@@ -18,25 +18,20 @@ namespace {
 
 constexpr int kWindowNameFieldId = 1;
 
-class WindowNamePromptDelegate : public ui::DialogModelDelegate {
- public:
-  void SetBrowserTitleFromTextField(Browser* browser) {
-    browser->SetWindowUserTitle(base::UTF16ToUTF8(
-        dialog_model()->GetTextfieldByUniqueId(kWindowNameFieldId)->text()));
-  }
-};
+void SetBrowserTitleFromTextfield(Browser* browser,
+                                  ui::DialogModel* dialog_model) {
+  browser->SetWindowUserTitle(base::UTF16ToUTF8(
+      dialog_model->GetTextfieldByUniqueId(kWindowNameFieldId)->text()));
+}
 
 std::unique_ptr<views::DialogDelegate> CreateWindowNamePrompt(
     Browser* browser) {
-  auto bubble_delegate_unique = std::make_unique<WindowNamePromptDelegate>();
-  WindowNamePromptDelegate* bubble_delegate = bubble_delegate_unique.get();
-
+  ui::DialogModel::Builder dialog_builder;
   auto dialog_model =
-      ui::DialogModel::Builder(std::move(bubble_delegate_unique))
+      dialog_builder
           .SetTitle(l10n_util::GetStringUTF16(IDS_NAME_WINDOW_PROMPT_TITLE))
-          .AddOkButton(base::BindOnce(
-              &WindowNamePromptDelegate::SetBrowserTitleFromTextField,
-              base::Unretained(bubble_delegate), browser))
+          .AddOkButton(base::BindOnce(&SetBrowserTitleFromTextfield, browser,
+                                      dialog_builder.model()))
           .AddCancelButton(base::DoNothing())
           .AddTextfield(
               l10n_util::GetStringUTF16(IDS_NAME_WINDOW_PROMPT_WINDOW_NAME),

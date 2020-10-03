@@ -12,6 +12,9 @@ namespace ui {
 DialogModel::Builder::Builder(std::unique_ptr<DialogModelDelegate> delegate)
     : model_(std::make_unique<DialogModel>(util::PassKey<Builder>(),
                                            std::move(delegate))) {}
+
+DialogModel::Builder::Builder() : Builder(nullptr) {}
+
 DialogModel::Builder::~Builder() {
   DCHECK(!model_) << "Model should've been built.";
 }
@@ -75,7 +78,8 @@ DialogModel::Builder& DialogModel::Builder::SetInitiallyFocusedField(
 DialogModel::DialogModel(util::PassKey<Builder>,
                          std::unique_ptr<DialogModelDelegate> delegate)
     : delegate_(std::move(delegate)) {
-  delegate_->set_dialog_model(this);
+  if (delegate_)
+    delegate_->set_dialog_model(this);
 }
 
 DialogModel::~DialogModel() = default;

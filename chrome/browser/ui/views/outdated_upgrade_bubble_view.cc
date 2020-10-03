@@ -46,84 +46,59 @@ constexpr int kMaxIgnored = 50;
 // The number of buckets we want the NumLaterPerReinstall histogram to use.
 constexpr int kNumIgnoredBuckets = 5;
 
-class OutdatedUpgradeBubbleDelegate;
-// The currently showing bubble.
-OutdatedUpgradeBubbleDelegate* g_upgrade_bubble = nullptr;
+bool g_upgrade_bubble_is_showing = false;
 
 // The number of times the user ignored the bubble before finally choosing to
 // reinstall.
 int g_num_ignored_bubbles = 0;
 
-class OutdatedUpgradeBubbleDelegate : public ui::DialogModelDelegate {
- public:
-  OutdatedUpgradeBubbleDelegate(content::PageNavigator* navigator,
-                                bool auto_update_enabled)
-      : auto_update_enabled_(auto_update_enabled), navigator_(navigator) {}
+void OnWindowClosing() {
+  g_upgrade_bubble_is_showing = false;
 
-  OutdatedUpgradeBubbleDelegate(const OutdatedUpgradeBubbleDelegate&) = delete;
-  OutdatedUpgradeBubbleDelegate& operator=(
-      const OutdatedUpgradeBubbleDelegate&) = delete;
+  // Increment the ignored bubble count (if this bubble wasn't ignored, this
+  // increment is offset by a decrement in OnDialogAccepted()).
+  if (g_num_ignored_bubbles < kMaxIgnored)
+    ++g_num_ignored_bubbles;
+}
 
-  ~OutdatedUpgradeBubbleDelegate() override {
-    // Increment the ignored bubble count (if this bubble wasn't ignored, this
-    // increment is offset by a decrement in OnDialogAccepted()).
-    if (g_num_ignored_bubbles < kMaxIgnored)
-      ++g_num_ignored_bubbles;
-  }
-
-  void OnWindowClosing() {
-    // Reset |g_upgrade_bubble| here, not in destructor, because destruction is
-    // asynchronous and ShowBubble may be called before full destruction and
-    // would attempt to show a bubble that is closing.
-    DCHECK_EQ(g_upgrade_bubble, this);
-    g_upgrade_bubble = nullptr;
-  }
-
-  void OnDialogAccepted() {
-    // Offset the +1 in the dtor.
-    --g_num_ignored_bubbles;
-    if (auto_update_enabled_) {
-      DCHECK(UpgradeDetector::GetInstance()->is_outdated_install());
-      UMA_HISTOGRAM_CUSTOM_COUNTS("OutdatedUpgradeBubble.NumLaterPerReinstall",
-                                  g_num_ignored_bubbles, 1, kMaxIgnored,
-                                  kNumIgnoredBuckets);
-      base::RecordAction(
-          base::UserMetricsAction("OutdatedUpgradeBubble.Reinstall"));
-      navigator_->OpenURL(
-          content::OpenURLParams(GURL(kDownloadChromeUrl), content::Referrer(),
-                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                 ui::PAGE_TRANSITION_LINK, false));
+void OnDialogAccepted(content::PageNavigator* navigator,
+                      bool auto_update_enabled) {
+  // Offset the +1 in OnWindowClosing().
+  --g_num_ignored_bubbles;
+  if (auto_update_enabled) {
+    DCHECK(UpgradeDetector::GetInstance()->is_outdated_install());
+    UMA_HISTOGRAM_CUSTOM_COUNTS("OutdatedUpgradeBubble.NumLaterPerReinstall",
+                                g_num_ignored_bubbles, 1, kMaxIgnored,
+                                kNumIgnoredBuckets);
+    base::RecordAction(
+        base::UserMetricsAction("OutdatedUpgradeBubble.Reinstall"));
+    navigator->OpenURL(
+        content::OpenURLParams(GURL(kDownloadChromeUrl), content::Referrer(),
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               ui::PAGE_TRANSITION_LINK, false));
 #if defined(OS_WIN)
-    } else {
-      DCHECK(UpgradeDetector::GetInstance()->is_outdated_install_no_au());
-      UMA_HISTOGRAM_CUSTOM_COUNTS("OutdatedUpgradeBubble.NumLaterPerEnableAU",
-                                  g_num_ignored_bubbles, 1, kMaxIgnored,
-                                  kNumIgnoredBuckets);
-      base::RecordAction(
-          base::UserMetricsAction("OutdatedUpgradeBubble.EnableAU"));
-      // Record that the autoupdate flavour of the dialog has been shown.
-      if (g_browser_process->local_state()) {
-        g_browser_process->local_state()->SetBoolean(
-            prefs::kAttemptedToEnableAutoupdate, true);
-      }
-
-      // Re-enable updates by shelling out to setup.exe asynchronously.
-      base::ThreadPool::PostTask(
-          FROM_HERE,
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-          base::BindOnce(&google_update::ElevateIfNeededToReenableUpdates));
-#endif  // defined(OS_WIN)
+  } else {
+    DCHECK(UpgradeDetector::GetInstance()->is_outdated_install_no_au());
+    UMA_HISTOGRAM_CUSTOM_COUNTS("OutdatedUpgradeBubble.NumLaterPerEnableAU",
+                                g_num_ignored_bubbles, 1, kMaxIgnored,
+                                kNumIgnoredBuckets);
+    base::RecordAction(
+        base::UserMetricsAction("OutdatedUpgradeBubble.EnableAU"));
+    // Record that the autoupdate flavour of the dialog has been shown.
+    if (g_browser_process->local_state()) {
+      g_browser_process->local_state()->SetBoolean(
+          prefs::kAttemptedToEnableAutoupdate, true);
     }
+
+    // Re-enable updates by shelling out to setup.exe asynchronously.
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+        base::BindOnce(&google_update::ElevateIfNeededToReenableUpdates));
+#endif  // defined(OS_WIN)
   }
-
- private:
-  // Identifies if auto-update is enabled or not.
-  const bool auto_update_enabled_;
-
-  // The PageNavigator to use for opening the Download Chrome URL.
-  content::PageNavigator* const navigator_;
-};
+}
 
 }  // namespace
 
@@ -133,28 +108,23 @@ class OutdatedUpgradeBubbleDelegate : public ui::DialogModelDelegate {
 void OutdatedUpgradeBubbleView::ShowBubble(views::View* anchor_view,
                                            content::PageNavigator* navigator,
                                            bool auto_update_enabled) {
-  if (g_upgrade_bubble)
+  if (g_upgrade_bubble_is_showing)
     return;
 
-  auto delegate = std::make_unique<OutdatedUpgradeBubbleDelegate>(
-      navigator, auto_update_enabled);
-  g_upgrade_bubble = delegate.get();
+  g_upgrade_bubble_is_showing = true;
 
   auto dialog_model =
-      ui::DialogModel::Builder(std::move(std::move(delegate)))
+      ui::DialogModel::Builder()
           .SetShowCloseButton(true)
           .SetTitle(l10n_util::GetStringUTF16(IDS_UPGRADE_BUBBLE_TITLE))
           .AddOkButton(
-              base::BindOnce(&OutdatedUpgradeBubbleDelegate::OnDialogAccepted,
-                             base::Unretained(g_upgrade_bubble)),
+              base::BindOnce(&OnDialogAccepted, navigator, auto_update_enabled),
               l10n_util::GetStringUTF16(auto_update_enabled
                                             ? IDS_REINSTALL_APP
                                             : IDS_REENABLE_UPDATES))
           .AddBodyText(
               ui::DialogModelLabel(IDS_UPGRADE_BUBBLE_TEXT).set_is_secondary())
-          .SetWindowClosingCallback(
-              base::BindOnce(&OutdatedUpgradeBubbleDelegate::OnWindowClosing,
-                             base::Unretained(g_upgrade_bubble)))
+          .SetWindowClosingCallback(base::BindOnce(&OnWindowClosing))
           .SetCloseCallback(base::BindOnce(
               &base::RecordAction,
               base::UserMetricsAction("OutdatedUpgradeBubble.Later")))

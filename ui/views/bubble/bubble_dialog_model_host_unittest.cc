@@ -19,48 +19,33 @@ using BubbleDialogModelHostTest = ViewsTestBase;
 // check its compliance.
 
 namespace {
-// TODO(pbos): Consider moving this to a non-views testutil location. This is
-// likely usable without/outside views (even if the test suite doesn't move).
-class TestModelDelegate : public ui::DialogModelDelegate {
+// WeakPtrs to this delegate is used to infer when DialogModel is destroyed.
+class WeakDialogModelDelegate : public ui::DialogModelDelegate {
  public:
-  struct Stats {
-    int window_closing_count = 0;
-  };
-
-  explicit TestModelDelegate(Stats* stats) : stats_(stats) {}
-
-  base::WeakPtr<TestModelDelegate> GetWeakPtr() {
+  base::WeakPtr<WeakDialogModelDelegate> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  static std::unique_ptr<ui::DialogModel> BuildModel(
-      std::unique_ptr<TestModelDelegate> delegate) {
-    auto* delegate_ptr = delegate.get();
-    return ui::DialogModel::Builder(std::move(delegate))
-        .SetWindowClosingCallback(
-            base::BindOnce(&TestModelDelegate::OnWindowClosing,
-                           base::Unretained(delegate_ptr)))
-        .Build();
-  }
-
-  void OnWindowClosing() { ++stats_->window_closing_count; }
-
  private:
-  Stats* const stats_;
-  base::WeakPtrFactory<TestModelDelegate> weak_ptr_factory_{this};
+  base::WeakPtrFactory<WeakDialogModelDelegate> weak_ptr_factory_{this};
 };
+
 }  // namespace
 
 TEST_F(BubbleDialogModelHostTest, CloseIsSynchronousAndCallsWindowClosing) {
   std::unique_ptr<Widget> anchor_widget =
       CreateTestWidget(Widget::InitParams::TYPE_WINDOW);
 
-  TestModelDelegate::Stats stats;
-  auto delegate = std::make_unique<TestModelDelegate>(&stats);
+  auto delegate = std::make_unique<WeakDialogModelDelegate>();
   auto weak_delegate = delegate->GetWeakPtr();
 
+  int window_closing_count = 0;
   auto host = std::make_unique<BubbleDialogModelHost>(
-      TestModelDelegate::BuildModel(std::move(delegate)),
+      ui::DialogModel::Builder(std::move(delegate))
+          .SetWindowClosingCallback(base::BindOnce(base::BindOnce(
+              [](int* window_closing_count) { ++(*window_closing_count); },
+              &window_closing_count)))
+          .Build(),
       anchor_widget->GetContentsView(), BubbleBorder::Arrow::TOP_RIGHT);
   auto* host_ptr = host.get();
 
@@ -68,10 +53,10 @@ TEST_F(BubbleDialogModelHostTest, CloseIsSynchronousAndCallsWindowClosing) {
       BubbleDialogDelegateView::CreateBubble(host.release());
   test::WidgetDestroyedWaiter waiter(bubble_widget);
 
-  EXPECT_EQ(0, stats.window_closing_count);
+  EXPECT_EQ(0, window_closing_count);
   DCHECK_EQ(host_ptr, weak_delegate->dialog_model()->host());
   weak_delegate->dialog_model()->host()->Close();
-  EXPECT_EQ(1, stats.window_closing_count);
+  EXPECT_EQ(1, window_closing_count);
 
   // The model (and hence delegate) should destroy synchronously, so the
   // WeakPtr should disappear before waiting for the views Widget to close.

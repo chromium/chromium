@@ -83,12 +83,33 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
  public:
   // Builder for DialogModel. Used for properties that are either only or
   // commonly const after construction.
-  class COMPONENT_EXPORT(UI_BASE) Builder {
+  class COMPONENT_EXPORT(UI_BASE) Builder final {
    public:
+    // Constructs a Builder for a DialogModel with a DialogModelDelegate whose
+    // lifetime (and storage) is tied to the lifetime of the DialogModel.
     explicit Builder(std::unique_ptr<DialogModelDelegate> delegate);
+
+    // Constructs a DialogModel without a DialogModelDelegate (that doesn't
+    // require storage tied to the DialogModel). For access to the DialogModel
+    // during construction (for use in callbacks), use model().
+    Builder();
+
+    Builder(const Builder&) = delete;
+    Builder& operator=(const Builder&) = delete;
+
     ~Builder();
 
     std::unique_ptr<DialogModel> Build() WARN_UNUSED_RESULT;
+
+    // Gets the DialogModel. Used for setting up callbacks that make use of the
+    // model later once it's fully constructed. This is useful for dialogs or
+    // callbacks that don't use DialogModelDelegate and don't have direct access
+    // to the model through DialogModelDelegate::dialog_model().
+    //
+    // Note that the DialogModel* returned here is only for registering
+    // callbacks with the DialogModel::Builder. These callbacks share lifetimes
+    // with the DialogModel so uses of it will not result in use-after-frees.
+    DialogModel* model() { return model_.get(); }
 
     Builder& SetShowCloseButton(bool show_close_button) {
       model_->show_close_button_ = show_close_button;
@@ -192,6 +213,10 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
 
   DialogModel(util::PassKey<DialogModel::Builder>,
               std::unique_ptr<DialogModelDelegate> delegate);
+
+  DialogModel(const DialogModel&) = delete;
+  DialogModel& operator=(const DialogModel&) = delete;
+
   ~DialogModel();
 
   // The host in which this model is hosted. Set by the Host implementation
