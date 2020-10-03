@@ -544,14 +544,17 @@ void V4L2VideoDecoder::ContinueChangeResolution(
     return;
   }
 
-  v4l2_memory type =
+  const v4l2_memory type =
       client_->GetVideoFramePool() ? V4L2_MEMORY_DMABUF : V4L2_MEMORY_MMAP;
-  if (output_queue_->AllocateBuffers(num_output_frames_, type) == 0) {
+  const size_t v4l2_num_buffers =
+      (type == V4L2_MEMORY_DMABUF) ? VIDEO_MAX_FRAME : num_output_frames_;
+
+  if (output_queue_->AllocateBuffers(v4l2_num_buffers, type) == 0) {
     VLOGF(1) << "Failed to request output buffers.";
     SetState(State::kError);
     return;
   }
-  if (output_queue_->AllocatedBuffersCount() != num_output_frames_) {
+  if (output_queue_->AllocatedBuffersCount() < num_output_frames_) {
     VLOGF(1) << "Could not allocate requested number of output buffers.";
     SetState(State::kError);
     return;
