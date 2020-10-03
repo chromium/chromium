@@ -225,6 +225,19 @@ TEST_F(SerialPortManagerImplTest, GetDevices) {
   loop.Run();
 }
 
+TEST_F(SerialPortManagerImplTest, GetUnknownPort) {
+  mojo::Remote<mojom::SerialPortManager> port_manager;
+  Bind(port_manager.BindNewPipeAndPassReceiver());
+
+  mojo::Remote<mojom::SerialPort> serial_port;
+  port_manager->GetPort(base::UnguessableToken::Create(),
+                        /*use_alternate_path=*/false,
+                        serial_port.BindNewPipeAndPassReceiver(),
+                        /*watcher=*/mojo::NullRemote());
+  serial_port.FlushForTesting();
+  EXPECT_FALSE(serial_port.is_connected());
+}
+
 TEST_F(SerialPortManagerImplTest, PortRemovedAndAdded) {
   SetupBluetoothEnumerator();
   mojo::Remote<mojom::SerialPortManager> port_manager;

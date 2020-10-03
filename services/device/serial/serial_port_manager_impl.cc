@@ -94,14 +94,22 @@ void SerialPortManagerImpl::GetPort(
     return;
   }
 
-  DCHECK(bluetooth_enumerator_);
-  base::Optional<std::string> address =
-      bluetooth_enumerator_->GetAddressFromToken(token);
-  if (address) {
-    ui_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&BluetoothSerialPortImpl::Create,
-                                  bluetooth_enumerator_->GetAdapter(), *address,
-                                  std::move(receiver), std::move(watcher)));
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableBluetoothSerialPortProfileInSerialApi)) {
+    if (!bluetooth_enumerator_) {
+      bluetooth_enumerator_ =
+          std::make_unique<BluetoothSerialDeviceEnumerator>();
+      observed_enumerator_.Add(bluetooth_enumerator_.get());
+    }
+    base::Optional<std::string> address =
+        bluetooth_enumerator_->GetAddressFromToken(token);
+    if (address) {
+      ui_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&BluetoothSerialPortImpl::Create,
+                         bluetooth_enumerator_->GetAdapter(), *address,
+                         std::move(receiver), std::move(watcher)));
+    }
   }
 }
 
