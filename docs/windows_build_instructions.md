@@ -178,58 +178,6 @@ $ gn gen out/Default
   operating system and CPU.
 * For more info on GN, run `gn help` on the command line or read the [quick
   start guide](https://gn.googlesource.com/gn/+/master/docs/quick_start.md).
-
-### Using the Visual Studio IDE
-
-If you want to use the Visual Studio IDE, use the `--ide` command line
-argument to `gn gen` when you generate your output directory (as described on
-the [get the code](https://dev.chromium.org/developers/how-tos/get-the-code)
-page):
-
-```shell
-$ gn gen --ide=vs out\Default
-$ devenv out\Default\all.sln
-```
-
-GN will produce a file `all.sln` in your build directory. It will internally
-use Ninja to compile while still allowing most IDE functions to work (there is
-no native Visual Studio compilation mode). If you manually run "gen" again you
-will need to resupply this argument, but normally GN will keep the build and
-IDE files up to date automatically when you build.
-
-The generated solution will contain several thousand projects and will be very
-slow to load. Use the `--filters` argument to restrict generating project files
-for only the code you're interested in. Although this will also limit what
-files appear in the project explorer, debugging will still work and you can
-set breakpoints in files that you open manually. A minimal solution that will
-let you compile and run Chrome in the IDE but will not show any source files
-is:
-
-```
-$ gn gen --ide=vs --filters=//chrome --no-deps out\Default
-```
-
-You can selectively add other directories you care about to the filter like so:
-`--filters=//chrome;//third_party/WebKit/*;//gpu/*`.
-
-There are other options for controlling how the solution is generated, run `gn
-help gen` for the current documentation.
-
-By default when you start debugging in Visual Studio the debugger will only
-attach to the main browser process. To debug all of Chrome, install
-[Microsoft's Child Process Debugging Power Tool](https://blogs.msdn.microsoft.com/devops/2014/11/24/introducing-the-child-process-debugging-power-tool/).
-You will also need to run Visual Studio as administrator, or it will silently
-fail to attach to some of Chrome's child processes.
-
-It is also possible to debug and develop Chrome in Visual Studio without a
-solution file. Simply "open" your chrome.exe binary with
-`File->Open->Project/Solution`, or from a Visual Studio command prompt like
-so: `devenv /debugexe out\Debug\chrome.exe <your arguments>`. Many of Visual
-Studio's code editing features will not work in this configuration, but by
-installing the [VsChromium Visual Studio Extension](https://chromium.github.io/vs-chromium/)
-you can get the source code to appear in the solution explorer window along
-with other useful features such as code search.
-
 ### Faster builds
 
 * Reduce file system overhead by excluding build directories from
@@ -418,7 +366,7 @@ To update an existing checkout, you can run
 
 ```shell
 $ git rebase-update
-$ gclient sync
+$ gclient sync -D
 ```
 
 The first command updates the primary Chromium source repository and rebases
@@ -426,5 +374,70 @@ any of your local branches on top of tip-of-tree (aka the Git branch `origin/mas
 If you don't want to use this script, you can also just use `git pull` or
 other common Git commands to update the repo.
 
-The second command syncs the subrepositories to the appropriate versions and
-re-runs the hooks as needed.
+The second command syncs the subrepositories to the appropriate versions,
+deleting those that are no longer needed, and re-runs the hooks as needed.
+
+### Editing and Debugging With the Visual Studio IDE
+
+You can use the Visual Studio IDE to edit and debug Chrome, with or without
+Intellisense support.
+
+#### Using Visual Studio Intellisense
+
+If you want to use Visual Studio Intellisense when developing Chromium, use the
+`--ide` command line argument to `gn gen` when you generate your output
+directory (as described on the [get the code](https://dev.chromium.org/developers/how-tos/get-the-code)
+page):
+
+```shell
+$ gn gen --ide=vs out\Default
+$ devenv out\Default\all.sln
+```
+
+GN will produce a file `all.sln` in your build directory. It will internally
+use Ninja to compile while still allowing most IDE functions to work (there is
+no native Visual Studio compilation mode). If you manually run "gen" again you
+will need to resupply this argument, but normally GN will keep the build and
+IDE files up to date automatically when you build.
+
+The generated solution will contain several thousand projects and will be very
+slow to load. Use the `--filters` argument to restrict generating project files
+for only the code you're interested in. Although this will also limit what
+files appear in the project explorer, debugging will still work and you can
+set breakpoints in files that you open manually. A minimal solution that will
+let you compile and run Chrome in the IDE but will not show any source files
+is:
+
+```
+$ gn gen --ide=vs --filters=//chrome --no-deps out\Default
+```
+
+You can selectively add other directories you care about to the filter like so:
+`--filters=//chrome;//third_party/WebKit/*;//gpu/*`.
+
+There are other options for controlling how the solution is generated, run `gn
+help gen` for the current documentation.
+
+#### Using Visual Studio without Intellisense
+
+It is also possible to debug and develop Chrome in Visual Studio without the
+overhead of a multi-project solution file. Simply "open" your chrome.exe binary
+with `File->Open->Project/Solution`, or from a Visual Studio command prompt like
+so: `devenv /debugexe out\Debug\chrome.exe <your arguments>`. Many of Visual
+Studio's code exploration features will not work in this configuration, but by
+installing the [VsChromium Visual Studio Extension](https://chromium.github.io/vs-chromium/)
+you can get the source code to appear in the solution explorer window along
+with other useful features such as code search. You can add multiple executables
+of interest (base_unittests.exe, browser_tests.exe) to your solution with
+`File->Add->Existing Project...` and change which one will be debugged by
+right-clicking on them in `Solution Explorer` and selecting `Set as Startup
+Project`. You can also change their properties, including command line
+arguments, by right-clicking on them in `Solution Explorer` and selecting
+`Properties`.
+
+By default when you start debugging in Visual Studio the debugger will only
+attach to the main browser process. To debug all of Chrome, install
+[Microsoft's Child Process Debugging Power Tool](https://blogs.msdn.microsoft.com/devops/2014/11/24/introducing-the-child-process-debugging-power-tool/).
+You will also need to run Visual Studio as administrator, or it will silently
+fail to attach to some of Chrome's child processes.
+
