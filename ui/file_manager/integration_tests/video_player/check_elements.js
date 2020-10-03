@@ -9,12 +9,10 @@
  * @return {Promise} Promise to be fulfilled with on success.
  */
 testcase.checkInitialElements = function() {
-  var test = openVideos('local', 'downloads', [ENTRIES.world]);
+  const test = openVideos('local', 'downloads', [ENTRIES.world]);
   return test.then(function(args) {
-    var appId = args[0];
-    var videoPlayer = args[1];
+    const appId = args[0];
     return Promise.all([
-      remoteCallVideoPlayer.waitForElement(appId, 'html[i18n-processed]'),
       remoteCallVideoPlayer.waitForElement(appId, 'div#video-player'),
       remoteCallVideoPlayer.waitForElement(
           appId, '#video-container > video[autopictureinpicture]'),

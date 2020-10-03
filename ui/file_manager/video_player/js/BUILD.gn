@@ -67,7 +67,6 @@ js_library("video_player") {
     "//ui/file_manager/base/js:filtered_volume_manager",
     "//ui/file_manager/file_manager/common/js:metrics_base",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/js:i18n_template_no_process",
     "//ui/webui/resources/js/cr/ui:menu",
     "//ui/webui/resources/js/cr/ui:menu_item",
   ]

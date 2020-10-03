@@ -59,7 +59,6 @@ initPromise
     .then(function() {
       const isReady = document.readyState !== 'loading';
       assert(isReady, 'VideoPlayer DOM document is still loading');
-      i18nTemplate.process(document, loadTimeData);
       return new Promise(function(fulfill, reject) {
         util.URLsToEntries(window.appState.items, function(entries) {
           metrics.recordOpenVideoPlayerAction();
