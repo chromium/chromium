@@ -6,6 +6,8 @@
 
 #include <vector>
 
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -22,6 +24,9 @@ namespace chromeos {
 namespace {
 
 namespace mojo_ipc = scanning::mojom;
+
+// Relative path where scanned images are saved, relative to the root directory.
+constexpr char kMyFilesPath[] = "home/chronos/user/MyFiles";
 
 // Scanner names used for tests.
 constexpr char kFirstTestScannerName[] = "Test Scanner 1";
@@ -59,6 +64,10 @@ class ScanServiceTest : public testing::Test {
   ScanServiceTest() = default;
 
   void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    ASSERT_TRUE(
+        base::CreateDirectory(temp_dir_.GetPath().Append(kMyFilesPath)));
+    scan_service_.SetRootDirForTesting(temp_dir_.GetPath());
     scan_service_.BindInterface(
         scan_service_remote_.BindNewPipeAndPassReceiver());
   }
@@ -82,11 +91,22 @@ class ScanServiceTest : public testing::Test {
     return caps;
   }
 
+  // Performs a scan with the scanner identified by |scanner_id| with the given
+  // |settings| by calling ScanService::Scan() via the mojo::Remote.
+  bool Scan(const base::UnguessableToken& scanner_id,
+            mojo_ipc::ScanSettingsPtr settings) {
+    bool success;
+    mojo_ipc::ScanServiceAsyncWaiter(scan_service_remote_.get())
+        .Scan(scanner_id, std::move(settings), &success);
+    return success;
+  }
+
  protected:
   FakeLorgnetteScannerManager fake_lorgnette_scanner_manager_;
 
  private:
   base::test::TaskEnvironment task_environment_;
+  base::ScopedTempDir temp_dir_;
   ScanService scan_service_{&fake_lorgnette_scanner_manager_};
   mojo::Remote<mojo_ipc::ScanService> scan_service_remote_;
 };
@@ -162,6 +182,23 @@ TEST_F(ScanServiceTest, GetScannerCapabilities) {
   ASSERT_EQ(caps->resolutions.size(), 2u);
   EXPECT_EQ(caps->resolutions[0], kFirstResolution);
   EXPECT_EQ(caps->resolutions[1], kSecondResolution);
+}
+
+// Test that attempting to scan with a scanner ID that doesn't correspond to a
+// scanner results in a failed scan.
+TEST_F(ScanServiceTest, ScanWithBadScannerId) {
+  EXPECT_FALSE(
+      Scan(base::UnguessableToken::Create(), mojo_ipc::ScanSettings::New()));
+}
+
+// Test that a scan can be performed successfully.
+TEST_F(ScanServiceTest, Scan) {
+  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
+      {kFirstTestScannerName});
+  fake_lorgnette_scanner_manager_.SetScanResponse("TestData");
+  auto scanners = GetScanners();
+  ASSERT_EQ(scanners.size(), 1u);
+  EXPECT_TRUE(Scan(scanners[0]->id, mojo_ipc::ScanSettings::New()));
 }
 
 }  // namespace chromeos

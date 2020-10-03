@@ -45,6 +45,16 @@ struct ScannerCapabilities {
   array<uint32> resolutions;
 };
 
+// Settings used to perform a scan.
+struct ScanSettings {
+  // The SANE name of the ScanSource from which to scan.
+  string source_name;
+  // The color mode with which to scan.
+  ColorMode color_mode;
+  // The resolution with which to scan in DPI.
+  uint32 resolution_dpi;
+};
+
 // Represents a connected scanner.
 struct Scanner {
   // The scanner's unique identifier.
@@ -67,4 +77,9 @@ interface ScanService {
   // were obtained via a secure protocol.
   GetScannerCapabilities(mojo_base.mojom.UnguessableToken scanner_id)
       => (ScannerCapabilities capabilities);
+
+  // Performs a scan using the provided |settings|.
+  // TODO(jschettler): Send a ScanJobObserver to get scan job updates.
+  Scan(mojo_base.mojom.UnguessableToken scanner_id, ScanSettings settings)
+      => (bool success);
 };
