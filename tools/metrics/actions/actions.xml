@@ -16079,6 +16079,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="NewTabPage.Promo.EnhancedProtectionPromo.Accepted">
+  <owner>bdea@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>
+    The Safe Browsing Enhanced Protection promo is accepted.
+  </description>
+</action>
+
+<action name="NewTabPage.Promo.EnhancedProtectionPromo.Dismissed">
+  <owner>bdea@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>
+    The Safe Browsing Enhanced Protection promo is dismissed.
+  </description>
+</action>
+
 <action name="NewTabPage_ContentSuggestions_ArticlesUsage"
     not_user_triggered="true">
   <owner>markusheintz@chromium.org</owner>

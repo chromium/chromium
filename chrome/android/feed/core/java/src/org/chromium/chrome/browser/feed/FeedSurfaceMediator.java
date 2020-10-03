@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.ntp.SnapScrollHelper;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
 import org.chromium.chrome.browser.ntp.cards.promo.HomepagePromoController.HomepagePromoStateListener;
 import org.chromium.chrome.browser.ntp.cards.promo.HomepagePromoVariationManager;
+import org.chromium.chrome.browser.ntp.cards.promo.enhanced_protection.EnhancedProtectionPromoController.EnhancedProtectionPromoStateListener;
 import org.chromium.chrome.browser.ntp.snippets.SectionHeader;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
@@ -38,6 +39,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.signin.SigninManager;
+import org.chromium.chrome.browser.signin.SigninPromoController;
 import org.chromium.chrome.browser.signin.SigninPromoUtil;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
@@ -48,6 +50,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -62,7 +65,7 @@ import org.chromium.ui.mojom.WindowOpenDisposition;
 public class FeedSurfaceMediator
         implements NewTabPageLayout.ScrollDelegate, ContextMenuManager.TouchEnabledDelegate,
                    TemplateUrlServiceObserver, ListMenu.Delegate, HomepagePromoStateListener,
-                   IdentityManager.Observer {
+                   EnhancedProtectionPromoStateListener, IdentityManager.Observer {
     @VisibleForTesting
     public static final String FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA = "FeedContentFirstLoadedTime";
 
@@ -325,8 +328,13 @@ public class FeedSurfaceMediator
             mSignInPromo = null;
         }
 
+        View enhancedProtectionPromoView = null;
+        if (homepagePromoView == null && mSignInPromo == null) {
+            enhancedProtectionPromoView = createEnhancedProtectionPromoIfNeeded();
+        }
         // We are not going to show two promos at the same time.
-        mCoordinator.updateHeaderViews(signInPromoVisible, homepagePromoView);
+        mCoordinator.updateHeaderViews(
+                signInPromoVisible, homepagePromoView, enhancedProtectionPromoView);
     }
 
     /**
@@ -334,7 +342,11 @@ public class FeedSurfaceMediator
      * @return Whether the SignPromo is visible.
      */
     private boolean createSignInPromoIfNeeded() {
-        if (!SignInPromo.shouldCreatePromo()) return false;
+        if (!SignInPromo.shouldCreatePromo()
+                || !SigninPromoController.hasNotReachedImpressionLimit(
+                        SigninAccessPoint.NTP_CONTENT_SUGGESTIONS)) {
+            return false;
+        }
         if (mSignInPromo == null) {
             boolean suggestionsVisible = getPrefService().getBoolean(Pref.ARTICLES_LIST_VISIBLE);
 
@@ -352,6 +364,18 @@ public class FeedSurfaceMediator
             mCoordinator.getHomepagePromoController().setHomepagePromoStateListener(this);
         }
         return homepagePromoView;
+    }
+
+    private View createEnhancedProtectionPromoIfNeeded() {
+        if (mCoordinator.getEnhancedProtectionPromoController() == null) return null;
+
+        View enhancedProtectionPromoView =
+                mCoordinator.getEnhancedProtectionPromoController().getPromoView();
+        if (enhancedProtectionPromoView != null) {
+            mCoordinator.getEnhancedProtectionPromoController()
+                    .setEnhancedProtectionPromoStateListener(this);
+        }
+        return enhancedProtectionPromoView;
     }
 
     /** Clear any dependencies related to the {@link Stream}. */
@@ -601,7 +625,13 @@ public class FeedSurfaceMediator
         // If the homepage has status update, we'll not show the HomepagePromo again.
         // There are cases where the user has their homepage reset to default. This is an edge case
         // and we don't have to reflect that change immediately.
-        mCoordinator.updateHeaderViews(false, null);
+        mCoordinator.updateHeaderViews(false, null, null);
+    }
+
+    @Override
+    public void onEnhancedProtectionPromoStateChange() {
+        // If the enhanced protection promo has been dismissed, delete it.
+        mCoordinator.updateHeaderViews(false, null, null);
     }
 
     // IdentityManager.Delegate interface.
@@ -631,7 +661,7 @@ public class FeedSurfaceMediator
             if (isVisible() == visible) return;
 
             super.setVisibilityInternal(visible);
-            mCoordinator.updateHeaderViews(visible, null);
+            mCoordinator.updateHeaderViews(visible, null, null);
             maybeUpdateSignInPromo();
         }
 

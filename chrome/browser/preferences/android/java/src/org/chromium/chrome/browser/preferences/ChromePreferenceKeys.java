@@ -628,6 +628,8 @@ public final class ChromePreferenceKeys {
 
     public static final String SIGNIN_PROMO_IMPRESSIONS_COUNT_BOOKMARKS =
             "signin_promo_impressions_count_bookmarks";
+    public static final String SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP =
+            "Chrome.SigninPromo.NTPImpressions";
     public static final String SIGNIN_PROMO_IMPRESSIONS_COUNT_SETTINGS =
             "signin_promo_impressions_count_settings";
     public static final String SIGNIN_PROMO_LAST_SHOWN_ACCOUNT_NAMES =
@@ -820,6 +822,7 @@ public final class ChromePreferenceKeys {
                 PROMO_TIMES_SEEN.pattern(),
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,
+                SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP,
                 TWA_DISCLOSURE_SEEN_PACKAGES
         );
         // clang-format on
