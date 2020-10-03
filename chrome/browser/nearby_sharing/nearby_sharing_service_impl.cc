@@ -3282,19 +3282,12 @@ void NearbySharingServiceImpl::UnregisterShareTarget(
     if (it != outgoing_share_target_info_map_.end())
       endpoint_id = it->second.endpoint_id();
 
-    // Remove info except for this endpoint id, if present.
+    // TODO(crbug/1108348): Support caching manager by keeping track of the
+    // share_target/endpoint_id for next time.
     ClearOutgoingShareTargetInfoMap();
 
-    if (endpoint_id) {
-      NS_LOG(VERBOSE) << __func__ << ": Unregister share target: "
-                      << share_target.device_name;
-      GetOrCreateShareTargetInfo(share_target, *endpoint_id);
-    } else {
-      NS_LOG(VERBOSE)
-          << __func__
-          << ": Cannot unregister share target since none registered: "
-          << share_target.device_name;
-    }
+    NS_LOG(VERBOSE) << __func__ << ": Unregister share target: "
+                    << share_target.device_name;
   }
   mutual_acceptance_timeout_alarm_.Cancel();
 }
