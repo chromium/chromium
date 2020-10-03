@@ -1243,7 +1243,7 @@ by a child template that "extends" this file.
 
       <!-- Downloads Google Sans from GMS Core -->
       <meta-data android:name="preloaded_fonts"
-          android:resource="@array/preloaded_google_sans_fonts" />
+          android:resource="@array/chrome_preloaded_google_sans_fonts" />
 
       {% block base_application_definitions %}
       {% endblock %}

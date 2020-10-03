@@ -9,10 +9,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="FontValidationError,FontValidationWarning,UnusedResources"
     android:fontProviderAuthority="com.google.android.gms.fonts"
-    android:fontProviderCerts="@array/com_google_android_gms_fonts_certs"
+    android:fontProviderCerts="@array/ui_com_google_android_gms_fonts_certs"
     android:fontProviderPackage="com.google.android.gms"
-    android:fontProviderQuery="Google Sans:500"
+    android:fontProviderQuery="Google Sans:700"
     app:fontProviderAuthority="com.google.android.gms.fonts"
-    app:fontProviderCerts="@array/com_google_android_gms_fonts_certs"
+    app:fontProviderCerts="@array/ui_com_google_android_gms_fonts_certs"
     app:fontProviderPackage="com.google.android.gms"
-    app:fontProviderQuery="Google Sans:500"/>
+    app:fontProviderQuery="Google Sans:700"/>

@@ -5,12 +5,12 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
     <!-- Fonts that are specified to be preloaded by AndroidManifest.xml. -->
-    <array name="preloaded_google_sans_fonts">
+    <array name="chrome_preloaded_google_sans_fonts">
         <!-- The following 2 fonts are used in downstream Clank UI. -->
-        <item>@font/google_sans</item>
-        <item>@font/google_sans_medium</item>
+        <item>@font/chrome_google_sans</item>
+        <item>@font/chrome_google_sans_medium</item>
         <!-- The following font is not used in Clank UI, but may be used by
              AndroidFontLookupImpl#matchLocalFontByUniqueName. -->
-        <item>@font/google_sans_bold</item>
+        <item>@font/chrome_google_sans_bold</item>
     </array>
 </resources>
