@@ -66,12 +66,12 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   }
 
   // LorgnetteManagerClient override.
-  void StartScan(const std::string& device_name,
-                 const lorgnette::ScanSettings& settings,
-                 VoidDBusMethodCallback completion_callback,
-                 base::RepeatingCallback<void(std::string)> page_callback,
-                 base::Optional<base::RepeatingCallback<void(int)>>
-                     progress_callback) override {
+  void StartScan(
+      const std::string& device_name,
+      const lorgnette::ScanSettings& settings,
+      VoidDBusMethodCallback completion_callback,
+      base::RepeatingCallback<void(std::string)> page_callback,
+      base::RepeatingCallback<void(int)> progress_callback) override {
     lorgnette::StartScanRequest request;
     request.set_device_name(device_name);
     *request.mutable_settings() = settings;
@@ -88,8 +88,8 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
 
     ScanJobState state;
     state.completion_callback = std::move(completion_callback);
-    state.progress_callback = progress_callback;
-    state.page_callback = page_callback;
+    state.progress_callback = std::move(progress_callback);
+    state.page_callback = std::move(page_callback);
 
     lorgnette_daemon_proxy_->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
@@ -184,7 +184,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   // of data into a string.
   struct ScanJobState {
     VoidDBusMethodCallback completion_callback;
-    base::Optional<base::RepeatingCallback<void(int)>> progress_callback;
+    base::RepeatingCallback<void(int)> progress_callback;
     base::RepeatingCallback<void(std::string)> page_callback;
     std::unique_ptr<ScanDataReader> scan_data_reader;
   };
@@ -383,8 +383,8 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       VLOG(1) << "Scan job " << signal_proto.scan_uuid()
               << " completed successfully";
     } else if (signal_proto.state() == lorgnette::SCAN_STATE_IN_PROGRESS &&
-               state.progress_callback.has_value()) {
-      state.progress_callback.value().Run(signal_proto.progress());
+               !state.progress_callback.is_null()) {
+      state.progress_callback.Run(signal_proto.progress());
     }
   }
 
