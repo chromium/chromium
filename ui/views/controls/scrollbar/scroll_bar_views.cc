@@ -75,7 +75,7 @@ class ScrollBarThumb : public BaseScrollBarThumb {
 ScrollBarButton::ScrollBarButton(ButtonListener* listener, Type type)
     : BaseScrollBarButton(listener), type_(type) {
   EnableCanvasFlippingForRTLUI(true);
-  SetFocusBehavior(FocusBehavior::NEVER);
+  DCHECK_EQ(FocusBehavior::NEVER, GetFocusBehavior());
 }
 
 ScrollBarButton::~ScrollBarButton() = default;

@@ -16,7 +16,10 @@ BaseScrollBarButton::BaseScrollBarButton(ButtonListener* listener,
     : Button(listener),
       repeater_(base::BindRepeating(&BaseScrollBarButton::RepeaterNotifyClick,
                                     base::Unretained(this)),
-                tick_clock) {}
+                tick_clock) {
+  // Not focusable by default.
+  SetFocusBehavior(FocusBehavior::NEVER);
+}
 
 BaseScrollBarButton::~BaseScrollBarButton() = default;
 

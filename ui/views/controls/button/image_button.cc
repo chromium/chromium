@@ -34,6 +34,8 @@ ImageButton::ImageButton(PressedCallback callback)
   // implementation is flipped horizontally so that the button's images are
   // mirrored when the UI directionality is right-to-left.
   EnableCanvasFlippingForRTLUI(true);
+  // Not focusable by default, only for accessibility.
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 }
 
 ImageButton::ImageButton(ButtonListener* listener)

@@ -77,6 +77,8 @@ FrameCaptionButton::FrameCaptionButton(views::ButtonListener* listener,
       ink_drop_corner_radius_(kCaptionButtonInkDropDefaultCornerRadius),
       swap_images_animation_(new gfx::SlideAnimation(this)) {
   views::SetHitTestComponent(this, hit_test_type);
+  // Not focusable by default, only for accessibility.
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
   SetAnimateOnStateChange(true);
   swap_images_animation_->Reset(1);

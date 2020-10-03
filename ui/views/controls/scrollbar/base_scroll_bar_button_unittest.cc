@@ -71,6 +71,10 @@ TEST_F(BaseScrollBarButtonTest, Metadata) {
   test::TestViewMetadata(button());
 }
 
+TEST_F(BaseScrollBarButtonTest, FocusBehavior) {
+  EXPECT_EQ(View::FocusBehavior::NEVER, button()->GetFocusBehavior());
+}
+
 TEST_F(BaseScrollBarButtonTest, CallbackFiresOnMouseDown) {
   EXPECT_CALL(listener(), ButtonPressed(_, _));
 

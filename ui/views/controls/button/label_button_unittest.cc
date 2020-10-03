@@ -141,6 +141,12 @@ class LabelButtonTest : public test::WidgetTest {
   DISALLOW_COPY_AND_ASSIGN(LabelButtonTest);
 };
 
+TEST_F(LabelButtonTest, FocusBehavior) {
+  LabelButton button;
+
+  EXPECT_EQ(View::FocusBehavior::ACCESSIBLE_ONLY, button.GetFocusBehavior());
+}
+
 TEST_F(LabelButtonTest, Init) {
   const base::string16 text(ASCIIToUTF16("abc"));
   TestLabelButton button(text);

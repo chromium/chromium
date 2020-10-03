@@ -39,6 +39,12 @@ namespace views {
 
 using ImageButtonTest = ViewsTestBase;
 
+TEST_F(ImageButtonTest, FocusBehavior) {
+  ImageButton button;
+
+  EXPECT_EQ(View::FocusBehavior::ACCESSIBLE_ONLY, button.GetFocusBehavior());
+}
+
 TEST_F(ImageButtonTest, Basics) {
   ImageButton button;
 
