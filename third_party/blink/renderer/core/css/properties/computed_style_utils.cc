@@ -117,6 +117,10 @@ CSSValue* ComputedStyleUtils::CurrentColorOrValidColor(
     CSSValuePhase value_phase) {
   // This function does NOT look at visited information, so that computed style
   // doesn't expose that.
+  if (value_phase == CSSValuePhase::kComputedValue && color.IsSystemColor() &&
+      RuntimeEnabledFeatures::CSSSystemColorComputeToSelfEnabled()) {
+    return CSSIdentifierValue::Create(color.GetColorKeyword());
+  }
   return cssvalue::CSSColorValue::Create(
       color.Resolve(style.GetCurrentColor(), style.UsedColorScheme()).Rgb());
 }
