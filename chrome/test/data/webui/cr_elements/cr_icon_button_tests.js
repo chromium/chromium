@@ -167,13 +167,4 @@ suite('cr-icon-button', function() {
     assertEquals('icon1', elements[0].icon);
     assertEquals('icon2', elements[1].icon);
   });
-
-  test('disable ripple property prevents showing ripple', () => {
-    document.body.innerHTML =
-        '<cr-icon-button disable-ripple></cr-icon-button>';
-    button = /** @type {!CrIconButtonElement} */ (
-        document.body.querySelector('cr-icon-button'));
-    button.focus();
-    assertFalse(button.hasRipple());
-  });
 });
