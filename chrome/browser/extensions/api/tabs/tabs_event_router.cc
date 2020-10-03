@@ -261,6 +261,15 @@ void TabsEventRouter::TabPinnedStateChanged(TabStripModel* tab_strip_model,
   DispatchTabUpdatedEvent(contents, std::move(changed_property_names));
 }
 
+void TabsEventRouter::TabGroupedStateChanged(
+    base::Optional<tab_groups::TabGroupId> group,
+    content::WebContents* contents,
+    int index) {
+  std::set<std::string> changed_property_names;
+  changed_property_names.insert(tabs_constants::kGroupIdKey);
+  DispatchTabUpdatedEvent(contents, std::move(changed_property_names));
+}
+
 void TabsEventRouter::OnZoomChanged(
     const ZoomController::ZoomChangedEventData& data) {
   DCHECK(data.web_contents);

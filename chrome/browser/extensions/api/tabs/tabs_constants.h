@@ -22,6 +22,7 @@ extern const char kFileKey[];
 extern const char kFocusedKey[];
 extern const char kFormatKey[];
 extern const char kFromIndexKey[];
+extern const char kGroupIdKey[];
 extern const char kHeightKey[];
 extern const char kHighlightedKey[];
 extern const char kIdKey[];
@@ -107,6 +108,7 @@ extern const char kMissingLockWindowFullscreenPrivatePermission[];
 extern const char kJavaScriptUrlsNotAllowedInTabsUpdate[];
 extern const char kBrowserWindowNotAllowed[];
 extern const char kLockedFullscreenModeNewTabError[];
+extern const char kGroupParamsError[];
 
 }  // namespace tabs_constants
 }  // namespace extensions

@@ -189,6 +189,17 @@ class TabsRemoveFunction : public ExtensionFunction {
       web_contents_destroyed_observers_;
   DECLARE_EXTENSION_FUNCTION("tabs.remove", TABS_REMOVE)
 };
+class TabsGroupFunction : public ExtensionFunction {
+  ~TabsGroupFunction() override = default;
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("tabs.group", TABS_GROUP)
+};
+class TabsUngroupFunction : public ExtensionFunction {
+  ~TabsUngroupFunction() override = default;
+  ResponseAction Run() override;
+  bool UngroupTab(int tab_id, std::string* error);
+  DECLARE_EXTENSION_FUNCTION("tabs.ungroup", TABS_UNGROUP)
+};
 class TabsDetectLanguageFunction
     : public ExtensionFunction,
       public content::WebContentsObserver,

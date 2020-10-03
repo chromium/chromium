@@ -18,6 +18,7 @@ const char kFileKey[] = "file";
 const char kFocusedKey[] = "focused";
 const char kFormatKey[] = "format";
 const char kFromIndexKey[] = "fromIndex";
+const char kGroupIdKey[] = "groupId";
 const char kHeightKey[] = "height";
 const char kIdKey[] = "id";
 const char kIncognitoKey[] = "incognito";
@@ -118,6 +119,8 @@ const char kJavaScriptUrlsNotAllowedInTabsUpdate[] =
 const char kBrowserWindowNotAllowed[] = "Browser windows not allowed.";
 const char kLockedFullscreenModeNewTabError[] =
     "You cannot create new tabs while in locked fullscreen mode.";
+const char kGroupParamsError[] =
+    "Cannot specify 'createProperties' along with a 'groupId'.";
 
 }  // namespace tabs_constants
 }  // namespace extensions

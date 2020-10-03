@@ -13,7 +13,8 @@
         "enum": ["unloaded", "loading", "complete"],
         "description": "The tab's loading status."
       },
-      { "id": "MutedInfoReason",
+      {
+        "id": "MutedInfoReason",
         "type": "string",
         "description": "An event that caused a muted state change.",
         "enum": [
@@ -50,6 +51,7 @@
           "id": {"type": "integer", "minimum": -1, "optional": true, "description": "The ID of the tab. Tab IDs are unique within a browser session. Under some circumstances a tab may not be assigned an ID; for example, when querying foreign tabs using the $(ref:sessions) API, in which case a session ID may be present. Tab ID can also be set to <code>chrome.tabs.TAB_ID_NONE</code> for apps and devtools windows."},
           // TODO(kalman): Investigate how this is ending up as -1 (based on window type? a bug?) and whether it should be optional instead.
           "index": {"type": "integer", "minimum": -1, "description": "The zero-based index of the tab within its window."},
+          "groupId": {"type": "integer", "minimum": -1, "description": "The ID of the group that the tab belongs to."},
           "windowId": {"type": "integer", "minimum": 0, "description": "The ID of the window that contains the tab."},
           "openerTabId": {"type": "integer", "minimum": 0, "optional": true, "description": "The ID of the tab that opened this tab, if any. This property is only present if the opener tab still exists."},
           "selected": {"type": "boolean", "description": "Whether the tab is selected.", "deprecated": "Please use $(ref:tabs.Tab.highlighted)."},
@@ -492,6 +494,12 @@
                 "optional": true,
                 "description": "Match tabs against one or more <a href='match_patterns'>URL patterns</a>. Fragment identifiers are not matched. This property is ignored if the extension does not have the <code>\"tabs\"</code> permission."
               },
+              "groupId": {
+                "type": "integer",
+                "optional": true,
+                "minimum": -1,
+                "description": "The ID of the group that the tabs are in, or $(ref:tabGroups.TAB_GROUP_ID_NONE) for ungrouped tabs."
+              },
               "windowId": {
                 "type": "integer",
                 "optional": true,
@@ -718,6 +726,74 @@
             "choices": [
               {"type": "integer", "minimum": 0},
               {"type": "array", "items": {"type": "integer", "minimum": 0}}
+            ]
+          },
+          {"type": "function", "name": "callback", "optional": true, "parameters": []}
+        ]
+      },
+      {
+        "name": "group",
+        "type": "function",
+        "description": "Adds one or more tabs to a specified group, or if no group is specified, adds the given tabs to a newly created group.",
+        "parameters": [
+          {
+            "name": "options",
+            "type": "object",
+            "properties": {
+              "tabIds": {
+                "description": "The tab ID or list of tab IDs to add to the specified group.",
+                "choices": [
+                  {"type": "integer", "minimum": 0},
+                  {"type": "array", "items": {"type": "integer", "minimum": 0}, "minItems": 1}
+                ]
+              },
+              "groupId": {
+                "type": "integer",
+                "description": "The ID of the group to add the tabs to. If not specified, a new group will be created.",
+                "minimum": 0,
+                "optional": true
+              },
+              "createProperties": {
+                "type": "object",
+                "optional": true,
+                "description": "Configurations for creating a group. Cannot be used if groupId is already specified.",
+                "properties": {
+                  "windowId": {
+                    "type": "integer",
+                    "minimum": -2,
+                    "optional": true,
+                    "description": "The window of the new group. Defaults to the current window."
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "function",
+            "name": "callback",
+            "optional": true,
+            "parameters": [
+              {
+                "name": "groupId",
+                "type": "integer",
+                "minimum": 0,
+                "description": "The ID of the group that the tabs were added to."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "ungroup",
+        "type": "function",
+        "description": "Removes one or more tabs from their respective groups. If any groups become empty, they are deleted.",
+        "parameters": [
+          {
+            "name": "tabIds",
+            "description": "The tab ID or list of tab IDs to remove from their respective groups.",
+            "choices": [
+              {"type": "integer", "minimum": 0},
+              {"type": "array", "items": {"type": "integer", "minimum": 0}, "minItems": 1}
             ]
           },
           {"type": "function", "name": "callback", "optional": true, "parameters": []}
@@ -1052,6 +1128,12 @@
                 "type": "string",
                 "optional": true,
                 "description": "The tab's URL if it has changed."
+              },
+              "groupId": {
+                "type": "integer",
+                "optional": true,
+                "minimum": -1,
+                "description": "The tab's new group."
               },
               "pinned": {
                 "type": "boolean",
