@@ -142,6 +142,7 @@ TEST_F(SavedPasswordsPresenterTest, EditPassword) {
 
   // Verify that editing a password that does not exist does not triggers
   // notifications.
+  form.username_value = base::ASCIIToUTF16("another_username");
   EXPECT_CALL(observer, OnEdited).Times(0);
   EXPECT_CALL(observer, OnSavedPasswordsChanged).Times(0);
   EXPECT_FALSE(presenter().EditPassword(form, new_password));

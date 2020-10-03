@@ -41,7 +41,10 @@ void SavedPasswordsPresenter::Init() {
 
 bool SavedPasswordsPresenter::EditPassword(const PasswordForm& form,
                                            base::string16 new_password) {
-  auto found = base::ranges::find(passwords_, form);
+  auto is_equal = [&form](const PasswordForm& form_to_check) {
+    return ArePasswordFormUniqueKeysEqual(form, form_to_check);
+  };
+  auto found = base::ranges::find_if(passwords_, is_equal);
   if (found == passwords_.end())
     return false;
 
