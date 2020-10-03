@@ -6,9 +6,10 @@
 
 #include <wrl/client.h>
 
+#include <string>
+
 #include "base/debug/alias.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/windows_version.h"
@@ -110,7 +111,7 @@ IDWriteFactory* GetDirectWriteFactory() {
 base::Optional<std::string> RetrieveLocalizedString(
     IDWriteLocalizedStrings* names,
     const std::string& locale) {
-  base::string16 locale_wide = base::UTF8ToUTF16(locale);
+  std::wstring locale_wide = base::UTF8ToWide(locale);
 
   // If locale is empty, index 0 will be used. Otherwise, the locale name must
   // be found and must exist.
@@ -129,7 +130,7 @@ base::Optional<std::string> RetrieveLocalizedString(
 
   // The output buffer length needs to be one larger to receive the NUL
   // character.
-  base::string16 buffer;
+  std::wstring buffer;
   buffer.resize(length + 1);
   if (FAILED(names->GetString(index, &buffer[0], buffer.size())))
     return base::nullopt;
@@ -137,7 +138,7 @@ base::Optional<std::string> RetrieveLocalizedString(
   // Shrink the string to fit the actual length.
   buffer.resize(length);
 
-  return base::UTF16ToUTF8(buffer);
+  return base::WideToUTF8(buffer);
 }
 
 base::Optional<std::string> RetrieveLocalizedFontName(
@@ -153,7 +154,7 @@ base::Optional<std::string> RetrieveLocalizedFontName(
 
   UINT32 index = 0;
   BOOL exists;
-  base::string16 font_name_wide = base::UTF8ToUTF16(font_name);
+  std::wstring font_name_wide = base::UTF8ToWide(font_name);
   if (FAILED(font_collection->FindFamilyName(font_name_wide.c_str(), &index,
                                              &exists)) ||
       !exists) {

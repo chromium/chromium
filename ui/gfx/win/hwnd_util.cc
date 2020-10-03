@@ -83,7 +83,7 @@ NOINLINE void CrashOther(DWORD last_error) {
 
 }  // namespace
 
-base::string16 GetClassName(HWND window) {
+std::wstring GetClassName(HWND window) {
   // GetClassNameW will return a truncated result (properly null terminated) if
   // the given buffer is not large enough.  So, it is not possible to determine
   // that we got the entire class name if the result is exactly equal to the

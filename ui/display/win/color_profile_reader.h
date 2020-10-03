@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "ui/display/display_export.h"
 #include "ui/gfx/icc_profile.h"
 
@@ -42,8 +41,8 @@ class DISPLAY_EXPORT ColorProfileReader {
   gfx::ColorSpace GetDisplayColorSpace(int64_t id) const;
 
  private:
-  typedef std::map<base::string16, base::string16> DeviceToPathMap;
-  typedef std::map<base::string16, std::string> DeviceToDataMap;
+  typedef std::map<std::wstring, std::wstring> DeviceToPathMap;
+  typedef std::map<std::wstring, std::string> DeviceToDataMap;
 
   // Enumerate displays and return a map to their ICC profile path. This
   // needs to be run off of the main thread.

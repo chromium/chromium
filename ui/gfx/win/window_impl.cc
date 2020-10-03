@@ -66,7 +66,7 @@ class ClassRegistrar {
   // Represents a registered window class.
   struct RegisteredClass {
     RegisteredClass(const ClassInfo& info,
-                    const base::string16& name,
+                    const std::wstring& name,
                     ATOM atom,
                     HINSTANCE instance);
 
@@ -74,7 +74,7 @@ class ClassRegistrar {
     ClassInfo info;
 
     // The name given to the window class
-    base::string16 name;
+    std::wstring name;
 
     // The atom identifying the window class.
     ATOM atom;
@@ -126,8 +126,8 @@ ATOM ClassRegistrar::RetrieveClassAtom(const ClassInfo& class_info) {
   }
 
   // No class found, need to register one.
-  base::string16 name = base::string16(WindowImpl::kBaseClassName) +
-                        base::NumberToString16(registered_count_++);
+  std::wstring name = std::wstring(WindowImpl::kBaseClassName) +
+                      base::NumberToWString(registered_count_++);
 
   WNDCLASSEX window_class;
   base::win::InitializeWindowClass(
@@ -155,13 +155,10 @@ ATOM ClassRegistrar::RetrieveClassAtom(const ClassInfo& class_info) {
 }
 
 ClassRegistrar::RegisteredClass::RegisteredClass(const ClassInfo& info,
-                                                 const base::string16& name,
+                                                 const std::wstring& name,
                                                  ATOM atom,
                                                  HMODULE instance)
-    : info(info),
-      name(name),
-      atom(atom),
-      instance(instance) {}
+    : info(info), name(name), atom(atom), instance(instance) {}
 
 ClassRegistrar::ClassRegistrar() : registered_count_(0) {}
 

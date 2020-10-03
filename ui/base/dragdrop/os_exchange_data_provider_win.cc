@@ -24,6 +24,7 @@
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/stl_util.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_hdc.h"
 #include "base/win/scoped_hglobal.h"
@@ -35,6 +36,7 @@
 #include "ui/base/clipboard/clipboard_util_win.h"
 #include "ui/base/dragdrop/file_info/file_info.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/l10n_util_win.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/skbitmap_operations.h"
@@ -64,8 +66,8 @@ const ClipboardFormatType& GetRendererTaintFormatType();
 // Creates the contents of an Internet Shortcut file for the given URL.
 std::string GetInternetShortcutFileContents(const GURL& url);
 // Creates a valid file name given a suggested title and URL.
-base::string16 CreateValidFileNameFromTitle(const GURL& url,
-                                            const base::string16& title);
+std::wstring CreateValidFileNameFromTitle(const GURL& url,
+                                          const std::wstring& title);
 
 }  // namespace
 
@@ -329,7 +331,8 @@ void OSExchangeDataProviderWin::SetURL(const GURL& url,
       ClipboardFormatType::GetMozUrlType().ToFormatEtc(), storage));
 
   // Add a .URL shortcut file for dragging to Explorer.
-  base::string16 valid_file_name = CreateValidFileNameFromTitle(url, title);
+  std::wstring valid_file_name =
+      CreateValidFileNameFromTitle(url, base::AsWString(title));
   std::string shortcut_url_file_contents = GetInternetShortcutFileContents(url);
   SetFileContents(base::FilePath(valid_file_name), shortcut_url_file_contents);
 
@@ -400,7 +403,7 @@ void OSExchangeDataProviderWin::SetVirtualFileContentsForTesting(
   for (size_t i = 0; i < num_files; i++) {
     // Fill in each FILEDESCRIPTORW with file name.
     descriptor->fgd[i].dwFlags |= FD_UNICODE;
-    base::string16 file_name = filenames_and_contents[i].first.value();
+    std::wstring file_name = filenames_and_contents[i].first.value();
     wcsncpy_s(descriptor->fgd[i].cFileName, MAX_PATH, file_name.c_str(),
               std::min(file_name.size(), static_cast<size_t>(MAX_PATH - 1u)));
 
@@ -544,7 +547,7 @@ bool OSExchangeDataProviderWin::GetURLAndTitle(FilenameToURLPolicy policy,
 }
 
 bool OSExchangeDataProviderWin::GetFilename(base::FilePath* path) const {
-  std::vector<base::string16> filenames;
+  std::vector<std::wstring> filenames;
   bool success = ClipboardUtil::GetFilenames(source_object_.Get(), &filenames);
   if (success)
     *path = base::FilePath(filenames[0]);
@@ -553,11 +556,11 @@ bool OSExchangeDataProviderWin::GetFilename(base::FilePath* path) const {
 
 bool OSExchangeDataProviderWin::GetFilenames(
     std::vector<FileInfo>* filenames) const {
-  std::vector<base::string16> filenames_local;
+  std::vector<std::wstring> filenames_local;
   bool success =
       ClipboardUtil::GetFilenames(source_object_.Get(), &filenames_local);
   if (success) {
-    for (const base::string16& filename_local : filenames_local)
+    for (const std::wstring& filename_local : filenames_local)
       filenames->push_back(
           FileInfo(base::FilePath(filename_local), base::FilePath()));
   }
@@ -619,7 +622,7 @@ bool OSExchangeDataProviderWin::GetPickledData(
 bool OSExchangeDataProviderWin::GetFileContents(
     base::FilePath* filename,
     std::string* file_contents) const {
-  base::string16 filename_str;
+  std::wstring filename_str;
   if (!ClipboardUtil::GetFileContents(source_object_.Get(), &filename_str,
                                       file_contents)) {
     return false;
@@ -1212,7 +1215,7 @@ STGMEDIUM CreateIdListStorageForFileName(const base::FilePath& path) {
 }
 
 STGMEDIUM CreateStorageForFileDescriptor(const base::FilePath& path) {
-  base::string16 file_name = path.value();
+  std::wstring file_name = path.value();
   DCHECK(!file_name.empty());
   HANDLE hdata = GlobalAlloc(GPTR, sizeof(FILEGROUPDESCRIPTORW));
   base::win::ScopedHGlobal<FILEGROUPDESCRIPTORW*> locked_mem(hdata);
@@ -1241,16 +1244,16 @@ std::string GetInternetShortcutFileContents(const GURL& url) {
   return kInternetShortcutFileStart + url.spec() + kInternetShortcutFileEnd;
 }
 
-base::string16 CreateValidFileNameFromTitle(const GURL& url,
-                                            const base::string16& title) {
-  base::string16 validated;
+std::wstring CreateValidFileNameFromTitle(const GURL& url,
+                                          const std::wstring& title) {
+  std::wstring validated;
   if (title.empty()) {
     if (url.is_valid()) {
-      validated = net::GetSuggestedFilename(url, "", "", "", "", std::string());
+      validated = base::AsWString(
+          net::GetSuggestedFilename(url, "", "", "", "", std::string()));
     } else {
       // Nothing else can be done, just use a default.
-      validated =
-          l10n_util::GetStringUTF16(IDS_APP_UNTITLED_SHORTCUT_FILE_NAME);
+      validated = l10n_util::GetWideString(IDS_APP_UNTITLED_SHORTCUT_FILE_NAME);
     }
   } else {
     validated = title;

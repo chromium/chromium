@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 
 namespace l10n_util {
 
@@ -41,7 +40,7 @@ COMPONENT_EXPORT(UI_BASE) void HWNDSetRTLLayout(HWND hwnd);
 // filled with the font family name and the size scaler.  The output
 // parameters are not modified if the return value is false.
 COMPONENT_EXPORT(UI_BASE)
-bool NeedOverrideDefaultUIFont(base::string16* override_font_family,
+bool NeedOverrideDefaultUIFont(std::wstring* override_font_family,
                                double* font_size_scaler);
 
 // Allow processes to override the configured locale with the user's Windows UI
@@ -52,6 +51,9 @@ COMPONENT_EXPORT(UI_BASE) void OverrideLocaleWithUILanguageList();
 // Retrieve the locale override, or an empty vector if the locale has not been
 // or failed to be overridden.
 COMPONENT_EXPORT(UI_BASE) const std::vector<std::string>& GetLocaleOverrides();
+
+// Pulls resource string from the string bundle and returns it.
+COMPONENT_EXPORT(UI_BASE) std::wstring GetWideString(int message_id);
 
 }  // namespace l10n_util
 

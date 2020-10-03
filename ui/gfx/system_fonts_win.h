@@ -13,7 +13,7 @@ namespace win {
 
 // Represents an optional override of system font and scale.
 struct FontAdjustment {
-  base::string16 font_family_override;
+  std::wstring font_family_override;
   double font_scale = 1.0;
 };
 

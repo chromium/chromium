@@ -7,15 +7,16 @@
 
 #include <windows.h>
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 class Size;
 
 // A version of the GetClassNameW API that returns the class name in an
-// base::string16. An empty result indicates a failure to get the class name.
-GFX_EXPORT base::string16 GetClassName(HWND hwnd);
+// std::wstring. An empty result indicates a failure to get the class name.
+GFX_EXPORT std::wstring GetClassName(HWND hwnd);
 
 // Useful for subclassing a HWND.  Returns the previous window procedure.
 GFX_EXPORT WNDPROC SetWindowProc(HWND hwnd, WNDPROC wndproc);

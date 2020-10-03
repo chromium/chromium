@@ -5,6 +5,9 @@
 #include "ui/base/win/message_box_win.h"
 
 #include "base/i18n/rtl.h"
+#include "base/strings/string16.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 
 namespace ui {
 
@@ -12,20 +15,20 @@ namespace ui {
 // RTL locale, we need to make sure that LTR strings are rendered correctly by
 // adding the appropriate Unicode directionality marks.
 int MessageBox(HWND hwnd,
-               const base::string16& text,
-               const base::string16& caption,
+               const std::wstring& text,
+               const std::wstring& caption,
                UINT flags) {
   UINT actual_flags = flags;
   if (base::i18n::IsRTL())
     actual_flags |= MB_RIGHT | MB_RTLREADING;
 
-  base::string16 localized_text = text;
+  base::string16 localized_text = base::WideToUTF16(text);
   base::i18n::AdjustStringForLocaleDirection(&localized_text);
-  const wchar_t* text_ptr = localized_text.c_str();
+  const wchar_t* text_ptr = base::as_wcstr(localized_text);
 
-  base::string16 localized_caption = caption;
+  base::string16 localized_caption = base::WideToUTF16(caption);
   base::i18n::AdjustStringForLocaleDirection(&localized_caption);
-  const wchar_t* caption_ptr = localized_caption.c_str();
+  const wchar_t* caption_ptr = base::as_wcstr(localized_caption);
 
   return ::MessageBox(hwnd, text_ptr, caption_ptr, actual_flags);
 }

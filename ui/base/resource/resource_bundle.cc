@@ -85,7 +85,7 @@ base::FilePath GetResourcesPakFilePath(const std::string& pak_name) {
 
   // Return just the name of the pak file.
 #if defined(OS_WIN)
-  return base::FilePath(base::ASCIIToUTF16(pak_name));
+  return base::FilePath(base::ASCIIToWide(pak_name));
 #else
   return base::FilePath(pak_name.c_str());
 #endif  // OS_WIN

@@ -23,14 +23,14 @@ BOOL CALLBACK EnumMonitorForProfilePathCallback(HMONITOR monitor,
                                                 HDC input_hdc,
                                                 LPRECT rect,
                                                 LPARAM data) {
-  base::string16 device_name;
+  std::wstring device_name;
   MONITORINFOEX monitor_info;
   ::ZeroMemory(&monitor_info, sizeof(monitor_info));
   monitor_info.cbSize = sizeof(monitor_info);
   ::GetMonitorInfo(monitor, &monitor_info);
-  device_name = base::string16(monitor_info.szDevice);
+  device_name = std::wstring(monitor_info.szDevice);
 
-  base::string16 profile_path;
+  std::wstring profile_path;
   HDC hdc = ::CreateDC(monitor_info.szDevice, NULL, NULL, NULL);
   if (hdc) {
     DWORD path_length = MAX_PATH;
@@ -38,11 +38,11 @@ BOOL CALLBACK EnumMonitorForProfilePathCallback(HMONITOR monitor,
     BOOL result = ::GetICMProfile(hdc, &path_length, path);
     ::DeleteDC(hdc);
     if (result)
-      profile_path = base::string16(path);
+      profile_path = std::wstring(path);
   }
 
-  std::map<base::string16, base::string16>* device_to_path_map =
-      reinterpret_cast<std::map<base::string16, base::string16>*>(data);
+  std::map<std::wstring, std::wstring>* device_to_path_map =
+      reinterpret_cast<std::map<std::wstring, std::wstring>*>(data);
   (*device_to_path_map)[device_name] = profile_path;
   return TRUE;
 }
@@ -113,8 +113,8 @@ ColorProfileReader::ReadProfilesOnBackgroundThread(
     DeviceToPathMap new_device_to_path_map) {
   DeviceToDataMap new_device_to_data_map;
   for (auto entry : new_device_to_path_map) {
-    const base::string16& device_name = entry.first;
-    const base::string16& profile_path = entry.second;
+    const std::wstring& device_name = entry.first;
+    const std::wstring& profile_path = entry.second;
     std::string profile_data;
     base::ReadFileToString(base::FilePath(profile_path), &profile_data);
     new_device_to_data_map[device_name] = profile_data;
@@ -129,7 +129,7 @@ void ColorProfileReader::ReadProfilesCompleted(
 
   display_id_to_profile_map_.clear();
   for (auto entry : device_to_data_map) {
-    const base::string16& device_name = entry.first;
+    const std::wstring& device_name = entry.first;
     const std::string& profile_data = entry.second;
     if (!profile_data.empty()) {
       int64_t display_id =

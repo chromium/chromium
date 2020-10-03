@@ -67,9 +67,9 @@ bool GetUrlFromHDrop(IDataObject* data_object,
       if (0 == _wcsicmp(PathFindExtensionW(filename), L".url") &&
           GetPrivateProfileStringW(L"InternetShortcut", L"url", 0, url_buffer,
                                    base::size(url_buffer), filename)) {
-        *url = GURL(url_buffer);
+        *url = GURL(base::AsStringPiece16(url_buffer));
         PathRemoveExtension(filename);
-        title->assign(PathFindFileName(filename));
+        title->assign(base::as_u16cstr(PathFindFileName(filename)));
         success = url->is_valid();
       }
     }
@@ -112,7 +112,7 @@ bool ContainsFilePathCaseInsensitive(
 // emails with the same subject line are dragged out of Outlook.exe).
 // |uniquifier| is incremented on encountering a non-unique file name.
 base::FilePath GetUniqueVirtualFilename(
-    const base::string16& candidate_name,
+    const std::wstring& candidate_name,
     const std::vector<base::FilePath>& existing_filenames,
     unsigned int* uniquifier) {
   // Remove any possible filepath components/separators that drag source may
@@ -122,9 +122,9 @@ base::FilePath GetUniqueVirtualFilename(
   // To mitigate against running up against MAX_PATH limitations (temp files
   // failing to be created), truncate the display name.
   const size_t kTruncatedDisplayNameLength = 128;
-  const base::string16 extension = unique_name.Extension();
+  const std::wstring extension = unique_name.Extension();
   unique_name = unique_name.RemoveExtension();
-  base::string16 truncated = unique_name.value();
+  std::wstring truncated = unique_name.value();
   if (truncated.length() > kTruncatedDisplayNameLength) {
     truncated.erase(kTruncatedDisplayNameLength);
     unique_name = base::FilePath(truncated);
@@ -133,7 +133,7 @@ base::FilePath GetUniqueVirtualFilename(
 
   // Replace any file name illegal characters.
   unique_name = net::GenerateFileName(GURL(), std::string(), std::string(),
-                                      base::UTF16ToUTF8(unique_name.value()),
+                                      base::WideToUTF8(unique_name.value()),
                                       std::string(), std::string());
 
   // Make the file name unique. This is more involved than just marching through
@@ -348,11 +348,11 @@ HGLOBAL CopyFileContentsToHGlobal(IDataObject* data_object, LONG index) {
   return hdata;
 }
 
-base::string16 ConvertString(const char* string) {
+std::wstring ConvertString(const char* string) {
   return base::UTF8ToWide(string);
 }
 
-base::string16 ConvertString(const wchar_t* string) {
+std::wstring ConvertString(const wchar_t* string) {
   return string;
 }
 
@@ -424,7 +424,7 @@ bool GetVirtualFilenames(IDataObject* data_object,
 
 template <typename FileGroupDescriptorType>
 bool GetFileNameFromFirstDescriptor(IDataObject* data_object,
-                                    base::string16* filename) {
+                                    std::wstring* filename) {
   STGMEDIUM medium;
 
   if (!FileGroupDescriptorData<FileGroupDescriptorType>::get(data_object,
@@ -505,7 +505,7 @@ bool ClipboardUtil::GetUrl(IDataObject* data_object,
     {
       // Mozilla URL format or Unicode URL
       base::win::ScopedHGlobal<wchar_t*> data(store.hGlobal);
-      SplitUrlAndTitle(data.get(), url, title);
+      SplitUrlAndTitle(base::WideToUTF16(data.get()), url, title);
     }
     ReleaseStgMedium(&store);
     return url->is_valid();
@@ -515,14 +515,14 @@ bool ClipboardUtil::GetUrl(IDataObject* data_object,
     {
       // URL using ASCII
       base::win::ScopedHGlobal<char*> data(store.hGlobal);
-      SplitUrlAndTitle(base::UTF8ToWide(data.get()), url, title);
+      SplitUrlAndTitle(base::UTF8ToUTF16(data.get()), url, title);
     }
     ReleaseStgMedium(&store);
     return url->is_valid();
   }
 
   if (convert_filenames) {
-    std::vector<base::string16> filenames;
+    std::vector<std::wstring> filenames;
     if (!GetFilenames(data_object, &filenames))
       return false;
     DCHECK_GT(filenames.size(), 0U);
@@ -534,7 +534,7 @@ bool ClipboardUtil::GetUrl(IDataObject* data_object,
 }
 
 bool ClipboardUtil::GetFilenames(IDataObject* data_object,
-                                 std::vector<base::string16>* filenames) {
+                                 std::vector<std::wstring>* filenames) {
   DCHECK(data_object && filenames);
   if (!HasFilenames(data_object))
     return false;
@@ -646,7 +646,7 @@ bool ClipboardUtil::GetPlainText(IDataObject* data_object,
     {
       // Unicode text
       base::win::ScopedHGlobal<wchar_t*> data(store.hGlobal);
-      plain_text->assign(data.get());
+      plain_text->assign(base::as_u16cstr(data.get()));
     }
     ReleaseStgMedium(&store);
     return true;
@@ -656,7 +656,7 @@ bool ClipboardUtil::GetPlainText(IDataObject* data_object,
     {
       // ASCII text
       base::win::ScopedHGlobal<char*> data(store.hGlobal);
-      plain_text->assign(base::UTF8ToWide(data.get()));
+      plain_text->assign(base::UTF8ToUTF16(data.get()));
     }
     ReleaseStgMedium(&store);
     return true;
@@ -686,7 +686,7 @@ bool ClipboardUtil::GetHtml(IDataObject* data_object,
 
       std::string html_utf8;
       CFHtmlToHtml(std::string(data.get(), data.Size()), &html_utf8, base_url);
-      html->assign(base::UTF8ToWide(html_utf8));
+      html->assign(base::UTF8ToUTF16(html_utf8));
     }
     ReleaseStgMedium(&store);
     return true;
@@ -701,14 +701,14 @@ bool ClipboardUtil::GetHtml(IDataObject* data_object,
   {
     // text/html
     base::win::ScopedHGlobal<wchar_t*> data(store.hGlobal);
-    html->assign(data.get());
+    html->assign(base::as_u16cstr(data.get()));
   }
   ReleaseStgMedium(&store);
   return true;
 }
 
 bool ClipboardUtil::GetFileContents(IDataObject* data_object,
-                                    base::string16* filename,
+                                    std::wstring* filename,
                                     std::string* file_contents) {
   DCHECK(data_object && filename && file_contents);
   if (!HasFileContents(data_object))

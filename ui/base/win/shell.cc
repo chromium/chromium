@@ -39,10 +39,10 @@ namespace {
 const DWORD kDefaultShellExecuteFlags = SEE_MASK_NOASYNC;
 
 // Invokes ShellExecuteExW() with the given parameters.
-bool InvokeShellExecute(const base::string16 path,
-                        const base::string16 working_directory,
-                        const base::string16 args,
-                        const base::string16 verb,
+bool InvokeShellExecute(const std::wstring& path,
+                        const std::wstring& working_directory,
+                        const std::wstring& args,
+                        const std::wstring& verb,
                         DWORD mask) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
@@ -67,7 +67,7 @@ bool InvokeShellExecute(const base::string16 path,
 bool OpenFileViaShell(const base::FilePath& full_path) {
   // Invoke the default verb on the file with no arguments.
   return InvokeShellExecute(full_path.value(), full_path.DirName().value(),
-                            base::string16(), base::string16(),
+                            std::wstring(), std::wstring(),
                             kDefaultShellExecuteFlags);
 }
 
@@ -75,7 +75,7 @@ bool OpenFolderViaShell(const base::FilePath& full_path) {
   // The "explore" verb causes the folder at |full_path| to be displayed in a
   // file browser. This will fail if |full_path| is not a directory.
   return InvokeShellExecute(full_path.value(), full_path.value(),
-                            base::string16(), L"explore",
+                            std::wstring(), L"explore",
                             kDefaultShellExecuteFlags);
 }
 
@@ -92,11 +92,11 @@ bool PreventWindowFromPinning(HWND hwnd) {
 
 // TODO(calamity): investigate moving this out of the UI thread as COM
 // operations may spawn nested run loops which can cause issues.
-void SetAppDetailsForWindow(const base::string16& app_id,
+void SetAppDetailsForWindow(const std::wstring& app_id,
                             const base::FilePath& app_icon_path,
                             int app_icon_index,
-                            const base::string16& relaunch_command,
-                            const base::string16& relaunch_display_name,
+                            const std::wstring& relaunch_command,
+                            const std::wstring& relaunch_display_name,
                             HWND hwnd) {
   DCHECK(hwnd);
 
@@ -127,23 +127,23 @@ void SetAppDetailsForWindow(const base::string16& app_id,
   }
 }
 
-void SetAppIdForWindow(const base::string16& app_id, HWND hwnd) {
-  SetAppDetailsForWindow(app_id, base::FilePath(), 0, base::string16(),
-                         base::string16(), hwnd);
+void SetAppIdForWindow(const std::wstring& app_id, HWND hwnd) {
+  SetAppDetailsForWindow(app_id, base::FilePath(), 0, std::wstring(),
+                         std::wstring(), hwnd);
 }
 
 void SetAppIconForWindow(const base::FilePath& app_icon_path,
                          int app_icon_index,
                          HWND hwnd) {
-  SetAppDetailsForWindow(base::string16(), app_icon_path, app_icon_index,
-                         base::string16(), base::string16(), hwnd);
+  SetAppDetailsForWindow(std::wstring(), app_icon_path, app_icon_index,
+                         std::wstring(), std::wstring(), hwnd);
 }
 
-void SetRelaunchDetailsForWindow(const base::string16& relaunch_command,
-                                 const base::string16& display_name,
+void SetRelaunchDetailsForWindow(const std::wstring& relaunch_command,
+                                 const std::wstring& display_name,
                                  HWND hwnd) {
-  SetAppDetailsForWindow(base::string16(), base::FilePath(), 0,
-                         relaunch_command, display_name, hwnd);
+  SetAppDetailsForWindow(std::wstring(), base::FilePath(), 0, relaunch_command,
+                         display_name, hwnd);
 }
 
 void ClearWindowPropertyStore(HWND hwnd) {

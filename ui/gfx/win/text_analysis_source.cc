@@ -11,8 +11,8 @@ namespace win {
 
 HRESULT TextAnalysisSource::Create(
     IDWriteTextAnalysisSource** text_analysis_out,
-    const base::string16& text,
-    const base::string16& locale_name,
+    const std::wstring& text,
+    const std::wstring& locale_name,
     IDWriteNumberSubstitution* number_substitution,
     DWRITE_READING_DIRECTION reading_direction) {
   return Microsoft::WRL::MakeAndInitialize<gfx::win::TextAnalysisSource>(
@@ -79,8 +79,8 @@ HRESULT TextAnalysisSource::GetTextBeforePosition(UINT32 text_position,
 }
 
 HRESULT TextAnalysisSource::RuntimeClassInitialize(
-    const base::string16& text,
-    const base::string16& locale_name,
+    const std::wstring& text,
+    const std::wstring& locale_name,
     IDWriteNumberSubstitution* number_substitution,
     DWRITE_READING_DIRECTION reading_direction) {
   DCHECK(number_substitution);

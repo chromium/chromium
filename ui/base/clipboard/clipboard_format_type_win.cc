@@ -135,7 +135,7 @@ std::string ClipboardFormatType::GetName() const {
     return std::string();
   }
 
-  return base::UTF16ToUTF8(base::string16(name_buffer->data(), name_size));
+  return base::WideToUTF8(std::wstring(name_buffer->data(), name_size));
 }
 
 bool ClipboardFormatType::operator<(const ClipboardFormatType& other) const {
@@ -157,7 +157,7 @@ ClipboardFormatType ClipboardFormatType::GetType(
     return ClipboardFormatType(it->second);
 
   return ClipboardFormatType(
-      ::RegisterClipboardFormat(base::ASCIIToUTF16(format_string).c_str()));
+      ::RegisterClipboardFormat(base::ASCIIToWide(format_string).c_str()));
 }
 
 // The following formats can be referenced by ClipboardUtilWin::GetPlainText.
