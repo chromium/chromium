@@ -18,6 +18,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/shadow_value.h"
@@ -127,6 +128,7 @@ DECLARE_CONVERSIONS(base::TimeDelta)
 DECLARE_CONVERSIONS(gfx::ShadowValues)
 DECLARE_CONVERSIONS(gfx::Size)
 DECLARE_CONVERSIONS(gfx::Range)
+DECLARE_CONVERSIONS(gfx::Insets)
 
 #undef DECLARE_CONVERSIONS
 

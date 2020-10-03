@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace MD = views::metadata;
@@ -100,4 +101,17 @@ TEST_F(TypeConversionTest, TestConversion_StringToShadowValues) {
 
   EXPECT_EQ(result[0].blur(), 0.53);
   EXPECT_EQ(result[1].blur(), 4.33);
+}
+
+TEST_F(TypeConversionTest, TestConversion_InsetsToString) {
+  base::string16 to_string =
+      MD::TypeConverter<gfx::Insets>::ToString(gfx::Insets(3, 5, 7, 9));
+
+  EXPECT_EQ(to_string, base::ASCIIToUTF16("{3, 5, 7, 9}"));
+}
+
+TEST_F(TypeConversionTest, TestConversion_StringToInsets) {
+  base::string16 from_string = base::ASCIIToUTF16("{2, 3, 4, 5}");
+  EXPECT_EQ(MD::TypeConverter<gfx::Insets>::FromString(from_string),
+            gfx::Insets(2, 3, 4, 5));
 }

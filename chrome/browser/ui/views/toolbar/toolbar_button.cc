@@ -28,6 +28,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/views/animation/ink_drop.h"
@@ -69,6 +70,7 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
       model_(std::move(model)),
       tab_strip_model_(tab_strip_model),
       trigger_menu_on_long_press_(trigger_menu_on_long_press),
+      layout_insets_(::GetLayoutInsets(TOOLBAR_BUTTON)),
       highlight_color_animation_(this) {
   SetHasInkDropActionOnClick(true);
   set_context_menu_controller(this);
@@ -147,9 +149,8 @@ void ToolbarButton::UpdateColorsAndInsets() {
     SetBackground(nullptr);
   }
 
-  gfx::Insets target_insets =
-      layout_insets_.value_or(GetLayoutInsets(TOOLBAR_BUTTON)) +
-      layout_inset_delta_ + *GetProperty(views::kInternalPaddingKey);
+  gfx::Insets target_insets = layout_insets_ + layout_inset_delta_ +
+                              *GetProperty(views::kInternalPaddingKey);
   base::Optional<SkColor> border_color =
       highlight_color_animation_.GetBorderColor();
   if (!border() || target_insets != border()->GetInsets() ||
@@ -264,6 +265,10 @@ void ToolbarButton::ClearPendingMenu() {
 
 bool ToolbarButton::IsMenuShowing() const {
   return menu_showing_;
+}
+
+gfx::Insets ToolbarButton::GetLayoutInsets() const {
+  return layout_insets_;
 }
 
 void ToolbarButton::SetLayoutInsets(const gfx::Insets& insets) {
@@ -524,10 +529,6 @@ void ToolbarButton::OnMenuClosed() {
   menu_model_adapter_.reset();
 }
 
-const char* ToolbarButton::GetClassName() const {
-  return "ToolbarButton";
-}
-
 namespace {
 
 // The default duration does not work well for dark mode where the animation has
@@ -650,3 +651,7 @@ void ToolbarButton::HighlightColorAnimation::ClearHighlightColor() {
   highlight_color_.reset();
   parent_->UpdateColorsAndInsets();
 }
+
+BEGIN_METADATA(ToolbarButton, views::LabelButton)
+ADD_PROPERTY_METADATA(gfx::Insets, LayoutInsets)
+END_METADATA
