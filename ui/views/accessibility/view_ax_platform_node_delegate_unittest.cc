@@ -434,11 +434,11 @@ class DerivedTestView : public View {
   void OnBlur() override { SetVisible(false); }
 };
 
-using ViewAccessibilityTest = ViewsTestBase;
+using AXViewTest = ViewsTestBase;
 
 // Check if the destruction of the widget ends successfully if |view|'s
 // visibility changed during destruction.
-TEST_F(ViewAccessibilityTest, LayoutCalledInvalidateRootView) {
+TEST_F(AXViewTest, LayoutCalledInvalidateRootView) {
   // TODO(jamescook): Construct a real AutomationManagerAura rather than using
   // this observer to simulate it.
   AXAuraObjCache cache;

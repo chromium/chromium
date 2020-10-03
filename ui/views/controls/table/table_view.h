@@ -49,7 +49,7 @@ class TableHeader;
 class TableViewObserver;
 class TableViewTestHelper;
 
-// The cells in the first column of a table can contain:
+// The cell's in the first column of a table can contain:
 // - only text
 // - a small icon (16x16) and some text
 // - a check box and some text
@@ -206,10 +206,13 @@ class VIEWS_EXPORT TableView : public views::View,
   bool GetSortOnPaint() const;
   void SetSortOnPaint(bool sort_on_paint);
 
+  // Returns the proper ax sort direction.
+  ax::mojom::SortDirection GetFirstSortDescriptorDirection() const;
+
   TableTypes GetTableType() const;
 
   // Updates the relative bounds of the virtual accessibility children created
-  // in UpdateVirtualAccessibilityChildren(). This function is public so that
+  // in RebuildVirtualAccessibilityChildren(). This function is public so that
   // the table's |header_| can trigger an update when its visible bounds are
   // changed, because its accessibility information is also contained in the
   // table's virtual accessibility children.
@@ -248,7 +251,7 @@ class VIEWS_EXPORT TableView : public views::View,
   struct GroupSortHelper;
   struct SortHelper;
 
-  // Used during painting to determine the range of cells that need to be
+  // Used during painting to determine the range of cell's that need to be
   // painted.
   // NOTE: the row indices returned by this are in terms of the view and column
   // indices in terms of |visible_columns_|.
@@ -271,9 +274,6 @@ class VIEWS_EXPORT TableView : public views::View,
   // Returns the horizontal spacing between elements (grouper, icon, and text)
   // in a cell.
   int GetCellElementSpacing() const;
-
-  // Invoked when the number of rows changes in some way.
-  void NumRowsChanged();
 
   // Does the actual sort and updates the mappings (|view_to_model_| and
   // |model_to_view_|) appropriately. If |schedule_paint| is true,
@@ -308,7 +308,7 @@ class VIEWS_EXPORT TableView : public views::View,
   // Updates the |x| and |width| of each of the columns in |visible_columns_|.
   void UpdateVisibleColumnSizes();
 
-  // Returns the cells that need to be painted for the specified region.
+  // Returns the cell's that need to be painted for the specified region.
   // |bounds| is in terms of |this|.
   PaintRegion GetPaintRegion(const gfx::Rect& bounds) const;
 
@@ -353,17 +353,17 @@ class VIEWS_EXPORT TableView : public views::View,
 
   // Updates a set of accessibility views that expose the visible table contents
   // to assistive software.
-  void UpdateVirtualAccessibilityChildren();
+  void RebuildVirtualAccessibilityChildren();
 
   // Clears the set of accessibility views set up in
-  // UpdateVirtualAccessibilityChildren(). Useful when the model is in the
+  // RebuildVirtualAccessibilityChildren(). Useful when the model is in the
   // process of changing but the virtual accessibility children haven't been
   // updated yet, e.g. showing or hiding a column via SetColumnVisibility().
   void ClearVirtualAccessibilityChildren();
 
   // Helper functions used in UpdateVirtualAccessibilityChildrenBounds() for
   // calculating the accessibility bounds for the header and table rows and
-  // cells.
+  // cell's.
   gfx::Rect CalculateHeaderRowAccessibilityBounds() const;
   gfx::Rect CalculateHeaderCellAccessibilityBounds(
       const int visible_column_index) const;
@@ -385,6 +385,37 @@ class VIEWS_EXPORT TableView : public views::View,
   // |row| should be a view index, not a model index.
   // |visible_column_index| indexes into |visible_columns_|.
   AXVirtualView* GetVirtualAccessibilityCell(int row, int visible_column_index);
+
+  // Creates a virtual accessibility view that is used to expose information
+  // about the row at |view_index| to assistive software.
+  std::unique_ptr<AXVirtualView> CreateRowAccessibilityView(int view_index);
+
+  // Creates a virtual accessibility view that is used to expose information
+  // about the cell at the provided coordinates |row_index| and |column_index|
+  // to assistive software.
+  std::unique_ptr<AXVirtualView> CreateCellAccessibilityView(
+      int row_index,
+      size_t column_index);
+
+  // Creates a virtual accessibility view that is used to expose information
+  // about this header to assistive software.
+  std::unique_ptr<AXVirtualView> CreateHeaderAccessibilityView();
+
+  // Updates the accessibility data for |ax_row| to match the data in the view
+  // at |view_index| in the table. Returns false if row data not changed.
+  bool UpdateVirtualAccessibilityRowData(AXVirtualView* ax_row,
+                                         int view_index,
+                                         int model_index);
+
+  // The accessibility view |ax_row| callback function that populates the
+  // accessibility data for a table row.
+  void PopulateAccessibilityRowData(AXVirtualView* ax_row,
+                                    ui::AXNodeData* data);
+
+  // The accessibility view |ax_cell| callback function that populates the
+  // accessibility data for a table cell.
+  void PopulateAccessibilityCellData(AXVirtualView* ax_cell,
+                                     ui::AXNodeData* data);
 
   ui::TableModel* model_ = nullptr;
 

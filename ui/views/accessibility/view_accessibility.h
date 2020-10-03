@@ -119,6 +119,11 @@ class VIEWS_EXPORT ViewAccessibility {
   // virtual children.
   void AddVirtualChildView(std::unique_ptr<AXVirtualView> virtual_view);
 
+  // Adds |virtual_view| as a child of this View at an index.
+  // We take ownership of our virtual children.
+  void AddVirtualChildViewAt(std::unique_ptr<AXVirtualView> virtual_view,
+                             int index);
+
   // Removes |virtual_view| from this View. The virtual view's parent will
   // change to nullptr. Hands ownership back to the caller.
   std::unique_ptr<AXVirtualView> RemoveVirtualChildView(

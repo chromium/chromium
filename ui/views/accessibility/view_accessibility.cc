@@ -59,7 +59,16 @@ ViewAccessibility::~ViewAccessibility() = default;
 
 void ViewAccessibility::AddVirtualChildView(
     std::unique_ptr<AXVirtualView> virtual_view) {
+  AddVirtualChildViewAt(std::move(virtual_view), int{virtual_children_.size()});
+}
+
+void ViewAccessibility::AddVirtualChildViewAt(
+    std::unique_ptr<AXVirtualView> virtual_view,
+    int index) {
   DCHECK(virtual_view);
+  DCHECK_GE(index, 0);
+  DCHECK_LE(size_t{index}, virtual_children_.size());
+
   if (virtual_view->parent_view() == this)
     return;
   DCHECK(!virtual_view->parent_view()) << "This |view| already has a View "
@@ -69,7 +78,8 @@ void ViewAccessibility::AddVirtualChildView(
                                                   "AXVirtualView parent. Call "
                                                   "RemoveChildView first.";
   virtual_view->set_parent_view(this);
-  virtual_children_.push_back(std::move(virtual_view));
+  auto insert_iterator = virtual_children_.begin() + index;
+  virtual_children_.insert(insert_iterator, std::move(virtual_view));
 }
 
 std::unique_ptr<AXVirtualView> ViewAccessibility::RemoveVirtualChildView(

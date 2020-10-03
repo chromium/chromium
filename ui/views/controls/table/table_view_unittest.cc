@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -154,8 +155,16 @@ class TestTableModel2 : public ui::TableModel {
   // Adds a new row at index |row| with values |c1_value| and |c2_value|.
   void AddRow(int row, int c1_value, int c2_value);
 
+  // Adds new rows starting from |row| to |row| + |length| with the value
+  // of |row| times the |value_multiplier|. The |value_multiplier| can be used
+  // to distinguish these rows from the rest.
+  void AddRows(int row, int length, int value_multiplier);
+
   // Removes the row at index |row|.
   void RemoveRow(int row);
+
+  // Removes all the rows starting from |row| to |row| + |length|.
+  void RemoveRows(int row, int length);
 
   // Changes the values of the row at |row|.
   void ChangeRow(int row, int c1_value, int c2_value);
@@ -195,11 +204,41 @@ void TestTableModel2::AddRow(int row, int c1_value, int c2_value) {
   if (observer_)
     observer_->OnItemsAdded(row, 1);
 }
+
+void TestTableModel2::AddRows(int row, int length, int value_multiplier) {
+  DCHECK(row >= 0 && length >= 0);
+  // Do not DCHECK here since we are testing the OnItemsAdded callback.
+  if (row >= 0 && row <= static_cast<int>(rows_.size())) {
+    for (int i = row; i < row + length; i++) {
+      std::vector<int> new_row;
+      new_row.push_back(i + value_multiplier);
+      new_row.push_back(i + value_multiplier);
+      rows_.insert(rows_.begin() + i, new_row);
+    }
+  }
+
+  if (observer_ && length > 0)
+    observer_->OnItemsAdded(row, length);
+}
+
 void TestTableModel2::RemoveRow(int row) {
-  DCHECK(row >= 0 && row <= static_cast<int>(rows_.size()));
+  DCHECK(row >= 0 && row < static_cast<int>(rows_.size()));
   rows_.erase(rows_.begin() + row);
   if (observer_)
     observer_->OnItemsRemoved(row, 1);
+}
+
+void TestTableModel2::RemoveRows(int row, int length) {
+  DCHECK(row >= 0 && length >= 0);
+  if (row >= 0 && row <= static_cast<int>(rows_.size())) {
+    rows_.erase(
+        rows_.begin() + row,
+        rows_.begin() + base::ClampToRange(row + length, 0,
+                                           static_cast<int>(rows_.size())));
+  }
+
+  if (observer_ && length > 0)
+    observer_->OnItemsRemoved(row, length);
 }
 
 void TestTableModel2::ChangeRow(int row, int c1_value, int c2_value) {
@@ -287,6 +326,54 @@ std::string GetRowsInViewOrderAsString(TableView* table) {
     }
     result += "]";
   }
+  return result;
+}
+
+// Formats the whole accessibility views as a string.
+// Like: "[a, b, c], [d, e, f]".
+std::string GetRowsInVirtualViewAsString(TableView* table) {
+  auto& virtual_children = table->GetViewAccessibility().virtual_children();
+  std::string result;
+
+  for (size_t row_index = 0; row_index < virtual_children.size(); row_index++) {
+    if (row_index != 0)
+      result += ", ";  // Comma between each row.
+
+    const auto& row = virtual_children[row_index];
+
+    result += "[";
+
+    for (size_t cell_index = 0; cell_index < row->children().size();
+         cell_index++) {
+      if (cell_index != 0)
+        result += ", ";  // Comma between each value in the row.
+
+      const auto& cell = row->children()[cell_index];
+      const ui::AXNodeData& cell_data = cell->GetData();
+
+      result += cell_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+    }
+
+    result += "]";
+  }
+
+  return result;
+}
+
+std::string GetHeaderRowAsString(TableView* table) {
+  std::string result = "[";
+
+  for (size_t col_index = 0; col_index < table->visible_columns().size();
+       ++col_index) {
+    if (col_index != 0)
+      result += ", ";  // Comma between each column.
+
+    result +=
+        base::UTF16ToUTF8(table->GetVisibleColumn(col_index).column.title);
+  }
+
+  result += "]";
+
   return result;
 }
 
@@ -399,6 +486,26 @@ class TableViewTest : public ViewsTestBase,
     generator.PressKey(code, flags);
   }
 
+  void VerifyTableViewAndAXOrder(std::string expected_view_order) {
+    auto& virtual_children = table_->GetViewAccessibility().virtual_children();
+
+    // Makes sure the virtual children count takes into account of the header
+    // row.
+    int virtual_row_count = table_->GetRowCount() + (helper_->header() ? 1 : 0);
+    EXPECT_EQ(virtual_row_count, int{virtual_children.size()});
+
+    // The table views should match the expected view order.
+    EXPECT_EQ(expected_view_order, GetRowsInViewOrderAsString(table_));
+
+    // Update the expected view order to have header information if exists.
+    if (helper_->header()) {
+      expected_view_order =
+          GetHeaderRowAsString(table_) + ", " + expected_view_order;
+    }
+
+    EXPECT_EQ(expected_view_order, GetRowsInVirtualViewAsString(table_));
+  }
+
   // Helper function for comparing the bounds of |table_|'s virtual
   // accessibility child rows and cells with a set of expected bounds.
   void VerifyTableAccChildrenBounds(
@@ -479,7 +586,7 @@ TEST_P(TableViewTest, GetPaintRegion) {
             helper_->GetPaintRegion(gfx::Rect(0, 0, 1, table_->height())));
 }
 
-TEST_P(TableViewTest, UpdateVirtualAccessibilityChildren) {
+TEST_P(TableViewTest, RebuildVirtualAccessibilityChildren) {
   const ViewAccessibility& view_accessibility = table_->GetViewAccessibility();
   ui::AXNodeData data;
   view_accessibility.GetAccessibleNodeData(&data);
@@ -718,8 +825,7 @@ TEST_P(TableViewTest, Sort) {
   EXPECT_TRUE(table_->sort_descriptors().empty());
   EXPECT_EQ("0 1 2 3", GetViewToModelAsString(table_));
   EXPECT_EQ("0 1 2 3", GetModelToViewAsString(table_));
-  EXPECT_EQ("[0, 1], [1, 1], [2, 2], [3, 0]",
-            GetRowsInViewOrderAsString(table_));
+  VerifyTableViewAndAXOrder("[0, 1], [1, 1], [2, 2], [3, 0]");
 
   // Toggle the sort order of the first column, shouldn't change anything.
   table_->ToggleSortOrder(0);
@@ -728,8 +834,7 @@ TEST_P(TableViewTest, Sort) {
   EXPECT_TRUE(table_->sort_descriptors()[0].ascending);
   EXPECT_EQ("0 1 2 3", GetViewToModelAsString(table_));
   EXPECT_EQ("0 1 2 3", GetModelToViewAsString(table_));
-  EXPECT_EQ("[0, 1], [1, 1], [2, 2], [3, 0]",
-            GetRowsInViewOrderAsString(table_));
+  VerifyTableViewAndAXOrder("[0, 1], [1, 1], [2, 2], [3, 0]");
 
   // Toggle the sort (first column descending).
   table_->ToggleSortOrder(0);
@@ -738,8 +843,7 @@ TEST_P(TableViewTest, Sort) {
   EXPECT_FALSE(table_->sort_descriptors()[0].ascending);
   EXPECT_EQ("3 2 1 0", GetViewToModelAsString(table_));
   EXPECT_EQ("3 2 1 0", GetModelToViewAsString(table_));
-  EXPECT_EQ("[3, 0], [2, 2], [1, 1], [0, 1]",
-            GetRowsInViewOrderAsString(table_));
+  VerifyTableViewAndAXOrder("[3, 0], [2, 2], [1, 1], [0, 1]");
 
   // Change the [3, 0] cell to [-1, 0]. This should move it to the back of
   // the current sort order.
@@ -749,16 +853,14 @@ TEST_P(TableViewTest, Sort) {
   EXPECT_FALSE(table_->sort_descriptors()[0].ascending);
   EXPECT_EQ("2 1 0 3", GetViewToModelAsString(table_));
   EXPECT_EQ("2 1 0 3", GetModelToViewAsString(table_));
-  EXPECT_EQ("[2, 2], [1, 1], [0, 1], [-1, 0]",
-            GetRowsInViewOrderAsString(table_));
+  VerifyTableViewAndAXOrder("[2, 2], [1, 1], [0, 1], [-1, 0]");
 
   // Toggle the sort again, to clear the sort and restore the model ordering.
   table_->ToggleSortOrder(0);
   EXPECT_TRUE(table_->sort_descriptors().empty());
   EXPECT_EQ("0 1 2 3", GetViewToModelAsString(table_));
   EXPECT_EQ("0 1 2 3", GetModelToViewAsString(table_));
-  EXPECT_EQ("[0, 1], [1, 1], [2, 2], [-1, 0]",
-            GetRowsInViewOrderAsString(table_));
+  VerifyTableViewAndAXOrder("[0, 1], [1, 1], [2, 2], [-1, 0]");
 
   // Toggle the sort again (first column ascending).
   table_->ToggleSortOrder(0);
@@ -767,19 +869,18 @@ TEST_P(TableViewTest, Sort) {
   EXPECT_TRUE(table_->sort_descriptors()[0].ascending);
   EXPECT_EQ("3 0 1 2", GetViewToModelAsString(table_));
   EXPECT_EQ("1 2 3 0", GetModelToViewAsString(table_));
-  EXPECT_EQ("[-1, 0], [0, 1], [1, 1], [2, 2]",
-            GetRowsInViewOrderAsString(table_));
+  VerifyTableViewAndAXOrder("[-1, 0], [0, 1], [1, 1], [2, 2]");
 
-  // Add a row that's second in the model order, but last in the active sort
+  // Add two rows that's second in the model order, but last in the active sort
   // order.
-  model_->AddRow(1, 3, 4);
+  model_->AddRows(1, 2, 10 /* Multiplier */);
   ASSERT_EQ(1u, table_->sort_descriptors().size());
   EXPECT_EQ(0, table_->sort_descriptors()[0].column_id);
   EXPECT_TRUE(table_->sort_descriptors()[0].ascending);
-  EXPECT_EQ("4 0 2 3 1", GetViewToModelAsString(table_));
-  EXPECT_EQ("1 4 2 3 0", GetModelToViewAsString(table_));
-  EXPECT_EQ("[-1, 0], [0, 1], [1, 1], [2, 2], [3, 4]",
-            GetRowsInViewOrderAsString(table_));
+  EXPECT_EQ("5 0 3 4 1 2", GetViewToModelAsString(table_));
+  EXPECT_EQ("1 4 5 2 3 0", GetModelToViewAsString(table_));
+  VerifyTableViewAndAXOrder(
+      "[-1, 0], [0, 1], [1, 1], [2, 2], [11, 11], [12, 12]");
 
   // Add a row that's last in the model order but second in the the active sort
   // order.
@@ -787,10 +888,10 @@ TEST_P(TableViewTest, Sort) {
   ASSERT_EQ(1u, table_->sort_descriptors().size());
   EXPECT_EQ(0, table_->sort_descriptors()[0].column_id);
   EXPECT_TRUE(table_->sort_descriptors()[0].ascending);
-  EXPECT_EQ("4 5 0 2 3 1", GetViewToModelAsString(table_));
-  EXPECT_EQ("2 5 3 4 0 1", GetModelToViewAsString(table_));
-  EXPECT_EQ("[-1, 0], [-1, 20], [0, 1], [1, 1], [2, 2], [3, 4]",
-            GetRowsInViewOrderAsString(table_));
+  EXPECT_EQ("5 6 0 3 4 1 2", GetViewToModelAsString(table_));
+  EXPECT_EQ("2 5 6 3 4 0 1", GetModelToViewAsString(table_));
+  VerifyTableViewAndAXOrder(
+      "[-1, 20], [-1, 0], [0, 1], [1, 1], [2, 2], [11, 11], [12, 12]");
 
   // Click the first column again, then click the second column. This should
   // yield an ordering of second column ascending, with the first column
@@ -802,10 +903,10 @@ TEST_P(TableViewTest, Sort) {
   EXPECT_TRUE(table_->sort_descriptors()[0].ascending);
   EXPECT_EQ(0, table_->sort_descriptors()[1].column_id);
   EXPECT_FALSE(table_->sort_descriptors()[1].ascending);
-  EXPECT_EQ("4 2 0 3 1 5", GetViewToModelAsString(table_));
-  EXPECT_EQ("2 4 1 3 0 5", GetModelToViewAsString(table_));
-  EXPECT_EQ("[-1, 0], [1, 1], [0, 1], [2, 2], [3, 4], [-1, 20]",
-            GetRowsInViewOrderAsString(table_));
+  EXPECT_EQ("6 3 0 4 1 2 5", GetViewToModelAsString(table_));
+  EXPECT_EQ("2 4 5 1 3 6 0", GetModelToViewAsString(table_));
+  VerifyTableViewAndAXOrder(
+      "[-1, 0], [1, 1], [0, 1], [2, 2], [11, 11], [12, 12], [-1, 20]");
 
   // Toggle the current column to change from ascending to descending. This
   // should result in an almost-reversal of the previous order, except for the
@@ -816,10 +917,10 @@ TEST_P(TableViewTest, Sort) {
   EXPECT_FALSE(table_->sort_descriptors()[0].ascending);
   EXPECT_EQ(0, table_->sort_descriptors()[1].column_id);
   EXPECT_FALSE(table_->sort_descriptors()[1].ascending);
-  EXPECT_EQ("5 1 3 2 0 4", GetViewToModelAsString(table_));
-  EXPECT_EQ("4 1 3 2 5 0", GetModelToViewAsString(table_));
-  EXPECT_EQ("[-1, 20], [3, 4], [2, 2], [1, 1], [0, 1], [-1, 0]",
-            GetRowsInViewOrderAsString(table_));
+  EXPECT_EQ("5 2 1 4 3 0 6", GetViewToModelAsString(table_));
+  EXPECT_EQ("5 2 1 4 3 0 6", GetModelToViewAsString(table_));
+  VerifyTableViewAndAXOrder(
+      "[-1, 20], [12, 12], [11, 11], [2, 2], [1, 1], [0, 1], [-1, 0]");
 
   // Delete the [0, 1] row from the model. It's at model index zero.
   model_->RemoveRow(0);
@@ -828,19 +929,29 @@ TEST_P(TableViewTest, Sort) {
   EXPECT_FALSE(table_->sort_descriptors()[0].ascending);
   EXPECT_EQ(0, table_->sort_descriptors()[1].column_id);
   EXPECT_FALSE(table_->sort_descriptors()[1].ascending);
-  EXPECT_EQ("4 0 2 1 3", GetViewToModelAsString(table_));
-  EXPECT_EQ("1 3 2 4 0", GetModelToViewAsString(table_));
-  EXPECT_EQ("[-1, 20], [3, 4], [2, 2], [1, 1], [-1, 0]",
-            GetRowsInViewOrderAsString(table_));
+  EXPECT_EQ("4 1 0 3 2 5", GetViewToModelAsString(table_));
+  EXPECT_EQ("2 1 4 3 0 5", GetModelToViewAsString(table_));
+  VerifyTableViewAndAXOrder(
+      "[-1, 20], [12, 12], [11, 11], [2, 2], [1, 1], [-1, 0]");
+
+  // Delete [-1, 20] and [10, 11] from the model.
+  model_->RemoveRows(1, 2);
+  ASSERT_EQ(2u, table_->sort_descriptors().size());
+  EXPECT_EQ(1, table_->sort_descriptors()[0].column_id);
+  EXPECT_FALSE(table_->sort_descriptors()[0].ascending);
+  EXPECT_EQ(0, table_->sort_descriptors()[1].column_id);
+  EXPECT_FALSE(table_->sort_descriptors()[1].ascending);
+  EXPECT_EQ("2 0 1 3", GetViewToModelAsString(table_));
+  EXPECT_EQ("1 2 0 3", GetModelToViewAsString(table_));
+  VerifyTableViewAndAXOrder("[-1, 20], [11, 11], [2, 2], [-1, 0]");
 
   // Toggle the current sort column again. This should clear both the primary
   // and secondary sort descriptor.
   table_->ToggleSortOrder(1);
   EXPECT_TRUE(table_->sort_descriptors().empty());
-  EXPECT_EQ("0 1 2 3 4", GetViewToModelAsString(table_));
-  EXPECT_EQ("0 1 2 3 4", GetModelToViewAsString(table_));
-  EXPECT_EQ("[3, 4], [1, 1], [2, 2], [-1, 0], [-1, 20]",
-            GetRowsInViewOrderAsString(table_));
+  EXPECT_EQ("0 1 2 3", GetViewToModelAsString(table_));
+  EXPECT_EQ("0 1 2 3", GetModelToViewAsString(table_));
+  VerifyTableViewAndAXOrder("[11, 11], [2, 2], [-1, 20], [-1, 0]");
 }
 
 // Verifies clicking on the header sorts.
@@ -1171,6 +1282,16 @@ TEST_P(TableViewTest, Selection) {
   EXPECT_EQ(0, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=3 anchor=3 selection=3", SelectionStateAsString());
 
+  // Insert two rows to the selection.
+  model_->AddRows(2, 2, 1);
+  EXPECT_EQ(0, observer.GetChangedCountAndClear());
+  EXPECT_EQ("active=5 anchor=5 selection=5", SelectionStateAsString());
+
+  // Remove two rows which include the selection.
+  model_->RemoveRows(4, 2);
+  EXPECT_EQ(1, observer.GetChangedCountAndClear());
+  EXPECT_EQ("active=0 anchor=0 selection=0", SelectionStateAsString());
+
   table_->set_observer(nullptr);
 }
 
@@ -1192,6 +1313,22 @@ TEST_P(TableViewTest, RemoveUnselectedRows) {
   model_->RemoveRow(0);
   EXPECT_EQ(1, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=1 anchor=1 selection=1", SelectionStateAsString());
+}
+
+TEST_P(TableViewTest, AddingRemovingMultipleRows) {
+  TableViewObserverImpl observer;
+  table_->set_observer(&observer);
+
+  VerifyTableViewAndAXOrder("[0, 1], [1, 1], [2, 2], [3, 0]");
+
+  model_->AddRows(0, 3, 10);
+
+  VerifyTableViewAndAXOrder(
+      "[10, 10], [11, 11], [12, 12], [0, 1], [1, 1], [2, 2], [3, 0]");
+
+  model_->RemoveRows(4, 3);
+
+  VerifyTableViewAndAXOrder("[10, 10], [11, 11], [12, 12], [0, 1]");
 }
 
 // 0 1 2 3:
@@ -1644,44 +1781,44 @@ TEST_P(TableViewTest, MoveRowsWithMultipleSelection) {
   ClickOnRow(4, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(2, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=4 anchor=2 selection=2 3 4", SelectionStateAsString());
-  EXPECT_EQ("[0], [1], [2], [77], [3]", GetRowsInViewOrderAsString(table_));
+  VerifyTableViewAndAXOrder("[0], [1], [2], [77], [3]");
 
   // Move the unselected rows to the middle of the current selection. None of
   // the move operations should affect the view order.
   model_->MoveRows(0, 2, 1);
   EXPECT_EQ(0, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=4 anchor=0 selection=0 3 4", SelectionStateAsString());
-  EXPECT_EQ("[2], [0], [1], [77], [3]", GetRowsInViewOrderAsString(table_));
+  VerifyTableViewAndAXOrder("[2], [0], [1], [77], [3]");
 
   // Move the unselected rows to the end of the current selection.
   model_->MoveRows(1, 2, 3);
   EXPECT_EQ(0, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=2 anchor=0 selection=0 1 2", SelectionStateAsString());
-  EXPECT_EQ("[2], [77], [3], [0], [1]", GetRowsInViewOrderAsString(table_));
+  VerifyTableViewAndAXOrder("[2], [77], [3], [0], [1]");
 
   // Move the unselected rows back to the middle of the selection.
   model_->MoveRows(3, 2, 1);
   EXPECT_EQ(0, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=4 anchor=0 selection=0 3 4", SelectionStateAsString());
-  EXPECT_EQ("[2], [0], [1], [77], [3]", GetRowsInViewOrderAsString(table_));
+  VerifyTableViewAndAXOrder("[2], [0], [1], [77], [3]");
 
   // Swap the unselected rows.
   model_->MoveRows(1, 1, 2);
   EXPECT_EQ(0, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=4 anchor=0 selection=0 3 4", SelectionStateAsString());
-  EXPECT_EQ("[2], [1], [0], [77], [3]", GetRowsInViewOrderAsString(table_));
+  VerifyTableViewAndAXOrder("[2], [1], [0], [77], [3]");
 
   // Move the second unselected row to be between two selected rows.
   model_->MoveRows(2, 1, 3);
   EXPECT_EQ(0, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=4 anchor=0 selection=0 2 4", SelectionStateAsString());
-  EXPECT_EQ("[2], [1], [77], [0], [3]", GetRowsInViewOrderAsString(table_));
+  VerifyTableViewAndAXOrder("[2], [1], [77], [0], [3]");
 
   // Move the three middle rows to the beginning, including one selected row.
   model_->MoveRows(1, 3, 0);
   EXPECT_EQ(0, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=4 anchor=3 selection=1 3 4", SelectionStateAsString());
-  EXPECT_EQ("[1], [77], [0], [2], [3]", GetRowsInViewOrderAsString(table_));
+  VerifyTableViewAndAXOrder("[1], [77], [0], [2], [3]");
 
   table_->set_observer(nullptr);
 }
@@ -1694,7 +1831,7 @@ TEST_P(TableViewTest, MoveRowsWithMultipleSelectionAndSort) {
   table_->ToggleSortOrder(0);
   table_->SetColumnVisibility(1, false);
   const char* kViewOrder = "[0], [1], [2], [3], [77]";
-  EXPECT_EQ(kViewOrder, GetRowsInViewOrderAsString(table_));
+  VerifyTableViewAndAXOrder(kViewOrder);
 
   TableViewObserverImpl observer;
   table_->set_observer(&observer);
@@ -1710,37 +1847,37 @@ TEST_P(TableViewTest, MoveRowsWithMultipleSelectionAndSort) {
   model_->MoveRows(0, 2, 1);
   EXPECT_EQ(0, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=3 anchor=0 selection=0 3 4", SelectionStateAsString());
-  EXPECT_EQ(kViewOrder, GetRowsInViewOrderAsString(table_));
+  VerifyTableViewAndAXOrder(kViewOrder);
 
   // Move the unselected rows to the end of the current selection.
   model_->MoveRows(1, 2, 3);
   EXPECT_EQ(0, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=1 anchor=0 selection=0 1 2", SelectionStateAsString());
-  EXPECT_EQ(kViewOrder, GetRowsInViewOrderAsString(table_));
+  VerifyTableViewAndAXOrder(kViewOrder);
 
   // Move the unselected rows back to the middle of the selection.
   model_->MoveRows(3, 2, 1);
   EXPECT_EQ(0, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=3 anchor=0 selection=0 3 4", SelectionStateAsString());
-  EXPECT_EQ(kViewOrder, GetRowsInViewOrderAsString(table_));
+  VerifyTableViewAndAXOrder(kViewOrder);
 
   // Swap the unselected rows.
   model_->MoveRows(1, 1, 2);
   EXPECT_EQ(0, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=3 anchor=0 selection=0 3 4", SelectionStateAsString());
-  EXPECT_EQ(kViewOrder, GetRowsInViewOrderAsString(table_));
+  VerifyTableViewAndAXOrder(kViewOrder);
 
   // Swap the unselected rows again.
   model_->MoveRows(2, 1, 1);
   EXPECT_EQ(0, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=3 anchor=0 selection=0 3 4", SelectionStateAsString());
-  EXPECT_EQ(kViewOrder, GetRowsInViewOrderAsString(table_));
+  VerifyTableViewAndAXOrder(kViewOrder);
 
   // Move the unselected rows back to the beginning.
   model_->MoveRows(1, 2, 0);
   EXPECT_EQ(0, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=3 anchor=2 selection=2 3 4", SelectionStateAsString());
-  EXPECT_EQ(kViewOrder, GetRowsInViewOrderAsString(table_));
+  VerifyTableViewAndAXOrder(kViewOrder);
 
   table_->set_observer(nullptr);
 }
@@ -1758,15 +1895,6 @@ TEST_P(TableViewTest, FocusAfterRemovingAnchor) {
   helper_->SetSelectionModel(new_selection);
   model_->RemoveRow(0);
   table_->RequestFocus();
-}
-
-TEST_P(TableViewTest, RemovingInvalidRowIsNoOp) {
-  table_->Select(3);
-  EXPECT_EQ("active=3 anchor=3 selection=3", SelectionStateAsString());
-  table_->OnItemsRemoved(4, 1);
-  EXPECT_EQ("active=3 anchor=3 selection=3", SelectionStateAsString());
-  table_->OnItemsRemoved(2, 0);
-  EXPECT_EQ("active=3 anchor=3 selection=3", SelectionStateAsString());
 }
 
 namespace {
