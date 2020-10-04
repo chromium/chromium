@@ -81905,6 +81905,19 @@
        {}
       ]
      ],
+     "multicol-span-all-014.html": [
+      "ec835686cf2ec9fffbdb04a8c007613381c778b2",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "multicol-span-all-block-sibling-003.xht": [
       "abaa45f0a85023f3f07a9db483629b74d2b09d71",
       [
@@ -176816,7 +176829,7 @@
       []
      ],
      "system-color-compute-expected.txt": [
-      "9d193d1b2755332f4eb02bd5a1d3e780e767da38",
+      "167db12f958839786995ea43e8d2178a92d0ef48",
       []
      ],
      "t31-color-currentColor-b-ref.html": [
@@ -280557,7 +280570,7 @@
       ]
      ],
      "system-color-compute.html": [
-      "9b3946c6de56f56959146f2dc751cbb83c929684",
+      "49c61647777ef2136128547fddea068745b2fe49",
       [
        null,
        {}
@@ -289461,7 +289474,7 @@
       ]
      ],
      "marker-intrinsic-contribution-001.html": [
-      "3f9ca076f87826e17492b889670d3916301540f2",
+      "db492e3156281c6550380db6bf5e4ad6ac128de4",
       [
        null,
        {}
@@ -300907,6 +300920,13 @@
      ],
      "getComputedStyle-pseudo.html": [
       "3f8b7a72bdc28bb7773d0da72373799dfab6db63",
+      [
+       null,
+       {}
+      ]
+     ],
+     "getComputedStyle-resolved-colors.html": [
+      "da4fddbc24313c1c0c5c629dcee5cfc2f5a65e23",
       [
        null,
        {}
