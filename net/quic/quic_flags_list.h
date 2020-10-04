@@ -282,10 +282,6 @@ QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_disable_server_blackhole_detection,
           false)
 
-// If true, when server is silently closing connections due to idle timeout,
-// serialize the connection close packets which will be added to time wait list.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_add_silent_idle_timeout, true)
-
 // When true, QUIC+TLS versions will send the key_update_not_yet_supported
 // transport parameter.
 QUIC_FLAG(bool,
@@ -467,3 +463,8 @@ QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_reject_spdy_frames, false)
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_connection_set_initial_self_address,
           false)
+
+// If true, let QUIC connection handle PINGs instead of going through session.
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_let_connection_handle_pings,
+          true)

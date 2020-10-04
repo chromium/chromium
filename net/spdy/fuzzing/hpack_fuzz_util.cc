@@ -137,8 +137,7 @@ std::string HpackFuzzUtil::HeaderBlockPrefix(size_t block_size) {
 // static
 void HpackFuzzUtil::InitializeFuzzerContext(FuzzerContext* context) {
   context->first_stage = std::make_unique<HpackDecoderAdapter>();
-  context->second_stage =
-      std::make_unique<HpackEncoder>(ObtainHpackHuffmanTable());
+  context->second_stage = std::make_unique<HpackEncoder>();
   context->third_stage = std::make_unique<HpackDecoderAdapter>();
 }
 

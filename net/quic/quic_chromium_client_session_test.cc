@@ -273,7 +273,7 @@ class QuicChromiumClientSessionTest
     // For version99, the count will include both static and dynamic streams.
     // These tests are only concerned with dynamic streams (that is, the number
     // of streams that they can create), so back out the static header stream.
-    return quic::test::QuicSessionPeer::v99_streamid_manager(quic_session)
+    return quic::test::QuicSessionPeer::ietf_streamid_manager(quic_session)
         ->max_outgoing_bidirectional_streams();
   }
 
