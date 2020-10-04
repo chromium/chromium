@@ -576,11 +576,13 @@ def main():
     base_cmake_args.append('-DPython3_EXECUTABLE=/nonexistent')
 
   if args.gcc_toolchain:
-    # Don't use the custom gcc toolchain when building compiler-rt tests; those
-    # tests are built with the just-built Clang, and target both i386 and x86_64
-    # for example, so should use the system's libstdc++.
+    # Force compiler-rt tests to use our gcc toolchain (including libstdc++.so)
+    # because the one on the host may be too old.
     base_cmake_args.append(
-        '-DCOMPILER_RT_TEST_COMPILER_CFLAGS=--gcc-toolchain=')
+        '-DCOMPILER_RT_TEST_COMPILER_CFLAGS=--gcc-toolchain=' +
+        args.gcc_toolchain + ' -Wl,-rpath,' +
+        os.path.join(args.gcc_toolchain, 'lib64') + ' -Wl,-rpath,' +
+        os.path.join(args.gcc_toolchain, 'lib32'))
 
   if sys.platform == 'win32':
     base_cmake_args.append('-DLLVM_USE_CRT_RELEASE=MT')
