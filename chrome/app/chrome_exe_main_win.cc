@@ -12,6 +12,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/debug/alias.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -27,6 +28,7 @@
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
+#include "build/build_config.h"
 #include "chrome/app/main_dll_loader_win.h"
 #include "chrome/browser/policy/policy_path_parser.h"
 #include "chrome/browser/win/chrome_process_finder.h"
@@ -158,14 +160,89 @@ int RunFallbackCrashHandler(const base::CommandLine& cmd_line) {
 
 }  // namespace
 
+namespace {
+
+// In 32-bit builds, the main thread starts with the default (small) stack size.
+// The ARCH_CPU_32_BITS blocks here and below are in support of moving the main
+// thread to a fiber with a larger stack size.
+#if defined(ARCH_CPU_32_BITS)
+// The information needed to transfer control to the large-stack fiber and later
+// pass the main routine's exit code back to the small-stack fiber prior to
+// termination.
+struct FiberState {
+  HINSTANCE instance;
+  LPVOID original_fiber;
+  int fiber_result;
+};
+
+// A PFIBER_START_ROUTINE function run on a large-stack fiber that calls the
+// main routine, stores its return value, and returns control to the small-stack
+// fiber. |params| must be a pointer to a FiberState struct.
+void WINAPI FiberBinder(void* params) {
+  auto* fiber_state = static_cast<FiberState*>(params);
+  // Call the main routine from the fiber. Reusing the entry point minimizes
+  // confusion when examining call stacks in crash reports - seeing wWinMain on
+  // the stack is a handy hint that this is the main thread of the process.
+#if !defined(WIN_CONSOLE_APP)
+  fiber_state->fiber_result =
+      wWinMain(fiber_state->instance, nullptr, nullptr, 0);
+#else   // !defined(WIN_CONSOLE_APP)
+  fiber_state->fiber_result = main();
+#endif  // !defined(WIN_CONSOLE_APP)
+  // Switch back to the main thread to exit.
+  ::SwitchToFiber(fiber_state->original_fiber);
+}
+#endif  // defined(ARCH_CPU_32_BITS)
+
+}  // namespace
+
 #if !defined(WIN_CONSOLE_APP)
 int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prev, wchar_t*, int) {
-#else
+#else   // !defined(WIN_CONSOLE_APP)
 int main() {
   HINSTANCE instance = GetModuleHandle(nullptr);
-#endif
+#endif  // !defined(WIN_CONSOLE_APP)
+
+#if defined(ARCH_CPU_32_BITS)
+  enum class FiberStatus { kConvertFailed, kCreateFiberFailed, kSuccess };
+  FiberStatus fiber_status = FiberStatus::kSuccess;
+  // GetLastError result if fiber conversion failed.
+  DWORD fiber_error = ERROR_SUCCESS;
+  if (!::IsThreadAFiber()) {
+    constexpr size_t kStackSize = 1536 * 1024;  // 1.5 MiB
+    // Leak the fiber on exit.
+    LPVOID original_fiber =
+        ::ConvertThreadToFiberEx(nullptr, FIBER_FLAG_FLOAT_SWITCH);
+    if (original_fiber) {
+      FiberState fiber_state = {instance, original_fiber};
+      // Create a fiber with a bigger stack and switch to it. Leak the fiber on
+      // exit.
+      LPVOID big_stack_fiber = ::CreateFiberEx(
+          0, kStackSize, FIBER_FLAG_FLOAT_SWITCH, FiberBinder, &fiber_state);
+      if (big_stack_fiber) {
+        ::SwitchToFiber(big_stack_fiber);
+        // Control returns here after Chrome has finished running on FiberMain.
+        return fiber_state.fiber_result;
+      }
+      fiber_status = FiberStatus::kCreateFiberFailed;
+    } else {
+      fiber_status = FiberStatus::kConvertFailed;
+    }
+    // If we reach here then creating and switching to a fiber has failed. This
+    // probably means we are low on memory and will soon crash. Try to report
+    // this error once crash reporting is initialized.
+    fiber_error = ::GetLastError();
+    base::debug::Alias(&fiber_error);
+  }
+  // If we are already a fiber then continue normal execution.
+#endif  // defined(ARCH_CPU_32_BITS)
+
   install_static::InitializeFromPrimaryModule();
   SignalInitializeCrashReporting();
+#if defined(ARCH_CPU_32_BITS)
+  // Intentionally crash if converting to a fiber failed.
+  CHECK_EQ(fiber_status, FiberStatus::kSuccess);
+#endif  // defined(ARCH_CPU_32_BITS)
 
   // Done here to ensure that OOMs that happen early in process initialization
   // are correctly signaled to the OS.
