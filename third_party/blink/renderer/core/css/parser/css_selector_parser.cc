@@ -6,6 +6,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 
 #include <memory>
+#include "base/auto_reset.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -141,6 +142,13 @@ CSSSelectorList CSSSelectorParser::ConsumeCompoundSelectorList(
     return CSSSelectorList();
 
   return CSSSelectorList::AdoptSelectorVector(selector_list);
+}
+
+CSSSelectorList CSSSelectorParser::ConsumeNestedSelectorList(
+    CSSParserTokenRange& range) {
+  if (inside_compound_pseudo_)
+    return ConsumeCompoundSelectorList(range);
+  return ConsumeComplexSelectorList(range);
 }
 
 namespace {
@@ -593,7 +601,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
 
       std::unique_ptr<CSSSelectorList> selector_list =
           std::make_unique<CSSSelectorList>();
-      *selector_list = ConsumeComplexSelectorList(block);
+      *selector_list = ConsumeNestedSelectorList(block);
       if (!selector_list->IsValid() || !block.AtEnd())
         return nullptr;
       selector->SetSelectorList(std::move(selector_list));
@@ -610,7 +618,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
 
       std::unique_ptr<CSSSelectorList> selector_list =
           std::make_unique<CSSSelectorList>();
-      *selector_list = ConsumeComplexSelectorList(block);
+      *selector_list = ConsumeNestedSelectorList(block);
       if (!selector_list->IsValid() || !block.AtEnd())
         return nullptr;
       selector->SetSelectorList(std::move(selector_list));
@@ -621,6 +629,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
     case CSSSelector::kPseudoAny:
     case CSSSelector::kPseudoCue: {
       DisallowPseudoElementsScope scope(this);
+      base::AutoReset<bool> inside_compound(&inside_compound_pseudo_, true);
 
       std::unique_ptr<CSSSelectorList> selector_list =
           std::make_unique<CSSSelectorList>();
@@ -661,13 +670,12 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
     }
     case CSSSelector::kPseudoSlotted: {
       DisallowPseudoElementsScope scope(this);
+      base::AutoReset<bool> inside_compound(&inside_compound_pseudo_, true);
 
       std::unique_ptr<CSSParserSelector> inner_selector =
           ConsumeCompoundSelector(block);
       block.ConsumeWhitespace();
-      if (!inner_selector || !block.AtEnd() ||
-          inner_selector->GetPseudoType() == CSSSelector::kPseudoIs ||
-          inner_selector->GetPseudoType() == CSSSelector::kPseudoWhere)
+      if (!inner_selector || !block.AtEnd())
         return nullptr;
       Vector<std::unique_ptr<CSSParserSelector>> selector_vector;
       selector_vector.push_back(std::move(inner_selector));

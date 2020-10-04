@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_TEST_HELPERS_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -71,6 +72,8 @@ StyleRuleBase* ParseRule(Document& document, String text);
 // Parse a value according to syntax defined by:
 // https://drafts.css-houdini.org/css-properties-values-api-1/#syntax-strings
 const CSSValue* ParseValue(Document&, String syntax, String value);
+
+CSSSelectorList ParseSelectorList(const String&);
 
 }  // namespace css_test_helpers
 }  // namespace blink

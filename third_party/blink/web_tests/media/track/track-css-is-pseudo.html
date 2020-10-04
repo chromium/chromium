@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<title>Test that the :is() pseudo-class works in ::cue()</title>
+<script src="../media-controls.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+video::cue { color: green; }
+video::cue(:is(.red, .red2)) { color: red; }
+</style>
+<video>
+    <track src="captions-webvtt/styling.vtt" kind="captions" default>
+</video>
+<script>
+async_test(function(t) {
+    var video = document.querySelector("video");
+    video.src = "../content/test.ogv";
+
+    video.onseeked = t.step_func_done(function() {
+        var cueNode = textTrackCueElementByIndex(video, 0).firstChild.firstElementChild;
+        var cueStyle = getComputedStyle(cueNode);
+        assert_equals(cueStyle.color, "rgb(255, 0, 0)");
+
+        cueNode = cueNode.nextElementSibling;
+        cueStyle = getComputedStyle(cueNode);
+        assert_equals(cueStyle.color, "rgb(0, 128, 0)");
+
+        cueNode = cueNode.nextElementSibling;
+        cueStyle = getComputedStyle(cueNode);
+        assert_equals(cueStyle.color, "rgb(255, 0, 0)");
+    });
+
+    video.currentTime = 0.3;
+});
+
+</script>

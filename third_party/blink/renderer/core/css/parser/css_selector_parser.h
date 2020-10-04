@@ -46,6 +46,9 @@ class CORE_EXPORT CSSSelectorParser {
   CSSSelectorList ConsumeComplexSelectorList(CSSParserTokenStream&,
                                              CSSParserObserver*);
   CSSSelectorList ConsumeCompoundSelectorList(CSSParserTokenRange&);
+  // Consumes a complex selector list if inside_compound_pseudo_ is false,
+  // otherwise consumes a compound selector list.
+  CSSSelectorList ConsumeNestedSelectorList(CSSParserTokenRange&);
 
   std::unique_ptr<CSSParserSelector> ConsumeComplexSelector(
       CSSParserTokenRange&);
@@ -96,6 +99,10 @@ class CORE_EXPORT CSSSelectorParser {
   // we disallow :is()/:where().
   bool disallow_shadow_dom_v0_ = false;
   bool disallow_nested_complex_ = false;
+  // If we're inside a pseudo class that only accepts compound selectors,
+  // for example :host, inner :is()/:where() pseudo classes are also only
+  // allowed to contain compound selectors.
+  bool inside_compound_pseudo_ = false;
 
   class DisallowPseudoElementsScope {
     STACK_ALLOCATED();

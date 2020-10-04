@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
+#include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -411,18 +412,9 @@ TEST(CSSSelectorParserTest, InvalidPseudoIsArguments) {
                               ":is(:first-letter)",
                               ":is(:first-line)"};
 
-  auto* context = MakeGarbageCollected<CSSParserContext>(
-      kHTMLStandardMode, SecureContextMode::kInsecureContext);
-  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
-
   for (auto* test_case : test_cases) {
     SCOPED_TRACE(test_case);
-    CSSTokenizer tokenizer(test_case);
-    const auto tokens = tokenizer.TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    CSSSelectorList list =
-        CSSSelectorParser::ParseSelector(range, context, sheet);
-    EXPECT_FALSE(list.IsValid());
+    EXPECT_FALSE(css_test_helpers::ParseSelectorList(test_case).IsValid());
   }
 }
 
@@ -449,18 +441,61 @@ TEST(CSSSelectorParserTest, ShadowDomV0WithIsAndWhere) {
       // clang-format on
   };
 
-  auto* context = MakeGarbageCollected<CSSParserContext>(
-      kHTMLStandardMode, SecureContextMode::kInsecureContext);
-  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
-
   for (auto* test_case : test_cases) {
     SCOPED_TRACE(test_case);
-    CSSTokenizer tokenizer(test_case);
-    const auto tokens = tokenizer.TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    CSSSelectorList list =
-        CSSSelectorParser::ParseSelector(range, context, sheet);
-    EXPECT_FALSE(list.IsValid());
+    EXPECT_FALSE(css_test_helpers::ParseSelectorList(test_case).IsValid());
+  }
+}
+
+TEST(CSSSelectorParserTest, NestedSelectorValidity) {
+  const char* invalid_nesting[] = {
+      // clang-format off
+      // These pseudos only accept compound selectors:
+      "::slotted(:is(.a .b))",
+      "::slotted(:is(.a + .b))",
+      "::slotted(:is(.a, .b + .c))",
+      ":host(:is(.a .b))",
+      ":host(:is(.a + .b))",
+      ":host(:is(.a, .b + .c))",
+      ":host-context(:is(.a .b))",
+      ":host-context(:is(.a + .b))",
+      ":host-context(:is(.a, .b + .c))",
+      "::cue(:is(.a .b))",
+      "::cue(:is(.a + .b))",
+      "::cue(:is(.a, .b + .c))",
+      // clang-format on
+  };
+
+  const char* valid_nesting[] = {
+      // clang-format off
+      ":is(.a, .b)",
+      ":is(.a .b, .c)",
+      ":is(.a :is(.b .c), .d)",
+      ":is(.a :where(.b .c), .d)",
+      ":where(.a :is(.b .c), .d)",
+      "::slotted(:is(.a))",
+      "::slotted(:is(div.a))",
+      "::slotted(:is(.a, .b))",
+      ":host(:is(.a))",
+      ":host(:is(div.a))",
+      ":host(:is(.a, .b))",
+      ":host-context(:is(.a))",
+      ":host-context(:is(div.a))",
+      ":host-context(:is(.a, .b))",
+      "::cue(:is(.a))",
+      "::cue(:is(div.a))",
+      "::cue(:is(.a, .b))",
+      // clang-format on
+  };
+
+  for (auto* test_case : invalid_nesting) {
+    SCOPED_TRACE(test_case);
+    EXPECT_FALSE(css_test_helpers::ParseSelectorList(test_case).IsValid());
+  }
+
+  for (auto* test_case : valid_nesting) {
+    SCOPED_TRACE(test_case);
+    EXPECT_TRUE(css_test_helpers::ParseSelectorList(test_case).IsValid());
   }
 }
 

@@ -3,7 +3,7 @@ PASS Multiple selectors with combinators
 PASS Nested :is
 PASS Nested :where
 PASS Nested inside :host, without combinators
-FAIL Nested inside :host, with combinators assert_not_equals: Nested inside :host, with combinators: :host(:is(div .foo)) got disallowed value ":host(:is(div .foo))"
+PASS Nested inside :host, with combinators
 PASS Pseudo-classes inside
 PASS Pseudo-classes after
 PASS Pseudo-elements after
