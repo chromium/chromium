@@ -68,10 +68,8 @@ NGInlineLayoutAlgorithm::NGInlineLayoutAlgorithm(
       box_states_(nullptr),
       context_(context),
       baseline_type_(container_builder_.Style().GetFontBaseline()),
-      is_horizontal_writing_mode_(
-          blink::IsHorizontalWritingMode(space.GetWritingMode())) {
+      quirks_mode_(inline_node.GetDocument().InLineHeightQuirksMode()) {
   DCHECK(context);
-  quirks_mode_ = inline_node.InLineHeightQuirksMode();
 }
 
 // Define the destructor here, so that we can forward-declare more in the
