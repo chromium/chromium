@@ -456,14 +456,34 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     if (!it->second.is_array())
       return base::nullopt;
 
-    std::vector<uint8_t> supported_pin_protocols;
+    base::flat_set<PINUVAuthProtocol> pin_protocols;
     for (const auto& protocol : it->second.GetArray()) {
-      if (!protocol.is_unsigned())
+      if (!protocol.is_unsigned()) {
         return base::nullopt;
-
-      supported_pin_protocols.push_back(protocol.GetUnsigned());
+      }
+      base::Optional<PINUVAuthProtocol> pin_protocol =
+          ToPINUVAuthProtocol(protocol.GetUnsigned());
+      if (!pin_protocol) {
+        continue;
+      }
+      pin_protocols.insert(*pin_protocol);
     }
-    response.pin_protocols = std::move(supported_pin_protocols);
+    response.pin_protocols = std::move(pin_protocols);
+  }
+  if (response.options.supports_pin_uv_auth_token ||
+      response.options.client_pin_availability !=
+          AuthenticatorSupportedOptions::ClientPinAvailability::kNotSupported) {
+    if (!response.pin_protocols) {
+      return base::nullopt;
+    }
+    if (response.pin_protocols->empty()) {
+      // The authenticator only offers unsupported pinUvAuthToken versions.
+      // Treat PIN/pinUvAuthToken as not available.
+      FIDO_LOG(ERROR) << "No supported PIN/UV Auth Protocol";
+      response.options.supports_pin_uv_auth_token = false;
+      response.options.client_pin_availability =
+          AuthenticatorSupportedOptions::ClientPinAvailability::kNotSupported;
+    }
   }
 
   it = response_map.find(CBOR(7));
@@ -723,6 +743,13 @@ base::Optional<cbor::Value> FixInvalidUTF8(cbor::Value in,
 
   std::vector<const cbor::Value*> path;
   return FixInvalidUTF8Value(in, &path, predicate);
+}
+
+base::Optional<PINUVAuthProtocol> ToPINUVAuthProtocol(int64_t in) {
+  if (in != static_cast<uint8_t>(PINUVAuthProtocol::kV1)) {
+    return base::nullopt;
+  }
+  return static_cast<PINUVAuthProtocol>(in);
 }
 
 }  // namespace device

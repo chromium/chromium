@@ -87,7 +87,7 @@ class LargeBlobsRequest {
   int64_t offset_ = 0;
   base::Optional<int64_t> length_;
   base::Optional<std::vector<uint8_t>> pin_uv_auth_param_;
-  base::Optional<int64_t> pin_uv_auth_protocol_;
+  base::Optional<PINUVAuthProtocol> pin_uv_auth_protocol_;
 };
 
 class LargeBlobsResponse {

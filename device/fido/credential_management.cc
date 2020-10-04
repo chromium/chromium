@@ -33,8 +33,9 @@ CredentialManagementRequest CredentialManagementRequest::ForGetCredsMetadata(
   CredentialManagementRequest request(
       version, CredentialManagementSubCommand::kGetCredsMetadata,
       /*params=*/base::nullopt);
-  request.pin_auth = token.PinAuth({{static_cast<uint8_t>(
-      CredentialManagementSubCommand::kGetCredsMetadata)}});
+  std::tie(request.pin_protocol, request.pin_auth) =
+      token.PinAuth({{static_cast<uint8_t>(
+          CredentialManagementSubCommand::kGetCredsMetadata)}});
   return request;
 }
 
@@ -45,8 +46,9 @@ CredentialManagementRequest CredentialManagementRequest::ForEnumerateRPsBegin(
   CredentialManagementRequest request(
       version, CredentialManagementSubCommand::kEnumerateRPsBegin,
       /*params=*/base::nullopt);
-  request.pin_auth = token.PinAuth({{static_cast<uint8_t>(
-      CredentialManagementSubCommand::kEnumerateRPsBegin)}});
+  std::tie(request.pin_protocol, request.pin_auth) =
+      token.PinAuth({{static_cast<uint8_t>(
+          CredentialManagementSubCommand::kEnumerateRPsBegin)}});
   return request;
 }
 
@@ -77,7 +79,8 @@ CredentialManagementRequest::ForEnumerateCredentialsBegin(
       pin_auth_bytes.begin(),
       static_cast<uint8_t>(
           CredentialManagementSubCommand::kEnumerateCredentialsBegin));
-  request.pin_auth = token.PinAuth(pin_auth_bytes);
+  std::tie(request.pin_protocol, request.pin_auth) =
+      token.PinAuth(pin_auth_bytes);
   return request;
 }
 
@@ -107,7 +110,8 @@ CredentialManagementRequest CredentialManagementRequest::ForDeleteCredential(
   pin_auth_bytes.insert(
       pin_auth_bytes.begin(),
       static_cast<uint8_t>(CredentialManagementSubCommand::kDeleteCredential));
-  request.pin_auth = token.PinAuth(pin_auth_bytes);
+  std::tie(request.pin_protocol, request.pin_auth) =
+      token.PinAuth(pin_auth_bytes);
   return request;
 }
 
@@ -347,10 +351,11 @@ AsCTAPRequestValuePair(const CredentialManagementRequest& request) {
         static_cast<int>(CredentialManagementRequestKey::kSubCommandParams),
         *request.params);
   }
+  DCHECK_EQ(request.pin_protocol.has_value(), request.pin_auth.has_value());
   if (request.pin_auth) {
     request_map.emplace(
         static_cast<int>(CredentialManagementRequestKey::kPinProtocol),
-        static_cast<int>(pin::kProtocolVersion));
+        static_cast<uint8_t>(*request.pin_protocol));
     request_map.emplace(
         static_cast<int>(CredentialManagementRequestKey::kPinAuth),
         *request.pin_auth);

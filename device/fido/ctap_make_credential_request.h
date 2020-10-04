@@ -86,7 +86,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapMakeCredentialRequest {
 
   std::vector<PublicKeyCredentialDescriptor> exclude_list;
   base::Optional<std::vector<uint8_t>> pin_auth;
-  base::Optional<uint8_t> pin_protocol;
+  base::Optional<PINUVAuthProtocol> pin_protocol;
   AttestationConveyancePreference attestation_preference =
       AttestationConveyancePreference::kNone;
   // U2F AppID for excluding credentials.

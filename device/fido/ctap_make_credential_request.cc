@@ -10,6 +10,7 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "components/cbor/values.h"
+#include "device/fido/device_response_converter.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 
@@ -205,7 +206,12 @@ base::Optional<CtapMakeCredentialRequest> CtapMakeCredentialRequest::Parse(
             std::numeric_limits<uint8_t>::max()) {
       return base::nullopt;
     }
-    request.pin_protocol = pin_protocol_it->second.GetUnsigned();
+    base::Optional<PINUVAuthProtocol> pin_protocol =
+        ToPINUVAuthProtocol(pin_protocol_it->second.GetUnsigned());
+    if (!pin_protocol) {
+      return base::nullopt;
+    }
+    request.pin_protocol = *pin_protocol;
   }
 
   const auto enterprise_attestation_it = request_map.find(cbor::Value(10));
@@ -300,7 +306,8 @@ AsCTAPRequestValuePair(const CtapMakeCredentialRequest& request) {
   }
 
   if (request.pin_protocol) {
-    cbor_map[cbor::Value(9)] = cbor::Value(*request.pin_protocol);
+    cbor_map[cbor::Value(9)] =
+        cbor::Value(static_cast<uint8_t>(*request.pin_protocol));
   }
 
   cbor::Value::MapValue option_map;

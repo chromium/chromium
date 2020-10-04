@@ -83,7 +83,6 @@ LargeBlobsRequest::~LargeBlobsRequest() = default;
 
 void LargeBlobsRequest::SetPinParam(
     const pin::TokenResponse& pin_uv_auth_token) {
-  pin_uv_auth_protocol_ = pin::kProtocolVersion;
   std::vector<uint8_t> pin_auth(pin::kPinUvAuthTokenSafetyPadding.begin(),
                                 pin::kPinUvAuthTokenSafetyPadding.end());
   pin_auth.insert(pin_auth.end(), kLargeBlobPinPrefix.begin(),
@@ -94,7 +93,8 @@ void LargeBlobsRequest::SetPinParam(
   if (set_) {
     pin_auth.insert(pin_auth.end(), set_->begin(), set_->end());
   }
-  pin_uv_auth_param_ = pin_uv_auth_token.PinAuth(pin_auth);
+  std::tie(pin_uv_auth_protocol_, pin_uv_auth_param_) =
+      pin_uv_auth_token.PinAuth(pin_auth);
 }
 
 // static
@@ -159,7 +159,7 @@ AsCTAPRequestValuePair(const LargeBlobsRequest& request) {
   }
   if (request.pin_uv_auth_protocol_) {
     map.emplace(static_cast<int>(LargeBlobsRequestKey::kPinUvAuthProtocol),
-                *request.pin_uv_auth_protocol_);
+                static_cast<uint8_t>(*request.pin_uv_auth_protocol_));
   }
   return std::make_pair(CtapRequestCommand::kAuthenticatorLargeBlobs,
                         cbor::Value(std::move(map)));

@@ -59,10 +59,12 @@ bool IsValid(const std::string& pin) {
 // |add_additional| callback.
 static std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
 EncodePINCommand(
+    PINUVAuthProtocol protocol_version,
     Subcommand subcommand,
     std::function<void(cbor::Value::MapValue*)> add_additional = nullptr) {
   cbor::Value::MapValue map;
-  map.emplace(static_cast<int>(RequestKey::kProtocol), kProtocolVersion);
+  map.emplace(static_cast<int>(RequestKey::kProtocol),
+              static_cast<uint8_t>(protocol_version));
   map.emplace(static_cast<int>(RequestKey::kSubcommand),
               static_cast<int>(subcommand));
 
@@ -213,9 +215,10 @@ std::array<uint8_t, kP256X962Length> KeyAgreementResponse::X962() const {
   return ret;
 }
 
-SetRequest::SetRequest(const std::string& pin,
+SetRequest::SetRequest(PINUVAuthProtocol protocol,
+                       const std::string& pin,
                        const KeyAgreementResponse& peer_key)
-    : peer_key_(peer_key) {
+    : protocol_(protocol), peer_key_(peer_key) {
   DCHECK(IsValid(pin));
   memset(pin_, 0, sizeof(pin_));
   memcpy(pin_, pin.data(), pin.size());
@@ -297,10 +300,11 @@ void Encrypt(const uint8_t key[SHA256_DIGEST_LENGTH],
   EVP_CIPHER_CTX_cleanup(&aes_ctx);
 }
 
-ChangeRequest::ChangeRequest(const std::string& old_pin,
+ChangeRequest::ChangeRequest(PINUVAuthProtocol protocol,
+                             const std::string& old_pin,
                              const std::string& new_pin,
                              const KeyAgreementResponse& peer_key)
-    : peer_key_(peer_key) {
+    : protocol_(protocol), peer_key_(peer_key) {
   uint8_t digest[SHA256_DIGEST_LENGTH];
   SHA256(reinterpret_cast<const uint8_t*>(old_pin.data()), old_pin.size(),
          digest);
@@ -326,9 +330,11 @@ base::Optional<EmptyResponse> EmptyResponse::Parse(
   return ret;
 }
 
-TokenResponse::TokenResponse() = default;
+TokenResponse::TokenResponse(PINUVAuthProtocol protocol)
+    : protocol_(protocol) {}
 TokenResponse::~TokenResponse() = default;
 TokenResponse::TokenResponse(const TokenResponse&) = default;
+TokenResponse& TokenResponse::operator=(const TokenResponse&) = default;
 
 // Decrypt AES-256 CBC decrypts some number of whole blocks from |ciphertext|
 // into |plaintext|, using |key|.
@@ -349,7 +355,8 @@ void Decrypt(const uint8_t key[SHA256_DIGEST_LENGTH],
 }
 
 base::Optional<TokenResponse> TokenResponse::Parse(
-    std::array<uint8_t, 32> shared_key,
+    PINUVAuthProtocol protocol,
+    base::span<const uint8_t> shared_key,
     const base::Optional<cbor::Value>& cbor) {
   if (!cbor || !cbor->is_map()) {
     return base::nullopt;
@@ -366,34 +373,33 @@ base::Optional<TokenResponse> TokenResponse::Parse(
     return base::nullopt;
   }
 
-  TokenResponse ret;
+  TokenResponse ret(protocol);
   ret.token_.resize(encrypted_token.size());
   Decrypt(shared_key.data(), encrypted_token, ret.token_.data());
-
   return ret;
 }
 
-std::vector<uint8_t> TokenResponse::PinAuth(
+std::pair<PINUVAuthProtocol, std::vector<uint8_t>> TokenResponse::PinAuth(
     base::span<const uint8_t> client_data_hash) const {
-  return MakePinAuth(token_, client_data_hash);
+  return {protocol_, MakePinAuth(token_, client_data_hash)};
 }
 
 // static
 std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
-AsCTAPRequestValuePair(const PinRetriesRequest&) {
-  return EncodePINCommand(Subcommand::kGetRetries);
+AsCTAPRequestValuePair(const PinRetriesRequest& request) {
+  return EncodePINCommand(request.protocol, Subcommand::kGetRetries);
 }
 
 // static
 std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
-AsCTAPRequestValuePair(const UvRetriesRequest&) {
-  return EncodePINCommand(Subcommand::kGetUvRetries);
+AsCTAPRequestValuePair(const UvRetriesRequest& request) {
+  return EncodePINCommand(request.protocol, Subcommand::kGetUvRetries);
 }
 
 // static
 std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
-AsCTAPRequestValuePair(const KeyAgreementRequest&) {
-  return EncodePINCommand(Subcommand::kGetKeyAgreement);
+AsCTAPRequestValuePair(const KeyAgreementRequest& request) {
+  return EncodePINCommand(request.protocol, Subcommand::kGetKeyAgreement);
 }
 
 // static
@@ -415,7 +421,7 @@ AsCTAPRequestValuePair(const SetRequest& request) {
                   base::make_span(encrypted_pin, sizeof(encrypted_pin)));
 
   return EncodePINCommand(
-      Subcommand::kSetPIN,
+      request.protocol_, Subcommand::kSetPIN,
       [&cose_key, &encrypted_pin, &pin_auth](cbor::Value::MapValue* map) {
         map->emplace(static_cast<int>(RequestKey::kKeyAgreement),
                      std::move(cose_key));
@@ -455,8 +461,9 @@ AsCTAPRequestValuePair(const ChangeRequest& request) {
       base::make_span(ciphertexts_concat, sizeof(ciphertexts_concat)));
 
   return EncodePINCommand(
-      Subcommand::kChangePIN, [&cose_key, &encrypted_pin, &old_pin_hash_enc,
-                               &pin_auth](cbor::Value::MapValue* map) {
+      request.protocol_, Subcommand::kChangePIN,
+      [&cose_key, &encrypted_pin, &old_pin_hash_enc,
+       &pin_auth](cbor::Value::MapValue* map) {
         map->emplace(static_cast<int>(RequestKey::kKeyAgreement),
                      std::move(cose_key));
         map->emplace(static_cast<int>(RequestKey::kPINHashEnc),
@@ -476,8 +483,10 @@ AsCTAPRequestValuePair(const ResetRequest&) {
   return std::make_pair(CtapRequestCommand::kAuthenticatorReset, base::nullopt);
 }
 
-TokenRequest::TokenRequest(const KeyAgreementResponse& peer_key)
-    : public_key_(GenerateSharedKey(peer_key, shared_key_.data())) {
+TokenRequest::TokenRequest(PINUVAuthProtocol protocol,
+                           const KeyAgreementResponse& peer_key)
+    : protocol_(protocol),
+      public_key_(GenerateSharedKey(peer_key, shared_key_.data())) {
   DCHECK_EQ(static_cast<size_t>(SHA256_DIGEST_LENGTH), shared_key_.size());
 }
 
@@ -489,9 +498,10 @@ const std::array<uint8_t, 32>& TokenRequest::shared_key() const {
   return shared_key_;
 }
 
-PinTokenRequest::PinTokenRequest(const std::string& pin,
+PinTokenRequest::PinTokenRequest(PINUVAuthProtocol protocol,
+                                 const std::string& pin,
                                  const KeyAgreementResponse& peer_key)
-    : TokenRequest(peer_key) {
+    : TokenRequest(protocol, peer_key) {
   uint8_t digest[SHA256_DIGEST_LENGTH];
   SHA256(reinterpret_cast<const uint8_t*>(pin.data()), pin.size(), digest);
   memcpy(pin_hash_, digest, sizeof(pin_hash_));
@@ -510,7 +520,7 @@ AsCTAPRequestValuePair(const PinTokenRequest& request) {
   Encrypt(request.shared_key_.data(), request.pin_hash_, encrypted_pin);
 
   return EncodePINCommand(
-      Subcommand::kGetPINToken,
+      request.protocol_, Subcommand::kGetPINToken,
       [&request, &encrypted_pin](cbor::Value::MapValue* map) {
         map->emplace(static_cast<int>(RequestKey::kKeyAgreement),
                      EncodeCOSEPublicKey(request.public_key_));
@@ -521,11 +531,12 @@ AsCTAPRequestValuePair(const PinTokenRequest& request) {
 }
 
 PinTokenWithPermissionsRequest::PinTokenWithPermissionsRequest(
+    PINUVAuthProtocol protocol,
     const std::string& pin,
     const KeyAgreementResponse& peer_key,
     const uint8_t permissions,
     const base::Optional<std::string> rp_id)
-    : PinTokenRequest(pin, peer_key),
+    : PinTokenRequest(protocol, pin, peer_key),
       permissions_(permissions),
       rp_id_(rp_id) {}
 
@@ -536,8 +547,8 @@ AsCTAPRequestValuePair(const PinTokenWithPermissionsRequest& request) {
   Encrypt(request.shared_key_.data(), request.pin_hash_, encrypted_pin);
 
   return EncodePINCommand(
-      Subcommand::kGetPinUvAuthTokenUsingPinWithPermissions,
-      [&request, encrypted_pin](cbor::Value::MapValue* map) {
+      request.protocol_, Subcommand::kGetPinUvAuthTokenUsingPinWithPermissions,
+      [&request, &encrypted_pin](cbor::Value::MapValue* map) {
         map->emplace(static_cast<int>(RequestKey::kKeyAgreement),
                      EncodeCOSEPublicKey(request.public_key_));
         map->emplace(
@@ -557,9 +568,10 @@ PinTokenWithPermissionsRequest::~PinTokenWithPermissionsRequest() = default;
 PinTokenWithPermissionsRequest::PinTokenWithPermissionsRequest(
     PinTokenWithPermissionsRequest&& other) = default;
 
-UvTokenRequest::UvTokenRequest(const KeyAgreementResponse& peer_key,
+UvTokenRequest::UvTokenRequest(PINUVAuthProtocol protocol,
+                               const KeyAgreementResponse& peer_key,
                                base::Optional<std::string> rp_id)
-    : TokenRequest(peer_key), rp_id_(rp_id) {}
+    : TokenRequest(protocol, peer_key), rp_id_(rp_id) {}
 
 UvTokenRequest::~UvTokenRequest() = default;
 
@@ -569,7 +581,8 @@ UvTokenRequest::UvTokenRequest(UvTokenRequest&& other) = default;
 std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
 AsCTAPRequestValuePair(const UvTokenRequest& request) {
   return EncodePINCommand(
-      Subcommand::kGetUvToken, [&request](cbor::Value::MapValue* map) {
+      request.protocol_, Subcommand::kGetUvToken,
+      [&request](cbor::Value::MapValue* map) {
         map->emplace(static_cast<int>(RequestKey::kKeyAgreement),
                      EncodeCOSEPublicKey(request.public_key_));
         map->emplace(static_cast<int>(RequestKey::kPermissions),
@@ -607,10 +620,12 @@ static std::vector<uint8_t> ConcatSalts(
 }
 
 HMACSecretRequest::HMACSecretRequest(
+    PINUVAuthProtocol protocol,
     const KeyAgreementResponse& peer_key,
     base::span<const uint8_t, 32> salt1,
     const base::Optional<std::array<uint8_t, 32>>& salt2)
-    : public_key_x962(GenerateSharedKey(peer_key, shared_key_.data())),
+    : protocol_(protocol),
+      public_key_x962(GenerateSharedKey(peer_key, shared_key_.data())),
       encrypted_salts(EncryptToVector(shared_key_, ConcatSalts(salt1, salt2))),
       salts_auth(MakePinAuth(shared_key_, encrypted_salts)) {}
 

@@ -473,6 +473,11 @@ enum class CredProtectRequest : uint8_t {
 // CTAP2 makeCredential or getAssertion response.
 constexpr int kAndroidClientDataExtOutputKey = 0xf0;
 
+// PINUVAuthProtocol is the version number of a PIN/UV auth protocol.
+enum class PINUVAuthProtocol : uint8_t {
+  kV1 = 1,
+};
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FIDO_CONSTANTS_H_

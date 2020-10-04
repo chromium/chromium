@@ -248,6 +248,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   base::Optional<AuthenticatorSupportedOptions> options_;
   std::unique_ptr<FidoTask> task_;
   std::unique_ptr<GenericDeviceOperation> operation_;
+
+  // The highest advertised PINUVAuthProtocol version that the authenticator
+  // supports. This is guaranteed to be non-null after authenticator
+  // initialization if |options_| indicates that PIN is supported.
+  base::Optional<PINUVAuthProtocol> chosen_pin_uv_auth_protocol_;
+
   base::WeakPtrFactory<FidoDeviceAuthenticator> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FidoDeviceAuthenticator);

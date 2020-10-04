@@ -816,8 +816,8 @@ void GetAssertionRequestHandler::DispatchRequestWithToken(
   observer()->FinishCollectToken();
   state_ = State::kWaitingForSecondTouch;
   CtapGetAssertionRequest request(request_);
-  request.pin_auth = token.PinAuth(request.client_data_hash);
-  request.pin_protocol = pin::kProtocolVersion;
+  std::tie(request.pin_protocol, request.pin_auth) =
+      token.PinAuth(request.client_data_hash);
 
   if (android_client_data_ext_ && authenticator_->Options() &&
       authenticator_->Options()->supports_android_client_data_ext) {

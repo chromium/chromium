@@ -391,7 +391,8 @@ void GetAssertionTask::MaybeSetPRFParameters(
   }
 
   hmac_secret_request_ = std::make_unique<pin::HMACSecretRequest>(
-      *options_.key, maybe_inputs->salt1, maybe_inputs->salt2);
+      *request->pin_protocol, *options_.pin_key_agreement, maybe_inputs->salt1,
+      maybe_inputs->salt2);
   request->hmac_secret.emplace(hmac_secret_request_->public_key_x962,
                                hmac_secret_request_->encrypted_salts,
                                hmac_secret_request_->salts_auth);

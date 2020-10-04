@@ -41,7 +41,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetInfoResponse {
   base::Optional<uint32_t> max_msg_size;
   base::Optional<uint32_t> max_credential_count_in_list;
   base::Optional<uint32_t> max_credential_id_length;
-  base::Optional<std::vector<uint8_t>> pin_protocols;
+  base::Optional<base::flat_set<PINUVAuthProtocol>> pin_protocols;
   base::Optional<std::vector<std::string>> extensions;
   std::vector<int32_t> algorithms = {
       static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256),

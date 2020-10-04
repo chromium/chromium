@@ -126,6 +126,7 @@ struct CredentialManagementRequest {
   Version version;
   CredentialManagementSubCommand subcommand;
   base::Optional<cbor::Value::MapValue> params;
+  base::Optional<PINUVAuthProtocol> pin_protocol;
   base::Optional<std::vector<uint8_t>> pin_auth;
 };
 

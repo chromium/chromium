@@ -138,7 +138,7 @@ CtapMakeCredentialRequest MakeCredentialTask::GetTouchRequest(
            AuthenticatorSupportedOptions::ClientPinAvailability::
                kNotSupported)) {
     req.pin_auth.emplace();
-    req.pin_protocol = pin::kProtocolVersion;
+    req.pin_protocol = PINUVAuthProtocol::kV1;
   }
 
   DCHECK(IsConvertibleToU2fRegisterCommand(req));

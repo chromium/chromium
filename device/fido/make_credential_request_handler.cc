@@ -986,8 +986,8 @@ void MakeCredentialRequestHandler::DispatchRequestWithToken(
     pin::TokenResponse token) {
   observer()->FinishCollectToken();
   state_ = State::kWaitingForSecondTouch;
-  request->pin_auth = token.PinAuth(request->client_data_hash);
-  request->pin_protocol = pin::kProtocolVersion;
+  std::tie(request->pin_protocol, request->pin_auth) =
+      token.PinAuth(request->client_data_hash);
 
   ReportMakeCredentialRequestTransport(authenticator_);
 

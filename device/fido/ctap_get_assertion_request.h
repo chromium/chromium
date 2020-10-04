@@ -52,7 +52,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionOptions {
     base::Optional<std::array<uint8_t, 32>> salt2;
   };
 
-  base::Optional<pin::KeyAgreementResponse> key;
+  base::Optional<pin::KeyAgreementResponse> pin_key_agreement;
 
   // prf_inputs may contain a default PRFInput without a |credential_id|. If so,
   // it will be the first element and all others will have |credential_id|s.
@@ -120,7 +120,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionRequest {
 
   std::vector<PublicKeyCredentialDescriptor> allow_list;
   base::Optional<std::vector<uint8_t>> pin_auth;
-  base::Optional<uint8_t> pin_protocol;
+  base::Optional<PINUVAuthProtocol> pin_protocol;
   base::Optional<std::vector<CableDiscoveryData>> cable_extension;
   base::Optional<std::string> app_id;
   base::Optional<std::array<uint8_t, crypto::kSHA256Length>>

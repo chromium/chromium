@@ -12,7 +12,6 @@ namespace device {
 
 static void SetPinAuth(BioEnrollmentRequest* request,
                        const pin::TokenResponse& token) {
-  request->pin_protocol = 1;
   request->modality = BioEnrollmentModality::kFingerprint;
 
   std::vector<uint8_t> pin_auth;
@@ -24,7 +23,8 @@ static void SetPinAuth(BioEnrollmentRequest* request,
 
   pin_auth.insert(pin_auth.begin(), static_cast<int>(*request->modality));
 
-  request->pin_auth = token.PinAuth(std::move(pin_auth));
+  std::tie(request->pin_protocol, request->pin_auth) =
+      token.PinAuth(std::move(pin_auth));
 }
 
 // static
@@ -288,7 +288,8 @@ AsCTAPRequestValuePair(const BioEnrollmentRequest& request) {
   }
 
   if (request.pin_protocol) {
-    map.emplace(static_cast<int>(Key::kPinProtocol), *request.pin_protocol);
+    map.emplace(static_cast<int>(Key::kPinProtocol),
+                static_cast<uint8_t>(*request.pin_protocol));
   }
 
   if (request.pin_auth) {

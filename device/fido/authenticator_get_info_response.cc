@@ -84,7 +84,11 @@ std::vector<uint8_t> AuthenticatorGetInfoResponse::EncodeToCBOR(
   }
 
   if (response.pin_protocols) {
-    device_info_map.emplace(6, ToArrayValue(*response.pin_protocols));
+    cbor::Value::ArrayValue pin_protocols;
+    for (const PINUVAuthProtocol p : *response.pin_protocols) {
+      pin_protocols.push_back(cbor::Value(static_cast<int>(p)));
+    }
+    device_info_map.emplace(6, std::move(pin_protocols));
   }
 
   if (response.max_credential_count_in_list) {

@@ -53,6 +53,9 @@ base::Optional<cbor::Value> FixInvalidUTF8(
     cbor::Value in,
     bool (*predicate)(const std::vector<const cbor::Value*>&));
 
+// Converts |in| to the equivalent |PINUVAuthProtocol|.
+base::Optional<PINUVAuthProtocol> ToPINUVAuthProtocol(int64_t in);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_DEVICE_RESPONSE_CONVERTER_H_
