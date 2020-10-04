@@ -307,4 +307,53 @@ suite('FakeSystemDataProviderTest', () => {
           return completeResolver.promise;
         });
   });
+
+  test('ObserveWithResetBetweenTriggers', () => {
+    // The fake needs to have at least 2 samples.
+    assertTrue(fakeCpuUsage.length >= 2);
+    provider.setFakeCpuUsage(fakeCpuUsage);
+
+    // Keep track of which call to the callback.
+    let whichSample = 0;
+    let firstResolver = new PromiseResolver();
+    let completeResolver = new PromiseResolver();
+
+    /** @type {!CpuUsageObserver} */
+    const cpuObserverRemote = {
+      onCpuUsageUpdated: (cpuUsage) => {
+        // Only expect 2 calls.
+        assertTrue(whichSample >= 0);
+        assertTrue(whichSample <= 1);
+
+        // In both cases we should get the first sample only.
+        assertDeepEquals(fakeCpuUsage[0], cpuUsage);
+
+        if (whichSample === 0) {
+          firstResolver.resolve();
+        } else {
+          completeResolver.resolve();
+        }
+        whichSample++;
+      }
+    };
+
+    return provider.observeCpuUsage(cpuObserverRemote)
+        .then(() => {
+          return firstResolver.promise;
+        })
+        .then(() => {
+          // After the observer fires the first time, reset it and observe
+          // again. We should go back to the initial sample.
+          provider.reset();
+          provider.setFakeCpuUsage(fakeCpuUsage);
+
+          // Observing will implicitly trigger again.
+          return provider.observeCpuUsage(cpuObserverRemote);
+        })
+        .then(() => {
+          // Wait for the second callback which should return the first sample
+          // because it was reset.
+          return completeResolver.promise;
+        });
+  });
 });
