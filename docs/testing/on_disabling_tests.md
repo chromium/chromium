@@ -1,4 +1,4 @@
-# On disabling tests
+# On Disabling Tests
 
 Sometimes you don't want to run a test that you've written (or that
 you've imported, like conformance tests).
