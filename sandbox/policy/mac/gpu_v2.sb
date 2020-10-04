@@ -4,12 +4,49 @@
 
 ; --- The contents of common.sb implicitly included here. ---
 
+(deny default (with partial-symbolication))
+(debug deny)
+
 ; Allow cf prefs to work.
 (allow user-preference-read)
 
 (allow-cvms-blobs)
 
 (allow ipc-posix-shm)
+
+; TODO(https://crbug.com/1126350): Remove this after debugging. These blocks
+; enumerate known denials, while turning unknown denials into fatal crashes.
+(define crash-on-unknown-denials #t) ; Single-line kill switch.
+(if crash-on-unknown-denials
+  (begin
+    (deny mach-lookup (with no-report)
+      (global-name "com.apple.GameController.gamecontrollerd")
+      (global-name "com.apple.analyticsd")
+      (global-name "com.apple.diagnosticd")
+      (global-name "com.apple.pasteboard.1") ; For tests only.
+      (global-name "com.apple.tccd.system")
+    )
+    (deny mach-lookup (with send-signal SIGABRT))
+    (deny iokit-open (with send-signal SIGTRAP))
+    ; Added in 10.14, but only needed on 10.15+. Partial compatibility
+    ; definition.
+    (unless (defined? 'path-ancestors) (define (path-ancestors x) (path x)))
+    (deny file-read* (with no-report)
+      (path (param "PARENT_DIR"))
+      (path (param "PWD"))
+      (path-ancestors (param "PARENT_DIR")) ; libxpc.dylib`_xpc_bundle_resolve_sync walks the dir tree.
+      (subpath "/Library/Application Support/CrashReporter")
+      (subpath "/usr/share/locale")
+    )
+    (deny file-read* (with send-signal SIGFPE))
+    (deny file-write-data (with no-report)
+      ; CoreServicesInternal`prepareValuesForBitmap() calls getattrlist(), which
+      ; results for some reason in a file-write-data evaluation in the kernel.
+      (subpath (param bundle-path))
+    )
+    (deny file-write* (with send-signal SIGSYS))
+  )
+)
 
 ; Allow communication between the GPU process and the UI server.
 (allow mach-lookup
@@ -91,6 +128,7 @@
 
 (allow file-read-data
   (path "/Library/MessageTracer/SubmitDiagInfo.default.domains.searchtree")
+  (path "/System/Library/MessageTracer/SubmitDiagInfo.default.domains.searchtree")
   (regex (user-homedir-path #"/Library/Preferences/ByHost/com.apple.AppleGVA.*"))
 )
 

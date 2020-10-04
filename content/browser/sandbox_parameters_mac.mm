@@ -224,10 +224,19 @@ void SetupSandboxParameters(sandbox::policy::SandboxType sandbox_type,
     case sandbox::policy::SandboxType::kRenderer:
       SetupCommonSandboxParameters(client);
       break;
-    case sandbox::policy::SandboxType::kGpu:
+    case sandbox::policy::SandboxType::kGpu: {
       SetupCommonSandboxParameters(client);
+      // Temporary for https://crbug.com/1126350.
+      CHECK(client->SetParameter("PARENT_DIR",
+                                 sandbox::policy::SandboxMac::GetCanonicalPath(
+                                     base::mac::OuterBundlePath().DirName())
+                                     .value()));
+      base::FilePath pwd;
+      CHECK(base::GetCurrentDirectory(&pwd));
+      CHECK(client->SetParameter("PWD", pwd.value()));
       AddDarwinDirs(client);
       break;
+    }
     case sandbox::policy::SandboxType::kCdm:
       SetupCDMSandboxParameters(client);
       break;
