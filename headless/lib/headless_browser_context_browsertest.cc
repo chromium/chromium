@@ -181,7 +181,7 @@ class HeadlessBrowserUserDataDirTest : public HeadlessBrowserTest {
   base::ScopedTempDir user_data_dir_;
 };
 
-#if defined(OS_WIN)
+#if defined(NO_WIN_FLAKES)
 // TODO(crbug.com/1045971): Disabled due to flakiness.
 #define MAYBE_Do DISABLED_Do
 #else
@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserUserDataDirTest, MAYBE_Do) {
   EXPECT_FALSE(base::IsDirectoryEmpty(user_data_dir()));
 }
 
-#if defined(OS_WIN)
+#if defined(NO_WIN_FLAKES)
 // TODO(crbug.com/1045971): Disabled due to flakiness.
 #define MAYBE_IncognitoMode DISABLED_IncognitoMode
 #else

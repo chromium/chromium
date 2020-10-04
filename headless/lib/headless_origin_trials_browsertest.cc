@@ -55,7 +55,7 @@ class HeadlessOriginTrialsBrowserTest : public HeadlessBrowserTest {
 };
 
 // Flaky on Windows Debug https://crbug.com/1090801
-#if defined(OS_WIN) && !defined(NDEBUG)
+#if defined(NO_WIN_FLAKES) && !defined(NDEBUG)
 #define MAYBE_TrialsCanBeEnabled DISABLED_TrialsCanBeEnabled
 #else
 #define MAYBE_TrialsCanBeEnabled TrialsCanBeEnabled
@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessOriginTrialsBrowserTest,
 }
 
 // Flaky on Windows Debug https://crbug.com/1090801
-#if defined(OS_WIN) && !defined(NDEBUG)
+#if defined(NO_WIN_FLAKES) && !defined(NDEBUG)
 #define MAYBE_TrialsDisabledByDefault DISABLED_TrialsDisabledByDefault
 #else
 #define MAYBE_TrialsDisabledByDefault TrialsDisabledByDefault
@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessOriginTrialsBrowserTest,
 }
 
 // Flaky on Windows Debug https://crbug.com/1090801
-#if defined(OS_WIN) && !defined(NDEBUG)
+#if defined(NO_WIN_FLAKES) && !defined(NDEBUG)
 #define MAYBE_WebComponentsV0CustomElements \
   DISABLED_WebComponentsV0CustomElements
 #else

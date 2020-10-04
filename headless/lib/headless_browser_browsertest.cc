@@ -212,7 +212,7 @@ class HeadlessBrowserTestWithProxy : public HeadlessBrowserTest {
   net::SpawnedTestServer proxy_server_;
 };
 
-#if defined(OS_WIN) || (defined(OS_MAC) && defined(ADDRESS_SANITIZER))
+#if defined(NO_WIN_FLAKES) || (defined(OS_MAC) && defined(ADDRESS_SANITIZER))
 // TODO(crbug.com/1045971): Disabled due to flakiness.
 // TODO(crbug.com/1086872): Disabled due to flakiness on Mac ASAN.
 #define MAYBE_SetProxyConfig DISABLED_SetProxyConfig
@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTestWithProxy, MAYBE_SetProxyConfig) {
 }
 
 // TODO(crbug.com/867447): Flaky on Windows 10 debug.
-#if defined(OS_WIN) && !defined(NDEBUG)
+#if defined(NO_WIN_FLAKES) && !defined(NDEBUG)
 #define MAYBE_WebGLSupported DISABLED_WebGLSupported
 #else
 #define MAYBE_WebGLSupported WebGLSupported
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, ClipboardCopyPasteText) {
   }
 }
 
-#if defined(OS_WIN)
+#if defined(NO_WIN_FLAKES)
 // TODO(crbug.com/1045971): Disabled due to flakiness.
 #define MAYBE_DefaultSizes DISABLED_DefaultSizes
 #else
@@ -628,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, TraceUsingBrowserDevToolsTarget) {
   EXPECT_LT(0u, tracing_data->GetSize());
 }
 
-#if defined(OS_WIN)
+#if defined(NO_WIN_FLAKES)
 // TODO(crbug.com/1045971): Disabled due to flakiness.
 #define MAYBE_WindowPrint DISABLED_WindowPrint
 #else
@@ -656,7 +656,7 @@ class HeadlessBrowserAllowInsecureLocalhostTest : public HeadlessBrowserTest {
   }
 };
 
-#if defined(OS_WIN)
+#if defined(NO_WIN_FLAKES)
 // TODO(crbug.com/1045971): Disabled due to flakiness.
 #define MAYBE_AllowInsecureLocalhostFlag DISABLED_AllowInsecureLocalhostFlag
 #else
@@ -707,7 +707,7 @@ class HeadlessBrowserTestAppendCommandLineFlags : public HeadlessBrowserTest {
   bool callback_was_run_ = false;
 };
 
-#if defined(OS_WIN)
+#if defined(NO_WIN_FLAKES)
 // Flaky on Win ASAN. See https://crbug.com/884095.
 #define MAYBE_AppendChildProcessCommandLineFlags \
   DISABLED_AppendChildProcessCommandLineFlags
@@ -731,7 +731,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTestAppendCommandLineFlags,
   (void)web_contents;
 }
 
-#if defined(OS_WIN)
+#if defined(NO_WIN_FLAKES)
 // TODO(crbug.com/1045971): Disabled due to flakiness.
 #define MAYBE_ServerWantsClientCertificate DISABLED_ServerWantsClientCertificate
 #else
@@ -757,7 +757,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest,
   EXPECT_TRUE(WaitForLoad(web_contents));
 }
 
-#if defined(OS_WIN)
+#if defined(NO_WIN_FLAKES)
 // TODO(crbug.com/1045971): Disabled due to flakiness.
 #define MAYBE_AIAFetching DISABLED_AIAFetching
 #else

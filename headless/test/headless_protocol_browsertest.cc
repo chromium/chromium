@@ -196,7 +196,7 @@ class HeadlessProtocolBrowserTest
 
 // TODO(crbug.com/867447): The whole test suite is extremely flaky on Win dbg.
 // TODO(crbug.com/1086872): The whole test suite is flaky on Mac ASAN.
-#if (defined(OS_WIN) && !defined(NDEBUG)) || \
+#if (defined(NO_WIN_FLAKES) && !defined(NDEBUG)) || \
     (defined(OS_MAC) && defined(ADDRESS_SANITIZER))
 #define HEADLESS_PROTOCOL_TEST(TEST_NAME, SCRIPT_NAME)                        \
   IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTest, DISABLED_##TEST_NAME) { \
@@ -319,7 +319,7 @@ class HeadlessProtocolCompositorBrowserTest
 // rcl=5811aa08e60ba5ac7622f029163213cfbdb682f7&l=32
 // TODO(crbug.com/954398): Suite is timeout-flaky on Windows.
 // TODO(crbug.com/1020046): Suite is flaky on TSan Linux.
-#if defined(OS_MAC) || defined(OS_WIN) || \
+#if defined(OS_MAC) || defined(NO_WIN_FLAKES) || \
     ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(THREAD_SANITIZER))
 #define HEADLESS_PROTOCOL_COMPOSITOR_TEST(TEST_NAME, SCRIPT_NAME) \
   IN_PROC_BROWSER_TEST_F(HeadlessProtocolCompositorBrowserTest,   \
@@ -343,8 +343,9 @@ HEADLESS_PROTOCOL_COMPOSITOR_TEST(
     CompositorImageAnimation,
     "emulation/compositor-image-animation-test.js")
 
-// Flaky on Linux. TODO(crbug.com/986027): Re-enable.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+// Flaky on all platforms. TODO(crbug.com/986027): Re-enable.
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
+    defined(OS_FUCHSIA)
 #define MAYBE_CompositorCssAnimation DISABLED_CompositorCssAnimation
 #else
 #define MAYBE_CompositorCssAnimation CompositorCssAnimation
@@ -440,7 +441,13 @@ HEADLESS_PROTOCOL_COMPOSITOR_TEST(RendererCanvas, "sanity/renderer-canvas.js")
 
 HEADLESS_PROTOCOL_COMPOSITOR_TEST(RendererOpacityAnimation,
                                   "sanity/renderer-opacity-animation.js")
-HEADLESS_PROTOCOL_COMPOSITOR_TEST(BrowserSetInitialProxyConfig,
+// Flaky on Windows (crbug.com/1134929).
+#if defined(OS_WIN)
+#define MAYBE_BrowserSetInitialProxyConfig DISABLED_BrowserSetInitialProxyConfig
+#else
+#define MAYBE_BrowserSetInitialProxyConfig BrowserSetInitialProxyConfig
+#endif
+HEADLESS_PROTOCOL_COMPOSITOR_TEST(MAYBE_BrowserSetInitialProxyConfig,
                                   "sanity/browser-set-initial-proxy-config.js")
 
 }  // namespace headless

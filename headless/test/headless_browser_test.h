@@ -15,6 +15,12 @@
 #include "headless/public/headless_web_contents.h"
 #include "headless/test/test_network_interceptor.h"
 
+// Uncomment |NO_WIN_FLAKES| to disable tests that are known to be flaky
+// on Windows. (crbug.com/1045980, crbug.com/867447, crbug.com/1090801 ...)
+#ifdef OS_WIN
+// #define NO_WIN_FLAKES
+#endif
+
 namespace base {
 class RunLoop;
 }
