@@ -334,8 +334,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
   }
 
   // Truncate the line if 'text-overflow: ellipsis' is set, or for line-clamp.
-  if (UNLIKELY((inline_size >
-                    line_info->AvailableWidth() - line_info->TextIndent() &&
+  if (UNLIKELY((line_info->HasOverflow() &&
                 node_.GetLayoutBlockFlow()->ShouldTruncateOverflowingText()) ||
                ConstraintSpace().LinesUntilClamp() == 1)) {
     NGLineTruncator truncator(*line_info);
