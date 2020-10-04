@@ -549,7 +549,8 @@ bool File::Flush() {
 #if defined(OS_NACL)
   NOTIMPLEMENTED();  // NaCl doesn't implement fsync.
   return true;
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#elif defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA) || \
+    defined(OS_LINUX)
   return !HANDLE_EINTR(fdatasync(file_.get()));
 #elif defined(OS_APPLE)
   // On macOS and iOS, fsync() is guaranteed to send the file's data to the
