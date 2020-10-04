@@ -1520,7 +1520,7 @@ TEST_F(ControllerTest, BrowseStateStopsOnDifferentDomain) {
   SimulateNavigateToUrl(GURL("http://other-example.com/"));
 }
 
-TEST_F(ControllerTest, BrowseStateWithDomainWhitelist) {
+TEST_F(ControllerTest, BrowseStateWithDomainAllowlist) {
   SupportsScriptResponseProto script_response;
   AddRunnableScript(&script_response, "runnable")
       ->mutable_presentation()
@@ -1528,8 +1528,8 @@ TEST_F(ControllerTest, BrowseStateWithDomainWhitelist) {
   ActionsResponseProto runnable_script;
   auto* prompt = runnable_script.add_actions()->mutable_prompt();
   prompt->set_browse_mode(true);
-  *prompt->add_browse_domains_whitelist() = "example.com";
-  *prompt->add_browse_domains_whitelist() = "other-example.com";
+  *prompt->add_browse_domains_allowlist() = "example.com";
+  *prompt->add_browse_domains_allowlist() = "other-example.com";
   prompt->add_choices()->mutable_chip()->set_text("continue");
   SetupActionsForScript("runnable", runnable_script);
   std::string response_str;
@@ -1552,13 +1552,13 @@ TEST_F(ControllerTest, BrowseStateWithDomainWhitelist) {
   content::NavigationSimulator::GoBack(web_contents());
   EXPECT_EQ(AutofillAssistantState::BROWSE, controller_->GetState());
 
-  // Same domain navigations as one of the whitelisted domains should not
-  // shutdown AA.
+  // Same domain navigations as one of the allowed domains should not shut down
+  // AA.
   SimulateNavigateToUrl(GURL("http://other-example.com/"));
   EXPECT_EQ(AutofillAssistantState::BROWSE, controller_->GetState());
 }
 
-TEST_F(ControllerTest, BrowseStateWithDomainWhitelistCleanup) {
+TEST_F(ControllerTest, BrowseStateWithDomainAllowlistCleanup) {
   SupportsScriptResponseProto script_response;
   AddRunnableScript(&script_response, "runnable")
       ->mutable_presentation()
@@ -1566,10 +1566,10 @@ TEST_F(ControllerTest, BrowseStateWithDomainWhitelistCleanup) {
   ActionsResponseProto runnable_script;
   auto* prompt = runnable_script.add_actions()->mutable_prompt();
   prompt->set_browse_mode(true);
-  *prompt->add_browse_domains_whitelist() = "example.com";
+  *prompt->add_browse_domains_allowlist() = "example.com";
   prompt->add_choices()->mutable_chip()->set_text("continue");
 
-  // Second browse action without a whitelist.
+  // Second browse action without an allowlist.
   auto* prompt2 = runnable_script.add_actions()->mutable_prompt();
   prompt2->set_browse_mode(true);
   prompt2->add_choices()->mutable_chip()->set_text("done");
@@ -1593,7 +1593,7 @@ TEST_F(ControllerTest, BrowseStateWithDomainWhitelistCleanup) {
 
   EXPECT_EQ(controller_->GetUserActions()[0].chip().text, "done");
 
-  // Make sure the whitelist got reset with the second prompt action.
+  // Make sure the allowlist got reset with the second prompt action.
   EXPECT_CALL(
       mock_client_,
       RecordDropOut(Metrics::DropOutReason::DOMAIN_CHANGE_DURING_BROWSE_MODE));

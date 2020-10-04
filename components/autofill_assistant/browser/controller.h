@@ -164,7 +164,7 @@ class Controller : public ScriptExecutorDelegate,
   void RemoveListener(ScriptExecutorDelegate::Listener* listener) override;
 
   void SetExpandSheetForPromptAction(bool expand) override;
-  void SetBrowseDomainsWhitelist(std::vector<std::string> domains) override;
+  void SetBrowseDomainsAllowlist(std::vector<std::string> domains) override;
 
   bool EnterState(AutofillAssistantState state) override;
   void SetOverlayBehavior(
@@ -517,7 +517,7 @@ class Controller : public ScriptExecutorDelegate,
   BasicInteractions basic_interactions_{this};
 
   bool expand_sheet_for_prompt_action_ = true;
-  std::vector<std::string> browse_domains_whitelist_;
+  std::vector<std::string> browse_domains_allowlist_;
   bool browse_mode_invisible_ = false;
 
   // Only set during a ShowGenericUiAction.

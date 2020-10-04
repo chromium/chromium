@@ -477,9 +477,9 @@ void ScriptExecutor::CleanUpAfterPrompt() {
   delegate_->EnterState(AutofillAssistantState::RUNNING);
 }
 
-void ScriptExecutor::SetBrowseDomainsWhitelist(
+void ScriptExecutor::SetBrowseDomainsAllowlist(
     std::vector<std::string> domains) {
-  delegate_->SetBrowseDomainsWhitelist(std::move(domains));
+  delegate_->SetBrowseDomainsAllowlist(std::move(domains));
 }
 
 void ScriptExecutor::OnChosen(UserAction::Callback callback,

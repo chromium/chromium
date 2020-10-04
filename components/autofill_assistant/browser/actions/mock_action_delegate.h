@@ -91,7 +91,7 @@ class MockActionDelegate : public ActionDelegate {
 
   MOCK_METHOD0(CleanUpAfterPrompt, void());
 
-  MOCK_METHOD1(SetBrowseDomainsWhitelist,
+  MOCK_METHOD1(SetBrowseDomainsAllowlist,
                void(std::vector<std::string> domains));
 
   void FillAddressForm(

@@ -170,8 +170,8 @@ class ScriptExecutorDelegate {
   // Set how the sheet should behave when entering a prompt state.
   virtual void SetExpandSheetForPromptAction(bool expand) = 0;
 
-  // Set the domains whitelist for browse mode.
-  virtual void SetBrowseDomainsWhitelist(std::vector<std::string> domains) = 0;
+  // Set the domains allowlist for browse mode.
+  virtual void SetBrowseDomainsAllowlist(std::vector<std::string> domains) = 0;
 
   // Sets the generic UI to show to the user.
   virtual void SetGenericUi(

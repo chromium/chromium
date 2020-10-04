@@ -1530,7 +1530,7 @@ message PromptProto {
 
   // A list of domains and subdomains to allow users to navigate to when in
   // browse mode.
-  repeated string browse_domains_whitelist = 9;
+  repeated string browse_domains_allowlist = 9;
 
   // Result to pass to ProcessedActionProto.
   message Result {

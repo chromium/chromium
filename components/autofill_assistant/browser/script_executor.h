@@ -150,7 +150,7 @@ class ScriptExecutor : public ActionDelegate,
               bool browse_mode,
               bool browse_mode_invisible) override;
   void CleanUpAfterPrompt() override;
-  void SetBrowseDomainsWhitelist(std::vector<std::string> domains) override;
+  void SetBrowseDomainsAllowlist(std::vector<std::string> domains) override;
   void FillAddressForm(
       const autofill::AutofillProfile* profile,
       const Selector& selector,

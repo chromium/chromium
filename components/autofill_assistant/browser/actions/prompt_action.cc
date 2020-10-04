@@ -40,9 +40,9 @@ void PromptAction::InternalProcessAction(ProcessActionCallback callback) {
   }
 
   if (proto_.prompt().browse_mode()) {
-    delegate_->SetBrowseDomainsWhitelist(
-        {proto_.prompt().browse_domains_whitelist().begin(),
-         proto_.prompt().browse_domains_whitelist().end()});
+    delegate_->SetBrowseDomainsAllowlist(
+        {proto_.prompt().browse_domains_allowlist().begin(),
+         proto_.prompt().browse_domains_allowlist().end()});
   }
 
   SetupConditions();
@@ -238,9 +238,9 @@ void PromptAction::OnNavigationEnded() {
 
 void PromptAction::EndAction(const ClientStatus& status) {
   delegate_->CleanUpAfterPrompt();
-  // Clear the whitelist when a browse action is done.
+  // Clear the allowlist when a browse action is done.
   if (proto_.prompt().browse_mode()) {
-    delegate_->SetBrowseDomainsWhitelist({});
+    delegate_->SetBrowseDomainsAllowlist({});
   }
   UpdateProcessedAction(status);
   std::move(callback_).Run(std::move(processed_action_proto_));

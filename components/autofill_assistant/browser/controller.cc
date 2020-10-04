@@ -101,11 +101,11 @@ bool HasSameDomainAs(const GURL& a, const GURL& b) {
   return a.host() == b.host();
 }
 
-// Check whether |subdomain| is a subdomain of a set of domains in |whitelist|.
-bool IsInWhitelist(const std::string& subdomain,
-                   const std::vector<std::string> whitelist) {
+// Check whether |subdomain| is a subdomain of a set of domains in |allowlist|.
+bool IsInAllowlist(const std::string& subdomain,
+                   const std::vector<std::string> allowlist) {
   const GURL subdomain_gurl = GURL(subdomain);
-  for (const std::string& parent_domain : whitelist) {
+  for (const std::string& parent_domain : allowlist) {
     if (HasSameDomainAs(subdomain_gurl, GURL(parent_domain)) ||
         IsSubdomainOf(subdomain, parent_domain))
       return true;
@@ -453,8 +453,8 @@ void Controller::SetExpandSheetForPromptAction(bool expand) {
   expand_sheet_for_prompt_action_ = expand;
 }
 
-void Controller::SetBrowseDomainsWhitelist(std::vector<std::string> domains) {
-  browse_domains_whitelist_ = std::move(domains);
+void Controller::SetBrowseDomainsAllowlist(std::vector<std::string> domains) {
+  browse_domains_allowlist_ = std::move(domains);
 }
 
 bool Controller::PerformUserActionWithContext(
@@ -1885,7 +1885,7 @@ void Controller::DidFinishNavigation(
     auto script_host = script_url_.host();
     if (current_host != script_host &&
         !IsSubdomainOf(current_host, script_host) &&
-        !IsInWhitelist(current_host, browse_domains_whitelist_)) {
+        !IsInAllowlist(current_host, browse_domains_allowlist_)) {
       OnScriptError(l10n_util::GetStringUTF8(IDS_AUTOFILL_ASSISTANT_GIVE_UP),
                     Metrics::DropOutReason::DOMAIN_CHANGE_DURING_BROWSE_MODE);
     }

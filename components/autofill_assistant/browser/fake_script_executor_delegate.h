@@ -86,7 +86,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   void AddListener(ScriptExecutorDelegate::Listener* listener) override;
   void RemoveListener(ScriptExecutorDelegate::Listener* listener) override;
   void SetExpandSheetForPromptAction(bool expand) override;
-  void SetBrowseDomainsWhitelist(std::vector<std::string> domains) override;
+  void SetBrowseDomainsAllowlist(std::vector<std::string> domains) override;
   void SetGenericUi(
       std::unique_ptr<GenericUserInterfaceProto> generic_ui,
       base::OnceCallback<void(const ClientStatus&)> end_action_callback,

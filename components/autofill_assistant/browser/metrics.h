@@ -222,13 +222,13 @@ class Metrics {
     LITE_SCRIPT_INVALID_SCRIPT = 6,
 
     // The prompt(browse) action failed due to a navigation event to a
-    // non-whitelisted domain.
+    // non-allowed domain.
     LITE_SCRIPT_BROWSE_FAILED_NAVIGATE = 7,
     // The prompt(browse) action failed for an unknown reason.
     LITE_SCRIPT_BROWSE_FAILED_OTHER = 8,
 
     // The prompt(regular) action failed due to a navigation event to a
-    // non-whitelisted domain.
+    // non-allowed domain.
     LITE_SCRIPT_PROMPT_FAILED_NAVIGATE = 9,
     // The prompt(regular) action failed because the condition to show it was no
     // longer true.

@@ -213,7 +213,7 @@ void FakeScriptExecutorDelegate::SetExpandSheetForPromptAction(bool expand) {
   expand_sheet_for_prompt_ = expand;
 }
 
-void FakeScriptExecutorDelegate::SetBrowseDomainsWhitelist(
+void FakeScriptExecutorDelegate::SetBrowseDomainsAllowlist(
     std::vector<std::string> domains) {
   browse_domains_ = std::move(domains);
 }
