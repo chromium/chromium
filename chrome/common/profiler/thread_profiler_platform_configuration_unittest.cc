@@ -72,7 +72,7 @@ TEST_F(ThreadProfilerPlatformConfigurationTest, IsSupported) {
   EXPECT_FALSE(config()->IsSupported(base::nullopt));
 #elif defined(OS_ANDROID)
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::UNKNOWN));
-  EXPECT_FALSE(config()->IsSupported(version_info::Channel::CANARY));
+  EXPECT_TRUE(config()->IsSupported(version_info::Channel::CANARY));
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::DEV));
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::BETA));
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::STABLE));
@@ -126,14 +126,15 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
 
 MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
                              GetEnableRates) {
-  // Note: death tests aren't supported on Android. Otherwise this test would
-  // check that all inputs result in CHECKs.
-#if !defined(OS_ANDROID)
   using RelativePopulations =
       ThreadProfilerPlatformConfiguration::RelativePopulations;
-  EXPECT_CHECK_DEATH(config()->GetEnableRates(version_info::Channel::UNKNOWN));
   EXPECT_EQ((RelativePopulations{80, 20}),
             config()->GetEnableRates(version_info::Channel::CANARY));
+#if defined(OS_ANDROID)
+  // Note: death tests aren't supported on Android. Otherwise this test would
+  // check that the other inputs result in CHECKs.
+#else
+  EXPECT_CHECK_DEATH(config()->GetEnableRates(version_info::Channel::UNKNOWN));
   EXPECT_EQ((RelativePopulations{80, 20}),
             config()->GetEnableRates(version_info::Channel::DEV));
   EXPECT_CHECK_DEATH(config()->GetEnableRates(version_info::Channel::BETA));
@@ -149,7 +150,7 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
 #if defined(OS_ANDROID)
   EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
                      metrics::CallStackProfileParams::GPU_PROCESS));
-  EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
+  EXPECT_EQ(0.4, config()->GetChildProcessEnableFraction(
                      metrics::CallStackProfileParams::RENDERER_PROCESS));
   EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
                      metrics::CallStackProfileParams::NETWORK_SERVICE_PROCESS));
@@ -191,7 +192,7 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
       metrics::CallStackProfileParams::GPU_PROCESS,
       metrics::CallStackProfileParams::COMPOSITOR_THREAD));
 
-  EXPECT_FALSE(config()->IsEnabledForThread(
+  EXPECT_TRUE(config()->IsEnabledForThread(
       metrics::CallStackProfileParams::RENDERER_PROCESS,
       metrics::CallStackProfileParams::MAIN_THREAD));
   EXPECT_FALSE(config()->IsEnabledForThread(
