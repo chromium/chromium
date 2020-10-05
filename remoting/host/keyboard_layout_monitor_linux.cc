@@ -18,6 +18,7 @@
 #include "ui/base/glib/glib_signal.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/xkb.h"
 #include "ui/gfx/x/xproto.h"
@@ -42,7 +43,7 @@ class GtkThreadDeleter {
 
 // Can be constructed on any thread, but must be started and destroyed on the
 // main GTK+ thread (i.e., the GLib global default main context).
-class GdkLayoutMonitorOnGtkThread : public x11::Connection::Delegate {
+class GdkLayoutMonitorOnGtkThread : public ui::XEventDispatcher {
  public:
   GdkLayoutMonitorOnGtkThread(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -53,19 +54,17 @@ class GdkLayoutMonitorOnGtkThread : public x11::Connection::Delegate {
   void Start();
 
  private:
-  // x11::Connection::Delegate:
-  bool ShouldContinueStream() const override;
-  void DispatchXEvent(x11::Event* event) override;
+  // ui::XEventDispatcher:
+  bool DispatchXEvent(x11::Event* event) override;
 
   void QueryLayout();
-  void OnConnectionData();
   CHROMEG_CALLBACK_0(GdkLayoutMonitorOnGtkThread,
                      void,
                      OnKeysChanged,
                      GdkKeymap*);
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtr<KeyboardLayoutMonitorLinux> weak_ptr_;
-  std::unique_ptr<x11::Connection> connection_;
+  x11::Connection* connection_;
   std::unique_ptr<base::FileDescriptorWatcher::Controller> controller_;
   GdkDisplay* display_ = nullptr;
   GdkKeymap* keymap_ = nullptr;
@@ -120,8 +119,10 @@ GdkLayoutMonitorOnGtkThread::GdkLayoutMonitorOnGtkThread(
 
 GdkLayoutMonitorOnGtkThread::~GdkLayoutMonitorOnGtkThread() {
   DCHECK(g_main_context_is_owner(g_main_context_default()));
-  if (handler_id_)
+  if (handler_id_) {
     g_signal_handler_disconnect(keymap_, handler_id_);
+    ui::X11EventSource::GetInstance()->RemoveXEventDispatcher(this);
+  }
 }
 
 void GdkLayoutMonitorOnGtkThread::Start() {
@@ -143,30 +144,22 @@ void GdkLayoutMonitorOnGtkThread::Start() {
   // when switching between groups with different writing directions. As a
   // result, we have to use Xkb directly to get and monitor that information,
   // which is a pain.
-  connection_ = std::make_unique<x11::Connection>();
+  connection_ = x11::Connection::Get();
   auto& xkb = connection_->xkb();
   if (xkb.UseExtension({x11::Xkb::major_version, x11::Xkb::minor_version})
           .Sync()) {
-    auto req = xkb.GetState(
-        {static_cast<x11::Xkb::DeviceSpec>(x11::Xkb::Id::UseCoreKbd)});
-    if (auto reply = req.Sync()) {
-      current_group_ = static_cast<int>(reply->group);
-      constexpr auto kXkbAllStateComponentsMask =
-          static_cast<x11::Xkb::StatePart>(0x3fff);
-      xkb.SelectEvents({
-          .deviceSpec =
-              static_cast<x11::Xkb::DeviceSpec>(x11::Xkb::Id::UseCoreKbd),
-          .affectWhich = x11::Xkb::EventType::StateNotify,
-          .affectState = kXkbAllStateComponentsMask,
-          .stateDetails = x11::Xkb::StatePart::GroupState,
-      });
-      connection_->Flush();
-      controller_ = base::FileDescriptorWatcher::WatchReadable(
-          connection_->GetFd(),
-          base::BindRepeating(&GdkLayoutMonitorOnGtkThread::OnConnectionData,
-                              base::Unretained(this)));
-    }
+    constexpr auto kXkbAllStateComponentsMask =
+        static_cast<x11::Xkb::StatePart>(0x3fff);
+    xkb.SelectEvents({
+        .deviceSpec =
+            static_cast<x11::Xkb::DeviceSpec>(x11::Xkb::Id::UseCoreKbd),
+        .affectWhich = x11::Xkb::EventType::StateNotify,
+        .affectState = kXkbAllStateComponentsMask,
+        .stateDetails = x11::Xkb::StatePart::GroupState,
+    });
+    connection_->Flush();
   }
+  ui::X11EventSource::GetInstance()->AddXEventDispatcher(this);
 
   keymap_ = gdk_keymap_get_for_display(display_);
   handler_id_ = g_signal_connect(keymap_, "keys-changed",
@@ -174,19 +167,18 @@ void GdkLayoutMonitorOnGtkThread::Start() {
   QueryLayout();
 }
 
-bool GdkLayoutMonitorOnGtkThread::ShouldContinueStream() const {
-  return true;
-}
-
-void GdkLayoutMonitorOnGtkThread::DispatchXEvent(x11::Event* event) {
-  if (auto* notify = event->As<x11::Xkb::StateNotifyEvent>()) {
+bool GdkLayoutMonitorOnGtkThread::DispatchXEvent(x11::Event* event) {
+  if (event->As<x11::MappingNotifyEvent>() ||
+      event->As<x11::Xkb::NewKeyboardNotifyEvent>()) {
+    QueryLayout();
+  } else if (auto* notify = event->As<x11::Xkb::StateNotifyEvent>()) {
     int new_group = notify->baseGroup + notify->latchedGroup +
                     static_cast<int16_t>(notify->lockedGroup);
-    if (new_group != current_group_) {
-      current_group_ = new_group;
+    if (new_group != current_group_)
       QueryLayout();
-    }
+    return true;
   }
+  return false;
 }
 
 void GdkLayoutMonitorOnGtkThread::QueryLayout() {
@@ -197,6 +189,11 @@ void GdkLayoutMonitorOnGtkThread::QueryLayout() {
   auto altgr_modifier = x11::KeyButMask::Mod5;
 
   bool have_altgr = false;
+
+  auto req = connection_->xkb().GetState(
+      {static_cast<x11::Xkb::DeviceSpec>(x11::Xkb::Id::UseCoreKbd)});
+  if (auto reply = req.Sync())
+    current_group_ = static_cast<int>(reply->group);
 
   for (ui::DomCode key : KeyboardLayoutMonitorLinux::kSupportedKeys) {
     // Skip single-layout IME keys for now, as they are always present in the
@@ -296,10 +293,6 @@ void GdkLayoutMonitorOnGtkThread::QueryLayout() {
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&KeyboardLayoutMonitorLinux::OnLayoutChanged,
                                 weak_ptr_, std::move(layout_message)));
-}
-
-void GdkLayoutMonitorOnGtkThread::OnConnectionData() {
-  connection_->Dispatch(this);
 }
 
 void GdkLayoutMonitorOnGtkThread::OnKeysChanged(GdkKeymap* keymap) {
