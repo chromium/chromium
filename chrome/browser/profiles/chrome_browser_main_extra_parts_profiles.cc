@@ -105,6 +105,7 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/explore_sites/explore_sites_service_factory.h"
+#include "chrome/browser/android/reading_list/reading_list_manager_factory.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/android/thin_webview/chrome_thin_webview_initializer.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager_factory.h"
@@ -342,10 +343,14 @@ void ChromeBrowserMainExtraPartsProfiles::
   ProfileThemeUpdateServiceFactory::GetInstance();
 #endif
   ProtocolHandlerRegistryFactory::GetInstance();
-#if !defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kReadLater))
+  if (base::FeatureList::IsEnabled(features::kReadLater)) {
     ReadingListModelFactory::GetInstance();
+
+#if defined(OS_ANDROID)
+    ReadingListManagerFactory::GetInstance();
 #endif
+  }
+
   RendererUpdaterFactory::GetInstance();
 #if !defined(OS_ANDROID)
   performance_manager::SiteDataCacheFacadeFactory::GetInstance();
