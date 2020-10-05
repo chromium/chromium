@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -72,11 +73,9 @@ public class TranslateCompactInfoBarTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
-    // TODO(crbug.com/1134812): Remove the reliance on a network connection for these tests.
-    @Restriction({ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES,
-            Restriction.RESTRICTION_TYPE_INTERNET})
-    public void
-    testTranslateCompactInfoBarAppears() throws TimeoutException {
+    @Restriction(ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
+    @DisabledTest(message = "https://crbug.com/1130712")
+    public void testTranslateCompactInfoBarAppears() throws TimeoutException {
         mActivityTestRule.loadUrl(mTestServer.getURL(TRANSLATE_PAGE));
         mListener.addInfoBarAnimationFinished("InfoBar not opened.");
         InfoBar infoBar = mInfoBarContainer.getInfoBarsForTesting().get(0);
@@ -90,10 +89,9 @@ public class TranslateCompactInfoBarTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
-    @Restriction({ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES,
-            Restriction.RESTRICTION_TYPE_INTERNET})
-    public void
-    testTranslateCompactInfoBarOverflowMenus() throws TimeoutException {
+    @Restriction(ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
+    @DisabledTest(message = "https://crbug.com/1130712")
+    public void testTranslateCompactInfoBarOverflowMenus() throws TimeoutException {
         mActivityTestRule.loadUrl(mTestServer.getURL(TRANSLATE_PAGE));
         mListener.addInfoBarAnimationFinished("InfoBar not opened.");
         TranslateCompactInfoBar infoBar =
@@ -114,10 +112,9 @@ public class TranslateCompactInfoBarTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
-    @Restriction({ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES,
-            Restriction.RESTRICTION_TYPE_INTERNET})
-    public void
-    testTabMenuDismissedOnOrientationChange() throws Exception {
+    @Restriction(ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
+    @DisabledTest(message = "https://crbug.com/1130712")
+    public void testTabMenuDismissedOnOrientationChange() throws Exception {
         mActivityTestRule.loadUrl(mTestServer.getURL(TRANSLATE_PAGE));
         mListener.addInfoBarAnimationFinished("InfoBar not opened.");
         TranslateCompactInfoBar infoBar =
@@ -145,10 +142,9 @@ public class TranslateCompactInfoBarTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
-    @Restriction({ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES,
-            Restriction.RESTRICTION_TYPE_INTERNET})
-    public void
-    testTranslateCompactInfoBarReopenOnTarget() throws TimeoutException {
+    @Restriction(ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
+    @DisabledTest(message = "https://crbug.com/1130712")
+    public void testTranslateCompactInfoBarReopenOnTarget() throws TimeoutException {
         mActivityTestRule.loadUrl(mTestServer.getURL(TRANSLATE_PAGE));
         mListener.addInfoBarAnimationFinished("InfoBar not opened.");
 
@@ -181,10 +177,9 @@ public class TranslateCompactInfoBarTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
-    @Restriction({ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES,
-            Restriction.RESTRICTION_TYPE_INTERNET})
-    public void
-    testStartTranslateOnManualInitiation() throws TimeoutException {
+    @Restriction(ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
+    @DisabledTest(message = "https://crbug.com/1130712")
+    public void testStartTranslateOnManualInitiation() throws TimeoutException {
         // Load a page that won't trigger the translate recommendation.
         mActivityTestRule.loadUrl(mTestServer.getURL(NON_TRANSLATE_PAGE));
 
@@ -209,10 +204,9 @@ public class TranslateCompactInfoBarTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
-    @Restriction({ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES,
-            Restriction.RESTRICTION_TYPE_INTERNET})
-    public void
-    testManualInitiationWithBarOpen() throws TimeoutException {
+    @Restriction(ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
+    @DisabledTest(message = "https://crbug.com/1130712")
+    public void testManualInitiationWithBarOpen() throws TimeoutException {
         mActivityTestRule.loadUrl(mTestServer.getURL(TRANSLATE_PAGE));
         mListener.addInfoBarAnimationFinished("InfoBar not opened.");
 
