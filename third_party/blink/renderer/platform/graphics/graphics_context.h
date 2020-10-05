@@ -88,7 +88,7 @@ class PLATFORM_EXPORT GraphicsContext {
   bool IsDarkModeEnabled() const { return is_dark_mode_enabled_; }
   void SetDarkModeEnabled(bool enabled) { is_dark_mode_enabled_ = enabled; }
 
-  DarkModeFilter* GetDarkModeFilter() { return dark_mode_filter_.get(); }
+  DarkModeFilter* GetDarkModeFilter();
 
   void UpdateDarkModeSettingsForTest(const DarkModeSettings&);
 
