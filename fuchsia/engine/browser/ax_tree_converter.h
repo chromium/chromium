@@ -24,4 +24,13 @@ AXNodeDataToSemanticNode(const ui::AXNodeData& node);
 bool ConvertAction(fuchsia::accessibility::semantics::Action fuchsia_action,
                    ax::mojom::Action* mojom_action);
 
+// Converts |ax_node_id|, which is signed, to a Fuchsia node ID, which is
+// unsigned.
+// Fuchsia requires root node IDs to be zero. This function ensures
+// that the conversion takes that into account.
+// If |ax_node_id| is 0 and is not the root, we return the
+// MAX(int32_t) + 1, which is a number that will never conflict with other IDs.
+WEB_ENGINE_EXPORT uint32_t ConvertToFuchsiaNodeId(int32_t ax_node_id,
+                                                  int32_t ax_root_node_id);
+
 #endif  // FUCHSIA_ENGINE_BROWSER_AX_TREE_CONVERTER_H_
