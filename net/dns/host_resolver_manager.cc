@@ -1389,7 +1389,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
                                               HostCache::Entry* out_results) {
     DCHECK(response);
     AddressList addresses;
-    base::TimeDelta ttl;
+    base::Optional<base::TimeDelta> ttl;
     DnsResponse::Result parse_result =
         response->ParseToAddressList(&addresses, &ttl);
 
@@ -1620,6 +1620,29 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 
         out_records->push_back(std::move(record));
       }
+    }
+
+    // For NXDOMAIN or NODATA (NOERROR with 0 answers), attempt to find a TTL
+    // via an SOA record.
+    if (response->rcode() == dns_protocol::kRcodeNXDOMAIN ||
+        (response->answer_count() == 0 &&
+         response->rcode() == dns_protocol::kRcodeNOERROR)) {
+      bool soa_found = false;
+      for (unsigned i = 0; i < response->authority_count(); ++i) {
+        DnsResourceRecord record;
+        if (parser.ReadRecord(&record) &&
+            record.type == dns_protocol::kTypeSOA) {
+          soa_found = true;
+          base::TimeDelta ttl = base::TimeDelta::FromSeconds(record.ttl);
+          *out_response_ttl =
+              std::min(out_response_ttl->value_or(base::TimeDelta::Max()), ttl);
+        }
+      }
+
+      // Per RFC2308, section 5, never cache negative results unless an SOA
+      // record is found.
+      if (!soa_found)
+        out_response_ttl->reset();
     }
 
     return DnsResponse::DNS_PARSE_OK;

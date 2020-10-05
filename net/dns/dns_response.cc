@@ -443,6 +443,11 @@ unsigned DnsResponse::answer_count() const {
   return base::NetToHost16(header()->ancount);
 }
 
+unsigned DnsResponse::authority_count() const {
+  DCHECK(parser_.IsValid());
+  return base::NetToHost16(header()->nscount);
+}
+
 unsigned DnsResponse::additional_answer_count() const {
   DCHECK(parser_.IsValid());
   return base::NetToHost16(header()->arcount);
@@ -482,8 +487,8 @@ const dns_protocol::Header* DnsResponse::header() const {
 }
 
 DnsResponse::Result DnsResponse::ParseToAddressList(
-    AddressList* addr_list,
-    base::TimeDelta* ttl) const {
+    AddressList* out_addr_list,
+    base::Optional<base::TimeDelta>* out_ttl) const {
   DCHECK(IsValid());
   // DnsTransaction already verified that |response| matches the issued query.
   // We still need to determine if there is a valid chain of CNAMEs from the
@@ -502,7 +507,7 @@ DnsResponse::Result DnsResponse::ParseToAddressList(
                              ? IPAddress::kIPv6AddressSize
                              : IPAddress::kIPv4AddressSize;
 
-  uint32_t ttl_sec = std::numeric_limits<uint32_t>::max();
+  base::Optional<base::TimeDelta> ttl;
   IPAddressList ip_addresses;
   DnsRecordParser parser = Parser();
   DnsResourceRecord record;
@@ -512,6 +517,7 @@ DnsResponse::Result DnsResponse::ParseToAddressList(
     if (!parser.ReadRecord(&record))
       return DNS_MALFORMED_RESPONSE;
 
+    base::TimeDelta record_ttl = base::TimeDelta::FromSeconds(record.ttl);
     if (record.type == dns_protocol::kTypeCNAME) {
       // Following the CNAME chain, only if no addresses seen.
       if (!ip_addresses.empty())
@@ -524,7 +530,7 @@ DnsResponse::Result DnsResponse::ParseToAddressList(
           parser.ReadName(record.rdata.begin(), &expected_name))
         return DNS_MALFORMED_CNAME;
 
-      ttl_sec = std::min(ttl_sec, record.ttl);
+      ttl = std::min(ttl.value_or(base::TimeDelta::Max()), record_ttl);
     } else if (record.type == expected_type) {
       if (record.rdata.size() != expected_size)
         return DNS_SIZE_MISMATCH;
@@ -532,7 +538,7 @@ DnsResponse::Result DnsResponse::ParseToAddressList(
       if (!base::EqualsCaseInsensitiveASCII(record.name, expected_name))
         return DNS_NAME_MISMATCH;
 
-      ttl_sec = std::min(ttl_sec, record.ttl);
+      ttl = std::min(ttl.value_or(base::TimeDelta::Max()), record_ttl);
       ip_addresses.push_back(
           IPAddress(reinterpret_cast<const uint8_t*>(record.rdata.data()),
                     record.rdata.length()));
@@ -542,18 +548,27 @@ DnsResponse::Result DnsResponse::ParseToAddressList(
   // NXDOMAIN or NODATA cases respectively.
   if (rcode() == dns_protocol::kRcodeNXDOMAIN ||
       (ancount == 0 && rcode() == dns_protocol::kRcodeNOERROR)) {
+    bool soa_found = false;
     unsigned nscount = base::NetToHost16(header()->nscount);
     for (unsigned i = 0; i < nscount; ++i) {
-      if (parser.ReadRecord(&record) && record.type == dns_protocol::kTypeSOA)
-        ttl_sec = std::min(ttl_sec, record.ttl);
+      if (parser.ReadRecord(&record) && record.type == dns_protocol::kTypeSOA) {
+        soa_found = true;
+        base::TimeDelta record_ttl = base::TimeDelta::FromSeconds(record.ttl);
+        ttl = std::min(ttl.value_or(base::TimeDelta::Max()), record_ttl);
+      }
     }
+
+    // Per RFC2308, section 5, never cache negative results unless an SOA
+    // record is found.
+    if (!soa_found)
+      ttl.reset();
   }
 
   // getcanonname in eglibc returns the first owner name of an A or AAAA RR.
   // If the response passed all the checks so far, then |expected_name| is it.
-  *addr_list = AddressList::CreateFromIPAddressList(ip_addresses,
-                                                    expected_name);
-  *ttl = base::TimeDelta::FromSeconds(ttl_sec);
+  *out_addr_list =
+      AddressList::CreateFromIPAddressList(ip_addresses, expected_name);
+  *out_ttl = ttl;
   return DNS_PARSE_OK;
 }
 

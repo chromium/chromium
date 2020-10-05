@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/address_list.h"
@@ -153,7 +154,7 @@ void RunTestCase(uint16_t id,
   }
 
   net::AddressList address_list;
-  base::TimeDelta ttl;
+  base::Optional<base::TimeDelta> ttl;
   net::DnsResponse::Result result = response.ParseToAddressList(
       &address_list, &ttl);
   if (result != net::DnsResponse::DNS_PARSE_OK) {
@@ -166,7 +167,8 @@ void RunTestCase(uint16_t id,
   result_line << "Response: address_list={ ";
   for (unsigned int i = 0; i < address_list.size(); i++)
     result_line << address_list[i].ToString() << " ";
-  result_line << "}, ttl=" << ttl.InSeconds() << "s";
+  result_line << "}, ttl=" << ttl.value_or(base::TimeDelta()).InSeconds()
+              << "s";
 
   LOG(INFO) << result_line.str();
 }

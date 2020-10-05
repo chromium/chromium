@@ -574,15 +574,44 @@ void VerifyAddressList(const std::vector<const char*>& ip_addresses,
   }
 }
 
+static const uint8_t kResponseNoDataWithSoa[] = {
+    // Header
+    0x00, 0x00, 0x81, 0x80, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00,
+    // Question (name: "query" type: A)
+    0x05, 'q', 'u', 'e', 'r', 'y', 0x00, 0x00, 0x01, 0x00, 0x01,
+    // Answers (empty)
+    // Authority records (single minimally faked SOA with TTL: 2 days)
+    0xc0, 0x0c, 0x00, 0x06, 0x00, 0x01, 0x00, 0x02, 0xa3, 0x00, 0x00, 0x00};
+
+static const uint8_t kResponseNxdomainCnameWithSoa[] = {
+    // Header
+    0x00, 0x00, 0x81, 0x83, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00,
+    // Question (name: "query" type: A)
+    0x05, 'q', 'u', 'e', 'r', 'y', 0x00, 0x00, 0x01, 0x00, 0x01,
+    // Answers (CNAME "query"->"canon" TTL: 48 minutes)
+    0xc0, 0x0c, 0x00, 0x05, 0x00, 0x01, 0x00, 0x00, 0x0b, 0x40, 0x00, 0x07,
+    0x05, 'c', 'a', 'n', 'o', 'n', 0x00,
+    // Authority records (single minimally faked SOA with TTL: 2 days)
+    0xc0, 0x0c, 0x00, 0x06, 0x00, 0x01, 0x00, 0x02, 0xa3, 0x00, 0x00, 0x00};
+
+static const uint8_t kResponseNxdomainCnameWithoutSoa[] = {
+    // Header
+    0x00, 0x00, 0x81, 0x83, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00,
+    // Question (name: "query" type: A)
+    0x05, 'q', 'u', 'e', 'r', 'y', 0x00, 0x00, 0x01, 0x00, 0x01,
+    // Answers (CNAME "query"->"canon" TTL: 48 minutes)
+    0xc0, 0x0c, 0x00, 0x05, 0x00, 0x01, 0x00, 0x00, 0x0b, 0x40, 0x00, 0x07,
+    0x05, 'c', 'a', 'n', 'o', 'n', 0x00};
+
 TEST(DnsResponseTest, ParseToAddressList) {
   const struct TestCase {
-    size_t query_size;
+    size_t answers_offset;
     const uint8_t* response_data;
     size_t response_size;
     const char* const* expected_addresses;
     size_t num_expected_addresses;
     const char* expected_cname;
-    int expected_ttl_sec;
+    base::Optional<base::TimeDelta> expected_ttl;
   } cases[] = {
       {
           kT0QuerySize,
@@ -591,7 +620,7 @@ TEST(DnsResponseTest, ParseToAddressList) {
           kT0IpAddresses,
           base::size(kT0IpAddresses),
           kT0CanonName,
-          kT0TTL,
+          kT0Ttl,
       },
       {
           kT1QuerySize,
@@ -600,7 +629,7 @@ TEST(DnsResponseTest, ParseToAddressList) {
           kT1IpAddresses,
           base::size(kT1IpAddresses),
           kT1CanonName,
-          kT1TTL,
+          kT1Ttl,
       },
       {
           kT2QuerySize,
@@ -609,7 +638,7 @@ TEST(DnsResponseTest, ParseToAddressList) {
           kT2IpAddresses,
           base::size(kT2IpAddresses),
           kT2CanonName,
-          kT2TTL,
+          kT2Ttl,
       },
       {
           kT3QuerySize,
@@ -618,15 +647,42 @@ TEST(DnsResponseTest, ParseToAddressList) {
           kT3IpAddresses,
           base::size(kT3IpAddresses),
           kT3CanonName,
-          kT3TTL,
+          kT3Ttl,
+      },
+      {
+          12 + 11,
+          kResponseNoDataWithSoa,
+          base::size(kResponseNoDataWithSoa),
+          {} /* expected_addresses */,
+          0 /* num_expected_addresses */,
+          "query",
+          base::TimeDelta::FromDays(2),
+      },
+      {
+          12 + 11,
+          kResponseNxdomainCnameWithSoa,
+          base::size(kResponseNxdomainCnameWithSoa),
+          {} /* expected_addresses */,
+          0 /* num_expected_addresses */,
+          "canon",
+          base::TimeDelta::FromMinutes(48),
+      },
+      {
+          12 + 11,
+          kResponseNxdomainCnameWithoutSoa,
+          base::size(kResponseNxdomainCnameWithoutSoa),
+          {} /* expected_addresses */,
+          0 /* num_expected_addresses */,
+          "canon",
+          base::nullopt,
       },
   };
 
   for (size_t i = 0; i < base::size(cases); ++i) {
     const TestCase& t = cases[i];
-    DnsResponse response(t.response_data, t.response_size, t.query_size);
+    DnsResponse response(t.response_data, t.response_size, t.answers_offset);
     AddressList addr_list;
-    base::TimeDelta ttl;
+    base::Optional<base::TimeDelta> ttl;
     EXPECT_EQ(DnsResponse::DNS_PARSE_OK,
               response.ParseToAddressList(&addr_list, &ttl));
     std::vector<const char*> expected_addresses(
@@ -634,7 +690,7 @@ TEST(DnsResponseTest, ParseToAddressList) {
         t.expected_addresses + t.num_expected_addresses);
     VerifyAddressList(expected_addresses, addr_list);
     EXPECT_EQ(t.expected_cname, addr_list.canonical_name());
-    EXPECT_EQ(base::TimeDelta::FromSeconds(t.expected_ttl_sec), ttl);
+    EXPECT_EQ(t.expected_ttl, ttl);
   }
 }
 
@@ -751,7 +807,7 @@ TEST(DnsResponseTest, ParseToAddressListFail) {
 
     DnsResponse response(t.data, t.size, kQuerySize);
     AddressList addr_list;
-    base::TimeDelta ttl;
+    base::Optional<base::TimeDelta> ttl;
     EXPECT_EQ(t.expected_result,
               response.ParseToAddressList(&addr_list, &ttl));
   }

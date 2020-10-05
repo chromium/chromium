@@ -7794,6 +7794,8 @@ TEST_F(HostResolverManagerDnsTest, TxtQuery) {
   CreateResolver();
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
 
+  EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
+
   HostResolver::ResolveHostParameters parameters;
   parameters.dns_query_type = DnsQueryType::TXT;
 
@@ -7812,6 +7814,22 @@ TEST_F(HostResolverManagerDnsTest, TxtQuery) {
                   "foo1", "foo2", "foo3", "bar1", "bar2")));
   std::vector<std::string> results =
       response.request()->GetTextResults().value();
+  EXPECT_NE(results.end(), std::search(results.begin(), results.end(),
+                                       foo_records.begin(), foo_records.end()));
+  EXPECT_NE(results.end(), std::search(results.begin(), results.end(),
+                                       bar_records.begin(), bar_records.end()));
+
+  // Expect result to be cached.
+  EXPECT_EQ(resolve_context_->host_cache()->size(), 1u);
+  parameters.source = HostResolverSource::LOCAL_ONLY;
+  ResolveHostResponseHelper cached_response(resolver_->CreateRequest(
+      HostPortPair("host", 108), NetworkIsolationKey(), NetLogWithSource(),
+      parameters, resolve_context_.get(), resolve_context_->host_cache()));
+  EXPECT_THAT(cached_response.result_error(), IsOk());
+  ASSERT_THAT(cached_response.request()->GetTextResults(),
+              testing::Optional(testing::UnorderedElementsAre(
+                  "foo1", "foo2", "foo3", "bar1", "bar2")));
+  results = cached_response.request()->GetTextResults().value();
   EXPECT_NE(results.end(), std::search(results.begin(), results.end(),
                                        foo_records.begin(), foo_records.end()));
   EXPECT_NE(results.end(), std::search(results.begin(), results.end(),
@@ -7846,6 +7864,8 @@ TEST_F(HostResolverManagerDnsTest, TxtQuery_NonexistentDomain) {
   CreateResolver();
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
 
+  EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
+
   HostResolver::ResolveHostParameters parameters;
   parameters.dns_query_type = DnsQueryType::TXT;
 
@@ -7857,6 +7877,18 @@ TEST_F(HostResolverManagerDnsTest, TxtQuery_NonexistentDomain) {
   EXPECT_FALSE(response.request()->GetTextResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_FALSE(response.request()->GetIntegrityResultsForTesting());
+
+  // Expect result to be cached.
+  EXPECT_EQ(resolve_context_->host_cache()->size(), 1u);
+  parameters.source = HostResolverSource::LOCAL_ONLY;
+  ResolveHostResponseHelper cached_response(resolver_->CreateRequest(
+      HostPortPair("host", 108), NetworkIsolationKey(), NetLogWithSource(),
+      parameters, resolve_context_.get(), resolve_context_->host_cache()));
+  EXPECT_THAT(cached_response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_FALSE(cached_response.request()->GetAddressResults());
+  EXPECT_FALSE(cached_response.request()->GetTextResults());
+  EXPECT_FALSE(cached_response.request()->GetHostnameResults());
+  EXPECT_FALSE(cached_response.request()->GetIntegrityResultsForTesting());
 }
 
 TEST_F(HostResolverManagerDnsTest, TxtQuery_Failure) {
@@ -7884,6 +7916,9 @@ TEST_F(HostResolverManagerDnsTest, TxtQuery_Failure) {
   EXPECT_FALSE(response.request()->GetTextResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_FALSE(response.request()->GetIntegrityResultsForTesting());
+
+  // Expect result not cached.
+  EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
 }
 
 TEST_F(HostResolverManagerDnsTest, TxtQuery_Timeout) {
@@ -7911,6 +7946,9 @@ TEST_F(HostResolverManagerDnsTest, TxtQuery_Timeout) {
   EXPECT_FALSE(response.request()->GetTextResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_FALSE(response.request()->GetIntegrityResultsForTesting());
+
+  // Expect result not cached.
+  EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
 }
 
 TEST_F(HostResolverManagerDnsTest, TxtQuery_Empty) {
@@ -7927,6 +7965,8 @@ TEST_F(HostResolverManagerDnsTest, TxtQuery_Empty) {
   CreateResolver();
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
 
+  EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
+
   HostResolver::ResolveHostParameters parameters;
   parameters.dns_query_type = DnsQueryType::TXT;
 
@@ -7938,6 +7978,18 @@ TEST_F(HostResolverManagerDnsTest, TxtQuery_Empty) {
   EXPECT_FALSE(response.request()->GetTextResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_FALSE(response.request()->GetIntegrityResultsForTesting());
+
+  // Expect result to be cached.
+  EXPECT_EQ(resolve_context_->host_cache()->size(), 1u);
+  parameters.source = HostResolverSource::LOCAL_ONLY;
+  ResolveHostResponseHelper cached_response(resolver_->CreateRequest(
+      HostPortPair("host", 108), NetworkIsolationKey(), NetLogWithSource(),
+      parameters, resolve_context_.get(), resolve_context_->host_cache()));
+  EXPECT_THAT(cached_response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_FALSE(cached_response.request()->GetAddressResults());
+  EXPECT_FALSE(cached_response.request()->GetTextResults());
+  EXPECT_FALSE(cached_response.request()->GetHostnameResults());
+  EXPECT_FALSE(cached_response.request()->GetIntegrityResultsForTesting());
 }
 
 TEST_F(HostResolverManagerDnsTest, TxtQuery_Malformed) {
@@ -7965,6 +8017,9 @@ TEST_F(HostResolverManagerDnsTest, TxtQuery_Malformed) {
   EXPECT_FALSE(response.request()->GetTextResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_FALSE(response.request()->GetIntegrityResultsForTesting());
+
+  // Expect result not cached.
+  EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
 }
 
 TEST_F(HostResolverManagerDnsTest, TxtQuery_MismatchedName) {
@@ -7989,6 +8044,9 @@ TEST_F(HostResolverManagerDnsTest, TxtQuery_MismatchedName) {
   EXPECT_FALSE(response.request()->GetTextResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_FALSE(response.request()->GetIntegrityResultsForTesting());
+
+  // Expect result not cached.
+  EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
 }
 
 TEST_F(HostResolverManagerDnsTest, TxtQuery_WrongType) {
@@ -8014,6 +8072,9 @@ TEST_F(HostResolverManagerDnsTest, TxtQuery_WrongType) {
   EXPECT_FALSE(response.request()->GetTextResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_FALSE(response.request()->GetIntegrityResultsForTesting());
+
+  // Expect result not cached.
+  EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
 }
 
 // Same as TxtQuery except we specify DNS HostResolverSource instead of relying
@@ -8036,6 +8097,8 @@ TEST_F(HostResolverManagerDnsTest, TxtDnsQuery) {
   CreateResolver();
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
 
+  EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
+
   HostResolver::ResolveHostParameters parameters;
   parameters.source = HostResolverSource::DNS;
   parameters.dns_query_type = DnsQueryType::TXT;
@@ -8055,6 +8118,22 @@ TEST_F(HostResolverManagerDnsTest, TxtDnsQuery) {
                   "foo1", "foo2", "foo3", "bar1", "bar2")));
   std::vector<std::string> results =
       response.request()->GetTextResults().value();
+  EXPECT_NE(results.end(), std::search(results.begin(), results.end(),
+                                       foo_records.begin(), foo_records.end()));
+  EXPECT_NE(results.end(), std::search(results.begin(), results.end(),
+                                       bar_records.begin(), bar_records.end()));
+
+  // Expect result to be cached.
+  EXPECT_EQ(resolve_context_->host_cache()->size(), 1u);
+  ResolveHostResponseHelper cached_response(resolver_->CreateRequest(
+      HostPortPair("host", 108), NetworkIsolationKey(), NetLogWithSource(),
+      parameters, resolve_context_.get(), resolve_context_->host_cache()));
+  EXPECT_THAT(cached_response.result_error(), IsOk());
+  EXPECT_TRUE(cached_response.request()->GetStaleInfo());
+  ASSERT_THAT(cached_response.request()->GetTextResults(),
+              testing::Optional(testing::UnorderedElementsAre(
+                  "foo1", "foo2", "foo3", "bar1", "bar2")));
+  results = cached_response.request()->GetTextResults().value();
   EXPECT_NE(results.end(), std::search(results.begin(), results.end(),
                                        foo_records.begin(), foo_records.end()));
   EXPECT_NE(results.end(), std::search(results.begin(), results.end(),

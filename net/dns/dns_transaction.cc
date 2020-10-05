@@ -985,7 +985,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
           probe_stats->probe_attempts[attempt_number].get();
       const DnsResponse* response = attempt->GetResponse();
       AddressList addresses;
-      base::TimeDelta ttl;
+      base::Optional<base::TimeDelta> ttl;
       if (response &&
           attempt->GetResponse()->ParseToAddressList(&addresses, &ttl) ==
               DnsResponse::DNS_PARSE_OK &&

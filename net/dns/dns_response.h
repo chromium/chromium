@@ -186,6 +186,7 @@ class NET_EXPORT_PRIVATE DnsResponse {
   uint8_t rcode() const;
 
   unsigned answer_count() const;
+  unsigned authority_count() const;
   unsigned additional_answer_count() const;
 
   // Accessors to the question. The qname is unparsed.
@@ -202,7 +203,8 @@ class NET_EXPORT_PRIVATE DnsResponse {
 
   // Extracts an AddressList from this response. Returns SUCCESS if succeeded.
   // Otherwise returns a detailed error number.
-  Result ParseToAddressList(AddressList* addr_list, base::TimeDelta* ttl) const;
+  Result ParseToAddressList(AddressList* out_addr_list,
+                            base::Optional<base::TimeDelta>* out_ttl) const;
 
  private:
   bool WriteHeader(base::BigEndianWriter* writer,
