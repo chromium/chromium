@@ -4322,7 +4322,14 @@ IN_PROC_BROWSER_TEST_F(ParallelDownloadTest,
 
 // Verify that if the second request fails after the beginning request takes
 // over and completes its slice, download should complete.
-IN_PROC_BROWSER_TEST_F(ParallelDownloadTest, MiddleSliceDelayedError) {
+// Flaky on Linux.  http://crbug.com/1106059
+#if defined(OS_LINUX)
+#define MAYBE_MiddleSliceDelayedError DISABLED_MiddleSliceDelayedError
+#else
+#define MAYBE_MiddleSliceDelayedError MiddleSliceDelayedError
+#endif
+
+IN_PROC_BROWSER_TEST_F(ParallelDownloadTest, MAYBE_MiddleSliceDelayedError) {
   scoped_refptr<TestFileErrorInjector> injector(
       TestFileErrorInjector::Create(DownloadManagerForShell(shell())));
 
