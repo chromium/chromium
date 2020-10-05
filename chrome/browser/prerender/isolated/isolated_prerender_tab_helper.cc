@@ -38,6 +38,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -147,6 +148,23 @@ void CookieSetHelper(base::RepeatingClosure run_me,
   run_me.Run();
 }
 
+bool ShouldStartSpareRenderer() {
+  if (!IsolatedPrerenderStartsSpareRenderer()) {
+    return false;
+  }
+
+  for (content::RenderProcessHost::iterator iter(
+           content::RenderProcessHost::AllHostsIterator());
+       !iter.IsAtEnd(); iter.Advance()) {
+    if (iter.GetCurrentValue()->IsUnused()) {
+      // There is already a spare renderer.
+      return false;
+    }
+  }
+
+  return true;
+}
+
 }  // namespace
 
 IsolatedPrerenderTabHelper::PrefetchMetrics::PrefetchMetrics() = default;
@@ -168,6 +186,12 @@ IsolatedPrerenderTabHelper::CurrentPageLoad::CurrentPageLoad(
 }
 
 IsolatedPrerenderTabHelper::CurrentPageLoad::~CurrentPageLoad() {
+  if (IsolatedPrerenderStartsSpareRenderer()) {
+    UMA_HISTOGRAM_COUNTS_100(
+        "IsolatedPrerender.SpareRenderer.CountStartedOnSRP",
+        number_of_spare_renderers_started_);
+  }
+
   if (!profile_)
     return;
 
@@ -680,6 +704,12 @@ void IsolatedPrerenderTabHelper::StartSinglePrefetch() {
       IsolatedPrerenderMainframeBodyLengthLimit());
 
   page_->url_loaders_.emplace(std::move(loader));
+
+  // Start a spare renderer now so that it will be ready by the time it is
+  // useful to have.
+  if (ShouldStartSpareRenderer()) {
+    StartSpareRenderer();
+  }
 }
 
 void IsolatedPrerenderTabHelper::OnPrefetchRedirect(
@@ -922,6 +952,12 @@ void IsolatedPrerenderTabHelper::DoNoStatePrefetch() {
 void IsolatedPrerenderTabHelper::OnPrerenderDone(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // The completed NSP probably consumed a previously started spare renderer, so
+  // kick off another one if needed.
+  if (ShouldStartSpareRenderer()) {
+    StartSpareRenderer();
+  }
+
   // It is possible that this is run as a callback after a navigation has
   // already happened and |page_| is now a different instance than when the
   // prerender was started. In this case, just return.
@@ -941,6 +977,11 @@ void IsolatedPrerenderTabHelper::OnPrerenderDone(const GURL& url) {
       page_->urls_to_no_state_prefetch_.begin());
 
   DoNoStatePrefetch();
+}
+
+void IsolatedPrerenderTabHelper::StartSpareRenderer() {
+  page_->number_of_spare_renderers_started_++;
+  content::RenderProcessHost::WarmupSpareRenderProcessHost(profile_);
 }
 
 void IsolatedPrerenderTabHelper::OnPredictionUpdated(

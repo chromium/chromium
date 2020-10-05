@@ -156,3 +156,10 @@ size_t IsolatedPrerenderMaxSubresourcesPerPrerender() {
   return base::GetFieldTrialParamByFeatureAsInt(
       features::kIsolatePrerenders, "max_subresource_count_per_prerender", 50);
 }
+
+bool IsolatedPrerenderStartsSpareRenderer() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+             "isolated-prerender-start-spare-renderer") ||
+         base::GetFieldTrialParamByFeatureAsBool(features::kIsolatePrerenders,
+                                                 "start_spare_renderer", false);
+}
