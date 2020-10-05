@@ -2,13 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 component("wifi") {
   sources = [
     "network_properties.cc",
@@ -16,8 +9,6 @@ component("wifi") {
     "wifi_export.h",
     "wifi_service.cc",
     "wifi_service.h",
-    "wifi_service_mac.mm",
-    "wifi_service_win.cc",
   ]
 
   defines = [ "WIFI_IMPLEMENTATION" ]
@@ -29,6 +20,7 @@ component("wifi") {
   ]
 
   if (is_win) {
+    sources += [ "wifi_service_win.cc" ]
     libs = [ "iphlpapi.lib" ]
     deps += [
       "//third_party/libxml:xml_reader",  # Safe, data come from system.
@@ -37,6 +29,7 @@ component("wifi") {
   }
 
   if (is_mac) {
+    sources += [ "wifi_service_mac.mm" ]
     frameworks = [
       "CoreWLAN.framework",
       "Foundation.framework",
