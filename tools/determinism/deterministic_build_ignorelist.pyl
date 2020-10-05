@@ -61,6 +61,9 @@
     'test_data/ppapi/tests/extensions/packaged_app/newlib/ppapi_tests_extensions_packaged_app_newlib_x86_64.nexe',
     'test_data/ppapi/tests/extensions/popup/newlib/ppapi_tests_extensions_popup_newlib_x86_64.nexe',
     'test_data/ppapi/tests/extensions/socket_permissions/newlib/ppapi_tests_extensions_socket_permissions_newlib_x86_64.nexe',
+
+    # https://crbug.com/1135151
+    'args.gn',
   ],
 
   'linux_component': [
