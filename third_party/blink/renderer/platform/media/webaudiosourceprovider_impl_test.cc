@@ -22,6 +22,11 @@ using ::testing::_;
 namespace blink {
 
 namespace {
+
+MATCHER(IsMuted, std::string(negation ? "isn't" : "is") + " muted") {
+  return arg->AreFramesZero();
+}
+
 const float kTestVolume = 0.25;
 const int kTestSampleRate = 48000;
 }  // namespace
@@ -91,17 +96,10 @@ class WebAudioSourceProviderImplTest : public testing::Test,
 
   // WebAudioSourceProviderClient implementation.
   MOCK_METHOD2(SetFormat, void(uint32_t numberOfChannels, float sampleRate));
-
-  // CopyAudioCB. Added forwarder method due to GMock troubles with scoped_ptr.
   MOCK_METHOD3(DoCopyAudioCB,
-               void(media::AudioBus*,
+               void(std::unique_ptr<media::AudioBus> bus,
                     uint32_t frames_delayed,
                     int sample_rate));
-  void OnAudioBus(std::unique_ptr<media::AudioBus> bus,
-                  uint32_t frames_delayed,
-                  int sample_rate) {
-    DoCopyAudioCB(bus.get(), frames_delayed, sample_rate);
-  }
 
   int Render(media::AudioBus* audio_bus) {
     return wasp_impl_->RenderForTesting(audio_bus);
@@ -165,6 +163,35 @@ TEST_F(WebAudioSourceProviderImplTest, SinkMethods) {
   // this shouldn't crash, but shouldn't do anything either.
   SetClient(nullptr);
   CallAllSinkMethodsAndVerify(false);
+}
+
+// Test tainting effects on Render().
+TEST_F(WebAudioSourceProviderImplTest, RenderTainted) {
+  auto bus = media::AudioBus::Create(params_);
+  bus->Zero();
+
+  // Point the WebVector into memory owned by |bus|.
+  WebVector<float*> audio_data(static_cast<size_t>(bus->channels()));
+  for (size_t i = 0; i < audio_data.size(); ++i)
+    audio_data[i] = bus->channel(static_cast<int>(i));
+
+  wasp_impl_->Initialize(params_, &fake_callback_);
+
+  EXPECT_CALL(*mock_sink_, Start());
+  wasp_impl_->Start();
+  EXPECT_CALL(*mock_sink_, Play());
+  wasp_impl_->Play();
+
+  Render(bus.get());
+  ASSERT_FALSE(bus->AreFramesZero());
+
+  // Normal audio output should be unaffected by tainting.
+  wasp_impl_->TaintOrigin();
+  Render(bus.get());
+  ASSERT_FALSE(bus->AreFramesZero());
+
+  EXPECT_CALL(*mock_sink_, Stop());
+  wasp_impl_->Stop();
 }
 
 // Test the AudioRendererSink state machine and its effects on provideInput().
@@ -253,12 +280,37 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInput) {
   ASSERT_TRUE(CompareBusses(bus1.get(), bus2.get()));
 }
 
+// Test tainting effects on ProvideInput().
+TEST_F(WebAudioSourceProviderImplTest, ProvideInputTainted) {
+  auto bus = media::AudioBus::Create(params_);
+  bus->Zero();
+
+  // Point the WebVector into memory owned by |bus|.
+  WebVector<float*> audio_data(static_cast<size_t>(bus->channels()));
+  for (size_t i = 0; i < audio_data.size(); ++i)
+    audio_data[i] = bus->channel(static_cast<int>(i));
+
+  wasp_impl_->Initialize(params_, &fake_callback_);
+  SetClient(this);
+
+  wasp_impl_->Start();
+  wasp_impl_->Play();
+  wasp_impl_->ProvideInput(audio_data, params_.frames_per_buffer());
+  ASSERT_FALSE(bus->AreFramesZero());
+
+  wasp_impl_->TaintOrigin();
+  wasp_impl_->ProvideInput(audio_data, params_.frames_per_buffer());
+  ASSERT_TRUE(bus->AreFramesZero());
+
+  wasp_impl_->Stop();
+}
+
 // Verify CopyAudioCB is called if registered.
 TEST_F(WebAudioSourceProviderImplTest, CopyAudioCB) {
   testing::InSequence s;
   wasp_impl_->Initialize(params_, &fake_callback_);
   wasp_impl_->SetCopyAudioCallback(WTF::BindRepeating(
-      &WebAudioSourceProviderImplTest::OnAudioBus, base::Unretained(this)));
+      &WebAudioSourceProviderImplTest::DoCopyAudioCB, base::Unretained(this)));
 
   const auto bus1 = media::AudioBus::Create(params_);
   EXPECT_CALL(*this, DoCopyAudioCB(_, 0, params_.sample_rate())).Times(1);
@@ -266,6 +318,27 @@ TEST_F(WebAudioSourceProviderImplTest, CopyAudioCB) {
 
   wasp_impl_->ClearCopyAudioCallback();
   EXPECT_CALL(*this, DoCopyAudioCB(_, _, _)).Times(0);
+  Render(bus1.get());
+
+  testing::Mock::VerifyAndClear(mock_sink_.get());
+}
+
+// Verify CopyAudioCB is zero when tainted.
+TEST_F(WebAudioSourceProviderImplTest, CopyAudioCBTainted) {
+  testing::InSequence s;
+  wasp_impl_->Initialize(params_, &fake_callback_);
+  wasp_impl_->SetCopyAudioCallback(WTF::BindRepeating(
+      &WebAudioSourceProviderImplTest::DoCopyAudioCB, base::Unretained(this)));
+
+  const auto bus1 = media::AudioBus::Create(params_);
+  EXPECT_CALL(*this,
+              DoCopyAudioCB(testing::Not(IsMuted()), 0, params_.sample_rate()))
+      .Times(1);
+  Render(bus1.get());
+
+  wasp_impl_->TaintOrigin();
+  EXPECT_CALL(*this, DoCopyAudioCB(IsMuted(), 0, params_.sample_rate()))
+      .Times(1);
   Render(bus1.get());
 
   testing::Mock::VerifyAndClear(mock_sink_.get());
@@ -337,6 +410,7 @@ TEST_F(WebAudioSourceProviderImplTest, SetClientCallback) {
 
   // SetClient when called with a valid client should trigger the callback once.
   EXPECT_CALL(*this, OnClientSet()).Times(1);
+  EXPECT_CALL(*mock_sink_, Stop());
   wasp_impl_->SetClient(this);
   base::RunLoop().RunUntilIdle();
   ::testing::Mock::VerifyAndClearExpectations(this);
