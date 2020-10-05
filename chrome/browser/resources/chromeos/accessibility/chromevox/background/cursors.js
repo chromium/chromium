@@ -564,7 +564,7 @@ cursors.Cursor = class {
       newIndex = cursors.NODE_INDEX;
     }
 
-    return new cursors.Cursor(newNode, newIndex);
+    return new this.constructor(newNode, newIndex);
   }
 
   /**

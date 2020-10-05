@@ -3105,3 +3105,18 @@ TEST_F('ChromeVoxBackgroundTest', 'VolumeChanges', function() {
         .replay();
   });
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'WrapTextFieldAtEndOfDoc', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `<p>start</p><div role="textbox" contenteditable></div>`;
+  this.runWithLoadedTree(site, function() {
+    mockFeedback.call(doCmd('nextObject'))
+        .expectSpeech('Edit text')
+        .call(doCmd('nextObject'))
+        .expectEarcon(Earcon.WRAP)
+        .expectSpeech('Web Content')
+        .call(doCmd('nextObject'))
+        .expectSpeech('start')
+        .replay();
+  });
+});
