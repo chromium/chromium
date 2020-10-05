@@ -1038,6 +1038,8 @@ by a child template that "extends" this file.
         <service android:name="org.chromium.chrome.browser.notifications.NotificationService"
             android:exported="false"/>
         <receiver android:name="org.chromium.chrome.browser.notifications.NotificationService$Receiver"
+            android:exported="false"/>
+        <receiver android:name="org.chromium.chrome.browser.notifications.NotificationServiceImpl$Receiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="org.chromium.chrome.browser.notifications.CLICK_NOTIFICATION" />

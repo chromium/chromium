@@ -962,6 +962,7 @@ android_library("chrome_test_java") {
   sources = chrome_test_java_sources
 
   deps = [
+    ":base_module_java",
     ":browser_java_test_support",
     ":chrome_app_java_resources",
     ":chrome_test_util_java",
@@ -2057,6 +2058,13 @@ android_library("base_module_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/base/SplitChromeApplication.java",
     "java/src/org/chromium/chrome/browser/base/SplitCompatApplication.java",
+    "java/src/org/chromium/chrome/browser/base/SplitCompatIntentService.java",
+    "java/src/org/chromium/chrome/browser/base/SplitCompatJobService.java",
+    "java/src/org/chromium/chrome/browser/base/SplitCompatService.java",
+    "java/src/org/chromium/chrome/browser/base/SplitCompatUtils.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadForegroundService.java",
+    "java/src/org/chromium/chrome/browser/notifications/NotificationJobService.java",
+    "java/src/org/chromium/chrome/browser/notifications/NotificationService.java",
   ]
   deps = [
     ":chrome_base_module_resources",

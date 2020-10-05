@@ -148,7 +148,7 @@ public class NotificationPlatformBridgeIntentTest {
                                   .getApplicationContext();
 
         Intent intent = new Intent(NotificationConstants.ACTION_CLICK_NOTIFICATION);
-        intent.setClass(context, NotificationService.Receiver.class);
+        intent.setClass(context, NotificationServiceImpl.Receiver.class);
 
         intent.putExtra(NotificationConstants.EXTRA_NOTIFICATION_ID, "42");
         intent.putExtra(NotificationConstants.EXTRA_NOTIFICATION_INFO_PROFILE_ID, "Default");

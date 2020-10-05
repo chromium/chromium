@@ -5,10 +5,6 @@
 package org.chromium.chrome.browser.base;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.os.Build;
-
-import org.chromium.base.compat.ApiHelperForO;
 
 /**
  * Application class to use for Chrome when //chrome code is in an isolated split. This class will
@@ -30,8 +26,8 @@ public class SplitChromeApplication extends SplitCompatApplication {
     @Override
     protected void attachBaseContext(Context context) {
         if (isBrowserProcess()) {
-            context = createChromeContext(context);
-            setImpl(createChromeApplication(context));
+            context = SplitCompatUtils.createChromeContext(context);
+            setImpl((Impl) SplitCompatUtils.newInstance(context, mChromeApplicationClassName));
         } else {
             setImpl(createNonBrowserApplication());
         }
@@ -40,30 +36,5 @@ public class SplitChromeApplication extends SplitCompatApplication {
 
     protected Impl createNonBrowserApplication() {
         return new Impl();
-    }
-
-    private Impl createChromeApplication(Context context) {
-        try {
-            return (Impl) context.getClassLoader()
-                    .loadClass(mChromeApplicationClassName)
-                    .newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private Context createChromeContext(Context base) {
-        assert isBrowserProcess();
-        // Isolated splits are only supported in O+, so just return the base context on other
-        // versions, since this will have access to all splits.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return base;
-        }
-        try {
-            return ApiHelperForO.createContextForSplit(base, "chrome");
-        } catch (PackageManager.NameNotFoundException e) {
-            // This application class should not be used if the chrome split does not exist.
-            throw new RuntimeException(e);
-        }
     }
 }

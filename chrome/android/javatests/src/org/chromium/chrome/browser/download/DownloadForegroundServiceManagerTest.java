@@ -72,7 +72,7 @@ public final class DownloadForegroundServiceManagerTest {
         }
 
         @Override
-        void stopAndUnbindServiceInternal(@DownloadForegroundService.StopForegroundNotification
+        void stopAndUnbindServiceInternal(@DownloadForegroundServiceImpl.StopForegroundNotification
                                           int stopForegroundNotification,
                 int pinnedNotificationId, Notification pinnedNotification) {
             mStopForegroundNotificationFlag = stopForegroundNotification;
@@ -102,7 +102,7 @@ public final class DownloadForegroundServiceManagerTest {
      * Implementation of DownloadForegroundService for testing.
      * Does not implement startOrUpdateForegroundService to avoid test service lifecycle.
      */
-    public static class MockDownloadForegroundService extends DownloadForegroundService {
+    public static class MockDownloadForegroundService extends DownloadForegroundServiceImpl {
         @Override
         public void startOrUpdateForegroundService(int newNotificationId,
                 Notification newNotification, int oldNotificationId, Notification oldNotification,
@@ -231,7 +231,7 @@ public final class DownloadForegroundServiceManagerTest {
         mDownloadServiceManager.updateDownloadStatus(mContext,
                 DownloadNotificationService.DownloadStatus.PAUSED, FAKE_DOWNLOAD_1, mNotification);
         assertFalse(mDownloadServiceManager.mIsServiceBound);
-        assertEquals(DownloadForegroundService.StopForegroundNotification.DETACH,
+        assertEquals(DownloadForegroundServiceImpl.StopForegroundNotification.DETACH,
                 mDownloadServiceManager.mStopForegroundNotificationFlag);
 
         // Service restarts and then is cancelled, so notification is killed.
@@ -245,7 +245,7 @@ public final class DownloadForegroundServiceManagerTest {
                 DownloadNotificationService.DownloadStatus.CANCELLED, FAKE_DOWNLOAD_1,
                 mNotification);
         assertFalse(mDownloadServiceManager.mIsServiceBound);
-        assertEquals(DownloadForegroundService.StopForegroundNotification.KILL,
+        assertEquals(DownloadForegroundServiceImpl.StopForegroundNotification.KILL,
                 mDownloadServiceManager.mStopForegroundNotificationFlag);
 
         // Download starts and completes, notification is either detached or killed.
@@ -259,7 +259,7 @@ public final class DownloadForegroundServiceManagerTest {
                 DownloadNotificationService.DownloadStatus.COMPLETED, FAKE_DOWNLOAD_2,
                 mNotification);
         assertFalse(mDownloadServiceManager.mIsServiceBound);
-        assertEquals(DownloadForegroundService.StopForegroundNotification.DETACH,
+        assertEquals(DownloadForegroundServiceImpl.StopForegroundNotification.DETACH,
                 mDownloadServiceManager.mStopForegroundNotificationFlag);
     }
 
