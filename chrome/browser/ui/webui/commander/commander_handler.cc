@@ -22,7 +22,7 @@ constexpr char kActionKey[] = "action";
 constexpr char kResultSetIdKey[] = "result_set_id";
 constexpr char kTitleKey[] = "title";
 constexpr char kEntityKey[] = "entity";
-constexpr char kAnnotationKey[] = "annotations";
+constexpr char kAnnotationKey[] = "annotation";
 constexpr char kMatchedRangesKey[] = "matched_ranges";
 constexpr char kOptionsKey[] = "options";
 }  // namespace
