@@ -15,7 +15,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/values.h"
-#include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -59,7 +58,6 @@
 #include "chrome/common/url_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
-#include "components/version_info/version_info.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -79,7 +77,6 @@
 #include "chrome/browser/win/conflicts/incompatible_applications_updater.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/notifications/notification_platform_bridge_win.h"
-#include "chrome/browser/shell_integration_win.h"
 #include "chrome/browser/ui/startup/credential_provider_signin_dialog_win.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #endif  // defined(OS_WIN)
@@ -296,32 +293,6 @@ bool StartupBrowserCreatorImpl::Launch(
     if (browser)
       MaybeToggleFullscreen(browser);
   }
-
-#if defined(OS_WIN)
-  if (process_startup) {
-    // Update this number when users should go through a taskbar shortcut
-    // migration again. The last reason to do this was crrev.com/2285399 @
-    // 86.0.4231.0.
-    //
-    // Note: If shortcut updates need to be done once after a future OS upgrade,
-    // that should be done by re-versioning Active Setup (see //chrome/installer
-    // and http://crbug.com/577697 for details).
-    const base::Version kLastVersionNeedingMigration({86U, 0U, 4231U, 0U});
-
-    PrefService* local_state = g_browser_process->local_state();
-    if (local_state) {
-      const base::Version last_version_migrated(
-          local_state->GetString(prefs::kShortcutMigrationVersion));
-      if (!last_version_migrated.IsValid() ||
-          last_version_migrated < kLastVersionNeedingMigration) {
-        shell_integration::win::MigrateTaskbarPins(base::BindOnce(
-            &PrefService::SetString, base::Unretained(local_state),
-            prefs::kShortcutMigrationVersion,
-            version_info::GetVersionNumber()));
-      }
-    }
-  }
-#endif  // defined(OS_WIN)
 
   return true;
 }

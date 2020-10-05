@@ -67,7 +67,6 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
-#include "components/version_info/version_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -1188,34 +1187,6 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 }
 
 #endif  // !defined(OS_CHROMEOS)
-
-#if defined(OS_WIN)
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
-                       PRE_ShortcutsAreMigratedOnce) {
-  content::RunAllTasksUntilIdle();
-
-  // Confirm that shortcuts were migrated.
-  const std::string last_version_migrated =
-      g_browser_process->local_state()->GetString(
-          prefs::kShortcutMigrationVersion);
-  EXPECT_EQ(last_version_migrated, version_info::GetVersionNumber());
-
-  // Set the version back as far as kLastVersionNeedingMigration and ensure it's
-  // not migrated again.
-  g_browser_process->local_state()->SetString(prefs::kShortcutMigrationVersion,
-                                              "86.0.4231.0");
-}
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, ShortcutsAreMigratedOnce) {
-  content::RunAllTasksUntilIdle();
-
-  // Confirm that shortcuts weren't migrated when marked as having last been
-  // migrated in kLastVersionNeedingMigration+.
-  const std::string last_version_migrated =
-      g_browser_process->local_state()->GetString(
-          prefs::kShortcutMigrationVersion);
-  EXPECT_EQ(last_version_migrated, "86.0.4231.0");
-}
-#endif  // defined(OS_WIN)
 
 class StartupBrowserCreatorExtensionsCheckupExperimentTest
     : public extensions::ExtensionBrowserTest {

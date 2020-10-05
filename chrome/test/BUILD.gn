@@ -2881,6 +2881,7 @@ if (!is_android) {
     }
     if (is_win) {
       sources += [
+        "../browser/chrome_browser_main_win_browsertest.cc",
         "../browser/printing/pdf_to_emf_converter_browsertest.cc",
         "../browser/spellchecker/spell_check_host_chrome_impl_win_browsertest.cc",
         "../browser/ui/startup/credential_provider_signin_dialog_win_browsertest.cc",
