@@ -82,11 +82,7 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
   descriptor.waitFDs = {};
 
   texture_ = dawn_native::vulkan::WrapVulkanImage(device_, &descriptor);
-  if (texture_) {
-    // Keep a reference to the texture so that it stays valid (its content
-    // might be destroyed).
-    dawn_procs_->data.textureReference(texture_);
-  } else {
+  if (!texture_) {
     close(fd);
   }
 

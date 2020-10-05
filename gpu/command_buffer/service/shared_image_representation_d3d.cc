@@ -98,11 +98,7 @@ WGPUTexture SharedImageRepresentationDawnD3D::BeginAccess(
        SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE);
 
   texture_ = dawn_native::d3d12::WrapSharedHandle(device_, &descriptor);
-  if (texture_) {
-    // Keep a reference to the texture so that it stays valid (its content
-    // might be destroyed).
-    dawn_procs_.textureReference(texture_);
-  } else {
+  if (!texture_) {
     d3d_image_backing->EndAccessD3D12();
   }
 

@@ -364,6 +364,8 @@ class GPU_GLES2_EXPORT SharedImageRepresentationDawn
                  WGPUTexture texture);
     ~ScopedAccess();
 
+    // Get the unowned texture handle. The caller should take a reference
+    // if necessary by doing wgpu::Texture texture(access->texture());
     WGPUTexture texture() const { return texture_; }
 
    private:

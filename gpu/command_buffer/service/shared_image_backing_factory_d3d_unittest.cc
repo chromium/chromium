@@ -569,7 +569,7 @@ TEST_F(SharedImageBackingFactoryD3DTest, Dawn_SkiaGL) {
         SharedImageRepresentation::AllowUnclearedAccess::kYes);
     ASSERT_TRUE(scoped_access);
 
-    wgpu::Texture texture = wgpu::Texture::Acquire(scoped_access->texture());
+    wgpu::Texture texture(scoped_access->texture());
 
     wgpu::RenderPassColorAttachmentDescriptor color_desc;
     color_desc.attachment = texture.CreateView();
@@ -686,8 +686,7 @@ TEST_F(SharedImageBackingFactoryD3DTest, GL_Dawn_Skia_UnclearTexture) {
         SharedImageRepresentation::AllowUnclearedAccess::kYes);
     ASSERT_TRUE(dawn_scoped_access);
 
-    wgpu::Texture texture =
-        wgpu::Texture::Acquire(dawn_scoped_access->texture());
+    wgpu::Texture texture(dawn_scoped_access->texture());
     wgpu::RenderPassColorAttachmentDescriptor color_desc;
     color_desc.attachment = texture.CreateView();
     color_desc.resolveTarget = nullptr;
@@ -771,8 +770,7 @@ TEST_F(SharedImageBackingFactoryD3DTest, UnclearDawn_SkiaFails) {
         SharedImageRepresentation::AllowUnclearedAccess::kYes);
     ASSERT_TRUE(dawn_scoped_access);
 
-    wgpu::Texture texture =
-        wgpu::Texture::Acquire(dawn_scoped_access->texture());
+    wgpu::Texture texture(dawn_scoped_access->texture());
     wgpu::RenderPassColorAttachmentDescriptor color_desc;
     color_desc.attachment = texture.CreateView();
     color_desc.resolveTarget = nullptr;

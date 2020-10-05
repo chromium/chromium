@@ -41,12 +41,12 @@ wpt_internal/webgpu/cts.html?q=webgpu:web-platform,copyImageBitmapToTexture:from
 
 # These tests aren't working on CQ, unclear whether the test or harness (or Chrome) is broken.
 # Mac: mostly works
-# Linux: actual is white/blank
-crbug.com/1083478 [ Linux ] wpt_internal/webgpu/webgpu/web-platform/reftests/canvas_clear.html [ Failure ]
-crbug.com/1083478 [ Linux ] wpt_internal/webgpu/webgpu/web-platform/reftests/canvas_complex_bgra8unorm.html [ Failure ]
-# Win: actual is black
-crbug.com/1083478 [ Win ] wpt_internal/webgpu/webgpu/web-platform/reftests/canvas_clear.html [ Failure ]
-crbug.com/1083478 [ Win ] wpt_internal/webgpu/webgpu/web-platform/reftests/canvas_complex_bgra8unorm.html [ Failure ]
+# Linux: actual is white/blank - is actually crashing silently
+crbug.com/1083478 [ Linux ] wpt_internal/webgpu/webgpu/web-platform/reftests/canvas_clear.html [ Skip ]
+crbug.com/1083478 [ Linux ] wpt_internal/webgpu/webgpu/web-platform/reftests/canvas_complex_bgra8unorm.html [ Skip ]
+# Win: takeScreenshot crashes
+crbug.com/1083478 [ Win ] wpt_internal/webgpu/webgpu/web-platform/reftests/canvas_clear.html [ Skip ]
+crbug.com/1083478 [ Win ] wpt_internal/webgpu/webgpu/web-platform/reftests/canvas_complex_bgra8unorm.html [ Skip ]
 
 #
 # Platform-independent failures
