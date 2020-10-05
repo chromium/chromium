@@ -32,6 +32,7 @@ extern const char kSetExtensionThrottleTestParams[];
 extern const char kShowComponentExtensionOptions[];
 extern const char kTraceAppSource[];
 extern const char kEnableCrxHashCheck[];
+extern const char kAllowFutureManifestVersion[];
 
 }  // namespace switches
 

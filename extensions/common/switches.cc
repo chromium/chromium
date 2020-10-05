@@ -84,6 +84,9 @@ const char kTraceAppSource[] = "enable-trace-app-source";
 // the one received from update manifest.
 const char kEnableCrxHashCheck[] = "enable-crx-hash-check";
 
+// Mute extension errors while working with new manifest version.
+const char kAllowFutureManifestVersion[] = "allow-future-manifest-version";
+
 }  // namespace switches
 
 }  // namespace extensions
