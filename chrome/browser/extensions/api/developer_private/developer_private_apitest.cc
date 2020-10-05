@@ -4,6 +4,7 @@
 
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
@@ -137,8 +138,17 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
   EXPECT_TRUE(DevToolsWindow::GetInstanceForInspectedWebContents(wc));
 }
 
+// Crashes on Linux only.  http://crbug.com/1134506
+#if defined(OS_LINUX)
+#define MAYBE_InspectInactiveServiceWorkerBackground \
+  DISABLED_InspectInactiveServiceWorkerBackground
+#else
+#define MAYBE_InspectInactiveServiceWorkerBackground \
+  InspectInactiveServiceWorkerBackground
+#endif
+
 IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
-                       InspectInactiveServiceWorkerBackground) {
+                       MAYBE_InspectInactiveServiceWorkerBackground) {
   ResultCatcher result_catcher;
   // Load an extension that is service worker based.
   const Extension* extension =
