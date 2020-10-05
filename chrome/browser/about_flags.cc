@@ -5364,6 +5364,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPhoneHubDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kPhoneHub)},
 
+    {"enable-phone-hub-use-ble", flag_descriptions::kPhoneHubUseBleName,
+     flag_descriptions::kPhoneHubUseBleDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kPhoneHubUseBle)},
+
     {"wifi-sync-android", flag_descriptions::kWifiSyncAndroidName,
      flag_descriptions::kWifiSyncAndroidDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kWifiSyncAndroid)},

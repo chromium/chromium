@@ -1924,7 +1924,12 @@
     "expiry_milestone": 87
   },
   { "name": "enable-phone-hub",
-    "owners": [ "cros-customization@google.com", "tjohnsonkanu", "khorimoto" ],
+    "owners": [ "better-together-dev@google.com", "tjohnsonkanu", "khorimoto" ],
+    "expiry_milestone": 90
+  },
+  {
+    "name": "enable-phone-hub-use-ble",
+    "owners": [ "better-together-dev@google.com", "khorimoto"],
     "expiry_milestone": 90
   },
   {

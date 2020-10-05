@@ -415,6 +415,11 @@ const base::Feature kParentalControlsSettings{
 // and perform phone-side actions within Chrome OS.
 const base::Feature kPhoneHub{"PhoneHub", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether Phone Hub will exclusively use BLE for its connection with
+// the user's phone.
+const base::Feature kPhoneHubUseBle{"PhoneHubUseBle",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether the camera permissions should be shown in the Plugin
 // VM app settings.
 const base::Feature kPluginVmShowCameraPermissions{
@@ -689,6 +694,10 @@ bool IsParentalControlsSettingsEnabled() {
 
 bool IsPhoneHubEnabled() {
   return base::FeatureList::IsEnabled(kPhoneHub);
+}
+
+bool IsPhoneHubUseBleEnabled() {
+  return base::FeatureList::IsEnabled(kPhoneHubUseBle) && IsPhoneHubEnabled();
 }
 
 bool IsPinAutosubmitFeatureEnabled() {
