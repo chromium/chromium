@@ -48,6 +48,7 @@
 #include "chrome/browser/chromeos/login/hwid_checker.h"
 #include "chrome/browser/chromeos/login/login_wizard.h"
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_utils.h"
+#include "chrome/browser/chromeos/login/screens/active_directory_login_screen.h"
 #include "chrome/browser/chromeos/login/screens/active_directory_password_change_screen.h"
 #include "chrome/browser/chromeos/login/screens/app_downloading_screen.h"
 #include "chrome/browser/chromeos/login/screens/arc_terms_of_service_screen.h"
@@ -105,6 +106,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login_screen_client.h"
+#include "chrome/browser/ui/webui/chromeos/login/active_directory_login_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/active_directory_password_change_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/app_downloading_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/app_launch_splash_screen_handler.h"
@@ -662,6 +664,12 @@ std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnUserCreationScreenExit,
                           weak_factory_.GetWeakPtr())));
 
+  append(std::make_unique<ActiveDirectoryLoginScreen>(
+      oobe_ui->GetView<ActiveDirectoryLoginScreenHandler>(),
+      oobe_ui->GetErrorScreen(),
+      base::BindRepeating(&WizardController::OnActiveDirectoryLoginScreenExit,
+                          weak_factory_.GetWeakPtr())));
+
   return result;
 }
 
@@ -859,8 +867,14 @@ void WizardController::OnUserCreationScreenExit(
   switch (result) {
     case UserCreationScreen::Result::SIGNIN:
     case UserCreationScreen::Result::SKIPPED:
-      GaiaScreen::Get(screen_manager())->LoadOnline(EmptyAccountId());
-      AdvanceToScreen(GaiaView::kScreenId);
+      if (g_browser_process->platform_part()
+              ->browser_policy_connector_chromeos()
+              ->GetDeviceMode() == policy::DEVICE_MODE_ENTERPRISE_AD) {
+        AdvanceToScreen(ActiveDirectoryLoginView::kScreenId);
+      } else {
+        GaiaScreen::Get(screen_manager())->LoadOnline(EmptyAccountId());
+        AdvanceToScreen(GaiaView::kScreenId);
+      }
       break;
     case UserCreationScreen::Result::CHILD_SIGNIN:
       GaiaScreen::Get(screen_manager())->LoadOnlineForChildSignin();
@@ -889,6 +903,11 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
       LoginDisplayHost::default_host()->HideOobeDialog();
       break;
   }
+}
+
+void WizardController::OnActiveDirectoryLoginScreenExit() {
+  OnScreenExit(ActiveDirectoryLoginView::kScreenId, kDefaultExitReason);
+  LoginDisplayHost::default_host()->HideOobeDialog();
 }
 
 void WizardController::SkipToLoginForTesting() {
@@ -1731,7 +1750,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == ActiveDirectoryPasswordChangeView::kScreenId ||
              screen_id == FamilyLinkNoticeView::kScreenId ||
              screen_id == GaiaView::kScreenId ||
-             screen_id == UserCreationView::kScreenId) {
+             screen_id == UserCreationView::kScreenId ||
+             screen_id == ActiveDirectoryLoginView::kScreenId) {
     SetCurrentScreen(GetScreen(screen_id));
   } else {
     NOTREACHED();

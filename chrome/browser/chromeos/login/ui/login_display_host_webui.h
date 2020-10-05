@@ -87,10 +87,11 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   void UpdateAddUserButtonStatus() override;
   void RequestSystemInfoUpdate() override;
   void OnCancelPasswordChangedFlow() override;
+  bool HasUserPods() override;
 
   // Trace id for ShowLoginWebUI event (since there exists at most one login
   // WebUI at a time).
-  static const trace_event_internal::TraceID kShowLoginWebUIid;
+  static const char kShowLoginWebUIid[];
 
   views::Widget* login_window_for_test() { return login_window_; }
 

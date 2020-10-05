@@ -322,6 +322,11 @@ cr.define('cr.ui.login.debug', function() {
       kind: ScreenKind.NORMAL,
     },
     {
+      id: 'offline-ad-login',
+      kind: ScreenKind.NORMAL,
+      suffix: 'E',
+    },
+    {
       id: 'enterprise-enrollment',
       kind: ScreenKind.NORMAL,
       defaultState: 'step-signin',

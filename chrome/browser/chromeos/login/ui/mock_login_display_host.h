@@ -83,6 +83,7 @@ class MockLoginDisplayHost : public LoginDisplayHost {
   MOCK_METHOD(void, HandleDisplayCaptivePortal, (), (override));
   MOCK_METHOD(void, UpdateAddUserButtonStatus, (), (override));
   MOCK_METHOD(void, RequestSystemInfoUpdate, (), (override));
+  MOCK_METHOD(bool, HasUserPods, (), (override));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockLoginDisplayHost);

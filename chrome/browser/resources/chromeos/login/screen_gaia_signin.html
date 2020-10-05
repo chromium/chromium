@@ -69,10 +69,6 @@
     <offline-gaia id="offline-gaia" class="gaia-dialog"
         hidden="[[!isStep_(step_, 'offline-gaia')]]">
     </offline-gaia>
-    <offline-ad-login id="offline-ad-auth" class="gaia-dialog"
-        hidden="[[!isStep_(step_, 'ad')]]"
-        ad-welcome-message-key="loginWelcomeMessage">
-    </offline-ad-login>
     <security-token-pin id="pinDialog" parameters="[[pinDialogParameters_]]"
         hidden="[[!isStep_(step_, 'pin')]]"
         on-cancel="onPinDialogCanceled_" on-completed="onPinDialogCompleted_">

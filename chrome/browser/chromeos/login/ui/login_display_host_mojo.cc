@@ -356,6 +356,10 @@ void LoginDisplayHostMojo::RequestSystemInfoUpdate() {
   system_info_updater_->StartRequest();
 }
 
+bool LoginDisplayHostMojo::HasUserPods() {
+  return user_count_ > 0;
+}
+
 void LoginDisplayHostMojo::OnCancelPasswordChangedFlow() {
   HideOobeDialog();
 }

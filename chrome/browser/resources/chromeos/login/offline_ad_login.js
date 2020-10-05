@@ -32,7 +32,12 @@ var JoinConfigType;
 Polymer({
   is: 'offline-ad-login',
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior],
+  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+
+  EXTERNAL_API: [
+    'reset',
+    'setErrorState',
+  ],
 
   properties: {
     /**
@@ -173,9 +178,40 @@ Polymer({
 
   /** @override */
   ready() {
-    if (!this.isDomainJoin)
-      return;
-    this.setupEncList();
+    if (this.isDomainJoin) {
+      this.setupEncList();
+    } else {
+      this.initializeLoginScreen('ActiveDirectoryLoginScreen', {
+        resetAllowed: true,
+      });
+    }
+  },
+
+  onBeforeShow(data) {
+    if (data) {
+      this.realm = data['realm'];
+      if ('emailDomain' in data)
+        this.userRealm = '@' + data['emailDomain'];
+    }
+    if (!this.adWelcomeMessageKey)
+      this.adWelcomeMessageKey = 'loginWelcomeMessage';
+    this.focus();
+  },
+
+  /**
+   * @param {string} username
+   * @param {ACTIVE_DIRECTORY_ERROR_STATE} errorState
+   */
+  setErrorState(username, errorState) {
+    this.userName = username;
+    this.errorState = errorState;
+    this.loading = false;
+  },
+
+  reset() {
+    this.$.userInput.value = '';
+    this.$.passwordInput.value = '';
+    this.errorState = ACTIVE_DIRECTORY_ERROR_STATE.NONE;
   },
 
   setupEncList() {
@@ -288,13 +324,17 @@ Polymer({
       msg['machine_name'] = this.$.machineNameInput.value;
       msg['encryption_types'] = this.$.encryptionList.value;
     }
-    this.fire('authCompleted', msg);
+    if (this.isDomainJoin) {
+      this.fire('authCompleted', msg);
+    } else {
+      this.loading = true;
+      chrome.send('completeAdAuthentication', [msg.username, msg.password]);
+    }
   },
 
   /** @private */
   onBackButton_() {
-    this.$.passwordInput.value = '';
-    this.fire('cancel');
+    this.userActed('cancel');
   },
 
   /** @private */

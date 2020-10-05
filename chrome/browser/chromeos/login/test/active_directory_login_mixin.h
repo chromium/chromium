@@ -50,6 +50,8 @@ class ActiveDirectoryLoginMixin : public InProcessBrowserTestMixin {
   void TestDomainVisible();
   // Checks if autocomplete domain is hidden for the user input.
   void TestDomainHidden();
+  // Clicks back button.
+  void ClickBackButton();
 
   void TriggerPasswordChangeScreen();
   void ClosePasswordChangeScreen();

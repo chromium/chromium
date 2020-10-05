@@ -135,19 +135,10 @@ void RecordAPILogin(bool is_third_party_idp, bool is_api_used) {
   base::UmaHistogramEnumeration("ChromeOS.SAML.APILogin", login_type);
 }
 
-policy::DeviceMode GetDeviceMode() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  return connector->GetDeviceMode();
-}
-
 GaiaScreenHandler::GaiaScreenMode GetGaiaScreenMode(const std::string& email,
                                                     bool use_offline) {
   if (use_offline)
     return GaiaScreenHandler::GAIA_SCREEN_MODE_OFFLINE;
-
-  if (GetDeviceMode() == policy::DEVICE_MODE_ENTERPRISE_AD)
-    return GaiaScreenHandler::GAIA_SCREEN_MODE_AD;
 
   int authentication_behavior = 0;
   CrosSettings::Get()->GetInteger(kLoginAuthenticationBehavior,
@@ -482,9 +473,6 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   screen_mode_ = GetGaiaScreenMode(context.email, context.use_offline);
   params.SetInteger("screenMode", screen_mode_);
 
-  if (screen_mode_ == GAIA_SCREEN_MODE_AD && !authpolicy_login_helper_)
-    authpolicy_login_helper_ = std::make_unique<AuthPolicyHelper>();
-
   if (screen_mode_ != GAIA_SCREEN_MODE_OFFLINE) {
     const std::string app_locale = g_browser_process->GetApplicationLocale();
     if (!app_locale.empty())
@@ -668,10 +656,6 @@ void GaiaScreenHandler::DeclareLocalizedValues(
   builder->Add("samlInterstitialNextBtn",
                IDS_LOGIN_SAML_INTERSTITIAL_NEXT_BUTTON_TEXT);
 
-  builder->Add("adAuthWelcomeMessage", IDS_AD_DOMAIN_AUTH_WELCOME_MESSAGE);
-  builder->Add("adAuthLoginUsername", IDS_AD_AUTH_LOGIN_USER);
-  builder->Add("adLoginPassword", IDS_AD_LOGIN_PASSWORD);
-
   builder->Add("adPassChangeOldPasswordHint",
                IDS_AD_PASSWORD_CHANGE_OLD_PASSWORD_HINT);
   builder->Add("adPassChangeNewPasswordHint",
@@ -736,10 +720,6 @@ void GaiaScreenHandler::RegisterMessages() {
               &GaiaScreenHandler::SetOfflineLoginIsActive);
   AddCallback("authExtensionLoaded",
               &GaiaScreenHandler::HandleAuthExtensionLoaded);
-  AddCallback("completeAdAuthentication",
-              &GaiaScreenHandler::HandleCompleteAdAuthentication);
-  AddCallback("cancelAdAuthentication",
-              &GaiaScreenHandler::HandleCancelActiveDirectoryAuth);
   AddRawCallback("showAddUser", &GaiaScreenHandler::HandleShowAddUser);
   AddCallback("getIsSamlUserPasswordless",
               &GaiaScreenHandler::HandleGetIsSamlUserPasswordless);
@@ -836,75 +816,6 @@ AccountId GaiaScreenHandler::GetAccountId(
   }
 
   return account_id;
-}
-
-void GaiaScreenHandler::DoAdAuth(
-    const std::string& username,
-    const Key& key,
-    authpolicy::ErrorType error,
-    const authpolicy::ActiveDirectoryAccountInfo& account_info) {
-  if (error != authpolicy::ERROR_NONE)
-    authpolicy_login_helper_->CancelRequestsAndRestart();
-
-  switch (error) {
-    case authpolicy::ERROR_NONE: {
-      DCHECK(account_info.has_account_id() &&
-             !account_info.account_id().empty() &&
-             LoginDisplayHost::default_host());
-      const AccountId account_id(GetAccountId(
-          username, account_info.account_id(), AccountType::ACTIVE_DIRECTORY));
-      LoginDisplayHost::default_host()->SetDisplayAndGivenName(
-          account_info.display_name(), account_info.given_name());
-      UserContext user_context(
-          user_manager::UserType::USER_TYPE_ACTIVE_DIRECTORY, account_id);
-      user_context.SetKey(key);
-      user_context.SetAuthFlow(UserContext::AUTH_FLOW_ACTIVE_DIRECTORY);
-      user_context.SetIsUsingOAuth(false);
-      LoginDisplayHost::default_host()->CompleteLogin(user_context);
-      break;
-    }
-    case authpolicy::ERROR_PASSWORD_EXPIRED:
-      LoginDisplayHost::default_host()
-          ->GetWizardController()
-          ->ShowActiveDirectoryPasswordChangeScreen(username);
-      break;
-    case authpolicy::ERROR_PARSE_UPN_FAILED:
-    case authpolicy::ERROR_BAD_USER_NAME:
-      CallJS("login.GaiaSigninScreen.invalidateAd", username,
-             static_cast<int>(ActiveDirectoryErrorState::BAD_USERNAME));
-      break;
-    case authpolicy::ERROR_BAD_PASSWORD:
-      CallJS("login.GaiaSigninScreen.invalidateAd", username,
-             static_cast<int>(ActiveDirectoryErrorState::BAD_AUTH_PASSWORD));
-      break;
-    default:
-      CallJS("login.GaiaSigninScreen.invalidateAd", username,
-             static_cast<int>(ActiveDirectoryErrorState::NONE));
-      core_oobe_view_->ShowSignInError(
-          0, GetAdErrorMessage(error), std::string(),
-          HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
-  }
-}
-
-void GaiaScreenHandler::HandleCompleteAdAuthentication(
-    const std::string& username,
-    const std::string& password) {
-  if (LoginDisplayHost::default_host())
-    LoginDisplayHost::default_host()->SetDisplayEmail(username);
-
-  populated_account_id_ = AccountId::FromUserEmail(username);
-  DCHECK(authpolicy_login_helper_);
-  Key key(password);
-  key.SetLabel(kCryptohomeGaiaKeyLabel);
-  authpolicy_login_helper_->AuthenticateUser(
-      username, std::string() /* object_guid */, password,
-      base::BindOnce(&GaiaScreenHandler::DoAdAuth, weak_factory_.GetWeakPtr(),
-                     username, key));
-}
-
-void GaiaScreenHandler::HandleCancelActiveDirectoryAuth() {
-  DCHECK(authpolicy_login_helper_);
-  authpolicy_login_helper_->CancelRequestsAndRestart();
 }
 
 void GaiaScreenHandler::HandleCompleteAuthentication(
@@ -1096,8 +1007,10 @@ void GaiaScreenHandler::HandleGaiaUIReady() {
 
 void GaiaScreenHandler::HandleShowAddUser(const base::ListValue* args) {
   // TODO(xiaoyinh): Add trace event for gaia webui in views login screen.
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("ui", "ShowAddUser",
-                                      LoginDisplayHostWebUI::kShowLoginWebUIid);
+  TRACE_EVENT_NESTABLE_ASYNC_INSTANT0(
+      "ui", "ShowAddUser",
+      TRACE_ID_WITH_SCOPE(LoginDisplayHostWebUI::kShowLoginWebUIid,
+                          TRACE_ID_GLOBAL(1)));
 
   std::string email;
   // |args| can be null if it's OOBE.

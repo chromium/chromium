@@ -195,6 +195,9 @@ class LoginDisplayHost {
   // Update the system info at login screen.
   virtual void RequestSystemInfoUpdate() = 0;
 
+  // Returns if the device has any user after filtering based on policy.
+  virtual bool HasUserPods() = 0;
+
  protected:
   LoginDisplayHost();
   virtual ~LoginDisplayHost();

@@ -205,8 +205,8 @@ void ErrorScreen::DoHide() {
       PortalDetectorStrategy::STRATEGY_ID_LOGIN_SCREEN);
 }
 
-void ErrorScreen::SetupNetworkErrorMessage(NetworkStateInformer::State state,
-                                           NetworkError::ErrorReason reason) {
+void ErrorScreen::ShowNetworkErrorMessage(NetworkStateInformer::State state,
+                                          NetworkError::ErrorReason reason) {
   const std::string network_path = network_state_informer_->network_path();
   const std::string network_name =
       NetworkStateInformer::GetNetworkName(network_path);
@@ -239,6 +239,12 @@ void ErrorScreen::SetupNetworkErrorMessage(NetworkStateInformer::State state,
       GetErrorState() != NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT;
   AllowGuestSignin(guest_signin_allowed);
   AllowOfflineLogin(offline_login_allowed);
+
+  // No need to show the screen again if it is already shown.
+  if (is_hidden()) {
+    SetUIState(NetworkError::UI_STATE_SIGNIN);
+    Show(nullptr /*wizard_context*/);
+  }
 }
 
 void ErrorScreen::ShowImpl() {

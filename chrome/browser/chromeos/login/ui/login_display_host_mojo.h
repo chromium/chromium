@@ -88,6 +88,7 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void HandleDisplayCaptivePortal() override;
   void UpdateAddUserButtonStatus() override;
   void RequestSystemInfoUpdate() override;
+  bool HasUserPods() override;
 
   // LoginScreenClient::Delegate:
   void HandleAuthenticateUserWithPasswordOrPin(

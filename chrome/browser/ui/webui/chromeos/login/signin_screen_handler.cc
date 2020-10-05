@@ -1140,8 +1140,10 @@ void SigninScreenHandler::HandleLoginVisible(const std::string& source) {
         chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
         content::NotificationService::AllSources(),
         content::NotificationService::NoDetails());
-    TRACE_EVENT_NESTABLE_ASYNC_END0("ui", "ShowLoginWebUI",
-                                    LoginDisplayHostWebUI::kShowLoginWebUIid);
+    TRACE_EVENT_NESTABLE_ASYNC_END0(
+        "ui", "ShowLoginWebUI",
+        TRACE_ID_WITH_SCOPE(LoginDisplayHostWebUI::kShowLoginWebUIid,
+                            TRACE_ID_GLOBAL(1)));
   }
   webui_visible_ = true;
   if (preferences_changed_delayed_)

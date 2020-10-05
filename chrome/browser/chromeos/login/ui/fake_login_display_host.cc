@@ -133,4 +133,8 @@ void FakeLoginDisplayHost::UpdateAddUserButtonStatus() {}
 
 void FakeLoginDisplayHost::RequestSystemInfoUpdate() {}
 
+bool FakeLoginDisplayHost::HasUserPods() {
+  return false;
+}
+
 }  // namespace chromeos

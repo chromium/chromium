@@ -2208,6 +2208,8 @@ static_library("ui") {
       "webui/chromeos/internet_config_dialog.h",
       "webui/chromeos/internet_detail_dialog.cc",
       "webui/chromeos/internet_detail_dialog.h",
+      "webui/chromeos/login/active_directory_login_screen_handler.cc",
+      "webui/chromeos/login/active_directory_login_screen_handler.h",
       "webui/chromeos/login/active_directory_password_change_screen_handler.cc",
       "webui/chromeos/login/active_directory_password_change_screen_handler.h",
       "webui/chromeos/login/app_downloading_screen_handler.cc",

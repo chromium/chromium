@@ -168,6 +168,24 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryLoginTest, LoginErrors) {
   ad_login_.TestDomainHidden();
 }
 
+// Test back button clears the input and error from the login screen.
+IN_PROC_BROWSER_TEST_F(ActiveDirectoryLoginTest, Back) {
+  ASSERT_TRUE(InstallAttributes::Get()->IsActiveDirectoryManaged());
+  ad_login_.TestNoError();
+  ad_login_.TestDomainHidden();
+
+  ad_login_.SubmitActiveDirectoryCredentials(
+      std::string(kTestActiveDirectoryUser) + "@", kPassword);
+  ad_login_.WaitForAuthError();
+  ad_login_.TestUserError();
+  ad_login_.TestDomainHidden();
+
+  ad_login_.ClickBackButton();
+  ad_login_.TestUserInput("");
+  ad_login_.TestNoError();
+  ad_login_.TestDomainHidden();
+}
+
 // Test successful Active Directory login from the password change screen.
 IN_PROC_BROWSER_TEST_F(ActiveDirectoryLoginTest, PasswordChange_LoginSuccess) {
   ASSERT_TRUE(InstallAttributes::Get()->IsActiveDirectoryManaged());

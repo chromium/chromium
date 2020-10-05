@@ -61,6 +61,7 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   void HandleDisplayCaptivePortal() override;
   void UpdateAddUserButtonStatus() override;
   void RequestSystemInfoUpdate() override;
+  bool HasUserPods() override;
 
  private:
   class FakeBaseScreen;

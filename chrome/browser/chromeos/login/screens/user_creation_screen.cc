@@ -7,6 +7,7 @@
 #include "ash/public/cpp/login_screen.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/wizard_context.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
@@ -92,17 +93,19 @@ void UserCreationScreen::ShowImpl() {
   // Back button is only available in login screen (add user flow) which is
   // indicated by if the device has users. Back button is hidden in the oobe
   // flow.
-  view_->SetIsBackButtonVisible(context()->device_has_users);
+  view_->SetIsBackButtonVisible(
+      LoginDisplayHost::default_host()->HasUserPods());
 
   UpdateState(NetworkError::ERROR_REASON_UPDATE);
 
-  if (!error_screen_visible_)
+  if (error_screen_->is_hidden())
     view_->Show();
 }
 
 void UserCreationScreen::HideImpl() {
-  error_screen_visible_ = false;
   scoped_observer_.reset();
+  error_screen_->SetParentScreen(OobeScreen::SCREEN_UNKNOWN);
+  error_screen_->Hide();
 }
 
 void UserCreationScreen::OnUserAction(const std::string& action_id) {
@@ -136,30 +139,16 @@ void UserCreationScreen::UpdateState(NetworkError::ErrorReason reason) {
   NetworkStateInformer::State state = network_state_informer_->state();
   const bool is_online = NetworkStateInformer::IsOnline(state, reason);
   if (!is_online) {
-    ShowOfflineMessage(state, reason);
-  } else {
-    HideOfflineMessage();
-  }
-}
-
-void UserCreationScreen::ShowOfflineMessage(NetworkStateInformer::State state,
-                                            NetworkError::ErrorReason reason) {
-  error_screen_->SetupNetworkErrorMessage(state, reason);
-  if (!error_screen_visible_) {
-    error_screen_visible_ = true;
-    error_screen_->SetUIState(NetworkError::UI_STATE_SIGNIN);
     error_screen_->SetParentScreen(UserCreationView::kScreenId);
-    error_screen_->Show(nullptr);
-  }
-}
-
-void UserCreationScreen::HideOfflineMessage() {
-  error_screen_->HideCaptivePortal();
-  if (error_screen_visible_ &&
-      error_screen_->GetParentScreen() == UserCreationView::kScreenId) {
-    error_screen_visible_ = false;
-    error_screen_->Hide();
-    view_->Show();
+    error_screen_->ShowNetworkErrorMessage(state, reason);
+  } else {
+    error_screen_->HideCaptivePortal();
+    if (!error_screen_->is_hidden() &&
+        error_screen_->GetParentScreen() == UserCreationView::kScreenId) {
+      error_screen_->SetParentScreen(OobeScreen::SCREEN_UNKNOWN);
+      error_screen_->Hide();
+      view_->Show();
+    }
   }
 }
 

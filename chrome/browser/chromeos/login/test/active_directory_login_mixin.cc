@@ -11,8 +11,8 @@
 #include "chrome/browser/chromeos/login/test/js_checker.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
+#include "chrome/browser/ui/webui/chromeos/login/active_directory_login_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/active_directory_password_change_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chromeos/dbus/authpolicy/fake_authpolicy_client.h"
@@ -22,26 +22,20 @@ namespace chromeos {
 
 namespace {
 
-constexpr char kGaiaSigninId[] = "gaia-signin";
-constexpr char kAdOfflineAuthId[] = "offline-ad-auth";
+constexpr char kAdOfflineAuthId[] = "offline-ad-login";
 constexpr char kPasswordChangeId[] = "ad-password-change";
 constexpr char kAdOldPasswordInput[] = "oldPassword";
 constexpr char kAdNewPassword1Input[] = "newPassword";
 constexpr char kAdNewPassword2Input[] = "newPasswordRepeat";
 
-const test::UIPath kGaiaSigninDialogId = {kGaiaSigninId, "signin-frame-dialog"};
-const test::UIPath kAdMachineInput = {kGaiaSigninId, kAdOfflineAuthId,
-                                      "machineNameInput"};
-const test::UIPath kAdMoreOptionsButton = {kGaiaSigninId, kAdOfflineAuthId,
-                                           "moreOptionsBtn"};
-const test::UIPath kAdUserInput = {kGaiaSigninId, kAdOfflineAuthId,
-                                   "userInput"};
-const test::UIPath kAdPasswordInput = {kGaiaSigninId, kAdOfflineAuthId,
-                                       "passwordInput"};
-const test::UIPath kAdCredsButton = {kGaiaSigninId, kAdOfflineAuthId,
-                                     "nextButton"};
-const test::UIPath kAdAutocompleteRealm = {kGaiaSigninId, kAdOfflineAuthId,
-                                           "userRealm"};
+const test::UIPath kGaiaSigninDialogId = {"gaia-signin"};
+const test::UIPath kAdMachineInput = {kAdOfflineAuthId, "machineNameInput"};
+const test::UIPath kAdMoreOptionsButton = {kAdOfflineAuthId, "moreOptionsBtn"};
+const test::UIPath kAdUserInput = {kAdOfflineAuthId, "userInput"};
+const test::UIPath kAdPasswordInput = {kAdOfflineAuthId, "passwordInput"};
+const test::UIPath kAdBackButton = {kAdOfflineAuthId, "backButton"};
+const test::UIPath kAdCredsButton = {kAdOfflineAuthId, "nextButton"};
+const test::UIPath kAdAutocompleteRealm = {kAdOfflineAuthId, "userRealm"};
 
 const test::UIPath kAdAnimatedPages = {kPasswordChangeId, "animatedPages"};
 const test::UIPath kFormButtonId = {kPasswordChangeId, "inputForm", "button"};
@@ -91,14 +85,17 @@ void ActiveDirectoryLoginMixin::ClosePasswordChangeScreen() {
   test::OobeJS().TapOnPath(kCloseButtonId);
 }
 
+void ActiveDirectoryLoginMixin::ClickBackButton() {
+  test::OobeJS().ClickOnPath(kAdBackButton);
+}
+
 // Checks if Active Directory login is visible.
 void ActiveDirectoryLoginMixin::TestLoginVisible() {
-  OobeScreenWaiter screen_waiter(GaiaView::kScreenId);
+  OobeScreenWaiter screen_waiter(ActiveDirectoryLoginView::kScreenId);
   screen_waiter.Wait();
 
   // Wait for the Active Directory signin visible.
-  std::initializer_list<base::StringPiece> ad_screen{kGaiaSigninId,
-                                                     kAdOfflineAuthId};
+  std::initializer_list<base::StringPiece> ad_screen{kAdOfflineAuthId};
   test::OobeJS().CreateVisibilityWaiter(true, ad_screen)->Wait();
 
   // Checks if Gaia signin is hidden.
@@ -216,9 +213,10 @@ void ActiveDirectoryLoginMixin::SubmitActiveDirectoryPasswordChangeCredentials(
 
 void ActiveDirectoryLoginMixin::SetupActiveDirectoryJSNotifications() {
   test::OobeJS().Evaluate(
-      "var testInvalidateAd = login.GaiaSigninScreen.invalidateAd;"
-      "login.GaiaSigninScreen.invalidateAd = function(user, errorState) {"
-      "  testInvalidateAd(user, errorState);"
+      "var testSetErrorState = login.ActiveDirectoryLoginScreen.setErrorState;"
+      "login.ActiveDirectoryLoginScreen.setErrorState = function(user, "
+      "errorState) {"
+      "  testSetErrorState(user, errorState);"
       "  window.domAutomationController.send('ShowAuthError');"
       "}");
 }
