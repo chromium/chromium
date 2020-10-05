@@ -54,6 +54,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/cursor_manager.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -888,6 +889,7 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
     VLOG(1) << "Exit tablet mode.";
 
     UpdateInternalInputDevicesEventBlocker();
+    Shell::Get()->cursor_manager()->ShowCursor();
   }
 }
 
@@ -1152,6 +1154,7 @@ void TabletModeController::FinishInitTabletMode() {
   }
 
   UpdateInternalInputDevicesEventBlocker();
+  Shell::Get()->cursor_manager()->HideCursor();
 
   VLOG(1) << "Enter tablet mode.";
 }

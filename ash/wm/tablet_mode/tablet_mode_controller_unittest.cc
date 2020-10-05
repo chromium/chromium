@@ -65,6 +65,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 #include "ui/message_center/message_center.h"
+#include "ui/wm/core/cursor_manager.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -1067,6 +1068,19 @@ TEST_P(TabletModeControllerTest, InternalKeyboardMouseInDockedModeTest) {
       .SetFirstDisplayAsInternalDisplay();
   EXPECT_TRUE(IsTabletModeStarted());
   EXPECT_TRUE(AreEventsBlocked());
+}
+
+// Test that the mouse cursor is hidden when entering tablet mode, and shown
+// when exiting tablet mode.
+TEST_P(TabletModeControllerTest, ShowAndHideMouseCursorTest) {
+  wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+
+  tablet_mode_controller()->SetEnabledForTest(true);
+  EXPECT_FALSE(cursor_manager->IsCursorVisible());
+
+  tablet_mode_controller()->SetEnabledForTest(false);
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
 }
 
 class TabletModeControllerForceTabletModeTest
