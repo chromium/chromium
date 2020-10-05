@@ -5,9 +5,7 @@
 var createWindowUtil = function(urlToLoad, createdCallback) {
   try {
     chrome.windows.create({ 'url': urlToLoad, 'type': 'normal',
-        'width': 600, 'height': 400 }, function(window) {
-      createdCallback({width: window.width, height: window.height});
-    });
+        'width': 600, 'height': 400 }, createdCallback);
   } catch (e) {
     chrome.test.fail(e);
   }
@@ -15,9 +13,23 @@ var createWindowUtil = function(urlToLoad, createdCallback) {
 
 var getAllWindowUtil = function(populateValue, getAllCallback) {
   try {
-    chrome.windows.getAll({populate: populateValue}, function(window) {
-      getAllCallback({length: window.length});
-    });
+    chrome.windows.getAll({populate: populateValue}, getAllCallback);
+  } catch (e) {
+    chrome.test.fail(e);
+  }
+}
+
+var getWindowUtil = function(windowId, getCallback) {
+  try {
+    chrome.windows.get(windowId, getCallback);
+  } catch (e) {
+    chrome.test.fail(e);
+  }
+}
+
+var getCurrentWindowUtil = function(getCurrentCallback) {
+  try {
+    chrome.windows.getCurrent(getCurrentCallback);
   } catch (e) {
     chrome.test.fail(e);
   }
@@ -25,27 +37,38 @@ var getAllWindowUtil = function(populateValue, getAllCallback) {
 
 chrome.test.runTests([
   // Get the window that was automatically created.
-  function testWindowGetBeforeCreate() {
+  function testWindowGetAllBeforeCreate() {
     var populateValue = true;
-    getAllWindowUtil(populateValue, function(windowData) {
-      chrome.test.assertEq(1, windowData.length);
+    getAllWindowUtil(populateValue, function(allWindowsData) {
+      chrome.test.assertEq(1, allWindowsData.length);
       chrome.test.succeed();
     });
   },
   // Create a new window.
   function testWindowCreate() {
-    createWindowUtil('blank.html', function(windowData) {
-      chrome.test.assertEq(600, windowData.width);
-      chrome.test.assertEq(400, windowData.height);
+    createWindowUtil('blank.html', function(createdWindowData) {
+      chrome.test.assertEq(600, createdWindowData.width);
+      chrome.test.assertEq(400, createdWindowData.height);
       chrome.test.succeed();
     });
   },
   // Check that the created window exists.
-  function testWindowGetAfterCreate() {
+  function testWindowGetAllAfterCreate() {
     var populateValue = true;
-    getAllWindowUtil(populateValue, function(windowData) {
-      chrome.test.assertEq(2, windowData.length);
+    getAllWindowUtil(populateValue, function(allWindowsData) {
+      chrome.test.assertEq(2, allWindowsData.length);
+      var createdWindowId = allWindowsData[allWindowsData.length - 1].id;
+      getWindowUtil(createdWindowId, function(windowData) {
+        chrome.test.assertEq(600, windowData.width);
+        chrome.test.assertEq(400, windowData.height);
+        chrome.test.succeed();
+      });
+      // Check that the created window is the current window.
+      getCurrentWindowUtil(function(currentWindowData) {
+        chrome.test.assertEq(createdWindowId, currentWindowData.id);
+        chrome.test.succeed();
+      });
       chrome.test.succeed();
     });
   },
-]);
+  ]);
