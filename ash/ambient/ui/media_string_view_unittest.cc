@@ -371,6 +371,7 @@ TEST_F(MediaStringViewTest, DoNotShowOnLockScreenIfPrefIsDisabled) {
   // Simulates Ambient Mode shown on lock-screen.
   LockScreen();
   FastForwardToInactivity();
+  FastForwardTiny();
 
   // Simulates active and playing media session.
   SimulateMediaPlaybackStateChanged(

@@ -51,24 +51,21 @@ class ASH_PUBLIC_EXPORT AmbientUiModel {
   // Updates current UI visibility and notifies all subscribers.
   void SetUiVisibility(AmbientUiVisibility visibility);
 
-  // Updates current UI mode.
-  void SetUiMode(AmbientUiMode ui_mode);
-
   AmbientUiVisibility ui_visibility() const { return ui_visibility_; }
-
-  AmbientUiMode ui_mode() const { return ui_mode_; }
 
  private:
   void NotifyAmbientUiVisibilityChanged();
 
   AmbientUiVisibility ui_visibility_ = AmbientUiVisibility::kClosed;
-  AmbientUiMode ui_mode_ = AmbientUiMode::kLockScreenUi;
 
   base::ObserverList<AmbientUiModelObserver> observers_;
 };
 
 ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& out,
                                            AmbientUiMode mode);
+
+ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& out,
+                                           AmbientUiVisibility visibility);
 
 }  // namespace ash
 

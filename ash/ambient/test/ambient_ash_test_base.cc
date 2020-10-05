@@ -35,6 +35,9 @@
 #include "ui/views/controls/label.h"
 
 namespace ash {
+namespace {
+constexpr float kFastForwardFactor = 1.0001;
+}  // namespace
 
 class TestAmbientURLLoaderImpl : public AmbientURLLoader {
  public:
@@ -141,7 +144,7 @@ void AmbientAshTestBase::SetAmbientModeEnabled(bool enabled) {
 
 void AmbientAshTestBase::ShowAmbientScreen() {
   // The widget will be destroyed in |AshTestBase::TearDown()|.
-  ambient_controller()->ShowUi(AmbientUiMode::kInSessionUi);
+  ambient_controller()->ShowUi();
   // The UI only shows when images are downloaded to avoid showing blank screen.
   FastForwardToNextImage();
   // Flush the message loop to finish all async calls.
@@ -149,12 +152,11 @@ void AmbientAshTestBase::ShowAmbientScreen() {
 }
 
 void AmbientAshTestBase::HideAmbientScreen() {
-  ambient_controller()->HideLockScreenUi();
+  ambient_controller()->ShowHiddenUi();
 }
 
 void AmbientAshTestBase::CloseAmbientScreen() {
-  ambient_controller()->ambient_ui_model()->SetUiVisibility(
-      AmbientUiVisibility::kClosed);
+  ambient_controller()->CloseUi();
 }
 
 void AmbientAshTestBase::LockScreen() {
@@ -242,11 +244,51 @@ MediaStringView* AmbientAshTestBase::GetMediaStringView() {
 
 void AmbientAshTestBase::FastForwardToInactivity() {
   task_environment()->FastForwardBy(
-      2 * AmbientController::kAutoShowWaitTimeInterval);
+      kFastForwardFactor * AmbientController::kAutoShowWaitTimeInterval);
 }
 
 void AmbientAshTestBase::FastForwardToNextImage() {
-  task_environment()->FastForwardBy(1.2 * kPhotoRefreshInterval);
+  task_environment()->FastForwardBy(kFastForwardFactor * kPhotoRefreshInterval);
+}
+
+void AmbientAshTestBase::FastForwardTiny() {
+  // `TestAmbientURLLoaderImpl` has a small delay (1ms) to fake download delay,
+  // here we fake plenty of time to download the image.
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(10));
+}
+
+void AmbientAshTestBase::FastForwardToLockScreen() {
+  task_environment()->FastForwardBy(kFastForwardFactor * kLockScreenDelay);
+}
+
+void AmbientAshTestBase::SetPowerStateCharging() {
+  power_manager::PowerSupplyProperties proto;
+  proto.set_battery_state(
+      power_manager::PowerSupplyProperties_BatteryState_CHARGING);
+  proto.set_external_power(
+      power_manager::PowerSupplyProperties_ExternalPower_AC);
+  PowerStatus::Get()->SetProtoForTesting(proto);
+  ambient_controller()->OnPowerStatusChanged();
+}
+
+void AmbientAshTestBase::SetPowerStateDischarging() {
+  power_manager::PowerSupplyProperties proto;
+  proto.set_battery_state(
+      power_manager::PowerSupplyProperties_BatteryState_DISCHARGING);
+  proto.set_external_power(
+      power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED);
+  PowerStatus::Get()->SetProtoForTesting(proto);
+  ambient_controller()->OnPowerStatusChanged();
+}
+
+void AmbientAshTestBase::SetPowerStateFull() {
+  power_manager::PowerSupplyProperties proto;
+  proto.set_battery_state(
+      power_manager::PowerSupplyProperties_BatteryState_FULL);
+  proto.set_external_power(
+      power_manager::PowerSupplyProperties_ExternalPower_AC);
+  PowerStatus::Get()->SetProtoForTesting(proto);
+  ambient_controller()->OnPowerStatusChanged();
 }
 
 void AmbientAshTestBase::FastForwardToRefreshWeather() {
