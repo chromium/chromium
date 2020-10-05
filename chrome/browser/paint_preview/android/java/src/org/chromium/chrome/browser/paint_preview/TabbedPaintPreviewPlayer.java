@@ -121,9 +121,7 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
         public void onHidden(Tab tab, @TabHidingType int hidingType) {
             releasePersistentToolbar();
             dismissSnackbar();
-            if (mProgressSimulatorNeededCallback != null) {
-                mProgressPreventionCallback.onResult(false);
-            }
+            setProgressPreventionNeeded(false);
 
             if (mPlayerManager == null || !isShowingAndNeedsBadge()) return;
 
@@ -138,9 +136,7 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
             if (!isShowingAndNeedsBadge()) return;
 
             showToolbarPersistent();
-            if (mProgressSimulatorNeededCallback != null) {
-                mProgressPreventionCallback.onResult(true);
-            }
+            setProgressPreventionNeeded(true);
         }
     }
 
@@ -318,6 +314,12 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
         SnackbarManagerProvider.from(mTab.getWindowAndroid()).dismissSnackbars(mSnackbarController);
     }
 
+    private void setProgressPreventionNeeded(boolean progressPrevention) {
+        if (mProgressPreventionCallback == null) return;
+
+        mProgressPreventionCallback.onResult(progressPrevention);
+    }
+
     public boolean isShowingAndNeedsBadge() {
         if (mTab == null) return false;
 
@@ -363,14 +365,14 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
     @Override
     public void onShown() {
         showToolbarPersistent();
-        if (mProgressSimulatorNeededCallback != null) mProgressPreventionCallback.onResult(true);
+        setProgressPreventionNeeded(true);
     }
 
     @Override
     public void onHidden() {
         releasePersistentToolbar();
         dismissSnackbar();
-        if (mProgressSimulatorNeededCallback != null) mProgressPreventionCallback.onResult(false);
+        setProgressPreventionNeeded(false);
     }
 
     @Override
