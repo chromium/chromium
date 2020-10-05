@@ -75,32 +75,7 @@ static PositionType CanonicalizeCandidate(const PositionType& candidate) {
 }
 
 template <typename PositionType>
-static PositionType CanonicalPosition(const PositionType& position) {
-  // Sometimes updating selection positions can be extremely expensive and
-  // occur frequently.  Often calling preventDefault on mousedown events can
-  // avoid doing unnecessary text selection work.  http://crbug.com/472258.
-  TRACE_EVENT0("input", "VisibleUnits::canonicalPosition");
-
-  // FIXME (9535):  Canonicalizing to the leftmost candidate means that if
-  // we're at a line wrap, we will ask layoutObjects to paint downstream
-  // carets for other layoutObjects. To fix this, we need to either a) add
-  // code to all paintCarets to pass the responsibility off to the appropriate
-  // layoutObject for VisiblePosition's like these, or b) canonicalize to the
-  // rightmost candidate unless the affinity is upstream.
-  if (position.IsNull())
-    return PositionType();
-
-  DCHECK(position.GetDocument());
-  DCHECK(!position.GetDocument()->NeedsLayoutTreeUpdate());
-
-  const PositionType& backward_candidate = MostBackwardCaretPosition(position);
-  if (IsVisuallyEquivalentCandidate(backward_candidate))
-    return backward_candidate;
-
-  const PositionType& forward_candidate = MostForwardCaretPosition(position);
-  if (IsVisuallyEquivalentCandidate(forward_candidate))
-    return forward_candidate;
-
+static PositionType SnapFallbackTemplate(const PositionType& position) {
   // When neither upstream or downstream gets us to a candidate
   // (upstream/downstream won't leave blocks or enter new ones), we search
   // forward and backward until we find one.
@@ -153,12 +128,93 @@ static PositionType CanonicalPosition(const PositionType& position) {
   return next;
 }
 
+template <typename Strategy>
+static PositionWithAffinityTemplate<Strategy> SnapBackwardTemplate(
+    const PositionTemplate<Strategy>& position) {
+  // Sometimes updating selection positions can be extremely expensive and
+  // occur frequently.  Often calling preventDefault on mousedown events can
+  // avoid doing unnecessary text selection work.  http://crbug.com/472258.
+  TRACE_EVENT0("input", "VisibleUnits::SnapBackward");
+
+  if (position.IsNull())
+    return PositionWithAffinityTemplate<Strategy>();
+
+  DCHECK(position.GetDocument());
+  DCHECK(!position.GetDocument()->NeedsLayoutTreeUpdate());
+
+  const PositionTemplate<Strategy>& candidate1 =
+      MostBackwardCaretPosition(position);
+  if (IsVisuallyEquivalentCandidate(candidate1)) {
+    return PositionWithAffinityTemplate<Strategy>(candidate1,
+                                                  TextAffinity::kUpstream);
+  }
+
+  const PositionTemplate<Strategy>& candidate2 =
+      MostForwardCaretPosition(position);
+  if (IsVisuallyEquivalentCandidate(candidate2)) {
+    return PositionWithAffinityTemplate<Strategy>(candidate2,
+                                                  TextAffinity::kDownstream);
+  }
+
+  return PositionWithAffinityTemplate<Strategy>(SnapFallbackTemplate(position),
+                                                TextAffinity::kDownstream);
+}
+
+PositionWithAffinity SnapBackward(const Position& position) {
+  return SnapBackwardTemplate(position);
+}
+
+PositionInFlatTreeWithAffinity SnapBackward(
+    const PositionInFlatTree& position) {
+  return SnapBackwardTemplate(position);
+}
+
+template <typename Strategy>
+static PositionWithAffinityTemplate<Strategy> SnapForwardTemplate(
+    const PositionTemplate<Strategy>& position) {
+  // Sometimes updating selection positions can be extremely expensive and
+  // occur frequently.  Often calling preventDefault on mousedown events can
+  // avoid doing unnecessary text selection work.  http://crbug.com/472258.
+  TRACE_EVENT0("input", "VisibleUnits::SnapForward");
+
+  if (position.IsNull())
+    return PositionWithAffinityTemplate<Strategy>();
+
+  DCHECK(position.GetDocument());
+  DCHECK(!position.GetDocument()->NeedsLayoutTreeUpdate());
+
+  const PositionTemplate<Strategy>& candidate1 =
+      MostForwardCaretPosition(position);
+  if (IsVisuallyEquivalentCandidate(candidate1)) {
+    return PositionWithAffinityTemplate<Strategy>(candidate1,
+                                                  TextAffinity::kDownstream);
+  }
+
+  const PositionTemplate<Strategy>& candidate2 =
+      MostBackwardCaretPosition(position);
+  if (IsVisuallyEquivalentCandidate(candidate2)) {
+    return PositionWithAffinityTemplate<Strategy>(candidate2,
+                                                  TextAffinity::kDownstream);
+  }
+
+  return PositionWithAffinityTemplate<Strategy>(SnapFallbackTemplate(position),
+                                                TextAffinity::kDownstream);
+}
+
+PositionWithAffinity SnapForward(const Position& position) {
+  return SnapForwardTemplate(position);
+}
+
+PositionInFlatTreeWithAffinity SnapForward(const PositionInFlatTree& position) {
+  return SnapForwardTemplate(position);
+}
+
 Position CanonicalPositionOf(const Position& position) {
-  return CanonicalPosition(position);
+  return SnapBackward(position).GetPosition();
 }
 
 PositionInFlatTree CanonicalPositionOf(const PositionInFlatTree& position) {
-  return CanonicalPosition(position);
+  return SnapBackward(position).GetPosition();
 }
 
 template <typename Strategy>
