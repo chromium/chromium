@@ -16,7 +16,6 @@
 #include "crypto/rsa_private_key.h"
 #include "crypto/sha2.h"
 #include "net/cert/ct_policy_status.h"
-#include "net/cert/ct_verify_result.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/log/net_log_with_source.h"

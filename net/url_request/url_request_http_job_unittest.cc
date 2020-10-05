@@ -88,8 +88,6 @@ const char kTrustAnchorRequestHistogram[] =
 
 const char kCTComplianceHistogramName[] =
     "Net.CertificateTransparency.RequestComplianceStatus";
-const char kCTRequiredHistogramName[] =
-    "Net.CertificateTransparency.CTRequiredRequestComplianceStatus";
 
 // Inherit from URLRequestHttpJob to expose the priority and some
 // other hidden functions.
@@ -1040,7 +1038,6 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   ssl_socket_data.ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
   ssl_socket_data.ssl_info.is_issued_by_known_root = true;
-  ssl_socket_data.ssl_info.ct_policy_compliance_required = false;
   ssl_socket_data.ssl_info.ct_policy_compliance =
       ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS;
 
@@ -1086,7 +1083,6 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   ssl_socket_data.ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
   ssl_socket_data.ssl_info.is_issued_by_known_root = true;
-  ssl_socket_data.ssl_info.ct_policy_compliance_required = false;
   ssl_socket_data.ssl_info.ct_policy_compliance =
       ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS;
 
@@ -1113,9 +1109,6 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
       kCTComplianceHistogramName,
       static_cast<int32_t>(ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS),
       1);
-  // CTRequiredRequestComplianceStatus should *not* have been recorded because
-  // it is only recorded for requests which are required to be compliant.
-  histograms.ExpectTotalCount(kCTRequiredHistogramName, 0);
 }
 
 // Tests that the CT compliance histograms are not recorded for
@@ -1126,7 +1119,6 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   ssl_socket_data.ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
   ssl_socket_data.ssl_info.is_issued_by_known_root = false;
-  ssl_socket_data.ssl_info.ct_policy_compliance_required = false;
   ssl_socket_data.ssl_info.ct_policy_compliance =
       ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS;
 
@@ -1150,7 +1142,6 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   EXPECT_THAT(delegate.request_status(), IsOk());
 
   histograms.ExpectTotalCount(kCTComplianceHistogramName, 0);
-  histograms.ExpectTotalCount(kCTRequiredHistogramName, 0);
 }
 
 // Tests that the CT compliance histogram is recorded when CT is required but
@@ -1161,7 +1152,6 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   ssl_socket_data.ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
   ssl_socket_data.ssl_info.is_issued_by_known_root = true;
-  ssl_socket_data.ssl_info.ct_policy_compliance_required = true;
   ssl_socket_data.ssl_info.ct_policy_compliance =
       ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS;
 
@@ -1188,10 +1178,6 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
       kCTComplianceHistogramName,
       static_cast<int32_t>(ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS),
       1);
-  histograms.ExpectUniqueSample(
-      kCTRequiredHistogramName,
-      static_cast<int32_t>(ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS),
-      1);
 }
 
 // Tests that the CT compliance histograms are not recorded when there is an
@@ -1202,7 +1188,6 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   ssl_socket_data.ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
   ssl_socket_data.ssl_info.is_issued_by_known_root = true;
-  ssl_socket_data.ssl_info.ct_policy_compliance_required = true;
   ssl_socket_data.ssl_info.ct_policy_compliance =
       ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS;
   ssl_socket_data.ssl_info.cert_status = net::CERT_STATUS_DATE_INVALID;
@@ -1227,7 +1212,6 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   EXPECT_THAT(delegate.request_status(), IsOk());
 
   histograms.ExpectTotalCount(kCTComplianceHistogramName, 0);
-  histograms.ExpectTotalCount(kCTRequiredHistogramName, 0);
 }
 
 TEST_F(URLRequestHttpJobWithMockSocketsTest, EncodingAdvertisementOnRange) {

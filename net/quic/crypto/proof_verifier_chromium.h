@@ -15,7 +15,6 @@
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
 #include "net/cert/cert_verify_result.h"
-#include "net/cert/ct_verify_result.h"
 #include "net/cert/x509_certificate.h"
 #include "net/log/net_log_with_source.h"
 #include "net/third_party/quiche/src/quic/core/crypto/proof_verifier.h"
@@ -41,7 +40,6 @@ class NET_EXPORT_PRIVATE ProofVerifyDetailsChromium
   quic::ProofVerifyDetails* Clone() const override;
 
   CertVerifyResult cert_verify_result;
-  ct::CTVerifyResult ct_verify_result;
 
   // pinning_failure_log contains a message produced by
   // TransportSecurityState::PKPState::CheckPublicKeyPins in the event of a

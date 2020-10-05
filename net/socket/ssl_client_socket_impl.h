@@ -22,7 +22,6 @@
 #include "net/base/io_buffer.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/cert_verify_result.h"
-#include "net/cert/ct_verify_result.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/socket_bio_adapter.h"
@@ -158,14 +157,6 @@ class SSLClientSocketImpl : public SSLClientSocket,
   // Called from the SSL layer whenever a new session is established.
   int NewSessionCallback(SSL_SESSION* session);
 
-  // Adds the Certificate Transparency info from ct_verify_result_ to
-  // |ssl_info|.
-  // SCTs are held in three separate vectors in ct_verify_result, each
-  // vetor representing a particular verification state, this method associates
-  // each of the SCTs with the corresponding SCTVerifyStatus as it adds it to
-  // the |ssl_info|.signed_certificate_timestamps list.
-  void AddCTInfoToSSLInfo(SSLInfo* ssl_info) const;
-
   // Returns a session cache key for this socket.
   SSLClientSessionCache::Key GetSessionCacheKey(
       base::Optional<IPAddress> dest_ip_addr) const;
@@ -254,9 +245,6 @@ class SSLClientSocketImpl : public SSLClientSocket,
 
   // Result from Cert Verifier.
   int cert_verification_result_;
-
-  // Certificate Transparency: Verifier and result holder.
-  ct::CTVerifyResult ct_verify_result_;
 
   // OpenSSL stuff
   bssl::UniquePtr<SSL> ssl_;

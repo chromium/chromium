@@ -190,17 +190,17 @@ class ProofVerifierChromiumTest : public ::testing::Test {
   void CheckSCT(bool sct_expected_ok) {
     ProofVerifyDetailsChromium* proof_details =
         reinterpret_cast<ProofVerifyDetailsChromium*>(details_.get());
-    const ct::CTVerifyResult& ct_verify_result =
-        proof_details->ct_verify_result;
+    const CertVerifyResult& cert_verify_result =
+        proof_details->cert_verify_result;
     if (sct_expected_ok) {
-      ASSERT_TRUE(ct::CheckForSingleVerifiedSCTInResult(ct_verify_result.scts,
+      EXPECT_TRUE(ct::CheckForSingleVerifiedSCTInResult(cert_verify_result.scts,
                                                         kLogDescription));
-      ASSERT_TRUE(ct::CheckForSCTOrigin(
-          ct_verify_result.scts,
+      EXPECT_TRUE(ct::CheckForSCTOrigin(
+          cert_verify_result.scts,
           ct::SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION));
     } else {
-      ASSERT_EQ(1U, ct_verify_result.scts.size());
-      EXPECT_EQ(ct::SCT_STATUS_LOG_UNKNOWN, ct_verify_result.scts[0].status);
+      ASSERT_EQ(1U, cert_verify_result.scts.size());
+      EXPECT_EQ(ct::SCT_STATUS_LOG_UNKNOWN, cert_verify_result.scts[0].status);
     }
   }
 
@@ -1063,112 +1063,6 @@ TEST_F(ProofVerifierChromiumTest, CTComplianceStatusHistogram) {
         kHistogramName,
         static_cast<int>(ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS),
         2);
-  }
-}
-
-// Tests that when CT is required but the connection is not compliant, the
-// relevant flag is set in the CTVerifyResult.
-TEST_F(ProofVerifierChromiumTest, CTRequirementsFlagNotMet) {
-  dummy_result_.is_issued_by_known_root = true;
-  MockCertVerifier dummy_verifier;
-  dummy_verifier.AddResultForCert(test_cert_.get(), dummy_result_, OK);
-
-  // Set up CT.
-  MockRequireCTDelegate require_ct_delegate;
-  transport_security_state_.SetRequireCTDelegate(&require_ct_delegate);
-  EXPECT_CALL(require_ct_delegate, IsCTRequiredForHost(_, _, _))
-      .WillRepeatedly(Return(TransportSecurityState::RequireCTDelegate::
-                                 CTRequirementLevel::REQUIRED));
-  EXPECT_CALL(ct_policy_enforcer_, CheckCompliance(_, _, _))
-      .WillRepeatedly(
-          Return(ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS));
-
-  ProofVerifierChromium proof_verifier(
-      &dummy_verifier, &ct_policy_enforcer_, &transport_security_state_,
-      ct_verifier_.get(), nullptr, {}, NetworkIsolationKey());
-
-  {
-    std::unique_ptr<DummyProofVerifierCallback> callback(
-        new DummyProofVerifierCallback);
-    proof_verifier.VerifyProof(
-        kTestHostname, kTestPort, kTestConfig, kTestTransportVersion,
-        kTestChloHash, certs_, kTestEmptySCT, GetTestSignature(),
-        verify_context_.get(), &error_details_, &details_, std::move(callback));
-
-    // The flag should be set in the CTVerifyResult.
-    ProofVerifyDetailsChromium* proof_details =
-        reinterpret_cast<ProofVerifyDetailsChromium*>(details_.get());
-    const ct::CTVerifyResult& ct_verify_result =
-        proof_details->ct_verify_result;
-    EXPECT_TRUE(ct_verify_result.policy_compliance_required);
-  }
-
-  {
-    std::unique_ptr<DummyProofVerifierCallback> callback(
-        new DummyProofVerifierCallback);
-    proof_verifier.VerifyCertChain(
-        kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-        verify_context_.get(), &error_details_, &details_, std::move(callback));
-
-    // The flag should be set in the CTVerifyResult.
-    ProofVerifyDetailsChromium* proof_details =
-        reinterpret_cast<ProofVerifyDetailsChromium*>(details_.get());
-    const ct::CTVerifyResult& ct_verify_result =
-        proof_details->ct_verify_result;
-    EXPECT_TRUE(ct_verify_result.policy_compliance_required);
-  }
-}
-
-// Tests that when CT is required and the connection is compliant, the relevant
-// flag is set in the CTVerifyResult.
-TEST_F(ProofVerifierChromiumTest, CTRequirementsFlagMet) {
-  dummy_result_.is_issued_by_known_root = true;
-  MockCertVerifier dummy_verifier;
-  dummy_verifier.AddResultForCert(test_cert_.get(), dummy_result_, OK);
-
-  // Set up CT.
-  MockRequireCTDelegate require_ct_delegate;
-  transport_security_state_.SetRequireCTDelegate(&require_ct_delegate);
-  EXPECT_CALL(require_ct_delegate, IsCTRequiredForHost(_, _, _))
-      .WillRepeatedly(Return(TransportSecurityState::RequireCTDelegate::
-                                 CTRequirementLevel::REQUIRED));
-  EXPECT_CALL(ct_policy_enforcer_, CheckCompliance(_, _, _))
-      .WillRepeatedly(
-          Return(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
-
-  ProofVerifierChromium proof_verifier(
-      &dummy_verifier, &ct_policy_enforcer_, &transport_security_state_,
-      ct_verifier_.get(), nullptr, {}, NetworkIsolationKey());
-
-  {
-    std::unique_ptr<DummyProofVerifierCallback> callback(
-        new DummyProofVerifierCallback);
-    proof_verifier.VerifyProof(
-        kTestHostname, kTestPort, kTestConfig, kTestTransportVersion,
-        kTestChloHash, certs_, kTestEmptySCT, GetTestSignature(),
-        verify_context_.get(), &error_details_, &details_, std::move(callback));
-
-    // The flag should be set in the CTVerifyResult.
-    ProofVerifyDetailsChromium* proof_details =
-        reinterpret_cast<ProofVerifyDetailsChromium*>(details_.get());
-    const ct::CTVerifyResult& ct_verify_result =
-        proof_details->ct_verify_result;
-    EXPECT_TRUE(ct_verify_result.policy_compliance_required);
-  }
-
-  {
-    std::unique_ptr<DummyProofVerifierCallback> callback(
-        new DummyProofVerifierCallback);
-    proof_verifier.VerifyCertChain(
-        kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-        verify_context_.get(), &error_details_, &details_, std::move(callback));
-
-    // The flag should be set in the CTVerifyResult.
-    ProofVerifyDetailsChromium* proof_details =
-        reinterpret_cast<ProofVerifyDetailsChromium*>(details_.get());
-    const ct::CTVerifyResult& ct_verify_result =
-        proof_details->ct_verify_result;
-    EXPECT_TRUE(ct_verify_result.policy_compliance_required);
   }
 }
 

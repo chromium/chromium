@@ -13,7 +13,6 @@
 #include "net/base/net_export.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/ct_policy_status.h"
-#include "net/cert/ct_verify_result.h"
 #include "net/cert/ocsp_verify_result.h"
 #include "net/cert/sct_status_flags.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
@@ -44,16 +43,6 @@ class NET_EXPORT SSLInfo {
   void Reset();
 
   bool is_valid() const { return cert.get() != nullptr; }
-
-  // Adds the SignedCertificateTimestamps and policy compliance details
-  // from ct_verify_result to |signed_certificate_timestamps| and
-  // |ct_policy_compliance_details|. SCTs are held in three separate
-  // vectors in ct_verify_result, each vetor representing a particular
-  // verification state, this method associates each of the SCTs with
-  // the corresponding SCTVerifyStatus as it adds it to the
-  // |signed_certificate_timestamps| list.
-  void UpdateCertificateTransparencyInfo(
-      const ct::CTVerifyResult& ct_verify_result);
 
   // The SSL certificate.
   scoped_refptr<X509Certificate> cert;
@@ -118,11 +107,6 @@ class NET_EXPORT SSLInfo {
   // not, why not.
   ct::CTPolicyCompliance ct_policy_compliance =
       ct::CTPolicyCompliance::CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE;
-
-  // True if the connection was required to comply with the CT cert policy. Only
-  // meaningful if |ct_policy_compliance| is not
-  // COMPLIANCE_DETAILS_NOT_AVAILABLE.
-  bool ct_policy_compliance_required = false;
 
   // OCSP stapling details.
   OCSPVerifyResult ocsp_result;
