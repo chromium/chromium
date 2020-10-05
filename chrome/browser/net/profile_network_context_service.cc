@@ -136,13 +136,13 @@ network::mojom::AdditionalCertificatesPtr GetAdditionalCertificates(
 // feature flag and policy. Next steps would be changing the feature value to
 // false after enough heads up and then removing the feature.
 bool IsAmbientAuthAllowedForProfile(Profile* profile) {
-  if (profile->IsRegularProfile())
+  if (profile->IsRegularProfile() && !profile->IsEphemeralGuestProfile())
     return true;
 
   // Non-primary OTR profiles are not used to create browser windows and are
   // only technical means for a task that does not need to leave state after
   // it's completed.
-  if (!profile->IsPrimaryOTRProfile())
+  if (profile->IsOffTheRecord() && !profile->IsPrimaryOTRProfile())
     return true;
 
   PrefService* local_state = g_browser_process->local_state();
@@ -154,7 +154,7 @@ bool IsAmbientAuthAllowedForProfile(Profile* profile) {
       static_cast<net::AmbientAuthAllowedProfileTypes>(local_state->GetInteger(
           prefs::kAmbientAuthenticationInPrivateModesEnabled));
 
-  if (profile->IsGuestSession()) {
+  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile()) {
     return base::FeatureList::IsEnabled(
                features::kEnableAmbientAuthenticationInGuestSession) ||
            type == net::AmbientAuthAllowedProfileTypes::GUEST_AND_REGULAR ||
