@@ -35,6 +35,29 @@ HoldingSpaceKeyedService* GetHoldingSpaceKeyedService(Profile* profile) {
   return HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile);
 }
 
+// Returns file info for the specified `file_path` or `base::nullopt` in the
+// event that file info cannot be obtained.
+using GetFileInfoCallback =
+    base::OnceCallback<void(const base::Optional<base::File::Info>&)>;
+void GetFileInfo(Profile* profile,
+                 const base::FilePath& file_path,
+                 GetFileInfoCallback callback) {
+  scoped_refptr<storage::FileSystemContext> file_system_context =
+      file_manager::util::GetFileSystemContextForExtensionId(
+          profile, file_manager::kFileManagerAppId);
+  file_manager::util::GetMetadataForPath(
+      file_system_context, file_path,
+      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
+      base::BindOnce(
+          [](GetFileInfoCallback callback, base::File::Error error,
+             const base::File::Info& info) {
+            std::move(callback).Run(error == base::File::FILE_OK
+                                        ? base::make_optional<>(info)
+                                        : base::nullopt);
+          },
+          std::move(callback)));
+}
+
 }  // namespace
 
 // HoldingSpaceClientImpl ------------------------------------------------------
@@ -123,16 +146,34 @@ void HoldingSpaceClientImpl::OpenItems(
       barrier_closure.Run();
       return;
     }
-    file_manager::util::OpenItem(
-        profile_, item->file_path(), platform_util::OPEN_FILE,
-        base::BindOnce(
-            [](base::RepeatingClosure barrier_closure, bool* complete_success,
-               platform_util::OpenOperationResult result) {
-              const bool success = result == platform_util::OPEN_SUCCEEDED;
-              *complete_success &= success;
-              barrier_closure.Run();
-            },
-            barrier_closure, complete_success_ptr));
+    GetFileInfo(profile_, item->file_path(),
+                base::BindOnce(
+                    [](const base::WeakPtr<HoldingSpaceClientImpl>& weak_ptr,
+                       base::RepeatingClosure barrier_closure,
+                       bool* complete_success, const base::FilePath& file_path,
+                       const base::Optional<base::File::Info>& info) {
+                      if (!weak_ptr || !info.has_value()) {
+                        *complete_success = false;
+                        barrier_closure.Run();
+                        return;
+                      }
+                      file_manager::util::OpenItem(
+                          weak_ptr->profile_, file_path,
+                          info.value().is_directory ? platform_util::OPEN_FOLDER
+                                                    : platform_util::OPEN_FILE,
+                          base::BindOnce(
+                              [](base::RepeatingClosure barrier_closure,
+                                 bool* complete_success,
+                                 platform_util::OpenOperationResult result) {
+                                const bool success =
+                                    result == platform_util::OPEN_SUCCEEDED;
+                                *complete_success &= success;
+                                barrier_closure.Run();
+                              },
+                              barrier_closure, complete_success));
+                    },
+                    weak_factory_.GetWeakPtr(), barrier_closure,
+                    complete_success_ptr, item->file_path()));
   }
 }
 

@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 
 class Profile;
 
@@ -35,6 +36,8 @@ class HoldingSpaceClientImpl : public HoldingSpaceClient {
 
  private:
   Profile* const profile_;
+
+  base::WeakPtrFactory<HoldingSpaceClientImpl> weak_factory_{this};
 };
 
 }  // namespace ash
