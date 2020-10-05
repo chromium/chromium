@@ -6614,6 +6614,9 @@ crbug.com/1057060 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/
 crbug.com/1057060 virtual/scroll-unification/fast/scrolling/scrollbars/mouse-autoscrolling-on-scrollbar.html [ Pass Failure Timeout ]
 crbug.com/1045599 fast/css-grid-layout/flex-content-sized-columns-resize.html [ Pass Failure Timeout ]
 
+# TODO(michaelludwig) - Remove after Skia roll and rebaseline
+crbug.com/1135225 fast/sub-pixel/transformed-iframe-copy-on-scroll.html [ Pass Failure ]
+
 # Sheriff 2020-09-29
 crbug.com/1133342 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/reporting-observer.html [ Pass Failure Timeout ]
 crbug.com/1083605 media/controls-styling-strict.html [ Pass Failure ]
