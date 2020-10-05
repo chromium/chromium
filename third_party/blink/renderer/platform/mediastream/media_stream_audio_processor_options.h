@@ -123,6 +123,8 @@ struct PLATFORM_EXPORT AdaptiveGainController2Properties {
   int initial_saturation_margin_db;
   int extra_saturation_margin_db;
   int gain_applier_speech_frames_threshold;
+  int max_gain_change_db_per_second;
+  int max_output_noise_level_dbfs;
 };
 
 // Configures automatic gain control in `apm_config`. If `agc_enabled` is true
