@@ -1009,6 +1009,7 @@ source_set("test_support") {
         "test/ui_controls_factory_desktop_aurax11.cc",
         "test/ui_controls_factory_desktop_aurax11.h",
       ]
+      deps += [ "//ui/base/x:test_support" ]
     }
   }
   if (use_x11) {

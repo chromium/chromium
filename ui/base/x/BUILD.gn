@@ -118,10 +118,15 @@ source_set("test_support") {
   sources = [
     "test/x11_property_change_waiter.cc",
     "test/x11_property_change_waiter.h",
+    "test/x11_ui_controls_test_helper.cc",
+    "test/x11_ui_controls_test_helper.h",
   ]
 
   deps = [
+    ":x",
+    "//ui/base:test_support",
     "//ui/events:platform_event",
+    "//ui/events:test_support",
     "//ui/events/platform/x11",
     "//ui/gfx/x",
   ]
