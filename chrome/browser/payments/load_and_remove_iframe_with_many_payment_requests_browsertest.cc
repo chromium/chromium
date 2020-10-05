@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
+#include "components/payments/core/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -11,18 +12,21 @@
 namespace payments {
 namespace {
 
-// TODO(crbug.com/1129573): fix flakiness and reenable
-#if defined(OS_MAC)
-#define MAYBE_LoadAndRemoveIframeWithManyPaymentRequestsTest \
-  DISABLED_LoadAndRemoveIframeWithManyPaymentRequestsTest
-#else
-#define MAYBE_LoadAndRemoveIframeWithManyPaymentRequestsTest \
-  LoadAndRemoveIframeWithManyPaymentRequestsTest
-#endif
-
-class MAYBE_LoadAndRemoveIframeWithManyPaymentRequestsTest
+class LoadAndRemoveIframeWithManyPaymentRequestsTest
     : public PaymentRequestPlatformBrowserTestBase {
  public:
+  LoadAndRemoveIframeWithManyPaymentRequestsTest() {
+    // Enable the browser-side feature flag as it's disabled by default on
+    // non-origin trial platforms.
+    feature_list_.InitAndEnableFeature(features::kSecurePaymentConfirmation);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PaymentRequestPlatformBrowserTestBase::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        switches::kEnableExperimentalWebPlatformFeatures);
+  }
+
   void RunTest(const std::string& iframe_hostname) {
     NavigateTo("a.com", "/load_and_remove_iframe.html");
 
@@ -36,14 +40,16 @@ class MAYBE_LoadAndRemoveIframeWithManyPaymentRequestsTest
                                                "/create_many_requests.html")
                                       .spec())));
   }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(MAYBE_LoadAndRemoveIframeWithManyPaymentRequestsTest,
+IN_PROC_BROWSER_TEST_F(LoadAndRemoveIframeWithManyPaymentRequestsTest,
                        CrossOriginNoCrash) {
   RunTest(/*iframe_hostname=*/"b.com");
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_LoadAndRemoveIframeWithManyPaymentRequestsTest,
+IN_PROC_BROWSER_TEST_F(LoadAndRemoveIframeWithManyPaymentRequestsTest,
                        SameOriginNoCrash) {
   RunTest(/*iframe_hostname=*/"a.com");
 }
