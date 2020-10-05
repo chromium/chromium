@@ -8,24 +8,42 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/commander/commander_view_model.h"
 
-const char CommanderHandler::Delegate::kKey[] =
-    "CommanderHandler::Delegate::kKey";
+namespace {
+// Message handler keys.
+constexpr char kTextChangedMessage[] = "textChanged";
+constexpr char kOptionSelectedMessage[] = "optionSelected";
+constexpr char kDismissMessage[] = "dismiss";
+constexpr char kHeightChangedMessage[] = "heightChanged";
+// WebUI event keys.
+constexpr char kViewModelUpdatedEvent[] = "view-model-updated";
+constexpr char kInitializeEvent[] = "initialize";
+// View model dictionary keys
+constexpr char kActionKey[] = "action";
+constexpr char kResultSetIdKey[] = "result_set_id";
+constexpr char kTitleKey[] = "title";
+constexpr char kEntityKey[] = "entity";
+constexpr char kAnnotationKey[] = "annotations";
+constexpr char kMatchedRangesKey[] = "matched_ranges";
+constexpr char kOptionsKey[] = "options";
+}  // namespace
+
 CommanderHandler::CommanderHandler() = default;
 CommanderHandler::~CommanderHandler() = default;
 
 void CommanderHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
-      "textChanged", base::BindRepeating(&CommanderHandler::HandleTextChanged,
-                                         base::Unretained(this)));
+      kTextChangedMessage,
+      base::BindRepeating(&CommanderHandler::HandleTextChanged,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "optionSelected",
+      kOptionSelectedMessage,
       base::BindRepeating(&CommanderHandler::HandleOptionSelected,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "dismiss", base::BindRepeating(&CommanderHandler::HandleDismiss,
-                                     base::Unretained(this)));
+      kDismissMessage, base::BindRepeating(&CommanderHandler::HandleDismiss,
+                                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "heightChanged",
+      kHeightChangedMessage,
       base::BindRepeating(&CommanderHandler::HandleHeightChanged,
                           base::Unretained(this)));
 }
@@ -73,17 +91,37 @@ void CommanderHandler::ViewModelUpdated(
     commander::CommanderViewModel view_model) {
   if (view_model.action ==
       commander::CommanderViewModel::Action::kDisplayResults) {
-    base::Value list(base::Value::Type::LIST);
+    base::DictionaryValue vm;
+    vm.SetIntKey(kActionKey, view_model.action);
+    vm.SetIntKey(kResultSetIdKey, view_model.result_set_id);
+    base::ListValue option_list;
     for (commander::CommandItemViewModel& item : view_model.items) {
-      // TODO(lgrey): This is temporary, just so we can display something.
-      // We will also need to pass on the result set id, and match ranges for
-      // each item.
-      list.Append(item.title);
+      base::DictionaryValue option;
+      option.SetStringKey(kTitleKey, item.title);
+      option.SetIntKey(kEntityKey, item.entity_type);
+      if (!item.annotation.empty())
+        option.SetStringKey(kAnnotationKey, item.annotation);
+      base::ListValue ranges;
+      for (const gfx::Range& range : item.matched_ranges) {
+        base::ListValue range_value;
+        range_value.Append(static_cast<int>(range.start()));
+        range_value.Append(static_cast<int>(range.end()));
+        ranges.Append(std::move(range_value));
+      }
+      option.SetKey(kMatchedRangesKey, std::move(ranges));
+      option_list.Append(std::move(option));
     }
-    FireWebUIListener("view-model-updated", list);
+    vm.SetKey(kOptionsKey, std::move(option_list));
+    FireWebUIListener(kViewModelUpdatedEvent, vm);
   } else {
     DCHECK_EQ(view_model.action,
               commander::CommanderViewModel::Action::kPrompt);
     // TODO(lgrey): Handle kPrompt. kDismiss is handled higher up the stack.
   }
+}
+
+void CommanderHandler::PrepareToShow(Delegate* delegate) {
+  delegate_ = delegate;
+  if (IsJavascriptAllowed())
+    FireWebUIListener(kInitializeEvent);
 }

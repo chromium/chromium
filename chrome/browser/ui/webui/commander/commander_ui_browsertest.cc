@@ -38,7 +38,7 @@ class CommanderUITest : public InProcessBrowserTest,
         ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
     CommanderUI* controller =
         static_cast<CommanderUI*>(contents_->GetWebUI()->GetController());
-    controller->handler()->set_delegate(this);
+    controller->handler()->PrepareToShow(this);
 
     ASSERT_TRUE(content::WaitForLoadStop(contents_.get()));
     EXPECT_EQ(contents_->GetLastCommittedURL().host(),
@@ -122,16 +122,47 @@ IN_PROC_BROWSER_TEST_F(CommanderUITest, OptionSelected) {
 TEST(CommanderHandlerTest, ViewModelPassed) {
   content::TestWebUI test_web_ui;
   auto handler = std::make_unique<TestCommanderHandler>(&test_web_ui);
+
   commander::CommanderViewModel vm;
   vm.action = commander::CommanderViewModel::Action::kDisplayResults;
   base::string16 item_title = base::ASCIIToUTF16("Test item");
-  std::vector<gfx::Range> item_ranges;
+  std::vector<gfx::Range> item_ranges = {gfx::Range(0, 4)};
   vm.items.emplace_back(item_title, item_ranges);
+  vm.result_set_id = 42;
+
   handler->AllowJavascriptForTesting();
   handler->ViewModelUpdated(std::move(vm));
   const content::TestWebUI::CallData& call_data =
       *test_web_ui.call_data().back();
   EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
   EXPECT_EQ("view-model-updated", call_data.arg1()->GetString());
-  EXPECT_EQ("Test item", call_data.arg2()->GetList()[0].GetString());
+
+  const base::Value* arg = call_data.arg2();
+  EXPECT_EQ(
+      "Test item",
+      arg->FindPath("options")->GetList()[0].FindPath("title")->GetString());
+  EXPECT_EQ(0, arg->FindPath("options")
+                   ->GetList()[0]
+                   .FindPath("matched_ranges")
+                   ->GetList()[0]
+                   .GetList()[0]
+                   .GetInt());
+  EXPECT_EQ(4, arg->FindPath("options")
+                   ->GetList()[0]
+                   .FindPath("matched_ranges")
+                   ->GetList()[0]
+                   .GetList()[1]
+                   .GetInt());
+  EXPECT_EQ(42, arg->FindPath("result_set_id")->GetInt());
+}
+
+TEST(CommanderHandlerTest, Initialize) {
+  content::TestWebUI test_web_ui;
+  auto handler = std::make_unique<TestCommanderHandler>(&test_web_ui);
+  handler->AllowJavascriptForTesting();
+  handler->PrepareToShow(nullptr);
+  const content::TestWebUI::CallData& call_data =
+      *test_web_ui.call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
+  EXPECT_EQ("initialize", call_data.arg1()->GetString());
 }

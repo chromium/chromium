@@ -101,7 +101,7 @@ void CommanderFrontendViews::Show(Browser* browser) {
   web_view_->LoadInitialURL(GURL(chrome::kChromeUICommanderURL));
   CommanderUI* controller = static_cast<CommanderUI*>(
       web_view_->GetWebContents()->GetWebUI()->GetController());
-  controller->handler()->set_delegate(this);
+  controller->handler()->PrepareToShow(this);
 
   web_view_ptr_ = widget_->SetContentsView(std::move(web_view_));
 

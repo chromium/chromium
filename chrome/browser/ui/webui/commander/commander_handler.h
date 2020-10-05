@@ -17,9 +17,6 @@ class CommanderHandler : public content::WebUIMessageHandler {
   // browser-side commander system.
   class Delegate {
    public:
-    // The key under which the delegate is expected to be stashed in the
-    // containing web contents.
-    static const char kKey[];
     // Called when the text is changed in the WebUI interface.
     virtual void OnTextChanged(const base::string16& text) = 0;
     // Called when an option is selected (clicked or enter pressed) in the WebUI
@@ -39,7 +36,9 @@ class CommanderHandler : public content::WebUIMessageHandler {
   // Called when a new view model should be displayed.
   void ViewModelUpdated(commander::CommanderViewModel view_model);
 
-  void set_delegate(Delegate* delegate) { delegate_ = delegate; }
+  // Called to reinitialize the UI (clear input, remove results, etc.) and
+  // attach the delegate.
+  void PrepareToShow(Delegate* delegate);
 
   // WebUIMessageHandler overrides.
   void RegisterMessages() override;
