@@ -10,13 +10,6 @@ if (is_android) {
   import("//build/config/android/config.gni")
 }
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 if (is_component_build) {
   link_target_type = "source_set"
 } else {
@@ -47,43 +40,21 @@ target(link_target_type, "child") {
     "blink_platform_impl.h",
     "browser_exposed_child_interfaces.cc",
     "browser_exposed_child_interfaces.h",
-    "browser_font_resource_trusted.cc",
-    "browser_font_resource_trusted.h",
     "child_histogram_fetcher_impl.cc",
     "child_histogram_fetcher_impl.h",
     "child_process.cc",
     "child_process.h",
-    "child_process_sandbox_support_impl_linux.cc",
-    "child_process_sandbox_support_impl_linux.h",
-    "child_process_sandbox_support_impl_mac.cc",
-    "child_process_sandbox_support_impl_mac.h",
     "child_thread_impl.cc",
     "child_thread_impl.h",
-    "dwrite_font_proxy/dwrite_font_proxy_init_impl_win.cc",
-    "dwrite_font_proxy/dwrite_font_proxy_init_impl_win.h",
-    "dwrite_font_proxy/dwrite_font_proxy_win.cc",
-    "dwrite_font_proxy/dwrite_font_proxy_win.h",
-    "dwrite_font_proxy/dwrite_localized_strings_win.cc",
-    "dwrite_font_proxy/dwrite_localized_strings_win.h",
-    "dwrite_font_proxy/font_fallback_win.cc",
-    "dwrite_font_proxy/font_fallback_win.h",
     "field_trial.cc",
     "field_trial.h",
-    "font_warmup_win.cc",
-    "font_warmup_win.h",
     "image_decoder_utils.cc",
     "runtime_features.cc",
     "runtime_features.h",
     "scoped_child_process_reference.cc",
     "scoped_child_process_reference.h",
-    "webthemeengine_impl_android.cc",
-    "webthemeengine_impl_android.h",
     "webthemeengine_impl_conversions.cc",
     "webthemeengine_impl_conversions.h",
-    "webthemeengine_impl_default.cc",
-    "webthemeengine_impl_default.h",
-    "webthemeengine_impl_mac.cc",
-    "webthemeengine_impl_mac.h",
   ]
 
   configs += [ "//build/config:precompiled_headers" ]
@@ -144,13 +115,22 @@ target(link_target_type, "child") {
 
   if (is_android) {
     deps += [ "//third_party/android_ndk:cpu_features" ]
-    sources -= [
+    sources += [
+      "webthemeengine_impl_android.cc",
+      "webthemeengine_impl_android.h",
+    ]
+  } else {
+    sources += [
       "webthemeengine_impl_default.cc",
       "webthemeengine_impl_default.h",
     ]
   }
 
   if (is_linux || is_chromeos) {
+    sources += [
+      "child_process_sandbox_support_impl_linux.cc",
+      "child_process_sandbox_support_impl_linux.h",
+    ]
     deps += [
       "//components/services/font/public/cpp",
       "//components/services/font/public/mojom",
@@ -158,7 +138,28 @@ target(link_target_type, "child") {
   }
 
   if (is_win) {
+    sources += [
+      "dwrite_font_proxy/dwrite_font_proxy_init_impl_win.cc",
+      "dwrite_font_proxy/dwrite_font_proxy_init_impl_win.h",
+      "dwrite_font_proxy/dwrite_font_proxy_win.cc",
+      "dwrite_font_proxy/dwrite_font_proxy_win.h",
+      "dwrite_font_proxy/dwrite_localized_strings_win.cc",
+      "dwrite_font_proxy/dwrite_localized_strings_win.h",
+      "dwrite_font_proxy/font_fallback_win.cc",
+      "dwrite_font_proxy/font_fallback_win.h",
+      "font_warmup_win.cc",
+      "font_warmup_win.h",
+    ]
     libs = [ "dwrite.lib" ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "child_process_sandbox_support_impl_mac.cc",
+      "child_process_sandbox_support_impl_mac.h",
+      "webthemeengine_impl_mac.cc",
+      "webthemeengine_impl_mac.h",
+    ]
   }
 
   if (enable_plugins) {
@@ -166,8 +167,7 @@ target(link_target_type, "child") {
       "//ppapi/proxy",
       "//ppapi/shared_impl",
     ]
-  } else {
-    sources -= [
+    sources += [
       "browser_font_resource_trusted.cc",
       "browser_font_resource_trusted.h",
     ]
