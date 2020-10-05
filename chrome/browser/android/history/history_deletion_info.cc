@@ -47,21 +47,6 @@ jboolean JNI_HistoryDeletionInfo_IsTimeRangeForAllTime(
   return deletion_info->time_range().IsAllTime();
 }
 
-jlong JNI_HistoryDeletionInfo_GetTimeRangeBegin(
-    JNIEnv* env,
-    jlong history_deletion_info_ptr) {
-  history::DeletionInfo* deletion_info =
-      ToDeletionInfo(history_deletion_info_ptr);
-  return deletion_info->time_range().begin().ToJavaTime();
-}
-
-jlong JNI_HistoryDeletionInfo_GetTimeRangeEnd(JNIEnv* env,
-                                              jlong history_deletion_info_ptr) {
-  history::DeletionInfo* deletion_info =
-      ToDeletionInfo(history_deletion_info_ptr);
-  return deletion_info->time_range().end().ToJavaTime();
-}
-
 ScopedJavaLocalRef<jobject> CreateHistoryDeletionInfo(
     JNIEnv* env,
     const history::DeletionInfo* deletion_info) {

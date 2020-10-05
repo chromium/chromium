@@ -83,6 +83,7 @@ import org.chromium.components.browser_ui.photo_picker.DecoderServiceHost;
 import org.chromium.components.browser_ui.photo_picker.PhotoPickerDialog;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.util.ConversionUtils;
+import org.chromium.components.content_capture.ContentCaptureController;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.signin.AccountManagerFacadeImpl;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -259,8 +260,8 @@ public class ProcessInitializationHandler {
                 });
 
         SearchWidgetProvider.initialize();
-        HistoryDeletionBridge.getInstance().addObserver(
-                new ContentCaptureHistoryDeletionObserver());
+        HistoryDeletionBridge.getInstance().addObserver(new ContentCaptureHistoryDeletionObserver(
+                () -> ContentCaptureController.getInstance()));
     }
 
     /**
