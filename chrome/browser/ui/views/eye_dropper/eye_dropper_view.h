@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/optional.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/public/browser/eye_dropper.h"
@@ -79,7 +78,6 @@ class EyeDropperView : public content::EyeDropper,
   std::unique_ptr<ViewPositionHandler> view_position_handler_;
   std::unique_ptr<ScreenCapturer> screen_capturer_;
   base::Optional<SkColor> selected_color_;
-  base::TimeTicks ignore_selection_time_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EYE_DROPPER_EYE_DROPPER_VIEW_H_
