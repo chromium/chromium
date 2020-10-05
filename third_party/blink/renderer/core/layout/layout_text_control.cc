@@ -230,13 +230,7 @@ MinMaxSizes LayoutTextControl::ComputeIntrinsicLogicalWidths() const {
 
   // Use average character width. Matches IE.
   sizes.max_size += PreferredContentLogicalWidth(GetAvgCharWidth(StyleRef()));
-  if (InnerEditorElement()) {
-    if (LayoutBox* inner_editor_layout_box =
-            InnerEditorElement()->GetLayoutBox()) {
-      sizes.max_size += inner_editor_layout_box->PaddingStart() +
-                        inner_editor_layout_box->PaddingEnd();
-    }
-  }
+
   if (!StyleRef().LogicalWidth().IsPercentOrCalc())
     sizes.min_size = sizes.max_size;
   return sizes;
