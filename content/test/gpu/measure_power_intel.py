@@ -22,7 +22,7 @@ Sample runs:
 
 python measure_power_intel.py --browser=canary --duration=10 --delay=5
   --verbose --url="https://www.youtube.com/watch?v=0XdS37Re1XQ"
-  --extra-browser-args="--no-sandbox --disable-features=UseSurfaceLayerForVideo"
+  --extra-browser-args="--no-sandbox"
 
 It is recommended to test with optimized builds of Chromium e.g. these GN args:
 

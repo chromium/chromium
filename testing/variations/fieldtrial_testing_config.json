@@ -7165,25 +7165,6 @@
             ]
         }
     ],
-    "VideoSurfaceLayer": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows",
-                "chromeos",
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseSurfaceLayerForVideo"
-                    ]
-                }
-            ]
-        }
-    ],
     "VideoToolboxVp9Decoding": [
         {
             "platforms": [

@@ -925,8 +925,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   // Monitors the player events.
   base::WeakPtr<MediaObserver> observer_;
 
-  // Owns the weblayer and obtains/maintains SurfaceIds for
-  // kUseSurfaceLayerForVideo feature.
+  // Owns the weblayer and obtains/maintains SurfaceIds.
   std::unique_ptr<blink::WebSurfaceLayerBridge> bridge_;
 
   // The maximum video keyframe distance that allows triggering background

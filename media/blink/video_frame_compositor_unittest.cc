@@ -56,6 +56,8 @@ class VideoFrameCompositorTest : public VideoRendererSink::RenderCallback,
 
   void SetUp() override {
     if (IsSurfaceLayerForVideoEnabled()) {
+      // TODO(http://crbug/1134146): Clean up the tests in this file since the
+      // feature UseSurfaceLayerForVideo no longer exists.
       feature_list_.InitFromCommandLine("UseSurfaceLayerForVideo", "");
 
       // When SurfaceLayerForVideo is enabled, |compositor_| owns the
