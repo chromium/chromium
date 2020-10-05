@@ -2,10 +2,41 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * Possible UI states of the screen. Must be in the same order as
+ * UpdateRequiredView::UIState enum values.
+ */
+/** @const */ var UI_STATE = {
+  UPDATE_REQUIRED_MESSAGE: 'update-required-message',
+  UPDATE_PROCESS: 'update-process',
+  UPDATE_NEED_PERMISSION: 'update-need-permission',
+  UPDATE_COMPLETED_NEED_REBOOT: 'update-completed-need-reboot',
+  UPDATE_ERROR: 'update-error',
+  EOL_REACHED: 'eol',
+  UPDATE_NO_NETWORK: 'update-no-network'
+};
+
 Polymer({
   is: 'update-required-card',
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior],
+  behaviors: [
+    OobeI18nBehavior,
+    OobeDialogHostBehavior,
+    LoginScreenBehavior,
+    MultiStepBehavior,
+  ],
+
+  EXTERNAL_API: [
+    'setIsConnected',
+    'setUpdateProgressUnavailable',
+    'setUpdateProgressValue',
+    'setUpdateProgressMessage',
+    'setEstimatedTimeLeftVisible',
+    'setEstimatedTimeLeft',
+    'setUIState',
+    'setEnterpriseAndDeviceName',
+    'setEolMessage',
+  ],
 
   properties: {
     /**
@@ -34,9 +65,24 @@ Polymer({
       type: Number,
       value: 0,
     },
-
-    ui_state: {type: String},
   },
+
+  ready() {
+    this.initializeLoginScreen('UpdateRequiredScreen', {
+      resetAllowed: true,
+    });
+  },
+
+  /** Initial UI State for screen */
+  getOobeUIInitialState() {
+    return OOBE_UI_STATE.BLOCKING;
+  },
+
+  defaultUIStep() {
+    return UI_STATE.UPDATE_REQUIRED_MESSAGE;
+  },
+
+  UI_STEPS: UI_STATE,
 
   onBeforeShow() {
     cr.ui.login.invokePolymerMethod(
@@ -48,49 +94,113 @@ Polymer({
     this.i18nUpdateLocale();
   },
 
+  /** @param {string} domain Enterprise domain name */
+  /** @param {string} device Device name */
+  setEnterpriseAndDeviceName(enterpriseDomain, device) {
+    this.enterpriseDomain = enterpriseDomain;
+    this.deviceName = device;
+  },
+
+  /**
+   * @param {string} eolMessage Not sanitized end of life message from policy
+   */
+  setEolMessage(eolMessage) {
+    this.eolAdminMessage_ = loadTimeData.sanitizeInnerHtml(eolMessage);
+  },
+
+  /** @param {boolean} connected */
+  setIsConnected(connected) {
+    this.isNetworkConnected = connected;
+  },
+
+  /**
+   * @param {boolean} unavailable
+   */
+  setUpdateProgressUnavailable(unavailable) {
+    this.updateProgressUnavailable = unavailable;
+  },
+
+  /**
+   * Sets update's progress bar value.
+   * @param {number} progress Percentage of the progress bar.
+   */
+  setUpdateProgressValue(progress) {
+    this.updateProgressValue = progress;
+  },
+
+  /**
+   * Sets message below progress bar.
+   * @param {string} message Message that should be shown.
+   */
+  setUpdateProgressMessage(message) {
+    this.updateProgressMessage = message;
+  },
+
+  /**
+   * Shows or hides downloading ETA message.
+   * @param {boolean} visible Are ETA message visible?
+   */
+  setEstimatedTimeLeftVisible(visible) {
+    this.estimatedTimeLeftVisible = visible;
+  },
+
+  /**
+   * Sets estimated time left until download will complete.
+   * @param {number} seconds Time left in seconds.
+   */
+  setEstimatedTimeLeft(seconds) {
+    this.estimatedTimeLeft = seconds;
+  },
+
+  /**
+   * Sets current UI state of the screen.
+   * @param {number} ui_state New UI state of the screen.
+   */
+  setUIState(ui_state) {
+    this.setUIStep(Object.values(UI_STATE)[ui_state]);
+  },
+
   /**
    * @private
    */
   onSelectNetworkClicked_() {
-    chrome.send('login.UpdateRequiredScreen.userActed', ['select-network']);
+    this.userActed('select-network');
   },
 
   /**
    * @private
    */
   onUpdateClicked_() {
-    chrome.send('login.UpdateRequiredScreen.userActed', ['update']);
+    this.userActed('update');
   },
 
   /**
    * @private
    */
   onFinishClicked_() {
-    chrome.send('login.UpdateRequiredScreen.userActed', ['finish']);
+    this.userActed('finish');
   },
 
   /**
    * @private
    */
   onCellularPermissionRejected_() {
-    chrome.send(
-        'login.UpdateRequiredScreen.userActed', ['update-reject-cellular']);
+    this.userActed('update-reject-cellular');
   },
 
   /**
    * @private
    */
   onCellularPermissionAccepted_() {
-    chrome.send(
-        'login.UpdateRequiredScreen.userActed', ['update-accept-cellular']);
+    this.userActed('update-accept-cellular');
   },
 
   /**
+   * Simple equality comparison function.
    * @private
    */
-  showOn_(ui_state) {
-    // Negate the value as it used as |hidden| attribute's value.
-    return !(Array.prototype.slice.call(arguments, 1).includes(ui_state));
+  eq_(one, another) {
+    return one === another;
   },
 
   /**

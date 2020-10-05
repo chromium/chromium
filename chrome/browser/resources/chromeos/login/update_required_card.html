@@ -15,9 +15,8 @@
     <style include="oobe-dialog-host"></style>
     <link rel="stylesheet" href="update_required_card.css">
 
-    <oobe-dialog has-buttons hidden="[[showOn_(ui_state,
-        'update-required-message')]]" id="update-required-dialog"
-        title-key="updateRequiredTitle" role="dialog"
+    <oobe-dialog has-buttons for-step="update-required-message" role="dialog"
+        id="update-required-dialog" title-key="updateRequiredTitle"
         aria-label$="[[i18nDynamic(locale, 'updateRequiredTitle')]]">
       <hd-iron-icon slot="oobe-icon"
           icon1x="oobe-32:enterprise" icon2x="oobe-64:enterprise">
@@ -38,8 +37,8 @@
       </div>
     </oobe-dialog>
 
-    <oobe-dialog has-buttons hidden="[[showOn_(ui_state,
-        'update-error')]]" id="update-required-error-dialog" role="dialog"
+    <oobe-dialog has-buttons for-step="update-error"
+        id="update-required-error-dialog" role="dialog"
         title-key="updateRequiredTitle" subtitle-key="errorMessage"
         aria-label$="[[i18nDynamic(locale, 'updateRequiredTitle')]]">
       <hd-iron-icon slot="oobe-icon"
@@ -57,11 +56,9 @@
 
     <checking-downloading-update id="checking-downloading-update"
         aria-label$="[[i18nDynamic(locale, 'updateScreenAccessibleTitle')]]"
-        hidden="[[showOn_(ui_state, 'update-process',
-                'update-completed-need-reboot')]]"
+        for-step="update-process, update-completed-need-reboot"
         checking-for-update="[[updateProgressUnavailable]]"
-        update-completed="[[!showOn_(ui_state,
-                          'update-completed-need-reboot')]]"
+        update-completed="[[eq_(uiStep, 'update-completed-need-reboot')]]"
         progress-value="[[updateProgressValue]]"
         has-estimate="[[estimatedTimeLeftVisible]]"
         estimated-time-left="[[estimatedTimeLeft]]"
@@ -70,9 +67,8 @@
         downloading-updates-key="updatingMessage">
     </checking-downloading-update>
 
-    <oobe-dialog hidden="[[showOn_(ui_state, 'update-need-permission')]]"
-        has-buttons title-key="updateRequiredTitle"
-        id="update-need-permission-dialog" role="dialog"
+    <oobe-dialog for-step="update-need-permission" has-buttons role="dialog"
+        title-key="updateRequiredTitle" id="update-need-permission-dialog"
         aria-label$="[[i18nDynamic(locale, 'updateRequiredTitle')]]">
       <hd-iron-icon slot="oobe-icon"
           icon1x="oobe-32:enterprise" icon2x="oobe-64:enterprise">
@@ -94,9 +90,8 @@
       </div>
     </oobe-dialog>
 
-    <oobe-dialog hidden="[[showOn_(ui_state, 'update-no-network')]]"
-        has-buttons title-key="updateRequiredTitle"
-        id="update-required-no-network-dialog" role="dialog"
+    <oobe-dialog for-step="update-no-network" has-buttons role="dialog"
+        title-key="updateRequiredTitle" id="update-required-no-network-dialog"
         aria-label$="[[i18nDynamic(locale, 'updateRequiredTitle')]]">
       <hd-iron-icon slot="oobe-icon"
         icon1x="oobe-32:enterprise" icon2x="oobe-64:enterprise">
@@ -118,8 +113,7 @@
       </div>
     </oobe-dialog>
 
-    <oobe-dialog
-        hidden="[[showOn_(ui_state, 'eol')]]" id="eolDialog"
+    <oobe-dialog for-step="eol" id="eolDialog"
         role="dialog" aria-labelledby="eolTitle">
       <hd-iron-icon slot="oobe-icon" id="eolAlertIcon"
           icon1x="oobe-32:warning" icon2x="oobe-64:warning">

@@ -44,38 +44,35 @@ namespace chromeos {
 
 namespace {
 
-const test::UIPath kUpdateRequiredScreen = {"update-required-card"};
-const test::UIPath kUpdateRequiredStep = {"update-required-card",
+const test::UIPath kUpdateRequiredScreen = {"update-required"};
+const test::UIPath kUpdateRequiredStep = {"update-required",
                                           "update-required-dialog"};
-const test::UIPath kUpdateNowButton = {"update-required-card", "update-button"};
-const test::UIPath kUpdateProcessStep = {"update-required-card",
+const test::UIPath kUpdateNowButton = {"update-required", "update-button"};
+const test::UIPath kUpdateProcessStep = {"update-required",
                                          "checking-downloading-update"};
-const test::UIPath kUpdateRequiredEolDialog = {"update-required-card",
-                                               "eolDialog"};
-const test::UIPath kEolAdminMessageContainer = {"update-required-card",
+const test::UIPath kUpdateRequiredEolDialog = {"update-required", "eolDialog"};
+const test::UIPath kEolAdminMessageContainer = {"update-required",
                                                 "adminMessageContainer"};
-const test::UIPath kEolAdminMessage = {"update-required-card", "adminMessage"};
-const test::UIPath kMeteredNetworkStep = {"update-required-card",
+const test::UIPath kEolAdminMessage = {"update-required", "adminMessage"};
+const test::UIPath kMeteredNetworkStep = {"update-required",
                                           "update-need-permission-dialog"};
 const test::UIPath kMeteredNetworkAcceptButton = {
-    "update-required-card", "cellular-permission-accept-button"};
-const test::UIPath kNoNetworkStep = {"update-required-card",
+    "update-required", "cellular-permission-accept-button"};
+const test::UIPath kNoNetworkStep = {"update-required",
                                      "update-required-no-network-dialog"};
 
 // Elements in checking-downloading-update
-const test::UIPath kUpdateProcessCheckingStep = {"update-required-card",
+const test::UIPath kUpdateProcessCheckingStep = {"update-required",
                                                  "checking-downloading-update",
                                                  "checking-for-updates-dialog"};
 const test::UIPath kUpdateProcessUpdatingStep = {
-    "update-required-card", "checking-downloading-update", "updating-dialog"};
-const test::UIPath kUpdateProcessCompleteStep = {"update-required-card",
-                                                 "checking-downloading-update",
-                                                 "update-complete-dialog"};
-const test::UIPath kCheckingForUpdatesMessage = {"update-required-card",
-                                                 "checking-downloading-update",
-                                                 "checkingForUpdatesMsg"};
+    "update-required", "checking-downloading-update", "updating-dialog"};
+const test::UIPath kUpdateProcessCompleteStep = {
+    "update-required", "checking-downloading-update", "update-complete-dialog"};
+const test::UIPath kCheckingForUpdatesMessage = {
+    "update-required", "checking-downloading-update", "checkingForUpdatesMsg"};
 const test::UIPath kUpdatingProgress = {
-    "update-required-card", "checking-downloading-update", "updating-progress"};
+    "update-required", "checking-downloading-update", "updating-progress"};
 
 constexpr char kWifiServicePath[] = "/service/wifi2";
 constexpr char kCellularServicePath[] = "/service/cellular1";

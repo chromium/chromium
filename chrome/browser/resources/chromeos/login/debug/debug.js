@@ -380,18 +380,13 @@ cr.define('cr.ui.login.debug', function() {
       id: 'update-required',
       kind: ScreenKind.OTHER,
       suffix: 'E',
+      handledSteps: 'update-required-message,update-process,eol',
       states: [
         {
           id: 'initial',
           trigger: (screen) => {
             screen.setUIState(0);
             screen.setEnterpriseAndDeviceName('example.com', 'Chromebook');
-          },
-        },
-        {
-          id: 'need-permission',
-          trigger: (screen) => {
-            screen.setUIState(2);
           },
         },
         {
@@ -416,29 +411,11 @@ cr.define('cr.ui.login.debug', function() {
           },
         },
         {
-          id: 'completed-reboot',
-          trigger: (screen) => {
-            screen.setUIState(3);
-          },
-        },
-        {
           id: 'eol',
           trigger: (screen) => {
             screen.setUIState(5);
             screen.setEolMessage(
                 'Message from admin: please return device somewhere.');
-          },
-        },
-        {
-          id: 'no-network',
-          trigger: (screen) => {
-            screen.setUIState(6);
-          },
-        },
-        {
-          id: 'error',
-          trigger: (screen) => {
-            screen.setUIState(4);
           },
         },
       ],
