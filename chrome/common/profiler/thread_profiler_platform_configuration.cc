@@ -192,13 +192,6 @@ double AndroidPlatformConfiguration::GetChildProcessEnableFraction(
   if (browser_test_mode_enabled())
     return DefaultPlatformConfiguration::GetChildProcessEnableFraction(process);
 
-  // Enable just on renderer process for now. Enabling for 40% of renderer
-  // processes samples roughly one renderer process on average for every Chrome
-  // execution, based on early channel data in the
-  // Memory.RenderProcessHost.Count.InitializedAndNotDead histogram.
-  if (process == metrics::CallStackProfileParams::RENDERER_PROCESS)
-    return 0.4;
-
   // TODO(https://crbug.com/1004855): Enable for all the default processes.
   return 0.0;
 }
@@ -206,23 +199,15 @@ double AndroidPlatformConfiguration::GetChildProcessEnableFraction(
 bool AndroidPlatformConfiguration::IsEnabledForThread(
     metrics::CallStackProfileParams::Process process,
     metrics::CallStackProfileParams::Thread thread) const {
-  // Enable on renderer process main thread in production, for now.
-  if (process == metrics::CallStackProfileParams::RENDERER_PROCESS &&
-      thread == metrics::CallStackProfileParams::MAIN_THREAD) {
-    return true;
-  }
-
-  // Otherwise enable in dedicated ThreadProfiler browser tests.
+  // Disable for all supported threads pending launch. Enable only for browser
+  // tests.
   return browser_test_mode_enabled();
 }
 
 bool AndroidPlatformConfiguration::IsSupportedForChannel(
     base::Optional<version_info::Channel> release_channel) const {
-  // Enable on canary, for now.
-  if (release_channel && *release_channel == version_info::Channel::CANARY)
-    return true;
-
-  // Otherwise enable in dedicated ThreadProfiler browser tests.
+  // On Android profiling is only enabled in its own dedicated browser tests
+  // in local builds and the CQ.
   // TODO(https://crbug.com/1004855): Enable across all browser tests.
   return browser_test_mode_enabled();
 }
