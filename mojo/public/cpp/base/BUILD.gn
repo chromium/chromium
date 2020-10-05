@@ -90,6 +90,8 @@ component("shared_typemap_traits") {
     "generic_pending_receiver_mojom_traits.h",
     "read_only_buffer_mojom_traits.cc",
     "read_only_buffer_mojom_traits.h",
+    "read_only_file_mojom_traits.cc",
+    "read_only_file_mojom_traits.h",
     "shared_memory_mojom_traits.cc",
     "shared_memory_mojom_traits.h",
     "time_mojom_traits.cc",
