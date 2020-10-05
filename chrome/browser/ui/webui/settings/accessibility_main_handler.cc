@@ -24,6 +24,8 @@
 #include "base/numerics/ranges.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/soda_component_installer.h"
+#include "chrome/browser/component_updater/soda_en_us_component_installer.h"
+#include "chrome/browser/component_updater/soda_ja_jp_component_installer.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -34,9 +36,23 @@
 
 namespace {
 
-int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes) {
-  if (downloaded_bytes == -1 || total_bytes == -1 || total_bytes == 0)
+int GetDownloadProgress(
+    std::unordered_map<std::string, update_client::CrxUpdateItem>
+        downloading_components) {
+  int total_bytes = 0;
+  int downloaded_bytes = 0;
+
+  for (auto component : downloading_components) {
+    if (component.second.downloaded_bytes >= 0 &&
+        component.second.total_bytes > 0) {
+      downloaded_bytes += component.second.downloaded_bytes;
+      total_bytes += component.second.total_bytes;
+    }
+  }
+
+  if (total_bytes == 0)
     return -1;
+
   DCHECK_LE(downloaded_bytes, total_bytes);
   return 100 *
          base::ClampToRange(double{downloaded_bytes} / total_bytes, 0.0, 1.0);
@@ -125,7 +141,11 @@ void AccessibilityMainHandler::OnAccessibilityStatusChanged(
 }
 #else
 void AccessibilityMainHandler::OnEvent(Events event, const std::string& id) {
-  if (id != component_updater::SODAComponentInstallerPolicy::GetExtensionId())
+  if (id != component_updater::SODAComponentInstallerPolicy::GetExtensionId() &&
+      id != component_updater::SodaEnUsComponentInstallerPolicy::
+                GetExtensionId() &&
+      id !=
+          component_updater::SodaJaJpComponentInstallerPolicy::GetExtensionId())
     return;
 
   switch (event) {
@@ -136,8 +156,8 @@ void AccessibilityMainHandler::OnEvent(Events event, const std::string& id) {
     case Events::COMPONENT_UPDATE_UPDATING: {
       update_client::CrxUpdateItem item;
       g_browser_process->component_updater()->GetComponentDetails(id, &item);
-      const int progress =
-          GetDownloadProgress(item.downloaded_bytes, item.total_bytes);
+      downloading_components_[id] = item;
+      const int progress = GetDownloadProgress(downloading_components_);
       // When GetDownloadProgress returns -1, do nothing. It returns -1 when the
       // downloaded or total bytes is unknown.
       if (progress != -1) {
