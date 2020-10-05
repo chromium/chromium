@@ -743,7 +743,9 @@ public class Tab {
     // Called by Browser when removed.
     void onRemovedFromBrowser() {
         if (mDestroyOnRemove) {
-            unregisterTab(this);
+            // If this is destroyed as part of destroying the browser, then the tab has already been
+            // unregistered.
+            if (getTabById(mId) == this) unregisterTab(this);
             mDestroyOnRemove = false;
             mImpl = null;
         }
@@ -809,9 +811,9 @@ public class Tab {
 
         @Override
         public void onTabDestroyed() {
-            // Prior to 87 this was called *before* onTabRemoved(). Post 87 this is called after
-            // onTabRemoved(). onTabRemoved() needs the Tab to be registered, so unregisterTab()
-            // should only be called in >= 87 (in < 87 it is called from
+            // Prior to 87 this was potentially called *before* onTabRemoved(). Post 87 this is
+            // called after onTabRemoved(). onTabRemoved() needs the Tab to be registered, so
+            // unregisterTab() should only be called in >= 87 (in < 87 it is called from
             // Browser.prepareForDestroy()).
             if (WebLayer.getSupportedMajorVersionInternal() >= 87) {
                 unregisterTab(Tab.this);
@@ -819,7 +821,12 @@ public class Tab {
                 // into the implementation via this Tab.
                 mImpl = null;
             } else {
+                // This Tab should not have been destroyed yet.
+                assert mImpl != null;
                 mDestroyOnRemove = true;
+                // If the tab isn't registered, it means the Browser fragment was destroyed, in
+                // which case there is no call to onTabRemoved().
+                if (getTabById(mId) == null) onRemovedFromBrowser();
             }
         }
 
