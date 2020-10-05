@@ -239,7 +239,7 @@ class TestManagementUIHandler : public ManagementUIHandler {
     return report_sources;
   }
 
-  const std::string GetDeviceDomain() const override { return device_domain; }
+  const std::string GetDeviceManager() const override { return device_domain; }
   void SetDeviceDomain(const std::string& domain) { device_domain = domain; }
 #endif  // defined(OS_CHROMEOS)
 
@@ -1268,20 +1268,6 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   }
 
   EXPECT_EQ(expected_info, *threat_protection_info->FindListKey("info"));
-}
-
-TEST_F(ManagementUIHandlerTests, GetAccountDomain) {
-  TestingProfile::Builder builder_unmanaged_user;
-  builder_unmanaged_user.SetProfileName(kUser);
-  builder_unmanaged_user.OverridePolicyConnectorIsManagedForTesting(false);
-  auto unmanaged_user = builder_unmanaged_user.Build();
-  EXPECT_EQ("", handler_.GetAccountDomain(unmanaged_user.get()));
-
-  TestingProfile::Builder builder_managed_user;
-  builder_managed_user.SetProfileName(kUser);
-  builder_managed_user.OverridePolicyConnectorIsManagedForTesting(true);
-  auto managed_user = builder_managed_user.Build();
-  EXPECT_EQ(kDomain, handler_.GetAccountDomain(managed_user.get()));
 }
 
 TEST_F(ManagementUIHandlerTests, GetAccountManager) {

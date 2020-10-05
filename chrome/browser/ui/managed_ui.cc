@@ -33,30 +33,28 @@ bool ShouldDisplayManagedUi(Profile* profile) {
 }
 
 base::string16 GetManagedUiMenuItemLabel(Profile* profile) {
-  std::string management_domain =
-      ManagementUIHandler::GetAccountDomain(profile);
+  std::string account_manager = ManagementUIHandler::GetAccountManager(profile);
 
   int string_id = IDS_MANAGED;
   std::vector<base::string16> replacements;
-  if (!management_domain.empty()) {
+  if (!account_manager.empty()) {
     string_id = IDS_MANAGED_BY;
-    replacements.push_back(base::UTF8ToUTF16(management_domain));
+    replacements.push_back(base::UTF8ToUTF16(account_manager));
   }
 
   return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
 }
 
 base::string16 GetManagedUiWebUILabel(Profile* profile) {
-  std::string management_domain =
-      ManagementUIHandler::GetAccountDomain(profile);
+  std::string account_manager = ManagementUIHandler::GetAccountManager(profile);
 
   int string_id = IDS_MANAGED_WITH_HYPERLINK;
 
   std::vector<base::string16> replacements;
   replacements.push_back(base::UTF8ToUTF16(chrome::kChromeUIManagementURL));
-  if (!management_domain.empty()) {
+  if (!account_manager.empty()) {
     string_id = IDS_MANAGED_BY_WITH_HYPERLINK;
-    replacements.push_back(base::UTF8ToUTF16(management_domain));
+    replacements.push_back(base::UTF8ToUTF16(account_manager));
   }
 
   return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
@@ -64,17 +62,16 @@ base::string16 GetManagedUiWebUILabel(Profile* profile) {
 
 #if defined(OS_CHROMEOS)
 base::string16 GetDeviceManagedUiWebUILabel(Profile* profile) {
-  std::string management_domain =
-      ManagementUIHandler::GetAccountDomain(profile);
+  std::string account_manager = ManagementUIHandler::GetAccountManager(profile);
 
   int string_id = IDS_DEVICE_MANAGED_WITH_HYPERLINK;
 
   std::vector<base::string16> replacements;
   replacements.push_back(base::UTF8ToUTF16(chrome::kChromeUIManagementURL));
   replacements.push_back(ui::GetChromeOSDeviceName());
-  if (!management_domain.empty()) {
+  if (!account_manager.empty()) {
     string_id = IDS_DEVICE_MANAGED_BY_WITH_HYPERLINK;
-    replacements.push_back(base::UTF8ToUTF16(management_domain));
+    replacements.push_back(base::UTF8ToUTF16(account_manager));
   }
 
   return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);

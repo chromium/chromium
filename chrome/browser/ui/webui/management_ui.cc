@@ -171,32 +171,32 @@ base::string16 ManagementUI::GetManagementPageSubtitle(Profile* profile) {
                                       l10n_util::GetStringUTF16(device_type));
   }
 
-  std::string display_domain = connector->GetEnterpriseDisplayDomain();
+  std::string account_manager = connector->GetEnterpriseDomainManager();
 
-  if (display_domain.empty())
-    display_domain = connector->GetRealm();
-  if (display_domain.empty())
-    display_domain = ManagementUIHandler::GetAccountDomain(profile);
-  if (display_domain.empty()) {
+  if (account_manager.empty())
+    account_manager = connector->GetRealm();
+  if (account_manager.empty())
+    account_manager = ManagementUIHandler::GetAccountManager(profile);
+  if (account_manager.empty()) {
     return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED,
                                       l10n_util::GetStringUTF16(device_type));
   }
   return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
                                     l10n_util::GetStringUTF16(device_type),
-                                    base::UTF8ToUTF16(display_domain));
+                                    base::UTF8ToUTF16(account_manager));
 #else   // defined(OS_CHROMEOS)
-  const auto management_domain = ManagementUIHandler::GetAccountDomain(profile);
+  const auto account_manager = ManagementUIHandler::GetAccountManager(profile);
   const auto managed =
       profile->GetProfilePolicyConnector()->IsManaged() ||
       g_browser_process->browser_policy_connector()->HasMachineLevelPolicies();
-  if (management_domain.empty()) {
+  if (account_manager.empty()) {
     return l10n_util::GetStringUTF16(managed
                                          ? IDS_MANAGEMENT_SUBTITLE
                                          : IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE);
   }
   if (managed) {
     return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
-                                      base::UTF8ToUTF16(management_domain));
+                                      base::UTF8ToUTF16(account_manager));
   }
   return l10n_util::GetStringUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE);
 #endif  // defined(OS_CHROMEOS)

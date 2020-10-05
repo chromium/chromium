@@ -325,9 +325,7 @@ const char* GetReportingTypeValue(ReportingType reportingType) {
 
 }  // namespace
 
-// TODO(raleksandov) Move to util class or smth similar.
-// static
-std::string ManagementUIHandler::GetAccountDomain(Profile* profile) {
+std::string GetAccountDomain(Profile* profile) {
   if (!IsProfileManaged(profile))
     return std::string();
   auto username = profile->GetProfileUserName();
@@ -652,7 +650,7 @@ void ManagementUIHandler::AddUpdateRequiredEolInfo(
   response->SetStringPath(
       "eolMessage",
       l10n_util::GetStringFUTF16(IDS_MANAGEMENT_UPDATE_REQUIRED_EOL_MESSAGE,
-                                 base::UTF8ToUTF16(GetDeviceDomain()),
+                                 base::UTF8ToUTF16(GetDeviceManager()),
                                  ui::GetChromeOSDeviceName()));
   std::string eol_admin_message;
   chromeos::CrosSettings::Get()->GetString(
@@ -694,13 +692,13 @@ void ManagementUIHandler::AddProxyServerPrivacyDisclosure(
 base::Value ManagementUIHandler::GetContextualManagedData(Profile* profile) {
   base::Value response(base::Value::Type::DICTIONARY);
 #if defined(OS_CHROMEOS)
-  std::string management_domain = GetDeviceDomain();
-  if (management_domain.empty())
-    management_domain = GetAccountDomain(profile);
+  std::string enterprise_manager = GetDeviceManager();
+  if (enterprise_manager.empty())
+    enterprise_manager = GetAccountManager(profile);
   AddUpdateRequiredEolInfo(&response);
   AddProxyServerPrivacyDisclosure(&response);
 #else
-  std::string management_domain = GetAccountDomain(profile);
+  std::string enterprise_manager = GetAccountManager(profile);
 
   response.SetStringPath(
       "browserManagementNotice",
@@ -710,7 +708,7 @@ base::Value ManagementUIHandler::GetContextualManagedData(Profile* profile) {
           base::UTF8ToUTF16(chrome::kManagedUiLearnMoreUrl)));
 #endif
 
-  if (management_domain.empty()) {
+  if (enterprise_manager.empty()) {
     response.SetStringPath(
         "extensionReportingTitle",
         l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
@@ -736,14 +734,14 @@ base::Value ManagementUIHandler::GetContextualManagedData(Profile* profile) {
     response.SetStringPath(
         "extensionReportingTitle",
         l10n_util::GetStringFUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY,
-                                   base::UTF8ToUTF16(management_domain)));
+                                   base::UTF8ToUTF16(enterprise_manager)));
 
 #if !defined(OS_CHROMEOS)
     response.SetStringPath(
         "pageSubtitle",
         managed_()
             ? l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
-                                         base::UTF8ToUTF16(management_domain))
+                                         base::UTF8ToUTF16(enterprise_manager))
             : l10n_util::GetStringUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE));
 #else
     const auto device_type = ui::GetChromeOSDeviceTypeResourceId();
@@ -752,7 +750,7 @@ base::Value ManagementUIHandler::GetContextualManagedData(Profile* profile) {
         managed_()
             ? l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
                                          l10n_util::GetStringUTF16(device_type),
-                                         base::UTF8ToUTF16(management_domain))
+                                         base::UTF8ToUTF16(enterprise_manager))
             : l10n_util::GetStringFUTF16(
                   IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE,
                   l10n_util::GetStringUTF16(device_type)));
@@ -825,21 +823,21 @@ base::Value ManagementUIHandler::GetThreatProtectionInfo(
   }
 
 #if defined(OS_CHROMEOS)
-  std::string management_domain = GetDeviceDomain();
-  if (management_domain.empty())
-    management_domain = GetAccountDomain(profile);
+  std::string enterprise_manager = GetDeviceManager();
+  if (enterprise_manager.empty())
+    enterprise_manager = GetAccountManager(profile);
 #else
-  std::string management_domain = GetAccountDomain(profile);
+  std::string enterprise_manager = GetAccountManager(profile);
 #endif  // defined(OS_CHROMEOS)
 
   base::Value result(base::Value::Type::DICTIONARY);
   result.SetStringKey("description",
-                      management_domain.empty()
+                      enterprise_manager.empty()
                           ? l10n_util::GetStringUTF16(
                                 IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION)
                           : l10n_util::GetStringFUTF16(
                                 IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION_BY,
-                                base::UTF8ToUTF16(management_domain)));
+                                base::UTF8ToUTF16(enterprise_manager)));
   result.SetKey("info", std::move(info));
   return result;
 }
@@ -891,39 +889,39 @@ void AddStatusOverviewManagedDeviceAndAccount(
     base::Value* status,
     bool device_managed,
     bool account_managed,
-    const std::string& device_domain,
-    const std::string& account_domain) {
+    const std::string& device_manager,
+    const std::string& account_manager) {
   if (device_managed && account_managed &&
-      (account_domain.empty() || account_domain == device_domain)) {
+      (account_manager.empty() || account_manager == device_manager)) {
     status->SetKey(kOverview, base::Value(l10n_util::GetStringFUTF16(
                                   IDS_MANAGEMENT_DEVICE_AND_ACCOUNT_MANAGED_BY,
-                                  base::UTF8ToUTF16(device_domain))));
+                                  base::UTF8ToUTF16(device_manager))));
 
     return;
   }
 
-  if (account_managed && !account_domain.empty()) {
+  if (account_managed && !account_manager.empty()) {
     status->SetKey(kOverview, base::Value(l10n_util::GetStringFUTF16(
                                   IDS_MANAGEMENT_ACCOUNT_MANAGED_BY,
-                                  base::UTF8ToUTF16(account_domain))));
+                                  base::UTF8ToUTF16(account_manager))));
   }
 
-  if (account_managed && device_managed && !account_domain.empty() &&
-      account_domain != device_domain) {
+  if (account_managed && device_managed && !account_manager.empty() &&
+      account_manager != device_manager) {
     status->SetKey(kOverview,
                    base::Value(l10n_util::GetStringFUTF16(
                        IDS_MANAGEMENT_DEVICE_MANAGED_BY_ACCOUNT_MANAGED_BY,
-                       base::UTF8ToUTF16(device_domain),
-                       base::UTF8ToUTF16(account_domain))));
+                       base::UTF8ToUTF16(device_manager),
+                       base::UTF8ToUTF16(account_manager))));
   }
 }
 
-const std::string ManagementUIHandler::GetDeviceDomain() const {
+const std::string ManagementUIHandler::GetDeviceManager() const {
   std::string device_domain;
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   if (device_managed_)
-    device_domain = connector->GetEnterpriseDisplayDomain();
+    device_domain = connector->GetEnterpriseDomainManager();
   if (device_domain.empty() && connector->IsActiveDirectoryManaged())
     device_domain = connector->GetRealm();
   return device_domain;
@@ -942,7 +940,7 @@ void ManagementUIHandler::GetManagementStatus(Profile* profile,
                                   IDS_MANAGEMENT_DEVICE_NOT_MANAGED)));
     return;
   }
-  std::string account_domain = GetAccountDomain(profile);
+  std::string account_manager = GetAccountManager(profile);
   auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
   auto* primary_profile =
       primary_user
@@ -952,13 +950,13 @@ void ManagementUIHandler::GetManagementStatus(Profile* profile,
       primary_profile ? IsProfileManaged(primary_profile) : false;
 
   if (primary_user_managed)
-    account_domain = GetAccountDomain(primary_profile);
+    account_manager = GetAccountManager(primary_profile);
 
-  std::string device_domain = GetDeviceDomain();
+  std::string device_manager = GetDeviceManager();
 
   AddStatusOverviewManagedDeviceAndAccount(
       status, device_managed_, account_managed_ || primary_user_managed,
-      device_domain, account_domain);
+      device_manager, account_manager);
 #endif  // defined(OS_CHROMEOS)
 }
 
