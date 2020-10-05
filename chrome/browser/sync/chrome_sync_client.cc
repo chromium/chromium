@@ -87,6 +87,7 @@
 #include "components/sync_user_events/user_event_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/storage_partition.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -230,7 +231,9 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile) : profile_(profile) {
   trusted_vault_client_ =
       std::make_unique<syncer::StandaloneTrustedVaultClient>(
           profile_->GetPath().Append(kTrustedVaultFilename),
-          IdentityManagerFactory::GetForProfile(profile_));
+          IdentityManagerFactory::GetForProfile(profile_),
+          content::BrowserContext::GetDefaultStoragePartition(profile_)
+              ->GetURLLoaderFactoryForBrowserProcess());
 #endif  // defined(OS_ANDROID)
 }
 

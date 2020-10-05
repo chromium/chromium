@@ -134,7 +134,8 @@ class BackendDelegate : public StandaloneTrustedVaultBackend::Delegate {
 
 StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
     const base::FilePath& file_path,
-    signin::IdentityManager* identity_manager)
+    signin::IdentityManager* identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : backend_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(kBackendTaskTraits)),
       access_token_fetcher_frontend_(identity_manager) {
@@ -142,10 +143,6 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
           switches::kSyncSupportTrustedVaultPassphrase)) {
     return;
   }
-  // TODO(crbug.com/1113598): populate URLLoaderFactory into
-  // TrustedVaultConnectionImpl ctor.
-  // TODO(crbug.com/1102340): allow setting custom TrustedVaultConnection for
-  // testing.
   backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
       file_path,
       std::make_unique<
@@ -153,7 +150,7 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
           &StandaloneTrustedVaultClient::NotifyRecoverabilityDegradedChanged,
           weak_ptr_factory_.GetWeakPtr()))),
       std::make_unique<TrustedVaultConnectionImpl>(
-          /*url_loader_factory=*/nullptr,
+          url_loader_factory->Clone(),
           std::make_unique<TrustedVaultAccessTokenFetcherImpl>(
               access_token_fetcher_frontend_.GetWeakPtr())));
   backend_task_runner_->PostTask(

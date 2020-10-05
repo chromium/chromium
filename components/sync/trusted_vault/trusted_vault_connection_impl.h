@@ -24,13 +24,13 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
  public:
   TrustedVaultConnectionImpl(
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
-          url_loader_factory,
+          pending_url_loader_factory,
       std::unique_ptr<TrustedVaultAccessTokenFetcher> access_token_fetcher);
 
   TrustedVaultConnectionImpl(const TrustedVaultConnectionImpl& other) = delete;
   TrustedVaultConnectionImpl& operator=(
       const TrustedVaultConnectionImpl& other) = delete;
-  ~TrustedVaultConnectionImpl() override = default;
+  ~TrustedVaultConnectionImpl() override;
 
   void RegisterAuthenticationFactor(
       const CoreAccountInfo& account_info,
@@ -44,6 +44,11 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
                     int last_trusted_vault_key_version,
                     std::unique_ptr<SecureBoxKeyPair> device_key_pair,
                     DownloadKeysCallback callback) override;
+
+ private:
+  const std::unique_ptr<network::PendingSharedURLLoaderFactory>
+      pending_url_loader_factory_;
+  const std::unique_ptr<TrustedVaultAccessTokenFetcher> access_token_fetcher_;
 };
 
 }  // namespace syncer

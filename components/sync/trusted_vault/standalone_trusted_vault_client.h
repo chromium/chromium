@@ -21,6 +21,10 @@
 
 struct CoreAccountInfo;
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace syncer {
 
 class StandaloneTrustedVaultBackend;
@@ -33,8 +37,12 @@ class StandaloneTrustedVaultBackend;
 class StandaloneTrustedVaultClient : public TrustedVaultClient {
  public:
   // |identity_manager| must not be null and must outlive this object.
-  StandaloneTrustedVaultClient(const base::FilePath& file_path,
-                               signin::IdentityManager* identity_manager);
+  // |url_loader_factory| must not be null.
+  StandaloneTrustedVaultClient(
+      const base::FilePath& file_path,
+      signin::IdentityManager* identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
   StandaloneTrustedVaultClient(const StandaloneTrustedVaultClient& other) =
       delete;
   StandaloneTrustedVaultClient& operator=(
