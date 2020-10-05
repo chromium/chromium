@@ -546,9 +546,11 @@
   {
     "prefix": "dark-color-scheme",
     "bases": ["external/wpt/css/css-color-adjust/rendering/dark-color-scheme",
-              "fast/forms/color-scheme"],
+              "fast/forms/color-scheme",
+              "virtual/eye-dropper"],
     "args": ["--force-dark-mode",
-             "--enable-blink-features=CSSColorScheme,CSSColorSchemeUARendering"]
+             "--enable-blink-features=CSSColorScheme,CSSColorSchemeUARendering",
+             "--enable-features=EyeDropper"]
   },
   {
     "prefix": "appcache-origin-trial",

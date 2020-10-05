@@ -153,3 +153,4 @@ crbug.com/1095518 [ Linux ] crbug.com/840659 external/wpt/webrtc/simulcast/h264.
 
 # Sheriff 2020-10-05
 crbug.com/1134580 [ Linux ] virtual/eye-dropper/color-picker-show-eye-dropper.html [ Pass Timeout ]
+crbug.com/1134580 [ Linux ] virtual/dark-color-scheme/virtual/eye-dropper/color-picker-show-eye-dropper.html [ Pass Timeout ]

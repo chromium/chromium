@@ -220,6 +220,15 @@ channel-label {
     border: 1px solid #858585;
   }
 
+  eye-dropper {
+    background-image: -webkit-image-set(url(eye_dropper_icon_dark.svg) 1x);
+  }
+
+  eye-dropper.selected {
+    background-color: #454545;
+  }
+
+  eye-dropper:not(.selected):hover,
   format-toggler:hover {
     background-color: #545454;
   }
