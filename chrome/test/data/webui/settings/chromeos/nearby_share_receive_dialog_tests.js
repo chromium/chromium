@@ -5,10 +5,9 @@
 // clang-format off
 // #import {assertEquals} from '../../chai_assert.js';
 // #import {isChildVisible, waitAfterNextRender} from '../../test_util.m.js';
-// #import {setNearbyShareSettingsForTesting, setReceiveManagerForTesting, setContactManagerForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {setReceiveManagerForTesting, setContactManagerForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {FakeContactManager} from '../../nearby_share/shared/fake_nearby_contact_manager.m.js';
-// #import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.m.js';
 // #import {FakeReceiveManager} from './fake_receive_manager.m.js'
 // clang-format on
 
@@ -19,8 +18,6 @@ suite('NearbyShare', function() {
   let fakeReceiveManager;
   /** @type {!nearby_share.FakeContactManager} */
   let fakeContactManager;
-  /** @type {!nearby_share.FakeNearbyShareSettings} */
-  let fakeSettings;
 
   /**
    * This allows both sub-suites to share the same setup logic but with a
@@ -30,12 +27,9 @@ suite('NearbyShare', function() {
   function sharedSetup(enabled) {
     fakeReceiveManager = new nearby_share.FakeReceiveManager();
     fakeContactManager = new nearby_share.FakeContactManager();
-    fakeSettings = new nearby_share.FakeNearbyShareSettings();
-    fakeSettings.setEnabled(true);
 
     nearby_share.setReceiveManagerForTesting(fakeReceiveManager);
     nearby_share.setContactManagerForTesting(fakeContactManager);
-    nearby_share.setNearbyShareSettingsForTesting(fakeSettings);
 
     PolymerTest.clearBody();
 
