@@ -142,7 +142,19 @@ void ExpectRequestIsolationInfo(
 // AllowRenderingMhtmlOverHttp() and allows consumers to set a value.
 class DownloadTestContentBrowserClient : public TestContentBrowserClient {
  public:
-  DownloadTestContentBrowserClient() = default;
+  DownloadTestContentBrowserClient() {
+#if defined(OS_ANDROID)
+    content_url_loader_factory_ = std::make_unique<FakeNetworkURLLoaderFactory>(
+        "HTTP/1.1 200 OK\nContent-Type: multipart/related\n\n",
+        "This is a test for download mhtml through non http/https urls",
+        /* network_accessed */ true, net::OK);
+#endif  // OS_ANDROID
+
+    file_url_loader_factory_ = std::make_unique<FakeNetworkURLLoaderFactory>(
+        "HTTP/1.1 200 OK\nContent-Type: multipart/related\n\n",
+        "This is a test for download mhtml through non http/https urls",
+        /* network_accessed */ true, net::OK);
+  }
 
   bool AllowRenderingMhtmlOverHttp(NavigationUIData* navigation_data) override {
     return allowed_rendering_mhtml_over_http_;
@@ -163,33 +175,30 @@ class DownloadTestContentBrowserClient : public TestContentBrowserClient {
   void RegisterNonNetworkNavigationURLLoaderFactories(
       int frame_tree_node_id,
       base::UkmSourceId ukm_source_id,
-      NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories,
       NonNetworkURLLoaderFactoryMap* factories) override {
     if (!enable_register_non_network_url_loader_)
       return;
 
 #if defined(OS_ANDROID)
-    auto content_url_loader_factory =
-        std::make_unique<FakeNetworkURLLoaderFactory>(
-            "HTTP/1.1 200 OK\nContent-Type: multipart/related\n\n",
-            "This is a test for download mhtml through non http/https urls",
-            /* network_accessed */ true, net::OK);
-    uniquely_owned_factories->emplace(url::kContentScheme,
-                                      std::move(content_url_loader_factory));
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+        content_factory_remote;
+    content_url_loader_factory_->Clone(
+        content_factory_remote.InitWithNewPipeAndPassReceiver());
+    factories->emplace(url::kContentScheme, std::move(content_factory_remote));
 #endif  // OS_ANDROID
 
-    auto file_url_loader_factory =
-        std::make_unique<FakeNetworkURLLoaderFactory>(
-            "HTTP/1.1 200 OK\nContent-Type: multipart/related\n\n",
-            "This is a test for download mhtml through non http/https urls",
-            /* network_accessed */ true, net::OK);
-    uniquely_owned_factories->emplace(url::kFileScheme,
-                                      std::move(file_url_loader_factory));
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> file_factory_remote;
+    file_url_loader_factory_->Clone(
+        file_factory_remote.InitWithNewPipeAndPassReceiver());
+    factories->emplace(url::kFileScheme, std::move(file_factory_remote));
   }
 
  private:
   bool allowed_rendering_mhtml_over_http_ = false;
   bool enable_register_non_network_url_loader_ = false;
+
+  std::unique_ptr<FakeNetworkURLLoaderFactory> content_url_loader_factory_;
+  std::unique_ptr<FakeNetworkURLLoaderFactory> file_url_loader_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadTestContentBrowserClient);
 };

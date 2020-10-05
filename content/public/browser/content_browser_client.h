@@ -1241,21 +1241,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   //
   // |ukm_source_id| can be used to record UKM events associated with the
   // navigation.
-  //
-  // TODO(lukasza): https://crbug.com/1106995: Remove
-  // NonNetworkURLLoaderFactoryDeprecatedMap type alias (and parameters in
-  // methods below that use this type).  This type encourages incorrect lifetime
-  // of factories (the factories and their clones need to be fully owned by
-  // their receivers).
-  using NonNetworkURLLoaderFactoryDeprecatedMap =
-      std::map<std::string, std::unique_ptr<network::mojom::URLLoaderFactory>>;
   using NonNetworkURLLoaderFactoryMap =
       std::map<std::string,
                mojo::PendingRemote<network::mojom::URLLoaderFactory>>;
   virtual void RegisterNonNetworkNavigationURLLoaderFactories(
       int frame_tree_node_id,
       base::UkmSourceId ukm_source_id,
-      NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories,
       NonNetworkURLLoaderFactoryMap* factories);
 
   // Allows the embedder to register per-scheme URLLoaderFactory
@@ -1285,14 +1276,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   //   -downloads
   //   -service worker script when starting a service worker. In that case, the
   //    frame id will be MSG_ROUTING_NONE
-  //
-  // TODO(lukasza): https://crbug.com/1106995: Deprecate and remove the
-  // |uniquely_owned_factories| parameter - it results in incorrect factory
-  // lifetimes.
   virtual void RegisterNonNetworkSubresourceURLLoaderFactories(
       int render_process_id,
       int render_frame_id,
-      NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories,
       NonNetworkURLLoaderFactoryMap* factories);
 
   // Describes the purpose of the factory in WillCreateURLLoaderFactory().

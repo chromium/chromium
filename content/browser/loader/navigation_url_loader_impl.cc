@@ -1171,7 +1171,6 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
             frame_tree_node_id_,
             base::UkmSourceId::FromInt64(frame_tree_node->navigation_request()
                                              ->GetNextPageUkmSourceId()),
-            &non_network_uniquely_owned_factories_,
             &non_network_url_loader_factories_);
 
     // The embedder may want to proxy all network-bound URLLoaderFactory
@@ -1231,8 +1230,6 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
                                             ContentURLLoaderFactory::Create());
 #endif
 
-  for (auto& iter : non_network_uniquely_owned_factories_)
-    known_schemes_.insert(iter.first);
   for (auto& iter : non_network_url_loader_factories_)
     known_schemes_.insert(iter.first);
 
@@ -1342,18 +1339,12 @@ void NavigationURLLoaderImpl::CreateURLLoaderFactoryWithHeaderClient(
 void NavigationURLLoaderImpl::BindNonNetworkURLLoaderFactoryReceiver(
     const GURL& url,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver) {
-  auto it = non_network_uniquely_owned_factories_.find(url.scheme());
-  if (it != non_network_uniquely_owned_factories_.end()) {
-    it->second->Clone(std::move(factory_receiver));
-    return;
-  }
-
-  auto it2 = non_network_url_loader_factories_.find(url.scheme());
-  if (it2 != non_network_url_loader_factories_.end()) {
+  auto it = non_network_url_loader_factories_.find(url.scheme());
+  if (it != non_network_url_loader_factories_.end()) {
     mojo::Remote<network::mojom::URLLoaderFactory> remote(
-        std::move(it2->second));
+        std::move(it->second));
     remote->Clone(std::move(factory_receiver));
-    non_network_url_loader_factories_.erase(it2);
+    non_network_url_loader_factories_.erase(it);
     return;
   }
 

@@ -3266,18 +3266,20 @@ class NavigationUrlRewriteBrowserTest : public NavigationBaseBrowserTest {
     void BrowserURLHandlerCreated(BrowserURLHandler* handler) override {
       handler->AddHandlerPair(RewriteUrl,
                               BrowserURLHandlerImpl::null_handler());
+      fake_url_loader_factory_ = std::make_unique<FakeNetworkURLLoaderFactory>(
+          "HTTP/1.1 200 OK\nContent-Type: text/html\n\n", "This is a test",
+          /* network_accessed */ true, net::OK);
     }
 
     void RegisterNonNetworkNavigationURLLoaderFactories(
         int frame_tree_node_id,
         base::UkmSourceId ukm_source_id,
-        NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories,
         NonNetworkURLLoaderFactoryMap* factories) override {
-      auto url_loader_factory = std::make_unique<FakeNetworkURLLoaderFactory>(
-          "HTTP/1.1 200 OK\nContent-Type: text/html\n\n", "This is a test",
-          /* network_accessed */ true, net::OK);
-      uniquely_owned_factories->emplace(std::string(kNoAccessScheme),
-                                        std::move(url_loader_factory));
+      mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
+      fake_url_loader_factory_->Clone(
+          pending_remote.InitWithNewPipeAndPassReceiver());
+      factories->emplace(std::string(kNoAccessScheme),
+                         std::move(pending_remote));
     }
 
     bool ShouldAssignSiteForURL(const GURL& url) override {
@@ -3291,6 +3293,9 @@ class NavigationUrlRewriteBrowserTest : public NavigationBaseBrowserTest {
       }
       return false;
     }
+
+   private:
+    std::unique_ptr<FakeNetworkURLLoaderFactory> fake_url_loader_factory_;
   };
 
   NavigationUrlRewriteBrowserTest() {

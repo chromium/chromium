@@ -6140,7 +6140,6 @@ void RenderFrameHostImpl::CommitNavigation(
           appcache_remote.Unbind();
     }
 
-    non_network_uniquely_owned_factories_.clear();
     ContentBrowserClient::NonNetworkURLLoaderFactoryMap non_network_factories;
 
     // Set up the default factory.
@@ -6281,20 +6280,7 @@ void RenderFrameHostImpl::CommitNavigation(
     GetContentClient()
         ->browser()
         ->RegisterNonNetworkSubresourceURLLoaderFactories(
-            GetProcess()->GetID(), routing_id_,
-            &non_network_uniquely_owned_factories_, &non_network_factories);
-
-    for (auto& factory : non_network_uniquely_owned_factories_) {
-      mojo::PendingRemote<network::mojom::URLLoaderFactory>
-          pending_factory_proxy;
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver =
-          pending_factory_proxy.InitWithNewPipeAndPassReceiver();
-      WillCreateURLLoaderFactory(main_world_origin_for_url_loader_factory,
-                                 &factory_receiver, next_page_ukm_source_id);
-      factory.second->Clone(std::move(factory_receiver));
-      subresource_loader_factories->pending_scheme_specific_factories().emplace(
-          factory.first, std::move(pending_factory_proxy));
-    }
+            GetProcess()->GetID(), routing_id_, &non_network_factories);
 
     for (auto& factory : non_network_factories) {
       mojo::PendingRemote<network::mojom::URLLoaderFactory>

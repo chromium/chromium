@@ -194,8 +194,6 @@ WorkerScriptFetchInitiator::CreateFactoryBundle(
     RenderFrameHost* creator_render_frame_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  ContentBrowserClient::NonNetworkURLLoaderFactoryDeprecatedMap
-      non_network_uniquely_owned_factories;
   ContentBrowserClient::NonNetworkURLLoaderFactoryMap non_network_factories;
   non_network_factories.emplace(url::kDataScheme,
                                 DataURLLoaderFactory::Create());
@@ -231,8 +229,7 @@ WorkerScriptFetchInitiator::CreateFactoryBundle(
       GetContentClient()
           ->browser()
           ->RegisterNonNetworkSubresourceURLLoaderFactories(
-              worker_process_id, MSG_ROUTING_NONE,
-              &non_network_uniquely_owned_factories, &non_network_factories);
+              worker_process_id, MSG_ROUTING_NONE, &non_network_factories);
       break;
   }
 
@@ -254,17 +251,6 @@ WorkerScriptFetchInitiator::CreateFactoryBundle(
 
   auto factory_bundle =
       std::make_unique<blink::PendingURLLoaderFactoryBundle>();
-  for (auto& pair : non_network_uniquely_owned_factories) {
-    const std::string& scheme = pair.first;
-    std::unique_ptr<network::mojom::URLLoaderFactory> factory =
-        std::move(pair.second);
-
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
-    mojo::MakeSelfOwnedReceiver(
-        std::move(factory), factory_remote.InitWithNewPipeAndPassReceiver());
-    factory_bundle->pending_scheme_specific_factories().emplace(
-        scheme, std::move(factory_remote));
-  }
   for (auto& pair : non_network_factories) {
     const std::string& scheme = pair.first;
     mojo::PendingRemote<network::mojom::URLLoaderFactory>& pending_remote =

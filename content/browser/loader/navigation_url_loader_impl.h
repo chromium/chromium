@@ -297,12 +297,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   ContentBrowserClient::NonNetworkURLLoaderFactoryMap
       non_network_url_loader_factories_;
 
-  // Like |non_network_url_loader_factories_|, but with factories owned by
-  // |this| NavigationURLLoaderImpl. (This ownership mode is deprecated - see
-  // https://crbug.com/1106995)
-  ContentBrowserClient::NonNetworkURLLoaderFactoryDeprecatedMap
-      non_network_uniquely_owned_factories_;
-
   // Lazily initialized and used in the case of non-network resource
   // navigations. Keyed by URL scheme.
   // (These are cloned by entries populated in

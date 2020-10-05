@@ -130,7 +130,16 @@ const char kTrustMeIfEmbeddingSecureUrl[] =
 class FirstPartySchemeContentBrowserClient : public TestContentBrowserClient {
  public:
   explicit FirstPartySchemeContentBrowserClient(const GURL& iframe_url)
-      : iframe_url_(iframe_url) {}
+      : iframe_url_(iframe_url) {
+    trustme_factory_ = std::make_unique<network::TestURLLoaderFactory>();
+    trustmeifembeddingsecure_factory_ =
+        std::make_unique<network::TestURLLoaderFactory>();
+    std::string response_body =
+        base::StrCat({"<iframe src=\"", iframe_url_.spec(), "\"></iframe>"});
+    trustme_factory_->AddResponse(kTrustMeUrl, response_body);
+    trustmeifembeddingsecure_factory_->AddResponse(kTrustMeIfEmbeddingSecureUrl,
+                                                   response_body);
+  }
 
   ~FirstPartySchemeContentBrowserClient() override = default;
 
@@ -145,24 +154,24 @@ class FirstPartySchemeContentBrowserClient : public TestContentBrowserClient {
   void RegisterNonNetworkNavigationURLLoaderFactories(
       int frame_tree_node_id,
       base::UkmSourceId ukm_source_id,
-      NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories,
       NonNetworkURLLoaderFactoryMap* factories) override {
-    auto trustme_factory = std::make_unique<network::TestURLLoaderFactory>();
-    auto trustmeifembeddingsecure_factory =
-        std::make_unique<network::TestURLLoaderFactory>();
-    std::string response_body =
-        base::StrCat({"<iframe src=\"", iframe_url_.spec(), "\"></iframe>"});
-    trustme_factory->AddResponse(kTrustMeUrl, response_body);
-    trustmeifembeddingsecure_factory->AddResponse(kTrustMeIfEmbeddingSecureUrl,
-                                                  response_body);
-    uniquely_owned_factories->emplace("trustme", std::move(trustme_factory));
-    uniquely_owned_factories->emplace(
-        "trustmeifembeddingsecure",
-        std::move(trustmeifembeddingsecure_factory));
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> trustme_remote;
+    trustme_factory_->Clone(trustme_remote.InitWithNewPipeAndPassReceiver());
+    factories->emplace("trustme", std::move(trustme_remote));
+
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+        trustmeifembeddingsecure_remote;
+    trustmeifembeddingsecure_factory_->Clone(
+        trustmeifembeddingsecure_remote.InitWithNewPipeAndPassReceiver());
+    factories->emplace("trustmeifembeddingsecure",
+                       std::move(trustmeifembeddingsecure_remote));
   }
 
  private:
   GURL iframe_url_;
+  std::unique_ptr<network::TestURLLoaderFactory> trustme_factory_;
+  std::unique_ptr<network::TestURLLoaderFactory>
+      trustmeifembeddingsecure_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(FirstPartySchemeContentBrowserClient);
 };

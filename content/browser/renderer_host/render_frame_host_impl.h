@@ -2865,12 +2865,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   std::unique_ptr<PendingNavigation> pending_navigate_;
 
-  // A collection of non-network URLLoaderFactory implementations which are used
-  // to service any supported non-network subresource requests for the currently
-  // committed navigation.
-  ContentBrowserClient::NonNetworkURLLoaderFactoryDeprecatedMap
-      non_network_uniquely_owned_factories_;
-
   // Renderer-side states that blocks fast shutdown of the frame.
   bool has_before_unload_handler_ = false;
   bool has_unload_handler_ = false;

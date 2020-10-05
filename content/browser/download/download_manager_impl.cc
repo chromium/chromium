@@ -272,17 +272,6 @@ CreatePendingSharedURLLoaderFactory(StoragePartitionImpl* storage_partition,
       std::move(proxy_factory_remote), std::move(proxy_factory_receiver));
 }
 
-std::unique_ptr<network::PendingSharedURLLoaderFactory>
-CreatePendingSharedURLLoaderFactoryFromURLLoaderFactory(
-    std::unique_ptr<network::mojom::URLLoaderFactory> factory) {
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
-  mojo::MakeSelfOwnedReceiver(std::move(factory),
-                              factory_remote.InitWithNewPipeAndPassReceiver());
-
-  return std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
-      std::move(factory_remote));
-}
-
 void RecordDownloadOpenerType(RenderFrameHost* current,
                               RenderFrameHost* opener) {
   DCHECK(current);
@@ -1322,34 +1311,22 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
             DataURLLoaderFactory::CreateForOneSpecificUrl(params->url()));
   } else if (rfh && !blink::network_utils::IsURLHandledByNetworkService(
                         params->url())) {
-    ContentBrowserClient::NonNetworkURLLoaderFactoryDeprecatedMap
-        non_network_uniquely_owned_factories;
     ContentBrowserClient::NonNetworkURLLoaderFactoryMap
         non_network_url_loader_factories;
-
     GetContentClient()
         ->browser()
         ->RegisterNonNetworkSubresourceURLLoaderFactories(
             params->render_process_host_id(),
             params->render_frame_host_routing_id(),
-            &non_network_uniquely_owned_factories,
             &non_network_url_loader_factories);
-    auto it = non_network_uniquely_owned_factories.find(params->url().scheme());
-    if (it != non_network_uniquely_owned_factories.end()) {
+    auto it = non_network_url_loader_factories.find(params->url().scheme());
+    if (it != non_network_url_loader_factories.end()) {
       pending_url_loader_factory =
-          CreatePendingSharedURLLoaderFactoryFromURLLoaderFactory(
+          std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
               std::move(it->second));
     } else {
-      auto it2 = non_network_url_loader_factories.find(params->url().scheme());
-      if (it2 != non_network_url_loader_factories.end()) {
-        pending_url_loader_factory =
-            std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
-                std::move(it2->second));
-      } else {
-        DLOG(ERROR) << "No URLLoaderFactory found to download "
-                    << params->url();
-        return;
-      }
+      DLOG(ERROR) << "No URLLoaderFactory found to download " << params->url();
+      return;
     }
   } else {
     StoragePartitionImpl* storage_partition =

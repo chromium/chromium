@@ -238,9 +238,7 @@ ShellContentBrowserClient::GetNavigationUIData(
 void ShellContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
     int frame_tree_node_id,
     base::UkmSourceId ukm_source_id,
-    NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories,
     NonNetworkURLLoaderFactoryMap* factories) {
-  DCHECK(uniquely_owned_factories);
   DCHECK(factories);
 
   content::WebContents* web_contents =
@@ -281,9 +279,7 @@ void ShellContentBrowserClient::
 void ShellContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
     int render_process_id,
     int render_frame_id,
-    NonNetworkURLLoaderFactoryDeprecatedMap* uniquely_owned_factories,
     NonNetworkURLLoaderFactoryMap* factories) {
-  DCHECK(uniquely_owned_factories);
   DCHECK(factories);
 
   factories->emplace(extensions::kExtensionScheme,
