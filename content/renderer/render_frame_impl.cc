@@ -119,7 +119,6 @@
 #include "content/renderer/render_process.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
-#include "content/renderer/render_widget_fullscreen_pepper.h"
 #include "content/renderer/renderer_blink_platform_impl.h"
 #include "content/renderer/service_worker/service_worker_network_provider_for_frame.h"
 #include "content/renderer/service_worker/web_service_worker_provider_impl.h"
@@ -2174,49 +2173,6 @@ void RenderFrameImpl::PepperSelectionChanged(
   if (instance != focused_pepper_plugin_)
     return;
   SyncSelectionIfRequired();
-}
-
-RenderWidgetFullscreenPepper* RenderFrameImpl::CreatePepperFullscreenContainer(
-    PepperPluginInstanceImpl* plugin) {
-  // Get the URL of the main frame if possible.
-  blink::WebURL main_frame_url;
-  WebFrame* main_frame = render_view()->GetWebView()->MainFrame();
-  if (main_frame->IsWebLocalFrame())
-    main_frame_url = main_frame->ToWebLocalFrame()->GetDocument().Url();
-
-  mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget;
-  mojo::PendingAssociatedReceiver<blink::mojom::Widget> blink_widget_receiver =
-      blink_widget.InitWithNewEndpointAndPassReceiver();
-
-  mojo::PendingAssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
-  mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost>
-      blink_widget_host_receiver =
-          blink_widget_host.InitWithNewEndpointAndPassReceiver();
-
-  // Synchronous IPC to obtain a routing id for the fullscreen widget.
-  int32_t fullscreen_widget_routing_id = MSG_ROUTING_NONE;
-  if (!GetFrameHost()->CreateNewFullscreenWidget(
-          std::move(blink_widget_host_receiver), std::move(blink_widget),
-          &fullscreen_widget_routing_id)) {
-    return nullptr;
-  }
-  RenderWidget::ShowCallback show_callback =
-      base::BindOnce(&RenderViewImpl::ShowCreatedFullscreenWidget,
-                     render_view()->GetWeakPtr());
-
-  RenderWidgetFullscreenPepper* widget = RenderWidgetFullscreenPepper::Create(
-      agent_scheduling_group_, fullscreen_widget_routing_id,
-      std::move(show_callback), GetLocalRootRenderWidget()->compositor_deps(),
-      GetLocalRootRenderWidget()->GetWebWidget()->GetOriginalScreenInfo(),
-      plugin, std::move(main_frame_url), std::move(blink_widget_host),
-      std::move(blink_widget_receiver));
-  // TODO(nick): The show() handshake seems like unnecessary complexity here,
-  // since there's no real delay between CreateFullscreenWidget and
-  // ShowCreatedFullscreenWidget. Would it be simpler to have the
-  // CreateFullscreenWidget mojo method implicitly show the window, and skip the
-  // subsequent step?
-  widget->Show(blink::kWebNavigationPolicyCurrentTab);
-  return widget;
 }
 
 bool RenderFrameImpl::IsPepperAcceptingCompositionEvents() const {

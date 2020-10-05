@@ -29,7 +29,6 @@
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/renderer/pepper/event_conversion.h"
-#include "content/renderer/pepper/fullscreen_container.h"
 #include "content/renderer/pepper/gfx_conversion.h"
 #include "content/renderer/pepper/host_dispatcher_wrapper.h"
 #include "content/renderer/pepper/host_globals.h"
@@ -55,7 +54,6 @@
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
 #include "content/renderer/render_widget.h"
-#include "content/renderer/render_widget_fullscreen_pepper.h"
 #include "content/renderer/sad_plugin.h"
 #include "device/gamepad/public/cpp/gamepads.h"
 #include "ppapi/c/dev/ppp_text_input_dev.h"
@@ -504,7 +502,6 @@ PepperPluginInstanceImpl::PepperPluginInstanceImpl(
       graphics2d_translation_(0, 0),
       graphics2d_scale_(1.f),
       container_(container),
-      layer_bound_to_fullscreen_(false),
       layer_is_hardware_(false),
       plugin_url_(plugin_url),
       document_url_(container ? GURL(container->GetDocument().Url()) : GURL()),
@@ -529,8 +526,6 @@ PepperPluginInstanceImpl::PepperPluginInstanceImpl(
       uma_private_impl_(nullptr),
       plugin_print_interface_(nullptr),
       always_on_top_(false),
-      fullscreen_container_(nullptr),
-      flash_fullscreen_(false),
       desired_fullscreen_state_(false),
       message_channel_(nullptr),
       input_event_mask_(0),
@@ -576,8 +571,6 @@ PepperPluginInstanceImpl::PepperPluginInstanceImpl(
 }
 
 PepperPluginInstanceImpl::~PepperPluginInstanceImpl() {
-  DCHECK(!fullscreen_container_);
-
   // Notify all the plugin objects of deletion. This will prevent blink from
   // calling into the plugin any more.
   //
@@ -687,11 +680,6 @@ void PepperPluginInstanceImpl::Delete() {
   original_instance_interface_.reset();
   instance_interface_.reset();
 
-  if (fullscreen_container_) {
-    fullscreen_container_->Destroy();
-    fullscreen_container_ = nullptr;
-  }
-
   // Force-unbind any Graphics. In the case of Graphics2D, if the plugin
   // leaks the graphics 2D, it may actually get cleaned up after our
   // destruction, so we need its pointers to be up to date.
@@ -724,18 +712,13 @@ void PepperPluginInstanceImpl::Paint(cc::PaintCanvas* canvas,
 }
 
 void PepperPluginInstanceImpl::InvalidateRect(const gfx::Rect& rect) {
-  if (fullscreen_container_) {
-    // The fullscreen container uses a composited layer, which we invalidate
-    // directly below via SetNeedsDisplay().
-  } else {
-    if (!container_ || view_data_.rect.size.width == 0 ||
-        view_data_.rect.size.height == 0)
-      return;  // Nothing to do.
-    if (rect.IsEmpty())
-      container_->Invalidate();
-    else
-      container_->InvalidateRect(rect);
-  }
+  if (!container_ || view_data_.rect.size.width == 0 ||
+      view_data_.rect.size.height == 0)
+    return;  // Nothing to do.
+  if (rect.IsEmpty())
+    container_->Invalidate();
+  else
+    container_->InvalidateRect(rect);
 
   if (texture_layer_) {
     if (rect.IsEmpty()) {
@@ -811,7 +794,6 @@ void PepperPluginInstanceImpl::InstanceCrashed() {
 
   // Free any associated graphics.
   SetFullscreen(false);
-  FlashSetFullscreen(false, false);
   // Unbind current 2D or 3D graphics context.
   BindGraphics(pp_instance(), 0);
   InvalidateRect(gfx::Rect());
@@ -1303,8 +1285,6 @@ void PepperPluginInstanceImpl::ViewChanged(
     }
   }
 
-  UpdateFlashFullscreenState(fullscreen_container_ != nullptr);
-
   // During plugin initialization, there are often re-layouts. Avoid sending
   // intermediate sizes the plugin and throttler.
   if (sent_initial_did_change_view_)
@@ -1717,7 +1697,7 @@ void PepperPluginInstanceImpl::UpdateLayerTransform() {
 }
 
 bool PepperPluginInstanceImpl::PluginHasFocus() const {
-  return flash_fullscreen_ || has_webkit_focus_;
+  return has_webkit_focus_;
 }
 
 void PepperPluginInstanceImpl::SendFocusChangeNotification() {
@@ -1859,7 +1839,7 @@ void PepperPluginInstanceImpl::ReportGeometry() {
   // If this call was delayed, we may have transitioned back to fullscreen in
   // the mean time, so only report the geometry if we are actually in normal
   // mode.
-  if (container_ && !fullscreen_container_ && !flash_fullscreen_)
+  if (container_)
     container_->ReportGeometry();
 }
 
@@ -2049,10 +2029,6 @@ void PepperPluginInstanceImpl::RotateView(WebPlugin::RotationType type) {
   // NOTE: plugin instance may have been deleted.
 }
 
-bool PepperPluginInstanceImpl::FlashIsFullscreenOrPending() {
-  return fullscreen_container_ != nullptr;
-}
-
 bool PepperPluginInstanceImpl::IsFullscreenOrPending() {
   return desired_fullscreen_state_;
 }
@@ -2067,8 +2043,19 @@ bool PepperPluginInstanceImpl::SetFullscreen(bool fullscreen) {
   if (fullscreen == IsFullscreenOrPending())
     return false;
 
-  if (!SetFullscreenCommon(fullscreen))
+  if (!render_frame_)
     return false;
+
+  if (fullscreen) {
+    if (!render_frame_->render_view()
+             ->renderer_preferences()
+             .plugin_fullscreen_allowed) {
+      return false;
+    }
+
+    if (!HasTransientUserActivation())
+      return false;
+  }
 
   // Check whether we are trying to switch while the state is in transition.
   // The 2nd request gets dropped while messing up the internal state, so
@@ -2091,36 +2078,6 @@ bool PepperPluginInstanceImpl::SetFullscreen(bool fullscreen) {
   return true;
 }
 
-void PepperPluginInstanceImpl::UpdateFlashFullscreenState(
-    bool flash_fullscreen) {
-  bool is_mouselock_pending = TrackedCallback::IsPending(lock_mouse_callback_);
-
-  if (flash_fullscreen == flash_fullscreen_) {
-    // Manually clear callback when fullscreen fails with mouselock pending.
-    if (!flash_fullscreen && is_mouselock_pending)
-      lock_mouse_callback_->Run(PP_ERROR_FAILED);
-    return;
-  }
-
-  UpdateLayer(false);
-
-  bool old_plugin_focus = PluginHasFocus();
-  flash_fullscreen_ = flash_fullscreen;
-  if (is_mouselock_pending && !IsMouseLocked()) {
-    if (!HasTransientUserActivation() &&
-        !module_->permissions().HasPermission(
-            ppapi::PERMISSION_BYPASS_USER_GESTURE)) {
-      lock_mouse_callback_->Run(PP_ERROR_NO_USER_GESTURE);
-    } else {
-      if (!LockMouse(/*request_unadjusted_movement=*/false))
-        lock_mouse_callback_->Run(PP_ERROR_FAILED);
-    }
-  }
-
-  if (PluginHasFocus() != old_plugin_focus)
-    SendFocusChangeNotification();
-}
-
 void PepperPluginInstanceImpl::UpdateLayer(bool force_creation) {
   if (!container_)
     return;
@@ -2136,17 +2093,13 @@ void PepperPluginInstanceImpl::UpdateLayer(bool force_creation) {
   }
 
   if (!force_creation && (want_texture_layer == !!texture_layer_) &&
-      (want_3d_layer == layer_is_hardware_) &&
-      layer_bound_to_fullscreen_ == !!fullscreen_container_) {
+      (want_3d_layer == layer_is_hardware_)) {
     UpdateLayerTransform();
     return;
   }
 
   if (texture_layer_) {
-    if (!layer_bound_to_fullscreen_)
-      container_->SetCcLayer(nullptr, false);
-    else if (fullscreen_container_)
-      fullscreen_container_->SetLayer(nullptr);
+    container_->SetCcLayer(nullptr, false);
     texture_layer_->ClearClient();
     texture_layer_ = nullptr;
   }
@@ -2170,20 +2123,15 @@ void PepperPluginInstanceImpl::UpdateLayer(bool force_creation) {
     // Ignore transparency in fullscreen, since that's what Flash always
     // wants to do, and that lets it not recreate a context if
     // wmode=transparent was specified.
-    opaque = opaque || fullscreen_container_;
     texture_layer_->SetContentsOpaque(opaque);
   }
 
   if (texture_layer_) {
-    if (fullscreen_container_)
-      fullscreen_container_->SetLayer(texture_layer_);
-    else
-      container_->SetCcLayer(texture_layer_.get(), true);
+    container_->SetCcLayer(texture_layer_.get(), true);
     if (is_flash_plugin_)
       texture_layer_->SetMayContainVideo(true);
   }
 
-  layer_bound_to_fullscreen_ = !!fullscreen_container_;
   layer_is_hardware_ = want_3d_layer;
   UpdateLayerTransform();
 }
@@ -2364,10 +2312,8 @@ PP_Bool PepperPluginInstanceImpl::BindGraphics(PP_Instance instance,
     return PP_TRUE;
   }
 
-  // Refuse to bind if in transition to fullscreen with PPB_FlashFullscreen or
-  // to/from fullscreen with PPB_Fullscreen.
-  if ((fullscreen_container_ && !flash_fullscreen_) ||
-      desired_fullscreen_state_ != view_data_.is_fullscreen)
+  // Refuse to bind if in transition to/from fullscreen with PPB_Fullscreen.
+  if (desired_fullscreen_state_ != view_data_.is_fullscreen)
     return PP_FALSE;
 
   const ppapi::host::PpapiHost* ppapi_host =
@@ -2418,10 +2364,6 @@ PP_Bool PepperPluginInstanceImpl::IsFullFrame(PP_Instance instance) {
 
 const ViewData* PepperPluginInstanceImpl::GetViewData(PP_Instance instance) {
   return &view_data_;
-}
-
-PP_Bool PepperPluginInstanceImpl::FlashIsFullscreen(PP_Instance instance) {
-  return PP_FromBool(flash_fullscreen_);
 }
 
 PP_Var PepperPluginInstanceImpl::GetWindowObject(PP_Instance instance) {
@@ -2595,23 +2537,13 @@ PP_Bool PepperPluginInstanceImpl::SetFullscreen(PP_Instance instance,
 
 PP_Bool PepperPluginInstanceImpl::GetScreenSize(PP_Instance instance,
                                                 PP_Size* size) {
-  if (flash_fullscreen_) {
-    // Workaround for Flash rendering bug: Flash is assuming the fullscreen view
-    // size will be equal to the physical screen size.  However, the fullscreen
-    // view is sized by the browser UI, and may not be the same size as the
-    // screen or the desktop.  Therefore, report the view size as the screen
-    // size when in fullscreen mode.  http://crbug.com/506016
-    // TODO(miu): Remove this workaround once Flash has been fixed.
-    *size = view_data_.rect.size;
-  } else {
-    // All other cases: Report the screen size.
-    if (!render_frame_)
-      return PP_FALSE;
-    blink::ScreenInfo info = render_frame_->GetLocalRootRenderWidget()
-                                 ->GetWebWidget()
-                                 ->GetScreenInfo();
-    *size = PP_MakeSize(info.rect.width(), info.rect.height());
-  }
+  // All other cases: Report the screen size.
+  if (!render_frame_)
+    return PP_FALSE;
+  blink::ScreenInfo info = render_frame_->GetLocalRootRenderWidget()
+                               ->GetWebWidget()
+                               ->GetScreenInfo();
+  *size = PP_MakeSize(info.rect.width(), info.rect.height());
   return PP_TRUE;
 }
 
@@ -2735,13 +2667,6 @@ int32_t PepperPluginInstanceImpl::LockMouse(
 
   if (!HasTransientUserActivation())
     return PP_ERROR_NO_USER_GESTURE;
-
-  // Attempt mouselock only if Flash isn't waiting on fullscreen, otherwise
-  // we wait and call LockMouse() in UpdateFlashFullscreenState().
-  if (!FlashIsFullscreenOrPending() || flash_fullscreen_) {
-    if (!LockMouse(false))
-      return PP_ERROR_FAILED;
-  }
 
   // Either mouselock succeeded or a Flash fullscreen is pending.
   lock_mouse_callback_ = callback;
@@ -3037,9 +2962,7 @@ void PepperPluginInstanceImpl::DoSetCursor(std::unique_ptr<ui::Cursor> cursor) {
     return;
 
   cursor_ = std::move(cursor);
-  if (fullscreen_container_) {
-    fullscreen_container_->PepperDidChangeCursor(*cursor_);
-  } else if (render_frame_) {
+  if (render_frame_) {
     // Update the cursor appearance immediately if the requesting plugin is the
     // one which receives the last mouse event. Otherwise, the new cursor won't
     // be picked up until the plugin gets the next input event. That is bad if,
@@ -3062,49 +2985,7 @@ bool PepperPluginInstanceImpl::IsFullPagePlugin() {
              .IsPluginDocument();
 }
 
-bool PepperPluginInstanceImpl::FlashSetFullscreen(bool fullscreen,
-                                                  bool delay_report) {
-  TRACE_EVENT0("ppapi", "PepperPluginInstanceImpl::FlashSetFullscreen");
-  // Keep a reference on the stack. See NOTE above.
-  scoped_refptr<PepperPluginInstanceImpl> ref(this);
-
-  // We check whether we are trying to switch to the state we're already going
-  // to (i.e. if we're already switching to fullscreen but the fullscreen
-  // container isn't ready yet, don't do anything more).
-  if (fullscreen == FlashIsFullscreenOrPending())
-    return true;
-
-  if (!SetFullscreenCommon(fullscreen))
-    return false;
-
-  // Unbind current 2D or 3D graphics context.
-  DVLOG(1) << "Setting fullscreen to " << (fullscreen ? "on" : "off");
-  if (fullscreen) {
-    DCHECK(!fullscreen_container_);
-    fullscreen_container_ =
-        render_frame_->CreatePepperFullscreenContainer(this);
-    UpdateLayer(false);
-  } else {
-    DCHECK(fullscreen_container_);
-    fullscreen_container_->Destroy();
-    fullscreen_container_ = nullptr;
-    UpdateFlashFullscreenState(false);
-    if (!delay_report) {
-      ReportGeometry();
-    } else {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&PepperPluginInstanceImpl::ReportGeometry, this));
-    }
-  }
-
-  return true;
-}
-
 bool PepperPluginInstanceImpl::IsRectTopmost(const gfx::Rect& rect) {
-  if (flash_fullscreen_)
-    return true;
-
   return container_->IsRectTopmost(rect);
 }
 
@@ -3239,23 +3120,6 @@ void PepperPluginInstanceImpl::ResetSizeAttributesAfterFullscreen() {
   element.SetAttribute(WebString::FromUTF8(kStyle), style_before_fullscreen_);
 }
 
-bool PepperPluginInstanceImpl::SetFullscreenCommon(bool fullscreen) const {
-  if (!render_frame_)
-    return false;
-
-  if (fullscreen) {
-    if (!render_frame_->render_view()
-             ->renderer_preferences()
-             .plugin_fullscreen_allowed) {
-      return false;
-    }
-
-    if (!HasTransientUserActivation())
-      return false;
-  }
-  return true;
-}
-
 bool PepperPluginInstanceImpl::IsMouseLocked() {
   return GetMouseLockDispatcher()->IsMouseLockedTo(
       GetOrCreateLockTargetAdapter());
@@ -3277,11 +3141,6 @@ PepperPluginInstanceImpl::GetOrCreateLockTargetAdapter() {
 }
 
 MouseLockDispatcher* PepperPluginInstanceImpl::GetMouseLockDispatcher() {
-  if (flash_fullscreen_) {
-    RenderWidgetFullscreenPepper* container =
-        static_cast<RenderWidgetFullscreenPepper*>(fullscreen_container_);
-    return container->mouse_lock_dispatcher();
-  }
   if (render_frame_)
     return render_frame_->GetLocalRootRenderWidget()->mouse_lock_dispatcher();
   return nullptr;

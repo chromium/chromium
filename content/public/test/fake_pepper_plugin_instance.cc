@@ -55,11 +55,6 @@ bool FakePepperPluginInstance::IsFullPagePlugin() {
   return false;
 }
 
-bool FakePepperPluginInstance::FlashSetFullscreen(bool fullscreen,
-                                                  bool delay_report) {
-  return false;
-}
-
 bool FakePepperPluginInstance::IsRectTopmost(const gfx::Rect& rect) {
   return false;
 }

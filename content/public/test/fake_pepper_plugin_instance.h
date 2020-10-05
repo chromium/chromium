@@ -34,7 +34,6 @@ class FakePepperPluginInstance : public PepperPluginInstance {
       int plugin_child_id) override;
   void SetAlwaysOnTop(bool on_top) override;
   bool IsFullPagePlugin() override;
-  bool FlashSetFullscreen(bool fullscreen, bool delay_report) override;
   bool IsRectTopmost(const gfx::Rect& rect) override;
   int32_t Navigate(const ppapi::URLRequestInfoData& request,
                    const char* target,

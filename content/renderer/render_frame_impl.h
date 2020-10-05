@@ -161,7 +161,6 @@ class RenderAccessibilityManager;
 class RenderFrameObserver;
 class RenderViewImpl;
 class RenderWidget;
-class RenderWidgetFullscreenPepper;
 struct CustomContextMenuContext;
 struct FrameReplicationState;
 
@@ -352,10 +351,6 @@ class CONTENT_EXPORT RenderFrameImpl
 
   // Informs the render view that a PPAPI plugin has changed selection.
   void PepperSelectionChanged(PepperPluginInstanceImpl* instance);
-
-  // Creates a fullscreen container for a pepper plugin instance.
-  RenderWidgetFullscreenPepper* CreatePepperFullscreenContainer(
-      PepperPluginInstanceImpl* plugin);
 
   bool IsPepperAcceptingCompositionEvents() const;
 

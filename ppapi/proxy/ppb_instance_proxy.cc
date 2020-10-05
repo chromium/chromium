@@ -227,13 +227,6 @@ const ViewData* PPB_Instance_Proxy::GetViewData(PP_Instance instance) {
   return &data->view;
 }
 
-PP_Bool PPB_Instance_Proxy::FlashIsFullscreen(PP_Instance instance) {
-  // This function is only used for proxying in the renderer process. It is not
-  // implemented in the plugin process.
-  NOTREACHED();
-  return PP_FALSE;
-}
-
 PP_Var PPB_Instance_Proxy::GetWindowObject(PP_Instance instance) {
   ReceiveSerializedVarReturnValue result;
   dispatcher()->Send(new PpapiHostMsg_PPBInstance_GetWindowObject(

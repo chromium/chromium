@@ -50,8 +50,6 @@ class PPB_Instance_API {
   // Unexposed PPAPI functions for proxying.
   // Returns the internal view data struct.
   virtual const ViewData* GetViewData(PP_Instance instance) = 0;
-  // Returns the flash fullscreen status.
-  virtual PP_Bool FlashIsFullscreen(PP_Instance instance) = 0;
 
   // InstancePrivate.
   virtual PP_Var GetWindowObject(PP_Instance instance) = 0;

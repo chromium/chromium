@@ -11,7 +11,6 @@
 #include "base/process/process_handle.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "content/renderer/pepper/fullscreen_container.h"
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/pepper_browser_connection.h"
 #include "content/renderer/pepper/pepper_graphics_2d_host.h"
@@ -20,7 +19,6 @@
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/pepper/plugin_module.h"
 #include "content/renderer/render_view_impl.h"
-#include "content/renderer/render_widget_fullscreen_pepper.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_platform_file.h"
 #include "ppapi/host/ppapi_host.h"
@@ -192,10 +190,6 @@ int RendererPpapiHostImpl::GetRoutingIDForWidget(PP_Instance instance) {
   PepperPluginInstanceImpl* plugin_instance = GetAndValidateInstance(instance);
   if (!plugin_instance)
     return 0;
-  if (plugin_instance->flash_fullscreen()) {
-    FullscreenContainer* container = plugin_instance->fullscreen_container();
-    return static_cast<RenderWidgetFullscreenPepper*>(container)->routing_id();
-  }
   return GetRenderViewForInstance(instance)->GetRoutingID();
 }
 
@@ -203,11 +197,8 @@ gfx::Point RendererPpapiHostImpl::PluginPointToRenderFrame(
     PP_Instance instance,
     const gfx::Point& pt) {
   PepperPluginInstanceImpl* plugin_instance = GetAndValidateInstance(instance);
-  if (!plugin_instance || plugin_instance->flash_fullscreen()) {
-    // Flash fullscreen is special in that it renders into its own separate,
-    // dedicated window.  So, do not offset the point.
+  if (!plugin_instance)
     return pt;
-  }
   return gfx::Point((pt.x() + plugin_instance->view_data().rect.point.x) /
                         viewport_to_dip_scale_,
                     (pt.y() + plugin_instance->view_data().rect.point.y) /

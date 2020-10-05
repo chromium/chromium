@@ -89,7 +89,6 @@ class RenderWidgetDelegate;
 //
 // RenderWidget is used to implement:
 // - RenderViewImpl (deprecated)
-// - Fullscreen mode (RenderWidgetFullScreen)
 // - Popup "menus" (like the color chooser and date picker)
 // - Widgets for frames (the main frame, and subframes due to out-of-process
 //   iframe support)
@@ -160,12 +159,6 @@ class CONTENT_EXPORT RenderWidget
                     RenderWidget* opener_widget,
                     blink::WebPagePopup* web_page_popup,
                     const blink::ScreenInfo& screen_info);
-
-  // Initialize a new RenderWidget for pepper fullscreen. The |show_callback| is
-  // called when RenderWidget::Show() happens.
-  void InitForPepperFullscreen(ShowCallback show_callback,
-                               blink::WebWidget* web_widget,
-                               const blink::ScreenInfo& screen_info);
 
   // Initialize a new RenderWidget that will be attached to a RenderFrame (via
   // the WebFrameWidget), for a frame that is a main frame.
@@ -335,8 +328,7 @@ class CONTENT_EXPORT RenderWidget
   // Returns the WebFrameWidget associated with this RenderWidget if any.
   // Returns nullptr if GetWebWidget() returns nullptr or returns a WebWidget
   // that is not a WebFrameWidget. A WebFrameWidget only makes sense when there
-  // a local root associated with it. RenderWidgetFullscreenPepper and a swapped
-  // out RenderWidgets are amongst the cases where this method returns nullptr.
+  // a local root associated with it.
   blink::WebFrameWidget* GetFrameWidget() const;
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -401,13 +393,12 @@ class CONTENT_EXPORT RenderWidget
   // that are not for a frame (eg popups) and excludes the widget for the main
   // frame (which is attached to the RenderViewImpl).
   bool for_child_local_root_frame_ = false;
-  // RenderWidgets are created for frames, popups and pepper fullscreen. In the
+  // RenderWidgets are created for frames and  popups. In the
   // former case, the caller frame takes ownership and eventually passes the
   // unique_ptr back in Close(). In the latter cases, the browser process takes
   // ownership via IPC.  These booleans exist to allow us to confirm than an IPC
-  // message to kill the render widget is coming for a popup or fullscreen.
+  // message to kill the render widget is coming for a popup.
   bool for_popup_ = false;
-  bool for_pepper_fullscreen_ = false;
 
   // A callback into the creator/opener of this widget, to be executed when
   // WebWidgetClient::Show() occurs.

@@ -264,14 +264,6 @@ void RenderWidget::InitForPopup(ShowCallback show_callback,
   Initialize(std::move(show_callback), web_page_popup, screen_info);
 }
 
-void RenderWidget::InitForPepperFullscreen(
-    ShowCallback show_callback,
-    blink::WebWidget* web_widget,
-    const blink::ScreenInfo& screen_info) {
-  for_pepper_fullscreen_ = true;
-  Initialize(std::move(show_callback), web_widget, screen_info);
-}
-
 void RenderWidget::InitForMainFrame(ShowCallback show_callback,
                                     blink::WebFrameWidget* web_frame_widget,
                                     const blink::ScreenInfo& screen_info,
@@ -357,7 +349,7 @@ bool RenderWidget::Send(IPC::Message* message) {
 }
 
 void RenderWidget::OnClose() {
-  DCHECK(for_popup_ || for_pepper_fullscreen_);
+  DCHECK(for_popup_);
 
   Close(base::WrapUnique(this));
 }

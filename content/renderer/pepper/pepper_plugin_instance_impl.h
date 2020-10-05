@@ -104,7 +104,6 @@ class MetafileSkia;
 
 namespace content {
 
-class FullscreenContainer;
 class MessageChannel;
 class PepperAudioController;
 class PepperGraphics2DHost;
@@ -279,38 +278,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   bool CanRotateView();
   void RotateView(blink::WebPlugin::RotationType type);
 
-  // There are 2 implementations of the fullscreen interface
-  // PPB_FlashFullscreen is used by Pepper Flash.
-  // PPB_Fullscreen is intended for other applications including NaCl.
-  // The two interface are mutually exclusive.
-
-  // Implementation of PPB_FlashFullscreen.
-
-  // Because going to fullscreen is asynchronous (but going out is not), there
-  // are 3 states:
-  // - normal            : fullscreen_container_ == NULL
-  //                       flash_fullscreen_ == false
-  // - fullscreen pending: fullscreen_container_ != NULL
-  //                       flash_fullscreen_ == false
-  // - fullscreen        : fullscreen_container_ != NULL
-  //                       flash_fullscreen_ == true
-  //
-  // In normal state, events come from webkit and painting goes back to it.
-  // In fullscreen state, events come from the fullscreen container, and
-  // painting goes back to it.
-  // In pending state, events from webkit are ignored, and as soon as we
-  // receive events from the fullscreen container, we go to the fullscreen
-  // state.
-  bool FlashIsFullscreenOrPending();
-
-  // Updates |flash_fullscreen_| and sends focus change notification if
-  // necessary.
-  void UpdateFlashFullscreenState(bool flash_fullscreen);
-
-  FullscreenContainer* fullscreen_container() const {
-    return fullscreen_container_;
-  }
-
   // Implementation of PPB_Fullscreen.
 
   // Because going to/from fullscreen is asynchronous, there are 4 states:
@@ -323,8 +290,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   // - normal pending    : desired_fullscreen_state_ = false
   //                       view_data_.is_fullscreen = true
   bool IsFullscreenOrPending();
-
-  bool flash_fullscreen() const { return flash_fullscreen_; }
 
   // Switches between fullscreen and normal mode. The transition is
   // asynchronous. WebKit will trigger corresponding ViewChanged calls.  Returns
@@ -391,7 +356,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
       int plugin_child_id) override;
   void SetAlwaysOnTop(bool on_top) override;
   bool IsFullPagePlugin() override;
-  bool FlashSetFullscreen(bool fullscreen, bool delay_report) override;
   bool IsRectTopmost(const gfx::Rect& rect) override;
   int32_t Navigate(const ppapi::URLRequestInfoData& request,
                    const char* target,
@@ -421,7 +385,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   PP_Bool BindGraphics(PP_Instance instance, PP_Resource device) override;
   PP_Bool IsFullFrame(PP_Instance instance) override;
   const ppapi::ViewData* GetViewData(PP_Instance instance) override;
-  PP_Bool FlashIsFullscreen(PP_Instance instance) override;
   PP_Var GetWindowObject(PP_Instance instance) override;
   PP_Var GetOwnerElementObject(PP_Instance instance) override;
   PP_Var ExecuteScript(PP_Instance instance,
@@ -645,9 +608,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   void SetSizeAttributesForFullscreen();
   void ResetSizeAttributesAfterFullscreen();
 
-  // Shared code between SetFullscreen() and FlashSetFullscreen().
-  bool SetFullscreenCommon(bool fullscreen) const;
-
   bool IsMouseLocked();
   bool LockMouse(bool request_unadjusted_movement);
   MouseLockDispatcher* GetMouseLockDispatcher();
@@ -704,7 +664,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   // NULL until we have been initialized.
   blink::WebPluginContainer* container_;
   scoped_refptr<cc::TextureLayer> texture_layer_;
-  bool layer_bound_to_fullscreen_;
   bool layer_is_hardware_;
 
   // Plugin URL.
@@ -800,18 +759,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   // Set to true if this plugin thinks it will always be on top. This allows us
   // to use a more optimized painting path in some cases.
   bool always_on_top_;
-
-  // Implementation of PPB_FlashFullscreen.
-
-  // Plugin container for fullscreen mode. NULL if not in fullscreen mode. Note:
-  // there is a transition state where fullscreen_container_ is non-NULL but
-  // flash_fullscreen_ is false (see above).
-  FullscreenContainer* fullscreen_container_;
-
-  // True if we are in "flash" fullscreen mode. False if we are in normal mode
-  // or in transition to fullscreen. Normal fullscreen mode is indicated in
-  // the ViewData.
-  bool flash_fullscreen_;
 
   // Implementation of PPB_Fullscreen.
 

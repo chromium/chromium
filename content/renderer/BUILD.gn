@@ -457,7 +457,6 @@ target(link_target_type, "renderer") {
       "pepper/content_renderer_pepper_host_factory.h",
       "pepper/event_conversion.cc",
       "pepper/event_conversion.h",
-      "pepper/fullscreen_container.h",
       "pepper/gfx_conversion.h",
       "pepper/host_array_buffer_var.cc",
       "pepper/host_array_buffer_var.h",
@@ -580,8 +579,6 @@ target(link_target_type, "renderer") {
       "pepper/video_decoder_shim.h",
       "pepper/video_encoder_shim.cc",
       "pepper/video_encoder_shim.h",
-      "render_widget_fullscreen_pepper.cc",
-      "render_widget_fullscreen_pepper.h",
     ]
 
     deps += [

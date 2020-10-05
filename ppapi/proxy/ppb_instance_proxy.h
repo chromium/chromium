@@ -47,7 +47,6 @@ class PPB_Instance_Proxy : public InterfaceProxy,
   PP_Bool BindGraphics(PP_Instance instance, PP_Resource device) override;
   PP_Bool IsFullFrame(PP_Instance instance) override;
   const ViewData* GetViewData(PP_Instance instance) override;
-  PP_Bool FlashIsFullscreen(PP_Instance instance) override;
   PP_Var GetWindowObject(PP_Instance instance) override;
   PP_Var GetOwnerElementObject(PP_Instance instance) override;
   PP_Var ExecuteScript(PP_Instance instance,

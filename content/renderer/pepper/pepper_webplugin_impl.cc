@@ -199,7 +199,7 @@ bool PepperWebPluginImpl::SupportsKeyboardFocus() const {
 void PepperWebPluginImpl::Paint(cc::PaintCanvas* canvas, const WebRect& rect) {
   // Re-entrancy may cause JS to try to execute script on the plugin before it
   // is fully initialized. See: crbug.com/715747.
-  if (instance_ && !instance_->FlashIsFullscreenOrPending())
+  if (instance_)
     instance_->Paint(canvas, plugin_rect_, rect);
 }
 
@@ -209,7 +209,7 @@ void PepperWebPluginImpl::UpdateGeometry(
     const WebRect& unobscured_rect,
     bool is_visible) {
   plugin_rect_ = window_rect;
-  if (instance_ && !instance_->FlashIsFullscreenOrPending())
+  if (instance_)
     instance_->ViewChanged(plugin_rect_, clip_rect, unobscured_rect);
 }
 
@@ -253,7 +253,7 @@ blink::WebInputEventResult PepperWebPluginImpl::HandleInputEvent(
     ui::Cursor* cursor) {
   // Re-entrancy may cause JS to try to execute script on the plugin before it
   // is fully initialized. See: crbug.com/715747.
-  if (!instance_ || instance_->FlashIsFullscreenOrPending())
+  if (!instance_)
     return blink::WebInputEventResult::kNotHandled;
   return instance_->HandleCoalescedInputEvent(coalesced_event, cursor)
              ? blink::WebInputEventResult::kHandledApplication

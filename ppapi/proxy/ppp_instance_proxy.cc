@@ -77,8 +77,6 @@ void DidChangeView(PP_Instance instance, PP_Resource view_resource) {
 
   PP_Bool flash_fullscreen = PP_FALSE;
   EnterInstanceNoLock enter_instance(instance);
-  if (!enter_instance.failed())
-    flash_fullscreen = enter_instance.functions()->FlashIsFullscreen(instance);
   dispatcher->Send(new PpapiMsg_PPPInstance_DidChangeView(
       API_ID_PPP_INSTANCE, instance, enter_view.object()->GetData(),
       flash_fullscreen));
