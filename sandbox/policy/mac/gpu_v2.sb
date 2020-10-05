@@ -35,6 +35,7 @@
       (path (param "PARENT_DIR"))
       (path (param "PWD"))
       (path-ancestors (param "PARENT_DIR")) ; libxpc.dylib`_xpc_bundle_resolve_sync walks the dir tree.
+      (subpath "/Library/Apple")
       (subpath "/Library/Application Support/CrashReporter")
       (subpath "/usr/share/locale")
     )
