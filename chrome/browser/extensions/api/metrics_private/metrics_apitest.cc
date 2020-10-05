@@ -14,6 +14,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/common/scoped_worker_based_extensions_channel.h"
 
 namespace extensions {
 
@@ -131,18 +132,49 @@ void ValidateHistograms(const RecordedHistogram* recorded,
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest, Metrics) {
+using ContextType = ExtensionBrowserTest::ContextType;
+
+class ExtensionMetricsApiTest
+    : public ExtensionApiTest,
+      public testing::WithParamInterface<ContextType> {
+ public:
+  ExtensionMetricsApiTest() {
+    // Service Workers are currently only available on certain channels, so set
+    // the channel for those tests.
+    if (GetParam() == ContextType::kServiceWorker)
+      current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
+  }
+
+  bool RunComponentTestWithParamFlag(const std::string& extension_name) {
+    int flags = kFlagEnableFileAccess;
+    if (GetParam() == ContextType::kServiceWorker)
+      flags |= ExtensionBrowserTest::kFlagRunAsServiceWorkerBasedExtension;
+
+    return RunExtensionTestWithFlags(extension_name, flags,
+                                     kFlagLoadAsComponent);
+  }
+
+ private:
+  std::unique_ptr<ScopedWorkerBasedExtensionsChannel> current_channel_;
+};
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         ExtensionMetricsApiTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         ExtensionMetricsApiTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+IN_PROC_BROWSER_TEST_P(ExtensionMetricsApiTest, Metrics) {
   base::UserActionTester user_action_tester;
 
   base::FieldTrialList::CreateFieldTrial("apitestfieldtrial2", "group1");
 
-  std::map<std::string, std::string> params;
-  params["a"] = "aa";
-  params["b"] = "bb";
   ASSERT_TRUE(variations::AssociateVariationParams(
-      "apitestfieldtrial2", "group1", params));
+      "apitestfieldtrial2", "group1", {{"a", "aa"}, {"b", "bb"}}));
 
-  ASSERT_TRUE(RunComponentExtensionTest("metrics")) << message_;
+  ASSERT_TRUE(RunComponentTestWithParamFlag("metrics")) << message_;
 
   ValidateUserActions(user_action_tester, g_user_actions,
                       base::size(g_user_actions));
