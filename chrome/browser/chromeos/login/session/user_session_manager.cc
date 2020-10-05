@@ -2136,7 +2136,7 @@ EasyUnlockKeyManager* UserSessionManager::GetEasyUnlockKeyManager() {
 void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
                                                  LoginDisplayHost* login_host,
                                                  bool locale_pref_checked) {
-  if (browser_shutdown::IsTryingToQuit())
+  if (browser_shutdown::IsTryingToQuit() || chrome::IsAttemptingShutdown())
     return;
 
   if (!locale_pref_checked) {
@@ -2210,7 +2210,7 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
 void UserSessionManager::RespectLocalePreferenceWrapper(
     Profile* profile,
     const base::Closure& callback) {
-  if (browser_shutdown::IsTryingToQuit())
+  if (browser_shutdown::IsTryingToQuit() || chrome::IsAttemptingShutdown())
     return;
 
   const user_manager::User* const user =
