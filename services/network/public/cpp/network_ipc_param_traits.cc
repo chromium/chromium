@@ -30,12 +30,6 @@ void ParamTraits<network::DataElement>::Write(base::Pickle* m,
       WriteParam(m, p.expected_modification_time());
       break;
     }
-    case network::mojom::DataElementType::kBlob: {
-      WriteParam(m, p.blob_uuid());
-      WriteParam(m, p.offset());
-      WriteParam(m, p.length());
-      break;
-    }
     case network::mojom::DataElementType::kDataPipe: {
       WriteParam(m, p.CloneDataPipeGetter().PassPipe().release());
       break;
@@ -84,18 +78,6 @@ bool ParamTraits<network::DataElement>::Read(const base::Pickle* m,
         return false;
       r->SetToFilePathRange(file_path, offset, length,
                             expected_modification_time);
-      return true;
-    }
-    case network::mojom::DataElementType::kBlob: {
-      std::string blob_uuid;
-      uint64_t offset, length;
-      if (!ReadParam(m, iter, &blob_uuid))
-        return false;
-      if (!ReadParam(m, iter, &offset))
-        return false;
-      if (!ReadParam(m, iter, &length))
-        return false;
-      r->SetToBlobRange(blob_uuid, offset, length);
       return true;
     }
     case network::mojom::DataElementType::kDataPipe: {

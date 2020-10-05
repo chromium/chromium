@@ -224,10 +224,6 @@ std::unique_ptr<net::UploadDataStream> CreateUploadDataStream(
         element_readers.push_back(std::make_unique<FileElementReader>(
             body, file_task_runner, element, std::move(*opened_file++)));
         break;
-      case network::mojom::DataElementType::kBlob: {
-        CHECK(false) << "Network service always uses DATA_PIPE for blobs.";
-        break;
-      }
       case network::mojom::DataElementType::kDataPipe: {
         element_readers.push_back(std::make_unique<DataPipeElementReader>(
             body, element.CloneDataPipeGetter()));

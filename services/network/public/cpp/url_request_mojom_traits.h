@@ -314,9 +314,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static const base::FilePath& path(const network::DataElement& element) {
     return element.path_;
   }
-  static const std::string& blob_uuid(const network::DataElement& element) {
-    return element.blob_uuid_;
-  }
   static mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter(
       const network::DataElement& element) {
     if (element.type_ != network::mojom::DataElementType::kDataPipe)

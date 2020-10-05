@@ -1817,7 +1817,7 @@ struct FuzzTraits<network::DataElement> {
     if (!fuzzer->ShouldGenerate())
       return true;
 
-    switch (RandInRange(3)) {
+    switch (RandInRange(2)) {
       case 0: {
         // network::DataElement::Type::TYPE_BYTES
         if (RandEvent(2)) {
@@ -1845,20 +1845,6 @@ struct FuzzTraits<network::DataElement> {
         if (!FuzzParam(&modification_time, fuzzer))
           return false;
         p->SetToFilePathRange(path, offset, length, modification_time);
-        return true;
-      }
-      case 2: {
-        // network::DataElement::Type::TYPE_BLOB
-        std::string uuid;
-        uint64_t offset;
-        uint64_t length;
-        if (!FuzzParam(&uuid, fuzzer))
-          return false;
-        if (!FuzzParam(&offset, fuzzer))
-          return false;
-        if (!FuzzParam(&length, fuzzer))
-          return false;
-        p->SetToBlobRange(uuid, offset, length);
         return true;
       }
       default: {

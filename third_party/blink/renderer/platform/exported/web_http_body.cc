@@ -73,7 +73,6 @@ bool WebHTTPBody::ElementAt(size_t index, Element& result) const {
   result.file_start = 0;
   result.file_length = 0;
   result.modification_time = base::nullopt;
-  result.blob_uuid.Reset();
 
   switch (element.type_) {
     case FormDataElement::kData:
@@ -89,13 +88,10 @@ bool WebHTTPBody::ElementAt(size_t index, Element& result) const {
       break;
     case FormDataElement::kEncodedBlob:
       result.type = Element::kTypeBlob;
-      result.blob_uuid = element.blob_uuid_;
       result.blob_length = std::numeric_limits<uint64_t>::max();
-      if (element.optional_blob_data_handle_) {
-        result.optional_blob =
-            element.optional_blob_data_handle_->CloneBlobRemote();
-        result.blob_length = element.optional_blob_data_handle_->size();
-      }
+      result.optional_blob =
+          element.optional_blob_data_handle_->CloneBlobRemote();
+      result.blob_length = element.optional_blob_data_handle_->size();
       break;
     case FormDataElement::kDataPipe:
       result.type = Element::kTypeDataPipe;

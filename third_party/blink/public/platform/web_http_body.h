@@ -62,7 +62,6 @@ class WebHTTPBody {
     int64_t file_start;
     int64_t file_length;  // -1 means to the end of the file.
     base::Optional<base::Time> modification_time;
-    WebString blob_uuid;
     uint64_t blob_length;
     CrossVariantMojoRemote<mojom::BlobInterfaceBase> optional_blob;
     CrossVariantMojoRemote<network::mojom::DataPipeGetterInterfaceBase>

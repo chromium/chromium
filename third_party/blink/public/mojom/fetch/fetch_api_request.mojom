@@ -122,8 +122,6 @@ struct FetchAPIDataElement {
   array<uint8> buf;
   // For kFile
   mojo_base.mojom.FilePath path;
-  // For kBlob
-  string? blob_uuid;
   // For kDataPipe
   pending_remote<network.mojom.DataPipeGetter>? data_pipe_getter;
   // For kChunkedDataPipe

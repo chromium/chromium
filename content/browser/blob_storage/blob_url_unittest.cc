@@ -78,7 +78,6 @@ class BlobURLTest : public testing::Test {
   BlobURLTest()
       : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP),
         blob_data_(new BlobDataBuilder("uuid")),
-        blob_uuid_(blob_data_->uuid()),
         response_error_code_(net::OK),
         expected_error_code_(net::OK),
         expected_status_code_(0) {}
@@ -309,7 +308,6 @@ class BlobURLTest : public testing::Test {
   storage::BlobUrlRegistry blob_url_registry_;
   std::unique_ptr<storage::BlobDataHandle> blob_handle_;
   std::unique_ptr<BlobDataBuilder> blob_data_;
-  std::string blob_uuid_;
   std::unique_ptr<BlobDataSnapshot> blob_data_snapshot_;
   std::string response_;
   int response_error_code_;

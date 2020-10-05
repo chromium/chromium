@@ -50,7 +50,6 @@ void ExpectEquality(const network::DataElement& expected,
   EXPECT_EQ(expected.length(), actual.length());
   EXPECT_EQ(expected.expected_modification_time(),
             actual.expected_modification_time());
-  EXPECT_EQ(expected.blob_uuid(), actual.blob_uuid());
 }
 
 template <>
@@ -685,8 +684,6 @@ TEST_F(PageStateSerializationTest, BackwardsCompat_HttpBody) {
 
   std::string test_body("foo");
   http_body.request_body->AppendBytes(test_body.data(), test_body.size());
-
-  http_body.request_body->AppendBlob("some_uuid");
 
   base::FilePath path(FILE_PATH_LITERAL("file.txt"));
   http_body.request_body->AppendFileRange(base::FilePath(path), 100, 1024,

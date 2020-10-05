@@ -54,12 +54,6 @@ void AppendFileRangeToRequestBody(
       file_modification_time);
 }
 
-void AppendBlobToRequestBody(
-    const scoped_refptr<network::ResourceRequestBody>& request_body,
-    const std::string& uuid) {
-  request_body->AppendBlob(uuid);
-}
-
 //----------------------------------------------------------------------------
 
 void AppendReferencedFilesFromHttpBody(
@@ -290,10 +284,6 @@ GURL ReadGURL(SerializeObject* obj) {
   return GURL();
 }
 
-void WriteStdString(const std::string& s, SerializeObject* obj) {
-  obj->pickle.WriteString(s);
-}
-
 std::string ReadStdString(SerializeObject* obj) {
   std::string s;
   if (obj->iter.ReadString(&s))
@@ -416,10 +406,6 @@ void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
         WriteInteger64(static_cast<int64_t>(element.length()), obj);
         WriteReal(element.expected_modification_time().ToDoubleT(), obj);
         break;
-      case network::mojom::DataElementType::kBlob:
-        WriteInteger(blink::WebHTTPBody::Element::kTypeBlob, obj);
-        WriteStdString(element.blob_uuid(), obj);
-        break;
       default:
         NOTREACHED();
         continue;
@@ -451,11 +437,11 @@ void ReadResourceRequestBody(
           request_body, file_path, file_start, file_length,
           base::Time::FromDoubleT(file_modification_time));
     } else if (type == blink::WebHTTPBody::Element::kTypeBlob) {
+      // Skip obsolete blob values.
       if (obj->version >= 16) {
-        std::string blob_uuid = ReadStdString(obj);
-        AppendBlobToRequestBody(request_body, blob_uuid);
+        ReadStdString(obj);
       } else {
-        ReadGURL(obj);  // Skip the obsolete blob url value.
+        ReadGURL(obj);
       }
     }
   }
@@ -691,9 +677,6 @@ void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
         data_element->set_file(std::move(file));
         break;
       }
-      case network::mojom::DataElementType::kBlob:
-        data_element->set_blob_uuid(element.blob_uuid());
-        break;
       case network::mojom::DataElementType::kDataPipe:
         NOTIMPLEMENTED();
         break;
@@ -727,7 +710,7 @@ void ReadResourceRequestBody(
         break;
       }
       case blink::mojom::Element::Tag::BLOB_UUID:
-        AppendBlobToRequestBody(request_body, element->get_blob_uuid());
+        // No longer supported.
         break;
       case blink::mojom::Element::Tag::DEPRECATED_FILE_SYSTEM_FILE:
         // No longer supported.

@@ -59,17 +59,13 @@ enum URLRequestReferrerPolicy {
 enum DataElementType {
   kUnknown = -1,
 
-  // Only used for Upload with Network Service as of now:
   kDataPipe,
   kChunkedDataPipe,
   kReadOnceStream,
-
-  // Used for Upload when Network Service is disabled:
-  kBlob,
-  kFile,
-
-  // Commonly used in every case:
   kBytes,
+
+  // TODO(https://crbug.com/1132362):  Remove this.
+  kFile,
 };
 
 // Options that may only be set on URLRequests passed to a URLLoaderFactory
@@ -430,9 +426,6 @@ struct DataElement {
   array<uint8> buf;
   // For kFile
   mojo_base.mojom.FilePath path;
-  // For kBlob
-  // TODO(richard.li): Deprecate this once NetworkService is fully shipped.
-  string blob_uuid;
   // For kDataPipe
   pending_remote<network.mojom.DataPipeGetter>? data_pipe_getter;
   // For kChunkedDataPipe

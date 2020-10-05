@@ -55,7 +55,9 @@ FormDataElement::FormDataElement(const String& blob_uuid,
                                  scoped_refptr<BlobDataHandle> optional_handle)
     : type_(kEncodedBlob),
       blob_uuid_(blob_uuid),
-      optional_blob_data_handle_(std::move(optional_handle)) {}
+      optional_blob_data_handle_(std::move(optional_handle)) {
+  DCHECK(optional_blob_data_handle_);
+}
 
 FormDataElement::FormDataElement(
     scoped_refptr<WrappedDataPipeGetter> data_pipe_getter)

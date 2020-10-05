@@ -5,15 +5,21 @@
 #include <utility>
 
 #include "base/sequenced_task_runner.h"
+#include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/string_traits_wtf.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 
-#include "testing/gtest/include/gtest/gtest.h"
-
 namespace blink {
+
+using mojom::blink::BlobRegistry;
 
 namespace {
 
@@ -44,7 +50,13 @@ TEST_F(EncodedFormDataTest, DeepCopy) {
   original->AppendData("Foo", 3);
   original->AppendFileRange("example.txt", 12345, 56789,
                             base::Time::FromDoubleT(9999.0));
-  original->AppendBlob("originalUUID", nullptr);
+
+  mojo::PendingRemote<mojom::blink::Blob> remote;
+  mojo::PendingReceiver<mojom::blink::Blob> receiver =
+      remote.InitWithNewPipeAndPassReceiver();
+  original->AppendBlob(
+      "originalUUID", BlobDataHandle::Create("uuid", "" /* type */,
+                                             0u /* size */, std::move(remote)));
 
   Vector<char> boundary_vector;
   boundary_vector.Append("----boundaryForTest", 19);

@@ -137,9 +137,6 @@ WebHTTPBody GetWebHTTPBodyForRequestBody(
             modification_time);
         break;
       }
-      case network::mojom::DataElementType::kBlob:
-          http_body.AppendBlob(WebString::FromASCII(element.blob_uuid()));
-        break;
       case network::mojom::DataElementType::kDataPipe: {
         http_body.AppendDataPipe(element.CloneDataPipeGetter());
         break;

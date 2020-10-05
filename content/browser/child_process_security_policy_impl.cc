@@ -1289,11 +1289,6 @@ bool ChildProcessSecurityPolicyImpl::CanReadRequestBody(
         // Data is self-contained within |body| - no need to check access.
         break;
 
-      case network::mojom::DataElementType::kBlob:
-        // No need to validate - the unguessability of the uuid of the blob is a
-        // sufficient defense against access from an unrelated renderer.
-        break;
-
       case network::mojom::DataElementType::kDataPipe:
         // Data is self-contained within |body| - no need to check access.
         break;

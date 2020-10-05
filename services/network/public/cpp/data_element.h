@@ -35,8 +35,8 @@ class FetchAPIDataElementDataView;
 
 namespace network {
 
-// Represents part of an upload body. This could be either one of bytes, file or
-// blob data.
+// Represents part of an upload body. This could be one of raw bytes, file data,
+// or a mojo pipe that streams data.
 class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
  public:
   static const uint64_t kUnknownSize = std::numeric_limits<uint64_t>::max();
@@ -54,7 +54,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
     return reinterpret_cast<const char*>(buf_.data());
   }
   const base::FilePath& path() const { return path_; }
-  const std::string& blob_uuid() const { return blob_uuid_; }
   uint64_t offset() const { return offset_; }
   uint64_t length() const { return length_; }
   const base::Time& expected_modification_time() const {
@@ -94,21 +93,11 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
     length_ = buf_.size();
   }
 
-  // Sets TYPE_BLOB data.
-  void SetToBlob(const std::string& uuid) {
-    SetToBlobRange(uuid, 0, std::numeric_limits<uint64_t>::max());
-  }
-
   // Sets TYPE_FILE data with range.
   void SetToFilePathRange(const base::FilePath& path,
                           uint64_t offset,
                           uint64_t length,
                           const base::Time& expected_modification_time);
-
-  // Sets TYPE_BLOB data with range.
-  void SetToBlobRange(const std::string& blob_uuid,
-                      uint64_t offset,
-                      uint64_t length);
 
   // Sets TYPE_DATA_PIPE data. The data pipe consumer can safely wait for the
   // callback passed to Read() to be invoked before reading the request body.
@@ -149,8 +138,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
   std::vector<uint8_t> buf_;
   // For TYPE_FILE.
   base::FilePath path_;
-  // For TYPE_BLOB.
-  std::string blob_uuid_;
   // For TYPE_DATA_PIPE.
   mojo::PendingRemote<mojom::DataPipeGetter> data_pipe_getter_;
   // For TYPE_CHUNKED_DATA_PIPE.
