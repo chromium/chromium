@@ -56,10 +56,10 @@ class WebStateListMetricsBrowserAgent
   WebStateList* web_state_list_;  // weak
 
   // Counters for metrics.
-  int inserted_web_state_counter_;
-  int detached_web_state_counter_;
-  int activated_web_state_counter_;
-  bool metric_collection_paused_;
+  int inserted_web_state_counter_ = 0;
+  int detached_web_state_counter_ = 0;
+  int activated_web_state_counter_ = 0;
+  bool metric_collection_paused_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(WebStateListMetricsBrowserAgent);
 };

@@ -41,6 +41,12 @@ void AttachBrowserAgents(Browser* browser) {
   DeviceSharingBrowserAgent::CreateForBrowser(browser);
   UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser);
   AppLauncherBrowserAgent::CreateForBrowser(browser);
+
+  // SessionRestorartionAgent requires WebUsageEnablerBrowserAgent.
+  SessionRestorationBrowserAgent::CreateForBrowser(
+      browser, [SessionServiceIOS sharedService]);
+
+  // WebStateListMetricsBrowserAgent requires SessionRestorationBrowserAgent.
   WebStateListMetricsBrowserAgent::CreateForBrowser(browser);
   SnapshotBrowserAgent::CreateForBrowser(browser);
 
@@ -50,10 +56,6 @@ void AttachBrowserAgents(Browser* browser) {
 
   // UrlLoadingBrowserAgent requires UrlLoadingNotifierBrowserAgent.
   UrlLoadingBrowserAgent::CreateForBrowser(browser);
-
-  // SessionRestorartionAgent requires WebUsageEnablerBrowserAgent.
-  SessionRestorationBrowserAgent::CreateForBrowser(
-      browser, [SessionServiceIOS sharedService]);
 
   // TabUsageRecorderBrowserAgent and WebStateListMetricsBrowserAgent observe
   // the SessionRestorationBrowserAgent, so they should be created after the the
