@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.incognito;
 
 import static org.junit.Assert.assertEquals;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -29,6 +28,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -190,7 +190,7 @@ public class IncognitoNotificationServiceTest {
     @MediumTest
     @Feature("Incognito")
     @TargetApi(Build.VERSION_CODES.M)
-    @SuppressLint("NewApi")
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     public void testCloseAllIncognitoNotificationIsDisplayed() {
         mActivityTestRule.startMainActivityOnBlankPage();
 
