@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.phone.SimpleAnimationLayout;
 import org.chromium.chrome.browser.compositor.overlays.SceneOverlay;
@@ -52,7 +51,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     public void init(TabModelSelector selector, TabCreatorManager creator,
             ControlContainer controlContainer,
             ContextualSearchManagementDelegate contextualSearchDelegate,
-            DynamicResourceLoader dynamicResourceLoader, ActivityTabProvider tabProvider) {
+            DynamicResourceLoader dynamicResourceLoader) {
         Context context = mHost.getContext();
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
 
@@ -60,7 +59,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
         mSimpleAnimationLayout = new SimpleAnimationLayout(context, this, renderHost);
 
         super.init(selector, creator, controlContainer, contextualSearchDelegate,
-                dynamicResourceLoader, tabProvider);
+                dynamicResourceLoader);
 
         // Set up layout parameters
         mStaticLayout.setLayoutHandlesTabLifecycles(false);

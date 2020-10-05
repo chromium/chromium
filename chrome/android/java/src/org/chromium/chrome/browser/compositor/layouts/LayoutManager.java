@@ -16,12 +16,10 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -43,7 +41,6 @@ import org.chromium.chrome.browser.compositor.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.ScrollingBottomViewSceneLayer;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagementDelegate;
-import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
@@ -66,10 +63,12 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarColors;
-import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.SPenSupport;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.util.TokenHolder;
@@ -139,7 +138,6 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
     private boolean mUpdateRequested;
     private ContextualSearchPanel mContextualSearchPanel;
     private final OverlayPanelManager mOverlayPanelManager;
-    private TopToolbarOverlayCoordinator mToolbarOverlay;
     private SceneOverlay mGestureNavigationOverscrollGlow;
 
     /** A delegate for interacting with the Contextual Search manager. */
@@ -454,7 +452,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
     public void init(TabModelSelector selector, TabCreatorManager creator,
             @Nullable ControlContainer controlContainer,
             ContextualSearchManagementDelegate contextualSearchDelegate,
-            DynamicResourceLoader dynamicResourceLoader, ActivityTabProvider tabProvider) {
+            DynamicResourceLoader dynamicResourceLoader) {
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
 
         // Build Layouts
@@ -465,19 +463,6 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
         mStaticLayout.setLayoutHandlesTabLifecycles(true);
 
         setNextLayout(null);
-
-        // If fullscreen is disabled, don't bother creating this overlay; only the android view will
-        // ever be shown.
-        if (DeviceClassManager.enableFullscreen()) {
-            Callback<ClipDrawableProgressBar.DrawingInfo> progressInfoCallback = (info) -> {
-                if (controlContainer == null) return;
-                controlContainer.getProgressBarDrawingInfo(info);
-            };
-            mToolbarOverlay = new TopToolbarOverlayCoordinator(mContext, mFrameRequestSupplier,
-                    this, progressInfoCallback, tabProvider, getBrowserControlsManager(),
-                    mAndroidViewShownSupplier, () -> renderHost.getResourceManager());
-            addSceneOverlay(mToolbarOverlay);
-        }
 
         // Initialize Layouts
         mStaticLayout.onFinishNativeInitialization();
@@ -563,7 +548,6 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
      * Cleans up and destroys this object.  It should not be used after this.
      */
     public void destroy() {
-        if (mToolbarOverlay != null) mToolbarOverlay.destroy();
         mAnimationHandler.destroy();
         mSceneChangeObservers.clear();
         if (mStaticLayout != null) mStaticLayout.destroy();
@@ -576,6 +560,27 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
             getTabModelSelector().getTabModelFilterProvider().removeTabModelFilterObserver(
                     mTabModelFilterObserver);
         }
+    }
+
+    /** @return A resource manager to pull textures from. */
+    public ResourceManager getResourceManager() {
+        if (mHost.getLayoutRenderHost() == null) return null;
+        return mHost.getLayoutRenderHost().getResourceManager();
+    }
+
+    /**
+     * Creates a CompositorModelChangeProcessor observing the given {@code model} that will operate
+     * on this {@link LayoutManager}'s frame cycle. The model will be bound to the view initially
+     * and request a new frame.
+     * @param model The model containing the data to be bound to the view.
+     * @param view The view which the model will be bound to.
+     * @param viewBinder This is used to bind the model to the view.
+     */
+    public <V extends SceneLayer> CompositorModelChangeProcessor<V> createCompositorMCP(
+            PropertyModel model, V view,
+            PropertyModelChangeProcessor.ViewBinder<PropertyModel, V, PropertyKey> viewBinder) {
+        return CompositorModelChangeProcessor.create(
+                model, view, viewBinder, mFrameRequestSupplier, true);
     }
 
     /**

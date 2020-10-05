@@ -43,7 +43,6 @@ import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
@@ -1241,16 +1240,14 @@ public class CompositorViewHolder extends FrameLayout
      *                                represent.
      * @param tabCreatorManager       The {@link TabCreatorManager} for this view.
      * @param contextualSearchManager A {@link ContextualSearchManagementDelegate} instance.
-     * @param tabProvider             A means of acquiring the active tab.
      */
     public void onFinishNativeInitialization(TabModelSelector tabModelSelector,
             TabCreatorManager tabCreatorManager,
-            ContextualSearchManagementDelegate contextualSearchManager,
-            ActivityTabProvider tabProvider) {
+            ContextualSearchManagementDelegate contextualSearchManager) {
         assert mLayoutManager != null;
         mLayoutManager.init(tabModelSelector, tabCreatorManager, mControlContainer,
                 contextualSearchManager,
-                mCompositorView.getResourceManager().getDynamicResourceLoader(), tabProvider);
+                mCompositorView.getResourceManager().getDynamicResourceLoader());
 
         mTabModelSelector = tabModelSelector;
         tabModelSelector.addObserver(new EmptyTabModelSelectorObserver() {

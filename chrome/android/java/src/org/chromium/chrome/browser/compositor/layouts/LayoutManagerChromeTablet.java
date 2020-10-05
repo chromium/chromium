@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagementDelegate;
@@ -85,13 +84,13 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     public void init(TabModelSelector selector, TabCreatorManager creator,
             ControlContainer controlContainer,
             ContextualSearchManagementDelegate contextualSearchDelegate,
-            DynamicResourceLoader dynamicResourceLoader, ActivityTabProvider tabProvider) {
+            DynamicResourceLoader dynamicResourceLoader) {
         if (mTabStripLayoutHelperManager != null) {
             mTabStripLayoutHelperManager.setTabModelSelector(selector, creator);
         }
 
         super.init(selector, creator, controlContainer, contextualSearchDelegate,
-                dynamicResourceLoader, tabProvider);
+                dynamicResourceLoader);
 
         // Make sure any tabs already restored get loaded into the title cache.
         List<TabModel> models = selector.getModels();

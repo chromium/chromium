@@ -20,7 +20,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -63,14 +62,9 @@ public class TopToolbarOverlayMediatorTest {
     @Captor
     private ArgumentCaptor<ActivityTabProvider.ActivityTabObserver> mActivityTabObserverCaptor;
 
-    private ObservableSupplierImpl<Boolean> mAndroidViewShownSupplier;
-
     @Before
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
-
-        mAndroidViewShownSupplier = new ObservableSupplierImpl<>();
-        mAndroidViewShownSupplier.set(true);
 
         TopToolbarOverlayMediator.setToolbarBackgroundColorForTesting(Color.RED);
         TopToolbarOverlayMediator.setUrlBarColorForTesting(Color.BLUE);
@@ -88,7 +82,8 @@ public class TopToolbarOverlayMediatorTest {
                          .build();
 
         mMediator = new TopToolbarOverlayMediator(mModel, mContext, mLayoutManager,
-                (info) -> {}, mTabSupplier, mBrowserControlsProvider, mAndroidViewShownSupplier);
+                (info) -> {}, mTabSupplier, mBrowserControlsProvider);
+        mMediator.setIsAndroidViewVisible(true);
 
         // Ensure the observer is added to the initial tab.
         verify(mTabSupplier).addObserverAndTrigger(mActivityTabObserverCaptor.capture());
@@ -137,12 +132,12 @@ public class TopToolbarOverlayMediatorTest {
 
     @Test
     public void testShadowVisibility_androidViewForceHidden() {
-        mAndroidViewShownSupplier.set(true);
+        mMediator.setIsAndroidViewVisible(true);
 
         Assert.assertFalse(
                 "Shadow should be invisible.", mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
 
-        mAndroidViewShownSupplier.set(false);
+        mMediator.setIsAndroidViewVisible(false);
 
         Assert.assertTrue(
                 "Shadow should be visible.", mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));

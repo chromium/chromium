@@ -8,8 +8,6 @@ import android.content.Context;
 import android.graphics.RectF;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -40,14 +38,10 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
     /** Business logic for this overlay. */
     private final TopToolbarOverlayMediator mMediator;
 
-    public TopToolbarOverlayCoordinator(Context context,
-            CompositorModelChangeProcessor.FrameRequestSupplier frameRequestSupplier,
-            LayoutManager layoutManager,
+    public TopToolbarOverlayCoordinator(Context context, LayoutManager layoutManager,
             Callback<ClipDrawableProgressBar.DrawingInfo> progressInfoCallback,
             ActivityTabProvider tabSupplier,
-            BrowserControlsStateProvider browserControlsStateProvider,
-            ObservableSupplier<Boolean> androidViewShownSupplier,
-            Supplier<ResourceManager> resourceManagerSupplier) {
+            BrowserControlsStateProvider browserControlsStateProvider) {
         mModel = new PropertyModel.Builder(TopToolbarOverlayProperties.ALL_KEYS)
                          .with(TopToolbarOverlayProperties.RESOURCE_ID, R.id.control_container)
                          .with(TopToolbarOverlayProperties.URL_BAR_RESOURCE_ID,
@@ -56,13 +50,20 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
                          .with(TopToolbarOverlayProperties.CONTENT_OFFSET,
                                  browserControlsStateProvider.getContentOffset())
                          .build();
-        mSceneLayer = new TopToolbarSceneLayer(resourceManagerSupplier);
-        mChangeProcessor = CompositorModelChangeProcessor.create(
-                mModel, mSceneLayer, TopToolbarSceneLayer::bind, frameRequestSupplier, true);
+        mSceneLayer = new TopToolbarSceneLayer(() -> layoutManager.getResourceManager());
+        mChangeProcessor =
+                layoutManager.createCompositorMCP(mModel, mSceneLayer, TopToolbarSceneLayer::bind);
 
-        mMediator =
-                new TopToolbarOverlayMediator(mModel, context, layoutManager, progressInfoCallback,
-                        tabSupplier, browserControlsStateProvider, androidViewShownSupplier);
+        mMediator = new TopToolbarOverlayMediator(mModel, context, layoutManager,
+                progressInfoCallback, tabSupplier, browserControlsStateProvider);
+    }
+
+    /**
+     * Set whether the android view corresponding with this overlay is showing.
+     * @param isVisible Whether the android view is visible.
+     */
+    public void setIsAndroidViewVisible(boolean isVisible) {
+        mMediator.setIsAndroidViewVisible(isVisible);
     }
 
     /** Clean up this component. */

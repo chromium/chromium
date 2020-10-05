@@ -1739,7 +1739,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         mCompositorViewHolder.setUrlBar(urlBar);
         mCompositorViewHolder.setInsetObserverView(getInsetObserverView());
         mCompositorViewHolder.onFinishNativeInitialization(
-                getTabModelSelector(), this, mContextualSearchManager, mActivityTabProvider);
+                getTabModelSelector(), this, mContextualSearchManager);
 
         if (controlContainer != null && DeviceClassManager.enableToolbarSwipe()
                 && getCompositorViewHolder().getLayoutManager().getToolbarSwipeHandler() != null) {

@@ -20,7 +20,14 @@ import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.compositor.Invalidator;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.compositor.overlays.toolbar.TopToolbarOverlayCoordinator;
+import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.findinpage.FindToolbar;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -36,6 +43,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
+import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 
 import java.util.List;
 
@@ -79,6 +87,9 @@ public class TopToolbarCoordinator implements Toolbar {
     private ObservableSupplier<AppMenuButtonHelper> mAppMenuButtonHelperSupplier;
     private CallbackController mCallbackController = new CallbackController();
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private TopToolbarOverlayCoordinator mOverlayCoordinator;
+
+    private Callback<ClipDrawableProgressBar.DrawingInfo> mProgressDrawInfoCallback;
 
     /**
      * Creates a new {@link TopToolbarCoordinator}.
@@ -118,6 +129,10 @@ public class TopToolbarCoordinator implements Toolbar {
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
         mOptionalButtonController = new OptionalBrowsingModeButtonController(buttonDataProviders,
                 userEducationHelper, mToolbarLayout, () -> toolbarDataProvider.getTab());
+        mProgressDrawInfoCallback = (info) -> {
+            if (controlContainer == null) return;
+            controlContainer.getProgressBarDrawingInfo(info);
+        };
 
         overviewModeBehaviorSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::setOverviewModeBehavior));
@@ -165,11 +180,16 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param newTabClickHandler The click handler for the new tab button.
      * @param bookmarkClickHandler The click handler for the bookmarks button.
      * @param customTabsBackClickHandler The click handler for the custom tabs back button.
+     * @param layoutManager A means of adding SceneOverlays.
+     * @param tabProvider A means of accessing the currently active tab.
+     * @param browserControlsStateProvider Access to the state of the browser controls.
      */
     public void initializeWithNative(Runnable layoutUpdater,
             OnClickListener tabSwitcherClickHandler,
             OnLongClickListener tabSwitcherLongClickHandler, OnClickListener newTabClickHandler,
-            OnClickListener bookmarkClickHandler, OnClickListener customTabsBackClickHandler) {
+            OnClickListener bookmarkClickHandler, OnClickListener customTabsBackClickHandler,
+            LayoutManager layoutManager, ActivityTabProvider tabProvider,
+            BrowserControlsStateProvider browserControlsStateProvider) {
         assert mTabModelSelectorSupplier.get() != null;
         if (mTabSwitcherModeCoordinatorPhone != null) {
             mTabSwitcherModeCoordinatorPhone.setOnTabSwitcherClickHandler(tabSwitcherClickHandler);
@@ -194,6 +214,16 @@ public class TopToolbarCoordinator implements Toolbar {
         mToolbarLayout.setLayoutUpdater(layoutUpdater);
 
         mToolbarLayout.onNativeLibraryReady();
+
+        // If fullscreen is disabled, don't bother creating this overlay; only the android view will
+        // ever be shown.
+        if (DeviceClassManager.enableFullscreen()) {
+            mOverlayCoordinator =
+                    new TopToolbarOverlayCoordinator(mToolbarLayout.getContext(), layoutManager,
+                            mProgressDrawInfoCallback, tabProvider, browserControlsStateProvider);
+            layoutManager.addSceneOverlay(mOverlayCoordinator);
+            mToolbarLayout.setOverlayCoordinator(mOverlayCoordinator);
+        }
     }
 
     private void setOverviewModeBehavior(OverviewModeBehavior overviewModeBehavior) {
@@ -226,6 +256,11 @@ public class TopToolbarCoordinator implements Toolbar {
      * Cleans up any code as necessary.
      */
     public void destroy() {
+        if (mOverlayCoordinator != null) {
+            mOverlayCoordinator.destroy();
+            mOverlayCoordinator = null;
+        }
+
         mToolbarLayout.destroy();
         if (mTabSwitcherModeCoordinatorPhone != null) {
             mTabSwitcherModeCoordinatorPhone.destroy();

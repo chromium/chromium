@@ -10,7 +10,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
@@ -58,12 +57,6 @@ public class TopToolbarOverlayMediator {
     /** An observer of the browser controls offsets. */
     private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
 
-    /** A means of checking whether the toolbar android view is being force-hidden or shown. */
-    private final ObservableSupplier<Boolean> mAndroidViewShownSupplier;
-
-    /** An observer of the android view's hidden state. */
-    private final Callback<Boolean> mAndroidViewShownObserver;
-
     /** The view state for this overlay. */
     private final PropertyModel mModel;
 
@@ -73,17 +66,18 @@ public class TopToolbarOverlayMediator {
     /** Whether the active layout has its own toolbar to display instead of this one. */
     private boolean mLayoutHasOwnToolbar;
 
+    /** Whether the android view for this overlay is visible. */
+    private boolean mIsAndroidViewVisible;
+
     TopToolbarOverlayMediator(PropertyModel model, Context context, LayoutManager layoutManager,
             Callback<ClipDrawableProgressBar.DrawingInfo> progressInfoCallback,
             ActivityTabProvider tabSupplier,
-            BrowserControlsStateProvider browserControlsStateProvider,
-            ObservableSupplier<Boolean> androidViewShownSupplier) {
+            BrowserControlsStateProvider browserControlsStateProvider) {
         mContext = context;
         mLayoutManager = layoutManager;
         mProgressInfoCallback = progressInfoCallback;
         mTabSupplier = tabSupplier;
         mBrowserControlsStateProvider = browserControlsStateProvider;
-        mAndroidViewShownSupplier = androidViewShownSupplier;
         mModel = model;
 
         mSceneChangeObserver = new SceneChangeObserver() {
@@ -134,9 +128,6 @@ public class TopToolbarOverlayMediator {
         };
         mTabSupplier.addObserverAndTrigger(mTabSupplierObserver);
 
-        mAndroidViewShownObserver = (shown) -> updateShadowState();
-        mAndroidViewShownSupplier.addObserver(mAndroidViewShownObserver);
-
         mBrowserControlsObserver = new BrowserControlsStateProvider.Observer() {
             @Override
             public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
@@ -158,13 +149,22 @@ public class TopToolbarOverlayMediator {
     }
 
     /**
+     * Set whether the android view corresponding with this overlay is showing.
+     * @param isVisible Whether the android view is visible.
+     */
+    void setIsAndroidViewVisible(boolean isVisible) {
+        mIsAndroidViewVisible = isVisible;
+        updateShadowState();
+    }
+
+    /**
      * Compute whether the texture's shadow should be visible. The shadow is visible whenever the
      * android view is not shown.
      */
     private void updateShadowState() {
         boolean drawControlsAsTexture =
                 BrowserControlsUtils.drawControlsAsTexture(mBrowserControlsStateProvider);
-        boolean showShadow = drawControlsAsTexture || !mAndroidViewShownSupplier.get();
+        boolean showShadow = drawControlsAsTexture || !mIsAndroidViewVisible;
         mModel.set(TopToolbarOverlayProperties.SHOW_SHADOW, showShadow);
     }
 
@@ -231,7 +231,6 @@ public class TopToolbarOverlayMediator {
         mLastActiveTab = null;
 
         mLayoutManager.removeSceneChangeObserver(mSceneChangeObserver);
-        mAndroidViewShownSupplier.removeObserver(mAndroidViewShownObserver);
         mBrowserControlsStateProvider.removeObserver(mBrowserControlsObserver);
     }
 

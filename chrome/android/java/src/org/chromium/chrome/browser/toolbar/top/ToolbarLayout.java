@@ -28,6 +28,8 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.compositor.overlays.toolbar.TopToolbarOverlayCoordinator;
+import org.chromium.chrome.browser.findinpage.FindToolbar;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
@@ -83,6 +85,8 @@ public abstract class ToolbarLayout
     private MenuButtonCoordinator mMenuButtonCoordinator;
     private AppMenuButtonHelper mAppMenuButtonHelper;
 
+    private TopToolbarOverlayCoordinator mOverlayCoordinator;
+
     /**
      * Basic constructor for {@link ToolbarLayout}.
      */
@@ -117,6 +121,20 @@ public abstract class ToolbarLayout
         mToolbarDataProvider = toolbarDataProvider;
         mToolbarTabController = tabController;
         mMenuButtonCoordinator = menuButtonCoordinator;
+    }
+
+    /** @param overlay The coordinator for the texture version of the top toolbar. */
+    void setOverlayCoordinator(TopToolbarOverlayCoordinator overlay) {
+        mOverlayCoordinator = overlay;
+        mOverlayCoordinator.setIsAndroidViewVisible(getVisibility() == View.VISIBLE);
+    }
+
+    @Override
+    public void setVisibility(int visibility) {
+        super.setVisibility(visibility);
+        if (mOverlayCoordinator != null) {
+            mOverlayCoordinator.setIsAndroidViewVisible(visibility == View.VISIBLE);
+        }
     }
 
     /**
