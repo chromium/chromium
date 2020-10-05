@@ -1,0 +1,33 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++splitter horizontal name='Control: elements that are not in tree'
+++++++layoutTable
+++++++++layoutTableRow
+++++++++++layoutTableCell
+++++++++++++textField
+++++++++++++++genericContainer
+++++++splitter horizontal name='An aria-owned element is always in tree'
+++++++group
+++++++++genericContainer ignored
+++++++++++button name='button-in-owned-tree'
+++++++++++++staticText name='button-in-owned-tree'
+++++++++++++++inlineTextBox name='button-in-owned-tree'
+++++++splitter horizontal name='Element with aria-owns is always in tree'
+++++++genericContainer
+++++++++textField
+++++++++++genericContainer
+++++++splitter horizontal name='Owning an element with unincluded ancestors serializes cleanly'
+++++++group
+++++++++checkBox checkedState=false
+++++++splitter horizontal name='All the above in one'
+++++++none ignored
+++++++++genericContainer
+++++++++++genericContainer
+++++++++++++staticText name='xyz'
+++++++++++++++inlineTextBox name='xyz'
+++++++++++genericContainer
+++++++++++++slider horizontal value='50' valueForRange=50.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++++++++sliderThumb
+++++++none ignored
+++++++genericContainer ignored invisible
