@@ -1,3 +1,2 @@
 per-file *_param_traits*.*=set noparent
 per-file *_param_traits*.*=file://ipc/SECURITY_OWNERS
-# COMPONENT: Internals>Core
