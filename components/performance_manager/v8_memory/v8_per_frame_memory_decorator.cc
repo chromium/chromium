@@ -603,6 +603,18 @@ V8PerFrameMemoryRequest::V8PerFrameMemoryRequest(
                                 base::Unretained(this)));
 }
 
+V8PerFrameMemoryRequest::V8PerFrameMemoryRequest(
+    util::PassKey<V8DetailedMemoryRequestOneShot>,
+    MeasurementMode mode)
+    : min_time_between_requests_(base::TimeDelta()), mode_(mode) {
+  // Do not forward to the standard constructor because it disallows the empty
+  // TimeDelta.
+#if DCHECK_IS_ON()
+  DCHECK(mode != MeasurementMode::kEagerForTesting ||
+         g_test_eager_measurement_requests_enabled);
+#endif
+}
+
 V8PerFrameMemoryRequest::~V8PerFrameMemoryRequest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (decorator_)
@@ -651,8 +663,6 @@ void V8PerFrameMemoryRequest::NotifyObserversOnMeasurementAvailable(
   const auto* process_data =
       V8PerFrameMemoryProcessData::ForProcessNode(process_node);
   DCHECK(process_data);
-  for (V8PerFrameMemoryObserver& observer : observers_)
-    observer.OnV8MemoryMeasurementAvailable(process_node, process_data);
 
   // If this request was made from off-sequence, notify its off-sequence
   // observers with a copy of the process and frame data.
@@ -683,6 +693,11 @@ void V8PerFrameMemoryRequest::NotifyObserversOnMeasurementAvailable(
                        V8PerFrameMemoryObserverAnySeq::FrameDataMap(
                            std::move(all_frame_data))));
   }
+
+  // The observer could delete the request so this must be the last thing in
+  // the function.
+  for (V8PerFrameMemoryObserver& observer : observers_)
+    observer.OnV8MemoryMeasurementAvailable(process_node, process_data);
 }
 
 void V8PerFrameMemoryRequest::StartMeasurementImpl(
@@ -701,6 +716,53 @@ void V8PerFrameMemoryRequest::StartMeasurementImpl(
 
   decorator_->AddMeasurementRequest(util::PassKey<V8PerFrameMemoryRequest>(),
                                     this, process_node);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// V8DetailedMemoryRequestOneShot
+
+V8DetailedMemoryRequestOneShot::V8DetailedMemoryRequestOneShot(
+    const ProcessNode* process,
+    MeasurementCallback callback,
+    MeasurementMode mode)
+    : callback_(std::move(callback)), mode_(mode) {
+  DCHECK(process);
+  DCHECK_EQ(process->GetProcessType(), content::PROCESS_TYPE_RENDERER);
+  request_ = std::make_unique<V8PerFrameMemoryRequest>(
+      util::PassKey<V8DetailedMemoryRequestOneShot>(), mode);
+  request_->AddObserver(this);
+  request_->StartMeasurementForProcess(process);
+
+#if DCHECK_IS_ON()
+  process_ = process;
+#endif
+}
+
+V8DetailedMemoryRequestOneShot::~V8DetailedMemoryRequestOneShot() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DeleteRequest();
+}
+
+void V8DetailedMemoryRequestOneShot::OnV8MemoryMeasurementAvailable(
+    const ProcessNode* process_node,
+    const V8PerFrameMemoryProcessData* process_data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+#if DCHECK_IS_ON()
+  DCHECK_EQ(process_node, process_);
+#endif
+
+  // Don't send another request now that a response has been received.
+  DeleteRequest();
+
+  std::move(callback_).Run(process_node, process_data);
+}
+
+void V8DetailedMemoryRequestOneShot::DeleteRequest() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (request_)
+    request_->RemoveObserver(this);
+  request_.reset();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -949,13 +1011,22 @@ void V8PerFrameMemoryDecorator::MeasurementRequestQueue::
     NotifyObserversOnMeasurementAvailable(
         const ProcessNode* process_node) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (const V8PerFrameMemoryRequest* request : bounded_measurement_requests_) {
+
+  // First collect all requests with observers to notify. The observer
+  // implementations may add or remove requests from the queue, invalidating
+  // iterators.
+  std::vector<V8PerFrameMemoryRequest*> requests_to_notify;
+  requests_to_notify.insert(requests_to_notify.end(),
+                            bounded_measurement_requests_.begin(),
+                            bounded_measurement_requests_.end());
+  requests_to_notify.insert(requests_to_notify.end(),
+                            lazy_measurement_requests_.begin(),
+                            lazy_measurement_requests_.end());
+  for (const V8PerFrameMemoryRequest* request : requests_to_notify) {
     request->NotifyObserversOnMeasurementAvailable(
         util::PassKey<MeasurementRequestQueue>(), process_node);
-  }
-  for (const V8PerFrameMemoryRequest* request : lazy_measurement_requests_) {
-    request->NotifyObserversOnMeasurementAvailable(
-        util::PassKey<MeasurementRequestQueue>(), process_node);
+    // The observer may have deleted |request| so it is no longer safe to
+    // reference.
   }
 }
 

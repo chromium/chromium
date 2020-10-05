@@ -392,6 +392,89 @@ TEST_F(V8PerFrameMemoryDecoratorTest, OnlyMeasureRenderers) {
   }
 }
 
+TEST_F(V8PerFrameMemoryDecoratorTest, OneShot) {
+  // Create 2 renderer processes. Create one request that measures both of
+  // them, and a one-shot request that measures only one.
+  constexpr RenderProcessHostId kProcessId1 = RenderProcessHostId(0xFAB);
+  auto process1 = CreateNode<ProcessNodeImpl>(
+      content::PROCESS_TYPE_RENDERER,
+      RenderProcessHostProxy::CreateForTesting(kProcessId1));
+  constexpr RenderProcessHostId kProcessId2 = RenderProcessHostId(0xBAF);
+  auto process2 = CreateNode<ProcessNodeImpl>(
+      content::PROCESS_TYPE_RENDERER,
+      RenderProcessHostProxy::CreateForTesting(kProcessId2));
+
+  // Set the all process request to only send once within the test.
+  V8PerFrameMemoryRequest all_process_request(kMinTimeBetweenRequests * 100);
+  all_process_request.StartMeasurement(graph());
+
+  // Create a mock reporter for each process and expect a query and reply on
+  // each.
+  MockV8DetailedMemoryReporter mock_reporter1;
+  {
+    auto data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->unassociated_bytes_used = 1ULL;
+    ExpectBindAndRespondToQuery(&mock_reporter1, std::move(data), kProcessId1);
+  }
+  MockV8DetailedMemoryReporter mock_reporter2;
+  {
+    auto data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->unassociated_bytes_used = 2ULL;
+    ExpectBindAndRespondToQuery(&mock_reporter2, std::move(data), kProcessId2);
+  }
+
+  task_env().RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_reporter1);
+  Mock::VerifyAndClearExpectations(&mock_reporter2);
+
+  // Create a one-shot request for process1 and expect the callback to be
+  // called only for that process.
+  {
+    auto data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->unassociated_bytes_used = 3ULL;
+    ExpectQueryAndReply(&mock_reporter1, std::move(data));
+  }
+
+  uint64_t unassociated_v8_bytes_used = 0;
+  V8DetailedMemoryRequestOneShot process1_request(
+      process1.get(), base::BindLambdaForTesting(
+                          [&unassociated_v8_bytes_used, &process1](
+                              const ProcessNode* process_node,
+                              const V8PerFrameMemoryProcessData* process_data) {
+                            ASSERT_TRUE(process_data);
+                            EXPECT_EQ(process_node, process1.get());
+                            unassociated_v8_bytes_used =
+                                process_data->unassociated_v8_bytes_used();
+                          }));
+  task_env().RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_reporter1);
+  Mock::VerifyAndClearExpectations(&mock_reporter2);
+  EXPECT_EQ(unassociated_v8_bytes_used, 3ULL);
+
+  // Create another request, but delete it before the result arrives.
+  {
+    auto data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->unassociated_bytes_used = 4ULL;
+    ExpectQueryAndDelayReply(&mock_reporter1, base::TimeDelta::FromSeconds(10),
+                             std::move(data));
+  }
+
+  auto doomed_request = std::make_unique<V8DetailedMemoryRequestOneShot>(
+      process1.get(),
+      base::BindOnce([](const ProcessNode* process_node,
+                        const V8PerFrameMemoryProcessData* process_data) {
+        FAIL() << "Callback called after request deleted.";
+      }));
+
+  // Verify that requests are sent but reply is not yet received.
+  task_env().FastForwardBy(base::TimeDelta::FromSeconds(5));
+  Mock::VerifyAndClearExpectations(&mock_reporter1);
+  Mock::VerifyAndClearExpectations(&mock_reporter2);
+
+  doomed_request.reset();
+  task_env().RunUntilIdle();
+}
+
 TEST_F(V8PerFrameMemoryDecoratorTest, QueryRateIsLimited) {
   auto process = CreateNode<ProcessNodeImpl>(
       content::PROCESS_TYPE_RENDERER,

@@ -238,7 +238,9 @@ namespace v8_memory {
 //     SEQUENCE_CHECKER(sequence_checker_);
 //   };
 
+class V8DetailedMemoryRequestOneShot;
 class V8PerFrameMemoryObserver;
+class V8PerFrameMemoryProcessData;
 class V8PerFrameMemoryRequest;
 class V8PerFrameMemoryRequestAnySeq;
 
@@ -313,6 +315,80 @@ class V8PerFrameMemoryDecorator
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
+
+//////////////////////////////////////////////////////////////////////////////
+// The following classes report results from memory measurements.
+
+class V8PerFrameMemoryFrameData {
+ public:
+  V8PerFrameMemoryFrameData() = default;
+  virtual ~V8PerFrameMemoryFrameData() = default;
+
+  bool operator==(const V8PerFrameMemoryFrameData& other) const {
+    return v8_bytes_used_ == other.v8_bytes_used_;
+  }
+
+  // Returns the number of bytes used by V8 for this frame at the last
+  // measurement.
+  uint64_t v8_bytes_used() const { return v8_bytes_used_; }
+
+  void set_v8_bytes_used(uint64_t v8_bytes_used) {
+    v8_bytes_used_ = v8_bytes_used;
+  }
+
+  // Returns frame data for the given node, or nullptr if no measurement has
+  // been taken. The returned pointer must only be accessed on the graph
+  // sequence and may go invalid at any time after leaving the calling scope.
+  static const V8PerFrameMemoryFrameData* ForFrameNode(const FrameNode* node);
+
+ private:
+  uint64_t v8_bytes_used_ = 0;
+};
+
+class V8PerFrameMemoryProcessData {
+ public:
+  V8PerFrameMemoryProcessData() = default;
+  virtual ~V8PerFrameMemoryProcessData() = default;
+
+  bool operator==(const V8PerFrameMemoryProcessData& other) const {
+    return unassociated_v8_bytes_used_ == other.unassociated_v8_bytes_used_;
+  }
+
+  // Returns the number of bytes used by V8 at the last measurement in this
+  // process that could not be attributed to a frame.
+  uint64_t unassociated_v8_bytes_used() const {
+    return unassociated_v8_bytes_used_;
+  }
+
+  void set_unassociated_v8_bytes_used(uint64_t unassociated_v8_bytes_used) {
+    unassociated_v8_bytes_used_ = unassociated_v8_bytes_used;
+  }
+
+  // Returns process data for the given node, or nullptr if no measurement has
+  // been taken. The returned pointer must only be accessed on the graph
+  // sequence and may go invalid at any time after leaving the calling scope.
+  static const V8PerFrameMemoryProcessData* ForProcessNode(
+      const ProcessNode* node);
+
+ private:
+  uint64_t unassociated_v8_bytes_used_ = 0;
+};
+
+class V8PerFrameMemoryObserver : public base::CheckedObserver {
+ public:
+  // Called on the PM sequence when a measurement is available for
+  // |process_node|. |process_data| contains the process-level measurements for
+  // the process, and can go invalid at any time after returning from this
+  // method. Per-frame measurements can be read by walking the graph from
+  // |process_node| to find frame nodes, and calling
+  // V8PerFrameMemoryFrameData::ForFrameNode to retrieve the measurement data.
+  virtual void OnV8MemoryMeasurementAvailable(
+      const ProcessNode* process_node,
+      const V8PerFrameMemoryProcessData* process_data) = 0;
+};
+
+//////////////////////////////////////////////////////////////////////////////
+// The following classes create requests for memory measurements.
 
 class V8PerFrameMemoryRequest {
  public:
@@ -394,6 +470,12 @@ class V8PerFrameMemoryRequest {
       MeasurementMode mode,
       base::WeakPtr<V8PerFrameMemoryRequestAnySeq> off_sequence_request);
 
+  // Private constructor for V8DetailedMemoryRequestOneShot. Sets
+  // min_time_between_requests_ to 0, which is not allowed for repeating
+  // requests.
+  V8PerFrameMemoryRequest(util::PassKey<V8DetailedMemoryRequestOneShot>,
+                          MeasurementMode mode);
+
   // V8PerFrameMemoryDecorator::MeasurementRequestQueue calls
   // OnOwnerUnregistered for all requests in the queue when the owning
   // decorator or process node is removed from the graph.
@@ -424,73 +506,60 @@ class V8PerFrameMemoryRequest {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-class V8PerFrameMemoryFrameData {
+// TODO(joenotcharles): Rename the other V8PerFrameMemory* classes to
+// V8DetailedMemory*.
+class V8DetailedMemoryRequestOneShot : public V8PerFrameMemoryObserver {
  public:
-  V8PerFrameMemoryFrameData() = default;
-  virtual ~V8PerFrameMemoryFrameData() = default;
+  // A callback that will be passed the results of the measurement. |process|
+  // will always match the value passed to the V8DetailedMemoryRequestOneShot
+  // constructor.
+  using MeasurementCallback =
+      base::OnceCallback<void(const ProcessNode* process,
+                              const V8PerFrameMemoryProcessData* process_data)>;
 
-  bool operator==(const V8PerFrameMemoryFrameData& other) const {
-    return v8_bytes_used_ == other.v8_bytes_used_;
-  }
+  using MeasurementMode = V8PerFrameMemoryRequest::MeasurementMode;
 
-  // Returns the number of bytes used by V8 for this frame at the last
-  // measurement.
-  uint64_t v8_bytes_used() const { return v8_bytes_used_; }
+  // Creates a one-shot memory measurement request that will immediately be
+  // sent to |process| (which must be a renderer process). The process will
+  // perform the measurement during a GC as determined by |mode|, and
+  // |callback| will be called with the results.
+  V8DetailedMemoryRequestOneShot(
+      const ProcessNode* process,
+      MeasurementCallback callback,
+      MeasurementMode mode = MeasurementMode::kDefault);
 
-  void set_v8_bytes_used(uint64_t v8_bytes_used) {
-    v8_bytes_used_ = v8_bytes_used;
-  }
+  ~V8DetailedMemoryRequestOneShot() final;
 
-  // Returns frame data for the given node, or nullptr if no measurement has
-  // been taken. The returned pointer must only be accessed on the graph
-  // sequence and may go invalid at any time after leaving the calling scope.
-  static const V8PerFrameMemoryFrameData* ForFrameNode(const FrameNode* node);
+  V8DetailedMemoryRequestOneShot(const V8DetailedMemoryRequestOneShot&) =
+      delete;
+  V8DetailedMemoryRequestOneShot& operator=(
+      const V8DetailedMemoryRequestOneShot&) = delete;
 
- private:
-  uint64_t v8_bytes_used_ = 0;
-};
+  MeasurementMode mode() const { return mode_; }
 
-class V8PerFrameMemoryProcessData {
- public:
-  V8PerFrameMemoryProcessData() = default;
-  virtual ~V8PerFrameMemoryProcessData() = default;
+  // V8PerFrameMemoryObserver implementation.
 
-  bool operator==(const V8PerFrameMemoryProcessData& other) const {
-    return unassociated_v8_bytes_used_ == other.unassociated_v8_bytes_used_;
-  }
-
-  // Returns the number of bytes used by V8 at the last measurement in this
-  // process that could not be attributed to a frame.
-  uint64_t unassociated_v8_bytes_used() const {
-    return unassociated_v8_bytes_used_;
-  }
-
-  void set_unassociated_v8_bytes_used(uint64_t unassociated_v8_bytes_used) {
-    unassociated_v8_bytes_used_ = unassociated_v8_bytes_used;
-  }
-
-  // Returns process data for the given node, or nullptr if no measurement has
-  // been taken. The returned pointer must only be accessed on the graph
-  // sequence and may go invalid at any time after leaving the calling scope.
-  static const V8PerFrameMemoryProcessData* ForProcessNode(
-      const ProcessNode* node);
-
- private:
-  uint64_t unassociated_v8_bytes_used_ = 0;
-};
-
-class V8PerFrameMemoryObserver : public base::CheckedObserver {
- public:
-  // Called on the PM sequence when a measurement is available for
-  // |process_node|. |process_data| contains the process-level measurements for
-  // the process, and can go invalid at any time after returning from this
-  // method. Per-frame measurements can be read by walking the graph from
-  // |process_node| to find frame nodes, and calling
-  // V8PerFrameMemoryFrameData::ForFrameNode to retrieve the measurement data.
-  virtual void OnV8MemoryMeasurementAvailable(
+  void OnV8MemoryMeasurementAvailable(
       const ProcessNode* process_node,
-      const V8PerFrameMemoryProcessData* process_data) = 0;
+      const V8PerFrameMemoryProcessData* process_data) final;
+
+ private:
+  void DeleteRequest();
+
+#if DCHECK_IS_ON()
+  const ProcessNode* process_;
+#endif
+
+  MeasurementCallback callback_;
+  MeasurementMode mode_;
+  std::unique_ptr<V8PerFrameMemoryRequest> request_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
+
+//////////////////////////////////////////////////////////////////////////////
+// The following classes are wrappers that can be called from outside the PM
+// sequence.
 
 // Observer that can be created on any sequence, and will be notified on that
 // sequence when measurements are available. Register the observer through
@@ -559,6 +628,9 @@ class V8PerFrameMemoryRequestAnySeq {
 
   base::WeakPtrFactory<V8PerFrameMemoryRequestAnySeq> weak_factory_{this};
 };
+
+//////////////////////////////////////////////////////////////////////////////
+// The following internal functions are exposed in the header for testing.
 
 namespace internal {
 
