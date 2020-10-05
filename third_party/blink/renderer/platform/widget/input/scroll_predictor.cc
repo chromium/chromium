@@ -13,8 +13,7 @@
 
 namespace blink {
 
-ScrollPredictor::ScrollPredictor()
-    : metrics_handler_("Event.InputEventPrediction.Scroll") {
+ScrollPredictor::ScrollPredictor() {
   // Get the predictor from feature flags
   std::string predictor_name = GetFieldTrialParamValueByFeature(
       blink::features::kResamplingScrollEvents, "predictor");

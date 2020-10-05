@@ -2,18 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <utility>
-
 #include "ui/base/prediction/prediction_metrics_handler.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/strcat.h"
 
 namespace ui {
 
-PredictionMetricsHandler::PredictionMetricsHandler(const char* histogram_name)
-    : histogram_name_(std::move(histogram_name)) {}
-PredictionMetricsHandler::~PredictionMetricsHandler() = default;
+PredictionMetricsHandler::PredictionMetricsHandler() {}
+PredictionMetricsHandler::~PredictionMetricsHandler() {}
 
 void PredictionMetricsHandler::AddRealEvent(const gfx::PointF& pos,
                                             const base::TimeTicks& time_stamp,
@@ -134,25 +130,25 @@ void PredictionMetricsHandler::ComputeMetrics() {
   for (int i = 0; i < first_needed_event - 1; i++)
     events_queue_.pop_front();
 
+  std::string kPredictionMetrics = "Event.InputEventPrediction.Scroll.";
+
   double score = ComputeOverUnderPredictionMetric();
   if (score >= 0) {
-    base::UmaHistogramCounts1000(
-        base::StrCat({histogram_name_, ".OverPrediction"}), score);
+    base::UmaHistogramCounts1000(kPredictionMetrics + "OverPrediction", score);
   } else {
-    base::UmaHistogramCounts1000(
-        base::StrCat({histogram_name_, ".UnderPrediction"}), -score);
+    base::UmaHistogramCounts1000(kPredictionMetrics + "UnderPrediction",
+                                 -score);
   }
 
   // Need |last_predicted_| to compute WrongDirection and Jitter metrics.
   if (!last_predicted_.has_value())
     return;
 
-  base::UmaHistogramBoolean(base::StrCat({histogram_name_, ".WrongDirection"}),
+  base::UmaHistogramBoolean(kPredictionMetrics + "WrongDirection",
                             ComputeWrongDirectionMetric());
-  base::UmaHistogramCounts1000(
-      base::StrCat({histogram_name_, ".PredictionJitter"}),
-      ComputePredictionJitterMetric());
-  base::UmaHistogramCounts1000(base::StrCat({histogram_name_, ".VisualJitter"}),
+  base::UmaHistogramCounts1000(kPredictionMetrics + "PredictionJitter",
+                               ComputePredictionJitterMetric());
+  base::UmaHistogramCounts1000(kPredictionMetrics + "VisualJitter",
                                ComputeVisualJitterMetric());
 }
 
