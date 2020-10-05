@@ -351,6 +351,7 @@
     [self.thumbStripCoordinator start];
     self.thumbStripCoordinator.panHandler.layoutSwitcherProvider =
         baseViewController;
+    [self.thumbStripCoordinator.panHandler addAnimatee:baseViewController];
 
     [self setUpThumbStripAttachers];
   }

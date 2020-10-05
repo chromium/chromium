@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/gestures/layout_switcher_provider.h"
+#import "ios/chrome/browser/ui/gestures/view_revealing_animatee.h"
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_grid/transitions/grid_transition_animation_layout_providing.h"
 
@@ -32,7 +33,8 @@
 @interface TabGridViewController
     : UIViewController <GridTransitionAnimationLayoutProviding,
                         LayoutSwitcherProvider,
-                        TabGridPaging>
+                        TabGridPaging,
+                        ViewRevealingAnimatee>
 
 @property(nonatomic, weak) id<ApplicationCommands> handler;
 

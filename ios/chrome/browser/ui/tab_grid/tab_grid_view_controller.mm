@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_top_toolbar.h"
 #import "ios/chrome/browser/ui/tab_grid/transitions/grid_transition_layout.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -434,6 +435,21 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   return [self gridViewControllerForPage:self.activePage];
 }
 
+#pragma mark - ViewRevealingAnimatee
+
+- (void)willAnimateViewReveal:(ViewRevealState)currentViewRevealState {
+  self.scrollView.scrollEnabled = NO;
+}
+
+- (void)animateViewReveal:(ViewRevealState)viewRevealState {
+}
+
+- (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
+  if (viewRevealState == ViewRevealState::Revealed) {
+    self.scrollView.scrollEnabled = YES;
+  }
+}
+
 #pragma mark - Private
 
 // Sets the proper insets for the Remote Tabs ViewController to accomodate for
@@ -611,6 +627,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.scrollContentView = contentView;
   self.scrollView = scrollView;
   self.scrollView.accessibilityIdentifier = kTabGridScrollViewIdentifier;
+  if (IsThumbStripEnabled()) {
+    self.scrollView.scrollEnabled = NO;
+  }
   NSArray* constraints = @[
     [contentView.topAnchor constraintEqualToAnchor:scrollView.topAnchor],
     [contentView.bottomAnchor constraintEqualToAnchor:scrollView.bottomAnchor],
