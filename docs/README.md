@@ -253,6 +253,11 @@ used when committed.
     on top of DirectX
 *   [Windows Split DLLs](windows_split_dll.md) - Splitting `chrome.dll` into
     multiple dlls to work around toolchain limitations on Windows.
+*   [Windows Native Window Occlusion Tracking](windows_native_window_occlusion_tracking.md)
+*   [Windows PWA Integration](windows_pwa_integration.md) - Integration with 
+    Progressive Web Apps on Windows
+*   [Windows Shortcut and Taskbar Handling](windows_shortcut_and_taskbar_handling.md)
+*   [Windows Virtual Desktop Integration](windows_virtual_desktop_handling.md)
 
 ### Misc Android-Specific Docs
 *   [Google Play Services in Chrome for Android](google_play_services.md)
