@@ -85,6 +85,9 @@ class StoragePartition;
 class WebUI;
 
 // The interface provides a communication conduit with a frame in the renderer.
+// The preferred way to keep a reference to a RenderFrameHost is storing a
+// GlobalFrameRoutingId and using RenderFrameHost::FromID() when you need to
+// access it.
 class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
                                        public IPC::Sender {
  public:
