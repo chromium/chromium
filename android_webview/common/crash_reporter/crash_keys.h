@@ -22,6 +22,7 @@ extern const char kAppPackageVersionCode[];
 extern const char kAppProcessName[];
 
 extern const char kAndroidSdkInt[];
+extern const char kTerminationInfo[];
 
 extern const char kSupportLibraryWebkitVersion[];
 

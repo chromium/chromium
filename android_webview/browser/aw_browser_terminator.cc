@@ -10,7 +10,10 @@
 #include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/aw_render_process_gone_delegate.h"
 #include "android_webview/common/aw_descriptors.h"
+#include "android_webview/common/crash_reporter/crash_keys.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
@@ -122,6 +125,20 @@ void AwBrowserTerminator::OnChildExit(
 
   LOG(ERROR) << "Renderer process (" << info.pid << ") crash detected (code "
              << info.crash_signo << ").";
+
+  if (info.crash_signo ==
+      crash_reporter::ChildExitObserver::TerminationInfo::kInvalidSigno) {
+    static auto* termination_info_key = base::debug::AllocateCrashKeyString(
+        crash_keys::kTerminationInfo, base::debug::CrashKeySize::Size32);
+    std::ostringstream stream;
+    stream << info.was_killed_intentionally_by_browser << " "
+           << info.renderer_shutdown_requested << " "
+           << info.threw_exception_during_init << " "
+           << info.renderer_has_visible_clients;
+    base::debug::SetCrashKeyString(termination_info_key, stream.str());
+    base::debug::DumpWithoutCrashing();
+    base::debug::ClearCrashKeyString(termination_info_key);
+  }
 
   std::vector<ScopedJavaGlobalRef<jobject>> java_web_contents;
   GetJavaWebContentsForRenderProcess(rph, &java_web_contents);

@@ -15,6 +15,7 @@ const char kAppPackageVersionCode[] = "app-package-version-code";
 const char kAppProcessName[] = "app-process-name";
 
 const char kAndroidSdkInt[] = "android-sdk-int";
+const char kTerminationInfo[] = "termination-info";
 
 const char kSupportLibraryWebkitVersion[] = "androidx-webkit-version";
 
@@ -28,6 +29,7 @@ const char* const kWebViewCrashKeyAllowList[] = {
     kAppProcessName,
     kAndroidSdkInt,
     kSupportLibraryWebkitVersion,
+    kTerminationInfo,
 
     // process type
     "ptype",
