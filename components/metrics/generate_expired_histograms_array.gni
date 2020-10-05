@@ -8,7 +8,8 @@
 # Parameters:
 #   inputs:
 #     List of file name to read. Each file should be a .xml file with
-#     histogram descriptions.
+#     histogram descriptions and should be a path starting with
+#     //tools/metrics/histograms/
 #
 #   namespace (optional):
 #     Namespace in which the generated code should be scoped. If left empty,
