@@ -98,10 +98,9 @@ wtf_size_t TransformOperations::MatchingPrefixLength(
   wtf_size_t num_operations =
       std::min(Operations().size(), other.Operations().size());
   for (wtf_size_t i = 0; i < num_operations; ++i) {
-    if (Operations()[i]->PrimitiveType() !=
-        other.Operations()[i]->PrimitiveType()) {
-      // Remaining operations in each operations list require matrix/matrix3d
-      // interpolation.
+    if (!Operations()[i]->CanBlendWith(*other.Operations()[i])) {
+      // Remaining operations in each operations list require merging for
+      // matrix/matrix3d interpolation.
       return i;
     }
   }

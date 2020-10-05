@@ -54,8 +54,6 @@ class PLATFORM_EXPORT ScaleTransformOperation final
   double Y() const { return y_; }
   double Z() const { return z_; }
 
-  bool CanBlendWith(const TransformOperation& other) const override;
-
   void Apply(TransformationMatrix& transform, const FloatSize&) const override {
     transform.Scale3d(x_, y_, z_);
   }

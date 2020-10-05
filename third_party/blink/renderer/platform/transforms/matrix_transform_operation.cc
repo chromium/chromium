@@ -64,8 +64,7 @@ scoped_refptr<TransformOperation> MatrixTransformOperation::Blend(
     const TransformOperation* from,
     double progress,
     bool blend_to_identity) {
-  if (from && !from->IsSameType(*this))
-    return this;
+  DCHECK(!from || CanBlendWith(*from));
 
   // convert the TransformOperations into matrices
   TransformationMatrix from_t;

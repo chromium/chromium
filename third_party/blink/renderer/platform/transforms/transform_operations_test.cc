@@ -571,6 +571,75 @@ TEST(TransformOperationsTest, PerspectiveOpsTest) {
   EXPECT_TRUE(ops.HasNonTrivial3DComponent());
 }
 
+TEST(TransformOperationsTest, CanBlendWithSkewTest) {
+  TransformOperations ops_x, ops_y, ops_skew, ops_skew2;
+  ops_x.Operations().push_back(
+      SkewTransformOperation::Create(45, 0, TransformOperation::kSkewX));
+  ops_y.Operations().push_back(
+      SkewTransformOperation::Create(0, 45, TransformOperation::kSkewY));
+  ops_skew.Operations().push_back(
+      SkewTransformOperation::Create(45, 0, TransformOperation::kSkew));
+  ops_skew2.Operations().push_back(
+      SkewTransformOperation::Create(0, 45, TransformOperation::kSkew));
+
+  EXPECT_TRUE(ops_x.Operations()[0]->CanBlendWith(*ops_x.Operations()[0]));
+  EXPECT_TRUE(ops_y.Operations()[0]->CanBlendWith(*ops_y.Operations()[0]));
+
+  EXPECT_FALSE(ops_x.Operations()[0]->CanBlendWith(*ops_y.Operations()[0]));
+  EXPECT_FALSE(ops_x.Operations()[0]->CanBlendWith(*ops_skew.Operations()[0]));
+  EXPECT_FALSE(ops_y.Operations()[0]->CanBlendWith(*ops_skew.Operations()[0]));
+
+  EXPECT_TRUE(
+      ops_skew.Operations()[0]->CanBlendWith(*ops_skew2.Operations()[0]));
+
+  ASSERT_TRUE(IsA<SkewTransformOperation>(
+      *ops_skew.Blend(ops_skew2, 0.5).Operations()[0]));
+  ASSERT_TRUE(IsA<Matrix3DTransformOperation>(
+      *ops_x.Blend(ops_y, 0.5).Operations()[0]));
+}
+
+TEST(TransformOperationsTest, CanBlendWithMatrixTest) {
+  TransformOperations ops_a, ops_b;
+  ops_a.Operations().push_back(
+      MatrixTransformOperation::Create(1, 0, 0, 1, 0, 0));
+  ops_a.Operations().push_back(
+      RotateTransformOperation::Create(0, TransformOperation::kRotate));
+  ops_b.Operations().push_back(
+      MatrixTransformOperation::Create(2, 0, 0, 2, 0, 0));
+  ops_b.Operations().push_back(
+      RotateTransformOperation::Create(360, TransformOperation::kRotate));
+
+  EXPECT_TRUE(ops_a.Operations()[0]->CanBlendWith(*ops_b.Operations()[0]));
+
+  TransformOperations ops_blended = ops_a.Blend(ops_b, 0.5);
+  ASSERT_EQ(ops_blended.Operations().size(), 2u);
+  ASSERT_TRUE(IsA<MatrixTransformOperation>(*ops_blended.Operations()[0]));
+  ASSERT_TRUE(IsA<RotateTransformOperation>(*ops_blended.Operations()[1]));
+  EXPECT_EQ(To<RotateTransformOperation>(*ops_blended.Operations()[1]).Angle(),
+            180.0);
+}
+
+TEST(TransformOperationsTest, CanBlendWithMatrix3DTest) {
+  TransformOperations ops_a, ops_b;
+  ops_a.Operations().push_back(Matrix3DTransformOperation::Create(
+      TransformationMatrix(1, 0, 0, 1, 0, 0)));
+  ops_a.Operations().push_back(
+      RotateTransformOperation::Create(0, TransformOperation::kRotate));
+  ops_b.Operations().push_back(Matrix3DTransformOperation::Create(
+      TransformationMatrix(2, 0, 0, 2, 0, 0)));
+  ops_b.Operations().push_back(
+      RotateTransformOperation::Create(360, TransformOperation::kRotate));
+
+  EXPECT_TRUE(ops_a.Operations()[0]->CanBlendWith(*ops_b.Operations()[0]));
+
+  TransformOperations ops_blended = ops_a.Blend(ops_b, 0.5);
+  ASSERT_EQ(ops_blended.Operations().size(), 2u);
+  ASSERT_TRUE(IsA<Matrix3DTransformOperation>(*ops_blended.Operations()[0]));
+  ASSERT_TRUE(IsA<RotateTransformOperation>(*ops_blended.Operations()[1]));
+  EXPECT_EQ(To<RotateTransformOperation>(*ops_blended.Operations()[1]).Angle(),
+            180.0);
+}
+
 TEST(TransformOperationsTest, InterpolatedTransformBlendIdentityTest) {
   // When interpolating transform lists of differing lengths, the length of the
   // shorter list behaves as if it is padded with identity transforms.

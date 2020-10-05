@@ -40,10 +40,6 @@ class PLATFORM_EXPORT PerspectiveTransformOperation final
 
   double Perspective() const { return p_; }
 
-  bool CanBlendWith(const TransformOperation& other) const override {
-    return IsSameType(other);
-  }
-
   static bool IsMatchingOperationType(OperationType type) {
     return type == kPerspective;
   }

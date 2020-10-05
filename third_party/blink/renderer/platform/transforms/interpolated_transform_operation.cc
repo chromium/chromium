@@ -57,8 +57,8 @@ scoped_refptr<TransformOperation> InterpolatedTransformOperation::Blend(
     const TransformOperation* from,
     double progress,
     bool blend_to_identity) {
-  if (from && !from->IsSameType(*this))
-    return this;
+  DCHECK(!from || CanBlendWith(*from));
+
   TransformOperations to_operations;
   to_operations.Operations().push_back(this);
   TransformOperations from_operations;

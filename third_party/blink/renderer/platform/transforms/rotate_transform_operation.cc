@@ -71,8 +71,7 @@ scoped_refptr<TransformOperation> RotateTransformOperation::Blend(
     const TransformOperation* from,
     double progress,
     bool blend_to_identity) {
-  if (from && !IsMatchingOperationType(from->GetType()))
-    return this;
+  DCHECK(!from || CanBlendWith(*from));
 
   if (blend_to_identity)
     return RotateTransformOperation::Create(
@@ -94,11 +93,6 @@ scoped_refptr<TransformOperation> RotateTransformOperation::Blend(
   const auto& from_rotate = To<RotateTransformOperation>(*from);
   return RotateTransformOperation::Create(
       Rotation::Slerp(from_rotate.rotation_, rotation_, progress), type);
-}
-
-bool RotateTransformOperation::CanBlendWith(
-    const TransformOperation& other) const {
-  return other.IsSameType(*this);
 }
 
 RotateAroundOriginTransformOperation::RotateAroundOriginTransformOperation(
@@ -134,8 +128,8 @@ scoped_refptr<TransformOperation> RotateAroundOriginTransformOperation::Blend(
     const TransformOperation* from,
     double progress,
     bool blend_to_identity) {
-  if (from && !from->IsSameType(*this))
-    return this;
+  DCHECK(!from || CanBlendWith(*from));
+
   if (blend_to_identity) {
     return RotateAroundOriginTransformOperation::Create(
         Angle() * (1 - progress), origin_x_, origin_y_);

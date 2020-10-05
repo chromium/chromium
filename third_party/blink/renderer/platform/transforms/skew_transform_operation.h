@@ -42,8 +42,6 @@ class PLATFORM_EXPORT SkewTransformOperation final : public TransformOperation {
   double AngleX() const { return angle_x_; }
   double AngleY() const { return angle_y_; }
 
-  bool CanBlendWith(const TransformOperation& other) const override;
-
   static bool IsMatchingOperationType(OperationType type) {
     return type == kSkewX || type == kSkewY || type == kSkew;
   }

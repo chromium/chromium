@@ -63,8 +63,7 @@ scoped_refptr<TransformOperation> ScaleTransformOperation::Blend(
     const TransformOperation* from,
     double progress,
     bool blend_to_identity) {
-  if (from && !from->CanBlendWith(*this))
-    return this;
+  DCHECK(!from || CanBlendWith(*from));
 
   if (blend_to_identity)
     return ScaleTransformOperation::Create(
@@ -81,13 +80,6 @@ scoped_refptr<TransformOperation> ScaleTransformOperation::Blend(
   return ScaleTransformOperation::Create(
       blink::Blend(from_x, x_, progress), blink::Blend(from_y, y_, progress),
       blink::Blend(from_z, z_, progress), is_3d ? kScale3D : kScale);
-}
-
-bool ScaleTransformOperation::CanBlendWith(
-    const TransformOperation& other) const {
-  return other.GetType() == kScaleX || other.GetType() == kScaleY ||
-         other.GetType() == kScaleZ || other.GetType() == kScale3D ||
-         other.GetType() == kScale;
 }
 
 }  // namespace blink

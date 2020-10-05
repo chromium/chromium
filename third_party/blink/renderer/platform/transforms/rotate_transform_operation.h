@@ -70,9 +70,8 @@ class PLATFORM_EXPORT RotateTransformOperation : public TransformOperation {
                             double& result_angle_a,
                             double& result_angle_b);
 
-  bool CanBlendWith(const TransformOperation& other) const override;
   OperationType GetType() const override { return type_; }
-  OperationType PrimitiveType() const final { return kRotate3D; }
+  OperationType PrimitiveType() const override { return kRotate3D; }
 
   void Apply(TransformationMatrix& transform,
              const FloatSize& /*borderBoxSize*/) const override {
@@ -130,6 +129,7 @@ class PLATFORM_EXPORT RotateAroundOriginTransformOperation final
   static bool IsMatchingOperationType(OperationType type) {
     return type == kRotateAroundOrigin;
   }
+  OperationType PrimitiveType() const override { return kRotateAroundOrigin; }
 
  private:
   RotateAroundOriginTransformOperation(double angle,

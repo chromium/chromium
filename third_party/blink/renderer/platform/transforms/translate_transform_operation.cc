@@ -74,8 +74,7 @@ scoped_refptr<TransformOperation> TranslateTransformOperation::Blend(
     const TransformOperation* from,
     double progress,
     bool blend_to_identity) {
-  if (from && !from->CanBlendWith(*this))
-    return this;
+  DCHECK(!from || CanBlendWith(*from));
 
   const Length zero_length = Length::Fixed(0);
   if (blend_to_identity) {
@@ -95,13 +94,6 @@ scoped_refptr<TransformOperation> TranslateTransformOperation::Blend(
       x_.Blend(from_x, progress, kValueRangeAll),
       y_.Blend(from_y, progress, kValueRangeAll),
       blink::Blend(from_z, z_, progress), is_3d ? kTranslate3D : kTranslate);
-}
-
-bool TranslateTransformOperation::CanBlendWith(
-    const TransformOperation& other) const {
-  return other.GetType() == kTranslate || other.GetType() == kTranslateX ||
-         other.GetType() == kTranslateY || other.GetType() == kTranslateZ ||
-         other.GetType() == kTranslate3D;
 }
 
 scoped_refptr<TranslateTransformOperation>

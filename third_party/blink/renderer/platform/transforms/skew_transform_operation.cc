@@ -37,8 +37,7 @@ scoped_refptr<TransformOperation> SkewTransformOperation::Blend(
     const TransformOperation* from,
     double progress,
     bool blend_to_identity) {
-  if (from && !from->CanBlendWith(*this))
-    return this;
+  DCHECK(!from || CanBlendWith(*from));
 
   if (blend_to_identity)
     return SkewTransformOperation::Create(blink::Blend(angle_x_, 0.0, progress),
@@ -52,12 +51,6 @@ scoped_refptr<TransformOperation> SkewTransformOperation::Blend(
   return SkewTransformOperation::Create(
       blink::Blend(from_angle_x, angle_x_, progress),
       blink::Blend(from_angle_y, angle_y_, progress), type_);
-}
-
-bool SkewTransformOperation::CanBlendWith(
-    const TransformOperation& other) const {
-  return other.GetType() == kSkew || other.GetType() == kSkewX ||
-         other.GetType() == kSkewY;
 }
 
 }  // namespace blink

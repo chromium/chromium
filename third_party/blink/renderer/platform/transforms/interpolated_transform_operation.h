@@ -50,10 +50,6 @@ class PLATFORM_EXPORT InterpolatedTransformOperation final
         new InterpolatedTransformOperation(from, to, starting_index, progress));
   }
 
-  bool CanBlendWith(const TransformOperation& other) const override {
-    return IsSameType(other);
-  }
-
  private:
   OperationType GetType() const override { return kInterpolated; }
 

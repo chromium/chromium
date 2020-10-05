@@ -92,7 +92,9 @@ class PLATFORM_EXPORT TransformOperation
   bool IsSameType(const TransformOperation& other) const {
     return other.GetType() == GetType();
   }
-  virtual bool CanBlendWith(const TransformOperation& other) const = 0;
+  bool CanBlendWith(const TransformOperation& other) const {
+    return PrimitiveType() == other.PrimitiveType();
+  }
 
   virtual bool PreservesAxisAlignment() const { return false; }
 
