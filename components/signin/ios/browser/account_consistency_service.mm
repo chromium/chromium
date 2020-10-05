@@ -151,6 +151,14 @@ void AccountConsistencyHandler::ShouldAllowResponse(
   if (signin::IsUrlEligibleForMirrorCookie(url)) {
     account_consistency_service_->SetChromeConnectedCookieWithUrls(
         {url, GURL(kGoogleUrl)});
+  }
+
+  // Chrome monitors GAIA cookies when navigating to a google.com domain to
+  // ensure that signed-in users remain signed-in to their Google services on
+  // the web. This includes redirects to accounts.google.com.
+  if (google_util::IsGoogleDomainUrl(
+          url, google_util::ALLOW_SUBDOMAIN,
+          google_util::DISALLOW_NON_STANDARD_PORTS)) {
     account_consistency_service_->SetGaiaCookiesIfDeleted();
   }
 
