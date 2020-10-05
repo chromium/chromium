@@ -109,6 +109,10 @@ void IOSBlockingPageControllerClient::OpenUrlInNewForegroundTab(
       ui::PAGE_TRANSITION_LINK, false));
 }
 
+void IOSBlockingPageControllerClient::OpenEnhancedProtectionSettings() {
+  NOTREACHED() << "Enhanced protection is not supported on iOS.";
+}
+
 const std::string& IOSBlockingPageControllerClient::GetApplicationLocale()
     const {
   return app_locale_;

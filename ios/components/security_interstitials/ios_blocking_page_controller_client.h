@@ -37,6 +37,7 @@ class IOSBlockingPageControllerClient
   void Proceed() override;
   void GoBack() override;
   bool CanGoBack() override;
+  void OpenEnhancedProtectionSettings() override;
 
   void SetWebInterstitial(web::WebInterstitial* web_interstitial);
 

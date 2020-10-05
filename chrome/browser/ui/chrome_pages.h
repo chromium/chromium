@@ -134,6 +134,7 @@ void ShowSettingsSubPageInTabbedBrowser(Browser* browser,
 void ShowClearBrowsingDataDialog(Browser* browser);
 void ShowPasswordManager(Browser* browser);
 void ShowPasswordCheck(Browser* browser);
+void ShowSafeBrowsingEnhancedProtection(Browser* browser);
 void ShowImportDialog(Browser* browser);
 void ShowAboutChrome(Browser* browser);
 void ShowSearchEngineSettings(Browser* browser);

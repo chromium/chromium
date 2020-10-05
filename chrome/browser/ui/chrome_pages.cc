@@ -468,6 +468,12 @@ void ShowPasswordCheck(Browser* browser) {
   ShowSettingsSubPage(browser, kPasswordCheckSubPage);
 }
 
+void ShowSafeBrowsingEnhancedProtection(Browser* browser) {
+  base::RecordAction(
+      UserMetricsAction("Options_ShowSafeBrowsingEnhancedProtection"));
+  ShowSettingsSubPage(browser, kSafeBrowsingEnhancedProtectionSubPage);
+}
+
 void ShowImportDialog(Browser* browser) {
   base::RecordAction(UserMetricsAction("Import_ShowDlg"));
   ShowSettingsSubPage(browser, kImportDataSubPage);

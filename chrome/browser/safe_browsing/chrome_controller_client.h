@@ -12,6 +12,10 @@ namespace content {
 class WebContents;
 }
 
+namespace security_interstitials {
+class SettingsPageHelper;
+}
+
 class PrefService;
 
 // Provides embedder-specific logic for the Safe Browsing interstitial page
@@ -24,7 +28,9 @@ class ChromeControllerClient
       std::unique_ptr<security_interstitials::MetricsHelper> metrics_helper,
       PrefService* prefs,
       const std::string& app_locale,
-      const GURL& default_safe_page);
+      const GURL& default_safe_page,
+      std::unique_ptr<security_interstitials::SettingsPageHelper>
+          settings_page_helper);
   ~ChromeControllerClient() override;
 
   void Proceed() override;

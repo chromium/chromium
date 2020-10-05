@@ -11,6 +11,7 @@
 #include "base/optional.h"
 #include "components/security_interstitials/content/origin_policy_interstitial_page.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
+#include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "content/public/browser/navigation_handle.h"
 #include "services/network/public/cpp/origin_policy.h"
@@ -31,7 +32,7 @@ std::unique_ptr<SecurityInterstitialPage> GetErrorPageImpl(
           web_contents,
           std::make_unique<MetricsHelper>(url, report_details, nullptr),
           nullptr, /* pref service: can be null */
-          "", GURL());
+          "", GURL(), /* settings_page_helper: not used */ nullptr);
   return std::make_unique<security_interstitials::OriginPolicyInterstitialPage>(
       web_contents, url, std::move(controller), error_reason);
 }

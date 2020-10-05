@@ -596,6 +596,8 @@ static_library("browser") {
     "installable/installable_utils.h",
     "internal_auth.cc",
     "internal_auth.h",
+    "interstitials/chrome_settings_page_helper.cc",
+    "interstitials/chrome_settings_page_helper.h",
     "interstitials/enterprise_util.cc",
     "interstitials/enterprise_util.h",
     "intranet_redirect_detector.cc",
