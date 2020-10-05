@@ -148,5 +148,6 @@ public class PageInfoPermissionsController
     @Override
     public void onPermissionChanged() {
         mMainController.recordAction(PageInfoAction.PAGE_INFO_PERMISSIONS_CHANGED);
+        mMainController.refreshPermissions();
     }
 }
