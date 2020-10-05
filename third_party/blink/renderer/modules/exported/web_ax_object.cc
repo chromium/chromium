@@ -1663,10 +1663,8 @@ WebAXObject WebAXObject::FromWebDocumentFocused(
 // static
 void WebAXObject::UpdateLayout(const WebDocument& web_document) {
   const Document* document = web_document.ConstUnwrap<Document>();
-  if (!document || !document->View())
+  if (!document || !document->View() || !document->ExistingAXObjectCache())
     return;
-  DCHECK(document->View());
-  DCHECK(document->ExistingAXObjectCache());
   if (document->NeedsLayoutTreeUpdate() || document->View()->NeedsLayout() ||
       document->Lifecycle().GetState() <
           DocumentLifecycle::kCompositingAssignmentsClean ||
