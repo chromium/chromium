@@ -359,10 +359,16 @@ void MessageView::OnSlideOut() {
   for (auto& observer : observers_)
     observer.OnPreSlideOut(notification_id_);
 
-  MessageCenter::Get()->RemoveNotification(notification_id_,
-                                           true /* by_user */);
+  // Copy the |notification_id| here as calling OnSlideOut() might destroy
+  // |this| but we still want to call RemoveNotification(). Note that the
+  // iteration over |observers_| is still safe and will simply stop.
+  std::string notification_id_copy = notification_id_;
+
   for (auto& observer : observers_)
     observer.OnSlideOut(notification_id_);
+
+  MessageCenter::Get()->RemoveNotification(notification_id_copy,
+                                           true /* by_user */);
 }
 
 void MessageView::OnWillChangeFocus(views::View* before, views::View* now) {}
