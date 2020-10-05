@@ -168,8 +168,11 @@ bool HardwareDisplayPlaneManagerAtomic::Commit(
   }
 
   if (test_only) {
-    for (HardwareDisplayPlane* plane : plane_list->plane_list) {
+    for (auto* plane : plane_list->plane_list) {
       plane->set_in_use(false);
+    }
+    for (auto* plane : plane_list->old_plane_list) {
+      plane->set_in_use(true);
     }
   } else {
     plane_list->plane_list.swap(plane_list->old_plane_list);

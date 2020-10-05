@@ -223,7 +223,13 @@ class HardwareDisplayPlaneManager {
                             const DrmOverlayPlane& overlay,
                             uint32_t crtc_index) const;
 
+  // Resets |plane_list| setting all planes to unused.
+  // Frees any temporary data structure in |plane_list| used for pageflipping.
   void ResetCurrentPlaneList(HardwareDisplayPlaneList* plane_list) const;
+  // Restores |plane_list| planes |in_use| flag to what it was before
+  // BeginFrame was called.
+  // Frees any temporary data structure in |plane_list| used for pageflipping.
+  void RestoreCurrentPlaneList(HardwareDisplayPlaneList* plane_list) const;
 
   // Populates scanout formats supported by all planes.
   void PopulateSupportedFormats();
