@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/modules/plugins/dom_mime_type.h"
 #include "third_party/blink/renderer/modules/plugins/dom_mime_type_array.h"
 #include "third_party/blink/renderer/modules/plugins/dom_plugin_array.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
@@ -91,9 +92,38 @@ DOMPluginArray* NavigatorPlugins::plugins(LocalFrame* frame) const {
 }
 
 DOMMimeTypeArray* NavigatorPlugins::mimeTypes(LocalFrame* frame) const {
-  if (!mime_types_)
+  if (!mime_types_) {
     mime_types_ = MakeGarbageCollected<DOMMimeTypeArray>(frame);
+    RecordMimeTypes(frame);
+  }
   return mime_types_.Get();
+}
+
+void NavigatorPlugins::RecordMimeTypes(LocalFrame* frame) const {
+  constexpr IdentifiableSurface surface = IdentifiableSurface::FromTypeAndToken(
+      IdentifiableSurface::Type::kWebFeature, WebFeature::kNavigatorMimeTypes);
+  if (!IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(surface) || !frame)
+    return;
+  Document* document = frame->GetDocument();
+  if (!document)
+    return;
+  IdentifiableTokenBuilder builder;
+  for (unsigned i = 0; i < mime_types_->length(); i++) {
+    DOMMimeType* mime_type = mime_types_->item(i);
+    builder.AddToken(IdentifiabilityBenignStringToken(mime_type->type()));
+    builder.AddToken(
+        IdentifiabilityBenignStringToken(mime_type->description()));
+    builder.AddToken(IdentifiabilityBenignStringToken(mime_type->suffixes()));
+    DOMPlugin* plugin = mime_type->enabledPlugin();
+    if (plugin) {
+      builder.AddToken(IdentifiabilityBenignStringToken(plugin->name()));
+      builder.AddToken(IdentifiabilityBenignStringToken(plugin->filename()));
+      builder.AddToken(IdentifiabilityBenignStringToken(plugin->description()));
+    }
+  }
+  IdentifiabilityMetricBuilder(document->UkmSourceID())
+      .Set(surface, builder.GetToken())
+      .Record(document->UkmRecorder());
 }
 
 void NavigatorPlugins::Trace(Visitor* visitor) const {
