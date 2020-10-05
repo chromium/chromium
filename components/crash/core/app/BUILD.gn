@@ -11,13 +11,6 @@ if (is_android) {
   import("//build/config/android/config.gni")
 }
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 source_set("lib") {
   visibility = [
     ":*",
@@ -56,10 +49,6 @@ static_library("app") {
     "crash_switches.cc",
     "crash_switches.h",
     "crashpad.h",
-    "crashpad_android.cc",
-    "crashpad_linux.cc",
-    "crashpad_mac.mm",
-    "crashpad_win.cc",
   ]
 
   if (is_mac || is_win || is_android || is_linux || is_chromeos) {
@@ -71,6 +60,7 @@ static_library("app") {
       "breakpad_linux.cc",
       "breakpad_linux.h",
       "breakpad_linux_impl.h",
+      "crashpad_linux.cc",
     ]
   }
 
@@ -91,12 +81,14 @@ static_library("app") {
   }
 
   if (is_android) {
+    sources += [ "crashpad_android.cc" ]
     deps += [
       ":crashpad_handler_main",
       "//components/crash/android:jni_headers",
       "//third_party/crashpad/crashpad/handler",
       "//third_party/crashpad/crashpad/snapshot",
     ]
+    libs = [ "log" ]
   }
 
   if (is_android || is_linux || is_chromeos) {
@@ -113,6 +105,7 @@ static_library("app") {
 
   if (is_win) {
     sources += [
+      "crashpad_win.cc",
       "dump_hung_process_with_ptype.cc",
       "dump_hung_process_with_ptype.h",
       "minidump_with_crashpad_info.cc",
@@ -128,14 +121,11 @@ static_library("app") {
   }
 
   if (is_mac) {
+    sources += [ "crashpad_mac.mm" ]
     deps += [
       "//third_party/crashpad/crashpad/minidump",
       "//third_party/crashpad/crashpad/snapshot",
     ]
-  }
-
-  if (is_android) {
-    libs = [ "log" ]
   }
 
   if (is_linux || is_chromeos) {
@@ -284,11 +274,7 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "fallback_crash_handler_launcher_win_unittest.cc",
-    "fallback_crash_handler_win_unittest.cc",
-    "fallback_crash_handling_win_unittest.cc",
-  ]
+  sources = []
   deps = [
     ":lib",
     "//base",
@@ -298,6 +284,11 @@ source_set("unit_tests") {
   ]
 
   if (is_win) {
+    sources += [
+      "fallback_crash_handler_launcher_win_unittest.cc",
+      "fallback_crash_handler_win_unittest.cc",
+      "fallback_crash_handling_win_unittest.cc",
+    ]
     deps += [
       ":run_as_crashpad_handler",
       "//third_party/breakpad:client",
