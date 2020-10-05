@@ -594,9 +594,6 @@ void WebFrameTestProxy::PostAccessibilityEvent(const ui::AXEvent& event) {
     case ax::mojom::Event::kLocationChanged:
       event_name = "LocationChanged";
       break;
-    case ax::mojom::Event::kMenuListItemSelected:
-      event_name = "MenuListItemSelected";
-      break;
     case ax::mojom::Event::kMenuListValueChanged:
       event_name = "MenuListValueChanged";
       break;

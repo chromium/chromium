@@ -63,7 +63,6 @@ bool IsEventTypeHandledByAXEventGenerator(ax::mojom::Event event_type) {
     case ax::mojom::Event::kMediaStartedPlaying:
     case ax::mojom::Event::kMediaStoppedPlaying:
     case ax::mojom::Event::kMenuEnd:
-    case ax::mojom::Event::kMenuListItemSelected:
     case ax::mojom::Event::kMenuListValueChanged:
     case ax::mojom::Event::kMenuPopupEnd:
     case ax::mojom::Event::kMenuPopupStart:

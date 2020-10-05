@@ -57,7 +57,6 @@ enum Event {
   kMediaStartedPlaying,   // Native / Automation
   kMediaStoppedPlaying,   // Native / Automation
   kMenuEnd,               // Native / web: menu interaction has ended.
-  kMenuListItemSelected,  // Web
   kMenuListValueChanged,  // Web
   kMenuPopupEnd,          // Native / web: a menu/submenu is hidden/closed.
   kMenuPopupStart,        // Native / web: a menu/submenu is shown/opened.

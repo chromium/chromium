@@ -59,8 +59,6 @@ def GetEnumsFromFile(fullpath):
         enum_value = CamelToLowerHacker(enum_value[1:])
       if enum_value == 'none' or enum_value == 'last':
         continue
-      if enum_value == 'active_descendant_changed':
-        enum_value = 'activedescendantchanged'
       enums[enum_name].append(enum_value)
 
   return enums
@@ -71,7 +69,8 @@ def CheckMatchingEnum(ax_enums,
                       automation_enum_name,
                       errs,
                       output_api,
-                      strict_ordering=False):
+                      strict_ordering=False,
+                      allow_extra_destination_enums=False):
   if ax_enum_name not in ax_enums:
     errs.append(output_api.PresubmitError(
         'Expected %s to have an enum named %s' % (AX_MOJOM, ax_enum_name)))
@@ -113,12 +112,13 @@ def CheckMatchingEnum(ax_enums,
               automation_enum_name, InitialLowerCamelCase(value),
               AUTOMATION_IDL)))
   #  Should be no remaining items
-  for value in dst:
-      errs.append(output_api.PresubmitError(
-          'Found %s.%s in %s, but did not find %s.%s in %s' % (
-              automation_enum_name, value, AUTOMATION_IDL,
-              ax_enum_name, InitialLowerCamelCase(value),
-              AX_MOJOM)))
+  if not allow_extra_destination_enums:
+      for value in dst:
+          errs.append(output_api.PresubmitError(
+              'Found %s.%s in %s, but did not find %s.%s in %s' % (
+                  automation_enum_name, value, AUTOMATION_IDL,
+                  ax_enum_name, InitialLowerCamelCase(value),
+                  AX_MOJOM)))
 
 def CheckEnumsMatch(input_api, output_api):
   repo_root = input_api.change.RepositoryRoot()
@@ -138,7 +138,7 @@ def CheckEnumsMatch(input_api, output_api):
   CheckMatchingEnum(ax_enums, 'Action', automation_enums, 'ActionType', errs,
                     output_api, strict_ordering=True)
   CheckMatchingEnum(ax_enums, 'Event', automation_enums, 'EventType', errs,
-                    output_api)
+                    output_api, allow_extra_destination_enums=True)
   CheckMatchingEnum(ax_enums, 'NameFrom', automation_enums, 'NameFromType',
                     errs, output_api)
   CheckMatchingEnum(ax_enums, 'DescriptionFrom', automation_enums,

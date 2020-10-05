@@ -19,7 +19,7 @@ async_test(function(t)
             assert_equals(element.role, "AXRole: AXMenuListPopup");
             ++eventCount;
         }
-        if (notification == "MenuListItemSelected") {
+        if (notification == "MarkDirty") {
             assert_equals(element.role, "AXRole: AXMenuListOption");
             assert_equals(element.name, "Alicia");
             ++eventCount;
