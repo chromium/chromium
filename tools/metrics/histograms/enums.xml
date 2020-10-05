@@ -70138,6 +70138,9 @@ would be helpful to identify which type is being sent.
 </enum>
 
 <enum name="SyncMissingBookmarkPermanentNodes">
+  <obsolete>
+    Removed 2020-10.
+  </obsolete>
   <int value="0" label="Bookmark Bar"/>
   <int value="1" label="Other Bookmarks"/>
   <int value="2" label="Mobile Bookmarks"/>

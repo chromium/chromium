@@ -470,6 +470,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Sync.MissingBookmarkPermanentNodes"
     enum="SyncMissingBookmarkPermanentNodes" expires_after="2020-08-02">
+  <obsolete>
+    Removed as of 10/2020.
+  </obsolete>
   <owner>mamir@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
