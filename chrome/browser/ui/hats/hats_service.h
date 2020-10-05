@@ -36,6 +36,10 @@ extern const char kHatsSurveyTriggerSettingsPrivacy[];
 // and demo purposes when the migration feature flag is enabled.
 extern const char kHatsNextSurveyTriggerIDTesting[];
 
+// The name of the histogram which records if a survey was shown, or if not, the
+// reason why not.
+extern const char kHatsShouldShowSurveyReasonHistogram[];
+
 // This class provides the client side logic for determining if a
 // survey should be shown for any trigger based on input from a finch
 // configuration. It is created on a per profile basis.
@@ -95,6 +99,27 @@ class HatsService : public KeyedService {
     HatsService* hats_service_;
     std::string trigger_;
     base::WeakPtrFactory<DelayedSurveyTask> weak_ptr_factory_{this};
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ShouldShowSurveyReasons {
+    kYes = 0,
+    kNoOffline = 1,
+    kNoLastSessionCrashed = 2,
+    kNoReceivedSurveyInCurrentMilestone = 3,
+    kNoProfileTooNew = 4,
+    kNoLastSurveyTooRecent = 5,
+    kNoBelowProbabilityLimit = 6,
+    kNoTriggerStringMismatch = 7,
+    kNoNotRegularBrowser = 8,
+    kNoIncognitoDisabled = 9,
+    kNoCookiesBlocked = 10,            // Unused.
+    kNoThirdPartyCookiesBlocked = 11,  // Unused.
+    kNoSurveyUnreachable = 12,
+    kNoSurveyOverCapacity = 13,
+    kNoSurveyAlreadyInProgress = 14,
+    kMaxValue = kNoSurveyAlreadyInProgress,
   };
 
   ~HatsService() override;

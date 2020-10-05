@@ -70,9 +70,9 @@ class HatsNextWebDialog : public ui::WebDialogDelegate,
   class WebContentsDelegate;
   class WebContentsObserver;
 
-  // Closes the HaTS Next widget and informs the service that the dialog was
-  // shut.
-  void CloseWidgetAndInformService();
+  // Called by |loading_timer_| after |timeout_| time has passed without getting
+  // an appropriate response from the HaTS service after creating the widget.
+  void LoadTimedOut();
 
   // Fired by the observer when the survey page has pushed state to the window
   // via URL fragments.

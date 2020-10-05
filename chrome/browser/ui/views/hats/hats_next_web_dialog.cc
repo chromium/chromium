@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/browser_dialogs.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/util/values/values_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
@@ -212,7 +213,7 @@ HatsNextWebDialog::HatsNextWebDialog(Browser* browser,
   web_view_->web_contents()->SetDelegate(web_contents_delegate_.get());
 
   loading_timer_.Start(FROM_HERE, timeout_,
-                       base::BindOnce(&HatsNextWebDialog::CloseWidget,
+                       base::BindOnce(&HatsNextWebDialog::LoadTimedOut,
                                       weak_factory_.GetWeakPtr()));
 }
 
@@ -229,6 +230,13 @@ HatsNextWebDialog::~HatsNextWebDialog() {
   // Explicitly clear the delegate to ensure it is not invalid between now and
   // when the web contents is destroyed in the base class.
   web_view_->web_contents()->SetDelegate(nullptr);
+}
+
+void HatsNextWebDialog::LoadTimedOut() {
+  base::UmaHistogramEnumeration(
+      kHatsShouldShowSurveyReasonHistogram,
+      HatsService::ShouldShowSurveyReasons::kNoSurveyUnreachable);
+  CloseWidget();
 }
 
 void HatsNextWebDialog::OnSurveyStateUpdateReceived(std::string state) {

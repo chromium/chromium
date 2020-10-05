@@ -38,6 +38,9 @@ constexpr char kHatsSurveyTriggerSettingsPrivacy[] = "settings-privacy";
 constexpr char kHatsNextSurveyTriggerIDTesting[] =
     "zishSVViB0kPN8UwQ150VGjBKuBP";
 
+constexpr char kHatsShouldShowSurveyReasonHistogram[] =
+    "Feedback.HappinessTrackingSurvey.ShouldShowSurveyReason";
+
 namespace {
 
 const base::Feature* survey_features[] = {
@@ -85,30 +88,6 @@ std::string GetIsSurveyFull(const std::string& trigger) {
 std::string GetLastSurveyCheckTime(const std::string& trigger) {
   return trigger + ".last_survey_check_time";
 }
-
-constexpr char kHatsShouldShowSurveyReasonHistogram[] =
-    "Feedback.HappinessTrackingSurvey.ShouldShowSurveyReason";
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class ShouldShowSurveyReasons {
-  kYes = 0,
-  kNoOffline = 1,
-  kNoLastSessionCrashed = 2,
-  kNoReceivedSurveyInCurrentMilestone = 3,
-  kNoProfileTooNew = 4,
-  kNoLastSurveyTooRecent = 5,
-  kNoBelowProbabilityLimit = 6,
-  kNoTriggerStringMismatch = 7,
-  kNoNotRegularBrowser = 8,
-  kNoIncognitoDisabled = 9,
-  kNoCookiesBlocked = 10,            // Unused.
-  kNoThirdPartyCookiesBlocked = 11,  // Unused.
-  kNoSurveyUnreachable = 12,
-  kNoSurveyOverCapacity = 13,
-  kNoSurveyAlreadyInProgress = 14,
-  kMaxValue = kNoSurveyAlreadyInProgress,
-};
 
 }  // namespace
 
