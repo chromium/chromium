@@ -116,13 +116,6 @@ class WebUIResourceBrowserTestV0 : public InProcessBrowserTest {
   std::vector<int> include_libraries_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTestV0, I18nProcessTest) {
-  AddLibrary(IDR_WEBUI_JS_LOAD_TIME_DATA);
-  AddLibrary(IDR_WEBUI_JS_I18N_TEMPLATE_NO_PROCESS);
-  AddLibrary(IDR_WEBUI_JS_UTIL);
-  LoadFile("i18n_process_test.html");
-}
-
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListTest) {
   LoadTestUrl("js/cr/ui/list_test.html");
 }

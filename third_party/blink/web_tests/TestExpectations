@@ -1369,6 +1369,29 @@ crbug.com/1053725 [ Win7 ] fast/forms/calendar-picker/date-picker-appearance-dis
 # ====== Form Controls Refresh failures until here ======
 
 
+# ===== These tests fail when Web Components v0 is removed =====
+
+crbug.com/1081941 web-components-v0-only/* [ Skip ]
+crbug.com/1081941 virtual/web-components-v0-disabled/* [ Skip ]
+crbug.com/1081941 http/tests/htmlimports/* [ Skip ]
+crbug.com/1081941 http/tests/custom/xhr-response-does-not-have-registry.html [ Skip ]
+crbug.com/1081941 http/tests/custom-elements/no-registry-test.html [ Skip ]
+crbug.com/1081941 http/tests/devtools/import-open-inspector.js [ Skip ]
+crbug.com/1081941 http/tests/devtools/elements/html-link-import.js [ Skip ]
+crbug.com/1081941 http/tests/devtools/elements/styles-3/style-rule-from-imported-stylesheet.js [ Skip ]
+crbug.com/1081941 http/tests/devtools/network/network-imported-resource-content.js [ Skip ]
+crbug.com/1081941 http/tests/devtools/resource-tree/resource-tree-htmlimports.js [ Skip ]
+crbug.com/1081941 http/tests/linkHeader/link-rel-import-css-rule-capital.html [ Skip ]
+crbug.com/1081941 http/tests/security/contentSecurityPolicy/nonces/import-enforce-allowed.php [ Skip ]
+crbug.com/1081941 http/tests/security/contentSecurityPolicy/nonces/import-enforce-blocked.php [ Skip ]
+crbug.com/1081941 http/tests/security/contentSecurityPolicy/nonces/import-multiple-allowed.php [ Skip ]
+crbug.com/1081941 http/tests/security/contentSecurityPolicy/nonces/import-multiple-blocked.php [ Skip ]
+crbug.com/1081941 http/tests/security/contentSecurityPolicy/nonces/import-reportonly-allowed.php [ Skip ]
+crbug.com/1081941 http/tests/security/referrer-policy-attribute-import-no-referrer.html [ Skip ]
+crbug.com/1081941 http/tests/subresource_filter/resource-in-import-disallowed.html [ Skip ]
+
+# ===== Web Components v0 until here =====
+
 # Bug in FormControlsRefresh <select multiple> tap behavior:
 crbug.com/1045672 fast/forms/select/listbox-tap.html [ Failure ]
 
@@ -5410,9 +5433,6 @@ crbug.com/1062984 external/wpt/paint-timing/fcp-only/fcp-invisible-3d-rotate.htm
 crbug.com/1062984 external/wpt/paint-timing/fcp-only/fcp-out-of-bounds-translate.html [ Failure ]
 crbug.com/1062984 external/wpt/paint-timing/fcp-only/fcp-text-input.html [ Failure ]
 
-# Sheriff 2019-03-01
-crbug.com/937416 http/tests/devtools/resource-tree/resource-tree-htmlimports.js [ Pass Failure ]
-
 # Also crbug.com/1044535
 crbug.com/937416 http/tests/devtools/resource-tree/resource-tree-frame-navigate.js [ Pass Failure Timeout ]
 
@@ -5444,7 +5464,6 @@ crbug.com/943969 [ Win ] inspector-protocol/css/css-get-media-queries.js [ Pass 
 crbug.com/945665 http/tests/devtools/elements/styles-3/styles-add-new-rule-tab.js [ Pass Failure ]
 crbug.com/945665 http/tests/devtools/elements/styles-3/styles-add-new-rule.js [ Pass Failure Timeout ]
 crbug.com/945665 http/tests/devtools/elements/styles-3/styles-disable-inherited.js [ Pass Failure ]
-crbug.com/945665 [ Win7 ] http/tests/devtools/elements/styles-3/style-rule-from-imported-stylesheet.js [ Failure Pass ]
 crbug.com/945665 http/tests/devtools/elements/styles-3/styles-change-node-while-editing.js [ Pass Failure ]
 crbug.com/945629 http/tests/devtools/network/network-filters.js [ Pass Failure Timeout ]
 

@@ -60,29 +60,6 @@ class HeadlessOriginTrialsBrowserTest : public HeadlessBrowserTest {
 #else
 #define MAYBE_TrialsCanBeEnabled TrialsCanBeEnabled
 #endif
-IN_PROC_BROWSER_TEST_F(HeadlessOriginTrialsBrowserTest,
-                       MAYBE_TrialsCanBeEnabled) {
-  HeadlessBrowserContext* browser_context =
-      browser()->CreateBrowserContextBuilder().Build();
-
-  // TODO(crbug.com/1050190): Implement a permanent, sample trial so this test
-  // doesn't rely on WebComponents V0, which will eventually go away.
-  HeadlessWebContents* web_contents =
-      browser_context->CreateWebContentsBuilder()
-          .SetInitialURL(
-              GURL("https://example.test/origin_trial_webcomponentsv0.html"))
-          .Build();
-  EXPECT_TRUE(WaitForLoad(web_contents));
-
-  // Ensure we can call createShadowRoot(), which is only available when the
-  // WebComponents V0 origin trial is enabled.
-  EXPECT_TRUE(EvaluateScript(web_contents,
-                             "document.createElement('div').createShadowRoot() "
-                             "instanceof ShadowRoot")
-                  ->GetResult()
-                  ->GetValue()
-                  ->GetBool());
-}
 
 // Flaky on Windows Debug https://crbug.com/1090801
 #if defined(NO_WIN_FLAKES) && !defined(NDEBUG)
@@ -120,26 +97,5 @@ IN_PROC_BROWSER_TEST_F(HeadlessOriginTrialsBrowserTest,
 #else
 #define MAYBE_WebComponentsV0CustomElements WebComponentsV0CustomElements
 #endif
-IN_PROC_BROWSER_TEST_F(HeadlessOriginTrialsBrowserTest,
-                       MAYBE_WebComponentsV0CustomElements) {
-  HeadlessBrowserContext* browser_context =
-      browser()->CreateBrowserContextBuilder().Build();
-
-  HeadlessWebContents* web_contents =
-      browser_context->CreateWebContentsBuilder()
-          .SetInitialURL(
-              GURL("https://example.test/origin_trial_webcomponentsv0.html"))
-          .Build();
-  EXPECT_TRUE(WaitForLoad(web_contents));
-
-  // Ensure we can call registerElement(), which is only available when the
-  // WebComponents V0 origin trial is enabled.
-  EXPECT_EQ(
-      "function",
-      EvaluateScript(web_contents, "typeof document.registerElement('my-tag')")
-          ->GetResult()
-          ->GetValue()
-          ->GetString());
-}
 
 }  // namespace headless

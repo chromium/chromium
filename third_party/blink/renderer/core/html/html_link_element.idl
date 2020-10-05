@@ -51,10 +51,6 @@
     // https://drafts.csswg.org/cssom/#the-linkstyle-interface
     readonly attribute StyleSheet? sheet;
 
-    // HTML Imports
-    // https://w3c.github.io/webcomponents/spec/imports/#interface-import
-    [RuntimeEnabled=HTMLImports] readonly attribute Document? import;
-
     // Subresource Integrity
     // https://w3c.github.io/webappsec-subresource-integrity/#HTMLLinkElement
     [Reflect] attribute DOMString integrity;

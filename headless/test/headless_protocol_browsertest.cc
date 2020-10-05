@@ -56,12 +56,6 @@ class HeadlessProtocolBrowserTest
     // Make sure the navigations spawn new processes. We run test harness
     // in one process (harness.test) and tests in another.
     command_line->AppendSwitch(::switches::kSitePerProcess);
-    // TODO(yoichio): This is temporary switch to support chrome internal
-    // components migration from the old web APIs.
-    // After completion of the migration, we should remove this.
-    // See crbug.com/911943 for detail.
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "HTMLImports");
   }
 
  private:
@@ -236,8 +230,6 @@ HEADLESS_PROTOCOL_TEST(VirtualTimeLocalStorage,
                        "emulation/virtual-time-local-storage.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimePendingScript,
                        "emulation/virtual-time-pending-script.js")
-HEADLESS_PROTOCOL_TEST(VirtualTimeHtmlImport,
-                       "emulation/virtual-time-html-import.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeRedirect,
                        "emulation/virtual-time-redirect.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeSessionStorage,

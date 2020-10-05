@@ -3465,35 +3465,6 @@ public class AwSettingsTest {
         Assert.assertEquals(expectedTitle, actualTitle);
     }
 
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView", "Preferences"})
-    public void testWebComponentsV0Reenabled() throws Throwable {
-        // TODO(1021631): This test should be removed once Android Webview
-        // disables Web Components v0 by default.
-        final TestAwContentsClient client = new TestAwContentsClient();
-        final AwTestContainerView view =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(client);
-        final AwContents awContents = view.getAwContents();
-        CallbackHelper onPageFinishedHelper = client.getOnPageFinishedHelper();
-        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
-        final String expectedTitle = "enabled"; // https://crbug.com/1021631
-        final String page = "<!doctype html>"
-                + "<script>"
-                + "const htmlImportsEnabled = 'import' in document.createElement('link');"
-                + "const customElementsV0Enabled = 'registerElement' in document;"
-                + "const shadowDomV0Enabled = 'createShadowRoot' in document.createElement('div');"
-                + "if (htmlImportsEnabled && customElementsV0Enabled && shadowDomV0Enabled) {"
-                + "  document.title = 'enabled';"
-                + "} else {"
-                + "  document.title = 'disabled';"
-                + "}"
-                + "</script>";
-        mActivityTestRule.loadDataSync(awContents, onPageFinishedHelper, page, "text/html", false);
-        String actualTitle = mActivityTestRule.getTitleOnUiThread(awContents);
-        Assert.assertEquals(expectedTitle, actualTitle);
-    }
-
     private static class SelectionRangeTestDependencyFactory extends TestDependencyFactory {
         private boolean mDoNotUpdate;
         public SelectionRangeTestDependencyFactory(boolean doNotUpdate) {
