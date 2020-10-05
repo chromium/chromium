@@ -30,7 +30,7 @@ const base::Feature kAImageReader{"AImageReader",
 #endif
 
 // Enable GPU Rasterization by default. This can still be overridden by
-// --force-gpu-rasterization or --disable-gpu-rasterization.
+// --enable-gpu-rasterization or --disable-gpu-rasterization.
 // DefaultEnableGpuRasterization has launched on Mac, Windows, ChromeOS, and
 // Android.
 const base::Feature kDefaultEnableGpuRasterization{

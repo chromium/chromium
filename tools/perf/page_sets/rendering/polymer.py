@@ -26,11 +26,11 @@ class PolymerPage(rendering_story.RenderingStory):
                name_suffix='',
                extra_browser_args=None):
 
-    super(PolymerPage, self).__init__(
-        page_set=page_set,
-        shared_page_state_class=shared_page_state_class,
-        name_suffix=name_suffix,
-        extra_browser_args=['--force-gpu-rasterization'])
+    super(PolymerPage,
+          self).__init__(page_set=page_set,
+                         shared_page_state_class=shared_page_state_class,
+                         name_suffix=name_suffix,
+                         extra_browser_args=extra_browser_args)
 
     self.script_to_evaluate_on_commit = '''
       document.addEventListener("polymer-ready", function() {
