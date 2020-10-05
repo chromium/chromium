@@ -6,6 +6,7 @@
 
 #include "base/path_service.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/browsing_data/access_context_audit_service.h"
 #include "chrome/browser/browsing_data/access_context_audit_service_factory.h"
@@ -467,6 +468,34 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, TreeModelDeletion) {
 
   EXPECT_EQ(records.size(), 0u);
   EXPECT_EQ(cookies.size(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, MultipleAccesses) {
+  // Ensure that renavigating to a page in the same tab correctly re-records
+  // accesses.
+  base::SimpleTestClock clock;
+  clock.SetNow(base::Time::Now());
+  AccessContextAuditServiceFactory::GetForProfile(browser()->profile())
+      ->SetClockForTesting(&clock);
+
+  NavigateToTopLevelPage();
+  NavigateToEmbeddedPage();
+
+  // Check all records have the initial access time.
+  auto records = GetAllAccessRecords();
+  for (const auto& record : records)
+    EXPECT_EQ(record.last_access_time, clock.Now());
+
+  // Renavigate to the same pages, this should update the access times on all
+  // records.
+  clock.Advance(base::TimeDelta::FromHours(1));
+  NavigateToTopLevelPage();
+  NavigateToEmbeddedPage();
+
+  // All records should now have the updated time.
+  records = GetAllAccessRecords();
+  for (const auto& record : records)
+    EXPECT_EQ(record.last_access_time, clock.Now());
 }
 
 class AccessContextAuditSessionRestoreBrowserTest

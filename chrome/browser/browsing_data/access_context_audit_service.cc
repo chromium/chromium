@@ -16,6 +16,37 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/storage_partition.h"
 
+AccessContextAuditService::CookieAccessHelper::CookieAccessHelper(
+    AccessContextAuditService* service)
+    : service_(service) {
+  DCHECK(service);
+  deletion_observer_.Add(service);
+}
+AccessContextAuditService::CookieAccessHelper::~CookieAccessHelper() = default;
+
+void AccessContextAuditService::CookieAccessHelper::OnCookieDeleted(
+    const net::CanonicalCookie& cookie) {
+  seen_cookies_.erase(cookie);
+}
+
+void AccessContextAuditService::CookieAccessHelper::RecordCookieAccess(
+    const net::CookieList& accessed_cookies,
+    const url::Origin& top_frame_origin) {
+  net::CookieList new_cookies;
+  for (const auto& cookie : accessed_cookies) {
+    if (!seen_cookies_.count(cookie)) {
+      new_cookies.push_back(cookie);
+      seen_cookies_.insert(cookie);
+    }
+  }
+  if (!new_cookies.empty())
+    service_->RecordCookieAccess(new_cookies, top_frame_origin);
+}
+
+void AccessContextAuditService::CookieAccessHelper::ClearSeenCookies() {
+  seen_cookies_.clear();
+}
+
 AccessContextAuditService::AccessContextAuditService(Profile* profile)
     : clock_(base::DefaultClock::GetInstance()), profile_(profile) {}
 AccessContextAuditService::~AccessContextAuditService() = default;
@@ -68,8 +99,8 @@ void AccessContextAuditService::RecordCookieAccess(
       continue;
 
     access_records.emplace_back(top_frame_origin, cookie.Name(),
-                                cookie.Domain(), cookie.Path(),
-                                cookie.LastAccessDate(), cookie.IsPersistent());
+                                cookie.Domain(), cookie.Path(), now,
+                                cookie.IsPersistent());
   }
   database_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&AccessContextAuditDatabase::AddRecords,
@@ -198,6 +229,10 @@ void AccessContextAuditService::OnCookieChange(
     case net::CookieChangeCause::EXPIRED:
     case net::CookieChangeCause::EVICTED:
     case net::CookieChangeCause::EXPIRED_OVERWRITE: {
+      // Notify helpers so that future accesses to this cookie are reported.
+      for (auto& helper : cookie_access_helpers_) {
+        helper.OnCookieDeleted(change.cookie);
+      }
       // Remove records of deleted cookie from database.
       database_task_runner_->PostTask(
           FROM_HERE,
@@ -249,6 +284,14 @@ void AccessContextAuditService::OnURLsDeleted(
             &AccessContextAuditDatabase::RemoveAllRecordsForTopFrameOrigins,
             database_, std::move(deleted_origins)));
   }
+}
+
+void AccessContextAuditService::AddObserver(CookieAccessHelper* helper) {
+  cookie_access_helpers_.AddObserver(helper);
+}
+
+void AccessContextAuditService::RemoveObserver(CookieAccessHelper* helper) {
+  cookie_access_helpers_.RemoveObserver(helper);
 }
 
 void AccessContextAuditService::SetClockForTesting(base::Clock* clock) {

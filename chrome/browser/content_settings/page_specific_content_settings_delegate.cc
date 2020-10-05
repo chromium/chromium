@@ -52,7 +52,18 @@ namespace chrome {
 
 PageSpecificContentSettingsDelegate::PageSpecificContentSettingsDelegate(
     content::WebContents* web_contents)
-    : WebContentsObserver(web_contents) {}
+    : WebContentsObserver(web_contents) {
+#if !defined(OS_ANDROID)
+  auto* access_context_audit_service =
+      AccessContextAuditServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  if (access_context_audit_service) {
+    cookie_access_helper_ =
+        std::make_unique<AccessContextAuditService::CookieAccessHelper>(
+            access_context_audit_service);
+  }
+#endif  // !defined(OS_ANDROID)
+}
 
 PageSpecificContentSettingsDelegate::~PageSpecificContentSettingsDelegate() =
     default;
@@ -202,13 +213,11 @@ void PageSpecificContentSettingsDelegate::OnCacheStorageAccessAllowed(
 void PageSpecificContentSettingsDelegate::OnCookieAccessAllowed(
     const net::CookieList& accessed_cookies) {
 #if !defined(OS_ANDROID)
-  auto* access_context_audit_service =
-      AccessContextAuditServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
-  if (access_context_audit_service)
-    access_context_audit_service->RecordCookieAccess(
+  if (cookie_access_helper_) {
+    cookie_access_helper_->RecordCookieAccess(
         accessed_cookies,
         url::Origin::Create(web_contents()->GetLastCommittedURL()));
+  }
 #endif  // !defined(OS_ANDROID)
 }
 
@@ -254,6 +263,15 @@ void PageSpecificContentSettingsDelegate::OnWebDatabaseAccessAllowed(
   RecordOriginStorageAccess(
       origin, AccessContextAuditDatabase::StorageAPIType::kWebDatabase,
       web_contents());
+#endif  // !defined(OS_ANDROID)
+}
+void PageSpecificContentSettingsDelegate::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+#if !defined(OS_ANDROID)
+  if (cookie_access_helper_ && navigation_handle->IsInMainFrame() &&
+      !navigation_handle->IsSameDocument()) {
+    cookie_access_helper_->ClearSeenCookies();
+  }
 #endif  // !defined(OS_ANDROID)
 }
 
