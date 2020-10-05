@@ -64,6 +64,11 @@ suite('CpuCardTest', () => {
       assertEquals(currentlyUsingValue, dataPoints[0].value);
       assertEquals(
           fakeCpuUsage[0].cpu_temp_degrees_celcius, dataPoints[1].value);
+
+      const cpuChart =
+          diagnostics_test_utils.getRealtimeCpuChartElement(cpuElement);
+      assertEquals(fakeCpuUsage[0].percent_usage_user, cpuChart.user);
+      assertEquals(fakeCpuUsage[0].percent_usage_system, cpuChart.system);
     });
   });
 });

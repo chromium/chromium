@@ -4,6 +4,10 @@
 <diagnostics-card>
   <div id="cardTitle" slot="title">[[i18n('cpuTitle')]]</div>
   <!-- TODO(michaelcheco): Add i18n string for percent number format -->
+  <realtime-cpu-chart slot="left-panel" id="realtimeCpuChart"
+    user="[[cpuUsage_.percent_usage_user]]"
+    system="[[cpuUsage_.percent_usage_system]]">
+  </realtime-cpu-chart>
   <data-point slot="body" id="cpuUsageUser"
     value="[[computeCurrentlyUsing_(cpuUsage_.percent_usage_system,
         cpuUsage_.percent_usage_user)]]">

@@ -21,3 +21,13 @@ export function getDataPointElements(element) {
 export function getPercentBarChartElement(element) {
   return element.shadowRoot.querySelector('percent-bar-chart');
 }
+
+/**
+ * Helper function for getting a realtime-cpu-chart element from a
+ * diagnostics card.
+ * @param {!HTMLElement} element
+ * @return {!Array<!HTMLElement>}
+ */
+export function getRealtimeCpuChartElement(element) {
+  return element.shadowRoot.querySelector('realtime-cpu-chart');
+}
