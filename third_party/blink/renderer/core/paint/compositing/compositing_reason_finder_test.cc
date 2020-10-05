@@ -383,4 +383,61 @@ TEST_F(CompositingReasonFinderTest, CompositedSVGText) {
             CompositingReasonFinder::DirectReasonsForPaintProperties(*text));
 }
 
+TEST_F(CompositingReasonFinderTest, SVGCompositedTransformAnimation) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .animate {
+        width: 100px;
+        height: 100px;
+        animation: wave 1s infinite;
+      }
+      @keyframes wave {
+        0% { transform: rotate(-5deg); }
+        100% { transform: rotate(5deg); }
+      }
+    </style>
+    <svg id="svg" class="animate">
+      <rect id="rect" class="animate"/>
+      <rect id="rect-smil" class="animate">
+        <animateMotion dur="10s" repeatCount="indefinite"
+                       path="M0,0 L100,100 z"/>
+      </rect>
+      <svg id="embedded-svg" class="animate"/>
+      <foreignObject id="foreign" class="animate"/>
+      <foreignObject id="foreign-zoomed" class="animate"
+                     style="zoom: 1.5; will-change: opacity"/>
+      <use id="use" href="#rect" class="animate"/>
+      <use id="use-offset" href="#rect" x="10" class="animate"/>
+    </svg>
+  )HTML");
+
+  EXPECT_EQ(CompositingReason::kActiveTransformAnimation |
+                CompositingReason::kSVGRoot,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("svg")));
+  EXPECT_EQ(CompositingReason::kActiveTransformAnimation,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("rect")));
+  EXPECT_EQ(CompositingReason::kNone,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("rect-smil")));
+  EXPECT_EQ(CompositingReason::kNone,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("embedded-svg")));
+  EXPECT_EQ(CompositingReason::kActiveTransformAnimation,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("foreign")));
+  // The foreignObject that can't use composited animation still gets other
+  // compositing reasons.
+  EXPECT_EQ(CompositingReason::kWillChangeOpacity,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("foreign-zoomed")));
+  EXPECT_EQ(CompositingReason::kActiveTransformAnimation,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("use")));
+  EXPECT_EQ(CompositingReason::kNone,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("use-offset")));
+}
+
 }  // namespace blink

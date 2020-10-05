@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
+#include "third_party/blink/renderer/core/svg/animation/element_smil_animations.h"
 #include "third_party/blink/renderer/core/svg/properties/svg_animated_property.h"
 #include "third_party/blink/renderer/core/svg/properties/svg_property.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_string.h"
@@ -229,7 +230,7 @@ void SVGElement::ClearWebAnimatedAttributes() {
   animated_attributes.clear();
 }
 
-ElementSMILAnimations* SVGElement::GetSMILAnimations() {
+ElementSMILAnimations* SVGElement::GetSMILAnimations() const {
   if (!HasSVGRareData())
     return nullptr;
   return SvgRareData()->GetSMILAnimations();
@@ -266,6 +267,16 @@ void SVGElement::ClearAnimatedAttribute(const QualifiedName& attribute) {
   });
 }
 
+bool SVGElement::HasMainThreadAnimations() const {
+  if (!HasSVGRareData())
+    return false;
+  if (!SvgRareData()->WebAnimatedAttributes().IsEmpty())
+    return true;
+  if (GetSMILAnimations() && GetSMILAnimations()->HasAnimations())
+    return true;
+  return false;
+}
+
 AffineTransform SVGElement::LocalCoordinateSpaceTransform(CTMScope) const {
   // To be overriden by SVGGraphicsElement (or as special case SVGTextElement
   // and SVGPatternElement)
@@ -284,8 +295,10 @@ AffineTransform SVGElement::CalculateTransform(
   const LayoutObject* layout_object = GetLayoutObject();
 
   AffineTransform matrix;
-  if (layout_object && layout_object->StyleRef().HasTransform())
-    matrix = TransformHelper::ComputeTransform(*layout_object);
+  if (layout_object && layout_object->StyleRef().HasTransform()) {
+    matrix = TransformHelper::ComputeTransform(
+        *layout_object, ComputedStyle::kIncludeTransformOrigin);
+  }
 
   // Apply any "motion transform" contribution if requested (and existing.)
   if (apply_motion_transform == kIncludeMotionTransform && HasSVGRareData())

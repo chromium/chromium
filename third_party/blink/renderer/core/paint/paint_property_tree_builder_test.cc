@@ -6994,4 +6994,27 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGChildBackdropFilter) {
                    .PaintProperties());
 }
 
+TEST_P(PaintPropertyTreeBuilderTest, SVGTransformAnimationAndOrigin) {
+  SetBodyInnerHTML(R"HTML(
+    <svg width="200" height="200">
+      <rect id="rect"
+            style="animation: 2s infinite spin; transform-origin: 50% 50%">
+    </svg>
+    <style>
+      @keyframes spin {
+        0% { transform: rotate(0); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+  )HTML");
+
+  auto* properties = PaintPropertiesForElement("rect");
+  ASSERT_TRUE(properties);
+  auto* transform_node = properties->Transform();
+  ASSERT_TRUE(transform_node);
+  EXPECT_TRUE(transform_node->HasActiveTransformAnimation());
+  EXPECT_EQ(TransformationMatrix(), transform_node->Matrix());
+  EXPECT_EQ(FloatPoint3D(100, 100, 0), transform_node->Origin());
+}
+
 }  // namespace blink
