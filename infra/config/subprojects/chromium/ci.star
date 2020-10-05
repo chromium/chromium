@@ -4145,6 +4145,9 @@ ci.mac_builder(
     os = os.MAC_ANY,
 )
 
+# TODO(estaab) When promoting out of FYI, make tree_closing True and make
+# branch_selector branches.STANDARD_RELEASES, then remove the entry for this
+# builder from //generators/scheduler-noop-jobs.star
 ci.thin_tester(
     name = "mac-arm64-rel-tests",
     builder_group = "chromium.fyi",
@@ -4152,7 +4155,6 @@ ci.thin_tester(
         category = "mac",
         short_name = "a64",
     ),
-    # TODO(estaab): Make this true when promoting out of FYI.
     tree_closing = False,
     triggered_by = [builder_name("mac-arm64-rel")],
 )
