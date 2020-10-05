@@ -228,6 +228,13 @@ class GomaLinkUnitTest(unittest.TestCase):
       self.assertTrue(os.path.exists('test'))
       self.assertRaises(OSError, goma_link.ensure_file, 'test/impossible')
 
+  def test_transform_codegen_param_on_mllvm(self):
+    # Regression test for crbug.com/1135234
+    link = goma_ld.GomaLinkUnix()
+    self.assertEqual(
+        link.transform_codegen_param_common('-mllvm,-import-instr-limit=20'),
+        ['-mllvm', '-import-instr-limit=20'])
+
 
 if __name__ == '__main__':
   unittest.main()

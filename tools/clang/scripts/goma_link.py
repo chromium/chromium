@@ -237,7 +237,7 @@ class GomaLinkBase(object):
       '-Wl,--lto.*',
       '-Wl,--thin.*',
   )))
-  MLLVM_RE = re.compile('(?:-Wl,)?([-/]mllvm)[:=]?(.*)', re.IGNORECASE)
+  MLLVM_RE = re.compile('(?:-Wl,)?([-/]mllvm)[:=,]?(.*)', re.IGNORECASE)
   OBJ_RE = re.compile('(.*)\\.(o(?:bj)?)', re.IGNORECASE)
 
   def _no_codegen(self, args):
