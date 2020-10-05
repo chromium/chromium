@@ -134,6 +134,7 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">Utökningstriangel</translation>
 <translation id="5278860589123563674">Det gick inte att skicka</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> begär din uppmärksamhet.</translation>
 <translation id="528468243742722775">Avsluta</translation>
 <translation id="5329858601952122676">&amp;Ta bort</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> ovanpå <ph name="IN_PLACE_APP" />, om du släpper skapas en mapp.</translation>
@@ -144,6 +145,7 @@
 <translation id="5574202486608032840">Operativsystemet <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backsteg</translation>
 <translation id="5613020302032141669">Vänsterpil</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> begär din uppmärksamhet.</translation>
 <translation id="5675363643668471212">Hyllobjekt</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktiv i dag}=1{Aktiv för 1 dag sedan}other{Aktiv för # dagar sedan}}</translation>

@@ -667,6 +667,7 @@
 <translation id="5958275228015807058">Скачанные файлы и веб-страницы хранятся в одноименном разделе.</translation>
 <translation id="5962718611393537961">Нажмите, чтобы свернуть</translation>
 <translation id="5964805880140440652">Чтобы открыть доступ к этой странице другому устройству, откройте настройки Chrome и включите синхронизацию.</translation>
+<translation id="5964869237734432770">Не генерировать описания</translation>
 <translation id="5979084224081478209">Проверить пароли</translation>
 <translation id="6000066717592683814">Использовать Google</translation>
 <translation id="6005538289190791541">Предложенный пароль</translation>
@@ -694,6 +695,7 @@
 <translation id="6157392216611456285">Выбрать <ph name="APP_NAME" /></translation>
 <translation id="6159335304067198720">Сэкономлено: <ph name="PERCENT" /></translation>
 <translation id="6186394685773237175">Похищенных паролей не найдено.</translation>
+<translation id="6192907950379606605">Описания изображений</translation>
 <translation id="6206830853671714236">Выберите, когда начать скачивание</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> не ваш аккаунт?</translation>
 <translation id="6218096829563201111">Искать похожие товары<ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
@@ -762,6 +764,7 @@
 <translation id="6590471736817333463">Экономьте до 60 % трафика</translation>
 <translation id="6590680911007613645">Убедитесь, что пароль, который вы сохраняете, совпадает с паролем для сайта <ph name="SITE" />.</translation>
 <translation id="6593061639179217415">Версия для ПК</translation>
+<translation id="6595046016124923392">Изображения передаются в Google, чтобы сгенерировать их описание.</translation>
 <translation id="6597891566292541626">Поместите QR-код или штрихкод в эту рамку.</translation>
 <translation id="6600954340915313787">Скопировано в Chrome</translation>
 <translation id="661266467055912436">Делает Интернет безопаснее для вас и других пользователей.</translation>
@@ -820,6 +823,7 @@
 <translation id="702463548815491781">Рекомендовано при включенных функциях TalkBack и Switch Access</translation>
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="703523980599857277">Изменить главную страницу</translation>
+<translation id="7054588988317389591">Генерировать описания изображений?</translation>
 <translation id="7055152154916055070">Заблокирована попытка переадресации:</translation>
 <translation id="7063006564040364415">Не удалось связаться с сервером синхронизации</translation>
 <translation id="7071521146534760487">Настройки аккаунта</translation>
@@ -851,6 +855,7 @@
 <translation id="729975465115245577">На устройстве не установлено приложение для хранения файлов паролей.</translation>
 <translation id="7302081693174882195">Сортировка по объему сэкономленного трафика</translation>
 <translation id="7304873321153398381">Вы не в Сети. Браузеру Chrome не удается проверить пароли.</translation>
+<translation id="7313188324932846546">Нажмите, чтобы настроить синхронизацию.</translation>
 <translation id="7328017930301109123">В упрощенном режиме Chrome быстрее загружает страницы и экономит до 60 процентов трафика.</translation>
 <translation id="7333031090786104871">Предыдущий сайт ещё не добавлен</translation>
 <translation id="7340958967809483333">Параметры рекомендаций</translation>
@@ -1042,6 +1047,7 @@
 <translation id="8636825310635137004">Чтобы получить доступ к вкладкам на всех ваших устройствах, включите синхронизацию.</translation>
 <translation id="8641930654639604085">Блокировать сайты для взрослых</translation>
 <translation id="8655129584991699539">Удалить данные можно в настройках Chrome</translation>
+<translation id="8656747343598256512">Войдите на сайт и в Chrome со своим аккаунтом Google. Синхронизацию можно включить позже.</translation>
 <translation id="8659579665266920523">Как выполнять поиск в Chrome</translation>
 <translation id="8662811608048051533">Вы автоматически выйдете из учетных записей на большинстве сайтов.</translation>
 <translation id="8664979001105139458">Файл с таким именем уже существует.</translation>
@@ -1061,6 +1067,7 @@
 <translation id="8840953339110955557">Страница может отличаться от онлайн-версии.</translation>
 <translation id="8853345339104747198">Вкладка "<ph name="TAB_TITLE" />"</translation>
 <translation id="8854223127042600341">Посмотреть скачанные файлы</translation>
+<translation id="8856607253650333758">Генерировать описания</translation>
 <translation id="8873817150012960745">Нажмите здесь, чтобы начать</translation>
 <translation id="889338405075704026">Открыть настройки Chrome</translation>
 <translation id="8898822736010347272">Отправлять в Google URL и контент некоторых посещенных страниц, а также определенную информацию о системе (это помогает обнаруживать новые угрозы и защищать всех пользователей Интернета)</translation>

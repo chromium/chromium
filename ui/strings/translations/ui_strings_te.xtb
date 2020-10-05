@@ -134,6 +134,7 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">కంటెంట్‌ను విస్తరింపజేసే లేదా కుదించే త్రిభుజం</translation>
 <translation id="5278860589123563674">పంపడం విఫలమైంది</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" />, మీ అటెన్షన్ కోసం రిక్వెస్ట్ చేస్తోంది.</translation>
 <translation id="528468243742722775">ముగించు</translation>
 <translation id="5329858601952122676">&amp;తొలగించు</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" />పై భాగాన <ph name="DRAGGED_APP_NAME" /> ఉంది, ఫోల్డర్ సృష్టించడానికి రిలీజ్ చేయండి.</translation>
@@ -144,6 +145,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> సిస్టమ్</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">ఎడమ బాణం</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />, మీ అటెన్షన్ కోసం రిక్వెస్ట్ చేస్తోంది.</translation>
 <translation id="5675363643668471212">అరలోని అంశం</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 నిమి.}other{# నిమి.}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{ఈ రోజు యాక్టివ్‌గా ఉంది}=1{1 రోజు క్రితం యాక్టివ్‌గా ఉంది}other{# రోజుల క్రితం యాక్టివ్‌గా ఉంది}}</translation>

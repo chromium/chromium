@@ -27,6 +27,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="121097972571826261">Ett ord frem</translation>
 <translation id="1225748608451425081">Chromebooken er låst på grunn av en kjent feil. Du kan logge på om <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Slutt å merke</translation>
+<translation id="1239161794459865856"><ph name="FEATURE_NAME" /> er tilkoblet.</translation>
 <translation id="1247372569136754018">Mikrofon (intern)</translation>
 <translation id="1252999807265626933">Lader fra <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Hvordan er været?</translation>
@@ -74,6 +75,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1654477262762802994">Start et talesøk</translation>
 <translation id="1667964833127753507">Den nøytrale fargemodusen bruker ikke farger som er hentet fra bakgrunnen. I stedet brukes et nøytralt utvalg av lyse eller mørke fargetoner.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> igjen</translation>
+<translation id="1677507110654891115"><ph name="FEATURE_NAME" /> er ikke tilkoblet.</translation>
 <translation id="1698080062160024910">Nedtelling på <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-adresse: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Skrivebord: <ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2369165858548251131">«Hei» på kinesisk</translation>
 <translation id="2390318262976603432">Lokalitetsinnstillinger</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="2405664212338326887">Ikke tilkoblet</translation>
 <translation id="2408955596600435184">Skriv inn PIN-koden din</translation>
 <translation id="2412593942846481727">En oppdatering er tilgjengelig</translation>
 <translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> er en administrert økt administrert av <ph name="DOMAIN" /></translation>
@@ -243,6 +246,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3364721542077212959">Pekepennverktøy</translation>
 <translation id="3368922792935385530">Tilkoblet</translation>
 <translation id="3371140690572404006">USB-C-enhet (porten foran på høyre side)</translation>
+<translation id="3375634426936648815">Tilkoblet</translation>
 <translation id="3386978599540877378">fullskjermlupen</translation>
 <translation id="3400357268283240774">Flere innstillinger</translation>
 <translation id="3410336247007142655">Vis innstillinger for mørkt tema</translation>
@@ -322,6 +326,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4181841719683918333">Språk</translation>
 <translation id="4195877955194704651">Automatisk klikk-knapp</translation>
 <translation id="4197790712631116042">Av</translation>
+<translation id="4201033867194214117"><ph name="FEATURE_NAME" /> er ikke tilgjengelig.</translation>
 <translation id="4212246570487010370">Fortsett å surfe</translation>
 <translation id="4212472694152630271">Bytt til PIN-kode</translation>
 <translation id="4215497585250573029">VPN-innstillinger</translation>
@@ -333,6 +338,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4285498937028063278">Løsne</translation>
 <translation id="4294319844246081198">God morgen, <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Fjern alle <ph name="COUNT" /> varsler</translation>
+<translation id="4302592941791324970">Ikke tilgjengelig</translation>
 <translation id="4303223480529385476">Vis statusområdet</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Du trykket på hurtigtasten for høy kontrast. Vil du slå det på?</translation>
@@ -426,6 +432,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5302048478445481009">Språk</translation>
 <translation id="5313326810920013265">Bluetooth-innstillinger</translation>
 <translation id="5314219114274263156">Skjermopptaket er utført</translation>
+<translation id="5329548388331921293">Kobler til …</translation>
 <translation id="5331975486040154427">USB-C-enhet (porten bak på venstre side)</translation>
 <translation id="5352250171825660495">Mørkt tema er på</translation>
 <translation id="5379115545237091094">For mange forsøk</translation>
@@ -439,6 +446,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5465662442746197494">Trenger du hjelp?</translation>
 <translation id="5496819745535887422">Administratoren din tilbakestiller enheten din til forrige versjon. Alle data blir slettet når enheten starter på nytt.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166"><ph name="FEATURE_NAME" /> kobler til.</translation>
 <translation id="553675580533261935">Avslutning av økten</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5548285847212963613">Utvidelsen «<ph name="EXTENSION_NAME" />» kan hjelpe deg med å koble deg til dette nettverket.</translation>

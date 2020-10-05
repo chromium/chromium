@@ -21,6 +21,7 @@
 <translation id="1553358976309200471">Chromeని నవీకరించు</translation>
 <translation id="1587223624401073077">Google Chrome మీ కెమెరాను ఉపయోగిస్తోంది.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> హానికరం, కావున Chrome దాన్ని బ్లాక్ చేసింది.</translation>
+<translation id="1597911401261118146">డేటా ఉల్లంఘనల నుండి, ఇతర భద్రతా సమస్యల నుండి మీ పాస్‌వర్డ్‌లు సురక్షితంగా ఉన్నాయో లేదో చెక్ చేయడానికి, <ph name="BEGIN_LINK" />Chromeకు సైన్ ఇన్ చేయండి<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Chromeని సురక్షితం చేయడానికి, మేము క్రింది పొడిగింపుని నిలిపివేసాము, ఇది <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />లో జాబితా చేయబడలేదు మరియు మీకు తెలియకుండా జోడించబడి ఉండవచ్చు.</translation>
 <translation id="162448658176061655">అవాంఛిత సాఫ్ట్‌వేర్ ఏదైనా ఉందా? అని వారానికి ఒకసారి Chromium తనిఖీ చేస్తుంది. చివరగా తనిఖీ చేసిన సమయం: ఒక క్షణం క్రితం.</translation>
 <translation id="162629503687514352">Chrome OS మీ పాస్‌వర్డ్‌లను సింక్ చేయలేకపోయింది.</translation>
@@ -34,6 +35,7 @@
 <translation id="1734234790201236882">Chrome ఈ పాస్‌వర్డ్‌ను మీ Google ఖాతాలో సేవ్ చేస్తుంది. మీరు దీనిని గుర్తుంచుకోవాల్సిన అవసరం లేదు.</translation>
 <translation id="174539241580958092">సైన్ ఇన్ చేయడంలో ఎర్రర్ ఏర్పడినందున Google Chrome మీ డేటాను సింక్ చేయలేకపోయింది.</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1786003790898721085">మీ <ph name="TARGET_DEVICE_NAME" />లో మీరు Chromeకు సైన్ ఇన్ చేశారని నిర్ధారించుకుని, ఆపై మళ్లీ పంపడానికి ట్రై చేయండి.</translation>
 <translation id="1812689907177901597">దీనిని ఆఫ్ చేయడం ద్వారా, మీరు Chromeకి సైన్ ఇన్ చేయకుండానే Gmail లాంటి Google సైట్‌లలో సైన్ ఇన్ చేయగలరు</translation>
 <translation id="1860536484129686729">ఈ సైట్ కోసం మీ కెమెరాను ఉపయోగించడానికి Chromeకు అనుమతి అవసరం</translation>
 <translation id="1873233029667955273">Google Chrome మీ ఆటోమేటిక్ బ్రౌజర్ కాదు</translation>
@@ -78,6 +80,7 @@
 <translation id="3065168410429928842">Chrome ట్యాబ్</translation>
 <translation id="3080151273017101988">Google Chromeను మూసివేసినపుడు, యాప్‌లను బ్యాక్‌గ్రౌండ్‌లో రన్ చేయడాన్ని కొనసాగించు</translation>
 <translation id="3089968997497233615">Google Chrome యొక్క కొత్తదైన, మరింత సురక్షిత వెర్షన్ అందుబాటులో ఉంది.</translation>
+<translation id="3114643501466072395">డేటా ఉల్లంఘనల నుండి, ఇతర భద్రతా సమస్యల నుండి మీ ఇతర పాస్‌వర్డ్‌లు సురక్షితంగా ఉన్నాయో లేదో చెక్ చేయడానికి, <ph name="BEGIN_LINK" />Chromeకు సైన్ ఇన్ చేయండి<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">Chrome OS మీ డేటాను సింక్ చేయలేకపోయింది.</translation>
 <translation id="3149510190863420837">Chrome యాప్‌లు</translation>
 <translation id="3360895254066713204">Chrome సహాయకారుడు</translation>
@@ -245,6 +248,7 @@
 <translation id="8344083974188970894">{NUM_MINS,plural, =1{అవాంఛిత సాఫ్ట్‌వేర్ ఏదైనా ఉందా? అని వారానికి ఒకసారి Chromium తనిఖీ చేస్తుంది. చివరగా తనిఖీ చేసిన సమయం: 1 నిమిషం క్రితం.}other{అవాంఛిత సాఫ్ట్‌వేర్ ఏదైనా ఉందా? అని వారానికి ఒకసారి Chromium తనిఖీ చేస్తుంది. చివరగా తనిఖీ చేసిన సమయం: {NUM_MINS} నిమిషాల క్రితం.}}</translation>
 <translation id="8370517070665726704">కాపీరైట్ <ph name="YEAR" /> Google LLC. సర్వ హక్కులు ప్రత్యేకించబడ్డాయి.</translation>
 <translation id="840084489713044809">Google Chrome మీ పాస్‌వర్డ్‌లను ఎగుమతి చేయాలనుకుంటోంది.</translation>
+<translation id="8433638294851456451">ఇక్కడి నుండి మీ Android ఫోన్‌కు నంబర్‌ను పంపడానికి, రెండు పరికరాలలోని Chromeకు సైన్ ఇన్ చేయండి.</translation>
 <translation id="8498858610309223613">Google Chromeకి సంబంధించిన ప్రత్యేక భద్రతా అప్‌డేట్ వర్తింపజేయబడింది. ఇప్పుడే పునఃప్రారంభించండి, మేము మీ ట్యాబ్‌లను పునరుద్ధరిస్తాము.</translation>
 <translation id="8521348052903287641">mDNS ట్రాఫిక్‌ను అనుమతించడానికి Google Chrome డెవలపర్ కోసం ఇన్‌బౌండ్ నియమం.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
@@ -264,6 +268,7 @@
 <translation id="884296878221830158">ఇది మీరు Chromeను ప్రారంభించేటప్పుడు లేదా హోమ్ బటన్‌ను క్లిక్ చేసేటప్పుడు చూపబడే పేజీని కూడా నియంత్రిస్తుంది.</translation>
 <translation id="8862326446509486874">సిస్టమ్-స్థాయిలో ఇన్‌స్టాల్‌ చేయ‌డానికి మీకు సరైన హక్కులు లేవు. నిర్వాహకుడి లాగా ఇన్‌స్టాలర్‌ను మ‌ళ్లీ రన్ చేయ‌డానికి ప్రయత్నించండి.</translation>
 <translation id="8914504000324227558">Chromeను పునఃప్రారంభించు</translation>
+<translation id="8922193594870374009"><ph name="ORIGIN" /> నుండి మీ Android ఫోన్‌కు నంబర్‌ను పంపడానికి, రెండు పరికరాలలోని Chromeకు సైన్ ఇన్ చేయండి.</translation>
 <translation id="8999208279178790196">{0,plural, =0{ఒక Chrome అప్‌డేట్ అందుబాటులో ఉంది}=1{ఒక Chrome అప్‌డేట్ అందుబాటులో ఉంది}other{ఒక Chrome అప్‌డేట్ # రోజులుగా అందుబాటులో ఉంది}}</translation>
 <translation id="9026991721384951619">మీ ఖాతా సైన్-ఇన్ వివరాల గడువు ముగిసినందున Chrome OS మీ డేటాను సింక్ చేయ‌లేకపోయింది.</translation>
 <translation id="9067395829937117663">Google Chromeకి Windows 7 లేదా అంతకంటే ఆధునికమైనది ఉండటం ఆవశ్యకం.</translation>

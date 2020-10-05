@@ -27,6 +27,7 @@
 <translation id="121097972571826261">Реч унапред</translation>
 <translation id="1225748608451425081">Chromebook је закључан због познатог проблема. Моћи ћете да се пријавите за: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Изађи из режима бирања</translation>
+<translation id="1239161794459865856">Функција <ph name="FEATURE_NAME" /> је повезана.</translation>
 <translation id="1247372569136754018">Микрофон (интерни)</translation>
 <translation id="1252999807265626933">Пуњење из уређаја <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Какво је време?</translation>
@@ -74,6 +75,7 @@
 <translation id="1654477262762802994">Започните гласовну претрагу</translation>
 <translation id="1667964833127753507">Режим неутралних боја не користи боје из позадина и замењује их скупом неутралних светлих и тамних нијанси.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> је преостало</translation>
+<translation id="1677507110654891115">Функција <ph name="FEATURE_NAME" /> није повезана.</translation>
 <translation id="1698080062160024910">Тајмер за <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 адреса: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Радна површина: <ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@
 <translation id="2369165858548251131">„Здраво“ на кинеском</translation>
 <translation id="2390318262976603432">Подешавања локалитета</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="2405664212338326887">Није повезано</translation>
 <translation id="2408955596600435184">Унесите PIN</translation>
 <translation id="2412593942846481727">Доступно је ажурирање</translation>
 <translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> је сесија којом управља <ph name="DOMAIN" /></translation>
@@ -243,6 +246,7 @@
 <translation id="3364721542077212959">Алатке за писаљку</translation>
 <translation id="3368922792935385530">Повезан</translation>
 <translation id="3371140690572404006">Уређај са USB прикључком типа C (десни предњи порт)</translation>
+<translation id="3375634426936648815">Повезано</translation>
 <translation id="3386978599540877378">лупа преко целог екрана</translation>
 <translation id="3400357268283240774">Додатна подешавања</translation>
 <translation id="3410336247007142655">Прикажите подешавања тамне теме</translation>
@@ -322,6 +326,7 @@
 <translation id="4181841719683918333">Језици</translation>
 <translation id="4195877955194704651">Аутоматски кликови на дугмад</translation>
 <translation id="4197790712631116042">Искључено</translation>
+<translation id="4201033867194214117">Функција <ph name="FEATURE_NAME" /> није доступна</translation>
 <translation id="4212246570487010370">Наставите са прегледањем</translation>
 <translation id="4212472694152630271">Пређи на PIN</translation>
 <translation id="4215497585250573029">Подешавања VPN-а</translation>
@@ -333,6 +338,7 @@
 <translation id="4285498937028063278">Откачи</translation>
 <translation id="4294319844246081198">Добро јутро, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Обришите сва обавештења (<ph name="COUNT" />)</translation>
+<translation id="4302592941791324970">Није доступно</translation>
 <translation id="4303223480529385476">Проширите област статуса</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Притиснули сте тастерску пречицу за високи контраст. Желите ли да је укључите?</translation>
@@ -426,6 +432,7 @@
 <translation id="5302048478445481009">Језик</translation>
 <translation id="5313326810920013265">Подешавања Bluetooth-а</translation>
 <translation id="5314219114274263156">Екран је снимљен</translation>
+<translation id="5329548388331921293">Повезује се...</translation>
 <translation id="5331975486040154427">Уређај са USB прикључком типа C (леви задњи порт)</translation>
 <translation id="5352250171825660495">Тамна тема је укључена</translation>
 <translation id="5379115545237091094">Превише покушаја</translation>
@@ -439,6 +446,7 @@
 <translation id="5465662442746197494">Потребна вам је помоћ?</translation>
 <translation id="5496819745535887422">Администратор враћа уређај на ранију верзију. Сви подаци ће бити избрисани када се уређај рестартује.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166"><ph name="FEATURE_NAME" /> се повезује.</translation>
 <translation id="553675580533261935">Напуштање сесије</translation>
 <translation id="5537725057119320332">Пребацуј</translation>
 <translation id="5548285847212963613">Додатак „<ph name="EXTENSION_NAME" />“ може да помогне у повезивању са овом мрежом.</translation>
