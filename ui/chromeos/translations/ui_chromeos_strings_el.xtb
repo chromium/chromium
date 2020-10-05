@@ -119,7 +119,6 @@
 <translation id="2208158072373999562">Αρχείο Zip</translation>
 <translation id="2225536596944493418">Είστε βέβαιοι ότι θέλετε να διαγράψετε <ph name="NUMBER_OF_ITEMS" /> στοιχεία;</translation>
 <translation id="2230062665678605299">Δεν είναι δυνατή η δημιουργία του φακέλου "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2270413998793223379">Σανσκριτικά</translation>
 <translation id="2275059641601412272">Μετακινήθηκε.</translation>
 <translation id="2278988676849463018">Πληκτρολόγιο Κανάντα (Φωνητικό)</translation>
 <translation id="2287742181953707290">Πορτογαλικά με πληκτρολόγιο υπολογιστή Διεθνές ΗΠΑ</translation>
@@ -291,6 +290,7 @@
 <translation id="4072248638558688893">Πληκτρολόγιο Ταμίλ (Φωνητικό)</translation>
 <translation id="4124935795427217608">Μονόκερος</translation>
 <translation id="4158739975813877944">Άνοιγμα playlist</translation>
+<translation id="4159731583141908892">Το αρχείο <ph name="FILE_NAME" /> μετακινήθηκε.</translation>
 <translation id="418179967336296930">Ρωσικό φωνητικό πληκτρολόγιο (YaZHert)</translation>
 <translation id="4193154014135846272">Έγγραφο Google</translation>
 <translation id="4195249722193633765">Εγκατάσταση εφαρμογής με Linux (beta)</translation>
@@ -326,6 +326,7 @@
 <translation id="4582497162516204941">Εγκατάσταση με Linux (beta)</translation>
 <translation id="4594543368593301662">Εμφάνιση αποτελεσμάτων για <ph name="SEARCH_TERM" />.</translation>
 <translation id="4603392156942865207">Αντιγραφή αρχείου <ph name="FILE_NAME" /> στον φάκελο <ph name="FOLDER_NAME" /></translation>
+<translation id="4627439232948440198">Σανσκριτικά</translation>
 <translation id="4631887759990505102">Καλλιτέχνης</translation>
 <translation id="4656293982926141856">Αυτός ο υπολογιστής</translation>
 <translation id="4669606053856530811">Τα μέλη του "<ph name="SOURCE_NAME" />" θα χάσουν την πρόσβαση, εκτός εάν αυτά τα στοιχεία είναι κοινόχρηστα για τα συγκεκριμένα μέλη.</translation>
@@ -635,6 +636,7 @@
 <translation id="7693909743393669729">Η μορφοποίηση ενός δίσκου θα διαγράψει όλα τα δεδομένα που είναι αποθηκευμένα σε αυτόν και θα καταργήσει τα υπάρχοντα διαμερίσματα, συμπεριλαμβανομένων των διαμερισμάτων που μπορεί να μην είναι ορατά. Δεν είναι δυνατή η αναίρεση αυτής της ενέργειας.</translation>
 <translation id="7695430100978772476">Δεν ήταν δυνατή η μορφοποίηση της συσκευής <ph name="DRIVE_NAME" /></translation>
 <translation id="770015031906360009">Ελληνικά</translation>
+<translation id="7705251383879779343">Το αρχείο <ph name="FILE_NAME" /> αντιγράφηκε.</translation>
 <translation id="7706319470528945664">Πληκτρολόγιο με πορτογαλικούς χαρακτήρες</translation>
 <translation id="7711920809702896782">Πληροφορίες εικόνας</translation>
 <translation id="7724603315864178912">Αποκοπή</translation>

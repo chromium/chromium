@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">ପ୍ରାରମ୍ଭିକ ସିଙ୍କ୍ ସେଟ୍‌ଅପ୍ ସମାପ୍ତ ହୋଇ ନାହିଁ</translation>
 <translation id="1821253160463689938">ଆପଣ ସେହି ପୃଷ୍ଠାଗୁଡ଼ିକୁ ନ ଯାଉଥିଲେ ମଧ୍ୟ, ଆପଣଙ୍କର ପ୍ରାଥମିକତାକୁ ମନେରଖିବା ପାଇଁ ଏହା କୁକୀଗୁଡ଼ିକ ବ୍ୟବହାର କରେ</translation>
 <translation id="1829244130665387512">ପୃଷ୍ଠାରେ ଖୋଜି ପାଆନ୍ତୁ</translation>
+<translation id="1830550083491357902">ସାଇନ୍‍ ଇନ୍‍ କରିନାହାନ୍ତି</translation>
 <translation id="1843805151597803366">ଆହୁରି ଭଲ ଅନୁବାଦ ପାଇବା ପାଇଁ, Google Searchକୁ ବର୍ତ୍ତମାନର ପୃଷ୍ଠା ବ୍ୟବହାର କରିବାକୁ ଦିଅନ୍ତୁ</translation>
 <translation id="1853692000353488670">ନୂଆ ଇନ୍‌କଗ୍ନିଟୋ ଟାବ୍</translation>
 <translation id="1856325424225101786">ଲାଇଟ୍‌ ମୋଡ୍‌ ରିସେଟ୍‌ କରିବେ?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chromeର ସମୟସୀମା ଶେଷ ହୋଇଛି</translation>
 <translation id="1883903952484604915">ମୋ ଫାଇଲ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="189358972401248634">ଅନ୍ୟ ଭାଷାଗୁଡ଼ିକ</translation>
+<translation id="1919130412786645364">Chromeରେ ସାଇନ୍-ଇନ୍‌ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="1922362554271624559">ପ୍ରସ୍ତାବିତ ଭାଷାଗୁଡ଼ିକ</translation>
 <translation id="1925021887439448749">ଏକ କଷ୍ଟମ୍ ୱେବ୍ ଠିକଣା ଲେଖନ୍ତୁ</translation>
 <translation id="1928696683969751773">ଅପ୍‌ଡେଟ୍</translation>
@@ -174,7 +176,6 @@
 <translation id="2321086116217818302">ପାସ୍‌ୱାର୍ଡଗୁଡ଼ିକ ପ୍ରସ୍ତୁତ ହେଉଛି…</translation>
 <translation id="2321958826496381788">ସ୍ଲାଇଡର୍‍କୁ ସେପର୍ଯ୍ୟନ୍ତ ଟାଣନ୍ତୁ, ଯେପର୍ଯ୍ୟନ୍ତ ଆପଣ ଏହାକୁ ଭଲ ଭାବରେ ପଢ଼ିନାହାନ୍ତି। ପାରାଗ୍ରାଫ୍‍‍ରେ ଦୁଇଥର ଟାପ୍ କରିବା ପରେ ଟେକ୍ସଟ୍ ଅତି କମ୍‍‍ରେ ଏତେ ବଡ଼ ଦେଖାଯିବା ଆବଶ୍ୟକ।</translation>
 <translation id="2323763861024343754">ସାଇଟ୍ ଷ୍ଟୋରେଜ୍</translation>
-<translation id="2326606747676847821">ଇନକଗ୍ନିଟୋ ମୋଡକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2328985652426384049">ସାଇନ୍ ଇନ୍ କରିପାରିବେ ନାହିଁ</translation>
 <translation id="234265804618409743">ଆପଣଙ୍କ କ୍ୟାମେରାକୁ ଖୋଲାଯାଇ ପାରିବ ନାହିଁ। କିଛି ତ୍ରୁଟି ହୋଇଗଲା।</translation>
 <translation id="2345671828921229300">ସନ୍ଧାନ କରିବାକୁ, କୌଣସି ଏକ ଶବ୍ଦକୁ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତୁ</translation>
@@ -225,6 +226,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{#ଟି ଅଡିଓ ଫାଇଲ୍‌}other{#ଟି ଅଡିଓ ଫାଇଲ୍‌}}</translation>
 <translation id="2656405586795711023">ୱେବ୍ ଆପଗୁଡ଼ିକ</translation>
 <translation id="2689830683995595741">Chrome ବ୍ୟବହାର କରିବା ଦ୍ୱାରା, ଆପଣ <ph name="BEGIN_LINK1" />Google ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK1" /> ଏବଂ <ph name="BEGIN_LINK2" />Google Chrome ଏବଂ Chrome OS ଅତିରିକ୍ତ ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK2" /> ସହିତ ସହମତ ହେଉଛନ୍ତି। <ph name="BEGIN_LINK3" />Family Link ମାଧ୍ୟମରେ ପରିଚାଳନା କରାଯାଇଥିବା Google ଆକାଉଣ୍ଟଗୁଡ଼ିକ ପାଇଁ ଗୋପନୀୟତା ନୋଟିସ୍<ph name="END_LINK3" /> ମଧ୍ୟ ଲାଗୁ ହୋଇଥାଏ।</translation>
+<translation id="2704606927547763573">କପି କରାଯାଇଛି</translation>
 <translation id="2707726405694321444">ପୃଷ୍ଠା ରିଫ୍ରେସ୍ କରନ୍ତୁ</translation>
 <translation id="2709516037105925701">ସ୍ୱତଃପୂରଣ</translation>
 <translation id="2718352093833049315">କେବଳ ୱାଇ-ଫାଇରେ</translation>
@@ -343,10 +345,12 @@
 <translation id="3587482841069643663">ସମସ୍ତ</translation>
 <translation id="3587596251841506391">ୱେବରେ ସୁରକ୍ଷାକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
 <translation id="3599863153486145794">ସମସ୍ତ ସାଇନ୍‌-ଇନ୍‍ ହୋ‍ଇଥିବା ଡିଭାଇସ୍‍ରୁ ଇତିବୃତ୍ତି ଖାଲି କରେ। ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟର <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> ରେ ଅନ୍ୟ ପ୍ରକାରର ବ୍ରାଉଜିଂ ଇତିବୃତ୍ତି ଥାଇପାରେ।</translation>
+<translation id="3602290021589620013">ପ୍ରିଭ୍ୟୁ</translation>
 <translation id="3616113530831147358">ଅଡିଓ</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> ସହ ସେୟାର୍ କରାଯାଉଛି</translation>
 <translation id="3632295766818638029">ପାସ୍‌ୱର୍ଡ ଦେଖାନ୍ତୁ</translation>
 <translation id="363596933471559332">ଷ୍ଟୋର୍ ଥିବା କ୍ରିଡେନ୍‌ସିଆଲ୍ ବ୍ୟବହାର କରି ୱେବ୍‌ସାଇଟ୍‌ରେ ସ୍ୱଚାଳିତରୂପେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ। ଯେତେବେଳେ ଏହି ବୈଶିଷ୍ଟ୍ୟଟି ବନ୍ଦଥାଏ, ସେତେବେଳେ ଏକ ୱେବ୍‌ସାଇଟ୍‌ରେ ସାଇନ୍ ଇନ୍ କରିବା ପୂର୍ବରୁ ପ୍ରତ୍ୟେକଥର ଆପଣଙ୍କୁ ଯାଞ୍ଚ କରିବା ପାଇଁ କୁହାଯିବ।</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">ରିସେଟ୍ କରିଲେ ଆପଣ ଯାଇଥିବା ୱେବ୍‌ସାଇଟ୍‌ଗୁଡ଼ିକର ତାଲିକା ଏବଂ ଏହା ସହିତ ଆପଣ ସେଭ୍ କରିଥିବା ଡାଟା ଇତିବୃତ୍ତି ଖାଲି କରିଦିଏ।</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> ଡାଉନ୍‌ଲୋଡ୍ ବିଫଳ ହୋଇଛି କାରଣ ଷ୍ଟୋରେଜ୍ ଲୋକେସନ୍ ପହଞ୍ଚଯୋଗ୍ୟ ନୁହେଁ।</translation>
 <translation id="3701167022068948696">ବର୍ତ୍ତମାନ ସମାଧାନ କରନ୍ତୁ</translation>
@@ -594,6 +598,7 @@
 <translation id="5527082711130173040">ଡିଭାଇସ୍‌ଗୁଡ଼ିକୁ ସ୍କାନ୍ କରିବାକୁ Chrome ଲୋକେସନ୍ ଆକ୍‌ସେସ୍ ଆବଶ୍ୟକ କରେ। <ph name="BEGIN_LINK1" />ଅପ୍‌ଡେଟ୍ ଅନୁମତି<ph name="END_LINK1" />। ଲୋକେସନ୍‍ ଆକ୍ସେସ୍‍ ମଧ୍ୟ <ph name="BEGIN_LINK2" />ଏହି ଡିଭାଇସ୍‍ ପାଇଁ ବନ୍ଦ ଅଛି<ph name="END_LINK2" />।</translation>
 <translation id="5530766185686772672">ଇନ୍‌କଗ୍ନିଟୋ ଟାବ୍ସ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5534640966246046842">ସାଇଟ୍‍କୁ କପି କରାଯାଇଛି</translation>
+<translation id="5556459405103347317">ପୁନଃ ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="5561549206367097665">ନେଟ୍‌ୱର୍କ ପାଇଁ ଅପେକ୍ଷାରତ…</translation>
 <translation id="55737423895878184">ଲୋକେସନ୍ ଏବଂ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="5578795271662203820">ଏହି ଛବି ପାଇଁ <ph name="SEARCH_ENGINE" /> ସନ୍ଧାନ କରନ୍ତୁ</translation>
@@ -838,6 +843,7 @@
 <translation id="7233236755231902816">ଆପଣଙ୍କର ଭାଷାରେ ୱେବ୍ ଦେଖିବା ପାଇଁ, Chromeର ନବୀନତମ ସଂସ୍କରଣ ପ୍ରାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="7248069434667874558">Chromeରେ <ph name="TARGET_DEVICE_NAME" />ର ସିଙ୍କ୍ ଚାଲୁ ହୋଇଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="7274013316676448362">ବ୍ଲକ୍ କରାଯାଇଥିବା ସାଇଟ୍</translation>
+<translation id="7286572596625053347"><ph name="LANGUAGE" /> ପରିବର୍ତ୍ତନ କରିବେ?</translation>
 <translation id="7290209999329137901">ଯାହା ଉପଲବ୍ଧ ନାହିଁ ତା’କୁ ରିନେମ୍ କରନ୍ତୁ</translation>
 <translation id="7291387454912369099">Assistant ଟ୍ରିଗର୍ କରିଥିବା ଚେକ୍ଆଉଟ୍</translation>
 <translation id="7293171162284876153">ସିଙ୍କ ଆରମ୍ଭ କରିବାକୁ, "ଆପଣଙ୍କ Chrome ଡାଟା ସିଙ୍କ କରନ୍ତୁ"କୁ ଚାଲୁ କରନ୍ତୁ।</translation>
@@ -902,9 +908,6 @@
 <translation id="766587987807204883">ଅନୁଚ୍ଛେଦଗୁଡ଼ିକ ଏଠାରେ ଦେଖାଯାଏ, ଯାହା ଆପଣ ଅଫ୍‌ଲାଇନ୍ ଥିଲେ ମଧ୍ୟ ପଢ଼ିପାରିବେ</translation>
 <translation id="7682724950699840886">ନିମ୍ନୋକ୍ତ ପରାମର୍ଶ‌ଗୁଡ଼ିକୁ ଚେଷ୍ଟା କରନ୍ତୁ: ଆପଣଙ୍କର ଡିଭାଇସ୍‌ରେ ଯଥେଷ୍ଟ ଜାଗା ଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ, ପୁଣି ଏକ୍ସପୋର୍ଟ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" />ରେ ଇମେଲ୍ ତିଆରି କରନ୍ତୁ</translation>
-<translation id="7702724591845223485">ଆପଣଙ୍କର ସମସ୍ତ ସାଇନ୍-ଇନ୍ ସୂଚନା ଏବଂ ଅନ୍ୟ ଡାଟାକୁ Chromeରୁ ଖାଲି କରିବାକୁ, ସମସ୍ତ ଇନକଗ୍ନିଟୋ ଟାବଗୁଡ଼ିକୁ ବନ୍ଦ କରନ୍ତୁ।
-
-ଇନକଗ୍ନିଟୋ ମୋଡରେ, ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପ ଏବେ ବି ଆପଣ ଭିଜିଟ୍ କରିଥିବା ୱେବସାଇଟଗୁଡ଼ିକୁ, ଆପଣଙ୍କ ନିଯୁକ୍ତିଦାତା କିମ୍ବା ସ୍କୁଲ୍ ଏବଂ ଆପଣଙ୍କ ଇଣ୍ଟରନେଟ୍ ସେବା ପ୍ରଦାନକାରୀଙ୍କୁ ଦୃଶ୍ୟମାନ ହୋଇପାରେ।</translation>
 <translation id="7704317875155739195">ସନ୍ଧାନ ଓ URLଗୁଡ଼ିକୁ ସ୍ୱଚାଳିତ ଭାବେ ସମ୍ପୂର୍ଣ୍ଣ ହେବାକୁ ଦିଅନ୍ତୁ</translation>
 <translation id="7725024127233776428">ଏଠାରେ ଆପଣ ବୁକ୍‌ମାର୍କ କରୁଥିବା ପୃଷ୍ଠା ଦେଖାଯାଏ</translation>
 <translation id="7735637452482172701">ସ୍କ୍ରିନ୍ ଲକ୍ ସହ ଅନଲକ୍ କରନ୍ତୁ</translation>
@@ -960,7 +963,6 @@
 <translation id="8058746566562539958">ନୂଆ Chrome ଟାବ୍‍‍ରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="8063895661287329888">ବୁକ୍‍ମାର୍କ ଯୋଗକରିବାରେ ବିଫଳ ହେଲା।</translation>
 <translation id="806745655614357130">ମୋ ଡାଟାକୁ ଅଲଗା ରଖନ୍ତୁ</translation>
-<translation id="8069669375923284295">ସିଙ୍କ୍ ସେଟଅପ୍ ଜାରି ରଖିବାକୁ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="8073388330009372546">ନୂତନ ଟାବ୍‌ରେ ଛବି ଖୋଲନ୍ତୁ</translation>
 <translation id="8076492880354921740">ଟାବ୍</translation>
 <translation id="8084114998886531721">ସେଭ୍‌ ହୋ‍ଇଥିବା ପାସ୍‌ୱର୍ଡ</translation>
@@ -1046,7 +1048,7 @@
 <translation id="8683039184091909753">ଛବି</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{ସିଗ୍‍ନାଲ୍‌ ଦକ୍ଷତାର ସ୍ତର: #ଟି ବାର୍‍}other{ସିଗ୍‍ନାଲ୍‌ ଦକ୍ଷତାର ସ୍ତର: #ଟି ବାର୍‍}}</translation>
 <translation id="869891660844655955">ମିଆଦ ଶେଷ ହେଉଥିବା ତାରିଖ</translation>
-<translation id="8699120352855309748">ଏହି ଭାଷାଗୁଡ଼ିକରେ ଅନୁବାଦ କରିବାକୁ ଅଫର୍ କରନ୍ତୁ ନାହିଁ</translation>
+<translation id="8699120352855309748">ଏହି ଭାଷାଗୁଡ଼ିକର ଅନୁବାଦ କରିବାକୁ ଅଫର୍ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="8712637175834984815">ବୁଝିଗଲି</translation>
 <translation id="8725066075913043281">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="8748850008226585750">ଲୁଚାଯାଇଥିବା ବିଷୟବସ୍ତୁ</translation>

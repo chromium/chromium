@@ -7,7 +7,7 @@
 <translation id="1124772482545689468">Utente</translation>
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
-<translation id="1195941046451948919">Vuoi reimpostare tutte le autorizzazioni di questo sito web?</translation>
+<translation id="1195941046451948919">Vuoi reimpostare tutte le autorizzazioni per questo sito web?</translation>
 <translation id="1201402288615127009">Avanti</translation>
 <translation id="1242008676835033345">Incorporato su <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Interrompi</translation>
@@ -265,6 +265,7 @@
 <translation id="8249310407154411074">Sposta in alto</translation>
 <translation id="8261506727792406068">Elimina</translation>
 <translation id="8300705686683892304">Gestiti dall'app</translation>
+<translation id="8324158725704657629">Non chiedermelo più</translation>
 <translation id="8372893542064058268">Consenti la sincronizzazione in background per un sito specifico.</translation>
 <translation id="8376384591331888629">Inclusi i cookie di terze parti su questo sito</translation>
 <translation id="83792324527827022">Un sito sta utilizzando la fotocamera e il microfono</translation>

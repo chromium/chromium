@@ -163,9 +163,6 @@
 <translation id="1252536192437793850">Autoriser les sites à demander à l'utilisateur d'accorder l'accès à un port série</translation>
 <translation id="1257550411839719984">Définir le répertoire de téléchargement par défaut</translation>
 <translation id="1265053460044691532">Limiter la durée pendant laquelle un utilisateur authentifié via SAML peut se connecter hors connexion</translation>
-<translation id="1271840407438458464">Si cette règle est définie sur une valeur valide, <ph name="PRODUCT_NAME" /> n'utilisera pas de versions SSL/TLS antérieures à la version spécifiée. Les valeurs non reconnues sont ignorées.
-
-      Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> utilise la version minimale par défaut TLS 1.0.</translation>
 <translation id="127264587838521316">Autorise les demandes d'installation d'extension de <ph name="PRODUCT_NAME" /></translation>
 <translation id="1290634681382861275">Contrôle divers paramètres de type USB, Bluetooth, actualisation des stratégies, mode développeur et plus encore.</translation>
 <translation id="1291880496936992484">Avertissement : RC4 sera intégralement supprimé de <ph name="PRODUCT_NAME" /> après la version 52 (autour de septembre 2016) et cette règle ne sera plus valable.
@@ -351,21 +348,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="1523774894176285446">Navigateur secondaire à lancer pour les sites Web configurés.</translation>
 <translation id="152657506688053119">Liste d'URL alternatives pour le moteur de recherche par défaut</translation>
 <translation id="1530812829012954197">Toujours rendre les formats d'URL suivants dans le navigateur hôte</translation>
-<translation id="1544617932000544686">Si cette règle est activée, les utilisateurs ne peuvent pas contourner les décisions de sécurité concernant les téléchargements.
-
-       Configurations possibles :
-
-      * Bloquer les téléchargements dangereux. Tous les téléchargements sont autorisés, sauf ceux déclenchant un avertissement dans le cadre de la navigation sécurisée.
-
-      * Bloquer les téléchargements potentiellement dangereux. Tous les téléchargements sont autorisés, sauf ceux déclenchant un avertissement dans le cadre de la navigation sécurisée (du type "téléchargement potentiellement dangereux").
-
-      * Bloquer tous les téléchargements. Aucun téléchargement n'est autorisé.
-
-      * Bloquer les téléchargements malveillants. Tous les téléchargements sont autorisés, sauf ceux que la navigation sécurisée identifie comme des logiciels malveillants avec un haut degré de fiabilité. Contrairement aux téléchargements dangereux, le type de fichier n'est pas pris en compte. L'hôte, en revanche, l'est.
-
-      * Aucune restriction particulière. Les restrictions de sécurité habituelles basées sur les résultats de l'analyse de la navigation sécurisée s'appliquent aux téléchargements.
-
-      Remarque : Ces restrictions s'appliquent aux téléchargements déclenchés à partir du contenu d'une page Web et de l'option de menu contextuel "Télécharger le lien". Elles ne s'appliquent pas au téléchargement de la page actuellement affichée, ni à l'enregistrement au format PDF depuis les options d'impression. Pour en savoir plus sur la navigation sécurisée, consultez la page https://developers.google.com/safe-browsing.</translation>
 <translation id="1553532014072799546">Liste blanche des restrictions temporelles spécifiques à chaque application</translation>
 <translation id="1553956579506604198">Empêche que des extensions externes soient installées</translation>
 <translation id="1555248923316727072">Paramètres de gestion de l'identité des utilisateurs authentifiés via SAML</translation>
@@ -385,15 +367,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si cette règle n'est pas configurée, la règle <ph name="PRINTERS_ALLOW_ALL" /> s'applique.
       </translation>
 <translation id="1588240398285670601">Paramètres du navigateur</translation>
-<translation id="1588456836529393506">Permet d'établir une liste de formats d'URL indiquant les sites automatiquement autorisés à accéder à un appareil USB avec le fournisseur et les ID produit indiqués. Chaque élément de la liste doit contenir des appareils et des URL pour que la règle soit valide. Chaque élément des appareils peut disposer d'un champ d'ID produit et d'ID de fournisseur. Les ID que vous omettez sont traités comme des caractères génériques, à une exception près : vous ne pouvez pas spécifier un ID produit sans définir un ID de fournisseur. Si vous ne respectez pas cette condition, la règle ne sera pas valide.
-
-      Le modèle d'autorisation USB utilise l'URL de requête et l'URL d'intégration (du site du cadre de premier niveau) pour permettre à l'URL de requête d'accéder à l'appareil USB. L'URL de requête peut être différente de l'URL d'intégration si le site à l'origine de la demande est chargé dans un iFrame. Le champ "URL" peut de ce fait contenir jusqu'à deux chaînes d'URL séparées par une virgule, afin d'indiquer ces URL. Si vous ne spécifiez qu'une seule URL, l'accès aux appareils USB concernés est autorisé si l'URL du site à l'origine de la demande correspond à cette URL, quel que soit l'état d'intégration. Si les URL indiquées dans le champ "URL" ne sont pas valides, la règle est ignorée.
-
-      Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> s'applique, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre spécifié par l'utilisateur s'applique.
-
-      Les formats d'URL de cette règle ne doivent pas entrer en conflit avec ceux qui ont été définis dans la règle <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. En cas de conflit, cette règle prévaut sur <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> et <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.
-
-      Ses valeurs sont fusionnées avec celles de <ph name="DEVICE_WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="1593245608325508847">Permet d'activer la fonctionnalité de connexion limitée de Chrome dans G Suite sans que les utilisateurs puissent modifier ce paramètre. Les utilisateurs ne peuvent accéder aux outils Google que via des comptes associés aux domaines spécifiés (pour autoriser des comptes Gmail ou Googlemail, ajoutez "consumer_accounts" à la liste des domaines). Ce paramètre empêche les utilisateurs de se connecter et d'ajouter un compte secondaire sur un appareil géré qui exige l'authentification Google, si ce compte n'appartient pas à l'un des domaines explicitement autorisés.
 
       Si ce paramètre n'est pas configuré, les utilisateurs peuvent accéder à G Suite avec n'importe quel compte.
@@ -565,9 +538,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 
       Si vous ne configurez pas cette règle, la prédiction réseau est activée, mais les utilisateurs peuvent la modifier.</translation>
 <translation id="1865417998205858223">Autorisations de clés</translation>
-<translation id="1866563857170942397">Définit la liste des utilisateurs autorisés à se connecter à l'appareil. Les entrées se présentent sous la forme suivante : <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> (<ph name="USER_WHITELIST_ENTRY_EXAMPLE" />, par exemple). Pour autoriser des utilisateurs arbitraires sur un domaine, utilisez les entrées sous la forme suivante : <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
-
-       Si cette règle n'est pas configurée, aucune restriction ne s'applique quant aux utilisateurs autorisés à se connecter. Notez que la création d'utilisateurs nécessite toujours de configurer correctement la règle <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" />.</translation>
 <translation id="186719019195685253">Indique l'action à effectuer lorsque le délai d'inactivité est atteint en cas de fonctionnement sur une source d'alimentation CA.</translation>
 <translation id="1885782360784839335">Activer l'affichage de contenus promotionnels en mode Plein onglet</translation>
 <translation id="1888871729456797026">Jeton d'enregistrement des règles relatives au cloud sur ordinateur</translation>
@@ -955,14 +925,14 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       - Contrôle des données du presse-papiers partagées entre les sources et les destinations.
       - Contrôle des captures d'écran de n'importe quelle source.
       - Contrôle de l'impression de n'importe quelle source.
-      - Contrôle de l'écran Confidentialité lorsque l'une des sources est visible.
+      - Contrôle de l'écran de confidentialité lorsque l'une des sources est visible.
 
       Le niveau de restriction peut être défini sur BLOCK ou ALLOW.
       - Si la restriction est définie sur BLOCK, l'action correspondante n'est pas autorisée.
       - Si elle est définie sur ALLOW, l'action est autorisée.
 
       Remarques :
-      - La restriction PRIVACY_SCREEN n'empêche pas d'activer l'écran Confidentialité, mais elle force son affichage lorsque le niveau de restriction est défini sur BLOCK.
+      - La restriction PRIVACY_SCREEN n'empêche pas d'activer l'écran de confidentialité, mais elle force son affichage lorsque le niveau de restriction est défini sur BLOCK.
       - Les destinations ne peuvent pas être vides si l'une des restrictions est la restriction CLIPBOARD. Toutefois, elles n'ont aucune incidence pour les autres restrictions.
       - La restriction CLIPBOARD ne fait pas la différence entre CROSTINI et PLUGIN_VM. Si l'un de ces éléments est sélectionné pour bloquer ou autoriser le partage de données, la règle s'applique aux deux.
       - Les formats d'URL doivent respecter les conditions énoncées sur la page https://www.chromium.org/administrators/url-blacklist-filter-format.
@@ -1391,7 +1361,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
         Cette règle n'a aucune incidence sur les règles déjà publiées.</translation>
 <translation id="3016255526521614822">Les applications de prise de note ajoutées à la liste blanche sont autorisées sur l'écran de verrouillage de <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="3020064401262077616">Contrôle les règles de supervision parentale s'appliquant uniquement aux comptes d'utilisateurs mineurs.</translation>
 <translation id="3020953534071988875">La configuration de cette règle autorise/interdit l'authentification ambiante pour les profils Invité et de navigation privée dans <ph name="PRODUCT_NAME" />.
 
       L'authentification ambiante est une authentification HTTP qui utilise des identifiants par défaut si aucun identifiant explicite n'est fourni via les systèmes de défi-réponse NTLM/Kerberos/Negotiate.

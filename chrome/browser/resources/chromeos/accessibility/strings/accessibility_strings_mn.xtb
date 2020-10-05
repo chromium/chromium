@@ -179,7 +179,7 @@
 <translation id="2390264819538553347">Дараагийн хуудсанд очих бол Enter товчлуурыг; буцахын тулд арилгах товчлуурыг дарна уу.</translation>
 <translation id="2398579267367951220">Хуудаснаас хайхын тулд бичнэ үү. Илэрц рүү үсэрч очихын тулд Enter, илэрцүүдийг үзэхийн тулд дээш эсвэл доош сумыг дарж, хайлтаа өөрчлөхийн тулд үргэлжлүүлэн бичнэ үү эсвэл болихын тулд escape товчийг дарна уу.</translation>
 <translation id="240709722712693803">Нил хөх ягаан (Яргуйн өнгө)</translation>
-<translation id="2416512023405990736">Сонгоогүй checkbox</translation>
+<translation id="2416512023405990736">Сонгоогүй тэмдэглэх нүд</translation>
 <translation id="2417569100218200841">Контентын мэдээлэл</translation>
 <translation id="2417948780551741035">Нэмэлт тэмдэглэл</translation>
 <translation id="2419852971200420169">Тайлбарын жагсаалт</translation>
@@ -408,7 +408,7 @@
 <translation id="4081085052247739398">{COUNT,plural, =1{ДОЛГИНТОЙ ЗУРААС}other{ # долгионтой зурааснууд}}</translation>
 <translation id="409334809956508737">Өмнөх обьект</translation>
 <translation id="4099274309791143834">дэд цэстэй</translation>
-<translation id="4101527861445851766">Сонгосон checkbox</translation>
+<translation id="4101527861445851766">Сонгосон тэмдэглэх нүд</translation>
 <translation id="4115378294792113321">Гүн ягаавтар улаан өнгө</translation>
 <translation id="4116415223832267137">Дохио</translation>
 <translation id="4148180433151187540">{COUNT,plural, =1{баруун талын хаалт}other{# баруун талын хаалтууд}}</translation>
@@ -511,7 +511,7 @@
 <translation id="4892105484979139179">Гүн номин ногоон</translation>
 <translation id="489907760999452556">Дотоод холбоос</translation>
 <translation id="4909019435900810068">Нэг үгээр хойшоо зөөвөрлөх</translation>
-<translation id="4911349081560453449">Өмнөх checkbox алга байна</translation>
+<translation id="4911349081560453449">Өмнөх тэмдэглэх нүд алга байна</translation>
 <translation id="492295894462528572">Өмнөх үг</translation>
 <translation id="495046168593986294">Дээш гүйлгэх</translation>
 <translation id="495170559598752135">Авах арга хэмжээ</translation>
@@ -946,7 +946,7 @@
 <translation id="8455868257606149352">Макс <ph name="X" /></translation>
 <translation id="84575901236241018">нэвтрэх түлхүүртэй, <ph name="KEY" /></translation>
 <translation id="8463645336674919227">Дүрмийн алдаанаас гарч байна</translation>
-<translation id="847040613207937740">Дараагийн checkbox алга байна</translation>
+<translation id="847040613207937740">Дараагийн тэмдэглэх нүд алга байна</translation>
 <translation id="8473540203671727883">Хулганын доорх текстийг хэлнэ үү</translation>
 <translation id="8476408756881832830">ChromeVox-г ярьж байх үед дахин тоглуулахыг түр зогсооно уу</translation>
 <translation id="8476508772960940536">цонхны тойм</translation>

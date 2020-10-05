@@ -160,12 +160,12 @@
       Als dit beleid is ingesteld op 'waar', is de functie ingeschakeld en kunnen gebruikers het wijzigen.
       Dit beleid is standaard ingesteld op 'onwaar'. Er worden geen suggesties voor emoji's weergegeven en gebruikers kunnen dit niet overschrijven.</translation>
 <translation id="1243570869342663665">SafeSites-filters voor content voor volwassenen beheren.</translation>
+<translation id="1247850578871017740">Als je het beleid instelt op een geldige waarde, gebruikt <ph name="PRODUCT_NAME" /> geen SSL/TLS-versies lager dan de opgegeven versie. Niet-herkende waarden worden genegeerd.
+
+      Als dit beleid niet is ingesteld, geeft <ph name="PRODUCT_NAME" /> een fout weer voor TLS 1.0 en TLS 1.1. De gebruiker kan deze fout wel omzeilen.</translation>
 <translation id="1252536192437793850">Sites toestaan om gebruikers toestemming te vragen voor toegang tot een seriële poort</translation>
 <translation id="1257550411839719984">Standaardmap voor downloads instellen</translation>
 <translation id="1265053460044691532">De offline inlogtijd beperken voor een gebruiker die is geverifieerd via SAML</translation>
-<translation id="1271840407438458464">Als je het beleid instelt op een geldige waarde, gebruikt <ph name="PRODUCT_NAME" /> geen SSL/TLS-versies lager dan de opgegeven versie. Niet-herkende waarden worden genegeerd.
-
-      Als dit beleid niet is ingesteld, gebruikt <ph name="PRODUCT_NAME" /> de standaard minimum versie TLS 1.0.</translation>
 <translation id="127264587838521316">Hiermee worden installatieverzoeken voor <ph name="PRODUCT_NAME" />-extensies ingeschakeld</translation>
 <translation id="1290634681382861275">Beheert diverse instellingen, waaronder USB, Bluetooth, vernieuwingsinterval voor beleid, ontwikkelaarsmodus en meer.</translation>
 <translation id="1291880496936992484">Waarschuwing: RC4 wordt volledig verwijderd van <ph name="PRODUCT_NAME" /> na versie 52 (rond september 2016) en dit beleid werkt vanaf dan niet meer.
@@ -340,21 +340,6 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
 <translation id="1523774894176285446">Alternatieve browser die wordt gestart voor geconfigureerde websites.</translation>
 <translation id="152657506688053119">Lijst met alternatieve URL's voor de standaardzoekprovider</translation>
 <translation id="1530812829012954197">De volgende URL-patronen altijd verwerken in de hostbrowser</translation>
-<translation id="1544617932000544686">Als je het beleid instelt, kunnen gebruikers de keuzes voor downloadbeveiliging niet omzeilen.
-
-       Je kunt de volgende opties instellen voor het beleid:
-
-      * 'Gevaarlijke downloads blokkeren': Alle downloads zijn toegestaan, met uitzondering van downloads waarvoor een Safe Browsing-waarschuwing is afgegeven.
-
-      * 'Potentieel gevaarlijke downloads blokkeren': Alle downloads zijn toegestaan, met uitzondering van downloads waarvoor een Safe Browsing-waarschuwing is afgegeven of potentieel gevaarlijke downloads.
-
-      * 'Alle downloads blokkeren': Alle downloads worden geblokkeerd.
-
-      * 'Schadelijke downloads blokkeren': Alle downloads zijn toegestaan, met uitzondering van downloads die met grote zekerheid door Safe Browsing worden aangeduid als malware. Anders dan bij gevaarlijke downloads wordt hierbij geen rekening gehouden met het bestandstype, maar wordt wel rekening gehouden met de host.
-
-      * 'Geen speciale beperkingen': De gebruikelijke beveiligingsbeperkingen worden op de downloads toegepast op basis van de Safe Browsing-analyse.
-
-      Opmerking: Deze beperkingen gelden zowel voor downloads die via de webpaginacontent als voor downloads die via de menuoptie 'Link downloaden...' geactiveerd zijn. De beperkingen gelden niet voor het downloaden van de huidige pagina die wordt weergegeven of voor de afdrukoptie 'Opslaan als pdf'. Meer informatie over Safe Browsing (https://developers.google.com/safe-browsing).</translation>
 <translation id="1553532014072799546">Witte lijst voor tijdslimieten per app</translation>
 <translation id="1553956579506604198">Blokkeert de installatie van externe extensies</translation>
 <translation id="1555248923316727072">Beheerinstellingen voor SAML-gebruikersidentiteit</translation>
@@ -374,15 +359,6 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
       Als dit beleid niet is ingesteld, wordt er uitgegaan van <ph name="PRINTERS_ALLOW_ALL" />.
       </translation>
 <translation id="1588240398285670601">Browserinstellingen</translation>
-<translation id="1588456836529393506">Als je het beleid instelt, kun je een lijst met URL-patronen opgeven met de sites die automatisch toegangsrechten krijgen voor een USB-apparaat met de opgegeven leveranciers- en product-ID's. Het beleid is alleen geldig als elk lijstitem apparaten en URL's bevat. Elk item in apparaten kan een veld voor de leverancier-ID en een veld voor de product-ID bevatten. Elke ID die je weglaat, wordt als jokerteken behandeld, met één uitzondering: je kunt geen product-ID opgeven als je niet ook een leverancier-ID opgeeft. Als je dit niet doet, is het beleid niet geldig.
-
-      Het USB-rechtenmodel gebruikt de aanvragende URL en de insluitings-URL (van de framesite op hoofdniveau) om de aanvragende URL toegang te geven tot het USB-apparaat. Als de aanvragende site in een iframe wordt geladen, is het mogelijk dat de aanvragende URL en de insluitings-URL niet hetzelfde zijn. Daarom kan het veld voor URL's maximaal twee, door een komma gescheiden tekenreeksen bevatten om deze URL's op te geven. Als je maar één URL wilt opgeven, wordt er alleen toegang tot de bijbehorende USB-apparaten gegeven als de URL van de aanvragende site overeenkomt met deze URL, ongeacht de insluitingsstatus. De URL's in het veld voor URL's moeten geldig zijn. Als dit niet het geval is, wordt het beleid genegeerd.
-
-      Als je het beleid niet instelt, is <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> van toepassing als dit is ingesteld. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
-
-      De URL-patronen in dit beleid mogen geen conflict vormen met de patronen die zijn ingesteld via <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Als dit het geval is, krijgt dit beleid voorrang op <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> en <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.
-
-      Waarden voor dit beleid en <ph name="DEVICE_WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> worden samengevoegd.</translation>
 <translation id="1593245608325508847">Als je dit beleid instelt, wordt de beperkte inlogfunctie van Chrome in G Suite ingeschakeld. Gebruikers kunnen deze instelling niet wijzigen. Gebruikers kunnen Google-tools alleen openen met accounts van de opgegeven domeinen (voeg consumer_accounts toe aan de lijst met domeinen om Gmail- en GoogleMail-accounts toe te staan). Deze instelling voorkomt dat gebruikers inloggen op een secundair account en dit toevoegen aan een beheerd apparaat waarvoor Google-verificatie vereist is, als dit account niet behoort tot één van de expliciet toegestane domeinen.
 
       Als je deze instelling leeg laat of niet instelt, kunnen gebruikers G Suite openen met elk account.
@@ -550,9 +526,6 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
 
       Als dit beleid niet wordt ingesteld, wordt netwerkvoorspelling ingeschakeld, maar kan de gebruiker dit wijzigen.</translation>
 <translation id="1865417998205858223">Rechten voor sleutels</translation>
-<translation id="1866563857170942397">Definieert de lijst met gebruikers die toestemming hebben om op het apparaat in te loggen. De invoer heeft de vorm <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, zoals <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />. Als je willekeurige gebruikers toegang wilt geven tot een domein, gebruik je invoer in de vorm <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
-
-      Als dit beleid niet is geconfigureerd, zijn er geen beperkingen voor welke gebruikers mogen inloggen. Als je nieuwe gebruikers wilt maken, moet het beleid <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> correct zijn ingesteld.</translation>
 <translation id="186719019195685253">Actie die moet worden ondernomen wanneer de vertraging voor inactief wordt bereikt bij gebruik op netspanning</translation>
 <translation id="1885782360784839335">Weergave van promotiecontent op volledig tabblad inschakelen</translation>
 <translation id="1888871729456797026">De inschrijvingstoken van het cloudbeleid op een desktop</translation>
@@ -1362,7 +1335,6 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
 
         Dit beleid heeft geen invloed op al uitgebrachte beleidsregels.</translation>
 <translation id="3016255526521614822">Notitie-apps die zijn toegestaan op het <ph name="PRODUCT_OS_NAME" />-vergrendelscherm toevoegen aan de witte lijst</translation>
-<translation id="3020064401262077616">Hiermee bepaal je de beleidsregels voor ouderlijk toezicht, die alleen op kinderaccounts worden toegepast.</translation>
 <translation id="3020953534071988875">Als je dit beleid configureert, wordt Ambient-verificatie voor incognito- en gastprofielen toegestaan/niet toegestaan in <ph name="PRODUCT_NAME" />.
 
       Ambient-verificatie is HTTP-verificatie met standaardgegevens als er geen expliciete gegevens worden verstrekt via uitdaging/reactie-schema's van NTLM/Kerberos/Negotiate.
@@ -2313,6 +2285,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
       Als dit beleid niet is ingesteld, is Safe Browsing ingeschakeld voor de standaard beveiligingsmodus, maar kunnen gebruikers deze instelling wijzigen.
 
       Zie https://developers.google.com/safe-browsing voor meer informatie over Safe Browsing.</translation>
+<translation id="4402887080007986374">De geldige versie van de servicevoorwaarden van Edu Coexistence</translation>
 <translation id="4408428864159735559">Lijst met vooraf geconfigureerde netwerkfileshares.</translation>
 <translation id="4410236409016356088">Netwerkbandbreedtebeperking inschakelen</translation>
 <translation id="441217499641439905">Google Drive uitschakelen via mobiele verbindingen in de app Bestanden van <ph name="PRODUCT_OS_NAME" /></translation>
@@ -2495,6 +2468,13 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
           Ga voor voorbeeldpatronen naar https://www.chromium.org/developers/how-tos/chrome-frame-getting-started.</translation>
 <translation id="467449052039111439">Een lijst met URL's openen</translation>
 <translation id="4674871290487541952">Onbeveiligde algoritmen toestaan in integriteitscontroles bij updates en installaties van extensies</translation>
+<translation id="4677605038200415894">Als je het beleid instelt, kun je een lijst met URL-patronen opgeven met de sites die automatisch toegangsrechten krijgen voor een USB-apparaat met de opgegeven leveranciers- en product-ID's. Het beleid is alleen geldig als elk lijstitem apparaten en URL's bevat. Elk item in apparaten kan een veld voor de leverancier-ID en een veld voor de product-ID bevatten. Elke ID die je weglaat, wordt als jokerteken behandeld, met één uitzondering: je kunt geen product-ID opgeven als je niet ook een leverancier-ID opgeeft. Als je dit niet doet, is het beleid niet geldig.
+
+      Het USB-rechtenmodel gebruikt de aanvragende URL en de insluitings-URL (van de framesite op hoofdniveau) om de aanvragende URL toegang te geven tot het USB-apparaat. Als de aanvragende site in een iframe wordt geladen, is het mogelijk dat de aanvragende URL en de insluitings-URL niet hetzelfde zijn. Daarom kan het veld voor URL's maximaal twee, door een komma gescheiden tekenreeksen bevatten om deze URL's op te geven. Als je maar één URL wilt opgeven, wordt er alleen toegang tot de bijbehorende USB-apparaten gegeven als de URL van de aanvragende site overeenkomt met deze URL, ongeacht de insluitingsstatus. De URL's in het veld voor URL's moeten geldig zijn. Als dit niet het geval is, wordt het beleid genegeerd.
+
+      Als je het beleid niet instelt, is <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> van toepassing als dit is ingesteld. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
+
+      De URL-patronen in dit beleid mogen geen conflict vormen met de patronen die zijn ingesteld via <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Als dit het geval is, krijgt dit beleid voorrang op <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> en <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="4680936297850947973">Beëindigd in M68. Gebruik in plaats hiervan DefaultPopupsSetting.
 
       Ga naar https://www.chromestatus.com/features/5675755719622656 voor een volledige uitleg.
@@ -3209,6 +3189,8 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Opmerking: Gebruik bij meerdere servernamen een komma als scheidingsteken. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.</translation>
 <translation id="5645779841392247734">Cookies toestaan op deze sites</translation>
 <translation id="5646234199535103501">Configuratiebeleid voor de Chrome Enterprise Connector OnBulkDataEntry</translation>
+<translation id="5652250453612826983">Hiermee bepaal je de beleidsregels voor ouderlijk toezicht, die alleen op kinderaccounts worden toegepast.
+      Deze beleidsregels worden niet ingesteld in de beheerdersconsole, maar worden rechtstreeks geconfigureerd via Kids API Server.</translation>
 <translation id="5656177735561364047">De functie voor gedeeld klembord inschakelen</translation>
 <translation id="5657576769650058122">Als je het beleid inschakelt, blijft het virtuele schermtoetsenbord (een Chrome OS-invoerapparaat) ingeschakeld. Als je het beleid uitschakelt, blijft dit toetsenbord uitgeschakeld.
 
@@ -3844,6 +3826,21 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="6628043374475466084">URL-patronen waarvoor gedownloade content niet moet worden gecontroleerd op schendingen van de beveiligingsregels voor gevoelige gegevens</translation>
 <translation id="6628120204569232711">Opslagstatus rapporteren</translation>
 <translation id="663685822663765995">Afdrukken in kleurenmodus beperken</translation>
+<translation id="6640989746632867803">Als je het beleid instelt, kunnen gebruikers de keuzes voor downloadbeveiliging niet omzeilen.
+
+       Je kunt de volgende opties instellen voor het beleid:
+
+      * Gevaarlijke downloads blokkeren: Alle downloads zijn toegestaan, met uitzondering van downloads waarvoor een beveiligingswaarschuwing is afgegeven.
+
+      * Potentieel gevaarlijke downloads blokkeren: Alle downloads zijn toegestaan, met uitzondering van downloads waarvoor een beveiligingswaarschuwing is afgegeven of potentieel gevaarlijke downloads.
+
+      * Alle downloads blokkeren: Alle downloads worden geblokkeerd.
+
+      * Schadelijke downloads blokkeren: Alle downloads zijn toegestaan, met uitzondering van downloads die met grote zekerheid worden aangeduid als malware. Anders dan bij gevaarlijke downloads wordt hierbij geen rekening gehouden met het bestandstype, maar wordt wel rekening gehouden met de host.
+
+      * Geen speciale beperkingen: De gebruikelijke beveiligingsbeperkingen worden op de downloads toegepast op basis van de beveiligingsanalyse.
+
+      Opmerking: Deze beperkingen gelden zowel voor downloads die via de webpaginacontent als voor downloads die via de menuoptie 'Link downloaden...' geactiveerd zijn. De beperkingen gelden niet voor het downloaden van de huidige pagina die wordt weergegeven of voor de afdrukoptie 'Opslaan als pdf'. Bekijk meer informatie over Safe Browsing (https://developers.google.com/safe-browsing).</translation>
 <translation id="6641981670621198190">Ondersteuning voor API's voor 3D-beelden uitschakelen</translation>
 <translation id="6646056064606561298">Het beleid voor het beheer van opstarten bij netstroom inschakelen.
 
@@ -5546,6 +5543,13 @@ Dit beleid wordt verwijderd in M75.</translation>
 <translation id="8942616385591203339">Dit beleid bepaalt of er informatie over toestemming voor synchronisatie mag worden getoond aan de gebruiker wanneer deze voor het eerst inlogt. De waarde moet op 'False' worden ingesteld als er nooit toestemming voor synchronisatie is vereist voor de gebruiker.
       Als dit is ingesteld op 'False', wordt er geen informatie over toestemming voor synchronisatie weergegeven.
       Als dit is ingesteld op 'True' of als dit niet is ingesteld, kan er informatie over toestemming voor synchronisatie worden weergegeven.</translation>
+<translation id="8943744188513019866">Met dit beleid wordt de huidige geldige versie van de servicevoorwaarden van Edu Coexistence aangegeven.
+      De versie in het beleid wordt vergeleken met de versie die de ouder het laatst heeft geaccepteerd en wordt gebruikt om te vragen om verlenging van de ouderlijke toestemming als dat nodig is.
+
+      Als dit beleid is ingesteld, kan de versie van de servicevoorwaarden worden gevalideerd.
+      Als dit beleid niet is ingesteld, kan de geldigheid van de servicevoorwaarden van Edu Coexistence niet worden geverifieerd.
+
+      Dit beleid wordt alleen gebruikt voor Family Link-gebruikers.</translation>
 <translation id="8943934315109955032">Niet controleren op schendingen van de beveiligingsregels voor gevoelige gegevens</translation>
 <translation id="8947415621777543415">Apparaatlocatie rapporteren</translation>
 <translation id="8948062138228904066">Toelatingslijst voor verificatieserver</translation>

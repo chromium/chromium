@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">نامعلوم خرابی۔</translation>
 <translation id="1413240736185167732">ناکام ہو گیا - فلٹر ناکام ہو گیا</translation>
 <translation id="1468664791493211953">پیشکشیں</translation>
+<translation id="1478594628797167447">اسکینر</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> اس آلہ کا نظم کرتا ہے اور آپ کی سرگرمی کو مانیٹر کرنے کا اہل ہو سکتا ہے۔</translation>
 <translation id="150962533380566081">‏غلط PUK۔</translation>
 <translation id="1510238584712386396">لانچر</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">بند کریں</translation>
 <translation id="3008341117444806826">ریفریش کریں</translation>
 <translation id="3091839911843451378">ناکام ہو گیا - رک گیا</translation>
+<translation id="3246869037381808805">1 دن سے پرانی پرنٹ جابز کو ہٹا دیا جائے گا</translation>
 <translation id="3268178239013324452">ناکام ہو گیا - دروازہ کھلا ہے</translation>
 <translation id="3369013195428705271">کیا آپ واقعی پرنٹ کی تمام سرگزشت کو صاف کرنا چاہتے ہیں؟ آپ کی جاری پرنٹ جابز کو صاف نہیں کیا جائے گا۔</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> میں سے <ph name="PRINTED_PAGES" /> پرنٹ کئے ہوئے صفحات۔</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">تمام سرگزشت صاف کریں</translation>
 <translation id="3820172043799983114">‏غلط PIN۔</translation>
 <translation id="3838338534323494292">نیا پاس ورڈ</translation>
+<translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> دن سے پرانی پرنٹ جابز کو ہٹا دیا جائے گا</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> اس آلے کا نظم کرتا ہے اور ملاحظہ کردہ ویب صفحات، پاس ورڈز اور ای میل سمیت صارف کی تمام سرگرمی تک رسائی حاصل کر سکتا ہے۔</translation>
 <translation id="4003384961948020559">ناکام ہو گیا - آؤٹ پٹ مکمل</translation>
 <translation id="4027485274696301677">یہ <ph name="DEVICE_TYPE" /><ph name="ENROLLMENT_DOMAIN" /> کے زیر انتظام ہے۔ منتظمین دور سے آلہ کو کنفیگر کر سکتے ہیں۔</translation>
@@ -52,6 +55,7 @@
 <translation id="4890353053343094602">فوری طور پر نیا پاس ورڈ منتخب کریں</translation>
 <translation id="4917889632206600977">رک گیا - کاغذ ختم ہو گیا</translation>
 <translation id="4932733599132424254">تاریخ</translation>
+<translation id="520299634122159966">کوئی اسکینرز دستیاب نہیں ہے</translation>
 <translation id="5212543919916444558">مجھے آپ کی اسکرین پر ایسا کچھ نہیں ملا جس سے متعلق میں آپ کی مدد کر سکوں۔ مجھ سے کچھ بھی پوچھنے کے لیے مائیک کو تھپتھپانے کی کوشش کریں۔</translation>
 <translation id="5222676887888702881">سائن آؤٹ</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
@@ -70,6 +74,7 @@
 <translation id="649050271426829538">رک گیا - پیپر جام</translation>
 <translation id="6517239166834772319">دریافت</translation>
 <translation id="6564646048574748301">ناکام ہو گیا - پرنٹر ناقابل رسائی ہے</translation>
+<translation id="6620487321149975369">پرنٹ جابز سرگزشت میں ظاہر ہوں گی جب تک کہ انہیں دستی طور پر ہٹا نہیں دیا جاتا</translation>
 <translation id="6643016212128521049">صاف کریں</translation>
 <translation id="6747215703636344499">رک گیا - آؤٹ پٹ بھر گیا ہے</translation>
 <translation id="7162487448488904999">گیلری</translation>

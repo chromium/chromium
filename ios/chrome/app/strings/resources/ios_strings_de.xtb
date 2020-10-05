@@ -97,7 +97,6 @@
 <translation id="1965935827552890526">Sie können zu Ihrem offenem Chrome-Fenster zurückkehren, um Ihre vorherige Aktion abzuschließen.</translation>
 <translation id="1974060860693918893">Erweitert</translation>
 <translation id="1989112275319619282">Durchsuchen</translation>
-<translation id="1992734845128748707">Standardbrowser ändern…</translation>
 <translation id="2015722694326466240">Um die Passwörter zu sehen, müssen Sie zuerst einen Passcode auf Ihrem Gerät einrichten.</translation>
 <translation id="2073572773299281212">Vor <ph name="DAYS" /> Tagen aktiv</translation>
 <translation id="2074131957428911366">Sie können in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> auswählen, was Sie synchronisieren möchten.</translation>
@@ -288,6 +287,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites Cookies nicht verwenden,
 <translation id="4181841719683918333">Sprachen</translation>
 <translation id="424315890655130736">Passphrase eingeben</translation>
 <translation id="4263576668337963058">Verfügbare Seitenaktionen anzeigen</translation>
+<translation id="4267380167363222949">Nächster Tab</translation>
 <translation id="4272631900155121838">Um einen QR-Code zu scannen, aktivieren Sie in den Einstellungen die Kamera</translation>
 <translation id="4276041135170112053">Jetzt beheben.</translation>
 <translation id="4277990410970811858">Safe Browsing</translation>
@@ -330,6 +330,7 @@ Ihre Daten sind mit Ihrer Synchronisierungspassphrase verschlüsselt. Geben Sie 
 <translation id="4747097190499141774">Die Passphrasenverschlüsselung enthält keine Zahlungsmethoden oder Adressen von Google Pay. Nur Personen mit Ihrer Passphrase können Ihre verschlüsselten Daten lesen. Die Passphrase wird nicht an Google gesendet oder von Google gespeichert. Falls Sie sie vergessen oder diese Einstellung ändern möchten, müssen Sie die Synchronisierung zurücksetzen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Neuer Inkognitotab</translation>
 <translation id="4758977202923349869">Positionieren Sie die Kreditkarte in diesem Bereich</translation>
+<translation id="4775879719735953715">Standardbrowser</translation>
 <translation id="4802417911091824046">Die Passphrasenverschlüsselung enthält keine Zahlungsmethoden oder Adressen von Google Pay.
 
 Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie die Synchronisierung zurück<ph name="END_LINK" /></translation>
@@ -576,6 +577,7 @@ Websites können Cookies nicht verwenden, um Ihre Browseraktivitäten auf andere
 <translation id="734758817008927353">Optionen zum Speichern von Karten</translation>
 <translation id="7348502496356775519">Lesezeichen</translation>
 <translation id="7383797227493018512">Leseliste</translation>
+<translation id="739941347996872055">Vorheriger Tab</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> ungelesene Artikel.</translation>
 <translation id="7425346204213733349">Änderungen an Ihren Lesezeichen, Ihrem Verlauf, Ihren Passwörtern und anderen Einstellungen werden nicht mehr mit Ihrem Google-Konto synchronisiert. Ihre vorhandenen Daten bleiben aber in Ihrem Google-Konto gespeichert.</translation>
@@ -600,7 +602,7 @@ Websites können Cookies nicht verwenden, um Ihre Browseraktivitäten auf andere
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="766891008101699113">Fügen Sie einen neuen Tab hinzu, um privat im Web zu surfen.</translation>
 <translation id="7671141431838911305">Installieren</translation>
-<translation id="7701040980221191251">Keine Besuche</translation>
+<translation id="7701040980221191251">Keine</translation>
 <translation id="7765158879357617694">Verschieben</translation>
 <translation id="7771470029643830783">Wenn Sie sich abmelden, werden Ihre Lesezeichen, Ihr Verlauf, Ihre Passwörter und andere Chrome-Daten nicht mehr mit Ihrem Google-Konto synchronisiert.
 

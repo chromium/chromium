@@ -117,7 +117,6 @@
 <translation id="2208158072373999562">Zip 封存檔案</translation>
 <translation id="2225536596944493418">您確定要刪除<ph name="NUMBER_OF_ITEMS" /> 個項目嗎？</translation>
 <translation id="2230062665678605299">無法建立資料夾「<ph name="FOLDER_NAME" />」。<ph name="ERROR_MESSAGE" /></translation>
-<translation id="2270413998793223379">梵文</translation>
 <translation id="2275059641601412272">已移動。</translation>
 <translation id="2278988676849463018">坎那達文鍵盤 (拼音)</translation>
 <translation id="2287742181953707290">葡萄牙文，美國國際 (PC) 鍵盤</translation>
@@ -283,6 +282,7 @@
 <translation id="4072248638558688893">坦米爾文鍵盤 (拼音)</translation>
 <translation id="4124935795427217608">獨角獸</translation>
 <translation id="4158739975813877944">開啟播放清單</translation>
+<translation id="4159731583141908892">已移動 <ph name="FILE_NAME" />。</translation>
 <translation id="418179967336296930">俄文拼音 (YaZHert) 鍵盤</translation>
 <translation id="4193154014135846272">Google 文件</translation>
 <translation id="4195249722193633765">透過 Linux (Beta 版本) 安裝應用程式</translation>
@@ -318,6 +318,7 @@
 <translation id="4582497162516204941">透過 Linux (Beta 版本) 安裝</translation>
 <translation id="4594543368593301662">宜家顯示緊 <ph name="SEARCH_TERM" /> 嘅結果。</translation>
 <translation id="4603392156942865207">正在將 <ph name="FILE_NAME" /> 複製到「<ph name="FOLDER_NAME" />」</translation>
+<translation id="4627439232948440198">梵文</translation>
 <translation id="4631887759990505102">演出者</translation>
 <translation id="4656293982926141856">這部電腦</translation>
 <translation id="4669606053856530811">除非有人與「<ph name="SOURCE_NAME" />」的成員共用這些項目，否則他們將失去存取權。</translation>
@@ -618,6 +619,7 @@
 <translation id="7693909743393669729">將硬碟格式化會清除其中儲存的所有資料，並移除所有的現有分割區，包括隱藏的分割區。此操作無法復原。</translation>
 <translation id="7695430100978772476">無法格式化「<ph name="DRIVE_NAME" />」</translation>
 <translation id="770015031906360009">希臘文</translation>
+<translation id="7705251383879779343">已複製 <ph name="FILE_NAME" />。</translation>
 <translation id="7706319470528945664">葡萄牙文鍵盤</translation>
 <translation id="7711920809702896782">圖片資料</translation>
 <translation id="7724603315864178912">剪下</translation>

@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">Felhasználó</translation>
 <translation id="1178581264944972037">Szünet</translation>
 <translation id="1181037720776840403">Eltávolítás</translation>
+<translation id="1195941046451948919">Biztosan visszaállítja ennek a webhelynek az összes engedélyét?</translation>
 <translation id="1201402288615127009">Tovább</translation>
 <translation id="1242008676835033345">Beágyazva itt: <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Leállítás</translation>
@@ -264,6 +265,7 @@
 <translation id="8249310407154411074">Mozgatás az elejére</translation>
 <translation id="8261506727792406068">Törlés</translation>
 <translation id="8300705686683892304">Alkalmazás által kezelt</translation>
+<translation id="8324158725704657629">Ne jelenjen meg többé</translation>
 <translation id="8372893542064058268">Háttérben történő szinkronizálás engedélyezése adott webhely esetében.</translation>
 <translation id="8376384591331888629">Az ezen a webhelyen található, harmadik felektől származó cookie-k is</translation>
 <translation id="83792324527827022">Egy webhely használja az Ön kameráját és mikrofonját</translation>

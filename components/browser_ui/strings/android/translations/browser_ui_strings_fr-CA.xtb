@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">Utilisateur</translation>
 <translation id="1178581264944972037">Interrompre</translation>
 <translation id="1181037720776840403">Supprimer</translation>
+<translation id="1195941046451948919">Voulez-vous vraiment réinitialiser toutes les autorisations pour ce site Web?</translation>
 <translation id="1201402288615127009">Suivant</translation>
 <translation id="1242008676835033345">Intégré sur <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Arrêter</translation>
@@ -125,6 +126,7 @@
 <translation id="4570913071927164677">Détails</translation>
 <translation id="4645575059429386691">Géré par l’un de tes parents</translation>
 <translation id="4670064810192446073">Réalité virtuelle</translation>
+<translation id="4708011789095599544">Voulez-vous vraiment supprimer les témoins et les autres données de ce site Web?</translation>
 <translation id="4751476147751820511">Capteurs de mouvement ou de luminosité</translation>
 <translation id="4883854917563148705">Les paramètres gérés ne peuvent pas être réinitialisés</translation>
 <translation id="4887024562049524730">Demander avant d'autoriser les sites à utiliser votre appareil et vos données de réalité virtuelle (recommandé)</translation>
@@ -263,6 +265,7 @@
 <translation id="8249310407154411074">Placer en première position</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8300705686683892304">Gérés par une application</translation>
+<translation id="8324158725704657629">Ne plus me demander</translation>
 <translation id="8372893542064058268">Autorisez la synchronisation en arrière-plan pour un site en particulier.</translation>
 <translation id="8376384591331888629">Y compris les témoins tiers sur ce site</translation>
 <translation id="83792324527827022">Un site utilise votre appareil photo et votre microphone</translation>

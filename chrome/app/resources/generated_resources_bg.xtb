@@ -228,6 +228,7 @@
 <translation id="1249643471736608405">Приставката <ph name="PLUGIN_NAME" /> бе блокирана, тъй като е оттеглена</translation>
 <translation id="1251366534849411931">Очаква се отваряща фигурна скоба: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Съхраняваните от сайтовете и инсталираните приложения данни в размер на <ph name="TOTAL_USAGE" /> ще бъдат изчистени</translation>
+<translation id="125220115284141797">По подразбиране</translation>
 <translation id="1252987234827889034">Възникна грешка в потребителския профил</translation>
 <translation id="1254593899333212300">Директна връзка с интернет</translation>
 <translation id="1259152067760398571">Проверката на безопасността бе изпълнена вчера</translation>
@@ -319,6 +320,7 @@
 <translation id="1361872463926621533">Възпроизвеждане на звук при стартиране</translation>
 <translation id="1362865166188278099">Механичен проблем. Проверете принтера</translation>
 <translation id="1363585519747660921">Принтерът с USB трябва да бъде конфигуриран</translation>
+<translation id="1364664799726141130">Профилът, който потвърдихте, не е упълномощен да използва това устройство. За да отключите сесията, трябва да потвърдите <ph name="ACCOUNT" />.</translation>
 <translation id="1365180424462182382"><ph name="BEGIN_LINK" />Браузърът ви се управлява<ph name="END_LINK" /> от <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1367951781824006909">Избор на файл</translation>
 <translation id="1369149969991017342">Достъп с превключване (контролиране на компютъра само с един или два превключвателя)</translation>
@@ -428,6 +430,7 @@
 <translation id="1486096554574027028">Търсене в паролите</translation>
 <translation id="1487335504823219454">Включено – персонализирани настройки</translation>
 <translation id="1489664337021920575">Изберете друга опция</translation>
+<translation id="1492417797159476138">Вече запазихте това потребителско име за този сайт</translation>
 <translation id="1493892686965953381">Изчаква се <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1495486559005647033">Още <ph name="NUM_PRINTERS" /> налични устройства.</translation>
 <translation id="1495677929897281669">Назад към раздела</translation>
@@ -650,6 +653,7 @@
 <translation id="173628468822554835">Разбрано. По подразбиране новите сайтове, които посещавате, няма да ви изпращат известия.</translation>
 <translation id="1736419249208073774">Разглеждане</translation>
 <translation id="1737968601308870607">Картотекиране на програмната грешка</translation>
+<translation id="174123615272205933">Персонализиран</translation>
 <translation id="1741314857973421784">Напред</translation>
 <translation id="1743570585616704562">Не е разпознато</translation>
 <translation id="1743970419083351269">Затваряне на лентата на изтеглянето</translation>
@@ -684,6 +688,7 @@
 <translation id="1776712937009046120">Добавяне на потребител</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
 <translation id="1778457539567749232">Означаване като непрочетено</translation>
+<translation id="1779468444204342338">Минимални</translation>
 <translation id="1779652936965200207">Моля, въведете този ключ за достъп на „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="177989070088644880">Приложение (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Затваряне на групата</translation>
@@ -1459,6 +1464,7 @@
 <translation id="2688196195245426394">Грешка при регистрирането на устройството в сървъра: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Показване на езиковите опции</translation>
 <translation id="2691385045260836588">Модел</translation>
+<translation id="2691440343905273290">Промяна на настройките за въвеждане</translation>
 <translation id="2693176596243495071">Ами сега! Възникна неизвестна грешка. Моля, опитайте отново по-късно или се свържете с администратора си, ако проблемът продължи.</translation>
 <translation id="2695749433451188613">Internet Printing Protocol (HTTPS)</translation>
 <translation id="2699911226086014512">Операцията с ПИН кода не бе успешна: код <ph name="RETRIES" />.</translation>
@@ -1881,6 +1887,7 @@
 <translation id="3192947282887913208">Аудиофайлове</translation>
 <translation id="3199127022143353223">Сървъри</translation>
 <translation id="3200310363903241381">{COUNT,plural, =1{Chrome препоръчва да проверите тази парола сега}other{Chrome препоръчва да проверите тези пароли сега}}</translation>
+<translation id="3201154330231437478">Активиране на обратното превъртане. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="3201422919974259695">Наличните USB устройства ще се показват тук.</translation>
 <translation id="3202131003361292969">Път</translation>
 <translation id="3202173864863109533">Звукът на този раздел е спрян.</translation>
@@ -2076,6 +2083,7 @@
 <translation id="3440663250074896476">Още действия за „<ph name="BOOKMARK_NAME" />“</translation>
 <translation id="3440761377721825626">Извеждане на запитване, когато сайт иска да използва приставка за достъп до компютъра ви</translation>
 <translation id="3441653493275994384">Екран</translation>
+<translation id="3441663102605358937">Влезте в <ph name="ACCOUNT" /> отново, за да потвърдите този профил</translation>
 <translation id="3445047461171030979">Кратки отговори на Google Асистент</translation>
 <translation id="3445925074670675829">USB-C устройство</translation>
 <translation id="3446274660183028131">Моля, стартирайте Parallels Desktop, за да инсталирате Windows.</translation>
@@ -2829,6 +2837,7 @@
 <translation id="4312866146174492540">Блокиране (по подразбиране)</translation>
 <translation id="4314815835985389558">Управление на синхронизирането</translation>
 <translation id="4316850752623536204">Уебсайт на програмиста</translation>
+<translation id="4317820549299924617">Потвърждението не бе успешно</translation>
 <translation id="4320177379694898372">Няма връзка с интернет</translation>
 <translation id="4322394346347055525">Затваряне на другите раздели</translation>
 <translation id="4324577459193912240">Файлът е непълен</translation>
@@ -3675,6 +3684,7 @@
 <translation id="5362741141255528695">Изберете файла с личен ключ.</translation>
 <translation id="5363109466694494651">Powerwash и възстановяване</translation>
 <translation id="5365881113273618889">Избраната от вас папка съдържа поверителни файлове. Наистина ли искате да предоставите на <ph name="APP_NAME" /> постоянен достъп за записване в тази папка?</translation>
+<translation id="536638840841140142">Няма</translation>
 <translation id="5368720394188453070">Телефонът ви е заключен. Отключете го, за да влезете.</translation>
 <translation id="5368779022775404937">Влизане в домейна <ph name="REALM" /></translation>
 <translation id="5369491905435686894">Активиране на ускоряването на мишката</translation>
@@ -4832,6 +4842,7 @@
 <translation id="6748465660675848252">Може да продължите, но само синхронизираните ви данни и настройки ще бъдат възстановени. Цялата локална информация ще бъде заличена.</translation>
 <translation id="6749006854028927059">Сайтовете не могат да използват „бисквитките“ ви, за да следят активността ви при сърфиране в различни сайтове, например за да персонализират реклами. Функциите в някои от тях може да не работят правилно.</translation>
 <translation id="6750757184909117990">Деактивиране на мобилната мрежа</translation>
+<translation id="6750946710563435348">Използване на друго потребителско име</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Инкогнито)</translation>
 <translation id="6757101664402245801">URL адресът е копиран</translation>
 <translation id="6758056191028427665">Уведомете ни как се справяме.</translation>
@@ -5200,6 +5211,7 @@
 <translation id="7191159667348037">Неизвестен принтер (USB)</translation>
 <translation id="7193051357671784796">Това приложение бе добавено от организацията ви. Рестартирайте го, за да завършите инсталирането му.</translation>
 <translation id="7193374945610105795">Няма запазени пароли за <ph name="ORIGIN" /></translation>
+<translation id="7196020411877309443">Защо се показва това?</translation>
 <translation id="7196913789568937443">Създаване на резервно копие в Google Диск. По всяко време можете лесно да възстановите данните на устройството или да го замените с друго. Резервните ви копия включват данните на приложенията, качени са в Google и са шифровани посредством паролата за профила ви в Google. <ph name="BEGIN_LINK1" />Научете повече<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Възползвайте се от интелигентните функции на Търсене и Google всеки път, когато сърфирате</translation>
 <translation id="7197632491113152433">Открихме <ph name="NUMBER_OF_APPS" /> приложения от профила ви, които могат да се използват на това устройство.</translation>
@@ -5350,6 +5362,7 @@
 <translation id="7377451353532943397">Достъпът до сензорите да продължи да се блокира</translation>
 <translation id="73786666777299047">Отваряне на уеб магазина на Chrome</translation>
 <translation id="7378812711085314936">Получаване на връзка за пренос на данни</translation>
+<translation id="7380622428988553498">Името на устройството съдържа невалидни знаци</translation>
 <translation id="7380768571499464492">Актуализирането на <ph name="PRINTER_NAME" /> завърши</translation>
 <translation id="7384687527486377545">Автоматично повторение за клавиатурата</translation>
 <translation id="7385854874724088939">При опита за печат нещо се обърка.  Моля, проверете принтера си и опитайте отново.</translation>
@@ -5398,6 +5411,7 @@
 <translation id="7434969625063495310">Сървърът за отпечатване не бе добавен. Моля, проверете конфигурацията му и опитайте отново.</translation>
 <translation id="7436921188514130341">Ужас! При преименуването възникна грешка.</translation>
 <translation id="7438976808740265764">Поддръжката на Flash Player ще бъде прекратена след декември 2020 г.</translation>
+<translation id="7439519621174723623">Добавете име на устройство, за да продължите</translation>
 <translation id="7441736921018636843">За да промените тази настройка, <ph name="BEGIN_LINK" />нулирайте синхронизирането<ph name="END_LINK" />, така че да премахнете съответния си пропуск</translation>
 <translation id="7441830548568730290">Други потребители</translation>
 <translation id="7442465037756169001">Хардуерът Hangouts Meet е готов за настройване.</translation>
@@ -5639,6 +5653,7 @@
 <translation id="7717134585801378441">Сайтовете могат да извеждат запитвания за достъп до местоположението ви (препоръчително)</translation>
 <translation id="7717845620320228976">Проверка за актуализации</translation>
 <translation id="7719367874908701697">Промяна на мащаба на страницата</translation>
+<translation id="7719588063158526969">Името на устройството е твърде дълго</translation>
 <translation id="7721179060400456005">Разрешаване на прозорците да се простират на няколко екрана</translation>
 <translation id="7722040605881499779">Необходимо място за актуализацията: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">Изрязване</translation>
@@ -5943,6 +5958,7 @@
 <translation id="8049705080247101012">Google сигнализира, че разширението <ph name="EXTENSION_NAME" /> е злонамерено, и инсталирането бе предотвратено</translation>
 <translation id="8049948037269924837">Обратно превъртане със сензорния панел</translation>
 <translation id="8050038245906040378">Подписване от Microsoft на код за търговски цели</translation>
+<translation id="8050191834453426339">Повторно потвърждаване</translation>
 <translation id="8051193500142930381">Функциите, за които е необходима камера, няма да работят</translation>
 <translation id="8051390370038326517">Пълният контрол над MIDI устройствата да е разрешен винаги за <ph name="HOST" /></translation>
 <translation id="8053278772142718589">Файлове PKCS #12</translation>

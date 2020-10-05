@@ -134,6 +134,7 @@
 <translation id="1453974140256777690">Το κείμενο που επικολλάτε ή επισυνάπτετε αποστέλλεται στο Google Cloud ή σε τρίτα μέρη για ανάλυση. Για παράδειγμα, ενδέχεται να σαρώνεται για ευαίσθητα δεδομένα.</translation>
 <translation id="1455413310270022028">Γόμα</translation>
 <translation id="1462245070427461050">JIS B9</translation>
+<translation id="1462951478840426066">Χρησιμοποιεί τις γραμματοσειρές στον υπολογιστή σας, έτσι ώστε να μπορείτε να δημιουργείτε περιεχόμενο υψηλής πιστότητας.</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">Αριστερά</translation>
 <translation id="1472675084647422956">Εμφάνιση περισσότερων</translation>
@@ -221,6 +222,7 @@
 <translation id="17513872634828108">Ανοικτές καρτέλες</translation>
 <translation id="1752021286346845558">Γραμματοκιβώτιο 8</translation>
 <translation id="1753706481035618306">Αριθμός σελίδας</translation>
+<translation id="1757773103848038814">Γραμματοσειρά Monospace</translation>
 <translation id="1763864636252898013">Ο διακομιστής δεν μπόρεσε να αποδείξει ότι είναι <ph name="DOMAIN" />. Το πιστοποιητικό ασφαλείας του δεν θεωρείται έμπιστο από το λειτουργικό σύστημα της συσκευής σας. Αυτό μπορεί να οφείλεται σε λανθασμένη ρύθμιση ή σε κάποιον τρίτο που επιτίθεται στη σύνδεσή σας.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Δοκιμάστε να εκτελέσετε τον Διαγνωστικό έλεγχο δικτύου των Windows<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">Ο διακομιστής στον οποίο μεταβαίνετε, <ph name="ORIGIN" />, έχει ορίσει μια κεφαλίδα
@@ -594,6 +596,7 @@
 <translation id="3395827396354264108">Τρόπος παραλαβής</translation>
 <translation id="3399952811970034796">Διεύθυνση παράδοσης</translation>
 <translation id="3402261774528610252">Η σύνδεση που χρησιμοποιήθηκε για τη φόρτωση αυτού του ιστοτόπου χρησιμοποίησε το TLS 1.0 ή το TLS 1.1, τα οποία έχουν καταργηθεί και θα απενεργοποιηθούν στο μέλλον. Μετά την απενεργοποίησή τους, οι χρήστες δεν θα μπορούν να φορτώσουν αυτόν τον ιστότοπο. Θα πρέπει να ενεργοποιηθεί η έκδοση TLS 1.2 ή μεταγενέστερη στον διακομιστή.</translation>
+<translation id="3411120537985775570">Η επικόλληση από <ph name="ORIGIN_NAME" /> σε αυτήν την τοποθεσία έχει αποκλειστεί από τον διαχειριστή.</translation>
 <translation id="3414952576877147120">Μέγεθος:</translation>
 <translation id="3417660076059365994">Τα αρχεία που ανεβάζετε ή επισυνάπτετε αποστέλλονται στο Google Cloud ή σε τρίτα μέρη για ανάλυση. Για παράδειγμα, ενδέχεται να σαρώνονται για ευαίσθητα δεδομένα ή κακόβουλο λογισμικό.</translation>
 <translation id="3422248202833853650">Δοκιμάστε να εξέλθετε από τα άλλα προγράμματα για να απελευθερώσετε μνήμη.</translation>
@@ -632,6 +635,7 @@
 <translation id="3532844647053365774">Ο ιστότοπος <ph name="HOST" /> επιθυμεί να χρησιμοποιήσει το μικρόφωνο σας</translation>
 <translation id="3533328374079021623">Γραμματοκιβώτιο 5</translation>
 <translation id="3539171420378717834">Διατήρηση αντιγράφου αυτής της κάρτας σε αυτήν τη συσκευή</translation>
+<translation id="3552297013052089404">Γραμματοσειρά Sans-serif</translation>
 <translation id="3558573058928565255">Ημέρα</translation>
 <translation id="3566021033012934673">Η σύνδεσή σας δεν είναι ιδιωτική</translation>
 <translation id="3567778190852720481">Δεν είναι δυνατή η εγγραφή με εταιρικό λογαριασμό (ο εταιρικός λογαριασμός δεν είναι κατάλληλος).</translation>
@@ -831,6 +835,7 @@
 <translation id="4277028893293644418">Επαναφορά κωδικού πρόσβασης</translation>
 <translation id="4279811152705618813">Η συσκευή <ph name="DEVICE_TYPE" /> είναι διαχειριζόμενη από τον οργανισμό <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Αυτή η κάρτα αποθηκεύτηκε στον Λογαριασμό σας Google}other{Αυτές οι κάρτες αποθηκεύτηκαν στον Λογαριασμό σας Google}}</translation>
+<translation id="4297502707443874121">Μικρογραφία για τη σελίδα <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Επέκταση</translation>
 <translation id="4300675098767811073">Πολλαπλό τρύπημα στα δεξιά</translation>
 <translation id="4302965934281694568">Chou3 (Φάκελος)</translation>
@@ -1001,6 +1006,7 @@
 <translation id="503069730517007720">Απαιτείται πιστοποιητικό ρίζας για το λογισμικό "<ph name="SOFTWARE_NAME" />" αλλά δεν έχει εγκατασταθεί. Ο διαχειριστής IT πρέπει να εξετάσει τις οδηγίες διαμόρφωσης για το λογισμικό "<ph name="SOFTWARE_NAME" />", προκειμένου να διορθώσει αυτό το πρόβλημα. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Σχετικά με τη Google Μετάφραση</translation>
 <translation id="503498442187459473">Ο ιστότοπος <ph name="HOST" /> επιθυμεί να χρησιμοποιήσει την κάμερα και το μικρόφωνο σας</translation>
+<translation id="5039762155821394373">Μέγεθος γραμματοσειράς</translation>
 <translation id="5039804452771397117">Επιτρέπεται</translation>
 <translation id="5040262127954254034">Απόρρητο</translation>
 <translation id="5043480802608081735">Σύνδεσμος που αντιγράψατε</translation>
@@ -1230,6 +1236,7 @@
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Άνοιγμα <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Δεν είναι δυνατή η εγγραφή με λογαριασμό καταναλωτή (διατίθεται σχετική άδεια).</translation>
+<translation id="5963413905009737549">Ενότητα</translation>
 <translation id="5967592137238574583">Επεξεργασία στοιχείων επικοινωνίας</translation>
 <translation id="5967867314010545767">Κατάργηση από το ιστορικό</translation>
 <translation id="5975083100439434680">Σμίκρυνση</translation>
@@ -1266,6 +1273,7 @@
 <translation id="6051221802930200923">Δεν μπορείτε να επισκεφτείτε το <ph name="SITE" /> αυτήν τη στιγμή επειδή ο ιστότοπος χρησιμοποιεί certificate pinning (κλείδωμα πιστοποιητικών). Τα σφάλματα δικτύου και οι επιθέσεις είναι συνήθως προσωρινά, συνεπώς αυτή η σελίδα πιθανότατα θα λειτουργήσει αργότερα.</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">Κοινοποίηση της παρουσίας σας;</translation>
+<translation id="6057359309778282021">Ο διαχειριστής έχει αποκλείσει την κοινοποίηση αυτού του περιεχομένου από <ph name="ORIGIN_NAME" /> σε <ph name="VM_NAME" /></translation>
 <translation id="6058977677006700226">Χρήση των καρτών σας σε όλες τις συσκευές σας;</translation>
 <translation id="6059925163896151826">Συσκευές USB</translation>
 <translation id="6060009363608157444">Μη έγκυρη λειτουργία DnsOverHttps.</translation>
@@ -1315,6 +1323,7 @@
         <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">Δεν είναι δυνατή η παράδοση σε αυτήν τη διεύθυνση. Επιλέξτε μια άλλη διεύθυνση.</translation>
 <translation id="6282194474023008486">Ταχυδρομικός κώδικας</translation>
+<translation id="6289939620939689042">Χρώμα σελίδας</translation>
 <translation id="6290238015253830360">Τα προτεινόμενα άρθρα σας εμφανίζονται εδώ</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Διακοπή Βοηθού Google στο Chrome</translation>
@@ -1471,6 +1480,7 @@
 <translation id="7004583254764674281">Χρησιμοποιήστε το Windows Hello για πιο γρήγορη επιβεβαίωση καρτών</translation>
 <translation id="7006930604109697472">Αποστολή ούτως ή άλλως</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7014741021609395734">Επίπεδο εστίασης</translation>
 <translation id="7016992613359344582">Αυτές οι χρεώσεις μπορεί να είναι εφάπαξ ή επαναλαμβανόμενες και ίσως να μην είναι εμφανείς.</translation>
 <translation id="7029809446516969842">Κωδ. πρόσβασης</translation>
 <translation id="7031646650991750659">Ποιες εφαρμογές Google Play έχετε εγκαταστήσει</translation>
@@ -1873,6 +1883,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Δεν αντιστοιχούν κωδικοί πρόσβασης. Εμφάνιση όλων των αποθηκευμένων κωδικών πρόσβασης.</translation>
 <translation id="8625384913736129811">Αποθήκευση αυτής της κάρτας στη συγκεκριμένη συσκευή</translation>
+<translation id="8657078576661269990">Ο διαχειριστής έχει αποκλείσει την κοινοποίηση αυτού του περιεχομένου από <ph name="ORIGIN_NAME" /> σε <ph name="VM_NAME_1" /> και <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Σύνοψη παραγγελίας, <ph name="TOTAL_LABEL" />, Περισσότερες λεπτομέρειες</translation>
 <translation id="867224526087042813">Υπογραφή</translation>
 <translation id="8676424191133491403">Χωρίς καθυστέρηση</translation>
@@ -1885,6 +1896,7 @@
 <translation id="8699041776323235191">Συσκευή HID</translation>
 <translation id="8703575177326907206">Η σύνδεσή σας με τον τομέα <ph name="DOMAIN" /> δεν είναι κρυπτογραφημένη.</translation>
 <translation id="8705331520020532516">Σειριακός αριθμός</translation>
+<translation id="8710842507289500830">Στιλ γραμματοσειράς</translation>
 <translation id="8718314106902482036">Η πληρωμή δεν ολοκληρώθηκε</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, πρόταση αναζήτησης</translation>
 <translation id="8719528812645237045">Πολλαπλό τρύπημα στο επάνω μέρος</translation>
@@ -2005,6 +2017,7 @@
 <translation id="9191834167571392248">Τρύπημα κάτω αριστερά</translation>
 <translation id="9205078245616868884">Τα δεδομένα σας είναι κρυπτογραφημένα με τη δική σας φράση πρόσβασης συγχρονισμού. Πληκτρολογήστε την για να ξεκινήσει ο συγχρονισμός.</translation>
 <translation id="9207861905230894330">Αποτυχία προσθήκης άρθρου.</translation>
+<translation id="9213433120051936369">Προσαρμογή της εμφάνισης</translation>
 <translation id="9215416866750762878">Μια εφαρμογή παρεμποδίζει την ασφαλή σύνδεση του Chrome σε αυτόν τον ιστότοπο</translation>
 <translation id="9219103736887031265">Εικόνες</translation>
 <translation id="933712198907837967">Diners Club</translation>

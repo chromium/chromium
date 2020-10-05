@@ -117,7 +117,6 @@
 <translation id="2208158072373999562">فایل بایگانی زیپ</translation>
 <translation id="2225536596944493418">مطمئنید می‌خواهید <ph name="NUMBER_OF_ITEMS" /> مورد را حذف کنید؟</translation>
 <translation id="2230062665678605299">پوشه «<ph name="FOLDER_NAME" />» را نمی‌توان ایجاد کرد.<ph name="ERROR_MESSAGE" /></translation>
-<translation id="2270413998793223379">سانسکریت</translation>
 <translation id="2275059641601412272">منتقل شد.</translation>
 <translation id="2278988676849463018">صفحه‌کلید کانارا (آوایی)</translation>
 <translation id="2287742181953707290">پرتغالی با صفحه‌کلید بین‌المللی آمریکایی رایانه</translation>
@@ -283,6 +282,7 @@
 <translation id="4072248638558688893">صفحه‌‌کلید تامیل (آوایی)</translation>
 <translation id="4124935795427217608">تک‌شاخ</translation>
 <translation id="4158739975813877944">باز کردن فهرست پخش</translation>
+<translation id="4159731583141908892"><ph name="FILE_NAME" /> منتقل شد.</translation>
 <translation id="418179967336296930">‏صفحه‌کلید آوایی روسی (YaZHert)</translation>
 <translation id="4193154014135846272">‏سند Google </translation>
 <translation id="4195249722193633765">‏نصب برنامه با Linux (بتا)</translation>
@@ -318,6 +318,7 @@
 <translation id="4582497162516204941">‏نصب با Linux (بتا)</translation>
 <translation id="4594543368593301662">درحال نمایش نتایج برای <ph name="SEARCH_TERM" />.</translation>
 <translation id="4603392156942865207">درحال کپی کردن <ph name="FILE_NAME" /> در <ph name="FOLDER_NAME" /></translation>
+<translation id="4627439232948440198">سانسکریت</translation>
 <translation id="4631887759990505102">هنرمند</translation>
 <translation id="4656293982926141856">این رایانه</translation>
 <translation id="4669606053856530811">اگر این موارد با اعضای «<ph name="SOURCE_NAME" />» هم‌رسانی نشوند، دسترسی را از دست خواهند داد.</translation>
@@ -618,6 +619,7 @@
 <translation id="7693909743393669729">با قالب‌بندی درایو همه داده‌های ذخیره‌شده در آن پاک می‌شود و همه پارتیشن‌های موجود برداشته می‌شوند، ازجمله پارتیشن‌هایی که ممکن است نمایان نباشند. این کنش واگردشدنی نیست.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> قالب‌بندی نشد</translation>
 <translation id="770015031906360009">یونانی</translation>
+<translation id="7705251383879779343"><ph name="FILE_NAME" /> کپی شد.</translation>
 <translation id="7706319470528945664">صفحه‌کلید پرتغالی</translation>
 <translation id="7711920809702896782">اطلاعات تصویر</translation>
 <translation id="7724603315864178912">برش</translation>

@@ -113,6 +113,7 @@
 <translation id="2049240716062114887">เปลี่ยนชื่อเดสก์ท็อปเป็น <ph name="DESK_NAME" /> แล้ว</translation>
 <translation id="2050339315714019657">แนวตั้ง</translation>
 <translation id="2067602449040652523">ความสว่างของแป้นพิมพ์</translation>
+<translation id="2074759828767813253">ภาพหน้าจอและการดาวน์โหลดล่าสุด</translation>
 <translation id="2083190527011054446">ราตรีสวัสดิ์ <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">ไม่ได้เชื่อมต่อกับเครือข่าย</translation>
 <translation id="2126242104232412123">โต๊ะทำงานใหม่</translation>
@@ -197,7 +198,6 @@
 <translation id="2996462380875591307">เปิดใช้แว่นขยายหน้าจอบางส่วนแล้ว กด Ctrl+Search+D อีกครั้งเพื่อสลับเป็นปิด</translation>
 <translation id="3000461861112256445">เสียงแบบโมโน</translation>
 <translation id="3009178788565917040">เอาต์พุต</translation>
-<translation id="3025081209054535615">เลิกตรึงตัวควบคุมสื่อส่วนกลางจากชั้นวาง</translation>
 <translation id="3033545621352269033">เปิด</translation>
 <translation id="3038571455154067151">โปรดป้อนรหัสการเข้าถึง Family Link ของผู้ปกครองเพื่อลงชื่อเข้าใช้</translation>
 <translation id="3045488863354895414">สวัสดียามบ่าย</translation>
@@ -620,6 +620,7 @@
 <translation id="7526573455193969409">อาจมีการตรวจสอบเครือข่าย</translation>
 <translation id="7536035074519304529">ที่อยู่ IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">ได้เวลาเข้านอนแล้ว</translation>
+<translation id="7551643184018910560">ตรึงที่ชั้นวาง</translation>
 <translation id="7561982940498449837">ปิดเมนู</translation>
 <translation id="7564874036684306347">การย้ายหน้าต่างไปยังเดสก์ท็อปอื่นอาจส่งผลให้ลักษณะการทำงานผิกปกติ การแจ้งเตือน หน้าต่าง และกล่องโต้ตอบที่ตามมาอาจแสดงแยกส่วนในเดสก์ท็อปทั้งสอง</translation>
 <translation id="7568294522609223312">ปิดการคลิกอัตโนมัติ</translation>
@@ -700,7 +701,6 @@
 <translation id="8297006494302853456">อ่อน</translation>
 <translation id="8308637677604853869">เมนูก่อนหน้า</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">ตรึงตัวควบคุมสื่อส่วนกลางกับชั้นวาง</translation>
 <translation id="8351131234907093545">สร้างโน้ต</translation>
 <translation id="8371779926711439835">ไปข้างหน้าทีละตัวอักษร</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> นี้และโทรศัพท์จะเชื่อมต่อกันโดยอัตโนมัติ</translation>

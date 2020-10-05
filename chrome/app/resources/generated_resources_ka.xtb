@@ -228,6 +228,7 @@
 <translation id="1249643471736608405"><ph name="PLUGIN_NAME" /> დაიბლოკა, რადგან ის მოძველებულია</translation>
 <translation id="1251366534849411931">მოსალოდნელი იყო გამხსნელი ფიგურული ფრჩხილი: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">ამ მოქმედებით გასუფთავდება საიტებისა და დაინსტალირებული აპების მიერ შენახული მონაცემების <ph name="TOTAL_USAGE" /></translation>
+<translation id="125220115284141797">ნაგულისხმევი</translation>
 <translation id="1252987234827889034">წარმოიქმნა პროფილთან დაკავშირებული შეცდომა</translation>
 <translation id="1254593899333212300">პირდაპირი ინტერნეტ კავშირი</translation>
 <translation id="1259152067760398571">უსაფრთხოების შემოწმება შესრულდა გუშინ</translation>
@@ -319,6 +320,7 @@
 <translation id="1361872463926621533">ხმის დაკვრა გაშვებისას</translation>
 <translation id="1362865166188278099">მექანიკური პრობლემაა. შეამოწმეთ პრინტერი</translation>
 <translation id="1363585519747660921">USB პრინტერი საჭიროებს კონფიგურაციას</translation>
+<translation id="1364664799726141130">ანგარიშს, რომელიც დაადასტურეთ, არ აქვს ამ მოწყობილობაზე წვდომის უფლება. სესიის განსაბლოკად დარწმუნდით, რომ <ph name="ACCOUNT" />-ის დადასტურებას ცდილობთ.</translation>
 <translation id="1365180424462182382">თქვენს <ph name="BEGIN_LINK" />ბრაუზერს მართავს<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1367951781824006909">აირჩიეთ ფაილი</translation>
 <translation id="1369149969991017342">გადამრთველებით წვდომა (მართეთ კომპიუტერი მხოლოდ რამდენიმე გადამრთველის მეშვეობით)</translation>
@@ -428,6 +430,7 @@
 <translation id="1486096554574027028">პაროლების ძებნა</translation>
 <translation id="1487335504823219454">ჩართულია — მორგებული პარამეტრები</translation>
 <translation id="1489664337021920575">სხვა ვარიანტის არჩევა</translation>
+<translation id="1492417797159476138">მომხმარებლის ეს სახელი ამ საიტისთვის უკვე შეინახეთ</translation>
 <translation id="1493892686965953381">ელოდება <ph name="LOAD_STATE_PARAMETER" />-ს…</translation>
 <translation id="1495486559005647033"><ph name="NUM_PRINTERS" /> სხვა ხელმისაწვდომი მოწყობილობა.</translation>
 <translation id="1495677929897281669">ჩანართზე დაბრუნება</translation>
@@ -653,6 +656,7 @@
 <translation id="173628468822554835">გასაგებია. ნაგულისხმევად, თქვენ მიერ მონახულებული ახალი საიტები შეტყობინებებს არ გამოგზავნით.</translation>
 <translation id="1736419249208073774">მიმოხილვა</translation>
 <translation id="1737968601308870607">ფაილის შეცდომა</translation>
+<translation id="174123615272205933">მორგებული</translation>
 <translation id="1741314857973421784">გაგრძელება</translation>
 <translation id="1743570585616704562">არ არის ამოცნობილი</translation>
 <translation id="1743970419083351269">ჩამოტვირთვების ზოლის დახურვა</translation>
@@ -687,6 +691,7 @@
 <translation id="1776712937009046120">მომხმარებლის დამატება</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
 <translation id="1778457539567749232">წაუკითხავად მონიშვნა</translation>
+<translation id="1779468444204342338">მინიმალური</translation>
 <translation id="1779652936965200207">შეიყვანეთ ეს კოდი „<ph name="DEVICE_NAME" />“-ში:</translation>
 <translation id="177989070088644880">აპი (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">ჯგუფის დახურვა</translation>
@@ -1461,6 +1466,7 @@
 <translation id="2688196195245426394">შეცდომა სერვერზე მოწყობილობის დარეგისტრირებისას: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">ენის ვარიანტების ჩვენება</translation>
 <translation id="2691385045260836588">მოდელი</translation>
+<translation id="2691440343905273290">შეყვანის პარამეტრების შეცვლა</translation>
 <translation id="2693176596243495071">სამწუხაროდ, მოხდა უცნობი შეცდომა. გთხოვთ, ცადოთ მოგვიანებით ან დაუკავშირდეთ თქვენს ადმინისტრატორს, თუ პრობლემა არ მოგვარდება.</translation>
 <translation id="2695749433451188613">Internet Printing Protocol (HTTPS)</translation>
 <translation id="2699911226086014512">PIN-კოდთან დაკავშირებული ოპერაცია ვერ შესრულდა. კოდი: <ph name="RETRIES" />.</translation>
@@ -1883,6 +1889,7 @@
 <translation id="3192947282887913208">აუდიო ფაილები</translation>
 <translation id="3199127022143353223">სერვერები</translation>
 <translation id="3200310363903241381">{COUNT,plural, =1{Chrome გირჩევთ, ახლავე შეამოწმოთ ეს პაროლი}other{Chrome გირჩევთ, ახლავე შეამოწმოთ ეს პაროლები}}</translation>
+<translation id="3201154330231437478">უკუგადაადგილების ჩართვა. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="3201422919974259695">აქ გამოჩნდება ხელმისაწვდომი USB-მოწყობილობები.</translation>
 <translation id="3202131003361292969">მდებარეობა</translation>
 <translation id="3202173864863109533">ამ ჩანართის აუდიო გამორთულია.</translation>
@@ -2078,6 +2085,7 @@
 <translation id="3440663250074896476">სხვა ქმედებები „<ph name="BOOKMARK_NAME" />“-სთვის</translation>
 <translation id="3440761377721825626">ნებართვის მოთხოვნა, როცა კომპიუტერზე წვდომის მისაღებად, საიტს დანამატის გამოყენება დასჭირდება</translation>
 <translation id="3441653493275994384">ეკრანი</translation>
+<translation id="3441663102605358937">ამ ანგარიშის დასადასტურებლად ხელახლა შედით <ph name="ACCOUNT" />-ში</translation>
 <translation id="3445047461171030979">Google ასისტენტის სწრაფი პასუხები</translation>
 <translation id="3445925074670675829">USB-C მოწყობილობა</translation>
 <translation id="3446274660183028131">Windows-ის ინსტალაციისთვის გაუშვით Parallels Desktop.</translation>
@@ -2829,6 +2837,7 @@
 <translation id="4312866146174492540">დაბლოკვა (ნაგულისხმევი)</translation>
 <translation id="4314815835985389558">სინქრონიზაციის მართვა</translation>
 <translation id="4316850752623536204">დეველოპერის საიტი</translation>
+<translation id="4317820549299924617">დადასტურება ვერ მოხერხდა</translation>
 <translation id="4320177379694898372">ინტერნეტთან კავშირი არ არის</translation>
 <translation id="4322394346347055525">სხვა ჩანართების დახურვა</translation>
 <translation id="4324577459193912240">ფაილი არასრულია</translation>
@@ -3675,6 +3684,7 @@
 <translation id="5362741141255528695">აირჩიეთ პირადი გასაღების ფაილი.</translation>
 <translation id="5363109466694494651">Powerwash-ის განხორციელება და წინა ვერსიის დაბრუნება</translation>
 <translation id="5365881113273618889">თქვენ მიერ არჩეული საქაღალდე შეიცავს კონფიდენციალურ ფაილებს. ნამდვილად გსურთ, მიანიჭოთ „<ph name="APP_NAME" />“-ს ამ საქაღალდეში ჩაწერის მუდმივი ნებართვა?</translation>
+<translation id="536638840841140142">არცერთი</translation>
 <translation id="5368720394188453070">ტელეფონი დაბლოკილია. განბლოკვისათვის შეიყვანეთ.</translation>
 <translation id="5368779022775404937"><ph name="REALM" />-ში შესვლა</translation>
 <translation id="5369491905435686894">მაუსის აჩქარების ჩართვა</translation>
@@ -4831,6 +4841,7 @@
 <translation id="6748465660675848252">შეგიძლიათ გააგრძელოთ, მაგრამ მოხდება მხოლოდ თქვენი სინქრონიზებული მონაცემებისა და პარამეტრების აღდგენა. მთელი ლოკალური მონაცემები დაიკარგება.</translation>
 <translation id="6749006854028927059">საიტები ვერ გამოიყენებს ქუქი-ჩანაწერებს სხვადასხვა საიტის თქვენ მიერ დათვალიერების აქტივობის სანახავად, მაგალითად, რეკლამის პერსონალიზების მიზნით. ზოგიერთი საიტის ფუნქციებმა შეიძლება არასათანადოდ იმუშაოს.</translation>
 <translation id="6750757184909117990">მობილური კავშირის გათიშვა</translation>
+<translation id="6750946710563435348">მომხმარებლის სხვა სახელის გამოყენება</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (ინკოგნიტო)</translation>
 <translation id="6757101664402245801">URL დაკოპირდა</translation>
 <translation id="6758056191028427665">შეგვატყობინეთ, როგორ ვმუშაობთ.</translation>
@@ -5199,6 +5210,7 @@
 <translation id="7191159667348037">უცნობი პრინტერი (USB)</translation>
 <translation id="7193051357671784796">ეს აპი დაამატა თქვენმა ორგანიზაციამ. ინსტალაციის დასასრულებლად საჭიროა მისი გადატვირთვა.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" />-სთვის შენახული პაროლები არ არის</translation>
+<translation id="7196020411877309443">რატომ ვხედავ ამას?</translation>
 <translation id="7196913789568937443">სარეზერვო კოპირება Google Drive-ში. მარტივად აღადგინეთ თქვენი მონაცემები ან შეცვალეთ მოწყობილობები ნებისმიერ დროს. თქვენი სარეზერვო ასლი მოიცავს აპების მონაცემებს. სარეზერვო ასლები აიტვირთება Google-ში და დაიშიფრება თქვენი Google ანგარიშის პაროლით. <ph name="BEGIN_LINK1" />შეიტყვეთ მეტი<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">ისარგებლეთ Google Search-ითა და Google-ის გონიერი ფუნქციებით ვების ყოველი დათვალიერებისას</translation>
 <translation id="7197632491113152433">თქვენს ანგარიშში მოიძებნა <ph name="NUMBER_OF_APPS" /> აპი, რომელიც შეგიძლიათ გამოიყენოთ ამ მოწყობილობაზე.</translation>
@@ -5349,6 +5361,7 @@
 <translation id="7377451353532943397">სენსორებზე წვდომის აკრძალვის გაგრძელება</translation>
 <translation id="73786666777299047">Chrome Web Store-ის გახსნა</translation>
 <translation id="7378812711085314936">მობილური ინტერნეტით სარგებლობა</translation>
+<translation id="7380622428988553498">მოწყობილობის სახელი შეიცავს არასწორ სიმბოლოებს</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> განახლდა</translation>
 <translation id="7384687527486377545">შეყვანის ავტომატურად გამეორება კლავიატურაზე</translation>
 <translation id="7385854874724088939">ბეჭდვისას პრობლემა წარმოიქმნა. შეამოწმეთ პრინტერი და ხელახლა სცადეთ.</translation>
@@ -5397,6 +5410,7 @@
 <translation id="7434969625063495310">ბეჭდვის სერვერის დამატება ვერ მოხერხდა. შეამოწმეთ სერვერის კონფიგურაცია და ცადეთ ხელახლა.</translation>
 <translation id="7436921188514130341">სამწუხაროდ, გადარქმევა ვერ მოხერხდა შეცდომის გამო.</translation>
 <translation id="7438976808740265764">Flash Player აღარ იქნება მხარდაჭერილი 2020 წლის დეკემბრის შემდეგ.</translation>
+<translation id="7439519621174723623">გასაგრძელებლად დაამატეთ მოწყობილობის სახელი</translation>
 <translation id="7441736921018636843">ამ პარამეტრის შესაცვლელად <ph name="BEGIN_LINK" />გადააყენეთ სინქრონიზაცია<ph name="END_LINK" />, რომ ამოშალოთ სინქრონიზაციის საიდუმლო ფრაზა</translation>
 <translation id="7441830548568730290">სხვა მომხმარებლები</translation>
 <translation id="7442465037756169001">Hangouts Meet hardware მზად არის დასაყენებლად.</translation>
@@ -5638,6 +5652,7 @@
 <translation id="7717134585801378441">საიტებს შეუძლია თქვენი მდებარეობის თხოვნა (რეკომენდებული)</translation>
 <translation id="7717845620320228976">განახლებების შემოწმება</translation>
 <translation id="7719367874908701697">გვერდის მასშტაბი</translation>
+<translation id="7719588063158526969">მოწყობილობის სახელი ზედმეტად გრძელია</translation>
 <translation id="7721179060400456005">ფანჯრებისთვის ეკრანების გადაფარვის დაშვება</translation>
 <translation id="7722040605881499779">განახლებისთვის საჭიროა: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">ამოჭრა</translation>
@@ -5941,6 +5956,7 @@
 <translation id="8049705080247101012">Google-მა მონიშნა „<ph name="EXTENSION_NAME" />“, როგორც საზიანო და აკრძალა მისი ინსტალაცია</translation>
 <translation id="8049948037269924837">სენსორული პანელით უკუგადაადგილება</translation>
 <translation id="8050038245906040378">Microsoft-ის კომერციული კოდის ხელმოწერა</translation>
+<translation id="8050191834453426339">ხელახლა დადასტურება</translation>
 <translation id="8051193500142930381">ფუნქციები, რომლებიც კამერას საჭიროებს, არ იმუშავებს</translation>
 <translation id="8051390370038326517"><ph name="HOST" />-ისთვის MIDI მოწყობილობების სრული კონტროლის ყოველთვის დაშვება</translation>
 <translation id="8053278772142718589">PKCS #12 ფაილები</translation>

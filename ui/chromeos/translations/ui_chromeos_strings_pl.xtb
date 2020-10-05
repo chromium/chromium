@@ -117,7 +117,6 @@
 <translation id="2208158072373999562">Archiwum ZIP</translation>
 <translation id="2225536596944493418">Czy na pewno chcesz usunąć te elementy (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Nie można utworzyć folderu „<ph name="FOLDER_NAME" />”. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2270413998793223379">sanskryt</translation>
 <translation id="2275059641601412272">Przeniesiono.</translation>
 <translation id="2278988676849463018">Klawiatura kannada (fonetyczna)</translation>
 <translation id="2287742181953707290">portugalski z klawiaturą amerykańską międzynarodową (PC)</translation>
@@ -283,6 +282,7 @@
 <translation id="4072248638558688893">Klawiatura tamilska (fonetyczna)</translation>
 <translation id="4124935795427217608">Jednorożec</translation>
 <translation id="4158739975813877944">Otwórz listę odtwarzania</translation>
+<translation id="4159731583141908892">Plik <ph name="FILE_NAME" /> został przeniesiony.</translation>
 <translation id="418179967336296930">Klawiatura rosyjska – fonetyczna (YaZHert)</translation>
 <translation id="4193154014135846272">Dokument Google</translation>
 <translation id="4195249722193633765">Zainstaluj aplikację za pomocą Linuksa (Beta)</translation>
@@ -318,6 +318,7 @@
 <translation id="4582497162516204941">Zainstaluj za pomocą Linuksa (Beta)</translation>
 <translation id="4594543368593301662">Wyświetlam wyniki dla: <ph name="SEARCH_TERM" />.</translation>
 <translation id="4603392156942865207">Kopiuję plik <ph name="FILE_NAME" /> do folderu <ph name="FOLDER_NAME" /></translation>
+<translation id="4627439232948440198">Sanskryt</translation>
 <translation id="4631887759990505102">Wykonawca</translation>
 <translation id="4656293982926141856">Ten komputer</translation>
 <translation id="4669606053856530811">Osoby z uprawnieniami do: „<ph name="SOURCE_NAME" />” utracą dostęp do tych elementów, chyba że zostaną one im udostępnione.</translation>
@@ -618,6 +619,7 @@
 <translation id="7693909743393669729">Sformatowanie dysku spowoduje usunięcie wszystkich zapisanych na nim danych i wszystkich znajdujących się na nim partycji, w tym partycji niewidocznych. Tej czynności nie będzie można cofnąć.</translation>
 <translation id="7695430100978772476">Nie udało się sformatować: <ph name="DRIVE_NAME" /></translation>
 <translation id="770015031906360009">Grecki</translation>
+<translation id="7705251383879779343">Plik <ph name="FILE_NAME" /> został skopiowany.</translation>
 <translation id="7706319470528945664">Klawiatura portugalska</translation>
 <translation id="7711920809702896782">Informacje o pliku graficznym</translation>
 <translation id="7724603315864178912">Wytnij</translation>

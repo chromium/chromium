@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">クレジット</translation>
 <translation id="1342835525016946179">記事</translation>
 <translation id="1359897965706325498">バナー</translation>
+<translation id="145015347812617860"><ph name="COUNT" />個のアイテム</translation>
 <translation id="1480676835519562650">複数の選択が可能です。<ph name="COUNT" /> 件中 <ph name="SELECTED" /> 件が選択されています。</translation>
 <translation id="1589122976691792535">地域</translation>
 <translation id="1591562245178063882">今月</translation>
@@ -54,7 +55,7 @@
 <translation id="2507943997699731163">このフィールドを入力してください。</translation>
 <translation id="2508569020611168319">タブリスト</translation>
 <translation id="2530182415807757784">複数の選択が可能です。項目が選択されていません。</translation>
-<translation id="2561842179657104141">その他のメディア コントロールを表示</translation>
+<translation id="2561842179657104141">その他のメディア操作ボタンを表示</translation>
 <translation id="2572483411312390101">再生</translation>
 <translation id="2613802280814924224">有効な値を入力してください。有効な値として最も近いのは <ph name="VALID_VALUE" /> です。</translation>
 <translation id="2634240155926812724">緑チャネル</translation>

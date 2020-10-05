@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">المستخدم</translation>
 <translation id="1178581264944972037">الإيقاف مؤقتًا</translation>
 <translation id="1181037720776840403">إزالة</translation>
+<translation id="1195941046451948919">هل تريد فعلاً إعادة ضبط كافّة الأذونات لهذا الموقع الإلكتروني؟</translation>
 <translation id="1201402288615127009">التالي</translation>
 <translation id="1242008676835033345">مضمّن في <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">إيقاف</translation>
@@ -264,6 +265,7 @@
 <translation id="8249310407154411074">نقل إلى الأعلى</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8300705686683892304">تتم الإدارة من خلال التطبيق</translation>
+<translation id="8324158725704657629">عدم السؤال مرة أخرى</translation>
 <translation id="8372893542064058268">السماح لموقع إلكتروني معيّن بتشغيل "المزامنة في الخلفية"</translation>
 <translation id="8376384591331888629">تضمين ملفات تعريف الارتباط التابعة لجهات خارجية على هذا الموقع الإلكتروني</translation>
 <translation id="83792324527827022">هناك موقع إلكتروني يستخدم الميكروفون والكاميرا.</translation>

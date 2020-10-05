@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Αυτή είναι μια νέα λειτουργία</translation>
 <translation id="2006524834898217237">Βεβαιωθείτε ότι αυτή η συσκευή είναι συνδεδεμένη στο διαδίκτυο.</translation>
 <translation id="208586643495776849">Προσπαθήστε ξανά</translation>
-<translation id="2090963878406559571">Για να στείλετε έναν αριθμό από <ph name="ORIGIN" /> σε τηλέφωνο Android, <ph name="TROUBLESHOOT_LINK" /> και για τις δύο συσκευές στις ρυθμίσεις.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1ημ.}other{#ημ.}}</translation>
 <translation id="2148716181193084225">Σήμερα</translation>
 <translation id="2161656808144014275">Κείμενο</translation>
@@ -103,7 +102,6 @@
 <translation id="364720409959344976">Επιλέξτε φάκελο για μεταφόρτωση</translation>
 <translation id="3660179305079774227">Πάνω βέλος</translation>
 <translation id="3670030362669914947">Αριθμός</translation>
-<translation id="3674022972144966498">Η εφαρμογή <ph name="FOCUSED_APP_NAME" /> έχει νέες ενημερώσεις.</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/s</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
 <translation id="3842239759367498783">Συνέχεια ανάγνωσης από την κινητή συσκευή σας <ph name="TITLE" /></translation>
@@ -136,8 +134,8 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">Τρίγωνο αποκάλυψης</translation>
 <translation id="5278860589123563674">Αποτυχία αποστολής</translation>
+<translation id="5283099933536931082">Η εφαρμογή <ph name="APP_ITEM_TITLE" /> χρειάζεται την προσοχή σας.</translation>
 <translation id="528468243742722775">Τέλος</translation>
-<translation id="5327567770033251652">ενεργοποίηση συγχρονισμού</translation>
 <translation id="5329858601952122676">&amp;Διαγραφή</translation>
 <translation id="5395308026110844773">Η εφαρμογή <ph name="DRAGGED_APP_NAME" /> πάνω από την εφαρμογή <ph name="IN_PLACE_APP" />, αφήστε για να δημιουργήσετε φάκελο.</translation>
 <translation id="5463830097259460683">Emoji και σύμβολα</translation>
@@ -147,6 +145,7 @@
 <translation id="5574202486608032840">Σύστημα <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Πλήκτρο Backspace</translation>
 <translation id="5613020302032141669">Αριστερό βέλος</translation>
+<translation id="5652575806481723716">Η εφαρμογή <ph name="FOCUSED_APP_NAME" /> χρειάζεται την προσοχή σας.</translation>
 <translation id="5675363643668471212">Στοιχείο ραφιού</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 λεπτό}other{# λεπτά}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Ενεργή σήμερα}=1{Ενεργή 1 ημέρα πριν}other{Ενεργή # ημέρες πριν}}</translation>
@@ -184,10 +183,8 @@
 <translation id="6578407462441924264">Χωρίς όνομα</translation>
 <translation id="6612467943526193239">Για να εξέλθετε από τη βαθμονόμηση, πατήστε Esc.</translation>
 <translation id="6620110761915583480">Αποθήκευση Αρχείου</translation>
-<translation id="6656912866303152668">Βεβαιωθείτε ότι ο συγχρονισμός στο Chrome έχει ενεργοποιηθεί για τη συσκευή <ph name="TARGET_DEVICE_NAME" /> και έπειτα δοκιμάστε ξανά την αποστολή.</translation>
 <translation id="6699343763173986273">Επόμενο κομμάτι πολυμέσων</translation>
 <translation id="6710213216561001401">Προηγούμενο</translation>
-<translation id="6779314412797872738">Για να στείλετε έναν αριθμό από εδώ στο τηλέφωνό σας, <ph name="TROUBLESHOOT_LINK" /> και για τις δύο συσκευές στις ρυθμίσεις.</translation>
 <translation id="6786750046913594791">Κλείσιμο φακέλου</translation>
 <translation id="6808150112686056157">Διακοπή πολυμέσων</translation>
 <translation id="6845383723252244143">Επιλογή Φακέλου</translation>

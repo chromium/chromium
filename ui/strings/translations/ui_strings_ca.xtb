@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Aquesta funció és nova</translation>
 <translation id="2006524834898217237">Comprova que el dispositiu estigui connectat a Internet.</translation>
 <translation id="208586643495776849">Torna-ho a provar</translation>
-<translation id="2090963878406559571">Per enviar un número des del lloc web <ph name="ORIGIN" /> al telèfon Android, <ph name="TROUBLESHOOT_LINK" /> a la configuració dels dos dispositius.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d}other{# d}}</translation>
 <translation id="2148716181193084225">Avui</translation>
 <translation id="2161656808144014275">Text</translation>
@@ -103,7 +102,6 @@
 <translation id="364720409959344976">Selecció d'una carpeta per penjar</translation>
 <translation id="3660179305079774227">Fletxa amunt</translation>
 <translation id="3670030362669914947">Número</translation>
-<translation id="3674022972144966498">Hi ha actualitzacions disponibles per a <ph name="FOCUSED_APP_NAME" />.</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/s</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
 <translation id="3842239759367498783">Continua la lectura des del dispositiu mòbil <ph name="TITLE" /></translation>
@@ -136,8 +134,8 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">Triangle desplegable</translation>
 <translation id="5278860589123563674">No s'ha pogut enviar</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> sol·licita la teva atenció.</translation>
 <translation id="528468243742722775">Finalitza</translation>
-<translation id="5327567770033251652">activa la sincronització</translation>
 <translation id="5329858601952122676">&amp;Suprimeix</translation>
 <translation id="5395308026110844773">L'aplicació <ph name="DRAGGED_APP_NAME" /> és a sobre de l'aplicació <ph name="IN_PLACE_APP" />. Deixa-la anar per crear una carpeta.</translation>
 <translation id="5463830097259460683">Emojis i símbols</translation>
@@ -147,6 +145,7 @@
 <translation id="5574202486608032840">Sistema <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Retrocés</translation>
 <translation id="5613020302032141669">Fletxa esquerra</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> sol·licita la teva atenció.</translation>
 <translation id="5675363643668471212">Objecte de prestatge</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Actiu avui}=1{Actiu fa 1 dia}other{Actiu fa # dies}}</translation>
@@ -184,10 +183,8 @@
 <translation id="6578407462441924264">Sense nom</translation>
 <translation id="6612467943526193239">Prem Esc per sortir del calibratge.</translation>
 <translation id="6620110761915583480">Desa el fitxer</translation>
-<translation id="6656912866303152668">Comprova que <ph name="TARGET_DEVICE_NAME" /> tingui la sincronització activada a Chrome i després prova de tornar a fer l'enviament.</translation>
 <translation id="6699343763173986273">Fitxer multimèdia: pista següent</translation>
 <translation id="6710213216561001401">Anterior</translation>
-<translation id="6779314412797872738">Per enviar un número des d'aquest dispositiu al telèfon Android, <ph name="TROUBLESHOOT_LINK" /> a la configuració de tots dos dispositius.</translation>
 <translation id="6786750046913594791">Tanca la carpeta</translation>
 <translation id="6808150112686056157">Fitxer multimèdia: atura</translation>
 <translation id="6845383723252244143">Selecció d'una carpeta</translation>

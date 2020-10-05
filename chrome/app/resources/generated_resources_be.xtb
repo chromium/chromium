@@ -228,6 +228,7 @@
 <translation id="1249643471736608405">Убудова "<ph name="PLUGIN_NAME" />" заблакіравана, бо яна састарэлая</translation>
 <translation id="1251366534849411931">Чакалася пачатковая фігурная дужка: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Будуць выдалены даныя (<ph name="TOTAL_USAGE" />), захаваныя сайтамі і ўсталяванымі імі праграмамі</translation>
+<translation id="125220115284141797">Стандартныя</translation>
 <translation id="1252987234827889034">Узнікла памылка профілю</translation>
 <translation id="1254593899333212300">Прамое падключэнне да інтэрнэту</translation>
 <translation id="1259152067760398571">Праверка бяспекі выконвалася ўчора</translation>
@@ -319,6 +320,7 @@
 <translation id="1361872463926621533">Прайграваць гук пры запуску</translation>
 <translation id="1362865166188278099">Механічная праблема. Праверце прынтар</translation>
 <translation id="1363585519747660921">Неабходна наладзіць USB-прынтар</translation>
+<translation id="1364664799726141130">Спраўджаны вамі ўліковы запіс не мае дазволу на доступ да гэтай прылады. Каб разблакіраваць сеанс, вы павінны спраўдзіць уліковы запіс <ph name="ACCOUNT" />.</translation>
 <translation id="1365180424462182382"><ph name="BEGIN_LINK" />Браўзер знаходзіцца пад кіраваннем<ph name="END_LINK" /> дамена <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="1367951781824006909">Выбраць файл</translation>
 <translation id="1369149969991017342">Доступ праз пераключальнікі (кіраванне камп'ютарам з дапамогай аднаго або двух пераключальнікаў)</translation>
@@ -428,6 +430,7 @@
 <translation id="1486096554574027028">Пошук пароляў</translation>
 <translation id="1487335504823219454">Уключана – карыстальніцкія налады</translation>
 <translation id="1489664337021920575">Выбраць іншы варыянт</translation>
+<translation id="1492417797159476138">Вы ўжо захавалі гэта імя карыстальніка для гэтага сайта</translation>
 <translation id="1493892686965953381">Чакаецца <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1495486559005647033">Іншых даступных прылад: <ph name="NUM_PRINTERS" />.</translation>
 <translation id="1495677929897281669">Вярнуцца на ўкладку</translation>
@@ -501,6 +504,7 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Госць)</translation>
 <translation id="1572266655485775982">Уключэнне Wi-Fi</translation>
 <translation id="1572876035008611720">Увядзіце адрас электроннай пошты</translation>
+<translation id="1575741822946219011">Мовы і метады ўводу</translation>
 <translation id="1576594961618857597">Стандартны белы аватар</translation>
 <translation id="1578558981922970608">Прымусова завяршыць</translation>
 <translation id="1578784163189013834">Выбраць фон застаўкі</translation>
@@ -652,6 +656,7 @@
 <translation id="173628468822554835">Зразумела. Пакуль вы не зменіце налады, новыя сайты, якія вы наведваеце, не будуць адпраўляць вам апавяшчэнні.</translation>
 <translation id="1736419249208073774">Агляд</translation>
 <translation id="1737968601308870607">Зарэгістраваць памылку</translation>
+<translation id="174123615272205933">Карыстальніцкія</translation>
 <translation id="1741314857973421784">Далей</translation>
 <translation id="1743570585616704562">Не распазнана</translation>
 <translation id="1743970419083351269">Закрыць панэль спамповак</translation>
@@ -686,6 +691,7 @@
 <translation id="1776712937009046120">Дадаванне карыстальніка</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
 <translation id="1778457539567749232">Пазначыць як непрачытанае</translation>
+<translation id="1779468444204342338">Мінімальныя</translation>
 <translation id="1779652936965200207">Увядзіце гэты ключ доступу на прыладзе "<ph name="DEVICE_NAME" />":</translation>
 <translation id="177989070088644880">Праграма (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Закрыць групу</translation>
@@ -858,6 +864,7 @@
 <translation id="1974821797477522211">Падключыцца да сеткі</translation>
 <translation id="1975841812214822307">Выдаліць...</translation>
 <translation id="1976150099241323601">Уваход на прыладу бяспекі</translation>
+<translation id="1976307821760494606">Сайт <ph name="DOMAIN" /> выключыў адладку ADB. Гэта прывядзе да скіду прылады <ph name="DEVICE_TYPE" /> праз 24 гадзіны. Зрабіце рэзервовыя копіі ўсіх файлаў, якія трэба захаваць.</translation>
 <translation id="1977965994116744507">Паднясіце свой тэлефон бліжэй, каб разблакіраваць <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978006917103730774">Наступныя версіі праграмнага забеспячэння і абнаўленні сістэмы бяспекі будуць усталёўвацца аўтаматычна.</translation>
 <translation id="1979095679518582070">Калі вы выключыце гэту функцыю, прылада ўсё роўна будзе адпраўляць даныя, неабходныя для працы асноўных сэрвісаў, такіх як абнаўленне сістэмы і бяспека прылады.</translation>
@@ -1460,6 +1467,7 @@
 <translation id="2688196195245426394">Пры рэгістрацыі прылады на серверы адбылася памылка: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Паказаць параметры маўлення</translation>
 <translation id="2691385045260836588">Мадэль</translation>
+<translation id="2691440343905273290">Змяніць налады ўводу</translation>
 <translation id="2693176596243495071">Памылка!  Адбылася невядомая памылка. Паўтарыце спробу пазней або звярніцеся да адміністратара, калі праблема не знікла.</translation>
 <translation id="2695749433451188613">Пратакол друку праз інтэрнэт (HTTPS)</translation>
 <translation id="2699911226086014512">Не ўдалося выканаць аперацыю з PIN-кодам. Код памылкі: <ph name="RETRIES" />.</translation>
@@ -1882,6 +1890,7 @@
 <translation id="3192947282887913208">Аўдыяфайлы</translation>
 <translation id="3199127022143353223">Серверы</translation>
 <translation id="3200310363903241381">{COUNT,plural, =1{Chrome рэкамендуе праверыць гэты пароль зараз}one{Chrome рэкамендуе праверыць гэтыя паролі зараз}few{Chrome рэкамендуе праверыць гэтыя паролі зараз}many{Chrome рэкамендуе праверыць гэтыя паролі зараз}other{Chrome рэкамендуе праверыць гэтыя паролі зараз}}</translation>
+<translation id="3201154330231437478">Уключыць адваротную прагортку <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="3201422919974259695">Тут з'явяцца даступныя прылады USB.</translation>
 <translation id="3202131003361292969">Шлях</translation>
 <translation id="3202173864863109533">Гук на гэтай укладцы выключаны.</translation>
@@ -2038,6 +2047,7 @@
 <translation id="3404249063913988450">Уключыць застаўку</translation>
 <translation id="3405664148539009465">Наладзіць шрыфты</translation>
 <translation id="3405763860805964263">...</translation>
+<translation id="3406396172897554194">Выберыце мову або назву метаду ўводу</translation>
 <translation id="3406605057700382950">&amp;Паказваць панэль закладак</translation>
 <translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Гэта пашырэнне можа быць небяспечным}one{Гэтыя пашырэнні могуць быць небяспечнымі}few{Гэтыя пашырэнні могуць быць небяспечнымі}many{Гэтыя пашырэнні могуць быць небяспечнымі}other{Гэтыя пашырэнні могуць быць небяспечнымі}}</translation>
 <translation id="3409785640040772790">Карты</translation>
@@ -2076,6 +2086,7 @@
 <translation id="3440663250074896476">Іншыя дзеянні для закладкі "<ph name="BOOKMARK_NAME" />"</translation>
 <translation id="3440761377721825626">Пытацца, калі сайт спрабуе атрымаць доступ да камп'ютара з дапамогай убудовы</translation>
 <translation id="3441653493275994384">Экран</translation>
+<translation id="3441663102605358937">Каб спраўдзіць уліковы запіс <ph name="ACCOUNT" />, увайдзіце ў яго</translation>
 <translation id="3445047461171030979">Хуткія адказы Памочніка Google</translation>
 <translation id="3445925074670675829">Прылада USB-C</translation>
 <translation id="3446274660183028131">Каб усталяваць Windows, запусціце Parallels Desktop.</translation>
@@ -2613,6 +2624,7 @@
 <translation id="4025039777635956441">Выключыць гук на выбраным сайце</translation>
 <translation id="4027804175521224372">(Карыстайцеся ўсімі магчымасцямі – <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4027951648498485763">Вашы налады Flash будуць захоўвацца, пакуль вы не выйдзеце з Chrome.</translation>
+<translation id="4028467762035011525">Дадаць метады ўводу</translation>
 <translation id="4031179711345676612">Выкарыстанне мікрафона дазволена</translation>
 <translation id="4031527940632463547">Датчыкі заблакіраваны</translation>
 <translation id="4033471457476425443">Дадаць новую папку</translation>
@@ -2826,6 +2838,7 @@
 <translation id="4312866146174492540">Блакіраваць (стандартна)</translation>
 <translation id="4314815835985389558">Кіраванне сінхранізацыяй</translation>
 <translation id="4316850752623536204">Вэб-сайт распрацоўшчыка</translation>
+<translation id="4317820549299924617">Ажыццявіць спраўджанне не ўдалося</translation>
 <translation id="4320177379694898372">Няма падключэння да інтэрнэту</translation>
 <translation id="4322394346347055525">Закрыць іншыя ўкладкі</translation>
 <translation id="4324577459193912240">Файл няпоўны</translation>
@@ -3672,6 +3685,7 @@
 <translation id="5362741141255528695">Выберыце файл закрытага ключа.</translation>
 <translation id="5363109466694494651">Скінуць налады функцыяй Powerwash і вярнуцца да старой версіі</translation>
 <translation id="5365881113273618889">Выбраная папка змяшчае канфідэнцыяльныя файлы. Даць праграме "<ph name="APP_NAME" />" пастаянны доступ на запіс у гэту папку?</translation>
+<translation id="536638840841140142">Без палёў</translation>
 <translation id="5368720394188453070">Ваш тэлефон заблакіраваны. Каб увайсці, разблакіруйце яго.</translation>
 <translation id="5368779022775404937">Уваход у дамен <ph name="REALM" /></translation>
 <translation id="5369491905435686894">Уключыць паскарэнне мышы</translation>
@@ -4063,6 +4077,7 @@
 <translation id="5833726373896279253">Гэтыя налады можа змяняць толькі ўладальнік:</translation>
 <translation id="5834581999798853053">Засталося каля <ph name="TIME" /> хв</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – ідзе запіс з камеры або мікрафона</translation>
+<translation id="5839574759884227787">Сайт <ph name="DOMAIN" /> выключыў адладку ADB, што прывядзе да скіду налад прылады <ph name="DEVICE_TYPE" />. Зрабіце рэзервовыя копіі файлаў перад перазапускам.</translation>
 <translation id="5840680448799937675">Файлы будуць заўсёды абагульвацца па-за сеткай</translation>
 <translation id="5841270259333717135">Наладзіць Ethernet</translation>
 <translation id="5842497610951477805">Bluetooth уключаны</translation>
@@ -4476,6 +4491,7 @@
 <translation id="6308077700132376815">Блакіраваць відарысы</translation>
 <translation id="6308493641021088955">Уваход забяспечвае сэрвіс <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Захаваць &amp;спасылку як...</translation>
+<translation id="6309443618838462258">Ваш адміністратар не дазваляе выкарыстоўваць гэты метад уводу</translation>
 <translation id="6309510305002439352">Мікрафон выключаны</translation>
 <translation id="6311220991371174222">Chrome запусціць не ўдалося: нешта пайшло не так падчас адкрыцця вашага профілю. Паспрабуйце перазапусціць Chrome.</translation>
 <translation id="6312403991423642364">Невядомая памылка сеткі</translation>
@@ -4826,6 +4842,7 @@
 <translation id="6748465660675848252">Вы можаце працягнуць, але будуць адноўлены толькі сінхранізаваныя даныя і налады. Усе лакальныя даныя будуць страчаны.</translation>
 <translation id="6749006854028927059">Сайты не могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры на розных сайтах, напрыклад, каб персаналізаваць рэкламу. На некаторых сайтах можа перастаць працаваць частка функцый.</translation>
 <translation id="6750757184909117990">Выключыць сотавую сетку</translation>
+<translation id="6750946710563435348">Выкарыстаць іншае імя карыстальніка</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (інкогніта)</translation>
 <translation id="6757101664402245801">URL-адрас скапіраваны</translation>
 <translation id="6758056191028427665">Паведаміце нам, што вы думаеце пра наш прадукт.</translation>
@@ -5344,6 +5361,7 @@
 <translation id="7377451353532943397">Працягваць блакіраваць доступ да датчыкаў</translation>
 <translation id="73786666777299047">Адкрыць Вэб-краму Chrome</translation>
 <translation id="7378812711085314936">Атрымаць падключэнне для перадачы даных</translation>
+<translation id="7380622428988553498">Назва прылады змяшчае недапушчальныя сімвалы</translation>
 <translation id="7380768571499464492">Прынтар "<ph name="PRINTER_NAME" />" абноўлены</translation>
 <translation id="7384687527486377545">Аўтаматычны паўтор уводу на клавіятуры</translation>
 <translation id="7385854874724088939">Падчас друку нешта пайшло не так.  Праверце прынтар і паўтарыце спробу.</translation>
@@ -5392,6 +5410,7 @@
 <translation id="7434969625063495310">Не ўдалося дадаць сервер друку. Праверце канфігурацыю сервера і паўтарыце спробу.</translation>
 <translation id="7436921188514130341">На жаль, падчас перайменавання адбылася памылка.</translation>
 <translation id="7438976808740265764">Са снежня 2020 г. Flash Player падтрымлівацца не будзе.</translation>
+<translation id="7439519621174723623">Каб працягнуць, дадайце назву прылады</translation>
 <translation id="7441736921018636843">Для змянення гэтай налады <ph name="BEGIN_LINK" />скіньце сінхранізацыю<ph name="END_LINK" />, каб выдаліць фразу-пароль сінхранізацыі</translation>
 <translation id="7441830548568730290">Іншыя карыстальнікі</translation>
 <translation id="7442465037756169001">Абсталяванне для Hangouts Meet гатовае да наладжвання.</translation>
@@ -5633,6 +5652,7 @@
 <translation id="7717134585801378441">Сайты могуць запытваць ваша месцазнаходжанне (рэкамендуецца)</translation>
 <translation id="7717845620320228976">Праверыць наяўнасць абнаўленняў</translation>
 <translation id="7719367874908701697">Маштаб старонкі</translation>
+<translation id="7719588063158526969">Назва прылады занадта доўгая</translation>
 <translation id="7721179060400456005">Дазволіць вокнам пашырацца на некалькі дысплэяў</translation>
 <translation id="7722040605881499779">Для пераносу неабходна <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">Выразаць</translation>
@@ -5850,6 +5870,7 @@
 <translation id="7952708427581814389">Сайты могуць запытваць дазвол на прагляд тэксту і відарысаў у буферы абмену</translation>
 <translation id="795282463722894016">Аднаўленне выканана</translation>
 <translation id="7952904276017482715">Чакаўся ідэнтыфікатар "<ph name="EXPECTED_ID" />", фактычны ідэнтыфікатар – "<ph name="NEW_ID" />"</translation>
+<translation id="7953669802889559161">Метады ўводу</translation>
 <translation id="7953955868932471628">Кіраваць ярлыкамі</translation>
 <translation id="7956373551960864128">Вашы захаваныя прынтары</translation>
 <translation id="7957074856830851026">Прагляд звестак пра прыладу (напрыклад, серыйнага нумара або ідэнтыфікатара аб'екта ўласнасці)</translation>
@@ -5873,6 +5894,7 @@
 <translation id="7973962044839454485">Не ўдалося выканаць аўтэнтыфікацыю PPP: няправільнае імя карыстальніка ці пароль</translation>
 <translation id="7974566588408714340">Паўтарыць спробу, выкарыстаўшы <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">Вылет разгорткі</translation>
+<translation id="7977404132325989121">&amp;Дадаць назву акна...</translation>
 <translation id="7978412674231730200">Закрыты ключ</translation>
 <translation id="7978450511781612192">Вы выйдзеце з Уліковых запісаў Google. Вашы закладкі, гісторыя, паролі і г. д. больш не будуць сінхранізавацца.</translation>
 <translation id="7980084013673500153">Ідэнтыфікатар аб'екта ўласнасці: <ph name="ASSET_ID" /></translation>
@@ -5934,6 +5956,7 @@
 <translation id="8049705080247101012">У Google пашырэнне "<ph name="EXTENSION_NAME" />" абазначана як шкоднае. Яго ўсталяванне было прадухілена</translation>
 <translation id="8049948037269924837">Адваротная прагортка сэнсарнай панэллю</translation>
 <translation id="8050038245906040378">Камерцыйнае падпісванне кода ў Microsoft</translation>
+<translation id="8050191834453426339">Прайсці спраўджанне яшчэ раз</translation>
 <translation id="8051193500142930381">Функцыі, якім патрэбна камера, не будуць працаваць</translation>
 <translation id="8051390370038326517">Заўсёды дазваляць сайту <ph name="HOST" /> поўны кантроль над прыладамі MIDI</translation>
 <translation id="8053278772142718589">Файлы PKCS #12</translation>
@@ -6424,6 +6447,7 @@
 <translation id="8648408795949963811">Тэмпература колеру для Начной падсветкі</translation>
 <translation id="8648544143274677280">Сайт <ph name="SITE_NAME" /> запытвае наступныя дазволы: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> і іншыя</translation>
 <translation id="8650543407998814195">У вас больш няма доступу да старога профілю, але вы можаце выдаліць яго.</translation>
+<translation id="865118751078059229">&amp;Дадаць назву акна...</translation>
 <translation id="8651585100578802546">Перазагрузіць гэту старонку прымусова</translation>
 <translation id="8652400352452647993">Не ўдалося ўпакаваць пашырэнне</translation>
 <translation id="8654151524613148204">Файл занадта вялікі для вашага камп'ютара. Прабачце.</translation>
@@ -6576,6 +6600,7 @@
 <translation id="8813872945700551674">Для ўхвалення пашырэння "<ph name="EXTENSION_NAME" />" звярніцеся да бацькоў.</translation>
 <translation id="8813969267212093033">Тэкст сістэмы паказаны на гэтай мове</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8814319344131658221">Спіс моў для праверкі правапісу грунтуецца на зададзеных вамі моўных параметрах</translation>
 <translation id="8814644416678422095">Унутраны дыск</translation>
 <translation id="8814687660896548945">Пачакайце, архіў правяраецца...</translation>
 <translation id="881782782501875829">Дадаванне нумара порта</translation>
@@ -6671,6 +6696,7 @@
 <translation id="8912810933860534797">Уключыць аўтаматычнае сканіраванне</translation>
 <translation id="8915370057835397490">Загрузка прапановы</translation>
 <translation id="8916476537757519021">Субфрэйм інкогніта: <ph name="SUBFRAME_SITE" /></translation>
+<translation id="8916749157829986308">Дайце назву акну</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />: <ph name="DEVICE_TYPE" /></translation>
 <translation id="8922013791253848639">Заўсёды паказваць рэкламу на гэтым сайце</translation>
 <translation id="8923880975836399332">Цёмна-бірузовы</translation>
@@ -6846,6 +6872,7 @@
 <translation id="9124003689441359348">Захаваныя паролі з'явяцца тут</translation>
 <translation id="9126149354162942022">Колер курсора</translation>
 <translation id="9128317794749765148">Не ўдалося завяршыць наладку</translation>
+<translation id="9128335130883257666">Адкрыць старонку налад для метаду ўводу "<ph name="INPUT_METHOD_NAME" />"</translation>
 <translation id="9128870381267983090">Падключыцеся да сеткі</translation>
 <translation id="9130015405878219958">Уведзены няправільны рэжым.</translation>
 <translation id="9131487537093447019">Адпраўка і атрыманне паведамленняў з прылад Bluetooth.</translation>

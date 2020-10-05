@@ -113,6 +113,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2049240716062114887">Masa adı <ph name="DESK_NAME" /> olarak değiştirildi</translation>
 <translation id="2050339315714019657">Dikey</translation>
 <translation id="2067602449040652523">Klavye parlaklığı</translation>
+<translation id="2074759828767813253">En son ekran görüntüleri ve indirilenler</translation>
 <translation id="2083190527011054446">İyi geceler <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Ağa bağlı değilsiniz</translation>
 <translation id="2126242104232412123">Yeni masa</translation>
@@ -197,7 +198,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2996462380875591307">Yerleştirilmiş Büyüteç etkinleştirildi. Kapatmak için tekrar Ctrl+Arama+H tuşlarına basın.</translation>
 <translation id="3000461861112256445">Mono ses</translation>
 <translation id="3009178788565917040">Çıkış</translation>
-<translation id="3025081209054535615">Genel medya denetimlerinin sabitlemesini raftan kaldır</translation>
 <translation id="3033545621352269033">Açık</translation>
 <translation id="3038571455154067151">Oturum açmak için Family Link ebeveyn erişim kodunuzu girin</translation>
 <translation id="3045488863354895414">İyi günler,</translation>
@@ -300,6 +300,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3943857333388298514">Yapıştır</translation>
 <translation id="394485226368336402">Ses ayarları</translation>
 <translation id="3962859241508114581">Önceki Parça</translation>
+<translation id="3969043077941541451">Kapalı</translation>
 <translation id="397105322502079400">Hesaplanııyor...</translation>
 <translation id="3977512764614765090">Pil %<ph name="PERCENTAGE" /> dolu ve şarj oluyor.</translation>
 <translation id="3995138139523574647">USB-C cihaz (sağ arka bağlantı noktası)</translation>
@@ -310,6 +311,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Ekranınızı paylaşıyorsunuz</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Kapalı, 1 uygulama}other{Kapalı, # uygulama}}</translation>
+<translation id="4066027111132117168">Açık, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Orta düzeyde sinyal</translation>
 <translation id="4112140312785995938">Geri Sar</translation>
 <translation id="4114315158543974537">Phone Hub'ı etkinleştirin</translation>
@@ -565,6 +567,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6803622936009808957">Desteklenen bir çözünürlük bulunamadığı için ekranlar yansıtılamıyor. Bunun yerine genişletilmiş masaüstüne geçiliyor.</translation>
 <translation id="6818242057446442178">Kelime bazında geri git</translation>
 <translation id="6820676911989879663">Mola verin!</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> sn.</translation>
 <translation id="6857811139397017780">Şunu etkinleştir: <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Bir rakam kaldı}other{# rakam kaldı}}</translation>
 <translation id="6878400149835617132">Kısayol kapalı</translation>
@@ -621,6 +624,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7526573455193969409">Ağ trafiği izleniyor olabilir</translation>
 <translation id="7536035074519304529">IP adresi: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Uyku vakti geldi</translation>
+<translation id="7551643184018910560">Rafa sabitle</translation>
 <translation id="7561982940498449837">Menüyü kapat</translation>
 <translation id="7564874036684306347">Pencereleri başka bir masaüstüne taşımak, beklenmeyen davranışlara neden olabilir. Pencereler taşındıktan sonra gelen bildirimler, pencereler ve iletişim kutuları masaüstleri arasında bölünebilir.</translation>
 <translation id="7568294522609223312">Otomatik tıklamayı kapat</translation>
@@ -632,6 +636,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7600875258240007829">Tüm bildirimleri göster</translation>
 <translation id="7618774594543487847">Normal</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7633755430369750696">Yakındakilerle Paylaşım ayarlarını gösterir.</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> için ayarları aç</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (cihaz sahibi)</translation>
 <translation id="7647488630410863958">Bildirimlerinizi görüntülemek için cihazınızın kilidini açın</translation>
@@ -647,6 +652,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7780159184141939021">Ekranı Döndür</translation>
 <translation id="7796353162336583443">Not veya ekran görüntüsü almak, Google Asistan, lazer işaretçi veya büyüteç işlevlerini kullanmak için raftaki ekran kalemi düğmesine dokunun.</translation>
 <translation id="7798302898096527229">İptal etmek için Ara veya Üst Karakter tuşuna basın.</translation>
+<translation id="781126011916719498">Önemli dosyalarınıza hızlıca erişin. Bir dosyayı sabitlemek için sağ tıklayın veya dokunup basılı tutun.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ve <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Güçlü sinyal</translation>
 <translation id="7837740436429729974">Süre doldu</translation>
@@ -701,7 +707,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8297006494302853456">Zayıf</translation>
 <translation id="8308637677604853869">Önceki menü</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">Genel medya denetimlerini rafa sabitle</translation>
 <translation id="8351131234907093545">Not oluştur</translation>
 <translation id="8371779926711439835">Harf bazında ilerle</translation>
 <translation id="8375916635258623388">Bu <ph name="DEVICE_NAME" /> ve telefonunuz otomatik olarak bağlanacaktır</translation>
@@ -791,6 +796,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="9089416786594320554">Giriş yöntemleri</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> adlı ekran kaldırıldı</translation>
 <translation id="9151726767154816831">Güncellemek için yeniden başlatın ve Powerwash uygulayın</translation>
+<translation id="9166331175924255663">Yakındakilerle Paylaş özelliğinin yüksek görünürlüğünü açar/kapatır.</translation>
 <translation id="9168436347345867845">Daha sonra yap</translation>
 <translation id="9179259655489829027">Bu özellik oturum açmış tüm kullanıcılara şifre gerektirmeden hızlı bir şekilde erişmenize olanak verir. Bu özelliği sadece güvendiğiniz hesaplarda kullanın.</translation>
 <translation id="9183456764293710005">Tam Ekran Büyüteci</translation>

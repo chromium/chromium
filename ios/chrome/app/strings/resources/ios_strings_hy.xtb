@@ -97,7 +97,6 @@
 <translation id="1965935827552890526">Ավարտեք աշխատանքը Chrome-ի մյուս բացված պատուհանում։</translation>
 <translation id="1974060860693918893">Լրացուցիչ</translation>
 <translation id="1989112275319619282">Ընտրել</translation>
-<translation id="1992734845128748707">Փոխել կանխադրված դիտարկիչը…</translation>
 <translation id="2015722694326466240">Գաղտնաբառերը տեսնելու համար ձեր սարքում նախ պետք է անցակոդ սահմանեք:</translation>
 <translation id="2073572773299281212">Ակտիվ է եղել <ph name="DAYS" /> օր առաջ</translation>
 <translation id="2074131957428911366">Ցանկացած ժամանակ կարող եք անցնել <ph name="BEGIN_LINK" />կարգավորումներ<ph name="END_LINK" /> և ընտրել, թե ինչն եք ուզում համաժամացնել:</translation>
@@ -165,6 +164,7 @@
 <translation id="2781331604911854368">Միացված է</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Փակել ներդիրների փոխանջատիչը</translation>
+<translation id="2815198996063984598">2. Հպեք «Դիտարկիչի կանխադրված հավելված»։</translation>
 <translation id="2830972654601096923">Կառավարել հասցեները…</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Համաժամացման սկզբնական կարգավորումը չի ավարտվել</translation>
@@ -181,6 +181,7 @@
 <translation id="2921219216347069551">Չհաջողվեց համօգտագործել էջը</translation>
 <translation id="2923448633003185837">Տեղադրել և անցնել</translation>
 <translation id="292639812446257861">Նշել որպես չկարդացված</translation>
+<translation id="2952581218264071393">1. Բացեք Chrome-ի կարգավորումները։</translation>
 <translation id="2958718410589002129">Գաղտնաբառեր</translation>
 <translation id="2964349545761222050">Երրորդ կողմի քուքիների արգելափակում</translation>
 <translation id="2969979262385602596">Չհաջողվեց մուտք գործել: Փորձեք մի փոքր ուշ:</translation>
@@ -217,6 +218,7 @@
 <translation id="3335947283844343239">Նորից բացել փակված ներդիրը</translation>
 <translation id="3371831930909698441">Translate-ը հասանելի է: Կարգավորումները հասանելի են էկրանի ստորին հատվածում:</translation>
 <translation id="3393920035788932672">Ելնող պատուհանները թույլատրված են</translation>
+<translation id="3399930248910934354">Բացել Chrome-ի կարգավորումները</translation>
 <translation id="3425644765244388016">Քարտի կեղծանունը</translation>
 <translation id="3433057996795775706">Եթե հեռացնեք այս գաղտնաբառը, ձեր հաշիվը չի ջնջվի <ph name="WEBSITE" /> կայքից։ Անվտանգության նկատառումներով փոխեք ձեր գաղտնաբառը <ph name="WEBSITE" /> կայքում։</translation>
 <translation id="3443810440409579745">Դուք ներդիր եք ստացել։</translation>
@@ -241,6 +243,9 @@
 <translation id="3551320343578183772">Փակել ներդիրը</translation>
 <translation id="3581564640715911333">Առաջարկել էջերի թարգմանությունն այլ լեզուներով</translation>
 <translation id="3588820906588687999">Բացել պատկերը նոր ներդիրում</translation>
+<translation id="359441731697487922">Դուք կարող եք Chrome-ը դարձնել ձեր կանխադրված դիտարկիչը և կայքերը բացել այնտեղ ավտոմատ կերպով։
+      
+Կատարեք հետևյալ քայլերը՝</translation>
 <translation id="3603009562372709545">Պատճենել հղման հասցեն</translation>
 <translation id="3607167657931203000">Ինքնալցման տվյալները</translation>
 <translation id="3609785682760573515">Համաժամացում…</translation>
@@ -331,6 +336,7 @@
 <translation id="4747097190499141774">Անցաբառով գաղտնագրումը չի կիրառվում վճարման եղանակների և Google Pay-ի հասցեների համար։ Միայն ձեր անցաբառն ունեցող օգտատերը կարող է կարդալ ձեր գաղտնագրված տվյալները: Անցաբառը չի ուղարկվում Google-ին, և Google-ը չի պահում այն: Անցաբառը մոռանալու դեպքում ձեզ անհրաժեշտ կլինի վերակայել համաժամացումը: <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Նոր ինկոգնիտո ներդիր</translation>
 <translation id="4758977202923349869">Վարկային քարտը տեղադրեք այս շրջանակում</translation>
+<translation id="4775879719735953715">Կանխադրված դիտարկիչ</translation>
 <translation id="4802417911091824046">Անցաբառով գաղտնագրումը չի կիրառվում վճարման եղանակների և Google Pay-ի հասցեների համար։
 
 Այս կարգավորումը փոփոխելու համար <ph name="BEGIN_LINK" />վերակայեք համաժամացումը<ph name="END_LINK" /></translation>
@@ -338,6 +344,7 @@
 <translation id="4808744395915275922">Թարմացումներ</translation>
 <translation id="4818522717893377262">Ավելացնել լեզու…</translation>
 <translation id="481968316161811770">Cookie ֆայլեր, կայքի տվյալներ</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ու ևս 1}one{{domain} ու ևս {count}}other{{domain} ու ևս {count}}}</translation>
 <translation id="4826218269716039351">Կողմնակի քուքիներն արգելափակված են</translation>
 <translation id="48274138579728272">Նշել որպես կարդացված</translation>
 <translation id="4833786495304741580">Ավտոմատ ուղարկում է Google-ին օգտագործման վիճակագրությունը և խափանումների մասին հաշվետվությունները:</translation>
@@ -586,6 +593,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7456847797759667638">Open Location...</translation>
 <translation id="7460314822154045102">Օգտագործել տեսախցիկը</translation>
 <translation id="7464701184726199289">Համաժամացված տվյալները կհեռացվեն բոլոր սարքերից: Պահված կայքերի կարգավորումները չեն ջնջվի և կարող են արտացոլել համացանցում դիտարկման ձեր սովորությունները: <ph name="BEGIN_LINK" />Մանրամասն<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. Ընտրեք Chrome-ը։</translation>
 <translation id="7472734401283673885">Ընկերության անունը</translation>
 <translation id="7473891865547856676">Ոչ</translation>
 <translation id="7481312909269577407">Forward</translation>

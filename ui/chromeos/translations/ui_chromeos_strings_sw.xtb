@@ -117,7 +117,6 @@
 <translation id="2208158072373999562">Kumbukumbu ya Zip</translation>
 <translation id="2225536596944493418">Je, una uhakika ungependa kufuta vipengee <ph name="NUMBER_OF_ITEMS" />?</translation>
 <translation id="2230062665678605299">Haiwezi kuunda folda "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2270413998793223379">Kisankriti</translation>
 <translation id="2275059641601412272">Imehamishwa.</translation>
 <translation id="2278988676849463018">Kibodi ya Kannada (Fonetiki)</translation>
 <translation id="2287742181953707290">Kireno kwenye kibodi ya Kimataifa ya Marekani (PC)</translation>
@@ -283,6 +282,7 @@
 <translation id="4072248638558688893">Kibodi ya Kitamil (Fonetiki)</translation>
 <translation id="4124935795427217608">Farasi mwenye pembe</translation>
 <translation id="4158739975813877944">Fungua orodha ya kucheza</translation>
+<translation id="4159731583141908892"><ph name="FILE_NAME" /> imehamishwa.</translation>
 <translation id="418179967336296930">Kibodi ya Fonetiki (YaZHert) ya Kirusi</translation>
 <translation id="4193154014135846272">Hati za Google</translation>
 <translation id="4195249722193633765">Sakinisha programu na Linux (Beta)</translation>
@@ -318,6 +318,7 @@
 <translation id="4582497162516204941">Sakinisha ukitumia Linux (Beta)</translation>
 <translation id="4594543368593301662">Inaonyesha matokeo ya <ph name="SEARCH_TERM" />.</translation>
 <translation id="4603392156942865207">Inanakili <ph name="FILE_NAME" /> kwenye <ph name="FOLDER_NAME" /></translation>
+<translation id="4627439232948440198">Kisanskriti</translation>
 <translation id="4631887759990505102">Msanii</translation>
 <translation id="4656293982926141856">Kompyuta hii</translation>
 <translation id="4669606053856530811">Wanachama wa '<ph name="SOURCE_NAME" />' hawataweza kuifikia isipokuwa vipengee hivi viwe vinashirikiwa nao.</translation>
@@ -618,6 +619,7 @@
 <translation id="7693909743393669729">Hatua ya kuweka upya muundo wa hifadhi ya USB itafuta data yote iliyomo na iondoe sehemu zote zilizopo, ikiwa ni pamoja na sehemu ambazo hazionekani. Kitendo hiki hakiwezi kutenduliwa.</translation>
 <translation id="7695430100978772476">Imeshindwa kubadilisha muundo <ph name="DRIVE_NAME" /></translation>
 <translation id="770015031906360009">Kigiriki</translation>
+<translation id="7705251383879779343"><ph name="FILE_NAME" /> imenakiliwa.</translation>
 <translation id="7706319470528945664">Kibodi ya Kireno</translation>
 <translation id="7711920809702896782">Maelezo ya picha</translation>
 <translation id="7724603315864178912">Kata</translation>

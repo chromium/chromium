@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">Käyttäjä</translation>
 <translation id="1178581264944972037">Tauko</translation>
 <translation id="1181037720776840403">Poista</translation>
+<translation id="1195941046451948919">Haluatko varmasti nollata kaikki verkkosivuston käyttöoikeudet?</translation>
 <translation id="1201402288615127009">Seuraava</translation>
 <translation id="1242008676835033345">Upotettu sivustolle <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Pysäytä</translation>
@@ -264,6 +265,7 @@
 <translation id="8249310407154411074">Siirrä ylimmäksi</translation>
 <translation id="8261506727792406068">Poista</translation>
 <translation id="8300705686683892304">Sovelluksen ylläpitämät</translation>
+<translation id="8324158725704657629">Älä kysy uudestaan</translation>
 <translation id="8372893542064058268">Salli taustasynkronointi tietyllä sivustolla.</translation>
 <translation id="8376384591331888629">Mukaan lukien kolmannen osapuolen evästeet tällä sivustolla</translation>
 <translation id="83792324527827022">Sivusto käyttää kameraasi ja mikrofoniasi</translation>

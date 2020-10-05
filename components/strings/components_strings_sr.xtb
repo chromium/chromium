@@ -134,6 +134,7 @@
 <translation id="1453974140256777690">Текст који налепите или приложите се шаље у Google Cloud или трећим странама на анализу. На пример, можда ће бити скениран у потрази за осетљивим подацима.</translation>
 <translation id="1455413310270022028">Брисач</translation>
 <translation id="1462245070427461050">JIS B9</translation>
+<translation id="1462951478840426066">Користите фонтове на рачунару да бисте могли да правите садржај високе верности</translation>
 <translation id="1463543813647160932">5×7</translation>
 <translation id="1467432559032391204">Улево</translation>
 <translation id="1472675084647422956">Прикажи више</translation>
@@ -221,6 +222,7 @@
 <translation id="17513872634828108">Отворене картице</translation>
 <translation id="1752021286346845558">8. поштанско сандуче</translation>
 <translation id="1753706481035618306">Број странице</translation>
+<translation id="1757773103848038814">Фонт фиксне ширине</translation>
 <translation id="1763864636252898013">Овај сервер не може да докаже да је <ph name="DOMAIN" />; оперативни систем уређаја нема поверења у његов безбедносни сертификат. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Покушајте да покренете Windows дијагностику мреже<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">Сервер на који идете, <ph name="ORIGIN" />, подесио је заглавље
@@ -594,6 +596,7 @@
 <translation id="3395827396354264108">Начин преузимања</translation>
 <translation id="3399952811970034796">Адреса испоруке</translation>
 <translation id="3402261774528610252">Веза коришћена за учитавање овог сајта је користила TLS 1.0 или TLS 1.1, који су застарели и биће онемогућени у будућности. Када буду онемогућени, корисници неће моћи да учитају овај сајт. Сервер треба да омогући TLS 1.2 или новију верзију.</translation>
+<translation id="3411120537985775570">Администратор је блокирао налепљивање са <ph name="ORIGIN_NAME" /> на ову локацију</translation>
 <translation id="3414952576877147120">Величина:</translation>
 <translation id="3417660076059365994">Датотеке које отпремите или приложите се шаљу у Google Cloud или трећим странама на анализу. На пример, можда ће бити скениране у потрази за осетљивим подацима или малвером.</translation>
 <translation id="3422248202833853650">Пробајте да изађете из других програма да бисте ослободили меморију.</translation>
@@ -632,6 +635,7 @@
 <translation id="3532844647053365774"><ph name="HOST" /> жели да користи микрофон</translation>
 <translation id="3533328374079021623">5. поштанско сандуче</translation>
 <translation id="3539171420378717834">Задржи копију ове картице на овом уређају</translation>
+<translation id="3552297013052089404">Фонт Sans Serif</translation>
 <translation id="3558573058928565255">Време дана</translation>
 <translation id="3566021033012934673">Веза није приватна</translation>
 <translation id="3567778190852720481">Не можете да се региструјете са налогом предузећа (налог предузећа не испуњава услове).</translation>
@@ -1000,6 +1004,7 @@
 <translation id="503069730517007720">Основни сертификат за софтвер „<ph name="SOFTWARE_NAME" />“ је обавезан, али није инсталиран. ИТ администратор треба да прегледа упутства за конфигурацију софтвера „<ph name="SOFTWARE_NAME" />“ да би решио овај проблем. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">О Google преводиоцу</translation>
 <translation id="503498442187459473"><ph name="HOST" /> жели да користи камеру и микрофон</translation>
+<translation id="5039762155821394373">Величина фонта</translation>
 <translation id="5039804452771397117">Дозволи</translation>
 <translation id="5040262127954254034">Приватност</translation>
 <translation id="5043480802608081735">Линк који сте копирали</translation>
@@ -1229,6 +1234,7 @@
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Отвара се <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Регистрација корисничког налога није успела (доступна је лиценца пакета).</translation>
+<translation id="5963413905009737549">Одељак</translation>
 <translation id="5967592137238574583">Измените контакт информације</translation>
 <translation id="5967867314010545767">Уклони из историје</translation>
 <translation id="5975083100439434680">Умањивање</translation>
@@ -1265,6 +1271,7 @@
 <translation id="6051221802930200923">Тренутно не можете да посетите <ph name="SITE" /> јер веб-сајт користи проверу сертификата. Грешке и напади на мрежи су обично привремени, па ће ова страница вероватно функционисати касније.</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">Желите ли да делите присуство?</translation>
+<translation id="6057359309778282021">Администратор је блокирао дељење са <ph name="ORIGIN_NAME" /> на <ph name="VM_NAME" /></translation>
 <translation id="6058977677006700226">Желите ли да користите картице на свим уређајима?</translation>
 <translation id="6059925163896151826">USB уређаји</translation>
 <translation id="6060009363608157444">Режим DnsOverHttps је неважећи.</translation>
@@ -1313,6 +1320,7 @@
         <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">Испорука на ову адресу није могућа. Изаберите другу адресу.</translation>
 <translation id="6282194474023008486">Поштански број</translation>
+<translation id="6289939620939689042">Боја странице</translation>
 <translation id="6290238015253830360">Предложени чланци се приказују овде</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Google помоћник у Chrome-у се зауставља</translation>
@@ -1469,6 +1477,7 @@
 <translation id="7004583254764674281">Користите Windows Hello за бржу потврду картица</translation>
 <translation id="7006930604109697472">Ипак пошаљи</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7014741021609395734">Ниво зумирања</translation>
 <translation id="7016992613359344582">Те наплате могу да буду једнократне или периодичне и можда нису одмах видљиве.</translation>
 <translation id="7029809446516969842">Лозинке</translation>
 <translation id="7031646650991750659">Google Play које апликације сте инсталирали</translation>
@@ -1871,6 +1880,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Ниједна лозинка се не подудара. Прикажи све сачуване лозинке.</translation>
 <translation id="8625384913736129811">Сачувај ову картицу на овом уређају</translation>
+<translation id="8657078576661269990">Администратор је блокирао дељење са <ph name="ORIGIN_NAME" /> на <ph name="VM_NAME_1" /> и <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Резиме поруџбине, <ph name="TOTAL_LABEL" />, још детаља</translation>
 <translation id="867224526087042813">Потпис</translation>
 <translation id="8676424191133491403">Без одлагања</translation>
@@ -1883,6 +1893,7 @@
 <translation id="8699041776323235191">Уређај са интерфејсом</translation>
 <translation id="8703575177326907206">Ваша веза са доменом <ph name="DOMAIN" /> није шифрована.</translation>
 <translation id="8705331520020532516">Серијски број</translation>
+<translation id="8710842507289500830">Стил фонта</translation>
 <translation id="8718314106902482036">Плаћање није довршено</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, предлог за претрагу</translation>
 <translation id="8719528812645237045">Вишеструко бушење на врху</translation>
@@ -2003,6 +2014,7 @@
 <translation id="9191834167571392248">Бушење у доњем левом углу</translation>
 <translation id="9205078245616868884">Подаци се шифрују помоћу приступне фразе за синхронизацију. Унесите је да бисте започели синхронизацију.</translation>
 <translation id="9207861905230894330">Додавање чланка није успело.</translation>
+<translation id="9213433120051936369">Прилагодите изглед</translation>
 <translation id="9215416866750762878">Апликација онемогућава Chrome-у да се безбедно повеже са овим сајтом</translation>
 <translation id="9219103736887031265">Слике</translation>
 <translation id="933712198907837967">Diners Club</translation>

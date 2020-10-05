@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">משתמש</translation>
 <translation id="1178581264944972037">השהה</translation>
 <translation id="1181037720776840403">הסרה</translation>
+<translation id="1195941046451948919">ההרשאות שניתנו לאתר הזה יאופסו להגדרת ברירת המחדל. להמשיך?</translation>
 <translation id="1201402288615127009">הבא</translation>
 <translation id="1242008676835033345">מוטמע ב-<ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">הפסק</translation>
@@ -41,7 +42,7 @@
 <translation id="2079545284768500474">ביטול הפעולה</translation>
 <translation id="2091887806945687916">צליל</translation>
 <translation id="2107397443965016585">יש לבקש ממני אישור לפני מתן הרשאה לאתרים להציג תוכן מוגן (מומלץ)</translation>
-<translation id="2146738493024040262">פתח אפליקציית אינסטנט</translation>
+<translation id="2146738493024040262">פתח אפליקציה ללא התקנה</translation>
 <translation id="2148716181193084225">היום</translation>
 <translation id="2182457891543959921">תוצג שאלה לפני מתן הרשאה לאתרים ליצור מפה בתלת ממד של הסביבה שלך או לעקוב אחר מיקום המצלמה (מומלץ)</translation>
 <translation id="2187243482123994665">נוכחות משתמש</translation>
@@ -264,6 +265,7 @@
 <translation id="8249310407154411074">העברה לראש הרשימה</translation>
 <translation id="8261506727792406068">מחיקה</translation>
 <translation id="8300705686683892304">מנוהלים על-ידי אפליקציה</translation>
+<translation id="8324158725704657629">לא לשאול שוב</translation>
 <translation id="8372893542064058268">אפשר סנכרון ברקע לאתר ספציפי.</translation>
 <translation id="8376384591331888629">‏כולל קובצי cookie של צד שלישי באתר זה</translation>
 <translation id="83792324527827022">אתר כלשהו משתמש במצלמה ובמיקרופון שלך</translation>

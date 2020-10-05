@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">Përdoruesi</translation>
 <translation id="1178581264944972037">Pauzë</translation>
 <translation id="1181037720776840403">Hiq</translation>
+<translation id="1195941046451948919">E konfirmon që dëshiron t'i rivendosësh të gjitha lejet për këtë faqe interneti?</translation>
 <translation id="1201402288615127009">Tjetra</translation>
 <translation id="1242008676835033345">Integruar në <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Ndalo</translation>
@@ -125,7 +126,7 @@
 <translation id="4570913071927164677">Detajet</translation>
 <translation id="4645575059429386691">Menaxhohet nga prindi yt</translation>
 <translation id="4670064810192446073">Realiteti virtual</translation>
-<translation id="4708011789095599544">E konfirmon se dëshiron të fshish kukit dhe të dhënat e tjera të sajtit për këtë faqe interneti?</translation>
+<translation id="4708011789095599544">E konfirmon se dëshiron t'i fshish kukit dhe të dhënat e tjera të sajtit për këtë faqe interneti?</translation>
 <translation id="4751476147751820511">Sensorët e lëvizjes ose të dritës</translation>
 <translation id="4883854917563148705">Cilësimet e menaxhuara nuk mund të rivendosen</translation>
 <translation id="4887024562049524730">Pyet përpara se sajtet të lejohen të përdorin pajisjen e realitetit virtual dhe të dhënat e tua (rekomandohet)</translation>
@@ -264,6 +265,7 @@
 <translation id="8249310407154411074">Lëvize në krye</translation>
 <translation id="8261506727792406068">Fshi</translation>
 <translation id="8300705686683892304">Menaxhuar nga aplikacioni</translation>
+<translation id="8324158725704657629">Mos pyet më</translation>
 <translation id="8372893542064058268">Lejo "Sinkronizimin në sfond" për një sajt specifik.</translation>
 <translation id="8376384591331888629">Duke përfshirë kukit e palëve të treta në këtë sajt</translation>
 <translation id="83792324527827022">Një sajt po përdor kamerën dhe mikrofonin tënd</translation>

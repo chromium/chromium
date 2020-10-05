@@ -198,7 +198,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2996462380875591307">Le mode Loupe ancrée est activé. Appuyez de nouveau sur Ctrl+Recherche+D pour le désactiver.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3009178788565917040">Sortie</translation>
-<translation id="3025081209054535615">Retirer les commandes multimédias générales de l'étagère</translation>
 <translation id="3033545621352269033">Activé</translation>
 <translation id="3038571455154067151">Pour vous connecter, saisissez le code d'accès parental Family Link</translation>
 <translation id="3045488863354895414">Bonjour,</translation>
@@ -621,6 +620,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7526573455193969409">Il est possible que le réseau soit surveillé</translation>
 <translation id="7536035074519304529">Adresse IP : <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Il est l'heure d'aller au lit</translation>
+<translation id="7551643184018910560">Épingler sur l'étagère</translation>
 <translation id="7561982940498449837">Fermer le menu</translation>
 <translation id="7564874036684306347">Le déplacement de fenêtres vers un autre écran peut entraîner un comportement inattendu. Par exemple, les notifications, les fenêtres et les boîtes de dialogue peuvent s'afficher sur les deux écrans.</translation>
 <translation id="7568294522609223312">Désactiver les clics automatiques</translation>
@@ -701,7 +701,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8297006494302853456">Faible</translation>
 <translation id="8308637677604853869">Menu précédent</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">Épingler les commandes multimédias générales à l'étagère</translation>
 <translation id="8351131234907093545">Créer une note</translation>
 <translation id="8371779926711439835">Avancer par lettre</translation>
 <translation id="8375916635258623388">L'appareil <ph name="DEVICE_NAME" /> et votre téléphone seront associés automatiquement</translation>

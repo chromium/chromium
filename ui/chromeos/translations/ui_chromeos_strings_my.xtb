@@ -72,7 +72,7 @@
 <translation id="1673103856845176271">လုံခြုံရေးအချက်လက်များကြောင့် ဤဖိုင်အား အသုံးပြု၍ မရပါ။</translation>
 <translation id="169515659049020177">Shift ကီး</translation>
 <translation id="1722487484194605434">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခု ဇစ်လုပ်နေသည်…</translation>
-<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ခု မိတ္ထူကူးထားသည်။</translation>
+<translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ခု မိတ္တူကူးထားသည်။</translation>
 <translation id="174173592514158117">Play ဖိုင်တွဲအားလုံး ပြရန်</translation>
 <translation id="174937106936716857">စုစုပေါင်းဖိုင်အရေအတွက်</translation>
 <translation id="1775381402323441512">ဗီဒီယိုအချက်အလက်</translation>
@@ -117,10 +117,9 @@
 <translation id="2208158072373999562">Zip မှတ်တမ်း</translation>
 <translation id="2225536596944493418">အကြောင်းအရာ <ph name="NUMBER_OF_ITEMS" />ခုကို ဖျက်လိုသည်မှာ သေချာသလား။</translation>
 <translation id="2230062665678605299">ဖိုလ်ဒါ  "<ph name="FOLDER_NAME" />"ကို ဖန်တီး မရခဲ့ပါ။ <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2270413998793223379">သင်္သကရိုက်</translation>
 <translation id="2275059641601412272">ရွှေ့ထားသည်။</translation>
 <translation id="2278988676849463018">ကန္နာဒါ ကီးဘုတ်(Phonetic)</translation>
-<translation id="2287742181953707290">ယူအက်စ်နိုင်ငံတကာ ပီစီလက်ကွက်ဖြင့် ပေါ်တူဂီ</translation>
+<translation id="2287742181953707290">ယူအက်စ်နိုင်ငံတကာ PC လက်ကွက်ဖြင့် ပေါ်တူဂီ</translation>
 <translation id="2288278176040912387">ကစားသူ မှတ်တမ်းတင်</translation>
 <translation id="2291538123825441971">ဖိုင် <ph name="NUMBER_OF_FILES" /> ခု ဖွင့်နေသည်။</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" />ဖိုင် ကို ဖွင့်နေသည်။</translation>
@@ -283,6 +282,7 @@
 <translation id="4072248638558688893">တမီးလ် ကီးဘုတ် (Phonetic)</translation>
 <translation id="4124935795427217608">သိင်္ဂဿမြင်း</translation>
 <translation id="4158739975813877944">သီချင်းစာရင်းကို ဖွင့်ပါ</translation>
+<translation id="4159731583141908892"><ph name="FILE_NAME" /> ကို ရွှေ့ထားသည်။</translation>
 <translation id="418179967336296930">ရုရှ အသံထွက်ဆိုင်ရာ (YaZHert) ကီးဘုတ်</translation>
 <translation id="4193154014135846272">Google စာရွက်စာတမ်း</translation>
 <translation id="4195249722193633765">Linux (စမ်းသပ်ဆော့ဖ်ဝဲ) ဖြင့် အက်ပ်ကို ထည့်သွင်းခြင်း</translation>
@@ -318,6 +318,7 @@
 <translation id="4582497162516204941">Linux (စမ်းသပ်ဆော့ဖ်ဝဲ) ဖြင့် ထည့်သွင်းခြင်း</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> အတွက် ရလဒ်များ ပြထားသည်</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> ကို <ph name="FOLDER_NAME" /> သို့ မိတ္တူကူးနေသည်</translation>
+<translation id="4627439232948440198">သင်္သကရိုက်</translation>
 <translation id="4631887759990505102">အနုပညာရှင်</translation>
 <translation id="4656293982926141856">ဒီကွန်ပျူတာ</translation>
 <translation id="4669606053856530811">ဤအရာများကို '<ph name="SOURCE_NAME" />' ၏ အဖွဲ့ဝင်များနှင့် မျှဝေထားခြင်း မရှိလျင် ၎င်းတို့သည် အသုံးပြုခွင့် ဆုံးရှုံးနိုင်ပါသည်။</translation>
@@ -405,7 +406,7 @@
     သင့်စက်ပစ္စည်း ဘာဖြစ်ဖြစ် သင့်ဖိုင်များကို Google Drive တွင်လုံခြုံစွာ သိမ်းဆည်းထားပါသည်။<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />ဖိုင်များကို မျှဝေခြင်း၊ ပြုစုခြင်းနှင့် ပူးပေါင်းလုပ်ဆောင်ခြင်း<ph name="MARKUP_8" />
     တို့ကို တစ်နေရာတည်းတွင်လုပ်ဆောင်နိုင်သည်<ph name="MARKUP_9" /></translation>
-<translation id="5274350207900771082">မိတ္ထူကူးထားသည်။</translation>
+<translation id="5274350207900771082">မိတ္တူကူးထားသည်။</translation>
 <translation id="5275973617553375938">Google Drive မှရှာဖွေထားသည့် ဖိုင်များ</translation>
 <translation id="5283140566205748520">ပြင်သစ် (ဘယ်လ်ဂျီယမ်)</translation>
 <translation id="5317780077021120954">သိမ်းရန်</translation>
@@ -617,6 +618,7 @@
 <translation id="7693909743393669729">ဒရိုက်ဗ်တစ်ခုကို ဖော်မက်ချခြင်းက ၎င်းပေါ်ရှိ ဒေတာများအားလုံးကို ဖျက်ပြီး မမြင်ရသောအကန့်ခွဲများ အပါအဝင် လက်ရှိအကန့်ခွဲများအားလုံးကို ဖယ်ရှားပါမည်။ ဤလုပ်ဆောင်ချက်ကို ပြန်ပြင်၍ မရပါ။</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> ကို ဖော်မက်ချ၍မရပါ</translation>
 <translation id="770015031906360009">ဂရိ</translation>
+<translation id="7705251383879779343"><ph name="FILE_NAME" /> ကို မိတ္တူကူးထားသည်။</translation>
 <translation id="7706319470528945664">ပေါ်တူဂီ ကီးဘုတ်</translation>
 <translation id="7711920809702896782">ဓာတ်ပုံအချက်အလက်</translation>
 <translation id="7724603315864178912">ဖြတ်တောက်</translation>

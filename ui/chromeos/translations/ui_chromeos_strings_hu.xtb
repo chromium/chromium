@@ -117,7 +117,6 @@
 <translation id="2208158072373999562">Zip-archívum</translation>
 <translation id="2225536596944493418">Biztosan törli ezt a(z) <ph name="NUMBER_OF_ITEMS" /> elemet?</translation>
 <translation id="2230062665678605299">Nem sikerült létrehozni a(z) "<ph name="FOLDER_NAME" />" könyvtárat. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2270413998793223379">szanszkrit</translation>
 <translation id="2275059641601412272">Áthelyezve.</translation>
 <translation id="2278988676849463018">Kannada billentyűzet (fonetikus)</translation>
 <translation id="2287742181953707290">portugál, amerikai nemzetközi PC-billentyűzettel</translation>
@@ -283,6 +282,7 @@
 <translation id="4072248638558688893">Tamil billentyűzet (fonetikus)</translation>
 <translation id="4124935795427217608">Egyszarvú</translation>
 <translation id="4158739975813877944">Lejátszási lista megnyitása</translation>
+<translation id="4159731583141908892"><ph name="FILE_NAME" /> áthelyezve.</translation>
 <translation id="418179967336296930">Orosz fonetikus (YaZHert) billentyűzet</translation>
 <translation id="4193154014135846272">Google-dokumentum</translation>
 <translation id="4195249722193633765">Alkalmazás telepítése a Linux (béta) segítségével</translation>
@@ -318,6 +318,7 @@
 <translation id="4582497162516204941">Telepítés a Linux (béta) segítségével</translation>
 <translation id="4594543368593301662">Keresési eredmények megjelenítése a következőhöz: <ph name="SEARCH_TERM" />.</translation>
 <translation id="4603392156942865207">A(z) <ph name="FILE_NAME" /> másolása ide: <ph name="FOLDER_NAME" />…</translation>
+<translation id="4627439232948440198">szanszkrit</translation>
 <translation id="4631887759990505102">Előadó</translation>
 <translation id="4656293982926141856">Ez a számítógép</translation>
 <translation id="4669606053856530811">A(z) „<ph name="SOURCE_NAME" />” tagjai elveszítik hozzáférésüket, kivéve, ha meg vannak osztva velük ezek az elemek.</translation>
@@ -618,6 +619,7 @@
 <translation id="7693909743393669729">A meghajtó formázásával minden rajta tárolt adat, és ezzel együtt az összes meglévő partíció is törlődik (többek között az esetlegesen nem láthatók is). A művelet nem vonható vissza.</translation>
 <translation id="7695430100978772476">Nem sikerült a(z) <ph name="DRIVE_NAME" /> formázása</translation>
 <translation id="770015031906360009">görög</translation>
+<translation id="7705251383879779343"><ph name="FILE_NAME" /> a vágólapra másolva.</translation>
 <translation id="7706319470528945664">Portugál billentyűzet</translation>
 <translation id="7711920809702896782">Képfájl adatai</translation>
 <translation id="7724603315864178912">Kivágás</translation>

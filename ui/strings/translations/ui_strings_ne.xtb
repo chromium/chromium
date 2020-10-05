@@ -44,7 +44,6 @@
 <translation id="19085484004813472">यो नयाँ सुविधा हो</translation>
 <translation id="2006524834898217237">यो यन्त्र इन्टरनेटमा जोडिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="208586643495776849">कृपया फेरि प्रयास गर्नुहोस्</translation>
-<translation id="2090963878406559571"><ph name="ORIGIN" /> बाट आफ्नो Android फोनमा कुनै नम्बर पठाउन सेटिङमा गई दुवै यन्त्रहरूमा <ph name="TROUBLESHOOT_LINK" />।</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{१ दिन}other{# दिन}}</translation>
 <translation id="2148716181193084225">आज</translation>
 <translation id="2161656808144014275">पाठ</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">डिस्क्लोजर त्रिकोण</translation>
 <translation id="5278860589123563674">पठाउन सकिएन</translation>
 <translation id="528468243742722775">समाप्त</translation>
-<translation id="5327567770033251652">सिंक सुविधा सक्रिय गर्नुहोस्</translation>
 <translation id="5329858601952122676">&amp;मेट्नुहोस्</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> का माथि <ph name="DRAGGED_APP_NAME" />, फोल्डर सिर्जना गर्न विमोचन गर्नुहोस्।</translation>
 <translation id="5463830097259460683">इमोजी र प्रतीकहरू</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">नामविहीन</translation>
 <translation id="6612467943526193239">क्यालिब्रेसनबाट बाहिर निस्कन Esc थिच्नुहोस्।</translation>
 <translation id="6620110761915583480">फाइल बचत गर्नुहोस्</translation>
-<translation id="6656912866303152668"><ph name="TARGET_DEVICE_NAME" /> को Chrome मा सिंक गर्ने सुविधा सक्रिय गरिएको कुरा सुनिश्चित गरेर फेरि पठाई हेर्नुहोस्।</translation>
 <translation id="6699343763173986273">मिडिया अर्को ट्रयाक</translation>
 <translation id="6710213216561001401">अघिल्लो</translation>
-<translation id="6779314412797872738">यहाँबाट आफ्नो Android फोनमा कुनै नम्बर पठाउन सेटिङमा गई दुवै यन्त्रहरूमा <ph name="TROUBLESHOOT_LINK" />।</translation>
 <translation id="6786750046913594791">फोल्डर बन्द गर्नुहोस्</translation>
 <translation id="6808150112686056157">मिडिया रोक्नुहोस्</translation>
 <translation id="6845383723252244143">फोल्डर चयन गर्नुहोस्</translation>

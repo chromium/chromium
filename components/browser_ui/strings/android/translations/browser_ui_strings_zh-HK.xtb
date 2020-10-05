@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">使用者</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1181037720776840403">移除</translation>
+<translation id="1195941046451948919">確定要重設此網站的所有權限嗎？</translation>
 <translation id="1201402288615127009">下一個</translation>
 <translation id="1242008676835033345">嵌入至 <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">停止</translation>
@@ -264,6 +265,7 @@
 <translation id="8249310407154411074">移至頂部</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8300705686683892304">由應用程式管理</translation>
+<translation id="8324158725704657629">不要再詢問</translation>
 <translation id="8372893542064058268">允許特定網站執行背景同步功能。</translation>
 <translation id="8376384591331888629">包括在此網站上的第三方 Cookie</translation>
 <translation id="83792324527827022">有網站正在使用您的相機和麥克風</translation>

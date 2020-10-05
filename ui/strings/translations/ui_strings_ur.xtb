@@ -44,7 +44,6 @@
 <translation id="19085484004813472">یہ نئی خصوصیت ہے</translation>
 <translation id="2006524834898217237">یہ یقینی بنائیں کہ آپ کا آلہ انٹرنیٹ سے منسلک ہے۔</translation>
 <translation id="208586643495776849">براہ کرم دوبارہ کوشش کریں</translation>
-<translation id="2090963878406559571">‏<ph name="ORIGIN" /> سے اپنے Android فون پر نمبر بھیجنے کے لیے، ترتیبات میں دونوں آلات کے لیے <ph name="TROUBLESHOOT_LINK" />۔</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1d}other{#d}}</translation>
 <translation id="2148716181193084225">آج</translation>
 <translation id="2161656808144014275">متن</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">افشاء کا مثلث</translation>
 <translation id="5278860589123563674">بھیجنا ناکام ہو گیا</translation>
 <translation id="528468243742722775">اختتام</translation>
-<translation id="5327567770033251652">مطابقت پذیری آن کریں</translation>
 <translation id="5329858601952122676">&amp;حذف کریں</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> کے اوپر <ph name="DRAGGED_APP_NAME" />، فولڈر بنانے کیلئے ریلیز کریں۔</translation>
 <translation id="5463830097259460683">‏Emoji اور علامات</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">بغیر نام والا</translation>
 <translation id="6612467943526193239">‏کیلیبریشن سے باہر نکلنے کیلئے Esc کو دبائیں۔</translation>
 <translation id="6620110761915583480">فائل محفوظ کریں</translation>
-<translation id="6656912866303152668">‏یہ یقینی بنائیں کہ <ph name="TARGET_DEVICE_NAME" /> کی مطابقت پذیری Chrome میں آن ہے اور پھر دوبارہ بھیجنے کی کوشش کریں۔</translation>
 <translation id="6699343763173986273">میڈیا کا اگلا ٹریک</translation>
 <translation id="6710213216561001401">گزشتہ</translation>
-<translation id="6779314412797872738">‏یہاں سے اپنے Android فون پر نمبر بھیجنے کے لیے، ترتیبات میں دونوں آلات کے لیے<ph name="TROUBLESHOOT_LINK" />۔</translation>
 <translation id="6786750046913594791">فولڈر بند کریں</translation>
 <translation id="6808150112686056157">میڈیا اسٹاپ</translation>
 <translation id="6845383723252244143">فولڈر منتخب کریں</translation>

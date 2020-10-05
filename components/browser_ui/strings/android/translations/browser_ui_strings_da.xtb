@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">Bruger</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Fjern</translation>
+<translation id="1195941046451948919">Er du sikker på, at du vil nulstille alle tilladelserne for dette website?</translation>
 <translation id="1201402288615127009">Næste</translation>
 <translation id="1242008676835033345">Indlejret på <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Stop</translation>
@@ -264,6 +265,7 @@
 <translation id="8249310407154411074">Flyt til toppen</translation>
 <translation id="8261506727792406068">Slet</translation>
 <translation id="8300705686683892304">Administreres af en app</translation>
+<translation id="8324158725704657629">Spørg ikke igen</translation>
 <translation id="8372893542064058268">Tillad synkronisering i baggrunden for et bestemt website.</translation>
 <translation id="8376384591331888629">Medtag tredjepartscookies på dette websites</translation>
 <translation id="83792324527827022">Et website anvender dit kamera og din mikrofon</translation>

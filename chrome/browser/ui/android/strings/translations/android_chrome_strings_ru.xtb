@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">Синхронизация не настроена</translation>
 <translation id="1821253160463689938">Использовать файлы cookie, чтобы запомнить ваши предпочтения, даже если вы не открываете эти страницы</translation>
 <translation id="1829244130665387512">Найти на странице</translation>
+<translation id="1830550083491357902">Вход не выполнен</translation>
 <translation id="1843805151597803366">Чтобы обеспечить более высокое качество переводов, предоставьте Google Поиску доступ к содержанию этой страницы.</translation>
 <translation id="1853692000353488670">Новая вкладка инкогнито</translation>
 <translation id="1856325424225101786">Сбросить упрощенный режим?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Версия Chrome устарела</translation>
 <translation id="1883903952484604915">Скачанные</translation>
 <translation id="189358972401248634">Другие языки</translation>
+<translation id="1919130412786645364">Разрешить вход в Chrome</translation>
 <translation id="1922362554271624559">Рекомендуемые языки</translation>
 <translation id="1925021887439448749">Введите веб-адрес</translation>
 <translation id="1928696683969751773">Обновления</translation>
@@ -174,7 +176,6 @@
 <translation id="2321086116217818302">Подготовка паролей…</translation>
 <translation id="2321958826496381788">Перемещайте ползунок, пока текст не станет удобным для чтения. После двойного нажатия на абзац текст должен быть такого размера.</translation>
 <translation id="2323763861024343754">Данные сайтов</translation>
-<translation id="2326606747676847821">Режим инкогнито</translation>
 <translation id="2328985652426384049">Не удается войти</translation>
 <translation id="234265804618409743">Произошла ошибка. Не удается открыть камеру.</translation>
 <translation id="2345671828921229300">Для поиска нажмите на слово и удерживайте</translation>
@@ -225,10 +226,11 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аудиофайл}one{# аудиофайл}few{# аудиофайла}many{# аудиофайлов}other{# аудиофайла}}</translation>
 <translation id="2656405586795711023">Веб-приложения</translation>
 <translation id="2689830683995595741">Используя Chrome, вы принимаете <ph name="BEGIN_LINK1" />Условия использования Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" />. Кроме этих документов, также действует <ph name="BEGIN_LINK3" />Примечание о конфиденциальности данных в аккаунтах Google, управляемых с помощью Family Link<ph name="END_LINK3" />.</translation>
+<translation id="2704606927547763573">Скопировано</translation>
 <translation id="2707726405694321444">Обновить страницу</translation>
 <translation id="2709516037105925701">Автозаполнение</translation>
 <translation id="2718352093833049315">Только Wi-Fi</translation>
-<translation id="2718846868787000099">Сайты, которые вы посещаете, могут видеть предпочтения, чтобы показывать контент на нужном языке.</translation>
+<translation id="2718846868787000099">Сайты, которые вы посещаете, могут видеть выбранные вами настройки, чтобы показывать контент на нужном языке.</translation>
 <translation id="2723001399770238859">аудио</translation>
 <translation id="2728754400939377704">Сортировать по имени домена</translation>
 <translation id="2744248271121720757">Нажмите на слово, чтобы увидеть связанные с ним результаты поиска и действия.</translation>
@@ -343,6 +345,7 @@
 <translation id="3587482841069643663">Все</translation>
 <translation id="3587596251841506391">Помогать Google делать Интернет безопаснее</translation>
 <translation id="3599863153486145794">Удаление истории со всех устройств, на которых выполнен вход в аккаунт. Информация о других ваших действиях в Интернете может также храниться на странице <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="3602290021589620013">Предварительный просмотр</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3631987586758005671">Отправка на устройство "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="3632295766818638029">Показать пароль</translation>
@@ -595,6 +598,7 @@
 <translation id="5527082711130173040">Чтобы выполнить поиск устройств, браузеру Chrome нужен доступ к геоданным. <ph name="BEGIN_LINK2" />Включите доступ<ph name="END_LINK2" /> и <ph name="BEGIN_LINK1" />обновите разрешения<ph name="END_LINK1" />.</translation>
 <translation id="5530766185686772672">Закрыть вкладки инкогнито</translation>
 <translation id="5534640966246046842">Адрес сайта скопирован</translation>
+<translation id="5556459405103347317">Перезагрузить</translation>
 <translation id="5561549206367097665">Поиск сети…</translation>
 <translation id="55737423895878184">Может определять местоположение и отправлять уведомления</translation>
 <translation id="5578795271662203820">Найти это изображение в <ph name="SEARCH_ENGINE" /></translation>
@@ -656,7 +660,7 @@
 <translation id="5937580074298050696">Сохранено: <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">Сбросить</translation>
 <translation id="5942872142862698679">Google используется как поисковая система по умолчанию</translation>
-<translation id="5951615825629292797">Язык скачан, перезапустите <ph name="APP_NAME" /></translation>
+<translation id="5951615825629292797">Языковой пакет скачан, перезапустите <ph name="APP_NAME" />.</translation>
 <translation id="5952764234151283551">Отправлять в Google URL страниц, которые вы пытаетесь открыть</translation>
 <translation id="5956665950594638604">Открыть Справочный центр Chrome в новой вкладке</translation>
 <translation id="5957442310066583693">Нажмите эту кнопку, чтобы увидеть интересные вам сайты</translation>
@@ -708,7 +712,6 @@
 <translation id="6301525844455696527">Загляните в свой список для чтения</translation>
 <translation id="6303969859164067831">Выйти из аккаунта и отключить синхронизацию</translation>
 <translation id="6312687380483398334">Веб-приложения (тихий режим)</translation>
-<translation id="6313752143992575395">Подсказка для сайта "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="6316139424528454185">Устаревшая версия Android</translation>
 <translation id="6324034347079777476">Синхронизация системы Android отключена</translation>
 <translation id="6333140779060797560">Отправить с помощью <ph name="APPLICATION" /></translation>
@@ -905,9 +908,6 @@
 <translation id="766587987807204883">Здесь появляются статьи, которые можно читать даже в офлайн-режиме.</translation>
 <translation id="7682724950699840886">Убедитесь, что на вашем устройстве достаточно свободного места. Затем снова попробуйте экспортировать пароли.</translation>
 <translation id="7698359219371678927">Написать письмо в приложении "<ph name="APP_NAME" />"</translation>
-<translation id="7702724591845223485">Чтобы удалить учетные данные и другие сведения из Chrome, закройте все вкладки инкогнито.
-
-В этом режиме информация о ваших действиях может быть по-прежнему доступна сайтам, которые вы посещаете, системному администратору в учебном заведении или на работе, а также вашему интернет-провайдеру.</translation>
 <translation id="7704317875155739195">Заполнять поисковые запросы и URL автоматически</translation>
 <translation id="7725024127233776428">Здесь будут страницы, которые вы добавляете в закладки.</translation>
 <translation id="7735637452482172701">Использовать разблокировку экрана</translation>
@@ -963,7 +963,6 @@
 <translation id="8058746566562539958">Открыть в новой вкладке</translation>
 <translation id="8063895661287329888">Не удалось добавить закладку.</translation>
 <translation id="806745655614357130">Не объединять данные</translation>
-<translation id="8069669375923284295">Нажмите, чтобы продолжить настройку синхронизации.</translation>
 <translation id="8073388330009372546">Открыть в новой вкладке</translation>
 <translation id="8076492880354921740">Вкладки</translation>
 <translation id="8084114998886531721">Сохраненный пароль</translation>

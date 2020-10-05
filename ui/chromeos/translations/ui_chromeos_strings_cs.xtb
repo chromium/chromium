@@ -117,7 +117,6 @@
 <translation id="2208158072373999562">Archiv ZIP</translation>
 <translation id="2225536596944493418">Opravdu chcete tyto položky (<ph name="NUMBER_OF_ITEMS" />) smazat?</translation>
 <translation id="2230062665678605299">Složku „<ph name="FOLDER_NAME" />“ se nepodařilo vytvořit. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2270413998793223379">sanskrt</translation>
 <translation id="2275059641601412272">Přesunuto.</translation>
 <translation id="2278988676849463018">Kannadská klávesnice (fonetická)</translation>
 <translation id="2287742181953707290">portugalština s klávesnicí USA – mezinárodní (PC)</translation>
@@ -283,6 +282,7 @@
 <translation id="4072248638558688893">Tamilská klávesnice (fonetická)</translation>
 <translation id="4124935795427217608">Jednorožec</translation>
 <translation id="4158739975813877944">Otevřít seznam přehrávání</translation>
+<translation id="4159731583141908892">Přesunutá položka: <ph name="FILE_NAME" />.</translation>
 <translation id="418179967336296930">Ruská fonetická klávesnice (YaZHert)</translation>
 <translation id="4193154014135846272">Dokument Google</translation>
 <translation id="4195249722193633765">Nainstalovat aplikaci pro Linux (beta)</translation>
@@ -318,6 +318,7 @@
 <translation id="4582497162516204941">Instalovat pomocí Linuxu (beta)</translation>
 <translation id="4594543368593301662">Zobrazují se výsledky pro dotaz <ph name="SEARCH_TERM" />.</translation>
 <translation id="4603392156942865207">Kopírování souboru <ph name="FILE_NAME" /> do složky <ph name="FOLDER_NAME" /></translation>
+<translation id="4627439232948440198">Sanskrt</translation>
 <translation id="4631887759990505102">Interpret</translation>
 <translation id="4656293982926141856">Tento počítač</translation>
 <translation id="4669606053856530811">Pokud s nimi tyto položky nejsou sdíleny, ztratí k nim členové týmu <ph name="SOURCE_NAME" /> přístup.</translation>
@@ -617,6 +618,7 @@
 <translation id="7693909743393669729">Naformátováním jednotky smažete všechna na ní uložená data a odstraníte všechny stávající oddíly (včetně neviditelných). Tuto akci nelze vrátit zpět.</translation>
 <translation id="7695430100978772476">Disk <ph name="DRIVE_NAME" /> se nepodařilo naformátovat</translation>
 <translation id="770015031906360009">řečtina</translation>
+<translation id="7705251383879779343">Položka <ph name="FILE_NAME" /> byla zkopírována.</translation>
 <translation id="7706319470528945664">Portugalská klávesnice</translation>
 <translation id="7711920809702896782">Informace o obrázku</translation>
 <translation id="7724603315864178912">Vyjmout</translation>

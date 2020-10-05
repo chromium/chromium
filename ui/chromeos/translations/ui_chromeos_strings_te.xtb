@@ -117,7 +117,6 @@
 <translation id="2208158072373999562">జిప్ ఆర్కైవ్</translation>
 <translation id="2225536596944493418">మీరు <ph name="NUMBER_OF_ITEMS" /> అంశాలను ఖచ్చితంగా తొలగించాలనుకుంటున్నారా?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ఫోల్డర్‌ను సృష్టించడం సాధ్యపడలేదు. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2270413998793223379">సంస్కృతం</translation>
 <translation id="2275059641601412272">తరలించబడింది.</translation>
 <translation id="2278988676849463018">కన్నడ కీబోర్డ్ (ఫొనెటిక్)</translation>
 <translation id="2287742181953707290">US అంతర్జాతీయ PC కీబోర్డ్‌తో పోర్చుగీస్</translation>
@@ -283,6 +282,7 @@
 <translation id="4072248638558688893">తమిళ కీబోర్డ్ (ఫొనెటిక్)</translation>
 <translation id="4124935795427217608">యునికార్న్</translation>
 <translation id="4158739975813877944">ప్లే జాబితాను తెరువు</translation>
+<translation id="4159731583141908892"><ph name="FILE_NAME" /> తరలించబడింది.</translation>
 <translation id="418179967336296930">రష్యన్ ఫొనెటిక్ (YaZHert) కీబోర్డ్</translation>
 <translation id="4193154014135846272">Google పత్రం</translation>
 <translation id="4195249722193633765">Linux (బీటా)తో అప్లికేషన్‌ని ఇన్‌స్టాల్ చేయండి</translation>
@@ -318,6 +318,7 @@
 <translation id="4582497162516204941">Linux (బీటా)తో ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> ఫలితాలను చూపుతోంది.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" />ను <ph name="FOLDER_NAME" />కు కాపీ చేస్తోంది</translation>
+<translation id="4627439232948440198">సంస్కృతం</translation>
 <translation id="4631887759990505102">చిత్రకారుడు</translation>
 <translation id="4656293982926141856">ఈ కంప్యూటర్</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' యొక్క సభ్యులతో ఈ అంశాలను షేర్ చేస్తే మినహా వారు యాక్సెస్‌ను కోల్పోతారు.</translation>
@@ -618,6 +619,7 @@
 <translation id="7693909743393669729">డ్రైవ్‌ను ఫార్మాట్ చేయడం వలన దానిలో స్టోర్ చేసిన మొత్తం డేటా తొలగించబడుతుంది, కనపడకుండా ఉండే కొన్ని విభజనలతో సహా విభజనలు అన్నీ తీసివేయబడతాయి. ఈ చర్యను రద్దు చేయలేరు.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" />ను ఫార్మాట్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="770015031906360009">గ్రీక్</translation>
+<translation id="7705251383879779343"><ph name="FILE_NAME" /> కాపీ చేయబడింది.</translation>
 <translation id="7706319470528945664">పోర్చ్‌గీస్ కీబోర్డ్</translation>
 <translation id="7711920809702896782">చిత్రం సమాచారం</translation>
 <translation id="7724603315864178912">కత్తిరించు</translation>

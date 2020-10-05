@@ -134,6 +134,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1453974140256777690">Text that you paste or attach is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data.</translation>
 <translation id="1455413310270022028">Eraser</translation>
 <translation id="1462245070427461050">JIS B9</translation>
+<translation id="1462951478840426066">Use the fonts on your computer so that you can create high-fidelity content</translation>
 <translation id="1463543813647160932">5 x 7</translation>
 <translation id="1467432559032391204">Left</translation>
 <translation id="1472675084647422956">Show more</translation>
@@ -221,6 +222,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="17513872634828108">Open tabs</translation>
 <translation id="1752021286346845558">Mailbox 8</translation>
 <translation id="1753706481035618306">Page number</translation>
+<translation id="1757773103848038814">Monospace font</translation>
 <translation id="1763864636252898013">This server could not prove that it is <ph name="DOMAIN" />; its security certificate is not trusted by your device's operating system. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Try running Windows Network Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">The server that you are going to, <ph name="ORIGIN" />, has set a header
@@ -593,6 +595,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3395827396354264108">Pickup method</translation>
 <translation id="3399952811970034796">Delivery Address</translation>
 <translation id="3402261774528610252">The connection used to load this site used TLS 1.0 or TLS 1.1, which are deprecated and will be disabled in the future. Once disabled, users will be prevented from loading this site. The server should enable TLS 1.2 or later.</translation>
+<translation id="3411120537985775570">Pasting from <ph name="ORIGIN_NAME" /> to this location is blocked by your administrator</translation>
 <translation id="3414952576877147120">Size:</translation>
 <translation id="3417660076059365994">Files that you upload or attach are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware.</translation>
 <translation id="3422248202833853650">Try exiting other programmes to free up memory.</translation>
@@ -631,6 +634,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3532844647053365774"><ph name="HOST" /> wants to use your microphone</translation>
 <translation id="3533328374079021623">Mailbox 5</translation>
 <translation id="3539171420378717834">Keep a copy of this card on this device</translation>
+<translation id="3552297013052089404">Sans-serif font</translation>
 <translation id="3558573058928565255">Day time</translation>
 <translation id="3566021033012934673">Your connection is not private</translation>
 <translation id="3567778190852720481">Can't enrol with enterprise account (enterprise account is not eligible).</translation>
@@ -829,6 +833,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4277028893293644418">Reset password</translation>
 <translation id="4279811152705618813">Your <ph name="DEVICE_TYPE" /> is managed by <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{This card has been saved in your Google Account}other{These cards have been saved in your Google Account}}</translation>
+<translation id="4297502707443874121">Thumbnail for page <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Expand</translation>
 <translation id="4300675098767811073">Multiple punch right</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
@@ -999,6 +1004,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="503069730517007720">A root certificate for '<ph name="SOFTWARE_NAME" />' is required but isn’t installed. Your IT administrator should look at configuration instructions for '<ph name="SOFTWARE_NAME" />' to fix this problem. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">About Google Translate</translation>
 <translation id="503498442187459473"><ph name="HOST" /> wants to use your camera and microphone</translation>
+<translation id="5039762155821394373">Font size</translation>
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5040262127954254034">Privacy</translation>
 <translation id="5043480802608081735">Link that you copied</translation>
@@ -1228,6 +1234,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Opening <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Can't enrol with consumer account (packaged licence available).</translation>
+<translation id="5963413905009737549">Section</translation>
 <translation id="5967592137238574583">Edit Contact Info</translation>
 <translation id="5967867314010545767">Remove from history</translation>
 <translation id="5975083100439434680">Zoom out</translation>
@@ -1264,6 +1271,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6051221802930200923">You cannot visit <ph name="SITE" /> right now because the website uses certificate pinning. Network errors and attacks are usually temporary, so this page will probably work later.</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">Share your presence?</translation>
+<translation id="6057359309778282021">Your administrator has blocked sharing from <ph name="ORIGIN_NAME" /> to <ph name="VM_NAME" /></translation>
 <translation id="6058977677006700226">Use your cards on all your devices?</translation>
 <translation id="6059925163896151826">USB devices</translation>
 <translation id="6060009363608157444">Invalid DnsOverHttps mode.</translation>
@@ -1313,6 +1321,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
         <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">Can’t deliver to this address. Select a different address.</translation>
 <translation id="6282194474023008486">Postcode</translation>
+<translation id="6289939620939689042">Page colour</translation>
 <translation id="6290238015253830360">Your suggested articles appear here</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Google Assistant in Chrome stopping</translation>
@@ -1469,6 +1478,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7004583254764674281">Use Windows Hello to confirm cards faster</translation>
 <translation id="7006930604109697472">Send anyway</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7014741021609395734">Zoom level</translation>
 <translation id="7016992613359344582">These charges could be one-off or recurring and may not be obvious.</translation>
 <translation id="7029809446516969842">Passwords</translation>
 <translation id="7031646650991750659">Which Google Play apps you have installed</translation>
@@ -1870,6 +1880,7 @@ Additional details:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">No matching passwords. Show all saved passwords.</translation>
 <translation id="8625384913736129811">Save This Card to This Device</translation>
+<translation id="8657078576661269990">Your administrator has blocked sharing from <ph name="ORIGIN_NAME" /> to <ph name="VM_NAME_1" /> and <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Order Summary, <ph name="TOTAL_LABEL" />, More Details</translation>
 <translation id="867224526087042813">Signature</translation>
 <translation id="8676424191133491403">No delay</translation>
@@ -1882,6 +1893,7 @@ Additional details:
 <translation id="8699041776323235191">HID device</translation>
 <translation id="8703575177326907206">Your connection to <ph name="DOMAIN" /> is not encrypted.</translation>
 <translation id="8705331520020532516">Serial Number</translation>
+<translation id="8710842507289500830">Font style</translation>
 <translation id="8718314106902482036">Payment not completed</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, search suggestion</translation>
 <translation id="8719528812645237045">Multiple punch top</translation>
@@ -2002,6 +2014,7 @@ Additional details:
 <translation id="9191834167571392248">Punch bottom left</translation>
 <translation id="9205078245616868884">Your data is encrypted with your sync passphrase. Enter it to start sync.</translation>
 <translation id="9207861905230894330">Failed to add article.</translation>
+<translation id="9213433120051936369">Customise appearance</translation>
 <translation id="9215416866750762878">An application is stopping Chrome from safely connecting to this site</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="933712198907837967">Diners Club</translation>

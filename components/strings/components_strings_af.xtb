@@ -134,6 +134,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1453974140256777690">Teks wat jy plak of aanheg word na Google Cloud of derde partye gestuur om ontleed te word. Dit kan byvoorbeeld vir sensitiewe data geskandeer word.</translation>
 <translation id="1455413310270022028">Uitveër</translation>
 <translation id="1462245070427461050">JIS B9</translation>
+<translation id="1462951478840426066">Gebruik die lettertipes op jou rekenaar sodat jy hoëtrou-inhoud kan skep</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">Links</translation>
 <translation id="1472675084647422956">Wys meer</translation>
@@ -221,6 +222,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="17513872634828108">Oop oortjies</translation>
 <translation id="1752021286346845558">Posbus 8</translation>
 <translation id="1753706481035618306">Bladsynommer</translation>
+<translation id="1757773103848038814">Enkelspasielettertipe</translation>
 <translation id="1763864636252898013">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat word nie deur jou toestel se bedryfstelsel vertrou nie. Dit kan veroorsaak word deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Probeer Windows Network Diagnostics uitvoer<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">Die bediener waarheen jy nou gaan, <ph name="ORIGIN" />, het 'n opskrif gestel
@@ -594,6 +596,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3395827396354264108">Oplaaimetode</translation>
 <translation id="3399952811970034796">Afleweringadres</translation>
 <translation id="3402261774528610252">Die verbinding wat gebruik word om hierdie werf te laai, gebruik TLS 1.0 of TLS 1.1, wat opgeskort is en in die toekoms gedeaktiveer sal word. Nadat dit gedeaktiveer is, sal gebruikers verhinder word om hierdie werf te laai. Die bediener moet TLS 1.2 of nuwer aktiveer.</translation>
+<translation id="3411120537985775570">Jou administrateur blokkeer plak van <ph name="ORIGIN_NAME" /> af na hierdie ligging toe</translation>
 <translation id="3414952576877147120">Grootte:</translation>
 <translation id="3417660076059365994">Lêers wat jy oplaai of aanheg, word na Google Cloud of derde partye gestuur om ontleed te word. Hulle kan byvoorbeeld vir sensitiewe data of wanware geskandeer word.</translation>
 <translation id="3422248202833853650">Probeer opwindende ander programme om berging beskikbaar te maak.</translation>
@@ -632,6 +635,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3532844647053365774"><ph name="HOST" /> wil jou mikrofoon gebruik</translation>
 <translation id="3533328374079021623">Posbus 5</translation>
 <translation id="3539171420378717834">Hou 'n kopie van hierdie kaart op hierdie toestel</translation>
+<translation id="3552297013052089404">Sans serif-lettertipe</translation>
 <translation id="3558573058928565255">Dag</translation>
 <translation id="3566021033012934673">Jou verbinding is nie privaat nie</translation>
 <translation id="3567778190852720481">Kan nie met werkrekening inskryf nie (werkrekening kwalifiseer nie).</translation>
@@ -1000,6 +1004,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="503069730517007720">'n Kernsertifikaat vir "<ph name="SOFTWARE_NAME" />" word vereis, maar is nie geïnstalleer nie. Jou IT-administrateur moet opstellinginstruksies vir "<ph name="SOFTWARE_NAME" />" nagaan om hierdie probleem reg te stel. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Meer oor Google Vertaal</translation>
 <translation id="503498442187459473"><ph name="HOST" /> wil jou kamera en mikrofoon gebruik</translation>
+<translation id="5039762155821394373">Lettergrootte</translation>
 <translation id="5039804452771397117">Laat toe</translation>
 <translation id="5040262127954254034">Privaatheid</translation>
 <translation id="5043480802608081735">Skakel wat jy gekopieer het</translation>
@@ -1229,6 +1234,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Maak tans <ph name="SITE_NAME" /> oop …</translation>
 <translation id="5951495562196540101">Kan nie met 'n verbruikerrekening inskryf nie (verpakte lisensie beskikbaar).</translation>
+<translation id="5963413905009737549">Afdeling</translation>
 <translation id="5967592137238574583">Wysig kontakinligting</translation>
 <translation id="5967867314010545767">Verwyder uit geskiedenis</translation>
 <translation id="5975083100439434680">Zoem uit</translation>
@@ -1265,6 +1271,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6051221802930200923">Jy kan nie <ph name="SITE" /> nou onmiddellik besoek nie omdat die webwerf sertifikaatvasspelding gebruik. Netwerkfoute en -aanvalle is gewoonlik tydelik en daarom sal hierdie bladsy waarskynlik later werk.</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">Deel jou teenwoordigheid?</translation>
+<translation id="6057359309778282021">Jou administrateur blokkeer deling van <ph name="ORIGIN_NAME" /> af na <ph name="VM_NAME" /></translation>
 <translation id="6058977677006700226">Gebruik jou kaarte op al jou toestelle?</translation>
 <translation id="6059925163896151826">USB-toestelle</translation>
 <translation id="6060009363608157444">Ongeldige DnsOverHttps-modus.</translation>
@@ -1314,6 +1321,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
         <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">Kan nie by hierdie adres aflewer nie. Kies 'n ander adres.</translation>
 <translation id="6282194474023008486">Poskode</translation>
+<translation id="6289939620939689042">Bladsykleur</translation>
 <translation id="6290238015253830360">Jou voorgestelde artikels verskyn hier</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Google Assistent in Chrome stop tans</translation>
@@ -1397,6 +1405,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6645291930348198241">Kry toegang tot webkoekies en werfdata.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Geen}=1{Vanaf 1 werf (jy sal nie uit jou Google-rekening afgemeld word nie)}other{Vanaf # werwe (jy sal nie uit jou Google-rekening afgemeld word nie)}}</translation>
 <translation id="6648459603387803038">Jou administrateur kan jou blaaieropstelling oor 'n afstand verander. Aktiwiteit op hierdie toestel kan ook buite Chrome bestuur word.</translation>
+<translation id="6648524591329069940">Seriflettertipe</translation>
 <translation id="6652101503459149953">Gebruik Windows Hello</translation>
 <translation id="6657585470893396449">Wagwoord</translation>
 <translation id="666259744093848177">(x86_64 vertaal)</translation>
@@ -1469,6 +1478,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="7004583254764674281">Gebruik Windows Hello om kaarte vinniger te bevestig</translation>
 <translation id="7006930604109697472">Stuur in elk geval</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7014741021609395734">Zoemvlak</translation>
 <translation id="7016992613359344582">Hierdie heffings kan eenmalig of herhalend wees en is dalk nie ooglopend nie.</translation>
 <translation id="7029809446516969842">Wagwoorde</translation>
 <translation id="7031646650991750659">Watter Google Play-programme jy geïnstalleer het</translation>
@@ -1870,6 +1880,7 @@ Bykomende besonderhede:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Geen passende wagwoorde nie. Wys alle gestoorde wagwoorde.</translation>
 <translation id="8625384913736129811">Stoor hierdie kaart op hierdie toestel</translation>
+<translation id="8657078576661269990">Jou administrateur het deling van <ph name="ORIGIN_NAME" /> af na <ph name="VM_NAME_1" /> en <ph name="VM_NAME_2" /> geblokkeer</translation>
 <translation id="8663226718884576429">Bestellingopsomming, <ph name="TOTAL_LABEL" />, meer besonderhede</translation>
 <translation id="867224526087042813">Handtekening</translation>
 <translation id="8676424191133491403">Geen wagperiode nie</translation>
@@ -1882,6 +1893,7 @@ Bykomende besonderhede:
 <translation id="8699041776323235191">HID-toestel</translation>
 <translation id="8703575177326907206">Jou verbinding aan <ph name="DOMAIN" /> is nie geënkripteer nie.</translation>
 <translation id="8705331520020532516">Reeksnommer</translation>
+<translation id="8710842507289500830">Lettertipestyl</translation>
 <translation id="8718314106902482036">Betaling is nie voltooi nie</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, soekvoorstel</translation>
 <translation id="8719528812645237045">Veelvuldige pons bo</translation>
@@ -2002,6 +2014,7 @@ Bykomende besonderhede:
 <translation id="9191834167571392248">Pons links onder</translation>
 <translation id="9205078245616868884">Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om sinkronisering te begin.</translation>
 <translation id="9207861905230894330">Kon nie artikel bevoeg nie.</translation>
+<translation id="9213433120051936369">Pasmaak voorkoms</translation>
 <translation id="9215416866750762878">'n Program verhinder Chrome om veilig aan hierdie werf te koppel</translation>
 <translation id="9219103736887031265">Prente</translation>
 <translation id="933712198907837967">Diners Club</translation>

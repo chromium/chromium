@@ -117,7 +117,6 @@
 <translation id="2208158072373999562">Архіў ZIP</translation>
 <translation id="2225536596944493418">Сапраўды выдаліць гэтыя элементы (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Не ўдалося стварыць папку "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2270413998793223379">Санскрыт</translation>
 <translation id="2275059641601412272">Перамешчана.</translation>
 <translation id="2278988676849463018">Раскладка каннада (фанетычная)</translation>
 <translation id="2287742181953707290">Партугальская з міжнароднай клавіятурай ЗША для ПК</translation>
@@ -283,6 +282,7 @@
 <translation id="4072248638558688893">Тамільская клавіятура (фанетычная)</translation>
 <translation id="4124935795427217608">Аднарог</translation>
 <translation id="4158739975813877944">Адкрыць плэй-ліст</translation>
+<translation id="4159731583141908892">Элемент "<ph name="FILE_NAME" />" перамешчаны.</translation>
 <translation id="418179967336296930">Руская фанетычная (YaZHert) клавіятура</translation>
 <translation id="4193154014135846272">Дакумент Google</translation>
 <translation id="4195249722193633765">Усталяванне праграмы пад Linux (бэта-версія)</translation>
@@ -296,7 +296,7 @@
 <translation id="4298972503445160211">Дацкая клавіятура</translation>
 <translation id="4299729908419173967">Бразільская</translation>
 <translation id="4309915981827077375">Агульныя звесткі</translation>
-<translation id="4315949787858895817">Нiдэрландская (Бельгія)</translation>
+<translation id="4315949787858895817">Нідэрландская (Бельгія)</translation>
 <translation id="4326192123064055915">Кава</translation>
 <translation id="4336032328163998280">Збой аперацыі капіравання. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">Дыня</translation>
@@ -318,6 +318,7 @@
 <translation id="4582497162516204941">Усталяваць пакет Linux (бэта-версія)</translation>
 <translation id="4594543368593301662">Паказваюцца вынікі па запыце "<ph name="SEARCH_TERM" />".</translation>
 <translation id="4603392156942865207">Ідзе капіраванне файла "<ph name="FILE_NAME" />" у папку "<ph name="FOLDER_NAME" />"</translation>
+<translation id="4627439232948440198">Санскрыт</translation>
 <translation id="4631887759990505102">Выканаўца</translation>
 <translation id="4656293982926141856">Гэты камп'ютар</translation>
 <translation id="4669606053856530811">Удзельнікі дыска "<ph name="SOURCE_NAME" />" страцяць доступ да гэтых элементаў, калі гэтыя элементы не абагулены з імі.</translation>
@@ -617,6 +618,7 @@
 <translation id="7693909743393669729">Фармаціраванне дыска прывядзе да сцірання ўсіх захаваных на ім даных і выдалення ўсіх наяўных раздзелаў, у тым ліку нябачных. Гэта дзеянне немагчыма адрабіць.</translation>
 <translation id="7695430100978772476">Не ўдалося адфармаціраваць дыск "<ph name="DRIVE_NAME" />"</translation>
 <translation id="770015031906360009">Грэчаская</translation>
+<translation id="7705251383879779343">Элемент "<ph name="FILE_NAME" />" скапіраваны.</translation>
 <translation id="7706319470528945664">Партугальская клавіятура</translation>
 <translation id="7711920809702896782">Звесткі пра відарыс</translation>
 <translation id="7724603315864178912">Выразаць</translation>

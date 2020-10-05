@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Dit is een nieuwe functie</translation>
 <translation id="2006524834898217237">Zorg dat dit apparaat is verbonden met internet.</translation>
 <translation id="208586643495776849">Probeer het opnieuw</translation>
-<translation id="2090963878406559571">Als je vanaf <ph name="ORIGIN" /> een nummer naar je Android-telefoon wilt sturen, moet je in de instellingen <ph name="TROUBLESHOOT_LINK" /> voor beide apparaten.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d}other{# d}}</translation>
 <translation id="2148716181193084225">Vandaag</translation>
 <translation id="2161656808144014275">Tekst</translation>
@@ -103,7 +102,6 @@
 <translation id="364720409959344976">Map voor uploaden selecteren</translation>
 <translation id="3660179305079774227">Pijl-omhoog</translation>
 <translation id="3670030362669914947">Nummer</translation>
-<translation id="3674022972144966498"><ph name="FOCUSED_APP_NAME" /> heeft nieuwe updates.</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/s</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
 <translation id="3842239759367498783">Verder lezen vanaf je mobiele apparaat <ph name="TITLE" /></translation>
@@ -136,8 +134,8 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">Driehoek voor samen-/uitvouwen</translation>
 <translation id="5278860589123563674">Verzenden mislukt</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> vraagt om je aandacht.</translation>
 <translation id="528468243742722775">Beëindigen</translation>
-<translation id="5327567770033251652">synchronisatie inschakelen</translation>
 <translation id="5329858601952122676">Verwij&amp;deren</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> bovenop <ph name="IN_PLACE_APP" />, laat los om een map te maken.</translation>
 <translation id="5463830097259460683">Emoji en symbolen</translation>
@@ -147,6 +145,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" />-systeem</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Pijl-links</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> vraagt om je aandacht.</translation>
 <translation id="5675363643668471212">Plankitem</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min.}other{# min.}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Vandaag actief}=1{1 dag geleden actief}other{# dagen geleden actief}}</translation>
@@ -184,10 +183,8 @@
 <translation id="6578407462441924264">Naamloos</translation>
 <translation id="6612467943526193239">Druk op Esc om de kalibratie af te sluiten.</translation>
 <translation id="6620110761915583480">Bestand opslaan</translation>
-<translation id="6656912866303152668">Zorg dat synchronisatie in Chrome is ingeschakeld voor <ph name="TARGET_DEVICE_NAME" /> en probeer opnieuw te verzenden.</translation>
 <translation id="6699343763173986273">Volgende track voor media</translation>
 <translation id="6710213216561001401">Vorige</translation>
-<translation id="6779314412797872738">Als je vanaf hier een nummer naar je Android-telefoon wilt sturen, moet je in de instellingen <ph name="TROUBLESHOOT_LINK" /> voor beide apparaten.</translation>
 <translation id="6786750046913594791">Map sluiten</translation>
 <translation id="6808150112686056157">Media stoppen</translation>
 <translation id="6845383723252244143">Map selecteren</translation>

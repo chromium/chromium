@@ -44,7 +44,6 @@
 <translation id="19085484004813472">这是一项新功能</translation>
 <translation id="2006524834898217237">请确保此设备已连接到互联网。</translation>
 <translation id="208586643495776849">请重试</translation>
-<translation id="2090963878406559571">要从 <ph name="ORIGIN" /> 向您的 Android 手机发送电话号码，请在这两部设备的设置中分别<ph name="TROUBLESHOOT_LINK" />。</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 天}other{# 天}}</translation>
 <translation id="2148716181193084225">今天</translation>
 <translation id="2161656808144014275">文字</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">开合三角标记</translation>
 <translation id="5278860589123563674">发送失败</translation>
 <translation id="528468243742722775">结束</translation>
-<translation id="5327567770033251652">开启同步功能</translation>
 <translation id="5329858601952122676">删除(&amp;D)</translation>
 <translation id="5395308026110844773">“<ph name="DRAGGED_APP_NAME" />”已拖至“<ph name="IN_PLACE_APP" />”上，松开即可创建文件夹。</translation>
 <translation id="5463830097259460683">表情符号与符号</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">未命名</translation>
 <translation id="6612467943526193239">要退出校准模式，请按 Esc 键。</translation>
 <translation id="6620110761915583480">保存文件</translation>
-<translation id="6656912866303152668">请确保 <ph name="TARGET_DEVICE_NAME" /> 已在 Chrome 中开启同步，然后再次尝试发送。</translation>
 <translation id="6699343763173986273">媒体下一曲</translation>
 <translation id="6710213216561001401">上一项</translation>
-<translation id="6779314412797872738">要在此处向您的 Android 手机发送电话号码，请在这两台设备的设置中<ph name="TROUBLESHOOT_LINK" />。</translation>
 <translation id="6786750046913594791">关闭文件夹</translation>
 <translation id="6808150112686056157">媒体停止</translation>
 <translation id="6845383723252244143">选择文件夹</translation>

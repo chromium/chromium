@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Ovo je nova značajka</translation>
 <translation id="2006524834898217237">Provjerite je li uređaj povezan s internetom.</translation>
 <translation id="208586643495776849">Pokušajte ponovo</translation>
-<translation id="2090963878406559571">Da biste poslali broj s <ph name="ORIGIN" /> na svoj Android telefon, <ph name="TROUBLESHOOT_LINK" /> za oba uređaja u postavkama.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d}one{# d}few{# d}other{# d}}</translation>
 <translation id="2148716181193084225">Danas</translation>
 <translation id="2161656808144014275">Tekst</translation>
@@ -103,7 +102,6 @@
 <translation id="364720409959344976">Odabir mape za prijenos</translation>
 <translation id="3660179305079774227">Strelica prema gore</translation>
 <translation id="3670030362669914947">Broj</translation>
-<translation id="3674022972144966498">Aplikacija <ph name="FOCUSED_APP_NAME" /> ima nova ažuriranja.</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/s</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
 <translation id="3842239759367498783">Nastavite čitati s mobilnog uređaja <ph name="TITLE" /></translation>
@@ -136,8 +134,8 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">Trokut za otkrivanje</translation>
 <translation id="5278860589123563674">Slanje nije uspjelo</translation>
+<translation id="5283099933536931082">Aplikacija <ph name="APP_ITEM_TITLE" /> zahtijeva vašu pažnju.</translation>
 <translation id="528468243742722775">Završi</translation>
-<translation id="5327567770033251652">uključite sinkronizaciju</translation>
 <translation id="5329858601952122676">&amp;Obriši</translation>
 <translation id="5395308026110844773">Aplikacija <ph name="DRAGGED_APP_NAME" /> povučena je iznad aplikacije <ph name="IN_PLACE_APP" />. Pustite je da biste izradili mapu.</translation>
 <translation id="5463830097259460683">Emoji i simboli</translation>
@@ -147,6 +145,7 @@
 <translation id="5574202486608032840">Sustav <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Strelica lijevo</translation>
+<translation id="5652575806481723716">Aplikacija <ph name="FOCUSED_APP_NAME" /> zahtijeva vašu pažnju.</translation>
 <translation id="5675363643668471212">Stavka police</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}one{# min}few{# min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktivan danas}=1{Aktivan prije jednog dana}one{Aktivan prije # dana}few{Aktivan prije # dana}other{Aktivan prije # dana}}</translation>
@@ -184,10 +183,8 @@
 <translation id="6578407462441924264">Bez naziva</translation>
 <translation id="6612467943526193239">Za izlaz iz kalibracije pritisnite Esc.</translation>
 <translation id="6620110761915583480">Spremi datoteku</translation>
-<translation id="6656912866303152668">Provjerite je li za <ph name="TARGET_DEVICE_NAME" /> uključena sinkronizacija u Chromeu, a potom pokušajte ponovo poslati.</translation>
 <translation id="6699343763173986273">Sljedeći zapis Medija</translation>
 <translation id="6710213216561001401">Prethodno</translation>
-<translation id="6779314412797872738">Da biste poslali broj s ovog uređaja na svoj Android telefon, <ph name="TROUBLESHOOT_LINK" /> za oba uređaja u postavkama.</translation>
 <translation id="6786750046913594791">Zatvori mapu</translation>
 <translation id="6808150112686056157">Zaustavi Medije</translation>
 <translation id="6845383723252244143">Odabir mape</translation>

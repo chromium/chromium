@@ -97,7 +97,6 @@
 <translation id="1965935827552890526">Жасап жаткан нерсени Chrome'дун ачык терезесинде улантыңыз.</translation>
 <translation id="1974060860693918893">Өркүндөтүлгөн</translation>
 <translation id="1989112275319619282">Серептөө</translation>
-<translation id="1992734845128748707">Демейки серепчини өзгөртүү…</translation>
 <translation id="2015722694326466240">Сырсөздөрдү көрүү үчүн, адегенде, түзмөгүңүздөгү өткөрүүчү кодду жөндөп алышыңыз керек.</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> күн мурун жигердүү болгон</translation>
 <translation id="2074131957428911366">Эмнени шайкештирүү керек экенин <ph name="BEGIN_LINK" />жөндөөлөрдөн<ph name="END_LINK" /> ар дайым тандай аласыз.</translation>
@@ -165,6 +164,7 @@
 <translation id="2781331604911854368">Күйүк</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Өтмөк которуштургучтан кетүү</translation>
+<translation id="2815198996063984598">2. Демейки серепчи колдонмосун басыңыз</translation>
 <translation id="2830972654601096923">Даректерди башкаруу…</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Баштапкы шайкештирүү жөндөөсү аяктаган жок</translation>
@@ -181,6 +181,7 @@
 <translation id="2921219216347069551">Бетти бөлш мүмкн эмс</translation>
 <translation id="2923448633003185837">Чаптоо жана өтүү</translation>
 <translation id="292639812446257861">Окула элек деп белгилөө</translation>
+<translation id="2952581218264071393">1. Chrome'дун жөндөөлөрүн ачыңыз</translation>
 <translation id="2958718410589002129">Сырсөздөр</translation>
 <translation id="2964349545761222050">Үчүнчү тараптын cookie файлдарын бөгөттөө</translation>
 <translation id="2969979262385602596">Кире албай калдңз. Бир аздн кийн аракт кылп көрңз.</translation>
@@ -217,6 +218,7 @@
 <translation id="3335947283844343239">Жабылган терезени кайра ачуу</translation>
 <translation id="3371831930909698441">Котормочу жеткиликтүү. Параметрлер экрандын төмөн жагында берилген.</translation>
 <translation id="3393920035788932672">Калк чыкм урукс берл</translation>
+<translation id="3399930248910934354">Chrome'дун жөндөөлөрүн ачыңыз</translation>
 <translation id="3425644765244388016">Картанын ылакап аты</translation>
 <translation id="3433057996795775706">Бул сырсөздү жок кылуу менен, <ph name="WEBSITE" /> аккаунтуңуз жок кылынбайт. <ph name="WEBSITE" /> аккаунтуңузду башкалардан коргоо үчүн сырсөздү өзгөртүңүз.</translation>
 <translation id="3443810440409579745">Өтмөк алынды.</translation>
@@ -241,6 +243,9 @@
 <translation id="3551320343578183772">Өтмөктү жабуу</translation>
 <translation id="3581564640715911333">Башка тилдердеги барактарды которуу сунушталсын</translation>
 <translation id="3588820906588687999">Сүрөттү жаңы өтмөктө ачуу</translation>
+<translation id="359441731697487922">Chrome'ду демейки серепчиңиз кылып алып, шилтемелерди автоматтык түрдө ачыңыз.
+      
+Төмөнкү кадамдарды аткарыңыз:</translation>
 <translation id="3603009562372709545">Шилтеменин URL көчүрүү</translation>
 <translation id="3607167657931203000">Дайындарды автотолтуруу</translation>
 <translation id="3609785682760573515">Шайкештештирилүүдө…</translation>
@@ -331,6 +336,7 @@
 <translation id="4747097190499141774">Купуя сөз айкашы менен шифрлөө Google Pay'деги төлөм ыкмалары менен даректерине карата колдонулбайт. Шифрленген дайын-даректериңизди купуя сөз айкашын билген адам гана окуй алат. Бул купуя сөз айкашы Google'га жөнөтүлбөйт же анда сакталбайт. Эгер купуя сөз айкашыңызды унутуп калсаңыз, шайкештирүүнү баштапкы абалга келтиришиңиз керек болот. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Жаңы жашыруун өтмөк</translation>
 <translation id="4758977202923349869">Насыя картасын ушул алкактын ичине жайгаштырыңыз</translation>
+<translation id="4775879719735953715">Демейки серепчи</translation>
 <translation id="4802417911091824046">Купуя сөз айкашы менен шифрлөө Google Pay'деги төлөм ыкмалары менен даректерине карата колдонулбайт.
 
 Бул жөндөөнү өзгөртүү үчүн <ph name="BEGIN_LINK" />шайкештирүүнү баштапкы абалга келтириңиз<ph name="END_LINK" /></translation>
@@ -338,6 +344,7 @@
 <translation id="4808744395915275922">Жаңыртуулар</translation>
 <translation id="4818522717893377262">Тил кошуу…</translation>
 <translation id="481968316161811770">Кукилер, сайт дайындары</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} жана дагы 1}other{{domain} жана дагы {count}}}</translation>
 <translation id="4826218269716039351">Үчүнчү тараптыкы бөгөттөлгөн</translation>
 <translation id="48274138579728272">Окулду деп белгилөө</translation>
 <translation id="4833786495304741580">Колдонуу статистикасын жана каталар жөнүндө кабарларды Google'га автоматтык түрдө жөнөтүп турат.</translation>
@@ -586,6 +593,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="7456847797759667638">Жайгашкан жерди ачуу…</translation>
 <translation id="7460314822154045102">Камераны колдонуу</translation>
 <translation id="7464701184726199289">Бул учурда шайкештештирилген дайындар бардык түзмөктөрдөн тазаланат. Сакталган сайт жөндөөлөрү өзгөрүлбөйт, андыктан, сайттарды адаттагыдай карай бересиз. <ph name="BEGIN_LINK" />Көбүрөөк маалымат алуу<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. Chrome'ду тандаңыз</translation>
 <translation id="7472734401283673885">Компаниянын аты</translation>
 <translation id="7473891865547856676">Жок, рахмат</translation>
 <translation id="7481312909269577407">Багыттоо</translation>

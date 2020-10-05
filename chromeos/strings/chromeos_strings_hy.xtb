@@ -25,7 +25,7 @@
 <translation id="2872961005593481000">Անջատել</translation>
 <translation id="3008341117444806826">ԹԱՐՄԱՑՆԵԼ</translation>
 <translation id="3091839911843451378">Չհաջողվեց տպել – Տպիչի աշխատանքը դադարեցվել է</translation>
-<translation id="3246869037381808805">1 օրից հին տպելու առաջադրանքները կհեռացվեն</translation>
+<translation id="3246869037381808805">Տպման առաջադրանքները, որոնք 1 օրից հին են, կհեռացվեն</translation>
 <translation id="3268178239013324452">Չհաջողվեց տպել – Կափարիչը բաց է</translation>
 <translation id="3369013195428705271">Մաքրե՞լ ամբողջ տպման պատմությունը: Ընթացիկ տպման աշխատանքները չեն ջնջվի։</translation>
 <translation id="3456078764689556234">Տպված էջ՝ <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />։</translation>
@@ -36,7 +36,7 @@
 <translation id="38114475217616659">Մաքրել ամբողջ պատմությունը</translation>
 <translation id="3820172043799983114">PIN-ը սխալ է</translation>
 <translation id="3838338534323494292">Նոր գաղտնաբառը</translation>
-<translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> օրից հին տպելու առաջադրանքները կհեռացվեն</translation>
+<translation id="39823212440917567">Տպման առաջադրանքները, որոնք <ph name="NUMBER_OF_DAYS" /> օրից հին են, կհեռացվեն</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> տիրույթը կառավարում է այս սարքը, և դրան տեսանելի են օգտատիրոջ բոլոր գործողությունները, այդ թվում՝ այցելած կայքերը, գաղտնաբառերը և նամակները:</translation>
 <translation id="4003384961948020559">Չհաջողվեց տպել – Ելքը լցված է</translation>
 <translation id="4027485274696301677">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="ENROLLMENT_DOMAIN" /> տիրույթի կողմից։ Ադմինիստրատորները կարող են հեռակա փոխել սարքի կարգավորումները։</translation>
@@ -55,6 +55,7 @@
 <translation id="4890353053343094602">Հնարավորինս արագ փոխեք գաղտնաբառը</translation>
 <translation id="4917889632206600977">Դադարեցվել է – Թուղթ չկա</translation>
 <translation id="4932733599132424254">Ամսաթիվ</translation>
+<translation id="520299634122159966">Հասանելի սկաներներ չկան</translation>
 <translation id="5212543919916444558">Չհաջողվեց գտնել քարտեր էկրանին:
 Փորձեք օգտագործել խոսափողը` առաջադրանքներ տալու համար:</translation>
 <translation id="5222676887888702881">Դուրս գրվել</translation>

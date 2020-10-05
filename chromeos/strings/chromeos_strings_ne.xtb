@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">अज्ञात त्रुटि:</translation>
 <translation id="1413240736185167732">प्रिन्ट गर्न सकिएन - फिल्टरमा समस्या आयो</translation>
 <translation id="1468664791493211953">योजनाहरू</translation>
+<translation id="1478594628797167447">स्क्यानर</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> ले यो यन्त्रको व्यवस्थापन गर्ने छ र तपाईंको क्रियाकलाप निरीक्षण गर्न सक्छ।</translation>
 <translation id="150962533380566081">अमान्य PUK।</translation>
 <translation id="1510238584712386396">लन्चर</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">बन्द गर्नुहोस्</translation>
 <translation id="3008341117444806826">पुनः ताजा गर्नुहोस्</translation>
 <translation id="3091839911843451378">प्रिन्ट गर्न सकिएन - प्रिन्ट गर्दा गर्दै रोकियो</translation>
+<translation id="3246869037381808805">१ दिनभन्दा पहिलेका प्रिन्टसम्बन्धी कार्यहरू हटाइने छन्</translation>
 <translation id="3268178239013324452">प्रिन्ट गर्न सकिएन - प्रिन्टरको कभर खुला छ</translation>
 <translation id="3369013195428705271">आफूले गरेका प्रिन्टको सबै इतिहास मेटाउन खोज्नुभएकै हो? भइरहेका प्रिन्टिङ कार्यहरू मेटाइने छैनन्।</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> मध्ये <ph name="PRINTED_PAGES" /> पृष्ठहरू प्रिन्ट गरिए</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">सबै इतिहास मेटाउनुहोस्</translation>
 <translation id="3820172043799983114">अमान्य PIN।</translation>
 <translation id="3838338534323494292">नयाँ पासवर्ड</translation>
+<translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> दिनभन्दा पहिलेका प्रिन्टसम्बन्धी कार्यहरू हटाइने छ</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" />ले यस यन्त्रको व्यवस्थापन गर्छ र भ्रमण गरिएका वेब पृष्ठ, पासवर्ड र इमेललगायत प्रयोगकर्ताका सबै क्रियाकलापमाथि यसको पहुँच छ।</translation>
 <translation id="4003384961948020559">प्रिन्ट गर्न सकिएन - ट्रे भरियो</translation>
 <translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> ले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ। एड्मिनहरू टाढैबाट यो यन्त्र कन्फिगर गर्न सक्छन्।</translation>
@@ -52,6 +55,7 @@
 <translation id="4890353053343094602">तुरुन्तै एउटा नयाँ पासवर्ड राख्नुहोस्</translation>
 <translation id="4917889632206600977">रोकियो - प्रिन्टरमा कागज सकियो</translation>
 <translation id="4932733599132424254">मिति</translation>
+<translation id="520299634122159966">कुनै पनि स्क्यानर उपलब्ध छैन</translation>
 <translation id="5212543919916444558">मैले तपाईंको स्क्रिनमा आफूले मद्दत गर्न मिल्ने कुनै पनि कुरा फेला पार्न सकिन। मलाई केही कुरा सोध्न माइकमा ट्याप गरी हेर्नुहोस्।</translation>
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
@@ -70,6 +74,7 @@
 <translation id="649050271426829538">रोकियो - प्रिन्टरमा कागज अड्कियो</translation>
 <translation id="6517239166834772319">एक्स्प्लोर</translation>
 <translation id="6564646048574748301">प्रिन्ट गर्न सकिएन - प्रिन्टरमा कनेक्ट भइरहेको छैन</translation>
+<translation id="6620487321149975369">तपाईंले प्रिन्टसम्बन्धी कार्यहरू नहटाउँदासम्म ती कार्यहरू इतिहासमा देखिने छन्</translation>
 <translation id="6643016212128521049">खालि गर्नुहोस्</translation>
 <translation id="6747215703636344499">रोकियो - प्रिन्टरको आउटपुट ट्रे भरिएको छ</translation>
 <translation id="7162487448488904999">Gallery</translation>

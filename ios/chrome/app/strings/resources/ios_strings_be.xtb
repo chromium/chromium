@@ -97,7 +97,6 @@
 <translation id="1965935827552890526">Скончыце тое, што вы пачалі рабіць у іншым адкрытым акне Chrome.</translation>
 <translation id="1974060860693918893">Пашыраныя налады</translation>
 <translation id="1989112275319619282">Агляд</translation>
-<translation id="1992734845128748707">Змяніць стандартны браўзер…</translation>
 <translation id="2015722694326466240">Каб убачыць паролі, на прыладзе трэба спачатку задаць пароль.</translation>
 <translation id="2073572773299281212">Апошнія дзеянні: <ph name="DAYS" /> сут таму</translation>
 <translation id="2074131957428911366">У <ph name="BEGIN_LINK" />наладах<ph name="END_LINK" /> заўсёды можна выбраць, што трэба сінхранізаваць.</translation>
@@ -165,6 +164,7 @@
 <translation id="2781331604911854368">Уключана</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Выйсці з пераключальніка ўкладак</translation>
+<translation id="2815198996063984598">2. Націсніце "Стандартны браўзер".</translation>
 <translation id="2830972654601096923">Кіраваць адрасамі...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Першапачатковая наладка сінхранізацыі не завершана</translation>
@@ -181,6 +181,7 @@
 <translation id="2921219216347069551">Не ўдалося абагуліць</translation>
 <translation id="2923448633003185837">Уставіць і перайсці</translation>
 <translation id="292639812446257861">Пазначыць як непрачытаныя</translation>
+<translation id="2952581218264071393">1. Адкрыйце налады Chrome.</translation>
 <translation id="2958718410589002129">Паролі</translation>
 <translation id="2964349545761222050">Блакіраваць староннія файлы cookie</translation>
 <translation id="2969979262385602596">Не ўдалося ўвайсці. Паўтарыце спробу пазней.</translation>
@@ -217,6 +218,7 @@
 <translation id="3335947283844343239">Паўторна адкрыць закрытыя ўкладкі</translation>
 <translation id="3371831930909698441">Пераклад гатовы. Параметры знаходзяцца ў ніжняй частцы экрана.</translation>
 <translation id="3393920035788932672">Усплывальныя вокны дазволены</translation>
+<translation id="3399930248910934354">Адкрыць налады Chrome</translation>
 <translation id="3425644765244388016">Псеўданім карткі</translation>
 <translation id="3433057996795775706">Пры выдаленні гэтага пароля ўліковы запіс на сайце <ph name="WEBSITE" /> не выдаліцца. Змяніце свой пароль да ўліковага запісу на <ph name="WEBSITE" />, каб абараніць яго.</translation>
 <translation id="3443810440409579745">Атрымана ўкладка.</translation>
@@ -241,6 +243,9 @@
 <translation id="3551320343578183772">Закрыць укладку</translation>
 <translation id="3581564640715911333">Прапаноўваць перакладаць старонкі на іншых мовах</translation>
 <translation id="3588820906588687999">Адкрыць відарыс у новай укладцы</translation>
+<translation id="359441731697487922">Спасылкі будуць аўтаматычна адкрывацца ў Chrome, калі вы зробіце яго стандартным браўзерам.
+      
+Выканайце наступныя дзеянні:</translation>
 <translation id="3603009562372709545">Скапіраваць URL-адрас спасылкі</translation>
 <translation id="3607167657931203000">Аўтазапаўненне даных</translation>
 <translation id="3609785682760573515">Сінхранізацыя...</translation>
@@ -331,6 +336,7 @@
 <translation id="4747097190499141774">Шыфраванне з дапамогай фразы-пароля не прымяняецца для спосабаў аплаты і адрасоў з Google Pay. Доступ да зашыфраваных даных маюць толькі карыстальнікі, якія ведаюць фразу-пароль. Яна не адпраўляецца і не захоўваецца ў Google. Калі вы забудзеце фразу-пароль або захочаце змяніць гэту наладу, вам спатрэбіцца скінуць параметры сінхранізацыі. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Новая ўкладка інкогніта</translation>
 <translation id="4758977202923349869">Змясціце крэдытную картку ў гэтай рамцы</translation>
+<translation id="4775879719735953715">Стандартны браўзер</translation>
 <translation id="4802417911091824046">Шыфраванне фразы-пароля не распаўсюджваецца на спосабы аплаты і адрасы з Google Pay.
 
 Каб змяніць гэту наладу, <ph name="BEGIN_LINK" />скіньце налады сінхранізацыі<ph name="END_LINK" /></translation>
@@ -338,6 +344,7 @@
 <translation id="4808744395915275922">Абнаўленні</translation>
 <translation id="4818522717893377262">Дадаць мову...</translation>
 <translation id="481968316161811770">Файлы cookie, даныя сайта</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} і яшчэ 1}one{{domain} і яшчэ {count}}few{{domain} і яшчэ {count}}many{{domain} і яшчэ {count}}other{{domain} і яшчэ {count}}}</translation>
 <translation id="4826218269716039351">Староннія файлы cookie блакіруюцца</translation>
 <translation id="48274138579728272">Пазначыць як прачытанае</translation>
 <translation id="4833786495304741580">Аўтаматычна адпраўляе ў Google статыстыку выкарыстання і справаздачы аб збоях.</translation>
@@ -586,6 +593,7 @@
 <translation id="7456847797759667638">Адкрыць размяшчэнне...</translation>
 <translation id="7460314822154045102">Выкарыстаць камеру</translation>
 <translation id="7464701184726199289">Выдаляе сінхранізаваныя даныя з усіх прылад. Захаваныя налады сайтаў не будуць выдалены і могуць змяшчаць вашу гісторыю праглядаў. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. Выберыце Chrome.</translation>
 <translation id="7472734401283673885">Назва кампаніі</translation>
 <translation id="7473891865547856676">Не, дзякуй</translation>
 <translation id="7481312909269577407">Далей</translation>

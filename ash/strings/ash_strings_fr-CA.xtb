@@ -113,6 +113,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2049240716062114887">Le bureau a été renommé : <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2067602449040652523">Luminosité du clavier</translation>
+<translation id="2074759828767813253">Captures d'écran et téléchargements récents</translation>
 <translation id="2083190527011054446">Bonne nuit <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Aucune connexion réseau</translation>
 <translation id="2126242104232412123">Nouveau bureau</translation>
@@ -299,6 +300,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3943857333388298514">Coller</translation>
 <translation id="394485226368336402">Paramètres audio</translation>
 <translation id="3962859241508114581">Chanson précédente</translation>
+<translation id="3969043077941541451">Désactivé</translation>
 <translation id="397105322502079400">Calcul en cours...</translation>
 <translation id="3977512764614765090">Pile chargée à <ph name="PERCENTAGE" /> % et en cours de recharge.</translation>
 <translation id="3995138139523574647">Appareil USB-C (port arrière-droit)</translation>
@@ -309,6 +311,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4032485810211612751"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4042660782729322247">Vous partagez votre écran</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Désactivées pour une appli}one{Désactivées pour # appli}other{Désactivées pour # applis}}</translation>
+<translation id="4066027111132117168">Activé, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Signal moyen</translation>
 <translation id="4112140312785995938">Rechercher vers l'arrière</translation>
 <translation id="4114315158543974537">Activer Phone Hub</translation>
@@ -384,6 +387,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4804818685124855865">Déconnecter</translation>
 <translation id="4814539958450445987">Écran de connexion</translation>
 <translation id="4831034276697007977">Voulez-vous vraiment désactiver les clics automatiques?</translation>
+<translation id="4836108105469522644">Activer les notifications provenant de votre téléphone Android</translation>
 <translation id="4849058404725798627">Mettre l'élément sélectionné par le clavier en surbrillance</translation>
 <translation id="485592688953820832">Aucune action (pause)</translation>
 <translation id="4868492592575313542">activée</translation>
@@ -562,6 +566,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="6803622936009808957">La mise en miroir n'a pas été possible faute de résolutions prises en charge. Le mode de bureau étendu a plutôt été sélectionné.</translation>
 <translation id="6818242057446442178">Déplacer un mot vers l'arrière</translation>
 <translation id="6820676911989879663">Prenez une pause!</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6857811139397017780">Activer <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Il reste 1 chiffre}one{Il reste # chiffre}other{Il reste # chiffres}}</translation>
 <translation id="6878400149835617132">Raccourci désactivé</translation>
@@ -618,6 +623,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="7526573455193969409">Le réseau peut être surveillé</translation>
 <translation id="7536035074519304529">Adresse IP : <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">C'est l'heure du dodo</translation>
+<translation id="7551643184018910560">Épingler sur l'étagère</translation>
 <translation id="7561982940498449837">Fermer le menu</translation>
 <translation id="7564874036684306347">Si vous déplacez des fenêtres sur un autre bureau, elles peuvent présenter des comportements inattendus. À la suite d'une telle opération, les notifications, les fenêtres et les boîtes de dialogue peuvent s'afficher sur les deux écrans.</translation>
 <translation id="7568294522609223312">Désactiver les clics automatiques</translation>
@@ -629,6 +635,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="7600875258240007829">Afficher toutes les notifications</translation>
 <translation id="7618774594543487847">Neutre</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7633755430369750696">Afficher les paramètres de partage à proximité.</translation>
 <translation id="7642647758716480637">Ouvrir les paramètres pour <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propriétaire)</translation>
 <translation id="7647488630410863958">Déverrouillez l'appareil pour voir vos notifications</translation>
@@ -644,6 +651,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="7780159184141939021">Faire pivoter l'écran</translation>
 <translation id="7796353162336583443">Touchez le bouton du stylet sur l'étagère pour créer une note, pour prendre une capture d'écran ou pour utiliser l'Assistant Google, le pointeur laser ou la loupe.</translation>
 <translation id="7798302898096527229">Appuyez sur Recherche ou Majuscule pour le désactiver.</translation>
+<translation id="781126011916719498">Accédez rapidement à vos fichiers importants. Faites un clic droit ou maintenez le doigt sur un fichier pour l'épingler.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> et <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Signal fort</translation>
 <translation id="7837740436429729974">Temps écoulé</translation>
@@ -787,6 +795,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="9089416786594320554">Méthodes d'entrée</translation>
 <translation id="9091626656156419976">Affichage <ph name="DISPLAY_NAME" /> supprimé</translation>
 <translation id="9151726767154816831">Redémarrer et utiliser PowerWash afin de mettre à jour</translation>
+<translation id="9166331175924255663">Basculer la haute visibilité du partage à proximité.</translation>
 <translation id="9168436347345867845">Plus tard</translation>
 <translation id="9179259655489829027">Cette fonctionnalité vous permet d'accéder rapidement à tout compte connecté sans mot de passe. N'utilisez cette fonctionnalité que lorsqu'il s'agit de comptes fiables.</translation>
 <translation id="9183456764293710005">Loupe en mode plein écran</translation>

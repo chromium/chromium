@@ -27,6 +27,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="121097972571826261">Endavant per paraula</translation>
 <translation id="1225748608451425081">El Chromebook està bloquejat a causa d'un problema conegut. Podràs iniciar-hi la sessió d'aquí a: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Deixa de seleccionar</translation>
+<translation id="1239161794459865856">La funció <ph name="FEATURE_NAME" /> està connectada.</translation>
 <translation id="1247372569136754018">Micròfon (intern)</translation>
 <translation id="1252999807265626933">S'està carregant amb: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Quin temps fa?</translation>
@@ -74,6 +75,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1654477262762802994">Inicia una consulta per veu</translation>
 <translation id="1667964833127753507">El mode de color neutre no utilitza colors extrets del fons de pantalla, sinó que els substitueix per un conjunt de tons neutres clars o foscos.</translation>
 <translation id="1677472565718498478">Temps restant: <ph name="TIME" /></translation>
+<translation id="1677507110654891115">La funció <ph name="FEATURE_NAME" /> no està connectada.</translation>
 <translation id="1698080062160024910">Temporitzador de: <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Adreça IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Escriptori: <ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2369165858548251131">"Hola" en xinès</translation>
 <translation id="2390318262976603432">Configuració regional</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="2405664212338326887">No connectat</translation>
 <translation id="2408955596600435184">Introdueix el PIN</translation>
 <translation id="2412593942846481727">Hi ha una actualització disponible</translation>
 <translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> és una sessió gestionada per <ph name="DOMAIN" /></translation>
@@ -198,7 +201,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2996462380875591307">La lupa acoblada està activada. Torna a prémer Ctrl+Cerca+D per desactivar-la.</translation>
 <translation id="3000461861112256445">Àudio mono</translation>
 <translation id="3009178788565917040">Sortida</translation>
-<translation id="3025081209054535615">Deixa de fixar els controls multimèdia globals al prestatge</translation>
 <translation id="3033545621352269033">Activada</translation>
 <translation id="3038571455154067151">Per iniciar la sessió, introdueix el codi d'accés parental de Family Link</translation>
 <translation id="3045488863354895414">Bona tarda,</translation>
@@ -244,6 +246,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3364721542077212959">Eines del llapis òptic</translation>
 <translation id="3368922792935385530">Connectat</translation>
 <translation id="3371140690572404006">Dispositiu USB-C (port frontal dret)</translation>
+<translation id="3375634426936648815">Connectat</translation>
 <translation id="3386978599540877378">la lupa de pantalla completa</translation>
 <translation id="3400357268283240774">Configuració addicional</translation>
 <translation id="3410336247007142655">Mostra la configuració del tema fosc</translation>
@@ -301,6 +304,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3943857333388298514">Enganxa</translation>
 <translation id="394485226368336402">Configuració d'àudio</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
+<translation id="3969043077941541451">Desactivada</translation>
 <translation id="397105322502079400">S’està calculant...</translation>
 <translation id="3977512764614765090">La bateria s'està carregant i està a un <ph name="PERCENTAGE" />%.</translation>
 <translation id="3995138139523574647">Dispositiu USB-C (port posterior dret)</translation>
@@ -311,6 +315,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Estàs compartint la pantalla</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{No en una app}other{No en # apps}}</translation>
+<translation id="4066027111132117168">Activada (<ph name="REMAINING_TIME" />)</translation>
 <translation id="4072264167173457037">Senyal mitjà</translation>
 <translation id="4112140312785995938">Retrocedeix</translation>
 <translation id="4114315158543974537">Activa Phone Hub</translation>
@@ -321,6 +326,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4181841719683918333">Idiomes</translation>
 <translation id="4195877955194704651">Botó Clics automàtics</translation>
 <translation id="4197790712631116042">Desactivat</translation>
+<translation id="4201033867194214117"><ph name="FEATURE_NAME" /> no està disponible.</translation>
 <translation id="4212246570487010370">Continua navegant</translation>
 <translation id="4212472694152630271">Canvia a PIN</translation>
 <translation id="4215497585250573029">Configuració de VPN</translation>
@@ -332,6 +338,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4285498937028063278">No fixis</translation>
 <translation id="4294319844246081198">Bon dia, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Esborra les <ph name="COUNT" /> notificacions</translation>
+<translation id="4302592941791324970">No disponible</translation>
 <translation id="4303223480529385476">Desplega l'àrea d'estat</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Has premut la tecla de drecera de l'alt contrast. Vols activar-lo?</translation>
@@ -425,6 +432,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5302048478445481009">Idioma</translation>
 <translation id="5313326810920013265">Configuració del Bluetooth</translation>
 <translation id="5314219114274263156">S'ha fet una gravació de pantalla</translation>
+<translation id="5329548388331921293">S'està connectant...</translation>
 <translation id="5331975486040154427">Dispositiu USB-C (port posterior esquerre)</translation>
 <translation id="5352250171825660495">El tema fosc està activat</translation>
 <translation id="5379115545237091094">Massa intents</translation>
@@ -438,6 +446,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5465662442746197494">Necessiteu ajuda?</translation>
 <translation id="5496819745535887422">L'administrador està canviant la versió del dispositiu a una d'anterior. Quan es reiniciï el dispositiu, se'n suprimiran totes les dades.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166"><ph name="FEATURE_NAME" /> s'està connectant.</translation>
 <translation id="553675580533261935">S'està tancant la sessió</translation>
 <translation id="5537725057119320332">Emet</translation>
 <translation id="5548285847212963613">L'extensió "<ph name="EXTENSION_NAME" />" pot ajudar a connectar-se a aquesta xarxa.</translation>
@@ -565,6 +574,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6803622936009808957">No s'han pogut projectar les pantalles, perquè no s'ha trobat cap resolució compatible. S'ha entrat al mode d'escriptori ampliat.</translation>
 <translation id="6818242057446442178">Enrere per paraula</translation>
 <translation id="6820676911989879663">Fes una pausa</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6857811139397017780">Activa <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un dígit}other{Falten # dígits}}</translation>
 <translation id="6878400149835617132">S'ha desactivat la drecera</translation>
@@ -621,6 +631,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7526573455193969409">És possible que la xarxa estigui supervisada</translation>
 <translation id="7536035074519304529">Adreça IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Ara toca anar a dormir</translation>
+<translation id="7551643184018910560">Fixa al prestatge</translation>
 <translation id="7561982940498449837">Tanca el menú</translation>
 <translation id="7564874036684306347">Moure finestres a un altre escriptori pot provocar un comportament imprevist. És possible que les notificacions, les finestres i els quadres de diàleg següents quedin dividits entre escriptoris.</translation>
 <translation id="7568294522609223312">Desactiva els clics automàtics</translation>
@@ -632,6 +643,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7600875258240007829">Mostra totes les notificacions</translation>
 <translation id="7618774594543487847">Neutre</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7633755430369750696">Mostra la configuració de Compartició Nearby.</translation>
 <translation id="7642647758716480637">Obre la configuració de la xarxa <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propietari)</translation>
 <translation id="7647488630410863958">Desbloqueja el dispositiu per veure les notificacions</translation>
@@ -647,6 +659,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7780159184141939021">Gira la pantalla</translation>
 <translation id="7796353162336583443">Toca el botó del llapis òptic al prestatge per escriure una nota, fer una captura de pantalla, utilitzar l'Assistent de Google o fer-lo servir com a punter làser o lupa.</translation>
 <translation id="7798302898096527229">Prem Cerca o Maj per cancel·lar.</translation>
+<translation id="781126011916719498">Accedeix als teus fitxers importants ràpidament. Fes clic amb el botó dret en un fitxer o mantén-lo premut per fixar-lo.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Senyal potent</translation>
 <translation id="7837740436429729974">S'ha esgotat el temps</translation>
@@ -701,7 +714,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8297006494302853456">Feble</translation>
 <translation id="8308637677604853869">Menú anterior</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">Fixa els controls multimèdia globals al prestatge</translation>
 <translation id="8351131234907093545">Crea una nota</translation>
 <translation id="8371779926711439835">Endavant per lletra</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> i el teu telèfon es connectaran automàticament</translation>
@@ -791,6 +803,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="9089416786594320554">Mètodes d'entrada</translation>
 <translation id="9091626656156419976">S'ha suprimit la pantalla <ph name="DISPLAY_NAME" /></translation>
 <translation id="9151726767154816831">Reinicieu i feu un Powerwash per actualitzar.</translation>
+<translation id="9166331175924255663">Commuta la visibilitat alta de Compartició Nearby.</translation>
 <translation id="9168436347345867845">Fes-ho més tard</translation>
 <translation id="9179259655489829027">Aquesta funció et permet accedir ràpidament als usuaris que han iniciat la sessió sense haver d'introduir la contrasenya. Utilitza aquesta funció només amb comptes de confiança.</translation>
 <translation id="9183456764293710005">Lupa de pantalla completa</translation>

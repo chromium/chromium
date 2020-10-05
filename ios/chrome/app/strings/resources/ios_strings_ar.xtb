@@ -97,7 +97,6 @@
 <translation id="1965935827552890526">‏يجب إنهاء ما كنت تفعله في نافذة Chrome المفتوحة الأخرى.</translation>
 <translation id="1974060860693918893">الإعدادات المتقدّمة</translation>
 <translation id="1989112275319619282">تصفّح</translation>
-<translation id="1992734845128748707">تغيير المتصفِّح التلقائي…</translation>
 <translation id="2015722694326466240">للاطلاع على كلمات المرور، يجب عليك أولاً تعيين رمز مرور على جهازك.</translation>
 <translation id="2073572773299281212">نشط قبل <ph name="DAYS" /> من الأيام</translation>
 <translation id="2074131957428911366">يمكنك دائمًا اختيار ما تريد مزامنته في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
@@ -165,6 +164,7 @@
 <translation id="2781331604911854368">مفعّل</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">الخروج من أداة تغيير علامات التبويب</translation>
+<translation id="2815198996063984598">2- انقر على تطبيق المتصفِّح التلقائي.</translation>
 <translation id="2830972654601096923">إدارة العناوين...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />، <ph name="STATE" />، <ph name="URL" /></translation>
 <translation id="2840687315230832938">عدم انتهاء إعداد المزامنة الأولية</translation>
@@ -181,6 +181,7 @@
 <translation id="2921219216347069551">تتعذر مشاركة الصفحة</translation>
 <translation id="2923448633003185837">لصق وانتقال</translation>
 <translation id="292639812446257861">وضع علامة كغير مقروءة</translation>
+<translation id="2952581218264071393">‏1- افتَح إعدادات Chrome.</translation>
 <translation id="2958718410589002129">كلمات المرور</translation>
 <translation id="2964349545761222050">حظر ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="2969979262385602596">تعذّر تسجيل الدخول. يُرجى إعادة المحاولة لاحقًا.</translation>
@@ -217,6 +218,7 @@
 <translation id="3335947283844343239">إعادة فتح علامة التبويب المغلقة</translation>
 <translation id="3371831930909698441">الترجمة متوفّرة. الخيارات المتاحة بالقرب من الجزء السفلي من الشاشة</translation>
 <translation id="3393920035788932672">النوافذ المنبثقة المسموح بها</translation>
+<translation id="3399930248910934354">‏افتَح إعدادات Chrome.</translation>
 <translation id="3425644765244388016">لقب البطاقة</translation>
 <translation id="3433057996795775706">لن يؤدي حذف كلمة المرور هذه إلى حذف حسابك على <ph name="WEBSITE" />. يُرجى تغيير كلمة مرورك على <ph name="WEBSITE" /> لحمايته من الآخرين.</translation>
 <translation id="3443810440409579745">تم استلام علامة تبويب.</translation>
@@ -241,6 +243,9 @@
 <translation id="3551320343578183772">إغلاق علامة التبويب</translation>
 <translation id="3581564640715911333">اقتراح ترجمة الصفحات المكتوبة بلغات أخرى</translation>
 <translation id="3588820906588687999">فتح صورة في علامة تبويب جديدة</translation>
+<translation id="359441731697487922">‏يمكنك فتح الروابط في Chrome تلقائيًا من خلال جعله تطبيق المتصفِّح التلقائي.
+      
+يُرجى اتّباع الخطوات التالية:</translation>
 <translation id="3603009562372709545">‏نسخ عنوان URL للرابط</translation>
 <translation id="3607167657931203000">ملء البيانات تلقائيًا</translation>
 <translation id="3609785682760573515">جارٍ المزامنة...</translation>
@@ -331,6 +336,7 @@
 <translation id="4747097190499141774">‏لا يتضمّن التشفير باستخدام عبارة المرور طرق الدفع والعناوين من Google Pay. ولن يتمكّن أي شخص من الاطّلاع على بياناتك المشفرة إلا من يعرف عبارة مرورك. لا تُرسَل عبارة المرور إلى شركة Google ولا تُخزّن لديها. في حال نسيان عبارة المرور أو الرغبة في تغيير هذا الإعداد، ستحتاج إلى إعادة ضبط المزامنة. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">علامة تبويب جديدة للتصفُّح المتخفي</translation>
 <translation id="4758977202923349869">ضَع بطاقة الائتمان في هذا الإطار.</translation>
+<translation id="4775879719735953715">المتصفح التلقائي</translation>
 <translation id="4802417911091824046">‏لا يتضمّن التشفير باستخدام عبارة المرور طرق الدفع والعناوين من Google Pay.
 
 لتغيير هذا الإعداد، يُرجى <ph name="BEGIN_LINK" />إعادة ضبط المزامنة<ph name="END_LINK" /></translation>
@@ -338,6 +344,7 @@
 <translation id="4808744395915275922">التحديثات</translation>
 <translation id="4818522717893377262">إضافة لغة...</translation>
 <translation id="481968316161811770">ملفات تعريف الارتباط، وبيانات الموقع الإلكتروني</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} وعلامة تبويب واحدة إضافية}two{{domain} وعلامتا تبويب ({count}) إضافيتان}few{{domain} و{count} علامات تبويب إضافية}many{{domain} و{count} علامة تبويب إضافية}other{{domain} و{count} علامة تبويب إضافية}}</translation>
 <translation id="4826218269716039351">حظر ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="48274138579728272">وضع علامة "مقروءة"</translation>
 <translation id="4833786495304741580">‏إرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google تلقائيًا</translation>
@@ -586,6 +593,7 @@
 <translation id="7456847797759667638">فتح موقع...</translation>
 <translation id="7460314822154045102">استخدام الكاميرا</translation>
 <translation id="7464701184726199289">يمحو هذا الخيار البيانات المتزامنة من كافة الأجهزة. لن يتم حذف إعدادات الموقع الإلكتروني المحفوظة وقد تعكس عادات التصفح. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">‏3- اختَر Chrome.</translation>
 <translation id="7472734401283673885">اسم الشركة</translation>
 <translation id="7473891865547856676">لا، شكرًا</translation>
 <translation id="7481312909269577407">إلى الأمام</translation>

@@ -97,7 +97,6 @@
 <translation id="1965935827552890526">Gør det færdigt, du var i gang med i dit andet åbne Chrome-vindue.</translation>
 <translation id="1974060860693918893">Avanceret</translation>
 <translation id="1989112275319619282">Gennemse</translation>
-<translation id="1992734845128748707">Skift standardbrowser…</translation>
 <translation id="2015722694326466240">Angiv en adgangskode på din enhed, før du kan se adgangskoder.</translation>
 <translation id="2073572773299281212">Aktiv for <ph name="DAYS" /> dage siden</translation>
 <translation id="2074131957428911366">Du kan altid vælge, hvad der skal synkroniseres, i <ph name="BEGIN_LINK" />indstillingerne<ph name="END_LINK" />.</translation>
@@ -165,6 +164,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2781331604911854368">Til</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Luk Faneskift</translation>
+<translation id="2815198996063984598">2. Tryk på Standardbrowserapp</translation>
 <translation id="2830972654601096923">Administrer adresser...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Indledende konfiguration af synkronisering er ikke afsluttet</translation>
@@ -181,6 +181,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2921219216347069551">Siden kan ikke deles</translation>
 <translation id="2923448633003185837">Indsæt og fortsæt</translation>
 <translation id="292639812446257861">Markér som ulæst</translation>
+<translation id="2952581218264071393">1. Åbn indstillingerne for Chrome</translation>
 <translation id="2958718410589002129">Adgangskoder</translation>
 <translation id="2964349545761222050">Bloker cookies fra tredjeparter</translation>
 <translation id="2969979262385602596">Login mislykkedes. Prøv igen senere.</translation>
@@ -217,6 +218,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="3335947283844343239">Åbn lukket fane igen</translation>
 <translation id="3371831930909698441">Oversættelse er tilgængelig. Du finder indstillingerne nederst på skærmen.</translation>
 <translation id="3393920035788932672">Pop op-vinduer tilladt</translation>
+<translation id="3399930248910934354">Åbn indstillingerne for Chrome</translation>
 <translation id="3425644765244388016">Kortets kaldenavn</translation>
 <translation id="3433057996795775706">Fjernelse af denne adgangskode sletter ikke din konto på <ph name="WEBSITE" />. Skift din adgangskode på <ph name="WEBSITE" /> for at beskytte den mod andre.</translation>
 <translation id="3443810440409579745">Du har modtaget en fane.</translation>
@@ -241,6 +243,9 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="3551320343578183772">Luk fanen</translation>
 <translation id="3581564640715911333">Tilbyd at oversætte sider på andre sprog</translation>
 <translation id="3588820906588687999">Åbn billede på ny fane</translation>
+<translation id="359441731697487922">Du kan åbne links i Chrome automatisk ved at angive den som din standardbrowserapp.
+      
+Følg vejledningen nedenfor:</translation>
 <translation id="3603009562372709545">Kopiér linkets webadresse</translation>
 <translation id="3607167657931203000">AutoFyld-data</translation>
 <translation id="3609785682760573515">Synkroniserer…</translation>
@@ -331,6 +336,7 @@ Dine data er krypteret med din adgangssætning til synkronisering. Angiv den for
 <translation id="4747097190499141774">Kryptering med adgangssætning omfatter ikke betalingsmetoder og adresser fra Google Pay. Det er kun personer med din adgangssætning, der kan læse dine krypterede data. Adgangssætningen sendes ikke til eller gemmes af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du nulstille synkronisering. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Ny inkognitofane</translation>
 <translation id="4758977202923349869">Placer betalingskortet i dette felt</translation>
+<translation id="4775879719735953715">Standardbrowser</translation>
 <translation id="4802417911091824046">Kryptering med adgangssætning omfatter ikke betalingsmetoder og adresser fra Google Pay.
 
 Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille synkronisering<ph name="END_LINK" /></translation>
@@ -338,6 +344,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="4808744395915275922">Opdateringer</translation>
 <translation id="4818522717893377262">Tilføj sprog...</translation>
 <translation id="481968316161811770">Cookies, websitedata</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} og 1 mere}one{{domain} og {count} mere}other{{domain} og {count} mere}}</translation>
 <translation id="4826218269716039351">Bloker cookies fra tredjeparter</translation>
 <translation id="48274138579728272">Markér som læst</translation>
 <translation id="4833786495304741580">Sender automatisk brugsstatistik og nedbrudsrapporter til Google.</translation>
@@ -586,6 +593,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="7456847797759667638">Åbn placering...</translation>
 <translation id="7460314822154045102">Brug Kamera</translation>
 <translation id="7464701184726199289">Dette rydder synkroniserede data fra alle enheder. Gemte websiteindstillinger slettes ikke og kan afspejle dine søgevaner. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. Vælg Chrome</translation>
 <translation id="7472734401283673885">Virksomhedsnavn</translation>
 <translation id="7473891865547856676">Nej tak</translation>
 <translation id="7481312909269577407">Frem</translation>

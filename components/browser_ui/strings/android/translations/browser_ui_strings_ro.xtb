@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">Utilizator</translation>
 <translation id="1178581264944972037">Întrerupe</translation>
 <translation id="1181037720776840403">Elimină</translation>
+<translation id="1195941046451948919">Sigur vrei să resetezi toate permisiunile pentru acest site?</translation>
 <translation id="1201402288615127009">Înainte</translation>
 <translation id="1242008676835033345">Încorporat în <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Oprește</translation>
@@ -264,6 +265,7 @@
 <translation id="8249310407154411074">Mută la început</translation>
 <translation id="8261506727792406068">Șterge</translation>
 <translation id="8300705686683892304">Gestionate de aplicație</translation>
+<translation id="8324158725704657629">Nu mai întreba</translation>
 <translation id="8372893542064058268">Permite sincronizarea în fundal pentru un anumit site.</translation>
 <translation id="8376384591331888629">Inclusiv cookie-urile terță parte de pe acest site</translation>
 <translation id="83792324527827022">Un site folosește camera foto și microfonul</translation>

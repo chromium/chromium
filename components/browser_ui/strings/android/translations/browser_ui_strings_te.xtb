@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">వినియోగదారు</translation>
 <translation id="1178581264944972037">పాజ్ చేయి</translation>
 <translation id="1181037720776840403">తీసివేయి</translation>
+<translation id="1195941046451948919">మీరు ఖచ్చితంగా ఈ వెబ్‌సైట్‌కు సంబంధించిన అన్ని అనుమతులను రీసెట్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="1201402288615127009">తరువాత</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />లో పొందుపరచబడింది</translation>
 <translation id="1272079795634619415">ఆపు</translation>
@@ -161,11 +162,11 @@
 <translation id="5596627076506792578">మరిన్ని ఎంపికలు</translation>
 <translation id="5649053991847567735">ఆటోమేటిక్ డౌన్‌లోడ్‌లు</translation>
 <translation id="5677928146339483299">బ్లాక్ చేయబడింది</translation>
-<translation id="5689516760719285838">స్థానం</translation>
+<translation id="5689516760719285838">లొకేషన్</translation>
 <translation id="5690795753582697420">Android సెట్టింగ్‌లలో కెమెరా ఆఫ్ చేయబడింది</translation>
 <translation id="5710871682236653961">మీరు NFC పరికరాలను నొక్కినప్పుడు, సైట్‌లు సమాచారాన్ని పంపడానికి, అలాగే స్వీకరించడానికి ముందు అనుమతి కోసం అడుగుతాయి (సిఫార్సు చేయబడింది)</translation>
 <translation id="5719847187258001597">ఇది మీ హోమ్ స్క్రీన్‌లో <ph name="ORIGIN" /> లేదా దాని యాప్ ద్వారా స్టోర్ చేయబడిన మొత్తం డేటా, కుక్కీలను క్లియర్ చేస్తుంది.</translation>
-<translation id="5771720122942595109"><ph name="PERMISSION_1" /> బ్లాక్ చేయబడింది</translation>
+<translation id="5771720122942595109">'<ph name="PERMISSION_1" />'ను బ్లాక్ చేశారు</translation>
 <translation id="5804241973901381774">అనుమతులు</translation>
 <translation id="5860033963881614850">ఆఫ్ అయ్యింది</translation>
 <translation id="5876056640971328065">వీడియోను పాజ్ చేయి</translation>
@@ -181,7 +182,7 @@
 <translation id="6177111841848151710">ప్రస్తుత శోధన ఇంజిన్‌కు బ్లాక్ చేయబడింది</translation>
 <translation id="6181444274883918285">సైట్ మినహాయింపును జోడించు</translation>
 <translation id="6192792657125177640">మినహాయింపులు</translation>
-<translation id="6196640612572343990">మూడవ పక్షం కుక్కీలను బ్లాక్ చేయి</translation>
+<translation id="6196640612572343990">థర్డ్ పార్టీ కుక్కీలను బ్లాక్ చేయండి</translation>
 <translation id="6206551242102657620">కనెక్షన్ సురక్షితం. సైట్ సమాచారం</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> ఎంపికలు</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> బ్లాక్ చేయబడ్డాయి</translation>
@@ -264,6 +265,7 @@
 <translation id="8249310407154411074">ఎగువకు తరలించు</translation>
 <translation id="8261506727792406068">తొలగించు</translation>
 <translation id="8300705686683892304">యాప్ ద్వారా నిర్వహించబడుతున్నవి</translation>
+<translation id="8324158725704657629">మళ్లీ అడగవద్దు</translation>
 <translation id="8372893542064058268">నిర్దిష్ట సైట్ కోసం నేపథ్య సింక్‌ను అనుమతిస్తుంది.</translation>
 <translation id="8376384591331888629">ఈ సైట్‌లో థర్డ్ పార్టీ కుకీలు చేర్చబడుతున్నాయి</translation>
 <translation id="83792324527827022">ఒక సైట్ మీ కెమెరాను, మైక్రోఫోన్‌ను ఉపయోగిస్తోంది</translation>

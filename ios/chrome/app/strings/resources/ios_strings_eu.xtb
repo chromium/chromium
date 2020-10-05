@@ -97,7 +97,6 @@
 <translation id="1965935827552890526">Amaitu egiten ari zarena irekita daukazun Chrome-ko beste leihoan.</translation>
 <translation id="1974060860693918893">Aurreratuak</translation>
 <translation id="1989112275319619282">Arakatu</translation>
-<translation id="1992734845128748707">Aldatu arakatzaile lehenetsia…</translation>
 <translation id="2015722694326466240">Pasahitzak ikusteko, lehenik, pasakode bat ezarri behar duzu gailuan.</translation>
 <translation id="2073572773299281212">Aktibo duela <ph name="DAYS" /> egun</translation>
 <translation id="2074131957428911366">Zer sinkronizatu nahi duzun aukeratzeko, joan <ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalera.</translation>
@@ -165,6 +164,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2781331604911854368">Aktibatuta</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Irten fitxa-aldatzailetik</translation>
+<translation id="2815198996063984598">2. Sakatu Arakatzaile lehenetsia</translation>
 <translation id="2830972654601096923">Kudeatu helbideak…</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Ez da amaitu hasierako sinkronizazioa konfiguratzen</translation>
@@ -181,6 +181,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2921219216347069551">Ezin da partekatu orria</translation>
 <translation id="2923448633003185837">Itsatsi eta listo</translation>
 <translation id="292639812446257861">Markatu irakurri gabeko gisa</translation>
+<translation id="2952581218264071393">1. Ireki Chrome-ren ezarpenak</translation>
 <translation id="2958718410589002129">Pasahitzak</translation>
 <translation id="2964349545761222050">Blokeatu hirugarrenen cookieak</translation>
 <translation id="2969979262385602596">Ezin izan da hasi saioa. Saiatu berriro geroago.</translation>
@@ -217,6 +218,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="3335947283844343239">Ireki aurretik itxitako fitxa</translation>
 <translation id="3371831930909698441">Translate zerbitzua erabilgarri dago. Pantailaren behealdean agertzen dira dauden aukerak.</translation>
 <translation id="3393920035788932672">Leiho gainerakorrak onartzen dira</translation>
+<translation id="3399930248910934354">Ireki Chrome-ren ezarpenak</translation>
 <translation id="3425644765244388016">Txartelaren goitizena</translation>
 <translation id="3433057996795775706">Pasahitza ezabatzen baduzu ere, ez da ezabatuko <ph name="WEBSITE" /> webguneko kontua. Aldatu <ph name="WEBSITE" /> webguneko pasahitza kontua babestuta mantentzeko.</translation>
 <translation id="3443810440409579745">Fitxa bat jaso da.</translation>
@@ -241,6 +243,9 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="3551320343578183772">Itxi fitxa</translation>
 <translation id="3581564640715911333">Eskaini beste hizkuntzetan dauden orriak itzultzea</translation>
 <translation id="3588820906588687999">Ireki irudia beste fitxa batean</translation>
+<translation id="359441731697487922">Estekak automatikoki ireki ditzakezu Chrome-n arakatzaile lehenetsi gisa ezartzen baduzu.
+      
+Jarraitu beheko urratsei:</translation>
 <translation id="3603009562372709545">Kopiatu estekaren URLa</translation>
 <translation id="3607167657931203000">Bete automatikoki</translation>
 <translation id="3609785682760573515">Sinkronizatzen…</translation>
@@ -331,6 +336,7 @@ Sinkronizatzeko pasaesaldiaren bidez daude enkriptatuta datuak. Idatz ezazu sink
 <translation id="4747097190499141774">Pasaesaldi bidezko enkriptatzeak ez ditu hartzen barne Google Pay-ko ordainketa-metodoak eta helbideak. Pasaesaldia dutenek soilik irakur ditzakete enkriptatutako datuak. Pasaesaldia ez da bidaltzen Google-ra, ezta bertan gordetzen ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, sinkronizazioa berrezarri beharko duzu. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Ezkutuko moduko fitxa berria</translation>
 <translation id="4758977202923349869">Ezarri kreditu-txartela markoaren barnean</translation>
+<translation id="4775879719735953715">Arakatzaile lehenetsia</translation>
 <translation id="4802417911091824046">Pasaesaldi bidezko enkriptatzeak ez ditu hartzen barne Google Pay-ko ordainketa-metodoak eta helbideak.
 
 Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="END_LINK" />.</translation>
@@ -338,6 +344,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="4808744395915275922">Eguneratzeak</translation>
 <translation id="4818522717893377262">Gehitu hizkuntza bat…</translation>
 <translation id="481968316161811770">Cookieak, webguneko datuak</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} eta beste bat}other{{domain} eta beste {count}}}</translation>
 <translation id="4826218269716039351">Blokeatu hirugarrenen cookieak</translation>
 <translation id="48274138579728272">Markatu irakurritako gisa</translation>
 <translation id="4833786495304741580">Erabilera-estatistikak eta hutsegite-txostenak automatikoki bidaltzen dizkio Google-ri.</translation>
@@ -586,6 +593,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="7456847797759667638">Ireki kokapena…</translation>
 <translation id="7460314822154045102">Erabili kamera</translation>
 <translation id="7464701184726199289">Gailu guztien datu sinkronizatuak garbituko dira. Ez dira ezabatuko webgunearen gordetako ezarpenak, eta baliteke arakatze-ohiturak islatzea. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. Hautatu Chrome</translation>
 <translation id="7472734401283673885">Enpresaren izena</translation>
 <translation id="7473891865547856676">Ez, eskerrik asko</translation>
 <translation id="7481312909269577407">Aurrera</translation>

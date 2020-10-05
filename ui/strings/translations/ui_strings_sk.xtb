@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Toto je nová funkcia</translation>
 <translation id="2006524834898217237">Skontrolujte, či je toto zariadenie pripojené k internetu.</translation>
 <translation id="208586643495776849">Skúste to znova</translation>
-<translation id="2090963878406559571">Ak chcete zo zariadenia <ph name="ORIGIN" /> odoslať číslo do telefónu s Androidom, <ph name="TROUBLESHOOT_LINK" /> pre obidve zariadenia v nastaveniach.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d.}few{# d.}many{# d.}other{# d.}}</translation>
 <translation id="2148716181193084225">Dnes</translation>
 <translation id="2161656808144014275">Text</translation>
@@ -103,7 +102,6 @@
 <translation id="364720409959344976">Výber priečinka na nahranie</translation>
 <translation id="3660179305079774227">Šípka nahor</translation>
 <translation id="3670030362669914947">Číslo</translation>
-<translation id="3674022972144966498">K dispozícii sú nové aktualizácie aplikácie <ph name="FOCUSED_APP_NAME" />.</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/s</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
 <translation id="3842239759367498783">Pokračujte v čítaní v mobilnom zariadení <ph name="TITLE" /></translation>
@@ -136,8 +134,8 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">Trojuholníkové tlačidlo na zobrazenie skrytého obsahu</translation>
 <translation id="5278860589123563674">Nepodarilo sa odoslať</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> vyžaduje vašu pozornosť.</translation>
 <translation id="528468243742722775">Koniec</translation>
-<translation id="5327567770033251652">zapnite synchronizáciu</translation>
 <translation id="5329858601952122676">&amp;Odstrániť</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> na aplikáciu <ph name="IN_PLACE_APP" />, uvoľnením vytvoríte priečinok.</translation>
 <translation id="5463830097259460683">Emodži a symboly</translation>
@@ -147,6 +145,7 @@
 <translation id="5574202486608032840">Systém <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Šípka doľava</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> vyžaduje vašu pozornosť.</translation>
 <translation id="5675363643668471212">Položka na poličke</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}few{# min}many{# min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktívne dnes}=1{Aktívne včera}few{Aktívne pred # dňami}many{Aktívne pred # dňa}other{Aktívne pred # dňami}}</translation>
@@ -184,10 +183,8 @@
 <translation id="6578407462441924264">Bez názvu</translation>
 <translation id="6612467943526193239">Kalibráciu ukončíte stlačením klávesa Esc.</translation>
 <translation id="6620110761915583480">Uložiť súbor</translation>
-<translation id="6656912866303152668">Skontrolujte, či má <ph name="TARGET_DEVICE_NAME" /> v Chrome zapnutú synchronizáciu, a skúste to odoslať znova.</translation>
 <translation id="6699343763173986273">Média – ďalšia stopa</translation>
 <translation id="6710213216561001401">Späť</translation>
-<translation id="6779314412797872738">Ak chcete odtiaľto odoslať číslo do telefónu s Androidom, <ph name="TROUBLESHOOT_LINK" /> pre obidve zariadenia v nastaveniach.</translation>
 <translation id="6786750046913594791">Zatvoriť priečinok</translation>
 <translation id="6808150112686056157">Médiá – zastaviť</translation>
 <translation id="6845383723252244143">Vybrať priečinok</translation>

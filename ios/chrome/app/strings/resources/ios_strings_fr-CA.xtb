@@ -97,7 +97,6 @@
 <translation id="1965935827552890526">Terminez ce que vous faisiez dans votre autre fenêtre de Chrome.</translation>
 <translation id="1974060860693918893">Options avancées</translation>
 <translation id="1989112275319619282">Parcourir</translation>
-<translation id="1992734845128748707">Changer le navigateur par défaut…</translation>
 <translation id="2015722694326466240">Pour afficher vos mots de passe, vous devez d'abord définir un mot de passe sur votre appareil.</translation>
 <translation id="2073572773299281212">Actif il y a <ph name="DAYS" /> jours</translation>
 <translation id="2074131957428911366">Vous pouvez toujours choisir les éléments à synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
@@ -165,6 +164,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2781331604911854368">Activé</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Quitter le gestionnaire d’onglets</translation>
+<translation id="2815198996063984598">2. Touchez Navigateur par défaut</translation>
 <translation id="2830972654601096923">Gérer les adresses…</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">La configuration initiale de la synchronisation n'est pas terminée</translation>
@@ -181,6 +181,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2921219216347069551">Partage page imposs.</translation>
 <translation id="2923448633003185837">Coller et rechercher</translation>
 <translation id="292639812446257861">Marquer comme non lu</translation>
+<translation id="2952581218264071393">1. Ouvrez les paramètres de Chrome</translation>
 <translation id="2958718410589002129">Mots de passe</translation>
 <translation id="2964349545761222050">Bloquer les témoins tiers</translation>
 <translation id="2969979262385602596">Échec de connexion. Veuillez réessayer plus tard.</translation>
@@ -217,6 +218,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="3335947283844343239">Rouvrir l'onglet fermé</translation>
 <translation id="3371831930909698441">La traduction est disponible. Vous trouverez les options vers le bas de l'écran.</translation>
 <translation id="3393920035788932672">Fenêtr context autor</translation>
+<translation id="3399930248910934354">Ouvrir les paramètres de Chrome</translation>
 <translation id="3425644765244388016">Pseudo de la carte</translation>
 <translation id="3433057996795775706">Supprimer ce mot de passe ne supprimera pas également votre compte sur <ph name="WEBSITE" />. Changez votre mot de passe sur <ph name="WEBSITE" /> pour le protéger des autres.</translation>
 <translation id="3443810440409579745">Onglet reçu.</translation>
@@ -241,6 +243,9 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="3551320343578183772">Fermer l'onglet</translation>
 <translation id="3581564640715911333">Proposer des traductions de pages dans d'autres langues</translation>
 <translation id="3588820906588687999">Ouvrir l'image dans un nouvel onglet</translation>
+<translation id="359441731697487922">Vous pouvez ouvrir automatiquement les sites dans Chrome en le définissant comme application de navigation par défaut.
+      
+Suivez les étapes ci-dessous :</translation>
 <translation id="3603009562372709545">Copier lien URL</translation>
 <translation id="3607167657931203000">Données de saisie auto</translation>
 <translation id="3609785682760573515">Synchronisation en cours...</translation>
@@ -288,6 +293,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="4181841719683918333">Langues</translation>
 <translation id="424315890655130736">Entrer la phrase de passe</translation>
 <translation id="4263576668337963058">Afficher les actions de page proposées</translation>
+<translation id="4267380167363222949">Onglet suivant</translation>
 <translation id="4272631900155121838">Pour numériser un code QR, activez la caméra dans les paramètres</translation>
 <translation id="4276041135170112053">Corriger maintenant.</translation>
 <translation id="4277990410970811858">Navigation sécurisée</translation>
@@ -330,6 +336,7 @@ Vos données sont chiffrées avec votre phrase de passe. Veuillez l'entrer pour 
 <translation id="4747097190499141774">Le chiffrement par phrase de passe ne couvre pas les modes de paiement ni les adresses de Google Pay. Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. Google ne reçoit ni ne stocke la phrase de passe. Si vous l'oubliez ou souhaitez modifier ce paramètre, vous devrez réinitialiser la synchronisation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nouvel onglet de navigation privée</translation>
 <translation id="4758977202923349869">Placer la carte de crédit dans ce cadre</translation>
+<translation id="4775879719735953715">Navigateur par défaut</translation>
 <translation id="4802417911091824046">Le chiffrement par phrase de passe ne couvre pas les modes de paiement ni les adresses de Google Pay.
 
 Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchronisation<ph name="END_LINK" /></translation>
@@ -337,6 +344,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4808744395915275922">Mises à jour</translation>
 <translation id="4818522717893377262">Ajouter une langue…</translation>
 <translation id="481968316161811770">Témoins, données de sites</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} et 1 autre}one{{domain} et {count} autre}other{{domain} et {count} autres}}</translation>
 <translation id="4826218269716039351">Bloquer les témoins tiers</translation>
 <translation id="48274138579728272">Marquer comme lu</translation>
 <translation id="4833786495304741580">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google.</translation>
@@ -576,6 +584,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="734758817008927353">Options pour enregistrer la carte</translation>
 <translation id="7348502496356775519">Ajouter aux favoris</translation>
 <translation id="7383797227493018512">Liste de lecture</translation>
+<translation id="739941347996872055">Onglet précédent</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> articles non lus.</translation>
 <translation id="7425346204213733349">Les modifications apportées à vos favoris, à votre historique, à vos mots de passe et aux autres paramètres ne seront plus synchronisées avec votre compte Google. Cependant, vos données actuelles resteront stockées dans votre compte Google.</translation>
@@ -584,6 +593,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="7456847797759667638">Ouvrir une adresse...</translation>
 <translation id="7460314822154045102">Utiliser l'appareil photo</translation>
 <translation id="7464701184726199289">Les données synchronisées seront supprimées de tous les appareils. Les paramètres de site sauvegardés ne seront pas supprimés et peuvent donner des indications sur vos habitudes de navigation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. Sélectionnez Chrome</translation>
 <translation id="7472734401283673885">Nom d'entreprise</translation>
 <translation id="7473891865547856676">Non merci</translation>
 <translation id="7481312909269577407">Suivant</translation>

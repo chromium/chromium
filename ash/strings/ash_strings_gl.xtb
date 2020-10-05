@@ -198,7 +198,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2996462380875591307">Activouse a Lupa ancorada. Preme Ctrl+Buscar+D de novo para desactivala.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3009178788565917040">Saída</translation>
-<translation id="3025081209054535615">Deixar de fixar os controis multimedia globais no andel</translation>
 <translation id="3033545621352269033">Activada</translation>
 <translation id="3038571455154067151">Para iniciar sesión, escribe o teu código de acceso parental de Family Link</translation>
 <translation id="3045488863354895414">Boas tardes!</translation>
@@ -302,6 +301,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="394485226368336402">Configuración do audio</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
+<translation id="3969043077941541451">Desactivar</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3977512764614765090">Nivel de batería: <ph name="PERCENTAGE" /> % (cargando).</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (porto dereito posterior)</translation>
@@ -312,6 +312,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Estás compartindo a pantalla</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Non para 1 app}other{Non para # apps}}</translation>
+<translation id="4066027111132117168">Activado, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Sinal medio</translation>
 <translation id="4112140312785995938">Retroceder</translation>
 <translation id="4114315158543974537">Activar Phone Hub</translation>
@@ -566,6 +567,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6803622936009808957">Non se puideron replicar as pantallas porque non se atopou ningunha resolución compatible. No seu lugar accedeuse ao escritorio ampliado.</translation>
 <translation id="6818242057446442178">Retroceder unha palabra</translation>
 <translation id="6820676911989879663">Fai unha pausa!</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6857811139397017780">Activar <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un díxito}other{Faltan # díxitos}}</translation>
 <translation id="6878400149835617132">Desactivouse o atallo</translation>
@@ -622,6 +624,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7526573455193969409">É posible que se controle a rede</translation>
 <translation id="7536035074519304529">Enderezo IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">É hora de deitarse</translation>
+<translation id="7551643184018910560">Fixar no estante</translation>
 <translation id="7561982940498449837">Pechar menú</translation>
 <translation id="7564874036684306347">Ao mover as ventás a outro ordenador pódese provocar un comportamento inesperado. É posible que as notificacións, as ventás e os cadros de diálogo posteriores se dividan entre os ordenadores.</translation>
 <translation id="7568294522609223312">Desactivar clics automáticos</translation>
@@ -633,6 +636,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7600875258240007829">Ver todas as notificacións</translation>
 <translation id="7618774594543487847">Neutra</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7633755430369750696">Mostrar a configuración da función Compartir por Nearby.</translation>
 <translation id="7642647758716480637">Abrir a configuración para <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propietario)</translation>
 <translation id="7647488630410863958">Desbloquea o dispositivo para ver as notificacións</translation>
@@ -648,6 +652,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7780159184141939021">Xirar a pantalla</translation>
 <translation id="7796353162336583443">Toca o botón do lapis óptico no estante para escribir unha nota, facer unha captura de pantalla, usar o Asistente de Google, utilizar o punteiro láser ou aplicar a lupa.</translation>
 <translation id="7798302898096527229">Preme Buscar ou Maiúsculas para cancelar.</translation>
+<translation id="781126011916719498">Accede rapidamente aos teus ficheiros importantes. Fai clic co botón dereito ou mantén premido un ficheiro para fixalo.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sinal forte</translation>
 <translation id="7837740436429729974">Acabouse o tempo</translation>
@@ -702,7 +707,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="8297006494302853456">Feble</translation>
 <translation id="8308637677604853869">Menú anterior</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">Fixar os controis multimedia globais no andel</translation>
 <translation id="8351131234907093545">Crear nota</translation>
 <translation id="8371779926711439835">Avanzar unha letra</translation>
 <translation id="8375916635258623388">Este <ph name="DEVICE_NAME" /> e o teu teléfono conectaranse automaticamente</translation>
@@ -792,6 +796,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="9089416786594320554">Métodos de entrada</translation>
 <translation id="9091626656156419976">Quitouse a pantalla <ph name="DISPLAY_NAME" /></translation>
 <translation id="9151726767154816831">Reinicia e fai un powerwash para actualizar</translation>
+<translation id="9166331175924255663">Activar ou desactivar a alta visibilidade da función Compartir por Nearby.</translation>
 <translation id="9168436347345867845">Configurar máis tarde</translation>
 <translation id="9179259655489829027">Con esta función podes acceder rapidamente a calquera usuario que teña a sesión iniciada sen necesidade de introducir un contrasinal. Utiliza esta función só con contas nas que confíes.</translation>
 <translation id="9183456764293710005">Lupa de pantalla completa</translation>

@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">Kullanıcı</translation>
 <translation id="1178581264944972037">Duraklat</translation>
 <translation id="1181037720776840403">Kaldır</translation>
+<translation id="1195941046451948919">Bu web sitesi için tüm izinleri sıfırlamak istiyor musunuz?</translation>
 <translation id="1201402288615127009">İleri</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> adresinde yerleşik</translation>
 <translation id="1272079795634619415">Durdur</translation>
@@ -125,7 +126,7 @@
 <translation id="4570913071927164677">Ayrıntılar</translation>
 <translation id="4645575059429386691">Ebeveyniniz tarafından yönetiliyor</translation>
 <translation id="4670064810192446073">Sanal gerçeklik</translation>
-<translation id="4708011789095599544">Bu site için çerezleri ve diğer site verilerini temizlemek istediğinizden emin misiniz?</translation>
+<translation id="4708011789095599544">Bu web sitesi için çerezleri ve diğer site verilerini temizlemek istediğinizden emin misiniz?</translation>
 <translation id="4751476147751820511">Hareket veya ışık sensörleri</translation>
 <translation id="4883854917563148705">Yönetilen ayarlar sıfırlanamaz</translation>
 <translation id="4887024562049524730">Sitelerin sanal gerçeklik cihazıma veya verilerime erişmesine izin vermeden önce sor (önerilir)</translation>
@@ -264,6 +265,7 @@
 <translation id="8249310407154411074">En üste taşı</translation>
 <translation id="8261506727792406068">Sil</translation>
 <translation id="8300705686683892304">Uygulama tarafından yönetiliyor</translation>
+<translation id="8324158725704657629">Tekrar sorma</translation>
 <translation id="8372893542064058268">Belirli bir site için Arka Plan Senkronizasyonuna izin verin.</translation>
 <translation id="8376384591331888629">Bu sitedeki üçüncü taraf çerezler dahil</translation>
 <translation id="83792324527827022">Bir site kameranızı ve mikrofonunuzu kullanıyor</translation>
