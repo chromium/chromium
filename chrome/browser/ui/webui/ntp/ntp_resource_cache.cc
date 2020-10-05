@@ -370,11 +370,11 @@ void NTPResourceCache::CreateNewTabGuestHTML() {
                                 chrome::kLearnMoreEnterpriseURL);
     base::string16 enterprise_info;
     if (connector->IsCloudManaged()) {
-      const std::string enterprise_display_domain =
-          connector->GetEnterpriseDisplayDomain();
+      const std::string enterprise_domain_manager =
+          connector->GetEnterpriseDomainManager();
       enterprise_info = l10n_util::GetStringFUTF16(
           IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY,
-          base::UTF8ToUTF16(enterprise_display_domain));
+          base::UTF8ToUTF16(enterprise_domain_manager));
     } else if (connector->IsActiveDirectoryManaged()) {
       enterprise_info =
           l10n_util::GetStringUTF16(IDS_ASH_ENTERPRISE_DEVICE_MANAGED);
