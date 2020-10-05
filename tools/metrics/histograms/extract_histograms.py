@@ -370,6 +370,29 @@ def _ExtractOwners(node):
   return owners, has_owner
 
 
+def _ExtractComponents(histogram):
+  """Extracts component information from the given histogram element.
+
+  Components are present when a histogram has a component tag, e.g.
+  <component>UI&gt;Browser</component>. Components may also be present when an
+  OWNERS file is given as a histogram owner, e.g. <owner>src/dir/OWNERS</owner>.
+  See _ExtractComponentFromOWNERS() in the following file for details:
+  chromium/src/tools/metrics/histograms/expand_owners.py.
+
+  Args:
+    histogram: A DOM Element corresponding to a histogram.
+
+  Returns:
+    A list of the components associated with the histogram, e.g.
+    ['UI>Browser>Spellcheck'].
+  """
+  component_nodes = histogram.getElementsByTagName('component')
+  return [
+      _GetTextFromChildNodes(component_node)
+      for component_node in component_nodes
+  ]
+
+
 def _ValidateDateString(date_str):
   """Checks if |date_str| matches 'YYYY-MM-DD'.
 
@@ -552,6 +575,11 @@ def _ExtractHistogramsFromXmlTree(tree, enums):
     owners, has_owner = _ExtractOwners(histogram)
     if owners:
       histogram_entry['owners'] = owners
+
+    # Find <component> tag.
+    components = _ExtractComponents(histogram)
+    if components:
+      histogram_entry['components'] = components
 
     # Find <summary> tag.
     summary_nodes = list(IterElementsWithTag(histogram, 'summary'))

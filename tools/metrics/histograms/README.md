@@ -516,6 +516,19 @@ usefulness. When a histogram is nearing expiry, a robot will file a reminder
 bug in Monorail. It's important that somebody familiar with the histogram
 notices and triages such bugs!
 
+### Components
+
+Histograms may be associated with components, which can help make sure that
+histogram expiry bugs don't fall through the cracks.
+
+There are two ways in which components may be associated with a histogram. The
+first and recommended way is to add a tag to a histogram or histogram suffix,
+e.g. <component>UI&gt;Shell</component>. The second way is to specify an OWNERS
+file as a secondary owner for a histogram. If the OWNERS file contains a
+component, then the component is associated with the histogram. If the specified
+OWNERS file doesn't have a component, but an OWNERS file in a parent directory
+does, then the parent directory's component is used.
+
 ### Cleaning Up Histogram Entries
 
 Do not delete histograms from histograms.xml. Instead, mark unused

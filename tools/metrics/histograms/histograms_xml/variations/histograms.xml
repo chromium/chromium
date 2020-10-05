@@ -121,6 +121,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2020-12-15">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
+  <component>Internals&gt;Metrics</component>
   <summary>
     The owner of the top-level domain from which certain subframe-initiated HTTP
     requests are made. It's logged after determining that (i) the request should
@@ -148,6 +149,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>jwd@chromium.org</owner>
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
+  <component>Internals&gt;Metrics</component>
   <summary>
     Details about the request context in which an HTTP request is made. Logged
     after determining that the request should include variations headers but

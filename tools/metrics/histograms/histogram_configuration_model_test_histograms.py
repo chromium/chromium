@@ -84,6 +84,7 @@ PRETTY_XML = """
   </obsolete>
   <owner>owner1@chromium.org</owner>
   <owner>owner2@chromium.org</owner>
+  <component>Component&gt;Subcomponent</component>
   <summary>Summary text</summary>
 </histogram>
 
@@ -119,6 +120,7 @@ XML_WRONG_ATTRIBUTE_ORDER = """
   </obsolete>
   <owner>owner1@chromium.org</owner>
   <owner>owner2@chromium.org</owner>
+  <component>Component&gt;Subcomponent</component>
   <summary>Summary text</summary>
 </histogram>
 
@@ -189,6 +191,7 @@ XML_WRONG_INDENT = """
     </obsolete>
       <owner>owner1@chromium.org</owner>
       <owner>owner2@chromium.org</owner>
+      <component>Component&gt;Subcomponent</component>
     <summary>Summary text</summary>
   </histogram>
 
@@ -224,6 +227,9 @@ XML_WRONG_SINGLELINE = """
     owner1@chromium.org
   </owner>
   <owner>owner2@chromium.org</owner>
+  <component>
+    Component&gt;Subcomponent
+  </component>
   <summary>
     Summary text
   </summary>
@@ -259,6 +265,7 @@ XML_WRONG_LINEBREAK = """
   </obsolete>
   <owner>owner1@chromium.org</owner>
   <owner>owner2@chromium.org</owner>
+  <component>Component&gt;Subcomponent</component>
   <summary>Summary text</summary>
 
 </histogram>
@@ -292,6 +299,7 @@ XML_WRONG_CHILDREN_ORDER = """
   </obsolete>
   <summary>Summary text</summary>
   <owner>owner1@chromium.org</owner>
+  <component>Component&gt;Subcomponent</component>
   <owner>owner2@chromium.org</owner>
 </histogram>
 
