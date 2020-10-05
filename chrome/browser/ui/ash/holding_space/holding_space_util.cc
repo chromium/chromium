@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 
 #include "ash/public/cpp/file_icon_util.h"
+#include "ash/public/cpp/holding_space/holding_space_color_provider.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "base/barrier_closure.h"
@@ -39,12 +40,15 @@ gfx::ImageSkia GetPlaceholderImage(HoldingSpaceItem::Type type,
       break;
   }
 
+  const SkColor color = HoldingSpaceColorProvider::Get()->GetFileIconColor();
+
   // NOTE: We superimpose the file type icon for `file_path` over a transparent
   // bitmap in order to center it within the placeholder image at a fixed size.
   SkBitmap bitmap;
   bitmap.allocN32Pixels(size.width(), size.height());
   return gfx::ImageSkiaOperations::CreateSuperimposedImage(
-      gfx::ImageSkia::CreateFrom1xBitmap(bitmap), GetIconForPath(file_path));
+      gfx::ImageSkia::CreateFrom1xBitmap(bitmap),
+      GetIconForPath(file_path, color));
 }
 
 }  // namespace

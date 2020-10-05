@@ -109,6 +109,7 @@
 #include "ash/system/brightness/brightness_controller_chromeos.h"
 #include "ash/system/brightness_control_delegate.h"
 #include "ash/system/caps_lock_notification_controller.h"
+#include "ash/system/holding_space/holding_space_color_provider_impl.h"
 #include "ash/system/keyboard_brightness/keyboard_brightness_controller.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "ash/system/locale/locale_update_controller_impl.h"
@@ -1250,8 +1251,10 @@ void Shell::Init(
         std::make_unique<DisplayAlignmentController>();
   }
 
-  if (features::IsTemporaryHoldingSpaceEnabled())
-    holding_space_controller_ = std::make_unique<HoldingSpaceController>();
+  if (features::IsTemporaryHoldingSpaceEnabled()) {
+    holding_space_controller_ = std::make_unique<HoldingSpaceController>(
+        std::make_unique<HoldingSpaceColorProviderImpl>());
+  }
 
   for (auto& observer : shell_observers_)
     observer.OnShellInitialized();

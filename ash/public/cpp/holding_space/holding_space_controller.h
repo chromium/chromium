@@ -5,6 +5,8 @@
 #ifndef ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_CONTROLLER_H_
 #define ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_CONTROLLER_H_
 
+#include <memory>
+
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/observer_list.h"
@@ -13,6 +15,7 @@
 namespace ash {
 
 class HoldingSpaceClient;
+class HoldingSpaceColorProvider;
 class HoldingSpaceControllerObserver;
 class HoldingSpaceModel;
 
@@ -23,7 +26,7 @@ class HoldingSpaceModel;
 // using HoldingSpaceController::Get().
 class ASH_PUBLIC_EXPORT HoldingSpaceController : public SessionObserver {
  public:
-  HoldingSpaceController();
+  explicit HoldingSpaceController(std::unique_ptr<HoldingSpaceColorProvider>);
   HoldingSpaceController(const HoldingSpaceController& other) = delete;
   HoldingSpaceController& operator=(const HoldingSpaceController& other) =
       delete;
@@ -52,6 +55,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceController : public SessionObserver {
 
   void SetClient(HoldingSpaceClient* client);
   void SetModel(HoldingSpaceModel* model);
+
+  // The singleton provider for colors used by holding space.
+  std::unique_ptr<HoldingSpaceColorProvider> color_provider_;
 
   // The currently active holding space client, set by `SetClient()`.
   HoldingSpaceClient* client_ = nullptr;
