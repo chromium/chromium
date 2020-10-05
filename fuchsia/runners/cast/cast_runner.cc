@@ -67,6 +67,9 @@ bool IsPermissionGrantedInAppConfig(
   return false;
 }
 
+// Ephemeral remote debugging port used by child contexts.
+const uint16_t kEphemeralRemoteDebuggingPort = 0;
+
 }  // namespace
 
 CastRunner::CastRunner(bool is_headless)
@@ -226,8 +229,6 @@ fuchsia::web::CreateContextParams CastRunner::GetCommonContextParams() {
   params.set_user_agent_product("CrKey");
   params.set_user_agent_version("1.43.000000");
 
-  params.set_remote_debugging_port(CastRunner::kRemoteDebuggingPort);
-
   // When tests require that VULKAN be disabled, DRM must also be disabled.
   if (disable_vulkan_for_test_) {
     *params.mutable_features() &=
@@ -248,6 +249,7 @@ fuchsia::web::CreateContextParams CastRunner::GetCommonContextParams() {
 
 fuchsia::web::CreateContextParams CastRunner::GetMainContextParams() {
   fuchsia::web::CreateContextParams params = GetCommonContextParams();
+  params.set_remote_debugging_port(CastRunner::kRemoteDebuggingPort);
   *params.mutable_features() |=
       fuchsia::web::ContextFeatureFlags::NETWORK |
       fuchsia::web::ContextFeatureFlags::LEGACYMETRICS;
@@ -266,6 +268,7 @@ fuchsia::web::CreateContextParams
 CastRunner::GetIsolatedContextParamsWithFuchsiaDirs(
     std::vector<fuchsia::web::ContentDirectoryProvider> content_directories) {
   fuchsia::web::CreateContextParams params = GetCommonContextParams();
+  params.set_remote_debugging_port(kEphemeralRemoteDebuggingPort);
   params.set_content_directories(std::move(content_directories));
   isolated_services_->ConnectClient(
       params.mutable_service_directory()->NewRequest());
@@ -275,6 +278,7 @@ CastRunner::GetIsolatedContextParamsWithFuchsiaDirs(
 fuchsia::web::CreateContextParams
 CastRunner::GetIsolatedContextParamsForCastStreaming() {
   fuchsia::web::CreateContextParams params = GetCommonContextParams();
+  params.set_remote_debugging_port(kEphemeralRemoteDebuggingPort);
   ApplyCastStreamingContextParams(&params);
   // TODO(crbug.com/1069746): Use a different FilteredServiceDirectory for Cast
   // Streaming Contexts.
