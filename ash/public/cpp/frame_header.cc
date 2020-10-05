@@ -112,7 +112,12 @@ class FrameHeader::FrameAnimatorView : public views::View,
   }
 
   void StartAnimation(base::TimeDelta duration) {
-    StopAnimation();
+    if (layer_owner_) {
+      // If animation is already running, just update the content of the new
+      // layer.
+      parent_->SchedulePaint();
+      return;
+    }
     aura::Window* window = frame_header_->target_widget()->GetNativeWindow();
 
     // Make sure the this view is at the bottom of root view's children.
