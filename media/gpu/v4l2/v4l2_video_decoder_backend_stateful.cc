@@ -213,7 +213,10 @@ void V4L2StatefulVideoDecoderBackend::DoDecodeWork() {
   }
 
   // The V4L2 input buffer contains a decodable entity, queue it.
-  std::move(*current_input_buffer_).QueueMMap();
+  if (!std::move(*current_input_buffer_).QueueMMap()) {
+    LOG(ERROR) << "Error while queuing input buffer!";
+    client_->OnBackendError();
+  }
   current_input_buffer_.reset();
 
   // If we can still progress on a decode request, do it.
@@ -297,8 +300,10 @@ void V4L2StatefulVideoDecoderBackend::EnqueueOutputBuffers() {
     if (no_buffer)
       break;
 
-    if (!ret)
+    if (!ret) {
+      LOG(ERROR) << "Error while queueing output buffer!";
       client_->OnBackendError();
+    }
   }
 
   DVLOGF(3) << output_queue_->QueuedBuffersCount() << "/"
@@ -428,7 +433,10 @@ bool V4L2StatefulVideoDecoderBackend::InitiateFlush(
 
   // Submit any pending input buffer at the time of flush.
   if (current_input_buffer_) {
-    std::move(*current_input_buffer_).QueueMMap();
+    if (!std::move(*current_input_buffer_).QueueMMap()) {
+      LOG(ERROR) << "Error while queuing input buffer!";
+      client_->OnBackendError();
+    }
     current_input_buffer_.reset();
   }
 
