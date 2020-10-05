@@ -25,6 +25,7 @@ class WebView;
 #endif
 
 namespace weblayer {
+class Browser;
 class ErrorPageDelegate;
 class FaviconFetcher;
 class FaviconFetcherDelegate;
@@ -39,6 +40,9 @@ class WebMessageHostFactory;
 class Tab {
  public:
   virtual ~Tab() = default;
+
+  // Returns the Browser that owns this.
+  virtual Browser* GetBrowser() = 0;
 
   // Sets the ErrorPageDelegate. If none is set, a default action will be taken
   // for any given interaction with an error page.

@@ -214,6 +214,7 @@ class TabImpl : public Tab,
   }
 
   // Tab:
+  Browser* GetBrowser() override;
   void SetErrorPageDelegate(ErrorPageDelegate* delegate) override;
   void SetFullscreenDelegate(FullscreenDelegate* delegate) override;
   void SetNewTabDelegate(NewTabDelegate* delegate) override;

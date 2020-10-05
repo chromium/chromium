@@ -11,8 +11,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.weblayer.NewTabCallback;
 import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
@@ -47,6 +49,31 @@ public class NewTabCallbackTest {
             Tab secondTab = mActivity.getBrowser().getActiveTab();
             Assert.assertNotSame(firstTab, secondTab);
         });
+    }
+
+    @Test
+    @SmallTest
+    public void testDestroyTabInOnNewTab() throws Throwable {
+        String url = mActivityTestRule.getTestDataURL("new_browser.html");
+        mActivity = mActivityTestRule.launchShellWithUrl(url);
+        Assert.assertNotNull(mActivity);
+        CallbackHelper callbackHelper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Tab tab = mActivity.getBrowser().getActiveTab();
+            tab.setNewTabCallback(new NewTabCallback() {
+                @Override
+                public void onNewTab(Tab newTab, int mode) {
+                    newTab.getBrowser().destroyTab(newTab);
+                    Assert.assertTrue(newTab.isDestroyed());
+                    Assert.assertEquals(1, mActivity.getBrowser().getTabs().size());
+                    Assert.assertFalse(mActivity.getBrowser().getActiveTab().isDestroyed());
+                    callbackHelper.notifyCalled();
+                }
+            });
+        });
+
+        EventUtils.simulateTouchCenterOfView(mActivity.getWindow().getDecorView());
+        callbackHelper.waitForFirst();
     }
 
     @Test

@@ -401,6 +401,10 @@ void TabImpl::RemoveDataObserver(DataObserver* observer) {
   data_observers_.RemoveObserver(observer);
 }
 
+Browser* TabImpl::GetBrowser() {
+  return browser_;
+}
+
 void TabImpl::SetErrorPageDelegate(ErrorPageDelegate* delegate) {
   error_page_delegate_ = delegate;
 }
