@@ -7241,6 +7241,26 @@
             ]
         }
     ],
+    "VizGLFastSolidColorDraw": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "VizGLFastSolidColorDraw",
+                    "enable_features": [
+                        "FastSolidColorDraw"
+                    ]
+                }
+            ]
+        }
+    ],
     "Vulkan": [
         {
             "platforms": [
