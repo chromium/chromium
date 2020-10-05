@@ -3505,6 +3505,7 @@ source_set("unit_tests") {
     "policy/fake_affiliated_invalidation_service_provider.h",
     "policy/heartbeat_scheduler_unittest.cc",
     "policy/hostname_handler_unittest.cc",
+    "policy/install_event_log_util_unittest.cc",
     "policy/lock_to_single_user_manager_unittest.cc",
     "policy/minimum_version_policy_handler_unittest.cc",
     "policy/network_configuration_updater_unittest.cc",
