@@ -9,7 +9,6 @@
 
 #include "ash/ambient/ui/ambient_assistant_container_view.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
-#include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/ui/photo_view.h"
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
@@ -38,7 +37,6 @@ using chromeos::assistant::features::IsAmbientAssistantEnabled;
 
 // Appearance.
 constexpr int kAssistantPreferredHeightDip = 128;
-constexpr int kMediaStringMarginDip = 32;
 
 // A tolerance threshold used to ignore spurious mouse move.
 constexpr int kMouseMoveErrorTolerancePx = 3;
@@ -135,7 +133,7 @@ gfx::Size AmbientContainerView::CalculatePreferredSize() const {
 void AmbientContainerView::Layout() {
   // Layout child views first to have proper bounds set for children.
   LayoutPhotoView();
-  LayoutMediaStringView();
+
   // The assistant view may not exist if |kAmbientAssistant| feature is
   // disabled.
   if (ambient_assistant_container_view_)
@@ -156,9 +154,6 @@ void AmbientContainerView::Init() {
 
   photo_view_ = AddChildView(std::make_unique<PhotoView>(delegate_));
 
-  media_string_view_ = AddChildView(std::make_unique<MediaStringView>());
-  media_string_view_->SetVisible(false);
-
   if (IsAmbientAssistantEnabled()) {
     ambient_assistant_container_view_ =
         AddChildView(std::make_unique<AmbientAssistantContainerView>());
@@ -176,19 +171,6 @@ void AmbientContainerView::LayoutAssistantView() {
   int preferred_height = kAssistantPreferredHeightDip;
   ambient_assistant_container_view_->SetBoundsRect(
       gfx::Rect(0, 0, preferred_width, preferred_height));
-}
-
-void AmbientContainerView::LayoutMediaStringView() {
-  const gfx::Size container_size = GetLocalBounds().size();
-  const gfx::Size preferred_size = media_string_view_->GetPreferredSize();
-
-  // The media string view is positioned on the right-top corner of the
-  // container.
-  int x =
-      container_size.width() - kMediaStringMarginDip - preferred_size.width();
-  int y = kMediaStringMarginDip;
-  media_string_view_->SetBoundsRect(
-      gfx::Rect(x, y, preferred_size.width(), preferred_size.height()));
 }
 
 void AmbientContainerView::HandleEvent() {

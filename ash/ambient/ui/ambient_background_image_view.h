@@ -22,6 +22,7 @@ class Label;
 namespace ash {
 
 class GlanceableInfoView;
+class MediaStringView;
 
 // AmbientBackgroundImageView--------------------------------------------------
 // A custom ImageView to display photo image and details information on ambient.
@@ -89,6 +90,8 @@ class ASH_EXPORT AmbientBackgroundImageView : public views::View,
   // Label to show details text, i.e. attribution, to be displayed for the
   // current image. Owned by the view hierarchy.
   views::Label* details_label_ = nullptr;
+
+  MediaStringView* media_string_view_ = nullptr;
 
   ScopedObserver<views::View, views::ViewObserver> observed_views_{this};
 };
