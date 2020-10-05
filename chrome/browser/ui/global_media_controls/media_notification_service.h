@@ -299,12 +299,6 @@ class MediaNotificationService
   base::WeakPtr<media_message_center::MediaNotificationItem>
   GetNotificationItem(const std::string& id);
 
-  // Called after changing anything about a notification to notify any observers
-  // and update the visibility of supplemental notifications.  If the change is
-  // associated with a particular notification ID, that ID should be passed as
-  // the argument, otherwise the argument should be nullptr.
-  void OnNotificationChanged(const std::string* changed_notification_id);
-
   // Looks up a Session object by its ID.  Returns null if not found.
   Session* GetSession(const std::string& id);
 
@@ -314,6 +308,14 @@ class MediaNotificationService
   // TODO(crbug.com/1021643): Treat audio sessions the same way we treat others.
   base::WeakPtr<media_message_center::MediaNotificationItem>
   GetNonSessionNotificationItem(const std::string& id);
+
+  // Called after changing anything about a notification to notify any observers
+  // and update the visibility of supplemental notifications.  If the change is
+  // associated with a particular notification ID, that ID should be passed as
+  // the argument, otherwise the argument should be nullptr.
+  void OnNotificationChanged(const std::string* changed_notification_id);
+
+  bool HasSessionForWebContents(content::WebContents* web_contents) const;
 
   MediaDialogDelegate* dialog_delegate_ = nullptr;
 

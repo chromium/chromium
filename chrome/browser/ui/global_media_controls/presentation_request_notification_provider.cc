@@ -16,6 +16,8 @@
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 
 namespace {
 
@@ -103,8 +105,8 @@ void PresentationRequestNotificationProvider::AfterMediaDialogOpened(
   // request.
   if (presentation_manager->HasDefaultPresentationRequest() &&
       notification_service_->HasOpenDialog()) {
-    CreateItemForPresentationRequest(
-        presentation_manager->GetDefaultPresentationRequest(), nullptr);
+    OnDefaultPresentationChanged(
+        &presentation_manager->GetDefaultPresentationRequest());
   }
 }
 
@@ -138,5 +140,10 @@ void PresentationRequestNotificationProvider::CreateItemForPresentationRequest(
   // This may replace an existing item, which is the right thing to do if we've
   // reached this point.
   item_.emplace(notification_service_, request, std::move(context));
-  notification_service_->ShowNotification(item_->id());
+
+  auto* rfh = content::RenderFrameHost::FromID(request.render_frame_host_id);
+  DCHECK(rfh);
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  DCHECK(web_contents);
+  notification_service_->AddSupplementalNotification(item_->id(), web_contents);
 }

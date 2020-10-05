@@ -629,8 +629,10 @@ void MediaNotificationService::Shutdown() {
 void MediaNotificationService::AddSupplementalNotification(
     const std::string& id,
     content::WebContents* web_contents) {
+  DCHECK(web_contents);
   supplemental_notifications_.emplace(id, web_contents);
-  ShowNotification(id);
+  if (!HasSessionForWebContents(web_contents))
+    ShowNotification(id);
 }
 
 void MediaNotificationService::OnOverlayNotificationClosed(
@@ -872,7 +874,7 @@ void MediaNotificationService::OnNotificationChanged(
   for (auto& observer : observers_)
     observer.OnNotificationListChanged();
 
-  // Avoid re-examining the supplemental notifications as a side-effect or
+  // Avoid re-examining the supplemental notifications as a side-effect of
   // showing or hiding a supplemental notification.
   if (!changed_notification_id ||
       base::Contains(supplemental_notifications_, *changed_notification_id))
@@ -880,20 +882,23 @@ void MediaNotificationService::OnNotificationChanged(
 
   // Show or hide supplemental notifications as necessary.
   for (const auto& pair : supplemental_notifications_) {
-    auto* web_contents = pair.second;
-    const bool should_hide = std::any_of(
-        sessions_.begin(), sessions_.end(),
-        [web_contents, this](const auto& pair) {
-          return pair.second.web_contents() == web_contents &&
-                 base::Contains(active_controllable_session_ids_, pair.first);
-        });
-
     // If there is an active session associated with the same web contents as
     // this supplemental notification, hide it; if not, show it.
-    if (should_hide) {
+    if (HasSessionForWebContents(pair.second)) {
       HideNotification(pair.first);
     } else {
       ShowNotification(pair.first);
     }
   }
+}
+
+bool MediaNotificationService::HasSessionForWebContents(
+    content::WebContents* web_contents) const {
+  DCHECK(web_contents);
+  return std::any_of(sessions_.begin(), sessions_.end(),
+                     [web_contents, this](const auto& pair) {
+                       return pair.second.web_contents() == web_contents &&
+                              base::Contains(active_controllable_session_ids_,
+                                             pair.first);
+                     });
 }
