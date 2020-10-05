@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -53,6 +54,8 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
                       uint32_t locked,
                       uint32_t group);
 
+  DomCode GetDomCodeByKeysym(uint32_t keysym) const;
+
   static void ParseLayoutName(const std::string& layout_name,
                               std::string* layout_id,
                               std::string* layout_variant);
@@ -65,6 +68,12 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
     xkb_mod_index_t xkb_index;
   };
   std::vector<XkbFlagMapEntry> xkb_flag_map_;
+
+  // Table from xkb_keysym to xkb_keycode on the current keymap.
+  // Note that there could be multiple keycodes mapped to the same
+  // keysym. In the case, the first one (smallest keycode) will be
+  // kept.
+  base::flat_map<uint32_t, uint32_t> xkb_keysym_map_;
 
 #if defined(OS_CHROMEOS)
   // Flag mask for num lock, which is always considered enabled in ChromeOS.

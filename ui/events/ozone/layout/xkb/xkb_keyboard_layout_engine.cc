@@ -852,6 +852,30 @@ void XkbKeyboardLayoutEngine::SetKeymap(xkb_keymap* keymap) {
         num_lock_mask = flag;
     }
   }
+
+  // Reconstruct keysym map.
+  xkb_keysym_map_.clear();
+  const xkb_keycode_t min_key = xkb_keymap_min_keycode(keymap);
+  const xkb_keycode_t max_key = xkb_keymap_max_keycode(keymap);
+  for (xkb_keycode_t keycode = min_key; keycode <= max_key; ++keycode) {
+    const xkb_layout_index_t num_layouts =
+        xkb_keymap_num_layouts_for_key(keymap, keycode);
+    for (xkb_layout_index_t layout = 0; layout < num_layouts; ++layout) {
+      const xkb_level_index_t num_levels =
+          xkb_keymap_num_levels_for_key(keymap, keycode, layout);
+      for (xkb_level_index_t level = 0; level < num_levels; ++level) {
+        const xkb_keysym_t* keysyms;
+        int num_syms = xkb_keymap_key_get_syms_by_level(keymap, keycode, layout,
+                                                        level, &keysyms);
+        for (int i = 0; i < num_syms; ++i) {
+          // Ignore if there already an entry for the current keysym.
+          // Iterating keycode from min to max, so the minimum value wins.
+          xkb_keysym_map_.emplace(keysyms[i], keycode);
+        }
+      }
+    }
+  }
+
   layout_index_ = 0;
 #if defined(OS_CHROMEOS)
   // Update num lock mask.
@@ -891,6 +915,15 @@ int XkbKeyboardLayoutEngine::UpdateModifiers(uint32_t depressed,
   }
   layout_index_ = group;
   return ui_flags;
+}
+
+DomCode XkbKeyboardLayoutEngine::GetDomCodeByKeysym(uint32_t keysym) const {
+  auto iter = xkb_keysym_map_.find(keysym);
+  if (iter == xkb_keysym_map_.end()) {
+    VLOG(1) << "No Keycode found for the keysym: " << keysym;
+    return DomCode::NONE;
+  }
+  return KeycodeConverter::NativeKeycodeToDomCode(iter->second);
 }
 
 bool XkbKeyboardLayoutEngine::XkbLookup(xkb_keycode_t xkb_keycode,

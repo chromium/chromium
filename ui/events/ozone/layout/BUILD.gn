@@ -61,6 +61,7 @@ source_set("unittests") {
       "keyboard_layout_engine_unittest.cc",
       "xkb/xkb_keyboard_layout_engine_unittest.cc",
     ]
+    configs += [ ":xkbcommon" ]
   }
 
   deps = [

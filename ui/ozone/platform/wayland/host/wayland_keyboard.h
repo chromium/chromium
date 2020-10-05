@@ -29,6 +29,14 @@ class WaylandKeyboard : public EventAutoRepeatHandler::Delegate {
  public:
   class Delegate;
 
+  using LayoutEngine =
+#if BUILDFLAG(USE_XKBCOMMON)
+      XkbKeyboardLayoutEngine
+#else
+      KeyboardLayoutEngine
+#endif
+      ;
+
   WaylandKeyboard(wl_keyboard* keyboard,
                   zcr_keyboard_extension_v1* keyboard_extension_v1,
                   WaylandConnection* connection,
@@ -41,6 +49,7 @@ class WaylandKeyboard : public EventAutoRepeatHandler::Delegate {
               int modifiers,
               DomKey* out_dom_key,
               KeyboardCode* out_key_code);
+  LayoutEngine* layout_engine() const { return layout_engine_; }
 
  private:
   // wl_keyboard_listener
@@ -99,11 +108,7 @@ class WaylandKeyboard : public EventAutoRepeatHandler::Delegate {
   base::OnceClosure auto_repeat_closure_;
   wl::Object<wl_callback> sync_callback_;
 
-#if BUILDFLAG(USE_XKBCOMMON)
-  XkbKeyboardLayoutEngine* layout_engine_;
-#else
-  KeyboardLayoutEngine* layout_engine_;
-#endif
+  LayoutEngine* layout_engine_;
 };
 
 class WaylandKeyboard::Delegate {

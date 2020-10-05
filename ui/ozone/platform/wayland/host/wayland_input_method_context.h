@@ -45,7 +45,7 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void OnPreeditString(const std::string& text, int preedit_cursor) override;
   void OnCommitString(const std::string& text) override;
   void OnDeleteSurroundingText(int32_t index, uint32_t length) override;
-  void OnKeysym(uint32_t key, uint32_t state, uint32_t modifiers) override;
+  void OnKeysym(uint32_t keysym, uint32_t state, uint32_t modifiers) override;
 
  private:
   void UpdatePreeditText(const base::string16& preedit_text);

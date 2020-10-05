@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/ime/composition_text.h"
@@ -21,6 +22,10 @@
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper_v1.h"
 #include "ui/ozone/public/ozone_switches.h"
+
+#if BUILDFLAG(USE_XKBCOMMON)
+#include "ui/events/ozone/layout/xkb/xkb_keyboard_layout_engine.h"
+#endif
 
 namespace ui {
 
@@ -49,7 +54,6 @@ void WaylandInputMethodContext::Init(bool initialize_for_testing) {
       initialize_for_testing ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableWaylandIme);
-
   // If text input instance is not created then all ime context operations
   // are noop. This option is because in some environments someone might not
   // want to enable ime/virtual keyboard even if it's available.
@@ -148,19 +152,23 @@ void WaylandInputMethodContext::OnDeleteSurroundingText(int32_t index,
   ime_delegate_->OnDeleteSurroundingText(index, length);
 }
 
-void WaylandInputMethodContext::OnKeysym(uint32_t key,
+void WaylandInputMethodContext::OnKeysym(uint32_t keysym,
                                          uint32_t state,
                                          uint32_t modifiers) {
+#if BUILDFLAG(USE_XKBCOMMON)
+  // TODO(crbug.com/1079353): Handle modifiers.
   DomCode dom_code =
-      KeycodeConverter::NativeKeycodeToDomCode(EvdevCodeToNativeCode(key));
-  if (dom_code == ui::DomCode::NONE)
+      connection_->keyboard()->layout_engine()->GetDomCodeByKeysym(keysym);
+  if (dom_code == DomCode::NONE)
     return;
 
-  // TODO(crbug.com/1079353): Handle modifiers.
   EventType type =
       state == WL_KEYBOARD_KEY_STATE_PRESSED ? ET_KEY_PRESSED : ET_KEY_RELEASED;
   key_delegate_->OnKeyboardKeyEvent(type, dom_code, /*repeat=*/false,
                                     EventTimeForNow());
+#else
+  NOTIMPLEMENTED();
+#endif
 }
 
 }  // namespace ui

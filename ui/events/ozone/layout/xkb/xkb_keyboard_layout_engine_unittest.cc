@@ -906,4 +906,42 @@ TEST_F(XkbLayoutEngineVkTest, XkbRuleNamesForLayoutName) {
   }
 }
 
+TEST_F(XkbLayoutEngineVkTest, GetDomCodeByKeysym) {
+  // Set up US keyboard layout.
+  {
+    std::unique_ptr<xkb_context, ui::XkbContextDeleter> xkb_context(
+        xkb_context_new(XKB_CONTEXT_NO_FLAGS));
+    xkb_rule_names names = {
+        .rules = nullptr,
+        .model = "pc101",
+        .layout = "us",
+        .variant = "",
+        .options = "",
+    };
+    std::unique_ptr<xkb_keymap, ui::XkbKeymapDeleter> xkb_keymap(
+        xkb_keymap_new_from_names(xkb_context.get(), &names,
+                                  XKB_KEYMAP_COMPILE_NO_FLAGS));
+    std::unique_ptr<char, base::FreeDeleter> layout(
+        xkb_keymap_get_as_string(xkb_keymap.get(), XKB_KEYMAP_FORMAT_TEXT_V1));
+    layout_engine_->SetCurrentLayoutFromBuffer(layout.get(),
+                                               std::strlen(layout.get()));
+  }
+
+  constexpr struct {
+    uint32_t keysym;
+    DomCode dom_code;
+  } kTestCases[] = {
+      {65307, ui::DomCode::ESCAPE}, {65288, ui::DomCode::BACKSPACE},
+      {65293, ui::DomCode::ENTER},  {65289, ui::DomCode::TAB},
+      {65056, ui::DomCode::TAB},  // SHIFT+TAB.
+      {65289, ui::DomCode::TAB},  // CTRL+TAB.
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.keysym);
+    EXPECT_EQ(test_case.dom_code,
+              layout_engine_->GetDomCodeByKeysym(test_case.keysym));
+  }
+}
+
 }  // namespace ui

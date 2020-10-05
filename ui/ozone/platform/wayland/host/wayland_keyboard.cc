@@ -45,11 +45,7 @@ WaylandKeyboard::WaylandKeyboard(
       connection_(connection),
       delegate_(delegate),
       auto_repeat_handler_(this),
-#if BUILDFLAG(USE_XKBCOMMON)
-      layout_engine_(static_cast<XkbKeyboardLayoutEngine*>(layout_engine)) {
-#else
-      layout_engine_(layout_engine) {
-#endif
+      layout_engine_(static_cast<LayoutEngine*>(layout_engine)) {
   static const wl_keyboard_listener listener = {
       &WaylandKeyboard::Keymap,    &WaylandKeyboard::Enter,
       &WaylandKeyboard::Leave,     &WaylandKeyboard::Key,
