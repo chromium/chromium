@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/android/config.gni")
 import("//build/config/c++/c++.gni")
 import("//build/config/chrome_build.gni")
@@ -2522,4 +2523,10 @@ config("default_init_stack_vars") {
   if (init_stack_vars && is_clang && !is_nacl && !using_sanitizer) {
     cflags += [ "-ftrivial-auto-var-init=pattern" ]
   }
+}
+
+buildflag_header("compiler_buildflags") {
+  header = "compiler_buildflags.h"
+
+  flags = [ "CLANG_PGO=$chrome_pgo_phase" ]
 }

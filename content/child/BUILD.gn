@@ -67,6 +67,7 @@ target(link_target_type, "child") {
 
   deps = [
     "//base",
+    "//build/config/compiler:compiler_buildflags",
     "//cc/paint",
     "//components/discardable_memory/client",
     "//components/discardable_memory/public/mojom",

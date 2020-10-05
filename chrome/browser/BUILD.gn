@@ -76,7 +76,6 @@ if (is_win) {
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
-    "CLANG_PGO=$chrome_pgo_phase",
     "ENABLE_KALEIDOSCOPE=$enable_kaleidoscope",
     "USE_THIN_LTO=$use_thin_lto",
   ]
@@ -1882,6 +1881,7 @@ static_library("browser") {
     "//base/util/values:values_util",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
+    "//build/config/compiler:compiler_buildflags",
     "//cc",
     "//chrome:extra_resources",
     "//chrome:resources",
