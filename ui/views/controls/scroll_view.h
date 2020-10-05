@@ -50,6 +50,19 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // Indicates whether or not scroll view is initialized with layer-scrolling.
   enum class ScrollWithLayers { kDisabled, kEnabled };
 
+  // Controls how a scroll bar appears and functions.
+  enum class ScrollBarMode {
+    // The scrollbar is hidden, and the pane will not respond to e.g. mousewheel
+    // events even if the contents are larger than the viewport.
+    kDisabled,
+    // The scrollbar is hidden whether or not the contents are larger than the
+    // viewport, but the pane will respond to scroll events.
+    kHiddenButEnabled,
+    // The scrollbar will be visible if the contents are larger than the
+    // viewport and the pane will respond to scroll events.
+    kEnabled
+  };
+
   ScrollView();
 
   // Additional constructor for overriding scrolling as defined by
@@ -110,8 +123,19 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   bool GetUseColorId() const { return !!background_color_id_; }
 
-  bool GetHideHorizontalScrollBar() const { return hide_horizontal_scrollbar_; }
-  void SetHideHorizontalScrollBar(bool visible);
+  ScrollBarMode GetHorizontalScrollBarMode() const {
+    return horizontal_scroll_bar_mode_;
+  }
+  ScrollBarMode GetVerticalScrollBarMode() const {
+    return vertical_scroll_bar_mode_;
+  }
+  bool GetTreatAllScrollEventsAsHorizontal() const {
+    return treat_all_scroll_events_as_horizontal_;
+  }
+  void SetHorizontalScrollBarMode(ScrollBarMode horizontal_scroll_bar_mode);
+  void SetVerticalScrollBarMode(ScrollBarMode vertical_scroll_bar_mode);
+  void SetTreatAllScrollEventsAsHorizontal(
+      bool treat_all_scroll_events_as_horizontal);
 
   bool GetDrawOverflowIndicator() const { return draw_overflow_indicator_; }
   void SetDrawOverflowIndicator(bool draw_overflow_indicator);
@@ -164,6 +188,9 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   friend class test::ScrollViewTestApi;
 
   class Viewport;
+
+  bool IsHorizontalScrollEnabled() const;
+  bool IsVerticalScrollEnabled() const;
 
   // Forces |contents_viewport_| to have a Layer (assuming it doesn't already).
   void EnableViewportLayer();
@@ -269,9 +296,14 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   base::Optional<ui::NativeTheme::ColorId> background_color_id_ =
       ui::NativeTheme::kColorId_DialogBackground;
 
-  // If true, never show the horizontal scrollbar (even if the contents is wider
-  // than the viewport).
-  bool hide_horizontal_scrollbar_ = false;
+  // How to handle the case when the contents overflow the viewport.
+  ScrollBarMode horizontal_scroll_bar_mode_ = ScrollBarMode::kEnabled;
+  ScrollBarMode vertical_scroll_bar_mode_ = ScrollBarMode::kEnabled;
+
+  // Causes vertical scroll events (e.g. scrolling with the mousewheel) as
+  // horizontal events, to make scrolling in horizontal-only scroll situations
+  // easier for the user.
+  bool treat_all_scroll_events_as_horizontal_ = false;
 
   // In Harmony, the indicator is a focus ring. Pre-Harmony, the indicator is a
   // different border painter.
@@ -298,7 +330,9 @@ VIEW_BUILDER_VIEW_TYPE_PROPERTY(View, Contents)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(View, Header)
 VIEW_BUILDER_PROPERTY(base::Optional<ui::NativeTheme::ColorId>,
                       BackgroundThemeColorId)
-VIEW_BUILDER_PROPERTY(bool, HideHorizontalScrollBar)
+VIEW_BUILDER_PROPERTY(ScrollView::ScrollBarMode, HorizontalScrollBarMode)
+VIEW_BUILDER_PROPERTY(ScrollView::ScrollBarMode, VerticalScrollBarMode)
+VIEW_BUILDER_PROPERTY(bool, TreatAllScrollEventsAsHorizontal)
 VIEW_BUILDER_PROPERTY(bool, DrawOverflowIndicator)
 VIEW_BUILDER_PROPERTY(base::Optional<SkColor>, BackgroundColor)
 VIEW_BUILDER_VIEW_PROPERTY(ScrollBar, HorizontalScrollBar)

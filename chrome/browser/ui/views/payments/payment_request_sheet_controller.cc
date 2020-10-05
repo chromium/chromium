@@ -253,7 +253,8 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
   scroll_ = layout->AddView(DisplayDynamicBorderForHiddenContents()
                                 ? std::make_unique<BorderedScrollView>()
                                 : std::make_unique<views::ScrollView>());
-  scroll_->SetHideHorizontalScrollBar(true);
+  scroll_->SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
   pane_ = scroll_->SetContents(std::make_unique<views::View>());
   views::GridLayout* pane_layout =
       pane_->SetLayoutManager(std::make_unique<views::GridLayout>());

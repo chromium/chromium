@@ -460,7 +460,8 @@ void ParentPermissionDialogView::CreateContents() {
 
     // Add section container to an enclosing scroll view.
     auto scroll_view = std::make_unique<views::ScrollView>();
-    scroll_view->SetHideHorizontalScrollBar(true);
+    scroll_view->SetHorizontalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kDisabled);
     scroll_view->SetContents(std::move(install_permissions_section_container));
     scroll_view->ClipHeightTo(
         0, provider->GetDistanceMetric(

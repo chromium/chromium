@@ -14,6 +14,7 @@
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/controls/scroll_view.h"
 
 namespace views {
 namespace metadata {
@@ -353,6 +354,14 @@ DEFINE_ENUM_CONVERTERS(ui::MenuSeparatorType,
                         base::ASCIIToUTF16("VERTICAL_SEPARATOR")},
                        {ui::MenuSeparatorType::PADDED_SEPARATOR,
                         base::ASCIIToUTF16("PADDED_SEPARATOR")})
+
+DEFINE_ENUM_CONVERTERS(views::ScrollView::ScrollBarMode,
+                       {views::ScrollView::ScrollBarMode::kDisabled,
+                        base::ASCIIToUTF16("kDisabled")},
+                       {views::ScrollView::ScrollBarMode::kHiddenButEnabled,
+                        base::ASCIIToUTF16("kHiddenButEnabled")},
+                       {views::ScrollView::ScrollBarMode::kEnabled,
+                        base::ASCIIToUTF16("kEnabled")})
 
 #define OP(enum_name) \
   { ui::NativeTheme::enum_name, base::ASCIIToUTF16(#enum_name) }

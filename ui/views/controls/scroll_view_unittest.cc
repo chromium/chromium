@@ -65,7 +65,9 @@ class ScrollViewTestApi {
     return gfx::Point() - gfx::ScrollOffsetToFlooredVector2d(CurrentOffset());
   }
 
-  gfx::ScrollOffset CurrentOffset() { return scroll_view_->CurrentOffset(); }
+  gfx::ScrollOffset CurrentOffset() const {
+    return scroll_view_->CurrentOffset();
+  }
 
   base::RetainingOneShotTimer* GetScrollBarHideTimer(
       ScrollBarOrientation orientation) {
@@ -181,6 +183,21 @@ class VerticalResizingView : public View {
 
  private:
   DISALLOW_COPY_AND_ASSIGN(VerticalResizingView);
+};
+
+// Same as VerticalResizingView, but horizontal instead.
+class HorizontalResizingView : public View {
+ public:
+  HorizontalResizingView() = default;
+  ~HorizontalResizingView() override = default;
+  void Layout() override {
+    int height = 10000;
+    int width = parent()->width();
+    SetBounds(x(), y(), width, height);
+  }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(HorizontalResizingView);
 };
 
 class TestScrollBarThumb : public BaseScrollBarThumb {
@@ -469,6 +486,53 @@ TEST_F(ScrollViewTest, VerticalScrollbarDoesNotAppearUnnecessarily) {
   EXPECT_TRUE(scroll_view_->horizontal_scroll_bar()->GetVisible());
 }
 
+// Same as above, but setting horizontal scroll bar to hidden.
+TEST_F(ScrollViewTest, HorizontalScrollbarDoesNotAppearIfHidden) {
+  const gfx::Rect default_outer_bounds(0, 0, 100, 100);
+  scroll_view_->SetHorizontalScrollBarMode(
+      ScrollView::ScrollBarMode::kHiddenButEnabled);
+  scroll_view_->SetContents(std::make_unique<VerticalResizingView>());
+  scroll_view_->SetBoundsRect(default_outer_bounds);
+  scroll_view_->Layout();
+  EXPECT_FALSE(scroll_view_->vertical_scroll_bar()->GetVisible());
+  EXPECT_FALSE(scroll_view_->horizontal_scroll_bar()->GetVisible());
+}
+
+// Same as above, but setting vertical scrollbar instead.
+TEST_F(ScrollViewTest, VerticalScrollbarDoesNotAppearIfHidden) {
+  const gfx::Rect default_outer_bounds(0, 0, 100, 100);
+  scroll_view_->SetVerticalScrollBarMode(
+      ScrollView::ScrollBarMode::kHiddenButEnabled);
+  scroll_view_->SetContents(std::make_unique<HorizontalResizingView>());
+  scroll_view_->SetBoundsRect(default_outer_bounds);
+  scroll_view_->Layout();
+  EXPECT_FALSE(scroll_view_->vertical_scroll_bar()->GetVisible());
+  EXPECT_FALSE(scroll_view_->horizontal_scroll_bar()->GetVisible());
+}
+
+// Same as above, but setting horizontal scroll bar to disabled.
+TEST_F(ScrollViewTest, HorizontalScrollbarDoesNotAppearIfDisabled) {
+  const gfx::Rect default_outer_bounds(0, 0, 100, 100);
+  scroll_view_->SetHorizontalScrollBarMode(
+      ScrollView::ScrollBarMode::kDisabled);
+  scroll_view_->SetContents(std::make_unique<VerticalResizingView>());
+  scroll_view_->SetBoundsRect(default_outer_bounds);
+  scroll_view_->Layout();
+  EXPECT_FALSE(scroll_view_->vertical_scroll_bar()->GetVisible());
+  EXPECT_FALSE(scroll_view_->horizontal_scroll_bar()->GetVisible());
+}
+
+// Same as above, but setting vertical scrollbar instead.
+TEST_F(ScrollViewTest, VerticallScrollbarDoesNotAppearIfDisabled) {
+  const gfx::Rect default_outer_bounds(0, 0, 100, 100);
+  scroll_view_->SetVerticalScrollBarMode(ScrollView::ScrollBarMode::kDisabled);
+  scroll_view_->SetContents(std::make_unique<HorizontalResizingView>());
+  scroll_view_->SetBoundsRect(default_outer_bounds);
+  scroll_view_->Layout();
+  EXPECT_FALSE(scroll_view_->vertical_scroll_bar()->GetVisible());
+  EXPECT_FALSE(scroll_view_->horizontal_scroll_bar()->GetVisible());
+}
+
 // Verifies the scrollbars are added as necessary.
 // If on Mac, test the non-overlay scrollbars.
 TEST_F(ScrollViewTest, ScrollBars) {
@@ -742,6 +806,46 @@ TEST_F(ScrollViewTest, ScrollToPositionUpdatesScrollBar) {
   EXPECT_GT(scroll_bar->GetPosition(), 0);
 }
 
+// Test that calling ScrollToPosition() also updates the position of the
+// child view even when the horizontal scrollbar is hidden.
+TEST_F(ScrollViewTest, ScrollToPositionUpdatesWithHiddenHorizontalScrollBar) {
+  scroll_view_->SetHorizontalScrollBarMode(
+      ScrollView::ScrollBarMode::kHiddenButEnabled);
+  ScrollViewTestApi test_api(scroll_view_.get());
+  View* contents = InstallContents();
+
+  contents->SetBounds(0, 0, 400, 50);
+  scroll_view_->Layout();
+  auto* scroll_bar = test_api.GetScrollBar(HORIZONTAL);
+  ASSERT_TRUE(scroll_bar);
+  EXPECT_FALSE(scroll_bar->GetVisible());
+  // We can't rely on the scrollbar, which may not be updated as it's not
+  // visible, but we can check the scroll offset itself.
+  EXPECT_EQ(0, test_api.CurrentOffset().x());
+  scroll_view_->ScrollToPosition(scroll_bar, 20);
+  EXPECT_GT(test_api.CurrentOffset().x(), 0);
+}
+
+// Test that calling ScrollToPosition() also updates the position of the
+// child view even when the horizontal scrollbar is hidden.
+TEST_F(ScrollViewTest, ScrollToPositionUpdatesWithHiddenVerticalScrollBar) {
+  scroll_view_->SetVerticalScrollBarMode(
+      ScrollView::ScrollBarMode::kHiddenButEnabled);
+  ScrollViewTestApi test_api(scroll_view_.get());
+  View* contents = InstallContents();
+
+  contents->SetBounds(0, 0, 50, 400);
+  scroll_view_->Layout();
+  auto* scroll_bar = test_api.GetScrollBar(VERTICAL);
+  ASSERT_TRUE(scroll_bar);
+  EXPECT_FALSE(scroll_bar->GetVisible());
+  // We can't rely on the scrollbar, which may not be updated as it's not
+  // visible, but we can check the scroll offset itself.
+  EXPECT_EQ(0, test_api.CurrentOffset().y());
+  scroll_view_->ScrollToPosition(scroll_bar, 20);
+  EXPECT_GT(test_api.CurrentOffset().y(), 0);
+}
+
 // Verifies ScrollRectToVisible() on the child works.
 TEST_F(ScrollViewTest, ScrollRectToVisible) {
   ScrollViewTestApi test_api(scroll_view_.get());
@@ -767,6 +871,66 @@ TEST_F(ScrollViewTest, ScrollRectToVisible) {
   // Scroll to the current y-location and 10x10; should do nothing.
   contents_ptr->ScrollRectToVisible(gfx::Rect(0, offset.y(), 10, 10));
   EXPECT_EQ(415 - viewport_height, test_api.CurrentOffset().y());
+}
+
+// Verifies ScrollRectToVisible() scrolls the view horizontally even if the
+// horizontal scrollbar is hidden (but not disabled).
+TEST_F(ScrollViewTest, ScrollRectToVisibleWithHiddenHorizontalScrollbar) {
+  scroll_view_->SetHorizontalScrollBarMode(
+      ScrollView::ScrollBarMode::kHiddenButEnabled);
+  ScrollViewTestApi test_api(scroll_view_.get());
+  auto contents = std::make_unique<CustomView>();
+  contents->SetPreferredSize(gfx::Size(500, 1000));
+  auto* contents_ptr = scroll_view_->SetContents(std::move(contents));
+
+  scroll_view_->SetBoundsRect(gfx::Rect(0, 0, 100, 100));
+  scroll_view_->Layout();
+  EXPECT_EQ("0,0", test_api.IntegralViewOffset().ToString());
+
+  // Scroll to x=305 width=10, this should make the x position of the content
+  // at (305 + 10) - viewport_width (scroll region right aligned).
+  contents_ptr->ScrollRectToVisible(gfx::Rect(305, 0, 10, 10));
+  const int viewport_width = test_api.contents_viewport()->width();
+
+  // Expect there to be a vertical scrollbar, making the viewport shorter.
+  EXPECT_EQ(100 - scroll_view_->GetScrollBarLayoutWidth(), viewport_width);
+
+  gfx::ScrollOffset offset = test_api.CurrentOffset();
+  EXPECT_EQ(315 - viewport_width, offset.x());
+
+  // Scroll to the current x-location and 10x10; should do nothing.
+  contents_ptr->ScrollRectToVisible(gfx::Rect(offset.x(), 0, 10, 10));
+  EXPECT_EQ(315 - viewport_width, test_api.CurrentOffset().x());
+}
+
+// Verifies ScrollRectToVisible() scrolls the view horizontally even if the
+// horizontal scrollbar is hidden (but not disabled).
+TEST_F(ScrollViewTest, ScrollRectToVisibleWithHiddenVerticalScrollbar) {
+  scroll_view_->SetVerticalScrollBarMode(
+      ScrollView::ScrollBarMode::kHiddenButEnabled);
+  ScrollViewTestApi test_api(scroll_view_.get());
+  auto contents = std::make_unique<CustomView>();
+  contents->SetPreferredSize(gfx::Size(1000, 500));
+  auto* contents_ptr = scroll_view_->SetContents(std::move(contents));
+
+  scroll_view_->SetBoundsRect(gfx::Rect(0, 0, 100, 100));
+  scroll_view_->Layout();
+  EXPECT_EQ("0,0", test_api.IntegralViewOffset().ToString());
+
+  // Scroll to y=305 height=10, this should make the y position of the content
+  // at (305 + 10) - viewport_height (scroll region bottom aligned).
+  contents_ptr->ScrollRectToVisible(gfx::Rect(0, 305, 10, 10));
+  const int viewport_height = test_api.contents_viewport()->height();
+
+  // Expect there to be a vertical scrollbar, making the viewport shorter.
+  EXPECT_EQ(100 - scroll_view_->GetScrollBarLayoutHeight(), viewport_height);
+
+  gfx::ScrollOffset offset = test_api.CurrentOffset();
+  EXPECT_EQ(315 - viewport_height, offset.y());
+
+  // Scroll to the current x-location and 10x10; should do nothing.
+  contents_ptr->ScrollRectToVisible(gfx::Rect(0, offset.y(), 10, 10));
+  EXPECT_EQ(315 - viewport_height, test_api.CurrentOffset().y());
 }
 
 // Verifies that child scrolls into view when it's focused.
@@ -1576,8 +1740,34 @@ TEST_F(ScrollViewTest, VerticalWithHeaderOverflowIndicators) {
   EXPECT_FALSE(test_api.more_content_right()->GetVisible());
 }
 
-// Ensure ScrollView::Layout succeeds if a hidden scrollbar's overlap style
+// Ensure ScrollView::Layout succeeds if a disabled scrollbar's overlap style
 // does not match the other scrollbar.
+TEST_F(ScrollViewTest, IgnoreOverlapWithDisabledHorizontalScroll) {
+  ScrollViewTestApi test_api(scroll_view_.get());
+
+  constexpr int kThickness = 1;
+  // Assume horizontal scroll bar is the default and is overlapping.
+  scroll_view_->SetHorizontalScrollBar(std::make_unique<TestScrollBar>(
+      /* horizontal */ true, /* overlaps_content */ true, kThickness));
+  // Assume vertical scroll bar is custom and it we want it to not overlap.
+  scroll_view_->SetVerticalScrollBar(std::make_unique<TestScrollBar>(
+      /* horizontal */ false, /* overlaps_content */ false, kThickness));
+
+  // Also, let's turn off horizontal scroll bar.
+  scroll_view_->SetHorizontalScrollBarMode(
+      ScrollView::ScrollBarMode::kDisabled);
+
+  View* contents = InstallContents();
+  contents->SetBoundsRect(gfx::Rect(0, 0, 300, 300));
+  scroll_view_->Layout();
+
+  gfx::Size expected_size = scroll_view_->size();
+  expected_size.Enlarge(-kThickness, 0);
+  EXPECT_EQ(expected_size, test_api.contents_viewport()->size());
+}
+
+// Ensure ScrollView::Layout succeeds if a hidden but enabled scrollbar's
+// overlap style does not match the other scrollbar.
 TEST_F(ScrollViewTest, IgnoreOverlapWithHiddenHorizontalScroll) {
   ScrollViewTestApi test_api(scroll_view_.get());
 
@@ -1590,7 +1780,8 @@ TEST_F(ScrollViewTest, IgnoreOverlapWithHiddenHorizontalScroll) {
       /* horizontal */ false, /* overlaps_content */ false, kThickness));
 
   // Also, let's turn off horizontal scroll bar.
-  scroll_view_->SetHideHorizontalScrollBar(true);
+  scroll_view_->SetHorizontalScrollBarMode(
+      ScrollView::ScrollBarMode::kHiddenButEnabled);
 
   View* contents = InstallContents();
   contents->SetBoundsRect(gfx::Rect(0, 0, 300, 300));
@@ -1598,6 +1789,57 @@ TEST_F(ScrollViewTest, IgnoreOverlapWithHiddenHorizontalScroll) {
 
   gfx::Size expected_size = scroll_view_->size();
   expected_size.Enlarge(-kThickness, 0);
+  EXPECT_EQ(expected_size, test_api.contents_viewport()->size());
+}
+
+// Ensure ScrollView::Layout succeeds if a disabled scrollbar's overlap style
+// does not match the other scrollbar.
+TEST_F(ScrollViewTest, IgnoreOverlapWithDisabledVerticalScroll) {
+  ScrollViewTestApi test_api(scroll_view_.get());
+
+  constexpr int kThickness = 1;
+  // Assume horizontal scroll bar is custom and it we want it to not overlap.
+  scroll_view_->SetHorizontalScrollBar(std::make_unique<TestScrollBar>(
+      /* horizontal */ true, /* overlaps_content */ false, kThickness));
+  // Assume vertical scroll bar is the default and is overlapping.
+  scroll_view_->SetVerticalScrollBar(std::make_unique<TestScrollBar>(
+      /* horizontal */ false, /* overlaps_content */ true, kThickness));
+
+  // Also, let's turn off horizontal scroll bar.
+  scroll_view_->SetVerticalScrollBarMode(ScrollView::ScrollBarMode::kDisabled);
+
+  View* contents = InstallContents();
+  contents->SetBoundsRect(gfx::Rect(0, 0, 300, 300));
+  scroll_view_->Layout();
+
+  gfx::Size expected_size = scroll_view_->size();
+  expected_size.Enlarge(0, -kThickness);
+  EXPECT_EQ(expected_size, test_api.contents_viewport()->size());
+}
+
+// Ensure ScrollView::Layout succeeds if a hidden but enabled scrollbar's
+// overlap style does not match the other scrollbar.
+TEST_F(ScrollViewTest, IgnoreOverlapWithHiddenVerticalScroll) {
+  ScrollViewTestApi test_api(scroll_view_.get());
+
+  constexpr int kThickness = 1;
+  // Assume horizontal scroll bar is custom and it we want it to not overlap.
+  scroll_view_->SetHorizontalScrollBar(std::make_unique<TestScrollBar>(
+      /* horizontal */ true, /* overlaps_content */ false, kThickness));
+  // Assume vertical scroll bar is the default and is overlapping.
+  scroll_view_->SetVerticalScrollBar(std::make_unique<TestScrollBar>(
+      /* horizontal */ false, /* overlaps_content */ true, kThickness));
+
+  // Also, let's turn off horizontal scroll bar.
+  scroll_view_->SetVerticalScrollBarMode(
+      ScrollView::ScrollBarMode::kHiddenButEnabled);
+
+  View* contents = InstallContents();
+  contents->SetBoundsRect(gfx::Rect(0, 0, 300, 300));
+  scroll_view_->Layout();
+
+  gfx::Size expected_size = scroll_view_->size();
+  expected_size.Enlarge(0, -kThickness);
   EXPECT_EQ(expected_size, test_api.contents_viewport()->size());
 }
 
@@ -1847,6 +2089,38 @@ TEST_P(WidgetScrollViewTestRTLAndLayers, ScrollOffsetUsingLayers) {
   EXPECT_EQ(gfx::ScrollOffset(offset.x(), offset.y()), impl_offset);
 }
 
+namespace {
+
+// Applies |scroll_event| to |scroll_view| and verifies that the event is
+// applied correctly whether or not compositor scrolling is enabled.
+static void ApplyScrollEvent(const ScrollViewTestApi& test_api,
+                             ScrollView* scroll_view,
+                             ui::ScrollEvent& scroll_event) {
+  EXPECT_FALSE(scroll_event.handled());
+  EXPECT_FALSE(scroll_event.stopped_propagation());
+  scroll_view->OnScrollEvent(&scroll_event);
+
+  // Check to see if the scroll event is handled by the scroll view.
+  if (base::FeatureList::IsEnabled(::features::kUiCompositorScrollWithLayers)) {
+    // If UiCompositorScrollWithLayers is enabled, the event is set handled
+    // and its propagation is stopped.
+    EXPECT_TRUE(scroll_event.handled());
+    EXPECT_TRUE(scroll_event.stopped_propagation());
+  } else {
+    // If UiCompositorScrollWithLayers is disabled, the event isn't handled.
+    // This informs Widget::OnScrollEvent() to convert to a MouseWheel event
+    // and dispatch again. Simulate that.
+    EXPECT_FALSE(scroll_event.handled());
+    EXPECT_FALSE(scroll_event.stopped_propagation());
+    EXPECT_EQ(gfx::ScrollOffset(), test_api.CurrentOffset());
+
+    ui::MouseWheelEvent wheel(scroll_event);
+    scroll_view->OnMouseEvent(&wheel);
+  }
+}
+
+}  // namespace
+
 // Tests to see the scroll events are handled correctly in composited and
 // non-composited scrolling.
 TEST_F(WidgetScrollViewTest, CompositedScrollEvents) {
@@ -1858,30 +2132,78 @@ TEST_F(WidgetScrollViewTest, CompositedScrollEvents) {
   // Create a fake scroll event and send it to the scroll view.
   ui::ScrollEvent scroll(ui::ET_SCROLL, gfx::Point(), base::TimeTicks::Now(), 0,
                          0, -10, 0, -10, 3);
-  EXPECT_FALSE(scroll.handled());
-  EXPECT_FALSE(scroll.stopped_propagation());
-  scroll_view->OnScrollEvent(&scroll);
-
-  // Check to see if the scroll event is handled by the scroll view.
-  if (base::FeatureList::IsEnabled(::features::kUiCompositorScrollWithLayers)) {
-    // If UiCompositorScrollWithLayers is enabled, the event is set handled
-    // and its propagation is stopped.
-    EXPECT_TRUE(scroll.handled());
-    EXPECT_TRUE(scroll.stopped_propagation());
-  } else {
-    // If UiCompositorScrollWithLayers is disabled, the event isn't handled.
-    // This informs Widget::OnScrollEvent() to convert to a MouseWheel event
-    // and dispatch again. Simulate that.
-    EXPECT_FALSE(scroll.handled());
-    EXPECT_FALSE(scroll.stopped_propagation());
-    EXPECT_EQ(gfx::ScrollOffset(), test_api.CurrentOffset());
-
-    ui::MouseWheelEvent wheel(scroll);
-    scroll_view->OnMouseEvent(&wheel);
-  }
+  ApplyScrollEvent(test_api, scroll_view, scroll);
 
   // Check if the scroll view has been offset.
   EXPECT_EQ(gfx::ScrollOffset(0, 10), test_api.CurrentOffset());
+}
+
+// Tests to see that transposed (treat-as-horizontal) scroll events are handled
+// correctly in composited and non-composited scrolling.
+TEST_F(WidgetScrollViewTest, CompositedTransposedScrollEvents) {
+  // Set up with a vertical scroll bar.
+  ScrollView* scroll_view =
+      AddScrollViewWithContentSize(gfx::Size(kDefaultHeight * 5, 10));
+  scroll_view->SetTreatAllScrollEventsAsHorizontal(true);
+  ScrollViewTestApi test_api(scroll_view);
+
+  // Create a fake scroll event and send it to the scroll view.
+  // Note that this is still a VERTICAL scroll event, but we'll be looking for
+  // HORIZONTAL motion later because we're transposed.
+  ui::ScrollEvent scroll(ui::ET_SCROLL, gfx::Point(), base::TimeTicks::Now(), 0,
+                         0, -10, 0, -10, 3);
+  ApplyScrollEvent(test_api, scroll_view, scroll);
+
+  // Check if the scroll view has been offset.
+  EXPECT_EQ(gfx::ScrollOffset(10, 0), test_api.CurrentOffset());
+}
+
+// Tests to see that transposed (treat-as-horizontal) scroll events are handled
+// correctly in composited and non-composited scrolling when the scroll offset
+// is somewhat ambiguous. This is the case where the horizontal component is
+// larger than the vertical.
+TEST_F(WidgetScrollViewTest,
+       CompositedTransposedScrollEventsHorizontalComponentIsLarger) {
+  // Set up with a vertical scroll bar.
+  ScrollView* scroll_view =
+      AddScrollViewWithContentSize(gfx::Size(kDefaultHeight * 5, 10));
+  scroll_view->SetTreatAllScrollEventsAsHorizontal(true);
+  ScrollViewTestApi test_api(scroll_view);
+
+  // Create a fake scroll event and send it to the scroll view.
+  // This will be a horizontal scroll event but there will be a conflicting
+  // vertical element. We should still scroll horizontally, since the horizontal
+  // component is greater.
+  ui::ScrollEvent scroll(ui::ET_SCROLL, gfx::Point(), base::TimeTicks::Now(), 0,
+                         -10, 7, -10, 7, 3);
+  ApplyScrollEvent(test_api, scroll_view, scroll);
+
+  // Check if the scroll view has been offset.
+  EXPECT_EQ(gfx::ScrollOffset(10, 0), test_api.CurrentOffset());
+}
+
+// Tests to see that transposed (treat-as-horizontal) scroll events are handled
+// correctly in composited and non-composited scrolling when the scroll offset
+// is somewhat ambiguous. This is the case where the vertical component is
+// larger than the horizontal.
+TEST_F(WidgetScrollViewTest,
+       CompositedTransposedScrollEventsVerticalComponentIsLarger) {
+  // Set up with a vertical scroll bar.
+  ScrollView* scroll_view =
+      AddScrollViewWithContentSize(gfx::Size(kDefaultHeight * 5, 10));
+  scroll_view->SetTreatAllScrollEventsAsHorizontal(true);
+  ScrollViewTestApi test_api(scroll_view);
+
+  // Create a fake scroll event and send it to the scroll view.
+  // This will be a vertical scroll event but there will be a conflicting
+  // horizontal element. We should still scroll horizontally, since the vertical
+  // component is greater.
+  ui::ScrollEvent scroll(ui::ET_SCROLL, gfx::Point(), base::TimeTicks::Now(), 0,
+                         7, -10, 7, -10, 3);
+  ApplyScrollEvent(test_api, scroll_view, scroll);
+
+  // Check if the scroll view has been offset.
+  EXPECT_EQ(gfx::ScrollOffset(10, 0), test_api.CurrentOffset());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

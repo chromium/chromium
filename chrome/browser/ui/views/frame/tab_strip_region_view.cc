@@ -31,7 +31,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
         AddChildView(std::make_unique<views::ScrollView>(
             views::ScrollView::ScrollWithLayers::kEnabled));
     tab_strip_scroll_container->SetBackgroundColor(base::nullopt);
-    tab_strip_scroll_container->SetHideHorizontalScrollBar(true);
+    tab_strip_scroll_container->SetHorizontalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kDisabled);
     tab_strip_container_ = tab_strip_scroll_container;
     tab_strip_scroll_container->SetContents(std::move(tab_strip));
   } else {

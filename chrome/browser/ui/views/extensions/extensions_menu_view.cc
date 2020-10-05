@@ -132,7 +132,8 @@ void ExtensionsMenuView::Populate() {
   auto scroll_view = std::make_unique<views::ScrollView>();
   scroll_view->ClipHeightTo(0, kMaxExtensionButtonsHeightDp);
   scroll_view->SetDrawOverflowIndicator(false);
-  scroll_view->SetHideHorizontalScrollBar(true);
+  scroll_view->SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
   scroll_view->SetContents(std::move(extension_buttons));
   AddChildView(std::move(scroll_view));
 

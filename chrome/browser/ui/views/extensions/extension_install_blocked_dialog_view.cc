@@ -121,7 +121,8 @@ void ExtensionInstallBlockedDialogView::AddCustomMessageContents(
   header_label->SizeToFit(content_width);
 
   auto* scroll_view = AddChildView(std::make_unique<views::ScrollView>());
-  scroll_view->SetHideHorizontalScrollBar(true);
+  scroll_view->SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
   scroll_view->SetContents(std::move(extension_info_container));
   scroll_view->ClipHeightTo(
       0, provider->GetDistanceMetric(

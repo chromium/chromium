@@ -24,11 +24,27 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
 
 namespace {
+
+// Returns the combined scroll amount given separate x and y offsets. This is
+// used in the "treat all scroll events as horizontal" case when there is both
+// an x and y offset and we do not want them to add in unintuitive ways.
+//
+// The current approach is to return whichever offset has the larger absolute
+// value, which should at least handle the case in which the gesture is mostly
+// vertical or horizontal. It does mean that for a gesture at 135° or 315° from
+// the x axis there is a breakpoint where scroll direction reverses, but we do
+// not typically expect users to try to scroll a horizontal-scroll-only view at
+// this exact angle.
+template <class T>
+T CombineScrollOffsets(T x, T y) {
+  return std::abs(x) >= std::abs(y) ? x : y;
+}
 
 class ScrollCornerView : public View {
  public:
@@ -303,11 +319,42 @@ gfx::Rect ScrollView::GetVisibleRect() const {
                    contents_viewport_->height());
 }
 
-void ScrollView::SetHideHorizontalScrollBar(bool visible) {
-  if (hide_horizontal_scrollbar_ == visible)
+void ScrollView::SetHorizontalScrollBarMode(
+    ScrollBarMode horizontal_scroll_bar_mode) {
+  if (horizontal_scroll_bar_mode_ == horizontal_scroll_bar_mode)
     return;
-  hide_horizontal_scrollbar_ = visible;
-  OnPropertyChanged(&hide_horizontal_scrollbar_, kPropertyEffectsPaint);
+  horizontal_scroll_bar_mode_ = horizontal_scroll_bar_mode;
+  OnPropertyChanged(&horizontal_scroll_bar_mode_, kPropertyEffectsPaint);
+}
+
+void ScrollView::SetVerticalScrollBarMode(
+    ScrollBarMode vertical_scroll_bar_mode) {
+  if (vertical_scroll_bar_mode_ == vertical_scroll_bar_mode)
+    return;
+
+  // Enabling vertical scrolling is incompatible with all scrolling being
+  // interpreted as horizontal.
+  DCHECK(!treat_all_scroll_events_as_horizontal_ ||
+         vertical_scroll_bar_mode == ScrollBarMode::kDisabled);
+
+  vertical_scroll_bar_mode_ = vertical_scroll_bar_mode;
+  OnPropertyChanged(&vertical_scroll_bar_mode_, kPropertyEffectsPaint);
+}
+
+void ScrollView::SetTreatAllScrollEventsAsHorizontal(
+    bool treat_all_scroll_events_as_horizontal) {
+  if (treat_all_scroll_events_as_horizontal_ ==
+      treat_all_scroll_events_as_horizontal) {
+    return;
+  }
+  treat_all_scroll_events_as_horizontal_ =
+      treat_all_scroll_events_as_horizontal;
+  OnPropertyChanged(&treat_all_scroll_events_as_horizontal_,
+                    kPropertyEffectsNone);
+
+  // Since this effectively disables vertical scrolling, don't show a
+  // vertical scrollbar.
+  SetVerticalScrollBarMode(ScrollBarMode::kDisabled);
 }
 
 void ScrollView::SetDrawOverflowIndicator(bool draw_overflow_indicator) {
@@ -383,9 +430,10 @@ int ScrollView::GetHeightForWidth(int width) const {
 }
 
 void ScrollView::Layout() {
-  // When horizontal scrollbar is disabled, it should not matter
-  // if its OverlapsContent matches vertical bar's.
-  if (!hide_horizontal_scrollbar_) {
+  // When either scrollbar is disabled, it should not matter
+  // if its OverlapsContent matches other bar's.
+  if (horizontal_scroll_bar_mode_ == ScrollBarMode::kEnabled &&
+      vertical_scroll_bar_mode_ == ScrollBarMode::kEnabled) {
 #if defined(OS_APPLE)
     // On Mac, scrollbars may update their style one at a time, so they may
     // temporarily be of different types. Refuse to lay out at this point.
@@ -578,10 +626,10 @@ bool ScrollView::OnKeyPressed(const ui::KeyEvent& event) {
   bool processed = false;
 
   // Give vertical scrollbar priority
-  if (vert_sb_->GetVisible())
+  if (IsVerticalScrollEnabled())
     processed = vert_sb_->OnKeyPressed(event);
 
-  if (!processed && horiz_sb_->GetVisible())
+  if (!processed && IsHorizontalScrollEnabled())
     processed = horiz_sb_->OnKeyPressed(event);
 
   return processed;
@@ -590,12 +638,21 @@ bool ScrollView::OnKeyPressed(const ui::KeyEvent& event) {
 bool ScrollView::OnMouseWheel(const ui::MouseWheelEvent& e) {
   bool processed = false;
 
-  // TODO(https://crbug.com/615948): Use composited scrolling.
-  if (vert_sb_->GetVisible())
-    processed = vert_sb_->OnMouseWheel(e);
+  const ui::MouseWheelEvent to_propagate =
+      treat_all_scroll_events_as_horizontal_
+          ? ui::MouseWheelEvent(
+                e, CombineScrollOffsets(e.x_offset(), e.y_offset()), 0)
+          : e;
 
-  if (horiz_sb_->GetVisible())
-    processed = horiz_sb_->OnMouseWheel(e) || processed;
+  // TODO(https://crbug.com/615948): Use composited scrolling.
+  if (IsVerticalScrollEnabled())
+    processed = vert_sb_->OnMouseWheel(to_propagate);
+
+  if (IsHorizontalScrollEnabled()) {
+    // When there is no vertical scrollbar, allow vertical scroll events to be
+    // interpreted as horizontal scroll events.
+    processed |= horiz_sb_->OnMouseWheel(to_propagate);
+  }
 
   return processed;
 }
@@ -604,13 +661,28 @@ void ScrollView::OnScrollEvent(ui::ScrollEvent* event) {
   if (!contents_)
     return;
 
+  // Possibly force the scroll event to horizontal based on the configuration
+  // option.
+  ui::ScrollEvent e =
+      treat_all_scroll_events_as_horizontal_
+          ? ui::ScrollEvent(
+                event->type(), event->location_f(), event->root_location_f(),
+                event->time_stamp(), event->flags(),
+                CombineScrollOffsets(event->x_offset(), event->y_offset()),
+                0.0f,
+                CombineScrollOffsets(event->y_offset_ordinal(),
+                                     event->x_offset_ordinal()),
+                0.0f, event->finger_count(), event->momentum_phase(),
+                event->scroll_event_phase())
+          : *event;
+
   ui::ScrollInputHandler* compositor_scroller =
       GetWidget()->GetCompositor()->scroll_input_handler();
   if (compositor_scroller) {
     DCHECK(scroll_with_layers_enabled_);
-    if (compositor_scroller->OnScrollEvent(*event, contents_->layer())) {
-      event->SetHandled();
-      event->StopPropagation();
+    if (compositor_scroller->OnScrollEvent(e, contents_->layer())) {
+      e.SetHandled();
+      e.StopPropagation();
     }
   }
 
@@ -618,9 +690,15 @@ void ScrollView::OnScrollEvent(ui::ScrollEvent* event) {
   // scrollbars that they may be about scroll, or that they may need to cancel
   // UI feedback once the scrolling direction is known.
   if (horiz_sb_)
-    horiz_sb_->ObserveScrollEvent(*event);
+    horiz_sb_->ObserveScrollEvent(e);
   if (vert_sb_)
-    vert_sb_->ObserveScrollEvent(*event);
+    vert_sb_->ObserveScrollEvent(e);
+
+  // Need to copy state back to original event.
+  if (e.handled())
+    event->SetHandled();
+  if (e.stopped_propagation())
+    event->StopPropagation();
 }
 
 void ScrollView::OnGestureEvent(ui::GestureEvent* event) {
@@ -632,14 +710,20 @@ void ScrollView::OnGestureEvent(ui::GestureEvent* event) {
                       event->type() == ui::ET_GESTURE_SCROLL_END ||
                       event->type() == ui::ET_SCROLL_FLING_START;
 
+  // Note: we will not invert gesture events because it will be confusing to
+  // have a vertical finger gesture on a touchscreen cause the scroll pane to
+  // scroll horizontally.
+
   // TODO(https://crbug.com/615948): Use composited scrolling.
-  if (vert_sb_->GetVisible()) {
-    if (vert_sb_->bounds().Contains(event->location()) || scroll_event)
-      vert_sb_->OnGestureEvent(event);
+  if (IsVerticalScrollEnabled() &&
+      (scroll_event || (vert_sb_->GetVisible() &&
+                        vert_sb_->bounds().Contains(event->location())))) {
+    vert_sb_->OnGestureEvent(event);
   }
-  if (!event->handled() && horiz_sb_->GetVisible()) {
-    if (horiz_sb_->bounds().Contains(event->location()) || scroll_event)
-      horiz_sb_->OnGestureEvent(event);
+  if (!event->handled() && IsHorizontalScrollEnabled() &&
+      (scroll_event || (horiz_sb_->GetVisible() &&
+                        horiz_sb_->bounds().Contains(event->location())))) {
+    horiz_sb_->OnGestureEvent(event);
   }
 }
 
@@ -719,13 +803,13 @@ void ScrollView::ScrollToPosition(ScrollBar* source, int position) {
     return;
 
   gfx::ScrollOffset offset = CurrentOffset();
-  if (source == horiz_sb_.get() && horiz_sb_->GetVisible()) {
+  if (source == horiz_sb_.get() && IsHorizontalScrollEnabled()) {
     position = AdjustPosition(offset.x(), position, contents_->width(),
                               contents_viewport_->width());
     if (offset.x() == position)
       return;
     offset.set_x(position);
-  } else if (source == vert_sb_.get() && vert_sb_->GetVisible()) {
+  } else if (source == vert_sb_.get() && IsVerticalScrollEnabled()) {
     position = AdjustPosition(offset.y(), position, contents_->height(),
                               contents_viewport_->height());
     if (offset.y() == position)
@@ -783,8 +867,10 @@ void ScrollView::SetHeaderOrContents(View* parent,
 }
 
 void ScrollView::ScrollContentsRegionToBeVisible(const gfx::Rect& rect) {
-  if (!contents_ || (!horiz_sb_->GetVisible() && !vert_sb_->GetVisible()))
+  if (!contents_ ||
+      (!IsHorizontalScrollEnabled() && !IsVerticalScrollEnabled())) {
     return;
+  }
 
   // Figure out the maximums for this scroll view.
   const int contents_max_x =
@@ -830,9 +916,19 @@ void ScrollView::ComputeScrollBarsVisibility(const gfx::Size& vp_size,
                                              const gfx::Size& content_size,
                                              bool* horiz_is_shown,
                                              bool* vert_is_shown) const {
-  if (hide_horizontal_scrollbar_) {
+  const bool horizontal_enabled =
+      horizontal_scroll_bar_mode_ == ScrollBarMode::kEnabled;
+  const bool vertical_enabled =
+      vertical_scroll_bar_mode_ == ScrollBarMode::kEnabled;
+  if (!horizontal_enabled) {
     *horiz_is_shown = false;
-    *vert_is_shown = content_size.height() > vp_size.height();
+    *vert_is_shown =
+        vertical_enabled && content_size.height() > vp_size.height();
+    return;
+  }
+  if (!vertical_enabled) {
+    *vert_is_shown = false;
+    *horiz_is_shown = content_size.width() > vp_size.width();
     return;
   }
 
@@ -876,12 +972,12 @@ void ScrollView::UpdateScrollBarPositions() {
     return;
 
   const gfx::ScrollOffset offset = CurrentOffset();
-  if (horiz_sb_->GetVisible()) {
+  if (IsHorizontalScrollEnabled()) {
     int vw = contents_viewport_->width();
     int cw = contents_->width();
     horiz_sb_->Update(vw, cw, offset.x());
   }
-  if (vert_sb_->GetVisible()) {
+  if (IsVerticalScrollEnabled()) {
     int vh = contents_viewport_->height();
     int ch = contents_->height();
     vert_sb_->Update(vh, ch, offset.y());
@@ -917,6 +1013,28 @@ bool ScrollView::ScrollsWithLayers() const {
   // Just check for the presence of a layer since it's cheaper than querying the
   // Feature flag each time.
   return contents_viewport_->layer() != nullptr;
+}
+
+bool ScrollView::IsHorizontalScrollEnabled() const {
+  switch (horizontal_scroll_bar_mode_) {
+    case ScrollBarMode::kDisabled:
+      return false;
+    case ScrollBarMode::kHiddenButEnabled:
+      return bool{horiz_sb_};
+    case ScrollBarMode::kEnabled:
+      return horiz_sb_ && horiz_sb_->GetVisible();
+  }
+}
+
+bool ScrollView::IsVerticalScrollEnabled() const {
+  switch (vertical_scroll_bar_mode_) {
+    case ScrollBarMode::kDisabled:
+      return false;
+    case ScrollBarMode::kHiddenButEnabled:
+      return bool{vert_sb_};
+    case ScrollBarMode::kEnabled:
+      return vert_sb_ && vert_sb_->GetVisible();
+  }
 }
 
 void ScrollView::EnableViewportLayer() {
@@ -1013,20 +1131,21 @@ void ScrollView::PositionOverflowIndicators() {
 void ScrollView::UpdateOverflowIndicatorVisibility(
     const gfx::ScrollOffset& offset) {
   SetControlVisibility(more_content_top_.get(),
-                       !draw_border_ && !header_ && vert_sb_->GetVisible() &&
+                       !draw_border_ && !header_ && IsVerticalScrollEnabled() &&
                            offset.y() > vert_sb_->GetMinPosition() &&
                            draw_overflow_indicator_);
   SetControlVisibility(
       more_content_bottom_.get(),
       !draw_border_ && vert_sb_->GetVisible() && !horiz_sb_->GetVisible() &&
           offset.y() < vert_sb_->GetMaxPosition() && draw_overflow_indicator_);
+
   SetControlVisibility(more_content_left_.get(),
-                       !draw_border_ && horiz_sb_->GetVisible() &&
+                       !draw_border_ && IsHorizontalScrollEnabled() &&
                            offset.x() > horiz_sb_->GetMinPosition() &&
                            draw_overflow_indicator_);
   SetControlVisibility(
       more_content_right_.get(),
-      !draw_border_ && horiz_sb_->GetVisible() && !vert_sb_->GetVisible() &&
+      !draw_border_ && IsHorizontalScrollEnabled() && !vert_sb_->GetVisible() &&
           offset.x() < horiz_sb_->GetMaxPosition() && draw_overflow_indicator_);
 }
 
@@ -1038,7 +1157,9 @@ ADD_PROPERTY_METADATA(base::Optional<ui::NativeTheme::ColorId>,
                       BackgroundThemeColorId)
 ADD_PROPERTY_METADATA(bool, DrawOverflowIndicator)
 ADD_PROPERTY_METADATA(bool, HasFocusIndicator)
-ADD_PROPERTY_METADATA(bool, HideHorizontalScrollBar)
+ADD_PROPERTY_METADATA(ScrollView::ScrollBarMode, HorizontalScrollBarMode)
+ADD_PROPERTY_METADATA(ScrollView::ScrollBarMode, VerticalScrollBarMode)
+ADD_PROPERTY_METADATA(bool, TreatAllScrollEventsAsHorizontal)
 END_METADATA
 
 // VariableRowHeightScrollHelper ----------------------------------------------
