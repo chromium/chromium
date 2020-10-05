@@ -1238,10 +1238,8 @@ gfx::Rect RenderWidgetHostViewAura::ConvertRectToScreen(
     return rect;
   screen_position_client->ConvertPointToScreen(window_, &origin);
   screen_position_client->ConvertPointToScreen(window_, &end);
-  return gfx::Rect(origin.x(),
-                   origin.y(),
-                   end.x() - origin.x(),
-                   end.y() - origin.y());
+  return gfx::Rect(origin.x(), origin.y(), base::ClampSub(end.x(), origin.x()),
+                   base::ClampSub(end.y(), origin.y()));
 }
 
 gfx::Rect RenderWidgetHostViewAura::ConvertRectFromScreen(
