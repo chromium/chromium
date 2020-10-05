@@ -145,6 +145,9 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
                       NearbyConnectionsMojom::StartDiscoveryCallback callback) {
           EXPECT_EQ(kServiceId, service_id);
           EXPECT_EQ(kStrategy, options->strategy);
+          EXPECT_EQ(
+              device::BluetoothUUID("0000fef3-0000-1000-8000-00805f9b34fb"),
+              options->fast_advertisement_service_uuid);
 
           listener_remote.Bind(std::move(listener));
           std::move(callback).Run(Status::kSuccess);

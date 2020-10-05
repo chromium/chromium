@@ -132,10 +132,10 @@ void NearbyConnectionsManagerImpl::StartDiscovery(
   }
 
   discovery_listener_ = listener;
-  // TODO(b/168659459): Inject kFastAdvertisementServiceUuid once BLE scanning
-  // actually uses it.
   nearby_connections_->StartDiscovery(
-      kServiceId, DiscoveryOptions::New(kStrategy),
+      kServiceId,
+      DiscoveryOptions::New(
+          kStrategy, device::BluetoothUUID(kFastAdvertisementServiceUuid)),
       endpoint_discovery_listener_.BindNewPipeAndPassRemote(),
       std::move(callback));
 }

@@ -185,7 +185,9 @@ void NearbyConnections::StartDiscovery(
     mojo::PendingRemote<mojom::EndpointDiscoveryListener> listener,
     StartDiscoveryCallback callback) {
   ConnectionOptions connection_options{
-      .strategy = StrategyFromMojom(options->strategy)};
+      .strategy = StrategyFromMojom(options->strategy),
+      .fast_advertisement_service_uuid =
+          options->fast_advertisement_service_uuid.canonical_value()};
   mojo::SharedRemote<mojom::EndpointDiscoveryListener> remote(
       std::move(listener));
   DiscoveryListener discovery_listener{
