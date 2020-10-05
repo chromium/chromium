@@ -1,6 +1,6 @@
 // Place your key bindings in this file to overwrite the defaults
 [
-  // Run the task marked as "isTestCommand": true, see tasks.json.
+  // Run the task marked as "group": "test", see tasks.json.
   { "key": "ctrl+shift+t",       "command": "workbench.action.tasks.test" },
   // Jump to the previous change in the built-in diff tool.
   { "key": "ctrl+up",            "command": "workbench.action.compareEditor.previousChange" },
@@ -16,7 +16,7 @@
   // key binding from the C/C++ extension as I found it to be slow).
   { "key": "alt+o",              "command": "togglehs.toggleHS" },
   // Quickly run a task, see tasks.json. Since we named them 1-, 2- etc., it is
-  // suffucient to press the corresponding number.
+  // sufficient to press the corresponding number.
   { "key": "ctrl+r",             "command": "workbench.action.tasks.runTask",
                                     "when": "!inDebugMode" },
   // The following keybindings are useful on laptops with small keyboards such as
