@@ -746,7 +746,8 @@ base::Optional<cbor::Value> FixInvalidUTF8(cbor::Value in,
 }
 
 base::Optional<PINUVAuthProtocol> ToPINUVAuthProtocol(int64_t in) {
-  if (in != static_cast<uint8_t>(PINUVAuthProtocol::kV1)) {
+  if (in != static_cast<uint8_t>(PINUVAuthProtocol::kV1) &&
+      in != static_cast<uint8_t>(PINUVAuthProtocol::kV2)) {
     return base::nullopt;
   }
   return static_cast<PINUVAuthProtocol>(in);

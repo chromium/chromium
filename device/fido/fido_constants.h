@@ -476,6 +476,7 @@ constexpr int kAndroidClientDataExtOutputKey = 0xf0;
 // PINUVAuthProtocol is the version number of a PIN/UV auth protocol.
 enum class PINUVAuthProtocol : uint8_t {
   kV1 = 1,
+  kV2 = 2,
 };
 
 }  // namespace device

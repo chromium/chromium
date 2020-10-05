@@ -60,6 +60,7 @@
 #include "device/fido/fido_types.h"
 #include "device/fido/hid/fake_hid_impl_for_testing.h"
 #include "device/fido/mock_fido_device.h"
+#include "device/fido/pin.h"
 #include "device/fido/public_key.h"
 #include "device/fido/test_callback_receiver.h"
 #include "device/fido/virtual_fido_device_factory.h"
@@ -3644,8 +3645,11 @@ class PINAuthenticatorImplTest : public UVAuthenticatorImplTest {
     kUsePIN,
   };
 
-  void ConfigureVirtualDevice(bool pin_uv_auth_token, int support_level) {
+  void ConfigureVirtualDevice(device::PINUVAuthProtocol pin_protocol,
+                              bool pin_uv_auth_token,
+                              int support_level) {
     device::VirtualCtap2Device::Config config;
+    config.pin_protocol = pin_protocol;
     config.pin_uv_auth_token_support = pin_uv_auth_token;
     config.ctap2_versions = {device::Ctap2Version::kCtap2_0,
                              device::Ctap2Version::kCtap2_1};
@@ -3738,57 +3742,65 @@ TEST_F(PINAuthenticatorImplTest, MakeCredential) {
       test_client_.supports_pin = ui_support;
 
       for (int support_level = 0; support_level <= 2; support_level++) {
-        SCOPED_TRACE(kPINSupportDescription[support_level]);
-        ConfigureVirtualDevice(pin_uv_auth_token, support_level);
+        for (const auto pin_protocol :
+             {device::PINUVAuthProtocol::kV1, device::PINUVAuthProtocol::kV2}) {
+          SCOPED_TRACE(testing::Message()
+                       << "support_level="
+                       << kPINSupportDescription[support_level]
+                       << ", pin_protocol=" << static_cast<int>(pin_protocol));
+          ConfigureVirtualDevice(pin_protocol, pin_uv_auth_token,
+                                 support_level);
 
-        for (int uv_level = 0; uv_level <= 2; uv_level++) {
-          SCOPED_TRACE(kUVDescription[uv_level]);
+          for (int uv_level = 0; uv_level <= 2; uv_level++) {
+            SCOPED_TRACE(kUVDescription[uv_level]);
 
-          switch (expected[support_level][uv_level]) {
-            case kNoPIN:
-            case kFailure:
-              // There shouldn't be any PIN prompts.
-              test_client_.expected.clear();
-              break;
+            switch (expected[support_level][uv_level]) {
+              case kNoPIN:
+              case kFailure:
+                // There shouldn't be any PIN prompts.
+                test_client_.expected.clear();
+                break;
 
-            case kSetPIN:
-              // A single PIN prompt to set a PIN is expected.
-              test_client_.expected = {{base::nullopt, kTestPIN}};
-              break;
+              case kSetPIN:
+                // A single PIN prompt to set a PIN is expected.
+                test_client_.expected = {{base::nullopt, kTestPIN}};
+                break;
 
-            case kUsePIN:
-              // A single PIN prompt to get the PIN is expected.
-              test_client_.expected = {{8, kTestPIN}};
-              break;
+              case kUsePIN:
+                // A single PIN prompt to get the PIN is expected.
+                test_client_.expected = {{8, kTestPIN}};
+                break;
 
-            default:
-              NOTREACHED();
-          }
+              default:
+                NOTREACHED();
+            }
 
-          MakeCredentialResult result = AuthenticatorMakeCredential(
-              make_credential_options(kUVLevel[uv_level]));
+            MakeCredentialResult result = AuthenticatorMakeCredential(
+                make_credential_options(kUVLevel[uv_level]));
 
-          switch (expected[support_level][uv_level]) {
-            case kFailure:
-              EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR, result.status);
-              break;
+            switch (expected[support_level][uv_level]) {
+              case kFailure:
+                EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR,
+                          result.status);
+                break;
 
-            case kNoPIN:
-              EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
-              EXPECT_EQ("", virtual_device_factory_->mutable_state()->pin);
-              EXPECT_FALSE(HasUV(result.response));
-              break;
+              case kNoPIN:
+                EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
+                EXPECT_EQ("", virtual_device_factory_->mutable_state()->pin);
+                EXPECT_FALSE(HasUV(result.response));
+                break;
 
-            case kSetPIN:
-            case kUsePIN:
-              EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
-              EXPECT_EQ(kTestPIN,
-                        virtual_device_factory_->mutable_state()->pin);
-              EXPECT_TRUE(HasUV(result.response));
-              break;
+              case kSetPIN:
+              case kUsePIN:
+                EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
+                EXPECT_EQ(kTestPIN,
+                          virtual_device_factory_->mutable_state()->pin);
+                EXPECT_TRUE(HasUV(result.response));
+                break;
 
-            default:
-              NOTREACHED();
+              default:
+                NOTREACHED();
+            }
           }
         }
       }
@@ -3873,49 +3885,58 @@ TEST_F(PINAuthenticatorImplTest, GetAssertion) {
 
       for (int support_level = 0; support_level <= 2; support_level++) {
         SCOPED_TRACE(kPINSupportDescription[support_level]);
-        ConfigureVirtualDevice(pin_uv_auth_token, support_level);
+        for (const auto pin_protocol :
+             {device::PINUVAuthProtocol::kV1, device::PINUVAuthProtocol::kV2}) {
+          SCOPED_TRACE(testing::Message()
+                       << "support_level="
+                       << kPINSupportDescription[support_level]
+                       << ", pin_protocol=" << static_cast<int>(pin_protocol));
+          ConfigureVirtualDevice(pin_protocol, pin_uv_auth_token,
+                                 support_level);
 
-        for (int uv_level = 0; uv_level <= 2; uv_level++) {
-          SCOPED_TRACE(kUVDescription[uv_level]);
+          for (int uv_level = 0; uv_level <= 2; uv_level++) {
+            SCOPED_TRACE(kUVDescription[uv_level]);
 
-          switch (expected[support_level][uv_level]) {
-            case kNoPIN:
-            case kFailure:
-              // No PIN prompts are expected.
-              test_client_.expected.clear();
-              break;
+            switch (expected[support_level][uv_level]) {
+              case kNoPIN:
+              case kFailure:
+                // No PIN prompts are expected.
+                test_client_.expected.clear();
+                break;
 
-            case kUsePIN:
-              // A single prompt to get the PIN is expected.
-              test_client_.expected = {{8, kTestPIN}};
-              break;
+              case kUsePIN:
+                // A single prompt to get the PIN is expected.
+                test_client_.expected = {{8, kTestPIN}};
+                break;
 
-            default:
-              NOTREACHED();
-          }
+              default:
+                NOTREACHED();
+            }
 
-          GetAssertionResult result = AuthenticatorGetAssertion(
-              get_credential_options(kUVLevel[uv_level]));
+            GetAssertionResult result = AuthenticatorGetAssertion(
+                get_credential_options(kUVLevel[uv_level]));
 
-          switch (expected[support_level][uv_level]) {
-            case kFailure:
-              EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR, result.status);
-              break;
+            switch (expected[support_level][uv_level]) {
+              case kFailure:
+                EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR,
+                          result.status);
+                break;
 
-            case kNoPIN:
-              EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
-              EXPECT_FALSE(HasUV(result.response));
-              break;
+              case kNoPIN:
+                EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
+                EXPECT_FALSE(HasUV(result.response));
+                break;
 
-            case kUsePIN:
-              EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
-              EXPECT_EQ(kTestPIN,
-                        virtual_device_factory_->mutable_state()->pin);
-              EXPECT_TRUE(HasUV(result.response));
-              break;
+              case kUsePIN:
+                EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
+                EXPECT_EQ(kTestPIN,
+                          virtual_device_factory_->mutable_state()->pin);
+                EXPECT_TRUE(HasUV(result.response));
+                break;
 
-            default:
-              NOTREACHED();
+              default:
+                NOTREACHED();
+            }
           }
         }
       }

@@ -127,21 +127,6 @@ void ReturnCtap2Response(
                                        data.value_or(std::vector<uint8_t>{}))));
 }
 
-// CheckPINToken returns true iff |pin_auth| is a valid authentication of
-// |data| given that the PIN token in effect is |pin_token|.
-bool CheckPINToken(base::span<const uint8_t> pin_token,
-                   base::span<const uint8_t> pin_auth,
-                   base::span<const uint8_t> data) {
-  uint8_t calculated_pin_auth[SHA256_DIGEST_LENGTH];
-  unsigned hmac_bytes;
-  CHECK(HMAC(EVP_sha256(), pin_token.data(), pin_token.size(), data.data(),
-             data.size(), calculated_pin_auth, &hmac_bytes));
-  DCHECK_EQ(sizeof(calculated_pin_auth), static_cast<size_t>(hmac_bytes));
-
-  return pin_auth.size() == 16 &&
-         CRYPTO_memcmp(pin_auth.data(), calculated_pin_auth, 16) == 0;
-}
-
 std::vector<uint8_t> ConstructSignatureBuffer(
     const AuthenticatorData& authenticator_data,
     base::span<const uint8_t, kClientDataHashLength> client_data_hash) {
@@ -233,9 +218,16 @@ base::Optional<bssl::UniquePtr<EC_POINT>> GetPINKey(
 // possession of the PIN, given that |shared_key| is the result of the ECDH key
 // agreement.
 CtapDeviceResponseCode ConfirmPresentedPIN(
+    PINUVAuthProtocol pin_protocol,
     VirtualCtap2Device::State* state,
-    const uint8_t shared_key[SHA256_DIGEST_LENGTH],
+    const std::vector<uint8_t>& shared_key,
     const std::vector<uint8_t>& encrypted_pin_hash) {
+  constexpr size_t kPinHashSize = AES_BLOCK_SIZE;
+  if (encrypted_pin_hash.empty() ||
+      encrypted_pin_hash.size() % kPinHashSize != 0u) {
+    return CtapDeviceResponseCode::kCtap2ErrPinInvalid;
+  }
+
   if (state->pin_retries == 0) {
     return CtapDeviceResponseCode::kCtap2ErrPinBlocked;
   }
@@ -246,16 +238,16 @@ CtapDeviceResponseCode ConfirmPresentedPIN(
   state->pin_retries--;
   state->pin_retries_since_insertion++;
 
-  DCHECK_EQ(encrypted_pin_hash.size() % AES_BLOCK_SIZE, 0ul);
-  uint8_t pin_hash[AES_BLOCK_SIZE];
-  pin::Decrypt(shared_key, encrypted_pin_hash, pin_hash);
+  std::vector<uint8_t> pin_hash = pin::ProtocolVersion(pin_protocol)
+                                      .Decrypt(shared_key, encrypted_pin_hash);
 
   uint8_t calculated_pin_hash[SHA256_DIGEST_LENGTH];
   SHA256(reinterpret_cast<const uint8_t*>(state->pin.data()), state->pin.size(),
          calculated_pin_hash);
+  static_assert(sizeof(calculated_pin_hash) >= kPinHashSize, "");
 
-  if (state->pin.empty() ||
-      CRYPTO_memcmp(pin_hash, calculated_pin_hash, sizeof(pin_hash)) != 0) {
+  if (state->pin.empty() || pin_hash.size() != kPinHashSize ||
+      CRYPTO_memcmp(pin_hash.data(), calculated_pin_hash, kPinHashSize) != 0) {
     if (state->pin_retries == 0) {
       return CtapDeviceResponseCode::kCtap2ErrPinBlocked;
     }
@@ -275,24 +267,13 @@ CtapDeviceResponseCode ConfirmPresentedPIN(
 
 // SetPIN sets the current PIN based on the ciphertext in |encrypted_pin|, given
 // that |shared_key| is the result of the ECDH key agreement.
-CtapDeviceResponseCode SetPIN(VirtualCtap2Device::State* state,
-                              const uint8_t shared_key[SHA256_DIGEST_LENGTH],
+CtapDeviceResponseCode SetPIN(PINUVAuthProtocol protocol,
+                              VirtualCtap2Device::State* state,
+                              const std::vector<uint8_t>& shared_key,
                               const std::vector<uint8_t>& encrypted_pin,
                               const std::vector<uint8_t>& pin_auth) {
-  // See
-  // https://fidoalliance.org/specs/fido-v2.0-rd-20180702/fido-client-to-authenticator-protocol-v2.0-rd-20180702.html#settingNewPin
-  uint8_t calculated_pin_auth[SHA256_DIGEST_LENGTH];
-  unsigned hmac_bytes;
-  CHECK(HMAC(EVP_sha256(), shared_key, SHA256_DIGEST_LENGTH,
-             encrypted_pin.data(), encrypted_pin.size(), calculated_pin_auth,
-             &hmac_bytes));
-  DCHECK_EQ(sizeof(calculated_pin_auth), static_cast<size_t>(hmac_bytes));
-
-  static_assert(sizeof(calculated_pin_auth) >= 16,
-                "calculated_pin_auth is expected to be at least 16 bytes");
-  if (pin_auth.size() != 16 ||
-      CRYPTO_memcmp(calculated_pin_auth, pin_auth.data(), pin_auth.size()) !=
-          0) {
+  const pin::Protocol& pin_protocol = pin::ProtocolVersion(protocol);
+  if (!pin_protocol.Verify(shared_key, encrypted_pin, pin_auth)) {
     return CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid;
   }
 
@@ -300,8 +281,8 @@ CtapDeviceResponseCode SetPIN(VirtualCtap2Device::State* state,
     return CtapDeviceResponseCode::kCtap2ErrPinPolicyViolation;
   }
 
-  std::vector<uint8_t> plaintext_pin(encrypted_pin.size());
-  pin::Decrypt(shared_key, encrypted_pin, plaintext_pin.data());
+  std::vector<uint8_t> plaintext_pin =
+      pin_protocol.Decrypt(shared_key, encrypted_pin);
 
   size_t padding_len = 0;
   while (padding_len < plaintext_pin.size() &&
@@ -355,8 +336,8 @@ CtapDeviceResponseCode VerifyPINUVAuthToken(
   if (pinauth_it == request_map.end() || !pinauth_it->second.is_bytestring()) {
     return CtapDeviceResponseCode::kCtap2ErrCBORUnexpectedType;
   }
-  if (!CheckPINToken(pin_token, pinauth_it->second.GetBytestring(),
-                     pinauth_bytes)) {
+  if (!pin::ProtocolVersion(*protocol).Verify(
+          pin_token, pinauth_bytes, pinauth_it->second.GetBytestring())) {
     return CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid;
   }
   return CtapDeviceResponseCode::kSuccess;
@@ -446,13 +427,12 @@ std::vector<uint8_t> EncodeGetAssertionResponse(
   return WriteCBOR(cbor::Value(std::move(response_map)), allow_invalid_utf8);
 }
 
-std::array<uint8_t, 32> GenerateAndEncryptToken(
-    base::span<const uint8_t, SHA256_DIGEST_LENGTH> shared_key,
+std::vector<uint8_t> GenerateAndEncryptToken(
+    PINUVAuthProtocol pin_protocol,
+    base::span<const uint8_t> shared_key,
     base::span<uint8_t, 32> pin_token) {
   RAND_bytes(pin_token.data(), pin_token.size());
-  std::array<uint8_t, pin_token.size()> encrypted_pin_token;
-  pin::Encrypt(shared_key.data(), pin_token, encrypted_pin_token.data());
-  return encrypted_pin_token;
+  return pin::ProtocolVersion(pin_protocol).Encrypt(shared_key, pin_token);
 }
 
 }  // namespace
@@ -849,11 +829,12 @@ VirtualCtap2Device::CheckUserVerification(
       }
 
       // Verify pinUvAuthParam.
-      if (CheckPINToken(pin_token, *pin_auth, client_data_hash)) {
-        uv = true;
-      } else {
+      if (!pin::ProtocolVersion(*pin_protocol)
+               .Verify(pin_token, client_data_hash, *pin_auth)) {
         return CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid;
       }
+
+      uv = true;
     }
 
     if (is_make_credential && !uv) {
@@ -1290,6 +1271,11 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
       NOTREACHED();
       return CtapDeviceResponseCode::kCtap2ErrMissingParameter;
     }
+    if (!request.pin_protocol) {
+      return CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid;
+    }
+    const pin::Protocol& pin_protocol =
+        pin::ProtocolVersion(*request.pin_protocol);
 
     const auto& x962 = request.hmac_secret->public_key_x962;
     bssl::UniquePtr<EC_GROUP> p256(
@@ -1301,9 +1287,8 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
       return CtapDeviceResponseCode::kCtap1ErrInvalidParameter;
     }
 
-    uint8_t shared_key[SHA256_DIGEST_LENGTH];
-    pin::CalculateSharedKey(mutable_state()->ecdh_key.get(),
-                            platform_point.get(), shared_key);
+    std::vector<uint8_t> shared_key = pin_protocol.CalculateSharedKey(
+        mutable_state()->ecdh_key.get(), platform_point.get());
 
     const auto& encrypted_salts = request.hmac_secret->encrypted_salts;
     if (encrypted_salts.size() != 32 && encrypted_salts.size() != 64) {
@@ -1311,26 +1296,27 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
       return CtapDeviceResponseCode::kCtap1ErrInvalidParameter;
     }
 
-    uint8_t salts[64];
-    pin::Decrypt(shared_key, encrypted_salts, salts);
+    std::vector<uint8_t> salts =
+        pin_protocol.Decrypt(shared_key, encrypted_salts);
+    CHECK_EQ(salts.size(), encrypted_salts.size());
 
-    if (pin::MakePinAuth(shared_key, encrypted_salts) !=
+    if (pin_protocol.Authenticate(shared_key, encrypted_salts) !=
         request.hmac_secret->salts_auth) {
       NOTREACHED();
       return CtapDeviceResponseCode::kCtap1ErrInvalidParameter;
     }
 
     hmac_salt1.emplace();
-    memcpy(hmac_salt1->data(), salts, hmac_salt1->size());
+    memcpy(hmac_salt1->data(), salts.data(), hmac_salt1->size());
     if (encrypted_salts.size() == 64) {
       hmac_salt2.emplace();
-      memcpy(hmac_salt2->data(), salts + hmac_salt1->size(),
+      memcpy(hmac_salt2->data(), salts.data() + hmac_salt1->size(),
              hmac_salt2->size());
     }
 
     hmac_shared_key.emplace();
-    CHECK_EQ(hmac_shared_key->size(), sizeof(shared_key));
-    memcpy(hmac_shared_key->data(), shared_key, sizeof(shared_key));
+    CHECK_EQ(hmac_shared_key->size(), shared_key.size());
+    memcpy(hmac_shared_key->data(), shared_key.data(), shared_key.size());
   }
 
   // This implementation does not sort credentials by creation time as the spec
@@ -1377,8 +1363,10 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
                        &hmac_result[sizeof(hmac_result)]);
       }
 
-      std::vector<uint8_t> encrypted_outputs(outputs.size());
-      pin::Encrypt(hmac_shared_key->data(), outputs, encrypted_outputs.data());
+      std::vector<uint8_t> encrypted_outputs =
+          pin::ProtocolVersion(*request.pin_protocol)
+              .Encrypt(*hmac_shared_key, outputs);
+      CHECK_EQ(encrypted_outputs.size(), outputs.size());
 
       extensions_map.emplace(kExtensionHmacSecret,
                              std::move(encrypted_outputs));
@@ -1586,8 +1574,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
       const auto peer_key =
           GetPINKey(request_map, pin::RequestKey::kKeyAgreement);
 
-      if (!encrypted_pin || (encrypted_pin->size() % AES_BLOCK_SIZE) != 0 ||
-          !pin_auth || !peer_key) {
+      if (!encrypted_pin || !pin_auth || !peer_key) {
         return CtapDeviceResponseCode::kCtap2ErrMissingParameter;
       }
 
@@ -1595,17 +1582,19 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
         return CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid;
       }
 
-      uint8_t shared_key[SHA256_DIGEST_LENGTH];
       if (!mutable_state()->ecdh_key) {
         // kGetKeyAgreement should have been called first.
         NOTREACHED();
         return CtapDeviceResponseCode::kCtap2ErrPinTokenExpired;
       }
-      pin::CalculateSharedKey(mutable_state()->ecdh_key.get(), peer_key->get(),
-                              shared_key);
+      std::vector<uint8_t> shared_key =
+          pin::ProtocolVersion(*pin_protocol)
+              .CalculateSharedKey(mutable_state()->ecdh_key.get(),
+                                  peer_key->get());
 
       CtapDeviceResponseCode err =
-          SetPIN(mutable_state(), shared_key, *encrypted_pin, *pin_auth);
+          SetPIN(*pin_protocol, mutable_state(), shared_key, *encrypted_pin,
+                 *pin_auth);
       if (err != CtapDeviceResponseCode::kSuccess) {
         return err;
       }
@@ -1628,25 +1617,29 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
       const auto peer_key =
           GetPINKey(request_map, pin::RequestKey::kKeyAgreement);
 
-      if (!encrypted_pin_hash || encrypted_pin_hash->size() != AES_BLOCK_SIZE ||
-          !encrypted_new_pin ||
-          (encrypted_new_pin->size() % AES_BLOCK_SIZE) != 0 || !pin_auth ||
-          !peer_key) {
+      if (!encrypted_pin_hash || !encrypted_new_pin || !pin_auth || !peer_key) {
         return CtapDeviceResponseCode::kCtap2ErrMissingParameter;
       }
 
-      uint8_t shared_key[SHA256_DIGEST_LENGTH];
-      pin::CalculateSharedKey(mutable_state()->ecdh_key.get(), peer_key->get(),
-                              shared_key);
+      if (!mutable_state()->ecdh_key) {
+        // kGetKeyAgreement should have been called first.
+        NOTREACHED();
+        return CtapDeviceResponseCode::kCtap2ErrPinTokenExpired;
+      }
+      std::vector<uint8_t> shared_key =
+          pin::ProtocolVersion(*pin_protocol)
+              .CalculateSharedKey(mutable_state()->ecdh_key.get(),
+                                  peer_key->get());
 
-      CtapDeviceResponseCode err =
-          ConfirmPresentedPIN(mutable_state(), shared_key, *encrypted_pin_hash);
+      CtapDeviceResponseCode err = ConfirmPresentedPIN(
+          *pin_protocol, mutable_state(), shared_key, *encrypted_pin_hash);
       if (err != CtapDeviceResponseCode::kSuccess) {
         RegenerateKeyAgreementKey();
         return err;
       }
 
-      err = SetPIN(mutable_state(), shared_key, *encrypted_new_pin, *pin_auth);
+      err = SetPIN(*pin_protocol, mutable_state(), shared_key,
+                   *encrypted_new_pin, *pin_auth);
       if (err != CtapDeviceResponseCode::kSuccess) {
         return err;
       }
@@ -1668,8 +1661,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
       const auto peer_key =
           GetPINKey(request_map, pin::RequestKey::kKeyAgreement);
 
-      if (!encrypted_pin_hash || encrypted_pin_hash->size() != AES_BLOCK_SIZE ||
-          !peer_key) {
+      if (!encrypted_pin_hash || !peer_key) {
         return CtapDeviceResponseCode::kCtap2ErrMissingParameter;
       }
 
@@ -1698,17 +1690,18 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
         }
       }
 
-      uint8_t shared_key[SHA256_DIGEST_LENGTH];
       if (!mutable_state()->ecdh_key) {
         // kGetKeyAgreement should have been called first.
         NOTREACHED();
         return CtapDeviceResponseCode::kCtap2ErrPinTokenExpired;
       }
-      pin::CalculateSharedKey(mutable_state()->ecdh_key.get(), peer_key->get(),
-                              shared_key);
+      std::vector<uint8_t> shared_key =
+          pin::ProtocolVersion(*pin_protocol)
+              .CalculateSharedKey(mutable_state()->ecdh_key.get(),
+                                  peer_key->get());
 
-      CtapDeviceResponseCode err =
-          ConfirmPresentedPIN(mutable_state(), shared_key, *encrypted_pin_hash);
+      CtapDeviceResponseCode err = ConfirmPresentedPIN(
+          *pin_protocol, mutable_state(), shared_key, *encrypted_pin_hash);
       if (err != CtapDeviceResponseCode::kSuccess) {
         RegenerateKeyAgreementKey();
         return err;
@@ -1719,9 +1712,9 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
       mutable_state()->pin_uv_token_permissions = permissions.permissions;
       mutable_state()->pin_uv_token_rpid = permissions.rp_id;
 
-      response_map.emplace(
-          static_cast<int>(pin::ResponseKey::kPINToken),
-          GenerateAndEncryptToken(shared_key, mutable_state()->pin_token));
+      response_map.emplace(static_cast<int>(pin::ResponseKey::kPINToken),
+                           GenerateAndEncryptToken(*pin_protocol, shared_key,
+                                                   mutable_state()->pin_token));
       break;
     }
 
@@ -1749,14 +1742,15 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
         return CtapDeviceResponseCode::kCtap2ErrUvBlocked;
       }
 
-      uint8_t shared_key[SHA256_DIGEST_LENGTH];
       if (!mutable_state()->ecdh_key) {
         // kGetKeyAgreement should have been called first.
         NOTREACHED();
         return CtapDeviceResponseCode::kCtap2ErrPinTokenExpired;
       }
-      pin::CalculateSharedKey(mutable_state()->ecdh_key.get(), peer_key->get(),
-                              shared_key);
+      std::vector<uint8_t> shared_key =
+          pin::ProtocolVersion(*pin_protocol)
+              .CalculateSharedKey(mutable_state()->ecdh_key.get(),
+                                  peer_key->get());
 
       --mutable_state()->uv_retries;
 
@@ -1773,9 +1767,9 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
       mutable_state()->pin_uv_token_permissions = permissions.permissions;
       mutable_state()->pin_uv_token_rpid = permissions.rp_id;
 
-      response_map.emplace(
-          static_cast<int>(pin::ResponseKey::kPINToken),
-          GenerateAndEncryptToken(shared_key, mutable_state()->pin_token));
+      response_map.emplace(static_cast<int>(pin::ResponseKey::kPINToken),
+                           GenerateAndEncryptToken(*pin_protocol, shared_key,
+                                                   mutable_state()->pin_token));
       break;
     }
 

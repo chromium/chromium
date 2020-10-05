@@ -15,13 +15,8 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/pin_internal.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
-#include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
-#include "third_party/boringssl/src/include/openssl/ec_key.h"
-#include "third_party/boringssl/src/include/openssl/ecdh.h"
-#include "third_party/boringssl/src/include/openssl/evp.h"
-#include "third_party/boringssl/src/include/openssl/hmac.h"
-#include "third_party/boringssl/src/include/openssl/obj.h"
+#include "third_party/boringssl/src/include/openssl/nid.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace device {
@@ -33,19 +28,6 @@ namespace pin {
 static bool HasAtLeastFourCodepoints(const std::string& pin) {
   base::i18n::UTF8CharIterator it(&pin);
   return it.Advance() && it.Advance() && it.Advance() && it.Advance();
-}
-
-// MakePinAuth returns `LEFT(HMAC-SHA-256(secret, data), 16)`.
-std::vector<uint8_t> MakePinAuth(base::span<const uint8_t> secret,
-                                 base::span<const uint8_t> data) {
-  std::vector<uint8_t> pin_auth;
-  pin_auth.resize(SHA256_DIGEST_LENGTH);
-  unsigned hmac_bytes;
-  CHECK(HMAC(EVP_sha256(), secret.data(), secret.size(), data.data(),
-             data.size(), pin_auth.data(), &hmac_bytes));
-  DCHECK_EQ(pin_auth.size(), static_cast<size_t>(hmac_bytes));
-  pin_auth.resize(16);
-  return pin_auth;
 }
 
 bool IsValid(const std::string& pin) {
@@ -117,28 +99,6 @@ base::Optional<RetriesResponse> RetriesResponse::Parse(
 }
 
 KeyAgreementResponse::KeyAgreementResponse() = default;
-
-// PointFromKeyAgreementResponse returns an |EC_POINT| that represents the same
-// P-256 point as |response|. It returns |nullopt| if |response| encodes an
-// invalid point.
-base::Optional<bssl::UniquePtr<EC_POINT>> PointFromKeyAgreementResponse(
-    const EC_GROUP* group,
-    const KeyAgreementResponse& response) {
-  bssl::UniquePtr<EC_POINT> ret(EC_POINT_new(group));
-
-  bssl::UniquePtr<BIGNUM> x_bn(BN_new()), y_bn(BN_new());
-  BN_bin2bn(response.x, sizeof(response.x), x_bn.get());
-  BN_bin2bn(response.y, sizeof(response.y), y_bn.get());
-  const bool on_curve =
-      EC_POINT_set_affine_coordinates_GFp(group, ret.get(), x_bn.get(),
-                                          y_bn.get(), nullptr /* ctx */) == 1;
-
-  if (!on_curve) {
-    return base::nullopt;
-  }
-
-  return ret;
-}
 
 // static
 base::Optional<KeyAgreementResponse> KeyAgreementResponse::Parse(
@@ -224,31 +184,6 @@ SetRequest::SetRequest(PINUVAuthProtocol protocol,
   memcpy(pin_, pin.data(), pin.size());
 }
 
-// SHA256KDF implements CTAP2's KDF, which just runs SHA-256 on the x-coordinate
-// of the result. The function signature is such that it fits into OpenSSL's
-// ECDH API.
-static void* SHA256KDF(const void* in,
-                       size_t in_len,
-                       void* out,
-                       size_t* out_len) {
-  DCHECK_GE(*out_len, static_cast<size_t>(SHA256_DIGEST_LENGTH));
-  SHA256(reinterpret_cast<const uint8_t*>(in), in_len,
-         reinterpret_cast<uint8_t*>(out));
-  *out_len = SHA256_DIGEST_LENGTH;
-  return out;
-}
-
-// CalculateSharedKey writes the CTAP2 shared key between |key| and |peers_key|
-// to |out_shared_key|.
-void CalculateSharedKey(const EC_KEY* key,
-                        const EC_POINT* peers_key,
-                        uint8_t out_shared_key[SHA256_DIGEST_LENGTH]) {
-  CHECK_EQ(static_cast<int>(SHA256_DIGEST_LENGTH),
-           ECDH_compute_key(out_shared_key, SHA256_DIGEST_LENGTH, peers_key,
-                            key, SHA256KDF));
-}
-
-// EncodeCOSEPublicKey converts an X9.62 public key into a COSE structure.
 cbor::Value::MapValue EncodeCOSEPublicKey(
     base::span<const uint8_t, kP256X962Length> x962) {
   cbor::Value::MapValue cose_key;
@@ -260,44 +195,6 @@ cbor::Value::MapValue EncodeCOSEPublicKey(
   cose_key.emplace(-3 /* y */, x962.subspan(33, 32));
 
   return cose_key;
-}
-
-// GenerateSharedKey generates and returns an ephemeral key, and writes the
-// shared key between that ephemeral key and the authenticator's ephemeral key
-// (from |peers_key|) to |out_shared_key|.
-static std::array<uint8_t, kP256X962Length> GenerateSharedKey(
-    const KeyAgreementResponse& peers_key,
-    uint8_t out_shared_key[SHA256_DIGEST_LENGTH]) {
-  bssl::UniquePtr<EC_KEY> key(EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
-  CHECK(EC_KEY_generate_key(key.get()));
-  auto peers_point =
-      PointFromKeyAgreementResponse(EC_KEY_get0_group(key.get()), peers_key);
-  CalculateSharedKey(key.get(), peers_point->get(), out_shared_key);
-  std::array<uint8_t, kP256X962Length> x962;
-  CHECK_EQ(x962.size(),
-           EC_POINT_point2oct(EC_KEY_get0_group(key.get()),
-                              EC_KEY_get0_public_key(key.get()),
-                              POINT_CONVERSION_UNCOMPRESSED, x962.data(),
-                              x962.size(), nullptr /* BN_CTX */));
-
-  return x962;
-}
-
-// Encrypt encrypts |plaintext| using |key|, writing the ciphertext to
-// |out_ciphertext|. |plaintext| must be a whole number of AES blocks.
-void Encrypt(const uint8_t key[SHA256_DIGEST_LENGTH],
-             base::span<const uint8_t> plaintext,
-             uint8_t* out_ciphertext) {
-  DCHECK_EQ(0u, plaintext.size() % AES_BLOCK_SIZE);
-
-  EVP_CIPHER_CTX aes_ctx;
-  EVP_CIPHER_CTX_init(&aes_ctx);
-  const uint8_t kZeroIV[AES_BLOCK_SIZE] = {0};
-  CHECK(EVP_EncryptInit_ex(&aes_ctx, EVP_aes_256_cbc(), nullptr, key, kZeroIV));
-  CHECK(EVP_CIPHER_CTX_set_padding(&aes_ctx, 0 /* no padding */));
-  CHECK(
-      EVP_Cipher(&aes_ctx, out_ciphertext, plaintext.data(), plaintext.size()));
-  EVP_CIPHER_CTX_cleanup(&aes_ctx);
 }
 
 ChangeRequest::ChangeRequest(PINUVAuthProtocol protocol,
@@ -336,24 +233,6 @@ TokenResponse::~TokenResponse() = default;
 TokenResponse::TokenResponse(const TokenResponse&) = default;
 TokenResponse& TokenResponse::operator=(const TokenResponse&) = default;
 
-// Decrypt AES-256 CBC decrypts some number of whole blocks from |ciphertext|
-// into |plaintext|, using |key|.
-void Decrypt(const uint8_t key[SHA256_DIGEST_LENGTH],
-             base::span<const uint8_t> ciphertext,
-             uint8_t* out_plaintext) {
-  DCHECK_EQ(0u, ciphertext.size() % AES_BLOCK_SIZE);
-
-  EVP_CIPHER_CTX aes_ctx;
-  EVP_CIPHER_CTX_init(&aes_ctx);
-  const uint8_t kZeroIV[AES_BLOCK_SIZE] = {0};
-  CHECK(EVP_DecryptInit_ex(&aes_ctx, EVP_aes_256_cbc(), nullptr, key, kZeroIV));
-  CHECK(EVP_CIPHER_CTX_set_padding(&aes_ctx, 0 /* no padding */));
-
-  CHECK(EVP_Cipher(&aes_ctx, out_plaintext, ciphertext.data(),
-                   ciphertext.size()));
-  EVP_CIPHER_CTX_cleanup(&aes_ctx);
-}
-
 base::Optional<TokenResponse> TokenResponse::Parse(
     PINUVAuthProtocol protocol,
     base::span<const uint8_t> shared_key,
@@ -374,14 +253,14 @@ base::Optional<TokenResponse> TokenResponse::Parse(
   }
 
   TokenResponse ret(protocol);
-  ret.token_.resize(encrypted_token.size());
-  Decrypt(shared_key.data(), encrypted_token, ret.token_.data());
+  ret.token_ = ProtocolVersion(protocol).Decrypt(shared_key, encrypted_token);
   return ret;
 }
 
 std::pair<PINUVAuthProtocol, std::vector<uint8_t>> TokenResponse::PinAuth(
     base::span<const uint8_t> client_data_hash) const {
-  return {protocol_, MakePinAuth(token_, client_data_hash)};
+  return {protocol_,
+          ProtocolVersion(protocol_).Authenticate(token_, client_data_hash)};
 }
 
 // static
@@ -407,27 +286,26 @@ std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
 AsCTAPRequestValuePair(const SetRequest& request) {
   // See
   // https://fidoalliance.org/specs/fido-v2.0-rd-20180702/fido-client-to-authenticator-protocol-v2.0-rd-20180702.html#settingNewPin
-  uint8_t shared_key[SHA256_DIGEST_LENGTH];
-  auto cose_key =
-      EncodeCOSEPublicKey(GenerateSharedKey(request.peer_key_, shared_key));
+  std::vector<uint8_t> shared_key;
+  const Protocol& pin_protocol = ProtocolVersion(request.protocol_);
+  auto cose_key = EncodeCOSEPublicKey(
+      pin_protocol.Encapsulate(request.peer_key_, &shared_key));
 
   static_assert((sizeof(request.pin_) % AES_BLOCK_SIZE) == 0,
                 "pin_ is not a multiple of the AES block size");
-  uint8_t encrypted_pin[sizeof(request.pin_)];
-  Encrypt(shared_key, request.pin_, encrypted_pin);
+  std::vector<uint8_t> encrypted_pin =
+      pin_protocol.Encrypt(shared_key, request.pin_);
 
   std::vector<uint8_t> pin_auth =
-      MakePinAuth(base::make_span(shared_key, sizeof(shared_key)),
-                  base::make_span(encrypted_pin, sizeof(encrypted_pin)));
+      pin_protocol.Authenticate(shared_key, encrypted_pin);
 
   return EncodePINCommand(
       request.protocol_, Subcommand::kSetPIN,
       [&cose_key, &encrypted_pin, &pin_auth](cbor::Value::MapValue* map) {
         map->emplace(static_cast<int>(RequestKey::kKeyAgreement),
                      std::move(cose_key));
-        map->emplace(
-            static_cast<int>(RequestKey::kNewPINEnc),
-            base::span<const uint8_t>(encrypted_pin, sizeof(encrypted_pin)));
+        map->emplace(static_cast<int>(RequestKey::kNewPINEnc),
+                     std::move(encrypted_pin));
         map->emplace(static_cast<int>(RequestKey::kPINAuth),
                      std::move(pin_auth));
       });
@@ -438,27 +316,29 @@ std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
 AsCTAPRequestValuePair(const ChangeRequest& request) {
   // See
   // https://fidoalliance.org/specs/fido-v2.0-rd-20180702/fido-client-to-authenticator-protocol-v2.0-rd-20180702.html#changingExistingPin
-  uint8_t shared_key[SHA256_DIGEST_LENGTH];
-  auto cose_key =
-      EncodeCOSEPublicKey(GenerateSharedKey(request.peer_key_, shared_key));
+  std::vector<uint8_t> shared_key;
+  const Protocol& pin_protocol = ProtocolVersion(request.protocol_);
+  auto cose_key = EncodeCOSEPublicKey(
+      pin_protocol.Encapsulate(request.peer_key_, &shared_key));
 
   static_assert((sizeof(request.new_pin_) % AES_BLOCK_SIZE) == 0,
                 "new_pin_ is not a multiple of the AES block size");
-  uint8_t encrypted_pin[sizeof(request.new_pin_)];
-  Encrypt(shared_key, request.new_pin_, encrypted_pin);
+  std::vector<uint8_t> encrypted_pin =
+      pin_protocol.Encrypt(shared_key, request.new_pin_);
 
   static_assert((sizeof(request.old_pin_hash_) % AES_BLOCK_SIZE) == 0,
                 "old_pin_hash_ is not a multiple of the AES block size");
-  uint8_t old_pin_hash_enc[sizeof(request.old_pin_hash_)];
-  Encrypt(shared_key, request.old_pin_hash_, old_pin_hash_enc);
+  std::vector<uint8_t> old_pin_hash_enc =
+      pin_protocol.Encrypt(shared_key, request.old_pin_hash_);
 
-  uint8_t ciphertexts_concat[sizeof(encrypted_pin) + sizeof(old_pin_hash_enc)];
-  memcpy(ciphertexts_concat, encrypted_pin, sizeof(encrypted_pin));
-  memcpy(ciphertexts_concat + sizeof(encrypted_pin), old_pin_hash_enc,
-         sizeof(old_pin_hash_enc));
-  std::vector<uint8_t> pin_auth = MakePinAuth(
-      base::make_span(shared_key, sizeof(shared_key)),
-      base::make_span(ciphertexts_concat, sizeof(ciphertexts_concat)));
+  std::vector<uint8_t> ciphertexts_concat(encrypted_pin.size() +
+                                          old_pin_hash_enc.size());
+  memcpy(ciphertexts_concat.data(), encrypted_pin.data(), encrypted_pin.size());
+  memcpy(ciphertexts_concat.data() + encrypted_pin.size(),
+         old_pin_hash_enc.data(), old_pin_hash_enc.size());
+
+  std::vector<uint8_t> pin_auth =
+      pin_protocol.Authenticate(shared_key, ciphertexts_concat);
 
   return EncodePINCommand(
       request.protocol_, Subcommand::kChangePIN,
@@ -467,11 +347,9 @@ AsCTAPRequestValuePair(const ChangeRequest& request) {
         map->emplace(static_cast<int>(RequestKey::kKeyAgreement),
                      std::move(cose_key));
         map->emplace(static_cast<int>(RequestKey::kPINHashEnc),
-                     base::span<const uint8_t>(old_pin_hash_enc,
-                                               sizeof(old_pin_hash_enc)));
-        map->emplace(
-            static_cast<int>(RequestKey::kNewPINEnc),
-            base::span<const uint8_t>(encrypted_pin, sizeof(encrypted_pin)));
+                     std::move(old_pin_hash_enc));
+        map->emplace(static_cast<int>(RequestKey::kNewPINEnc),
+                     std::move(encrypted_pin));
         map->emplace(static_cast<int>(RequestKey::kPINAuth),
                      std::move(pin_auth));
       });
@@ -486,15 +364,14 @@ AsCTAPRequestValuePair(const ResetRequest&) {
 TokenRequest::TokenRequest(PINUVAuthProtocol protocol,
                            const KeyAgreementResponse& peer_key)
     : protocol_(protocol),
-      public_key_(GenerateSharedKey(peer_key, shared_key_.data())) {
-  DCHECK_EQ(static_cast<size_t>(SHA256_DIGEST_LENGTH), shared_key_.size());
-}
+      public_key_(
+          ProtocolVersion(protocol_).Encapsulate(peer_key, &shared_key_)) {}
 
 TokenRequest::~TokenRequest() = default;
 
 TokenRequest::TokenRequest(TokenRequest&& other) = default;
 
-const std::array<uint8_t, 32>& TokenRequest::shared_key() const {
+const std::vector<uint8_t>& TokenRequest::shared_key() const {
   return shared_key_;
 }
 
@@ -516,17 +393,17 @@ std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
 AsCTAPRequestValuePair(const PinTokenRequest& request) {
   static_assert((sizeof(request.pin_hash_) % AES_BLOCK_SIZE) == 0,
                 "pin_hash_ is not a multiple of the AES block size");
-  uint8_t encrypted_pin[sizeof(request.pin_hash_)];
-  Encrypt(request.shared_key_.data(), request.pin_hash_, encrypted_pin);
+  std::vector<uint8_t> encrypted_pin =
+      ProtocolVersion(request.protocol_)
+          .Encrypt(request.shared_key_, request.pin_hash_);
 
   return EncodePINCommand(
       request.protocol_, Subcommand::kGetPINToken,
       [&request, &encrypted_pin](cbor::Value::MapValue* map) {
         map->emplace(static_cast<int>(RequestKey::kKeyAgreement),
                      EncodeCOSEPublicKey(request.public_key_));
-        map->emplace(
-            static_cast<int>(RequestKey::kPINHashEnc),
-            base::span<const uint8_t>(encrypted_pin, sizeof(encrypted_pin)));
+        map->emplace(static_cast<int>(RequestKey::kPINHashEnc),
+                     std::move(encrypted_pin));
       });
 }
 
@@ -543,17 +420,17 @@ PinTokenWithPermissionsRequest::PinTokenWithPermissionsRequest(
 // static
 std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
 AsCTAPRequestValuePair(const PinTokenWithPermissionsRequest& request) {
-  uint8_t encrypted_pin[sizeof(request.pin_hash_)];
-  Encrypt(request.shared_key_.data(), request.pin_hash_, encrypted_pin);
+  std::vector<uint8_t> encrypted_pin =
+      ProtocolVersion(request.protocol_)
+          .Encrypt(request.shared_key_, request.pin_hash_);
 
   return EncodePINCommand(
       request.protocol_, Subcommand::kGetPinUvAuthTokenUsingPinWithPermissions,
       [&request, &encrypted_pin](cbor::Value::MapValue* map) {
         map->emplace(static_cast<int>(RequestKey::kKeyAgreement),
                      EncodeCOSEPublicKey(request.public_key_));
-        map->emplace(
-            static_cast<int>(RequestKey::kPINHashEnc),
-            base::span<const uint8_t>(encrypted_pin, sizeof(encrypted_pin)));
+        map->emplace(static_cast<int>(RequestKey::kPINHashEnc),
+                     std::move(encrypted_pin));
         map->emplace(static_cast<int>(RequestKey::kPermissions),
                      std::move(request.permissions_));
         if (request.rp_id_) {
@@ -595,15 +472,6 @@ AsCTAPRequestValuePair(const UvTokenRequest& request) {
       });
 }
 
-static std::vector<uint8_t> EncryptToVector(
-    base::span<const uint8_t, SHA256_DIGEST_LENGTH> key,
-    base::span<const uint8_t> plaintext) {
-  std::vector<uint8_t> ret;
-  ret.resize(plaintext.size());
-  Encrypt(key.data(), plaintext, ret.data());
-  return ret;
-}
-
 static std::vector<uint8_t> ConcatSalts(
     base::span<const uint8_t, 32> salt1,
     const base::Optional<std::array<uint8_t, 32>>& salt2) {
@@ -625,9 +493,13 @@ HMACSecretRequest::HMACSecretRequest(
     base::span<const uint8_t, 32> salt1,
     const base::Optional<std::array<uint8_t, 32>>& salt2)
     : protocol_(protocol),
-      public_key_x962(GenerateSharedKey(peer_key, shared_key_.data())),
-      encrypted_salts(EncryptToVector(shared_key_, ConcatSalts(salt1, salt2))),
-      salts_auth(MakePinAuth(shared_key_, encrypted_salts)) {}
+      public_key_x962(
+          ProtocolVersion(protocol_).Encapsulate(peer_key, &shared_key_)),
+      encrypted_salts(
+          ProtocolVersion(protocol_).Encrypt(shared_key_,
+                                             ConcatSalts(salt1, salt2))),
+      salts_auth(ProtocolVersion(protocol_).Authenticate(shared_key_,
+                                                         encrypted_salts)) {}
 
 HMACSecretRequest::~HMACSecretRequest() = default;
 
@@ -639,12 +511,8 @@ base::Optional<std::vector<uint8_t>> HMACSecretRequest::Decrypt(
     return base::nullopt;
   }
 
-  std::vector<uint8_t> ret;
-  ret.resize(ciphertext.size());
-  pin::Decrypt(shared_key_.data(), ciphertext, ret.data());
-  return ret;
+  return pin::ProtocolVersion(protocol_).Decrypt(shared_key_, ciphertext);
 }
 
 }  // namespace pin
-
 }  // namespace device

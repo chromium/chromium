@@ -261,7 +261,7 @@ void FidoDeviceAuthenticator::OnHaveEphemeralKeyForGetPINToken(
   if (Options()->supports_pin_uv_auth_token) {
     pin::PinTokenWithPermissionsRequest request(*chosen_pin_uv_auth_protocol_,
                                                 pin, *key, permissions, rp_id);
-    std::array<uint8_t, 32> shared_key = request.shared_key();
+    std::vector<uint8_t> shared_key = request.shared_key();
     RunOperation<pin::PinTokenWithPermissionsRequest, pin::TokenResponse>(
         std::move(request), std::move(callback),
         base::BindOnce(&pin::TokenResponse::Parse,
@@ -270,7 +270,7 @@ void FidoDeviceAuthenticator::OnHaveEphemeralKeyForGetPINToken(
   }
 
   pin::PinTokenRequest request(*chosen_pin_uv_auth_protocol_, pin, *key);
-  std::array<uint8_t, 32> shared_key = request.shared_key();
+  std::vector<uint8_t> shared_key = request.shared_key();
   RunOperation<pin::PinTokenRequest, pin::TokenResponse>(
       std::move(request), std::move(callback),
       base::BindOnce(&pin::TokenResponse::Parse, *chosen_pin_uv_auth_protocol_,
@@ -1068,7 +1068,7 @@ void FidoDeviceAuthenticator::OnHaveEphemeralKeyForUvToken(
 
   pin::UvTokenRequest request(*chosen_pin_uv_auth_protocol_, *key,
                               std::move(rp_id));
-  std::array<uint8_t, 32> shared_key = request.shared_key();
+  std::vector<uint8_t> shared_key = request.shared_key();
   RunOperation<pin::UvTokenRequest, pin::TokenResponse>(
       std::move(request), std::move(callback),
       base::BindOnce(&pin::TokenResponse::Parse, *chosen_pin_uv_auth_protocol_,

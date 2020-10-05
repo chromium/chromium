@@ -55,6 +55,7 @@ constexpr size_t kMinBytes = 4;
 constexpr size_t kMaxBytes = 63;
 
 // EncodeCOSEPublicKey converts an X9.62 public key to a COSE structure.
+COMPONENT_EXPORT(DEVICE_FIDO)
 cbor::Value::MapValue EncodeCOSEPublicKey(
     base::span<const uint8_t, kP256X962Length> x962);
 
@@ -100,7 +101,7 @@ struct KeyAgreementRequest {
 // KeyAgreementResponse reflects an authenticator's response to a
 // |KeyAgreementRequest| and is also used as representation of the
 // authenticator's ephemeral key.
-struct KeyAgreementResponse {
+struct COMPONENT_EXPORT(DEVICE_FIDO) KeyAgreementResponse {
   static base::Optional<KeyAgreementResponse> Parse(
       const base::Optional<cbor::Value>& cbor);
   static base::Optional<KeyAgreementResponse> ParseFromCOSE(
@@ -177,7 +178,7 @@ class TokenRequest {
 
   // shared_key returns the shared ECDH key that was used to encrypt the PIN.
   // This is needed to decrypt the response.
-  const std::array<uint8_t, 32>& shared_key() const;
+  const std::vector<uint8_t>& shared_key() const;
 
  protected:
   TokenRequest(TokenRequest&&);
@@ -186,7 +187,7 @@ class TokenRequest {
   ~TokenRequest();
 
   const PINUVAuthProtocol protocol_;
-  std::array<uint8_t, 32> shared_key_;
+  std::vector<uint8_t> shared_key_;
   std::array<uint8_t, kP256X962Length> public_key_;
 };
 
@@ -257,7 +258,7 @@ class HMACSecretRequest {
 
  private:
   const PINUVAuthProtocol protocol_;
-  std::array<uint8_t, 32> shared_key_ = {};
+  std::vector<uint8_t> shared_key_;
 
  public:
   const std::array<uint8_t, kP256X962Length> public_key_x962;

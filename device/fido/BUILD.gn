@@ -173,6 +173,8 @@ component("fido") {
       "opaque_attestation_statement.h",
       "pin.cc",
       "pin.h",
+      "pin_internal.cc",
+      "pin_internal.h",
       "platform_credential_store.h",
       "reset_request_handler.cc",
       "reset_request_handler.h",

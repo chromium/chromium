@@ -11,10 +11,16 @@
 
 #include <stdint.h>
 
+#include <array>
+#include <vector>
+
+#include "base/component_export.h"
+#include "base/containers/span.h"
+#include "base/optional.h"
 #include "components/cbor/values.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
-#include "third_party/boringssl/src/include/openssl/ec.h"
-#include "third_party/boringssl/src/include/openssl/sha.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
 
 namespace device {
 namespace pin {
@@ -65,27 +71,60 @@ base::Optional<bssl::UniquePtr<EC_POINT>> PointFromKeyAgreementResponse(
     const EC_GROUP* group,
     const KeyAgreementResponse& response);
 
-// MakePinAuth returns a PIN protocol v1 authentication tag for |data|.
-std::vector<uint8_t> MakePinAuth(base::span<const uint8_t> secret,
-                                 base::span<const uint8_t> data);
+// Protocol abstracts a PIN/UV Auth Token Protocol. Instances are obtained
+// through ProtocolVersion().
+class COMPONENT_EXPORT(DEVICE_FIDO) Protocol {
+ public:
+  virtual ~Protocol() = default;
+  Protocol(Protocol&) = delete;
+  Protocol& operator=(Protocol&) = delete;
 
-// CalculateSharedKey writes the CTAP2 shared key between |key| and |peers_key|
-// to |out_shared_key|.
-void CalculateSharedKey(const EC_KEY* key,
-                        const EC_POINT* peers_key,
-                        uint8_t out_shared_key[SHA256_DIGEST_LENGTH]);
+  // Encapsulate derives a shared secret, which it writes to |out_shared_key|,
+  // and returns the platform's public key.
+  virtual std::array<uint8_t, kP256X962Length> Encapsulate(
+      const KeyAgreementResponse& peers_key,
+      std::vector<uint8_t>* out_shared_key) const = 0;
 
-// Encrypt encrypts |plaintext| using |key|, writing the ciphertext to
-// |out_ciphertext|. |plaintext| must be a whole number of AES blocks.
-void Encrypt(const uint8_t key[SHA256_DIGEST_LENGTH],
-             base::span<const uint8_t> plaintext,
-             uint8_t* out_ciphertext);
+  // Encrypt encrypts |plaintext| under |shared_key|. |plaintext| must be a
+  // multiple of AES_BLOCK_SIZE in length. |shared_key| must be a shared secret
+  // derived by Encapsulate().
+  virtual std::vector<uint8_t> Encrypt(
+      base::span<const uint8_t> shared_key,
+      base::span<const uint8_t> plaintext) const = 0;
 
-// Decrypt AES-256 CBC decrypts some number of whole blocks from |ciphertext|
-// into |plaintext|, using |key|.
-void Decrypt(const uint8_t key[SHA256_DIGEST_LENGTH],
-             base::span<const uint8_t> ciphertext,
-             uint8_t* out_plaintext);
+  // Decrypt returns the decryption of |ciphertext|, which must be non-empty and
+  // a multiple of AES_BLOCK_SIZE in length. |shared_key| must be a shared
+  // secret derived by Encapsulate().
+  virtual std::vector<uint8_t> Decrypt(
+      base::span<const uint8_t> shared_key,
+      base::span<const uint8_t> ciphertext) const = 0;
+
+  // Authenticate() returns a signature of |data|. |key| must be either a shared
+  // secret derived by Encapsulate() or a valid pinUvAuthToken from the same
+  // PIN/UV Auth Protocol.
+  virtual std::vector<uint8_t> Authenticate(
+      base::span<const uint8_t> key,
+      base::span<const uint8_t> data) const = 0;
+
+  // Verify verifies a signature computed by Authenticate().
+  virtual bool Verify(base::span<const uint8_t> key,
+                      base::span<const uint8_t> data,
+                      base::span<const uint8_t> signature) const = 0;
+
+  // CalculateSharedKey returns the CTAP2 shared key between |key| and
+  // |peers_key|.
+  virtual std::vector<uint8_t> CalculateSharedKey(
+      const EC_KEY* key,
+      const EC_POINT* peers_key) const = 0;
+
+ protected:
+  Protocol() = default;
+};
+
+// ProtocolVersion returns the |Protocol| implementation for
+// |PINUvAuthProtocol|.
+COMPONENT_EXPORT(DEVICE_FIDO)
+const Protocol& ProtocolVersion(PINUVAuthProtocol protocol);
 
 }  // namespace pin
 }  // namespace device
