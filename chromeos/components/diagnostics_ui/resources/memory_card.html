@@ -3,15 +3,15 @@
 
 <diagnostics-card>
   <div id="cardTitle" slot="title">[[i18n('memoryTitle')]]</div>
+  <!-- TODO(joonbug): Localize once strings are confirmed -->
+  <percent-bar-chart slot="left-panel" title="Used memory"
+    value="[[getTotalUsedMemory_(memoryUsage_)]]"
+    max="[[memoryUsage_.total_memory_kib]]">
+  </percent-bar-chart>
   <data-point slot="body" id="memoryTotal"
     value="[[memoryUsage_.total_memory_kib]]">
   </data-point>
   <data-point slot="body" id="memoryAvailable"
     value="[[memoryUsage_.available_memory_kib]]">
   </data-point>
-  <!-- TODO(joonbug): Localize once strings are confirmed -->
-  <percent-bar-chart slot="body" title="Used memory"
-    value="[[getTotalUsedMemory_(memoryUsage_)]]"
-    max="[[memoryUsage_.total_memory_kib]]">
-  </percent-bar-chart>
 </diagnostics-card>
