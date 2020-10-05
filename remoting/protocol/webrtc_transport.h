@@ -10,6 +10,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -26,6 +27,12 @@
 #include "remoting/protocol/webrtc_event_log_data.h"
 #include "remoting/signaling/signal_strategy.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
+
+namespace base {
+
+class Watchdog;
+
+}  // namespace base
 
 namespace remoting {
 namespace protocol {
@@ -133,6 +140,14 @@ class WebrtcTransport : public Transport,
   // or to zero out the interval and prevent hangs due to PostDelayedTask.
   static void SetDataChannelPollingIntervalForTests(
       base::TimeDelta data_channel_state_polling_interval);
+
+  // Replaces the watchdog that monitors the thread join process when the peer
+  // connection is being torn down.
+  void SetThreadJoinWatchdogForTests(std::unique_ptr<base::Watchdog> watchdog);
+
+  // Sets a callback to be executed before disarming the thread join watchdog.
+  // Only used for testing.
+  void SetBeforeDisarmThreadJoinWatchdogCallbackForTests(base::OnceClosure cb);
 
  private:
   // PeerConnectionWrapper is responsible for PeerConnection creation,
