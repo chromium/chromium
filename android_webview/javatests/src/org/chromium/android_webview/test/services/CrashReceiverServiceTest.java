@@ -22,6 +22,7 @@ import org.chromium.android_webview.common.crash.SystemWideCrashDirectories;
 import org.chromium.android_webview.services.CrashReceiverService;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.android_webview.test.OnlyRunIn;
+import org.chromium.base.test.util.Batch;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,10 +31,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Instrumentation tests for CrashReceiverService.
+ * Instrumentation tests for CrashReceiverService. These tests are batched as UNIT_TESTS because
+ * they don't actually launch any services or other components.
  */
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS)
+@Batch(Batch.UNIT_TESTS)
 public class CrashReceiverServiceTest {
     private static final String TEST_CRASH_LOCAL_ID = "abc1234";
     private static final String TEST_CRASH_FILE_NAME =

@@ -37,7 +37,8 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Test VariationsSeedServer.
+ * Test VariationsSeedServer. These tests are not batched to make sure all unbinded services are
+ * properly killed between tests.
  */
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS)

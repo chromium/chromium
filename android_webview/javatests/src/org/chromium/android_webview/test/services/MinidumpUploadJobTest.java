@@ -44,6 +44,9 @@ import java.io.IOException;
 /**
  * Instrumentation tests for WebView's implementation of MinidumpUploaderDelegate, and the
  * interoperability of WebView's minidump-copying and minidump-uploading logic.
+ *
+ * These tests loads native library and mark the process as a browser process, it's safer to
+ * leave them unbatched to avoid possible state leaking between tests.
  */
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS)

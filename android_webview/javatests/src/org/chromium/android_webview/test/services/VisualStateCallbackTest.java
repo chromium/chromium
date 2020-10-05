@@ -38,7 +38,8 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
- * Test VisualStateCallback when render process is gone.
+ * Test VisualStateCallback when render process is gone. Test is not batched because it tests
+ * behaviour in multiprocesses.
  */
 @RunWith(AwJUnit4ClassRunner.class)
 public class VisualStateCallbackTest {
