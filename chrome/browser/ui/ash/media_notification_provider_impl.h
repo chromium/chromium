@@ -45,6 +45,7 @@ class MediaNotificationProviderImpl
   void HideMediaSession(const std::string& id) override;
   std::unique_ptr<OverlayMediaNotification> PopOut(const std::string& id,
                                                    gfx::Rect bounds) override;
+  void HideMediaDialog() override {}
 
   // MediaNotificationServiceObserver implementations.
   void OnNotificationListChanged() override;

@@ -357,7 +357,7 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, AudioDeviceButtonsChange) {
 
 TEST_F(MediaNotificationDeviceSelectorViewTest, VisibilityChanges) {
   // The device selector view should become hidden when there is only one
-  // unique device.
+  // unique device, unless there exists a cast device.
   MockMediaNotificationDeviceSelectorViewDelegate delegate;
   auto* provider = delegate.GetProvider();
   provider->AddDevice("Speaker", "1");
@@ -373,6 +373,12 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, VisibilityChanges) {
 
   testing::Mock::VerifyAndClearExpectations(&delegate);
 
+  EXPECT_CALL(delegate, OnDeviceSelectorViewSizeChanged);
+  view_->OnModelUpdated(CreateModelWithSinks({CreateMediaSink()}));
+  EXPECT_TRUE(view_->GetVisible());
+
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+  view_->OnModelUpdated(CreateModelWithSinks({}));
   provider->ResetDevices();
   provider->AddDevice("Speaker", "1");
   provider->AddDevice("Headphones",

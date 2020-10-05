@@ -185,8 +185,13 @@ void MediaNotificationService::Session::MediaSessionPositionChanged(
 
 void MediaNotificationService::Session::OnMediaRoutesChanged(
     const std::vector<media_router::MediaRoute>& routes) {
-  if (!routes.empty())
+  // Closes the media dialog after a cast session starts.
+  if (!routes.empty()) {
+    if (owner_->dialog_delegate_) {
+      owner_->dialog_delegate_->HideMediaDialog();
+    }
     item_->Dismiss();
+  }
 }
 
 void MediaNotificationService::Session::SetController(
@@ -252,6 +257,13 @@ MediaNotificationService::Session::
   callback.Run(is_audio_device_switching_supported_);
   return is_audio_device_switching_supported_callback_list_.Add(
       std::move(callback));
+}
+
+void MediaNotificationService::Session::SetPresentationManagerForTesting(
+    base::WeakPtr<media_router::WebContentsPresentationManager>
+        presentation_manager) {
+  presentation_manager_ = presentation_manager;
+  presentation_manager_->AddObserver(this);
 }
 
 // static
@@ -472,11 +484,6 @@ void MediaNotificationService::HideNotification(const std::string& id) {
   dialog_delegate_->HideMediaSession(id);
 }
 
-scoped_refptr<base::SequencedTaskRunner>
-MediaNotificationService::GetTaskRunner() const {
-  return nullptr;
-}
-
 void MediaNotificationService::RemoveItem(const std::string& id) {
   active_controllable_session_ids_.erase(id);
   frozen_session_ids_.erase(id);
@@ -488,13 +495,18 @@ void MediaNotificationService::RemoveItem(const std::string& id) {
     dragged_out_session_ids_.erase(id);
   }
 
-  // Copy |id| to avoid a dangling reference after the session is deleted.  This
+  // Copy |id| to avoid a dangling reference after the session is deleted. This
   // happens when |id| refers to a string owned by the session being removed.
   const auto id_copy{id};
 
   sessions_.erase(id);
 
   OnNotificationChanged(&id_copy);
+}
+
+scoped_refptr<base::SequencedTaskRunner>
+MediaNotificationService::GetTaskRunner() const {
+  return nullptr;
 }
 
 void MediaNotificationService::LogMediaSessionActionButtonPressed(

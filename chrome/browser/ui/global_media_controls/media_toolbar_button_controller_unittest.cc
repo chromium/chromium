@@ -73,6 +73,7 @@ class MockMediaDialogDelegate : public MediaDialogDelegate {
   MOCK_METHOD2(PopOut,
                std::unique_ptr<OverlayMediaNotification>(const std::string& id,
                                                          gfx::Rect bounds));
+  MOCK_METHOD0(HideMediaDialog, void());
 
  private:
   MediaNotificationService* service_;

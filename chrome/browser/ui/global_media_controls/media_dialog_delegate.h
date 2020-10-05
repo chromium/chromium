@@ -37,6 +37,8 @@ class MediaDialogDelegate {
       const std::string& id,
       gfx::Rect bounds) = 0;
 
+  virtual void HideMediaDialog() = 0;
+
  protected:
   virtual ~MediaDialogDelegate();
 };

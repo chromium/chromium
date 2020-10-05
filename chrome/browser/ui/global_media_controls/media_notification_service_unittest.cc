@@ -91,6 +91,7 @@ class MockMediaDialogDelegate : public MediaDialogDelegate {
   MOCK_METHOD2(PopOutProxy,
                OverlayMediaNotification*(const std::string& id,
                                          gfx::Rect bounds));
+  void HideMediaDialog() override { Close(); }
 
  private:
   MediaNotificationService* service_;
@@ -125,6 +126,43 @@ class MockOverlayMediaNotification : public OverlayMediaNotification {
   OverlayMediaNotificationsManager* manager_ = nullptr;
 };
 
+class MockWebContentsPresentationManager
+    : public media_router::WebContentsPresentationManager {
+ public:
+  void NotifyMediaRoutesChanged(
+      const std::vector<media_router::MediaRoute>& routes) {
+    for (auto& observer : observers_) {
+      observer.OnMediaRoutesChanged(routes);
+    }
+  }
+
+  void AddObserver(media_router::WebContentsPresentationManager::Observer*
+                       observer) override {
+    observers_.AddObserver(observer);
+  }
+
+  void RemoveObserver(media_router::WebContentsPresentationManager::Observer*
+                          observer) override {
+    observers_.RemoveObserver(observer);
+  }
+
+  MOCK_CONST_METHOD0(HasDefaultPresentationRequest, bool());
+  MOCK_CONST_METHOD0(GetDefaultPresentationRequest,
+                     const content::PresentationRequest&());
+  MOCK_METHOD3(OnPresentationResponse,
+               void(const content::PresentationRequest&,
+                    media_router::mojom::RoutePresentationConnectionPtr,
+                    const media_router::RouteRequestResult&));
+
+  base::WeakPtr<WebContentsPresentationManager> GetWeakPtr() override {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::ObserverList<media_router::WebContentsPresentationManager::Observer>
+      observers_;
+  base::WeakPtrFactory<MockWebContentsPresentationManager> weak_factory_{this};
+};
 }  // anonymous namespace
 
 class MediaNotificationServiceTest : public testing::Test {
@@ -345,12 +383,19 @@ class MediaNotificationServiceTest : public testing::Test {
     service_->cast_notification_provider_->OnRoutesUpdated(routes, {});
   }
 
+  MediaNotificationService::Session* GetSession(
+      const base::UnguessableToken& id) {
+    return service_->GetSession(id.ToString());
+  }
+
   MockMediaNotificationServiceObserver& observer() { return observer_; }
 
   MediaNotificationService* service() { return service_.get(); }
 
- private:
+ protected:
   content::BrowserTaskEnvironment task_environment_;
+
+ private:
   MockMediaNotificationServiceObserver observer_;
   std::unique_ptr<MediaNotificationService> service_;
   base::HistogramTester histogram_tester_;
@@ -677,8 +722,33 @@ TEST_F(MediaNotificationServiceCastTest, MAYBE_CountCastSessionsAsActive) {
   testing::Mock::VerifyAndClearExpectations(&observer());
 }
 
-// Regression test for https://crbug.com/1015903: we could end up in a situation
-// where the toolbar icon was disabled indefinitely.
+TEST_F(MediaNotificationServiceCastTest,
+       HideNotification_NewCastSessionStarted) {
+  // If a new cast session starts, hide the media dialog.
+  base::UnguessableToken id = SimulatePlayingControllableMedia();
+  MockMediaDialogDelegate dialog_delegate;
+  SimulateDialogOpened(&dialog_delegate);
+  EXPECT_TRUE(HasOpenDialog());
+
+  auto presentation_manager =
+      std::make_unique<MockWebContentsPresentationManager>();
+  media_router::MediaRoute media_route("id",
+                                       media_router::MediaSource("source_id"),
+                                       "sink_id", "description", true, true);
+  media_route.set_controller_type(media_router::RouteControllerType::kGeneric);
+  auto* session = GetSession(id);
+  session->SetPresentationManagerForTesting(
+      presentation_manager.get()->GetWeakPtr());
+
+  EXPECT_CALL(observer(), OnMediaDialogClosed());
+  presentation_manager->NotifyMediaRoutesChanged({media_route});
+  EXPECT_FALSE(HasOpenDialog());
+
+  task_environment_.RunUntilIdle();
+}
+
+// Regression test for https://crbug.com/1015903: we could end up in a
+// situation where the toolbar icon was disabled indefinitely.
 TEST_F(MediaNotificationServiceTest, LoseGainLoseDoesNotCauseRaceCondition) {
   // First, start an active session and include artwork.
   base::UnguessableToken id = SimulatePlayingControllableMedia();
@@ -803,7 +873,8 @@ TEST_F(MediaNotificationServiceTest, InactiveBecomesActive_PlayPause) {
   // Then, play the media. The notification should become active.
   SimulatePlaybackStateChanged(id, true);
 
-  // We should have recorded an interaction even though the timer has finished.
+  // We should have recorded an interaction even though the timer has
+  // finished.
   ExpectHistogramInteractionDelayAfterPause(base::TimeDelta::FromMinutes(70),
                                             1);
   EXPECT_TRUE(HasActiveNotifications());
@@ -831,13 +902,15 @@ TEST_F(MediaNotificationServiceTest, InactiveBecomesActive_Seeking) {
   // Then, seek the media. The notification should become active.
   SimulateMediaSeeked(id);
 
-  // We should have recorded an interaction even though the timer has finished.
+  // We should have recorded an interaction even though the timer has
+  // finished.
   ExpectHistogramInteractionDelayAfterPause(base::TimeDelta::FromMinutes(70),
                                             1);
   EXPECT_TRUE(HasActiveNotifications());
   EXPECT_FALSE(IsSessionInactive(id));
 
-  // If we don't interact again, the notification should become inactive again.
+  // If we don't interact again, the notification should become inactive
+  // again.
   AdvanceClockMinutes(70);
   EXPECT_FALSE(HasActiveNotifications());
   EXPECT_TRUE(IsSessionInactive(id));
@@ -856,8 +929,8 @@ TEST_F(MediaNotificationServiceTest, DelaysHidingNotifications_PlayPause) {
   AdvanceClockMinutes(59);
   EXPECT_TRUE(HasActiveNotifications());
 
-  // If we start playing again, we should not hide the notification, even after
-  // an hour.
+  // If we start playing again, we should not hide the notification, even
+  // after an hour.
   ExpectHistogramInteractionDelayAfterPause(base::TimeDelta::FromMinutes(59),
                                             0);
   SimulatePlaybackStateChanged(id, true);
@@ -894,8 +967,8 @@ TEST_F(MediaNotificationServiceTest, DelaysHidingNotifications_Interactions) {
   AdvanceClockMinutes(50);
   EXPECT_TRUE(HasActiveNotifications());
 
-  // If the user seeks the media before an hour is up, it should reset the hide
-  // timer.
+  // If the user seeks the media before an hour is up, it should reset the
+  // hide timer.
   ExpectHistogramInteractionDelayAfterPause(base::TimeDelta::FromMinutes(50),
                                             0);
   SimulateMediaSeeked(id);
@@ -1021,12 +1094,13 @@ TEST_F(MediaNotificationServiceTest, HidingNotification_TimerParams) {
   SimulatePlaybackStateChanged(id, false);
   EXPECT_TRUE(HasActiveNotifications());
 
-  // After (kTimerInMinutes-1) minutes, the notification should still be there.
+  // After (kTimerInMinutes-1) minutes, the notification should still be
+  // there.
   AdvanceClockMinutes(kTimerInMinutes - 1);
   EXPECT_TRUE(HasActiveNotifications());
 
-  // If we start playing again, we should not hide the notification, even after
-  // kTimerInMinutes.
+  // If we start playing again, we should not hide the notification, even
+  // after kTimerInMinutes.
   ExpectHistogramInteractionDelayAfterPause(
       base::TimeDelta::FromMinutes(kTimerInMinutes - 1), 0);
   SimulatePlaybackStateChanged(id, true);

@@ -236,6 +236,10 @@ class MediaNotificationService
     RegisterIsAudioDeviceSwitchingSupportedCallback(
         base::RepeatingCallback<void(bool)> callback);
 
+    void SetPresentationManagerForTesting(
+        base::WeakPtr<media_router::WebContentsPresentationManager>
+            presentation_manager);
+
    private:
     static void RecordDismissReason(GlobalMediaControlsDismissReason reason);
 

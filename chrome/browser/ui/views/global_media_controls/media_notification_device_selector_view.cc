@@ -307,8 +307,9 @@ void MediaNotificationDeviceSelectorView::UpdateVisibility() {
   delegate_->OnDeviceSelectorViewSizeChanged();
 }
 
-// TODO(muyaoxu):Change the logic to work with Cast devices.
 bool MediaNotificationDeviceSelectorView::ShouldBeVisible() const {
+  if (has_cast_device_)
+    return true;
   if (!is_audio_device_switching_enabled_)
     return false;
   // The UI should be visible if there are more than one unique devices. That is
@@ -363,6 +364,7 @@ DeviceEntryUI* MediaNotificationDeviceSelectorView::GetDeviceEntryUI(
 void MediaNotificationDeviceSelectorView::OnModelUpdated(
     const media_router::CastDialogModel& model) {
   RemoveDevicesOfType(DeviceEntryUIType::kCast);
+  has_cast_device_ = !model.media_sinks().empty();
   for (auto sink : model.media_sinks()) {
     auto device_entry_view = std::make_unique<CastDeviceEntryView>(
         this, foreground_color_, background_color_, sink);
@@ -370,9 +372,7 @@ void MediaNotificationDeviceSelectorView::OnModelUpdated(
     device_entry_ui_map_[device_entry_view->tag()] = device_entry_view.get();
     device_entry_views_container_->AddChildView(std::move(device_entry_view));
   }
-  SetVisible(true);
-  delegate_->OnDeviceSelectorViewSizeChanged();
-  Layout();
+  UpdateVisibility();
 }
 
 void MediaNotificationDeviceSelectorView::OnControllerInvalidated() {

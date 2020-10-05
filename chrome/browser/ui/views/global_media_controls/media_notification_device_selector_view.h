@@ -99,6 +99,7 @@ class MediaNotificationDeviceSelectorView
 
   bool is_expanded_ = false;
   bool is_audio_device_switching_enabled_ = false;
+  bool has_cast_device_ = false;
   MediaNotificationDeviceSelectorViewDelegate* const delegate_;
   std::string current_device_id_;
   SkColor foreground_color_, background_color_;
