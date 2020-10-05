@@ -1236,8 +1236,13 @@ void CookieMonster::SetCanonicalCookie(std::unique_ptr<CanonicalCookie> cc,
     if (!already_expired) {
       // See InitializeHistograms() for details.
       if (cc->IsPersistent()) {
-        histogram_expiration_duration_minutes_->Add(
-            (cc->ExpiryDate() - creation_date).InMinutes());
+        if (cc->IsSecure()) {
+          histogram_expiration_duration_minutes_secure_->Add(
+              (cc->ExpiryDate() - creation_date).InMinutes());
+        } else {
+          histogram_expiration_duration_minutes_non_secure_->Add(
+              (cc->ExpiryDate() - creation_date).InMinutes());
+        }
       }
 
       // Histogram the type of scheme used on URLs that set cookies. This
@@ -1297,8 +1302,13 @@ void CookieMonster::SetAllCookies(CookieList list,
       continue;
 
     if (cookie.IsPersistent()) {
-      histogram_expiration_duration_minutes_->Add(
-          (cookie.ExpiryDate() - creation_time).InMinutes());
+      if (cookie.IsSecure()) {
+        histogram_expiration_duration_minutes_secure_->Add(
+            (cookie.ExpiryDate() - creation_time).InMinutes());
+      } else {
+        histogram_expiration_duration_minutes_non_secure_->Add(
+            (cookie.ExpiryDate() - creation_time).InMinutes());
+      }
     }
 
     CookieAccessResult access_result;
@@ -1885,9 +1895,13 @@ void CookieMonster::InitializeHistograms() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // From UMA_HISTOGRAM_CUSTOM_COUNTS
-  histogram_expiration_duration_minutes_ = base::Histogram::FactoryGet(
-      "Cookie.ExpirationDurationMinutes", 1, kMinutesInTenYears, 50,
+  histogram_expiration_duration_minutes_secure_ = base::Histogram::FactoryGet(
+      "Cookie.ExpirationDurationMinutesSecure", 1, kMinutesInTenYears, 50,
       base::Histogram::kUmaTargetedHistogramFlag);
+  histogram_expiration_duration_minutes_non_secure_ =
+      base::Histogram::FactoryGet("Cookie.ExpirationDurationMinutesNonSecure",
+                                  1, kMinutesInTenYears, 50,
+                                  base::Histogram::kUmaTargetedHistogramFlag);
   histogram_count_ = base::Histogram::FactoryGet(
       "Cookie.Count", 1, 4000, 50, base::Histogram::kUmaTargetedHistogramFlag);
 
