@@ -160,6 +160,9 @@
       Si se asigna el valor "verdadero" a esta política, se habilitará esta función y los usuarios podrán cambiarla.
       De forma predeterminada, se le asignará el valor "falso", no se sugerirá ningún emoji y los usuarios no podrán anularla.</translation>
 <translation id="1243570869342663665">Controlar el filtrado de contenido para adultos de SafeSites.</translation>
+<translation id="1247850578871017740">Si se le asigna un valor válido a esta política, <ph name="PRODUCT_NAME" /> no podrá usar las versiones de SSL/TLS anteriores a la versión especificada. Los valores que no se reconozcan se ignorarán.
+
+      Si no se establece esta política, <ph name="PRODUCT_NAME" /> mostrará un error para las versiones TLS 1.0 y TLS 1.1, pero el usuario podrá evitarlo.</translation>
 <translation id="1252536192437793850">Dejar que los sitios web pidan permiso al usuario para acceder a un puerto serie</translation>
 <translation id="1257550411839719984">Establecer directorio de descargas predeterminado</translation>
 <translation id="1265053460044691532">Limitar el tiempo durante el que un usuario autenticado a través de SAML puede iniciar sesión sin conexión</translation>
@@ -2355,6 +2358,7 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
       Si no se establece esta política, Navegación segura funcionará en modo de protección estándar, pero los usuarios podrán cambiar esta opción.
 
       Consulta la página https://developers.google.com/safe-browsing para obtener más información acerca de Navegación segura.</translation>
+<translation id="4402887080007986374">La versión válida de los Términos del Servicio de Edu Coexistence</translation>
 <translation id="4408428864159735559">Lista de sistemas de archivos de red compartidos preconfigurados.</translation>
 <translation id="4410236409016356088">Habilitar la limitación de ancho de banda</translation>
 <translation id="441217499641439905">Inhabilitar Google Drive a través de conexiones móviles en la aplicación Archivos de <ph name="PRODUCT_OS_NAME" /></translation>
@@ -2537,6 +2541,13 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
           Puedes consultar ejemplos de patrones en la página https://www.chromium.org/developers/how-tos/chrome-frame-getting-started.</translation>
 <translation id="467449052039111439">Abrir una lista de URLs</translation>
 <translation id="4674871290487541952">Permite los algoritmos no seguros en las comprobaciones de integridad de las actualizaciones e instalaciones de extensiones</translation>
+<translation id="4677605038200415894">Si se le asigna un valor a esta política, podrás crear una lista de patrones de URL donde se especifique qué sitios web obtienen permiso para acceder a un dispositivo USB automáticamente con los ID de proveedor y producto determinados. Cada elemento de la lista debe contener dispositivos y URLs para que la política sea válida. Cada elemento de los dispositivos puede incluir un campo de ID de proveedor y otro de ID de producto. Los ID que omitas se considerarán comodines, con una excepción: no puedes especificar un ID de producto sin definir también un ID de proveedor. De lo contrario, la política no será válida.
+
+      El modelo de permisos USB usa la URL solicitante y la URL de inserción (del sitio web marco de nivel superior) para permitir a la URL solicitante que acceda al dispositivo USB. La URL solicitante puede ser distinta a la de inserción si el sitio web solicitante se carga en un iframe. Por lo tanto, el campo "urls" puede contener un máximo de 2 cadenas delimitadas por una coma para especificar estas URL. Si solo especificas una, se otorgará acceso a los dispositivos USB correspondientes cuando la URL del sitio web solicitante coincida con esta URL, independientemente del estado de inserción. Las URL del campo "urls" deben ser URL válidas. De lo contrario, la política se ignorará.
+
+      Si no se le asigna un valor a la política, se aplicará <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> si se ha establecido previamente. Si no, se aplicará la configuración personal del usuario.
+
+      Los patrones de URL de esta política no deben entrar en conflicto con los de la política <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Si lo hacen, esta política prevalece sobre <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> y <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="4680936297850947973">Obsoleta en M68. Usa DefaultPopupsSetting en su lugar.
 
       Consulta una explicación completa en la página  https://www.chromestatus.com/features/5675755719622656.
@@ -3260,6 +3271,8 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
       Nota: Si hay varios nombres de servidores, se deben separar con comas. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
 <translation id="5645779841392247734">Permitir cookies en estos sitios</translation>
 <translation id="5646234199535103501">Política de configuración del conector OnBulkDataEntry de Chrome Enterprise Connectors</translation>
+<translation id="5652250453612826983">Controla las políticas de supervisión parental, que se aplican exclusivamente a las cuentas infantiles.
+      Estas políticas no se configuran en la consola de administración, sino en el servidor de APIs para niños directamente.</translation>
 <translation id="5656177735561364047">Habilita la función de portapapeles compartido</translation>
 <translation id="5657576769650058122">Si se asigna el valor "Habilitada" a esta política, el teclado virtual en pantalla (un dispositivo de introducción de texto de Chrome OS) siempre estará activado. Si se le asigna el valor "Inhabilitada", este teclado siempre estará desactivado.
 
@@ -3914,6 +3927,21 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 <translation id="6628043374475466084">Indica los patrones de URL en los que no se comprobará si el contenido subido cumple con las normas de protección de datos sensibles.</translation>
 <translation id="6628120204569232711">Informar sobre el estado del almacenamiento</translation>
 <translation id="663685822663765995">Restringir el modo de impresión en color</translation>
+<translation id="6640989746632867803">Si se le asigna un valor a la política, los usuarios no podrán saltarse las medidas de seguridad de las descargas.
+
+       Estos son los efectos de cada valor:
+
+      * Bloquear descargas peligrosas: se permiten todas las descargas, excepto las que incluyan advertencias de seguridad.
+
+      * Bloquear descargas potencialmente peligrosas: se permiten todas las descargas, excepto las que incluyan advertencias de seguridad sobre descargas potencialmente peligrosas.
+
+      * Bloquear todas las descargas: se bloquean todas las descargas.
+
+      * Bloquear las descargas de contenido malicioso: se permiten todas las descargas, excepto las definidas como software malicioso con un nivel elevado de certeza. A diferencia de la opción Bloquear descargas peligrosas, esta opción no tiene en cuenta el tipo de archivo, pero sí el host.
+
+      * Sin restricciones especiales: las restricciones de seguridad habituales se aplican a las descargas en función de los resultados de análisis de seguridad.
+
+      Nota: Estas restricciones se aplican a las descargas activadas desde el contenido de las páginas web o mediante la opción Descargar enlace… del menú. No se aplican a la opción Descargar de la página que se muestra ni a la opción Guardar como PDF de las opciones de impresión. Consulta más información sobre Navegación segura en https://developers.google.com/safe-browsing.</translation>
 <translation id="6641981670621198190">Inhabilitar compatibilidad con API de gráficos 3D</translation>
 <translation id="6646056064606561298">Habilita la política de gestión de inicio con CA.
 
@@ -5639,6 +5667,13 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="8942616385591203339">Esta política controla si se muestra Sync Consent al usuario durante el primer inicio de sesión. Se le debería asignar el valor "False" si no es necesario mostrar Sync Consent al usuario en ningún caso.
       Si se le asigna el valor "False", Sync Consent no se mostrará.
       Si se le asigna el valor "True" o no se le asigna ningún valor, Sync Consent no se puede mostrar.</translation>
+<translation id="8943744188513019866">Esta política indica la versión válida actual de los Términos del Servicio de Edu Coexistence.
+      Se compara con la última versión aceptada por el padre o madre y se utiliza para mostrar la renovación del permiso parental cuando sea necesario.
+
+      Si se le asigna un valor a la política, la versión de los Términos del Servicio puede validarse.
+      Si no se le asigna ningún valor, no será posible verificar la validez de los Términos del Servicio de Edu Coexistence.
+
+      Esta política solo se usa para usuarios de Family Link.</translation>
 <translation id="8943934315109955032">No comprueba si se infringen las normas de protección de datos sensibles</translation>
 <translation id="8947415621777543415">Informar de ubicación del dispositivo</translation>
 <translation id="8948062138228904066">Lista de permitidos de servidores de autenticación</translation>

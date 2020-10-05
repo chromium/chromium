@@ -23,6 +23,7 @@
 <translation id="1553358976309200471">Ажурирај Chrome</translation>
 <translation id="1587223624401073077">Google Chrome користи камеру.</translation>
 <translation id="1587325591171447154">Датотека <ph name="FILE_NAME" /> је опасна, па ју је Chrome блокирао.</translation>
+<translation id="1597911401261118146">Да бисте проверили да ли су лозинке безбедне од упада у податке и других безбедносних проблема, <ph name="BEGIN_LINK" />пријавите се у Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Да бисмо учинили Chrome безбеднијим, онемогућили смо следећи додатак који <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не наводи и који је можда додат без вашег знања.</translation>
 <translation id="162448658176061655">Chrome проверава да ли је присутан нежељени софтвер једном недељно. Последњи пут проверено: малопре.</translation>
 <translation id="162629503687514352">Chrome ОС није успео да синхронизује лозинке.</translation>
@@ -38,6 +39,7 @@
 <translation id="1734234790201236882">Chrome ће сачувати ову лозинку на Google налогу. Нећете морати да је памтите.</translation>
 <translation id="174539241580958092">Google Chrome не може да синхронизује податке због грешке при пријављивању.</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1786003790898721085">Уверите се да сте пријављени у Chrome на уређају <ph name="TARGET_DEVICE_NAME" /> и пробајте да пошаљете поново.</translation>
 <translation id="1812689907177901597">Када то укључите, можете да се пријављујете на Google сајтове, као што је Gmail, али се не пријављујете у Chrome</translation>
 <translation id="1860536484129686729">Chrome тражи дозволу да приступи камери за овај сајт</translation>
 <translation id="1873233029667955273">Google Chrome није подразумевани прегледач</translation>
@@ -82,6 +84,7 @@
 <translation id="3065168410429928842">Картица Chrome</translation>
 <translation id="3080151273017101988">Настави са покретањем апликација у позадини када се Google Chrome затвори</translation>
 <translation id="3089968997497233615">Доступна је нова, безбеднија верзија Google Chrome прегледача.</translation>
+<translation id="3114643501466072395">Да бисте проверили да ли су остале лозинке безбедне од упада у податке и других безбедносних проблема, <ph name="BEGIN_LINK" />пријавите се у Chrome<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">Chrome ОС није успео да синхронизује податке.</translation>
 <translation id="3149510190863420837">Chrome апликације</translation>
 <translation id="3360895254066713204">Chrome помоћник</translation>
@@ -253,6 +256,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8344083974188970894">{NUM_MINS,plural, =1{Chrome проверава да ли је присутан нежељени софтвер једном недељно. Последњи пут проверено: пре 1 минут.}one{Chrome проверава да ли је присутан нежељени софтвер једном недељно. Последњи пут проверено: пре {NUM_MINS} минут.}few{Chrome проверава да ли је присутан нежељени софтвер једном недељно. Последњи пут проверено: пре {NUM_MINS} минута.}other{Chrome проверава да ли је присутан нежељени софтвер једном недељно. Последњи пут проверено: пре {NUM_MINS} минута.}}</translation>
 <translation id="8370517070665726704">Ауторска права <ph name="YEAR" />. Google LLC. Сва права задржана.</translation>
 <translation id="840084489713044809">Google Chrome жели да извезе лозинке.</translation>
+<translation id="8433638294851456451">Да бисте послали број са овог уређаја на Android телефон, пријавите се у Chrome на оба уређаја.</translation>
 <translation id="8498858610309223613">Посебно безбедносно ажурирање за Google Chrome је управо примењено. Рестартујте га и вратићемо вам картице.</translation>
 <translation id="8521348052903287641">Правило за долазни саобраћај за програмерску верзију Google Chrome-а да бисте омогућили mDNS саобраћај.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
@@ -272,6 +276,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="884296878221830158">Контролише и страницу која се приказује када покренете Chrome или кликнете на дугме Почетак.</translation>
 <translation id="8862326446509486874">Немате одговарајућа права за инсталацију на нивоу система. Пробајте поново да покренете програм за инсталацију, овога пута као администратор.</translation>
 <translation id="8914504000324227558">Поново покрени Chrome</translation>
+<translation id="8922193594870374009">Да бисте послали број са <ph name="ORIGIN" /> на Android телефон, пријавите се у Chrome на оба уређаја.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ажурирање за Chrome је доступно}=1{Ажурирање за Chrome је доступно}one{Ажурирање за Chrome је доступно већ # дан}few{Ажурирање за Chrome је доступно већ # дана}other{Ажурирање за Chrome је доступно већ # дана}}</translation>
 <translation id="9026991721384951619">Chrome ОС не може да синхронизује податке зато што су подаци за пријављивање на налог застарели.</translation>
 <translation id="9067395829937117663">За Google Chrome је потребан Windows 7 или новија верзија.</translation>

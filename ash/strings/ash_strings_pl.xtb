@@ -27,6 +27,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="121097972571826261">Do przodu o jedno słowo</translation>
 <translation id="1225748608451425081">Ten Chromebook został zablokowany z powodu znanego błędu. Zalogowanie się będzie możliwe za <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Wyjdź z trybu wybierania danych</translation>
+<translation id="1239161794459865856">Funkcja <ph name="FEATURE_NAME" /> ma połączenie.</translation>
 <translation id="1247372569136754018">Mikrofon (wewnętrzny)</translation>
 <translation id="1252999807265626933">Trwa ładowanie z: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Jaka jest pogoda?</translation>
@@ -74,6 +75,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1654477262762802994">Rozpocznij zapytanie głosowe</translation>
 <translation id="1667964833127753507">Tryb koloru neutralnego nie wyświetla kolorów wyodrębnionych z tapety. Zamiast nich używa jasnych i ciemnych odcieni stonowanych neutralnie.</translation>
 <translation id="1677472565718498478">Pozostało <ph name="TIME" /></translation>
+<translation id="1677507110654891115">Funkcja <ph name="FEATURE_NAME" /> nie ma połączenia.</translation>
 <translation id="1698080062160024910">Minutnik <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Adres IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Biurko: <ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2369165858548251131">„Cześć” po chińsku</translation>
 <translation id="2390318262976603432">Ustawienia języka</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="2405664212338326887">Brak połączenia</translation>
 <translation id="2408955596600435184">Wpisz kod PIN</translation>
 <translation id="2412593942846481727">Dostępna aktualizacja</translation>
 <translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> jest sesją zarządzaną, którą zarządza <ph name="DOMAIN" /></translation>
@@ -243,6 +246,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3364721542077212959">Narzędzia rysika</translation>
 <translation id="3368922792935385530">Połączone</translation>
 <translation id="3371140690572404006">Urządzenie USB-C (przedni port na prawym boku)</translation>
+<translation id="3375634426936648815">Połączono</translation>
 <translation id="3386978599540877378">Lupa pełnoekranowa</translation>
 <translation id="3400357268283240774">Ustawienia dodatkowe</translation>
 <translation id="3410336247007142655">Pokaż ustawienia trybu ciemnego</translation>
@@ -322,6 +326,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4181841719683918333">Języki</translation>
 <translation id="4195877955194704651">Automatyczne klikanie przycisku</translation>
 <translation id="4197790712631116042">Wyłączono</translation>
+<translation id="4201033867194214117">Funkcja <ph name="FEATURE_NAME" /> jest niedostępna.</translation>
 <translation id="4212246570487010370">Przeglądaj dalej</translation>
 <translation id="4212472694152630271">Zmień na PIN</translation>
 <translation id="4215497585250573029">Ustawienia sieci VPN</translation>
@@ -333,6 +338,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4285498937028063278">Odepnij</translation>
 <translation id="4294319844246081198">Dzień dobry <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Wyczyść wszystkie powiadomienia (<ph name="COUNT" />)</translation>
+<translation id="4302592941791324970">Brak dostępu</translation>
 <translation id="4303223480529385476">Rozwiń pasek stanu</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Naciśnięto skrót klawiszowy wysokiego kontrastu. Czy chcesz go włączyć?</translation>
@@ -426,6 +432,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5302048478445481009">Język</translation>
 <translation id="5313326810920013265">Ustawienia Bluetooth</translation>
 <translation id="5314219114274263156">Nagrano ekran</translation>
+<translation id="5329548388331921293">Łączę…</translation>
 <translation id="5331975486040154427">Urządzenie USB-C (tylny port na lewym boku)</translation>
 <translation id="5352250171825660495">Tryb ciemny jest włączony</translation>
 <translation id="5379115545237091094">Zbyt wiele prób</translation>
@@ -439,6 +446,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5465662442746197494">Potrzebujesz pomocy?</translation>
 <translation id="5496819745535887422">Administrator przywraca wcześniejszą wersję oprogramowania na urządzeniu. Po ponownym uruchomieniu urządzenia wszystkie dane zostaną usunięte.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166">Funkcja <ph name="FEATURE_NAME" /> nawiązuje połączenie.</translation>
 <translation id="553675580533261935">Zamykanie sesji</translation>
 <translation id="5537725057119320332">Przesyłaj</translation>
 <translation id="5548285847212963613">Rozszerzenie „<ph name="EXTENSION_NAME" />” może ułatwić połączenie z tą siecią.</translation>

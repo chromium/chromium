@@ -134,6 +134,7 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">Trikotnik z dodatno vsebino</translation>
 <translation id="5278860589123563674">Pošiljanje ni uspelo</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> potrebuje vašo pozornost.</translation>
 <translation id="528468243742722775">Konec</translation>
 <translation id="5329858601952122676">&amp;Izbriši</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> na <ph name="IN_PLACE_APP" />, spustite, da ustvarite mapo.</translation>
@@ -143,6 +144,7 @@
 <translation id="5528053674512161860">Nalaganje strani ni uspelo, ker modul uporabniškega vmesnika za razvijalce (dev_ui) ni nameščen</translation>
 <translation id="5583640892426849032">Vračalka</translation>
 <translation id="5613020302032141669">Puščica levo</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> potrebuje vašo pozornost.</translation>
 <translation id="5675363643668471212">Element na polici</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}one{# min}two{# min}few{# min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktivna danes}=1{Aktivna pred 1 dnevom}one{Aktivna pred # dnevom}two{Aktivna pred # dnevoma}few{Aktivna pred # dnevi}other{Aktivna pred # dnevi}}</translation>

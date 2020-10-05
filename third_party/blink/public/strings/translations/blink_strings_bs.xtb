@@ -47,7 +47,7 @@
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. sedmica, <ph name="YEAR" />.</translation>
 <translation id="2277199496770840904">Zapis <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">polje za potvrdu</translation>
-<translation id="2307576640803031502">na popisu, stavka <ph name="INDEX" /> od <ph name="COUNT" /></translation>
+<translation id="2307576640803031502">na listi, <ph name="INDEX" />. stavka od <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">prijelom stranice</translation>
 <translation id="2335594187091864976">odabirač datuma i vremena</translation>
 <translation id="2393030564806080191">Heksadecimalna vrijednost boje</translation>
@@ -291,7 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, počevši od <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Slika u slici</translation>
 <translation id="9168329111483466115">fusnota</translation>
-<translation id="945780513535800434">Djelomično označen</translation>
+<translation id="945780513535800434">Djelimično označeno</translation>
 <translation id="954003015749068518">pokretanje načina rada slika u slici</translation>
 <translation id="966787709310836684">meni</translation>
 </translationbundle>

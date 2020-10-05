@@ -304,6 +304,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3943857333388298514">Plak</translation>
 <translation id="394485226368336402">Audio-instellingen</translation>
 <translation id="3962859241508114581">Vorig nummer</translation>
+<translation id="3969043077941541451">Uit</translation>
 <translation id="397105322502079400">Berekenen...</translation>
 <translation id="3977512764614765090">Batterij op <ph name="PERCENTAGE" />% en wordt opgeladen.</translation>
 <translation id="3995138139523574647">USB-C-apparaat (poort rechts aan de achterkant)</translation>
@@ -314,6 +315,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Je deelt je scherm</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Uit voor een app}other{Uit voor # apps}}</translation>
+<translation id="4066027111132117168">Aan, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Normaal signaal</translation>
 <translation id="4112140312785995938">Achteruit zoeken</translation>
 <translation id="4114315158543974537">Phone Hub inschakelen</translation>
@@ -572,6 +574,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6803622936009808957">Kan schermen niet spiegelen, omdat er geen ondersteunde resoluties zijn gevonden. Het uitgebreide bureaublad is geactiveerd.</translation>
 <translation id="6818242057446442178">Terug per woord</translation>
 <translation id="6820676911989879663">Neem een pauze</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> activeren</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Nog 1 cijfer nodig}other{Nog # cijfers nodig}}</translation>
 <translation id="6878400149835617132">Snelkoppeling uitgeschakeld</translation>
@@ -640,6 +643,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="7600875258240007829">Alle meldingen bekijken</translation>
 <translation id="7618774594543487847">Neutraal</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7633755430369750696">Instellingen voor 'Dichtbij delen' weergeven.</translation>
 <translation id="7642647758716480637">Instellingen openen voor <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (eigenaar)</translation>
 <translation id="7647488630410863958">Ontgrendel het apparaat om je meldingen weer te geven</translation>
@@ -655,6 +659,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="7780159184141939021">Scherm draaien</translation>
 <translation id="7796353162336583443">Tik op de stylusknop op de plank om een notitie of screenshot te maken of de Google Assistent, de laserpen of het vergrootglas te gebruiken.</translation>
 <translation id="7798302898096527229">Druk op Zoeken of Shift om te annuleren.</translation>
+<translation id="781126011916719498">Krijg snel toegang tot je belangrijkste bestanden. Klik met de rechtermuisknop op een bestand of tik op een bestand en houd dit vast om het bestand vast te zetten.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> en <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sterk signaal</translation>
 <translation id="7837740436429729974">De tijd is om</translation>
@@ -798,6 +803,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="9089416786594320554">Invoermethoden</translation>
 <translation id="9091626656156419976">Scherm <ph name="DISPLAY_NAME" /> is verwijderd</translation>
 <translation id="9151726767154816831">Opnieuw opstarten en de functie Powerwash gebruiken om bij te werken</translation>
+<translation id="9166331175924255663">Hoge zichtbaarheid voor 'Dichtbij delen' in-/uitschakelen.</translation>
 <translation id="9168436347345867845">Later doen</translation>
 <translation id="9179259655489829027">Met deze functie kun je snel zonder wachtwoord toegang krijgen tot iedere ingelogde gebruiker. Gebruik deze functie alleen met accounts die je vertrouwt.</translation>
 <translation id="9183456764293710005">Vergrootglas voor volledig scherm</translation>

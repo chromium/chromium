@@ -134,6 +134,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1453974140256777690">O texto colado ou anexado é enviado ao Google Cloud ou a terceiros para análise. Por exemplo, ele pode ser verificado em busca de dados confidenciais.</translation>
 <translation id="1455413310270022028">Borracha</translation>
 <translation id="1462245070427461050">JIS B9</translation>
+<translation id="1462951478840426066">Usar as fontes do seu computador para criar conteúdo de alta fidelidade</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">À esquerda</translation>
 <translation id="1472675084647422956">Mostrar mais</translation>
@@ -221,6 +222,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="17513872634828108">Guias abertas</translation>
 <translation id="1752021286346845558">Caixa de e-mails 8</translation>
 <translation id="1753706481035618306">Numero da página</translation>
+<translation id="1757773103848038814">Fonte monoespaçada</translation>
 <translation id="1763864636252898013">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança não é confiável para o sistema operacional do seu dispositivo. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Tente executar o Diagnóstico de Rede do Windows<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">O servidor que você acessará, <ph name="ORIGIN" />, definiu um cabeçalho solicitando que uma política de origem seja aplicada a todas as solicitações feitas a ele. No entanto, o cabeçalho está incorreto, o que impede que o navegador faça a solicitação para <ph name="SITE" />. Políticas de origem podem ser usadas por operadores para configurar a segurança e outras propriedades de um site.</translation>
@@ -588,6 +590,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3395827396354264108">Método de retirada</translation>
 <translation id="3399952811970034796">Endereço de Entrega</translation>
 <translation id="3402261774528610252">A conexão para carregar este site usou o TLS 1.0 ou o TLS 1.1, que estão obsoletos e serão desativados em breve. Depois da desativação, os usuários não poderão carregar este site. É necessário ativar o TLS 1.2 ou mais recente no servidor.</translation>
+<translation id="3411120537985775570">O administrador bloqueou a opção de colar conteúdo de <ph name="ORIGIN_NAME" /> neste local</translation>
 <translation id="3414952576877147120">Tamanho:</translation>
 <translation id="3417660076059365994">Os arquivos transferidos por upload ou anexados são enviados ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados em busca de dados confidenciais ou malware.</translation>
 <translation id="3422248202833853650">Tente sair de outros programas para liberar memória.</translation>
@@ -626,6 +629,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3532844647053365774"><ph name="HOST" /> quer usar seu microfone</translation>
 <translation id="3533328374079021623">Caixa de e-mails 5</translation>
 <translation id="3539171420378717834">Manter uma cópia deste cartão neste dispositivo</translation>
+<translation id="3552297013052089404">Fonte Sans-Serif</translation>
 <translation id="3558573058928565255">Dia</translation>
 <translation id="3566021033012934673">Sua conexão não é particular</translation>
 <translation id="3567778190852720481">Não é possível fazer a inscrição com a conta corporativa (a conta corporativa não está qualificada).</translation>
@@ -819,6 +823,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4277028893293644418">Redefinir senha</translation>
 <translation id="4279811152705618813">Seu <ph name="DEVICE_TYPE" /> é gerenciado por <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Esse cartão foi adicionado à sua Conta do Google}one{Esse cartão foi adicionado à sua Conta do Google}other{Esses cartões foram adicionados à sua Conta do Google}}</translation>
+<translation id="4297502707443874121">Miniatura da página <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Expandir</translation>
 <translation id="4300675098767811073">Perfuração múltipla do lado direito</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
@@ -989,6 +994,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="503069730517007720">Um certificado raiz para "<ph name="SOFTWARE_NAME" />" é necessário, mas não está instalado. O administrador de TI deve revisar as instruções de configuração do "<ph name="SOFTWARE_NAME" />" para corrigir esse problema. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Sobre o Google Tradutor</translation>
 <translation id="503498442187459473"><ph name="HOST" /> quer usar sua câmera e seu microfone</translation>
+<translation id="5039762155821394373">Tamanho da fonte</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5040262127954254034">Privacidade</translation>
 <translation id="5043480802608081735">Link que você copiou</translation>
@@ -1255,6 +1261,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6051221802930200923">Não é possível acessar <ph name="SITE" /> no momento, porque o site usa bloqueio de certificados. Como os ataques e erros de rede são geralmente temporários, esta pagina provavelmente funcionará mais tarde.</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">Compartilhar que você está interagindo?</translation>
+<translation id="6057359309778282021">O administrador bloqueou o compartilhamento de <ph name="ORIGIN_NAME" /> com <ph name="VM_NAME" /></translation>
 <translation id="6058977677006700226">Usar seus cartões em todos os dispositivos?</translation>
 <translation id="6059925163896151826">Dispositivos USB</translation>
 <translation id="6060009363608157444">Modo DnsOverHttps inválido.</translation>
@@ -1304,6 +1311,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
         <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">Não é possível entregar nesse endereço. Selecione um endereço diferente.</translation>
 <translation id="6282194474023008486">CEP</translation>
+<translation id="6289939620939689042">Cor da página</translation>
 <translation id="6290238015253830360">Os artigos sugeridos aparecerão aqui</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Parando o Google Assistente no Chrome</translation>
@@ -1460,6 +1468,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7004583254764674281">Use o Windows Hello para confirmar o uso de cartões mais rapidamente</translation>
 <translation id="7006930604109697472">Enviar mesmo assim</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7014741021609395734">Nível de zoom</translation>
 <translation id="7016992613359344582">Essas cobranças podem ser únicas ou recorrentes e talvez não sejam óbvias.</translation>
 <translation id="7029809446516969842">Senhas</translation>
 <translation id="7031646650991750659">quais apps do Google Play estão instalados.</translation>
@@ -1862,6 +1871,7 @@ Mais detalhes:
 <translation id="8622948367223941507">Legal extra</translation>
 <translation id="8623885649813806493">Não achamos uma senha. Mostrar todas as senhas salvas.</translation>
 <translation id="8625384913736129811">Salvar este cartão neste dispositivo</translation>
+<translation id="8657078576661269990">O administrador bloqueou o compartilhamento de <ph name="ORIGIN_NAME" /> com <ph name="VM_NAME_1" /> e <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Resumo do pedido, <ph name="TOTAL_LABEL" />, Mais detalhes</translation>
 <translation id="867224526087042813">Assinatura</translation>
 <translation id="8676424191133491403">Sem atraso</translation>
@@ -1874,6 +1884,7 @@ Mais detalhes:
 <translation id="8699041776323235191">Dispositivo HID</translation>
 <translation id="8703575177326907206">Sua conexão com <ph name="DOMAIN" /> não está criptografada.</translation>
 <translation id="8705331520020532516">Número de série</translation>
+<translation id="8710842507289500830">Estilo da fonte</translation>
 <translation id="8718314106902482036">Pagamento não concluído</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, sugestão de pesquisa</translation>
 <translation id="8719528812645237045">Perfuração múltipla na parte superior</translation>
@@ -1995,6 +2006,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9191834167571392248">Perfuração na parte inferior esquerda</translation>
 <translation id="9205078245616868884">Seus dados são criptografados com sua senha longa de sincronização. Informe-a para começar a sincronização.</translation>
 <translation id="9207861905230894330">Falha ao adicionar artigo.</translation>
+<translation id="9213433120051936369">Personalizar aparência</translation>
 <translation id="9215416866750762878">Um aplicativo está impedindo que o Chrome se conecte com segurança a este site</translation>
 <translation id="9219103736887031265">Imagens</translation>
 <translation id="933712198907837967">Diners Club</translation>

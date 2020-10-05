@@ -160,6 +160,9 @@
       Se questo criterio viene impostato su vero, la funzionalità verrà attivata e gli utenti potranno modificarla.
       Per impostazione predefinita questo criterio è impostato su falso, il che significa che non vengono suggerite emoji e gli utenti non possono ignorarlo.</translation>
 <translation id="1243570869342663665">Controlla il filtro dei contenuti per adulti di SafeSites.</translation>
+<translation id="1247850578871017740">Se il criterio viene impostato su un valore valido, <ph name="PRODUCT_NAME" /> non utilizza versioni SSL/TLS precedenti alla versione specificata. I valori non riconosciuti vengono ignorati.
+
+      Se il criterio non viene configurato, <ph name="PRODUCT_NAME" /> mostra un errore per TLS 1.0 e TLS 1.1, ma l'utente può ignorarlo.</translation>
 <translation id="1252536192437793850">Consenti ai siti di chiedere all'utente di concedere l'accesso a una porta seriale</translation>
 <translation id="1257550411839719984">Imposta directory di download predefinita</translation>
 <translation id="1265053460044691532">Limita il tempo per cui un utente autenticato tramite SAML può eseguire l'accesso offline</translation>
@@ -2335,6 +2338,7 @@ Il valore della norma dovrebbe essere specificato in secondi. Il valore minimo d
       Se questo criterio non viene impostato, Navigazione sicura sarà attiva in modalità di protezione standard, ma gli utenti potranno modificare questa impostazione.
 
       Visita il sito https://developers.google.com/safe-browsing per ulteriori informazioni sulla funzionalità Navigazione sicura.</translation>
+<translation id="4402887080007986374">La versione valida dei Termini di servizio di Edu Coexistence</translation>
 <translation id="4408428864159735559">Elenco di condivisioni di file di rete preconfigurate.</translation>
 <translation id="4410236409016356088">Attiva la limitazione della larghezza di banda della rete</translation>
 <translation id="441217499641439905">Disattiva Google Drive su reti cellulari nell'app File di <ph name="PRODUCT_OS_NAME" /></translation>
@@ -2517,6 +2521,13 @@ Se questa norma non viene impostata, verranno utilizzate le dimensioni predefini
           Per avere pattern di esempio, visita il sito https://www.chromium.org/developers/how-tos/chrome-frame-getting-started.</translation>
 <translation id="467449052039111439">Apri un elenco di URL</translation>
 <translation id="4674871290487541952">Consente algoritmi non protetti nei controlli dell'integrità durante gli aggiornamenti e le installazioni delle estensioni</translation>
+<translation id="4677605038200415894">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti a cui viene concessa automaticamente l'autorizzazione di accesso a un dispositivo USB con gli ID fornitore e prodotto indicati. Affinché il criterio sia valido, ogni elemento dell'elenco deve contenere sia dispositivi sia URL. Ogni elemento nei dispositivi può contenere un campo ID fornitore e un campo ID prodotto. Gli eventuali ID omessi vengono considerati caratteri jolly con un'eccezione: non è possibile specificare un ID prodotto senza specificare anche un ID fornitore. In caso contrario, il criterio non è valido.
+
+      Il modello di autorizzazione USB utilizza l'URL richiedente e l'URL di incorporamento (del sito frame di primo livello) per consentire all'URL richiedente di accedere al dispositivo USB. L'URL richiedente potrebbe essere diverso dall'URL di incorporamento quando il sito richiedente viene caricato in un iframe. Di conseguenza il campo "urls" può contenere fino a 2 stringhe delimitate da virgola per specificare questi URL. Se specifichi un solo URL, l'accesso ai dispositivi USB corrispondenti viene concesso quando l'URL del sito richiedente corrisponde all'URL indicato, a prescindere dallo stato di incorporamento. Gli URL indicati nel campo "urls" devono essere validi, altrimenti il criterio viene ignorato.
+
+      Se il criterio non viene configurato, viene applicato il criterio <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
+
+      I pattern URL di questo criterio non devono essere in conflitto con quelli configurati tramite <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. In caso di conflitto, questo criterio ha la precedenza sui criteri <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="4680936297850947973">Ritirata in M68. Usa DefaultPopupsSetting.
 
       Per una spiegazione completa, consulta la pagina https://www.chromestatus.com/features/5675755719622656.
@@ -3237,6 +3248,8 @@ Se questa impostazione viene disattivata o non viene impostata, sia gli utenti l
       Nota: se ci sono più server, separane i nomi utilizzando virgole. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
 <translation id="5645779841392247734">Consenti i cookie in questi siti</translation>
 <translation id="5646234199535103501">Criterio di configurazione per il connettore OnBulkDataEntry di Chrome Enterprise</translation>
+<translation id="5652250453612826983">Consente di controllare i criteri relativi alla supervisione dei genitori che vengono applicati soltanto agli account di minori.
+      Questi criteri non sono configurati nella Console di amministrazione, ma direttamente dal server API Kids.</translation>
 <translation id="5656177735561364047">Attiva la funzione Appunti condivisi</translation>
 <translation id="5657576769650058122">Se il criterio viene attivato, la tastiera virtuale (un dispositivo di immissione Chrome OS) rimane attiva sullo schermo. Se il criterio viene disattivato, questa tastiera rimane disabilitata.
 
@@ -3890,6 +3903,21 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 <translation id="6628043374475466084">Pattern URL per non eseguire il controllo della presenza di violazioni delle regole relative alla protezione dei dati sensibili nei contenuti caricati</translation>
 <translation id="6628120204569232711">Segnala lo stato di archiviazione</translation>
 <translation id="663685822663765995">Limita la modalità di stampa a colori</translation>
+<translation id="6640989746632867803">Se il criterio viene configurato, gli utenti non possono aggirare le decisioni di sicurezza.
+
+       Se il criterio viene impostato su:
+
+      * Blocca download pericolosi, tutti i download vengono consentiti, ad eccezione di quelli contenenti avvisi di sicurezza.
+
+      * Blocca download potenzialmente pericolosi, tutti i download vengono consentiti, ad eccezione di quelli contenenti avvisi di sicurezza che segnalano la potenziale pericolosità di tali download.
+
+      * Blocca tutti i download, tutti i download vengono bloccati.
+
+      * Blocca download dannosi, tutti i download vengono consentiti, ad eccezione di quelli che secondo la valutazione di sicurezza molto probabilmente sono malware. A differenza dei download pericolosi, questa opzione non prende in considerazione il tipo di file, bensì l'host.
+
+      * Nessuna limitazione speciale, i download sono sottoposti alle normali limitazioni di sicurezza in base ai risultati delle analisi di sicurezza.
+
+      Nota: tali limitazioni vengono applicate ai download attivati dai contenuti delle pagine web, nonché all'opzione del menu "Link di download…" e non al download della pagina attualmente visualizzata né all'opzione di stampa relativa al salvataggio in formato PDF. Leggi ulteriori informazioni sulla funzionalità Navigazione sicura (https://developers.google.com/safe-browsing).</translation>
 <translation id="6641981670621198190">Disattiva supporto per le API grafiche 3D</translation>
 <translation id="6646056064606561298">Consente di attivare la norma di gestione dell'energia relativa all'avvio tramite CA.
 
@@ -5592,6 +5620,13 @@ https://www.w3.org/TR/secure-contexts/
 <translation id="8942616385591203339">Questa norma consente di controllare se il consenso alla sincronizzazione può essere mostrato all'utente durante il primo accesso. Dovrebbe essere impostata su false se tale consenso non è mai necessario per l'utente.
       Se impostata su false, il consenso alla sincronizzazione non verrà visualizzato.
       Se impostata su true o non viene impostata, il consenso alla sincronizzazione può essere visualizzato.</translation>
+<translation id="8943744188513019866">Questo criterio indica la versione corrente valida dei Termini di servizio di Edu Coexistence,
+      che viene confrontata con l'ultima versione accettata dal genitore e utilizzata per suggerire al genitore stesso il rinnovo dell'autorizzazione quando necessario.
+
+      Se questo criterio viene configurato, la versione dei Termini di servizio può essere convalidata.
+      Se questo criterio non viene configurato, non è possibile verificare la validità dei Termini di servizio di Edu Coexistence.
+
+      Questo criterio viene utilizzato unicamente per gli utenti di Family Link.</translation>
 <translation id="8943934315109955032">Non verificare eventuali violazioni delle regole relative alla protezione dei dati sensibili</translation>
 <translation id="8947415621777543415">Segnala posizione del dispositivo</translation>
 <translation id="8948062138228904066">Lista consentita di server di autenticazione</translation>

@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">Settimana <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Traccia <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">casella di controllo</translation>
+<translation id="2307576640803031502">elemento <ph name="INDEX" /> di <ph name="COUNT" /> dell'elenco</translation>
 <translation id="2311842470354187719">interruzione di pagina</translation>
 <translation id="2335594187091864976">selettore di data e ora</translation>
 <translation id="2393030564806080191">Valore del colore esadecimale</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, a partire dal giorno <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Picture in picture</translation>
 <translation id="9168329111483466115">piè di pagina</translation>
+<translation id="945780513535800434">Parzialmente selezionato</translation>
 <translation id="954003015749068518">attiva picture in picture</translation>
 <translation id="966787709310836684">menu</translation>
 </translationbundle>

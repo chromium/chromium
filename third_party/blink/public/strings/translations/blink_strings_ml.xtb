@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">ആഴ്‌ച <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ട്രാക്ക് <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">ചെക്ക്‌ ബോക്‌സ്</translation>
+<translation id="2307576640803031502">ലിസ്റ്റിലെ <ph name="COUNT" /> ഇനങ്ങളിൽ <ph name="INDEX" />-ാമത്തേത്</translation>
 <translation id="2311842470354187719">പേജ് ബ്രേക്ക്</translation>
 <translation id="2335594187091864976">തീയതിയും സമയ പിക്കറും</translation>
 <translation id="2393030564806080191">ഹെക്‌സാഡെസിമല്‍ വർണ മൂല്യം</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, <ph name="WEEK_START_DATE" />-ന് ആരംഭിക്കുന്നു</translation>
 <translation id="916607977885256133">ചിത്രത്തിനുള്ളിൽ ചിത്രം</translation>
 <translation id="9168329111483466115">അടിക്കുറിപ്പ്</translation>
+<translation id="945780513535800434">ഭാഗികമായി ചെക്ക് മാർക്കിട്ടു</translation>
 <translation id="954003015749068518">ചിത്രത്തിനുള്ളിലെ ചിത്രത്തിലേക്ക് പ്രവേശിക്കുക</translation>
 <translation id="966787709310836684">മെനു</translation>
 </translationbundle>

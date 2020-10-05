@@ -27,6 +27,7 @@
 <translation id="121097972571826261">ఒక పదం ముందుకు</translation>
 <translation id="1225748608451425081">తెలిసిన సమస్య కారణంగా మీ Chromebook లాక్ చేయబడింది. మీరు ఈ సమయం తర్వాత సైన్ ఇన్ చేయగలరు: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">ఎంచుకోవడం ఆపివేయండి</translation>
+<translation id="1239161794459865856"><ph name="FEATURE_NAME" /> కనెక్ట్ చేయబడింది.</translation>
 <translation id="1247372569136754018">మైక్రోఫోన్ (అంతర్గతం)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> నుండి ఛార్జ్ అవుతోంది</translation>
 <translation id="1255033239764210633">వాతావరణం ఎలా ఉంది?</translation>
@@ -74,6 +75,7 @@
 <translation id="1654477262762802994">వాయిస్ ప్రశ్నను ప్రారంభించు</translation>
 <translation id="1667964833127753507">'న్యూట్రల్ రంగు మోడ్'లో వాల్‌పేపర్ నుండి సంగ్రహించిన రంగులు ఉపయోగించబడవు, వాటి స్థానంలో తటస్థంగా కనిపించే పలుచని లేదా ముదురు రంగులు ఉపయోగించబడతాయి.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> మిగిలి ఉంది</translation>
+<translation id="1677507110654891115"><ph name="FEATURE_NAME" /> కనెక్ట్ కాలేదు.</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> టైమర్ · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 చిరునామా: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">డెస్క్: <ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@
 <translation id="2369165858548251131">చైనీస్‌లో "హలో"</translation>
 <translation id="2390318262976603432">లొకేల్ సెట్టింగ్‌లు</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="2405664212338326887">కనెక్ట్ చేయబడలేదు</translation>
 <translation id="2408955596600435184">మీ PINని నమోదు చేయండి</translation>
 <translation id="2412593942846481727">అప్‌డేట్ అందుబాటులో ఉంది</translation>
 <translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> ఒక నిర్వహిత సెషన్, ఇది <ph name="DOMAIN" /> ద్వారా నిర్వహించబడుతుంది</translation>
@@ -243,6 +246,7 @@
 <translation id="3364721542077212959">స్టైలస్ సాధనాలు</translation>
 <translation id="3368922792935385530">కనెక్ట్ అయింది</translation>
 <translation id="3371140690572404006">USB-C పరికరం (కుడివైపు ముందు పోర్ట్)</translation>
+<translation id="3375634426936648815">కనెక్ట్ చేయబడింది</translation>
 <translation id="3386978599540877378">పూర్తి స్క్రీన్ మాగ్నిఫైయర్</translation>
 <translation id="3400357268283240774">అదనపు సెట్టింగ్‌లు</translation>
 <translation id="3410336247007142655">ముదురు రంగు రూపం సెట్టింగ్‌లను చూపించు</translation>
@@ -323,6 +327,7 @@
 <translation id="4181841719683918333">భాషలు</translation>
 <translation id="4195877955194704651">ఆటోమేటిక్ క్లిక్‌ల బటన్</translation>
 <translation id="4197790712631116042">ఆఫ్</translation>
+<translation id="4201033867194214117"><ph name="FEATURE_NAME" /> అందుబాటులో లేదు.</translation>
 <translation id="4212246570487010370">బ్రౌజింగ్‌ను కొనసాగించండి</translation>
 <translation id="4212472694152630271">పిన్‌కి స్విచ్ చేయి</translation>
 <translation id="4215497585250573029">VPN సెట్టింగ్‌లు</translation>
@@ -334,6 +339,7 @@
 <translation id="4285498937028063278">అన్‌పిన్ చేయి</translation>
 <translation id="4294319844246081198">శుభోదయం <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">మొత్తం <ph name="COUNT" /> నోటిఫికేషన్‌లను క్లియర్ చేస్తుంది</translation>
+<translation id="4302592941791324970">అందుబాటులో లేదు</translation>
 <translation id="4303223480529385476">స్టేటస్ ప్రాంతాన్ని విస్తరించండి</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">మీరు అధిక కాంట్రాస్ట్‌ కోసం కీబోర్డ్ షార్ట్‌కట్‌ను నొక్కారు. మీరు దీన్ని ఆన్ చేయాలనుకుంటున్నారా?</translation>
@@ -427,6 +433,7 @@
 <translation id="5302048478445481009">భాష</translation>
 <translation id="5313326810920013265">బ్లూటూత్ సెట్టింగ్‌లు</translation>
 <translation id="5314219114274263156">స్క్రీన్ రికార్డింగ్ తీసుకోబడింది</translation>
+<translation id="5329548388331921293">కనెక్ట్ అవుతోంది...</translation>
 <translation id="5331975486040154427">USB-C పరికరం (ఎడమవైపు వెనుక పోర్ట్)</translation>
 <translation id="5352250171825660495">ముదురు రంగు రూపం ఆన్‌లో ఉంది</translation>
 <translation id="5379115545237091094">అనేకసార్లు ప్రయత్నించారు</translation>
@@ -440,6 +447,7 @@
 <translation id="5465662442746197494">సహాయం కావాలా?</translation>
 <translation id="5496819745535887422">మీ నిర్వాహకుడు మీ పరికరాన్ని ఉపసంహరిస్తున్నారు. పరికరం మళ్లీ ప్రారంభించినప్పుడు మొత్తం డేటా తొలగించబడుతుంది.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166"><ph name="FEATURE_NAME" /> కనెక్ట్ అవుతోంది.</translation>
 <translation id="553675580533261935">సెషన్ నుండి నిష్క్రమిస్తోంది</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5548285847212963613">"<ph name="EXTENSION_NAME" />" ఎక్స్‌టెన్షన్ ఈ నెట్‌వర్క్‌కు కనెక్ట్ చేయడంలో సహాయపడగలదు.</translation>

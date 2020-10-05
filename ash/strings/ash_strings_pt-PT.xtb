@@ -27,6 +27,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="121097972571826261">Avançar por palavra</translation>
 <translation id="1225748608451425081">O seu Chromebook está bloqueado devido a um problema conhecido. Poderá iniciar sessão dentro de <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Parar seleção</translation>
+<translation id="1239161794459865856">A funcionalidade <ph name="FEATURE_NAME" /> está ligada.</translation>
 <translation id="1247372569136754018">Microfone (interno)</translation>
 <translation id="1252999807265626933">A carregar a partir de <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Como está o tempo?</translation>
@@ -74,6 +75,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1654477262762802994">Iniciar uma consulta de voz</translation>
 <translation id="1667964833127753507">O modo de cores neutras não utiliza cores extraídas da imagem de fundo: substitui-as por um conjunto de tons claros ou escuros.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> restante(s)</translation>
+<translation id="1677507110654891115">A funcionalidade <ph name="FEATURE_NAME" /> não está ligada.</translation>
 <translation id="1698080062160024910">Temporizador de <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Endereço IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Espaço de trabalho: <ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2369165858548251131">"Olá" em chinês</translation>
 <translation id="2390318262976603432">Definições locais</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="2405664212338326887">Sem ligação</translation>
 <translation id="2408955596600435184">Introduza o PIN</translation>
 <translation id="2412593942846481727">Atualização disponível</translation>
 <translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> é uma sessão gerida por <ph name="DOMAIN" /></translation>
@@ -243,6 +246,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3364721542077212959">Ferramentas da caneta stylus</translation>
 <translation id="3368922792935385530">Ligado</translation>
 <translation id="3371140690572404006">Dispositivo USB-C (porta frontal do lado direito)</translation>
+<translation id="3375634426936648815">Ligado</translation>
 <translation id="3386978599540877378">a lupa em ecrã inteiro</translation>
 <translation id="3400357268283240774">Definições adicionais</translation>
 <translation id="3410336247007142655">Mostre as definições do tema escuro.</translation>
@@ -322,6 +326,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4195877955194704651">Botão de cliques automáticos</translation>
 <translation id="4197790712631116042">Desativado</translation>
+<translation id="4201033867194214117">A funcionalidade <ph name="FEATURE_NAME" /> não está disponível.</translation>
 <translation id="4212246570487010370">Continue a navegar</translation>
 <translation id="4212472694152630271">Mudar para PIN</translation>
 <translation id="4215497585250573029">Definições da VPN</translation>
@@ -333,6 +338,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4285498937028063278">Soltar</translation>
 <translation id="4294319844246081198">Bom dia, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Limpar todas as <ph name="COUNT" /> notificações</translation>
+<translation id="4302592941791324970">Não disponível</translation>
 <translation id="4303223480529385476">Expandir área de estado</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Premiu o atalho de teclado de alto contraste. Pretende ativá-lo?</translation>
@@ -426,6 +432,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5302048478445481009">Idioma</translation>
 <translation id="5313326810920013265">Definições de Bluetooth</translation>
 <translation id="5314219114274263156">Gravação de ecrã captada</translation>
+<translation id="5329548388331921293">A ligar…</translation>
 <translation id="5331975486040154427">Dispositivo USB-C (porta traseira do lado esquerdo)</translation>
 <translation id="5352250171825660495">O tema escuro está ativado.</translation>
 <translation id="5379115545237091094">Demasiadas tentativas</translation>
@@ -439,6 +446,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5465662442746197494">Precisa de ajuda?</translation>
 <translation id="5496819745535887422">O administrador vai reverter o dispositivo. Todos os dados serão eliminados quando o dispositivo for reiniciado.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166">A funcionalidade <ph name="FEATURE_NAME" /> está a estabelecer ligação.</translation>
 <translation id="553675580533261935">A sair da sessão…</translation>
 <translation id="5537725057119320332">Transmitir</translation>
 <translation id="5548285847212963613">A extensão "<ph name="EXTENSION_NAME" />" pode ajudar a estabelecer ligação a esta rede.</translation>

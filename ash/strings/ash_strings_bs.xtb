@@ -27,7 +27,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="121097972571826261">Riječ unaprijed</translation>
 <translation id="1225748608451425081">Vaš Chromebook je zaključan zbog poznatog problema. Moći ćete se ponovo prijaviti nakon: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Zaustavi odabir</translation>
-<translation id="1239161794459865856">Značajka <ph name="FEATURE_NAME" /> je povezana.</translation>
+<translation id="1239161794459865856">Funkcija <ph name="FEATURE_NAME" /> je povezana.</translation>
 <translation id="1247372569136754018">Mikrofon (interno)</translation>
 <translation id="1252999807265626933">Izvor punjenja: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Kakvo je vrijeme?</translation>
@@ -75,7 +75,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1654477262762802994">Započni glasovni upit</translation>
 <translation id="1667964833127753507">Način rada neutralne boje ne koristi boje izdvojene iz pozadinske slike nego ih zamjenjuje skupom neutralnih boja svijetlih ili tamnih nijansi.</translation>
 <translation id="1677472565718498478">Još <ph name="TIME" /></translation>
-<translation id="1677507110654891115">Značajka <ph name="FEATURE_NAME" /> nije povezana.</translation>
+<translation id="1677507110654891115">Funkcija <ph name="FEATURE_NAME" /> nije povezana.</translation>
 <translation id="1698080062160024910">Tajmer od <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 adresa: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Radna površina: <ph name="DESK_NAME" /></translation>
@@ -326,7 +326,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4181841719683918333">Jezici</translation>
 <translation id="4195877955194704651">Automatski klikovi na dugme</translation>
 <translation id="4197790712631116042">Isključeno</translation>
-<translation id="4201033867194214117">Značajka <ph name="FEATURE_NAME" /> nije dostupna.</translation>
+<translation id="4201033867194214117">Funkcija <ph name="FEATURE_NAME" /> nije dostupna.</translation>
 <translation id="4212246570487010370">Nastavite pregledati</translation>
 <translation id="4212472694152630271">Prebaci na PIN</translation>
 <translation id="4215497585250573029">Postavke za VPN</translation>
@@ -338,7 +338,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4285498937028063278">Otkači</translation>
 <translation id="4294319844246081198">Dobro jutro <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Brisanje svih obavijesti (<ph name="COUNT" />)</translation>
-<translation id="4302592941791324970">Nedostupno</translation>
+<translation id="4302592941791324970">Nije dostupno</translation>
 <translation id="4303223480529385476">Proširi područje statusa</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Pritisnuli ste prečicu na tastaturi za visoki kontrast. Želite li ga uključiti?</translation>
@@ -432,7 +432,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="5302048478445481009">Jezik</translation>
 <translation id="5313326810920013265">Bluetooth postavke</translation>
 <translation id="5314219114274263156">Snimak ekrana je napravljen</translation>
-<translation id="5329548388331921293">Povezivanje...</translation>
+<translation id="5329548388331921293">Povezivanje…</translation>
 <translation id="5331975486040154427">USB-C uređaj (lijevi priključak na zadnjem dijelu)</translation>
 <translation id="5352250171825660495">Tamna tema je uključena</translation>
 <translation id="5379115545237091094">Previše pokušaja</translation>
@@ -446,7 +446,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="5465662442746197494">Trebate pomoć?</translation>
 <translation id="5496819745535887422">Vaš administrator vraća uređaj na prethodnu verziju sustava. Svi će se podaci izbrisati kada se uređaj ponovo pokrene.</translation>
 <translation id="5519195206574732858">LTE</translation>
-<translation id="5523434445161341166">Značajka <ph name="FEATURE_NAME" /> se povezuje.</translation>
+<translation id="5523434445161341166">Povezivanje funkcije <ph name="FEATURE_NAME" />.</translation>
 <translation id="553675580533261935">Izlazak iz sesije</translation>
 <translation id="5537725057119320332">Emitiraj</translation>
 <translation id="5548285847212963613">Ekstenzija "<ph name="EXTENSION_NAME" />" može pomoći prilikom povezivanja na ovu mrežu.</translation>

@@ -27,6 +27,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="121097972571826261">Avanti per parola</translation>
 <translation id="1225748608451425081">Il Chromebook è bloccato a causa di un problema noto. Potrai accedere dopo: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Interrompi la selezione</translation>
+<translation id="1239161794459865856">La funzionalità <ph name="FEATURE_NAME" /> è connessa.</translation>
 <translation id="1247372569136754018">Microfono (interno)</translation>
 <translation id="1252999807265626933">In carica da: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Che tempo fa?</translation>
@@ -74,6 +75,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1654477262762802994">Avvia una query vocale</translation>
 <translation id="1667964833127753507">La modalità colore Neutra non usa i colori estratti dallo sfondo, che sostituisce con un insieme di tonalità neutre chiare o scure.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> rimanenti</translation>
+<translation id="1677507110654891115">La funzionalità <ph name="FEATURE_NAME" /> non è connessa.</translation>
 <translation id="1698080062160024910">Timer: <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Indirizzo IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Scrivania: <ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2369165858548251131">"Ciao" in cinese</translation>
 <translation id="2390318262976603432">Impostazioni internazionali</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="2405664212338326887">Non connessa</translation>
 <translation id="2408955596600435184">Inserisci il codice PIN</translation>
 <translation id="2412593942846481727">Aggiornamento disponibile</translation>
 <translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> è una sessione gestita da <ph name="DOMAIN" /></translation>
@@ -243,6 +246,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3364721542077212959">Strumenti per stilo</translation>
 <translation id="3368922792935385530">Connesso</translation>
 <translation id="3371140690572404006">Dispositivo USB-C (porta anteriore destra)</translation>
+<translation id="3375634426936648815">Connessa</translation>
 <translation id="3386978599540877378">la lente d'ingrandimento a schermo intero</translation>
 <translation id="3400357268283240774">Impostazioni aggiuntive</translation>
 <translation id="3410336247007142655">Mostra le impostazioni del tema scuro</translation>
@@ -323,6 +327,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4181841719683918333">Lingue</translation>
 <translation id="4195877955194704651">Pulsante Clic automatici</translation>
 <translation id="4197790712631116042">Off</translation>
+<translation id="4201033867194214117"><ph name="FEATURE_NAME" /> non è disponibile.</translation>
 <translation id="4212246570487010370">Continua la navigazione</translation>
 <translation id="4212472694152630271">Passa al PIN</translation>
 <translation id="4215497585250573029">Impostazioni VPN</translation>
@@ -334,6 +339,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4285498937028063278">Sblocca</translation>
 <translation id="4294319844246081198">Buongiorno <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Cancella tutte e <ph name="COUNT" /> le notifiche</translation>
+<translation id="4302592941791324970">Non disponibile</translation>
 <translation id="4303223480529385476">Espandi area di stato</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Hai premuto la scorciatoia da tastiera per l'alto contrasto. Vuoi attivarlo?</translation>
@@ -427,6 +433,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5302048478445481009">Lingua</translation>
 <translation id="5313326810920013265">Impostazioni Bluetooth</translation>
 <translation id="5314219114274263156">Registrazione dello schermo acquisita</translation>
+<translation id="5329548388331921293">Connessione…</translation>
 <translation id="5331975486040154427">Dispositivo USB-C (porta posteriore sinistra)</translation>
 <translation id="5352250171825660495">Tema scuro attivo</translation>
 <translation id="5379115545237091094">Troppi tentativi</translation>
@@ -440,6 +447,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5465662442746197494">Hai bisogno di assistenza?</translation>
 <translation id="5496819745535887422">L'amministratore sta eseguendo il rollback del tuo dispositivo. Tutti i dati verranno eliminati al momento del riavvio.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166"><ph name="FEATURE_NAME" /> sta cercando di connettersi.</translation>
 <translation id="553675580533261935">Uscita dalla sessione</translation>
 <translation id="5537725057119320332">Trasmetti</translation>
 <translation id="5548285847212963613">L'estensione "<ph name="EXTENSION_NAME" />" può essere utile per il collegamento a questa rete.</translation>

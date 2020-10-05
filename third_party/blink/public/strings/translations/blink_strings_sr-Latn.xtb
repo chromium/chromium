@@ -47,6 +47,7 @@
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. nedelja, <ph name="YEAR" />.</translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. pesma</translation>
 <translation id="2291999235780842123">polje za potvrdu</translation>
+<translation id="2307576640803031502">na listi, <ph name="INDEX" />. stavka od <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">prelom stranice</translation>
 <translation id="2335594187091864976">birač datuma i vremena</translation>
 <translation id="2393030564806080191">Heksadecimalna vrednost boje</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, od <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Slika u slici</translation>
 <translation id="9168329111483466115">fusnota</translation>
+<translation id="945780513535800434">Delimično označeno</translation>
 <translation id="954003015749068518">uđi u režim slike u slici</translation>
 <translation id="966787709310836684">meni</translation>
 </translationbundle>

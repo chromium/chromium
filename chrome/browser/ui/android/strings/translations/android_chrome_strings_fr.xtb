@@ -667,6 +667,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5958275228015807058">Recherchez vos fichiers et vos pages dans la section "Téléchargements"</translation>
 <translation id="5962718611393537961">Appuyer pour réduire</translation>
 <translation id="5964805880140440652">Pour partager cette page avec un autre appareil, activez la synchronisation dans les paramètres Chrome</translation>
+<translation id="5964869237734432770">Arrêter descriptions images</translation>
 <translation id="5979084224081478209">Vérifier les mots de passe</translation>
 <translation id="6000066717592683814">Conserver Google</translation>
 <translation id="6005538289190791541">Mot de passe suggéré</translation>
@@ -694,6 +695,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="6157392216611456285">Sélectionner <ph name="APP_NAME" /></translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> de données économisées</translation>
 <translation id="6186394685773237175">Aucun mot de passe compromis trouvé</translation>
+<translation id="6192907950379606605">Obtenir descriptions images</translation>
 <translation id="6206830853671714236">Choisissez l'heure du téléchargement</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> n'est pas votre adresse e-mail ?</translation>
 <translation id="6218096829563201111">Rechercher produits similaires <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
@@ -762,6 +764,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6590471736817333463">Économisez jusqu'à 60 % de données mobiles</translation>
 <translation id="6590680911007613645">Assurez-vous que le mot de passe que vous enregistrez correspond bien à celui que vous utilisez pour accéder à <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Version pour ordinateur</translation>
+<translation id="6595046016124923392">Les images sont envoyées à Google afin de vous proposer de meilleures descriptions.</translation>
 <translation id="6597891566292541626">Positionnez le code-barres/code QR dans ce cadre.</translation>
 <translation id="6600954340915313787">Copiée dans Chrome</translation>
 <translation id="661266467055912436">Il renforce votre sécurité et celle de tous les utilisateurs sur le Web.</translation>
@@ -820,6 +823,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="702463548815491781">Recommandé quand TalkBack ou Switch Access sont activés</translation>
 <translation id="7029809446516969842">Mots de passe</translation>
 <translation id="703523980599857277">Changer de page d'accueil</translation>
+<translation id="7054588988317389591">Obtenir les descriptions d'images ?</translation>
 <translation id="7055152154916055070">Redirection bloquée :</translation>
 <translation id="7063006564040364415">Impossible de se connecter au serveur de synchronisation.</translation>
 <translation id="7071521146534760487">Gérer le compte</translation>
@@ -851,6 +855,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="729975465115245577">Aucune application n'est installée sur votre appareil pour stocker le fichier de mots de passe.</translation>
 <translation id="7302081693174882195">Détails : tri effectué par volume de données enregistrées</translation>
 <translation id="7304873321153398381">Hors connexion. Chrome ne parvient pas à vérifier vos mots de passe.</translation>
+<translation id="7313188324932846546">Appuyez ici pour configurer la synchronisation</translation>
 <translation id="7328017930301109123">En mode simplifié, Chrome charge les pages plus rapidement et consomme jusqu'à 60 pour cent de données en moins.</translation>
 <translation id="7333031090786104871">L'ajout du site précédent est toujours en cours</translation>
 <translation id="7340958967809483333">Options pour Discover</translation>
@@ -1042,6 +1047,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8636825310635137004">Activez la synchronisation pour accéder à vos onglets sur vos autres appareils.</translation>
 <translation id="8641930654639604085">Essayer de bloquer les sites réservés aux adultes</translation>
 <translation id="8655129584991699539">Vous pouvez effacer les données dans les paramètres Chrome</translation>
+<translation id="8656747343598256512">Connectez-vous à ce site et à Chrome avec votre compte Google. Vous pourrez activer la synchronisation plus tard.</translation>
 <translation id="8659579665266920523">Comment effectuer une recherche avec Chrome</translation>
 <translation id="8662811608048051533">Vous déconnecte de la plupart des sites.</translation>
 <translation id="8664979001105139458">Nom de fichier déjà attribué</translation>
@@ -1061,6 +1067,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8840953339110955557">Cette page peut différer de la version en ligne.</translation>
 <translation id="8853345339104747198">"<ph name="TAB_TITLE" />", onglet</translation>
 <translation id="8854223127042600341">Consultez vos fichiers hors connexion</translation>
+<translation id="8856607253650333758">Obtenir les descriptions</translation>
 <translation id="8873817150012960745">Appuyez ici pour commencer</translation>
 <translation id="889338405075704026">Accéder aux paramètres Chrome</translation>
 <translation id="8898822736010347272">Les URL de certaines pages que vous consultez, ainsi que des informations système limitées et une partie du contenu de certaines pages sont envoyées à Google, à la fois pour identifier les nouvelles menaces et pour protéger tous les utilisateurs sur le Web.</translation>

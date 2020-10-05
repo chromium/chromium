@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">Uke <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Spor <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">avmerkingsboks</translation>
+<translation id="2307576640803031502">på listen, element <ph name="INDEX" /> av <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">sideskift</translation>
 <translation id="2335594187091864976">dato- og klokkeslettvelger</translation>
 <translation id="2393030564806080191">Heksadesimal fargeverdi</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, med start <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Bilde i bilde</translation>
 <translation id="9168329111483466115">fotnote</translation>
+<translation id="945780513535800434">delvis avmerket</translation>
 <translation id="954003015749068518">start bilde-i-bilde</translation>
 <translation id="966787709310836684">meny</translation>
 </translationbundle>

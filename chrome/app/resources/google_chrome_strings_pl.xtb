@@ -21,6 +21,7 @@
 <translation id="1553358976309200471">Zaktualizuj Chrome</translation>
 <translation id="1587223624401073077">Google Chrome używa Twojej kamery.</translation>
 <translation id="1587325591171447154">Plik <ph name="FILE_NAME" /> jest niebezpieczny, dlatego został zablokowany przez Chrome.</translation>
+<translation id="1597911401261118146">Aby sprawdzić, czy Twoje hasła są chronione przed naruszeniami bezpieczeństwa danych i innymi zagrożeniami tego typu, <ph name="BEGIN_LINK" />zaloguj się w Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Aby poprawić bezpieczeństwo Chrome, wyłączyliśmy to rozszerzenie. Nie jest ono dostępne w <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i mogło zostać dodane bez Twojej wiedzy.</translation>
 <translation id="162448658176061655">Raz w tygodniu Chrome sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: przed chwilą.</translation>
 <translation id="162629503687514352">System operacyjny Chrome nie może zsynchronizować haseł.</translation>
@@ -34,6 +35,7 @@
 <translation id="1734234790201236882">Chrome zapisze to hasło na Twoim koncie Google. Nie musisz go pamiętać.</translation>
 <translation id="174539241580958092">Google Chrome nie może zsynchronizować danych z powodu błędu podczas logowania.</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1786003790898721085">Najpierw zaloguj się w Chrome na swoim urządzeniu <ph name="TARGET_DEVICE_NAME" />, a potem ponów próbę wysyłania.</translation>
 <translation id="1812689907177901597">Jeśli wyłączysz tę opcję, możesz logować się na stronach Google takich jak Gmail bez logowania się w Chrome</translation>
 <translation id="1860536484129686729">Chrome potrzebuje uprawnień dostępu do aparatu na tej stronie</translation>
 <translation id="1873233029667955273">Google Chrome nie jest domyślną przeglądarką</translation>
@@ -78,6 +80,7 @@
 <translation id="3065168410429928842">Karta Chrome</translation>
 <translation id="3080151273017101988">Kontynuuj działanie aplikacji w tle po zamknięciu przeglądarki Google Chrome</translation>
 <translation id="3089968997497233615">Dostępna jest nowa, bezpieczniejsza wersja przeglądarki Google Chrome.</translation>
+<translation id="3114643501466072395">Aby sprawdzić, czy Twoje pozostałe hasła są chronione przed naruszeniami bezpieczeństwa danych i innymi zagrożeniami tego typu, <ph name="BEGIN_LINK" />zaloguj się w Chrome<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">System operacyjny Chrome nie może zsynchronizować danych.</translation>
 <translation id="3149510190863420837">Aplikacje Chrome</translation>
 <translation id="3360895254066713204">Pomoc Chrome</translation>
@@ -244,6 +247,7 @@
 <translation id="8344083974188970894">{NUM_MINS,plural, =1{Raz w tygodniu Chrome sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: minutę temu.}few{Raz w tygodniu Chrome sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_MINS} minuty temu.}many{Raz w tygodniu Chrome sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_MINS} minut temu.}other{Raz w tygodniu Chrome sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_MINS} minuty temu.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="840084489713044809">Google Chrome chce wyeksportować Twoje hasła.</translation>
+<translation id="8433638294851456451">Aby wysłać stąd numer na swój telefon z Androidem, zaloguj się w Chrome na obu urządzeniach.</translation>
 <translation id="8498858610309223613">Właśnie została zastosowana specjalna aktualizacja zabezpieczeń Google Chrome. Uruchom ponownie Chrome teraz. Karty zostaną przywrócone.</translation>
 <translation id="8521348052903287641">Reguła dla ruchu przychodzącego w wersji deweloperskiej Google Chrome zezwalająca na ruch mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
@@ -263,6 +267,7 @@
 <translation id="884296878221830158">Kontroluje także to, jaka strona wyświetla się po uruchomieniu Chrome lub kliknięciu przycisku strony głównej.</translation>
 <translation id="8862326446509486874">Nie masz odpowiednich uprawnień do przeprowadzenia instalacji na poziomie systemowym. Uruchom ponownie program instalacyjny jako administrator.</translation>
 <translation id="8914504000324227558">Uruchom Chrome ponownie</translation>
+<translation id="8922193594870374009">Aby wysłać numer z <ph name="ORIGIN" /> na swój telefon z Androidem, zaloguj się w Chrome na obu urządzeniach.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Dostępna jest aktualizacja Chrome}=1{Dostępna jest aktualizacja Chrome}few{Aktualizacja Chrome jest dostępna od # dni}many{Aktualizacja Chrome jest dostępna od # dni}other{Aktualizacja Chrome jest dostępna od # dnia}}</translation>
 <translation id="9026991721384951619">Google Chrome nie może zsynchronizować danych, ponieważ dane logowania na Twoje konto są nieaktualne.</translation>
 <translation id="9067395829937117663">Google Chrome wymaga systemu Windows 7 lub nowszego.</translation>

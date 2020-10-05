@@ -670,6 +670,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5958275228015807058">Vind je bestanden en pagina's in Downloads</translation>
 <translation id="5962718611393537961">Tik om samen te vouwen</translation>
 <translation id="5964805880140440652">Als je deze pagina wilt delen met een ander apparaat, schakel je synchronisatie in via de Chrome-instellingen</translation>
+<translation id="5964869237734432770">Afbeeldingsbeschrijvingen stoppen</translation>
 <translation id="5979084224081478209">Wachtwoorden controleren</translation>
 <translation id="5982307838673692400">Incognitotabblad openen</translation>
 <translation id="6000066717592683814">Google blijven gebruiken</translation>
@@ -698,6 +699,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="6157392216611456285"><ph name="APP_NAME" /> kiezen</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> data bespaard</translation>
 <translation id="6186394685773237175">Geen gehackte wachtwoorden gevonden</translation>
+<translation id="6192907950379606605">Afbeeldingsbeschrijvingen ophalen</translation>
 <translation id="6206830853671714236">Kies wanneer je wilt downloaden</translation>
 <translation id="6210748933810148297">Niet <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Voorbeeld van deze pagina bekijken</translation>
@@ -767,6 +769,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties weer te gev
 <translation id="6590471736817333463">Bespaar tot 60% data</translation>
 <translation id="6590680911007613645">Zorg ervoor dat het wachtwoord dat je opslaat, overeenkomt met je wachtwoord voor <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Desktopsite</translation>
+<translation id="6595046016124923392">Afbeeldingen worden naar Google gestuurd om de beschrijvingen voor je te verbeteren.</translation>
 <translation id="6597891566292541626">Zorg dat de QR-/streepjescode binnen dit kader valt.</translation>
 <translation id="6600954340915313787">Gekopieerd naar Chrome</translation>
 <translation id="661266467055912436">Verbetert de beveiliging voor jou en alle andere internetgebruikers.</translation>
@@ -828,6 +831,7 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="702463548815491781">Aanbevolen wanneer TalkBack of 'Toegang via schakelaar' is ingeschakeld</translation>
 <translation id="7029809446516969842">Wachtwoorden</translation>
 <translation id="703523980599857277">Homepage wijzigen</translation>
+<translation id="7054588988317389591">Afbeeldingsbeschrijvingen ophalen?</translation>
 <translation id="7055152154916055070">Omleiding geblokkeerd:</translation>
 <translation id="7063006564040364415">Kan geen verbinding maken met synchronisatieserver.</translation>
 <translation id="7071521146534760487">Account beheren</translation>
@@ -859,6 +863,7 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="729975465115245577">Je apparaat bevat geen app om het wachtwoordbestand in op te slaan.</translation>
 <translation id="7302081693174882195">Details: gesorteerd op de hoeveelheid bespaarde data</translation>
 <translation id="7304873321153398381">Offline. Chrome kan je wachtwoorden niet checken.</translation>
+<translation id="7313188324932846546">Tik om synchronisatie in te stellen</translation>
 <translation id="7328017930301109123">In de Lite-versie van Chrome worden pagina's sneller geladen en wordt tot wel 60 procent minder data verbruikt.</translation>
 <translation id="7333031090786104871">Nog steeds bezig met toevoegen van vorige site</translation>
 <translation id="7340958967809483333">Opties voor Discover</translation>
@@ -1050,6 +1055,7 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="8636825310635137004">Schakel synchronisatie in om de tabbladen op je andere apparaten te bekijken</translation>
 <translation id="8641930654639604085">Sites met content voor volwassenen proberen te blokkeren</translation>
 <translation id="8655129584991699539">Je kunt de gegevens wissen in de Chrome-instellingen</translation>
+<translation id="8656747343598256512">Log in bij deze site en Chrome met je Google-account. Je kunt synchronisatie later inschakelen.</translation>
 <translation id="8659579665266920523">Zoeken met Chrome</translation>
 <translation id="8662811608048051533">Hiermee word je uitgelogd van de meeste sites.</translation>
 <translation id="8664979001105139458">Bestandsnaam bestaat al</translation>
@@ -1069,6 +1075,7 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="8840953339110955557">Deze pagina kan afwijken van de online versie.</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, tabblad</translation>
 <translation id="8854223127042600341">Je offline bestanden bekijken</translation>
+<translation id="8856607253650333758">Beschrijvingen ophalen</translation>
 <translation id="8873817150012960745">Tik hier om te beginnen</translation>
 <translation id="889338405075704026">Naar Chrome-instellingen</translation>
 <translation id="8898822736010347272">Stuurt URL's van sommige pagina's die je bezoekt, beperkte systeeminformatie en bepaalde paginacontent naar Google om nieuwe dreigingen te ontdekken en iedereen op internet te beschermen.</translation>

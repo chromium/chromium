@@ -635,6 +635,9 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
           </translation>
 <translation id="2030905906517501646">Zoekwoord voor standaardzoekprovider</translation>
 <translation id="203096360153626918">Dit beleid is niet van invloed op de Android-apps. Deze hebben toegang tot de modus voor volledig scherm, zelfs als dit beleid is ingesteld op <ph name="FALSE" /> (Onwaar).</translation>
+<translation id="2037214548071298156">Als je het beleid inschakelt of niet instelt, rapporteren ingeschreven apparaten hardwarestatistieken, zoals het CPU/RAM-gebruik.
+
+      Als je het beleid uitschakelt, rapporteren ingeschreven apparaten de hardwarestatistieken niet.</translation>
 <translation id="2040479044912658454">Modus voor afdrukrastering</translation>
 <translation id="2043749682619281558">De cursormarkering op het inlogscherm inschakelen</translation>
 <translation id="2043770014371753404">Bedrijfsprinters uitgeschakeld</translation>
@@ -969,7 +972,11 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
       Als deze optie is ingeschakeld en er ongewenste software door Chrome Cleanup wordt gedetecteerd, worden er mogelijk metadata over de scan naar Google gestuurd, volgens het beleid dat is ingesteld met SafeBrowsingExtendedReportingEnabled. Chrome Cleanup vraagt de gebruiker of deze de ongewenste software wil opschonen.  De resultaten van de opschoonbewerking worden gemeld aan Google en de gebruiker beschikt niet over de optie om dit te voorkomen.
 
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor 'Cloudbeheer voor de Chrome-browser'.</translation>
+<translation id="2448315169529769573">Als je het beleid inschakelt, rapporteert <ph name="PRODUCT_OS_NAME" /> gebruiksstatistieken en diagnostische gegevens, waaronder crashrapporten, aan Google. Als je het beleid uitschakelt, worden er geen statistieken en diagnostische gegevens gerapporteerd.
+
+       Als je het beleid niet instelt, worden er geen statistieken en diagnostische gegevens gerapporteerd voor onbeheerde apparaten, maar wel voor beheerde apparaten.</translation>
 <translation id="2454228136871844693">Optimaliseren voor stabiliteit.</translation>
+<translation id="2456629156652006573">Alleen privé</translation>
 <translation id="2463034609187171371">DHE-coderingssuites inschakelen in TLS</translation>
 <translation id="2463365186486772703">Landinstelling voor applicatie</translation>
 <translation id="2463832514638083341">Met dit beleid wordt bepaald hoelang (in dagen) de metadata van afdruktaken worden opgeslagen op het apparaat.
@@ -1140,9 +1147,16 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
       Dit beleid is verwijderd in M77.
       Dit beleid is van toepassing op het inlogscherm. Raadpleeg ook het beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" /> dat van toepassing is op de gebruikerssessie. Het wordt aangeraden beide beleidsregels op dezelfde waarde in te stellen. Als de waarden niet overeenkomen, kan er bij het starten van een gebruikerssessie terwijl de door het gebruikersbeleid gespecificeerde waarde wordt toegepast, een vertraging optreden.
       </translation>
+<translation id="2702023190395322609">Media-aanbevelingen inschakelen</translation>
 <translation id="2706708761587205154">Afdrukken alleen toestaan met pincode</translation>
 <translation id="2707873794476722903">Safe Browsing is actief in de standaardmodus.</translation>
 <translation id="2710534340210290498">Als dit beleid wordt ingesteld op 'false', kunnen gebruikers het scherm niet vergrendelen (alleen uitloggen van de gebruikerssessie is mogelijk). Als deze instelling is ingesteld op 'true' of niet is ingesteld, kunnen gebruikers die verificatie met een wachtwoord hebben uitgevoerd het scherm vergrendelen.</translation>
+<translation id="2716623398185506073">Als je het beleid inschakelt, rapporteren ingeschreven apparaten hardwarestatistieken en ID's met betrekking tot de stroomstatus.
+
+      Als je dit beleid uitschakelt of niet instelt, rapporteren ingeschreven apparaten geen statistieken met betrekking tot de stroomstatus.</translation>
+<translation id="2725855586003209701">Als je het beleid inschakelt of niet instelt, rapporteren ingeschreven apparaten de lijst met apparaatgebruikers die onlangs zijn ingelogd.
+
+      Als je het beleid uitschakelt, rapporteren ingeschreven apparaten de lijst met gebruikers niet.</translation>
 <translation id="2731627323327011390">Gebruik van certificaten van <ph name="PRODUCT_OS_NAME" /> voor ARC-apps uitschakelen</translation>
 <translation id="2742843273354638707">De app en voettekstlink voor de Chrome Web Store verbergen op de pagina 'Nieuw tabblad' en in de App Launcher van <ph name="PRODUCT_OS_NAME" />.
 
@@ -1262,6 +1276,17 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
 
       Als dit beleid niet is ingesteld, wordt er niet gefilterd en wordt er rekening gehouden met alle afdrukservers.</translation>
 <translation id="2877225735001246144">CNAME-lookup uitschakelen bij het verwerken van Kerberos-authenticatie</translation>
+<translation id="2886215882246310669">Bepaalt of <ph name="PRODUCT_OS_NAME" /> toestaat dat er nieuwe Family Link-gebruikersaccounts worden toegevoegd aan het apparaat.
+      Dit beleid is alleen nuttig in combinatie met <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />. Met dit beleid worden ook andere Family Link-accounts toegestaan dan de accounts die zijn gedefinieerd in de toelatingslijst.
+      Dit beleid heeft geen effect op andere beleidsregels voor inloggen Het beleid heeft met name geen effect wanneer:
+      - Het toevoegen van nieuwe gebruikers aan het apparaat is uitgeschakeld met het beleid <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" />.
+      - Het toevoegen van alle gebruikers is toegestaan met het beleid <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />.
+
+      Als dit beleid is ingesteld op False (of niet is ingesteld), worden er geen aanvullende regels toegepast op Family Link-accounts.
+      Als dit beleid is ingesteld op True, zijn er naast de accounts die zijn gedefinieerd in <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> ook nieuwe Family Link-gebruikersaccounts toegestaan.</translation>
+<translation id="2886969306951284125">Als Android-apps zijn ingeschakeld en je het beleid instelt op True, rapporteren ingeschreven apparaten Android-statusinformatie.
+
+      Als je het beleid uitschakelt of niet instelt, rapporteren ingeschreven apparaten de Android-statusinformatie niet.</translation>
 <translation id="2890645751406497668">Automatisch rechten verlenen aan deze sites om verbinding te maken met USB-apparaten met de opgegeven leveranciers- en product-ID's.</translation>
 <translation id="2892414556511568464">Hiermee beperk je afdrukken in de duplexmodus. Als er geen beleid is ingesteld of de instelling leeg is, gelden er geen beperkingen.</translation>
 <translation id="2893546967669465276">Systeemlogboeken naar de beheerserver verzenden</translation>
@@ -1284,6 +1309,10 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
 <translation id="2905984450136807296">Levensduur van verificatiegegevens in cachegeheugen</translation>
 <translation id="2906874737073861391">Lijst met app-pakketextensies</translation>
 <translation id="2908277604670530363">Maximaal aantal gelijktijdige verbindingen met de proxyserver</translation>
+<translation id="2919544577647246857">Definieert de lijst met gebruikers die toestemming hebben om op het apparaat in te loggen. De invoer heeft de vorm <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, zoals <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />. Als je willekeurige gebruikers toegang wilt geven tot een domein, gebruik je invoer in de vorm <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
+
+      Als dit beleid niet is geconfigureerd, zijn er geen beperkingen voor welke gebruikers mogen inloggen. Als je nieuwe gebruikers wilt maken, moet het beleid <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> correct zijn ingesteld.
+      Als <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> niet is ingesteld, zijn extra Family Link-gebruikers toegestaan voor de accounts die in dit beleid zijn gedefinieerd.</translation>
 <translation id="2921222258441684334">Als je het beleid instelt op 1, kunnen sites de fysieke locatie van gebruikers standaard bijhouden. Als je het beleid instelt op 2, wordt het bijhouden van de fysieke locatie van gebruikers standaard geblokkeerd. Je kunt het beleid zo instellen dat om goedkeuring wordt gevraagd als een site de fysieke locatie van gebruikers wil bijhouden.
 
       Als je het beleid niet instelt, is het beleid <ph name="ASK_GEOLOCATION_POLICY_NAME" /> van toepassing maar kunnen gebruikers deze instelling wijzigen.</translation>
@@ -1507,6 +1536,7 @@ Dit beleid kan alleen worden ingesteld via de Google Beheerdersconsole.</transla
       Als je het beleid niet instelt, is de standaardwaarde 0 graden en kunnen gebruikers dit wijzigen. In dat geval wordt de standaardwaarde niet opnieuw toegepast bij opnieuw opstarten.</translation>
 <translation id="3264793472749429012">Coderingen voor standaardzoekprovider</translation>
 <translation id="3273221114520206906">Standaardinstelling voor JavaScript</translation>
+<translation id="328347261792478720">De browser geeft standaard media-aanbevelingen weer die zijn gepersonaliseerd voor de gebruiker. Als je dit beleid uitschakelt, worden deze aanbevelingen niet weergegeven aan de gebruiker. Als je dit beleid inschakelt of niet instelt, worden de media-aanbevelingen weergegeven aan de gebruiker.</translation>
 <translation id="3284094172359247914">Gebruik van de WebUSB API beheren</translation>
 <translation id="3288595667065905535">Releasekanaal</translation>
 <translation id="3292147213643666827">Met deze instelling kan <ph name="PRODUCT_NAME" /> als proxy worden ingesteld tussen <ph name="CLOUD_PRINT_NAME" /> en printers die zijn aangesloten op het apparaat.
@@ -1523,6 +1553,9 @@ Dit beleid kan alleen worden ingesteld via de Google Beheerdersconsole.</transla
       Dit beleid wordt verwijderd in Chrome 88.
 
       Zie https://www.chromestatus.com/feature/4664843055398912 .</translation>
+<translation id="3302829897293005699">Als je het beleid inschakelt of niet instelt, rapporteren ingeschreven apparaten informatie over de actieve kiosksessies, zoals de app-ID en -versie.
+
+      Als je het beleid uitschakelt, rapporteren ingeschreven apparaten geen informatie over kiosksessies.</translation>
 <translation id="3303911765031636277">Configuratiebeleid voor de Chrome Enterprise-connector OnFileAttached</translation>
 <translation id="3304662785258434098">Hiermee kun je instellen of gebruikers uitzonderingen kunnen toevoegen om gecombineerde content toe te staan voor specifieke sites.
 
@@ -1553,6 +1586,10 @@ Dit beleid kan alleen worden ingesteld via de Google Beheerdersconsole.</transla
 <translation id="3345682490796432751">Als je het beleid inschakelt, worden verouderde plug-ins gebruikt als normale plug-ins. Als je het beleid uitschakelt, worden verouderde plug-ins niet gebruikt.
 
       Als je het beleid niet instelt, wordt de gebruikers toestemming gevraagd om verouderde plug-ins uit te voeren.</translation>
+<translation id="3348799281602260763">Als het beleid is ingeschakeld, kunnen WebRTC-peerverbindingen worden gedowngraded naar verouderde versies van de TLS/DTLS-protocollen (DTLS 1.0, TLS 1.0 en TLS 1.1).
+      Als dit beleid is uitgeschakeld of niet is ingesteld, worden deze TLS/DTLS-versies uitgeschakeld.
+
+      Dit beleid is tijdelijk en wordt verwijderd in een toekomstige versie van <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3356657927302977341">Configureert of <ph name="PRODUCT_NAME" /> op Linux native meldingen gebruikt.
 
 Als dit beleid is ingesteld op True of niet is ingesteld, mag <ph name="PRODUCT_NAME" /> native meldingen gebruiken.
@@ -1833,6 +1870,9 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
 <translation id="3709266154059827597">Zwarte lijst voor het installeren van extensies configureren</translation>
 <translation id="3711895659073496551">Onderbreken</translation>
 <translation id="3715569262675717862">Verificatie op basis van clientcertificaten</translation>
+<translation id="3727675072430693164">Als je het beleid inschakelt, rapporteren ingeschreven apparaten hardwarestatistieken voor SoC-componenten.
+
+      Als je het beleid uitschakelt of niet instelt, rapporteren ingeschreven apparaten de statistieken niet.</translation>
 <translation id="3736879847913515635">'Persoon toevoegen' inschakelen in gebruikersbeheer</translation>
 <translation id="3737890474637805114">Grote bestandsdownloads blokkeren</translation>
 <translation id="3748900290998155147">Geeft aan of wake locks zijn toegestaan. Wake locks kunnen door extensies worden aangevraagd via de API voor de stroombeheerextensie en door ARC-apps.
@@ -1844,6 +1884,9 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
 <translation id="375266612405883748">Hiermee wordt het UDP-poortbereik beperkt dat wordt gebruikt door de host voor externe toegang op dit apparaat.
 
           Als dit beleid niet is ingesteld, of als het is ingesteld op een lege reeks, heeft de host voor externe toegang toestemming om elke beschikbare poort te gebruiken, tenzij het beleid <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> is uitgeschakeld. In dat geval gebruikt de host voor externe toegang UDP-poorten binnen het bereik 12400-12409.</translation>
+<translation id="3755237588083934849">Met dit beleid bepaal je hoe vaak (in milliseconden) apparaatstatusuploads moeten worden gestuurd. Het toegestane minimum is 60 seconden.
+
+      Als dit beleid niet is ingesteld, wordt het standaardinterval van 3 uur toegepast.</translation>
 <translation id="3756011779061588474">Ontwikkelaarsmodus blokkeren</translation>
 <translation id="3758089716224084329">Hiermee kun je de proxyserver specificeren die door <ph name="PRODUCT_NAME" /> wordt gebruikt en wordt voorkomen dat gebruikers proxyinstellingen kunnen aanpassen.
 
@@ -2911,6 +2954,9 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 
       Als het beleid niet is ingesteld in versies tot en met M76, kan <ph name="PRODUCT_NAME" /> deze logboeken standaard niet verzamelen en uploaden. Vanaf M77 kan <ph name="PRODUCT_NAME" /> deze logboeken standaard verzamelen en uploaden vanuit de meeste profielen waarop cloudgebaseerde bedrijfsbeleidsregels op gebruikersniveau van toepassing zijn. Vanaf M77 tot en met M80 kan <ph name="PRODUCT_NAME" /> deze logboeken ook standaard verzamelen en uploaden vanuit profielen waarop <ph name="PRODUCT_NAME" />-beheer op locatie van toepassing is.</translation>
 <translation id="5331746669335642668"><ph name="PRODUCT_NAME" />-cloudbeleid krijgt voorrang op het platformbeleid.</translation>
+<translation id="5340105431123046323">Als je het beleid inschakelt of niet instelt, rapporteren ingeschreven apparaten de lijst met netwerkinterfaces, met zowel het type als het hardwareadres.
+
+      Als je het beleid uitschakelt, rapporteren ingeschreven apparaten de netwerkinterface niet.</translation>
 <translation id="5346587320074666194">Toegang tot sensoren op deze sites blokkeren</translation>
 <translation id="5362531528507578966">Hiermee wordt de standaardmodus voor afdrukken met achtergrondbeelden overschreven.</translation>
 <translation id="5365476955714838841">Opdrachtregelparameters voor de alternatieve browser.</translation>
@@ -3301,6 +3347,9 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Elk item in deze lijst is een patroon van een extensie (zie https://developer.chrome.com/extensions/match_patterns). Gebruikers kunnen gemakkelijk items installeren vanaf elke URL die overeenkomt met een item in deze lijst. De locatie van het *.crx-bestand en de pagina waar de download wordt gestart (de verwijzer genoemd), moeten beide zijn toegestaan op basis van deze patronen.
 
       <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> krijgt voorrang boven dit beleid. Dat betekent dat een extensie op de blokkeringslijst niet wordt geïnstalleerd, zelfs niet als dit gebeurt vanaf een site op deze lijst.</translation>
+<translation id="5860010874344790473">Als je het beleid inschakelt, worden er systeemlogboeken naar de beheerserver gestuurd, zodat beheerders de systeemlogboeken kunnen controleren.
+
+      Als je het beleid uitschakelt of niet instelt, worden er geen systeemlogboeken gerapporteerd.</translation>
 <translation id="5861856285460256766">Configuratie van toegangscode voor ouders</translation>
 <translation id="5868414965372171132">Netwerkconfiguratie op gebruikersniveau</translation>
 <translation id="587242272905978723">Sta <ph name="PLUGIN_VM_NAME" /> toe om gebruiksgegevens van <ph name="PLUGIN_VM_NAME" /> te verzamelen.
@@ -3815,6 +3864,17 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Als het beleid is ingesteld op True, kan het apparaat Powerwash activeren.
       Als het beleid niet is ingesteld, is het standaard ingesteld op True, wat betekent dat het apparaat Powerwash kan activeren.
       </translation>
+<translation id="6614020900120353107">Hiermee bepaal je of de ingebouwde DNS-client wordt gebruikt in <ph name="PRODUCT_NAME" />.
+
+      Dit is niet van invloed op welke DNS-servers worden gebruikt, maar alleen op de softwarestack die wordt gebruikt om met de servers te communiceren. Als het besturingssysteem bijvoorbeeld is geconfigureerd om een zakelijke DNS-server te gebruiken, wordt dezelfde server gebruikt door de ingebouwde DNS-client. Het is mogelijk dat de ingebouwde DNS-client servers op andere manieren aanspreekt via modernere DNS-protocollen, zoals DNS-over-TLS.
+
+      Dit beleid is niet van invloed op DNS-over-HTTPS. Zie het beleid <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> om dat gedrag te wijzigen.
+
+      Als dit beleid is ingesteld op True, wordt de ingebouwde DNS-client gebruikt (indien beschikbaar).
+
+      Als dit beleid is ingesteld op False, wordt de ingebouwde DNS-client nooit gebruikt.
+
+      Als dit beleid niet wordt ingesteld, wordt de ingebouwde DNS-client standaard ingeschakeld op macOS, Android (als Privé-DNS en VPN niet zijn ingeschakeld) en Chrome OS en kunnen de gebruikers bepalen of de ingebouwde DNS-client wordt gebruikt door chrome://flags te bewerken of door een opdrachtregelmarkering op te geven.</translation>
 <translation id="6621839881150363218">Als je dit beleid inschakelt, worden alle sites geïsoleerd (elke site wordt in een eigen proces uitgevoerd). Als je het beleid uitschakelt, vindt er geen expliciete site-isolatie plaats en worden praktijktests van IsolateOriginsAndroid en SitePerProcessAndroid uitgeschakeld. Gebruikers kunnen het beleid nog wel steeds handmatig inschakelen.
 
       Als je het beleid niet instelt, kunnen gebruikers deze instelling wijzigen.
@@ -3951,6 +4011,9 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Als dit beleid niet is ingesteld op een beheerd apparaat, kan het apparaat geen virtuele machines uitvoeren. Niet-beheerde apparaten kunnen virtuele machines uitvoeren.</translation>
 <translation id="6786747875388722282">Extensies</translation>
 <translation id="6786967369487349613">De map voor roaming-profielen instellen</translation>
+<translation id="6789422336869764846">Als je het beleid inschakelt of niet instelt, rapporteren ingeschreven apparaten de status van de schakelaar voor de ontwikkelaarsmodus toen de computer werd opgestart.
+
+      Als je het beleid uitschakelt, rapporteren ingeschreven apparaten de status van de schakelaar voor de ontwikkelaarsmodus niet.</translation>
 <translation id="6795485990775913659">Alleen afdrukken toestaan zonder pincode</translation>
 <translation id="6810445994095397827">JavaScript blokkeren op deze sites</translation>
 <translation id="6813263547126514821">Energiebeheer en uitschakelen</translation>
@@ -4495,6 +4558,9 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="7458437477941640506">Herstel de doelversie niet als de OS-versie nieuwer is dan de doelversie. Updates zijn ook uitgeschakeld.</translation>
 <translation id="7459601923199346224">Beheert het gebruikers- en apparaatbeleid voor certificaatbeheer.</translation>
 <translation id="7464991223784276288">Cookies van overeenkomende URL's beperken tot de huidige sessie</translation>
+<translation id="7468182772656807573">Als je dit beleid instelt, geef je aan hoe vaak (in milliseconden) netwerkpakketten voor controle moeten worden gestuurd. De intervallen variëren van 30 seconden tot 24 uur. Waarden buiten dit bereik worden aangepast aan dit bereik.
+
+      Als er geen interval is ingesteld, wordt het standaardinterval van 3 minuten toegepast.</translation>
 <translation id="7469554574977894907">Zoeksuggesties inschakelen</translation>
 <translation id="747014869399137701">Als je het beleid instelt op 1, kunnen websites bureaubladmeldingen weergeven. Als je het beleid instelt op 2, worden bureaubladmeldingen geblokkeerd.
 
@@ -4758,6 +4824,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
           Als dit beleid niet is ingesteld, zijn snelkoppelingen voor toegankelijkheidsfuncties standaard ingeschakeld op het inlogscherm.</translation>
 <translation id="7777535871204167559">Externe opslagapparaten behandelen als alleen-lezen</translation>
 <translation id="7788511847830146438">Per profiel</translation>
+<translation id="780629758750905699">Toevoegen van Family Link-accounts aan het apparaat toestaan</translation>
 <translation id="7807139251387225825">Lijst met typen die moeten worden uitgesloten van synchronisatie</translation>
 <translation id="7815699949432723208">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid '<ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />'.
 
@@ -4910,6 +4977,9 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Als je deze instelling uitschakelt, kunnen gebruikers de functie 'Automatisch invullen' niet gebruiken.
 
       Als je de instelling inschakelt of geen waarde instelt, kunnen gebruikers de opties voor 'Automatisch invullen' zelf beheren. Zo kunnen ze profielen voor 'Automatisch invullen' configureren en de functie naar wens in- of uitschakelen.</translation>
+<translation id="8036964468882248070">Als je dit beleid inschakelt, rapporteren ingeschreven apparaten hardwarestatistieken en ID's voor opslagapparaten.
+
+      Als je het beleid uitschakelt of niet instelt, rapporteren ingeschreven apparaten geen opslagstatistieken.</translation>
 <translation id="8044493735196713914">Opstartmodus van apparaat melden</translation>
 <translation id="8049769137921877885">Met dit beleid wordt bepaald of beleidsgegevens en het tijdstip van de beleidsfetch worden gerapporteerd.
 
@@ -4987,6 +5057,9 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, is de functie voor cursormarkering in eerste instantie uitgeschakeld, maar kan de gebruiker deze op elk gewenst moment inschakelen.</translation>
+<translation id="8164687848393015214">Als je het beleid inschakelt, worden netwerkpakketten voor controle (<ph name="HEARTBEATS_TERM" />) naar de beheerserver gestuurd, zodat de server kan waarnemen of het apparaat offline is.
+
+      Als je het beleid uitschakelt of niet instelt, worden er geen pakketten gestuurd.</translation>
 <translation id="816783746144552109">Configureer de minimaal toegestane Chrome OS-versie voor het apparaat.</translation>
 <translation id="8171924760436219650">De rechtermuisknop instellen als de primaire muisknop op het inlogscherm</translation>
 <translation id="8176035528522326671">Toestaan dat Enterprise-gebruiker alleen primair gebruiker van meerdere profielen is (standaardgedrag voor beheerde Enterprise-gebruikers)</translation>
@@ -5277,6 +5350,7 @@ Dit beleid wordt verwijderd in M75.</translation>
 
       Als dit beleid is ingesteld op 'False' of niet is geconfigureerd, kan de gebruiker de browser gebruiken zonder in te loggen bij <ph name="PRODUCT_NAME" />.</translation>
 <translation id="858309738002328421">Grote bestandsuploads blokkeren</translation>
+<translation id="8583509234908413302">Downgraden van verouderde TLS/DTLS toestaan in WebRTC</translation>
 <translation id="8584279193368801689">Beperkt de modus voor afdrukken met pincode. Als het beleid niet is ingesteld, gelden er geen beperkingen. Als de modus niet beschikbaar is, wordt dit beleid genegeerd. Houd er rekening mee dat de functie voor afdrukken met pincode alleen is ingeschakeld voor printers die het protocol IPPS, HTTPS, USB of IPP-over-USB gebruiken.</translation>
 <translation id="8585558195682146109">Gebruikersdownloads sturen om te laten scannen</translation>
 <translation id="8587229956764455752">Het maken van nieuwe gebruikersaccounts toestaan</translation>
@@ -5504,6 +5578,9 @@ Dit beleid wordt verwijderd in M75.</translation>
 
       De URL-patronen hebben dezelfde indeling als het beleid '<ph name="URL_BLOCKLIST_POLICY_NAME" />', dat wordt beschreven op https://www.chromium.org/administrators/url-blacklist-filter-format.
       </translation>
+<translation id="8931555638815157255">Als je dit beleid inschakelt of niet instelt, rapporteren ingeschreven apparaten periodiek hun OS- en firmwareversie.
+
+      Als je het beleid uitschakelt, rapporteren ingeschreven apparaten de versiegegevens niet.</translation>
 <translation id="8937282917198525844"> Vanaf M81 hebben de standaard formulierbesturingselementen (bijv. &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;) een nieuw uiterlijk met verbeterde toegankelijkheid en betere platformuniformiteit. Met dit beleid worden de 'verouderde' formulierbesturingselementen hersteld tot M84.
 
       Als dit beleid is ingesteld op True, worden de 'verouderde' formulierbesturingselementen gebruikt voor alle sites.
@@ -5682,6 +5759,9 @@ Dit beleid wordt verwijderd in M75.</translation>
       Als je het beleid niet instelt, is <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, indien ingesteld, van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. Vanaf M85 worden patronen met de jokertekens '*' en '[*.]' in de host niet meer ondersteund voor dit beleid.</translation>
+<translation id="9073405975862312795">Als je het beleid inschakelt of niet instelt, rapporteren ingeschreven apparaten de perioden dat een gebruiker actief is op het apparaat.
+
+      Als je het beleid uitschakelt, registreren of rapporteren ingeschreven apparaten geen activiteitstijden.</translation>
 <translation id="9077227880520270584">Timer voor automatisch inloggen op lokaal account op apparaat</translation>
 <translation id="9084985621503260744">Specificeer of videoactiviteit invloed heeft op stroombeheer</translation>
 <translation id="9088433379343318874">Contentprovider voor de gebruiker met beperkte rechten inschakelen</translation>

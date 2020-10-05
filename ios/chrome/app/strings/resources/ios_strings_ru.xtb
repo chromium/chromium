@@ -164,6 +164,7 @@
 <translation id="2781331604911854368">ВКЛ</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Закрыть переключатель вкладок</translation>
+<translation id="2815198996063984598">2. Найдите раздел, где выбирается браузер по умолчанию.</translation>
 <translation id="2830972654601096923">Управление адресами</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Синхронизация не настроена</translation>
@@ -180,6 +181,7 @@
 <translation id="2921219216347069551">Ошибка</translation>
 <translation id="2923448633003185837">Вставить и перейти</translation>
 <translation id="292639812446257861">Отметить как непрочитанное</translation>
+<translation id="2952581218264071393">1. Откройте настройки Chrome.</translation>
 <translation id="2958718410589002129">Пароли</translation>
 <translation id="2964349545761222050">Блокировать сторонние файлы cookie</translation>
 <translation id="2969979262385602596">Не удалось войти в аккаунт. Повторите попытку.</translation>
@@ -216,6 +218,7 @@
 <translation id="3335947283844343239">Открыть закрытую вкладку</translation>
 <translation id="3371831930909698441">Доступен перевод. Параметры указаны в нижней части экрана.</translation>
 <translation id="3393920035788932672">Вспл. окна разрешены</translation>
+<translation id="3399930248910934354">Открыть настройки Chrome</translation>
 <translation id="3425644765244388016">Название карты</translation>
 <translation id="3433057996795775706">Это действие не приведет к удалению вашего аккаунта на сайте <ph name="WEBSITE" />. Чтобы защитить свои данные на сайте <ph name="WEBSITE" /> от злоумышленников, измените пароль.</translation>
 <translation id="3443810440409579745">Вкладка получена.</translation>
@@ -240,6 +243,9 @@
 <translation id="3551320343578183772">Закрыть вкладку</translation>
 <translation id="3581564640715911333">Предлагать перевести страницы на других языках.</translation>
 <translation id="3588820906588687999">Открыть изображение в новой вкладке</translation>
+<translation id="359441731697487922">Чтобы автоматически открывать ссылки в Chrome, сделайте его браузером по умолчанию.
+      
+Выполните следующие действия:</translation>
 <translation id="3603009562372709545">Копировать URL</translation>
 <translation id="3607167657931203000">Данные автозаполнения</translation>
 <translation id="3609785682760573515">Cинхронизация…</translation>
@@ -338,6 +344,7 @@
 <translation id="4808744395915275922">Обновления</translation>
 <translation id="4818522717893377262">Добавить язык</translation>
 <translation id="481968316161811770">Cookie, данные сайтов</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} и ещё 1 вкладка}one{{domain} и ещё {count} вкладка}few{{domain} и ещё {count} вкладки}many{{domain} и ещё {count} вкладок}other{{domain} и ещё {count} вкладки}}</translation>
 <translation id="4826218269716039351">Блокировать сторонние файлы cookie</translation>
 <translation id="48274138579728272">Отметить как прочитанное</translation>
 <translation id="4833786495304741580">Автоматически отправлять в Google статистику использования и отчеты о сбоях.</translation>
@@ -586,6 +593,7 @@
 <translation id="7456847797759667638">Открыть адрес...</translation>
 <translation id="7460314822154045102">Использовать камеру</translation>
 <translation id="7464701184726199289">Синхронизированные данные будут удалены со всех устройств. Настройки сайтов не изменятся, поэтому данные о вашей работе в Интернете сохранятся. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. Выберите Chrome.</translation>
 <translation id="7472734401283673885">Название компании</translation>
 <translation id="7473891865547856676">Пропустить</translation>
 <translation id="7481312909269577407">Вперед</translation>

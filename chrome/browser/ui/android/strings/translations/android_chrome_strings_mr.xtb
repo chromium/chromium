@@ -667,6 +667,7 @@
 <translation id="5958275228015807058">तुमच्या फाइल आणि पेज डाउनलोडमध्ये शोधा</translation>
 <translation id="5962718611393537961">संकुचित करण्‍यासाठी टॅप करा</translation>
 <translation id="5964805880140440652">हे पेज दुसर्‍या डिव्हाइसवर शेअर करण्यासाठी, Chrome सेटिंग्जमध्ये सिंक सुरू करा</translation>
+<translation id="5964869237734432770">इमेजची वर्णने थांबवा</translation>
 <translation id="5979084224081478209">पासवर्ड तपासा</translation>
 <translation id="6000066717592683814">Google ठेवा</translation>
 <translation id="6005538289190791541">सुचवलेला पासवर्ड</translation>
@@ -694,6 +695,7 @@
 <translation id="6157392216611456285"><ph name="APP_NAME" /> निवडा</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> डेटा बचत</translation>
 <translation id="6186394685773237175">धोक्यात असलेले पासवर्ड सापडले नाहीत</translation>
+<translation id="6192907950379606605">इमेजची वर्णने मिळवा</translation>
 <translation id="6206830853671714236">कधी डाउनलोड करायचे ते निवडा</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> नाही?</translation>
 <translation id="6218096829563201111">सारखी उत्पादने शोधा <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
@@ -762,6 +764,7 @@
 <translation id="6590471736817333463">कमाल ६०% डेटाची बचत करा</translation>
 <translation id="6590680911007613645">तुम्ही सेव्ह करत असलेला पासवर्ड तुमच्या <ph name="SITE" /> च्या पासवर्डशी जुळत असल्याची खात्री करा</translation>
 <translation id="6593061639179217415">डेस्कटॉप साइट</translation>
+<translation id="6595046016124923392">तुम्हाला दिसत असलेली वर्णने सुधारण्यासाठी इमेज Google कडे पाठवली जातात.</translation>
 <translation id="6597891566292541626">या फ्रेममध्ये QR/बार कोडची स्थिती निश्चित करा.</translation>
 <translation id="6600954340915313787">Chrome वर कॉपी केले</translation>
 <translation id="661266467055912436">तुमच्यासाठी आणि वेबवरील प्रत्येकजणासाठी सुरक्षिततेत सुधारणा करते.</translation>
@@ -820,6 +823,7 @@
 <translation id="702463548815491781">TalkBack किंवा स्विच ॲक्सेस सुरू असताना शिफारस केलेले</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
 <translation id="703523980599857277">होम पेज बदला</translation>
+<translation id="7054588988317389591">इमेजची वर्णने मिळवायची का?</translation>
 <translation id="7055152154916055070">रीडिरेक्ट ब्लॉक केले:</translation>
 <translation id="7063006564040364415">संकालित सर्व्हरशी कनेक्ट करू शकलो नाही.</translation>
 <translation id="7071521146534760487">खाते व्यवस्थापित करा</translation>
@@ -851,6 +855,7 @@
 <translation id="729975465115245577">पासवर्ड फाइल स्टोअर करण्यासाठी तुमच्या डिव्हाइसमध्ये अ‍ॅप नाही.</translation>
 <translation id="7302081693174882195">तपशील: सेव्ह केलेल्या डेटाच्या प्रमाणानुसार क्रमाने लावलेले</translation>
 <translation id="7304873321153398381">ऑफलाइन. Chrome तुमचे पासवर्ड तपासू शकत नाही.</translation>
+<translation id="7313188324932846546">सिंक सेट करण्यासाठी टॅप करा</translation>
 <translation id="7328017930301109123">लाइट मोडमध्ये, Chrome पेज आणखी जलद लोड करते आणि ६० टक्के पर्यंत कमी डेटा वापरते.</translation>
 <translation id="7333031090786104871">अद्याप मागील साइट जोडत आहे</translation>
 <translation id="7340958967809483333">Discover चे पर्याय</translation>
@@ -1042,6 +1047,7 @@
 <translation id="8636825310635137004">आपल्या इतर डिव्हाइसेस मधून तुमचे टॅब प्राप्त करण्यासाठी, संकालन सुरू करा</translation>
 <translation id="8641930654639604085">प्रौढ सामग्री असलेल्या साइटना अवरोधित करण्‍याचा प्रयत्न करा</translation>
 <translation id="8655129584991699539">तुम्ही Chrome सेटिंग्जमध्ये डेटा साफ करू शकता</translation>
+<translation id="8656747343598256512">तुमच्या Google खाते सह या साइट आणि Chrome वर साइन इन करा. तुम्ही सिंक करणे नंतर सुरू करू शकता.</translation>
 <translation id="8659579665266920523">Chrome सह कसे शोधावे</translation>
 <translation id="8662811608048051533">तुम्हाला बहुतांश साइटवरून साइन आउट करते.</translation>
 <translation id="8664979001105139458">फाइलचे नाव आधीपासून अस्तित्वात आहे</translation>
@@ -1061,6 +1067,7 @@
 <translation id="8840953339110955557">हे पेज ऑनलाइन आवृत्तीपेक्षा वेगळे असू शकते.</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, टॅब</translation>
 <translation id="8854223127042600341">तुमच्या ऑफलाइन फाइल पहा</translation>
+<translation id="8856607253650333758">वर्णने मिळवा</translation>
 <translation id="8873817150012960745">सुरू करण्यासाठी येथे टॅप करा</translation>
 <translation id="889338405075704026">Chrome सेटिंग्जवर जा</translation>
 <translation id="8898822736010347272">नवीन धोके शोधण्यात आणि वेबवरील प्रत्येकाचे संरक्षण करण्यात मदत करण्यासाठी, तुम्ही भेट देत असलेल्या काही पेजच्या URL, मर्यादित सिस्टम माहिती आणि काही पेज आशय Google ला पाठवते.</translation>

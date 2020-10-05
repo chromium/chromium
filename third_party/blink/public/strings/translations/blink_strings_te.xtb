@@ -47,6 +47,7 @@
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />వ వారం, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ట్రాక్ <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">చెక్‌బాక్స్</translation>
+<translation id="2307576640803031502">లిస్ట్‌లో, <ph name="COUNT" />లో <ph name="INDEX" />వ ఐటమ్</translation>
 <translation id="2311842470354187719">పేజీ విభజన</translation>
 <translation id="2335594187091864976">తేదీ మరియు సమయం ఎంపిక</translation>
 <translation id="2393030564806080191">హెక్సాడెసిమల్ రంగు విలువ</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, <ph name="WEEK_START_DATE" /> నుండి ప్రారంభమవుతుంది</translation>
 <translation id="916607977885256133">చిత్రంలో చిత్రం</translation>
 <translation id="9168329111483466115">ఫుట్‌నోట్</translation>
+<translation id="945780513535800434">పాక్షికంగా టిక్ గుర్తు పెట్టబడింది</translation>
 <translation id="954003015749068518">చిత్రంలో చిత్రం మోడ్‌లోకి ప్రవేశిస్తుంది</translation>
 <translation id="966787709310836684">మెను</translation>
 </translationbundle>

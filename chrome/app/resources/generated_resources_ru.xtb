@@ -228,6 +228,7 @@
 <translation id="1249643471736608405">Плагин <ph name="PLUGIN_NAME" /> заблокирован, так как он больше не поддерживается.</translation>
 <translation id="1251366534849411931">Отсутствует ожидаемая открывающая фигурная скобка: <ph name="ERROR_LINE" />.</translation>
 <translation id="1251480783646955802">Будут удалены сохраненные данные сайтов и установленных с них приложений (<ph name="TOTAL_USAGE" />).</translation>
+<translation id="125220115284141797">По умолчанию</translation>
 <translation id="1252987234827889034">Ошибка в профиле</translation>
 <translation id="1254593899333212300">Прямое подключение к Интернету</translation>
 <translation id="1259152067760398571">Проверка безопасности выполнена вчера.</translation>
@@ -319,6 +320,7 @@
 <translation id="1361872463926621533">Воспроизводить звук при запуске</translation>
 <translation id="1362865166188278099">Техническая проблема. Проверьте принтер.</translation>
 <translation id="1363585519747660921">Необходимо настроить USB-принтер</translation>
+<translation id="1364664799726141130">У аккаунта, который вы подтвердили, нет доступа к этому устройству. Чтобы разблокировать сеанс, подтвердите аккаунт <ph name="ACCOUNT" />.</translation>
 <translation id="1365180424462182382"><ph name="BEGIN_LINK" />Браузер находится под управлением<ph name="END_LINK" /> домена <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="1367951781824006909">Выберите файл</translation>
 <translation id="1369149969991017342">Включить функцию Switch Access (позволяет управлять компьютером с помощью переключателей)</translation>
@@ -428,6 +430,7 @@
 <translation id="1486096554574027028">Поиск паролей</translation>
 <translation id="1487335504823219454">Вкл. – пользовательские настройки</translation>
 <translation id="1489664337021920575">Выбрать другой вариант</translation>
+<translation id="1492417797159476138">Вы уже сохранили это имя пользователя для данного сайта.</translation>
 <translation id="1493892686965953381">Ожидание загрузки <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1495486559005647033">Количество других доступных устройств: <ph name="NUM_PRINTERS" />.</translation>
 <translation id="1495677929897281669">Вернуться на вкладку</translation>
@@ -652,6 +655,7 @@
 <translation id="173628468822554835">ОК. По умолчанию новые сайты не будут отправлять вам уведомления.</translation>
 <translation id="1736419249208073774">Подробнее</translation>
 <translation id="1737968601308870607">Сообщить об ошибке</translation>
+<translation id="174123615272205933">Другое</translation>
 <translation id="1741314857973421784">Далее</translation>
 <translation id="1743570585616704562">Не распознано</translation>
 <translation id="1743970419083351269">Закрыть панель загрузок</translation>
@@ -686,6 +690,7 @@
 <translation id="1776712937009046120">Добавить пользователя</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
 <translation id="1778457539567749232">Отметить как непрочитанное</translation>
+<translation id="1779468444204342338">Минимальные</translation>
 <translation id="1779652936965200207">Введите данный ключ доступа в "<ph name="DEVICE_NAME" />":</translation>
 <translation id="177989070088644880">Приложение (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Закрыть группу</translation>
@@ -1460,6 +1465,7 @@
 <translation id="2688196195245426394">Ошибка при регистрации устройства на сервере: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Показать языковые настройки</translation>
 <translation id="2691385045260836588">Модель</translation>
+<translation id="2691440343905273290">Изменить настройки ввода</translation>
 <translation id="2693176596243495071">Произошла неизвестная ошибка. Повторите попытку позже. Если ситуация не изменится, обратитесь к администратору.</translation>
 <translation id="2695749433451188613">Internet Printing Protocol (HTTPS)</translation>
 <translation id="2699911226086014512">Не удалось установить PIN-код (ошибка <ph name="RETRIES" />).</translation>
@@ -1882,6 +1888,7 @@
 <translation id="3192947282887913208">Аудиофайлы</translation>
 <translation id="3199127022143353223">Серверы</translation>
 <translation id="3200310363903241381">{COUNT,plural, =1{Советуем проверить этот пароль.}one{Советуем проверить эти пароли.}few{Советуем проверить эти пароли.}many{Советуем проверить эти пароли.}other{Советуем проверить эти пароли.}}</translation>
+<translation id="3201154330231437478">Включить прокрутку в обратную сторону. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="3201422919974259695">Здесь появятся доступные USB-устройства.</translation>
 <translation id="3202131003361292969">Путь</translation>
 <translation id="3202173864863109533">Звук на этой вкладке отключен</translation>
@@ -2077,6 +2084,7 @@
 <translation id="3440663250074896476">Другие действия с закладкой <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3440761377721825626">Предупреждать, что сайт пытается использовать плагин для доступа к компьютеру</translation>
 <translation id="3441653493275994384">Экран</translation>
+<translation id="3441663102605358937">Войдите в аккаунт <ph name="ACCOUNT" /> ещё раз, чтобы подтвердить его</translation>
 <translation id="3445047461171030979">Быстрые ответы Google Ассистента</translation>
 <translation id="3445925074670675829">Устройство USB-C</translation>
 <translation id="3446274660183028131">Чтобы установить Windows, запустите Parallels Desktop.</translation>
@@ -2828,6 +2836,7 @@
 <translation id="4312866146174492540">Блокировать (по умолчанию)</translation>
 <translation id="4314815835985389558">Настройки синхронизации</translation>
 <translation id="4316850752623536204">Сайт разработчика</translation>
+<translation id="4317820549299924617">Не удалось выполнить верификацию</translation>
 <translation id="4320177379694898372">Нет подключения к Интернету</translation>
 <translation id="4322394346347055525">Закрыть другие вкладки</translation>
 <translation id="4324577459193912240">Файл скачан не полностью</translation>
@@ -3674,6 +3683,7 @@
 <translation id="5362741141255528695">Выберите файл закрытого ключа.</translation>
 <translation id="5363109466694494651">Powerwash и откат</translation>
 <translation id="5365881113273618889">Выбранная папка содержит конфиденциальные файлы. Предоставить приложению "<ph name="APP_NAME" />" постоянный доступ для записи данных?</translation>
+<translation id="536638840841140142">Нет</translation>
 <translation id="5368720394188453070">Для входа разблокируйте телефон.</translation>
 <translation id="5368779022775404937">Вход в <ph name="REALM" /></translation>
 <translation id="5369491905435686894">Включить ускорение мыши</translation>
@@ -4830,6 +4840,7 @@
 <translation id="6748465660675848252">Если вы продолжите сейчас, восстановлены будут только синхронизированные, но не локальные данные.</translation>
 <translation id="6749006854028927059">Сайты не могут использовать файлы cookie, чтобы видеть ваши действия в браузере, например, для показа персонализированной рекламы. Из-за этого некоторые функции на сайтах могут работать некорректно.</translation>
 <translation id="6750757184909117990">Отключить мобильную сеть</translation>
+<translation id="6750946710563435348">Использовать другое имя пользователя.</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (инкогнито)</translation>
 <translation id="6757101664402245801">URL скопирован</translation>
 <translation id="6758056191028427665">Расскажите, как у вас дела.</translation>
@@ -5349,6 +5360,7 @@
 <translation id="7377451353532943397">Всегда запрещать использовать датчики</translation>
 <translation id="73786666777299047">Открыть Интернет-магазин Chrome</translation>
 <translation id="7378812711085314936">Подключаться к точкам доступа</translation>
+<translation id="7380622428988553498">Имя устройства содержит недопустимые символы.</translation>
 <translation id="7380768571499464492">Обновлено: <ph name="PRINTER_NAME" /></translation>
 <translation id="7384687527486377545">Автоматический повтор ввода на клавиатуре</translation>
 <translation id="7385854874724088939">При печати произошла ошибка. Проверьте состояние принтера и повторите попытку.</translation>
@@ -5397,6 +5409,7 @@
 <translation id="7434969625063495310">Не удалось добавить сервер печати. Проверьте его настройки и повторите попытку.</translation>
 <translation id="7436921188514130341">При изменении названия произошла ошибка.</translation>
 <translation id="7438976808740265764">Поддержка Flash Player будет прекращена в декабре 2020 года.</translation>
+<translation id="7439519621174723623">Чтобы продолжить, добавьте имя устройства.</translation>
 <translation id="7441736921018636843">Чтобы изменить этот параметр, <ph name="BEGIN_LINK" />сбросьте настройки синхронизации<ph name="END_LINK" /> и удалите кодовую фразу</translation>
 <translation id="7441830548568730290">Другие пользователи</translation>
 <translation id="7442465037756169001">Оборудование Hangouts Meet готово к настройке.</translation>
@@ -5638,6 +5651,7 @@
 <translation id="7717134585801378441">Разрешить сайтам отправлять запрос на доступ к информации о местоположении</translation>
 <translation id="7717845620320228976">Проверить наличие обновлений</translation>
 <translation id="7719367874908701697">Масштабирование страницы</translation>
+<translation id="7719588063158526969">Слишком длинное имя устройства.</translation>
 <translation id="7721179060400456005">Разрешить показывать окно на нескольких устройствах</translation>
 <translation id="7722040605881499779">Для обновления необходимо <ph name="NECESSARY_SPACE" />.</translation>
 <translation id="7724603315864178912">Вырезать</translation>
@@ -5942,6 +5956,7 @@
 <translation id="8049705080247101012">Google заблокировал установку потенциально опасной программы (<ph name="EXTENSION_NAME" />).</translation>
 <translation id="8049948037269924837">Обратное направление прокрутки с помощью сенсорной панели</translation>
 <translation id="8050038245906040378">Подписывание коммерческого кода Microsoft</translation>
+<translation id="8050191834453426339">Подтвердите данные ещё раз</translation>
 <translation id="8051193500142930381">Функции, которые используют камеру, не будут работать</translation>
 <translation id="8051390370038326517">Предоставить сайту <ph name="HOST" /> полный контроль над устройствами MIDI</translation>
 <translation id="8053278772142718589">Файлы PKCS #12</translation>

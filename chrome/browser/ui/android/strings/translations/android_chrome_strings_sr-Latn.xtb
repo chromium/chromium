@@ -344,6 +344,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3568688522516854065">Da bi vam kartice bile dostupne na drugim uređajima, prijavite se i uključite sinhronizaciju</translation>
 <translation id="3587482841069643663">Sve</translation>
 <translation id="3587596251841506391">Poboljšajte bezbednost na vebu</translation>
+<translation id="3598653140581545904">Koristite režim bez arhiviranja da biste se prijavili</translation>
 <translation id="3599863153486145794">Briše istoriju sa svih uređaja na kojima ste prijavljeni. Google nalog može da ima druge oblike istorije pregledanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="3602290021589620013">Pregled</translation>
 <translation id="3616113530831147358">Audio</translation>
@@ -385,6 +386,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Kombinuj podatke</translation>
 <translation id="393697183122708255">Nije dostupna nijed. omoguć. glas. pret.</translation>
+<translation id="3943557322767080599">Prikaži Chrome upite za prijavljivanje pri prijavljivanju na Google nalog</translation>
 <translation id="395206256282351086">Predlozi za pretragu i sajtove su onemogućeni</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome će učitati stranicu kada bude spremna}one{Chrome će učitati stranice kada budu spremne}few{Chrome će učitati stranice kada budu spremne}other{Chrome će učitati stranice kada budu spremne}}</translation>
 <translation id="3963007978381181125">Šifrovanje pomoću pristupne fraze ne obuhvata načine plaćanja i adrese iz Google Pay-a. Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fraza se ne šalje Google-u niti je on čuva. Ako zaboravite pristupnu frazu ili poželite da promenite ovo podešavanje, treba da resetujete sinhronizaciju. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -660,6 +662,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5937580074298050696">Uštedeli ste <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">Resetuj</translation>
 <translation id="5942872142862698679">Koristite Google za pretragu</translation>
+<translation id="5951119116059277034">Prikazuje se aktivna stranica</translation>
 <translation id="5951615825629292797">Jezik je spreman, restartujte aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="5952764234151283551">Šalje Google-u URL stranice kojoj pokušavate da pristupite</translation>
 <translation id="5956665950594638604">Otvaranje Chrome centra za pomoć na novoj kartici</translation>
@@ -669,6 +672,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5964805880140440652">Da biste delili ovu stranicu sa drugim uređajem, uključite sinhronizaciju u podešavanjima Chrome-a</translation>
 <translation id="5964869237734432770">Zaustavi opise slika</translation>
 <translation id="5979084224081478209">Proveri lozinke</translation>
+<translation id="5982307838673692400">Otvori karticu bez arhiviranja</translation>
 <translation id="6000066717592683814">Zadrži Google</translation>
 <translation id="6005538289190791541">Predložena lozinka</translation>
 <translation id="6014293228235665243">Nepročitano</translation>
@@ -698,6 +702,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="6192907950379606605">Preuzimaj opise slika</translation>
 <translation id="6206830853671714236">Izaberite vreme preuzimanja</translation>
 <translation id="6210748933810148297">Niste <ph name="EMAIL" />?</translation>
+<translation id="6211386937064921208">Pregled ove stranice</translation>
 <translation id="6218096829563201111">Pretraži slične proizvode <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Otključajte da biste izvezli lozinke</translation>
 <translation id="6232535412751077445">Ako omogućite funkciju „Ne prati“, zahtev će biti obuhvaćen saobraćajem pregledanja. Posledica te radnje zavisi od toga da li veb-sajt odgovara na zahtev i kako se zahtev tumači.
@@ -809,6 +814,9 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6900532703269623216">Napredna zaštita</translation>
 <translation id="6903907808598579934">Uključi sinhronizaciju</translation>
 <translation id="6929699136511445623">Omogući sinhronizaciju Android sistema</translation>
+<translation id="6941901516114974832">U režimu bez arhiviranja vaše aktivnosti <ph name="BEGIN_BOLD1" />i dalje mogu da vide <ph name="END_BOLD1" />veb-sajtovi koje posećujete, vaš poslodavac ili škola i internet provajder.
+
+Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN_BOLD2" />zatvorite sve kartice bez arhiviranja<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Promenite podrazumevanu lokaciju za preuzimanje u bilo kom trenutku pomoći opcije u meniju Podešavanja</translation>
 <translation id="6945221475159498467">Izaberi</translation>
 <translation id="6955535239952325894">Ovo podešavanje je onemogućeno u pregledačima kojima se upravlja</translation>
