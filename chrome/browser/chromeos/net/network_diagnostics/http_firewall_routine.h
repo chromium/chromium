@@ -76,7 +76,7 @@ class HttpFirewallRoutine : public NetworkDiagnosticsRoutine {
   void AttemptNextResolution();
   void AttemptSocketConnections();
   void Connect(int socket_index);
-  void OnSocketConnected(int result, int socket_index);
+  void OnSocketConnected(int socket_index, int result);
 
   // Unowned
   net::ClientSocketFactory* client_socket_factory_ = nullptr;
