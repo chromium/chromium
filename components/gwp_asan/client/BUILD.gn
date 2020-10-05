@@ -4,24 +4,20 @@
 
 import("//base/allocator/allocator.gni")
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 component("client") {
   output_name = "gwp_asan_client"
   sources = [
     "export.h",
     "guarded_page_allocator.cc",
     "guarded_page_allocator.h",
-    "guarded_page_allocator_win.cc",
     "gwp_asan.cc",
     "gwp_asan.h",
     "sampling_state.h",
   ]
+
+  if (is_win) {
+    sources += [ "guarded_page_allocator_win.cc" ]
+  }
 
   if (is_posix) {
     sources += [ "guarded_page_allocator_posix.cc" ]
