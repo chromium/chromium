@@ -26,6 +26,8 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/default_color_constants.h"
+#include "ash/style/default_colors.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
@@ -75,13 +77,15 @@ namespace {
 const char* kLoginShelfButtonClassName = "LoginShelfButton";
 
 SkColor GetButtonTextColor() {
-  return AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonLabelColor);
+  return DeprecatedGetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonLabelColor,
+      kLoginShelfButtonLabelColor);
 }
 
 SkColor GetButtonIconColor() {
-  return AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor);
+  return DeprecatedGetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonIconColor,
+      kLoginShelfButtonIconColor);
 }
 
 SkColor GetButtonBackgroundColor() {
@@ -89,8 +93,7 @@ SkColor GetButtonBackgroundColor() {
       session_manager::SessionState::OOBE) {
     return SkColorSetA(SK_ColorBLACK, 16);  // 6% opacity
   }
-  return AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+  return DeprecatedGetLoginBackgroundBaseColor(kLoginBackgroundBaseColor);
 }
 
 LoginMetricsRecorder::ShelfButtonClickTarget GetUserClickTarget(int button_id) {

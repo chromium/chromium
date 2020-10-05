@@ -41,4 +41,10 @@ SkColor DeprecatedGetContentLayerColor(AshColorProvider::ContentLayerType type,
   return AshColorProvider::Get()->GetContentLayerColor(type);
 }
 
+SkColor DeprecatedGetLoginBackgroundBaseColor(SkColor default_color) {
+  if (!features::IsDarkLightModeEnabled())
+    return default_color;
+  return AshColorProvider::Get()->GetLoginBackgroundBaseColor();
+}
+
 }  // namespace ash
