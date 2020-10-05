@@ -193,13 +193,6 @@ GpuFeatureStatus GetOopRasterizationFeatureStatus(
     const base::CommandLine& command_line,
     const GpuPreferences& gpu_preferences,
     const GPUInfo& gpu_info) {
-#if defined(OS_WIN)
-  // On Windows, using the validating decoder causes a lot of errors.  This
-  // could be fixed independently, but validating decoder is going away.
-  // See: http://crbug.com/949773.
-  if (!gpu_info.passthrough_cmd_decoder)
-    return kGpuFeatureStatusDisabled;
-#endif
   // OOP rasterization requires GPU rasterization, so if blocklisted or
   // disabled, report the same.
   auto status =
