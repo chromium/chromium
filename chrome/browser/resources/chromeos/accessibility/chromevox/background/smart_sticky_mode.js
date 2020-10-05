@@ -35,6 +35,7 @@ SmartStickyMode = class {
   /** @override */
   onCurrentRangeChanged(newRange) {
     if (!newRange || this.ignoreRangeChanges_ ||
+        ChromeVoxState.isReadingContinuously ||
         localStorage['smartStickyMode'] !== 'true') {
       return;
     }
