@@ -79,13 +79,12 @@ class FakeMessageCenter : public MessageCenter {
 
  protected:
   void DisableTimersForTest() override;
-  const base::ObserverList<MessageCenterObserver>::Unchecked& observer_list()
-      const {
+  const base::ObserverList<MessageCenterObserver>& observer_list() const {
     return observers_;
   }
 
  private:
-  base::ObserverList<MessageCenterObserver>::Unchecked observers_;
+  base::ObserverList<MessageCenterObserver> observers_;
   NotificationList notifications_;
   NotificationList::Notifications visible_notifications_;
   std::vector<NotificationBlocker*> blockers_;

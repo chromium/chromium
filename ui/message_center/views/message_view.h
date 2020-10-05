@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -52,10 +53,8 @@ class MESSAGE_CENTER_EXPORT MessageView
  public:
   static const char kViewClassName[];
 
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() = default;
-
     virtual void OnSlideStarted(const std::string& notification_id) {}
     virtual void OnSlideChanged(const std::string& notification_id) {}
     virtual void OnPreSlideOut(const std::string& notification_id) {}
@@ -185,7 +184,7 @@ class MESSAGE_CENTER_EXPORT MessageView
 
   views::ScrollView* scroller() { return scroller_; }
 
-  base::ObserverList<Observer>::Unchecked* observers() { return &observers_; }
+  base::ObserverList<Observer>* observers() { return &observers_; }
 
   bool is_nested() const { return is_nested_; }
 
@@ -225,7 +224,7 @@ class MESSAGE_CENTER_EXPORT MessageView
   bool setting_mode_ = false;
 
   views::SlideOutController slide_out_controller_;
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 
   // True if |this| is embedded in another view. Equivalent to |!top_level| in
   // MessageViewFactory parlance.

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/observer_list_types.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "ui/message_center/message_center_export.h"
@@ -18,10 +19,9 @@ class NotificationBlocker;
 // An observer class for the change of notifications in the MessageCenter.
 // WARNING: It is not safe to modify the message center from within these
 // callbacks.
-class MESSAGE_CENTER_EXPORT MessageCenterObserver {
+class MESSAGE_CENTER_EXPORT MessageCenterObserver
+    : public base::CheckedObserver {
  public:
-  virtual ~MessageCenterObserver() {}
-
   // Called when the notification associated with |notification_id| is added
   // to the notification_list.
   virtual void OnNotificationAdded(const std::string& notification_id) {}

@@ -6,6 +6,7 @@
 #define UI_MESSAGE_CENTER_NOTIFICATION_BLOCKER_H_
 
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -17,7 +18,7 @@ class MessageCenter;
 // single state such as screen lock or fullscreen.
 class MESSAGE_CENTER_EXPORT NotificationBlocker {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     virtual void OnBlockingStateChanged(NotificationBlocker* blocker) = 0;
   };
@@ -48,7 +49,7 @@ class MESSAGE_CENTER_EXPORT NotificationBlocker {
   void NotifyBlockingStateChanged();
 
  private:
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
   MessageCenter* message_center_;  // weak
 };
 
