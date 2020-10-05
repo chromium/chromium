@@ -268,9 +268,6 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
   // Verify keyboard is shown without the password controller.
   GREYAssertTrue([ChromeEarlGrey isKeyboardShownWithError:nil],
                  @"Keyboard Should be Shown");
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
-      performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
       assertWithMatcher:grey_notVisible()];
 }
