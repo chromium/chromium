@@ -69,10 +69,7 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
                         .spec());
 
   // Realbox.
-  const bool realbox_enabled =
-      ntp_features::IsRealboxEnabled() &&
-      base::FeatureList::IsEnabled(ntp_features::kWebUIRealbox);
-  source->AddBoolean("realboxEnabled", realbox_enabled);
+  source->AddBoolean("realboxEnabled", true);
   source->AddBoolean(
       "realboxMatchOmniboxTheme",
       base::FeatureList::IsEnabled(ntp_features::kRealboxMatchOmniboxTheme));

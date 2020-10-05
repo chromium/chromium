@@ -20,21 +20,12 @@ extern const base::Feature kOneGoogleBarModalOverlays;
 extern const base::Feature kRealboxMatchOmniboxTheme;
 extern const base::Feature kRealboxUseGoogleGIcon;
 extern const base::Feature kWebUI;
-extern const base::Feature kWebUIRealbox;
 extern const base::Feature kWebUIThemeModeDoodles;
 extern const base::Feature kModules;
 extern const base::Feature kNtpShoppingTasksModule;
 
-// Note: only exposed for about:flags. Use IsNtpRealboxEnabled() instead.
-extern const base::Feature kRealbox;
-
 extern const base::Feature kSearchSuggestChips;
 extern const base::Feature kDisableSearchSuggestChips;
-
-// Returns true if either kRealbox or omnibox::kZeroSuggestionsOnNTPRealbox
-// are enabled; or omnibox::kOnFocusSuggestions is enabled and configured to
-// show suggestions of some type in the NTP Realbox.
-bool IsRealboxEnabled();
 
 }  // namespace ntp_features
 

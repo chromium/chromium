@@ -6,9 +6,6 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
-#include "components/omnibox/common/omnibox_features.h"
-#include "ui/base/ui_base_features.h"
 
 namespace ntp_features {
 
@@ -46,11 +43,6 @@ const base::Feature kRealboxMatchOmniboxTheme{
 const base::Feature kRealboxUseGoogleGIcon{"NtpRealboxUseGoogleGIcon",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, the search box in the middle of the NTP will accept input
-// directly (i.e. not be a "fake" box) and search results will show directly
-// below the non-fake input ("realbox").
-const base::Feature kRealbox{"NtpRealbox", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // If enabled, shows Vasco suggestion chips in the NTP below fakebox/realbox
 // despite other config except DisableSearchSuggestChips below.
 const base::Feature kSearchSuggestChips{"SearchSuggestChips",
@@ -65,10 +57,6 @@ const base::Feature kDisableSearchSuggestChips{
 // instead of the local NTP.
 const base::Feature kWebUI{"NtpWebUI", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// If disabled, the realbox will not show on the WebUI new tab page.
-const base::Feature kWebUIRealbox{"WebUIRealbox",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
-
 // If enabled, the Doodle will be shown on themed and dark mode NTPs.
 const base::Feature kWebUIThemeModeDoodles{"WebUIThemeModeDoodles",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
@@ -79,15 +67,5 @@ const base::Feature kModules{"NtpModules", base::FEATURE_DISABLED_BY_DEFAULT};
 // If enabled, shopping tasks module will be shown.
 const base::Feature kNtpShoppingTasksModule{"NtpShoppingTasksModule",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool IsRealboxEnabled() {
-  if (!base::FeatureList::IsEnabled(omnibox::kNewSearchFeatures))
-    return false;
-
-  return base::FeatureList::IsEnabled(kRealbox) ||
-         base::FeatureList::IsEnabled(omnibox::kZeroSuggestionsOnNTPRealbox) ||
-         base::FeatureList::IsEnabled(
-             omnibox::kReactiveZeroSuggestionsOnNTPRealbox);
-}
 
 }  // namespace ntp_features

@@ -3306,12 +3306,6 @@ const char kNtpOneGoogleBarModalOverlaysDescription[] =
     "Otherwise, a clip-path definition is used to clip away parts of the"
     "OneGoogleBar that do not have visible elements.";
 
-const char kNtpRealboxName[] = "Real search box in New Tab Page";
-const char kNtpRealboxDescription[] =
-    "Enables a search box in the middle of the NTP that will accept input "
-    "directly (i.e. not be a \"fake\" box). Search results will show below the "
-    "non-fake input (\"realbox\").";
-
 const char kNtpRepeatableQueriesName[] =
     "Repeatable queries on the New Tab Page";
 const char kNtpRepeatableQueriesDescription[] =

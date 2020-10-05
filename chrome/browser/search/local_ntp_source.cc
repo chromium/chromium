@@ -628,8 +628,7 @@ class LocalNtpSource::SearchConfigurationProvider
 
     if (is_google) {
       config_data.SetBoolean("richerPicker", true);
-      config_data.SetBoolean("realboxEnabled",
-                             ntp_features::IsRealboxEnabled());
+      config_data.SetBoolean("realboxEnabled", true);
       config_data.SetBoolean("realboxMatchOmniboxTheme",
                              base::FeatureList::IsEnabled(
                                  ntp_features::kRealboxMatchOmniboxTheme));
@@ -1045,9 +1044,8 @@ void LocalNtpSource::StartDataRequest(
                                     "\" as=\"image\">";
     }
 
-    bool realbox_enabled = ntp_features::IsRealboxEnabled();
-    replacements["hiddenIfRealboxEnabled"] = realbox_enabled ? "hidden" : "";
-    replacements["hiddenIfRealboxDisabled"] = realbox_enabled ? "" : "hidden";
+    replacements["hiddenIfRealboxEnabled"] = "hidden";
+    replacements["hiddenIfRealboxDisabled"] = "";
 
     bool use_google_g_icon =
         base::FeatureList::IsEnabled(ntp_features::kRealboxUseGoogleGIcon);

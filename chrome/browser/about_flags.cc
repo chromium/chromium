@@ -4359,10 +4359,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpOneGoogleBarModalOverlaysDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kOneGoogleBarModalOverlays)},
 
-    {"ntp-realbox", flag_descriptions::kNtpRealboxName,
-     flag_descriptions::kNtpRealboxDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kRealbox)},
-
     {"ntp-repeatable-queries", flag_descriptions::kNtpRepeatableQueriesName,
      flag_descriptions::kNtpRepeatableQueriesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpRepeatableQueries)},

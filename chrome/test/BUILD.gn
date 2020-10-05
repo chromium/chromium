@@ -4580,7 +4580,6 @@ test("unit_tests") {
       "../browser/feedback/system_logs/log_sources/crash_ids_source_unittest.cc",
 
       # NTP is in native code on Android.
-      "../browser/search/ntp_features_unittest.cc",
       "../browser/search/shopping_tasks/shopping_tasks_service_unittest.cc",
     ]
     if (is_posix || is_fuchsia) {
@@ -6216,7 +6215,6 @@ if (!is_android) {
       "../browser/ui/search/instant_extended_interactive_uitest.cc",
       "../browser/ui/search/instant_test_base.cc",
       "../browser/ui/search/instant_test_base.h",
-      "../browser/ui/search/local_ntp_uitest.cc",
       "../browser/ui/search/third_party_ntp_uitest.cc",
       "../browser/ui/send_mouse_move_uitest_win.cc",
       "../browser/ui/signin_view_controller_interactive_uitest.cc",

@@ -5,7 +5,6 @@
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
-#include "chrome/browser/search/ntp_features.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/ui/browser.h"
@@ -24,15 +23,6 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-namespace {
-
-std::string searchbox_microphone() {
-  return ntp_features::IsRealboxEnabled() ? "realbox-microphone"
-                                          : "fakebox-microphone";
-}
-
-}  // namespace
 
 using LocalNTPVoiceSearchSmokeTest = InProcessBrowserTest;
 
@@ -56,10 +46,8 @@ IN_PROC_BROWSER_TEST_F(LocalNTPVoiceSearchSmokeTest,
   bool microphone_is_visible = false;
   ASSERT_TRUE(instant_test_utils::GetBoolFromJS(
       active_tab,
-      "!!document.getElementById('" + searchbox_microphone() +
-          "') && "
-          "!document.getElementById('" +
-          searchbox_microphone() + "').hidden",
+      "!!document.getElementById('realbox-microphone') && "
+      "!document.getElementById('realbox-microphone').hidden",
       &microphone_is_visible));
   EXPECT_TRUE(microphone_is_visible);
 
@@ -107,8 +95,7 @@ IN_PROC_BROWSER_TEST_F(LocalNTPVoiceSearchSmokeTest,
 
   // Click on the microphone button, which will trigger a permission request.
   ASSERT_TRUE(content::ExecuteScript(
-      active_tab,
-      "document.getElementById('" + searchbox_microphone() + "').click();"));
+      active_tab, "document.getElementById('realbox-microphone').click();"));
 
   // Make sure the request arrived.
   prompt_factory.WaitForPermissionBubble();
