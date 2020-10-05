@@ -21,6 +21,7 @@ import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-annou
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {fuzzySearch} from './fuzzy_search.js';
+import {TabData} from './tab_data.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
 const selectorNavigationKeys = ['ArrowUp', 'ArrowDown', 'Home', 'End'];
@@ -48,7 +49,7 @@ export class TabSearchAppElement extends PolymerElement {
         observer: 'openTabsChanged_',
       },
 
-      /** @private {!Array<!tabSearch.mojom.Tab>} */
+      /** @private {!Array<!TabData>} */
       filteredOpenTabs_: {
         type: Array,
         value: [],
@@ -78,7 +79,7 @@ export class TabSearchAppElement extends PolymerElement {
           distance: 200,
           keys: [
             {
-              name: 'title',
+              name: 'tab.title',
               weight: 2,
             },
             {
@@ -121,7 +122,7 @@ export class TabSearchAppElement extends PolymerElement {
       distance: loadTimeData.getInteger('searchDistance'),
       keys: [
         {
-          name: 'title',
+          name: 'tab.title',
           weight: loadTimeData.getValue('searchTitleToHostnameWeightRatio'),
         },
         {
@@ -342,9 +343,8 @@ export class TabSearchAppElement extends PolymerElement {
       e.stopPropagation();
       e.preventDefault();
     } else if (e.key === 'Enter' || e.key === ' ') {
-      const selectedItem = this.filteredOpenTabs_[this.getSelectedIndex()];
       this.apiProxy_.switchToTab(
-          {tabId: selectedItem.tabId}, !!this.searchText_);
+          {tabId: this.getSelectedTab_().tabId}, !!this.searchText_);
       e.stopPropagation();
     }
   }
@@ -393,12 +393,10 @@ export class TabSearchAppElement extends PolymerElement {
 
       // For some reasons setting combobox/aria-activedescendant on tab-search-search-field
       // has no effect, so manually announce a11y message here.
-      const selectedItem = this.filteredOpenTabs_[this.getSelectedIndex()];
-      this.announceA11y_(this.ariaLabel_(selectedItem));
+      this.announceA11y_(this.ariaLabel_(this.getSelectedTab_()));
     } else if (e.key === 'Enter') {
-      const selectedItem = this.filteredOpenTabs_[this.getSelectedIndex()];
       this.apiProxy_.switchToTab(
-          {tabId: selectedItem.tabId}, !!this.searchText_);
+          {tabId: this.getSelectedTab_().tabId}, !!this.searchText_);
       e.stopPropagation();
     }
   }
@@ -434,13 +432,15 @@ export class TabSearchAppElement extends PolymerElement {
     const result = [];
     windowTabs.forEach(window => {
       window.tabs.forEach(tab => {
-        result.push(
-            Object.assign({}, tab, {hostname: new URL(tab.url).hostname}));
+        const hostname = new URL(tab.url).hostname;
+        result.push({hostname, tab});
       });
     });
-    result.sort((a, b) => (b.lastActiveTimeTicks && a.lastActiveTimeTicks) ?
-        b.lastActiveTimeTicks.internalValue - a.lastActiveTimeTicks.internalValue :
-        0);
+    result.sort(
+        (a, b) => (b.tab.lastActiveTimeTicks && a.tab.lastActiveTimeTicks) ?
+            b.tab.lastActiveTimeTicks.internalValue -
+                a.tab.lastActiveTimeTicks.internalValue :
+            0);
     this.filteredOpenTabs_ =
         fuzzySearch(this.searchText_, result, this.fuzzySearchOptions_);
 
@@ -479,6 +479,11 @@ export class TabSearchAppElement extends PolymerElement {
             {behavior: 'smooth', block: 'nearest'});
       }
     }
+  }
+
+  /** return {!tabSearch.mojom.Tab} */
+  getSelectedTab_() {
+    return this.filteredOpenTabs_[this.getSelectedIndex()].tab;
   }
 }
 

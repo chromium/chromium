@@ -13,6 +13,7 @@ js_type_check("closure_compile") {
   deps = [
     ":app",
     ":fuzzy_search",
+    ":tab_data",
     ":tab_search_api_proxy",
     ":tab_search_item",
     ":tab_search_search_field",
@@ -22,6 +23,7 @@ js_type_check("closure_compile") {
 js_library("app") {
   deps = [
     ":fuzzy_search",
+    ":tab_data",
     ":tab_search_api_proxy",
     ":tab_search_item",
     ":tab_search_search_field",
@@ -36,7 +38,14 @@ js_library("app") {
 }
 
 js_library("fuzzy_search") {
-  deps = [ "//ui/webui/resources/js:util.m" ]
+  deps = [
+    ":tab_data",
+    "//ui/webui/resources/js:util.m",
+  ]
+}
+
+js_library("tab_data") {
+  deps = []
 }
 
 js_library("tab_search_api_proxy") {
@@ -49,6 +58,7 @@ js_library("tab_search_api_proxy") {
 
 js_library("tab_search_item") {
   deps = [
+    ":tab_data",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
     "//ui/webui/resources/js:icon.m",

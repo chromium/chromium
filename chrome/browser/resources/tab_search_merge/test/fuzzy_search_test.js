@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fuzzySearch} from 'chrome://tab-search/fuzzy_search.js'
-
+import {fuzzySearch} from 'chrome://tab-search/fuzzy_search.js';
+import {TabData} from 'chrome://tab-search/tab_data.js';
 import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
 
 /**
  * Assert search results return in specific order.
- * TODO(tluk): Fix the typing for tabSearch.mojom.Tab here given we are updating
- * the fields on this object ( https://crbug.com/1133558 ).
- * @suppress {checkTypes}
  * @param {string} input
- * @param {!Array<!tabSearch.mojom.Tab>} items
+ * @param {!Array<!TabData>} items
  * @param {!Object} options
  * @param {!Array<number>} expectedIndices
  */
@@ -20,8 +17,10 @@ function assertSearchOrders(input, items, options, expectedIndices) {
   const results = fuzzySearch(input, items, options);
   assertEquals(results.length, expectedIndices.length);
   for (let i = 0; i < results.length; ++i) {
-    assertEquals(items[expectedIndices[i]].title, results[i].title);
-    assertEquals(items[expectedIndices[i]].hostname, results[i].hostname);
+    const expectedItem = items[expectedIndices[i]];
+    const actualItem = results[i];
+    assertEquals(expectedItem.tab.title, actualItem.tab.title);
+    assertEquals(expectedItem.hostname, actualItem.hostname);
   }
 }
 
@@ -29,24 +28,32 @@ suite('FuzzySearchTest', () => {
   test('fuzzySearch', () => {
     const records = [
       {
-        title: 'OpenGL',
+        tab: {
+          title: 'OpenGL',
+        },
         hostname: 'www.opengl.org',
       },
       {
-        title: 'Google',
+        tab: {
+          title: 'Google',
+        },
         hostname: 'www.google.com',
       },
     ];
 
     const matchedRecords = [
       {
-        title: 'Google',
+        tab: {
+          title: 'Google',
+        },
         hostname: 'www.google.com',
         titleHighlightRanges: [{start: 0, length: 1}, {start: 3, length: 3}],
         hostnameHighlightRanges: [{start: 4, length: 1}, {start: 7, length: 3}]
       },
       {
-        title: 'OpenGL',
+        tab: {
+          title: 'OpenGL',
+        },
         hostname: 'www.opengl.org',
         titleHighlightRanges: [{start: 2, length: 1}, {start: 4, length: 2}],
         hostnameHighlightRanges: [
@@ -61,7 +68,7 @@ suite('FuzzySearchTest', () => {
       includeMatches: true,
       keys: [
         {
-          name: 'title',
+          name: 'tab.title',
           weight: 2,
         },
         {
@@ -85,24 +92,26 @@ suite('FuzzySearchTest', () => {
     // Initial pre-search item list.
     const records = [
       {
-        title: 'Code Search',
+        tab: {
+          title: 'Code Search',
+        },
         hostname: 'search.chromium.search',
       },
-      {title: 'Marching band', hostname: 'en.marching.band.com'},
+      {tab: {title: 'Marching band'}, hostname: 'en.marching.band.com'},
       {
-        title: 'Chrome Desktop Architecture',
+        tab: {title: 'Chrome Desktop Architecture'},
         hostname: 'drive.google.com',
       },
       {
-        title: 'Arch Linux',
+        tab: {title: 'Arch Linux'},
         hostname: 'www.archlinux.org',
       },
       {
-        title: 'Arches National Park',
+        tab: {title: 'Arches National Park'},
         hostname: 'www.nps.gov',
       },
       {
-        title: 'Search Engine Land - Search Engines',
+        tab: {title: 'Search Engine Land - Search Engines'},
         hostname: 'searchengineland.com'
       },
     ];
@@ -110,36 +119,36 @@ suite('FuzzySearchTest', () => {
     // Resuts for 'arch'.
     const archMatchedRecords = [
       {
-        title: 'Arch Linux',
+        tab: {title: 'Arch Linux'},
         hostname: 'www.archlinux.org',
         titleHighlightRanges: [{start: 0, length: 4}],
         hostnameHighlightRanges: [{start: 4, length: 4}],
       },
       {
-        title: 'Arches National Park',
+        tab: {title: 'Arches National Park'},
         hostname: 'www.nps.gov',
         titleHighlightRanges: [{start: 0, length: 4}],
       },
       {
-        title: 'Chrome Desktop Architecture',
+        tab: {title: 'Chrome Desktop Architecture'},
         hostname: 'drive.google.com',
         titleHighlightRanges: [{start: 15, length: 4}],
       },
       {
-        title: 'Code Search',
+        tab: {title: 'Code Search'},
         hostname: 'search.chromium.search',
         titleHighlightRanges: [{start: 7, length: 4}],
         hostnameHighlightRanges:
             [{start: 2, length: 4}, {start: 18, length: 4}],
       },
       {
-        title: 'Search Engine Land - Search Engines',
+        tab: {title: 'Search Engine Land - Search Engines'},
         hostname: 'searchengineland.com',
         titleHighlightRanges: [{start: 2, length: 4}, {start: 23, length: 4}],
         hostnameHighlightRanges: [{start: 2, length: 4}]
       },
       {
-        title: 'Marching band',
+        tab: {title: 'Marching band'},
         hostname: 'en.marching.band.com',
         titleHighlightRanges: [{start: 1, length: 4}],
         hostnameHighlightRanges: [{start: 4, length: 4}]
@@ -149,14 +158,14 @@ suite('FuzzySearchTest', () => {
     // Results for 'search'.
     const searchMatchedRecords = [
       {
-        title: 'Code Search',
+        tab: {title: 'Code Search'},
         hostname: 'search.chromium.search',
         titleHighlightRanges: [{start: 5, length: 6}],
         hostnameHighlightRanges:
             [{start: 0, length: 6}, {start: 16, length: 6}],
       },
       {
-        title: 'Search Engine Land - Search Engines',
+        tab: {title: 'Search Engine Land - Search Engines'},
         hostname: 'searchengineland.com',
         titleHighlightRanges: [{start: 0, length: 6}, {start: 21, length: 6}],
         hostnameHighlightRanges: [{start: 0, length: 6}]
@@ -181,27 +190,27 @@ suite('FuzzySearchTest', () => {
     };
 
     // Initial pre-search item list.
-    const records = [ {
-      title: '\'beginning\\test\\end',
+    const records = [{
+      tab: {title: '\'beginning\\test\\end'},
       hostname: 'beginning\\test\"end',
-    } ];
+    }];
 
     // Expected results for '\test'.
     const backslashMatchedRecords = [
       {
-        title: '\'beginning\\test\\end',
+        tab: {title: '\'beginning\\test\\end'},
         hostname: 'beginning\\test\"end',
-        titleHighlightRanges: [ {start: 10, length: 5} ],
-        hostnameHighlightRanges: [ {start: 9, length: 5} ]
+        titleHighlightRanges: [{start: 10, length: 5}],
+        hostnameHighlightRanges: [{start: 9, length: 5}]
       },
     ];
 
     // Expected results for '"end'.
     const quoteMatchedRecords = [
       {
-        title: '\'beginning\\test\\end',
+        tab: {title: '\'beginning\\test\\end'},
         hostname: 'beginning\\test\"end',
-        hostnameHighlightRanges: [ {start: 14, length: 4} ],
+        hostnameHighlightRanges: [{start: 14, length: 4}],
       },
     ];
 
@@ -218,8 +227,8 @@ suite('FuzzySearchTest', () => {
     assertSearchOrders(
         'two',
         [
-          {title: 'three one two'}, {title: 'three two one'},
-          {title: 'one two three'}
+          {tab: {title: 'three one two'}}, {tab: {title: 'three two one'}},
+          {tab: {title: 'one two three'}}
         ],
         options, [2, 1, 0]);
   });
@@ -233,8 +242,8 @@ suite('FuzzySearchTest', () => {
         assertSearchOrders(
             'one',
             [
-              {title: 'one two three'}, {title: 'one one three'},
-              {title: 'one one one'}
+              {tab: {title: 'one two three'}}, {tab: {title: 'one one three'}},
+              {tab: {title: 'one one one'}}
             ],
             options, [2, 1, 0]);
       });
@@ -246,7 +255,7 @@ suite('FuzzySearchTest', () => {
           threshold: 0.0,
           keys: [
             {
-              name: 'title',
+              name: 'tab.title',
               weight: 2,
             },
             {
@@ -258,10 +267,12 @@ suite('FuzzySearchTest', () => {
         assertSearchOrders(
             'search',
             [
-              {hostname: 'chrome://tab-search'}, {title: 'chrome://tab-search'},
-              {title: 'chrome://tab-search', hostname: 'chrome://tab-search'}
+              {tab: {title: 'New tab'}, hostname: 'chrome://tab-search'},
+              {tab: {title: 'chrome://tab-search'}}, {
+                tab: {title: 'chrome://tab-search'},
+                hostname: 'chrome://tab-search'
+              }
             ],
             options, [2, 1, 0]);
       });
-
 });

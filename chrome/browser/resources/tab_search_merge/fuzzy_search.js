@@ -5,15 +5,13 @@
 import {quoteString} from 'chrome://resources/js/util.m.js';
 
 import Fuse from './fuse.js';
+import {TabData} from './tab_data.js';
 
 /**
- * TODO(tluk): Fix the typing for tabSearch.mojom.Tab here given we are updating
- * the fields on this object ( https://crbug.com/1133558 ).
- * @suppress {checkTypes}
  * @param {string} input
- * @param {!Array<!tabSearch.mojom.Tab>} records
+ * @param {!Array<!TabData>} records
  * @param {!Object} options
- * @return {!Array<!tabSearch.mojom.Tab>}
+ * @return {!Array<!TabData>}
  */
 export function fuzzySearch(input, records, options) {
   if (input.length === 0) {
@@ -32,7 +30,7 @@ export function fuzzySearch(input, records, options) {
     return exactSearch(input, records, options);
   } else {
     return new Fuse(records, options).search(input).map(result => {
-      const titleMatch = result.matches.find(e => e.key === 'title');
+      const titleMatch = result.matches.find(e => e.key === 'tab.title');
       const hostnameMatch = result.matches.find(e => e.key === 'hostname');
       const item = Object.assign({}, result.item);
       if (titleMatch) {
@@ -70,11 +68,10 @@ function convertToRanges(matches) {
  *    beginning of a word in the string.
  * 3. All remaining items with |title| or |hostname| matching the searchText
  *    elsewhere in the string.
- * @suppress {checkTypes}
  * @param {string} searchText
- * @param {!Array<!tabSearch.mojom.Tab>} records
+ * @param {!Array<!TabData>} records
  * @param {!Object} options
- * @return {!Array<!tabSearch.mojom.Tab>}
+ * @return {!Array<!TabData>}
  */
 function exactSearch(searchText, records, options) {
   if (searchText.length === 0) {
@@ -84,7 +81,7 @@ function exactSearch(searchText, records, options) {
   // Controls how heavily weighted the tab's title is relative to the hostname
   // in the scoring function.
   const key =
-      options.keys ? options.keys.find(e => e.name === 'title') : undefined;
+      options.keys ? options.keys.find(e => e.name === 'tab.title') : undefined;
   const titleToHostnameWeightRatio = key ? key.weight : 1;
   // Default distance to calculate score for title/hostname based on match
   // position.
@@ -94,12 +91,12 @@ function exactSearch(searchText, records, options) {
   // Perform an exact match search with range discovery.
   const exactMatches = [];
   for (let tab of records) {
-    const titleHighlightRanges = getRanges(tab.title, searchText);
+    const titleHighlightRanges = getRanges(tab.tab.title, searchText);
     const hostnameHighlightRanges = getRanges(tab.hostname, searchText);
     if (!titleHighlightRanges.length && !hostnameHighlightRanges.length) {
       continue;
     }
-    const matchedTab = Object.assign({}, tab);
+    const matchedTab = /** @type {!TabData} */ (Object.assign({}, tab));
     if (titleHighlightRanges.length) {
       matchedTab.titleHighlightRanges = titleHighlightRanges;
     }
@@ -136,28 +133,28 @@ function exactSearch(searchText, records, options) {
 /**
  * Determines whether the given tab has a title or hostname with identified
  * matches at the beginning of the string.
- * @suppress {checkTypes}
- * @param {!tabSearch.mojom.Tab} tab
+ * @param {!TabData} tab
  * @return {boolean}
  */
 function hasMatchStringStart(tab) {
-  return (tab.titleHighlightRanges &&
+  return (tab.titleHighlightRanges !== undefined &&
           tab.titleHighlightRanges[0].start === 0) ||
-         (tab.hostnameHighlightRanges &&
-          tab.hostnameHighlightRanges[0].start === 0);
+      (tab.hostnameHighlightRanges !== undefined &&
+       tab.hostnameHighlightRanges[0].start === 0);
 }
 
 /**
  * Determines whether the given tab has a match for the given regexp in its
  * title or hostname.
- * @suppress {checkTypes}
- * @param {!tabSearch.mojom.Tab} tab
+ * @param {!TabData} tab
  * @param {RegExp} regexp
  * @return {boolean}
  */
 function hasRegexMatch(tab, regexp) {
-  return (tab.titleHighlightRanges && tab.title.search(regexp) !== -1) ||
-         (tab.hostnameHighlightRanges && tab.hostname.search(regexp) !== -1);
+  return (tab.titleHighlightRanges !== undefined &&
+          tab.tab.title.search(regexp) !== -1) ||
+      (tab.hostnameHighlightRanges !== undefined &&
+       tab.hostname.search(regexp) !== -1);
 }
 
 /**
@@ -186,8 +183,7 @@ function getRanges(target, searchText) {
  * Matches near the beginning of the string will have a higher score than
  * matches near the end of the string. Multiple matches will have a higher score
  * than single matches.
- * @suppress {checkTypes}
- * @param {!tabSearch.mojom.Tab} tab
+ * @param {!TabData} tab
  * @param {number} distance
  * @param {number} titleToHostnameWeightRatio
  */

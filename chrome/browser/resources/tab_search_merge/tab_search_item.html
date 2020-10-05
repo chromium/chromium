@@ -76,13 +76,13 @@
   }
 </style>
 
-<div class="favicon" style="background-image:[[faviconUrl_(data)]]"></div>
+<div class="favicon" style="background-image:[[faviconUrl_(data.tab)]]"></div>
 <div class="text-container">
-  <div id="primaryText" title="[[data.title]]"></div>
+  <div id="primaryText" title="[[data.tab.title]]"></div>
   <div id="secondaryText"></div>
 </div>
 <div class="button-container">
-  <cr-icon-button id="closeButton" aria-label="[[ariaLabel_(data.title)]]"
+  <cr-icon-button id="closeButton" aria-label="[[ariaLabel_(data.tab.title)]]"
       iron-icon="mwb16:close" noink on-click="onItemClose_"
       title="$i18n{closeTab}">
   </cr-icon-button>

@@ -13,6 +13,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {highlight} from 'chrome://resources/js/search_highlight_utils.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {TabData} from './tab_data.js';
 import './strings.js';
 
 export class TabSearchItem extends PolymerElement {
@@ -26,7 +27,7 @@ export class TabSearchItem extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!tabSearch.mojom.Tab} */
+      /** @type {!TabData} */
       data: {
         type: Object,
         observer: 'dataChanged_',
@@ -44,32 +45,30 @@ export class TabSearchItem extends PolymerElement {
   }
 
   /**
-   * @param {!tabSearch.mojom.Tab} data
+   * @param {!tabSearch.mojom.Tab} tab
    * @return {string}
    * @private
    */
-  faviconUrl_(data) {
-    return data.faviconUrl ? `url("${data.faviconUrl}")` :
-        getFaviconForPageURL(data.isDefaultFavicon ? 'chrome://newtab' : data.url, false);
+  faviconUrl_(tab) {
+    return tab.faviconUrl ?
+        `url("${tab.faviconUrl}")` :
+        getFaviconForPageURL(
+            tab.isDefaultFavicon ? 'chrome://newtab' : tab.url, false);
   }
 
   /**
-   * @suppress {checkTypes}
-   * Suppress checking types because hostname, titleHighlightRanges and
-   * hostnameHighlightRanges are added on the flight and not part of the
-   * original mojom.tabSearch.Tab definition
    * @private
    */
   dataChanged_() {
     this.highlightText_(
-        /** @type {!HTMLElement} */ (this.$.primaryText), this.data.title,
+        /** @type {!HTMLElement} */ (this.$.primaryText), this.data.tab.title,
         this.data.titleHighlightRanges);
     this.highlightText_(
         /** @type {!HTMLElement} */ (this.$.secondaryText), this.data.hostname,
         this.data.hostnameHighlightRanges);
 
     // Show chrome:// if it's a chrome internal url
-    if (new URL(this.data.url).protocol === 'chrome:') {
+    if (new URL(this.data.tab.url).protocol === 'chrome:') {
       /** @type {!HTMLElement} */ (this.$.secondaryText)
           .prepend(document.createTextNode('chrome://'));
     }
@@ -79,7 +78,7 @@ export class TabSearchItem extends PolymerElement {
    *
    * @param {!HTMLElement} container
    * @param {string} text
-   * @param {?Array<!{start:number, length:number}>} ranges
+   * @param {!Array<!{start:number, length:number}>|undefined} ranges
    */
   highlightText_(container, text, ranges) {
     container.textContent = '';

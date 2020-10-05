@@ -22,6 +22,9 @@
       <include name="IDR_FUZZY_SEARCH_JS"
                file="fuzzy_search.js"
                type="BINDATA"/>
+      <include name="IDR_TAB_DATA_JS"
+               file="tab_data.js"
+               type="BINDATA" />
       <include name="IDR_TAB_SEARCH_API_PROXY_JS"
                file="tab_search_api_proxy.js"
                type="BINDATA" />

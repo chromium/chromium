@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TabData} from 'chrome://tab-search/tab_data.js';
 import {TabSearchItem} from 'chrome://tab-search/tab_search_item.js';
+
 import {assertDeepEquals} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
 
@@ -16,20 +18,22 @@ suite('TabSearchItemTest', () => {
       text, highlightRanges, expected) {
     const tabSearchItem = /** @type {!TabSearchItem} */ (
         document.createElement('tab-search-item'));
-    const data = {
-      active: true,
-      index: 0,
-      isDefaultFavicon: true,
-      lastActiveTimeTicks: {internalValue: 0},
-      pinned: false,
-      showIcon: true,
-      tabId: 0,
-      url: 'https://example.com',
-      title: text,
+    const data = /** @type {!TabData} */ ({
       titleHighlightRanges: highlightRanges,
       hostname: text,
       hostnameHighlightRanges: highlightRanges,
-    };
+      tab: {
+        active: true,
+        index: 0,
+        isDefaultFavicon: true,
+        lastActiveTimeTicks: {internalValue: 0},
+        pinned: false,
+        showIcon: true,
+        tabId: 0,
+        url: 'https://example.com',
+        title: text,
+      }
+    });
     tabSearchItem.data = data;
     document.body.innerHTML = '';
     document.body.appendChild(tabSearchItem);

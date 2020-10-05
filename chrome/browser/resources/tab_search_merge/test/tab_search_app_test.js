@@ -211,8 +211,8 @@ suite('TabSearchAppTest', () => {
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
     let tabSearchItem = /** @type {!HTMLElement} */
         (tabSearchApp.shadowRoot.querySelector('tab-search-item[id="1"]'));
-    assertEquals('Google', tabSearchItem.data.title);
-    assertEquals('https://www.google.com', tabSearchItem.data.url);
+    assertEquals('Google', tabSearchItem.data.tab.title);
+    assertEquals('https://www.google.com', tabSearchItem.data.tab.url);
     const updatedTab = /** @type {!tabSearch.mojom.Tab} */ ({
       index: 0,
       tabId: 1,
@@ -226,8 +226,8 @@ suite('TabSearchAppTest', () => {
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
     tabSearchItem = /** @type {!HTMLElement} */
         (tabSearchApp.shadowRoot.querySelector('tab-search-item[id="1"]'));
-    assertEquals(updatedTab.title, tabSearchItem.data.title);
-    assertEquals(updatedTab.url, tabSearchItem.data.url);
+    assertEquals(updatedTab.title, tabSearchItem.data.tab.title);
+    assertEquals(updatedTab.url, tabSearchItem.data.tab.url);
     assertEquals('example.com', tabSearchItem.data.hostname);
   });
 
