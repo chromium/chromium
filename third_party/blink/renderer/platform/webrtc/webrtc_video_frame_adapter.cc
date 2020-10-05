@@ -244,6 +244,7 @@ WebRtcVideoFrameAdapter::CreateFrameAdapter() const {
 
 rtc::scoped_refptr<webrtc::I420BufferInterface>
 WebRtcVideoFrameAdapter::ToI420() {
+  base::AutoLock auto_lock(adapter_lock_);
   if (!frame_adapter_) {
     frame_adapter_ = CreateFrameAdapter();
   }
@@ -251,6 +252,7 @@ WebRtcVideoFrameAdapter::ToI420() {
 }
 
 const webrtc::I420BufferInterface* WebRtcVideoFrameAdapter::GetI420() const {
+  base::AutoLock auto_lock(adapter_lock_);
   if (!frame_adapter_) {
     frame_adapter_ = CreateFrameAdapter();
   }
