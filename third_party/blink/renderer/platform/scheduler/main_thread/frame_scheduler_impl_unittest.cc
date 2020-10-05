@@ -916,8 +916,7 @@ TEST_P(FrameSchedulerImplStopInBackgroundDisabledTest, NoThrottlingWithOptOut) {
 INSTANTIATE_TEST_SUITE_P(
     AllTimerTaskTypes,
     FrameSchedulerImplStopInBackgroundDisabledTest,
-    testing::Values(TaskType::kJavascriptTimerImmediate,
-                    TaskType::kJavascriptTimerDelayedLowNesting,
+    testing::Values(TaskType::kJavascriptTimerDelayedLowNesting,
                     TaskType::kJavascriptTimerDelayedHighNesting),
     [](const testing::TestParamInfo<TaskType>& info) {
       return TaskTypeNames::TaskTypeToString(info.param);
@@ -2390,15 +2389,8 @@ TEST_F(FrameSchedulerImplTest, TaskTypeToTaskQueueMapping) {
             JavaScriptTimerTaskQueue());
   EXPECT_EQ(GetTaskQueue(TaskType::kJavascriptTimerDelayedHighNesting),
             JavaScriptTimerTaskQueue());
-  EXPECT_EQ(GetTaskQueue(TaskType::kJavascriptTimerImmediate),
-            JavaScriptTimerTaskQueue());
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        features::kOptOutZeroTimeoutTimersFromThrottling);
     EXPECT_EQ(GetTaskQueue(TaskType::kJavascriptTimerImmediate),
               JavaScriptTimerNonThrottleableTaskQueue());
-  }
 
   EXPECT_EQ(GetTaskQueue(TaskType::kWebSocket), DeferrableTaskQueue());
   EXPECT_EQ(GetTaskQueue(TaskType::kDatabaseAccess), PausableTaskQueue());
@@ -2423,7 +2415,6 @@ TEST_F(FrameSchedulerImplTest, ThrottledTaskTypes) {
                  << TaskTypeNames::TaskTypeToString(task_type));
     switch (task_type) {
       case TaskType::kInternalContentCapture:
-      case TaskType::kJavascriptTimerImmediate:
       case TaskType::kJavascriptTimerDelayedLowNesting:
       case TaskType::kJavascriptTimerDelayedHighNesting:
       case TaskType::kInternalTranslation:
@@ -2807,7 +2798,6 @@ TEST_F(WebSchedulingTaskQueueTest, DynamicTaskPriorityOrder) {
 // expected time when throttled.
 TEST_F(FrameSchedulerImplTest, ThrottledJSTimerTasksRunTime) {
   constexpr TaskType kJavaScriptTimerTaskTypes[] = {
-      TaskType::kJavascriptTimerImmediate,
       TaskType::kJavascriptTimerDelayedLowNesting,
       TaskType::kJavascriptTimerDelayedHighNesting};
 
@@ -3735,10 +3725,6 @@ INSTANTIATE_TEST_SUITE_P(
     AllTimerTaskTypes,
     FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
     testing::Values(
-        IntensiveWakeUpThrottlingTestParam{
-            /* task_type=*/TaskType::kJavascriptTimerImmediate,
-            /* can_intensively_throttle_low_nesting_level=*/false,
-            /* is_intensive_throttling_expected=*/false},
         IntensiveWakeUpThrottlingTestParam{
             /* task_type=*/TaskType::kJavascriptTimerDelayedLowNesting,
             /* can_intensively_throttle_low_nesting_level=*/false,

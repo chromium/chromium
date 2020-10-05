@@ -223,7 +223,7 @@ const base::Feature kIntensiveWakeUpThrottling{
 
 // When enabled, timers with timeout=0 are not throttled.
 const base::Feature kOptOutZeroTimeoutTimersFromThrottling{
-    "OptOutZeroTimeoutTimersFromThrottling", base::FEATURE_DISABLED_BY_DEFAULT};
+    "OptOutZeroTimeoutTimersFromThrottling", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, no throttling is applied to a page when it uses WebRTC.
 //
