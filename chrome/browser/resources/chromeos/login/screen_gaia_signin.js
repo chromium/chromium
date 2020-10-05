@@ -459,15 +459,14 @@ Polymer({
   },
 
   /**
-   * Updates whether the Guest button is allowed to be shown. (Note that the
-   * C++ side contains additional logic that decides whether the Guest button
-   * should be shown.)
+   * Updates whether the Guest and Apps button is allowed to be shown. (Note
+   * that the C++ side contains additional logic that decides whether the
+   * Guest button should be shown.)
    * @private
    */
-  updateGuestButtonVisibility_() {
-    let showGuestInOobe = !this.isClosable_() && this.isAtTheBeginning_();
-    // TODO(rsorokin): Rename message string to reflect the meaning.
-    chrome.send('showGuestInOobe', [showGuestInOobe]);
+  updateButtonsVisibilityAtFirstSigingStep_() {
+    let isFristSigninStep = !this.isClosable_() && this.isAtTheBeginning_();
+    chrome.send('setIsFirstSigninStep', [isFristSigninStep]);
   },
 
   /**
@@ -545,7 +544,7 @@ Polymer({
       return;
     }
     chrome.send('updateOfflineLogin', [this.isOffline_()]);
-    this.updateGuestButtonVisibility_();
+    this.updateButtonsVisibilityAtFirstSigingStep_();
   },
 
   /**
@@ -713,7 +712,7 @@ Polymer({
     this.navigationEnabled_ = true;
 
     this.lastBackMessageValue_ = false;
-    this.updateGuestButtonVisibility_();
+    this.updateButtonsVisibilityAtFirstSigingStep_();
 
     cr.ui.login.invokePolymerMethod(
         this.$['signin-frame-dialog'], 'onBeforeShow');
@@ -823,7 +822,7 @@ Polymer({
         this.loadingFrameContents_ = false;
         break;
     }
-    this.updateGuestButtonVisibility_();
+    this.updateButtonsVisibilityAtFirstSigingStep_();
     chrome.send('authExtensionLoaded');
   },
 
@@ -916,7 +915,7 @@ Polymer({
         Oobe.getInstance().updateScreenSize(this);
       }
 
-      this.updateGuestButtonVisibility_();
+      this.updateButtonsVisibilityAtFirstSigingStep_();
     }
   },
 
@@ -987,7 +986,7 @@ Polymer({
   onBackButton_(e) {
     this.getActiveFrame_().focus();
     this.lastBackMessageValue_ = !!e.detail;
-    this.updateGuestButtonVisibility_();
+    this.updateButtonsVisibilityAtFirstSigingStep_();
   },
   /**
    * Invoked when the auth host emits 'setPrimaryActionEnabled'  event
@@ -1219,7 +1218,7 @@ Polymer({
 
     this.clearVideoTimer_();
     this.authCompleted_ = true;
-    this.updateGuestButtonVisibility_();
+    this.updateButtonsVisibilityAtFirstSigingStep_();
   },
 
   /**
@@ -1284,7 +1283,7 @@ Polymer({
     this.startLoadingTimer_();
     this.lastBackMessageValue_ = false;
     this.authCompleted_ = false;
-    this.updateGuestButtonVisibility_();
+    this.updateButtonsVisibilityAtFirstSigingStep_();
   },
 
   /**
@@ -1387,7 +1386,7 @@ Polymer({
     else
       Oobe.showSigninUI();
 
-    this.updateGuestButtonVisibility_();
+    this.updateButtonsVisibilityAtFirstSigingStep_();
   },
 
   /**

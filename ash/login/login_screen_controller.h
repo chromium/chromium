@@ -112,7 +112,7 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
   bool IsReadyForPassword() override;
   void EnableAddUserButton(bool enable) override;
   void EnableShutdownButton(bool enable) override;
-  void ShowGuestButtonInOobe(bool show) override;
+  void SetIsFirstSigninStep(bool is_first) override;
   void ShowParentAccessButton(bool show) override;
   void SetAllowLoginAsGuest(bool allow_guest) override;
   std::unique_ptr<ScopedGuestButtonBlocker> GetScopedGuestButtonBlocker()

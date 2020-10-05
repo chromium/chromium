@@ -320,11 +320,11 @@ void LoginScreenController::EnableShutdownButton(bool enable) {
       ->SetShutdownButtonEnabled(enable);
 }
 
-void LoginScreenController::ShowGuestButtonInOobe(bool show) {
+void LoginScreenController::SetIsFirstSigninStep(bool is_first) {
   Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
       ->shelf_widget()
       ->login_shelf_view()
-      ->ShowGuestButtonInOobe(show);
+      ->SetIsFirstSigninStep(is_first);
 }
 
 void LoginScreenController::ShowParentAccessButton(bool show) {

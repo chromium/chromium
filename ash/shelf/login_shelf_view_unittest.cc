@@ -239,24 +239,39 @@ TEST_F(LoginShelfViewTest, ShouldUpdateUiBasedOnShutdownPolicyInActiveSession) {
       AreButtonsInOrder(LoginShelfView::kRestart, LoginShelfView::kSignOut));
 }
 
+// Checks that the Apps button is hidden if a session has started
+TEST_F(LoginShelfViewTest, ShouldNotShowAppsButtonAfterSessionStarted) {
+  NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
+
+  std::vector<KioskAppMenuEntry> kiosk_apps(1);
+  login_shelf_view_->SetKioskApps(kiosk_apps, {}, {});
+  EXPECT_TRUE(
+      login_shelf_view_->GetViewByID(LoginShelfView::kApps)->GetVisible());
+
+  CreateUserSessions(1);
+  EXPECT_FALSE(
+      login_shelf_view_->GetViewByID(LoginShelfView::kApps)->GetVisible());
+}
+
 // Checks that the shutdown or restart buttons shown before the Apps button when
-// kiosk mode is enabled at GAIA_SIGNIN state
+// kiosk mode is enabled
 TEST_F(LoginShelfViewTest, ShouldShowShutdownOrRestartButtonsBeforeApps){
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
 
   std::vector<KioskAppMenuEntry> kiosk_apps(1);
   login_shelf_view_->SetKioskApps(kiosk_apps, {}, {});
-  login_shelf_view_->SetLoginDialogState(OobeDialogState::GAIA_SIGNIN);
 
   // |reboot_on_shutdown| is initially off
-  EXPECT_TRUE(
-      ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kApps}));
+  EXPECT_TRUE(ShowsShelfButtons(
+      {LoginShelfView::kShutdown, LoginShelfView::kBrowseAsGuest,
+       LoginShelfView::kAddUser, LoginShelfView::kApps}));
   EXPECT_TRUE(
       AreButtonsInOrder(LoginShelfView::kShutdown, LoginShelfView::kApps));
 
   NotifyShutdownPolicyChanged(true /*reboot_on_shutdown*/);
-  EXPECT_TRUE(
-      ShowsShelfButtons({LoginShelfView::kRestart, LoginShelfView::kApps}));
+  EXPECT_TRUE(ShowsShelfButtons(
+      {LoginShelfView::kRestart, LoginShelfView::kBrowseAsGuest,
+       LoginShelfView::kAddUser, LoginShelfView::kApps}));
   EXPECT_TRUE(
       AreButtonsInOrder(LoginShelfView::kRestart, LoginShelfView::kApps));
 }
@@ -394,23 +409,18 @@ TEST_F(LoginShelfViewTest, ShouldUpdateUiAfterDialogStateChange) {
   login_shelf_view_->SetAllowLoginAsGuest(false /*allow_guest*/);
   EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
 
-  // Kiosk app button is visible when dialog state == OobeDialogState::HIDDEN
-  // or GAIA_SIGNIN.
+  // By default apps button is hidden during gaia sign in
   login_shelf_view_->SetLoginDialogState(OobeDialogState::GAIA_SIGNIN);
   std::vector<KioskAppMenuEntry> kiosk_apps(1);
   login_shelf_view_->SetKioskApps(kiosk_apps, {}, {});
-  EXPECT_TRUE(
-      ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kApps}));
-  EXPECT_TRUE(
-      AreButtonsInOrder(LoginShelfView::kShutdown, LoginShelfView::kApps));
+  EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
 
+  // Apps button is hidden during SAML_PASSWORD_CONFIRM STATE
   login_shelf_view_->SetLoginDialogState(
       OobeDialogState::SAML_PASSWORD_CONFIRM);
-  EXPECT_TRUE(
-      ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kApps}));
-  EXPECT_TRUE(
-      AreButtonsInOrder(LoginShelfView::kShutdown, LoginShelfView::kApps));
+  EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
 
+  // Kiosk apps button is visible when dialog state == OobeDialogState::HIDDEN
   login_shelf_view_->SetLoginDialogState(OobeDialogState::HIDDEN);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kAddUser,
@@ -450,7 +460,7 @@ TEST_F(LoginShelfViewTest, ShouldUpdateUiAfterDialogStateChange) {
 
 TEST_F(LoginShelfViewTest, ShouldShowGuestButtonWhenNoUserPods) {
   login_shelf_view_->SetAllowLoginAsGuest(/*allow_guest=*/true);
-  login_shelf_view_->ShowGuestButtonInOobe(/*show=*/true);
+  login_shelf_view_->SetIsFirstSigninStep(/*is_first=*/true);
   SetUserCount(0);
 
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);

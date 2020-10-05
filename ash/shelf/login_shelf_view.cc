@@ -275,12 +275,6 @@ void StartAddUser() {
       EmptyAccountId() /*prefilled_account*/);
 }
 
-bool DialogStateGuestAllowed(OobeDialogState state) {
-  return state == OobeDialogState::GAIA_SIGNIN ||
-         state == OobeDialogState::ERROR || state == OobeDialogState::HIDDEN ||
-         state == OobeDialogState::USER_CREATION;
-}
-
 bool ShutdownButtonHidden(OobeDialogState state) {
   return state == OobeDialogState::MIGRATION ||
          state == OobeDialogState::ENROLLMENT ||
@@ -668,8 +662,8 @@ void LoginShelfView::ShowParentAccessButton(bool show) {
   UpdateUi();
 }
 
-void LoginShelfView::ShowGuestButtonInOobe(bool show) {
-  allow_guest_in_oobe_ = show;
+void LoginShelfView::SetIsFirstSigninStep(bool is_first) {
+  is_first_signin_step_ = is_first;
   UpdateUi();
 }
 
@@ -802,13 +796,9 @@ void LoginShelfView::UpdateUi() {
   // visible. The button should not appear if the device is not connected to a
   // network.
   GetViewByID(kAddUser)->SetVisible(!dialog_visible && is_login_primary);
-  // Show kiosk apps button if:
-  // 1. It's in login screen.
-  // 2. There are Kiosk apps available.
-  // 3. Device is not currently blocked.
   kiosk_apps_button_->SetVisible(kiosk_apps_button_->HasApps() &&
-                                 (is_login_primary || is_oobe) &&
-                                 (dialog_state_ != OobeDialogState::BLOCKING));
+                                 ShouldShowAppsButton());
+
   // If there is no visible (and thus focusable) buttons, we shouldn't focus
   // LoginShelfView. We update it here, so we don't need to check visibility
   // every time we move focus to system tray.
@@ -866,6 +856,22 @@ void LoginShelfView::UpdateButtonUnionBounds() {
   }
 }
 
+bool LoginShelfView::ShouldShowGuestAndAppsButtons() const {
+  bool dialog_state_allowed = false;
+  if (dialog_state_ == OobeDialogState::USER_CREATION ||
+      dialog_state_ == OobeDialogState::GAIA_SIGNIN) {
+    dialog_state_allowed = !login_screen_has_users_ && is_first_signin_step_;
+  } else if (dialog_state_ == OobeDialogState::ERROR ||
+             dialog_state_ == OobeDialogState::HIDDEN) {
+    dialog_state_allowed = true;
+  }
+
+  const bool user_session_started =
+      Shell::Get()->session_controller()->NumberOfLoggedInUsers() != 0;
+
+  return dialog_state_allowed && !user_session_started;
+}
+
 // Show guest button if:
 // 1. Guest login is allowed.
 // 2. OOBE UI dialog is currently showing the login UI or error.
@@ -885,26 +891,17 @@ bool LoginShelfView::ShouldShowGuestButton() const {
   if (scoped_guest_button_blockers_ > 0)
     return false;
 
-  if (!DialogStateGuestAllowed(dialog_state_))
-    return false;
-
-  const bool user_session_started =
-      Shell::Get()->session_controller()->NumberOfLoggedInUsers() != 0;
-  if (user_session_started)
+  if (!ShouldShowGuestAndAppsButtons())
     return false;
 
   const SessionState session_state =
       Shell::Get()->session_controller()->GetSessionState();
 
   if (session_state == SessionState::OOBE)
-    return allow_guest_in_oobe_;
+    return is_first_signin_step_;
 
   if (session_state != SessionState::LOGIN_PRIMARY)
     return false;
-
-  if (dialog_state_ == OobeDialogState::USER_CREATION ||
-      dialog_state_ == OobeDialogState::GAIA_SIGNIN)
-    return !login_screen_has_users_ && allow_guest_in_oobe_;
 
   return true;
 }
@@ -914,6 +911,18 @@ bool LoginShelfView::ShouldShowEnterpriseEnrollmentButton() const {
       Shell::Get()->session_controller()->GetSessionState();
   return session_state == SessionState::OOBE &&
          dialog_state_ == OobeDialogState::USER_CREATION;
+}
+
+bool LoginShelfView::ShouldShowAppsButton() const {
+  if (!ShouldShowGuestAndAppsButtons())
+    return false;
+
+  const SessionState session_state =
+      Shell::Get()->session_controller()->GetSessionState();
+  if (session_state != SessionState::LOGIN_PRIMARY)
+    return false;
+
+  return true;
 }
 
 }  // namespace ash

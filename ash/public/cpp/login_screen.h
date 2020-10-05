@@ -51,8 +51,9 @@ class ASH_PUBLIC_EXPORT LoginScreen {
   // Sets whether shutdown button is enabled in the login screen.
   virtual void EnableShutdownButton(bool enable) = 0;
 
-  // Shows or hides the guest button on the login shelf during OOBE.
-  virtual void ShowGuestButtonInOobe(bool show) = 0;
+  // Used to show or hide apps the guest and buttons on the login shelf during
+  // OOBE.
+  virtual void SetIsFirstSigninStep(bool is_first) = 0;
 
   // Shows or hides the parent access button on the login shelf.
   virtual void ShowParentAccessButton(bool show) = 0;

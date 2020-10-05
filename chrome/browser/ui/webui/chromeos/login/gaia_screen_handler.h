@@ -241,9 +241,9 @@ class GaiaScreenHandler : public BaseScreenHandler,
                                        const std::string& typed_email,
                                        const std::string& gaia_id);
 
-  // Allows WebUI to control the login shelf's guest button visibility during
-  // OOBE.
-  void HandleShowGuestInOobe(bool show);
+  // Allows WebUI to control the login shelf's guest and apps buttons visibility
+  // during OOBE.
+  void HandleIsFirstSigninStep(bool is_first);
 
   // Called to notify whether the SAML sign-in is currently happening.
   void HandleSamlStateChanged(bool is_saml);

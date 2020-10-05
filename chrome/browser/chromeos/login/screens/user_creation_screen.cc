@@ -88,7 +88,7 @@ void UserCreationScreen::ShowImpl() {
       ScopedObserver<NetworkStateInformer, NetworkStateInformerObserver>>(this);
   scoped_observer_->Add(network_state_informer_.get());
 
-  ash::LoginScreen::Get()->ShowGuestButtonInOobe(true);
+  ash::LoginScreen::Get()->SetIsFirstSigninStep(true);
 
   // Back button is only available in login screen (add user flow) which is
   // indicated by if the device has users. Back button is hidden in the oobe

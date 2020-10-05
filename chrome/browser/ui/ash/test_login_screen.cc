@@ -43,7 +43,7 @@ void TestLoginScreen::EnableAddUserButton(bool enable) {}
 
 void TestLoginScreen::EnableShutdownButton(bool enable) {}
 
-void TestLoginScreen::ShowGuestButtonInOobe(bool show) {}
+void TestLoginScreen::SetIsFirstSigninStep(bool is_first) {}
 
 void TestLoginScreen::ShowParentAccessButton(bool show) {}
 

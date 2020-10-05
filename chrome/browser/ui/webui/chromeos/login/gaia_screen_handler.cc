@@ -723,7 +723,8 @@ void GaiaScreenHandler::RegisterMessages() {
   AddRawCallback("showAddUser", &GaiaScreenHandler::HandleShowAddUser);
   AddCallback("getIsSamlUserPasswordless",
               &GaiaScreenHandler::HandleGetIsSamlUserPasswordless);
-  AddCallback("showGuestInOobe", &GaiaScreenHandler::HandleShowGuestInOobe);
+  AddCallback("setIsFirstSigninStep",
+              &GaiaScreenHandler::HandleIsFirstSigninStep);
   AddCallback("samlStateChanged", &GaiaScreenHandler::HandleSamlStateChanged);
   AddCallback("securityTokenPinEntered",
               &GaiaScreenHandler::HandleSecurityTokenPinEntered);
@@ -1031,8 +1032,8 @@ void GaiaScreenHandler::HandleGetIsSamlUserPasswordless(
                             base::Value(is_saml_user_passwordless));
 }
 
-void GaiaScreenHandler::HandleShowGuestInOobe(bool show) {
-  ash::LoginScreen::Get()->ShowGuestButtonInOobe(show);
+void GaiaScreenHandler::HandleIsFirstSigninStep(bool is_first) {
+  ash::LoginScreen::Get()->SetIsFirstSigninStep(is_first);
 }
 
 void GaiaScreenHandler::HandleSamlStateChanged(bool is_saml) {

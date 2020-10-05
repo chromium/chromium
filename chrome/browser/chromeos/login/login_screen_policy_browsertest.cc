@@ -104,16 +104,16 @@ IN_PROC_BROWSER_TEST_F(LoginScreenGuestButtonPolicyTest, NoUsers) {
   EXPECT_TRUE(ash::LoginScreenTestApi::IsGuestButtonShown());
 
   // When there are no users - should be the same as OOBE.
-  test::ExecuteOobeJS("chrome.send('showGuestInOobe', [false]);");
+  test::ExecuteOobeJS("chrome.send('setIsFirstSigninStep', [false]);");
   EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
 
-  test::ExecuteOobeJS("chrome.send('showGuestInOobe', [true]);");
+  test::ExecuteOobeJS("chrome.send('setIsFirstSigninStep', [true]);");
   EXPECT_TRUE(ash::LoginScreenTestApi::IsGuestButtonShown());
 
   SetGuestModePolicy(false);
   EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
 
-  test::ExecuteOobeJS("chrome.send('showGuestInOobe', [true]);");
+  test::ExecuteOobeJS("chrome.send('setIsFirstSigninStep', [true]);");
   // Should not affect.
   EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
 
@@ -131,13 +131,13 @@ IN_PROC_BROWSER_TEST_F(LoginScreenGuestButtonPolicyTest, HasUsers) {
   EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
 
   // Should not affect.
-  test::ExecuteOobeJS("chrome.send('showGuestInOobe', [true]);");
+  test::ExecuteOobeJS("chrome.send('setIsFirstSigninStep', [true]);");
   EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
 
   ash::LoginScreen::Get()->GetModel()->SetUserList({});
   EXPECT_TRUE(ash::LoginScreenTestApi::IsGuestButtonShown());
 
-  test::ExecuteOobeJS("chrome.send('showGuestInOobe', [false]);");
+  test::ExecuteOobeJS("chrome.send('setIsFirstSigninStep', [false]);");
   EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
 }
 

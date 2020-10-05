@@ -106,7 +106,7 @@ void SupervisionTransitionScreenHandler::Show() {
   SystemTrayClient::Get()->SetPrimaryTrayEnabled(false);
   ash::LoginScreen::Get()->EnableShutdownButton(false);
   ash::LoginScreen::Get()->SetAllowLoginAsGuest(false);
-  ash::LoginScreen::Get()->ShowGuestButtonInOobe(false);
+  ash::LoginScreen::Get()->SetIsFirstSigninStep(false);
 
   base::DictionaryValue data;
   data.SetBoolean("isRemovingSupervision",

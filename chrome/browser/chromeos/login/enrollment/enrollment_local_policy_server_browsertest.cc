@@ -822,10 +822,10 @@ IN_PROC_BROWSER_TEST_P(OobeGuestButtonPolicy, VisibilityAfterEnrollment) {
             user_manager::UserManager::Get()->IsGuestSessionAllowed());
   EXPECT_EQ(GetParam(), ash::LoginScreenTestApi::IsGuestButtonShown());
 
-  test::ExecuteOobeJS("chrome.send('showGuestInOobe', [false]);");
+  test::ExecuteOobeJS("chrome.send('setIsFirstSigninStep', [false]);");
   EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
 
-  test::ExecuteOobeJS("chrome.send('showGuestInOobe', [true]);");
+  test::ExecuteOobeJS("chrome.send('setIsFirstSigninStep', [true]);");
   EXPECT_EQ(GetParam(), ash::LoginScreenTestApi::IsGuestButtonShown());
 }
 

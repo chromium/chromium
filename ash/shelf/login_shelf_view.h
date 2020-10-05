@@ -93,9 +93,9 @@ class ASH_EXPORT LoginShelfView : public views::View,
   // Sets whether parent access button can be shown on the login shelf.
   void ShowParentAccessButton(bool show);
 
-  // Sets if the guest button on the login shelf can be shown during gaia
-  // signin screen.
-  void ShowGuestButtonInOobe(bool show);
+  // Sets if the guest button and apps button on the login shelf can be
+  // shown during gaia signin screen.
+  void SetIsFirstSigninStep(bool is_first);
 
   // Sets whether users can be added from the login screen.
   void SetAddUserButtonEnabled(bool enable_add_user);
@@ -172,9 +172,13 @@ class ASH_EXPORT LoginShelfView : public views::View,
 
   bool ShouldShowEnterpriseEnrollmentButton() const;
 
+  bool ShouldShowAppsButton() const;
+
+  bool ShouldShowGuestAndAppsButtons() const;
+
   OobeDialogState dialog_state_ = OobeDialogState::HIDDEN;
   bool allow_guest_ = true;
-  bool allow_guest_in_oobe_ = false;
+  bool is_first_signin_step_ = false;
   bool show_parent_access_ = false;
   // When the Gaia screen is active during Login, the guest-login button should
   // appear if there are no user views.
