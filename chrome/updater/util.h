@@ -56,13 +56,11 @@ GURL AppendQueryParameter(const GURL& url,
 
 // Provides a way to safely convert numeric types to enumerated values.
 // To use this facility, the enum definition must be annotated with traits to
-// specify the range of the enum values. Due to how the specialization of
-// class template work in C++, the |EnumTraits| specialization must be
-// defined in the |updater| namespace. That means that traits for enum types
-// defined inside other scopes, such as nested classes or other namespaces
-// may not work if the traits type is define inside the that scope instead of
-// the |updater| namespace where the primary template is defined.
-
+// specify the range of the enum values. Due to how specialization of class
+// templates works in C++14, the |EnumTraits| specialization of the primary
+// template must be defined inside the |updater| namespace, where the
+// primary template is defined. Traits for enum types defined inside
+// other scopes, such as nested classes or other namespaces, may not work.
 //
 // enum class MyEnum {
 //   kVal1 = -1,
