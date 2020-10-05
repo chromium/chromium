@@ -31,6 +31,7 @@
 #include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "inline_autocompletion_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/third_party/mozilla/url_parse.h"
@@ -73,24 +74,6 @@ bool WordMatchesURLContent(
       return true;
   }
   return false;
-}
-
-// Finds the first occurrence of |search| at a wordbreak within |text|.
-size_t FindAtWordbreak(const base::string16& text,
-                       const base::string16& search) {
-  WordStarts word_starts;
-  String16VectorFromString16(text, false, &word_starts);
-  size_t next_occurrence = std::string::npos;
-  for (auto word_start : word_starts) {
-    if (next_occurrence != std::string::npos && word_start < next_occurrence)
-      continue;
-    next_occurrence = text.find(search, word_start);
-    if (next_occurrence == std::string::npos)
-      break;
-    if (word_start == next_occurrence)
-      return next_occurrence;
-  }
-  return std::string::npos;
 }
 
 }  // namespace
@@ -1134,7 +1117,7 @@ size_t AutocompleteMatch::EstimateMemoryUsage() const {
 void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
     AutocompleteMatch& duplicate_match) {
   // For Entity Matches, absorb the duplicate match's |allowed_to_be_default|
-  // and |inline_autocomplete| properties.
+  // and |inline_autocompletion| properties.
   if (type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY &&
       fill_into_edit == duplicate_match.fill_into_edit &&
       duplicate_match.allowed_to_be_default_match) {
