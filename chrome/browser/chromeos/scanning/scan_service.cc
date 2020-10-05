@@ -59,6 +59,7 @@ void ScanService::Scan(const base::UnguessableToken& scanner_id,
   if (scanner_name.empty())
     std::move(callback).Run(false);
 
+  base::Time::Now().UTCExplode(&start_time_);
   save_failed_ = false;
 
   // TODO(jschettler): Create a TypeConverter to convert from
@@ -118,13 +119,13 @@ void ScanService::OnScannerCapabilitiesReceived(
       mojo::ConvertTo<mojo_ipc::ScannerCapabilitiesPtr>(capabilities.value()));
 }
 
-void ScanService::OnPageReceived(std::string scanned_image) {
-  // TODO(jschettler): Add page number to filename.
-  base::Time::Exploded time;
-  base::Time::Now().UTCExplode(&time);
+void ScanService::OnPageReceived(std::string scanned_image,
+                                 uint32_t page_number) {
+  // The |page_number| is 0-indexed.
   const std::string filename = base::StringPrintf(
-      "scan_%02d%02d%02d-%02d%02d%02d.png", time.year, time.month,
-      time.day_of_month, time.hour, time.minute, time.second);
+      "scan_%02d%02d%02d-%02d%02d%02d_page_%d.png", start_time_.year,
+      start_time_.month, start_time_.day_of_month, start_time_.hour,
+      start_time_.minute, start_time_.second, page_number + 1);
   const auto file_path = root_dir_.Append(kMyFilesPath).Append(filename);
   if (!base::WriteFile(file_path, scanned_image)) {
     LOG(ERROR) << "Failed to save scanned image: " << file_path.value().c_str();

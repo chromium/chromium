@@ -70,7 +70,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       const std::string& device_name,
       const lorgnette::ScanSettings& settings,
       VoidDBusMethodCallback completion_callback,
-      base::RepeatingCallback<void(std::string)> page_callback,
+      base::RepeatingCallback<void(std::string, uint32_t)> page_callback,
       base::RepeatingCallback<void(int)> progress_callback) override {
     lorgnette::StartScanRequest request;
     request.set_device_name(device_name);
@@ -185,7 +185,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   struct ScanJobState {
     VoidDBusMethodCallback completion_callback;
     base::RepeatingCallback<void(int)> progress_callback;
-    base::RepeatingCallback<void(std::string)> page_callback;
+    base::RepeatingCallback<void(std::string, uint32_t)> page_callback;
     std::unique_ptr<ScanDataReader> scan_data_reader;
   };
 
@@ -267,6 +267,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
 
   // Called when scan data read is completed.
   void OnScanDataCompleted(const std::string& uuid,
+                           uint32_t page_number,
                            bool more_pages,
                            base::Optional<std::string> data) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -284,7 +285,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       return;
     }
 
-    state.page_callback.Run(std::move(data.value()));
+    state.page_callback.Run(std::move(data.value()), page_number);
 
     if (more_pages) {
       GetNextImage(uuid);
@@ -375,10 +376,10 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       VLOG(1) << "Scan job " << signal_proto.scan_uuid() << " page "
               << signal_proto.page() << " completed successfully";
       ScanDataReader* reader = state.scan_data_reader.get();
-      reader->Wait(
-          base::BindOnce(&LorgnetteManagerClientImpl::OnScanDataCompleted,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         signal_proto.scan_uuid(), signal_proto.more_pages()));
+      reader->Wait(base::BindOnce(
+          &LorgnetteManagerClientImpl::OnScanDataCompleted,
+          weak_ptr_factory_.GetWeakPtr(), signal_proto.scan_uuid(),
+          signal_proto.page(), signal_proto.more_pages()));
     } else if (signal_proto.state() == lorgnette::SCAN_STATE_COMPLETED) {
       VLOG(1) << "Scan job " << signal_proto.scan_uuid()
               << " completed successfully";

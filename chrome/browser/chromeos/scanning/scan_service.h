@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_SCANNING_SCAN_SERVICE_H_
 #define CHROME_BROWSER_CHROMEOS_SCANNING_SCAN_SERVICE_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -12,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/scanning/mojom/scanning.mojom.h"
 #include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
@@ -65,7 +67,7 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
 
   // Processes each |scanned_image| received after calling
   // LorgnetteScannerManager::Scan().
-  void OnPageReceived(std::string scanned_image);
+  void OnPageReceived(std::string scanned_image, uint32_t page_number);
 
   // Processes the final result of calling LorgnetteScannerManager::Scan().
   void OnScanCompleted(ScanCallback callback, bool success);
@@ -91,6 +93,9 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
 
   // Indicates whether there was a failure to save scanned images.
   bool save_failed_;
+
+  // The time a scan was started. Used in filenames when saving scanned images.
+  base::Time::Exploded start_time_;
 
   base::WeakPtrFactory<ScanService> weak_ptr_factory_{this};
 };
