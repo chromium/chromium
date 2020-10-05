@@ -1,4 +1,5 @@
 include_rules = [
   "+device/base",
-  "+device/vr",
+  "+device/vr/orientation",
+  "+device/vr/test",
 ]

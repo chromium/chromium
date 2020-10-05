@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_ARCORE_DEVICE_H_
-#define CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_ARCORE_DEVICE_H_
+#ifndef DEVICE_VR_ANDROID_ARCORE_ARCORE_DEVICE_H_
+#define DEVICE_VR_ANDROID_ARCORE_ARCORE_DEVICE_H_
 
 #include <jni.h>
 #include <memory>
@@ -22,7 +22,6 @@
 #include "ui/gfx/native_widget_types.h"
 
 namespace vr {
-class MailboxToSurfaceBridge;
 class ArCoreSessionUtils;
 }  // namespace vr
 
@@ -31,15 +30,17 @@ namespace device {
 class ArImageTransportFactory;
 class ArCoreFactory;
 class ArCoreGlThread;
+class MailboxToSurfaceBridge;
+class MailboxToSurfaceBridgeFactory;
 
-class ArCoreDevice : public VRDeviceBase {
+class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
  public:
   ArCoreDevice(
       std::unique_ptr<ArCoreFactory> arcore_factory,
       std::unique_ptr<ArImageTransportFactory> ar_image_transport_factory,
-      std::unique_ptr<vr::MailboxToSurfaceBridge> mailbox_to_surface_bridge,
+      std::unique_ptr<MailboxToSurfaceBridgeFactory>
+          mailbox_to_surface_bridge_factory,
       std::unique_ptr<vr::ArCoreSessionUtils> arcore_session_utils);
-  ArCoreDevice();
   ~ArCoreDevice() override;
 
   // VRDeviceBase implementation.
@@ -112,8 +113,10 @@ class ArCoreDevice : public VRDeviceBase {
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
   std::unique_ptr<ArCoreFactory> arcore_factory_;
   std::unique_ptr<ArImageTransportFactory> ar_image_transport_factory_;
-  std::unique_ptr<vr::MailboxToSurfaceBridge> mailbox_bridge_;
+  std::unique_ptr<MailboxToSurfaceBridgeFactory> mailbox_bridge_factory_;
   std::unique_ptr<vr::ArCoreSessionUtils> arcore_session_utils_;
+
+  std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge_;
 
   // Encapsulates data with session lifetime.
   struct SessionState {
@@ -149,4 +152,4 @@ class ArCoreDevice : public VRDeviceBase {
 
 }  // namespace device
 
-#endif  // CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_ARCORE_DEVICE_H_
+#endif  // DEVICE_VR_ANDROID_ARCORE_ARCORE_DEVICE_H_

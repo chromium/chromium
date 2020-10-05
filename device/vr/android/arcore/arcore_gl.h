@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_ARCORE_GL_H_
-#define CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_ARCORE_GL_H_
+#ifndef DEVICE_VR_ANDROID_ARCORE_ARCORE_GL_H_
+#define DEVICE_VR_ANDROID_ARCORE_ARCORE_GL_H_
 
 #include <memory>
 #include <unordered_set>
@@ -324,4 +324,4 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
 
 }  // namespace device
 
-#endif  // CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_ARCORE_GL_H_
+#endif  // DEVICE_VR_ANDROID_ARCORE_ARCORE_GL_H_

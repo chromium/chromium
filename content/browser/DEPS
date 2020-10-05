@@ -50,7 +50,8 @@ include_rules = [
   "+device/fido/hid",
   "+device/gamepad", # For gamepad API
   "+device/nfc",
-  "+device/vr",  # For WebVR API
+  "+device/vr/public", # For WebXR API
+  "+device/vr/buildflags/buildflags.h",  # For WebXR API
   # This can only be used on POSIX, in particular it mustn't be used on Windows
   # in the browser DLL.
   "+gin/v8_initializer.h",

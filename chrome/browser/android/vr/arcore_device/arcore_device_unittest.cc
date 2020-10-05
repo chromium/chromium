@@ -2,21 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/vr/arcore_device/arcore_device.h"
+#include "device/vr/android/arcore/arcore_device.h"
 
 #include <memory>
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "chrome/browser/android/vr/arcore_device/ar_image_transport.h"
-#include "chrome/browser/android/vr/arcore_device/arcore_gl.h"
-#include "chrome/browser/android/vr/arcore_device/arcore_session_utils.h"
 #include "chrome/browser/android/vr/arcore_device/fake_arcore.h"
-#include "chrome/browser/android/vr/mailbox_to_surface_bridge.h"
+#include "components/webxr/mailbox_to_surface_bridge_impl.h"
+#include "device/vr/android/arcore/ar_image_transport.h"
+#include "device/vr/android/arcore/arcore_gl.h"
+#include "device/vr/android/arcore/arcore_session_utils.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
-#include "device/vr/test/fake_vr_device.h"
-#include "device/vr/test/fake_vr_service_client.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -28,7 +26,7 @@ namespace device {
 class StubArImageTransport : public ArImageTransport {
  public:
   explicit StubArImageTransport(
-      std::unique_ptr<vr::MailboxToSurfaceBridge> mailbox_bridge)
+      std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge)
       : ArImageTransport(std::move(mailbox_bridge)) {}
 
   void Initialize(vr::WebXrPresentationState*,
@@ -49,7 +47,7 @@ class StubArImageTransport : public ArImageTransport {
     return gpu::MailboxHolder();
   }
 
-  std::unique_ptr<vr::MailboxToSurfaceBridge> mailbox_bridge_;
+  std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge_;
   const GLuint CAMERA_TEXTURE_ID = 10;
 };
 
@@ -58,12 +56,12 @@ class StubArImageTransportFactory : public ArImageTransportFactory {
   ~StubArImageTransportFactory() override = default;
 
   std::unique_ptr<ArImageTransport> Create(
-      std::unique_ptr<vr::MailboxToSurfaceBridge> mailbox_bridge) override {
+      std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge) override {
     return std::make_unique<StubArImageTransport>(std::move(mailbox_bridge));
   }
 };
 
-class StubMailboxToSurfaceBridge : public vr::MailboxToSurfaceBridge {
+class StubMailboxToSurfaceBridge : public webxr::MailboxToSurfaceBridgeImpl {
  public:
   StubMailboxToSurfaceBridge() = default;
 
@@ -73,12 +71,17 @@ class StubMailboxToSurfaceBridge : public vr::MailboxToSurfaceBridge {
 
   bool IsConnected() override { return true; }
 
-  void CallCallback() { std::move(callback_).Run(); }
-
   const uint32_t TEXTURE_ID = 1;
 
  private:
   base::OnceClosure callback_;
+};
+
+class StubMailboxToSurfaceBridgeFactory : public MailboxToSurfaceBridgeFactory {
+ public:
+  std::unique_ptr<device::MailboxToSurfaceBridge> Create() const override {
+    return std::make_unique<StubMailboxToSurfaceBridge>();
+  }
 };
 
 class StubArCoreSessionUtils : public vr::ArCoreSessionUtils {
@@ -140,7 +143,6 @@ class ArCoreDeviceTest : public testing::Test {
     std::move(quit_closure).Run();
   }
 
-  StubMailboxToSurfaceBridge* bridge;
   StubArCoreSessionUtils* session_utils;
   mojo::Remote<mojom::XRFrameDataProvider> frame_provider;
   mojo::AssociatedRemote<mojom::XREnvironmentIntegrationProvider>
@@ -150,15 +152,13 @@ class ArCoreDeviceTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    std::unique_ptr<StubMailboxToSurfaceBridge> bridge_ptr =
-        std::make_unique<StubMailboxToSurfaceBridge>();
-    bridge = bridge_ptr.get();
     std::unique_ptr<StubArCoreSessionUtils> session_utils_ptr =
         std::make_unique<StubArCoreSessionUtils>();
     session_utils = session_utils_ptr.get();
     device_ = std::make_unique<ArCoreDevice>(
         std::make_unique<FakeArCoreFactory>(),
-        std::make_unique<StubArImageTransportFactory>(), std::move(bridge_ptr),
+        std::make_unique<StubArImageTransportFactory>(),
+        std::make_unique<StubMailboxToSurfaceBridgeFactory>(),
         std::move(session_utils_ptr));
   }
 

@@ -4,7 +4,11 @@
 
 #include "chrome/browser/android/vr/arcore_device/arcore_device_provider.h"
 
-#include "chrome/browser/android/vr/arcore_device/arcore_device.h"
+#include "chrome/browser/android/vr/arcore_device/arcore_java_utils.h"
+#include "components/webxr/mailbox_to_surface_bridge_impl.h"
+#include "device/vr/android/arcore/ar_image_transport.h"
+#include "device/vr/android/arcore/arcore_device.h"
+#include "device/vr/android/arcore/arcore_impl.h"
 #include "device/vr/android/arcore/arcore_shim.h"
 
 namespace device {
@@ -23,7 +27,11 @@ void ArCoreDeviceProvider::Initialize(
     base::OnceClosure initialization_complete) {
   if (vr::IsArCoreSupported()) {
     DVLOG(2) << __func__ << ": ARCore is supported, creating device";
-    arcore_device_ = std::make_unique<ArCoreDevice>();
+    arcore_device_ = std::make_unique<ArCoreDevice>(
+        std::make_unique<ArCoreImplFactory>(),
+        std::make_unique<ArImageTransportFactory>(),
+        std::make_unique<webxr::MailboxToSurfaceBridgeFactoryImpl>(),
+        std::make_unique<vr::ArCoreJavaUtils>());
 
     add_device_callback.Run(
         arcore_device_->GetId(), arcore_device_->GetVRDisplayInfo(),

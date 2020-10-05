@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/vr/mailbox_to_surface_bridge.h"
+#include "components/webxr/mailbox_to_surface_bridge_impl.h"
 
 #include <memory>
 #include <string>
@@ -134,7 +134,7 @@ GLuint CreateAndLinkProgram(gpu::gles2::GLES2Interface* gl,
 
 GLuint ConsumeTexture(gpu::gles2::GLES2Interface* gl,
                       const gpu::MailboxHolder& mailbox) {
-  TRACE_EVENT0("gpu", "MailboxToSurfaceBridge::ConsumeTexture");
+  TRACE_EVENT0("gpu", "MailboxToSurfaceBridgeImpl::ConsumeTexture");
   gl->WaitSyncTokenCHROMIUM(mailbox.sync_token.GetConstData());
 
   return gl->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.mailbox.name);
@@ -142,13 +142,13 @@ GLuint ConsumeTexture(gpu::gles2::GLES2Interface* gl,
 
 }  // namespace
 
-namespace vr {
+namespace webxr {
 
-MailboxToSurfaceBridge::MailboxToSurfaceBridge() {
+MailboxToSurfaceBridgeImpl::MailboxToSurfaceBridgeImpl() {
   DVLOG(1) << __FUNCTION__;
 }
 
-MailboxToSurfaceBridge::~MailboxToSurfaceBridge() {
+MailboxToSurfaceBridgeImpl::~MailboxToSurfaceBridgeImpl() {
   if (surface_handle_) {
     // Unregister from the surface tracker to avoid a resource leak.
     gpu::GpuSurfaceTracker* tracker = gpu::GpuSurfaceTracker::Get();
@@ -158,17 +158,17 @@ MailboxToSurfaceBridge::~MailboxToSurfaceBridge() {
   DVLOG(1) << __FUNCTION__;
 }
 
-bool MailboxToSurfaceBridge::IsConnected() {
+bool MailboxToSurfaceBridgeImpl::IsConnected() {
   return context_provider_ && gl_ && context_support_;
 }
 
-bool MailboxToSurfaceBridge::IsGpuWorkaroundEnabled(int32_t workaround) {
+bool MailboxToSurfaceBridgeImpl::IsGpuWorkaroundEnabled(int32_t workaround) {
   DCHECK(IsConnected());
 
   return context_provider_->GetGpuFeatureInfo().IsWorkaroundEnabled(workaround);
 }
 
-void MailboxToSurfaceBridge::OnContextAvailableOnUiThread(
+void MailboxToSurfaceBridgeImpl::OnContextAvailableOnUiThread(
     scoped_refptr<viz::ContextProvider> provider) {
   DVLOG(1) << __FUNCTION__;
   // Must save a reference to the viz::ContextProvider to keep it alive,
@@ -180,11 +180,11 @@ void MailboxToSurfaceBridge::OnContextAvailableOnUiThread(
   gl_thread_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &MailboxToSurfaceBridge::BindContextProviderToCurrentThread,
+          &MailboxToSurfaceBridgeImpl::BindContextProviderToCurrentThread,
           base::Unretained(this)));
 }
 
-void MailboxToSurfaceBridge::BindContextProviderToCurrentThread() {
+void MailboxToSurfaceBridgeImpl::BindContextProviderToCurrentThread() {
   auto result = context_provider_->BindToCurrentThread();
   if (result != gpu::ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to init viz::ContextProvider";
@@ -210,7 +210,7 @@ void MailboxToSurfaceBridge::BindContextProviderToCurrentThread() {
   }
 }
 
-void MailboxToSurfaceBridge::CreateSurface(
+void MailboxToSurfaceBridgeImpl::CreateSurface(
     gl::SurfaceTexture* surface_texture) {
   ANativeWindow* window = surface_texture->CreateSurface();
   gpu::GpuSurfaceTracker* tracker = gpu::GpuSurfaceTracker::Get();
@@ -225,7 +225,7 @@ void MailboxToSurfaceBridge::CreateSurface(
   ANativeWindow_release(window);
 }
 
-void MailboxToSurfaceBridge::CreateAndBindContextProvider(
+void MailboxToSurfaceBridgeImpl::CreateAndBindContextProvider(
     base::OnceClosure on_bound_callback) {
   gl_thread_task_runner_ = base::ThreadTaskRunnerHandle::Get();
   on_context_bound_ = std::move(on_bound_callback);
@@ -234,7 +234,7 @@ void MailboxToSurfaceBridge::CreateAndBindContextProvider(
   // until the context becomes available. So pass it on to the callback, so that
   // it stays alive, and is destroyed on the same thread once done.
   auto callback =
-      base::BindOnce(&MailboxToSurfaceBridge::OnContextAvailableOnUiThread,
+      base::BindOnce(&MailboxToSurfaceBridgeImpl::OnContextAvailableOnUiThread,
                      weak_ptr_factory_.GetWeakPtr());
 
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -272,7 +272,7 @@ void MailboxToSurfaceBridge::CreateAndBindContextProvider(
                      surface_handle_, std::move(callback)));
 }
 
-void MailboxToSurfaceBridge::ResizeSurface(int width, int height) {
+void MailboxToSurfaceBridgeImpl::ResizeSurface(int width, int height) {
   surface_width_ = width;
   surface_height_ = height;
 
@@ -289,7 +289,7 @@ void MailboxToSurfaceBridge::ResizeSurface(int width, int height) {
   gl_->Viewport(0, 0, surface_width_, surface_height_);
 }
 
-bool MailboxToSurfaceBridge::CopyMailboxToSurfaceAndSwap(
+bool MailboxToSurfaceBridgeImpl::CopyMailboxToSurfaceAndSwap(
     const gpu::MailboxHolder& mailbox) {
   if (!IsConnected()) {
     // We may not have a context yet, i.e. due to surface initialization
@@ -323,19 +323,21 @@ bool MailboxToSurfaceBridge::CopyMailboxToSurfaceAndSwap(
   return true;
 }
 
-void MailboxToSurfaceBridge::GenSyncToken(gpu::SyncToken* out_sync_token) {
+void MailboxToSurfaceBridgeImpl::GenSyncToken(gpu::SyncToken* out_sync_token) {
   TRACE_EVENT0("gpu", __FUNCTION__);
   DCHECK(IsConnected());
   gl_->GenSyncTokenCHROMIUM(out_sync_token->GetData());
 }
 
-void MailboxToSurfaceBridge::WaitSyncToken(const gpu::SyncToken& sync_token) {
+void MailboxToSurfaceBridgeImpl::WaitSyncToken(
+    const gpu::SyncToken& sync_token) {
   TRACE_EVENT0("gpu", __FUNCTION__);
   DCHECK(IsConnected());
   gl_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
 }
 
-void MailboxToSurfaceBridge::WaitForClientGpuFence(gfx::GpuFence* gpu_fence) {
+void MailboxToSurfaceBridgeImpl::WaitForClientGpuFence(
+    gfx::GpuFence* gpu_fence) {
   TRACE_EVENT0("gpu", __FUNCTION__);
   DCHECK(IsConnected());
   GLuint id = gl_->CreateClientGpuFenceCHROMIUM(gpu_fence->AsClientGpuFence());
@@ -343,7 +345,7 @@ void MailboxToSurfaceBridge::WaitForClientGpuFence(gfx::GpuFence* gpu_fence) {
   gl_->DestroyGpuFenceCHROMIUM(id);
 }
 
-void MailboxToSurfaceBridge::CreateGpuFence(
+void MailboxToSurfaceBridgeImpl::CreateGpuFence(
     const gpu::SyncToken& sync_token,
     base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback) {
   TRACE_EVENT0("gpu", __FUNCTION__);
@@ -354,7 +356,7 @@ void MailboxToSurfaceBridge::CreateGpuFence(
   gl_->DestroyGpuFenceCHROMIUM(id);
 }
 
-gpu::MailboxHolder MailboxToSurfaceBridge::CreateSharedImage(
+gpu::MailboxHolder MailboxToSurfaceBridgeImpl::CreateSharedImage(
     gpu::GpuMemoryBufferImplAndroidHardwareBuffer* buffer,
     const gfx::ColorSpace& color_space,
     uint32_t usage) {
@@ -375,7 +377,7 @@ gpu::MailboxHolder MailboxToSurfaceBridge::CreateSharedImage(
   return mailbox_holder;
 }
 
-void MailboxToSurfaceBridge::DestroySharedImage(
+void MailboxToSurfaceBridgeImpl::DestroySharedImage(
     const gpu::MailboxHolder& mailbox_holder) {
   TRACE_EVENT0("gpu", __FUNCTION__);
   DCHECK(IsConnected());
@@ -385,12 +387,12 @@ void MailboxToSurfaceBridge::DestroySharedImage(
   sii->DestroySharedImage(mailbox_holder.sync_token, mailbox_holder.mailbox);
 }
 
-void MailboxToSurfaceBridge::DestroyContext() {
+void MailboxToSurfaceBridgeImpl::DestroyContext() {
   gl_ = nullptr;
   context_provider_ = nullptr;
 }
 
-void MailboxToSurfaceBridge::InitializeRenderer() {
+void MailboxToSurfaceBridgeImpl::InitializeRenderer() {
   GLuint vertex_shader_handle =
       CompileShader(gl_, GL_VERTEX_SHADER, kQuadCopyVertex);
   if (!vertex_shader_handle) {
@@ -464,7 +466,7 @@ void MailboxToSurfaceBridge::InitializeRenderer() {
   gl_->Uniform1i(texUniform_handle, 0);
 }
 
-void MailboxToSurfaceBridge::DrawQuad(unsigned int texture_handle) {
+void MailboxToSurfaceBridgeImpl::DrawQuad(unsigned int texture_handle) {
   DCHECK(IsConnected());
 
   // We're redrawing over the entire viewport, but it's generally more
@@ -486,4 +488,9 @@ void MailboxToSurfaceBridge::DrawQuad(unsigned int texture_handle) {
   gl_->DrawArrays(GL_TRIANGLE_FAN, 0, 4);
 }
 
-}  // namespace vr
+std::unique_ptr<device::MailboxToSurfaceBridge>
+MailboxToSurfaceBridgeFactoryImpl::Create() const {
+  return std::make_unique<MailboxToSurfaceBridgeImpl>();
+}
+
+}  // namespace webxr

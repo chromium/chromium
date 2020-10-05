@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_VR_WEB_XR_PRESENTATION_STATE_H_
-#define CHROME_BROWSER_ANDROID_VR_WEB_XR_PRESENTATION_STATE_H_
+#ifndef DEVICE_VR_ANDROID_WEB_XR_PRESENTATION_STATE_H_
+#define DEVICE_VR_ANDROID_WEB_XR_PRESENTATION_STATE_H_
 
 #include <memory>
 #include <utility>
@@ -214,4 +214,4 @@ class WebXrPresentationState {
 
 }  // namespace vr
 
-#endif  // CHROME_BROWSER_ANDROID_VR_WEB_XR_PRESENTATION_STATE_H_
+#endif  // DEVICE_VR_ANDROID_WEB_XR_PRESENTATION_STATE_H_

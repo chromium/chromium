@@ -2,26 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_ARCORE_GL_THREAD_H_
-#define CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_ARCORE_GL_THREAD_H_
+#ifndef DEVICE_VR_ANDROID_ARCORE_ARCORE_GL_THREAD_H_
+#define DEVICE_VR_ANDROID_ARCORE_ARCORE_GL_THREAD_H_
 
 #include <memory>
 #include "base/android/java_handler_thread.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
-#include "chrome/browser/android/vr/mailbox_to_surface_bridge.h"
+#include "device/vr/android/mailbox_to_surface_bridge.h"
 
 namespace device {
 
 class ArCoreGl;
 class ArImageTransportFactory;
+class MailboxToSurfaceBridge;
 
 class ArCoreGlThread : public base::android::JavaHandlerThread {
  public:
   ArCoreGlThread(
       std::unique_ptr<ArImageTransportFactory> ar_image_transport_factory,
-      std::unique_ptr<vr::MailboxToSurfaceBridge> mailbox_bridge,
+      std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge,
       base::OnceCallback<void()> initialized_callback);
   ~ArCoreGlThread() override;
   ArCoreGl* GetArCoreGl();
@@ -32,7 +33,7 @@ class ArCoreGlThread : public base::android::JavaHandlerThread {
 
  private:
   std::unique_ptr<ArImageTransportFactory> ar_image_transport_factory_;
-  std::unique_ptr<vr::MailboxToSurfaceBridge> mailbox_bridge_;
+  std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge_;
   base::OnceCallback<void()> initialized_callback_;
 
   // Created on GL thread.
@@ -43,4 +44,4 @@ class ArCoreGlThread : public base::android::JavaHandlerThread {
 
 }  // namespace device
 
-#endif  // CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_ARCORE_GL_THREAD_H_
+#endif  // DEVICE_VR_ANDROID_ARCORE_ARCORE_GL_THREAD_H_

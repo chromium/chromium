@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_AR_IMAGE_TRANSPORT_H_
-#define CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_AR_IMAGE_TRANSPORT_H_
+#ifndef DEVICE_VR_ANDROID_ARCORE_AR_IMAGE_TRANSPORT_H_
+#define DEVICE_VR_ANDROID_ARCORE_AR_IMAGE_TRANSPORT_H_
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
-#include "chrome/browser/android/vr/arcore_device/ar_renderer.h"
+#include "device/vr/android/arcore/ar_renderer.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -27,22 +27,23 @@ struct SyncToken;
 }  // namespace gpu
 
 namespace vr {
-class MailboxToSurfaceBridge;
 class WebXrPresentationState;
 struct WebXrSharedBuffer;
 }  // namespace vr
 
 namespace device {
 
+class MailboxToSurfaceBridge;
+
 using XrFrameCallback = base::RepeatingCallback<void(const gfx::Transform&)>;
 
 // This class handles transporting WebGL rendered output from the GPU process's
 // command buffer GL context to the local GL context, and compositing WebGL
 // output onto the camera image using the local GL context.
-class ArImageTransport {
+class COMPONENT_EXPORT(VR_ARCORE) ArImageTransport {
  public:
   explicit ArImageTransport(
-      std::unique_ptr<vr::MailboxToSurfaceBridge> mailbox_bridge);
+      std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge);
   virtual ~ArImageTransport();
 
   virtual void DestroySharedBuffers(vr::WebXrPresentationState* webxr);
@@ -109,7 +110,7 @@ class ArImageTransport {
 
   scoped_refptr<base::SingleThreadTaskRunner> gl_thread_task_runner_;
 
-  std::unique_ptr<vr::MailboxToSurfaceBridge> mailbox_bridge_;
+  std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge_;
 
   // If true, use shared buffer transport aka DRAW_INTO_TEXTURE_MAILBOX.
   // If false, use Surface transport aka SUBMIT_AS_MAILBOX_HOLDER.
@@ -134,13 +135,13 @@ class ArImageTransport {
   DISALLOW_COPY_AND_ASSIGN(ArImageTransport);
 };
 
-class ArImageTransportFactory {
+class COMPONENT_EXPORT(VR_ARCORE) ArImageTransportFactory {
  public:
   virtual ~ArImageTransportFactory() = default;
   virtual std::unique_ptr<ArImageTransport> Create(
-      std::unique_ptr<vr::MailboxToSurfaceBridge> mailbox_bridge);
+      std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge);
 };
 
 }  // namespace device
 
-#endif  // CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_AR_IMAGE_TRANSPORT_H_
+#endif  // DEVICE_VR_ANDROID_ARCORE_AR_IMAGE_TRANSPORT_H_

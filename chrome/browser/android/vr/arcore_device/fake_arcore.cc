@@ -7,9 +7,6 @@
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/numerics/math_constants.h"
 #include "base/single_thread_task_runner.h"
-#include "ui/display/display.h"
-#include "ui/gfx/buffer_types.h"
-#include "ui/gl/gl_image_ahardwarebuffer.h"
 
 namespace {}
 
