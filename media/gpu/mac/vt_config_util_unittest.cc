@@ -11,6 +11,7 @@
 #include "base/mac/mac_util.h"
 #include "base/mac/sdk_forward_declarations.h"
 #include "base/strings/sys_string_conversions.h"
+#include "media/base/mac/color_space_util_mac.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

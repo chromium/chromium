@@ -42,6 +42,7 @@
 #include "gpu/command_buffer/service/shared_image_factory.h"
 #include "gpu/ipc/service/shared_image_stub.h"
 #include "media/base/limits.h"
+#include "media/base/mac/color_space_util_mac.h"
 #include "media/base/media_switches.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/mac/vp9_super_frame_bitstream_filter.h"

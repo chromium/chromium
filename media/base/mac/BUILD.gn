@@ -12,6 +12,8 @@ source_set("mac") {
   visibility = [ "//media" ]
 
   sources = [
+    "color_space_util_mac.h",
+    "color_space_util_mac.mm",
     "video_frame_mac.cc",
     "video_frame_mac.h",
     "videotoolbox_helpers.cc",
