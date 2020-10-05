@@ -22,11 +22,15 @@ class DummyEvent : public ui::Event {
   DummyEvent() : Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
 };
 
+constexpr base::TimeDelta kWaitForRequestTimeout =
+    base::TimeDelta::FromSeconds(10);
+
 }  // namespace
 
 class QuickActionsViewTest : public AshTestBase {
  public:
-  QuickActionsViewTest() = default;
+  QuickActionsViewTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~QuickActionsViewTest() override = default;
 
   // AshTestBase:
@@ -105,6 +109,22 @@ TEST_F(QuickActionsViewTest, SilencePhoneToggle) {
   actions_view()->silence_phone_for_testing()->ButtonPressed(nullptr,
                                                              DummyEvent());
   EXPECT_FALSE(dnd_controller()->IsDndEnabled());
+
+  // Test the error state.
+  dnd_controller()->SetShouldRequestFail(true);
+  actions_view()->silence_phone_for_testing()->ButtonPressed(nullptr,
+                                                             DummyEvent());
+
+  // In error state, do not disturb is disabled but the button should still be
+  // on after being pressed.
+  EXPECT_FALSE(dnd_controller()->IsDndEnabled());
+  EXPECT_TRUE(actions_view()->silence_phone_for_testing()->IsToggled());
+
+  // After a certain time, the button should be corrected to be off.
+  task_environment()->FastForwardBy(kWaitForRequestTimeout);
+  EXPECT_FALSE(actions_view()->silence_phone_for_testing()->IsToggled());
+
+  dnd_controller()->SetShouldRequestFail(false);
 }
 
 TEST_F(QuickActionsViewTest, LocatePhoneToggle) {

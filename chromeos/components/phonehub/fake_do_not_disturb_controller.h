@@ -20,8 +20,14 @@ class FakeDoNotDisturbController : public DoNotDisturbController {
   void SetDoNotDisturbStateInternal(bool is_dnd_enabled) override;
   void RequestNewDoNotDisturbState(bool enabled) override;
 
+  void SetShouldRequestFail(bool should_request_fail);
+
  private:
   bool is_dnd_enabled_ = false;
+
+  // Indicates if the connection to the phone is working correctly. If it is
+  // true, there is a problem and the phone cannot change its state.
+  bool should_request_fail_ = false;
 };
 
 }  // namespace phonehub

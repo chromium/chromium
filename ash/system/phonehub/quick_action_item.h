@@ -16,7 +16,8 @@ class Label;
 namespace ash {
 
 // A toggle button with labels used in the quick action view.
-class QuickActionItem : public views::View, public views::ButtonListener {
+class ASH_EXPORT QuickActionItem : public views::View,
+                                   public views::ButtonListener {
  public:
   class Delegate {
    public:

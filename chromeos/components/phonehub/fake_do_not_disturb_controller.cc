@@ -25,7 +25,13 @@ void FakeDoNotDisturbController::SetDoNotDisturbStateInternal(
 }
 
 void FakeDoNotDisturbController::RequestNewDoNotDisturbState(bool enabled) {
-  SetDoNotDisturbStateInternal(enabled);
+  if (!should_request_fail_)
+    SetDoNotDisturbStateInternal(enabled);
+}
+
+void FakeDoNotDisturbController::SetShouldRequestFail(
+    bool should_request_fail) {
+  should_request_fail_ = should_request_fail;
 }
 
 }  // namespace phonehub
