@@ -13783,7 +13783,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
 // shown. Similar to the test above, except that the crashed subframe is
 // scrolled out of view.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
-                       ReloadHiddenTabWithCrashedSubframeOutOfView) {
+                       DISABLED_ReloadHiddenTabWithCrashedSubframeOutOfView) {
   // Set WebContents to VISIBLE to avoid hitting the |!did_first_set_visible_|
   // case when we hide it later.
   web_contents()->UpdateWebContentsVisibility(Visibility::VISIBLE);
