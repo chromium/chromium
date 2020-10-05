@@ -320,7 +320,7 @@ bool DevToolsEventForwarder::ForwardEvent(
   event_data.SetIntKey("keyCode", key_code);
   event_data.SetIntKey("modifiers", modifiers);
   devtools_window_->bindings_->CallClientMethod(
-      "DevToolsAPI", "keyEventUnhandled", event_data);
+      "DevToolsAPI", "keyEventUnhandled", std::move(event_data));
   return true;
 }
 
@@ -1469,7 +1469,8 @@ void DevToolsWindow::ColorPickedInEyeDropper(int r, int g, int b, int a) {
   color.SetInteger("g", g);
   color.SetInteger("b", b);
   color.SetInteger("a", a);
-  bindings_->CallClientMethod("DevToolsAPI", "eyeDropperPickedColor", color);
+  bindings_->CallClientMethod("DevToolsAPI", "eyeDropperPickedColor",
+                              std::move(color));
 }
 
 void DevToolsWindow::InspectedContentsClosing() {

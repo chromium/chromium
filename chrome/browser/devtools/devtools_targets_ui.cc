@@ -397,5 +397,5 @@ void PortForwardingStatusSerializer::PortStatusChanged(
         sit->first->serial().c_str());
     result.Set(device_id, std::move(device_status_dict));
   }
-  callback_.Run(result);
+  callback_.Run(std::move(result));
 }

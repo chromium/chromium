@@ -671,8 +671,9 @@ void InspectUI::PopulateAdditionalTargets(const base::Value& targets) {
   web_ui()->CallJavascriptFunctionUnsafe("populateAdditionalTargets", targets);
 }
 
-void InspectUI::PopulatePortStatus(const base::Value& status) {
-  web_ui()->CallJavascriptFunctionUnsafe("populatePortStatus", status);
+void InspectUI::PopulatePortStatus(base::Value status) {
+  web_ui()->CallJavascriptFunctionUnsafe("populatePortStatus",
+                                         std::move(status));
 }
 
 void InspectUI::ShowIncognitoWarning() {

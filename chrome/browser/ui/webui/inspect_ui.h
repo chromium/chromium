@@ -89,7 +89,7 @@ class InspectUI : public content::WebUIController,
 
   void PopulateAdditionalTargets(const base::Value& targets);
 
-  void PopulatePortStatus(const base::Value& status);
+  void PopulatePortStatus(base::Value status);
 
   void ShowIncognitoWarning();
 
