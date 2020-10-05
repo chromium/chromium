@@ -201,7 +201,7 @@ js_type_check("closure_compile_module") {
     ":internet_page_browser_proxy.m",
     ":internet_shared_css.m",
 
-    #    ":internet_subpage.m",
+    ":internet_subpage.m",
     ":network_proxy_section.m",
     ":network_summary.m",
     ":network_summary_item.m",
@@ -336,7 +336,25 @@ js_library("internet_shared_css.m") {
 js_library("internet_subpage.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/internet_page/internet_subpage.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":internet_page_browser_proxy.m",
+    "//chrome/browser/resources/settings/chromeos/localized_link:localized_link.m",
+    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
+    "//chrome/browser/resources/settings/chromeos:metrics_recorder.m",
+    "//chrome/browser/resources/settings/chromeos:os_route.m",
+    "//chrome/browser/resources/settings/chromeos:route_origin_behavior.m",
+    "//chrome/browser/resources/settings:router.m",
+    "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
+    "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/network:cr_policy_network_behavior_mojo.m",
+    "//ui/webui/resources/cr_components/chromeos/network:network_list.m",
+    "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior.m",
+    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+    "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row.m",
+    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":internet_subpage_module" ]
 }
@@ -467,6 +485,8 @@ polymer_modulizer("internet_subpage") {
   js_file = "internet_subpage.js"
   html_file = "internet_subpage.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 polymer_modulizer("network_proxy_section") {

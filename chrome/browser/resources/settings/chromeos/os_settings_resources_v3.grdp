@@ -65,6 +65,11 @@
            use_base_dir="false"
            compress="false"
            type="BINDATA" />
+  <include name="IDR_OS_SETTINGS_INTERNET_SUBPAGE_M_JS"
+           file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/internet_page/internet_subpage.m.js"
+           use_base_dir="false"
+           compress="false"
+           type="BINDATA" />
   <include name="IDR_OS_SETTINGS_NETWORK_PROXY_SECTION_M_JS"
            file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/internet_page/network_proxy_section.m.js"
            use_base_dir="false"
@@ -673,6 +678,11 @@
            use_base_dir="false"
            compress="false" type="BINDATA"
            preprocess="true" />
+  <include name="IDR_OS_SETTINGS_OS_SETTINGS_ICONS_CSS_M_JS"
+           file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/os_settings_icons_css.m.js"
+           use_base_dir="false"
+           compress="false"
+           type="BINDATA" />
   <include name="IDR_OS_SETTINGS_SETTINGS_OS_ROUTE_M_JS"
            file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/os_route.m.js"
            use_base_dir="false"

@@ -432,6 +432,8 @@ js_library("network_ip_config.m") {
 js_library("network_list.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network/network_list.m.js" ]
   deps = [
+    ":network_list_item.m",
+    ":network_list_types.m",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
@@ -442,6 +444,7 @@ js_library("network_list.m") {
 js_library("network_list_item.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network/network_list_item.m.js" ]
   deps = [
+    ":network_list_types.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":network_list_item_module" ]
@@ -552,6 +555,7 @@ js_library("network_select.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network/network_select.m.js" ]
   deps = [
     ":network_list.m",
+    ":network_list_types.m",
     ":network_listener_behavior.m",
     ":onc_mojo.m",
     "//third_party/polymer/v3_0/components-chromium/paper-progress:paper-progress",

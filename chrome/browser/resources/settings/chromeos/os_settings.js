@@ -11,6 +11,7 @@ import './internet_page/cellular_setup_dialog.m.js';
 import './internet_page/internet_config.m.js';
 import './internet_page/internet_detail_page.m.js';
 import './internet_page/internet_known_networks_page.m.js';
+import './internet_page/internet_subpage.m.js';
 import './internet_page/network_proxy_section.m.js';
 import './internet_page/network_summary.m.js';
 import './internet_page/network_summary_item.m.js';

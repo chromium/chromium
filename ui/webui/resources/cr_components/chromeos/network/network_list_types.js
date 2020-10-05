@@ -8,7 +8,7 @@
  * NetworkListItem.
  */
 
-const NetworkList = {};
+/* #export */ const NetworkList = {};
 
 /**
  * Custom data for implementation specific network list items.
@@ -23,5 +23,3 @@ NetworkList.CustomItemState;
 
 /** @typedef {OncMojo.NetworkStateProperties|NetworkList.CustomItemState} */
 NetworkList.NetworkListItemType;
-
-// #export {NetworkList}
