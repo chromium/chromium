@@ -34,7 +34,10 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
  private:
   // TODO(lyf): Make config_ read-only. The creationOptions getter which
   // asks for the pointer is forbidened by a read-only variable.
+  // TODO(lyf): This could be optimized by dropping config_ and adding
+  // Vector<QualifiedName> for drop_elements.
   Member<SanitizerConfig> config_ = {};
+  Vector<AtomicString> drop_attributes_ = {};
 };
 
 }  // namespace blink

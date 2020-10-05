@@ -16,7 +16,7 @@
 
     test(t => {
       let s = new Sanitizer({});
-      assert_object_equals(s.creationOptions, {dropElements: null});
+      assert_object_equals(s.creationOptions, {dropElements: null, dropAttributes: null});
       assert_throws_js(TypeError, _ => s.sanitize());
     }, "SanitizerAPI sanitize function without argument should throw an error.");
 
