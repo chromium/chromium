@@ -37,7 +37,7 @@ source_set("eg2_tests") {
   deps = [
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/bookmarks:bookmarks_ui",
+    "//ios/chrome/browser/ui/bookmarks:constants",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/table_view:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
