@@ -2612,6 +2612,11 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/CSS2/text/text-transform-bicameral-007.xht [ Failure ]
+crbug.com/626703 [ Mac10.12 ] external/wpt/css/CSS2/text/text-transform-bicameral-014.xht [ Failure ]
+crbug.com/626703 [ Mac10.13 ] external/wpt/css/CSS2/text/text-transform-bicameral-014.xht [ Failure ]
+crbug.com/626703 [ Mac10.14 ] external/wpt/css/CSS2/text/text-transform-bicameral-014.xht [ Failure ]
+crbug.com/626703 [ Mac ] external/wpt/css/CSS2/text/text-transform-bicameral-009.xht [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/text/text-indent-101.xht [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/text/text-indent-100.xht [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/text/text-indent-102.xht [ Failure ]

@@ -41884,39 +41884,325 @@
         {}
        ]
       ],
-      "text-transform-capitalize-001.xht": [
-       "5dd1683545785c303204b73236a9be7377eee539",
+      "text-transform-bicameral-001.xht": [
+       "1db12c286d72487b0e0b1bc0f267e0223368d6e3",
        [
         null,
         [
          [
-          "/css/CSS2/text/text-transform-capitalize-001-ref.xht",
+          "/css/CSS2/text/text-transform-bicameral-001-ref.xht",
           "=="
          ]
         ],
         {}
        ]
       ],
-      "text-transform-capitalize-002.xht": [
-       "ebc1f50afde20de08dee3a7201910c026c11d700",
+      "text-transform-bicameral-002.xht": [
+       "8233d51aa7a1373d974c23d6dbc491f149a1583a",
        [
         null,
         [
          [
-          "/css/CSS2/text/text-transform-capitalize-001-ref.xht",
+          "/css/CSS2/text/text-transform-bicameral-002-ref.xht",
           "=="
          ]
         ],
         {}
        ]
       ],
-      "text-transform-capitalize-003.xht": [
-       "e2869d18a4eb57eafeda8517672962b0776e9228",
+      "text-transform-bicameral-003.xht": [
+       "53314d839eb0b3f6a3215e6e8cded41b8029b24b",
        [
         null,
         [
          [
-          "/css/CSS2/text/text-transform-capitalize-003-ref.xht",
+          "/css/CSS2/text/text-transform-bicameral-003-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-bicameral-004.xht": [
+       "83b0de6568bc783724a8ea9ae62bee27b034ad7d",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-transform-bicameral-004-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-bicameral-005.xht": [
+       "5467156a8d8d7a34d626235d309b545e4286c2c6",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-transform-bicameral-005-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-bicameral-006.xht": [
+       "d86c8f5a2c42c41089b4a9a0c3b513ad76d787d6",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-transform-bicameral-006-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-bicameral-007.xht": [
+       "43fa4c332221d5e4f239949774f27b1ab9411531",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-transform-bicameral-007-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-bicameral-008.xht": [
+       "31ed3373c778b7c69f1243855bad460b4dbfb0d8",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-transform-bicameral-008-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-bicameral-009.xht": [
+       "2253509872d7d024304aec19ac3b98c141f8fedd",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-transform-bicameral-009-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-bicameral-010.xht": [
+       "33c8116c90da25d839837e665d8f77f93fb02bf2",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-transform-bicameral-010-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-bicameral-011.xht": [
+       "c4bc984c2f722f5027e5cb514b6693ac5efb7f26",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-transform-bicameral-011-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-bicameral-012.xht": [
+       "9d051a58f1cf9ef408ed65ac699fcc492cdb862c",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-transform-bicameral-012-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-bicameral-013.xht": [
+       "513febe42dcef0c579ec9d9b79ce39d649dad36c",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-transform-bicameral-013-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-bicameral-014.xht": [
+       "62409ea9bdcd08a9dc52913409c13709bb4373e2",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-transform-bicameral-014-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-bicameral-015.xht": [
+       "b3e44534fbe89ba22ad59ed726a4b24a270b021e",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-transform-bicameral-015-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-bicameral-016.xht": [
+       "7d834572e7f27ad2b5cd6ed9d205507a2f76402d",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-transform-bicameral-016-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-bicameral-017.xht": [
+       "a6152f452ee0f3ee3a8fdaf2bfcb8776734947b7",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-transform-bicameral-017-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-bicameral-018.xht": [
+       "e4fe1eea47f899daa8e5958c003f51aa01b52152",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-transform-bicameral-018-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-bicameral-019.xht": [
+       "0fe0d8c7abdb8cc96b37ad87b283280ebb18cf2f",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-transform-bicameral-019-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-bicameral-020.xht": [
+       "113f8e38d63efdb3461246f6566ebf4a10fc7dcf",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-transform-bicameral-020-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-bicameral-021.xht": [
+       "a74965464851be82e001e027ec044daa5452aa3d",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-transform-bicameral-021-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-bicameral-022.xht": [
+       "7f8c65c67ed3aff99ec9ea1ac609334ab7eeb1a3",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-transform-bicameral-022-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-cap-001.xht": [
+       "329f5f7ff02a8c0198f0b59c8b2e81f5ac597f97",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-transform-cap-001-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-cap-002.xht": [
+       "bf4632b1d5980627f226dd3ba15375441d5c453b",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-transform-cap-001-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-transform-cap-003.xht": [
+       "d3290c2a328fdb419095b457830f3c3219afdb6a",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-transform-cap-003-ref.xht",
           "=="
          ]
         ],
@@ -41924,7 +42210,7 @@
        ]
       ],
       "text-transform-lowercase-001.xht": [
-       "59d9b245a1da7adbb1beecb10138767b94e8b8fb",
+       "58d8eb703750349c710dbbba0803dd2a117a66f6",
        [
         null,
         [
@@ -41936,8 +42222,21 @@
         {}
        ]
       ],
+      "text-transform-unicase-001.xht": [
+       "3979cbbd9cba26d338704431ae1c3d064de5afa3",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-transform-unicase-001-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-transform-uppercase-001.xht": [
-       "8b0d28e18e092e6849bfac64bbc84860d224d334",
+       "4ef06f3e6640eaa99810dcefcd20fdbb28993d46",
        [
         null,
         [
@@ -41950,7 +42249,7 @@
        ]
       ],
       "text-transform-uppercase-002.xht": [
-       "9e268c80cadc4ed15091e05c31990baecf7136f8",
+       "0aff0f0aa1379ca26d38ae0c93823f7158a23e97",
        [
         null,
         [
@@ -104680,26 +104979,26 @@
         {}
        ]
       ],
-      "text-transform-lowercase-001.xht": [
-       "dc3fadf64caf5786123250da2cc50187ec693d2b",
+      "text-transform-lowercase-101.xht": [
+       "2016cf072007feae6674d16cfdf33430ea360dd8",
        [
         null,
         [
          [
-          "/css/css-text/text-transform/reference/text-transform-lowercase-001-ref.xht",
+          "/css/css-text/text-transform/reference/text-transform-lowercase-101-ref.xht",
           "=="
          ]
         ],
         {}
        ]
       ],
-      "text-transform-lowercase-002.xht": [
-       "42deb58b1bb08474f754adf8f8b492d04e9b6613",
+      "text-transform-lowercase-102.xht": [
+       "ebbd5bf2d2bbb32a2339ee6e50dd0bd3d3fc8873",
        [
         null,
         [
          [
-          "/css/css-text/text-transform/text-transform-lowercase-002-ref.xht",
+          "/css/css-text/text-transform/text-transform-lowercase-102-ref.xht",
           "=="
          ]
         ],
@@ -104849,13 +105148,13 @@
         {}
        ]
       ],
-      "text-transform-uppercase-001.xht": [
-       "e0d1f9a195557004455cd70fba33b8e1da26da93",
+      "text-transform-uppercase-101.xht": [
+       "559992e76ee66222f75069a75858234cca6e6f7e",
        [
         null,
         [
          [
-          "/css/css-text/text-transform/reference/text-transform-uppercase-001-ref.xht",
+          "/css/css-text/text-transform/reference/text-transform-uppercase-101-ref.xht",
           "=="
          ]
         ],
@@ -175275,16 +175574,108 @@
        "1a172ca66d5019dbc89c072e3b77ee633af0113a",
        []
       ],
-      "text-transform-capitalize-001-ref.xht": [
+      "text-transform-bicameral-001-ref.xht": [
+       "048bb0483309edb3c68f6e9df78455dd98731447",
+       []
+      ],
+      "text-transform-bicameral-002-ref.xht": [
+       "a8e51fd7dad306d46af9490e490416217c8f6d9c",
+       []
+      ],
+      "text-transform-bicameral-003-ref.xht": [
+       "b2c7cfec36833ce3db04c8442c78b1c38dad9840",
+       []
+      ],
+      "text-transform-bicameral-004-ref.xht": [
+       "d6f19211599983198a23295c4af66f0b759e5766",
+       []
+      ],
+      "text-transform-bicameral-005-ref.xht": [
+       "6f993f3a3a01d33ca795351d75627209ffb42736",
+       []
+      ],
+      "text-transform-bicameral-006-ref.xht": [
+       "ddf3b8b3ec8d4ab9a947557331c2f9811935be20",
+       []
+      ],
+      "text-transform-bicameral-007-ref.xht": [
+       "56e640913d0537b5045e0474389af17e254a8f7b",
+       []
+      ],
+      "text-transform-bicameral-008-ref.xht": [
+       "7fdd0d0140fd94dc7e6e353e5c1d190634c67f75",
+       []
+      ],
+      "text-transform-bicameral-009-ref.xht": [
+       "1a8727ddec16c850227376fbac85b0fa61e2ec12",
+       []
+      ],
+      "text-transform-bicameral-010-ref.xht": [
+       "c5d842cb9c7e7044f5427be1caf7fb6d2b20a2b5",
+       []
+      ],
+      "text-transform-bicameral-011-ref.xht": [
+       "54945b7d61cb66701c1cd9fdd3d05bb0018eb684",
+       []
+      ],
+      "text-transform-bicameral-012-ref.xht": [
+       "745b7c7326d5b4773bbf6cb1e25e9165ab23d2e7",
+       []
+      ],
+      "text-transform-bicameral-013-ref.xht": [
+       "48a8b43b4b2e2de2fee04466304461f7747d9e6d",
+       []
+      ],
+      "text-transform-bicameral-014-ref.xht": [
+       "27249cce979f9aef05f3e330e72068ef3b34891a",
+       []
+      ],
+      "text-transform-bicameral-015-ref.xht": [
+       "2f5c8877cfea2c42291cb5d434ec3f5ad9cc0ade",
+       []
+      ],
+      "text-transform-bicameral-016-ref.xht": [
+       "c4b2e8e031dd43c20de6cc46bbd9e96e8ee5d3f3",
+       []
+      ],
+      "text-transform-bicameral-017-ref.xht": [
+       "4262ac0478f8c59d2845138e52eb9dabcdc59c18",
+       []
+      ],
+      "text-transform-bicameral-018-ref.xht": [
+       "1665eba3c4f8e7800c03cdba66244e5f77e7bac9",
+       []
+      ],
+      "text-transform-bicameral-019-ref.xht": [
+       "97b3be4a1d260cd510ccef0180183a02f7e9d179",
+       []
+      ],
+      "text-transform-bicameral-020-ref.xht": [
+       "51d41c4cd7e8f2e666736d94dc4ab9c36522ae1b",
+       []
+      ],
+      "text-transform-bicameral-021-ref.xht": [
+       "17567c6b8c82b8b5eeb3f9b34c8cd83be67dd718",
+       []
+      ],
+      "text-transform-bicameral-022-ref.xht": [
+       "f2ca31d3e6bdb841273064467c35c3ae08debc54",
+       []
+      ],
+      "text-transform-cap-001-ref.xht": [
        "2408b13443ffeb58c8f7dbfd0eb620f0632d0a76",
        []
       ],
-      "text-transform-capitalize-003-ref.xht": [
+      "text-transform-cap-003-ref.xht": [
        "f1ea0ece0820f04950eb9012837552b87f1d179a",
        []
       ],
       "text-transform-lowercase-001-ref.xht": [
        "d9cff6d61876ad6481594069c1317aab810b4f2c",
+       []
+      ],
+      "text-transform-unicase-001-ref.xht": [
+       "3dffb50868886b93ceede24634c78caa2ce91fc3",
        []
       ],
       "text-transform-uppercase-001-ref.xht": [
@@ -196674,7 +197065,7 @@
         "915e8444f1335e920073e2c8091281241370f830",
         []
        ],
-       "text-transform-lowercase-001-ref.xht": [
+       "text-transform-lowercase-101-ref.xht": [
         "3d6eb4af8ac5aeb7fd54e1b2e2aec325886ddca0",
         []
        ],
@@ -196714,7 +197105,7 @@
         "66ce847e30a10fe09f014d24eb8ad1d429ef1d92",
         []
        ],
-       "text-transform-uppercase-001-ref.xht": [
+       "text-transform-uppercase-101-ref.xht": [
         "e80ca4ed7bae07256ba664850a59e21a7f55dfeb",
         []
        ],
@@ -196915,7 +197306,7 @@
        "a1e1c12270146490f983fa02c1b21b923434e844",
        []
       ],
-      "text-transform-lowercase-002-ref.xht": [
+      "text-transform-lowercase-102-ref.xht": [
        "f6da9069cde7d68d6b3ba4f5051d1bf4e43b9fbf",
        []
       ]
@@ -437982,167 +438373,6 @@
       ],
       "text-indent-overflow-003.xht": [
        "79b3cb4bc330b9ab8dcfc3e60ccdee4a0a8787b3",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-transform-bicameral-001.xht": [
-       "48a7bc86e3dfefe0dadc2e3975c7e8cf08817853",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-transform-bicameral-002.xht": [
-       "4cce6d8a3b6527d72525588162ec78a7f2cede99",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-transform-bicameral-003.xht": [
-       "a6e9cc321db46cd2f6a5cb74c10e830e3bf9567a",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-transform-bicameral-004.xht": [
-       "dc55e4c5b7d3752df23802e35ad187dc87117e50",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-transform-bicameral-005.xht": [
-       "7e7f79143bbc1e28e4db474ba557d575eca2be79",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-transform-bicameral-006.xht": [
-       "dec1852ec3a66e8f28db1fb7222dd00b75a11037",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-transform-bicameral-007.xht": [
-       "6691aa2db0062e57d276c945b8c80564e35bbfe2",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-transform-bicameral-008.xht": [
-       "03ffaf15b7c574871b2c17ae25fe2254e63d8a8f",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-transform-bicameral-009.xht": [
-       "366b7fa54bbe64cf442410128f4545621b631803",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-transform-bicameral-010.xht": [
-       "768c66ebace583f5f5aa793c6651ea8885f8bc86",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-transform-bicameral-011.xht": [
-       "c4e812336705e2762541cbd2c0c11122d4eea6b8",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-transform-bicameral-012.xht": [
-       "7036841721b7830a3fac0fbee9c8ef216329087f",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-transform-bicameral-013.xht": [
-       "c259b9accf075d2ce0a709389086ca8433c7c909",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-transform-bicameral-014.xht": [
-       "a830f3465004897534351ccf494061db3b19650d",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-transform-bicameral-015.xht": [
-       "8ecc385a0151a1114e6398f5b4e8485530e2a5f3",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-transform-bicameral-016.xht": [
-       "d84fc7d1779d6278d480652f9d95890ae2bbe8e6",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-transform-bicameral-017.xht": [
-       "678d37c649ecc019e580356c90784c27ef22ff44",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-transform-bicameral-018.xht": [
-       "31a8dc0bd9fd19fc415842b360942a673a8ca172",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-transform-bicameral-019.xht": [
-       "259b95852e4f58f02df660aca8c8bb879f888f9b",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-transform-bicameral-020.xht": [
-       "087d4709eeda25e1639dcf84072297fab2b5296b",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-transform-bicameral-021.xht": [
-       "2de260ef97f3b4f6ddac7e79a286d04b1859a259",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-transform-bicameral-022.xht": [
-       "9e195af6e142ee52b5cc78776f9bd0ec27419a15",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-transform-unicase-001.xht": [
-       "c899e90046bf01a34744f9bfa4df78942090686f",
        [
         null,
         {}
