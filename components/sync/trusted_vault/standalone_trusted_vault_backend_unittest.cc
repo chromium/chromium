@@ -45,6 +45,14 @@ base::FilePath CreateUniqueTempDir(base::ScopedTempDir* temp_dir) {
   return temp_dir->GetPath();
 }
 
+class MockDelegate : public StandaloneTrustedVaultBackend::Delegate {
+ public:
+  MockDelegate() = default;
+  ~MockDelegate() override = default;
+
+  MOCK_METHOD0(NotifyRecoverabilityDegradedChanged, void());
+};
+
 class MockTrustedVaultConnection : public TrustedVaultConnection {
  public:
   MockTrustedVaultConnection() = default;
@@ -72,11 +80,16 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
                 .Append(base::FilePath(FILE_PATH_LITERAL("some_file")))) {
     override_features.InitAndEnableFeature(
         switches::kFollowTrustedVaultKeyRotation);
+
+    auto delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
+    delegate_ = delegate.get();
+
     auto connection =
         std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>();
     connection_ = connection.get();
+
     backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-        file_path_, std::move(connection));
+        file_path_, std::move(delegate), std::move(connection));
   }
 
   ~StandaloneTrustedVaultBackendTest() override = default;
@@ -135,6 +148,7 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
   const base::FilePath file_path_;
+  testing::NiceMock<MockDelegate>* delegate_;
   testing::NiceMock<MockTrustedVaultConnection>* connection_;
   scoped_refptr<StandaloneTrustedVaultBackend> backend_;
 };
@@ -230,7 +244,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchPreviouslyStoredKeys) {
 
   // Instantiate a second backend to read the file.
   auto other_backend = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-      file_path(),
+      file_path(), std::make_unique<testing::NiceMock<MockDelegate>>(),
       std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>());
   other_backend->ReadDataFromDisk();
 

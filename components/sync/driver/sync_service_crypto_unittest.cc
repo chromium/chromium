@@ -15,9 +15,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/sync_prefs.h"
+#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/trusted_vault_client.h"
 #include "components/sync/engine/mock_sync_engine.h"
-#include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/nigori/nigori.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -151,12 +151,13 @@ class TestTrustedVaultClient : public TrustedVaultClient {
 
   void SetIsRecoverabilityDegraded(bool is_recoverability_degraded) {
     is_recoverability_degraded_ = is_recoverability_degraded;
+    recoverability_observer_list_.Notify();
   }
 
   // TrustedVaultClient implementation.
   std::unique_ptr<Subscription> AddKeysChangedObserver(
       const base::RepeatingClosure& cb) override {
-    return observer_list_.Add(cb);
+    return keys_observer_list_.Add(cb);
   }
 
   void FetchKeys(
@@ -202,12 +203,12 @@ class TestTrustedVaultClient : public TrustedVaultClient {
     CachedKeysPerUser& cached_keys = gaia_id_to_cached_keys_[gaia_id];
     cached_keys.keys = keys;
     cached_keys.marked_as_stale = false;
-    observer_list_.Notify();
+    keys_observer_list_.Notify();
   }
 
   void RemoveAllStoredKeys() override {
     gaia_id_to_cached_keys_.clear();
-    observer_list_.Notify();
+    keys_observer_list_.Notify();
   }
 
   void MarkKeysAsStale(const CoreAccountInfo& account_info,
@@ -236,6 +237,18 @@ class TestTrustedVaultClient : public TrustedVaultClient {
     std::move(cb).Run(is_recoverability_degraded_);
   }
 
+  std::unique_ptr<Subscription> AddRecoverabilityObserver(
+      const base::RepeatingClosure& cb) override {
+    return recoverability_observer_list_.Add(cb);
+  }
+
+  void AddTrustedRecoveryMethod(const std::string& gaia_id,
+                                const std::vector<uint8_t>& public_key,
+                                base::OnceClosure cb) override {
+    // Not relevant in these tests.
+    std::move(cb).Run();
+  }
+
  private:
   struct CachedKeysPerUser {
     bool marked_as_stale = false;
@@ -245,7 +258,8 @@ class TestTrustedVaultClient : public TrustedVaultClient {
   const TestTrustedVaultServer* const server_;
 
   std::map<std::string, CachedKeysPerUser> gaia_id_to_cached_keys_;
-  CallbackList observer_list_;
+  CallbackList keys_observer_list_;
+  CallbackList recoverability_observer_list_;
   int fetch_count_ = 0;
   int keys_marked_as_stale_count_ = 0;
   int get_is_recoverablity_degraded_call_count_ = 0;
@@ -787,7 +801,8 @@ TEST_F(SyncServiceCryptoTest, ShouldNotGetRecoverabilityIfFeatureDisabled) {
   EXPECT_FALSE(crypto_.IsTrustedVaultRecoverabilityDegraded());
 }
 
-TEST_F(SyncServiceCryptoTest, ShouldNotReportDegradedRecoverability) {
+TEST_F(SyncServiceCryptoTest,
+       ShouldNotReportDegradedRecoverabilityUponInitialization) {
   base::test::ScopedFeatureList override_features;
   override_features.InitAndEnableFeature(
       switches::kSyncSupportTrustedVaultPassphraseRecovery);
@@ -804,7 +819,8 @@ TEST_F(SyncServiceCryptoTest, ShouldNotReportDegradedRecoverability) {
   EXPECT_FALSE(crypto_.IsTrustedVaultRecoverabilityDegraded());
 }
 
-TEST_F(SyncServiceCryptoTest, ShouldReportDegradedRecoverability) {
+TEST_F(SyncServiceCryptoTest,
+       ShouldReportDegradedRecoverabilityUponInitialization) {
   base::test::ScopedFeatureList override_features;
   override_features.InitAndEnableFeature(
       switches::kSyncSupportTrustedVaultPassphraseRecovery);
@@ -818,6 +834,88 @@ TEST_F(SyncServiceCryptoTest, ShouldReportDegradedRecoverability) {
   ASSERT_TRUE(crypto_.IsTrustedVaultKeyRequiredStateKnown());
   ASSERT_FALSE(crypto_.IsTrustedVaultKeyRequired());
 
+  EXPECT_TRUE(crypto_.IsTrustedVaultRecoverabilityDegraded());
+}
+
+TEST_F(SyncServiceCryptoTest, ShouldReportDegradedRecoverabilityUponChange) {
+  base::test::ScopedFeatureList override_features;
+  override_features.InitAndEnableFeature(
+      switches::kSyncSupportTrustedVaultPassphraseRecovery);
+
+  trusted_vault_client_.SetIsRecoverabilityDegraded(false);
+  crypto_.OnPassphraseTypeChanged(PassphraseType::kTrustedVaultPassphrase,
+                                  base::Time::Now());
+  crypto_.SetSyncEngine(CoreAccountInfo(), &engine_);
+  ASSERT_THAT(crypto_.GetPassphraseType(),
+              Eq(PassphraseType::kTrustedVaultPassphrase));
+  ASSERT_TRUE(crypto_.IsTrustedVaultKeyRequiredStateKnown());
+  ASSERT_FALSE(crypto_.IsTrustedVaultKeyRequired());
+  ASSERT_FALSE(crypto_.IsTrustedVaultRecoverabilityDegraded());
+
+  // Changing the state notifies observers and should lead to a change in
+  // IsTrustedVaultRecoverabilityDegraded().
+  EXPECT_CALL(notify_observers_cb_, Run());
+  trusted_vault_client_.SetIsRecoverabilityDegraded(true);
+  EXPECT_TRUE(crypto_.IsTrustedVaultRecoverabilityDegraded());
+}
+
+TEST_F(SyncServiceCryptoTest,
+       ShouldStopReportingDegradedRecoverabilityUponChange) {
+  base::test::ScopedFeatureList override_features;
+  override_features.InitAndEnableFeature(
+      switches::kSyncSupportTrustedVaultPassphraseRecovery);
+
+  trusted_vault_client_.SetIsRecoverabilityDegraded(true);
+  crypto_.OnPassphraseTypeChanged(PassphraseType::kTrustedVaultPassphrase,
+                                  base::Time::Now());
+  crypto_.SetSyncEngine(CoreAccountInfo(), &engine_);
+  ASSERT_THAT(crypto_.GetPassphraseType(),
+              Eq(PassphraseType::kTrustedVaultPassphrase));
+  ASSERT_TRUE(crypto_.IsTrustedVaultKeyRequiredStateKnown());
+  ASSERT_FALSE(crypto_.IsTrustedVaultKeyRequired());
+  ASSERT_TRUE(crypto_.IsTrustedVaultRecoverabilityDegraded());
+
+  // Changing the state notifies observers and should lead to a change in
+  // IsTrustedVaultRecoverabilityDegraded().
+  EXPECT_CALL(notify_observers_cb_, Run());
+  trusted_vault_client_.SetIsRecoverabilityDegraded(false);
+  EXPECT_FALSE(crypto_.IsTrustedVaultRecoverabilityDegraded());
+}
+
+TEST_F(SyncServiceCryptoTest, ShouldReportDegradedRecoverabilityUponRetrieval) {
+  base::test::ScopedFeatureList override_features;
+  override_features.InitAndEnableFeature(
+      switches::kSyncSupportTrustedVaultPassphraseRecovery);
+
+  trusted_vault_client_.SetIsRecoverabilityDegraded(true);
+
+  // Mimic startup with trusted vault keys being required.
+  crypto_.OnTrustedVaultKeyRequired();
+  crypto_.OnPassphraseTypeChanged(PassphraseType::kTrustedVaultPassphrase,
+                                  base::Time::Now());
+  crypto_.SetSyncEngine(kSyncingAccount, &engine_);
+  ASSERT_FALSE(crypto_.IsTrustedVaultKeyRequiredStateKnown());
+  ASSERT_FALSE(crypto_.IsTrustedVaultRecoverabilityDegraded());
+
+  // Complete the fetching of initial keys (no keys) from the client.
+  ASSERT_TRUE(trusted_vault_client_.CompleteFetchKeysRequest());
+  ASSERT_TRUE(crypto_.IsTrustedVaultKeyRequiredStateKnown());
+  ASSERT_TRUE(crypto_.IsTrustedVaultKeyRequired());
+  ASSERT_FALSE(crypto_.IsTrustedVaultRecoverabilityDegraded());
+
+  // Mimic a successful key retrieval.
+  ON_CALL(engine_, AddTrustedVaultDecryptionKeys(_, _))
+      .WillByDefault([&](const std::vector<std::vector<uint8_t>>& keys,
+                         base::OnceClosure done_cb) {
+        crypto_.OnTrustedVaultKeyAccepted();
+        std::move(done_cb).Run();
+      });
+  MimicKeyRetrievalByUser();
+  ASSERT_TRUE(trusted_vault_client_.CompleteFetchKeysRequest());
+  ASSERT_TRUE(crypto_.IsTrustedVaultKeyRequiredStateKnown());
+  ASSERT_FALSE(crypto_.IsTrustedVaultKeyRequired());
+
+  // The recoverability state should be exposed.
   EXPECT_TRUE(crypto_.IsTrustedVaultRecoverabilityDegraded());
 }
 

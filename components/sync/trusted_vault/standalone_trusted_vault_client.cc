@@ -111,6 +111,25 @@ void PrimaryAccountObserver::UpdatePrimaryAccountIfNeeded() {
                      backend_, optional_primary_account));
 }
 
+// Backend delegate that dispatches delegate notifications to custom callbacks,
+// used to post notifications from the backend sequence to the UI thread.
+class BackendDelegate : public StandaloneTrustedVaultBackend::Delegate {
+ public:
+  explicit BackendDelegate(
+      const base::RepeatingClosure& notify_recoverability_degraded_cb)
+      : notify_recoverability_degraded_cb_(notify_recoverability_degraded_cb) {}
+
+  ~BackendDelegate() override = default;
+
+  // StandaloneTrustedVaultBackend::Delegate implementation.
+  void NotifyRecoverabilityDegradedChanged() override {
+    notify_recoverability_degraded_cb_.Run();
+  }
+
+ private:
+  const base::RepeatingClosure notify_recoverability_degraded_cb_;
+};
+
 }  // namespace
 
 StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
@@ -128,10 +147,15 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
   // TODO(crbug.com/1102340): allow setting custom TrustedVaultConnection for
   // testing.
   backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-      file_path, std::make_unique<TrustedVaultConnectionImpl>(
-                     /*url_loader_factory=*/nullptr,
-                     std::make_unique<TrustedVaultAccessTokenFetcherImpl>(
-                         access_token_fetcher_frontend_.GetWeakPtr())));
+      file_path,
+      std::make_unique<
+          BackendDelegate>(BindToCurrentSequence(base::BindRepeating(
+          &StandaloneTrustedVaultClient::NotifyRecoverabilityDegradedChanged,
+          weak_ptr_factory_.GetWeakPtr()))),
+      std::make_unique<TrustedVaultConnectionImpl>(
+          /*url_loader_factory=*/nullptr,
+          std::make_unique<TrustedVaultAccessTokenFetcherImpl>(
+              access_token_fetcher_frontend_.GetWeakPtr())));
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&StandaloneTrustedVaultBackend::ReadDataFromDisk,
@@ -145,12 +169,14 @@ StandaloneTrustedVaultClient::~StandaloneTrustedVaultClient() = default;
 std::unique_ptr<StandaloneTrustedVaultClient::Subscription>
 StandaloneTrustedVaultClient::AddKeysChangedObserver(
     const base::RepeatingClosure& cb) {
-  return observer_list_.Add(cb);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return keys_observer_list_.Add(cb);
 }
 
 void StandaloneTrustedVaultClient::FetchKeys(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
   backend_task_runner_->PostTask(
       FROM_HERE,
@@ -162,25 +188,28 @@ void StandaloneTrustedVaultClient::StoreKeys(
     const std::string& gaia_id,
     const std::vector<std::vector<uint8_t>>& keys,
     int last_key_version) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
   backend_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&StandaloneTrustedVaultBackend::StoreKeys,
                                 backend_, gaia_id, keys, last_key_version));
-  observer_list_.Notify();
+  keys_observer_list_.Notify();
 }
 
 void StandaloneTrustedVaultClient::RemoveAllStoredKeys() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&StandaloneTrustedVaultBackend::RemoveAllStoredKeys,
                      backend_));
-  observer_list_.Notify();
+  keys_observer_list_.Notify();
 }
 
 void StandaloneTrustedVaultClient::MarkKeysAsStale(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
   base::PostTaskAndReplyWithResult(
       backend_task_runner_.get(), FROM_HERE,
@@ -192,19 +221,45 @@ void StandaloneTrustedVaultClient::MarkKeysAsStale(
 void StandaloneTrustedVaultClient::GetIsRecoverabilityDegraded(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> cb) {
-  // TODO(crbug.com/1081649): Implement logic.
-  NOTIMPLEMENTED();
-  std::move(cb).Run(is_recoverability_degraded_for_testing_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(backend_);
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &StandaloneTrustedVaultBackend::GetIsRecoverabilityDegraded, backend_,
+          account_info, BindToCurrentSequence(std::move(cb))));
+}
+
+std::unique_ptr<StandaloneTrustedVaultClient::Subscription>
+StandaloneTrustedVaultClient::AddRecoverabilityObserver(
+    const base::RepeatingClosure& cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return recoverability_observer_list_.Add(cb);
+}
+
+void StandaloneTrustedVaultClient::AddTrustedRecoveryMethod(
+    const std::string& gaia_id,
+    const std::vector<uint8_t>& public_key,
+    base::OnceClosure cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(backend_);
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod,
+                     backend_, gaia_id, public_key,
+                     BindToCurrentSequence(std::move(cb))));
 }
 
 void StandaloneTrustedVaultClient::WaitForFlushForTesting(
     base::OnceClosure cb) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   backend_task_runner_->PostTaskAndReply(FROM_HERE, base::DoNothing(),
                                          std::move(cb));
 }
 
 void StandaloneTrustedVaultClient::FetchBackendPrimaryAccountForTesting(
     base::OnceCallback<void(const base::Optional<CoreAccountInfo>&)> cb) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
   base::PostTaskAndReplyWithResult(
       backend_task_runner_.get(), FROM_HERE,
@@ -215,7 +270,27 @@ void StandaloneTrustedVaultClient::FetchBackendPrimaryAccountForTesting(
 }
 
 void StandaloneTrustedVaultClient::SetRecoverabilityDegradedForTesting() {
-  is_recoverability_degraded_for_testing_ = true;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(backend_);
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &StandaloneTrustedVaultBackend::SetRecoverabilityDegradedForTesting,
+          backend_));
+}
+
+void StandaloneTrustedVaultClient::ResolveRecoverabilityDegradedForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(backend_);
+  backend_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&StandaloneTrustedVaultBackend::
+                                    ResolveRecoverabilityDegradedForTesting,
+                                backend_));
+}
+
+void StandaloneTrustedVaultClient::NotifyRecoverabilityDegradedChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  recoverability_observer_list_.Notify();
 }
 
 }  // namespace syncer

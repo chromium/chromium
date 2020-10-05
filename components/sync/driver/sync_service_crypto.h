@@ -113,8 +113,9 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
     kTrustedVaultRecoverabilityDegraded,
   };
 
-  // Observer method invoked by TrustedVaultClient when its content changes.
+  // Observer methods invoked by TrustedVaultClient when its content changes.
   void OnTrustedVaultClientKeysChanged();
+  void OnTrustedVaultClientRecoverabilityChanged();
 
   // Reads trusted vault keys from the client and feeds them to the sync engine.
   void FetchTrustedVaultKeys(bool is_second_fetch_attempt);
@@ -135,6 +136,9 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   void UpdateRequiredUserActionAndNotify(
       RequiredUserAction new_required_user_action);
 
+  // Invokes TrustedVaultClient::GetIsRecoverabilityDegraded() if needed.
+  void RefreshIsRecoverabilityDegraded();
+
   // Completion callback function for
   // TrustedVaultClient::GetIsRecoverabilityDegraded().
   void GetIsRecoverabilityDegradedCompleted(bool is_recoverability_degraded);
@@ -153,9 +157,11 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   // Never null and guaranteed to outlive us.
   TrustedVaultClient* const trusted_vault_client_;
 
-  // Subscription to observe changes in |*trusted_vault_client_|.
+  // Subscriptions to observe changes in |*trusted_vault_client_|.
   std::unique_ptr<TrustedVaultClient::Subscription>
-      trusted_vault_client_subscription_;
+      trusted_vault_client_keys_subscription_;
+  std::unique_ptr<TrustedVaultClient::Subscription>
+      trusted_vault_client_recoverability_subscription_;
 
   // All the mutable state is wrapped in a struct so that it can be easily
   // reset to its default values.

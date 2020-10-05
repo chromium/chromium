@@ -60,6 +60,11 @@ class TrustedVaultClientAndroid : public syncer::TrustedVaultClient {
                        base::OnceCallback<void(bool)> cb) override;
   void GetIsRecoverabilityDegraded(const CoreAccountInfo& account_info,
                                    base::OnceCallback<void(bool)> cb) override;
+  std::unique_ptr<Subscription> AddRecoverabilityObserver(
+      const base::RepeatingClosure& cb) override;
+  void AddTrustedRecoveryMethod(const std::string& gaia_id,
+                                const std::vector<uint8_t>& public_key,
+                                base::OnceClosure cb) override;
 
  private:
   // Struct representing an in-flight FetchKeys() call invoked from C++.

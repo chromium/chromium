@@ -67,4 +67,8 @@ const base::Feature kDecoupleSyncFromAndroidMasterSync{
 const base::Feature kFollowTrustedVaultKeyRotation{
     "FollowTrustedVaultKeyRotation", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSyncSupportTrustedVaultPassphraseRecovery{
+    "SyncSupportTrustedVaultPassphraseRecovery",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace switches

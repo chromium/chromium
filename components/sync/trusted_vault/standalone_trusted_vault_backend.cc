@@ -50,8 +50,11 @@ void WriteToDisk(const sync_pb::LocalTrustedVault& data,
 
 StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
     const base::FilePath& file_path,
+    std::unique_ptr<Delegate> delegate,
     std::unique_ptr<TrustedVaultConnection> connection)
-    : file_path_(file_path), connection_(std::move(connection)) {}
+    : file_path_(file_path),
+      delegate_(std::move(delegate)),
+      connection_(std::move(connection)) {}
 
 StandaloneTrustedVaultBackend::~StandaloneTrustedVaultBackend() = default;
 
@@ -182,6 +185,28 @@ bool StandaloneTrustedVaultBackend::MarkKeysAsStale(
   return true;
 }
 
+void StandaloneTrustedVaultBackend::GetIsRecoverabilityDegraded(
+    const CoreAccountInfo& account_info,
+    base::OnceCallback<void(bool)> cb) {
+  // TODO(crbug.com/1081649): Implement logic.
+  NOTIMPLEMENTED();
+  std::move(cb).Run(is_recoverability_degraded_for_testing_);
+}
+
+void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
+    const std::string& gaia_id,
+    const std::vector<uint8_t>& public_key,
+    base::OnceClosure cb) {
+  if (primary_account_->gaia == gaia_id) {
+    // TODO(crbug.com/1081649): Implement logic.
+    NOTIMPLEMENTED();
+    is_recoverability_degraded_for_testing_ = false;
+    delegate_->NotifyRecoverabilityDegradedChanged();
+  }
+
+  std::move(cb).Run();
+}
+
 base::Optional<CoreAccountInfo>
 StandaloneTrustedVaultBackend::GetPrimaryAccountForTesting() const {
   return primary_account_;
@@ -195,6 +220,16 @@ StandaloneTrustedVaultBackend::GetDeviceRegistrationInfoForTesting(
     return sync_pb::LocalDeviceRegistrationInfo();
   }
   return per_user_vault->local_device_registration_info();
+}
+
+void StandaloneTrustedVaultBackend::SetRecoverabilityDegradedForTesting() {
+  is_recoverability_degraded_for_testing_ = true;
+  delegate_->NotifyRecoverabilityDegradedChanged();
+}
+
+void StandaloneTrustedVaultBackend::ResolveRecoverabilityDegradedForTesting() {
+  is_recoverability_degraded_for_testing_ = false;
+  delegate_->NotifyRecoverabilityDegradedChanged();
 }
 
 void StandaloneTrustedVaultBackend::MaybeRegisterDevice(

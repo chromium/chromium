@@ -137,3 +137,20 @@ void TrustedVaultClientAndroid::GetIsRecoverabilityDegraded(
   NOTIMPLEMENTED();
   std::move(cb).Run(false);
 }
+
+std::unique_ptr<TrustedVaultClientAndroid::Subscription>
+TrustedVaultClientAndroid::AddRecoverabilityObserver(
+    const base::RepeatingClosure& cb) {
+  // TODO(crbug.com/1100279): Needs implementation.
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+void TrustedVaultClientAndroid::AddTrustedRecoveryMethod(
+    const std::string& gaia_id,
+    const std::vector<uint8_t>& public_key,
+    base::OnceClosure cb) {
+  // TODO(crbug.com/1100279): Needs implementation.
+  NOTIMPLEMENTED();
+  std::move(cb).Run();
+}

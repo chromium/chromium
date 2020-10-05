@@ -31,8 +31,20 @@ class StandaloneTrustedVaultBackend
   using FetchKeysCallback = base::OnceCallback<void(
       const std::vector<std::vector<uint8_t>>& vault_keys)>;
 
+  class Delegate {
+   public:
+    Delegate() = default;
+    Delegate(const Delegate&) = delete;
+    virtual ~Delegate() = default;
+
+    Delegate& operator=(const Delegate&) = delete;
+
+    virtual void NotifyRecoverabilityDegradedChanged() = 0;
+  };
+
   StandaloneTrustedVaultBackend(
       const base::FilePath& file_path,
+      std::unique_ptr<Delegate> delegate,
       std::unique_ptr<TrustedVaultConnection> connection);
   StandaloneTrustedVaultBackend(const StandaloneTrustedVaultBackend& other) =
       delete;
@@ -68,10 +80,23 @@ class StandaloneTrustedVaultBackend
   void SetPrimaryAccount(
       const base::Optional<CoreAccountInfo>& primary_account);
 
+  // Returns whether recoverability of the keys is degraded and user action is
+  // required to add a new method.
+  void GetIsRecoverabilityDegraded(const CoreAccountInfo& account_info,
+                                   base::OnceCallback<void(bool)> cb);
+
+  // Registers a new trusted recovery method that can be used to retrieve keys.
+  void AddTrustedRecoveryMethod(const std::string& gaia_id,
+                                const std::vector<uint8_t>& public_key,
+                                base::OnceClosure cb);
+
   base::Optional<CoreAccountInfo> GetPrimaryAccountForTesting() const;
 
   sync_pb::LocalDeviceRegistrationInfo GetDeviceRegistrationInfoForTesting(
       const std::string& gaia_id);
+
+  void SetRecoverabilityDegradedForTesting();
+  void ResolveRecoverabilityDegradedForTesting();
 
  private:
   friend class base::RefCountedThreadSafe<StandaloneTrustedVaultBackend>;
@@ -102,20 +127,24 @@ class StandaloneTrustedVaultBackend
 
   const base::FilePath file_path_;
 
+  const std::unique_ptr<Delegate> delegate_;
+
+  // Used for communication with trusted vault server.
+  const std::unique_ptr<TrustedVaultConnection> connection_;
+
   sync_pb::LocalTrustedVault data_;
 
   // Only current |primary_account_| can be used for communication with trusted
   // vault server.
   base::Optional<CoreAccountInfo> primary_account_;
 
-  // Used for communication with trusted vault server.
-  std::unique_ptr<TrustedVaultConnection> connection_;
-
   // Used to plumb FetchKeys() result to the caller.
   FetchKeysCallback ongoing_fetch_keys_callback_;
 
   // Account used in last FetchKeys() call.
   base::Optional<std::string> ongoing_fetch_keys_gaia_id_;
+
+  bool is_recoverability_degraded_for_testing_ = false;
 
   // Used for cancellation of callbacks passed to |connection_|.
   base::WeakPtrFactory<StandaloneTrustedVaultBackend>

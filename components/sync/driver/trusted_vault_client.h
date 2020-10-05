@@ -74,6 +74,21 @@ class TrustedVaultClient {
       const CoreAccountInfo& account_info,
       base::OnceCallback<void(bool)> cb) = 0;
 
+  // Registers an observer-like callback that will be invoked when the
+  // recoverability of the keys has changed. The subscription must not outlive
+  // |*this|.
+  // TODO(crbug.com/1081649): Unify with AddKeysChangedObserver() by introducing
+  // an observer interface instead.
+  virtual std::unique_ptr<Subscription> AddRecoverabilityObserver(
+      const base::RepeatingClosure& cb) = 0;
+
+  // Registers a new trusted recovery method that can be used to retrieve keys,
+  // usually for the purpose of resolving a recoverability-degraded case
+  // surfaced by GetIsRecoverabilityDegraded().
+  virtual void AddTrustedRecoveryMethod(const std::string& gaia_id,
+                                        const std::vector<uint8_t>& public_key,
+                                        base::OnceClosure cb) = 0;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(TrustedVaultClient);
 };

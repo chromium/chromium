@@ -27,6 +27,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/sync/base/time.h"
+#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/nigori/nigori.h"
@@ -171,6 +172,24 @@ class PageTitleChecker : public StatusChangeChecker,
   DISALLOW_COPY_AND_ASSIGN(PageTitleChecker);
 };
 
+// Used to wait until IsTrustedVaultRecoverabilityDegraded() returns false.
+class TrustedVaultRecoverabilityNotDegradedChecker
+    : public SingleClientStatusChangeChecker {
+ public:
+  explicit TrustedVaultRecoverabilityNotDegradedChecker(
+      syncer::ProfileSyncService* service)
+      : SingleClientStatusChangeChecker(service) {}
+  ~TrustedVaultRecoverabilityNotDegradedChecker() override = default;
+
+ protected:
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    return !service()
+                ->GetUserSettings()
+                ->IsTrustedVaultRecoverabilityDegraded();
+  }
+};
+
 class SingleClientNigoriSyncTest : public SyncTest {
  public:
   SingleClientNigoriSyncTest() : SyncTest(SINGLE_CLIENT) {}
@@ -227,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
 
   const std::vector<std::vector<uint8_t>>& keystore_keys =
       GetFakeServer()->GetKeystoreKeys();
-  ASSERT_TRUE(keystore_keys.size() == 1);
+  ASSERT_THAT(keystore_keys, SizeIs(1));
   EXPECT_THAT(
       specifics.encryption_keybag(),
       IsDataEncryptedWith(Pbkdf2KeyParamsForTesting(keystore_keys.back())));
@@ -958,6 +977,21 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
       sync_ui_util::GetStatusLabels(GetProfile(0)),
       StatusLabelsMatch(sync_ui_util::SYNCED, IDS_SYNC_ACCOUNT_SYNCING,
                         IDS_SETTINGS_EMPTY_STRING, sync_ui_util::NO_ACTION));
+
+  // Mimic opening a web page where the user can interact with the degraded
+  // recoverability flow.
+  static_cast<syncer::StandaloneTrustedVaultClient*>(
+      GetSyncService(0)->GetSyncClientForTest()->GetTrustedVaultClient())
+      ->ResolveRecoverabilityDegradedForTesting();
+
+  EXPECT_TRUE(
+      TrustedVaultRecoverabilityNotDegradedChecker(GetSyncService(0)).Wait());
+
+#if !defined(OS_CHROMEOS)
+  // Verify the profile-menu error string is empty.
+  EXPECT_EQ(sync_ui_util::NO_SYNC_ERROR,
+            sync_ui_util::GetAvatarSyncErrorType(GetProfile(0)));
+#endif  // !defined(OS_CHROMEOS)
 }
 
 }  // namespace

@@ -12,6 +12,8 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/trusted_vault_client.h"
@@ -54,6 +56,11 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
                        base::OnceCallback<void(bool)> cb) override;
   void GetIsRecoverabilityDegraded(const CoreAccountInfo& account_info,
                                    base::OnceCallback<void(bool)> cb) override;
+  std::unique_ptr<Subscription> AddRecoverabilityObserver(
+      const base::RepeatingClosure& cb) override;
+  void AddTrustedRecoveryMethod(const std::string& gaia_id,
+                                const std::vector<uint8_t>& public_key,
+                                base::OnceClosure cb) override;
 
   // Runs |cb| when all requests have completed.
   void WaitForFlushForTesting(base::OnceClosure cb) const;
@@ -61,11 +68,17 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
       base::OnceCallback<void(const base::Optional<CoreAccountInfo>&)> callback)
       const;
   void SetRecoverabilityDegradedForTesting();
+  void ResolveRecoverabilityDegradedForTesting();
 
  private:
+  void NotifyRecoverabilityDegradedChanged();
+
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
-  CallbackList observer_list_;
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  CallbackList keys_observer_list_;
+  CallbackList recoverability_observer_list_;
 
   // Allows access token fetching for primary account on the ui thread. Passed
   // as WeakPtr to TrustedVaultAccessTokenFetcherImpl.
@@ -79,7 +92,7 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
   // Holds references to |backend_| and |backend_task_runner_|.
   std::unique_ptr<signin::IdentityManager::Observer> primary_account_observer_;
 
-  bool is_recoverability_degraded_for_testing_ = false;
+  base::WeakPtrFactory<StandaloneTrustedVaultClient> weak_ptr_factory_{this};
 };
 
 }  // namespace syncer

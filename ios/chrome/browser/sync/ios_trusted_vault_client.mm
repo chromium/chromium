@@ -72,3 +72,18 @@ void IOSTrustedVaultClient::GetIsRecoverabilityDegraded(
   // TODO(crbug.com/1100278): Needs implementation.
   std::move(callback).Run(false);
 }
+
+std::unique_ptr<IOSTrustedVaultClient::Subscription>
+IOSTrustedVaultClient::AddRecoverabilityObserver(
+    const base::RepeatingClosure& callback) {
+  // TODO(crbug.com/1100278): Needs implementation.
+  return nullptr;
+}
+
+void IOSTrustedVaultClient::AddTrustedRecoveryMethod(
+    const std::string& gaia_id,
+    const std::vector<uint8_t>& public_key,
+    base::OnceClosure callback) {
+  // TODO(crbug.com/1100278): Needs implementation.
+  std::move(callback).Run();
+}

@@ -30,6 +30,11 @@ class IOSTrustedVaultClient : public syncer::TrustedVaultClient {
   void GetIsRecoverabilityDegraded(
       const CoreAccountInfo& account_info,
       base::OnceCallback<void(bool)> callback) override;
+  std::unique_ptr<Subscription> AddRecoverabilityObserver(
+      const base::RepeatingClosure& callback) override;
+  void AddTrustedRecoveryMethod(const std::string& gaia_id,
+                                const std::vector<uint8_t>& public_key,
+                                base::OnceClosure callback) override;
 
   // Not copyable or movable
   IOSTrustedVaultClient(const IOSTrustedVaultClient&) = delete;

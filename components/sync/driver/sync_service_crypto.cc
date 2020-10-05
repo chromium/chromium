@@ -17,7 +17,6 @@
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service.h"
-#include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/engine/sync_string_conversions.h"
 #include "components/sync/nigori/nigori.h"
 
@@ -71,6 +70,18 @@ class EmptyTrustedVaultClient : public TrustedVaultClient {
   void GetIsRecoverabilityDegraded(const CoreAccountInfo& account_info,
                                    base::OnceCallback<void(bool)> cb) override {
     std::move(cb).Run(false);
+  }
+
+  std::unique_ptr<Subscription> AddRecoverabilityObserver(
+      const base::RepeatingClosure& cb) override {
+    return nullptr;
+  }
+
+  void AddTrustedRecoveryMethod(const std::string& gaia_id,
+                                const std::vector<uint8_t>& public_key,
+                                base::OnceClosure cb) override {
+    // Never invoked by SyncServiceCrypto.
+    NOTREACHED();
   }
 };
 
@@ -221,9 +232,14 @@ SyncServiceCrypto::SyncServiceCrypto(
   DCHECK(sync_prefs_);
   DCHECK(trusted_vault_client_);
 
-  trusted_vault_client_subscription_ =
+  trusted_vault_client_keys_subscription_ =
       trusted_vault_client_->AddKeysChangedObserver(base::BindRepeating(
           &SyncServiceCrypto::OnTrustedVaultClientKeysChanged,
+          weak_factory_.GetWeakPtr()));
+
+  trusted_vault_client_recoverability_subscription_ =
+      trusted_vault_client_->AddRecoverabilityObserver(base::BindRepeating(
+          &SyncServiceCrypto::OnTrustedVaultClientRecoverabilityChanged,
           weak_factory_.GetWeakPtr()));
 }
 
@@ -646,6 +662,10 @@ void SyncServiceCrypto::OnTrustedVaultClientKeysChanged() {
   FetchTrustedVaultKeys(/*is_second_fetch_attempt=*/false);
 }
 
+void SyncServiceCrypto::OnTrustedVaultClientRecoverabilityChanged() {
+  RefreshIsRecoverabilityDegraded();
+}
+
 void SyncServiceCrypto::FetchTrustedVaultKeys(bool is_second_fetch_attempt) {
   DCHECK(state_.engine);
   DCHECK(state_.required_user_action ==
@@ -775,20 +795,37 @@ void SyncServiceCrypto::UpdateRequiredUserActionAndNotify(
   state_.required_user_action = new_required_user_action;
   notify_required_user_action_changed_.Run();
 
-  if (state_.required_user_action == RequiredUserAction::kNone &&
-      state_.cached_passphrase_type ==
-          PassphraseType::kTrustedVaultPassphrase &&
-      base::FeatureList::IsEnabled(
-          switches::kSyncSupportTrustedVaultPassphraseRecovery)) {
-    trusted_vault_client_->GetIsRecoverabilityDegraded(
-        state_.account_info,
-        base::BindOnce(&SyncServiceCrypto::GetIsRecoverabilityDegradedCompleted,
-                       weak_factory_.GetWeakPtr()));
+  RefreshIsRecoverabilityDegraded();
+}
+
+void SyncServiceCrypto::RefreshIsRecoverabilityDegraded() {
+  switch (state_.required_user_action) {
+    case RequiredUserAction::kUnknownDuringInitialization:
+    case RequiredUserAction::kFetchingTrustedVaultKeys:
+    case RequiredUserAction::kTrustedVaultKeyRequired:
+    case RequiredUserAction::kTrustedVaultKeyRequiredButFetching:
+    case RequiredUserAction::kPassphraseRequiredForDecryption:
+    case RequiredUserAction::kPassphraseRequiredForEncryption:
+      return;
+    case RequiredUserAction::kNone:
+    case RequiredUserAction::kTrustedVaultRecoverabilityDegraded:
+      break;
   }
+
+  if (!base::FeatureList::IsEnabled(
+          switches::kSyncSupportTrustedVaultPassphraseRecovery)) {
+    return;
+  }
+
+  trusted_vault_client_->GetIsRecoverabilityDegraded(
+      state_.account_info,
+      base::BindOnce(&SyncServiceCrypto::GetIsRecoverabilityDegradedCompleted,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void SyncServiceCrypto::GetIsRecoverabilityDegradedCompleted(
     bool is_recoverability_degraded) {
+  // The passphrase type could have changed.
   if (state_.cached_passphrase_type !=
       PassphraseType::kTrustedVaultPassphrase) {
     DCHECK_NE(state_.required_user_action,
