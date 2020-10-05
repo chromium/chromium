@@ -167,7 +167,7 @@ bool StructTraits<DnsConfigOverridesDataView, net::DnsConfigOverrides>::Read(
     out->ndots = data.ndots();
   // if == -1, leave nullopt.
 
-  if (!data.ReadTimeout(&out->timeout))
+  if (!data.ReadFallbackPeriod(&out->fallback_period))
     return false;
 
   if (data.attempts() < -1)

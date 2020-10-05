@@ -1030,9 +1030,9 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
 
 // Implements DnsTransaction. Configuration is supplied by DnsSession.
 // The suffix list is built according to the DnsConfig from the session.
-// The timeout for each DnsUDPAttempt is given by
-// ResolveContext::NextClassicTimeout. The first server to attempt on each query
-// is given by ResolveContext::NextFirstServerIndex, and the order is
+// The fallback period for each DnsUDPAttempt is given by
+// ResolveContext::NextClassicFallbackPeriod(). The first server to attempt on
+// each query is given by ResolveContext::NextFirstServerIndex, and the order is
 // round-robin afterwards. Each server is attempted DnsConfig::attempts times.
 class DnsTransactionImpl : public DnsTransaction,
                            public base::SupportsWeakPtr<DnsTransactionImpl> {
@@ -1243,9 +1243,11 @@ class DnsTransactionImpl : public DnsTransaction,
     }
 
     if (result.rv == ERR_IO_PENDING) {
-      base::TimeDelta timeout = resolve_context_->NextClassicTimeout(
-          server_index, attempt_number, session_.get());
-      timer_.Start(FROM_HERE, timeout, this, &DnsTransactionImpl::OnTimeout);
+      base::TimeDelta fallback_period =
+          resolve_context_->NextClassicFallbackPeriod(
+              server_index, attempt_number, session_.get());
+      timer_.Start(FROM_HERE, fallback_period, this,
+                   &DnsTransactionImpl::OnFallbackPeriodExpired);
     }
 
     return result;
@@ -1303,9 +1305,10 @@ class DnsTransactionImpl : public DnsTransaction,
         &DnsTransactionImpl::OnAttemptComplete, base::Unretained(this),
         attempt_number, true /* record_rtt */, base::TimeTicks::Now()));
     if (rv == ERR_IO_PENDING) {
-      base::TimeDelta timeout =
-          resolve_context_->NextDohTimeout(doh_server_index, session_.get());
-      timer_.Start(FROM_HERE, timeout, this, &DnsTransactionImpl::OnTimeout);
+      base::TimeDelta fallback_period = resolve_context_->NextDohFallbackPeriod(
+          doh_server_index, session_.get());
+      timer_.Start(FROM_HERE, fallback_period, this,
+                   &DnsTransactionImpl::OnFallbackPeriodExpired);
     }
     return AttemptResult(rv, attempts_.back().get());
   }
@@ -1332,9 +1335,10 @@ class DnsTransactionImpl : public DnsTransaction,
     RecordAttemptUma(DnsAttemptType::kTcpTruncationRetry);
 
     if (result.rv == ERR_IO_PENDING) {
-      // On TCP upgrade, use 2x the upgraded timeout.
-      base::TimeDelta timeout = timer_.GetCurrentDelay() * 2;
-      timer_.Start(FROM_HERE, timeout, this, &DnsTransactionImpl::OnTimeout);
+      // On TCP upgrade, use 2x the upgraded fallback period.
+      base::TimeDelta fallback_period = timer_.GetCurrentDelay() * 2;
+      timer_.Start(FROM_HERE, fallback_period, this,
+                   &DnsTransactionImpl::OnFallbackPeriodExpired);
     }
 
     return result;
@@ -1481,11 +1485,11 @@ class DnsTransactionImpl : public DnsTransaction,
           DCHECK(result.attempt);
 
           // If attempt is not the most recent attempt, means this error is for
-          // an attempt that already timed out and was treated as complete but
-          // allowed to continue attempting in parallel with new attempts (see
-          // the ERR_DNS_TIMED_OUT case above). As the failure was already
-          // recorded at timeout time and is no longer being waited on, ignore
-          // this failure.
+          // a previous attempt that passed its fallback period and was treated
+          // as complete but allowed to continue attempting in parallel with new
+          // attempts (see the ERR_DNS_TIMED_OUT case above). As the failure was
+          // already recorded at fallback time and is no longer being waited on,
+          // ignore this failure.
           if (result.attempt != attempts_.back().get()) {
             return AttemptResult(ERR_IO_PENDING, nullptr);
           }
@@ -1515,7 +1519,7 @@ class DnsTransactionImpl : public DnsTransaction,
     }
   }
 
-  void OnTimeout() {
+  void OnFallbackPeriodExpired() {
     if (callback_.is_null())
       return;
     DCHECK(!attempts_.empty());

@@ -52,9 +52,9 @@ struct StructTraits<network::mojom::DnsConfigOverridesDataView,
     return overrides.ndots.value_or(-1);
   }
 
-  static const base::Optional<base::TimeDelta>& timeout(
+  static const base::Optional<base::TimeDelta>& fallback_period(
       const net::DnsConfigOverrides& overrides) {
-    return overrides.timeout;
+    return overrides.fallback_period;
   }
 
   static int attempts(const net::DnsConfigOverrides& overrides) {

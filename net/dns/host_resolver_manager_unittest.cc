@@ -7066,8 +7066,8 @@ TEST_F(HostResolverManagerDnsTest, SetDnsConfigOverrides) {
   overrides.append_to_multi_label_name = false;
   const int ndots = 5;
   overrides.ndots = ndots;
-  const base::TimeDelta timeout = base::TimeDelta::FromSeconds(10);
-  overrides.timeout = timeout;
+  const base::TimeDelta fallback_period = base::TimeDelta::FromSeconds(10);
+  overrides.fallback_period = fallback_period;
   const int attempts = 20;
   overrides.attempts = attempts;
   const int doh_attempts = 19;
@@ -7097,7 +7097,7 @@ TEST_F(HostResolverManagerDnsTest, SetDnsConfigOverrides) {
   EXPECT_EQ(search, overridden_config->search);
   EXPECT_FALSE(overridden_config->append_to_multi_label_name);
   EXPECT_EQ(ndots, overridden_config->ndots);
-  EXPECT_EQ(timeout, overridden_config->timeout);
+  EXPECT_EQ(fallback_period, overridden_config->fallback_period);
   EXPECT_EQ(attempts, overridden_config->attempts);
   EXPECT_EQ(doh_attempts, overridden_config->doh_attempts);
   EXPECT_TRUE(overridden_config->rotate);
@@ -7179,7 +7179,8 @@ TEST_F(HostResolverManagerDnsTest, SetDnsConfigOverrides_PartialOverride) {
   EXPECT_EQ(original_config.hosts, overridden_config->hosts);
   EXPECT_TRUE(overridden_config->append_to_multi_label_name);
   EXPECT_EQ(original_config.ndots, overridden_config->ndots);
-  EXPECT_EQ(original_config.timeout, overridden_config->timeout);
+  EXPECT_EQ(original_config.fallback_period,
+            overridden_config->fallback_period);
   EXPECT_EQ(original_config.attempts, overridden_config->attempts);
   EXPECT_TRUE(overridden_config->rotate);
   EXPECT_FALSE(overridden_config->use_local_ipv6);

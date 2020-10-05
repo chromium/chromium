@@ -29,34 +29,37 @@ namespace net {
 
 namespace {
 
-// Set min timeout, in case we are talking to a local DNS proxy.
-const base::TimeDelta kMinTimeout = base::TimeDelta::FromMilliseconds(10);
+// Min fallback period between queries, in case we are talking to a local DNS
+// proxy.
+const base::TimeDelta kMinFallbackPeriod =
+    base::TimeDelta::FromMilliseconds(10);
 
-// Default maximum timeout between queries, even with exponential backoff.
-// (Can be overridden by field trial.)
-const base::TimeDelta kDefaultMaxTimeout = base::TimeDelta::FromSeconds(5);
+// Default maximum fallback period between queries, even with exponential
+// backoff. (Can be overridden by field trial.)
+const base::TimeDelta kDefaultMaxFallbackPeriod =
+    base::TimeDelta::FromSeconds(5);
 
 // Maximum RTT that will fit in the RTT histograms.
 const base::TimeDelta kRttMax = base::TimeDelta::FromSeconds(30);
 // Number of buckets in the histogram of observed RTTs.
 const size_t kRttBucketCount = 350;
-// Target percentile in the RTT histogram used for retransmission timeout.
+// Target percentile in the RTT histogram used for fallback period.
 const int kRttPercentile = 99;
 // Number of samples to seed the histogram with.
 const base::HistogramBase::Count kNumSeeds = 2;
 
-base::TimeDelta GetDefaultTimeout(const DnsConfig& config) {
+base::TimeDelta GetDefaultFallbackPeriod(const DnsConfig& config) {
   NetworkChangeNotifier::ConnectionType type =
       NetworkChangeNotifier::GetConnectionType();
   return GetTimeDeltaForConnectionTypeFromFieldTrialOrDefault(
-      "AsyncDnsInitialTimeoutMsByConnectionType", config.timeout, type);
+      "AsyncDnsInitialTimeoutMsByConnectionType", config.fallback_period, type);
 }
 
-base::TimeDelta GetMaxTimeout() {
+base::TimeDelta GetMaxFallbackPeriod() {
   NetworkChangeNotifier::ConnectionType type =
       NetworkChangeNotifier::GetConnectionType();
   return GetTimeDeltaForConnectionTypeFromFieldTrialOrDefault(
-      "AsyncDnsMaxTimeoutMsByConnectionType", kDefaultMaxTimeout, type);
+      "AsyncDnsMaxTimeoutMsByConnectionType", kDefaultMaxFallbackPeriod, type);
 }
 
 class RttBuckets : public base::BucketRanges {
@@ -79,7 +82,7 @@ static std::unique_ptr<base::SampleVector> GetRttHistogram(
     base::TimeDelta rtt_estimate) {
   std::unique_ptr<base::SampleVector> histogram =
       std::make_unique<base::SampleVector>(GetRttBuckets());
-  // Seed histogram with 2 samples at |rtt_estimate| timeout.
+  // Seed histogram with 2 samples at |rtt_estimate|.
   histogram->Accumulate(base::checked_cast<base::HistogramBase::Sample>(
                             rtt_estimate.InMilliseconds()),
                         kNumSeeds);
@@ -101,7 +104,7 @@ ResolveContext::ResolveContext(URLRequestContext* url_request_context,
     : url_request_context_(url_request_context),
       host_cache_(enable_caching ? HostCache::CreateDefaultCache() : nullptr),
       isolation_info_(IsolationInfo::CreateTransient()) {
-  max_timeout_ = GetMaxTimeout();
+  max_fallback_period_ = GetMaxFallbackPeriod();
 }
 
 ResolveContext::~ResolveContext() = default;
@@ -219,8 +222,10 @@ void ResolveContext::RecordRtt(size_t server_index,
 
   ServerStats* stats = GetServerStats(server_index, is_doh_server);
 
-  base::TimeDelta base_timeout = NextTimeoutHelper(stats, 0 /* num_backoffs */);
-  RecordRttForUma(server_index, is_doh_server, rtt, rv, base_timeout, session);
+  base::TimeDelta base_fallback_period =
+      NextFallbackPeriodHelper(stats, 0 /* num_backoffs */);
+  RecordRttForUma(server_index, is_doh_server, rtt, rv, base_fallback_period,
+                  session);
 
   // RTT values shouldn't be less than 0, but it shouldn't cause a crash if
   // they are anyway, so clip to 0. See https://crbug.com/753568.
@@ -233,23 +238,27 @@ void ResolveContext::RecordRtt(size_t server_index,
       1);
 }
 
-base::TimeDelta ResolveContext::NextClassicTimeout(size_t classic_server_index,
-                                                   int attempt,
-                                                   const DnsSession* session) {
+base::TimeDelta ResolveContext::NextClassicFallbackPeriod(
+    size_t classic_server_index,
+    int attempt,
+    const DnsSession* session) {
   if (!IsCurrentSession(session))
-    return std::min(GetDefaultTimeout(session->config()), max_timeout_);
+    return std::min(GetDefaultFallbackPeriod(session->config()),
+                    max_fallback_period_);
 
-  return NextTimeoutHelper(
+  return NextFallbackPeriodHelper(
       GetServerStats(classic_server_index, false /* is _doh_server */),
       attempt / current_session_->config().nameservers.size());
 }
 
-base::TimeDelta ResolveContext::NextDohTimeout(size_t doh_server_index,
-                                               const DnsSession* session) {
+base::TimeDelta ResolveContext::NextDohFallbackPeriod(
+    size_t doh_server_index,
+    const DnsSession* session) {
   if (!IsCurrentSession(session))
-    return std::min(GetDefaultTimeout(session->config()), max_timeout_);
+    return std::min(GetDefaultFallbackPeriod(session->config()),
+                    max_fallback_period_);
 
-  return NextTimeoutHelper(
+  return NextFallbackPeriodHelper(
       GetServerStats(doh_server_index, true /* is _doh_server */),
       0 /* num_backoffs */);
 }
@@ -280,8 +289,8 @@ void ResolveContext::InvalidateCachesAndPerSessionData(
   current_session_.reset();
   classic_server_stats_.clear();
   doh_server_stats_.clear();
-  initial_timeout_ = base::TimeDelta();
-  max_timeout_ = GetMaxTimeout();
+  initial_fallback_period_ = base::TimeDelta();
+  max_fallback_period_ = GetMaxFallbackPeriod();
 
   if (!new_session) {
     NotifyDohStatusObserversOfSessionChanged();
@@ -290,14 +299,16 @@ void ResolveContext::InvalidateCachesAndPerSessionData(
 
   current_session_ = new_session->GetWeakPtr();
 
-  initial_timeout_ = GetDefaultTimeout(current_session_->config());
+  initial_fallback_period_ =
+      GetDefaultFallbackPeriod(current_session_->config());
 
   for (size_t i = 0; i < new_session->config().nameservers.size(); ++i) {
-    classic_server_stats_.emplace_back(GetRttHistogram(initial_timeout_));
+    classic_server_stats_.emplace_back(
+        GetRttHistogram(initial_fallback_period_));
   }
   for (size_t i = 0; i < new_session->config().dns_over_https_servers.size();
        ++i) {
-    doh_server_stats_.emplace_back(GetRttHistogram(initial_timeout_));
+    doh_server_stats_.emplace_back(GetRttHistogram(initial_fallback_period_));
   }
 
   CHECK_EQ(new_session->config().nameservers.size(),
@@ -353,11 +364,13 @@ ResolveContext::ServerStats* ResolveContext::GetServerStats(
   }
 }
 
-base::TimeDelta ResolveContext::NextTimeoutHelper(ServerStats* server_stats,
-                                                  int num_backoffs) {
-  // Respect initial timeout (from config or field trial) if it exceeds max.
-  if (initial_timeout_ > max_timeout_)
-    return initial_timeout_;
+base::TimeDelta ResolveContext::NextFallbackPeriodHelper(
+    ServerStats* server_stats,
+    int num_backoffs) {
+  // Respect initial fallback period (from config or field trial) if it exceeds
+  // max.
+  if (initial_fallback_period_ > max_fallback_period_)
+    return initial_fallback_period_;
 
   static_assert(std::numeric_limits<base::HistogramBase::Count>::is_signed,
                 "histogram base count assumed to be signed");
@@ -373,19 +386,19 @@ base::TimeDelta ResolveContext::NextTimeoutHelper(ServerStats* server_stats,
     ++index;
   }
 
-  base::TimeDelta timeout =
+  base::TimeDelta fallback_period =
       base::TimeDelta::FromMilliseconds(GetRttBuckets()->range(index));
 
-  timeout = std::max(timeout, kMinTimeout);
+  fallback_period = std::max(fallback_period, kMinFallbackPeriod);
 
-  return std::min(timeout * (1 << num_backoffs), max_timeout_);
+  return std::min(fallback_period * (1 << num_backoffs), max_fallback_period_);
 }
 
 void ResolveContext::RecordRttForUma(size_t server_index,
                                      bool is_doh_server,
                                      base::TimeDelta rtt,
                                      int rv,
-                                     base::TimeDelta base_timeout,
+                                     base::TimeDelta base_fallback_period,
                                      const DnsSession* session) {
   DCHECK(IsCurrentSession(session));
 
@@ -403,15 +416,17 @@ void ResolveContext::RecordRttForUma(size_t server_index,
       DCHECK(is_doh_server);
 
       // Only for SecureValidated requests, record the ratio between successful
-      // RTT and the base timeout for the server. Note that RTT could be much
-      // longer than the timeout as previous attempts are often allowed to
-      // continue in parallel with new attempts made by the transaction. Scale
-      // the ratio up by 10 for sub-integer granularity.
-      // TODO(crbug.com/1105138): Remove after determining good timeout logic.
-      int timeout_ratio = base::ClampFloor(rtt / base_timeout * 10);
+      // RTT and the base fallback period for the server. Note that RTT could be
+      // much longer than the fallback period as previous attempts are often
+      // allowed to continue in parallel with new attempts made by the
+      // transaction. Scale the ratio up by 10 for sub-integer granularity.
+      // TODO(crbug.com/1105138): Remove after determining good fallback period
+      // logic.
+      int fallback_period_ratio =
+          base::ClampFloor(rtt / base_fallback_period * 10);
       UMA_HISTOGRAM_COUNTS_1000(
           "Net.DNS.DnsTransaction.SecureValidated.SuccessTimeoutRatio",
-          timeout_ratio);
+          fallback_period_ratio);
     }
   } else {
     base::UmaHistogramMediumTimes(

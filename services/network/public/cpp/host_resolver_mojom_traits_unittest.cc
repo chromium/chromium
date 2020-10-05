@@ -33,7 +33,7 @@ TEST(HostResolverMojomTraitsTest, DnsConfigOverridesRoundtrip_FullySpecified) {
   original.search.emplace({std::string("str")});
   original.append_to_multi_label_name = true;
   original.ndots = 2;
-  original.timeout = base::TimeDelta::FromHours(4);
+  original.fallback_period = base::TimeDelta::FromHours(4);
   original.attempts = 1;
   original.rotate = true;
   original.use_local_ipv6 = false;

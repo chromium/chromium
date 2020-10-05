@@ -66,7 +66,7 @@ struct DnsConfigOverrides {
   int8 ndots = -1;  // -1 for no override.
 
   // Time between retransmissions, see res_state.retrans.
-  mojo_base.mojom.TimeDelta? timeout;
+  mojo_base.mojom.TimeDelta? fallback_period;
 
   // Maximum number of attempts, see res_state.retry.
   int32 attempts = -1;  // -1 for no override.

@@ -189,8 +189,8 @@ ConfigParsePosixResult ReadDnsConfig(DnsConfig* dns_config) {
       return error;
   }
 #endif  // defined(OS_MAC)
-  // Override timeout value to match default setting on Windows.
-  dns_config->timeout = kDnsDefaultTimeout;
+  // Override |fallback_period| value to match default setting on Windows.
+  dns_config->fallback_period = kDnsDefaultFallbackPeriod;
   return result;
 #else  // defined(OS_ANDROID)
   dns_config->nameservers.clear();
@@ -537,7 +537,7 @@ ConfigParsePosixResult ConvertResStateToDnsConfig(const struct __res_state& res,
   }
 
   dns_config->ndots = res.ndots;
-  dns_config->timeout = base::TimeDelta::FromSeconds(res.retrans);
+  dns_config->fallback_period = base::TimeDelta::FromSeconds(res.retrans);
   dns_config->attempts = res.retry;
 #if defined(RES_ROTATE)
   dns_config->rotate = res.options & RES_ROTATE;

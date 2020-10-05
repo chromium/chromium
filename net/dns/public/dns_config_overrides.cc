@@ -26,7 +26,7 @@ DnsConfigOverrides& DnsConfigOverrides::operator=(DnsConfigOverrides&& other) =
 bool DnsConfigOverrides::operator==(const DnsConfigOverrides& other) const {
   return nameservers == other.nameservers && search == other.search &&
          append_to_multi_label_name == other.append_to_multi_label_name &&
-         ndots == other.ndots && timeout == other.timeout &&
+         ndots == other.ndots && fallback_period == other.fallback_period &&
          attempts == other.attempts && doh_attempts == other.doh_attempts &&
          rotate == other.rotate && use_local_ipv6 == other.use_local_ipv6 &&
          dns_over_https_servers == other.dns_over_https_servers &&
@@ -50,7 +50,7 @@ DnsConfigOverrides::CreateOverridingEverythingWithDefaults() {
   overrides.search = defaults.search;
   overrides.append_to_multi_label_name = defaults.append_to_multi_label_name;
   overrides.ndots = defaults.ndots;
-  overrides.timeout = defaults.timeout;
+  overrides.fallback_period = defaults.fallback_period;
   overrides.attempts = defaults.attempts;
   overrides.doh_attempts = defaults.doh_attempts;
   overrides.rotate = defaults.rotate;
@@ -67,8 +67,8 @@ DnsConfigOverrides::CreateOverridingEverythingWithDefaults() {
 
 bool DnsConfigOverrides::OverridesEverything() const {
   return nameservers && search && append_to_multi_label_name && ndots &&
-         timeout && attempts && doh_attempts && rotate && use_local_ipv6 &&
-         dns_over_https_servers && secure_dns_mode &&
+         fallback_period && attempts && doh_attempts && rotate &&
+         use_local_ipv6 && dns_over_https_servers && secure_dns_mode &&
          allow_dns_over_https_upgrade && disabled_upgrade_providers &&
          clear_hosts;
 }
@@ -87,8 +87,8 @@ DnsConfig DnsConfigOverrides::ApplyOverrides(const DnsConfig& config) const {
     overridden.append_to_multi_label_name = append_to_multi_label_name.value();
   if (ndots)
     overridden.ndots = ndots.value();
-  if (timeout)
-    overridden.timeout = timeout.value();
+  if (fallback_period)
+    overridden.fallback_period = fallback_period.value();
   if (attempts)
     overridden.attempts = attempts.value();
   if (doh_attempts)
