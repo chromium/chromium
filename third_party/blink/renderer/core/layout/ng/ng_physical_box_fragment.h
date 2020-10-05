@@ -204,13 +204,14 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   // Compute visual overflow of this box in the local coordinate.
   PhysicalRect ComputeSelfInkOverflow() const;
 
+  // |InkOverflow| includes self and contents ink overflow, unless it has
+  // clipping, in that case it includes self ink overflow only.
+  PhysicalRect InkOverflow() const;
+
   // Contents ink overflow includes anything that would bleed out of the box and
   // would be clipped by the overflow clip ('overflow' != visible). This
   // corresponds to children that overflows their parent.
-  PhysicalRect ContentsInkOverflow() const {
-    // TODO(layout-dev): Implement box fragment overflow.
-    return LocalRect();
-  }
+  PhysicalRect ContentsInkOverflow() const;
 
   // Fragment offset is this fragment's offset from parent.
   // Needed to compensate for LayoutInline Legacy code offsets.

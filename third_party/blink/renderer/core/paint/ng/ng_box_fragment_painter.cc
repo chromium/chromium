@@ -365,12 +365,6 @@ PhysicalRect NGBoxFragmentPainter::SelfInkOverflow() const {
       ->PhysicalSelfVisualOverflowRect();
 }
 
-PhysicalRect NGBoxFragmentPainter::ContentsInkOverflow() const {
-  if (const LayoutObject* layout_object = box_fragment_.GetLayoutObject())
-    return ToLayoutBox(layout_object)->PhysicalContentsVisualOverflowRect();
-  return box_fragment_.ContentsInkOverflow();
-}
-
 void NGBoxFragmentPainter::Paint(const PaintInfo& paint_info) {
   if (PhysicalFragment().IsPaintedAtomically() &&
       !box_fragment_.HasSelfPaintingLayer())
@@ -664,10 +658,15 @@ void NGBoxFragmentPainter::PaintBlockFlowContents(
   // overflow, in which case check with |LocalRect()|. For 2, check with
   // |LayoutOverflow()|, but this can be approximiated with
   // |ContentsInkOverflow()|.
-  PhysicalRect content_ink_rect = fragment.LocalRect();
-  content_ink_rect.Unite(ContentsInkOverflow());
-  if (!paint_info.IntersectsCullRect(content_ink_rect, paint_offset))
-    return;
+  // TODO(crbug.com/829028): Column boxes do not have |ContentsInkOverflow| atm,
+  // hence skip the optimization. If we were to have it, this should be enabled.
+  // Otherwise, if we're ok with the perf, we can remove this TODO.
+  if (fragment.IsCSSBox()) {
+    PhysicalRect content_ink_rect = fragment.LocalRect();
+    content_ink_rect.Unite(fragment.ContentsInkOverflow());
+    if (!paint_info.IntersectsCullRect(content_ink_rect, paint_offset))
+      return;
+  }
 
   if (paint_fragment_) {
     NGInlineCursor children(*paint_fragment_);
@@ -1859,16 +1858,26 @@ bool NGBoxFragmentPainter::NodeAtPoint(HitTestResult& result,
 bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
                                        const PhysicalOffset& physical_offset) {
   const NGPhysicalBoxFragment& fragment = PhysicalFragment();
-  const PhysicalSize& size = box_fragment_.Size();
-  const ComputedStyle& style = box_fragment_.Style();
+  if (fragment.IsCSSBox() && !fragment.IsInlineBox() &&
+      !fragment.IsEffectiveRootScroller()) {
+    // Check if we need to do anything at all.
+    // If we have clipping, then we can't have any spillout.
+    PhysicalRect overflow_box = fragment.IsScrollContainer()
+                                    ? fragment.LocalRect()
+                                    : fragment.InkOverflow();
+    overflow_box.Move(physical_offset);
+    if (!hit_test.location.Intersects(overflow_box))
+      return false;
+  }
 
   bool hit_test_self = fragment.IsInSelfHitTestingPhase(hit_test.action);
-
   if (hit_test_self && box_fragment_.IsScrollContainer() &&
       HitTestOverflowControl(hit_test, physical_offset))
     return true;
 
-  const LayoutObject* layout_object = PhysicalFragment().GetLayoutObject();
+  const PhysicalSize& size = fragment.Size();
+  const ComputedStyle& style = fragment.Style();
+  const LayoutObject* layout_object = fragment.GetLayoutObject();
   bool skip_children =
       layout_object &&
       layout_object == hit_test.result->GetHitTestRequest().GetStopNode();

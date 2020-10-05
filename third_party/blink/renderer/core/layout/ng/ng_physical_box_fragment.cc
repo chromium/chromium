@@ -349,6 +349,24 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {
   return this;
 }
 
+PhysicalRect NGPhysicalBoxFragment::InkOverflow() const {
+  if (const LayoutBox* owner_box = ToLayoutBoxOrNull(GetLayoutObject()))
+    return owner_box->PhysicalVisualOverflowRect();
+  // TODO(kojii): (!IsCSSBox() || IsInlineBox()) is not supported yet. Implement
+  // if needed.
+  NOTREACHED();
+  return LocalRect();
+}
+
+PhysicalRect NGPhysicalBoxFragment::ContentsInkOverflow() const {
+  if (const LayoutBox* owner_box = ToLayoutBoxOrNull(GetLayoutObject()))
+    return owner_box->PhysicalContentsVisualOverflowRect();
+  // TODO(kojii): (!IsCSSBox() || IsInlineBox()) is not supported yet. Implement
+  // if needed.
+  NOTREACHED();
+  return LocalRect();
+}
+
 PhysicalRect NGPhysicalBoxFragment::OverflowClipRect(
     const PhysicalOffset& location,
     OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior) const {

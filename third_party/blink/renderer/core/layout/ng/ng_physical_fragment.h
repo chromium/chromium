@@ -264,6 +264,16 @@ class CORE_EXPORT NGPhysicalFragment
     return IsCSSBox() && layout_object_->IsScrollContainer();
   }
 
+  // Return true if the given object is the effective root scroller in its
+  // Document. See |effective root scroller| in page/scrolling/README.md.
+  // Note: a root scroller always establishes a PaintLayer.
+  // This bit is updated in
+  // RootScrollerController::RecomputeEffectiveRootScroller in the LayoutClean
+  // document lifecycle phase.
+  bool IsEffectiveRootScroller() const {
+    return IsCSSBox() && layout_object_->IsEffectiveRootScroller();
+  }
+
   bool ShouldClipOverflowAlongEitherAxis() const {
     return IsCSSBox() && layout_object_->ShouldClipOverflowAlongEitherAxis();
   }
@@ -338,11 +348,6 @@ class CORE_EXPORT NGPhysicalFragment
   // may keep the reference to old generations of this fragment. Callers can
   // check if there were newer generations.
   const NGPhysicalFragment* PostLayout() const;
-
-  PhysicalRect InkOverflow() const {
-    // TODO(layout-dev): Implement box fragment overflow.
-    return LocalRect();
-  }
 
   // Specifies the type of scrollable overflow computation.
   enum TextHeightType {

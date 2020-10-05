@@ -295,7 +295,6 @@ class NGBoxFragmentPainter : public BoxPainterBase {
     return display_item_client_;
   }
   PhysicalRect SelfInkOverflow() const;
-  PhysicalRect ContentsInkOverflow() const;
 
   const NGPhysicalBoxFragment& box_fragment_;
   const DisplayItemClient& display_item_client_;
