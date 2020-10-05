@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_fragment_geometry.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_margin_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_layout_algorithm.h"
@@ -23,28 +24,22 @@ namespace {
 
 LayoutUnit CalculateColumnContentBlockSize(
     const NGPhysicalContainerFragment& fragment,
-    bool multicol_is_horizontal_writing_mode) {
+    WritingDirectionMode writing_direction) {
+  WritingModeConverter converter(writing_direction, fragment.Size());
   // TODO(mstensho): Once LayoutNG is capable of calculating overflow on its
   // own, we should probably just move over to relying on that machinery,
   // instead of doing all this on our own.
   LayoutUnit total_size;
   for (const auto& child : fragment.Children()) {
-    LayoutUnit size;
-    LayoutUnit offset;
-    if (multicol_is_horizontal_writing_mode) {
-      offset = child.Offset().top;
-      size = child->Size().height;
-    } else {
-      offset = child.Offset().left;
-      size = child->Size().width;
-    }
+    LayoutUnit size = converter.ToLogical(child->Size()).block_size;
+    LayoutUnit offset =
+        converter.ToLogical(child.offset, child->Size()).block_offset;
     // TODO(mstensho): Need to detect whether we're actually clipping in the
     // block direction. The combination of overflow-x:clip and
     // overflow-y:visible should enter children here.
     if (child->IsContainer() && !child->HasNonVisibleOverflow()) {
       LayoutUnit children_size = CalculateColumnContentBlockSize(
-          To<NGPhysicalContainerFragment>(*child),
-          multicol_is_horizontal_writing_mode);
+          To<NGPhysicalContainerFragment>(*child), writing_direction);
       if (size < children_size)
         size = children_size;
     }
@@ -927,8 +922,8 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
 
     const NGPhysicalBoxFragment& fragment =
         To<NGPhysicalBoxFragment>(result->PhysicalFragment());
-    LayoutUnit column_block_size = CalculateColumnContentBlockSize(
-        fragment, IsHorizontalWritingMode(space.GetWritingMode()));
+    LayoutUnit column_block_size =
+        CalculateColumnContentBlockSize(fragment, space.GetWritingDirection());
     content_runs.emplace_back(column_block_size);
 
     tallest_unbreakable_block_size = std::max(
