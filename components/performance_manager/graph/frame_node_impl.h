@@ -342,7 +342,7 @@ class FrameNodeImpl
   // Inline storage for ExecutionContextPriorityDecorator data.
   execution_context_priority::AcceptedVote accepted_vote_;
 
-  base::WeakPtrFactory<FrameNodeImpl> weak_factory_;
+  base::WeakPtrFactory<FrameNodeImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FrameNodeImpl);
 };

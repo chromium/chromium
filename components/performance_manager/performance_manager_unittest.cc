@@ -10,7 +10,9 @@
 #include "base/test/bind_test_util.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/render_frame_host_proxy.h"
+#include "components/performance_manager/public/render_process_host_proxy.h"
 #include "components/performance_manager/public/web_contents_proxy.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -49,6 +51,8 @@ TEST_F(PerformanceManagerTest, NodeAccessors) {
   auto contents = CreateTestWebContents();
   content::RenderFrameHost* rfh = contents->GetMainFrame();
   ASSERT_TRUE(rfh);
+  content::RenderProcessHost* rph = rfh->GetProcess();
+  ASSERT_TRUE(rph);
 
   base::WeakPtr<PageNode> page_node =
       PerformanceManager::GetPageNodeForWebContents(contents.get());
@@ -57,12 +61,15 @@ TEST_F(PerformanceManagerTest, NodeAccessors) {
   // navigation. Verify that looking them up before that returns null instead
   // of crashing.
   EXPECT_FALSE(PerformanceManager::GetFrameNodeForRenderFrameHost(rfh));
+  EXPECT_FALSE(PerformanceManager::GetProcessNodeForRenderProcessHost(rph));
 
   // Simulate a committed navigation to create the nodes.
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       contents.get(), GURL("https://www.example.com/"));
   base::WeakPtr<FrameNode> frame_node =
       PerformanceManager::GetFrameNodeForRenderFrameHost(rfh);
+  base::WeakPtr<ProcessNode> process_node =
+      PerformanceManager::GetProcessNodeForRenderProcessHost(rph);
 
   // Post a task to the Graph and make it call a function on the UI thread that
   // will ensure that the nodes are really associated with the content objects.
@@ -70,19 +77,23 @@ TEST_F(PerformanceManagerTest, NodeAccessors) {
   base::RunLoop run_loop;
   auto check_proxies_on_main_thread =
       base::BindLambdaForTesting([&](const WebContentsProxy& wc_proxy,
-                                     const RenderFrameHostProxy& rfh_proxy) {
+                                     const RenderFrameHostProxy& rfh_proxy,
+                                     const RenderProcessHostProxy& rph_proxy) {
         EXPECT_EQ(contents.get(), wc_proxy.Get());
         EXPECT_EQ(rfh, rfh_proxy.Get());
+        EXPECT_EQ(rph, rph_proxy.Get());
         run_loop.Quit();
       });
 
   auto call_on_graph_cb = base::BindLambdaForTesting([&]() {
     EXPECT_TRUE(page_node.get());
     EXPECT_TRUE(frame_node.get());
+    EXPECT_TRUE(process_node.get());
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(check_proxies_on_main_thread),
                                   page_node->GetContentsProxy(),
-                                  frame_node->GetRenderFrameHostProxy()));
+                                  frame_node->GetRenderFrameHostProxy(),
+                                  process_node->GetRenderProcessHostProxy()));
   });
 
   PerformanceManager::CallOnGraph(FROM_HERE, call_on_graph_cb);
@@ -99,6 +110,7 @@ TEST_F(PerformanceManagerTest, NodeAccessors) {
   auto call_on_graph_cb_2 = base::BindLambdaForTesting([&]() {
     EXPECT_FALSE(page_node.get());
     EXPECT_FALSE(frame_node.get());
+    EXPECT_FALSE(process_node.get());
     std::move(quit_closure).Run();
   });
 

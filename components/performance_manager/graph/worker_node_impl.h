@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/util/type_safety/pass_key.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/public/graph/worker_node.h"
@@ -61,6 +62,10 @@ class WorkerNodeImpl
   const base::flat_set<FrameNodeImpl*>& client_frames() const;
   const base::flat_set<WorkerNodeImpl*>& client_workers() const;
   const base::flat_set<WorkerNodeImpl*>& child_workers() const;
+
+  base::WeakPtr<WorkerNodeImpl> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
 
   // Implementation details below this point.
 
@@ -123,6 +128,8 @@ class WorkerNodeImpl
 
   // Used by ExecutionContextRegistry mechanism.
   std::unique_ptr<NodeAttachedData> execution_context_;
+
+  base::WeakPtrFactory<WorkerNodeImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WorkerNodeImpl);
 };

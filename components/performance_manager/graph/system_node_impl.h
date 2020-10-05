@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
 #include "components/performance_manager/graph/node_base.h"
@@ -30,7 +31,13 @@ class SystemNodeImpl
   // nodes.
   void OnProcessMemoryMetricsAvailable();
 
+  base::WeakPtr<SystemNodeImpl> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
+  base::WeakPtrFactory<SystemNodeImpl> weak_factory_{this};
+
   DISALLOW_COPY_AND_ASSIGN(SystemNodeImpl);
 };
 

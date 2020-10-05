@@ -15,6 +15,7 @@
 
 namespace content {
 class RenderFrameHost;
+class RenderProcessHost;
 class WebContents;
 }
 
@@ -24,6 +25,7 @@ class FrameNode;
 class Graph;
 class GraphOwned;
 class PageNode;
+class ProcessNode;
 class PerformanceManagerMainThreadMechanism;
 class PerformanceManagerMainThreadObserver;
 class PerformanceManagerOwned;
@@ -76,12 +78,23 @@ class PerformanceManager {
   static base::WeakPtr<PageNode> GetPageNodeForWebContents(
       content::WebContents* wc);
 
-  // Returns a WeakPtr to the FrameNode associated with a given RenderFrameHost,
-  // or a null WeakPtr if there's no FrameNode for this RFH. Valid to call from
-  // the main thread only, the returned WeakPtr should only be dereferenced on
-  // the PM sequence (e.g. it can be used in a CallOnGraph callback).
+  // Returns a WeakPtr to the FrameNode associated with a given
+  // RenderFrameHost, or a null WeakPtr if there's no FrameNode for this RFH.
+  // (There is a brief window after the RFH is created before the FrameNode is
+  // added.) Valid to call from the main thread only, the returned WeakPtr
+  // should only be dereferenced on the PM sequence (e.g. it can be used in a
+  // CallOnGraph callback).
   static base::WeakPtr<FrameNode> GetFrameNodeForRenderFrameHost(
       content::RenderFrameHost* rfh);
+
+  // Returns a WeakPtr to the ProcessNode associated with a given
+  // RenderProcessHost, or a null WeakPtr if there's no ProcessNode for this
+  // RPH. (There is a brief window after the RPH is created before the
+  // ProcessNode is added.) Valid to call from the main thread only, the
+  // returned WeakPtr should only be dereferenced on the PM sequence (e.g. it
+  // can be used in a CallOnGraph callback).
+  static base::WeakPtr<ProcessNode> GetProcessNodeForRenderProcessHost(
+      content::RenderProcessHost* rph);
 
   // Adds / removes an observer that is notified of PerformanceManager events
   // that happen on the main thread. Can only be called on the main thread.

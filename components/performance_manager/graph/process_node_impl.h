@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
@@ -113,6 +114,10 @@ class ProcessNodeImpl
 
   void OnAllFramesInProcessFrozenForTesting() { OnAllFramesInProcessFrozen(); }
 
+  base::WeakPtr<ProcessNodeImpl> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  protected:
   void SetProcessImpl(base::Process process,
                       base::ProcessId process_id,
@@ -183,6 +188,8 @@ class ProcessNodeImpl
 
   // Inline storage for ProcessPriorityAggregator user data.
   std::unique_ptr<NodeAttachedData> process_priority_data_;
+
+  base::WeakPtrFactory<ProcessNodeImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProcessNodeImpl);
 };

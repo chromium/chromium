@@ -41,8 +41,7 @@ FrameNodeImpl::FrameNodeImpl(ProcessNodeImpl* process_node,
           process_node->render_process_host_proxy()
               .render_process_host_id()
               .value(),
-          render_frame_id)),
-      weak_factory_(this) {
+          render_frame_id)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK(process_node);
   DCHECK(page_node);
