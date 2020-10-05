@@ -242,6 +242,14 @@ IN_PROC_BROWSER_TEST_F(
       entry, UkmDeferEntry::kforce_deferred_scripts_mainframeName, 2);
   test_ukm_recorder.ExpectEntryMetric(
       entry, UkmDeferEntry::kforce_deferred_scripts_mainframe_externalName, 1);
+
+  // Opt out of the Preview page.
+  PreviewsUITabHelper::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents())
+      ->ReloadWithoutPreviews();
+
+  histogram_tester.ExpectBucketCount(
+      "Previews.OptOut.UserOptedOut.DeferAllScript", 1, 1);
 }
 
 // Test with an incognito browser.

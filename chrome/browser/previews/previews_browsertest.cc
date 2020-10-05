@@ -263,63 +263,8 @@ INSTANTIATE_TEST_SUITE_P(ShouldSkipPreview,
                          PreviewsNoScriptBrowserTest,
                          ::testing::Bool());
 
-// Loads a webpage that has both script and noscript tags and also requests
-// a script resource. Verifies that the noscript tag is evaluated and the
-// script resource is not loaded.
-IN_PROC_BROWSER_TEST_P(
-    PreviewsNoScriptBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS_LINUX(NoScriptPreviewsEnabled)) {
-  GURL url = https_url();
 
-  // Whitelist NoScript for https_hint_setup_url()'s' host.
-  SetUpNoScriptWhitelist(https_hint_setup_url());
 
-  base::HistogramTester histogram_tester;
-  ui_test_utils::NavigateToURL(browser(), url);
-
-  // Verify loaded noscript tag triggered css resource but not js one.
-  EXPECT_TRUE(noscript_css_requested());
-  EXPECT_FALSE(noscript_js_requested());
-
-  // Verify info bar presented via histogram check.
-  RetryForHistogramUntilCountReached(&histogram_tester,
-                                     "Previews.PreviewShown.NoScript", 1);
-}
-
-IN_PROC_BROWSER_TEST_P(
-    PreviewsNoScriptBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS(NoScriptPreviewsEnabled_Incognito)) {
-  GURL url = https_url();
-
-  // Whitelist NoScript for https_hint_setup_url()'s' host.
-  SetUpNoScriptWhitelist(https_hint_setup_url());
-
-  base::HistogramTester histogram_tester;
-  Browser* incognito = CreateIncognitoBrowser();
-  ASSERT_FALSE(PreviewsServiceFactory::GetForProfile(incognito->profile()));
-  ASSERT_TRUE(PreviewsServiceFactory::GetForProfile(browser()->profile()));
-
-  ui_test_utils::NavigateToURL(incognito, url);
-
-  // Verify JS was loaded indicating that NoScript preview was not triggered.
-  EXPECT_FALSE(noscript_css_requested());
-  EXPECT_TRUE(noscript_js_requested());
-}
-
-IN_PROC_BROWSER_TEST_P(
-    PreviewsNoScriptBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS_LINUX(NoScriptPreviewsForHttp)) {
-  GURL url = http_url();
-
-  // Whitelist NoScript for http_hint_setup_url() host.
-  SetUpNoScriptWhitelist(http_hint_setup_url());
-
-  ui_test_utils::NavigateToURL(browser(), url);
-
-  // Verify loaded noscript tag triggered css resource but not js one.
-  EXPECT_TRUE(noscript_css_requested());
-  EXPECT_FALSE(noscript_js_requested());
-}
 
 IN_PROC_BROWSER_TEST_P(PreviewsNoScriptBrowserTest,
                        DISABLE_ON_WIN_MAC_CHROMEOS(
@@ -340,67 +285,7 @@ IN_PROC_BROWSER_TEST_P(PreviewsNoScriptBrowserTest,
       "Previews.CacheControlNoTransform.BlockedPreview", 5 /* NoScript */, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(PreviewsNoScriptBrowserTest,
-                       DISABLE_ON_WIN_MAC_CHROMEOS_LINUX(
-                           NoScriptPreviewsEnabledHttpRedirectToHttps)) {
-  GURL url = redirect_url();
 
-  // Whitelist NoScript for http_hint_setup_url() host.
-  SetUpNoScriptWhitelist(http_hint_setup_url());
-
-  base::HistogramTester histogram_tester;
-  ui_test_utils::NavigateToURL(browser(), url);
-
-  // Verify loaded noscript tag triggered css resource but not js one.
-  EXPECT_TRUE(noscript_css_requested());
-  EXPECT_FALSE(noscript_js_requested());
-
-  // Verify info bar presented via histogram check.
-  RetryForHistogramUntilCountReached(&histogram_tester,
-                                     "Previews.PreviewShown.NoScript", 1);
-}
-
-IN_PROC_BROWSER_TEST_P(
-    PreviewsNoScriptBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS_LINUX(NoScriptPreviewsRecordsOptOut)) {
-  GURL url = redirect_url();
-
-  // Whitelist NoScript for http_hint_setup_url()'s' host.
-  SetUpNoScriptWhitelist(http_hint_setup_url());
-
-  base::HistogramTester histogram_tester;
-
-  // Navigate to a NoScript Preview page.
-  ui_test_utils::NavigateToURL(browser(), url);
-
-  // Terminate the previous page (non-opt out) and pull up a new NoScript page.
-  ui_test_utils::NavigateToURL(browser(), url);
-  histogram_tester.ExpectUniqueSample("Previews.OptOut.UserOptedOut.NoScript",
-                                      0, 1);
-
-  // Opt out of the NoScript Preview page.
-  PreviewsUITabHelper::FromWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents())
-      ->ReloadWithoutPreviews();
-
-  histogram_tester.ExpectBucketCount("Previews.OptOut.UserOptedOut.NoScript", 1,
-                                     1);
-}
-
-IN_PROC_BROWSER_TEST_P(
-    PreviewsNoScriptBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS_LINUX(NoScriptPreviewsEnabledByWhitelist)) {
-  GURL url = https_url();
-
-  // Whitelist NoScript for https_hint_setup_url()'s' host.
-  SetUpNoScriptWhitelist(https_hint_setup_url());
-
-  ui_test_utils::NavigateToURL(browser(), url);
-
-  // Verify loaded noscript tag triggered css resource but not js one.
-  EXPECT_TRUE(noscript_css_requested());
-  EXPECT_FALSE(noscript_js_requested());
-}
 
 IN_PROC_BROWSER_TEST_P(
     PreviewsNoScriptBrowserTest,
