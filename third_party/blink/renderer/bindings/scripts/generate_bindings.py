@@ -37,6 +37,12 @@ def parse_options():
         type="string",
         help='output directory for "modules" component relative '
         'to root_gen_dir')
+    parser.add_option(
+        '--single_process',
+        action="store_true",
+        default=False,
+        help=('run everything in a single process, which makes debugging '
+              'easier'))
     options, args = parser.parse_args()
 
     required_option_names = ("web_idl_database", "root_src_dir",
@@ -76,7 +82,7 @@ def main():
                   root_gen_dir=options.root_gen_dir,
                   component_reldirs=component_reldirs)
 
-    task_queue = bind_gen.TaskQueue()
+    task_queue = bind_gen.TaskQueue(single_process=options.single_process)
 
     for task in tasks:
         dispatch_table[task](task_queue)
