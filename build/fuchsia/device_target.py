@@ -28,8 +28,6 @@ BOOT_DISCOVERY_ATTEMPTS = 30
 # Number of failed connection attempts before redirecting system logs to stdout.
 CONNECT_RETRY_COUNT_BEFORE_LOGGING = 10
 
-TARGET_HASH_FILE_PATH = '/data/.hash'
-
 # Number of seconds to wait when querying a list of all devices over mDNS.
 _LIST_DEVICES_TIMEOUT_SECS = 3
 
@@ -149,20 +147,6 @@ class DeviceTarget(target.Target):
         "match. If 'update', then the target device will automatically "
         "be repaved. If 'ignore', then the OS version won\'t be checked.")
 
-  def _SDKHashMatches(self):
-    """Checks if /data/.hash on the device matches SDK_ROOT/.hash.
-
-    Returns True if the files are identical, or False otherwise.
-    """
-    with tempfile.NamedTemporaryFile() as tmp:
-      try:
-        self.GetFile(TARGET_HASH_FILE_PATH, tmp.name)
-      except subprocess.CalledProcessError:
-        # If the file is unretrievable for whatever reason, assume mismatch.
-        return False
-
-      return filecmp.cmp(tmp.name, os.path.join(SDK_ROOT, '.hash'), False)
-
   def _ProvisionDeviceIfNecessary(self):
     if self._Discover():
       self._WaitUntilReady()
@@ -258,8 +242,8 @@ class DeviceTarget(target.Target):
     # Repeatdly query mDNS until we find the device, or we hit the timeout of
     # DISCOVERY_TIMEOUT_SECS.
     logging.info('Waiting for device to join network.')
-    for _ in xrange(_BOOT_DISCOVERY_ATTEMPTS):
-      if self.__Discover():
+    for _ in xrange(BOOT_DISCOVERY_ATTEMPTS):
+      if self._Discover():
         break
 
     if not self._host:
@@ -267,9 +251,6 @@ class DeviceTarget(target.Target):
                       self._node_name)
 
     self._WaitUntilReady();
-
-    # Update the target's hash to match the current tree's.
-    self.PutFile(os.path.join(SDK_ROOT, '.hash'), TARGET_HASH_FILE_PATH)
 
   def _GetEndpoint(self):
     return (self._host, self._port)

@@ -29,6 +29,24 @@ class GenericX64PavedDeviceTarget(device_target.DeviceTarget):
   If --os-check=update is set, then the target device is repaved if the SDK
   version doesn't match."""
 
+  TARGET_HASH_FILE_PATH = '/data/.hash'
+
+  def _SDKHashMatches(self):
+    """Checks if /data/.hash on the device matches SDK_ROOT/.hash.
+
+    Returns True if the files are identical, or False otherwise.
+    """
+
+    with tempfile.NamedTemporaryFile() as tmp:
+      # TODO: Avoid using an exception for when file is unretrievable.
+      try:
+        self.GetFile(TARGET_HASH_FILE_PATH, tmp.name)
+      except subprocess.CalledProcessError:
+        # If the file is unretrievable for whatever reason, assume mismatch.
+        return False
+
+      return filecmp.cmp(tmp.name, os.path.join(SDK_ROOT, '.hash'), False)
+
   def _ProvisionDeviceIfNecessary(self):
     should_provision = False
 
@@ -51,6 +69,7 @@ class GenericX64PavedDeviceTarget(device_target.DeviceTarget):
 
   def _ProvisionDevice(self):
     """Pave a device with a generic image of Fuchsia."""
+
     bootserver_path = GetHostToolPathFromPlatform('bootserver')
     bootserver_command = [
         bootserver_path, '-1', '--fvm',
@@ -75,23 +94,6 @@ class GenericX64PavedDeviceTarget(device_target.DeviceTarget):
                                           timeout_secs=300)
 
     self._ParseNodename(stdout)
-
-    # Start loglistener to save system logs.
-    if self._system_log_file:
-      self._StartLoglistener()
-
-    # Repeatdly query mDNS until we find the device, or we hit
-    # BOOT_DISCOVERY_ATTEMPTS
-    logging.info('Waiting for device to join network.')
-    for _ in xrange(device_target.BOOT_DISCOVERY_ATTEMPTS):
-      if self.__Discover():
-        break
-
-    if not self._host:
-      raise Exception("Device %s couldn't be discovered via mDNS." %
-                      self._node_name)
-
-    self._WaitUntilReady()
 
     # Update the target's hash to match the current tree's.
     self.PutFile(os.path.join(SDK_ROOT, '.hash'), TARGET_HASH_FILE_PATH)
