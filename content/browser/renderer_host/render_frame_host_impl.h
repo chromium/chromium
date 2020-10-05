@@ -290,6 +290,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   ui::AXTreeID GetAXTreeID() override;
   SiteInstanceImpl* GetSiteInstance() override;
   RenderProcessHost* GetProcess() override;
+  GlobalFrameRoutingId GetGlobalFrameRoutingId() override;
   RenderWidgetHostView* GetView() override;
   RenderFrameHostImpl* GetParent() override;
   RenderFrameHostImpl* GetMainFrame() override;
@@ -663,8 +664,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // a RenderWidgetHost and nor does any of its ancestors. That would
   // typically mean that the frame has been detached from the frame tree.
   virtual RenderWidgetHostImpl* GetRenderWidgetHost();
-
-  GlobalFrameRoutingId GetGlobalFrameRoutingId();
 
   media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
   GetRecordAggregateWatchTimeCallback();

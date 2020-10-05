@@ -148,6 +148,10 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Associated RenderProcessHost never changes.
   virtual RenderProcessHost* GetProcess() = 0;
 
+  // Returns the GlobalFrameRoutingId for this frame. Embedders should store
+  // this instead of a raw RenderFrameHost pointer.
+  virtual GlobalFrameRoutingId GetGlobalFrameRoutingId() = 0;
+
   // Returns a StoragePartition associated with this RenderFrameHost.
   // Associated StoragePartition never changes.
   virtual StoragePartition* GetStoragePartition() = 0;
