@@ -42,6 +42,7 @@ NGBlockBreakToken::NGBlockBreakToken(PassKey key,
       num_children_(builder.child_break_tokens_.size()) {
   break_appeal_ = builder.break_appeal_;
   has_seen_all_children_ = builder.has_seen_all_children_;
+  is_caused_by_column_spanner_ = builder.FoundColumnSpanner();
   is_at_block_end_ = builder.is_at_block_end_;
   for (wtf_size_t i = 0; i < builder.child_break_tokens_.size(); ++i) {
     child_break_tokens_[i] = builder.child_break_tokens_[i].get();

@@ -1172,7 +1172,16 @@ const NGConstraintSpace& NGOutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
 
   wtf_size_t num_children = container_builder_->Children().size();
   bool is_new_fragment = index >= num_children;
-  bool is_first_fragmentainer = index == 0;
+  // Allow margins to be discarded if this is not the first column in the
+  // multicol container, and we're not right after a spanner.
+  //
+  // TODO(layout-dev): This check is incorrect in nested multicol. If the
+  // previous outer fragmentainer ended with regular column content (i.e. not a
+  // spanner), and this is the first column in the next outer fragmentainer, we
+  // should still discard margins, since there is no explicit break involved.
+  bool allow_discard_start_margin =
+      is_new_fragment || (index > 0 && container_builder_->Children()[index - 1]
+                                           .fragment->IsFragmentainerBox());
 
   // If we are a new fragment, find a non-spanner fragmentainer to base our
   // constraint space off of.
@@ -1213,7 +1222,7 @@ const NGConstraintSpace& NGOutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
   NGConstraintSpace fragmentainer_constraint_space =
       CreateConstraintSpaceForColumns(*container_builder_->ConstraintSpace(),
                                       column_size, percentage_resolution_size,
-                                      is_first_fragmentainer,
+                                      allow_discard_start_margin,
                                       /* balance_columns */ false);
 
   return fragmentainer_constraint_space_map_
