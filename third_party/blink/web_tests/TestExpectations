@@ -4372,6 +4372,10 @@ crbug.com/610835 http/tests/security/XFrameOptions/x-frame-options-deny-multiple
 #crbug.com/765738 [ Linux Win Mac ] http/tests/wasm/wasm_remote_postMessage_test.https.html [ Pass Timeout ]
 crbug.com/892212 http/tests/wasm/wasm_remote_postMessage_test.https.html [ Pass Failure Timeout ]
 
+# Disabling 3 tests temporarily in order to land a devtools-frontend change. Will re-enable soon.
+crbug.com/1135145 http/tests/devtools/elements/css-variables/color-swatch.js [ Failure Pass ]
+crbug.com/1135145 http/tests/devtools/elements/styles/url-color-swatch.js [ Failure Pass ]
+crbug.com/1135145 http/tests/devtools/elements/styles-1/color-swatch.js [ Failure Pass ]
 
 # ====== Random order flaky tests from here ======
 # These tests are flaky when run in random order, which is the default on Linux & Mac since since 2016-12-16.
