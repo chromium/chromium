@@ -17,7 +17,7 @@
   </div>
   <!-- TODO(jschettler): Verify this meets a11y expecations (e.g. ChromeVox
       should announce when a new option is focused). -->
-  <select class="md-select" on-change="onSelectedScannerChange_"
+  <select class="md-select" value="{{selectedScannerId::change}}"
       hidden$="[[!loaded]]" disabled="[[disabled_]]">
     <!-- TODO(jschettler): Figure out why hiding/disabling the option doesn't
         remove it from the dropdown. -->

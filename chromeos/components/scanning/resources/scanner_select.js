@@ -35,6 +35,12 @@ Polymer({
       value: () => [],
     },
 
+    /** @type {?string} */
+    selectedScannerId: {
+      type: String,
+      notify: true,
+    },
+
     loaded: Boolean,
 
     /** @private */
@@ -64,14 +70,6 @@ Polymer({
    */
   getTokenAsString_(scanner) {
     return tokenToString(scanner.id);
-  },
-
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onSelectedScannerChange_(event) {
-    this.fire('selected-scanner-change', event.target);
   },
 
   /**
