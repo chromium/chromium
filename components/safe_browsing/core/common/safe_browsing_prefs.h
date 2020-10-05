@@ -296,6 +296,9 @@ bool IsExtendedReportingPolicyManaged(const PrefService& prefs);
 // SafeBrowsingProtectionLevel policy(new).
 bool IsSafeBrowsingPolicyManaged(const PrefService& prefs);
 
+// Returns whether enhanced protection message is enabled in interstitials.
+bool IsEnhancedProtectionMessageInInterstitialsEnabled();
+
 // Updates UMA metrics about Safe Browsing Extended Reporting states.
 void RecordExtendedReportingMetrics(const PrefService& prefs);
 

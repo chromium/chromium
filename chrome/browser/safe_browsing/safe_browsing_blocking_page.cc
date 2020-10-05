@@ -84,7 +84,8 @@ class SafeBrowsingBlockingPageFactoryImpl
         IsEnhancedProtectionEnabled(*prefs), is_proceed_anyway_disabled,
         true,  // should_open_links_in_new_tab
         true,  // always_show_back_to_safety
-        kHelpCenterLink);
+        IsEnhancedProtectionMessageInInterstitialsEnabled(),
+        IsSafeBrowsingPolicyManaged(*prefs), kHelpCenterLink);
 
     return new SafeBrowsingBlockingPage(
         ui_manager, web_contents, main_frame_url, unsafe_resources,

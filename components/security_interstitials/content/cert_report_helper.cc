@@ -192,9 +192,33 @@ bool CertReportHelper::ShouldShowCertificateReporterCheckbox() {
 }
 
 bool CertReportHelper::ShouldShowEnhancedProtectionMessage() {
-  // TODO(crbug.com/1130721): Check feature flag, check ep not managed, check
-  // not already in ep. Check not in incognito.
-  return false;
+  // Only show the enhanced protection message iff the user is part of the
+  // respective Finch group and the window is not incognito and Safe Browsing is
+  // not managed by policy and the user is not already in enhanced protection
+  // mode.
+  const bool in_incognito =
+      web_contents_->GetBrowserContext()->IsOffTheRecord();
+  const PrefService* pref_service = GetPrefs(web_contents_);
+  bool is_enhanced_protection_enabled =
+      safe_browsing::IsEnhancedProtectionEnabled(*pref_service);
+  bool is_safe_browsing_managed =
+      safe_browsing::IsSafeBrowsingPolicyManaged(*pref_service);
+  bool is_enhanced_protection_message_enabled =
+      safe_browsing::IsEnhancedProtectionMessageInInterstitialsEnabled();
+
+  if (in_incognito) {
+    return false;
+  }
+  if (is_enhanced_protection_enabled) {
+    return false;
+  }
+  if (is_safe_browsing_managed) {
+    return false;
+  }
+  if (!is_enhanced_protection_message_enabled) {
+    return false;
+  }
+  return true;
 }
 
 bool CertReportHelper::ShouldReportCertificateError() {
