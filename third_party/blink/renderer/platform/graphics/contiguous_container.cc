@@ -14,10 +14,6 @@
 
 namespace blink {
 
-// Default number of max-sized elements to allocate space for, if there is no
-// initial buffer.
-static const unsigned kDefaultInitialBufferSize = 32;
-
 class ContiguousContainerBase::Buffer {
   USING_FAST_MALLOC(Buffer);
 
@@ -57,7 +53,7 @@ class ContiguousContainerBase::Buffer {
   }
 
  private:
-  // m_begin <= m_end <= m_begin + m_capacity
+  // begin_ <= end_ <= begin_ + capacity_
   char* begin_;
   char* end_;
   wtf_size_t capacity_;
@@ -65,12 +61,18 @@ class ContiguousContainerBase::Buffer {
   DISALLOW_COPY_AND_ASSIGN(Buffer);
 };
 
-ContiguousContainerBase::ContiguousContainerBase(wtf_size_t max_object_size)
-    : end_index_(0), max_object_size_(max_object_size) {}
+ContiguousContainerBase::ContiguousContainerBase(
+    wtf_size_t max_object_size,
+    wtf_size_t initial_capacity_in_bytes)
+    : end_index_(0),
+      max_object_size_(max_object_size),
+      initial_capacity_in_bytes_(
+          std::max(max_object_size, initial_capacity_in_bytes)) {}
 
 ContiguousContainerBase::ContiguousContainerBase(
     ContiguousContainerBase&& source)
-    : ContiguousContainerBase(source.max_object_size_) {
+    : ContiguousContainerBase(source.max_object_size_,
+                              source.initial_capacity_in_bytes_) {
   Swap(source);
 }
 
@@ -101,11 +103,6 @@ wtf_size_t ContiguousContainerBase::MemoryUsageInBytes() const {
          elements_.capacity() * sizeof(elements_[0]);
 }
 
-void ContiguousContainerBase::ReserveInitialCapacity(wtf_size_t buffer_size,
-                                                     const char* type_name) {
-  AllocateNewBufferForNextAllocation(buffer_size, type_name);
-}
-
 void* ContiguousContainerBase::Allocate(wtf_size_t object_size,
                                         const char* type_name) {
   DCHECK_LE(object_size, max_object_size_);
@@ -120,9 +117,9 @@ void* ContiguousContainerBase::Allocate(wtf_size_t object_size,
   }
 
   if (!buffer_for_alloc) {
-    wtf_size_t new_buffer_size =
-        buffers_.IsEmpty() ? kDefaultInitialBufferSize * max_object_size_
-                           : 2 * buffers_.back()->Capacity();
+    wtf_size_t new_buffer_size = buffers_.IsEmpty()
+                                     ? initial_capacity_in_bytes_
+                                     : 2 * buffers_.back()->Capacity();
     buffer_for_alloc =
         AllocateNewBufferForNextAllocation(new_buffer_size, type_name);
   }
@@ -158,13 +155,7 @@ void ContiguousContainerBase::Swap(ContiguousContainerBase& other) {
   buffers_.swap(other.buffers_);
   std::swap(end_index_, other.end_index_);
   std::swap(max_object_size_, other.max_object_size_);
-}
-
-void ContiguousContainerBase::ShrinkToFit() {
-  while (end_index_ < buffers_.size() - 1) {
-    DCHECK(buffers_.back()->IsEmpty());
-    buffers_.pop_back();
-  }
+  std::swap(initial_capacity_in_bytes_, other.initial_capacity_in_bytes_);
 }
 
 ContiguousContainerBase::Buffer*

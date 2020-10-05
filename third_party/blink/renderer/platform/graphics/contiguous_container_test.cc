@@ -25,16 +25,25 @@ struct Point3D : public Point2D {
 };
 
 // Maximum size of a subclass of Point2D.
-static const size_t kMaxPointSize = sizeof(Point3D);
+static const wtf_size_t kMaxPointSize = sizeof(Point3D);
 
 // Alignment for Point2D and its subclasses.
-static const size_t kPointAlignment = sizeof(int);
+static const wtf_size_t kPointAlignment = sizeof(int);
 
 // How many elements to use for tests with "plenty" of elements.
-static const unsigned kNumElements = 150;
+static const wtf_size_t kNumElements = 150;
+
+static const wtf_size_t kDefaultInitialCapacityInBytes = 256;
+
+class PointList : public ContiguousContainer<Point2D, kPointAlignment> {
+ public:
+  explicit PointList(
+      wtf_size_t initial_capacity_in_bytes = kDefaultInitialCapacityInBytes)
+      : ContiguousContainer(kMaxPointSize, initial_capacity_in_bytes) {}
+};
 
 TEST(ContiguousContainerTest, SimpleStructs) {
-  ContiguousContainer<Point2D, kPointAlignment> list(kMaxPointSize);
+  PointList list;
   list.AllocateAndConstruct<Point2D>(1, 2);
   list.AllocateAndConstruct<Point3D>(3, 4, 5);
   list.AllocateAndConstruct<Point2D>(6, 7);
@@ -50,14 +59,14 @@ TEST(ContiguousContainerTest, SimpleStructs) {
 }
 
 TEST(ContiguousContainerTest, AllocateLots) {
-  ContiguousContainer<Point2D, kPointAlignment> list(kMaxPointSize);
-  for (int i = 0; i < (int)kNumElements; i++) {
+  PointList list;
+  for (int i = 0; i < static_cast<int>(kNumElements); i++) {
     list.AllocateAndConstruct<Point2D>(i, i);
     list.AllocateAndConstruct<Point2D>(i, i);
     list.RemoveLast();
   }
   ASSERT_EQ(kNumElements, list.size());
-  for (int i = 0; i < (int)kNumElements; i++) {
+  for (int i = 0; i < static_cast<int>(kNumElements); i++) {
     ASSERT_EQ(i, list[i].x);
     ASSERT_EQ(i, list[i].y);
   }
@@ -71,15 +80,23 @@ class MockDestructible {
   MOCK_METHOD0(Destruct, void());
 };
 
+class MockDestructibleList : public ContiguousContainer<MockDestructible> {
+ public:
+  explicit MockDestructibleList(
+      wtf_size_t initial_capacity_in_bytes = kDefaultInitialCapacityInBytes)
+      : ContiguousContainer(sizeof(MockDestructible),
+                            initial_capacity_in_bytes) {}
+};
+
 TEST(ContiguousContainerTest, DestructorCalled) {
-  ContiguousContainer<MockDestructible> list(sizeof(MockDestructible));
+  MockDestructibleList list;
   auto& destructible = list.AllocateAndConstruct<MockDestructible>();
   EXPECT_EQ(&destructible, &list.First());
   EXPECT_CALL(destructible, Destruct());
 }
 
 TEST(ContiguousContainerTest, DestructorCalledOnceWhenClear) {
-  ContiguousContainer<MockDestructible> list(sizeof(MockDestructible));
+  MockDestructibleList list;
   auto& destructible = list.AllocateAndConstruct<MockDestructible>();
   EXPECT_EQ(&destructible, &list.First());
 
@@ -96,7 +113,7 @@ TEST(ContiguousContainerTest, DestructorCalledOnceWhenClear) {
 }
 
 TEST(ContiguousContainerTest, DestructorCalledOnceWhenRemoveLast) {
-  ContiguousContainer<MockDestructible> list(sizeof(MockDestructible));
+  MockDestructibleList list;
   auto& destructible = list.AllocateAndConstruct<MockDestructible>();
   EXPECT_EQ(&destructible, &list.First());
 
@@ -115,8 +132,7 @@ TEST(ContiguousContainerTest, DestructorCalledOnceWhenRemoveLast) {
 TEST(ContiguousContainerTest, DestructorCalledWithMultipleRemoveLastCalls) {
   // This container only requests space for one, but the implementation is
   // free to use more space if the allocator provides it.
-  ContiguousContainer<MockDestructible> list(sizeof(MockDestructible),
-                                             1 * sizeof(MockDestructible));
+  MockDestructibleList list(1 * sizeof(MockDestructible));
   testing::MockFunction<void()> separator;
 
   // We should be okay to allocate and remove a single one, like before.
@@ -170,7 +186,7 @@ TEST(ContiguousContainerTest, DestructorCalledWithMultipleRemoveLastCalls) {
 }
 
 TEST(ContiguousContainerTest, InsertionAndIndexedAccess) {
-  ContiguousContainer<Point2D, kPointAlignment> list(kMaxPointSize);
+  PointList list;
 
   auto& point1 = list.AllocateAndConstruct<Point2D>();
   auto& point2 = list.AllocateAndConstruct<Point2D>();
@@ -185,27 +201,35 @@ TEST(ContiguousContainerTest, InsertionAndIndexedAccess) {
 }
 
 TEST(ContiguousContainerTest, InsertionAndClear) {
-  ContiguousContainer<Point2D, kPointAlignment> list(kMaxPointSize);
+  PointList list;
   EXPECT_TRUE(list.IsEmpty());
   EXPECT_EQ(0u, list.size());
+  EXPECT_EQ(0u, list.CapacityInBytes());
+  EXPECT_EQ(0u, list.UsedCapacityInBytes());
 
   list.AllocateAndConstruct<Point2D>();
   EXPECT_FALSE(list.IsEmpty());
   EXPECT_EQ(1u, list.size());
+  EXPECT_GE(list.CapacityInBytes(), kDefaultInitialCapacityInBytes);
+  EXPECT_EQ(sizeof(Point2D), list.UsedCapacityInBytes());
 
   list.Clear();
   EXPECT_TRUE(list.IsEmpty());
   EXPECT_EQ(0u, list.size());
+  EXPECT_EQ(0u, list.CapacityInBytes());
+  EXPECT_EQ(0u, list.UsedCapacityInBytes());
 
   list.AllocateAndConstruct<Point2D>();
   EXPECT_FALSE(list.IsEmpty());
   EXPECT_EQ(1u, list.size());
+  EXPECT_GE(list.CapacityInBytes(), kDefaultInitialCapacityInBytes);
+  EXPECT_EQ(sizeof(Point2D), list.UsedCapacityInBytes());
 }
 
 TEST(ContiguousContainerTest, ElementAddressesAreStable) {
-  ContiguousContainer<Point2D, kPointAlignment> list(kMaxPointSize);
+  PointList list;
   Vector<Point2D*> pointers;
-  for (int i = 0; i < (int)kNumElements; i++)
+  for (int i = 0; i < static_cast<int>(kNumElements); i++)
     pointers.push_back(&list.AllocateAndConstruct<Point2D>());
   EXPECT_EQ(kNumElements, list.size());
   EXPECT_EQ(kNumElements, pointers.size());
@@ -217,12 +241,12 @@ TEST(ContiguousContainerTest, ElementAddressesAreStable) {
 }
 
 TEST(ContiguousContainerTest, ForwardIteration) {
-  ContiguousContainer<Point2D, kPointAlignment> list(kMaxPointSize);
-  for (int i = 0; i < (int)kNumElements; i++)
+  PointList list;
+  for (int i = 0; i < static_cast<int>(kNumElements); i++)
     list.AllocateAndConstruct<Point2D>(i, i);
-  unsigned count = 0;
+  wtf_size_t count = 0;
   for (Point2D& point : list) {
-    EXPECT_EQ((int)count, point.x);
+    EXPECT_EQ(static_cast<int>(count), point.x);
     count++;
   }
   EXPECT_EQ(kNumElements, count);
@@ -232,14 +256,14 @@ TEST(ContiguousContainerTest, ForwardIteration) {
 }
 
 TEST(ContiguousContainerTest, ConstForwardIteration) {
-  ContiguousContainer<Point2D, kPointAlignment> list(kMaxPointSize);
-  for (int i = 0; i < (int)kNumElements; i++)
+  PointList list;
+  for (int i = 0; i < static_cast<int>(kNumElements); i++)
     list.AllocateAndConstruct<Point2D>(i, i);
 
   const auto& const_list = list;
-  unsigned count = 0;
+  wtf_size_t count = 0;
   for (const Point2D& point : const_list) {
-    EXPECT_EQ((int)count, point.x);
+    EXPECT_EQ(static_cast<int>(count), point.x);
     count++;
   }
   EXPECT_EQ(kNumElements, count);
@@ -250,13 +274,13 @@ TEST(ContiguousContainerTest, ConstForwardIteration) {
 }
 
 TEST(ContiguousContainerTest, ReverseIteration) {
-  ContiguousContainer<Point2D, kPointAlignment> list(kMaxPointSize);
-  for (int i = 0; i < (int)kNumElements; i++)
+  PointList list;
+  for (int i = 0; i < static_cast<int>(kNumElements); i++)
     list.AllocateAndConstruct<Point2D>(i, i);
 
-  unsigned count = 0;
+  wtf_size_t count = 0;
   for (auto it = list.rbegin(); it != list.rend(); ++it) {
-    EXPECT_EQ((int)(kNumElements - 1 - count), it->x);
+    EXPECT_EQ(static_cast<int>(kNumElements - 1 - count), it->x);
     count++;
   }
   EXPECT_EQ(kNumElements, count);
@@ -331,7 +355,7 @@ TEST(ContiguousContainerTest, IterationAfterRemoveLast) {
 }
 
 TEST(ContiguousContainerTest, AppendByMovingSameList) {
-  ContiguousContainer<Point2D, kPointAlignment> list(kMaxPointSize);
+  PointList list;
   list.AllocateAndConstruct<Point3D>(1, 2, 3);
 
   // Moves the Point3D to the end, and default-constructs a Point2D in its
@@ -368,11 +392,13 @@ TEST(ContiguousContainerTest, AppendByMovingDoesNotDestruct) {
   };
 
   bool destroyed = false;
-  ContiguousContainer<DestructionNotifier> list1(sizeof(DestructionNotifier));
+  ContiguousContainer<DestructionNotifier> list1(
+      sizeof(DestructionNotifier), kDefaultInitialCapacityInBytes);
   list1.AllocateAndConstruct<DestructionNotifier>(&destroyed);
   {
     // Make sure destructor isn't called during appendByMoving.
-    ContiguousContainer<DestructionNotifier> list2(sizeof(DestructionNotifier));
+    ContiguousContainer<DestructionNotifier> list2(
+        sizeof(DestructionNotifier), kDefaultInitialCapacityInBytes);
     list2.AppendByMoving(list1.Last(), sizeof(DestructionNotifier));
     EXPECT_FALSE(destroyed);
   }
@@ -381,8 +407,8 @@ TEST(ContiguousContainerTest, AppendByMovingDoesNotDestruct) {
 }
 
 TEST(ContiguousContainerTest, AppendByMovingReturnsMovedPointer) {
-  ContiguousContainer<Point2D, kPointAlignment> list1(kMaxPointSize);
-  ContiguousContainer<Point2D, kPointAlignment> list2(kMaxPointSize);
+  PointList list1;
+  PointList list2;
 
   Point2D& point = list1.AllocateAndConstruct<Point2D>();
   Point2D& moved_point1 = list2.AppendByMoving(point, sizeof(Point2D));
@@ -394,8 +420,8 @@ TEST(ContiguousContainerTest, AppendByMovingReturnsMovedPointer) {
 }
 
 TEST(ContiguousContainerTest, AppendByMovingReplacesSourceWithNewElement) {
-  ContiguousContainer<Point2D, kPointAlignment> list1(kMaxPointSize);
-  ContiguousContainer<Point2D, kPointAlignment> list2(kMaxPointSize);
+  PointList list1;
+  PointList list2;
 
   list1.AllocateAndConstruct<Point2D>(1, 2);
   EXPECT_EQ(1, list1.First().x);
@@ -412,7 +438,7 @@ TEST(ContiguousContainerTest, AppendByMovingReplacesSourceWithNewElement) {
 }
 
 TEST(ContiguousContainerTest, AppendByMovingElementsOfDifferentSizes) {
-  ContiguousContainer<Point2D, kPointAlignment> list(kMaxPointSize);
+  PointList list;
   list.AllocateAndConstruct<Point3D>(1, 2, 3);
   list.AllocateAndConstruct<Point2D>(4, 5);
 
@@ -440,9 +466,9 @@ TEST(ContiguousContainerTest, AppendByMovingElementsOfDifferentSizes) {
 }
 
 TEST(ContiguousContainerTest, Swap) {
-  ContiguousContainer<Point2D, kPointAlignment> list1(kMaxPointSize);
+  PointList list1;
   list1.AllocateAndConstruct<Point2D>(1, 2);
-  ContiguousContainer<Point2D, kPointAlignment> list2(kMaxPointSize);
+  PointList list2;
   list2.AllocateAndConstruct<Point2D>(3, 4);
   list2.AllocateAndConstruct<Point2D>(5, 6);
 
@@ -469,46 +495,30 @@ TEST(ContiguousContainerTest, Swap) {
 
 TEST(ContiguousContainerTest, CapacityInBytes) {
   const int kIterations = 500;
-  const size_t kInitialCapacity = 10 * kMaxPointSize;
-  const size_t kUpperBoundOnMinCapacity = kInitialCapacity;
+  const wtf_size_t kInitialCapacity = 10 * kMaxPointSize;
+  const wtf_size_t kUpperBoundOnMinCapacity = kInitialCapacity;
+  // In worst case, there are 2 buffers, and the second buffer contains only one
+  // element, so the factor is close to 3 as the second buffer is twice as big
+  // as the first buffer.
+  const size_t kMaxWasteFactor = 3;
 
-  // At time of writing, removing elements from the end can cause up to 7x the
-  // memory required to be consumed, in the worst case, since we can have up to
-  // two trailing inner lists that are empty (for 2*size + 4*size in unused
-  // memory, due to the exponential growth strategy).
-  // Unfortunately, this captures behaviour of the underlying allocator as
-  // well as this container, so we're pretty loose here. This constant may
-  // need to be adjusted.
-  const size_t kMaxWasteFactor = 8;
-
-  ContiguousContainer<Point2D, kPointAlignment> list(kMaxPointSize,
-                                                     kInitialCapacity);
+  PointList list(kInitialCapacity);
 
   // The capacity should grow with the list.
   for (int i = 0; i < kIterations; i++) {
     size_t capacity = list.CapacityInBytes();
     ASSERT_GE(capacity, list.size() * sizeof(Point2D));
-    ASSERT_LE(capacity, std::max(list.size() * sizeof(Point2D),
-                                 kUpperBoundOnMinCapacity) *
+    ASSERT_LE(capacity, std::max<wtf_size_t>(list.size() * sizeof(Point2D),
+                                             kUpperBoundOnMinCapacity) *
                             kMaxWasteFactor);
     list.AllocateAndConstruct<Point2D>();
-  }
-
-  // The capacity should shrink with the list.
-  for (int i = 0; i < kIterations; i++) {
-    size_t capacity = list.CapacityInBytes();
-    ASSERT_GE(capacity, list.size() * sizeof(Point2D));
-    ASSERT_LE(capacity, std::max(list.size() * sizeof(Point2D),
-                                 kUpperBoundOnMinCapacity) *
-                            kMaxWasteFactor);
-    list.RemoveLast();
   }
 }
 
 TEST(ContiguousContainerTest, CapacityInBytesAfterClear) {
   // Clearing should restore the capacity of the container to the same as a
   // newly allocated one (without reserved capacity requested).
-  ContiguousContainer<Point2D, kPointAlignment> list(kMaxPointSize);
+  PointList list;
   size_t empty_capacity = list.CapacityInBytes();
   list.AllocateAndConstruct<Point2D>();
   list.AllocateAndConstruct<Point2D>();
@@ -518,7 +528,8 @@ TEST(ContiguousContainerTest, CapacityInBytesAfterClear) {
 
 TEST(ContiguousContainerTest, Alignment) {
   const size_t kMaxAlign = alignof(long double);
-  ContiguousContainer<Point2D, kMaxAlign> list(kMaxPointSize);
+  ContiguousContainer<Point2D, kMaxAlign> list(kMaxPointSize,
+                                               kDefaultInitialCapacityInBytes);
 
   list.AllocateAndConstruct<Point2D>();
   EXPECT_EQ(0u, reinterpret_cast<intptr_t>(&list.Last()) & (kMaxAlign - 1));

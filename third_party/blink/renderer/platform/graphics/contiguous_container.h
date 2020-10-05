@@ -41,7 +41,9 @@ class PLATFORM_EXPORT ContiguousContainerBase {
   DISALLOW_NEW();
 
  protected:
-  explicit ContiguousContainerBase(wtf_size_t max_object_size);
+  // The initial capacity will be allocated when the first item is added.
+  ContiguousContainerBase(wtf_size_t max_object_size,
+                          wtf_size_t initial_capacity_in_bytes);
   ContiguousContainerBase(ContiguousContainerBase&&);
   ~ContiguousContainerBase();
 
@@ -54,15 +56,10 @@ class PLATFORM_EXPORT ContiguousContainerBase {
   wtf_size_t MemoryUsageInBytes() const;
 
   // These do not invoke constructors or destructors.
-  void ReserveInitialCapacity(wtf_size_t, const char* type_name);
   void* Allocate(wtf_size_t object_size, const char* type_name);
   void RemoveLast();
   void Clear();
   void Swap(ContiguousContainerBase&);
-
-  // Discards excess buffer capacity. Intended for use when no more appending
-  // is anticipated.
-  void ShrinkToFit();
 
   Vector<void*> elements_;
 
@@ -74,6 +71,7 @@ class PLATFORM_EXPORT ContiguousContainerBase {
   Vector<std::unique_ptr<Buffer>> buffers_;
   unsigned end_index_;
   wtf_size_t max_object_size_;
+  wtf_size_t initial_capacity_in_bytes_;
 
   DISALLOW_COPY_AND_ASSIGN(ContiguousContainerBase);
 };
@@ -138,14 +136,10 @@ class ContiguousContainer : public ContiguousContainerBase {
 
   using value_type = BaseElementType;
 
-  explicit ContiguousContainer(wtf_size_t max_object_size)
-      : ContiguousContainerBase(Align(max_object_size)) {}
-
-  ContiguousContainer(wtf_size_t max_object_size, wtf_size_t initial_size_bytes)
-      : ContiguousContainer(max_object_size) {
-    ReserveInitialCapacity(std::max(max_object_size, initial_size_bytes),
-                           WTF_HEAP_PROFILER_TYPE_NAME(BaseElementType));
-  }
+  ContiguousContainer(wtf_size_t max_object_size,
+                      wtf_size_t initial_capacity_in_bytes)
+      : ContiguousContainerBase(Align(max_object_size),
+                                initial_capacity_in_bytes) {}
 
   ContiguousContainer(ContiguousContainer&& source)
       : ContiguousContainerBase(std::move(source)) {}
@@ -169,7 +163,6 @@ class ContiguousContainer : public ContiguousContainerBase {
   using ContiguousContainerBase::CapacityInBytes;
   using ContiguousContainerBase::IsEmpty;
   using ContiguousContainerBase::MemoryUsageInBytes;
-  using ContiguousContainerBase::ShrinkToFit;
   using ContiguousContainerBase::size;
   using ContiguousContainerBase::UsedCapacityInBytes;
 

@@ -158,7 +158,7 @@ PaintChunk::Id DefaultId() {
 
 struct TestChunks {
   Vector<PaintChunk> chunks;
-  DisplayItemList items = DisplayItemList(0);
+  DisplayItemList items;
 
   // Add a paint chunk with a non-empty paint record and given property nodes.
   void AddChunk(

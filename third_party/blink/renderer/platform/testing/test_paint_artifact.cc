@@ -18,10 +18,6 @@
 
 namespace blink {
 
-TestPaintArtifact::TestPaintArtifact() : display_item_list_(0) {}
-
-TestPaintArtifact::~TestPaintArtifact() = default;
-
 static DisplayItemClient& StaticDummyClient() {
   DEFINE_STATIC_LOCAL(FakeDisplayItemClient, client, ());
   client.Validate();

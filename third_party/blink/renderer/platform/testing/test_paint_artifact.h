@@ -50,9 +50,6 @@ class TestPaintArtifact {
   STACK_ALLOCATED();
 
  public:
-  TestPaintArtifact();
-  ~TestPaintArtifact();
-
   // Add a chunk to the artifact. Each chunk will have a different automatically
   // created client.
   TestPaintArtifact& Chunk() { return Chunk(NewClient()); }

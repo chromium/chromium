@@ -14,8 +14,6 @@
 
 namespace blink {
 
-PaintArtifact::PaintArtifact() : display_item_list_(0) {}
-
 PaintArtifact::PaintArtifact(DisplayItemList display_items,
                              Vector<PaintChunk> chunks)
     : display_item_list_(std::move(display_items)), chunks_(std::move(chunks)) {

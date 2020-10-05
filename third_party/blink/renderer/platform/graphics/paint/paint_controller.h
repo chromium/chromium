@@ -29,8 +29,6 @@
 
 namespace blink {
 
-static constexpr wtf_size_t kInitialDisplayItemListCapacityBytes = 512;
-
 enum class PaintBenchmarkMode {
   kNormal,
   kForceRasterInvalidationAndConvert,
@@ -148,7 +146,6 @@ class PLATFORM_EXPORT PaintController {
                   "DisplayItem subclass alignment is not a factor of "
                   "kDisplayItemAlignment.");
 
-    EnsureNewDisplayItemListInitialCapacity();
     DisplayItemClass& display_item =
         new_display_item_list_.AllocateAndConstruct<DisplayItemClass>(
             std::forward<Args>(args)...);
@@ -302,17 +299,6 @@ class PLATFORM_EXPORT PaintController {
 
   void InvalidateAllForTesting() { InvalidateAllInternal(); }
   void InvalidateAllInternal();
-
-  void EnsureNewDisplayItemListInitialCapacity() {
-    if (new_display_item_list_.IsEmpty()) {
-      // TODO(wangxianzhu): Consider revisiting this heuristic.
-      new_display_item_list_ = DisplayItemList(
-          current_paint_artifact_->GetDisplayItemList().IsEmpty()
-              ? kInitialDisplayItemListCapacityBytes
-              : current_paint_artifact_->GetDisplayItemList()
-                    .UsedCapacityInBytes());
-    }
-  }
 
   // Set new item state (cache skipping, etc) for the last new display item.
   void ProcessNewItem(DisplayItem&);

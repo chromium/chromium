@@ -90,7 +90,7 @@ class PLATFORM_EXPORT PaintArtifact final : public RefCounted<PaintArtifact> {
                              const PaintChunkSubset& paint_chunks) const;
 
  private:
-  PaintArtifact();
+  PaintArtifact() = default;
   PaintArtifact(DisplayItemList, Vector<PaintChunk>);
 
   DisplayItemList display_item_list_;

@@ -15,9 +15,7 @@
 namespace blink {
 
 PaintController::PaintController(Usage usage)
-    : usage_(usage),
-      current_paint_artifact_(PaintArtifact::Empty()),
-      new_display_item_list_(0) {
+    : usage_(usage), current_paint_artifact_(PaintArtifact::Empty()) {
   // frame_first_paints_ should have one null frame since the beginning, so
   // that PaintController is robust even if it paints outside of BeginFrame
   // and EndFrame cycles. It will also enable us to combine the first paint
@@ -61,7 +59,6 @@ bool PaintController::UseCachedItemIfPossible(const DisplayItemClient& client,
   }
 
   ++num_cached_new_items_;
-  EnsureNewDisplayItemListInitialCapacity();
   if (!RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled())
     ProcessNewItem(MoveItemFromCurrentListToNewList(cached_item));
 
@@ -126,8 +123,6 @@ bool PaintController::UseCachedSubsequenceIfPossible(
     NOTREACHED();
     return false;
   }
-
-  EnsureNewDisplayItemListInitialCapacity();
 
   if (next_item_to_match_ == start_item_index) {
     // We are matching new and cached display items sequentially. Skip the
@@ -506,9 +501,6 @@ void PaintController::CommitNewDisplayItems() {
   new_cached_subsequences_.swap(current_cached_subsequences_);
   new_cached_subsequences_.clear();
 
-  // The new list will not be appended to again so we can release unused memory.
-  new_display_item_list_.ShrinkToFit();
-
   current_paint_artifact_ =
       PaintArtifact::Create(std::move(new_display_item_list_),
                             new_paint_chunks_.ReleasePaintChunks());
@@ -517,7 +509,8 @@ void PaintController::CommitNewDisplayItems() {
   out_of_order_item_id_index_map_.clear();
 
   // We'll allocate the initial buffer when we start the next paint.
-  new_display_item_list_ = DisplayItemList(0);
+  new_display_item_list_ =
+      DisplayItemList(GetDisplayItemList().UsedCapacityInBytes());
 
 #if DCHECK_IS_ON()
   num_indexed_items_ = 0;

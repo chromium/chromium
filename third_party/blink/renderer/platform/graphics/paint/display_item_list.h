@@ -28,8 +28,16 @@ static constexpr wtf_size_t kMaximumDisplayItemSize =
 class PLATFORM_EXPORT DisplayItemList
     : public ContiguousContainer<DisplayItem, kDisplayItemAlignment> {
  public:
-  DisplayItemList(wtf_size_t initial_size_bytes)
-      : ContiguousContainer(kMaximumDisplayItemSize, initial_size_bytes) {}
+  static constexpr wtf_size_t kDefaultCapacityInBytes = 512;
+
+  // Using 0 as the default value to make 0 also fall back to
+  // kDefaultCapacityInBytes.
+  explicit DisplayItemList(wtf_size_t initial_capacity_in_bytes = 0)
+      : ContiguousContainer(kMaximumDisplayItemSize,
+                            initial_capacity_in_bytes
+                                ? initial_capacity_in_bytes
+                                : kDefaultCapacityInBytes) {}
+
   DisplayItemList(DisplayItemList&& source)
       : ContiguousContainer(std::move(source)) {}
 
