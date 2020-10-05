@@ -9,13 +9,6 @@ if (is_android) {
   import("//build/config/android/rules.gni")  # For generate_jni().
 }
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 component("gamepad") {
   output_name = "device_gamepad"
 
@@ -24,8 +17,6 @@ component("gamepad") {
     "abstract_haptic_gamepad.h",
     "dualshock4_controller.cc",
     "dualshock4_controller.h",
-    "game_controller_data_fetcher_mac.h",
-    "game_controller_data_fetcher_mac.mm",
     "gamepad_blocklist.cc",
     "gamepad_blocklist.h",
     "gamepad_consumer.cc",
@@ -34,10 +25,6 @@ component("gamepad") {
     "gamepad_data_fetcher.h",
     "gamepad_data_fetcher_manager.cc",
     "gamepad_data_fetcher_manager.h",
-    "gamepad_device_linux.cc",
-    "gamepad_device_linux.h",
-    "gamepad_device_mac.h",
-    "gamepad_device_mac.mm",
     "gamepad_export.h",
     "gamepad_haptics_manager.cc",
     "gamepad_haptics_manager.h",
@@ -48,12 +35,6 @@ component("gamepad") {
     "gamepad_pad_state_provider.cc",
     "gamepad_pad_state_provider.h",
     "gamepad_platform_data_fetcher.h",
-    "gamepad_platform_data_fetcher_android.cc",
-    "gamepad_platform_data_fetcher_android.h",
-    "gamepad_platform_data_fetcher_linux.cc",
-    "gamepad_platform_data_fetcher_linux.h",
-    "gamepad_platform_data_fetcher_mac.h",
-    "gamepad_platform_data_fetcher_mac.mm",
     "gamepad_provider.cc",
     "gamepad_provider.h",
     "gamepad_service.cc",
@@ -62,42 +43,15 @@ component("gamepad") {
     "gamepad_shared_buffer.h",
     "gamepad_standard_mappings.cc",
     "gamepad_standard_mappings.h",
-    "gamepad_standard_mappings_linux.cc",
-    "gamepad_standard_mappings_mac.mm",
-    "gamepad_standard_mappings_win.cc",
     "gamepad_uma.cc",
     "gamepad_uma.h",
     "gamepad_user_gesture.cc",
     "gamepad_user_gesture.h",
-    "hid_dll_functions_win.cc",
-    "hid_dll_functions_win.h",
     "hid_haptic_gamepad.cc",
     "hid_haptic_gamepad.h",
     "hid_writer.h",
-    "hid_writer_linux.cc",
-    "hid_writer_linux.h",
-    "hid_writer_mac.cc",
-    "hid_writer_mac.h",
-    "hid_writer_win.cc",
-    "hid_writer_win.h",
-    "raw_input_data_fetcher_win.cc",
-    "raw_input_data_fetcher_win.h",
-    "raw_input_gamepad_device_win.cc",
-    "raw_input_gamepad_device_win.h",
-    "udev_gamepad_linux.cc",
-    "udev_gamepad_linux.h",
-    "wgi_data_fetcher_win.cc",
-    "wgi_data_fetcher_win.h",
-    "xbox_controller_mac.h",
-    "xbox_controller_mac.mm",
-    "xbox_data_fetcher_mac.cc",
-    "xbox_data_fetcher_mac.h",
     "xbox_hid_controller.cc",
     "xbox_hid_controller.h",
-    "xinput_data_fetcher_win.cc",
-    "xinput_data_fetcher_win.h",
-    "xinput_haptic_gamepad_win.cc",
-    "xinput_haptic_gamepad_win.h",
   ]
 
   deps = [
@@ -116,23 +70,51 @@ component("gamepad") {
   defines = [ "DEVICE_GAMEPAD_IMPLEMENTATION" ]
 
   if (is_win) {
+    sources += [
+      "gamepad_standard_mappings_win.cc",
+      "hid_dll_functions_win.cc",
+      "hid_dll_functions_win.h",
+      "hid_writer_win.cc",
+      "hid_writer_win.h",
+      "raw_input_data_fetcher_win.cc",
+      "raw_input_data_fetcher_win.h",
+      "raw_input_gamepad_device_win.cc",
+      "raw_input_gamepad_device_win.h",
+      "wgi_data_fetcher_win.cc",
+      "wgi_data_fetcher_win.h",
+      "xinput_data_fetcher_win.cc",
+      "xinput_data_fetcher_win.h",
+      "xinput_haptic_gamepad_win.cc",
+      "xinput_haptic_gamepad_win.h",
+    ]
     cflags =
         [ "/wd4267" ]  # conversion from 'size_t' (64 bit) to 'type'(32 bit).
   }
 
   if (is_linux || is_chromeos) {
+    sources += [
+      "gamepad_standard_mappings_linux.cc",
+      "hid_writer_linux.cc",
+      "hid_writer_linux.h",
+    ]
     if (use_udev) {
-      deps += [ "//device/udev_linux" ]
-    } else {
-      sources -= [
+      sources += [
         "gamepad_device_linux.cc",
+        "gamepad_device_linux.h",
         "gamepad_platform_data_fetcher_linux.cc",
+        "gamepad_platform_data_fetcher_linux.h",
         "udev_gamepad_linux.cc",
+        "udev_gamepad_linux.h",
       ]
+      deps += [ "//device/udev_linux" ]
     }
   }
 
   if (is_android) {
+    sources += [
+      "gamepad_platform_data_fetcher_android.cc",
+      "gamepad_platform_data_fetcher_android.h",
+    ]
     deps += [ ":jni_headers" ]
   }
 
@@ -146,6 +128,21 @@ component("gamepad") {
   }
 
   if (is_mac) {
+    sources += [
+      "game_controller_data_fetcher_mac.h",
+      "game_controller_data_fetcher_mac.mm",
+      "gamepad_device_mac.h",
+      "gamepad_device_mac.mm",
+      "gamepad_platform_data_fetcher_mac.h",
+      "gamepad_platform_data_fetcher_mac.mm",
+      "gamepad_standard_mappings_mac.mm",
+      "hid_writer_mac.cc",
+      "hid_writer_mac.h",
+      "xbox_controller_mac.h",
+      "xbox_controller_mac.mm",
+      "xbox_data_fetcher_mac.cc",
+      "xbox_data_fetcher_mac.h",
+    ]
     frameworks = [
       "CoreFoundation.framework",
       "Foundation.framework",

@@ -15,13 +15,6 @@ if (is_mac) {
   import("//build/config/mac/mac_sdk.gni")
 }
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 is_linux_without_udev = (is_linux || is_chromeos) && !use_udev
 
 test("device_unittests") {
@@ -29,25 +22,16 @@ test("device_unittests") {
     "base/synchronization/one_writer_seqlock_unittest.cc",
     "bluetooth/adapter_unittest.cc",
     "bluetooth/advertisement_unittest.cc",
-    "bluetooth/bluetooth_adapter_android_unittest.cc",
-    "bluetooth/bluetooth_adapter_mac_metrics_unittest.mm",
-    "bluetooth/bluetooth_adapter_mac_unittest.mm",
     "bluetooth/bluetooth_adapter_unittest.cc",
-    "bluetooth/bluetooth_adapter_win_unittest.cc",
     "bluetooth/bluetooth_advertisement_unittest.cc",
     "bluetooth/bluetooth_device_unittest.cc",
-    "bluetooth/bluetooth_device_win_unittest.cc",
     "bluetooth/bluetooth_discovery_filter_unittest.cc",
     "bluetooth/bluetooth_local_gatt_characteristic_unittest.cc",
     "bluetooth/bluetooth_local_gatt_descriptor_unittest.cc",
     "bluetooth/bluetooth_local_gatt_service_unittest.cc",
-    "bluetooth/bluetooth_low_energy_advertisement_manager_mac_unittest.mm",
-    "bluetooth/bluetooth_low_energy_win_unittest.cc",
     "bluetooth/bluetooth_remote_gatt_characteristic_unittest.cc",
     "bluetooth/bluetooth_remote_gatt_descriptor_unittest.cc",
     "bluetooth/bluetooth_remote_gatt_service_unittest.cc",
-    "bluetooth/bluetooth_service_record_win_unittest.cc",
-    "bluetooth/bluetooth_task_manager_win_unittest.cc",
     "bluetooth/device_unittest.cc",
     "bluetooth/public/cpp/bluetooth_uuid_unittest.cc",
     "bluetooth/server_socket_unittest.cc",
@@ -57,22 +41,6 @@ test("device_unittests") {
     "bluetooth/test/bluetooth_gatt_server_test.h",
     "bluetooth/test/bluetooth_test.cc",
     "bluetooth/test/bluetooth_test.h",
-    "bluetooth/test/bluetooth_test_android.cc",
-    "bluetooth/test/bluetooth_test_android.h",
-    "bluetooth/test/bluetooth_test_mac.h",
-    "bluetooth/test/bluetooth_test_mac.mm",
-    "bluetooth/test/bluetooth_test_win.cc",
-    "bluetooth/test/bluetooth_test_win.h",
-    "bluetooth/test/mock_bluetooth_cbcharacteristic_mac.h",
-    "bluetooth/test/mock_bluetooth_cbcharacteristic_mac.mm",
-    "bluetooth/test/mock_bluetooth_cbdescriptor_mac.h",
-    "bluetooth/test/mock_bluetooth_cbdescriptor_mac.mm",
-    "bluetooth/test/mock_bluetooth_cbperipheral_mac.h",
-    "bluetooth/test/mock_bluetooth_cbperipheral_mac.mm",
-    "bluetooth/test/mock_bluetooth_cbservice_mac.h",
-    "bluetooth/test/mock_bluetooth_cbservice_mac.mm",
-    "bluetooth/test/mock_bluetooth_central_manager_mac.h",
-    "bluetooth/test/mock_bluetooth_central_manager_mac.mm",
     "bluetooth/test/test_bluetooth_adapter_observer.cc",
     "bluetooth/test/test_bluetooth_adapter_observer.h",
     "bluetooth/test/test_bluetooth_advertisement_observer.cc",
@@ -92,6 +60,46 @@ test("device_unittests") {
     "gamepad/xbox_hid_controller_unittest.cc",
     "test/run_all_unittests.cc",
   ]
+
+  if (is_mac) {
+    sources += [
+      "bluetooth/bluetooth_adapter_mac_metrics_unittest.mm",
+      "bluetooth/bluetooth_adapter_mac_unittest.mm",
+      "bluetooth/bluetooth_low_energy_advertisement_manager_mac_unittest.mm",
+      "bluetooth/test/bluetooth_test_mac.h",
+      "bluetooth/test/bluetooth_test_mac.mm",
+      "bluetooth/test/mock_bluetooth_cbcharacteristic_mac.h",
+      "bluetooth/test/mock_bluetooth_cbcharacteristic_mac.mm",
+      "bluetooth/test/mock_bluetooth_cbdescriptor_mac.h",
+      "bluetooth/test/mock_bluetooth_cbdescriptor_mac.mm",
+      "bluetooth/test/mock_bluetooth_cbperipheral_mac.h",
+      "bluetooth/test/mock_bluetooth_cbperipheral_mac.mm",
+      "bluetooth/test/mock_bluetooth_cbservice_mac.h",
+      "bluetooth/test/mock_bluetooth_cbservice_mac.mm",
+      "bluetooth/test/mock_bluetooth_central_manager_mac.h",
+      "bluetooth/test/mock_bluetooth_central_manager_mac.mm",
+    ]
+  }
+
+  if (is_android) {
+    sources += [
+      "bluetooth/bluetooth_adapter_android_unittest.cc",
+      "bluetooth/test/bluetooth_test_android.cc",
+      "bluetooth/test/bluetooth_test_android.h",
+    ]
+  }
+
+  if (is_win) {
+    sources += [
+      "bluetooth/bluetooth_adapter_win_unittest.cc",
+      "bluetooth/bluetooth_device_win_unittest.cc",
+      "bluetooth/bluetooth_low_energy_win_unittest.cc",
+      "bluetooth/bluetooth_service_record_win_unittest.cc",
+      "bluetooth/bluetooth_task_manager_win_unittest.cc",
+      "bluetooth/test/bluetooth_test_win.cc",
+      "bluetooth/test/bluetooth_test_win.h",
+    ]
+  }
 
   if (is_fuchsia) {
     sources += [
@@ -161,11 +169,6 @@ test("device_unittests") {
       "fido/get_assertion_task_unittest.cc",
       "fido/hid/fido_hid_message_unittest.cc",
       "fido/large_blob_unittest.cc",
-      "fido/mac/browsing_data_deletion_unittest.mm",
-      "fido/mac/credential_metadata_unittest.cc",
-      "fido/mac/get_assertion_operation_unittest_mac.mm",
-      "fido/mac/make_credential_operation_unittest_mac.mm",
-      "fido/mac/util_unittest.cc",
       "fido/make_credential_handler_unittest.cc",
       "fido/make_credential_task_unittest.cc",
       "fido/test_callback_receiver_unittest.cc",
@@ -174,10 +177,23 @@ test("device_unittests") {
       "fido/u2f_sign_operation_unittest.cc",
       "fido/virtual_ctap2_device_unittest.cc",
       "fido/virtual_u2f_device_unittest.cc",
-      "fido/win/type_conversions_unittest.cc",
     ]
 
     deps += [ "//device/fido:mocks" ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "fido/mac/browsing_data_deletion_unittest.mm",
+      "fido/mac/credential_metadata_unittest.cc",
+      "fido/mac/get_assertion_operation_unittest_mac.mm",
+      "fido/mac/make_credential_operation_unittest_mac.mm",
+      "fido/mac/util_unittest.cc",
+    ]
+  }
+
+  if (is_win) {
+    sources += [ "fido/win/type_conversions_unittest.cc" ]
   }
 
   # FIDO HID:
