@@ -4,26 +4,8 @@
 
 import("//remoting/build/config/remoting_build.gni")
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 source_set("file_transfer") {
-  sources = [
-    "ensure_user_mac.cc",
-    "ensure_user_win.cc",
-    "file_chooser_chromeos.cc",
-    "file_chooser_common_win.h",
-    "file_chooser_mac.mm",
-    "file_chooser_main_win.cc",
-    "file_chooser_win.cc",
-    "get_desktop_directory.cc",
-    "get_desktop_directory.h",
-    "get_desktop_directory_win.cc",
-  ]
+  sources = [ "get_desktop_directory.h" ]
 
   public_deps = [ ":common" ]
 
@@ -34,6 +16,10 @@ source_set("file_transfer") {
   ]
 
   if (is_mac) {
+    sources += [
+      "ensure_user_mac.cc",
+      "file_chooser_mac.mm",
+    ]
     frameworks = [ "AppKit.framework" ]
   }
 
@@ -42,12 +28,24 @@ source_set("file_transfer") {
   }
 
   if (is_win) {
-    sources -= [ "get_desktop_directory.cc" ]
+    sources += [
+      "ensure_user_win.cc",
+      "file_chooser_common_win.h",
+      "file_chooser_main_win.cc",
+      "file_chooser_win.cc",
+      "get_desktop_directory_win.cc",
+    ]
+  } else {
+    sources += [ "get_desktop_directory.cc" ]
   }
 
   if (is_linux) {
     sources += [ "file_chooser_linux.cc" ]
     deps += [ "//build/config/linux/gtk" ]
+  }
+
+  if (is_chromeos) {
+    sources += [ "file_chooser_chromeos.cc" ]
   }
 }
 
