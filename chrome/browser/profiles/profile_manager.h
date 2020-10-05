@@ -215,6 +215,9 @@ class ProfileManager : public content::NotificationObserver,
   // that case the callback will be called when profile creation is complete.
   void ScheduleProfileForDeletion(const base::FilePath& profile_dir,
                                   ProfileLoadedCallback callback);
+
+  // Deletes Guest profile's browsing data.
+  static void CleanUpGuestProfile();
 #endif
 
   // Autoloads profiles if they are running background apps.
@@ -457,6 +460,9 @@ class ProfileManager : public content::NotificationObserver,
 
   // Controls whether to initialize some services. Only disabled for testing.
   bool do_final_services_init_ = true;
+
+  // Path to Guest profile. Can be empty when the profile does not exist.
+  base::FilePath guest_profile_path_;
 
   // TODO(chrome/browser/profiles/OWNERS): Usage of this in profile_manager.cc
   // should likely be turned into DCHECK_CURRENTLY_ON(BrowserThread::UI) for

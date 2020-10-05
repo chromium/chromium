@@ -602,19 +602,9 @@ Browser::~Browser() {
   //
   // Non-primary OffTheRecord profiles should not be destroyed directly by
   // Browser (e.g. for offscreen tabs, https://crbug.com/664351).
-  if (profile_->IsPrimaryOTRProfile() &&
+  if (profile_->IsIncognitoProfile() &&
       !BrowserList::IsOffTheRecordBrowserInUse(profile_) &&
       !profile_->GetOriginalProfile()->IsSystemProfile()) {
-    if (profile_->IsGuestSession()) {
-// ChromeOS handles guest data independently.
-#if !defined(OS_CHROMEOS)
-      // Clear all browsing data once a Guest Session completes. The Guest
-      // profile has BrowserContextKeyedServices that the Incognito profile
-      // doesn't, so the ProfileDestroyer can't delete it properly.
-      // TODO(mlerman): Delete the guest using an improved ProfileDestroyer.
-      profiles::RemoveBrowsingDataForProfile(profile_->GetPath());
-#endif
-    } else {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
       // The Printing Background Manager holds onto preview dialog WebContents
       // whose corresponding print jobs have not yet fully spooled. Make sure
@@ -626,7 +616,6 @@ Browser::~Browser() {
       // An incognito profile is no longer needed, this indirectly frees
       // its cache and cookies once it gets destroyed at the appropriate time.
       ProfileDestroyer::DestroyProfileWhenAppropriate(profile_);
-    }
   }
 
   // There may be pending file dialogs, we need to tell them that we've gone

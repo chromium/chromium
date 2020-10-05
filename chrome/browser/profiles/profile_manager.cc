@@ -793,8 +793,16 @@ base::FilePath ProfileManager::GetGuestProfilePath() {
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
-  base::FilePath guest_path = profile_manager->user_data_dir();
-  return guest_path.Append(chrome::kGuestProfileDir);
+  // TODO(https://crbug.com/1125474): Consider adding a different naming system
+  // for Guest profiles.
+  if (profile_manager->guest_profile_path_.empty()) {
+    profile_manager->guest_profile_path_ =
+        Profile::IsEphemeralGuestProfileEnabled()
+            ? profile_manager->GenerateNextProfileDirectoryPath()
+            : profile_manager->user_data_dir().Append(chrome::kGuestProfileDir);
+  }
+
+  return profile_manager->guest_profile_path_;
 }
 
 // static
@@ -1616,6 +1624,27 @@ void ProfileManager::FinishDeletingProfile(
   // Prevents CreateProfileAsync from re-creating the profile.
   MarkProfileDirectoryForDeletion(profile_dir);
 }
+
+// static
+void ProfileManager::CleanUpGuestProfile() {
+// ChromeOS handles guest data independently.
+#if !defined(OS_CHROMEOS)
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+
+  Profile* profile =
+      profile_manager->GetProfileByPath(profile_manager->GetGuestProfilePath());
+  if (profile) {
+    // Clear all browsing data once a Guest Session completes. The Guest
+    // profile has BrowserContextKeyedServices that the ProfileDestroyer
+    // can't delete it properly.
+    // TODO(https://crbug.com/88586): Delete the guest when regular profiles
+    // become deletable when not needed.
+    profiles::RemoveBrowsingDataForProfile(GetGuestProfilePath());
+  }
+  profile_manager->guest_profile_path_.clear();
+#endif  //! defined(OS_CHROMEOS)
+}
+
 #endif  // !defined(OS_ANDROID)
 
 ProfileManager::ProfileInfo* ProfileManager::RegisterProfile(
@@ -1726,6 +1755,9 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
       storage.GetProfileAttributesWithPath(profile->GetPath(), &entry);
   DCHECK(has_entry);
 
+  if (profile->IsEphemeralGuestProfile())
+    profile->GetPrefs()->SetBoolean(prefs::kForceEphemeralProfiles, true);
+
   if (profile->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles))
     entry->SetIsEphemeral(true);
 
@@ -1775,7 +1807,7 @@ void ProfileManager::SaveActiveProfiles() {
   for (it = active_profiles_.begin(); it != active_profiles_.end(); ++it) {
     // crbug.com/823338 -> CHECK that the profiles aren't guest or incognito,
     // causing a crash during session restore.
-    CHECK(!(*it)->IsGuestSession())
+    CHECK((!(*it)->IsGuestSession()) && (!(*it)->IsEphemeralGuestProfile()))
         << "Guest profiles shouldn't be saved as active profiles";
     CHECK(!(*it)->IsOffTheRecord())
         << "OTR profiles shouldn't be saved as active profiles";
@@ -1828,6 +1860,9 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
     if (browser_iter->profile()->GetOriginalProfile() == original_profile)
       return;
   }
+
+  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile())
+    CleanUpGuestProfile();
 
   base::FilePath path = profile->GetPath();
   if (IsProfileDirectoryMarkedForDeletion(path)) {

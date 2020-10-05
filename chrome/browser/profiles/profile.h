@@ -411,9 +411,23 @@ class Profile : public content::BrowserContext {
   // OffTheRecord profile used for incognito mode and guest sessions.
   bool IsPrimaryOTRProfile() const;
 
-  // Returns whether it is a guest session. This covers both the guest profile
-  // and its parent.
+  // Returns whether ephemeral Guest profiles are enabled.
+  static bool IsEphemeralGuestProfileEnabled();
+
+  // Returns whether it is a Guest session. This covers both regular and
+  // off-the-record profiles of a Guest session.
+  // This function only returns true for non-ephemeral Guest sessions.
+  // TODO(https://crbug.com/1125474): Audit all use cases and consider adding
+  // |IsEphemeralGuestProfile|. Remove after audit is done on all relevant
+  // platforms and non-ephemeral Guest profiles are deprecated.
   virtual bool IsGuestSession() const;
+
+  // Returns whether it is an ephemeral Guest profile. This covers both regular
+  // and off-the-record profiles of a Guest session.
+  // TODO(https://crbug.com/1125474): After auditing all use cases of
+  // |IsGuestSession| on all platforms and removal of all calls to
+  // |IsGuestSession|, rename to |IsGuestProfile|.
+  virtual bool IsEphemeralGuestProfile() const;
 
   // Returns whether it is a system profile.
   virtual bool IsSystemProfile() const;
