@@ -466,6 +466,11 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
   return grey_accessibilityID(kSyncSettingsConfirmButtonId);
 }
 
++ (id<GREYMatcher>)addressesAndMoreButton {
+  return [ChromeMatchersAppInterface
+      buttonWithAccessibilityLabelID:(IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE)];
+}
+
 + (id<GREYMatcher>)paymentMethodsButton {
   return [ChromeMatchersAppInterface
       buttonWithAccessibilityLabelID:(IDS_AUTOFILL_PAYMENT_METHODS)];

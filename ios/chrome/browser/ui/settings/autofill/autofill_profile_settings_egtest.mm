@@ -110,13 +110,8 @@ id<GREYMatcher> NavigationBarEditButton() {
 // Helper to open the settings page for Autofill profiles.
 - (void)openAutofillProfilesSettings {
   [ChromeEarlGreyUI openSettingsMenu];
-  id<GREYMatcher> addressesButton =
-      ButtonWithAccessibilityLabelId(IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE);
-  [[[EarlGrey selectElementWithMatcher:addressesButton]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:grey_allOf(grey_kindOfClassName(@"UITableView"),
-                                      grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::AddressesAndMoreButton()];
 }
 
 // Helper to open the settings page for the Autofill profile with |label|.
@@ -248,8 +243,10 @@ id<GREYMatcher> NavigationBarEditButton() {
       performAction:grey_tap()];
 
   // Check the Autofill profile switch is disabled.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
-                                          @"addressItem_switch", YES, NO)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+                                   kAutofillAddressSwitchViewId,
+                                   /*is_toggled_on=*/YES, /*is_enabled=*/NO)]
       assertWithMatcher:grey_notNil()];
 
   [self exitSettingsMenu];
@@ -262,8 +259,10 @@ id<GREYMatcher> NavigationBarEditButton() {
   [self openAutofillProfilesSettings];
 
   // Toggle the Autofill profiles switch off.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
-                                          @"addressItem_switch", YES, YES)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+                                   kAutofillAddressSwitchViewId,
+                                   /*is_toggled_on=*/YES, /*is_enabled=*/YES)]
       performAction:chrome_test_util::TurnSettingsSwitchOn(NO)];
 
   // Expect Autofill profiles to remain visible.
@@ -271,8 +270,10 @@ id<GREYMatcher> NavigationBarEditButton() {
       assertWithMatcher:grey_notNil()];
 
   // Toggle the Autofill profiles switch back on.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
-                                          @"addressItem_switch", NO, YES)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+                                   kAutofillAddressSwitchViewId,
+                                   /*is_toggled_on=*/NO, /*is_enabled=*/YES)]
       performAction:chrome_test_util::TurnSettingsSwitchOn(YES)];
 
   // Expect Autofill profiles to remain visible.

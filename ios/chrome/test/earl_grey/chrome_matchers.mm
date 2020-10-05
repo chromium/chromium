@@ -231,6 +231,10 @@ id<GREYMatcher> AutofillCreditCardTableView() {
   return [ChromeMatchersAppInterface autofillCreditCardTableView];
 }
 
+id<GREYMatcher> AddressesAndMoreButton() {
+  return [ChromeMatchersAppInterface addressesAndMoreButton];
+}
+
 id<GREYMatcher> PaymentMethodsButton() {
   return [ChromeMatchersAppInterface paymentMethodsButton];
 }

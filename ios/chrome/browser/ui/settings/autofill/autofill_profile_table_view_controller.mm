@@ -162,7 +162,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   switchItem.text =
       l10n_util::GetNSString(IDS_AUTOFILL_ENABLE_PROFILES_TOGGLE_LABEL);
   switchItem.on = [self isAutofillProfileEnabled];
-  switchItem.accessibilityIdentifier = @"addressItem_switch";
+  switchItem.accessibilityIdentifier = kAutofillAddressSwitchViewId;
   return switchItem;
 }
 
@@ -175,7 +175,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   managedAddressItem.statusText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
   managedAddressItem.accessibilityHint =
       l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
-  managedAddressItem.accessibilityIdentifier = @"addressItem_managed";
+  managedAddressItem.accessibilityIdentifier = kAutofillAddressManagedViewId;
   return managedAddressItem;
 }
 

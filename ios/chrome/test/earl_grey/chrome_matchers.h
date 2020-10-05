@@ -182,6 +182,9 @@ id<GREYMatcher> SyncSettingsConfirmButton();
 // settings menu.
 id<GREYMatcher> AutofillCreditCardTableView();
 
+// Returns matcher for the "Addresses and More" button in the settings menu.
+id<GREYMatcher> AddressesAndMoreButton();
+
 // Returns matcher for the "Payment Methods" button in the settings menu.
 id<GREYMatcher> PaymentMethodsButton();
 

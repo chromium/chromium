@@ -9,8 +9,10 @@
 
 extern NSString* const kAutofillProfileEditTableViewId;
 extern NSString* const kAutofillProfileTableViewID;
-
 extern NSString* const kAutofillPaymentMethodsToolbarId;
+extern NSString* const kAutofillAddressSwitchViewId;
+extern NSString* const kAutofillAddressManagedViewId;
+
 extern NSString* const kAutofillCreditCardTableViewId;
 extern NSString* const kAutofillCreditCardSwitchViewId;
 extern NSString* const kAutofillCreditCardManagedViewId;

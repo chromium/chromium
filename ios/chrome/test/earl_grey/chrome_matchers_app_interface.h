@@ -186,6 +186,9 @@
 // settings menu.
 + (id<GREYMatcher>)autofillCreditCardTableView;
 
+// Returns matcher for the "Addresses and More" button in the settings menu.
++ (id<GREYMatcher>)addressesAndMoreButton;
+
 // Returns matcher for the "Payment Methods" button in the settings menu.
 + (id<GREYMatcher>)paymentMethodsButton;
 
