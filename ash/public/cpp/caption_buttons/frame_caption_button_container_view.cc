@@ -10,10 +10,10 @@
 #include "ash/public/cpp/caption_buttons/caption_button_model.h"
 #include "ash/public/cpp/caption_buttons/frame_size_button.h"
 #include "ash/public/cpp/caption_buttons/snap_controller.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/ranges.h"
+#include "chromeos/ui/tablet_state.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -420,7 +420,7 @@ void FrameCaptionButtonContainerView::ButtonPressed(views::Button* sender,
     }
   } else if (sender == close_button_) {
     frame_->Close();
-    if (TabletMode::Get()->InTabletMode())
+    if (chromeos::TabletState::Get()->InTabletMode())
       RecordAction(UserMetricsAction("Tablet_WindowCloseFromCaptionButton"));
     else
       RecordAction(UserMetricsAction("CloseButton_Clk"));
