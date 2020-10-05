@@ -20,27 +20,6 @@
 
 namespace ash {
 
-// A WidgetDelegate which ensures that |initially_focused| gets focus.
-class LoginTestBase::WidgetDelegate : public views::WidgetDelegate {
- public:
-  explicit WidgetDelegate(views::View* content) : content_(content) {
-    SetOwnedByWidget(true);
-  }
-  ~WidgetDelegate() override = default;
-
-  // views::WidgetDelegate:
-  views::View* GetInitiallyFocusedView() override { return content_; }
-  views::Widget* GetWidget() override { return content_->GetWidget(); }
-  const views::Widget* GetWidget() const override {
-    return content_->GetWidget();
-  }
-
- private:
-  views::View* content_;
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetDelegate);
-};
-
 LoginTestBase::LoginTestBase() = default;
 
 LoginTestBase::~LoginTestBase() = default;
@@ -76,7 +55,10 @@ std::unique_ptr<views::Widget> LoginTestBase::CreateWidgetWithContent(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.bounds = gfx::Rect(0, 0, 800, 800);
-  params.delegate = new WidgetDelegate(content);
+
+  params.delegate = new views::WidgetDelegate();
+  params.delegate->SetInitiallyFocusedView(content);
+  params.delegate->SetOwnedByWidget(true);
 
   // Set the widget to the lock screen container, since a test may change the
   // session state to locked, which will hide all widgets not associated with

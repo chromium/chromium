@@ -80,8 +80,6 @@ class LoginTestBase : public AshTestBase {
   void TearDown() override;
 
  private:
-  class WidgetDelegate;
-
   // The widget created using |ShowWidgetWithContent|.
   std::unique_ptr<views::Widget> widget_;
 
