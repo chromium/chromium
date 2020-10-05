@@ -34125,11 +34125,11 @@ Called by update_feature_policy_enum.py.-->
 <enum name="GoogleUpdateErrorCode">
   <int value="0" label="GOOGLE_UPDATE_NO_ERROR"/>
   <int value="1" label="CANNOT_UPGRADE_CHROME_IN_THIS_DIRECTORY"/>
-  <int value="2" label="GOOGLE_UPDATE_JOB_SERVER_CREATION_FAILED"/>
+  <int value="2" label="GOOGLE_UPDATE_JOB_SERVER_CREATION_FAILED (deprecated)"/>
   <int value="3" label="GOOGLE_UPDATE_ONDEMAND_CLASS_NOT_FOUND"/>
   <int value="4" label="GOOGLE_UPDATE_ONDEMAND_CLASS_REPORTED_ERROR"/>
-  <int value="5" label="GOOGLE_UPDATE_GET_RESULT_CALL_FAILED"/>
-  <int value="6" label="GOOGLE_UPDATE_GET_VERSION_INFO_FAILED"/>
+  <int value="5" label="GOOGLE_UPDATE_GET_RESULT_CALL_FAILED (deprecated)"/>
+  <int value="6" label="GOOGLE_UPDATE_GET_VERSION_INFO_FAILED (deprecated)"/>
   <int value="7" label="GOOGLE_UPDATE_ERROR_UPDATING"/>
   <int value="8" label="GOOGLE_UPDATE_DISABLED_BY_POLICY"/>
   <int value="9" label="GOOGLE_UPDATE_DISABLED_BY_POLICY_AUTO_ONLY"/>
@@ -34157,8 +34157,8 @@ Called by update_feature_policy_enum.py.-->
 </enum>
 
 <enum name="GoogleUpdateUpgradeStatus">
-  <int value="0" label="UPGRADE_STARTED"/>
-  <int value="1" label="UPGRADE_CHECK_STARTED"/>
+  <int value="0" label="UPGRADE_STARTED (deprecated)"/>
+  <int value="1" label="UPGRADE_CHECK_STARTED (deprecated)"/>
   <int value="2" label="UPGRADE_IS_AVAILABLE"/>
   <int value="3" label="UPGRADE_SUCCESSFUL"/>
   <int value="4" label="UPGRADE_ALREADY_UP_TO_DATE"/>
@@ -35697,8 +35697,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="custom error for taskbar::CustomHresultCodes::kWindowsInvisible"/>
   <int value="-2147220477"
       label="custom error for taskbar::CustomHresultCodes::kImageLoading"/>
+  <int value="-2147219705" label="GOOPDATE_E_INSTANCES_RUNNING"/>
   <int value="-2147219455" label="GOOPDATE_E_NO_NETWORK"/>
   <int value="-2147219437" label="GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY"/>
+  <int value="-2147219425"
+      label="GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL"/>
   <int value="-2147219198" label="GOOPDATEINSTALL_E_INSTALLER_FAILED"/>
   <int value="-2147168255" label="ITF_E_FONTFILE_UTIL_TOO_MANY_FILES_PER_FACE"/>
   <int value="-2147168254" label="ITF_E_FONTFILE_UTIL_EMPTY_FILE_PATH"/>
@@ -35721,6 +35724,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-2147023728" label="ERROR_NOT_FOUND"/>
   <int value="-2147023673" label="ERROR_CANCELLED"/>
   <int value="-2147023605" label="ERROR_DRIVER_PROCESS_TERMINATED"/>
+  <int value="-2147023589" label="ERROR_INVALID_OWNER"/>
   <int value="-2147023504" label="ERROR_FILE_CORRUPT"/>
   <int value="-2147023436" label="ERROR_TIMEOUT"/>
   <int value="-2147023179" label="RPC_S_UNKNOWN_IF"/>
@@ -35729,6 +35733,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-2147012889" label="WININET_E_NAME_NOT_RESOLVED"/>
   <int value="-2147012867" label="WININET_E_CANNOT_CONNECT"/>
   <int value="-2147012866" label="WININET_E_CONNECTION_ABORTED"/>
+  <int value="-2147012851" label="WININET_E_INVALID_CA"/>
   <int value="-2147009295" label="ERROR_INSTALL_PACKAGE_NOT_FOUND"/>
   <int value="-2146959355" label="CO_E_SERVER_EXEC_FAILURE"/>
   <int value="-2005270527" label="DXGI_ERROR_INVALID_CALL"/>
@@ -37779,8 +37784,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="61" label="SETUP_SINGLETON_RELEASED"/>
   <int value="62" label="DELETE_OLD_VERSIONS_SUCCESS"/>
   <int value="63" label="DELETE_OLD_VERSIONS_TOO_MANY_ATTEMPTS"/>
-  <int value="64" label="SAVE_DMTOKEN_FAILED"/>
-  <int value="65" label="SAVE_DMTOKEN_SUCCESS"/>
+  <int value="64" label="STORE_DMTOKEN_FAILED"/>
+  <int value="65" label="STORE_DMTOKEN_SUCCESS"/>
 </enum>
 
 <enum name="InstanceIDResult">

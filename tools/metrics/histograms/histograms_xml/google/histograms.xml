@@ -21,8 +21,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
-<histogram name="GoogleUpdate.ErrorHresult" enum="Hresult" expires_after="M85">
+<histogram name="GoogleUpdate.ErrorHresult" enum="Hresult" expires_after="M86">
   <owner>grt@chromium.org</owner>
+  <owner>ydago@chromium.org</owner>
   <summary>The HRESULT for a failed on-demand update check.</summary>
 </histogram>
 
@@ -117,8 +118,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GoogleUpdate.InstallerExitCode" enum="InstallStatus"
-    expires_after="M85">
+    expires_after="M86">
   <owner>grt@chromium.org</owner>
+  <owner>ydago@chromium.org</owner>
   <summary>
     The exit code from Chrome's installer following a failed on-demand update
     check. All values reported for this histogram fall in the
@@ -196,6 +198,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="GoogleUpdate.UnexpectedState" units="units"
     expires_after="M85">
+  <obsolete>
+    Removed in M87.
+  </obsolete>
   <owner>grt@chromium.org</owner>
   <summary>
     An unrecognized CurrentState value received from Google Update while polling
@@ -204,14 +209,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GoogleUpdate.UpdateErrorCode" enum="GoogleUpdateErrorCode"
-    expires_after="M85">
+    expires_after="M86">
   <owner>grt@chromium.org</owner>
+  <owner>ydago@chromium.org</owner>
   <summary>The error code for a failed on-demand update check.</summary>
 </histogram>
 
 <histogram name="GoogleUpdate.UpgradeResult" enum="GoogleUpdateUpgradeStatus"
-    expires_after="M85">
+    expires_after="M86">
   <owner>grt@chromium.org</owner>
+  <owner>ydago@chromium.org</owner>
   <summary>The result of an on-demand update check.</summary>
 </histogram>
 

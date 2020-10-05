@@ -17,7 +17,6 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
@@ -449,11 +448,11 @@ UpdateCheckDriver::~UpdateCheckDriver() {
 
   *GetLastUpdateStateStorage() = update_state_;
 
-  UMA_HISTOGRAM_ENUMERATION("GoogleUpdate.UpgradeResult", status_,
-                            NUM_UPGRADE_STATUS);
+  base::UmaHistogramEnumeration("GoogleUpdate.UpgradeResult", status_,
+                                NUM_UPGRADE_STATUS);
   if (status_ == UPGRADE_ERROR) {
-    UMA_HISTOGRAM_ENUMERATION("GoogleUpdate.UpdateErrorCode",
-                              update_state_.error_code, NUM_ERROR_CODES);
+    base::UmaHistogramEnumeration("GoogleUpdate.UpdateErrorCode",
+                                  update_state_.error_code, NUM_ERROR_CODES);
     if (FAILED(update_state_.hresult)) {
       base::UmaHistogramSparse("GoogleUpdate.ErrorHresult",
                                update_state_.hresult);
@@ -803,7 +802,6 @@ bool UpdateCheckDriver::IsIntermediateState(
     case STATE_ERROR:
     default:
       NOTREACHED();
-      base::UmaHistogramSparse("GoogleUpdate.UnexpectedState", state_value);
       return false;
   }
   return true;
