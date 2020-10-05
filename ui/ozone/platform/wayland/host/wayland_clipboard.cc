@@ -14,6 +14,8 @@
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/gtk_primary_selection_device.h"
 #include "ui/ozone/platform/wayland/host/gtk_primary_selection_device_manager.h"
+#include "ui/ozone/platform/wayland/host/zwp_primary_selection_device.h"
+#include "ui/ozone/platform/wayland/host/zwp_primary_selection_device_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
@@ -185,7 +187,8 @@ void WaylandClipboard::GetAvailableMimeTypes(
 }
 
 bool WaylandClipboard::IsSelectionBufferAvailable() const {
-  return (connection_->primary_selection_device_manager() != nullptr);
+  return (connection_->zwp_primary_selection_device_manager() != nullptr) ||
+         (connection_->gtk_primary_selection_device_manager() != nullptr);
 }
 
 void WaylandClipboard::SetData(PlatformClipboard::Data contents,
@@ -214,7 +217,15 @@ wl::Clipboard* WaylandClipboard::GetClipboard(ClipboardBuffer buffer) {
     return copypaste_clipboard_.get();
 
   if (buffer == ClipboardBuffer::kSelection) {
-    if (auto* manager = connection_->primary_selection_device_manager()) {
+    if (auto* manager = connection_->zwp_primary_selection_device_manager()) {
+      if (!primary_selection_clipboard_) {
+        primary_selection_clipboard_ =
+            std::make_unique<wl::ClipboardImpl<ZwpPrimarySelectionDeviceManager>>(
+                manager);
+      }
+      return primary_selection_clipboard_.get();
+    } else if (auto* manager =
+                   connection_->gtk_primary_selection_device_manager()) {
       if (!primary_selection_clipboard_) {
         primary_selection_clipboard_ = std::make_unique<
             wl::ClipboardImpl<GtkPrimarySelectionDeviceManager>>(manager);

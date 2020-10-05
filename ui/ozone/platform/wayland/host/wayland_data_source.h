@@ -15,6 +15,7 @@
 
 struct wl_data_source;
 struct gtk_primary_selection_source;
+struct zwp_primary_selection_source_v1;
 
 namespace wl {
 template <typename T>
@@ -34,12 +35,12 @@ class WaylandConnection;
 // Implementation wise, these variants are share a single class template, with
 // specializations defined for each underlying supported extensions. Below are
 // the type aliases for the variants currently supported.
-//
-// TODO(crbug.com/1088132): Support standard primary selection extension.
 
 using WaylandDataSource = wl::DataSource<wl_data_source>;
 
 using GtkPrimarySelectionSource = wl::DataSource<gtk_primary_selection_source>;
+
+using ZwpPrimarySelectionSource = wl::DataSource<zwp_primary_selection_source_v1>;
 
 }  // namespace ui
 

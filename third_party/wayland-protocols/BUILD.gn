@@ -8,6 +8,11 @@ wayland_protocol("gtk_primary_selection_protocol") {
   sources = [ "unstable/gtk-primary-selection/gtk-primary-selection.xml" ]
 }
 
+wayland_protocol("primary_selection_protocol") {
+  sources =
+      [ "src/unstable/primary-selection/primary-selection-unstable-v1.xml" ]
+}
+
 wayland_protocol("input_method_protocol") {
   sources = [ "src/unstable/input-method/input-method-unstable-v1.xml" ]
 }

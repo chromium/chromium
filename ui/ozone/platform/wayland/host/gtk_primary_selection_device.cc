@@ -43,7 +43,7 @@ void GtkPrimarySelectionDevice::OnDataOffer(
   DCHECK(self);
 
   self->connection()->clipboard()->UpdateSequenceNumber(
-      ClipboardBuffer::kCopyPaste);
+      ClipboardBuffer::kSelection);
 
   self->set_data_offer(std::make_unique<GtkPrimarySelectionOffer>(offer));
 }

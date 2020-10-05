@@ -10,6 +10,7 @@
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <presentation-time-client-protocol.h>
+#include <primary-selection-unstable-v1-client-protocol.h>
 #include <text-input-unstable-v1-client-protocol.h>
 #include <viewporter-client-protocol.h>
 #include <wayland-drm-client-protocol.h>
@@ -91,6 +92,30 @@ const wl_interface* ObjectTraits<gtk_primary_selection_source>::interface =
     &gtk_primary_selection_source_interface;
 void (*ObjectTraits<gtk_primary_selection_source>::deleter)(
     gtk_primary_selection_source*) = &gtk_primary_selection_source_destroy;
+
+const wl_interface*
+    ObjectTraits<zwp_primary_selection_device_manager_v1>::interface =
+        &zwp_primary_selection_device_manager_v1_interface;
+void (*ObjectTraits<zwp_primary_selection_device_manager_v1>::deleter)(
+    zwp_primary_selection_device_manager_v1*) =
+    &zwp_primary_selection_device_manager_v1_destroy;
+
+const wl_interface* ObjectTraits<zwp_primary_selection_device_v1>::interface =
+    &zwp_primary_selection_device_v1_interface;
+void (*ObjectTraits<zwp_primary_selection_device_v1>::deleter)(
+    zwp_primary_selection_device_v1*) =
+    &zwp_primary_selection_device_v1_destroy;
+
+const wl_interface* ObjectTraits<zwp_primary_selection_offer_v1>::interface =
+    &zwp_primary_selection_offer_v1_interface;
+void (*ObjectTraits<zwp_primary_selection_offer_v1>::deleter)(
+    zwp_primary_selection_offer_v1*) = &zwp_primary_selection_offer_v1_destroy;
+
+const wl_interface* ObjectTraits<zwp_primary_selection_source_v1>::interface =
+    &zwp_primary_selection_source_v1_interface;
+void (*ObjectTraits<zwp_primary_selection_source_v1>::deleter)(
+    zwp_primary_selection_source_v1*) =
+    &zwp_primary_selection_source_v1_destroy;
 
 const wl_interface* ObjectTraits<wl_buffer>::interface = &wl_buffer_interface;
 void (*ObjectTraits<wl_buffer>::deleter)(wl_buffer*) = &wl_buffer_destroy;
