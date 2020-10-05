@@ -351,7 +351,7 @@ class GCMClientImplTest : public testing::Test,
     return gcm_client_->state_;
   }
   FakeMCSClient* mcs_client() const {
-    return reinterpret_cast<FakeMCSClient*>(gcm_client_->mcs_client_.get());
+    return static_cast<FakeMCSClient*>(gcm_client_->mcs_client_.get());
   }
   ConnectionFactory* connection_factory() const {
     return gcm_client_->connection_factory_.get();
