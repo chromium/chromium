@@ -14,7 +14,7 @@
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #include "base/allocator/partition_allocator/spinning_futex_linux.h"
 #endif
 
@@ -142,7 +142,7 @@ class LOCKABLE MaybeSpinLock<true> {
   }
 
  private:
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   base::NoDestructor<SpinningFutex> lock_;
 #else
   // base::Lock is slower on the fast path than SpinLock, hence we still use it

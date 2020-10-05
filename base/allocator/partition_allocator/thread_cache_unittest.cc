@@ -27,7 +27,8 @@
 // on Windows 7 (at least). As long as it doesn't use something else on Windows,
 // disable the cache (and tests)
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && defined(OS_LINUX)
+    !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&  \
+    (defined(OS_LINUX) || defined(OS_CHROMEOS))
 
 namespace base {
 namespace internal {
@@ -402,4 +403,5 @@ TEST_F(ThreadCacheTest, PurgeAll) NO_THREAD_SAFETY_ANALYSIS {
 }  // namespace base
 
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && defined(OS_LINUX)
+        // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&
+        // (defined(OS_LINUX) || defined(OS_CHROMEOS))

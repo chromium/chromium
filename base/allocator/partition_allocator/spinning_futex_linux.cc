@@ -7,7 +7,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "build/build_config.h"
 
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 
 #include <errno.h>
 #include <linux/futex.h>
@@ -70,4 +70,4 @@ void SpinningFutex::LockSlow() {
 }  // namespace internal
 }  // namespace base
 
-#endif  // defined(OS_LINUX) || defined(OS_ANDROID)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
