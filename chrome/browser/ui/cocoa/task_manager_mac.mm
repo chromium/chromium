@@ -287,9 +287,12 @@ NSString* ColumnIdentifier(int id) {
       [[NSTableView alloc] initWithFrame:NSMakeRect(0, 0, 400, 200)]);
   [tableView setAllowsColumnReordering:NO];
   [tableView setAllowsMultipleSelection:YES];
+  // No autosaving, since column identifiers are IDS_ values which are not
+  // stable. TODO(avi): Would it be worth it to find stable identifiers so that
+  // we could use autosaving?
   [tableView setAutosaveTableColumns:NO];
   [tableView
-      setColumnAutoresizingStyle:NSTableViewSequentialColumnAutoresizingStyle];
+      setColumnAutoresizingStyle:NSTableViewUniformColumnAutoresizingStyle];
   [tableView setDoubleAction:@selector(tableWasDoubleClicked:)];
   [tableView setFocusRingType:NSFocusRingTypeNone];
   [tableView setIntercellSpacing:NSMakeSize(0, 0)];
@@ -308,14 +311,17 @@ NSString* ColumnIdentifier(int id) {
   base::scoped_nsobject<NSTableColumn> column([[NSTableColumn alloc]
       initWithIdentifier:ColumnIdentifier(columnData.id)]);
 
+  NSTableHeaderCell* headerCell = [column.get() headerCell];
+  id dataCell = [column.get() dataCell];
+
   NSTextAlignment textAlignment = (columnData.align == ui::TableColumn::LEFT)
                                       ? NSLeftTextAlignment
                                       : NSRightTextAlignment;
 
-  [[column.get() headerCell]
-      setStringValue:l10n_util::GetNSStringWithFixup(columnData.id)];
-  [[column.get() headerCell] setAlignment:textAlignment];
-  [[column.get() dataCell] setAlignment:textAlignment];
+  NSString* columnTitle = l10n_util::GetNSStringWithFixup(columnData.id);
+  [headerCell setStringValue:columnTitle];
+  [headerCell setAlignment:textAlignment];
+  [dataCell setAlignment:textAlignment];
 
   const CGFloat smallSystemFontSize = [NSFont smallSystemFontSize];
   NSFont* font = nil;
@@ -325,7 +331,7 @@ NSString* ColumnIdentifier(int id) {
   } else {
     font = [NSFont systemFontOfSize:smallSystemFontSize];
   }
-  [[column.get() dataCell] setFont:font];
+  [dataCell setFont:font];
 
   [column.get() setHidden:!columnData.default_visibility];
   [column.get() setEditable:NO];
@@ -337,8 +343,20 @@ NSString* ColumnIdentifier(int id) {
   [column.get() setSortDescriptorPrototype:sortDescriptor.get()];
 
   [column.get() setMinWidth:columnData.min_width];
-  if (columnData.max_width > 0)
-    [column.get() setMaxWidth:columnData.max_width];
+  // If there is no specified max width, use a reasonable value of 1.5x the min
+  // width, but make sure that the max width is big enough to actually show the
+  // entire column title.
+  const int kTitleMargin = 40;  // Space for the arrow, etc.
+  int maxWidth = columnData.max_width;
+  if (maxWidth <= 0)
+    maxWidth = 3 * columnData.min_width / 2;
+  int columnTitleWidth =
+      [columnTitle
+          sizeWithAttributes:@{NSFontAttributeName : [headerCell font]}]
+          .width +
+      kTitleMargin;
+  maxWidth = std::max(maxWidth, columnTitleWidth);
+  [column.get() setMaxWidth:maxWidth];
   [column.get() setResizingMask:NSTableColumnAutoresizingMask |
                                 NSTableColumnUserResizingMask];
 

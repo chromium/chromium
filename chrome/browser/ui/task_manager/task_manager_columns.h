@@ -27,7 +27,7 @@ struct TableColumnData {
   float percent;
 
   // min and max widths used for Mac's implementation and are ignored on Views.
-  // If |max_width| is -1, it is unset.
+  // If |max_width| is -1, a value of 1.5 * |min_width| will be used.
   int min_width;
   int max_width;
 
