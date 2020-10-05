@@ -1,6 +1,6 @@
 file://third_party/blink/common/mediastream/OWNERS
 
-per-file media_stream_audio_processor*=aluebs@chromium.org
+per-file media_stream_audio_processor*=olka@chromium.org
 
 # TEAM: webrtc-dev@chromium.org
 # COMPONENT: Blink>GetUserMedia
