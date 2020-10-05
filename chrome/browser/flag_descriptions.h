@@ -1173,6 +1173,9 @@ extern const char kSameSiteByDefaultCookiesDescription[];
 extern const char kSchemefulSameSiteName[];
 extern const char kSchemefulSameSiteDescription[];
 
+extern const char kScreenCaptureTestName[];
+extern const char kScreenCaptureTestDescription[];
+
 extern const char kScrollableTabStripName[];
 extern const char kScrollableTabStripDescription[];
 

@@ -2707,6 +2707,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(display::features::kUseHDRTransferFunction)},
 #endif  // OS_CHROMEOS
 #if defined(OS_CHROMEOS)
+    {"screen-capture", flag_descriptions::kScreenCaptureTestName,
+     flag_descriptions::kScreenCaptureTestDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kCaptureMode)},
     {"ash-limit-alt-tab-to-active-desk",
      flag_descriptions::kLimitAltTabToActiveDeskName,
      flag_descriptions::kLimitAltTabToActiveDeskDescription, kOsCrOS,
