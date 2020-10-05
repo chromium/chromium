@@ -11,6 +11,8 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/prefs/pref_service.h"
 #include "crypto/sha2.h"
+#include "net/base/ip_address.h"
+#include "net/base/url_util.h"
 
 #if defined(OS_WIN)
 #include "base/enterprise_util.h"
@@ -72,6 +74,32 @@ base::TimeDelta GetDelayFromPref(PrefService* prefs, const char* pref_name) {
     return zero_delay;
   else
     return next_event - now;
+}
+
+bool CanGetReputationOfUrl(const GURL& url) {
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() || net::IsLocalhost(url)) {
+    return false;
+  }
+  const std::string hostname = url.host();
+  // A valid hostname should be longer than 3 characters and have at least 1
+  // dot.
+  if (hostname.size() < 4 || base::STLCount(hostname, '.') < 1) {
+    return false;
+  }
+
+  if (net::IsLocalhost(url)) {
+    // Includes: "//localhost/", "//localhost.localdomain/", "//127.0.0.1/"
+    return false;
+  }
+
+  net::IPAddress ip_address;
+  if (url.HostIsIPAddress() && ip_address.AssignFromIPLiteral(hostname) &&
+      !ip_address.IsPubliclyRoutable()) {
+    // Includes: "//192.168.1.1/", "//172.16.2.2/", "//10.1.1.1/"
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace safe_browsing

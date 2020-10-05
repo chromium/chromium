@@ -15,6 +15,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
+#include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/verdict_cache_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "net/base/ip_address.h"
@@ -133,25 +134,10 @@ RealTimeUrlLookupServiceBase::~RealTimeUrlLookupServiceBase() = default;
 
 // static
 bool RealTimeUrlLookupServiceBase::CanCheckUrl(const GURL& url) {
-  if (!url.SchemeIsHTTPOrHTTPS()) {
-    return false;
+  if (VerdictCacheManager::has_artificial_unsafe_url()) {
+    return true;
   }
-
-  if (net::IsLocalhost(url) &&
-      !VerdictCacheManager::has_artificial_unsafe_url()) {
-    // Includes: "//localhost/", "//localhost.localdomain/", "//127.0.0.1/"
-    return false;
-  }
-
-  net::IPAddress ip_address;
-  if (url.HostIsIPAddress() && ip_address.AssignFromIPLiteral(url.host()) &&
-      !ip_address.IsPubliclyRoutable() &&
-      !VerdictCacheManager::has_artificial_unsafe_url()) {
-    // Includes: "//192.168.1.1/", "//172.16.2.2/", "//10.1.1.1/"
-    return false;
-  }
-
-  return true;
+  return CanGetReputationOfUrl(url);
 }
 
 // static

@@ -77,12 +77,11 @@ PasswordProtectionService::~PasswordProtectionService() {
 }
 
 bool PasswordProtectionService::CanGetReputationOfURL(const GURL& url) {
-  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() || net::IsLocalhost(url))
+  if (!safe_browsing::CanGetReputationOfUrl(url)) {
     return false;
-
+  }
   const std::string hostname = url.HostNoBrackets();
-  return !net::IsHostnameNonUnique(hostname) &&
-         hostname.find('.') != std::string::npos;
+  return !net::IsHostnameNonUnique(hostname);
 }
 
 #if defined(ON_FOCUS_PING_ENABLED)
