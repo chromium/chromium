@@ -9,6 +9,7 @@
 #include "chromeos/components/phonehub/browser_tabs_model_provider.h"
 #include "chromeos/components/phonehub/connection_manager_impl.h"
 #include "chromeos/components/phonehub/connection_scheduler_impl.h"
+#include "chromeos/components/phonehub/cros_state_sender.h"
 #include "chromeos/components/phonehub/do_not_disturb_controller_impl.h"
 #include "chromeos/components/phonehub/feature_status_provider_impl.h"
 #include "chromeos/components/phonehub/find_my_device_controller_impl.h"
@@ -44,6 +45,10 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           std::make_unique<MessageReceiverImpl>(connection_manager_.get())),
       message_sender_(
           std::make_unique<MessageSenderImpl>(connection_manager_.get())),
+      cros_state_sender_(
+          std::make_unique<CrosStateSender>(message_sender_.get(),
+                                            connection_manager_.get(),
+                                            multidevice_setup_client)),
       do_not_disturb_controller_(
           std::make_unique<DoNotDisturbControllerImpl>(message_sender_.get())),
       connection_scheduler_(std::make_unique<ConnectionSchedulerImpl>(
@@ -129,6 +134,7 @@ void PhoneHubManagerImpl::Shutdown() {
   find_my_device_controller_.reset();
   connection_scheduler_.reset();
   do_not_disturb_controller_.reset();
+  cros_state_sender_.reset();
   message_sender_.reset();
   message_receiver_.reset();
   feature_status_provider_.reset();
