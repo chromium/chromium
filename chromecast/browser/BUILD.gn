@@ -446,6 +446,8 @@ cast_source_set("browser") {
       "webview/platform_views_rpc_instance.h",
       "webview/web_content_controller.cc",
       "webview/web_content_controller.h",
+      "webview/webview_browser_context.cc",
+      "webview/webview_browser_context.h",
       "webview/webview_controller.cc",
       "webview/webview_controller.h",
       "webview/webview_navigation_throttle.cc",

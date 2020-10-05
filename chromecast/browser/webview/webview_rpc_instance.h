@@ -9,6 +9,8 @@
 
 namespace chromecast {
 
+class WebviewBrowserContext;
+
 class WebviewRpcInstance : public PlatformViewsRpcInstance {
  public:
   WebviewRpcInstance(webview::PlatformViewsService::AsyncService* service,
@@ -23,9 +25,10 @@ class WebviewRpcInstance : public PlatformViewsRpcInstance {
   bool Initialize() override;
 
  private:
-  void CreateWebview(int app_id, int window_id);
+  void CreateWebview(int app_id, int window_id, bool incognito);
   webview::PlatformViewsService::AsyncService* platform_views_service_;
   bool enabled_for_dev_ = false;
+  std::unique_ptr<WebviewBrowserContext> incognito_context_;
 
   DISALLOW_COPY_AND_ASSIGN(WebviewRpcInstance);
 };

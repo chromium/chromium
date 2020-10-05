@@ -9,6 +9,7 @@
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/webview/platform_views_rpc_instance.h"
+#include "chromecast/browser/webview/webview_browser_context.h"
 #include "chromecast/browser/webview/webview_controller.h"
 #include "third_party/grpc/src/include/grpcpp/grpcpp.h"
 #include "third_party/grpc/src/include/grpcpp/security/server_credentials.h"
@@ -46,11 +47,14 @@ bool WebviewRpcInstance::Initialize() {
       FROM_HERE,
       base::BindOnce(&WebviewRpcInstance::CreateWebview, base::Unretained(this),
                      request_->create().webview_id(),
-                     request_->create().window_id()));
+                     request_->create().window_id(),
+                     request_->create().incognito()));
   return true;
 }
 
-void WebviewRpcInstance::CreateWebview(int app_id, int window_id) {
+void WebviewRpcInstance::CreateWebview(int app_id,
+                                       int window_id,
+                                       bool incognito) {
   app_id_ = app_id;
   window_id_ = window_id;
   // Only start listening for window events after the Webview is created. It
@@ -60,6 +64,11 @@ void WebviewRpcInstance::CreateWebview(int app_id, int window_id) {
 
   content::BrowserContext* browser_context =
       shell::CastBrowserProcess::GetInstance()->browser_context();
+  if (incognito) {
+    incognito_context_ =
+        std::make_unique<WebviewBrowserContext>(browser_context);
+    browser_context = incognito_context_.get();
+  }
   controller_ = std::make_unique<WebviewController>(browser_context, this,
                                                     enabled_for_dev_);
 

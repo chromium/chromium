@@ -26,6 +26,9 @@ message WebviewCreateRequest {
   // This is the cast window ID that will be assigned to the web contents
   // window.
   int32 window_id = 2;
+  // True if this webview should exist in an incognito context. It will never
+  // persist state.
+  bool incognito = 3;
 }
 
 message WebviewCreateResponse {
