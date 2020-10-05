@@ -37,35 +37,11 @@ bool IsSameSite(const GURL& url1, const GURL& url2) {
 
 }  // namespace
 
-ThirdPartyMetricsObserver::AccessedTypes::AccessedTypes(
-    AccessType access_type) {
-  switch (access_type) {
-    case AccessType::kCookieRead:
-      cookie_read = true;
-      break;
-    case AccessType::kCookieWrite:
-      cookie_write = true;
-      break;
-    case AccessType::kLocalStorage:
-      local_storage = true;
-      break;
-    case AccessType::kSessionStorage:
-      session_storage = true;
-      break;
-    // No extra metadata required for the following types as they only record
-    // use counters.
-    case AccessType::kFileSystem:
-    case AccessType::kIndexedDb:
-    case AccessType::kCacheStorage:
-      break;
-    case AccessType::kUnknown:
-      NOTREACHED();
-      break;
-  }
-}
-
 ThirdPartyMetricsObserver::ThirdPartyMetricsObserver() = default;
 ThirdPartyMetricsObserver::~ThirdPartyMetricsObserver() = default;
+ThirdPartyMetricsObserver::ThirdPartyInfo::ThirdPartyInfo() = default;
+ThirdPartyMetricsObserver::ThirdPartyInfo::ThirdPartyInfo(
+    const ThirdPartyInfo&) = default;
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 ThirdPartyMetricsObserver::FlushMetricsOnAppEnterBackground(
@@ -74,6 +50,23 @@ ThirdPartyMetricsObserver::FlushMetricsOnAppEnterBackground(
   // what we have now and ignore future changes to this navigation.
   RecordMetrics(timing);
   return STOP_OBSERVING;
+}
+
+void ThirdPartyMetricsObserver::FrameReceivedFirstUserActivation(
+    content::RenderFrameHost* render_frame_host) {
+  bool is_third_party = false;
+  auto* third_party_info = GetThirdPartyInfo(
+      render_frame_host->GetLastCommittedURL(),
+      content::WebContents::FromRenderFrameHost(render_frame_host)
+          ->GetMainFrame()
+          ->GetLastCommittedURL(),
+      is_third_party);
+
+  // Update the activation status and record use counters as necessary.
+  if (is_third_party && third_party_info != nullptr) {
+    third_party_info->activation = true;
+    RecordUseCounters(AccessType::kMaxValue, third_party_info);
+  }
 }
 
 void ThirdPartyMetricsObserver::OnComplete(
@@ -113,10 +106,35 @@ void ThirdPartyMetricsObserver::OnCookieChange(
                           AccessType::kCookieWrite);
 }
 
-void ThirdPartyMetricsObserver::RecordStorageAccessUseCounter(
-    AccessType access_type) {
+// TODO(crbug.com/1115657): It would be simpler to just pass in ThirdPartyInfo
+// and set the bits appropriately, but because this is called every time an
+// access is made, that would mean re-calling old accesses.  This could be fixed
+// by calling this only when the page is removed or when backgrounded.
+void ThirdPartyMetricsObserver::RecordUseCounters(
+    AccessType access_type,
+    const ThirdPartyInfo* third_party_info) {
   page_load_metrics::mojom::PageLoadFeatures third_party_storage_features;
 
+  // We only record access/activation if the third_party_info didn't overflow.
+  if (third_party_info != nullptr) {
+    // Record any sort of access.
+    if (third_party_info->access_types.any()) {
+      third_party_storage_features.features.push_back(
+          blink::mojom::WebFeature::kThirdPartyAccess);
+    }
+    // Record any sort of activation.
+    if (third_party_info->activation) {
+      third_party_storage_features.features.push_back(
+          blink::mojom::WebFeature::kThirdPartyActivation);
+    }
+    // Record the combination of the above two
+    if (third_party_info->access_types.any() && third_party_info->activation) {
+      third_party_storage_features.features.push_back(
+          blink::mojom::WebFeature::kThirdPartyAccessAndActivation);
+    }
+  }
+
+  // Record the specific type of access, if appropriate.
   switch (access_type) {
     case AccessType::kCookieRead:
       third_party_storage_features.features.push_back(
@@ -146,14 +164,18 @@ void ThirdPartyMetricsObserver::RecordStorageAccessUseCounter(
       third_party_storage_features.features.push_back(
           blink::mojom::WebFeature::kThirdPartyCacheStorage);
       break;
-    default
-        :  // No feature usage recorded for storage types without a use counter.
-      return;
+    default:
+      // No feature usage recorded for storage types without a use counter.
+      // Also nothing reported for non storage access.
+      break;
   }
 
-  page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
-      GetDelegate().GetWebContents()->GetMainFrame(),
-      third_party_storage_features);
+  // Report the feature usage if there's anything to report.
+  if (third_party_storage_features.features.size() > 0) {
+    page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
+        GetDelegate().GetWebContents()->GetMainFrame(),
+        third_party_storage_features);
+  }
 }
 
 void ThirdPartyMetricsObserver::OnStorageAccessed(
@@ -220,26 +242,19 @@ void ThirdPartyMetricsObserver::OnTimingUpdate(
   }
 }
 
-void ThirdPartyMetricsObserver::OnCookieOrStorageAccess(
-    const GURL& url,
-    const GURL& first_party_url,
-    bool blocked_by_policy,
-    AccessType access_type) {
-  if (blocked_by_policy) {
-    should_record_metrics_ = false;
-    return;
-  }
-
-  if (!url.is_valid())
-    return;
+ThirdPartyMetricsObserver::ThirdPartyInfo*
+ThirdPartyMetricsObserver::GetThirdPartyInfo(const GURL& url,
+                                             const GURL& first_party_url,
+                                             bool& is_third_party) {
+  is_third_party = false;
 
   // TODO(csharrison): Optimize the domain lookup.
   // Note: If either |url| or |first_party_url| is empty, SameDomainOrHost will
   // return false, and function execution will continue because it is considered
   // 3rd party. Since |first_party_url| is actually the |site_for_cookies|, this
   // will happen e.g. for a 3rd party iframe on document.cookie access.
-  if (IsSameSite(url, first_party_url))
-    return;
+  if (!url.is_valid() || IsSameSite(url, first_party_url))
+    return nullptr;
 
   std::string registrable_domain =
       net::registry_controlled_domains::GetDomainAndRegistry(
@@ -253,49 +268,48 @@ void ThirdPartyMetricsObserver::OnCookieOrStorageAccess(
     if (url.has_host()) {
       registrable_domain = url.host();
     } else {
-      return;
+      return nullptr;
     }
   }
 
-  RecordStorageAccessUseCounter(access_type);
+  // If we haven't returned by this point, this is a third party access.
+  is_third_party = true;
 
   GURL representative_url(
       base::StrCat({url.scheme(), "://", registrable_domain, "/"}));
+  auto it = all_third_party_info_.find(representative_url);
+  if (it == all_third_party_info_.end() &&
+      all_third_party_info_.size() < 1000) {  // Bound growth.
+    it = all_third_party_info_.emplace(url, ThirdPartyInfo()).first;
+  }
+  // If there's no valid iterator, we've gone over the size limit for the map.
+  // TODO(crbug.com/1115657): We probably want UMA to let us know how often we
+  // might be underreporting.
+  return (it == all_third_party_info_.end() ? nullptr : &it->second);
+}
 
-  auto it = third_party_accessed_types_.find(representative_url);
-
-  if (it != third_party_accessed_types_.end()) {
-    switch (access_type) {
-      case AccessType::kCookieRead:
-        it->second.cookie_read = true;
-        break;
-      case AccessType::kCookieWrite:
-        it->second.cookie_write = true;
-        break;
-      case AccessType::kLocalStorage:
-        it->second.local_storage = true;
-        break;
-      case AccessType::kSessionStorage:
-        it->second.session_storage = true;
-        break;
-      // No metadata is tracked for the following types as they only record use
-      // counters.
-      case AccessType::kFileSystem:
-      case AccessType::kIndexedDb:
-      case AccessType::kCacheStorage:
-        break;
-      case AccessType::kUnknown:
-        NOTREACHED();
-        break;
-    }
+void ThirdPartyMetricsObserver::OnCookieOrStorageAccess(
+    const GURL& url,
+    const GURL& first_party_url,
+    bool blocked_by_policy,
+    AccessType access_type) {
+  DCHECK(access_type != AccessType::kUnknown);
+  if (blocked_by_policy) {
+    should_record_metrics_ = false;
     return;
   }
 
-  // Don't let the map grow unbounded.
-  if (third_party_accessed_types_.size() >= 1000)
+  bool is_third_party = false;
+  auto* third_party_info =
+      GetThirdPartyInfo(url, first_party_url, is_third_party);
+  if (!is_third_party)
     return;
+  if (third_party_info != nullptr) {
+    third_party_info->access_types[static_cast<size_t>(access_type)] = true;
+  }
 
-  third_party_accessed_types_.emplace(representative_url, access_type);
+  // Record the use counters as necessary.
+  RecordUseCounters(access_type, third_party_info);
 }
 
 void ThirdPartyMetricsObserver::RecordMetrics(
@@ -308,11 +322,16 @@ void ThirdPartyMetricsObserver::RecordMetrics(
   int local_storage_origin_access = 0;
   int session_storage_origin_access = 0;
 
-  for (auto it : third_party_accessed_types_) {
-    cookie_origin_reads += it.second.cookie_read;
-    cookie_origin_writes += it.second.cookie_write;
-    local_storage_origin_access += it.second.local_storage;
-    session_storage_origin_access += it.second.session_storage;
+  for (auto it : all_third_party_info_) {
+    const ThirdPartyInfo& tpi = it.second;
+    if (tpi.access_types[static_cast<size_t>(AccessType::kCookieRead)])
+      ++cookie_origin_reads;
+    if (tpi.access_types[static_cast<size_t>(AccessType::kCookieWrite)])
+      ++cookie_origin_writes;
+    if (tpi.access_types[static_cast<size_t>(AccessType::kLocalStorage)])
+      ++local_storage_origin_access;
+    if (tpi.access_types[static_cast<size_t>(AccessType::kSessionStorage)])
+      ++session_storage_origin_access;
   }
 
   UMA_HISTOGRAM_COUNTS_1000("PageLoad.Clients.ThirdParty.Origins.CookieRead2",

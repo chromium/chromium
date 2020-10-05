@@ -29583,6 +29583,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3696" label="AddressSpacePrivateEmbeddedInUnknownSecureContext"/>
   <int value="3697"
       label="AddressSpacePrivateEmbeddedInUnknownNonSecureContext"/>
+  <int value="3698" label="ThirdPartyAccess"/>
+  <int value="3699" label="ThirdPartyActivation"/>
+  <int value="3700" label="ThirdPartyAccessAndActivation"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

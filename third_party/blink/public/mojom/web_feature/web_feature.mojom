@@ -3022,6 +3022,9 @@ enum WebFeature {
   kAddressSpacePrivateEmbeddedInPublicNonSecureContext = 3695,
   kAddressSpacePrivateEmbeddedInUnknownSecureContext = 3696,
   kAddressSpacePrivateEmbeddedInUnknownNonSecureContext = 3697,
+  kThirdPartyAccess = 3698,
+  kThirdPartyActivation = 3699,
+  kThirdPartyAccessAndActivation = 3700,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
