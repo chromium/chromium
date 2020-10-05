@@ -5,15 +5,19 @@
 package org.chromium.components.page_info;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.ui.widget.ChromeImageView;
 
 /**
  * View showing an icon, title and subtitle for a page info row.
@@ -23,12 +27,13 @@ public class PageInfoRowView extends FrameLayout {
     public static class ViewParams {
         public boolean visible;
         public @DrawableRes int iconResId;
-        public String title;
-        public String subtitle;
+        public @ColorRes int iconTint;
+        public CharSequence title;
+        public CharSequence subtitle;
         public Runnable clickCallback;
     }
 
-    private final ImageView mIcon;
+    private final ChromeImageView mIcon;
     private final TextView mTitle;
     private final TextView mSubtitle;
 
@@ -43,6 +48,10 @@ public class PageInfoRowView extends FrameLayout {
     public void setParams(ViewParams params) {
         setVisibility(params.visible ? VISIBLE : GONE);
         mIcon.setImageResource(params.iconResId);
+        ApiCompatibilityUtils.setImageTintList(mIcon,
+                ColorStateList.valueOf(getResources().getColor(
+                        params.iconTint != 0 ? params.iconTint : R.color.default_icon_color)));
+
         mTitle.setText(params.title);
         mTitle.setVisibility(params.title != null ? VISIBLE : GONE);
         updateSubtitle(params.subtitle);
@@ -53,7 +62,7 @@ public class PageInfoRowView extends FrameLayout {
         }
     }
 
-    public void updateSubtitle(String subtitle) {
+    public void updateSubtitle(CharSequence subtitle) {
         mSubtitle.setText(subtitle);
         mSubtitle.setVisibility(subtitle != null ? VISIBLE : GONE);
     }

@@ -69,14 +69,14 @@ public class PageInfoContainer extends FrameLayout {
         mTruncatedUrlTitle = findViewById(R.id.page_info_truncated_url);
         mTruncatedUrlTitle.setText(params.truncatedUrl);
 
+        View urlWrapper = findViewById(R.id.page_info_url_wrapper);
+        urlWrapper.setVisibility(params.urlTitleShown ? VISIBLE : GONE);
+
         ChromeImageButton backButton = findViewById(R.id.subpage_back_button);
         backButton.setOnClickListener(v -> params.backButtonClickCallback.run());
     }
 
     private void initializeUrlView(View view, Params params) {
-        if (!params.urlTitleShown) {
-            view.setVisibility(GONE);
-        }
         if (params.urlTitleClickCallback != null) {
             view.setOnClickListener(v -> { params.urlTitleClickCallback.run(); });
         }
@@ -94,12 +94,6 @@ public class PageInfoContainer extends FrameLayout {
     }
 
     public void setFavicon(Drawable favicon) {
-        int padding =
-                getResources().getDimensionPixelSize(R.dimen.page_info_popup_button_padding_sides);
-        int size = getResources().getDimensionPixelSize(R.dimen.page_info_favicon_size);
-
-        favicon.setBounds(0, 0, size, size);
-        mTruncatedUrlTitle.setCompoundDrawablePadding(padding);
         mTruncatedUrlTitle.setCompoundDrawablesRelative(favicon, null, null, null);
     }
 

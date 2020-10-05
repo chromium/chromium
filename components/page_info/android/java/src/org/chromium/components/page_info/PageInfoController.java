@@ -413,7 +413,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             messageBuilder.append(details);
         }
 
-        if (!mIsV2Enabled && isConnectionDetailsLinkVisible()) {
+        if (isConnectionDetailsLinkVisible() && messageBuilder.length() > 0) {
             messageBuilder.append(" ");
             SpannableString detailsText =
                     new SpannableString(mContext.getString(R.string.details_link));

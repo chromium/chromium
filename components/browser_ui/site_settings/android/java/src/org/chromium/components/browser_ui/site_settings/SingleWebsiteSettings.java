@@ -1038,12 +1038,12 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         int confirmationResId = mHideNonPermissionPreferences
                 ? R.string.page_info_permissions_reset_confirmation
                 : R.string.website_reset_confirmation;
-        preference.setTitle(titleResId);
+        int buttonResId = mHideNonPermissionPreferences ? R.string.reset : titleResId;
         // Handle the Clear & Reset preference click by showing a confirmation.
         new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
                 .setTitle(titleResId)
                 .setMessage(confirmationResId)
-                .setPositiveButton(titleResId,
+                .setPositiveButton(buttonResId,
                         (dialog, which) -> {
                             if (mHideNonPermissionPreferences) {
                                 mSiteDataCleaner.resetPermissions(

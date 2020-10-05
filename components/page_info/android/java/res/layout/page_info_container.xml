@@ -14,28 +14,38 @@
     android:background="@color/sheet_bg_color"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/page_info_truncated_url"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginVertical="16dp"
-        android:ellipsize="end"
-        android:lineSpacingExtra="6dp"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
-
-    <view
-        android:id="@+id/page_info_url"
-        class="org.chromium.components.page_info.PageInfoView$ElidedUrlTextView"
+    <LinearLayout
+        android:id="@+id/page_info_url_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:lineSpacingExtra="6dp"
-        android:paddingVertical="16dp"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-        android:visibility="gone" />
+        android:minHeight="48dp"
+        android:gravity="center"
+        android:paddingVertical="@dimen/page_info_popup_padding_vertical"
+        android:paddingHorizontal="@dimen/page_info_popup_padding_sides">
+
+        <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+            android:id="@+id/page_info_truncated_url"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="@dimen/page_info_popup_button_padding_sides"
+            android:includeFontPadding="false"
+            android:lineSpacingExtra="6dp"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            app:drawableHeight="@dimen/page_info_favicon_size"
+            app:drawableWidth="@dimen/page_info_favicon_size" />
+
+        <view
+            android:id="@+id/page_info_url"
+            class="org.chromium.components.page_info.PageInfoView$ElidedUrlTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:lineSpacingExtra="6dp"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            android:visibility="gone" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/page_info_wrapper"
@@ -49,7 +59,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingHorizontal="16dp">
+            android:paddingHorizontal="@dimen/page_info_popup_padding_sides">
 
             <org.chromium.ui.widget.ChromeImageButton
                 android:id="@+id/subpage_back_button"
@@ -67,7 +77,7 @@
                 android:id="@+id/page_info_subpage_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="12dp"
+                android:layout_marginVertical="@dimen/page_info_popup_padding_vertical"
                 android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
         </LinearLayout>
 
