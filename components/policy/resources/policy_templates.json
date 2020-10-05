@@ -23708,11 +23708,11 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     },
     'doc_feature_unlisted': {
       'desc': '''The name of the feature that indicates whether a policy is set from cloud without any user interface.''',
-      'text': '''Private Only'''
+      'text': '''Unlisted'''
     },
     'doc_deprecated': {
       'desc': '''Text appended in parentheses to the policy name to indicate that it has been deprecated''',
-      'text': 'deprecated',
+      'text': 'Deprecated',
     },
     'doc_recommended': {
       'desc': '''Text appended in parentheses next to the policies top-level container to indicate that those policies are of the Recommended level''',
