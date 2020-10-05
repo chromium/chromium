@@ -152,7 +152,6 @@ void AXRelationCache::UpdateAriaOwnsFromAttrAssociatedElements(
   // attr-associated elements have already had their scope validated, but they
   // need to be further validated to determine if they introduce a cycle or are
   // already owned by another element.
-
   Vector<String> owned_id_vector;
   for (const auto& element : attr_associated_elements) {
     AXObject* child = GetOrCreate(element);
@@ -226,13 +225,6 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMapping(
   // Finally, update the mapping from the owner to the list of child IDs.
   aria_owner_to_children_mapping_.Set(owner->AXObjectID(),
                                       validated_owned_child_axids);
-
-#if DCHECK_IS_ON()
-  // Owned children must be in tree to avoid serialization issues.
-  for (AXObject* child : validated_owned_children_result) {
-    DCHECK(child->AccessibilityIsIncludedInTree());
-  }
-#endif
 }
 
 bool AXRelationCache::MayHaveHTMLLabelViaForAttribute(

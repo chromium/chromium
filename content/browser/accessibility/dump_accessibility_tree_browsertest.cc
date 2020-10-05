@@ -947,16 +947,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaOwns) {
   RunAriaTest(FILE_PATH_LITERAL("aria-owns.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityAriaOwnsIgnored) {
-  RunAriaTest(FILE_PATH_LITERAL("aria-owns-ignored.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityAriaOwnsIncludedInTree) {
-  RunAriaTest(FILE_PATH_LITERAL("aria-owns-included-in-tree.html"));
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaOwnsList) {
   RunAriaTest(FILE_PATH_LITERAL("aria-owns-list.html"));
 }
@@ -1486,10 +1476,6 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityContenteditableWithNoDescendants) {
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-with-no-descendants.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCustomElement) {
-  RunHtmlTest(FILE_PATH_LITERAL("custom-element.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityEm) {

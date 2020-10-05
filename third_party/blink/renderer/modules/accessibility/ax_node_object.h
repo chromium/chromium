@@ -221,12 +221,8 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   void AddChildren() override;
 
   bool CanHaveChildren() const override;
-  // Set is_from_aria_owns to true if the child is being added because it was
-  // pointed to from aria-owns.
-  void AddChild(AXObject*, bool is_from_aria_owns = false);
-  // Set is_from_aria_owns to true if the child is being insert because it was
-  // pointed to from aria-owns.
-  void InsertChild(AXObject*, unsigned index, bool is_from_aria_owns = false);
+  void AddChild(AXObject*);
+  void InsertChild(AXObject*, unsigned index);
   void ClearChildren() override;
   bool NeedsToUpdateChildren() const override { return children_dirty_; }
   void SetNeedsToUpdateChildren() override { children_dirty_ = true; }
