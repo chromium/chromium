@@ -234,6 +234,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -265,6 +268,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -511,6 +517,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -542,6 +551,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -788,6 +800,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -819,6 +834,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1065,6 +1083,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1096,6 +1117,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1343,6 +1367,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1374,6 +1401,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1604,6 +1634,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1633,6 +1666,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1877,6 +1913,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1908,6 +1947,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2138,6 +2180,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2167,6 +2212,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2413,6 +2461,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2658,6 +2709,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2688,6 +2742,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2926,6 +2983,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2956,6 +3016,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3194,6 +3257,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3224,6 +3290,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3462,6 +3531,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3492,6 +3564,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3731,6 +3806,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3760,6 +3838,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3997,6 +4078,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4026,6 +4110,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4263,6 +4350,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4292,6 +4382,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4529,6 +4622,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4558,6 +4654,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [

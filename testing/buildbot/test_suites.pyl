@@ -934,10 +934,13 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
+        'resultdb': {
+          'enable': True,
+        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 12,
-        }
+        },
       },
       'webdriver_tests_suite': {
         'isolate_name': 'webdriver_wpt_tests',
@@ -973,6 +976,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
+        'resultdb': {
+          'enable': True,
+        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 12,
@@ -996,6 +1002,9 @@
             '--verbose',
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
+        },
+        'resultdb': {
+          'enable': True,
         },
         'results_handler': 'layout tests',
         'swarming': {
@@ -1152,6 +1161,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
+        'resultdb': {
+          'enable': True,
+        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 12,
@@ -1219,6 +1231,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
+        'resultdb': {
+          'enable': True,
+        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 12,
@@ -1239,6 +1254,9 @@
             '--verbose',
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
+        },
+        'resultdb': {
+          'enable': True,
         },
         'results_handler': 'layout tests',
         'swarming': {
@@ -2061,6 +2079,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
+        'resultdb': {
+          'enable': True,
+        },
         'results_handler': 'layout tests',
       },
     },
@@ -2095,6 +2116,9 @@
             '--verbose',
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
+        },
+        'resultdb': {
+          'enable': True,
         },
         'results_handler': 'layout tests',
       },
@@ -3142,6 +3166,9 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'isolate_name': 'webgpu_blink_web_tests',
+        'resultdb': {
+          'enable': True,
+        },
       },
     },
 
@@ -3178,6 +3205,9 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'isolate_name': 'webgpu_blink_web_tests',
+        'resultdb': {
+          'enable': True,
+        },
       },
     },
 
@@ -3431,6 +3461,9 @@
             '--verbose',
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
+        },
+        'resultdb': {
+          'enable': True,
         },
         'results_handler': 'layout tests',
         'swarming': {
@@ -3930,6 +3963,9 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
+        'resultdb': {
+          'enable': True,
+        },
         'results_handler': 'layout tests',
       },
       'vulkan_swiftshader_blink_web_tests': {
@@ -3956,6 +3992,9 @@
             '--verbose',
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
+        },
+        'resultdb': {
+          'enable': True,
         },
         'results_handler': 'layout tests',
       },
