@@ -20,9 +20,10 @@
 
 // static
 void AdsBlockedInfobarDelegate::Create(
-    infobars::ContentInfoBarManager* infobar_manager) {
+    infobars::ContentInfoBarManager* infobar_manager,
+    const infobars::InfoBarAndroid::ResourceIdMapper& resource_id_mapper) {
   infobar_manager->AddInfoBar(std::make_unique<AdsBlockedInfoBar>(
-      base::WrapUnique(new AdsBlockedInfobarDelegate())));
+      base::WrapUnique(new AdsBlockedInfobarDelegate()), resource_id_mapper));
 }
 
 AdsBlockedInfobarDelegate::~AdsBlockedInfobarDelegate() = default;

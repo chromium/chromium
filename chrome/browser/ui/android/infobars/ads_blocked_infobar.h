@@ -7,12 +7,12 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/android/content_settings/ads_blocked_infobar_delegate.h"
-#include "chrome/browser/ui/android/infobars/chrome_confirm_infobar.h"
+#include "components/infobars/android/confirm_infobar.h"
 
-class AdsBlockedInfoBar : public ChromeConfirmInfoBar {
+class AdsBlockedInfoBar : public infobars::ConfirmInfoBar {
  public:
-  explicit AdsBlockedInfoBar(
-      std::unique_ptr<AdsBlockedInfobarDelegate> delegate);
+  AdsBlockedInfoBar(std::unique_ptr<AdsBlockedInfobarDelegate> delegate,
+                    const ResourceIdMapper& resource_id_mapper);
 
   ~AdsBlockedInfoBar() override;
 

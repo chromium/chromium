@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ANDROID_CONTENT_SETTINGS_ADS_BLOCKED_INFOBAR_DELEGATE_H_
 
 #include "base/macros.h"
+#include "components/infobars/android/infobar_android.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 namespace infobars {
@@ -22,7 +23,9 @@ class AdsBlockedInfobarDelegate : public ConfirmInfoBarDelegate {
  public:
   // Creates a subresource filter infobar and delegate and adds the infobar to
   // |infobar_manager|.
-  static void Create(infobars::ContentInfoBarManager* infobar_manager);
+  static void Create(
+      infobars::ContentInfoBarManager* infobar_manager,
+      const infobars::InfoBarAndroid::ResourceIdMapper& resource_id_mapper);
 
   ~AdsBlockedInfobarDelegate() override;
 
