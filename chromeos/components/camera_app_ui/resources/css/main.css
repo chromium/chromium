@@ -1125,7 +1125,7 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
 }
 
 #banner.animate {
-  animation: emerge 12000ms cubic-bezier(0.0, 0.0, 0.2, 1);
+  animation: emerge 6000ms cubic-bezier(0.0, 0.0, 0.2, 1);
   display: block;
 }
 
@@ -1134,8 +1134,8 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
   100% {
     bottom: -130;
   }
-  4%,
-  96% {
+  8%,
+  92% {
     animation-timing-function: cubic-bezier(0.4, 0.0, 1.0, 1.0);
     bottom: 31px;
   }
