@@ -5,26 +5,23 @@
 import("//build/config/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 source_set("cpp") {
   deps = [ "//chrome/common/safe_browsing:archive_analyzer_results" ]
   public_deps = [ "//chrome/services/file_util/public/mojom" ]
 
   if (safe_browsing_mode == 1) {
     sources = [
-      "sandboxed_dmg_analyzer_mac.cc",
-      "sandboxed_dmg_analyzer_mac.h",
       "sandboxed_rar_analyzer.cc",
       "sandboxed_rar_analyzer.h",
       "sandboxed_zip_analyzer.cc",
       "sandboxed_zip_analyzer.h",
     ]
+    if (is_mac) {
+      sources += [
+        "sandboxed_dmg_analyzer_mac.cc",
+        "sandboxed_dmg_analyzer_mac.h",
+      ]
+    }
     if (is_chromeos) {
       sources += [
         "zip_file_creator.cc",
@@ -46,10 +43,12 @@ if (safe_browsing_mode == 1) {
     testonly = true
 
     sources = [
-      "sandboxed_dmg_analyzer_mac_unittest.cc",
       "sandboxed_rar_analyzer_unittest.cc",
       "sandboxed_zip_analyzer_unittest.cc",
     ]
+    if (is_mac) {
+      sources += [ "sandboxed_dmg_analyzer_mac_unittest.cc" ]
+    }
 
     deps = [
       ":cpp",
