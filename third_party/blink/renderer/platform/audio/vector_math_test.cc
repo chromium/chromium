@@ -70,7 +70,7 @@ bool Equal(float a, float b) {
 // blink::vector_math functions.
 template <typename T>
 class TestVector {
-  STACK_ALLOCATED();
+  DISALLOW_NEW();
 
   class Iterator {
     STACK_ALLOCATED();
