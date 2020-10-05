@@ -298,6 +298,11 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
 
     free_span->set_is_locked(true);
 
+    if (pages >= allocation_pages) {
+      UMA_HISTOGRAM_BOOLEAN("Memory.Discardable.LargeAllocationFromFreelist",
+                            true);
+    }
+
     // Memory usage is guaranteed to have changed after having removed
     // at least one span from the free lists.
     MemoryUsageChanged(heap_->GetSize(), heap_->GetSizeOfFreeLists());
@@ -355,6 +360,11 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
         leftover->length() * base::GetPageSize());
     leftover->set_is_locked(false);
     heap_->MergeIntoFreeLists(std::move(leftover));
+  }
+
+  if (pages >= allocation_pages) {
+    UMA_HISTOGRAM_BOOLEAN("Memory.Discardable.LargeAllocationFromFreelist",
+                          false);
   }
 
   MemoryUsageChanged(heap_->GetSize(), heap_->GetSizeOfFreeLists());

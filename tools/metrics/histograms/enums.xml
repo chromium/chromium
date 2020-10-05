@@ -7930,6 +7930,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Known"/>
 </enum>
 
+<enum name="BooleanLargeAllocationFromFreelist">
+  <int value="0" label="Allocated via IPC"/>
+  <int value="1" label="Allocated via Freelist"/>
+</enum>
+
 <enum name="BooleanLatched">
   <int value="0" label="Not latched"/>
   <int value="1" label="Latched"/>
