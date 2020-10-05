@@ -1041,15 +1041,6 @@
       },
     },
   },
-  'content_browsertests_x11': {
-    'modifications': {
-      'Linux Ozone Tester (X11)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.x11_content_browsertests.filter',
-        ],
-      },
-    },
-  },
   'content_shell_crash_test': {
     'remove_from': [
       'android-marshmallow-x86-rel-non-cq', # crbug.com/1084353
