@@ -11346,8 +11346,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="RenderViewContextMenu.Shown" enum="RenderViewContextMenuItem"
-    expires_after="M85">
+    expires_after="M95">
   <owner>avi@chromium.org</owner>
+  <owner>edwardjung@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <summary>Count of renderer view context menu items shown.</summary>
 </histogram>
