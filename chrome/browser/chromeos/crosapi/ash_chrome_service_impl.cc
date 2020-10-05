@@ -9,17 +9,26 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/chromeos/crosapi/account_manager_ash.h"
 #include "chrome/browser/chromeos/crosapi/browser_manager.h"
 #include "chrome/browser/chromeos/crosapi/feedback_ash.h"
 #include "chrome/browser/chromeos/crosapi/keystore_service_ash.h"
 #include "chrome/browser/chromeos/crosapi/message_center_ash.h"
 #include "chrome/browser/chromeos/crosapi/screen_manager_ash.h"
 #include "chrome/browser/chromeos/crosapi/select_file_ash.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/components/account_manager/account_manager.h"
+#include "chromeos/components/account_manager/account_manager_factory.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/device_service.h"
 
 namespace crosapi {
@@ -34,6 +43,37 @@ AshChromeServiceImpl::AshChromeServiceImpl(
 }
 
 AshChromeServiceImpl::~AshChromeServiceImpl() = default;
+
+void AshChromeServiceImpl::BindAccountManager(
+    mojo::PendingReceiver<mojom::AccountManager> receiver) {
+  DVLOG(1) << "Binding AccountManager receiver";
+  // Assumptions:
+  // 1. TODO(https://crbug.com/1102768): Multi-Signin / Fast-User-Switching is
+  // disabled.
+  // 2. ash-chrome has 1 and only 1 "regular" |Profile|.
+#if DCHECK_IS_ON()
+  int num_regular_profiles = 0;
+  for (const Profile* profile :
+       g_browser_process->profile_manager()->GetLoadedProfiles()) {
+    if (chromeos::ProfileHelper::IsRegularProfile(profile))
+      num_regular_profiles++;
+  }
+  DCHECK_EQ(1, num_regular_profiles);
+#endif  // DCHECK_IS_ON()
+  // Given these assumptions, there is 1 and only 1 Account Manager that
+  // can/should be contacted - the one attached to the regular |Profile| in
+  // ash-chrome, for the current |User|.
+  const user_manager::User* const user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  const Profile* const profile =
+      chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  chromeos::AccountManager* const account_manager =
+      g_browser_process->platform_part()
+          ->GetAccountManagerFactory()
+          ->GetAccountManager(/* profile_path = */ profile->GetPath().value());
+  account_manager_ash_ = std::make_unique<crosapi::AccountManagerAsh>(
+      account_manager, std::move(receiver));
+}
 
 void AshChromeServiceImpl::BindKeystoreService(
     mojo::PendingReceiver<crosapi::mojom::KeystoreService> receiver) {

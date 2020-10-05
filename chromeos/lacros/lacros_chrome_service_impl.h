@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
+#include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
@@ -132,6 +133,17 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
     return feedback_remote_;
   }
 
+  // account_manager_remote() can only be used if this method returns true.
+  bool IsAccountManagerAvailable();
+
+  // This must be called on the affine sequence. It exposes a remote that can
+  // be used to interact with accounts in Chrome OS Account Manager.
+  mojo::Remote<crosapi::mojom::AccountManager>& account_manager_remote() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
+    DCHECK(IsAccountManagerAvailable());
+    return account_manager_remote_;
+  }
+
   // --------------------------------------------------------------------------
   // Some clients will want to use mojo::Remotes on arbitrary sequences (e.g.
   // background threads). The following methods allow the client to construct a
@@ -186,6 +198,11 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // member is affine to the affine sequence. It is initialized in the
   // constructor and it is immediately available for use.
   mojo::Remote<crosapi::mojom::KeystoreService> keystore_service_remote_;
+
+  // This member allows lacros-chrome to use the AccountManager interface. This
+  // member is affine to the affine sequence. It is initialized in the
+  // constructor and it is immediately available for use.
+  mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote_;
 
   // This member is instantiated on the affine sequence alongside the
   // constructor. All subsequent invocations of this member, including

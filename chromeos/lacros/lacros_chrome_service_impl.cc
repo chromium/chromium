@@ -11,6 +11,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/lacros/lacros_chrome_service_delegate.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace chromeos {
 namespace {
@@ -142,6 +143,13 @@ class LacrosChromeServiceNeverBlockingState
   void OnLacrosStartup(crosapi::mojom::LacrosInfoPtr lacros_info) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     ash_chrome_service_->OnLacrosStartup(std::move(lacros_info));
+  }
+
+  void BindAccountManagerReceiver(
+      mojo::PendingReceiver<crosapi::mojom::AccountManager> pending_receiver) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DVLOG(1) << "Binding AccountManager";
+    ash_chrome_service_->BindAccountManager(std::move(pending_receiver));
   }
 
   base::WeakPtr<LacrosChromeServiceNeverBlockingState> GetWeakPtr() {
@@ -292,6 +300,20 @@ void LacrosChromeServiceImpl::BindReceiver(
                        weak_sequenced_state_,
                        ToMojo(delegate_->GetChromeVersion())));
   }
+
+  if (IsAccountManagerAvailable()) {
+    mojo::PendingReceiver<crosapi::mojom::AccountManager>
+        account_manager_receiver =
+            account_manager_remote_.BindNewPipeAndPassReceiver();
+    never_blocking_sequence_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LacrosChromeServiceNeverBlockingState::BindAccountManagerReceiver,
+            weak_sequenced_state_, std::move(account_manager_receiver)));
+  } else {
+    LOG(WARNING) << "Connected to an older version of ash. Account consistency "
+                    "will not be available";
+  }
 }
 
 void LacrosChromeServiceImpl::DisableCrosapiForTests() {
@@ -312,6 +334,10 @@ bool LacrosChromeServiceImpl::IsKeystoreServiceAvailable() {
 
 bool LacrosChromeServiceImpl::IsHidManagerAvailable() {
   return AshChromeServiceVersion() >= 0;
+}
+
+bool LacrosChromeServiceImpl::IsAccountManagerAvailable() {
+  return AshChromeServiceVersion() >= 4;
 }
 
 bool LacrosChromeServiceImpl::IsScreenManagerAvailable() {
