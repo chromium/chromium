@@ -7535,26 +7535,6 @@
             ]
         }
     ],
-    "WebRTC-EnableWebRtcEcdsa": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebRTC-EnableWebRtcEcdsa"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebRTC-Pacer-BlockAudio": [
         {
             "platforms": [
