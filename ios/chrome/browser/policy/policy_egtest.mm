@@ -68,8 +68,13 @@ void SetPolicy(bool enabled, const std::string& policy_key) {
   SetPolicy(base::Value(enabled), policy_key);
 }
 
+// Sets the value of the policy with the |policy_key| key to the given integer
+// value.
+void SetPolicy(int value, const std::string& policy_key) {
+  SetPolicy(base::Value(value), policy_key);
+}
+
 // TODO(crbug.com/1065522): Add helpers as needed for:
-//    - INTEGER
 //    - STRING
 //    - LIST (and subtypes, e.g. int list, string list, etc)
 //    - DICTIONARY (and subtypes, e.g. int dictionary, string dictionary, etc)
@@ -325,6 +330,23 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
 
   // Enable the policy.
   SetPolicy(true, policy::key::kTranslateEnabled);
+}
+
+- (void)testBlockPopupsSettingsUI {
+  // Set the policy to int value 2, which stands for "do not allow any site to
+  // show popups".
+  SetPolicy(2, policy::key::kDefaultPopupsSetting);
+
+  // Open settings menu and tap Content Settings setting.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::ContentSettingsButton()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSettingsBlockPopupsCellId)]
+      performAction:grey_tap()];
+
+  VerifyManagedSettingItem(@"blockPopupsContentView_managed",
+                           @"block_popups_settings_view_controller");
 }
 
 // Test whether the managed item will be shown if a policy is set.
