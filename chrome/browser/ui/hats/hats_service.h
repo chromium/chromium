@@ -62,10 +62,14 @@ class HatsService : public KeyedService {
     SurveyMetadata();
     ~SurveyMetadata();
 
+    // Trigger specific metadata.
     base::Optional<int> last_major_version;
     base::Optional<base::Time> last_survey_started_time;
     base::Optional<bool> is_survey_full;
     base::Optional<base::Time> last_survey_check_time;
+
+    // Metadata affecting all triggers.
+    base::Optional<base::Time> any_last_survey_started_time;
   };
 
   class DelayedSurveyTask : public content::WebContentsObserver {
@@ -119,7 +123,8 @@ class HatsService : public KeyedService {
     kNoSurveyUnreachable = 12,
     kNoSurveyOverCapacity = 13,
     kNoSurveyAlreadyInProgress = 14,
-    kMaxValue = kNoSurveyAlreadyInProgress,
+    kNoAnyLastSurveyTooRecent = 15,
+    kMaxValue = kNoAnyLastSurveyTooRecent,
   };
 
   ~HatsService() override;

@@ -62,6 +62,9 @@ constexpr char kHatsSurveyEnSiteIDDefault[] = "bhej2dndhpc33okm6xexsbyv4y";
 constexpr base::TimeDelta kMinimumTimeBetweenSurveyStarts =
     base::TimeDelta::FromDays(60);
 
+constexpr base::TimeDelta kMinimumTimeBetweenAnySurveyStarts =
+    base::TimeDelta::FromDays(7);
+
 constexpr base::TimeDelta kMinimumTimeBetweenSurveyChecks =
     base::TimeDelta::FromDays(1);
 
@@ -72,6 +75,9 @@ constexpr base::TimeDelta kMinimumProfileAge = base::TimeDelta::FromDays(30);
 // The valid keys and value types for this dictionary are as follows:
 // [trigger].last_major_version        ---> Integer
 // [trigger].last_survey_started_time  ---> Time
+// [trigger].is_survey_full            ---> Bool
+// [trigger].last_survey_check_time    ---> Time
+// any_last_survey_started_time        ---> Time
 
 std::string GetMajorVersionPath(const std::string& trigger) {
   return trigger + ".last_major_version";
@@ -88,6 +94,8 @@ std::string GetIsSurveyFull(const std::string& trigger) {
 std::string GetLastSurveyCheckTime(const std::string& trigger) {
   return trigger + ".last_survey_check_time";
 }
+
+constexpr char kAnyLastSurveyStartedTimePath[] = "any_last_survey_started_time";
 
 }  // namespace
 
@@ -214,6 +222,8 @@ void HatsService::RecordSurveyAsShown(std::string survey_id) {
                         version_info::GetVersion().components()[0]);
   pref_data->SetPath(GetLastSurveyStartedTime(trigger),
                      util::TimeToValue(base::Time::Now()));
+  pref_data->SetPath(kAnyLastSurveyStartedTimePath,
+                     util::TimeToValue(base::Time::Now()));
 }
 
 void HatsService::HatsNextDialogClosed() {
@@ -246,6 +256,14 @@ void HatsService::SetSurveyMetadataForTesting(
     pref_data->RemovePath(GetLastSurveyStartedTime(trigger));
   }
 
+  if (metadata.any_last_survey_started_time.has_value()) {
+    pref_data->SetPath(
+        kAnyLastSurveyStartedTimePath,
+        util::TimeToValue(*metadata.any_last_survey_started_time));
+  } else {
+    pref_data->RemovePath(kAnyLastSurveyStartedTimePath);
+  }
+
   if (metadata.is_survey_full.has_value()) {
     pref_data->SetBoolPath(GetIsSurveyFull(trigger), *metadata.is_survey_full);
   } else {
@@ -275,6 +293,11 @@ void HatsService::GetSurveyMetadataForTesting(
       util::ValueToTime(pref_data->FindPath(GetLastSurveyStartedTime(trigger)));
   if (last_survey_started_time.has_value())
     metadata->last_survey_started_time = last_survey_started_time;
+
+  base::Optional<base::Time> any_last_survey_started_time =
+      util::ValueToTime(pref_data->FindPath(kAnyLastSurveyStartedTimePath));
+  if (any_last_survey_started_time.has_value())
+    metadata->any_last_survey_started_time = any_last_survey_started_time;
 
   base::Optional<bool> is_survey_full =
       pref_data->FindBoolPath(GetIsSurveyFull(trigger));
@@ -405,6 +428,21 @@ bool HatsService::ShouldShowSurvey(const std::string& trigger) const {
       UMA_HISTOGRAM_ENUMERATION(
           kHatsShouldShowSurveyReasonHistogram,
           ShouldShowSurveyReasons::kNoLastSurveyTooRecent);
+      return false;
+    }
+  }
+
+  // The time any survey was started will always be equal or more recent than
+  // the time a particular survey was started, so it is checked afterwards to
+  // improve UMA logging.
+  base::Optional<base::Time> last_any_started_time =
+      util::ValueToTime(pref_data->FindPath(kAnyLastSurveyStartedTimePath));
+  if (last_any_started_time.has_value()) {
+    base::TimeDelta elapsed_time_any_started = now - *last_any_started_time;
+    if (elapsed_time_any_started < kMinimumTimeBetweenAnySurveyStarts) {
+      UMA_HISTOGRAM_ENUMERATION(
+          kHatsShouldShowSurveyReasonHistogram,
+          ShouldShowSurveyReasons::kNoAnyLastSurveyTooRecent);
       return false;
     }
   }
