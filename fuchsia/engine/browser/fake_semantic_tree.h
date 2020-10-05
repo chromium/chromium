@@ -47,6 +47,9 @@ class FakeSemanticTree
   fuchsia::accessibility::semantics::Node* GetNodeFromRole(
       fuchsia::accessibility::semantics::Role role);
 
+  size_t tree_size() const { return nodes_.size(); }
+  void Clear();
+
   // fuchsia::accessibility::semantics::SemanticTree implementation.
   void UpdateSemanticNodes(
       std::vector<fuchsia::accessibility::semantics::Node> nodes) final;
