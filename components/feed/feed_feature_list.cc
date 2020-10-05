@@ -36,6 +36,14 @@ const base::Feature kInterestFeedFeedback{"InterestFeedFeedback",
 const base::Feature kReportFeedUserActions{"ReportFeedUserActions",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Determines whether conditions should be reached before enabling the upload of
+// click and view actions in the feed (e.g., the user needs to view X cards).
+// For example, This is needed when the notice card is at the second position in
+// the feed.
+const base::Feature kInterestFeedV1ClicksAndViewsConditionalUpload{
+    "InterestFeedV1ClickAndViewActionsConditionalUpload",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 const char kDefaultReferrerUrl[] =
     "https://www.googleapis.com/auth/chrome-content-suggestions";
 

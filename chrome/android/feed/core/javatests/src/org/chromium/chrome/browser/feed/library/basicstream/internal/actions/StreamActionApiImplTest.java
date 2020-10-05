@@ -253,7 +253,9 @@ public class StreamActionApiImplTest {
         mStreamActionApi.handleBlockContent(streamDataOperations, ACTION_PAYLOAD);
 
         verify(mActionManager).dismiss(streamDataOperations, SESSION_ID);
-        verify(mActionManager).createAndUploadAction(CONTENT_ID, ACTION_PAYLOAD);
+        verify(mActionManager)
+                .createAndUploadAction(
+                        CONTENT_ID, ACTION_PAYLOAD, ActionManager.UploadActionType.MISC);
     }
 
     @Test
@@ -299,7 +301,9 @@ public class StreamActionApiImplTest {
         String contentId = "contentId";
         mStreamActionApi.reportClickAction(contentId, ACTION_PAYLOAD);
 
-        verify(mActionManager).createAndUploadAction(contentId, ACTION_PAYLOAD);
+        verify(mActionManager)
+                .createAndUploadAction(
+                        contentId, ACTION_PAYLOAD, ActionManager.UploadActionType.CLICK);
     }
 
     @Test
@@ -308,7 +312,8 @@ public class StreamActionApiImplTest {
         mStreamActionApi.reportClickAction("contentId", ACTION_PAYLOAD);
 
         verify(mActionManager, never())
-                .createAndUploadAction(anyString(), any(ActionPayload.class));
+                .createAndUploadAction(anyString(), any(ActionPayload.class),
+                        any(ActionManager.UploadActionType.class));
     }
 
     @Test
@@ -611,7 +616,9 @@ public class StreamActionApiImplTest {
                                 ImmutableList.of(CONTENT_ID), streamDataOperations, SESSION_ID);
                 verify(mBasicLoggingApi)
                         .onContentDismissed(mContentLoggingData, /*wasCommitted =*/true);
-                verify(mActionManager).createAndUploadAction(CONTENT_ID, ACTION_PAYLOAD);
+                verify(mActionManager)
+                        .createAndUploadAction(
+                                CONTENT_ID, ACTION_PAYLOAD, ActionManager.UploadActionType.MISC);
                 break;
             case DISMISS_LOCAL:
                 verify(mActionManager)
@@ -625,7 +632,9 @@ public class StreamActionApiImplTest {
                 verify(mBasicLoggingApi)
                         .onNotInterestedIn(
                                 INTEREST_TYPE, mContentLoggingData, /*wasCommitted =*/true);
-                verify(mActionManager).createAndUploadAction(CONTENT_ID, ACTION_PAYLOAD);
+                verify(mActionManager)
+                        .createAndUploadAction(
+                                CONTENT_ID, ACTION_PAYLOAD, ActionManager.UploadActionType.MISC);
                 break;
             default:
                 break;

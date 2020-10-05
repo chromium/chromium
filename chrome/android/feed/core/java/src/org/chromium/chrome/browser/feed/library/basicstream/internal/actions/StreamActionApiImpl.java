@@ -130,7 +130,8 @@ public class StreamActionApiImpl implements StreamActionApi {
                 @Override
                 public void onDismissCommitted() {
                     dismiss(dataOperations);
-                    mActionManager.createAndUploadAction(mContentId, payload);
+                    mActionManager.createAndUploadAction(
+                            mContentId, payload, ActionManager.UploadActionType.MISC);
                     mBasicLoggingApi.onNotInterestedIn(
                             interestType, mContentLoggingData.get(), /* wasCommitted = */ true);
                 }
@@ -142,7 +143,8 @@ public class StreamActionApiImpl implements StreamActionApi {
     public void handleBlockContent(
             List<StreamDataOperation> dataOperations, ActionPayload payload) {
         dismiss(dataOperations);
-        mActionManager.createAndUploadAction(mContentId, payload);
+        mActionManager.createAndUploadAction(
+                mContentId, payload, ActionManager.UploadActionType.MISC);
     }
 
     @Override
@@ -164,7 +166,8 @@ public class StreamActionApiImpl implements StreamActionApi {
                 public void onDismissCommitted() {
                     dismissLocal(contentId, dataOperations);
                     dismiss(dataOperations);
-                    mActionManager.createAndUploadAction(contentId, payload);
+                    mActionManager.createAndUploadAction(
+                            contentId, payload, ActionManager.UploadActionType.MISC);
                     mBasicLoggingApi.onContentDismissed(
                             mContentLoggingData.get(), /* wasCommitted = */ true);
                 }
@@ -334,7 +337,8 @@ public class StreamActionApiImpl implements StreamActionApi {
     @Override
     public void reportClickAction(String contentId, ActionPayload payload) {
         if (FeedFeatures.isReportingUserActions()) {
-            mActionManager.createAndUploadAction(contentId, payload);
+            mActionManager.createAndUploadAction(
+                    contentId, payload, ActionManager.UploadActionType.CLICK);
         }
     }
 

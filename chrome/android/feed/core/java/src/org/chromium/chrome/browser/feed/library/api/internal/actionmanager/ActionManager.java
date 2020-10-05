@@ -14,6 +14,8 @@ import java.util.List;
 
 /** Allows Stream to notify the Feed library of actions taken */
 public interface ActionManager extends ViewActionManager {
+    public static enum UploadActionType { MISC, CLICK, VIEW }
+
     /**
      * Dismiss content for the content ID in the session, along with executing the provided stream
      * data operations on the session.
@@ -41,12 +43,13 @@ public interface ActionManager extends ViewActionManager {
      * Issues a request to record a set of actions, with the consumer being called back with the
      * resulting {@link ConsistencyToken}.
      */
-    void createAndUploadAction(String contentId, ActionPayload payload);
+    void createAndUploadAction(
+            String contentId, ActionPayload payload, UploadActionType actionType);
 
     /**
      * Issues a request to record a single action and store it for future upload.
      */
-    void createAndStoreAction(String contentId, ActionPayload payload);
+    void createAndStoreAction(String contentId, ActionPayload payload, UploadActionType actionType);
 
     /**
      * Issues a request to record a set of action and update the url with consistency token with the
@@ -54,4 +57,10 @@ public interface ActionManager extends ViewActionManager {
      */
     void uploadAllActionsAndUpdateUrl(
             String url, String consistencyTokenQueryParamName, Consumer<String> consumer);
+
+    /**
+     * Sets the bit that determines whether clicks and views can be uploaded when the notice card is
+     * present.
+     */
+    void setCanUploadClicksAndViewsWhenNoticeCardIsPresent(boolean canUploadClicksAndViews);
 }

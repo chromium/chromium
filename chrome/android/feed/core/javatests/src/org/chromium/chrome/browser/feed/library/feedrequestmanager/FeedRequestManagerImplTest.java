@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.feed.library.feedrequestmanager;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -59,6 +60,7 @@ import org.chromium.chrome.browser.feed.library.testing.host.stream.FakeTooltipS
 import org.chromium.chrome.browser.feed.library.testing.network.FakeNetworkClient;
 import org.chromium.chrome.browser.feed.library.testing.protocoladapter.FakeProtocolAdapter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.IdentityServicesProviderJni;
@@ -77,6 +79,7 @@ import org.chromium.components.feed.core.proto.wire.FeedActionQueryDataProto.Fee
 import org.chromium.components.feed.core.proto.wire.FeedActionQueryDataProto.FeedActionQueryDataItem;
 import org.chromium.components.feed.core.proto.wire.FeedQueryProto.FeedQuery;
 import org.chromium.components.feed.core.proto.wire.FeedRequestProto.FeedRequest;
+import org.chromium.components.feed.core.proto.wire.FeedResponseProto.FeedResponse;
 import org.chromium.components.feed.core.proto.wire.RequestProto.Request;
 import org.chromium.components.feed.core.proto.wire.RequestProto.Request.RequestVersion;
 import org.chromium.components.feed.core.proto.wire.ResponseProto.Response;
@@ -84,7 +87,10 @@ import org.chromium.components.feed.core.proto.wire.SemanticPropertiesProto.Sema
 import org.chromium.components.feed.core.proto.wire.VersionProto.Version;
 import org.chromium.components.feed.core.proto.wire.VersionProto.Version.Architecture;
 import org.chromium.components.feed.core.proto.wire.VersionProto.Version.BuildType;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 import java.io.IOException;
@@ -118,6 +124,9 @@ public class FeedRequestManagerImplTest {
     private final TimingUtils mTimingUtils = new TimingUtils();
     private final Configuration mConfiguration = new Configuration.Builder().build();
 
+    @Rule
+    public JniMocker mocker = new JniMocker();
+
     @Mock
     private SchedulerApi mScheduler;
     @Mock
@@ -128,6 +137,12 @@ public class FeedRequestManagerImplTest {
     private Profile mProfileMock;
     @Mock
     private IdentityManager mIdentifiyManagerMock;
+    @Mock
+    private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock
+    private Profile mProfile;
+    @Mock
+    private PrefService mPrefService;
 
     private Context mContext;
     private ExtensionRegistryLite mRegistry;
@@ -187,6 +202,9 @@ public class FeedRequestManagerImplTest {
         when(mIdentityServicesProviderJniMock.getIdentityManager(mProfileMock))
                 .thenReturn(mIdentifiyManagerMock);
 
+        jniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        when(mUserPrefsJniMock.get(mProfileMock)).thenReturn(mPrefService);
+
         mRequestManager = new FeedRequestManagerImpl(mConfiguration, mFakeNetworkClient,
                 mFakeProtocolAdapter, feedExtensionRegistry, mScheduler, mFakeTaskQueue,
                 mTimingUtils, mFakeThreadUtils, mFakeActionReader, mContext, mApplicationInfo,
@@ -221,6 +239,62 @@ public class FeedRequestManagerImplTest {
                                         .build())
                         .build();
         assertThat(request).isEqualTo(expectedRequest);
+    }
+
+    @Test
+    public void testTriggerRefresh_setNoticeCardPref() throws Exception {
+        // Skip the read of the int that determines the length of the encoded proto. This is to
+        // avoid having to encode the length which is a feature we don't want to test here.
+        Configuration configuration =
+                new Configuration.Builder()
+                        .put(ConfigKey.FEED_SERVER_RESPONSE_LENGTH_PREFIXED, false)
+                        .build();
+
+        mRequestManager = new FeedRequestManagerImpl(configuration, mFakeNetworkClient,
+                mFakeProtocolAdapter, new FeedExtensionRegistry(ArrayList::new), mScheduler,
+                mFakeTaskQueue, mTimingUtils, mFakeThreadUtils, mFakeActionReader, mContext,
+                mApplicationInfo, mFakeMainThreadRunner, mFakeBasicLoggingApi,
+                mFakeTooltipSupportedApi);
+
+        Response response =
+                Response.newBuilder()
+                        .setExtension(FeedResponse.feedResponse,
+                                FeedResponse.newBuilder()
+                                        .addServerCapabilities(
+                                                Capability.REPORT_FEED_USER_ACTIONS_NOTICE_CARD)
+                                        .build())
+                        .build();
+        mFakeNetworkClient.addResponse(new HttpResponse(200, response.toByteArray()));
+        mRequestManager.triggerRefresh(RequestReason.HOST_REQUESTED, input -> {});
+
+        verify(mPrefService, times(1)).setBoolean(Pref.LAST_FETCH_HAD_NOTICE_CARD, true);
+    }
+
+    @Test
+    public void testLoadMore_setNoticeCardPref() throws Exception {
+        // Skip the read of the int that determines the length of the encoded proto. This is to
+        // avoid having to encode the length which is a feature we don't want to test here.
+        Configuration configuration =
+                new Configuration.Builder()
+                        .put(ConfigKey.FEED_SERVER_RESPONSE_LENGTH_PREFIXED, false)
+                        .build();
+
+        mRequestManager = new FeedRequestManagerImpl(configuration, mFakeNetworkClient,
+                mFakeProtocolAdapter, new FeedExtensionRegistry(ArrayList::new), mScheduler,
+                mFakeTaskQueue, mTimingUtils, mFakeThreadUtils, mFakeActionReader, mContext,
+                mApplicationInfo, mFakeMainThreadRunner, mFakeBasicLoggingApi,
+                mFakeTooltipSupportedApi);
+
+        mFakeNetworkClient.addResponse(
+                new HttpResponse(200, Response.getDefaultInstance().toByteArray()));
+        StreamToken token =
+                StreamToken.newBuilder()
+                        .setNextPageToken(ByteString.copyFrom("abc", Charset.defaultCharset()))
+                        .build();
+        mFakeThreadUtils.enforceMainThread(false);
+        mRequestManager.loadMore(token, ConsistencyToken.getDefaultInstance(), input -> {});
+
+        verify(mPrefService, never()).setBoolean(Pref.LAST_FETCH_HAD_NOTICE_CARD, true);
     }
 
     @Test

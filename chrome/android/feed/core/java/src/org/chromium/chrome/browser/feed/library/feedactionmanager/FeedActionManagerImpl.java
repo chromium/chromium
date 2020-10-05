@@ -36,9 +36,12 @@ import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.shared.stream.Stream.ScrollListener;
 import org.chromium.chrome.browser.feed.shared.stream.Stream.ScrollListener.ScrollState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.feed.core.proto.libraries.api.internal.StreamDataProto.StreamDataOperation;
 import org.chromium.components.feed.core.proto.libraries.api.internal.StreamDataProto.StreamUploadableAction;
 import org.chromium.components.feed.core.proto.wire.ActionPayloadProto.ActionPayload;
+import org.chromium.components.user_prefs.UserPrefs;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -88,6 +91,8 @@ public class FeedActionManagerImpl implements ActionManager {
     private final double mViewportCoverageThreshold;
     private final long mViewDurationMsThreshold;
 
+    private boolean mCanUploadClicksAndViewsWhenNoticePresent;
+
     FeedActionManagerImpl(Store store, ThreadUtils threadUtils, TaskQueue taskQueue,
             MainThreadRunner mainThreadRunner, ViewHandler viewHandler, Clock clock,
             BasicLoggingApi basicLoggingApi) {
@@ -121,6 +126,11 @@ public class FeedActionManagerImpl implements ActionManager {
     }
 
     @Override
+    public void setCanUploadClicksAndViewsWhenNoticeCardIsPresent(boolean canUploadClicksAndViews) {
+        mCanUploadClicksAndViewsWhenNoticePresent = canUploadClicksAndViews;
+    }
+
+    @Override
     public void dismissLocal(List<String> contentIds,
             List<StreamDataOperation> streamDataOperations, @Nullable String sessionId) {
         executeStreamDataOperations(streamDataOperations, sessionId);
@@ -142,7 +152,13 @@ public class FeedActionManagerImpl implements ActionManager {
     }
 
     @Override
-    public void createAndUploadAction(String contentId, ActionPayload payload) {
+    public void createAndUploadAction(
+            String contentId, ActionPayload payload, ActionManager.UploadActionType type) {
+        // Don't upload click actions when logging is disabled.
+        if (!canUploadClicksAndViews() && type == ActionManager.UploadActionType.CLICK) {
+            return;
+        }
+
         mTaskQueue.execute(Task.CREATE_AND_UPLOAD, TaskType.BACKGROUND, () -> {
             HashSet<StreamUploadableAction> actionSet = new HashSet<>();
             long currentTime = TimeUnit.MILLISECONDS.toSeconds(mClock.currentTimeMillis());
@@ -156,7 +172,13 @@ public class FeedActionManagerImpl implements ActionManager {
     }
 
     @Override
-    public void createAndStoreAction(String contentId, ActionPayload payload) {
+    public void createAndStoreAction(
+            String contentId, ActionPayload payload, ActionManager.UploadActionType type) {
+        // Don't store click actions when logging is disabled.
+        if (!canUploadClicksAndViews() && type == ActionManager.UploadActionType.CLICK) {
+            return;
+        }
+
         mTaskQueue.execute(Task.CREATE_AND_STORE, TaskType.BACKGROUND, () -> {
             long currentTime = TimeUnit.MILLISECONDS.toSeconds(mClock.currentTimeMillis());
             StreamUploadableAction action = StreamUploadableAction.newBuilder()
@@ -355,6 +377,11 @@ public class FeedActionManagerImpl implements ActionManager {
     }
 
     private void reportViewActions(Runnable doneCallback) {
+        // Don't report when logging is disabled.
+        if (!canUploadClicksAndViews()) {
+            return;
+        }
+
         Set<StreamUploadableAction> actions = new HashSet<>();
         if (FeedFeatures.isReportingUserActions()) {
             Iterator<Map.Entry<String, ViewActionData>> entryIterator =
@@ -475,5 +502,11 @@ public class FeedActionManagerImpl implements ActionManager {
         public static ViewActionData createUntrackedWithZeroDuration(ActionPayload actionPayload) {
             return new ViewActionData(actionPayload, 0L, false);
         }
+    }
+
+    private boolean canUploadClicksAndViews() {
+        boolean wasNoticePresent = UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                           .getBoolean(Pref.LAST_FETCH_HAD_NOTICE_CARD);
+        return mCanUploadClicksAndViewsWhenNoticePresent || !wasNoticePresent;
     }
 }
