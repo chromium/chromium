@@ -359,7 +359,7 @@ def _optimize(in_folder, args):
     # Pass the JS files through Uglify and write the output to its final
     # destination.
     for index, js_out_file in enumerate(args.js_out_files):
-      node.RunNode([node_modules.PathToTerser(),
+      node.RunNode([node_modules.PathToUglify(),
                     os.path.join(tmp_out_dir, js_out_file),
                     '--comments', '/Copyright|license|LICENSE|\<\/?if/',
                     '--output', os.path.join(out_path, js_out_file)])

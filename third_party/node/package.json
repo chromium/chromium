@@ -8,7 +8,7 @@
     "eslint": "5.16.0",
     "polymer-bundler": "4.0.10",
     "polymer-css-build": "0.7.0",
-    "terser": "5.3.3",
+    "uglify-es": "3.3.9",
     "svgo": "1.2.0",
     "typescript": "3.5.3"
   }
