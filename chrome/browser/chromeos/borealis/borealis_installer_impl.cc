@@ -5,12 +5,18 @@
 #include "chrome/browser/chromeos/borealis/borealis_installer_impl.h"
 
 #include "base/bind.h"
+#include "chrome/browser/chromeos/borealis/borealis_features.h"
+#include "chrome/browser/chromeos/borealis/borealis_features_factory.h"
 #include "chrome/browser/chromeos/borealis/borealis_util.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace borealis {
 
-BorealisInstallerImpl::BorealisInstallerImpl() = default;
+BorealisInstallerImpl::BorealisInstallerImpl(Profile* profile)
+    : state_(State::kIdle),
+      installing_state_(InstallingState::kInactive),
+      profile_(profile),
+      weak_ptr_factory_(this) {}
 
 BorealisInstallerImpl::~BorealisInstallerImpl() = default;
 
@@ -19,7 +25,7 @@ bool BorealisInstallerImpl::IsProcessing() {
 }
 
 void BorealisInstallerImpl::Start() {
-  if (!IsBorealisAllowed()) {
+  if (!BorealisFeaturesFactory::GetForProfile(profile_)->IsAllowed()) {
     LOG(ERROR) << "Installation of Borealis cannot be started because "
                << "Borealis is not allowed.";
     InstallationEnded(InstallationResult::kNotAllowed);

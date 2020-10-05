@@ -35,7 +35,7 @@ BorealisInstallerFactory::~BorealisInstallerFactory() = default;
 
 KeyedService* BorealisInstallerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new BorealisInstallerImpl();
+  return new BorealisInstallerImpl(Profile::FromBrowserContext(context));
 }
 
 content::BrowserContext* BorealisInstallerFactory::GetBrowserContextToUse(

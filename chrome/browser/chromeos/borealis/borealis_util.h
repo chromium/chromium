@@ -15,9 +15,6 @@ extern const char kBorealisAppId[];
 // This is used to install the Borealis DLC component.
 extern const char kBorealisDlcName[];
 
-// Checks if Borealis is allowed to run in the current environment.
-bool IsBorealisAllowed();
-
 // Shows the Borealis installer (borealis_installer_view).
 void ShowBorealisInstallerView(Profile* profile);
 

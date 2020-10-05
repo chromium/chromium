@@ -7,6 +7,8 @@
 #include "ash/public/cpp/app_menu_constants.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
+#include "chrome/browser/chromeos/borealis/borealis_features.h"
+#include "chrome/browser/chromeos/borealis/borealis_features_factory.h"
 #include "chrome/browser/chromeos/borealis/borealis_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
@@ -64,7 +66,9 @@ void BorealisApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {
   std::vector<apps::mojom::AppPtr> apps;
-  apps.push_back(GetBorealisLauncher(profile_, borealis::IsBorealisAllowed()));
+  apps.push_back(GetBorealisLauncher(
+      profile_,
+      borealis::BorealisFeaturesFactory::GetForProfile(profile_)->IsAllowed()));
 
   mojo::Remote<apps::mojom::Subscriber> subscriber(
       std::move(subscriber_remote));
@@ -95,7 +99,8 @@ void BorealisApps::Launch(const std::string& app_id,
                           apps::mojom::LaunchSource launch_source,
                           int64_t display_id) {
   DCHECK_EQ(borealis::kBorealisAppId, app_id);
-  DCHECK_EQ(borealis::IsBorealisAllowed(), true);
+  DCHECK(
+      borealis::BorealisFeaturesFactory::GetForProfile(profile_)->IsAllowed());
   borealis::ShowBorealisInstallerView(profile_);
 }
 

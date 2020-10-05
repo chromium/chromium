@@ -8,6 +8,8 @@
 #include "chrome/browser/chromeos/borealis/borealis_installer.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 
+class Profile;
+
 namespace borealis {
 
 // This class is responsible for installing the Borealis VM. Currently
@@ -16,7 +18,7 @@ namespace borealis {
 // chrome/browser/ui/views/borealis/borealis_installer_view.h.
 class BorealisInstallerImpl : public BorealisInstaller {
  public:
-  BorealisInstallerImpl();
+  explicit BorealisInstallerImpl(Profile* profile);
 
   // Disallow copy and assign.
   BorealisInstallerImpl(const BorealisInstallerImpl&) = delete;
@@ -51,11 +53,12 @@ class BorealisInstallerImpl : public BorealisInstaller {
   void OnDlcInstallationCompleted(
       const chromeos::DlcserviceClient::InstallResult& install_result);
 
-  State state_ = State::kIdle;
-  InstallingState installing_state_ = InstallingState::kInactive;
-  double progress_ = 0;
+  State state_;
+  InstallingState installing_state_;
+  double progress_;
+  Profile* profile_;
 
-  base::WeakPtrFactory<BorealisInstallerImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<BorealisInstallerImpl> weak_ptr_factory_;
 };
 
 }  // namespace borealis
