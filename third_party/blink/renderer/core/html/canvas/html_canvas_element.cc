@@ -43,6 +43,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_participation.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/gpu/gpu.mojom-blink.h"
@@ -315,6 +316,17 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
     const CanvasContextCreationAttributesCore& attributes) {
   auto* old_contents_cc_layer = ContentsCcLayer();
   auto* result = GetCanvasRenderingContextInternal(type, attributes);
+
+  if (ukm_params_ && IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+                         IdentifiableSurface::Type::kCanvasRenderingContext)) {
+    IdentifiabilityMetricBuilder(ukm_params_->source_id)
+        .Set(IdentifiableSurface::FromTypeAndToken(
+                 IdentifiableSurface::Type::kCanvasRenderingContext,
+                 CanvasRenderingContext::ContextTypeFromId(type)),
+             !!result)
+        .Record(ukm_params_->ukm_recorder);
+  }
+
   if (ContentsCcLayer() != old_contents_cc_layer)
     OnContentsCcLayerChanged();
   return result;
@@ -333,13 +345,6 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
 
   // Log the aliased context type used.
   if (!context_) {
-    if (IsUserInIdentifiabilityStudy()) {
-      RecordIdentifiabilityMetric(
-          IdentifiableSurface::FromTypeAndToken(
-              blink::IdentifiableSurface::Type::kWebFeature,
-              blink::WebFeature::kCanvasRenderingContext),
-          context_type);
-    }
     UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.ContextType", context_type);
   }
 
