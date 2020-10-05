@@ -17,7 +17,6 @@
 <translation id="1335095011850992622">ક્રેડિટ</translation>
 <translation id="1342835525016946179">લેખ</translation>
 <translation id="1359897965706325498">બેનર</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> આઇટમ્સ</translation>
 <translation id="1480676835519562650">એકથી વધુ પસંદ કરવા યોગ્ય, <ph name="COUNT" />માંથી <ph name="SELECTED" /> બાળક પસંદ કરવામાં આવ્યા.</translation>
 <translation id="1589122976691792535">પ્રદેશ</translation>
 <translation id="1591562245178063882">આ મહિને</translation>
@@ -290,6 +289,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, <ph name="WEEK_START_DATE" /> થી શરૂ કરીને</translation>
 <translation id="916607977885256133">ચિત્ર-માં-ચિત્ર</translation>
 <translation id="9168329111483466115">ફૂટનોટ</translation>
+<translation id="945780513535800434">આંશિક રૂપે ચેક કરેલું</translation>
 <translation id="954003015749068518">ચિત્ર-માં-ચિત્રમાં પ્રવેશ કરો</translation>
 <translation id="966787709310836684">મેનૂ</translation>
 </translationbundle>

@@ -207,7 +207,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1717494416764505390">Caixa de correo 3</translation>
 <translation id="1718029547804390981">O documento é demasiado grande para anotalo</translation>
 <translation id="1721424275792716183">* O campo é obrigatorio</translation>
-<translation id="1724638245199909652">Acceso aos tipos de letra locais</translation>
 <translation id="1727741090716970331">Engade un número de tarxeta válido</translation>
 <translation id="1728677426644403582">Estas vendo a fonte dunha páxina web</translation>
 <translation id="173080396488393970">Este tipo de tarxeta non é compatible</translation>
@@ -467,6 +466,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2839501879576190149">O sitio ao que te dirixes é falso</translation>
 <translation id="2850739647070081192">Invite (sobre)</translation>
 <translation id="2856444702002559011">É posible que os piratas informáticos tenten roubar a túa información de <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (por exemplo, contrasinais, mensaxes ou tarxetas de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Máis información<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="2859806420264540918">Este sitio mostra anuncios intrusivos ou enganosos.</translation>
 <translation id="2878197950673342043">Dobrez de póster</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">Colocación das ventás</translation>
@@ -1099,6 +1099,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5386426401304769735">A cadea de certificados deste sitio contén un certificado que se asinou con SHA-1.</translation>
 <translation id="538659543871111977">A4-Tab</translation>
 <translation id="5396631636586785122">Grampa no bordo dereito</translation>
+<translation id="5398772614898833570">Bloqueáronse os anuncios</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="540969355065856584">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o seu certificado de seguranza non é válido neste momento. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
 <translation id="541416427766103491">Amontoador 4</translation>
@@ -1365,6 +1366,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6451458296329894277">Confirmar reenvío do formulario</translation>
 <translation id="6457206614190510200">Costura</translation>
 <translation id="6465306955648956876">Xestiona os contrasinais…</translation>
+<translation id="6468485451923838994">Letras</translation>
 <translation id="647261751007945333">Políticas de dispositivo</translation>
 <translation id="6476284679642588870">Xestionar métodos de pago</translation>
 <translation id="6489534406876378309">Comezar a cargar erros</translation>
@@ -1558,6 +1560,7 @@ Detalles adicionais:
 <translation id="7346048084945669753">É colaborador:</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Liña de comandos</translation>
+<translation id="7359588939039777303">Bloqueáronse os anuncios.</translation>
 <translation id="7372973238305370288">resultado da busca</translation>
 <translation id="7374733840632556089">Este problema prodúcese por causa dun certificado instalado por ti ou por outra persoa no teu dispositivo. Sábese que este certificado se utiliza para supervisar e interceptar redes, e Chrome non confía nel. Aínda que existen algunhas situacións lexítimas para a supervisión, como no caso de redes de empresas ou de centros educativos, Chrome quere asegurarse de que sexas consciente do que acontece, inda que non poidas facer nada ao respecto. A supervisión pode levarse a cabo en calquera navegador ou aplicación que acceda á Web.</translation>
 <translation id="7375818412732305729">Anéxase un ficheiro</translation>
@@ -1938,6 +1941,7 @@ Detalles adicionais:
 <translation id="8912362522468806198">Conta de Google</translation>
 <translation id="8913778647360618320">Botón Xestionar métodos de pago. Preme Intro para xestionar os teus métodos de pago e a información das tarxetas de crédito desde a configuración de Chrome</translation>
 <translation id="8918231688545606538">Esta páxina é sospeitosa</translation>
+<translation id="8922013791253848639">Permitir sempre os anuncios neste sitio</translation>
 <translation id="892588693504540538">Perforación na parte superior dereita</translation>
 <translation id="8931333241327730545">Queres gardar esta tarxeta na túa conta de Google?</translation>
 <translation id="8932102934695377596">O reloxo está atrasado</translation>

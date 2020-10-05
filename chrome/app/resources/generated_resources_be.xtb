@@ -63,7 +63,6 @@
 <translation id="1067048845568873861">Створаны</translation>
 <translation id="1067291318998134776">Linux (бэта-версія)</translation>
 <translation id="1067922213147265141">Іншыя сэрвісы Google</translation>
-<translation id="1068961867683064946">Стварыць Уліковы запіс Google для дзіцяці</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Іншая праграма на камп'ютары дадала пашырэнне, якое можа змяніць працу Chrome.
 
@@ -391,7 +390,6 @@
 <translation id="1436390408194692385">Дзейнічае яшчэ <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">Працягнуць наладку</translation>
 <translation id="1436784010935106834">Выдалены</translation>
-<translation id="1442392616396121389">Прэфікс маршрутызацыі</translation>
 <translation id="144283815522798837">Выбрана: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Задаць актыўны білет Kerberos</translation>
 <translation id="1444628761356461360">Гэта налада кіруецца ўладальнікам прылады – <ph name="OWNER_EMAIL" />.</translation>
@@ -1139,7 +1137,6 @@
 <translation id="2309620859903500144">Гэтаму сайту заблакіраваны доступ да датчыкаў руху або святла.</translation>
 <translation id="2314165183524574721">Бягучая налада бачнасці: схавана</translation>
 <translation id="2314774579020744484">Мова, якая выкарыстоўваецца для перакладу</translation>
-<translation id="2314873619957287124">Вызначыце асноўныя правілы карыстання лічбавым змесцівам, каб збалансаваць для дзіцяці час вучобы, гульні і вандровак у інтэрнэце</translation>
 <translation id="2315414688463285945">Памылка канфігурацыі файлаў Linux. Паўтарыце спробу.</translation>
 <translation id="2315587498123194634">Адправіць спасылку на прыладу "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2316129865977710310">Не, дзякуй</translation>
@@ -1151,7 +1148,6 @@
 <translation id="2322318151094136999">Пытацца, калі сайт спрабуе атрымаць доступ да паслядоўных партоў (рэкамендуецца)</translation>
 <translation id="2323018538045954000">Захаваныя сеткі Wi-Fi</translation>
 <translation id="2325444234681128157">Запомніць пароль</translation>
-<translation id="2326160999284776503">Увайсці ва Уліковы запіс Google дзіцяці</translation>
 <translation id="2326188115274135041">Каб уключыць функцыю аўтаматычнага зняцця блакіроўкі, увядзіце PIN-код</translation>
 <translation id="2326931316514688470">&amp;Перазагрузіць праграму</translation>
 <translation id="2327492829706409234">Уключыць праграму</translation>
@@ -1615,7 +1611,6 @@
 <translation id="2851634818064021665">Каб наведаць гэты сайт, вам патрабуецца дазвол</translation>
 <translation id="2854896010770911740">Выдаліць староннія файлы cookie</translation>
 <translation id="2858138569776157458">Топ сайтаў</translation>
-<translation id="2859806420264540918">Гэты сайт паказвае назойлівую рэкламу або рэкламу, якая ўводзіць у зман.</translation>
 <translation id="2861301611394761800">Абнаўленне сістэмы завершана. Перазапусціце сістэму.</translation>
 <translation id="2861941300086904918">Менеджар бяспекі Native Client</translation>
 <translation id="2864601841139725659">Задайце сваё фота профілю</translation>
@@ -1890,7 +1885,6 @@
 <translation id="3192947282887913208">Аўдыяфайлы</translation>
 <translation id="3199127022143353223">Серверы</translation>
 <translation id="3200310363903241381">{COUNT,plural, =1{Chrome рэкамендуе праверыць гэты пароль зараз}one{Chrome рэкамендуе праверыць гэтыя паролі зараз}few{Chrome рэкамендуе праверыць гэтыя паролі зараз}many{Chrome рэкамендуе праверыць гэтыя паролі зараз}other{Chrome рэкамендуе праверыць гэтыя паролі зараз}}</translation>
-<translation id="3201154330231437478">Уключыць адваротную прагортку <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="3201422919974259695">Тут з'явяцца даступныя прылады USB.</translation>
 <translation id="3202131003361292969">Шлях</translation>
 <translation id="3202173864863109533">Гук на гэтай укладцы выключаны.</translation>
@@ -2872,7 +2866,6 @@
 <translation id="4364327530094270451">Дыня</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> абагульвае акно.</translation>
 <translation id="4364830672918311045">Паказ апавяшчэнняў</translation>
-<translation id="4368115171699243057">Наладзьце прыладу <ph name="DEVICE_TYPE" /> для дзіцяці</translation>
 <translation id="437004882363131692">Давайце водгукі, атрымлівайце прапановы, навіны і парады па прыладах <ph name="DEVICE_TYPE" />. Адпісацца можна ў любы час.</translation>
 <translation id="4370975561335139969">Вы ўвялі няправільны адрас электроннай пошты або пароль</translation>
 <translation id="4374831787438678295">Усталёўшчык Linux</translation>
@@ -3710,7 +3703,6 @@
 <translation id="5397794290049113714">Вы</translation>
 <translation id="5398497406011404839">Схаваныя закладкі</translation>
 <translation id="5398572795982417028">Спасылка на старонку па-за межамі, максімальная колькасць старонак: <ph name="MAXIMUM_PAGE" /></translation>
-<translation id="5398772614898833570">Рэклама заблакіравана</translation>
 <translation id="5401938042319910061">Запусціць усе паслядоўнасці дзеянняў</translation>
 <translation id="5402815541704507626">Спампоўванне абнаўлення з дапамогай мабільнай перадачы даных</translation>
 <translation id="540296380408672091">Заўсёды блакіраваць файлы cookie ад хоста <ph name="HOST" /></translation>
@@ -4336,7 +4328,6 @@
 <translation id="6124698108608891449">Гэтаму сайту патрэбны дадатковыя дазволы.</translation>
 <translation id="6125479973208104919">На жаль, вам трэба зноў дадаць ваш уліковы запіс на <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6129691635767514872">Выбраныя даныя выдалены з браўзера Chrome і сінхранізаваных прылад. На сайце <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> могуць быць размешчаны іншыя формы гісторыі праглядаў сайтаў для вашага Уліковага запісу Google: напрыклад, пошукавыя запыты і дзеянні ў іншых сэрвісах Google.</translation>
-<translation id="6129839611163153407">Ваша дзіця</translation>
 <translation id="6129938384427316298">Netscape Certificate Comment</translation>
 <translation id="6129953537138746214">Прабел</translation>
 <translation id="6130692320435119637">Дадаць сетку Wi-Fi</translation>
@@ -4384,7 +4375,6 @@
 <translation id="6185132558746749656">Месцазнаходжанне прылады</translation>
 <translation id="6186394437969115158">Сайты звычайна паказваюць рэкламу, каб мець магчымасць прапаноўваць змесціва або паслугі бясплатна Але некаторыя сайты паказваюць назойлівую рэкламу або рэкламу, якая ўводзіць у зман.</translation>
 <translation id="6191293864534840972">Серверы даменных імён маюць няправільны фармат</translation>
-<translation id="6195446518998936840">Для наладжвання бацькоўскага кантролю ў дзіцяці павінен быць Уліковы запіс Google, якім вы будзеце дапамагаць яму кіраваць. Выкарыстоўваючы праграму Family Link, вы можаце задаваць абмежаванні часу карыстання прыладамі, даваць дазвол на наведванне вэб-сайтаў або блакіраваць іх і не толькі.</translation>
 <translation id="6195693561221576702">Гэту прыладу нельга наладзіць у пазасеткавым дэманстрацыйным рэжыме.</translation>
 <translation id="6196640612572343990">Блакіраваць староннія файлы cookie</translation>
 <translation id="6196854373336333322">Пашырэнне "<ph name="EXTENSION_NAME" />" узяло пад кантроль налады проксі-сервера: яно можа змяняць, пашкоджваць і праслухоўваць усе даныя падчас вашай працы ў інтэрнэце. Калі вы не ведаеце, чаму гэта адбылося, хутчэй за ўсё, гэта непатрэбная вам змена.</translation>
@@ -5338,7 +5328,6 @@
 <translation id="7354341762311560488">Сканер адбіткаў пальцаў – гэта ніжняя кнопка злева на клавіятуры. Злёгку дакраніцеся да яе любым пальцам.</translation>
 <translation id="7356908624372060336">Сеткавыя журналы</translation>
 <translation id="735745346212279324">Сетка VPN адключана</translation>
-<translation id="7359588939039777303">Рэклама заблакіравана.</translation>
 <translation id="7360183604634508679">Меню закладак</translation>
 <translation id="7360233684753165754">Друк старонак (<ph name="PAGE_NUMBER" />) на прынтары <ph name="PRINTER_NAME" /></translation>
 <translation id="7361297102842600584">Націсніце правай клавішай мышы, каб запусціць <ph name="PLUGIN_NAME" /></translation>
@@ -6698,7 +6687,6 @@
 <translation id="8916476537757519021">Субфрэйм інкогніта: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8916749157829986308">Дайце назву акну</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />: <ph name="DEVICE_TYPE" /></translation>
-<translation id="8922013791253848639">Заўсёды паказваць рэкламу на гэтым сайце</translation>
 <translation id="8923880975836399332">Цёмна-бірузовы</translation>
 <translation id="8925458182817574960">&amp;Налады</translation>
 <translation id="8926389886865778422">Больш не пытацца</translation>

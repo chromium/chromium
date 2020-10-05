@@ -17,7 +17,6 @@
 <translation id="1335095011850992622">pateicības</translation>
 <translation id="1342835525016946179">raksts</translation>
 <translation id="1359897965706325498">reklāmkarogs</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> vienumi</translation>
 <translation id="1480676835519562650">vairākas atlasāmas iespējas; tika atlasītas <ph name="SELECTED" /> no <ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">reģions</translation>
 <translation id="1591562245178063882">Šis mēnesis</translation>
@@ -290,6 +289,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, sākot no: <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Attēls attēlā</translation>
 <translation id="9168329111483466115">vēre</translation>
+<translation id="945780513535800434">Daļēji atzīmēta</translation>
 <translation id="954003015749068518">atvērt režīmu “attēls attēlā”</translation>
 <translation id="966787709310836684">izvēlne</translation>
 </translationbundle>

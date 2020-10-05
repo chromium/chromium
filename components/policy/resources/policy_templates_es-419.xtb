@@ -92,14 +92,6 @@
 
       Si se establece la política en 0, los GPO dejan de almacenarse en caché. Ten en cuenta que esta acción aumenta la carga del servidor, ya que se vuelven a descargar los GPO en cada obtención de la política, incluso si no cambiaron.</translation>
 <translation id="1111470455889178048">Analizar las cargas y descargas del usuario</translation>
-<translation id="1117462881884985156"><ph name="PRODUCT_NAME" /> omitirá cualquier proxy de la lista de hosts que se proporciona aquí.
-
-          Esta política solo se aplicará si se selecciona la configuración manual de proxy en "Elegir cómo especificar la configuración del servidor proxy" y si no se especifica la política <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-          No se debe configurar esta política si se seleccionó otro modo para configurar políticas de proxy.
-
-          Para conocer más ejemplos detallados, visita:
-          <ph name="PROXY_HELP_URL" />.</translation>
 <translation id="1117535567637097036">Los controladores de protocolo establecidos mediante esta política no se usan cuando se controlan intents en Android.</translation>
 <translation id="1118093128235245168">Permite que los sitios soliciten al usuario que otorgue acceso a un dispositivo USB conectado</translation>
 <translation id="1128717055763152639">Te permite configurar una lista de patrones de URL donde se indiquen los sitios que pueden mostrar contenido mixto (p. ej., contenido HTTP en sitios HTTPS) bloqueable (p. ej., activo) y para los cuales se inhabilitarán las actualizaciones del contenido mixto bloqueable de forma opcional.
@@ -1388,14 +1380,6 @@ Esta política solo se puede establecer en la Consola del administrador de Googl
 
           Si no la estableces, el cursor grande estará inicialmente inhabilitado en la pantalla de acceso, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="3030000825273123558">Activar los informes estadísticos</translation>
-<translation id="3033660238345063904">Puedes especificar la URL del servidor proxy aquí.
-
-          Esta política solo se aplicará si se selecciona la configuración manual de proxy en "Elegir cómo especificar la configuración del servidor proxy" y si no se especifica la política <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-          No se debe configurar esta política si se seleccionó otro modo para configurar políticas de proxy.
-
-          Para obtener más opciones y ejemplos detallados, visita:
-          <ph name="PROXY_HELP_URL" />.</translation>
 <translation id="3038323923255997294">Continuar ejecutando aplicaciones en segundo plano cuando <ph name="PRODUCT_NAME" /> esté cerrado</translation>
 <translation id="3041887182529293512">Si estableces la política como verdadera o no la estableces, se mostrarán las sugerencias de contenido autogenerado en la página Nueva pestaña, según el historial de navegación del usuario, sus intereses y su ubicación.
 
@@ -2657,33 +2641,6 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
       y se mostrará un error.</translation>
 <translation id="5032164758660626397">Evita que el usuario transfiera archivos grandes</translation>
 <translation id="5047604665028708335">Permite el acceso a sitios fuera de los paquetes de contenido.</translation>
-<translation id="5055312535952606505">Establece la configuración de proxy para <ph name="PRODUCT_NAME" />. Las apps de ARC también podrán usar estas opciones de configuración de proxy.
-
-          Si habilitas esta configuración, <ph name="PRODUCT_NAME" /> y las apps de ARC ignorarán todas las opciones relacionadas con el proxy que se especificaron en la línea de comandos.
-
-          Si no se configura esta política, los usuarios podrán elegir las opciones de configuración del proxy por su cuenta.
-
-          Si se configura la política <ph name="PROXY_SETTINGS_POLICY_NAME" />, anulará cualquiera de las políticas específicas <ph name="PROXY_MODE_POLICY_NAME" />, <ph name="PROXY_PAC_URL_POLICY_NAME" />, <ph name="PROXY_SERVER_POLICY_NAME" />, <ph name="PROXY_BYPASS_POLICY_NAME" /> y <ph name="PROXY_SERVER_MODE_POLICY_NAME" />.
-
-          El campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> te permite especificar el servidor proxy que usa <ph name="PRODUCT_NAME" /> y evita que los usuarios cambien la configuración del proxy.
-
-          El campo <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> indica la dirección URL del archivo .pac del proxy.
-
-          El campo <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> indica la dirección del servidor proxy.
-
-          El campo <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> es una lista de hosts de proxy que <ph name="PRODUCT_NAME" /> anulará.
-
-          El campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> es obsoleto. En su lugar, se usará el campo "ProxyMode". Te permite especificar el servidor proxy que usa <ph name="PRODUCT_NAME" /> y evita que los usuarios cambien la configuración del proxy.
-
-          Si eliges el valor "direct" en el campo "ProxyMode", nunca se usará un proxy y se ignorará el resto de los campos.
-
-          Si eliges el valor "system" en el campo "ProxyMode", se usará el proxy del sistema y se ignorará el resto de los campos.
-
-          Si eliges el valor "auto_detect" en el campo "ProxyMode", se ignorará el resto de los campos.
-
-          Si eliges el valor "fixed_server" en el campo "ProxyMode", se usarán los campos "ProxyServer" y "ProxyBypassList".
-
-          Si eliges el valor "pac_script" en el campo "ProxyMode", se usarán los campos "ProxyPacUrl" y "ProxyBypassList".</translation>
 <translation id="5056708224511062314">La lupa está inhabilitada.</translation>
 <translation id="5058573563327660283">Seleccionar la estrategia utilizada para liberar espacio en el disco durante el proceso de limpieza automática (dejó de estar disponible)</translation>
 <translation id="5061114193960158745">Si estableces esta política, se controlará la lista de sitios web que nunca obligarán a cambiar de navegador. Cada elemento será tratado como una regla. Las reglas que coincidan no se abrirán en un navegador alternativo. A diferencia de la política <ph name="URL_LIST_POLICY_NAME" />, las reglas se aplican en ambas direcciones. Si el complemento de <ph name="IE_PRODUCT_NAME" /> está activado, también controlará si <ph name="IE_PRODUCT_NAME" /> puede abrir estas URL en <ph name="PRODUCT_NAME" />.
@@ -3500,14 +3457,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6155936611791017817">Establece el estado predeterminado del cursor grande en la pantalla de acceso.</translation>
 <translation id="6157537876488211233">Lista separada por comas de las normas de omisión de proxy</translation>
 <translation id="6158324314836466367">Indica el nombre de la tienda web de la empresa (en desuso).</translation>
-<translation id="6158817306788002298">Aquí puedes especificar una dirección URL para un archivo proxy .pac.
-
-          Esta política solo se aplicará si se selecciona la configuración manual de proxy en "Elegir cómo especificar la configuración del servidor proxy" y si no se especifica la política <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-          No se debe configurar esta política si se seleccionó otro modo para configurar políticas de proxy.
-
-          Para obtener ejemplos detallados, visita:
-          <ph name="PROXY_HELP_URL" />.</translation>
 <translation id="6172896675583897796">Si habilitas la política, el Asistente de Google podrá acceder al contexto de pantalla y enviar esa información a un servidor. Si la inhabilitas, el Asistente de Google no podrá acceder a ese contexto.
 
       Si no la estableces, los usuarios podrán activar o desactivar esta función.</translation>
@@ -3678,15 +3627,6 @@ En <ph name="MS_WIN_NAME" />, esta funcionalidad solo está disponible en instan
 
       Si esta política se configura como habilitada o no se configura, nunca se mostrará el menú de accesibilidad flotante.</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
-<translation id="6426205278746959912">No puedes forzar las apps de Android a que usen un proxy. Las apps de Android tienen a su disposición un subgrupo de opciones de configuración de proxy que pueden respetar de forma voluntaria:
-
-          Si eliges no usar nunca un servidor proxy, se informa a las apps de Android que no hay ningún proxy configurado.
-
-          Si eliges usar la configuración del proxy del sistema o un proxy fijo del servidor, las apps de Android reciben el puerto y la dirección del servidor proxy HTTP.
-
-          Si eliges detectar el servidor proxy de forma automática, las apps de Android reciben la URL "http://wpad/wpad.dat" de la secuencia de comandos. No se usa ninguna otra parte del protocolo de autodetección del proxy.
-
-          Si eliges una secuencia de comandos .pac de proxy, las apps de Android reciben la URL de la secuencia de comandos.</translation>
 <translation id="6438364096042399634">Si estableces la política, se definirá la lista de dispositivos USB que el usuario puede desconectar del controlador de kernel para usarlos a través de la API chrome.usb directamente en una aplicación web. Las entradas son pares formados por el identificador del producto y el identificador del proveedor USB que permiten reconocer hardware específico.
 
       Si no estableces la política, la lista de dispositivos USB que se pueden desconectar estará vacía.
@@ -5439,26 +5379,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
        Nota: Esta política no se aplica al modo Incógnito. Obtén más información sobre el alojamiento de extensiones en https://developer.chrome.com/extensions/hosting.</translation>
 <translation id="8833109046074170275">Autenticación mediante el flujo de GAIA predeterminado</translation>
-<translation id="8851325571441692315">Te permite especificar el servidor proxy que utiliza <ph name="PRODUCT_NAME" /> y evita que los usuarios cambien la configuración del proxy.
-
-          Solo se aplicará esta política, si no se especificó la política <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-          Si eliges no utilizar jamás un servidor proxy y conectarte siempre de forma directa, se ignorarán todas las demás opciones.
-
-          Si eliges usar la configuración de proxy del sistema, se ignorarán todas las demás opciones.
-
-          Si eliges la detección automática del servidor proxy, se ignorarán todas las demás opciones.
-
-          Si eliges el modo de proxy de servidor fijo, puedes especificar más opciones en los campos "Dirección o URL del servidor proxy" y "Lista separada por comas de las reglas de omisión del proxy". Las apps de ARC solo podrán usar el servidor proxy HTTP con la prioridad más alta.
-
-          Si eliges usar una secuencia de comandos para el proxy con formato .pac, deberás especificar la URL de la secuencia de comandos en el campo "URL a un archivo proxy .pac".
-
-          Para obtener ejemplos detallados, visita:
-          <ph name="PROXY_HELP_URL" />.
-
-          Si habilitas esta configuración, <ph name="PRODUCT_NAME" /> y las apps de ARC ignorarán todas las opciones relacionadas con el proxy que se especificaron en la línea de comandos.
-
-          Si no se configura esta política, los usuarios podrán elegir las opciones de configuración del proxy por su cuenta.</translation>
 <translation id="8852579753940989645">Habilita la integridad del código de renderizado</translation>
 <translation id="8854571659927427063">Si habilitas la política, se importarán los favoritos del navegador predeterminado anterior en la primera ejecución. Si la inhabilitas o no la estableces, no se importará ningún favorito en la primera ejecución.
 

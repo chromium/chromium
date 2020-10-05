@@ -134,6 +134,7 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">પ્રકટીકરણ ત્રિકોણ</translation>
 <translation id="5278860589123563674">મોકલવામાં નિષ્ફળ રહ્યાં</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> તમને ધ્યાન આપવાની વિનંતી કરે છે.</translation>
 <translation id="528468243742722775">સમાપ્ત</translation>
 <translation id="5329858601952122676">&amp;કાઢી નાખો</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" />ની સૌથી ઉપર <ph name="DRAGGED_APP_NAME" /> પર, ફોલ્ડર બનાવવા માટે રિલીઝ કરો.</translation>
@@ -144,6 +145,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> સિસ્ટમ</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">ડાબો એરો</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> તમને ધ્યાન આપવાની વિનંતી કરે છે.</translation>
 <translation id="5675363643668471212">શેલ્ફ આઇટમ</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 મિનિટ}one{# મિનિટ}other{# મિનિટ}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{આજે સક્રિય છે}=1{1 દિવસ પહેલાં સક્રિય હતું}one{# દિવસ પહેલાં સક્રિય હતું}other{# દિવસ પહેલાં સક્રિય હતું}}</translation>

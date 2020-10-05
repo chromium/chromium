@@ -92,14 +92,6 @@
 
       Als dit beleid is ingesteld op 0, worden er geen GPO's in het cachegeheugen opgeslagen. Houd er rekening mee dat de server hierdoor zwaarder wordt belast, aangezien GPO's telkens opnieuw worden gedownload wanneer er beleid wordt opgehaald, zelfs als ze niet zijn gewijzigd.</translation>
 <translation id="1111470455889178048">Gebruikersuploads en -downloads verzenden om te laten scannen</translation>
-<translation id="1117462881884985156"><ph name="PRODUCT_NAME" /> omzeilt elke proxy voor de lijst met hosts die hier wordt gespecificeerd.
-
-          Dit beleid wordt alleen van kracht als je handmatige proxyinstellingen hebt geselecteerd bij 'Kies hoe je proxyserverinstellingen wilt specificeren' en als het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" /> niet is gespecificeerd.
-
-          Stel dit beleid niet in als je een andere modus hebt geselecteerd voor het instellen van proxybeleid.
-
-          Ga voor gedetailleerdere voorbeelden naar:
-          <ph name="PROXY_HELP_URL" />.</translation>
 <translation id="1117535567637097036">De protocolhandlers die via dit beleid zijn ingesteld, worden niet gebruikt bij de verwerking van Android-intenties.</translation>
 <translation id="1118093128235245168">Toestaan dat sites de gebruiker vragen om toegang te verlenen tot een aangesloten USB-apparaat</translation>
 <translation id="1128717055763152639">Hiermee kun je een lijst met URL-patronen opgeven van sites waarop blokkeerbare (actieve) gecombineerde content (zoals HTTP-content op een HTTPS-site) mag worden weergegeven en waarvoor optioneel blokkeerbare gecombineerde content wordt uitgeschakeld.
@@ -160,6 +152,9 @@
       Als dit beleid is ingesteld op 'waar', is de functie ingeschakeld en kunnen gebruikers het wijzigen.
       Dit beleid is standaard ingesteld op 'onwaar'. Er worden geen suggesties voor emoji's weergegeven en gebruikers kunnen dit niet overschrijven.</translation>
 <translation id="1243570869342663665">SafeSites-filters voor content voor volwassenen beheren.</translation>
+<translation id="1247850578871017740">Als je het beleid instelt op een geldige waarde, gebruikt <ph name="PRODUCT_NAME" /> geen SSL/TLS-versies lager dan de opgegeven versie. Niet-herkende waarden worden genegeerd.
+
+      Als dit beleid niet is ingesteld, geeft <ph name="PRODUCT_NAME" /> een fout weer voor TLS 1.0 en TLS 1.1. De gebruiker kan deze fout wel omzeilen.</translation>
 <translation id="1252536192437793850">Sites toestaan om gebruikers toestemming te vragen voor toegang tot een seriële poort</translation>
 <translation id="1257550411839719984">Standaardmap voor downloads instellen</translation>
 <translation id="1265053460044691532">De offline inlogtijd beperken voor een gebruiker die is geverifieerd via SAML</translation>
@@ -1371,14 +1366,6 @@ Dit beleid kan alleen worden ingesteld via de Google Beheerdersconsole.</transla
 
           Als dit beleid niet is ingesteld, is de grote muisaanwijzer in eerste instantie uitgeschakeld op het inlogscherm, maar kan de gebruiker deze op elk gewenst moment inschakelen.</translation>
 <translation id="3030000825273123558">Rapportage van statistieken inschakelen</translation>
-<translation id="3033660238345063904">Je kunt hier de URL van de proxyserver specificeren.
-
-          Dit beleid wordt alleen van kracht als je handmatige proxyinstellingen hebt geselecteerd bij 'Kies hoe je proxyserverinstellingen wilt specificeren' en als het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" /> niet is gespecificeerd.
-
-          Stel dit beleid niet in als je een andere modus hebt geselecteerd voor het instellen van proxybeleid.
-
-          Ga voor meer opties en gedetailleerde voorbeelden naar:
-          <ph name="PROXY_HELP_URL" />.</translation>
 <translation id="3038323923255997294">Doorgaan met uitvoeren van achtergrondapps als <ph name="PRODUCT_NAME" /> is gesloten</translation>
 <translation id="3041887182529293512">Als je het beleid instelt op 'True' of niet instelt, worden automatisch gegenereerde contentsuggesties weergegeven op de pagina 'Nieuw tabblad', op basis van de browsegeschiedenis, interesses of locatie van de gebruiker.
 
@@ -2282,6 +2269,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
       Als dit beleid niet is ingesteld, is Safe Browsing ingeschakeld voor de standaard beveiligingsmodus, maar kunnen gebruikers deze instelling wijzigen.
 
       Zie https://developers.google.com/safe-browsing voor meer informatie over Safe Browsing.</translation>
+<translation id="4402887080007986374">De geldige versie van de servicevoorwaarden van Edu Coexistence</translation>
 <translation id="4408428864159735559">Lijst met vooraf geconfigureerde netwerkfileshares.</translation>
 <translation id="4410236409016356088">Netwerkbandbreedtebeperking inschakelen</translation>
 <translation id="441217499641439905">Google Drive uitschakelen via mobiele verbindingen in de app Bestanden van <ph name="PRODUCT_OS_NAME" /></translation>
@@ -2464,6 +2452,13 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
           Ga voor voorbeeldpatronen naar https://www.chromium.org/developers/how-tos/chrome-frame-getting-started.</translation>
 <translation id="467449052039111439">Een lijst met URL's openen</translation>
 <translation id="4674871290487541952">Onbeveiligde algoritmen toestaan in integriteitscontroles bij updates en installaties van extensies</translation>
+<translation id="4677605038200415894">Als je het beleid instelt, kun je een lijst met URL-patronen opgeven met de sites die automatisch toegangsrechten krijgen voor een USB-apparaat met de opgegeven leveranciers- en product-ID's. Het beleid is alleen geldig als elk lijstitem apparaten en URL's bevat. Elk item in apparaten kan een veld voor de leverancier-ID en een veld voor de product-ID bevatten. Elke ID die je weglaat, wordt als jokerteken behandeld, met één uitzondering: je kunt geen product-ID opgeven als je niet ook een leverancier-ID opgeeft. Als je dit niet doet, is het beleid niet geldig.
+
+      Het USB-rechtenmodel gebruikt de aanvragende URL en de insluitings-URL (van de framesite op hoofdniveau) om de aanvragende URL toegang te geven tot het USB-apparaat. Als de aanvragende site in een iframe wordt geladen, is het mogelijk dat de aanvragende URL en de insluitings-URL niet hetzelfde zijn. Daarom kan het veld voor URL's maximaal twee, door een komma gescheiden tekenreeksen bevatten om deze URL's op te geven. Als je maar één URL wilt opgeven, wordt er alleen toegang tot de bijbehorende USB-apparaten gegeven als de URL van de aanvragende site overeenkomt met deze URL, ongeacht de insluitingsstatus. De URL's in het veld voor URL's moeten geldig zijn. Als dit niet het geval is, wordt het beleid genegeerd.
+
+      Als je het beleid niet instelt, is <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> van toepassing als dit is ingesteld. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
+
+      De URL-patronen in dit beleid mogen geen conflict vormen met de patronen die zijn ingesteld via <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Als dit het geval is, krijgt dit beleid voorrang op <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> en <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="4680936297850947973">Beëindigd in M68. Gebruik in plaats hiervan DefaultPopupsSetting.
 
       Ga naar https://www.chromestatus.com/features/5675755719622656 voor een volledige uitleg.
@@ -2637,33 +2632,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Als dit beleid is ingeschakeld, mislukken aanroepen aan API's voor het delen van schermen en wordt er een fout weergegeven.</translation>
 <translation id="5032164758660626397">Overdracht van grote bestanden door de gebruiker voorkomen</translation>
 <translation id="5047604665028708335">Toegang toestaan tot sites die zich niet in de inhoudspakketten bevinden</translation>
-<translation id="5055312535952606505">Hiermee configureer je de proxyinstellingen voor <ph name="PRODUCT_NAME" />. Deze proxyinstellingen zijn ook beschikbaar voor ARC-apps.
-
-          Als je deze instelling inschakelt, negeren <ph name="PRODUCT_NAME" /> en ARC-apps alle proxygerelateerde opties die zijn gespecificeerd via de opdrachtregel.
-
-          Als dit beleid niet is ingesteld, kunnen gebruikers zelf de proxyinstellingen kiezen.
-
-          Als het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" /> is ingesteld, worden de afzonderlijke beleidsregels <ph name="PROXY_MODE_POLICY_NAME" />, <ph name="PROXY_PAC_URL_POLICY_NAME" />, <ph name="PROXY_SERVER_POLICY_NAME" />, <ph name="PROXY_BYPASS_POLICY_NAME" /> en <ph name="PROXY_SERVER_MODE_POLICY_NAME" /> overschreven.
-
-          Via het veld <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> kun je de proxyserver specificeren die moet worden gebruikt door <ph name="PRODUCT_NAME" />. Hiermee voorkom je ook dat gebruikers de proxyinstellingen kunnen wijzigen.
-
-          Het veld <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> is een URL naar een .PAC-bestand voor de proxy.
-
-          Het veld <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> is een URL van de proxyserver.
-
-          Het veld <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> is een lijst met proxyhosts die worden omzeild door <ph name="PRODUCT_NAME" />.
-
-          Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is verouderd. In plaats daarvan wordt het veld 'ProxyMode' gebruikt. Hiermee kun je de door <ph name="PRODUCT_NAME" /> gebruikte proxyserver specificeren en voorkomen dat gebruikers de proxyinstellingen wijzigen.
-
-          Als je bij 'ProxyMode' de waarde 'direct' kiest, wordt er nooit een proxy gebruikt en worden alle andere velden genegeerd.
-
-          Als je bij 'ProxyMode' de waarde 'system' kiest, wordt de proxy van het systeem gebruikt en worden alle andere velden genegeerd.
-
-          Als je bij 'ProxyMode' de waarde 'auto_detect' kiest, worden alle andere velden genegeerd.
-
-          Als je bij 'ProxyMode' de waarde 'fixed_server' kiest, worden de velden 'ProxyServer' en 'ProxyBypassList' gebruikt.
-
-          Als je bij 'ProxyMode' de waarde 'pac_script' kiest, worden de velden 'ProxyPacUrl' en 'ProxyBypassList' gebruikt.</translation>
 <translation id="5056708224511062314">Vergrootglas uitgeschakeld</translation>
 <translation id="5058573563327660283">De strategie selecteren die wordt gebruikt om schijfruimte vrij te maken tijdens het automatisch opschonen (verouderd)</translation>
 <translation id="5061114193960158745">Met dit beleid wordt de lijst met websites bepaald die nooit een schakeling tussen browsers veroorzaken. Elk item wordt als regel behandeld. Bij overeenkomende regels wordt er geen alternatieve browser geopend. Anders dan bij het beleid <ph name="URL_LIST_POLICY_NAME" /> zijn de regels in beide richtingen van toepassing. Als de add-in van <ph name="IE_PRODUCT_NAME" /> ingeschakeld is, bepaalt deze ook of <ph name="IE_PRODUCT_NAME" /> deze URL's moet openen in <ph name="PRODUCT_NAME" />.
@@ -3178,6 +3146,8 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Opmerking: Gebruik bij meerdere servernamen een komma als scheidingsteken. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.</translation>
 <translation id="5645779841392247734">Cookies toestaan op deze sites</translation>
 <translation id="5646234199535103501">Configuratiebeleid voor de Chrome Enterprise Connector OnBulkDataEntry</translation>
+<translation id="5652250453612826983">Hiermee bepaal je de beleidsregels voor ouderlijk toezicht, die alleen op kinderaccounts worden toegepast.
+      Deze beleidsregels worden niet ingesteld in de beheerdersconsole, maar worden rechtstreeks geconfigureerd via Kids API Server.</translation>
 <translation id="5656177735561364047">De functie voor gedeeld klembord inschakelen</translation>
 <translation id="5657576769650058122">Als je het beleid inschakelt, blijft het virtuele schermtoetsenbord (een Chrome OS-invoerapparaat) ingeschakeld. Als je het beleid uitschakelt, blijft dit toetsenbord uitgeschakeld.
 
@@ -3486,14 +3456,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="6155936611791017817">De standaardstatus van de grote muisaanwijzer op het inlogscherm instellen</translation>
 <translation id="6157537876488211233">Door komma's gescheiden lijst van regels voor proxyomzeiling</translation>
 <translation id="6158324314836466367">Naam van zakelijke webwinkel (verouderd)</translation>
-<translation id="6158817306788002298">Je kunt hier de URL naar een proxybestand (.pac) opgeven.
-
-          Dit beleid wordt alleen van kracht als je handmatige proxyinstellingen hebt geselecteerd bij 'Kies hoe je proxyserverinstellingen wilt specificeren' en als het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" /> niet is gespecificeerd.
-
-          Stel dit beleid niet in als je een andere modus hebt geselecteerd voor het instellen van proxybeleid.
-
-          Ga voor gedetailleerdere voorbeelden naar:
-          <ph name="PROXY_HELP_URL" />.</translation>
 <translation id="6172896675583897796">Als je het beleid inschakelt, heeft de Google Assistent toegang tot de schermcontext en kan de Assistent die gegevens naar een server sturen. Als je het beleid uitschakelt, heeft de Google Assistent geen toegang tot de schermcontext.
 
       Als je het beleid niet instelt, kunnen gebruikers zelf bepalen of ze deze functie willen in- of uitschakelen.</translation>
@@ -3661,15 +3623,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 
       Als dit beleid is uitgeschakeld of niet is ingesteld, wordt het zwevende toegankelijkheidsmenu nooit weergegeven.</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
-<translation id="6426205278746959912">Je kunt Android-apps niet dwingen een proxy te gebruiken. Er is een subset met proxyinstellingen beschikbaar voor Android-apps. Deze kunnen ze op vrijwillige basis respecteren:
-
-          Als je ervoor kiest nooit een proxyserver te gebruiken, wordt aan de Android-apps gemeld dat er geen proxy is geconfigureerd.
-
-          Als je ervoor kiest de proxyinstellingen van het systeem of een vaste serverproxy te gebruiken, ontvangen de Android-apps het adres en de poort van de HTTP-proxyserver.
-
-          Als je ervoor kiest de proxyserver automatisch te detecteren, ontvangen de Android-apps de script-URL http://wpad/wpad.dat. Er wordt geen enkel ander onderdeel van het protocol voor de automatische detectie van de proxy gebruikt.
-
-          Als je het PAC-script voor de proxy kiest, ontvangen de Android-apps de script-URL.</translation>
 <translation id="6438364096042399634">Als je het beleid instelt, wordt de lijst met USB-apparaten gedefinieerd die door gebruikers mogen worden ontkoppeld van hun kernel-driver, zodat ze via de chrome.usb API rechtstreeks kunnen worden gebruikt in een web-app. Items zijn paren van de ID van de USB-leverancier en de ID van het product, zodat specifieke hardware kan worden geïdentificeerd.
 
       Als je het beleid niet instelt, is de lijst met USB-apparaten die kunnen worden ontkoppeld leeg.
@@ -3813,6 +3766,21 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="6628043374475466084">URL-patronen waarvoor gedownloade content niet moet worden gecontroleerd op schendingen van de beveiligingsregels voor gevoelige gegevens</translation>
 <translation id="6628120204569232711">Opslagstatus rapporteren</translation>
 <translation id="663685822663765995">Afdrukken in kleurenmodus beperken</translation>
+<translation id="6640989746632867803">Als je het beleid instelt, kunnen gebruikers de keuzes voor downloadbeveiliging niet omzeilen.
+
+       Je kunt de volgende opties instellen voor het beleid:
+
+      * Gevaarlijke downloads blokkeren: Alle downloads zijn toegestaan, met uitzondering van downloads waarvoor een beveiligingswaarschuwing is afgegeven.
+
+      * Potentieel gevaarlijke downloads blokkeren: Alle downloads zijn toegestaan, met uitzondering van downloads waarvoor een beveiligingswaarschuwing is afgegeven of potentieel gevaarlijke downloads.
+
+      * Alle downloads blokkeren: Alle downloads worden geblokkeerd.
+
+      * Schadelijke downloads blokkeren: Alle downloads zijn toegestaan, met uitzondering van downloads die met grote zekerheid worden aangeduid als malware. Anders dan bij gevaarlijke downloads wordt hierbij geen rekening gehouden met het bestandstype, maar wordt wel rekening gehouden met de host.
+
+      * Geen speciale beperkingen: De gebruikelijke beveiligingsbeperkingen worden op de downloads toegepast op basis van de beveiligingsanalyse.
+
+      Opmerking: Deze beperkingen gelden zowel voor downloads die via de webpaginacontent als voor downloads die via de menuoptie 'Link downloaden...' geactiveerd zijn. De beperkingen gelden niet voor het downloaden van de huidige pagina die wordt weergegeven of voor de afdrukoptie 'Opslaan als pdf'. Bekijk meer informatie over Safe Browsing (https://developers.google.com/safe-browsing).</translation>
 <translation id="6641981670621198190">Ondersteuning voor API's voor 3D-beelden uitschakelen</translation>
 <translation id="6646056064606561298">Het beleid voor het beheer van opstarten bij netstroom inschakelen.
 
@@ -5405,26 +5373,6 @@ Dit beleid wordt verwijderd in M75.</translation>
 
        Opmerking: Dit beleid is niet van toepassing op de incognitomodus. Bekijk meer informatie over het hosten van extensies ( https://developer.chrome.com/extensions/hosting ).</translation>
 <translation id="8833109046074170275">Verificatie via GAIA (standaard)</translation>
-<translation id="8851325571441692315">Specificeert de door <ph name="PRODUCT_NAME" /> gebruikte proxyserver en voorkomt dat gebruikers de proxyinstellingen wijzigen.
-
-          Dit beleid wordt alleen van kracht als het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" /> niet is gespecificeerd.
-
-          Als je ervoor kiest nooit een proxyserver te gebruiken en altijd rechtstreeks verbinding te maken, worden alle andere opties genegeerd.
-
-          Als je ervoor kiest de proxyinstellingen van het systeem te gebruiken, worden alle andere opties genegeerd.
-
-          Als je ervoor kiest de proxyserver automatisch te detecteren, worden alle andere opties genegeerd.
-
-          Als je de modus voor een vaste proxyserver kiest, kun je verdere opties specificeren in 'Adres of URL van proxyserver' en 'Door komma's gescheiden lijst van regels voor proxyomzeiling'. Alleen de HTTP-proxyserver met de hoogste prioriteit is beschikbaar voor ARC-apps.
-
-          Als je een proxyscript in een PAC-bestand gebruikt, moet je de URL met het script specificeren in 'URL naar een PAC-bestand voor de proxy'.
-
-          Ga voor gedetailleerdere voorbeelden naar:
-          <ph name="PROXY_HELP_URL" />.
-
-          Als je deze instelling inschakelt, negeren <ph name="PRODUCT_NAME" /> en ARC-apps alle aan proxy's gerelateerde opties die via de opdrachtregel worden gespecificeerd.
-
-          Als dit beleid niet is ingesteld, kunnen gebruikers zelf de proxyinstellingen kiezen.</translation>
 <translation id="8852579753940989645">Code-integriteit van weergaveprogramma inschakelen</translation>
 <translation id="8854571659927427063">Als je het beleid inschakelt, worden de bookmarks van de vorige standaardbrowser geïmporteerd bij de eerste uitvoering. Als je het beleid uitschakelt of niet instelt, worden de bookmarks niet geïmporteerd bij de eerste uitvoering.
 
@@ -5515,6 +5463,13 @@ Dit beleid wordt verwijderd in M75.</translation>
 <translation id="8942616385591203339">Dit beleid bepaalt of er informatie over toestemming voor synchronisatie mag worden getoond aan de gebruiker wanneer deze voor het eerst inlogt. De waarde moet op 'False' worden ingesteld als er nooit toestemming voor synchronisatie is vereist voor de gebruiker.
       Als dit is ingesteld op 'False', wordt er geen informatie over toestemming voor synchronisatie weergegeven.
       Als dit is ingesteld op 'True' of als dit niet is ingesteld, kan er informatie over toestemming voor synchronisatie worden weergegeven.</translation>
+<translation id="8943744188513019866">Met dit beleid wordt de huidige geldige versie van de servicevoorwaarden van Edu Coexistence aangegeven.
+      De versie in het beleid wordt vergeleken met de versie die de ouder het laatst heeft geaccepteerd en wordt gebruikt om te vragen om verlenging van de ouderlijke toestemming als dat nodig is.
+
+      Als dit beleid is ingesteld, kan de versie van de servicevoorwaarden worden gevalideerd.
+      Als dit beleid niet is ingesteld, kan de geldigheid van de servicevoorwaarden van Edu Coexistence niet worden geverifieerd.
+
+      Dit beleid wordt alleen gebruikt voor Family Link-gebruikers.</translation>
 <translation id="8943934315109955032">Niet controleren op schendingen van de beveiligingsregels voor gevoelige gegevens</translation>
 <translation id="8947415621777543415">Apparaatlocatie rapporteren</translation>
 <translation id="8948062138228904066">Toelatingslijst voor verificatieserver</translation>

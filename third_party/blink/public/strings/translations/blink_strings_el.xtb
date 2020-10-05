@@ -17,7 +17,6 @@
 <translation id="1335095011850992622">συντελεστές</translation>
 <translation id="1342835525016946179">άρθρο</translation>
 <translation id="1359897965706325498">banner</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> στοιχεία</translation>
 <translation id="1480676835519562650">πολλαπλής επιλογής, έγινε επιλογή <ph name="SELECTED" /> από <ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">περιοχή</translation>
 <translation id="1591562245178063882">Αυτόν το μήνα</translation>
@@ -290,6 +289,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, από τις <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Παράθεση εικόνων</translation>
 <translation id="9168329111483466115">υποσημείωση</translation>
+<translation id="945780513535800434">Μερικώς επιλεγμένο</translation>
 <translation id="954003015749068518">είσοδος στη λειτουργία picture-in-picture</translation>
 <translation id="966787709310836684">μενού</translation>
 </translationbundle>

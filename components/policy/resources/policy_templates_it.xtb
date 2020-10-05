@@ -92,14 +92,6 @@
 
       Se la norma è impostata su 0, la memorizzazione nella cache del GPO è disattivata. Tieni presente che in questo modo aumenterà il carico del server perché i GPO verranno scaricati nuovamente a ogni recupero della norma, anche se non sono stati modificati.</translation>
 <translation id="1111470455889178048">Invia caricamenti e download degli utenti da analizzare</translation>
-<translation id="1117462881884985156"><ph name="PRODUCT_NAME" /> aggirerà qualsiasi proxy per l'elenco di host fornito.
-
-          Questa norma viene applicata solo se hai selezionato manualmente le impostazioni proxy in "Scegli come specificare le impostazioni del server proxy" e se la norma <ph name="PROXY_SETTINGS_POLICY_NAME" /> non è stata specificata.
-
-          Devi lasciare questa norma non impostata se hai selezionato una qualsiasi altra modalità per l'impostazione delle norme relative al proxy.
-
-          Per esempi più dettagliati, visita:
-          <ph name="PROXY_HELP_URL" />.</translation>
 <translation id="1117535567637097036">I gestori di protocollo impostati tramite questa norma non sono utilizzati durante la gestione degli intent di Android.</translation>
 <translation id="1118093128235245168">Consenti ai siti di chiedere all'utente di concedere l'accesso a un dispositivo USB collegato</translation>
 <translation id="1128717055763152639">Consente di impostare un elenco di pattern URL che specificano i siti autorizzati a visualizzare contenuti misti (ossia contenuti HTTP su siti HTTPS) bloccabili (ossia attivi) e per i quali gli aggiornamenti dei contenuti misti bloccabili facoltativi verranno disattivati.
@@ -636,6 +628,9 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
           </translation>
 <translation id="2030905906517501646">Parola chiave del provider di ricerca predefinito</translation>
 <translation id="203096360153626918">Questa norma non ha effetto sulle app Android, che saranno in grado di entrare in modalità a schermo intero anche se la norma viene impostata su <ph name="FALSE" />.</translation>
+<translation id="2037214548071298156">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano statistiche hardware quali l'utilizzo di CPU/RAM.
+
+      Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano le statistiche hardware.</translation>
 <translation id="2040479044912658454">Modalità rasterizzazione stampa</translation>
 <translation id="2043749682619281558">Attiva l'evidenziazione del cursore sulla schermata di accesso</translation>
 <translation id="2043770014371753404">Stampanti aziendali disattivate</translation>
@@ -971,7 +966,11 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Se questo criterio viene attivato, nel caso in cui Chrome Software Cleaner dovesse rilevare software indesiderato, a Google potrebbero essere segnalati metadati relativi alla scansione in base al criterio stabilito da SafeBrowsingExtendedReportingEnabled. Chrome Software Cleaner chiederà all'utente se vuole ripulire il software indesiderato.  I risultati della pulizia verranno segnalati a Google e l'utente non avrà la possibilità di impedire la segnalazione.
 
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in Chrome Browser Cloud Management.</translation>
+<translation id="2448315169529769573">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_OS_NAME" /> segnala a Google metriche relative all'utilizzo e dati diagnostici, ad esempio rapporti sugli arresti anomali. Se il criterio viene impostato su Disattivato, la segnalazione di metriche e dati diagnostici viene disattivata.
+
+       Se il criterio non viene configurato, la segnalazione di metriche e dati diagnostici rimane disattivata sui dispositivi non gestiti e attiva sui dispositivi gestiti.</translation>
 <translation id="2454228136871844693">Ottimizza per aumentare la stabilità.</translation>
+<translation id="2456629156652006573">Solo privato</translation>
 <translation id="2463034609187171371">Attiva i pacchetti di crittografia DHE in TLS</translation>
 <translation id="2463365186486772703">Lingua dell'applicazione</translation>
 <translation id="2463832514638083341">Questo criterio controlla per quanto tempo i metadati dei processi di stampa vengono memorizzati sul dispositivo, con valore espresso in giorni.
@@ -1142,9 +1141,16 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
       Questo criterio è stato rimosso da M77.
       Questo criterio si applica alla schermata di accesso. Vedi anche il criterio <ph name="SITE_PER_PROCESS_POLICY_NAME" /> che viene applicato alla sessione utente. È consigliabile impostare lo stesso valore per entrambi i criteri. Se i valori non corrispondono, può verificarsi un ritardo quando si accede a una sessione utente mentre viene applicato il valore specificato dai criteri relativi agli utenti.
       </translation>
+<translation id="2702023190395322609">Attiva consigli di contenuti multimediali</translation>
 <translation id="2706708761587205154">Consenti la stampa solo con PIN</translation>
 <translation id="2707873794476722903">Navigazione sicura è attiva in modalità standard.</translation>
 <translation id="2710534340210290498">Se la norma viene impostata su false, gli utenti non potranno bloccare lo schermo (sarà possibile solo la disconnessione dalla sessione utente). Se l'impostazione viene impostata su true o non viene configurata, gli utenti autenticati mediante password potranno bloccare lo schermo.</translation>
+<translation id="2716623398185506073">Se il criterio viene impostato su Attivato, i dispositivi registrati segnalano statistiche hardware e identificatori relativi all'alimentazione.
+
+      Se il criterio viene impostato su Disattivato o se non viene configurato, i dispositivi registrati non segnalano statistiche relative all'alimentazione.</translation>
+<translation id="2725855586003209701">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano l'elenco di utenti dei dispositivi che hanno eseguito l'accesso di recente.
+
+      Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano l'elenco di utenti.</translation>
 <translation id="2731627323327011390">Disattiva l'utilizzo dei certificati <ph name="PRODUCT_OS_NAME" /> per le app ARC</translation>
 <translation id="2742843273354638707">Consente di nascondere l'app Chrome Web Store e il link nel piè di pagina nella pagina Nuova scheda e in Avvio applicazioni di <ph name="PRODUCT_OS_NAME" />.
 
@@ -1264,6 +1270,17 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
 
       Se questo criterio non viene impostato, il filtro viene omesso e vengono presi in considerazione tutti i server di stampa.</translation>
 <translation id="2877225735001246144">Disabilita ricerca CNAME durante la negoziazione con Kerberos</translation>
+<translation id="2886215882246310669">Consente di stabilire se <ph name="PRODUCT_OS_NAME" /> permette o meno di aggiungere nuovi account utente Family Link al dispositivo.
+      Questo criterio è utile soltanto insieme al criterio <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />, che consente di autorizzare gli account Family Link oltre agli account definiti nella lista consentita.
+      Questo criterio non influisce sul comportamento di altri criteri di accesso. Nello specifico, non ha effetto se:
+      - Viene disattivata l'aggiunta di nuovi utenti al dispositivo tramite il criterio <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" />.
+      - Viene consentita l'aggiunta di tutti gli utenti tramite il criterio <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />.
+
+      Se questo criterio viene impostato su falso o se non viene configurato, non verranno applicate regole aggiuntive per gli account Family Link.
+      Se questo criterio viene impostato su vero, verranno consentiti nuovi account utente Family Link oltre agli account definiti nel criterio <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />.</translation>
+<translation id="2886969306951284125">Se le app Android sono attive e il criterio viene impostato su Vero, i dispositivi registrati segnalano informazioni sullo stato di Android.
+
+      Se il criterio viene impostato su Disattivato o se non viene configurato, i dispositivi registrati non segnalano informazioni sullo stato di Android.</translation>
 <translation id="2890645751406497668">Concede automaticamente a questi siti l'autorizzazione a connettersi a dispositivi USB usando gli ID fornitore e prodotto forniti.</translation>
 <translation id="2892414556511568464">Consente di limitare la modalità di stampa fronte/retro. Se la norma non viene impostata o viene lasciata vuota non vengono applicate limitazioni.</translation>
 <translation id="2893546967669465276">Consente di inviare log di sistema al server di gestione</translation>
@@ -1286,6 +1303,10 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
 <translation id="2905984450136807296">Durata dei dati di autenticazione nella cache</translation>
 <translation id="2906874737073861391">Elenco di estensioni AppPack</translation>
 <translation id="2908277604670530363">Numero massimo di connessioni simultanee al server proxy</translation>
+<translation id="2919544577647246857">Consente di definire l'elenco di utenti autorizzati ad accedere al dispositivo. Le voci sono nel formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, ad esempio <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />. Per autorizzare utenti arbitrari su un dominio, le voci devono essere nel formato <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
+
+      Se questo criterio non viene configurato, non ci sono limitazioni in termini di utenti autorizzati ad accedere. Tieni presente che la creazione di nuovi utenti richiede comunque la corretta configurazione del criterio <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" />.
+      Se viene attivato il criterio <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" />, saranno consentiti anche gli utenti Family Link oltre agli account definiti in questo criterio.</translation>
 <translation id="2921222258441684334">Se il criterio è impostato su 1, i siti possono tracciare la posizione fisica dell'utente come stato predefinito. Se il criterio è impostato su 2, il tracciamento viene negato per impostazione predefinita. Puoi impostare il criterio per chiedere ogni volta che un sito desidera tracciare la posizione fisica degli utenti.
 
       Se il criterio non viene configurato, si applica il criterio <ph name="ASK_GEOLOCATION_POLICY_NAME" />, ma gli utenti possono cambiare l'impostazione.</translation>
@@ -1376,14 +1397,6 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
 
           Se questo criterio non viene impostato, inizialmente il puntatore grande è disattivato nella schermata di accesso, ma l'utente può attivarlo in qualsiasi momento.</translation>
 <translation id="3030000825273123558">Attiva rapporti sulle metriche</translation>
-<translation id="3033660238345063904">Puoi specificare l'URL del server proxy qui.
-
-          Questa norma viene applicata solo se hai selezionato manualmente le impostazioni proxy in "Scegli come specificare le impostazioni del server proxy" e se la norma <ph name="PROXY_SETTINGS_POLICY_NAME" /> non è stata specificata.
-
-          Devi lasciare questa norma non impostata se hai selezionato una qualsiasi altra modalità per l'impostazione delle norme relative al proxy.
-
-          Per ulteriori opzioni ed esempi dettagliati, visita:
-          <ph name="PROXY_HELP_URL" />.</translation>
 <translation id="3038323923255997294">Continua a eseguire applicazioni in background dopo la chiusura di <ph name="PRODUCT_NAME" /></translation>
 <translation id="3041887182529293512">Se il criterio viene impostato su True o non viene impostato, nella pagina Nuova scheda vengono visualizzati suggerimenti di contenuti generati automaticamente in base alla cronologia di navigazione, agli interessi o alla posizione dell'utente.
 
@@ -1509,6 +1522,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       Se non viene configurato, il valore predefinito è 0 e gli utenti sono liberi di modificarlo. In questo caso, il valore predefinito non viene applicato nuovamente al riavvio.</translation>
 <translation id="3264793472749429012">Codifiche del provider di ricerca predefinito</translation>
 <translation id="3273221114520206906">Impostazione JavaScript predefinita</translation>
+<translation id="328347261792478720">Per impostazione predefinita, nel browser vengono mostrati consigli di contenuti multimediali personalizzati in base agli interessi dell'utente. Se questo criterio viene impostato su Disattivato, questi consigli vengono nascosti all'utente. Se il criterio viene impostato su Attivato o se non viene configurato, i consigli di contenuti multimediali vengono mostrati all'utente.</translation>
 <translation id="3284094172359247914">Controlla l'utilizzo dell'API WebUSB</translation>
 <translation id="3288595667065905535">Canale di rilascio</translation>
 <translation id="3292147213643666827">Consente a <ph name="PRODUCT_NAME" /> di fungere da proxy tra <ph name="CLOUD_PRINT_NAME" /> e le stampanti preesistenti collegate al computer.
@@ -1525,6 +1539,9 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       Questo criterio verrà rimosso nella versione 88 di Chrome.
 
       Visita la pagina https://www.chromestatus.com/feature/4664843055398912.</translation>
+<translation id="3302829897293005699">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano informazioni relative alla sessione kiosk attiva quali ID applicazione e versione.
+
+      Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano informazioni relative alla sessione kiosk.</translation>
 <translation id="3303911765031636277">Criterio di configurazione per il connettore OnFileAttached di Chrome Enterprise</translation>
 <translation id="3304662785258434098">Consente di stabilire se gli utenti possono aggiungere eccezioni per consentire contenuti misti per siti specifici.
 
@@ -1559,6 +1576,10 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3345682490796432751">Se il criterio viene impostato su Attivato, i plug-in obsoleti vengono utilizzati come normali plug-in. Se il criterio viene impostato su Disattivato, i plug-in obsoleti non vengono utilizzati.
 
       Se il criterio non viene configurato, agli utenti viene richiesta l'autorizzazione per eseguire i plug-in obsoleti.</translation>
+<translation id="3348799281602260763">Se questo criterio viene attivato, è possibile eseguire il downgrade delle connessioni peer WebRTC a versioni obsolete dei protocolli TLS/DTLS (DTLS 1.0, TLS 1.0 e TLS 1.1).
+      Se questo criterio viene disattivato o se non viene configurato, queste versioni TLS/DTLS sono disattivate.
+
+      Questo criterio è temporaneo e verrà rimosso in una futura versione di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3356657927302977341">Consente di configurare se <ph name="PRODUCT_NAME" /> utilizzerà notifiche native su Linux.
 
 Se questo criterio viene impostato su True o se non viene impostato, <ph name="PRODUCT_NAME" /> potrà utilizzare notifiche native.
@@ -1840,6 +1861,9 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 <translation id="3709266154059827597">Configura blacklist per l'installazione delle estensioni</translation>
 <translation id="3711895659073496551">Sospensione</translation>
 <translation id="3715569262675717862">Autenticazione basata su certificati client</translation>
+<translation id="3727675072430693164">Se il criterio viene impostato su Attivato, i dispositivi registrati segnalano statistiche hardware relative ai componenti SoC.
+
+      Se il criterio viene impostato su Disattivato o se non viene configurato, i dispositivi registrati non segnalano le statistiche.</translation>
 <translation id="3736879847913515635">Attiva la funzione Aggiungi persona in Gestione utenti</translation>
 <translation id="3737890474637805114">Blocca i download di file di grandi dimensioni</translation>
 <translation id="3748900290998155147">Consente di specificare se consentire o meno i wakelock. I wakelock possono essere richiesti dalle estensioni tramite l'API dell'estensione di gestione dell'alimentazione e dalle app ARC.
@@ -1851,6 +1875,9 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 <translation id="375266612405883748">Limita l'intervallo di porte UDP utilizzate dall'host di accesso remoto in questo computer.
 
           Se questa norma non è impostata o se viene impostata una stringa vuota, l'host di accesso remoto potrà utilizzare qualsiasi porta, a meno che la norma <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> sia disattivata; in questo caso l'host di accesso remoto utilizzerà le porte UDP nell'intervallo 12400-12409.</translation>
+<translation id="3755237588083934849">Questo criterio consente di stabilire la frequenza di invio, in millisecondi, dei caricamenti dello stato del dispositivo. Il valore minimo consentito è 60 secondi.
+
+      Se il criterio non viene configurato, viene applicato l'intervallo predefinito di 3 ore.</translation>
 <translation id="3756011779061588474">Blocca modalità sviluppatore</translation>
 <translation id="3758089716224084329">Consente di specificare il server proxy utilizzato da <ph name="PRODUCT_NAME" /> e impedisce agli utenti di modificare le impostazioni proxy.
 
@@ -2649,33 +2676,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
       Se questo criterio viene disattivato, le chiamate alle API di condivisione schermo restituiranno un errore.</translation>
 <translation id="5032164758660626397">Impedisci all'utente di trasferire file di grandi dimensioni</translation>
 <translation id="5047604665028708335">Consenti l'accesso ai siti non presenti nei pacchetti di contenuti</translation>
-<translation id="5055312535952606505">Consente di configurare le impostazioni proxy per <ph name="PRODUCT_NAME" />, che saranno disponibili anche per le app ARC.
-
-          Se attivi questa impostazione, <ph name="PRODUCT_NAME" /> e le app ARC ignorano tutte le opzioni relative ai proxy specificate dalla riga di comando.
-
-          Se questa norma non è impostata, gli utenti potranno scegliere le impostazioni proxy autonomamente.
-
-          Se la norma <ph name="PROXY_SETTINGS_POLICY_NAME" /> è impostata, sostituirà qualsiasi norma singola <ph name="PROXY_MODE_POLICY_NAME" />, <ph name="PROXY_PAC_URL_POLICY_NAME" />, <ph name="PROXY_SERVER_POLICY_NAME" />, <ph name="PROXY_BYPASS_POLICY_NAME" /> e <ph name="PROXY_SERVER_MODE_POLICY_NAME" />.
-
-          Il campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> consente di specificare il server proxy utilizzato da <ph name="PRODUCT_NAME" /> e impedisce agli utenti di modificare le impostazioni di proxy.
-
-          Il campo <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> è un URL di un file proxy .pac.
-
-          Il campo <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> è un URL del server proxy.
-
-          Il campo <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> è un elenco di host proxy che <ph name="PRODUCT_NAME" /> aggirerà.
-
-          Il campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> è obsoleto a favore del campo "ProxyMode". Consente di specificare il server proxy utilizzato da <ph name="PRODUCT_NAME" /> e impedisce agli utenti di modificare le impostazioni proxy.
-
-          Se si sceglie come "ProxyMode" il valore "direct", non verrà mai utilizzato un proxy e tutti gli altri campi saranno ignorati.
-
-          Se si sceglie come "ProxyMode" il valore "system", verrà utilizzato il proxy del sistema e tutti gli altri campi saranno ignorati.
-
-          Se si sceglie come "ProxyMode" il valore "auto_detect", tutti gli altri campi saranno ignorati.
-
-          Se si sceglie come "ProxyMode" il valore "fixed_server", verranno utilizzati i campi "ProxyServer" e "ProxyBypassList".
-
-          Se si sceglie come "ProxyMode" il valore "pac_script", verranno utilizzati i campi "ProxyPacUrl" e "ProxyBypassList".</translation>
 <translation id="5056708224511062314">Ingrandimento dello schermo disattivato</translation>
 <translation id="5058573563327660283">Seleziona la strategia da utilizzare per liberare spazio su disco durante la pulizia automatica (obsoleta)</translation>
 <translation id="5061114193960158745">Questo criterio consente di stabilire l'elenco di siti web che non causeranno mai un cambio di browser. Ogni elemento è considerato come una regola. Le regole con una corrispondenza non aprono un browser alternativo. A differenza del criterio <ph name="URL_LIST_POLICY_NAME" />, le regole vengono applicate in entrambe le direzioni. Quando il componente aggiuntivo <ph name="IE_PRODUCT_NAME" /> è attivo, il criterio consente di stabilire anche se <ph name="IE_PRODUCT_NAME" /> deve aprire questi URL in <ph name="PRODUCT_NAME" />.
@@ -2915,6 +2915,9 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 
       Se il criterio non viene impostato su versioni fino alla M76 inclusa, per impostazione predefinita <ph name="PRODUCT_NAME" /> non può raccogliere e caricare questi log. A partire dalla versione M77, per impostazione predefinita <ph name="PRODUCT_NAME" /> può raccogliere e caricare questi log dalla maggior parte dei profili interessati dai criteri aziendali a livello di utente basati sul cloud. Dalla versione M77 fino alla M80 inclusa, <ph name="PRODUCT_NAME" /> può anche raccogliere e caricare questi log per impostazione predefinita dai profili soggetti alla gestione on-premise di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5331746669335642668">La norma relativa alla cloud <ph name="PRODUCT_NAME" /> esegue l'override della norma relativa alla piattaforma.</translation>
+<translation id="5340105431123046323">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano l'elenco di interfacce di rete con i relativi tipi e indirizzi hardware.
+
+      Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano l'interfaccia di rete.</translation>
 <translation id="5346587320074666194">Blocca l'accesso ai sensori su questi siti</translation>
 <translation id="5362531528507578966">Consente di sostituire la modalità di stampa predefinita delle immagini di sfondo.</translation>
 <translation id="5365476955714838841">Parametri della riga di comando per il browser alternativo.</translation>
@@ -3303,6 +3306,9 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
       Ogni voce di questo elenco è un pattern di corrispondenza in stile di estensione (vedi https://developer.chrome.com/extensions/match_patterns). Gli utenti possono installare facilmente elementi da qualsiasi URL che corrisponda a una voce nell'elenco. Questi pattern devono consentire sia la posizione del file *.crx sia la pagina da cui viene avviato il download (il referrer).
 
       <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> ha la precedenza su questo criterio. Ciò significa che un'estensione presente nella lista bloccata non verrà installata, anche se è di un sito presente in questo elenco.</translation>
+<translation id="5860010874344790473">Se il criterio viene impostato su Attivato, i log di sistema vengono inviati al server di gestione per consentire agli amministratori di monitorarli.
+
+      Se il criterio viene impostato su Disattivato o se non viene configurato, i log di sistema non vengono segnalati.</translation>
 <translation id="5861856285460256766">Configurazione codice di accesso genitori</translation>
 <translation id="5868414965372171132">Configurazione di rete a livello di utente</translation>
 <translation id="587242272905978723">Consenti a <ph name="PLUGIN_VM_NAME" /> di raccogliere i dati sull'utilizzo di <ph name="PLUGIN_VM_NAME" />.
@@ -3500,14 +3506,6 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 <translation id="6155936611791017817">Impostazione stato predefinito del puntatore grande nella schermata di accesso</translation>
 <translation id="6157537876488211233">Elenco separato da virgole delle regole di bypass proxy</translation>
 <translation id="6158324314836466367">Nome del web store dell'azienda (obsoleta)</translation>
-<translation id="6158817306788002298">Puoi specificare un URL di un file .pac del proxy qui.
-
-          Questa norma viene applicata solo se hai selezionato manualmente le impostazioni proxy in "Scegli come specificare le impostazioni del server proxy" e se la norma <ph name="PROXY_SETTINGS_POLICY_NAME" /> non è stata specificata.
-
-          Devi lasciare questa norma non impostata se hai selezionato una qualsiasi altra modalità per l'impostazione delle norme relative al proxy.
-
-          Per esempi dettagliati, visita:
-          <ph name="PROXY_HELP_URL" />.</translation>
 <translation id="6172896675583897796">Se il criterio viene impostato su Attivato, l'Assistente Google potrà accedere al contesto dello schermo e inviare i dati al server. Se il criterio è impostato su Disattivato, l'Assistente Google non potrà accedere al contesto dello schermo.
 
       Se il criterio non viene configurato, gli utenti potranno decidere se attivare o disattivare la funzionalità.</translation>
@@ -3678,15 +3676,6 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 
       Se il criterio è disattivato o non è impostato, il menu Accessibilità mobile non verrà mai mostrato.</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
-<translation id="6426205278746959912">Non è possibile imporre l'utilizzo di un proxy alle app Android. Viene messo a disposizione un sottoinsieme di impostazioni proxy che le app Android possono decidere se rispettare o meno.
-
-          Se si decide di non usare mai un server proxy, alle app Android viene comunicato che non è configurato alcun proxy.
-
-          Se si decide di usare le impostazioni proxy di sistema o un proxy server fisso, alle app Android vengono forniti l'indirizzo HTTP e la porta di tale server.
-
-          Se si decide di rilevare automaticamente il server proxy, alle app Android viene fornito l'URL script "http://wpad/wpad.dat". Non viene utilizzata nessun'altra parte del protocollo di rilevamento automatico del server proxy.
-
-          Se si decide di utilizzare uno script proxy .pac, alle app Android viene fornito l'URL script.</translation>
 <translation id="6438364096042399634">L'impostazione del criterio consente di definire l'elenco di dispositivi USB che gli utenti possono scollegare dal proprio driver del kernel per essere utilizzati tramite l'API chrome.usb direttamente all'interno di un'app web. Le voci sono coppie costituite dall'ID fornitore USB e dall'ID prodotto per identificare hardware specifico.
 
       Se il criterio non viene configurato, l'elenco di dispositivi USB scollegabili è vuoto.
@@ -3819,6 +3808,17 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
       Se viene impostato su true, consente di attivare la funzionalità Powerwash sul dispositivo.
       Se non viene configurato, il valore predefinito sarà true, consentendo al dispositivo di attivare la funzionalità Powerwash.
       </translation>
+<translation id="6614020900120353107">Consente di stabilire se usare o meno in <ph name="PRODUCT_NAME" /> il client DNS integrato.
+
+      Questo criterio non influisce sui server DNS utilizzati, ma soltanto sullo stack software usato per comunicare con loro. Ad esempio, se il sistema operativo è configurato in modo da usare un server DNS aziendale, lo stesso server viene usato dal client DNS integrato. Tuttavia, è possibile che il client DNS integrato indirizzi i server in modi diversi usando protocolli DNS più moderni, come DNS-over-TLS.
+
+      Questo criterio non ha effetto sul protocollo DNS-over-HTTPS. Usa il criterio <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> per cambiare questo comportamento.
+
+      Se questo criterio viene impostato su vero, verrà usato il client DNS integrato, se disponibile.
+
+      Se questo criterio viene impostato su falso, il client DNS integrato non verrà mai utilizzato.
+
+      Se il criterio non viene configurato, per impostazione predefinita il client DNS integrato verrà attivato su macOS, Android (nel caso in cui non siano attivi il DNS privato né la VPN) e Chrome OS. Gli utenti potranno scegliere se utilizzare o meno il client DNS integrato modificando chrome://flags o specificando un flag della riga di comando.</translation>
 <translation id="6621839881150363218">Se il criterio viene impostato su Attivato, tutti i siti vengono isolati (ogni sito viene eseguito nel proprio processo). Se il criterio viene impostato su Disattivato, non si verifica alcun isolamento esplicito dei siti e le prove sul campo di IsolateOriginsAndroid e SitePerProcessAndroid vengono disattivate. Gli utenti possono comunque attivare manualmente il criterio.
 
       Se il criterio non viene configurato, gli utenti possono modificare questa impostazione.
@@ -3940,6 +3940,9 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
       Se il criterio non è impostato su un dispositivo gestito, quest'ultimo non può eseguire macchine virtuali. I dispositivi non gestiti non possono eseguire macchine virtuali.</translation>
 <translation id="6786747875388722282">Estensioni</translation>
 <translation id="6786967369487349613">Imposta la directory profilo di roaming</translation>
+<translation id="6789422336869764846">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano lo stato dello switch sviluppatore del dispositivo all'avvio.
+
+      Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano lo stato dello switch sviluppatore.</translation>
 <translation id="6795485990775913659">Consenti la stampa solo senza PIN</translation>
 <translation id="6810445994095397827">Blocca JavaScript in questi siti</translation>
 <translation id="6813263547126514821">Alimentazione e spegnimento</translation>
@@ -4484,6 +4487,9 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
 <translation id="7458437477941640506">Non eseguire il rollback alla versione target se la versione del sistema operativo è più nuova del target. Anche gli aggiornamenti sono disattivati.</translation>
 <translation id="7459601923199346224">Consente di controllare i criteri relativi agli utenti e ai dispositivi per la gestione dei certificati.</translation>
 <translation id="7464991223784276288">Limita i cookie degli URL corrispondenti alla sessione corrente</translation>
+<translation id="7468182772656807573">Questo criterio consente di stabilire la frequenza di invio, in millisecondi, dei pacchetti di rete di monitoraggio. Gli intervalli sono compresi tra 30 secondi e 24 ore. I valori che non rientrano in questo intervallo verranno fatti rientrare.
+
+      Se il criterio non viene configurato, viene applicato l'intervallo predefinito di 3 minuti.</translation>
 <translation id="7469554574977894907">Attiva suggerimenti di ricerca</translation>
 <translation id="747014869399137701">Se il criterio è impostato su 1, i siti web possono mostrare le notifiche desktop. Se il criterio è impostato su 2, le notifiche desktop vengono negate.
 
@@ -4747,6 +4753,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
           Se questo criterio non viene impostato, le scorciatoie delle funzioni di accessibilità saranno attive per impostazione predefinita nella schermata di accesso.</translation>
 <translation id="7777535871204167559">Considera i dispositivi di archiviazione esterni come di sola lettura</translation>
 <translation id="7788511847830146438">Per profilo</translation>
+<translation id="780629758750905699">Consenti l'aggiunta di account Family Link al dispositivo</translation>
 <translation id="7807139251387225825">Elenco di tipi di dati che dovrebbero essere esclusi dalla sincronizzazione</translation>
 <translation id="7815699949432723208">Questo criterio è obsoleto. Usa il criterio "<ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />".
 
@@ -4894,6 +4901,9 @@ Consente di attivare la funzione Compilazione automatica di <ph name="PRODUCT_NA
 Se disattivi questa impostazione, gli utenti non potranno utilizzare la funzione Compilazione automatica.
 
 Se attivi questa impostazione o non imposti un valore, la funzione Compilazione automatica potrà essere gestita dagli utenti, che potranno quindi configurare i profili di Compilazione automatica e attivare o disattivare a propria scelta questa funzione.</translation>
+<translation id="8036964468882248070">Se il criterio viene impostato su Attivato, i dispositivi registrati segnalano statistiche hardware e identificatori per i dispositivi di archiviazione.
+
+      Se il criterio viene impostato su Disattivato o se non viene configurato, i dispositivi registrati non segnalano statistiche relative all'archiviazione.</translation>
 <translation id="8044493735196713914">Indicazione modalità di avvio dispositivo</translation>
 <translation id="8049769137921877885">Questo criterio consente di stabilire se segnalare o meno i dati del criterio e data e ora del relativo recupero.
 
@@ -4974,6 +4984,9 @@ Se questo criterio non viene impostato, la Schermata sulla privacy viene inizial
           Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
 
           Se questo criterio non viene impostato, inizialmente l'evidenziazione del cursore è disattivata, ma l'utente può attivarla in qualsiasi momento.</translation>
+<translation id="8164687848393015214">Se il criterio viene impostato su Attivato, i pacchetti di rete di monitoraggio (<ph name="HEARTBEATS_TERM" />) vengono inviati al server di gestione per monitorare lo stato online e consentire al server di rilevare se il dispositivo è offline.
+
+      Se il criterio viene impostato su Disattivato o se non viene configurato, i pacchetti non vengono inviati.</translation>
 <translation id="816783746144552109">Configura la versione minima di Chrome OS consentita per il dispositivo</translation>
 <translation id="8171924760436219650">Imposta il pulsante destro come pulsante principale del mouse nella schermata di accesso</translation>
 <translation id="8176035528522326671">Consenti all'utente aziendale di essere solo l'utente multiprofilo principale (comportamento predefinito per gli utenti gestiti dall'azienda)</translation>
@@ -5264,6 +5277,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 
       Se la norma viene impostata su false o non viene configurata, l'utente può utilizzare il browser senza accedere a <ph name="PRODUCT_NAME" />.</translation>
 <translation id="858309738002328421">Blocca i caricamenti di file di grandi dimensioni</translation>
+<translation id="8583509234908413302">Consenti downgrade a protocolli TLS/DTLS precedenti in WebRTC</translation>
 <translation id="8584279193368801689">Consente di limitare la modalità di stampa PIN. Se il criterio non viene impostato non vengono applicate limitazioni. Se la modalità non è disponibile, questo criterio viene ignorato. Tieni presente che la funzionalità di stampa PIN viene attivata solo per le stampanti che usano uno dei protocolli IPPS, HTTPS, USB o IPP-over-USB.</translation>
 <translation id="8585558195682146109">Invia download degli utenti da analizzare</translation>
 <translation id="8587229956764455752">Consenti la creazione di nuovi account utente</translation>
@@ -5421,26 +5435,6 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
 
        Nota: questo criterio non viene applicato alla Modalità di navigazione in incognito. Leggi ulteriori informazioni sull'hosting delle estensioni (https://developer.chrome.com/extensions/hosting).</translation>
 <translation id="8833109046074170275">Autenticazione tramite il flusso GAIA predefinito</translation>
-<translation id="8851325571441692315">Consente di specificare il server proxy utilizzato da <ph name="PRODUCT_NAME" /> e impedisce agli utenti di modificare le impostazioni proxy.
-
-          Questa norma viene applicata soltanto se la norma <ph name="PROXY_SETTINGS_POLICY_NAME" /> non è stata specificata.
-
-          Se si sceglie di non utilizzare mai un server proxy e ci si connette sempre direttamente, tutte le altre opzioni verranno ignorate.
-
-          Se si sceglie di utilizzare le impostazioni proxy di sistema, tutte le altre opzioni verranno ignorate.
-
-          Se si sceglie il rilevamento automatico del server proxy, tutte le altre opzioni verranno ignorate.
-
-          Se si sceglie la modalità server proxy fissa, è possibile specificare ulteriori opzioni in "Indirizzo o URL del server proxy" e in "Elenco separato da virgole delle regole di bypass proxy". Per le app ARC è disponibile solo il server proxy HTTP con la priorità più alta.
-
-          Se si sceglie di utilizzare uno script proxy .pac, si deve specificare l'URL per lo script in "URL per file proxy .pac".
-
-          Per esempi dettagliati, visita:
-          <ph name="PROXY_HELP_URL" />.
-
-          Se attivi questa impostazione, <ph name="PRODUCT_NAME" /> e le app ARC ignorano tutte le opzioni relative al proxy specificate dalla riga di comando.
-
-          Se questa norma non è impostata, gli utenti potranno scegliere le impostazioni proxy autonomamente.</translation>
 <translation id="8852579753940989645">Attiva l'integrità del codice del renderer</translation>
 <translation id="8854571659927427063">Se il criterio viene impostato su Attivato, i preferiti del precedente browser predefinito verranno importati alla prima esecuzione. Se il criterio viene impostato su Disattivato o se non viene configurato, i preferiti non verranno importati alla prima esecuzione.
 
@@ -5492,6 +5486,9 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
 
       I pattern URL hanno lo stesso formato del criterio "<ph name="URL_BLOCKLIST_POLICY_NAME" />" documentato all'indirizzo https://www.chromium.org/administrators/url-blacklist-filter-format.
       </translation>
+<translation id="8931555638815157255">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano periodicamente la versione dei relativi sistemi operativi e firmware.
+
+      Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano le informazioni sulla versione.</translation>
 <translation id="8937282917198525844"> A partire dalla versione M81, abbiamo rinnovato aspetto e design degli elementi di controllo modulo standard (ad esempio, &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;), con una superiore accessibilità e una migliore uniformità della piattaforma. Questo criterio ripristina i precedenti controlli modulo "legacy" fino alla versione M84.
 
       Se questo criterio viene impostato su True, gli elementi di controllo modulo "legacy" verranno utilizzati per tutti i siti.
@@ -5647,6 +5644,9 @@ https://www.w3.org/TR/secure-contexts/
       Se il criterio non viene configurato, viene applicato il criterio <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
 
       Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Tuttavia, a partire dalla versione M85, i pattern con caratteri jolly "*" e "[*.]" nell'host non sono più supportati per questo criterio.</translation>
+<translation id="9073405975862312795">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano i periodi di attività di un utente sul dispositivo.
+
+      Se il criterio viene impostato su Disattivato, i dispositivi registrati non registrano e non segnalano i tempi di attività.</translation>
 <translation id="9077227880520270584">Timer accesso automatico all'account locale del dispositivo</translation>
 <translation id="9084985621503260744">Specifica se l'attività video incide sulla gestione dell'alimentazione</translation>
 <translation id="9088433379343318874">Abilita il provider di contenuti dell'utente supervisionato</translation>

@@ -17,7 +17,6 @@
 <translation id="1335095011850992622">crèdits</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">bàner</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> elements</translation>
 <translation id="1480676835519562650">multiseleccionable; se n'han seleccionat <ph name="SELECTED" /> de <ph name="COUNT" /></translation>
 <translation id="1589122976691792535">regió</translation>
 <translation id="1591562245178063882">Aquest mes</translation>
@@ -290,6 +289,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, a partir del dia <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Pantalla en pantalla</translation>
 <translation id="9168329111483466115">nota al peu</translation>
+<translation id="945780513535800434">Marcada parcialment</translation>
 <translation id="954003015749068518">entra a pantalla en pantalla</translation>
 <translation id="966787709310836684">menú</translation>
 </translationbundle>

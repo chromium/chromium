@@ -63,7 +63,6 @@
 <translation id="1067048845568873861">Created</translation>
 <translation id="1067291318998134776">Linux (Beta)</translation>
 <translation id="1067922213147265141">Other Google services</translation>
-<translation id="1068961867683064946">Create a Google Account for your child</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Another program on your computer added an extension that may change the way Chrome works.
 
@@ -392,7 +391,6 @@
 <translation id="1436390408194692385">Valid for <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">Continue setup</translation>
 <translation id="1436784010935106834">Removed</translation>
-<translation id="1442392616396121389">Routing prefix</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> selected</translation>
 <translation id="1442851588227551435">Set active Kerberos ticket</translation>
 <translation id="1444628761356461360">This setting is managed by the device owner, <ph name="OWNER_EMAIL" />.</translation>
@@ -1141,7 +1139,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2309620859903500144">This site has been blocked from accessing your motion or light sensors.</translation>
 <translation id="2314165183524574721">Current visibility setting is hidden</translation>
 <translation id="2314774579020744484">Language used when translating pages</translation>
-<translation id="2314873619957287124">Set digital ground rules to help your child learn, play and explore</translation>
 <translation id="2315414688463285945">Error configuring Linux files. Please try again.</translation>
 <translation id="2315587498123194634">Send link to <ph name="DEVICE_NAME" /></translation>
 <translation id="2316129865977710310">No, thanks</translation>
@@ -1153,7 +1150,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2322318151094136999">Ask when a site wants to access serial ports (recommended)</translation>
 <translation id="2323018538045954000">Saved Wi-Fi networks</translation>
 <translation id="2325444234681128157">Remember password</translation>
-<translation id="2326160999284776503">Sign in with your child's Google Account</translation>
 <translation id="2326188115274135041">Confirm PIN to turn on automatic unlock</translation>
 <translation id="2326931316514688470">&amp;Reload app</translation>
 <translation id="2327492829706409234">Enable app</translation>
@@ -1617,7 +1613,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2851634818064021665">You need permission to visit this site</translation>
 <translation id="2854896010770911740">Remove third-party cookies</translation>
 <translation id="2858138569776157458">Top sites</translation>
-<translation id="2859806420264540918">This site shows intrusive or misleading ads.</translation>
 <translation id="2861301611394761800">System update complete. Please restart the system.</translation>
 <translation id="2861941300086904918">Native Client security manager</translation>
 <translation id="2864601841139725659">Set your profile picture</translation>
@@ -1892,7 +1887,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3192947282887913208">Audio Files</translation>
 <translation id="3199127022143353223">Servers</translation>
 <translation id="3200310363903241381">{COUNT,plural, =1{Chrome recommends checking this password now}other{Chrome recommends checking these passwords now}}</translation>
-<translation id="3201154330231437478">Enable reverse scrolling <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="3201422919974259695">Available USB devices will appear here.</translation>
 <translation id="3202131003361292969">Path</translation>
 <translation id="3202173864863109533">This tab's audio is being muted.</translation>
@@ -2874,7 +2868,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> is sharing a window.</translation>
 <translation id="4364830672918311045">Display notifications</translation>
-<translation id="4368115171699243057">Set up this <ph name="DEVICE_TYPE" /> for your child</translation>
 <translation id="437004882363131692">Get <ph name="DEVICE_TYPE" /> tips, offers and updates, and share feedback. Unsubscribe at any time.</translation>
 <translation id="4370975561335139969">The email and password that you entered don't match.</translation>
 <translation id="4374831787438678295">Linux installer</translation>
@@ -3713,7 +3706,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5397794290049113714">You</translation>
 <translation id="5398497406011404839">Hidden bookmarks</translation>
 <translation id="5398572795982417028">Out of bounds page reference, limit is <ph name="MAXIMUM_PAGE" /></translation>
-<translation id="5398772614898833570">Ads blocked</translation>
 <translation id="5401938042319910061">Run all routines</translation>
 <translation id="5402815541704507626">Download update using mobile data</translation>
 <translation id="540296380408672091">Always block cookies on <ph name="HOST" /></translation>
@@ -4339,7 +4331,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6124698108608891449">This site needs more permissions.</translation>
 <translation id="6125479973208104919">Unfortunately, you'll need to add your account to this <ph name="DEVICE_TYPE" /> again.</translation>
 <translation id="6129691635767514872">The selected data has been removed from Chrome and synced devices. Your Google Account may have other forms of browsing history such as searches and activity from other Google services at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
-<translation id="6129839611163153407">Your child</translation>
 <translation id="6129938384427316298">Netscape Certificate Comment</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6130692320435119637">Add Wi-Fi</translation>
@@ -4387,7 +4378,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6185132558746749656">Device Location</translation>
 <translation id="6186394437969115158">Sites usually show ads so that they can provide content or services for free. But, some sites are known to show intrusive or misleading ads.</translation>
 <translation id="6191293864534840972">Malformed name servers</translation>
-<translation id="6195446518998936840">To set up parental controls, your child must have a Google Account that you'll help manage. You can set screen time limits, approve or block websites, and more with the Family Link app.</translation>
 <translation id="6195693561221576702">This device cannot be set up in offline demo mode.</translation>
 <translation id="6196640612572343990">Block third-party cookies</translation>
 <translation id="6196854373336333322">The extension "<ph name="EXTENSION_NAME" />" has taken control of your proxy settings, which means it can change, break or eavesdrop on anything you do online. If you aren't sure why this change happened, you probably don't want it.</translation>
@@ -5342,7 +5332,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7354341762311560488">The fingerprint sensor is the bottom-left key on your keyboard. Touch it lightly with any finger.</translation>
 <translation id="7356908624372060336">Network logs</translation>
 <translation id="735745346212279324">VPN disconnected</translation>
-<translation id="7359588939039777303">Ads blocked.</translation>
 <translation id="7360183604634508679">Bookmarks menu</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> pages to <ph name="PRINTER_NAME" /></translation>
 <translation id="7361297102842600584">Right-click to run <ph name="PLUGIN_NAME" /></translation>
@@ -6705,7 +6694,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8916476537757519021">Incognito Subframe: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8916749157829986308">Set window name</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />'s <ph name="DEVICE_TYPE" /></translation>
-<translation id="8922013791253848639">Always allow ads on this site</translation>
 <translation id="8923880975836399332">Dark teal</translation>
 <translation id="8925458182817574960">&amp;Settings</translation>
 <translation id="8926389886865778422">Don't ask again</translation>

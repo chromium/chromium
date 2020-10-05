@@ -92,14 +92,6 @@
 
       如將這項政策設為 0，就代表關閉 GPO 快取功能；請注意，這項設定會增加伺服器負載，因為即使 GPO 沒有更動，系統還是必須在每次擷取政策時重新下載 GPO。</translation>
 <translation id="1111470455889178048">傳送使用者上傳及下載的內容以供掃描</translation>
-<translation id="1117462881884985156"><ph name="PRODUCT_NAME" /> 會略過這項政策所指定的一系列主機的 Proxy。
-
-          你必須在「選擇如何指定 Proxy 伺服器設定」中選取手動 Proxy 設定，並且未指定 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策，這項政策才會生效。
-
-          如果你選擇了透過任何其他模式設定 Proxy 政策，請勿設定這項政策。
-
-          如需更詳細的範例，請造訪：
-          <ph name="PROXY_HELP_URL" />。</translation>
 <translation id="1117535567637097036">處理 Android 意圖時，系統不會使用透過這項政策設定的通訊協定處理常式。</translation>
 <translation id="1118093128235245168">允許網站要求使用者授權存取已連線的 USB 裝置</translation>
 <translation id="1128717055763152639">你可以設定網址模式清單，指定哪些網站能夠顯示可封鎖 (亦即使用中) 混合內容 (亦即 HTTPS 網站上的 HTTP 內容)，並指定要停用哪些選擇性可封鎖混合內容的升級功能。
@@ -1358,14 +1350,6 @@
 
           如果不設定這項政策，系統會在初次顯示登入畫面時停用大型游標，但使用者隨時可以啟用。</translation>
 <translation id="3030000825273123558">啟用計量回報功能</translation>
-<translation id="3033660238345063904">你可以在這裡指定 Proxy 伺服器的網址。
-
-          你必須在「選擇如何指定 Proxy 伺服器設定」中選取手動 Proxy 設定，並且未指定 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策，這項政策才會生效。
-
-          如果你選擇了透過任何其他模式設定 Proxy 政策，請勿設定這項政策。
-
-          如需更多選項和詳細範例，請造訪：
-          <ph name="PROXY_HELP_URL" />。</translation>
 <translation id="3038323923255997294">在 <ph name="PRODUCT_NAME" /> 關閉時繼續執行背景應用程式 </translation>
 <translation id="3041887182529293512">如果將這項政策設為 True 或不設定，系統會根據使用者的瀏覽記錄、興趣喜好或所在位置，在新分頁上顯示自動產生的內容建議。
 
@@ -2622,33 +2606,6 @@
       如果停用這項政策，網頁將無法呼叫任何螢幕畫面分享 API，且系統會傳回錯誤訊息。</translation>
 <translation id="5032164758660626397">禁止使用者傳輸大型檔案</translation>
 <translation id="5047604665028708335">允許存取內容套件以外的網站</translation>
-<translation id="5055312535952606505">這項政策可設定 <ph name="PRODUCT_NAME" /> 的 Proxy 設定。ARC 應用程式也能使用這些 Proxy 設定。
-
-          如果啟用這項設定，<ph name="PRODUCT_NAME" /> 和 ARC 應用程式會忽略所有從命令列指定的 Proxy 相關選項。
-
-          如果不設定這項政策，則使用者可自行選擇 Proxy 設定。
-
-          如果設定 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策，這項政策將覆寫任何個別政策，包括 <ph name="PROXY_MODE_POLICY_NAME" />、<ph name="PROXY_PAC_URL_POLICY_NAME" />、<ph name="PROXY_SERVER_POLICY_NAME" />、<ph name="PROXY_BYPASS_POLICY_NAME" /> 和 <ph name="PROXY_SERVER_MODE_POLICY_NAME" />。
-
-          <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> 欄位可讓你指定 <ph name="PRODUCT_NAME" /> 所使用的 Proxy 伺服器，並禁止使用者變更 Proxy 設定。
-
-          <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> 欄位是 Proxy .pac 檔案的網址。
-
-          <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> 欄位是 Proxy 伺服器的網址。
-
-          <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 欄位是 <ph name="PRODUCT_NAME" /> 將略過的 Proxy 主機清單。
-
-          <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> 欄位已遭淘汰，請改用「ProxyMode」欄位。這項政策可讓你指定 <ph name="PRODUCT_NAME" /> 所使用的 Proxy 伺服器，同時禁止使用者變更 Proxy 設定。
-
-          如果你選擇將「ProxyMode」設為「direct」，則系統一律不會使用 Proxy，並將忽略所有其他欄位。
-
-          如果你選擇將「ProxyMode」設為「system」，則系統將使用系統 Proxy，並忽略所有其他欄位。
-
-          如果你選擇將「ProxyMode」設為「auto_detect」，系統將忽略所有其他欄位。
-
-          如果你選擇將「ProxyMode」設為「fixed_server」，系統將使用「ProxyServer」和「ProxyBypassList」欄位。
-
-          如果你選擇將「ProxyMode」設為「pac_script」，系統將使用「ProxyPacUrl」和「ProxyBypassList」欄位。</translation>
 <translation id="5056708224511062314">已停用螢幕放大鏡</translation>
 <translation id="5058573563327660283">選取自動清理時用來釋出磁碟空間的策略 (已不適用)</translation>
 <translation id="5061114193960158745">你可以透過這項政策，控管一律不觸發瀏覽器切換的網站清單。系統會將每個項目視為規則。相符的規則不會開啟替代瀏覽器。這項政策與 <ph name="URL_LIST_POLICY_NAME" /> 政策的不同之處在於，規則為雙向適用。如果 <ph name="IE_PRODUCT_NAME" /> 增益集已啟用，這項政策也會控管 <ph name="IE_PRODUCT_NAME" /> 是否應在 <ph name="PRODUCT_NAME" /> 中開啟這些網址。
@@ -3466,14 +3423,6 @@
 <translation id="6155936611791017817">設定大型游標在登入畫面的預設狀態</translation>
 <translation id="6157537876488211233">以逗號間隔的 Proxy 略過規則清單</translation>
 <translation id="6158324314836466367">企業線上應用程式商店名稱 (已不適用)</translation>
-<translation id="6158817306788002298">你可以在這裡指定 Proxy .pac 檔案的網址。
-
-          你必須在「選擇如何指定 Proxy 伺服器設定」中選取手動 Proxy 設定，並且未指定 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策，這項政策才會生效。
-
-          如果你選擇了透過任何其他模式設定 Proxy 政策，請勿設定這項政策。
-
-          如需詳細範例，請造訪：
-          <ph name="PROXY_HELP_URL" />。</translation>
 <translation id="6172896675583897796">如果將這項政策設為啟用，Google 助理將可存取畫面內容，並將該項資料傳送給伺服器。如果將這項政策設為停用，Google 助理無法存取畫面內容。
 
       如果未設定這項政策，使用者可自行決定要啟用或停用這項功能。</translation>
@@ -3640,15 +3589,6 @@
 
       如果將這項政策設為停用或不予設定，系統一律不會顯示浮動式無障礙選單。</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />：</translation>
-<translation id="6426205278746959912">你無法強制 Android 應用程式使用 Proxy。有一部分 Proxy 設定可供 Android 應用程式使用，Android 應用程式可以選擇是否使用：
-
-          如果選擇一律不使用 Proxy 伺服器，系統會告知 Android 應用程式未設定 Proxy。
-
-          如果選擇使用系統 Proxy 設定或固定的伺服器 Proxy，系統會提供 HTTP Proxy 伺服器位址和通訊埠給 Android 應用程式。
-
-          如果選擇自動偵測 Proxy 伺服器，系統會提供指令碼網址「http://wpad/wpad.dat」給 Android 應用程式 (不會使用 Proxy 自動偵測通訊協定的其他部分)。
-
-          如果選擇 .pac Proxy 指令碼，系統會提供該指令碼網址給 Android 應用程式。</translation>
 <translation id="6438364096042399634">你可以透過這項政策來定義 USB 裝置清單，使用者可以從核心驅動程式中卸除這份清單中的 USB 裝置，並且直接透過 chrome.usb API 在網頁應用程式中使用。輸入項目為可識別特定硬體的 USB 供應商識別碼和產品識別碼組合。
 
       如果未設定，卸除式 USB 裝置的清單會空白。
@@ -5369,26 +5309,6 @@
 
        注意：這項政策不適用於無痕模式。請前往以下頁面，參閱有關代管擴充功能的資訊：https://developer.chrome.com/extensions/hosting。</translation>
 <translation id="8833109046074170275">透過預設的 GAIA 流程進行驗證</translation>
-<translation id="8851325571441692315">這項政策可讓你指定 <ph name="PRODUCT_NAME" /> 使用的 Proxy 伺服器，並禁止使用者變更 Proxy 設定。
-
-          只有在 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策未設定時，這項政策才會生效。
-
-          如果你選擇完全不使用 Proxy 伺服器，而一律採用直接連線，系統會忽略所有其他選項。
-
-          如果你選擇使用系統 Proxy 設定，系統會忽略所有其他選項。
-
-          如果你選擇自動偵測 Proxy 伺服器，系統會忽略所有其他選項。
-
-          如果你選擇固定的伺服器 Proxy 模式，可以在「Proxy 伺服器的位址或網址」和「以逗號分隔的 Proxy 略過規則清單」中指定進一步的選項。ARC 應用程式只能使用優先級最高的 HTTP Proxy 伺服器。
-
-          如果你選擇使用 .pac Proxy 指令碼，則必須在「Proxy .pac 檔案的網址」中指定該指令碼的網址。
-
-          如需詳細範例，請造訪：
-          <ph name="PROXY_HELP_URL" />。
-
-          如果啟用這項設定，<ph name="PRODUCT_NAME" /> 和 ARC 應用程式會忽略所有從指令列指定的 Proxy 相關選項。
-
-          如果不設定這項政策，使用者將可自行選擇 Proxy 設定。</translation>
 <translation id="8852579753940989645">啟用轉譯器程式碼完整性功能</translation>
 <translation id="8854571659927427063">如果將這項政策設為啟用，瀏覽器會在首次執行時，從先前的預設瀏覽器中匯入書籤。如果將這項政策設為停用或不設定，瀏覽器首次執行時不會匯入任何書籤。
 

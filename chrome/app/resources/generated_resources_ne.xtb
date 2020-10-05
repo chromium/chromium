@@ -63,7 +63,6 @@
 <translation id="1067048845568873861">सिर्जना गरियो</translation>
 <translation id="1067291318998134776">Linux (बिटा)</translation>
 <translation id="1067922213147265141">Google का अन्य सेवाहरू</translation>
-<translation id="1068961867683064946">आफ्ना बच्चाका लागि Google खाता बनाइदिनुहोस्</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">तपाईँको कम्प्युटरमा अर्को प्रोग्रामले एउटा विस्तार थप्यो जसले Chrome को कार्य गर्ने तरिकालाई बदल्न सक्छ। <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382"><ph name="COUNTDOWN_SECONDS" /> सेकेन्डमा वैकल्पिक ब्राउजरमा खोल्दै</translation>
@@ -387,7 +386,6 @@
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> का लागि मान्य छ</translation>
 <translation id="1436671784520050284">सेटअप जारी राख्नुहोस्</translation>
 <translation id="1436784010935106834">हटाइयो</translation>
-<translation id="1442392616396121389">राउटिङको उपसर्ग</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> चयन गरियो</translation>
 <translation id="1442851588227551435">Kerberos को सक्रिय टिकट सेट गर्नुहोस्</translation>
 <translation id="1444628761356461360">यो सेटिङ यन्त्रको मालिक, <ph name="OWNER_EMAIL" /> द्वारा व्यवस्थत छ।</translation>
@@ -1130,7 +1128,6 @@
 <translation id="2309620859903500144">यो साइटलाई तपाईंको चाल वा प्रकाशसम्बन्धी सेन्सरहरूको पहुँच राख्नबाट रोक लागाइएको छ।</translation>
 <translation id="2314165183524574721">हालको भिजिबिलिटी सेटिङ यस प्रकार छ: लुकाइएको</translation>
 <translation id="2314774579020744484">पृष्ठहरू अनुवाद गर्दा प्रयोग हुने भाषा</translation>
-<translation id="2314873619957287124">आफ्ना बच्चालाई सिक्न, खेल्न र अन्वेषण गर्न सघाउन आधारभूत डिजिटल नियमहरू स्थापित गर्नुहोस्</translation>
 <translation id="2315414688463285945">Linux का फाइलहरू कन्फिगर गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2315587498123194634"><ph name="DEVICE_NAME" /> मा लिंक पठाउनुहोस्</translation>
 <translation id="2316129865977710310">पर्दैन, धन्यवाद</translation>
@@ -1142,7 +1139,6 @@
 <translation id="2322318151094136999">कुनै साइटले सिरियल पोर्टहरूमाथि पहुँच गर्न खोज्दा सोध्नुहोस् (सिफारिस गरिएको)</translation>
 <translation id="2323018538045954000">सुरक्षित गरिएका Wi-Fi नेटवर्कहरू</translation>
 <translation id="2325444234681128157">पासवर्ड सम्झनुहोस्</translation>
-<translation id="2326160999284776503">आफ्नो बच्चाको Google खातामार्फत साइन इन गर्नुहोस्</translation>
 <translation id="2326188115274135041">स्वतः अनलक हुने सुविधा सक्षम पार्न PIN पुष्टि गर्नुहोस्</translation>
 <translation id="2326931316514688470">एप पुन: &amp;लोड गर्नुहोस्</translation>
 <translation id="2327492829706409234">एप सक्षम गर्नुहोस्</translation>
@@ -1605,7 +1601,6 @@
 <translation id="2851634818064021665">यो साइटमा जान तपाईंलाई अनुमतिको आवश्यकता पर्छ</translation>
 <translation id="2854896010770911740">तेस्रो पक्षीय कुकीहरू हटाउनुहोस्</translation>
 <translation id="2858138569776157458">शीर्ष साइटहरू</translation>
-<translation id="2859806420264540918">यो साइटले हस्तक्षेपकारी वा भ्रामक विज्ञापनहरू देखाउँछ।</translation>
 <translation id="2861301611394761800">सिस्टम अपडेट पूरा भयो। कृपया सिस्टमलाई फेरि सुरु गर्नुहोस्।</translation>
 <translation id="2861941300086904918">स्वदेशी ग्राहक सुरक्षा व्यवस्थापक</translation>
 <translation id="2864601841139725659">आफ्नो प्रोफाइल तस्बिर सेट गर्नुहोस्</translation>
@@ -2859,7 +2854,6 @@
 <translation id="4364327530094270451">खरबुजो</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> एउटा विन्डोलाई साझेदारी गर्दैछ</translation>
 <translation id="4364830672918311045">सूचनाहरू देखाउनुहोस्</translation>
-<translation id="4368115171699243057">आफ्ना बच्चाका लागि यो <ph name="DEVICE_TYPE" /> सेटअप गरिदिनुहोस्</translation>
 <translation id="437004882363131692"><ph name="DEVICE_TYPE" /> सम्बन्धी सुझाव, योजना तथा अपडेटहरू प्राप्त गर्नुहोस् र प्रतिक्रिया दिनुहोस्। जुनसुकै बेला सदस्यता रद्द गर्नुहोस्।</translation>
 <translation id="4370975561335139969">तपाईँले प्रविष्टि गर्नुभएको इमेल र पासवर्ड मेल खाँदैनन्</translation>
 <translation id="4374831787438678295">Linux को स्थापनाकर्ता</translation>
@@ -3696,7 +3690,6 @@
 <translation id="5397794290049113714">तपाइँ</translation>
 <translation id="5398497406011404839">लुकाइएका बुकमार्कहरू</translation>
 <translation id="5398572795982417028">सीमा बाहिरको पृष्ठ सन्दर्भ, सीमा <ph name="MAXIMUM_PAGE" /> हो</translation>
-<translation id="5398772614898833570">विज्ञापनहरूमाथि रोक लगाइयो</translation>
 <translation id="5401938042319910061">सबै रुटिनहरू चलाउनुहोस्</translation>
 <translation id="5402815541704507626">मोबाइल डेटाको प्रयोग गरेर अद्यावधिक डाउनलोड गर्नुहोस्</translation>
 <translation id="540296380408672091"><ph name="HOST" />मा कुकीहरू सधैँ रोक्नुहोस्</translation>
@@ -4321,7 +4314,6 @@
 <translation id="6124698108608891449">यो साइटलाई थप अनुमति चाहिन्छ।</translation>
 <translation id="6125479973208104919">दुर्भाग्यवश, तपाईंले यो <ph name="DEVICE_TYPE" /> मा आफ्नो खाता फेरि थप्नु पर्नेछ।</translation>
 <translation id="6129691635767514872">चयन गरिएको डेटालाई Chrome र सिंक गरिएका यन्त्रहरूबाट हटाइएको छ। <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> मा तपाईंको Google खातासँग तपाईंका अन्य Google सेवाहरूका खोज र गतिविधि जस्ता ब्राउजिङसम्बन्धी इतिहासका अरू ढाँचाहरू हुन सक्छन्।</translation>
-<translation id="6129839611163153407">तपाईंको बच्चा</translation>
 <translation id="6129938384427316298">नेटस्केप प्रमाणपत्र टिप्पणी</translation>
 <translation id="6129953537138746214">क्षेत्र</translation>
 <translation id="6130692320435119637">Wi-Fi नेटवर्क थप्नुहोस्</translation>
@@ -4369,7 +4361,6 @@
 <translation id="6185132558746749656">यन्त्र स्थान</translation>
 <translation id="6186394437969115158">सामग्री वा सेवाहरू निःशुल्क रूपमा प्रदान गर्न सकियोस् भन्नाका खातिर साइटहरूले सामान्यतया विज्ञापनहरू देखाउँछन्। तर केही साइटहरूले हस्तक्षेपकारी वा भ्रामक विज्ञापनहरू देखाउन सक्छन्।</translation>
 <translation id="6191293864534840972">डोमेन नेम सर्भरहरूको ढाँचा मिलेको छैन</translation>
-<translation id="6195446518998936840">अभिभावकीय नियन्त्रणहरू सेटअप गर्न तपाईंको बच्चासँग अनिवार्य रूपमा Google खाता हुनु पर्छ। तपाईं सोही खाता व्यवस्थापन गर्न मद्दत गर्नु हुने छ। तपाईं Family Link एप प्रयोग गरी आफ्ना बच्चाले यन्त्र चलाएर बिताउने समयको सीमा निर्धारण गर्न, वेबसाइटहरूलाई अनुमति दिन वा ब्लक गर्न र अन्य थुप्रै कुरा गर्न सक्नुहुन्छ।</translation>
 <translation id="6195693561221576702">यो यन्त्र अफलाइन डेमो मोडको प्रयोग गरी सेटअप गर्न सकिँदैन।</translation>
 <translation id="6196640612572343990">तेस्रो पक्षीय कुकीहरूमाथि रोक लगाउनुहोस्</translation>
 <translation id="6196854373336333322">विस्तार "<ph name="EXTENSION_NAME" />" ले तपाईंका प्रोक्सी सेटिङहरूको नियन्त्रण गरेको छ, मतलब तपाईंले अनलाइन गरेको जुनसुकै कुरालाई यसले परिवर्तन गर्न, बिगार्न वा चियो गर्न सक्छ। यो किन परिवर्तन भयो भन्नेमा सुनिश्चित हुनुहुन्न भने सायद तपाईं यसलाई चाहनुहुन्न।</translation>
@@ -5323,7 +5314,6 @@
 <translation id="7354341762311560488">तपाईंको किबोर्डको बायाँतिर फेदमा रहेको कुञ्जी फिंगरप्रिन्ट सेन्सर हो। यसलाई जुनसुकै औँलाले हल्का छुनुहोस्।</translation>
 <translation id="7356908624372060336">नेटवर्क लगहरू</translation>
 <translation id="735745346212279324">VPN को जडान विच्छेद भयो</translation>
-<translation id="7359588939039777303">विज्ञापनहरूमाथि रोक लगाइयो।</translation>
 <translation id="7360183604634508679">पुस्तक चिन्हहरूको मेनु</translation>
 <translation id="7360233684753165754"><ph name="PRINTER_NAME" /> मा <ph name="PAGE_NUMBER" /> पृष्ठहरू</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" /> सञ्चालन गर्नका लागि दायाँ-क्लिक गर्नुहोस्</translation>
@@ -6679,7 +6669,6 @@
 <translation id="8916476537757519021">इनकगनिटो सबफ्रेम: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8916749157829986308">विन्डोको नाम सेट गर्नुहोस्</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> को <ph name="DEVICE_TYPE" /></translation>
-<translation id="8922013791253848639">यो साइटमा सधैँ विज्ञापनहरू राख्ने अनुमति दिनुहोस्</translation>
 <translation id="8923880975836399332">गाढा निलो-हरियो मिश्रित रङ्ग</translation>
 <translation id="8925458182817574960">&amp;सेटिङहरू</translation>
 <translation id="8926389886865778422">फेरि नसोध्नुहोस्</translation>

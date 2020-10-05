@@ -17,7 +17,6 @@
 <translation id="1335095011850992622">titulky</translation>
 <translation id="1342835525016946179">článok</translation>
 <translation id="1359897965706325498">banner</translation>
-<translation id="145015347812617860">Počet položiek: <ph name="COUNT" /></translation>
 <translation id="1480676835519562650">s viacerými výbermi, vybrané: <ph name="SELECTED" /> z <ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">oblasť</translation>
 <translation id="1591562245178063882">Tento mesiac</translation>
@@ -290,6 +289,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" /> začínajúci <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Obraz v obraze</translation>
 <translation id="9168329111483466115">poznámka pod čiarou</translation>
+<translation id="945780513535800434">Čiastočne začiarknuté</translation>
 <translation id="954003015749068518">zapnúť obraz v obraze</translation>
 <translation id="966787709310836684">ponuka</translation>
 </translationbundle>

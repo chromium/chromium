@@ -92,14 +92,6 @@ Wenn die Richtlinie nicht festgelegt ist, gilt die Standardeinstellung: Vom Unte
 
       Ist die Richtlinie auf 0 gesetzt, so ist die GPO-Speicherung deaktiviert. Dies erhöht die Serverlast, da GPOs bei jedem Richtlinienabruf heruntergeladen werden, auch wenn sie unverändert sind.</translation>
 <translation id="1111470455889178048">Nutzeruploads und -downloads zum Scannen senden</translation>
-<translation id="1117462881884985156">Für die hier angegebenen Hosts umgeht <ph name="PRODUCT_NAME" /> alle Proxys.
-
-          Diese Richtlinie tritt nur dann in Kraft, wenn Sie bei "Auswählen, wie Proxyserver-Einstellungen angegeben werden" die Option für manuelle Proxyeinstellungen ausgewählt haben und die Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />" nicht konfiguriert wurde.
-
-          Sie sollten diese Richtlinie nicht konfigurieren, wenn Sie sich für eine andere Methode zur Festlegung der Proxyrichtlinien entschieden haben.
-
-          Ausführlichere Beispiele finden Sie unter
-          <ph name="PROXY_HELP_URL" />.</translation>
 <translation id="1117535567637097036">Die über diese Richtlinie festgelegten Protokoll-Handler werden bei der Verarbeitung von Android-Intents nicht verwendet.</translation>
 <translation id="1118093128235245168">Websites dürfen den Nutzer um Zugriff auf ein angeschlossenes USB-Gerät bitten</translation>
 <translation id="1128717055763152639">Mit dieser Richtlinie können Sie eine Liste mit URL-Mustern festlegen und so Websites angeben, auf denen blockierbare (aktive) gemischte Inhalte (HTTP-Inhalte auf HTTPS-Websites) angezeigt werden dürfen und für die HTTPS-Upgrades für optional blockierbare gemischte Inhalte deaktiviert werden.
@@ -1370,14 +1362,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
           Wird sie nicht konfiguriert, ist der große Cursor auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="3030000825273123558">Messdatenberichte aktivieren</translation>
-<translation id="3033660238345063904">Hier können Sie die URL für den Proxyserver festlegen.
-
-          Diese Richtlinie tritt nur dann in Kraft, wenn Sie bei "Auswählen, wie Proxyserver-Einstellungen angegeben werden" die Option für manuelle Proxyeinstellungen ausgewählt haben und die Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />" nicht konfiguriert wurde.
-
-          Sie sollten diese Richtlinie nicht konfigurieren, wenn Sie sich für eine andere Methode zur Festlegung der Proxyrichtlinien entschieden haben.
-
-          Weitere Optionen und ausführliche Beispiele finden Sie unter
-          <ph name="PROXY_HELP_URL" />.</translation>
 <translation id="3038323923255997294">Apps weiter im Hintergrund ausführen, wenn <ph name="PRODUCT_NAME" /> geschlossen ist</translation>
 <translation id="3041887182529293512">Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, werden auf der Seite "Neuer Tab" automatisch generierte Inhaltsvorschläge auf Basis des Browserverlaufs, der Interessen oder des Standorts des Nutzers angezeigt.
 
@@ -2640,33 +2624,6 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
       Fehler auf.</translation>
 <translation id="5032164758660626397">Verhindern, dass Nutzer große Dateien übertragen</translation>
 <translation id="5047604665028708335">Zugriff auf Websites außerhalb von Inhaltspaketen erlauben</translation>
-<translation id="5055312535952606505">Hiermit werden die Proxyeinstellungen für <ph name="PRODUCT_NAME" /> konfiguriert. Diese Proxyeinstellungen können auch von ARC-Apps verwendet werden.
-
-          Wenn Sie diese Einstellung aktivieren, werden alle Proxyoptionen, die über die Befehlszeile eingegeben werden, von <ph name="PRODUCT_NAME" /> und ARC-Apps ignoriert.
-
-          Wird die Richtlinie nicht konfiguriert, so können Nutzer ihre eigenen Proxyeinstellungen vornehmen.
-
-          Wenn die Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />" konfiguriert ist, werden die Richtlinien "<ph name="PROXY_MODE_POLICY_NAME" />", "<ph name="PROXY_PAC_URL_POLICY_NAME" />", "<ph name="PROXY_SERVER_POLICY_NAME" />", "<ph name="PROXY_BYPASS_POLICY_NAME" />" und "<ph name="PROXY_SERVER_MODE_POLICY_NAME" />" überschrieben.
-
-          Anhand des Felds "<ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />" können Sie angeben, welcher Proxyserver von <ph name="PRODUCT_NAME" /> verwendet werden soll, und verhindern, dass Nutzer die Proxyeinstellungen ändern.
-
-          Das Feld "<ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />" beinhaltet eine URL zu einer PAC-Proxy-Datei.
-
-          Das Feld "<ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />" beinhaltet eine URL zum Proxyserver.
-
-          Das Feld "<ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />" beinhaltet eine Liste mit Proxy-Hosts, die von <ph name="PRODUCT_NAME" /> umgangen werden.
-
-          Das Feld "<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />" musste dem Feld "ProxyMode" weichen. Damit können Sie angeben, welcher Proxyserver von <ph name="PRODUCT_NAME" /> verwendet werden soll, und verhindern, dass Nutzer die Proxyeinstellungen ändern.
-
-          Wenn Sie für "ProxyMode" den Wert "direct" festlegen, wird kein Proxy verwendet und alle anderen Felder werden ignoriert.
-
-          Bei Auswahl von "system" für "ProxyMode" wird der Proxy des Systems verwendet und alle anderen Felder werden ignoriert.
-
-          Ist "ProxyMode" auf "auto_detect" festgelegt, werden alle anderen Felder ignoriert.
-
-          Wenn Sie für "ProxyMode" den Wert "fixed_server" festlegen, werden die Felder "ProxyServer" und "ProxyBypassList" verwendet.
-
-          Bei Auswahl von "pac_script" für "ProxyMode" werden die Felder "ProxyPacUrl" und "ProxyBypassList" verwendet.</translation>
 <translation id="5056708224511062314">Lupe deaktiviert</translation>
 <translation id="5058573563327660283">Strategie auswählen, die bei der automatischen Bereinigung zur Freigabe von Festplattenspeicher verwendet wird (eingestellt)</translation>
 <translation id="5061114193960158745">Mithilfe dieser Richtlinie wird die Liste der Websites verwaltet, die unter keinen Umständen einen Browserwechsel auslösen. Jedes Element wird als Regel angesehen. Wenn es eine Übereinstimmung mit der Regel gibt, wird kein alternativer Browser geöffnet. Im Gegensatz zur Richtlinie "<ph name="URL_LIST_POLICY_NAME" />" gelten die Regeln in beide Richtungen. Wenn das <ph name="IE_PRODUCT_NAME" />-Add-in aktiviert ist, wird damit auch gesteuert, ob <ph name="IE_PRODUCT_NAME" /> diese URLs in <ph name="PRODUCT_NAME" /> öffnen soll.
@@ -3487,14 +3444,6 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
 <translation id="6155936611791017817">Standardstatus für den großen Cursor auf der Anmeldeseite festlegen</translation>
 <translation id="6157537876488211233">Kommagetrennte Liste der Proxy-Umgehungsregeln</translation>
 <translation id="6158324314836466367">Unternehmens-Web-Store-Name (veraltet)</translation>
-<translation id="6158817306788002298">Hier können Sie die URL zu einer PAC-Proxy-Datei festlegen.
-
-          Diese Richtlinie tritt nur dann in Kraft, wenn Sie bei "Auswählen, wie Proxyserver-Einstellungen angegeben werden" die Option für manuelle Proxyeinstellungen ausgewählt haben und die Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />" nicht konfiguriert wurde.
-
-          Sie sollten diese Richtlinie nicht konfigurieren, wenn Sie sich für eine andere Methode zur Festlegung der Proxyrichtlinien entschieden haben.
-
-          Ausführliche Beispiele finden Sie unter
-          <ph name="PROXY_HELP_URL" />.</translation>
 <translation id="6172896675583897796">Wenn die Richtlinie aktiviert ist, erhält Google Assistant die Berechtigung, auf den Bildschirmkontext zuzugreifen und Daten an einen Server zu senden. Ist die Richtlinie deaktiviert, darf Google Assistant nicht auf den Bildschirmkontext zugreifen.
 
       Ist die Richtlinie nicht konfiguriert, können Nutzer diese Funktion aktivieren oder deaktivieren.</translation>
@@ -3665,16 +3614,6 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
 
       Ist diese Richtlinie deaktiviert oder nicht konfiguriert, wird das unverankerte Menü für Bedienungshilfen nie angezeigt.</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
-<translation id="6426205278746959912">Android-Apps können nicht zur Verwendung eines Proxys gezwungen werden. 
-Ein Teil der Proxyeinstellungen ist für Android-Apps verfügbar und kann auf freiwilliger Basis übernommen werden:
-
-          Wenn Sie "nie einen Proxyserver verwenden" wählen, erhalten Android-Apps die Information, dass kein Proxy konfiguriert ist.
-
-          Wenn Sie "Systemproxyeinstellungen verwenden" oder "fester Proxyserver" wählen, erhalten Android-Apps die HTTP-Proxyserveradresse und den Port.
-
-          Wenn Sie "Proxyserver automatisch erkennen" wählen, erhalten Android-Apps die Skript-URL "http://wpad/wpad.dat". Kein anderer Teil des Protokolls zur automatischen Proxyerkennung wird verwendet.
-
-          Wenn Sie ein PAC-Proxyskript wählen, erhalten Android-Apps die Skript-URL.</translation>
 <translation id="6438364096042399634">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste der USB-Geräte definieren, die vom jeweiligen Kerneltreiber getrennt werden können, um über die chrome.usb API direkt in einer Webanwendung eingesetzt zu werden. Die Einträge bestehen aus der ID des USB-Herstellers und der Produkt-ID, über die die Hardware identifiziert werden kann.
 
       Ist diese Richtlinie nicht konfiguriert, dann bleibt die Liste der trennbaren USB-Geräte leer.
@@ -5402,26 +5341,6 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 
        Hinweis: Diese Richtlinie gilt nicht für den Inkognitomodus. Informationen zum Hosting von Erweiterungen finden Sie unter https://developer.chrome.com/extensions/hosting.</translation>
 <translation id="8833109046074170275">Authentifizierung über den standardmäßigen GAIA-Vorgang</translation>
-<translation id="8851325571441692315">Mit dieser Richtlinie können Sie angeben, welcher Proxyserver von <ph name="PRODUCT_NAME" /> verwendet werden soll, und verhindern, dass Nutzer die Proxyeinstellungen ändern.
-
-          Diese Richtlinie wird nur angewendet, wenn die Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />" nicht konfiguriert wurde.
-
-          Wenn Sie festlegen, dass kein Proxyserver verwendet, sondern immer eine direkte Verbindung hergestellt werden soll, werden alle anderen Optionen ignoriert.
-
-          Falls Sie sich entscheiden, die Proxyeinstellungen des Systems zu verwenden, werden alle anderen Optionen ignoriert.
-
-          Gleiches gilt, wenn Sie festlegen, dass der Proxyserver automatisch erkannt werden soll.
-
-          Wenn Sie sich für einen festen Proxyserver entscheiden, können Sie unter "Adresse oder URL des Proxyservers" und "Kommagetrennte Liste der Proxy-Umgehungsregeln" weitere Optionen festlegen. Nur der HTTP-Proxyserver mit der höchsten Priorität ist für ARC-Apps verfügbar.
-
-          Wenn Sie sich für ein PAC-Proxyskript entscheiden, müssen Sie die URL des Skripts unter "URL einer PAC-Proxy-Datei" angeben.
-
-          Ausführliche Beispiele finden Sie unter
-          <ph name="PROXY_HELP_URL" />.
-
-          Wenn Sie diese Einstellung aktivieren, werden alle Proxyoptionen, die über die Befehlszeile eingegeben werden, von <ph name="PRODUCT_NAME" /> und ARC-Apps ignoriert.
-
-          Wird die Richtlinie nicht konfiguriert, so können Nutzer ihre eigenen Proxyeinstellungen vornehmen.</translation>
 <translation id="8852579753940989645">Renderer-Codeintegrität aktivieren</translation>
 <translation id="8854571659927427063">Wenn die Richtlinie aktiviert ist, werden Lesezeichen bei der ersten Ausführung aus dem vorherigen Standardbrowser importiert. Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden bei der ersten Ausführung keine Lesezeichen importiert.
 

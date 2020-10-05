@@ -63,7 +63,6 @@
 <translation id="1067048845568873861">Үүсгэсэн</translation>
 <translation id="1067291318998134776">Linux (Бэта)</translation>
 <translation id="1067922213147265141">Google-н бусад үйлчилгээ</translation>
-<translation id="1068961867683064946">Хүүхдэдээ Google Бүртгэл үүсгэнэ үү</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Taны компьютерын өөр нэг программ өргөтгөл нэмсэн бөгөөд энэ нь Chrome-н ажиллах зарчмыг өөрчилж магад.
 
@@ -391,7 +390,6 @@
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" />-н турш хүчинтэй</translation>
 <translation id="1436671784520050284">Тохируулгыг үргэлжлүүлэх</translation>
 <translation id="1436784010935106834">Устгасан</translation>
-<translation id="1442392616396121389">Чиглүүлэгчийн угтвар</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" />-г сонгосон</translation>
 <translation id="1442851588227551435">Идэвхтэй Kerberos тасалбарыг тохируулах</translation>
 <translation id="1444628761356461360">Энэ тохиргоог төхөөрөмжийн эзэмшигч удирддаг, <ph name="OWNER_EMAIL" />.</translation>
@@ -1135,7 +1133,6 @@
 <translation id="2309620859903500144">Энэ сайтад таны хөдөлгөөн болон гэрлийн мэдрэгчид хандахыг хориглосон байна.</translation>
 <translation id="2314165183524574721">Одоогийн харагдцын тохиргоог нуусан байна</translation>
 <translation id="2314774579020744484">Хуудсыг орчуулахад ашигладаг хэл</translation>
-<translation id="2314873619957287124">Суралцах, тоглох, судлахад нь хүүхдэдээ туслахын тулд дижитал үндсэн дүрэм тохируулах</translation>
 <translation id="2315414688463285945">Linux-н файлуудыг тохируулахад алдаа гарлаа. Дахин оролдоно уу.</translation>
 <translation id="2315587498123194634">Холбоосыг <ph name="DEVICE_NAME" />-д илгээх</translation>
 <translation id="2316129865977710310">Үгүй ээ, баярлалаа</translation>
@@ -1147,7 +1144,6 @@
 <translation id="2322318151094136999">Сайт цуваа портод хандахыг хүсэх үед асуух (санал болгосон)</translation>
 <translation id="2323018538045954000">Хадгалсан Wi-Fi сүлжээнүүд</translation>
 <translation id="2325444234681128157">Нууц үг санах</translation>
-<translation id="2326160999284776503">Хүүхдийнхээ Google Бүртгэлээр нэвтрэх</translation>
 <translation id="2326188115274135041">Түгжээг автоматаар тайлах үйлдлийг идэвхжүүлэхийн тулд ПИН-г баталгаажуулна уу</translation>
 <translation id="2326931316514688470">Аппыг дахин ачаалла</translation>
 <translation id="2327492829706409234">Аппликейшнийг идэвхжүүл</translation>
@@ -1610,7 +1606,6 @@
 <translation id="2851634818064021665">Та энэ сайтад зочлохын тулд зөвшөөрөл авах шаардлагатай</translation>
 <translation id="2854896010770911740">Гуравдагч талын күүкиг устгах</translation>
 <translation id="2858138569776157458">Шилдэг сайтууд</translation>
-<translation id="2859806420264540918">Энэ сайт төвөгтэй эсвэл хуурамч зар харуулдаг.</translation>
 <translation id="2861301611394761800">Системийн шинэчлэлт дууслаа. Системийг дахин эхлүүлнэ үү.</translation>
 <translation id="2861941300086904918">Native Client security manager</translation>
 <translation id="2864601841139725659">Профайл зургаа тохируулах</translation>
@@ -1885,7 +1880,6 @@
 <translation id="3192947282887913208">Аудио файлууд</translation>
 <translation id="3199127022143353223">Серверүүд</translation>
 <translation id="3200310363903241381">{COUNT,plural, =1{Chrome энэ нууц үгийг одоо шалгахыг зөвлөж байна}other{Chrome эдгээр нууц үгийг одоо шалгахыг зөвлөж байна}}</translation>
-<translation id="3201154330231437478">Урвуу гүйлгэхийг идэвхжүүлэх <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="3201422919974259695">Боломжтой USB төхөөрөмжүүд энд харагдана.</translation>
 <translation id="3202131003361292969">Зам</translation>
 <translation id="3202173864863109533">Энэ табны дууг хаасан байна.</translation>
@@ -2866,7 +2860,6 @@
 <translation id="4364327530094270451">Амтат гуа</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> цонх хуваалцаж байна.</translation>
 <translation id="4364830672918311045">Дэлгэцийн мэдэгдэл</translation>
-<translation id="4368115171699243057">Энэ <ph name="DEVICE_TYPE" />-г хүүхдэдээ зориулж тохируулах</translation>
 <translation id="437004882363131692"><ph name="DEVICE_TYPE" />-н зөвлөгөө, санал болон шинэчлэлтийг авч, cанал хүсэлт хуваалцаарай. Хүссэн үедээ захиалгаа цуцална уу.</translation>
 <translation id="4370975561335139969">Таны оруулсан имэйл болон нууц үг таарахгүй байна</translation>
 <translation id="4374831787438678295">Linux суулгагч</translation>
@@ -3704,7 +3697,6 @@
 <translation id="5397794290049113714">Та</translation>
 <translation id="5398497406011404839">Нуусан хавчуурга</translation>
 <translation id="5398572795982417028">Хуудасны лавлагааны хязгаар болох <ph name="MAXIMUM_PAGE" />-с хэтэрсэн байна</translation>
-<translation id="5398772614898833570">Зарыг блоклосон</translation>
 <translation id="5401938042319910061">Бүх хэвшлийг ажиллуулах</translation>
 <translation id="5402815541704507626">Шинэчлэлтийг мобайл датагаар татах</translation>
 <translation id="540296380408672091"><ph name="HOST" /> дээрх cookies-г үргэлж блоклох</translation>
@@ -4330,7 +4322,6 @@
 <translation id="6124698108608891449">Энэ сайтад илүү зөвшөөрөл шаардлагатай.</translation>
 <translation id="6125479973208104919">Харамсалтай нь та бүртгэлээ <ph name="DEVICE_TYPE" />-д дахин нэмэх шаардлагатай болно.</translation>
 <translation id="6129691635767514872">Сонгосон датаг Chrome болон синк хийсэн төхөөрөмжүүдээс устгасан. Таны Google Бүртгэл <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> дээр Google-н бусад үйлчилгээнээс хайлт, ашиглалт зэрэг хөтчийн түүхийн өөр хэлбэртэй байж болзошгүй.</translation>
-<translation id="6129839611163153407">Таны хүүхэд</translation>
 <translation id="6129938384427316298">Нэтскейп гэрчилгээний тайлбар</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6130692320435119637">Wi-Fi нэмэх</translation>
@@ -4378,7 +4369,6 @@
 <translation id="6185132558746749656">Төхөөрөмжийн байршил</translation>
 <translation id="6186394437969115158">Сайтууд ихэвчлэн үнэгүй контент эсвэл үйлчилгээ өгөхийн тулд зар харуулдаг. Гэсэн хэдий ч зарим сайт төвөгтэй эсвэл хуурамч зар харуулдаг.</translation>
 <translation id="6191293864534840972">DNS алдаатай байна</translation>
-<translation id="6195446518998936840">Эцэг эхийн хяналтыг тохируулахын тулд таны зүгээс удирдахад нь туслах Google Бүртгэл танай хүүхдэд байх шаардлагатай. Та Family Link аппыг ашиглан дэлгэцийн цагийн хязгаар тогтоох, вэб сайтуудыг зөвшөөрөх эсвэл блоклох зэрэг бусад тохируулгыг хийх боломжтой.</translation>
 <translation id="6195693561221576702">Энэ төхөөрөмжийг офлайн демо горимд тохируулах боломжгүй.</translation>
 <translation id="6196640612572343990">Гуравдагч талын күүкиг блоклох</translation>
 <translation id="6196854373336333322">"<ph name="EXTENSION_NAME" />" өргөтгөл нь таны прокси тохиргоог удирдаж байгаа бөгөөд энэ нь таны онлайнаар хийсэн зүйлийг өөрчилж, гэмтээж, хуулбарлах боломжтой гэсэн үг юм. Энэ өөрчлөлт яагаад гарсныг та мэдэхгүй байгаа бол энэ таны хүссэн зүйл биш байна.</translation>
@@ -5333,7 +5323,6 @@
 <translation id="7354341762311560488">Таны гарын зүүн гар талын доод товчлуур нь хурууны хээ мэдрэгч болно. Үүнд дурын хуруугаар зөөлөн хүрнэ үү.</translation>
 <translation id="7356908624372060336">Сүлжээний логууд</translation>
 <translation id="735745346212279324">VPN салгагдсан</translation>
-<translation id="7359588939039777303">Зарыг блоклосон.</translation>
 <translation id="7360183604634508679">Хавчуургын цэс</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> хуудсыг <ph name="PRINTER_NAME" />-р</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" />-г ажиллуулахын тулд барууныг дарна уу</translation>
@@ -6688,7 +6677,6 @@
 <translation id="8916476537757519021">Нууцлалтай дэд хүрээ: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8916749157829986308">Цонхны нэр тохируулах</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />-н <ph name="DEVICE_TYPE" /></translation>
-<translation id="8922013791253848639">Энэ сайтад зарыг үргэлж зөвшөөрөх</translation>
 <translation id="8923880975836399332">Бараан номин ногоон</translation>
 <translation id="8925458182817574960">&amp;Тохиргоонууд</translation>
 <translation id="8926389886865778422">Дахин битгий асуу</translation>

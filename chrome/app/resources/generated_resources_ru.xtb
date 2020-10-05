@@ -63,7 +63,6 @@
 <translation id="1067048845568873861">Создано</translation>
 <translation id="1067291318998134776">Linux (бета)</translation>
 <translation id="1067922213147265141">Другие сервисы Google</translation>
-<translation id="1068961867683064946">Создать аккаунт Google для ребенка</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Одна из программ на вашем компьютере установила расширение, которое может влиять на работу Chrome.
 
@@ -389,7 +388,6 @@
 <translation id="1436390408194692385">До окончания срока действия: <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">Продолжить настройку</translation>
 <translation id="1436784010935106834">Удалено</translation>
-<translation id="1442392616396121389">Префикс маршрутизации</translation>
 <translation id="144283815522798837">Выбрано: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Задать активный билет Kerberos</translation>
 <translation id="1444628761356461360">Этот аккаунт контролируется владельцем устройства (<ph name="OWNER_EMAIL" />)</translation>
@@ -1133,7 +1131,6 @@
 <translation id="2309620859903500144">Этому сайту запрещено использовать датчики движения и освещенности.</translation>
 <translation id="2314165183524574721">Ваше устройство скрыто от других пользователей</translation>
 <translation id="2314774579020744484">Язык, который используется при переводе страниц</translation>
-<translation id="2314873619957287124">Задайте базовые правила, чтобы сбалансировать учебу, игры и отдых.</translation>
 <translation id="2315414688463285945">Не удалось настроить файлы Linux. Повторите попытку.</translation>
 <translation id="2315587498123194634">Отправить ссылку на устройство "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2316129865977710310">Спасибо, не надо</translation>
@@ -1145,7 +1142,6 @@
 <translation id="2322318151094136999">Запрашивать разрешение на доступ сайтов к последовательным портам (рекомендуется)</translation>
 <translation id="2323018538045954000">Сохраненные сети Wi-Fi</translation>
 <translation id="2325444234681128157">Запомнить·пароль</translation>
-<translation id="2326160999284776503">Войти в аккаунт Google ребенка</translation>
 <translation id="2326188115274135041">Для включения автоматической разблокировки экрана введите PIN-код.</translation>
 <translation id="2326931316514688470">Пере&amp;загрузить приложение</translation>
 <translation id="2327492829706409234">Включить приложение</translation>
@@ -1607,7 +1603,6 @@
 <translation id="2851634818064021665">Для доступа к этой странице требуется разрешение.</translation>
 <translation id="2854896010770911740">Удалить сторонние файлы cookie</translation>
 <translation id="2858138569776157458">Топ сайтов</translation>
-<translation id="2859806420264540918">Этот сайт показывает навязчивую или вводящую в заблуждение рекламу.</translation>
 <translation id="2861301611394761800">Обновление системы завершено. Перезапустите компьютер.</translation>
 <translation id="2861941300086904918">Менеджер безопасности – Native Client</translation>
 <translation id="2864601841139725659">Выберите фото профиля</translation>
@@ -2861,7 +2856,6 @@
 <translation id="4364327530094270451">Дыня</translation>
 <translation id="4364567974334641491">Приложение "<ph name="APP_NAME" />" предоставило доступ к окну.</translation>
 <translation id="4364830672918311045">Показывать уведомления</translation>
-<translation id="4368115171699243057">Настройте это устройство <ph name="DEVICE_TYPE" /> для ребенка</translation>
 <translation id="437004882363131692">Вы можете подписаться на нашу рассылку и получать советы по работе с устройствами <ph name="DEVICE_TYPE" />, специальные предложения и новости, а также оставлять отзывы. Отказаться от рассылки можно в любой момент.</translation>
 <translation id="4370975561335139969">Указан неправильный адрес или пароль</translation>
 <translation id="4374831787438678295">Установщик Linux</translation>
@@ -3698,7 +3692,6 @@
 <translation id="5397794290049113714">Вы</translation>
 <translation id="5398497406011404839">Скрытые закладки</translation>
 <translation id="5398572795982417028">Размер страницы больше максимально допустимого (лимит ‒ <ph name="MAXIMUM_PAGE" />)</translation>
-<translation id="5398772614898833570">Реклама заблокирована</translation>
 <translation id="5401938042319910061">Запустить все проверки</translation>
 <translation id="5402815541704507626">Скачивание обновления по мобильной сети</translation>
 <translation id="540296380408672091">Всегда блокировать файлы cookie на сайте <ph name="HOST" /></translation>
@@ -4324,7 +4317,6 @@
 <translation id="6124698108608891449">Для работы этого сайта требуются дополнительные разрешения.</translation>
 <translation id="6125479973208104919">Необходимо заново добавить аккаунт на <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6129691635767514872">Выбранные данные удалены из Chrome и с синхронизированных устройств. История также может храниться в вашем аккаунте Google, например в виде поисковых запросов и сведений из сервисов Google. Их можно найти на сайте <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
-<translation id="6129839611163153407">Ваш ребенок</translation>
 <translation id="6129938384427316298">Комментарий к сертификату Netscape</translation>
 <translation id="6129953537138746214">Пробел</translation>
 <translation id="6130692320435119637">Добавить сеть Wi-Fi</translation>
@@ -4372,7 +4364,6 @@
 <translation id="6185132558746749656">Местоположение устройства</translation>
 <translation id="6186394437969115158">Обычно сайты показывают рекламу, чтобы зарабатывать на ней и иметь возможность бесплатно предоставлять свой контент или сервисы. Однако на некоторых страницах используется навязчивая или вводящая в заблуждение реклама.</translation>
 <translation id="6191293864534840972">Некорректно указаны серверы доменных имен.</translation>
-<translation id="6195446518998936840">Чтобы можно было настроить родительский контроль, у ребенка должен быть аккаунт Google. В приложении Family Link вы можете ограничивать время использования устройства, одобрять или блокировать определенные сайты и не только.</translation>
 <translation id="6195693561221576702">Демонстрационный офлайн-режим на этом устройстве недоступен.</translation>
 <translation id="6196640612572343990">Блокировать сторонние файлы cookie</translation>
 <translation id="6196854373336333322">Расширение "<ph name="EXTENSION_NAME" />" контролирует настройки прокси-сервера. Это значит, что оно может отследить или изменить передаваемые вами данные, а также оборвать интернет-соединение. Если вы не знали об этом, вам следует отключить расширение.</translation>
@@ -5326,7 +5317,6 @@
 <translation id="7354341762311560488">Сканер отпечатков пальцев – это клавиша в левом нижнем углу клавиатуры. Слегка коснитесь ее любым пальцем.</translation>
 <translation id="7356908624372060336">Сетевые журналы</translation>
 <translation id="735745346212279324">VPN-соединение прервано</translation>
-<translation id="7359588939039777303">Реклама заблокирована.</translation>
 <translation id="7360183604634508679">Меню закладок</translation>
 <translation id="7360233684753165754">Печать <ph name="PAGE_NUMBER" /> стр. на принтере <ph name="PRINTER_NAME" /></translation>
 <translation id="7361297102842600584">Нажмите правой кнопкой мыши, чтобы запустить плагин "<ph name="PLUGIN_NAME" />"</translation>
@@ -6682,7 +6672,6 @@
 <translation id="8916476537757519021">Субфрейм в режиме инкогнито: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8916749157829986308">Укажите название окна</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> пользователя <ph name="GIVEN_NAME" /></translation>
-<translation id="8922013791253848639">Всегда разрешать рекламу на этом сайте</translation>
 <translation id="8923880975836399332">Темно-бирюзовый</translation>
 <translation id="8925458182817574960">&amp;Настройки</translation>
 <translation id="8926389886865778422">Больше не спрашивать</translation>

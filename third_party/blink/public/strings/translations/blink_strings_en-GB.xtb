@@ -17,7 +17,6 @@
 <translation id="1335095011850992622">credits</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">banner</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> items</translation>
 <translation id="1480676835519562650">multiselectable, <ph name="SELECTED" /> of <ph name="COUNT" /> selected.</translation>
 <translation id="1589122976691792535">region</translation>
 <translation id="1591562245178063882">This month</translation>
@@ -47,7 +46,6 @@
 <translation id="2247351761944213033">Week <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Track <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">Tick box</translation>
-<translation id="2307576640803031502">in list, item <ph name="INDEX" /> of <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">page break</translation>
 <translation id="2335594187091864976">date and time picker</translation>
 <translation id="2393030564806080191">Hexadecimal colour value</translation>
