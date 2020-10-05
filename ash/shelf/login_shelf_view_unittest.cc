@@ -443,6 +443,7 @@ TEST_F(LoginShelfViewTest, ShouldUpdateUiAfterDialogStateChange) {
 
   // Only Shutdown button should be available if some device blocking
   // screen is shown (e.g. Device Disabled, or Update Required).
+  login_shelf_view_->SetKioskApps(kiosk_apps, {}, {});
   login_shelf_view_->SetLoginDialogState(OobeDialogState::BLOCKING);
   EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
 }

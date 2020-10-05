@@ -805,8 +805,10 @@ void LoginShelfView::UpdateUi() {
   // Show kiosk apps button if:
   // 1. It's in login screen.
   // 2. There are Kiosk apps available.
+  // 3. Device is not currently blocked.
   kiosk_apps_button_->SetVisible(kiosk_apps_button_->HasApps() &&
-                                 (is_login_primary || is_oobe));
+                                 (is_login_primary || is_oobe) &&
+                                 (dialog_state_ != OobeDialogState::BLOCKING));
   // If there is no visible (and thus focusable) buttons, we shouldn't focus
   // LoginShelfView. We update it here, so we don't need to check visibility
   // every time we move focus to system tray.
