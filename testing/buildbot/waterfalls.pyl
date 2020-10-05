@@ -4972,6 +4972,7 @@
         },
       },
       'linux-swangle-tot-angle-x64' : {
+        'os_type': 'linux',
         'mixins': [
           'gpu-swarming-pool',
           'isolate_profile_data',
@@ -4985,6 +4986,7 @@
         },
       },
       'linux-swangle-tot-angle-x86' : {
+        'os_type': 'linux',
         'mixins': [
           'gpu-swarming-pool',
           'isolate_profile_data',
@@ -4998,6 +5000,7 @@
         },
       },
       'linux-swangle-tot-swiftshader-x64' : {
+        'os_type': 'linux',
         'mixins': [
           'gpu-swarming-pool',
           'isolate_profile_data',
@@ -5011,6 +5014,7 @@
         },
       },
       'linux-swangle-tot-swiftshader-x86' : {
+        'os_type': 'linux',
         'mixins': [
           'gpu-swarming-pool',
           'isolate_profile_data',
@@ -5024,6 +5028,7 @@
         },
       },
       'linux-swangle-x64' : {
+        'os_type': 'linux',
         'mixins': [
           'gpu-swarming-pool',
           'isolate_profile_data',
@@ -5037,6 +5042,7 @@
         },
       },
       'linux-swangle-x86' : {
+        'os_type': 'linux',
         'mixins': [
           'gpu-swarming-pool',
           'isolate_profile_data',
@@ -5073,6 +5079,7 @@
         },
       },
       'win-swangle-tot-angle-x64' : {
+        'os_type': 'win',
         'mixins': [
           'gpu-swarming-pool',
           'no_gpu',
@@ -5085,6 +5092,7 @@
         },
       },
       'win-swangle-tot-angle-x86' : {
+        'os_type': 'win',
         'mixins': [
           'gpu-swarming-pool',
           'no_gpu',
@@ -5097,6 +5105,7 @@
         },
       },
       'win-swangle-tot-swiftshader-x64' : {
+        'os_type': 'win',
         'mixins': [
           'gpu-swarming-pool',
           'no_gpu',
@@ -5109,6 +5118,7 @@
         },
       },
       'win-swangle-tot-swiftshader-x86' : {
+        'os_type': 'win',
         'mixins': [
           'gpu-swarming-pool',
           'no_gpu',
@@ -5121,6 +5131,7 @@
         },
       },
       'win-swangle-x64' : {
+        'os_type': 'win',
         'mixins': [
           'gpu-swarming-pool',
           'no_gpu',
@@ -5133,6 +5144,7 @@
         },
       },
       'win-swangle-x86' : {
+        'os_type': 'win',
         'mixins': [
           'gpu-swarming-pool',
           'no_gpu',
