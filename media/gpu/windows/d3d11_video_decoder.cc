@@ -215,7 +215,7 @@ D3D11VideoDecoder::CreateD3D11Decoder() {
       decoder_configurator_->TextureFormat(),
       is_hdr_supported_ ? TextureSelector::HDRMode::kSDROrHDR
                         : TextureSelector::HDRMode::kSDROnly,
-      &format_checker, media_log_.get());
+      &format_checker, video_device_, device_context_, media_log_.get());
   if (!texture_selector_)
     return StatusCode::kCreateTextureSelectorFailed;
 
@@ -727,8 +727,7 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
 
     DCHECK(!!in_texture);
 
-    auto tex_wrapper = texture_selector_->CreateTextureWrapper(
-        device_, video_device_, device_context_, size);
+    auto tex_wrapper = texture_selector_->CreateTextureWrapper(device_, size);
     if (!tex_wrapper) {
       NotifyError(StatusCode::kAllocateTextureForCopyingWrapperFailed);
       return;

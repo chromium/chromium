@@ -35,7 +35,7 @@ class D3D11VideoProcessorProxyUnittest : public ::testing::Test {
   MockD3D11VideoProcessorEnumerator enumerator_;
   MockD3D11VideoProcessor proc_;
 
-  std::unique_ptr<VideoProcessorProxy> CreateProxy() {
+  scoped_refptr<VideoProcessorProxy> CreateProxy() {
     dev_ = MakeComPtr<D3D11VideoDeviceMock>();
     ctx_ = MakeComPtr<D3D11DeviceContextMock>();
     vctx_ = MakeComPtr<D3D11VideoContextMock>();
@@ -51,7 +51,7 @@ class D3D11VideoProcessorProxyUnittest : public ::testing::Test {
     EXPECT_CALL(*ctx_.Get(), QueryInterface(_, _))
         .WillOnce(SetComPointeeAndReturnOk<1>(vctx_.Get()));
 
-    return std::make_unique<VideoProcessorProxy>(dev_, ctx_);
+    return base::MakeRefCounted<VideoProcessorProxy>(dev_, ctx_);
   }
 
   // Pull a random pointer off the stack, rather than relying on nullptrs.

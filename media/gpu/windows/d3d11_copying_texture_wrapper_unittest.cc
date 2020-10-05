@@ -80,6 +80,9 @@ class MockVideoProcessorProxy : public VideoProcessorProxy {
   base::Optional<gfx::ColorSpace> last_output_color_space_;
   base::Optional<DXGI_HDR_METADATA_HDR10> last_stream_metadata_;
   base::Optional<DXGI_HDR_METADATA_HDR10> last_display_metadata_;
+
+ private:
+  ~MockVideoProcessorProxy() override = default;
 };
 
 class MockTexture2DWrapper : public Texture2DWrapper {
@@ -136,8 +139,8 @@ class D3D11CopyingTexture2DWrapperTest
     gpu_task_runner_ = task_environment_.GetMainThreadTaskRunner();
   }
 
-  std::unique_ptr<MockVideoProcessorProxy> ExpectProcessorProxy() {
-    auto result = std::make_unique<MockVideoProcessorProxy>();
+  scoped_refptr<MockVideoProcessorProxy> ExpectProcessorProxy() {
+    auto result = base::MakeRefCounted<MockVideoProcessorProxy>();
     ON_CALL(*result.get(), MockInit(_, _))
         .WillByDefault(Return(GetProcessorProxyInit()
                                   ? StatusCode::kOk
@@ -215,8 +218,7 @@ TEST_P(D3D11CopyingTexture2DWrapperTest,
   auto texture_wrapper = ExpectTextureWrapper();
   MockTexture2DWrapper* texture_wrapper_raw = texture_wrapper.get();
   auto wrapper = std::make_unique<CopyingTexture2DWrapper>(
-      size, std::move(texture_wrapper), std::move(processor), nullptr,
-      copy_color_space);
+      size, std::move(texture_wrapper), processor, nullptr, copy_color_space);
 
   // TODO: check |gpu_task_runner_|.
 

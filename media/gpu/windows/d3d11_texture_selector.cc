@@ -16,8 +16,15 @@
 namespace media {
 
 TextureSelector::TextureSelector(VideoPixelFormat pixfmt,
-                                 DXGI_FORMAT output_dxgifmt)
-    : pixel_format_(pixfmt), output_dxgifmt_(output_dxgifmt) {}
+                                 DXGI_FORMAT output_dxgifmt,
+                                 ComD3D11VideoDevice video_device,
+                                 ComD3D11DeviceContext device_context)
+    : pixel_format_(pixfmt),
+      output_dxgifmt_(output_dxgifmt),
+      video_device_(std::move(video_device)),
+      device_context_(std::move(device_context)) {}
+
+TextureSelector::~TextureSelector() = default;
 
 bool SupportsZeroCopy(const gpu::GpuPreferences& preferences,
                       const gpu::GpuDriverBugWorkarounds& workarounds) {
@@ -37,6 +44,8 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
     DXGI_FORMAT decoder_output_format,
     TextureSelector::HDRMode hdr_output_mode,
     const FormatSupportChecker* format_checker,
+    ComD3D11VideoDevice video_device,
+    ComD3D11DeviceContext device_context,
     MediaLog* media_log) {
   VideoPixelFormat output_pixel_format;
   DXGI_FORMAT output_dxgi_format;
@@ -158,21 +167,20 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
     MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder is copying textures";
     return std::make_unique<CopyTextureSelector>(
         output_pixel_format, decoder_output_format, output_dxgi_format,
-        output_color_space);
+        output_color_space, std::move(video_device), std::move(device_context));
   } else {
     MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder is binding textures";
     // Binding can't change the color space.  The consumer has to do it, if they
     // want to.
     DCHECK(!output_color_space);
-    return std::make_unique<TextureSelector>(output_pixel_format,
-                                             output_dxgi_format);
+    return std::make_unique<TextureSelector>(
+        output_pixel_format, output_dxgi_format, std::move(video_device),
+        std::move(device_context));
   }
 }
 
 std::unique_ptr<Texture2DWrapper> TextureSelector::CreateTextureWrapper(
     ComD3D11Device device,
-    ComD3D11VideoDevice video_device,
-    ComD3D11DeviceContext device_context,
     gfx::Size size) {
   // TODO(liberato): If the output format is rgb, then create a pbuffer wrapper.
   return std::make_unique<DefaultTexture2DWrapper>(size, OutputDXGIFormat(),
@@ -187,16 +195,22 @@ CopyTextureSelector::CopyTextureSelector(
     VideoPixelFormat pixfmt,
     DXGI_FORMAT input_dxgifmt,
     DXGI_FORMAT output_dxgifmt,
-    base::Optional<gfx::ColorSpace> output_color_space)
-    : TextureSelector(pixfmt, output_dxgifmt),
-      output_color_space_(std::move(output_color_space)) {}
+    base::Optional<gfx::ColorSpace> output_color_space,
+    ComD3D11VideoDevice video_device,
+    ComD3D11DeviceContext device_context)
+    : TextureSelector(pixfmt,
+                      output_dxgifmt,
+                      std::move(video_device),
+                      std::move(device_context)),
+      output_color_space_(std::move(output_color_space)),
+      video_processor_proxy_(
+          base::MakeRefCounted<VideoProcessorProxy>(this->video_device(),
+                                                    this->device_context())) {}
 
 CopyTextureSelector::~CopyTextureSelector() = default;
 
 std::unique_ptr<Texture2DWrapper> CopyTextureSelector::CreateTextureWrapper(
     ComD3D11Device device,
-    ComD3D11VideoDevice video_device,
-    ComD3D11DeviceContext device_context,
     gfx::Size size) {
   D3D11_TEXTURE2D_DESC texture_desc = {};
   texture_desc.MipLevels = 1;
@@ -218,8 +232,7 @@ std::unique_ptr<Texture2DWrapper> CopyTextureSelector::CreateTextureWrapper(
       size,
       std::make_unique<DefaultTexture2DWrapper>(size, OutputDXGIFormat(),
                                                 PixelFormat()),
-      std::make_unique<VideoProcessorProxy>(video_device, device_context),
-      out_texture, output_color_space_);
+      video_processor_proxy_, out_texture, output_color_space_);
 }
 
 bool CopyTextureSelector::WillCopyForTesting() const {

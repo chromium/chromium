@@ -30,8 +30,11 @@ class MEDIA_GPU_EXPORT TextureSelector {
     kSDROrHDR = 1,
   };
 
-  TextureSelector(VideoPixelFormat pixfmt, DXGI_FORMAT output_dxgifmt);
-  virtual ~TextureSelector() = default;
+  TextureSelector(VideoPixelFormat pixfmt,
+                  DXGI_FORMAT output_dxgifmt,
+                  ComD3D11VideoDevice video_device,
+                  ComD3D11DeviceContext d3d11_device_context);
+  virtual ~TextureSelector();
 
   static std::unique_ptr<TextureSelector> Create(
       const gpu::GpuPreferences& gpu_preferences,
@@ -39,12 +42,12 @@ class MEDIA_GPU_EXPORT TextureSelector {
       DXGI_FORMAT decoder_output_format,
       HDRMode hdr_output_mode,
       const FormatSupportChecker* format_checker,
+      ComD3D11VideoDevice video_device,
+      ComD3D11DeviceContext device_context,
       MediaLog* media_log);
 
   virtual std::unique_ptr<Texture2DWrapper> CreateTextureWrapper(
       ComD3D11Device device,
-      ComD3D11VideoDevice video_device,
-      ComD3D11DeviceContext,
       gfx::Size size);
 
   VideoPixelFormat PixelFormat() const { return pixel_format_; }
@@ -52,11 +55,21 @@ class MEDIA_GPU_EXPORT TextureSelector {
 
   virtual bool WillCopyForTesting() const;
 
+ protected:
+  const ComD3D11VideoDevice& video_device() const { return video_device_; }
+
+  const ComD3D11DeviceContext& device_context() const {
+    return device_context_;
+  }
+
  private:
   friend class CopyTextureSelector;
 
   const VideoPixelFormat pixel_format_;
   const DXGI_FORMAT output_dxgifmt_;
+
+  ComD3D11VideoDevice video_device_;
+  ComD3D11DeviceContext device_context_;
 };
 
 class MEDIA_GPU_EXPORT CopyTextureSelector : public TextureSelector {
@@ -65,19 +78,20 @@ class MEDIA_GPU_EXPORT CopyTextureSelector : public TextureSelector {
   CopyTextureSelector(VideoPixelFormat pixfmt,
                       DXGI_FORMAT input_dxgifmt,
                       DXGI_FORMAT output_dxgifmt,
-                      base::Optional<gfx::ColorSpace> output_color_space);
+                      base::Optional<gfx::ColorSpace> output_color_space,
+                      ComD3D11VideoDevice video_device,
+                      ComD3D11DeviceContext d3d11_device_context);
   ~CopyTextureSelector() override;
 
   std::unique_ptr<Texture2DWrapper> CreateTextureWrapper(
       ComD3D11Device device,
-      ComD3D11VideoDevice video_device,
-      ComD3D11DeviceContext,
       gfx::Size size) override;
 
   bool WillCopyForTesting() const override;
 
  private:
   base::Optional<gfx::ColorSpace> output_color_space_;
+  scoped_refptr<VideoProcessorProxy> video_processor_proxy_;
 };
 
 }  // namespace media

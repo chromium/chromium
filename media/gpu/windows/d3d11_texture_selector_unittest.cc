@@ -60,7 +60,8 @@ class D3D11TextureSelectorUnittest : public ::testing::Test {
         zero_copy_disabled_by_workaround == ZeroCopyDisabledByWorkaround::kTrue;
     auto media_log = std::make_unique<NullMediaLog>();
     return TextureSelector::Create(prefs, workarounds, decoder_output_format,
-                                   hdr_mode, &format_checker_, media_log.get());
+                                   hdr_mode, &format_checker_, nullptr, nullptr,
+                                   media_log.get());
   }
 
   // Set the format checker to succeed any check, except for |disallowed|.
