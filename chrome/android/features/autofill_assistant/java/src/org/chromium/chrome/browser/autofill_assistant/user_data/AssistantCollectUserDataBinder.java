@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.ChromeVersionInfo;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSection.Delegate;
@@ -23,6 +22,7 @@ import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 import org.chromium.chrome.browser.payments.CardEditor;
 import org.chromium.chrome.browser.payments.ContactEditor;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.payments.BasicCardUtils;
 import org.chromium.components.payments.MethodStrings;
 import org.chromium.content_public.browser.UiThreadTaskTraits;

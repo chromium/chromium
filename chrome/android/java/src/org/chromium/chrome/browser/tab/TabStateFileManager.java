@@ -10,8 +10,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
-import org.chromium.chrome.browser.ChromeVersionInfo;
 import org.chromium.chrome.browser.crypto.CipherFactory;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
 
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;

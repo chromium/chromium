@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.payments.handler;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.ChromeVersionInfo;
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.payments.handler.toolbar.PaymentHandlerToolbarCoordinator;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.embedder_support.view.ContentView;

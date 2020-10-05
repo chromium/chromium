@@ -14,8 +14,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeVersionInfo;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.widget.Toast;
 

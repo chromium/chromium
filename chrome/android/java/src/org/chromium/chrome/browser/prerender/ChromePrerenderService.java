@@ -12,9 +12,9 @@ import android.os.Message;
 import android.os.Messenger;
 
 import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.ChromeVersionInfo;
 import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.externalauth.VerifiedHandler;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
 
 /**
  * A bound service that does nothing. Kept here to prevent old clients relying on it being

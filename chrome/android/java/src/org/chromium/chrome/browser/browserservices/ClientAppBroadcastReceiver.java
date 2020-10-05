@@ -10,9 +10,9 @@ import android.content.Intent;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.ChromeApplication;
-import org.chromium.chrome.browser.ChromeVersionInfo;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
 import org.chromium.chrome.browser.metrics.WebApkUma;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.webapk.lib.common.WebApkConstants;
 

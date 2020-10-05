@@ -19,7 +19,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeVersionInfo;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;

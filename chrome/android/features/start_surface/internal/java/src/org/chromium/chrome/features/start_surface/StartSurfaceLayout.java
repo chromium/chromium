@@ -20,7 +20,6 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.ChromeVersionInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.animation.CompositorAnimationHandler;
@@ -38,6 +37,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.ui.resources.ResourceManager;
 

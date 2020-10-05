@@ -25,6 +25,7 @@ include_rules = [
   "+chrome/browser/preferences",
   "+chrome/browser/tab",
   "+chrome/browser/ui/android/native_page",
+  "+chrome/browser/version",
   "+components/browser_ui/styles/android",
   "+components/browser_ui/widget/android",
   "+content/public/android/java/src/org/chromium/content_public",
@@ -47,7 +48,6 @@ specific_include_rules = {
   'TabImpl\.java': [
     "+chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeVersionInfo.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/WarmupManager.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/WebContentsFactory.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/content/ContentUtils.java",
@@ -69,9 +69,6 @@ specific_include_rules = {
     "+components/navigation_interception/android/java/src/org/chromium/components/navigation_interception",
     "+ui/android/java/src/org/chromium/ui/base",
     "+ui/android/java/src/org/chromium/ui/mojom",
-  ],
-  'TabStateFileManager\.java': [
-    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeVersionInfo.java",
   ],
   'TabStateBrowserControlsVisibilityDelegate\.java': [
     "+chrome/browser/util/android/java/src/org/chromium/chrome/browser/util/ChromeAccessibilityUtil.java",

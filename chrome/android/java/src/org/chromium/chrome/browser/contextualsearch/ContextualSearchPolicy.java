@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CollectionUtil;
-import org.chromium.chrome.browser.ChromeVersionInfo;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSetting;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
@@ -27,6 +26,7 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.UnifiedConsentServiceBridge;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 import java.net.URL;

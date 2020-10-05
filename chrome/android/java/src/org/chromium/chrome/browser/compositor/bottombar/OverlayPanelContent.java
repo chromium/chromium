@@ -14,13 +14,13 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.ChromeVersionInfo;
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.external_intents.ExternalNavigationHandler;

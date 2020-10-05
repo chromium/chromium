@@ -19,7 +19,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.PiiElider;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.MainDex;
-import org.chromium.chrome.browser.ChromeVersionInfo;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.crash.CrashKeys;
 
 import java.io.File;

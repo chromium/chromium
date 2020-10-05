@@ -12,7 +12,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.ChromeVersionInfo;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.webapk.lib.client.ChromeWebApkHostSignature;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.content_public.browser.UiThreadTaskTraits;

@@ -12,6 +12,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.chrome.browser.base.SplitMonochromeApplication;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.content_public.browser.ChildProcessCreationParams;
 
 /**

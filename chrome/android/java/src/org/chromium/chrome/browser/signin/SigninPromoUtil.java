@@ -14,9 +14,9 @@ import androidx.collection.ArraySet;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeVersionInfo;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;

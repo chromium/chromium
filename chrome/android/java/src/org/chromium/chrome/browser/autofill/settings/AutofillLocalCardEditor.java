@@ -23,12 +23,12 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeVersionInfo;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

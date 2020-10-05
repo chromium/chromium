@@ -20,7 +20,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.test.util.RestrictionSkipCheck;
 import org.chromium.base.test.util.SkipCheck;
-import org.chromium.chrome.browser.ChromeVersionInfo;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.chrome.test.util.ChromeRestriction;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.policy.test.annotations.Policies;
