@@ -52,16 +52,6 @@ DeskNameView::DeskNameView() {
   border_ptr_ = border.get();
   SetBorder(std::move(border));
 
-  const SkColor text_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
-  SetTextColor(text_color);
-  SetSelectionTextColor(text_color);
-
-  const SkColor selection_color =
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kFocusRingColor);
-  SetSelectionBackgroundColor(selection_color);
-
   SetCursorEnabled(true);
   SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
 }
@@ -137,8 +127,19 @@ void DeskNameView::OnMouseExited(const ui::MouseEvent& event) {
 
 void DeskNameView::OnThemeChanged() {
   Textfield::OnThemeChanged();
+
   SetBackground(views::CreateRoundedRectBackground(GetBackgroundColor(),
                                                    kDeskNameViewBorderRadius));
+
+  AshColorProvider* color_provider = AshColorProvider::Get();
+  const SkColor text_color = color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary);
+  SetTextColor(text_color);
+  SetSelectionTextColor(text_color);
+
+  const SkColor selection_color = color_provider->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusAuraColor);
+  SetSelectionBackgroundColor(selection_color);
 }
 
 views::View* DeskNameView::GetView() {

@@ -125,6 +125,19 @@ SkColor AppListColorProviderImpl::GetFolderNameBackgroundColor(
                      ripple_attributes.inkdrop_opacity * 255);
 }
 
+SkColor AppListColorProviderImpl::GetFolderNameBorderColor(bool active) const {
+  if (!active)
+    return SK_ColorTRANSPARENT;
+
+  return ash_color_provider_->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor);
+}
+
+SkColor AppListColorProviderImpl::GetFolderNameSelectionColor() const {
+  return ash_color_provider_->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusAuraColor);
+}
+
 SkColor AppListColorProviderImpl::GetContentsBackgroundColor() const {
   return ash_color_provider_->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);

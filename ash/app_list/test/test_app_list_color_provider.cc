@@ -92,6 +92,17 @@ SkColor TestAppListColorProvider::GetFolderNameBackgroundColor(
   return SkColorSetA(SK_ColorBLACK, 0x0F);
 }
 
+SkColor TestAppListColorProvider::GetFolderNameBorderColor(bool active) const {
+  if (!active)
+    return SK_ColorTRANSPARENT;
+
+  return SkColorSetA(SK_ColorBLACK, 0x0F);
+}
+
+SkColor TestAppListColorProvider::GetFolderNameSelectionColor() const {
+  return SkColorSetA(SK_ColorBLACK, 0x0F);
+}
+
 SkColor TestAppListColorProvider::GetContentsBackgroundColor() const {
   return gfx::kGoogleGrey200;
 }

@@ -147,6 +147,7 @@ SkColor AshColorProvider::GetControlsLayerColor(ControlsLayerType type) const {
                                       gfx::kGoogleRed600,
                                       gfx::kGoogleYellow600,
                                       gfx::kGoogleGreen600,
+                                      SkColorSetA(gfx::kGoogleBlue600, 0x3D),
                                       gfx::kGoogleBlue600};
   constexpr SkColor kDarkColors[] = {SkColorSetA(SK_ColorWHITE, 0x24),
                                      gfx::kGoogleBlue300,
@@ -154,6 +155,7 @@ SkColor AshColorProvider::GetControlsLayerColor(ControlsLayerType type) const {
                                      gfx::kGoogleRed300,
                                      gfx::kGoogleYellow300,
                                      gfx::kGoogleGreen300,
+                                     SkColorSetA(gfx::kGoogleBlue300, 0x3D),
                                      gfx::kGoogleBlue300};
   DCHECK(base::size(kLightColors) == base::size(kDarkColors));
   static_assert(

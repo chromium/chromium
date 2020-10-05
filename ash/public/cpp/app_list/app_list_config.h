@@ -126,7 +126,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
     return folder_name_border_thickness_;
   }
   int folder_name_padding() const { return folder_name_padding_; }
-  SkColor folder_name_border_color() const { return folder_name_border_color_; }
   int folder_icon_dimension() const { return folder_icon_dimension_; }
   int folder_unclipped_icon_dimension() const {
     return folder_unclipped_icon_dimension_;
@@ -400,9 +399,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
 
   // The inner padding for folder name.
   const int folder_name_padding_;
-
-  // The color of the folder name border.
-  const SkColor folder_name_border_color_;
 
   // The icon dimension of folder.
   const int folder_icon_dimension_;
