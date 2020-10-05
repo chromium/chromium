@@ -8,6 +8,10 @@
 #include "ash/system/phonehub/quick_action_controller_base.h"
 #include "chromeos/components/phonehub/find_my_device_controller.h"
 
+namespace base {
+class OneShotTimer;
+}  // namespace base
+
 namespace ash {
 
 // Controller of a quick action item that toggles Locate phone mode.
@@ -32,14 +36,29 @@ class LocatePhoneQuickActionController
  private:
   // All the possible states that the locate phone button can be viewed. Each
   // state has a corresponding icon, labels and tooltip view.
-  enum class ActionState { kOff, kConnecting, kOn };
+  enum class ActionState { kOff, kOn };
 
   // Set the item (including icon, label and tooltips) to a certain state.
-  void SetState(ActionState state);
+  void SetItemState(ActionState state);
+
+  // Check to see if the requested state is the same as the current state of the
+  // phone. Make changes to item's state if necessary.
+  void CheckRequestedState();
 
   chromeos::phonehub::FindMyDeviceController* find_my_device_controller_ =
       nullptr;
   QuickActionItem* item_ = nullptr;
+
+  // Keep track the current state of the item.
+  ActionState state_;
+
+  // State that user requests when clicking the button.
+  base::Optional<ActionState> requested_state_;
+
+  // Timer that fires to prevent showing wrong state in the item. It will check
+  // if the requested state is the same as the current state after the button is
+  // pressed for a certain time.
+  std::unique_ptr<base::OneShotTimer> check_requested_state_timer_;
 };
 
 }  // namespace ash

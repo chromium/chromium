@@ -31,12 +31,18 @@ void FakeFindMyDeviceController::SetIsPhoneRingingInternal(
 }
 
 void FakeFindMyDeviceController::RequestNewPhoneRingingState(bool ringing) {
-  SetIsPhoneRingingInternal(ringing);
+  if (!should_request_fail_)
+    SetIsPhoneRingingInternal(ringing);
 }
 
 FindMyDeviceController::Status
 FakeFindMyDeviceController::GetPhoneRingingStatus() {
   return phone_ringing_status_;
+}
+
+void FakeFindMyDeviceController::SetShouldRequestFail(
+    bool should_request_fail) {
+  should_request_fail_ = should_request_fail;
 }
 
 }  // namespace phonehub

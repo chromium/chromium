@@ -143,6 +143,23 @@ TEST_F(QuickActionsViewTest, LocatePhoneToggle) {
                                                             DummyEvent());
   EXPECT_EQ(FindMyDeviceController::Status::kRingingOff,
             find_my_device_controller()->GetPhoneRingingStatus());
+
+  // Test the error state.
+  find_my_device_controller()->SetShouldRequestFail(true);
+  actions_view()->locate_phone_for_testing()->ButtonPressed(nullptr,
+                                                            DummyEvent());
+
+  // In error state, find my device is disabled but the button should still be
+  // on after being pressed.
+  EXPECT_EQ(FindMyDeviceController::Status::kRingingOff,
+            find_my_device_controller()->GetPhoneRingingStatus());
+  EXPECT_TRUE(actions_view()->locate_phone_for_testing()->IsToggled());
+
+  // After a certain time, the button should be corrected to be off.
+  task_environment()->FastForwardBy(kWaitForRequestTimeout);
+  EXPECT_FALSE(actions_view()->locate_phone_for_testing()->IsToggled());
+
+  find_my_device_controller()->SetShouldRequestFail(false);
 }
 
 }  // namespace ash

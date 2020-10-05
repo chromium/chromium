@@ -39,8 +39,6 @@ QuickActionItem* EnableHotspotQuickActionController::CreateItem() {
 void EnableHotspotQuickActionController::OnButtonPressed(bool is_now_enabled) {
   is_now_enabled ? tether_controller_->Disconnect()
                  : tether_controller_->AttemptConnection();
-  // TODO(leandre): Add a timer to switch back to off state after connecting
-  // failed.
 }
 
 void EnableHotspotQuickActionController::OnTetherStatusChanged() {
