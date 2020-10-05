@@ -7,14 +7,24 @@ import './strings.m.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ProfileCustomizationBrowserProxy, ProfileCustomizationBrowserProxyImpl} from './profile_customization_browser_proxy.js';
 
 Polymer({
   is: 'profile-customization-app',
 
   _template: html`{__html_template__}`,
 
+  /** @private {?ProfileCustomizationBrowserProxy} */
+  profileCustomizationBrowserProxy_: null,
+
+  /** @override */
+  ready() {
+    this.profileCustomizationBrowserProxy_ =
+        ProfileCustomizationBrowserProxyImpl.getInstance();
+  },
+
   /** @private */
-  onDone_() {
-    // TODO: call native to close the bubble
+  onDoneCustomizationClicked_() {
+    this.profileCustomizationBrowserProxy_.done();
   },
 });

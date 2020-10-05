@@ -7,6 +7,8 @@
 
 #include "content/public/browser/web_ui_controller.h"
 
+#include "base/callback.h"
+
 namespace content {
 class WebUI;
 }
@@ -18,6 +20,12 @@ class ProfileCustomizationUI : public content::WebUIController {
 
   ProfileCustomizationUI(const ProfileCustomizationUI&) = delete;
   ProfileCustomizationUI& operator=(const ProfileCustomizationUI&) = delete;
+
+  // Initializes the ProfileCustomizationUI.
+  void Initialize(base::OnceClosure done_closure);
+
+ private:
+  WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_PROFILE_CUSTOMIZATION_UI_H_

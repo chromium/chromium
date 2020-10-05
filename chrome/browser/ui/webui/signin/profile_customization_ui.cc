@@ -23,6 +23,8 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
   source->SetDefaultResource(IDR_PROFILE_CUSTOMIZATION_HTML);
   source->AddResourcePath("profile_customization_app.js",
                           IDR_PROFILE_CUSTOMIZATION_APP_JS);
+  source->AddResourcePath("profile_customization_browser_proxy.js",
+                          IDR_PROFILE_CUSTOMIZATION_BROWSER_PROXY_JS);
 
   // Localized strings.
   source->UseStringsJs();
@@ -44,8 +46,13 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
   source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER);
 
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
-
-  web_ui->AddMessageHandler(std::make_unique<ProfileCustomizationHandler>());
 }
 
 ProfileCustomizationUI::~ProfileCustomizationUI() = default;
+
+void ProfileCustomizationUI::Initialize(base::OnceClosure done_closure) {
+  web_ui()->AddMessageHandler(
+      std::make_unique<ProfileCustomizationHandler>(std::move(done_closure)));
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(ProfileCustomizationUI)

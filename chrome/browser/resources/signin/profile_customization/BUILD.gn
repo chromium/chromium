@@ -7,13 +7,22 @@ import("//tools/polymer/html_to_js.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  deps = [ ":profile_customization_app" ]
+  deps = [
+    ":profile_customization_app",
+    ":profile_customization_browser_proxy",
+  ]
 }
 
 js_library("profile_customization_app") {
   deps = [
+    ":profile_customization_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
+}
+
+js_library("profile_customization_browser_proxy") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
 html_to_js("web_components") {

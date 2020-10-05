@@ -4,11 +4,16 @@
 
 #include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 
-ProfileCustomizationHandler::ProfileCustomizationHandler() = default;
+ProfileCustomizationHandler::ProfileCustomizationHandler(
+    base::OnceClosure done_closure)
+    : done_closure_(std::move(done_closure)) {}
 
 ProfileCustomizationHandler::~ProfileCustomizationHandler() = default;
 
@@ -19,5 +24,6 @@ void ProfileCustomizationHandler::RegisterMessages() {
 }
 
 void ProfileCustomizationHandler::HandleDone(const base::ListValue* args) {
-  // TODO: close the bubble
+  if (done_closure_)
+    std::move(done_closure_).Run();
 }

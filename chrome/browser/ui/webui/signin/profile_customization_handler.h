@@ -7,6 +7,8 @@
 
 #include "content/public/browser/web_ui_message_handler.h"
 
+#include "base/callback.h"
+
 namespace base {
 class ListValue;
 }
@@ -14,7 +16,7 @@ class ListValue;
 // WebUI message handler for the profile customization bubble.
 class ProfileCustomizationHandler : public content::WebUIMessageHandler {
  public:
-  ProfileCustomizationHandler();
+  explicit ProfileCustomizationHandler(base::OnceClosure done_closure);
   ~ProfileCustomizationHandler() override;
 
   ProfileCustomizationHandler(const ProfileCustomizationHandler&) = delete;
@@ -26,6 +28,9 @@ class ProfileCustomizationHandler : public content::WebUIMessageHandler {
 
  private:
   void HandleDone(const base::ListValue* args);
+
+  // Called when the "Done" button has been pressed.
+  base::OnceClosure done_closure_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_PROFILE_CUSTOMIZATION_HANDLER_H_

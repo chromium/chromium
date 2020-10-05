@@ -27,6 +27,9 @@ class ProfileCustomizationBubbleView : public views::BubbleDialogDelegateView {
 
  private:
   ProfileCustomizationBubbleView(Profile* profile, views::View* anchor_view);
+
+  // Called when the "Done" button is clicked in the inner WebUI.
+  void OnDoneButtonClicked();
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_CUSTOMIZATION_BUBBLE_VIEW_H_

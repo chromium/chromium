@@ -8,6 +8,7 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
                     "browser_resolver_prefix_replacements=\"chrome://signin-dice-web-intercept/=../../chrome/browser/resources/signin/dice_web_signin_intercept/\"",
+                    "browser_resolver_prefix_replacements=\"chrome://profile-customization/=../../chrome/browser/resources/signin/profile_customization/\"",
                     "browser_resolver_prefix_replacements=\"chrome://profile-picker/=../../chrome/browser/resources/signin/profile_picker/\"",
                     "js_module_root=../../chrome/test/data/webui/",
                     "js_module_root=./gen/chrome/test/data/webui/",
@@ -15,9 +16,11 @@ js_type_check("closure_compile") {
   deps = [
     ":dice_web_signin_intercept_test",
     ":profile_creation_flow_test",
+    ":profile_customization_test",
     ":profile_picker_app_test",
     ":test_dice_web_signin_intercept_browser_proxy",
     ":test_manage_profiles_browser_proxy",
+    ":test_profile_customization_browser_proxy",
   ]
 }
 
@@ -38,6 +41,17 @@ js_library("profile_creation_flow_test") {
     "..:test_util.m",
     "//chrome/browser/resources/signin/profile_picker:lazy_load",
   ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("profile_customization_test") {
+  deps = [
+    ":test_profile_customization_browser_proxy",
+    "..:chai_assert",
+    "..:test_util.m",
+    "//chrome/browser/resources/signin/profile_customization:profile_customization_app",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("profile_picker_app_test") {
@@ -47,12 +61,20 @@ js_library("profile_picker_app_test") {
     "..:test_util.m",
     "//chrome/browser/resources/signin/profile_picker:profile_picker",
   ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("test_dice_web_signin_intercept_browser_proxy") {
   deps = [
     "..:test_browser_proxy.m",
     "//chrome/browser/resources/signin/dice_web_signin_intercept:dice_web_signin_intercept_browser_proxy",
+  ]
+}
+
+js_library("test_profile_customization_browser_proxy") {
+  deps = [
+    "..:test_browser_proxy.m",
+    "//chrome/browser/resources/signin/profile_customization:profile_customization_browser_proxy",
   ]
 }
 

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
+#include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -42,17 +43,32 @@ ProfileCustomizationBubbleView::ProfileCustomizationBubbleView(
     views::View* anchor_view)
     : views::BubbleDialogDelegateView(anchor_view,
                                       views::BubbleBorder::TOP_RIGHT) {
+  set_close_on_deactivate(false);
   // Create the web view in the native bubble.
   std::unique_ptr<views::WebView> web_view =
       std::make_unique<views::WebView>(profile);
   web_view->LoadInitialURL(GURL(chrome::kChromeUIProfileCustomizationURL));
   web_view->SetPreferredSize(
       gfx::Size(kCustomizationBubbleWidth, kCustomizationBubbleHeight));
+  ProfileCustomizationUI* web_ui = web_view->GetWebContents()
+                                       ->GetWebUI()
+                                       ->GetController()
+                                       ->GetAs<ProfileCustomizationUI>();
+  DCHECK(web_ui);
+  web_ui->Initialize(
+      base::BindOnce(&ProfileCustomizationBubbleView::OnDoneButtonClicked,
+                     // Unretained is fine because this owns the web view.
+                     base::Unretained(this)));
   AddChildView(std::move(web_view));
 
   set_margins(gfx::Insets());
   SetButtons(ui::DIALOG_BUTTON_NONE);  // Buttons are implemented in WebUI.
   SetLayoutManager(std::make_unique<views::FillLayout>());
+}
+
+void ProfileCustomizationBubbleView::OnDoneButtonClicked() {
+  GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
 void DiceWebSigninInterceptorDelegate::ShowProfileCustomizationBubbleInternal(
