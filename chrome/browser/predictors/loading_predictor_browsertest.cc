@@ -2065,7 +2065,7 @@ class LoadingPredictorPrefetchBrowserTest
 // for a navigation which it has a prediction for and there isn't a local
 // prediction available.
 IN_PROC_BROWSER_TEST_P(LoadingPredictorPrefetchBrowserTest,
-                       PrepareForPageLoadWithPredictionForPrefetchNoLocalHint) {
+                       DISABLED_PrepareForPageLoadWithPredictionForPrefetchNoLocalHint) {
   GURL url = embedded_test_server()->GetURL(
       "test.com", GetPathWithPortReplacement(kHtmlSubresourcesPath,
                                              embedded_test_server()->port()));
