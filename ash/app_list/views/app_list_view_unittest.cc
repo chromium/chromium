@@ -2498,19 +2498,6 @@ TEST_F(AppListViewTest, AppsGridVisibilityOnResetForShow) {
   EXPECT_FALSE(assistant_page_view()->GetVisible());
 }
 
-// Tests that no answer card view when kEnableAssistantSearch is enabled.
-TEST_F(AppListViewTest, NoAnswerCardWhenEmbeddedAssistantUIEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {app_list_features::kEnableAssistantSearch}, {});
-  ASSERT_TRUE(app_list_features::IsAssistantSearchEnabled());
-
-  Initialize(false /*is_tablet_mode*/);
-  Show();
-
-  EXPECT_FALSE(contents_view()->search_result_answer_card_view_for_test());
-}
-
 // Tests that pressing escape in embedded Assistant UI returns to fullscreen
 // if the Assistant UI was launched from fullscreen app list.
 TEST_F(AppListViewTest, EscapeKeyInEmbeddedAssistantUIReturnsToAppList) {
