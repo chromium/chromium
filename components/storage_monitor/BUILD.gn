@@ -4,13 +4,6 @@
 
 import("//build/config/features.gni")
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 static_library("storage_monitor") {
   sources = [
     "media_storage_util.cc",
@@ -89,10 +82,12 @@ static_library("storage_monitor") {
   }
 
   if (use_udev) {
-    sources += [
-      "udev_util_linux.cc",
-      "udev_util_linux.h",
-    ]
+    if (is_linux || is_chromeos) {
+      sources += [
+        "udev_util_linux.cc",
+        "udev_util_linux.h",
+      ]
+    }
     deps += [ "//device/udev_linux" ]
   }
 
@@ -106,16 +101,8 @@ static_library("test_support") {
   sources = [
     "mock_removable_storage_observer.cc",
     "mock_removable_storage_observer.h",
-    "test_media_transfer_protocol_manager_chromeos.cc",
-    "test_media_transfer_protocol_manager_chromeos.h",
-    "test_portable_device_watcher_win.cc",
-    "test_portable_device_watcher_win.h",
     "test_storage_monitor.cc",
     "test_storage_monitor.h",
-    "test_storage_monitor_win.cc",
-    "test_storage_monitor_win.h",
-    "test_volume_mount_watcher_win.cc",
-    "test_volume_mount_watcher_win.h",
   ]
 
   public_deps = [
@@ -124,11 +111,25 @@ static_library("test_support") {
     "//content/public/browser",
   ]
 
-  if (is_chromeos && use_dbus) {
-    deps = [ "//services/device/public/mojom" ]
+  if (is_chromeos) {
+    sources += [
+      "test_media_transfer_protocol_manager_chromeos.cc",
+      "test_media_transfer_protocol_manager_chromeos.h",
+    ]
+    if (use_dbus) {
+      deps = [ "//services/device/public/mojom" ]
+    }
   }
 
   if (is_win) {
+    sources += [
+      "test_portable_device_watcher_win.cc",
+      "test_portable_device_watcher_win.h",
+      "test_storage_monitor_win.cc",
+      "test_storage_monitor_win.h",
+      "test_volume_mount_watcher_win.cc",
+      "test_volume_mount_watcher_win.h",
+    ]
     deps = [ "//testing/gtest" ]
   }
 }
@@ -139,9 +140,7 @@ source_set("unit_tests") {
     "image_capture_device_manager_unittest.mm",
     "media_storage_util_unittest.cc",
     "storage_info_unittest.cc",
-    "storage_monitor_mac_unittest.mm",
     "storage_monitor_unittest.cc",
-    "storage_monitor_win_unittest.cc",
   ]
 
   deps = [
@@ -150,6 +149,14 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//testing/gtest",
   ]
+
+  if (is_win) {
+    sources += [ "storage_monitor_win_unittest.cc" ]
+  }
+
+  if (is_mac) {
+    sources += [ "storage_monitor_mac_unittest.mm" ]
+  }
 
   if (use_dbus) {
     if (is_chromeos) {
