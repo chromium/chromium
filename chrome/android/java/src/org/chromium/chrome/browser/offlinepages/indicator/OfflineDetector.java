@@ -13,7 +13,9 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.ChromeVersionInfo;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.offlinepages.indicator.ConnectivityDetector.ConnectionState;
 import org.chromium.components.variations.VariationsAssociatedData;
@@ -87,6 +89,12 @@ class OfflineDetector
     // from "online" to "offline" or when we are notified that the device is online" at the end.
     private long mTimeWhenLastOnline;
 
+    // Set to true if adb console logging should be enabled.
+    private static final boolean sLoggingEnabled = ChromeVersionInfo.isCanaryBuild()
+            || ChromeVersionInfo.isDevBuild() || ChromeVersionInfo.isLocalBuild();
+
+    private static final String TAG = "OfflineDetector";
+
     /**
      * Constructs the offline indicator.
      * @param callback The {@link callback} is invoked when the connectivity status is stable and
@@ -100,6 +108,10 @@ class OfflineDetector
                 STATUS_INDICATOR_WAIT_ON_SWITCH_ONLINE_TO_OFFLINE_DEFAULT_DURATION_MS);
 
         mUpdateOfflineStatusIndicatorDelayedRunnable = () -> {
+            if (sLoggingEnabled) {
+                logToAdbConsoleNow("Running mUpdateOfflineStatusIndicatorDelayedRunnable start.");
+            }
+
             // |callback| is invoked only when the app is in foreground. If the app is in
             // background, return early. When the app comes to foreground,
             // |mUpdateOfflineStatusIndicatorDelayedRunnable| would be posted.
@@ -114,6 +126,9 @@ class OfflineDetector
             }
             mIsEffectivelyOffline = mIsOfflineLastReportedByConnectivityDetector;
             mCallback.onResult(mIsEffectivelyOffline);
+            if (sLoggingEnabled) {
+                logToAdbConsoleNow("Running mUpdateOfflineStatusIndicatorDelayedRunnable end.");
+            }
         };
 
         // Register as an application state observer and initialize |mTimeWhenLastForegrounded|.
@@ -141,6 +156,12 @@ class OfflineDetector
             return;
         }
 
+        if (sLoggingEnabled) {
+            logToAdbConsoleNow("Received connection change state message.");
+            Log.i(TAG, "onConnectionStateChanged(): previousLastReportedStateByOfflineDetector: %b",
+                    previousLastReportedStateByOfflineDetector);
+        }
+
         if (mIsOfflineLastReportedByConnectivityDetector) {
             mTimeWhenLastOfflineNotificationReceived = getElapsedTime();
         }
@@ -158,6 +179,21 @@ class OfflineDetector
         mConnectivityDetectorInitialized = true;
 
         updateState();
+    }
+
+    private void logToAdbConsoleNow(String prefix) {
+        Log.i(TAG,
+                prefix + " mConnectivityDetectorInitialized: %b,"
+                        + " mTimeWhenLastForegrounded: %d,"
+                        + " getElapsedTime: %d,"
+                        + " mTimeWhenLastOfflineNotificationReceived: %d,"
+                        + " mTimeWhenLastOnline: %d,"
+                        + " mApplicationState: %d,"
+                        + " mIsOfflineLastReportedByConnectivityDetector: %b,"
+                        + " mIsEffectivelyOffline: %b",
+                mConnectivityDetectorInitialized, mTimeWhenLastForegrounded, getElapsedTime(),
+                mTimeWhenLastOfflineNotificationReceived, mTimeWhenLastOnline, mApplicationState,
+                mIsOfflineLastReportedByConnectivityDetector, mIsEffectivelyOffline);
     }
 
     /*
@@ -237,6 +273,14 @@ class OfflineDetector
                 : 0;
 
         assert mUpdateOfflineStatusIndicatorDelayedRunnable != null;
+
+        logToAdbConsoleNow("Running updateState");
+        Log.i(TAG,
+                "updateState(): timeSinceLastForeground: %d,"
+                        + " timeSinceOfflineNotificationReceived: %d, timeSinceLastOnline: %d,"
+                        + " timeNeededForForeground: %d, timeNeededForOffline: %d",
+                timeSinceLastForeground, timeSinceOfflineNotificationReceived, timeSinceLastOnline,
+                timeNeededForForeground, timeNeededForOffline);
 
         // If the connection is online, report the state immediately. Alternatively, if the app has
         // been in foreground and connection has been offline for sufficient time, then report the
