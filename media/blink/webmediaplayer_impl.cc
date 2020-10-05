@@ -485,6 +485,7 @@ WebMediaPlayerImpl::~WebMediaPlayerImpl() {
 
   delegate_->PlayerGone(delegate_id_);
   delegate_->RemoveObserver(delegate_id_);
+  delegate_ = nullptr;
 
   // Finalize any watch time metrics before destroying the pipeline.
   watch_time_reporter_.reset();
