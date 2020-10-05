@@ -34,9 +34,6 @@ constexpr size_t kQRKeySize = kQRSeedSize + kQRSecretSize;
 // kCompressedPublicKeySize is the size of a compressed X9.62 public key.
 constexpr size_t kCompressedPublicKeySize =
     /* type byte */ 1 + /* field element */ (256 / 8);
-// kQRDataSize is the size of the (unencoded) QR payload. It's a compressed
-// public key followed by the QR secret.
-constexpr size_t kQRDataSize = kCompressedPublicKeySize + kQRSecretSize;
 
 }  // namespace cablev2
 }  // namespace device

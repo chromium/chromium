@@ -438,7 +438,7 @@ class CableAuthenticator {
      * Called to indicate that a QR code was scanned by the user.
      *
      * @param value contents of the QR code, which will be a valid caBLE
-     *              URL, i.e. "fido://c1/"...
+     *              URL, i.e. "fido://"...
      */
     public void onQRCode(String value) {
         mTaskRunner.postTask(() -> {

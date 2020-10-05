@@ -33,6 +33,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "crypto/random.h"
+#include "device/fido/cable/v2_handshake.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
@@ -359,11 +360,13 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
 
   base::Optional<std::array<uint8_t, device::cablev2::kQRKeySize>>
       qr_generator_key;
+  base::Optional<std::string> qr_string;
   bool have_paired_phones = false;
   std::vector<std::unique_ptr<device::cablev2::Pairing>> paired_phones;
   if (base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport)) {
     qr_generator_key.emplace();
     crypto::RandBytes(*qr_generator_key);
+    qr_string = device::cablev2::qr::Encode(*qr_generator_key);
     paired_phones = GetCablePairings();
     have_paired_phones = !paired_phones.empty();
 
@@ -379,8 +382,8 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
     return;
   }
 
-  weak_dialog_model_->set_cable_transport_info(
-      cable_extension_provided, have_paired_phones, qr_generator_key);
+  weak_dialog_model_->set_cable_transport_info(cable_extension_provided,
+                                               have_paired_phones, qr_string);
   discovery_factory->set_cable_data(std::move(pairings), qr_generator_key,
                                     std::move(paired_phones));
 

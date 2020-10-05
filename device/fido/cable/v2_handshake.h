@@ -116,6 +116,23 @@ Components ToComponents(const CableEidArray& eid);
 
 }  // namespace eid
 
+namespace qr {
+
+// Components contains the parsed elements of a QR code.
+struct COMPONENT_EXPORT(DEVICE_FIDO) Components {
+  std::array<uint8_t, device::kP256X962Length> peer_identity;
+  std::array<uint8_t, 16> secret;
+};
+
+COMPONENT_EXPORT(DEVICE_FIDO)
+base::Optional<Components> Parse(const std::string& qr_url);
+
+// Encode returns the contents of a QR code that represents |qr_key|.
+COMPONENT_EXPORT(DEVICE_FIDO)
+std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key);
+
+}  // namespace qr
+
 // DerivedValueType enumerates the different types of values that might be
 // derived in caBLEv2 from some secret. The values this this enum are protocol
 // constants and thus must not change over time.

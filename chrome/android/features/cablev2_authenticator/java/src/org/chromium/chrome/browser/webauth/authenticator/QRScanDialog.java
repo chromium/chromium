@@ -36,7 +36,7 @@ public class QRScanDialog extends DialogFragment implements Camera.PreviewCallba
      * FIDO QR codes begin with this prefix. This class will ignore QR codes that don't match
      * this.
      */
-    public static final String FIDO_QR_PREFIX = "fido://c1/";
+    public static final String FIDO_QR_PREFIX = "fido://";
     private static final String TAG = "QRScanDialog";
     /**
      * Receives a single call containing the decoded QR value. It will

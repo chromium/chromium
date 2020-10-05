@@ -4,7 +4,6 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/base64url.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -19,8 +18,6 @@
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/cable/v2_registration.h"
 #include "device/fido/fido_parsing_utils.h"
-#include "third_party/boringssl/src/include/openssl/ec_key.h"
-#include "third_party/boringssl/src/include/openssl/obj.h"
 
 // These "headers" actually contain several function definitions and thus can
 // only be included once across Chromium.
@@ -73,79 +70,6 @@ NewState() {
   CHECK(bytes.has_value());
 
   return std::make_tuple(root_secret, std::move(*bytes));
-}
-
-// DecodeQR represents the values in a scanned QR code.
-struct DecodedQR {
-  std::array<uint8_t, 16> secret;
-  std::array<uint8_t, device::kP256X962Length> peer_identity;
-};
-
-// DecompressPublicKey converts a compressed public key (from a scanned QR
-// code) into a standard, uncompressed one.
-base::Optional<std::array<uint8_t, device::kP256X962Length>>
-DecompressPublicKey(
-    base::span<const uint8_t, device::cablev2::kCompressedPublicKeySize>
-        compressed_public_key) {
-  bssl::UniquePtr<EC_GROUP> p256(
-      EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
-  bssl::UniquePtr<EC_POINT> point(EC_POINT_new(p256.get()));
-  if (!EC_POINT_oct2point(p256.get(), point.get(), compressed_public_key.data(),
-                          compressed_public_key.size(), /*ctx=*/nullptr)) {
-    return base::nullopt;
-  }
-  std::array<uint8_t, device::kP256X962Length> ret;
-  CHECK_EQ(
-      ret.size(),
-      EC_POINT_point2oct(p256.get(), point.get(), POINT_CONVERSION_UNCOMPRESSED,
-                         ret.data(), ret.size(), /*ctx=*/nullptr));
-  return ret;
-}
-
-// DecodeQR converts the textual form of a scanned QR code into a |DecodedQR|.
-base::Optional<DecodedQR> DecodeQR(const std::string& qr_url) {
-  static const char kPrefix[] = "fido://c1/";
-  // The scanning code should have filtered out any unrelated URLs.
-  if (qr_url.find(kPrefix) != 0) {
-    NOTREACHED();
-    return base::nullopt;
-  }
-
-  base::StringPiece qr_url_base64(qr_url);
-  qr_url_base64 = qr_url_base64.substr(sizeof(kPrefix) - 1);
-  std::string qr_data_str;
-  if (!base::Base64UrlDecode(qr_url_base64,
-                             base::Base64UrlDecodePolicy::DISALLOW_PADDING,
-                             &qr_data_str) ||
-      qr_data_str.size() != device::cablev2::kQRDataSize) {
-    FIDO_LOG(ERROR) << "QR decoding failed: " << qr_url;
-    return base::nullopt;
-  }
-
-  base::span<const uint8_t, device::cablev2::kQRDataSize> qr_data(
-      reinterpret_cast<const uint8_t*>(qr_data_str.data()), qr_data_str.size());
-
-  static_assert(EXTENT(qr_data) == device::cablev2::kCompressedPublicKeySize +
-                                       device::cablev2::kQRSecretSize,
-                "");
-  base::span<const uint8_t, device::cablev2::kCompressedPublicKeySize>
-      compressed_public_key(qr_data.data(),
-                            device::cablev2::kCompressedPublicKeySize);
-  auto qr_secret = qr_data.subspan(device::cablev2::kCompressedPublicKeySize);
-
-  DecodedQR ret;
-  DCHECK_EQ(qr_secret.size(), ret.secret.size());
-  std::copy(qr_secret.begin(), qr_secret.end(), ret.secret.begin());
-
-  base::Optional<std::array<uint8_t, device::kP256X962Length>> peer_identity =
-      DecompressPublicKey(compressed_public_key);
-  if (!peer_identity) {
-    FIDO_LOG(ERROR) << "Invalid compressed public key in QR data";
-    return base::nullopt;
-  }
-
-  ret.peer_identity = *peer_identity;
-  return ret;
 }
 
 // JavaByteArrayToSpan returns a span that aliases |data|. Be aware that the
@@ -466,9 +390,11 @@ static jboolean JNI_CableAuthenticator_StartQR(
     const JavaParamRef<jstring>& authenticator_name,
     const JavaParamRef<jstring>& qr_url) {
   GlobalData& global_data = GetGlobalData();
-  base::Optional<DecodedQR> decoded_qr(
-      DecodeQR(ConvertJavaStringToUTF8(qr_url)));
+  const std::string& qr_string = ConvertJavaStringToUTF8(qr_url);
+  base::Optional<device::cablev2::qr::Components> decoded_qr(
+      device::cablev2::qr::Parse(qr_string));
   if (!decoded_qr) {
+    FIDO_LOG(ERROR) << "Failed to decode QR: " << qr_string;
     return false;
   }
 

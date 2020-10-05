@@ -226,7 +226,7 @@ void AuthenticatorRequestDialogModel::StartWinNativeApi() {
 }
 
 void AuthenticatorRequestDialogModel::StartPhonePairing() {
-  DCHECK(qr_generator_key_);
+  DCHECK(cable_qr_string_);
   SetCurrentStep(Step::kCableV2QRCode);
 }
 
@@ -585,11 +585,10 @@ void AuthenticatorRequestDialogModel::RequestAttestationPermission(
 void AuthenticatorRequestDialogModel::set_cable_transport_info(
     bool cable_extension_provided,
     bool have_paired_phones,
-    const base::Optional<std::array<uint8_t, device::cablev2::kQRKeySize>>&
-        qr_generator_key) {
+    const base::Optional<std::string>& cable_qr_string) {
   cable_extension_provided_ = cable_extension_provided;
   have_paired_phones_ = have_paired_phones;
-  qr_generator_key_ = qr_generator_key;
+  cable_qr_string_ = cable_qr_string;
 }
 
 base::WeakPtr<AuthenticatorRequestDialogModel>

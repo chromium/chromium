@@ -20,8 +20,6 @@
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/observable_authenticator_list.h"
-#include "device/fido/cable/cable_discovery_data.h"
-#include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 
@@ -366,10 +364,7 @@ class AuthenticatorRequestDialogModel {
     return transport_availability_.available_transports;
   }
 
-  base::span<const uint8_t, device::cablev2::kQRKeySize> qr_generator_key()
-      const {
-    return *qr_generator_key_;
-  }
+  const std::string& cable_qr_string() const { return *cable_qr_string_; }
 
   void CollectPIN(base::Optional<int> attempts,
                   base::OnceCallback<void(std::string)> provide_pin_cb);
@@ -413,8 +408,7 @@ class AuthenticatorRequestDialogModel {
   void set_cable_transport_info(
       bool cable_extension_provided,
       bool has_paired_phones,
-      const base::Optional<std::array<uint8_t, device::cablev2::kQRKeySize>>&
-          qr_generator_key);
+      const base::Optional<std::string>& cable_qr_string);
 
   bool win_native_api_enabled() const {
     return transport_availability_.has_win_native_api_authenticator;
@@ -509,8 +503,7 @@ class AuthenticatorRequestDialogModel {
   // have_paired_phones_ indicates whether this profile knows of any paired
   // phones.
   bool have_paired_phones_ = false;
-  base::Optional<std::array<uint8_t, device::cablev2::kQRKeySize>>
-      qr_generator_key_;
+  base::Optional<std::string> cable_qr_string_;
   // win_native_api_already_tried_ is true if the Windows-native UI has been
   // displayed already and the user cancelled it. In this case, we shouldn't
   // jump straight to showing it again.

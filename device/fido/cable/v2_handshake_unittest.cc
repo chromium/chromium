@@ -46,6 +46,24 @@ TEST(CableV2Encoding, EIDs) {
   EXPECT_FALSE(eid::IsValid(eid));
 }
 
+TEST(CableV2Encoding, QRs) {
+  std::array<uint8_t, kQRKeySize> qr_key;
+  crypto::RandBytes(qr_key);
+  std::string url = qr::Encode(qr_key);
+  EXPECT_LE(url.size(), 81u) << "QR code doesn't fit into version five";
+  const base::Optional<qr::Components> decoded = qr::Parse(url);
+  ASSERT_TRUE(decoded.has_value());
+  static_assert(EXTENT(qr_key) >= EXTENT(decoded->secret), "");
+  EXPECT_EQ(memcmp(decoded->secret.data(),
+                   &qr_key[qr_key.size() - decoded->secret.size()],
+                   decoded->secret.size()),
+            0);
+
+  url[0] ^= 4;
+  EXPECT_FALSE(qr::Parse(url));
+  EXPECT_FALSE(qr::Parse("nonsense"));
+}
+
 TEST(CableV2Encoding, PaddedCBOR) {
   cbor::Value::MapValue map;
   base::Optional<std::vector<uint8_t>> encoded =
