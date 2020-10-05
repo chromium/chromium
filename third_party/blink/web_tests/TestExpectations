@@ -6642,6 +6642,10 @@ crbug.com/1135225 fast/sub-pixel/transformed-iframe-copy-on-scroll.html [ Pass F
 crbug.com/1133342 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/reporting-observer.html [ Pass Failure Timeout ]
 crbug.com/1083605 media/controls-styling-strict.html [ Pass Failure ]
 
+# Transform animation reftests
+crbug.com/1133901 virtual/threaded/external/wpt/css/css-transforms/animation/transform-interpolation-translate-em.html [ Failure ]
+crbug.com/1131252 virtual/threaded/external/wpt/css/css-transforms/animation/transform-interpolation-skew.html [ Failure ]
+
 # Sheriff 2020-09-30
 crbug.com/1133821 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/one-custom-property-animation.https.html [ Pass Failure ]
 crbug.com/1133821 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/two-custom-property-animation.https.html [ Pass Failure ]
