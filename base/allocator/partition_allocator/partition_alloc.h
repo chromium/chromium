@@ -578,7 +578,7 @@ struct BASE_EXPORT PartitionRoot {
   }
 
   bool ReallocDirectMappedInPlace(internal::PartitionPage<thread_safe>* page,
-                                  size_t raw_size)
+                                  size_t requested_size)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void DecommitEmptyPages() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 

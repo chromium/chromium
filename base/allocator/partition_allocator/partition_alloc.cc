@@ -330,42 +330,48 @@ PartitionRoot<thread_safe>::~PartitionRoot() = default;
 template <bool thread_safe>
 bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
     internal::PartitionPage<thread_safe>* page,
-    size_t raw_size) {
+    size_t requested_size) {
   PA_DCHECK(page->bucket->is_direct_mapped());
 
-  raw_size = internal::PartitionSizeAdjustAdd(allow_extras, raw_size);
-  // Note that the new size might be a bucketed size; this function is called
+  size_t raw_size =
+      internal::PartitionSizeAdjustAdd(allow_extras, requested_size);
+  // Note that the new size isn't a bucketed size; this function is called
   // whenever we're reallocating a direct mapped allocation.
-  size_t new_size = Bucket::get_direct_map_size(raw_size);
-  if (new_size < kMinDirectMappedDownsize)
+  size_t new_slot_size = Bucket::get_direct_map_size(raw_size);
+  if (new_slot_size < kMinDirectMappedDownsize)
     return false;
 
   // bucket->slot_size is the current size of the allocation.
-  size_t current_size = page->bucket->slot_size;
+  size_t current_slot_size = page->bucket->slot_size;
   char* char_ptr = static_cast<char*>(Page::ToPointer(page));
-  if (new_size == current_size) {
+  if (new_slot_size == current_slot_size) {
     // No need to move any memory around, but update size and cookie below.
-  } else if (new_size < current_size) {
+  } else if (new_slot_size < current_slot_size) {
     size_t map_size = DirectMapExtent::FromPage(page)->map_size;
 
     // Don't reallocate in-place if new size is less than 80 % of the full
     // map size, to avoid holding on to too much unused address space.
-    if ((new_size / SystemPageSize()) * 5 < (map_size / SystemPageSize()) * 4)
+    if ((new_slot_size / SystemPageSize()) * 5 <
+        (map_size / SystemPageSize()) * 4)
       return false;
 
     // Shrink by decommitting unneeded pages and making them inaccessible.
-    size_t decommit_size = current_size - new_size;
-    DecommitSystemPages(char_ptr + new_size, decommit_size);
-    SetSystemPagesAccess(char_ptr + new_size, decommit_size, PageInaccessible);
-  } else if (new_size <= DirectMapExtent::FromPage(page)->map_size) {
+    size_t decommit_size = current_slot_size - new_slot_size;
+    DecommitSystemPages(char_ptr + new_slot_size, decommit_size);
+    SetSystemPagesAccess(char_ptr + new_slot_size, decommit_size,
+                         PageInaccessible);
+  } else if (new_slot_size <= DirectMapExtent::FromPage(page)->map_size) {
     // Grow within the actually allocated memory. Just need to make the
     // pages accessible again.
-    size_t recommit_size = new_size - current_size;
-    SetSystemPagesAccess(char_ptr + current_size, recommit_size, PageReadWrite);
-    RecommitSystemPages(char_ptr + current_size, recommit_size);
+    size_t recommit_slot_size_growth = new_slot_size - current_slot_size;
+    SetSystemPagesAccess(char_ptr + current_slot_size,
+                         recommit_slot_size_growth, PageReadWrite);
+    RecommitSystemPages(char_ptr + current_slot_size,
+                        recommit_slot_size_growth);
 
 #if DCHECK_IS_ON()
-    memset(char_ptr + current_size, kUninitializedByte, recommit_size);
+    memset(char_ptr + current_slot_size, kUninitializedByte,
+           recommit_slot_size_growth);
 #endif
   } else {
     // We can't perform the realloc in-place.
@@ -384,7 +390,7 @@ bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
   page->set_raw_size(raw_size);
   PA_DCHECK(page->get_raw_size() == raw_size);
 
-  page->bucket->slot_size = new_size;
+  page->bucket->slot_size = new_slot_size;
   return true;
 }
 
