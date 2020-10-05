@@ -82,49 +82,36 @@ VisiblePositionTemplate<Strategy> VisiblePositionTemplate<Strategy>::Create(
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       document.Lifecycle());
 
-  // Find the canonical position with a backward preference.
-  const PositionWithAffinityTemplate<Strategy> backward_position =
-      SnapBackward(position_with_affinity.GetPosition());
-  if (backward_position.IsNull())
+  const PositionTemplate<Strategy> deep_position =
+      CanonicalPositionOf(position_with_affinity.GetPosition());
+  if (deep_position.IsNull())
     return VisiblePositionTemplate<Strategy>();
-  const PositionWithAffinityTemplate<Strategy> backward_position_upstream(
-      backward_position.GetPosition(), TextAffinity::kUpstream);
-  const PositionWithAffinityTemplate<Strategy> backward_position_downstream(
-      backward_position.GetPosition(), TextAffinity::kDownstream);
+  const PositionWithAffinityTemplate<Strategy> downstream_position(
+      deep_position);
+  if (position_with_affinity.Affinity() == TextAffinity::kDownstream)
+    return VisiblePositionTemplate<Strategy>(downstream_position);
 
   if (RuntimeEnabledFeatures::BidiCaretAffinityEnabled() &&
-      NGInlineFormattingContextOf(backward_position.GetPosition())) {
-    if (position_with_affinity.Affinity() == TextAffinity::kDownstream)
-      return VisiblePositionTemplate<Strategy>(backward_position_downstream);
+      NGInlineFormattingContextOf(deep_position)) {
     // When not at a line wrap or bidi boundary, make sure to end up with
     // |TextAffinity::Downstream| affinity.
-    if (AbsoluteCaretBoundsOf(backward_position_upstream) ==
-        AbsoluteCaretBoundsOf(backward_position_downstream)) {
-      return VisiblePositionTemplate<Strategy>(backward_position_downstream);
+    const PositionWithAffinityTemplate<Strategy> upstream_position(
+        deep_position, TextAffinity::kUpstream);
+
+    if (AbsoluteCaretBoundsOf(downstream_position) !=
+        AbsoluteCaretBoundsOf(upstream_position)) {
+      return VisiblePositionTemplate<Strategy>(upstream_position);
     }
-    return VisiblePositionTemplate<Strategy>(backward_position_upstream);
+    return VisiblePositionTemplate<Strategy>(downstream_position);
   }
 
-  // Find the canonical position with a forward preference. If backward_position
-  // has a downstream affinity, it means that we couldn't find any backward
-  // candidate, so they must be equal and we can avoid calling SnapForward().
-  // The forward canonical position can't be null because we already checked
-  // that the backward one is not null.
-  const PositionWithAffinityTemplate<Strategy> forward_position =
-      backward_position.Affinity() == TextAffinity::kDownstream
-          ? backward_position
-          : SnapForward(position_with_affinity.GetPosition());
-  DCHECK(forward_position.IsNotNull());
-
-  // When not at a line wrap, make sure to end up with the backward canonical
-  // position with |TextAffinity::Downstream| affinity.
-  if (InSameLine(backward_position_upstream, forward_position))
-    return VisiblePositionTemplate<Strategy>(backward_position_downstream);
-  if (position_with_affinity.Affinity() == TextAffinity::kUpstream)
-    return VisiblePositionTemplate<Strategy>(backward_position_upstream);
-  if (StartOfLine(forward_position).IsNull())
-    return VisiblePositionTemplate<Strategy>(backward_position_downstream);
-  return VisiblePositionTemplate<Strategy>(forward_position);
+  // When not at a line wrap, make sure to end up with
+  // |TextAffinity::Downstream| affinity.
+  const PositionWithAffinityTemplate<Strategy> upstream_position(
+      deep_position, TextAffinity::kUpstream);
+  if (InSameLine(downstream_position, upstream_position))
+    return VisiblePositionTemplate<Strategy>(downstream_position);
+  return VisiblePositionTemplate<Strategy>(upstream_position);
 }
 
 template <typename Strategy>

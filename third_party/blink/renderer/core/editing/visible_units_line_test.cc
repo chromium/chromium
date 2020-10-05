@@ -121,12 +121,8 @@ TEST_F(VisibleUnitsLineTest, endOfLine) {
       PositionInFlatTree(seven, 7),
       EndOfLine(CreateVisiblePositionInFlatTree(*one, 1)).DeepEquivalent());
 
-  EXPECT_EQ(Position(seven, 7), EndOfLine(CreateVisiblePositionInDOMTree(
-                                              *two, 0, TextAffinity::kUpstream))
-                                    .DeepEquivalent());
   EXPECT_EQ(
-      // The result on legacy layout is broken and not worth fixing.
-      LayoutNGEnabled() ? Position(two, 2) : Position(five, 5),
+      Position(seven, 7),
       EndOfLine(CreateVisiblePositionInDOMTree(*two, 0)).DeepEquivalent());
   EXPECT_EQ(
       PositionInFlatTree(two, 2),
@@ -143,11 +139,6 @@ TEST_F(VisibleUnitsLineTest, endOfLine) {
   EXPECT_EQ(
       // The result on legacy layout is broken and not worth fixing.
       LayoutNGEnabled() ? Position(two, 2) : Position(five, 5),
-      EndOfLine(
-          CreateVisiblePositionInDOMTree(*three, 0, TextAffinity::kUpstream))
-          .DeepEquivalent());
-  EXPECT_EQ(
-      Position(four, 4),
       EndOfLine(CreateVisiblePositionInDOMTree(*three, 0)).DeepEquivalent());
   EXPECT_EQ(
       PositionInFlatTree(four, 4),
@@ -213,9 +204,11 @@ TEST_F(VisibleUnitsLineTest, isEndOfLine) {
   EXPECT_FALSE(IsEndOfLine(CreateVisiblePositionInDOMTree(*one, 1)));
   EXPECT_FALSE(IsEndOfLine(CreateVisiblePositionInFlatTree(*one, 1)));
 
-  EXPECT_TRUE(IsEndOfLine(
-      CreateVisiblePositionInFlatTree(*two, 2, TextAffinity::kUpstream)));
-  EXPECT_FALSE(IsEndOfLine(CreateVisiblePositionInDOMTree(*two, 2)));
+  // The result on legacy layout is broken and not worth fixing.
+  if (LayoutNGEnabled())
+    EXPECT_TRUE(IsEndOfLine(CreateVisiblePositionInFlatTree(*two, 2)));
+  else
+    EXPECT_FALSE(IsEndOfLine(CreateVisiblePositionInDOMTree(*two, 2)));
   EXPECT_TRUE(IsEndOfLine(CreateVisiblePositionInFlatTree(*two, 2)));
 
   EXPECT_FALSE(IsEndOfLine(CreateVisiblePositionInDOMTree(*three, 3)));
@@ -269,14 +262,10 @@ TEST_F(VisibleUnitsLineTest, isLogicalEndOfLine) {
   EXPECT_FALSE(IsLogicalEndOfLine(CreateVisiblePositionInFlatTree(*one, 1)));
 
   // The result in legacy layout is broken and not worth fixing.
-  if (LayoutNGEnabled()) {
-    EXPECT_TRUE(IsLogicalEndOfLine(
-        CreateVisiblePositionInDOMTree(*two, 2, TextAffinity::kUpstream)));
-  } else {
-    EXPECT_FALSE(IsLogicalEndOfLine(
-        CreateVisiblePositionInDOMTree(*two, 2, TextAffinity::kUpstream)));
-  }
-  EXPECT_FALSE(IsLogicalEndOfLine(CreateVisiblePositionInDOMTree(*two, 2)));
+  if (LayoutNGEnabled())
+    EXPECT_TRUE(IsLogicalEndOfLine(CreateVisiblePositionInDOMTree(*two, 2)));
+  else
+    EXPECT_FALSE(IsLogicalEndOfLine(CreateVisiblePositionInDOMTree(*two, 2)));
   EXPECT_TRUE(IsLogicalEndOfLine(CreateVisiblePositionInFlatTree(*two, 2)));
 
   EXPECT_FALSE(IsLogicalEndOfLine(CreateVisiblePositionInDOMTree(*three, 3)));
@@ -326,25 +315,15 @@ TEST_P(ParameterizedVisibleUnitsLineTest, inSameLine) {
       InSameLine(PositionWithAffinityInDOMTree(*two->firstChild(), 0),
                  PositionWithAffinityInDOMTree(*four->firstChild(), 0)));
 
-  EXPECT_TRUE(InSameLine(
-      CreateVisiblePositionInDOMTree(*one, 0),
-      CreateVisiblePositionInDOMTree(*two, 0, TextAffinity::kUpstream)));
-  EXPECT_FALSE(InSameLine(CreateVisiblePositionInDOMTree(*one, 0),
-                          CreateVisiblePositionInDOMTree(*two, 0)));
-  EXPECT_TRUE(InSameLine(CreateVisiblePositionInDOMTree(*one->firstChild(), 0),
-                         CreateVisiblePositionInDOMTree(
-                             *two->firstChild(), 0, TextAffinity::kUpstream)));
-  EXPECT_FALSE(
+  EXPECT_TRUE(InSameLine(CreateVisiblePositionInDOMTree(*one, 0),
+                         CreateVisiblePositionInDOMTree(*two, 0)));
+  EXPECT_TRUE(
       InSameLine(CreateVisiblePositionInDOMTree(*one->firstChild(), 0),
                  CreateVisiblePositionInDOMTree(*two->firstChild(), 0)));
   EXPECT_FALSE(
       InSameLine(CreateVisiblePositionInDOMTree(*one->firstChild(), 0),
                  CreateVisiblePositionInDOMTree(*five->firstChild(), 0)));
   EXPECT_FALSE(
-      InSameLine(CreateVisiblePositionInDOMTree(*two->firstChild(), 0,
-                                                TextAffinity::kUpstream),
-                 CreateVisiblePositionInDOMTree(*four->firstChild(), 0)));
-  EXPECT_TRUE(
       InSameLine(CreateVisiblePositionInDOMTree(*two->firstChild(), 0),
                  CreateVisiblePositionInDOMTree(*four->firstChild(), 0)));
 
@@ -401,9 +380,7 @@ TEST_F(VisibleUnitsLineTest, isStartOfLine) {
   EXPECT_FALSE(IsStartOfLine(CreateVisiblePositionInDOMTree(*two, 0)));
   EXPECT_FALSE(IsStartOfLine(CreateVisiblePositionInFlatTree(*two, 0)));
 
-  EXPECT_FALSE(IsStartOfLine(
-      CreateVisiblePositionInDOMTree(*three, 0, TextAffinity::kUpstream)));
-  EXPECT_TRUE(IsStartOfLine(CreateVisiblePositionInDOMTree(*three, 0)));
+  EXPECT_FALSE(IsStartOfLine(CreateVisiblePositionInDOMTree(*three, 0)));
   EXPECT_TRUE(IsStartOfLine(CreateVisiblePositionInFlatTree(*three, 0)));
 
   EXPECT_FALSE(IsStartOfLine(CreateVisiblePositionInDOMTree(*four, 0)));
@@ -458,11 +435,6 @@ TEST_F(VisibleUnitsLineTest, logicalEndOfLine) {
                 .DeepEquivalent());
 
   EXPECT_EQ(Position(seven, 7),
-            LogicalEndOfLine(CreateVisiblePositionInDOMTree(
-                                 *two, 0, TextAffinity::kUpstream))
-                .DeepEquivalent());
-  // The result on legacy layout is broken and not worth fixing.
-  EXPECT_EQ(LayoutNGEnabled() ? Position(two, 2) : Position(five, 5),
             LogicalEndOfLine(CreateVisiblePositionInDOMTree(*two, 0))
                 .DeepEquivalent());
   EXPECT_EQ(PositionInFlatTree(two, 2),
@@ -480,10 +452,6 @@ TEST_F(VisibleUnitsLineTest, logicalEndOfLine) {
   // DOM VisiblePosition canonicalization moves input position to (two, 2),
   // which yields wrong results in both legacy layout and LayoutNG.
   EXPECT_EQ(LayoutNGEnabled() ? Position(two, 2) : Position(five, 5),
-            LogicalEndOfLine(CreateVisiblePositionInDOMTree(
-                                 *three, 0, TextAffinity::kUpstream))
-                .DeepEquivalent());
-  EXPECT_EQ(Position(four, 4),
             LogicalEndOfLine(CreateVisiblePositionInDOMTree(*three, 0))
                 .DeepEquivalent());
   EXPECT_EQ(PositionInFlatTree(four, 4),
@@ -554,10 +522,6 @@ TEST_F(VisibleUnitsLineTest, logicalStartOfLine) {
                 .DeepEquivalent());
 
   EXPECT_EQ(Position(one, 0),
-            LogicalStartOfLine(CreateVisiblePositionInDOMTree(
-                                   *two, 0, TextAffinity::kUpstream))
-                .DeepEquivalent());
-  EXPECT_EQ(Position(five, 0),
             LogicalStartOfLine(CreateVisiblePositionInDOMTree(*two, 0))
                 .DeepEquivalent());
   EXPECT_EQ(PositionInFlatTree(five, 0),
@@ -572,21 +536,15 @@ TEST_F(VisibleUnitsLineTest, logicalStartOfLine) {
                 .DeepEquivalent());
 
   EXPECT_EQ(Position(five, 0),
-            LogicalStartOfLine(CreateVisiblePositionInDOMTree(
-                                   *three, 0, TextAffinity::kUpstream))
-                .DeepEquivalent());
-  EXPECT_EQ(Position(three, 0),
             LogicalStartOfLine(CreateVisiblePositionInDOMTree(*three, 0))
                 .DeepEquivalent());
   EXPECT_EQ(PositionInFlatTree(three, 0),
             LogicalStartOfLine(CreateVisiblePositionInFlatTree(*three, 1))
                 .DeepEquivalent());
 
-  EXPECT_EQ(Position(three, 0),
-            LogicalStartOfLine(CreateVisiblePositionInDOMTree(
-                                   *four, 1, TextAffinity::kUpstream))
-                .DeepEquivalent());
-  EXPECT_EQ(Position(three, 0),
+  // TODO(yosin) logicalStartOfLine(four, 1) -> (two, 2) is a broken result.
+  // We keep it as a marker for future change.
+  EXPECT_EQ(Position(two, 2),
             LogicalStartOfLine(CreateVisiblePositionInDOMTree(*four, 1))
                 .DeepEquivalent());
   EXPECT_EQ(PositionInFlatTree(three, 0),
@@ -653,11 +611,8 @@ TEST_F(VisibleUnitsLineTest, startOfLine) {
       PositionInFlatTree(one, 0),
       StartOfLine(CreateVisiblePositionInFlatTree(*one, 1)).DeepEquivalent());
 
-  EXPECT_EQ(Position(one, 0), StartOfLine(CreateVisiblePositionInDOMTree(
-                                              *two, 0, TextAffinity::kUpstream))
-                                  .DeepEquivalent());
   EXPECT_EQ(
-      Position(five, 0),
+      Position(one, 0),
       StartOfLine(CreateVisiblePositionInDOMTree(*two, 0)).DeepEquivalent());
   EXPECT_EQ(
       PositionInFlatTree(five, 0),
@@ -670,23 +625,17 @@ TEST_F(VisibleUnitsLineTest, startOfLine) {
       PositionInFlatTree(five, 0),
       StartOfLine(CreateVisiblePositionInFlatTree(*two, 1)).DeepEquivalent());
 
-  EXPECT_EQ(Position(five, 0),
-            StartOfLine(CreateVisiblePositionInDOMTree(*three, 0,
-                                                       TextAffinity::kUpstream))
-                .DeepEquivalent());
   EXPECT_EQ(
-      Position(three, 0),
+      Position(five, 0),
       StartOfLine(CreateVisiblePositionInDOMTree(*three, 0)).DeepEquivalent());
   EXPECT_EQ(
       PositionInFlatTree(three, 0),
       StartOfLine(CreateVisiblePositionInFlatTree(*three, 1)).DeepEquivalent());
 
-  EXPECT_EQ(Position(three, 0),
-            StartOfLine(CreateVisiblePositionInDOMTree(*four, 1,
-                                                       TextAffinity::kUpstream))
-                .DeepEquivalent());
+  // TODO(yosin) startOfLine(four, 1) -> (two, 2) is a broken result. We keep
+  // it as a marker for future change.
   EXPECT_EQ(
-      Position(three, 0),
+      Position(two, 2),
       StartOfLine(CreateVisiblePositionInDOMTree(*four, 1)).DeepEquivalent());
   EXPECT_EQ(
       PositionInFlatTree(three, 0),

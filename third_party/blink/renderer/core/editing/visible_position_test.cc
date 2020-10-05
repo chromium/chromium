@@ -157,34 +157,18 @@ TEST_F(VisiblePositionTest, ShadowV0DistributedNodes) {
   EXPECT_EQ(Position(one->firstChild(), 0),
             CanonicalPositionOf(Position(one, 0)));
   EXPECT_EQ(Position(one->firstChild(), 0),
-            SnapBackward(Position(one, 0)).GetPosition());
-  EXPECT_EQ(Position(one->firstChild(), 0),
-            SnapForward(Position(one, 0)).GetPosition());
-  EXPECT_EQ(Position(one->firstChild(), 0),
             CreateVisiblePosition(Position(one, 0)).DeepEquivalent());
   EXPECT_EQ(Position(one->firstChild(), 2),
             CanonicalPositionOf(Position(two, 0)));
-  EXPECT_EQ(Position(one->firstChild(), 2),
-            SnapBackward(Position(two, 0)).GetPosition());
-  EXPECT_EQ(Position(two->firstChild(), 0),
-            SnapForward(Position(two, 0)).GetPosition());
   EXPECT_EQ(Position(one->firstChild(), 2),
             CreateVisiblePosition(Position(two, 0)).DeepEquivalent());
 
   EXPECT_EQ(PositionInFlatTree(five->firstChild(), 2),
             CanonicalPositionOf(PositionInFlatTree(one, 0)));
   EXPECT_EQ(PositionInFlatTree(five->firstChild(), 2),
-            SnapBackward(PositionInFlatTree(one, 0)).GetPosition());
-  EXPECT_EQ(PositionInFlatTree(one->firstChild(), 0),
-            SnapForward(PositionInFlatTree(one, 0)).GetPosition());
-  EXPECT_EQ(PositionInFlatTree(five->firstChild(), 2),
             CreateVisiblePosition(PositionInFlatTree(one, 0)).DeepEquivalent());
   EXPECT_EQ(PositionInFlatTree(four->firstChild(), 2),
             CanonicalPositionOf(PositionInFlatTree(two, 0)));
-  EXPECT_EQ(PositionInFlatTree(four->firstChild(), 2),
-            SnapBackward(PositionInFlatTree(two, 0)).GetPosition());
-  EXPECT_EQ(PositionInFlatTree(two->firstChild(), 0),
-            SnapForward(PositionInFlatTree(two, 0)).GetPosition());
   EXPECT_EQ(PositionInFlatTree(four->firstChild(), 2),
             CreateVisiblePosition(PositionInFlatTree(two, 0)).DeepEquivalent());
 }

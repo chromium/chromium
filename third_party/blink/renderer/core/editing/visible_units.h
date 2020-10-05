@@ -92,12 +92,6 @@ CORE_EXPORT bool IsVisuallyEquivalentCandidate(const PositionInFlatTree&);
 // If true, adjacent candidates are visually distinct.
 CORE_EXPORT bool EndsOfNodeAreVisuallyDistinctPositions(const Node*);
 
-CORE_EXPORT PositionWithAffinity SnapBackward(const Position&);
-CORE_EXPORT PositionInFlatTreeWithAffinity
-SnapBackward(const PositionInFlatTree&);
-CORE_EXPORT PositionWithAffinity SnapForward(const Position&);
-CORE_EXPORT PositionInFlatTreeWithAffinity
-SnapForward(const PositionInFlatTree&);
 CORE_EXPORT Position CanonicalPositionOf(const Position&);
 CORE_EXPORT PositionInFlatTree CanonicalPositionOf(const PositionInFlatTree&);
 
@@ -162,17 +156,11 @@ EphemeralRange ExpandRangeToSentenceBoundary(const EphemeralRange&);
 CORE_EXPORT VisiblePosition StartOfLine(const VisiblePosition&);
 CORE_EXPORT VisiblePositionInFlatTree
 StartOfLine(const VisiblePositionInFlatTree&);
-CORE_EXPORT PositionWithAffinity StartOfLine(const PositionWithAffinity&);
-CORE_EXPORT PositionInFlatTreeWithAffinity
-StartOfLine(const PositionInFlatTreeWithAffinity&);
 // TODO(yosin) Return values of |VisiblePosition| version of |endOfLine()| with
 // shadow tree isn't defined well. We should not use it for shadow tree.
 CORE_EXPORT VisiblePosition EndOfLine(const VisiblePosition&);
 CORE_EXPORT VisiblePositionInFlatTree
 EndOfLine(const VisiblePositionInFlatTree&);
-CORE_EXPORT PositionWithAffinity EndOfLine(const PositionWithAffinity&);
-CORE_EXPORT PositionInFlatTreeWithAffinity
-EndOfLine(const PositionInFlatTreeWithAffinity&);
 CORE_EXPORT bool InSameLine(const VisiblePosition&, const VisiblePosition&);
 CORE_EXPORT bool InSameLine(const VisiblePositionInFlatTree&,
                             const VisiblePositionInFlatTree&);
