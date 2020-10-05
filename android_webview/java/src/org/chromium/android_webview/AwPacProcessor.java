@@ -24,57 +24,66 @@ import org.chromium.base.annotations.NativeMethods;
 public class AwPacProcessor {
     private long mNativePacProcessor;
     private Network mNetwork;
+    private ConnectivityManager.NetworkCallback mNetworkCallback;
 
     public static final long NETWORK_UNSPECIFIED = 0;
 
     private static class LazyHolder {
-        static final AwPacProcessor sInstance = new AwPacProcessor(null);
+        static final AwPacProcessor sInstance = new AwPacProcessor();
     }
 
     public static AwPacProcessor getInstance() {
         return LazyHolder.sInstance;
     }
 
-    public AwPacProcessor(Network network) {
-        if (network == null) {
-            mNativePacProcessor =
-                    AwPacProcessorJni.get().createNativePacProcessor(NETWORK_UNSPECIFIED);
-            return;
-        }
+    // TODO(amalova): remove this constructor once
+    //  corresponging changes are landed in internal repo
+    public AwPacProcessor(Network network) {}
 
-        mNetwork = network;
-        mNativePacProcessor =
-                AwPacProcessorJni.get().createNativePacProcessor(mNetwork.getNetworkHandle());
-
-        Context context = ContextUtils.getApplicationContext();
-        ConnectivityManager connectivityManager =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkRequest.Builder builder = new NetworkRequest.Builder();
-
-        connectivityManager.registerNetworkCallback(
-                builder.build(), new ConnectivityManager.NetworkCallback() {
-                    @Override
-                    public void onLinkPropertiesChanged(
-                            Network network, LinkProperties linkProperties) {
-                        if (network.equals(mNetwork)) {
-                            updateNetworkLinkAddress(linkProperties);
-                        }
-                    }
-                });
-
-        updateNetworkLinkAddress(connectivityManager.getLinkProperties(mNetwork));
+    public AwPacProcessor() {
+        mNativePacProcessor = AwPacProcessorJni.get().createNativePacProcessor();
+        registerNetworkCallback();
     }
 
-    private void updateNetworkLinkAddress(LinkProperties linkProperties) {
-        String[] addresses = linkProperties.getLinkAddresses()
-                                     .stream()
-                                     .map(LinkAddress::toString)
-                                     .toArray(String[] ::new);
-        AwPacProcessorJni.get().setNetworkLinkAddresses(mNativePacProcessor, addresses);
+    private static ConnectivityManager getConnectivityManager() {
+        Context context = ContextUtils.getApplicationContext();
+        return (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    }
+
+    private void updateNetworkLinkAddress(Network network, LinkProperties linkProperties) {
+        if (network == null || linkProperties == null) {
+            setNetworkAndLinkAddresses(NETWORK_UNSPECIFIED, new String[0]);
+        } else {
+            String[] addresses = linkProperties.getLinkAddresses()
+                                         .stream()
+                                         .map(LinkAddress::toString)
+                                         .toArray(String[] ::new);
+            setNetworkAndLinkAddresses(network.getNetworkHandle(), addresses);
+        }
+    }
+
+    public void setNetworkAndLinkAddresses(long networkHandle, String[] addresses) {
+        AwPacProcessorJni.get().setNetworkAndLinkAddresses(
+                mNativePacProcessor, networkHandle, addresses);
+    }
+
+    private void registerNetworkCallback() {
+        mNetworkCallback = new ConnectivityManager.NetworkCallback() {
+            @Override
+            public void onLinkPropertiesChanged(Network network, LinkProperties linkProperties) {
+                if (network.equals(mNetwork)) {
+                    updateNetworkLinkAddress(network, linkProperties);
+                }
+            }
+        };
+        NetworkRequest.Builder builder = new NetworkRequest.Builder();
+
+        getConnectivityManager().registerNetworkCallback(builder.build(), mNetworkCallback);
     }
 
     // The calling code must not call any methods after it called destroy().
     public void destroy() {
+        getConnectivityManager().unregisterNetworkCallback(mNetworkCallback);
         AwPacProcessorJni.get().destroyNative(mNativePacProcessor, this);
     }
 
@@ -84,6 +93,11 @@ public class AwPacProcessor {
 
     public String makeProxyRequest(String url) {
         return AwPacProcessorJni.get().makeProxyRequest(mNativePacProcessor, this, url);
+    }
+
+    public void setNetwork(Network network) {
+        updateNetworkLinkAddress(network, getConnectivityManager().getLinkProperties(network));
+        mNetwork = network;
     }
 
     public Network getNetwork() {
@@ -97,10 +111,11 @@ public class AwPacProcessor {
     @NativeMethods
     interface Natives {
         void initializeEnvironment();
-        long createNativePacProcessor(long netHandle);
+        long createNativePacProcessor();
         boolean setProxyScript(long nativeAwPacProcessor, AwPacProcessor caller, String script);
         String makeProxyRequest(long nativeAwPacProcessor, AwPacProcessor caller, String url);
         void destroyNative(long nativeAwPacProcessor, AwPacProcessor caller);
-        void setNetworkLinkAddresses(long nativeAwPacProcessor, String[] adresses);
+        void setNetworkAndLinkAddresses(
+                long nativeAwPacProcessor, long networkHandle, String[] adresses);
     }
 }

@@ -22,7 +22,7 @@ class HostResolver;
 
 class AwPacProcessor {
  public:
-  AwPacProcessor(net_handle_t net_handle);
+  AwPacProcessor();
   AwPacProcessor(const AwPacProcessor&) = delete;
   AwPacProcessor& operator=(const AwPacProcessor&) = delete;
 
@@ -39,8 +39,9 @@ class AwPacProcessor {
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& jurl);
   std::string MakeProxyRequest(std::string url);
-  void SetNetworkLinkAddresses(
+  void SetNetworkAndLinkAddresses(
       JNIEnv* env,
+      net_handle_t net_handle,
       const base::android::JavaParamRef<jobjectArray>& addresses);
 
  private:
@@ -63,7 +64,6 @@ class AwPacProcessor {
   std::unique_ptr<HostResolver> host_resolver_;
 
   std::set<Job*> jobs_;
-  net_handle_t net_handle_;
 };
 }  // namespace android_webview
 

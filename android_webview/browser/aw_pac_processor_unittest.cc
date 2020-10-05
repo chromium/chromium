@@ -33,7 +33,7 @@ class AwPacProcessorTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
            base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  AwPacProcessor* pac_processor_ = new AwPacProcessor(NETWORK_UNSPECIFIED);
+  AwPacProcessor* pac_processor_ = new AwPacProcessor();
 };
 
 TEST_F(AwPacProcessorTest, MakeProxyRequest) {
@@ -49,8 +49,7 @@ TEST_F(AwPacProcessorTest, MakeProxyRequestDnsResolve) {
 }
 
 TEST_F(AwPacProcessorTest, MultipleProxyRequest) {
-  AwPacProcessor* other_pac_processor_ =
-      new AwPacProcessor(NETWORK_UNSPECIFIED);
+  AwPacProcessor* other_pac_processor_ = new AwPacProcessor();
   pac_processor_->SetProxyScript(kScript);
   other_pac_processor_->SetProxyScript(kScriptDnsResolve);
 
