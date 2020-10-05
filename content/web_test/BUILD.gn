@@ -18,13 +18,6 @@ if (is_android) {
   import("//v8/gni/v8.gni")
 }
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 mojom("web_test_common_mojom") {
   sources = [
     "common/fake_bluetooth_chooser.mojom",
@@ -111,9 +104,6 @@ static_library("web_test_browser") {
     "browser/web_test_browser_main_parts.cc",
     "browser/web_test_browser_main_parts.h",
     "browser/web_test_browser_main_platform_support.h",
-    "browser/web_test_browser_main_platform_support_linux.cc",
-    "browser/web_test_browser_main_platform_support_mac.mm",
-    "browser/web_test_browser_main_platform_support_win.cc",
     "browser/web_test_browser_main_runner.cc",
     "browser/web_test_browser_main_runner.h",
     "browser/web_test_content_browser_client.cc",
@@ -141,11 +131,22 @@ static_library("web_test_browser") {
   ]
 
   if (is_mac) {
-    sources += [ "browser/web_test_shell_platform_delegate_mac.mm" ]
+    sources += [
+      "browser/web_test_browser_main_platform_support_mac.mm",
+      "browser/web_test_shell_platform_delegate_mac.mm",
+    ]
   } else if (toolkit_views && !is_chromecast) {
     sources += [ "browser/web_test_shell_platform_delegate_views.cc" ]
   } else {
     sources += [ "browser/web_test_shell_platform_delegate_aura.cc" ]
+  }
+
+  if (is_win) {
+    sources += [ "browser/web_test_browser_main_platform_support_win.cc" ]
+  }
+
+  if (is_linux || is_chromeos) {
+    sources += [ "browser/web_test_browser_main_platform_support_linux.cc" ]
   }
 
   deps = [
