@@ -13,7 +13,7 @@
 #include "tools/accessibility/inspect/ax_tree_server.h"
 #include "tools/accessibility/inspect/ax_utils.h"
 
-using TreeSelector = content::AccessibilityTreeFormatter::TreeSelector;
+using ui::AXTreeSelector;
 
 char kIdSwitch[] =
 #if defined(WINDOWS)
@@ -104,7 +104,7 @@ int main(int argc, char** argv) {
     return 0;
   }
 
-  TreeSelector selector = tools::TreeSelectorFromCommandLine(command_line);
+  AXTreeSelector selector = tools::TreeSelectorFromCommandLine(command_line);
   if (!selector.empty()) {
     std::unique_ptr<content::AXTreeServer> server(
         new content::AXTreeServer(selector, filters_path, use_json));

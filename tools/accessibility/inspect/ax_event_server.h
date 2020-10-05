@@ -19,9 +19,8 @@ class AXEventServer final {
  public:
   // Dumps events into console for application identified either by process id
   // or tree selector.
-  explicit AXEventServer(
-      base::ProcessId pid,
-      const content::AccessibilityTreeFormatter::TreeSelector& selector);
+  explicit AXEventServer(base::ProcessId pid,
+                         const ui::AXTreeSelector& selector);
   ~AXEventServer();
 
  private:

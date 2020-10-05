@@ -16,7 +16,6 @@
 namespace content {
 namespace a11y {
 
-using TreeSelector = AccessibilityTreeFormatter::TreeSelector;
 using base::SysNSStringToUTF8;
 
 const char kChromeTitle[] = "Google Chrome";
@@ -148,20 +147,19 @@ AXUIElementRef FindAXUIElement(const AXUIElementRef node,
   return nil;
 }
 
-std::pair<AXUIElementRef, int> FindAXUIElement(
-    const AccessibilityTreeFormatter::TreeSelector& selector) {
+std::pair<AXUIElementRef, int> FindAXUIElement(const AXTreeSelector& selector) {
   NSArray* windows = static_cast<NSArray*>(CGWindowListCopyWindowInfo(
       kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements,
       kCGNullWindowID));
 
   std::string title;
-  if (selector.types & TreeSelector::Chrome) {
+  if (selector.types & AXTreeSelector::Chrome) {
     title = kChromeTitle;
-  } else if (selector.types & TreeSelector::Chromium) {
+  } else if (selector.types & AXTreeSelector::Chromium) {
     title = kChromiumTitle;
-  } else if (selector.types & TreeSelector::Firefox) {
+  } else if (selector.types & AXTreeSelector::Firefox) {
     title = kFirefoxTitle;
-  } else if (selector.types & TreeSelector::Safari) {
+  } else if (selector.types & AXTreeSelector::Safari) {
     title = kSafariTitle;
   }
 
@@ -178,7 +176,7 @@ std::pair<AXUIElementRef, int> FindAXUIElement(
 
     if (window_name == title) {
       AXUIElementRef node = AXUIElementCreateApplication(pid);
-      if (selector.types & TreeSelector::ActiveTab) {
+      if (selector.types & AXTreeSelector::ActiveTab) {
         node = FindAXUIElement(
             node, base::BindRepeating([](const AXUIElementRef node) {
               // Only active tab in exposed in browsers, thus find first

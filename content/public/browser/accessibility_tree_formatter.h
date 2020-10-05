@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
+#include "ui/accessibility/platform/inspect/inspect.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace base {
@@ -55,6 +56,8 @@ class AccessibilityTestExpectationsLocator {
 class CONTENT_EXPORT AccessibilityTreeFormatter
     : public AccessibilityTestExpectationsLocator {
  public:
+  using AXTreeSelector = ui::AXTreeSelector;
+
   // A single property filter specification. Represents a parsed string of the
   // filter_str;match_str format, where `filter_str` has
   // :line_num_0,...:line_num_N format, `match_str` has format of
@@ -97,29 +100,6 @@ class CONTENT_EXPORT AccessibilityTreeFormatter
         : property(property), pattern(pattern) {}
   };
 
-  // Tree selector used to identify an accessible tree to traverse, it can be
-  // built by a pre-defined tree type like Chromium to indicate that Chromium
-  // browser tree should be traversed and/or by a string pattern which matches
-  // an accessible name of a root of some accessible subtree.
-  struct TreeSelector {
-    enum Type {
-      None = 0,
-      ActiveTab = 1 << 0,
-      Chrome = 1 << 1,
-      Chromium = 1 << 2,
-      Firefox = 1 << 3,
-      Safari = 1 << 4,
-    };
-    int types;
-    std::string pattern;
-
-    TreeSelector() : types(None) {}
-    TreeSelector(int types, const std::string& pattern)
-        : types(types), pattern(pattern) {}
-
-    bool empty() const { return types == None && pattern.empty(); }
-  };
-
   // Create the appropriate native subclass of AccessibilityTreeFormatter.
   static std::unique_ptr<AccessibilityTreeFormatter> Create();
 
@@ -156,7 +136,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatter
   // Build an accessibility tree for an application with a name matching the
   // given pattern.
   virtual std::unique_ptr<base::DictionaryValue>
-  BuildAccessibilityTreeForSelector(const TreeSelector&) = 0;
+  BuildAccessibilityTreeForSelector(const AXTreeSelector&) = 0;
 
   // Returns a filtered accesibility tree using the current property and node
   // filters.

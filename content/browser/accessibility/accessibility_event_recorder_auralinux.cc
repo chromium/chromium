@@ -35,7 +35,7 @@ class AccessibilityEventRecorderAuraLinux : public AccessibilityEventRecorder {
   explicit AccessibilityEventRecorderAuraLinux(
       BrowserAccessibilityManager* manager,
       base::ProcessId pid,
-      const AccessibilityTreeFormatter::TreeSelector& selector);
+      const AXTreeSelector& selector);
   ~AccessibilityEventRecorderAuraLinux() override;
 
   void ProcessATKEvent(const char* event,
@@ -98,7 +98,7 @@ gboolean AccessibilityEventRecorderAuraLinux::OnATKEventReceived(
 std::unique_ptr<AccessibilityEventRecorder> AccessibilityEventRecorder::Create(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
-    const AccessibilityTreeFormatter::TreeSelector& selector) {
+    const AXTreeSelector& selector) {
   return std::make_unique<AccessibilityEventRecorderAuraLinux>(manager, pid,
                                                                selector);
 }
@@ -120,7 +120,7 @@ bool AccessibilityEventRecorderAuraLinux::ShouldUseATSPI() {
 AccessibilityEventRecorderAuraLinux::AccessibilityEventRecorderAuraLinux(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
-    const AccessibilityTreeFormatter::TreeSelector& selector)
+    const AXTreeSelector& selector)
     : AccessibilityEventRecorder(manager),
       pid_(pid),
       application_name_match_pattern_(selector.pattern) {

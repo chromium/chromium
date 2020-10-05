@@ -26,8 +26,10 @@ constexpr char kAllowOptEmptyStr[] = "@ALLOW-EMPTY:";
 constexpr char kAllowOptStr[] = "@ALLOW:";
 constexpr char kDenyOptStr[] = "@DENY:";
 
+using ui::AXTreeSelector;
+
 std::unique_ptr<base::DictionaryValue> BuildTreeForSelector(
-    const AccessibilityTreeFormatter::TreeSelector& selector,
+    const AXTreeSelector& selector,
     AccessibilityTreeFormatter* formatter) {
   return formatter->BuildAccessibilityTreeForSelector(selector);
 }
@@ -38,10 +40,9 @@ std::unique_ptr<base::DictionaryValue> BuildTreeForWindow(
   return formatter->BuildAccessibilityTreeForWindow(widget);
 }
 
-AXTreeServer::AXTreeServer(
-    const AccessibilityTreeFormatter::TreeSelector& selector,
-    const base::FilePath& filters_path,
-    bool use_json) {
+AXTreeServer::AXTreeServer(const AXTreeSelector& selector,
+                           const base::FilePath& filters_path,
+                           bool use_json) {
   Run(base::BindOnce(&BuildTreeForSelector, selector), filters_path, use_json);
 }
 

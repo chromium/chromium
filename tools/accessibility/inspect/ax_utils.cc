@@ -13,6 +13,8 @@ char kFirefoxSwitch[] = "firefox";
 char kPatternSwitch[] = "pattern";
 char kSafariSwitch[] = "safari";
 
+using ui::AXTreeSelector;
+
 namespace tools {
 
 void PrintHelpForTreeSelectors() {
@@ -25,24 +27,24 @@ void PrintHelpForTreeSelectors() {
   printf("    --active-tab\tActive tab of a choosen browser\n");
 }
 
-TreeSelector TreeSelectorFromCommandLine(
+AXTreeSelector TreeSelectorFromCommandLine(
     const base::CommandLine* command_line) {
-  int selectors = TreeSelector::None;
+  int selectors = AXTreeSelector::None;
   if (command_line->HasSwitch(kChromeSwitch)) {
-    selectors = TreeSelector::Chrome;
+    selectors = AXTreeSelector::Chrome;
   } else if (command_line->HasSwitch(kChromiumSwitch)) {
-    selectors = TreeSelector::Chromium;
+    selectors = AXTreeSelector::Chromium;
   } else if (command_line->HasSwitch(kFirefoxSwitch)) {
-    selectors = TreeSelector::Firefox;
+    selectors = AXTreeSelector::Firefox;
   } else if (command_line->HasSwitch(kSafariSwitch)) {
-    selectors = TreeSelector::Safari;
+    selectors = AXTreeSelector::Safari;
   }
   if (command_line->HasSwitch(kActiveTabSwitch)) {
-    selectors |= TreeSelector::ActiveTab;
+    selectors |= AXTreeSelector::ActiveTab;
   }
 
   std::string pattern_str = command_line->GetSwitchValueASCII(kPatternSwitch);
-  return TreeSelector(selectors, pattern_str);
+  return AXTreeSelector(selectors, pattern_str);
 }
 
 }  // namespace tools

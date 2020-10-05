@@ -57,6 +57,9 @@ source_set("platform") {
     # Used by //chrome/test/browser_tests/browser_view_browsertest.cc
     "ax_platform_node_test_helper.cc",
     "ax_platform_node_test_helper.h",
+
+    # Used by DumpAccTree testsuite and a11y tools
+    "inspect/inspect.h",
   ]
 
   public_deps = [

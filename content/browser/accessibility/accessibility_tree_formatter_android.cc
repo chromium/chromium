@@ -90,7 +90,7 @@ class AccessibilityTreeFormatterAndroid
       gfx::AcceleratedWidget widget) override;
 
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForSelector(
-      const TreeSelector& selector) override;
+      const AXTreeSelector& selector) override;
 
   void AddDefaultFilters(
       std::vector<PropertyFilter>* property_filters) override;
@@ -154,7 +154,7 @@ AccessibilityTreeFormatterAndroid::BuildAccessibilityTreeForWindow(
 
 std::unique_ptr<base::DictionaryValue>
 AccessibilityTreeFormatterAndroid::BuildAccessibilityTreeForSelector(
-    const TreeSelector& selector) {
+    const AXTreeSelector& selector) {
   NOTREACHED();
   return nullptr;
 }

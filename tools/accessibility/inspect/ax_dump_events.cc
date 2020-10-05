@@ -16,6 +16,8 @@
 #include "tools/accessibility/inspect/ax_event_server.h"
 #include "tools/accessibility/inspect/ax_utils.h"
 
+using ui::AXTreeSelector;
+
 namespace {
 
 constexpr char kPidSwitch[] = "pid";
@@ -67,7 +69,7 @@ int main(int argc, char** argv) {
 
   const std::string pid_str =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(kPidSwitch);
-  const tools::TreeSelector selector =
+  const AXTreeSelector selector =
       tools::TreeSelectorFromCommandLine(command_line);
 
   if (pid_str.empty() && selector.empty()) {

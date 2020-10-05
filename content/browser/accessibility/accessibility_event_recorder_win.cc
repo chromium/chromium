@@ -126,7 +126,7 @@ AccessibilityEventRecorderWin* AccessibilityEventRecorderWin::instance_ =
 std::unique_ptr<AccessibilityEventRecorder> AccessibilityEventRecorder::Create(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
-    const AccessibilityTreeFormatter::TreeSelector& selector) {
+    const AXTreeSelector& selector) {
   if (!selector.pattern.empty()) {
     LOG(FATAL) << "Recording accessibility events from an application name "
                   "match pattern not supported on this platform yet.";

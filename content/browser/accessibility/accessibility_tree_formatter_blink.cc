@@ -223,7 +223,7 @@ AccessibilityTreeFormatterBlink::BuildAccessibilityTreeForWindow(
 
 std::unique_ptr<base::DictionaryValue>
 AccessibilityTreeFormatterBlink::BuildAccessibilityTreeForSelector(
-    const TreeSelector& selector) {
+    const AXTreeSelector& selector) {
   NOTREACHED();
   return nullptr;
 }

@@ -47,7 +47,7 @@ class AccessibilityTreeFormatterWin : public AccessibilityTreeFormatterBase {
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForWindow(
       gfx::AcceleratedWidget hwnd) override;
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForSelector(
-      const TreeSelector& selector) override;
+      const AXTreeSelector& selector) override;
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTree(
       Microsoft::WRL::ComPtr<IAccessible> start,
       LONG window_x = 0,
@@ -327,7 +327,7 @@ AccessibilityTreeFormatterWin::BuildAccessibilityTreeForWindow(
 
 std::unique_ptr<base::DictionaryValue>
 AccessibilityTreeFormatterWin::BuildAccessibilityTreeForSelector(
-    const TreeSelector& selector) {
+    const AXTreeSelector& selector) {
   LOG(ERROR) << "Windows does not yet support building accessibility trees for "
                 "tree selectors";
   return nullptr;

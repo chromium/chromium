@@ -8,9 +8,8 @@
 
 namespace tools {
 
-AXEventServer::AXEventServer(
-    base::ProcessId pid,
-    const content::AccessibilityTreeFormatter::TreeSelector& selector)
+AXEventServer::AXEventServer(base::ProcessId pid,
+                             const ui::AXTreeSelector& selector)
     : recorder_(
           content::AccessibilityEventRecorder::Create(nullptr, pid, selector)) {
   recorder_->ListenToEvents(

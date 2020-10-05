@@ -67,7 +67,7 @@ class AccessibilityTreeFormatterMac : public AccessibilityTreeFormatterBase {
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForWindow(
       gfx::AcceleratedWidget widget) override;
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForSelector(
-      const TreeSelector& selector) override;
+      const AXTreeSelector& selector) override;
 
  private:
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForAXUIElement(
@@ -171,7 +171,7 @@ AccessibilityTreeFormatterMac::BuildAccessibilityTreeForWindow(
 
 std::unique_ptr<base::DictionaryValue>
 AccessibilityTreeFormatterMac::BuildAccessibilityTreeForSelector(
-    const TreeSelector& selector) {
+    const AXTreeSelector& selector) {
   AXUIElementRef node = nil;
   std::tie(node, std::ignore) = a11y::FindAXUIElement(selector);
   return node != nil ? BuildAccessibilityTreeForAXUIElement(node) : nil;

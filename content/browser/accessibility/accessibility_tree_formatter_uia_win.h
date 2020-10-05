@@ -38,7 +38,7 @@ class AccessibilityTreeFormatterUia : public AccessibilityTreeFormatterBase {
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForWindow(
       gfx::AcceleratedWidget hwnd) override;
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForSelector(
-      const TreeSelector& selector) override;
+      const AXTreeSelector& selector) override;
 
  private:
   static const long properties_[];

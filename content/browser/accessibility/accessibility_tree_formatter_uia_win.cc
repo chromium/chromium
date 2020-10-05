@@ -444,7 +444,7 @@ AccessibilityTreeFormatterUia::BuildAccessibilityTreeForWindow(
 
 std::unique_ptr<base::DictionaryValue>
 AccessibilityTreeFormatterUia::BuildAccessibilityTreeForSelector(
-    const TreeSelector& selector) {
+    const AXTreeSelector& selector) {
   LOG(ERROR) << "Windows does not yet support building accessibility trees for "
                 "tree selectors";
   return nullptr;

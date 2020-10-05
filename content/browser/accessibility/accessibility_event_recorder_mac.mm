@@ -64,7 +64,7 @@ static void EventReceivedThunk(AXObserverRef observer_ref,
 std::unique_ptr<AccessibilityEventRecorder> AccessibilityEventRecorder::Create(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
-    const AccessibilityTreeFormatter::TreeSelector& selector) {
+    const AXTreeSelector& selector) {
   AXUIElementRef node = nil;
   if (pid) {
     node = AXUIElementCreateApplication(pid);

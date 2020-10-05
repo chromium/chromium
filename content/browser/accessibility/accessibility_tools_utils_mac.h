@@ -8,7 +8,9 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/callback.h"
-#include "content/public/browser/accessibility_tree_formatter.h"
+#include "ui/accessibility/platform/inspect/inspect.h"
+
+using ui::AXTreeSelector;
 
 namespace content {
 namespace a11y {
@@ -55,8 +57,7 @@ AXUIElementRef FindAXUIElement(const AXUIElementRef node,
 /**
  * Returns AXUIElement and its application process id by a given tree selector.
  */
-std::pair<AXUIElementRef, int> FindAXUIElement(
-    const AccessibilityTreeFormatter::TreeSelector&);
+std::pair<AXUIElementRef, int> FindAXUIElement(const AXTreeSelector&);
 
 }  // namespace a11y
 }  // namespace content
