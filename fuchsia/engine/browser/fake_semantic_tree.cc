@@ -139,7 +139,3 @@ void FakeSemanticTree::CommitUpdates(CommitUpdatesCallback callback) {
 void FakeSemanticTree::NotImplemented_(const std::string& name) {
   NOTIMPLEMENTED() << name;
 }
-
-void FakeSemanticTree::Clear() {
-  nodes_.clear();
-}

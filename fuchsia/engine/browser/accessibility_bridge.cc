@@ -47,7 +47,13 @@ AccessibilityBridge::AccessibilityBridge(
 }
 
 AccessibilityBridge::~AccessibilityBridge() {
-  InterruptPendingActions();
+  // Acknowledge to the SemanticsManager if any actions have not been handled
+  // upon destruction time.
+  for (auto& callback : pending_hit_test_callbacks_) {
+    fuchsia::accessibility::semantics::Hit hit;
+    hit.set_node_id(kSemanticNodeRootId);
+    callback.second(std::move(hit));
+  }
 }
 
 void AccessibilityBridge::TryCommit() {
@@ -122,11 +128,6 @@ uint32_t AccessibilityBridge::ConvertToFuchsiaNodeId(int32_t ax_node_id) {
 
 void AccessibilityBridge::AccessibilityEventReceived(
     const content::AXEventNotificationDetails& details) {
-  if (!enable_semantic_updates_) {
-    // No need to process events if Fuchsia is not receiving them.
-    return;
-  }
-
   // Updates to AXTree must be applied first.
   for (const ui::AXTreeUpdate& update : details.updates) {
     if (!ax_tree_.Unserialize(update)) {
@@ -211,29 +212,18 @@ void AccessibilityBridge::HitTest(fuchsia::math::PointF local_point,
 void AccessibilityBridge::OnSemanticsModeChanged(
     bool updates_enabled,
     OnSemanticsModeChangedCallback callback) {
-  // TODO(https://crbug.com/1134591): Enabling / disabling semantics can lead to
-  // race conditions.
-  if (enable_semantic_updates_ == updates_enabled)
-    return callback();
-
-  enable_semantic_updates_ = updates_enabled;
   if (updates_enabled) {
-    // The first call to AccessibilityEventReceived after this call will be
-    // the entire semantic tree.
+    // The first call to AccessibilityEventReceived after this call will be the
+    // entire semantic tree.
     web_contents_->EnableWebContentsOnlyAccessibilityMode();
   } else {
-    // The SemanticsManager will clear all state in this case, which is
-    // mirrored here.
-    ui::AXMode mode = web_contents_->GetAccessibilityMode();
-    mode.set_mode(ui::AXMode::kWebContents, false);
-    web_contents_->SetAccessibilityMode(mode);
+    // The SemanticsManager will clear all state in this case, which is mirrored
+    // here.
     to_send_.clear();
     commit_inflight_ = false;
-    ax_tree_.Destroy();
-    InterruptPendingActions();
   }
 
-  // Notify the SemanticsManager that this request was handled.
+  // Notify the SemanticsManager that semantics mode has been updated.
   callback();
 }
 
@@ -289,14 +279,4 @@ void AccessibilityBridge::OnAtomicUpdateFinished(
     }
   }
   TryCommit();
-}
-
-void AccessibilityBridge::InterruptPendingActions() {
-  // Acknowledge to the SemanticsManager if any actions have not been handled
-  // upon destruction time or when semantic updates have been disabled.
-  for (auto& callback : pending_hit_test_callbacks_) {
-    fuchsia::accessibility::semantics::Hit hit;
-    callback.second(std::move(hit));
-  }
-  pending_hit_test_callbacks_.clear();
 }
