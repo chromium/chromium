@@ -696,21 +696,28 @@ body.view-settings #view-settings {
   transition: opacity 0ms;
 }
 
-body.view-settings .left-stripe,
-body.view-grid-settings .left-stripe,
+html[dir=ltr] body.view-settings .left-stripe,
+html[dir=rtl] body.view-settings .right-stripe,
 body.view-grid-settings #view-settings,
-body.view-timer-settings .left-stripe,
+html[dir=ltr] body.view-grid-settings .left-stripe,
+html[dir=rtl] body.view-grid-settings .right-stripe,
 body.view-timer-settings #view-settings,
-body.view-resolution-settings .left-stripe,
+html[dir=ltr] body.view-timer-settings .left-stripe,
+html[dir=rtl] body.view-timer-settings .right-stripe,
 body.view-resolution-settings #view-settings,
-body.view-photo-resolution-settings .left-stripe,
+html[dir=ltr] body.view-resolution-settings .left-stripe,
+html[dir=rtl] body.view-resolution-settings .right-stripe,
 body.view-photo-resolution-settings #view-settings,
 body.view-photo-resolution-settings #view-resolution-settings,
-body.view-video-resolution-settings .left-stripe,
+html[dir=ltr] body.view-photo-resolution-settings .left-stripe,
+html[dir=rtl] body.view-photo-resolution-settings .right-stripe,
 body.view-video-resolution-settings #view-settings,
 body.view-video-resolution-settings #view-resolution-settings,
-body.view-expert-settings .left-stripe,
-body.view-expert-settings #view-settings {
+html[dir=ltr] body.view-video-resolution-settings .left-stripe,
+html[dir=rtl] body.view-video-resolution-settings .right-stripe,
+body.view-expert-settings #view-settings,
+html[dir=ltr] body.view-expert-settings .left-stripe,
+html[dir=rtl] body.view-expert-settings .right-stripe {
   opacity: 0;
 }
 
@@ -737,15 +744,6 @@ body.max-wnd #view-camera {
   --bottom-line: 56px;
 }
 
-body.w-letterbox.w-letterbox-s #view-camera {
-  justify-content: flex-end;
-}
-
-body.w-letterbox.w-letterbox-m #view-camera,
-body.w-letterbox.w-letterbox-l #view-camera {
-  justify-content: flex-start;
-}
-
 body.w-letterbox.w-letterbox-xl #view-camera {
   justify-content: center;
 }
@@ -766,8 +764,14 @@ body:not(.w-letterbox).preview-vertical-dock #view-camera {
   position: relative;
 }
 
+body.w-letterbox.w-letterbox-s #preview-wrapper {
+  margin-left: auto;  /* csschecker-disable-line left-right */
+  margin-right: 0; /* csschecker-disable-line left-right */
+}
+
 body.w-letterbox.w-letterbox-l #preview-wrapper {
-  left: 72px;
+  margin-left: 72px;  /* csschecker-disable-line left-right */
+  margin-right: auto;  /* csschecker-disable-line left-right */
 }
 
 body:not(.w-letterbox).preview-vertical-dock #preview-wrapper {
@@ -829,6 +833,7 @@ body.mirror:not(.streaming) #preview-video {
   font-size: 14px;
   left: 60px;
   position: absolute;
+  text-align: left;  /* csschecker-disable-line left-right */
   top: 10px;
 }
 
@@ -933,8 +938,8 @@ body.view-grid-settings._4x4 #preview-grid-horizontal::before {
 }
 
 #preview-grid-vertical {
-  border-left: 1px solid white;
-  border-right: 1px solid white;
+  border-inline-end: 1px solid white;
+  border-inline-start: 1px solid white;
   bottom: 0;
   left: 50%;
   position: absolute;
@@ -944,7 +949,7 @@ body.view-grid-settings._4x4 #preview-grid-horizontal::before {
 }
 
 body._4x4 #preview-grid-vertical::before {
-  border-right: 1px solid white;
+  border-right: 1px solid white;  /* csschecker-disable-line left-right */
   bottom: 0;
   content: '';
   left: 0;
@@ -1028,7 +1033,7 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
 }
 
 #record-time #record-time-msg {
-  margin-left: 8px;
+  margin-inline-start: 8px;
 }
 
 @media print {
@@ -1150,7 +1155,7 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
   background-image: url(/images/camera_intro_banner_icon.svg);
   display: inline-block;
   height: 20px;
-  margin-right: 10px;
+  margin-inline-end: 10px;
   vertical-align: middle;
   width: 20px;
 }
@@ -1175,12 +1180,16 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
   width: 20px;
 }
 
+html[dir=rtl] #banner-close {
+  left: 15px;
+  right: auto;
+}
+
 .menu {
   background: rgba(0, 0, 0, 0.75);
   display: flex;
   flex-direction: column;
   height: 100vh;
-  left: 0;
   min-width: 360px;
   opacity: 0.9;
   overflow-y: scroll;
@@ -1200,7 +1209,7 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
   font-size: 13px;
   height: 64px;
   justify-content: flex-start;
-  text-align: left;
+  text-align: initial;
 }
 
 button.menu-item:hover,
@@ -1252,23 +1261,23 @@ label.menu-item.animate::before {
 }
 
 .menu-item {
-  padding-left: 32px;
+  padding-inline-start: 32px;
 }
 
 .menu-header {
   color: white;
   font-size: 20px;
   height: 72px;
-  padding-left: 16px;
+  padding-inline-start: 16px;
 }
 
 .menu-item.resol-item {
-  padding-left: 64px;
+  padding-inline-start: 64px;
 }
 
 .menu-item .icon.end {
-  margin-left: auto;
-  margin-right: 16px;
+  margin-inline-end: 16px;
+  margin-inline-start: auto;
 }
 
 .menu-item .description {
@@ -1333,6 +1342,10 @@ body.tab-navigation button.menu-item:focus::after {
   background-image: url(/images/settings_button_back.svg);
 }
 
+html[dir=rtl] .menu-header .icon {
+  transform: scale(-1, 1);
+}
+
 .menu-header .icon:hover {
   background-color: var(--hover-color);
 }
@@ -1371,6 +1384,10 @@ body.no-resolution-settings #settings-resolution {
 #settings-expert .icon.end,
 .resol-item.multi-option .icon.end {
   background-image: url(/images/settings_button_expand.svg);
+}
+
+html[dir=rtl] .icon.end {
+  transform: scale(-1, 1);
 }
 
 #view-warning,

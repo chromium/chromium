@@ -137,6 +137,11 @@ class WebUIBrowserProxy {
   }
 
   /** @override */
+  getTextDirection() {
+    return window.loadTimeData.getString('textdirection');
+  }
+
+  /** @override */
   addOnMessageExternalListener(listener) {
     throw new NotImplementedError();
   }

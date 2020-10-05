@@ -189,6 +189,7 @@ export class App {
    * @return {!Promise}
    */
   async start() {
+    document.documentElement.dir = browserProxy.getTextDirection();
     await this.cameraView_.initialize();
 
     try {

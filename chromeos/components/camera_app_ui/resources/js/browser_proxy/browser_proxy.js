@@ -141,6 +141,11 @@ class ChromeAppBrowserProxy {
   }
 
   /** @override */
+  getTextDirection() {
+    return this.getI18nMessage('@@bidi_dir');
+  }
+
+  /** @override */
   addOnMessageExternalListener(listener) {
     chrome.runtime.onMessageExternal.addListener(listener);
   }

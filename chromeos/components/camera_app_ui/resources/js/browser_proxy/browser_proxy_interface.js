@@ -94,6 +94,13 @@ export class BrowserProxy {
   getAppVersion() {}
 
   /**
+   * @return {string} Returns 'ltr'/'rtl' for left-to-right/right-to-left system
+   *     UI language.
+   * @abstract
+   */
+  getTextDirection() {}
+
+  /**
    * @param {function(*, !MessageSender, function(string)): (boolean|undefined)}
    *     listener
    * @abstract
