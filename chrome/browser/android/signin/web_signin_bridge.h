@@ -19,7 +19,7 @@ class WebSigninBridge : public signin::IdentityManager::Observer,
                         public AccountReconcilor::Observer {
  public:
   using OnSigninCompletedCallback =
-      base::OnceCallback<void(const GoogleServiceAuthError&)>;
+      base::RepeatingCallback<void(const GoogleServiceAuthError&)>;
 
   explicit WebSigninBridge(signin::IdentityManager* identity_manager,
                            AccountReconcilor* account_reconcilor,

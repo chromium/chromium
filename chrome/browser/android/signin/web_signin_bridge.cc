@@ -18,17 +18,14 @@ using base::android::JavaParamRef;
 void ForwardOnSigninCompletedToJava(
     const base::android::ScopedJavaGlobalRef<jobject>& j_listener,
     const GoogleServiceAuthError& error) {
-  if (error.state() == GoogleServiceAuthError::State::NONE) {
-    Java_WebSigninBridge_onSigninSucceded(base::android::AttachCurrentThread(),
-                                          j_listener);
-    return;
-  }
-
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jobject> j_error =
-      signin::Java_GoogleServiceAuthError_Constructor(env, error.state());
-  Java_WebSigninBridge_onSigninFailed(base::android::AttachCurrentThread(),
-                                      j_listener, j_error);
+  if (error.state() == GoogleServiceAuthError::State::NONE) {
+    Java_WebSigninBridge_onSigninSucceded(env, j_listener);
+  } else {
+    base::android::ScopedJavaLocalRef<jobject> j_error =
+        signin::Java_GoogleServiceAuthError_Constructor(env, error.state());
+    Java_WebSigninBridge_onSigninFailed(env, j_listener, j_error);
+  }
 }
 
 WebSigninBridge::WebSigninBridge(signin::IdentityManager* identity_manager,
@@ -51,10 +48,8 @@ WebSigninBridge::WebSigninBridge(signin::IdentityManager* identity_manager,
 }
 
 WebSigninBridge::~WebSigninBridge() {
-  if (on_signin_completed_) {
-    identity_manager_->RemoveObserver(this);
-    account_reconcilor_->RemoveObserver(this);
-  }
+  identity_manager_->RemoveObserver(this);
+  account_reconcilor_->RemoveObserver(this);
 }
 
 void WebSigninBridge::OnAccountsInCookieUpdated(
@@ -84,10 +79,7 @@ void WebSigninBridge::OnStateChanged(
 }
 
 void WebSigninBridge::OnSigninCompleted(const GoogleServiceAuthError& error) {
-  std::move(on_signin_completed_).Run(error);
-  // Remove observers to make sure the callback is invoked only once.
-  identity_manager_->RemoveObserver(this);
-  account_reconcilor_->RemoveObserver(this);
+  on_signin_completed_.Run(error);
 }
 
 static jlong JNI_WebSigninBridge_Create(
@@ -104,9 +96,10 @@ static jlong JNI_WebSigninBridge_Create(
       AccountReconcilorFactory::GetForProfile(profile);
   CoreAccountInfo signin_account =
       ConvertFromJavaCoreAccountInfo(env, j_account);
-  base::OnceCallback<void(const GoogleServiceAuthError&)> on_signin_completed =
-      base::BindOnce(&ForwardOnSigninCompletedToJava,
-                     base::android::ScopedJavaGlobalRef<jobject>(j_listener));
+  base::RepeatingCallback<void(const GoogleServiceAuthError&)>
+      on_signin_completed = base::BindRepeating(
+          &ForwardOnSigninCompletedToJava,
+          base::android::ScopedJavaGlobalRef<jobject>(j_listener));
   return reinterpret_cast<intptr_t>(
       new WebSigninBridge(identity_manager, account_reconcilor, signin_account,
                           std::move(on_signin_completed)));
