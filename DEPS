@@ -1365,7 +1365,7 @@ deps = {
   },
 
   'src/third_party/requests/src': {
-      'url': Var('chromium_git') + '/external/github.com/kennethreitz/requests.git' + '@' + 'b7c6aba848b10933f327fcce41970c29dc59051b',
+      'url': Var('chromium_git') + '/external/github.com/kennethreitz/requests.git' + '@' + 'refs/tags/v2.23.0',
       'condition': 'checkout_android',
   },
 
