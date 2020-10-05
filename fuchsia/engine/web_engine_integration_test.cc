@@ -690,9 +690,8 @@ TEST_F(WebEngineIntegrationTest, WebGLContextAbsentWithoutVulkanFeature) {
 #endif
 class MAYBE_VulkanWebEngineIntegrationTest : public WebEngineIntegrationTest {};
 
-// TODO(crbug.com/1104563): Flakily times-out.
 TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
-       DISABLED_WebGLContextPresentWithVulkanFeature) {
+       WebGLContextPresentWithVulkanFeature) {
   fuchsia::web::CreateContextParams create_params = DefaultContextParams();
   create_params.set_features(fuchsia::web::ContextFeatureFlags::VULKAN);
   CreateContextAndFrame(std::move(create_params));
