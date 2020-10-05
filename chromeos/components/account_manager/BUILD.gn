@@ -10,6 +10,10 @@ component("account_manager") {
   sources = [
     "account_manager.cc",
     "account_manager.h",
+    "account_manager_facade.cc",
+    "account_manager_facade.h",
+    "account_manager_facade_ash.cc",
+    "account_manager_facade_ash.h",
     "account_manager_factory.cc",
     "account_manager_factory.h",
   ]

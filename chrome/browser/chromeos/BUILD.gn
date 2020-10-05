@@ -416,6 +416,7 @@ source_set("chromeos") {
     "accessibility/magnifier_type.h",
     "accessibility/select_to_speak_event_handler_delegate.cc",
     "accessibility/select_to_speak_event_handler_delegate.h",
+    "account_manager/account_manager_facade_factory_ash.cc",
     "account_manager/account_manager_migrator.cc",
     "account_manager/account_manager_migrator.h",
     "account_manager/account_manager_policy_controller.cc",
