@@ -581,24 +581,37 @@ void MediaStreamAudioProcessor::InitializeAudioProcessingModule(
 
   if (properties.goog_auto_gain_control ||
       properties.goog_experimental_auto_gain_control) {
-    bool use_hybrid_agc = false;
-    base::Optional<bool> use_peaks_not_rms;
-    base::Optional<int> saturation_margin;
-    if (properties.goog_experimental_auto_gain_control) {
-      use_hybrid_agc = base::FeatureList::IsEnabled(features::kWebRtcHybridAgc);
-      if (use_hybrid_agc) {
-        DCHECK(properties.goog_auto_gain_control)
-            << "Cannot enable hybrid AGC when AGC is disabled.";
-      }
-      use_peaks_not_rms = base::GetFieldTrialParamByFeatureAsBool(
-          features::kWebRtcHybridAgc, "use_peaks_not_rms", false);
-      saturation_margin = base::GetFieldTrialParamByFeatureAsInt(
-          features::kWebRtcHybridAgc, "saturation_margin", -1);
+    base::Optional<blink::AdaptiveGainController2Properties> agc2_properties;
+    if (properties.goog_experimental_auto_gain_control &&
+        base::FeatureList::IsEnabled(features::kWebRtcHybridAgc)) {
+      DCHECK(properties.goog_auto_gain_control)
+          << "Cannot enable hybrid AGC when AGC is disabled.";
+      agc2_properties = blink::AdaptiveGainController2Properties{};
+      agc2_properties->vad_probability_attack =
+          base::GetFieldTrialParamByFeatureAsDouble(
+              features::kWebRtcHybridAgc, "vad_probability_attack", 1.0);
+      agc2_properties->use_peaks_not_rms =
+          base::GetFieldTrialParamByFeatureAsBool(features::kWebRtcHybridAgc,
+                                                  "use_peaks_not_rms", false);
+      agc2_properties->level_estimator_speech_frames_threshold =
+          base::GetFieldTrialParamByFeatureAsInt(
+              features::kWebRtcHybridAgc,
+              "level_estimator_speech_frames_threshold", 1);
+      agc2_properties->initial_saturation_margin_db =
+          base::GetFieldTrialParamByFeatureAsInt(
+              features::kWebRtcHybridAgc, "initial_saturation_margin", 20);
+      agc2_properties->extra_saturation_margin_db =
+          base::GetFieldTrialParamByFeatureAsInt(features::kWebRtcHybridAgc,
+                                                 "extra_saturation_margin", 5);
+      agc2_properties->gain_applier_speech_frames_threshold =
+          base::GetFieldTrialParamByFeatureAsInt(
+              features::kWebRtcHybridAgc,
+              "gain_applier_speech_frames_threshold", 1);
     }
     blink::ConfigAutomaticGainControl(
-        &apm_config, properties.goog_auto_gain_control,
-        properties.goog_experimental_auto_gain_control, use_hybrid_agc,
-        use_peaks_not_rms, saturation_margin, gain_control_compression_gain_db);
+        properties.goog_auto_gain_control,
+        properties.goog_experimental_auto_gain_control, agc2_properties,
+        gain_control_compression_gain_db, apm_config);
   }
 
   if (goog_typing_detection) {

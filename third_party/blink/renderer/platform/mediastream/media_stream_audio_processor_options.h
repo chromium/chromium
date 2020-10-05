@@ -115,15 +115,27 @@ PLATFORM_EXPORT void StartEchoCancellationDump(
 PLATFORM_EXPORT void StopEchoCancellationDump(
     AudioProcessing* audio_processing);
 
-// Enables automatic gain control with flags and optional configures.
+// Adaptive Gain Controller 2 (aka AGC2) properties.
+struct PLATFORM_EXPORT AdaptiveGainController2Properties {
+  float vad_probability_attack;
+  bool use_peaks_not_rms;
+  int level_estimator_speech_frames_threshold;
+  int initial_saturation_margin_db;
+  int extra_saturation_margin_db;
+  int gain_applier_speech_frames_threshold;
+};
+
+// Configures automatic gain control in `apm_config`. If `agc_enabled` is true
+// and `agc2_properties` is specified, the AGC2 adaptive digital replaces the
+// adaptive digital controller of AGC1 - i.e., hybrid configuration (AGC1 analog
+// plus AGC2 adaptive digital).
+// TODO(crbug.com/webrtc/7494): Clean up once hybrid AGC experiment finalized.
 PLATFORM_EXPORT void ConfigAutomaticGainControl(
-    AudioProcessing::Config* apm_config,
     bool agc_enabled,
     bool experimental_agc_enabled,
-    bool use_hybrid_agc,
-    base::Optional<bool> hybrid_agc_use_peaks_not_rms,
-    base::Optional<int> hybrid_agc_saturation_margin,
-    base::Optional<double> compression_gain_db);
+    base::Optional<AdaptiveGainController2Properties> agc2_properties,
+    base::Optional<double> compression_gain_db,
+    AudioProcessing::Config& apm_config);
 
 PLATFORM_EXPORT void PopulateApmConfig(
     AudioProcessing::Config* apm_config,
