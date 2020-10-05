@@ -46,18 +46,20 @@ class TextLinkColors {
   TextLinkColors(const TextLinkColors&) = delete;
   TextLinkColors& operator=(const TextLinkColors&) = delete;
 
-  void SetTextColor(const Color& color) { text_color_ = color; }
-  Color TextColor() const { return text_color_; }
+  void SetTextColor(const Color& color);
+  Color TextColor(ColorScheme color_scheme = ColorScheme::kLight) const;
 
-  const Color& LinkColor() const { return link_color_; }
-  const Color& VisitedLinkColor() const { return visited_link_color_; }
-  const Color& ActiveLinkColor() const { return active_link_color_; }
-  void SetLinkColor(const Color& color) { link_color_ = color; }
-  void SetVisitedLinkColor(const Color& color) { visited_link_color_ = color; }
-  void SetActiveLinkColor(const Color& color) { active_link_color_ = color; }
-  void ResetLinkColor();
-  void ResetVisitedLinkColor();
-  void ResetActiveLinkColor();
+  const Color& LinkColor(ColorScheme color_scheme = ColorScheme::kLight) const;
+  const Color& VisitedLinkColor(
+      ColorScheme color_scheme = ColorScheme::kLight) const;
+  const Color& ActiveLinkColor(
+      ColorScheme color_scheme = ColorScheme::kLight) const;
+  void SetLinkColor(const Color& color);
+  void SetVisitedLinkColor(const Color& color);
+  void SetActiveLinkColor(const Color& color);
+  void ResetLinkColor() { has_custom_link_color_ = false; }
+  void ResetVisitedLinkColor() { has_custom_visited_link_color_ = false; }
+  void ResetActiveLinkColor() { has_custom_active_link_color_ = false; }
   Color ColorFromCSSValue(const CSSValue&,
                           Color current_color,
                           ColorScheme color_scheme,
@@ -68,6 +70,11 @@ class TextLinkColors {
   Color link_color_;
   Color visited_link_color_;
   Color active_link_color_;
+
+  bool has_custom_text_color_{false};
+  bool has_custom_link_color_{false};
+  bool has_custom_visited_link_color_{false};
+  bool has_custom_active_link_color_{false};
 };
 
 }  // namespace blink

@@ -38,22 +38,69 @@
 
 namespace blink {
 
+constexpr Color kDefaultLinkColorLight = Color::CreateUnchecked(0, 0, 238);
+constexpr Color kDefaultLinkColorDark = Color::CreateUnchecked(158, 158, 255);
+constexpr Color kDefaultVisitedLinkColorLight =
+    Color::CreateUnchecked(85, 26, 139);
+constexpr Color kDefaultVisitedLinkColorDark =
+    Color::CreateUnchecked(208, 173, 240);
+constexpr Color kDefaultActiveLinkColorLight =
+    Color::CreateUnchecked(255, 0, 0);
+constexpr Color kDefaultActiveLinkColorDark =
+    Color::CreateUnchecked(255, 158, 158);
+
 TextLinkColors::TextLinkColors() : text_color_(Color::kBlack) {
   ResetLinkColor();
   ResetVisitedLinkColor();
   ResetActiveLinkColor();
 }
 
-void TextLinkColors::ResetLinkColor() {
-  link_color_ = Color(0, 0, 238);
+void TextLinkColors::SetTextColor(const Color& color) {
+  text_color_ = color;
+  has_custom_text_color_ = true;
 }
 
-void TextLinkColors::ResetVisitedLinkColor() {
-  visited_link_color_ = Color(85, 26, 139);
+Color TextLinkColors::TextColor(ColorScheme color_scheme) const {
+  return has_custom_text_color_
+             ? text_color_
+             : color_scheme == ColorScheme::kLight ? Color::kBlack
+                                                   : Color::kWhite;
 }
 
-void TextLinkColors::ResetActiveLinkColor() {
-  active_link_color_ = Color(255, 0, 0);
+void TextLinkColors::SetLinkColor(const Color& color) {
+  link_color_ = color;
+  has_custom_link_color_ = true;
+}
+
+const Color& TextLinkColors::LinkColor(ColorScheme color_scheme) const {
+  return has_custom_link_color_
+             ? link_color_
+             : color_scheme == ColorScheme::kLight ? kDefaultLinkColorLight
+                                                   : kDefaultLinkColorDark;
+}
+
+void TextLinkColors::SetVisitedLinkColor(const Color& color) {
+  visited_link_color_ = color;
+  has_custom_visited_link_color_ = true;
+}
+
+const Color& TextLinkColors::VisitedLinkColor(ColorScheme color_scheme) const {
+  return has_custom_visited_link_color_ ? visited_link_color_
+                                        : color_scheme == ColorScheme::kLight
+                                              ? kDefaultVisitedLinkColorLight
+                                              : kDefaultVisitedLinkColorDark;
+}
+
+void TextLinkColors::SetActiveLinkColor(const Color& color) {
+  active_link_color_ = color;
+  has_custom_active_link_color_ = true;
+}
+
+const Color& TextLinkColors::ActiveLinkColor(ColorScheme color_scheme) const {
+  return has_custom_active_link_color_ ? active_link_color_
+                                       : color_scheme == ColorScheme::kLight
+                                             ? kDefaultActiveLinkColorLight
+                                             : kDefaultActiveLinkColorDark;
 }
 
 Color TextLinkColors::ColorFromCSSValue(const CSSValue& value,
@@ -76,11 +123,12 @@ Color TextLinkColors::ColorFromCSSValue(const CSSValue& value,
       NOTREACHED();
       return Color();
     case CSSValueID::kInternalQuirkInherit:
-      return TextColor();
+      return TextColor(color_scheme);
     case CSSValueID::kWebkitLink:
-      return for_visited_link ? VisitedLinkColor() : LinkColor();
+      return for_visited_link ? VisitedLinkColor(color_scheme)
+                              : LinkColor(color_scheme);
     case CSSValueID::kWebkitActivelink:
-      return ActiveLinkColor();
+      return ActiveLinkColor(color_scheme);
     case CSSValueID::kWebkitFocusRingColor:
       return LayoutTheme::GetTheme().FocusRingColor();
     case CSSValueID::kCurrentcolor:

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+
+<head>
+    <meta name="color-scheme" content="light dark">
+</head>
+
+<body>
+    <ul>
+        <li><a href="#" id="website1">Website</a></li>
+        <li><a href="#" id="website2">Website - Active</a></li>
+    </ul>
+</body>
+
+<script>
+    var website2 = document.getElementById("website2");
+
+    var mouseX = website2.offsetLeft;
+    var mouseY = website2.offsetTop;
+    eventSender.mouseMoveTo(mouseX, mouseY);
+    eventSender.mouseDown();
+</script>
