@@ -189,8 +189,7 @@ LayoutUnit LayoutTextControlSingleLine::PreferredContentLogicalWidth(
 
   float max_char_width = 0.f;
   const Font& font = StyleRef().GetFont();
-  AtomicString family = font.GetFontDescription().Family().Family();
-  if (HasValidAvgCharWidth(font.PrimaryFont(), family))
+  if (HasValidAvgCharWidth(font))
     max_char_width = roundf(font.PrimaryFont()->MaxCharWidth());
 
   // For text inputs, IE adds some extra width.

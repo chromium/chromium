@@ -81,11 +81,11 @@ void LayoutTextControl::StyleDidChange(StyleDifference diff,
   }
 }
 
-int LayoutTextControl::ScrollbarThickness() const {
-  NOT_DESTROYED();
-  return GetDocument().GetPage()->GetScrollbarTheme().ScrollbarThickness(
-      GetDocument().GetPage()->GetChromeClient().WindowToViewportScalar(
-          GetFrame(), 1.0f));
+// static
+int LayoutTextControl::ScrollbarThickness(const LayoutBox& box) {
+  const Page& page = *box.GetDocument().GetPage();
+  return page.GetScrollbarTheme().ScrollbarThickness(
+      page.GetChromeClient().WindowToViewportScalar(box.GetFrame(), 1.0f));
 }
 
 void LayoutTextControl::ComputeLogicalHeight(
@@ -109,7 +109,7 @@ void LayoutTextControl::ComputeLogicalHeight(
         (StyleRef().OverflowInlineDirection() == EOverflow::kAuto &&
          inner_editor->GetLayoutObject()->StyleRef().OverflowWrap() ==
              EOverflowWrap::kNormal))
-      logical_height += ScrollbarThickness();
+      logical_height += ScrollbarThickness(*this);
 
     // FIXME: The logical height of the inner text box should have been added
     // before calling computeLogicalHeight to avoid this hack.
@@ -179,13 +179,14 @@ static const char* const kFontFamiliesWithInvalidCharWidth[] = {
 // avgCharWidth from the width of a '0'. This only seems to apply to a fixed
 // number of Mac fonts, but, in order to get similar rendering across platforms,
 // we do this check for all platforms.
-bool LayoutTextControl::HasValidAvgCharWidth(const SimpleFontData* font_data,
-                                             const AtomicString& family) {
-  // Some fonts match avgCharWidth to CJK full-width characters.
-  // Heuristic check to avoid such fonts.
+bool LayoutTextControl::HasValidAvgCharWidth(const Font& font) {
+  const AtomicString family = font.GetFontDescription().Family().Family();
+  const SimpleFontData* font_data = font.PrimaryFont();
   DCHECK(font_data);
   if (!font_data)
     return false;
+  // Some fonts match avgCharWidth to CJK full-width characters.
+  // Heuristic check to avoid such fonts.
   const FontMetrics& metrics = font_data->GetFontMetrics();
   if (metrics.HasZeroWidth() &&
       font_data->AvgCharWidth() > metrics.ZeroWidth() * 1.7)
@@ -211,9 +212,8 @@ bool LayoutTextControl::HasValidAvgCharWidth(const SimpleFontData* font_data,
 // static
 float LayoutTextControl::GetAvgCharWidth(const ComputedStyle& style) {
   const Font& font = style.GetFont();
-  const AtomicString family = font.GetFontDescription().Family().Family();
   const SimpleFontData* primary_font = font.PrimaryFont();
-  if (primary_font && HasValidAvgCharWidth(primary_font, family))
+  if (primary_font && HasValidAvgCharWidth(font))
     return roundf(primary_font->AvgCharWidth());
 
   const UChar kCh = '0';

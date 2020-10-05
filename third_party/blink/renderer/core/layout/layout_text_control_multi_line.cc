@@ -61,7 +61,7 @@ LayoutUnit LayoutTextControlMultiLine::PreferredContentLogicalWidth(
   NOT_DESTROYED();
   int factor = To<HTMLTextAreaElement>(GetNode())->cols();
   return static_cast<LayoutUnit>(ceilf(char_width * factor)) +
-         ScrollbarThickness();
+         ScrollbarThickness(*this);
 }
 
 LayoutUnit LayoutTextControlMultiLine::ComputeControlLogicalHeight(
