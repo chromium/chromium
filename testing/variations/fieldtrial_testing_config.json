@@ -3400,6 +3400,21 @@
             ]
         }
     ],
+    "IOSWebContentDropInteraction": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AddWebContentDropInteraction"
+                    ]
+                }
+            ]
+        }
+    ],
     "Identifiability": [
         {
             "platforms": [
