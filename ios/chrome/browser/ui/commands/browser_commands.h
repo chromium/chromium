@@ -50,7 +50,8 @@ class GURL;
 - (void)reload;
 
 // Bookmarks the current page.
-- (void)bookmarkPage;
+// TODO(crbug.com/1134586): Reuse BookmarksCommands' bookmarkPage instead.
+- (void)bookmarkCurrentPage;
 
 // Adds a page to the reading list using data in |command|.
 - (void)addToReadingList:(ReadingListAddCommand*)command;

@@ -77,7 +77,7 @@ const char kManagementPageURL[] = "chrome://management";
       break;
     case PopupMenuActionPageBookmark:
       RecordAction(UserMetricsAction("MobileMenuAddToBookmarks"));
-      [self.dispatcher bookmarkPage];
+      [self.dispatcher bookmarkCurrentPage];
       break;
     case PopupMenuActionTranslate:
       base::RecordAction(UserMetricsAction("MobileMenuTranslate"));
