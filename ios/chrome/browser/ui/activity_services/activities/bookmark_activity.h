@@ -11,20 +11,21 @@ namespace bookmarks {
 class BookmarkModel;
 }
 
-@protocol BrowserCommands;
+@protocol BookmarksCommands;
 class GURL;
 class PrefService;
 
 // Activity that adds the page to bookmarks.
 @interface BookmarkActivity : UIActivity
 
-// Initializes the bookmark activity with the |URL| to check to know if the page
-// is already bookmarked in the |bookmarkModel|. The |handler| is used to add
-// the page to the bookmarks. The |prefService| is used to verify if the user
-// can edit their bookmarks or not.
+// Initializes the bookmark activity with a page's |URL| and |title|. The
+// |bookmarkModel| to verify if the page has already been bookmarked or not. The
+// |handler| is used to add the page to the bookmarks. The |prefService| is used
+// to verify if the user can edit their bookmarks or not.
 - (instancetype)initWithURL:(const GURL&)URL
+                      title:(NSString*)title
               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-                    handler:(id<BrowserCommands>)handler
+                    handler:(id<BookmarksCommands>)handler
                 prefService:(PrefService*)prefService;
 - (instancetype)init NS_UNAVAILABLE;
 

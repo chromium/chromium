@@ -12,7 +12,8 @@
 #include "components/prefs/testing_pref_service.h"
 #include "ios/chrome/browser/policy/policy_features.h"
 #include "ios/chrome/browser/ui/bookmarks/bookmark_ios_unittest.h"
-#include "ios/chrome/browser/ui/commands/browser_commands.h"
+#include "ios/chrome/browser/ui/commands/bookmark_page_command.h"
+#include "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -21,6 +22,12 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+NSString* const kTestTitle = @"Test Title";
+
+}  // namespace
 
 // Test fixture for covering the BookmarkActivity class.
 class BookmarkActivityTest : public BookmarkIOSUnitTest {
@@ -33,7 +40,7 @@ class BookmarkActivityTest : public BookmarkIOSUnitTest {
     // Turn off flag by default.
     scoped_features_.InitAndDisableFeature(kEditBookmarksIOS);
 
-    mocked_handler_ = OCMProtocolMock(@protocol(BrowserCommands));
+    mocked_handler_ = OCMProtocolMock(@protocol(BookmarksCommands));
 
     RegisterPrefs();
   }
@@ -53,6 +60,7 @@ class BookmarkActivityTest : public BookmarkIOSUnitTest {
   // Creates a BookmarkActivity instance with the given |URL|.
   BookmarkActivity* CreateActivity(const GURL& URL) {
     return [[BookmarkActivity alloc] initWithURL:URL
+                                           title:kTestTitle
                                    bookmarkModel:bookmark_model_
                                          handler:mocked_handler_
                                      prefService:&testing_pref_service_];
@@ -97,6 +105,7 @@ TEST_F(BookmarkActivityTest, FlagOn_ActivityHiddenByPref) {
 TEST_F(BookmarkActivityTest, NilBookmarkModel_NoCrash) {
   BookmarkActivity* activity =
       [[BookmarkActivity alloc] initWithURL:GURL("https://example.com/")
+                                      title:kTestTitle
                               bookmarkModel:nil
                                     handler:mocked_handler_
                                 prefService:&testing_pref_service_];
@@ -126,4 +135,24 @@ TEST_F(BookmarkActivityTest, ActivityTitle_EditBookmark) {
   NSString* editBookmarkString =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_EDIT_BOOKMARK);
   EXPECT_TRUE([editBookmarkString isEqualToString:activity.activityTitle]);
+}
+
+TEST_F(BookmarkActivityTest, PerformActivity_BookmarkPageCommand) {
+  GURL testUrl("https://example.com/");
+  BookmarkActivity* activity = CreateActivity(testUrl);
+
+  [[mocked_handler_ expect]
+      bookmarkPage:[OCMArg checkWithBlock:^BOOL(BookmarkPageCommand* value) {
+        EXPECT_EQ(testUrl, value.URL);
+        EXPECT_EQ(kTestTitle, value.title);
+        return YES;
+      }]];
+
+  id activity_partial_mock = OCMPartialMock(activity);
+  [[activity_partial_mock expect] activityDidFinish:YES];
+
+  [activity performActivity];
+
+  [mocked_handler_ verify];
+  [activity_partial_mock verify];
 }

@@ -14,6 +14,7 @@ namespace bookmarks {
 class BookmarkModel;
 }
 
+@protocol BookmarksCommands;
 @protocol BrowserCommands;
 @class ChromeActivityImageSource;
 @protocol ChromeActivityItemSource;
@@ -28,10 +29,12 @@ class PrefService;
 @interface ActivityServiceMediator : NSObject
 
 // Initializes a mediator instance with a |handler| used to execute action, a
+// |bookmarksHandler| to execute Bookmarks actions, a
 // |qrGenerationHandler| to execute QR generation actions, a |prefService| to
 // read settings and policies, and a |bookmarkModel| to retrieve bookmark
 // states.
 - (instancetype)initWithHandler:(id<BrowserCommands, FindInPageCommands>)handler
+               bookmarksHandler:(id<BookmarksCommands>)bookmarksHandler
             qrGenerationHandler:(id<QRGenerationCommands>)qrGenerationHandler
                     prefService:(PrefService*)prefService
                   bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel

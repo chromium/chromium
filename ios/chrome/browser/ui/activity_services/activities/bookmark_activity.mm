@@ -4,16 +4,18 @@
 
 #import "ios/chrome/browser/ui/activity_services/activities/bookmark_activity.h"
 
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/common/bookmark_pref_names.h"
-#include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/policy/policy_features.h"
-#include "ios/chrome/browser/ui/commands/browser_commands.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
-#include "url/gurl.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/common/bookmark_pref_names.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/policy/policy_features.h"
+#import "ios/chrome/browser/ui/commands/bookmark_page_command.h"
+#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -30,10 +32,12 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 @property(nonatomic, assign) BOOL bookmarked;
 // The bookmark model used to validate if a page was bookmarked.
 @property(nonatomic, assign) bookmarks::BookmarkModel* bookmarkModel;
-// The URL for the activity.
+// The URL of the page to be bookmarked.
 @property(nonatomic, assign) GURL URL;
+// The title of the page to be bookmarked.
+@property(nonatomic, assign) NSString* title;
 // The handler invoked when the activity is performed.
-@property(nonatomic, weak) id<BrowserCommands> handler;
+@property(nonatomic, weak) id<BookmarksCommands> handler;
 // User's preferences service.
 @property(nonatomic, assign) PrefService* prefService;
 @end
@@ -41,12 +45,14 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 @implementation BookmarkActivity
 
 - (instancetype)initWithURL:(const GURL&)URL
+                      title:(NSString*)title
               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-                    handler:(id<BrowserCommands>)handler
+                    handler:(id<BookmarksCommands>)handler
                 prefService:(PrefService*)prefService {
   self = [super init];
   if (self) {
     _URL = URL;
+    _title = title;
     _bookmarkModel = bookmarkModel;
     _handler = handler;
     _prefService = prefService;
@@ -89,7 +95,9 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 }
 
 - (void)performActivity {
-  [self.handler bookmarkCurrentPage];
+  BookmarkPageCommand* command =
+      [[BookmarkPageCommand alloc] initWithURL:self.URL title:self.title];
+  [self.handler bookmarkPage:command];
   [self activityDidFinish:YES];
 }
 
