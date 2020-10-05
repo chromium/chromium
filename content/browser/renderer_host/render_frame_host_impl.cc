@@ -8432,12 +8432,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // TODO(clamy): Fix this.
     is_commit_allowed_to_proceed |= params->url_is_unreachable;
 
-    // 4) Special case for DOMSerializerBrowsertests which are implemented
-    // entirely renderer-side and unlike normal RenderView based tests load
-    // file URLs instead of data URLs.
-    // TODO(clamy): Rework the tests to remove this exception.
-    is_commit_allowed_to_proceed |= params->url.SchemeIsFile();
-
     if (!is_commit_allowed_to_proceed) {
       bad_message::ReceivedBadMessage(
           GetProcess(),
