@@ -300,6 +300,12 @@ const base::Feature kAutofillUseParseCityStateCountryZipCodeInHeuristic{
     "AutofillUseParseCityStateCountryZipCodeInHeuristic",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether page language is used to match patterns.
+// TODO(crbug.com/1134496): Remove once launched.
+const base::Feature kAutofillUsePageLanguageToSelectFieldParsingPatterns{
+    "AutofillUsePageLanguageToSelectFieldParsingPatterns",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether or not autofill utilizes the country code from the Chrome
 // variation service. The country code is used for determining the address
 // requirements for address profile creation and as source for a default country

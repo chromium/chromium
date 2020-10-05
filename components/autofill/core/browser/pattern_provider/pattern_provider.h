@@ -37,17 +37,20 @@ class PatternProvider {
 
   // Provides us with all patterns that can match our field type and page
   // language.
-  const std::vector<MatchingPattern>& GetMatchPatterns(
+  const std::vector<MatchingPattern> GetMatchPatterns(
       ServerFieldType type,
       const std::string& page_language);
 
-  const std::vector<MatchingPattern>& GetMatchPatterns(
+  const std::vector<MatchingPattern> GetMatchPatterns(
       const std::string& pattern_name,
       const std::string& page_language);
 
   // Provides us with all patterns that can match our field type.
-  const std::vector<MatchingPattern>& GetAllPatternsBaseOnType(
+  const std::vector<MatchingPattern> GetAllPatternsBaseOnType(
       ServerFieldType type);
+
+  const std::vector<MatchingPattern> GetAllPatternsBaseOnType(
+      const std::string& type);
 
  protected:
   PatternProvider();

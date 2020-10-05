@@ -9,11 +9,13 @@
 #include <vector>
 
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/pattern_provider/pattern_configuration_parser.h"
 #include "components/autofill/core/browser/pattern_provider/pattern_provider.h"
 #include "components/autofill/core/browser/pattern_provider/test_pattern_provider.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,15 +61,18 @@ bool operator==(const MatchingPattern& mp1, const MatchingPattern& mp2) {
           mp1.positive_score == mp2.positive_score);
 }
 
-TEST_F(AutofillPatternProviderTest, Single_Match) {
+TEST(AutofillPatternProvider, Single_Match) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillUsePageLanguageToSelectFieldParsingPatterns);
+
   MatchingPattern kCompanyPatternEn = GetCompanyPatternEn();
   MatchingPattern kCompanyPatternDe = GetCompanyPatternDe();
-  PatternProvider& pattern_provider = PatternProvider::GetInstance();
+  UnitTestPatternProvider* pattern_provider = new UnitTestPatternProvider();
+  auto pattern_store = pattern_provider->GetMatchPatterns("COMPANY_NAME", "EN");
 
-  ASSERT_TRUE(pattern_provider.GetMatchPatterns("COMPANY_NAME", "EN").size() >
-              0);
-  EXPECT_EQ(pattern_provider.GetMatchPatterns("COMPANY_NAME", "EN")[0],
-            kCompanyPatternEn);
+  ASSERT_EQ(pattern_store.size(), 1u);
+  EXPECT_EQ(pattern_store[0], kCompanyPatternEn);
 }
 
 // Test that the default pattern provider loads without crashing.
@@ -103,6 +108,23 @@ TEST(AutofillPatternProviderPipelineTest, TestParsingEquivalent) {
 
   EXPECT_EQ(default_pattern_provider.patterns_,
             test_pattern_provider.patterns_);
+}
+
+TEST(AutofillPatternProvider, Based_On_Type_Match) {
+  MatchingPattern kCompanyPatternEn = GetCompanyPatternEn();
+  MatchingPattern kCompanyPatternDe = GetCompanyPatternDe();
+  std::vector<MatchingPattern> match_vector;
+  match_vector.push_back(kCompanyPatternDe);
+  match_vector.push_back(kCompanyPatternEn);
+
+  UnitTestPatternProvider* pattern_provider = new UnitTestPatternProvider();
+
+  ASSERT_GT(pattern_provider->GetAllPatternsBaseOnType("COMPANY_NAME").size(),
+            0u);
+  EXPECT_EQ(pattern_provider->GetAllPatternsBaseOnType("COMPANY_NAME"),
+            match_vector);
+  EXPECT_EQ(pattern_provider->GetAllPatternsBaseOnType("COMPANY_NAME").size(),
+            2u);
 }
 
 }  // namespace autofill

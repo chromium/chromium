@@ -220,7 +220,6 @@ bool FormField::ParseFieldSpecifics(
       return true;
     }
   }
-
   return false;
 }
 

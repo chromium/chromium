@@ -9,9 +9,11 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/pattern_provider/pattern_configuration_parser.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 namespace {
@@ -33,15 +35,21 @@ void PatternProvider::SetPatterns(PatternProvider::Map patterns,
   }
 }
 
-const std::vector<MatchingPattern>& PatternProvider::GetMatchPatterns(
+const std::vector<MatchingPattern> PatternProvider::GetMatchPatterns(
     const std::string& pattern_name,
     const std::string& page_language) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return patterns_[pattern_name][page_language];
+  // TODO(crbug.com/1134496): Remove feature check once launched.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillUsePageLanguageToSelectFieldParsingPatterns)) {
+    return patterns_[pattern_name][page_language];
+  } else {
+    return GetAllPatternsBaseOnType(pattern_name);
+  }
 }
 
-const std::vector<MatchingPattern>& PatternProvider::GetMatchPatterns(
+const std::vector<MatchingPattern> PatternProvider::GetMatchPatterns(
     ServerFieldType type,
     const std::string& page_language) {
   std::string pattern_name = AutofillType(type).ToString();
@@ -68,6 +76,24 @@ void PatternProvider::SetPatternProviderForTesting(
 // static.
 void PatternProvider::ResetPatternProvider() {
   g_pattern_provider = nullptr;
+}
+
+const std::vector<MatchingPattern> PatternProvider::GetAllPatternsBaseOnType(
+    ServerFieldType type) {
+  std::string type_str = AutofillType(type).ToString();
+  return GetAllPatternsBaseOnType(type_str);
+}
+
+const std::vector<MatchingPattern> PatternProvider::GetAllPatternsBaseOnType(
+    const std::string& type) {
+  std::vector<MatchingPattern> match_patterns;
+
+  for (const auto& inner_map : patterns_[type]) {
+    match_patterns.insert(match_patterns.end(), inner_map.second.begin(),
+                          inner_map.second.end());
+  }
+
+  return match_patterns;
 }
 
 }  //  namespace autofill
