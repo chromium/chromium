@@ -8,13 +8,6 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 source_set("browser") {
   sources = [
     "platform_spell_checker.h",
@@ -26,10 +19,6 @@ source_set("browser") {
     "spellcheck_host_metrics.cc",
     "spellcheck_host_metrics.h",
     "spellcheck_platform.h",
-    "spellcheck_platform_android.cc",
-    "spellcheck_platform_mac.mm",
-    "spellchecker_session_bridge_android.cc",
-    "spellchecker_session_bridge_android.h",
   ]
 
   if (enable_spelling_service) {
@@ -62,20 +51,30 @@ source_set("browser") {
     "//services/network/public/cpp",
   ]
 
+  if (is_mac) {
+    sources += [ "spellcheck_platform_mac.mm" ]
+  }
+
   if (is_android) {
+    sources += [
+      "spellcheck_platform_android.cc",
+      "spellchecker_session_bridge_android.cc",
+      "spellchecker_session_bridge_android.h",
+    ]
     deps += [ "android:jni_headers" ]
   }
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "spellcheck_host_metrics_unittest.cc",
-    "spellcheck_platform_mac_unittest.cc",
-  ]
+  sources = [ "spellcheck_host_metrics_unittest.cc" ]
 
   if (is_win) {
     sources += [ "windows_spell_checker_unittest.cc" ]
+  }
+
+  if (is_mac) {
+    sources += [ "spellcheck_platform_mac_unittest.cc" ]
   }
 
   deps = [
