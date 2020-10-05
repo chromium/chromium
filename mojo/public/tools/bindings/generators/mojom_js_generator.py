@@ -1,7 +1,6 @@
 # Copyright 2013 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Generates JavaScript source files from a mojom.Module."""
 
 import mojom.generate.generator as generator
@@ -17,115 +16,115 @@ else:
   import urllib.request as urllib_request
 
 _kind_to_javascript_default_value = {
-  mojom.BOOL:                  "false",
-  mojom.INT8:                  "0",
-  mojom.UINT8:                 "0",
-  mojom.INT16:                 "0",
-  mojom.UINT16:                "0",
-  mojom.INT32:                 "0",
-  mojom.UINT32:                "0",
-  mojom.FLOAT:                 "0",
-  mojom.HANDLE:                "null",
-  mojom.DCPIPE:                "null",
-  mojom.DPPIPE:                "null",
-  mojom.MSGPIPE:               "null",
-  mojom.SHAREDBUFFER:          "null",
-  mojom.PLATFORMHANDLE:          "null",
-  mojom.NULLABLE_HANDLE:       "null",
-  mojom.NULLABLE_DCPIPE:       "null",
-  mojom.NULLABLE_DPPIPE:       "null",
-  mojom.NULLABLE_MSGPIPE:      "null",
-  mojom.NULLABLE_SHAREDBUFFER: "null",
-  mojom.NULLABLE_PLATFORMHANDLE: "null",
-  mojom.INT64:                 "0",
-  mojom.UINT64:                "0",
-  mojom.DOUBLE:                "0",
-  mojom.STRING:                "null",
-  mojom.NULLABLE_STRING:       "null"
+    mojom.BOOL: "false",
+    mojom.INT8: "0",
+    mojom.UINT8: "0",
+    mojom.INT16: "0",
+    mojom.UINT16: "0",
+    mojom.INT32: "0",
+    mojom.UINT32: "0",
+    mojom.FLOAT: "0",
+    mojom.HANDLE: "null",
+    mojom.DCPIPE: "null",
+    mojom.DPPIPE: "null",
+    mojom.MSGPIPE: "null",
+    mojom.SHAREDBUFFER: "null",
+    mojom.PLATFORMHANDLE: "null",
+    mojom.NULLABLE_HANDLE: "null",
+    mojom.NULLABLE_DCPIPE: "null",
+    mojom.NULLABLE_DPPIPE: "null",
+    mojom.NULLABLE_MSGPIPE: "null",
+    mojom.NULLABLE_SHAREDBUFFER: "null",
+    mojom.NULLABLE_PLATFORMHANDLE: "null",
+    mojom.INT64: "0",
+    mojom.UINT64: "0",
+    mojom.DOUBLE: "0",
+    mojom.STRING: "null",
+    mojom.NULLABLE_STRING: "null"
 }
 
 _kind_to_codec_type = {
-  mojom.BOOL:                  "codec.Uint8",
-  mojom.INT8:                  "codec.Int8",
-  mojom.UINT8:                 "codec.Uint8",
-  mojom.INT16:                 "codec.Int16",
-  mojom.UINT16:                "codec.Uint16",
-  mojom.INT32:                 "codec.Int32",
-  mojom.UINT32:                "codec.Uint32",
-  mojom.FLOAT:                 "codec.Float",
-  mojom.HANDLE:                "codec.Handle",
-  mojom.DCPIPE:                "codec.Handle",
-  mojom.DPPIPE:                "codec.Handle",
-  mojom.MSGPIPE:               "codec.Handle",
-  mojom.SHAREDBUFFER:          "codec.Handle",
-  mojom.PLATFORMHANDLE:        "codec.Handle",
-  mojom.NULLABLE_HANDLE:       "codec.NullableHandle",
-  mojom.NULLABLE_DCPIPE:       "codec.NullableHandle",
-  mojom.NULLABLE_DPPIPE:       "codec.NullableHandle",
-  mojom.NULLABLE_MSGPIPE:      "codec.NullableHandle",
-  mojom.NULLABLE_SHAREDBUFFER: "codec.NullableHandle",
-  mojom.NULLABLE_PLATFORMHANDLE: "codec.NullableHandle",
-  mojom.INT64:                 "codec.Int64",
-  mojom.UINT64:                "codec.Uint64",
-  mojom.DOUBLE:                "codec.Double",
-  mojom.STRING:                "codec.String",
-  mojom.NULLABLE_STRING:       "codec.NullableString",
+    mojom.BOOL: "codec.Uint8",
+    mojom.INT8: "codec.Int8",
+    mojom.UINT8: "codec.Uint8",
+    mojom.INT16: "codec.Int16",
+    mojom.UINT16: "codec.Uint16",
+    mojom.INT32: "codec.Int32",
+    mojom.UINT32: "codec.Uint32",
+    mojom.FLOAT: "codec.Float",
+    mojom.HANDLE: "codec.Handle",
+    mojom.DCPIPE: "codec.Handle",
+    mojom.DPPIPE: "codec.Handle",
+    mojom.MSGPIPE: "codec.Handle",
+    mojom.SHAREDBUFFER: "codec.Handle",
+    mojom.PLATFORMHANDLE: "codec.Handle",
+    mojom.NULLABLE_HANDLE: "codec.NullableHandle",
+    mojom.NULLABLE_DCPIPE: "codec.NullableHandle",
+    mojom.NULLABLE_DPPIPE: "codec.NullableHandle",
+    mojom.NULLABLE_MSGPIPE: "codec.NullableHandle",
+    mojom.NULLABLE_SHAREDBUFFER: "codec.NullableHandle",
+    mojom.NULLABLE_PLATFORMHANDLE: "codec.NullableHandle",
+    mojom.INT64: "codec.Int64",
+    mojom.UINT64: "codec.Uint64",
+    mojom.DOUBLE: "codec.Double",
+    mojom.STRING: "codec.String",
+    mojom.NULLABLE_STRING: "codec.NullableString",
 }
 
 _kind_to_closure_type = {
-  mojom.BOOL:                  "boolean",
-  mojom.INT8:                  "number",
-  mojom.UINT8:                 "number",
-  mojom.INT16:                 "number",
-  mojom.UINT16:                "number",
-  mojom.INT32:                 "number",
-  mojom.UINT32:                "number",
-  mojom.FLOAT:                 "number",
-  mojom.INT64:                 "number",
-  mojom.UINT64:                "number",
-  mojom.DOUBLE:                "number",
-  mojom.STRING:                "string",
-  mojom.NULLABLE_STRING:       "string",
-  mojom.HANDLE:                "MojoHandle",
-  mojom.DCPIPE:                "MojoHandle",
-  mojom.DPPIPE:                "MojoHandle",
-  mojom.MSGPIPE:               "MojoHandle",
-  mojom.SHAREDBUFFER:          "MojoHandle",
-  mojom.PLATFORMHANDLE:        "MojoHandle",
-  mojom.NULLABLE_HANDLE:       "MojoHandle",
-  mojom.NULLABLE_DCPIPE:       "MojoHandle",
-  mojom.NULLABLE_DPPIPE:       "MojoHandle",
-  mojom.NULLABLE_MSGPIPE:      "MojoHandle",
-  mojom.NULLABLE_SHAREDBUFFER: "MojoHandle",
-  mojom.NULLABLE_PLATFORMHANDLE: "MojoHandle",
+    mojom.BOOL: "boolean",
+    mojom.INT8: "number",
+    mojom.UINT8: "number",
+    mojom.INT16: "number",
+    mojom.UINT16: "number",
+    mojom.INT32: "number",
+    mojom.UINT32: "number",
+    mojom.FLOAT: "number",
+    mojom.INT64: "number",
+    mojom.UINT64: "number",
+    mojom.DOUBLE: "number",
+    mojom.STRING: "string",
+    mojom.NULLABLE_STRING: "string",
+    mojom.HANDLE: "MojoHandle",
+    mojom.DCPIPE: "MojoHandle",
+    mojom.DPPIPE: "MojoHandle",
+    mojom.MSGPIPE: "MojoHandle",
+    mojom.SHAREDBUFFER: "MojoHandle",
+    mojom.PLATFORMHANDLE: "MojoHandle",
+    mojom.NULLABLE_HANDLE: "MojoHandle",
+    mojom.NULLABLE_DCPIPE: "MojoHandle",
+    mojom.NULLABLE_DPPIPE: "MojoHandle",
+    mojom.NULLABLE_MSGPIPE: "MojoHandle",
+    mojom.NULLABLE_SHAREDBUFFER: "MojoHandle",
+    mojom.NULLABLE_PLATFORMHANDLE: "MojoHandle",
 }
 
 _kind_to_lite_js_type = {
-  mojom.BOOL:                  "mojo.internal.Bool",
-  mojom.INT8:                  "mojo.internal.Int8",
-  mojom.UINT8:                 "mojo.internal.Uint8",
-  mojom.INT16:                 "mojo.internal.Int16",
-  mojom.UINT16:                "mojo.internal.Uint16",
-  mojom.INT32:                 "mojo.internal.Int32",
-  mojom.UINT32:                "mojo.internal.Uint32",
-  mojom.FLOAT:                 "mojo.internal.Float",
-  mojom.HANDLE:                "mojo.internal.Handle",
-  mojom.DCPIPE:                "mojo.internal.Handle",
-  mojom.DPPIPE:                "mojo.internal.Handle",
-  mojom.MSGPIPE:               "mojo.internal.Handle",
-  mojom.SHAREDBUFFER:          "mojo.internal.Handle",
-  mojom.PLATFORMHANDLE:        "mojo.internal.Handle",
-  mojom.NULLABLE_HANDLE:       "mojo.internal.Handle",
-  mojom.NULLABLE_DCPIPE:       "mojo.internal.Handle",
-  mojom.NULLABLE_DPPIPE:       "mojo.internal.Handle",
-  mojom.NULLABLE_MSGPIPE:      "mojo.internal.Handle",
-  mojom.NULLABLE_SHAREDBUFFER: "mojo.internal.Handle",
-  mojom.NULLABLE_PLATFORMHANDLE: "mojo.internal.Handle",
-  mojom.INT64:                 "mojo.internal.Int64",
-  mojom.UINT64:                "mojo.internal.Uint64",
-  mojom.DOUBLE:                "mojo.internal.Double",
-  mojom.STRING:                "mojo.internal.String",
-  mojom.NULLABLE_STRING:       "mojo.internal.String",
+    mojom.BOOL: "mojo.internal.Bool",
+    mojom.INT8: "mojo.internal.Int8",
+    mojom.UINT8: "mojo.internal.Uint8",
+    mojom.INT16: "mojo.internal.Int16",
+    mojom.UINT16: "mojo.internal.Uint16",
+    mojom.INT32: "mojo.internal.Int32",
+    mojom.UINT32: "mojo.internal.Uint32",
+    mojom.FLOAT: "mojo.internal.Float",
+    mojom.HANDLE: "mojo.internal.Handle",
+    mojom.DCPIPE: "mojo.internal.Handle",
+    mojom.DPPIPE: "mojo.internal.Handle",
+    mojom.MSGPIPE: "mojo.internal.Handle",
+    mojom.SHAREDBUFFER: "mojo.internal.Handle",
+    mojom.PLATFORMHANDLE: "mojo.internal.Handle",
+    mojom.NULLABLE_HANDLE: "mojo.internal.Handle",
+    mojom.NULLABLE_DCPIPE: "mojo.internal.Handle",
+    mojom.NULLABLE_DPPIPE: "mojo.internal.Handle",
+    mojom.NULLABLE_MSGPIPE: "mojo.internal.Handle",
+    mojom.NULLABLE_SHAREDBUFFER: "mojo.internal.Handle",
+    mojom.NULLABLE_PLATFORMHANDLE: "mojo.internal.Handle",
+    mojom.INT64: "mojo.internal.Int64",
+    mojom.UINT64: "mojo.internal.Uint64",
+    mojom.DOUBLE: "mojo.internal.Double",
+    mojom.STRING: "mojo.internal.String",
+    mojom.NULLABLE_STRING: "mojo.internal.String",
 }
 
 _js_reserved_keywords = [
@@ -176,31 +175,31 @@ _js_reserved_keywords = [
 ]
 
 _primitive_kind_to_fuzz_type = {
-  mojom.BOOL:                  "Bool",
-  mojom.INT8:                  "Int8",
-  mojom.UINT8:                 "Uint8",
-  mojom.INT16:                 "Int16",
-  mojom.UINT16:                "Uint16",
-  mojom.INT32:                 "Int32",
-  mojom.UINT32:                "Uint32",
-  mojom.FLOAT:                 "Float",
-  mojom.INT64:                 "Int64",
-  mojom.UINT64:                "Uint64",
-  mojom.DOUBLE:                "Double",
-  mojom.STRING:                "String",
-  mojom.NULLABLE_STRING:       "String",
-  mojom.HANDLE:                "Handle",
-  mojom.DCPIPE:                "DataPipeConsumer",
-  mojom.DPPIPE:                "DataPipeProducer",
-  mojom.MSGPIPE:               "MessagePipe",
-  mojom.SHAREDBUFFER:          "SharedBuffer",
-  mojom.PLATFORMHANDLE:        "PlatformHandle",
-  mojom.NULLABLE_HANDLE:       "Handle",
-  mojom.NULLABLE_DCPIPE:       "DataPipeConsumer",
-  mojom.NULLABLE_DPPIPE:       "DataPipeProducer",
-  mojom.NULLABLE_MSGPIPE:      "MessagePipe",
-  mojom.NULLABLE_SHAREDBUFFER: "SharedBuffer",
-  mojom.NULLABLE_PLATFORMHANDLE: "PlatformHandle",
+    mojom.BOOL: "Bool",
+    mojom.INT8: "Int8",
+    mojom.UINT8: "Uint8",
+    mojom.INT16: "Int16",
+    mojom.UINT16: "Uint16",
+    mojom.INT32: "Int32",
+    mojom.UINT32: "Uint32",
+    mojom.FLOAT: "Float",
+    mojom.INT64: "Int64",
+    mojom.UINT64: "Uint64",
+    mojom.DOUBLE: "Double",
+    mojom.STRING: "String",
+    mojom.NULLABLE_STRING: "String",
+    mojom.HANDLE: "Handle",
+    mojom.DCPIPE: "DataPipeConsumer",
+    mojom.DPPIPE: "DataPipeProducer",
+    mojom.MSGPIPE: "MessagePipe",
+    mojom.SHAREDBUFFER: "SharedBuffer",
+    mojom.PLATFORMHANDLE: "PlatformHandle",
+    mojom.NULLABLE_HANDLE: "Handle",
+    mojom.NULLABLE_DCPIPE: "DataPipeConsumer",
+    mojom.NULLABLE_DPPIPE: "DataPipeProducer",
+    mojom.NULLABLE_MSGPIPE: "MessagePipe",
+    mojom.NULLABLE_SHAREDBUFFER: "SharedBuffer",
+    mojom.NULLABLE_PLATFORMHANDLE: "PlatformHandle",
 }
 
 
@@ -260,26 +259,27 @@ class JavaScriptStylizer(generator.Stylizer):
     return mojom_name
 
   def StylizeModule(self, mojom_namespace):
-    return '.'.join(generator.ToCamel(word, lower_initial=True)
-                        for word in mojom_namespace.split('.'))
+    return '.'.join(
+        generator.ToCamel(word, lower_initial=True)
+        for word in mojom_namespace.split('.'))
 
 
 class Generator(generator.Generator):
   def _GetParameters(self, for_compile=False):
     return {
-      "enums": self.module.enums,
-      "html_imports": self._GenerateHtmlImports(),
-      "imports": self.module.imports,
-      "interfaces": self.module.interfaces,
-      "kinds": self.module.kinds,
-      "module": self.module,
-      "mojom_filename": os.path.basename(self.module.path),
-      "mojom_namespace": self.module.mojom_namespace,
-      "structs": self.module.structs + self._GetStructsFromMethods(),
-      "unions": self.module.unions,
-      "generate_fuzzing": self.generate_fuzzing,
-      "generate_closure_exports": for_compile,
-      "generate_struct_deserializers": self.js_generate_struct_deserializers,
+        "enums": self.module.enums,
+        "html_imports": self._GenerateHtmlImports(),
+        "imports": self.module.imports,
+        "interfaces": self.module.interfaces,
+        "kinds": self.module.kinds,
+        "module": self.module,
+        "mojom_filename": os.path.basename(self.module.path),
+        "mojom_namespace": self.module.mojom_namespace,
+        "structs": self.module.structs + self._GetStructsFromMethods(),
+        "unions": self.module.unions,
+        "generate_fuzzing": self.generate_fuzzing,
+        "generate_closure_exports": for_compile,
+        "generate_struct_deserializers": self.js_generate_struct_deserializers,
     }
 
   @staticmethod
@@ -288,65 +288,66 @@ class Generator(generator.Generator):
 
   def GetFilters(self):
     js_filters = {
-      "closure_type": self._ClosureType,
-      "decode_snippet": self._JavaScriptDecodeSnippet,
-      "default_value": self._JavaScriptDefaultValue,
-      "encode_snippet": self._JavaScriptEncodeSnippet,
-      "expression_to_text": self._ExpressionToText,
-      "expression_to_text_lite": self._ExpressionToTextLite,
-      "field_offset": JavaScriptFieldOffset,
-      "get_relative_url": GetRelativeUrl,
-      "has_callbacks": mojom.HasCallbacks,
-      "is_any_handle_or_interface_kind": mojom.IsAnyHandleOrInterfaceKind,
-      "is_array_kind": mojom.IsArrayKind,
-      "is_associated_interface_kind": mojom.IsAssociatedInterfaceKind,
-      "is_pending_associated_remote_kind": mojom.IsPendingAssociatedRemoteKind,
-      "is_associated_interface_request_kind":
-          mojom.IsAssociatedInterfaceRequestKind,
-      "is_pending_associated_receiver_kind":
-          mojom.IsPendingAssociatedReceiverKind,
-      "is_bool_kind": mojom.IsBoolKind,
-      "is_enum_kind": mojom.IsEnumKind,
-      "is_any_handle_kind": mojom.IsAnyHandleKind,
-      "is_any_interface_kind": mojom.IsAnyInterfaceKind,
-      "is_interface_kind": mojom.IsInterfaceKind,
-      "is_pending_remote_kind": mojom.IsPendingRemoteKind,
-      "is_interface_request_kind": mojom.IsInterfaceRequestKind,
-      "is_pending_receiver_kind": mojom.IsPendingReceiverKind,
-      "is_map_kind": mojom.IsMapKind,
-      "is_object_kind": mojom.IsObjectKind,
-      "is_reference_kind": mojom.IsReferenceKind,
-      "is_string_kind": mojom.IsStringKind,
-      "is_struct_kind": mojom.IsStructKind,
-      "is_union_kind": mojom.IsUnionKind,
-      "js_type": self._JavaScriptType,
-      "lite_default_value": self._LiteJavaScriptDefaultValue,
-      "lite_js_type": self._LiteJavaScriptType,
-      "lite_js_import_name": self._LiteJavaScriptImportName,
-      "method_passes_associated_kinds": mojom.MethodPassesAssociatedKinds,
-      "namespace_declarations": self._NamespaceDeclarations,
-      "closure_type_with_nullability": self._ClosureTypeWithNullability,
-      "lite_closure_param_type": self._LiteClosureParamType,
-      "lite_closure_type": self._LiteClosureType,
-      "lite_closure_type_with_nullability":
-          self._LiteClosureTypeWithNullability,
-      "lite_closure_field_type": self._LiteClosureFieldType,
-      "payload_size": JavaScriptPayloadSize,
-      "to_camel": generator.ToCamel,
-      "union_decode_snippet": self._JavaScriptUnionDecodeSnippet,
-      "union_encode_snippet": self._JavaScriptUnionEncodeSnippet,
-      "validate_array_params": self._JavaScriptValidateArrayParams,
-      "validate_enum_params": self._JavaScriptValidateEnumParams,
-      "validate_map_params": self._JavaScriptValidateMapParams,
-      "validate_nullable_params": self._JavaScriptNullableParam,
-      "validate_struct_params": self._JavaScriptValidateStructParams,
-      "validate_union_params": self._JavaScriptValidateUnionParams,
-      "sanitize_identifier": self._JavaScriptSanitizeIdentifier,
-      "contains_handles_or_interfaces": mojom.ContainsHandlesOrInterfaces,
-      "fuzz_handle_name": self._FuzzHandleName,
-      "is_primitive_kind": self._IsPrimitiveKind,
-      "primitive_to_fuzz_type": self._PrimitiveToFuzzType,
-      "to_js_boolean": self._ToJsBoolean,
+        "closure_type": self._ClosureType,
+        "decode_snippet": self._JavaScriptDecodeSnippet,
+        "default_value": self._JavaScriptDefaultValue,
+        "encode_snippet": self._JavaScriptEncodeSnippet,
+        "expression_to_text": self._ExpressionToText,
+        "expression_to_text_lite": self._ExpressionToTextLite,
+        "field_offset": JavaScriptFieldOffset,
+        "get_relative_url": GetRelativeUrl,
+        "has_callbacks": mojom.HasCallbacks,
+        "is_any_handle_or_interface_kind": mojom.IsAnyHandleOrInterfaceKind,
+        "is_array_kind": mojom.IsArrayKind,
+        "is_associated_interface_kind": mojom.IsAssociatedInterfaceKind,
+        "is_pending_associated_remote_kind":
+        mojom.IsPendingAssociatedRemoteKind,
+        "is_associated_interface_request_kind":
+        mojom.IsAssociatedInterfaceRequestKind,
+        "is_pending_associated_receiver_kind":
+        mojom.IsPendingAssociatedReceiverKind,
+        "is_bool_kind": mojom.IsBoolKind,
+        "is_enum_kind": mojom.IsEnumKind,
+        "is_any_handle_kind": mojom.IsAnyHandleKind,
+        "is_any_interface_kind": mojom.IsAnyInterfaceKind,
+        "is_interface_kind": mojom.IsInterfaceKind,
+        "is_pending_remote_kind": mojom.IsPendingRemoteKind,
+        "is_interface_request_kind": mojom.IsInterfaceRequestKind,
+        "is_pending_receiver_kind": mojom.IsPendingReceiverKind,
+        "is_map_kind": mojom.IsMapKind,
+        "is_object_kind": mojom.IsObjectKind,
+        "is_reference_kind": mojom.IsReferenceKind,
+        "is_string_kind": mojom.IsStringKind,
+        "is_struct_kind": mojom.IsStructKind,
+        "is_union_kind": mojom.IsUnionKind,
+        "js_type": self._JavaScriptType,
+        "lite_default_value": self._LiteJavaScriptDefaultValue,
+        "lite_js_type": self._LiteJavaScriptType,
+        "lite_js_import_name": self._LiteJavaScriptImportName,
+        "method_passes_associated_kinds": mojom.MethodPassesAssociatedKinds,
+        "namespace_declarations": self._NamespaceDeclarations,
+        "closure_type_with_nullability": self._ClosureTypeWithNullability,
+        "lite_closure_param_type": self._LiteClosureParamType,
+        "lite_closure_type": self._LiteClosureType,
+        "lite_closure_type_with_nullability":
+        self._LiteClosureTypeWithNullability,
+        "lite_closure_field_type": self._LiteClosureFieldType,
+        "payload_size": JavaScriptPayloadSize,
+        "to_camel": generator.ToCamel,
+        "union_decode_snippet": self._JavaScriptUnionDecodeSnippet,
+        "union_encode_snippet": self._JavaScriptUnionEncodeSnippet,
+        "validate_array_params": self._JavaScriptValidateArrayParams,
+        "validate_enum_params": self._JavaScriptValidateEnumParams,
+        "validate_map_params": self._JavaScriptValidateMapParams,
+        "validate_nullable_params": self._JavaScriptNullableParam,
+        "validate_struct_params": self._JavaScriptValidateStructParams,
+        "validate_union_params": self._JavaScriptValidateUnionParams,
+        "sanitize_identifier": self._JavaScriptSanitizeIdentifier,
+        "contains_handles_or_interfaces": mojom.ContainsHandlesOrInterfaces,
+        "fuzz_handle_name": self._FuzzHandleName,
+        "is_primitive_kind": self._IsPrimitiveKind,
+        "primitive_to_fuzz_type": self._PrimitiveToFuzzType,
+        "to_js_boolean": self._ToJsBoolean,
     }
     return js_filters
 
@@ -416,8 +417,7 @@ class Generator(generator.Generator):
       return kind.module.namespace + "." + kind.name + "Ptr"
     if mojom.IsPendingRemoteKind(kind):
       return kind.kind.module.namespace + "." + kind.kind.name + "Ptr"
-    if (mojom.IsStructKind(kind) or
-        mojom.IsEnumKind(kind)):
+    if (mojom.IsStructKind(kind) or mojom.IsEnumKind(kind)):
       return kind.module.namespace + "." + kind.name
     # TODO(calamity): Support unions properly.
     if mojom.IsUnionKind(kind):
@@ -425,17 +425,17 @@ class Generator(generator.Generator):
     if mojom.IsArrayKind(kind):
       return "Array<%s>" % self._ClosureType(kind.kind)
     if mojom.IsMapKind(kind):
-      return "Map<%s, %s>" % (
-          self._ClosureType(kind.key_kind), self._ClosureType(kind.value_kind))
+      return "Map<%s, %s>" % (self._ClosureType(
+          kind.key_kind), self._ClosureType(kind.value_kind))
     if mojom.IsInterfaceRequestKind(kind) or mojom.IsPendingReceiverKind(kind):
       return "mojo.InterfaceRequest"
     # TODO(calamity): Support associated interfaces properly.
-    if (mojom.IsAssociatedInterfaceKind(kind) or
-        mojom.IsPendingAssociatedRemoteKind(kind)):
+    if (mojom.IsAssociatedInterfaceKind(kind)
+        or mojom.IsPendingAssociatedRemoteKind(kind)):
       return "mojo.AssociatedInterfacePtrInfo"
     # TODO(calamity): Support associated interface requests properly.
-    if (mojom.IsAssociatedInterfaceRequestKind(kind) or
-        mojom.IsPendingAssociatedReceiverKind(kind)):
+    if (mojom.IsAssociatedInterfaceRequestKind(kind)
+        or mojom.IsPendingAssociatedReceiverKind(kind)):
       return "mojo.AssociatedInterfaceRequest"
     # TODO(calamity): Support enums properly.
 
@@ -445,9 +445,9 @@ class Generator(generator.Generator):
     # Indicates whether a kind of suitable to stringify and use as an Object
     # property name. This is checked for map key types to allow most kinds of
     # mojom maps to be represented as either a Map or an Object.
-    return (mojom.IsIntegralKind(kind) or mojom.IsFloatKind(kind) or
-        mojom.IsDoubleKind(kind) or mojom.IsStringKind(kind) or
-        mojom.IsEnumKind(kind))
+    return (mojom.IsIntegralKind(kind) or mojom.IsFloatKind(kind)
+            or mojom.IsDoubleKind(kind) or mojom.IsStringKind(kind)
+            or mojom.IsEnumKind(kind))
 
   def _LiteClosureType(self, kind):
     if kind in mojom.PRIMITIVES:
@@ -455,18 +455,16 @@ class Generator(generator.Generator):
     if mojom.IsArrayKind(kind):
       return "Array<%s>" % self._LiteClosureTypeWithNullability(kind.kind)
     if mojom.IsMapKind(kind) and self._IsStringableKind(kind.key_kind):
-      return "Object<%s, %s>" % (
-          self._LiteClosureTypeWithNullability(kind.key_kind),
-          self._LiteClosureTypeWithNullability(kind.value_kind))
+      return "Object<%s, %s>" % (self._LiteClosureTypeWithNullability(
+          kind.key_kind), self._LiteClosureTypeWithNullability(kind.value_kind))
     if mojom.IsMapKind(kind):
-      return "Map<%s, %s>" % (
-          self._LiteClosureTypeWithNullability(kind.key_kind),
-          self._LiteClosureTypeWithNullability(kind.value_kind))
+      return "Map<%s, %s>" % (self._LiteClosureTypeWithNullability(
+          kind.key_kind), self._LiteClosureTypeWithNullability(kind.value_kind))
 
-    if (mojom.IsAssociatedKind(kind) or mojom.IsInterfaceRequestKind(kind) or
-        mojom.IsPendingRemoteKind(kind) or mojom.IsPendingReceiverKind(kind) or
-        mojom.IsPendingAssociatedRemoteKind(kind) or
-        mojom.IsPendingAssociatedReceiverKind(kind)):
+    if (mojom.IsAssociatedKind(kind) or mojom.IsInterfaceRequestKind(kind)
+        or mojom.IsPendingRemoteKind(kind) or mojom.IsPendingReceiverKind(kind)
+        or mojom.IsPendingAssociatedRemoteKind(kind)
+        or mojom.IsPendingAssociatedReceiverKind(kind)):
       named_kind = kind.kind
     else:
       named_kind = kind
@@ -484,20 +482,20 @@ class Generator(generator.Generator):
       name.append("" + named_kind.name)
       name = ".".join(name)
 
-    if (mojom.IsStructKind(kind) or mojom.IsUnionKind(kind) or
-        mojom.IsEnumKind(kind)):
+    if (mojom.IsStructKind(kind) or mojom.IsUnionKind(kind)
+        or mojom.IsEnumKind(kind)):
       return name
     if mojom.IsInterfaceKind(kind) or mojom.IsPendingRemoteKind(kind):
       return name + "Remote"
     if mojom.IsInterfaceRequestKind(kind) or mojom.IsPendingReceiverKind(kind):
       return name + "PendingReceiver"
     # TODO(calamity): Support associated interfaces properly.
-    if (mojom.IsAssociatedInterfaceKind(kind) or
-        mojom.IsPendingAssociatedRemoteKind(kind)):
+    if (mojom.IsAssociatedInterfaceKind(kind)
+        or mojom.IsPendingAssociatedRemoteKind(kind)):
       return "Object"
     # TODO(calamity): Support associated interface requests properly.
-    if (mojom.IsAssociatedInterfaceRequestKind(kind) or
-        mojom.IsPendingAssociatedReceiverKind(kind)):
+    if (mojom.IsAssociatedInterfaceRequestKind(kind)
+        or mojom.IsPendingAssociatedReceiverKind(kind)):
       return "Object"
 
     raise Exception("No valid closure type: %s" % kind)
@@ -512,20 +510,19 @@ class Generator(generator.Generator):
     if mojom.IsStructKind(kind) or mojom.IsUnionKind(kind):
       return prefix + "Object"
     if mojom.IsArrayKind(kind):
-      return prefix + ("Array<%s>" %
-                       self._LiteClosureParamType(kind.kind))
+      return prefix + ("Array<%s>" % self._LiteClosureParamType(kind.kind))
     if mojom.IsMapKind(kind):
       return "%sMap<%s, %s>|%sObject<%s, %s>" % (
           prefix, self._LiteClosureParamType(kind.key_kind),
-          self._LiteClosureParamType(kind.value_kind),
-          prefix, self._LiteClosureParamType(kind.key_kind),
-          self._LiteClosureParamType(kind.value_kind))
+          self._LiteClosureParamType(
+              kind.value_kind), prefix, self._LiteClosureParamType(
+                  kind.key_kind), self._LiteClosureParamType(kind.value_kind))
 
     return prefix + self._LiteClosureType(kind)
 
   def _LiteClosureTypeWithNullability(self, kind):
     return (("?" if mojom.IsNullableKind(kind) else "!") +
-        self._LiteClosureType(kind))
+            self._LiteClosureType(kind))
 
   def _LiteClosureFieldType(self, kind):
     if mojom.IsNullableKind(kind):
@@ -555,19 +552,18 @@ class Generator(generator.Generator):
     if self._IsPrimitiveKind(kind):
       return _kind_to_lite_js_type[kind]
     if mojom.IsArrayKind(kind):
-      return "mojo.internal.Array(%s, %s)" % (
-          self._LiteJavaScriptType(kind.kind),
-          "true" if mojom.IsNullableKind(kind.kind) else "false")
+      return "mojo.internal.Array(%s, %s)" % (self._LiteJavaScriptType(
+          kind.kind), "true" if mojom.IsNullableKind(kind.kind) else "false")
     if mojom.IsMapKind(kind):
-      return "mojo.internal.Map(%s, %s, %s)" % (
-          self._LiteJavaScriptType(kind.key_kind),
-          self._LiteJavaScriptType(kind.value_kind),
-          "true" if mojom.IsNullableKind(kind.value_kind) else "false")
+      return "mojo.internal.Map(%s, %s, %s)" % (self._LiteJavaScriptType(
+          kind.key_kind), self._LiteJavaScriptType(
+              kind.value_kind), "true" if mojom.IsNullableKind(kind.value_kind)
+                                                else "false")
 
-    if (mojom.IsAssociatedKind(kind) or mojom.IsInterfaceRequestKind(kind) or
-        mojom.IsPendingRemoteKind(kind) or mojom.IsPendingReceiverKind(kind) or
-        mojom.IsPendingAssociatedRemoteKind(kind) or
-        mojom.IsPendingAssociatedReceiverKind(kind)):
+    if (mojom.IsAssociatedKind(kind) or mojom.IsInterfaceRequestKind(kind)
+        or mojom.IsPendingRemoteKind(kind) or mojom.IsPendingReceiverKind(kind)
+        or mojom.IsPendingAssociatedRemoteKind(kind)
+        or mojom.IsPendingAssociatedReceiverKind(kind)):
       named_kind = kind.kind
     else:
       named_kind = kind
@@ -583,21 +579,21 @@ class Generator(generator.Generator):
     name.append(named_kind.name)
     name = ".".join(name)
 
-    if (mojom.IsStructKind(kind) or mojom.IsUnionKind(kind) or
-        mojom.IsEnumKind(kind)):
+    if (mojom.IsStructKind(kind) or mojom.IsUnionKind(kind)
+        or mojom.IsEnumKind(kind)):
       return "%sSpec.$" % name
     if mojom.IsInterfaceKind(kind) or mojom.IsPendingRemoteKind(kind):
       return "mojo.internal.InterfaceProxy(%sRemote)" % name
     if mojom.IsInterfaceRequestKind(kind) or mojom.IsPendingReceiverKind(kind):
       return "mojo.internal.InterfaceRequest(%sPendingReceiver)" % name
-    if (mojom.IsAssociatedInterfaceKind(kind) or
-        mojom.IsPendingAssociatedRemoteKind(kind)):
+    if (mojom.IsAssociatedInterfaceKind(kind)
+        or mojom.IsPendingAssociatedRemoteKind(kind)):
       # TODO(rockot): Implement associated interfaces.
       return "mojo.internal.AssociatedInterfaceProxy(%sRemote)" % (name)
-    if (mojom.IsAssociatedInterfaceRequestKind(kind) or
-        mojom.IsPendingAssociatedReceiverKind(kind)):
+    if (mojom.IsAssociatedInterfaceRequestKind(kind)
+        or mojom.IsPendingAssociatedReceiverKind(kind)):
       return "mojo.internal.AssociatedInterfaceRequest(%sPendingReceiver)" % (
-        name)
+          name)
 
     return name
 
@@ -630,14 +626,14 @@ class Generator(generator.Generator):
       return "new %sPtr()" % self._JavaScriptType(field.kind)
     if mojom.IsPendingRemoteKind(field.kind):
       return "new %sPtr()" % self._JavaScriptType(field.kind.kind)
-    if (mojom.IsInterfaceRequestKind(field.kind) or
-        mojom.IsPendingReceiverKind(field.kind)):
+    if (mojom.IsInterfaceRequestKind(field.kind)
+        or mojom.IsPendingReceiverKind(field.kind)):
       return "new bindings.InterfaceRequest()"
-    if (mojom.IsAssociatedInterfaceKind(field.kind) or
-        mojom.IsPendingAssociatedRemoteKind(field.kind)):
+    if (mojom.IsAssociatedInterfaceKind(field.kind)
+        or mojom.IsPendingAssociatedRemoteKind(field.kind)):
       return "new associatedBindings.AssociatedInterfacePtrInfo()"
-    if (mojom.IsAssociatedInterfaceRequestKind(field.kind) or
-        mojom.IsPendingAssociatedReceiverKind(field.kind)):
+    if (mojom.IsAssociatedInterfaceRequestKind(field.kind)
+        or mojom.IsPendingAssociatedReceiverKind(field.kind)):
       return "new associatedBindings.AssociatedInterfaceRequest()"
     if mojom.IsEnumKind(field.kind):
       return "0"
@@ -647,7 +643,7 @@ class Generator(generator.Generator):
     if field.default:
       if mojom.IsStructKind(field.kind):
         assert field.default == "default"
-        return "null";
+        return "null"
       return self._ExpressionToTextLite(field.default)
     if field.kind in mojom.PRIMITIVES:
       return _kind_to_javascript_default_value[field.kind]
@@ -665,8 +661,8 @@ class Generator(generator.Generator):
     if mojom.IsUnionKind(kind):
       return self._JavaScriptType(kind)
     if mojom.IsArrayKind(kind):
-      array_type = ("NullableArrayOf" if mojom.IsNullableKind(kind)
-                                      else "ArrayOf")
+      array_type = ("NullableArrayOf"
+                    if mojom.IsNullableKind(kind) else "ArrayOf")
       array_length = "" if kind.length is None else ", %d" % kind.length
       element_type = self._ElementCodecType(kind.kind)
       return "new codec.%s(%s%s)" % (array_type, element_type, array_length)
@@ -679,17 +675,18 @@ class Generator(generator.Generator):
           "NullableInterface" if mojom.IsNullableKind(kind) else "Interface",
           self._JavaScriptType(kind.kind))
     if mojom.IsInterfaceRequestKind(kind) or mojom.IsPendingReceiverKind(kind):
-      return "codec.%s" % (
-          "NullableInterfaceRequest" if mojom.IsNullableKind(kind)
-                                     else "InterfaceRequest")
-    if (mojom.IsAssociatedInterfaceKind(kind) or
-        mojom.IsPendingAssociatedRemoteKind(kind)):
+      return "codec.%s" % ("NullableInterfaceRequest" if
+                           mojom.IsNullableKind(kind) else "InterfaceRequest")
+    if (mojom.IsAssociatedInterfaceKind(kind)
+        or mojom.IsPendingAssociatedRemoteKind(kind)):
       return "codec.%s" % ("NullableAssociatedInterfacePtrInfo"
-          if mojom.IsNullableKind(kind) else "AssociatedInterfacePtrInfo")
-    if (mojom.IsAssociatedInterfaceRequestKind(kind) or
-        mojom.IsPendingAssociatedReceiverKind(kind)):
+                           if mojom.IsNullableKind(kind) else
+                           "AssociatedInterfacePtrInfo")
+    if (mojom.IsAssociatedInterfaceRequestKind(kind)
+        or mojom.IsPendingAssociatedReceiverKind(kind)):
       return "codec.%s" % ("NullableAssociatedInterfaceRequest"
-          if mojom.IsNullableKind(kind) else "AssociatedInterfaceRequest")
+                           if mojom.IsNullableKind(kind) else
+                           "AssociatedInterfaceRequest")
     if mojom.IsEnumKind(kind):
       return "new codec.Enum(%s)" % self._JavaScriptType(kind)
     if mojom.IsMapKind(kind):
@@ -700,19 +697,18 @@ class Generator(generator.Generator):
     raise Exception("No codec type for %s" % kind)
 
   def _ElementCodecType(self, kind):
-    return ("codec.PackedBool" if mojom.IsBoolKind(kind)
-                               else self._CodecType(kind))
+    return ("codec.PackedBool"
+            if mojom.IsBoolKind(kind) else self._CodecType(kind))
 
   def _JavaScriptDecodeSnippet(self, kind):
-    if (kind in mojom.PRIMITIVES or mojom.IsUnionKind(kind) or
-        mojom.IsAnyInterfaceKind(kind)):
+    if (kind in mojom.PRIMITIVES or mojom.IsUnionKind(kind)
+        or mojom.IsAnyInterfaceKind(kind)):
       return "decodeStruct(%s)" % self._CodecType(kind)
     if mojom.IsStructKind(kind):
       return "decodeStructPointer(%s)" % self._JavaScriptType(kind)
     if mojom.IsMapKind(kind):
-      return "decodeMapPointer(%s, %s)" % (
-          self._ElementCodecType(kind.key_kind),
-          self._ElementCodecType(kind.value_kind))
+      return "decodeMapPointer(%s, %s)" % (self._ElementCodecType(
+          kind.key_kind), self._ElementCodecType(kind.value_kind))
     if mojom.IsArrayKind(kind) and mojom.IsBoolKind(kind.kind):
       return "decodeArrayPointer(codec.PackedBool)"
     if mojom.IsArrayKind(kind):
@@ -724,19 +720,18 @@ class Generator(generator.Generator):
     raise Exception("No decode snippet for %s" % kind)
 
   def _JavaScriptEncodeSnippet(self, kind):
-    if (kind in mojom.PRIMITIVES or mojom.IsUnionKind(kind) or
-        mojom.IsAnyInterfaceKind(kind)):
+    if (kind in mojom.PRIMITIVES or mojom.IsUnionKind(kind)
+        or mojom.IsAnyInterfaceKind(kind)):
       return "encodeStruct(%s, " % self._CodecType(kind)
     if mojom.IsUnionKind(kind):
       return "encodeStruct(%s, " % self._JavaScriptType(kind)
     if mojom.IsStructKind(kind):
       return "encodeStructPointer(%s, " % self._JavaScriptType(kind)
     if mojom.IsMapKind(kind):
-      return "encodeMapPointer(%s, %s, " % (
-          self._ElementCodecType(kind.key_kind),
-          self._ElementCodecType(kind.value_kind))
+      return "encodeMapPointer(%s, %s, " % (self._ElementCodecType(
+          kind.key_kind), self._ElementCodecType(kind.value_kind))
     if mojom.IsArrayKind(kind) and mojom.IsBoolKind(kind.kind):
-      return "encodeArrayPointer(codec.PackedBool, ";
+      return "encodeArrayPointer(codec.PackedBool, "
     if mojom.IsArrayKind(kind):
       return "encodeArrayPointer(%s, " % self._CodecType(kind.kind)
     if mojom.IsEnumKind(kind):
@@ -760,8 +755,7 @@ class Generator(generator.Generator):
     nullable = self._JavaScriptNullableParam(field)
     element_kind = field.kind.kind
     element_size = pack.PackedField.GetSizeForKind(element_kind)
-    expected_dimension_sizes = GetArrayExpectedDimensionSizes(
-        field.kind)
+    expected_dimension_sizes = GetArrayExpectedDimensionSizes(field.kind)
     element_type = self._ElementCodecType(element_kind)
     return "%s, %s, %s, %s, 0" % \
         (element_size, element_type, nullable,
@@ -783,7 +777,7 @@ class Generator(generator.Generator):
   def _JavaScriptValidateMapParams(self, field):
     nullable = self._JavaScriptNullableParam(field)
     keys_type = self._ElementCodecType(field.kind.key_kind)
-    values_kind = field.kind.value_kind;
+    values_kind = field.kind.value_kind
     values_type = self._ElementCodecType(values_kind)
     values_nullable = "true" if mojom.IsNullableKind(values_kind) else "false"
     return "%s, %s, %s, %s" % \
@@ -811,12 +805,12 @@ class Generator(generator.Generator):
 
     if isinstance(token, mojom.BuiltinValue):
       if token.value == "double.INFINITY" or token.value == "float.INFINITY":
-        return "Infinity";
+        return "Infinity"
       if token.value == "double.NEGATIVE_INFINITY" or \
          token.value == "float.NEGATIVE_INFINITY":
-        return "-Infinity";
+        return "-Infinity"
       if token.value == "double.NAN" or token.value == "float.NAN":
-        return "NaN";
+        return "NaN"
 
     return token
 
@@ -848,8 +842,8 @@ class Generator(generator.Generator):
   def _GenerateHtmlImports(self):
     result = []
     for full_import in self.module.imports:
-      result.append(os.path.relpath(full_import.path,
-                                    os.path.dirname(self.module.path)))
+      result.append(
+          os.path.relpath(full_import.path, os.path.dirname(self.module.path)))
     return result
 
   def _GetStructsFromMethods(self):
@@ -863,20 +857,17 @@ class Generator(generator.Generator):
 
   def _FuzzHandleName(self, kind):
     if mojom.IsInterfaceRequestKind(kind) or mojom.IsPendingReceiverKind(kind):
-      return '{0}.{1}Request'.format(kind.kind.module.namespace,
-                                     kind.kind.name)
+      return '{0}.{1}Request'.format(kind.kind.module.namespace, kind.kind.name)
     elif mojom.IsInterfaceKind(kind):
-      return '{0}.{1}Ptr'.format(kind.module.namespace,
-                                 kind.name)
+      return '{0}.{1}Ptr'.format(kind.module.namespace, kind.name)
     elif mojom.IsPendingRemoteKind(kind):
-      return '{0}.{1}Ptr'.format(kind.kind.module.namespace,
-                                 kind.kind.name)
-    elif (mojom.IsAssociatedInterfaceRequestKind(kind) or
-          mojom.IsPendingAssociatedReceiverKind(kind)):
+      return '{0}.{1}Ptr'.format(kind.kind.module.namespace, kind.kind.name)
+    elif (mojom.IsAssociatedInterfaceRequestKind(kind)
+          or mojom.IsPendingAssociatedReceiverKind(kind)):
       return '{0}.{1}AssociatedRequest'.format(kind.kind.module.namespace,
                                                kind.kind.name)
-    elif (mojom.IsAssociatedInterfaceKind(kind) or
-          mojom.IsPendingAssociatedRemoteKind(kind)):
+    elif (mojom.IsAssociatedInterfaceKind(kind)
+          or mojom.IsPendingAssociatedRemoteKind(kind)):
       return '{0}.{1}AssociatedPtr'.format(kind.kind.module.namespace,
                                            kind.kind.name)
     elif mojom.IsSharedBufferKind(kind):
