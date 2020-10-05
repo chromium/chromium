@@ -94,6 +94,7 @@ public class VariationsSeedBridge {
     /**
      * Returns the status of the variations seed storing on the C++ side: was it successful or not.
      */
+    @CalledByNative
     public static boolean hasNativePref() {
         return ContextUtils.getAppSharedPreferences().getBoolean(
                 VARIATIONS_FIRST_RUN_SEED_NATIVE_STORED, false);

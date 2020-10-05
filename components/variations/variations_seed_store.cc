@@ -118,9 +118,11 @@ VariationsSeedStore::VariationsSeedStore(PrefService* local_state)
 VariationsSeedStore::VariationsSeedStore(
     PrefService* local_state,
     std::unique_ptr<SeedResponse> initial_seed,
-    bool signature_verification_enabled)
+    bool signature_verification_enabled,
+    bool use_first_run_prefs)
     : local_state_(local_state),
-      signature_verification_enabled_(signature_verification_enabled) {
+      signature_verification_enabled_(signature_verification_enabled),
+      use_first_run_prefs_(use_first_run_prefs) {
 #if defined(OS_ANDROID)
   if (initial_seed)
     ImportInitialSeed(std::move(initial_seed));
@@ -411,7 +413,9 @@ void VariationsSeedStore::ImportInitialSeed(
   // needed there. This is done regardless if we fail or succeed
   // below - since if we succeed, we're good to go and if we fail,
   // we probably don't want to keep around the bad content anyway.
-  android::ClearJavaFirstRunPrefs();
+  if (use_first_run_prefs_) {
+    android::ClearJavaFirstRunPrefs();
+  }
 
   if (initial_seed->date == 0) {
     RecordFirstRunSeedImportResult(
@@ -518,8 +522,10 @@ bool VariationsSeedStore::StoreSeedDataNoDelta(
 #if defined(OS_ANDROID)
   // If currently we do not have any stored pref then we mark seed storing as
   // successful on the Java side to avoid repeated seed fetches.
-  if (local_state_->GetString(prefs::kVariationsCompressedSeed).empty())
+  if (local_state_->GetString(prefs::kVariationsCompressedSeed).empty() &&
+      use_first_run_prefs_) {
     android::MarkVariationsSeedAsStored();
+  }
 #endif
 
   // Update the saved country code only if one was returned from the server.

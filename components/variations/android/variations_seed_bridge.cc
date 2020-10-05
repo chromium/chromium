@@ -70,5 +70,10 @@ void SetJavaFirstRunPrefsForTesting(const std::string& seed_data,
       static_cast<jboolean>(is_gzip_compressed));
 }
 
+bool HasMarkedPrefsForTesting() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_VariationsSeedBridge_hasNativePref(env);
+}
+
 }  // namespace android
 }  // namespace variations

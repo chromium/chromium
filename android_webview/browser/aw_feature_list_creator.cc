@@ -190,7 +190,8 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   client_ = std::make_unique<AwVariationsServiceClient>();
   auto seed_store = std::make_unique<variations::VariationsSeedStore>(
       local_state_.get(), /*initial_seed=*/std::move(seed),
-      /*signature_verification_enabled=*/g_signature_verification_enabled);
+      /*signature_verification_enabled=*/g_signature_verification_enabled,
+      /*use_first_run_prefs=*/false);
 
   if (!seed_date.is_null())
     seed_store->RecordLastFetchTime(seed_date);

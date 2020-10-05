@@ -33,6 +33,8 @@ void SetJavaFirstRunPrefsForTesting(const std::string& seed_data,
                                     long response_date,
                                     bool is_gzip_compressed);
 
+bool HasMarkedPrefsForTesting();
+
 }  // namespace android
 }  // namespace variations
 
