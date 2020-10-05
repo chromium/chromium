@@ -370,6 +370,8 @@ export class PDFViewerBaseElement extends PolymerElement {
     const visiblePage = this.viewport_.getMostVisiblePage();
     const visiblePageDimensions = this.viewport_.getPageScreenRect(visiblePage);
     const size = this.viewport_.size;
+    this.paramsParser.setViewportDimensions(size);
+
     this.sendScriptingMessage({
       type: 'viewport',
       pageX: visiblePageDimensions.x,
@@ -426,6 +428,7 @@ export class PDFViewerBaseElement extends PolymerElement {
     this.documentDimensions = documentDimensions;
     this.isUserInitiatedEvent = false;
     this.viewport_.setDocumentDimensions(this.documentDimensions);
+    this.paramsParser.setViewportDimensions(this.viewport_.size);
     this.isUserInitiatedEvent = true;
   }
 

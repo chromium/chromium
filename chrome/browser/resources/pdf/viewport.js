@@ -32,7 +32,7 @@ export let LayoutOptions;
 export let PartialPoint;
 
 /** @typedef {{width: number, height: number}} */
-let Size;
+export let Size;
 
 /** @typedef {{x: number, y: number, width: number, height: number}} */
 let ViewportRect;

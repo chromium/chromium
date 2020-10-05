@@ -13,6 +13,10 @@ const tests = [
    */
   function testParamsParser() {
     const paramsParser = new OpenPdfParamsParser(function(destination) {
+      // Set the dummy viewport dimensions for calculating the zoom level for
+      // view destination with 'FitR' type.
+      paramsParser.setViewportDimensions({width: 300, height: 500});
+
       if (destination === 'RU') {
         return Promise.resolve(
             {messageId: 'getNamedDestination_1', pageNumber: 26});
@@ -40,9 +44,27 @@ const tests = [
           namedDestinationView: 'XYZ,111,null,1.7',
           pageNumber: 13
         });
+      } else if (destination === 'DestWithFitR') {
+        return Promise.resolve({
+          messageId: 'getNamedDestination_7',
+          namedDestinationView: 'FitR,20,100,120,300',
+          pageNumber: 0
+        });
+      } else if (destination === 'DestWithFitRReversedCoordinates') {
+        return Promise.resolve({
+          messageId: 'getNamedDestination_8',
+          namedDestinationView: 'FitR,120,300,20,100',
+          pageNumber: 0
+        });
+      } else if (destination === 'DestWithFitRWithNull') {
+        return Promise.resolve({
+          messageId: 'getNamedDestination_9',
+          namedDestinationView: 'FitR,null,100,100,300',
+          pageNumber: 0
+        });
       } else {
         return Promise.resolve(
-            {messageId: 'getNamedDestination_7', pageNumber: -1});
+            {messageId: 'getNamedDestination_10', pageNumber: -1});
       }
     });
 
@@ -142,6 +164,38 @@ const tests = [
           chrome.test.assertEq(undefined, params.viewPosition);
         });
 
+    // Checking #nameddest=name with a nameddest that specifies the view fit
+    // type is "FitR" with multiple valid parameters.
+    paramsParser.getViewportFromUrlParams(
+        `${url}#nameddest=DestWithFitR`, function(params) {
+          chrome.test.assertEq(0, params.page);
+          chrome.test.assertEq(2.5, params.zoom);
+          chrome.test.assertEq(20, params.position.x);
+          chrome.test.assertEq(100, params.position.y);
+          chrome.test.assertEq(undefined, params.viewPosition);
+        });
+
+    // Checking #nameddest=name with a nameddest that specifies the view fit
+    // type is "FitR" with multiple valid parameters.
+    paramsParser.getViewportFromUrlParams(
+        `${url}#nameddest=DestWithFitRReversedCoordinates`, function(params) {
+          chrome.test.assertEq(0, params.page);
+          chrome.test.assertEq(2.5, params.zoom);
+          chrome.test.assertEq(20, params.position.x);
+          chrome.test.assertEq(100, params.position.y);
+          chrome.test.assertEq(undefined, params.viewPosition);
+        });
+
+    // Checking #nameddest=name with a nameddest that specifies the view fit
+    // type is "FitR" with one NULL parameters.
+    paramsParser.getViewportFromUrlParams(
+        `${url}#nameddest=DestWithFitRWithNull`, function(params) {
+          chrome.test.assertEq(0, params.page);
+          chrome.test.assertEq(undefined, params.zoom);
+          chrome.test.assertEq(undefined, params.position);
+          chrome.test.assertEq(undefined, params.viewPosition);
+        });
+
     // Checking #view=Fit.
     paramsParser.getViewportFromUrlParams(`${url}#view=Fit`, function(params) {
       chrome.test.assertEq(FittingType.FIT_TO_PAGE, params.view);
@@ -205,6 +259,20 @@ const tests = [
           chrome.test.assertEq(undefined, params.view);
           chrome.test.assertEq(undefined, params.viewPosition);
         });
+    // Checking #view=[wrong parameter].
+    paramsParser.getViewportFromUrlParams(`${url}#view=FitR`, function(params) {
+      chrome.test.assertEq(undefined, params.view);
+      chrome.test.assertEq(undefined, params.viewPosition);
+    });
+    // Checking #view=[wrong parameter],[position].
+    paramsParser.getViewportFromUrlParams(
+        `${url}#view=FitR,20,100,120,300`, function(params) {
+          chrome.test.assertEq(undefined, params.zoom);
+          chrome.test.assertEq(undefined, params.position);
+          chrome.test.assertEq(undefined, params.view);
+          chrome.test.assertEq(undefined, params.viewPosition);
+        });
+
 
     // Checking #toolbar=0 to disable the toolbar.
     chrome.test.assertFalse(paramsParser.shouldShowToolbar(`${url}#toolbar=0`));
