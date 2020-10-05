@@ -48,8 +48,6 @@ const char TranslateScript::kCssLoaderCallbackQueryValue[] =
 const char TranslateScript::kJavascriptLoaderCallbackQueryName[] = "jlc";
 const char TranslateScript::kJavascriptLoaderCallbackQueryValue[] =
     "cr.googleTranslate.onLoadJavascript";
-const char kTranslateServerStudy[] = "TranslateServerStudy";
-const char kServerParams[] = "server_params";
 
 TranslateScript::TranslateScript()
     : expiration_delay_(base::TimeDelta::FromDays(kExpirationDelayDays)) {}
@@ -132,9 +130,6 @@ void TranslateScript::OnScriptFetchComplete(bool success,
     // server.
     std::string server_params;
     std::map<std::string, std::string> params;
-    if (variations::GetVariationParams(kTranslateServerStudy, &params)) {
-      server_params = params[kServerParams];
-    }
     base::StringAppendF(
         &data_, "var gtTimeInfo = {'fetchStart': %0.f, 'fetchEnd': %0.f};\n",
         script_fetch_start_time_, base::Time::Now().ToJsTime());

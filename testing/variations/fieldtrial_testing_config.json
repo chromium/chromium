@@ -6919,27 +6919,6 @@
             ]
         }
     ],
-    "TranslateServerStudy": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "SmartRendering",
-                    "params": {
-                        "server_params": "smrd"
-                    }
-                }
-            ]
-        }
-    ],
     "TrustTokenOriginTrial": [
         {
             "platforms": [
