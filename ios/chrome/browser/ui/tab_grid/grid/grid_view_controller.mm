@@ -332,6 +332,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   GridItem* item = self.items[itemIndex];
   [self configureCell:cell withItem:item];
+  cell.layer.zPosition = itemIndex;
 
 #if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
