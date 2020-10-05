@@ -134,6 +134,7 @@
 <translation id="1453974140256777690">Тэкст, які вы ўстаўляеце або далучаеце, перасылаецца для аналізу ў Google Cloud або трэцім бакам: напрыклад, для праверкі на наяўнасць канфідэнцыяльных даных.</translation>
 <translation id="1455413310270022028">Сцірка</translation>
 <translation id="1462245070427461050">JIS B9</translation>
+<translation id="1462951478840426066">Выкарыстоўваць шрыфты з вашага камп'ютара, каб даць вам магчымасць ствараць змесціва высокай якасці.</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">Злева</translation>
 <translation id="1472675084647422956">Разгарнуць</translation>
@@ -221,6 +222,7 @@
 <translation id="17513872634828108">Адкрытыя ўкладкі</translation>
 <translation id="1752021286346845558">Паштовая скрынка 8</translation>
 <translation id="1753706481035618306">Нумар старонкі</translation>
+<translation id="1757773103848038814">Монашырынны шрыфт</translation>
 <translation id="1763864636252898013">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />: аперацыйная сістэма прылады не давярае сертыфікату бяспекі гэтага дамена. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Паспрабаваць запусціць дыягностыку сеткі Windows<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">Сервер, на які вы пераходзіце (<ph name="ORIGIN" />), мае загаловак, які патрабуе,
@@ -292,6 +294,7 @@
 <translation id="2099652385553570808">Тры скабы злева</translation>
 <translation id="2101225219012730419">Версія:</translation>
 <translation id="2102134110707549001">Прапанаваць надзейны пароль…</translation>
+<translation id="2102495993840063010">Праграмы для Android</translation>
 <translation id="2107021941795971877">Апоры прынтара</translation>
 <translation id="2108755909498034140">Перазапусціце камп'ютар.</translation>
 <translation id="2111256659903765347">Super-A</translation>
@@ -593,6 +596,7 @@
 <translation id="3395827396354264108">Спосаб прыняцця</translation>
 <translation id="3399952811970034796">Адрас дастаўкі</translation>
 <translation id="3402261774528610252">Для загрузкі гэтага сайта выкарыстоўвалася падключэнне праз устарэлы пратакол TLS 1.0 або TLS 1.1, які ў далейшым будзе адключаны. Пасля яго адключэння карыстальнікі не змогуць загружаць гэты сайт. На серверы трэба ўключыць пратакол TLS версіі 1.2 або навейшай.</translation>
+<translation id="3411120537985775570">Магчымасць устаўляць сюды элементы з сайта <ph name="ORIGIN_NAME" /> заблакіравана адміністратарам</translation>
 <translation id="3414952576877147120">Памер:</translation>
 <translation id="3417660076059365994">Запампаваныя або далучаныя файлы перасылаюцца для аналізу ў Google Cloud або трэцім бакам: напрыклад, для праверкі на наяўнасць канфідэнцыяльных даных або шкодных праграм.</translation>
 <translation id="3422248202833853650">Каб вызваліць памяць, выйдзіце з іншых праграм.</translation>
@@ -630,6 +634,7 @@
 <translation id="3532844647053365774"><ph name="HOST" /> запытвае дазвол на выкарыстанне мікрафона</translation>
 <translation id="3533328374079021623">Паштовая скрынка 5</translation>
 <translation id="3539171420378717834">Захаваць даныя карткі на прыладзе</translation>
+<translation id="3552297013052089404">Шрыфт без засечак</translation>
 <translation id="3558573058928565255">Светлы час дня</translation>
 <translation id="3566021033012934673">Падключэнне не з'яўляецца прыватным</translation>
 <translation id="3567778190852720481">Не ўдалося зарэгістраваць прыладу з дапамогай карпаратыўнага ўліковага запісу (карпаратыўны ўліковы запіс не адпавядае патрабаванням).</translation>
@@ -998,6 +1003,7 @@
 <translation id="503069730517007720">Патрабуецца каранёвы сертыфікат для "<ph name="SOFTWARE_NAME" />", але ён не ўсталяваны. Каб выправіць гэту праблему, адміністратар павінен азнаёміцца з інструкцыяй па наладжванні для "<ph name="SOFTWARE_NAME" />". <ph name="FURTHER_EXPLANATION" />.</translation>
 <translation id="5031870354684148875">Пра Перакладчык Google</translation>
 <translation id="503498442187459473"><ph name="HOST" /> запытвае доступ да камеры і мікрафона</translation>
+<translation id="5039762155821394373">Памер шрыфту</translation>
 <translation id="5039804452771397117">Дазволіць</translation>
 <translation id="5040262127954254034">Прыватнасць</translation>
 <translation id="5043480802608081735">Скапіраваная вамі спасылка</translation>
@@ -1264,6 +1270,7 @@
 <translation id="6051221802930200923">Вы не можаце адкрыць вэб-сайт <ph name="SITE" />, бо ён выкарыстоўвае механізм замацоўвання сертыфікатаў. Сеткавыя памылкі і атакі звычайна маюць часовы характар. Хутчэй за ўсё, праз некаторы час вэб-сайт будзе працаваць зноў.</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">Абагульваць звесткі аб вашай прысутнасці?</translation>
+<translation id="6057359309778282021">Адміністратар заблакіраваў абагульванне змесціва з сайта <ph name="ORIGIN_NAME" /> з віртуальнай машынай <ph name="VM_NAME" /></translation>
 <translation id="6058977677006700226">Выкарыстоўваць вашы карткі на ўсіх прыладах?</translation>
 <translation id="6059925163896151826">Прылады USB</translation>
 <translation id="6060009363608157444">Няправільны рэжым DnsOverHttps.</translation>
@@ -1313,6 +1320,7 @@
         <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">Немагчыма адправіць на гэты адрас. Выберыце іншы адрас.</translation>
 <translation id="6282194474023008486">Паштовы індэкс</translation>
+<translation id="6289939620939689042">Колер старонкі</translation>
 <translation id="6290238015253830360">Рэкамендаваныя вам артыкулы з'явяцца тут</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Памочнік Google у Chrome спыняецца</translation>
@@ -1396,6 +1404,7 @@
 <translation id="6645291930348198241">Атрымаць доступ да файлаў cookie і даных сайта.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Няма}=1{З 1 сайта (вы не выйдзеце з Уліковага запісу Google)}one{З # сайта (вы не выйдзеце з Уліковага запісу Google)}few{З # сайтаў (вы не выйдзеце з Уліковага запісу Google)}many{З # сайтаў (вы не выйдзеце з Уліковага запісу Google)}other{З # сайта (вы не выйдзеце з Уліковага запісу Google)}}</translation>
 <translation id="6648459603387803038">Адміністратар можа аддалена змяняць налады браўзера. Сама прылада таксама можа знаходзіцца пад знешнім кіраваннем.</translation>
+<translation id="6648524591329069940">Шрыфт з засечкамі</translation>
 <translation id="6652101503459149953">Выкарыстоўваць Windows Hello</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="666259744093848177">(x86_64, пераклад)</translation>
@@ -1468,6 +1477,7 @@
 <translation id="7004583254764674281">Выкарыстоўваць Windows Hello для хутчэйшага пацвярджэння картак</translation>
 <translation id="7006930604109697472">Усё роўна адправіць</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7014741021609395734">Маштаб</translation>
 <translation id="7016992613359344582">Плацяжы могуць быць аднаразовыя або рэгулярныя, і іх можа быць цяжка заўважыць.</translation>
 <translation id="7029809446516969842">Паролі</translation>
 <translation id="7031646650991750659">Якія праграмы Google Play вы ўсталявалі.</translation>
@@ -1870,6 +1880,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Пароль для гэтага сайта не знойдзены. Паказаць усе захаваныя паролі.</translation>
 <translation id="8625384913736129811">Захаваць гэту картку на гэту прыладу</translation>
+<translation id="8657078576661269990">Адміністратар заблакіраваў абагульванне змесціва з сайта <ph name="ORIGIN_NAME" /> з віртуальнымі машынамі <ph name="VM_NAME_1" /> і <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Зводка па заказе, <ph name="TOTAL_LABEL" />, дадатковая інфармацыя</translation>
 <translation id="867224526087042813">Подпіс</translation>
 <translation id="8676424191133491403">Без затрымкі</translation>
@@ -1882,6 +1893,7 @@
 <translation id="8699041776323235191">Прылада HID</translation>
 <translation id="8703575177326907206">Падключэнне да дамена <ph name="DOMAIN" /> не шыфруецца.</translation>
 <translation id="8705331520020532516">Серыйны нумар</translation>
+<translation id="8710842507289500830">Стыль шрыфту</translation>
 <translation id="8718314106902482036">Аплата не завершана</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, прапанова пошуку</translation>
 <translation id="8719528812645237045">Некалькі дзірак зверху</translation>
@@ -2002,6 +2014,7 @@
 <translation id="9191834167571392248">Дзірка знізу злева</translation>
 <translation id="9205078245616868884">Вашы даныя зашыфраваны з дапамогай фразы-пароля для сінхранізацыі. Увядзіце яе, каб пачаць сінхранізацыю.</translation>
 <translation id="9207861905230894330">Не ўдалося дадаць артыкул.</translation>
+<translation id="9213433120051936369">Наладжванне выгляду</translation>
 <translation id="9215416866750762878">Нейкая праграма не дае браўзеру Chrome устанавіць бяспечнае падключэнне да гэтага сайта</translation>
 <translation id="9219103736887031265">Відарысы</translation>
 <translation id="933712198907837967">Diners Club</translation>

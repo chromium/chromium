@@ -44,7 +44,6 @@
 <translation id="19085484004813472">આ નવી સુવિધા છે</translation>
 <translation id="2006524834898217237">ખાતરી કરો કે આ ડિવાઇસ ઇન્ટરનેટ સાથે કનેક્ટ કરેલું છે.</translation>
 <translation id="208586643495776849">કૃપા કરીને ફરી પ્રયાસ કરો</translation>
-<translation id="2090963878406559571"><ph name="ORIGIN" />થી તમારા Android ફોન પર નંબર મોકલવા માટે, સેટિંગમાં બંને ડિવાઇસ માટે <ph name="TROUBLESHOOT_LINK" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 દિ}one{# દિ}other{# દિ}}</translation>
 <translation id="2148716181193084225">આજે</translation>
 <translation id="2161656808144014275">ટેક્સ્ટ</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">પ્રકટીકરણ ત્રિકોણ</translation>
 <translation id="5278860589123563674">મોકલવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="528468243742722775">સમાપ્ત</translation>
-<translation id="5327567770033251652">સિંક ચાલુ કરો</translation>
 <translation id="5329858601952122676">&amp;કાઢી નાખો</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" />ની સૌથી ઉપર <ph name="DRAGGED_APP_NAME" /> પર, ફોલ્ડર બનાવવા માટે રિલીઝ કરો.</translation>
 <translation id="5463830097259460683">ઇમોજી અને પ્રતીકો</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">અનામાંકિત</translation>
 <translation id="6612467943526193239">કેલિબ્રેશનથી બહાર નીકળવા માટે Esc દબાવો.</translation>
 <translation id="6620110761915583480">ફાઇલ સાચવો</translation>
-<translation id="6656912866303152668"><ph name="TARGET_DEVICE_NAME" />એ Chromeમાં સિંક ચાલુ કર્યું હોય તેની ખાતરી કરો અને પછી ફરી મોકલી જુઓ.</translation>
 <translation id="6699343763173986273">મીડિયા આગલો ટ્રૅક</translation>
 <translation id="6710213216561001401">પાછલી</translation>
-<translation id="6779314412797872738">અહીંથી તમારા Android ફોન પર નંબર મોકલવા માટે, સેટિંગમાં બંને ડિવાઇસ માટે <ph name="TROUBLESHOOT_LINK" />.</translation>
 <translation id="6786750046913594791">ફોલ્ડર બંધ કરો</translation>
 <translation id="6808150112686056157">મીડિયા સ્ટોપ</translation>
 <translation id="6845383723252244143">ફોલ્ડર પસંદ કરો</translation>

@@ -134,6 +134,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1453974140256777690">Siz joylaydigan yoki biriktiradigan matn tekshiruv uchun Google Cloud yoki boshqa tashqi xizmatlarga yuboriladi. Masalan, tarkibida maxfiy axborot borligini aniqlash uchun.</translation>
 <translation id="1455413310270022028">Oʻchirgʻich</translation>
 <translation id="1462245070427461050">JIS B9</translation>
+<translation id="1462951478840426066">Yuqori tiniqlikdagi yozuvlarni yaratish uchun kompyuteringizda oʻrnatilgan shriftlardan foydalaning</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">Chapga</translation>
 <translation id="1472675084647422956">Yana</translation>
@@ -220,6 +221,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="17513872634828108">Ichki oynalarni ochish</translation>
 <translation id="1752021286346845558">Pochta qutisi 8</translation>
 <translation id="1753706481035618306">Sahifa raqami</translation>
+<translation id="1757773103848038814">Monospace shrifti</translation>
 <translation id="1763864636252898013">Bu <ph name="DOMAIN" /> serveri ekanligini tasdiqlab bo‘lmadi. Uning havfsizlik sertifikati qurilmangizdagi operatsion tizimga ishonchli tuyulmayapti. Balki, server noto‘g‘ri sozlangan yoki kimdir ma’lumotlaringizni o‘g‘rilashga urinayotgan bo‘lishi mumkin.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows tarmoq diagnostikasi bilan tekshirib ko‘ring<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">Siz ochmoqchi boʻlgan <ph name="ORIGIN" /> serverida
@@ -591,6 +593,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3395827396354264108">Olib ketish usuli</translation>
 <translation id="3399952811970034796">Yetkazib berish manzili</translation>
 <translation id="3402261774528610252">Bu sayt eskirgan TLS 1.0 yoki TLS 1.1 ishlatadi, shuning uchun keyingi versiyalarda faolsizlantiriladi. Faolsizlantirilsa, foydalanuvchilar bu saytni ocha olmaydi. Serverda TLS 1.2 yoki yuqoriroq versiya yoqilishi lozim.</translation>
+<translation id="3411120537985775570"><ph name="ORIGIN_NAME" /> dan bu yerga axborot joylash administrator tomonidan taqiqlangan</translation>
 <translation id="3414952576877147120">Hajmi:</translation>
 <translation id="3417660076059365994">Siz yuklaydigan fayllar tekshiruv uchun Google Cloud yoki boshqa tashqi xizmatlarga yuboriladi. Masalan, tarkibida maxfiy yoki zararli axborotlar mavjudligini aniqlash uchun.</translation>
 <translation id="3422248202833853650">Xotirani bo‘shatish uchun boshqa dasturlarni yopib ko‘ring.</translation>
@@ -628,6 +631,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3532844647053365774"><ph name="HOST" /> mikrofoningizdan foydalanmoqchi</translation>
 <translation id="3533328374079021623">Pochta qutisi 5</translation>
 <translation id="3539171420378717834">Karta ma’lumotlarini bu qurilmada saqlash</translation>
+<translation id="3552297013052089404">Sans-serif shrifti</translation>
 <translation id="3558573058928565255">Kunduzi</translation>
 <translation id="3566021033012934673">Ulanishingiz himoyalanmagan</translation>
 <translation id="3567778190852720481">Korporativ hisob orqali yozilish imkonsiz (korporativ hisoblarda ishlamaydi).</translation>
@@ -825,6 +829,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4277028893293644418">Parolni o‘zgartirish</translation>
 <translation id="4279811152705618813"><ph name="DEVICE_TYPE" /> qurilmangiz <ph name="ENROLLMENT_DOMAIN" /> domenida boshqariladi</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Bu karta Google hisobingizga saqlandi}other{Bu kartalar Google hisobingizga saqlandi}}</translation>
+<translation id="4297502707443874121">Sahifa eskizi: <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Kengaytirish</translation>
 <translation id="4300675098767811073">Oʻngdan bir necha teshik ochish</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
@@ -995,6 +1000,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="503069730517007720">“<ph name="SOFTWARE_NAME" />” uchun negiz sertifikati zarur, lekin o‘rnatilmagan. Tarmoq administratori bu muammoning yechimini “<ph name="SOFTWARE_NAME" />” konfiguratsiyasi ko‘rsatmalaridan izlashi zarur. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google Tarjimon haqida</translation>
 <translation id="503498442187459473"><ph name="HOST" /> kamera va mikrofoningizdan foydalanishni istaydi</translation>
+<translation id="5039762155821394373">Shrift oʻlchami</translation>
 <translation id="5039804452771397117">Ruxsat berish</translation>
 <translation id="5040262127954254034">Shaxsiy ma’lumotlar</translation>
 <translation id="5043480802608081735">Nusxalangan havola</translation>
@@ -1261,6 +1267,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6051221802930200923"><ph name="SITE" /> sayti ochilmadi, bu sayt taqilgan sertifikatdan foydalanayotgan bo‘lishi mumkin. Bunday xatolik tarmoq xatoligi va saytga hujumlar bo‘layotganda yuz beradi, lekin keyinroq sayt ishlab ketishi mumkin.</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">Faolligingiz haqida axborot berishni xohlaysizmi?</translation>
+<translation id="6057359309778282021"><ph name="ORIGIN_NAME" /> dan <ph name="VM_NAME" /> tizimiga axborot ulashish administrator tomonidan taqiqlangan</translation>
 <translation id="6058977677006700226">Kartalaringiz barcha qurilmalaringizda ishlatilsinmi?</translation>
 <translation id="6059925163896151826">USB qurilmalar</translation>
 <translation id="6060009363608157444">Yaroqsiz DnsOverHttps rejimi.</translation>
@@ -1309,6 +1316,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
         <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">Bu manzilga yetkazib bera olmaymiz. Boshqa manzilni tanlang.</translation>
 <translation id="6282194474023008486">Pochta indeksi</translation>
+<translation id="6289939620939689042">Sahifa rangi</translation>
 <translation id="6290238015253830360">Tavsiya etiladigan maqolalar shu yerda chiqadi</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Chrome ichidagi Google Assistent toʻxtatilmoqda</translation>
@@ -1392,6 +1400,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6645291930348198241">Cookie-fayllari va boshqa sayt maʼlumotlariga ruxsat.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Hech qanday}=1{1 ta saytdan (Google hisobingizdan chiqmaysiz)}other{# ta saytdan (Google hisobingizdan chiqmaysiz)}}</translation>
 <translation id="6648459603387803038">Adminitratoringiz brauzerni masofadan sozlashi mumkin. Bu qurilmadagi amallar Chrome tashqarisidan boshqarilishi mumkin.</translation>
+<translation id="6648524591329069940">Serif shrifti</translation>
 <translation id="6652101503459149953">Windows Hello ishlatish</translation>
 <translation id="6657585470893396449">Parol</translation>
 <translation id="666259744093848177">(x86_64 tarjimasi)</translation>
@@ -1464,6 +1473,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="7004583254764674281">Kartalarni tezroq tasdiqlash uchun Windows Hello ishlating</translation>
 <translation id="7006930604109697472">Baribir yuborilsin</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7014741021609395734">Masshtab</translation>
 <translation id="7016992613359344582">To‘lov bir martalik, qayta bo‘lishi yoki umuman bo‘lmasligi ham mumkin.</translation>
 <translation id="7029809446516969842">Parollar</translation>
 <translation id="7031646650991750659">Google Play Marketdan oʻrnatilgan ilovalar</translation>
@@ -1865,6 +1875,7 @@ Batafsil axborot:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Mos parollar mavjud emas. Saqlangan barcha parollar koʻrsatilsin.</translation>
 <translation id="8625384913736129811">Kartani bu qurilmaga saqlash</translation>
+<translation id="8657078576661269990"><ph name="ORIGIN_NAME" /> dan <ph name="VM_NAME_1" /> va <ph name="VM_NAME_2" /> tizimlariga axborot ulashish administrator tomonidan taqiqlangan</translation>
 <translation id="8663226718884576429">Buyurtma axboroti, <ph name="TOTAL_LABEL" />, Batafsil</translation>
 <translation id="867224526087042813">Imzo</translation>
 <translation id="8676424191133491403">Kechikishsiz</translation>
@@ -1877,6 +1888,7 @@ Batafsil axborot:
 <translation id="8699041776323235191">HID qurilmasi</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> domeniga ulanish shifrlanmagan.</translation>
 <translation id="8705331520020532516">Seriya raqami</translation>
+<translation id="8710842507289500830">Shrift uslubi</translation>
 <translation id="8718314106902482036">To‘lov amalga oshirilmagan</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, qidiruv taklifi</translation>
 <translation id="8719528812645237045">Yuqoridan bir nechta teshik ochish</translation>
@@ -1997,6 +2009,7 @@ Batafsil axborot:
 <translation id="9191834167571392248">Quyi chapdan teshik ochish</translation>
 <translation id="9205078245616868884">Ma’lumotlaringiz kodli ibora bilan shifrlangan. Sinxronlashuvni boshlash uchun uni kiriting.</translation>
 <translation id="9207861905230894330">Maqolani qo‘shib bo‘lmadi.</translation>
+<translation id="9213433120051936369">Dizaynini moslash</translation>
 <translation id="9215416866750762878">Ilova Chromening bu saytga xavfsiz ulanishiga xalaqit qilmoqda</translation>
 <translation id="9219103736887031265">Rasmlar</translation>
 <translation id="933712198907837967">Diners Club</translation>

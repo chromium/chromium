@@ -164,6 +164,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2781331604911854368">Sees</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Välju vahelehtede vahetist</translation>
+<translation id="2815198996063984598">2. Puudutage valikut Vaikebrauserirakendus.</translation>
 <translation id="2830972654601096923">Halda aadresse …</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Sünkroonimise algseadistus on lõpetamata</translation>
@@ -180,6 +181,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2921219216347069551">Lehte ei saa jagada</translation>
 <translation id="2923448633003185837">Kleebi ja mine</translation>
 <translation id="292639812446257861">Märgi mitteloetuks</translation>
+<translation id="2952581218264071393">1. Avage Chrome'i seaded.</translation>
 <translation id="2958718410589002129">Paroolid</translation>
 <translation id="2964349545761222050">Kolmanda osapoole küpsisefailide blokeerimine</translation>
 <translation id="2969979262385602596">Sisselogimine ebaõnnestus. Proovige hiljem uuesti.</translation>
@@ -216,6 +218,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="3335947283844343239">Ava uuesti suletud vaheleht</translation>
 <translation id="3371831930909698441">Tõlkimine on saadaval. Valikud on saadaval ekraanikuva allosas.</translation>
 <translation id="3393920035788932672">Hüpikud on lubatud</translation>
+<translation id="3399930248910934354">Avage Chrome'i seaded.</translation>
 <translation id="3425644765244388016">Kaardi hüüdnimi</translation>
 <translation id="3433057996795775706">Selle parooli eemaldamisel ei kustutata teie kontot saidil <ph name="WEBSITE" />. Muutke saidil <ph name="WEBSITE" /> oma parooli, et seda kaitsta.</translation>
 <translation id="3443810440409579745">Vaheleht võeti vastu.</translation>
@@ -240,6 +243,9 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="3551320343578183772">Sule vaheleht</translation>
 <translation id="3581564640715911333">Paku muudes keeltes olevate lehtede tõlkimist</translation>
 <translation id="3588820906588687999">Ava kujutis uuel vahelehel</translation>
+<translation id="359441731697487922">Saate Chrome'is linke avada automaatselt, muutes selle oma vaikebrauserirakenduseks.
+      
+Järgige allolevaid juhiseid.</translation>
 <translation id="3603009562372709545">Kopeeri lingi URL</translation>
 <translation id="3607167657931203000">Automaattäite andmed</translation>
 <translation id="3609785682760573515">Sünkroonimine ...</translation>
@@ -338,6 +344,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="4808744395915275922">Värskendused</translation>
 <translation id="4818522717893377262">Lisa keel …</translation>
 <translation id="481968316161811770">Küpsis., saidi andm.</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ja veel 1}other{{domain} ja veel {count}}}</translation>
 <translation id="4826218269716039351">Kolmanda osapoole küpsisefailide blokeerimine</translation>
 <translation id="48274138579728272">Märgi loetuks</translation>
 <translation id="4833786495304741580">Google'ile saadetakse automaatselt kasutusstatistikat ja krahhiaruandeid.</translation>
@@ -586,6 +593,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="7456847797759667638">Ava asukoht...</translation>
 <translation id="7460314822154045102">Kasuta kaamerat</translation>
 <translation id="7464701184726199289">See kustutab sünkroonitud andmed kõikidest seadmetest. Saitide salvestatud seadeid ei kustutata ja need võivad kajastada teie sirvimisharjumusi. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. Valige Chrome.</translation>
 <translation id="7472734401283673885">Ettevõtte nimi</translation>
 <translation id="7473891865547856676">Tänan, ei</translation>
 <translation id="7481312909269577407">Edasta</translation>

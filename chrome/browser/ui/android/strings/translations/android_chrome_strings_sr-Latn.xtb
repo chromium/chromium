@@ -176,7 +176,6 @@ Dodirnite bilo koju reč za pretragu. Da biste precizirali pretragu, dodirnite i
 <translation id="2321086116217818302">Pripremaju se lozinke...</translation>
 <translation id="2321958826496381788">Prevlačite klizač dok ovo ne budete mogli lako da pročitate. Kada dvaput dodirnete pasus, tekst treba da bude bar ovoliki.</translation>
 <translation id="2323763861024343754">Memorijski prostor za sajt</translation>
-<translation id="2326606747676847821">Pređi u režim bez arhiviranja</translation>
 <translation id="2328985652426384049">Ne mogu da se prijavim</translation>
 <translation id="234265804618409743">Ne možemo da otvorimo kameru. Nešto nije u redu.</translation>
 <translation id="2345671828921229300">Da biste pretraživali, dodirnite i zadržite reč</translation>
@@ -346,6 +345,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3587482841069643663">Sve</translation>
 <translation id="3587596251841506391">Poboljšajte bezbednost na vebu</translation>
 <translation id="3599863153486145794">Briše istoriju sa svih uređaja na kojima ste prijavljeni. Google nalog može da ima druge oblike istorije pregledanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="3602290021589620013">Pregled</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3631987586758005671">Deli se sa: <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">Otkrij lozinku</translation>
@@ -598,6 +598,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5527082711130173040">Chrome-u je potreban pristup lokaciji da bi tražio uređaje. <ph name="BEGIN_LINK1" />Ažurirajte dozvole<ph name="END_LINK1" />. Pristup lokaciji je takođe <ph name="BEGIN_LINK2" />isključen za ovaj uređaj<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Zatvori kartice bez arhiv.</translation>
 <translation id="5534640966246046842">Sajt je kopiran</translation>
+<translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="5561549206367097665">Čeka se mreža...</translation>
 <translation id="55737423895878184">Lokacija i obaveštenja su dozvoljeni</translation>
 <translation id="5578795271662203820">Potraži ovu sliku na <ph name="SEARCH_ENGINE" />-u</translation>
@@ -913,9 +914,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="766587987807204883">Ovde se pojavljuju članci, koje možete da čitate čak i kada ste oflajn</translation>
 <translation id="7682724950699840886">Isprobajte sledeće savete: proverite da li na uređaju ima dovoljno prostora, pa probajte da ponovo izvezete lozinke.</translation>
 <translation id="7698359219371678927">Napišite imejl u aplikaciji <ph name="APP_NAME" /></translation>
-<translation id="7702724591845223485">Da biste izbrisali informacije za prijavljivanje i druge podatke iz Chrome-a, zatvorite sve kartice bez arhiviranja.
-
-U režimu bez arhiviranja vaše aktivnosti i dalje mogu da vide veb-sajtovi koje posećujete, vaš poslodavac ili škola i internet provajder.</translation>
 <translation id="7704317875155739195">Automatski dovršavaj pretrage i URL-ove</translation>
 <translation id="7725024127233776428">Stranice koje obeležite se prikazuju ovde</translation>
 <translation id="7735637452482172701">Otključaj pomoću Zaključavanja ekrana</translation>

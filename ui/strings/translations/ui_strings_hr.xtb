@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Ovo je nova značajka</translation>
 <translation id="2006524834898217237">Provjerite je li uređaj povezan s internetom.</translation>
 <translation id="208586643495776849">Pokušajte ponovo</translation>
-<translation id="2090963878406559571">Da biste poslali broj s <ph name="ORIGIN" /> na svoj Android telefon, <ph name="TROUBLESHOOT_LINK" /> za oba uređaja u postavkama.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d}one{# d}few{# d}other{# d}}</translation>
 <translation id="2148716181193084225">Danas</translation>
 <translation id="2161656808144014275">Tekst</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">Trokut za otkrivanje</translation>
 <translation id="5278860589123563674">Slanje nije uspjelo</translation>
 <translation id="528468243742722775">Završi</translation>
-<translation id="5327567770033251652">uključite sinkronizaciju</translation>
 <translation id="5329858601952122676">&amp;Obriši</translation>
 <translation id="5395308026110844773">Aplikacija <ph name="DRAGGED_APP_NAME" /> povučena je iznad aplikacije <ph name="IN_PLACE_APP" />. Pustite je da biste izradili mapu.</translation>
 <translation id="5463830097259460683">Emoji i simboli</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">Bez naziva</translation>
 <translation id="6612467943526193239">Za izlaz iz kalibracije pritisnite Esc.</translation>
 <translation id="6620110761915583480">Spremi datoteku</translation>
-<translation id="6656912866303152668">Provjerite je li za <ph name="TARGET_DEVICE_NAME" /> uključena sinkronizacija u Chromeu, a potom pokušajte ponovo poslati.</translation>
 <translation id="6699343763173986273">Sljedeći zapis Medija</translation>
 <translation id="6710213216561001401">Prethodno</translation>
-<translation id="6779314412797872738">Da biste poslali broj s ovog uređaja na svoj Android telefon, <ph name="TROUBLESHOOT_LINK" /> za oba uređaja u postavkama.</translation>
 <translation id="6786750046913594791">Zatvori mapu</translation>
 <translation id="6808150112686056157">Zaustavi Medije</translation>
 <translation id="6845383723252244143">Odabir mape</translation>

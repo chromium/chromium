@@ -135,6 +135,7 @@
 <translation id="1453974140256777690">អត្ថបទ​ដែលអ្នក​ដាក់ចូល ឬ​ភ្ជាប់​ត្រូវបានផ្ញើ​ទៅ Google Cloud ឬ​ភាគីទីបី​ដើម្បី​វិភាគ​។ ឧទាហរណ៍ អត្ថបទនោះ​អាចត្រូវបាន​ស្កេន ដើម្បីរកមើល​ទិន្នន័យ​រសើប​។</translation>
 <translation id="1455413310270022028">ជ័រលុប</translation>
 <translation id="1462245070427461050">JIS B9</translation>
+<translation id="1462951478840426066">ប្រើពុម្ពអក្សរ​នៅលើកុំព្យូទ័រ​របស់អ្នក ដើម្បីអាចឱ្យអ្នកបង្កើត​ខ្លឹមសារ​ដែលមានសុក្រឹតភាពកម្រិតខ្ពស់</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">ឆ្វេង</translation>
 <translation id="1472675084647422956">បង្ហាញ​ច្រើនទៀត</translation>
@@ -222,6 +223,7 @@
 <translation id="17513872634828108">បើកផ្ទាំង</translation>
 <translation id="1752021286346845558">ប្រអប់​សំបុត្រទី 8</translation>
 <translation id="1753706481035618306">លេខទំព័រ</translation>
+<translation id="1757773103848038814">ពុម្ពអក្សរ Monospace</translation>
 <translation id="1763864636252898013">ម៉ាស៊ីនមេនេះមិនអាចបង្ហាញថាវាជា <ph name="DOMAIN" /> ទេ វិញ្ញាបនប័ត្រសុវត្ថិភាពរបស់វា
 មិនត្រូវបានជឿ៌ជាក់ដោយប្រព័ន្ធប្រតិបត្តិការឧបករណ៍របស់អ្នកទេ។ នេះអាចបណ្តាលមកពីការកំណត់មិនត្រឹមត្រូវ ឬមានការស្ទាក់ការភ្ជាប់របស់អ្នកពីអ្នកវាយប្រហារ។</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />សាកល្បងដំណើរការការវិភាគបណ្តាញ Windows<ph name="END_LINK" /></translation>
@@ -597,6 +599,7 @@
 <translation id="3395827396354264108">មធ្យោបាយទៅយក</translation>
 <translation id="3399952811970034796">អាសយដ្ឋាន​ចែកចាយ</translation>
 <translation id="3402261774528610252">បានប្រើការតភ្ជាប់ ដើម្បីផ្ទុកគេហទំព័រនេះ ដែលប្រើ TLS 1.0 ឬ TLS 1.1 ដែលបានបញ្ឈប់ ហើយនឹងត្រូវបិទក្នុងពេលអនាគត។ បន្ទាប់ពីបិទហើយ អ្នកប្រើប្រាស់​នឹងត្រូវបានទប់ស្កាត់​មិនឱ្យផ្ទុកគេហទំព័រនេះ។ ម៉ាស៊ីនមេនេះគួរតែបើក TLS 1.2 ឬខ្ពស់ជាងនេះ។</translation>
+<translation id="3411120537985775570">អ្នកគ្រប់គ្រង​របស់អ្នក​បានទប់ស្កាត់​ការដាក់ចូលពី <ph name="ORIGIN_NAME" /> ទៅទីតាំងនេះ</translation>
 <translation id="3414952576877147120">ទំហំ៖</translation>
 <translation id="3417660076059365994">ឯកសារ​ដែលអ្នក​បង្ហោះ ឬ​ភ្ជាប់​ត្រូវបានផ្ញើ​ទៅ Google Cloud ឬ​ភាគីទីបី​ដើម្បីវិភាគ​។ ឧទាហរណ៍ ឯកសារទាំងនោះ​អាចត្រូវបានស្កេន ដើម្បីរកមើល​ទិន្នន័យ​រសើប ឬ​កម្មវិធីគ្រោះថ្នាក់​។</translation>
 <translation id="3422248202833853650">សាកល្បងចាកចេញពីកម្មវិធីផ្សេងទៀត ដើម្បីបង្កើនទំហំអង្គចងចាំ។</translation>
@@ -635,6 +638,7 @@
 <translation id="3532844647053365774"><ph name="HOST" /> ចង់​ប្រើ​មីក្រូហ្វូន​របស់អ្នក</translation>
 <translation id="3533328374079021623">ប្រអប់​សំបុត្រទី 5</translation>
 <translation id="3539171420378717834">រក្សាច្បាប់ចម្លងនៃកាតនេះនៅលើឧបករណ៍នេះ</translation>
+<translation id="3552297013052089404">ពុម្ពអក្សរ Sans-serif</translation>
 <translation id="3558573058928565255">ពេលថ្ងៃ</translation>
 <translation id="3566021033012934673">ការភ្ជាប់របស់អ្នកមិនឯកជនទេ</translation>
 <translation id="3567778190852720481">មិនអាច​ចុះឈ្មោះ​ដោយប្រើ​គណនី​សហគ្រាស​បានទេ (គណនី​សហគ្រាស​មិនមានសិទ្ធិ​ឡើយ)។</translation>
@@ -1004,6 +1008,7 @@
 <translation id="503069730517007720">តម្រូវឱ្យមានវិញ្ញាបនបត្រគោលសម្រាប់ "<ph name="SOFTWARE_NAME" />" ប៉ុន្តែមិនចាំបាច់ដំឡើងទេ។ អ្នកគ្រប់គ្រងផ្នែកព័ត៌មានវិទ្យារបស់អ្នកគួរតែមើលការណែនាំអំពីការកំណត់រចនាសម្ព័ន្ធសម្រាប់ "<ph name="SOFTWARE_NAME" />" ដើម្បីដោះស្រាយបញ្ហានេះ។ <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">អំពី Google បកប្រែ</translation>
 <translation id="503498442187459473"><ph name="HOST" /> ចង់ប្រើកាមេរ៉ា និងមីក្រូហ្វូនរបស់អ្នក</translation>
+<translation id="5039762155821394373">ទំហំពុម្ពអក្សរ</translation>
 <translation id="5039804452771397117">អនុញ្ញាត</translation>
 <translation id="5040262127954254034">ឯកជនភាព</translation>
 <translation id="5043480802608081735">តំណដែល​អ្នកបានចម្លង</translation>
@@ -1270,6 +1275,7 @@
 <translation id="6051221802930200923">អ្នក​មិន​អាច​ចូលទៅកាន់ <ph name="SITE" /> ឥឡូវនេះ​បានទេ ដោយសារតែគេហទំព័រនេះ​ប្រើ​ការខ្ទាស់វិញ្ញាបនបត្រ។ ជាទូទៅបញ្ហា​បណ្តាញ ឬ​ការវាយប្រហារ​កើត​ឡើង​ជាបណ្តោះអាសន្ន ដូច្នេះ​ទំព័រ​នេះ​នឹងដំណើរការល្អឡើងវិញនៅពេលក្រោយ។</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">ចែករំលែកវត្តមាន​របស់អ្នកឬ?</translation>
+<translation id="6057359309778282021">អ្នកគ្រប់គ្រងរបស់អ្នក​បានទប់ស្កាត់ការចែករំលែក​ពី <ph name="ORIGIN_NAME" /> ទៅ <ph name="VM_NAME" /></translation>
 <translation id="6058977677006700226">ប្រើបណ្ណរបស់អ្នក​នៅលើឧបករណ៍​ទាំងអស់របស់អ្នកឬ?</translation>
 <translation id="6059925163896151826">ឧបករណ៍ USB</translation>
 <translation id="6060009363608157444">មុខងារ DnsOverHttps គ្មានសុពលភាព។</translation>
@@ -1319,6 +1325,7 @@
         <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">មិនអាចដឹកជញ្ជូនផ្ទាល់ទៅអាសយដ្ឋាននេះបានទេ។ សូមជ្រើសរើសអាសយដ្ឋានផ្សេង។</translation>
 <translation id="6282194474023008486">លេខកូដប្រៃសណីយ៍</translation>
+<translation id="6289939620939689042">ពណ៌​ទំព័រ</translation>
 <translation id="6290238015253830360">អត្ថបទដែលបានផ្តល់យោបល់របស់អ្នកបង្ហាញនៅទីនេះ</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">ការបញ្ឈប់ Google ជំនួយការនៅក្នុង Chrome</translation>
@@ -1402,6 +1409,7 @@
 <translation id="6645291930348198241">ចូលប្រើ​ទិន្នន័យ​គេហទំព័រ និង​ខូគី។</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{គ្មាន}=1{ពីទំព័រ 1 (អ្នក​នឹង​មិនចាក​ចេញ​ពី​គណនី Google របស់អ្នក​ទេ)}other{ពីទំព័រ # (អ្នក​នឹង​មិនចាក​ចេញ​ពី​គណនី Google របស់អ្នក​ទេ)}}</translation>
 <translation id="6648459603387803038">អ្នកគ្រប់គ្រង​របស់អ្នក​អាចប្ដូរ​ការរៀបចំ​កម្មវិធីរុករកតាមអ៊ីនធឺណិត​របស់អ្នក​ពីចម្ងាយបាន។ សកម្មភាព​នៅលើឧបករណ៍នេះ​ក៏អាចត្រូវបាន​គ្រប់គ្រងនៅក្រៅ Chrome ផងដែរ។</translation>
+<translation id="6648524591329069940">ពុម្ពអក្សរ Serif</translation>
 <translation id="6652101503459149953">ប្រើ Windows Hello</translation>
 <translation id="6657585470893396449">ពាក្យសម្ងាត់</translation>
 <translation id="666259744093848177">(x86_64 ដែលបានបកប្រែ)</translation>
@@ -1474,6 +1482,7 @@
 <translation id="7004583254764674281">ប្រើ Windows Hello ដើម្បី​បញ្ជាក់​បណ្ណ​ឱ្យ​បាន​រហ័ស​ជាងមុន</translation>
 <translation id="7006930604109697472">មិនអីទេ ផ្ញើចុះ</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7014741021609395734">កម្រិត​ពង្រីកបង្រួម</translation>
 <translation id="7016992613359344582">ការគិតប្រាក់ទាំងនេះអាចធ្វើឡើងម្ដង ឬច្រើន​ដង ហើយអាចនឹងមិនមាន​ការបញ្ជាក់ច្បាស់លាស់នោះទេ។</translation>
 <translation id="7029809446516969842">ពាក្យសម្ងាត់</translation>
 <translation id="7031646650991750659">ថាតើកម្មវិធី Google Play ណាខ្លះដែលអ្នកបានដំឡើង</translation>
@@ -1876,6 +1885,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">គ្មាន​ពាក្យសម្ងាត់​ដែលត្រូវគ្នាទេ។ បង្ហាញ​ពាក្យសម្ងាត់​ដែលបានរក្សាទុក​ទាំងអស់។</translation>
 <translation id="8625384913736129811">រក្សាទុកបណ្ណនេះទៅក្នុងឧបករណ៍នេះ</translation>
+<translation id="8657078576661269990">អ្នកគ្រប់គ្រង​របស់អ្នកបានទប់ស្កាត់​ការចែករំលែក​ពី <ph name="ORIGIN_NAME" /> ទៅ <ph name="VM_NAME_1" /> និង <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">ការ​សង្ខេប​អំពី​ការបញ្ជាទិញ, <ph name="TOTAL_LABEL" />, ព័ត៌មាន​លម្អិត​បន្ថែម</translation>
 <translation id="867224526087042813">ហត្ថលេខា</translation>
 <translation id="8676424191133491403">គ្មាន​ការ​ពន្យារពេល</translation>
@@ -1888,6 +1898,7 @@
 <translation id="8699041776323235191">ឧបករណ៍ HID</translation>
 <translation id="8703575177326907206">ការភ្ជាប់របស់អ្នកទៅ <ph name="DOMAIN" /> មិនត្រូវបានអ៊ីនគ្រីបទេ។</translation>
 <translation id="8705331520020532516">លេខសេរ៊ី</translation>
+<translation id="8710842507289500830">រចនាប័ទ្ម​ពុម្ពអក្សរ</translation>
 <translation id="8718314106902482036">ការបង់ប្រាក់​មិនទាន់​បញ្ចប់​ទេ</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, ការស្វែងរកដែលបានណែនាំ​</translation>
 <translation id="8719528812645237045">ចោះ​ច្រើនរន្ធ​ខាងលើ</translation>
@@ -2008,6 +2019,7 @@
 <translation id="9191834167571392248">ចោះ​ខាងក្រោម​ផ្នែកខាងឆ្វេង</translation>
 <translation id="9205078245616868884">ទិន្នន័យរបស់អ្នកត្រូវបានអ៊ិនគ្រីបដោយប្រើឃ្លាសម្ងាត់សមកាលកម្មរបស់អ្នក។ សូមបញ្ចូលវាដើម្បីចាប់ផ្តើមធ្វើសមកាលកម្ម។</translation>
 <translation id="9207861905230894330">បានបរាជ័យក្នុងបន្ថែមអត្ថបទ។</translation>
+<translation id="9213433120051936369">ប្ដូររូបរាងតាមបំណង</translation>
 <translation id="9215416866750762878">កម្មវិធី​មួយកំពុង​បញ្ឈប់ Chrome មិនឱ្យ​ភ្ជាប់ទៅកាន់ទំព័រ​នេះដោយ​សុវត្ថិភាពទេ</translation>
 <translation id="9219103736887031265">រូបភាព</translation>
 <translation id="933712198907837967">Diners Club</translation>

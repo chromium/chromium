@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Þetta er nýr eiginleiki</translation>
 <translation id="2006524834898217237">Gakktu úr skugga um að tækið sé tengt við internetið.</translation>
 <translation id="208586643495776849">Reyndu aftur</translation>
-<translation id="2090963878406559571">Til að senda númer frá <ph name="ORIGIN" /> í Android símann þinn skaltu <ph name="TROUBLESHOOT_LINK" /> fyrir bæði tækin í stillingunum.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1d}one{#d}other{#d}}</translation>
 <translation id="2148716181193084225">Í dag</translation>
 <translation id="2161656808144014275">Texti</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">Upplýsingaþríhyrningur</translation>
 <translation id="5278860589123563674">Sending mistókst</translation>
 <translation id="528468243742722775">Ljúka</translation>
-<translation id="5327567770033251652">kveikja á samstillingu</translation>
 <translation id="5329858601952122676">Eyða</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> ofan á <ph name="IN_PLACE_APP" />, slepptu til að búa til möppu.</translation>
 <translation id="5463830097259460683">Emoji og tákn</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">Án heitis</translation>
 <translation id="6612467943526193239">Ýttu á Esc til að hætta kvörðun.</translation>
 <translation id="6620110761915583480">Vista skrá</translation>
-<translation id="6656912866303152668">Gakktu úr skugga um að kveikt sé á samstillingu <ph name="TARGET_DEVICE_NAME" /> í Chrome og prófaðu svo að senda aftur.</translation>
 <translation id="6699343763173986273">Næsta lag í efnisspilun</translation>
 <translation id="6710213216561001401">Til baka</translation>
-<translation id="6779314412797872738">Til að senda númer héðan í Android símann þinn skaltu <ph name="TROUBLESHOOT_LINK" /> fyrir bæði tækin í stillingunum.</translation>
 <translation id="6786750046913594791">Loka möppu</translation>
 <translation id="6808150112686056157">Stöðva spilun efnis</translation>
 <translation id="6845383723252244143">Veldu möppu</translation>

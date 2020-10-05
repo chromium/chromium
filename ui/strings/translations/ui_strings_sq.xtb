@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Kjo është një veçori e re</translation>
 <translation id="2006524834898217237">Sigurohu që kjo pajisje të jetë e lidhur me internetin.</translation>
 <translation id="208586643495776849">Provo sërish</translation>
-<translation id="2090963878406559571">Për të dërguar një numër nga <ph name="ORIGIN" /> te telefoni yt Android, <ph name="TROUBLESHOOT_LINK" /> për të dyja pajisjet te cilësimet.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d}other{# d}}</translation>
 <translation id="2148716181193084225">Sot</translation>
 <translation id="2161656808144014275">Teksti</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">Trekëndëshi i zbulimit</translation>
 <translation id="5278860589123563674">Dërgimi dështoi</translation>
 <translation id="528468243742722775">Fundi</translation>
-<translation id="5327567770033251652">aktivizo sinkronizimin</translation>
 <translation id="5329858601952122676">&amp;Fshi</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> mbi <ph name="IN_PLACE_APP" />, lëshoje për të krijuar dosje.</translation>
 <translation id="5463830097259460683">Emojit dhe simbolet</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">Pa emër</translation>
 <translation id="6612467943526193239">Për të dalë nga kalibrimi, shtyp Esc.</translation>
 <translation id="6620110761915583480">Ruaj skedarin</translation>
-<translation id="6656912866303152668">Sigurohu që <ph name="TARGET_DEVICE_NAME" /> të ketë të aktivizuar sinkronizimin në Chrome dhe më pas provo ta dërgosh përsëri.</translation>
 <translation id="6699343763173986273">Pjesa tjetër e medias</translation>
 <translation id="6710213216561001401">Prapa</translation>
-<translation id="6779314412797872738">Për të dërguar një numër nga këtu te telefoni yt Android, <ph name="TROUBLESHOOT_LINK" /> për të dyja pajisjet te cilësimet.</translation>
 <translation id="6786750046913594791">Mbyll dosjen</translation>
 <translation id="6808150112686056157">Ndalimi i medias</translation>
 <translation id="6845383723252244143">Zgjidh dosje</translation>

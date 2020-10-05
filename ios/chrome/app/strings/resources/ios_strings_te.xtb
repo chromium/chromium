@@ -164,6 +164,7 @@
 <translation id="2781331604911854368">ఆన్‌లో ఉంది</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">ట్యాబ్ స్విచర్ నుండి నిష్క్రమించు</translation>
+<translation id="2815198996063984598">2. ఆటోమేటిక్ బ్రౌజర్ యాప్‌ను ట్యాప్ చేయండి</translation>
 <translation id="2830972654601096923">చిరునామాలను నిర్వహించు...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">ప్రారంభ సింక్ సెటప్ పూర్తి కాలేదు</translation>
@@ -180,6 +181,7 @@
 <translation id="2921219216347069551">పేజీ భాగస్వామ్యం సాధ్యపడలేదు</translation>
 <translation id="2923448633003185837">పేస్ట్ చేసి, ముందుకు వెళ్ళండి</translation>
 <translation id="292639812446257861">చదవనట్లు గుర్తు పెట్టు</translation>
+<translation id="2952581218264071393">1. Chrome సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="2958718410589002129">పాస్‌వర్డ్‌లు</translation>
 <translation id="2964349545761222050">థర్డ్-పార్టీ కుక్కీలను బ్లాక్ చేయి</translation>
 <translation id="2969979262385602596">సైన్ ఇన్ చేయడం విఫలమైంది. దయచేసి తర్వాత మళ్లీ ప్రయత్నించండి.</translation>
@@ -216,6 +218,7 @@
 <translation id="3335947283844343239">మూసిన ట్యాబ్‌ను మళ్లీ తెరువు</translation>
 <translation id="3371831930909698441">అనువాదం అందుబాటులో ఉంది. స్క్రీన్ దిగువ భాగానికి సమీపంలో ఎంపికలు అందుబాటులో ఉంటాయి.</translation>
 <translation id="3393920035788932672">పాప్-అప్‌లు అనుమతించబడ్డాయి</translation>
+<translation id="3399930248910934354">Chrome సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="3425644765244388016">కార్డ్ మారుపేరు</translation>
 <translation id="3433057996795775706">ఈ పాస్‌వర్డ్‌ను తొలగించడం వలన <ph name="WEBSITE" />లో మీ ఖాతా తొలగించబడదు. మీ ఖాతాను ఇతరుల నుండి సురక్షితంగా ఉంచడానికి, <ph name="WEBSITE" />లో మీ పాస్‌వర్డ్‌ను మార్చండి.</translation>
 <translation id="3443810440409579745">ట్యాబ్‌ను అందుకున్నారు.</translation>
@@ -240,6 +243,9 @@
 <translation id="3551320343578183772">ట్యాబ్‌ను మూసివేయి</translation>
 <translation id="3581564640715911333">ఇతర భాషలలో ఉన్న పేజీలను అనువదించడాన్ని ఆఫర్ చేస్తుంది</translation>
 <translation id="3588820906588687999">చిత్రాన్ని కొత్త ట్యాబ్‌లో తెరువు</translation>
+<translation id="359441731697487922">Chromeను మీ ఆటోమేటిక్ బ్రౌజర్ యాప్‌గా చేయడం ద్వారా, దానిలో లింక్‌లను ఆటోమేటిక్‌గా తెరవండి.
+      
+కింది దశలను ఫాలో అవ్వండి:</translation>
 <translation id="3603009562372709545">లింక్ URLను కాపీ చేయి</translation>
 <translation id="3607167657931203000">స్వీయపూర్తి డేటా</translation>
 <translation id="3609785682760573515">సమకాలీకరిస్తోంది...</translation>
@@ -338,6 +344,7 @@
 <translation id="4808744395915275922">అప్‌డేట్‌లు</translation>
 <translation id="4818522717893377262">భాషను జోడించు...</translation>
 <translation id="481968316161811770">కుక్కీలు, సైట్ డేటా</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain}, ఇంకా మరో 1}other{{domain}, ఇంకా మరో {count}}}</translation>
 <translation id="4826218269716039351">థర్డ్-పార్టీని బ్లాక్ చేయి</translation>
 <translation id="48274138579728272">చదివినట్లు గుర్తు పెట్టు</translation>
 <translation id="4833786495304741580">Googleకు ఆటోమేటిక్‌గా వినియోగ గణాంకాలు, క్రాష్ నివేదికలను పంపుతుంది.</translation>
@@ -586,6 +593,7 @@
 <translation id="7456847797759667638">స్థానాన్ని తెరువు...</translation>
 <translation id="7460314822154045102">కెమెరాను ఉపయోగించు</translation>
 <translation id="7464701184726199289">ఇది అన్ని పరికరాల నుండి సింక్ చేయబడిన డేటాను తీసివేస్తుంది. సేవ్ చేసిన సైట్ సెట్టింగ్‌లు తొలగించబడవు, ఇవి మీ బ్రౌజింగ్ అలవాట్లను ప్రదర్శించవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. Chromeను ఎంచుకోండి</translation>
 <translation id="7472734401283673885">కంపెనీ పేరు</translation>
 <translation id="7473891865547856676">వద్దు, ధన్యవాదాలు</translation>
 <translation id="7481312909269577407">ఫార్వర్డ్</translation>

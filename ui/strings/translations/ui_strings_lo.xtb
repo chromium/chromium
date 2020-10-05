@@ -44,7 +44,6 @@
 <translation id="19085484004813472">ນີ້ແມ່ນຄຸນສົມບັດໃໝ່</translation>
 <translation id="2006524834898217237">ກວດໃຫ້ແນ່ໃຈວ່າອຸປະກອນນີ້ເຊື່ອມຕໍ່ກັບອິນເຕີເນັດ.</translation>
 <translation id="208586643495776849">ກະລຸນາລອງໃໝ່</translation>
-<translation id="2090963878406559571">ບໍ່ສາມາດສົ່ງເບີຈາກ <ph name="ORIGIN" /> ຫາໂທລະສັບ Android ຂອງທ່ານໄດ້, <ph name="TROUBLESHOOT_LINK" /> ສຳລັບທັງສອງອຸປະກອນໃນການຕັ້ງຄ່າ.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 ມື້}other{# ມື້}}</translation>
 <translation id="2148716181193084225">ມື້​ນີ້</translation>
 <translation id="2161656808144014275">ຂໍ້ຄວາມ</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">ສາມຫຼ່ຽມການເປີດເຜີຍ</translation>
 <translation id="5278860589123563674">ສົ່ງບໍ່ສຳເລັດ</translation>
 <translation id="528468243742722775">ສິ້ນສຸດ</translation>
-<translation id="5327567770033251652">ເປີດການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="5329858601952122676">ລຶບ</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> ຢູ່ເທິງ <ph name="IN_PLACE_APP" />, ປ່ອຍເພື່ອສ້າງໂຟນເດີ.</translation>
 <translation id="5463830097259460683">ອີໂມຈິ ແລະ ສັນຍາລັກ</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">ບໍ່ມີຊື່</translation>
 <translation id="6612467943526193239">ເພື່ອອອກຈາການປັບຕັ້ງຄ່າ ໃຫ້ກົດ Esc.</translation>
 <translation id="6620110761915583480">ບັນທຶກໄຟລ໌</translation>
-<translation id="6656912866303152668">ໃຫ້ແນ່ໃຈວ່າ <ph name="TARGET_DEVICE_NAME" /> ໄດ້ເປີດການຊິິ້ງຂໍ້ມູນໃນ Chrome ແລ້ວຈາກນັ້ນລອງສົ່ງອີກຄັ້ງ.</translation>
 <translation id="6699343763173986273">ເພງຕໍ່ໄປຂອງມີເດຍ</translation>
 <translation id="6710213216561001401">ຜ່ານມາ</translation>
-<translation id="6779314412797872738">ບໍ່ສາມາດສົ່ງເບີຈາກບ່ອນນີ້ຫາໂທລະສັບ Android ຂອງທ່ານໄດ້, <ph name="TROUBLESHOOT_LINK" /> ສຳລັບທັງສອງອຸປະກອນໃນການຕັ້ງຄ່າ.</translation>
 <translation id="6786750046913594791">ປິດໂຟລເດີ</translation>
 <translation id="6808150112686056157">ຢຸດມີເດຍ</translation>
 <translation id="6845383723252244143">ເລືອກໂຟລເດີ</translation>

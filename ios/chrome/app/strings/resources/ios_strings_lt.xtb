@@ -164,6 +164,7 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="2781331604911854368">Įjungta</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Išjungti skirtukų perjungiklį</translation>
+<translation id="2815198996063984598">2. Palieskite „Numatytoji naršyklės programa“</translation>
 <translation id="2830972654601096923">Tvarkyti adresus...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Pradinė sinchronizavimo sąranka nebaigta</translation>
@@ -180,6 +181,7 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="2921219216347069551">Neįman. bendr. pusl.</translation>
 <translation id="2923448633003185837">Įklijuoti ir eiti</translation>
 <translation id="292639812446257861">Pažymėti kaip neskaitytus</translation>
+<translation id="2952581218264071393">1. Atidarykite „Chrome“ nustatymus</translation>
 <translation id="2958718410589002129">Slaptažodžiai</translation>
 <translation id="2964349545761222050">Trečiosios šalies slapukų blokavimas</translation>
 <translation id="2969979262385602596">Nepavyko prisijungti. Bandykite dar kartą vėliau.</translation>
@@ -216,6 +218,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, kad sužin
 <translation id="3335947283844343239">Iš naujo atidarykite uždarytą skirtuką</translation>
 <translation id="3371831930909698441">Pasiekiamas vertimas. Parinktys pasiekiamos netoli ekrano apačios.</translation>
 <translation id="3393920035788932672">Iššok. l. leidžiami</translation>
+<translation id="3399930248910934354">Atidarykite „Chrome“ nustatymus</translation>
 <translation id="3425644765244388016">Kortelės slapyvardis</translation>
 <translation id="3433057996795775706">Ištrynus šį slaptažodį jūsų paskyra svetainėje <ph name="WEBSITE" /> nebus ištrinta. Pakeiskite slaptažodį svetainėje <ph name="WEBSITE" />, kad apsaugotumėte ją nuo kitų.</translation>
 <translation id="3443810440409579745">Skirtukas gautas.</translation>
@@ -240,6 +243,9 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, kad sužin
 <translation id="3551320343578183772">Uždaryti skirtuką</translation>
 <translation id="3581564640715911333">Siūlyti versti puslapius į kitas kalbas</translation>
 <translation id="3588820906588687999">Atidaryti vaizdą naujo skirtuko lape</translation>
+<translation id="359441731697487922">Galite automatiškai atidaryti nuorodas naršyklėje „Chrome“, nustatę ją kaip numatytąją naršyklės programą.
+      
+Atlikite toliau nurodytus veiksmus.</translation>
 <translation id="3603009562372709545">Kopijuoti nuorodos URL</translation>
 <translation id="3607167657931203000">Autom. pild. duom.</translation>
 <translation id="3609785682760573515">Sinchronizuojama...</translation>
@@ -338,6 +344,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="4808744395915275922">Naujiniai</translation>
 <translation id="4818522717893377262">Pridėti kalbą...</translation>
 <translation id="481968316161811770">Slapuk., svet. duom.</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ir dar 1}one{{domain} ir dar {count}}few{{domain} ir dar {count}}many{{domain} ir dar {count}}other{{domain} ir dar {count}}}</translation>
 <translation id="4826218269716039351">Blokuoti trečiosios šalies slapukus</translation>
 <translation id="48274138579728272">Pažymėti kaip skaitytą</translation>
 <translation id="4833786495304741580">Automatiškai siunčia naudojimo statistiką ir strigčių ataskaitas „Google“.</translation>
@@ -586,6 +593,7 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="7456847797759667638">Atidaryti vietą...</translation>
 <translation id="7460314822154045102">Naudoti fotoaparatą</translation>
 <translation id="7464701184726199289">Taip sinchronizuoti duomenys bus išvalyti iš visų įrenginių. Išsaugoti svetainių nustatymai nebus ištrinti ir gali nurodyti naršymo įpročius. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. Pasirinkite „Chrome“</translation>
 <translation id="7472734401283673885">Įmonės pavad.</translation>
 <translation id="7473891865547856676">Ne, ačiū</translation>
 <translation id="7481312909269577407">Persiųsti</translation>

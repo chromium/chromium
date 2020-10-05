@@ -164,6 +164,7 @@
 <translation id="2781331604911854368">開啟</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">退出分頁切換選項</translation>
+<translation id="2815198996063984598">2. 輕按 [預設瀏覽器應用程式]</translation>
 <translation id="2830972654601096923">管理地址…</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />，<ph name="STATE" />，<ph name="URL" /></translation>
 <translation id="2840687315230832938">未完成初始同步處理設定</translation>
@@ -180,6 +181,7 @@
 <translation id="2921219216347069551">無法分享網頁</translation>
 <translation id="2923448633003185837">貼上並前往</translation>
 <translation id="292639812446257861">標示為未閱讀</translation>
+<translation id="2952581218264071393">1. 開啟 Chrome 設定</translation>
 <translation id="2958718410589002129">密碼</translation>
 <translation id="2964349545761222050">封鎖第三方 Cookie</translation>
 <translation id="2969979262385602596">無法登入，請稍後再試。</translation>
@@ -216,6 +218,7 @@
 <translation id="3335947283844343239">重新開啟先前關閉的分頁</translation>
 <translation id="3371831930909698441">有可以用嘅翻譯。你可以喺接近畫面底部附近搵到選項。</translation>
 <translation id="3393920035788932672">已允許的彈出式視窗</translation>
+<translation id="3399930248910934354">開啟 Chrome 設定</translation>
 <translation id="3425644765244388016">信用卡暱稱</translation>
 <translation id="3433057996795775706">刪除此密碼不會刪除您在 <ph name="WEBSITE" /> 的帳戶。請變更您在 <ph name="WEBSITE" /> 的密碼，以免被他人盜用。</translation>
 <translation id="3443810440409579745">已收到分頁。</translation>
@@ -240,6 +243,9 @@
 <translation id="3551320343578183772">關閉分頁</translation>
 <translation id="3581564640715911333">詢問是否將網頁內容翻譯成其他語言</translation>
 <translation id="3588820906588687999">在新分頁中開啟圖片</translation>
+<translation id="359441731697487922">將 Chrome 設為預設瀏覽器應用程式，即可自動以 Chrome 開啟連結。
+      
+請按以下步驟操作：</translation>
 <translation id="3603009562372709545">複製連結網址</translation>
 <translation id="3607167657931203000">自動填入資料</translation>
 <translation id="3609785682760573515">同步處理中…</translation>
@@ -338,6 +344,7 @@
 <translation id="4808744395915275922">更新</translation>
 <translation id="4818522717893377262">新增語言…</translation>
 <translation id="481968316161811770">Cookie、網站資料</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} 和另外 1 個}other{{domain} 和另外 {count} 個}}</translation>
 <translation id="4826218269716039351">封鎖第三方 Cookie</translation>
 <translation id="48274138579728272">標示為已讀取</translation>
 <translation id="4833786495304741580">自動將使用情況統計和當機報告傳送給 Google。</translation>
@@ -586,6 +593,7 @@
 <translation id="7456847797759667638">開啟位置…</translation>
 <translation id="7460314822154045102">使用相機</translation>
 <translation id="7464701184726199289">這會清除所有裝置上已同步的資料。系統不會刪除已儲存的網站設定，這可能會反映您的瀏覽習慣。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. 選取 [Chrome]</translation>
 <translation id="7472734401283673885">公司名稱</translation>
 <translation id="7473891865547856676">不用了，謝謝</translation>
 <translation id="7481312909269577407">向前</translation>

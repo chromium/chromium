@@ -164,6 +164,7 @@
 <translation id="2781331604911854368">מופעל</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">‏צא מ-Tab Switcher</translation>
+<translation id="2815198996063984598">2. מקישים על אפליקציית הדפדפן שמוגדרת כברירת מחדל</translation>
 <translation id="2830972654601096923">ניהול כתובות...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">ההגדרה הראשונית של הסנכרון לא הושלמה</translation>
@@ -180,6 +181,7 @@
 <translation id="2921219216347069551">לא ניתן לשתף את הדף</translation>
 <translation id="2923448633003185837">הדבקה וחיפוש</translation>
 <translation id="292639812446257861">סמן כ'לא נקרא'</translation>
+<translation id="2952581218264071393">‏1. פתיחת ההגדרות של Chrome</translation>
 <translation id="2958718410589002129">סיסמאות</translation>
 <translation id="2964349545761222050">‏חסימה של קובצי cookie מצדדים שלישיים</translation>
 <translation id="2969979262385602596">הכניסה נכשלה. נסה שוב מאוחר יותר.</translation>
@@ -216,6 +218,7 @@
 <translation id="3335947283844343239">פתח מחדש כרטיסייה שנסגרה</translation>
 <translation id="3371831930909698441">‏Translate זמין. האפשרויות מוצגות בחלק התחתון של המסך.</translation>
 <translation id="3393920035788932672">חלונות קופצים מותרים</translation>
+<translation id="3399930248910934354">‏פתיחת ההגדרות של Chrome</translation>
 <translation id="3425644765244388016">כינוי הכרטיס</translation>
 <translation id="3433057996795775706">מחיקת הסיסמה הזו לא תגרום למחיקת החשבון שלך באתר <ph name="WEBSITE" />. יש לשנות את הסיסמה באתר <ph name="WEBSITE" /> כדי למנוע מאחרים גישה לחשבון שלך.</translation>
 <translation id="3443810440409579745">כרטיסייה התקבלה.</translation>
@@ -240,6 +243,9 @@
 <translation id="3551320343578183772">סגור כרטיסייה</translation>
 <translation id="3581564640715911333">הצעה לתרגם דפים בשפות אחרות</translation>
 <translation id="3588820906588687999">פתיחת התמונה בכרטיסייה חדשה</translation>
+<translation id="359441731697487922">‏אם Chrome יוגדר כאפליקציית הדפדפן בברירת מחדל, קישורים ייפתחו בו באופן אוטומטי.
+      
+עליך למלא אחר השלבים הבאים:</translation>
 <translation id="3603009562372709545">העתק כתובת אתר של קישור</translation>
 <translation id="3607167657931203000">נתוני מילוי אוטומטי</translation>
 <translation id="3609785682760573515">מסנכרן ...</translation>
@@ -338,6 +344,7 @@
 <translation id="4808744395915275922">עדכונים</translation>
 <translation id="4818522717893377262">הוספת שפה…</translation>
 <translation id="481968316161811770">‏קובצי cookie, נתוני אתרים</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ואחד נוסף}two{{domain} ו-{count} נוספים}many{{domain} ו-{count} נוספים}other{{domain} ו-{count} נוספים}}</translation>
 <translation id="4826218269716039351">חסימת צדדים שלישיים</translation>
 <translation id="48274138579728272">סימון כפריט שנקרא</translation>
 <translation id="4833786495304741580">‏שליחת דוחות קריסה וסטטיסטיקות שימוש אל Google באופן אוטומטי.</translation>
@@ -586,6 +593,7 @@
 <translation id="7456847797759667638">פתח מיקום...</translation>
 <translation id="7460314822154045102">שימוש במצלמה</translation>
 <translation id="7464701184726199289">פעולה זו מוחקת נתונים מסונכרנים מכל המכשירים. הגדרות אתרים שנשמרו לא יימחקו ועשויות לשקף את הרגלי הגלישה שלך. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">‏3. בוחרים באפשרות Chrome.</translation>
 <translation id="7472734401283673885">שם החברה</translation>
 <translation id="7473891865547856676">לא, תודה</translation>
 <translation id="7481312909269577407">קדימה</translation>

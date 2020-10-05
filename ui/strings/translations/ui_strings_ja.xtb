@@ -44,7 +44,6 @@
 <translation id="19085484004813472">これは新しい機能です</translation>
 <translation id="2006524834898217237">このデバイスがインターネットに接続されているかご確認ください。</translation>
 <translation id="208586643495776849">もう一度お試しください</translation>
-<translation id="2090963878406559571"><ph name="ORIGIN" /> から Android スマートフォンに番号を送信するには、設定で両方のデバイスの<ph name="TROUBLESHOOT_LINK" />にしてください。</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1日}other{#日}}</translation>
 <translation id="2148716181193084225">今日</translation>
 <translation id="2161656808144014275">テキスト</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">三角形の展開ボタン</translation>
 <translation id="5278860589123563674">送信できませんでした</translation>
 <translation id="528468243742722775">終了</translation>
-<translation id="5327567770033251652">同期を有効</translation>
 <translation id="5329858601952122676">削除(&amp;D)</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" />を<ph name="IN_PLACE_APP" />の上にドラッグしました。指を離すとフォルダが作成されます。</translation>
 <translation id="5463830097259460683">絵文字と記号</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">名前なし</translation>
 <translation id="6612467943526193239">キャリブレーションを終了するには Esc キーを押します。</translation>
 <translation id="6620110761915583480">ファイルを保存</translation>
-<translation id="6656912866303152668"><ph name="TARGET_DEVICE_NAME" /> の Chrome で同期がオンになっていることを確認してから、もう一度送信してください。</translation>
 <translation id="6699343763173986273">メディアの次のトラック</translation>
 <translation id="6710213216561001401">前へ</translation>
-<translation id="6779314412797872738">Android スマートフォンに番号を送信するには、設定で両方のデバイスの<ph name="TROUBLESHOOT_LINK" />にしてください。</translation>
 <translation id="6786750046913594791">フォルダを閉じる</translation>
 <translation id="6808150112686056157">メディアの停止</translation>
 <translation id="6845383723252244143">フォルダを選択</translation>

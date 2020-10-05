@@ -164,6 +164,7 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="2781331604911854368">Be</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Kilépés a lapváltóból</translation>
+<translation id="2815198996063984598">2. Koppintson az Alapértelmezett böngésző lehetőségre.</translation>
 <translation id="2830972654601096923">Címek kezelése…</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">A szinkronizálás kezdeti beállítása nem fejeződött be</translation>
@@ -180,6 +181,7 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="2921219216347069551">Az oldal megosztása sikertelen</translation>
 <translation id="2923448633003185837">Beillesztés és ugrás</translation>
 <translation id="292639812446257861">Megjelölés olvasatlanként</translation>
+<translation id="2952581218264071393">1. Nyissa meg a Chrome beállításait.</translation>
 <translation id="2958718410589002129">Jelszavak</translation>
 <translation id="2964349545761222050">Harmadik féltől származó cookie-k letiltása</translation>
 <translation id="2969979262385602596">Nem sikerült bejelentkezni. Kérjük, próbálja újra később.</translation>
@@ -216,6 +218,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="3335947283844343239">Bezárt lap megnyitása</translation>
 <translation id="3371831930909698441">Rendelkezésre áll fordítás. A beállítások a képernyő alsó részén találhatók.</translation>
 <translation id="3393920035788932672">Pop-up megengedett</translation>
+<translation id="3399930248910934354">Chrome-beállítások megnyitása</translation>
 <translation id="3425644765244388016">Egyedi kártyanév</translation>
 <translation id="3433057996795775706">A jelszó eltávolításával nem törli fiókját a következő domainről: <ph name="WEBSITE" />. Ha szeretné megőrizni fiókja biztonságát, módosítsa a(z) <ph name="WEBSITE" /> domainen használt jelszavát.</translation>
 <translation id="3443810440409579745">Sikerült a lap fogadása.</translation>
@@ -240,6 +243,9 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="3551320343578183772">Lap bezárása</translation>
 <translation id="3581564640715911333">Más nyelvű oldalak fordításának felajánlása</translation>
 <translation id="3588820906588687999">Kép megnyitása új lapon</translation>
+<translation id="359441731697487922">Ha az alapértelmezett böngészővé teszi, beállíthatja, hogy a linkek automatikusan a Chrome-ban nyíljanak meg.
+      
+Hajtsa végre az alábbi lépéseket:</translation>
 <translation id="3603009562372709545">Link URL-jének másolása</translation>
 <translation id="3607167657931203000">Automatikus kitöltés adatai</translation>
 <translation id="3609785682760573515">Szinkronizálás...</translation>
@@ -338,6 +344,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="4808744395915275922">Frissítések</translation>
 <translation id="4818522717893377262">Nyelv hozzáadása…</translation>
 <translation id="481968316161811770">Cookie-k, webhelyadatok</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} és további 1}other{{domain} és további {count}}}</translation>
 <translation id="4826218269716039351">Harmadik féltől származó cookie-k letiltása</translation>
 <translation id="48274138579728272">Megjelölés olvasottként</translation>
 <translation id="4833786495304741580">Automatikusan elküldi a használati statisztikákat és a hibajelentéseket a Google-nak.</translation>
@@ -586,6 +593,7 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="7456847797759667638">Hely megnyitása...</translation>
 <translation id="7460314822154045102">A Kamera használata</translation>
 <translation id="7464701184726199289">Az összes eszközről törli a szinkronizált adatokat. A mentett webhelybeállítások nem törlődnek, és tájékozódási alapul szolgálhatnak böngészési szokásait illetően. <ph name="BEGIN_LINK" />További információ.<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. Válassza ki a Chrome böngészőt.</translation>
 <translation id="7472734401283673885">Vállalat neve</translation>
 <translation id="7473891865547856676">Nem, köszönöm</translation>
 <translation id="7481312909269577407">Előre</translation>

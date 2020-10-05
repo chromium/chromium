@@ -44,7 +44,6 @@
 <translation id="19085484004813472">हे नवीन वैशिष्‍ट्य आहे</translation>
 <translation id="2006524834898217237">हे डिव्हाइस इंटरनेटशी कनेक्ट केलेले असल्याची खात्री करा.</translation>
 <translation id="208586643495776849">कृपया पुन्हा प्रयत्न करा</translation>
-<translation id="2090963878406559571"><ph name="ORIGIN" /> वरून तुमच्या Android फोनवर नंबर पाठवण्याकरिता सेटिंग्जमध्ये दोन्ही डिव्हाइससाठी <ph name="TROUBLESHOOT_LINK" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1दि}other{#दि}}</translation>
 <translation id="2148716181193084225">आज</translation>
 <translation id="2161656808144014275">मजकूर</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">प्रकटन त्रिकोण</translation>
 <translation id="5278860589123563674">पाठवता आले नाही</translation>
 <translation id="528468243742722775">बंद करा</translation>
-<translation id="5327567770033251652">सिंक सुरू करा</translation>
 <translation id="5329858601952122676">&amp;हटवा</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> च्या वर <ph name="DRAGGED_APP_NAME" />, फोल्डर तयार करण्यासाठी रिलीझ करा.</translation>
 <translation id="5463830097259460683">इमोजी &amp;&amp; चिन्हे</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">नाव नसलेले</translation>
 <translation id="6612467943526193239">कॅलिब्रेशनमधून बाहेर पडण्‍यासाठी Esc दाबा.</translation>
 <translation id="6620110761915583480">फाइल सेव्ह करा</translation>
-<translation id="6656912866303152668">Chrome मध्ये <ph name="TARGET_DEVICE_NAME" /> चे सिंक सुरू केले असल्याची खात्री करा आणि त्यानंतर पाठवण्याचा पुन्हा प्रयत्न करा.</translation>
 <translation id="6699343763173986273">मीडिया पुढील ट्रॅक</translation>
 <translation id="6710213216561001401">मागील</translation>
-<translation id="6779314412797872738">येथून तुमच्या Android फोनवर नंबर पाठवण्यासाठी, सेटिंग्जमध्ये दोन्ही डिव्हाइससाठी <ph name="TROUBLESHOOT_LINK" />.</translation>
 <translation id="6786750046913594791">फोल्डर बंद करा</translation>
 <translation id="6808150112686056157">मीडिया थांबवा</translation>
 <translation id="6845383723252244143">फोल्डर निवडा</translation>

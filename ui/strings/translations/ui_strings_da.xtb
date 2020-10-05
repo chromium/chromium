@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Dette er en ny funktion</translation>
 <translation id="2006524834898217237">Sørg for, at denne enhed har forbindelse til internettet.</translation>
 <translation id="208586643495776849">Prøv igen</translation>
-<translation id="2090963878406559571"><ph name="TROUBLESHOOT_LINK" /> for begge enheder i indstillingerne, hvis du vil sende et nummer fra <ph name="ORIGIN" /> til din Android-telefon.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d}one{# d}other{# d}}</translation>
 <translation id="2148716181193084225">I dag</translation>
 <translation id="2161656808144014275">Tekst</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">Trekant til at vise eller skjule indhold</translation>
 <translation id="5278860589123563674">Afsendelsen mislykkedes</translation>
 <translation id="528468243742722775">Afslut</translation>
-<translation id="5327567770033251652">aktivér synkronisering</translation>
 <translation id="5329858601952122676">&amp;Slet</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> oven på <ph name="IN_PLACE_APP" />, slip for at oprette mappe.</translation>
 <translation id="5463830097259460683">Emojis og symboler</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">Uden navn</translation>
 <translation id="6612467943526193239">Tryk på Esc for at afslutte kalibreringen.</translation>
 <translation id="6620110761915583480">Gem fil</translation>
-<translation id="6656912866303152668">Sørg for, at synkronisering i Chrome er aktiveret på <ph name="TARGET_DEVICE_NAME" />, og prøv så at sende igen.</translation>
 <translation id="6699343763173986273">Medie: Næste nummer</translation>
 <translation id="6710213216561001401">Forrige</translation>
-<translation id="6779314412797872738">Hvis du vil sende et nummer herfra til din Android-telefon, skal du <ph name="TROUBLESHOOT_LINK" /> i indstillingerne på begge enheder.</translation>
 <translation id="6786750046913594791">Luk mappe</translation>
 <translation id="6808150112686056157">Medie: Stop</translation>
 <translation id="6845383723252244143">Vælg mappe</translation>

@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Ovo je nova funkcija</translation>
 <translation id="2006524834898217237">Provjerite je li ovaj uređaj povezan na internet.</translation>
 <translation id="208586643495776849">Pokušajte ponovo</translation>
-<translation id="2090963878406559571">Da pošaljete broj s web lokacije <ph name="ORIGIN" /> na Android telefon, <ph name="TROUBLESHOOT_LINK" /> za oba uređaja u postavkama.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d}one{# d}few{# d}other{# d}}</translation>
 <translation id="2148716181193084225">Danas</translation>
 <translation id="2161656808144014275">Tekst</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">Trougao za otkrivanje</translation>
 <translation id="5278860589123563674">Slanje nije uspjelo</translation>
 <translation id="528468243742722775">Prekid</translation>
-<translation id="5327567770033251652">uključite sinkronizaciju</translation>
 <translation id="5329858601952122676">&amp;Obriši</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> prekriva aplikaciju <ph name="IN_PLACE_APP" />. Pustite da kreirate folder.</translation>
 <translation id="5463830097259460683">Emoji sličice i simboli</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">Neimenovano</translation>
 <translation id="6612467943526193239">Da izađete iz kalibracije, pritisnite tipku Esc.</translation>
 <translation id="6620110761915583480">Sačuvajte fajl</translation>
-<translation id="6656912866303152668">Provjerite je li sinhronizacija za uređaj <ph name="TARGET_DEVICE_NAME" /> uključena u Chromeu pa pokušajte poslati ponovo.</translation>
 <translation id="6699343763173986273">Sljedeća numera medijskog fajla</translation>
 <translation id="6710213216561001401">Nazad</translation>
-<translation id="6779314412797872738">Da pošaljete broj s ovog uređaja na Android telefon, <ph name="TROUBLESHOOT_LINK" /> za oba uređaja u postavkama.</translation>
 <translation id="6786750046913594791">Zatvori folder</translation>
 <translation id="6808150112686056157">Zaustavi medijske fajlove</translation>
 <translation id="6845383723252244143">Odaberite folder</translation>

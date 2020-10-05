@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Ez a funkció új</translation>
 <translation id="2006524834898217237">Ellenőrizze, hogy az eszköz csatlakozik-e az internethez.</translation>
 <translation id="208586643495776849">Próbálkozzon újra</translation>
-<translation id="2090963878406559571">Ha a(z) <ph name="ORIGIN" /> webhelyről szeretne számot küldeni Android-telefonjára, <ph name="TROUBLESHOOT_LINK" /> a beállításokban mindkét eszközén.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 n}other{# n}}</translation>
 <translation id="2148716181193084225">Ma</translation>
 <translation id="2161656808144014275">Szöveg</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">Plusz tartalom kibontására szolgáló háromszög</translation>
 <translation id="5278860589123563674">Sikertelen küldés</translation>
 <translation id="528468243742722775">Befejezés</translation>
-<translation id="5327567770033251652">szinkronizálás bekapcsolása</translation>
 <translation id="5329858601952122676">&amp;Törlés</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> az alatta lévő <ph name="IN_PLACE_APP" /> alkalmazáson; mappa létrehozásához engedje el.</translation>
 <translation id="5463830097259460683">Hangulatjelek és szimbólumok</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">Név nélküli</translation>
 <translation id="6612467943526193239">Ha ki szeretne lépni a kalibrálásból, nyomja meg az Esc billentyűt.</translation>
 <translation id="6620110761915583480">Fájl mentése</translation>
-<translation id="6656912866303152668">Győződjön meg arról, hogy a(z) <ph name="TARGET_DEVICE_NAME" /> szinkronizálása be van kapcsolva a Chrome-ban, majd próbálja újra.</translation>
 <translation id="6699343763173986273">Következő szám</translation>
 <translation id="6710213216561001401">Előző</translation>
-<translation id="6779314412797872738">Ha innen szeretne számot küldeni Android-telefonjára, <ph name="TROUBLESHOOT_LINK" /> a beállításokban mindkét eszközén.</translation>
 <translation id="6786750046913594791">Mappa bezárása</translation>
 <translation id="6808150112686056157">Leállítás</translation>
 <translation id="6845383723252244143">Mappa választása</translation>

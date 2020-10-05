@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Սա նոր գործառույթ է</translation>
 <translation id="2006524834898217237">Համոզվեք, որ սարքը միացված է ինտերնետին։</translation>
 <translation id="208586643495776849">Նորից փորձեք</translation>
-<translation id="2090963878406559571">Համարը <ph name="ORIGIN" /> կայքից ձեր Android հեռախոսին ուղարկելու համար <ph name="TROUBLESHOOT_LINK" /> սարքերի համար կարգավորումներում։</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 օր}one{# օր}other{# օր}}</translation>
 <translation id="2148716181193084225">Այսօր</translation>
 <translation id="2161656808144014275">Տեքստ</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">Բացվող եռանկյուն</translation>
 <translation id="5278860589123563674">Չհաջողվեց ուղարկել</translation>
 <translation id="528468243742722775">Վերջ</translation>
-<translation id="5327567770033251652">միացրեք համաժամացումը</translation>
 <translation id="5329858601952122676">&amp;Ջնջել</translation>
 <translation id="5395308026110844773">«<ph name="DRAGGED_APP_NAME" />» հավելվածը «<ph name="IN_PLACE_APP" />» հավելվածի վրա է: Բաց թողեք՝ պանակ ստեղծելու համար:</translation>
 <translation id="5463830097259460683">Զմայլիկներ և նշաններ</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">Անանուն</translation>
 <translation id="6612467943526193239">Չափաբերման ռեժիմից դուրս գալու համար սեղմեք Esc ստեղնը:</translation>
 <translation id="6620110761915583480">Պահել ֆայլը</translation>
-<translation id="6656912866303152668">Համոզվեք, որ <ph name="TARGET_DEVICE_NAME" /> սարքի համաժամացումը միացված է Chrome-ում, ապա փորձեք նորից ուղարկել։</translation>
 <translation id="6699343763173986273">Հաջորդ կատարումը</translation>
 <translation id="6710213216561001401">Նախորդը</translation>
-<translation id="6779314412797872738">Համարն այստեղից ձեր Android հեռախոսին ուղարկելու համար <ph name="TROUBLESHOOT_LINK" /> սարքերի և կարգավորումների համար։</translation>
 <translation id="6786750046913594791">Փակել պանակը</translation>
 <translation id="6808150112686056157">Դադարեցնել</translation>
 <translation id="6845383723252244143">Ընտրեք պանակը</translation>

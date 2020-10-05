@@ -159,9 +159,6 @@
 <translation id="1252536192437793850">Permitir que os sites peçam ao usuário para conceder acesso a uma porta serial</translation>
 <translation id="1257550411839719984">Definir diretório de download padrão</translation>
 <translation id="1265053460044691532">Limite o tempo pelo qual um usuário autenticado via SAML pode fazer login off-line</translation>
-<translation id="1271840407438458464">Se a política for definida com um valor válido, o <ph name="PRODUCT_NAME" /> não usará versões SSL/TLS anteriores a versão especificada. Valores não reconhecidos serão ignorados.
-
-      Se a política não for definida, o <ph name="PRODUCT_NAME" /> usará uma versão padrão mínima do TLS 1.0.</translation>
 <translation id="127264587838521316">Ativa as solicitações de instalação de extensões do <ph name="PRODUCT_NAME" /></translation>
 <translation id="1290634681382861275">Controla diversas configurações, inclusive USB, Bluetooth, atualização de políticas, modo de desenvolvedor, entre outras.</translation>
 <translation id="1291880496936992484">Atenção: o RC4 será completamente removido de <ph name="PRODUCT_NAME" /> após a versão 52 (por volta de setembro de 2016), e esta política parará de funcionar.
@@ -337,21 +334,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="1523774894176285446">Navegador alternativo que será iniciado com sites configurados.</translation>
 <translation id="152657506688053119">Lista de URLs alternativos para o provedor de pesquisa padrão</translation>
 <translation id="1530812829012954197">Sempre renderizar os seguintes padrões de URL no navegador do host</translation>
-<translation id="1544617932000544686">Se a política for definida, o usuário não poderá ignorar as decisões de segurança de downloads.
-
-       Se a política for definida como:
-
-      * "Bloquear downloads perigosos", todos os downloads serão permitidos, exceto os marcados com avisos do "Navegação segura".
-
-      * "Bloquear downloads possivelmente perigosos", todos os downloads serão permitidos, exceto os marcados com avisos de downloads possivelmente perigosos do "Navegação segura".
-
-      * "Bloquear todos os downloads", todos os downloads serão bloqueados.
-
-      * "Bloquear downloads maliciosos", todos os downloads serão permitidos, exceto os que forem determinados como malware pelo "Navegação segura". Diferentemente dos downloads perigosos, esta política não considera o tipo de arquivo, mas sim o host.
-
-      * "Nenhuma restrição especial", os downloads passarão pelas restrições normais de segurança de acordo com os resultados de análise do "Navegação segura".
-
-      Observação: essas restrições são aplicadas a downloads acionados em conteúdos de páginas da Web e na opção do menu "Fazer download do link". Elas não se aplicam à opção de fazer o download da página atualmente exibida nem de salvar como PDF nas opções de impressão. Leia mais sobre o "Navegação segura" ( https://developers.google.com/safe-browsing ).</translation>
 <translation id="1553532014072799546">Autorização de limites de tempo por app</translation>
 <translation id="1553956579506604198">Bloqueia a instalação de extensões externas</translation>
 <translation id="1555248923316727072">Configurações do gerenciamento de identidade de usuário do SAML</translation>
@@ -922,12 +904,12 @@ Se você desativar esta configuração ou deixá-la sem definição, todas as p�
       - controlar a impressão de qualquer uma das origens;
       - controlar a Tela de privacidade quando qualquer uma das origens estiver visível.
 
-      O nível de restrição pode ser definido como BLOQUEAR ou PERMITIR.
-      - Se a restrição for definida como BLOQUEAR, a ação não será permitida.
-      - Se a restrição for definida como PERMITIR, a ação será permitida.
+      O nível de restrição pode ser definido como BLOCK ou ALLOW (bloquear ou permitir).
+      - Se a restrição for definida como BLOCK, a ação não será permitida.
+      - Se a restrição for definida como ALLOW, a ação será permitida.
 
       Observações:
-      - Restrições PRIVACY_SCREEN não bloqueiam a capacidade de ativar a Tela de privacidade, mas forçam o uso dela quando a classe de restrição é definida como BLOQUEAR.
+      - Restrições PRIVACY_SCREEN não bloqueiam a capacidade de ativar a Tela de privacidade, mas forçam o uso dela quando a classe de restrição é definida como BLOCK.
       - Os destinos não podem ficar vazios caso uma das restrições seja CLIPBOARD, mas eles não afetarão as outras restrições.
       - A restrição CLIPBOARD não diferencia entre CROSTINI e PLUGIN_VM. Se qualquer um deles tiver sido definido como bloquear/permitir o compartilhamento de dados, a regra será aplicada a ambos.
       - Formate os padrões do URL de acordo com este formato (https://www.chromium.org/administrators/url-blacklist-filter-format, link em inglês).
@@ -1356,7 +1338,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
         Esta política não afeta políticas já lançadas.</translation>
 <translation id="3016255526521614822">Colocar na lista de permissões os apps de anotação permitidos na tela de bloqueio do <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="3020064401262077616">Controla as políticas de supervisão dos pais, que são aplicadas apenas às contas de crianças.</translation>
 <translation id="3020953534071988875">Configurar esta política permitirá/proibirá a autenticação pelo SO para perfis anônimos e de visitante no <ph name="PRODUCT_NAME" />.
 
       A autenticação pelo SO é do tipo HTTP com credenciais padrão caso as explícitas não sejam fornecidas por meio de esquemas de resposta/desafio Negotiate/NTLM/Kerberos.
@@ -4138,7 +4119,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       Se esta política não for definida, a estante será posicionada na parte inferior da tela por padrão, e o usuário poderá mudar a posição da estante.</translation>
 <translation id="7040229947030068419">Exemplo de valor:</translation>
-<translation id="7044883996351280650">Controla o serviço de backup e restauração do Android</translation>
+<translation id="7044883996351280650">Controlar o serviço de backup e restauração do Android</translation>
 <translation id="7063842402585660314">A lista de apps permitidos na tela de bloqueio do <ph name="PRODUCT_OS_NAME" />.
 
       Se o app de anotação preferido for ativado na tela de bloqueio, ela terá um elemento de IU para iniciar o app em questão.
@@ -4507,7 +4488,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 
       Esta política está obsoleta. Use a <ph name="PRINTERS_POLICY_NAME" />.
       </translation>
-<translation id="7504632989711326175">Se esta política for definida, o host usará um certificado do cliente com o CN do emissor fornecido para autenticar em RemoteAccessHostTokenValidationUrl. Configure como "*" para usar qualquer certificado do cliente disponível.
+<translation id="7504632989711326175">Se esta política for definida, o host usará um certificado do cliente com o nome comum (CN, na sigla em inglês) do emissor fornecido para autenticar em RemoteAccessHostTokenValidationUrl. Configure como "*" para usar qualquer certificado do cliente disponível.
 
           Este recurso será desativado se for deixado vazio ou sem definição.</translation>
 <translation id="7506745375479451616">Esta política controla o comando usado para abrir URLs no <ph name="PRODUCT_NAME" /> ao alternar do <ph name="IE_PRODUCT_NAME" />. Ela pode ser definida como um caminho de arquivo executável ou <ph name="PRODUCT_NAME_PLACEHOLDER" /> para detectar automaticamente o local do <ph name="PRODUCT_NAME" />.

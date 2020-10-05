@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Това е нова функция</translation>
 <translation id="2006524834898217237">Проверете дали устройството е свързано с интернет.</translation>
 <translation id="208586643495776849">Моля, опитайте отново</translation>
-<translation id="2090963878406559571">За да изпратите номер от <ph name="ORIGIN" /> до телефона си с Android, <ph name="TROUBLESHOOT_LINK" /> в настройките и на двете устройства.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 д.}other{# д.}}</translation>
 <translation id="2148716181193084225">Днес</translation>
 <translation id="2161656808144014275">Текст</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">Триъгълник за разкриване на съдържание</translation>
 <translation id="5278860589123563674">Изпращането не бе успешно</translation>
 <translation id="528468243742722775">Край</translation>
-<translation id="5327567770033251652">Включете синхронизирането</translation>
 <translation id="5329858601952122676">&amp;Изтриване</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> е върху <ph name="IN_PLACE_APP" />. Освободете, за да създадете папка.</translation>
 <translation id="5463830097259460683">Емоджи и символи</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">Без име</translation>
 <translation id="6612467943526193239">За изход от калибрирането натиснете Esc.</translation>
 <translation id="6620110761915583480">Запазване на файл</translation>
-<translation id="6656912866303152668">Проверете дали синхронизацията в Chrome е включена за <ph name="TARGET_DEVICE_NAME" /> и опитайте да изпратите отново.</translation>
 <translation id="6699343763173986273">Мултимедия, следващият запис</translation>
 <translation id="6710213216561001401">Предишно</translation>
-<translation id="6779314412797872738">За да изпратите номер оттук до телефона си с Android, <ph name="TROUBLESHOOT_LINK" /> в настройките и на двете устройства.</translation>
 <translation id="6786750046913594791">Затваряне на папката</translation>
 <translation id="6808150112686056157">Мултимедия, стоп</translation>
 <translation id="6845383723252244143">Избор на папка</translation>

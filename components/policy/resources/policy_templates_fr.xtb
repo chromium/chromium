@@ -163,9 +163,6 @@
 <translation id="1252536192437793850">Autoriser les sites à demander à l'utilisateur d'accorder l'accès à un port série</translation>
 <translation id="1257550411839719984">Définir le répertoire de téléchargement par défaut</translation>
 <translation id="1265053460044691532">Limiter la durée pendant laquelle un utilisateur authentifié via SAML peut se connecter hors connexion</translation>
-<translation id="1271840407438458464">Si cette règle est définie sur une valeur valide, <ph name="PRODUCT_NAME" /> n'utilisera pas de versions SSL/TLS antérieures à la version spécifiée. Les valeurs non reconnues sont ignorées.
-
-      Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> utilise la version minimale par défaut TLS 1.0.</translation>
 <translation id="127264587838521316">Autorise les demandes d'installation d'extension de <ph name="PRODUCT_NAME" /></translation>
 <translation id="1290634681382861275">Contrôle divers paramètres de type USB, Bluetooth, actualisation des stratégies, mode développeur et plus encore.</translation>
 <translation id="1291880496936992484">Avertissement : RC4 sera intégralement supprimé de <ph name="PRODUCT_NAME" /> après la version 52 (autour de septembre 2016) et cette règle ne sera plus valable.
@@ -351,21 +348,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="1523774894176285446">Navigateur secondaire à lancer pour les sites Web configurés.</translation>
 <translation id="152657506688053119">Liste d'URL alternatives pour le moteur de recherche par défaut</translation>
 <translation id="1530812829012954197">Toujours rendre les formats d'URL suivants dans le navigateur hôte</translation>
-<translation id="1544617932000544686">Si cette règle est activée, les utilisateurs ne peuvent pas contourner les décisions de sécurité concernant les téléchargements.
-
-       Configurations possibles :
-
-      * Bloquer les téléchargements dangereux. Tous les téléchargements sont autorisés, sauf ceux déclenchant un avertissement dans le cadre de la navigation sécurisée.
-
-      * Bloquer les téléchargements potentiellement dangereux. Tous les téléchargements sont autorisés, sauf ceux déclenchant un avertissement dans le cadre de la navigation sécurisée (du type "téléchargement potentiellement dangereux").
-
-      * Bloquer tous les téléchargements. Aucun téléchargement n'est autorisé.
-
-      * Bloquer les téléchargements malveillants. Tous les téléchargements sont autorisés, sauf ceux que la navigation sécurisée identifie comme des logiciels malveillants avec un haut degré de fiabilité. Contrairement aux téléchargements dangereux, le type de fichier n'est pas pris en compte. L'hôte, en revanche, l'est.
-
-      * Aucune restriction particulière. Les restrictions de sécurité habituelles basées sur les résultats de l'analyse de la navigation sécurisée s'appliquent aux téléchargements.
-
-      Remarque : Ces restrictions s'appliquent aux téléchargements déclenchés à partir du contenu d'une page Web et de l'option de menu contextuel "Télécharger le lien". Elles ne s'appliquent pas au téléchargement de la page actuellement affichée, ni à l'enregistrement au format PDF depuis les options d'impression. Pour en savoir plus sur la navigation sécurisée, consultez la page https://developers.google.com/safe-browsing.</translation>
 <translation id="1553532014072799546">Liste blanche des restrictions temporelles spécifiques à chaque application</translation>
 <translation id="1553956579506604198">Empêche que des extensions externes soient installées</translation>
 <translation id="1555248923316727072">Paramètres de gestion de l'identité des utilisateurs authentifiés via SAML</translation>
@@ -1379,7 +1361,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
         Cette règle n'a aucune incidence sur les règles déjà publiées.</translation>
 <translation id="3016255526521614822">Les applications de prise de note ajoutées à la liste blanche sont autorisées sur l'écran de verrouillage de <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="3020064401262077616">Contrôle les règles de supervision parentale s'appliquant uniquement aux comptes d'utilisateurs mineurs.</translation>
 <translation id="3020953534071988875">La configuration de cette règle autorise/interdit l'authentification ambiante pour les profils Invité et de navigation privée dans <ph name="PRODUCT_NAME" />.
 
       L'authentification ambiante est une authentification HTTP qui utilise des identifiants par défaut si aucun identifiant explicite n'est fourni via les systèmes de défi-réponse NTLM/Kerberos/Negotiate.

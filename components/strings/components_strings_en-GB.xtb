@@ -833,6 +833,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4277028893293644418">Reset password</translation>
 <translation id="4279811152705618813">Your <ph name="DEVICE_TYPE" /> is managed by <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{This card has been saved in your Google Account}other{These cards have been saved in your Google Account}}</translation>
+<translation id="4297502707443874121">Thumbnail for page <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Expand</translation>
 <translation id="4300675098767811073">Multiple punch right</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>

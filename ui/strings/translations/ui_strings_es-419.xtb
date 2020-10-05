@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Esta es una función nueva</translation>
 <translation id="2006524834898217237">Comprueba que este dispositivo tenga conexión a Internet.</translation>
 <translation id="208586643495776849">Vuelve a intentarlo</translation>
-<translation id="2090963878406559571">Para enviar un número desde <ph name="ORIGIN" /> a tu teléfono Android, <ph name="TROUBLESHOOT_LINK" /> en la configuración de ambos dispositivos.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d}other{# d}}</translation>
 <translation id="2148716181193084225">Hoy</translation>
 <translation id="2161656808144014275">Texto</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">Triángulo desplegable</translation>
 <translation id="5278860589123563674">No se pudo enviar</translation>
 <translation id="528468243742722775">Finalizar</translation>
-<translation id="5327567770033251652">activa la sincronización</translation>
 <translation id="5329858601952122676">&amp;Suprimir</translation>
 <translation id="5395308026110844773">Arrastra la app <ph name="DRAGGED_APP_NAME" /> sobre <ph name="IN_PLACE_APP" /> y suéltala para crear una carpeta.</translation>
 <translation id="5463830097259460683">Emoji y símbolos</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">Sin nombre</translation>
 <translation id="6612467943526193239">Para salir de las opciones de calibración, presiona Esc.</translation>
 <translation id="6620110761915583480">Guardar archivo</translation>
-<translation id="6656912866303152668">Asegúrate de que el dispositivo <ph name="TARGET_DEVICE_NAME" /> tenga activada la sincronización en Chrome y, luego, vuelve a intentar el envío.</translation>
 <translation id="6699343763173986273">Pista multimedia siguiente</translation>
 <translation id="6710213216561001401">Anterior</translation>
-<translation id="6779314412797872738">Para enviar un número desde aquí a tu teléfono Android, <ph name="TROUBLESHOOT_LINK" /> en la configuración de ambos dispositivos.</translation>
 <translation id="6786750046913594791">Cerrar carpeta</translation>
 <translation id="6808150112686056157">Detener contenido multimedia</translation>
 <translation id="6845383723252244143">Seleccionar carpeta</translation>

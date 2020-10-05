@@ -566,7 +566,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="6803622936009808957">Preslikavanje ekrana nije moguće jer nisu pronađene podržane rezolucije. Umjesto toga, prikazuje se proširena radna površina.</translation>
 <translation id="6818242057446442178">Riječ unazad</translation>
 <translation id="6820676911989879663">Odmori se!</translation>
-<translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6857811139397017780">Aktiviraj <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Preostala je jedna cifra}one{Preostala je # cifra}few{Preostale su # cifre}other{Preostalo je # cifara}}</translation>
 <translation id="6878400149835617132">Prečica je isključena</translation>
@@ -635,7 +635,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="7600875258240007829">Prikaži sva obavještenja</translation>
 <translation id="7618774594543487847">Neutralno</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Prikaži postavke Dijeljenja s Android uređajima.</translation>
+<translation id="7633755430369750696">Vidite postavke Dijeljenja u blizini.</translation>
 <translation id="7642647758716480637">Otvaranje postavki mreže <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (vlasnik)</translation>
 <translation id="7647488630410863958">Otključajte uređaj da vidite obavještenja</translation>
@@ -651,7 +651,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="7780159184141939021">Rotiranje ekrana</translation>
 <translation id="7796353162336583443">Dodirnite gumb pisaljke na polici da biste napisali bilješku, izradili snimku zaslona ili upotrijebili Google asistent, laserski pokazivač ili povećalo.</translation>
 <translation id="7798302898096527229">Za otkazivanje pritisnite tipku za pretraživanje ili Shift.</translation>
-<translation id="781126011916719498">Brzo pristupite važnim datotekama. Kliknite desnom tipkom ili dodirnite i zadržite datoteku da biste je prikvačili.</translation>
+<translation id="781126011916719498">Brzo pristupite uvezenim fajlovima. Kliknite desnim klikom na fajl ili ga dodirnite i zadržite da ga zakačite.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Jak signal</translation>
 <translation id="7837740436429729974">Vrijeme je isteklo</translation>
@@ -795,7 +795,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="9089416786594320554">Načini unosa</translation>
 <translation id="9091626656156419976">Uklonjen je ekran <ph name="DISPLAY_NAME" /></translation>
 <translation id="9151726767154816831">Ponovo pokrenite i izvršite powerwash da ažurirate</translation>
-<translation id="9166331175924255663">Prebacivanje na visoku vidljivost Dijeljenja s Android uređajima.</translation>
+<translation id="9166331175924255663">Uključite/isključite povećanu vidljivost Dijeljenja u blizini.</translation>
 <translation id="9168436347345867845">Uradit ću to kasnije</translation>
 <translation id="9179259655489829027">Ova funkcija vam omogućava da brzo pristupite prijavljenim korisnicima bez lozinke. Ovu funkciju koristite samo s računima kojima vjerujete.</translation>
 <translation id="9183456764293710005">Povećalo za cijeli ekran</translation>

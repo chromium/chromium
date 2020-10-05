@@ -176,7 +176,6 @@ Tippen Sie auf ein Wort, um eine Suche damit zu starten. Sie können Ihre Suche 
 <translation id="2321086116217818302">Passwörter werden zum Exportieren vorbereitet…</translation>
 <translation id="2321958826496381788">Ziehen Sie den Schieberegler, bis Sie diesen Text problemlos lesen können. Nach dem Doppeltippen auf einen Abschnitt sollte der Text mindestens so groß sein.</translation>
 <translation id="2323763861024343754">Websitespeicher</translation>
-<translation id="2326606747676847821">Zum Inkognitomodus wechseln</translation>
 <translation id="2328985652426384049">Anmeldung nicht möglich</translation>
 <translation id="234265804618409743">Die Kamera kann nicht geöffnet werden. Ein Fehler ist aufgetreten.</translation>
 <translation id="2345671828921229300">Wenn Sie ein Wort suchen, berühren und halten sie es</translation>
@@ -346,6 +345,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3587596251841506391">Dabei helfen, das Web sicherer zu machen</translation>
 <translation id="3599863153486145794">Löscht den Verlauf auf allen angemeldeten Geräten. Unter <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> sind möglicherweise weitere Arten von Browserverlaufsdaten für Ihr Google-Konto gespeichert.</translation>
+<translation id="3602290021589620013">Vorschau</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3631987586758005671">Wird mit "<ph name="DEVICE_NAME" />" geteilt</translation>
 <translation id="3632295766818638029">Passwort anzeigen</translation>
@@ -598,6 +598,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5527082711130173040">Chrome benötigt Zugriff auf den Standort, um nach Geräten suchen zu können. <ph name="BEGIN_LINK1" />Berechtigungen aktualisieren.<ph name="END_LINK1" /> Außerdem ist der Standortzugriff <ph name="BEGIN_LINK2" />für dieses Gerät deaktiviert<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Inkognito-Tabs schließen</translation>
 <translation id="5534640966246046842">Website kopiert</translation>
+<translation id="5556459405103347317">Neu laden</translation>
 <translation id="5561549206367097665">Warten auf Netzwerk…</translation>
 <translation id="55737423895878184">Standortermittlung und Benachrichtigungen sind erlaubt</translation>
 <translation id="5578795271662203820">In <ph name="SEARCH_ENGINE" /> nach dem Bild suchen</translation>
@@ -659,7 +660,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5937580074298050696"><ph name="AMOUNT" /> gespeichert</translation>
 <translation id="5939518447894949180">Zurücksetzen</translation>
 <translation id="5942872142862698679">Suche erfolgt mit Google</translation>
-<translation id="5951615825629292797">Sprache heruntergeladen, <ph name="APP_NAME" /> neu starten</translation>
+<translation id="5951615825629292797">Sprachpaket heruntergeladen, <ph name="APP_NAME" /> neu starten</translation>
 <translation id="5952764234151283551">Die URL einer Seite, die Sie aufrufen möchten, wird an Google gesendet</translation>
 <translation id="5956665950594638604">Chrome-Hilfe in einem neuen Tab öffnen</translation>
 <translation id="5957442310066583693">Auf die Schaltfläche "Startseite" tippen, um Ihre Top-Websites aufzurufen</translation>
@@ -908,9 +909,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="766587987807204883">Artikel erscheinen hier und können auch gelesen werden, wenn Sie offline sind</translation>
 <translation id="7682724950699840886">Probieren Sie folgende Tipps aus: Sorgen Sie dafür, dass auf Ihrem Gerät ausreichend Speicherplatz vorhanden ist, und wiederholen Sie den Export.</translation>
 <translation id="7698359219371678927">E-Mail in <ph name="APP_NAME" /> erstellen</translation>
-<translation id="7702724591845223485">Wenn Sie Ihre Anmeldeinformationen und weitere Daten aus Chrome löschen möchten, schließen Sie alle Inkognitotabs.
-
-Im Inkognitomodus bleiben Ihre Aktivitäten möglicherweise für Websites, die Sie besuchen, Ihren Arbeitgeber oder Ihre Bildungseinrichtung sowie für Ihren Internetanbieter sichtbar.</translation>
 <translation id="7704317875155739195">Suchanfragen und URLs automatisch vervollständigen</translation>
 <translation id="7725024127233776428">Seiten, die Sie als Lesezeichen speichern, werden hier angezeigt</translation>
 <translation id="7735637452482172701">Mit Displaysperre entsperren</translation>

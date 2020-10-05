@@ -21,6 +21,7 @@
 <translation id="1553358976309200471">Chrome‘ni yangilash</translation>
 <translation id="1587223624401073077">Google Chrome kameradan foydalanmoqda.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> zararli edi, shuning uchun u Chrome tomonidan bloklandi.</translation>
+<translation id="1597911401261118146">Parollarni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalash uchun <ph name="BEGIN_LINK" />Chrome hisobingizga kiring<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Chrome brauzerini xavfsiz holda saqlash uchun <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ro‘yxatida keltirilmagan va sizga bildirmasdan qo‘shilgan bo‘lishi mumkin bo‘lgan quyidagi kengaytma o‘chirib qo‘yiladi.</translation>
 <translation id="162448658176061655">Chrome haftada bir marta zararli dasturlar mavjudligini tekshiradi. Oxirgi marta: hozirgina tekshirilgan.</translation>
 <translation id="162629503687514352">Chrome OS tizimidagi parollaringiz sinxronlanmadi.</translation>
@@ -35,6 +36,7 @@
 <translation id="1734234790201236882">Chrome bu parolni Google hisobingizga saqlaydi. Uni eslab qolishingiz shart emas.</translation>
 <translation id="174539241580958092">Hisobga kirishdagi xatolik sababli Google Chrome ma’lumotlarni sinxronlay olmadi.</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1786003790898721085"><ph name="TARGET_DEVICE_NAME" /> qurilmangizda Chrome hisobingizga kiring va keyin qaytadan yuborishga urining.</translation>
 <translation id="1812689907177901597">Agar bu faolsizlantirilsa, Gmail kabi Google saytlarida hisobingizga kirganingizda Chromium hisobingizga kirilmaydi</translation>
 <translation id="1860536484129686729">Bu sayt kamerangizdan foydalanishi uchun Chrome brauzeriga ruxsat berishingiz lozim</translation>
 <translation id="1873233029667955273">Google Chrome hozir birlamchi brauzeringiz emas</translation>
@@ -79,6 +81,7 @@
 <translation id="3065168410429928842">Chrome sahifasi</translation>
 <translation id="3080151273017101988">Google Chrome yopilishida orqa fon rejimida ishlayotgan ilovalar to‘xtatilmasin</translation>
 <translation id="3089968997497233615">Google Chrome brauzerining yangi, yanada xavfsiz versiyasi chiqdi.</translation>
+<translation id="3114643501466072395">Parollarni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalash uchun <ph name="BEGIN_LINK" />Chrome hisobingizga kiring<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">Chrome OS tizimidagi maʼlumotlaringiz sinxronlanmadi.</translation>
 <translation id="3149510190863420837">Chrome ilovalari</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
@@ -250,6 +253,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8344083974188970894">{NUM_MINS,plural, =1{Chrome haftada bir marta zararli dasturlar mavjudligini tekshiradi. Oxirgi marta: 1 daqiqa oldin tekshirilgan.}other{Chrome haftada bir marta zararli dasturlar mavjudligini tekshiradi. Oxirgi marta: {NUM_MINS} daqiqa oldin tekshirilgan.}}</translation>
 <translation id="8370517070665726704">© Google LLC, <ph name="YEAR" /> Barcha huquqlar himoyalangan.</translation>
 <translation id="840084489713044809">Google Chrome parollaringizni eksport qilmoqchi.</translation>
+<translation id="8433638294851456451">Bu yerdan Android telefoningizga raqam yuborish uchun ikkala qurilmada Chrome hisobingizga kiring.</translation>
 <translation id="8498858610309223613">Google Chrome xavfsizlik tizimiga maxsus yangilanish oʻrnatildi. Qayta ishga tushiring va ochiq sahifalarni tiklang.</translation>
 <translation id="8521348052903287641">Google Chrome Dev mDNS trafigiga ruxsat berishiga oid kiruvchi qoida.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
@@ -269,6 +273,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="884296878221830158">Bundan tashqari kengaytma Chrome ochilganida yoki Bosh sahifa tugmasi bosilganida qaysi sahifa ko‘rsatilishini nazorat qiladi.</translation>
 <translation id="8862326446509486874">Sizda tizim darajasida o‘rnatish uchun yetarli ruxsatlar yo‘q. O‘rnatish dasturini administrator nomidan qayta ishga tushiring.</translation>
 <translation id="8914504000324227558">Chrome’ni qayta ishga tushiring</translation>
+<translation id="8922193594870374009"><ph name="ORIGIN" /> orqali Android telefoningizga raqam yuborish uchun ikkala qurilmada Chrome hisobingizga kiring.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome uchun yangilanish mavjud}=1{Chrome uchun yangilanish mavjud}other{Chrome uchun yangilanish mavjud (# kun)}}</translation>
 <translation id="9026991721384951619">Hisob ma’lumotlaringiz eskirganligi tufayli sinxronlash amali bajarilmadi.</translation>
 <translation id="9067395829937117663">Google Chrome brauzeri ishlashi uchun kompyuterda Windows 7 yoki undan yangiroq versiyadagi operatsion tizim o‘rnatilgan bo‘lishi lozim.</translation>

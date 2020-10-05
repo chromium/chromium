@@ -164,6 +164,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2781331604911854368">Naka-on</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Umalis sa Tagalipat ng Tab</translation>
+<translation id="2815198996063984598">2. I-tap ang Default na Browser App</translation>
 <translation id="2830972654601096923">Pamahalaan ang Mga Address...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Hindi Natapos ang Pag-set Up ng Unang Pag-sync</translation>
@@ -180,6 +181,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2921219216347069551">Di Maibahagi Pahina</translation>
 <translation id="2923448633003185837">Mag-paste at Umalis</translation>
 <translation id="292639812446257861">Markahan Bilang Hindi pa Nababasa</translation>
+<translation id="2952581218264071393">1. Buksan ang Mga Setting ng Chrome</translation>
 <translation id="2958718410589002129">Mga Password</translation>
 <translation id="2964349545761222050">I-block ang Third-Party Cookies</translation>
 <translation id="2969979262385602596">Hindi nakapag-sign in. Pakisubukang muli mamaya.</translation>
@@ -216,6 +218,7 @@ Habang nasa incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="3335947283844343239">Muling buksan ang Nakasarang Tab</translation>
 <translation id="3371831930909698441">Available ang pagsasalin. May mga opsyon malapit sa ibaba ng screen.</translation>
 <translation id="3393920035788932672">Pinapayagan ang Mga Pop-up</translation>
+<translation id="3399930248910934354">Buksan ang Mga Setting ng Chrome</translation>
 <translation id="3425644765244388016">Nickname ng Card</translation>
 <translation id="3433057996795775706">Kapag na-delete ang password na ito, hindi ide-delete ang iyong account sa <ph name="WEBSITE" />. Palitan ang iyong password sa <ph name="WEBSITE" /> para mapanatili itong ligtas mula sa iba.</translation>
 <translation id="3443810440409579745">Natanggap ang tab.</translation>
@@ -240,6 +243,9 @@ Habang nasa incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="3551320343578183772">Isara ang Tab</translation>
 <translation id="3581564640715911333">Mag-alok na mag-translate ng mga page sa iba pang wika</translation>
 <translation id="3588820906588687999">Buksan ang Larawan sa Bagong Tab</translation>
+<translation id="359441731697487922">Puwede kang awtomatikong magbukas ng mga link sa Chrome sa pamamagitan ng pagtatakda rito bilang iyong Default na Browser App.
+      
+Sundin ang mga hakbang sa ibaba:</translation>
 <translation id="3603009562372709545">Kopyahin ang URL ng Link</translation>
 <translation id="3607167657931203000">Mag-autofill ng Data</translation>
 <translation id="3609785682760573515">Nagsi-sync...</translation>
@@ -338,6 +344,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="4808744395915275922">Mga Update</translation>
 <translation id="4818522717893377262">Magdagdag ng Wika...</translation>
 <translation id="481968316161811770">Cookies, Data ng Site</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} at 1 pa}one{{domain} at {count} pa}other{{domain} at {count} pa}}</translation>
 <translation id="4826218269716039351">I-block ang Third-Party</translation>
 <translation id="48274138579728272">Markahan Bilang Nabasa Na</translation>
 <translation id="4833786495304741580">Awtomatikong nagpapadala sa Google ng mga istatistika sa paggamit at ulat ng pag-crash.</translation>
@@ -586,6 +593,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="7456847797759667638">Buksan ang Lokasyon...</translation>
 <translation id="7460314822154045102">Gamitin ang Camera</translation>
 <translation id="7464701184726199289">Maki-clear nito ang mga naka-sync na data mula sa lahat ng device. Hindi made-delete ang mga naka-save na setting ng site at maaari nitong ipakita ang iyong mga gawi sa pagba-browse. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. Piliin ang Chrome</translation>
 <translation id="7472734401283673885">Pangalan ng Kumpanya</translation>
 <translation id="7473891865547856676">Hindi, Salamat</translation>
 <translation id="7481312909269577407">Sumulong</translation>

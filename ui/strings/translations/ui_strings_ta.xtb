@@ -44,7 +44,6 @@
 <translation id="19085484004813472">இது ஒரு புதிய அம்சம்</translation>
 <translation id="2006524834898217237">இந்த சாதனம் இணையத்துடன் இணைக்கப்பட்டுள்ளதை உறுதி செய்யவும்.</translation>
 <translation id="208586643495776849">மீண்டும் முயலவும்</translation>
-<translation id="2090963878406559571"><ph name="ORIGIN" /> இலிருந்து உங்கள் Android மொபைலுக்கு எண்ணை அனுப்ப இரு சாதனங்களிலும் உள்ள அமைப்புகளுக்குச் சென்று <ph name="TROUBLESHOOT_LINK" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1நா}other{#நா}}</translation>
 <translation id="2148716181193084225">இன்று</translation>
 <translation id="2161656808144014275">உரை</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">கூடுதல் உள்ளடக்கத்தைக் காட்டும் முக்கோணம்</translation>
 <translation id="5278860589123563674">அனுப்ப முடியவில்லை</translation>
 <translation id="528468243742722775">நிறுத்து</translation>
-<translation id="5327567770033251652">ஒத்திசைவை இயக்கவும்</translation>
 <translation id="5329858601952122676">&amp;நீக்கு</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" />ன் மேல் <ph name="DRAGGED_APP_NAME" />ஐ இழுத்துவிடுகிறீர்கள். கோப்புறையை உருவாக்க, விடுவிக்கவும்.</translation>
 <translation id="5463830097259460683">ஈமோஜி &amp;&amp; குறியீடுகள்</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">பெயரிடப்படாதது</translation>
 <translation id="6612467943526193239">அளவுத்திருத்தத்திலிருந்து வெளியேற, Esc எனும் விசையை அழுத்தவும்.</translation>
 <translation id="6620110761915583480">கோப்பைச் சேமி</translation>
-<translation id="6656912866303152668"><ph name="TARGET_DEVICE_NAME" /> சாதனம் Chromeமுடன் ஒத்திசைவை இயக்கியுள்ளதா என்பதை உறுதி செய்த பின்னர் மீண்டும் அனுப்பவும்.</translation>
 <translation id="6699343763173986273">ஊடகத்தின் அடுத்த டிராக்</translation>
 <translation id="6710213216561001401">முந்தையது</translation>
-<translation id="6779314412797872738">இங்கே இருந்து உங்கள் Android மொபைலுக்கு எண்ணை அனுப்ப இரு சாதனங்களிலும் உள்ள அமைப்புகளுக்குச் சென்று <ph name="TROUBLESHOOT_LINK" />.</translation>
 <translation id="6786750046913594791">கோப்புறையை மூடு</translation>
 <translation id="6808150112686056157">ஊடகத்தை நிறுத்து</translation>
 <translation id="6845383723252244143">கோப்புறையைத் தேர்ந்தெடு</translation>

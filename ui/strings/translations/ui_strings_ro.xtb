@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Aceasta este o funcție nouă</translation>
 <translation id="2006524834898217237">Verifică dacă dispozitivul este conectat la internet.</translation>
 <translation id="208586643495776849">Încearcă din nou</translation>
-<translation id="2090963878406559571">Pentru a trimite un număr de la <ph name="ORIGIN" /> pe telefonul Android, <ph name="TROUBLESHOOT_LINK" /> pentru ambele dispozitive din setări.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 zi}few{# zile}other{# zile}}</translation>
 <translation id="2148716181193084225">Astăzi</translation>
 <translation id="2161656808144014275">Text</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">Triunghi pentru afișare</translation>
 <translation id="5278860589123563674">Nu s-a trimis</translation>
 <translation id="528468243742722775">Oprește</translation>
-<translation id="5327567770033251652">activează sincronizarea</translation>
 <translation id="5329858601952122676">&amp;Șterge</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> deasupra <ph name="IN_PLACE_APP" />, eliberează pentru a crea un dosar.</translation>
 <translation id="5463830097259460683">Emoji și simboluri</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">Nedenumit</translation>
 <translation id="6612467943526193239">Pentru a ieși din calibrare, apasă pe Esc.</translation>
 <translation id="6620110761915583480">Salvează fișierul</translation>
-<translation id="6656912866303152668">Asigură-te că dispozitivul <ph name="TARGET_DEVICE_NAME" /> are sincronizarea activată în Chrome, apoi încearcă să trimiți din nou.</translation>
 <translation id="6699343763173986273">Melodia următoare din conținutul media</translation>
 <translation id="6710213216561001401">Înapoi</translation>
-<translation id="6779314412797872738">Pentru a trimite un număr de aici pe telefonul Android, <ph name="TROUBLESHOOT_LINK" /> pentru ambele dispozitive din setări.</translation>
 <translation id="6786750046913594791">Închideți dosarul</translation>
 <translation id="6808150112686056157">Opriți conținutul media</translation>
 <translation id="6845383723252244143">Selectează dosarul</translation>

@@ -44,7 +44,6 @@
 <translation id="19085484004813472">هذه ميزة جديدة</translation>
 <translation id="2006524834898217237">عليك التأكّد من اتصال الجهاز بالإنترنت.</translation>
 <translation id="208586643495776849">يُرجى إعادة المحاولة</translation>
-<translation id="2090963878406559571">‏لإرسال رقم من <ph name="ORIGIN" /> إلى هاتفك الذي يعمل بنظام التشغيل Android، يُرجى <ph name="TROUBLESHOOT_LINK" /> لكلا الجهازَين في الإعدادات.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{يوم واحد}zero{# يوم}two{يومان (#)}few{# أيام}many{# يومًا}other{# يوم}}</translation>
 <translation id="2148716181193084225">اليوم</translation>
 <translation id="2161656808144014275">نص</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">مثلث الإفصاح</translation>
 <translation id="5278860589123563674">تعذّر الإرسال</translation>
 <translation id="528468243742722775">‏مفتاح End</translation>
-<translation id="5327567770033251652">تفعيل المزامنة</translation>
 <translation id="5329858601952122676">&amp;حذف</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> في أعلى <ph name="IN_PLACE_APP" />، يُرجى التحرير لإنشاء مجلد.</translation>
 <translation id="5463830097259460683">الرموز التعبيرية والرموز</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">بدون اسم</translation>
 <translation id="6612467943526193239">‏للخروج من المعايرة، اضغط على Esc.</translation>
 <translation id="6620110761915583480">حفظ الملف</translation>
-<translation id="6656912866303152668">‏يُرجى التأكّد من تفعيل إعداد مزامنة الجهاز <ph name="TARGET_DEVICE_NAME" /> في Chrome، ثم محاولة الإرسال مرة أخرى.</translation>
 <translation id="6699343763173986273">المقطع الصوتي التالي للوسائط</translation>
 <translation id="6710213216561001401">السابق</translation>
-<translation id="6779314412797872738">‏لإرسال رقم من هنا إلى هاتف Android، يمكنك <ph name="TROUBLESHOOT_LINK" /> لكلا الجهازين في الإعدادات.</translation>
 <translation id="6786750046913594791">إغلاق المجلد</translation>
 <translation id="6808150112686056157">إيقاف الوسائط</translation>
 <translation id="6845383723252244143">تحديد مجلد</translation>

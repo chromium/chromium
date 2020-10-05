@@ -228,6 +228,7 @@
 <translation id="1249643471736608405"><ph name="PLUGIN_NAME" /> چون منسوخ شده است، مسدود شد</translation>
 <translation id="1251366534849411931">اینجا باید آکولاد باز باشد: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">با این کار <ph name="TOTAL_USAGE" /> از داده‌هایی که سایت‌ها و برنامه‌های نصب‌شده ذخیره کرده‌اند پاک می‌شود</translation>
+<translation id="125220115284141797">پیش‌فرض</translation>
 <translation id="1252987234827889034">خطای نمایه رخ داد</translation>
 <translation id="1254593899333212300">اتصال اینترنتی مستقیم</translation>
 <translation id="1259152067760398571">«بررسی ایمنی» دیروز اجرا شد</translation>
@@ -319,6 +320,7 @@
 <translation id="1361872463926621533">پخش صدا هنگام شروع به کار</translation>
 <translation id="1362865166188278099">مشکل مکانیکی. چاپگر را بررسی کنید</translation>
 <translation id="1363585519747660921">‏چاپگر USB باید پیکربندی شود</translation>
+<translation id="1364664799726141130">حسابی که به‌تأیید رساندید اجازه ندارد به این دستگاه دسترسی پیدا کند. لطفاً مطمئن شوید <ph name="ACCOUNT" /> را به‌تأیید می‌رسانید تا قفل جلسه باز شود.</translation>
 <translation id="1365180424462182382"><ph name="BEGIN_LINK" />مرورگرتان<ph name="END_LINK" /> توسط <ph name="ENROLLMENT_DOMAIN" /> مدیریت می‌شود</translation>
 <translation id="1367951781824006909">انتخاب یک فایل</translation>
 <translation id="1369149969991017342">دسترسی کلیدی (رایانه را فقط با یک یا دو سوئیچ کنترل کنید)</translation>
@@ -428,6 +430,7 @@
 <translation id="1486096554574027028">جستجوی گذرواژه‌ها</translation>
 <translation id="1487335504823219454">روشن - تنظیمات سفارشی</translation>
 <translation id="1489664337021920575">انتخاب گزینه‌ای دیگر</translation>
+<translation id="1492417797159476138">قبلاً این نام کاربری را برای این سایت ذخیره کرده‌اید</translation>
 <translation id="1493892686965953381">انتظار برای <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1495486559005647033"><ph name="NUM_PRINTERS" /> دستگاه دیگر در دسترس است.</translation>
 <translation id="1495677929897281669">برگشتن به برگه</translation>
@@ -650,6 +653,7 @@
 <translation id="173628468822554835">متوجه شدم. به‌طور پیش‌فرض، سایت‌های جدیدی را که بازدید کرده‌اید برایتان اعلان نمی‌فرستند.</translation>
 <translation id="1736419249208073774">کاوش</translation>
 <translation id="1737968601308870607">اشکال پرونده</translation>
+<translation id="174123615272205933">سفارشی</translation>
 <translation id="1741314857973421784">ادامه</translation>
 <translation id="1743570585616704562">شناسایی نشد</translation>
 <translation id="1743970419083351269">بستن نوار بارگیری‌</translation>
@@ -684,6 +688,7 @@
 <translation id="1776712937009046120">افزودن کاربر</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
 <translation id="1778457539567749232">علامت‌گذاری به عنوان خوانده نشده</translation>
+<translation id="1779468444204342338">حداقل</translation>
 <translation id="1779652936965200207">لطفاً این کلیدواژه را در "<ph name="DEVICE_NAME" />" وارد کنید:</translation>
 <translation id="177989070088644880">برنامه (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">بستن گروه</translation>
@@ -1459,6 +1464,7 @@
 <translation id="2688196195245426394">خطا هنگام ثبت دستگاه با سرور: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">نمایش گزینه‌های زبان</translation>
 <translation id="2691385045260836588">مدل</translation>
+<translation id="2691440343905273290">تغییر تنظیمات ورودی</translation>
 <translation id="2693176596243495071">وای! خطای نامعلومی روی داد. لطفاً بعداً دوباره امتحان کنید یا اگر مشکل حل نشد، با سرپرستتان تماس بگیرید.</translation>
 <translation id="2695749433451188613">‏پروتکل چاپ اینترنتی (HTTPS)</translation>
 <translation id="2699911226086014512">عملیات پین به‌دلیل کد خطای <ph name="RETRIES" /> انجام نشد.</translation>
@@ -1881,6 +1887,7 @@
 <translation id="3192947282887913208">فایل‌های صوتی</translation>
 <translation id="3199127022143353223">سرورها</translation>
 <translation id="3200310363903241381">{COUNT,plural, =1{‏Chrome توصیه می‌کند این گذرواژه را اکنون بررسی کنید}one{‏Chrome توصیه می‌کند این گذرواژه را اکنون بررسی کنید}other{‏Chrome توصیه می‌کند این گذرواژه‌ها را اکنون بررسی کنید}}</translation>
+<translation id="3201154330231437478">فعال کردن پیمایش معکوس <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="3201422919974259695">‏دستگاه‌های USB دردسترس در اینجا نشان داده می‌شود.</translation>
 <translation id="3202131003361292969">مسیر</translation>
 <translation id="3202173864863109533">صدای این برگه قطع شده است.</translation>
@@ -2076,6 +2083,7 @@
 <translation id="3440663250074896476">کنش‌های بیشتر برای <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3440761377721825626">وقتی سایتی می‌خواهد از افزایه‌ای برای دسترسی به رایانه‌تان استفاده کند، سؤال شود</translation>
 <translation id="3441653493275994384">صفحه</translation>
+<translation id="3441663102605358937">برای به‌تأیید رساندن این حساب، دوباره به سیستم <ph name="ACCOUNT" /> وارد شوید</translation>
 <translation id="3445047461171030979">‏پاسخ‌های سریع «دستیار Google»</translation>
 <translation id="3445925074670675829">‏دستگاه USB-C</translation>
 <translation id="3446274660183028131">‏لطفاً برای نصب Windows، ‏Parallels Desktop را راه‌اندازی کنید.</translation>
@@ -2827,6 +2835,7 @@
 <translation id="4312866146174492540">مسدود کردن (پیش‌فرض)</translation>
 <translation id="4314815835985389558">مدیریت همگام‌سازی</translation>
 <translation id="4316850752623536204">وب‌سایت برنامه‌نویس</translation>
+<translation id="4317820549299924617">راستی‌آزمایی انجام نشد</translation>
 <translation id="4320177379694898372">اتصال اینترنتی ندارید</translation>
 <translation id="4322394346347055525">بستن برگه‌های دیگر</translation>
 <translation id="4324577459193912240">فایل ناقص</translation>
@@ -3673,6 +3682,7 @@
 <translation id="5362741141255528695">فایل کلید خصوصی را انتخاب کنید.</translation>
 <translation id="5363109466694494651">‏Powerwash و برگرداندن</translation>
 <translation id="5365881113273618889">پوشه‌ای که انتخاب کرده‌اید حاوی فایل‌های حساسی است. آیا مطمئنید می‌خواهید به «<ph name="APP_NAME" />» دسترسی دائم نوشتن این پوشه را بدهید؟</translation>
+<translation id="536638840841140142">هیچ‌کدام</translation>
 <translation id="5368720394188453070">تلفنتان قفل است. برای وارد شدن قفل آن را باز کنید.</translation>
 <translation id="5368779022775404937">به سیستم <ph name="REALM" /> وارد شوید</translation>
 <translation id="5369491905435686894">فعال کردن شتاب‌دهنده موشواره</translation>
@@ -4829,6 +4839,7 @@
 <translation id="6748465660675848252">می‌توانید ادامه دهید، اما تنها تنظیمات و داده‌های همگام‌سازی شده شما بازیابی می‌شوند. همه داده‌های محلی از دست می‌روند.</translation>
 <translation id="6749006854028927059">سایت‌ها نمی‌توانند از کوکی‌های شما برای دیدن فعالیت مرور شما در سایت‌های مختلف و برای مثال شخصی‌سازی آگهی‌ها استفاده کنند. ویژگی‌ها ممکن است در برخی سایت‌ها کار نکنند.</translation>
 <translation id="6750757184909117990">غیرفعال کردن شبکه تلفن همراه</translation>
+<translation id="6750946710563435348">استفاده از نام کاربری دیگر</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (ناشناس)</translation>
 <translation id="6757101664402245801">نشانی اینترنتی کپی شد</translation>
 <translation id="6758056191028427665">عملکردمان را به ما نشان دهید.</translation>
@@ -5348,6 +5359,7 @@
 <translation id="7377451353532943397">دسترسی به حسگر همچنان مسدود شود</translation>
 <translation id="73786666777299047">‏باز کردن نت‌بازار Chrome</translation>
 <translation id="7378812711085314936">دریافت اتصال داده</translation>
+<translation id="7380622428988553498">نام دستگاه حاوی نویسه‌های نامعتبر است</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> به‌روزرسانی شد</translation>
 <translation id="7384687527486377545">تکرار خودکار صفحه‌کلید</translation>
 <translation id="7385854874724088939">هنگام سعی برای چاپ، اشتباهی رخ داده است. لطفاً چاپگر خود را بررسی کنید و دوباره امتحان کنید.</translation>
@@ -5396,6 +5408,7 @@
 <translation id="7434969625063495310">سرور چاپ اضافه نشد. لطفاً پیکربندی سرور را بررسی و دوباره امتحان کنید.</translation>
 <translation id="7436921188514130341">اوه، نه! درحین تغییر نام خطایی رخ داد.</translation>
 <translation id="7438976808740265764">‏Flash Player دیگر پس از دسامبر ۲۰۲۰ پشتیبانی نمی‌شود.</translation>
+<translation id="7439519621174723623">برای ادامه، نام دستگاه را اضافه کنید</translation>
 <translation id="7441736921018636843">برای تغییر این تنظیم، <ph name="BEGIN_LINK" />همگام‌سازی را بازنشانی کنید<ph name="END_LINK" /> تا عبارت عبور همگام‌سازی حذف شود</translation>
 <translation id="7441830548568730290">کاربران دیگر</translation>
 <translation id="7442465037756169001">‏Hangouts Meet hardware شما آماده راه‌اندازی است.</translation>
@@ -5637,6 +5650,7 @@
 <translation id="7717134585801378441">سایت‌ها می‌توانند مکان شما را درخواست کنند (توصیه می‌شود)</translation>
 <translation id="7717845620320228976">بررسی به‌روزرسانی‌ها</translation>
 <translation id="7719367874908701697">بزرگ‌نمایی صفحه</translation>
+<translation id="7719588063158526969">نام دستگاه خیلی طولانی است</translation>
 <translation id="7721179060400456005">اجازه دادن به پنجره‌ها برای پوشاندن کل نمایشگر</translation>
 <translation id="7722040605881499779">فضای لازم برای به‌روزرسانی: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">برش</translation>
@@ -5941,6 +5955,7 @@
 <translation id="8049705080247101012">‏‫Google‏ «<ph name="EXTENSION_NAME" />» را به عنوان برنامه مخرب پرچم‌‌گذاری کرده است و از نصب آن جلوگیری شده است</translation>
 <translation id="8049948037269924837">پیمایش معکوس صفحه لمسی</translation>
 <translation id="8050038245906040378">‏امضای کد تجاری Microsoft</translation>
+<translation id="8050191834453426339">راستی‌آزمایی مجدد</translation>
 <translation id="8051193500142930381">ویژگی‌هایی که به دوربین نیاز دارند کار نخواهند کرد</translation>
 <translation id="8051390370038326517">‏کنترل کامل <ph name="HOST" /> روی دستگاه‌های MIDI همیشه مجاز باشد</translation>
 <translation id="8053278772142718589">‏فایل‌های PKCS #12</translation>

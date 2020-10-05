@@ -164,6 +164,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="2781331604911854368">Activat</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Părăsește comutatorul de file</translation>
+<translation id="2815198996063984598">2. atinge Aplicația browser prestabilită;</translation>
 <translation id="2830972654601096923">Gestionează adresele…</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Configurarea inițială a sincronizării nu este finalizată</translation>
@@ -180,6 +181,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="2921219216347069551">Pagină netrimisă</translation>
 <translation id="2923448633003185837">Inserează și accesează</translation>
 <translation id="292639812446257861">Marchează ca necitite</translation>
+<translation id="2952581218264071393">1. deschide setările Chrome;</translation>
 <translation id="2958718410589002129">Parole</translation>
 <translation id="2964349545761222050">Blochează cookie-urile terță parte</translation>
 <translation id="2969979262385602596">Nu te-ai conectat. Încearcă din nou mai târziu.</translation>
@@ -216,6 +218,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="3335947283844343239">Redeschide fila închisă</translation>
 <translation id="3371831930909698441">Traducerea este disponibilă. Sunt disponibile opțiuni în partea de jos a ecranului.</translation>
 <translation id="3393920035788932672">Pop-upuri permise</translation>
+<translation id="3399930248910934354">Deschide setările Chrome</translation>
 <translation id="3425644765244388016">Pseudonimul cardului</translation>
 <translation id="3433057996795775706">Ștergerea acestei parole nu îți va șterge contul de pe <ph name="WEBSITE" />. Schimbă-ți parola de pe <ph name="WEBSITE" /> ca să-l păstrezi în siguranță.</translation>
 <translation id="3443810440409579745">Fila a fost primită.</translation>
@@ -240,6 +243,9 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="3551320343578183772">Închide fila</translation>
 <translation id="3581564640715911333">Oferă traducerea paginilor în alte limbi</translation>
 <translation id="3588820906588687999">Deschide imaginea într-o filă nouă</translation>
+<translation id="359441731697487922">Poți deschide automat linkuri în Chrome setând-o ca aplicație browser prestabilită.
+      
+Urmează pașii de mai jos:</translation>
 <translation id="3603009562372709545">Copiază adresa URL a linkului</translation>
 <translation id="3607167657931203000">Datele de completare automată</translation>
 <translation id="3609785682760573515">Se sincronizează...</translation>
@@ -338,6 +344,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="4808744395915275922">Actualizări</translation>
 <translation id="4818522717893377262">Adaugă o limbă...</translation>
 <translation id="481968316161811770">Cookie-urile, datele privind site-urile</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} și încă una}few{{domain} și încă {count}}other{{domain} și încă {count}}}</translation>
 <translation id="4826218269716039351">Blochează cookie-urile terță parte</translation>
 <translation id="48274138579728272">Marchează ca citit</translation>
 <translation id="4833786495304741580">Trimite automat statistici de utilizare și rapoarte de blocare la Google.</translation>
@@ -586,6 +593,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="7456847797759667638">Deschide o locație...</translation>
 <translation id="7460314822154045102">Folosește camera foto</translation>
 <translation id="7464701184726199289">Astfel, datele sincronizate vor fi șterse de pe toate dispozitivele. Setările salvate pentru site-uri nu vor fi șterse și pot reflecta obiceiurile de navigare. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. selectează Chrome.</translation>
 <translation id="7472734401283673885">Numele companiei</translation>
 <translation id="7473891865547856676">Nu, mulțumesc</translation>
 <translation id="7481312909269577407">Înainte</translation>

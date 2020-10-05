@@ -176,7 +176,6 @@
 <translation id="2321086116217818302">正在準備匯出密碼…</translation>
 <translation id="2321958826496381788">拖曳滑桿，將文字調整到適當的字體大小。當你輕觸兩下文字段落時，瀏覽器至少應呈現這樣的字體大小。</translation>
 <translation id="2323763861024343754">網站儲存資料量</translation>
-<translation id="2326606747676847821">進入無痕模式</translation>
 <translation id="2328985652426384049">無法登入</translation>
 <translation id="234265804618409743">無法開啟攝影機，發生錯誤。</translation>
 <translation id="2345671828921229300">如要進行搜尋，請按住要查詢的字詞</translation>
@@ -346,6 +345,7 @@
 <translation id="3587482841069643663">全部</translation>
 <translation id="3587596251841506391">協助改善網路安全</translation>
 <translation id="3599863153486145794">將歷史記錄從所有登入帳戶的裝置上清除。你的 Google 帳戶可能會儲存其他形式的瀏覽記錄，請參閱 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />。</translation>
+<translation id="3602290021589620013">預覽</translation>
 <translation id="3616113530831147358">音訊</translation>
 <translation id="3631987586758005671">正在分享至「<ph name="DEVICE_NAME" />」</translation>
 <translation id="3632295766818638029">取消密碼遮罩</translation>
@@ -598,6 +598,7 @@
 <translation id="5527082711130173040">Chrome 需要位置資訊存取權才能掃描裝置。<ph name="BEGIN_LINK1" />更新權限<ph name="END_LINK1" />。此外，<ph name="BEGIN_LINK2" />這個裝置的位置資訊存取權已關閉<ph name="END_LINK2" />。</translation>
 <translation id="5530766185686772672">關閉無痕式分頁</translation>
 <translation id="5534640966246046842">已複製網站</translation>
+<translation id="5556459405103347317">重新載入</translation>
 <translation id="5561549206367097665">正在等待網路連線…</translation>
 <translation id="55737423895878184">允許分享位置資訊和顯示通知</translation>
 <translation id="5578795271662203820">透過 <ph name="SEARCH_ENGINE" /> 搜尋這張圖片</translation>
@@ -908,9 +909,6 @@
 <translation id="766587987807204883">文章會顯示在這裡，並可供離線閱讀</translation>
 <translation id="7682724950699840886">請嘗試按照下列提示操作：確認你的裝置上有足夠空間，然後嘗試重新匯出。</translation>
 <translation id="7698359219371678927">在「<ph name="APP_NAME" />」中建立電子郵件</translation>
-<translation id="7702724591845223485">如要從 Chrome 中清除你的登入資訊和其他資料，請關閉所有無痕分頁。
-
-在無痕模式下，你造訪的網站、你的雇主或學校以及網際網路服務供應商可能仍可看到你的活動。</translation>
 <translation id="7704317875155739195">自動完成搜尋字詞與網址</translation>
 <translation id="7725024127233776428">加入書籤的頁面會顯示在這裡</translation>
 <translation id="7735637452482172701">使用螢幕鎖定功能解鎖</translation>

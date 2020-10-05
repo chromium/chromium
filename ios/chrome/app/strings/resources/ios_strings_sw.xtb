@@ -164,6 +164,7 @@ Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="2781331604911854368">Imewashwa</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Ondoka kwenye Kibadilishaji cha Kichupo</translation>
+<translation id="2815198996063984598">2. Gusa Programu ya Kivinjari Chaguomsingi</translation>
 <translation id="2830972654601096923">Dhibiti Anwani...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Haijakamilisha Kuweka Mipangilio ya Mwanzo ya Usawazishaji</translation>
@@ -180,6 +181,7 @@ Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="2921219216347069551">Haiwezi Kushiriki Ukurasa</translation>
 <translation id="2923448633003185837">Bandika na Utafute</translation>
 <translation id="292639812446257861">Tia Alama Kuwa Hujasoma</translation>
+<translation id="2952581218264071393">1. Fungua Mipangilio ya Chrome</translation>
 <translation id="2958718410589002129">Manenosiri</translation>
 <translation id="2964349545761222050">Zuia Vidakuzi vya Tovuti Nyingine</translation>
 <translation id="2969979262385602596">Haikufaulu kuingia katika akaunti. Tafadhali jaribu tena baadaye.</translation>
@@ -216,6 +218,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="3335947283844343239">Fungua Tena Kichupo Kilichofugwa</translation>
 <translation id="3371831930909698441">Huduma ya Tafsiri inapatikana. Chaguo zinapatikana karibu na sehemu ya chini ya skrini.</translation>
 <translation id="3393920035788932672">Ibukizi zimeruhusiwa</translation>
+<translation id="3399930248910934354">Fungua Mipangilio ya Chrome</translation>
 <translation id="3425644765244388016">Jina la Kuwakilisha Kadi</translation>
 <translation id="3433057996795775706">Hatua ya kufuta nenosiri hili haitafuta akaunti yako kwenye <ph name="WEBSITE" />. Badilisha nenosiri lako kwenye <ph name="WEBSITE" /> ili ulilinde dhidi ya watu wengine.</translation>
 <translation id="3443810440409579745">Umepokea kichupo.</translation>
@@ -240,6 +243,9 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="3551320343578183772">Funga Kichupo</translation>
 <translation id="3581564640715911333">Jitolee kutafsiri kurasa katika lugha nyingine</translation>
 <translation id="3588820906588687999">Fungua Picha Katika Kichupo Kipya</translation>
+<translation id="359441731697487922">Unaweza kufungua viungo kiotomatiki katika Chrome kwa kuiweka iwe Programu yako Chaguomsingi ya Kuvinjari.
+      
+Fuata hatua zifuatazo:</translation>
 <translation id="3603009562372709545">Nakili URL ya Kiungo</translation>
 <translation id="3607167657931203000">Jaza Data Kiotomatiki</translation>
 <translation id="3609785682760573515">Inasawazisha...</translation>
@@ -338,6 +344,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="4808744395915275922">Masasisho</translation>
 <translation id="4818522717893377262">Ongeza Lugha...</translation>
 <translation id="481968316161811770">Data ya Vidakuzi na Tovuti</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} na kingine kimoja}other{{domain} na vingine {count}}}</translation>
 <translation id="4826218269716039351">Zuia vya Wengine</translation>
 <translation id="48274138579728272">Tia Alama Kuwa Umesoma</translation>
 <translation id="4833786495304741580">Hutuma kiotomatiki takwimu za matumizi na ripoti za programu kuacha kufanya kazi kwa Google.</translation>
@@ -586,6 +593,7 @@ Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="7456847797759667638">Fungua Mahali...</translation>
 <translation id="7460314822154045102">Tumia Kamera</translation>
 <translation id="7464701184726199289">Hatua hii itafuta data iliyosawazishwa kwenye vifaa vyote. Mipangilio ya tovuti iliyohifadhiwa haitafutwa na inaweza kuonyesha mtindo wako wa kuvinjari. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. Chagua Chrome</translation>
 <translation id="7472734401283673885">Jina la Kampuni</translation>
 <translation id="7473891865547856676">La Asante</translation>
 <translation id="7481312909269577407">Mbele</translation>

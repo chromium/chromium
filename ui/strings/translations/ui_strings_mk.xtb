@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Ова е нова функција</translation>
 <translation id="2006524834898217237">Проверете дали уредов е поврзан на интернет.</translation>
 <translation id="208586643495776849">Обидете се повторно</translation>
-<translation id="2090963878406559571">За да испратите број од <ph name="ORIGIN" /> во телефонот со Android, <ph name="TROUBLESHOOT_LINK" /> за двата уреди во „Поставки“.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 д.}one{# д.}other{# д.}}</translation>
 <translation id="2148716181193084225">Денес</translation>
 <translation id="2161656808144014275">Текст</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">Триаголник за откривање</translation>
 <translation id="5278860589123563674">Не успеа да се испрати</translation>
 <translation id="528468243742722775">Крај</translation>
-<translation id="5327567770033251652">вклучете ја синхронизацијата</translation>
 <translation id="5329858601952122676">&amp;Избриши</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> врз <ph name="IN_PLACE_APP" />, пуштете за да се создаде папка.</translation>
 <translation id="5463830097259460683">Емотикони и симболи</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">Неименувана</translation>
 <translation id="6612467943526193239">За да излезете од калибрацијата, притиснете Esc.</translation>
 <translation id="6620110761915583480">Зачувај ја датотеката</translation>
-<translation id="6656912866303152668">Проверете дали е вклучена синхронизацијата на <ph name="TARGET_DEVICE_NAME" /> во Chrome, а потоа обидете се да го испратите повторно.</translation>
 <translation id="6699343763173986273">Следна нумера на медиум</translation>
 <translation id="6710213216561001401">Претходно</translation>
-<translation id="6779314412797872738">За да испратите број оттука во телефонот со Android, <ph name="TROUBLESHOOT_LINK" /> за двата уреди во „Поставки“.</translation>
 <translation id="6786750046913594791">Затвори папка</translation>
 <translation id="6808150112686056157">Сопри медиум</translation>
 <translation id="6845383723252244143">Избери папка</translation>

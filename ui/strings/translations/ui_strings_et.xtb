@@ -44,7 +44,6 @@
 <translation id="19085484004813472">See on uus funktsioon</translation>
 <translation id="2006524834898217237">Veenduge, et seadmel oleks internetiühendus.</translation>
 <translation id="208586643495776849">Proovige uuesti</translation>
-<translation id="2090963878406559571">Selleks et number asukohast <ph name="ORIGIN" /> teie Android-telefoni saata, tehke mõlema seadme puhul seadetes järgmist: <ph name="TROUBLESHOOT_LINK" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1p}other{#p}}</translation>
 <translation id="2148716181193084225">Täna</translation>
 <translation id="2161656808144014275">Tekst</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">Avalikustamise kolmnurk</translation>
 <translation id="5278860589123563674">Saatmine ebaõnnestus</translation>
 <translation id="528468243742722775">Lõpeta</translation>
-<translation id="5327567770033251652">lülita sünkroonimine sisse</translation>
 <translation id="5329858601952122676">&amp;Kustuta</translation>
 <translation id="5395308026110844773">Rakendus <ph name="DRAGGED_APP_NAME" /> rakenduse <ph name="IN_PLACE_APP" /> kohal, kausta loomiseks vabastage.</translation>
 <translation id="5463830097259460683">Emotikonid ja sümbolid</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">Nimetu</translation>
 <translation id="6612467943526193239">Kalibreerimisest väljumiseks vajutage paoklahvi Esc.</translation>
 <translation id="6620110761915583480">Faili salvestamine</translation>
-<translation id="6656912866303152668">Veenduge, et seadmes <ph name="TARGET_DEVICE_NAME" /> oleks Chrome'i sünkroonimine sisse lülitatud, ja proovige siis uuesti saata.</translation>
 <translation id="6699343763173986273">Meediumi järgmine lugu</translation>
 <translation id="6710213216561001401">Eelmine</translation>
-<translation id="6779314412797872738">Selleks et number siit teie Android-telefoni saata, tehke mõlema seadme puhul seadetes järgmist: <ph name="TROUBLESHOOT_LINK" />.</translation>
 <translation id="6786750046913594791">Kausta sulgemine</translation>
 <translation id="6808150112686056157">Meediumi peatamine</translation>
 <translation id="6845383723252244143">Kausta valimine</translation>

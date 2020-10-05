@@ -44,7 +44,6 @@
 <translation id="19085484004813472">นี่เป็นฟีเจอร์ใหม่</translation>
 <translation id="2006524834898217237">ตรวจสอบว่าอุปกรณ์นี้เชื่อมต่ออินเทอร์เน็ตแล้ว</translation>
 <translation id="208586643495776849">โปรดลองอีกครั้ง</translation>
-<translation id="2090963878406559571">หากต้องการส่งหมายเลขจาก <ph name="ORIGIN" /> ไปยังโทรศัพท์ Android ให้<ph name="TROUBLESHOOT_LINK" />อุปกรณ์ทั้งสองในการตั้งค่า</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 วัน}other{# วัน}}</translation>
 <translation id="2148716181193084225">วันนี้</translation>
 <translation id="2161656808144014275">ข้อความ</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">สามเหลี่ยมซ่อนเนื้อหา</translation>
 <translation id="5278860589123563674">ส่งไม่สำเร็จ</translation>
 <translation id="528468243742722775">สิ้นสุด</translation>
-<translation id="5327567770033251652">เปิดการซิงค์</translation>
 <translation id="5329858601952122676">&amp;ลบ</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> อยู่เหนือ <ph name="IN_PLACE_APP" /> ปล่อยเพื่อสร้างโฟลเดอร์</translation>
 <translation id="5463830097259460683">อีโมจิและสัญลักษณ์</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">ไม่ได้ตั้งชื่อ</translation>
 <translation id="6612467943526193239">หากต้องการออกจากการปรับเทียบ ให้กด Esc</translation>
 <translation id="6620110761915583480">บันทึกไฟล์</translation>
-<translation id="6656912866303152668">ตรวจสอบว่าการซิงค์ <ph name="TARGET_DEVICE_NAME" /> ใน Chrome เปิดอยู่ แล้วลองส่งอีกครั้ง</translation>
 <translation id="6699343763173986273">แทร็กถัดไปของสื่อ</translation>
 <translation id="6710213216561001401">ก่อนหน้า</translation>
-<translation id="6779314412797872738">หากต้องการส่งหมายเลขจากอุปกรณ์นี้ไปยังโทรศัพท์ Android ให้<ph name="TROUBLESHOOT_LINK" />ของอุปกรณ์ทั้งสองในการตั้งค่า</translation>
 <translation id="6786750046913594791">ปิดโฟลเดอร์</translation>
 <translation id="6808150112686056157">หยุดสื่อ</translation>
 <translation id="6845383723252244143">เลือกโฟลเดอร์</translation>

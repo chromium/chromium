@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Ini adalah fitur baru</translation>
 <translation id="2006524834898217237">Pastikan perangkat ini tersambung ke internet.</translation>
 <translation id="208586643495776849">Coba lagi</translation>
-<translation id="2090963878406559571">Untuk mengirim nomor dari <ph name="ORIGIN" /> ke ponsel Android Anda, <ph name="TROUBLESHOOT_LINK" /> untuk kedua perangkat di setelan.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1h}other{#h}}</translation>
 <translation id="2148716181193084225">Hari ini</translation>
 <translation id="2161656808144014275">Teks</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">Segitiga aksesibilitas</translation>
 <translation id="5278860589123563674">Gagal mengirim</translation>
 <translation id="528468243742722775">Berakhir</translation>
-<translation id="5327567770033251652">aktifkan sinkronisasi</translation>
 <translation id="5329858601952122676">&amp;Hapus</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> di atas <ph name="IN_PLACE_APP" />, lalu lepaskan untuk membuat folder.</translation>
 <translation id="5463830097259460683">Emoji &amp;&amp; Simbol</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">Tanpa Nama</translation>
 <translation id="6612467943526193239">Untuk keluar dari kalibrasi, tekan Esc.</translation>
 <translation id="6620110761915583480">Simpan File</translation>
-<translation id="6656912866303152668">Pastikan <ph name="TARGET_DEVICE_NAME" /> telah mengaktifkan sinkronisasi di Chrome, dan coba kirim lagi.</translation>
 <translation id="6699343763173986273">Lacak Media Berikutnya</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
-<translation id="6779314412797872738">Untuk mengirim nomor dari sini ke ponsel Android Anda, <ph name="TROUBLESHOOT_LINK" /> untuk kedua perangkat di setelan.</translation>
 <translation id="6786750046913594791">Tutup folder</translation>
 <translation id="6808150112686056157">Hentikan Media</translation>
 <translation id="6845383723252244143">Pilih Folder</translation>

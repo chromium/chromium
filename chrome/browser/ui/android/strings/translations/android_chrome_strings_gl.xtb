@@ -176,7 +176,6 @@ Toca calquera palabra para buscala. Mantena premida para seleccionar máis ou me
 <translation id="2321086116217818302">Preparando contrasinais…</translation>
 <translation id="2321958826496381788">Arrastra o control desprazable ata que poidas ler con comodidade. O texto debe ter polo menos este tamaño despois de facer dobre clic nun parágrafo.</translation>
 <translation id="2323763861024343754">Almacenamento do sitio</translation>
-<translation id="2326606747676847821">Entrar en modo de incógnito</translation>
 <translation id="2328985652426384049">Non se puido iniciar sesión</translation>
 <translation id="234265804618409743">Non se puido abrir a cámara. Produciuse un erro.</translation>
 <translation id="2345671828921229300">Para realizar buscas, mantén premida unha palabra</translation>
@@ -346,6 +345,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3587482841069643663">Todos</translation>
 <translation id="3587596251841506391">Axudar a mellorar a seguranza na Web</translation>
 <translation id="3599863153486145794">Borra o historial de todos os dispositivos que teñen a sesión iniciada. É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="3602290021589620013">Previsualizar</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3631987586758005671">Compartindo co dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">Mostra o contrasinal</translation>
@@ -506,7 +506,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="4842092870884894799">Mostrando ventá emerxente de xeración de contrasinais</translation>
 <translation id="4860895144060829044">Chamar</translation>
 <translation id="4864369630010738180">Iniciando sesión...</translation>
-<translation id="4865987431642283918">Idioma predeterminado do dispos.</translation>
+<translation id="4865987431642283918">Idioma predeterminado do dispositivo</translation>
 <translation id="4866368707455379617">Non se puido instalar o módulo <ph name="MODULE" /> para Chrome</translation>
 <translation id="4875775213178255010">Suxestións de contido</translation>
 <translation id="4878404682131129617">Produciuse un erro ao establecer un túnel a través do servidor proxy</translation>
@@ -598,6 +598,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5527082711130173040">Chrome necesita acceder á localización para buscar dispositivos. <ph name="BEGIN_LINK1" />Actualizar permisos<ph name="END_LINK1" />. O acceso á localización deste dispositivo está <ph name="BEGIN_LINK2" />desactivado<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Pechar pestanas incógnito</translation>
 <translation id="5534640966246046842">Copiouse o sitio</translation>
+<translation id="5556459405103347317">Volver cargar</translation>
 <translation id="5561549206367097665">Esperando unha rede…</translation>
 <translation id="55737423895878184">Permítese consultar a localización e mostrar notificacións</translation>
 <translation id="5578795271662203820">Busca esta imaxe en <ph name="SEARCH_ENGINE" /></translation>
@@ -666,6 +667,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5958275228015807058">Atopa os ficheiros e as páxinas que descargaches na sección Descargas</translation>
 <translation id="5962718611393537961">Toca para contraer</translation>
 <translation id="5964805880140440652">Para compartir esta páxina con outro dispositivo, activa a sincronización na configuración de Chrome</translation>
+<translation id="5964869237734432770">Descricións de imaxes: non</translation>
 <translation id="5979084224081478209">Comprobar contrasinais</translation>
 <translation id="6000066717592683814">Manter Google</translation>
 <translation id="6005538289190791541">Contrasinal suxerido</translation>
@@ -693,6 +695,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="6157392216611456285">Escoller <ph name="APP_NAME" /></translation>
 <translation id="6159335304067198720">Redución de datos do <ph name="PERCENT" /></translation>
 <translation id="6186394685773237175">Non se atoparon contrasinais vulnerados</translation>
+<translation id="6192907950379606605">Obter descricións de imaxes</translation>
 <translation id="6206830853671714236">Escoller cando realizar a descarga</translation>
 <translation id="6210748933810148297">Non es <ph name="EMAIL" />?</translation>
 <translation id="6218096829563201111">Buscar produtos similares <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
@@ -762,6 +765,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6590471736817333463">Aforra ata un 60 % de datos</translation>
 <translation id="6590680911007613645">Asegúrate de que o contrasinal que gardas coincida co de <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Sitio para ordenadores</translation>
+<translation id="6595046016124923392">As imaxes envíanse a Google coa finalidade de mellorar as descricións para ti.</translation>
 <translation id="6597891566292541626">Coloca o código QR ou o código de barras neste marco.</translation>
 <translation id="6600954340915313787">Copiouse en Chrome</translation>
 <translation id="661266467055912436">Mellora a túa seguranza e a do resto dos usuarios da Web.</translation>
@@ -820,6 +824,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="702463548815491781">Recoméndase cando están activadas as funcións TalkBack ou Acceso con interruptores</translation>
 <translation id="7029809446516969842">Contrasinais</translation>
 <translation id="703523980599857277">Cambiar páxina de inicio</translation>
+<translation id="7054588988317389591">Queres obter descricións de imaxes?</translation>
 <translation id="7055152154916055070">Bloqueouse unha redirección:</translation>
 <translation id="7063006564040364415">Non se puido conectar co servidor de sincronización.</translation>
 <translation id="7071521146534760487">Xestiona a conta</translation>
@@ -851,6 +856,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="729975465115245577">O dispositivo non ten unha aplicación para almacenar o ficheiro de contrasinais.</translation>
 <translation id="7302081693174882195">Detalles: filas ordenadas por cantidade de datos aforrados</translation>
 <translation id="7304873321153398381">Estás sen conexión. Chrome non puido comprobar os teus contrasinais.</translation>
+<translation id="7313188324932846546">Toca para configurar a sincronización</translation>
 <translation id="7328017930301109123">No modo básico, Chrome carga as páxinas máis rápido e usa un 60 por cento menos de datos.</translation>
 <translation id="7333031090786104871">Aínda se está engadindo o sitio anterior</translation>
 <translation id="7340958967809483333">Opcións de Discover</translation>
@@ -908,9 +914,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="766587987807204883">Aquí aparecen os artigos e podes lelos mesmo cando esteas sen conexión</translation>
 <translation id="7682724950699840886">Sigue estes consellos: asegúrate de que hai espazo suficiente no dispositivo e proba a exportar os contrasinais de novo.</translation>
 <translation id="7698359219371678927">Crea un correo electrónico en <ph name="APP_NAME" /></translation>
-<translation id="7702724591845223485">Para borrar a túa información de inicio de sesión e outros datos de Chrome, pecha todas as pestanas do modo de incógnito.
-
-Lembra que ese modo non impide que os sitios web que visites, a túa empresa, o teu centro educativo e o teu fornecedor de servizos de Internet poidan ver a túa actividade.</translation>
 <translation id="7704317875155739195">Completar buscas e URL automaticamente</translation>
 <translation id="7725024127233776428">As páxinas que engadas aos marcadores aparecerán aquí</translation>
 <translation id="7735637452482172701">Desbloquear con bloqueo de pantalla</translation>
@@ -1045,6 +1048,7 @@ Lembra que ese modo non impide que os sitios web que visites, a túa empresa, o 
 <translation id="8636825310635137004">Activa a sincronización para sincronizar as pestanas dos demais dispositivos.</translation>
 <translation id="8641930654639604085">Tentar bloquear sitios con contido para adultos</translation>
 <translation id="8655129584991699539">Podes borrar os datos na configuración de Chrome</translation>
+<translation id="8656747343598256512">Inicia sesión coa túa Conta de Google neste sitio e en Chrome. Podes activar a sincronización máis tarde.</translation>
 <translation id="8659579665266920523">Como facer buscas con Chrome?</translation>
 <translation id="8662811608048051533">Pecha a túa sesión na maioría dos sitios.</translation>
 <translation id="8664979001105139458">Xa existe un ficheiro con este nome</translation>
@@ -1064,6 +1068,7 @@ Lembra que ese modo non impide que os sitios web que visites, a túa empresa, o 
 <translation id="8840953339110955557">Esta páxina pode ser diferente da versión en liña.</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />: pestana</translation>
 <translation id="8854223127042600341">Consultar os teus ficheiros sen conexión</translation>
+<translation id="8856607253650333758">Obter descricións</translation>
 <translation id="8873817150012960745">Toca aquí para comezar</translation>
 <translation id="889338405075704026">Ir á configuración de Chrome</translation>
 <translation id="8898822736010347272">Envía os URL dalgunhas páxinas que visites, información limitada do sistema e certo contido das páxinas a Google para axudar a descubrir novas ameazas e protexer a todos os usuarios da Web.</translation>

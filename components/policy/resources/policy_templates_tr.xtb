@@ -163,9 +163,6 @@
 <translation id="1252536192437793850">Sitelerin, seri bağlantı noktasına erişmek için kullanıcıdan izin istemesine izin ver</translation>
 <translation id="1257550411839719984">Varsayılan indirme dizinini ayarlama</translation>
 <translation id="1265053460044691532">SAML kullanarak kimlik doğrulaması yapmış kullanıcının çevrimdışı olarak giriş yapabileceği süreyi sınırla</translation>
-<translation id="1271840407438458464">Politika geçerli bir değere ayarlanırsa <ph name="PRODUCT_NAME" /> belirtilen sürümden daha eski SSL/TLS sürümlerini kullanmaz. Tanınmayan değerler yok sayılır.
-
-      Bu politika ayarlanmazsa <ph name="PRODUCT_NAME" />, TLS 1.0'ın varsayılan en düşük sürümünü kullanır.</translation>
 <translation id="127264587838521316"><ph name="PRODUCT_NAME" /> uzantı yükleme isteklerini etkinleştirir</translation>
 <translation id="1290634681382861275">USB, Bluetooth, politika yenileme, geliştirici modu gibi çeşitli ayarları kontrol eder.</translation>
 <translation id="1291880496936992484">Uyarı: RC4, sürüm 52'den sonra (yaklaşık olarak Eylül 2016'da) <ph name="PRODUCT_NAME" /> ürününden tamamen kaldırılacak ve sonrasında bu politika çalışmayacaktır.
@@ -340,21 +337,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 <translation id="1523774894176285446">Yapılandırılan web siteleri için başlatılacak alternatif tarayıcı.</translation>
 <translation id="152657506688053119">Varsayılan arama sağlayıcısına ilişkin alternatif URL'lerin listesi</translation>
 <translation id="1530812829012954197">Aşağıdaki URL kalıplarını her zaman ana makine tarayıcısında oluştur</translation>
-<translation id="1544617932000544686">Politika ayarlanırsa kullanıcılar indirme güvenliği kararlarını atlayamaz.
-
-       Politika:
-
-      * Tehlikeli indirmeleri engelle değerine ayarlanırsa Güvenli Tarama uyarıları taşıyan indirmeler haricinde tüm indirmelere izin verilir.
-
-      * Tehlikeli olabilecek indirmeleri engelle değerine ayarlanırsa tehlikeli olabileceğine dair Güvenli Tarama uyarıları taşıyan indirmeler haricinde tüm indirmelere izin verilir.
-
-      * Tüm indirmeleri engelle değerine ayarlanırsa tüm indirmeler engellenir.
-
-      * Kötü amaçlı indirmeleri engelle değerine ayarlanırsa Güvenli Tarama'nın yüksek olasılıkla kötü amaçlı yazılım olarak değerlendirdiği indirmeler dışında tüm indirmelere izin verilir. Tehlikeli indirmelerden farklı olarak, burada dosya türü değil ana makine dikkate alınır.
-
-      * Özel kısıtlama yok değerine ayarlanırsa indirmeler, Güvenli Tarama analiz sonuçlarına göre her zamanki güvenlik kısıtlamalarından geçer.
-
-      Not: Bu kısıtlamalar hem web sayfası içeriğinden hem de Bağlantıyı indir... menü seçeneğinden tetiklenen indirmeler için geçerlidir. Görüntülenmekte olan sayfayı indirme ya da yazdırma seçeneklerinden PDF olarak kaydetme için geçerli değildir. Güvenli tarama hakkında daha fazla bilgi edinin ( https://developers.google.com/safe-browsing ).</translation>
 <translation id="1553532014072799546">Uygulama Başına Süre Sınırları Beyaz Listesi</translation>
 <translation id="1553956579506604198">Harici uzantıların yüklenmesini engeller</translation>
 <translation id="1555248923316727072">Saml kullanıcı kimliği yönetimi ayarları</translation>
@@ -924,7 +906,7 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       - Kısıtlama, ALLOW (İZİN VER) değerine ayarlanırsa işleme izin verilir.
 
       Notlar:
-      - PRIVACY_SCREEN kısıtlaması, gizlilik ekranını açabilmeyi engellemez, ancak kısıtlama sınıfı ALLOW (ENGELLE) değerine ayarlandığında gizlilik ekranını zorunlu kılar.
+      - PRIVACY_SCREEN kısıtlaması, gizlilik ekranını açabilmeyi engellemez, ancak kısıtlama sınıfı BLOCK (ENGELLE) değerine ayarlandığında gizlilik ekranını zorunlu kılar.
       - Kısıtlamalardan birinin CLIPBOARD (PANO) olması durumunda hedefler boş olamaz, ancak kalan kısıtlamalar açısından bir fark yaratmaz.
       - CLIPBOARD (PANO) kısıtlaması, CROSTINI ile PLUGIN_VM'yi birbirinden ayırt edemez. Veri paylaşımını engellemek/izin vermek için ikisinden biri seçildiğinde kural her ikisine de uygulanır.
       - URL kalıplarını şuna göre biçimlendirin: https://www.chromium.org/administrators/url-blacklist-filter-format
@@ -1353,7 +1335,6 @@ Bu politika ayarlanmazsa <ph name="PRODUCT_NAME" /> varsayılan 10.000 milisaniy
 
         Bu politikanın önceden yayınlanmış politikalar üzerinde bir etkisi yoktur.</translation>
 <translation id="3016255526521614822">Beyaz listedeki not alma uygulamalarına <ph name="PRODUCT_OS_NAME" /> kilit ekranında izin verilir</translation>
-<translation id="3020064401262077616">Yalnızca çocuk hesaplarına uygulanan ebeveyn gözetimi politikalarını kontrol eder.</translation>
 <translation id="3020953534071988875">Bu politika yapılandırıldığında <ph name="PRODUCT_NAME" /> içindeki Gizli profiller ve Misafir profilleri için ambiyans kimlik doğrulamasına izin verilir/verilmez.
 
       Ambiyans Kimlik Doğrulaması, NTLM/Kerberos/Negotiate görev/yanıt şemaları üzerinden açık kimlik bilgileri sağlanmadığında varsayılan kimlik bilgileriyle gerçekleştirilen http kimlik doğrulamasıdır.
@@ -4530,7 +4511,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       Bu politika kullanımdan kaldırıldı, lütfen bunun yerine <ph name="PRINTERS_POLICY_NAME" /> politikasını kullanın.
       </translation>
-<translation id="7504632989711326175">Bu politika ayarlanırsa ana makine, RemoteAccessHostTokenValidationUrl'ye erişim için kimlik doğrulaması yapmak üzere, belirtilen yayıncı CN'sine (Ortak Ad) sahip bir istemci sertifikası kullanır. Mevcut istemci sertifikalarından herhangi birisinin kullanılabilmesi için bunu "*" olarak ayarlayın.
+<translation id="7504632989711326175">Bu politika ayarlanırsa ana makine, RemoteAccessHostTokenValidationUrl'ye erişim için kimlik doğrulaması yapmak üzere, belirtilen yayıncı CN'sine (Ortak Ad) sahip bir istemci sertifikası kullanır. Mevcut istemci sertifikalarından herhangi birinin kullanılabilmesi için bunu "*" olarak ayarlayın.
 
           Boş bırakılır veya ayarlanmazsa bu özellik devre dışı bırakılır.</translation>
 <translation id="7506745375479451616">Bu politika, <ph name="IE_PRODUCT_NAME" /> tarayıcısından geçiş yaparken <ph name="PRODUCT_NAME" /> içindeki açık URL'lerin kullanılmasına yönelik komutu kontrol eder. Bu politika, yürütülebilir dosya yolu olarak veya <ph name="PRODUCT_NAME" /> tarayıcısının konumunu otomatik olarak algılamak için <ph name="PRODUCT_NAME_PLACEHOLDER" /> değerine ayarlanabilir.

@@ -164,6 +164,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2781331604911854368">Si</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Saír do selector de pestanas</translation>
+<translation id="2815198996063984598">2. Toca App de navegación predetermin.</translation>
 <translation id="2830972654601096923">Xestionar enderezos…</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Non se completou a configuración de sincronización inicial</translation>
@@ -180,6 +181,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2921219216347069551">Non se pode compartir a páxina</translation>
 <translation id="2923448633003185837">Pegar e acceder</translation>
 <translation id="292639812446257861">Marcar como non lidos</translation>
+<translation id="2952581218264071393">1. Abre a configuración de Chrome</translation>
 <translation id="2958718410589002129">Contrasinais</translation>
 <translation id="2964349545761222050">Bloquear cookies de terceiros</translation>
 <translation id="2969979262385602596">Erro ao iniciar sesión. Téntao de novo máis tarde.</translation>
@@ -216,6 +218,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="3335947283844343239">Abrir de novo a pestana pechada</translation>
 <translation id="3371831930909698441">A tradución está dispoñible. Hai opcións dispoñibles na parte inferior da pantalla.</translation>
 <translation id="3393920035788932672">Ventás emerxentes permitidas</translation>
+<translation id="3399930248910934354">Abrir configuración de Chrome</translation>
 <translation id="3425644765244388016">Alcume da tarxeta</translation>
 <translation id="3433057996795775706">Ao eliminar este contrasinal non se eliminará a túa conta de <ph name="WEBSITE" />. Cámbiao en <ph name="WEBSITE" /> para que estea a salvo doutras persoas.</translation>
 <translation id="3443810440409579745">Recibiuse unha pestana.</translation>
@@ -240,6 +243,9 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="3551320343578183772">Pechar pestana</translation>
 <translation id="3581564640715911333">Ofrece a tradución de páxinas noutros idiomas</translation>
 <translation id="3588820906588687999">Abrir imaxe nunha pestana nova</translation>
+<translation id="359441731697487922">Podes abrir ligazóns en Chrome automaticamente configurándoo como o teu navegador predeterminado.
+
+Sigue os pasos indicados a continuación:</translation>
 <translation id="3603009562372709545">Copiar URL da ligazón</translation>
 <translation id="3607167657931203000">Autocompletar datos</translation>
 <translation id="3609785682760573515">Sincronizando...</translation>
@@ -330,6 +336,7 @@ Os teus datos están encriptados co teu contrasinal de sincronización. Introdú
 <translation id="4747097190499141774">A encriptación mediante frase de acceso non inclúe métodos de pago nin enderezos de Google Pay. Só alguén coa túa frase de acceso pode ler os teus datos encriptados. A frase de acceso non se envía nin se almacena en Google. Se a esqueces ou se queres cambiar esta opción de configuración, deberás restablecer a sincronización. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nova pestana do modo de incógnito</translation>
 <translation id="4758977202923349869">Coloca a tarxeta de crédito neste marco</translation>
+<translation id="4775879719735953715">Navegador predeterminado</translation>
 <translation id="4802417911091824046">A encriptación mediante frase de acceso non inclúe métodos de pago nin enderezos de Google Pay.
 
 Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />restablecer a sincronización<ph name="END_LINK" /></translation>
@@ -337,6 +344,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="4808744395915275922">Actualizacións</translation>
 <translation id="4818522717893377262">Engadir idioma…</translation>
 <translation id="481968316161811770">Cookies, datos do sitio</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} e 1 máis}other{{domain} e {count} máis}}</translation>
 <translation id="4826218269716039351">Bloquear cookies de terceiros</translation>
 <translation id="48274138579728272">Marcar como lido</translation>
 <translation id="4833786495304741580">Envía estatísticas de uso e informes de fallos automaticamente a Google.</translation>
@@ -585,6 +593,7 @@ Non poden utilizalas para ver a túa actividade de navegación en distintos siti
 <translation id="7456847797759667638">Abrir localización...</translation>
 <translation id="7460314822154045102">Usar cámara</translation>
 <translation id="7464701184726199289">Esta acción borra os datos sincronizados de todos os dispositivos. As opcións de configuración dos sitios gardados non se eliminarán e quizais se reflictan os teus hábitos de navegación. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. Selecciona Chrome</translation>
 <translation id="7472734401283673885">Nome da empresa</translation>
 <translation id="7473891865547856676">Non, grazas</translation>
 <translation id="7481312909269577407">Adiante</translation>

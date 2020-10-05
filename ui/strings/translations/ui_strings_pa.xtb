@@ -44,7 +44,6 @@
 <translation id="19085484004813472">ਇਹ ਇੱਕ ਨਵੀਂ ਵਿਸ਼ੇਸ਼ਤਾ ਹੈ</translation>
 <translation id="2006524834898217237">ਪੱਕਾ ਕਰੋ ਕਿ ਇਹ ਡੀਵਾਈਸ ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਹੋਵੇ।</translation>
 <translation id="208586643495776849">ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
-<translation id="2090963878406559571"><ph name="ORIGIN" /> ਤੋਂ ਨੰਬਰ ਆਪਣੇ Android ਫ਼ੋਨ ਵਿੱਚ ਭੇਜਣ ਲਈ, ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਦੋਵੇਂ ਡੀਵਾਈਸਾਂ ਲਈ <ph name="TROUBLESHOOT_LINK" />।</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 ਦਿਨ}one{# ਦਿਨ}other{# ਦਿਨ}}</translation>
 <translation id="2148716181193084225">ਅੱਜ</translation>
 <translation id="2161656808144014275">ਲਿਖਤ</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">ਵਿਸਤਾਰ ਕਰਨ ਸੰਬੰਧੀ ਤਿਕੋਨ</translation>
 <translation id="5278860589123563674">ਭੇਜਣਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="528468243742722775">ਸਮਾਪਤੀ</translation>
-<translation id="5327567770033251652">ਸਮਕਾਲੀਕਰਨ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5329858601952122676">&amp;ਮਿਟਾਓ</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> ਦੇ ਉੱਪਰ <ph name="DRAGGED_APP_NAME" />, ਫੋਲਡਰ ਬਣਾਉਣ ਲਈ ਛੱਡੋ।</translation>
 <translation id="5463830097259460683">ਇਮੋਜੀ ਅਤੇ ਚਿੰਨ੍ਹ</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">ਬੇਨਾਮ</translation>
 <translation id="6612467943526193239">ਕੈਲੀਬਰੇਸ਼ਨ ਤੋਂ ਬਾਹਰ ਜਾਣ ਲਈ Esc ਦਬਾਓ।</translation>
 <translation id="6620110761915583480">ਫ਼ਾਈਲ ਰੱਖਿਅਤ ਕਰੋ</translation>
-<translation id="6656912866303152668">ਪੱਕਾ ਕਰੋ ਕਿ <ph name="TARGET_DEVICE_NAME" /> ਦੇ Chrome ਵਿੱਚ ਸਮਕਾਲੀਕਰਨ ਚਾਲੂ ਹੋਵੇ, ਅਤੇ ਫਿਰ ਦੁਬਾਰਾ ਭੇਜ ਕੇ ਦੇਖੋ।</translation>
 <translation id="6699343763173986273">ਮੀਡੀਆ ਅਗਲਾ ਟਰੈਕ</translation>
 <translation id="6710213216561001401">ਪਿਛਲਾ</translation>
-<translation id="6779314412797872738">ਇੱਥੋਂ ਨੰਬਰ ਨੂੰ ਆਪਣੇ Android ਫ਼ੋਨ 'ਤੇ ਭੇਜਣ ਲਈ, ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਦੋਵੇਂ ਡੀਵਾਈਸਾਂ ਲਈ <ph name="TROUBLESHOOT_LINK" />।</translation>
 <translation id="6786750046913594791">ਫੋਲਡਰ ਬੰਦ ਕਰੋ</translation>
 <translation id="6808150112686056157">ਮੀਡੀਆ ਰੋਕੋ</translation>
 <translation id="6845383723252244143">ਫੋਲਡਰ ਚੁਣੋ</translation>

@@ -163,9 +163,6 @@
 <translation id="1252536192437793850">Dejar que los sitios web pidan permiso al usuario para acceder a un puerto serie</translation>
 <translation id="1257550411839719984">Establecer directorio de descargas predeterminado</translation>
 <translation id="1265053460044691532">Limitar el tiempo durante el que un usuario autenticado a través de SAML puede iniciar sesión sin conexión</translation>
-<translation id="1271840407438458464">Si se le asigna un valor válido a esta política, <ph name="PRODUCT_NAME" /> no podrá usar las versiones de SSL/TLS anteriores a la versión especificada. Los valores que no se reconozcan se ignorarán.
-
-      Si no se define esta política, <ph name="PRODUCT_NAME" /> usará la versión mínima predeterminada de TLS 1.0.</translation>
 <translation id="127264587838521316">Habilita las solicitudes de instalación de extensiones de <ph name="PRODUCT_NAME" /></translation>
 <translation id="1290634681382861275">Controla varios ajustes, como el USB, el Bluetooth, la actualización de políticas o el modo desarrollador.</translation>
 <translation id="1291880496936992484">Advertencia: RC4 se eliminará completamente de <ph name="PRODUCT_NAME" /> después de la versión 52 (en torno a septiembre de 2016) y dejará de funcionar.
@@ -351,21 +348,6 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1523774894176285446">Navegador alternativo donde se abren los sitios web configurados.</translation>
 <translation id="152657506688053119">Lista de URL alternativas para el proveedor de búsquedas predeterminado</translation>
 <translation id="1530812829012954197">Mostrar siempre los patrones de URL que se indican a continuación en el navegador del host</translation>
-<translation id="1544617932000544686">Si se le asigna un valor a la política, los usuarios no podrán saltarse las medidas de seguridad de las descargas.
-
-       Estos son los efectos de cada valor:
-
-      * "Bloquear descargas peligrosas": se permiten todas las descargas excepto las que incluyan advertencias de Navegación segura.
-
-      * "Bloquear descargas potencialmente peligrosas": se permiten todas las descargas excepto las que incluyan advertencias de Navegación segura sobre descargas potencialmente peligrosas.
-
-      * "Bloquear todas las descargas": se bloquean todas las descargas.
-
-      * "Bloquear las descargas de contenido malicioso": se permiten todas las descargas excepto las que Navegación segura define como software malicioso con un nivel elevado de certeza. A diferencia de la opción "Bloquear descargas peligrosas", esta opción no tiene en cuenta el tipo de archivo, pero sí el host.
-
-      * "Sin restricciones especiales": se aplican a las descargas las restricciones de seguridad habituales en función de los resultados de análisis de Navegación segura.
-
-      Nota: Estas restricciones se aplican a las descargas activadas desde el contenido de las páginas web o a través de la opción "Descargar enlace..." del menú. No se aplican a la opción Descargar de la página actual ni a la opción Guardar como PDF de las opciones de impresión. Consulta más información sobre Navegación segura en la siguiente página: https://developers.google.com/safe-browsing.</translation>
 <translation id="1553532014072799546">Lista blanca de límites de tiempo por aplicación</translation>
 <translation id="1553956579506604198">Bloquea las extensiones externas para que no puedan instalarse</translation>
 <translation id="1555248923316727072">Configuración de gestión de identidades de usuarios de SAML</translation>
@@ -1373,7 +1355,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
         Esta política no tiene ningún efecto en las políticas ya publicadas.</translation>
 <translation id="3016255526521614822">Aplicaciones para tomar notas incluidas en la lista blanca que están permitidas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="3020064401262077616">Controla las políticas de supervisión parental, que se aplican exclusivamente a las cuentas infantiles.</translation>
 <translation id="3020953534071988875">Al configurar esta política, se habilita o inhabilita la autenticación pasiva para los perfiles de incógnito y de invitado en <ph name="PRODUCT_NAME" />.
 
       La autenticación pasiva permite realizar la autenticación HTTP con credenciales predeterminadas si no se proporcionan credenciales explícitas a través de estructuras de desafío-respuesta de NTLM, Kerberos o Negotiate.

@@ -44,7 +44,6 @@
 <translation id="19085484004813472">ఇది కొత్త ఫీచర్</translation>
 <translation id="2006524834898217237">ఈ పరికరం ఇంటర్నెట్‌కు కనెక్ట్ చేయబడి ఉందని నిర్ధారించుకోండి.</translation>
 <translation id="208586643495776849">దయచేసి మళ్లీ ప్రయత్నించండి</translation>
-<translation id="2090963878406559571"><ph name="ORIGIN" /> నుండి మీ Android ఫోన్‌కు నంబర్‌ను పంపడానికి, రెండు పరికరాలలోని సెట్టింగ్‌లలో <ph name="TROUBLESHOOT_LINK" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1రో}other{#రో}}</translation>
 <translation id="2148716181193084225">ఈ రోజు</translation>
 <translation id="2161656808144014275">వచనం</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">కంటెంట్‌ను విస్తరింపజేసే లేదా కుదించే త్రిభుజం</translation>
 <translation id="5278860589123563674">పంపడం విఫలమైంది</translation>
 <translation id="528468243742722775">ముగించు</translation>
-<translation id="5327567770033251652">సమకాలీకరణను ఆన్ చేయండి</translation>
 <translation id="5329858601952122676">&amp;తొలగించు</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" />పై భాగాన <ph name="DRAGGED_APP_NAME" /> ఉంది, ఫోల్డర్ సృష్టించడానికి రిలీజ్ చేయండి.</translation>
 <translation id="5463830097259460683">ఎమోజి &amp;&amp; చిహ్నాలు</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">పేరు లేదు</translation>
 <translation id="6612467943526193239">క్రమాంకనం నుండి నిష్క్రమించేందుకు, Esc నొక్కండి.</translation>
 <translation id="6620110761915583480">ఫైల్‌ను సేవ్ చేయి</translation>
-<translation id="6656912866303152668">Chromeతో <ph name="TARGET_DEVICE_NAME" /> సింక్ చేయబడి ఉందని నిర్ధారించుకుని, ఆపై మళ్లీ పంపే ప్రయత్నం చేయండి.</translation>
 <translation id="6699343763173986273">మీడియా తరువాత ట్రాక్</translation>
 <translation id="6710213216561001401">మునుపటి</translation>
-<translation id="6779314412797872738">దీని నుండి మీ ఫోన్‌కు Android నంబర్‌ను పంపడానికి, రెండు పరికరాలలోని సెట్టింగ్‌లలో "<ph name="TROUBLESHOOT_LINK" />".</translation>
 <translation id="6786750046913594791">ఫోల్డర్‌ను మూసివేయండి</translation>
 <translation id="6808150112686056157">మీడియా ఆపివేయి</translation>
 <translation id="6845383723252244143">ఫోల్డర్‌ను ఎంచుకో</translation>

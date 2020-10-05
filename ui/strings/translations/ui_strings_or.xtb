@@ -44,7 +44,6 @@
 <translation id="19085484004813472">ଏହା ଏକ ନୂଆ ଫିଚର୍ ଅଟେ</translation>
 <translation id="2006524834898217237">ଏହି ଡିଭାଇସ୍‌ଟି ଇଣ୍ଟର୍ନେଟ୍ ସହ ସଂଯୁକ୍ତ ହୋଇଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="208586643495776849">ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
-<translation id="2090963878406559571"><ph name="ORIGIN" />ରୁ ଆପଣଙ୍କ Android ଫୋନ୍‌କୁ ଏକ ନମ୍ବର ପଠାଇବା ପାଇଁ ସେଟିଂସ୍‌ରେ ଉଭୟ ଡିଭାଇସ୍ ନିମନ୍ତେ <ph name="TROUBLESHOOT_LINK" />।</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1d}other{#d}}</translation>
 <translation id="2148716181193084225">ଆଜି</translation>
 <translation id="2161656808144014275">ଟେକ୍ସଟ୍</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">ପ୍ରକାଶ ତ୍ରିଭୁଜ</translation>
 <translation id="5278860589123563674">ପଠାଇବାରେ ବିଫଳ ହେଲା</translation>
 <translation id="528468243742722775">ସମାପ୍ତ କରନ୍ତୁ</translation>
-<translation id="5327567770033251652">ସିଙ୍କ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="5329858601952122676">&amp;ବିଲୋପ</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" />ର ଶୀର୍ଷରେ <ph name="DRAGGED_APP_NAME" />କୁ, ଫୋଲ୍ଡର୍ ତିଆରି କରିବା ପାଇଁ ରିଲିଜ୍ କରନ୍ତୁ।</translation>
 <translation id="5463830097259460683">ଇମୋଜି &amp;&amp; ଚିହ୍ନ</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">ବେନାମୀ</translation>
 <translation id="6612467943526193239">କାଲିବ୍ରାସେନ୍‌ରୁ ପ୍ରସ୍ଥାନ କରିବାକୁ ଏସ୍କେପ୍‌ କୀ ଦବାନ୍ତୁ।</translation>
 <translation id="6620110761915583480">ଫାଇଲ୍ ସେଭ୍ କରନ୍ତୁ</translation>
-<translation id="6656912866303152668">Chromeରେ <ph name="TARGET_DEVICE_NAME" />ର ସିଙ୍କ୍ ଚାଲୁ ହୋଇଥିବା ସୁନିଶ୍ଚିତ କରି ପୁଣି ପଠାଇବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6699343763173986273">ମିଡିଆ ପରବର୍ତ୍ତୀ ଟ୍ରାକ୍</translation>
 <translation id="6710213216561001401">ପୂର୍ବବର୍ତ୍ତୀ</translation>
-<translation id="6779314412797872738">ଏଠାରୁ ଆପଣଙ୍କ Android ଫୋନ୍‌କୁ ଏକ ନମ୍ବର ପଠାଇବା ପାଇଁ ସେଟିଂସ୍‌ରେ ଉଭୟ ଡିଭାଇସ୍ ପାଇଁ <ph name="TROUBLESHOOT_LINK" />।</translation>
 <translation id="6786750046913594791">ଫୋଲ୍ଡର୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6808150112686056157">ମିଡିଆ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6845383723252244143">ଫୋଲ୍ଡର୍‌ ଚୟନ କରନ୍ତୁ</translation>

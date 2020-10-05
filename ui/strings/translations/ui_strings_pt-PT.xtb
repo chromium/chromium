@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Esta é uma nova funcionalidade</translation>
 <translation id="2006524834898217237">Certifique-se de que este dispositivo está ligado à Internet.</translation>
 <translation id="208586643495776849">Tente novamente</translation>
-<translation id="2090963878406559571">Para enviar um número de <ph name="ORIGIN" /> para o seu telemóvel Android, <ph name="TROUBLESHOOT_LINK" /> para ambos os dispositivos nas definições.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d}other{# d}}</translation>
 <translation id="2148716181193084225">Hoje</translation>
 <translation id="2161656808144014275">Texto</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">Triângulo de divulgação</translation>
 <translation id="5278860589123563674">Falha ao enviar</translation>
 <translation id="528468243742722775">Sair</translation>
-<translation id="5327567770033251652">ative a sincronização</translation>
 <translation id="5329858601952122676">E&amp;liminar</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> sobre <ph name="IN_PLACE_APP" />, solte para criar uma pasta.</translation>
 <translation id="5463830097259460683">Emoji e símbolos</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">Sem nome</translation>
 <translation id="6612467943526193239">Para sair da calibração, prima Esc.</translation>
 <translation id="6620110761915583480">Guardar ficheiro</translation>
-<translation id="6656912866303152668">Certifique-se de que o <ph name="TARGET_DEVICE_NAME" /> tem a sincronização ativada no Chrome e, em seguida, tente enviar novamente.</translation>
 <translation id="6699343763173986273">Faixa seguinte de multimédia</translation>
 <translation id="6710213216561001401">Anterior</translation>
-<translation id="6779314412797872738">Para enviar um número daqui para o seu telemóvel Android, <ph name="TROUBLESHOOT_LINK" /> para ambos os dispositivos nas definições.</translation>
 <translation id="6786750046913594791">Fechar pasta</translation>
 <translation id="6808150112686056157">Parar multimédia</translation>
 <translation id="6845383723252244143">Selecionar pasta</translation>

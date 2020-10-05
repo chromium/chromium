@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Ово је нова функција</translation>
 <translation id="2006524834898217237">Уверите се да је овај уређај повезан на интернет.</translation>
 <translation id="208586643495776849">Пробајте поново</translation>
-<translation id="2090963878406559571">Да бисте послали број са <ph name="ORIGIN" /> на Android телефон, <ph name="TROUBLESHOOT_LINK" /> за оба уређаја у подешавањима.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 д}one{# д}few{# д}other{# д}}</translation>
 <translation id="2148716181193084225">Данас</translation>
 <translation id="2161656808144014275">Текст</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">Троугао за откривање</translation>
 <translation id="5278860589123563674">Слање није успело</translation>
 <translation id="528468243742722775">Заврши</translation>
-<translation id="5327567770033251652">укључите синхронизацију</translation>
 <translation id="5329858601952122676">&amp;Избриши</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> преко апликације <ph name="IN_PLACE_APP" />, отпустите да бисте направили директоријум.</translation>
 <translation id="5463830097259460683">Емоџи и симболи</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">Без имена</translation>
 <translation id="6612467943526193239">Да бисте изашли из калибрације, притисните Esc.</translation>
 <translation id="6620110761915583480">Чување датотеке</translation>
-<translation id="6656912866303152668">Уверите се да је синхронизација за <ph name="TARGET_DEVICE_NAME" /> укључена на Chrome-у и пробајте да пошаљете поново.</translation>
 <translation id="6699343763173986273">Следећа песма медија</translation>
 <translation id="6710213216561001401">Претходно</translation>
-<translation id="6779314412797872738">Да бисте послали број са овог уређаја на Android телефон, <ph name="TROUBLESHOOT_LINK" /> за оба уређаја у подешавањима.</translation>
 <translation id="6786750046913594791">Затворите директоријум</translation>
 <translation id="6808150112686056157">Заустављање медија</translation>
 <translation id="6845383723252244143">Избор директоријума</translation>

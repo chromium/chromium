@@ -176,7 +176,6 @@ Nhấn vào từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung 
 <translation id="2321086116217818302">Đang chuẩn bị mật khẩu…</translation>
 <translation id="2321958826496381788">Kéo thanh trượt cho đến khi bạn có thể đọc nội dung này thoải mái. Chữ tối thiểu phải to như này sau khi bấm đúp vào một đoạn.</translation>
 <translation id="2323763861024343754">Bộ nhớ trang web</translation>
-<translation id="2326606747676847821">Truy cập ẩn danh</translation>
 <translation id="2328985652426384049">Không thể đăng nhập</translation>
 <translation id="234265804618409743">Không thể mở máy ảnh. Đã xảy ra lỗi.</translation>
 <translation id="2345671828921229300">Để tìm kiếm, hãy chạm và giữ một từ</translation>
@@ -346,6 +345,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3587482841069643663">Tất cả</translation>
 <translation id="3587596251841506391">Giúp tăng cường an ninh trên web</translation>
 <translation id="3599863153486145794">Xóa lịch sử khỏi tất cả các thiết bị đã đăng nhập. Tài khoản Google của bạn có thể có các dạng lịch sử duyệt web khác tại <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="3602290021589620013">Xem trước</translation>
 <translation id="3616113530831147358">Âm thanh</translation>
 <translation id="3631987586758005671">Đang chia sẻ đến <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">Hiển thị mật khẩu</translation>
@@ -598,6 +598,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5527082711130173040">Chrome cần có quyền truy cập vị trí để quét tìm thiết bị. <ph name="BEGIN_LINK1" />Cập nhật quyền<ph name="END_LINK1" />. Tính năng truy cập vị trí cũng bị <ph name="BEGIN_LINK2" />tắt cho thiết bị này<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Đóng thẻ ẩn danh</translation>
 <translation id="5534640966246046842">Đã sao chép trang web</translation>
+<translation id="5556459405103347317">Tải lại</translation>
 <translation id="5561549206367097665">Đang chờ mạng…</translation>
 <translation id="55737423895878184">Cho phép vị trí và thông báo</translation>
 <translation id="5578795271662203820">Tìm ảnh này trên <ph name="SEARCH_ENGINE" /></translation>
@@ -908,9 +909,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="766587987807204883">Các bài viết xuất hiện ở đây và bạn có thể đọc ngay cả khi không có kết nối mạng</translation>
 <translation id="7682724950699840886">Thử các mẹo sau: đảm bảo thiết bị của bạn có đủ dung lượng, sau đó thử xuất lại.</translation>
 <translation id="7698359219371678927">Tạo email trong <ph name="APP_NAME" /></translation>
-<translation id="7702724591845223485">Để xóa thông tin đăng nhập của bạn và dữ liệu khác khỏi Chrome, hãy đóng tất cả thẻ Ẩn danh.
-
-Trong chế độ Ẩn danh, hoạt động của bạn có thể vẫn hiển thị với các trang web bạn truy cập, cơ quan/trường học cũng như nhà cung cấp dịch vụ Internet của bạn.</translation>
 <translation id="7704317875155739195">Tự động hoàn thành cụm từ tìm kiếm và URL</translation>
 <translation id="7725024127233776428">Các trang mà bạn đánh dấu sẽ xuất hiện tại đây</translation>
 <translation id="7735637452482172701">Mở khóa bằng phương thức khóa màn hình</translation>

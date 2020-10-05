@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">ವಾರ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ಟ್ರ್ಯಾಕ್ <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">ಚೆಕ್‌ಬಾಕ್ಸ್</translation>
+<translation id="2307576640803031502">ಪಟ್ಟಿಯಲ್ಲಿ, <ph name="COUNT" /> ರಲ್ಲಿ <ph name="INDEX" /> ಐಟಂ</translation>
 <translation id="2311842470354187719">ಪುಟ ವಿಭಜನೆ</translation>
 <translation id="2335594187091864976">ದಿನಾಂಕ ಮತ್ತು ಸಮಯ ಪಿಕರ್</translation>
 <translation id="2393030564806080191">ಹೆಕ್ಸಾಡೆಸಿಮಲ್‌‌ ಬಣ್ಣದ ಮೌಲ್ಯ</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, <ph name="WEEK_START_DATE" /> ರಂದು ಪ್ರಾರಂಭವಾಗುತ್ತದೆ</translation>
 <translation id="916607977885256133">ಚಿತ್ರದಲ್ಲಿ ಚಿತ್ರ</translation>
 <translation id="9168329111483466115">ಅಡಿಟಿಪ್ಪಣಿ</translation>
+<translation id="945780513535800434">ಭಾಗಶಃ ಗುರುತಿಸಲಾಗಿದೆ</translation>
 <translation id="954003015749068518">ಚಿತ್ರದಲ್ಲಿನ ಚಿತ್ರವನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="966787709310836684">ಮೆನು</translation>
 </translationbundle>

@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Tai nauja funkcija</translation>
 <translation id="2006524834898217237">Įsitikinkite, kad šis įrenginys prijungtas prie interneto.</translation>
 <translation id="208586643495776849">Bandykite dar kartą</translation>
-<translation id="2090963878406559571">Jei norite iš <ph name="ORIGIN" /> į „Android“ telefoną išsiųsti numerį, <ph name="TROUBLESHOOT_LINK" /> nustatymuose abiejuose įrenginiuose.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d.}one{# d.}few{# d.}many{# d.}other{# d.}}</translation>
 <translation id="2148716181193084225">Šiandien</translation>
 <translation id="2161656808144014275">Tekstas</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">Paskelbimo trikampis</translation>
 <translation id="5278860589123563674">Nepavyko išsiųsti</translation>
 <translation id="528468243742722775">Baigti</translation>
-<translation id="5327567770033251652">įjungti sinchronizavimą</translation>
 <translation id="5329858601952122676">&amp;Pašalinti</translation>
 <translation id="5395308026110844773">„<ph name="DRAGGED_APP_NAME" />“ ant „<ph name="IN_PLACE_APP" />“, paleiskite, kad sukurtumėte aplanką.</translation>
 <translation id="5463830097259460683">Jaustukai ir simboliai</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">Be pavadinimo</translation>
 <translation id="6612467943526193239">Jei norite išeiti iš kalibravimo, paspauskite „Esc“.</translation>
 <translation id="6620110761915583480">Išsaugoti failą</translation>
-<translation id="6656912866303152668">Įsitikinkite, kad įrenginio „<ph name="TARGET_DEVICE_NAME" />“ naršyklėje „Chrome“ įjungtas sinchronizavimas, tada bandykite siųsti dar kartą.</translation>
 <translation id="6699343763173986273">Kitas medijos takelis</translation>
 <translation id="6710213216561001401">Ankstesnė</translation>
-<translation id="6779314412797872738">Jei norite iš čia į „Android“ telefoną išsiųsti numerį, nustatymuose<ph name="TROUBLESHOOT_LINK" /> abiejuose įrenginiuose.</translation>
 <translation id="6786750046913594791">Uždaryti aplanką</translation>
 <translation id="6808150112686056157">Sustabdyti mediją</translation>
 <translation id="6845383723252244143">Pasirinkti aplanką</translation>

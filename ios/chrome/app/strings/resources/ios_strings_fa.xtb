@@ -164,6 +164,7 @@
 <translation id="2781331604911854368">روشن</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">از تعویض‌کننده برگه خارج شوید</translation>
+<translation id="2815198996063984598">۲. روی برنامه مرور پیش‌فرض ضربه بزنید</translation>
 <translation id="2830972654601096923">مدیریت نشانی‌ها…</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />، <ph name="STATE" />، <ph name="URL" /></translation>
 <translation id="2840687315230832938">راه‌اندازی اولیه همگام‌سازی کامل نشد</translation>
@@ -180,6 +181,7 @@
 <translation id="2921219216347069551">امکان اشتراک‌گذاری صفحه وجود ندارد</translation>
 <translation id="2923448633003185837">جای‌گذاری و رفتن</translation>
 <translation id="292639812446257861">علامت‌گذاری به‌‌عنوان خوانده‌نشده</translation>
+<translation id="2952581218264071393">‏۱. «تنظیمات Chrome» را باز کنید</translation>
 <translation id="2958718410589002129">گذرواژه‌ها</translation>
 <translation id="2964349545761222050">مسدود کردن کوکی‌های شخص ثالث</translation>
 <translation id="2969979262385602596">ورود به سیستم انجام نشد. بعداً دوباره امتحان کنید.</translation>
@@ -216,6 +218,7 @@
 <translation id="3335947283844343239">باز کردن مجدد برگه بسته شده</translation>
 <translation id="3371831930909698441">«مترجم» دردسترس است. گزینه‌ها در نزدیک پایین صفحه نمایش در دسترس هستند.</translation>
 <translation id="3393920035788932672">پنجره‌های بازشو مجاز است</translation>
+<translation id="3399930248910934354">‏باز کردن «تنظیمات Chrome»</translation>
 <translation id="3425644765244388016">نام مستعار کارت</translation>
 <translation id="3433057996795775706">حذف این گذرواژه باعث حذف شدن حساب شما در <ph name="WEBSITE" /> نمی‌شود. برای ایمن نگه‌داشتن گذرواژه‌تان دربرابر دیگران، آن را در <ph name="WEBSITE" /> تغییر دهید.</translation>
 <translation id="3443810440409579745">برگه دریافت شد.</translation>
@@ -240,6 +243,9 @@
 <translation id="3551320343578183772">بستن برگه</translation>
 <translation id="3581564640715911333">پیشنهاد ترجمه صفحات نوشته‌شده به زبان‌های دیگر</translation>
 <translation id="3588820906588687999">باز کردن تصویر در برگه جدید</translation>
+<translation id="359441731697487922">‏با تنظیم Chrome به‌عنوان برنامه مرورگر پیش‌فرض می‌توانید پیوندها را به‌طور خودکار در آن باز کنید.
+      
+مراحل زیر را دنبال کنید:</translation>
 <translation id="3603009562372709545">‏کپی URL پیوند</translation>
 <translation id="3607167657931203000">داده‌های تکمیل خودکار</translation>
 <translation id="3609785682760573515">در حال همگام‌سازی...</translation>
@@ -338,6 +344,7 @@
 <translation id="4808744395915275922">به‌روزرسانی‌ها</translation>
 <translation id="4818522717893377262">افزودن زبان...</translation>
 <translation id="481968316161811770">کوکی‌ها، داده‌های سایت</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain}، و ۱ مورد دیگر}one{{domain} و {count} مورد دیگر}other{{domain} و {count} مورد دیگر}}</translation>
 <translation id="4826218269716039351">مسدود کردن کوکی‌های شخص ثالث</translation>
 <translation id="48274138579728272">علامت‌گذاری به‌عنوان خوانده‌شده</translation>
 <translation id="4833786495304741580">‏به‌طور خودکار آمار کاربرد و گزارش‌های خرابی را به Google ارسال می‌کند.</translation>
@@ -586,6 +593,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7456847797759667638">باز کردن مکان...</translation>
 <translation id="7460314822154045102">استفاده از دوربین</translation>
 <translation id="7464701184726199289">با این کار داده‌های همگام‌سازی‌شده در همه دستگاه‌ها پاک می‌شوند. تنظیمات ذخیره‌شده سایت حذف نمی‌شوند و احتمالاً عادات مرور شما را نشان می‌دهند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">‏۳. Chrome را انتخاب کنید</translation>
 <translation id="7472734401283673885">نام شرکت</translation>
 <translation id="7473891865547856676">نه متشکرم</translation>
 <translation id="7481312909269577407">ارسال کردن</translation>

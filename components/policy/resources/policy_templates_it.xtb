@@ -163,9 +163,6 @@
 <translation id="1252536192437793850">Consenti ai siti di chiedere all'utente di concedere l'accesso a una porta seriale</translation>
 <translation id="1257550411839719984">Imposta directory di download predefinita</translation>
 <translation id="1265053460044691532">Limita il tempo per cui un utente autenticato tramite SAML può eseguire l'accesso offline</translation>
-<translation id="1271840407438458464">Se il criterio viene impostato su un valore valido, <ph name="PRODUCT_NAME" /> non utilizza versioni SSL/TLS precedenti alla versione specificata. I valori non riconosciuti vengono ignorati.
-
-      Se il criterio non viene configurato, <ph name="PRODUCT_NAME" /> utilizza una versione minima predefinita, ovvero TLS 1.0.</translation>
 <translation id="127264587838521316">Attiva le richieste di installazione delle estensioni di <ph name="PRODUCT_NAME" /></translation>
 <translation id="1290634681382861275">Consente di gestire varie impostazioni, tra cui USB, Bluetooth, aggiornamento delle norme, modalità sviluppatore e altre ancora.</translation>
 <translation id="1291880496936992484">Avviso. RC4 sarà rimosso completamente da <ph name="PRODUCT_NAME" /> dopo la versione 52 (nel periodo di settembre 2016), dopodiché questa norma non sarà più attiva.
@@ -340,21 +337,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="1523774894176285446">Browser alternativo da aprire per i siti web configurati.</translation>
 <translation id="152657506688053119">Elenco di URL alternativi per il fornitore del servizio di ricerca predefinito</translation>
 <translation id="1530812829012954197">Visualizza sempre i seguenti schemi URL nel browser host</translation>
-<translation id="1544617932000544686">Se il criterio viene impostato, gli utenti non potranno aggirare le decisioni di sicurezza.
-
-       Se il criterio viene impostato su:
-
-      * Blocca download pericolosi, tutti i download verranno consentiti, ad eccezione di quelli contenenti avvisi di Navigazione sicura.
-
-      * Blocca download potenzialmente pericolosi, tutti i download verranno consentiti, ad eccezione di quelli contenenti avvisi di Navigazione sicura che segnalano la potenziale pericolosità di tali download.
-
-      * Blocca tutti i download, tutti i download verranno bloccati.
-
-      * Blocca i download dannosi, tutti i download verranno consentiti, ad eccezione di quelli che secondo la valutazione di Navigazione sicura sono con molta probabilità malware. A differenza dei download pericolosi, questa opzione non prende in considerazione il tipo di file bensì l'host.
-
-      * Nessuna limitazione speciale, i download saranno sottoposti alle normali limitazioni di sicurezza in base ai risultati dell'analisi di Navigazione sicura.
-
-      Nota: tali limitazioni vengono applicate ai download attivati dai contenuti delle pagine web, nonché all'opzione del menu "Link di download…". Non vengono applicate al download della pagina attualmente visualizzata né all'opzione di stampa relativa al salvataggio in PDF. Leggi ulteriori informazioni sulla Navigazione sicura (https://developers.google.com/safe-browsing).</translation>
 <translation id="1553532014072799546">Whitelist limiti di utilizzo per app</translation>
 <translation id="1553956579506604198">Blocca l'installazione delle estensioni esterne</translation>
 <translation id="1555248923316727072">Impostazioni di gestione dell'identità degli utenti SAML</translation>
@@ -1355,7 +1337,6 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
 
         Il criterio non ha effetto su quelli già pubblicati.</translation>
 <translation id="3016255526521614822">Autorizza l'uso di app per scrivere note nella schermata di blocco di <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="3020064401262077616">Consente di controllare i criteri relativi alla supervisione dei genitori che vengono applicati soltanto agli account di minori.</translation>
 <translation id="3020953534071988875">Se configuri questo criterio, l'autenticazione ambientale verrà attivata o disattivata per i profili Ospite e in modalità in incognito in <ph name="PRODUCT_NAME" />.
 
       L'autenticazione ambientale è l'autenticazione http con credenziali predefinite, se non sono fornite credenziali esplicite tramite schemi NTLM/Kerberos/Negotiate challenge/response.

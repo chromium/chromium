@@ -300,6 +300,7 @@
 <translation id="3943857333388298514">ഒട്ടിക്കുക</translation>
 <translation id="394485226368336402">ഓഡിയോ ക്രമീകരണം</translation>
 <translation id="3962859241508114581">മുമ്പത്തെ ട്രാക്ക്</translation>
+<translation id="3969043077941541451">ഓഫാണ്</translation>
 <translation id="397105322502079400">കണക്കാക്കുന്നു...</translation>
 <translation id="3977512764614765090">ബാറ്ററി <ph name="PERCENTAGE" />% ഉണ്ട്, ചാർജ് ചെയ്യുകയുമാണ്.</translation>
 <translation id="3995138139523574647">USB-C ഉപകരണം (വലതുവശത്ത് പിന്നിലെ പോർട്ട്)</translation>
@@ -310,6 +311,7 @@
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">നിങ്ങൾ സ്‌ക്രീൻ പങ്കിടുന്നു</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ആപ്പിൽ അറിയിപ്പ് ഓഫ്}other{# ആപ്പിൽ അറിയിപ്പ് ഓഫ്}}</translation>
+<translation id="4066027111132117168">ഓണാണ്, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">ഇടത്തരം സിഗ്നൽ</translation>
 <translation id="4112140312785995938">പുറകിലേക്ക് നീക്കുക</translation>
 <translation id="4114315158543974537">ഫോൺ ഹബ് ഓണാക്കുക</translation>
@@ -564,6 +566,7 @@
 <translation id="6803622936009808957">പിന്തുണയ്‌ക്കുന്ന മിഴിവുകൾ കണ്ടെത്താത്തതിനാൽ പ്രദർശനങ്ങൾ പ്രതിഫലിപ്പിക്കാനായില്ല. പകരം വിപുലീകൃത ഡെസ്‌ക്‌ടോപ്പ് നൽകി.</translation>
 <translation id="6818242057446442178">ഒരു വാക്ക് പിന്നിലേക്ക് പോവുക</translation>
 <translation id="6820676911989879663">ഒരു ഇടവേള എടുക്കൂ!</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> സജീവമാക്കുക</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ഒരു അക്കം ശേഷിക്കുന്നു}other{# അക്കങ്ങൾ ശേഷിക്കുന്നു}}</translation>
 <translation id="6878400149835617132">കുറുക്കുവഴി ഓഫാക്കിയിരിക്കുന്നു</translation>
@@ -632,6 +635,7 @@
 <translation id="7600875258240007829">എല്ലാ അറിയിപ്പുകളും കാണുക</translation>
 <translation id="7618774594543487847">ന്യൂട്രൽ</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7633755430369750696">സമീപമുള്ള പങ്കിടൽ ക്രമീകരണം കാണിക്കുക.</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" /> എന്നതിനുള്ള ക്രമീകരണം തുറക്കുക, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ഉടമ)</translation>
 <translation id="7647488630410863958">നിങ്ങളുടെ അറിയിപ്പുകൾ കാണാൻ ഉപകരണം അൺലോക്ക് ചെയ്യുക</translation>
@@ -647,6 +651,7 @@
 <translation id="7780159184141939021">സ്‌ക്രീൻ തിരിക്കുക</translation>
 <translation id="7796353162336583443">കുറിപ്പോ സ്‌ക്രീന്‍ഷോട്ടോ എടുക്കാനും Google സഹായിയോ ലേസർ പോയിന്‍ററോ ഭൂതക്കണ്ണാടിയോ ഉപയോഗിക്കാനും ഷെൽഫിലെ സ്‌റ്റൈലസ് ബട്ടൺ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="7798302898096527229">റദ്ദാക്കാൻ 'തിരയൽ' അല്ലെങ്കിൽ Shift അമർത്തുക.</translation>
+<translation id="781126011916719498">പ്രധാനപ്പെട്ട ഫയലുകൾ വേഗത്തിൽ ആക്സസ് ചെയ്യുക. ഒരു ഫയൽ പിൻ ചെയ്യാൻ അതിൽ വലത്-ക്ലിക്ക് ചെയ്യുകയോ സ്‌പർശിച്ച് പിടിക്കുകയോ ചെയ്യുക.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" />, <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">ശക്തിയുള്ള സിഗ്നൽ</translation>
 <translation id="7837740436429729974">സമയം കഴിഞ്ഞു</translation>
@@ -790,6 +795,7 @@
 <translation id="9089416786594320554">ഇൻപുട്ട്  രീതികൾ</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> ഡിസ്‌പ്ലേ നീക്കംചെയ്‌തു</translation>
 <translation id="9151726767154816831">അപ്‌ഡേറ്റ് ചെയ്യാൻ, റീസ്റ്റാർട്ട് ചെയ്ത് powerwash ചെയ്യുക</translation>
+<translation id="9166331175924255663">സമീപമുള്ള പങ്കിടലിന്റെ ഉയർന്ന ദൃശ്യപരത മാറ്റുക.</translation>
 <translation id="9168436347345867845">ഇത് പിന്നീട് ചെയ്യുക</translation>
 <translation id="9179259655489829027">സൈൻ ഇൻ ചെയ്‌ത ഏതൊരു ഉപയോക്താവിനെ പാസ്‌വേഡ് ഇല്ലാതെ തന്നെ വേഗത്തിൽ ആക്‌സസ് ചെയ്യാൻ ഈ ഫീച്ചർ നിങ്ങളെ അനുവദിക്കുന്നു. നിങ്ങൾക്ക് വിശ്വാസമുള്ള അക്കൗണ്ടുകളിൽ മാത്രം ഈ ഫീച്ചർ ഉപയോഗിക്കുക.</translation>
 <translation id="9183456764293710005">പൂർണ്ണ സ്ക്രീൻ മാഗ്നിഫയർ</translation>

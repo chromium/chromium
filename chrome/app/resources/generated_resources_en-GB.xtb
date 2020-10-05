@@ -123,6 +123,7 @@
 <translation id="1134009406053225289">Open in incognito window</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> of <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">The security key is locked because the wrong PIN was entered too many times. To unlock it, remove and reinsert it.</translation>
+<translation id="1137589305610962734">temporary data</translation>
 <translation id="1137673463384776352">Open link in <ph name="APP" /></translation>
 <translation id="1139343347646843679">There was an error while configuring Linux. Please contact your administrator.</translation>
 <translation id="1140351953533677694">Access your Bluetooth and Serial devices</translation>
@@ -984,6 +985,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2131077480075264">Unable to install "<ph name="APP_NAME" />" because it is not allowed by "<ph name="IMPORT_NAME" />"</translation>
 <translation id="21354425047973905">Hide PINs</translation>
 <translation id="2135456203358955318">Docked magnifier</translation>
+<translation id="2135468118189259524">Learn about the data that Google collects and why at <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" />.</translation>
 <translation id="2135787500304447609">&amp;Resume</translation>
 <translation id="2136372518715274136">Enter new password</translation>
 <translation id="2136476978468204130">The passphrase you entered is incorrect</translation>
@@ -3645,6 +3647,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5307030433605830021">Source not supported</translation>
 <translation id="5308380583665731573">Connect</translation>
 <translation id="5310281978693206542">Send Link to Your Devices</translation>
+<translation id="531118851858162334">You’re seeing this item based on your previous activity using Google services. You can see your data, delete it and change your settings at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="5311304534597152726">Signing in as</translation>
 <translation id="5311565231560644461">Do not allow sites to use your virtual reality devices and data</translation>
 <translation id="5314381603623123224">Chrome’s Terms of Service are changing on 31 March</translation>
@@ -6234,6 +6237,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8378714024927312812">Managed by your organisation</translation>
 <translation id="8379878387931047019">This device doesn't support the type of security key requested by this website</translation>
 <translation id="8379991678458444070">Get back here fast by bookmarking this tab</translation>
+<translation id="8380266723152870797">Window name</translation>
 <translation id="8382384117483909115">{NUM_TABS,plural, =1{Read tab later}other{Read tabs later}}</translation>
 <translation id="8382913212082956454">Copy &amp;email address</translation>
 <translation id="8386091599636877289">Policy not found.</translation>
@@ -6398,6 +6402,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8592141010104017453">Don't show notifications at all</translation>
 <translation id="859246725979739260">This site has been blocked from accessing your location.</translation>
 <translation id="8593121833493516339">Send usage and diagnostic data. Help improve your child's Android experience by automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If additional Web &amp; App Activity is turned on for your child, this data may be saved to their Google Account. <ph name="BEGIN_LINK1" />Find out more<ph name="END_LINK1" /></translation>
+<translation id="8593735906501637689">Removed <ph name="MODULE_TITLE" /></translation>
 <translation id="8594908476761052472">Capture video</translation>
 <translation id="8596540852772265699">Customised Files</translation>
 <translation id="8597845839771543242">Property format:</translation>

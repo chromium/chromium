@@ -176,7 +176,6 @@ Sakatu bilatu nahi duzun hitza. Bilaketa mugatzeko, eduki testua sakatuta eta ha
 <translation id="2321086116217818302">Pasahitzak prestatzen…</translation>
 <translation id="2321958826496381788">Arrastatu graduatzailea testu hau erraz irakurri ahal izan arte. Testuak gutxienez hau bezain handia izan beharko du paragrafoan klik bikoitza egin ondoren.</translation>
 <translation id="2323763861024343754">Webguneen datuak</translation>
-<translation id="2326606747676847821">Aktibatu ezkutuko modua</translation>
 <translation id="2328985652426384049">Ezin da hasi saioa</translation>
 <translation id="234265804618409743">Ezin da ireki kamera. Arazoren bat izan da.</translation>
 <translation id="2345671828921229300">Bilatzeko, eduki hitz bat sakatuta</translation>
@@ -215,7 +214,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="2537178555904266562">Errore bat gertatu da pasahitzak sinkronizatzean</translation>
 <translation id="2546283357679194313">Cookieak eta webgune-datuak</translation>
 <translation id="2567385386134582609">IRUDIA</translation>
-<translation id="2571711316400087311">Eskaini beste hizkuntzetan dauden orriak Google Translate-era bidaltzea</translation>
+<translation id="2571711316400087311">Eskaini beste hizkuntzetan dauden orriak Google Translate-ra bidaltzea</translation>
 <translation id="2581165646603367611">Chrome-k garrantzi gabekotzat jotzen dituen cookieak, cachea eta bestelako datuak ezabatuko dira.</translation>
 <translation id="2587052924345400782">Bertsio berriagoa dago</translation>
 <translation id="2593272815202181319">Tarte bakarrekoak</translation>
@@ -346,6 +345,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="3587482841069643663">Guztiak</translation>
 <translation id="3587596251841506391">Hobetu sareko segurtasuna</translation>
 <translation id="3599863153486145794">Saioa hasita daukaten gailu guztietako historia garbitzen du. Google-ko kontuko historia arakatzeko beste modu batzuk aurki zenitzake <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webgunean.</translation>
+<translation id="3602290021589620013">Aurrebista</translation>
 <translation id="3616113530831147358">Audioa</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> gailuarekin partekatzen</translation>
 <translation id="3632295766818638029">Erakutsi pasahitza</translation>
@@ -598,6 +598,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5527082711130173040">Chrome-k kokapenerako sarbidea izan behar du gailuak bilatzeko. <ph name="BEGIN_LINK1" />Eguneratu baimenak<ph name="END_LINK1" />. Kokapenerako sarbidea <ph name="BEGIN_LINK2" />desaktibatuta dago gailu honetan<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Itxi ezkutuko moduko fitxak</translation>
 <translation id="5534640966246046842">Kopiatu da webgunea</translation>
+<translation id="5556459405103347317">Kargatu berriro</translation>
 <translation id="5561549206367097665">Konektatzeko zain…</translation>
 <translation id="55737423895878184">Kokapena eta jakinarazpenak onartzen dira</translation>
 <translation id="5578795271662203820">Bilatu irudia <ph name="SEARCH_ENGINE" /> bilatzailean</translation>
@@ -659,7 +660,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5937580074298050696"><ph name="AMOUNT" /> aurreztu dira</translation>
 <translation id="5939518447894949180">Berrezarri</translation>
 <translation id="5942872142862698679">Google erabiliko da bilatzaile gisa</translation>
-<translation id="5951615825629292797">Hizkuntza-paketea prest dago, berrabiarazi <ph name="APP_NAME" /></translation>
+<translation id="5951615825629292797">Hizkuntza-paketea prest dago; berrabiarazi <ph name="APP_NAME" /></translation>
 <translation id="5952764234151283551">Atzitu nahi duzun orriaren URLa bidaltzen dio Google-ri</translation>
 <translation id="5956665950594638604">Ireki Chrome laguntza-zentroa beste fitxa batean</translation>
 <translation id="5957442310066583693">Zure webgune nagusiak ikusteko, sakatu Hasiera botoia</translation>
@@ -913,9 +914,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="766587987807204883">Artikuluak agertuko dira hemen, nahi duzunean irakur ditzazun, baita konektatuta ez bazaude ere</translation>
 <translation id="7682724950699840886">Saiatu hau egiten: ziurtatu gailuan behar adina toki duzula eta saiatu berriro esportatzen.</translation>
 <translation id="7698359219371678927">Sortu mezu elektronikoa <ph name="APP_NAME" /> aplikazioan</translation>
-<translation id="7702724591845223485">Saioa hasteko informazioa eta Chrome-n dauzkazun bestelako datuak garbitzeko, itxi ezkutuko moduko fitxa guztiak.
-
-Nahiz eta ezkutuko moduan egon, baliteke bisitatzen dituzun webguneek, zure enpresak edo ikastetxeak, eta Interneteko zerbitzu-hornitzaileek zure jarduerak ikusten jarraitzea.</translation>
 <translation id="7704317875155739195">Bete automatikoki bilaketak eta URLak</translation>
 <translation id="7725024127233776428">Hemen agertuko dira laster-marka egin diezun orriak</translation>
 <translation id="7735637452482172701">Desblokeatu pantailaren blokeoarekin</translation>
@@ -1057,7 +1055,7 @@ Nahiz eta ezkutuko moduan egon, baliteke bisitatzen dituzun webguneek, zure enpr
 <translation id="8683039184091909753">irudia</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Seinalearen indarra: # barra}other{Seinalearen indarra: # barra}}</translation>
 <translation id="869891660844655955">Iraungitze-data</translation>
-<translation id="8699120352855309748">Ez eskaini hizkuntza hauetara itzultzea</translation>
+<translation id="8699120352855309748">Ez eskaini hizkuntza hauek itzultzea</translation>
 <translation id="8712637175834984815">Ados</translation>
 <translation id="8725066075913043281">Saiatu berriro</translation>
 <translation id="8748850008226585750">Ezkutatuta dago edukia</translation>

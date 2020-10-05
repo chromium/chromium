@@ -163,9 +163,6 @@ Jika kebijakan ini tidak disetel, setelan default-nya dinonaktifkan bagi penggun
 <translation id="1252536192437793850">Izinkan situs meminta pengguna memberikan akses ke port serial</translation>
 <translation id="1257550411839719984">Setel direktori download default</translation>
 <translation id="1265053460044691532">Batasi waktu bagi pengguna yang diautentikasi melalui SAML untuk dapat masuk saat offline.</translation>
-<translation id="1271840407438458464">Jika kebijakan disetel ke nilai yang valid, <ph name="PRODUCT_NAME" /> tidak akan menggunakan versi SSL/TLS lebih rendah dari versi yang ditentukan. Nilai yang tidak dikenal akan diabaikan.
-
-      Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan menggunakan versi minimum default TLS 1.0.</translation>
 <translation id="127264587838521316">Mengaktifkan permintaan penginstalan ekstensi <ph name="PRODUCT_NAME" /></translation>
 <translation id="1290634681382861275">Mengontrol berbagai setelan antara lain USB, bluetooth, pembaruan kebijakan, mode developer, dan lainnya.</translation>
 <translation id="1291880496936992484">Peringatan: RC4 akan dihapus sepenuhnya dari <ph name="PRODUCT_NAME" /> setelah versi 52 (sekitar September 2016) dan sejak saat itu kebijakan ini tidak akan berlaku lagi.
@@ -350,21 +347,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="1523774894176285446">Browser alternatif untuk membuka situs yang dikonfigurasi.</translation>
 <translation id="152657506688053119">Daftar URL pengganti untuk penyedia penelusuran default</translation>
 <translation id="1530812829012954197">Selalu urai pola URL berikut di browser host</translation>
-<translation id="1544617932000544686">Jika kebijakan disetel, pengguna tidak dapat mengabaikan keputusan keamanan download.
-
-       Jika kebijakan disetel ke:
-
-      * Blokir download berbahaya, semua download akan diizinkan, kecuali yang menyertakan peringatan Safe Browsing.
-
-      * Blokir download yang berpotensi berbahaya, semua download akan diizinkan, kecuali yang menyertakan peringatan Safe Browsing tentang download yang berpotensi berbahaya.
-
-      * Blokir semua download, semua download akan diblokir.
-
-      * Blokir download berbahaya, semua download akan diizinkan, kecuali yang dinilai sebagai malware oleh Safe Browsing dengan tingkat keyakinan tinggi. Berbeda dengan download berbahaya, opsi ini tidak mempertimbangkan jenis file, tetapi mempertimbangkan host.
-
-      * Tidak ada batasan khusus, semua download akan melalui batasan keamanan yang biasa berdasarkan hasil analisis Safe Browsing.
-
-      Catatan: Batasan ini berlaku untuk download yang dipicu dari konten halaman web, serta dari opsi menu Download link.... Batasan ini tidak berlaku untuk download halaman yang sedang ditampilkan, atau untuk penyimpanan sebagai PDF dari opsi pencetakan. Baca selengkapnya tentang Safe Browsing (https://developers.google.com/safe-browsing).</translation>
 <translation id="1553532014072799546">Daftar yang Diizinkan terkait Batas Waktu per Aplikasi</translation>
 <translation id="1553956579506604198">Memblokir ekstensi eksternal sehingga tidak dapat diinstal</translation>
 <translation id="1555248923316727072">Setelan pengelolaan identitas pengguna SAML</translation>
@@ -1373,7 +1355,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
         Kebijakan ini tidak memengaruhi kebijakan yang sudah dirilis.</translation>
 <translation id="3016255526521614822">Beri akses aplikasi pencatat yang diizinkan di layar kunci <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="3020064401262077616">Mengontrol kebijakan pengawasan orang tua, yang diterapkan hanya ke akun anak.</translation>
 <translation id="3020953534071988875">Jika kebijakan ini dikonfigurasi, profil Samaran dan Tamu di <ph name="PRODUCT_NAME" /> akan diizinkan/dilarang untuk melakukan autentikasi pasif.
 
       Autentikasi Pasif adalah autentikasi http dengan kredensial default jika kredensial eksplisit tidak diberikan melalui skema verifikasi/respons NTLM/Kerberos/Negotiate.

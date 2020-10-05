@@ -44,7 +44,6 @@
 <translation id="19085484004813472">මෙය නව විශේෂාංගයකි</translation>
 <translation id="2006524834898217237">මෙම උපාංගය අන්තර්ජාලයට සම්බන්ධ වී තිබෙන බව තහවුරු කර ගන්න.</translation>
 <translation id="208586643495776849">නැවත උත්සාහ කරන්න</translation>
-<translation id="2090963878406559571"><ph name="ORIGIN" /> සිට ඔබේ Android දුරකථනයට අංකයක් යැවීමට, සැකසීම් තුළ උපාංග දෙකම සඳහා <ph name="TROUBLESHOOT_LINK" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1d}one{#d}other{#d}}</translation>
 <translation id="2148716181193084225">අද</translation>
 <translation id="2161656808144014275">පාඨය</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">අනාවරණය ත්‍රිකෝණය</translation>
 <translation id="5278860589123563674">යැවීම අසාර්ථකයි</translation>
 <translation id="528468243742722775">අවසන් කරන්න</translation>
-<translation id="5327567770033251652">සමමුහුර්තය ක්‍රියාත්මක කරන්න</translation>
 <translation id="5329858601952122676">&amp;මකන්න</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> ට වඩා <ph name="DRAGGED_APP_NAME" /> , ෆෝල්ඩරය නිර්මාණ කිරීමට මුදා හරියි.</translation>
 <translation id="5463830097259460683">ඉමොජි &amp;&amp; සංකේත</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">නම් නොකළ</translation>
 <translation id="6612467943526193239">ක්‍රමාංකනයෙන් පිට වීමට Esc ඔබන්න.</translation>
 <translation id="6620110761915583480">ගොනුව සුරකින්න</translation>
-<translation id="6656912866303152668">Chrome තුළ <ph name="TARGET_DEVICE_NAME" /> ට සමමුහූර්තය සක්‍රීය කර තිබීම තහවුරු කර ගෙන, පසුව නැවත යැවීමට උත්සාහ කරන්න.</translation>
 <translation id="6699343763173986273">මාධ්‍යය ඊළඟ ඛණ්ඩය</translation>
 <translation id="6710213216561001401">පෙර</translation>
-<translation id="6779314412797872738">මෙහි සිට ඔබේ Android දුරකථනයට අංකයක් යැවීමට, සැකසීම් තුළ උපාංග දෙකම සඳහා <ph name="TROUBLESHOOT_LINK" />.</translation>
 <translation id="6786750046913594791">ෆෝල්ඩරය වසන්න</translation>
 <translation id="6808150112686056157">මාධ්‍ය නැවතුම</translation>
 <translation id="6845383723252244143">ෆෝල්ඩරය තෝරන්න</translation>

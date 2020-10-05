@@ -176,7 +176,6 @@ Puudutage otsimiseks mis tahes sõna. Otsingu täpsustamiseks puudutage pikalt, 
 <translation id="2321086116217818302">Paroolide ettevalmistamine …</translation>
 <translation id="2321958826496381788">Lohistage liugurit, kuni saate seda mugavalt lugeda. Lõigu topeltkoputamisel peab tekst olema vähemalt nii suur.</translation>
 <translation id="2323763861024343754">Saidi salvestusruum</translation>
-<translation id="2326606747676847821">Ava inkognito režiim</translation>
 <translation id="2328985652426384049">Ei saa sisse logida</translation>
 <translation id="234265804618409743">Kaamerat ei saa avada. Midagi läks valesti.</translation>
 <translation id="2345671828921229300">Otsimiseks puudutage sõna pikalt</translation>
@@ -346,6 +345,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="3587482841069643663">Kõik</translation>
 <translation id="3587596251841506391">Aidake veebi turvalisemaks muuta</translation>
 <translation id="3599863153486145794">Kustutab ajaloo kõigist sisselogitud seadmetest. Aadressil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> võib teie Google'i kontol olla muus vormis sirvimisajalugu.</translation>
+<translation id="3602290021589620013">Eelvaade</translation>
 <translation id="3616113530831147358">Heli</translation>
 <translation id="3631987586758005671">Jagamine seadmega <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">Parooli kuvamine</translation>
@@ -598,6 +598,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5527082711130173040">Chrome vajab seadmete otsimiseks juurdepääsu teie asukohale. <ph name="BEGIN_LINK1" />Värskendage lube<ph name="END_LINK1" />. Juurdepääs asukohale on samuti <ph name="BEGIN_LINK2" />selles seadmes välja lülitatud<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Inkognito vahelehtede sulgemine</translation>
 <translation id="5534640966246046842">Sait on kopeeritud</translation>
+<translation id="5556459405103347317">Laadi uuesti</translation>
 <translation id="5561549206367097665">Võrguühenduse ootamine …</translation>
 <translation id="55737423895878184">Asukoht ja märguanded on lubatud</translation>
 <translation id="5578795271662203820">Otsi otsingust <ph name="SEARCH_ENGINE" /> kujutist</translation>
@@ -666,6 +667,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5958275228015807058">Leidke oma failid ja lehed jaotisest Allalaadimised</translation>
 <translation id="5962718611393537961">Ahendamiseks puudutage</translation>
 <translation id="5964805880140440652">Selle lehe jagamiseks teise seadmega lülitage sünkroonimine Chrome'i seadetes sisse</translation>
+<translation id="5964869237734432770">Piltide kirjelduste peatam.</translation>
 <translation id="5979084224081478209">Kontrolli paroole</translation>
 <translation id="6000066717592683814">Säilita Google</translation>
 <translation id="6005538289190791541">Soovitatud parool</translation>
@@ -693,6 +695,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="6157392216611456285">Valige <ph name="APP_NAME" /></translation>
 <translation id="6159335304067198720">Andmemahu kokkuhoid: <ph name="PERCENT" /></translation>
 <translation id="6186394685773237175">Ohustatud paroole ei leitud</translation>
+<translation id="6192907950379606605">Piltide kirjelduste saamine</translation>
 <translation id="6206830853671714236">Valige, millal alla laadida</translation>
 <translation id="6210748933810148297">Kas pole <ph name="EMAIL" />?</translation>
 <translation id="6218096829563201111">Otsige sarnaseid tooteid <ph name="BEGIN_NEW" />Uus<ph name="END_NEW" /></translation>
@@ -762,6 +765,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6590471736817333463">Säästke kuni 60% andmemahtu</translation>
 <translation id="6590680911007613645">Veenduge, et salvestatav parool ühtiks teie teenuses <ph name="SITE" /> kasutatava parooliga</translation>
 <translation id="6593061639179217415">Arvutisait</translation>
+<translation id="6595046016124923392">Pildid saadetakse kirjelduste täiendamiseks Google'ile.</translation>
 <translation id="6597891566292541626">Paigutage QR-/ribakood sellesse kaadrisse.</translation>
 <translation id="6600954340915313787">Chrome'i kopeeritud</translation>
 <translation id="661266467055912436">Täiendab turvalisust teie ja kõigi teiste veebikasutajate jaoks.</translation>
@@ -820,6 +824,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="702463548815491781">Soovitatav juhul, kui TalkBack või lülitiga juurdepääs on sisse lülitatud</translation>
 <translation id="7029809446516969842">Paroolid</translation>
 <translation id="703523980599857277">Avalehe muutmine</translation>
+<translation id="7054588988317389591">Kas saada piltide kirjeldusi?</translation>
 <translation id="7055152154916055070">Ümbersuunamine blokeeriti:</translation>
 <translation id="7063006564040364415">Sünkroonimisserveriga ei saanud ühendust.</translation>
 <translation id="7071521146534760487">Konto haldamine</translation>
@@ -851,6 +856,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="729975465115245577">Seadmes pole sünkroonimiseks piisavalt salvestusruumi.</translation>
 <translation id="7302081693174882195">Üksikasjad: sorditud säästetud andmemahu alusel</translation>
 <translation id="7304873321153398381">Võrguühenduseta. Chrome ei saa teie paroole kontrollida.</translation>
+<translation id="7313188324932846546">Puudutage sünkroonimise seadistamiseks</translation>
 <translation id="7328017930301109123">Lihtsustatud režiimis laadib Chrome lehti kiiremini ja kasutab kuni 60 protsenti vähem andmemahtu.</translation>
 <translation id="7333031090786104871">Eelmist saiti alles lisatakse</translation>
 <translation id="7340958967809483333">Funktsiooni Discover valikud</translation>
@@ -908,9 +914,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="766587987807204883">Artiklid kuvatakse siin ja saate neid lugeda ka võrguühenduseta</translation>
 <translation id="7682724950699840886">Järgige neid nõuandeid: veenduge, et seadmes oleks piisavalt ruumi, seejärel proovige uuesti eksportida.</translation>
 <translation id="7698359219371678927">Looge meil rakenduses <ph name="APP_NAME" /></translation>
-<translation id="7702724591845223485">Chrome'ist sisselogimisandmete ja muude andmete kustutamiseks sulgege kõik inkognito aknad.
-
-Inkognito režiimis tehtud toimingud võivad siiski olla nähtavad külastatavatele veebisaitidele, teie tööandjale, koolile ja internetiteenusepakkujale.</translation>
 <translation id="7704317875155739195">Otsingute ja URL-ide automaatne täitmine</translation>
 <translation id="7725024127233776428">Järjehoidjatesse lisatud lehed kuvatakse siin</translation>
 <translation id="7735637452482172701">Ava ekraanilukuga</translation>
@@ -1045,6 +1048,7 @@ Inkognito režiimis tehtud toimingud võivad siiski olla nähtavad külastatavat
 <translation id="8636825310635137004">Vahelehtede hankimiseks oma teistest seadmetest lülitage sünkroonimine sisse.</translation>
 <translation id="8641930654639604085">Proovi blokeerida täiskasvanutele mõeldud saidid</translation>
 <translation id="8655129584991699539">Andmeid saab kustutada Chrome’i seadetes.</translation>
+<translation id="8656747343598256512">Logite sellele saidile ja Chrome'i sisse oma Google'i kontoga. Sünkroonimise saate hiljem sisse lülitada.</translation>
 <translation id="8659579665266920523">Kuidas Chrome'iga otsida?</translation>
 <translation id="8662811608048051533">Logib teid enamikult saitidelt välja.</translation>
 <translation id="8664979001105139458">Faili nimi on juba olemas</translation>
@@ -1064,6 +1068,7 @@ Inkognito režiimis tehtud toimingud võivad siiski olla nähtavad külastatavat
 <translation id="8840953339110955557">Leht võib veebiversioonist erineda.</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, vahekaart</translation>
 <translation id="8854223127042600341">Vaadake oma võrguühenduseta faile</translation>
+<translation id="8856607253650333758">Esita kirjeldusi</translation>
 <translation id="8873817150012960745">Alustamiseks puudutage siin</translation>
 <translation id="889338405075704026">Ava Chrome'i seaded</translation>
 <translation id="8898822736010347272">Saadab mõne teie külastatud lehe URL-i, piiratud süsteemiteabe ja mõne lehe sisu Google'ile, et aidata avastada uusi ohte ja veebis kõiki kaitsta.</translation>

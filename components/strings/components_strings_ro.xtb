@@ -134,6 +134,7 @@
 <translation id="1453974140256777690">Textul pe care îl introduci sau atașezi este trimis la Google Cloud sau la terți spre analiză. De exemplu, se pot căuta date sensibile.</translation>
 <translation id="1455413310270022028">Radieră</translation>
 <translation id="1462245070427461050">JIS B9</translation>
+<translation id="1462951478840426066">să folosească fonturile de pe computer ca să poți crea conținut de înaltă fidelitate.</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">Stânga</translation>
 <translation id="1472675084647422956">Afișați mai multe</translation>
@@ -221,6 +222,7 @@
 <translation id="17513872634828108">File deschise</translation>
 <translation id="1752021286346845558">Căsuța de e-mail 8</translation>
 <translation id="1753706481035618306">Numărul paginii</translation>
+<translation id="1757773103848038814">Font Monospace</translation>
 <translation id="1763864636252898013">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; sistemul de operare al dispozitivului nu consideră că certificatul său de securitate este de încredere. Cauza poate fi o configurare greșită sau interceptarea conexiunii de către un atacator.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Rulează Diagnostice rețea Windows<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">Serverul pe care dorești să îl accesezi, <ph name="ORIGIN" />, a setat un antet care solicită
@@ -592,6 +594,7 @@
 <translation id="3395827396354264108">Metodă de preluare</translation>
 <translation id="3399952811970034796">Adresă de livrare</translation>
 <translation id="3402261774528610252">Conexiunea folosită pentru a încărca acest site a utilizat TLS 1.0 sau TLS 1.1, care sunt învechite și vor fi dezactivate în viitor. După dezactivare, utilizatorii nu vor mai putea să încarce site-ul. Serverul ar trebui să activeze TLS 1.2 sau o versiune ulterioară.</translation>
+<translation id="3411120537985775570">Inserarea de pe <ph name="ORIGIN_NAME" /> în această locație a fost blocată de administrator</translation>
 <translation id="3414952576877147120">Dimensiune:</translation>
 <translation id="3417660076059365994">Fișierele pe care le încarci sau atașezi sunt trimise la Google Cloud sau la terți spre analiză. De exemplu, se pot căuta date sensibile sau programe malware.</translation>
 <translation id="3422248202833853650">Încearcă să ieși din celelalte programe pentru a elibera memoria.</translation>
@@ -630,6 +633,7 @@
 <translation id="3532844647053365774"><ph name="HOST" /> dorește să utilizeze microfonul</translation>
 <translation id="3533328374079021623">Căsuța de e-mail 5</translation>
 <translation id="3539171420378717834">Păstrează o copie a cardului pe dispozitiv</translation>
+<translation id="3552297013052089404">Font Sans Serif</translation>
 <translation id="3558573058928565255">În timpul zilei</translation>
 <translation id="3566021033012934673">Conexiunea nu este privată</translation>
 <translation id="3567778190852720481">Nu te poți înregistra folosind contul de companie (contul de companie nu este eligibil).</translation>
@@ -998,6 +1002,7 @@
 <translation id="503069730517007720">Un certificat rădăcină pentru „<ph name="SOFTWARE_NAME" />” este necesar, dar nu este instalat. Administratorul IT trebuie să verifice instrucțiunile de configurare pentru „<ph name="SOFTWARE_NAME" />” ca să remedieze problema. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Despre Google Traducere</translation>
 <translation id="503498442187459473"><ph name="HOST" /> dorește să utilizeze camera foto și microfonul</translation>
+<translation id="5039762155821394373">Dimensiunea fontului</translation>
 <translation id="5039804452771397117">Permite</translation>
 <translation id="5040262127954254034">Confidențialitate</translation>
 <translation id="5043480802608081735">Linkul copiat de tine</translation>
@@ -1264,6 +1269,7 @@
 <translation id="6051221802930200923">Nu poți accesa <ph name="SITE" /> acum, deoarece site-ul folosește fixarea certificatelor. Erorile de rețea și atacurile sunt de obicei temporare și probabil că această pagină va funcționa mai târziu.</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">Permiți detectarea prezenței?</translation>
+<translation id="6057359309778282021">Administratorul a blocat permiterea accesului de pe <ph name="ORIGIN_NAME" /> la <ph name="VM_NAME" /></translation>
 <translation id="6058977677006700226">Folosești cardurile pe toate dispozitivele?</translation>
 <translation id="6059925163896151826">Dispozitive USB</translation>
 <translation id="6060009363608157444">Mod DnsOverHttps nevalid.</translation>
@@ -1313,6 +1319,7 @@
         <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">Nu se poate livra la această adresă. Selectează altă adresă.</translation>
 <translation id="6282194474023008486">Cod poștal</translation>
+<translation id="6289939620939689042">Culoarea paginii</translation>
 <translation id="6290238015253830360">Articolele sugerate apar aici</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Asistentul Google în Chrome se oprește</translation>
@@ -1469,6 +1476,7 @@
 <translation id="7004583254764674281">Folosește Windows Hello ca să confirmi mai repede cardurile</translation>
 <translation id="7006930604109697472">Trimite oricum</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7014741021609395734">Nivel de zoom</translation>
 <translation id="7016992613359344582">Aceste costuri pot fi unice sau recurente și ascunse.</translation>
 <translation id="7029809446516969842">Parole</translation>
 <translation id="7031646650991750659">aplicațiile Google Play instalate.</translation>
@@ -1871,6 +1879,7 @@ Detalii suplimentare:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Parolele nu corespund. Afișează toate parolele salvate.</translation>
 <translation id="8625384913736129811">Salvează cardul pe acest dispozitiv</translation>
+<translation id="8657078576661269990">Administratorul a blocat permiterea accesului de pe <ph name="ORIGIN_NAME" /> la <ph name="VM_NAME_1" /> și la <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Rezumatul comenzii, <ph name="TOTAL_LABEL" />, Mai multe detalii</translation>
 <translation id="867224526087042813">Semnătura</translation>
 <translation id="8676424191133491403">Fără întârziere</translation>
@@ -1883,6 +1892,7 @@ Detalii suplimentare:
 <translation id="8699041776323235191">Dispozitiv HID</translation>
 <translation id="8703575177326907206">Conexiunea la <ph name="DOMAIN" /> nu este criptată.</translation>
 <translation id="8705331520020532516">Număr de serie</translation>
+<translation id="8710842507289500830">Stilul fontului</translation>
 <translation id="8718314106902482036">Plata nu a fost finalizată</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, sugestie de căutare</translation>
 <translation id="8719528812645237045">Perforare multiplă în partea de sus</translation>
@@ -2003,6 +2013,7 @@ Detalii suplimentare:
 <translation id="9191834167571392248">Perforare în stânga jos</translation>
 <translation id="9205078245616868884">Datele sunt criptate cu expresia de acces pentru sincronizare. Introdu-o pentru a începe sincronizarea.</translation>
 <translation id="9207861905230894330">Articolul nu a fost adăugat.</translation>
+<translation id="9213433120051936369">Personalizează aspectul</translation>
 <translation id="9215416866750762878">O aplicație împiedică browserul Chrome să se conecteze în siguranță la acest site</translation>
 <translation id="9219103736887031265">Imagini</translation>
 <translation id="933712198907837967">Diners Club</translation>

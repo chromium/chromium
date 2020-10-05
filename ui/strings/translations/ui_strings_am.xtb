@@ -44,7 +44,6 @@
 <translation id="19085484004813472">ይህ አዲስ ባህሪ ነው</translation>
 <translation id="2006524834898217237">ይህ መሣሪያ ወደ በይነ መረብ እንደተገናኘ እርግጠኛ ይሁኑ።</translation>
 <translation id="208586643495776849">እባክዎ እንደገና ይሞክሩ</translation>
-<translation id="2090963878406559571">አንድ ቁጥር ከ<ph name="ORIGIN" /> ወደ የእርስዎ Android ስልክ ለመላክ በቅንብሮች ውስጥ ለሁሉም መሣሪያዎች <ph name="TROUBLESHOOT_LINK" />።</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1ቀ}one{#ቀ}other{#ቀ}}</translation>
 <translation id="2148716181193084225">ዛሬ</translation>
 <translation id="2161656808144014275">ጽሑፍ</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">ይፋ ማሳወቂያ ሦስት ማዕዘን</translation>
 <translation id="5278860589123563674">መላክ አልተሳካም</translation>
 <translation id="528468243742722775">ጨርስ</translation>
-<translation id="5327567770033251652">ስምረትን አብራ</translation>
 <translation id="5329858601952122676">&amp;ሠርዝ</translation>
 <translation id="5395308026110844773">በ<ph name="IN_PLACE_APP" /> ላይ <ph name="DRAGGED_APP_NAME" />፣ አቃፊ ለመፍጠር ይልቀቁት።</translation>
 <translation id="5463830097259460683">ስሜት ገላጭ ምስሎች እና ምልክቶች</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">ያልተሰየመ</translation>
 <translation id="6612467943526193239">ከመቃኘት ለመውጣት Escን ይጫኑ።</translation>
 <translation id="6620110761915583480">ፋይል አስቀምጥ</translation>
-<translation id="6656912866303152668"><ph name="TARGET_DEVICE_NAME" /> በ Chrome ውስጥ ስምረት እንደበራለት ያረጋግጡ እና በመቀጠል እንደገና ለመላክ ይሞክሩ።</translation>
 <translation id="6699343763173986273">የሚዲያ ቀጣይ ትራክ</translation>
 <translation id="6710213216561001401">ቀዳሚ</translation>
-<translation id="6779314412797872738">አንድ ቁጥር ከዚህ ወደ የእርስዎ Android ስልክ ለመላክ <ph name="TROUBLESHOOT_LINK" /> በቅንብሮች ውስጥ ሁለቱንም መሣሪያዎች ይፈልጋል።</translation>
 <translation id="6786750046913594791">አቃፊ ዝጋ</translation>
 <translation id="6808150112686056157">ሚዲያ አቁም</translation>
 <translation id="6845383723252244143">አቃፊ ምረጥ</translation>

@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Hiki ni kipengele kipya</translation>
 <translation id="2006524834898217237">Hakikisha kwamba kifaa hiki kimeunganishwa kwenye intaneti.</translation>
 <translation id="208586643495776849">Tafadhali jaribu tena</translation>
-<translation id="2090963878406559571">Ili utume nambari kutoka <ph name="ORIGIN" /> kwenda kwenye simu yako ya Android, <ph name="TROUBLESHOOT_LINK" /> katika vifaa vyote viwili kwenye mipangilio.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{Siku 1}other{Siku #}}</translation>
 <translation id="2148716181193084225">Leo</translation>
 <translation id="2161656808144014275">Maandishi</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">Pembe tatu ya ufumbuzi</translation>
 <translation id="5278860589123563674">Imeshindwa kutuma</translation>
 <translation id="528468243742722775">Mwisho</translation>
-<translation id="5327567770033251652">washa kipengele cha kusawazisha</translation>
 <translation id="5329858601952122676">&amp;Futa</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> iko juu ya <ph name="IN_PLACE_APP" />, achilia ili ufungue folda mpya.</translation>
 <translation id="5463830097259460683">Emoji na Ishara</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">Isiyo na jina</translation>
 <translation id="6612467943526193239">Ili kuacha kupima, bonyeza Esc.</translation>
 <translation id="6620110761915583480">Hifadhi Faili</translation>
-<translation id="6656912866303152668">Hakikisha kwamba umewasha kipengele cha usawazishaji katika <ph name="TARGET_DEVICE_NAME" /> kwenye Chrome kisha ujaribu kutuma tena.</translation>
 <translation id="6699343763173986273">Wimbo Unaofuata kwenye Media</translation>
 <translation id="6710213216561001401">Iliyopita</translation>
-<translation id="6779314412797872738">Ili utume nambari kutoka hapa hadi kwenye simu yako ya Android, <ph name="TROUBLESHOOT_LINK" /> kwenye vifaa vyote viwili katika mipangilio.</translation>
 <translation id="6786750046913594791">Funga Folda</translation>
 <translation id="6808150112686056157">Simamisha Media</translation>
 <translation id="6845383723252244143">Chagua Folda</translation>

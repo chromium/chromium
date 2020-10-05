@@ -27,6 +27,7 @@
 <translation id="121097972571826261">এটা শব্দ আগলৈ যাওক</translation>
 <translation id="1225748608451425081">এটা জ্ঞাত সমস্যাৰ বাবে আপোনাৰ Chromebookটো লক কৰা হৈছে। আপুনি এই সময়ৰ পাছত ছাইন ইন কৰিব পাৰিব: <ph name="TIME_LEFT" />।</translation>
 <translation id="1229194443904279055">বাছনি কৰা বন্ধ কৰক</translation>
+<translation id="1239161794459865856"><ph name="FEATURE_NAME" />ৰ সৈতে সংযোগ কৰা হ’ল।</translation>
 <translation id="1247372569136754018">মাইক্ৰফ’ন (আভ্যন্তৰীণ)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />ৰ পৰা চাৰ্জ কৰি থকা হৈছে</translation>
 <translation id="1255033239764210633">বতৰ কেনে?</translation>
@@ -74,6 +75,7 @@
 <translation id="1654477262762802994">কণ্ঠধ্বনিৰদ্বাৰা সন্ধান আৰম্ভ কৰক</translation>
 <translation id="1667964833127753507">নিৰপেক্ষ ৰঙৰ ম'ডটোৱে ৱালপেপাৰে আহৰণ কৰা ৰংবোৰ ব্যৱহাৰ নকৰে, তাৰ স্থানত নিৰপেক্ষভাৱে মিলাই সৃষ্টি কৰা পাতল আৰু গাঢ় বৰণৰ এটা ছেট ব্যৱহাৰ কৰে।</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> বাকী</translation>
+<translation id="1677507110654891115"><ph name="FEATURE_NAME" /> সংযোগ হৈ থকা নাই।</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />ৰ টাইমাৰ · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 ঠিকনা: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">ডেস্ক: <ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@
 <translation id="2369165858548251131">চীনা ভাষাত "নমস্কাৰ"</translation>
 <translation id="2390318262976603432">স্থানীয় ভাষাৰ ছেটিংসমূহ</translation>
 <translation id="2391579633712104609">১৮০°</translation>
+<translation id="2405664212338326887">সংযুক্ত হৈ থকা নাই</translation>
 <translation id="2408955596600435184">আপোনাৰ পিন দিয়ক</translation>
 <translation id="2412593942846481727">আপডে’ট উপলব্ধ</translation>
 <translation id="2413728805700750528"><ph name="DOMAIN" />এ পৰিচালনা কৰা এটা পৰিচালিত ছেশ্বন হৈছে <ph name="DISPLAY_NAME" /></translation>
@@ -243,6 +246,7 @@
 <translation id="3364721542077212959">ষ্টাইলাছ সঁজুলি</translation>
 <translation id="3368922792935385530">সংযোগ কৰা হ’ল</translation>
 <translation id="3371140690572404006">USB-C ডিভাইচ। (সোঁফালৰ সন্মুখৰ প’ৰ্ট)</translation>
+<translation id="3375634426936648815">সংযোগ কৰা হ’ল</translation>
 <translation id="3386978599540877378">সম্পূর্ণ স্ক্ৰীণৰ বিৱৰ্ধকটো</translation>
 <translation id="3400357268283240774">অতিৰিক্ত ছেটিংসমূহ</translation>
 <translation id="3410336247007142655">গাঢ় ৰঙৰ থীমৰ ছেটিংসমূহ দেখুৱাওক</translation>
@@ -321,6 +325,7 @@
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
 <translation id="4195877955194704651">স্বয়ংক্ৰিয়ভাৱে ক্লিকৰ বুটাম</translation>
 <translation id="4197790712631116042">অফ আছে</translation>
+<translation id="4201033867194214117"><ph name="FEATURE_NAME" /> উপলব্ধ নহয়।</translation>
 <translation id="4212246570487010370">ব্ৰাউজ কৰা অব্যাহত ৰাখক</translation>
 <translation id="4212472694152630271">পিনলৈ সলনি কৰক</translation>
 <translation id="4215497585250573029">ভিপিএনৰ ছেটিংসমূহ</translation>
@@ -332,6 +337,7 @@
 <translation id="4285498937028063278">আনপিন কৰক</translation>
 <translation id="4294319844246081198">সুপ্ৰভাত <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">সম্পূৰ্ণ <ph name="COUNT" />টা জাননী মচক</translation>
+<translation id="4302592941791324970">উপলব্ধ নহয়</translation>
 <translation id="4303223480529385476">বিভিন্ন স্থিতি দেখুওৱা ঠাই বিস্তাৰ কৰক</translation>
 <translation id="4321179778687042513">Ctrl</translation>
 <translation id="4321776623976362024">আপুনি হাই কনট্ৰাষ্টৰ বাবে কীব’ৰ্ডৰ শ্বৰ্টকাটত টিপিছে৷ আপুনি এইটো অন কৰিব বিচাৰেনে?</translation>
@@ -425,6 +431,7 @@
 <translation id="5302048478445481009">ভাষা</translation>
 <translation id="5313326810920013265">ব্লুটুথ ছেটিংসমূহ</translation>
 <translation id="5314219114274263156">স্ক্ৰীন ৰেকৰ্ডিং লোৱা হ'ল</translation>
+<translation id="5329548388331921293">সংযোগ কৰি থকা হৈছে…</translation>
 <translation id="5331975486040154427">USB-C ডিভাইচ (বাওঁফালৰ বেকপর্টত)</translation>
 <translation id="5352250171825660495">গাঢ় ৰঙৰ থীম অন হৈ আছে</translation>
 <translation id="5379115545237091094">অতি বেছি প্ৰয়াস</translation>
@@ -438,6 +445,7 @@
 <translation id="5465662442746197494">সহায় লাগিবনে?</translation>
 <translation id="5496819745535887422">আপোনাৰ প্ৰশাসকে আপোনাৰ ডিভাইচ ৰ’ল বেক কৰিছে। আপোনাৰ ডিভাইচটো ৰিষ্টাৰ্ট কৰিলে সকলো ডেটা মচা হ’ব।</translation>
 <translation id="5519195206574732858">এলটিই</translation>
+<translation id="5523434445161341166"><ph name="FEATURE_NAME" />এ সংযোগ কৰি আছে।</translation>
 <translation id="553675580533261935">ছেশ্বন বন্ধ কৰি আছে</translation>
 <translation id="5537725057119320332">কাষ্ট কৰক</translation>
 <translation id="5548285847212963613">"<ph name="EXTENSION_NAME" />" এক্সটেনশ্বনটোৱে এই নেটৱৰ্কটোত সংযোগ হোৱাত সহায় কৰিব পাৰে।</translation>

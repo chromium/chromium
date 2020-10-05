@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Bu yangi funksiya</translation>
 <translation id="2006524834898217237">Bu qurilma internetga ulanganini tekshiring.</translation>
 <translation id="208586643495776849">Qayta urining</translation>
-<translation id="2090963878406559571"><ph name="ORIGIN" /> orqali Android telefoningizga raqam yuborish uchun ikkala qurilma sozlamalarida <ph name="TROUBLESHOOT_LINK" /> sahifasini oching.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 kun}other{# kun}}</translation>
 <translation id="2148716181193084225">Bugun</translation>
 <translation id="2161656808144014275">Matn</translation>
@@ -135,8 +134,8 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">Yoyiluvchi uchburchak</translation>
 <translation id="5278860589123563674">Yuborilmadi</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ilovasiga diqqat qaratishingiz zarur.</translation>
 <translation id="528468243742722775">Tugatish</translation>
-<translation id="5327567770033251652">sinxronizatsiyani yoqing</translation>
 <translation id="5329858601952122676">&amp;O‘chirish</translation>
 <translation id="5395308026110844773">Jild yaratish uchun <ph name="DRAGGED_APP_NAME" /> ilovaisini <ph name="IN_PLACE_APP" /> ustiga sudrang.</translation>
 <translation id="5463830097259460683">Emoji va maxsus belgilar</translation>
@@ -146,6 +145,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> tizimi</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Chap strelka</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ilovasiga diqqat qaratishingiz zarur.</translation>
 <translation id="5675363643668471212">Javondagi element</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 daqiqa}other{# daqiqa}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Bugun onlayn edi}=1{1 kun oldin onlayn edi}other{# kun oldin onlayn edi}}</translation>
@@ -183,10 +183,8 @@
 <translation id="6578407462441924264">Nomsiz</translation>
 <translation id="6612467943526193239">Kalibrlash rejimidan chiqish uchun Esc tugmasini bosing.</translation>
 <translation id="6620110761915583480">Faylni saqlash</translation>
-<translation id="6656912866303152668"><ph name="TARGET_DEVICE_NAME" /> sozlamalarida Chrome sinxronizatsiyasi yoniqligini tekshiring va keyin qaytadan urining.</translation>
 <translation id="6699343763173986273">Keyingi musiqa</translation>
 <translation id="6710213216561001401">Avvalgi</translation>
-<translation id="6779314412797872738">Bu yerdan Android telefoningizga raqam yuborish uchun ikkala qurilma sozlamalarida <ph name="TROUBLESHOOT_LINK" /> sahifasini oching.</translation>
 <translation id="6786750046913594791">Jildni yopish</translation>
 <translation id="6808150112686056157">To‘xtatish</translation>
 <translation id="6845383723252244143">Jildni tanlang</translation>

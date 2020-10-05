@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">সপ্তাহ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ট্ৰেক <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">চেকবক্স</translation>
+<translation id="2307576640803031502">সূচীখনত, <ph name="COUNT" /> টা বস্তুৰ <ph name="INDEX" /></translation>
 <translation id="2311842470354187719">পৃষ্ঠা বিচ্ছেদ</translation>
 <translation id="2335594187091864976">তাৰিখ আৰু সময় নিৰ্বাচক</translation>
 <translation id="2393030564806080191">হেক্সাডেচিমেল ৰঙৰ মান</translation>
@@ -289,6 +290,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, <ph name="WEEK_START_DATE" />ৰ পৰা</translation>
 <translation id="916607977885256133">চিত্ৰৰ ভিতৰত চিত্ৰ</translation>
 <translation id="9168329111483466115">পাদটীকা</translation>
+<translation id="945780513535800434">আংশিকভাৱে পৰীক্ষা কৰা হৈছে</translation>
 <translation id="954003015749068518">চিত্ৰৰ ভিতৰত চিত্ৰ আৰম্ভ কৰক</translation>
 <translation id="966787709310836684">মেনু</translation>
 </translationbundle>

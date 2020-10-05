@@ -176,7 +176,6 @@
 <translation id="2321086116217818302">パスワードを準備しています…</translation>
 <translation id="2321958826496381788">読みやすくなるまでスライダをドラッグしてください。段落をダブルタップするとテキストがこれより大きくなります。</translation>
 <translation id="2323763861024343754">サイトのストレージ</translation>
-<translation id="2326606747676847821">シークレット モード</translation>
 <translation id="2328985652426384049">ログインできません</translation>
 <translation id="234265804618409743">カメラを開けません。エラーが発生しました。</translation>
 <translation id="2345671828921229300">検索するには、単語を長押しします</translation>
@@ -346,6 +345,7 @@
 <translation id="3587482841069643663">すべて</translation>
 <translation id="3587596251841506391">ウェブ上のセキュリティ強化に協力する</translation>
 <translation id="3599863153486145794">ログインしているすべてのデバイスの履歴を削除します。お使いの Google アカウントの <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> に、他の形式の閲覧履歴が記録されている場合があります。</translation>
+<translation id="3602290021589620013">プレビュー</translation>
 <translation id="3616113530831147358">音声</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> と共有しています</translation>
 <translation id="3632295766818638029">パスワードを表示</translation>
@@ -598,6 +598,7 @@
 <translation id="5527082711130173040">Chrome ではデバイスをスキャンするために現在地情報にアクセスする必要があります。<ph name="BEGIN_LINK1" />権限を更新<ph name="END_LINK1" />してください。また、現在地情報へのアクセスが<ph name="BEGIN_LINK2" />このデバイスでオフになっています<ph name="END_LINK2" />。</translation>
 <translation id="5530766185686772672">シークレットタブを閉じる</translation>
 <translation id="5534640966246046842">サイトがコピーされました</translation>
+<translation id="5556459405103347317">再読み込み</translation>
 <translation id="5561549206367097665">ネットワーク接続を待機しています…</translation>
 <translation id="55737423895878184">位置情報の使用と通知の送信が許可されています</translation>
 <translation id="5578795271662203820">この画像を <ph name="SEARCH_ENGINE" /> で検索</translation>
@@ -908,9 +909,6 @@
 <translation id="766587987807204883">記事がここに表示されます。これらの記事はオフラインでも読むことができます</translation>
 <translation id="7682724950699840886">推奨される対策: デバイスに十分な空き容量があることを確認し、再度エクスポートを試します。</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> でメールを作成</translation>
-<translation id="7702724591845223485">ログイン情報や他のデータを Chrome から消去するには、すべてのシークレット タブを閉じます。
-
-シークレット モードであっても、訪問先のウェブサイト、雇用主または学校、ご利用のインターネット サービス プロバイダには、あなたのアクティビティが知られる可能性があります。</translation>
 <translation id="7704317875155739195">検索語句や URL をオートコンプリートする</translation>
 <translation id="7725024127233776428">ブックマークしたページがここに表示されます</translation>
 <translation id="7735637452482172701">画面ロックでロックを解除する</translation>

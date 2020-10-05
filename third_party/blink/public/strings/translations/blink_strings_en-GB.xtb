@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">Week <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Track <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">Tick box</translation>
+<translation id="2307576640803031502">in list, item <ph name="INDEX" /> of <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">page break</translation>
 <translation id="2335594187091864976">date and time picker</translation>
 <translation id="2393030564806080191">Hexadecimal colour value</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, starting on <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Picture in Picture</translation>
 <translation id="9168329111483466115">footnote</translation>
+<translation id="945780513535800434">Partially ticked</translation>
 <translation id="954003015749068518">enter picture-in-picture</translation>
 <translation id="966787709310836684">menu</translation>
 </translationbundle>

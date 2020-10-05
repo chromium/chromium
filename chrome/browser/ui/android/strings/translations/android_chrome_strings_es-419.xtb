@@ -176,7 +176,6 @@ Para buscar una palabra, presiónala. Si quieres definir mejor la búsqueda, man
 <translation id="2321086116217818302">Preparando las contraseñas…</translation>
 <translation id="2321958826496381788">Arrastra el control deslizante hasta que puedas leer esto cómodamente. El texto debería verse, al menos, de este tamaño al tocar dos veces un párrafo.</translation>
 <translation id="2323763861024343754">Almacenamiento del sitio</translation>
-<translation id="2326606747676847821">Modo de navegación de incógnito</translation>
 <translation id="2328985652426384049">No puedes acceder</translation>
 <translation id="234265804618409743">No se puede abrir la cámara. Se produjo un error.</translation>
 <translation id="2345671828921229300">Para realizar una búsqueda, mantén presionada una palabra</translation>
@@ -346,6 +345,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="3587482841069643663">Todos</translation>
 <translation id="3587596251841506391">Ayuda a mejorar la seguridad en la Web</translation>
 <translation id="3599863153486145794">Borra el historial de todos los dispositivos en los que accediste. Es posible que tu cuenta de Google tenga otros tipos de historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="3602290021589620013">Vista previa</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3631987586758005671">Compartiendo con <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">Quitar máscara de la contraseña</translation>
@@ -598,6 +598,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5527082711130173040">Chrome debe acceder a la ubicación para buscar dispositivos. <ph name="BEGIN_LINK1" />Actualiza los permisos<ph name="END_LINK1" />. El acceso a la ubicación también está <ph name="BEGIN_LINK2" />desactivado en este dispositivo<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Cerrar pest. de incógnito</translation>
 <translation id="5534640966246046842">Se copió el sitio</translation>
+<translation id="5556459405103347317">Cargar de nuevo</translation>
 <translation id="5561549206367097665">Esperando red…</translation>
 <translation id="55737423895878184">La ubicación y las notificaciones están habilitadas</translation>
 <translation id="5578795271662203820">Buscar esta imagen en <ph name="SEARCH_ENGINE" /></translation>
@@ -908,9 +909,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="766587987807204883">Los artículos aparecen aquí, y puedes leerlos incluso cuando estás sin conexión</translation>
 <translation id="7682724950699840886">Intenta las siguientes sugerencias: Antes de exportar las contraseñas nuevamente, asegúrate de que haya espacio suficiente en tu dispositivo.</translation>
 <translation id="7698359219371678927">Crear correo electrónico en <ph name="APP_NAME" /></translation>
-<translation id="7702724591845223485">Para borrar la información de acceso y otros datos de Chrome, cierra todas las pestañas de incógnito.
-
-En el modo Incógnito, es posible que los sitios web que visitas, tu empleador, tu institución educativa o el proveedor de servicios de Internet aún puedan ver tu actividad.</translation>
 <translation id="7704317875155739195">Autocompletar búsquedas y URL</translation>
 <translation id="7725024127233776428">Las páginas que agregues a favoritos aparecerán aquí</translation>
 <translation id="7735637452482172701">Desbloquear con el bloqueo de pantalla</translation>

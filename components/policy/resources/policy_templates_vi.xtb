@@ -163,9 +163,6 @@
 <translation id="1252536192437793850">Cho phép trang web yêu cầu người dùng cấp quyền truy cập vào một cổng nối tiếp</translation>
 <translation id="1257550411839719984">Đặt thư mục tải xuống mặc định</translation>
 <translation id="1265053460044691532">Hạn chế thời gian người dùng được xác thực qua SAML có thể đăng nhập ngoại tuyến</translation>
-<translation id="1271840407438458464">Nếu bạn đặt chính sách này thành một giá trị hợp lệ, <ph name="PRODUCT_NAME" /> sẽ không sử dụng phiên bản SSL/TLS thấp hơn phiên bản được chỉ định. Những giá trị không nhận dạng được sẽ bị bỏ qua.
-
-      Nếu bạn không đặt chính sách này, <ph name="PRODUCT_NAME" /> sẽ sử dụng phiên bản tối thiểu mặc định là TLS 1.0.</translation>
 <translation id="127264587838521316">Bật yêu cầu cài đặt tiện ích của <ph name="PRODUCT_NAME" /></translation>
 <translation id="1290634681382861275">Kiểm soát các tùy chọn cài đặt khác bao gồm USB, Bluetooth, làm mới chính sách, chế độ nhà phát triển và những nội dung khác.</translation>
 <translation id="1291880496936992484">Cảnh báo: RC4 sẽ bị xóa hoàn toàn khỏi <ph name="PRODUCT_NAME" /> sau phiên bản 52 (khoảng tháng 9 năm 2016) và chính sách này sẽ ngừng hoạt động sau đó.
@@ -351,21 +348,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
 <translation id="1523774894176285446">Trình duyệt thay thế để chạy các trang web đã định cấu hình.</translation>
 <translation id="152657506688053119">Danh sách các URL thay thế cho nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
 <translation id="1530812829012954197">Luôn hiển thị các mẫu URL sau đây trong trình duyệt chính</translation>
-<translation id="1544617932000544686">Nếu bạn đặt chính sách này, thì người dùng sẽ không thể bỏ qua các quyết định về bảo mật khi tải xuống.
-
-       Nếu bạn đặt chính sách này thành:
-
-      * Chặn các tệp nguy hiểm đã tải xuống, thì tất cả các tệp đã tải xuống đều được phép, trừ những tệp có cảnh báo của dịch vụ Duyệt web an toàn.
-
-      * Chặn các tệp đã tải xuống có thể gây nguy hiểm, thì tất cả các tệp đã tải xuống đều được phép, trừ những tệp có cảnh báo của dịch vụ Duyệt web an toàn cho biết tệp đã tải xuống có thể gây nguy hiểm.
-
-      * Chặn tất cả các tệp đã tải xuống, thì tất cả các tệp đã tải xuống đều bị chặn.
-
-      * Chặn tệp độc hại đã tải xuống, thì tất cả các tệp đã tải xuống đều được phép, trừ những tệp mà dịch vụ Duyệt web an toàn đánh giá có nhiều khả năng là độc hại. Khác với các tệp nguy hiểm đã tải xuống, chính sách này không xem xét loại tệp mà xem xét máy chủ.
-
-      * Không có hạn chế đặc biệt, thì các hạn chế bảo mật thông thường sẽ được áp dụng cho các tệp đã tải xuống dựa trên kết quả phân tích của dịch vụ Duyệt web an toàn.
-
-      Lưu ý: Những hạn chế này áp dụng cho các tệp đã tải xuống được kích hoạt từ nội dung trang web, cũng như tùy chọn trình đơn "Đường liên kết tải xuống...". Những hạn chế này không áp dụng cho việc tải trang đang hiển thị xuống hay việc lưu ở dạng tệp PDF từ các tùy chọn in. Bạn có thể đọc thêm về dịch vụ Duyệt web an toàn (https://developers.google.com/safe-browsing).</translation>
 <translation id="1553532014072799546">Danh sách cho phép về giới hạn thời gian cho mỗi ứng dụng</translation>
 <translation id="1553956579506604198">Chặn không cho cài đặt các tiện ích bên ngoài</translation>
 <translation id="1555248923316727072">Các tùy chọn cài đặt quản lý danh tính người dùng Saml</translation>
@@ -1373,7 +1355,6 @@ Khi chính sách này được đặt thành false hoặc không được địn
 
         Chính sách này không ảnh hưởng đến các chính sách đã phát hành.</translation>
 <translation id="3016255526521614822">Đưa các ứng dụng ghi chú được phép trên màn hình khóa của <ph name="PRODUCT_OS_NAME" /> vào danh sách cho phép</translation>
-<translation id="3020064401262077616">Kiểm soát các chính sách về sự giám sát của cha mẹ (chỉ áp dụng cho tài khoản người dùng là trẻ em).</translation>
 <translation id="3020953534071988875">Việc định cấu hình chính sách này sẽ cho phép/không cho phép xác thực môi trường xung quanh đối với các cấu hình chế độ Khách và cấu hình chế độ Ẩn danh trong <ph name="PRODUCT_NAME" />.
 
       Xác thực môi trường xung quanh là quy trình xác thực http bằng bằng chứng xác thực mặc định nếu bằng chứng xác thực rõ ràng không được cung cấp qua lược đồ thách thức/phản hồi NTLM/Kerberos/Negotiate.

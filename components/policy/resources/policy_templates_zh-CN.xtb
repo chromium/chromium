@@ -162,9 +162,6 @@
 <translation id="1252536192437793850">允许网站请求用户授权其访问串行端口</translation>
 <translation id="1257550411839719984">设置默认下载目录</translation>
 <translation id="1265053460044691532">限制通过SAML验证身份的用户可离线登录的时长</translation>
-<translation id="1271840407438458464">如果将此政策设为有效值，<ph name="PRODUCT_NAME" /> 将不会使用低于指定版本的 SSL/TLS 版本。无法识别的值都会被忽略。
-
-      如果此政策未设置，<ph name="PRODUCT_NAME" /> 将会使用默认的最低版本（即 TLS 1.0）。</translation>
 <translation id="127264587838521316">启用 <ph name="PRODUCT_NAME" /> 扩展程序安装请求</translation>
 <translation id="1290634681382861275">控制各种各样的设置（包括 USB、蓝牙、政策刷新、开发者模式及其他设置）。</translation>
 <translation id="1291880496936992484">警告：从 52 版开始，<ph name="PRODUCT_NAME" /> 中将彻底移除 RC4（2016 年 9 月左右）。届时，此政策将不再有效。
@@ -338,21 +335,6 @@
 <translation id="1523774894176285446">对于配置的网站要启动的替代浏览器。</translation>
 <translation id="152657506688053119">默认搜索服务提供商的备选网址列表</translation>
 <translation id="1530812829012954197">总是通过托管浏览器呈现以下网址格式</translation>
-<translation id="1544617932000544686">如果您设置了此政策，用户便无法绕过下载安全决策。
-
-       如果此政策设为：
-
-      *“拦截有危险的下载内容”，系统将允许所有下载内容，但那些会触发安全浏览警告的下载内容除外。
-
-      *“拦截可能有危险的下载内容”，系统将允许所有下载内容，但那些会因有安全隐患而触发安全浏览警告的下载内容除外。
-
-      *“拦截所有下载内容”，系统将会拦截所有下载内容。
-
-      *“拦截恶意下载内容”，系统将允许所有下载内容，但那些已被“安全浏览”功能非常肯定地评估为恶意软件的下载内容除外。与有危险的下载内容不同，选择拦截恶意下载内容时不会考虑文件类型，而是考虑主机。
-
-      *“无特殊限制”，系统将根据“安全浏览”功能的分析结果检查下载内容是否符合常规安全限制。
-
-      注意：这些限制适用于从网页内容以及“下载链接…”菜单选项触发的下载，但不适用于下载当前显示的页面，也不适用于通过打印选项另存为 PDF 文件。详细了解“安全浏览”功能 ( https://developers.google.com/safe-browsing )。</translation>
 <translation id="1553532014072799546">应用级使用时间限制白名单</translation>
 <translation id="1553956579506604198">禁止安装外部扩展程序</translation>
 <translation id="1555248923316727072">SAML 用户身份管理设置</translation>
@@ -1343,7 +1325,6 @@
 
         此政策不会影响已发布的政策。</translation>
 <translation id="3016255526521614822">允许在 <ph name="PRODUCT_OS_NAME" />锁定屏幕启用加入白名单的备注应用</translation>
-<translation id="3020064401262077616">控制仅应用于未成年人帐号的家长监督政策。</translation>
 <translation id="3020953534071988875">通过配置此政策，您可以允许/禁止对 <ph name="PRODUCT_NAME" /> 中的无痕模式和访客个人资料进行静默身份验证。
 
       静默身份验证是指在未通过 NTLM/Kerberos/Negotiate 质询-响应方案提供明确凭据的情况下，采用默认凭据进行的 HTTP 身份验证。

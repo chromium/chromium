@@ -176,7 +176,6 @@ Touchez un mot pour lancer une recherche. Pour affiner votre recherche, maintene
 <translation id="2321086116217818302">Préparation des mots de passe en cours…</translation>
 <translation id="2321958826496381788">Faites glisser le curseur pour lire le texte aisément. Sa taille doit être similaire à celle-ci lorsque vous appuyez deux fois sur un paragraphe.</translation>
 <translation id="2323763861024343754">Stockage des sites</translation>
-<translation id="2326606747676847821">Mode navig. privée</translation>
 <translation id="2328985652426384049">Impossible de se connecter</translation>
 <translation id="234265804618409743">Impossible d'ouvrir votre appareil photo. Un problème s'est produit.</translation>
 <translation id="2345671828921229300">Pour effectuer une recherche, maintenez le doigt sur un mot</translation>
@@ -346,6 +345,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3587482841069643663">Tous</translation>
 <translation id="3587596251841506391">Contribuer à la sécurité sur le Web</translation>
 <translation id="3599863153486145794">Efface l'historique de tous les appareils connectés. D'autres formes d'historique de navigation peuvent exister sur votre compte Google à l'adresse <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="3602290021589620013">Aperçu</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3631987586758005671">Partage avec <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">Afficher le mot de passe</translation>
@@ -598,6 +598,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5527082711130173040">Google Chrome nécessite l'accès à votre position pour rechercher des appareils. <ph name="BEGIN_LINK1" />Mettre à jour les autorisations<ph name="END_LINK1" />. L'accès à la position est également <ph name="BEGIN_LINK2" />désactivé pour cet appareil<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Fermer les onglets de navigation privée</translation>
 <translation id="5534640966246046842">Site copié</translation>
+<translation id="5556459405103347317">Actualiser</translation>
 <translation id="5561549206367097665">En attente du réseau…</translation>
 <translation id="55737423895878184">La position et les notifications sont autorisées</translation>
 <translation id="5578795271662203820">Rechercher cette image avec <ph name="SEARCH_ENGINE" /></translation>
@@ -666,6 +667,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5958275228015807058">Trouvez vos fichiers et vos pages dans Téléchargements</translation>
 <translation id="5962718611393537961">Toucher pour réduire</translation>
 <translation id="5964805880140440652">Pour partager cette page avec un autre appareil, activez la synchronisation dans les paramètres de Chrome</translation>
+<translation id="5964869237734432770">Arrêter les descriptions</translation>
 <translation id="5979084224081478209">Vérifier les mots de passe</translation>
 <translation id="6000066717592683814">Conserver Google</translation>
 <translation id="6005538289190791541">Mot de passe suggéré</translation>
@@ -693,6 +695,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="6157392216611456285">Sélectionner <ph name="APP_NAME" /></translation>
 <translation id="6159335304067198720">Économies de données de <ph name="PERCENT" /></translation>
 <translation id="6186394685773237175">Aucun mot de passe compromis n'a été trouvé</translation>
+<translation id="6192907950379606605">Obtenir les descriptions</translation>
 <translation id="6206830853671714236">Choisir quand effectuer le téléchargement</translation>
 <translation id="6210748933810148297">Pas <ph name="EMAIL" />?</translation>
 <translation id="6218096829563201111">Rech. produits similaires <ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /></translation>
@@ -762,6 +765,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6590471736817333463">Économisez jusqu'à 60 % de données</translation>
 <translation id="6590680911007613645">Assurez-vous que le mot de passe que vous enregistrez correspond à celui pour <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Version ordinateur</translation>
+<translation id="6595046016124923392">Les images sont envoyées à Google afin d'améliorer les descriptions pour vous.</translation>
 <translation id="6597891566292541626">Placez le code QR ou le code à barres dans ce cadre.</translation>
 <translation id="6600954340915313787">Copiée dans Chrome</translation>
 <translation id="661266467055912436">Il renforce votre sécurité et celle de tous les utilisateurs sur le Web.</translation>
@@ -820,6 +824,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="702463548815491781">Recommandé lorsque le service TalkBack ou Switch Access est activé</translation>
 <translation id="7029809446516969842">Mots de passe</translation>
 <translation id="703523980599857277">Modifier la page d'accueil</translation>
+<translation id="7054588988317389591">Obtenir les descriptions d'images?</translation>
 <translation id="7055152154916055070">Redirection bloquée :</translation>
 <translation id="7063006564040364415">Échec de connexion au serveur de synchronisation.</translation>
 <translation id="7071521146534760487">Gérer le compte</translation>
@@ -851,6 +856,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="729975465115245577">Votre appareil ne dispose pas d'une application pour stocker le fichier de mots de passe.</translation>
 <translation id="7302081693174882195">Détails : triés par quantité de données enregistrées</translation>
 <translation id="7304873321153398381">Hors ligne. Chrome ne peut pas vérifier vos mots de passe.</translation>
+<translation id="7313188324932846546">Touchez pour configurer la synchronisation</translation>
 <translation id="7328017930301109123">En mode simplifié, Chrome charge les pages plus vite et utilise jusqu'à 60 pour cent moins de données.</translation>
 <translation id="7333031090786104871">Ajout du site précédent toujours en cours…</translation>
 <translation id="7340958967809483333">Options pour Découvertes</translation>
@@ -908,9 +914,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="766587987807204883">Les articles s'affichent ici, et vous pouvez les lire même lorsque vous êtes hors ligne</translation>
 <translation id="7682724950699840886">Essayez de suivre les conseils suivants : assurez-vous qu'il y a suffisamment d'espace sur votre appareil et réessayez d'exporter les mots de passe.</translation>
 <translation id="7698359219371678927">Créer un courriel dans <ph name="APP_NAME" /></translation>
-<translation id="7702724591845223485">Pour supprimer vos données de connexion et les autres données de Chrome, fermez tous les onglets de navigation privée.
-
-En mode de navigation privée, votre activité peut rester visible pour les sites Web que vous consultez, votre employeur ou votre établissement scolaire, ainsi que votre fournisseur d'accès Internet.</translation>
 <translation id="7704317875155739195">Saisie semi-automatique des recherches et des URL</translation>
 <translation id="7725024127233776428">Les pages que vous ajoutez aux favoris s'affichent ici</translation>
 <translation id="7735637452482172701">Déverrouiller à l'aide du verrouillage de l'écran</translation>
@@ -1045,6 +1048,7 @@ En mode de navigation privée, votre activité peut rester visible pour les site
 <translation id="8636825310635137004">Pour synchroniser vos onglets sur vos autres appareils, activez la synchronisation.</translation>
 <translation id="8641930654639604085">Essayer de bloquer les sites pour adultes</translation>
 <translation id="8655129584991699539">Vous pouvez effacer les données dans les paramètres de Chrome</translation>
+<translation id="8656747343598256512">Connectez-vous à ce site et à Chrome à l'aide de votre compte Google. Vous pouvez activer la synchronisation plus tard.</translation>
 <translation id="8659579665266920523">Effectuer une recherche avec Chrome</translation>
 <translation id="8662811608048051533">Vous déconnecte de la plupart des sites.</translation>
 <translation id="8664979001105139458">Ce nom de fichier existe déjà</translation>
@@ -1064,6 +1068,7 @@ En mode de navigation privée, votre activité peut rester visible pour les site
 <translation id="8840953339110955557">Cette page peut différer de la version en ligne.</translation>
 <translation id="8853345339104747198">Onglet <ph name="TAB_TITLE" /></translation>
 <translation id="8854223127042600341">Afficher vos fichiers hors ligne</translation>
+<translation id="8856607253650333758">Obtenir les descriptions</translation>
 <translation id="8873817150012960745">Touchez ici pour commencer</translation>
 <translation id="889338405075704026">Aller aux paramètres de Chrome</translation>
 <translation id="8898822736010347272">Envoie à Google des URL de certaines pages que vous visitez, certaines données système et des échantillons de contenu des pages afin d'aider à découvrir de nouvelles menaces et de protéger tous les internautes.</translation>

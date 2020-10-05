@@ -44,7 +44,6 @@
 <translation id="19085484004813472">새로운 기능입니다.</translation>
 <translation id="2006524834898217237">기기가 인터넷에 연결되어 있는지 확인하세요.</translation>
 <translation id="208586643495776849">다시 시도해 주세요.</translation>
-<translation id="2090963878406559571"><ph name="ORIGIN" />에서 Android 휴대전화로 번호를 전송하려면 설정에서 두 기기 모두의 <ph name="TROUBLESHOOT_LINK" />하세요.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1일}other{#일}}</translation>
 <translation id="2148716181193084225">오늘</translation>
 <translation id="2161656808144014275">텍스트</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">펼치기/접기 삼각형</translation>
 <translation id="5278860589123563674">전송 실패</translation>
 <translation id="528468243742722775">종료</translation>
-<translation id="5327567770033251652">동기화를 사용 설정</translation>
 <translation id="5329858601952122676">삭제(&amp;D)</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" />을(를) <ph name="IN_PLACE_APP" /> 위로 드래그해서 놓으면 폴더가 만들어집니다.</translation>
 <translation id="5463830097259460683">그림 이모티콘 &amp;&amp; 기호</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">이름 없음</translation>
 <translation id="6612467943526193239">보정을 종료하려면 Esc를 누르세요.</translation>
 <translation id="6620110761915583480">파일 저장</translation>
-<translation id="6656912866303152668"><ph name="TARGET_DEVICE_NAME" />에서 Chrome 동기화가 사용 설정되어 있는지 확인한 다음 다시 보내 보세요.</translation>
 <translation id="6699343763173986273">미디어 다음 트랙</translation>
 <translation id="6710213216561001401">이전</translation>
-<translation id="6779314412797872738">여기에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두 설정에서 <ph name="TROUBLESHOOT_LINK" />하세요.</translation>
 <translation id="6786750046913594791">폴더 닫기</translation>
 <translation id="6808150112686056157">미디어 중지</translation>
 <translation id="6845383723252244143">폴더 선택</translation>

@@ -228,6 +228,7 @@
 <translation id="1249643471736608405"><ph name="PLUGIN_NAME" /> disekat kerana telah ditamatkan</translation>
 <translation id="1251366534849411931">Tiada tanda kurung keriting pembuka: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Tindakan ini akan mengosongkan <ph name="TOTAL_USAGE" /> daripada data yang disimpan oleh tapak dan apl yang dipasang</translation>
+<translation id="125220115284141797">Lalai</translation>
 <translation id="1252987234827889034">Ralat profil berlaku</translation>
 <translation id="1254593899333212300">Sambungan Internet Langsung</translation>
 <translation id="1259152067760398571">Semakan keselamatan dijalankan semalam</translation>
@@ -319,6 +320,7 @@
 <translation id="1361872463926621533">Mainkan bunyi semasa permulaan</translation>
 <translation id="1362865166188278099">Masalah mekanikal. Semak pencetak</translation>
 <translation id="1363585519747660921">Pencetak USB memerlukan konfigurasi</translation>
+<translation id="1364664799726141130">Akaun yang anda sahkan tidak dibenarkan mengakses peranti ini. Sila pastikan anda mengesahkan <ph name="ACCOUNT" /> untuk membuka kunci sesi.</translation>
 <translation id="1365180424462182382"><ph name="BEGIN_LINK" />Penyemak imbas anda diurus<ph name="END_LINK" /> oleh <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1367951781824006909">Pilih fail</translation>
 <translation id="1369149969991017342">Akses Suis (kawal komputer dengan satu atau dua suis sahaja)</translation>
@@ -428,6 +430,7 @@
 <translation id="1486096554574027028">Cari kata laluan</translation>
 <translation id="1487335504823219454">Hidup - tetapan tersuai</translation>
 <translation id="1489664337021920575">Buat pilihan lain</translation>
+<translation id="1492417797159476138">Anda telah pun menyimpan nama pengguna ini untuk tapak ini</translation>
 <translation id="1493892686965953381">Menunggu untuk <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1495486559005647033"><ph name="NUM_PRINTERS" /> peranti lain yang tersedia.</translation>
 <translation id="1495677929897281669">Kembali ke tab</translation>
@@ -653,6 +656,7 @@
 <translation id="173628468822554835">OK. Secara lalai, tapak baharu yang anda lawati tidak akan menghantar pemberitahuan kepada anda.</translation>
 <translation id="1736419249208073774">Teroka</translation>
 <translation id="1737968601308870607">Failkan pepijat</translation>
+<translation id="174123615272205933">Tersuai</translation>
 <translation id="1741314857973421784">Teruskan</translation>
 <translation id="1743570585616704562">Tidak dikenali</translation>
 <translation id="1743970419083351269">Tutup Bar Muat Turun</translation>
@@ -687,6 +691,7 @@
 <translation id="1776712937009046120">Tambah pengguna</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
 <translation id="1778457539567749232">Tandai sebagai belum dibaca</translation>
+<translation id="1779468444204342338">Minimum</translation>
 <translation id="1779652936965200207">Sila masukkan kekunci laluan ini pada "<ph name="DEVICE_NAME" />":</translation>
 <translation id="177989070088644880">Apl (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Tutup Kumpulan</translation>
@@ -1462,6 +1467,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2688196195245426394">Ralat semasa mendaftarkan peranti dengan pelayan: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Tunjukkan pilihan bahasa</translation>
 <translation id="2691385045260836588">Model</translation>
+<translation id="2691440343905273290">Tukar tetapan masukan</translation>
 <translation id="2693176596243495071">Op! Ralat yang tidak diketahui telah berlaku. Sila cuba lagi nanti atau hubungi pentadbir anda jika isu ini berterusan.</translation>
 <translation id="2695749433451188613">Protokol Cetakan Internet (HTTPS)</translation>
 <translation id="2699911226086014512">Operasi PIN gagal dengan kod <ph name="RETRIES" />.</translation>
@@ -1884,6 +1890,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3192947282887913208">Fail Audio</translation>
 <translation id="3199127022143353223">Pelayan</translation>
 <translation id="3200310363903241381">{COUNT,plural, =1{Chrome mengesyorkan agar anda menyemak kata laluan ini sekarang}other{Chrome mengesyorkan agar anda menyemak kata laluan ini sekarang}}</translation>
+<translation id="3201154330231437478">Dayakan penatalan songsang <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="3201422919974259695">Peranti USB yang tersedia akan dipaparkan di sini.</translation>
 <translation id="3202131003361292969">Laluan</translation>
 <translation id="3202173864863109533">Audio bagi tab ini sedang diredam.</translation>
@@ -2079,6 +2086,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3440663250074896476">Lagi tindakan untuk <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3440761377721825626">Tanya apabila tapak ingin menggunakan pemalam untuk mengakses komputer anda</translation>
 <translation id="3441653493275994384">Skrin</translation>
+<translation id="3441663102605358937">Log masuk ke <ph name="ACCOUNT" /> sekali lagi untuk mengesahkan akaun ini</translation>
 <translation id="3445047461171030979">Jawapan pantas Google Assistant</translation>
 <translation id="3445925074670675829">Peranti USB-C</translation>
 <translation id="3446274660183028131">Sila lancarkan Parallels Desktop untuk memasang Windows.</translation>
@@ -2830,6 +2838,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4312866146174492540">Sekat (lalai)</translation>
 <translation id="4314815835985389558">Urus penyegerakan</translation>
 <translation id="4316850752623536204">Tapak Web Pembangun</translation>
+<translation id="4317820549299924617">Pengesahan tidak berjaya</translation>
 <translation id="4320177379694898372">Tiada sambungan Internet</translation>
 <translation id="4322394346347055525">Tutup Tab Lain</translation>
 <translation id="4324577459193912240">Fail tidak lengkap</translation>
@@ -3676,6 +3685,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="5362741141255528695">Pilih fail kunci persendirian.</translation>
 <translation id="5363109466694494651">Powerwash dan Berbalik</translation>
 <translation id="5365881113273618889">Folder yang anda pilih mengandungi fail sensitif. Adakah anda pasti anda mahu memberi "<ph name="APP_NAME" />" akses tulis kekal kepada folder ini?</translation>
+<translation id="536638840841140142">Tiada</translation>
 <translation id="5368720394188453070">Telefon anda dikunci. Buka kuncinya untuk masuk.</translation>
 <translation id="5368779022775404937">Log masuk ke <ph name="REALM" /></translation>
 <translation id="5369491905435686894">Dayakan pemecutan tetikus</translation>
@@ -4832,6 +4842,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="6748465660675848252">Anda boleh meneruskan, tetapi hanya data disegerakkan dan tetapan anda yang akan dipulihkan. Semua data tempatan akan hilang.</translation>
 <translation id="6749006854028927059">Tapak tidak boleh menggunakan kuki anda untuk melihat aktiviti penyemakan imbas anda pada tapak lain, contohnya, untuk memperibadikan iklan. Ciri pada sesetengah tapak mungkin rosak.</translation>
 <translation id="6750757184909117990">Lumpuhkan Selular</translation>
+<translation id="6750946710563435348">Gunakan nama pengguna lain</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkognito)</translation>
 <translation id="6757101664402245801">URL disalin</translation>
 <translation id="6758056191028427665">Beritahu kami tentang prestasi kami.</translation>
@@ -5351,6 +5362,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="7377451353532943397">Teruskan menyekat akses penderia</translation>
 <translation id="73786666777299047">Buka Gedung Web Chrome</translation>
 <translation id="7378812711085314936">Dapatkan sambungan data</translation>
+<translation id="7380622428988553498">Nama peranti mengandungi aksara tidak sah</translation>
 <translation id="7380768571499464492">Dikemas kini <ph name="PRINTER_NAME" /></translation>
 <translation id="7384687527486377545">Autoulang papan kekunci</translation>
 <translation id="7385854874724088939">Sesuatu tidak kena apabila mencuba untuk mencetak.  Sila periksa pencetak anda dan cuba semula.</translation>
@@ -5399,6 +5411,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="7434969625063495310">Tidak dapat menambahkan pelayan cetak. Sila semak konfigurasi pelayan dan cuba lagi.</translation>
 <translation id="7436921188514130341">Oh, Tidak! Ralat berlaku semasa penamaan semula.</translation>
 <translation id="7438976808740265764">Flash Player tidak akan disokong lagi selepas bulan Disember 2020.</translation>
+<translation id="7439519621174723623">Tambah nama peranti untuk meneruskan proses ini</translation>
 <translation id="7441736921018636843">Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<ph name="END_LINK" /> untuk mengalih keluar ungkapan laluan penyegerakan anda</translation>
 <translation id="7441830548568730290">Pengguna lain</translation>
 <translation id="7442465037756169001">Hangouts Meet hardware anda sudah boleh disediakan.</translation>
@@ -5640,6 +5653,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="7717134585801378441">Tapak boleh meminta lokasi anda (disyorkan)</translation>
 <translation id="7717845620320228976">Semak kemas kini</translation>
 <translation id="7719367874908701697">Zum halaman</translation>
+<translation id="7719588063158526969">Nama peranti terlalu panjang</translation>
 <translation id="7721179060400456005">Benarkan tetingkap mengembangkan paparan</translation>
 <translation id="7722040605881499779">Diperlukan untuk mengemas kini: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">Potong</translation>
@@ -5944,6 +5958,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8049705080247101012">Google telah menandai <ph name="EXTENSION_NAME" /> sebagai berhasad dan pemasangan telah dihalang</translation>
 <translation id="8049948037269924837">Penatalan terbalik pad sentuh</translation>
 <translation id="8050038245906040378">Menandatangani Kod Komersial Microsoft</translation>
+<translation id="8050191834453426339">Sahkan sekali lagi</translation>
 <translation id="8051193500142930381">Ciri yang memerlukan kamera tidak akan berfungsi</translation>
 <translation id="8051390370038326517">Sentiasa benarkan <ph name="HOST" /> untuk mengawal sepenuhnya peranti MIDI</translation>
 <translation id="8053278772142718589">Fail PKCS #12</translation>

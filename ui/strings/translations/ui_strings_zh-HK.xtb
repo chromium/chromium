@@ -44,7 +44,6 @@
 <translation id="19085484004813472">呢個係新功能</translation>
 <translation id="2006524834898217237">請確保此裝置已連接互聯網。</translation>
 <translation id="208586643495776849">請再試一次</translation>
-<translation id="2090963878406559571">如要將 <ph name="ORIGIN" /> 的號碼從此裝置傳送至您的 Android 手機，請在這兩部裝置的設定中<ph name="TROUBLESHOOT_LINK" />。</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 天}other{# 天}}</translation>
 <translation id="2148716181193084225">今天</translation>
 <translation id="2161656808144014275">文字</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">顯示/隱藏三角標記</translation>
 <translation id="5278860589123563674">無法傳送</translation>
 <translation id="528468243742722775">結束</translation>
-<translation id="5327567770033251652">開啟同步處理功能</translation>
 <translation id="5329858601952122676">刪除(&amp;D)</translation>
 <translation id="5395308026110844773">「<ph name="DRAGGED_APP_NAME" />」宜家拉咗去「<ph name="IN_PLACE_APP" />」上面，放開滑鼠就可以建立資料夾。</translation>
 <translation id="5463830097259460683">Emoji 和符號</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">未命名</translation>
 <translation id="6612467943526193239">如要結束校正模式，請按 Esc 鍵。</translation>
 <translation id="6620110761915583480">儲存檔案</translation>
-<translation id="6656912866303152668">請確認 <ph name="TARGET_DEVICE_NAME" /> 已開啟同步處理功能，然後嘗試重新傳送。</translation>
 <translation id="6699343763173986273">下一首媒體曲目</translation>
 <translation id="6710213216561001401">上一個</translation>
-<translation id="6779314412797872738">如要將號碼從此裝置傳送至您的 Android 手機，請在這兩部裝置的設定中<ph name="TROUBLESHOOT_LINK" />。</translation>
 <translation id="6786750046913594791">關閉資料夾</translation>
 <translation id="6808150112686056157">停止媒體播放</translation>
 <translation id="6845383723252244143">選取資料夾</translation>

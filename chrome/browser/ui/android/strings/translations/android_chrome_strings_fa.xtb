@@ -176,7 +176,6 @@
 <translation id="2321086116217818302">درحال آماده‌سازی گذرواژه‌ها…</translation>
 <translation id="2321958826496381788">لغزنده را بکشید تا زمانی که بتوانید این متن را به راحتی بخوانید. بعد از دو ضربه متوالی روی یک پاراگراف، اندازه نوشتار حداقل باید به این بزرگی باشد.</translation>
 <translation id="2323763861024343754">فضای ذخیره‌سازی سایت</translation>
-<translation id="2326606747676847821">ناشناس شوید</translation>
 <translation id="2328985652426384049">ورود به سیستم امکان‌پذیر نیست</translation>
 <translation id="234265804618409743">نمی‌توان دوربین را باز کرد. مشکلی پیش آمد.</translation>
 <translation id="2345671828921229300">برای جستجو کردن، واژه را لمس کنید و نگه دارید</translation>
@@ -346,6 +345,7 @@
 <translation id="3587482841069643663">همه</translation>
 <translation id="3587596251841506391">به بهبود امنیت وب کمک کنید</translation>
 <translation id="3599863153486145794">‏سابقه را از همه دستگاه‌های به سیستم واردشده پاک می‌کند. ممکن است حساب Google شما اشکال دیگری از سابقه مرور در <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> داشته باشد.</translation>
+<translation id="3602290021589620013">پیش‌نمایش</translation>
 <translation id="3616113530831147358">صوتی</translation>
 <translation id="3631987586758005671">درحال هم‌رسانی با <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">نمایش گذرواژه</translation>
@@ -598,6 +598,7 @@
 <translation id="5527082711130173040">‏Chrome برای جستجوی دستگاه‌ها باید به مکان دسترسی داشته باشد. <ph name="BEGIN_LINK1" />به‌روزرسانی مجوزها<ph name="END_LINK1" /> . دسترسی به مکان نیز <ph name="BEGIN_LINK2" />برای این دستگاه خاموش است<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">بستن برگه‌های ناشناس</translation>
 <translation id="5534640966246046842">سایت کپی شد</translation>
+<translation id="5556459405103347317">تازه‌سازی</translation>
 <translation id="5561549206367097665">در انتظار شبکه…</translation>
 <translation id="55737423895878184">مکان و اعلان‌ها مجاز هستند</translation>
 <translation id="5578795271662203820">جستجوی <ph name="SEARCH_ENGINE" /> برای این تصویر</translation>
@@ -666,6 +667,7 @@
 <translation id="5958275228015807058">فایل‌ها و صفحه‌هایتان را در «بارگیری‌ها» پیدا کنید</translation>
 <translation id="5962718611393537961">برای کوچک کردن ضربه بزنید</translation>
 <translation id="5964805880140440652">‏برای هم‌رسانی این صفحه با دستگاه دیگر، همگام‌سازی را در تنظیمات Chrome روشن کنید.</translation>
+<translation id="5964869237734432770">توقف توضیحات تصویر</translation>
 <translation id="5979084224081478209">بررسی گذرواژه‌ها</translation>
 <translation id="6000066717592683814">‏حفظ Google</translation>
 <translation id="6005538289190791541">گذرواژه پیشنهادی</translation>
@@ -693,6 +695,7 @@
 <translation id="6157392216611456285">انتخاب <ph name="APP_NAME" /></translation>
 <translation id="6159335304067198720">ذخیره داده‌ها: <ph name="PERCENT" /></translation>
 <translation id="6186394685773237175">گذرواژه لورفته‌ای پیدا نشد</translation>
+<translation id="6192907950379606605">دریافت توضیحات تصویر</translation>
 <translation id="6206830853671714236">انتخاب زمان بارگیری</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ایمیل شما نیست؟</translation>
 <translation id="6218096829563201111">جستجوی محصولات مشابه <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
@@ -762,6 +765,7 @@
 <translation id="6590471736817333463">تا ۶۰٪ در مصرف داده صرفه‌جویی کنید</translation>
 <translation id="6590680911007613645">مطمئن شوید گذرواژه‌ای که ذخیره می‌کنید با گذرواژه <ph name="SITE" /> مطابقت داشته باشد</translation>
 <translation id="6593061639179217415">سایت مخصوص رایانه</translation>
+<translation id="6595046016124923392">‏تصاویر به Google ارسال می‌شوند تا توضیحات برایتان بهبود یابند.</translation>
 <translation id="6597891566292541626">رمزینه پاسخ‌سریع/بارکد را در این قاب قرار دهید.</translation>
 <translation id="6600954340915313787">‏کپی در Chrome</translation>
 <translation id="661266467055912436">امنیت را برای شما و همه کاربران دیگر وب بهبود می‌بخشد.</translation>
@@ -820,6 +824,7 @@
 <translation id="702463548815491781">‏توصیه در زمانی‌که TalkBack یا «دسترسی کلیدی» روشن است</translation>
 <translation id="7029809446516969842">گذرواژه‌ها</translation>
 <translation id="703523980599857277">تغییر صفحه اصلی</translation>
+<translation id="7054588988317389591">توضیحات تصویر دریافت شود؟</translation>
 <translation id="7055152154916055070">هدایت کردن مسدود شده است:</translation>
 <translation id="7063006564040364415">اتصال به سرور همگام‌سازی ممکن نیست.</translation>
 <translation id="7071521146534760487">مدیریت حساب</translation>
@@ -851,6 +856,7 @@
 <translation id="729975465115245577">دستگاه شما برنامه‌ای برای ذخیره فایل گذرواژه‌ها ندارد.</translation>
 <translation id="7302081693174882195">جزئیات: مرتب‌شده براساس مقدار داده صرفه‌جویی‌شده</translation>
 <translation id="7304873321153398381">‏آفلاین. Chrome نمی‌تواند گذرواژه‌هایتان را بررسی کند.</translation>
+<translation id="7313188324932846546">برای تنظیم همگام‌سازی ضربه بزنید</translation>
 <translation id="7328017930301109123">‏در «حالت ساده»، Chrome صفحه‌ها را سریع‌تر بار می‌کند و تا ۶۰ درصد مصرف داده را کاهش می‌دهد.</translation>
 <translation id="7333031090786104871">همچنان درحال افزودن سایت قبلی</translation>
 <translation id="7340958967809483333">گزینه‌های «یافته‌ها»</translation>
@@ -908,9 +914,6 @@
 <translation id="766587987807204883">مقاله‌ها اینجا نشان داده می‌شوند و حتی درحالت آفلاین هم می‌توانید آن‌ها را بخوانید.</translation>
 <translation id="7682724950699840886">نکات زیر را امتحان کنید: مطمئن شوید که در دستگاهتان فضای کافی وجود داشته باشد، سعی کنید دوباره صادر کنید.</translation>
 <translation id="7698359219371678927">ایجاد ایمیل در <ph name="APP_NAME" /></translation>
-<translation id="7702724591845223485">‏برای پاک کردن اطلاعات ورود به سیستم یا دیگر داده‌ها از Chrome، همه برگه‌های ناشناس را ببندید.
-
-در «حالت ناشناس»، ممکن است فعالیت شما همچنان برای وب‌سایت‌هایی که بازدید می‌کنید، کارفرما، محل تحصیل، یا رساننده خدمات اینترنتی‌تان نمایان باشد.</translation>
 <translation id="7704317875155739195">تکمیل خودکار جستجوها و نشانی‌های وب</translation>
 <translation id="7725024127233776428">صفحاتی را که نشانک‌گذاری می‌کنید، در اینجا نشان داده می‌شوند</translation>
 <translation id="7735637452482172701">باز کردن قفل بااستفاده از «قفل صفحه»</translation>
@@ -1045,6 +1048,7 @@
 <translation id="8636825310635137004">برای دسترسی به برگه‌هایتان در دستگاه‌های دیگر، همگام‌سازی را روشن کنید.</translation>
 <translation id="8641930654639604085">سایت‌های مخصوص بزرگ‌سالان مسدود شوند</translation>
 <translation id="8655129584991699539">‏می‌توانید داده‌ها را در تنظیمات Chrome پاک کنید</translation>
+<translation id="8656747343598256512">‏با «حساب Google» به سیستم این سایت و Chrome وارد شوید. می‌توانید بعداً همگام‌سازی را روشن کنید.</translation>
 <translation id="8659579665266920523">‏نحوه جستجو با Chrome</translation>
 <translation id="8662811608048051533">شما را از سیستم اکثر سایت‌ها خارج می‌کند.</translation>
 <translation id="8664979001105139458">نام فایل از قبل وجود دارد</translation>
@@ -1064,6 +1068,7 @@
 <translation id="8840953339110955557">ممکن است این صفحه با نسخه آنلاین متفاوت باشد.</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />، برگه</translation>
 <translation id="8854223127042600341">مشاهده فایل‌های آفلاین</translation>
+<translation id="8856607253650333758">دریافت توضیحات</translation>
 <translation id="8873817150012960745">برای شروع، اینجا ضربه بزنید</translation>
 <translation id="889338405075704026">‏به تنظیمات Chrome بروید</translation>
 <translation id="8898822736010347272">‏نشانی‌های وب بعضی از صفحه‌هایی که بازدید می‌کنید، اطلاعات محدودی از سیستم، و برخی از محتوای صفحه را به Google ارسال می‌کند تا به کشف تهدیدهای جدید و محافظت از همه افراد در وب کمک کند.</translation>

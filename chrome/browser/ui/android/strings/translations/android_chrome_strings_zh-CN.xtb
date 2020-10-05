@@ -176,7 +176,6 @@
 <translation id="2321086116217818302">正在准备密码…</translation>
 <translation id="2321958826496381788">拖动该滑块，将文字调整到适合您阅读的大小。点按两次某段落后，显示的文字至少应是这么大。</translation>
 <translation id="2323763861024343754">网站存储数据</translation>
-<translation id="2326606747676847821">进入隐身模式</translation>
 <translation id="2328985652426384049">无法登录</translation>
 <translation id="234265804618409743">无法打开您的摄像头。出了点问题。</translation>
 <translation id="2345671828921229300">若要执行搜索，请轻触并按住某个字词</translation>
@@ -346,6 +345,7 @@
 <translation id="3587482841069643663">全部</translation>
 <translation id="3587596251841506391">帮助我们改善网络安全环境</translation>
 <translation id="3599863153486145794">清除所有登录过的设备上的历史记录。您的 Google 帐号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
+<translation id="3602290021589620013">预览</translation>
 <translation id="3616113530831147358">音频</translation>
 <translation id="3631987586758005671">正在分享给<ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">显示密码</translation>
@@ -598,6 +598,7 @@
 <translation id="5527082711130173040">Chrome 需要拥有位置信息使用权才能扫描设备。请<ph name="BEGIN_LINK1" />更新权限<ph name="END_LINK1" />。<ph name="BEGIN_LINK2" />此设备的位置信息使用权也已被停用<ph name="END_LINK2" />。</translation>
 <translation id="5530766185686772672">关闭无痕模式标签页</translation>
 <translation id="5534640966246046842">已复制网站</translation>
+<translation id="5556459405103347317">重新加载</translation>
 <translation id="5561549206367097665">正在等待连接到网络…</translation>
 <translation id="55737423895878184">允许使用位置信息以及显示通知</translation>
 <translation id="5578795271662203820">在<ph name="SEARCH_ENGINE" />中搜索此图片</translation>
@@ -908,9 +909,6 @@
 <translation id="766587987807204883">报道会显示在此处，即使在离线状态下也可以阅读</translation>
 <translation id="7682724950699840886">请尝试按以下提示操作：确保您的设备上有足够的空间，然后重新尝试导出。</translation>
 <translation id="7698359219371678927">在 <ph name="APP_NAME" /> 中创建电子邮件</translation>
-<translation id="7702724591845223485">若要从 Chrome 中清除您的登录信息和其他数据，请关闭所有无痕式标签页。
-
-在无痕模式下，以下各方或许仍能看到您的活动：您访问的网站、您的雇主或学校，以及您的互联网服务提供商。</translation>
 <translation id="7704317875155739195">自动填充搜索字词和网址</translation>
 <translation id="7725024127233776428">您添加书签的网页会显示在此处</translation>
 <translation id="7735637452482172701">使用“屏幕锁定”功能解锁</translation>

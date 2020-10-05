@@ -228,6 +228,7 @@
 <translation id="1249643471736608405"><ph name="PLUGIN_NAME" /> अब काम नहीं करता, इसलिए इसे ब्लॉक कर दिया गया</translation>
 <translation id="1251366534849411931">शुरुआत में दिखने वाले ज़रूरी कर्ली ब्रेस: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">इससे, साइटों और इंस्टॉल किए गए ऐप्लिकेशन के सेव किए गए कुल डेटा में से <ph name="TOTAL_USAGE" /> डेटा मिट जाएगा</translation>
+<translation id="125220115284141797">डिफ़ॉल्ट</translation>
 <translation id="1252987234827889034">प्रोफ़ाइल संबंधी गड़बड़ी हुई</translation>
 <translation id="1254593899333212300">प्रत्यक्ष इंटरनेट कनेक्‍शन</translation>
 <translation id="1259152067760398571">कल सुरक्षा जांच हुई थी</translation>
@@ -319,6 +320,7 @@
 <translation id="1361872463926621533">शुरू होने पर आवाज़ चालू करें</translation>
 <translation id="1362865166188278099">मशीन से जुड़ी समस्या. प्रिंटर जांचें</translation>
 <translation id="1363585519747660921">यूएसबी प्रिंटर को कॉन्फ़िगर करना होगा</translation>
+<translation id="1364664799726141130">आपने जिस खाते की पुष्टि की है उसके पास इस डिवाइस को ऐक्सेस करने की अनुमति नहीं है. पक्का करें कि आप सत्र को अनलॉक करने के लिए, <ph name="ACCOUNT" /> की पुष्टि कर रहे हैं.</translation>
 <translation id="1365180424462182382"><ph name="ENROLLMENT_DOMAIN" /> आपके <ph name="BEGIN_LINK" />ब्राउज़र को प्रबंधित करता है<ph name="END_LINK" /></translation>
 <translation id="1367951781824006909">कोई फ़ाइल चुनें</translation>
 <translation id="1369149969991017342">ऐक्सेस करने का तरीका बदलें (बस एक या दो स्विच से कंप्यूटर नियंत्रित करें)</translation>
@@ -428,6 +430,7 @@
 <translation id="1486096554574027028">पासवर्ड खोजें</translation>
 <translation id="1487335504823219454">चालू - कस्टम सेटिंग</translation>
 <translation id="1489664337021920575">कोई दूसरा विकल्प चुनें</translation>
+<translation id="1492417797159476138">आपने इस साइट के लिए, यह उपयोगकर्ता नाम पहले ही सेव कर दिया है</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" /> की प्रतीक्षा कर रहा है...</translation>
 <translation id="1495486559005647033"><ph name="NUM_PRINTERS" /> अन्य उपलब्ध डिवाइस.</translation>
 <translation id="1495677929897281669">टैब पर वापस जाएं</translation>
@@ -653,6 +656,7 @@
 <translation id="173628468822554835">ठीक है. डिफ़ॉल्ट रूप से, आप जिन नई साइटों पर जाएंगे वे आपको सूचनाएं नहीं दिखाएंगी.</translation>
 <translation id="1736419249208073774">बेहतर जानें</translation>
 <translation id="1737968601308870607">गड़बड़ी की सूचना दें</translation>
+<translation id="174123615272205933">कस्टम</translation>
 <translation id="1741314857973421784">जारी रखें</translation>
 <translation id="1743570585616704562">उंगली की पहचान नहीं हो सकी</translation>
 <translation id="1743970419083351269">डाउनलोड बार बंद करें</translation>
@@ -687,6 +691,7 @@
 <translation id="1776712937009046120">उपयोगकर्ता जोड़ें</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
 <translation id="1778457539567749232">'नहीं पढ़ा गया' का निशान लगाएं</translation>
+<translation id="1779468444204342338">कम से कम</translation>
 <translation id="1779652936965200207">कृपया यह पासकुंजी "<ph name="DEVICE_NAME" />" पर दर्ज करें:</translation>
 <translation id="177989070088644880">ऐप्लिकेशन (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">ग्रुप बंद करें</translation>
@@ -1462,6 +1467,7 @@
 <translation id="2688196195245426394">डिवाइस को सर्वर के साथ पंजीकृत करते समय गड़बड़ी: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">भाषा के विकल्प दिखाएं</translation>
 <translation id="2691385045260836588">मॉडल</translation>
+<translation id="2691440343905273290">इनपुट सेटिंग बदलें</translation>
 <translation id="2693176596243495071">ओह हो!  कोई अज्ञात गड़बड़ी हुई. कृपया बाद में फिर से कोशिश करें या अगर समस्या फिर भी बनी रहती है, तो अपने एडमिन से संपर्क करें.</translation>
 <translation id="2695749433451188613">इंटरनेट प्रिंटिंग प्रोटोकॉल (HTTPS)</translation>
 <translation id="2699911226086014512"><ph name="RETRIES" /> कोड के चलते पिन को सेट नहीं किया जा सका.</translation>
@@ -1884,6 +1890,7 @@
 <translation id="3192947282887913208">ऑडियो फ़ाइलें</translation>
 <translation id="3199127022143353223">सर्वर</translation>
 <translation id="3200310363903241381">{COUNT,plural, =1{Chrome अभी इस पासवर्ड की जांच करने का सुझाव देता है}one{Chrome अभी इस पासवर्ड की जांच करने का सुझाव देता है}other{Chrome अभी इन पासवर्ड की जांच करने का सुझाव देता है}}</translation>
+<translation id="3201154330231437478">उलटी दिशा में स्क्रोल करने की सुविधा चालू करें <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="3201422919974259695">उपलब्ध यूएसबी डिवाइस यहां दिखाई देंगे.</translation>
 <translation id="3202131003361292969">पाथ</translation>
 <translation id="3202173864863109533">इस टैब का ऑडियो म्‍यूट किया जा रहा है.</translation>
@@ -2079,6 +2086,7 @@
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" /> के लिए और कार्रवाइयां</translation>
 <translation id="3440761377721825626">जब कोई साइट आपका कंप्यूटर एक्सेस करने के लिए किसी प्लग इन का इस्तेमाल करना चाहे, तो इसके लिए पूछें</translation>
 <translation id="3441653493275994384">स्क्रीन</translation>
+<translation id="3441663102605358937">इस खाते की पुष्टि करने के लिए, <ph name="ACCOUNT" /> में फिर से साइन इन करें</translation>
 <translation id="3445047461171030979">Google Assistant में तुरंत जवाब की सुविधा</translation>
 <translation id="3445925074670675829">USB-C डिवाइस</translation>
 <translation id="3446274660183028131">Windows को इंस्टॉल करने के लिए कृपया Parallels Desktop को लॉन्च करें.</translation>
@@ -2829,6 +2837,7 @@
 <translation id="4312866146174492540">ब्लॉक करें (डिफ़ॉल्ट)</translation>
 <translation id="4314815835985389558">सिंक प्रबंधित करें</translation>
 <translation id="4316850752623536204">डेवलपर वेबसाइट</translation>
+<translation id="4317820549299924617">पुष्टि नहीं हुई</translation>
 <translation id="4320177379694898372">कोई इंटरनेट कनेक्‍शन नहीं</translation>
 <translation id="4322394346347055525">अन्य टैब बंद करें</translation>
 <translation id="4324577459193912240">फ़ाइल अधूरी है</translation>
@@ -3675,6 +3684,7 @@
 <translation id="5362741141255528695">निजी कुंजी फ़ाइल को चुनें.</translation>
 <translation id="5363109466694494651">पावरवॉश करें और वापस लाएं</translation>
 <translation id="5365881113273618889">आपने जो फ़ोल्डर चुना है उसमें संवेदनशील फ़ाइलें हैं. क्या आप वाकई "<ph name="APP_NAME" />" को इस फ़ोल्डर में लिखने का ऐक्सेस हमेशा के लिए देना चाहते हैं?</translation>
+<translation id="536638840841140142">कोई नहीं</translation>
 <translation id="5368720394188453070">आपका फ़ोन लॉक हो गया है. प्रवेश करने के लिए उसे अनलॉक करें.</translation>
 <translation id="5368779022775404937"><ph name="REALM" /> में साइन इन करें</translation>
 <translation id="5369491905435686894">माउस की रफ़्तार बढ़ाने की सुविधा चालू करें</translation>
@@ -4831,6 +4841,7 @@
 <translation id="6748465660675848252">आप आगे बढ़ सकते हैं, लेकिन केवल आपके समन्वयित डेटा और सेटिंग को पुनर्स्थापित किया जाएगा. सभी स्थानीय डेटा खो जाएगा.</translation>
 <translation id="6749006854028927059">साइटें अलग-अलग साइटों पर की गई आपकी ब्राउज़िंग गतिविधि देखने के लिए, कुकी का इस्तेमाल नहीं कर सकतीं. जैसे कि दर्शकों की पसंद को ध्यान में रखकर विज्ञापन दिखाने के लिए. शायद कुछ साइटों पर सुविधाएं ठीक से काम न करें.</translation>
 <translation id="6750757184909117990">सेल्युलर नेटवर्क बंद करें</translation>
+<translation id="6750946710563435348">दूसरा उपयोगकर्ता नाम इस्तेमाल करें</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (गुप्त)</translation>
 <translation id="6757101664402245801">URL कॉपी किया गया</translation>
 <translation id="6758056191028427665">हमें बताएं कि हम कैसा प्रदर्शन कर रहे हैं.</translation>
@@ -5350,6 +5361,7 @@
 <translation id="7377451353532943397">सेंसर का ऐक्सेस ब्लॉक करते रहें</translation>
 <translation id="73786666777299047">Chrome वेब स्टोर खोलें</translation>
 <translation id="7378812711085314936">डेटा कनेक्शन पाएं</translation>
+<translation id="7380622428988553498">डिवाइस के नाम में अमान्य वर्ण हैं</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> अपडेट किया गया</translation>
 <translation id="7384687527486377545">कीबोर्ड अपने-आप दोहराना</translation>
 <translation id="7385854874724088939">प्रिंट करने की कोशिश करते समय कुछ गड़बड़ी हो गई.  कृपया अपना प्रिंटर जाँचें और फिर से कोशिश करें.</translation>
@@ -5398,6 +5410,7 @@
 <translation id="7434969625063495310">प्रिंट सर्वर नहीं जोड़ा जा सका. कृपया सर्वर का कॉन्फ़िगरेशन जांचें और फिर से कोशिश करें.</translation>
 <translation id="7436921188514130341">हे भगवान! नाम बदलने के दौरान गड़बड़ी हुई.</translation>
 <translation id="7438976808740265764">दिसंबर, 2020 के बाद Flash Player बंद कर दिया जाएगा.</translation>
+<translation id="7439519621174723623">जारी रखने के लिए किसी डिवाइस का नाम जोड़ें</translation>
 <translation id="7441736921018636843">यह सेटिंग बदलने के लिए, <ph name="BEGIN_LINK" />सिंक रीसेट करें<ph name="END_LINK" /> ताकि आपका सिंक करने का लंबा पासवर्ड हटाया जा सके</translation>
 <translation id="7441830548568730290">अन्य उपयोगकर्ता</translation>
 <translation id="7442465037756169001">आपका Hangouts Meet hardware सेट अप किए जाने के लिए तैयार है.</translation>
@@ -5639,6 +5652,7 @@
 <translation id="7717134585801378441">साइटें आपकी जगह की जानकारी के लिए पूछ सकती हैं (हम इस सेटिंग को चालू रखने का सुझाव देते हैं)</translation>
 <translation id="7717845620320228976">देखें कि अपडेट उपलब्ध हैं या नहीं</translation>
 <translation id="7719367874908701697">पेज ज़ूम</translation>
+<translation id="7719588063158526969">डिवाइस का नाम बहुत लंबा है</translation>
 <translation id="7721179060400456005">विंडो को प्रदर्शन फैलाने दें</translation>
 <translation id="7722040605881499779">अपडेट करना ज़रूरी है: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">काटें</translation>
@@ -5942,6 +5956,7 @@
 <translation id="8049705080247101012">Google ने <ph name="EXTENSION_NAME" /> को नुकसान पहुंचाने वाले के रूप में फ़्लैग किया है और इंस्टॉलेशन रोक दिया गया है</translation>
 <translation id="8049948037269924837">टचपैड से उल्टा स्क्रोल करने की रफ़्तार</translation>
 <translation id="8050038245906040378">Microsoft Commercial Code Signing</translation>
+<translation id="8050191834453426339">फिर से पुष्टि करें</translation>
 <translation id="8051193500142930381">जिन सुविधाओं के लिए कैमरे की ज़रूरत होती है वे काम नहीं करेंगी</translation>
 <translation id="8051390370038326517"><ph name="HOST" /> को, MIDI डिवाइस के पूरे कंट्रोल की हमेशा अनुमति दें</translation>
 <translation id="8053278772142718589">PKCS #12 फ़ाइलें</translation>

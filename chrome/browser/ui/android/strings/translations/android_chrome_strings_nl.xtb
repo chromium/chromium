@@ -176,7 +176,6 @@ Tik op een woord om te zoeken. Je kunt je zoekopdracht verfijnen door te tikken 
 <translation id="2321086116217818302">Wachtwoorden voorbereiden…</translation>
 <translation id="2321958826496381788">Sleep de schuifknop tot je deze tekst prettig kunt lezen. De tekst moet minimaal deze grootte hebben nadat je op een alinea hebt gedubbeltikt.</translation>
 <translation id="2323763861024343754">Site-opslag</translation>
-<translation id="2326606747676847821">Incognito gaan</translation>
 <translation id="2328985652426384049">Kan niet inloggen</translation>
 <translation id="234265804618409743">Kan de camera niet openen. Er is iets misgegaan.</translation>
 <translation id="2345671828921229300">Tik op een woord en houd dit vast om te zoeken</translation>
@@ -346,6 +345,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="3587482841069643663">Alles</translation>
 <translation id="3587596251841506391">Bijdragen aan veiliger internet</translation>
 <translation id="3599863153486145794">Hiermee wordt de geschiedenis van alle ingelogde apparaten gewist. Er kunnen andere vormen van browsegeschiedenis zijn opgeslagen voor je Google-account op <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="3602290021589620013">Voorbeeld</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3631987586758005671">Delen met <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">Maskering van wachtwoord ongedaan maken</translation>
@@ -598,6 +598,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5527082711130173040">Chrome heeft locatietoegang nodig om naar apparaten te scannen. <ph name="BEGIN_LINK1" />Rechten updaten<ph name="END_LINK1" />. Locatietoegang is ook <ph name="BEGIN_LINK2" />uitgeschakeld voor dit apparaat<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Incognitotabbladen sluiten</translation>
 <translation id="5534640966246046842">Site gekopieerd</translation>
+<translation id="5556459405103347317">Opnieuw laden</translation>
 <translation id="5561549206367097665">Wachten op netwerk…</translation>
 <translation id="55737423895878184">Locatie en meldingen zijn toegestaan</translation>
 <translation id="5578795271662203820">Zoeken op <ph name="SEARCH_ENGINE" /> naar afbeelding</translation>
@@ -908,9 +909,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties weer te gev
 <translation id="766587987807204883">Hier worden artikelen weergegeven die je zelfs kunt lezen wanneer je offline bent</translation>
 <translation id="7682724950699840886">Probeer de volgende tips: zorg dat er voldoende ruimte op je apparaat beschikbaar is, probeer opnieuw te exporteren.</translation>
 <translation id="7698359219371678927">E-mail in <ph name="APP_NAME" /> maken</translation>
-<translation id="7702724591845223485">Sluit alle incognitotabbladen om je inloggegevens en andere gegevens uit Chrome te wissen.
-
-Je activiteit in de incognitomodus is mogelijk nog altijd zichtbaar voor websites die je bezoekt, je werkgever of school en je internetprovider.</translation>
 <translation id="7704317875155739195">Zoekopdrachten en URL's automatisch aanvullen</translation>
 <translation id="7725024127233776428">Pagina's waaraan je een bookmark toevoegt, worden hier weergegeven</translation>
 <translation id="7735637452482172701">Ontgrendelen met schermvergrendeling</translation>

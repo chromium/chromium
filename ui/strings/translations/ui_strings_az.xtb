@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Bu, yeni funksiyadır</translation>
 <translation id="2006524834898217237">Bu cihazın internetə qoşulduğuna əmin olun.</translation>
 <translation id="208586643495776849">Yenidən cəhd edin</translation>
-<translation id="2090963878406559571"><ph name="ORIGIN" /> cihazından Android telefonunuza nömrə göndərmək üçün ayarlarda hər iki cihaz üçün <ph name="TROUBLESHOOT_LINK" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1gün}other{#gün}}</translation>
 <translation id="2148716181193084225">Bu gün</translation>
 <translation id="2161656808144014275">Mətn</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">Açılma vidceti</translation>
 <translation id="5278860589123563674">Göndərilmədi</translation>
 <translation id="528468243742722775">Son</translation>
-<translation id="5327567770033251652">sinxronizasiyanı aktiv edin</translation>
 <translation id="5329858601952122676">&amp;Silin</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> <ph name="IN_PLACE_APP" /> tətbiqinin üzərindədir, qovluq yaratmaq üçün buraxın.</translation>
 <translation id="5463830097259460683">Emoji və Simvollar</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">Adsız</translation>
 <translation id="6612467943526193239">Kalibrləmədən çıxmaq üçün Esc düyməsini basın.</translation>
 <translation id="6620110761915583480">Faylı Saxlayın</translation>
-<translation id="6656912866303152668"><ph name="TARGET_DEVICE_NAME" /> cihazının Chrome sinxronizasiyasının aktiv olduğundan əmin olub yenidən göndərməyə çalışın.</translation>
 <translation id="6699343763173986273">Növbəti Media Trek</translation>
 <translation id="6710213216561001401">Əvvəlki</translation>
-<translation id="6779314412797872738">Buradan Android telefonunuza nömrə göndərmək üçün hər iki cihazın ayarlarında bu əməliyyatı yerinə yetirin: <ph name="TROUBLESHOOT_LINK" />.</translation>
 <translation id="6786750046913594791">Qovluğu qapadın</translation>
 <translation id="6808150112686056157">Media Stop</translation>
 <translation id="6845383723252244143">Qovluq Seçin</translation>

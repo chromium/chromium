@@ -134,6 +134,7 @@
 <translation id="1453974140256777690">आप जो लेख चिपकाते हैं या अटैच करते हैं उसे विश्लेषण के लिए 'Google क्लाउड' या तीसरे पक्षों को भेजा जाता है. उदाहरण के लिए, इसे संवेदनशील डेटा की जांच के लिए स्कैन किया जा सकता है.</translation>
 <translation id="1455413310270022028">इरेज़र</translation>
 <translation id="1462245070427461050">JIS B9</translation>
+<translation id="1462951478840426066">अपने कंप्यूटर पर मौजूद फ़ॉन्ट इस्तेमाल करें, ताकि आप हाई फ़िडेलिटी कॉन्टेंट बना सकें</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">बाएं</translation>
 <translation id="1472675084647422956">और दिखाएं</translation>
@@ -221,6 +222,7 @@
 <translation id="17513872634828108">टैब खोलें</translation>
 <translation id="1752021286346845558">मेलबॉक्स 8</translation>
 <translation id="1753706481035618306">पृष्‍ठ संख्‍या</translation>
+<translation id="1757773103848038814">मोनोस्पेस फ़ॉन्ट</translation>
 <translation id="1763864636252898013">यह सर्वर यह नहीं प्रमाणित कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाणपत्र आपके डिवाइस के ऑपरेटिंग सिस्टम द्वारा विश्वसनीय नहीं है. ऐसा गलत कॉन्फ़िगरेशन या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows नेटवर्क निदान चलाकर देखें<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">आप जिस <ph name="ORIGIN" /> सर्वर पर जा रहे हैं उसने एक हेडर
@@ -591,6 +593,7 @@
 <translation id="3395827396354264108">पिकअप का तरीका</translation>
 <translation id="3399952811970034796">डिलीवरी का पता</translation>
 <translation id="3402261774528610252">इस साइट को लोड करने में इस्तेमाल हुआ कनेक्शन TLS 1.0 या TLS 1.1 का इस्तेमाल कर रहा है. ये वर्शन रोक दिए गए हैं और आने वाले समय में इन्हें बंद कर दिया जाएगा. बंद होने के बाद, उपयोगकर्ता इस साइट को लोड नहीं कर पाएंगे. सर्वर पर TLS 1.2 या इसके बाद का वर्शन चालू होना चाहिए.</translation>
+<translation id="3411120537985775570"><ph name="ORIGIN_NAME" /> से लाकर इस जगह चिपकाने की सुविधा, आपके एडमिन ने बंद कर रखी है</translation>
 <translation id="3414952576877147120">आकार:</translation>
 <translation id="3417660076059365994">आप जो फ़ाइलें अपलोड करते हैं या अटैच करते हैं उन्हें विश्लेषण के लिए 'Google क्लाउड' या तीसरे पक्षों को भेजा जाता है. उदाहरण के लिए, इन्हें संवेदनशील डेटा या मैलवेयर की जांच के लिए स्कैन किया जा सकता है.</translation>
 <translation id="3422248202833853650">जगह खाली करने के लिए दूसरे प्रोग्राम से बाहर निकलकर देखें.</translation>
@@ -629,6 +632,7 @@
 <translation id="3532844647053365774"><ph name="HOST" /> वेबसाइट आपके माइक्रोफ़ोन का इस्तेमाल करना चाहती है</translation>
 <translation id="3533328374079021623">मेलबॉक्स 5</translation>
 <translation id="3539171420378717834">इस डिवाइस पर इस कार्ड की कॉपी रखें</translation>
+<translation id="3552297013052089404">Sans-serif फ़ॉन्ट</translation>
 <translation id="3558573058928565255">दिन के समय</translation>
 <translation id="3566021033012934673">आपका कनेक्शन निजी नहीं है</translation>
 <translation id="3567778190852720481">एंटरप्राइज़ खाते के साथ नाम दर्ज नहीं किया जा सकता (एंटरप्राइज़ खाते से डिवाइस को जोड़ने की मंज़ूरी नहीं दी गई है).</translation>
@@ -997,6 +1001,7 @@
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" के रूट प्रमाणपत्र की ज़रूरत है लेकिन वह इंस्टॉल नहीं है. यह समस्या ठीक करने के लिए आपके आईटी व्यवस्थापक को "<ph name="SOFTWARE_NAME" />" के कॉन्फ़िगरेशन से जुड़े निर्देशों पर नज़र डालनी चाहिए. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google अनुवाद के बारे में</translation>
 <translation id="503498442187459473"><ph name="HOST" /> आपके कैमरा और माइक्रोफ़ोन का उपयोग करना चाहता है</translation>
+<translation id="5039762155821394373">फ़ॉन्ट का साइज़</translation>
 <translation id="5039804452771397117">अनुमति दें</translation>
 <translation id="5040262127954254034">निजता</translation>
 <translation id="5043480802608081735">आपका कॉपी किया हुआ लिंक</translation>
@@ -1263,6 +1268,7 @@
 <translation id="6051221802930200923">आप इस समय <ph name="SITE" /> पर नहीं जा सकते क्योंकि वेबसाइट, प्रमाणपत्र पिनिंग का उपयोग करती है. नेटवर्क की गड़बड़ियां और हमले आमतौर पर कुछ समय के लिए होते हैं इसलिए यह पेज शायद बाद में ठीक से काम करेगा.</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">क्या आप इस वेबसाइट को बताना चाहते हैं कि आप डिवाइस का इस्तेमाल कब करते हैं?</translation>
+<translation id="6057359309778282021">आपके एडमिन ने, <ph name="ORIGIN_NAME" /> से <ph name="VM_NAME" /> पर शेयर करने की सुविधा बंद कर दी है</translation>
 <translation id="6058977677006700226">क्या आप अपने कार्ड का इस्तेमाल सभी डिवाइस पर करना चाहते हैं?</translation>
 <translation id="6059925163896151826">USB डिवाइस</translation>
 <translation id="6060009363608157444">अमान्य DnsOverHttps मोड.</translation>
@@ -1312,6 +1318,7 @@
         <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">इस पते पर वितरित नहीं किया जा सकता. कोई दूसरा पता चुनें.</translation>
 <translation id="6282194474023008486">पोस्टल कोड</translation>
+<translation id="6289939620939689042">पेज का रंग</translation>
 <translation id="6290238015253830360">आपके सुझाए हुए लेख यहां दिखाई देते हैं</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">'Chrome में Google Assistant' को रोका जा रहा है</translation>
@@ -1468,6 +1475,7 @@
 <translation id="7004583254764674281">कार्ड की जल्दी पुष्टि करने के लिए, Windows Hello का इस्तेमाल करें</translation>
 <translation id="7006930604109697472">फिर भी भेजें</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7014741021609395734">ज़ूम लेवल</translation>
 <translation id="7016992613359344582">ये शुल्क एक बार लगने वाले या बार-बार लगने वाले हो सकते हैं और हो सकता है कि इनके बारे में स्पष्ट जानकारी न दी जाए.</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
 <translation id="7031646650991750659">आपने Google Play के कौनसे ऐप्लिकेशन इंस्टॉल किए हैं</translation>
@@ -1870,6 +1878,7 @@
 <translation id="8622948367223941507">लीगल-एक्स्ट्रा</translation>
 <translation id="8623885649813806493">पासवर्ड गलत है. सेव किए गए सभी पासवर्ड दिखाएं.</translation>
 <translation id="8625384913736129811">इस कार्ड को इस डिवाइस में सेव करें</translation>
+<translation id="8657078576661269990">आपके एडमिन ने <ph name="ORIGIN_NAME" /> से <ph name="VM_NAME_1" /> और <ph name="VM_NAME_2" /> पर शेयर करने की सुविधा बंद कर दी है</translation>
 <translation id="8663226718884576429">ऑर्डर की खास बातें, <ph name="TOTAL_LABEL" />, ज़्यादा जानकारी</translation>
 <translation id="867224526087042813">हस्ताक्षर</translation>
 <translation id="8676424191133491403">बिना देरी के</translation>
@@ -1882,6 +1891,7 @@
 <translation id="8699041776323235191">एचआईडी डिवाइस</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> से आपके कनेक्शन को सुरक्षित नहीं किया गया है.</translation>
 <translation id="8705331520020532516">क्रम संख्या</translation>
+<translation id="8710842507289500830">फ़ॉन्ट की शैली</translation>
 <translation id="8718314106902482036">भुगतान पूरा नहीं हुआ</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, खोज सुझाव</translation>
 <translation id="8719528812645237045">सबसे ऊपर एक से ज़्यादा पंच</translation>
@@ -2002,6 +2012,7 @@
 <translation id="9191834167571392248">नीचे बाईं ओर पंच</translation>
 <translation id="9205078245616868884">आपका डेटा आपके सिंक पासफ़्रेज़ से सुरक्षित किया गया है. सिंक शुरू करने के लिए इसे डालें.</translation>
 <translation id="9207861905230894330">लेख जोड़ने में विफल रहा.</translation>
+<translation id="9213433120051936369">दिखने का तरीका अपनी पसंद के मुताबिक बनाएं</translation>
 <translation id="9215416866750762878">एक ऐप्‍लिकेशन Chrome को इस साइट से सुरक्षित तरीके से कनेक्‍ट होने से रोक रहा है</translation>
 <translation id="9219103736887031265">इमेज</translation>
 <translation id="933712198907837967">Diners Club</translation>

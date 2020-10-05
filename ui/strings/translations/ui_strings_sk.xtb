@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Toto je nová funkcia</translation>
 <translation id="2006524834898217237">Skontrolujte, či je toto zariadenie pripojené k internetu.</translation>
 <translation id="208586643495776849">Skúste to znova</translation>
-<translation id="2090963878406559571">Ak chcete zo zariadenia <ph name="ORIGIN" /> odoslať číslo do telefónu s Androidom, <ph name="TROUBLESHOOT_LINK" /> pre obidve zariadenia v nastaveniach.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d.}few{# d.}many{# d.}other{# d.}}</translation>
 <translation id="2148716181193084225">Dnes</translation>
 <translation id="2161656808144014275">Text</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">Trojuholníkové tlačidlo na zobrazenie skrytého obsahu</translation>
 <translation id="5278860589123563674">Nepodarilo sa odoslať</translation>
 <translation id="528468243742722775">Koniec</translation>
-<translation id="5327567770033251652">zapnite synchronizáciu</translation>
 <translation id="5329858601952122676">&amp;Odstrániť</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> na aplikáciu <ph name="IN_PLACE_APP" />, uvoľnením vytvoríte priečinok.</translation>
 <translation id="5463830097259460683">Emodži a symboly</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">Bez názvu</translation>
 <translation id="6612467943526193239">Kalibráciu ukončíte stlačením klávesa Esc.</translation>
 <translation id="6620110761915583480">Uložiť súbor</translation>
-<translation id="6656912866303152668">Skontrolujte, či má <ph name="TARGET_DEVICE_NAME" /> v Chrome zapnutú synchronizáciu, a skúste to odoslať znova.</translation>
 <translation id="6699343763173986273">Média – ďalšia stopa</translation>
 <translation id="6710213216561001401">Späť</translation>
-<translation id="6779314412797872738">Ak chcete odtiaľto odoslať číslo do telefónu s Androidom, <ph name="TROUBLESHOOT_LINK" /> pre obidve zariadenia v nastaveniach.</translation>
 <translation id="6786750046913594791">Zatvoriť priečinok</translation>
 <translation id="6808150112686056157">Médiá – zastaviť</translation>
 <translation id="6845383723252244143">Vybrať priečinok</translation>

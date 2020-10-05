@@ -176,7 +176,6 @@
 <translation id="2321086116217818302">پاس ورڈز تیار کیے جا رہے ہيں…</translation>
 <translation id="2321958826496381788">سلائیڈر کو اس وقت تک گھسیٹیں جب اسے آرام سے پڑھ سکتے ہوں۔ کسی پیراگراف پر دوبار تھپتھپانے کے بعد متن کم از کم اتنا بڑا دکھائی دینا چاہیے۔</translation>
 <translation id="2323763861024343754">سائٹ اسٹوریج</translation>
-<translation id="2326606747676847821">پوشیدگی طرز میں جائیں</translation>
 <translation id="2328985652426384049">سائن نہیں کیا جا سکتا ہے</translation>
 <translation id="234265804618409743">اپنا کیمرا نہیں کھول سکتے۔ کچھ غلط ہو گیا۔</translation>
 <translation id="2345671828921229300">تلاش کرنے کیلئے کسی لفظ کو ٹچ کریں اور دبائے رکھیں</translation>
@@ -346,6 +345,7 @@
 <translation id="3587482841069643663">سبھی</translation>
 <translation id="3587596251841506391">ویب پر سیکیورٹی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="3599863153486145794">‏سبھی سائن ان کردہ آلات سے سرگزشت صاف کر دیتا ہے۔ ممکن ہے کہ <ph name="BEGIN_LINK" />myactivity.google<ph name="END_LINK" /> پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں۔</translation>
+<translation id="3602290021589620013">پیش منظر</translation>
 <translation id="3616113530831147358">آڈیو</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> کے ساتھ اشتراک کیا جا رہا ہے</translation>
 <translation id="3632295766818638029">پاس ورڈ ظاہر کریں</translation>
@@ -598,6 +598,7 @@
 <translation id="5527082711130173040">‏Chrome کو آلات اسکین کرنے کیلئے مقام تک رسائی کی ضرورت ہے۔ <ph name="BEGIN_LINK1" />اجازتوں کو اپ ڈیٹ کریں<ph name="END_LINK1" />۔ مقام تک رسائی بھی <ph name="BEGIN_LINK2" />اس آلہ کیلئے آف<ph name="END_LINK2" /> ہے۔</translation>
 <translation id="5530766185686772672">پوشیدگی ٹیبز بند کریں</translation>
 <translation id="5534640966246046842">سائٹ کاپی ہو گئی</translation>
+<translation id="5556459405103347317">دوبارہ لوڈ کریں</translation>
 <translation id="5561549206367097665">نیٹ ورک کا منتظر…</translation>
 <translation id="55737423895878184">مقام اور اطلاعات کی اجازت ہے</translation>
 <translation id="5578795271662203820">اس تصویر کیلئے <ph name="SEARCH_ENGINE" /> تلاش کریں</translation>
@@ -908,9 +909,6 @@
 <translation id="766587987807204883">مضامین یہاں دکھائی دیتے ہیں جنہیں آپ آف لائن ہونے پر بھی پڑھ سکتے ہیں</translation>
 <translation id="7682724950699840886">مندرجہ ذیل تجاویز آزمائیں: یقینی بنائیں کہ آپ کے آلہ پر کافی جگہ ہے، دوبارہ برآمد کرنے کی کوشش کریں۔</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> میں ای میل تخلیق کریں</translation>
-<translation id="7702724591845223485">‏Chrome سے اپنی سائن ان کی معلومات اور دیگر ڈیٹا صاف کرنے کے لیے سبھی پوشیدگی ٹیبز بند کریں۔
-
-پوشیدگی ٹیب میں آپ کی سرگرمی اب بھی آپ کی ملاحظہ کی جانے والی ویب سائٹس، آپ کے ایمپلائر یا اسکول اور انٹرنیٹ سروس پرووائیڈر کو دکھائی دے سکتی ہے۔</translation>
 <translation id="7704317875155739195">‏تلاشوں اور URLs کی خودکار تکمیل کریں</translation>
 <translation id="7725024127233776428">آپ کے بُک مارک کیے ہوئے صفحات یہاں دکھائی دیتے ہیں</translation>
 <translation id="7735637452482172701">اسکرین لاک کے ساتھ غیر مقفل کریں</translation>

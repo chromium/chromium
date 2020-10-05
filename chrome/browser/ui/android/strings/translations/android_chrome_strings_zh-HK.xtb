@@ -176,7 +176,6 @@
 <translation id="2321086116217818302">正在準備密碼…</translation>
 <translation id="2321958826496381788">拖曳滑桿，將文字調整到您閱讀時感到舒適的大小。當您輕按兩下文字段落，文字至少應有這樣大。</translation>
 <translation id="2323763861024343754">網站儲存空間資料量</translation>
-<translation id="2326606747676847821">進入無痕模式</translation>
 <translation id="2328985652426384049">無法登入</translation>
 <translation id="234265804618409743">無法開啟攝錄機。發生錯誤。</translation>
 <translation id="2345671828921229300">如要搜尋，請輕觸並按住字詞</translation>
@@ -346,6 +345,7 @@
 <translation id="3587482841069643663">全部</translation>
 <translation id="3587596251841506391">協助改善網絡安全</translation>
 <translation id="3599863153486145794">清除所有已登入裝置上的記錄。您的 Google 帳戶在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的瀏覽記錄。</translation>
+<translation id="3602290021589620013">預覽</translation>
 <translation id="3616113530831147358">音效檔案</translation>
 <translation id="3631987586758005671">正在分享至 <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">顯示密碼</translation>
@@ -598,6 +598,7 @@
 <translation id="5527082711130173040">Chrome 需要位置資訊存取權才能掃描裝置。<ph name="BEGIN_LINK1" />更新權限<ph name="END_LINK1" />。系統已<ph name="BEGIN_LINK2" />關閉此裝置<ph name="END_LINK2" />的位置存取權。</translation>
 <translation id="5530766185686772672">關閉無痕式分頁</translation>
 <translation id="5534640966246046842">已複製網站</translation>
+<translation id="5556459405103347317">重新載入</translation>
 <translation id="5561549206367097665">正在等待網絡連線…</translation>
 <translation id="55737423895878184">允許分享位置資訊和顯示通知</translation>
 <translation id="5578795271662203820">透過 <ph name="SEARCH_ENGINE" /> 搜尋這張圖片</translation>
@@ -666,6 +667,7 @@
 <translation id="5958275228015807058">在「下載」主畫面尋找您的檔案和網頁</translation>
 <translation id="5962718611393537961">輕按即可收合</translation>
 <translation id="5964805880140440652">如要將此頁面分享至另一部裝置，請在 Chrome 設定中開啟同步功能</translation>
+<translation id="5964869237734432770">停止取得圖片說明</translation>
 <translation id="5979084224081478209">檢查密碼</translation>
 <translation id="6000066717592683814">繼續使用 Google</translation>
 <translation id="6005538289190791541">建議的密碼</translation>
@@ -693,6 +695,7 @@
 <translation id="6157392216611456285">選擇 <ph name="APP_NAME" /></translation>
 <translation id="6159335304067198720">節省 <ph name="PERCENT" /> 的數據用量</translation>
 <translation id="6186394685773237175">找不到被盜用的密碼</translation>
+<translation id="6192907950379606605">取得圖片說明</translation>
 <translation id="6206830853671714236">請選擇下載時間</translation>
 <translation id="6210748933810148297">不是 <ph name="EMAIL" /> 嗎？</translation>
 <translation id="6218096829563201111">搜尋類似產品<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
@@ -762,6 +765,7 @@
 <translation id="6590471736817333463">節省高達 60% 數據用量</translation>
 <translation id="6590680911007613645">請確保您儲存的密碼與 <ph name="SITE" /> 上的密碼相符</translation>
 <translation id="6593061639179217415">桌面版網站</translation>
+<translation id="6595046016124923392">圖片會傳送至 Google，以便為您改善說明。</translation>
 <translation id="6597891566292541626">將二維條碼/條碼放在此方框中。</translation>
 <translation id="6600954340915313787">已複製至 Chrome</translation>
 <translation id="661266467055912436">為您和網絡上的所有使用者提高安全性。</translation>
@@ -820,6 +824,7 @@
 <translation id="702463548815491781">建議在 TalkBack 或「按鈕控制」開啟時使用</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="703523980599857277">變更首頁</translation>
+<translation id="7054588988317389591">要取得圖片說明嗎？</translation>
 <translation id="7055152154916055070">已禁止重新導向：</translation>
 <translation id="7063006564040364415">無法連線至同步處理伺服器。</translation>
 <translation id="7071521146534760487">管理帳戶</translation>
@@ -851,6 +856,7 @@
 <translation id="729975465115245577">裝置沒有可儲存密碼檔案的應用程式。</translation>
 <translation id="7302081693174882195">詳情：依節省數據量排序</translation>
 <translation id="7304873321153398381">離線。Chrome 無法檢查密碼。</translation>
+<translation id="7313188324932846546">輕按即可設定同步</translation>
 <translation id="7328017930301109123">「精簡模式」可加快 Chrome 載入網頁的速度，並節省高達百分之 60 的數據用量。</translation>
 <translation id="7333031090786104871">仍在新增先前的網站</translation>
 <translation id="7340958967809483333">「探索」的選項</translation>
@@ -908,9 +914,6 @@
 <translation id="766587987807204883">文章在這裡顯示，即使處於離線狀態也可閱讀</translation>
 <translation id="7682724950699840886">請嘗試按照以下提示操作：確保您的裝置上有足夠的儲存空間，然後嘗試重新匯出。</translation>
 <translation id="7698359219371678927">在 <ph name="APP_NAME" /> 中建立電郵</translation>
-<translation id="7702724591845223485">如要從 Chrome 清除登入資料和其他資料，請關閉所有無痕式分頁。
-
-在無痕模式下，您瀏覽的網站、僱主或學校，以及互聯網服務供應商仍可看到您的活動。</translation>
 <translation id="7704317875155739195">自動完成搜尋和網址</translation>
 <translation id="7725024127233776428">加入書籤的網頁會在這裡顯示</translation>
 <translation id="7735637452482172701">透過「螢幕鎖定」功能解鎖</translation>
@@ -1045,6 +1048,7 @@
 <translation id="8636825310635137004">如要取得其他裝置上的分頁，請開啟同步處理功能。</translation>
 <translation id="8641930654639604085">嘗試封鎖成人網站</translation>
 <translation id="8655129584991699539">您可以在 Chrome 設定中清除資料</translation>
+<translation id="8656747343598256512">使用您的 Google 帳戶登入此網站和 Chrome。您可稍後再開啟同步功能。</translation>
 <translation id="8659579665266920523">如何使用 Chrome 搜尋</translation>
 <translation id="8662811608048051533">您會從大部分網站登出。</translation>
 <translation id="8664979001105139458">檔案名稱已存在</translation>
@@ -1064,6 +1068,7 @@
 <translation id="8840953339110955557">此網頁可能與網上版本不同。</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" /> (分頁)</translation>
 <translation id="8854223127042600341">查看離線檔案</translation>
+<translation id="8856607253650333758">取得說明</translation>
 <translation id="8873817150012960745">輕按此處即可開始搜尋</translation>
 <translation id="889338405075704026">前往 Chrome 設定</translation>
 <translation id="8898822736010347272">向 Google 傳送部分您瀏覽網頁的網址、特定的系統資料及部分網頁內容，以協助探索新威脅，並保護所有網絡使用者。</translation>

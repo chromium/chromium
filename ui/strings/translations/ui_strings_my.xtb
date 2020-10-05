@@ -44,7 +44,6 @@
 <translation id="19085484004813472">၎င်းသည် ဝန်ဆောင်မှုအသစ်ဖြစ်သည်</translation>
 <translation id="2006524834898217237">ဤစက်သည် အင်တာနက်ချိတ်ထားမှု ရှိမရှိ စစ်ဆေးပါ။</translation>
 <translation id="208586643495776849">ထပ်လုပ်ကြည့်ပါ</translation>
-<translation id="2090963878406559571"><ph name="ORIGIN" /> မှ နံပါတ်ကို သင့် Android ဖုန်းသို့ ပို့ရန် ဆက်တင်များတွင် စက်နှစ်ခုလုံးအတွက် <ph name="TROUBLESHOOT_LINK" />။</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{၁ ရက်}other{# ရက်}}</translation>
 <translation id="2148716181193084225">ယနေ့</translation>
 <translation id="2161656808144014275">စာသား</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">Disclosure triangle</translation>
 <translation id="5278860589123563674">ပို့၍ မရပါ</translation>
 <translation id="528468243742722775">အဆုံး</translation>
-<translation id="5327567770033251652">စင့်ခ်လုပ်ခြင်းကို ဖွင့်ရန်</translation>
 <translation id="5329858601952122676">&amp;ဖျက်ရန်</translation>
 <translation id="5395308026110844773">ဖိုင်တွဲပြုလုပ်ရန် <ph name="IN_PLACE_APP" /> ပေါ်တွင် <ph name="DRAGGED_APP_NAME" /> ကို တင်သည်။</translation>
 <translation id="5463830097259460683">အီမိုဂျီနှင့် သင်္ကေတများ</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">အမည်ပေးမထား</translation>
 <translation id="6612467943526193239">တိုင်းတာချိန်ညှိမှုမှ ထွက်ရန် Esc ကို နှိပ်ပါ။</translation>
 <translation id="6620110761915583480">ဖိုင် သိမ်းရန်</translation>
-<translation id="6656912866303152668">Chrome တွင် <ph name="TARGET_DEVICE_NAME" /> က စင့်ခ်ဖွင့်ထားခြင်း ရှိမရှိ စစ်ဆေးပြီး ထပ်ပို့ကြည့်ပါ။</translation>
 <translation id="6699343763173986273">နောက်ထပ်သီချင်းပုဒ် မီဒီယာ</translation>
 <translation id="6710213216561001401">အရင်</translation>
-<translation id="6779314412797872738">ဤနေရာမှ နံပါတ်ကို သင့် Android ဖုန်းသို့ ပို့ရန် ဆက်တင်များတွင် ကိရိယာနှစ်ခုလုံးအတွက် <ph name="TROUBLESHOOT_LINK" />။</translation>
 <translation id="6786750046913594791">ဖိုလ်ဒါကို ပိတ်ရန်</translation>
 <translation id="6808150112686056157">Media Stop</translation>
 <translation id="6845383723252244143">ဖိုင်တွဲ ရွေးရန်</translation>

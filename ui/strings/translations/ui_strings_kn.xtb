@@ -44,7 +44,6 @@
 <translation id="19085484004813472">ಇದೊಂದು ಹೊಸ ವೈಶಿಷ್ಟ್ಯ</translation>
 <translation id="2006524834898217237">ಈ ಸಾಧನವು ಇಂಟರ್ನೆಟ್‌ಗೆ ಸಂಪರ್ಕಗೊಂಡಿರುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="208586643495776849">ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
-<translation id="2090963878406559571"><ph name="ORIGIN" /> ನಿಂದ ನಿಮ್ಮ Android ಫೋನ್‌ಗೆ ಒಂದು ಸಂಖ್ಯೆಯನ್ನು ಕಳುಹಿಸಲು, ಎರಡೂ ಸಾಧನಗಳಿಗಾಗಿ, ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ <ph name="TROUBLESHOOT_LINK" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1ದಿ}one{#ದಿ}other{#ದಿ}}</translation>
 <translation id="2148716181193084225">ಇಂದು</translation>
 <translation id="2161656808144014275">ಪಠ್ಯ</translation>
@@ -135,8 +134,8 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">ತ್ರಿಕೋನ ಪ್ರಕಟಣೆ</translation>
 <translation id="5278860589123563674">ಕಳುಹಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" />, ನಿಮ್ಮ ಗಮನವನ್ನು ವಿನಂತಿಸುತ್ತದೆ.</translation>
 <translation id="528468243742722775">ಅಂತ್ಯ</translation>
-<translation id="5327567770033251652">ಸಿಂಕ್‌ ಆನ್‌ ಮಾಡಿ</translation>
 <translation id="5329858601952122676">&amp;ಅಳಿಸು</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> ನ ಮೇಲ್ಭಾಗದಲ್ಲಿ <ph name="DRAGGED_APP_NAME" />, ಫೋಲ್ಡರ್ ರಚಿಸಲು ಬಿಡುಗಡೆ ಮಾಡಿ.</translation>
 <translation id="5463830097259460683">ಎಮೋಜಿ ಮತ್ತು ಸಂಕೇತಗಳು</translation>
@@ -146,6 +145,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> ಸಿಸ್ಟಂ</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">ಎಡ ಬಾಣದ ಗುರುತು</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />, ನಿಮ್ಮ ಗಮನವನ್ನು ವಿನಂತಿಸುತ್ತದೆ.</translation>
 <translation id="5675363643668471212">ಶೆಲ್ಫ್ ಐಟಂ</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 ನಿಮಿ}one{# ನಿಮಿಷಗಳು}other{# ನಿಮಿಷಗಳು}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{ಇಂದು ಸಕ್ರಿಯ}=1{1 ದಿನದ ಹಿಂದೆ ಸಕ್ರಿಯ}one{# ದಿನಗಳ ಹಿಂದೆ ಸಕ್ರಿಯ}other{# ದಿನಗಳ ಹಿಂದೆ ಸಕ್ರಿಯ}}</translation>
@@ -183,10 +183,8 @@
 <translation id="6578407462441924264">ಹೆಸರಿಸದಿರುವುದು</translation>
 <translation id="6612467943526193239">ಮಾಪನಾಂಕದಿಂದ ನಿರ್ಗಮಿಸಲು Esc ಒತ್ತಿರಿ.</translation>
 <translation id="6620110761915583480">ಫೈಲ್ ಉಳಿಸು</translation>
-<translation id="6656912866303152668">Chrome ನಲ್ಲಿ <ph name="TARGET_DEVICE_NAME" /> ಸಾಧನದ ಸಿಂಕ್ ಆನ್ ಆಗಿದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ, ತದನಂತರ ಮತ್ತೆ ಕಳುಹಿಸಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="6699343763173986273">ಮೀಡಿಯಾದ ಮುಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="6710213216561001401">ಹಿಂದಿನದು</translation>
-<translation id="6779314412797872738">ಇಲ್ಲಿಂದ ನಿಮ್ಮ Android ಫೋನ್‌ಗೆ ಒಂದು ಸಂಖ್ಯೆಯನ್ನು ಕಳುಹಿಸಲು, ಎರಡೂ ಸಾಧನಗಳಿಗಾಗಿ, ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ <ph name="TROUBLESHOOT_LINK" />.</translation>
 <translation id="6786750046913594791">ಫೋಲ್ಡರ್ ಮುಚ್ಚಿರಿ</translation>
 <translation id="6808150112686056157">ಮೀಡಿಯಾ ನಿಲುಗಡೆ</translation>
 <translation id="6845383723252244143">ಫೋಲ್ಡರ್ ಆಯ್ಕೆಮಾಡಿ</translation>

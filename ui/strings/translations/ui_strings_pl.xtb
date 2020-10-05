@@ -44,7 +44,6 @@
 <translation id="19085484004813472">To jest nowa funkcja</translation>
 <translation id="2006524834898217237">Upewnij się, że to urządzenie jest połączone z internetem.</translation>
 <translation id="208586643495776849">Spróbuj ponownie</translation>
-<translation id="2090963878406559571">Aby przesłać numer z <ph name="ORIGIN" /> na swój telefon z Androidem, <ph name="TROUBLESHOOT_LINK" /> obu urządzeń w ustawieniach.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 dzień}few{# dni}many{# dni}other{# dnia}}</translation>
 <translation id="2148716181193084225">Dzisiaj</translation>
 <translation id="2161656808144014275">Tekstowe</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">Trójkąt rozwinięcia</translation>
 <translation id="5278860589123563674">Nie udało się wysłać</translation>
 <translation id="528468243742722775">Zakończ</translation>
-<translation id="5327567770033251652">włącz synchronizację</translation>
 <translation id="5329858601952122676">&amp;Usuń</translation>
 <translation id="5395308026110844773">Aplikacja <ph name="DRAGGED_APP_NAME" /> jest nad aplikacją <ph name="IN_PLACE_APP" /> – puść, by utworzyć folder.</translation>
 <translation id="5463830097259460683">Emotikony i symbole</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">Bez nazwy</translation>
 <translation id="6612467943526193239">Aby zakończyć kalibrację, naciśnij Esc.</translation>
 <translation id="6620110761915583480">Zapisz plik</translation>
-<translation id="6656912866303152668">Upewnij się, że <ph name="TARGET_DEVICE_NAME" /> ma w Chrome włączoną synchronizację, a potem spróbuj wysłać ponownie.</translation>
 <translation id="6699343763173986273">Następny utwór multimedialny</translation>
 <translation id="6710213216561001401">Poprzedni</translation>
-<translation id="6779314412797872738">Aby przesłać stąd numer na swój telefon z Androidem, <ph name="TROUBLESHOOT_LINK" /> obu urządzeń w ustawieniach.</translation>
 <translation id="6786750046913594791">Zamknij folder</translation>
 <translation id="6808150112686056157">Zatrzymaj multimedia</translation>
 <translation id="6845383723252244143">Wybierz folder</translation>

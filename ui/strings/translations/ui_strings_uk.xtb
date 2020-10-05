@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Це нова функція</translation>
 <translation id="2006524834898217237">Перевірте, чи пристрій підключено до Інтернету.</translation>
 <translation id="208586643495776849">Повторіть спробу</translation>
-<translation id="2090963878406559571">Щоб надіслати номер із сайту <ph name="ORIGIN" /> на телефон Android, <ph name="TROUBLESHOOT_LINK" /> для обох пристроїв у налаштуваннях.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 д.}one{# д.}few{# дн.}many{# дн.}other{# дн.}}</translation>
 <translation id="2148716181193084225">Сьогодні</translation>
 <translation id="2161656808144014275">Текст</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">Трикутник відкривання</translation>
 <translation id="5278860589123563674">Не вдалося надіслати</translation>
 <translation id="528468243742722775">Завершити</translation>
-<translation id="5327567770033251652">увімкніть синхронізацію</translation>
 <translation id="5329858601952122676">&amp;Видалити</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> перетягнено на додаток <ph name="IN_PLACE_APP" />. Відпустіть, щоб створити папку.</translation>
 <translation id="5463830097259460683">Смайли та символи</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">Без назви</translation>
 <translation id="6612467943526193239">Натисніть клавішу Esc, щоб вийти з режиму калібрування.</translation>
 <translation id="6620110761915583480">Зберегти файл</translation>
-<translation id="6656912866303152668">Переконайтеся, що на пристрої<ph name="TARGET_DEVICE_NAME" /> увімкнено синхронізацію в Chrome, а потім спробуйте надіслати знову.</translation>
 <translation id="6699343763173986273">Наступна композиція</translation>
 <translation id="6710213216561001401">Назад</translation>
-<translation id="6779314412797872738">Щоб надіслати номер на телефон Android, <ph name="TROUBLESHOOT_LINK" /> для обох пристроїв у налаштуваннях.</translation>
 <translation id="6786750046913594791">Закрити папку</translation>
 <translation id="6808150112686056157">Зупинити</translation>
 <translation id="6845383723252244143">Вибір папки</translation>

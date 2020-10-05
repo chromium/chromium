@@ -228,6 +228,7 @@
 <translation id="1249643471736608405">Plugin <ph name="PLUGIN_NAME" /> byl zablokován, protože jeho podpora byla ukončena</translation>
 <translation id="1251366534849411931">Je očekávána levá složená závorka: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Tímto vymažete <ph name="TOTAL_USAGE" /> dat, která uložily weby a nainstalované aplikace</translation>
+<translation id="125220115284141797">Výchozí</translation>
 <translation id="1252987234827889034">Došlo k chybě profilu</translation>
 <translation id="1254593899333212300">Přímé připojení k internetu</translation>
 <translation id="1259152067760398571">Bezpečnostní kontrola proběhla včera</translation>
@@ -319,6 +320,7 @@
 <translation id="1361872463926621533">Přehrát zvuk při spuštění</translation>
 <translation id="1362865166188278099">Mechanický problém. Zkontrolujte tiskárnu</translation>
 <translation id="1363585519747660921">Tiskárnu USB je potřeba nakonfigurovat</translation>
+<translation id="1364664799726141130">Účet, který jste ověřili, k tomuto zařízení nemá přístup. Pokud tuto relaci chcete odemknout, zkontrolujte, zda ověřujete účet <ph name="ACCOUNT" />.</translation>
 <translation id="1365180424462182382">Váš <ph name="BEGIN_LINK" />prohlížeč je spravován<ph name="END_LINK" /> doménou <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1367951781824006909">Vybrat soubor</translation>
 <translation id="1369149969991017342">Přístup pomocí přepínačů (ovládání počítače pouze jedním nebo dvěma přepínači)</translation>
@@ -428,6 +430,7 @@
 <translation id="1486096554574027028">Prohledávat hesla</translation>
 <translation id="1487335504823219454">Zapnuto – vlastní nastavení</translation>
 <translation id="1489664337021920575">Vyberte jinou možnost</translation>
+<translation id="1492417797159476138">Toto uživatelské jméno jste pro tento web už uložili</translation>
 <translation id="1493892686965953381">Čekání na <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1495486559005647033">Další dostupná zařízení: <ph name="NUM_PRINTERS" /></translation>
 <translation id="1495677929897281669">Zpět na kartu</translation>
@@ -653,6 +656,7 @@
 <translation id="173628468822554835">Rozumím. Ve výchozím nastavení vám nově navštívené weby nebudou zasílat oznámení.</translation>
 <translation id="1736419249208073774">Prozkoumat</translation>
 <translation id="1737968601308870607">Oznámit chybu</translation>
+<translation id="174123615272205933">Vlastní</translation>
 <translation id="1741314857973421784">Pokračovat</translation>
 <translation id="1743570585616704562">Nerozpoznáno</translation>
 <translation id="1743970419083351269">Zavřít lištu se staženými soubory</translation>
@@ -687,6 +691,7 @@
 <translation id="1776712937009046120">Přidat uživatele</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
 <translation id="1778457539567749232">Označit jako nepřečtené</translation>
+<translation id="1779468444204342338">Minimální</translation>
 <translation id="1779652936965200207">Zadejte prosím přístupové heslo v zařízení <ph name="DEVICE_NAME" />:</translation>
 <translation id="177989070088644880">Aplikace (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Zavřít skupinu</translation>
@@ -1461,6 +1466,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2688196195245426394">Při registraci zařízení na serveru došlo k chybě: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Zobrazit jazykové možnosti</translation>
 <translation id="2691385045260836588">Model</translation>
+<translation id="2691440343905273290">Změnit nastavení vstupu</translation>
 <translation id="2693176596243495071">Jejda! Došlo k neznámé chybě. Zkuste to znovu později, a pokud problém bude přetrvávat, kontaktujte administrátora.</translation>
 <translation id="2695749433451188613">Internet Printing Protocol (HTTPS)</translation>
 <translation id="2699911226086014512">Operace s kódem PIN selhala. Kód chyby: <ph name="RETRIES" />.</translation>
@@ -1883,6 +1889,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3192947282887913208">Zvukové soubory</translation>
 <translation id="3199127022143353223">Servery</translation>
 <translation id="3200310363903241381">{COUNT,plural, =1{Chrome doporučuje toto heslo okamžitě zkontrolovat}few{Chrome doporučuje tato hesla okamžitě zkontrolovat}many{Chrome doporučuje tato hesla okamžitě zkontrolovat}other{Chrome doporučuje tato hesla okamžitě zkontrolovat}}</translation>
+<translation id="3201154330231437478">Zapnout opačné posouvání <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="3201422919974259695">Zde se budou zobrazovat dostupná zařízení USB.</translation>
 <translation id="3202131003361292969">Cesta</translation>
 <translation id="3202173864863109533">Zvuk této karty je vypnut.</translation>
@@ -2078,6 +2085,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3440663250074896476">Další akce se záložkou <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3440761377721825626">Dotázat se, pokud chce web použít plugin k přístupu do počítače</translation>
 <translation id="3441653493275994384">Obrazovka</translation>
+<translation id="3441663102605358937">Ověřte účet <ph name="ACCOUNT" /> tím, že se k němu znovu přihlásíte</translation>
 <translation id="3445047461171030979">Rychlé odpovědi Asistenta Google</translation>
 <translation id="3445925074670675829">Zařízení USB Type-C</translation>
 <translation id="3446274660183028131">Pokud chcete nainstalovat systém Windows, spusťte nástroj Parallels Desktop.</translation>
@@ -2828,6 +2836,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4312866146174492540">Blokovat (výchozí)</translation>
 <translation id="4314815835985389558">Správa synchronizace</translation>
 <translation id="4316850752623536204">Webové stránky vývojáře</translation>
+<translation id="4317820549299924617">Ověření nebylo úspěšné</translation>
 <translation id="4320177379694898372">Žádné připojení k internetu</translation>
 <translation id="4322394346347055525">Zavřít ostatní karty</translation>
 <translation id="4324577459193912240">Soubor je neúplný</translation>
@@ -3674,6 +3683,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5362741141255528695">Vyberte soubor soukromého klíče.</translation>
 <translation id="5363109466694494651">Obnovit pomocí funkce Powerwash a vrátit předchozí verzi</translation>
 <translation id="5365881113273618889">Vybraná složka obsahuje citlivé soubory. Opravdu chcete aplikaci <ph name="APP_NAME" /> udělit trvalý přístup k zápisu do této složky?</translation>
+<translation id="536638840841140142">Žádné</translation>
 <translation id="5368720394188453070">Telefon je uzamčen. Chcete-li pokračovat, odemkněte jej.</translation>
 <translation id="5368779022775404937">Přihlaste se do domény <ph name="REALM" /></translation>
 <translation id="5369491905435686894">Zapnout zrychlení myši</translation>
@@ -4830,6 +4840,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6748465660675848252">Můžete pokračovat. Obnoví se však pouze synchronizovaná data a nastavení. Veškerá místní data budou ztracena.</translation>
 <translation id="6749006854028927059">Weby nemohou pomocí souborů sledovat vaši aktivitu prohlížení na různých webech, například k personalizaci reklam. Některé weby mohou přestat fungovat.</translation>
 <translation id="6750757184909117990">Deaktivovat mobilní síť</translation>
+<translation id="6750946710563435348">Použít jiné uživatelské jméno</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Anonymní režim)</translation>
 <translation id="6757101664402245801">Adresa URL byla zkopírována</translation>
 <translation id="6758056191028427665">Sdělte nám, jak si vedeme.</translation>
@@ -5349,6 +5360,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7377451353532943397">I nadále blokovat přístup k senzorům</translation>
 <translation id="73786666777299047">Otevřít Internetový obchod Chrome</translation>
 <translation id="7378812711085314936">Získání datového připojení</translation>
+<translation id="7380622428988553498">Název zařízení obsahuje neplatné znaky</translation>
 <translation id="7380768571499464492">Tiskárna <ph name="PRINTER_NAME" /> byla aktualizována</translation>
 <translation id="7384687527486377545">Automatické opakování klávesnice</translation>
 <translation id="7385854874724088939">Při pokusu o tisk došlo k chybě. Zkontrolujte tiskárnu a zkuste to znovu.</translation>
@@ -5397,6 +5409,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7434969625063495310">Přidání tiskového serveru se nezdařilo. Zkontrolujte konfiguraci serveru a zkuste to znovu.</translation>
 <translation id="7436921188514130341">Aj, chyba! Při přejmenovávání došlo k chybě.</translation>
 <translation id="7438976808740265764">Přehrávač Flash Player bude podporován jen do prosince 2020.</translation>
+<translation id="7439519621174723623">Pokud chcete pokračovat, přidejte název zařízení</translation>
 <translation id="7441736921018636843">Chcete-li toto nastavení změnit, <ph name="BEGIN_LINK" />resetováním synchronizace<ph name="END_LINK" /> odstraňte svou heslovou frázi pro synchronizaci</translation>
 <translation id="7441830548568730290">Ostatní uživatelé</translation>
 <translation id="7442465037756169001">Hangouts Meet hardware je připraven k nastavení.</translation>
@@ -5638,6 +5651,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7717134585801378441">Weby mohou žádat o přístup k poloze (doporučeno)</translation>
 <translation id="7717845620320228976">Kontrola dostupnosti aktualizací</translation>
 <translation id="7719367874908701697">Přiblížení/oddálení stránky</translation>
+<translation id="7719588063158526969">Název zařízení je příliš dlouhý</translation>
 <translation id="7721179060400456005">Povolit rozložení oken na více obrazovek</translation>
 <translation id="7722040605881499779">Místo potřebné pro aktualizaci: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">Vyjmout</translation>
@@ -5942,6 +5956,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8049705080247101012">Rozšíření <ph name="EXTENSION_NAME" /> bylo společností Google označeno jako škodlivé a jeho instalace byla zablokována</translation>
 <translation id="8049948037269924837">Opačné posouvání touchpadem</translation>
 <translation id="8050038245906040378">Komerční podepisování kódu Microsoft</translation>
+<translation id="8050191834453426339">Ověřit znovu</translation>
 <translation id="8051193500142930381">Funkce vyžadující fotoaparát nebudou k dispozici</translation>
 <translation id="8051390370038326517">Webu <ph name="HOST" /> vždy povolit úplné ovládání zařízení MIDI</translation>
 <translation id="8053278772142718589">Soubory PKCS #12</translation>

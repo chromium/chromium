@@ -176,7 +176,6 @@ Tocca una parola per eseguire una ricerca. Per perfezionare la ricerca, tocca e 
 <translation id="2321086116217818302">Preparazione delle password…</translation>
 <translation id="2321958826496381788">Trascina il cursore finché leggi il testo senza problemi. Il testo dovrebbe avere queste dimensioni minime quando tocchi due volte un paragrafo.</translation>
 <translation id="2323763861024343754">Memoria utilizzata dai siti</translation>
-<translation id="2326606747676847821">Naviga in incognito</translation>
 <translation id="2328985652426384049">Impossibile eseguire l'accesso</translation>
 <translation id="234265804618409743">Impossibile aprire la fotocamera. Si è verificato un problema.</translation>
 <translation id="2345671828921229300">Per eseguire una ricerca, tocca e tieni premuta una parola</translation>
@@ -346,6 +345,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3587482841069643663">Tutti</translation>
 <translation id="3587596251841506391">Aumenta la sicurezza sul Web</translation>
 <translation id="3599863153486145794">Consente di cancellare la cronologia da tutti i dispositivi su cui hai eseguito l'accesso. Il tuo Account Google potrebbe avere altri tipi di cronologia di navigazione all'indirizzo <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="3602290021589620013">Anteprima</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3631987586758005671">Condivisione con <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">Visualizza password</translation>
@@ -598,6 +598,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5527082711130173040">Chrome ha bisogno dell'accesso alla posizione per cercare dispositivi. <ph name="BEGIN_LINK1" />Aggiorna le autorizzazioni<ph name="END_LINK1" />. L'accesso alla posizione è <ph name="BEGIN_LINK2" />disattivato su questo dispositivo<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Chiudi schede in incognito</translation>
 <translation id="5534640966246046842">Sito copiato</translation>
+<translation id="5556459405103347317">Ricarica</translation>
 <translation id="5561549206367097665">In attesa della rete…</translation>
 <translation id="55737423895878184">La geolocalizzazione e le notifiche sono consentite</translation>
 <translation id="5578795271662203820">Cerca questa immagine su <ph name="SEARCH_ENGINE" /></translation>
@@ -908,9 +909,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="766587987807204883">Qui vengono visualizzati gli articoli che potrai leggere anche offline</translation>
 <translation id="7682724950699840886">Prova i seguenti suggerimenti: assicurati di avere spazio sufficiente sul dispositivo e prova a esportare di nuovo.</translation>
 <translation id="7698359219371678927">Crea email in <ph name="APP_NAME" /></translation>
-<translation id="7702724591845223485">Per eliminare le tue informazioni di accesso e altri dati da Chrome, chiudi tutte le schede di navigazione in incognito.
-
-In incognito, la tua attività potrebbe essere comunque visibile ai siti web visitati, al tuo datore di lavoro o alla scuola e al tuo provider di servizi Internet.</translation>
 <translation id="7704317875155739195">Completamento automatico di ricerche e URL</translation>
 <translation id="7725024127233776428">Le pagine aggiunte ai preferiti saranno mostrate qui</translation>
 <translation id="7735637452482172701">Sblocca con blocco schermo</translation>

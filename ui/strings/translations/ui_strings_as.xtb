@@ -44,7 +44,6 @@
 <translation id="19085484004813472">এইটো এটা নতুন সুবিধা</translation>
 <translation id="2006524834898217237">নিশ্চিত হৈ লওক যে এই ডিভাইচটো ইণ্টাৰনেটৰ সৈতে সংযুক্ত হৈ আছে।</translation>
 <translation id="208586643495776849">অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক</translation>
-<translation id="2090963878406559571"><ph name="ORIGIN" />ৰ পৰা আপোনাৰ Android ফ’নলৈ এটা নম্বৰ পঠিয়াবলৈ দুয়োটা ডিভাইচৰ ছেটিংসমূহত <ph name="TROUBLESHOOT_LINK" />।</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{১দিন}one{#দিন}other{#দিন}}</translation>
 <translation id="2148716181193084225">আজি</translation>
 <translation id="2161656808144014275">পাঠ</translation>
@@ -135,8 +134,8 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> পি.বি.</translation>
 <translation id="5266161281976477809">উন্মুক্তকৰণ ত্ৰিভুজ</translation>
 <translation id="5278860589123563674">পঠিয়াব পৰা নগ’ল</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" />এ আপোনাৰ মনোযোগ বিচাৰি অনুৰোধ কৰিছে।</translation>
 <translation id="528468243742722775">সমাপ্ত</translation>
-<translation id="5327567770033251652">ছিংক অন কৰক</translation>
 <translation id="5329858601952122676">&amp;মচক</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> <ph name="IN_PLACE_APP" />ৰ ওপৰত আছে, ফ'ল্ডাৰ সৃষ্টি কৰিবলৈ এৰি দিয়ক।</translation>
 <translation id="5463830097259460683">ইম’জি &amp;&amp; চিহ্ন</translation>
@@ -146,6 +145,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> ছিষ্টেম</translation>
 <translation id="5583640892426849032">বেকস্পেচ</translation>
 <translation id="5613020302032141669">বাওঁমুৱা কাঁড়</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />এ আপোনাৰ মনোযোগ বিচাৰি অনুৰোধ কৰিছে।</translation>
 <translation id="5675363643668471212">শ্বেল্ফৰ বস্তু</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{১ মিনিট}one{# মিনিট}other{# মিনিট}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{আজি সক্ৰিয় হৈছে}=1{১দিনৰ পূৰ্বে সক্ৰিয় আছিল}one{#দিনৰ পূৰ্বে সক্ৰিয় আছিল}other{#দিনৰ পূৰ্বে সক্ৰিয় আছিল}}</translation>
@@ -182,10 +182,8 @@
 <translation id="6578407462441924264">নামবিহীন</translation>
 <translation id="6612467943526193239">কেলিব্ৰেশ্বন বন্ধ কৰিবলৈ Esc টিপক।</translation>
 <translation id="6620110761915583480">ফাইল ছেভ কৰক</translation>
-<translation id="6656912866303152668">নিশ্চিত হৈ লওক যে Chromeত <ph name="TARGET_DEVICE_NAME" />ৰ ছিংক অন কৰা আছে আৰু তাৰ পাছত পুনৰ পঠিয়াই চাওক।</translation>
 <translation id="6699343763173986273">মিডিয়াৰ পৰৱর্তী ট্ৰেক</translation>
 <translation id="6710213216561001401">পূৰ্বৱৰ্তী</translation>
-<translation id="6779314412797872738">ইয়াৰ পৰা আপোনাৰ Android ফ’নলৈ এটা নম্বৰ পঠিয়াবলৈ ছেটিংসমূহত দুয়োটা ডিভাইচৰ বাবে <ph name="TROUBLESHOOT_LINK" />।</translation>
 <translation id="6786750046913594791">ফ’ল্ডাৰ বন্ধ কৰক</translation>
 <translation id="6808150112686056157">মিডিয়া বন্ধ কৰক</translation>
 <translation id="6845383723252244143">ফ’ল্ডাৰ বাছনি কৰক</translation>

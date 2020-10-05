@@ -176,7 +176,6 @@ Aby coś wyszukać, dotknij dowolnego słowa. Aby doprecyzować wyszukiwanie, na
 <translation id="2321086116217818302">Przygotowuję hasła…</translation>
 <translation id="2321958826496381788">Przeciągaj suwak, by umożliwić wygodne czytanie. Gdy dwukrotnie klikniesz akapit, tekst powiększy się co najmniej do tej wielkości.</translation>
 <translation id="2323763861024343754">Dane witryn:</translation>
-<translation id="2326606747676847821">Włącz tryb incognito</translation>
 <translation id="2328985652426384049">Nie można się zalogować</translation>
 <translation id="234265804618409743">Nie udało się otworzyć aparatu. Coś poszło nie tak.</translation>
 <translation id="2345671828921229300">Aby wyszukać, naciśnij i przytrzymaj słowo</translation>
@@ -346,6 +345,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3587482841069643663">Wszystkie</translation>
 <translation id="3587596251841506391">Pomóż poprawić bezpieczeństwo w sieci</translation>
 <translation id="3599863153486145794">Usuwa historię ze wszystkich urządzeń, na których jesteś zalogowany. Inne rodzaje historii przeglądania mogą być nadal dostępne na Twoim koncie Google na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="3602290021589620013">Podgląd</translation>
 <translation id="3616113530831147358">Dźwięk</translation>
 <translation id="3631987586758005671">Udostępniam urządzeniu <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">Pokaż hasło</translation>
@@ -598,6 +598,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5527082711130173040">Aby wyszukać urządzenia, Chrome potrzebuje dostępu do lokalizacji. <ph name="BEGIN_LINK1" />Zwiększ uprawnienia<ph name="END_LINK1" />. Dostęp do lokalizacji jest <ph name="BEGIN_LINK2" />wyłączony na tym urządzeniu<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">Zamknij karty incognito</translation>
 <translation id="5534640966246046842">Strona została skopiowana</translation>
+<translation id="5556459405103347317">Odśwież</translation>
 <translation id="5561549206367097665">Czekam na sieć…</translation>
 <translation id="55737423895878184">Lokalizacja i powiadomienia są włączone</translation>
 <translation id="5578795271662203820">Szukaj tej grafiki w <ph name="SEARCH_ENGINE" /></translation>
@@ -913,9 +914,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="766587987807204883">Tutaj pojawiają się artykuły, które możesz czytać, nawet gdy jesteś offline</translation>
 <translation id="7682724950699840886">Skorzystaj z tych wskazówek: upewnij się, że masz wystarczająco dużo miejsca na urządzeniu, i ponownie spróbuj wyeksportować hasła.</translation>
 <translation id="7698359219371678927">Utwórz e-maila w aplikacji <ph name="APP_NAME" /></translation>
-<translation id="7702724591845223485">Aby wyczyścić dane logowania i inne dane w Chrome, zamknij wszystkie karty incognito.
-
-W trybie incognito Twoja aktywność może być nadal widoczna dla odwiedzanych stron, Twojego pracodawcy lub szkoły oraz dostawcy internetu.</translation>
 <translation id="7704317875155739195">Autouzupełniaj wyszukiwania i adresy URL</translation>
 <translation id="7725024127233776428">Tutaj pojawią się strony, które dodasz do zakładek</translation>
 <translation id="7735637452482172701">Odblokuj za pomocą blokady ekranu</translation>

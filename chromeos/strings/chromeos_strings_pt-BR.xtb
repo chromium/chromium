@@ -25,7 +25,7 @@
 <translation id="2872961005593481000">Desligar</translation>
 <translation id="3008341117444806826">ATUALIZAR</translation>
 <translation id="3091839911843451378">Falha - Ação interrompida</translation>
-<translation id="3246869037381808805">Trabalhos de impressão com mais de 1 dia serão removidos</translation>
+<translation id="3246869037381808805">Trabalhos de impressão enviados há mais de 1 dia serão removidos</translation>
 <translation id="3268178239013324452">Falha - Porta aberta</translation>
 <translation id="3369013195428705271">Tem certeza de que quer limpar todo o histórico? Os trabalhos de impressão atuais não serão apagados.</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> página impressa de <ph name="TOTAL_PAGES" />.</translation>
@@ -36,7 +36,7 @@
 <translation id="38114475217616659">Limpar todo o histórico</translation>
 <translation id="3820172043799983114">PIN inválido.</translation>
 <translation id="3838338534323494292">Nova senha</translation>
-<translation id="39823212440917567">Trabalhos de impressão com mais de <ph name="NUMBER_OF_DAYS" /> dias serão removidos</translation>
+<translation id="39823212440917567">Trabalhos de impressão enviados há mais de <ph name="NUMBER_OF_DAYS" /> dias serão removidos</translation>
 <translation id="4003259559679196451">O domínio <ph name="ENROLLMENT_DOMAIN" /> gerencia este dispositivo e tem acesso a todas as atividades do usuário, incluindo páginas visitadas, senhas e e-mail.</translation>
 <translation id="4003384961948020559">Falha - Saída cheia</translation>
 <translation id="4027485274696301677">Este <ph name="DEVICE_TYPE" /> é gerenciado por <ph name="ENROLLMENT_DOMAIN" />. Os administradores podem configurar o dispositivo remotamente.</translation>

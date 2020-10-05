@@ -44,7 +44,6 @@
 <translation id="19085484004813472">Энэ бол шинэ онцлог</translation>
 <translation id="2006524834898217237">Энэ төхөөрөмж интернэтэд холбогдсон эсэхийг шалгана уу.</translation>
 <translation id="208586643495776849">Дахин оролдоно уу</translation>
-<translation id="2090963878406559571"><ph name="ORIGIN" />-с Android утас руугаа дугаар илгээхийн тулд хоёр төхөөрөмжийнхөө аль алины тохиргоонд <ph name="TROUBLESHOOT_LINK" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 хоног}other{# хоног}}</translation>
 <translation id="2148716181193084225">Өнөөдөр</translation>
 <translation id="2161656808144014275">Текст</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">Тодруулгын гурвалжин</translation>
 <translation id="5278860589123563674">Илгээж чадсангүй</translation>
 <translation id="528468243742722775">Төгсгөл</translation>
-<translation id="5327567770033251652">синкийг асаах</translation>
 <translation id="5329858601952122676">&amp;Устгах</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" />-г <ph name="IN_PLACE_APP" /> дээр тавьсан байна. Фолдер үүсгэхийн тулд чөлөөлнө үү.</translation>
 <translation id="5463830097259460683">Эможи, дүрс тэмдэг</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">Нэргүй</translation>
 <translation id="6612467943526193239">Тохируулгаас гарахын тулд Esc-г дарна уу.</translation>
 <translation id="6620110761915583480">Файлыг хадгалах</translation>
-<translation id="6656912866303152668"><ph name="TARGET_DEVICE_NAME" />-г синк хийхийг Chrome дээр асаасан эсэхийг шалгаад, дахин илгээхийг оролдоно уу.</translation>
 <translation id="6699343763173986273">Media Next Track</translation>
 <translation id="6710213216561001401">Өмнөх</translation>
-<translation id="6779314412797872738">Эндээс Android утас руугаа дугаар илгээхийн тулд хоёр төхөөрөмжийнхөө аль алины тохиргоонд <ph name="TROUBLESHOOT_LINK" /> хийнэ үү.</translation>
 <translation id="6786750046913594791">Хавтасыг хаах</translation>
 <translation id="6808150112686056157">Медиа зогсох</translation>
 <translation id="6845383723252244143">Folder сонгох</translation>

@@ -134,6 +134,7 @@
 <translation id="1453974140256777690">Сиз чаптаган же тиркеген билдирүү Google Булутка же үчүнчү тараптын кызматтарына талдоо үчүн жөнөтүлөт. Мисалы, анда купуя маалыматтын болуусу текшерилет.</translation>
 <translation id="1455413310270022028">Өчүргүч</translation>
 <translation id="1462245070427461050">JIS B9 (45mm x 64mm)</translation>
+<translation id="1462951478840426066">Мазмундарды жогорку тактык менен түзүү үчүн, компьютердеги ариптерди колдонуңуз</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">Сол</translation>
 <translation id="1472675084647422956">Дагы көрсөтүү</translation>
@@ -221,6 +222,7 @@
 <translation id="17513872634828108">Ачык өтмөктөр</translation>
 <translation id="1752021286346845558">8-электрондук каттар кутусу</translation>
 <translation id="1753706481035618306">Беттин номери</translation>
+<translation id="1757773103848038814">Monospace ариби</translation>
 <translation id="1763864636252898013">Бул сервер <ph name="DOMAIN" /> экендигин далилдей алган жок; себеби түзмөгүңүздүн иш тутуму анын коопсуздук тастыктамасына ишенбейт. Мындай көйгөй туура эмес конфигурация менен шартталышы мүмкүн же туташууңузга чабуулчу кийлигишип жатат.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows аркылуу Тармак мүчүлүштүгүн аныктоону иштетип көрүңүз<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">Сиз өтүүгө аракет кылып жаткан <ph name="ORIGIN" /> сервери
@@ -594,6 +596,7 @@
 <translation id="3395827396354264108">Алып кетүү ыкмасы</translation>
 <translation id="3399952811970034796">Жеткирүү дареги</translation>
 <translation id="3402261774528610252">Бул сайтты жүктөө үчүн TLS 1.0 же TLS 1.1 версиясы колдонулду. Алар жоюлган жана келечекте өчүрүлөт. Өчүрүлгөндөн кийин колдонуучулар бул сайтты жүктөй албай калышат. Сервер TLS 1.2 же андан кийинки версияны иштетиши керек.</translation>
+<translation id="3411120537985775570">Бул жерге <ph name="ORIGIN_NAME" /> сайтынан чаптоо аракети администраторуңуз тарабынан бөгөттөлгөн</translation>
 <translation id="3414952576877147120">Өлчөм:</translation>
 <translation id="3417660076059365994">Сиз жүктөп берген же тиркеген файлдар Google Булутка же үчүнчү тараптын кызматтарына талдоо үчүн жөнөтүлөт. Мисалы, аларда купуя маалыматтын же кесепеттүү программанын болуусу текшерилет.</translation>
 <translation id="3422248202833853650">Эстутумду бошотуу үчүн башка программаларды жаап көрүңүз.</translation>
@@ -631,6 +634,7 @@
 <translation id="3532844647053365774"><ph name="HOST" /> микрофонуңузду колдонгону жатат</translation>
 <translation id="3533328374079021623">5-электрондук каттар кутусу</translation>
 <translation id="3539171420378717834">Бул картанын көчүрмөсү ушул түзмөктө сакталсын</translation>
+<translation id="3552297013052089404">Sans-serif ариби</translation>
 <translation id="3558573058928565255">Күндүз</translation>
 <translation id="3566021033012934673">Туташууңуз купуя эмес</translation>
 <translation id="3567778190852720481">Ишкана аккаунту жараксыз болгондуктан аны менен катталууга болбойт.</translation>
@@ -999,6 +1003,7 @@
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" программасынын түпкү тастыктамасы талап кылынат, бирок ал орнотулган эмес. Көйгөйдү чечүү үчүн IT администраторуңуз "<ph name="SOFTWARE_NAME" />" программасынын конфигурациясында берилген нускамаларды карап чыгышы керек. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google Котормо жөнүндө</translation>
 <translation id="503498442187459473"><ph name="HOST" /> камера менен микрофонуңузду колдонгону жатат</translation>
+<translation id="5039762155821394373">Арип өлчөмү</translation>
 <translation id="5039804452771397117">Уруксат берүү</translation>
 <translation id="5040262127954254034">Купуялык</translation>
 <translation id="5043480802608081735">Сиз көчүргөн шилтеме</translation>
@@ -1265,6 +1270,7 @@
 <translation id="6051221802930200923">Вебсайт тастыктама бекиткичин колдонуп жаткандыктан азыр <ph name="SITE" /> сайтына өтө албайсыз. Адатта тармактагы каталар жана чабуулдар убактылуу көрүнүш болгондуктан, бул баракча кийинчерээк иштеп калышы мүмкүн.</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">Сайтта же сайтта эместигиңиз бөлүшүлсүнбү?</translation>
+<translation id="6057359309778282021">Администраторуңуз <ph name="ORIGIN_NAME" /> сайтын <ph name="VM_NAME" /> менен бөлүшүүгө тыюу салып койгон</translation>
 <translation id="6058977677006700226">Карталарыңыз бардык түзмөктөрүңүздө колдонулсунбу?</translation>
 <translation id="6059925163896151826">USB түзмөктөрү</translation>
 <translation id="6060009363608157444">DnsOverHttps режими жараксыз.</translation>
@@ -1314,6 +1320,7 @@
         <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">Бул дарекке жеткирүү мүмкүн эмес. Башка дарек тандаңыз.</translation>
 <translation id="6282194474023008486">Почта индекси</translation>
+<translation id="6289939620939689042">Барактын түсү</translation>
 <translation id="6290238015253830360">Сунушталган макалалар ушул жерде көрүнөт</translation>
 <translation id="6293309776179964942">JIS B5 (182mm x 257mm)</translation>
 <translation id="6302269476990306341">Chrome'догу Google Жардамчы токтотулууда</translation>
@@ -1397,6 +1404,7 @@
 <translation id="6645291930348198241">Cookie файлдарына жана сайттын маалыматына кирүү мүмкүнчүлүгүн алуу.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Бирөө да жок}=1{1 сайттан (Google аккаунтуңуздан чыгарылбайсыз)}other{# сайттан (Google аккаунтуңуздан чыгарылбайсыз)}}</translation>
 <translation id="6648459603387803038">Администраторуңуз серепчини алыстан жөндөй алат. Бул түзмөктө аткарылган аракеттер Chrome'дон тышкары да башкарылышы мүмкүн.</translation>
+<translation id="6648524591329069940">Serif ариби</translation>
 <translation id="6652101503459149953">Windows Hello функциясын колдонуу</translation>
 <translation id="6657585470893396449">Сырсөз</translation>
 <translation id="666259744093848177">(x86_64 которулду)</translation>
@@ -1469,6 +1477,7 @@
 <translation id="7004583254764674281">Карталарды тезирээк ырастоо үчүн Windows Hello функциясын колдонуу</translation>
 <translation id="7006930604109697472">Баары бир жөнөтүлсүн</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7014741021609395734">Чоңойтуп/кичирейтүү деңгээли</translation>
 <translation id="7016992613359344582">Алар бир жолу төлөнүүчү же кайталануучу төлөмдөр болушу мүмкүн, бирок алар ачык көрүнбөйт.</translation>
 <translation id="7029809446516969842">Сырсөздөр</translation>
 <translation id="7031646650991750659">Кайсы Google Play колдонмолорун орнотуп алдыңыз</translation>
@@ -1870,6 +1879,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Дал келген сырсөздөр жок. Бардык сакталган сырсөздөрдү көрсөтүү.</translation>
 <translation id="8625384913736129811">Бул карточка ушул түзмөктө сакталсын</translation>
+<translation id="8657078576661269990">Администраторуңуз <ph name="ORIGIN_NAME" /> сайтын <ph name="VM_NAME_1" /> жана <ph name="VM_NAME_2" /> менен бөлүшүүгө тыюу салып койгон</translation>
 <translation id="8663226718884576429">Буйрутма тууралуу маалымат, <ph name="TOTAL_LABEL" />, Толук маалымат</translation>
 <translation id="867224526087042813">Колтамга</translation>
 <translation id="8676424191133491403">Дароо</translation>
@@ -1882,6 +1892,7 @@
 <translation id="8699041776323235191">HID түзмөгү</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> менен туташуу аракетиңиз шифрленген эмес.</translation>
 <translation id="8705331520020532516">Сериялык номери:</translation>
+<translation id="8710842507289500830">Ариптин стили</translation>
 <translation id="8718314106902482036">Төлөм аягына чыккан жок</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, издөө сунушу</translation>
 <translation id="8719528812645237045">Муштум менен өйдө жакка эки жолу уруу</translation>
@@ -2002,6 +2013,7 @@
 <translation id="9191834167571392248">Төмөнкү сол жагын тешүү</translation>
 <translation id="9205078245616868884">Дайын-даректериңиз купуя сөз айкашы менен шифрленген. Шайкештирип баштоо үчүн аны киргизиңиз.</translation>
 <translation id="9207861905230894330">Макала кошулбай койду.</translation>
+<translation id="9213433120051936369">Көрүнүшүн ыңгайлаштыруу</translation>
 <translation id="9215416866750762878">Иштеп жаткан колдонмо Chrome’дун Интернетке коопсуз туташуусуна тоскоол болуп жатат</translation>
 <translation id="9219103736887031265">Сүрөттөр</translation>
 <translation id="933712198907837967">Diners Club</translation>

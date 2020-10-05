@@ -300,6 +300,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3943857333388298514">Paste</translation>
 <translation id="394485226368336402">Mga setting ng audio</translation>
 <translation id="3962859241508114581">Nakaraang Track</translation>
+<translation id="3969043077941541451">I-off</translation>
 <translation id="397105322502079400">Kinakalkula...</translation>
 <translation id="3977512764614765090">Nasa <ph name="PERCENTAGE" />% ang baterya at nagcha-charge.</translation>
 <translation id="3995138139523574647">USB-C device (port sa kanang bahagi sa likod)</translation>
@@ -310,6 +311,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Ibinabahagi mo ang iyong screen</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Off sa isa app}one{Off sa # app}other{Off sa # na app}}</translation>
+<translation id="4066027111132117168">Naka-on, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Katamtaman ang signal</translation>
 <translation id="4112140312785995938">Mag-seek Pabalik</translation>
 <translation id="4114315158543974537">I-on ang Phone Hub</translation>
@@ -564,6 +566,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="6803622936009808957">Hindi ma-mirror ang mga display dahil walang mga sinusuportahang resolusyon na nakita. Pumasok na lang sa pinalawak na desktop.</translation>
 <translation id="6818242057446442178">Bumalik nang paisa-isang salita</translation>
 <translation id="6820676911989879663">Magpahinga!</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> seg</translation>
 <translation id="6857811139397017780">I-activate <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Isang digit na lang ang natitira}one{# digit na lang ang natitira}other{# na digit na lang ang natitira}}</translation>
 <translation id="6878400149835617132">Naka-off ang shortcut</translation>
@@ -632,6 +635,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7600875258240007829">Tingnan ang lahat ng notification</translation>
 <translation id="7618774594543487847">Neutral</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7633755430369750696">Ipakita ang mga setting ng Nearby Share.</translation>
 <translation id="7642647758716480637">Buksan ang mga setting para sa <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (may-ari)</translation>
 <translation id="7647488630410863958">I-unlock ang device upang tingnan ang iyong mga notification</translation>
@@ -647,6 +651,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7780159184141939021">I-rotate ang Screen</translation>
 <translation id="7796353162336583443">I-tap ang button ng stylus sa shelf upang magsulat ng tala, mag-screenshot, gamitin ang Google Assistant, laser pointer, o magnifying glass.</translation>
 <translation id="7798302898096527229">Pindutin ang Search o Shift upang kanselahin.</translation>
+<translation id="781126011916719498">Mabilis na i-access ang iyong mahahalagang file. I-right click o pindutin nang matagal ang isang file para i-pin ito.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> at <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Malakas ang signal</translation>
 <translation id="7837740436429729974">Oras na</translation>
@@ -790,6 +795,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="9089416786594320554">Mga input method</translation>
 <translation id="9091626656156419976">Naalis ang display na <ph name="DISPLAY_NAME" /></translation>
 <translation id="9151726767154816831">I-restart at i-powerwash upang i-update</translation>
+<translation id="9166331175924255663">I-toggle ang mataas na visibility ng Nearby Share.</translation>
 <translation id="9168436347345867845">Gawin ito sa ibang pagkakataon</translation>
 <translation id="9179259655489829027">Nagbibigay-daan sa iyo ang feature na ito para mabilis na ma-access ang anumang na-sign in na user nang hindi nangangailangan ng password. Gamitin lang ang feature na ito sa mga account na iyong pinagkakatiwalaan.</translation>
 <translation id="9183456764293710005">Pang-magnify ng Full-screen</translation>

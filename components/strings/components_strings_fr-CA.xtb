@@ -134,6 +134,7 @@
 <translation id="1453974140256777690">Le texte que vous collez ou que vous joignez est envoyé à Google Cloud ou à des tiers afin d'être analysé. Par exemple, il pourrait être analysé pour déterminer s'il contient des données confidentielles.</translation>
 <translation id="1455413310270022028">Gomme</translation>
 <translation id="1462245070427461050">JIS B9</translation>
+<translation id="1462951478840426066">Utiliser les polices de votre ordinateur afin que vous puissiez créer du contenu haute-fidélité</translation>
 <translation id="1463543813647160932">5:7</translation>
 <translation id="1467432559032391204">À gauche</translation>
 <translation id="1472675084647422956">Plus</translation>
@@ -221,6 +222,7 @@
 <translation id="17513872634828108">Onglets ouverts</translation>
 <translation id="1752021286346845558">Boîte aux lettres 8</translation>
 <translation id="1753706481035618306">Numéro de page</translation>
+<translation id="1757773103848038814">Police à espace unique</translation>
 <translation id="1763864636252898013">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité n'est pas considéré comme fiable par le système d'exploitation de votre appareil. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Essayer d'exécuter Windows Network Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">Le serveur auquel vous accédez, <ph name="ORIGIN" />, a défini un en-tête qui exige qu'une politique d'origine soit appliquée à toutes les demandes qu'il reçoit. Mais l'en-tête est formaté de manière incorrecte, ce qui empêche le navigateur de répondre à votre demande pour <ph name="SITE" />. Les exploitants de sites peuvent utiliser des politiques d'origine pour configurer la sécurité et d'autres propriétés d'un site.</translation>
@@ -588,6 +590,7 @@
 <translation id="3395827396354264108">Mode de ramassage</translation>
 <translation id="3399952811970034796">Adresse de livraison</translation>
 <translation id="3402261774528610252">La connexion utilisée pour charger ce site faisait appel à TLS 1.0 ou à TLS 1.1, qui sont des versions obsolètes et qui seront désactivées à l'avenir. Une fois qu'elles seront désactivées, les utilisateurs ne seront pas en mesure de charger ce site. Le serveur devrait activer TLS 1.2 ou une version ultérieure.</translation>
+<translation id="3411120537985775570">Votre administrateur a bloqué le collage d'éléments venant de <ph name="ORIGIN_NAME" /> à cet endroit</translation>
 <translation id="3414952576877147120">Taille :</translation>
 <translation id="3417660076059365994">Les fichiers que vous téléversez ou joignez sont envoyés à Google Cloud ou à des tiers afin d'être analysés. Par exemple, ils pourraient être analysés pour déterminer s'ils contiennent des données confidentielles ou des logiciels malveillants.</translation>
 <translation id="3422248202833853650">Essayez de quitter d'autres programmes pour libérer de la mémoire.</translation>
@@ -626,6 +629,7 @@
 <translation id="3532844647053365774">L'hôte <ph name="HOST" /> veut utiliser votre microphone</translation>
 <translation id="3533328374079021623">Boîte aux lettres 5</translation>
 <translation id="3539171420378717834">Conserver une copie de cette carte sur cet appareil</translation>
+<translation id="3552297013052089404">Police sans empattement</translation>
 <translation id="3558573058928565255">Pendant la journée</translation>
 <translation id="3566021033012934673">Votre connexion n'est pas privée</translation>
 <translation id="3567778190852720481">Impossible de s'inscrire avec un compte d'entreprise (ce type de compte n'est pas pris en charge).</translation>
@@ -989,6 +993,7 @@
 <translation id="503069730517007720">Un certificat racine pour « <ph name="SOFTWARE_NAME" /> » est requis, mais n'est pas installé. Votre administrateur informatique devrait consulter les instructions de configuration de « <ph name="SOFTWARE_NAME" /> » pour corriger ce problème. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">À propos de Google Traduction</translation>
 <translation id="503498442187459473">L'hôte <ph name="HOST" /> veut utiliser votre appareil photo et votre microphone</translation>
+<translation id="5039762155821394373">Taille de police</translation>
 <translation id="5039804452771397117">Autoriser</translation>
 <translation id="5040262127954254034">Confidentialité</translation>
 <translation id="5043480802608081735">Le lien que vous avez copié</translation>
@@ -1255,6 +1260,7 @@
 <translation id="6051221802930200923">Vous ne pouvez pas consulter le site <ph name="SITE" /> pour le moment, car le site Web utilise l'épinglage de certificat. Les erreurs réseau et les attaques sont généralement temporaires. Vous devriez donc pouvoir accéder à cette page plus tard.</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">Partager votre présence?</translation>
+<translation id="6057359309778282021">Votre administrateur a bloqué le partage de <ph name="ORIGIN_NAME" /> vers <ph name="VM_NAME" /></translation>
 <translation id="6058977677006700226">Utiliser vos cartes sur tous vos appareils?</translation>
 <translation id="6059925163896151826">Appareils USB</translation>
 <translation id="6060009363608157444">Mode DnsOverHttps incorrect.</translation>
@@ -1304,6 +1310,7 @@
         <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">Impossible d'effectuer une livraison à cette adresse. Sélectionnez une autre adresse.</translation>
 <translation id="6282194474023008486">Code postal</translation>
+<translation id="6289939620939689042">Couleur de la page</translation>
 <translation id="6290238015253830360">Les articles que vous avez suggérés s'afficheront ici</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Arrêt de l'Assistant Google dans Chrome en cours…</translation>
@@ -1387,6 +1394,7 @@
 <translation id="6645291930348198241">Accéder aux témoins et aux données relatives aux sites.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Aucun}=1{De 1 site (vous ne serez pas déconnecté de votre compte Google)}one{De # site (vous ne serez pas déconnecté de votre compte Google)}other{De # sites (vous ne serez pas déconnecté de votre compte Google)}}</translation>
 <translation id="6648459603387803038">Votre administrateur peut modifier la configuration de votre navigateur à distance. L'activité sur cet appareil peut aussi être gérée à l'extérieur de Chrome.</translation>
+<translation id="6648524591329069940">Police avec empattement</translation>
 <translation id="6652101503459149953">Utiliser Windows Hello</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="666259744093848177">(x86_64, traduction)</translation>
@@ -1459,6 +1467,7 @@
 <translation id="7004583254764674281">Utiliser Windows Hello pour vérifier les cartes plus rapidement</translation>
 <translation id="7006930604109697472">Envoyer quand même</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7014741021609395734">Niveau de zoom</translation>
 <translation id="7016992613359344582">Ces frais peuvent être ponctuels ou récurrents, et peuvent ne pas être évidents.</translation>
 <translation id="7029809446516969842">Mots de passe</translation>
 <translation id="7031646650991750659">Les applications Google Play que vous avez installées</translation>
@@ -1860,6 +1869,7 @@ Détails supplémentaires :
 <translation id="8622948367223941507">Légal extra</translation>
 <translation id="8623885649813806493">Aucun mot de passe correspondant. Afficher tous les mots de passe enregistrés.</translation>
 <translation id="8625384913736129811">Enregistrer cette carte sur cet appareil</translation>
+<translation id="8657078576661269990">Votre administrateur a bloqué le partage de <ph name="ORIGIN_NAME" /> vers <ph name="VM_NAME_1" /> et vers <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Résumé de la commande, <ph name="TOTAL_LABEL" />, plus de détails</translation>
 <translation id="867224526087042813">Signature</translation>
 <translation id="8676424191133491403">Aucun délai</translation>
@@ -1872,6 +1882,7 @@ Détails supplémentaires :
 <translation id="8699041776323235191">Appareil HID</translation>
 <translation id="8703575177326907206">Votre connexion à <ph name="DOMAIN" /> n'est pas chiffrée.</translation>
 <translation id="8705331520020532516">Numéro de série</translation>
+<translation id="8710842507289500830">Style de police</translation>
 <translation id="8718314106902482036">Paiement incomplet</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, suggestion de recherche</translation>
 <translation id="8719528812645237045">Multiple perforation en haut</translation>
@@ -1992,6 +2003,7 @@ Détails supplémentaires :
 <translation id="9191834167571392248">Perforation en bas à gauche</translation>
 <translation id="9205078245616868884">Vos données sont chiffrées avec votre phrase de passe de synchronisation. Veuillez l'entrer pour commencer la synchronisation.</translation>
 <translation id="9207861905230894330">Échec de l'ajout d'un article.</translation>
+<translation id="9213433120051936369">Personnaliser l'apparence</translation>
 <translation id="9215416866750762878">Une application empêche Chrome de se connecter à ce site en toute sécurité</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="933712198907837967">Diners Club</translation>

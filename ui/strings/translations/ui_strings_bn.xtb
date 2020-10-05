@@ -44,7 +44,6 @@
 <translation id="19085484004813472">এটি একটি নতুন ফিচার</translation>
 <translation id="2006524834898217237">এই ডিভাইস ইন্টারনেটে কানেক্ট করা আছে কিনা দেখে নিন।</translation>
 <translation id="208586643495776849">আবার চেষ্টা করুন</translation>
-<translation id="2090963878406559571"><ph name="ORIGIN" /> থেকে আপনার Android ফোনে কোনও নম্বর পাঠাতে, সেটিংসে গিয়ে দুটি ডিভাইসের জন্য <ph name="TROUBLESHOOT_LINK" />।</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{১ দিন}one{# দিন}other{# দিন}}</translation>
 <translation id="2148716181193084225">আজ</translation>
 <translation id="2161656808144014275">পাঠ্য</translation>
@@ -136,7 +135,6 @@
 <translation id="5266161281976477809">সম্পূর্ণ দেখার ত্রিভুজ</translation>
 <translation id="5278860589123563674">পাঠানো যায়নি</translation>
 <translation id="528468243742722775">শেষ</translation>
-<translation id="5327567770033251652">সিঙ্ক চালু করুন</translation>
 <translation id="5329858601952122676">&amp;মুছুন</translation>
 <translation id="5395308026110844773">ফোল্ডার তৈরি করতে <ph name="IN_PLACE_APP" />-এর উপরে <ph name="DRAGGED_APP_NAME" /> টেনে এনে ছেড়ে দিন।</translation>
 <translation id="5463830097259460683">ইমোজি ও প্রতীকগুলি</translation>
@@ -183,10 +181,8 @@
 <translation id="6578407462441924264">নামবিহীন</translation>
 <translation id="6612467943526193239">ক্রমাঙ্কন থেকে বেরিয়ে যেতে Esc টিপুন।</translation>
 <translation id="6620110761915583480">ফাইল সেভ করুন</translation>
-<translation id="6656912866303152668"><ph name="TARGET_DEVICE_NAME" /> Chrome-এ সিঙ্ক করার ফিচার চালু করে রেখেছে কিনা দেখে নিন।</translation>
 <translation id="6699343763173986273">মিডিয়া পরবর্তী ট্র্যাক</translation>
 <translation id="6710213216561001401">আগের</translation>
-<translation id="6779314412797872738">এখান থেকে আপনার Android ফোনে কোনও নম্বর পাঠাতে, সেটিংসে গিয়ে দুটি ডিভাইসের জন্য <ph name="TROUBLESHOOT_LINK" />।</translation>
 <translation id="6786750046913594791">ফোল্ডার বন্ধ করুন</translation>
 <translation id="6808150112686056157">মিডিয়া থামান</translation>
 <translation id="6845383723252244143">ফোল্ডার বেছে নিন</translation>
