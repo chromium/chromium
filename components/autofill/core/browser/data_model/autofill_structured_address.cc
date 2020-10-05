@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/data_model/autofill_structured_address.h"
 
-#include <iostream>
 #include <utility>
 #include "base/i18n/case_conversion.h"
 #include "base/strings/strcat.h"
@@ -367,7 +366,6 @@ Address::~Address() = default;
 void Address::MigrateLegacyStructure(bool is_verified_profile) {
   // If this component already has a verification status, no profile is regarded
   // as already verified.
-  std::cout << "APply migration" << std::endl;
   if (GetVerificationStatus() != VerificationStatus::kNoStatus)
     return;
 
