@@ -125,8 +125,22 @@ SkiaOutputDeviceGL::SkiaOutputDeviceGL(
   }
   CHECK_GL_ERROR();
 
-  auto color_type =
-      (alpha_bits > 0) ? kRGBA_8888_SkColorType : kRGB_888x_SkColorType;
+  auto color_type = kRGBA_8888_SkColorType;
+
+  if (!alpha_bits) {
+    color_type = gl_surface_->GetFormat().GetBufferSize() == 16
+                     ? kRGB_565_SkColorType
+                     : kRGB_888x_SkColorType;
+    // Skia disables RGBx on some GPUs, fallback to RGBA if it's the
+    // case. This doesn't change framebuffer itself, as we already allocated it,
+    // but will change any temporary buffer Skia needs to allocate.
+    if (!context_state_->gr_context()
+             ->defaultBackendFormat(color_type, GrRenderable::kYes)
+             .isValid()) {
+      color_type = kRGBA_8888_SkColorType;
+    }
+  }
+
   capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_8888)] =
       color_type;
   capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::RGBX_8888)] =
@@ -174,6 +188,9 @@ bool SkiaOutputDeviceGL::Reshape(const gfx::Size& size,
       break;
     case kRGB_888x_SkColorType:
       framebuffer_info.fFormat = GL_RGB8;
+      break;
+    case kRGB_565_SkColorType:
+      framebuffer_info.fFormat = GL_RGB565;
       break;
     case kRGBA_F16_SkColorType:
       framebuffer_info.fFormat = GL_RGBA16F;
