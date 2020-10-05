@@ -10,6 +10,7 @@
 #include "base/at_exit.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/i18n/icu_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -48,6 +49,8 @@ class TestMain {
     // Initialize the CommandLine with arguments. ResourceBundle requires
     // CommandLine to exist.
     base::CommandLine::Init(argc, argv);
+
+    base::i18n::InitializeICU();
 
     // Load pak files into the ResourceBundle.
     l10n_util::OverrideLocaleWithCocoaLocale();

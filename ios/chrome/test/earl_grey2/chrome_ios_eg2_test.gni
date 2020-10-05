@@ -188,6 +188,7 @@ template("chrome_ios_eg2_test") {
     bundle_deps += [
       "//ios/chrome/app/resources",
       "//ios/third_party/gtx:gtx+bundle",
+      "//third_party/icu:icudata",
     ]
   }
 }

@@ -260,6 +260,7 @@ source_set("chrome_egtest_bundle_main+eg2") {
 
   deps = [
     "//base",
+    "//base:i18n",
     "//ui/base",
   ]
 }
