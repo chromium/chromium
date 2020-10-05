@@ -2432,8 +2432,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordProtection.VisualFeatureExtractionDuration" units="ms"
-    expires_after="M85">
-  <owner>vakh@chromium.org</owner>
+    expires_after="2021-04-05">
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The time it takes to extract the visual features of a login page before
