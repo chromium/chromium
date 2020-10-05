@@ -546,7 +546,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </suffix>
   <suffix name="PercentSameOrigin2"
       label="The percentage of bytes loaded from the same origin as the root
-             frame of the page or ad."/>
+             frame of the page or ad.">
+    <obsolete>
+      Removed 09/20.
+    </obsolete>
+  </suffix>
   <suffix name="SameOrigin"
       label="The number of bytes loaded from the same origin as the root frame
              of the page or ad.">
@@ -555,9 +559,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     </obsolete>
   </suffix>
   <suffix name="SameOrigin2"
-      label="The number of bytes (including those from both the HTTP cache
-             and memory cache) loaded from the same origin as the root frame
-             of the page or ad."/>
+      label="The number of bytes (including those from both the HTTP cache and
+             memory cache) loaded from the same origin as the root frame of
+             the page or ad.">
+    <obsolete>
+      Removed 09/20.
+    </obsolete>
+  </suffix>
   <affected-histogram name="PageLoad.Clients.Ads.Bytes.AdFrames.PerFrame"/>
   <affected-histogram name="PageLoad.Clients.Ads.Bytes.FullPage"/>
   <affected-histogram

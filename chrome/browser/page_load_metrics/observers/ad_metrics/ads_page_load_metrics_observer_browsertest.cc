@@ -1098,43 +1098,6 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       AdFrameSameOriginByteMetrics) {
-  base::HistogramTester histogram_tester;
-
-  // cross_site_iframe_factory loads URLs like:
-  // http://b.com:40919/cross_site_iframe_factory.html?b()
-  SetRulesetWithRules({subresource_filter::testing::CreateSuffixRule("b()))"),
-                       subresource_filter::testing::CreateSuffixRule("e())")});
-  const GURL main_url(embedded_test_server()->GetURL(
-      "a.com", "/cross_site_iframe_factory.html?a(b(c(),d(b())),e(e,e()))"));
-
-  auto waiter = CreatePageLoadMetricsTestWaiter();
-  ui_test_utils::NavigateToURL(browser(), main_url);
-
-  // One favicon resource and 2 resources for each frame.
-  waiter->AddMinimumCompleteResourcesExpectation(17);
-  waiter->Wait();
-
-  // Navigate away to force the histogram recording.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
-
-  // Verify that iframe e is only same origin.
-  histogram_tester.ExpectBucketCount(
-      "PageLoad.Clients.Ads.Bytes.AdFrames.PerFrame.PercentSameOrigin2", 100,
-      1);
-
-  // Verify that iframe b counts subframes as cross origin and a nested same
-  // origin subframe as same origin.
-  histogram_tester.ExpectBucketCount(
-      "PageLoad.Clients.Ads.Bytes.AdFrames.PerFrame.PercentSameOrigin2", 50, 1);
-
-  // Verify that all iframe are treated as cross-origin to the page. Only 1/8 of
-  // resources are on origin a.com.
-  histogram_tester.ExpectBucketCount(
-      "PageLoad.Clients.Ads.Bytes.FullPage.PercentSameOrigin2", 12.5, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
                        AdFrameRecordMediaStatusNotPlayed) {
   SetRulesetWithRules(
       {subresource_filter::testing::CreateSuffixRule("pixel.png")});

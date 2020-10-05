@@ -979,14 +979,7 @@ void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForAdTagging(
   // as these numbers do not change for different visibility types.
   if (visibility != FrameData::FrameVisibility::kAnyVisibility)
     return;
-  ADS_HISTOGRAM("Bytes.FullPage.SameOrigin2", PAGE_BYTES_HISTOGRAM, visibility,
-                aggregate_frame_data_->same_origin_bytes());
-  if (aggregate_frame_data_->bytes()) {
-    ADS_HISTOGRAM("Bytes.FullPage.PercentSameOrigin2", UMA_HISTOGRAM_PERCENTAGE,
-                  visibility,
-                  aggregate_frame_data_->same_origin_bytes() * 100 /
-                      aggregate_frame_data_->bytes());
-  }
+
   ADS_HISTOGRAM("Bytes.MainFrame.Network", PAGE_BYTES_HISTOGRAM, visibility,
                 main_frame_data_->network_bytes());
   ADS_HISTOGRAM("Bytes.MainFrame.Total2", PAGE_BYTES_HISTOGRAM, visibility,
@@ -1097,17 +1090,11 @@ void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForAdTagging(
                   visibility, ad_frame_data.bytes());
     ADS_HISTOGRAM("Bytes.AdFrames.PerFrame.Network", PAGE_BYTES_HISTOGRAM,
                   visibility, ad_frame_data.network_bytes());
-    ADS_HISTOGRAM("Bytes.AdFrames.PerFrame.SameOrigin2", PAGE_BYTES_HISTOGRAM,
-                  visibility, ad_frame_data.same_origin_bytes());
     if (ad_frame_data.bytes() > 0) {
       ADS_HISTOGRAM(
           "Bytes.AdFrames.PerFrame.PercentNetwork2", UMA_HISTOGRAM_PERCENTAGE,
           visibility,
           ad_frame_data.network_bytes() * 100 / ad_frame_data.bytes());
-      ADS_HISTOGRAM(
-          "Bytes.AdFrames.PerFrame.PercentSameOrigin2",
-          UMA_HISTOGRAM_PERCENTAGE, visibility,
-          ad_frame_data.same_origin_bytes() * 100 / ad_frame_data.bytes());
     }
     ADS_HISTOGRAM("FrameCounts.AdFrames.PerFrame.OriginStatus",
                   UMA_HISTOGRAM_ENUMERATION, visibility,

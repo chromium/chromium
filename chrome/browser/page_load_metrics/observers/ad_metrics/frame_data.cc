@@ -69,7 +69,6 @@ FrameData::FrameData(FrameTreeNodeId root_frame_tree_node_id,
     : root_frame_tree_node_id_(root_frame_tree_node_id),
       bytes_(0u),
       network_bytes_(0u),
-      same_origin_bytes_(0u),
       origin_status_(OriginStatus::kUnknown),
       creative_origin_status_(OriginStatus::kUnknown),
       frame_navigated_(false),
@@ -111,11 +110,8 @@ void FrameData::ProcessResourceLoadInFrame(
     const page_load_metrics::mojom::ResourceDataUpdatePtr& resource,
     int process_id,
     const page_load_metrics::ResourceTracker& resource_tracker) {
-  bool is_same_origin = origin_.IsSameOriginWith(resource->origin);
   bytes_ += resource->delta_bytes;
   network_bytes_ += resource->delta_bytes;
-  if (is_same_origin)
-    same_origin_bytes_ += resource->delta_bytes;
 
   content::GlobalRequestID global_id(process_id, resource->request_id);
   if (!resource_tracker.HasPreviousUpdateForResource(global_id))
@@ -125,8 +121,6 @@ void FrameData::ProcessResourceLoadInFrame(
   if (resource->is_complete &&
       resource->cache_type != page_load_metrics::mojom::CacheType::kNotCached) {
     bytes_ += resource->encoded_body_length;
-    if (is_same_origin)
-      same_origin_bytes_ += resource->encoded_body_length;
   }
 
   if (resource->reported_as_ad_resource) {

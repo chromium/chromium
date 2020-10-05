@@ -243,8 +243,6 @@ class FrameData : public base::SupportsWeakPtr<FrameData> {
 
   size_t network_bytes() const { return network_bytes_; }
 
-  size_t same_origin_bytes() const { return same_origin_bytes_; }
-
   size_t ad_bytes() const { return ad_bytes_; }
 
   size_t ad_network_bytes() const { return ad_network_bytes_; }
@@ -362,8 +360,6 @@ class FrameData : public base::SupportsWeakPtr<FrameData> {
   size_t ad_bytes_ = 0u;
   size_t ad_network_bytes_ = 0u;
 
-  // The number of bytes that are same origin to the root ad frame.
-  size_t same_origin_bytes_;
   OriginStatus origin_status_;
   OriginStatus creative_origin_status_;
   bool frame_navigated_;
