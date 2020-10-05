@@ -17,6 +17,8 @@
 @property(nonatomic, assign)
     previous_session_info_constants::DeviceBatteryState deviceBatteryState;
 @property(nonatomic, assign) BOOL OSRestartedAfterPreviousSession;
+@property(nonatomic, copy) NSString* OSVersion;
+@property(nonatomic, assign) BOOL terminatedDuringSessionRestoration;
 @property(nonatomic, strong) NSMutableSet<NSString*>* connectedSceneSessionsIDs;
 
 + (void)resetSharedInstanceForTesting;

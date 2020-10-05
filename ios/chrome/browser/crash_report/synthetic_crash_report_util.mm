@@ -72,6 +72,24 @@ void CreateSyntheticCrashReportForUte(
                  "BreakpadServerParameterPrefix_memory_warning_in_progress",
                  "yes");
   }
+
+  if (previous_session.applicationState &&
+      *(previous_session.applicationState) == UIApplicationStateBackground) {
+    AppendConfig(config, "BreakpadServerParameterPrefix_crashed_in_background",
+                 "yes");
+  }
+
+  if (previous_session.terminatedDuringSessionRestoration) {
+    AppendConfig(config,
+                 "BreakpadServerParameterPrefix_crashed_during_session_restore",
+                 "yes");
+  }
+
+  if (previous_session.OSVersion) {
+    AppendConfig(config, "BreakpadServerParameterPrefix_os_version",
+                 base::SysNSStringToUTF8(previous_session.OSVersion));
+  }
+
   AppendConfig(config, "BreakpadServerParameterPrefix_platform",
                base::SysInfo::HardwareModelName());
 

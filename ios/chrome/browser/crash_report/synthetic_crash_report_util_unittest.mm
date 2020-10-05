@@ -37,6 +37,9 @@ TEST_F(SyntheticCrashReportUtilTest, CreateSyntheticCrashReportForUte) {
   PreviousSessionInfo* previous_session = [PreviousSessionInfo sharedInstance];
   previous_session.availableDeviceStorage = kAvailableStorage;
   previous_session.didSeeMemoryWarningShortlyBeforeTerminating = YES;
+  NSString* const kOSVersion = @"OSVersion";
+  previous_session.OSVersion = kOSVersion;
+  previous_session.terminatedDuringSessionRestoration = YES;
 
   // Create crash report.
   base::ScopedTempDir temp_dir;
@@ -93,7 +96,7 @@ TEST_F(SyntheticCrashReportUtilTest, CreateSyntheticCrashReportForUte) {
 
   // Verify config file content. Config file has the following format:
   // <Key1>\n<Value1Length>\n<Value1>\n...<KeyN>\n<ValueNLength>\n<ValueN>
-  ASSERT_EQ(33U, config_lines.size())
+  ASSERT_EQ(39U, config_lines.size())
       << "<content>" << config_content << "</content>";
 
   EXPECT_EQ("MinidumpDir", config_lines[0]);
@@ -144,10 +147,19 @@ TEST_F(SyntheticCrashReportUtilTest, CreateSyntheticCrashReportForUte) {
   EXPECT_EQ(base::NumberToString(strlen(kYesString)), config_lines[28]);
   EXPECT_EQ(kYesString, config_lines[29]);
 
-  EXPECT_EQ("BreakpadServerParameterPrefix_platform", config_lines[30]);
+  EXPECT_EQ("BreakpadServerParameterPrefix_crashed_during_session_restore",
+            config_lines[30]);
+  EXPECT_EQ(base::NumberToString(strlen(kYesString)), config_lines[31]);
+  EXPECT_EQ(kYesString, config_lines[32]);
+
+  EXPECT_EQ("BreakpadServerParameterPrefix_os_version", config_lines[33]);
+  EXPECT_EQ(base::NumberToString(kOSVersion.length), config_lines[34]);
+  EXPECT_EQ(base::SysNSStringToUTF8(kOSVersion), config_lines[35]);
+
+  EXPECT_EQ("BreakpadServerParameterPrefix_platform", config_lines[36]);
   EXPECT_EQ(base::NumberToString(base::SysInfo::HardwareModelName().size()),
-            config_lines[31]);
-  EXPECT_EQ(base::SysInfo::HardwareModelName(), config_lines[32]);
+            config_lines[37]);
+  EXPECT_EQ(base::SysInfo::HardwareModelName(), config_lines[38]);
 
   // Read minidump file. It must be empty as there is no stack trace, but
   // Breakpad will not upload config without minidump file.
