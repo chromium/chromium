@@ -6,6 +6,7 @@
 
 #include "base/base_paths.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/path_service.h"
@@ -292,8 +293,6 @@ void TelemetryExtensionUiBrowserTest::SetUpOnMainThread() {
   chromeos::cros_healthd::FakeCrosHealthdClient::Get()
       ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
 
-  ConfigureSystemEventsServiceToEmitEvents();
-
   SandboxedWebUiAppTestBase::SetUpOnMainThread();
 }
 
@@ -434,17 +433,27 @@ void TelemetryExtensionUiBrowserTest::ConfigureProbeServiceToReturnErrors() {
       ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
 }
 
-void TelemetryExtensionUiBrowserTest::
-    ConfigureSystemEventsServiceToEmitEvents() {
-  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
-      ->EmitLidClosedEventForTesting();
-  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
-      ->EmitLidOpenedEventForTesting();
+void TelemetryExtensionUiBrowserTest::EmitLidClosedEventPeriodically() {
+  RunCallbackPeriodically(base::BindRepeating([] {
+    chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+        ->EmitLidClosedEventForTesting();
+  }));
+}
+
+void TelemetryExtensionUiBrowserTest::EmitLidOpenedEventPeriodically() {
+  RunCallbackPeriodically(base::BindRepeating([] {
+    chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+        ->EmitLidOpenedEventForTesting();
+  }));
+}
+
+void TelemetryExtensionUiBrowserTest::RunCallbackPeriodically(
+    const base::RepeatingClosure& callback) {
+  callback.Run();
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&TelemetryExtensionUiBrowserTest::
-                         ConfigureSystemEventsServiceToEmitEvents,
-                     system_events_weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&TelemetryExtensionUiBrowserTest::RunCallbackPeriodically,
+                     system_events_weak_ptr_factory_.GetWeakPtr(), callback),
       base::TimeDelta::FromSeconds(1));
 }

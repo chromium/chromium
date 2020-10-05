@@ -441,16 +441,16 @@ UNTRUSTED_TEST(
       assertDeepEquals(response, {id: 123456789, status: 'ready'});
     });
 
-// Tests that addEventListener receives system lid events.
-UNTRUSTED_TEST('UntrustedLidEventListener', async () => {
-  await Promise.all([
-    new Promise(
-        (resolve) =>
-            chromeos.telemetry.addEventListener('lid-closed', resolve)),
-    new Promise(
-        (resolve) =>
-            chromeos.telemetry.addEventListener('lid-opened', resolve)),
-  ]);
+// Tests that addEventListener receives system lid closed event.
+UNTRUSTED_TEST('UntrustedLidClosedEventListener', async () => {
+  await new Promise(
+      (resolve) => chromeos.telemetry.addEventListener('lid-closed', resolve));
+});
+
+// Tests that addEventListener receives system lid opened event.
+UNTRUSTED_TEST('UntrustedLidOpenedEventListener', async () => {
+  await new Promise(
+      (resolve) => chromeos.telemetry.addEventListener('lid-opened', resolve));
 });
 
 // Tests that TelemetryInfo throws an error if category is unknown.

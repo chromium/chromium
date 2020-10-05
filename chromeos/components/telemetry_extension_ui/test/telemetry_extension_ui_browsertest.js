@@ -371,6 +371,22 @@ var TelemetryExtensionUIWithProbeServiceErrorsBrowserTest =
   }
 }
 
+var TelemetryExtensionUIWithLidClosedEventBrowserTest =
+    class extends TelemetryExtensionUIBrowserTest {
+  /** @override */
+  testGenPreamble() {
+    GEN('EmitLidClosedEventPeriodically();');
+  }
+}
+
+var TelemetryExtensionUIWithLidOpenedEventBrowserTest =
+    class extends TelemetryExtensionUIBrowserTest {
+  /** @override */
+  testGenPreamble() {
+    GEN('EmitLidOpenedEventPeriodically();');
+  }
+}
+
 // Test cases injected into the untrusted context.
 // See implementations in untrusted_browsertest.js.
 //
@@ -408,7 +424,6 @@ const untrustedTests = [
   ['UntrustedDiagnosticsRequestRunBatteryDischargeRoutine'],
   ['UntrustedDiagnosticsRequestRunBatteryChargeRoutineInvalidInput'],
   ['UntrustedDiagnosticsRequestRunBatteryChargeRoutine'],
-  ['UntrustedLidEventListener'],
   ['UntrustedRequestTelemetryInfoUnknownCategory'],
   ['UntrustedRequestTelemetryInfo'],
   [
@@ -422,6 +437,14 @@ const untrustedTests = [
   [
     'UntrustedRequestTelemetryInfoWithErrors',
     'TelemetryExtensionUIWithProbeServiceErrorsBrowserTest'
+  ],
+  [
+    'UntrustedLidClosedEventListener',
+    'TelemetryExtensionUIWithLidClosedEventBrowserTest'
+  ],
+  [
+    'UntrustedLidOpenedEventListener',
+    'TelemetryExtensionUIWithLidOpenedEventBrowserTest'
   ],
 ].forEach(test => registerUntrustedTest(...test));
 
