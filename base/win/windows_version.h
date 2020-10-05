@@ -120,20 +120,42 @@ class BASE_EXPORT OSInfo {
   // process.  This doesn't touch member state, so you can bypass the singleton.
   static WOW64Status GetWOW64StatusForProcess(HANDLE process_handle);
 
+  // Returns the OS Version as returned from a call to GetVersionEx().
   const Version& version() const { return version_; }
-  Version Kernel32Version() const;
-  base::Version Kernel32BaseVersion() const;
-  // The next two functions return arrays of values, [major, minor(, build)].
+
+  // Returns detailed version info containing major, minor, build and patch.
   const VersionNumber& version_number() const { return version_number_; }
+
+  // The Kernel32* set of functions return the OS version as determined by a
+  // call to VerQueryValue() on kernel32.dll. This avoids any running App Compat
+  // shims from manipulating the version reported.
+  Version Kernel32Version() const;
+  VersionNumber Kernel32VersionNumber() const;
+  base::Version Kernel32BaseVersion() const;
+
+  // Functions to determine Version Type (e.g. Enterprise/Home) and Service Pack
+  // value. See above for definitions of these values.
   const VersionType& version_type() const { return version_type_; }
   const ServicePack& service_pack() const { return service_pack_; }
   const std::string& service_pack_str() const { return service_pack_str_; }
+
+  // Returns the number of processors on the system.
   const int& processors() const { return processors_; }
+
+  // Returns the allocation granularity. See
+  // https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/ns-sysinfoapi-system_info.
   const size_t& allocation_granularity() const {
     return allocation_granularity_;
   }
+
+  // Returns the WOW64 status of the running process. See above for definitions
+  // of the values.
   const WOW64Status& wow64_status() const { return wow64_status_; }
+
+  // Processor name as read from registry.
   std::string processor_model_name();
+
+  // Returns the "ReleaseId" (Windows 10 release number) from the registry.
   const std::string& release_id() const { return release_id_; }
 
  private:

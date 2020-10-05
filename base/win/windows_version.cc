@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/file_version_info_win.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -197,6 +198,16 @@ Version OSInfo::Kernel32Version() const {
                                Kernel32BaseVersion().components()[1],
                                Kernel32BaseVersion().components()[2]);
   return kernel32_version;
+}
+
+OSInfo::VersionNumber OSInfo::Kernel32VersionNumber() const {
+  DCHECK(Kernel32BaseVersion().components().size() == 4);
+  static const VersionNumber version = {
+      .major = Kernel32BaseVersion().components()[0],
+      .minor = Kernel32BaseVersion().components()[1],
+      .build = Kernel32BaseVersion().components()[2],
+      .patch = Kernel32BaseVersion().components()[3]};
+  return version;
 }
 
 // Retrieve a version from kernel32. This is useful because when running in

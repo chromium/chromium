@@ -154,7 +154,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>wfh@chromium.org</owner>
   <owner>brucedawson@chromium.org</owner>
   <summary>
-    The Windows version (base::win::Version) as reported by VeryQueryValue() on
+    The Windows version (base::win::Version) as reported by VerQueryValue() on
     kernel32.dll. This is queried shortly after startup.
   </summary>
 </histogram>
@@ -222,11 +222,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>brucedawson@chromium.org</owner>
   <summary>
     A 32-bit value formed from combining the minor and patch level of the
-    currently running Windows operating system. E.g. &quot;Windows 10 OS Version
-    1809 (Build 17763.503)&quot; would be 17763 (0x4563), combined with 503
-    (0x1F7) = 0x456301F7. If either minor or patch level exceeds the value that
-    can fit in a 16-bit unsigned integer, then this histogram will report 0.
-    Reported once, shortly after browser startup.
+    currently running Windows operating system as reported by GetVersionEx().
+    E.g. &quot;Windows 10 OS Version 1809 (Build 17763.503)&quot; would be 17763
+    (0x4563), combined with 503 (0x1F7) = 0x456301F7. If either minor or patch
+    level exceeds the value that can fit in a 16-bit unsigned integer, then this
+    histogram will report 0. Reported once, shortly after browser startup.
+  </summary>
+</histogram>
+
+<histogram name="Windows.PatchLevelKernel32" enum="WindowsPatchLevel"
+    expires_after="never">
+<!-- expires-never: Needed to measure Windows ecosystem. -->
+
+  <owner>wfh@chromium.org</owner>
+  <owner>brucedawson@chromium.org</owner>
+  <summary>
+    A 32-bit value formed from combining the minor and patch level of the
+    currently running Windows operating system as reported by VerQueryValue() of
+    kernel32.dll. E.g. &quot;Windows 10 OS Version 1809 (Build 17763.503)&quot;
+    would be 17763 (0x4563), combined with 503 (0x1F7) = 0x456301F7. If either
+    minor or patch level exceeds the value that can fit in a 16-bit unsigned
+    integer, then this histogram will report 0. Reported once, shortly after
+    browser startup.
   </summary>
 </histogram>
 
