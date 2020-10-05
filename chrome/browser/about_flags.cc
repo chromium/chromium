@@ -6668,10 +6668,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kWalletRequiresFirstSyncSetupComplete)},
 #endif  // defined(OS_ANDROID)
-        // NOTE: Adding a new flag requires adding a corresponding entry to enum
-        // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
-        // Histograms" in tools/metrics/histograms/README.md (run the
-        // AboutFlagsHistogramTest unit test to verify this process).
+
+    {"privacy-advisor", flag_descriptions::kPrivacyAdvisorName,
+     flag_descriptions::kPrivacyAdvisorDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kPrivacyAdvisor)},
+
+    // NOTE: Adding a new flag requires adding a corresponding entry to enum
+    // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
+    // Histograms" in tools/metrics/histograms/README.md (run the
+    // AboutFlagsHistogramTest unit test to verify this process).
 };
 
 class FlagsStateSingleton : public flags_ui::FlagsState::Delegate {

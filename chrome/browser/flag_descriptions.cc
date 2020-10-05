@@ -1899,6 +1899,10 @@ const char kPrintSaveToDriveName[] = "Print Save to Drive locally";
 const char kPrintSaveToDriveDescription[] =
     "Modifies Print Preview Save to Drive to use locally mounted Drive";
 
+const char kPrivacyAdvisorName[] = "Privacy Advisor";
+const char kPrivacyAdvisorDescription[] =
+    "Provides contextual entry points for adjusting privacy settings";
+
 const char kPrivacyElevatedAndroidName[] =
     "Elevate Privacy in Settings on Android";
 const char kPrivacyElevatedAndroidDescription[] =

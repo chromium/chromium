@@ -3793,6 +3793,15 @@
     "expiry_milestone": 90
   },
   {
+    "name": "privacy-advisor",
+    "owners": [
+      "harrisonsean",
+      "sauski",
+      "msramek",
+      "chrome-friendly-settings@google.com"],
+    "expiry_milestone": 90
+  },
+  {
     "name": "privacy-elevated-android",
     "owners": [
       "andzaytsev",

@@ -408,6 +408,9 @@ extern const base::Feature kPredictivePrefetchingAllowedOnAllConnectionTypes;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPrerenderFallbackToPreconnect;
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kPrivacyAdvisor;
+
 #if defined(OS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPrivacyElevatedAndroid;

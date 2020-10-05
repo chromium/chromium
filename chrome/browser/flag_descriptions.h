@@ -1093,6 +1093,9 @@ extern const char kPrintJobManagementAppDescription[];
 extern const char kPrintSaveToDriveName[];
 extern const char kPrintSaveToDriveDescription[];
 
+extern const char kPrivacyAdvisorName[];
+extern const char kPrivacyAdvisorDescription[];
+
 extern const char kPrivacyElevatedAndroidName[];
 extern const char kPrivacyElevatedAndroidDescription[];
 

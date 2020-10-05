@@ -43007,6 +43007,7 @@ from previous Chrome versions.
   <int value="-152439608" label="download-later-debug-on-wifi"/>
   <int value="-147283486" label="enable-network-portal-notification"/>
   <int value="-146552997" label="enable-affiliation-based-matching"/>
+  <int value="-146315671" label="PrivacyAdvisor:enabled"/>
   <int value="-144134779" label="AndroidPayIntegrationV2:disabled"/>
   <int value="-143394485" label="SplitSettingsSync:enabled"/>
   <int value="-143382681" label="InstantTethering:enabled"/>
@@ -44063,6 +44064,7 @@ from previous Chrome versions.
   <int value="965037619"
       label="HappinessTrackingSurveysForDesktopSettingsPrivacy:disabled"/>
   <int value="966134219" label="CrostiniEnableDlc:disabled"/>
+  <int value="966352185" label="PrivacyAdvisor:disabled"/>
   <int value="966415988" label="SyncPseudoUSSPasswords:enabled"/>
   <int value="968355926" label="ExportTaggedPDF:enabled"/>
   <int value="968715406"
