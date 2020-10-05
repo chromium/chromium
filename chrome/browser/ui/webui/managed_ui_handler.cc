@@ -114,7 +114,7 @@ std::unique_ptr<base::DictionaryValue> ManagedUIHandler::GetDataSourceUpdate()
                  base::Value(chrome::GetManagedUiWebUILabel(profile_)));
 #if defined(OS_CHROMEOS)
   update->SetKey("deviceManagedByOrg",
-                 base::Value(chrome::GetDeviceManagedUiWebUILabel(profile_)));
+                 base::Value(chrome::GetDeviceManagedUiWebUILabel()));
 #endif
   update->SetKey("isManaged", base::Value(managed_));
   return update;

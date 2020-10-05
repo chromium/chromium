@@ -16,6 +16,10 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
+#endif
+
 class ManagedUiTest : public InProcessBrowserTest {
  public:
   ManagedUiTest() = default;
@@ -87,14 +91,14 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabel) {
           "Your <a href=\"chrome://management\">browser is managed</a> by "
           "example.com"),
       chrome::GetManagedUiWebUILabel(profile_with_domain.get()));
+}
+
 #if defined(OS_CHROMEOS)
-  EXPECT_EQ(base::ASCIIToUTF16("Your <a target=\"_blank\" "
-                               "href=\"chrome://management\">Chrome device is "
-                               "managed</a> by your organization"),
-            chrome::GetDeviceManagedUiWebUILabel(profile.get()));
+using ManagedUiTestCros = policy::DevicePolicyCrosBrowserTest;
+IN_PROC_BROWSER_TEST_F(ManagedUiTestCros, GetManagedUiWebUILabel) {
   EXPECT_EQ(base::ASCIIToUTF16("Your <a target=\"_blank\" "
                                "href=\"chrome://management\">Chrome device is "
                                "managed</a> by example.com"),
-            chrome::GetDeviceManagedUiWebUILabel(profile_with_domain.get()));
-#endif
+            chrome::GetDeviceManagedUiWebUILabel());
 }
+#endif

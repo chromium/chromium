@@ -12,7 +12,10 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if defined(OS_CHROMEOS)
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
+#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "ui/chromeos/devicetype_utils.h"
 #endif
 
@@ -61,17 +64,22 @@ base::string16 GetManagedUiWebUILabel(Profile* profile) {
 }
 
 #if defined(OS_CHROMEOS)
-base::string16 GetDeviceManagedUiWebUILabel(Profile* profile) {
-  std::string account_manager = ManagementUIHandler::GetAccountManager(profile);
+base::string16 GetDeviceManagedUiWebUILabel() {
+  policy::BrowserPolicyConnectorChromeOS* connector =
+      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  const std::string device_manager =
+      connector->IsActiveDirectoryManaged()
+          ? connector->GetRealm()
+          : connector->GetEnterpriseDomainManager();
 
   int string_id = IDS_DEVICE_MANAGED_WITH_HYPERLINK;
 
   std::vector<base::string16> replacements;
   replacements.push_back(base::UTF8ToUTF16(chrome::kChromeUIManagementURL));
   replacements.push_back(ui::GetChromeOSDeviceName());
-  if (!account_manager.empty()) {
+  if (!device_manager.empty()) {
     string_id = IDS_DEVICE_MANAGED_BY_WITH_HYPERLINK;
-    replacements.push_back(base::UTF8ToUTF16(account_manager));
+    replacements.push_back(base::UTF8ToUTF16(device_manager));
   }
 
   return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
