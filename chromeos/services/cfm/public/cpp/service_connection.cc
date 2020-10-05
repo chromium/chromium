@@ -49,12 +49,13 @@ class ServiceConnectionImpl : public ServiceConnection,
       bool success);
 
   // |mojom::CfmServiceContext| implementation.
-  void ProvideAdaptor(const std::string& interface_name,
-                      chromeos::cfm::mojom::CfmServiceAdaptorPtr adaptor_remote,
-                      ProvideAdaptorCallback callback) override;
+  void ProvideAdaptor(
+      const std::string& interface_name,
+      mojo::PendingRemote<mojom::CfmServiceAdaptor> adaptor_remote,
+      ProvideAdaptorCallback callback) override;
   void BindRegistry(
       const std::string& interface_name,
-      chromeos::cfm::mojom::CfmServiceRegistryRequest broker_receiver,
+      mojo::PendingReceiver<mojom::CfmServiceRegistry> broker_receiver,
       BindRegistryCallback callback) override;
 
   void OnMojoConnectionError();
@@ -145,7 +146,7 @@ void ServiceConnectionImpl::OnBootstrapMojoConnectionResponse(
 
 void ServiceConnectionImpl::ProvideAdaptor(
     const std::string& interface_name,
-    chromeos::cfm::mojom::CfmServiceAdaptorPtr adaptor_remote,
+    mojo::PendingRemote<mojom::CfmServiceAdaptor> adaptor_remote,
     ProvideAdaptorCallback callback) {
   BindPlatformServiceContextIfNeeded();
 
@@ -155,7 +156,7 @@ void ServiceConnectionImpl::ProvideAdaptor(
 
 void ServiceConnectionImpl::BindRegistry(
     const std::string& interface_name,
-    chromeos::cfm::mojom::CfmServiceRegistryRequest broker_receiver,
+    mojo::PendingReceiver<mojom::CfmServiceRegistry> broker_receiver,
     BindRegistryCallback callback) {
   BindPlatformServiceContextIfNeeded();
 

@@ -21,14 +21,14 @@ FakeServiceConnectionImpl::~FakeServiceConnectionImpl() = default;
 
 // Bind to the CfM Service Context Daemon
 void FakeServiceConnectionImpl::BindServiceContext(
-    mojo::PendingReceiver<::chromeos::cfm::mojom::CfmServiceContext> receiver) {
+    mojo::PendingReceiver<mojom::CfmServiceContext> receiver) {
   CfmHotlineClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(&FakeServiceConnectionImpl::CfMContextServiceStarted,
                      base::Unretained(this), std::move(receiver)));
 }
 
 void FakeServiceConnectionImpl::CfMContextServiceStarted(
-    mojo::PendingReceiver<::chromeos::cfm::mojom::CfmServiceContext> receiver,
+    mojo::PendingReceiver<mojom::CfmServiceContext> receiver,
     bool is_available) {
   if (!is_available || callback_.is_null()) {
     receiver.reset();

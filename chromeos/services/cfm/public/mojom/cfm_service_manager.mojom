@@ -15,19 +15,19 @@ interface CfmServiceContext {
   // Note: |interface_name| MUST be the interface name, i.e. Interface::Name_
   ProvideAdaptor@0(
       string interface_name,
-      CfmServiceAdaptor adaptor_remote) => (bool success);
+      pending_remote<CfmServiceAdaptor> adaptor_remote) => (bool success);
 
   // Request to bind |CfmServiceRegistry| requests assuming a valid
   // |interface_name| is given.
   // Note: |interface_name| MUST be the interface name, i.e. Interface::Name_
   BindRegistry@1(
     string interface_name,
-    CfmServiceRegistry& registry_receiver) => (bool success);
+    pending_receiver<CfmServiceRegistry> registry_receiver) => (bool success);
 };
 
 // Interface used to bind to registered interfaces by name
 interface CfmServiceRegistry {
-  // Attempt to bind the |receiver_pipe| of an intended mojo::InterfaceRequest
+  // Attempt to bind the |receiver_pipe| of an intended mojo::Receiver
   // to a remote service that is internally identified as |interface_name|
   // Note: |interface_name| MUST be the interface name, i.e. Interface::Name_
   RequestBindService@0(
@@ -41,8 +41,8 @@ interface CfmServiceRegistry {
 // of a BindingSet. The broker calls BindService when a bind request for
 // interface comes.
 interface CfmServiceAdaptor {
-  // Called by the CfmServiceRegistry to Binds a |receiver_pipe| of an
-  // intended mojo::InterfaceRequest to a service's implementation. For example,
+  // Called by the CfmServiceRegistry to bind a |receiver_pipe| of an
+  // intended mojo::Receiver to a service's implementation. For example,
   // this method should bind |receiver_pipe| to the interface Foo implemented by
   // FooImpl assuming FooImpl also implements the CfmServiceAdaptor.
   // Note: Ideally services should handle multiple clients (i.e BindingSet)

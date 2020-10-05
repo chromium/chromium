@@ -31,14 +31,13 @@ class FakeServiceConnectionImpl : public ServiceConnection {
   ~FakeServiceConnectionImpl() override;
 
   void BindServiceContext(
-      mojo::PendingReceiver<::chromeos::cfm::mojom::CfmServiceContext> receiver)
-      override;
+      mojo::PendingReceiver<mojom::CfmServiceContext> receiver) override;
 
   void SetCallback(FakeBootstrapCallback callback);
 
  private:
   void CfMContextServiceStarted(
-      mojo::PendingReceiver<::chromeos::cfm::mojom::CfmServiceContext> receiver,
+      mojo::PendingReceiver<mojom::CfmServiceContext> receiver,
       bool is_available);
 
   FakeBootstrapCallback callback_;

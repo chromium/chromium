@@ -5,6 +5,9 @@ Note: //chromeos/services/cfm/public/mojom/cfm_service_manager.mojom
 is copied as is from its chromeos version as such the original file should be
 edited before changing this file.
 
+Due to the requirement of chrome dependencies individual service implementation
+lives in `chrome/browser/chromeos/cfm/`.
+
 Hot-tip: Generate  Js w/
 
 ```
