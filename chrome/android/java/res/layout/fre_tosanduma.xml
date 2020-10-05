@@ -91,6 +91,7 @@
                         android:layout_height="wrap_content"
                         android:lineSpacingMultiplier="1.4"
                         android:text="@string/fre_send_report_check"
+                        android:paddingStart="@dimen/fre_tos_checkbox_padding"
                         android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
                 </LinearLayout>
             </LinearLayout>

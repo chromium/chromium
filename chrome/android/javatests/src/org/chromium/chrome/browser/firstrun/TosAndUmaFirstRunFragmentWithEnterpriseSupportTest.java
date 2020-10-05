@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.firstrun;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
 import android.app.Activity;
@@ -11,6 +13,8 @@ import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
@@ -35,6 +39,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -44,6 +49,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.policy.PolicyService;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
@@ -81,6 +87,10 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
 
     @Rule
     public DisableAnimationsTestRule mDisableAnimationsTestRule = new DisableAnimationsTestRule();
+
+    @Rule
+    public ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus().build();
 
     @Mock
     public FirstRunAppRestrictionInfo mMockAppRestrictionInfo;
@@ -174,7 +184,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         assertHistograms(true, SpeedComparedToInflation.SLOWER,
                 SpeedComparedToInflation.NOT_RECORDED, SpeedComparedToInflation.NOT_RECORDED);
 
-        // Try to accept Tos.
+        // Try to accept ToS.
         TestThreadUtils.runOnUiThreadBlocking((Runnable) mAcceptButton::performClick);
         Assert.assertTrue("Crash report should be enabled.",
                 PrivacyPreferencesManager.getInstance().isUsageAndCrashReportingPermittedByUser());
@@ -402,6 +412,26 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
                 PrivacyPreferencesManager.getInstance().isUsageAndCrashReportingPermittedByUser());
     }
 
+    @Test
+    @SmallTest
+    @Feature({"RenderTest", "FirstRun"})
+    public void testRender() throws Exception {
+        launchFirstRunThroughCustomTab();
+        assertUIState(FragmentState.LOADING);
+
+        // Clear the focus on view to avoid unexpected highlight on background.
+        View tosAndUmaFragment =
+                mActivity.getSupportFragmentManager().getFragments().get(0).getView();
+        Assert.assertNotNull(tosAndUmaFragment);
+        TestThreadUtils.runOnUiThreadBlocking(tosAndUmaFragment::clearFocus);
+
+        renderWithPortraitAndLandscape(tosAndUmaFragment, "fre_tosanduma_loading");
+
+        setAppRestrictionsMockInitialized(false);
+        assertUIState(FragmentState.NO_POLICY);
+        renderWithPortraitAndLandscape(tosAndUmaFragment, "fre_tosanduma_nopolicy");
+    }
+
     /**
      * Launch chrome through custom tab and trigger first run.
      */
@@ -615,6 +645,37 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
             for (Callback<EnterpriseInfo.OwnedState> callback : mOwnedStateCallbacks) {
                 callback.onResult(ownedState);
             }
+        });
+    }
+
+    private void renderWithPortraitAndLandscape(View tosAndUmaFragmentView, String testPrefix)
+            throws Exception {
+        mRenderTestRule.render(tosAndUmaFragmentView, testPrefix + "_portrait");
+
+        setDeviceOrientation(tosAndUmaFragmentView, Configuration.ORIENTATION_LANDSCAPE);
+        mRenderTestRule.render(tosAndUmaFragmentView, testPrefix + "_landscape");
+
+        setDeviceOrientation(tosAndUmaFragmentView, Configuration.ORIENTATION_PORTRAIT);
+        mRenderTestRule.render(tosAndUmaFragmentView, testPrefix + "_portrait");
+    }
+
+    private void setDeviceOrientation(View tosAndUmaFragmentView, int orientation) {
+        // TODO(https://crbug.com/1133789): This function is copied mostly copied from
+        // TabUiTestHelper#rotateDeviceToOrientation. Merge / move these two test functions if
+        // applicable.
+        if (mActivity.getResources().getConfiguration().orientation == orientation) return;
+        assertTrue(orientation == Configuration.ORIENTATION_LANDSCAPE
+                || orientation == Configuration.ORIENTATION_PORTRAIT);
+
+        boolean isLandscape = orientation == Configuration.ORIENTATION_LANDSCAPE;
+        mActivity.setRequestedOrientation(isLandscape ? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                                                      : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(
+                    mActivity.getResources().getConfiguration().orientation, is(orientation));
+            Criteria.checkThat(tosAndUmaFragmentView.getWidth() > tosAndUmaFragmentView.getHeight(),
+                    is(isLandscape));
         });
     }
 }

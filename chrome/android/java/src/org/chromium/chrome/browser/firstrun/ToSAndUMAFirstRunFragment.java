@@ -16,7 +16,6 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.chrome.R;
@@ -80,11 +79,6 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
             }
         });
 
-        int paddingStart = getResources().getDimensionPixelSize(R.dimen.fre_tos_checkbox_padding);
-        ViewCompat.setPaddingRelative(mSendReportCheckBox,
-                ViewCompat.getPaddingStart(mSendReportCheckBox) + paddingStart,
-                mSendReportCheckBox.getPaddingTop(), ViewCompat.getPaddingEnd(mSendReportCheckBox),
-                mSendReportCheckBox.getPaddingBottom());
         mSendReportCheckBox.setChecked(FirstRunActivity.DEFAULT_METRICS_AND_CRASH_REPORTING);
 
         if (!canShowUmaCheckBox()) {
