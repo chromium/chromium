@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/notreached.h"
-#include "third_party/blink/renderer/modules/peerconnection/adapters/quic_packet_transport_adapter.h"
 #include "third_party/webrtc/api/ice_transport_factory.h"
 
 namespace blink {
@@ -43,9 +42,6 @@ IceTransportAdapterImpl::IceTransportAdapterImpl(
   // generated so that each peer can calculate a.tiebreaker <= b.tiebreaker
   // consistently.
   ice_transport_channel()->SetIceTiebreaker(rtc::CreateRandomId64());
-
-  quic_packet_transport_adapter_ =
-      std::make_unique<QuicPacketTransportAdapter>(ice_transport_channel());
 }
 
 IceTransportAdapterImpl::IceTransportAdapterImpl(
@@ -129,10 +125,6 @@ void IceTransportAdapterImpl::AddRemoteCandidate(
     return;
   }
   ice_transport_channel()->AddRemoteCandidate(candidate);
-}
-
-P2PQuicPacketTransport* IceTransportAdapterImpl::packet_transport() const {
-  return quic_packet_transport_adapter_.get();
 }
 
 void IceTransportAdapterImpl::SetupIceTransportChannel() {

@@ -6490,47 +6490,6 @@ interface RTCPeerConnectionIceEvent : Event
     attribute @@toStringTag
     getter candidate
     method constructor
-interface RTCQuicStream : EventTarget
-    attribute @@toStringTag
-    getter maxReadBufferedAmount
-    getter maxWriteBufferedAmount
-    getter onstatechange
-    getter readBufferedAmount
-    getter state
-    getter transport
-    getter writeBufferedAmount
-    method constructor
-    method readInto
-    method reset
-    method waitForReadable
-    method waitForWriteBufferedAmountBelow
-    method write
-    setter onstatechange
-interface RTCQuicStreamEvent : Event
-    attribute @@toStringTag
-    getter stream
-    method constructor
-interface RTCQuicTransport : EventTarget
-    attribute @@toStringTag
-    getter maxDatagramLength
-    getter onerror
-    getter onquicstream
-    getter onstatechange
-    getter state
-    getter transport
-    method connect
-    method constructor
-    method createStream
-    method getKey
-    method getStats
-    method listen
-    method readyToSendDatagram
-    method receiveDatagrams
-    method sendDatagram
-    method stop
-    setter onerror
-    setter onquicstream
-    setter onstatechange
 interface RTCRtpReceiver
     static method getCapabilities
     attribute @@toStringTag

@@ -7,20 +7,12 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/ice_transport_adapter.h"
-#include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_packet_transport.h"
 
 namespace blink {
 
 class MockIceTransportAdapter : public testing::NiceMock<IceTransportAdapter> {
  public:
-  MockIceTransportAdapter() : MockIceTransportAdapter(nullptr) {}
-  MockIceTransportAdapter(
-      std::unique_ptr<P2PQuicPacketTransport> packet_transport)
-      : packet_transport_(std::move(packet_transport)) {
-    ON_CALL(*this, packet_transport()).WillByDefault(testing::Invoke([this] {
-      return packet_transport_.get();
-    }));
-  }
+  MockIceTransportAdapter() = default;
   ~MockIceTransportAdapter() override { Die(); }
   MOCK_METHOD0(Die, void());
 
@@ -36,10 +28,6 @@ class MockIceTransportAdapter : public testing::NiceMock<IceTransportAdapter> {
                     const Vector<cricket::Candidate>&));
   MOCK_METHOD1(HandleRemoteRestart, void(const cricket::IceParameters&));
   MOCK_METHOD1(AddRemoteCandidate, void(const cricket::Candidate&));
-  MOCK_CONST_METHOD0(packet_transport, P2PQuicPacketTransport*());
-
- private:
-  std::unique_ptr<P2PQuicPacketTransport> packet_transport_;
 };
 
 }  // namespace blink

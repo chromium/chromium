@@ -12,8 +12,6 @@
 
 namespace blink {
 
-class P2PQuicPacketTransport;
-
 // Defines the ICE candidate policy the browser uses to surface the permitted
 // candidates to the application.
 // https://w3c.github.io/webrtc-pc/#dom-rtcicetransportpolicy
@@ -83,10 +81,6 @@ class IceTransportAdapter {
   // Adds a remote candidate to potentially start connectivity checks with.
   // The caller must ensure Start() has already bene called.
   virtual void AddRemoteCandidate(const cricket::Candidate& candidate) = 0;
-
-  // Gets a P2PQuicPacketTransport that is backed by this ICE connection. The
-  // returned instance lives the same lifetime as the IceTransportAdapter.
-  virtual P2PQuicPacketTransport* packet_transport() const = 0;
 };
 
 }  // namespace blink

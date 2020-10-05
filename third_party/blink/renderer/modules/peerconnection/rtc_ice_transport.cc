@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_ice_candidate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_ice_event.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_quic_transport.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -188,32 +187,8 @@ RTCIceTransport::~RTCIceTransport() {
   DCHECK(!proxy_);
 }
 
-bool RTCIceTransport::HasConsumer() const {
-  return consumer_;
-}
-
 bool RTCIceTransport::IsFromPeerConnection() const {
   return peer_connection_;
-}
-
-IceTransportProxy* RTCIceTransport::ConnectConsumer(
-    RTCQuicTransport* consumer) {
-  DCHECK(consumer);
-  DCHECK(proxy_);
-  DCHECK(!peer_connection_);
-  if (!consumer_) {
-    consumer_ = consumer;
-  } else {
-    DCHECK_EQ(consumer_, consumer);
-  }
-  return proxy_.get();
-}
-
-void RTCIceTransport::DisconnectConsumer(RTCQuicTransport* consumer) {
-  DCHECK(consumer);
-  DCHECK(proxy_);
-  DCHECK_EQ(consumer, consumer_);
-  consumer_ = nullptr;
 }
 
 String RTCIceTransport::role() const {
@@ -435,9 +410,6 @@ void RTCIceTransport::start(RTCIceParameters* raw_remote_parameters,
           *ConvertToCricketIceCandidate(*remote_candidate));
     }
     proxy_->Start(remote_parameters, role, initial_remote_candidates);
-    if (consumer_) {
-      consumer_->OnIceTransportStarted();
-    }
   } else {
     remote_candidates_.clear();
     state_ = webrtc::IceTransportState::kNew;
@@ -545,11 +517,6 @@ void RTCIceTransport::Close(CloseReason reason) {
   if (IsClosed()) {
     return;
   }
-  if (HasConsumer()) {
-    consumer_->OnIceTransportClosed(reason);
-  }
-  // Notifying the consumer that we're closing should cause it to disconnect.
-  DCHECK(!HasConsumer());
   state_ = webrtc::IceTransportState::kClosed;
   selected_candidate_pair_ = nullptr;
   proxy_.reset();
@@ -590,7 +557,6 @@ void RTCIceTransport::Trace(Visitor* visitor) const {
   visitor->Trace(local_parameters_);
   visitor->Trace(remote_parameters_);
   visitor->Trace(selected_candidate_pair_);
-  visitor->Trace(consumer_);
   visitor->Trace(peer_connection_);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);

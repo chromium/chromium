@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_transport.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/rtc_error.h"
@@ -41,7 +40,6 @@ namespace blink {
 
 class MockWebRtcVideoTrack;
 class MediaStreamVideoTrack;
-struct P2PQuicTransportConfig;
 
 }
 
@@ -86,12 +84,6 @@ struct CrossThreadCopier<std::pair<cricket::Candidate, cricket::Candidate>>
 };
 
 template <>
-struct CrossThreadCopier<blink::P2PQuicTransportConfig>
-    : public CrossThreadCopierPassThrough<blink::P2PQuicTransportConfig> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
 struct CrossThreadCopier<webrtc::DtlsTransportInformation>
     : public CrossThreadCopierPassThrough<webrtc::DtlsTransportInformation> {
   STATIC_ONLY(CrossThreadCopier);
@@ -100,31 +92,6 @@ struct CrossThreadCopier<webrtc::DtlsTransportInformation>
 template <>
 struct CrossThreadCopier<webrtc::SctpTransportInformation>
     : public CrossThreadCopierPassThrough<webrtc::SctpTransportInformation> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<blink::P2PQuicTransport::StartConfig>
-    : public CrossThreadCopierPassThrough<
-          blink::P2PQuicTransport::StartConfig> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = blink::P2PQuicTransport::StartConfig;
-  static blink::P2PQuicTransport::StartConfig Copy(
-      blink::P2PQuicTransport::StartConfig config) {
-    // This is in fact a move.
-    return config;
-  }
-};
-
-template <>
-struct CrossThreadCopier<blink::P2PQuicTransportStats>
-    : public CrossThreadCopierPassThrough<blink::P2PQuicTransportStats> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<blink::P2PQuicNegotiatedParams>
-    : public CrossThreadCopierPassThrough<blink::P2PQuicNegotiatedParams> {
   STATIC_ONLY(CrossThreadCopier);
 };
 
