@@ -1248,25 +1248,6 @@
             ]
         }
     ],
-    "CacheStorageSequenceChromeOS": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled6_v7",
-                    "params": {
-                        "min": "6"
-                    },
-                    "enable_features": [
-                        "BrowserThreadPoolAdjustment",
-                        "CacheStorageSequence"
-                    ]
-                }
-            ]
-        }
-    ],
     "CastMediaRouteProviderAndGlobalMediaControlsForCast": [
         {
             "platforms": [

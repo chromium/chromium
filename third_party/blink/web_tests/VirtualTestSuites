@@ -583,11 +583,6 @@
     "args": ["--disable-blink-features=PaymentRequestTotalOptional"]
   },
   {
-    "prefix": "cache-storage-sequence",
-    "bases": ["external/wpt/service-workers"],
-    "args": ["--enable-features=CacheStorageSequence"]
-  },
-  {
     "prefix": "conditional-appcache-delay",
     "bases": ["http/tests/loading/appcache-delay"],
     "args": ["--enable-features=VerifyHTMLFetchedFromAppCacheBeforeDelay"]
