@@ -28,10 +28,10 @@ TEST(MediaTrackConstraintsTest, LongConstraint) {
 
 TEST(MediaTrackConstraintsTest, DoubleConstraint) {
   DoubleConstraint range_constraint(nullptr);
-  EXPECT_TRUE(range_constraint.IsEmpty());
+  EXPECT_TRUE(range_constraint.IsUnconstrained());
   range_constraint.SetMin(5.0);
   range_constraint.SetMax(6.5);
-  EXPECT_FALSE(range_constraint.IsEmpty());
+  EXPECT_FALSE(range_constraint.IsUnconstrained());
   // Matching within epsilon
   EXPECT_TRUE(
       range_constraint.Matches(5.0 - DoubleConstraint::kConstraintEpsilon / 2));
@@ -39,7 +39,7 @@ TEST(MediaTrackConstraintsTest, DoubleConstraint) {
       range_constraint.Matches(6.5 + DoubleConstraint::kConstraintEpsilon / 2));
   DoubleConstraint exact_constraint(nullptr);
   exact_constraint.SetExact(5.0);
-  EXPECT_FALSE(range_constraint.IsEmpty());
+  EXPECT_FALSE(range_constraint.IsUnconstrained());
   EXPECT_FALSE(exact_constraint.Matches(4.9));
   EXPECT_TRUE(exact_constraint.Matches(5.0));
   EXPECT_TRUE(
@@ -51,11 +51,11 @@ TEST(MediaTrackConstraintsTest, DoubleConstraint) {
 
 TEST(MediaTrackConstraintsTest, BooleanConstraint) {
   BooleanConstraint bool_constraint(nullptr);
-  EXPECT_TRUE(bool_constraint.IsEmpty());
+  EXPECT_TRUE(bool_constraint.IsUnconstrained());
   EXPECT_TRUE(bool_constraint.Matches(false));
   EXPECT_TRUE(bool_constraint.Matches(true));
   bool_constraint.SetExact(false);
-  EXPECT_FALSE(bool_constraint.IsEmpty());
+  EXPECT_FALSE(bool_constraint.IsUnconstrained());
   EXPECT_FALSE(bool_constraint.Matches(true));
   EXPECT_TRUE(bool_constraint.Matches(false));
   bool_constraint.SetExact(true);
@@ -65,9 +65,9 @@ TEST(MediaTrackConstraintsTest, BooleanConstraint) {
 
 TEST(MediaTrackConstraintsTest, ConstraintSetEmpty) {
   MediaTrackConstraintSetPlatform the_set;
-  EXPECT_TRUE(the_set.IsEmpty());
+  EXPECT_TRUE(the_set.IsUnconstrained());
   the_set.echo_cancellation.SetExact(false);
-  EXPECT_FALSE(the_set.IsEmpty());
+  EXPECT_FALSE(the_set.IsUnconstrained());
 }
 
 TEST(MediaTrackConstraintsTest, ConstraintName) {

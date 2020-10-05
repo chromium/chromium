@@ -170,7 +170,7 @@ void CopyConstraintsIntoRtcConfiguration(
     const MediaConstraints constraints,
     webrtc::PeerConnectionInterface::RTCConfiguration* configuration) {
   // Copy info from constraints into configuration, if present.
-  if (constraints.IsEmpty()) {
+  if (constraints.IsUnconstrained()) {
     return;
   }
 
@@ -519,7 +519,7 @@ void ConvertAnswerOptionsToWebrtcAnswerOptions(
 void ConvertConstraintsToWebrtcOfferOptions(
     const MediaConstraints& constraints,
     webrtc::PeerConnectionInterface::RTCOfferAnswerOptions* output) {
-  if (constraints.IsEmpty()) {
+  if (constraints.IsUnconstrained()) {
     return;
   }
   String failing_name;

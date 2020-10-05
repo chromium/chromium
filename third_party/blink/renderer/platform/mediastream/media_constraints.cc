@@ -84,7 +84,7 @@ class MediaConstraintsPrivate final
       const MediaTrackConstraintSetPlatform& basic,
       const Vector<MediaTrackConstraintSetPlatform>& advanced);
 
-  bool IsEmpty() const;
+  bool IsUnconstrained() const;
   const MediaTrackConstraintSetPlatform& Basic() const;
   const Vector<MediaTrackConstraintSetPlatform>& Advanced() const;
   const String ToString() const;
@@ -115,10 +115,10 @@ MediaConstraintsPrivate::MediaConstraintsPrivate(
     const Vector<MediaTrackConstraintSetPlatform>& advanced)
     : basic_(basic), advanced_(advanced) {}
 
-bool MediaConstraintsPrivate::IsEmpty() const {
+bool MediaConstraintsPrivate::IsUnconstrained() const {
   // TODO(hta): When generating advanced constraints, make sure no empty
   // elements can be added to the m_advanced vector.
-  return basic_.IsEmpty() && advanced_.IsEmpty();
+  return basic_.IsUnconstrained() && advanced_.IsEmpty();
 }
 
 const MediaTrackConstraintSetPlatform& MediaConstraintsPrivate::Basic() const {
@@ -132,7 +132,7 @@ MediaConstraintsPrivate::Advanced() const {
 
 const String MediaConstraintsPrivate::ToString() const {
   StringBuilder builder;
-  if (!IsEmpty()) {
+  if (!IsUnconstrained()) {
     builder.Append('{');
     builder.Append(Basic().ToString());
     if (!Advanced().IsEmpty()) {
@@ -189,7 +189,7 @@ bool LongConstraint::Matches(int32_t value) const {
   return true;
 }
 
-bool LongConstraint::IsEmpty() const {
+bool LongConstraint::IsUnconstrained() const {
   return !has_min_ && !has_max_ && !has_exact_ && !has_ideal_;
 }
 
@@ -231,7 +231,7 @@ bool DoubleConstraint::Matches(double value) const {
   return true;
 }
 
-bool DoubleConstraint::IsEmpty() const {
+bool DoubleConstraint::IsUnconstrained() const {
   return !has_min_ && !has_max_ && !has_exact_ && !has_ideal_;
 }
 
@@ -261,7 +261,7 @@ bool StringConstraint::Matches(String value) const {
   return false;
 }
 
-bool StringConstraint::IsEmpty() const {
+bool StringConstraint::IsUnconstrained() const {
   return exact_.IsEmpty() && ideal_.IsEmpty();
 }
 
@@ -321,7 +321,7 @@ bool BooleanConstraint::Matches(bool value) const {
   return true;
 }
 
-bool BooleanConstraint::IsEmpty() const {
+bool BooleanConstraint::IsUnconstrained() const {
   return !has_ideal_ && !has_exact_;
 }
 
@@ -450,9 +450,9 @@ Vector<const BaseConstraint*> MediaTrackConstraintSetPlatform::AllConstraints()
           &goog_latency_ms};
 }
 
-bool MediaTrackConstraintSetPlatform::IsEmpty() const {
+bool MediaTrackConstraintSetPlatform::IsUnconstrained() const {
   for (auto* const constraint : AllConstraints()) {
-    if (!constraint->IsEmpty())
+    if (!constraint->IsUnconstrained())
       return false;
   }
   return true;
@@ -520,8 +520,8 @@ void MediaConstraints::Reset() {
   private_.Reset();
 }
 
-bool MediaConstraints::IsEmpty() const {
-  return private_.IsNull() || private_->IsEmpty();
+bool MediaConstraints::IsUnconstrained() const {
+  return private_.IsNull() || private_->IsUnconstrained();
 }
 
 void MediaConstraints::Initialize() {

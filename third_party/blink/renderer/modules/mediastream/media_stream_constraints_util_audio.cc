@@ -775,7 +775,7 @@ class ProcessingBasedContainer {
     // container, and only if it's based on a specific user constraint.
     base::Optional<int> requested_buffer_size;
     if (processing_type_ == ProcessingType::kUnprocessed && latency &&
-        !constraint_set.latency.IsEmpty()) {
+        !constraint_set.latency.IsUnconstrained()) {
       int min_buffer_size, max_buffer_size;
       std::tie(min_buffer_size, max_buffer_size) =
           GetMinMaxBufferSizesForAudioParameters(parameters);

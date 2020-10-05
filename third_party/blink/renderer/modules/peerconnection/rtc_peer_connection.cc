@@ -957,7 +957,7 @@ ScriptPromise RTCPeerConnection::CreateOffer(
       return ScriptPromise::CastUndefined(script_state);
     }
 
-    if (!constraints.IsEmpty()) {
+    if (!constraints.IsUnconstrained()) {
       UseCounter::Count(
           context, WebFeature::kRTCPeerConnectionCreateOfferLegacyConstraints);
     } else {
