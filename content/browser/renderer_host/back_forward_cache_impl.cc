@@ -110,7 +110,10 @@ bool ShouldIgnoreBlocklists() {
   return should_ignore_blocklists.Get();
 }
 
-uint64_t GetDisallowedFeatures(RenderFrameHostImpl* rfh) {
+enum RequestedFeatures { kAll, kOnlySticky };
+
+uint64_t GetDisallowedFeatures(RenderFrameHostImpl* rfh,
+                               RequestedFeatures requested_features) {
   // TODO(https://crbug.com/1015784): Finalize disallowed feature list, and test
   // for each disallowed feature.
   constexpr uint64_t kAlwaysDisallowedFeatures =
@@ -168,6 +171,11 @@ uint64_t GetDisallowedFeatures(RenderFrameHostImpl* rfh) {
         FeatureToBit(
             WebSchedulerTrackedFeature::kOutstandingNetworkRequestFetch) |
         FeatureToBit(WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR);
+  }
+
+  if (requested_features == RequestedFeatures::kOnlySticky) {
+    // Remove all non-sticky features from |result|.
+    result &= blink::scheduler::StickyFeaturesBitmask();
   }
 
   return result;
@@ -435,6 +443,18 @@ void BackForwardCacheImpl::CanStoreRenderFrameHostLater(
   if (rfh->IsOuterDelegateFrame())
     result->No(BackForwardCacheMetrics::NotRestoredReason::kHaveInnerContents);
 
+  // When it's not the final decision for putting a page in the back-forward
+  // cache, we should only consider "sticky" features here - features that
+  // will always result in a page becoming ineligible for back-forward cache
+  // since the first time it's used.
+  if (uint64_t banned_features =
+          GetDisallowedFeatures(rfh, RequestedFeatures::kOnlySticky) &
+          rfh->scheduler_tracked_features()) {
+    if (!ShouldIgnoreBlocklists()) {
+      result->NoDueToFeatures(banned_features);
+    }
+  }
+
   for (size_t i = 0; i < rfh->child_count(); i++)
     CanStoreRenderFrameHostLater(result,
                                  rfh->child_at(i)->current_frame_host());
@@ -448,11 +468,14 @@ void BackForwardCacheImpl::CheckDynamicStatesOnSubtree(
   if (!rfh->IsDOMContentLoaded())
     result->No(BackForwardCacheMetrics::NotRestoredReason::kLoading);
 
-  // TODO(altimin): At the moment only the first detected failure is reported.
-  // For reporting purposes it's a good idea to also collect this information
-  // from children.
+  // Check for banned features currently being used. Note that unlike the check
+  // in CanStoreRenderFrameHostLater, we are checking all banned features here
+  // (not only the "sticky" features), because this time we're making a final
+  // decision on whether we should store a page in the back-forward cache or
+  // not.
   if (uint64_t banned_features =
-          GetDisallowedFeatures(rfh) & rfh->scheduler_tracked_features()) {
+          GetDisallowedFeatures(rfh, RequestedFeatures::kAll) &
+          rfh->scheduler_tracked_features()) {
     if (!ShouldIgnoreBlocklists()) {
       result->NoDueToFeatures(banned_features);
     }

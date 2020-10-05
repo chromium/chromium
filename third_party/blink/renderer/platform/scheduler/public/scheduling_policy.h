@@ -17,10 +17,6 @@ namespace blink {
 struct PLATFORM_EXPORT SchedulingPolicy {
   using Feature = scheduler::WebSchedulerTrackedFeature;
 
-  // Sticky features can't be unregistered and remain active for the rest
-  // of the lifetime of the page.
-  static bool IsFeatureSticky(Feature feature);
-
   // List of opt-outs which form a policy.
   struct DisableAllThrottling {};
   struct DisableAggressiveThrottling {};
