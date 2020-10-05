@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
   bad_accessibility_event.updates[0].root_id = 1;
   bad_accessibility_event.updates[0].nodes.resize(1);
   bad_accessibility_event.updates[0].nodes[0].id = 1;
-  bad_accessibility_event.updates[0].nodes[0].child_ids.push_back(2);
+  bad_accessibility_event.updates[0].nodes[0].child_ids.push_back(999);
 
   for (int iteration = 0; iteration < max_iterations; iteration++) {
     // Make sure the manager has been created.

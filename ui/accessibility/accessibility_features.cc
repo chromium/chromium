@@ -21,7 +21,7 @@ bool IsAccessibilityExposeDisplayNoneEnabled() {
 // Enable exposing the <html> element to the browser process AXTree
 // (as an ignored node).
 const base::Feature kEnableAccessibilityExposeHTMLElement{
-    "AccessibilityExposeHTMLElement", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AccessibilityExposeHTMLElement", base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsAccessibilityExposeHTMLElementEnabled() {
   return base::FeatureList::IsEnabled(
