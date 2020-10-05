@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.identity;
+package org.chromium.chrome.browser.uid;
 
 import android.support.test.InstrumentationRegistry;
 
@@ -18,6 +18,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
+/** Unit tests for {@link UuidBasedUniqueIdentificationGenerator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class UuidBasedUniqueIdentificationGeneratorTest {
     private static final String FLAG_UUID = "uuid";

@@ -14,8 +14,8 @@ import androidx.annotation.VisibleForTesting;
 import org.xmlpull.v1.XmlSerializer;
 
 import org.chromium.base.BuildInfo;
-import org.chromium.chrome.browser.identity.SettingsSecureBasedIdentificationGenerator;
-import org.chromium.chrome.browser.identity.UniqueIdentificationGeneratorFactory;
+import org.chromium.chrome.browser.uid.SettingsSecureBasedIdentificationGenerator;
+import org.chromium.chrome.browser.uid.UniqueIdentificationGeneratorFactory;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.io.IOException;

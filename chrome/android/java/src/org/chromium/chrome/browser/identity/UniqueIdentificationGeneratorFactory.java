@@ -4,11 +4,6 @@
 
 package org.chromium.chrome.browser.identity;
 
-import androidx.annotation.VisibleForTesting;
-
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Factory for setting and retrieving instances of {@link UniqueIdentificationGenerator}s.
  * <p/>
@@ -17,27 +12,6 @@ import java.util.Map;
  * field in the generator itself.
  */
 public final class UniqueIdentificationGeneratorFactory {
-    private static final Object LOCK = new Object();
-    private static final Map<String, UniqueIdentificationGenerator> GENERATOR_MAP =
-            new HashMap<String, UniqueIdentificationGenerator>();
-
-    private UniqueIdentificationGeneratorFactory() {
-    }
-
-    /**
-     * Returns a UniqueIdentificationGenerator if it exists, else throws IllegalArgumentException.
-     *
-     * @param generatorType the generator type you want
-     * @return a unique ID generator
-     */
-    public static UniqueIdentificationGenerator getInstance(String generatorType) {
-        synchronized (LOCK) {
-            if (!GENERATOR_MAP.containsKey(generatorType)) {
-                throw new IllegalArgumentException("Unknown generator type " + generatorType);
-            }
-            return GENERATOR_MAP.get(generatorType);
-        }
-    }
 
     /**
      * During startup of the application, and before any calls to
@@ -51,18 +25,8 @@ public final class UniqueIdentificationGeneratorFactory {
      */
     public static void registerGenerator(String generatorType, UniqueIdentificationGenerator gen,
                                          boolean force) {
-        synchronized (LOCK) {
-            if (GENERATOR_MAP.containsKey(generatorType) && !force) {
-                return;
-            }
-            GENERATOR_MAP.put(generatorType, gen);
-        }
-    }
-
-    @VisibleForTesting
-    public static void clearGeneratorMapForTest() {
-        synchronized (LOCK) {
-            GENERATOR_MAP.clear();
-        }
+        // TODO(crbug.com/1131415): remove this file after the downstream is updated.
+        org.chromium.chrome.browser.uid.UniqueIdentificationGeneratorFactory.registerGenerator(
+                generatorType, gen, force);
     }
 }

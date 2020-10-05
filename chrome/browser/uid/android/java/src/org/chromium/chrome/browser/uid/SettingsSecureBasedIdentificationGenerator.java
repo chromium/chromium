@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.identity;
+package org.chromium.chrome.browser.uid;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -35,8 +35,7 @@ public class SettingsSecureBasedIdentificationGenerator implements UniqueIdentif
             return "";
         }
 
-        String md5Hash = HashUtil.getMd5Hash(
-                new HashUtil.Params(androidId).withSalt(salt));
+        String md5Hash = HashUtil.getMd5Hash(new HashUtil.Params(androidId).withSalt(salt));
         return md5Hash == null ? "" : md5Hash;
     }
 
