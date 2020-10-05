@@ -1917,9 +1917,11 @@ TEST_F(TraceEventDataSourceTest, HistogramSampleTraceConfigEmpty) {
                         {{1u, TRACE_DISABLED_BY_DEFAULT("histogram_samples")}});
   ExpectEventNames(e_packet, {{1u, "HistogramSample"}});
   ASSERT_TRUE(e_packet->track_event().has_chrome_histogram_sample());
-  EXPECT_EQ(e_packet->track_event().chrome_histogram_sample().name_hash(),
-            base::HashMetricName("Foo.Bar"));
   EXPECT_EQ(e_packet->track_event().chrome_histogram_sample().sample(), 1u);
+  ASSERT_TRUE(e_packet->has_interned_data());
+  EXPECT_EQ(e_packet->track_event().chrome_histogram_sample().name_iid(),
+            e_packet->interned_data().histogram_names()[0].iid());
+  EXPECT_EQ(e_packet->interned_data().histogram_names()[0].name(), "Foo.Bar");
 }
 
 TEST_F(TraceEventDataSourceTest, HistogramSampleTraceConfigNotEmpty) {
@@ -1946,9 +1948,11 @@ TEST_F(TraceEventDataSourceTest, HistogramSampleTraceConfigNotEmpty) {
   ASSERT_TRUE(e_packet->track_event().has_chrome_histogram_sample());
   EXPECT_EQ(e_packet->track_event().chrome_histogram_sample().name_hash(),
             base::HashMetricName("Foo1.Bar1"));
-  EXPECT_EQ(e_packet->track_event().chrome_histogram_sample().name(),
-            "Foo1.Bar1");
   EXPECT_EQ(e_packet->track_event().chrome_histogram_sample().sample(), 1u);
+  ASSERT_TRUE(e_packet->has_interned_data());
+  EXPECT_EQ(e_packet->track_event().chrome_histogram_sample().name_iid(),
+            e_packet->interned_data().histogram_names()[0].iid());
+  EXPECT_EQ(e_packet->interned_data().histogram_names()[0].name(), "Foo1.Bar1");
 
   e_packet = producer_client()->GetFinalizedPacket(packet_index++);
 
@@ -1957,9 +1961,11 @@ TEST_F(TraceEventDataSourceTest, HistogramSampleTraceConfigNotEmpty) {
   ASSERT_TRUE(e_packet->track_event().has_chrome_histogram_sample());
   EXPECT_EQ(e_packet->track_event().chrome_histogram_sample().name_hash(),
             base::HashMetricName("Foo3.Bar3"));
-  EXPECT_EQ(e_packet->track_event().chrome_histogram_sample().name(),
-            "Foo3.Bar3");
   EXPECT_EQ(e_packet->track_event().chrome_histogram_sample().sample(), 1u);
+  ASSERT_TRUE(e_packet->has_interned_data());
+  EXPECT_EQ(e_packet->track_event().chrome_histogram_sample().name_iid(),
+            e_packet->interned_data().histogram_names()[0].iid());
+  EXPECT_EQ(e_packet->interned_data().histogram_names()[0].name(), "Foo3.Bar3");
 
   EXPECT_EQ(packet_index, producer_client()->GetFinalizedPacketCount());
 }
