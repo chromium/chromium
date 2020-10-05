@@ -28,6 +28,8 @@ const int64_t kMBytes = 1024 * 1024;
 const int kRandomizedPercentage = 10;
 const double kDefaultPerHostRatio = 0.75;
 const double kDefaultPoolSizeRatio = 0.8;
+const double kIncognitoQuotaRatioLowerBound = 0.15;
+const double kIncognitoQuotaRatioUpperBound = 0.2;
 
 // Skews |value| by +/- |percent|.
 int64_t RandomizeByPercent(int64_t value, int percent) {
@@ -37,25 +39,15 @@ int64_t RandomizeByPercent(int64_t value, int percent) {
 
 QuotaSettings CalculateIncognitoDynamicSettings(
     int64_t physical_memory_amount) {
-  // The incognito pool size is a fraction of the amount of system memory,
-  // and the amount is capped to a hard limit.
-  double incognito_pool_size_ratio = 0.1;  // 10%
-  int64_t max_incognito_pool_size = 300 * kMBytes;
-  if (base::FeatureList::IsEnabled(features::kIncognitoDynamicQuota)) {
-    const double lower_bound = features::kIncognitoQuotaRatioLowerBound.Get();
-    const double upper_bound = features::kIncognitoQuotaRatioUpperBound.Get();
-    incognito_pool_size_ratio =
-        lower_bound + (base::RandDouble() * (upper_bound - lower_bound));
-    max_incognito_pool_size = std::numeric_limits<int64_t>::max();
-  } else {
-    max_incognito_pool_size =
-        RandomizeByPercent(max_incognito_pool_size, kRandomizedPercentage);
-  }
+  // The incognito pool size is a fraction of the amount of system memory.
+  double incognito_pool_size_ratio =
+      kIncognitoQuotaRatioLowerBound +
+      (base::RandDouble() *
+       (kIncognitoQuotaRatioUpperBound - kIncognitoQuotaRatioLowerBound));
 
   QuotaSettings settings;
-  settings.pool_size = std::min(
-      max_incognito_pool_size,
-      static_cast<int64_t>(physical_memory_amount * incognito_pool_size_ratio));
+  settings.pool_size =
+      static_cast<int64_t>(physical_memory_amount * incognito_pool_size_ratio);
   settings.per_host_quota = settings.pool_size / 3;
   settings.session_only_per_host_quota = settings.per_host_quota;
   settings.refresh_interval = base::TimeDelta::Max();
@@ -161,6 +153,13 @@ void GetNominalDynamicSettings(const base::FilePath& partition_path,
 QuotaDeviceInfoHelper* GetDefaultDeviceInfoHelper() {
   static base::NoDestructor<QuotaDeviceInfoHelper> singleton;
   return singleton.get();
+}
+
+double GetIncognitoQuotaRatioLowerBound_ForTesting() {
+  return kIncognitoQuotaRatioLowerBound;
+}
+double GetIncognitoQuotaRatioUpperBound_ForTesting() {
+  return kIncognitoQuotaRatioUpperBound;
 }
 
 }  // namespace storage

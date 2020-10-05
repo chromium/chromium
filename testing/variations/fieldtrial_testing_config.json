@@ -3480,30 +3480,6 @@
             ]
         }
     ],
-    "IncognitoDynamicQuota": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "WideRange",
-                    "params": {
-                        "IncognitoQuotaRatioLowerBound": "0.1",
-                        "IncognitoQuotaRatioUpperBound": "0.2"
-                    },
-                    "enable_features": [
-                        "IncognitoDynamicQuota"
-                    ]
-                }
-            ]
-        }
-    ],
     "IncompatibleApplicationsWarning": [
         {
             "platforms": [

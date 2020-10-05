@@ -96,6 +96,11 @@ inline QuotaSettings GetHardCodedSettings(int64_t per_host_quota) {
                        per_host_quota, per_host_quota);
 }
 
+COMPONENT_EXPORT(STORAGE_BROWSER)
+double GetIncognitoQuotaRatioLowerBound_ForTesting();
+COMPONENT_EXPORT(STORAGE_BROWSER)
+double GetIncognitoQuotaRatioUpperBound_ForTesting();
+
 // Returns object that can fetch actual total disk space; instance lives
 // as long as the process is a live.
 COMPONENT_EXPORT(STORAGE_BROWSER)

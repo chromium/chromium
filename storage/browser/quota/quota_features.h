@@ -14,11 +14,6 @@ namespace storage {
 namespace features {
 
 COMPONENT_EXPORT(STORAGE_BROWSER)
-extern const base::Feature kIncognitoDynamicQuota;
-extern const base::FeatureParam<double> kIncognitoQuotaRatioLowerBound;
-extern const base::FeatureParam<double> kIncognitoQuotaRatioUpperBound;
-
-COMPONENT_EXPORT(STORAGE_BROWSER)
 extern const base::Feature kStoragePressureEvent;
 
 }  // namespace features
