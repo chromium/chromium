@@ -12,16 +12,16 @@
   <template>
     <style include="oobe-dialog-host"></style>
     <link rel="stylesheet" href="encryption_migration.css">
-    <oobe-dialog tabindex="0" has-buttons hidden="[[!isInitial_(uiState)]]">
+    <oobe-dialog tabindex="0" has-buttons for-step="initial">
     </oobe-dialog>
     <oobe-dialog id="minimal-migration-dialog" tabindex="0" has-buttons
-        hidden="[[!isMigratingMinimal_(uiState)]]">
+        for-step="migrating-minimal">
       <div slot="footer" class="layout vertical">
         <throbber-notice text-key="gaiaLoading"></throbber-notice>
       </div>
     </oobe-dialog>
     <oobe-dialog tabindex="0" id="ready-dialog" has-buttons
-        title-key="migrationReadyTitle" hidden="[[!isReady_(uiState)]]"
+        title-key="migrationReadyTitle" for-step="ready"
         subtitle-key="migrationReadyDescription">
       <iron-icon slot="oobe-icon" class="warning-icon"></iron-icon>
       <div slot="footer" class="layout vertical center center-justified"
@@ -57,8 +57,7 @@
             text-key="migrationButtonUpdate"></oobe-text-button>
       </div>
     </oobe-dialog>
-    <oobe-dialog id="migrating-dialog" tabindex="0"
-        hidden="[[!isMigrating_(uiState)]]"
+    <oobe-dialog id="migrating-dialog" tabindex="0" for-step="migrating"
         title-key="migrationMigratingTitle"
         subtitle-key="migrationMigratingDescription">
       <iron-icon slot="oobe-icon" class="chrome-logo"></iron-icon>
@@ -75,8 +74,7 @@
       </div>
     </oobe-dialog>
     <oobe-dialog id="error-dialog" tabindex="0" has-buttons
-        hidden="[[!isMigrationFailed_(uiState)]]"
-        title-key="migrationFailedTitle"
+        title-key="migrationFailedTitle" for-step="migration-failed"
         subtitle-key="migrationFailedSubtitle">
       <iron-icon icon="cr:warning" slot="oobe-icon" class="warning">
       </iron-icon>
@@ -95,8 +93,7 @@
       </div>
     </oobe-dialog>
     <oobe-dialog id="insufficient-space-dialog" tabindex="0" has-buttons
-        hidden="[[!isNotEnoughSpace_(uiState)]]"
-        title-key="migrationReadyTitle"
+        title-key="migrationReadyTitle" for-step="not-enough-space"
         subtitle-key="migrationReadyDescription">
       <iron-icon slot="oobe-icon" class="chrome-logo"></iron-icon>
       <div slot="footer" class="layout vertical" aria-live="polite">

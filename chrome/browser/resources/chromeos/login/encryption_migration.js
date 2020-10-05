@@ -9,30 +9,40 @@
 /**
  * Enum for the UI states corresponding to sub steps inside migration screen.
  * These values must be kept in sync with
- * EncryptionMigrationScreenHandler::UIState in C++ code.
- * @enum {number}
+ * EncryptionMigrationScreenHandler::UIState in C++ code and the order of the
+ * enum must be the same.
+ * @enum {string}
  */
 var EncryptionMigrationUIState = {
-  INITIAL: 0,
-  READY: 1,
-  MIGRATING: 2,
-  MIGRATION_FAILED: 3,
-  NOT_ENOUGH_SPACE: 4,
-  MIGRATING_MINIMAL: 5
+  INITIAL: 'initial',
+  READY: 'ready',
+  MIGRATING: 'migrating',
+  MIGRATION_FAILED: 'migration-failed',
+  NOT_ENOUGH_SPACE: 'not-enough-space',
+  MIGRATING_MINIMAL: 'migrating-minimal',
 };
 
 Polymer({
   is: 'encryption-migration',
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior],
+  behaviors: [
+    OobeI18nBehavior,
+    OobeDialogHostBehavior,
+    LoginScreenBehavior,
+    MultiStepBehavior,
+  ],
+
+  EXTERNAL_API: [
+    'setUIState',
+    'setMigrationProgress',
+    'setIsResuming',
+    'setBatteryState',
+    'setNecessaryBatteryPercent',
+    'setAvailableSpaceInString',
+    'setNecessarySpaceInString',
+  ],
 
   properties: {
-    /**
-     * Current UI state which corresponds to a sub step in migration process.
-     * @type {EncryptionMigrationUIState}
-     */
-    uiState: {type: Number, value: 0},
-
     /**
      * Current migration progress in range [0, 1]. Negative value means that
      * the progress is unknown.
@@ -81,57 +91,94 @@ Polymer({
   },
 
   /**
-   * Returns true if the migration is in initial state.
-   * @param {EncryptionMigrationUIState} state Current UI state
-   * @private
+   * Ignore any accelerators the user presses on this screen.
    */
-  isInitial_(state) {
-    return state == EncryptionMigrationUIState.INITIAL;
+  ignoreAccelerators: true,
+
+  ready() {
+    this.initializeLoginScreen('EncryptionMigrationScreen', {
+      resetAllowed: false,
+    });
+  },
+
+  defaultUIStep() {
+    return EncryptionMigrationUIState.INITIAL;
+  },
+
+  UI_STEPS: EncryptionMigrationUIState,
+
+  /** Initial UI State for screen */
+  getOobeUIInitialState() {
+    return OOBE_UI_STATE.MIGRATION;
+  },
+
+  /*
+   * Executed on language change.
+   */
+  updateLocalizedContent() {
+    this.i18nUpdateLocale();
   },
 
   /**
-   * Returns true if the migration is ready to start.
-   * @param {EncryptionMigrationUIState} state Current UI state
-   * @private
+   * Updates the migration screen by specifying a state which corresponds
+   * to a sub step in the migration process.
+   * @param {number} state The UI state to identify a sub step in migration.
    */
-  isReady_(state) {
-    return state == EncryptionMigrationUIState.READY;
+  setUIState(state) {
+    this.setUIStep(Object.values(EncryptionMigrationUIState)[state]);
   },
 
   /**
-   * Returns true if the migration is in progress.
-   * @param {EncryptionMigrationUIState} state Current UI state
-   * @private
+   * Updates the migration progress.
+   * @param {number} progress The progress of migration in range [0, 1].
    */
-  isMigrating_(state) {
-    return state == EncryptionMigrationUIState.MIGRATING;
+  setMigrationProgress(progress) {
+    this.progress = progress;
   },
 
   /**
-   * Returns true if the migration failed.
-   * @param {EncryptionMigrationUIState} state Current UI state
-   * @private
+   * Updates the migration screen based on whether the migration process
+   * is resuming the previous one.
+   * @param {boolean} isResuming
    */
-  isMigrationFailed_(state) {
-    return state == EncryptionMigrationUIState.MIGRATION_FAILED;
+  setIsResuming(isResuming) {
+    this.isResuming = isResuming;
   },
 
   /**
-   * Returns true if the available space is not enough to start migration.
-   * @param {EncryptionMigrationUIState} state Current UI state
-   * @private
+   * Updates battery level of the device.
+   * @param {number} batteryPercent Battery level in percent.
+   * @param {boolean} isEnoughBattery True if the battery is enough.
+   * @param {boolean} isCharging True if the device is connected to power.
    */
-  isNotEnoughSpace_(state) {
-    return state == EncryptionMigrationUIState.NOT_ENOUGH_SPACE;
+  setBatteryState(batteryPercent, isEnoughBattery, isCharging) {
+    this.batteryPercent = Math.floor(batteryPercent);
+    this.isEnoughBattery = isEnoughBattery;
+    this.isCharging = isCharging;
   },
 
   /**
-   * Returns true if we're in minimal migration mode.
-   * @param {EncryptionMigrationUIState} state Current UI state
-   * @private
+   * Update the necessary battery percent to start migration in the UI.
+   * @param {number} necessaryBatteryPercent Necessary battery level.
    */
-  isMigratingMinimal_(state) {
-    return state == EncryptionMigrationUIState.MIGRATING_MINIMAL;
+  setNecessaryBatteryPercent(necessaryBatteryPercent) {
+    this.necessaryBatteryPercent = necessaryBatteryPercent;
+  },
+
+  /**
+   * Updates the string representation of available space size.
+   * @param {string} space
+   */
+  setAvailableSpaceInString(space) {
+    this.availableSpaceInString = space;
+  },
+
+  /**
+   * Updates the string representation of necessary space size.
+   * @param {string} space
+   */
+  setNecessarySpaceInString(space) {
+    this.necessarySpaceInString = space;
   },
 
   /**
@@ -227,7 +274,9 @@ Polymer({
    * @private
    */
   onUpgrade_() {
-    this.fire('upgrade');
+    // TODO(crbug.com/1133705) Move the logic from handler to screen object and
+    // use userActed call.
+    chrome.send('startMigration');
   },
 
   /**
@@ -236,7 +285,7 @@ Polymer({
    */
   onSkip_() {
     this.isSkipped = true;
-    this.fire('skip');
+    chrome.send('skipMigration');
   },
 
   /**
@@ -244,7 +293,7 @@ Polymer({
    * @private
    */
   onRestartOnLowStorage_() {
-    this.fire('restart-on-low-storage');
+    chrome.send('requestRestartOnLowStorage');
   },
 
   /**
@@ -252,7 +301,7 @@ Polymer({
    * @private
    */
   onRestartOnFailure_() {
-    this.fire('restart-on-failure');
+    chrome.send('requestRestartOnFailure');
   },
 
   /**
@@ -260,6 +309,6 @@ Polymer({
    * @private
    */
   onReportAnIssue_() {
-    this.fire('openFeedbackDialog');
+    chrome.send('openFeedbackDialog');
   },
 });

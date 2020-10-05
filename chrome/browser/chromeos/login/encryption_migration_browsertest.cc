@@ -39,10 +39,25 @@ namespace chromeos {
 
 namespace {
 
-const test::UIPath kMigrationProgress = {"encryption-migration-element",
+constexpr char kEncryptionMigrationId[] = "encryption-migration";
+
+const test::UIPath kReadyDialog = {kEncryptionMigrationId, "ready-dialog"};
+const test::UIPath kMigratingDialog = {kEncryptionMigrationId,
+                                       "migrating-dialog"};
+const test::UIPath kErrorDialog = {kEncryptionMigrationId, "error-dialog"};
+const test::UIPath kInsufficientSpaceDialog = {kEncryptionMigrationId,
+                                               "insufficient-space-dialog"};
+const test::UIPath kMinimalMigrationDialog = {kEncryptionMigrationId,
+                                              "minimal-migration-dialog"};
+const test::UIPath kMigrationProgress = {kEncryptionMigrationId,
                                          "migration-progress"};
-const test::UIPath kSkipButton = {"encryption-migration-element",
-                                  "skip-button"};
+const test::UIPath kSkipButton = {kEncryptionMigrationId, "skip-button"};
+const test::UIPath kRestartButton = {kEncryptionMigrationId, "restart-button"};
+const test::UIPath kUpgradeButton = {kEncryptionMigrationId, "upgrade-button"};
+const test::UIPath kInsufficientSpaceSkipButton = {
+    kEncryptionMigrationId, "insufficient-space-skip-button"};
+const test::UIPath kInsufficientSpaceRestartButton = {
+    kEncryptionMigrationId, "insufficient-space-restart-button"};
 
 OobeUI* GetOobeUI() {
   auto* host = LoginDisplayHost::default_host();
@@ -103,46 +118,15 @@ class EncryptionMigrationTest : public OobeBaseTest {
         static_cast<int>(action));
   }
 
-  // Verifies that an element within "encryption-migration-element" DOM is
-  // currently visible.
-  void VerifyUiElementVisible(const std::string& element_id) {
-    std::initializer_list<base::StringPiece> element = {
-        "encryption-migration-element", element_id};
-    ASSERT_TRUE(test::OobeJS().GetBool(test::GetOobeElementPath(element)));
-    test::OobeJS().ExpectPathDisplayed(true, element);
-  }
-
-  // Verifies that an element within "encryption-migration-element" DOM is
-  // currently not visible.
-  void VerifyUiElementNotVisible(const std::string& element_id) {
-    std::initializer_list<base::StringPiece> element = {
-        "encryption-migration-element", element_id};
-    // The element not being yet created is sufficient to verify it's not
-    // visible
-    if (!test::OobeJS().GetBool(test::GetOobeElementPath(element))) {
-      return;
-    }
-    test::OobeJS().ExpectPathDisplayed(false, element);
-  }
-
-  // Waits until a DOM element within "encryption-migration-element" is
-  // created and injected into the "encryption-migration-element".
-  void WaitForElementCreation(const std::string& element_id) {
-    std::initializer_list<base::StringPiece> element = {
-        "encryption-migration-element", element_id};
-    test::OobeJS().CreateWaiter(test::GetOobeElementPath(element))->Wait();
-  }
-
   // Runs a successful full migration flow, and tests that UI is updated as
   // expected.
   void RunFullMigrationFlowTest() {
-    WaitForElementCreation("migrating-dialog");
-    VerifyUiElementVisible("migrating-dialog");
+    test::OobeJS().CreateVisibilityWaiter(true, kMigratingDialog)->Wait();
 
-    VerifyUiElementNotVisible("ready-dialog");
-    VerifyUiElementNotVisible("error-dialog");
-    VerifyUiElementNotVisible("insufficient-space-dialog");
-    VerifyUiElementNotVisible("minimal-migration-dialog");
+    test::OobeJS().ExpectHiddenPath(kReadyDialog);
+    test::OobeJS().ExpectHiddenPath(kErrorDialog);
+    test::OobeJS().ExpectHiddenPath(kInsufficientSpaceDialog);
+    test::OobeJS().ExpectHiddenPath(kMinimalMigrationDialog);
 
     EXPECT_EQ(
         GetTestCryptohomeId(),
@@ -212,16 +196,15 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, SkipWithNoPolicySet) {
   EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
 
-  WaitForElementCreation("ready-dialog");
-  VerifyUiElementVisible("ready-dialog");
+  test::OobeJS().CreateVisibilityWaiter(true, kReadyDialog)->Wait();
 
-  VerifyUiElementNotVisible("migrating-dialog");
-  VerifyUiElementNotVisible("error-dialog");
-  VerifyUiElementNotVisible("insufficient-space-dialog");
-  VerifyUiElementNotVisible("minimal-migration-dialog");
+  test::OobeJS().ExpectHiddenPath(kMigratingDialog);
+  test::OobeJS().ExpectHiddenPath(kErrorDialog);
+  test::OobeJS().ExpectHiddenPath(kInsufficientSpaceDialog);
+  test::OobeJS().ExpectHiddenPath(kMinimalMigrationDialog);
 
-  VerifyUiElementVisible("skip-button");
-  VerifyUiElementVisible("upgrade-button");
+  test::OobeJS().ExpectVisiblePath(kSkipButton);
+  test::OobeJS().ExpectVisiblePath(kUpgradeButton);
 
   // Click skip - this should start the user session.
   test::OobeJS().TapOnPath(kSkipButton);
@@ -237,22 +220,21 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrateWithNoUserPolicySet) {
   SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
   OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
 
-  WaitForElementCreation("ready-dialog");
-  VerifyUiElementVisible("ready-dialog");
+  test::OobeJS().CreateVisibilityWaiter(true, kReadyDialog)->Wait();
 
-  VerifyUiElementNotVisible("migrating-dialog");
-  VerifyUiElementNotVisible("error-dialog");
-  VerifyUiElementNotVisible("insufficient-space-dialog");
-  VerifyUiElementNotVisible("minimal-migration-dialog");
+  test::OobeJS().ExpectHiddenPath(kMigratingDialog);
+  test::OobeJS().ExpectHiddenPath(kErrorDialog);
+  test::OobeJS().ExpectHiddenPath(kInsufficientSpaceDialog);
+  test::OobeJS().ExpectHiddenPath(kMinimalMigrationDialog);
 
-  VerifyUiElementVisible("skip-button");
-  VerifyUiElementVisible("upgrade-button");
+  test::OobeJS().ExpectVisiblePath(kSkipButton);
+  test::OobeJS().ExpectVisiblePath(kUpgradeButton);
 
   EXPECT_FALSE(FakeCryptohomeClient::Get()
                    ->get_id_for_disk_migrated_to_dircrypto()
                    .has_account_id());
 
-  test::OobeJS().TapOnPath({"encryption-migration-element", "upgrade-button"});
+  test::OobeJS().TapOnPath(kUpgradeButton);
 
   RunFullMigrationFlowTest();
 }
@@ -299,9 +281,8 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, AskUserPolicy) {
 
   // Verify that ready dialog is not shown, and that the migration started
   // without ask user for confirmation.
-  WaitForElementCreation("migrating-dialog");
-  VerifyUiElementVisible("migrating-dialog");
-  VerifyUiElementNotVisible("ready-dialog");
+  test::OobeJS().CreateVisibilityWaiter(true, kMigratingDialog)->Wait();
+  test::OobeJS().ExpectHiddenPath(kReadyDialog);
 
   EXPECT_EQ(
       GetTestCryptohomeId(),
@@ -316,13 +297,12 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MinimalMigration) {
   SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
   OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
 
-  WaitForElementCreation("minimal-migration-dialog");
-  VerifyUiElementVisible("minimal-migration-dialog");
+  test::OobeJS().CreateVisibilityWaiter(true, kMinimalMigrationDialog)->Wait();
 
-  VerifyUiElementNotVisible("ready-dialog");
-  VerifyUiElementNotVisible("migrating-dialog");
-  VerifyUiElementNotVisible("error-dialog");
-  VerifyUiElementNotVisible("insufficient-space-dialog");
+  test::OobeJS().ExpectHiddenPath(kReadyDialog);
+  test::OobeJS().ExpectHiddenPath(kMigratingDialog);
+  test::OobeJS().ExpectHiddenPath(kErrorDialog);
+  test::OobeJS().ExpectHiddenPath(kInsufficientSpaceDialog);
 
   EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
 
@@ -346,13 +326,12 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MinimalMigrationWithTimeout) {
   SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
   OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
 
-  WaitForElementCreation("minimal-migration-dialog");
-  VerifyUiElementVisible("minimal-migration-dialog");
+  test::OobeJS().CreateVisibilityWaiter(true, kMinimalMigrationDialog)->Wait();
 
-  VerifyUiElementNotVisible("ready-dialog");
-  VerifyUiElementNotVisible("migrating-dialog");
-  VerifyUiElementNotVisible("error-dialog");
-  VerifyUiElementNotVisible("insufficient-space-dialog");
+  test::OobeJS().ExpectHiddenPath(kReadyDialog);
+  test::OobeJS().ExpectHiddenPath(kMigratingDialog);
+  test::OobeJS().ExpectHiddenPath(kErrorDialog);
+  test::OobeJS().ExpectHiddenPath(kInsufficientSpaceDialog);
 
   EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
 
@@ -380,7 +359,9 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
   SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
   OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
 
-  WaitForElementCreation("migrating-dialog");
+  test::OobeJS()
+      .CreateWaiter(test::GetOobeElementPath(kMigratingDialog))
+      ->Wait();
 }
 
 // Tests that attempted full migration is continued, even if the migration mode
@@ -403,7 +384,9 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, PRE_ResumeMinimalMigration) {
   SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
   OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
 
-  WaitForElementCreation("minimal-migration-dialog");
+  test::OobeJS()
+      .CreateWaiter(test::GetOobeElementPath(kMinimalMigrationDialog))
+      ->Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, ResumeMinimalMigration) {
@@ -413,8 +396,7 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, ResumeMinimalMigration) {
   SetUpStubAuthenticatorAndAttemptLogin(true /* has_incomplete_migration */);
   OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
 
-  WaitForElementCreation("minimal-migration-dialog");
-  VerifyUiElementVisible("minimal-migration-dialog");
+  test::OobeJS().CreateVisibilityWaiter(true, kMinimalMigrationDialog)->Wait();
 
   EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
 
@@ -463,18 +445,16 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
   SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
   OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
 
-  WaitForElementCreation("insufficient-space-dialog");
-  VerifyUiElementVisible("insufficient-space-dialog");
+  test::OobeJS().CreateVisibilityWaiter(true, kInsufficientSpaceDialog)->Wait();
 
-  VerifyUiElementNotVisible("ready-dialog");
-  VerifyUiElementNotVisible("migrating-dialog");
-  VerifyUiElementNotVisible("error-dialog");
-  VerifyUiElementNotVisible("minimal-migartion-dialog");
+  test::OobeJS().ExpectHiddenPath(kReadyDialog);
+  test::OobeJS().ExpectHiddenPath(kMigratingDialog);
+  test::OobeJS().ExpectHiddenPath(kErrorDialog);
+  test::OobeJS().ExpectHiddenPath(kMinimalMigrationDialog);
 
-  VerifyUiElementNotVisible("insufficient-space-restart-button");
-  VerifyUiElementVisible("insufficient-space-skip-button");
-  test::OobeJS().TapOnPath(
-      {"encryption-migration-element", "insufficient-space-skip-button"});
+  test::OobeJS().ExpectHiddenPath(kInsufficientSpaceRestartButton);
+  test::OobeJS().ExpectVisiblePath(kInsufficientSpaceSkipButton);
+  test::OobeJS().TapOnPath(kInsufficientSpaceSkipButton);
 
   WaitForActiveSession();
   EXPECT_FALSE(FakeCryptohomeClient::Get()
@@ -490,19 +470,17 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrateWithInsuficientSpace) {
   SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
   OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
 
-  WaitForElementCreation("insufficient-space-dialog");
-  VerifyUiElementVisible("insufficient-space-dialog");
+  test::OobeJS().CreateVisibilityWaiter(true, kInsufficientSpaceDialog)->Wait();
 
-  VerifyUiElementNotVisible("ready-dialog");
-  VerifyUiElementNotVisible("migrating-dialog");
-  VerifyUiElementNotVisible("error-dialog");
-  VerifyUiElementNotVisible("minimal-migartion-dialog");
+  test::OobeJS().ExpectHiddenPath(kReadyDialog);
+  test::OobeJS().ExpectHiddenPath(kMigratingDialog);
+  test::OobeJS().ExpectHiddenPath(kErrorDialog);
+  test::OobeJS().ExpectHiddenPath(kMinimalMigrationDialog);
 
-  VerifyUiElementVisible("insufficient-space-restart-button");
-  VerifyUiElementNotVisible("insufficient-space-skip-button");
+  test::OobeJS().ExpectVisiblePath(kInsufficientSpaceRestartButton);
+  test::OobeJS().ExpectHiddenPath(kInsufficientSpaceSkipButton);
 
-  test::OobeJS().TapOnPath(
-      {"encryption-migration-element", "insufficient-space-restart-button"});
+  test::OobeJS().TapOnPath(kInsufficientSpaceRestartButton);
 
   EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
   EXPECT_FALSE(FakeCryptohomeClient::Get()
@@ -510,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrateWithInsuficientSpace) {
                    .has_account_id());
 }
 
-IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, InsuficientSpaceOnResume) {
+IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, InsufficientSpaceOnResume) {
   set_free_space(5 * 1000 * 1000);
   SetUpEncryptionMigrationActionPolicy(
       arc::policy_util::EcryptfsMigrationAction::kMigrate);
@@ -518,19 +496,17 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, InsuficientSpaceOnResume) {
   SetUpStubAuthenticatorAndAttemptLogin(true /* has_incomplete_migration */);
   OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
 
-  WaitForElementCreation("insufficient-space-dialog");
-  VerifyUiElementVisible("insufficient-space-dialog");
+  test::OobeJS().CreateVisibilityWaiter(true, kInsufficientSpaceDialog)->Wait();
 
-  VerifyUiElementNotVisible("ready-dialog");
-  VerifyUiElementNotVisible("migrating-dialog");
-  VerifyUiElementNotVisible("error-dialog");
-  VerifyUiElementNotVisible("minimal-migartion-dialog");
+  test::OobeJS().ExpectHiddenPath(kReadyDialog);
+  test::OobeJS().ExpectHiddenPath(kMigratingDialog);
+  test::OobeJS().ExpectHiddenPath(kErrorDialog);
+  test::OobeJS().ExpectHiddenPath(kMinimalMigrationDialog);
 
-  VerifyUiElementVisible("insufficient-space-restart-button");
-  VerifyUiElementNotVisible("insufficient-space-skip-button");
+  test::OobeJS().ExpectVisiblePath(kInsufficientSpaceRestartButton);
+  test::OobeJS().ExpectHiddenPath(kInsufficientSpaceSkipButton);
 
-  test::OobeJS().TapOnPath(
-      {"encryption-migration-element", "insufficient-space-restart-button"});
+  test::OobeJS().TapOnPath(kInsufficientSpaceRestartButton);
 
   EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
   EXPECT_FALSE(FakeCryptohomeClient::Get()
@@ -545,7 +521,9 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrationFailure) {
   SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
   OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
 
-  WaitForElementCreation("migrating-dialog");
+  test::OobeJS()
+      .CreateWaiter(test::GetOobeElementPath(kMigratingDialog))
+      ->Wait();
 
   EXPECT_EQ(
       GetTestCryptohomeId(),
@@ -555,17 +533,15 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrationFailure) {
 
   EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
 
-  WaitForElementCreation("error-dialog");
-  VerifyUiElementVisible("error-dialog");
+  test::OobeJS().CreateVisibilityWaiter(true, kErrorDialog)->Wait();
 
-  VerifyUiElementNotVisible("ready-dialog");
-  VerifyUiElementNotVisible("migrating-dialog");
-  VerifyUiElementNotVisible("insufficient-space-dialog");
-  VerifyUiElementNotVisible("minimal-migartion-dialog");
+  test::OobeJS().ExpectHiddenPath(kReadyDialog);
+  test::OobeJS().ExpectHiddenPath(kMigratingDialog);
+  test::OobeJS().ExpectHiddenPath(kInsufficientSpaceDialog);
+  test::OobeJS().ExpectHiddenPath(kMinimalMigrationDialog);
 
-  VerifyUiElementVisible("restart-button");
-
-  test::OobeJS().TapOnPath({"encryption-migration-element", "restart-button"});
+  test::OobeJS().ExpectVisiblePath(kRestartButton);
+  test::OobeJS().TapOnPath(kRestartButton);
 
   EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
 }
@@ -578,23 +554,20 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, LowBattery) {
   SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
   OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
 
-  WaitForElementCreation("ready-dialog");
-  VerifyUiElementVisible("ready-dialog");
+  test::OobeJS().CreateVisibilityWaiter(true, kReadyDialog)->Wait();
 
-  VerifyUiElementNotVisible("migrating-dialog");
-  VerifyUiElementNotVisible("insufficient-space-dialog");
-  VerifyUiElementNotVisible("error-dialog");
-  VerifyUiElementNotVisible("minimal-migartion-dialog");
+  test::OobeJS().ExpectHiddenPath(kMigratingDialog);
+  test::OobeJS().ExpectHiddenPath(kInsufficientSpaceDialog);
+  test::OobeJS().ExpectHiddenPath(kErrorDialog);
+  test::OobeJS().ExpectHiddenPath(kMinimalMigrationDialog);
 
-  VerifyUiElementVisible("skip-button");
-  test::OobeJS().ExpectEnabledPath(
-      {"encryption-migration-element", "skip-button"});
+  test::OobeJS().ExpectVisiblePath(kSkipButton);
+  test::OobeJS().ExpectEnabledPath(kSkipButton);
 
-  VerifyUiElementVisible("upgrade-button");
-  test::OobeJS().ExpectDisabledPath(
-      {"encryption-migration-element", "upgrade-button"});
+  test::OobeJS().ExpectVisiblePath(kUpgradeButton);
+  test::OobeJS().ExpectDisabledPath(kUpgradeButton);
 
-  test::OobeJS().TapOnPath({"encryption-migration-element", "skip-button"});
+  test::OobeJS().TapOnPath(kSkipButton);
 
   WaitForActiveSession();
   EXPECT_FALSE(FakeCryptohomeClient::Get()
@@ -611,16 +584,15 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
   SetUpStubAuthenticatorAndAttemptLogin(true /* has_incomplete_migration */);
   OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
 
-  WaitForElementCreation("ready-dialog");
-  VerifyUiElementVisible("ready-dialog");
+  test::OobeJS().CreateVisibilityWaiter(true, kReadyDialog)->Wait();
 
-  VerifyUiElementNotVisible("migrating-dialog");
-  VerifyUiElementNotVisible("insufficient-space-dialog");
-  VerifyUiElementNotVisible("error-dialog");
-  VerifyUiElementNotVisible("minimal-migartion-dialog");
+  test::OobeJS().ExpectHiddenPath(kMigratingDialog);
+  test::OobeJS().ExpectHiddenPath(kInsufficientSpaceDialog);
+  test::OobeJS().ExpectHiddenPath(kErrorDialog);
+  test::OobeJS().ExpectHiddenPath(kMinimalMigrationDialog);
 
-  VerifyUiElementNotVisible("skip-button");
-  VerifyUiElementNotVisible("upgrade-button");
+  test::OobeJS().ExpectPathDisplayed(false, kSkipButton);
+  test::OobeJS().ExpectPathDisplayed(false, kUpgradeButton);
 
   EXPECT_FALSE(FakeCryptohomeClient::Get()
                    ->get_id_for_disk_migrated_to_dircrypto()
@@ -636,13 +608,12 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
   SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
   OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
 
-  WaitForElementCreation("ready-dialog");
-  VerifyUiElementVisible("ready-dialog");
+  test::OobeJS().CreateVisibilityWaiter(true, kReadyDialog)->Wait();
 
-  VerifyUiElementNotVisible("migrating-dialog");
-  VerifyUiElementNotVisible("insufficient-space-dialog");
-  VerifyUiElementNotVisible("error-dialog");
-  VerifyUiElementNotVisible("minimal-migartion-dialog");
+  test::OobeJS().ExpectHiddenPath(kMigratingDialog);
+  test::OobeJS().ExpectHiddenPath(kInsufficientSpaceDialog);
+  test::OobeJS().ExpectHiddenPath(kErrorDialog);
+  test::OobeJS().ExpectHiddenPath(kMinimalMigrationDialog);
 
   EXPECT_FALSE(FakeCryptohomeClient::Get()
                    ->get_id_for_disk_migrated_to_dircrypto()

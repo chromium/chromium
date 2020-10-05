@@ -27,7 +27,6 @@
 // <include src="screen_arc_terms_of_service.js">
 // <include src="screen_error_message.js">
 // <include src="screen_fatal_error.js">
-// <include src="screen_encryption_migration.js">
 // <include src="screen_discover.js">
 // <include src="screen_multidevice_setup.js">
 
@@ -58,7 +57,6 @@ cr.define('cr.ui.Oobe', function() {
       login.ArcTermsOfServiceScreen.register();
       login.AppLaunchSplashScreen.register();
       login.FatalErrorScreen.register();
-      login.EncryptionMigrationScreen.register();
       login.DiscoverScreen.register();
       login.AssistantOptInFlowScreen.register();
       login.MultiDeviceSetupScreen.register();
