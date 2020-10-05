@@ -3202,14 +3202,9 @@
     "expiry_milestone": 89
   },
   {
-    "name": "ntp-dismiss-promos",
-    "owners": [ "aee", "mahmadi", "tiborg" ],
-    "expiry_milestone": 86
-  },
-  {
     "name": "ntp-iframe-one-google-bar",
     "owners": [ "aee", "mahmadi", "tiborg" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 88
   },
   {
     "name": "ntp-modules",
@@ -3219,15 +3214,10 @@
   {
     "name": "ntp-one-google-bar-modal-overlays",
     "owners": [ "aee", "mahmadi", "tiborg" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 88
   },
   {
     "name": "ntp-realbox",
-    "owners": [ "aee", "mahmadi", "tiborg" ],
-    "expiry_milestone": 86
-  },
-  {
-    "name": "ntp-realbox-match-omnibox-theme",
     "owners": [ "aee", "mahmadi", "tiborg" ],
     "expiry_milestone": 86
   },
@@ -3244,7 +3234,7 @@
   {
     "name": "ntp-webui",
     "owners": [ "aee", "mahmadi", "tiborg" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 88
   },
   {
     "name": "offline-indicator-always-http-probe",

@@ -3286,11 +3286,6 @@ const char kMuteNotificationsDuringScreenShareDescription[] =
     "Prevents new notifications from being shown while a screen is being "
     "shared.";
 
-const char kNtpDismissPromosName[] = "Dismiss promos on the New Tab Page";
-const char kNtpDismissPromosDescription[] =
-    "Enables a UI to persistently dismiss [non-emergency] promos on the "
-    "bottom/middle of the New Tab Page";
-
 const char kNtpIframeOneGoogleBarName[] = "Load OneGoogleBar in an iframe";
 const char kNtpIframeOneGoogleBarDescription[] =
     "Enables loading the OneGoogleBar in an iframe. Otherwise, the "
@@ -3308,12 +3303,6 @@ const char kNtpRealboxDescription[] =
     "Enables a search box in the middle of the NTP that will accept input "
     "directly (i.e. not be a \"fake\" box). Search results will show below the "
     "non-fake input (\"realbox\").";
-
-const char kNtpRealboxMatchOmniboxThemeName[] =
-    "Make the New Tab page real search box match the omnibox's theme colors";
-const char kNtpRealboxMatchOmniboxThemeDescription[] =
-    "Themes the real search box in the middle of the NTP to match the omnibox. "
-    "Only has an an effect if #ntp-realbox is enabled.";
 
 const char kNtpRepeatableQueriesName[] =
     "Repeatable queries on the New Tab Page";
