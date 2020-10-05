@@ -162,10 +162,6 @@ const base::Feature kImplicitRootScroller {
 #endif
 };
 
-// Enable CSSOM View Scroll Coordinates. https://crbug.com/721759.
-const base::Feature kCSSOMViewScrollCoordinates{
-    "CSSOMViewScrollCoordinates", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables Raw Clipboard. https://crbug.com/897289.
 const base::Feature kRawClipboard{"RawClipboard",
                                   base::FEATURE_DISABLED_BY_DEFAULT};

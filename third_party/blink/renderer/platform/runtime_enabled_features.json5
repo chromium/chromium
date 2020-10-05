@@ -547,10 +547,6 @@
       status: "experimental",
     },
     {
-      name: "CSSOMViewScrollCoordinates",
-      status: "stable",
-    },
-    {
       name: "CSSPaintAPIArguments",
       status: "experimental",
     },

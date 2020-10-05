@@ -1375,11 +1375,6 @@
     "expiry_milestone": 85
   },
   {
-    "name": "enable-cssom-view-scroll-coordinates",
-    "owners": [ "cathiechen@igalia.com", "fwang@igalia.com" ],
-    "expiry_milestone": 87
-  },
-  {
     "name": "enable-data-reduction-proxy-server-experiment",
     "owners": [ "//components/data_reduction_proxy/OWNERS" ],
     // This flag is used for frequent manual testing and should not be removed.

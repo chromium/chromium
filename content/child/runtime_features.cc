@@ -261,8 +261,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableAutoplayIgnoresWebAudio, media::kAutoplayIgnoreWebAudio},
     {wf::EnablePortals, blink::features::kPortals, kSetOnlyIfOverridden},
     {wf::EnableImplicitRootScroller, blink::features::kImplicitRootScroller},
-    {wf::EnableCSSOMViewScrollCoordinates,
-     blink::features::kCSSOMViewScrollCoordinates},
     {wf::EnableTextFragmentAnchor, blink::features::kTextFragmentAnchor},
     {wf::EnableBackgroundFetch, features::kBackgroundFetch},
     {wf::EnableForcedColors, features::kForcedColors},

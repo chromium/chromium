@@ -221,10 +221,6 @@ void WebRuntimeFeatures::EnableImplicitRootScroller(bool enable) {
   RuntimeEnabledFeatures::SetImplicitRootScrollerEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableCSSOMViewScrollCoordinates(bool enable) {
-  RuntimeEnabledFeatures::SetCSSOMViewScrollCoordinatesEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableInputMultipleFieldsUI(bool enable) {
   RuntimeEnabledFeatures::SetInputMultipleFieldsUIEnabled(enable);
 }
