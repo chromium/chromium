@@ -496,17 +496,6 @@ uint64_t ClipboardX11::GetSequenceNumber(ClipboardBuffer buffer) const {
     return SelectionChangeObserver::GetInstance()->primary_sequence_number();
 }
 
-void ClipboardX11::SetClipboardDlpController(
-    std::unique_ptr<ClipboardDlpController> dlp_controller) {
-  NOTIMPLEMENTED();
-}
-
-const ui::ClipboardDlpController* ClipboardX11::GetClipboardDlpController()
-    const {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 bool ClipboardX11::IsFormatAvailable(

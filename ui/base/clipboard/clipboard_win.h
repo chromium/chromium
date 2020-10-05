@@ -36,9 +36,6 @@ class ClipboardWin : public Clipboard {
   // Clipboard overrides:
   void OnPreShutdown() override;
   uint64_t GetSequenceNumber(ClipboardBuffer buffer) const override;
-  void SetClipboardDlpController(
-      std::unique_ptr<ClipboardDlpController> dlp_controller) override;
-  const ui::ClipboardDlpController* GetClipboardDlpController() const override;
   bool IsFormatAvailable(const ClipboardFormatType& format,
                          ClipboardBuffer buffer,
                          const ClipboardDataEndpoint* data_dst) const override;

@@ -16,6 +16,7 @@
 #include "base/macros.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_data_endpoint.h"
 
 namespace ui {
 
@@ -36,9 +37,6 @@ class TestClipboard : public Clipboard {
   // Clipboard overrides.
   void OnPreShutdown() override;
   uint64_t GetSequenceNumber(ClipboardBuffer buffer) const override;
-  void SetClipboardDlpController(
-      std::unique_ptr<ClipboardDlpController> dlp_controller) override;
-  const ui::ClipboardDlpController* GetClipboardDlpController() const override;
   bool IsFormatAvailable(const ClipboardFormatType& format,
                          ClipboardBuffer buffer,
                          const ClipboardDataEndpoint* data_dst) const override;
@@ -135,8 +133,6 @@ class TestClipboard : public Clipboard {
   ClipboardBuffer default_store_buffer_;
   mutable base::flat_map<ClipboardBuffer, DataStore> stores_;
   base::Time last_modified_time_;
-
-  std::unique_ptr<ClipboardDlpController> dlp_controller_;
 
   DISALLOW_COPY_AND_ASSIGN(TestClipboard);
 };

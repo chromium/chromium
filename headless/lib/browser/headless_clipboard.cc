@@ -24,17 +24,6 @@ uint64_t HeadlessClipboard::GetSequenceNumber(
   return GetStore(buffer).sequence_number;
 }
 
-void HeadlessClipboard::SetClipboardDlpController(
-    std::unique_ptr<ui::ClipboardDlpController> dlp_controller) {
-  NOTIMPLEMENTED();
-}
-
-const ui::ClipboardDlpController* HeadlessClipboard::GetClipboardDlpController()
-    const {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 bool HeadlessClipboard::IsFormatAvailable(

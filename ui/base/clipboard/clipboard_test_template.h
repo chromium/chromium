@@ -65,8 +65,6 @@ using testing::Contains;
 
 namespace ui {
 
-class MockClipboardDlpController;
-
 template <typename ClipboardTraits>
 class ClipboardTest : public PlatformTest {
  public:
@@ -97,35 +95,32 @@ class ClipboardTest : public PlatformTest {
     return types;
   }
 
-  void AddDlpController() {
-    auto dlp_controller = std::make_unique<MockClipboardDlpController>();
-    dlp_controller_ = dlp_controller.get();
-    ClipboardTest::clipboard().SetClipboardDlpController(
-        std::move(dlp_controller));
-  }
-
-  MockClipboardDlpController* dlp_controller() const { return dlp_controller_; }
-
  private:
 #if defined(USE_X11)
   std::unique_ptr<PlatformEventSource> event_source_;
 #endif
   // Clipboard has a protected destructor, so scoped_ptr doesn't work here.
   Clipboard* clipboard_ = nullptr;
-
-  // MockClipboardDlpController object is owned by ClipboardTest.
-  MockClipboardDlpController* dlp_controller_ = nullptr;
 };
 
 // A mock delegate for testing.
 class MockClipboardDlpController : public ClipboardDlpController {
  public:
-  MockClipboardDlpController();
-  ~MockClipboardDlpController();
+  static MockClipboardDlpController* Init();
+
   MOCK_CONST_METHOD2(IsDataReadAllowed,
                      bool(const ClipboardDataEndpoint* const data_src,
                           const ClipboardDataEndpoint* const data_dst));
+
+ private:
+  MockClipboardDlpController();
+  ~MockClipboardDlpController() override;
 };
+
+// static
+MockClipboardDlpController* MockClipboardDlpController::Init() {
+  return new MockClipboardDlpController();
+}
 
 MockClipboardDlpController::MockClipboardDlpController() = default;
 
@@ -1091,7 +1086,7 @@ TYPED_TEST(ClipboardTest, WriteImageEmptyParams) {
 // Test that copy/paste would work normally if the dlp controller didn't
 // restrict the clipboard data.
 TYPED_TEST(ClipboardTest, DlpAllowDataRead) {
-  this->AddDlpController();
+  auto* dlp_controller = MockClipboardDlpController::Init();
   const base::string16 kTestText(base::UTF8ToUTF16("World"));
   {
     ScopedClipboardWriter writer(
@@ -1099,7 +1094,6 @@ TYPED_TEST(ClipboardTest, DlpAllowDataRead) {
         std::make_unique<ClipboardDataEndpoint>(url::Origin()));
     writer.WriteText(kTestText);
   }
-  auto* dlp_controller = this->dlp_controller();
   EXPECT_CALL(*dlp_controller, IsDataReadAllowed)
       .WillRepeatedly(testing::Return(true));
   base::string16 read_result;
@@ -1107,12 +1101,13 @@ TYPED_TEST(ClipboardTest, DlpAllowDataRead) {
                              /* data_dst = */ nullptr, &read_result);
   ::testing::Mock::VerifyAndClearExpectations(dlp_controller);
   EXPECT_EQ(kTestText, read_result);
+  MockClipboardDlpController::DeleteInstance();
 }
 
 // Test that pasting clipboard data would not work if the dlp controller
 // restricted it.
 TYPED_TEST(ClipboardTest, DlpDisallowDataRead) {
-  this->AddDlpController();
+  auto* dlp_controller = MockClipboardDlpController::Init();
   const base::string16 kTestText(base::UTF8ToUTF16("World"));
   {
     ScopedClipboardWriter writer(
@@ -1120,7 +1115,6 @@ TYPED_TEST(ClipboardTest, DlpDisallowDataRead) {
         std::make_unique<ClipboardDataEndpoint>(url::Origin()));
     writer.WriteText(kTestText);
   }
-  auto* dlp_controller = this->dlp_controller();
   EXPECT_CALL(*dlp_controller, IsDataReadAllowed)
       .WillRepeatedly(testing::Return(false));
   base::string16 read_result;
@@ -1128,6 +1122,7 @@ TYPED_TEST(ClipboardTest, DlpDisallowDataRead) {
                              /* data_dst = */ nullptr, &read_result);
   ::testing::Mock::VerifyAndClearExpectations(dlp_controller);
   EXPECT_EQ(base::string16(), read_result);
+  MockClipboardDlpController::DeleteInstance();
 }
 #endif  // defined(OS_CHROMEOS)
 

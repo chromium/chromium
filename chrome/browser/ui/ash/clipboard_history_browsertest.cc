@@ -26,14 +26,18 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/clipboard/clipboard_data_endpoint.h"
+#include "ui/base/clipboard/clipboard_dlp_controller.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
+#include "url/origin.h"
 
 namespace {
+
+constexpr char kUrlString[] = "https://www.example.com";
 
 std::unique_ptr<views::Widget> CreateTestWidget() {
   auto widget = std::make_unique<views::Widget>();
@@ -536,7 +540,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
 class FakeDlpController : public ui::ClipboardDlpController {
  public:
   FakeDlpController()
-      : allowed_origin_(url::Origin::Create(GURL("www.example.com"))) {}
+      : allowed_origin_(url::Origin::Create(GURL(kUrlString))) {}
   ~FakeDlpController() override = default;
 
   // ui::ClipboardDlpController:
@@ -553,8 +557,6 @@ class FakeDlpController : public ui::ClipboardDlpController {
            (*data_src->origin() == allowed_origin_);
   }
 
-  const url::Origin& allowed_origin() const { return allowed_origin_; }
-
  private:
   const url::Origin allowed_origin_;
 };
@@ -563,21 +565,9 @@ class FakeDlpController : public ui::ClipboardDlpController {
 class ClipboardHistoryWithMockDLPBrowserTest
     : public ClipboardHistoryTextfieldBrowserTest {
  public:
-  ClipboardHistoryWithMockDLPBrowserTest() = default;
+  ClipboardHistoryWithMockDLPBrowserTest()
+      : dlp_controller_(std::make_unique<FakeDlpController>()) {}
   ~ClipboardHistoryWithMockDLPBrowserTest() override = default;
-
-  // ClipboardHistoryTextfieldBrowserTest:
-  void SetUpOnMainThread() override {
-    ClipboardHistoryTextfieldBrowserTest::SetUpOnMainThread();
-
-    // The DLP controller used for the login screen is destroyed after logging
-    // in. So the original DLP controller should be replaced with the custom
-    // one after logging in.
-    auto dlp_controller = std::make_unique<FakeDlpController>();
-    dlp_controller_ = dlp_controller.get();
-    ui::Clipboard::GetForCurrentThread()->SetClipboardDlpController(
-        std::move(dlp_controller));
-  }
 
   // Write text into the clipboard buffer and it should be inaccessible from
   // the multipaste menu, meaning that the clipboard data item created from
@@ -591,7 +581,7 @@ class ClipboardHistoryWithMockDLPBrowserTest
   void SetClipboardTextWithAccessibleSrc(const std::string& text) {
     ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste,
                               std::make_unique<ui::ClipboardDataEndpoint>(
-                                  dlp_controller_->allowed_origin()))
+                                  url::Origin::Create(GURL(kUrlString))))
         .WriteText(base::UTF8ToUTF16(text));
 
     // ClipboardHistory will post a task to process clipboard data in order to
@@ -601,7 +591,7 @@ class ClipboardHistoryWithMockDLPBrowserTest
   }
 
  private:
-  const FakeDlpController* dlp_controller_ = nullptr;
+  std::unique_ptr<FakeDlpController> dlp_controller_;
 };
 
 // Verifies the basic features related to the inaccessible menu item, the one

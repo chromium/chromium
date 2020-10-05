@@ -61,6 +61,7 @@ component("clipboard") {
     "clipboard.h",
     "clipboard_data_endpoint.cc",
     "clipboard_data_endpoint.h",
+    "clipboard_dlp_controller.cc",
     "clipboard_dlp_controller.h",
     "clipboard_metrics.cc",
     "clipboard_metrics.h",

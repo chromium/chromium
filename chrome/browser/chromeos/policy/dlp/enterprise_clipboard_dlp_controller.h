@@ -19,8 +19,9 @@ namespace policy {
 // policy rules set by the admin.
 class EnterpriseClipboardDlpController : public ui::ClipboardDlpController {
  public:
-  EnterpriseClipboardDlpController();
-  ~EnterpriseClipboardDlpController() override;
+  // Creates an instance of the class.
+  // Indicates that restricting clipboard content is required.
+  static void Init();
 
   EnterpriseClipboardDlpController(const EnterpriseClipboardDlpController&) =
       delete;
@@ -33,6 +34,9 @@ class EnterpriseClipboardDlpController : public ui::ClipboardDlpController {
       const ui::ClipboardDataEndpoint* const data_dst) const override;
 
  private:
+  EnterpriseClipboardDlpController();
+  ~EnterpriseClipboardDlpController() override;
+
   // Shows toast in case the access to the clipboard data is blocked.
   // TODO(crbug.com/1131670): Move `ShowBlockToast` to a separate util/helper.
   void ShowBlockToast(const base::string16& text) const;

@@ -10,6 +10,8 @@
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_data_endpoint.h"
+#include "ui/base/clipboard/clipboard_dlp_controller.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -18,6 +20,18 @@
 #include "ui/views/controls/menu/submenu_view.h"
 
 namespace ash {
+
+namespace {
+bool IsDataReadAllowed(ui::ClipboardDataEndpoint* source,
+                       ui::ClipboardDataEndpoint* destination) {
+  ui::ClipboardDlpController* dlp_controller =
+      ui::ClipboardDlpController::Get();
+  if (!dlp_controller)
+    return true;
+  return dlp_controller->IsDataReadAllowed(source, destination);
+}
+}  // namespace
+
 // static
 std::unique_ptr<ClipboardHistoryMenuModelAdapter>
 ClipboardHistoryMenuModelAdapter::Create(
@@ -52,14 +66,10 @@ void ClipboardHistoryMenuModelAdapter::Run(
     model_->AddItem(command_id, base::string16());
 
     // Enable or disable the command depending on whether its corresponding
-    // clipboard history item is allowed to be read or not.
-    const auto* dlp_controller =
-        ui::Clipboard::GetForCurrentThread()->GetClipboardDlpController();
-    model_->SetEnabledAt(model_->GetIndexOfCommandId(command_id),
-                         dlp_controller
-                             ? dlp_controller->IsDataReadAllowed(
-                                   item.data().source(), /*data_dst=*/nullptr)
-                             : true);
+    // clipboard history item is allowed to read or not.
+    model_->SetEnabledAt(
+        model_->GetIndexOfCommandId(command_id),
+        IsDataReadAllowed(item.data().source(), /*data_dst=*/nullptr));
 
     item_snapshots_.emplace(command_id, item);
     ++command_id;
