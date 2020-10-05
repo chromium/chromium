@@ -32,6 +32,8 @@ void OnRequestDeviceCallback(bool is_request_device_success,
 
 namespace webgpu {
 
+class WebGPUCmdHelper;
+class WebGPUDecoder;
 class WebGPUImplementation;
 
 }  // namespace webgpu
@@ -57,7 +59,9 @@ class WebGPUTest : public testing::Test {
   void Initialize(const Options& options);
 
   webgpu::WebGPUImplementation* webgpu() const;
+  webgpu::WebGPUCmdHelper* webgpu_cmds() const;
   SharedImageInterface* GetSharedImageInterface() const;
+  webgpu::WebGPUDecoder* GetDecoder() const;
 
   void RunPendingTasks();
   void WaitForCompletion(wgpu::Device device);
@@ -77,6 +81,7 @@ class WebGPUTest : public testing::Test {
  private:
   std::unique_ptr<viz::TestGpuServiceHolder> gpu_service_holder_;
   std::unique_ptr<WebGPUInProcessContext> context_;
+  std::unique_ptr<webgpu::WebGPUCmdHelper> cmd_helper_;
 #if defined(OS_MAC)
   // SharedImages on macOS require a valid image factory.
   GpuMemoryBufferFactoryIOSurface image_factory_;

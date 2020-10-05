@@ -6,24 +6,13 @@
 
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
-#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/webgpu_cmd_format.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/decoder_client.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
-#include "gpu/command_buffer/service/mailbox_manager_impl.h"
-#include "gpu/command_buffer/service/shared_image_factory.h"
-#include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/command_buffer/service/test_helper.h"
 #include "gpu/config/gpu_test_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gl/gl_context.h"
-#include "ui/gl/gl_surface.h"
-#include "ui/gl/init/gl_factory.h"
-
-#if defined(OS_MAC)
-#include "gpu/ipc/service/gpu_memory_buffer_factory_io_surface.h"
-#endif
 
 using ::testing::_;
 using ::testing::Return;
@@ -40,34 +29,11 @@ class WebGPUDecoderTest : public ::testing::Test {
     if (!WebGPUSupported()) {
       return;
     }
-    // Shared image factories for some backends take a dependency on GL.
-    // Failure to create a test context with a surface and making it current
-    // will result in a "NoContext" context being current that asserts on all
-    // GL calls.
-    gl_surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size(1, 1));
-    ASSERT_NE(gl_surface_, nullptr);
-
-    gl_context_ = gl::init::CreateGLContext(nullptr, gl_surface_.get(),
-                                            gl::GLContextAttribs());
-    ASSERT_NE(gl_context_, nullptr);
-
-    gl_context_->MakeCurrent(gl_surface_.get());
-
-#if defined(OS_WIN)
-    // D3D shared images are only supported with passthrough command decoder.
-    gpu_preferences_.use_passthrough_cmd_decoder = true;
-#endif  // OS_WIN
-
-    ImageFactory* image_factory = nullptr;
-#if defined(OS_MAC)
-    image_factory = &image_factory_;
-#endif
-
     decoder_client_.reset(new FakeDecoderClient());
     command_buffer_service_.reset(new FakeCommandBufferServiceBase());
     decoder_.reset(WebGPUDecoder::Create(
-        decoder_client_.get(), command_buffer_service_.get(),
-        &shared_image_manager_, nullptr, &outputter_, gpu_preferences_));
+        decoder_client_.get(), command_buffer_service_.get(), nullptr, nullptr,
+        &outputter_, GpuPreferences()));
     ASSERT_EQ(decoder_->Initialize(), ContextResult::kSuccess);
 
     constexpr uint32_t kAdapterClientID = 0;
@@ -81,30 +47,11 @@ class WebGPUDecoderTest : public ::testing::Test {
     cmds::RequestDevice requestDeviceCmd;
     requestDeviceCmd.Init(kDeviceClientID, kAdapterServiceID, 0, 0, 0);
     ASSERT_EQ(error::kNoError, ExecuteCmd(requestDeviceCmd));
-
-    factory_ = std::make_unique<SharedImageFactory>(
-        gpu_preferences_, GpuDriverBugWorkarounds(), GpuFeatureInfo(),
-        /*context_state=*/nullptr, &mailbox_manager_, &shared_image_manager_,
-        image_factory, /*tracker=*/nullptr,
-        /*enable_wrapped_sk_image=*/false);
-  }
-
-  void TearDown() override {
-    if (factory_) {
-      factory_->DestroyAllSharedImages(true);
-      factory_.reset();
-    }
-
-    gl_surface_.reset();
-    gl_context_.reset();
   }
 
   bool WebGPUSupported() const {
     // WebGPU does not work on Win7 because there is no D3D12 on Win7
-    // Linux bots running Vulkan are not properly initializing the shared
-    // image extensions.
-    return !GPUTestBotConfig::CurrentConfigMatches("Win7") &&
-           !GPUTestBotConfig::CurrentConfigMatches("Linux");
+    return !GPUTestBotConfig::CurrentConfigMatches("Win7");
   }
 
   template <typename T>
@@ -117,32 +64,11 @@ class WebGPUDecoderTest : public ::testing::Test {
                                 &entries_processed);
   }
 
-  template <typename T>
-  error::Error ExecuteImmediateCmd(const T& cmd, size_t data_size) {
-    static_assert(T::kArgFlags == cmd::kAtLeastN,
-                  "T::kArgFlags should equal cmd::kAtLeastN");
-    int entries_processed = 0;
-    return decoder_->DoCommands(1, (const void*)&cmd,
-                                ComputeNumEntries(sizeof(cmd) + data_size),
-                                &entries_processed);
-  }
-
  protected:
-  GpuPreferences gpu_preferences_;
   std::unique_ptr<FakeCommandBufferServiceBase> command_buffer_service_;
   std::unique_ptr<WebGPUDecoder> decoder_;
   std::unique_ptr<FakeDecoderClient> decoder_client_;
   gles2::TraceOutputter outputter_;
-  SharedImageManager shared_image_manager_;
-  std::unique_ptr<SharedImageFactory> factory_;
-  gles2::MailboxManagerImpl mailbox_manager_;
-#if defined(OS_MAC)
-  // SharedImages on macOS require a valid image factory.
-  GpuMemoryBufferFactoryIOSurface image_factory_;
-#endif
-  scoped_refptr<gl::GLSurface> gl_surface_;
-  scoped_refptr<gl::GLContext> gl_context_;
-
   static const DawnDeviceClientID kDeviceClientID = 0u;
 };
 
@@ -155,159 +81,6 @@ TEST_F(WebGPUDecoderTest, DawnCommands) {
   cmds::DawnCommands cmd;
   cmd.Init(kDeviceClientID, 0, 0, 0);
   EXPECT_EQ(error::kOutOfBounds, ExecuteCmd(cmd));
-}
-
-struct AssociateMailboxCmdStorage {
-  cmds::AssociateMailboxImmediate cmd;
-  GLbyte data[GL_MAILBOX_SIZE_CHROMIUM];
-};
-
-TEST_F(WebGPUDecoderTest, AssociateMailbox) {
-  if (!WebGPUSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
-    return;
-  }
-
-  gpu::Mailbox mailbox = Mailbox::GenerateForSharedImage();
-  EXPECT_TRUE(factory_->CreateSharedImage(
-      mailbox, viz::ResourceFormat::RGBA_8888, {1, 1},
-      gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, gfx::kNullAcceleratedWidget,
-      SHARED_IMAGE_USAGE_WEBGPU));
-
-  // Error case: invalid mailbox
-  {
-    gpu::Mailbox bad_mailbox;
-    AssociateMailboxCmdStorage cmd;
-    cmd.cmd.Init(kDeviceClientID, 0, 1, 0, WGPUTextureUsage_Sampled,
-                 bad_mailbox.name);
-    EXPECT_EQ(error::kInvalidArguments,
-              ExecuteImmediateCmd(cmd.cmd, sizeof(bad_mailbox.name)));
-  }
-
-  // Error case: device client id doesn't exist.
-  {
-    AssociateMailboxCmdStorage cmd;
-    cmd.cmd.Init(kDeviceClientID + 1, 0, 1, 0, WGPUTextureUsage_Sampled,
-                 mailbox.name);
-    EXPECT_EQ(error::kInvalidArguments,
-              ExecuteImmediateCmd(cmd.cmd, sizeof(mailbox.name)));
-  }
-
-  // Error case: device generation is invalid.
-  {
-    AssociateMailboxCmdStorage cmd;
-    cmd.cmd.Init(kDeviceClientID, 42, 1, 0, WGPUTextureUsage_Sampled,
-                 mailbox.name);
-    EXPECT_EQ(error::kInvalidArguments,
-              ExecuteImmediateCmd(cmd.cmd, sizeof(mailbox.name)));
-  }
-
-  // Error case: texture ID invalid for the wire server.
-  {
-    AssociateMailboxCmdStorage cmd;
-    cmd.cmd.Init(kDeviceClientID, 0, 42, 42, WGPUTextureUsage_Sampled,
-                 mailbox.name);
-    EXPECT_EQ(error::kInvalidArguments,
-              ExecuteImmediateCmd(cmd.cmd, sizeof(mailbox.name)));
-  }
-
-  // Error case: invalid usage.
-  {
-    AssociateMailboxCmdStorage cmd;
-    cmd.cmd.Init(kDeviceClientID, 0, 42, 42, WGPUTextureUsage_Sampled,
-                 mailbox.name);
-    EXPECT_EQ(error::kInvalidArguments,
-              ExecuteImmediateCmd(cmd.cmd, sizeof(mailbox.name)));
-  }
-
-  // Error case: invalid texture usage.
-  {
-    AssociateMailboxCmdStorage cmd;
-    cmd.cmd.Init(kDeviceClientID, 0, 1, 0, WGPUTextureUsage_Force32,
-                 mailbox.name);
-    EXPECT_EQ(error::kInvalidArguments,
-              ExecuteImmediateCmd(cmd.cmd, sizeof(mailbox.name)));
-  }
-
-  // Control case: test a successful call to AssociateMailbox
-  // (1, 0) is a valid texture ID on dawn_wire server start.
-  // The control case is not put first because it modifies the internal state
-  // of the Dawn wire server and would make calls with the same texture ID
-  // and generation invalid.
-  {
-    AssociateMailboxCmdStorage cmd;
-    cmd.cmd.Init(kDeviceClientID, 0, 1, 0, WGPUTextureUsage_Sampled,
-                 mailbox.name);
-    EXPECT_EQ(error::kNoError,
-              ExecuteImmediateCmd(cmd.cmd, sizeof(mailbox.name)));
-  }
-
-  // Error case: associated to an already associated texture.
-  {
-    AssociateMailboxCmdStorage cmd;
-    cmd.cmd.Init(kDeviceClientID, 0, 1, 0, WGPUTextureUsage_Sampled,
-                 mailbox.name);
-    EXPECT_EQ(error::kInvalidArguments,
-              ExecuteImmediateCmd(cmd.cmd, sizeof(mailbox.name)));
-  }
-
-  // Dissociate the image from the control case to remove its reference.
-  {
-    cmds::DissociateMailbox cmd;
-    cmd.Init(kDeviceClientID, 1, 0);
-    EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  }
-}
-
-TEST_F(WebGPUDecoderTest, DissociateMailbox) {
-  if (!WebGPUSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
-    return;
-  }
-
-  gpu::Mailbox mailbox = Mailbox::GenerateForSharedImage();
-  EXPECT_TRUE(factory_->CreateSharedImage(
-      mailbox, viz::ResourceFormat::RGBA_8888, {1, 1},
-      gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, kNullSurfaceHandle, SHARED_IMAGE_USAGE_WEBGPU));
-
-  // Associate a mailbox so we can later dissociate it.
-  {
-    AssociateMailboxCmdStorage cmd;
-    cmd.cmd.Init(kDeviceClientID, 0, 1, 0, WGPUTextureUsage_Sampled,
-                 mailbox.name);
-    EXPECT_EQ(error::kNoError,
-              ExecuteImmediateCmd(cmd.cmd, sizeof(mailbox.name)));
-  }
-
-  // Error case: wrong texture ID
-  {
-    cmds::DissociateMailbox cmd;
-    cmd.Init(kDeviceClientID, 42, 0);
-    EXPECT_EQ(error::kInvalidArguments, ExecuteCmd(cmd));
-  }
-
-  // Error case: wrong texture generation
-  {
-    cmds::DissociateMailbox cmd;
-    cmd.Init(kDeviceClientID, 1, 42);
-    EXPECT_EQ(error::kInvalidArguments, ExecuteCmd(cmd));
-  }
-
-  // Error case: invalid client device ID
-  {
-    cmds::DissociateMailbox cmd;
-    cmd.Init(kDeviceClientID + 1, 1, 0);
-    EXPECT_EQ(error::kInvalidArguments, ExecuteCmd(cmd));
-  }
-
-  // Success case
-  {
-    cmds::DissociateMailbox cmd;
-    cmd.Init(kDeviceClientID, 1, 0);
-    EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  }
 }
 
 }  // namespace webgpu

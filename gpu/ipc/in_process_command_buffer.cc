@@ -201,6 +201,10 @@ int InProcessCommandBuffer::GetRasterDecoderIdForTest() const {
       ->DecoderIdForTest();
 }
 
+webgpu::WebGPUDecoder* InProcessCommandBuffer::GetWebGPUDecoderForTest() const {
+  return static_cast<webgpu::WebGPUDecoder*>(decoder_.get());
+}
+
 gpu::SharedImageInterface* InProcessCommandBuffer::GetSharedImageInterface()
     const {
   return shared_image_interface_.get();

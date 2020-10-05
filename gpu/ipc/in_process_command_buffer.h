@@ -81,6 +81,10 @@ class SyncPointClientState;
 struct ContextCreationAttribs;
 struct SwapBuffersCompleteParams;
 
+namespace webgpu {
+class WebGPUDecoder;
+}
+
 namespace raster {
 class GrShaderCache;
 }
@@ -209,6 +213,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
 
   gpu::ServiceTransferCache* GetTransferCacheForTest() const;
   int GetRasterDecoderIdForTest() const;
+  webgpu::WebGPUDecoder* GetWebGPUDecoderForTest() const;
 
   CommandBufferTaskExecutor* service_for_testing() const {
     return task_executor_;

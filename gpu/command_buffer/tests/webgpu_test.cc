@@ -11,6 +11,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "build/build_config.h"
 #include "components/viz/test/test_gpu_service_holder.h"
+#include "gpu/command_buffer/client/webgpu_cmd_helper.h"
 #include "gpu/command_buffer/client/webgpu_implementation.h"
 #include "gpu/command_buffer/service/webgpu_decoder.h"
 #include "gpu/config/gpu_test_config.h"
@@ -104,6 +105,8 @@ void WebGPUTest::Initialize(const Options& options) {
                            image_factory, channel_manager);
   ASSERT_EQ(result, ContextResult::kSuccess);
 
+  cmd_helper_ = std::make_unique<webgpu::WebGPUCmdHelper>(
+      context_->GetCommandBufferForTest());
   ASSERT_TRUE(
       webgpu()->RequestAdapterAsync(webgpu::PowerPreference::kDefault,
                                     base::BindOnce(&OnRequestAdapterCallback)));
@@ -116,8 +119,16 @@ webgpu::WebGPUImplementation* WebGPUTest::webgpu() const {
   return context_->GetImplementation();
 }
 
+webgpu::WebGPUCmdHelper* WebGPUTest::webgpu_cmds() const {
+  return cmd_helper_.get();
+}
+
 SharedImageInterface* WebGPUTest::GetSharedImageInterface() const {
   return context_->GetCommandBufferForTest()->GetSharedImageInterface();
+}
+
+webgpu::WebGPUDecoder* WebGPUTest::GetDecoder() const {
+  return context_->GetCommandBufferForTest()->GetWebGPUDecoderForTest();
 }
 
 void WebGPUTest::RunPendingTasks() {
