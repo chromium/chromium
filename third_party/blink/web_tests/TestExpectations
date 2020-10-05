@@ -285,9 +285,6 @@ crbug.com/968791 crbug.com/1051044 virtual/scalefactor200/external/wpt/css/filte
 crbug.com/968791 crbug.com/1051044 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-feimage-003.html [ Failure ]
 crbug.com/968791 virtual/scalefactor200/external/wpt/css/filter-effects/filters-test-brightness-003.html [ Failure ]
 
-# Copying these from elsewhere in TestExpectations (for non-scalefactor200 virtual suite)
-crbug.com/591099 virtual/scalefactor200/external/wpt/css/filter-effects/filtered-inline-applies-to-float.html [ Failure ]
-
 # ==== Regressions introduced by BlinkGenPropertyTrees =====
 # Reflection / mask ordering issue
 crbug.com/767318 compositing/reflections/nested-reflection-mask-change.html [ Failure ]
@@ -859,20 +856,30 @@ crbug.com/591099 paint/invalidation/scroll/fixed-under-composited-fixed-scrolled
 crbug.com/591099 external/wpt/paint-timing/sibling-painting-first-image.html [ Failure ]
 
 # LayoutNG ref-tests that need to be updated (cannot be rebaselined).
-crbug.com/591099 fast/multicol/newmulticol/hide-box-vertical-lr.html [ Failure ]
-crbug.com/591099 fast/multicol/span/vertical-lr.html [ Failure ]
-crbug.com/591099 fast/multicol/vertical-lr/abspos-auto-position-on-line.html [ Failure ]
-crbug.com/591099 fast/multicol/vertical-lr/column-break-with-balancing.html [ Failure ]
+crbug.com/591099 [ Linux ] fast/multicol/newmulticol/hide-box-vertical-lr.html [ Failure ]
+crbug.com/591099 [ Win ] fast/multicol/newmulticol/hide-box-vertical-lr.html [ Failure ]
+crbug.com/591099 [ Linux ] fast/multicol/span/vertical-lr.html [ Failure ]
+crbug.com/591099 [ Win ] fast/multicol/span/vertical-lr.html [ Failure ]
+crbug.com/591099 [ Linux ] fast/multicol/vertical-lr/abspos-auto-position-on-line.html [ Failure ]
+crbug.com/591099 [ Win ] fast/multicol/vertical-lr/abspos-auto-position-on-line.html [ Failure ]
+crbug.com/591099 [ Linux ] fast/multicol/vertical-lr/column-break-with-balancing.html [ Failure ]
+crbug.com/591099 [ Win ] fast/multicol/vertical-lr/column-break-with-balancing.html [ Failure ]
 crbug.com/591099 fast/multicol/vertical-lr/column-count-with-rules.html [ Failure ]
-crbug.com/591099 fast/multicol/vertical-lr/column-rules.html [ Failure ]
-crbug.com/591099 fast/multicol/vertical-lr/float-avoidance.html [ Failure ]
+crbug.com/591099 [ Linux ] fast/multicol/vertical-lr/column-rules.html [ Failure ]
+crbug.com/591099 [ Win ] fast/multicol/vertical-lr/column-rules.html [ Failure ]
+crbug.com/591099 [ Linux ] fast/multicol/vertical-lr/float-avoidance.html [ Failure ]
+crbug.com/591099 [ Win ] fast/multicol/vertical-lr/float-avoidance.html [ Failure ]
 crbug.com/591099 fast/multicol/vertical-lr/float-big-line.html [ Failure ]
-crbug.com/591099 fast/multicol/vertical-lr/float-break.html [ Failure ]
+crbug.com/591099 [ Linux ] fast/multicol/vertical-lr/float-break.html [ Failure ]
+crbug.com/591099 [ Win ] fast/multicol/vertical-lr/float-break.html [ Failure ]
 crbug.com/591099 fast/multicol/vertical-lr/float-content-break.html [ Failure ]
 crbug.com/591099 fast/multicol/vertical-lr/float-edge.html [ Failure ]
-crbug.com/591099 fast/multicol/vertical-lr/float-paginate.html [ Failure ]
-crbug.com/591099 fast/multicol/vertical-lr/nested-columns.html [ Failure ]
-crbug.com/591099 fast/multicol/vertical-lr/unsplittable-inline-block.html [ Failure ]
+crbug.com/591099 [ Linux ] fast/multicol/vertical-lr/float-paginate.html [ Failure ]
+crbug.com/591099 [ Win ] fast/multicol/vertical-lr/float-paginate.html [ Failure ]
+crbug.com/591099 [ Linux ] fast/multicol/vertical-lr/nested-columns.html [ Failure ]
+crbug.com/591099 [ Win ] fast/multicol/vertical-lr/nested-columns.html [ Failure ]
+crbug.com/591099 [ Linux ] fast/multicol/vertical-lr/unsplittable-inline-block.html [ Failure ]
+crbug.com/591099 [ Win ] fast/multicol/vertical-lr/unsplittable-inline-block.html [ Failure ]
 crbug.com/591099 [ Win ] virtual/text-antialias/ellipsis-with-self-painting-layer.html [ Failure ]
 crbug.com/591099 [ Mac ] fast/multicol/file-upload-as-multicol.html [ Failure ]
 crbug.com/1098801 virtual/text-antialias/whitespace/whitespace-in-pre.html [ Failure ]
@@ -881,8 +888,10 @@ crbug.com/1098801 virtual/text-antialias/whitespace/whitespace-in-pre.html [ Fai
 crbug.com/591099 virtual/text-antialias/selection/selection-rect-line-height-too-small.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-text/hyphens/hyphens-out-of-flow-002.html [ Failure ]
 crbug.com/591099 fast/css-intrinsic-dimensions/width-avoid-floats.html [ Failure ]
-crbug.com/591099 fast/selectors/shadow-host-div-with-span.html [ Failure ]
-crbug.com/591099 fast/selectors/shadow-host-div-with-text.html [ Failure ]
+crbug.com/591099 [ Linux ] fast/selectors/shadow-host-div-with-span.html [ Failure ]
+crbug.com/591099 [ Win ] fast/selectors/shadow-host-div-with-span.html [ Failure ]
+crbug.com/591099 [ Linux ] fast/selectors/shadow-host-div-with-text.html [ Failure ]
+crbug.com/591099 [ Win ] fast/selectors/shadow-host-div-with-text.html [ Failure ]
 crbug.com/591099 virtual/text-antialias/selection/inline-block-in-selection-root.html [ Failure ]
 crbug.com/591099 paint/invalidation/media-audio-no-spurious-repaints.html [ Failure Timeout ]
 crbug.com/591099 editing/selection/paint-hyphen.html [ Failure Pass ]
@@ -922,11 +931,8 @@ crbug.com/591099 [ Mac ] virtual/text-antialias/hyphens/hyphen-min-preferred-wid
 crbug.com/591099 [ Mac ] virtual/text-antialias/hyphens/hyphens-auto-mock.html [ Failure ]
 crbug.com/591099 [ Mac ] virtual/text-antialias/hyphens/midword-break-priority.html [ Failure ]
 crbug.com/591099 [ Mac ] paint/invalidation/box/hover-pseudo-borders.html [ Failure ]
-crbug.com/591099 [ Mac ] paint/invalidation/text-match-transparent-text.html [ Failure ]
-crbug.com/591099 [ Mac ] paint/text/text-match-highlights-big-line-height.html [ Failure ]
 crbug.com/591099 [ Mac ] fast/css3-text/css3-text-decoration/text-underline-position/text-underline-position-auto.html [ Failure ]
 crbug.com/591099 [ Mac ] paint/invalidation/flexbox/remove-inline-block-descendant-of-flex.html [ Failure ]
-crbug.com/591099 [ Mac ] fast/replaced/input-radio-height-inside-auto-container.html [ Failure ]
 
 # A few other lines for this test are commented out above to avoid conflicting expectations.
 # If they are not also fixed, reinstate them when removing these lines.
@@ -936,22 +942,9 @@ crbug.com/982211 fast/events/before-unload-return-value-from-listener.html [ Pas
 crbug.com/982194 [ Win ] external/wpt/css/CSS2/linebox/empty-inline-002.xht [ Failure ]
 crbug.com/982194 [ Win ] external/wpt/css/css-text/white-space/line-edge-white-space-collapse-001.html [ Failure ]
 crbug.com/982194 [ Win7 ] external/wpt/css/css-text/white-space/seg-break-transformation-018.html [ Failure ]
-crbug.com/982194 [ Win7 ] fast/inline/drawStyledEmptyInlines.html [ Failure ]
-crbug.com/982194 [ Win7 ] fast/inline/emptyInlinesWithinLists.html [ Failure ]
-crbug.com/982194 [ Win7 ] fast/writing-mode/background-vertical-lr.html [ Failure ]
-crbug.com/982194 [ Win7 ] fast/writing-mode/background-vertical-rl.html [ Failure ]
-crbug.com/982194 [ Win7 ] fast/writing-mode/border-image-vertical-lr.html [ Failure ]
-crbug.com/982194 [ Win7 ] fast/writing-mode/border-image-vertical-rl.html [ Failure ]
-crbug.com/982194 [ Win7 ] paint/invalidation/outline/focus-ring-on-continuation-move.html [ Failure ]
-crbug.com/982194 [ Win7 ] paint/invalidation/outline/focus-ring-on-inline-continuation-move.html [ Failure ]
-crbug.com/982194 [ Win10 ] fast/inline/drawStyledEmptyInlines.html [ Failure ]
-crbug.com/982194 [ Win10 ] fast/inline/emptyInlinesWithinLists.html [ Failure ]
-crbug.com/982194 [ Win10 ] fast/writing-mode/background-vertical-lr.html [ Failure ]
-crbug.com/982194 [ Win10 ] fast/writing-mode/background-vertical-rl.html [ Failure ]
-crbug.com/982194 [ Win10 ] fast/writing-mode/border-image-vertical-lr.html [ Failure ]
-crbug.com/982194 [ Win10 ] fast/writing-mode/border-image-vertical-rl.html [ Failure ]
-crbug.com/982194 [ Win10 ] paint/invalidation/outline/focus-ring-on-continuation-move.html [ Failure ]
-crbug.com/982194 [ Win10 ] paint/invalidation/outline/focus-ring-on-inline-continuation-move.html [ Failure ]
+crbug.com/982194 [ Win10 ] fast/inline/emptyInlinesWithinLists.html [ Pass Failure ]
+crbug.com/982194 [ Win10 ] fast/writing-mode/background-vertical-rl.html [ Pass Failure ]
+crbug.com/982194 [ Win10 ] fast/writing-mode/border-image-vertical-lr.html [ Pass Failure ]
 
 ### Tests passing with LayoutNGBlockFragmentation enabled:
 virtual/layout_ng_block_frag/external/wpt/css/css-break/avoid-border-break.html [ Pass ]
@@ -1128,6 +1121,7 @@ crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/vertical-lr/caret-ra
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/vertical-lr/caret-range-outside-columns-rtl.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/vertical-lr/client-rects-crossing-boundaries-nested.html [ Failure ]
 crbug.com/1058792 virtual/layout_ng_block_frag/fast/multicol/vertical-lr/composited-relpos-overlapping-will-change.html [ Failure ]
+crbug.com/829028 [ Mac ] virtual/layout_ng_block_frag/fast/multicol/vertical-lr/nested-columns.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/vertical-lr/offset-top-and-left-at-boundaries-nested.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/vertical-lr/offset-top-and-left-nested.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/vertical-rl/caret-range-anonymous-block.html [ Failure ]
@@ -1402,6 +1396,8 @@ crbug.com/803276 [ Win ] inspector-protocol/memory/sampling-native-snapshot.js [
 crbug.com/538697 [ Win ] printing/webgl-oversized-printing.html [ Failure Crash ]
 
 crbug.com/904592 css3/filters/backdrop-filter-svg.html [ Failure ]
+crbug.com/904592 [ Linux ] virtual/scalefactor200/css3/filters/backdrop-filter-svg.html [ Pass ]
+crbug.com/904592 [ Win ] virtual/scalefactor200/css3/filters/backdrop-filter-svg.html [ Pass ]
 
 crbug.com/492664 [ Linux ] external/wpt/css/css-writing-modes/box-offsets-rel-pos-vlr-005.xht [ Failure ]
 crbug.com/492664 [ Linux ] external/wpt/css/css-writing-modes/box-offsets-rel-pos-vrl-004.xht [ Failure ]
@@ -1925,26 +1921,13 @@ crbug.com/483653 accessibility/scroll-containers.html [ Skip ]
 crbug.com/492511 [ Mac ] virtual/text-antialias/atsui-negative-spacing-features.html [ Failure ]
 crbug.com/492511 [ Mac ] virtual/text-antialias/international/arabic-justify.html [ Failure ]
 
-# Ref tests that fail due to differences in inline box structure, even though they contain the same text.
-# This happens because inline box layout uses fixed-point measurements, which can cause rounding differences.
-crbug.com/321237 [ Mac ] fast/selectors/007a.html [ Failure ]
-crbug.com/321237 [ Mac ] fast/text-autosizing/inherited-multiplier.html [ Failure ]
-crbug.com/321237 [ Win ] fast/text-autosizing/inherited-multiplier.html [ Failure ]
-
 crbug.com/501659 fast/xsl/xslt-missing-namespace-in-xslt.xml [ Failure ]
 
 crbug.com/501659 http/tests/security/xss-DENIED-xml-external-entity.xhtml [ Failure ]
 crbug.com/501659 fast/css/stylesheet-candidate-nodes-crash.xhtml [ Failure ]
 
-crbug.com/591500 [ Win10 ] printing/webgl-repeated-printing.html [ Failure ]
-
-crbug.com/591500 [ Win10 ] printing/simultaneous-position-float-change.html [ Failure ]
-crbug.com/591500 [ Win10 ] printing/webgl-repeated-printing-preservedrawingbuffer.html [ Failure ]
-crbug.com/591500 [ Win10 ] printing/quirks-percentage-height-body.html [ Failure ]
-crbug.com/591500 [ Win10 ] printing/standards-percentage-heights.html [ Failure ]
-
 # TODO(chrishtr) uncomment ones marked crbug.com/591500 after fixing crbug.com/665259.
-crbug.com/591500 [ Win10 ] printing/fixed-positioned-headers-and-footers-absolute-covering-some-pages.html [ Failure ]
+crbug.com/591500 [ Win10 ] virtual/threaded/printing/fixed-positioned-headers-and-footers-absolute-covering-some-pages.html [ Failure ]
 crbug.com/591500 [ Win10 ] printing/fixed-positioned-but-static-headers-and-footers.html [ Pass Failure ]
 crbug.com/591500 [ Win10 ] printing/fixed-positioned-headers-and-footers-inside-transform.html [ Pass Failure ]
 crbug.com/591500 [ Win10 ] printing/fixed-positioned-headers-and-footers-larger-than-page.html [ Pass Failure ]
