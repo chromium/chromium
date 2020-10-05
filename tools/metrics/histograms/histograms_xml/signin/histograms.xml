@@ -96,8 +96,9 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AndroidAccountSigninViewSeedingTime" units="ms"
-    expires_after="M85">
+    expires_after="M89">
   <owner>bsazonov@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     The time it takes to seed accounts before proceeding to the account
     confirmation screen.
@@ -142,8 +143,9 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AndroidGmsUpdatingDialogShownTime" units="ms"
-    expires_after="M85">
+    expires_after="M89">
   <owner>bsazonov@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     How long the &quot;Waiting for Google Play Services to finish updating&quot;
     dialog is shown.
