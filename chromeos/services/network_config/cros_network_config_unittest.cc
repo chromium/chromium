@@ -43,7 +43,22 @@ namespace network_config {
 namespace {
 
 const int kSimRetriesLeft = 3;
-const char* kCellularDevicePath = "/device/stub_cellular_device";
+const char kCellularDevicePath[] = "/device/stub_cellular_device";
+
+const char kCellularTestApn1[] = "TEST.APN1";
+const char kCellularTestApnName1[] = "Test Apn 1";
+const char kCellularTestApnUsername1[] = "Test User";
+const char kCellularTestApnPassword1[] = "Test Pass";
+
+const char kCellularTestApn2[] = "TEST.APN2";
+const char kCellularTestApnName2[] = "Test Apn 2";
+const char kCellularTestApnUsername2[] = "Test User";
+const char kCellularTestApnPassword2[] = "Test Pass";
+
+const char kCellularTestApn3[] = "TEST.APN3";
+const char kCellularTestApnName3[] = "Test Apn 3";
+const char kCellularTestApnUsername3[] = "Test User";
+const char kCellularTestApnPassword3[] = "Test Pass";
 
 }  // namespace
 
@@ -164,10 +179,12 @@ class CrosNetworkConfigTest : public testing::Test {
         R"({"GUID": "wifi2_guid", "Type": "wifi", "SSID": "wifi2",
             "State": "idle", "SecurityClass": "psk", "Strength": 100,
             "Profile": "user_profile_path"})");
-    helper().ConfigureService(
+    helper().ConfigureService(base::StringPrintf(
         R"({"GUID": "cellular_guid", "Type": "cellular",  "State": "idle",
             "Strength": 0, "Cellular.NetworkTechnology": "LTE",
-            "Cellular.ActivationState": "activated"})");
+            "Cellular.ActivationState": "activated",
+            "Profile": "%s"})",
+        NetworkProfileHandler::GetSharedProfilePath().c_str()));
     helper().ConfigureService(
         R"({"GUID": "vpn_guid", "Type": "vpn", "State": "association",
             "Provider": {"Type": "l2tpipsec"}})");
@@ -187,6 +204,31 @@ class CrosNetworkConfigTest : public testing::Test {
     NetworkHandler::Get()->network_metadata_store()->ConnectSucceeded(
         service_path);
 
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetupAPNList() {
+    base::Value apn_list(base::Value::Type::LIST);
+    base::Value apn_entry1(base::Value::Type::DICTIONARY);
+    apn_entry1.SetStringKey(shill::kApnNameProperty, kCellularTestApnName1);
+    apn_entry1.SetStringKey(shill::kApnProperty, kCellularTestApn1);
+    apn_entry1.SetStringKey(shill::kApnUsernameProperty,
+                            kCellularTestApnUsername1);
+    apn_entry1.SetStringKey(shill::kApnPasswordProperty,
+                            kCellularTestApnPassword1);
+    apn_list.Append(std::move(apn_entry1));
+    base::Value apn_entry2(base::Value::Type::DICTIONARY);
+    apn_entry2.SetStringKey(shill::kApnNameProperty, kCellularTestApnName2);
+    apn_entry2.SetStringKey(shill::kApnProperty, kCellularTestApn2);
+    apn_entry2.SetStringKey(shill::kApnUsernameProperty,
+                            kCellularTestApnUsername2);
+    apn_entry2.SetStringKey(shill::kApnPasswordProperty,
+                            kCellularTestApnPassword2);
+    apn_list.Append(std::move(apn_entry2));
+
+    helper().device_test()->SetDeviceProperty(
+        kCellularDevicePath, shill::kCellularApnListProperty, apn_list,
+        /*notify_changed=*/true);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -538,7 +580,7 @@ TEST_F(CrosNetworkConfigTest, GetNetworkState) {
   EXPECT_EQ(0, cellular->signal_strength);
   EXPECT_EQ("LTE", cellular->network_technology);
   EXPECT_EQ(mojom::ActivationStateType::kActivated, cellular->activation_state);
-  EXPECT_EQ(mojom::OncSource::kNone, network->source);
+  EXPECT_EQ(mojom::OncSource::kDevice, network->source);
   EXPECT_TRUE(cellular->sim_locked);
 
   network = GetNetworkState("vpn_guid");
@@ -842,6 +884,57 @@ TEST_F(CrosNetworkConfigTest, SetProperties) {
   config->guid = "Mismatched guid";
   success = SetProperties(kGUID, std::move(config));
   EXPECT_FALSE(success);
+}
+
+TEST_F(CrosNetworkConfigTest, CustomAPN) {
+  SetupAPNList();
+  const char* kGUID = "cellular_guid";
+  // Verify that setting APN to an entry that already exists in apn list
+  // does not update the custom apn list.
+  auto config = mojom::ConfigProperties::New();
+  auto cellular_config = mojom::CellularConfigProperties::New();
+  auto new_apn = mojom::ApnProperties::New();
+  new_apn->access_point_name = kCellularTestApn1;
+  new_apn->name = kCellularTestApnName1;
+  new_apn->username = kCellularTestApnUsername1;
+  new_apn->password = kCellularTestApnPassword1;
+  cellular_config->apn = std::move(new_apn);
+  config->type_config = mojom::NetworkTypeConfigProperties::NewCellular(
+      std::move(cellular_config));
+  SetProperties(kGUID, std::move(config));
+  const base::Value* apn_list =
+      NetworkHandler::Get()->network_metadata_store()->GetCustomAPNList(kGUID);
+  ASSERT_FALSE(apn_list);
+
+  // Verify that custom APN list is updated properly.
+  config = mojom::ConfigProperties::New();
+  cellular_config = mojom::CellularConfigProperties::New();
+  new_apn = mojom::ApnProperties::New();
+  new_apn->access_point_name = kCellularTestApn3;
+  new_apn->name = kCellularTestApnName3;
+  new_apn->username = kCellularTestApnUsername3;
+  new_apn->password = kCellularTestApnPassword3;
+  cellular_config->apn = std::move(new_apn);
+  config->type_config = mojom::NetworkTypeConfigProperties::NewCellular(
+      std::move(cellular_config));
+  SetProperties(kGUID, std::move(config));
+  apn_list =
+      NetworkHandler::Get()->network_metadata_store()->GetCustomAPNList(kGUID);
+  ASSERT_TRUE(apn_list);
+  ASSERT_TRUE(apn_list->is_list());
+
+  // Verify that custom APN list is returned properly in managed properties.
+  mojom::ManagedPropertiesPtr properties = GetManagedProperties(kGUID);
+  ASSERT_TRUE(properties);
+  ASSERT_EQ(kGUID, properties->guid);
+  ASSERT_TRUE(properties->type_properties->is_cellular());
+  ASSERT_TRUE(
+      properties->type_properties->get_cellular()->custom_apn_list.has_value());
+  ASSERT_EQ(
+      1u, properties->type_properties->get_cellular()->custom_apn_list->size());
+  ASSERT_EQ(kCellularTestApn3, properties->type_properties->get_cellular()
+                                   ->custom_apn_list->front()
+                                   ->access_point_name);
 }
 
 TEST_F(CrosNetworkConfigTest, ConfigureNetwork) {

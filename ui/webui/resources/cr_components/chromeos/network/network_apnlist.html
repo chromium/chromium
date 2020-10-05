@@ -4,6 +4,7 @@
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
 <link rel="import" href="network_property_list_mojo.html">
 <link rel="import" href="network_shared_css.html">
 
@@ -28,7 +29,7 @@
       </select>
     </div>
 
-    <template is="dom-if" if="[[showOtherApn_(selectedApn_)]]">    
+    <template is="dom-if" if="[[showOtherApn_(selectedApn_)]]">
       <div class="property-box single-column indented">
         <network-property-list-mojo on-property-change="onOtherApnChange_"
             fields="[[otherApnFields_]]" property-dict="[[otherApn_]]"

@@ -483,8 +483,13 @@ struct ManagedOpenVPNProperties {
 
 struct ManagedCellularProperties {
   ManagedBoolean? auto_connect;
-  ManagedApnProperties? apn;
+  // The current user selected APN. This corresponds to APN field
+  // in ONC.
+  ManagedApnProperties? selected_apn;
   ManagedApnList? apn_list;
+  // List of user-entered custom APN entries. Note: This field is not
+  // part of ONC spec.
+  array<ApnProperties>? custom_apn_list;
   ActivationStateType activation_state;
   bool allow_roaming = false;
   string? esn;
