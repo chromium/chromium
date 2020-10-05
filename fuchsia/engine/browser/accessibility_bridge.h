@@ -91,6 +91,10 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
   // accessibility bridge.
   void DeleteSubtree(ui::AXNode* node);
 
+  // Interrupts actions that are waiting for a response. This is invoked during
+  // destruction time or when semantic updates have been disabled.
+  void InterruptPendingActions();
+
   // content::WebContentsObserver implementation.
   void AccessibilityEventReceived(
       const content::AXEventNotificationDetails& details) override;
@@ -117,6 +121,9 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
   fidl::Binding<fuchsia::accessibility::semantics::SemanticListener> binding_;
   content::WebContents* web_contents_;
   ui::AXSerializableTree ax_tree_;
+
+  // Whether semantic updates are enabled.
+  bool enable_semantic_updates_ = false;
 
   // Cache for pending data to be sent to the Semantic Tree between commits.
   std::vector<SemanticUpdateOrDelete> to_send_;

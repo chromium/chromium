@@ -13,6 +13,9 @@ FakeSemanticsManager::FakeSemanticsManager() = default;
 FakeSemanticsManager::~FakeSemanticsManager() = default;
 
 void FakeSemanticsManager::SetSemanticsModeEnabled(bool is_enabled) {
+  if (!is_enabled)
+    semantic_tree_.Clear();
+
   listener_->OnSemanticsModeChanged(is_enabled, []() {});
 }
 
