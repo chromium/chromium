@@ -11,21 +11,28 @@ import "protos/perfetto/metrics/custom_options.proto";
 // power use through the CPU time they consume at different core frequencies.
 // Output values are in milliampere-seconds.
 
+message UsageByCoreType {
+  double little_cores_mas = 1;
+  double big_cores_mas = 2;
+  double bigger_core_mas = 3;
+  double total_mas = 4;  // sum of the fields above
+}
+
 message EstimatedWebViewAppPowerUsage {
   // Host app package name.
   string app_name = 1;
 
-  // Total app’s power consumption in milliampere-seconds.
-  // Includes renderer processes.
-  double total_app_power_mas = 2;
+  // Only browser + in-process renderer slices.
+  double webview_browser_slices_mas = 2;
 
-  // This is the sum of the following 3 fields.
-  // Includes renderer processes.
-  double webview_power_mas = 3;
+  // WebView-only browser + in-process renderer threads.
+  UsageByCoreType webview_only_usage = 3;
 
-  double webview_power_little_cores_mas = 4;
-  double webview_power_big_cores_mas = 5;
-  double webview_power_bigger_cores_mas = 6;
+  // All threads of the host app.
+  UsageByCoreType total_app_usage = 4;
+
+  // All out-of-process renderers.
+  UsageByCoreType renderer_usage = 5;
 }
 
 message WebViewPowerUsageMetric {

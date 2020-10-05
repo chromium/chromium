@@ -13,15 +13,38 @@ SELECT WebViewPowerUsageMetric(
   'estimated_webview_app_power_usage',
   (SELECT RepeatedField(
       EstimatedWebViewAppPowerUsage(
-        'app_name', app_name,
-        'webview_power_mas', webview_power_mas,
-        'total_app_power_mas', total_app_power_mas,
-        'webview_power_little_cores_mas', webview_power_little_cores_mas,
-        'webview_power_big_cores_mas', webview_power_big_cores_mas,
-        'webview_power_bigger_cores_mas', webview_power_bigger_cores_mas
-       )
+        'app_name', webview_browser_slices_power_summary.app_name,
+        'webview_browser_slices_mas', webview_browser_slices_power_summary.power_mas,
+        'webview_only_usage',
+        (SELECT UsageByCoreType(
+          'little_cores_mas', webview_only_power_output.little_cores_mas,
+          'big_cores_mas', webview_only_power_output.big_cores_mas,
+          'bigger_cores_mas', webview_only_power_output.bigger_cores_mas,
+          'total_mas', webview_only_power_output.total_mas
+        )),
+        'total_app_usage',
+        (SELECT UsageByCoreType(
+          'little_cores_mas', total_app_power_output.little_cores_mas,
+          'big_cores_mas', total_app_power_output.big_cores_mas,
+          'bigger_cores_mas', total_app_power_output.bigger_cores_mas,
+          'total_mas', total_app_power_output.total_mas
+        )),
+        'renderer_usage',
+        (SELECT UsageByCoreType(
+          'little_cores_mas', webview_renderer_power_output.little_cores_mas,
+          'big_cores_mas', webview_renderer_power_output.big_cores_mas,
+          'bigger_cores_mas', webview_renderer_power_output.bigger_cores_mas,
+          'total_mas', webview_renderer_power_output.total_mas
+        ))
+      )
    )
-   FROM webview_power_summary
+   FROM webview_browser_slices_power_summary
+     INNER JOIN webview_only_power_output
+       ON webview_browser_slices_power_summary.app_name = webview_only_power_output.app_name
+     INNER JOIN total_app_power_output
+       ON webview_browser_slices_power_summary.app_name = total_app_power_output.app_name
+     INNER JOIN webview_renderer_power_output
+       ON webview_browser_slices_power_summary.app_name = webview_renderer_power_output.app_name
   ),
   'total_device_power_mas',
   (SELECT power_mas FROM total_device_power)
