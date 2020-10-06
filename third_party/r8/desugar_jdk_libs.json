@@ -118,8 +118,7 @@
         "java.util.Tripwire": "j$.util.Tripwire",
         "java.util.concurrent.DesugarUnsafe": "j$.util.concurrent.DesugarUnsafe",
         "java.util.concurrent.ThreadLocalRandom": "j$.util.concurrent.ThreadLocalRandom",
-        "java.util.concurrent.atomic.DesugarAtomic": "j$.util.concurrent.atomic.DesugarAtomic",
-        "java.util.concurrent.ConcurrentHashMap": "j$.util.concurrent.ConcurrentHashMap"
+        "java.util.concurrent.atomic.DesugarAtomic": "j$.util.concurrent.atomic.DesugarAtomic"
       },
       "retarget_lib_member": {
         "java.util.Arrays#stream": "java.util.DesugarArrays",
@@ -190,8 +189,7 @@
         "java.util.Spliterator": "j$.util.Spliterator",
         "java.util.StringJoiner": "j$.util.StringJoiner",
         "java.util.concurrent.ThreadLocalRandom": "j$.util.concurrent.ThreadLocalRandom",
-        "java.util.concurrent.atomic.DesugarAtomic": "j$.util.concurrent.atomic.DesugarAtomic",
-        "java.util.concurrent.ConcurrentHashMap": "j$.util.concurrent.ConcurrentHashMap"
+        "java.util.concurrent.atomic.DesugarAtomic": "j$.util.concurrent.atomic.DesugarAtomic"
       },
       "retarget_lib_member": {
         "java.util.Arrays#stream": "java.util.DesugarArrays",
@@ -239,9 +237,6 @@
     }
   ],
   "shrinker_config": [
-    "-keepclassmembers class j$.util.concurrent.ConcurrentHashMap$TreeBin { int lockState; }",
-    "-keepclassmembers class j$.util.concurrent.ConcurrentHashMap { int sizeCtl; int transferIndex; long baseCount; int cellsBusy; }",
-    "-keepclassmembers class j$.util.concurrent.ConcurrentHashMap$CounterCell { long value; }",
     "-keepclassmembers enum * { public static **[] values(); public static ** valueOf(java.lang.String); }",
     "-keeppackagenames j$",
     "-keepclassmembers class j$.util.IntSummaryStatistics { long count; long sum; int min; int max; }",

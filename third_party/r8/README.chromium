@@ -21,6 +21,7 @@ R8 is a proguard-like optimizer that also has the ability to dex.
 Local Modifications:
 * Refer to commit descriptions within "patches" directory.
 * Added "playground" directory for quick "how does this optimize" tests.
+* Removed references to ConcurrentHashMap in desugar_jdk_libs.json.
 
 Update Instructions:
 # Download R8:
@@ -57,3 +58,7 @@ java -cp third_party/r8/lib/r8.jar com.android.tools.r8.BackportedMethodList --m
 # Manually update:
 * README.chromium (version number via "java -cp lib/r8.jar com.android.tools.r8.R8 --version")
 * //DEPS (instance ID output by cipd create)
+
+Update instructions for desugar_jdk_libs.json:
+* Find desugar.json as described above and copy to desugar_jdk_libs.json.
+* Remove all mentions of ConcurrentHashMap (and remove any trailing commas if necessary).
