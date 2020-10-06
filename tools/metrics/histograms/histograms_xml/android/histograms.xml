@@ -2056,6 +2056,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.ActualUiThread"
+    enum="AndroidWebViewActualUiThread" expires_after="2021-03-31">
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Recorded once per startup for apps targeting releases before JB MR2 if they
+    create their first WebView off the main thread. This records which thread
+    they actually ended up using as their UI thread.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.AndroidProtocolHandler.ResourceGetIdentifier"
     enum="BooleanSuccess" expires_after="2021-01-30">
   <owner>hazems@chromium.org</owner>

@@ -2030,6 +2030,12 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="Undos Dismissed (Action) (Deprecated)"/>
 </enum>
 
+<enum name="AndroidWebViewActualUiThread">
+  <int value="0" label="The thread on which the first WebView was constructed"/>
+  <int value="1" label="The main looper"/>
+  <int value="2" label="Some other thread"/>
+</enum>
+
 <enum name="AndroidWebViewClientSafeBrowsingThreatType">
   <obsolete>
     Removed 04/2020. These metrics are tracked generally for SafeBrowsing, and
