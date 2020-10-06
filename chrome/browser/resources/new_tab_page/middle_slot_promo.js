@@ -50,41 +50,40 @@ class MiddleSlotPromoElement extends PolymerElement {
   connectedCallback() {
     super.connectedCallback();
     this.pageHandler_.getPromo().then(({promo}) => {
-      if (!promo) {
-        return;
-      }
-      promo.middleSlotParts.forEach(({image, link, text}) => {
-        let el;
-        if (image) {
-          el = new ImgElement();
-          el.autoSrc = image.imageUrl.url;
-          if (image.target) {
-            const anchor = this.createAnchor_(image.target);
-            if (anchor) {
-              anchor.appendChild(el);
-              el = anchor;
+      if (promo) {
+        promo.middleSlotParts.forEach(({image, link, text}) => {
+          let el;
+          if (image) {
+            el = new ImgElement();
+            el.autoSrc = image.imageUrl.url;
+            if (image.target) {
+              const anchor = this.createAnchor_(image.target);
+              if (anchor) {
+                anchor.appendChild(el);
+                el = anchor;
+              }
+            }
+            el.classList.add('image');
+          } else if (link) {
+            el = this.createAnchor_(link.url);
+          } else if (text) {
+            el = document.createElement('span');
+          }
+          const linkOrText = link || text;
+          if (el && linkOrText) {
+            el.innerText = linkOrText.text;
+            if (linkOrText.color) {
+              el.style.color = linkOrText.color;
             }
           }
-          el.classList.add('image');
-        } else if (link) {
-          el = this.createAnchor_(link.url);
-        } else if (text) {
-          el = document.createElement('span');
-        }
-        const linkOrText = link || text;
-        if (el && linkOrText) {
-          el.innerText = linkOrText.text;
-          if (linkOrText.color) {
-            el.style.color = linkOrText.color;
+          if (el) {
+            this.$.container.appendChild(el);
           }
-        }
-        if (el) {
-          this.$.container.appendChild(el);
-        }
-      });
-      this.pageHandler_.onPromoRendered(
-          BrowserProxy.getInstance().now(), promo.logUrl || null);
-      this.hidden = false;
+        });
+        this.pageHandler_.onPromoRendered(
+            BrowserProxy.getInstance().now(), promo.logUrl || null);
+        this.hidden = false;
+      }
       this.dispatchEvent(new Event(
           'ntp-middle-slot-promo-loaded', {bubbles: true, composed: true}));
     });

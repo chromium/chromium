@@ -8,18 +8,18 @@ import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
 import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
 
 suite('NewTabPageMiddleSlotPromoTest', () => {
-  /** @type {!MiddleSlotPromoElement} */
-  let middleSlotPromo;
-
   /**
    * @implements {BrowserProxy}
    * @extends {TestBrowserProxy}
    */
   let testProxy;
 
-  setup(async () => {
+  setup(() => {
     PolymerTest.clearBody();
     testProxy = createTestProxy();
+  });
+
+  async function createMiddleSlotPromo() {
     testProxy.handler.setResultFor('getPromo', Promise.resolve({
       promo: {
         middleSlotParts: [
@@ -57,12 +57,14 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     BrowserProxy.instance_ = testProxy;
     const loaded =
         eventToPromise('ntp-middle-slot-promo-loaded', document.body);
-    middleSlotPromo = document.createElement('ntp-middle-slot-promo');
+    const middleSlotPromo = document.createElement('ntp-middle-slot-promo');
     document.body.appendChild(middleSlotPromo);
     await loaded;
-  });
+    return middleSlotPromo;
+  }
 
-  test('render', () => {
+  test('render', async () => {
+    const middleSlotPromo = await createMiddleSlotPromo();
     const parts = middleSlotPromo.$.container.children;
     assertEquals(6, parts.length);
     const [image, imageWithLink, imageWithCommand, text, link, command] = parts;
@@ -88,6 +90,7 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
   });
 
   test('clicking on command', async () => {
+    const middleSlotPromo = await createMiddleSlotPromo();
     const testProxy = PromoBrowserCommandProxy.getInstance();
     testProxy.handler = TestBrowserProxy.fromClass(
         promoBrowserCommand.mojom.CommandHandlerRemote);
@@ -114,5 +117,14 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
           },
           expectedClickInfo);
     }));
+  });
+
+  test('sends loaded event if no promo', async () => {
+    testProxy.handler.setResultFor('getPromo', Promise.resolve({promo: null}));
+    const loaded =
+        eventToPromise('ntp-middle-slot-promo-loaded', document.body);
+    const middleSlotPromo = document.createElement('ntp-middle-slot-promo');
+    document.body.appendChild(middleSlotPromo);
+    await loaded;
   });
 });
