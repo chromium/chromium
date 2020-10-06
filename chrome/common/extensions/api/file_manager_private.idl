@@ -1306,13 +1306,21 @@ interface Functions {
   [nocompile]
   static void importCrostiniImage([instanceof=Entry] object entry);
 
-  // For a given file entry, retrieves its thumbnail. If |cropToSquare| is true,
+  // For a file in DriveFS, retrieves its thumbnail. If |cropToSquare| is true,
   // returns a thumbnail appropriate for file list or grid views; otherwise,
   // returns a thumbnail appropriate for quickview.
   [nocompile]
-  static void getThumbnail([instanceOf=FileEntry] object entry,
-                           boolean cropToSquare,
-                           GetThumbnailCallback callback);
+  static void getDriveThumbnail([instanceof=FileEntry] object entry,
+                                boolean cropToSquare,
+                                GetThumbnailCallback callback);
+
+  // For a local PDF file, retrieves its thumbnail with a given |width| and
+  // |height|.
+  [nocompile]
+  static void getPdfThumbnail([instanceof=FileEntry] object entry,
+                              long width,
+                              long height,
+                              GetThumbnailCallback callback);
 
   // Returns a guessed character encoding of a hex-encoded string. Every 2
   // characters of |bytes| represent one byte by 2-digit hexadecimal number.

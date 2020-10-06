@@ -123,6 +123,33 @@ ImageRequestTask.VIDEO_THUMBNAIL_POSITION = 3;  // [sec]
 ImageRequestTask.MAX_MILLISECONDS_TO_LOAD_VIDEO = 3000;
 
 /**
+ * The default size (width and height) of a square thumbnail. The value is set
+ * to match the behavior of drivefs thumbnail generation.
+ * See chromeos/components/drivefs/mojom/drivefs.mojom
+ * @const
+ * @type {number}
+ */
+ImageRequestTask.DEFAULT_THUMBNAIL_SQUARE_SIZE = 360;
+
+/**
+ * The default width of a non-square thumbnail. The value is set to match the
+ * behavior of drivefs thumbnail generation.
+ * See chromeos/components/drivefs/mojom/drivefs.mojom
+ * @const
+ * @type {number}
+ */
+ImageRequestTask.DEFAULT_THUMBNAIL_WIDTH = 500;
+
+/**
+ * The default height of a non-square thumbnail. The value is set to match the
+ * behavior of drivefs thumbnail generation.
+ * See chromeos/components/drivefs/mojom/drivefs.mojom
+ * @const
+ * @type {number}
+ */
+ImageRequestTask.DEFAULT_THUMBNAIL_HEIGHT = 500;
+
+/**
  * A map which is used to estimate content type from extension.
  * @enum {string}
  */
@@ -257,34 +284,20 @@ ImageRequestTask.prototype.saveToCache_ = function(width, height, data) {
 };
 
 /**
- * Gets a file thumb from the browser hosted environment. If the thumbnail
- * is returned it is assigned to this.image_ instance variable, which ultimately
- * results in onsuccess function associated with the image being called.
- * @param {string} url The URL of the file entry for which we get a thumbnail.
- * @param {function()} onFailure a callback invoked if errors occur.
+ * Gets the target image size for external thumbnails, where supported.
+   The defaults replicate drivefs thumbnailer behavior.
+ * @return {{width: !number, height: !number}}
  */
-ImageRequestTask.prototype.getExternalThumbnail = function(url, onFailure) {
-  window.webkitResolveLocalFileSystemURL(
-      url,
-      entry => {
-        chrome.fileManagerPrivate.getThumbnail(
-            /** @type {FileEntry} */ (entry), !!this.request_.crop,
-            thumbnail => {
-              if (chrome.runtime.lastError) {
-                console.error(chrome.runtime.lastError.message);
-                onFailure();
-              } else if (thumbnail) {
-                this.image_.src = thumbnail;
-                this.contentType_ = 'image/png';
-              } else {
-                onFailure();
-              }
-            });
-      },
-      error => {
-        console.error(error);
-        onFailure();
-      });
+ImageRequestTask.prototype.targetThumbnailSize_ = function() {
+  const crop = !!this.request_.crop;
+  const defaultWidth = crop ? ImageRequestTask.DEFAULT_THUMBNAIL_SQUARE_SIZE :
+                              ImageRequestTask.DEFAULT_THUMBNAIL_WIDTH;
+  const defaultHeight = crop ? ImageRequestTask.DEFAULT_THUMBNAIL_SQUARE_SIZE :
+                               ImageRequestTask.DEFAULT_THUMBNAIL_HEIGHT;
+  return {
+    width: this.request_.width || defaultWidth,
+    height: this.request_.height || defaultHeight,
+  };
 };
 
 /**
@@ -315,16 +328,44 @@ ImageRequestTask.prototype.downloadOriginal_ = function(onSuccess, onFailure) {
     return;
   }
 
+  const resolveLocalFileSystemUrl = (url, onResolveSuccess) => {
+    window.webkitResolveLocalFileSystemURL(url, onResolveSuccess, error => {
+      console.error(error);
+      onFailure();
+    });
+  };
+
+  const onExternalThumbnail = (dataUrl) => {
+    if (chrome.runtime.lastError) {
+      console.error(chrome.runtime.lastError.message);
+      onFailure();
+    } else if (dataUrl) {
+      this.image_.src = dataUrl;
+      this.contentType_ = 'image/png';
+    } else {
+      onFailure();
+    }
+  };
+
   // Load Drive source thumbnail.
   const drivefsUrlMatches = this.request_.url.match(/^drivefs:(.*)/);
   if (drivefsUrlMatches) {
-    this.getExternalThumbnail(drivefsUrlMatches[1], onFailure);
+    const url = drivefsUrlMatches[1];
+    const cropToSquare = !!this.request_.crop;
+    resolveLocalFileSystemUrl(
+        url,
+        entry => chrome.fileManagerPrivate.getDriveThumbnail(
+            entry, cropToSquare, onExternalThumbnail));
     return;
   }
 
   // Load PDF source thumbnail.
   if (this.request_.url.endsWith('.pdf')) {
-    this.getExternalThumbnail(this.request_.url, onFailure);
+    const {width, height} = this.targetThumbnailSize_();
+    resolveLocalFileSystemUrl(
+        this.request_.url,
+        entry => chrome.fileManagerPrivate.getPdfThumbnail(
+            entry, width, height, onExternalThumbnail));
     return;
   }
 

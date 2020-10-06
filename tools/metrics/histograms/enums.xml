@@ -24772,7 +24772,7 @@ Called by update_extension_histograms.py.-->
   <int value="1275" label="TABCAPTURE_GETMEDIASTREAMID"/>
   <int value="1276" label="WEBVIEWINTERNAL_SETSPATIALNAVIGATIONENABLED"/>
   <int value="1277" label="WEBVIEWINTERNAL_ISSPATIALNAVIGATIONENABLED"/>
-  <int value="1278" label="FILEMANAGERPRIVATEINTERNAL_GETTHUMBNAIL"/>
+  <int value="1278" label="DELETED_FILEMANAGERPRIVATEINTERNAL_GETTHUMBNAIL"/>
   <int value="1279" label="FILEMANAGERPRIVATEINTERNAL_GETCROSTINISHAREDPATHS"/>
   <int value="1280" label="AUTOTESTPRIVATE_LAUNCHAPP"/>
   <int value="1281" label="AUTOTESTPRIVATE_BOOTSTRAPMACHINELEARNINGSERVICE"/>
@@ -25020,6 +25020,8 @@ Called by update_extension_histograms.py.-->
   <int value="1513" label="IDENTITY_CLEARALLCACHEDAUTHTOKENS"/>
   <int value="1514" label="TABS_GROUP"/>
   <int value="1515" label="TABS_UNGROUP"/>
+  <int value="1516" label="FILEMANAGERPRIVATEINTERNAL_GETDRIVETHUMBNAIL"/>
+  <int value="1517" label="FILEMANAGERPRIVATEINTERNAL_GETPDFTHUMBNAIL"/>
 </enum>
 
 <enum name="ExtensionIconState">

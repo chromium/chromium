@@ -1115,13 +1115,25 @@ chrome.fileManagerPrivate.detectCharacterEncoding = function(bytes, callback) {
  * For a file in DriveFS, retrieves its thumbnail. If |cropToSquare| is true,
  * returns a thumbnail appropriate for file list or grid views; otherwise,
  * returns a thumbnail appropriate for quickview.
- * @param {Object} entry
+ * @param {!FileEntry} entry
  * @param {boolean} cropToSquare
- * @param {function(string): void} callback |thumbnailDataUrl| A data URL for the
- *     thumbnail as a PNG; |thumbnailDataUrl| is empty if no thumbnail was
+ * @param {function(string): void} callback |thumbnailDataUrl| A data URL for
+ *     the thumbnail as a PNG; |thumbnailDataUrl| is empty if no thumbnail was
  *     available.
  */
-chrome.fileManagerPrivate.getThumbnail = function(entry, cropToSquare, callback) {};
+chrome.fileManagerPrivate.getDriveThumbnail = function(entry, cropToSquare, callback) {};
+
+/**
+ * For a local PDF file, retrieves its thumbnail with a given |width| and
+ * |height|.
+ * @param {!FileEntry} entry
+ * @param {number} width
+ * @param {number} height
+ * @param {function(string): void} callback |thumbnailDataUrl| A data URL for
+ *     the thumbnail as a PNG; |thumbnailDataUrl| is empty if no thumbnail was
+ *     available.
+ */
+chrome.fileManagerPrivate.getPdfThumbnail = function(entry, width, height, callback) {};
 
 /**
  * @param {!Array<string>} extensions

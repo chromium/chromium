@@ -2809,6 +2809,8 @@ source_set("chromeos") {
     "extensions/file_manager/private_api_strings.h",
     "extensions/file_manager/private_api_tasks.cc",
     "extensions/file_manager/private_api_tasks.h",
+    "extensions/file_manager/private_api_thumbnail.cc",
+    "extensions/file_manager/private_api_thumbnail.h",
     "extensions/file_manager/private_api_util.cc",
     "extensions/file_manager/private_api_util.h",
     "extensions/file_manager/select_file_dialog_extension_user_data.cc",
