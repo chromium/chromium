@@ -1,0 +1,37 @@
+{
+  "android-cfi-builder-perf-fyi": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_os": "android",
+      "thin_lto_enable_optimizations": true,
+      "use_goma": true,
+      "use_thin_lto": true
+    }
+  },
+  "android_arm64-cfi-builder-perf-fyi": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "thin_lto_enable_optimizations": true,
+      "use_goma": true,
+      "use_thin_lto": true
+    }
+  },
+  "chromeos-kevin-builder-perf-fyi": {
+    "args_file": "//build/args/chromeos/kevin.gni",
+    "gn_args": {
+      "is_chromeos_device": true,
+      "ozone_platform_headless": true,
+      "use_goma": true
+    }
+  }
+}

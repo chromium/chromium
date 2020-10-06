@@ -1,0 +1,61 @@
+{
+  "Android Compile Perf": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_os": "android",
+      "use_goma": true
+    }
+  },
+  "Android arm64 Compile Perf": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_goma": true
+    }
+  },
+  "Linux Builder Perf": {
+    "gn_args": {
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "symbol_level": 1,
+      "use_gnome_keyring": false,
+      "use_goma": true
+    }
+  },
+  "Mac Builder Perf": {
+    "gn_args": {
+      "enable_keystone_registration_framework": false,
+      "ignore_missing_widevine_signing_cert": true,
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "symbol_level": 2,
+      "use_goma": true
+    }
+  },
+  "Win Builder Perf": {
+    "gn_args": {
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  },
+  "Win x64 Builder Perf": {
+    "gn_args": {
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  }
+}

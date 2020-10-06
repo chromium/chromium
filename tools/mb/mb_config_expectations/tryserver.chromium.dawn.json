@@ -1,0 +1,95 @@
+{
+  "dawn-linux-x64-deps-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_dawn": true,
+      "use_goma": true
+    }
+  },
+  "dawn-mac-x64-deps-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_dawn": true,
+      "use_goma": true
+    }
+  },
+  "dawn-try-win10-x64-asan-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_asan": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_dawn": true,
+      "use_goma": true
+    }
+  },
+  "dawn-try-win10-x86-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_dawn": true,
+      "use_goma": true
+    }
+  },
+  "dawn-win10-x64-deps-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_dawn": true,
+      "use_goma": true
+    }
+  },
+  "dawn-win10-x86-deps-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_dawn": true,
+      "use_goma": true
+    }
+  },
+  "linux-dawn-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_dawn": true,
+      "use_goma": true
+    }
+  },
+  "mac-dawn-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_dawn": true,
+      "use_goma": true
+    }
+  },
+  "win-dawn-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_dawn": true,
+      "use_goma": true
+    }
+  }
+}

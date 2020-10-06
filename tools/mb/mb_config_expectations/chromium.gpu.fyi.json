@@ -1,0 +1,562 @@
+{
+  "ANGLE GPU Android Release (Nexus 5X)": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_goma": true,
+      "use_static_angle": true
+    }
+  },
+  "Android FYI 32 Vk Release (Pixel 2)": {
+    "gn_args": {
+      "android32_ndk_api_level": 26,
+      "android64_ndk_api_level": 26,
+      "build_angle_trace_perf_tests": true,
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_os": "android",
+      "use_goma": true,
+      "use_static_angle": true
+    }
+  },
+  "Android FYI 32 dEQP Vk Release (Pixel 2)": {
+    "gn_args": {
+      "android32_ndk_api_level": 26,
+      "android64_ndk_api_level": 26,
+      "build_angle_deqp_tests": true,
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": true,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_os": "android",
+      "use_goma": true
+    }
+  },
+  "Android FYI 64 Vk Release (Pixel 2)": {
+    "gn_args": {
+      "android32_ndk_api_level": 26,
+      "android64_ndk_api_level": 26,
+      "build_angle_trace_perf_tests": true,
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_goma": true,
+      "use_static_angle": true
+    }
+  },
+  "Android FYI 64 dEQP Vk Release (Pixel 2)": {
+    "gn_args": {
+      "android32_ndk_api_level": 26,
+      "android64_ndk_api_level": 26,
+      "build_angle_deqp_tests": true,
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": true,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_goma": true
+    }
+  },
+  "Android FYI Release (NVIDIA Shield TV)": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_goma": true,
+      "use_static_angle": true
+    }
+  },
+  "Android FYI Release (Nexus 5)": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_os": "android",
+      "use_goma": true,
+      "use_static_angle": true
+    }
+  },
+  "Android FYI Release (Nexus 5X)": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_goma": true,
+      "use_static_angle": true
+    }
+  },
+  "Android FYI Release (Nexus 6)": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_os": "android",
+      "use_goma": true,
+      "use_static_angle": true
+    }
+  },
+  "Android FYI Release (Nexus 6P)": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_goma": true,
+      "use_static_angle": true
+    }
+  },
+  "Android FYI Release (Nexus 9)": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_goma": true,
+      "use_static_angle": true
+    }
+  },
+  "Android FYI Release (Pixel 2)": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_os": "android",
+      "use_goma": true,
+      "use_static_angle": true
+    }
+  },
+  "Android FYI SkiaRenderer GL (Nexus 5X)": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_goma": true,
+      "use_static_angle": true
+    }
+  },
+  "Android FYI SkiaRenderer Vulkan (Pixel 2)": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_os": "android",
+      "use_goma": true,
+      "use_static_angle": true
+    }
+  },
+  "Android FYI dEQP Release (Nexus 5X)": {
+    "gn_args": {
+      "build_angle_deqp_tests": true,
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": true,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_goma": true
+    }
+  },
+  "ChromeOS FYI Release (amd64-generic)": {
+    "args_file": "//build/args/chromeos/amd64-generic.gni",
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_chromeos_device": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "ozone_platform_headless": true,
+      "proprietary_codecs": true,
+      "symbol_level": 0,
+      "use_goma": true
+    }
+  },
+  "ChromeOS FYI Release (kevin)": {
+    "args_file": "//build/args/chromeos/kevin.gni",
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_chromeos_device": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "ozone_platform_headless": true,
+      "proprietary_codecs": true,
+      "symbol_level": 0,
+      "use_goma": true
+    }
+  },
+  "GPU FYI Linux Builder": {
+    "gn_args": {
+      "build_angle_gles1_conform_tests": true,
+      "build_angle_trace_perf_tests": true,
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "internal_gles2_conform_tests": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "GPU FYI Linux Builder (dbg)": {
+    "gn_args": {
+      "build_angle_gles1_conform_tests": true,
+      "build_angle_trace_perf_tests": true,
+      "ffmpeg_branding": "Chrome",
+      "internal_gles2_conform_tests": true,
+      "is_component_build": true,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "GPU FYI Linux Ozone Builder": {
+    "gn_args": {
+      "build_angle_gles1_conform_tests": true,
+      "build_angle_trace_perf_tests": true,
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "internal_gles2_conform_tests": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "ozone_platform": "headless",
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_bundled_weston": true,
+      "use_goma": true,
+      "use_ozone": true,
+      "use_system_libdrm": true,
+      "use_system_minigbm": true,
+      "use_x11": false
+    }
+  },
+  "GPU FYI Linux dEQP Builder": {
+    "gn_args": {
+      "build_angle_deqp_tests": true,
+      "dcheck_always_on": true,
+      "is_component_build": true,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "GPU FYI Mac Builder": {
+    "gn_args": {
+      "build_angle_gles1_conform_tests": true,
+      "build_angle_trace_perf_tests": true,
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "internal_gles2_conform_tests": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "GPU FYI Mac Builder (dbg)": {
+    "gn_args": {
+      "build_angle_gles1_conform_tests": true,
+      "build_angle_trace_perf_tests": true,
+      "ffmpeg_branding": "Chrome",
+      "internal_gles2_conform_tests": true,
+      "is_component_build": true,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "GPU FYI Mac dEQP Builder": {
+    "gn_args": {
+      "build_angle_deqp_tests": true,
+      "dcheck_always_on": true,
+      "is_component_build": true,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "GPU FYI Perf Android 64 Builder": {
+    "gn_args": {
+      "android32_ndk_api_level": 26,
+      "android64_ndk_api_level": 26,
+      "build_angle_trace_perf_tests": true,
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_goma": true,
+      "use_static_angle": true
+    }
+  },
+  "GPU FYI Win Builder": {
+    "gn_args": {
+      "build_angle_gles1_conform_tests": true,
+      "build_angle_trace_perf_tests": true,
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "internal_gles2_conform_tests": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  },
+  "GPU FYI Win Builder (dbg)": {
+    "gn_args": {
+      "build_angle_gles1_conform_tests": true,
+      "build_angle_trace_perf_tests": true,
+      "ffmpeg_branding": "Chrome",
+      "internal_gles2_conform_tests": true,
+      "is_component_build": true,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  },
+  "GPU FYI Win dEQP Builder": {
+    "gn_args": {
+      "build_angle_deqp_tests": true,
+      "dcheck_always_on": true,
+      "is_component_build": true,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  },
+  "GPU FYI Win x64 Builder": {
+    "gn_args": {
+      "build_angle_gles1_conform_tests": true,
+      "build_angle_trace_perf_tests": true,
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "internal_gles2_conform_tests": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "GPU FYI Win x64 Builder (dbg)": {
+    "gn_args": {
+      "build_angle_gles1_conform_tests": true,
+      "build_angle_trace_perf_tests": true,
+      "ffmpeg_branding": "Chrome",
+      "internal_gles2_conform_tests": true,
+      "is_component_build": true,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "GPU FYI Win x64 DX12 Vulkan Builder": {
+    "gn_args": {
+      "build_angle_gles1_conform_tests": true,
+      "build_angle_trace_perf_tests": true,
+      "dcheck_always_on": true,
+      "enable_vulkan": true,
+      "ffmpeg_branding": "Chrome",
+      "internal_gles2_conform_tests": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "GPU FYI Win x64 DX12 Vulkan Builder (dbg)": {
+    "gn_args": {
+      "build_angle_gles1_conform_tests": true,
+      "build_angle_trace_perf_tests": true,
+      "enable_vulkan": true,
+      "ffmpeg_branding": "Chrome",
+      "internal_gles2_conform_tests": true,
+      "is_component_build": true,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "GPU FYI Win x64 dEQP Builder": {
+    "gn_args": {
+      "build_angle_deqp_tests": true,
+      "dcheck_always_on": true,
+      "is_component_build": true,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "GPU FYI XR Win x64 Builder": {
+    "gn_args": {
+      "build_angle_gles1_conform_tests": true,
+      "build_angle_trace_perf_tests": true,
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "internal_gles2_conform_tests": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "Linux FYI GPU TSAN Release": {
+    "gn_args": {
+      "build_angle_gles1_conform_tests": true,
+      "build_angle_trace_perf_tests": true,
+      "dcheck_always_on": true,
+      "enable_nacl": false,
+      "ffmpeg_branding": "Chrome",
+      "internal_gles2_conform_tests": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_tsan": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "Linux FYI SkiaRenderer Dawn Release (Intel HD 630)": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "enable_skia_dawn_gtests": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "skia_use_dawn": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "Mac FYI GPU ASAN Release": {
+    "gn_args": {
+      "build_angle_gles1_conform_tests": true,
+      "build_angle_trace_perf_tests": true,
+      "dcheck_always_on": true,
+      "enable_nacl": false,
+      "ffmpeg_branding": "Chrome",
+      "internal_gles2_conform_tests": true,
+      "is_asan": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "Mac FYI arm64 Release (Apple DTK)": {
+    "gn_args": {
+      "build_angle_gles1_conform_tests": true,
+      "build_angle_trace_perf_tests": true,
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "internal_gles2_conform_tests": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "use_goma": true
+    }
+  },
+  "Optional Android Release (Nexus 5X)": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_goma": true,
+      "use_static_angle": true
+    }
+  },
+  "Win10 FYI x64 SkiaRenderer Dawn Release (NVIDIA)": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "enable_skia_dawn_gtests": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "skia_use_dawn": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  }
+}

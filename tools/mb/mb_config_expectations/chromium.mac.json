@@ -1,0 +1,79 @@
+{
+  "Mac Builder": {
+    "gn_args": {
+      "enable_nacl": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "Mac Builder (dbg)": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": true,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "ios-device": {
+    "gn_args": {
+      "ios_code_signing_identity_description": "Apple Development",
+      "ios_enable_code_signing": false,
+      "ios_use_goma_rbe": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 0,
+      "target_cpu": "arm64",
+      "target_os": "ios",
+      "use_goma": true
+    }
+  },
+  "ios-simulator": {
+    "gn_args": {
+      "enable_run_ios_unittests_with_xctest": true,
+      "ios_use_goma_rbe": true,
+      "is_component_build": false,
+      "is_debug": true,
+      "symbol_level": 1,
+      "target_cpu": "x64",
+      "target_os": "ios",
+      "use_goma": true
+    }
+  },
+  "ios-simulator-full-configs": {
+    "gn_args": {
+      "enable_run_ios_unittests_with_xctest": true,
+      "is_component_build": false,
+      "is_debug": true,
+      "symbol_level": 1,
+      "target_cpu": "x64",
+      "target_os": "ios",
+      "use_goma": true
+    }
+  },
+  "ios-simulator-noncq": {
+    "gn_args": {
+      "enable_run_ios_unittests_with_xctest": true,
+      "ios_use_goma_rbe": true,
+      "is_component_build": false,
+      "is_debug": true,
+      "symbol_level": 1,
+      "target_cpu": "x64",
+      "target_os": "ios",
+      "use_goma": true
+    }
+  },
+  "mac-arm64-rel": {
+    "gn_args": {
+      "is_component_build": false,
+      "is_debug": false,
+      "target_cpu": "arm64",
+      "use_goma": true
+    }
+  }
+}

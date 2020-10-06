@@ -1,0 +1,32 @@
+{
+  "chromeos-amd64-generic-lacros-internal": {
+    "args_file": "//build/args/chromeos/amd64-generic.gni",
+    "gn_args": {
+      "chromeos_is_browser_only": true,
+      "cros_host_sysroot": "//build/linux/debian_sid_amd64-sysroot",
+      "cros_v8_snapshot_sysroot": "//build/linux/debian_sid_amd64-sysroot",
+      "enable_linux_installer": false,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "ozone_platform_headless": true,
+      "ozone_platform_wayland": true,
+      "ozone_platform_x11": false,
+      "rtc_use_pipewire": false,
+      "target_os": "linux",
+      "use_custom_libcxx": false,
+      "use_custom_libcxx_for_host": true,
+      "use_evdev_gestures": false,
+      "use_gio": false,
+      "use_glib": false,
+      "use_goma": true,
+      "use_gtk": false,
+      "use_ozone": true,
+      "use_pangocairo": false,
+      "use_pulseaudio": false,
+      "use_system_libsync": false,
+      "use_v8_context_snapshot": false,
+      "use_vaapi": false
+    }
+  }
+}
