@@ -134,9 +134,6 @@ PrintManagementUI::PrintManagementUI(
                                IDR_PRINTING_MANAGER_MOJO_LITE_JS);
 
   AddPrintManagementStrings(html_source.get());
-  web_app::SetManifestRequestFilter(html_source.get(),
-                                    IDR_PRINT_MANAGEMENT_MANIFEST,
-                                    IDS_PRINT_MANAGEMENT_APP_NAME);
 
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 html_source.release());

@@ -50,6 +50,7 @@
 #include "chrome/browser/chromeos/web_applications/diagnostics_system_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/help_app_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/media_web_app_info.h"
+#include "chrome/browser/chromeos/web_applications/print_management_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/scanning_system_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/terminal_source.h"
 #include "chrome/browser/chromeos/web_applications/terminal_system_web_app_info.h"
@@ -178,10 +179,10 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps() {
 
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::PRINT_MANAGEMENT)) {
     infos.emplace(
-        std::piecewise_construct,
-        std::forward_as_tuple(SystemAppType::PRINT_MANAGEMENT),
-        std::forward_as_tuple("PrintManagement",
-                              GURL("chrome://print-management/pwa.html")));
+        SystemAppType::PRINT_MANAGEMENT,
+        SystemAppInfo(
+            "PrintManagement", GURL("chrome://print-management/pwa.html"),
+            base::BindRepeating(&CreateWebAppInfoForPrintManagementApp)));
     infos.at(SystemAppType::PRINT_MANAGEMENT).show_in_launcher = false;
     infos.at(SystemAppType::PRINT_MANAGEMENT).minimum_window_size = {600, 320};
   }
