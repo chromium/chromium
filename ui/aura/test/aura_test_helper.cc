@@ -63,7 +63,7 @@ AuraTestHelper::AuraTestHelper(ui::ContextFactory* context_factory,
   ui::test::EnableTestConfigForPlatformWindows();
 #endif
 
-#if defined(USE_OZONE)
+#if defined(USE_OZONE) && defined(OS_CHROMEOS)
   ui::DisableNativeUiEventDispatchForTest();
 #endif
 
