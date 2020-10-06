@@ -1,0 +1,34 @@
+{%- macro enum_def(enum_spec_parent, enum_parent, enum) -%}
+{# TODO: Less generic enum annotations would be nice. We do it this way because
+   the bindings generator is still too stupid to generate the right integral
+   constants directly. #}
+{%- set enum_name = enum|lite_closure_type -%}
+
+{%  if generate_closure_exports -%}
+goog.provide('{{enum_name}}');
+goog.provide('{{enum_spec_parent}}.{{enum.name}}Spec');
+{%- endif %}
+/**
+ * @const { {$: !mojo.internal.MojomType} }
+ * @export
+ */
+{{enum_spec_parent}}.{{enum.name}}Spec = { $: mojo.internal.Enum() };
+
+/**
+ * @enum {number}
+ * @export
+ */
+{{enum_name}} = {
+  {# Set up the enum here, but fill out the values later. #}
+{%-   for field in enum.fields %}
+  {{field.name}}: {{field.numeric_value}},
+{%-   endfor %}
+{%-   if enum.min_value is not none %}
+  MIN_VALUE: {{enum.min_value}},
+{%-   endif %}
+{%-   if enum.max_value is not none %}
+  MAX_VALUE: {{enum.max_value}},
+{%-   endif %}
+};
+
+{%- endmacro %}
