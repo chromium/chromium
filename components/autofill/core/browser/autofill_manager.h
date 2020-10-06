@@ -32,6 +32,7 @@
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/address_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/credit_card_form_event_logger.h"
+#include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
@@ -680,6 +681,10 @@ class AutofillManager : public AutofillHandler,
 
   // The credit card access manager, used to access local and server cards.
   std::unique_ptr<CreditCardAccessManager> credit_card_access_manager_;
+
+  // The autofill offer manager, used to to retrieve offers for card
+  // suggestions.
+  AutofillOfferManager* offer_manager_;
 
   // Collected information about the autofill form where a credit card will be
   // filled.

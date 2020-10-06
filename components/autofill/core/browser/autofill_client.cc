@@ -35,6 +35,10 @@ version_info::Channel AutofillClient::GetChannel() const {
   return version_info::Channel::UNKNOWN;
 }
 
+AutofillOfferManager* AutofillClient::GetAutofillOfferManager() {
+  return nullptr;
+}
+
 std::string AutofillClient::GetVariationConfigCountryCode() const {
   return std::string();
 }

@@ -41,6 +41,13 @@ PersonalDataManager* PersonalDataManagerFactory::GetForProfile(
 }
 
 // static
+PersonalDataManager* PersonalDataManagerFactory::GetForBrowserContext(
+    content::BrowserContext* context) {
+  return static_cast<PersonalDataManager*>(
+      GetInstance()->GetServiceForBrowserContext(context, true));
+}
+
+// static
 PersonalDataManagerFactory* PersonalDataManagerFactory::GetInstance() {
   return base::Singleton<PersonalDataManagerFactory>::get();
 }

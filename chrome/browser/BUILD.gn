@@ -137,6 +137,8 @@ static_library("browser") {
     "autofill/autocomplete_history_manager_factory.h",
     "autofill/autofill_gstatic_reader.cc",
     "autofill/autofill_gstatic_reader.h",
+    "autofill/autofill_offer_manager_factory.cc",
+    "autofill/autofill_offer_manager_factory.h",
     "autofill/autofill_profile_validator_factory.cc",
     "autofill/autofill_profile_validator_factory.h",
     "autofill/personal_data_manager_factory.cc",

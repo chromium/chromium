@@ -59,6 +59,7 @@ namespace autofill {
 
 class AddressNormalizer;
 class AutocompleteHistoryManager;
+class AutofillOfferManager;
 class AutofillPopupDelegate;
 class CardUnmaskDelegate;
 class CreditCard;
@@ -274,6 +275,10 @@ class AutofillClient : public RiskDataLoader {
 
   // Gets an AddressNormalizer instance (can be null).
   virtual AddressNormalizer* GetAddressNormalizer() = 0;
+
+  // Gets an AutofillOfferManager instance (can be null for unsupported
+  // platforms).
+  virtual AutofillOfferManager* GetAutofillOfferManager();
 
   // Gets the virtual URL of the last committed page of this client's
   // associated WebContents.
