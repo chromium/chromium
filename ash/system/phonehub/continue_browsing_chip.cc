@@ -10,8 +10,10 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/system/unified/unified_system_tray_view.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/multidevice/logging/logging.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -33,6 +35,14 @@ constexpr gfx::Size kTitleViewSize(100, 40);
 ContinueBrowsingChip::ContinueBrowsingChip(
     const chromeos::phonehub::BrowserTabsModel::BrowserTabMetadata& metadata)
     : views::Button(this), url_(metadata.url) {
+  SetFocusBehavior(FocusBehavior::ALWAYS);
+  focus_ring()->SetColor(UnifiedSystemTrayView::GetFocusRingColor());
+
+  // Install this highlight path generator to set the desired shape for
+  // our focus ring.
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                kTaskContinuationChipRadius);
+
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, kContinueBrowsingChipPadding,
       kContinueBrowsingChipSpacing));
