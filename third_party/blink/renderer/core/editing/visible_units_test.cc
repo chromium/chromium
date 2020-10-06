@@ -113,25 +113,66 @@ TEST_F(VisibleUnitsTest, canonicalPositionOfWithHTMLHtmlElement) {
 
   EXPECT_EQ(Position(),
             CanonicalPositionOf(Position(GetDocument().documentElement(), 0)));
+  EXPECT_EQ(
+      Position(),
+      SnapBackward(Position(GetDocument().documentElement(), 0)).GetPosition());
+  EXPECT_EQ(
+      Position(),
+      SnapForward(Position(GetDocument().documentElement(), 0)).GetPosition());
 
   EXPECT_EQ(Position(one->firstChild(), 0),
             CanonicalPositionOf(Position(one, 0)));
+  EXPECT_EQ(Position(one->firstChild(), 0),
+            SnapBackward(Position(one, 0)).GetPosition());
+  EXPECT_EQ(Position(one->firstChild(), 0),
+            SnapForward(Position(one, 0)).GetPosition());
+
   EXPECT_EQ(Position(one->firstChild(), 1),
             CanonicalPositionOf(Position(one, 1)));
+  EXPECT_EQ(Position(one->firstChild(), 1),
+            SnapBackward(Position(one, 1)).GetPosition());
+  EXPECT_EQ(Position(one->firstChild(), 1),
+            SnapForward(Position(one, 1)).GetPosition());
 
   EXPECT_EQ(Position(one->firstChild(), 0),
             CanonicalPositionOf(Position(one->firstChild(), 0)));
+  EXPECT_EQ(Position(one->firstChild(), 0),
+            SnapBackward(Position(one->firstChild(), 0)).GetPosition());
+  EXPECT_EQ(Position(one->firstChild(), 0),
+            SnapForward(Position(one->firstChild(), 0)).GetPosition());
+
   EXPECT_EQ(Position(one->firstChild(), 1),
             CanonicalPositionOf(Position(one->firstChild(), 1)));
+  EXPECT_EQ(Position(one->firstChild(), 1),
+            SnapBackward(Position(one->firstChild(), 1)).GetPosition());
+  EXPECT_EQ(Position(one->firstChild(), 1),
+            SnapForward(Position(one->firstChild(), 1)).GetPosition());
 
   EXPECT_EQ(Position(html, 0), CanonicalPositionOf(Position(html, 0)));
+  EXPECT_EQ(Position(html, 0), SnapBackward(Position(html, 0)).GetPosition());
+  EXPECT_EQ(Position(html, 0), SnapForward(Position(html, 0)).GetPosition());
+
   EXPECT_EQ(Position(html, 1), CanonicalPositionOf(Position(html, 1)));
+  EXPECT_EQ(Position(html, 1), SnapBackward(Position(html, 1)).GetPosition());
+  EXPECT_EQ(Position(html, 1), SnapForward(Position(html, 1)).GetPosition());
+
   EXPECT_EQ(Position(html, 2), CanonicalPositionOf(Position(html, 2)));
+  EXPECT_EQ(Position(html, 2), SnapBackward(Position(html, 2)).GetPosition());
+  EXPECT_EQ(Position(html, 2), SnapForward(Position(html, 2)).GetPosition());
 
   EXPECT_EQ(Position(two->firstChild(), 0),
             CanonicalPositionOf(Position(two, 0)));
+  EXPECT_EQ(Position(two->firstChild(), 0),
+            SnapBackward(Position(two, 0)).GetPosition());
+  EXPECT_EQ(Position(two->firstChild(), 0),
+            SnapForward(Position(two, 0)).GetPosition());
+
   EXPECT_EQ(Position(two->firstChild(), 2),
             CanonicalPositionOf(Position(two, 1)));
+  EXPECT_EQ(Position(two->firstChild(), 2),
+            SnapBackward(Position(two, 1)).GetPosition());
+  EXPECT_EQ(Position(two->firstChild(), 2),
+            SnapForward(Position(two, 1)).GetPosition());
 }
 
 // For http://crbug.com/695317
@@ -139,13 +180,20 @@ TEST_F(VisibleUnitsTest, canonicalPositionOfWithInputElement) {
   SetBodyContent("<input>123");
   Element* const input = GetDocument().QuerySelector("input");
 
-  EXPECT_EQ(Position::BeforeNode(*input),
-            CanonicalPositionOf(Position::FirstPositionInNode(
-                *GetDocument().documentElement())));
+  Position position =
+      Position::FirstPositionInNode(*GetDocument().documentElement());
+  EXPECT_EQ(Position::BeforeNode(*input), CanonicalPositionOf(position));
+  EXPECT_EQ(Position::BeforeNode(*input), SnapBackward(position).GetPosition());
+  EXPECT_EQ(Position::BeforeNode(*input), SnapForward(position).GetPosition());
 
+  PositionInFlatTree pos_in_flat_tree =
+      PositionInFlatTree::FirstPositionInNode(*GetDocument().documentElement());
   EXPECT_EQ(PositionInFlatTree::BeforeNode(*input),
-            CanonicalPositionOf(PositionInFlatTree::FirstPositionInNode(
-                *GetDocument().documentElement())));
+            CanonicalPositionOf(pos_in_flat_tree));
+  EXPECT_EQ(PositionInFlatTree::BeforeNode(*input),
+            SnapBackward(pos_in_flat_tree).GetPosition());
+  EXPECT_EQ(PositionInFlatTree::BeforeNode(*input),
+            SnapForward(pos_in_flat_tree).GetPosition());
 }
 
 TEST_F(VisibleUnitsTest, characterBefore) {
@@ -757,8 +805,12 @@ TEST_F(VisibleUnitsTest,
 
   Node* paragraph = GetDocument().QuerySelector("p");
   Node* text = paragraph->firstChild();
-  Position start = CanonicalPositionOf(Position::BeforeNode(*paragraph));
-  EXPECT_EQ(Position(text, 2), start);
+  EXPECT_EQ(Position(text, 2),
+            CanonicalPositionOf(Position::BeforeNode(*paragraph)));
+  EXPECT_EQ(Position(text, 2),
+            SnapBackward(Position::BeforeNode(*paragraph)).GetPosition());
+  EXPECT_EQ(Position(text, 2),
+            SnapForward(Position::BeforeNode(*paragraph)).GetPosition());
 }
 
 TEST_F(VisibleUnitsTest, MostForwardCaretPositionWithInvisibleFirstLetter) {

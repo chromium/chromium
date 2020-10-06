@@ -147,8 +147,10 @@ VisiblePositionTemplate<Strategy> StartOfParagraphAlgorithm(
     const VisiblePositionTemplate<Strategy>& visible_position,
     EditingBoundaryCrossingRule boundary_crossing_rule) {
   DCHECK(visible_position.IsValid()) << visible_position;
-  return CreateVisiblePosition(StartOfParagraphAlgorithm(
-      visible_position.DeepEquivalent(), boundary_crossing_rule));
+  return CreateVisiblePosition(
+      StartOfParagraphAlgorithm(visible_position.DeepEquivalent(),
+                                boundary_crossing_rule),
+      TextAffinity::kDownstream);
 }
 
 template <typename Strategy>
@@ -245,8 +247,10 @@ VisiblePositionTemplate<Strategy> EndOfParagraphAlgorithm(
     const VisiblePositionTemplate<Strategy>& visible_position,
     EditingBoundaryCrossingRule boundary_crossing_rule) {
   DCHECK(visible_position.IsValid()) << visible_position;
-  return CreateVisiblePosition(EndOfParagraphAlgorithm(
-      visible_position.DeepEquivalent(), boundary_crossing_rule));
+  return CreateVisiblePosition(
+      EndOfParagraphAlgorithm(visible_position.DeepEquivalent(),
+                              boundary_crossing_rule),
+      TextAffinity::kUpstream);
 }
 
 template <typename Strategy>

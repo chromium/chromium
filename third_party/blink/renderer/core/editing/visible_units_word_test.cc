@@ -233,8 +233,13 @@ TEST_P(ParameterizedVisibleUnitsWordTest, StartOfWordShadowDOM) {
                 StartOfWordPosition(
                     CreateVisiblePositionInFlatTree(*two, 1).DeepEquivalent()))
                 .DeepEquivalent());
-  // DOM tree canonicalization moves the result to a wrong position.
-  EXPECT_EQ(Position(two, 2),
+  EXPECT_EQ(Position(three, 0),
+            CreateVisiblePosition(
+                StartOfWordPosition(CreateVisiblePositionInDOMTree(
+                                        *three, 1, TextAffinity::kUpstream)
+                                        .DeepEquivalent()))
+                .DeepEquivalent());
+  EXPECT_EQ(Position(three, 0),
             CreateVisiblePosition(
                 StartOfWordPosition(
                     CreateVisiblePositionInDOMTree(*three, 1).DeepEquivalent()))
