@@ -47,13 +47,10 @@ class DesktopCapturerLacros : public webrtc::DesktopCapturer {
   void SetExcludedWindow(webrtc::WindowId window) override;
 
  private:
-  // This method is used to lazily initialize screen_manager_ on the same
-  // affine sequence on which |Start| is called.
-  void EnsureScreenManager();
-
   // Callback for when ash-chrome returns a snapshot of the screen or window as
   // a bitmap.
-  void DidTakeSnapshot(bool success, crosapi::Bitmap snapshot);
+  void DidTakeSnapshot(bool success, const SkBitmap& snapshot);
+  void DeprecatedDidTakeSnapshot(bool success, crosapi::Bitmap snapshot);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -78,6 +75,10 @@ class DesktopCapturerLacros : public webrtc::DesktopCapturer {
 
   // The remote connection to the screen manager.
   mojo::Remote<crosapi::mojom::ScreenManager> screen_manager_;
+
+  // Only set if we are using a newer screen manager. Otherwise, we fallback to
+  // the deprecated methods.
+  mojo::Remote<crosapi::mojom::SnapshotCapturer> snapshot_capturer_;
 
   base::WeakPtrFactory<DesktopCapturerLacros> weak_factory_{this};
 };

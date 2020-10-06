@@ -5,15 +5,30 @@
 module crosapi.mojom;
 
 import "chromeos/crosapi/mojom/bitmap.mojom";
+import "skia/public/mojom/bitmap.mojom";
 
-// A unique identifier and title for a window.
-[Stable]
-struct WindowDetails {
+// A unique identifier and title for a window (or screen).
+[Stable, RenamedFrom="crosapi.mojom.WindowDetails"]
+struct SnapshotSource {
   // Guaranteed to be unique and never reused.
   uint64 id@0;
 
-  // The title of the window in UTF-8 encoding.
+  // The user-visible name of the window or screen in UTF-8 encoding.
   string title@1;
+};
+
+// This interface is used to capture bitmap snapshots of screens or windows.
+// See ScreenManager methods used to create instances of this interface.
+[Stable]
+interface SnapshotCapturer {
+  // Returns list of screens or windows that can be captured.
+  [Sync]
+  ListSources@0() => (array<SnapshotSource> sources);
+
+  // Captures a bitmap snapshot of the specified screen or window. If |success|
+  // is false, that may indicate that the specified source no longer exists.
+  [Sync]
+  TakeSnapshot@1(uint64 id) => (bool success, skia.mojom.Bitmap? snapshot);
 };
 
 // This interface is implemented by ash-chrome. It allows lacros-chrome to query
@@ -29,11 +44,8 @@ struct WindowDetails {
 // interface in the future.
 [Stable]
 interface ScreenManager {
-  // TODO(https://crbug.com/1094460): We will need to add more methods for
-  // querying screens, windows, etc. Details still TBD.
-
-  // TODO(https://crbug.com/1094460): Use a more performant transport
-  // mechanism.
+  // DEPRECATED. Use |GetScreenCapturer| instead.
+  //
   // This method assumes that there's exactly one screen. The implementation
   // of this method takes a screenshot and converts it into a bitmap. Each
   // pixel is represented by 4 bytes [RGBA].
@@ -41,16 +53,26 @@ interface ScreenManager {
   // The media screen capture implementation assumes that every platform
   // provides a synchronous method to take a snapshot of the screen.
   [Sync]
-  TakeScreenSnapshot@0() => (Bitmap snapshot);
+  DeprecatedTakeScreenSnapshot@0() => (Bitmap snapshot);
 
-  // Synchronously returns a list of visible, focusable windows. This method
-  // needs to be synchronous to support cross-platform code that relies on the
-  // assumption that every OS provides a similar synchronous IPC.
+  // DEPRECATED. Use |GetWindowCapturer| instead.
+  //
+  // Returns a list of visible, focusable top-level windows.
   [Sync]
-  ListWindows@1() => (array<WindowDetails> windows);
+  DeprecatedListWindows@1() => (array<SnapshotSource> windows);
 
+  // DEPRECATED. Use |GetWindowCapturer| instead.
+  //
   // Take a screenshot of a window with an id from ListWindows. If |success|
   // is false, then the window no longer exists.
   [Sync]
-  TakeWindowSnapshot@2(uint64 id) => (bool success, Bitmap snapshot);
+  DeprecatedTakeWindowSnapshot@2(uint64 id) => (bool success, Bitmap snapshot);
+
+  // Get a SnapshotCapturer instance that can snapshot available screens.
+  [MinVersion=1]
+  GetScreenCapturer@3(pending_receiver<SnapshotCapturer> capturer);
+
+  // Get a SnapshotCapturer instance that can snapshot available windows.
+  [MinVersion=1]
+  GetWindowCapturer@4(pending_receiver<SnapshotCapturer> capturer);
 };

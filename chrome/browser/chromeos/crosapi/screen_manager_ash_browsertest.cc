@@ -79,7 +79,8 @@ class ScreenManagerAshBrowserTest : public InProcessBrowserTest {
 };
 
 // Tests that taking a screen snapshot works.
-IN_PROC_BROWSER_TEST_F(ScreenManagerAshBrowserTest, TakeScreenSnapshot) {
+IN_PROC_BROWSER_TEST_F(ScreenManagerAshBrowserTest,
+                       DeprecatedTakeScreenSnapshot) {
   base::RunLoop run_loop;
   Bitmap snapshot;
 
@@ -88,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(ScreenManagerAshBrowserTest, TakeScreenSnapshot) {
   auto take_snapshot_background = base::BindOnce(
       [](SMRemote* remote, Bitmap* snapshot) {
         mojo::ScopedAllowSyncCallForTesting allow_sync;
-        (*remote)->TakeScreenSnapshot(snapshot);
+        (*remote)->DeprecatedTakeScreenSnapshot(snapshot);
       },
       screen_manager_remote_.get(), &snapshot);
   background_sequence_->PostTaskAndReply(
@@ -102,7 +103,8 @@ IN_PROC_BROWSER_TEST_F(ScreenManagerAshBrowserTest, TakeScreenSnapshot) {
   EXPECT_EQ(int{snapshot.height}, primary_window->bounds().height());
 }
 
-IN_PROC_BROWSER_TEST_F(ScreenManagerAshBrowserTest, TakeWindowSnapshot) {
+IN_PROC_BROWSER_TEST_F(ScreenManagerAshBrowserTest,
+                       DeprecatedTakeWindowSnapshot) {
   base::RunLoop run_loop;
   bool success;
   Bitmap snapshot;
@@ -112,13 +114,14 @@ IN_PROC_BROWSER_TEST_F(ScreenManagerAshBrowserTest, TakeWindowSnapshot) {
   auto take_snapshot_background = base::BindOnce(
       [](SMRemote* remote, bool* success, Bitmap* snapshot) {
         mojo::ScopedAllowSyncCallForTesting allow_sync;
-        std::vector<mojom::WindowDetailsPtr> windows;
-        (*remote)->ListWindows(&windows);
+        std::vector<mojom::SnapshotSourcePtr> windows;
+        (*remote)->DeprecatedListWindows(&windows);
 
         // There should be exactly 1 window.
         ASSERT_EQ(1u, windows.size());
 
-        (*remote)->TakeWindowSnapshot(windows[0]->id, success, snapshot);
+        (*remote)->DeprecatedTakeWindowSnapshot(windows[0]->id, success,
+                                                snapshot);
       },
       screen_manager_remote_.get(), &success, &snapshot);
   background_sequence_->PostTaskAndReply(
@@ -132,6 +135,83 @@ IN_PROC_BROWSER_TEST_F(ScreenManagerAshBrowserTest, TakeWindowSnapshot) {
   aura::Window* window = browser()->window()->GetNativeWindow();
   EXPECT_EQ(int{snapshot.width}, window->bounds().width());
   EXPECT_EQ(int{snapshot.height}, window->bounds().height());
+}
+
+IN_PROC_BROWSER_TEST_F(ScreenManagerAshBrowserTest, ScreenCapturer) {
+  base::RunLoop run_loop;
+  bool success;
+  SkBitmap snapshot;
+
+  // Take a snapshot on a background sequence. The call is blocking, so when it
+  // finishes, we can also unblock the main thread.
+  auto take_snapshot_background = base::BindOnce(
+      [](SMRemote* remote, bool* success, SkBitmap* snapshot) {
+        mojo::Remote<mojom::SnapshotCapturer> capturer;
+        (*remote)->GetScreenCapturer(capturer.BindNewPipeAndPassReceiver());
+
+        {
+          mojo::ScopedAllowSyncCallForTesting allow_sync;
+
+          std::vector<mojom::SnapshotSourcePtr> screens;
+          capturer->ListSources(&screens);
+
+          // There should be at least one screen!
+          ASSERT_LE(1u, screens.size());
+
+          capturer->TakeSnapshot(screens[0]->id, success, snapshot);
+        }
+      },
+      screen_manager_remote_.get(), &success, &snapshot);
+  background_sequence_->PostTaskAndReply(
+      FROM_HERE, std::move(take_snapshot_background), run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Check that the IPC succeeded.
+  ASSERT_TRUE(success);
+
+  // Check that the screenshot has the right dimensions.
+  aura::Window* primary_window =
+      browser()->window()->GetNativeWindow()->GetRootWindow();
+  EXPECT_EQ(int{snapshot.width()}, primary_window->bounds().width());
+  EXPECT_EQ(int{snapshot.height()}, primary_window->bounds().height());
+}
+
+IN_PROC_BROWSER_TEST_F(ScreenManagerAshBrowserTest, WindowCapturer) {
+  base::RunLoop run_loop;
+  bool success;
+  SkBitmap snapshot;
+
+  // Take a snapshot on a background sequence. The call is blocking, so when it
+  // finishes, we can also unblock the main thread.
+  auto take_snapshot_background = base::BindOnce(
+      [](SMRemote* remote, bool* success, SkBitmap* snapshot) {
+        mojo::Remote<mojom::SnapshotCapturer> capturer;
+        (*remote)->GetWindowCapturer(capturer.BindNewPipeAndPassReceiver());
+
+        {
+          mojo::ScopedAllowSyncCallForTesting allow_sync;
+
+          std::vector<mojom::SnapshotSourcePtr> windows;
+          capturer->ListSources(&windows);
+
+          // There should be at least one window!
+          ASSERT_LE(1u, windows.size());
+
+          capturer->TakeSnapshot(windows[0]->id, success, snapshot);
+        }
+      },
+      screen_manager_remote_.get(), &success, &snapshot);
+  background_sequence_->PostTaskAndReply(
+      FROM_HERE, std::move(take_snapshot_background), run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Check that the IPC succeeded.
+  ASSERT_TRUE(success);
+
+  // Check that the screenshot has the right dimensions.
+  aura::Window* window = browser()->window()->GetNativeWindow();
+  EXPECT_EQ(int{snapshot.width()}, window->bounds().width());
+  EXPECT_EQ(int{snapshot.height()}, window->bounds().height());
 }
 
 }  // namespace
