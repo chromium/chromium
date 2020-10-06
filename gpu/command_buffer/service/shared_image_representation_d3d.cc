@@ -90,7 +90,7 @@ WGPUTexture SharedImageRepresentationDawnD3D::BeginAccess(
 
   dawn_native::d3d12::ExternalImageDescriptorDXGISharedHandle descriptor;
   descriptor.cTextureDescriptor = &texture_descriptor;
-  descriptor.isCleared = IsCleared();
+  descriptor.isInitialized = IsCleared();
   descriptor.sharedHandle = shared_handle;
   descriptor.acquireMutexKey = shared_mutex_acquire_key;
   descriptor.isSwapChainTexture =

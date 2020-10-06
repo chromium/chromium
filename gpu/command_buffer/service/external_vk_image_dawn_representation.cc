@@ -57,7 +57,7 @@ WGPUTexture ExternalVkImageDawnRepresentation::BeginAccess(
 
   dawn_native::vulkan::ExternalImageDescriptorOpaqueFD descriptor = {};
   descriptor.cTextureDescriptor = &texture_descriptor;
-  descriptor.isCleared = IsCleared();
+  descriptor.isInitialized = IsCleared();
   descriptor.allocationSize = backing_impl()->image()->device_size();
   descriptor.memoryTypeIndex = backing_impl()->image()->memory_type_index();
   descriptor.memoryFD = dup(memory_fd_.get());
@@ -80,21 +80,27 @@ void ExternalVkImageDawnRepresentation::EndAccess() {
   }
 
   // Grab the signal semaphore from dawn
-  int signal_semaphore_fd =
-      dawn_native::vulkan::ExportSignalSemaphoreOpaqueFD(device_, texture_);
+  dawn_native::vulkan::ExternalImageExportInfoOpaqueFD export_info;
+  if (!dawn_native::vulkan::ExportVulkanImage(
+          texture_, VK_IMAGE_LAYOUT_UNDEFINED, &export_info)) {
+    DLOG(ERROR) << "Failed to export Dawn Vulkan image.";
+  } else {
+    if (export_info.isInitialized) {
+      SetCleared();
+    }
 
-  if (dawn_native::IsTextureSubresourceInitialized(texture_, 0, 1, 0, 1)) {
-    SetCleared();
+    // TODO(enga): Handle waiting on multiple semaphores from dawn
+    DCHECK(export_info.semaphoreHandles.size() == 1);
+
+    // Wrap file descriptor in a handle
+    SemaphoreHandle handle(VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT_KHR,
+                           base::ScopedFD(export_info.semaphoreHandles[0]));
+
+    auto semaphore = ExternalSemaphore::CreateFromHandle(
+        backing_impl()->context_provider(), std::move(handle));
+
+    backing_impl()->EndAccess(false, std::move(semaphore), false /* is_gl */);
   }
-
-  // Wrap file descriptor in a handle
-  SemaphoreHandle handle(VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT_KHR,
-                         base::ScopedFD(signal_semaphore_fd));
-
-  auto semaphore = ExternalSemaphore::CreateFromHandle(
-      backing_impl()->context_provider(), std::move(handle));
-
-  backing_impl()->EndAccess(false, std::move(semaphore), false /* is_gl */);
 
   // Destroy the texture, signaling the semaphore in dawn
   dawn_procs_.textureDestroy(texture_);

@@ -7,6 +7,7 @@
 #include <dawn_native/VulkanBackend.h>
 
 #include <vulkan/vulkan.h>
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -69,7 +70,7 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
 
   dawn_native::vulkan::ExternalImageDescriptorDmaBuf descriptor = {};
   descriptor.cTextureDescriptor = &texture_descriptor;
-  descriptor.isCleared = IsCleared();
+  descriptor.isInitialized = IsCleared();
   // Import the dma-buf into Dawn via the Vulkan backend. As per the Vulkan
   // documentation, importing memory from a file descriptor transfers
   // ownership of the fd from the application to the Vulkan implementation.
@@ -94,12 +95,19 @@ void SharedImageRepresentationDawnOzone::EndAccess() {
     return;
   }
 
-  if (dawn_native::IsTextureSubresourceInitialized(texture_, 0, 1, 0, 1)) {
-    SetCleared();
-  }
+  // Grab the signal semaphore from dawn
+  dawn_native::vulkan::ExternalImageExportInfoOpaqueFD export_info;
+  if (!dawn_native::vulkan::ExportVulkanImage(
+          texture_, VK_IMAGE_LAYOUT_UNDEFINED, &export_info)) {
+    DLOG(ERROR) << "Failed to export Dawn Vulkan image.";
+  } else {
+    if (export_info.isInitialized) {
+      SetCleared();
+    }
 
-  // TODO(hob): Synchronize access to the dma-buf by exporting the VkSemaphore
-  // from the WebGPU texture.
+    // TODO(hob): Synchronize access to the dma-buf by waiting on
+    // |export_info.semaphoreHandles|
+  }
   dawn_procs_->data.textureDestroy(texture_);
   dawn_procs_->data.textureRelease(texture_);
   texture_ = nullptr;

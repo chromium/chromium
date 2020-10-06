@@ -122,7 +122,7 @@ class SharedImageRepresentationDawnIOSurface
 
     dawn_native::metal::ExternalImageDescriptorIOSurface descriptor;
     descriptor.cTextureDescriptor = &texture_descriptor;
-    descriptor.isCleared = IsCleared();
+    descriptor.isInitialized = IsCleared();
     descriptor.ioSurface = io_surface_.get();
     descriptor.plane = 0;
 
