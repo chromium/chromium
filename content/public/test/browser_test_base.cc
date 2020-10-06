@@ -654,7 +654,7 @@ void BrowserTestBase::WaitUntilJavaIsReady(base::OnceClosure quit_closure) {
 
 namespace {
 
-std::string GetDefaultTraceFileneme() {
+std::string GetDefaultTraceFilename() {
   std::string test_suite_name = ::testing::UnitTest::GetInstance()
                                     ->current_test_info()
                                     ->test_suite_name();
@@ -769,10 +769,10 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
     base::FilePath trace_file =
         base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
             switches::kEnableTracingOutput);
-    // If there was no file specified, put a hardcoded one in the current
-    // working directory.
-    if (trace_file.empty())
-      trace_file = base::FilePath().AppendASCII(GetDefaultTraceFileneme());
+    // If |trace_file| ends in a directory separator or is empty use a generated
+    // name in that directory (empty means current directory).
+    if (trace_file.empty() || trace_file.EndsWithSeparator())
+      trace_file = trace_file.AppendASCII(GetDefaultTraceFilename());
 
     // Wait for tracing to collect results from the renderers.
     base::RunLoop run_loop;
