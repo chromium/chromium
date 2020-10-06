@@ -487,6 +487,39 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_CPU_TITLE" desc="The title of the diagnostics CPU section which shows users' information about their computer CPU usage." translateable="false">
         CPU
       </message>
+      <message name="IDS_DIAGNOSTICS_CPU_USAGE_LABEL" desc="The label for the percentage of CPU that is currently being used." translateable="false">
+        Currently using
+      </message>
+      <message name="IDS_DIAGNOSTICS_CPU_TEMPERATURE_LABEL" desc="The label for the current CPU temperature." translateable="false">
+        Temperature
+      </message>
+      <message name="IDS_DIAGNOSTICS_TOTAL_MEMORY_LABEL" desc="The label for the total amount of memory on a device." translateable="false">
+        Total Memory
+      </message>
+      <message name="IDS_DIAGNOSTICS_MEMORY_AVAILABLE_LABEL" desc="The label for the amount of memory available on a device." translateable="false">
+        Memory available
+      </message>
+      <message name="IDS_DIAGNOSTICS_POWER_LABEL" desc="The label for the power adapter status." translateable="false">
+        Power
+      </message>
+      <message name="IDS_DIAGNOSTICS_POWER_TIME_LABEL" desc="The label for the time until the battery is fully charged." translateable="false">
+        Time until full
+      </message>
+      <message name="IDS_DIAGNOSTICS_CHARGE_NOW_LABEL" desc="The label for a battery's current battery level represented in milliamps." translateable="false">
+        Now charge
+      </message>
+      <message name="IDS_DIAGNOSTICS_CURRENT_NOW_LABEL" desc="The label for a battery's current power consumption represented in milliamps." translateable="false">
+        Now current
+      </message>
+      <message name="IDS_DIAGNOSTICS_DESIGNED_FULL_CHARGE_LABEL" desc="The label for a battery's designed full charge capacity represented in milliamp hours." translateable="false">
+        Designed full charge
+      </message>
+      <message name="IDS_DIAGNOSTICS_NOW_FULL_CHARGE_LABEL" desc="The label for a battery's full charge capacity represented in milliamp hours." translateable="false">
+        Now full charge
+      </message>
+      <message name="IDS_DIAGNOSTICS_CYCLE_COUNT_LABEL" desc="The label for a battery's cycle count. The cycle count is the number of times the battery has been drained and recharged." translateable="false">
+        Cycle count
+      </message>
 
     </messages>
   </release>

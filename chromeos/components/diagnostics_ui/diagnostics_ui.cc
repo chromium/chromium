@@ -28,10 +28,21 @@ constexpr char kGeneratedPath[] =
 
 void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"adapterStatus", IDS_DIAGNOSTICS_POWER_LABEL},
       {"batteryTitle", IDS_DIAGNOSTICS_BATTERY_TITLE},
+      {"chargeFullDesign", IDS_DIAGNOSTICS_DESIGNED_FULL_CHARGE_LABEL},
+      {"chargeFullNow", IDS_DIAGNOSTICS_NOW_FULL_CHARGE_LABEL},
+      {"chargeNow", IDS_DIAGNOSTICS_CHARGE_NOW_LABEL},
+      {"cpuTemp", IDS_DIAGNOSTICS_CPU_TEMPERATURE_LABEL},
       {"cpuTitle", IDS_DIAGNOSTICS_CPU_TITLE},
+      {"cpuUsage", IDS_DIAGNOSTICS_CPU_USAGE_LABEL},
+      {"currentNow", IDS_DIAGNOSTICS_CURRENT_NOW_LABEL},
+      {"cycleCount", IDS_DIAGNOSTICS_CYCLE_COUNT_LABEL},
       {"diagnosticsTitle", IDS_DIAGNOSTICS_TITLE},
+      {"memoryAvailable", IDS_DIAGNOSTICS_MEMORY_AVAILABLE_LABEL},
       {"memoryTitle", IDS_DIAGNOSTICS_MEMORY_TITLE},
+      {"powerTime", IDS_DIAGNOSTICS_POWER_TIME_LABEL},
+      {"totalMemory", IDS_DIAGNOSTICS_TOTAL_MEMORY_LABEL},
   };
   for (const auto& str : kLocalizedStrings) {
     html_source->AddLocalizedString(str.name, str.id);
