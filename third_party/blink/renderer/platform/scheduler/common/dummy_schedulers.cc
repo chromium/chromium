@@ -252,6 +252,10 @@ class DummyWebThreadScheduler : public WebThreadScheduler,
       PageScheduler::Delegate*) override {
     return std::make_unique<DummyPageScheduler>();
   }
+
+  WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override {
+    return nullptr;
+  }
 };
 
 }  // namespace

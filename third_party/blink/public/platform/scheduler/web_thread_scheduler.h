@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_rail_mode_observer.h"
 #include "third_party/blink/public/platform/scheduler/web_render_widget_scheduling_state.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -92,6 +93,16 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler {
   // Creates a WebWidgetScheduler implementation. Must be called from the main
   // thread.
   virtual std::unique_ptr<WebWidgetScheduler> CreateWidgetScheduler();
+
+  // Return the current active AgentGroupScheduler.
+  // When a task which belongs to a specific AgentGroupScheduler is going to be
+  // run, this AgentGroupScheduler becomes the current active
+  // AgentGroupScheduler. And when the task is finished, the current active
+  // AgentGroupScheduler becomes nullptr. So if there is no active
+  // AgentGroupScheduler, this function returns nullptr. This behaviour is
+  // implemented by MainThreadSchedulerImpl’s OnTaskStarted and OnTaskCompleted
+  // hook points. So you can’t use this functionality in task observers.
+  virtual WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() = 0;
 
   // Returns a new WebRenderWidgetSchedulingState.  The signals from this will
   // be used to make scheduling decisions.

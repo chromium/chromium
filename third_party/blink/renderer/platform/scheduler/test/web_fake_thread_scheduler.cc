@@ -37,6 +37,11 @@ WebFakeThreadScheduler::CreateWidgetScheduler() {
   return std::make_unique<WebFakeWidgetScheduler>();
 }
 
+WebAgentGroupScheduler*
+WebFakeThreadScheduler::GetCurrentAgentGroupScheduler() {
+  return nullptr;
+}
+
 std::unique_ptr<WebRenderWidgetSchedulingState>
 WebFakeThreadScheduler::NewRenderWidgetSchedulingState() {
   return nullptr;
