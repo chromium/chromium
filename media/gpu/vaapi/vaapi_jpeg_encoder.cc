@@ -205,8 +205,16 @@ size_t FillJpegHeader(const gfx::Size& input_size,
 
     const JpegQuantizationTable& quant_table = kDefaultQuantTable[i];
     for (size_t j = 0; j < kDctSize; ++j) {
+      // The iHD media driver shifts the quantization values
+      // by 50 while encoding. We should add 50 here to
+      // ensure the correctness in the packed header that is
+      // directly stuffed into the bitstream as JPEG headers.
+      // GStreamer test cases show a psnr improvement in
+      // Y plane (41.27 to 48.31) with this quirk.
+      const static uint32_t shift =
+          VaapiWrapper::GetImplementationType() == VAImplementation::kIntelIHD ? 50 : 0;
       uint32_t scaled_quant_value =
-          (quant_table.value[kZigZag8x8[j]] * quality_normalized) / 100;
+          (quant_table.value[kZigZag8x8[j]] * quality_normalized + shift) / 100;
       scaled_quant_value = base::ClampToRange(scaled_quant_value, 1u, 255u);
       header[idx++] = static_cast<uint8_t>(scaled_quant_value);
     }
