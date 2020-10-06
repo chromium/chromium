@@ -82,7 +82,6 @@ class FakeRenderWidgetHost : public blink::mojom::FrameWidgetHost,
       const std::vector<gfx::Rect>& bounds) override;
   void SetMouseCapture(bool capture) override;
   void RequestMouseLock(bool from_user_gesture,
-                        bool privileged,
                         bool unadjusted_movement,
                         RequestMouseLockCallback callback) override;
 

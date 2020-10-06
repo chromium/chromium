@@ -66,7 +66,6 @@ class WebExternalWidgetImpl : public WebExternalWidget,
   void SetFocus(bool focus) override;
   void RequestMouseLock(
       bool has_transient_user_activation,
-      bool priviledged,
       bool request_unadjusted_movement,
       base::OnceCallback<
           void(mojom::blink::PointerLockResult,

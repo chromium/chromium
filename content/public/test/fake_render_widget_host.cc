@@ -94,7 +94,6 @@ void FakeRenderWidgetHost::ImeCompositionRangeChanged(
 void FakeRenderWidgetHost::SetMouseCapture(bool capture) {}
 
 void FakeRenderWidgetHost::RequestMouseLock(bool from_user_gesture,
-                                            bool privileged,
                                             bool unadjusted_movement,
                                             RequestMouseLockCallback callback) {
 }

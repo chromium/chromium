@@ -408,9 +408,6 @@ void TestWebContents::ShowCreatedWidget(int process_id,
                                         int route_id,
                                         const gfx::Rect& initial_rect) {}
 
-void TestWebContents::ShowCreatedFullscreenWidget(int process_id,
-                                                  int route_id) {}
-
 void TestWebContents::SaveFrameWithHeaders(
     const GURL& url,
     const Referrer& referrer,

@@ -561,10 +561,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // locked.
   bool GotResponseToLockMouseRequest(blink::mojom::PointerLockResult result);
 
-  void set_allow_privileged_mouse_lock(bool allow) {
-    allow_privileged_mouse_lock_ = allow;
-  }
-
   // Called when the response to a pending keyboard lock request has arrived.
   // |allowed| should be true if the current tab is in tab initiated fullscreen
   // mode.
@@ -712,7 +708,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void SetMouseCapture(bool capture) override;
   void RequestMouseLock(
       bool from_user_gesture,
-      bool privileged,
       bool unadjusted_movement,
       InputRouterImpl::RequestMouseLockCallback response) override;
   gfx::Size GetRootWidgetViewportSize() override;
@@ -1213,7 +1208,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   bool suppress_events_until_keydown_ = false;
 
   bool pending_mouse_lock_request_ = false;
-  bool allow_privileged_mouse_lock_ = false;
   bool mouse_lock_raw_movement_ = false;
   // Stores the keyboard keys to lock while waiting for a pending lock request.
   base::Optional<base::flat_set<ui::DomCode>> keyboard_keys_to_lock_;

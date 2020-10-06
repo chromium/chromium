@@ -80,7 +80,6 @@ class CONTENT_EXPORT InputRouterClient {
   virtual void SetMouseCapture(bool capture) = 0;
   virtual void RequestMouseLock(
       bool from_user_gesture,
-      bool privileged,
       bool unadjusted_movement,
       blink::mojom::WidgetInputHandlerHost::RequestMouseLockCallback
           response) = 0;

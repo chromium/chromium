@@ -871,7 +871,6 @@ void TestWidgetInputHandlerHost::SetMouseCapture(bool capture) {}
 
 void TestWidgetInputHandlerHost::RequestMouseLock(
     bool from_user_gesture,
-    bool privileged,
     bool unadjusted_movement,
     RequestMouseLockCallback callback) {}
 

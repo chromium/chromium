@@ -196,7 +196,6 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   void ShowCreatedWidget(int process_id,
                          int route_id,
                          const gfx::Rect& initial_rect) override;
-  void ShowCreatedFullscreenWidget(int process_id, int route_id) override;
   void SaveFrameWithHeaders(const GURL& url,
                             const Referrer& referrer,
                             const std::string& headers,

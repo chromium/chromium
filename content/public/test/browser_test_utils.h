@@ -338,7 +338,6 @@ void ResetTouchAction(RenderWidgetHost* host);
 // Requests mouse lock on the implementation of the given RenderWidgetHost
 void RequestMouseLock(RenderWidgetHost* host,
                       bool user_gesture,
-                      bool privileged,
                       bool request_unadjusted_movement);
 
 // Spins a run loop until effects of previously forwarded input are fully

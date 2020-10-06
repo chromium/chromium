@@ -44,7 +44,6 @@ class MockInputRouterClient : public InputRouterClient,
   void SetMouseCapture(bool capture) override {}
   void RequestMouseLock(
       bool user_gesture,
-      bool privileged,
       bool unadjusted_movement,
       blink::mojom::WidgetInputHandlerHost::RequestMouseLockCallback response)
       override {}

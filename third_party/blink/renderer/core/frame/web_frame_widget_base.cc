@@ -1182,13 +1182,12 @@ void WebFrameWidgetBase::CancelCompositionForPepper() {
 
 void WebFrameWidgetBase::RequestMouseLock(
     bool has_transient_user_activation,
-    bool priviledged,
     bool request_unadjusted_movement,
     base::OnceCallback<void(
         mojom::blink::PointerLockResult,
         CrossVariantMojoRemote<mojom::blink::PointerLockContextInterfaceBase>)>
         callback) {
-  widget_base_->RequestMouseLock(has_transient_user_activation, priviledged,
+  widget_base_->RequestMouseLock(has_transient_user_activation,
                                  request_unadjusted_movement,
                                  std::move(callback));
 }

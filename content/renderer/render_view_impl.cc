@@ -545,14 +545,6 @@ void RenderViewImpl::ShowCreatedPopupWidget(RenderWidget* popup_widget,
                                   initial_rect));
 }
 
-void RenderViewImpl::ShowCreatedFullscreenWidget(
-    RenderWidget* fullscreen_widget,
-    WebNavigationPolicy policy,
-    const gfx::Rect& initial_rect) {
-  Send(new ViewHostMsg_ShowFullscreenWidget(GetRoutingID(),
-                                            fullscreen_widget->routing_id()));
-}
-
 void RenderViewImpl::SendFrameStateUpdates() {
   // Tell each frame with pending state to send its UpdateState message.
   for (int render_frame_routing_id : frames_with_pending_state_) {

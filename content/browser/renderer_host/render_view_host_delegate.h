@@ -120,10 +120,6 @@ class CONTENT_EXPORT RenderViewHostDelegate {
                                  int widget_route_id,
                                  const gfx::Rect& initial_rect) {}
 
-  // Show the newly created full screen widget. Similar to above.
-  virtual void ShowCreatedFullscreenWidget(int process_id,
-                                           int widget_route_id) {}
-
   // Returns the SessionStorageNamespace the render view should use. Might
   // create the SessionStorageNamespace on the fly.
   virtual SessionStorageNamespace* GetSessionStorageNamespace(

@@ -115,17 +115,13 @@ IPC_MESSAGE_ROUTED1(ViewMsg_PpapiBrokerPermissionResult,
 // -----------------------------------------------------------------------------
 // Messages sent from the renderer to the browser.
 
-// These two messages are sent to the parent RenderViewHost to display a widget
-// that was created by CreateWidget/CreateFullscreenWidget. |route_id| refers
+// This message is sent to the parent RenderViewHost to display a widget
+// that was created by CreateWidget. |route_id| refers
 // to the id that was returned from the corresponding Create message above.
 // |initial_rect| is in screen coordinates.
 IPC_MESSAGE_ROUTED2(ViewHostMsg_ShowWidget,
                     int /* route_id */,
                     gfx::Rect /* initial_rect */)
-
-// Message to show a full screen widget.
-IPC_MESSAGE_ROUTED1(ViewHostMsg_ShowFullscreenWidget,
-                    int /* route_id */)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 // A renderer sends this to the browser process when it wants to access a PPAPI

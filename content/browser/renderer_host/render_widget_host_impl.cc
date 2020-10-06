@@ -2622,7 +2622,6 @@ void RenderWidgetHostImpl::SetMouseCapture(bool capture) {
 
 void RenderWidgetHostImpl::RequestMouseLock(
     bool from_user_gesture,
-    bool privileged,
     bool unadjusted_movement,
     InputRouterImpl::RequestMouseLockCallback response) {
   if (pending_mouse_lock_request_) {
@@ -2641,22 +2640,18 @@ void RenderWidgetHostImpl::RequestMouseLock(
 
   pending_mouse_lock_request_ = true;
   mouse_lock_raw_movement_ = unadjusted_movement;
-  if (delegate_) {
-    delegate_->RequestToLockMouse(this, from_user_gesture,
-                                  is_last_unlocked_by_target_,
-                                  privileged && allow_privileged_mouse_lock_);
-    // We need to reset |is_last_unlocked_by_target_| here as we don't know
-    // request source in |LostMouseLock()|.
-    is_last_unlocked_by_target_ = false;
+  if (!delegate_) {
+    // No delegate, reject message.
+    GotResponseToLockMouseRequest(
+        blink::mojom::PointerLockResult::kPermissionDenied);
     return;
   }
 
-  // Directly reject or approve the mouse lock based on privilege.
-  if (allow_privileged_mouse_lock_ && privileged)
-    GotResponseToLockMouseRequest(blink::mojom::PointerLockResult::kSuccess);
-  else
-    GotResponseToLockMouseRequest(
-        blink::mojom::PointerLockResult::kPermissionDenied);
+  delegate_->RequestToLockMouse(this, from_user_gesture,
+                                is_last_unlocked_by_target_, false);
+  // We need to reset |is_last_unlocked_by_target_| here as we don't know
+  // request source in |LostMouseLock()|.
+  is_last_unlocked_by_target_ = false;
 }
 
 void RenderWidgetHostImpl::RequestMouseLockChange(

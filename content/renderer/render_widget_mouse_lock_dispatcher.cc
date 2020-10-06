@@ -25,8 +25,7 @@ void RenderWidgetMouseLockDispatcher::SendLockMouseRequest(
   bool has_transient_user_activation =
       requester_frame ? requester_frame->HasTransientUserActivation() : false;
   render_widget_->GetWebWidget()->RequestMouseLock(
-      has_transient_user_activation, /*privileged=*/false,
-      request_unadjusted_movement,
+      has_transient_user_activation, request_unadjusted_movement,
       base::BindOnce(&RenderWidgetMouseLockDispatcher::OnMouseLocked,
                      weak_ptr_factory_.GetWeakPtr()));
 }

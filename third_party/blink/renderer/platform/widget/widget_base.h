@@ -221,7 +221,6 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   void RequestMouseLock(
       bool has_transient_user_activation,
-      bool priviledged,
       bool request_unadjusted_movement,
       base::OnceCallback<
           void(blink::mojom::PointerLockResult,

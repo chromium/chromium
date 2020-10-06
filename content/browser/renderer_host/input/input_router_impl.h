@@ -97,7 +97,6 @@ class CONTENT_EXPORT InputRouterImpl
       const std::vector<gfx::Rect>& bounds) override;
   void SetMouseCapture(bool capture) override;
   void RequestMouseLock(bool from_user_gesture,
-                        bool privileged,
                         bool unadjusted_movement,
                         RequestMouseLockCallback response) override;
   // Notifies touch action filter and touch event queue whether there are

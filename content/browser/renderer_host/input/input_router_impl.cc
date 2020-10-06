@@ -328,10 +328,9 @@ void InputRouterImpl::SetMouseCapture(bool capture) {
 }
 
 void InputRouterImpl::RequestMouseLock(bool from_user_gesture,
-                                       bool privileged,
                                        bool unadjusted_movement,
                                        RequestMouseLockCallback response) {
-  client_->RequestMouseLock(from_user_gesture, privileged, unadjusted_movement,
+  client_->RequestMouseLock(from_user_gesture, unadjusted_movement,
                             std::move(response));
 }
 

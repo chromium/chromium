@@ -1315,7 +1315,6 @@ void WidgetBase::OnImeEventGuardFinish(ImeEventGuard* guard) {
 
 void WidgetBase::RequestMouseLock(
     bool has_transient_user_activation,
-    bool priviledged,
     bool request_unadjusted_movement,
     base::OnceCallback<void(
         blink::mojom::PointerLockResult,
@@ -1324,7 +1323,7 @@ void WidgetBase::RequestMouseLock(
   if (mojom::blink::WidgetInputHandlerHost* host =
           widget_input_handler_manager_->GetWidgetInputHandlerHost()) {
     host->RequestMouseLock(
-        has_transient_user_activation, priviledged, request_unadjusted_movement,
+        has_transient_user_activation, request_unadjusted_movement,
         base::BindOnce(
             [](base::OnceCallback<void(
                    blink::mojom::PointerLockResult,

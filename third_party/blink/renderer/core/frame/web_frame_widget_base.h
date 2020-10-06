@@ -306,7 +306,6 @@ class CORE_EXPORT WebFrameWidgetBase
   void CancelCompositionForPepper() override;
   void RequestMouseLock(
       bool has_transient_user_activation,
-      bool priviledged,
       bool request_unadjusted_movement,
       base::OnceCallback<
           void(mojom::blink::PointerLockResult,

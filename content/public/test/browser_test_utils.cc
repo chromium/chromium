@@ -639,10 +639,9 @@ void ResetTouchAction(RenderWidgetHost* host) {
 
 void RequestMouseLock(RenderWidgetHost* host,
                       bool user_gesture,
-                      bool privileged,
                       bool request_unadjusted_movement) {
   static_cast<RenderWidgetHostImpl*>(host)->RequestMouseLock(
-      user_gesture, privileged, request_unadjusted_movement,
+      user_gesture, request_unadjusted_movement,
       /*response=*/base::DoNothing());
 }
 

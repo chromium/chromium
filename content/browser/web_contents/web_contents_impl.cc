@@ -3894,24 +3894,9 @@ void WebContentsImpl::ShowCreatedWidget(int process_id,
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::ShowCreatedWidget",
                         "process_id", process_id, "widget_route_id",
                         widget_route_id);
-  ShowCreatedWidget(process_id, widget_route_id, false, initial_rect);
-}
-
-void WebContentsImpl::ShowCreatedFullscreenWidget(int process_id,
-                                                  int widget_route_id) {
-  OPTIONAL_TRACE_EVENT2(
-      "content", "WebContentsImpl::ShowCreatedFullscreenWidget", "process_id",
-      process_id, "widget_route_id", widget_route_id);
-  ShowCreatedWidget(process_id, widget_route_id, true, gfx::Rect());
-}
-
-void WebContentsImpl::ShowCreatedWidget(int process_id,
-                                        int route_id,
-                                        bool is_fullscreen,
-                                        const gfx::Rect& initial_rect) {
   RenderWidgetHostViewBase* widget_host_view =
       static_cast<RenderWidgetHostViewBase*>(
-          GetCreatedWidget(process_id, route_id));
+          GetCreatedWidget(process_id, widget_route_id));
   if (!widget_host_view)
     return;
 
@@ -3942,34 +3927,10 @@ void WebContentsImpl::ShowCreatedWidget(int process_id,
                   bottom_right.y() - origin.y());
   }
 
-  // Fullscreen child widgets are frames, other child widgets are popups.
-  if (is_fullscreen) {
-    DCHECK_EQ(MSG_ROUTING_NONE, fullscreen_widget_routing_id_);
-    view_->StoreFocus();
-    fullscreen_widget_process_id_ =
-        widget_host_view->GetRenderWidgetHost()->GetProcess()->GetID();
-    fullscreen_widget_routing_id_ = route_id;
-    if (delegate_ && delegate_->EmbedsFullscreenWidget()) {
-      widget_host_view->InitAsChild(GetRenderWidgetHostView()->GetNativeView());
-      delegate_->EnterFullscreenModeForTab(GetMainFrame(),
-                                           blink::mojom::FullscreenOptions());
-    } else {
-      widget_host_view->InitAsFullscreen(view);
-    }
-    observers_.ForEachObserver([&](WebContentsObserver* observer) {
-      observer->DidShowFullscreenWidget();
-    });
-    if (!widget_host_view->HasFocus())
-      widget_host_view->Focus();
-  } else {
-    widget_host_view->InitAsPopup(view, transformed_rect);
-  }
+  widget_host_view->InitAsPopup(view, transformed_rect);
 
   RenderWidgetHostImpl* render_widget_host_impl = widget_host_view->host();
   render_widget_host_impl->Init();
-  // Only allow privileged mouse lock for fullscreen render widget, which is
-  // used to implement Pepper Flash fullscreen.
-  render_widget_host_impl->set_allow_privileged_mouse_lock(is_fullscreen);
 }
 
 base::Optional<CreatedWindow> WebContentsImpl::GetCreatedWindow(

@@ -806,8 +806,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void ShowCreatedWidget(int process_id,
                          int widget_route_id,
                          const gfx::Rect& initial_rect) override;
-  void ShowCreatedFullscreenWidget(int process_id,
-                                   int widget_route_id) override;
   void RequestMediaAccessPermission(const MediaStreamRequest& request,
                                     MediaResponseCallback callback) override;
   bool CheckMediaAccessPermission(RenderFrameHost* render_frame_host,
@@ -1588,12 +1586,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost>
           blink_widget_host,
       mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget);
-
-  // Helper for ShowCreatedWidget/ShowCreatedFullscreenWidget.
-  void ShowCreatedWidget(int process_id,
-                         int route_id,
-                         bool is_fullscreen,
-                         const gfx::Rect& initial_rect);
 
   // Finds the new RenderWidgetHost and returns it. Note that this can only be
   // called once as this call also removes it from the internal map.

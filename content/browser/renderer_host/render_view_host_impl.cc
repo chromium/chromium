@@ -765,8 +765,6 @@ bool RenderViewHostImpl::OnMessageReceived(const IPC::Message& msg) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(RenderViewHostImpl, msg)
     IPC_MESSAGE_HANDLER(ViewHostMsg_ShowWidget, OnShowWidget)
-    IPC_MESSAGE_HANDLER(ViewHostMsg_ShowFullscreenWidget,
-                        OnShowFullscreenWidget)
     IPC_MESSAGE_HANDLER(ViewHostMsg_TakeFocus, OnTakeFocus)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
@@ -788,12 +786,6 @@ void RenderViewHostImpl::OnShowWidget(int widget_route_id,
                                       const gfx::Rect& initial_rect) {
   delegate_->ShowCreatedWidget(GetProcess()->GetID(), widget_route_id,
                                initial_rect);
-  Send(new WidgetMsg_SetBounds_ACK(widget_route_id));
-}
-
-void RenderViewHostImpl::OnShowFullscreenWidget(int widget_route_id) {
-  delegate_->ShowCreatedFullscreenWidget(GetProcess()->GetID(),
-                                         widget_route_id);
   Send(new WidgetMsg_SetBounds_ACK(widget_route_id));
 }
 

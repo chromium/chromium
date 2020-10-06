@@ -220,11 +220,6 @@ interface WidgetInputHandlerHost {
   // also used by Pepper Flash.
   // |from_user_gesture| indicates whether this request came from a user
   // gesture or not.
-  // |privileged| is used by Pepper Flash. Privileged mouse lock is only
-  // allowed for fullscreen render widget, which is used to implement Pepper
-  // Flash fullscreen. If privileged is allowed and set to true, we
-  // won't pop up a bubble to ask for user permission or take mouse lock
-  // content into account. The mouse lock will be directly approved.
   // |unadjusted_movement| indicates whether the request asked for raw mouse
   // movement data or just what the operating system returns (often accelerated
   // mouse movement).
@@ -233,7 +228,6 @@ interface WidgetInputHandlerHost {
   // |context| is one end of a mojo pipe that will stay connected as long as
   // the mouse is locked. Is a NullRemote if |result| is not kSuccess.
   RequestMouseLock(bool from_user_gesture,
-                   bool privileged,
                    bool unadjusted_movement)
       => (PointerLockResult result,
           pending_remote<blink.mojom.PointerLockContext>? context);

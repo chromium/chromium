@@ -8278,9 +8278,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Now simulate both widgets being shown.
   web_contents()->ShowCreatedWidget(process1->GetID(), filter1->routing_id(),
-                                    false, gfx::Rect());
+                                    gfx::Rect());
   web_contents()->ShowCreatedWidget(process2->GetID(), filter2->routing_id(),
-                                    false, gfx::Rect());
+                                    gfx::Rect());
   EXPECT_FALSE(base::Contains(
       web_contents()->pending_widget_views_,
       GlobalRoutingID(process1->GetID(), filter1->routing_id())));

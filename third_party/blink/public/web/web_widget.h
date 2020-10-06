@@ -211,7 +211,6 @@ class WebWidget {
   // dispatcher is moved into blink.
   virtual void RequestMouseLock(
       bool has_transient_user_activation,
-      bool priviledged,
       bool request_unadjusted_movement,
       base::OnceCallback<
           void(mojom::PointerLockResult,
