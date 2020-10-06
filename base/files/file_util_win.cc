@@ -352,6 +352,9 @@ DWORD DoDeleteFile(const FilePath& path, bool recursive) {
              : ReturnLastErrorOrSuccessOnNotFound();
 }
 
+// Deletes the file/directory at |path| (recursively if |recursive| and |path|
+// names a directory), returning true on success. Sets the Windows last-error
+// code and returns false on failure.
 bool DeleteFileAndRecordMetrics(const FilePath& path, bool recursive) {
   static constexpr char kRecursive[] = "DeleteFile.Recursive";
   static constexpr char kNonRecursive[] = "DeleteFile.NonRecursive";
@@ -369,6 +372,8 @@ bool DeleteFileAndRecordMetrics(const FilePath& path, bool recursive) {
     return true;
 
   RecordFilesystemError(operation, error);
+
+  ::SetLastError(error);
   return false;
 }
 
