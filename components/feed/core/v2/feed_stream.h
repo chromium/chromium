@@ -16,7 +16,6 @@
 #include "base/version.h"
 #include "components/feed/core/common/enums.h"
 #include "components/feed/core/common/user_classifier.h"
-#include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/proto/v2/wire/response.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/protocol_translator.h"
@@ -149,8 +148,6 @@ class FeedStream : public FeedStreamApi,
   DebugStreamData GetDebugStreamData() override;
   void ForceRefreshForDebugging() override;
   std::string DumpStateForDebugging() override;
-  void SetForcedStreamUpdateForDebugging(
-      const feedui::StreamUpdate& stream_update) override;
 
   void ReportSliceViewed(SurfaceId surface_id,
                          const std::string& slice_id) override;
@@ -341,10 +338,6 @@ class FeedStream : public FeedStreamApi,
 
   // To allow tests to wait on task queue idle.
   base::RepeatingClosure idle_callback_;
-
-  // Stream update forced to use for new surfaces. This is provided in feed
-  // internals page for debugging purpose.
-  feedui::StreamUpdate forced_stream_update_for_debugging_;
 
   base::WeakPtrFactory<FeedStream> weak_ptr_factory_{this};
 };

@@ -239,17 +239,8 @@ void FeedStream::UpdateIsActivityLoggingEnabled() {
 
 void FeedStream::AttachSurface(SurfaceInterface* surface) {
   metrics_reporter_->SurfaceOpened(surface->GetSurfaceId());
-
-  // Skip normal processing when overriding stream data from the internals page.
-  if (forced_stream_update_for_debugging_.updated_slices_size() > 0) {
-    surface_updater_->SurfaceAdded(surface);
-    surface->StreamUpdate(forced_stream_update_for_debugging_);
-    return;
-  }
-
   TriggerStreamLoad();
   surface_updater_->SurfaceAdded(surface);
-
   // Cancel any scheduled model unload task.
   ++unload_on_detach_sequence_number_;
 }
@@ -452,11 +443,6 @@ std::string FeedStream::DumpStateForDebugging() {
   }
 
   return ss.str();
-}
-
-void FeedStream::SetForcedStreamUpdateForDebugging(
-    const feedui::StreamUpdate& stream_update) {
-  forced_stream_update_for_debugging_ = stream_update;
 }
 
 base::Time FeedStream::GetLastFetchTime() {
