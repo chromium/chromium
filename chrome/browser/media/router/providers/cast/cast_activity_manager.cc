@@ -19,6 +19,7 @@
 #include "chrome/browser/media/router/providers/cast/cast_media_route_provider_metrics.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
 #include "chrome/browser/media/router/providers/cast/mirroring_activity.h"
+#include "components/cast_channel/cast_message_util.h"
 #include "components/cast_channel/enum_table.h"
 #include "components/media_router/browser/logger_impl.h"
 #include "components/media_router/common/media_source.h"
@@ -370,7 +371,8 @@ void CastActivityManager::JoinSession(
       client_id,
       CreateNewSessionMessage(*session, client_id, *sink, hash_token_));
   message_handler_->EnsureConnection(sink->cast_data().cast_channel_id,
-                                     client_id, session->transport_id());
+                                     client_id, session->transport_id(),
+                                     cast_source.connection_type());
 
   // Route is now local; update route queries.
   NotifyAllOnRoutesUpdated();
@@ -816,16 +818,19 @@ void CastActivityManager::HandleLaunchSessionResponse(
   }
   RecordLaunchSessionResponseAppType(session->value().FindKey("appType"));
 
-  const std::string& client_id = cast_source.client_id();
-  if (!client_id.empty()) {
+  std::string client_id = cast_source.client_id();
+  // Mirroring sessions do not have |client_id| set here.
+  if (client_id.empty()) {
+    client_id = message_handler_->sender_id();
+  } else {
     activity_it->second->SendMessageToClient(
         client_id,
         CreateNewSessionMessage(*session, client_id, sink, hash_token_));
-
     // TODO(jrw): Query media status.
-    message_handler_->EnsureConnection(sink.cast_data().cast_channel_id,
-                                       client_id, session->transport_id());
   }
+  message_handler_->EnsureConnection(sink.cast_data().cast_channel_id,
+                                     client_id, session->transport_id(),
+                                     cast_source.connection_type());
 
   activity_it->second->SetOrUpdateSession(*session, sink, hash_token_);
   NotifyAllOnRoutesUpdated();

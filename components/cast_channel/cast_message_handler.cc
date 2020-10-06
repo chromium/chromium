@@ -12,6 +12,7 @@
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/default_tick_clock.h"
+#include "components/cast_channel/cast_message_util.h"
 #include "components/cast_channel/cast_socket_service.h"
 
 namespace cast_channel {
@@ -84,9 +85,11 @@ CastMessageHandler::~CastMessageHandler() {
   socket_service_->RemoveObserver(this);
 }
 
-void CastMessageHandler::EnsureConnection(int channel_id,
-                                          const std::string& source_id,
-                                          const std::string& destination_id) {
+void CastMessageHandler::EnsureConnection(
+    int channel_id,
+    const std::string& source_id,
+    const std::string& destination_id,
+    VirtualConnectionType connection_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CastSocket* socket = socket_service_->GetSocket(channel_id);
   if (!socket) {
@@ -94,7 +97,7 @@ void CastMessageHandler::EnsureConnection(int channel_id,
     return;
   }
 
-  DoEnsureConnection(socket, source_id, destination_id);
+  DoEnsureConnection(socket, source_id, destination_id, connection_type);
 }
 
 void CastMessageHandler::CloseConnection(int channel_id,
@@ -435,7 +438,8 @@ void CastMessageHandler::SendCastMessageToSocket(CastSocket* socket,
                                                  const CastMessage& message) {
   // A virtual connection must be opened to the receiver before other messages
   // can be sent.
-  DoEnsureConnection(socket, message.source_id(), message.destination_id());
+  DoEnsureConnection(socket, message.source_id(), message.destination_id(),
+                     GetConnectionType(message.destination_id()));
   VLOG(1) << __func__ << ": channel_id: " << socket->id()
           << ", message: " << message;
   socket->transport()->SendMessage(
@@ -443,9 +447,11 @@ void CastMessageHandler::SendCastMessageToSocket(CastSocket* socket,
                               weak_ptr_factory_.GetWeakPtr()));
 }
 
-void CastMessageHandler::DoEnsureConnection(CastSocket* socket,
-                                            const std::string& source_id,
-                                            const std::string& destination_id) {
+void CastMessageHandler::DoEnsureConnection(
+    CastSocket* socket,
+    const std::string& source_id,
+    const std::string& destination_id,
+    VirtualConnectionType connection_type) {
   VirtualConnection connection(socket->id(), source_id, destination_id);
 
   // If there is already a connection, there is nothing to do.
@@ -456,10 +462,7 @@ void CastMessageHandler::DoEnsureConnection(CastSocket* socket,
           << ", source: " << connection.source_id
           << ", dest: " << connection.destination_id;
   CastMessage virtual_connection_request = CreateVirtualConnectionRequest(
-      connection.source_id, connection.destination_id,
-      connection.destination_id == kPlatformReceiverId
-          ? VirtualConnectionType::kInvisible
-          : VirtualConnectionType::kStrong,
+      connection.source_id, connection.destination_id, connection_type,
       user_agent_, browser_version_);
   socket->transport()->SendMessage(
       virtual_connection_request,

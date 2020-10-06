@@ -28,6 +28,7 @@
 #include "chrome/browser/media/router/test/mock_logger.h"
 #include "chrome/browser/media/router/test/mock_mojo_media_router.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
+#include "components/cast_channel/cast_message_util.h"
 #include "components/cast_channel/cast_test_util.h"
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/test/test_helper.h"
@@ -288,7 +289,8 @@ class CastActivityManagerTest : public testing::Test,
     });
 
     EXPECT_CALL(message_handler_,
-                EnsureConnection(kChannelId, "theClientId", "theTransportId"));
+                EnsureConnection(kChannelId, "theClientId", "theTransportId",
+                                 cast_channel::VirtualConnectionType::kStrong));
 
     auto response = GetSuccessLaunchResponse(app_id);
     session_tracker_->SetSessionForTest(
@@ -313,6 +315,9 @@ class CastActivityManagerTest : public testing::Test,
 
   void LaunchMirroringSession() {
     CallLaunchSession(kCastStreamingAppId);
+    EXPECT_CALL(message_handler_,
+                EnsureConnection(kChannelId, "theClientId", "theTransportId",
+                                 cast_channel::VirtualConnectionType::kStrong));
     auto response = GetSuccessLaunchResponse();
     SetSessionForTest(route_->media_sink_id(),
                       CastSession::From(sink_, *response.receiver_status));

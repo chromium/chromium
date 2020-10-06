@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/test/values_test_util.h"
+#include "components/cast_channel/cast_message_util.h"
 #include "components/cast_channel/cast_test_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -164,6 +165,27 @@ class CastMessageHandlerTest : public testing::Test {
                          stop_session_callback_.Get());
   }
 
+  void SendMessageAndExpectConnection(const std::string& destination_id,
+                                      VirtualConnectionType connection_type) {
+    CastMessage message = CreateCastMessage(
+        "namespace", base::Value(base::Value::Type::DICTIONARY), kSourceId,
+        destination_id);
+    {
+      InSequence dummy;
+      // We should first send a CONNECT request to ensure a connection.
+      EXPECT_CALL(*transport_,
+                  SendMessage(HasMessageType(CastMessageType::kConnect), _))
+          .WillOnce(WithArg<0>([&](const CastMessage& message) {
+            std::unique_ptr<base::Value> dict =
+                GetDictionaryFromCastMessage(message);
+            EXPECT_EQ(connection_type, dict->FindIntKey("connType").value());
+          }));
+      // Then we send the actual message.
+      EXPECT_CALL(*transport_, SendMessage(_, _));
+    }
+    EXPECT_EQ(Result::kOk, handler_.SendAppMessage(channel_id_, message));
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -285,16 +307,19 @@ TEST_F(CastMessageHandlerTest, AppAvailabilitySentOnlyOnceWhilePending) {
 TEST_F(CastMessageHandlerTest, EnsureConnection) {
   ExpectEnsureConnection();
 
-  handler_.EnsureConnection(channel_id_, kSourceId, kDestinationId);
+  handler_.EnsureConnection(channel_id_, kSourceId, kDestinationId,
+                            VirtualConnectionType::kStrong);
 
   // No-op because connection is already created the first time.
   EXPECT_CALL(*transport_, SendMessage(_, _)).Times(0);
-  handler_.EnsureConnection(channel_id_, kSourceId, kDestinationId);
+  handler_.EnsureConnection(channel_id_, kSourceId, kDestinationId,
+                            VirtualConnectionType::kStrong);
 }
 
 TEST_F(CastMessageHandlerTest, CloseConnection) {
   ExpectEnsureConnection();
-  handler_.EnsureConnection(channel_id_, kSourceId, kDestinationId);
+  handler_.EnsureConnection(channel_id_, kSourceId, kDestinationId,
+                            VirtualConnectionType::kStrong);
 
   EXPECT_CALL(
       *transport_,
@@ -303,12 +328,14 @@ TEST_F(CastMessageHandlerTest, CloseConnection) {
 
   // Re-open virtual connection should cause CONNECT message to be sent.
   ExpectEnsureConnection();
-  handler_.EnsureConnection(channel_id_, kSourceId, kDestinationId);
+  handler_.EnsureConnection(channel_id_, kSourceId, kDestinationId,
+                            VirtualConnectionType::kStrong);
 }
 
 TEST_F(CastMessageHandlerTest, CloseConnectionFromReceiver) {
   ExpectEnsureConnection();
-  handler_.EnsureConnection(channel_id_, kSourceId, kDestinationId);
+  handler_.EnsureConnection(channel_id_, kSourceId, kDestinationId,
+                            VirtualConnectionType::kStrong);
 
   CastMessage response;
   response.set_namespace_("urn:x-cast:com.google.cast.tp.connection");
@@ -325,7 +352,8 @@ TEST_F(CastMessageHandlerTest, CloseConnectionFromReceiver) {
 
   // Re-open virtual connection should cause message to be sent.
   EXPECT_CALL(*transport_, SendMessage(_, _));
-  handler_.EnsureConnection(channel_id_, kSourceId, kDestinationId);
+  handler_.EnsureConnection(channel_id_, kSourceId, kDestinationId,
+                            VirtualConnectionType::kStrong);
 }
 
 TEST_F(CastMessageHandlerTest, LaunchSession) {
@@ -411,6 +439,19 @@ TEST_F(CastMessageHandlerTest, SendAppMessage) {
   }
 
   EXPECT_EQ(Result::kOk, handler_.SendAppMessage(channel_id_, message));
+}
+
+TEST_F(CastMessageHandlerTest, SendMessageOnInvisibleConnection) {
+  // For destinations other than receiver-0, we should default to an invisible
+  // connection.
+  SendMessageAndExpectConnection("non-platform-receiver-id",
+                                 VirtualConnectionType::kInvisible);
+}
+
+TEST_F(CastMessageHandlerTest, SendMessageToPlatformReceiver) {
+  // For receiver-0, we should default to a strong connection because some
+  // commands (e.g. LAUNCH) are not accepted from invisible connections.
+  SendMessageAndExpectConnection("receiver-0", VirtualConnectionType::kStrong);
 }
 
 TEST_F(CastMessageHandlerTest, SendAppMessageExceedsSizeLimit) {

@@ -151,7 +151,8 @@ class CastMessageHandler : public CastSocket::Observer {
   // in order to receive messages sooner.
   virtual void EnsureConnection(int channel_id,
                                 const std::string& source_id,
-                                const std::string& destination_id);
+                                const std::string& destination_id,
+                                VirtualConnectionType connection_type);
 
   // Closes any virtual connection on (|source_id|, |destination_id|) on the
   // device given by |channel_id|, sending a virtual connection close request to
@@ -301,7 +302,8 @@ class CastMessageHandler : public CastSocket::Observer {
   // for (|source_id|, |destination_id|) does not yet exist.
   void DoEnsureConnection(CastSocket* socket,
                           const std::string& source_id,
-                          const std::string& destination_id);
+                          const std::string& destination_id,
+                          VirtualConnectionType connection_type);
 
   // Callback for CastTransport::SendMessage.
   void OnMessageSent(int result);

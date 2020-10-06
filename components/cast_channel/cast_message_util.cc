@@ -315,8 +315,6 @@ CastMessage CreateVirtualConnectionRequest(
     VirtualConnectionType connection_type,
     const std::string& user_agent,
     const std::string& browser_version) {
-  DCHECK(destination_id == kPlatformReceiverId || connection_type == kStrong);
-
   // Parse system_version from user agent string. It contains platform, OS and
   // CPU info and is contained in the first set of parentheses of the user
   // agent string (e.g., X11; Linux x86_64).
@@ -599,6 +597,15 @@ LaunchSessionResponse GetLaunchSessionResponse(const base::Value& payload) {
   response.result = LaunchSessionResponse::Result::kOk;
   response.receiver_status = receiver_status->Clone();
   return response;
+}
+
+VirtualConnectionType GetConnectionType(const std::string& destination_id) {
+  // VCs to recevier-0 are invisible to the receiver application by design.
+  // We create a strong connection because some commands (e.g. LAUNCH) are
+  // not accepted from invisible connections.
+  return destination_id == kPlatformReceiverId
+             ? VirtualConnectionType::kStrong
+             : VirtualConnectionType::kInvisible;
 }
 
 }  // namespace cast_channel
