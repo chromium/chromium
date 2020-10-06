@@ -9,7 +9,7 @@ import("//build/toolchain/toolchain.gni")
 declare_args() {
   # Ozone extra platforms file path. Can be overridden to build out of
   # tree ozone platforms.
-  ozone_extra_path = "//ui/ozone/ozone_extra.gni"
+  ozone_extra_path = "//build/config/ozone_extra.gni"
 
   # Select platforms automatically. Turn this off for manual control.
   ozone_auto_platforms = use_ozone

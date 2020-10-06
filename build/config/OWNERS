@@ -3,3 +3,4 @@ scottmg@chromium.org
 
 per-file *jumbo*=bratell.d@gmail.com
 per-file ozone.gni=file://ui/ozone/OWNERS
+per-file ozone_extra.gni=file://ui/ozone/OWNERS
