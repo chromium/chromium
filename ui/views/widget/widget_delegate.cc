@@ -199,6 +199,8 @@ const Widget* WidgetDelegate::GetWidget() const {
 }
 
 View* WidgetDelegate::GetContentsView() {
+  if (unowned_contents_view_)
+    return unowned_contents_view_;
   if (!default_contents_view_)
     default_contents_view_ = new View;
   return default_contents_view_;
@@ -207,6 +209,8 @@ View* WidgetDelegate::GetContentsView() {
 View* WidgetDelegate::TransferOwnershipOfContentsView() {
   DCHECK(!contents_view_taken_);
   contents_view_taken_ = true;
+  if (owned_contents_view_)
+    owned_contents_view_.release();
   return GetContentsView();
 }
 
@@ -331,6 +335,15 @@ void WidgetDelegate::RegisterWindowClosingCallback(base::OnceClosure callback) {
 void WidgetDelegate::RegisterDeleteDelegateCallback(
     base::OnceClosure callback) {
   delete_delegate_callbacks_.emplace_back(std::move(callback));
+}
+
+void WidgetDelegate::SetContentsViewImpl(View* contents) {
+  // Note: DCHECKing the ownership of contents is done in the public setters,
+  // which are inlined in the header.
+  DCHECK(!unowned_contents_view_);
+  if (!contents->owned_by_client())
+    owned_contents_view_ = base::WrapUnique(contents);
+  unowned_contents_view_ = contents;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -1135,6 +1135,7 @@ test("views_unittests") {
     "widget/native_widget_unittest.cc",
     "widget/root_view_unittest.cc",
     "widget/unique_widget_ptr_unittest.cc",
+    "widget/widget_delegate_unittest.cc",
     "widget/widget_unittest.cc",
     "window/custom_frame_view_unittest.cc",
     "window/dialog_client_view_unittest.cc",

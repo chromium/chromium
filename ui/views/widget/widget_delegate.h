@@ -314,6 +314,21 @@ class VIEWS_EXPORT WidgetDelegate {
   void SetCenterTitle(bool center_title);
 #endif
 
+  template <typename T>
+  T* SetContentsView(std::unique_ptr<T> contents) {
+    DCHECK(!contents->owned_by_client());
+    T* raw_contents = contents.get();
+    SetContentsViewImpl(contents.release());
+    return raw_contents;
+  }
+
+  template <typename T>
+  T* SetContentsView(T* contents) {
+    DCHECK(contents->owned_by_client());
+    SetContentsViewImpl(contents);
+    return contents;
+  }
+
   // A convenience wrapper that does all three of SetCanMaximize,
   // SetCanMinimize, and SetCanResize.
   void SetHasWindowSizeControls(bool has_controls);
@@ -338,6 +353,8 @@ class VIEWS_EXPORT WidgetDelegate {
  private:
   friend class Widget;
 
+  void SetContentsViewImpl(View* contents);
+
   // The Widget that was initialized with this instance as its WidgetDelegate,
   // if any.
   Widget* widget_ = nullptr;
@@ -346,6 +363,9 @@ class VIEWS_EXPORT WidgetDelegate {
   View* default_contents_view_ = nullptr;
   bool contents_view_taken_ = false;
   bool can_activate_ = true;
+
+  View* unowned_contents_view_ = nullptr;
+  std::unique_ptr<View> owned_contents_view_;
 
   // Managed by Widget. Ensures |this| outlives its Widget.
   bool can_delete_this_ = true;
