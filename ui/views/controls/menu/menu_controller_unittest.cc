@@ -1370,6 +1370,31 @@ TEST_F(MenuControllerTest, DeleteChildButtonView) {
   EXPECT_FALSE(button3->IsHotTracked());
 }
 
+// Verifies that the child button of the menu item which is under mouse hovering
+// is hot tracked (https://crbug.com/1135000).
+TEST_F(MenuControllerTest, ChildButtonHotTrackedAfterMouseMove) {
+  // Add a menu item which owns a button as child.
+  menu_item()->SetBounds(0, 0, 200, 300);
+  MenuItemView* button_host_view =
+      menu_item()->AppendMenuItem(/*command_id=*/5);
+  auto* button = button_host_view->AddChildView(
+      std::make_unique<LabelButton>(nullptr, base::ASCIIToUTF16("Label")));
+  button->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  menu_item()->GetSubmenu()->ShowAt(owner(), menu_item()->bounds(), false);
+  EXPECT_FALSE(button->IsHotTracked());
+
+  SubmenuView* sub_menu = menu_item()->GetSubmenu();
+  gfx::Point location(button->GetBoundsInScreen().CenterPoint());
+  View::ConvertPointFromScreen(sub_menu->GetScrollViewContainer(), &location);
+  ui::MouseEvent event(ui::ET_MOUSE_MOVED, location, location,
+                       ui::EventTimeForNow(), 0, 0);
+  ProcessMouseMoved(sub_menu, event);
+
+  // After the mouse moves to `button`, `button` should be hot tracked.
+  EXPECT_EQ(button, GetHotButton());
+  EXPECT_TRUE(button->IsHotTracked());
+}
+
 // Creates a menu with Button child views, simulates running a nested
 // menu and tests that existing the nested run restores hot-tracked child view.
 TEST_F(MenuControllerTest, ChildButtonHotTrackedWhenNested) {

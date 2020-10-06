@@ -837,6 +837,7 @@ void MenuController::OnMouseMoved(SubmenuView* source,
 
   menu_open_mouse_loc_.reset();
   MenuHostRootView* root_view = GetRootView(source, event.location());
+  Button* new_hot_tracked_button = nullptr;
   if (root_view) {
     root_view->ProcessMouseMoved(event);
 
@@ -846,12 +847,15 @@ void MenuController::OnMouseMoved(SubmenuView* source,
     ui::MouseEvent event_for_root(event);
     ConvertLocatedEventForRootView(source, root_view, &event_for_root);
     View* view = root_view->GetEventHandlerForPoint(event_for_root.location());
-    Button* button = Button::AsButton(view);
-    if (button)
-      SetHotTrackedButton(button);
+    new_hot_tracked_button = Button::AsButton(view);
   }
 
   HandleMouseLocation(source, event.location());
+
+  // Updating the hot tracked button should be after `HandleMouseLocation()`
+  // which may reset the current hot tracked button.
+  if (new_hot_tracked_button)
+    SetHotTrackedButton(new_hot_tracked_button);
 }
 
 void MenuController::OnMouseEntered(SubmenuView* source,
