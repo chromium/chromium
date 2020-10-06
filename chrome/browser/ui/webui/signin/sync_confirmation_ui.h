@@ -12,6 +12,9 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/signin/signin_web_dialog_ui.h"
 
+class Browser;
+class Profile;
+
 namespace content {
 class WebUIDataSource;
 }
@@ -31,6 +34,10 @@ class SyncConfirmationUI : public SigninWebDialogUI {
 
   // SigninWebDialogUI:
   void InitializeMessageHandlerWithBrowser(Browser* browser) override;
+
+  // Initializes the message handler when there's no browser for `profile`
+  // available (such as in the profile creation flow).
+  void InitializeMessageHandlerWithProfile(Profile* profile);
 
  private:
   // Adds a string resource with the given GRD |ids| to the WebUI data |source|

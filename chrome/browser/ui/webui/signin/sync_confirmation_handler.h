@@ -29,12 +29,14 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
                                 public signin::IdentityManager::Observer,
                                 public BrowserListObserver {
  public:
-  // Creates a SyncConfirmationHandler for the |browser|. All strings in the
+  // Creates a SyncConfirmationHandler for the |profile|. All strings in the
   // corresponding Web UI should be represented in |string_to_grd_id_map| and
-  // mapped to their GRD IDs.
+  // mapped to their GRD IDs. If |browser| is provided, its signin view
+  // controller will be notified of the rendered size of the web page.
   SyncConfirmationHandler(
-      Browser* browser,
-      const std::unordered_map<std::string, int>& string_to_grd_id_map);
+      Profile* profile,
+      const std::unordered_map<std::string, int>& string_to_grd_id_map,
+      Browser* browser = nullptr);
   ~SyncConfirmationHandler() override;
 
   // content::WebUIMessageHandler:
@@ -95,15 +97,16 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
  private:
   Profile* profile_;
 
-  // Weak reference to the browser that showed the sync confirmation dialog.
-  Browser* browser_;
-
   // Records whether the user clicked on Undo, Ok, or Settings.
   bool did_user_explicitly_interact_ = false;
 
   // Mapping between strings displayed in the UI corresponding to this handler
   // and their respective GRD IDs.
   std::unordered_map<std::string, int> string_to_grd_id_map_;
+
+  // Weak reference to the browser that showed the sync confirmation dialog (if
+  // such a dialog exists).
+  Browser* browser_;
 
   signin::IdentityManager* identity_manager_;
 

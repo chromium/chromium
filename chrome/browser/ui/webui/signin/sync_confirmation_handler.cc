@@ -37,14 +37,14 @@ const int kProfileImageSize = 128;
 }  // namespace
 
 SyncConfirmationHandler::SyncConfirmationHandler(
-    Browser* browser,
-    const std::unordered_map<std::string, int>& string_to_grd_id_map)
-    : profile_(browser->profile()),
-      browser_(browser),
+    Profile* profile,
+    const std::unordered_map<std::string, int>& string_to_grd_id_map,
+    Browser* browser)
+    : profile_(profile),
       string_to_grd_id_map_(string_to_grd_id_map),
+      browser_(browser),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile_)) {
   DCHECK(profile_);
-  DCHECK(browser_);
   BrowserList::AddObserver(this);
 }
 
@@ -219,9 +219,6 @@ void SyncConfirmationHandler::HandleInitializedWithSize(
     const base::ListValue* args) {
   AllowJavascript();
 
-  if (!browser_)
-    return;
-
   base::Optional<AccountInfo> primary_account_info =
       identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
           identity_manager_->GetPrimaryAccountInfo(ConsentLevel::kNotRequired));
@@ -238,5 +235,6 @@ void SyncConfirmationHandler::HandleInitializedWithSize(
     SetUserImageURL(primary_account_info->picture_url);
   }
 
-  signin::SetInitializedModalHeight(browser_, web_ui(), args);
+  if (browser_)
+    signin::SetInitializedModalHeight(browser_, web_ui(), args);
 }
