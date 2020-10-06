@@ -240,6 +240,10 @@ try_.chromium_android_builder(
 )
 
 try_.chromium_android_builder(
+    name = "android-inverse-fieldtrials-pie-x86-fyi-rel",
+)
+
+try_.chromium_android_builder(
     name = "android-lollipop-arm-rel",
     branch_selector = branches.STANDARD_RELEASES,
     goma_jobs = goma.jobs.J150,

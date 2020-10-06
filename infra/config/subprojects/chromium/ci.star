@@ -896,6 +896,14 @@ ci.android_builder(
 )
 
 ci.android_fyi_builder(
+    name = "android-inverse-fieldtrials-pie-x86-fyi-rel",
+    console_view_entry = ci.console_view_entry(
+        category = "builder_tester|x86",
+        short_name = "P-IFT",
+    ),
+)
+
+ci.android_fyi_builder(
     name = "android-weblayer-pie-x86-fyi-rel",
     console_view_entry = ci.console_view_entry(
         category = "weblayer",
