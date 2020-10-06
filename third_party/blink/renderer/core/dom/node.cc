@@ -3115,6 +3115,11 @@ void Node::DecrementConnectedSubframeCount() {
 }
 
 StaticNodeList* Node::getDestinationInsertionPoints() {
+  // TODO(crbug.com/937746): Anything caught by this DCHECK is using the
+  // now-removed Shadow DOM v0 API.
+  DCHECK(false)
+      << "Shadow DOM v0 has been removed (getDestinationInsertionPoints).";
+
   UpdateDistributionForLegacyDistributedNodes();
   HeapVector<Member<V0InsertionPoint>, 8> insertion_points;
   CollectDestinationInsertionPoints(*this, insertion_points);

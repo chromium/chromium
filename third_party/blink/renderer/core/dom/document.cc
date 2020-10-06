@@ -1279,6 +1279,10 @@ ScriptValue Document::registerElement(ScriptState* script_state,
                                       const AtomicString& name,
                                       const ElementRegistrationOptions* options,
                                       ExceptionState& exception_state) {
+  // TODO(crbug.com/937746): Anything caught by this DCHECK is using the
+  // now-removed Custom Elements v0 API.
+  DCHECK(false) << "Custom Elements v0 has been removed.";
+
   if (!RegistrationContext()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,

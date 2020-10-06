@@ -3333,6 +3333,10 @@ const ElementInternals* Element::GetElementInternals() const {
 }
 
 ShadowRoot* Element::createShadowRoot(ExceptionState& exception_state) {
+  // TODO(crbug.com/937746): Anything caught by this DCHECK is using the
+  // now-removed Shadow DOM v0 API.
+  DCHECK(false) << "Shadow DOM v0 has been removed.";
+
   DCHECK(RuntimeEnabledFeatures::ShadowDOMV0Enabled(GetExecutionContext()));
   if (ShadowRoot* root = GetShadowRoot()) {
     if (root->IsUserAgent()) {
