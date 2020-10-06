@@ -2445,10 +2445,7 @@ const CSSValue* Display::CSSValueFromComputedStyleInternal(
 
   if (style.Display() == EDisplay::kBlockMath) {
     CSSValueList* values = CSSValueList::CreateSpaceSeparated();
-    if (style.Display() == EDisplay::kBlockMath)
-      values->Append(*CSSIdentifierValue::Create(CSSValueID::kBlock));
-    else
-      values->Append(*CSSIdentifierValue::Create(CSSValueID::kInline));
+    values->Append(*CSSIdentifierValue::Create(CSSValueID::kBlock));
     values->Append(*CSSIdentifierValue::Create(CSSValueID::kMath));
     return values;
   }
