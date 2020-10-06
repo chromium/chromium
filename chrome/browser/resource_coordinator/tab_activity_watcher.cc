@@ -33,14 +33,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 
-// Use a 1-day max for tab visibility histograms since it's not uncommon to keep
-// a tab in the same visibility state for a very long time (see Tab.VisibleTime
-// which has 5% of samples in the overflow bucket with a 1-hour max).
-#define UMA_TAB_VISIBILITY_HISTOGRAM(visibility, sample)           \
-  UMA_HISTOGRAM_CUSTOM_TIMES("Tab.Visibility." visibility, sample, \
-                             base::TimeDelta::FromMilliseconds(1), \
-                             base::TimeDelta::FromDays(1), 50)
-
 namespace resource_coordinator {
 namespace {
 using tab_ranker::TabFeatures;
@@ -284,9 +276,6 @@ class TabActivityWatcher::WebContentsData
         << "Expected a unique Source ID for the navigation";
     ukm_source_id_ = new_source_id;
 
-    // Update navigation time for UKM reporting.
-    navigation_time_ = navigation_handle->NavigationStart();
-
     // Reset the per-page data.
     page_metrics_ = {};
 
@@ -304,11 +293,6 @@ class TabActivityWatcher::WebContentsData
   }
 
   void OnVisibilityChanged(content::Visibility visibility) override {
-    // Record Tab.Visibility.* histogram and do associated bookkeeping.
-    // Recording is done at every visibility state change rather than just when
-    // the WebContents is destroyed to reduce data loss on session end.
-    RecordVisibilityHistogram(visibility);
-
     // Record background tab UKMs and do associated bookkepping.
     if (!web_contents()->IsBeingDestroyed()) {
       // TODO(michaelpg): Consider treating occluded tabs as hidden.
@@ -320,33 +304,7 @@ class TabActivityWatcher::WebContentsData
     }
   }
 
-  void RecordVisibilityHistogram(content::Visibility new_visibility) {
-    const base::TimeTicks now = NowTicks();
-    const base::TimeDelta duration = now - last_visibility_change_time_;
-    switch (visibility_) {
-      case content::Visibility::VISIBLE: {
-        UMA_TAB_VISIBILITY_HISTOGRAM("Visible", duration);
-        break;
-      }
-
-      case content::Visibility::OCCLUDED: {
-        UMA_TAB_VISIBILITY_HISTOGRAM("Occluded", duration);
-        break;
-      }
-
-      case content::Visibility::HIDDEN: {
-        UMA_TAB_VISIBILITY_HISTOGRAM("Hidden", duration);
-        break;
-      }
-    }
-
-    visibility_ = new_visibility;
-    last_visibility_change_time_ = now;
-  }
-
   void WebContentsDestroyed() override {
-    RecordVisibilityHistogram(visibility_);
-
     if (was_replaced_)
       return;
 
@@ -500,9 +458,6 @@ class TabActivityWatcher::WebContentsData
   // is activated.
   base::TimeTicks foregrounded_time_;
 
-  // The last navigation time associated with this tab.
-  base::TimeTicks navigation_time_;
-
   // Stores current page stats for the tab.
   TabMetricsLogger::PageMetrics page_metrics_;
 
@@ -511,12 +466,6 @@ class TabActivityWatcher::WebContentsData
 
   // If true, future events such as the tab being destroyed won't be logged.
   bool was_replaced_ = false;
-
-  // Current tab visibility.
-  content::Visibility visibility_ = web_contents()->GetVisibility();
-
-  // The last time at which |visibility_| changed.
-  base::TimeTicks last_visibility_change_time_ = NowTicks();
 
   // MRUFeatures of this WebContents, updated only before ForegroundedOrClosed
   // event is logged.
@@ -696,11 +645,6 @@ TabActivityWatcher* TabActivityWatcher::GetInstance() {
 }
 
 void TabActivityWatcher::OnTabClosed(WebContentsData* web_contents_data) {
-  // Log TabLifetime event.
-  tab_metrics_logger_->LogTabLifetime(
-      web_contents_data->ukm_source_id_,
-      NowTicks() - web_contents_data->navigation_time_);
-
   // Log ForegroundedOrClosed event.
   if (!web_contents_data->backgrounded_time_.is_null()) {
     web_contents_data->LogForegroundedOrClosedMetrics(

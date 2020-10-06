@@ -15,6 +15,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
@@ -28,6 +29,9 @@
 #include "components/metrics/daily_event.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/ukm/content/source_url_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 #include "chrome/browser/background/background_mode_manager.h"
@@ -240,7 +244,9 @@ class TabStatsTracker::WebContentsUsageObserver
   WebContentsUsageObserver(content::WebContents* web_contents,
                            TabStatsTracker* tab_stats_tracker)
       : content::WebContentsObserver(web_contents),
-        tab_stats_tracker_(tab_stats_tracker) {}
+        tab_stats_tracker_(tab_stats_tracker),
+        visibility_(web_contents->GetVisibility()),
+        ukm_source_id_(ukm::GetSourceIdForWebContentsDocument(web_contents)) {}
 
   // content::WebContentsObserver:
   void DidStartNavigation(
@@ -252,25 +258,89 @@ class TabStatsTracker::WebContentsUsageObserver
     }
   }
 
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    if (!navigation_handle->HasCommitted() ||
+        !navigation_handle->IsInMainFrame() ||
+        navigation_handle->IsSameDocument()) {
+      return;
+    }
+    // Update navigation time for UKM reporting.
+    navigation_time_ = navigation_handle->NavigationStart();
+    ukm_source_id_ = ukm::ConvertToSourceId(
+        navigation_handle->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
+  }
+
   void DidGetUserInteraction(const blink::WebInputEvent& event) override {
     tab_stats_tracker_->tab_stats_data_store()->OnTabInteraction(
         web_contents());
   }
 
   void OnVisibilityChanged(content::Visibility visibility) override {
+    // Record Tab.Visibility.* histogram and do associated bookkeeping.
+    // Recording is done at every visibility state change rather than just when
+    // the WebContents is destroyed to reduce data loss on session end.
+    RecordVisibilityHistogram(visibility);
+
     if (visibility == content::Visibility::VISIBLE)
       tab_stats_tracker_->tab_stats_data_store()->OnTabVisible(web_contents());
   }
 
   void WebContentsDestroyed() override {
-    tab_stats_tracker_->OnWebContentsDestroyed(web_contents());
+    RecordVisibilityHistogram(visibility_);
 
+    if (ukm_source_id_) {
+      ukm::builders::TabManager_TabLifetime(ukm_source_id_)
+          .SetTimeSinceNavigation(
+              (base::TimeTicks::Now() - navigation_time_).InMilliseconds())
+          .Record(ukm::UkmRecorder::Get());
+    }
+
+    tab_stats_tracker_->OnWebContentsDestroyed(web_contents());
     // The call above will free |this| and so nothing should be done on this
     // object starting from here.
   }
 
  private:
   TabStatsTracker* tab_stats_tracker_;
+  // Current tab visibility.
+  content::Visibility visibility_;
+  // The last time at which |visibility_| changed.
+  base::TimeTicks last_visibility_change_time_ = base::TimeTicks::Now();
+  // The last navigation time associated with this tab.
+  base::TimeTicks navigation_time_ = base::TimeTicks::Now();
+  // Updated when a navigation is finished.
+  ukm::SourceId ukm_source_id_ = 0;
+
+  void RecordVisibilityHistogram(content::Visibility new_visibility) {
+    const base::TimeTicks now = base::TimeTicks::Now();
+    const base::TimeDelta duration = now - last_visibility_change_time_;
+    switch (visibility_) {
+      case content::Visibility::VISIBLE: {
+        UMA_HISTOGRAM_CUSTOM_TIMES("Tab.Visibility.Visible", duration,
+                                   base::TimeDelta::FromMilliseconds(1),
+                                   base::TimeDelta::FromDays(1), 50);
+        break;
+      }
+
+      case content::Visibility::OCCLUDED: {
+        UMA_HISTOGRAM_CUSTOM_TIMES("Tab.Visibility.Occluded", duration,
+                                   base::TimeDelta::FromMilliseconds(1),
+                                   base::TimeDelta::FromDays(1), 50);
+        break;
+      }
+
+      case content::Visibility::HIDDEN: {
+        UMA_HISTOGRAM_CUSTOM_TIMES("Tab.Visibility.Hidden", duration,
+                                   base::TimeDelta::FromMilliseconds(1),
+                                   base::TimeDelta::FromDays(1), 50);
+        break;
+      }
+    }
+
+    visibility_ = new_visibility;
+    last_visibility_change_time_ = now;
+  }
 
   DISALLOW_COPY_AND_ASSIGN(WebContentsUsageObserver);
 };
