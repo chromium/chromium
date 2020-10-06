@@ -2,8 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_grit.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/webui_features.gni")
 
 js_library("module_descriptor") {
 }
@@ -41,4 +44,36 @@ group("web_components") {
     "dummy:web_components",
     "shopping_tasks:web_components",
   ]
+}
+
+if (optimize_webui) {
+  # Up one folder to get to the root NTP gen dir, where files need to live
+  # for bundling.
+  preprocess_folder = "../preprocessed/modules"
+
+  preprocess_grit("preprocess") {
+    defines = [ "is_official_build=$is_official_build" ]
+    in_folder = "./"
+
+    out_folder = "$target_gen_dir/$preprocess_folder"
+    in_files = [
+      "kaleidoscope/module.js",
+      "module_descriptor.js",
+      "modules.js",
+      "module_registry.js",
+      "shopping_tasks/shopping_tasks_handler_proxy.js",
+    ]
+  }
+
+  preprocess_grit("preprocess_gen") {
+    deps = [ ":web_components" ]
+    defines = [ "is_official_build=$is_official_build" ]
+    in_folder = target_gen_dir
+    out_folder = "$target_gen_dir/$preprocess_folder"
+    in_files = [
+      "module_wrapper.js",
+      "dummy/module.js",
+      "shopping_tasks/module.js",
+    ]
+  }
 }

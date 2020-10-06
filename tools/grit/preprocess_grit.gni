@@ -27,6 +27,15 @@ template("preprocess_grit") {
              "--in-files",
            ] + invoker.in_files + grit_defines
 
+    if (defined(invoker.defines)) {
+      foreach(define, invoker.defines) {
+        args += [
+          "-D",
+          define,
+        ]
+      }
+    }
+
     if (defined(invoker.out_manifest)) {
       args += [
         "--out-manifest",
