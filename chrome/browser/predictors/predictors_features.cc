@@ -69,12 +69,10 @@ bool ShouldUseOptimizationGuidePredictions() {
       kLoadingPredictorUseOptimizationGuide, "use_predictions", true);
 }
 
-bool ShouldAlwaysPrefetchUsingOptimizationGuidePredictions() {
-  if (!base::FeatureList::IsEnabled(kLoadingPredictorPrefetch))
-    return false;
-
+bool ShouldAlwaysRetrieveOptimizationGuidePredictions() {
   return base::GetFieldTrialParamByFeatureAsBool(
-      kLoadingPredictorUseOptimizationGuide, "always_prefetch", false);
+      kLoadingPredictorUseOptimizationGuide, "always_retrieve_predictions",
+      false);
 }
 
 size_t GetMaxInflightPreresolves() {

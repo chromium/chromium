@@ -173,7 +173,7 @@ void LoadingPredictorTabHelper::DidStartNavigation(
   has_local_preconnect_predictions_for_current_navigation_ =
       predictor_->OnNavigationStarted(navigation_id);
   if (has_local_preconnect_predictions_for_current_navigation_ &&
-      !features::ShouldAlwaysPrefetchUsingOptimizationGuidePredictions()) {
+      !features::ShouldAlwaysRetrieveOptimizationGuidePredictions()) {
     return;
   }
 
