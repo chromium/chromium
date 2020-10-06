@@ -497,6 +497,12 @@ bool IsUserVerifyingPlatformAuthenticatorAvailableImpl(
     AuthenticatorRequestClientDelegate* delegate,
     device::FidoDiscoveryFactory* discovery_factory,
     BrowserContext* browser_context) {
+  if (!delegate) {
+    // TODO(crbug/1110081): Investigate why this can be nullptr.
+    NOTREACHED();
+    return false;
+  }
+
   base::Optional<bool> is_uvpaa_override =
       delegate->IsUserVerifyingPlatformAuthenticatorAvailableOverride();
   if (is_uvpaa_override) {
