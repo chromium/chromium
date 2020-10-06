@@ -3443,6 +3443,8 @@ source_set("unit_tests") {
     "net/network_diagnostics/fake_host_resolver.h",
     "net/network_diagnostics/fake_network_context.cc",
     "net/network_diagnostics/fake_network_context.h",
+    "net/network_diagnostics/fake_tcp_connected_socket.cc",
+    "net/network_diagnostics/fake_tcp_connected_socket.h",
     "net/network_diagnostics/gateway_can_be_pinged_routine_unittest.cc",
     "net/network_diagnostics/has_secure_wifi_connection_routine_unittest.cc",
     "net/network_diagnostics/http_firewall_routine_unittest.cc",
