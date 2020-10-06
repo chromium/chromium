@@ -52,8 +52,10 @@ class PLATFORM_EXPORT TranslateTransformOperation final
     return *this == static_cast<const TransformOperation&>(other);
   }
 
-  bool DependsOnBoxSize() const override {
-    return x_.IsPercentOrCalc() || y_.IsPercentOrCalc();
+  BoxSizeDependency DependsOnBoxSize() const override {
+    return CombineDependencies(
+        (x_.IsPercentOrCalc() ? kDependsWidth : kDependsNone),
+        (y_.IsPercentOrCalc() ? kDependsHeight : kDependsNone));
   }
 
   double X(const FloatSize& border_box_size) const {

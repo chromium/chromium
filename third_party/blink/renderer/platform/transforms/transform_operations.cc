@@ -93,6 +93,16 @@ void TransformOperations::ApplyRemaining(const FloatSize& border_box_size,
   }
 }
 
+TransformOperation::BoxSizeDependency TransformOperations::DependsOnBoxSize(
+    wtf_size_t start) const {
+  TransformOperation::BoxSizeDependency deps = TransformOperation::kDependsNone;
+  for (wtf_size_t i = start; i < operations_.size(); i++) {
+    deps = TransformOperation::CombineDependencies(
+        deps, operations_[i]->DependsOnBoxSize());
+  }
+  return deps;
+}
+
 wtf_size_t TransformOperations::MatchingPrefixLength(
     const TransformOperations& other) const {
   wtf_size_t num_operations =

@@ -76,9 +76,9 @@ class PLATFORM_EXPORT InterpolatedTransformOperation final
     return from_.PreservesAxisAlignment() && to_.PreservesAxisAlignment();
   }
 
-  bool DependsOnBoxSize() const override {
-    return from_.DependsOnBoxSize(starting_index_) ||
-           to_.DependsOnBoxSize(starting_index_);
+  BoxSizeDependency DependsOnBoxSize() const override {
+    return CombineDependencies(from_.DependsOnBoxSize(starting_index_),
+                               to_.DependsOnBoxSize(starting_index_));
   }
 
   InterpolatedTransformOperation(const TransformOperations& from,

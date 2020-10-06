@@ -109,7 +109,18 @@ class PLATFORM_EXPORT TransformOperation
 
   virtual bool HasNonTrivial3DComponent() const { return Is3DOperation(); }
 
-  virtual bool DependsOnBoxSize() const { return false; }
+  enum BoxSizeDependency {
+    kDependsNone = 0,
+    kDependsWidth = 0x01,
+    kDependsHeight = 0x02,
+    kDependsBoth = kDependsWidth | kDependsHeight
+  };
+  virtual BoxSizeDependency DependsOnBoxSize() const { return kDependsNone; }
+
+  static inline BoxSizeDependency CombineDependencies(BoxSizeDependency a,
+                                                      BoxSizeDependency b) {
+    return static_cast<BoxSizeDependency>(a | b);
+  }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TransformOperation);

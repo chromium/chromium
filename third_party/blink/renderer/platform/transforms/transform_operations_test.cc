@@ -659,6 +659,7 @@ TEST(TransformOperationsTest, InterpolatedTransformBlendIdentityTest) {
   TransformOperations ops_c = ops_a.Blend(ops_b, 0.5);
   ASSERT_EQ(ops_c.Operations().size(), 1u);
   ASSERT_TRUE(IsA<InterpolatedTransformOperation>(*ops_c.Operations()[0]));
+  EXPECT_EQ(ops_c.DependsOnBoxSize(), TransformOperation::kDependsWidth);
 
   // Both should be the same and equal to translateX(12.5%) rotate(11.25deg);
   TransformOperations ops_d1 = ops_c.Blend(ops_empty, 0.25);
@@ -693,13 +694,13 @@ TEST(TransformOperationsTest, BlendPercentPrefixTest) {
   ops_b.Operations().push_back(
       ScaleTransformOperation::Create(2, 2, TransformOperation::kScale));
 
-  EXPECT_TRUE(ops_a.DependsOnBoxSize());
-  EXPECT_FALSE(ops_a.DependsOnBoxSize(1));
-  EXPECT_TRUE(ops_b.DependsOnBoxSize());
-  EXPECT_FALSE(ops_b.DependsOnBoxSize(1));
+  EXPECT_EQ(ops_a.DependsOnBoxSize(), TransformOperation::kDependsWidth);
+  EXPECT_EQ(ops_a.DependsOnBoxSize(1), TransformOperation::kDependsNone);
+  EXPECT_EQ(ops_b.DependsOnBoxSize(), TransformOperation::kDependsHeight);
+  EXPECT_EQ(ops_b.DependsOnBoxSize(1), TransformOperation::kDependsNone);
 
   TransformOperations ops_c = ops_a.Blend(ops_b, 0.5);
-  EXPECT_TRUE(ops_c.DependsOnBoxSize());
+  EXPECT_EQ(ops_c.DependsOnBoxSize(), TransformOperation::kDependsBoth);
   ASSERT_EQ(ops_c.Operations().size(), 2u);
   ASSERT_TRUE(IsA<TranslateTransformOperation>(*ops_c.Operations()[0]));
 
@@ -716,6 +717,23 @@ TEST(TransformOperationsTest, BlendPercentPrefixTest) {
   TransformationMatrix matrix_ref(0, 1.5, -1.5, 0, 0, 0);
   EXPECT_EQ(*ops_c.Operations()[0], *translate_ref);
   EXPECT_TRANSFORMATION_MATRIX(mat_c, matrix_ref);
+}
+
+TEST(TransformOperationsTest, SizeDependenciesCombineTest) {
+  TransformOperations ops;
+  ops.Operations().push_back(
+      RotateTransformOperation::Create(90, TransformOperation::kRotate));
+  EXPECT_EQ(ops.DependsOnBoxSize(), TransformOperation::kDependsNone);
+
+  ops.Operations().push_back(TranslateTransformOperation::Create(
+      Length::Fixed(0), Length::Percent(50), TransformOperation::kTranslate));
+  EXPECT_EQ(ops.DependsOnBoxSize(), TransformOperation::kDependsHeight);
+
+  ops.Operations().push_back(TranslateTransformOperation::Create(
+      Length::Percent(100), Length::Fixed(0), TransformOperation::kTranslate));
+  EXPECT_EQ(ops.Operations()[2]->DependsOnBoxSize(),
+            TransformOperation::kDependsWidth);
+  EXPECT_EQ(ops.DependsOnBoxSize(), TransformOperation::kDependsBoth);
 }
 
 }  // namespace blink

@@ -109,13 +109,8 @@ class PLATFORM_EXPORT TransformOperations {
     return false;
   }
 
-  bool DependsOnBoxSize(wtf_size_t skip_prefix = 0) const {
-    for (wtf_size_t i = skip_prefix; i < operations_.size(); i++) {
-      if (operations_[i]->DependsOnBoxSize())
-        return true;
-    }
-    return false;
-  }
+  TransformOperation::BoxSizeDependency DependsOnBoxSize(
+      wtf_size_t start = 0) const;
 
   wtf_size_t MatchingPrefixLength(const TransformOperations&) const;
 
