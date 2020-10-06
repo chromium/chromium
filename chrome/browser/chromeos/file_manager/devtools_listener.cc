@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/file_manager/browser_test_devtools_listener.h"
+#include "chrome/browser/chromeos/file_manager/devtools_listener.h"
 
 #include <stddef.h>
 #include <map>
