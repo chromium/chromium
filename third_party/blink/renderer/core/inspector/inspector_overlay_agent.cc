@@ -373,7 +373,7 @@ InspectorOverlayAgent::InspectorOverlayAgent(
       inspect_mode_protocol_config_(&agent_state_, std::vector<uint8_t>()) {}
 
 InspectorOverlayAgent::~InspectorOverlayAgent() {
-  DCHECK(!overlay_page_);
+  DCHECK(!overlay_page_ && !inspect_tool_ && !hinge_ && !persistent_tool_);
 }
 
 void InspectorOverlayAgent::Trace(Visitor* visitor) const {
@@ -419,7 +419,6 @@ Response InspectorOverlayAgent::enable() {
   }
   backend_node_id_to_inspect_ = 0;
   SetNeedsUnbufferedInput(true);
-
   return Response::Success();
 }
 
@@ -615,11 +614,10 @@ Response InspectorOverlayAgent::highlightRect(
     Maybe<protocol::DOM::RGBA> outline_color) {
   std::unique_ptr<FloatQuad> quad =
       std::make_unique<FloatQuad>(FloatRect(x, y, width, height));
-  SetInspectTool(MakeGarbageCollected<QuadHighlightTool>(
+  return SetInspectTool(MakeGarbageCollected<QuadHighlightTool>(
       this, GetFrontend(), std::move(quad),
       InspectorDOMAgent::ParseColor(color.fromMaybe(nullptr)),
       InspectorDOMAgent::ParseColor(outline_color.fromMaybe(nullptr))));
-  return Response::Success();
 }
 
 Response InspectorOverlayAgent::highlightQuad(
@@ -629,11 +627,10 @@ Response InspectorOverlayAgent::highlightQuad(
   std::unique_ptr<FloatQuad> quad = std::make_unique<FloatQuad>();
   if (!ParseQuad(std::move(quad_array), quad.get()))
     return Response::ServerError("Invalid Quad format");
-  SetInspectTool(MakeGarbageCollected<QuadHighlightTool>(
+  return SetInspectTool(MakeGarbageCollected<QuadHighlightTool>(
       this, GetFrontend(), std::move(quad),
       InspectorDOMAgent::ParseColor(color.fromMaybe(nullptr)),
       InspectorDOMAgent::ParseColor(outline_color.fromMaybe(nullptr))));
-  return Response::Success();
 }
 
 Response InspectorOverlayAgent::setShowHinge(
@@ -697,10 +694,9 @@ Response InspectorOverlayAgent::highlightNode(
   if (!response.IsSuccess())
     return response;
 
-  SetInspectTool(MakeGarbageCollected<NodeHighlightTool>(
+  return SetInspectTool(MakeGarbageCollected<NodeHighlightTool>(
       this, GetFrontend(), node, selector_list.fromMaybe(String()),
       std::move(highlight_config)));
-  return Response::Success();
 }
 
 Response InspectorOverlayAgent::setShowGridOverlays(
@@ -746,9 +742,8 @@ Response InspectorOverlayAgent::highlightSourceOrder(
   std::unique_ptr<InspectorSourceOrderConfig> source_order_config =
       std::make_unique<InspectorSourceOrderConfig>(config);
 
-  SetInspectTool(MakeGarbageCollected<SourceOrderTool>(
+  return SetInspectTool(MakeGarbageCollected<SourceOrderTool>(
       this, GetFrontend(), node, std::move(source_order_config)));
-  return Response::Success();
 }
 
 Response InspectorOverlayAgent::highlightFrame(
@@ -760,22 +755,22 @@ Response InspectorOverlayAgent::highlightFrame(
   // FIXME: Inspector doesn't currently work cross process.
   if (!frame)
     return Response::ServerError("Invalid frame id");
-  if (frame->DeprecatedLocalOwner()) {
-    std::unique_ptr<InspectorHighlightConfig> highlight_config =
-        std::make_unique<InspectorHighlightConfig>();
-    highlight_config->show_info = true;  // Always show tooltips for frames.
-    highlight_config->content =
-        InspectorDOMAgent::ParseColor(color.fromMaybe(nullptr));
-    highlight_config->content_outline =
-        InspectorDOMAgent::ParseColor(outline_color.fromMaybe(nullptr));
-
-    SetInspectTool(MakeGarbageCollected<NodeHighlightTool>(
-        this, GetFrontend(), frame->DeprecatedLocalOwner(), String(),
-        std::move(highlight_config)));
-  } else {
+  if (!frame->DeprecatedLocalOwner()) {
     PickTheRightTool();
+    return Response::Success();
   }
-  return Response::Success();
+
+  std::unique_ptr<InspectorHighlightConfig> highlight_config =
+      std::make_unique<InspectorHighlightConfig>();
+  highlight_config->show_info = true;  // Always show tooltips for frames.
+  highlight_config->content =
+      InspectorDOMAgent::ParseColor(color.fromMaybe(nullptr));
+  highlight_config->content_outline =
+      InspectorDOMAgent::ParseColor(outline_color.fromMaybe(nullptr));
+
+  return SetInspectTool(MakeGarbageCollected<NodeHighlightTool>(
+      this, GetFrontend(), frame->DeprecatedLocalOwner(), String(),
+      std::move(highlight_config)));
 }
 
 Response InspectorOverlayAgent::hideHighlight() {
@@ -885,6 +880,9 @@ void InspectorOverlayAgent::DispatchBufferedTouchEvents() {
 
 WebInputEventResult InspectorOverlayAgent::HandleInputEvent(
     const WebInputEvent& input_event) {
+  if (!enabled_.Get())
+    return WebInputEventResult::kNotHandled;
+
   if (input_event.GetType() == WebInputEvent::Type::kMouseUp &&
       swallow_next_mouse_up_) {
     swallow_next_mouse_up_ = false;
@@ -1358,24 +1356,35 @@ void InspectorOverlayAgent::EnsureEnableFrameOverlay() {
       GetFrame(), std::make_unique<InspectorPageOverlayDelegate>(*this));
 }
 
-void InspectorOverlayAgent::SetInspectTool(InspectTool* inspect_tool) {
+void InspectorOverlayAgent::ClearInspectTool() {
+  if (!hinge_)
+    DisableFrameOverlay();
+  inspect_tool_ = nullptr;
+}
+
+Response InspectorOverlayAgent::SetInspectTool(InspectTool* inspect_tool) {
+  ClearInspectTool();
+
+  if (!inspect_tool)
+    return Response::Success();
+
+  if (!enabled_.Get()) {
+    return Response::InvalidRequest(
+        "Overlay must be enabled before a tool can be shown");
+  }
+
   LocalFrameView* view = frame_impl_->GetFrameView();
   LocalFrame* frame = GetFrame();
   if (!view || !frame)
-    return;
+    return Response::InternalError();
 
-  if (inspect_tool && enabled_.Get()) {
-    inspect_tool_ = inspect_tool;
-    // If the tool supports persistent overlays, the resources of the persistent
-    // tool will be included into the JS resource.
-    LoadFrameForTool(inspect_tool->GetDataResourceId());
-    EnsureEnableFrameOverlay();
-  } else {
-    inspect_tool_ = nullptr;
-    if (!hinge_)
-      DisableFrameOverlay();
-  }
+  inspect_tool_ = inspect_tool;
+  // If the tool supports persistent overlays, the resources of the persistent
+  // tool will be included into the JS resource.
+  LoadFrameForTool(inspect_tool->GetDataResourceId());
+  EnsureEnableFrameOverlay();
   ScheduleUpdate();
+  return Response::Success();
 }
 
 InspectorSourceOrderConfig

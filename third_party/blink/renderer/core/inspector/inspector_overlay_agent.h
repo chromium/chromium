@@ -251,7 +251,8 @@ class CORE_EXPORT InspectorOverlayAgent final
   void SetNeedsUnbufferedInput(bool unbuffered);
   void PickTheRightTool();
   // Set or clear a mode tool, or add a highlight tool
-  void SetInspectTool(InspectTool* inspect_tool);
+  protocol::Response SetInspectTool(InspectTool* inspect_tool);
+  void ClearInspectTool();
   void LoadFrameForTool(int data_resource_id);
   void EnsureEnableFrameOverlay();
   void DisableFrameOverlay();
