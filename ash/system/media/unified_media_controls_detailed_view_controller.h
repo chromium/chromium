@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_MEDIA_UNIFIED_MEDIA_CONTROLS_DETAILED_VIEW_CONTROLLER_H_
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/media_notification_provider_observer.h"
 #include "ash/system/unified/detailed_view_controller.h"
 
 namespace ash {
@@ -16,8 +15,7 @@ class UnifiedSystemTrayController;
 
 // Controller of UnifiedMediaControlsDetailedView in UnifiedSystemTray.
 class ASH_EXPORT UnifiedMediaControlsDetailedViewController
-    : public DetailedViewController,
-      public MediaNotificationProviderObserver {
+    : public DetailedViewController {
  public:
   explicit UnifiedMediaControlsDetailedViewController(
       UnifiedSystemTrayController* tray_controller);
@@ -27,11 +25,9 @@ class ASH_EXPORT UnifiedMediaControlsDetailedViewController
   views::View* CreateView() override;
   base::string16 GetAccessibleName() const override;
 
-  // MediaNotificationProviderObserver implementations.
-  void OnNotificationListChanged() override;
-  void OnNotificationListViewSizeChanged() override {}
-
  private:
+  friend class UnifiedMediaControlsDetailedViewControllerTest;
+
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 };
 

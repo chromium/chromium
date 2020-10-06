@@ -18,17 +18,13 @@ UnifiedMediaControlsDetailedViewController::
     UnifiedMediaControlsDetailedViewController(
         UnifiedSystemTrayController* tray_controller)
     : detailed_view_delegate_(
-          std::make_unique<DetailedViewDelegate>(tray_controller)) {
-  DCHECK(MediaNotificationProvider::Get());
-  MediaNotificationProvider::Get()->AddObserver(this);
-}
+          std::make_unique<DetailedViewDelegate>(tray_controller)) {}
 
 UnifiedMediaControlsDetailedViewController::
     ~UnifiedMediaControlsDetailedViewController() {
   if (!MediaNotificationProvider::Get())
     return;
 
-  MediaNotificationProvider::Get()->RemoveObserver(this);
   MediaNotificationProvider::Get()->OnBubbleClosing();
 }
 
@@ -46,15 +42,6 @@ base::string16 UnifiedMediaControlsDetailedViewController::GetAccessibleName()
     const {
   return l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_SETTINGS_BUBBLE_MEDIA_CONTROLS_ACCESSIBLE_DESCRIPTION);
-}
-
-void UnifiedMediaControlsDetailedViewController::OnNotificationListChanged() {
-  DCHECK(MediaNotificationProvider::Get());
-  if (MediaNotificationProvider::Get()->HasActiveNotifications() ||
-      MediaNotificationProvider::Get()->HasFrozenNotifications())
-    return;
-
-  detailed_view_delegate_->TransitionToMainView(false /* restore_focus */);
 }
 
 }  // namespace ash

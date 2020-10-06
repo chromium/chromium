@@ -8,6 +8,7 @@
 #include "ash/system/media/media_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
+#include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -43,20 +44,8 @@ class MockMediaNotificationProvider : MediaNotificationProvider {
   }
   void AddObserver(MediaNotificationProviderObserver* observer) override {}
   void RemoveObserver(MediaNotificationProviderObserver* observer) override {}
-  bool HasActiveNotifications() override { return has_active_notifications_; }
-  bool HasFrozenNotifications() override { return has_frozen_notifications_; }
-
-  void SetHasActiveNotifications(bool has_active_notifications) {
-    has_active_notifications_ = has_active_notifications;
-  }
-
-  void SetHasFrozenNotifications(bool has_frozen_notifications) {
-    has_frozen_notifications_ = has_frozen_notifications;
-  }
-
- private:
-  bool has_active_notifications_ = false;
-  bool has_frozen_notifications_ = false;
+  bool HasActiveNotifications() override { return true; }
+  bool HasFrozenNotifications() override { return true; }
 };
 
 }  // namespace
@@ -84,6 +73,14 @@ class UnifiedMediaControlsDetailedViewControllerTest : public AshTestBase {
     provider_.reset();
   }
 
+  void SimulateTransitionToMainMenu() {
+    UnifiedMediaControlsDetailedViewController* controller =
+        static_cast<UnifiedMediaControlsDetailedViewController*>(
+            system_tray_controller()->detailed_view_controller());
+    controller->detailed_view_delegate_->TransitionToMainView(
+        true /* restore_focus */);
+  }
+
   UnifiedSystemTrayController* system_tray_controller() {
     return StatusAreaWidgetTestHelper::GetStatusAreaWidget()
         ->unified_system_tray()
@@ -98,7 +95,7 @@ class UnifiedMediaControlsDetailedViewControllerTest : public AshTestBase {
 };
 
 TEST_F(UnifiedMediaControlsDetailedViewControllerTest,
-       ExitDetailedViewWhenNoMediaIsPlaying) {
+       EnterAndExitDetailedView) {
   // UnifiedSystemTrayController should have no DetailedViewController
   // initially.
   EXPECT_EQ(system_tray_controller()->detailed_view_controller(), nullptr);
@@ -109,12 +106,9 @@ TEST_F(UnifiedMediaControlsDetailedViewControllerTest,
   system_tray_controller()->OnMediaControlsViewClicked();
   EXPECT_NE(system_tray_controller()->detailed_view_controller(), nullptr);
 
-  // Notification list update with neither active nor frozen session should
-  // close the detailed view and get back to main view.
+  // Should notify provider when transition to main menu.
   EXPECT_CALL(*provider(), OnBubbleClosing);
-  static_cast<UnifiedMediaControlsDetailedViewController*>(
-      system_tray_controller()->detailed_view_controller())
-      ->OnNotificationListChanged();
+  SimulateTransitionToMainMenu();
   EXPECT_EQ(system_tray_controller()->detailed_view_controller(), nullptr);
 }
 
