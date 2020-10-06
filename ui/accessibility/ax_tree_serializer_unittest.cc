@@ -347,7 +347,7 @@ TEST_F(AXTreeSerializerTest, MaximumSerializedNodeCount) {
 // update will re-send the entire tree.
 // Test does not work with address sanitizer -- if EXPECT_DEATH is used to
 // catch the "Illegal parenting" NOTREACHED(), an ASAN crash is still generated.
-TEST_F(AXTreeSerializerTest, DuplicateIdsReturnsErrorAndFlushes) {
+TEST_F(AXTreeSerializerTest, DISABLED_DuplicateIdsReturnsErrorAndFlushes) {
   // (1 (2 (3 (4) 5)))
   treedata0_.root_id = 1;
   treedata0_.nodes.resize(5);
