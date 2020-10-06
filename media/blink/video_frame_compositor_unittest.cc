@@ -7,7 +7,6 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -49,40 +48,24 @@ class MockWebVideoFrameSubmitter : public blink::WebVideoFrameSubmitter {
 };
 
 class VideoFrameCompositorTest : public VideoRendererSink::RenderCallback,
-                                 public ::testing::TestWithParam<bool> {
+                                 public testing::Test {
  public:
   VideoFrameCompositorTest()
       : client_(new StrictMock<MockWebVideoFrameSubmitter>()) {}
 
   void SetUp() override {
-    if (IsSurfaceLayerForVideoEnabled()) {
-      // TODO(http://crbug/1134146): Clean up the tests in this file since the
-      // feature UseSurfaceLayerForVideo no longer exists.
-      feature_list_.InitFromCommandLine("UseSurfaceLayerForVideo", "");
-
-      // When SurfaceLayerForVideo is enabled, |compositor_| owns the
-      // |submitter_|. Otherwise, the |compositor_| treats the |submitter_| as
-      // if it were a VideoFrameProviderClient in the VideoLayer code path,
-      // holding only a bare pointer.
-    }
     submitter_ = client_.get();
 
-    if (!IsSurfaceLayerForVideoEnabled()) {
-      compositor_ = std::make_unique<VideoFrameCompositor>(
-          base::ThreadTaskRunnerHandle::Get(), nullptr);
-      compositor_->SetVideoFrameProviderClient(client_.get());
-    } else {
-      EXPECT_CALL(*submitter_, Initialize(_, _));
-      compositor_ = std::make_unique<VideoFrameCompositor>(
-          base::ThreadTaskRunnerHandle::Get(), std::move(client_));
-      base::RunLoop().RunUntilIdle();
-      EXPECT_CALL(*submitter_,
-                  SetRotation(Eq(media::VideoRotation::VIDEO_ROTATION_90)));
-      EXPECT_CALL(*submitter_, SetForceSubmit(false));
-      EXPECT_CALL(*submitter_, EnableSubmission(Eq(viz::SurfaceId())));
-      compositor_->EnableSubmission(
-          viz::SurfaceId(), media::VideoRotation::VIDEO_ROTATION_90, false);
-    }
+    EXPECT_CALL(*submitter_, Initialize(_, _));
+    compositor_ = std::make_unique<VideoFrameCompositor>(
+        base::ThreadTaskRunnerHandle::Get(), std::move(client_));
+    base::RunLoop().RunUntilIdle();
+    EXPECT_CALL(*submitter_,
+                SetRotation(Eq(media::VideoRotation::VIDEO_ROTATION_90)));
+    EXPECT_CALL(*submitter_, SetForceSubmit(false));
+    EXPECT_CALL(*submitter_, EnableSubmission(Eq(viz::SurfaceId())));
+    compositor_->EnableSubmission(
+        viz::SurfaceId(), media::VideoRotation::VIDEO_ROTATION_90, false);
 
     compositor_->set_tick_clock_for_testing(&tick_clock_);
     // Disable background rendering by default.
@@ -111,8 +94,6 @@ class VideoFrameCompositorTest : public VideoRendererSink::RenderCallback,
   }
 
  protected:
-  bool IsSurfaceLayerForVideoEnabled() { return GetParam(); }
-
   // VideoRendererSink::RenderCallback implementation.
   MOCK_METHOD3(Render,
                scoped_refptr<VideoFrame>(base::TimeTicks,
@@ -156,19 +137,14 @@ class VideoFrameCompositorTest : public VideoRendererSink::RenderCallback,
   std::unique_ptr<VideoFrameCompositor> compositor_;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-
   DISALLOW_COPY_AND_ASSIGN(VideoFrameCompositorTest);
 };
 
-TEST_P(VideoFrameCompositorTest, InitialValues) {
+TEST_F(VideoFrameCompositorTest, InitialValues) {
   EXPECT_FALSE(compositor()->GetCurrentFrame().get());
 }
 
-TEST_P(VideoFrameCompositorTest, SetIsSurfaceVisible) {
-  if (!IsSurfaceLayerForVideoEnabled())
-    return;
-
+TEST_F(VideoFrameCompositorTest, SetIsSurfaceVisible) {
   auto cb = compositor()->GetUpdateSubmissionStateCallback();
 
   EXPECT_CALL(*submitter_, SetIsSurfaceVisible(true));
@@ -180,10 +156,7 @@ TEST_P(VideoFrameCompositorTest, SetIsSurfaceVisible) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_P(VideoFrameCompositorTest, SetIsPageVisible) {
-  if (!IsSurfaceLayerForVideoEnabled())
-    return;
-
+TEST_F(VideoFrameCompositorTest, SetIsPageVisible) {
   EXPECT_CALL(*submitter_, SetIsPageVisible(true));
   compositor()->SetIsPageVisible(true);
 
@@ -191,7 +164,7 @@ TEST_P(VideoFrameCompositorTest, SetIsPageVisible) {
   compositor()->SetIsPageVisible(false);
 }
 
-TEST_P(VideoFrameCompositorTest, PaintSingleFrame) {
+TEST_F(VideoFrameCompositorTest, PaintSingleFrame) {
   scoped_refptr<VideoFrame> expected = VideoFrame::CreateEOSFrame();
 
   // Should notify compositor synchronously.
@@ -202,7 +175,7 @@ TEST_P(VideoFrameCompositorTest, PaintSingleFrame) {
   EXPECT_EQ(1, submitter_->did_receive_frame_count());
 }
 
-TEST_P(VideoFrameCompositorTest, RenderFiresPresentationCallback) {
+TEST_F(VideoFrameCompositorTest, RenderFiresPresentationCallback) {
   // Advance the clock so we can differentiate between base::TimeTicks::Now()
   // and base::TimeTicks().
   tick_clock_.Advance(base::TimeDelta::FromSeconds(1));
@@ -220,10 +193,7 @@ TEST_P(VideoFrameCompositorTest, RenderFiresPresentationCallback) {
   EXPECT_NE(base::TimeTicks(), metadata->expected_display_time);
 }
 
-TEST_P(VideoFrameCompositorTest, PresentationCallbackForcesBeginFrames) {
-  if (!IsSurfaceLayerForVideoEnabled())
-    return;
-
+TEST_F(VideoFrameCompositorTest, PresentationCallbackForcesBeginFrames) {
   // A call to the requestVideoFrameCallback() API should set ForceBeginFrames.
   EXPECT_CALL(*submitter_, SetForceBeginFrames(true));
   compositor()->SetOnFramePresentedCallback(GetNewFramePresentedCB());
@@ -240,7 +210,7 @@ TEST_P(VideoFrameCompositorTest, PresentationCallbackForcesBeginFrames) {
   testing::Mock::VerifyAndClear(submitter_);
 }
 
-TEST_P(VideoFrameCompositorTest, MultiplePresentationCallbacks) {
+TEST_F(VideoFrameCompositorTest, MultiplePresentationCallbacks) {
   // Advance the clock so we can differentiate between base::TimeTicks::Now()
   // and base::TimeTicks().
   tick_clock_.Advance(base::TimeDelta::FromSeconds(1));
@@ -281,7 +251,7 @@ TEST_P(VideoFrameCompositorTest, MultiplePresentationCallbacks) {
   EXPECT_EQ(metadata->width, kSize3);
 }
 
-TEST_P(VideoFrameCompositorTest, VideoRendererSinkFrameDropped) {
+TEST_F(VideoFrameCompositorTest, VideoRendererSinkFrameDropped) {
   scoped_refptr<VideoFrame> opaque_frame = CreateOpaqueFrame();
 
   EXPECT_CALL(*this, Render(_, _, _)).WillRepeatedly(Return(opaque_frame));
@@ -315,23 +285,14 @@ TEST_P(VideoFrameCompositorTest, VideoRendererSinkFrameDropped) {
   StopVideoRendererSink(true);
 }
 
-TEST_P(VideoFrameCompositorTest, VideoLayerShutdownWhileRendering) {
-  if (!IsSurfaceLayerForVideoEnabled()) {
-    EXPECT_CALL(*this, Render(_, _, true)).WillOnce(Return(nullptr));
-    StartVideoRendererSink();
-    compositor_->SetVideoFrameProviderClient(nullptr);
-    StopVideoRendererSink(false);
-  }
-}
-
-TEST_P(VideoFrameCompositorTest, StartFiresBackgroundRender) {
+TEST_F(VideoFrameCompositorTest, StartFiresBackgroundRender) {
   scoped_refptr<VideoFrame> opaque_frame = CreateOpaqueFrame();
   EXPECT_CALL(*this, Render(_, _, true)).WillRepeatedly(Return(opaque_frame));
   StartVideoRendererSink();
   StopVideoRendererSink(true);
 }
 
-TEST_P(VideoFrameCompositorTest, BackgroundRenderTicks) {
+TEST_F(VideoFrameCompositorTest, BackgroundRenderTicks) {
   scoped_refptr<VideoFrame> opaque_frame = CreateOpaqueFrame();
   compositor_->set_background_rendering_for_testing(true);
 
@@ -352,7 +313,7 @@ TEST_P(VideoFrameCompositorTest, BackgroundRenderTicks) {
   StopVideoRendererSink(true);
 }
 
-TEST_P(VideoFrameCompositorTest,
+TEST_F(VideoFrameCompositorTest,
        UpdateCurrentFrameWorksWhenBackgroundRendered) {
   scoped_refptr<VideoFrame> opaque_frame = CreateOpaqueFrame();
   compositor_->set_background_rendering_for_testing(true);
@@ -380,7 +341,7 @@ TEST_P(VideoFrameCompositorTest,
   StopVideoRendererSink(true);
 }
 
-TEST_P(VideoFrameCompositorTest, UpdateCurrentFrameIfStale) {
+TEST_F(VideoFrameCompositorTest, UpdateCurrentFrameIfStale) {
   scoped_refptr<VideoFrame> opaque_frame_1 = CreateOpaqueFrame();
   scoped_refptr<VideoFrame> opaque_frame_2 = CreateOpaqueFrame();
   compositor_->set_background_rendering_for_testing(true);
@@ -439,7 +400,7 @@ TEST_P(VideoFrameCompositorTest, UpdateCurrentFrameIfStale) {
   StopVideoRendererSink(false);
 }
 
-TEST_P(VideoFrameCompositorTest, UpdateCurrentFrameIfStale_ClientBypass) {
+TEST_F(VideoFrameCompositorTest, UpdateCurrentFrameIfStale_ClientBypass) {
   scoped_refptr<VideoFrame> opaque_frame_1 = CreateOpaqueFrame();
   scoped_refptr<VideoFrame> opaque_frame_2 = CreateOpaqueFrame();
   compositor_->set_background_rendering_for_testing(true);
@@ -468,7 +429,7 @@ TEST_P(VideoFrameCompositorTest, UpdateCurrentFrameIfStale_ClientBypass) {
   StopVideoRendererSink(true);
 }
 
-TEST_P(VideoFrameCompositorTest, PreferredRenderInterval) {
+TEST_F(VideoFrameCompositorTest, PreferredRenderInterval) {
   preferred_render_interval_ = base::TimeDelta::FromSeconds(1);
   compositor_->Start(this);
   EXPECT_EQ(compositor_->GetPreferredRenderInterval(),
@@ -477,9 +438,5 @@ TEST_P(VideoFrameCompositorTest, PreferredRenderInterval) {
   EXPECT_EQ(compositor_->GetPreferredRenderInterval(),
             viz::BeginFrameArgs::MinInterval());
 }
-
-INSTANTIATE_TEST_SUITE_P(SubmitterEnabled,
-                         VideoFrameCompositorTest,
-                         ::testing::Bool());
 
 }  // namespace media
