@@ -31,9 +31,6 @@
 #include "sandbox/policy/sandbox.h"
 
 #if defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
-#include <sys/types.h>
-#include <unistd.h>
-
 #include "base/android/apk_assets.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/profiler/arm_cfi_table.h"
@@ -129,17 +126,7 @@ class NativeUnwinderCreator {
   const std::unique_ptr<stack_unwinder::MemoryRegionsMap> memory_regions_map_;
 };
 
-// This function must only be called via the closure created in
-// CreateCoreUnwindersFactory(), which is passed into StackSamplingProfiler.
-// This ensures the expensive work involved in constructing the unwinder
-// creators is done on the profiler thread rather than the profiled thread.
-// These take 50+ ms to execute due to the creation of the memory regions map
-// and lookup of the modules in the process.
 std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders() {
-  // This function is expected to be run on the profiler thread which is never
-  // the main thread in the process.
-  DCHECK_NE(getpid(), gettid());
-
   static base::NoDestructor<NativeUnwinderCreator> native_unwinder_creator;
   static base::NoDestructor<ChromeUnwinderCreator> chrome_unwinder_creator;
 
@@ -159,7 +146,15 @@ base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory() {
   CHECK(
       ThreadProfilerConfiguration::Get()->IsProfilerEnabledForCurrentProcess());
 
-  return base::BindOnce(&CreateCoreUnwinders);
+  // Temporarily run CreateCoreUnwinders() on the main thread to test a
+  // hypothesis about cause of crashes seen in https://crbug.com/1135152.
+  // TODO(https://crbug.com/1135152): Move CreateCoreUnwinders() execution back
+  // into the bound function.
+  return base::BindOnce(
+      [](std::vector<std::unique_ptr<base::Unwinder>> unwinders) {
+        return unwinders;
+      },
+      CreateCoreUnwinders());
 #else
   return base::StackSamplingProfiler::UnwindersFactory();
 #endif

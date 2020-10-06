@@ -192,6 +192,11 @@ double AndroidPlatformConfiguration::GetChildProcessEnableFraction(
   if (browser_test_mode_enabled())
     return DefaultPlatformConfiguration::GetChildProcessEnableFraction(process);
 
+  // TODO(https://crbug.com/1135152): Increase enable rate once we've validated
+  // the hypothesis about crash cause, and mitigated the issue.
+  if (process == metrics::CallStackProfileParams::RENDERER_PROCESS)
+    return 0.006;
+
   // TODO(https://crbug.com/1004855): Enable for all the default processes.
   return 0.0;
 }
@@ -199,15 +204,23 @@ double AndroidPlatformConfiguration::GetChildProcessEnableFraction(
 bool AndroidPlatformConfiguration::IsEnabledForThread(
     metrics::CallStackProfileParams::Process process,
     metrics::CallStackProfileParams::Thread thread) const {
-  // Disable for all supported threads pending launch. Enable only for browser
-  // tests.
+  // Enable on renderer process main thread in production, for now.
+  if (process == metrics::CallStackProfileParams::RENDERER_PROCESS &&
+      thread == metrics::CallStackProfileParams::MAIN_THREAD) {
+    return true;
+  }
+
+  // Otherwise enable in dedicated ThreadProfiler browser tests.
   return browser_test_mode_enabled();
 }
 
 bool AndroidPlatformConfiguration::IsSupportedForChannel(
     base::Optional<version_info::Channel> release_channel) const {
-  // On Android profiling is only enabled in its own dedicated browser tests
-  // in local builds and the CQ.
+  // Enable on canary, for now.
+  if (release_channel && *release_channel == version_info::Channel::CANARY)
+    return true;
+
+  // Otherwise enable in dedicated ThreadProfiler browser tests.
   // TODO(https://crbug.com/1004855): Enable across all browser tests.
   return browser_test_mode_enabled();
 }
