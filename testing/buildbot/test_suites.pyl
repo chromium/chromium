@@ -642,6 +642,7 @@
 
     'chromium_gtests': {
       'absl_hardening_tests': {},
+      'angle_unittests': {},
       'base_unittests': {},
       'base_util_unittests': {},
       'blink_common_unittests': {},
@@ -699,15 +700,6 @@
       'shell_dialogs_unittests': {},
       'skia_unittests': {},
       'sql_unittests': {},
-      'standalone_angle_unittests': {
-        'args': [
-          'standalone_angle_unittests',
-        ],
-        'android_args': [
-          '-v',
-        ],
-        'use_isolated_scripts_api': True,
-      },
       'storage_unittests': {},
       'ui_base_unittests': {},
       'ui_touch_selection_unittests': {},
@@ -2032,14 +2024,15 @@
     },
 
     'gpu_angle_unit_gtests': {
-      'standalone_angle_unittests': {
-        'args': [
-          'standalone_angle_unittests',
+      'angle_unittests': {
+        'desktop_args': [
+          '--use-gpu-in-tests',
+          # ANGLE test retries deliberately disabled to prevent flakiness.
+          # http://crbug.com/669196
+          '--test-launcher-retry-limit=0'
         ],
-        'android_args': [
-          '-v',
-        ],
-        'use_isolated_scripts_api': True,
+        'linux_args': ['--no-xvfb'],
+        'should_retry_with_patch': False,
       },
     },
 
@@ -2729,7 +2722,20 @@
         'args': [
           'bin/run_standalone_angle_unittests',
         ],
+        'should_retry_with_patch': False,
         'mixins': ['fuchsia_runner_logs'],
+      },
+    },
+
+    'gpu_standalone_angle_unittests_isolated_scripts': {
+      'standalone_angle_unittests': {
+        'args': [
+          'standalone_angle_unittests',
+        ],
+        'android_args': [
+          '-v',
+        ],
+        'should_retry_with_patch': False,
       },
     },
 
@@ -4991,6 +4997,7 @@
     'gpu_angle_isolated_scripts': [
       'gpu_angle_perf_smoke_isolated_scripts',
       'gpu_angle_restricted_trace_gold_isolated_scripts',
+      'gpu_standalone_angle_unittests_isolated_scripts',
     ],
 
     'gpu_angle_linux_gtests': [
