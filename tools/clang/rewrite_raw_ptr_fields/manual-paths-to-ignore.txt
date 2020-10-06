@@ -19,10 +19,14 @@ base/allocator/
 # Exclude - deprecated and contains legacy C++ and pre-C++11 code.
 ppapi/
 
-# Exclude tools that do not ship in the Chrome binary.
+# Exclude tools that do not ship in the Chrome binary. Can't depend on //base.
 base/android/linker/
 tools/
 net/tools/
+
+# The folder holds headers that are duplicated in the Android source and need to
+# provide a stable C ABI. Can't depend on //base.
+android_webview/public/
 
 # Exclude code that only runs inside a renderer process - renderer
 # processes are excluded for now from the MiraclePtr project scope,
