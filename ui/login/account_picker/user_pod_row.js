@@ -2167,7 +2167,7 @@ cr.define('login', function() {
           this.user_.displayName;
       this.querySelector('.info').textContent =
           loadTimeData.getStringF('publicAccountInfoFormat',
-                                  this.user_.enterpriseDisplayDomain);
+                                  this.user_.enterpriseDomainManager);
     },
 
     /** @override */

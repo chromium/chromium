@@ -248,7 +248,7 @@ class MonitoringWarningView : public NonAccessibleView {
   enum class WarningType { kNone, kSoftWarning, kFullWarning };
 
   void UpdateForUser(const LoginUserInfo& user) {
-    enterprise_domain_ = user.public_account_info->device_enterprise_domain;
+    device_manager_ = user.public_account_info->device_enterprise_manager;
     UpdateLabel();
   }
 
@@ -263,19 +263,19 @@ class MonitoringWarningView : public NonAccessibleView {
   void UpdateLabel() {
     // Call sequence of UpdateForUser() and SetWarningType() is not clear.
     // In case SetWarningType is called first there is a need to wait for
-    // enterprise_domain_ is set.
-    if (warning_type_ == WarningType::kNone || !enterprise_domain_.has_value())
+    // device_manager_ is set.
+    if (warning_type_ == WarningType::kNone || !device_manager_.has_value())
       return;
     base::string16 label_text;
     if (warning_type_ == WarningType::kFullWarning) {
       label_text = l10n_util::GetStringFUTF16(
           IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_FULL_WARNING,
-          base::UTF8ToUTF16(enterprise_domain_.value()));
+          base::UTF8ToUTF16(device_manager_.value()));
       image_->SetVisible(true);
     } else {
       label_text = l10n_util::GetStringFUTF16(
           IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_SOFT_WARNING,
-          base::UTF8ToUTF16(enterprise_domain_.value()));
+          base::UTF8ToUTF16(device_manager_.value()));
       image_->SetVisible(false);
     }
     label_->SetText(label_text);
@@ -284,7 +284,7 @@ class MonitoringWarningView : public NonAccessibleView {
   friend class LoginExpandedPublicAccountView::TestApi;
 
   WarningType warning_type_;
-  base::Optional<std::string> enterprise_domain_;
+  base::Optional<std::string> device_manager_;
   views::ImageView* image_;
   views::Label* label_;
 
@@ -724,7 +724,7 @@ LoginExpandedPublicAccountView::TestApi::monitoring_warning_label() {
 
 void LoginExpandedPublicAccountView::TestApi::ResetUserForTest() {
   if (view_->right_pane_->monitoring_warning_view_)
-    view_->right_pane_->monitoring_warning_view_->enterprise_domain_.reset();
+    view_->right_pane_->monitoring_warning_view_->device_manager_.reset();
 }
 
 bool LoginExpandedPublicAccountView::TestApi::SelectLanguage(

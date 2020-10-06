@@ -80,7 +80,7 @@ LoginUserInfo CreatePublicAccountUser(const std::string& email) {
   user.basic_user_info.display_email = email;
   user.basic_user_info.type = user_manager::USER_TYPE_PUBLIC_ACCOUNT;
   user.public_account_info.emplace();
-  user.public_account_info->device_enterprise_domain = email_parts[1];
+  user.public_account_info->device_enterprise_manager = email_parts[1];
   user.public_account_info->show_expanded_view = true;
   return user;
 }

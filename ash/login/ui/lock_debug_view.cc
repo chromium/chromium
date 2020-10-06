@@ -155,7 +155,7 @@ LoginUserInfo PopulateUserData(const LoginUserInfo& user,
 
   if (is_public_account) {
     result.public_account_info.emplace();
-    result.public_account_info->device_enterprise_domain =
+    result.public_account_info->device_enterprise_manager =
         kDebugEnterpriseDomain;
     result.public_account_info->default_locale = kDebugDefaultLocaleCode;
     result.public_account_info->show_expanded_view = true;

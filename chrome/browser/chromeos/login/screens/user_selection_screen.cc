@@ -80,7 +80,7 @@ const int kWaitingOvertimeInSeconds = 1;
 const char kKeyUsername[] = "username";
 const char kKeyDisplayName[] = "displayName";
 const char kKeyEmailAddress[] = "emailAddress";
-const char kKeyEnterpriseDisplayDomain[] = "enterpriseDisplayDomain";
+const char kKeyEnterpriseDomainManager[] = "enterpriseDomainManager";
 const char kKeyPublicAccount[] = "publicAccount";
 const char kKeyLegacySupervisedUser[] = "legacySupervisedUser";
 const char kKeyChildUser[] = "childUser";
@@ -105,12 +105,13 @@ const size_t kMaxUsers = 50;
 const int kPasswordClearTimeoutSec = 60;
 
 // Returns true if we have enterprise domain information.
-// |out_domain|:  Output value of the enterprise domain.
-bool GetEnterpriseDomain(std::string* out_domain) {
+// |out_manager|:  Output value of the manager of the device's domain. Can be
+// either a domain (foo.com) or an email address (user@foo.com)
+bool GetDeviceManager(std::string* out_manager) {
   policy::BrowserPolicyConnectorChromeOS* policy_connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   if (policy_connector->IsCloudManaged()) {
-    *out_domain = policy_connector->GetEnterpriseDisplayDomain();
+    *out_manager = policy_connector->GetEnterpriseDomainManager();
     return true;
   }
   return false;
@@ -150,9 +151,9 @@ std::unique_ptr<base::ListValue> GetPublicSessionLocales(
 void AddPublicSessionDetailsToUserDictionaryEntry(
     base::DictionaryValue* user_dict,
     const std::vector<std::string>* public_session_recommended_locales) {
-  std::string domain;
-  if (GetEnterpriseDomain(&domain))
-    user_dict->SetString(kKeyEnterpriseDisplayDomain, domain);
+  std::string manager;
+  if (GetDeviceManager(&manager))
+    user_dict->SetString(kKeyEnterpriseDomainManager, manager);
 
   std::string selected_locale;
   bool has_multiple_locales;
@@ -1098,10 +1099,10 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
 
     // Fill public session data.
     if (user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
-      std::string domain;
+      std::string manager;
       user_info.public_account_info.emplace();
-      if (GetEnterpriseDomain(&domain))
-        user_info.public_account_info->device_enterprise_domain = domain;
+      if (GetDeviceManager(&manager))
+        user_info.public_account_info->device_enterprise_manager = manager;
 
       user_info.public_account_info->using_saml = user->using_saml();
 

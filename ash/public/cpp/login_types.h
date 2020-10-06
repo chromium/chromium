@@ -209,9 +209,10 @@ struct ASH_PUBLIC_EXPORT PublicAccountInfo {
   PublicAccountInfo& operator=(const PublicAccountInfo& other);
   PublicAccountInfo& operator=(PublicAccountInfo&& other);
 
-  // The domain name displayed in the login screen UI for device-level
-  // management.
-  base::Optional<std::string> device_enterprise_domain;
+  // The name of the device manager displayed in the login screen UI for
+  // device-level management. May be either a domain (foo.com) or an email
+  // address (user@foo.com).
+  base::Optional<std::string> device_enterprise_manager;
 
   // A list of available user locales.
   std::vector<LocaleItem> available_locales;

@@ -310,7 +310,7 @@ TEST_P(LoginExpandedPublicAccountViewTest, ChangeWarningLabel) {
   public_account_->SetShowFullManagementDisclosure(false);
   EXPECT_EQ(label->GetText(), default_warning);
   const std::string domain =
-      user_.public_account_info->device_enterprise_domain.value();
+      user_.public_account_info->device_enterprise_manager.value();
   public_account_->UpdateForUser(user_);
   const base::string16 soft_warning = l10n_util::GetStringFUTF16(
       IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_SOFT_WARNING,
