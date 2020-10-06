@@ -29,6 +29,7 @@
 #include "base/task/post_task.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -127,6 +128,7 @@ namespace {
 namespace dnr_api = api::declarative_net_request;
 
 using ::testing::UnorderedElementsAre;
+using ::testing::UnorderedElementsAreArray;
 
 constexpr char kDefaultRulesetID[] = "id";
 
@@ -140,36 +142,6 @@ bool WasFrameWithScriptLoaded(content::RenderFrameHost* rfh) {
       &script_resource_was_loaded));
   return script_resource_was_loaded;
 }
-
-// Helper to wait for warnings thrown for a given extension. This must be
-// constructed before warnings are added.
-class WarningServiceObserver : public WarningService::Observer {
- public:
-  WarningServiceObserver(WarningService* warning_service,
-                         const ExtensionId& extension_id)
-      : observer_(this), extension_id_(extension_id) {
-    observer_.Add(warning_service);
-  }
-  WarningServiceObserver(const WarningServiceObserver&) = delete;
-  WarningServiceObserver& operator=(const WarningServiceObserver&) = delete;
-
-  // Should only be called once per WarningServiceObserver lifetime.
-  void WaitForWarning() { run_loop_.Run(); }
-
- private:
-  // WarningService::Observer override:
-  void ExtensionWarningsChanged(
-      const ExtensionIdSet& affected_extensions) override {
-    if (!base::Contains(affected_extensions, extension_id_))
-      return;
-
-    run_loop_.Quit();
-  }
-
-  ScopedObserver<WarningService, WarningService::Observer> observer_;
-  const ExtensionId extension_id_;
-  base::RunLoop run_loop_;
-};
 
 // Helper to wait for ruleset load in response to extension load.
 class RulesetLoadObserver : public RulesMonitorService::TestObserver {
@@ -611,7 +583,8 @@ class DeclarativeNetRequestBrowserTest
     ASSERT_FALSE(base::PathExists(extension_dir));
     EXPECT_TRUE(base::CreateDirectory(extension_dir));
 
-    WriteManifestAndRulesets(extension_dir, rulesets, hosts, flags_);
+    WriteManifestAndRulesets(extension_dir, rulesets, hosts, flags_,
+                             directory /* extension_name */);
 
     ExtensionTestMessageListener background_page_ready_listener(
         "ready", false /*will_reply*/);
@@ -4881,6 +4854,141 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
   EXPECT_FALSE(TryLoadScript("redirect_to_server.js"));
 }
 
+class DeclarativeNetRequestGlobalRulesBrowserTest
+    : public DeclarativeNetRequestBrowserTest {
+ public:
+  DeclarativeNetRequestGlobalRulesBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        kDeclarativeNetRequestGlobalRules);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  // Override the API guaranteed minimum to prevent a timeout on loading the
+  // extension.
+  base::AutoReset<int> guaranteed_minimum_override_ =
+      CreateScopedStaticGuaranteedMinimumOverrideForTesting(1);
+
+  // Similarly, override the global limit to prevent a timeout.
+  base::AutoReset<int> global_limit_override_ =
+      CreateScopedGlobalStaticRuleLimitOverrideForTesting(2);
+};
+
+using DeclarativeNetRequestGlobalRulesBrowserTest_Packed =
+    DeclarativeNetRequestGlobalRulesBrowserTest;
+
+// Test that extensions with allocated global rules keep their allocations after
+// the browser restarts.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
+                       PRE_GlobalRulesBrowserRestart) {
+  // This is not tested for unpacked extensions since the unpacked extension
+  // directory won't be persisted across browser restarts.
+  ASSERT_EQ(ExtensionLoadType::PACKED, GetParam());
+
+  // Sanity check that the extension can index and enable up to
+  // |rule_limit_override| + |global_limit_override| rules.
+  ASSERT_EQ(3, GetStaticRuleLimit());
+
+  auto create_rule = [](int id) {
+    TestRule rule = CreateGenericRule();
+    rule.id = id;
+    rule.condition->url_filter = std::string("index.html");
+    rule.condition->resource_types = std::vector<std::string>({"main_frame"});
+    return rule;
+  };
+
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
+      {create_rule(1), create_rule(2)}, "extension_1", {} /* hosts */));
+  const ExtensionId first_extension_id = last_loaded_extension_id();
+
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
+      {create_rule(1), create_rule(2)}, "extension_2", {} /* hosts */));
+  const ExtensionId second_extension_id = last_loaded_extension_id();
+
+  std::vector<TestRulesetInfo> rulesets;
+  rulesets.emplace_back("ruleset_1", *ToListValue({create_rule(1)}));
+  rulesets.emplace_back("ruleset_2", *ToListValue({create_rule(2)}));
+
+  ASSERT_NO_FATAL_FAILURE(
+      LoadExtensionWithRulesets(rulesets, "extension_3", {} /* hosts */));
+
+  const Extension* third_extension = last_loaded_extension();
+  CompositeMatcher* composite_matcher =
+      ruleset_manager()->GetMatcherForExtension(third_extension->id());
+
+  ASSERT_TRUE(composite_matcher);
+
+  // Check that the third extension only has |ruleset_1| enabled.
+  EXPECT_THAT(GetPublicRulesetIDs(*third_extension, *composite_matcher),
+              UnorderedElementsAre("ruleset_1"));
+
+  const ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+
+  // First and second extension should have 1 rule in the global pool, third
+  // extension should have none because one of its rulesets is not enabled since
+  // the global limit is reached.
+  size_t allocated_rules_count = 0;
+  EXPECT_TRUE(prefs->GetDNRAllocatedGlobalRuleCount(first_extension_id,
+                                                    &allocated_rules_count));
+  EXPECT_EQ(1u, allocated_rules_count);
+
+  EXPECT_TRUE(prefs->GetDNRAllocatedGlobalRuleCount(second_extension_id,
+                                                    &allocated_rules_count));
+  EXPECT_EQ(1u, allocated_rules_count);
+
+  EXPECT_FALSE(prefs->GetDNRAllocatedGlobalRuleCount(third_extension->id(),
+                                                     &allocated_rules_count));
+}
+
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
+                       GlobalRulesBrowserRestart) {
+  // This is not tested for unpacked extensions since the unpacked extension
+  // directory won't be persisted across browser restarts.
+  ASSERT_EQ(ExtensionLoadType::PACKED, GetParam());
+
+  // Sanity check that the extension can index and enable up to
+  // |rule_limit_override| + |global_limit_override| rules.
+  ASSERT_EQ(3, GetStaticRuleLimit());
+
+  const ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  std::map<std::string, size_t> allocated_rule_counts;
+  std::map<std::string, const Extension*> extensions_by_name;
+  for (const auto& extension : extension_registry()->enabled_extensions()) {
+    extensions_by_name[extension->name()] = extension.get();
+
+    size_t allocated_rule_count = 0;
+    if (prefs->GetDNRAllocatedGlobalRuleCount(extension->id(),
+                                              &allocated_rule_count)) {
+      allocated_rule_counts[extension->name()] = allocated_rule_count;
+    }
+  }
+
+  auto test_public_ruleset_ids =
+      [this](const Extension* extension,
+             const std::vector<std::string>& ruleset_ids) {
+        ASSERT_TRUE(extension);
+
+        CompositeMatcher* composite_matcher =
+            ruleset_manager()->GetMatcherForExtension(extension->id());
+        ASSERT_TRUE(composite_matcher);
+        EXPECT_THAT(GetPublicRulesetIDs(*extension, *composite_matcher),
+                    UnorderedElementsAreArray(ruleset_ids));
+      };
+
+  // Check that all three extensions have the same rulesets enabled as before
+  // the browser restart.
+  test_public_ruleset_ids(extensions_by_name["extension_1"],
+                          {kDefaultRulesetID});
+  test_public_ruleset_ids(extensions_by_name["extension_2"],
+                          {kDefaultRulesetID});
+  test_public_ruleset_ids(extensions_by_name["extension_3"], {"ruleset_1"});
+
+  EXPECT_THAT(allocated_rule_counts,
+              UnorderedElementsAre(std::make_pair("extension_1", 1),
+                                   std::make_pair("extension_2", 1)));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          DeclarativeNetRequestBrowserTest,
                          ::testing::Values(ExtensionLoadType::PACKED,
@@ -4911,6 +5019,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(All,
                          DeclarativeNetRequestBrowserTest_Unpacked,
                          ::testing::Values(ExtensionLoadType::UNPACKED));
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
+                         ::testing::Values(ExtensionLoadType::PACKED));
 
 }  // namespace
 }  // namespace declarative_net_request

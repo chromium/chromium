@@ -118,6 +118,29 @@ class RulesetManagerObserver : public RulesetManager::TestObserver {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
+// Helper to wait for warnings thrown for a given extension. This must be
+// constructed before warnings are added.
+class WarningServiceObserver : public WarningService::Observer {
+ public:
+  WarningServiceObserver(WarningService* warning_service,
+                         const ExtensionId& extension_id);
+  ~WarningServiceObserver();
+  WarningServiceObserver(const WarningServiceObserver&) = delete;
+  WarningServiceObserver& operator=(const WarningServiceObserver&) = delete;
+
+  // Should only be called once per WarningServiceObserver lifetime.
+  void WaitForWarning();
+
+ private:
+  // WarningService::Observer override:
+  void ExtensionWarningsChanged(
+      const ExtensionIdSet& affected_extensions) override;
+
+  ScopedObserver<WarningService, WarningService::Observer> observer_;
+  const ExtensionId extension_id_;
+  base::RunLoop run_loop_;
+};
+
 }  // namespace declarative_net_request
 }  // namespace extensions
 

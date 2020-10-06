@@ -447,5 +447,25 @@ void RulesetManagerObserver::OnEvaluateRequest(const WebRequestInfo& request,
   observed_requests_.push_back(request.url);
 }
 
+WarningServiceObserver::WarningServiceObserver(WarningService* warning_service,
+                                               const ExtensionId& extension_id)
+    : observer_(this), extension_id_(extension_id) {
+  observer_.Add(warning_service);
+}
+
+WarningServiceObserver::~WarningServiceObserver() = default;
+
+void WarningServiceObserver::WaitForWarning() {
+  run_loop_.Run();
+}
+
+void WarningServiceObserver::ExtensionWarningsChanged(
+    const ExtensionIdSet& affected_extensions) {
+  if (!base::Contains(affected_extensions, extension_id_))
+    return;
+
+  run_loop_.Quit();
+}
+
 }  // namespace declarative_net_request
 }  // namespace extensions

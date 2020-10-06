@@ -128,6 +128,14 @@ Warning Warning::CreateRulesetFailedToLoadWarning(
                  {} /*message_parameters*/);
 }
 
+// static
+Warning Warning::CreateEnabledRuleCountExceededWarning(
+    const ExtensionId& extension_id) {
+  return Warning(kEnabledRuleCountExceeded, extension_id,
+                 IDS_EXTENSION_WARNING_ENABLED_RULE_COUNT_EXCEEDED,
+                 {} /*message_parameters*/);
+}
+
 bool Warning::operator<(const Warning& other) const {
   return std::tie(extension_id_, type_) <
          std::tie(other.extension_id_, other.type_);

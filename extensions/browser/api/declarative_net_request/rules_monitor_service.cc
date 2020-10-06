@@ -173,7 +173,8 @@ RulesMonitorService::RulesMonitorService(
       warning_service_(WarningService::Get(browser_context)),
       context_(browser_context),
       ruleset_manager_(browser_context),
-      action_tracker_(browser_context) {
+      action_tracker_(browser_context),
+      global_rules_tracker_(prefs_, extension_registry_) {
   // Don't monitor extension lifecycle if the API is not available. This is
   // useful since we base some of our actions (like loading dynamic ruleset on
   // extension load) on the presence of certain extension prefs. These may still
@@ -301,6 +302,9 @@ void RulesMonitorService::OnExtensionUninstalled(
   // Skip if the extension will be reinstalled soon.
   if (reason == UNINSTALL_REASON_REINSTALL)
     return;
+
+  if (base::FeatureList::IsEnabled(kDeclarativeNetRequestGlobalRules))
+    global_rules_tracker_.ClearExtensionAllocation(extension->id());
 
   // Skip if the extension doesn't have a dynamic ruleset.
   int dynamic_checksum;
@@ -434,6 +438,17 @@ void RulesMonitorService::OnInitialRulesetsLoaded(LoadRequestData load_data) {
   size_t static_rules_count = 0;
   size_t static_regex_rules_count = 0;
   bool notify_ruleset_failed_to_load = false;
+  bool global_rule_limit_exceeded = false;
+
+  bool global_rules_enabled =
+      base::FeatureList::IsEnabled(kDeclarativeNetRequestGlobalRules);
+
+  size_t static_rule_limit = global_rules_enabled
+                                 ? global_rules_tracker_.GetAvailableAllocation(
+                                       load_data.extension_id) +
+                                       GetStaticGuaranteedMinimumRuleCount()
+                                 : GetStaticRuleLimit();
+
   for (RulesetInfo& ruleset : load_data.rulesets) {
     if (!ruleset.did_load_successfully()) {
       notify_ruleset_failed_to_load = true;
@@ -454,8 +469,10 @@ void RulesMonitorService::OnInitialRulesetsLoaded(LoadRequestData load_data) {
     }
 
     size_t new_rules_count = static_rules_count + matcher->GetRulesCount();
-    if (new_rules_count > static_cast<size_t>(GetStaticRuleLimit()))
+    if (new_rules_count > static_rule_limit) {
+      global_rule_limit_exceeded = global_rules_enabled;
       continue;
+    }
 
     size_t new_regex_rules_count =
         static_regex_rules_count + matcher->GetRegexRulesCount();
@@ -471,6 +488,18 @@ void RulesMonitorService::OnInitialRulesetsLoaded(LoadRequestData load_data) {
   if (notify_ruleset_failed_to_load) {
     warning_service_->AddWarnings(
         {Warning::CreateRulesetFailedToLoadWarning(load_data.extension_id)});
+  }
+
+  if (global_rule_limit_exceeded) {
+    warning_service_->AddWarnings(
+        {Warning::CreateEnabledRuleCountExceededWarning(
+            load_data.extension_id)});
+  }
+
+  if (global_rules_enabled) {
+    bool allocation_updated = global_rules_tracker_.OnExtensionRuleCountUpdated(
+        load_data.extension_id, static_rules_count);
+    DCHECK(allocation_updated);
   }
 
   if (matchers.empty())
@@ -498,6 +527,8 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
 
   size_t static_rules_count = 0;
   size_t static_regex_rules_count = 0;
+  bool global_rules_enabled =
+      base::FeatureList::IsEnabled(kDeclarativeNetRequestGlobalRules);
   CompositeMatcher* matcher =
       ruleset_manager_.GetMatcherForExtension(load_data.extension_id);
   if (matcher) {
@@ -543,13 +574,24 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
     new_matchers.push_back(std::move(matcher));
   }
 
-  if (static_rules_count > static_cast<size_t>(GetStaticRuleLimit())) {
+  if (!global_rules_enabled &&
+      static_rules_count > static_cast<size_t>(GetStaticRuleLimit())) {
     std::move(callback).Run(kEnabledRulesetsRuleCountExceeded);
     return;
   }
 
   if (static_regex_rules_count > static_cast<size_t>(GetRegexRuleLimit())) {
     std::move(callback).Run(kEnabledRulesetsRegexRuleCountExceeded);
+    return;
+  }
+
+  // If global rules are enabled, attempt to update the extension's extra rule
+  // count. If this update cannot be completed without exceeding the global
+  // limit, then the update is not applied and an error is returned.
+  if (global_rules_enabled &&
+      !global_rules_tracker_.OnExtensionRuleCountUpdated(load_data.extension_id,
+                                                         static_rules_count)) {
+    std::move(callback).Run(kEnabledRulesetsRuleCountExceeded);
     return;
   }
 

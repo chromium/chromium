@@ -24,6 +24,7 @@
 #include "components/crx_file/id_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_pref_store.h"
@@ -236,6 +237,11 @@ constexpr const char kPrefDNRUseActionCountAsBadgeText[] =
 
 // A boolean that indicates if a ruleset should be ignored.
 constexpr const char kDNRIgnoreRulesetKey[] = "ignore_ruleset";
+
+// A preference that indicates the amount of rules allocated to an extension
+// from the global pool.
+constexpr const char kDNRExtensionRulesAllocated[] =
+    "dnr_extension_rules_allocated";
 
 // The default value to use for permission withholding when setting the pref on
 // installation or for extensions where the pref has not been set.
@@ -2166,6 +2172,36 @@ bool ExtensionPrefs::ShouldIgnoreDNRRuleset(
                                 base::NumberToString(ruleset_id.value()),
                                 kDNRIgnoreRulesetKey});
   return ReadPrefAsBooleanAndReturn(extension_id, pref);
+}
+
+bool ExtensionPrefs::GetDNRAllocatedGlobalRuleCount(
+    const ExtensionId& extension_id,
+    size_t* rule_count) const {
+  int rule_count_value = -1;
+  if (!ReadPrefAsInteger(extension_id, kDNRExtensionRulesAllocated,
+                         &rule_count_value)) {
+    return false;
+  }
+
+  DCHECK_GT(rule_count_value, 0);
+  *rule_count = static_cast<size_t>(rule_count_value);
+  return true;
+}
+
+void ExtensionPrefs::SetDNRAllocatedGlobalRuleCount(
+    const ExtensionId& extension_id,
+    size_t rule_count) {
+  DCHECK_LE(
+      rule_count,
+      static_cast<size_t>(declarative_net_request::GetGlobalStaticRuleLimit()));
+
+  // Clear the pref entry if the extension has a global allocation of 0.
+  std::unique_ptr<base::Value> pref_value =
+      rule_count > 0
+          ? std::make_unique<base::Value>(static_cast<int>(rule_count))
+          : nullptr;
+  UpdateExtensionPref(extension_id, kDNRExtensionRulesAllocated,
+                      std::move(pref_value));
 }
 
 // static

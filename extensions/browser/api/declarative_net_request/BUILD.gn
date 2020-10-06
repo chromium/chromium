@@ -14,6 +14,8 @@ source_set("declarative_net_request") {
     "extension_url_pattern_index_matcher.h",
     "file_sequence_helper.cc",
     "file_sequence_helper.h",
+    "global_rules_tracker.cc",
+    "global_rules_tracker.h",
     "regex_rules_matcher.cc",
     "regex_rules_matcher.h",
     "request_action.cc",
@@ -36,8 +38,6 @@ source_set("declarative_net_request") {
     "//components/url_matcher",
     "//components/url_pattern_index",
     "//extensions/browser/api/declarative_net_request:core",
-    "//extensions/browser/api/declarative_net_request/flat:extension_ruleset",
-    "//third_party/re2",
   ]
 
   deps = [
@@ -81,18 +81,21 @@ source_set("core") {
     "utils.h",
   ]
 
+  public_deps = [
+    "//extensions/browser/api/declarative_net_request/flat:extension_ruleset",
+    "//third_party/re2",
+  ]
+
   deps = [
     "//base",
     "//components/url_pattern_index",
     "//components/web_cache/browser:browser",
     "//content/public/browser:browser",
-    "//extensions/browser/api/declarative_net_request/flat:extension_ruleset",
     "//extensions/common",
     "//extensions/common/api",
     "//net",
     "//services/data_decoder/public/cpp:cpp",
     "//third_party/flatbuffers:flatbuffers",
-    "//third_party/re2",
     "//tools/json_schema_compiler:generated_api_util",
     "//url",
   ]

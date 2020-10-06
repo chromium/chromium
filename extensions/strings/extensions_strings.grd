@@ -357,6 +357,9 @@
       <message name="IDS_EXTENSION_WARNING_RULESET_FAILED_TO_LOAD" desc="Warning message which indicates that the Declarative Net Request ruleset for the extension failed to load. Hence the extension might not be able to block/redirect network requests.">
         The extension failed to load properly. It might not be able to intercept network requests.
       </message>
+      <message name="IDS_EXTENSION_WARNING_ENABLED_RULE_COUNT_EXCEEDED" desc="Warning message which indicates that some Declarative Net Request rulesets for the extension were not enabled because the global rule limit was exceeded. Hence the extension might not be able to block/redirect network requests.">
+        The extension failed to load properly. It might not be able to intercept network requests.
+      </message>
 
       <!-- Install related messages. Please keep alphabetized. -->
       <message name="IDS_EXTENSION_INSTALL_PROCESS_CRASHED" desc="Error message in case package fails to install because a utility process crashed.">

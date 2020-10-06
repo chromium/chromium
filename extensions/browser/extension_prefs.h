@@ -682,6 +682,13 @@ class ExtensionPrefs : public KeyedService {
       const ExtensionId& extension_id,
       declarative_net_request::RulesetID ruleset_id) const;
 
+  // Returns the global rule allocation for the given |extension_id|. If no
+  // rules are allocated to the extension, false is returned.
+  bool GetDNRAllocatedGlobalRuleCount(const ExtensionId& extension_id,
+                                      size_t* rule_count) const;
+  void SetDNRAllocatedGlobalRuleCount(const ExtensionId& extension_id,
+                                      size_t rule_count);
+
   // Migrates the disable reasons extension pref for extensions that were
   // disabled due to a deprecated reason.
   // TODO(archanasimha): Remove this around M89.
