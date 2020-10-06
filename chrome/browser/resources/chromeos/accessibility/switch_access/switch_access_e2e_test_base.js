@@ -31,7 +31,6 @@ SwitchAccessE2ETest = class extends E2ETestBase {
       base::Bind(&chromeos::AccessibilityManager::SetSwitchAccessEnabled,
           base::Unretained(chromeos::AccessibilityManager::Get()),
           true);
-  chromeos::AccessibilityManager::Get()->SetSwitchAccessEnabled(true);
   WaitForExtension(extension_misc::kSwitchAccessExtensionId, load_cb);
     `);
   }

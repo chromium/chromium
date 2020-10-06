@@ -37,7 +37,6 @@ AccessibilityCommonE2ETest = class extends E2ETestBase {
       base::Bind(&chromeos::AccessibilityManager::EnableAutoclick,
           base::Unretained(chromeos::AccessibilityManager::Get()),
           true);
-  chromeos::AccessibilityManager::Get()->EnableAutoclick(true);
   WaitForExtension(extension_misc::kAccessibilityCommonExtensionId, load_cb);
     `);
   }

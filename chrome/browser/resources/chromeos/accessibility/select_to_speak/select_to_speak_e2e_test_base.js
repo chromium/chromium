@@ -33,7 +33,6 @@ SelectToSpeakE2ETest = class extends E2ETestBase {
         base::Bind(&chromeos::AccessibilityManager::SetSelectToSpeakEnabled,
             base::Unretained(chromeos::AccessibilityManager::Get()),
             true);
-    chromeos::AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
     WaitForExtension(extension_misc::kSelectToSpeakExtensionId, load_cb);
       `);
   }
