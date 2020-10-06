@@ -70,7 +70,7 @@ class PLATFORM_EXPORT NonMainThreadSchedulerImpl : public ThreadSchedulerImpl {
   void PostDelayedIdleTask(const base::Location& location,
                            base::TimeDelta delay,
                            Thread::IdleTask task) override;
-
+  std::unique_ptr<WebAgentGroupScheduler> CreateAgentGroupScheduler() override;
   std::unique_ptr<PageScheduler> CreatePageScheduler(
       PageScheduler::Delegate*) override;
   WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override;

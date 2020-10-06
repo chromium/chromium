@@ -219,6 +219,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
                            Thread::IdleTask) override;
   scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override;
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
+  std::unique_ptr<WebAgentGroupScheduler> CreateAgentGroupScheduler() override;
   // TODO(crbug/1113102): rename to CreateAgentGroupScheduler when integrate
   // with AgentSchedulingGroup
   AgentGroupSchedulerImpl& EnsureAgentGroupScheduler();

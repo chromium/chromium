@@ -59,6 +59,9 @@ class SimpleThreadScheduler : public ThreadScheduler {
   scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
       override;
 
+  // Unsupported. Return nullptr.
+  std::unique_ptr<WebAgentGroupScheduler> CreateAgentGroupScheduler() override;
+
   // Unsupported. Return nullptr, and it may cause a crash.
   std::unique_ptr<PageScheduler> CreatePageScheduler(
       PageScheduler::Delegate*) override;

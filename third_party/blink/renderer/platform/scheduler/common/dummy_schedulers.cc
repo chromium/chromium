@@ -136,6 +136,18 @@ class DummyPageScheduler : public PageScheduler {
   DISALLOW_COPY_AND_ASSIGN(DummyPageScheduler);
 };
 
+class DummyAgentGroupScheduler : public WebAgentGroupScheduler {
+ public:
+  DummyAgentGroupScheduler() = default;
+  ~DummyAgentGroupScheduler() override = default;
+  scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override {
+    return base::ThreadTaskRunnerHandle::Get();
+  }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(DummyAgentGroupScheduler);
+};
+
 // TODO(altimin,yutak): Merge with SimpleThread in platform.cc.
 class SimpleThread : public Thread {
  public:
@@ -178,6 +190,10 @@ class DummyThreadScheduler : public ThreadScheduler {
 
   scoped_refptr<base::SingleThreadTaskRunner> NonWakingTaskRunner() override {
     return base::ThreadTaskRunnerHandle::Get();
+  }
+
+  std::unique_ptr<WebAgentGroupScheduler> CreateAgentGroupScheduler() override {
+    return std::make_unique<DummyAgentGroupScheduler>();
   }
 
   std::unique_ptr<PageScheduler> CreatePageScheduler(
@@ -246,6 +262,10 @@ class DummyWebThreadScheduler : public WebThreadScheduler,
 
   std::unique_ptr<Thread> CreateMainThread() override {
     return std::make_unique<SimpleThread>(this);
+  }
+
+  std::unique_ptr<WebAgentGroupScheduler> CreateAgentGroupScheduler() override {
+    return std::make_unique<DummyAgentGroupScheduler>();
   }
 
   std::unique_ptr<PageScheduler> CreatePageScheduler(

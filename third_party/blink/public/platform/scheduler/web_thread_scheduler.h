@@ -90,6 +90,11 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler {
   // Creates a WebThread implementation for the renderer main thread.
   virtual std::unique_ptr<Thread> CreateMainThread();
 
+  // Creates a WebAgentGroupScheduler implementation. Must be called from the
+  // main thread.
+  virtual std::unique_ptr<WebAgentGroupScheduler>
+  CreateAgentGroupScheduler() = 0;
+
   // Creates a WebWidgetScheduler implementation. Must be called from the main
   // thread.
   virtual std::unique_ptr<WebWidgetScheduler> CreateWidgetScheduler();

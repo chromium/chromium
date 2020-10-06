@@ -111,6 +111,11 @@ class PLATFORM_EXPORT ThreadScheduler {
   virtual scoped_refptr<base::SingleThreadTaskRunner>
   DeprecatedDefaultTaskRunner() = 0;
 
+  // Creates a AgentGroupScheduler implementation. Must be called from the
+  // main thread.
+  virtual std::unique_ptr<scheduler::WebAgentGroupScheduler>
+  CreateAgentGroupScheduler() = 0;
+
   // Creates a new PageScheduler for a given Page. Must be called from the
   // associated WebThread.
   virtual std::unique_ptr<PageScheduler> CreatePageScheduler(

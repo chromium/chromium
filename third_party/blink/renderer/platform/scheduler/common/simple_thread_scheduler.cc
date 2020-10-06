@@ -62,6 +62,11 @@ SimpleThreadScheduler::NonWakingTaskRunner() {
   return base::ThreadTaskRunnerHandle::Get();
 }
 
+std::unique_ptr<WebAgentGroupScheduler>
+SimpleThreadScheduler::CreateAgentGroupScheduler() {
+  return nullptr;
+}
+
 std::unique_ptr<PageScheduler> SimpleThreadScheduler::CreatePageScheduler(
     PageScheduler::Delegate* delegate) {
   return nullptr;

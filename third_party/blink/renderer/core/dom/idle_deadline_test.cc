@@ -36,6 +36,11 @@ class MockIdleDeadlineScheduler final : public ThreadScheduler {
                            Thread::IdleTask) override {}
   void PostNonNestableIdleTask(const base::Location&,
                                Thread::IdleTask) override {}
+  std::unique_ptr<scheduler::WebAgentGroupScheduler> CreateAgentGroupScheduler()
+      override {
+    NOTREACHED();
+    return nullptr;
+  }
   std::unique_ptr<PageScheduler> CreatePageScheduler(
       PageScheduler::Delegate*) override {
     return nullptr;
