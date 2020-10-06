@@ -21,6 +21,7 @@
 <translation id="1553358976309200471">Актуализиране на Chrome</translation>
 <translation id="1587223624401073077">Google Chrome използва камерата ви.</translation>
 <translation id="1587325591171447154">Chrome блокира „<ph name="FILE_NAME" />“, тъй като файлът е опасен.</translation>
+<translation id="1597911401261118146">За да проверите дали паролите ви не са компрометирани при нарушения на сигурността на данните и други проблеми със сигурността, <ph name="BEGIN_LINK" />влезте в Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">За да направим Chrome по-безопасен, деактивирахме следното разширение, което липсва от <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и може да е било добавено без ваше знание.</translation>
 <translation id="162448658176061655">Chrome проверява за нежелан софтуер веднъж седмично. Последна проверка: преди малко.</translation>
 <translation id="162629503687514352">Chrome OS не синхронизира паролите ви.</translation>
@@ -36,6 +37,7 @@
 <translation id="1734234790201236882">Chrome ще запази тази парола в профила ви в Google. Няма да се налага да я помните.</translation>
 <translation id="174539241580958092">Google Chrome не можа да синхронизира данните ви поради грешка при влизането.</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1786003790898721085">Проверете дали сте влезли в Chrome на устройството си <ph name="TARGET_DEVICE_NAME" /> и опитайте да изпратите отново.</translation>
 <translation id="1812689907177901597">С изключването на тази функция можете да влизате в сайтовете на Google, като например Gmail, без да влизате в Chrome</translation>
 <translation id="1860536484129686729">Chrome се нуждае от разрешение за достъп до камерата ви за този сайт</translation>
 <translation id="1873233029667955273">Google Chrome не е браузърът ви по подразбиране</translation>
@@ -80,6 +82,7 @@
 <translation id="3065168410429928842">Раздел в Chrome</translation>
 <translation id="3080151273017101988">Изпълняване на приложения на заден план при затворен браузър Google Chrome</translation>
 <translation id="3089968997497233615">Налице е нова, по-сигурна версия на Google Chrome.</translation>
+<translation id="3114643501466072395">За да проверите дали другите ви пароли не са компрометирани при нарушения на сигурността на данните и други проблеми със сигурността, <ph name="BEGIN_LINK" />влезте в Chrome<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">Chrome OS не синхронизира данните ви.</translation>
 <translation id="3149510190863420837">Приложения в Chrome</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
@@ -246,6 +249,7 @@
 <translation id="8344083974188970894">{NUM_MINS,plural, =1{Chrome проверява за нежелан софтуер веднъж седмично. Последна проверка: преди 1 минута.}other{Chrome проверява за нежелан софтуер веднъж седмично. Последна проверка: преди {NUM_MINS} минути.}}</translation>
 <translation id="8370517070665726704">Авторски права <ph name="YEAR" /> г. Google LLC. Всички права запазени.</translation>
 <translation id="840084489713044809">Google Chrome иска да експортира паролите ви.</translation>
+<translation id="8433638294851456451">За да изпратите номер от тук до телефона си с Android, влезте в Chrome и на двете устройства.</translation>
 <translation id="8498858610309223613">Току-що бе приложена специална актуализация за сигурност за Google Chrome. Рестартирайте сега – ще възстановим разделите ви.</translation>
 <translation id="8521348052903287641">Правило за Google Chrome Dev за допускане на входящия трафик за mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
@@ -265,6 +269,7 @@
 <translation id="884296878221830158">То също контролира коя страница се показва при стартиране на Chrome или при кликване върху бутона „Начална страница“.</translation>
 <translation id="8862326446509486874">Нямате подходящи права за инсталация на ниво система. Опитайте да стартирате отново инсталационната програма като администратор.</translation>
 <translation id="8914504000324227558">Повторно стартиране на Chrome</translation>
+<translation id="8922193594870374009">За да изпратите номер от <ph name="ORIGIN" /> до телефона си с Android, влезте в Chrome и на двете устройства.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Налице е актуализация за Chrome}=1{Налице е актуализация за Chrome}other{Налице е актуализация за Chrome от # дни}}</translation>
 <translation id="9026991721384951619">Chrome OS не можа да синхронизира данните ви, защото потребителското име и паролата за вход в профила ви не са актуални.</translation>
 <translation id="9067395829937117663">За Google Chrome се изисква Windows 7 или по-нова версия.</translation>

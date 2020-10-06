@@ -27,6 +27,7 @@
 <translation id="121097972571826261">Придвижване напред с една дума</translation>
 <translation id="1225748608451425081">Вашият Chromebook е заключен поради известен проблем. Ще можете да влезете в профила си след <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Спиране на избирането</translation>
+<translation id="1239161794459865856">Функцията „<ph name="FEATURE_NAME" />“ е свързана.</translation>
 <translation id="1247372569136754018">Микрофон (вътрешен)</translation>
 <translation id="1252999807265626933">Зарежда се от <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">„What's the weather?“ („Какво е времето?“)</translation>
@@ -74,6 +75,7 @@
 <translation id="1654477262762802994">Стартиране на гласова заявка</translation>
 <translation id="1667964833127753507">При режима за неутрални цветове не се извличат цветовете от тапета, а се използва набор от неутрални светли или тъмни нюанси.</translation>
 <translation id="1677472565718498478">Оставащо време: <ph name="TIME" /></translation>
+<translation id="1677507110654891115">Функцията „<ph name="FEATURE_NAME" />“ не е свързана.</translation>
 <translation id="1698080062160024910">Таймер за <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 адрес: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Работен кът: <ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@
 <translation id="2369165858548251131">„Hello“ in Chinese</translation>
 <translation id="2390318262976603432">Настройки на локала</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="2405664212338326887">Няма връзка</translation>
 <translation id="2408955596600435184">Въведете своя ПИН</translation>
 <translation id="2412593942846481727">Налице е актуализация</translation>
 <translation id="2413728805700750528">„<ph name="DISPLAY_NAME" />“ е сесия, управлявана от <ph name="DOMAIN" /></translation>
@@ -243,6 +246,7 @@
 <translation id="3364721542077212959">Инструменти за писане</translation>
 <translation id="3368922792935385530">Има връзка</translation>
 <translation id="3371140690572404006">устройство с USB-C (предният десен порт)</translation>
+<translation id="3375634426936648815">Свързано</translation>
 <translation id="3386978599540877378">Лупата за увеличаване на целия екран</translation>
 <translation id="3400357268283240774">Допълнителни настройки</translation>
 <translation id="3410336247007142655">Показване на настройките за тъмната тема</translation>
@@ -322,6 +326,7 @@
 <translation id="4181841719683918333">Езици</translation>
 <translation id="4195877955194704651">Бутон за менюто за автоматични кликвания</translation>
 <translation id="4197790712631116042">Изключено</translation>
+<translation id="4201033867194214117">„<ph name="FEATURE_NAME" />“ не е налице.</translation>
 <translation id="4212246570487010370">Продължаване на сърфирането</translation>
 <translation id="4212472694152630271">Превключване към ПИН</translation>
 <translation id="4215497585250573029">Настройки за VPN</translation>
@@ -333,6 +338,7 @@
 <translation id="4285498937028063278">Освобождаване</translation>
 <translation id="4294319844246081198">Добро утро, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Изчистване на всичките <ph name="COUNT" /> известия</translation>
+<translation id="4302592941791324970">Не е налице</translation>
 <translation id="4303223480529385476">Разгъване на лентата на състоянието</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Използвахте клавишната комбинация за режима на висок контраст. Искате ли да го включите?</translation>
@@ -426,6 +432,7 @@
 <translation id="5302048478445481009">Език</translation>
 <translation id="5313326810920013265">Настройки за Bluetooth</translation>
 <translation id="5314219114274263156">Направен е запис на екрана</translation>
+<translation id="5329548388331921293">Установява се връзка...</translation>
 <translation id="5331975486040154427">Устройство с USB-C (задният ляв порт)</translation>
 <translation id="5352250171825660495">Тъмната тема е включена</translation>
 <translation id="5379115545237091094">Твърде много опити</translation>
@@ -439,6 +446,7 @@
 <translation id="5465662442746197494">Нужна ви е помощ?</translation>
 <translation id="5496819745535887422">Администраторът връща устройството ви към по-ранна версия. Всички данни ще бъдат изтрити след рестартирането му.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166">Функцията „<ph name="FEATURE_NAME" />“ установява връзка.</translation>
 <translation id="553675580533261935">Излизане от сесията</translation>
 <translation id="5537725057119320332">Предаване</translation>
 <translation id="5548285847212963613">Разширението <ph name="EXTENSION_NAME" /> може да помогне за свързването с тази мрежа.</translation>

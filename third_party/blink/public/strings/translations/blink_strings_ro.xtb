@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">Săptămâna <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Melodia <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">casetă de selectare</translation>
+<translation id="2307576640803031502">în listă, elementul <ph name="INDEX" /> din <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">sfârșit de pagină</translation>
 <translation id="2335594187091864976">selector pentru dată și oră</translation>
 <translation id="2393030564806080191">Valoarea hexazecimală a culorii</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, începând de pe <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Picture-in-Picture</translation>
 <translation id="9168329111483466115">notă de subsol</translation>
+<translation id="945780513535800434">Bifate parțial</translation>
 <translation id="954003015749068518">intră în modul picture-in-picture</translation>
 <translation id="966787709310836684">meniu</translation>
 </translationbundle>

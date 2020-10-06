@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">សប្តាហ៍ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">បទទី <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">ប្រអប់ធីក</translation>
+<translation id="2307576640803031502">នៅក្នុងបញ្ជី ធាតុ <ph name="INDEX" /> នៃ <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">បំបែក​ទំព័រ</translation>
 <translation id="2335594187091864976">កម្មវិធីជ្រើសកាលបរិច្ឆេទ និងម៉ោង</translation>
 <translation id="2393030564806080191">តម្លៃពណ៌​គោលដប់ប្រាំមួយ</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, ចាប់ផ្តើមនៅ <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">រូបក្នុងរូប</translation>
 <translation id="9168329111483466115">កំណត់​ចំណាំនៅ​ជើងទំព័រ</translation>
+<translation id="945780513535800434">បានធីក​មួយផ្នែក</translation>
 <translation id="954003015749068518">ចូល​មុខងាររូបក្នុងរូប</translation>
 <translation id="966787709310836684">ម៉ឺនុយ</translation>
 </translationbundle>

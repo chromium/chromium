@@ -667,6 +667,7 @@
 <translation id="5958275228015807058">在“下载内容”中查找您的文件和网页</translation>
 <translation id="5962718611393537961">点按即可收起</translation>
 <translation id="5964805880140440652">如果想将此页分享到其他设备，请在 Chrome 设置中开启同步</translation>
+<translation id="5964869237734432770">停止获取图片说明</translation>
 <translation id="5979084224081478209">检查密码</translation>
 <translation id="6000066717592683814">继续使用 Google</translation>
 <translation id="6005538289190791541">建议的密码</translation>
@@ -694,6 +695,7 @@
 <translation id="6157392216611456285">选择 <ph name="APP_NAME" /></translation>
 <translation id="6159335304067198720">节省 <ph name="PERCENT" /> 的数据流量</translation>
 <translation id="6186394685773237175">未发现任何已泄露的密码</translation>
+<translation id="6192907950379606605">获取图片说明</translation>
 <translation id="6206830853671714236">请选择下载时间</translation>
 <translation id="6210748933810148297">不是 <ph name="EMAIL" />？</translation>
 <translation id="6218096829563201111">搜索类似商品<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
@@ -762,6 +764,7 @@
 <translation id="6590471736817333463">节省高达 60% 的数据流量</translation>
 <translation id="6590680911007613645">请确保您要保存的密码与您用来登录 <ph name="SITE" /> 的密码相符</translation>
 <translation id="6593061639179217415">桌面版网站</translation>
+<translation id="6595046016124923392">系统会将图片发送给 Google 以便为您改进说明。</translation>
 <translation id="6597891566292541626">将二维码/条形码放到框内。</translation>
 <translation id="6600954340915313787">已复制到 Chrome</translation>
 <translation id="661266467055912436">为您以及网络上的所有人提供更好的安全保障。</translation>
@@ -820,6 +823,7 @@
 <translation id="702463548815491781">建议在开启 TalkBack 或“开关控制”时使用</translation>
 <translation id="7029809446516969842">密码</translation>
 <translation id="703523980599857277">更改主页</translation>
+<translation id="7054588988317389591">获取图片说明？</translation>
 <translation id="7055152154916055070">已禁止重定向：</translation>
 <translation id="7063006564040364415">无法连接到同步服务器。</translation>
 <translation id="7071521146534760487">管理帐号</translation>
@@ -851,6 +855,7 @@
 <translation id="729975465115245577">您的设备上没有可以存储密码文件的应用。</translation>
 <translation id="7302081693174882195">详细信息：按已节省的数据流量排序</translation>
 <translation id="7304873321153398381">设备已离线。Chrome 无法检查您的密码。</translation>
+<translation id="7313188324932846546">点按即可设置同步</translation>
 <translation id="7328017930301109123">在精简模式下，Chrome 可更快速地加载网页，并可节省多达百分之 60 的流量。</translation>
 <translation id="7333031090786104871">仍在添加先前的网站</translation>
 <translation id="7340958967809483333">“探索”功能的选项</translation>
@@ -1042,6 +1047,7 @@
 <translation id="8636825310635137004">要访问您在其他设备上的标签页，请开启同步功能。</translation>
 <translation id="8641930654639604085">尽量屏蔽成人网站</translation>
 <translation id="8655129584991699539">要清除数据，请前往 Chrome 的“设置”页面</translation>
+<translation id="8656747343598256512">使用您的 Google 帐号登录此网站和 Chrome。您可等到需要时再开启同步功能。</translation>
 <translation id="8659579665266920523">如何使用 Chrome 进行搜索</translation>
 <translation id="8662811608048051533">您会从大多数网站退出。</translation>
 <translation id="8664979001105139458">文件名已存在</translation>
@@ -1061,6 +1067,7 @@
 <translation id="8840953339110955557">此网页可能与在线版本有所不同。</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />，标签页</translation>
 <translation id="8854223127042600341">查看您的离线文件</translation>
+<translation id="8856607253650333758">获取说明</translation>
 <translation id="8873817150012960745">点按此处即可开始</translation>
 <translation id="889338405075704026">转至 Chrome 设置</translation>
 <translation id="8898822736010347272">向 Google 发送您访问的部分网页的网址、有限的系统信息以及部分网页内容，以协助我们发现新威胁并保护网络上的所有用户。</translation>

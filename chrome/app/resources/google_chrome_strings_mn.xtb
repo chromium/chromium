@@ -23,6 +23,7 @@
 <translation id="1553358976309200471">Chrome-г шинэчлэх</translation>
 <translation id="1587223624401073077">Google Chrome нь таны камерыг ашиглаж байна.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> аюултай тул үүнийг Chrome блок хийсэн.</translation>
+<translation id="1597911401261118146">Нууц үгнүүддээ өгөгдлийн зөрчил болон аюулгүй байдлын өөр асуудал байхгүй болохыг шалгахын тулд <ph name="BEGIN_LINK" />Chrome-д нэвтэрнэ үү<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Chrome-г илүү аюулгүй болгохын тулд <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> жагсаалтанд байхгүй, танд мэдэгдэлгүйгээр нэмэгдсэн байж болох дараах өргөтгөлийг идэвхгүй болголоо.</translation>
 <translation id="162448658176061655">Chrome нь хүсээгүй программ хангамжийг долоо хоногт нэг удаа шалгадаг. Хамгийн сүүлд нэг хормын өмнө шалгасан.</translation>
 <translation id="162629503687514352">Chrome үйлдлийн систем таны нууц үгийг синк хийж чадсангүй.</translation>
@@ -38,6 +39,7 @@
 <translation id="1734234790201236882">Chrome энэ нууц үгийг таны Google Бүртгэлд хадгалах тул та үүнийг санах шаардлагагүй.</translation>
 <translation id="174539241580958092">Google Chrome нь нэвтрэх хэсэгт гарсан алдаатай холбоотойгоор таны өгөгдлийн тохиргоог хийж чадсангүй.</translation>
 <translation id="1759842336958782510">Хромэ</translation>
+<translation id="1786003790898721085">Та Chrome-д өөрийн <ph name="TARGET_DEVICE_NAME" />-с нэвтэрсэн эсэхээ шалгаад, дахин илгээхээр оролдоно уу.</translation>
 <translation id="1812689907177901597">Үүнийг унтрааснаар та Gmail зэрэг Google-н сайтуудад Chrome-д нэвтрэлгүйгээр нэвтэрч болно</translation>
 <translation id="1860536484129686729">Энэ сайтыг ашиглахын тулд Chrome-д зөвшөөрөл шаардлагатай</translation>
 <translation id="1873233029667955273">Google Chrome таны өгөгдмөл хөтөч биш юм</translation>
@@ -82,6 +84,7 @@
 <translation id="3065168410429928842">Chrome-н чихтэй хуудас</translation>
 <translation id="3080151273017101988">Google Chrome хаагдсан үед үндсэн аппликйешнуудыг үргэлжлүүлэн ажиллуул</translation>
 <translation id="3089968997497233615">Google Chrome-ийн шинэ, илүү аюулгүй хувилбар бэлэн боллоо.</translation>
+<translation id="3114643501466072395">Бусад нууц үгэндээ өгөгдлийн зөрчил болон аюулгүй байдлын өөр асуудал байхгүй болохыг шалгахын тулд <ph name="BEGIN_LINK" />Chrome-д нэвтэрнэ үү<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">Chrome үйлдлийн систем таны өгөгдлийг синк хийж чадсангүй.</translation>
 <translation id="3149510190863420837">Chrome Аппликейшнууд</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
@@ -253,6 +256,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8344083974188970894">{NUM_MINS,plural, =1{Chrome нь хүсээгүй программ хангамжийг долоо хоногт нэг удаа шалгадаг. Хамгийн сүүлд 1 минутын өмнө шалгасан.}other{Chrome нь хүсээгүй программ хангамжийг долоо хоногт нэг удаа шалгадаг. Хамгийн сүүлд {NUM_MINS} минутын өмнө шалгасан.}}</translation>
 <translation id="8370517070665726704">Зохиогчийн эрх <ph name="YEAR" /> Google ХХК. Бүх эрх хуулиар хамгаалагдсан.</translation>
 <translation id="840084489713044809">Google Chrome таны нууц үгийг экспортлох хүсэлтэй байна.</translation>
+<translation id="8433638294851456451">Та эндээс Android утсандаа дугаар илгээхийн тулд хоёр төхөөрөмжийн аль алинаас нь Chrome-д нэвтэрнэ үү.</translation>
 <translation id="8498858610309223613">Google Chrome-н аюулгүй байдлын тусгай шинэчлэлтийг хийж дууслаа. Одоо дахин эхлүүлнэ үү. Бид таны табыг сэргээх болно.</translation>
 <translation id="8521348052903287641">mDNS урсгалыг зөвшөөрөх Google Chrome-н дотоод дүрэм.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
@@ -272,6 +276,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="884296878221830158">Энэ нь мөн таныг Chrome-ыг эхлүүлэх эсвэл Home товчийг дарах үед гарч ирсэн хуудсыг хянаж байдаг.</translation>
 <translation id="8862326446509486874">Танд системийн түвшинд суулгах зохих эрх байхгүй байна. Суулгагчийг админы хувиар дахин ажиллуулахыг оролдож үзнэ үү.</translation>
 <translation id="8914504000324227558">Chrome-г дахин эхлүүлэх</translation>
+<translation id="8922193594870374009"><ph name="ORIGIN" />-с Android утсандаа дугаар илгээхийн тулд хоёр төхөөрөмжийнхөө аль алинаас нь Chrome-д нэвтэрнэ үү.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome-н шинэчлэлт боломжтой байна}=1{Chrome-н шинэчлэлт боломжтой байна}other{Chromium-н шинэчлэлт # хоногийн турш боломжтой байсаар байна}}</translation>
 <translation id="9026991721384951619">Таны бүртгэлийн мэдээлэл хуучирсан учраас Chrome OS нь таны өгөгдлийг sync хийж чадсангүй.</translation>
 <translation id="9067395829937117663">Google Chrome-д Windows 7 болон үүнээс дээших хувилбарууд шаардлагатай.</translation>

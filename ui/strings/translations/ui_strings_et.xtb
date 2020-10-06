@@ -134,6 +134,7 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">Avalikustamise kolmnurk</translation>
 <translation id="5278860589123563674">Saatmine ebaõnnestus</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> vajab teie tähelepanu.</translation>
 <translation id="528468243742722775">Lõpeta</translation>
 <translation id="5329858601952122676">&amp;Kustuta</translation>
 <translation id="5395308026110844773">Rakendus <ph name="DRAGGED_APP_NAME" /> rakenduse <ph name="IN_PLACE_APP" /> kohal, kausta loomiseks vabastage.</translation>
@@ -144,6 +145,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" />-i süsteem</translation>
 <translation id="5583640892426849032">Tagasilükkeklahv</translation>
 <translation id="5613020302032141669">Vasaknool</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> vajab teie tähelepanu.</translation>
 <translation id="5675363643668471212">Riiuliüksus</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktiivne täna}=1{Aktiivne 1 päev tagasi}other{Aktiivne # päeva tagasi}}</translation>

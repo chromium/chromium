@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">Седмица <ph name="WEEKNUMBER" />, <ph name="YEAR" /> г.</translation>
 <translation id="2277199496770840904">Запис <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">квадратче за отметка</translation>
+<translation id="2307576640803031502">в списък, елемент <ph name="INDEX" /> от <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">разделител на страници</translation>
 <translation id="2335594187091864976">инструмент за избор на дата и час</translation>
 <translation id="2393030564806080191">Шестнадесетична стойност за цвета</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" /> – започва от <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Картина в картината</translation>
 <translation id="9168329111483466115">бележка под линия</translation>
+<translation id="945780513535800434">Частично отметнато</translation>
 <translation id="954003015749068518">вход в режима „Картина в картината“</translation>
 <translation id="966787709310836684">меню</translation>
 </translationbundle>

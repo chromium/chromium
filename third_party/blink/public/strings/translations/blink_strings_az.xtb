@@ -47,6 +47,7 @@
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" /> həftə, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Trek <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">Qeyd xanası</translation>
+<translation id="2307576640803031502">siyahıda <ph name="INDEX" />/<ph name="COUNT" /> element</translation>
 <translation id="2311842470354187719">səhifə sonu</translation>
 <translation id="2335594187091864976">tarix və saat seçici</translation>
 <translation id="2393030564806080191">Altırəqəmli rəng dəyəri</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, <ph name="WEEK_START_DATE" /> tarixində başlayır</translation>
 <translation id="916607977885256133">Şəkil içində Şəkil</translation>
 <translation id="9168329111483466115">qeyd</translation>
+<translation id="945780513535800434">Qismən Yoxlanılıb</translation>
 <translation id="954003015749068518">şəkil içində şəkil düyməsinə daxil olun</translation>
 <translation id="966787709310836684">menyu</translation>
 </translationbundle>

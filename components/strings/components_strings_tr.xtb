@@ -825,6 +825,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4277028893293644418">Şifreyi sıfırla</translation>
 <translation id="4279811152705618813"><ph name="DEVICE_TYPE" /> cihazınız <ph name="ENROLLMENT_DOMAIN" /> tarafından yönetiliyor.</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Bu kart Google Hesabınıza kaydedildi}other{Bu kartlar Google Hesabınıza kaydedildi}}</translation>
+<translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" />. sayfanın küçük resmi</translation>
 <translation id="42981349822642051">Genişlet</translation>
 <translation id="4300675098767811073">Sağda çoklu delik</translation>
 <translation id="4302965934281694568">Chou3 (Zarf)</translation>

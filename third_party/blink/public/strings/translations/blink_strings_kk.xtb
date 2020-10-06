@@ -47,6 +47,7 @@
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />-апта, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />-аудиотрек</translation>
 <translation id="2291999235780842123">құсбелгі ұяшығы</translation>
+<translation id="2307576640803031502">тізімде, <ph name="INDEX" />/<ph name="COUNT" /> элемент</translation>
 <translation id="2311842470354187719">бетті үзу</translation>
 <translation id="2335594187091864976">күн мен уақыт таңдағышы</translation>
 <translation id="2393030564806080191">Оналтылық форматтағы түс</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, <ph name="WEEK_START_DATE" /> күні басталады</translation>
 <translation id="916607977885256133">Суреттегі сурет</translation>
 <translation id="9168329111483466115">төменгі түсіндірме</translation>
+<translation id="945780513535800434">Ішінара тексерілген</translation>
 <translation id="954003015749068518">"суреттегі сурет" режиміне кіру</translation>
 <translation id="966787709310836684">мәзір</translation>
 </translationbundle>

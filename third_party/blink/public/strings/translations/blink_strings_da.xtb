@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">Uge <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Spor <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">afkrydsningsfelt</translation>
+<translation id="2307576640803031502">liste, element <ph name="INDEX" /> af <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">sideskift</translation>
 <translation id="2335594187091864976">dato- og tidsvælger</translation>
 <translation id="2393030564806080191">Hexadecimal farveværdi</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, med start <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Integreret billede</translation>
 <translation id="9168329111483466115">fodnote</translation>
+<translation id="945780513535800434">Delvis markering</translation>
 <translation id="954003015749068518">start integreret billede</translation>
 <translation id="966787709310836684">menu</translation>
 </translationbundle>

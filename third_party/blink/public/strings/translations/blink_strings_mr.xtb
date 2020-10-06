@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">आठवडा <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ट्रॅक <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">चेकबॉक्‍स</translation>
+<translation id="2307576640803031502">सूचीमधील, <ph name="COUNT" /> पैकी <ph name="INDEX" /> आयटम</translation>
 <translation id="2311842470354187719">पेज ब्रेक</translation>
 <translation id="2335594187091864976">तारीख आणि वेळ निवडक</translation>
 <translation id="2393030564806080191">रंगाचे हेक्साडेसिमल मूल्य</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK_START_DATE" /> रोजी प्रारंभ होणारा, <ph name="WEEK" /></translation>
 <translation id="916607977885256133">चित्रात-चित्र</translation>
 <translation id="9168329111483466115">तळटीप</translation>
+<translation id="945780513535800434">अंशतः तपासलेले</translation>
 <translation id="954003015749068518">चित्रात-चित्र एंटर करा</translation>
 <translation id="966787709310836684">मेनू</translation>
 </translationbundle>

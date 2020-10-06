@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">ሳምንት <ph name="WEEKNUMBER" />፣ <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ትራክ <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">አመልካች ሳጥን</translation>
+<translation id="2307576640803031502">በዝርዝር ውስጥ፣ ንጥል <ph name="INDEX" /> ከ<ph name="COUNT" /></translation>
 <translation id="2311842470354187719">ገጽ ከፋይ</translation>
 <translation id="2335594187091864976">የቀን እና የሰዓት መራጭ</translation>
 <translation id="2393030564806080191">ባለአስራስድስትዮሽ የቀለም እሴት</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />፣ የሚጀምረው በ<ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">በሥዕል ላይ ሥዕል</translation>
 <translation id="9168329111483466115">የግርጌ ማስታወሻ</translation>
+<translation id="945780513535800434">በከፊል ምልክት ተደርጎበታል</translation>
 <translation id="954003015749068518">ወደ ስዕል-ውስጥ-ስዕል ይግቡ</translation>
 <translation id="966787709310836684">ምናሌ</translation>
 </translationbundle>

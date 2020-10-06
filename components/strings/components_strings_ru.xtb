@@ -822,6 +822,7 @@
 <translation id="4277028893293644418">Сбросить пароль</translation>
 <translation id="4279811152705618813">Ваше устройство <ph name="DEVICE_TYPE" /> находится под управлением домена <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Карта сохранена в аккаунте Google.}one{Карты сохранены в аккаунте Google.}few{Карты сохранены в аккаунте Google.}many{Карты сохранены в аккаунте Google.}other{Карты сохранены в аккаунте Google.}}</translation>
+<translation id="4297502707443874121">Уменьшенное изображение страницы "<ph name="THUMBNAIL_PAGE" />"</translation>
 <translation id="42981349822642051">Развернуть</translation>
 <translation id="4300675098767811073">Несколько отверстий справа</translation>
 <translation id="4302965934281694568">Chou3 (конверт)</translation>

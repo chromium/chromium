@@ -164,6 +164,7 @@
 <translation id="2781331604911854368">已开启</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">离开标签页切换器</translation>
+<translation id="2815198996063984598">2. 点按“默认浏览器应用”</translation>
 <translation id="2830972654601096923">管理地址…</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />，<ph name="STATE" />，<ph name="URL" /></translation>
 <translation id="2840687315230832938">未完成初始同步设置</translation>
@@ -180,6 +181,7 @@
 <translation id="2921219216347069551">无法分享网页</translation>
 <translation id="2923448633003185837">粘贴并转到</translation>
 <translation id="292639812446257861">标记为未读</translation>
+<translation id="2952581218264071393">1. 打开 Chrome 设置</translation>
 <translation id="2958718410589002129">密码</translation>
 <translation id="2964349545761222050">阻止第三方 Cookie</translation>
 <translation id="2969979262385602596">登录失败，请稍后重试。</translation>
@@ -216,6 +218,7 @@
 <translation id="3335947283844343239">重新打开关闭的标签页</translation>
 <translation id="3371831930909698441">可以翻译。选项位于屏幕底部附近。</translation>
 <translation id="3393920035788932672">允许显示弹出式窗口</translation>
+<translation id="3399930248910934354">打开 Chrome 设置</translation>
 <translation id="3425644765244388016">卡的昵称</translation>
 <translation id="3433057996795775706">删除此密码不会删除您在 <ph name="WEBSITE" /> 上的帐号。如需保护您在 <ph name="WEBSITE" /> 上的帐号免遭他人盗用，请更改您的密码。</translation>
 <translation id="3443810440409579745">收到标签页。</translation>
@@ -240,6 +243,9 @@
 <translation id="3551320343578183772">关闭标签页</translation>
 <translation id="3581564640715911333">询问是否翻译其他语言版本的网页</translation>
 <translation id="3588820906588687999">在新标签页中打开图片</translation>
+<translation id="359441731697487922">只需将 Chrome 设为默认浏览器应用，即可自动在 Chrome 中打开链接。
+      
+请按照以下步骤操作：</translation>
 <translation id="3603009562372709545">复制链接网址</translation>
 <translation id="3607167657931203000">自动填充数据</translation>
 <translation id="3609785682760573515">正在同步…</translation>
@@ -338,6 +344,7 @@
 <translation id="4808744395915275922">更新</translation>
 <translation id="4818522717893377262">添加语言…</translation>
 <translation id="481968316161811770">Cookie 和网站数据</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} 以及另外 1 个}other{{domain} 以及另外 {count} 个}}</translation>
 <translation id="4826218269716039351">阻止第三方 Cookie</translation>
 <translation id="48274138579728272">标记为已读</translation>
 <translation id="4833786495304741580">自动将使用情况统计信息和崩溃报告发送至 Google。</translation>
@@ -586,6 +593,7 @@
 <translation id="7456847797759667638">打开位置...</translation>
 <translation id="7460314822154045102">使用相机</translation>
 <translation id="7464701184726199289">这将清除所有设备上的已同步数据。已保存的网站设置将不会遭到删除，并且可能会反映您的浏览习惯。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. 选择“Chrome”</translation>
 <translation id="7472734401283673885">公司名称</translation>
 <translation id="7473891865547856676">不，谢谢</translation>
 <translation id="7481312909269577407">前进</translation>

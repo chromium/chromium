@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">အပတ် <ph name="WEEKNUMBER" />၊ <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">အပုဒ်ရေ <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">ခြစ်ရန် အကွက်</translation>
+<translation id="2307576640803031502">စာရင်းတွင်၊ <ph name="COUNT" /> ခုအနက် <ph name="INDEX" /></translation>
 <translation id="2311842470354187719">စာမျက်နှာခြားခြင်း</translation>
 <translation id="2335594187091864976">ရက်စွဲနှင့် အချိန် ရွေးချယ်မှု</translation>
 <translation id="2393030564806080191">ဟက်စ်အရောင် အညွှန်းကိန်း</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK_START_DATE" />မှာ စတင်သည့် <ph name="WEEK" /></translation>
 <translation id="916607977885256133">တစ်ခုပေါ်တစ်ခုထပ်၍ ဖွင့်ခြင်း</translation>
 <translation id="9168329111483466115">အောက်ခြေမှတ်ချက်</translation>
+<translation id="945780513535800434">တစ်ချို့တစ်ဝက်ကို အမှန်ခြစ်ထားသည်</translation>
 <translation id="954003015749068518">တစ်ခုပေါ်တစ်ခုထပ်၍ ဖွင့်သည့်မုဒ်ကို ဖွင့်ရန်</translation>
 <translation id="966787709310836684">မီနူး</translation>
 </translationbundle>

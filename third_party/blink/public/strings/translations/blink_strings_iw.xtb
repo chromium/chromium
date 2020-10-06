@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">שבוע <ph name="WEEKNUMBER" />‏, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">רצועה <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">תיבת סימון</translation>
+<translation id="2307576640803031502">ברשימה, פריט <ph name="INDEX" /> מתוך <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">מעבר דף</translation>
 <translation id="2335594187091864976">בוחר תאריך ושעה</translation>
 <translation id="2393030564806080191">הערך ההקסדצימלי של הצבע</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, שמתחיל בתאריך <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">תמונה בתוך תמונה</translation>
 <translation id="9168329111483466115">הערת שוליים</translation>
+<translation id="945780513535800434">מסומנת באופן חלקי</translation>
 <translation id="954003015749068518">מעבר אל מצב 'תמונה בתוך תמונה'</translation>
 <translation id="966787709310836684">תפריט</translation>
 </translationbundle>

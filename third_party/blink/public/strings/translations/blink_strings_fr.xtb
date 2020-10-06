@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">Semaine <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Piste <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">case à cocher</translation>
+<translation id="2307576640803031502">dans la liste, élément <ph name="INDEX" /> sur <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">saut de page</translation>
 <translation id="2335594187091864976">outil de sélection de la date et de l'heure</translation>
 <translation id="2393030564806080191">Valeur de couleur hexadécimale</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" /> (premier jour de la semaine : <ph name="WEEK_START_DATE" />)</translation>
 <translation id="916607977885256133">Picture-in-picture</translation>
 <translation id="9168329111483466115">note de bas de page</translation>
+<translation id="945780513535800434">Partiellement cochée</translation>
 <translation id="954003015749068518">utiliser le mode PIP</translation>
 <translation id="966787709310836684">menu</translation>
 </translationbundle>

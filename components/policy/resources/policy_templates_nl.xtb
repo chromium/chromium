@@ -1286,7 +1286,7 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
       Als dit beleid is ingesteld op True, zijn er naast de accounts die zijn gedefinieerd in <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> ook nieuwe Family Link-gebruikersaccounts toegestaan.</translation>
 <translation id="2886969306951284125">Als Android-apps zijn ingeschakeld en je het beleid instelt op True, rapporteren ingeschreven apparaten Android-statusinformatie.
 
-      Als je het beleid uitschakelt of niet instelt, rapporteren ingeschreven apparaten de Android-statusinformatie niet.</translation>
+      Als je het beleid uitschakelt of niet instelt, rapporteren ingeschreven apparaten geen Android-statusinformatie.</translation>
 <translation id="2890645751406497668">Automatisch rechten verlenen aan deze sites om verbinding te maken met USB-apparaten met de opgegeven leveranciers- en product-ID's.</translation>
 <translation id="2892414556511568464">Hiermee beperk je afdrukken in de duplexmodus. Als er geen beleid is ingesteld of de instelling leeg is, gelden er geen beperkingen.</translation>
 <translation id="2893546967669465276">Systeemlogboeken naar de beheerserver verzenden</translation>
@@ -4558,7 +4558,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="7458437477941640506">Herstel de doelversie niet als de OS-versie nieuwer is dan de doelversie. Updates zijn ook uitgeschakeld.</translation>
 <translation id="7459601923199346224">Beheert het gebruikers- en apparaatbeleid voor certificaatbeheer.</translation>
 <translation id="7464991223784276288">Cookies van overeenkomende URL's beperken tot de huidige sessie</translation>
-<translation id="7468182772656807573">Als je dit beleid instelt, geef je aan hoe vaak (in milliseconden) netwerkpakketten voor controle moeten worden gestuurd. De intervallen variëren van 30 seconden tot 24 uur. Waarden buiten dit bereik worden aangepast aan dit bereik.
+<translation id="7468182772656807573">Als je dit beleid instelt, geef je aan hoe vaak (in milliseconden) controlenetwerkpakketten moeten worden gestuurd. De intervallen variëren van 30 seconden tot 24 uur. Waarden buiten dit bereik worden aangepast aan dit bereik.
 
       Als er geen interval is ingesteld, wordt het standaardinterval van 3 minuten toegepast.</translation>
 <translation id="7469554574977894907">Zoeksuggesties inschakelen</translation>
@@ -5057,7 +5057,7 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, is de functie voor cursormarkering in eerste instantie uitgeschakeld, maar kan de gebruiker deze op elk gewenst moment inschakelen.</translation>
-<translation id="8164687848393015214">Als je het beleid inschakelt, worden netwerkpakketten voor controle (<ph name="HEARTBEATS_TERM" />) naar de beheerserver gestuurd, zodat de server kan waarnemen of het apparaat offline is.
+<translation id="8164687848393015214">Als je het beleid inschakelt, worden controlenetwerkpakketten (<ph name="HEARTBEATS_TERM" />) naar de beheerserver gestuurd, zodat de server kan waarnemen of het apparaat offline is.
 
       Als je het beleid uitschakelt of niet instelt, worden er geen pakketten gestuurd.</translation>
 <translation id="816783746144552109">Configureer de minimaal toegestane Chrome OS-versie voor het apparaat.</translation>
@@ -5761,7 +5761,7 @@ Dit beleid wordt verwijderd in M75.</translation>
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. Vanaf M85 worden patronen met de jokertekens '*' en '[*.]' in de host niet meer ondersteund voor dit beleid.</translation>
 <translation id="9073405975862312795">Als je het beleid inschakelt of niet instelt, rapporteren ingeschreven apparaten de perioden dat een gebruiker actief is op het apparaat.
 
-      Als je het beleid uitschakelt, registreren of rapporteren ingeschreven apparaten geen activiteitstijden.</translation>
+      Als je het beleid uitschakelt, registreren of rapporteren ingeschreven apparaten geen tijden van activiteit.</translation>
 <translation id="9077227880520270584">Timer voor automatisch inloggen op lokaal account op apparaat</translation>
 <translation id="9084985621503260744">Specificeer of videoactiviteit invloed heeft op stroombeheer</translation>
 <translation id="9088433379343318874">Contentprovider voor de gebruiker met beperkte rechten inschakelen</translation>

@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">Nädal <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. lugu</translation>
 <translation id="2291999235780842123">märkeruut</translation>
+<translation id="2307576640803031502">loendis, üksus <ph name="INDEX" />/<ph name="COUNT" /></translation>
 <translation id="2311842470354187719">leheküljepiir</translation>
 <translation id="2335594187091864976">kuupäeva ja kellaaja valija</translation>
 <translation id="2393030564806080191">Värvi väärtus kuueteistkümnendsüsteemis</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" /> alates kuupäevast <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Pilt pildis</translation>
 <translation id="9168329111483466115">allmärkus</translation>
+<translation id="945780513535800434">Osaliselt märgitud</translation>
 <translation id="954003015749068518">aktiveeri režiim Pilt pildis</translation>
 <translation id="966787709310836684">menüü</translation>
 </translationbundle>

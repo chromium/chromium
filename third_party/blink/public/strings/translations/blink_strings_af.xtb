@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">Week <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Snit <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">merkblokkie</translation>
+<translation id="2307576640803031502">in lys, item <ph name="INDEX" /> van <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">bladsybreuk</translation>
 <translation id="2335594187091864976">datum- en tydkieser</translation>
 <translation id="2393030564806080191">Heksadesimale kleurwaarde</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, wat begin op <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Beeld-in-beeld</translation>
 <translation id="9168329111483466115">voetnoot</translation>
+<translation id="945780513535800434">Gedeeltelik gemerk</translation>
 <translation id="954003015749068518">gaan na prent-in-prent</translation>
 <translation id="966787709310836684">kieslys</translation>
 </translationbundle>

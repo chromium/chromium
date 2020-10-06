@@ -123,6 +123,7 @@
 <translation id="1134009406053225289">פתח בחלון גלישה פרטית</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> מתוך <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">מפתח האבטחה נעול כי הזנת קוד אימות שגוי יותר מדי פעמים. כדי לבטל את הנעילה צריך לנתק ולחבר אותו מחדש.</translation>
+<translation id="1137589305610962734">נתונים זמניים</translation>
 <translation id="1137673463384776352">פתח את הקישור ב-<ph name="APP" /></translation>
 <translation id="1139343347646843679">‏אירעה שגיאה במהלך ההגדרה של Linux. יש לפנות למנהל המערכת.</translation>
 <translation id="1140351953533677694">‏גישה ל-Bluetooth ולהתקנים סיריאליים</translation>
@@ -981,6 +982,7 @@
 <translation id="2131077480075264">לא ניתן להתקין את '<ph name="APP_NAME" />' מכיוון שהוא לא מאושר על ידי '<ph name="IMPORT_NAME" />'</translation>
 <translation id="21354425047973905">הסתרת קודי אימות</translation>
 <translation id="2135456203358955318">מגדיל במצב מעוגן</translation>
+<translation id="2135468118189259524">‏בכתובת <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> ניתן למצוא מידע על הנתונים שנאספים על ידי Google ועל הסיבות לכך.</translation>
 <translation id="2135787500304447609">&amp;המשך ביצוע</translation>
 <translation id="2136372518715274136">הזן סיסמה חדשה</translation>
 <translation id="2136476978468204130">הזנת ביטוי סיסמה שגוי</translation>
@@ -3643,6 +3645,7 @@
 <translation id="5307030433605830021">המקור אינו נתמך</translation>
 <translation id="5308380583665731573">התחברות</translation>
 <translation id="5310281978693206542">שליחת הקישור אל המכשירים שלך</translation>
+<translation id="531118851858162334">‏הפריט הזה מוצג לך על סמך הפעילות הקודמת שלך בשירותי Google. הנתונים שלך מוצגים בכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />, ואפשר למחוק אותם או לשנות את ההגדרות.</translation>
 <translation id="5311304534597152726">כניסה כ-</translation>
 <translation id="5311565231560644461">אתרים לא יוכלו להשתמש במכשירי המציאות המדומה ובנתוני המציאות המדומה שלך</translation>
 <translation id="5314381603623123224">‏התנאים וההגבלות של Chrome ישתנו ב-31 במרץ</translation>
@@ -6233,6 +6236,7 @@
 <translation id="8378714024927312812">מנוהל על-ידי הארגון</translation>
 <translation id="8379878387931047019">המכשיר לא תומך במפתח אבטחה מהסוג המבוקש באתר הזה</translation>
 <translation id="8379991678458444070">הוספת הכרטיסייה לסימניות תאפשר לך לגשת אליה במהירות</translation>
+<translation id="8380266723152870797">שם החלון</translation>
 <translation id="8382384117483909115">{NUM_TABS,plural, =1{קריאת הכרטיסייה במועד מאוחר יותר}two{קריאת הכרטיסיות במועד מאוחר יותר}many{קריאת הכרטיסיות במועד מאוחר יותר}other{קריאת הכרטיסיות במועד מאוחר יותר}}</translation>
 <translation id="8382913212082956454">העתק &amp;כתובת אימייל</translation>
 <translation id="8386091599636877289">המדיניות לא נמצאה.</translation>
@@ -6397,6 +6401,7 @@
 <translation id="8592141010104017453">לא להציג הודעות</translation>
 <translation id="859246725979739260">נחסמה הגישה של האתר הזה למיקום שלך.</translation>
 <translation id="8593121833493516339">‏שליחה של נתוני אבחון ונתונים על השימוש. אפשר לעזור בשיפור החוויה של הילד/ה שלך ב-Android. לשם כך יש לשלוח אל Google באופן אוטומטי נתוני אבחון ונתונים לגבי השימוש במכשיר ובאפליקציות. נתונים אלה לא ישמשו כדי לזהות את הילד/ה שלך, והם יעזרו לשמור על יציבות המערכת והאפליקציות, כמו גם לביצוע שיפורים אחרים. חלק מהנתונים הנצברים יעזרו גם לאפליקציות ולשותפים של Google, כמו מפתחי Android. אם הופעלה בשביל הילד/ה שלך האפשרות 'פעילות באתרי אינטרנט ובאפליקציות נוספים', ייתכן שהנתונים יישמרו בחשבון Google שלו/ה. <ph name="BEGIN_LINK1" />מידע נוסף<ph name="END_LINK1" /></translation>
+<translation id="8593735906501637689">בוצעה הסרה של <ph name="MODULE_TITLE" /></translation>
 <translation id="8594908476761052472">צילום סרטון</translation>
 <translation id="8596540852772265699">קבצים מותאמים אישית</translation>
 <translation id="8597845839771543242">פורמט מאפיין:</translation>

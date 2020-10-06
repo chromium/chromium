@@ -47,6 +47,7 @@
 <translation id="2247351761944213033"><ph name="YEAR" />年第<ph name="WEEKNUMBER" />週</translation>
 <translation id="2277199496770840904">トラック <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">チェックボックス</translation>
+<translation id="2307576640803031502">リスト内の <ph name="COUNT" /> 件中 <ph name="INDEX" /> 件目のアイテム</translation>
 <translation id="2311842470354187719">改ページ</translation>
 <translation id="2335594187091864976">日時選択ツール</translation>
 <translation id="2393030564806080191">16 進数色コード</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK_START_DATE" /> から始まる <ph name="WEEK" /></translation>
 <translation id="916607977885256133">ピクチャー イン ピクチャー</translation>
 <translation id="9168329111483466115">脚注</translation>
+<translation id="945780513535800434">一部オン</translation>
 <translation id="954003015749068518">ピクチャー イン ピクチャーを開始します</translation>
 <translation id="966787709310836684">メニュー</translation>
 </translationbundle>

@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">Тыдзень <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Трэк <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">поле для птушкі</translation>
+<translation id="2307576640803031502">у спісе, элемент <ph name="INDEX" /> з <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">разрыў старонкі</translation>
 <translation id="2335594187091864976">выбар даты і часу</translation>
 <translation id="2393030564806080191">Шаснаццатковае значэнне колеру</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, пачынаецца з <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Відарыс у відарысе</translation>
 <translation id="9168329111483466115">зноска</translation>
+<translation id="945780513535800434">Выбраны толькі некаторыя варыянты</translation>
 <translation id="954003015749068518">уключыць рэжым "Відарыс у відарысе"</translation>
 <translation id="966787709310836684">меню</translation>
 </translationbundle>

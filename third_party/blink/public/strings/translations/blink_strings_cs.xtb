@@ -47,6 +47,7 @@
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. týden, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Stopa <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">zaškrtávací políčko</translation>
+<translation id="2307576640803031502">na seznamu, položka <ph name="INDEX" /> z <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">konec stránky</translation>
 <translation id="2335594187091864976">výběr data a času</translation>
 <translation id="2393030564806080191">Hexadecimální hodnota barvy</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, začíná <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Obraz v obraze</translation>
 <translation id="9168329111483466115">poznámka pod čarou</translation>
+<translation id="945780513535800434">Částečně zaškrtnuto</translation>
 <translation id="954003015749068518">spustit režim obrazu v obraze</translation>
 <translation id="966787709310836684">nabídka</translation>
 </translationbundle>

@@ -134,6 +134,7 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> Пб</translation>
 <translation id="5266161281976477809">Ачып көрсөтүүчү үч бурчтук</translation>
 <translation id="5278860589123563674">Жөнөтүлгөн жок</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> колдонмосун караңыз.</translation>
 <translation id="528468243742722775">Бүтүрүү</translation>
 <translation id="5329858601952122676">&amp;Жок кылуу</translation>
 <translation id="5395308026110844773">Папка түзүү үчүн, <ph name="DRAGGED_APP_NAME" /> колдонмосун <ph name="IN_PLACE_APP" /> колдонмосунун үстүнө сүйрөп барып, коё бериңиз.</translation>
@@ -144,6 +145,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> тутуму</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Сол жебе</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> колдонмосун караңыз.</translation>
 <translation id="5675363643668471212">Текчедеги нерсе</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 мүн.}other{# мүн.}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Акыркы аракеттер: бүгүн}=1{Акыркы аракеттер: 1 күн мурун}other{Акыркы аракеттер: # күн мурун}}</translation>

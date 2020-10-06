@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">ہفتہ <ph name="WEEKNUMBER" />، <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" /> کو ٹریک کریں</translation>
 <translation id="2291999235780842123">چیک باکس</translation>
+<translation id="2307576640803031502">فہرست میں موجود، <ph name="COUNT" /> آئٹم میں سے <ph name="INDEX" /></translation>
 <translation id="2311842470354187719">صفحہ کا انقطاع</translation>
 <translation id="2335594187091864976">تاریخ اور وقت کا منتخب کنندہ</translation>
 <translation id="2393030564806080191">رنگ کی ہیگسا ڈیسیمل قدر</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />، <ph name="WEEK_START_DATE" /> سے</translation>
 <translation id="916607977885256133">تصویر میں تصویر</translation>
 <translation id="9168329111483466115">فٹ نوٹ</translation>
+<translation id="945780513535800434">جزوی طور پر نشان زد</translation>
 <translation id="954003015749068518">'تصویر میں تصویر' میں داخل ہوں</translation>
 <translation id="966787709310836684">مینو</translation>
 </translationbundle>

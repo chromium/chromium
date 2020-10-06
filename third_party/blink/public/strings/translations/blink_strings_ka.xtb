@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">კვირა <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ჩანაწერი <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">მოსანიშნი ველი</translation>
+<translation id="2307576640803031502">სიაში, ერთეული <ph name="INDEX" /> / <ph name="COUNT" />-დან</translation>
 <translation id="2311842470354187719">გვერდის წყვეტა</translation>
 <translation id="2335594187091864976">თარიღისა და დროის ამომრჩევი</translation>
 <translation id="2393030564806080191">ფერის თექვსმეტობითი მნიშვნელობა</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, რომლის დაწყების თარიღია: <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">გამოსახულება გამოსახულებაში</translation>
 <translation id="9168329111483466115">სქოლიო</translation>
+<translation id="945780513535800434">ნახევრად მონიშნული</translation>
 <translation id="954003015749068518">რეჟიმში „გამოსახულება გამოსახულებაში“ შესვლა</translation>
 <translation id="966787709310836684">მენიუ</translation>
 </translationbundle>

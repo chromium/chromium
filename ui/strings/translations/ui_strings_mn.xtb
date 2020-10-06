@@ -134,6 +134,7 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
 <translation id="5266161281976477809">Тодруулгын гурвалжин</translation>
 <translation id="5278860589123563674">Илгээж чадсангүй</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> танаас анхаарал тавихыг хүсэж байна.</translation>
 <translation id="528468243742722775">Төгсгөл</translation>
 <translation id="5329858601952122676">&amp;Устгах</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" />-г <ph name="IN_PLACE_APP" /> дээр тавьсан байна. Фолдер үүсгэхийн тулд чөлөөлнө үү.</translation>
@@ -144,6 +145,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> систем</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Зүүн талын сум</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> танаас анхаарал тавихыг хүсэж байна.</translation>
 <translation id="5675363643668471212">Shelf зүйл</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 мин}other{# мин}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Өнөөдөр идэвхтэй байсан}=1{1 өдрийн өмнө идэвхтэй байсан}other{# өдрийн өмнө идэвхтэй байсан}}</translation>

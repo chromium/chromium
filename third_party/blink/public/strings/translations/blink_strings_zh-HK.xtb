@@ -47,6 +47,7 @@
 <translation id="2247351761944213033"><ph name="YEAR" /> 年，第 <ph name="WEEKNUMBER" /> 週</translation>
 <translation id="2277199496770840904">曲目 <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">選框</translation>
+<translation id="2307576640803031502">清單入面嘅第 <ph name="INDEX" /> 個項目，總共有 <ph name="COUNT" /> 項</translation>
 <translation id="2311842470354187719">分頁</translation>
 <translation id="2335594187091864976">日期和時間點選器</translation>
 <translation id="2393030564806080191">十六進制顏色值</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" /> (該週的第一天為 <ph name="WEEK_START_DATE" />)</translation>
 <translation id="916607977885256133">畫中畫</translation>
 <translation id="9168329111483466115">腳註</translation>
+<translation id="945780513535800434">有部分勾選咗</translation>
 <translation id="954003015749068518">進入畫中畫</translation>
 <translation id="966787709310836684">選單</translation>
 </translationbundle>

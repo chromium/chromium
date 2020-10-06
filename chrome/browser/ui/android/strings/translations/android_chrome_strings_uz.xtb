@@ -380,7 +380,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="3894427358181296146">Jild qo‘shish</translation>
 <translation id="3895926599014793903">Hajmni majburiy o‘zgartirish funksiyasini yoqish</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> ilovasini yangilang</translation>
-<translation id="3909763690984331376"><ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /> xavfsizlik tekshiruvi</translation>
+<translation id="3909763690984331376">Xavfsizlik tekshiruvi <ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Internetdan maʼlumotlar yuklanmoqda…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> yoniq</translation>
 <translation id="3927692899758076493">Sans Serif</translation>

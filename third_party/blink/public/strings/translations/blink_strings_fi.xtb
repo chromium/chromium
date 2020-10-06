@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">Viikko <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Kappale <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">valintaruutu</translation>
+<translation id="2307576640803031502">listassa, kohde <ph name="INDEX" />/<ph name="COUNT" /></translation>
 <translation id="2311842470354187719">sivunvaihto</translation>
 <translation id="2335594187091864976">päivämäärän ja ajan valitsin</translation>
 <translation id="2393030564806080191">Heksadesimaalinen väriarvo</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, alkupäivä: <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Kuva kuvassa</translation>
 <translation id="9168329111483466115">alaviite</translation>
+<translation id="945780513535800434">Osittain valittu</translation>
 <translation id="954003015749068518">avaa kuva kuvassa ‑tila</translation>
 <translation id="966787709310836684">valikko</translation>
 </translationbundle>

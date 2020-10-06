@@ -47,6 +47,7 @@
 <translation id="2247351761944213033"><ph name="YEAR" /> m. <ph name="WEEKNUMBER" /> sav.</translation>
 <translation id="2277199496770840904"><ph name="NUMBER" /> takelis</translation>
 <translation id="2291999235780842123">žymimasis laukelis</translation>
+<translation id="2307576640803031502">sąraše, <ph name="INDEX" /> elementas iš <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">puslapio lūžis</translation>
 <translation id="2335594187091864976">datos ir laiko rinkiklis</translation>
 <translation id="2393030564806080191">Šešioliktainė spalvos vertė</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, nuo <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Vaizdas vaizde</translation>
 <translation id="9168329111483466115">išnaša</translation>
+<translation id="945780513535800434">Pažymėti kai kurie žymimieji laukeliai</translation>
 <translation id="954003015749068518">įeiti į vaizdą vaizde</translation>
 <translation id="966787709310836684">meniu</translation>
 </translationbundle>

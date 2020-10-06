@@ -134,6 +134,7 @@
 <translation id="520299402983819650"><ph name="QUANTITY" />PB</translation>
 <translation id="5266161281976477809">펼치기/접기 삼각형</translation>
 <translation id="5278860589123563674">전송 실패</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" />에 알림이 있습니다.</translation>
 <translation id="528468243742722775">종료</translation>
 <translation id="5329858601952122676">삭제(&amp;D)</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" />을(를) <ph name="IN_PLACE_APP" /> 위로 드래그해서 놓으면 폴더가 만들어집니다.</translation>
@@ -144,6 +145,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> 시스템</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">왼쪽 화살표</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />에 알림이 있습니다.</translation>
 <translation id="5675363643668471212">실행기 항목</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1분}other{#분}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{오늘 사용}=1{1일 전에 사용}other{#일 전에 사용}}</translation>

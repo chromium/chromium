@@ -134,6 +134,7 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">Triángulo despregable</translation>
 <translation id="5278860589123563674">Produciuse un erro no envío</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> require a túa atención.</translation>
 <translation id="528468243742722775">Final</translation>
 <translation id="5329858601952122676">&amp;Eliminar</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> está sobre <ph name="IN_PLACE_APP" />, solta a aplicación para crear un cartafol.</translation>
@@ -144,6 +145,7 @@
 <translation id="5574202486608032840">Sistema <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Retroceso</translation>
 <translation id="5613020302032141669">Frecha para a esquerda</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> require a túa atención.</translation>
 <translation id="5675363643668471212">Elemento do estante</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{Un minuto}other{# minutos}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Dispositivo activo hoxe}=1{Dispositivo activo hai 1 día}other{Dispositivo activo hai # días}}</translation>

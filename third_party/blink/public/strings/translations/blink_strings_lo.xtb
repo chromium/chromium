@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">ອາ​ທິດ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ແທຣັກ <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">ກ່ອງໝາຍເອົາ</translation>
+<translation id="2307576640803031502">ຢູ່ໃນລາຍຊື່, ລາຍການ <ph name="INDEX" /> ຈາກທັງໝົດ <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">ແບ່ງໜ້າ</translation>
 <translation id="2335594187091864976">ຕົວເລືອກວັນທີ ແລະ ເວລາ</translation>
 <translation id="2393030564806080191">ຄ່າສີແບບຖານສິບຫົກ</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, ເລີ່ມຕົ້ນໃນວັນທີ <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">ສະແດງຜົນຫຼາຍຢ່າງພ້ອມກັນ</translation>
 <translation id="9168329111483466115">ໝາຍເຫດຕີນເຈ້ຍ</translation>
+<translation id="945780513535800434">ໝາຍເລືອກບາງສ່ວນ</translation>
 <translation id="954003015749068518">ເຂົ້າໂໝດສະແດງຜົນຊ້ອນກັນ</translation>
 <translation id="966787709310836684">ເມນູ</translation>
 </translationbundle>

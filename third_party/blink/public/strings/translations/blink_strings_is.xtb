@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">Vika <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Hljóðrás <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">gátreitur</translation>
+<translation id="2307576640803031502">á lista, atriði <ph name="INDEX" /> af <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">síðuskil</translation>
 <translation id="2335594187091864976">val á dagsetningu og tíma</translation>
 <translation id="2393030564806080191">Sextándakerfisgildi litar</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, hefst <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Mynd í mynd</translation>
 <translation id="9168329111483466115">neðanmálsgrein</translation>
+<translation id="945780513535800434">Merkt að hluta</translation>
 <translation id="954003015749068518">skoða mynd í mynd</translation>
 <translation id="966787709310836684">valmynd</translation>
 </translationbundle>
