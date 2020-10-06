@@ -25,6 +25,10 @@
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/gpu_timing.h"
 
+#if defined(OS_APPLE)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace gl {
 
 namespace {
@@ -276,6 +280,17 @@ void GLContext::DestroyBackpressureFences() {
 }
 
 void GLContext::FlushForDriverCrashWorkaround() {
+  // If running on Apple silicon, regardless of the architecture, disable this
+  // workaround.
+  // https://crbug.com/1131312
+  switch (base::mac::GetCPUType()) {
+    case base::mac::CPUType::kArm:
+    case base::mac::CPUType::kTranslatedIntel:
+      return;
+    default:
+      break;
+  }
+
   if (!IsCurrent(nullptr))
     return;
   TRACE_EVENT0("gpu", "GLContext::FlushForDriverCrashWorkaround");
