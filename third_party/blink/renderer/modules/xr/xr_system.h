@@ -68,7 +68,7 @@ class XRSystem final : public EventTargetWithInlineData,
 
  public:
   // TODO(crbug.com/976796): Fix lint errors.
-  XRSystem(LocalFrame& frame, int64_t ukm_source_id);
+  explicit XRSystem(LocalFrame& frame);
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(devicechange, kDevicechange)
 
@@ -102,8 +102,6 @@ class XRSystem final : public EventTargetWithInlineData,
   // FocusChangedObserver overrides.
   void FocusedFrameChanged() override;
   bool IsFrameFocused();
-
-  int64_t GetSourceId() const { return ukm_source_id_; }
 
   using EnvironmentProviderErrorCallback = base::OnceCallback<void()>;
   // Registers a callback that'll be invoked when mojo invokes a disconnect
@@ -418,8 +416,6 @@ class XRSystem final : public EventTargetWithInlineData,
 
   // Indicates whether we've already logged a request for an immersive session.
   bool did_log_request_immersive_session_ = false;
-
-  const int64_t ukm_source_id_;
 
   // The XR object owns outstanding pending session queries, these live until
   // the underlying promise is either resolved or rejected.

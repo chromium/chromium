@@ -732,7 +732,7 @@ void XRSession::cancelAnimationFrame(int id) {
 
 XRInputSourceArray* XRSession::inputSources(ScriptState* script_state) const {
   if (!did_log_getInputSources_ && script_state->ContextIsValid()) {
-    ukm::builders::XR_WebXR(xr_->GetSourceId())
+    ukm::builders::XR_WebXR(GetExecutionContext()->UkmSourceID())
         .SetDidGetXRInputSources(1)
         .Record(LocalDOMWindow::From(script_state)->UkmRecorder());
     did_log_getInputSources_ = true;
@@ -1726,7 +1726,7 @@ void XRSession::LogGetPose() const {
   if (!did_log_getViewerPose_ && GetExecutionContext()) {
     did_log_getViewerPose_ = true;
 
-    ukm::builders::XR_WebXR(xr_->GetSourceId())
+    ukm::builders::XR_WebXR(GetExecutionContext()->UkmSourceID())
         .SetDidRequestPose(1)
         .Record(GetExecutionContext()->UkmRecorder());
   }

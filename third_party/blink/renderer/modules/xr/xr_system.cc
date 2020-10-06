@@ -761,10 +761,9 @@ device::mojom::blink::XRSessionOptionsPtr XRSystem::XRSessionOptionsFromQuery(
   return session_options;
 }
 
-XRSystem::XRSystem(LocalFrame& frame, int64_t ukm_source_id)
+XRSystem::XRSystem(LocalFrame& frame)
     : ExecutionContextLifecycleObserver(frame.DomWindow()),
       FocusChangedObserver(frame.GetPage()),
-      ukm_source_id_(ukm_source_id),
       service_(frame.DomWindow()),
       environment_provider_(frame.DomWindow()),
       receiver_(this, frame.DomWindow()),
@@ -971,7 +970,7 @@ void XRSystem::RequestImmersiveSession(LocalFrame* frame,
   DVLOG(2) << __func__;
   // Log an immersive session request if we haven't already
   if (!did_log_request_immersive_session_) {
-    ukm::builders::XR_WebXR(GetSourceId())
+    ukm::builders::XR_WebXR(doc->UkmSourceID())
         .SetDidRequestPresentation(1)
         .Record(doc->UkmRecorder());
     did_log_request_immersive_session_ = true;
@@ -1206,7 +1205,7 @@ ScriptPromise XRSystem::requestSession(ScriptState* script_state,
     // We haven't created the query yet, so we can't use it to implicitly log
     // our metrics for us, so explicitly log it here, as the query requires the
     // features to be parsed before it can be built.
-    ukm::builders::XR_WebXR_SessionRequest(GetSourceId())
+    ukm::builders::XR_WebXR_SessionRequest(doc->UkmSourceID())
         .SetMode(static_cast<int64_t>(session_mode))
         .SetStatus(static_cast<int64_t>(SessionRequestStatus::kOtherError))
         .Record(doc->UkmRecorder());
@@ -1260,8 +1259,8 @@ ScriptPromise XRSystem::requestSession(ScriptState* script_state,
 
   PendingRequestSessionQuery* query =
       MakeGarbageCollected<PendingRequestSessionQuery>(
-          GetSourceId(), resolver, session_mode, std::move(required_features),
-          std::move(optional_features));
+          doc->UkmSourceID(), resolver, session_mode,
+          std::move(required_features), std::move(optional_features));
 
   if (query->HasFeature(device::mojom::XRSessionFeature::DOM_OVERLAY)) {
     // Prerequisites were checked by IsFeatureValidForMode and IDL.
@@ -1491,7 +1490,7 @@ void XRSystem::OnRequestSessionReturned(
 void XRSystem::ReportImmersiveSupported(bool supported) {
   Document* doc = GetFrame() ? GetFrame()->GetDocument() : nullptr;
   if (doc && !did_log_supports_immersive_ && supported) {
-    ukm::builders::XR_WebXR ukm_builder(ukm_source_id_);
+    ukm::builders::XR_WebXR ukm_builder(doc->UkmSourceID());
     ukm_builder.SetReturnedPresentationCapableDevice(1);
     ukm_builder.Record(doc->UkmRecorder());
     did_log_supports_immersive_ = true;

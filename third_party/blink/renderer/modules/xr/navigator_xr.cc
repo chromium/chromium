@@ -65,10 +65,8 @@ XRSystem* NavigatorXR::xr() {
     did_log_navigator_xr_ = true;
   }
 
-  if (!xr_) {
-    xr_ = MakeGarbageCollected<XRSystem>(*document->GetFrame(),
-                                         document->UkmSourceID());
-  }
+  if (!xr_)
+    xr_ = MakeGarbageCollected<XRSystem>(*document->GetFrame());
 
   return xr_;
 }
