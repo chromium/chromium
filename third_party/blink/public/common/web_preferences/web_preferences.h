@@ -16,10 +16,10 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/css/preferred_color_scheme.h"
 #include "third_party/blink/public/common/web_preferences/autoplay_policy.h"
-#include "third_party/blink/public/common/web_preferences/editing_behavior_types.h"
 #include "third_party/blink/public/common/web_preferences/image_animation_policy.h"
 #include "third_party/blink/public/common/web_preferences/viewport_style.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-forward.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-forward.h"
 #include "ui/base/pointer/pointer_device.h"
 #include "url/gurl.h"
 
@@ -136,7 +136,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool barrel_button_for_drag_enabled = false;
   bool sync_xhr_in_documents_enabled;
   int number_of_cpu_cores;
-  EditingBehaviorType editing_behavior;
+  blink::mojom::EditingBehavior editing_behavior;
   bool supports_multiple_windows;
   bool viewport_enabled;
   bool viewport_meta_enabled;

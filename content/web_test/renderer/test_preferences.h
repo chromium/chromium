@@ -5,7 +5,7 @@
 #ifndef CONTENT_WEB_TEST_RENDERER_TEST_PREFERENCES_H_
 #define CONTENT_WEB_TEST_RENDERER_TEST_PREFERENCES_H_
 
-#include "third_party/blink/public/common/web_preferences/editing_behavior_types.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 
@@ -24,7 +24,7 @@ struct TestPreferences {
   bool loads_images_automatically;
   bool plugins_enabled;
   bool allow_universal_access_from_file_urls;
-  blink::web_pref::EditingBehaviorType editing_behavior;
+  blink::mojom::EditingBehavior editing_behavior;
   bool tabs_to_links;
   bool hyperlink_auditing_enabled;
   bool caret_browsing_enabled;

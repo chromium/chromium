@@ -98,7 +98,7 @@
     {
       name: "editingBehaviorType",
       initial: "EditingBehaviorTypeForPlatform()",
-      type: "web_pref::EditingBehaviorType",
+      type: "mojom::EditingBehavior",
     },
 
     {

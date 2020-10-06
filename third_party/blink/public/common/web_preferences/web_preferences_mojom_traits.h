@@ -10,6 +10,8 @@
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/css/preferred_color_scheme.h"
+#include "third_party/blink/public/common/web_preferences/autoplay_policy.h"
+#include "third_party/blink/public/common/web_preferences/image_animation_policy.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 #include "ui/base/pointer/pointer_device.h"
@@ -39,16 +41,6 @@ struct BLINK_COMMON_EXPORT EnumTraits<blink::mojom::PreferredColorScheme,
 
   static bool FromMojom(blink::mojom::PreferredColorScheme input,
                         blink::PreferredColorScheme* out);
-};
-
-template <>
-struct BLINK_COMMON_EXPORT EnumTraits<blink::mojom::EditingBehavior,
-                                      blink::web_pref::EditingBehaviorType> {
-  static blink::mojom::EditingBehavior ToMojom(
-      blink::web_pref::EditingBehaviorType behavior);
-
-  static bool FromMojom(blink::mojom::EditingBehavior input,
-                        blink::web_pref::EditingBehaviorType* out);
 };
 
 template <>
@@ -437,7 +429,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.number_of_cpu_cores;
   }
 
-  static blink::web_pref::EditingBehaviorType editing_behavior(
+  static blink::mojom::EditingBehavior editing_behavior(
       const blink::web_pref::WebPreferences& r) {
     return r.editing_behavior;
   }

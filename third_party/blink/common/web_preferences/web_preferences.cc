@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 #include "ui/base/ui_base_switches_util.h"
 
 namespace {
@@ -100,20 +101,20 @@ WebPreferences::WebPreferences()
       sync_xhr_in_documents_enabled(true),
       number_of_cpu_cores(1),
 #if defined(OS_MAC)
-      editing_behavior(web_pref::kEditingMacBehavior),
+      editing_behavior(mojom::EditingBehavior::kEditingMacBehavior),
 #elif defined(OS_WIN)
-      editing_behavior(web_pref::kEditingWindowsBehavior),
+      editing_behavior(mojom::EditingBehavior::kEditingWindowsBehavior),
 #elif defined(OS_ANDROID)
-      editing_behavior(web_pref::kEditingAndroidBehavior),
+      editing_behavior(mojom::EditingBehavior::kEditingAndroidBehavior),
 #elif defined(OS_CHROMEOS)
       editing_behavior(
           base::FeatureList::IsEnabled(blink::features::kCrOSAutoSelect)
-              ? web_pref::kEditingChromeOSBehavior
-              : web_pref::kEditingUnixBehavior),
+              ? mojom::EditingBehavior::kEditingChromeOSBehavior
+              : mojom::EditingBehavior::kEditingUnixBehavior),
 #elif defined(OS_POSIX)
-      editing_behavior(web_pref::kEditingUnixBehavior),
+      editing_behavior(mojom::EditingBehavior::kEditingUnixBehavior),
 #else
-      editing_behavior(web_pref::kEditingMacBehavior),
+      editing_behavior(mojom::EditingBehavior::kEditingMacBehavior),
 #endif
       supports_multiple_windows(true),
       viewport_enabled(false),

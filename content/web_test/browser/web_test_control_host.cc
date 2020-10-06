@@ -264,9 +264,10 @@ void ApplyWebTestDefaultPreferences(blink::web_pref::WebPreferences* prefs) {
   prefs->translate_service_available = true;
 
 #if defined(OS_MAC)
-  prefs->editing_behavior = blink::web_pref::kEditingMacBehavior;
+  prefs->editing_behavior = blink::mojom::EditingBehavior::kEditingMacBehavior;
 #else
-  prefs->editing_behavior = blink::web_pref::kEditingWindowsBehavior;
+  prefs->editing_behavior =
+      blink::mojom::EditingBehavior::kEditingWindowsBehavior;
 #endif
 
 #if defined(OS_MAC)

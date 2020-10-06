@@ -314,20 +314,26 @@ void InternalSettings::setAccessibilityFontScaleFactor(
 void InternalSettings::setEditingBehavior(const String& editing_behavior,
                                           ExceptionState& exception_state) {
   InternalSettingsGuardForSettings();
-  if (EqualIgnoringASCIICase(editing_behavior, "win"))
-    GetSettings()->SetEditingBehaviorType(web_pref::kEditingWindowsBehavior);
-  else if (EqualIgnoringASCIICase(editing_behavior, "mac"))
-    GetSettings()->SetEditingBehaviorType(web_pref::kEditingMacBehavior);
-  else if (EqualIgnoringASCIICase(editing_behavior, "unix"))
-    GetSettings()->SetEditingBehaviorType(web_pref::kEditingUnixBehavior);
-  else if (EqualIgnoringASCIICase(editing_behavior, "android"))
-    GetSettings()->SetEditingBehaviorType(web_pref::kEditingAndroidBehavior);
-  else if (EqualIgnoringASCIICase(editing_behavior, "chromeos"))
-    GetSettings()->SetEditingBehaviorType(web_pref::kEditingChromeOSBehavior);
-  else
+  if (EqualIgnoringASCIICase(editing_behavior, "win")) {
+    GetSettings()->SetEditingBehaviorType(
+        mojom::EditingBehavior::kEditingWindowsBehavior);
+  } else if (EqualIgnoringASCIICase(editing_behavior, "mac")) {
+    GetSettings()->SetEditingBehaviorType(
+        mojom::EditingBehavior::kEditingMacBehavior);
+  } else if (EqualIgnoringASCIICase(editing_behavior, "unix")) {
+    GetSettings()->SetEditingBehaviorType(
+        mojom::EditingBehavior::kEditingUnixBehavior);
+  } else if (EqualIgnoringASCIICase(editing_behavior, "android")) {
+    GetSettings()->SetEditingBehaviorType(
+        mojom::EditingBehavior::kEditingAndroidBehavior);
+  } else if (EqualIgnoringASCIICase(editing_behavior, "chromeos")) {
+    GetSettings()->SetEditingBehaviorType(
+        mojom::EditingBehavior::kEditingChromeOSBehavior);
+  } else {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       "The editing behavior type provided ('" +
                                           editing_behavior + "') is invalid.");
+  }
 }
 
 void InternalSettings::setLangAttributeAwareFormControlUIEnabled(bool enabled) {

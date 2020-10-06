@@ -42,20 +42,20 @@ namespace blink {
 //     Darwin/MacOS/Android (and then abusing the terminology);
 //  4) EditingAndroidBehavior comprises Android builds.
 // 99) MacEditingBehavior is used a fallback.
-static web_pref::EditingBehaviorType EditingBehaviorTypeForPlatform() {
+static mojom::blink::EditingBehavior EditingBehaviorTypeForPlatform() {
   return
 #if defined(OS_MAC)
-      web_pref::kEditingMacBehavior
+      mojom::blink::EditingBehavior::kEditingMacBehavior
 #elif defined(OS_WIN)
-      web_pref::kEditingWindowsBehavior
+      mojom::blink::EditingBehavior::kEditingWindowsBehavior
 #elif defined(OS_ANDROID)
-      web_pref::kEditingAndroidBehavior
+      mojom::blink::EditingBehavior::kEditingAndroidBehavior
 #elif defined(OS_CHROMEOS)
       base::FeatureList::IsEnabled(features::kCrOSAutoSelect)
-          ? web_pref::kEditingChromeOSBehavior
-          : web_pref::kEditingUnixBehavior
+          ? mojom::blink::EditingBehavior::kEditingChromeOSBehavior
+          : mojom::blink::EditingBehavior::kEditingUnixBehavior
 #else  // Rest of the UNIX-like systems
-      web_pref::kEditingUnixBehavior
+      mojom::blink::EditingBehavior::kEditingUnixBehavior
 #endif
       ;
 }

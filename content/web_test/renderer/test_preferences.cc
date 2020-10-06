@@ -30,10 +30,9 @@ void TestPreferences::Reset() {
   allow_universal_access_from_file_urls = false;
 
 #if defined(OS_MAC)
-  editing_behavior = blink::web_pref::EditingBehaviorType::kEditingMacBehavior;
+  editing_behavior = blink::mojom::EditingBehavior::kEditingMacBehavior;
 #else
-  editing_behavior =
-      blink::web_pref::EditingBehaviorType::kEditingWindowsBehavior;
+  editing_behavior = blink::mojom::EditingBehavior::kEditingWindowsBehavior;
 #endif
 
   tabs_to_links = false;

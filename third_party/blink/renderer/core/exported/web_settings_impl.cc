@@ -465,7 +465,7 @@ void WebSettingsImpl::SetShowContextMenuOnMouseUp(bool enabled) {
 }
 
 void WebSettingsImpl::SetEditingBehavior(
-    web_pref::EditingBehaviorType behavior) {
+    mojom::blink::EditingBehavior behavior) {
   settings_->SetEditingBehaviorType(behavior);
 }
 

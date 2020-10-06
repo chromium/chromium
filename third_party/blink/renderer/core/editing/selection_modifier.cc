@@ -271,8 +271,8 @@ VisibleSelection SelectionModifier::PrepareToModifySelection(
 VisiblePosition SelectionModifier::PositionForPlatform(
     bool is_get_start) const {
   Settings* settings = GetFrame().GetSettings();
-  if (settings &&
-      settings->GetEditingBehaviorType() == web_pref::kEditingMacBehavior)
+  if (settings && settings->GetEditingBehaviorType() ==
+                      mojom::blink::EditingBehavior::kEditingMacBehavior)
     return is_get_start ? selection_.VisibleStart() : selection_.VisibleEnd();
   // Linux and Windows always extend selections from the extent endpoint.
   // FIXME: VisibleSelection should be fixed to ensure as an invariant that

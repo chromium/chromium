@@ -77,52 +77,6 @@ bool EnumTraits<blink::mojom::HoverType, ui::HoverType>::FromMojom(
 }
 
 // static
-blink::mojom::EditingBehavior EnumTraits<blink::mojom::EditingBehavior,
-                                         blink::web_pref::EditingBehaviorType>::
-    ToMojom(blink::web_pref::EditingBehaviorType behavior) {
-  switch (behavior) {
-    case blink::web_pref::EditingBehaviorType::kEditingMacBehavior:
-      return blink::mojom::EditingBehavior::kEditingMacBehavior;
-    case blink::web_pref::EditingBehaviorType::kEditingWindowsBehavior:
-      return blink::mojom::EditingBehavior::kEditingWindowsBehavior;
-    case blink::web_pref::EditingBehaviorType::kEditingUnixBehavior:
-      return blink::mojom::EditingBehavior::kEditingUnixBehavior;
-    case blink::web_pref::EditingBehaviorType::kEditingAndroidBehavior:
-      return blink::mojom::EditingBehavior::kEditingAndroidBehavior;
-    case blink::web_pref::EditingBehaviorType::kEditingChromeOSBehavior:
-      return blink::mojom::EditingBehavior::kEditingChromeOSBehavior;
-  }
-  NOTREACHED();
-  return blink::mojom::EditingBehavior::kMaxValue;
-}
-
-// static
-bool EnumTraits<blink::mojom::EditingBehavior,
-                blink::web_pref::EditingBehaviorType>::
-    FromMojom(blink::mojom::EditingBehavior input,
-              blink::web_pref::EditingBehaviorType* out) {
-  switch (input) {
-    case blink::mojom::EditingBehavior::kEditingMacBehavior:
-      *out = blink::web_pref::EditingBehaviorType::kEditingMacBehavior;
-      return true;
-    case blink::mojom::EditingBehavior::kEditingWindowsBehavior:
-      *out = blink::web_pref::EditingBehaviorType::kEditingWindowsBehavior;
-      return true;
-    case blink::mojom::EditingBehavior::kEditingUnixBehavior:
-      *out = blink::web_pref::EditingBehaviorType::kEditingUnixBehavior;
-      return true;
-    case blink::mojom::EditingBehavior::kEditingAndroidBehavior:
-      *out = blink::web_pref::EditingBehaviorType::kEditingAndroidBehavior;
-      return true;
-    case blink::mojom::EditingBehavior::kEditingChromeOSBehavior:
-      *out = blink::web_pref::EditingBehaviorType::kEditingChromeOSBehavior;
-      return true;
-  }
-  NOTREACHED();
-  return false;
-}
-
-// static
 blink::mojom::ImageAnimationPolicy
 EnumTraits<blink::mojom::ImageAnimationPolicy,
            blink::web_pref::ImageAnimationPolicy>::
@@ -353,7 +307,6 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       !data.ReadTextTrackWindowRadius(&out->text_track_window_radius) ||
       !data.ReadPrimaryPointerType(&out->primary_pointer_type) ||
       !data.ReadPrimaryHoverType(&out->primary_hover_type) ||
-      !data.ReadEditingBehavior(&out->editing_behavior) ||
       !data.ReadViewportStyle(&out->viewport_style) ||
       !data.ReadAnimationPolicy(&out->animation_policy) ||
       !data.ReadAutoplayPolicy(&out->autoplay_policy) ||
@@ -445,6 +398,7 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->barrel_button_for_drag_enabled = data.barrel_button_for_drag_enabled();
   out->sync_xhr_in_documents_enabled = data.sync_xhr_in_documents_enabled();
   out->number_of_cpu_cores = data.number_of_cpu_cores();
+  out->editing_behavior = data.editing_behavior();
   out->supports_multiple_windows = data.supports_multiple_windows();
   out->viewport_enabled = data.viewport_enabled();
   out->viewport_meta_enabled = data.viewport_meta_enabled();
