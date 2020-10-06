@@ -115,7 +115,7 @@ class PLATFORM_EXPORT TransformOperation
     kDependsHeight = 0x02,
     kDependsBoth = kDependsWidth | kDependsHeight
   };
-  virtual BoxSizeDependency DependsOnBoxSize() const { return kDependsNone; }
+  virtual BoxSizeDependency BoxSizeDependencies() const { return kDependsNone; }
 
   static inline BoxSizeDependency CombineDependencies(BoxSizeDependency a,
                                                       BoxSizeDependency b) {

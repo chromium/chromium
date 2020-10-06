@@ -239,7 +239,7 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
               To<CompositorKeyframeTransform>(
                   keyframe->GetCompositorKeyframeValue())
                   ->GetTransformOperations()
-                  .DependsOnBoxSize()) {
+                  .BoxSizeDependencies()) {
             reasons |= kTransformRelatedPropertyDependsOnBoxSize;
           }
           break;

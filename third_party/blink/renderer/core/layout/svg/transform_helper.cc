@@ -31,9 +31,9 @@ bool TransformHelper::DependsOnReferenceBox(const ComputedStyle& style) {
       style.RequireTransformOrigin(ComputedStyle::kIncludeTransformOrigin,
                                    ComputedStyle::kExcludeMotionPath))
     return true;
-  if (style.Transform().DependsOnBoxSize())
+  if (style.Transform().BoxSizeDependencies())
     return true;
-  if (style.Translate() && style.Translate()->DependsOnBoxSize())
+  if (style.Translate() && style.Translate()->BoxSizeDependencies())
     return true;
   if (style.HasOffset())
     return true;

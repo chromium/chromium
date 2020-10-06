@@ -76,9 +76,9 @@ class PLATFORM_EXPORT InterpolatedTransformOperation final
     return from_.PreservesAxisAlignment() && to_.PreservesAxisAlignment();
   }
 
-  BoxSizeDependency DependsOnBoxSize() const override {
-    return CombineDependencies(from_.DependsOnBoxSize(starting_index_),
-                               to_.DependsOnBoxSize(starting_index_));
+  BoxSizeDependency BoxSizeDependencies() const override {
+    return CombineDependencies(from_.BoxSizeDependencies(starting_index_),
+                               to_.BoxSizeDependencies(starting_index_));
   }
 
   InterpolatedTransformOperation(const TransformOperations& from,
@@ -91,7 +91,7 @@ class PLATFORM_EXPORT InterpolatedTransformOperation final
         progress_(progress) {
     // This should only be generated during interpolation when it is impossible
     // to create a Matrix3DTransformOperation due to layout-dependence.
-    DCHECK(DependsOnBoxSize());
+    DCHECK(BoxSizeDependencies());
   }
 
   const TransformOperations from_;

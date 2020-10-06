@@ -499,7 +499,7 @@ void DOMMatrixReadOnly::SetMatrixValueFromString(
       *value,
       CSSToLengthConversionData(&initial_style, &initial_style, nullptr, 1.0f));
 
-  if (operations.DependsOnBoxSize()) {
+  if (operations.BoxSizeDependencies()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
         "Lengths must be absolute, not depend on the box size");

@@ -52,7 +52,7 @@ class PLATFORM_EXPORT TranslateTransformOperation final
     return *this == static_cast<const TransformOperation&>(other);
   }
 
-  BoxSizeDependency DependsOnBoxSize() const override {
+  BoxSizeDependency BoxSizeDependencies() const override {
     return CombineDependencies(
         (x_.IsPercentOrCalc() ? kDependsWidth : kDependsNone),
         (y_.IsPercentOrCalc() ? kDependsHeight : kDependsNone));
