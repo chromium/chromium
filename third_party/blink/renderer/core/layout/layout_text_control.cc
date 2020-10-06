@@ -96,12 +96,8 @@ void LayoutTextControl::ComputeLogicalHeight(
   HTMLElement* inner_editor = InnerEditorElement();
   DCHECK(inner_editor);
   if (LayoutBox* inner_editor_box = inner_editor->GetLayoutBox()) {
-    LayoutUnit non_content_height = inner_editor_box->BorderAndPaddingHeight() +
-                                    inner_editor_box->MarginHeight();
-    logical_height = ComputeControlLogicalHeight(
-        inner_editor_box->LineHeight(true, kHorizontalLine,
-                                     kPositionOfInteriorLineBoxes),
-        non_content_height);
+    logical_height = ComputeControlLogicalHeight(inner_editor_box->LineHeight(
+        true, kHorizontalLine, kPositionOfInteriorLineBoxes));
 
     // We are able to have a horizontal scrollbar if the overflow style is
     // scroll, or if its auto and there's no word wrap.

@@ -68,8 +68,7 @@ class CORE_EXPORT LayoutTextControl : public LayoutBlockFlow {
 
   virtual LayoutUnit PreferredContentLogicalWidth(float char_width) const = 0;
   virtual LayoutUnit ComputeControlLogicalHeight(
-      LayoutUnit line_height,
-      LayoutUnit non_content_height) const = 0;
+      LayoutUnit line_height) const = 0;
 
   void ComputeLogicalHeight(LayoutUnit logical_height,
                             LayoutUnit logical_top,

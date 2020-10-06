@@ -65,11 +65,9 @@ LayoutUnit LayoutTextControlMultiLine::PreferredContentLogicalWidth(
 }
 
 LayoutUnit LayoutTextControlMultiLine::ComputeControlLogicalHeight(
-    LayoutUnit line_height,
-    LayoutUnit non_content_height) const {
+    LayoutUnit line_height) const {
   NOT_DESTROYED();
-  return line_height * To<HTMLTextAreaElement>(GetNode())->rows() +
-         non_content_height;
+  return line_height * To<HTMLTextAreaElement>(GetNode())->rows();
 }
 
 LayoutUnit LayoutTextControlMultiLine::BaselinePosition(
