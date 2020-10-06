@@ -246,20 +246,6 @@ const base::Feature kReactiveZeroSuggestionsOnNTPRealbox{
     "OmniboxReactiveZeroSuggestionsOnNTPRealbox",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Allow suggestions to be shown to the user on the New Tab Page upon focusing
-// URL bar (the omnibox).
-const base::Feature kZeroSuggestionsOnNTP{"OmniboxZeroSuggestionsOnNTP",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Allow suggestions to be shown to the user on the New Tab Page upon focusing
-// the real search box.
-const base::Feature kZeroSuggestionsOnNTPRealbox{
-    "OmniboxZeroSuggestionsOnNTPRealbox", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Allow on-focus query refinements to be shown on the default SERP.
-const base::Feature kZeroSuggestionsOnSERP{"OmniboxZeroSuggestionsOnSERP",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Features to provide non personalized head search suggestion from a compact
 // on device model. More specifically, feature name with suffix Incognito /
 // NonIncognito will only controls behaviors under incognito / non-incognito

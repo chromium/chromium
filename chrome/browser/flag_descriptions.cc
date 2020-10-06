@@ -1700,22 +1700,6 @@ const char kOmniboxUISwapTitleAndUrlDescription[] =
     "In the omnibox dropdown, shows titles before URLs when both are "
     "available.";
 
-const char kOmniboxZeroSuggestionsOnNTPName[] =
-    "Omnibox Zero Suggestions on New Tab Page";
-const char kOmniboxZeroSuggestionsOnNTPDescription[] =
-    "Offer suggestions when URL bar (omnibox) is focused.";
-
-const char kOmniboxZeroSuggestionsOnNTPRealboxName[] =
-    "Zero Suggestions in real search box on New Tab Page";
-const char kOmniboxZeroSuggestionsOnNTPRealboxDescription[] =
-    "Offer suggestions when the real search box on New Tab Page is focused.";
-
-const char kOmniboxZeroSuggestionsOnSERPName[] =
-    "Omnibox Zero Suggestions on SERP / On-Focus Query Refinement";
-const char kOmniboxZeroSuggestionsOnSERPDescription[] =
-    "Offer query refinement suggestions when the URL bar (omnibox) is focused "
-    "on the default search provider's search results page (SERP).";
-
 const char kOnTheFlyMhtmlHashComputationName[] =
     "On-The-Fly MHTML Hash Computation";
 const char kOnTheFlyMhtmlHashComputationDescription[] =

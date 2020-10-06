@@ -4113,22 +4113,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxUISwapTitleAndUrlDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kUIExperimentSwapTitleAndUrl)},
 
-    {"omnibox-zero-suggestions-on-ntp",
-     flag_descriptions::kOmniboxZeroSuggestionsOnNTPName,
-     flag_descriptions::kOmniboxZeroSuggestionsOnNTPDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kZeroSuggestionsOnNTP)},
-
-    {"omnibox-zero-suggestions-on-ntp-realbox",
-     flag_descriptions::kOmniboxZeroSuggestionsOnNTPRealboxName,
-     flag_descriptions::kOmniboxZeroSuggestionsOnNTPRealboxDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(omnibox::kZeroSuggestionsOnNTPRealbox)},
-
-    {"omnibox-zero-suggestions-on-serp",
-     flag_descriptions::kOmniboxZeroSuggestionsOnSERPName,
-     flag_descriptions::kOmniboxZeroSuggestionsOnSERPDescription, kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kZeroSuggestionsOnSERP)},
-
     {"omnibox-disable-instant-extended-limit",
      flag_descriptions::kOmniboxDisableInstantExtendedLimitName,
      flag_descriptions::kOmniboxDisableInstantExtendedLimitDescription, kOsAll,

@@ -3547,21 +3547,6 @@
     "expiry_milestone": 76
   },
   {
-    "name": "omnibox-zero-suggestions-on-ntp",
-    "owners": [ "tommycli", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 85
-  },
-  {
-    "name": "omnibox-zero-suggestions-on-ntp-realbox",
-    "owners": [ "mahmadi" ],
-    "expiry_milestone": 86
-  },
-  {
-    "name": "omnibox-zero-suggestions-on-serp",
-    "owners": [ "tommycli", "pnoland" ],
-    "expiry_milestone": 85
-  },
-  {
     "name": "on-the-fly-mhtml-hash-computation",
     "owners": [ "sclittle", "srsudar", "offline-dev" ],
     "expiry_milestone": 76
