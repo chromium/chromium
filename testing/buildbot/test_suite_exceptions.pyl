@@ -2192,6 +2192,12 @@
   },
   'pixel_browser_tests': {
     'modifications': {
+      # TODO(crbug.com/1131319): Re-enable the tests.
+      'Win10 Tests x64':{
+        'args': [
+          '--gtest_filter=-*EyeDropperBrowserTest.*',
+        ],
+      },
       'win-pixel-tester-rel': {
         'non_precommit_args': [
           # Do not allow retry or it will break the bulk approval process.
