@@ -175,8 +175,11 @@ void GraphicsLayerUpdater::AssertNeedsToUpdateGraphicsLayerBitsCleared(
         ->AssertNeedsToUpdateGraphicsLayerBitsCleared();
   }
 
-  for (PaintLayer* child = layer.FirstChild(); child;
-       child = child->NextSibling())
+  PaintLayer* first_child =
+      layer.GetLayoutObject().ChildPrePaintBlockedByDisplayLock()
+          ? nullptr
+          : layer.FirstChild();
+  for (PaintLayer* child = first_child; child; child = child->NextSibling())
     AssertNeedsToUpdateGraphicsLayerBitsCleared(*child);
 }
 

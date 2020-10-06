@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
+#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -2970,4 +2971,52 @@ TEST_F(DisplayLockContextLegacyRenderingTest,
   UpdateAllLifecyclePhasesForTest();
 }
 
+TEST_F(DisplayLockContextTest, GraphicsLayerBitsNotCheckedInLockedSubtree) {
+  ResizeAndFocus();
+  GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
+
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+    div {
+      width: 100px;
+      height: 100px;
+      contain: style layout;
+      will-change: transform;
+    }
+    .locked {
+      content-visibility: hidden;
+    }
+    </style>
+    <div id=container>
+      <div>
+        <div id=target></div>
+      </div>
+    </div>
+  )HTML");
+
+  // Check if the result is correct if we update the contents.
+  auto* container = GetDocument().getElementById("container");
+  auto* target = GetDocument().getElementById("target");
+  auto* target_box = ToLayoutBoxModelObject(target->GetLayoutObject());
+  ASSERT_TRUE(target_box);
+  EXPECT_TRUE(target_box->Layer());
+  EXPECT_TRUE(target_box->HasSelfPaintingLayer());
+  auto* target_layer = target_box->Layer();
+  ASSERT_TRUE(target_layer->HasCompositedLayerMapping());
+
+  container->classList().Add("locked");
+  target_layer->GetCompositedLayerMapping()->SetNeedsGraphicsLayerUpdate(
+      kGraphicsLayerUpdateLocal);
+  // This should not DCHECK.
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(
+      target_layer->GetCompositedLayerMapping()->NeedsGraphicsLayerUpdate());
+
+  container->classList().Remove("locked");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(
+      target_layer->GetCompositedLayerMapping()->NeedsGraphicsLayerUpdate());
+}
 }  // namespace blink
