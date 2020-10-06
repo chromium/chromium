@@ -44,7 +44,7 @@ class ToolbarButton : public views::LabelButton,
 
   // More convenient form of the ctor below, when |model| and |tab_strip_model|
   // are both nullptr.
-  explicit ToolbarButton(PressedCallback callback);
+  explicit ToolbarButton(PressedCallback callback = PressedCallback());
 
   // |tab_strip_model| must outlive this class.
   // |model| can be null if no menu is to be shown.

@@ -96,14 +96,14 @@ class TestToolbarButton : public ToolbarButton {
 using ToolbarButtonViewsTest = ChromeViewsTestBase;
 
 TEST_F(ToolbarButtonViewsTest, DefaultLayoutInsets) {
-  ToolbarButton button{views::Button::PressedCallback()};
+  ToolbarButton button;
   gfx::Insets default_insets = ::GetLayoutInsets(TOOLBAR_BUTTON);
   EXPECT_EQ(default_insets, button.GetLayoutInsets());
   EXPECT_EQ(default_insets, button.GetInsets());
 }
 
 TEST_F(ToolbarButtonViewsTest, SetLayoutInsets) {
-  ToolbarButton button{views::Button::PressedCallback()};
+  ToolbarButton button;
   gfx::Insets new_insets(2, 3, 4, 5);
   button.SetLayoutInsets(new_insets);
   EXPECT_EQ(new_insets, button.GetLayoutInsets());
