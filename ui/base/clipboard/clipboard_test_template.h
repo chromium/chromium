@@ -1106,7 +1106,7 @@ TYPED_TEST(ClipboardTest, DlpAllowDataRead) {
 
 // Test that pasting clipboard data would not work if the dlp controller
 // restricted it.
-TYPED_TEST(ClipboardTest, DlpDisallowDataRead) {
+TYPED_TEST(ClipboardTest, DlpDisallow_ReadText) {
   auto* dlp_controller = MockClipboardDlpController::Init();
   const base::string16 kTestText(base::UTF8ToUTF16("World"));
   {
@@ -1124,6 +1124,17 @@ TYPED_TEST(ClipboardTest, DlpDisallowDataRead) {
   EXPECT_EQ(base::string16(), read_result);
   MockClipboardDlpController::DeleteInstance();
 }
+
+TYPED_TEST(ClipboardTest, DlpDisallow_ReadImage) {
+  auto* dlp_controller = MockClipboardDlpController::Init();
+  EXPECT_CALL(*dlp_controller, IsDataReadAllowed)
+      .WillRepeatedly(testing::Return(false));
+  const SkBitmap& image = clipboard_test_util::ReadImage(&this->clipboard());
+  ::testing::Mock::VerifyAndClearExpectations(dlp_controller);
+  EXPECT_EQ(true, image.empty());
+  MockClipboardDlpController::DeleteInstance();
+}
+
 #endif  // defined(OS_CHROMEOS)
 
 }  // namespace ui

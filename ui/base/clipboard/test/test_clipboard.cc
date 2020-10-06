@@ -201,7 +201,12 @@ void TestClipboard::ReadRTF(ClipboardBuffer buffer,
 void TestClipboard::ReadImage(ClipboardBuffer buffer,
                               const ClipboardDataEndpoint* data_dst,
                               ReadImageCallback callback) const {
-  std::move(callback).Run(GetStore(buffer).image);
+  const DataStore& store = GetStore(buffer);
+  if (!IsDataReadAllowed(store.data_src.get(), data_dst)) {
+    std::move(callback).Run(SkBitmap());
+    return;
+  }
+  std::move(callback).Run(store.image);
 }
 
 // TODO(crbug.com/1103215): |data_dst| should be supported.
