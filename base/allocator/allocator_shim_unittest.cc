@@ -581,11 +581,11 @@ TEST_F(AllocatorShimTest, NewHandlerConcurrency) {
   ASSERT_EQ(kNumThreads, GetNumberOfNewHandlerCalls());
 }
 
-#if defined(OS_WIN) && BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if defined(OS_WIN)
 TEST_F(AllocatorShimTest, ShimReplacesCRTHeapWhenEnabled) {
   ASSERT_EQ(::GetProcessHeap(), reinterpret_cast<HANDLE>(_get_heap_handle()));
 }
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // defined(OS_WIN)
 
 #if defined(OS_WIN)
 static size_t GetAllocatedSize(void* ptr) {
@@ -603,7 +603,7 @@ static size_t GetAllocatedSize(void* ptr) {
 #define NO_MALLOC_SIZE
 #endif
 
-#if !defined(NO_MALLOC_SIZE) && BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if !defined(NO_MALLOC_SIZE)
 TEST_F(AllocatorShimTest, ShimReplacesMallocSizeWhenEnabled) {
   InsertAllocatorDispatch(&g_mock_dispatch);
   EXPECT_EQ(GetAllocatedSize(kTestSizeEstimateAddress), kTestSizeEstimate);
@@ -621,7 +621,39 @@ TEST_F(AllocatorShimTest, ShimDoesntChangeMallocSizeWhenEnabled) {
 
   free(alloc);
 }
-#endif  // !defined(NO_MALLOC_SIZE) && BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // !defined(NO_MALLOC_SIZE)
+
+#if defined(OS_ANDROID)
+TEST_F(AllocatorShimTest, InterceptCLibraryFunctions) {
+  auto total_counts = [](const std::vector<size_t>& counts) {
+    size_t total = 0;
+    for (const auto count : counts)
+      total += count;
+    return total;
+  };
+  size_t counts_before;
+  size_t counts_after = total_counts(allocs_intercepted_by_size);
+  void* ptr;
+
+  InsertAllocatorDispatch(&g_mock_dispatch);
+
+  counts_before = counts_after;
+  ptr = strdup("hello, world");
+  EXPECT_NE(nullptr, ptr);
+  free(ptr);
+  counts_after = total_counts(allocs_intercepted_by_size);
+  EXPECT_GT(counts_after, counts_before);
+
+  counts_before = counts_after;
+  ptr = strndup("hello, world", 5);
+  EXPECT_NE(nullptr, ptr);
+  free(ptr);
+  counts_after = total_counts(allocs_intercepted_by_size);
+  EXPECT_GT(counts_after, counts_before);
+
+  RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
+}
+#endif  // defined(OS_ANDROID)
 
 }  // namespace
 }  // namespace allocator
