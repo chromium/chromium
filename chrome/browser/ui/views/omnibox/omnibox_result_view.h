@@ -29,6 +29,7 @@ class OmniboxMatchCellView;
 class OmniboxPopupContentsView;
 class OmniboxSuggestionButtonRowView;
 class OmniboxTabSwitchButton;
+class OmniboxResultFocusBar;
 enum class OmniboxPart;
 enum class OmniboxPartState;
 
@@ -152,6 +153,10 @@ class OmniboxResultView : public views::View,
   OmniboxMatchCellView* suggestion_view_;  // The leading (or left) view.
   OmniboxMatchCellView* keyword_view_;     // The trailing (or right) view.
   OmniboxTabSwitchButton* suggestion_tab_switch_button_;
+
+  // The blue bar used to indicate focus.  This is currently only used if
+  // omnibox-refined-focus-state flag is enabled.
+  OmniboxResultFocusBar* focus_bar_ = nullptr;
 
   // The row of buttons, only assigned and used if OmniboxSuggestionButtonRow
   // feature is enabled. It is owned by the base view, not this raw pointer.

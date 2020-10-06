@@ -68,6 +68,57 @@ class OmniboxRemoveSuggestionButton : public views::ImageButton {
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
+// OmniboxResultFocusBar
+
+class OmniboxResultFocusBar : public views::View {
+ public:
+  static constexpr int kStrokeThickness = 3;
+
+  explicit OmniboxResultFocusBar(OmniboxResultView* result_view)
+      : result_view_(result_view) {}
+
+  // views::View:
+  void OnPaint(gfx::Canvas* canvas) override {
+    SkPath path = GetPath();
+    cc::PaintFlags flags;
+    flags.setAntiAlias(true);
+    flags.setColor(color_);
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    canvas->DrawPath(path, flags);
+  }
+
+  // views::View:
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+
+    color_ = result_view_->GetColor(OmniboxPart::RESULTS_FOCUS_BAR);
+  }
+
+ private:
+  SkColor color_;
+
+  // Pointer to the parent view.
+  OmniboxResultView* const result_view_;
+
+  // The focus bar is a straight vertical line with half-rounded endcaps. Since
+  // this geometry is nontrivial to represent using primitives, it's instead
+  // represented using a fill path. This matches the style and implementation
+  // used in Tab Groups.
+  SkPath GetPath() const {
+    SkPath path;
+
+    path.moveTo(0, 0);
+    path.arcTo(kStrokeThickness, kStrokeThickness, 0, SkPath::kSmall_ArcSize,
+               SkPathDirection::kCW, kStrokeThickness, kStrokeThickness);
+    path.lineTo(kStrokeThickness, height() - kStrokeThickness);
+    path.arcTo(kStrokeThickness, kStrokeThickness, 0, SkPath::kSmall_ArcSize,
+               SkPathDirection::kCW, 0, height());
+    path.close();
+
+    return path;
+  }
+};
+////////////////////////////////////////////////////////////////////////////////
 // OmniboxResultView, public:
 
 OmniboxResultView::OmniboxResultView(
@@ -82,6 +133,10 @@ OmniboxResultView::OmniboxResultView(
           base::BindRepeating(&OmniboxResultView::UpdateHoverState,
                               base::Unretained(this))) {
   CHECK_GE(model_index, 0u);
+
+  if (OmniboxFieldTrial::IsRefinedFocusStateEnabled()) {
+    focus_bar_ = AddChildView(std::make_unique<OmniboxResultFocusBar>(this));
+  }
 
   suggestion_view_ = AddChildView(std::make_unique<OmniboxMatchCellView>(this));
 
@@ -262,6 +317,10 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   if (OmniboxFieldTrial::IsSuggestionButtonRowEnabled()) {
     button_row_->OnStyleRefresh();
   }
+
+  if (OmniboxFieldTrial::IsRefinedFocusStateEnabled()) {
+    focus_bar_->SetVisible(IsMatchSelected());
+  }
 }
 
 void OmniboxResultView::OnSelectionStateChanged() {
@@ -411,6 +470,11 @@ void OmniboxResultView::Layout() {
     button_row_->SetBounds(0, suggestion_height,
                            suggestion_width - suggestion_indent,
                            button_row_->GetPreferredSize().height());
+  }
+
+  if (OmniboxFieldTrial::IsRefinedFocusStateEnabled()) {
+    focus_bar_->SetBounds(0, 0, OmniboxResultFocusBar::kStrokeThickness,
+                          suggestion_height);
   }
 }
 

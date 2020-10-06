@@ -208,6 +208,7 @@ bool ThemeHelperWin::GetPlatformHighContrastColor(int id,
     case ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED_SELECTED:
     case ThemeProperties::COLOR_OMNIBOX_RESULTS_ICON_SELECTED:
     case ThemeProperties::COLOR_OMNIBOX_RESULTS_URL_SELECTED:
+    case ThemeProperties::COLOR_OMNIBOX_RESULTS_FOCUS_BAR:
       system_theme_color = ui::NativeTheme::SystemThemeColor::kHighlightText;
       break;
 
