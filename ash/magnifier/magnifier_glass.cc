@@ -16,23 +16,6 @@
 namespace ash {
 namespace {
 
-// Size of the border around the magnifying glass in DIP.
-constexpr int kBorderSize = 10;
-// Thickness of the outline around magnifying glass border in DIP.
-constexpr int kBorderOutlineThickness = 1;
-// Thickness of the shadow around the magnifying glass in DIP.
-constexpr int kShadowThickness = 24;
-// Offset of the shadow around the magnifying glass in DIP. One of the shadows
-// is lowered a bit, so we have to include |kShadowOffset| in our calculations
-// to compensate.
-constexpr int kShadowOffset = 24;
-// The color of the border and its outlines. The border has an outline on both
-// sides, producing a black/white/black ring.
-constexpr SkColor kBorderColor = SkColorSetARGB(204, 255, 255, 255);
-constexpr SkColor kBorderOutlineColor = SkColorSetARGB(51, 0, 0, 0);
-// The colors of the two shadow around the magnifiying glass.
-constexpr SkColor kTopShadowColor = SkColorSetARGB(26, 0, 0, 0);
-constexpr SkColor kBottomShadowColor = SkColorSetARGB(61, 0, 0, 0);
 // Inset on the zoom filter.
 constexpr int kZoomInset = 0;
 // Vertical offset between the center of the magnifier and the tip of the
@@ -43,14 +26,23 @@ constexpr int kVerticalOffset = 0;
 // Name of the magnifier window.
 constexpr char kMagniferGlassWindowName[] = "MagnifierGlassWindow";
 
+int GetShadowOffset(const MagnifierGlass::Params& params) {
+  return std::max(params.bottom_shadow.y(), params.top_shadow.y());
+}
+
+int GetShadowThickness(const MagnifierGlass::Params& params) {
+  return std::max(params.bottom_shadow.blur(), params.top_shadow.blur());
+}
+
 gfx::Size GetWindowSize(const MagnifierGlass::Params& params) {
   // The diameter of the window is the diameter of the magnifier, border and
-  // shadow combined. We apply |kShadowOffset| on all sides even though the
-  // shadow is only thicker on the bottom so as to keep the circle centered in
-  // the view and keep calculations (border rendering and content masking)
-  // simpler.
-  int window_diameter =
-      (params.radius + kBorderSize + kShadowThickness + kShadowOffset) * 2;
+  // shadow combined. We apply the larger shadow offset on all sides, despite
+  // the shadow offsets potentially being unequal, so as to keep the circle
+  // centered in the view and keep calculations (border rendering and content
+  // masking) simpler.
+  int window_diameter = (params.radius + params.border_size +
+                         GetShadowThickness(params) + GetShadowOffset(params)) *
+                        2;
   return gfx::Size(window_diameter, window_diameter);
 }
 
@@ -69,12 +61,11 @@ gfx::Rect GetBounds(const MagnifierGlass::Params& params,
 // the shadow.
 class MagnifierGlass::BorderRenderer : public ui::LayerDelegate {
  public:
-  BorderRenderer(const gfx::Rect& window_bounds, int radius)
-      : magnifier_window_bounds_(window_bounds), radius_(radius) {
-    magnifier_shadows_.push_back(gfx::ShadowValue(
-        gfx::Vector2d(0, kShadowOffset), kShadowThickness, kBottomShadowColor));
-    magnifier_shadows_.push_back(gfx::ShadowValue(
-        gfx::Vector2d(0, 0), kShadowThickness, kTopShadowColor));
+  BorderRenderer(const gfx::Rect& window_bounds,
+                 const MagnifierGlass::Params& params)
+      : magnifier_window_bounds_(window_bounds), params_(params) {
+    magnifier_shadows_.push_back(params_.bottom_shadow);
+    magnifier_shadows_.push_back(params_.top_shadow);
   }
 
   ~BorderRenderer() override = default;
@@ -90,13 +81,14 @@ class MagnifierGlass::BorderRenderer : public ui::LayerDelegate {
     shadow_flags.setColor(SK_ColorTRANSPARENT);
     shadow_flags.setLooper(gfx::CreateShadowDrawLooper(magnifier_shadows_));
     gfx::Rect shadow_bounds(magnifier_window_bounds_.size());
-    recorder.canvas()->DrawCircle(
-        shadow_bounds.CenterPoint(),
-        shadow_bounds.width() / 2 - kShadowThickness - kShadowOffset,
-        shadow_flags);
+    recorder.canvas()->DrawCircle(shadow_bounds.CenterPoint(),
+                                  shadow_bounds.width() / 2 -
+                                      GetShadowThickness(params_) -
+                                      GetShadowOffset(params_),
+                                  shadow_flags);
 
     // The radius of the magnifier and its border.
-    const int magnifier_radius = radius_ + kBorderSize;
+    const int magnifier_radius = params_.radius + params_.border_size;
 
     // Clear the shadow for the magnified area.
     cc::PaintFlags mask_flags;
@@ -105,36 +97,36 @@ class MagnifierGlass::BorderRenderer : public ui::LayerDelegate {
     mask_flags.setStyle(cc::PaintFlags::kFill_Style);
     recorder.canvas()->DrawCircle(
         magnifier_window_bounds_.CenterPoint(),
-        magnifier_radius - kBorderOutlineThickness / 2, mask_flags);
+        magnifier_radius - params_.border_outline_thickness / 2, mask_flags);
 
     cc::PaintFlags border_flags;
     border_flags.setAntiAlias(true);
     border_flags.setStyle(cc::PaintFlags::kStroke_Style);
 
     // Draw the inner border.
-    border_flags.setStrokeWidth(kBorderSize);
-    border_flags.setColor(kBorderColor);
+    border_flags.setStrokeWidth(params_.border_size);
+    border_flags.setColor(params_.border_color);
     recorder.canvas()->DrawCircle(magnifier_window_bounds_.CenterPoint(),
-                                  magnifier_radius - kBorderSize / 2,
+                                  magnifier_radius - params_.border_size / 2,
                                   border_flags);
 
     // Draw border outer outline and then draw the border inner outline.
-    border_flags.setStrokeWidth(kBorderOutlineThickness);
-    border_flags.setColor(kBorderOutlineColor);
+    border_flags.setStrokeWidth(params_.border_outline_thickness);
+    border_flags.setColor(params_.border_outline_color);
     recorder.canvas()->DrawCircle(
         magnifier_window_bounds_.CenterPoint(),
-        magnifier_radius - kBorderOutlineThickness / 2, border_flags);
-    recorder.canvas()->DrawCircle(
-        magnifier_window_bounds_.CenterPoint(),
-        magnifier_radius - kBorderSize + kBorderOutlineThickness / 2,
-        border_flags);
+        magnifier_radius - params_.border_outline_thickness / 2, border_flags);
+    recorder.canvas()->DrawCircle(magnifier_window_bounds_.CenterPoint(),
+                                  magnifier_radius - params_.border_size +
+                                      params_.border_outline_thickness / 2,
+                                  border_flags);
   }
 
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override {}
 
   const gfx::Rect magnifier_window_bounds_;
-  const int radius_;
+  const Params params_;
   std::vector<gfx::ShadowValue> magnifier_shadows_;
 
   DISALLOW_COPY_AND_ASSIGN(BorderRenderer);
@@ -219,8 +211,7 @@ void MagnifierGlass::CreateMagnifierWindow(aura::Window* root_window,
 
   border_layer_ = std::make_unique<ui::Layer>();
   border_layer_->SetBounds(window_bounds);
-  border_renderer_ =
-      std::make_unique<BorderRenderer>(window_bounds, params_.radius);
+  border_renderer_ = std::make_unique<BorderRenderer>(window_bounds, params_);
   border_layer_->set_delegate(border_renderer_.get());
   border_layer_->SetFillsBoundsOpaquely(false);
   root_layer->Add(border_layer_.get());
