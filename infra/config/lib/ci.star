@@ -426,6 +426,7 @@ def ci_builder(
         console_view_entry = None,
         tree_closing = False,
         notifies = None,
+        resultdb_bigquery_exports = None,
         **kwargs):
     """Define a CI builder.
 
@@ -459,6 +460,10 @@ def ci_builder(
         criteria will close the tree and email the sheriff. See the
         'chromium-tree-closer' config in notifiers.star for the full criteria.
       notifies - Any extra notifiers to attach to this builder.
+      resultdb_bigquery_exports - a list of resultdb.export_test_results(...)
+        specifying additional parameters for exporting test results to BigQuery.
+        Will always upload to the luci-resultdb.chromium.ci_test_results table
+        in addition to any tables specified by the list's elements.
     """
     if not branches.matches(branch_selector):
         return
@@ -469,14 +474,19 @@ def ci_builder(
     if tree_closing and bucket == "ci":
         notifies = (notifies or []) + ["chromium-tree-closer", "chromium-tree-closer-email"]
 
+    merged_resultdb_bigquery_exports = [
+        resultdb.export_test_results(
+            bq_table = "luci-resultdb.chromium.ci_test_results",
+        ),
+    ]
+    merged_resultdb_bigquery_exports.extend(resultdb_bigquery_exports or [])
+
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
     builders.builder(
         name = name,
         branch_selector = branch_selector,
-        resultdb_bigquery_exports = [resultdb.export_test_results(
-            bq_table = "luci-resultdb.chromium.ci_test_results",
-        )],
+        resultdb_bigquery_exports = merged_resultdb_bigquery_exports,
         notifies = notifies,
         **kwargs
     )
@@ -771,6 +781,15 @@ def fyi_windows_builder(
         **kwargs
     )
 
+gpu_ci_resultdb_exports = [
+    resultdb.export_test_results(
+        bq_table = "luci-resultdb.chromium.gpu_ci_test_results",
+        predicate = resultdb.test_result_predicate(
+            test_id_regexp = "ninja://chrome/test:telemetry_gpu_integration_test/.+",
+        ),
+    ),
+]
+
 def gpu_fyi_builder(*, name, **kwargs):
     return ci.builder(
         name = name,
@@ -780,6 +799,7 @@ def gpu_fyi_builder(*, name, **kwargs):
         properties = {
             "perf_dashboard_machine_group": "ChromiumGPUFYI",
         },
+        resultdb_bigquery_exports = gpu_ci_resultdb_exports,
         **kwargs
     )
 
@@ -844,6 +864,7 @@ def gpu_builder(*, name, tree_closing = True, notifies = None, **kwargs):
         builder_group = "chromium.gpu",
         tree_closing = tree_closing,
         notifies = notifies,
+        resultdb_bigquery_exports = gpu_ci_resultdb_exports,
         **kwargs
     )
 
