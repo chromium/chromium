@@ -97,6 +97,15 @@ void AXTreeSourceFlutter::NotifyAccessibilityEvent(
   }
 
   // First find out if we know what to do with this event type from flutter.
+  if (event_data->event_type() ==
+      gallium::castos::OnAccessibilityEventRequest_EventType_ANNOUNCEMENT) {
+    if (!event_data->has_text())
+      return;
+
+    SubmitTTS(event_data->text());
+    return;
+  }
+
   ax::mojom::Event translated_event = ToAXEvent(event_data->event_type());
   if (translated_event == ax::mojom::Event::kNone) {
     LOG(INFO) << "Ignoring unknown flutter ax event "
@@ -566,13 +575,7 @@ void AXTreeSourceFlutter::HandleNativeTTS() {
     if (prev_it != native_tts_name_cache_.end() &&
         prev_it->second != it.second) {
       // Send to TTS controller.
-      std::unique_ptr<content::TtsUtterance> utterance =
-          content::TtsUtterance::Create(browser_context_);
-      utterance->SetText(it.second);
-
-      auto* tts_controller = content::TtsController::GetInstance();
-      tts_controller->Stop();
-      tts_controller->SpeakOrEnqueue(std::move(utterance));
+      SubmitTTS(it.second);
     }
   }
 
@@ -660,12 +663,7 @@ void AXTreeSourceFlutter::HandleRoutes(std::vector<ui::AXEvent>* events) {
         focus_event.event_from = ax::mojom::EventFrom::kNone;
 
         // Speak it.
-        std::unique_ptr<content::TtsUtterance> utterance =
-            content::TtsUtterance::Create(browser_context_);
-        utterance->SetText(name);
-        auto* tts_controller = content::TtsController::GetInstance();
-        tts_controller->Stop();
-        tts_controller->SpeakOrEnqueue(std::move(utterance));
+        SubmitTTS(name);
       }
     }
   }
@@ -752,6 +750,17 @@ int32_t AXTreeSourceFlutter::FindFirstFocusableNodeId() {
 
   // Fallback to root if none found.
   return root_id_;
+}
+
+void AXTreeSourceFlutter::SubmitTTS(const std::string& text) {
+  std::unique_ptr<content::TtsUtterance> utterance =
+      content::TtsUtterance::Create(browser_context_);
+
+  utterance->SetText(text);
+
+  auto* tts_controller = content::TtsController::GetInstance();
+  tts_controller->Stop();
+  tts_controller->SpeakOrEnqueue(std::move(utterance));
 }
 
 void AXTreeSourceFlutter::UpdateTree() {

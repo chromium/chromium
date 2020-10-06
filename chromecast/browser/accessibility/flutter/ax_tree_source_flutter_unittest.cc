@@ -21,6 +21,7 @@ using ::testing::StrictMock;
 using ::gallium::castos::ActionProperties;
 using ::gallium::castos::BooleanProperties;
 using ::gallium::castos::OnAccessibilityEventRequest;
+using ::gallium::castos::OnAccessibilityEventRequest_EventType_ANNOUNCEMENT;
 using ::gallium::castos::OnAccessibilityEventRequest_EventType_CONTENT_CHANGED;
 using ::gallium::castos::OnAccessibilityEventRequest_EventType_FOCUSED;
 using ::gallium::castos::Rect;
@@ -842,6 +843,28 @@ TEST_F(AXTreeSourceFlutterTest, ScopesRoute) {
 
   CallGetTreeData(&tree_data);
   ASSERT_EQ(0, tree_data.focus_id);
+}
+
+TEST_F(AXTreeSourceFlutterTest, Announce) {
+  // Install a mock tts platform
+  auto* tts_controller = content::TtsController::GetInstance();
+  content::MockTtsPlatformImpl mock_tts_platform;
+  tts_controller->SetTtsPlatform(&mock_tts_platform);
+
+  // Setup some mocks required for tts platform impl
+  content::MockContentBrowserClient mock_content_browser_client;
+  content::MockContentClient client;
+  content::SetContentClient(&client);
+  content::SetBrowserClientForTesting(&mock_content_browser_client);
+
+  // Setup an announcement event
+  OnAccessibilityEventRequest event;
+  event.set_event_type(OnAccessibilityEventRequest_EventType_ANNOUNCEMENT);
+  event.set_text("Say this please");
+  CallNotifyAccessibilityEvent(&event);
+
+  // Child 3 should have been spoken
+  ASSERT_EQ(mock_tts_platform.GetLastSpokenUtterance(), "Say this please");
 }
 
 }  // namespace accessibility

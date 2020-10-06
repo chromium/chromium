@@ -55,7 +55,7 @@ message ActionProperties {
   optional bool dismiss = 19;
   optional bool move_cursor_forward_by_word = 20;
   optional bool move_cursor_backward_by_word = 21;
-};
+}
 
 message CustomAction {
   optional int32 id = 1;
@@ -63,6 +63,12 @@ message CustomAction {
 }
 
 message SemanticsNode {
+  enum SortKeyType {
+    UNSPECIFIED = 0;
+    // sort_key_value and sort_key_order specified.
+    ORDINAL = 1;
+  }
+
   optional int32 node_id = 1;
   optional Rect bounds_in_screen = 2;
   optional int32 window_id = 3;
@@ -86,6 +92,14 @@ message SemanticsNode {
   // is provided by a platform plugin or some other native backed
   // entity.
   optional string plugin_id = 20;
+  optional SortKeyType sort_key_type = 21;
+  // For sort_key_type ORDINAL: An optional name that will group
+  // this sort key with other sort keys of the same name.
+  optional string sort_key_value = 22;
+  // For sort_key_type ORDINAL: Determines the placement of this
+  // key in a sequence of keys that defines the order in which
+  // this node is traversed.
+  optional double sort_key_order = 23;
 }
 
 message OnAccessibilityEventRequest {
@@ -102,6 +116,14 @@ message OnAccessibilityEventRequest {
     TEXT_SELECTION_CHANGED = 9;
     CONTENT_CHANGED = 10;
     SCROLLED = 11;
+    ANNOUNCEMENT = 12;
+  }
+  enum TextDirection {
+    DEFAULT = 0;
+    // Left to right
+    LTR = 1;
+    // Right to left
+    RTL = 2;
   }
   // Type of event this represents.
   optional EventType event_type = 1;
@@ -111,6 +133,9 @@ message OnAccessibilityEventRequest {
   optional int32 window_id = 3;
   // The 'flattened' semantic tree nodes.
   repeated SemanticsNode node_data = 4;
+  // For announcements.
+  optional string text = 5;
+  optional TextDirection text_direction = 6;
 }
 
 message OnAccessibilityEventResponse {}

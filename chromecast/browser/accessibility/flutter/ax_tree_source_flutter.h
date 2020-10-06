@@ -167,6 +167,9 @@ class AXTreeSourceFlutter : public ui::AXTreeSource<FlutterSemanticsNode*,
   // the root node id.
   int32_t FindFirstFocusableNodeId();
 
+  // Submit text to TTS engine.
+  void SubmitTTS(const std::string& text);
+
   std::unique_ptr<AXTreeFlutterSerializer> current_tree_serializer_;
   int32_t root_id_;
   int32_t window_id_;
