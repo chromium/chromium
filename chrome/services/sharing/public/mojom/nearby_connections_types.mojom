@@ -148,6 +148,10 @@ struct DiscoveryOptions {
   // The strategy to use for discovering. Must match the strategy used in
   // AdvertisingOptions in order to see advertisements.
   Strategy strategy;
+  // Describes which mediums are allowed to be used for scanning/discovery. Note
+  // that allowing an otherwise unsupported medium is ok. Only the intersection
+  // of allowed and supported mediums will be used to scan.
+  MediumSelection allowed_mediums;
   // The fast advertisement service id to scan for in BLE.
   bluetooth.mojom.UUID fast_advertisement_service_uuid;
 };

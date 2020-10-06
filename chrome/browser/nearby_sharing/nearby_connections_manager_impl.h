@@ -46,6 +46,7 @@ class NearbyConnectionsManagerImpl
                         ConnectionsCallback callback) override;
   void StopAdvertising() override;
   void StartDiscovery(DiscoveryListener* listener,
+                      DataUsage data_usage,
                       ConnectionsCallback callback) override;
   void StopDiscovery() override;
   void Connect(std::vector<uint8_t> endpoint_info,

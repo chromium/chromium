@@ -137,14 +137,24 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
   void StartDiscovery(
       mojo::Remote<EndpointDiscoveryListener>& listener_remote,
       testing::NiceMock<MockDiscoveryListener>& discovery_listener) {
+    StartDiscovery(listener_remote, default_data_usage_, discovery_listener);
+  }
+  void StartDiscovery(
+      mojo::Remote<EndpointDiscoveryListener>& listener_remote,
+      DataUsage data_usage,
+      testing::NiceMock<MockDiscoveryListener>& discovery_listener) {
     EXPECT_CALL(nearby_connections_, StartDiscovery)
-        .WillOnce([&listener_remote](
+        .WillOnce([&listener_remote, this](
                       const std::string& service_id,
                       DiscoveryOptionsPtr options,
                       mojo::PendingRemote<EndpointDiscoveryListener> listener,
                       NearbyConnectionsMojom::StartDiscoveryCallback callback) {
           EXPECT_EQ(kServiceId, service_id);
           EXPECT_EQ(kStrategy, options->strategy);
+          EXPECT_TRUE(options->allowed_mediums->bluetooth);
+          EXPECT_TRUE(options->allowed_mediums->ble);
+          EXPECT_EQ(should_use_web_rtc_, options->allowed_mediums->web_rtc);
+          EXPECT_FALSE(options->allowed_mediums->wifi_lan);
           EXPECT_EQ(
               device::BluetoothUUID("0000fef3-0000-1000-8000-00805f9b34fb"),
               options->fast_advertisement_service_uuid);
@@ -154,7 +164,7 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
         });
     base::MockCallback<NearbyConnectionsManager::ConnectionsCallback> callback;
     EXPECT_CALL(callback, Run(testing::Eq(Status::kSuccess)));
-    nearby_connections_manager_.StartDiscovery(&discovery_listener,
+    nearby_connections_manager_.StartDiscovery(&discovery_listener, data_usage,
                                                callback.Get());
   }
 
@@ -347,6 +357,8 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  bool should_use_web_rtc_ = true;
+  DataUsage default_data_usage_ = DataUsage::kWifiOnly;
   TestingProfile profile_;
   std::unique_ptr<net::test::MockNetworkChangeNotifier> network_notifier_ =
       net::test::MockNetworkChangeNotifier::Create();
@@ -460,7 +472,7 @@ TEST_P(NearbyConnectionsManagerImplTestConnectionMediums,
       std::get<1>(param);
 
   network_notifier_->SetConnectionType(connection_type);
-  bool should_use_web_rtc =
+  should_use_web_rtc_ =
       data_usage != DataUsage::kOffline &&
       connection_type != net::NetworkChangeNotifier::CONNECTION_NONE &&
       (data_usage != DataUsage::kWifiOnly ||
@@ -470,13 +482,13 @@ TEST_P(NearbyConnectionsManagerImplTestConnectionMediums,
   auto expected_mediums = MediumSelection::New(
       /*bluetooth=*/true,
       /*ble=*/false,
-      /*web_rtc=*/should_use_web_rtc,
+      /*web_rtc=*/should_use_web_rtc_,
       /*wifi_lan=*/false);
 
   // StartDiscovery will succeed.
   mojo::Remote<EndpointDiscoveryListener> discovery_listener_remote;
   testing::NiceMock<MockDiscoveryListener> discovery_listener;
-  StartDiscovery(discovery_listener_remote, discovery_listener);
+  StartDiscovery(discovery_listener_remote, data_usage, discovery_listener);
 
   const std::vector<uint8_t> local_endpoint_info(std::begin(kEndpointInfo),
                                                  std::end(kEndpointInfo));

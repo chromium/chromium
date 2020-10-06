@@ -186,6 +186,7 @@ void NearbyConnections::StartDiscovery(
     StartDiscoveryCallback callback) {
   ConnectionOptions connection_options{
       .strategy = StrategyFromMojom(options->strategy),
+      .allowed = MediumSelectorFromMojom(options->allowed_mediums.get()),
       .fast_advertisement_service_uuid =
           options->fast_advertisement_service_uuid.canonical_value()};
   mojo::SharedRemote<mojom::EndpointDiscoveryListener> remote(

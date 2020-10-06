@@ -211,18 +211,25 @@ class NearbyConnectionsTest : public testing::Test {
           client_proxy = client;
           EXPECT_EQ(kServiceId, service_id);
           EXPECT_EQ(Strategy::kP2pPointToPoint, options.strategy);
+          EXPECT_TRUE(options.allowed.bluetooth);
+          EXPECT_FALSE(options.allowed.ble);
+          EXPECT_FALSE(options.allowed.web_rtc);
+          EXPECT_TRUE(options.allowed.wifi_lan);
           EXPECT_EQ(kFastAdvertisementServiceUuid,
                     options.fast_advertisement_service_uuid);
           client->StartedDiscovery(service_id, options.strategy, listener,
                                    /*mediums=*/{});
           return Status{Status::kAlreadyDiscovering};
         });
-
     base::RunLoop start_discovery_run_loop;
     nearby_connections_->StartDiscovery(
         kServiceId,
         mojom::DiscoveryOptions::New(
             mojom::Strategy::kP2pPointToPoint,
+            mojom::MediumSelection::New(/*bluetooth=*/true,
+                                        /*ble=*/false,
+                                        /*web_rtc=*/false,
+                                        /*wifi_lan=*/true),
             device::BluetoothUUID(kFastAdvertisementServiceUuid)),
         fake_discovery_listener.receiver.BindNewPipeAndPassRemote(),
         base::BindLambdaForTesting([&](mojom::Status status) {

@@ -40,6 +40,7 @@ void FakeNearbyConnectionsManager::StopAdvertising() {
 
 void FakeNearbyConnectionsManager::StartDiscovery(
     DiscoveryListener* listener,
+    DataUsage data_usage,
     ConnectionsCallback callback) {
   is_shutdown_ = false;
   discovery_listener_ = listener;

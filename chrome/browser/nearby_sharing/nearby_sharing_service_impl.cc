@@ -1535,7 +1535,7 @@ void NearbySharingServiceImpl::StartScanning() {
   ClearOutgoingShareTargetInfoMap();
 
   nearby_connections_manager_->StartDiscovery(
-      /* listener= */ this,
+      /* listener= */ this, settings_.GetDataUsage(),
       base::BindOnce([](NearbyConnectionsManager::ConnectionsStatus status) {
         NS_LOG(VERBOSE) << __func__
                         << ": Scanning start attempted over Nearby Connections "

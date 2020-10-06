@@ -121,6 +121,7 @@ void NearbyConnectionsManagerImpl::StopAdvertising() {
 
 void NearbyConnectionsManagerImpl::StartDiscovery(
     DiscoveryListener* listener,
+    DataUsage data_usage,
     ConnectionsCallback callback) {
   DCHECK(listener);
   DCHECK(!discovery_listener_);
@@ -131,11 +132,18 @@ void NearbyConnectionsManagerImpl::StartDiscovery(
     return;
   }
 
+  auto allowed_mediums = MediumSelection::New(
+      /*bluetooth=*/true,
+      /*ble=*/true,
+      /*webrtc=*/ShouldEnableWebRtc(data_usage, PowerLevel::kHighPower),
+      /*wifi_lan=*/kIsWifiLanSupported);
+
   discovery_listener_ = listener;
   nearby_connections_->StartDiscovery(
       kServiceId,
       DiscoveryOptions::New(
-          kStrategy, device::BluetoothUUID(kFastAdvertisementServiceUuid)),
+          kStrategy, std::move(allowed_mediums),
+          device::BluetoothUUID(kFastAdvertisementServiceUuid)),
       endpoint_discovery_listener_.BindNewPipeAndPassRemote(),
       std::move(callback));
 }

@@ -88,6 +88,7 @@ class NearbyConnectionsManager {
   // Starts discovery through Nearby Connections. Caller is expected to ensure
   // |listener| remains valid until StopDiscovery is called.
   virtual void StartDiscovery(DiscoveryListener* listener,
+                              DataUsage data_usage,
                               ConnectionsCallback callback) = 0;
 
   // Stops discovery through Nearby Connections.
