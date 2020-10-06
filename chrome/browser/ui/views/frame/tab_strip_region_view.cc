@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 
 #include "base/bind.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
@@ -13,6 +14,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -36,6 +39,20 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
     tab_strip_scroll_container->SetTreatAllScrollEventsAsHorizontal(true);
     tab_strip_container_ = tab_strip_scroll_container;
     tab_strip_scroll_container->SetContents(std::move(tab_strip));
+
+    auto left_scroll = std::make_unique<views::ImageButton>(base::BindRepeating(
+        &TabStripRegionView::ScrollLeft, base::Unretained(this)));
+    auto right_scroll =
+        std::make_unique<views::ImageButton>(base::BindRepeating(
+            &TabStripRegionView::ScrollRight, base::Unretained(this)));
+    const SkColor icon_color = GetNativeTheme()->GetSystemColor(
+        ui::NativeTheme::kColorId_MenuIconColor);
+    views::SetImageFromVectorIconWithColor(left_scroll.get(), kBrowserToolsIcon,
+                                           icon_color);
+    views::SetImageFromVectorIconWithColor(right_scroll.get(),
+                                           kBrowserToolsIcon, icon_color);
+    left_scroll_ = AddChildView(std::move(left_scroll));
+    right_scroll_ = AddChildView(std::move(right_scroll));
   } else {
     tab_strip_container_ = AddChildView(std::move(tab_strip));
   }
@@ -161,4 +178,23 @@ int TabStripRegionView::CalculateTabStripAvailableWidth() {
   }
 
   return size().width() - reserved_width;
+}
+
+void TabStripRegionView::ScrollLeft() {
+  views::ScrollView* scroll_view_container =
+      static_cast<views::ScrollView*>(tab_strip_container_);
+  gfx::Rect visible_content = scroll_view_container->GetVisibleRect();
+  gfx::Rect scroll(visible_content.x() - visible_content.width(),
+                   visible_content.y(), visible_content.width(),
+                   visible_content.height());
+  scroll_view_container->contents()->ScrollRectToVisible(scroll);
+}
+void TabStripRegionView::ScrollRight() {
+  views::ScrollView* scroll_view_container =
+      static_cast<views::ScrollView*>(tab_strip_container_);
+  gfx::Rect visible_content = scroll_view_container->GetVisibleRect();
+  gfx::Rect scroll(visible_content.x() + visible_content.width(),
+                   visible_content.y(), visible_content.width(),
+                   visible_content.height());
+  scroll_view_container->contents()->ScrollRectToVisible(scroll);
 }

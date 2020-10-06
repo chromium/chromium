@@ -48,9 +48,14 @@ class TabStripRegionView final : public views::AccessiblePaneView {
 
   int CalculateTabStripAvailableWidth();
 
+  void ScrollLeft();
+  void ScrollRight();
+
   views::View* tab_strip_container_;
   TabStrip* tab_strip_;
   TabSearchButton* tab_search_button_ = nullptr;
+  views::ImageButton* left_scroll_;
+  views::ImageButton* right_scroll_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_REGION_VIEW_H_
