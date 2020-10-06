@@ -69,6 +69,25 @@ float GetSDRWhiteLevelFromPQSkTransferFunction(
   return sdr_white_level_a;
 }
 
+bool PrimaryIdContainsSRGB(ColorSpace::PrimaryID id) {
+  DCHECK(id != ColorSpace::PrimaryID::INVALID &&
+         id != ColorSpace::PrimaryID::CUSTOM);
+
+  switch (id) {
+    case ColorSpace::PrimaryID::BT709:
+    case ColorSpace::PrimaryID::BT2020:
+    case ColorSpace::PrimaryID::SMPTEST428_1:
+    case ColorSpace::PrimaryID::SMPTEST431_2:
+    case ColorSpace::PrimaryID::SMPTEST432_1:
+    case ColorSpace::PrimaryID::XYZ_D50:
+    case ColorSpace::PrimaryID::ADOBE_RGB:
+    case ColorSpace::PrimaryID::WIDE_GAMUT_COLOR_SPIN:
+      return true;
+    default:
+      return false;
+  }
+}
+
 }  // namespace
 
 // static
@@ -700,6 +719,39 @@ ColorSpace::RangeID ColorSpace::GetRangeID() const {
 bool ColorSpace::HasExtendedSkTransferFn() const {
   return transfer_ == TransferID::LINEAR_HDR ||
          transfer_ == TransferID::IEC61966_2_1_HDR;
+}
+
+bool ColorSpace::Contains(const ColorSpace& other) const {
+  if (primaries_ == PrimaryID::INVALID ||
+      other.primaries_ == PrimaryID::INVALID)
+    return false;
+
+  // Contains() is commonly used to check if a color space contains sRGB. The
+  // computation can be bypassed for known primary IDs.
+  if (primaries_ != PrimaryID::CUSTOM && other.primaries_ == PrimaryID::BT709)
+    return PrimaryIdContainsSRGB(primaries_);
+
+  // |matrix| is the primary transform matrix from |other| to this color space.
+  skcms_Matrix3x3 other_to_xyz;
+  skcms_Matrix3x3 this_to_xyz;
+  skcms_Matrix3x3 xyz_to_this;
+  other.GetPrimaryMatrix(&other_to_xyz);
+  GetPrimaryMatrix(&this_to_xyz);
+  skcms_Matrix3x3_invert(&this_to_xyz, &xyz_to_this);
+  skcms_Matrix3x3 matrix = skcms_Matrix3x3_concat(&xyz_to_this, &other_to_xyz);
+
+  // Return true iff each primary is in the range [0, 1] after transforming.
+  // Transforming a primary vector by |matrix| always results in a column of
+  // |matrix|. So the multiplication can be skipped, and we can just check if
+  // each value in the matrix is in the range [0, 1].
+  constexpr float epsilon = 0.001f;
+  for (int r = 0; r < 3; r++) {
+    for (int c = 0; c < 3; c++) {
+      if (matrix.vals[r][c] < -epsilon || matrix.vals[r][c] > 1 + epsilon)
+        return false;
+    }
+  }
+  return true;
 }
 
 // static

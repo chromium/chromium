@@ -1793,6 +1793,11 @@ gfx::ColorSpace LayerTreeHostImpl::GetRasterColorSpace(
   if (result.IsHDR() && content_color_usage != gfx::ContentColorUsage::kHDR)
     return gfx::ColorSpace::CreateDisplayP3D65();
 
+  // The raster color space should contain sRGB to avoid artifacts during
+  // rasterization.
+  if (!result.Contains(srgb))
+    return srgb;
+
   return result;
 }
 

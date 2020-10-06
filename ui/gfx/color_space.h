@@ -378,6 +378,9 @@ class COLOR_SPACE_EXPORT ColorSpace {
   // skcms_TransferFunction which is extended to all real values.
   bool HasExtendedSkTransferFn() const;
 
+  // Returns true if each color in |other| can be expressed in this color space.
+  bool Contains(const ColorSpace& other) const;
+
  private:
   // The default bit depth assumed by GetRangeAdjustMatrix().
   static constexpr int kDefaultBitDepth = 8;

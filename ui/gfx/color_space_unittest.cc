@@ -362,5 +362,38 @@ TEST(ColorSpace, LinearHDRWhiteLevel) {
             std::make_tuple(1.f, kCustomSlope, 0.f, 0.f, 0.f, 0.f, 0.f));
 }
 
+TEST(ColorSpace, ExpectationsMatchSRGB) {
+  ColorSpace::PrimaryID primary_ids[] = {
+      ColorSpace::PrimaryID::BT709,
+      ColorSpace::PrimaryID::BT470M,
+      ColorSpace::PrimaryID::BT470BG,
+      ColorSpace::PrimaryID::SMPTE170M,
+      ColorSpace::PrimaryID::SMPTE240M,
+      ColorSpace::PrimaryID::FILM,
+      ColorSpace::PrimaryID::BT2020,
+      ColorSpace::PrimaryID::SMPTEST428_1,
+      ColorSpace::PrimaryID::SMPTEST431_2,
+      ColorSpace::PrimaryID::SMPTEST432_1,
+      ColorSpace::PrimaryID::XYZ_D50,
+      ColorSpace::PrimaryID::ADOBE_RGB,
+      ColorSpace::PrimaryID::APPLE_GENERIC_RGB,
+      ColorSpace::PrimaryID::WIDE_GAMUT_COLOR_SPIN,
+  };
+
+  // Create a custom color space with the sRGB primary matrix.
+  ColorSpace srgb = ColorSpace::CreateSRGB();
+  skcms_Matrix3x3 to_XYZD50;
+  srgb.GetPrimaryMatrix(&to_XYZD50);
+  ColorSpace custom_srgb =
+      ColorSpace::CreateCustom(to_XYZD50, ColorSpace::TransferID::IEC61966_2_1);
+
+  for (auto id : primary_ids) {
+    ColorSpace color_space(id, ColorSpace::TransferID::IEC61966_2_1);
+    // The precomputed results for Contains(sRGB) should match the calculation
+    // performed on a custom color space with sRGB primaries.
+    EXPECT_EQ(color_space.Contains(srgb), color_space.Contains(custom_srgb));
+  }
+}
+
 }  // namespace
 }  // namespace gfx

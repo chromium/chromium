@@ -48,6 +48,18 @@ class LayerTreeHostTilesPixelTest
     target->RequestCopyOfOutput(CreateCopyOutputRequest());
   }
 
+  void WillPrepareTilesOnThread(LayerTreeHostImpl* host_impl) override {
+    // Issue a GL finish before preparing tiles to ensure resources become
+    // available for use in a timely manner. Needed for the one-copy path.
+    viz::RasterContextProvider* context_provider =
+        host_impl->layer_tree_frame_sink()->worker_context_provider();
+    if (!context_provider)
+      return;
+
+    viz::RasterContextProvider::ScopedRasterContextLock lock(context_provider);
+    lock.RasterInterface()->Finish();
+  }
+
   base::FilePath ref_file_;
   std::unique_ptr<SkBitmap> result_bitmap_;
   bool use_partial_raster_ = false;
@@ -130,21 +142,82 @@ class LayerTreeHostTilesTestPartialInvalidation
     }
   }
 
-  void WillPrepareTilesOnThread(LayerTreeHostImpl* host_impl) override {
-    // Issue a GL finish before preparing tiles to ensure resources become
-    // available for use in a timely manner. Needed for the one-copy path.
-    viz::RasterContextProvider* context_provider =
-        host_impl->layer_tree_frame_sink()->worker_context_provider();
-    if (!context_provider)
-      return;
-
-    viz::RasterContextProvider::ScopedRasterContextLock lock(context_provider);
-    lock.RasterInterface()->Finish();
-  }
-
  protected:
   BlueYellowClient client_;
   scoped_refptr<PictureLayer> picture_layer_;
+};
+
+class PrimaryColorClient : public ContentLayerClient {
+ public:
+  explicit PrimaryColorClient(const gfx::Size& size) : size_(size) {}
+
+  gfx::Rect PaintableRegion() override { return gfx::Rect(size_); }
+  scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override {
+    // When painted, the DisplayItemList should produce blocks of red, green,
+    // and blue to test primary color reproduction.
+    auto display_list = base::MakeRefCounted<DisplayItemList>();
+
+    display_list->StartPaint();
+
+    int w = size_.width() / 3;
+    gfx::Rect red_rect(0, 0, w, size_.height());
+    gfx::Rect green_rect(w, 0, w, size_.height());
+    gfx::Rect blue_rect(w * 2, 0, w, size_.height());
+
+    PaintFlags flags;
+    flags.setStyle(PaintFlags::kFill_Style);
+
+    flags.setColor(SK_ColorRED);
+    display_list->push<DrawRectOp>(gfx::RectToSkRect(red_rect), flags);
+    flags.setColor(SK_ColorGREEN);
+    display_list->push<DrawRectOp>(gfx::RectToSkRect(green_rect), flags);
+    flags.setColor(SK_ColorBLUE);
+    display_list->push<DrawRectOp>(gfx::RectToSkRect(blue_rect), flags);
+
+    display_list->EndPaintOfUnpaired(PaintableRegion());
+    display_list->Finalize();
+    return display_list;
+  }
+
+  bool FillsBoundsCompletely() const override { return true; }
+  size_t GetApproximateUnsharedMemoryUsage() const override { return 0; }
+
+ private:
+  gfx::Size size_;
+};
+
+class LayerTreeHostTilesTestRasterColorSpace
+    : public LayerTreeHostTilesPixelTest {
+ public:
+  LayerTreeHostTilesTestRasterColorSpace()
+      : client_(gfx::Size(150, 150)),
+        picture_layer_(PictureLayer::Create(&client_)) {
+    picture_layer_->SetBounds(gfx::Size(150, 150));
+    picture_layer_->SetIsDrawable(true);
+  }
+
+  void SetColorSpace(const gfx::ColorSpace& color_space) {
+    color_space_ = color_space;
+  }
+
+  void WillBeginTest() override {
+    LayerTreeHostTilesPixelTest::WillBeginTest();
+    DCHECK(color_space_.IsValid());
+    layer_tree_host()->SetDisplayColorSpaces(
+        gfx::DisplayColorSpaces(color_space_));
+  }
+
+  void DidCommitAndDrawFrame() override {
+    if (layer_tree_host()->SourceFrameNumber() == 1) {
+      Finish();
+      DoReadback();
+    }
+  }
+
+ protected:
+  PrimaryColorClient client_;
+  scoped_refptr<PictureLayer> picture_layer_;
+  gfx::ColorSpace color_space_;
 };
 
 std::vector<RasterTestConfig> const kTestCases = {
@@ -234,6 +307,49 @@ TEST_P(LayerTreeHostTilesTestPartialInvalidationMultiThread,
 TEST_P(LayerTreeHostTilesTestPartialInvalidationMultiThread, FullRaster) {
   RunPixelTest(picture_layer_,
                base::FilePath(FILE_PATH_LITERAL("blue_yellow_flipped.png")));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         LayerTreeHostTilesTestRasterColorSpace,
+                         ::testing::ValuesIn(kTestCases),
+                         ::testing::PrintToStringParamName());
+
+// These tests verify that no artifacts are introduced when the color space for
+// rasterization doesn't contain the primary colors of sRGB.
+// See crbug.com/1073962 for more details.
+TEST_P(LayerTreeHostTilesTestRasterColorSpace, sRGB) {
+  SetColorSpace(gfx::ColorSpace::CreateSRGB());
+
+  RunPixelTest(picture_layer_,
+               base::FilePath(FILE_PATH_LITERAL("primary_colors.png")));
+}
+
+TEST_P(LayerTreeHostTilesTestRasterColorSpace, GenericRGB) {
+  SetColorSpace(gfx::ColorSpace(gfx::ColorSpace::PrimaryID::APPLE_GENERIC_RGB,
+                                gfx::ColorSpace::TransferID::GAMMA18));
+
+  RunPixelTest(picture_layer_,
+               base::FilePath(FILE_PATH_LITERAL("primary_colors.png")));
+}
+
+TEST_P(LayerTreeHostTilesTestRasterColorSpace, CustomColorSpace) {
+  // Create a color space with a different blue point.
+  SkColorSpacePrimaries primaries;
+  skcms_Matrix3x3 to_XYZD50;
+  primaries.fRX = 0.640f;
+  primaries.fRY = 0.330f;
+  primaries.fGX = 0.300f;
+  primaries.fGY = 0.600f;
+  primaries.fBX = 0.130f;
+  primaries.fBY = 0.080f;
+  primaries.fWX = 0.3127f;
+  primaries.fWY = 0.3290f;
+  primaries.toXYZD50(&to_XYZD50);
+  SetColorSpace(gfx::ColorSpace::CreateCustom(
+      to_XYZD50, gfx::ColorSpace::TransferID::IEC61966_2_1));
+
+  RunPixelTest(picture_layer_,
+               base::FilePath(FILE_PATH_LITERAL("primary_colors.png")));
 }
 
 // This test doesn't work on Vulkan because on our hardware we can't render to

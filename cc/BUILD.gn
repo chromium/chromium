@@ -813,6 +813,7 @@ cc_test("cc_unittests") {
     "//media",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
+    "//skia:skcms",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/events:events_base",
