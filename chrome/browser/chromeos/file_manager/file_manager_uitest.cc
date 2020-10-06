@@ -67,7 +67,8 @@ IN_PROC_BROWSER_TEST_F(FileManagerUITest, CrostiniMount) {
   RunTest("crostiniMount");
 }
 
-IN_PROC_BROWSER_TEST_F(FileManagerUITest, CrostiniShare) {
+// TODO(crbug.com/1135410) Renable this once it won't timeout.
+IN_PROC_BROWSER_TEST_F(FileManagerUITest, DISABLED_CrostiniShare) {
   RunTest("crostiniShare");
 }
 
@@ -83,7 +84,8 @@ IN_PROC_BROWSER_TEST_F(FileManagerUITest, PluginVm) {
   RunTest("pluginVm");
 }
 
-IN_PROC_BROWSER_TEST_F(FileManagerUITest, PluginVmShare) {
+// TODO(crbug.com/1135410) Renable this once it won't timeout.
+IN_PROC_BROWSER_TEST_F(FileManagerUITest, DISABLED_PluginVmShare) {
   RunTest("pluginVmShare");
 }
 
