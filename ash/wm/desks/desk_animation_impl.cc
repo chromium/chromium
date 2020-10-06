@@ -145,7 +145,8 @@ bool DeskActivationAnimation::UpdateSwipeAnimation(float scroll_delta_x) {
   }
 
   // Activate the target desk and take a screenshot.
-  DCHECK_EQ(pending_animators.size(), desk_switch_animators_.size());
+  // TODO(crbug.com/1134390): Convert back to DCHECK when the issue is fixed.
+  CHECK_EQ(pending_animators.size(), desk_switch_animators_.size());
   ending_desk_index_ = desk_switch_animators_[0]->ending_desk_index();
   PrepareDeskForScreenshot(ending_desk_index_);
   for (auto* animator : pending_animators)

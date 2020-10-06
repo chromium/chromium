@@ -320,6 +320,10 @@ bool RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(float scroll_delta_x) {
 }
 
 void RootWindowDeskSwitchAnimator::EndSwipeAnimation() {
+  // TODO(crbug.com/1134390): Convert back to DCHECK when the issue is fixed.
+  CHECK(starting_desk_screenshot_taken_);
+  CHECK(ending_desk_screenshot_taken_);
+
   ending_desk_index_ = GetIndexOfMostVisibleDeskScreenshot();
   StartAnimation();
 }
@@ -577,8 +581,9 @@ int RootWindowDeskSwitchAnimator::GetIndexOfMostVisibleDeskScreenshot() const {
     }
   }
 
-  DCHECK_GE(index, 0);
-  DCHECK_LT(index, int{DesksController::Get()->desks().size()});
+  // TODO(crbug.com/1134390): Convert back to DCHECK when the issue is fixed.
+  CHECK_GE(index, 0);
+  CHECK_LT(index, int{DesksController::Get()->desks().size()});
   return index;
 }
 
