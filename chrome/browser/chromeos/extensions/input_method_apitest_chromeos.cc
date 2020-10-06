@@ -63,8 +63,7 @@ class TestListener : public content::NotificationObserver {
       // background.
       InputMethodManager* manager = InputMethodManager::Get();
       manager->GetInputMethodUtil()->InitXkbInputMethodsForTesting(
-          *chromeos::input_method::InputMethodAllowlist()
-               .GetSupportedInputMethods());
+          *chromeos::input_method::allowlist::GetSupportedInputMethods());
 
       std::vector<std::string> keyboard_layouts;
       keyboard_layouts.push_back(

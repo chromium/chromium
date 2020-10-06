@@ -48,7 +48,7 @@ class TestableInputMethodUtil : public InputMethodUtil {
 class InputMethodUtilTest : public testing::Test {
  public:
   InputMethodUtilTest()
-      : util_(&delegate_, allowlist_.GetSupportedInputMethods()) {
+      : util_(&delegate_, allowlist::GetSupportedInputMethods()) {
     delegate_.set_get_localized_string_callback(
         base::BindRepeating(&l10n_util::GetStringUTF16));
     delegate_.set_get_display_language_name_callback(
@@ -85,7 +85,7 @@ class InputMethodUtilTest : public testing::Test {
                                      GURL(""));
     input_methods.push_back(zhuyin_ime);
 
-    util_.InitXkbInputMethodsForTesting(*allowlist_.GetSupportedInputMethods());
+    util_.InitXkbInputMethodsForTesting(*allowlist::GetSupportedInputMethods());
     util_.AppendInputMethods(input_methods);
   }
 
@@ -117,7 +117,6 @@ class InputMethodUtilTest : public testing::Test {
   }
 
   FakeInputMethodDelegate delegate_;
-  InputMethodAllowlist allowlist_;
   TestableInputMethodUtil util_;
 };
 

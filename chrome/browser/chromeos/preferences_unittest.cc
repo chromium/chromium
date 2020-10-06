@@ -128,7 +128,7 @@ class MyMockInputMethodManager : public MockInputMethodManagerImpl {
 
   std::unique_ptr<InputMethodDescriptors> GetSupportedInputMethods()
       const override {
-    return allowlist_.GetSupportedInputMethods();
+    return allowlist::GetSupportedInputMethods();
   }
 
   std::string last_input_method_id_;
@@ -136,7 +136,6 @@ class MyMockInputMethodManager : public MockInputMethodManagerImpl {
  private:
   StringPrefMember* previous_;
   StringPrefMember* current_;
-  InputMethodAllowlist allowlist_;
 };
 
 }  // anonymous namespace

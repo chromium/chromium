@@ -17,24 +17,11 @@
 
 namespace chromeos {
 namespace input_method {
+namespace allowlist {
 
 const char kLanguageDelimiter[] = ",";
 
-InputMethodAllowlist::InputMethodAllowlist() {
-  for (const auto& input_method : kInputMethods) {
-    supported_input_methods_.insert(input_method.input_method_id);
-  }
-}
-
-InputMethodAllowlist::~InputMethodAllowlist() = default;
-
-bool InputMethodAllowlist::InputMethodIdIsAllowlisted(
-    const std::string& input_method_id) const {
-  return supported_input_methods_.count(input_method_id) > 0;
-}
-
-std::unique_ptr<InputMethodDescriptors>
-InputMethodAllowlist::GetSupportedInputMethods() const {
+std::unique_ptr<InputMethodDescriptors> GetSupportedInputMethods() {
   std::unique_ptr<InputMethodDescriptors> input_methods(
       new InputMethodDescriptors);
   input_methods->reserve(base::size(kInputMethods));
@@ -59,5 +46,6 @@ InputMethodAllowlist::GetSupportedInputMethods() const {
   return input_methods;
 }
 
+}  // namespace allowlist
 }  // namespace input_method
 }  // namespace chromeos
