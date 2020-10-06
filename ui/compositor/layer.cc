@@ -281,6 +281,9 @@ std::unique_ptr<Layer> Layer::Clone() const {
   clone->SetIsFastRoundedCorner(is_fast_rounded_corner());
   clone->SetName(name_);
 
+  // the |damaged_region_| will be sent to cc later in SendDamagedRects().
+  clone->damaged_region_ = damaged_region_;
+
   return clone;
 }
 
