@@ -1717,15 +1717,6 @@ struct FuzzTraits<ppapi::proxy::SerializedFontDescription> {
 };
 
 template <>
-struct FuzzTraits<ppapi::proxy::SerializedTrueTypeFontDesc> {
-  static bool Fuzz(ppapi::proxy::SerializedTrueTypeFontDesc* p,
-                       Fuzzer* fuzzer) {
-    // TODO(mbarbella): This should actually do something.
-    return true;
-  }
-};
-
-template <>
 struct FuzzTraits<ppapi::proxy::SerializedVar> {
   static bool Fuzz(ppapi::proxy::SerializedVar* p, Fuzzer* fuzzer) {
     // TODO(mbarbella): This should actually do something.

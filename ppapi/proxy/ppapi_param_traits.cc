@@ -435,37 +435,6 @@ void ParamTraits<ppapi::proxy::SerializedFontDescription>::Log(
 }
 #endif  // !defined(OS_NACL) && !defined(NACL_WIN64)
 
-// ppapi::proxy::SerializedTrueTypeFontDesc ------------------------------------
-
-// static
-void ParamTraits<ppapi::proxy::SerializedTrueTypeFontDesc>::Write(
-    base::Pickle* m,
-    const param_type& p) {
-  WriteParam(m, p.family);
-  WriteParam(m, p.generic_family);
-  WriteParam(m, p.style);
-  WriteParam(m, p.weight);
-  WriteParam(m, p.width);
-  WriteParam(m, p.charset);
-}
-
-// static
-bool ParamTraits<ppapi::proxy::SerializedTrueTypeFontDesc>::Read(
-    const base::Pickle* m,
-    base::PickleIterator* iter,
-    param_type* r) {
-  return ReadParam(m, iter, &r->family) &&
-         ReadParam(m, iter, &r->generic_family) &&
-         ReadParam(m, iter, &r->style) && ReadParam(m, iter, &r->weight) &&
-         ReadParam(m, iter, &r->width) && ReadParam(m, iter, &r->charset);
-}
-
-// static
-void ParamTraits<ppapi::proxy::SerializedTrueTypeFontDesc>::Log(
-    const param_type& p,
-    std::string* l) {
-}
-
 #if !defined(OS_NACL) && !defined(NACL_WIN64)
 // ppapi::PepperFilePath -------------------------------------------------------
 

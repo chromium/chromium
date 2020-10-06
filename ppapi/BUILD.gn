@@ -110,8 +110,6 @@ test_common_source_files = [
   "tests/test_test_internals.h",
   "tests/test_trace_event.cc",
   "tests/test_trace_event.h",
-  "tests/test_truetype_font.cc",
-  "tests/test_truetype_font.h",
   "tests/test_udp_socket.cc",
   "tests/test_udp_socket.h",
   "tests/test_udp_socket_private.cc",

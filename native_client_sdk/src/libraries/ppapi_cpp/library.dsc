@@ -68,7 +68,6 @@
         'memory_dev.cc',
         'printing_dev.cc',
         'scriptable_object_deprecated.cc',
-        'truetype_font_dev.cc',
         'view_dev.cc',
 
         # ppapi/utility/graphics
@@ -155,7 +154,6 @@
         'memory_dev.h',
         'printing_dev.h',
         'scriptable_object_deprecated.h',
-        'truetype_font_dev.h',
         'video_capture_client_dev.h',
         'video_decoder_client_dev.h',
         'view_dev.h',

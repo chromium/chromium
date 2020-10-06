@@ -22,7 +22,7 @@ PP_Resource GetFontFileWithFallback(
     const PP_BrowserFont_Trusted_Description* description,
     PP_PrivateFontCharset charset) {
   // TODO(raymes): Eventually we should replace the use of this function with
-  // either PPB_Flash_Font_File or PPB_TrueType_Font directly in the PDF code.
+  // PPB_Flash_Font_File directly in the PDF code.
   // For now just call into PPB_Flash_Font_File which has the exact same API.
   EnterResourceCreation enter(instance);
   if (enter.failed())
@@ -35,7 +35,7 @@ bool GetFontTableForPrivateFontFile(PP_Resource font_file,
                                     void* output,
                                     uint32_t* output_length) {
   // TODO(raymes): Eventually we should replace the use of this function with
-  // either PPB_Flash_Font_File or PPB_TrueType_Font directly in the PDF code.
+  // PPB_Flash_Font_File directly in the PDF code.
   // For now just call into PPB_Flash_Font_File which has the exact same API.
   EnterResource<PPB_Flash_FontFile_API> enter(font_file, true);
   if (enter.failed())

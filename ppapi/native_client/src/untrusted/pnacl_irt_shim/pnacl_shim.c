@@ -13,7 +13,6 @@
 #include "ppapi/c/dev/ppb_file_chooser_dev.h"
 #include "ppapi/c/dev/ppb_ime_input_event_dev.h"
 #include "ppapi/c/dev/ppb_printing_dev.h"
-#include "ppapi/c/dev/ppb_truetype_font_dev.h"
 #include "ppapi/c/dev/ppb_url_util_dev.h"
 #include "ppapi/c/dev/ppb_video_capture_dev.h"
 #include "ppapi/c/dev/ppb_video_decoder_dev.h"
@@ -153,7 +152,6 @@ static struct __PnaclWrapperInfo Pnacl_WrapperInfo_PPB_FileChooser_Dev_0_6;
 static struct __PnaclWrapperInfo Pnacl_WrapperInfo_PPB_IMEInputEvent_Dev_0_1;
 static struct __PnaclWrapperInfo Pnacl_WrapperInfo_PPB_IMEInputEvent_Dev_0_2;
 static struct __PnaclWrapperInfo Pnacl_WrapperInfo_PPB_Printing_Dev_0_7;
-static struct __PnaclWrapperInfo Pnacl_WrapperInfo_PPB_TrueTypeFont_Dev_0_1;
 static struct __PnaclWrapperInfo Pnacl_WrapperInfo_PPB_URLUtil_Dev_0_6;
 static struct __PnaclWrapperInfo Pnacl_WrapperInfo_PPB_URLUtil_Dev_0_7;
 static struct __PnaclWrapperInfo Pnacl_WrapperInfo_PPB_VideoCapture_Dev_0_3;
@@ -2857,45 +2855,6 @@ static int32_t Pnacl_M23_PPB_Printing_Dev_GetDefaultPrintSettings(PP_Resource re
 
 /* Not generating wrapper methods for PPB_Trace_Event_Dev_0_2 */
 
-/* Begin wrapper methods for PPB_TrueTypeFont_Dev_0_1 */
-
-static int32_t Pnacl_M26_PPB_TrueTypeFont_Dev_GetFontFamilies(PP_Instance instance, struct PP_ArrayOutput* output, struct PP_CompletionCallback* callback) {
-  const struct PPB_TrueTypeFont_Dev_0_1 *iface = Pnacl_WrapperInfo_PPB_TrueTypeFont_Dev_0_1.real_iface;
-  return iface->GetFontFamilies(instance, *output, *callback);
-}
-
-static int32_t Pnacl_M26_PPB_TrueTypeFont_Dev_GetFontsInFamily(PP_Instance instance, struct PP_Var* family, struct PP_ArrayOutput* output, struct PP_CompletionCallback* callback) {
-  const struct PPB_TrueTypeFont_Dev_0_1 *iface = Pnacl_WrapperInfo_PPB_TrueTypeFont_Dev_0_1.real_iface;
-  return iface->GetFontsInFamily(instance, *family, *output, *callback);
-}
-
-static PP_Resource Pnacl_M26_PPB_TrueTypeFont_Dev_Create(PP_Instance instance, const struct PP_TrueTypeFontDesc_Dev* desc) {
-  const struct PPB_TrueTypeFont_Dev_0_1 *iface = Pnacl_WrapperInfo_PPB_TrueTypeFont_Dev_0_1.real_iface;
-  return iface->Create(instance, desc);
-}
-
-static PP_Bool Pnacl_M26_PPB_TrueTypeFont_Dev_IsTrueTypeFont(PP_Resource resource) {
-  const struct PPB_TrueTypeFont_Dev_0_1 *iface = Pnacl_WrapperInfo_PPB_TrueTypeFont_Dev_0_1.real_iface;
-  return iface->IsTrueTypeFont(resource);
-}
-
-static int32_t Pnacl_M26_PPB_TrueTypeFont_Dev_Describe(PP_Resource font, struct PP_TrueTypeFontDesc_Dev* desc, struct PP_CompletionCallback* callback) {
-  const struct PPB_TrueTypeFont_Dev_0_1 *iface = Pnacl_WrapperInfo_PPB_TrueTypeFont_Dev_0_1.real_iface;
-  return iface->Describe(font, desc, *callback);
-}
-
-static int32_t Pnacl_M26_PPB_TrueTypeFont_Dev_GetTableTags(PP_Resource font, struct PP_ArrayOutput* output, struct PP_CompletionCallback* callback) {
-  const struct PPB_TrueTypeFont_Dev_0_1 *iface = Pnacl_WrapperInfo_PPB_TrueTypeFont_Dev_0_1.real_iface;
-  return iface->GetTableTags(font, *output, *callback);
-}
-
-static int32_t Pnacl_M26_PPB_TrueTypeFont_Dev_GetTable(PP_Resource font, uint32_t table, int32_t offset, int32_t max_data_length, struct PP_ArrayOutput* output, struct PP_CompletionCallback* callback) {
-  const struct PPB_TrueTypeFont_Dev_0_1 *iface = Pnacl_WrapperInfo_PPB_TrueTypeFont_Dev_0_1.real_iface;
-  return iface->GetTable(font, table, offset, max_data_length, *output, *callback);
-}
-
-/* End wrapper methods for PPB_TrueTypeFont_Dev_0_1 */
-
 /* Begin wrapper methods for PPB_URLUtil_Dev_0_6 */
 
 static void Pnacl_M17_PPB_URLUtil_Dev_Canonicalize(struct PP_Var* _struct_result, struct PP_Var* url, struct PP_URLComponents_Dev* components) {
@@ -5087,16 +5046,6 @@ static const struct PPB_Printing_Dev_0_7 Pnacl_Wrappers_PPB_Printing_Dev_0_7 = {
 
 /* Not generating wrapper interface for PPB_Trace_Event_Dev_0_2 */
 
-static const struct PPB_TrueTypeFont_Dev_0_1 Pnacl_Wrappers_PPB_TrueTypeFont_Dev_0_1 = {
-    .GetFontFamilies = (int32_t (*)(PP_Instance instance, struct PP_ArrayOutput output, struct PP_CompletionCallback callback))&Pnacl_M26_PPB_TrueTypeFont_Dev_GetFontFamilies,
-    .GetFontsInFamily = (int32_t (*)(PP_Instance instance, struct PP_Var family, struct PP_ArrayOutput output, struct PP_CompletionCallback callback))&Pnacl_M26_PPB_TrueTypeFont_Dev_GetFontsInFamily,
-    .Create = (PP_Resource (*)(PP_Instance instance, const struct PP_TrueTypeFontDesc_Dev* desc))&Pnacl_M26_PPB_TrueTypeFont_Dev_Create,
-    .IsTrueTypeFont = (PP_Bool (*)(PP_Resource resource))&Pnacl_M26_PPB_TrueTypeFont_Dev_IsTrueTypeFont,
-    .Describe = (int32_t (*)(PP_Resource font, struct PP_TrueTypeFontDesc_Dev* desc, struct PP_CompletionCallback callback))&Pnacl_M26_PPB_TrueTypeFont_Dev_Describe,
-    .GetTableTags = (int32_t (*)(PP_Resource font, struct PP_ArrayOutput output, struct PP_CompletionCallback callback))&Pnacl_M26_PPB_TrueTypeFont_Dev_GetTableTags,
-    .GetTable = (int32_t (*)(PP_Resource font, uint32_t table, int32_t offset, int32_t max_data_length, struct PP_ArrayOutput output, struct PP_CompletionCallback callback))&Pnacl_M26_PPB_TrueTypeFont_Dev_GetTable
-};
-
 static const struct PPB_URLUtil_Dev_0_6 Pnacl_Wrappers_PPB_URLUtil_Dev_0_6 = {
     .Canonicalize = (struct PP_Var (*)(struct PP_Var url, struct PP_URLComponents_Dev* components))&Pnacl_M17_PPB_URLUtil_Dev_Canonicalize,
     .ResolveRelativeToURL = (struct PP_Var (*)(struct PP_Var base_url, struct PP_Var relative_string, struct PP_URLComponents_Dev* components))&Pnacl_M17_PPB_URLUtil_Dev_ResolveRelativeToURL,
@@ -5894,12 +5843,6 @@ static struct __PnaclWrapperInfo Pnacl_WrapperInfo_PPB_Printing_Dev_0_7 = {
   .real_iface = NULL
 };
 
-static struct __PnaclWrapperInfo Pnacl_WrapperInfo_PPB_TrueTypeFont_Dev_0_1 = {
-  .iface_macro = PPB_TRUETYPEFONT_DEV_INTERFACE_0_1,
-  .wrapped_iface = (const void *) &Pnacl_Wrappers_PPB_TrueTypeFont_Dev_0_1,
-  .real_iface = NULL
-};
-
 static struct __PnaclWrapperInfo Pnacl_WrapperInfo_PPB_URLUtil_Dev_0_6 = {
   .iface_macro = PPB_URLUTIL_DEV_INTERFACE_0_6,
   .wrapped_iface = (const void *) &Pnacl_Wrappers_PPB_URLUtil_Dev_0_6,
@@ -6183,7 +6126,6 @@ static struct __PnaclWrapperInfo *s_ppb_wrappers[] = {
   &Pnacl_WrapperInfo_PPB_IMEInputEvent_Dev_0_1,
   &Pnacl_WrapperInfo_PPB_IMEInputEvent_Dev_0_2,
   &Pnacl_WrapperInfo_PPB_Printing_Dev_0_7,
-  &Pnacl_WrapperInfo_PPB_TrueTypeFont_Dev_0_1,
   &Pnacl_WrapperInfo_PPB_URLUtil_Dev_0_6,
   &Pnacl_WrapperInfo_PPB_URLUtil_Dev_0_7,
   &Pnacl_WrapperInfo_PPB_VideoCapture_Dev_0_3,

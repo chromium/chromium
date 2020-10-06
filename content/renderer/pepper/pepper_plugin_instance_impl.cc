@@ -2561,7 +2561,6 @@ ppapi::Resource* PepperPluginInstanceImpl::GetSingletonResource(
     case ppapi::ISOLATED_FILESYSTEM_SINGLETON_ID:
     case ppapi::NETWORK_PROXY_SINGLETON_ID:
     case ppapi::PDF_SINGLETON_ID:
-    case ppapi::TRUETYPE_FONT_SINGLETON_ID:
       NOTIMPLEMENTED();
       return nullptr;
     case ppapi::GAMEPAD_SINGLETON_ID:

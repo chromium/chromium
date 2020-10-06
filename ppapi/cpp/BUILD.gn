@@ -179,8 +179,6 @@ source_set("objects") {
     "dev/printing_dev.h",
     "dev/text_input_dev.cc",
     "dev/text_input_dev.h",
-    "dev/truetype_font_dev.cc",
-    "dev/truetype_font_dev.h",
     "dev/url_util_dev.cc",
     "dev/url_util_dev.h",
     "dev/video_capture_client_dev.cc",

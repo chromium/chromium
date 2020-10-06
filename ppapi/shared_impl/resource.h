@@ -66,8 +66,6 @@
   F(PPB_PDF_API)                        \
   F(PPB_Printing_API)                   \
   F(PPB_Scrollbar_API)                  \
-  F(PPB_TrueTypeFont_API)               \
-  F(PPB_TrueTypeFont_Singleton_API)     \
   F(PPB_TCPServerSocket_Private_API)    \
   F(PPB_TCPSocket_API)                  \
   F(PPB_TCPSocket_Private_API)          \

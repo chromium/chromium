@@ -41,7 +41,6 @@
 #include "ppapi/proxy/tcp_server_socket_private_resource.h"
 #include "ppapi/proxy/tcp_socket_private_resource.h"
 #include "ppapi/proxy/tcp_socket_resource.h"
-#include "ppapi/proxy/truetype_font_resource.h"
 #include "ppapi/proxy/udp_socket_private_resource.h"
 #include "ppapi/proxy/udp_socket_resource.h"
 #include "ppapi/proxy/url_loader_resource.h"
@@ -157,14 +156,6 @@ PP_Resource ResourceCreationProxy::CreateTouchInputEvent(
     uint32_t modifiers) {
   return PPB_InputEvent_Shared::CreateTouchInputEvent(
       OBJECT_IS_PROXY, instance, type, time_stamp, modifiers);
-}
-
-PP_Resource ResourceCreationProxy::CreateTrueTypeFont(
-    PP_Instance instance,
-    const PP_TrueTypeFontDesc_Dev* desc) {
-  return (new TrueTypeFontResource(GetConnection(),
-                                   instance, *desc))->GetReference();
-
 }
 
 PP_Resource ResourceCreationProxy::CreateURLLoader(PP_Instance instance) {

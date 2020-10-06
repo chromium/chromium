@@ -34,7 +34,6 @@ struct PPBFlash_DrawGlyphs_Params;
 struct PPBURLLoader_UpdateProgress_Params;
 struct SerializedDirEntry;
 struct SerializedFontDescription;
-struct SerializedTrueTypeFontDesc;
 class SerializedFlashMenu;
 class SerializedHandle;
 class SerializedVar;
@@ -99,17 +98,6 @@ struct PPAPI_PROXY_EXPORT ParamTraits<ppapi::proxy::SerializedDirEntry> {
 template<>
 struct PPAPI_PROXY_EXPORT ParamTraits<ppapi::proxy::SerializedFontDescription> {
   typedef ppapi::proxy::SerializedFontDescription param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r);
-  static void Log(const param_type& p, std::string* l);
-};
-
-template<>
-struct PPAPI_PROXY_EXPORT
-    ParamTraits<ppapi::proxy::SerializedTrueTypeFontDesc> {
-  typedef ppapi::proxy::SerializedTrueTypeFontDesc param_type;
   static void Write(base::Pickle* m, const param_type& p);
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,

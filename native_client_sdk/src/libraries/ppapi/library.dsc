@@ -103,7 +103,6 @@
         'ppb_opengles2ext_dev.h',
         'ppb_printing_dev.h',
         'ppb_trace_event_dev.h',
-        'ppb_truetype_font_dev.h',
         'ppb_var_deprecated.h',
         'ppb_view_dev.h',
         'pp_cursor_type_dev.h',

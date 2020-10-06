@@ -35,7 +35,6 @@
 #include "ipc/ipc_platform_file.h"
 #include "ppapi/c/dev/pp_video_capture_dev.h"
 #include "ppapi/c/dev/pp_video_dev.h"
-#include "ppapi/c/dev/ppb_truetype_font_dev.h"
 #include "ppapi/c/dev/ppb_url_util_dev.h"
 #include "ppapi/c/dev/ppp_printing_dev.h"
 #include "ppapi/c/pp_bool.h"
@@ -131,14 +130,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(PP_PrivateFontCharset, PP_PRIVATEFONTCHARSET_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_TCPSocket_Option,
                           PP_TCPSOCKET_OPTION_RECV_BUFFER_SIZE)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_TextInput_Type, PP_TEXTINPUT_TYPE_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_TrueTypeFontFamily_Dev, PP_TRUETYPEFONTFAMILY_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_TrueTypeFontStyle_Dev, PP_TRUETYPEFONTSTYLE_LAST)
-IPC_ENUM_TRAITS_MIN_MAX_VALUE(PP_TrueTypeFontWeight_Dev,
-                              PP_TRUETYPEFONTWEIGHT_FIRST,
-                              PP_TRUETYPEFONTWEIGHT_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_TrueTypeFontWidth_Dev, PP_TRUETYPEFONTWIDTH_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_TrueTypeFontCharset_Dev,
-                          PP_TRUETYPEFONTCHARSET_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_UDPSocket_Option,
                           PP_UDPSOCKET_OPTION_MULTICAST_TTL)
 IPC_ENUM_TRAITS_MIN_MAX_VALUE(PP_VideoDecodeError_Dev,
@@ -1781,32 +1772,6 @@ IPC_MESSAGE_CONTROL1(PpapiHostMsg_NetworkProxy_GetProxyForURL,
 // Reply message for GetProxyForURL containing the proxy server.
 IPC_MESSAGE_CONTROL1(PpapiPluginMsg_NetworkProxy_GetProxyForURLReply,
                      std::string /* proxy */)
-
-// TrueTypeFont.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_TrueTypeFontSingleton_Create)
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_TrueTypeFontSingleton_GetFontFamilies)
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_TrueTypeFontSingleton_GetFontFamiliesReply,
-                     std::vector<std::string> /* font_families */)
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_TrueTypeFontSingleton_GetFontsInFamily,
-                     std::string /* family */)
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_TrueTypeFontSingleton_GetFontsInFamilyReply,
-                     std::vector<ppapi::proxy::SerializedTrueTypeFontDesc>
-                         /* fonts */)
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_TrueTypeFont_Create,
-                     ppapi::proxy::SerializedTrueTypeFontDesc /* desc */)
-// Unsolicited reply to return the actual font's desc to the plugin.
-IPC_MESSAGE_CONTROL2(PpapiPluginMsg_TrueTypeFont_CreateReply,
-                     ppapi::proxy::SerializedTrueTypeFontDesc /* desc */,
-                     int32_t /* result */)
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_TrueTypeFont_GetTableTags)
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_TrueTypeFont_GetTableTagsReply,
-                     std::vector<uint32_t> /* tags */)
-IPC_MESSAGE_CONTROL3(PpapiHostMsg_TrueTypeFont_GetTable,
-                     uint32_t /* table */,
-                     int32_t /* offset */,
-                     int32_t /* max_data_length */)
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_TrueTypeFont_GetTableReply,
-                     std::string /* data */)
 
 // Host Resolver ---------------------------------------------------------------
 // Creates a PPB_HostResolver resource.

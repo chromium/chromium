@@ -82,9 +82,6 @@ class ResourceCreationProxy : public InterfaceProxy,
       PP_InputEvent_Type type,
       PP_TimeTicks time_stamp,
       uint32_t modifiers) override;
-  PP_Resource CreateTrueTypeFont(
-      PP_Instance instance,
-      const PP_TrueTypeFontDesc_Dev* desc) override;
   PP_Resource CreateURLLoader(PP_Instance instance) override;
   PP_Resource CreateURLRequestInfo(PP_Instance instance) override;
   PP_Resource CreateWheelInputEvent(

@@ -2350,17 +2350,6 @@ source_set("browser") {
       "renderer_host/pepper/pepper_tcp_server_socket_message_filter.h",
       "renderer_host/pepper/pepper_tcp_socket_message_filter.cc",
       "renderer_host/pepper/pepper_tcp_socket_message_filter.h",
-      "renderer_host/pepper/pepper_truetype_font.h",
-      "renderer_host/pepper/pepper_truetype_font_host.cc",
-      "renderer_host/pepper/pepper_truetype_font_host.h",
-      "renderer_host/pepper/pepper_truetype_font_linux.cc",
-      "renderer_host/pepper/pepper_truetype_font_list.h",
-      "renderer_host/pepper/pepper_truetype_font_list_host.cc",
-      "renderer_host/pepper/pepper_truetype_font_list_host.h",
-      "renderer_host/pepper/pepper_truetype_font_list_mac.mm",
-      "renderer_host/pepper/pepper_truetype_font_list_win.cc",
-      "renderer_host/pepper/pepper_truetype_font_mac.mm",
-      "renderer_host/pepper/pepper_truetype_font_win.cc",
       "renderer_host/pepper/pepper_udp_socket_message_filter.cc",
       "renderer_host/pepper/pepper_udp_socket_message_filter.h",
       "renderer_host/pepper/pepper_vpn_provider_message_filter_chromeos.cc",
@@ -2376,20 +2365,6 @@ source_set("browser") {
       "//ppapi/proxy:ipc",
       "//ppapi/shared_impl",
     ]
-
-    # TODO(1119772): this makes both use_x11 and use_ozone builds for is_linux use
-    # pangocairo so that PPAPINaClNewlibTest.TrueTypeFont,
-    # PPAPINaClPNaClNonSfiTest.TrueTypeFont, and OutOfProcessPPAPITest.TrueTypeFont
-    # tests continue to run normally on Linux. This also fixes these tests for
-    # Ozone/Linux, but requires to use pangocairo. We probably want to continue
-    # using pango on Linux and switch to something else for other systems that
-    # use Ozone.
-    if (use_ozone && (!is_linux || !use_pangocairo)) {
-      sources += [ "renderer_host/pepper/pepper_truetype_font_list_ozone.cc" ]
-    } else if (use_pangocairo) {
-      sources += [ "renderer_host/pepper/pepper_truetype_font_list_pango.cc" ]
-    }
-
     if (is_linux || is_chromeos) {
       deps += [ "//components/services/font:ppapi_fontconfig_matching" ]
     }

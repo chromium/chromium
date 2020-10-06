@@ -2215,14 +2215,6 @@ TEST_PPAPI_NACL(MouseCursor)
 
 TEST_PPAPI_NACL(NetworkProxy)
 
-// TODO(crbug.com/619765): get working on CrOS build.
-#if defined(OS_CHROMEOS)
-#define MAYBE_TrueTypeFont DISABLED_TrueTypeFont
-#else
-#define MAYBE_TrueTypeFont TrueTypeFont
-#endif
-TEST_PPAPI_NACL(MAYBE_TrueTypeFont)
-
 // TODO(crbug.com/602875), TODO(crbug.com/602876) Flaky on Win and CrOS.
 #if defined(OS_CHROMEOS) || defined(OS_WIN)
 #define MAYBE_VideoDecoder DISABLED_VideoDecoder
