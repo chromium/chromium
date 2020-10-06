@@ -84,7 +84,6 @@
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
-#include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -1542,10 +1541,10 @@ bool Browser::ShouldShowStaleContentOnEviction(content::WebContents* source) {
 bool Browser::IsFrameLowPriority(
     const content::WebContents* web_contents,
     const content::RenderFrameHost* render_frame_host) {
-  const auto* client =
-      ChromeSubresourceFilterClient::FromWebContents(web_contents);
-  return client &&
-         client->GetThrottleManager()->IsFrameTaggedAsAd(render_frame_host);
+  const auto* throttle_manager = subresource_filter::
+      ContentSubresourceFilterThrottleManager::FromWebContents(web_contents);
+  return throttle_manager &&
+         throttle_manager->IsFrameTaggedAsAd(render_frame_host);
 }
 
 void Browser::MediaWatchTimeChanged(

@@ -15,6 +15,7 @@
 #include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "base/stl_util.h"
+#include "base/supports_user_data.h"
 #include "components/subresource_filter/content/browser/subframe_navigation_filtering_throttle.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
@@ -42,19 +43,33 @@ class SubresourceFilterClient;
 // within a given WebContents. It contains a mapping of all activated
 // RenderFrameHosts, along with their associated DocumentSubresourceFilters.
 //
-// The class is designed to be used by a SubresourceFilterClient instance that
-// shares lifetime with this class (aka the typical lifetime of a
-// WebContentsObserver). The client will be notified of the first disallowed
-// subresource load for a top level navgation, and has veto power for frame
-// activation.
+// The class is designed to be attached to a WebContents instance by an embedder
+// via CreateForWebContents(), with the embedder passing a
+// SubresourceFilterClient instance customized for that embedder. The client
+// will be notified of the first disallowed subresource load for a top level
+// navgation, and has veto power for frame activation.
 class ContentSubresourceFilterThrottleManager
-    : public content::WebContentsObserver,
+    : public base::SupportsUserData::Data,
+      public content::WebContentsObserver,
       public mojom::SubresourceFilterHost,
       public SubresourceFilterObserver,
       public SubframeNavigationFilteringThrottle::Delegate {
  public:
+  static const char
+      kContentSubresourceFilterThrottleManagerWebContentsUserDataKey[];
+
+  static void CreateForWebContents(
+      content::WebContents* web_contents,
+      std::unique_ptr<SubresourceFilterClient> client,
+      VerifiedRulesetDealer::Handle* dealer_handle);
+
+  static ContentSubresourceFilterThrottleManager* FromWebContents(
+      content::WebContents* web_contents);
+  static const ContentSubresourceFilterThrottleManager* FromWebContents(
+      const content::WebContents* web_contents);
+
   ContentSubresourceFilterThrottleManager(
-      SubresourceFilterClient* client,
+      std::unique_ptr<SubresourceFilterClient> client,
       VerifiedRulesetDealer::Handle* dealer_handle,
       content::WebContents* web_contents);
   ~ContentSubresourceFilterThrottleManager() override;
@@ -73,6 +88,8 @@ class ContentSubresourceFilterThrottleManager
       std::vector<std::unique_ptr<content::NavigationThrottle>>* throttles);
 
   PageLoadStatistics* page_load_statistics() const { return statistics_.get(); }
+
+  SubresourceFilterClient* client() { return client_.get(); }
 
   VerifiedRuleset::Handle* ruleset_handle_for_testing() {
     return ruleset_handle_.get();
@@ -212,9 +229,10 @@ class ContentSubresourceFilterThrottleManager
   // should only be called at most once per main frame load.
   bool current_committed_load_has_notified_disallowed_load_ = false;
 
-  // These members outlive this class.
+  // This member outlives this class.
   VerifiedRulesetDealer::Handle* dealer_handle_;
-  SubresourceFilterClient* client_;
+
+  std::unique_ptr<SubresourceFilterClient> client_;
 
   base::WeakPtrFactory<ContentSubresourceFilterThrottleManager>
       weak_ptr_factory_{this};

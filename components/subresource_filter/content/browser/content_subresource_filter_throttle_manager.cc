@@ -38,15 +38,51 @@
 
 namespace subresource_filter {
 
+const char ContentSubresourceFilterThrottleManager::
+    kContentSubresourceFilterThrottleManagerWebContentsUserDataKey[] =
+        "content_subresource_filter_throttle_manager";
+
+// static
+void ContentSubresourceFilterThrottleManager::CreateForWebContents(
+    content::WebContents* web_contents,
+    std::unique_ptr<SubresourceFilterClient> client,
+    VerifiedRulesetDealer::Handle* dealer_handle) {
+  if (FromWebContents(web_contents))
+    return;
+
+  web_contents->SetUserData(
+      kContentSubresourceFilterThrottleManagerWebContentsUserDataKey,
+      std::make_unique<ContentSubresourceFilterThrottleManager>(
+          std::move(client), dealer_handle, web_contents));
+}
+
+// static
+ContentSubresourceFilterThrottleManager*
+ContentSubresourceFilterThrottleManager::FromWebContents(
+    content::WebContents* web_contents) {
+  return static_cast<ContentSubresourceFilterThrottleManager*>(
+      web_contents->GetUserData(
+          kContentSubresourceFilterThrottleManagerWebContentsUserDataKey));
+}
+
+// static
+const ContentSubresourceFilterThrottleManager*
+ContentSubresourceFilterThrottleManager::FromWebContents(
+    const content::WebContents* web_contents) {
+  return static_cast<const ContentSubresourceFilterThrottleManager*>(
+      web_contents->GetUserData(
+          kContentSubresourceFilterThrottleManagerWebContentsUserDataKey));
+}
+
 ContentSubresourceFilterThrottleManager::
     ContentSubresourceFilterThrottleManager(
-        SubresourceFilterClient* client,
+        std::unique_ptr<SubresourceFilterClient> client,
         VerifiedRulesetDealer::Handle* dealer_handle,
         content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       receiver_(web_contents, this),
       dealer_handle_(dealer_handle),
-      client_(client) {
+      client_(std::move(client)) {
   SubresourceFilterObserverManager::CreateForWebContents(web_contents);
   scoped_observer_.Add(
       SubresourceFilterObserverManager::FromWebContents(web_contents));
@@ -316,7 +352,8 @@ void ContentSubresourceFilterThrottleManager::MaybeAppendNavigationThrottles(
       client_->GetSafeBrowsingDatabaseManager()) {
     throttles->push_back(
         std::make_unique<SubresourceFilterSafeBrowsingActivationThrottle>(
-            navigation_handle, client_, content::GetIOThreadTaskRunner({}),
+            navigation_handle, client_.get(),
+            content::GetIOThreadTaskRunner({}),
             client_->GetSafeBrowsingDatabaseManager()));
   }
 

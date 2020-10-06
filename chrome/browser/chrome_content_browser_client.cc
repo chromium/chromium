@@ -134,7 +134,6 @@
 #include "chrome/browser/ssl/sct_reporting_service_factory.h"
 #include "chrome/browser/ssl/ssl_client_auth_metrics.h"
 #include "chrome/browser/ssl/ssl_client_certificate_selector.h"
-#include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
 #include "chrome/browser/sync_file_system/local/sync_file_system_backend.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/tracing/chrome_tracing_delegate.h"
@@ -3998,10 +3997,10 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
 #endif
 
   content::WebContents* web_contents = handle->GetWebContents();
-  if (auto* subresource_filter_client =
-          ChromeSubresourceFilterClient::FromWebContents(web_contents)) {
-    subresource_filter_client->GetThrottleManager()
-        ->MaybeAppendNavigationThrottles(handle, &throttles);
+  if (auto* throttle_manager =
+          subresource_filter::ContentSubresourceFilterThrottleManager::
+              FromWebContents(web_contents)) {
+    throttle_manager->MaybeAppendNavigationThrottles(handle, &throttles);
   }
 
 #if !defined(OS_ANDROID)
@@ -5608,9 +5607,9 @@ void ChromeContentBrowserClient::AugmentNavigationDownloadPolicy(
     const content::RenderFrameHost* frame_host,
     bool user_gesture,
     content::NavigationDownloadPolicy* download_policy) {
-  const ChromeSubresourceFilterClient* client =
-      ChromeSubresourceFilterClient::FromWebContents(web_contents);
-  if (client && client->GetThrottleManager()->IsFrameTaggedAsAd(frame_host)) {
+  const auto* throttle_manager = subresource_filter::
+      ContentSubresourceFilterThrottleManager::FromWebContents(web_contents);
+  if (throttle_manager && throttle_manager->IsFrameTaggedAsAd(frame_host)) {
     download_policy->SetAllowed(content::NavigationDownloadType::kAdFrame);
     if (!user_gesture) {
       if (base::FeatureList::IsEnabled(

@@ -245,7 +245,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       autofill::ChromeAutofillClient::FromWebContents(web_contents));
   if (base::FeatureList::IsEnabled(
           subresource_filter::kSafeBrowsingSubresourceFilter)) {
-    ChromeSubresourceFilterClient::CreateForWebContents(web_contents);
+    ChromeSubresourceFilterClient::
+        CreateThrottleManagerWithClientForWebContents(web_contents);
   }
   ChromeTranslateClient::CreateForWebContents(web_contents);
   ConnectionHelpTabHelper::CreateForWebContents(web_contents);

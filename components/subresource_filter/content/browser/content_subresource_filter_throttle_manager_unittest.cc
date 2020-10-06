@@ -236,8 +236,6 @@ class ContentSubresourceFilterThrottleManagerTest
     ASSERT_NO_FATAL_FAILURE(test_ruleset_creator_.CreateRulesetWithRules(
         rules, &test_ruleset_pair_));
 
-    client_ = std::make_unique<TestSubresourceFilterClient>();
-
     // Make the blocking task runner run on the current task runner for the
     // tests, to ensure that the NavigationSimulator properly runs all necessary
     // tasks while waiting for throttle checks to finish.
@@ -247,16 +245,21 @@ class ContentSubresourceFilterThrottleManagerTest
                                              /*expected_checksum=*/0,
                                              base::DoNothing());
 
+    auto subresource_filter_client =
+        std::make_unique<TestSubresourceFilterClient>();
+    client_ = subresource_filter_client.get();
     throttle_manager_ =
         std::make_unique<ContentSubresourceFilterThrottleManager>(
-            client_.get(), dealer_handle_.get(), web_contents);
+            std::move(subresource_filter_client), dealer_handle_.get(),
+            web_contents);
+
     Observe(web_contents);
   }
 
   void TearDown() override {
+    client_ = nullptr;
     throttle_manager_.reset();
     dealer_handle_.reset();
-    client_.reset();
     base::RunLoop().RunUntilIdle();
     content::RenderViewHostTestHarness::TearDown();
   }
@@ -375,7 +378,7 @@ class ContentSubresourceFilterThrottleManagerTest
  private:
   testing::TestRulesetCreator test_ruleset_creator_;
   testing::TestRulesetPair test_ruleset_pair_;
-  std::unique_ptr<TestSubresourceFilterClient> client_;
+  TestSubresourceFilterClient* client_;
 
   std::unique_ptr<VerifiedRulesetDealer::Handle> dealer_handle_;
 

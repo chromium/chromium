@@ -160,7 +160,8 @@ void PresentationReceiverWindowView::Init() {
   SearchTabHelper::CreateForWebContents(web_contents);
   TabDialogs::CreateForWebContents(web_contents);
   FramebustBlockTabHelper::CreateForWebContents(web_contents);
-  ChromeSubresourceFilterClient::CreateForWebContents(web_contents);
+  ChromeSubresourceFilterClient::CreateThrottleManagerWithClientForWebContents(
+      web_contents);
   InfoBarService::CreateForWebContents(web_contents);
   MixedContentSettingsTabHelper::CreateForWebContents(web_contents);
   blocked_content::PopupBlockerTabHelper::CreateForWebContents(web_contents);

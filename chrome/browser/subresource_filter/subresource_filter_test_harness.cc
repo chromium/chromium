@@ -109,7 +109,8 @@ void SubresourceFilterTestHarness::SetUp() {
       web_contents(),
       std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
           web_contents()));
-  ChromeSubresourceFilterClient::CreateForWebContents(web_contents());
+  ChromeSubresourceFilterClient::CreateThrottleManagerWithClientForWebContents(
+      web_contents());
 
   base::RunLoop().RunUntilIdle();
 }

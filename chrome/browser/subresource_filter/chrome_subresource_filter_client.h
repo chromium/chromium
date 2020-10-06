@@ -12,7 +12,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/subresource_filter/content/browser/subresource_filter_client.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 class GURL;
 class SubresourceFilterProfileContext;
@@ -54,14 +53,26 @@ enum class SubresourceFilterAction {
   kMaxValue = kForcedActivationEnabled
 };
 
-// Chrome implementation of SubresourceFilterClient.
+// Chrome implementation of SubresourceFilterClient. Instances are associated
+// with and owned by ContentSubresourceFilterThrottleManager instances.
 class ChromeSubresourceFilterClient
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<ChromeSubresourceFilterClient>,
       public subresource_filter::SubresourceFilterClient {
  public:
   explicit ChromeSubresourceFilterClient(content::WebContents* web_contents);
   ~ChromeSubresourceFilterClient() override;
+
+  // Creates a ContentSubresourceFilterThrottleManager and attaches it to
+  // |web_contents|, passing it an instance of this client and other
+  // embedder-level state.
+  static void CreateThrottleManagerWithClientForWebContents(
+      content::WebContents* web_contents);
+
+  // Returns the ChromeSubresourceFilterClient instance that is owned by the
+  // ThrottleManager owned by |web_contents|, or nullptr if there is no such
+  // ThrottleManager.
+  static ChromeSubresourceFilterClient* FromWebContents(
+      content::WebContents* web_contents);
 
   void OnReloadRequested();
 
@@ -90,13 +101,9 @@ class ChromeSubresourceFilterClient
     return did_show_ui_for_navigation_;
   }
 
-  subresource_filter::ContentSubresourceFilterThrottleManager*
-  GetThrottleManager() const;
-
   static void LogAction(SubresourceFilterAction action);
 
  private:
-  friend class content::WebContentsUserData<ChromeSubresourceFilterClient>;
   void AllowlistByContentSettings(const GURL& url);
   void ShowUI(const GURL& url);
 
@@ -112,8 +119,6 @@ class ChromeSubresourceFilterClient
   // loads. We must be careful to ensure this boolean does not persist after the
   // devtools window is closed, which should be handled by the devtools system.
   bool activated_via_devtools_ = false;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   DISALLOW_COPY_AND_ASSIGN(ChromeSubresourceFilterClient);
 };

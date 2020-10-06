@@ -23,7 +23,6 @@
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_helper.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
-#include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
 #include "chrome/common/chrome_features.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
@@ -184,7 +183,8 @@ blink::mojom::HeavyAdReason GetHeavyAdReason(FrameData::HeavyAdStatus status) {
 std::unique_ptr<AdsPageLoadMetricsObserver>
 AdsPageLoadMetricsObserver::CreateIfNeeded(content::WebContents* web_contents) {
   if (!base::FeatureList::IsEnabled(subresource_filter::kAdTagging) ||
-      !ChromeSubresourceFilterClient::FromWebContents(web_contents))
+      !subresource_filter::ContentSubresourceFilterThrottleManager::
+          FromWebContents(web_contents))
     return nullptr;
   return std::make_unique<AdsPageLoadMetricsObserver>();
 }
@@ -503,11 +503,10 @@ void AdsPageLoadMetricsObserver::ReadyToCommitNextNavigation(
 void AdsPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
     content::NavigationHandle* navigation_handle) {
   // If the AdsPageLoadMetricsObserver is created, this does not return nullptr.
-  auto* client = ChromeSubresourceFilterClient::FromWebContents(
-      navigation_handle->GetWebContents());
-  // AdsPageLoadMetricsObserver is not created unless there is a
-  // ChromeSubresourceFilterClient
-  DCHECK(client);
+  auto* throttle_manager =
+      subresource_filter::ContentSubresourceFilterThrottleManager::
+          FromWebContents(navigation_handle->GetWebContents());
+  DCHECK(throttle_manager);
   FrameTreeNodeId frame_tree_node_id = navigation_handle->GetFrameTreeNodeId();
 
   // NOTE: Frame look-up only used for determining cross-origin status, not
@@ -515,7 +514,7 @@ void AdsPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
   content::RenderFrameHost* frame_host =
       FindFrameMaybeUnsafe(navigation_handle);
 
-  bool is_adframe = client->GetThrottleManager()->IsFrameTaggedAsAd(frame_host);
+  bool is_adframe = throttle_manager->IsFrameTaggedAsAd(frame_host);
 
   // TODO(https://crbug.com): The following block is a hack to ignore certain
   // frames that are detected by AdTagging. These frames are ignored
@@ -525,8 +524,7 @@ void AdsPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
   // tagging, rather than being implemented in AdsPLMO.
   bool should_ignore_detected_ad = false;
   base::Optional<subresource_filter::LoadPolicy> load_policy =
-      client->GetThrottleManager()->LoadPolicyForLastCommittedNavigation(
-          frame_host);
+      throttle_manager->LoadPolicyForLastCommittedNavigation(frame_host);
 
   // Only un-tag frames as ads if the navigation has committed. This prevents
   // frames from being untagged that have an aborted navigation to allowlist

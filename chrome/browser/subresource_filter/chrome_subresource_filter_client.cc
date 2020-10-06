@@ -43,17 +43,37 @@ ChromeSubresourceFilterClient::ChromeSubresourceFilterClient(
   DCHECK(web_contents);
   profile_context_ = SubresourceFilterProfileContextFactory::GetForProfile(
       Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+}
 
+ChromeSubresourceFilterClient::~ChromeSubresourceFilterClient() = default;
+
+// static
+void ChromeSubresourceFilterClient::
+    CreateThrottleManagerWithClientForWebContents(
+        content::WebContents* web_contents) {
   subresource_filter::RulesetService* ruleset_service =
       g_browser_process->subresource_filter_ruleset_service();
   subresource_filter::VerifiedRulesetDealer::Handle* dealer =
       ruleset_service ? ruleset_service->GetRulesetDealer() : nullptr;
-  throttle_manager_ = std::make_unique<
-      subresource_filter::ContentSubresourceFilterThrottleManager>(
-      this, dealer, web_contents);
+  subresource_filter::ContentSubresourceFilterThrottleManager::
+      CreateForWebContents(
+          web_contents,
+          std::make_unique<ChromeSubresourceFilterClient>(web_contents),
+          dealer);
 }
 
-ChromeSubresourceFilterClient::~ChromeSubresourceFilterClient() {}
+// static
+ChromeSubresourceFilterClient* ChromeSubresourceFilterClient::FromWebContents(
+    content::WebContents* web_contents) {
+  auto* throttle_manager = subresource_filter::
+      ContentSubresourceFilterThrottleManager::FromWebContents(web_contents);
+
+  if (!throttle_manager)
+    return nullptr;
+
+  return static_cast<ChromeSubresourceFilterClient*>(
+      throttle_manager->client());
+}
 
 void ChromeSubresourceFilterClient::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -181,11 +201,6 @@ void ChromeSubresourceFilterClient::ToggleForceActivationInCurrentWebContents(
   activated_via_devtools_ = force_activation;
 }
 
-subresource_filter::ContentSubresourceFilterThrottleManager*
-ChromeSubresourceFilterClient::GetThrottleManager() const {
-  return throttle_manager_.get();
-}
-
 // static
 void ChromeSubresourceFilterClient::LogAction(SubresourceFilterAction action) {
   UMA_HISTOGRAM_ENUMERATION("SubresourceFilter.Actions2", action);
@@ -211,5 +226,3 @@ void ChromeSubresourceFilterClient::ShowUI(const GURL& url) {
   did_show_ui_for_navigation_ = true;
   profile_context_->settings_manager()->OnDidShowUI(url);
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeSubresourceFilterClient)
