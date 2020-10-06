@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/web_applications/components/web_app_icon_downloader.h"
@@ -51,6 +50,8 @@ class WebAppDataRetriever : content::WebContentsObserver {
   using GetIconsCallback = base::OnceCallback<void(IconsMap)>;
 
   WebAppDataRetriever();
+  WebAppDataRetriever(const WebAppDataRetriever&) = delete;
+  WebAppDataRetriever& operator=(const WebAppDataRetriever&) = delete;
   ~WebAppDataRetriever() override;
 
   // Runs |callback| with the result of retrieving the WebApplicationInfo from
@@ -98,7 +99,6 @@ class WebAppDataRetriever : content::WebContentsObserver {
 
   base::WeakPtrFactory<WebAppDataRetriever> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(WebAppDataRetriever);
 };
 
 }  // namespace web_app

@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -24,6 +23,8 @@ class WebAppUninstallDialog;
 class WebAppDialogManager {
  public:
   explicit WebAppDialogManager(Profile* profile);
+  WebAppDialogManager(const WebAppDialogManager&) = delete;
+  WebAppDialogManager& operator=(const WebAppDialogManager&) = delete;
   ~WebAppDialogManager();
 
   enum class UninstallSource {
@@ -59,7 +60,6 @@ class WebAppDialogManager {
 
   Profile* const profile_;
 
-  DISALLOW_COPY_AND_ASSIGN(WebAppDialogManager);
 };
 
 }  // namespace web_app

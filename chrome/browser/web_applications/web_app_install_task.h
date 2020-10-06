@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/installable/installable_metrics.h"
@@ -55,6 +54,8 @@ class WebAppInstallTask : content::WebContentsObserver {
                     OsIntegrationManager* os_integration_manager,
                     InstallFinalizer* install_finalizer,
                     std::unique_ptr<WebAppDataRetriever> data_retriever);
+  WebAppInstallTask(const WebAppInstallTask&) = delete;
+  WebAppInstallTask& operator=(const WebAppInstallTask&) = delete;
   ~WebAppInstallTask() override;
 
   // Request the app_id expectation check. Install fails with
@@ -265,7 +266,6 @@ class WebAppInstallTask : content::WebContentsObserver {
 
   base::WeakPtrFactory<WebAppInstallTask> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(WebAppInstallTask);
 };
 
 }  // namespace web_app

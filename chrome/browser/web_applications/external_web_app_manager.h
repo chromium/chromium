@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
@@ -52,6 +51,8 @@ class ExternalWebAppManager {
   static void SetFileUtilsForTesting(const FileUtilsWrapper* file_utils);
 
   explicit ExternalWebAppManager(Profile* profile);
+  ExternalWebAppManager(const ExternalWebAppManager&) = delete;
+  ExternalWebAppManager& operator=(const ExternalWebAppManager&) = delete;
   ~ExternalWebAppManager();
 
   void SetSubsystems(PendingAppManager* pending_app_manager);
@@ -88,7 +89,6 @@ class ExternalWebAppManager {
 
   base::WeakPtrFactory<ExternalWebAppManager> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(ExternalWebAppManager);
 };
 
 }  // namespace web_app

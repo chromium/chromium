@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_PENDING_APP_REGISTRATION_TASK_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"
@@ -48,6 +47,9 @@ class PendingAppRegistrationTask : public PendingAppRegistrationTaskBase {
                              WebAppUrlLoader* url_loader,
                              content::WebContents* web_contents,
                              RegistrationCallback callback);
+  PendingAppRegistrationTask(const PendingAppRegistrationTask&) = delete;
+  PendingAppRegistrationTask& operator=(const PendingAppRegistrationTask&) =
+      delete;
   ~PendingAppRegistrationTask() override;
 
   // ServiceWorkerContextObserver:
@@ -74,7 +76,6 @@ class PendingAppRegistrationTask : public PendingAppRegistrationTaskBase {
 
   static int registration_timeout_in_seconds_;
 
-  DISALLOW_COPY_AND_ASSIGN(PendingAppRegistrationTask);
 };
 
 }  // namespace web_app

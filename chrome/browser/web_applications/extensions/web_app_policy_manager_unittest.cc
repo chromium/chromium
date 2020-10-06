@@ -181,6 +181,8 @@ class WebAppPolicyManagerTest
           features::kDesktopPWAsWithoutExtensions);
     }
   }
+  WebAppPolicyManagerTest(const WebAppPolicyManagerTest&) = delete;
+  WebAppPolicyManagerTest& operator=(const WebAppPolicyManagerTest&) = delete;
 
   ~WebAppPolicyManagerTest() override = default;
 
@@ -224,7 +226,6 @@ class WebAppPolicyManagerTest
   TestPendingAppManager* test_pending_app_manager_ = nullptr;
   WebAppPolicyManager* web_app_policy_manager_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(WebAppPolicyManagerTest);
 };
 
 TEST_P(WebAppPolicyManagerTest, NoForceInstalledAppsPrefValue) {

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/sync/model/model_type_store.h"
 
 class Profile;
@@ -27,6 +26,8 @@ class AbstractWebAppDatabaseFactory {
 class WebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
  public:
   explicit WebAppDatabaseFactory(Profile* profile);
+  WebAppDatabaseFactory(const WebAppDatabaseFactory&) = delete;
+  WebAppDatabaseFactory& operator=(const WebAppDatabaseFactory&) = delete;
   ~WebAppDatabaseFactory() override;
 
   // AbstractWebAppDatabaseFactory implementation.
@@ -39,8 +40,6 @@ class WebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
   std::unique_ptr<syncer::ModelTypeStoreService> model_type_store_service_;
 
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAppDatabaseFactory);
 };
 
 }  // namespace web_app

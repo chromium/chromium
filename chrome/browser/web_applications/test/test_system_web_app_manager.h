@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "url/gurl.h"
@@ -20,6 +19,8 @@ namespace web_app {
 class TestSystemWebAppManager : public SystemWebAppManager {
  public:
   explicit TestSystemWebAppManager(Profile* profile);
+  TestSystemWebAppManager(const TestSystemWebAppManager&) = delete;
+  TestSystemWebAppManager& operator=(const TestSystemWebAppManager&) = delete;
   ~TestSystemWebAppManager() override;
 
   void SetUpdatePolicy(SystemWebAppManager::UpdatePolicy policy);
@@ -40,7 +41,6 @@ class TestSystemWebAppManager : public SystemWebAppManager {
   base::Version current_version_{"0.0.0.0"};
   std::string current_locale_;
 
-  DISALLOW_COPY_AND_ASSIGN(TestSystemWebAppManager);
 };
 
 }  // namespace web_app

@@ -35,6 +35,10 @@ class WebAppControllerBrowserTestBase
       public ::testing::WithParamInterface<ProviderType> {
  public:
   WebAppControllerBrowserTestBase();
+  WebAppControllerBrowserTestBase(const WebAppControllerBrowserTestBase&) =
+      delete;
+  WebAppControllerBrowserTestBase& operator=(
+      const WebAppControllerBrowserTestBase&) = delete;
   ~WebAppControllerBrowserTestBase() = 0;
 
   WebAppProviderBase& provider();
@@ -66,7 +70,6 @@ class WebAppControllerBrowserTestBase
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  DISALLOW_COPY_AND_ASSIGN(WebAppControllerBrowserTestBase);
 };
 
 class WebAppControllerBrowserTest : public WebAppControllerBrowserTestBase {

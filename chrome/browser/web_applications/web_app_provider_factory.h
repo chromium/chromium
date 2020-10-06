@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_PROVIDER_FACTORY_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_PROVIDER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base_factory.h"
 
@@ -23,6 +22,9 @@ class WebAppProvider;
 // Profile.
 class WebAppProviderFactory : public WebAppProviderBaseFactory {
  public:
+  WebAppProviderFactory(const WebAppProviderFactory&) = delete;
+  WebAppProviderFactory& operator=(const WebAppProviderFactory&) = delete;
+
   static WebAppProvider* GetForProfile(Profile* profile);
 
   static WebAppProviderFactory* GetInstance();
@@ -40,7 +42,6 @@ class WebAppProviderFactory : public WebAppProviderBaseFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 
-  DISALLOW_COPY_AND_ASSIGN(WebAppProviderFactory);
 };
 
 }  // namespace web_app

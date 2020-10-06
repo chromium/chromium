@@ -91,13 +91,14 @@ class BookmarkAppInstallFinalizerTest : public ChromeRenderViewHostTestHarness {
                             base::ASCIIToUTF16(""));
       NotifyCrxInstallComplete(error);
     }
+    FakeCrxInstaller(const FakeCrxInstaller&) = delete;
+    FakeCrxInstaller& operator=(const FakeCrxInstaller&) = delete;
 
    private:
     ~FakeCrxInstaller() override = default;
 
     base::RunLoop run_loop_;
 
-    DISALLOW_COPY_AND_ASSIGN(FakeCrxInstaller);
   };
 
   class TestCrxInstallerToDisableExtension : public CrxInstaller {
@@ -121,6 +122,10 @@ class BookmarkAppInstallFinalizerTest : public ChromeRenderViewHostTestHarness {
           &TestCrxInstallerToDisableExtension::OnCrxInstalled, this));
       CrxInstaller::InstallWebApp(web_app);
     }
+    TestCrxInstallerToDisableExtension(
+        const TestCrxInstallerToDisableExtension&) = delete;
+    TestCrxInstallerToDisableExtension& operator=(
+        const TestCrxInstallerToDisableExtension&) = delete;
 
    private:
     ~TestCrxInstallerToDisableExtension() override = default;
@@ -137,10 +142,13 @@ class BookmarkAppInstallFinalizerTest : public ChromeRenderViewHostTestHarness {
 
     InstallerResultCallback real_callback_;
 
-    DISALLOW_COPY_AND_ASSIGN(TestCrxInstallerToDisableExtension);
   };
 
   BookmarkAppInstallFinalizerTest() = default;
+  BookmarkAppInstallFinalizerTest(const BookmarkAppInstallFinalizerTest&) =
+      delete;
+  BookmarkAppInstallFinalizerTest& operator=(
+      const BookmarkAppInstallFinalizerTest&) = delete;
   ~BookmarkAppInstallFinalizerTest() override = default;
 
   void SetUp() override {
@@ -210,7 +218,6 @@ class BookmarkAppInstallFinalizerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<web_app::TestWebAppUiManager> ui_manager_;
   std::unique_ptr<BookmarkAppInstallFinalizer> finalizer_;
 
-  DISALLOW_COPY_AND_ASSIGN(BookmarkAppInstallFinalizerTest);
 };
 
 TEST_F(BookmarkAppInstallFinalizerTest, BasicInstallButExtensionIsDisabled) {

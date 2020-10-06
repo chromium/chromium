@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
@@ -41,12 +40,13 @@ class PendingAppInstallTask {
   struct Result {
     Result(InstallResultCode code, base::Optional<AppId> app_id);
     Result(Result&&);
+    Result(const Result&) = delete;
+    Result& operator=(const Result&) = delete;
     ~Result();
 
     const InstallResultCode code;
     const base::Optional<AppId> app_id;
 
-    DISALLOW_COPY_AND_ASSIGN(Result);
   };
 
   using ResultCallback = base::OnceCallback<void(Result)>;
@@ -65,6 +65,9 @@ class PendingAppInstallTask {
                                  InstallFinalizer* install_finalizer,
                                  InstallManager* install_manager,
                                  ExternalInstallOptions install_options);
+
+  PendingAppInstallTask(const PendingAppInstallTask&) = delete;
+  PendingAppInstallTask& operator=(const PendingAppInstallTask&) = delete;
 
   virtual ~PendingAppInstallTask();
 
@@ -112,7 +115,6 @@ class PendingAppInstallTask {
 
   base::WeakPtrFactory<PendingAppInstallTask> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(PendingAppInstallTask);
 };
 
 }  // namespace web_app

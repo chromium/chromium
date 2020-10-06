@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
 #include "chrome/browser/web_applications/test/test_system_web_app_installation.h"
@@ -38,6 +37,10 @@ class SystemWebAppManagerBrowserTestBase : public InProcessBrowserTest {
   // System PWA, and ensures the WebAppProvider associated with the startup
   // profile is a TestWebAppProviderCreator.
   explicit SystemWebAppManagerBrowserTestBase(bool install_mock = true);
+  SystemWebAppManagerBrowserTestBase(
+      const SystemWebAppManagerBrowserTestBase&) = delete;
+  SystemWebAppManagerBrowserTestBase& operator=(
+      const SystemWebAppManagerBrowserTestBase&) = delete;
 
   ~SystemWebAppManagerBrowserTestBase() override;
 
@@ -99,7 +102,6 @@ class SystemWebAppManagerBrowserTestBase : public InProcessBrowserTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  DISALLOW_COPY_AND_ASSIGN(SystemWebAppManagerBrowserTestBase);
 };
 
 enum class InstallationType { kManifestInstall, kWebAppInfoInstall };

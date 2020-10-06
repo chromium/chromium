@@ -12,7 +12,6 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/one_shot_event.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
@@ -248,6 +247,10 @@ class TestPendingAppManagerImpl : public PendingAppManagerImpl {
               install_options),
           pending_app_manager_impl_(pending_app_manager_impl),
           externally_installed_app_prefs_(profile->GetPrefs()) {}
+
+    TestPendingAppInstallTask(const TestPendingAppInstallTask&) = delete;
+    TestPendingAppInstallTask& operator=(const TestPendingAppInstallTask&) =
+        delete;
     ~TestPendingAppInstallTask() override = default;
 
     void DoInstall(const GURL& install_url,
@@ -294,7 +297,6 @@ class TestPendingAppManagerImpl : public PendingAppManagerImpl {
     TestPendingAppManagerImpl* pending_app_manager_impl_;
     ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
 
-    DISALLOW_COPY_AND_ASSIGN(TestPendingAppInstallTask);
   };
 
   class TestPendingAppRegistrationTask : public PendingAppRegistrationTaskBase {
@@ -309,6 +311,10 @@ class TestPendingAppManagerImpl : public PendingAppManagerImpl {
           base::BindOnce(&TestPendingAppRegistrationTask::OnProgress,
                          weak_ptr_factory_.GetWeakPtr(), install_url));
     }
+    TestPendingAppRegistrationTask(const TestPendingAppRegistrationTask&) =
+        delete;
+    TestPendingAppRegistrationTask& operator=(
+        const TestPendingAppRegistrationTask&) = delete;
     ~TestPendingAppRegistrationTask() override = default;
 
    private:
@@ -324,7 +330,6 @@ class TestPendingAppManagerImpl : public PendingAppManagerImpl {
     base::WeakPtrFactory<TestPendingAppRegistrationTask> weak_ptr_factory_{
         this};
 
-    DISALLOW_COPY_AND_ASSIGN(TestPendingAppRegistrationTask);
   };
 
   TestAppRegistrar* test_app_registrar_;
@@ -355,6 +360,9 @@ class PendingAppManagerImplTest
           features::kDesktopPWAsWithoutExtensions);
     }
   }
+  PendingAppManagerImplTest(const PendingAppManagerImplTest&) = delete;
+  PendingAppManagerImplTest& operator=(const PendingAppManagerImplTest&) =
+      delete;
 
   ~PendingAppManagerImplTest() override = default;
 
@@ -504,7 +512,6 @@ class PendingAppManagerImplTest
   TestWebAppUiManager* ui_manager_ = nullptr;
   TestWebAppUrlLoader* url_loader_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(PendingAppManagerImplTest);
 };
 
 TEST_P(PendingAppManagerImplTest, Install_Succeeds) {

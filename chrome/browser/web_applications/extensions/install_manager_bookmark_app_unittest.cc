@@ -109,6 +109,9 @@ class InstallManagerBookmarkAppTest : public ExtensionServiceTestBase {
     scoped_feature_list_.InitWithFeatures(
         {}, {features::kDesktopPWAsWithoutExtensions});
   }
+  InstallManagerBookmarkAppTest(const InstallManagerBookmarkAppTest&) = delete;
+  InstallManagerBookmarkAppTest& operator=(
+      const InstallManagerBookmarkAppTest&) = delete;
 
   ~InstallManagerBookmarkAppTest() override = default;
 
@@ -310,7 +313,6 @@ class InstallManagerBookmarkAppTest : public ExtensionServiceTestBase {
   std::queue<std::unique_ptr<web_app::TestDataRetriever>>
       prepared_data_retrievers_;
 
-  DISALLOW_COPY_AND_ASSIGN(InstallManagerBookmarkAppTest);
 };
 
 TEST_F(InstallManagerBookmarkAppTest, CreateBookmarkApp) {
@@ -379,10 +381,12 @@ class InstallManagerBookmarkAppInstallableSiteTest
       public ::testing::WithParamInterface<web_app::ForInstallableSite> {
  public:
   InstallManagerBookmarkAppInstallableSiteTest() {}
+  InstallManagerBookmarkAppInstallableSiteTest(
+      const InstallManagerBookmarkAppInstallableSiteTest&) = delete;
+  InstallManagerBookmarkAppInstallableSiteTest& operator=(
+      const InstallManagerBookmarkAppInstallableSiteTest&) = delete;
   ~InstallManagerBookmarkAppInstallableSiteTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(InstallManagerBookmarkAppInstallableSiteTest);
 };
 
 TEST_P(InstallManagerBookmarkAppInstallableSiteTest,

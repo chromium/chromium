@@ -14,7 +14,6 @@
 #include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
@@ -97,6 +96,10 @@ class TestPendingAppInstallFinalizer : public InstallFinalizer {
  public:
   explicit TestPendingAppInstallFinalizer(TestAppRegistrar* registrar)
       : registrar_(registrar) {}
+  TestPendingAppInstallFinalizer(const TestPendingAppInstallFinalizer&) =
+      delete;
+  TestPendingAppInstallFinalizer& operator=(
+      const TestPendingAppInstallFinalizer&) = delete;
   ~TestPendingAppInstallFinalizer() override = default;
 
   // Returns what would be the AppId if an app is installed with |url|.
@@ -259,7 +262,6 @@ class TestPendingAppInstallFinalizer : public InstallFinalizer {
   std::map<GURL, std::pair<AppId, bool>>
       next_uninstall_external_web_app_results_;
 
-  DISALLOW_COPY_AND_ASSIGN(TestPendingAppInstallFinalizer);
 };
 
 }  // namespace
@@ -270,7 +272,9 @@ class PendingAppInstallTaskTest : public ChromeRenderViewHostTestHarness {
     scoped_feature_list_.InitWithFeatures(
         {}, {features::kDesktopPWAsWithoutExtensions});
   }
-
+  PendingAppInstallTaskTest(const PendingAppInstallTaskTest&) = delete;
+  PendingAppInstallTaskTest& operator=(const PendingAppInstallTaskTest&) =
+      delete;
   ~PendingAppInstallTaskTest() override = default;
 
   void SetUp() override {
@@ -368,7 +372,6 @@ class PendingAppInstallTaskTest : public ChromeRenderViewHostTestHarness {
   TestWebAppUiManager* ui_manager_ = nullptr;
   TestOsIntegrationManager* os_integration_manager_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(PendingAppInstallTaskTest);
 };
 
 class PendingAppInstallTaskWithRunOnOsLoginTest

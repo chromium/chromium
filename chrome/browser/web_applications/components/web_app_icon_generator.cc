@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/i18n/case_conversion.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_features.h"
@@ -42,6 +41,8 @@ class GeneratedIconImageSource : public gfx::CanvasImageSource {
         icon_letter_(icon_letter),
         color_(color),
         output_size_(output_size) {}
+  GeneratedIconImageSource(const GeneratedIconImageSource&) = delete;
+  GeneratedIconImageSource& operator=(const GeneratedIconImageSource&) = delete;
   ~GeneratedIconImageSource() override = default;
 
  private:
@@ -88,7 +89,6 @@ class GeneratedIconImageSource : public gfx::CanvasImageSource {
 
   int output_size_;
 
-  DISALLOW_COPY_AND_ASSIGN(GeneratedIconImageSource);
 };
 
 // Adds a square container icon of |output_size| and 2 * |output_size| pixels

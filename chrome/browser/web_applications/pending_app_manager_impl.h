@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
@@ -37,6 +36,8 @@ class PendingAppManagerImpl : public PendingAppManager {
  public:
 
   explicit PendingAppManagerImpl(Profile* profile);
+  PendingAppManagerImpl(const PendingAppManagerImpl&) = delete;
+  PendingAppManagerImpl& operator=(const PendingAppManagerImpl&) = delete;
   ~PendingAppManagerImpl() override;
 
   // PendingAppManager:
@@ -108,7 +109,6 @@ class PendingAppManagerImpl : public PendingAppManager {
 
   base::WeakPtrFactory<PendingAppManagerImpl> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(PendingAppManagerImpl);
 };
 
 }  // namespace web_app

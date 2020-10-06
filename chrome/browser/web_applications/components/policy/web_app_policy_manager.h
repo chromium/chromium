@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/pending_app_manager.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -36,6 +35,8 @@ class WebAppPolicyManager {
   // |pending_app_manager| to manage apps. |pending_app_manager| should outlive
   // this class.
   explicit WebAppPolicyManager(Profile* profile);
+  WebAppPolicyManager(const WebAppPolicyManager&) = delete;
+  WebAppPolicyManager& operator=(const WebAppPolicyManager&) = delete;
   ~WebAppPolicyManager();
 
   void SetSubsystems(PendingAppManager* pending_app_manager);
@@ -66,7 +67,6 @@ class WebAppPolicyManager {
 
   base::WeakPtrFactory<WebAppPolicyManager> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(WebAppPolicyManager);
 };
 
 }  // namespace web_app

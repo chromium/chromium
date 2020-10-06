@@ -12,7 +12,6 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -35,6 +34,8 @@ class WebAppInstallManager final : public InstallManager,
                                    public SyncInstallDelegate {
  public:
   explicit WebAppInstallManager(Profile* profile);
+  WebAppInstallManager(const WebAppInstallManager&) = delete;
+  WebAppInstallManager& operator=(const WebAppInstallManager&) = delete;
   ~WebAppInstallManager() override;
 
   void Start();
@@ -186,7 +187,6 @@ class WebAppInstallManager final : public InstallManager,
 
   base::WeakPtrFactory<WebAppInstallManager> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(WebAppInstallManager);
 };
 
 }  // namespace web_app

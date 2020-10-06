@@ -48,6 +48,8 @@ bool EqualsWithComparison(const GURL& a,
 class LoaderTask : public content::WebContentsObserver {
  public:
   LoaderTask() = default;
+  LoaderTask(const LoaderTask&) = delete;
+  LoaderTask& operator=(const LoaderTask&) = delete;
   ~LoaderTask() override = default;
 
   void LoadUrl(const GURL& url,
@@ -151,7 +153,6 @@ class LoaderTask : public content::WebContentsObserver {
 
   base::WeakPtrFactory<LoaderTask> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(LoaderTask);
 };
 
 }  // namespace

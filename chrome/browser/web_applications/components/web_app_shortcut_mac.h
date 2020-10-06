@@ -14,7 +14,6 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
 
@@ -72,6 +71,8 @@ class WebAppShortcutCreator {
   // the WebAppShortcutCreator.
   WebAppShortcutCreator(const base::FilePath& app_data_dir,
                         const ShortcutInfo* shortcut_info);
+  WebAppShortcutCreator(const WebAppShortcutCreator&) = delete;
+  WebAppShortcutCreator& operator=(const WebAppShortcutCreator&) = delete;
 
   virtual ~WebAppShortcutCreator();
 
@@ -150,8 +151,6 @@ class WebAppShortcutCreator {
 
   // Information about the app. Owned by the caller of the constructor.
   const ShortcutInfo* const info_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAppShortcutCreator);
 };
 
 }  // namespace web_app

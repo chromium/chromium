@@ -26,6 +26,10 @@ class ExternallyInstalledWebAppPrefsTest
     : public ChromeRenderViewHostTestHarness {
  public:
   ExternallyInstalledWebAppPrefsTest() = default;
+  ExternallyInstalledWebAppPrefsTest(
+      const ExternallyInstalledWebAppPrefsTest&) = delete;
+  ExternallyInstalledWebAppPrefsTest& operator=(
+      const ExternallyInstalledWebAppPrefsTest&) = delete;
   ~ExternallyInstalledWebAppPrefsTest() override = default;
 
   void SetUp() override {
@@ -69,8 +73,6 @@ class ExternallyInstalledWebAppPrefsTest
     return urls;
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExternallyInstalledWebAppPrefsTest);
 };
 
 TEST_F(ExternallyInstalledWebAppPrefsTest, BasicOps) {

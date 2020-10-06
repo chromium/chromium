@@ -17,7 +17,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -37,6 +36,8 @@ namespace {
 class MockEnvironment : public base::Environment {
  public:
   MockEnvironment() {}
+  MockEnvironment(const MockEnvironment&) = delete;
+  MockEnvironment& operator=(const MockEnvironment&) = delete;
 
   void Set(base::StringPiece name, const std::string& value) {
     variables_[name.as_string()] = value;
@@ -65,7 +66,6 @@ class MockEnvironment : public base::Environment {
  private:
   std::map<std::string, std::string> variables_;
 
-  DISALLOW_COPY_AND_ASSIGN(MockEnvironment);
 };
 
 }  // namespace

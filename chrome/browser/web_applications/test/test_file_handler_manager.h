@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "chrome/browser/web_applications/components/file_handler_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "url/gurl.h"
@@ -23,6 +22,8 @@ namespace web_app {
 class TestFileHandlerManager : public FileHandlerManager {
  public:
   explicit TestFileHandlerManager(Profile* profile);
+  TestFileHandlerManager(const TestFileHandlerManager&) = delete;
+  TestFileHandlerManager& operator=(const TestFileHandlerManager&) = delete;
   ~TestFileHandlerManager() override;
 
   const apps::FileHandlers* GetAllFileHandlers(const AppId& app_id) override;
@@ -42,7 +43,6 @@ class TestFileHandlerManager : public FileHandlerManager {
 
  private:
   std::map<AppId, apps::FileHandlers> file_handlers_;
-  DISALLOW_COPY_AND_ASSIGN(TestFileHandlerManager);
 };
 
 }  // namespace web_app

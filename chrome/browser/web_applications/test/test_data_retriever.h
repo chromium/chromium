@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
@@ -23,6 +22,8 @@ namespace web_app {
 class TestDataRetriever : public WebAppDataRetriever {
  public:
   TestDataRetriever();
+  TestDataRetriever(const TestDataRetriever&) = delete;
+  TestDataRetriever& operator=(const TestDataRetriever&) = delete;
   ~TestDataRetriever() override;
 
   // WebAppDataRetriever:
@@ -79,7 +80,6 @@ class TestDataRetriever : public WebAppDataRetriever {
 
   base::WeakPtrFactory<TestDataRetriever> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(TestDataRetriever);
 };
 
 }  // namespace web_app

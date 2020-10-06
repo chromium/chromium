@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/web_contents.h"
@@ -36,16 +35,17 @@ std::vector<SkBitmap> CreateTestBitmaps(const std::vector<gfx::Size>& sizes) {
 }
 
 class WebAppIconDownloaderTest : public ChromeRenderViewHostTestHarness {
+ public:
+  WebAppIconDownloaderTest(const WebAppIconDownloaderTest&) = delete;
+  WebAppIconDownloaderTest& operator=(const WebAppIconDownloaderTest&) = delete;
+
  protected:
   WebAppIconDownloaderTest() {}
-
   ~WebAppIconDownloaderTest() override {}
 
  protected:
   base::HistogramTester histogram_tester_;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebAppIconDownloaderTest);
 };
 
 const char* kHistogramForCreateName = "WebApp.Icon.HttpStatusCodeClassOnCreate";
@@ -63,6 +63,8 @@ class TestWebAppIconDownloader : public WebAppIconDownloader {
             base::BindOnce(&TestWebAppIconDownloader::DownloadsComplete,
                            base::Unretained(this))),
         id_counter_(0) {}
+  TestWebAppIconDownloader(const TestWebAppIconDownloader&) = delete;
+  TestWebAppIconDownloader& operator=(const TestWebAppIconDownloader&) = delete;
   ~TestWebAppIconDownloader() override {}
 
   int DownloadImage(const GURL& url) override { return id_counter_++; }
@@ -111,7 +113,6 @@ class TestWebAppIconDownloader : public WebAppIconDownloader {
   int id_counter_;
   base::Optional<bool> downloads_succeeded_;
 
-  DISALLOW_COPY_AND_ASSIGN(TestWebAppIconDownloader);
 };
 
 TEST_F(WebAppIconDownloaderTest, SimpleDownload) {

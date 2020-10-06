@@ -20,6 +20,8 @@ namespace extensions {
 class BookmarkAppIconManager : public web_app::AppIconManager {
  public:
   explicit BookmarkAppIconManager(Profile* profile);
+  BookmarkAppIconManager(const BookmarkAppIconManager&) = delete;
+  BookmarkAppIconManager& operator=(const BookmarkAppIconManager&) = delete;
   ~BookmarkAppIconManager() override;
 
   // AppIconManager:
@@ -58,7 +60,6 @@ class BookmarkAppIconManager : public web_app::AppIconManager {
  private:
   Profile* const profile_;
 
-  DISALLOW_COPY_AND_ASSIGN(BookmarkAppIconManager);
 };
 
 }  // namespace extensions

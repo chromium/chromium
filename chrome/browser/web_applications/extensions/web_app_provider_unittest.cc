@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/web_app_provider.h"
 
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -26,6 +25,8 @@ class WebAppProviderUnitTest
           features::kDesktopPWAsWithoutExtensions);
     }
   }
+  WebAppProviderUnitTest(const WebAppProviderUnitTest&) = delete;
+  WebAppProviderUnitTest& operator=(const WebAppProviderUnitTest&) = delete;
   ~WebAppProviderUnitTest() override = default;
 
   void SetUp() override {
@@ -39,7 +40,6 @@ class WebAppProviderUnitTest
   base::test::ScopedFeatureList scoped_feature_list_;
   WebAppProvider* provider_;
 
-  DISALLOW_COPY_AND_ASSIGN(WebAppProviderUnitTest);
 };
 
 TEST_P(WebAppProviderUnitTest, Registrar) {

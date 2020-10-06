@@ -13,7 +13,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "chrome/browser/web_applications/components/pending_app_manager.h"
@@ -152,6 +151,8 @@ class SystemWebAppManager {
   static bool IsAppEnabled(SystemAppType type);
 
   explicit SystemWebAppManager(Profile* profile);
+  SystemWebAppManager(const SystemWebAppManager&) = delete;
+  SystemWebAppManager& operator=(const SystemWebAppManager&) = delete;
   virtual ~SystemWebAppManager();
 
   void SetSubsystems(PendingAppManager* pending_app_manager,
@@ -301,7 +302,6 @@ class SystemWebAppManager {
 
   base::WeakPtrFactory<SystemWebAppManager> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(SystemWebAppManager);
 };
 
 }  // namespace web_app

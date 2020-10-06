@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -54,6 +53,8 @@ class PendingAppManager {
                               std::map<GURL, bool> uninstall_results)>;
 
   PendingAppManager();
+  PendingAppManager(const PendingAppManager&) = delete;
+  PendingAppManager& operator=(const PendingAppManager&) = delete;
   virtual ~PendingAppManager();
 
   void SetSubsystems(AppRegistrar* registrar,
@@ -134,6 +135,8 @@ class PendingAppManager {
  private:
   struct SynchronizeRequest {
     SynchronizeRequest(SynchronizeCallback callback, int remaining_requests);
+    SynchronizeRequest(const SynchronizeRequest&) = delete;
+    SynchronizeRequest& operator=(const SynchronizeRequest&) = delete;
     ~SynchronizeRequest();
 
     SynchronizeRequest& operator=(SynchronizeRequest&&);
@@ -144,8 +147,6 @@ class PendingAppManager {
     std::map<GURL, InstallResultCode> install_results;
     std::map<GURL, bool> uninstall_results;
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(SynchronizeRequest);
   };
 
   void InstallForSynchronizeCallback(ExternalInstallSource source,
@@ -169,7 +170,6 @@ class PendingAppManager {
 
   base::WeakPtrFactory<PendingAppManager> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(PendingAppManager);
 };
 
 }  // namespace web_app

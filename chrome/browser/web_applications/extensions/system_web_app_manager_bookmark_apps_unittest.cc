@@ -79,6 +79,10 @@ class SystemWebAppManagerTestBookmarkApps
     scoped_feature_list_.InitWithFeatures(
         {}, {features::kDesktopPWAsWithoutExtensions});
   }
+  SystemWebAppManagerTestBookmarkApps(
+      const SystemWebAppManagerTestBookmarkApps&) = delete;
+  SystemWebAppManagerTestBookmarkApps& operator=(
+      const SystemWebAppManagerTestBookmarkApps&) = delete;
 
   ~SystemWebAppManagerTestBookmarkApps() override = default;
 
@@ -143,7 +147,6 @@ class SystemWebAppManagerTestBookmarkApps
   TestSystemWebAppManager* system_web_app_manager_ = nullptr;
   TestWebAppUiManager* ui_manager_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(SystemWebAppManagerTestBookmarkApps);
 };
 
 // Deprecated. See corresponding SystemWebAppManagerTest.Enabled test for web

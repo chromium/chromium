@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
@@ -48,6 +47,8 @@ class WebAppBrowserController : public AppBrowserController,
                                 public AppRegistrarObserver {
  public:
   explicit WebAppBrowserController(Browser* browser);
+  WebAppBrowserController(const WebAppBrowserController&) = delete;
+  WebAppBrowserController& operator=(const WebAppBrowserController&) = delete;
   ~WebAppBrowserController() override;
 
   // AppBrowserController:
@@ -114,8 +115,6 @@ class WebAppBrowserController : public AppBrowserController,
 
   base::OnceClosure callback_for_testing_;
   mutable base::WeakPtrFactory<WebAppBrowserController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebAppBrowserController);
 };
 
 }  // namespace web_app

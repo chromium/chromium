@@ -95,6 +95,10 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
   AppBrowserControllerBrowserTest()
       : test_system_web_app_installation_(
             TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp(false)) {}
+  AppBrowserControllerBrowserTest(const AppBrowserControllerBrowserTest&) =
+      delete;
+  AppBrowserControllerBrowserTest& operator=(
+      const AppBrowserControllerBrowserTest&) = delete;
 
  protected:
   void InstallAndLaunchMockApp() {
@@ -131,7 +135,6 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<TestSystemWebAppInstallation>
       test_system_web_app_installation_;
 
-  DISALLOW_COPY_AND_ASSIGN(AppBrowserControllerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, TabsTest) {

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -40,6 +39,9 @@ class WebAppIconManagerBrowserTest : public InProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {features::kDesktopPWAsWithoutExtensions}, {});
   }
+  WebAppIconManagerBrowserTest(const WebAppIconManagerBrowserTest&) = delete;
+  WebAppIconManagerBrowserTest& operator=(const WebAppIconManagerBrowserTest&) =
+      delete;
 
   ~WebAppIconManagerBrowserTest() override = default;
 
@@ -63,7 +65,6 @@ class WebAppIconManagerBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer https_server_;
   apps::AppServiceTest app_service_test_;
 
-  DISALLOW_COPY_AND_ASSIGN(WebAppIconManagerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APP_PROVIDER_BASE_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APP_PROVIDER_BASE_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -32,6 +31,8 @@ class WebAppProviderBase : public KeyedService {
   static WebAppProviderBase* GetProviderBase(Profile* profile);
 
   WebAppProviderBase();
+  WebAppProviderBase(const WebAppProviderBase&) = delete;
+  WebAppProviderBase& operator=(const WebAppProviderBase&) = delete;
   ~WebAppProviderBase() override;
 
   // The app registry model.
@@ -63,7 +64,6 @@ class WebAppProviderBase : public KeyedService {
   // Manage all OS hooks that need to be deployed during Web Apps install
   virtual OsIntegrationManager& os_integration_manager() = 0;
 
-  DISALLOW_COPY_AND_ASSIGN(WebAppProviderBase);
 };
 
 }  // namespace web_app

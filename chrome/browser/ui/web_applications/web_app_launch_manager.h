@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_MANAGER_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
@@ -36,6 +35,8 @@ class WebAppProvider;
 class WebAppLaunchManager {
  public:
   explicit WebAppLaunchManager(Profile* profile);
+  WebAppLaunchManager(const WebAppLaunchManager&) = delete;
+  WebAppLaunchManager& operator=(const WebAppLaunchManager&) = delete;
   ~WebAppLaunchManager();
 
   // apps::LaunchManager:
@@ -61,7 +62,6 @@ class WebAppLaunchManager {
 
   base::WeakPtrFactory<WebAppLaunchManager> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(WebAppLaunchManager);
 };
 
 Browser* CreateWebApplicationWindow(Profile* profile,

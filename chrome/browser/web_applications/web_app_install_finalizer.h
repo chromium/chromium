@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -30,6 +29,8 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
   WebAppInstallFinalizer(Profile* profile,
                          WebAppIconManager* icon_manager,
                          std::unique_ptr<InstallFinalizer> legacy_finalizer);
+  WebAppInstallFinalizer(const WebAppInstallFinalizer&) = delete;
+  WebAppInstallFinalizer& operator=(const WebAppInstallFinalizer&) = delete;
   ~WebAppInstallFinalizer() override;
 
   // InstallFinalizer:
@@ -101,7 +102,6 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
 
   base::WeakPtrFactory<WebAppInstallFinalizer> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(WebAppInstallFinalizer);
 };
 
 }  // namespace web_app

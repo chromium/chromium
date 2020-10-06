@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -46,6 +45,8 @@ class AppBrowserController : public TabStripModelObserver,
                              public content::WebContentsObserver,
                              public BrowserThemeProviderDelegate {
  public:
+  AppBrowserController(const AppBrowserController&) = delete;
+  AppBrowserController& operator=(const AppBrowserController&) = delete;
   ~AppBrowserController() override;
 
   static std::unique_ptr<AppBrowserController> MaybeCreateWebAppController(
@@ -218,7 +219,6 @@ class AppBrowserController : public TabStripModelObserver,
 
   const bool has_tab_strip_;
 
-  DISALLOW_COPY_AND_ASSIGN(AppBrowserController);
 };
 
 }  // namespace web_app

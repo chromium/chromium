@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -60,6 +59,9 @@ constexpr char kAppUnmanagedUrl[] = "https://www.google.com/unmanaged";
 class ExternalWebAppManagerTest : public testing::Test {
  public:
   ExternalWebAppManagerTest() = default;
+  ExternalWebAppManagerTest(const ExternalWebAppManagerTest&) = delete;
+  ExternalWebAppManagerTest& operator=(const ExternalWebAppManagerTest&) =
+      delete;
   ~ExternalWebAppManagerTest() override = default;
 
   // testing::Test:
@@ -186,7 +188,6 @@ class ExternalWebAppManagerTest : public testing::Test {
   // To support context of browser threads.
   content::BrowserTaskEnvironment task_environment_;
 
-  DISALLOW_COPY_AND_ASSIGN(ExternalWebAppManagerTest);
 };
 
 TEST_F(ExternalWebAppManagerTest, ReplacementExtensionBlockedByPolicy) {

@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -46,6 +45,8 @@ class WebAppIconDownloader : public content::WebContentsObserver {
                        const std::vector<GURL>& extra_favicon_urls,
                        Histogram histogram,
                        WebAppIconDownloaderCallback callback);
+  WebAppIconDownloader(const WebAppIconDownloader&) = delete;
+  WebAppIconDownloader& operator=(const WebAppIconDownloader&) = delete;
   ~WebAppIconDownloader() override;
 
   // Instructs the downloader to not query the page for favicons (e.g. when a
@@ -120,7 +121,6 @@ class WebAppIconDownloader : public content::WebContentsObserver {
 
   base::WeakPtrFactory<WebAppIconDownloader> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(WebAppIconDownloader);
 };
 
 }  // namespace web_app

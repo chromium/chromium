@@ -36,6 +36,8 @@ using testing::Pair;
 class WebAppMetricsBrowserTest : public WebAppControllerBrowserTest {
  public:
   WebAppMetricsBrowserTest() = default;
+  WebAppMetricsBrowserTest(const WebAppMetricsBrowserTest&) = delete;
+  WebAppMetricsBrowserTest& operator=(const WebAppMetricsBrowserTest&) = delete;
   ~WebAppMetricsBrowserTest() override = default;
 
   void SetUp() override {
@@ -67,9 +69,6 @@ class WebAppMetricsBrowserTest : public WebAppControllerBrowserTest {
     base::ThreadPoolInstance::Get()->FlushForTesting();
     base::RunLoop().RunUntilIdle();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebAppMetricsBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(WebAppMetricsBrowserTest,

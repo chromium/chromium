@@ -57,6 +57,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleMatchingRequest(
 class WebAppUrlLoaderTest : public InProcessBrowserTest {
  public:
   WebAppUrlLoaderTest() = default;
+  WebAppUrlLoaderTest(const WebAppUrlLoaderTest&) = delete;
+  WebAppUrlLoaderTest& operator=(const WebAppUrlLoaderTest&) = delete;
   ~WebAppUrlLoaderTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -106,7 +108,6 @@ class WebAppUrlLoaderTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<content::WebContents> web_contents_;
 
-  DISALLOW_COPY_AND_ASSIGN(WebAppUrlLoaderTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, Loaded) {

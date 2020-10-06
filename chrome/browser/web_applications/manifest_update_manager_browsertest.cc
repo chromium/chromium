@@ -194,6 +194,10 @@ class ManifestUpdateManagerBrowserTest
           {features::kDesktopPWAsWithoutExtensions});
     }
   }
+  ManifestUpdateManagerBrowserTest(const ManifestUpdateManagerBrowserTest&) =
+      delete;
+  ManifestUpdateManagerBrowserTest& operator=(
+      const ManifestUpdateManagerBrowserTest&) = delete;
 
   ~ManifestUpdateManagerBrowserTest() override = default;
 
@@ -334,7 +338,6 @@ class ManifestUpdateManagerBrowserTest
   base::Optional<base::RunLoop> shortcut_run_loop_;
   base::Optional<SkColor> updated_shortcut_top_left_color_;
 
-  DISALLOW_COPY_AND_ASSIGN(ManifestUpdateManagerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest,

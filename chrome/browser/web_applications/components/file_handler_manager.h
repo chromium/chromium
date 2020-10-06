@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_shortcut_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -28,6 +27,8 @@ namespace web_app {
 class FileHandlerManager {
  public:
   explicit FileHandlerManager(Profile* profile);
+  FileHandlerManager(const FileHandlerManager&) = delete;
+  FileHandlerManager& operator=(const FileHandlerManager&) = delete;
   virtual ~FileHandlerManager();
 
   // |registrar| is used to observe OnWebAppInstalled/Uninstalled events.
@@ -134,7 +135,6 @@ class FileHandlerManager {
 
   base::WeakPtrFactory<FileHandlerManager> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(FileHandlerManager);
 };
 
 }  // namespace web_app

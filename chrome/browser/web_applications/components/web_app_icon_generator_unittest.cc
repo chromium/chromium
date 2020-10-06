@@ -167,13 +167,14 @@ void TestIconGeneration(int icon_size,
 class WebAppIconGeneratorTest : public testing::Test {
  public:
   WebAppIconGeneratorTest() = default;
+  WebAppIconGeneratorTest(const WebAppIconGeneratorTest&) = delete;
+  WebAppIconGeneratorTest& operator=(const WebAppIconGeneratorTest&) = delete;
 
  private:
   // Needed to bypass DCHECK in GetFallbackFont.
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
 
-  DISALLOW_COPY_AND_ASSIGN(WebAppIconGeneratorTest);
 };
 
 TEST_F(WebAppIconGeneratorTest, ConstrainBitmapsToSizes) {

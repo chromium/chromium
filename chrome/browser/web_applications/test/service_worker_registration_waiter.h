@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_SERVICE_WORKER_REGISTRATION_WAITER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_TEST_SERVICE_WORKER_REGISTRATION_WAITER_H_
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "url/gurl.h"
@@ -22,6 +21,10 @@ class ServiceWorkerRegistrationWaiter
  public:
   ServiceWorkerRegistrationWaiter(content::BrowserContext* browser_context,
                                   const GURL& url);
+  ServiceWorkerRegistrationWaiter(const ServiceWorkerRegistrationWaiter&) =
+      delete;
+  ServiceWorkerRegistrationWaiter& operator=(
+      const ServiceWorkerRegistrationWaiter&) = delete;
   ~ServiceWorkerRegistrationWaiter() override;
 
   void AwaitRegistration();
@@ -35,7 +38,6 @@ class ServiceWorkerRegistrationWaiter
   const GURL url_;
   base::RunLoop run_loop_;
 
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerRegistrationWaiter);
 };
 
 }  // namespace web_app

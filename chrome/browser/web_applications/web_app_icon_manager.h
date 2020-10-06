@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
@@ -36,6 +35,8 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
   WebAppIconManager(Profile* profile,
                     WebAppRegistrar& registrar,
                     std::unique_ptr<FileUtilsWrapper> utils);
+  WebAppIconManager(const WebAppIconManager&) = delete;
+  WebAppIconManager& operator=(const WebAppIconManager&) = delete;
   ~WebAppIconManager() override;
 
   using WriteDataCallback = base::OnceCallback<void(bool success)>;
@@ -120,7 +121,6 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
 
   base::WeakPtrFactory<WebAppIconManager> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(WebAppIconManager);
 };
 
 }  // namespace web_app

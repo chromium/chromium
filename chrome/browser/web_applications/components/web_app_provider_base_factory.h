@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APP_PROVIDER_BASE_FACTORY_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APP_PROVIDER_BASE_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class BrowserContextDependencyManager;
@@ -18,6 +17,10 @@ class WebAppProviderBase;
 // Singleton that associates WebAppProviderBase with Profile.
 class WebAppProviderBaseFactory : public BrowserContextKeyedServiceFactory {
  public:
+  WebAppProviderBaseFactory(const WebAppProviderBaseFactory&) = delete;
+  WebAppProviderBaseFactory& operator=(const WebAppProviderBaseFactory&) =
+      delete;
+
   static WebAppProviderBase* GetForProfile(Profile* profile);
 
   static WebAppProviderBaseFactory* GetInstance();
@@ -29,7 +32,6 @@ class WebAppProviderBaseFactory : public BrowserContextKeyedServiceFactory {
       BrowserContextDependencyManager* dependency_manager);
   ~WebAppProviderBaseFactory() override;
 
-  DISALLOW_COPY_AND_ASSIGN(WebAppProviderBaseFactory);
 };
 
 }  // namespace web_app

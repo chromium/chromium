@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/optional.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -46,6 +45,10 @@ class ExternallyInstalledWebAppPrefs {
       ExternalInstallSource install_source);
 
   explicit ExternallyInstalledWebAppPrefs(PrefService* pref_service);
+  ExternallyInstalledWebAppPrefs(const ExternallyInstalledWebAppPrefs&) =
+      delete;
+  ExternallyInstalledWebAppPrefs& operator=(
+      const ExternallyInstalledWebAppPrefs&) = delete;
 
   void Insert(const GURL& url,
               const AppId& app_id,
@@ -62,7 +65,6 @@ class ExternallyInstalledWebAppPrefs {
  private:
   PrefService* const pref_service_;
 
-  DISALLOW_COPY_AND_ASSIGN(ExternallyInstalledWebAppPrefs);
 };
 
 }  // namespace web_app

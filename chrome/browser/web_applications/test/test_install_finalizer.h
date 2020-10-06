@@ -9,7 +9,6 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
 #include "base/optional.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 
@@ -23,6 +22,8 @@ class TestInstallFinalizer final : public InstallFinalizer {
   static AppId GetAppIdForUrl(const GURL& url);
 
   TestInstallFinalizer();
+  TestInstallFinalizer(const TestInstallFinalizer&) = delete;
+  TestInstallFinalizer& operator=(const TestInstallFinalizer&) = delete;
   ~TestInstallFinalizer() override;
 
   // InstallFinalizer:
@@ -93,7 +94,6 @@ class TestInstallFinalizer final : public InstallFinalizer {
 
   int num_reparent_tab_calls_ = 0;
 
-  DISALLOW_COPY_AND_ASSIGN(TestInstallFinalizer);
 };
 
 }  // namespace web_app

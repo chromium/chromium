@@ -16,7 +16,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -52,8 +51,9 @@ class WebAppShortcutCreatorMock : public WebAppShortcutCreator {
   MOCK_CONST_METHOD0(GetAppBundlesByIdUnsorted, std::vector<base::FilePath>());
   MOCK_CONST_METHOD1(RevealAppShimInFinder, void(const base::FilePath&));
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebAppShortcutCreatorMock);
+  WebAppShortcutCreatorMock(const WebAppShortcutCreatorMock&) = delete;
+  WebAppShortcutCreatorMock& operator=(const WebAppShortcutCreatorMock&) =
+      delete;
 };
 
 class WebAppShortcutCreatorSortingMock : public WebAppShortcutCreator {
@@ -64,8 +64,10 @@ class WebAppShortcutCreatorSortingMock : public WebAppShortcutCreator {
 
   MOCK_CONST_METHOD0(GetAppBundlesByIdUnsorted, std::vector<base::FilePath>());
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebAppShortcutCreatorSortingMock);
+  WebAppShortcutCreatorSortingMock(const WebAppShortcutCreatorSortingMock&) =
+      delete;
+  WebAppShortcutCreatorSortingMock& operator=(
+      const WebAppShortcutCreatorSortingMock&) = delete;
 };
 
 std::unique_ptr<ShortcutInfo> GetShortcutInfo() {
@@ -83,6 +85,9 @@ std::unique_ptr<ShortcutInfo> GetShortcutInfo() {
 class WebAppShortcutCreatorTest : public testing::Test {
  protected:
   WebAppShortcutCreatorTest() {}
+  WebAppShortcutCreatorTest(const WebAppShortcutCreatorTest&) = delete;
+  WebAppShortcutCreatorTest& operator=(const WebAppShortcutCreatorTest&) =
+      delete;
 
   void SetUp() override {
     base::mac::SetBaseBundleID(kFakeChromeBundleId);
@@ -136,8 +141,6 @@ class WebAppShortcutCreatorTest : public testing::Test {
   base::FilePath shim_base_name_;
   base::FilePath shim_path_;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebAppShortcutCreatorTest);
 };
 
 }  // namespace

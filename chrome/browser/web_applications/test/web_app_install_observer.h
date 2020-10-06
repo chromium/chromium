@@ -9,7 +9,6 @@
 #include <set>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
@@ -42,6 +41,9 @@ class WebAppInstallObserver final : public AppRegistrarObserver {
   static std::unique_ptr<WebAppInstallObserver> CreateUninstallListener(
       Profile* registrar,
       const std::set<AppId>& listening_for_uninstall_app_ids);
+
+  WebAppInstallObserver(const WebAppInstallObserver&) = delete;
+  WebAppInstallObserver& operator=(const WebAppInstallObserver&) = delete;
 
   ~WebAppInstallObserver() override;
 
@@ -110,7 +112,6 @@ class WebAppInstallObserver final : public AppRegistrarObserver {
 
   ScopedObserver<AppRegistrar, AppRegistrarObserver> observer_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(WebAppInstallObserver);
 };
 
 }  // namespace web_app

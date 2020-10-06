@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_TAB_HELPER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_TAB_HELPER_H_
 
-#include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
@@ -31,6 +30,8 @@ class WebAppTabHelper : public WebAppTabHelperBase,
   static void CreateForWebContents(content::WebContents* contents);
 
   explicit WebAppTabHelper(content::WebContents* web_contents);
+  WebAppTabHelper(const WebAppTabHelper&) = delete;
+  WebAppTabHelper& operator=(const WebAppTabHelper&) = delete;
   ~WebAppTabHelper() override;
 
   // WebAppTabHelperBase:
@@ -93,7 +94,6 @@ class WebAppTabHelper : public WebAppTabHelperBase,
   ScopedObserver<AppRegistrar, AppRegistrarObserver> observer_{this};
   WebAppProviderBase* provider_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(WebAppTabHelper);
 };
 
 }  // namespace web_app

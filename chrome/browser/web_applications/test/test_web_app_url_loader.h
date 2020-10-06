@@ -18,6 +18,8 @@ namespace web_app {
 class TestWebAppUrlLoader : public WebAppUrlLoader {
  public:
   TestWebAppUrlLoader();
+  TestWebAppUrlLoader(const TestWebAppUrlLoader&) = delete;
+  TestWebAppUrlLoader& operator=(const TestWebAppUrlLoader&) = delete;
   ~TestWebAppUrlLoader() override;
 
   // Changes TestWebAppUrlLoader to save LoadUrl() calls. Use
@@ -61,7 +63,6 @@ class TestWebAppUrlLoader : public WebAppUrlLoader {
 
   std::queue<std::pair<GURL, ResultCallback>> pending_requests_;
 
-  DISALLOW_COPY_AND_ASSIGN(TestWebAppUrlLoader);
 };
 
 }  // namespace web_app

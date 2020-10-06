@@ -86,6 +86,8 @@ class FakeChromeRenderFrame
 class WebAppDataRetrieverTest : public ChromeRenderViewHostTestHarness {
  public:
   WebAppDataRetrieverTest() = default;
+  WebAppDataRetrieverTest(const WebAppDataRetrieverTest&) = delete;
+  WebAppDataRetrieverTest& operator=(const WebAppDataRetrieverTest&) = delete;
   ~WebAppDataRetrieverTest() override = default;
 
   // Set fake ChromeRenderFrame to avoid mojo connection errors.
@@ -160,7 +162,6 @@ class WebAppDataRetrieverTest : public ChromeRenderViewHostTestHarness {
   base::Optional<std::unique_ptr<WebApplicationInfo>> web_app_info_;
   std::vector<WebApplicationIconInfo> icons_;
 
-  DISALLOW_COPY_AND_ASSIGN(WebAppDataRetrieverTest);
 };
 
 TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_NoEntry) {

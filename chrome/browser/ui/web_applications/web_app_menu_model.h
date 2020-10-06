@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_MENU_MODEL_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_MENU_MODEL_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 
 // Menu model for the menu button in a web app browser window.
@@ -14,6 +13,8 @@ class WebAppMenuModel : public AppMenuModel {
   static constexpr int kUninstallAppCommandId = 1;
 
   WebAppMenuModel(ui::AcceleratorProvider* provider, Browser* browser);
+  WebAppMenuModel(const WebAppMenuModel&) = delete;
+  WebAppMenuModel& operator=(const WebAppMenuModel&) = delete;
   ~WebAppMenuModel() override;
 
   // AppMenuModel:
@@ -25,8 +26,6 @@ class WebAppMenuModel : public AppMenuModel {
   void Build() override;
   void LogMenuAction(AppMenuAction action_id) override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebAppMenuModel);
 };
 
 #endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_MENU_MODEL_H_

@@ -55,9 +55,11 @@ class DailyMetricsHelperTest : public WebAppTest {
     FlushOldRecordsAndUpdate(record, profile());
   }
 
+  DailyMetricsHelperTest(const DailyMetricsHelperTest&) = delete;
+  DailyMetricsHelperTest& operator=(const DailyMetricsHelperTest&) = delete;
+
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
 
-  DISALLOW_COPY_AND_ASSIGN(DailyMetricsHelperTest);
 };
 
 }  // namespace

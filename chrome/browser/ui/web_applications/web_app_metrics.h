@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_METRICS_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_METRICS_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/scoped_observer.h"
@@ -38,6 +37,8 @@ class WebAppMetrics : public KeyedService,
   static WebAppMetrics* Get(Profile* profile);
 
   explicit WebAppMetrics(Profile* profile);
+  WebAppMetrics(const WebAppMetrics&) = delete;
+  WebAppMetrics& operator=(const WebAppMetrics&) = delete;
   ~WebAppMetrics() override;
 
   // SiteEngagementObserver:
@@ -95,7 +96,6 @@ class WebAppMetrics : public KeyedService,
 
   base::WeakPtrFactory<WebAppMetrics> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(WebAppMetrics);
 };
 
 }  // namespace web_app

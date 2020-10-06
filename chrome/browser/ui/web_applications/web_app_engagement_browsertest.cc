@@ -157,6 +157,9 @@ namespace web_app {
 class WebAppEngagementBrowserTest : public WebAppControllerBrowserTestBase {
  public:
   WebAppEngagementBrowserTest() = default;
+  WebAppEngagementBrowserTest(const WebAppEngagementBrowserTest&) = delete;
+  WebAppEngagementBrowserTest& operator=(const WebAppEngagementBrowserTest&) =
+      delete;
   ~WebAppEngagementBrowserTest() override = default;
 
   void TestEngagementEventWebAppLaunch(const base::HistogramTester& tester,
@@ -220,8 +223,6 @@ class WebAppEngagementBrowserTest : public WebAppControllerBrowserTestBase {
 
   base::Optional<InstallResultCode> result_code_;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebAppEngagementBrowserTest);
 };
 
 // TODO(crbug.com/1012171): Migrate all to WebAppEngagementBrowserTest.

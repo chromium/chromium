@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/optional.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
@@ -30,6 +29,8 @@ using Registry = std::map<AppId, std::unique_ptr<WebApp>>;
 class WebAppRegistrar : public AppRegistrar, public ProfileManagerObserver {
  public:
   explicit WebAppRegistrar(Profile* profile);
+  WebAppRegistrar(const WebAppRegistrar&) = delete;
+  WebAppRegistrar& operator=(const WebAppRegistrar&) = delete;
   ~WebAppRegistrar() override;
 
   bool is_empty() const { return registry_.empty(); }
@@ -89,6 +90,8 @@ class WebAppRegistrar : public AppRegistrar, public ProfileManagerObserver {
       explicit Iter(InternalIter&& internal_iter)
           : internal_iter_(std::move(internal_iter)) {}
       Iter(Iter&&) = default;
+      Iter(const Iter&) = delete;
+      Iter& operator=(const Iter&) = delete;
       ~Iter() = default;
 
       void operator++() { ++internal_iter_; }
@@ -99,11 +102,12 @@ class WebAppRegistrar : public AppRegistrar, public ProfileManagerObserver {
 
      private:
       InternalIter internal_iter_;
-      DISALLOW_COPY_AND_ASSIGN(Iter);
     };
 
     explicit AppSet(const WebAppRegistrar* registrar);
     AppSet(AppSet&&) = default;
+    AppSet(const AppSet&) = delete;
+    AppSet& operator=(const AppSet&) = delete;
     ~AppSet();
 
     using iterator = Iter<WebApp>;
@@ -119,7 +123,6 @@ class WebAppRegistrar : public AppRegistrar, public ProfileManagerObserver {
 #if DCHECK_IS_ON()
     const size_t mutations_count_;
 #endif
-    DISALLOW_COPY_AND_ASSIGN(AppSet);
   };
 
   const AppSet AllApps() const;
@@ -136,7 +139,6 @@ class WebAppRegistrar : public AppRegistrar, public ProfileManagerObserver {
 #if DCHECK_IS_ON()
   size_t mutations_count_ = 0;
 #endif
-  DISALLOW_COPY_AND_ASSIGN(WebAppRegistrar);
 };
 
 // A writable API for the registry model. Mutable WebAppRegistrar must be used

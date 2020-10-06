@@ -172,6 +172,8 @@ class SystemWebAppManagerTest : public WebAppTest {
     scoped_feature_list_.InitWithFeatures(
         {features::kDesktopPWAsWithoutExtensions}, {});
   }
+  SystemWebAppManagerTest(const SystemWebAppManagerTest&) = delete;
+  SystemWebAppManagerTest& operator=(const SystemWebAppManagerTest&) = delete;
 
   ~SystemWebAppManagerTest() override = default;
 
@@ -378,7 +380,6 @@ class SystemWebAppManagerTest : public WebAppTest {
   TestWebAppUrlLoader* url_loader_ = nullptr;
   std::unique_ptr<TestDataRetrieverFactory> test_data_retriever_factory_;
 
-  DISALLOW_COPY_AND_ASSIGN(SystemWebAppManagerTest);
 };
 
 // Test that System Apps do install with the feature enabled.

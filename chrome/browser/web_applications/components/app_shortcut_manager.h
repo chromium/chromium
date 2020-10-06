@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -34,6 +33,8 @@ struct ShortcutInfo;
 class AppShortcutManager {
  public:
   explicit AppShortcutManager(Profile* profile);
+  AppShortcutManager(const AppShortcutManager&) = delete;
+  AppShortcutManager& operator=(const AppShortcutManager&) = delete;
   virtual ~AppShortcutManager();
 
   void SetSubsystems(AppIconManager* icon_manager, AppRegistrar* registrar);
@@ -126,7 +127,6 @@ class AppShortcutManager {
 
   base::WeakPtrFactory<AppShortcutManager> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(AppShortcutManager);
 };
 
 }  // namespace web_app

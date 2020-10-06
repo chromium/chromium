@@ -69,6 +69,8 @@ class InstallFinalizerUnitTest
         break;
     }
   }
+  InstallFinalizerUnitTest(const InstallFinalizerUnitTest&) = delete;
+  InstallFinalizerUnitTest& operator=(const InstallFinalizerUnitTest&) = delete;
   ~InstallFinalizerUnitTest() override = default;
 
   void SetUp() override {
@@ -138,7 +140,6 @@ class InstallFinalizerUnitTest
   std::unique_ptr<WebAppUiManager> ui_manager_;
   std::unique_ptr<InstallFinalizer> finalizer_;
 
-  DISALLOW_COPY_AND_ASSIGN(InstallFinalizerUnitTest);
 };
 
 TEST_P(InstallFinalizerUnitTest, BasicInstallSucceeds) {

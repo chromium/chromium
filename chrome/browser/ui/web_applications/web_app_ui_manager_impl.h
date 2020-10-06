@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -32,6 +31,8 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
   static WebAppUiManagerImpl* Get(Profile* profile);
 
   explicit WebAppUiManagerImpl(Profile* profile);
+  WebAppUiManagerImpl(const WebAppUiManagerImpl&) = delete;
+  WebAppUiManagerImpl& operator=(const WebAppUiManagerImpl&) = delete;
   ~WebAppUiManagerImpl() override;
 
   void SetSubsystems(AppRegistryController* app_registry_controller) override;
@@ -84,7 +85,6 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
 
   base::WeakPtrFactory<WebAppUiManagerImpl> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(WebAppUiManagerImpl);
 };
 
 }  // namespace web_app

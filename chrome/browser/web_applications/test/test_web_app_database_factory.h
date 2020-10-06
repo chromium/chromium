@@ -9,7 +9,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -28,6 +27,9 @@ class WebAppProto;
 class TestWebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
  public:
   TestWebAppDatabaseFactory();
+  TestWebAppDatabaseFactory(const TestWebAppDatabaseFactory&) = delete;
+  TestWebAppDatabaseFactory& operator=(const TestWebAppDatabaseFactory&) =
+      delete;
   ~TestWebAppDatabaseFactory() override;
 
   // AbstractWebAppDatabaseFactory interface implementation.
@@ -45,7 +47,6 @@ class TestWebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
  private:
   std::unique_ptr<syncer::ModelTypeStore> store_;
 
-  DISALLOW_COPY_AND_ASSIGN(TestWebAppDatabaseFactory);
 };
 
 }  // namespace web_app
