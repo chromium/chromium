@@ -27,7 +27,6 @@ const char kName[] = "name";
 const char kValue1[] = "value1";
 const char kValue2[] = "value2";
 const char kValue3[] = "value3";
-const ModelType kUnspecifiedModelTypeForUma = ModelType::UNSPECIFIED;
 
 sync_pb::EntitySpecifics GenerateSpecifics(const std::string& name,
                                            const std::string& value) {
@@ -209,8 +208,7 @@ TEST_F(ProcessorEntityTest, NewLocalItem) {
   EXPECT_EQ(entity->metadata().specifics_hash(), request.specifics_hash);
 
   // Ack the commit.
-  entity->ReceiveCommitResponse(GenerateAckData(request, kId, 1), false,
-                                kUnspecifiedModelTypeForUma);
+  entity->ReceiveCommitResponse(GenerateAckData(request, kId, 1), false);
 
   EXPECT_EQ(kId, entity->metadata().server_id());
   EXPECT_FALSE(entity->metadata().is_deleted());
@@ -362,8 +360,7 @@ TEST_F(ProcessorEntityTest, LocalChange) {
   EXPECT_FALSE(entity->RequiresCommitRequest());
 
   // Ack the commit.
-  entity->ReceiveCommitResponse(GenerateAckData(request, kId, 2), false,
-                                kUnspecifiedModelTypeForUma);
+  entity->ReceiveCommitResponse(GenerateAckData(request, kId, 2), false);
 
   EXPECT_EQ(1, entity->metadata().sequence_number());
   EXPECT_EQ(1, entity->metadata().acked_sequence_number());
@@ -428,8 +425,7 @@ TEST_F(ProcessorEntityTest, LocalDeletion) {
   EXPECT_EQ(entity->metadata().specifics_hash(), request.specifics_hash);
 
   // Ack the deletion.
-  entity->ReceiveCommitResponse(GenerateAckData(request, kId, 2), false,
-                                kUnspecifiedModelTypeForUma);
+  entity->ReceiveCommitResponse(GenerateAckData(request, kId, 2), false);
 
   EXPECT_TRUE(entity->metadata().is_deleted());
   EXPECT_EQ(1, entity->metadata().sequence_number());
@@ -482,8 +478,7 @@ TEST_F(ProcessorEntityTest, LocalUndeletion) {
   EXPECT_FALSE(entity->RequiresCommitRequest());
 
   // Ack the commit.
-  entity->ReceiveCommitResponse(GenerateAckData(request, kId, 2), false,
-                                kUnspecifiedModelTypeForUma);
+  entity->ReceiveCommitResponse(GenerateAckData(request, kId, 2), false);
 
   EXPECT_EQ(2, entity->metadata().sequence_number());
   EXPECT_EQ(2, entity->metadata().acked_sequence_number());
@@ -536,8 +531,7 @@ TEST_F(ProcessorEntityTest, LocalChangesInterleaved) {
   EXPECT_FALSE(entity->CanClearMetadata());
 
   // Ack the first commit.
-  entity->ReceiveCommitResponse(GenerateAckData(request_v1, kId, 2), false,
-                                kUnspecifiedModelTypeForUma);
+  entity->ReceiveCommitResponse(GenerateAckData(request_v1, kId, 2), false);
 
   EXPECT_EQ(2, entity->metadata().sequence_number());
   EXPECT_EQ(1, entity->metadata().acked_sequence_number());
@@ -553,8 +547,7 @@ TEST_F(ProcessorEntityTest, LocalChangesInterleaved) {
   EXPECT_FALSE(entity->HasCommitData());
 
   // Ack the second commit.
-  entity->ReceiveCommitResponse(GenerateAckData(request_v2, kId, 3), false,
-                                kUnspecifiedModelTypeForUma);
+  entity->ReceiveCommitResponse(GenerateAckData(request_v2, kId, 3), false);
 
   EXPECT_EQ(2, entity->metadata().sequence_number());
   EXPECT_EQ(2, entity->metadata().acked_sequence_number());
@@ -582,8 +575,7 @@ TEST_F(ProcessorEntityTest, NewLocalChangeUpdatedId) {
 
   // Before receiving commit response make local modification to the entity.
   entity->MakeLocalChange(GenerateEntityData(kHash, kName, kValue2));
-  entity->ReceiveCommitResponse(GenerateAckData(request, kId, 1), false,
-                                kUnspecifiedModelTypeForUma);
+  entity->ReceiveCommitResponse(GenerateAckData(request, kId, 1), false);
 
   // Receiving commit response with valid id should update
   // ProcessorEntity. Consecutive commit requests should include updated
@@ -643,52 +635,6 @@ TEST_F(ProcessorEntityTest, LocalCreationConflictsWithServerTombstone) {
   CommitRequestData request;
   entity->InitializeCommitRequestData(&request);
   EXPECT_EQ(kId, request.entity->id);
-}
-
-// Tests that the Sync.CommitLatency metric is correctly updated.
-TEST_F(ProcessorEntityTest, CommitLatencyUmaTest) {
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<ProcessorEntity> entity = CreateNew();
-  CommitRequestData request;
-  entity->MakeLocalChange(GenerateEntityData(kHash, kName, kValue1));
-  entity->InitializeCommitRequestData(&request);
-  entity->ReceiveCommitResponse(GenerateAckData(request, kId, 1), false,
-                                /*type_for_uma=*/ModelType::BOOKMARKS);
-
-  std::vector<base::Bucket> histogram_samples =
-      histogram_tester.GetAllSamples("Sync.CommitLatency.BOOKMARK");
-  ASSERT_THAT(histogram_samples, testing::SizeIs(1));
-  // Verify that the sample is in any of the buckets for 0 millis to 2 minutes.
-  EXPECT_EQ(1, histogram_samples.at(0).count);
-  EXPECT_LE(histogram_samples.at(0).min,
-            base::TimeDelta::FromMinutes(2).InMilliseconds());
-}
-
-// Tests that the Sync.CommitLatency metric is correctly updated in case the
-// latency is unknown.
-TEST_F(ProcessorEntityTest, CommitUnknownLatencyUmaTest) {
-  base::HistogramTester histogram_tester;
-  CommitRequestData request;
-
-  // Create new entity and preserve its metadata.
-  std::unique_ptr<ProcessorEntity> entity = CreateNew();
-  entity->MakeLocalChange(GenerateEntityData(kHash, kName, kValue1));
-  sync_pb::EntityMetadata entity_metadata = entity->metadata();
-
-  // Restore entity from metadata and emulate bridge passing different specifics
-  // to SetCommitData.
-  entity = RestoreFromMetadata(std::move(entity_metadata));
-  auto entity_data = GenerateEntityData(kHash, kName, kValue2);
-  entity->SetCommitData(std::move(entity_data));
-
-  entity->InitializeCommitRequestData(&request);
-  entity->ReceiveCommitResponse(GenerateAckData(request, kId, 1), false,
-                                /*type_for_uma=*/ModelType::BOOKMARKS);
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("Sync.CommitLatency.BOOKMARK"),
-              testing::ElementsAre(base::Bucket(
-                  /*min=*/base::TimeDelta::FromMinutes(3).InMilliseconds(),
-                  /*count=*/1)));
 }
 
 }  // namespace syncer

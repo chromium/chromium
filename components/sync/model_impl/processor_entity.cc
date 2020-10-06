@@ -10,7 +10,6 @@
 #include "base/hash/sha1.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -280,8 +279,7 @@ void ProcessorEntity::InitializeCommitRequestData(CommitRequestData* request) {
 }
 
 void ProcessorEntity::ReceiveCommitResponse(const CommitResponseData& data,
-                                            bool commit_only,
-                                            ModelType type_for_uma) {
+                                            bool commit_only) {
   DCHECK_EQ(metadata_.client_tag_hash(), data.client_tag_hash.value());
   DCHECK_GT(data.sequence_number, metadata_.acked_sequence_number());
   // Version is not valid for commit only types, as it's stripped before being
@@ -314,15 +312,6 @@ void ProcessorEntity::ReceiveCommitResponse(const CommitResponseData& data,
       commit_data_->id = metadata_.server_id();
     }
   }
-
-  // |unsynced_time_| can be null if the commit spanned a browser restart,
-  // since we don't currently persist this field. In such cases, we assume
-  // it takes longer than 3 minutes (saturation bucket).
-  base::UmaHistogramMediumTimes(std::string("Sync.CommitLatency.") +
-                                    ModelTypeToHistogramSuffix(type_for_uma),
-                                unsynced_time_.is_null()
-                                    ? base::TimeDelta::Max()
-                                    : base::Time::Now() - unsynced_time_);
 }
 
 void ProcessorEntity::ClearTransientSyncState() {

@@ -126,16 +126,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Sync.CommitLatency" units="ms" expires_after="M89">
-  <owner>mastiz@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <summary>
-    Records the time between the local model being changed until the commit
-    response is completed and propagated to the model thread. Note: This is only
-    recorded with a data type suffix. The base version is never recorded.
-  </summary>
-</histogram>
-
 <histogram name="Sync.CommitResponse" enum="SyncerErrorValues"
     expires_after="2021-05-27">
 <!-- Name completed by histogram_suffixes name="SyncModelType" -->

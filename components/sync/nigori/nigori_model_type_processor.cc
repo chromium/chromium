@@ -99,7 +99,7 @@ void NigoriModelTypeProcessor::OnCommitCompleted(
   model_type_state_ = type_state;
   if (!committed_response_list.empty()) {
     entity_->ReceiveCommitResponse(committed_response_list[0],
-                                   /*commit_only=*/false, ModelType::NIGORI);
+                                   /*commit_only=*/false);
   } else {
     // If the entity hasn't been mentioned in response_list, then it's not
     // committed and we should reset its commit_requested_sequence_number so
