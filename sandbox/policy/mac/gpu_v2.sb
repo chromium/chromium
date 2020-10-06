@@ -25,6 +25,7 @@
       (global-name "com.apple.analyticsd")
       (global-name "com.apple.diagnosticd")
       (global-name "com.apple.pasteboard.1") ; For tests only.
+      (global-name "com.apple.systemstats.analysis") ; https://crbug.com/1135413
       (global-name "com.apple.tccd.system")
     )
     (deny mach-lookup (with send-signal SIGABRT))
