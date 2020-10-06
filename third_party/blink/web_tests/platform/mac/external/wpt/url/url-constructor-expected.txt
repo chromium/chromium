@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 570 tests; 424 PASS, 146 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 574 tests; 424 PASS, 150 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -400,6 +400,7 @@ PASS Parsing: <sc::a@example.net> against <about:blank>
 PASS Parsing: <wow:%NBD> against <about:blank>
 PASS Parsing: <wow:%1G> against <about:blank>
 FAIL Parsing: <wow:￿> against <about:blank> assert_equals: href expected "wow:%EF%BF%BF" but got "wow:%EF%BF%BD"
+FAIL Parsing: <http://example.com/U+d800���U+dffeU+dfff﷐﷏﷯ﷰ￾￿?U+d800���U+dffeU+dfff﷐﷏﷯ﷰ￾￿> against <about:blank> Failed to construct 'URL': Invalid URL
 FAIL Parsing: <http://a<b> against <about:blank> assert_throws_js: function "function() {
           bURL(expected.input, expected.base)
         }" did not throw
@@ -467,6 +468,8 @@ PASS Parsing: <pix/submit.gif> against <file:///C:/Users/Domenic/Dropbox/GitHub/
 FAIL Parsing: <..> against <file:///C:/> assert_equals: href expected "file:///C:/" but got "file:///"
 PASS Parsing: <..> against <file:///>
 FAIL Parsing: </> against <file:///C:/a/b> assert_equals: href expected "file:///C:/" but got "file:///"
+FAIL Parsing: </> against <file://h/C:/a/b> assert_equals: href expected "file://h/C:/" but got "file:///"
+FAIL Parsing: </> against <file://h/a/b> assert_equals: href expected "file://h/" but got "file:///"
 FAIL Parsing: <//d:> against <file:///C:/a/b> Failed to construct 'URL': Invalid URL
 FAIL Parsing: <//d:/..> against <file:///C:/a/b> Failed to construct 'URL': Invalid URL
 PASS Parsing: <..> against <file:///ab:/>
@@ -495,6 +498,7 @@ PASS Parsing: <file://> against <file://ape/>
 PASS Parsing: </rooibos> against <file://tea/>
 PASS Parsing: </?chai> against <file://tea/>
 FAIL Parsing: <C|> against <file://host/dir/file> assert_equals: href expected "file://host/C:" but got "file://host/dir/C%7C"
+FAIL Parsing: <C|> against <file://host/D:/dir1/dir2/file> assert_equals: href expected "file://host/C:" but got "file://host/D:/dir1/dir2/C%7C"
 FAIL Parsing: <C|#> against <file://host/dir/file> assert_equals: href expected "file://host/C:#" but got "file://host/dir/C%7C#"
 FAIL Parsing: <C|?> against <file://host/dir/file> assert_equals: href expected "file://host/C:?" but got "file://host/dir/C%7C?"
 FAIL Parsing: <C|/> against <file://host/dir/file> assert_equals: href expected "file://host/C:/" but got "file://host/dir/C%7C/"

@@ -2729,7 +2729,6 @@ crbug.com/626703 [ Mac10.12 ] external/wpt/css/cssom/CSSStyleSheet-constructable
 crbug.com/626703 [ Mac10.12 ] external/wpt/WebCryptoAPI/derive_bits_keys/hkdf.https.any.worker.html?1001-2000 [ Failure Timeout ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/WebCryptoAPI/derive_bits_keys/hkdf.https.any.worker.html?1001-2000 [ Failure Timeout ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/WebCryptoAPI/derive_bits_keys/hkdf.https.any.html?3001-last [ Failure Timeout ]
-crbug.com/626703 [ Mac10.12 ] external/wpt/html/dom/idlharness.https.html?exclude=(Document|Window|HTML.\*) [ Failure Timeout ]
 crbug.com/626703 [ Win7 ] external/wpt/content-security-policy/object-src/object-src-no-url-allowed.html [ Timeout ]
 crbug.com/626703 [ Win7 ] external/wpt/content-security-policy/plugin-types/plugintypes-nourl-allowed.html [ Timeout ]
 crbug.com/626703 external/wpt/service-workers/service-worker/ready.https.window.html [ Timeout ]
