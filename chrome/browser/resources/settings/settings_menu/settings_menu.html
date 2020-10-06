@@ -95,94 +95,116 @@
         }
       }
     </style>
-    <iron-selector id="topMenu" selectable="a:not(#extensionsLink)"
-        attr-for-selected="href" on-iron-activate="onSelectorActivate_"
-        role="navigation" on-click="onLinkClick_">
-      <a id="people" href="/people" hidden="[[!pageVisibility.people]]">
-        <iron-icon icon="cr:person"></iron-icon>
-        $i18n{peoplePageTitle}
-      </a>
-      <a id="autofill" href="/autofill"
-          hidden="[[!pageVisibility.autofill]]">
-        <iron-icon icon="settings:assignment"></iron-icon>
-        $i18n{autofillPageTitle}
-      </a>
-      <a href="/safetyCheck" hidden="[[!pageVisibility.safetyCheck]]"
-          id="safetyCheck">
-        <iron-icon icon="settings20:safety-check"></iron-icon>
-        $i18n{safetyCheckSectionTitle}
-      </a>
-      <a href="/privacy" hidden="[[!pageVisibility.privacy]]">
-        <iron-icon icon="cr:security"></iron-icon>
-        $i18n{privacyPageTitle}
-      </a>
-      <a id="appearance" href="/appearance"
-        hidden="[[!pageVisibility.appearance]]">
-        <iron-icon icon="settings:palette"></iron-icon>
-        $i18n{appearancePageTitle}
-      </a>
-      <a href="/search">
-        <iron-icon icon="cr:search"></iron-icon>
-        $i18n{searchPageTitle}
-      </a>
-<if expr="not chromeos">
-      <a id="defaultBrowser" href="/defaultBrowser"
-        hidden="[[!pageVisibility.defaultBrowser]]">
-        <iron-icon icon="settings:web"></iron-icon>
-        $i18n{defaultBrowser}
-      </a>
-</if>
-      <a id="onStartup" href="/onStartup"
-        hidden="[[!pageVisibility.onStartup]]">
-        <iron-icon icon="settings:power-settings-new"></iron-icon>
-        $i18n{onStartup}
-      </a>
-      <cr-button id="advancedButton"
-          aria-expanded$="[[boolToString_(advancedOpened)]]"
-          on-click="onAdvancedButtonToggle_"
-          hidden="[[!pageVisibility.advancedSettings]]">
-        <span>$i18n{advancedPageTitle}</span>
-        <iron-icon icon="[[arrowState_(advancedOpened)]]">
-        </iron-icon></cr-button>
-      <iron-collapse id="advancedSubmenu" opened="[[advancedOpened]]"
-          hidden="[[!pageVisibility.advancedSettings]]">
-        <iron-selector id="subMenu" selectable="a" attr-for-selected="href"
-            role="navigation" on-click="onLinkClick_">
-          <a href="/languages">
-            <iron-icon icon="settings:language"></iron-icon>
-            $i18n{languagesPageTitle}
+
+    <div role="navigation">
+      <cr-menu-selector>
+        <iron-selector id="topMenu" selectable="a:not(#extensionsLink)"
+            attr-for-selected="href" on-iron-activate="onSelectorActivate_"
+            on-click="onLinkClick_">
+          <a role="menuitem"
+              id="people" href="/people" hidden="[[!pageVisibility.people]]">
+            <iron-icon icon="cr:person"></iron-icon>
+            $i18n{peoplePageTitle}
           </a>
-          <a href="/downloads">
-            <iron-icon icon="cr:file-download"></iron-icon>
-            $i18n{downloadsPageTitle}
+          <a role="menuitem" id="autofill" href="/autofill"
+              hidden="[[!pageVisibility.autofill]]">
+            <iron-icon icon="settings:assignment"></iron-icon>
+            $i18n{autofillPageTitle}
           </a>
-          <a href="/printing" hidden="[[!pageVisibility.printing]]">
-            <iron-icon icon="cr:print"></iron-icon>
-            $i18n{printingPageTitle}
+          <a role="menuitem" href="/safetyCheck"
+              hidden="[[!pageVisibility.safetyCheck]]"
+              id="safetyCheck">
+            <iron-icon icon="settings20:safety-check"></iron-icon>
+            $i18n{safetyCheckSectionTitle}
           </a>
-          <a href="/accessibility">
-            <iron-icon icon="settings:accessibility"></iron-icon>
-            $i18n{a11yPageTitle}
+          <a role="menuitem" href="/privacy"
+              hidden="[[!pageVisibility.privacy]]">
+            <iron-icon icon="cr:security"></iron-icon>
+            $i18n{privacyPageTitle}
           </a>
-<if expr="not chromeos">
-          <a href="/system">
-            <iron-icon icon="settings:build"></iron-icon>
-            $i18n{systemPageTitle}
+          <a role="menuitem" id="appearance" href="/appearance"
+            hidden="[[!pageVisibility.appearance]]">
+            <iron-icon icon="settings:palette"></iron-icon>
+            $i18n{appearancePageTitle}
           </a>
-</if>
-          <a id="reset" href="/reset" hidden="[[!pageVisibility.reset]]">
-            <iron-icon icon="settings:restore"></iron-icon>
-            $i18n{resetPageTitle}
+          <a role="menuitem" href="/search">
+            <iron-icon icon="cr:search"></iron-icon>
+            $i18n{searchPageTitle}
+          </a>
+    <if expr="not chromeos">
+          <a role="menuitem" id="defaultBrowser"
+            href="/defaultBrowser"
+            hidden="[[!pageVisibility.defaultBrowser]]">
+            <iron-icon icon="settings:web"></iron-icon>
+            $i18n{defaultBrowser}
+          </a>
+    </if>
+          <a role="menuitem" id="onStartup" href="/onStartup"
+            hidden="[[!pageVisibility.onStartup]]">
+            <iron-icon icon="settings:power-settings-new"></iron-icon>
+            $i18n{onStartup}
+          </a>
+          <cr-button
+              role="menuitem" tabindex="-1"
+              id="advancedButton"
+              aria-expanded$="[[boolToString_(advancedOpened)]]"
+              on-click="onAdvancedButtonToggle_"
+              hidden="[[!pageVisibility.advancedSettings]]">
+            <span>$i18n{advancedPageTitle}</span>
+            <iron-icon icon="[[arrowState_(advancedOpened)]]">
+            </iron-icon></cr-button>
+          <iron-collapse id="advancedSubmenu" opened="[[advancedOpened]]"
+              hidden="[[!pageVisibility.advancedSettings]]">
+            <iron-selector id="subMenu" selectable="a" attr-for-selected="href"
+                role="navigation" on-click="onLinkClick_">
+              <a role="menuitem" href="/languages"
+                disabled$="[[!advancedOpened]]">
+                <iron-icon icon="settings:language"></iron-icon>
+                $i18n{languagesPageTitle}
+              </a>
+              <a role="menuitem" href="/downloads"
+                  disabled$="[[!advancedOpened]]">
+                <iron-icon icon="cr:file-download"></iron-icon>
+                $i18n{downloadsPageTitle}
+              </a>
+              <a role="menuitem" href="/printing"
+                  disabled$="[[!advancedOpened]]"
+                  hidden="[[!pageVisibility.printing]]">
+                <iron-icon icon="cr:print"></iron-icon>
+                $i18n{printingPageTitle}
+              </a>
+              <a role="menuitem" href="/accessibility"
+                disabled$="[[!advancedOpened]]">
+                <iron-icon icon="settings:accessibility"></iron-icon>
+                $i18n{a11yPageTitle}
+              </a>
+    <if expr="not chromeos">
+              <a role="menuitem" href="/system"
+                  disabled$="[[!advancedOpened]]">
+                <iron-icon icon="settings:build"></iron-icon>
+                $i18n{systemPageTitle}
+              </a>
+    </if>
+              <a role="menuitem" id="reset" href="/reset"
+                  disabled$="[[!advancedOpened]]"
+                  hidden="[[!pageVisibility.reset]]">
+                <iron-icon icon="settings:restore"></iron-icon>
+                $i18n{resetPageTitle}
+              </a>
+            </iron-selector>
+          </iron-collapse>
+          <div id="menuSeparator"></div>
+          <a role="menuitem" id="extensionsLink"
+              href="chrome://extensions" target="_blank"
+              hidden="[[!pageVisibility.extensions]]"
+              on-click="onExtensionsLinkClick_"
+              title="$i18n{extensionsLinkTooltip}">
+            <span>$i18n{extensionsPageTitle}</span>
+            <div class="cr-icon icon-external"></div>
+          </a>
+          <a role="menuitem" id="about-menu" href="/help">
+            $i18n{aboutPageTitle}
           </a>
         </iron-selector>
-      </iron-collapse>
-      <div id="menuSeparator"></div>
-      <a id="extensionsLink" href="chrome://extensions" target="_blank"
-          hidden="[[!pageVisibility.extensions]]"
-          on-click="onExtensionsLinkClick_"
-          title="$i18n{extensionsLinkTooltip}">
-        <span>$i18n{extensionsPageTitle}</span>
-        <div class="cr-icon icon-external"></div>
-      </a>
-      <a id="about-menu" href="/help">$i18n{aboutPageTitle}</a>
-    </iron-selector>
+      </cr-menu-selector>
+    </div>

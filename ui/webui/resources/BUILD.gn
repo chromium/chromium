@@ -89,6 +89,7 @@ preprocess_grit("preprocess_generated") {
       "cr_elements/cr_container_shadow_behavior.m.js",
       "cr_elements/action_link_css.m.js",
       "cr_elements/cr_grid/cr_grid.js",
+      "cr_elements/cr_menu_selector/cr_menu_selector.js",
       "cr_elements/cr_view_manager/cr_view_manager.m.js",
       "cr_elements/cr_toolbar/cr_toolbar_selection_overlay.m.js",
       "cr_elements/cr_toolbar/cr_toolbar_search_field.m.js",

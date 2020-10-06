@@ -61,6 +61,10 @@
          file="${root_gen_dir}/ui/webui/resources/cr_elements/cr_input/cr_input_style_css.m.js"
          use_base_dir="false"
          type="BINDATA" />
+  <include name="IDR_CR_ELEMENTS_CR_MENU_SELECTOR_JS"
+         file="${root_gen_dir}/ui/webui/resources/cr_elements/cr_menu_selector/cr_menu_selector.js"
+         use_base_dir="false"
+         type="BINDATA" />
   <include name="IDR_CR_ELEMENTS_CR_PAGE_HOST_STYLE_CSS_M_JS"
          file="${root_gen_dir}/ui/webui/resources/cr_elements/cr_page_host_style_css.m.js"
          use_base_dir="false"
