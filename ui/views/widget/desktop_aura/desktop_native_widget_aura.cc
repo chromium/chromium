@@ -30,6 +30,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
@@ -522,6 +523,9 @@ void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
     if (!cursor_manager_) {
       cursor_manager_ = new wm::CursorManager(
           std::unique_ptr<wm::NativeCursorManager>(native_cursor_manager_));
+      cursor_manager_->SetDisplay(
+          display::Screen::GetScreen()->GetDisplayNearestWindow(
+              host_->window()));
     }
     native_cursor_manager_->AddHost(host());
     aura::client::SetCursorClient(host_->window(), cursor_manager_);
