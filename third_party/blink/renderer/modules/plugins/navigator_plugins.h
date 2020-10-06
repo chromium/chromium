@@ -35,6 +35,8 @@ class NavigatorPlugins final : public GarbageCollected<NavigatorPlugins>,
   DOMPluginArray* plugins(LocalFrame*) const;
   DOMMimeTypeArray* mimeTypes(LocalFrame*) const;
 
+  void RecordMimeTypes(LocalFrame*) const;
+
   mutable Member<DOMPluginArray> plugins_;
   mutable Member<DOMMimeTypeArray> mime_types_;
 };
