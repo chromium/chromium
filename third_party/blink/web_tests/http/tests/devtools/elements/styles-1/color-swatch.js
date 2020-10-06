@@ -46,7 +46,9 @@
 
     function testColorSwatchInVarFunction(next) {
       var treeItem = ElementsTestRunner.getMatchedStylePropertyTreeItem('background');
-      var swatch = treeItem.valueElement.querySelector('span[is=color-swatch]');
+      var swatch =
+          treeItem.valueElement.querySelector('devtools-css-var-swatch')
+              .shadowRoot.querySelector('.color-swatch-inner');
       TestRunner.addResult('var function has a color swatch: ' + !!swatch);
       next();
     },

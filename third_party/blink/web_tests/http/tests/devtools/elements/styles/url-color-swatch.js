@@ -41,10 +41,15 @@
       var node = childNodes[i];
       switch (node.nodeType) {
         case Node.ELEMENT_NODE:
-          if (node.getAttribute('is') === 'color-swatch')
+          if (node.getAttribute('is') === 'color-swatch') {
             result.push('[] ' + node.textContent);
-          else
+          } else if (
+              node.tagName.toLowerCase() === 'devtools-css-var-swatch' &&
+              node.shadowRoot.querySelector('.color-swatch-inner')) {
+            result.push('[] ' + node.textContent);
+          } else {
             dumpNode(node, result);
+          }
           break;
         case Node.TEXT_NODE:
           result.push(node.nodeValue);

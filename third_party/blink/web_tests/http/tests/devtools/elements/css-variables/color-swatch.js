@@ -38,11 +38,17 @@
 
   function dumpSwatches() {
     const colorTreeElement = ElementsTestRunner.getMatchedStylePropertyTreeItem('color');
-    let swatch = colorTreeElement.valueElement.querySelector('span[is=color-swatch]');
-    TestRunner.addResult('  "color" swatch:' + swatch.color().asString());
+    let varSwatch =
+        colorTreeElement.valueElement.querySelector('devtools-css-var-swatch');
+    let colorSwatch = varSwatch.shadowRoot.querySelector('.color-swatch-inner');
+    TestRunner.addResult(
+        '  "color" swatch:' + colorSwatch.style.backgroundColor);
 
     const bgTreeElement = ElementsTestRunner.getMatchedStylePropertyTreeItem('background-color');
-    swatch = bgTreeElement.valueElement.querySelector('span[is=color-swatch]');
-    TestRunner.addResult('  "background-color" swatch:' + swatch.color().asString());
+    varSwatch =
+        bgTreeElement.valueElement.querySelector('devtools-css-var-swatch');
+    colorSwatch = varSwatch.shadowRoot.querySelector('.color-swatch-inner');
+    TestRunner.addResult(
+        '  "background-color" swatch:' + colorSwatch.style.backgroundColor);
   }
 })();
