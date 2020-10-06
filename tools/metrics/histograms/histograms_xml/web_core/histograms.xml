@@ -304,6 +304,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="WebCore.IndexedDB.FoundBlobFileForValue" enum="Boolean"
+    expires_after="M95">
+  <owner>enne@chromium.org</owner>
+  <owner>mek@chromium.org</owner>
+  <summary>
+    Recorded when a blob is attempted to be read from an IndexedDB value. This
+    is triggered for both implicit blob-wrapped large values and explicit blob
+    values. Its value is false iff there was a file not found value when reading
+    the file. This metric is to help track down the rate of missing files for
+    http://crbug.com/1131151.
+  </summary>
+</histogram>
+
 <histogram name="WebCore.IndexedDB.LevelDB.CloseTime" units="ms"
     expires_after="M95">
   <owner>cmumford@chromium.org</owner>

@@ -53,7 +53,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FilesystemProxyFileStreamReader
       const base::FilePath& file_path,
       std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
       int64_t initial_offset,
-      const base::Time& expected_modification_time);
+      const base::Time& expected_modification_time,
+      bool emit_metrics);
   void Open(net::CompletionOnceCallback callback);
 
   // Callbacks that are chained from Open for Read.
@@ -83,6 +84,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FilesystemProxyFileStreamReader
   const int64_t initial_offset_;
   const base::Time expected_modification_time_;
   bool has_pending_open_ = false;
+  bool emit_metrics_ = false;
   base::WeakPtrFactory<FilesystemProxyFileStreamReader> weak_factory_{this};
 };
 

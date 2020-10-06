@@ -62,6 +62,15 @@ class FileStreamReader {
       int64_t initial_offset,
       const base::Time& expected_modification_time);
 
+  // The same as CreateForFilesystemProxy, but will emit diagnostic metrics.
+  COMPONENT_EXPORT(STORAGE_BROWSER)
+  static std::unique_ptr<FileStreamReader> CreateForIndexedDBDataItemReader(
+      scoped_refptr<base::TaskRunner> task_runner,
+      const base::FilePath& file_path,
+      std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
+      int64_t initial_offset,
+      const base::Time& expected_modification_time);
+
   // Creates a new FileReader for a memory file |file_path|.
   // |initial_offset| specifies the offset in the file where the first read
   // should start.  If the given offset is out of the file range any
