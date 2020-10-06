@@ -102,7 +102,7 @@ SessionStartupPref SessionStartupPref::GetStartupPref(const Profile* profile) {
 
   // Guest sessions should not store any state, therefore they should never
   // trigger a restore during startup.
-  return profile->IsGuestSession()
+  return (profile->IsGuestSession() || profile->IsEphemeralGuestProfile())
              ? SessionStartupPref(SessionStartupPref::DEFAULT)
              : GetStartupPref(profile->GetPrefs());
 }
