@@ -126,6 +126,17 @@ static void ScrollToVisible(Range* match) {
       const_cast<Node*>(&first_node));
 }
 
+void TextFinder::InitNewSession(const mojom::blink::FindOptions& options) {
+  should_locate_active_rect_ = false;
+  CancelPendingScopingEffort();
+  if (!options.find_match) {
+    // This gets called in FindInternal if a match is found, but FindInternal
+    // doesn't run when find_match is false, so we need to do it here in case
+    // there is a match (to get the scoping effort to look for it).
+    find_task_controller_->ResetLastFindRequestCompletedWithNoMatches();
+  }
+}
+
 bool TextFinder::Find(int identifier,
                       const WebString& search_text,
                       const mojom::blink::FindOptions& options,

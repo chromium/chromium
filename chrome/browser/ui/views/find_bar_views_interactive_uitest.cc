@@ -614,6 +614,52 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, MAYBE_CtrlEnter) {
   observer.Wait();
 }
 
+// This tests the following bug that used to exist:
+// 1) Do a find that has 0 results. The search text must contain a space.
+// 2) Navigate to a new page (on the same domain) that contains the search text.
+// 3) Open the find bar. It should display 0/N (where N is the number of
+// matches) and have no active-match highlighting. The bug caused it to display
+// 1/N, with the first having active-match highlighting (and the page wouldn't
+// scroll to the match if it was off-screen).
+IN_PROC_BROWSER_TEST_F(FindInPageTest, ActiveMatchAfterNoResults) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Make sure Chrome is in the foreground, otherwise sending input
+  // won't do anything and the test will hang.
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/find_in_page/simple.html"));
+
+  // This bug does not reproduce when using ui_test_utils::FindInPage here;
+  // sending keystrokes like this is required. Also note that the text must
+  // contain a space.
+  browser()->GetFindBarController()->Show();
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_A, false, false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_SPACE, false, false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_L, false, false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_I, false, false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_N, false, false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_K, false, false, false, false));
+  EXPECT_EQ(ASCIIToUTF16("a link"), GetFindBarText());
+
+  browser()->GetFindBarController()->EndFindSession(
+      find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
+
+  ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/find_in_page/link.html"));
+
+  browser()->GetFindBarController()->Show();
+  auto details = WaitForFindResult();
+  EXPECT_EQ(1, details.number_of_matches());
+  EXPECT_EQ(0, details.active_match_ordinal());
+}
+
 IN_PROC_BROWSER_TEST_F(FindInPageTest, SelectionDuringFind) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Make sure Chrome is in the foreground, otherwise sending input

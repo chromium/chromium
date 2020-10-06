@@ -56,6 +56,7 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
             const mojom::blink::FindOptions& options,
             bool wrap_within_frame,
             bool* active_now = nullptr);
+  void InitNewSession(const mojom::blink::FindOptions&  options);
   void ClearActiveFindMatch();
   void SetFindEndstateFocusAndSelection();
   void StopFindingAndClearSelection();

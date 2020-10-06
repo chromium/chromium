@@ -427,6 +427,30 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, FindInPageSpecialURLs) {
   ASSERT_EQ(first, first_reverse);
 }
 
+// This tests the following bug that used to exist:
+// 1) Do a find that has 0 results
+// 2) Navigate to a new page (on the same domain) that contains the search text.
+// 3) Open the find bar. It will be prepopulated with the previous search text
+// and should show the number of matches for that text. The bug caused it to
+// show 0 matches instead.
+IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, StaleCountAfterNoResults) {
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ui_test_utils::NavigateToURL(browser(), GetURL("simple.html"));
+  EXPECT_EQ(0, FindInPageASCII(web_contents, "link", kFwd, kIgnoreCase,
+                               nullptr));
+  browser()->GetFindBarController()->EndFindSession(
+      find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
+
+  ui_test_utils::NavigateToURL(browser(), GetURL("link.html"));
+  browser()->GetFindBarController()->Show();
+  ui_test_utils::FindResultWaiter observer(web_contents);
+  observer.Wait();
+  EXPECT_EQ(1, observer.number_of_matches());
+  EXPECT_EQ(0, observer.active_match_ordinal());
+}
+
 // Verifies that comments and meta data are not searchable.
 IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
                        CommentsAndMetaDataNotSearchable) {
