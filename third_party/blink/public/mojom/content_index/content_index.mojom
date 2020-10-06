@@ -73,6 +73,14 @@ interface ContentIndexService {
   // Returns how many icons are needed and their sizes (in pixels).
   GetIconSizes(ContentCategory category) => (array<gfx.mojom.Size> icon_sizes);
 
+  // Checks whether the provided url is offline-capable, i.e the ServiceWorker
+  // (identified by |service_worker_registration_id|) returns a 200 status when
+  // trying to navigate to |launch_url| while offline. Returns false if
+  // |launch_url| is handled by any other ServiceWorker.
+  CheckOfflineCapability(int64 service_worker_registration_id,
+                         url.mojom.Url launch_url)
+                         => (bool is_offline_capable);
+
   Add(int64 service_worker_registration_id,
       ContentDescription description,
       array<skia.mojom.Bitmap> icon,

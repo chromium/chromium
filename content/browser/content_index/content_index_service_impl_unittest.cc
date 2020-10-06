@@ -31,7 +31,8 @@ class ContentIndexServiceImplTest : public ::testing::Test {
   ContentIndexServiceImplTest()
       : service_(std::make_unique<ContentIndexServiceImpl>(
             url::Origin::Create(GURL(kOrigin)),
-            /* content_index_context= */ nullptr)) {}
+            /* content_index_context= */ nullptr,
+            /* service_worker_context= */ nullptr)) {}
 
   ~ContentIndexServiceImplTest() override = default;
 

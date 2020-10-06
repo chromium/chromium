@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/content_index/content_index.h"
 
+#include "base/feature_list.h"
 #include "base/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_size.h"
@@ -18,6 +19,15 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+
+namespace features {
+
+// If enabled, registering content index entries will perform a check
+// to see if the provided launch url is offline-capable.
+const base::Feature kContentIndexCheckOffline{
+    "ContentIndexCheckOffline", base::FEATURE_DISABLED_BY_DEFAULT};
+
+}  // namespace features
 
 namespace blink {
 
@@ -144,6 +154,36 @@ void ContentIndex::DidGetIcons(ScriptPromiseResolver* resolver,
 
   KURL launch_url = registration_->GetExecutionContext()->CompleteURL(
       description->launch_url);
+
+  if (base::FeatureList::IsEnabled(features::kContentIndexCheckOffline)) {
+    GetService()->CheckOfflineCapability(
+        registration_->RegistrationId(), launch_url,
+        WTF::Bind(&ContentIndex::DidCheckOfflineCapability,
+                  WrapPersistent(this), WrapPersistent(resolver), launch_url,
+                  std::move(description), std::move(icons)));
+    return;
+  }
+
+  DidCheckOfflineCapability(resolver, std::move(launch_url),
+                            std::move(description), std::move(icons),
+                            /* is_offline_capable= */ true);
+}
+
+void ContentIndex::DidCheckOfflineCapability(
+    ScriptPromiseResolver* resolver,
+    KURL launch_url,
+    mojom::blink::ContentDescriptionPtr description,
+    Vector<SkBitmap> icons,
+    bool is_offline_capable) {
+  ScriptState* script_state = resolver->GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  if (!is_offline_capable) {
+    resolver->Reject(V8ThrowException::CreateTypeError(
+        script_state->GetIsolate(),
+        "The provided launch URL is not offline-capable."));
+    return;
+  }
 
   GetService()->Add(registration_->RegistrationId(), std::move(description),
                     icons, launch_url,

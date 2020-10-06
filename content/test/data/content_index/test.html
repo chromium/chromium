@@ -9,7 +9,7 @@
   <script>
     navigator.serviceWorker.register('sw.js');
 
-    async function addContent(id, icons = []) {
+    async function addContent(id, icons = [], url = '/content_index/test.html') {
       try {
         const registration = await navigator.serviceWorker.ready;
         await registration.index.add({
@@ -18,7 +18,7 @@
           description: 'Description!',
           category: 'article',
           icons,
-          url: '/content_index/test.html',
+          url,
         });
         sendResultToTest('ok');
       } catch (e) {
