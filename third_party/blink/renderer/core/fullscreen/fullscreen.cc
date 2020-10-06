@@ -264,11 +264,18 @@ bool AllowedToRequestFullscreen(Document& document) {
   if (LocalFrame::HasTransientUserActivation(document.GetFrame()))
     return true;
 
-  //  The algorithm is triggered by a user generated orientation change.
+  // The algorithm is triggered by a user-generated orientation change.
   if (ScopedAllowFullscreen::FullscreenAllowedReason() ==
       ScopedAllowFullscreen::kOrientationChange) {
     UseCounter::Count(document,
                       WebFeature::kFullscreenAllowedByOrientationChange);
+    return true;
+  }
+
+  // The algorithm is triggered by another event with transient affordances,
+  // e.g. permission-gated events for user-generated screens changes.
+  if (document.GetFrame()->IsTransientAllowFullscreenActive()) {
+    UseCounter::Count(document, WebFeature::kFullscreenAllowedByScreensChange);
     return true;
   }
 

@@ -119,6 +119,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/fullscreen/scoped_allow_fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
@@ -715,6 +716,10 @@ bool LocalFrame::CanAccessEvent(
     case WebInputEventAttribution::kUnknown:
       return false;
   }
+}
+
+bool LocalFrame::IsTransientAllowFullscreenActive() const {
+  return transient_allow_fullscreen_.IsActive();
 }
 
 void LocalFrame::SetOptimizationGuideHints(
@@ -3040,6 +3045,8 @@ void LocalFrame::DidUpdateFramePolicy(const FramePolicy& frame_policy) {
 
 void LocalFrame::OnScreensChange() {
   if (RuntimeEnabledFeatures::WindowPlacementEnabled(DomWindow())) {
+    // Allow fullscreen requests shortly after user-generated screens changes.
+    transient_allow_fullscreen_.Activate();
     DomWindow()->DispatchEvent(
         *Event::Create(event_type_names::kScreenschange));
   }

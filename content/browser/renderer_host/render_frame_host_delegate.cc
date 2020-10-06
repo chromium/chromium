@@ -170,6 +170,10 @@ bool RenderFrameHostDelegate::HasSeenRecentScreenOrientationChange() {
   return false;
 }
 
+bool RenderFrameHostDelegate::IsTransientAllowFullscreenActive() const {
+  return false;
+}
+
 bool RenderFrameHostDelegate::ShowPopupMenu(
     RenderFrameHostImpl* render_frame_host,
     mojo::PendingRemote<blink::mojom::PopupMenuClient>* popup_client,

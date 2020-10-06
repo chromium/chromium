@@ -462,7 +462,7 @@ base::flat_set<WebContentsImpl*>* FullscreenContentsSet(
 }
 
 // Returns true if |host| has the Window Placement permission granted.
-bool WindowPlacementGranted(RenderFrameHost* host) {
+bool IsWindowPlacementGranted(RenderFrameHost* host) {
   auto* controller =
       PermissionControllerImpl::FromBrowserContext(host->GetBrowserContext());
   return controller && controller->GetPermissionStatusForFrame(
@@ -488,7 +488,7 @@ int64_t AdjustRequestedWindowBounds(gfx::Rect* bounds, RenderFrameHost* host) {
   // Check, but do not prompt, for permission to place windows on other screens.
   // Sites generally need permission to get such bounds in the first place.
   // Also clamp offscreen bounds to the window's current screen.
-  if (!bounds->Intersects(display.bounds()) || !WindowPlacementGranted(host))
+  if (!bounds->Intersects(display.bounds()) || !IsWindowPlacementGranted(host))
     display = screen->GetDisplayNearestView(host->GetNativeView());
 
   bounds->AdjustToFit(display.work_area());
@@ -1359,6 +1359,8 @@ WebContentsView* WebContentsImpl::GetView() const {
 void WebContentsImpl::OnScreensChange(bool is_multi_screen_changed) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnScreensChange",
                         "is_multi_screen_changed", is_multi_screen_changed);
+  // Allow fullscreen requests shortly after user-generated screens changes.
+  transient_allow_fullscreen_.Activate();
   // Send |is_multi_screen_changed| events to all visible frames, but limit
   // other events to frames with the Window Placement permission. This obviates
   // the most pressing need for sites to poll isMultiScreen(), which is exposed
@@ -1368,7 +1370,7 @@ void WebContentsImpl::OnScreensChange(bool is_multi_screen_changed) {
     RenderFrameHostImpl* rfh = node->current_frame_host();
     if ((is_multi_screen_changed &&
          rfh->GetVisibilityState() == PageVisibilityState::kVisible) ||
-        WindowPlacementGranted(rfh)) {
+        IsWindowPlacementGranted(rfh)) {
       rfh->GetAssociatedLocalFrame()->OnScreensChange();
     }
   }
@@ -8684,9 +8686,12 @@ bool WebContentsImpl::HasSeenRecentScreenOrientationChange() {
       base::TimeDelta::FromSeconds(1);
   base::TimeDelta delta =
       ui::EventTimeForNow() - last_screen_orientation_change_time_;
-  // Return whether there is a screen orientation change happened in the recent
-  // 1 second.
+  // Return whether a screen orientation change happened in the last 1 second.
   return delta <= kMaxInterval;
+}
+
+bool WebContentsImpl::IsTransientAllowFullscreenActive() const {
+  return transient_allow_fullscreen_.IsActive();
 }
 
 void WebContentsImpl::DidChangeScreenOrientation() {

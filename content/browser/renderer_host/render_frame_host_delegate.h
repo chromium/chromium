@@ -564,6 +564,10 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // decide if we should consume user activation when entering fullscreen.
   virtual bool HasSeenRecentScreenOrientationChange();
 
+  // Return true if the page has a transient affordance to enter fullscreen
+  // without consuming user activation.
+  virtual bool IsTransientAllowFullscreenActive() const;
+
   // The page is trying to open a new widget (e.g. a select popup). The
   // widget should be created associated with the given
   // |agent_scheduling_group|, but it should not be shown yet. That should

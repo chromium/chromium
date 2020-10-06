@@ -38,6 +38,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "third_party/blink/public/common/frame/transient_allow_fullscreen.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
@@ -684,6 +685,9 @@ class CORE_EXPORT LocalFrame final
   // access).
   bool CanAccessEvent(const WebInputEventAttribution&) const;
 
+  // Return true if the frame has a transient affordance to enter fullscreen.
+  bool IsTransientAllowFullscreenActive() const;
+
   void SetOptimizationGuideHints(
       mojom::blink::BlinkOptimizationGuideHintsPtr hints);
   mojom::blink::BlinkOptimizationGuideHints* GetOptimizationGuideHints() {
@@ -919,6 +923,9 @@ class CORE_EXPORT LocalFrame final
   mojom::blink::BlinkOptimizationGuideHintsPtr optimization_guide_hints_;
 
   Member<TextFragmentSelectorGenerator> text_fragment_selector_generator_;
+
+  // Manages a transient affordance for this frame to enter fullscreen.
+  TransientAllowFullscreen transient_allow_fullscreen_;
 };
 
 inline FrameLoader& LocalFrame::Loader() const {
