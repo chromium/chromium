@@ -1086,9 +1086,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.PublicSession.ExtensionPermissions"
-    enum="ExtensionPermission3" expires_after="M85">
-  <owner>isandrk@chromium.org</owner>
-  <owner>sduraisamy@chromium.org</owner>
+    enum="ExtensionPermission3" expires_after="2022-03-01">
+  <owner>anqing@chromium.org</owner>
+  <owner>apotapchuk@chromium.org</owner>
   <summary>
     Extensions (and apps) are quite restricted in public sessions for security
     and privacy concerns - some permissions are blocked which means the
