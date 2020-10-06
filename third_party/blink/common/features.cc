@@ -757,5 +757,11 @@ const base::Feature kPreferCompositingToLCDText = {
 const base::Feature kLogUnexpectedIPCPostedToBackForwardCachedDocuments{
     "LogUnexpectedIPCPostedToBackForwardCachedDocuments",
     base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Controls URL handling feature in web apps. Controls parsing of "url_handlers"
+// field in web app manifests. See explainer for more information:
+// https://github.com/WICG/pwa-url-handler/blob/master/explainer.md
+const base::Feature kWebAppEnableUrlHandlers{"WebAppEnableUrlHandlers",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace features
 }  // namespace blink
