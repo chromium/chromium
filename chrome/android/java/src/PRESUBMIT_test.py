@@ -107,7 +107,7 @@ class CheckAlertDialogBuilder(unittest.TestCase):
     self.assertEqual(1, len(errors[1].items))
     self.assertIn('One.java', errors[1].items[0])
 
-  def testSucess_WrongBuilderCheck(self):
+  def testSuccess_WrongBuilderCheck(self):
     """Use of OS-dependent AlertDialog should not be flagged."""
     mock_input = MockInputApi()
     mock_input.files = [
@@ -153,7 +153,7 @@ class CheckCompatibleAlertDialogBuilder(unittest.TestCase):
     self.assertIn('Three.java', errors[0].items[2])
     self.assertIn('Four.java', errors[0].items[3])
 
-  def testSucess(self):
+  def testSuccess(self):
     """Examples of when AlertDialog.Builder should not be flagged."""
     mock_input = MockInputApi()
     mock_input.files = [
@@ -173,6 +173,56 @@ class CheckCompatibleAlertDialogBuilder(unittest.TestCase):
                  action='D'),
     ]
     errors = PRESUBMIT._CheckCompatibleAlertDialogBuilder(
+        mock_input, MockOutputApi())
+    self.assertEqual(0, len(errors))
+
+class CheckSplitCompatUtilsIdentifierName(unittest.TestCase):
+  """Test the _CheckSplitCompatUtilsIdentifierName presubmit check."""
+
+  def testFailure(self):
+    """
+    SplitCompatUtils.getIdentifierName() without a String literal is flagged.
+    """
+    mock_input = MockInputApi()
+    mock_input.files = [
+        MockFile('path/One.java',
+                 [
+                  'SplitCompatUtils.getIdentifierName(foo)',
+                  'A new line to make sure there is no duplicate error.']),
+        MockFile('path/Two.java',
+                 ['SplitCompatUtils.getIdentifierName(    foo)']),
+        MockFile('path/Three.java',
+                 ['SplitCompatUtils.getIdentifierName(',
+                  '     bar)']),
+    ]
+    errors = PRESUBMIT._CheckSplitCompatUtilsIdentifierName(
+        mock_input, MockOutputApi())
+    self.assertEqual(1, len(errors))
+    self.assertEqual(3, len(errors[0].items))
+    self.assertIn('One.java', errors[0].items[0])
+    self.assertIn('Two.java', errors[0].items[1])
+    self.assertIn('Three.java', errors[0].items[2])
+
+  def testSuccess(self):
+    """
+    Examples of when SplitCompatUtils.getIdentifierName() should not be flagged.
+    """
+    mock_input = MockInputApi()
+    mock_input.files = [
+        MockFile('path/One.java',
+                 [
+                  'SplitCompatUtils.getIdentifierName("foo")',
+                  'A new line.']),
+        MockFile('path/Two.java',
+                 ['SplitCompatUtils.getIdentifierName(    "foo")']),
+        MockFile('path/Three.java',
+                 ['SplitCompatUtils.getIdentifierName(',
+                  '    "bar")']),
+        MockFile('path/Four.java',
+                 ['  super(SplitCompatUtils.getIdentifierName(',
+                  '"bar"))']),
+    ]
+    errors = PRESUBMIT._CheckSplitCompatUtilsIdentifierName(
         mock_input, MockOutputApi())
     self.assertEqual(0, len(errors))
 

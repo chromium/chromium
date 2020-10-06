@@ -16,7 +16,6 @@ import android.os.PersistableBundle;
 import android.os.SystemClock;
 import android.util.Log;
 
-import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
@@ -27,7 +26,6 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
  * The Notification service receives intents fired as responses to user actions issued on Android
  * notifications displayed in the notification tray.
  */
-@UsedByReflection("NotificationService.java")
 public class NotificationServiceImpl extends NotificationService.Impl {
     private static final String TAG = NotificationServiceImpl.class.getSimpleName();
 
@@ -73,9 +71,6 @@ public class NotificationServiceImpl extends NotificationService.Impl {
                     SystemClock.elapsedRealtime());
         }
     }
-
-    @UsedByReflection("NotificationService.java")
-    public NotificationServiceImpl() {}
 
     /**
      * Called when a Notification has been interacted with by the user. If we can verify that

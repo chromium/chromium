@@ -22,7 +22,6 @@ import androidx.core.app.ServiceCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 
 import java.lang.annotation.Retention;
@@ -31,7 +30,6 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Keep-alive foreground service for downloads.
  */
-@UsedByReflection("DownloadForegroundService.java")
 public class DownloadForegroundServiceImpl extends DownloadForegroundService.Impl {
     private static final String TAG = "DownloadFg";
     private final IBinder mBinder = new LocalBinder();
@@ -44,9 +42,6 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
         int KILL = 0; // Kill notification regardless of ability to detach.
         int DETACH = 1; // Try to detach, otherwise kill and relaunch.
     }
-
-    @UsedByReflection("DownloadForegroundService.java")
-    public DownloadForegroundServiceImpl() {}
 
     @Override
     public void onCreate() {

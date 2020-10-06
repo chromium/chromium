@@ -118,6 +118,7 @@
 -keep @interface org.chromium.base.annotations.DoNotInline
 -keep @interface org.chromium.base.annotations.RemovableInRelease
 -keep @interface org.chromium.base.annotations.UsedByReflection
+-keep @interface org.chromium.base.annotations.IdentifierNameString
 
 # Android support library annotations will get converted to androidx ones
 # which we want to keep.
@@ -196,6 +197,11 @@
 # for the reason for this. Also, see http://crbug.com/248037.
 -keepclassmembers enum org.chromium.** {
     public static **[] values();
+}
+
+# Mark members annotated with IdentifierNameString as identifier name strings
+-identifiernamestring class * {
+    @org.chromium.base.annotations.IdentifierNameString *;
 }
 
 # File: ../../build/android/dcheck_is_off.flags
@@ -285,6 +291,12 @@
   public <init>();
   public <clinit>();
   *** build() return null;
+}
+
+# Keep implementation classes needed for split compat. These will be accessed by
+# reflection.
+-keep,allowobfuscation public class ** extends org.chromium.chrome.browser.base.SplitCompat*$Impl {
+  public <init>();
 }
 
 # File: ../../third_party/gvr-android-sdk/proguard-gvr-chromium.txt

@@ -13,18 +13,13 @@ import android.os.PersistableBundle;
 import android.os.SystemClock;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.UsedByReflection;
 
 /**
  * Processes jobs scheduled when user actions are issued on web notifications.
  * We use this instead of starting the NotificationService on N+.
  */
-@UsedByReflection("NotificationService.java")
 @TargetApi(Build.VERSION_CODES.N)
 public class NotificationJobServiceImpl extends NotificationJobService.Impl {
-    @UsedByReflection("NotificationService.java")
-    public NotificationJobServiceImpl() {}
-
     static PersistableBundle getJobExtrasFromIntent(Intent intent) {
         PersistableBundle bundle = new PersistableBundle();
         bundle.putString(NotificationConstants.EXTRA_NOTIFICATION_ID,

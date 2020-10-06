@@ -20,7 +20,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.MainDex;
-import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.chrome.browser.background_task_scheduler.ChromeBackgroundTaskFactory;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
@@ -64,9 +63,7 @@ public class ChromeApplication extends SplitCompatApplication {
     private static volatile ChromeAppComponent sComponent;
 
     /** Chrome application logic. */
-    @UsedByReflection("SplitChromeApplication.java")
     public static class ChromeApplicationImpl extends Impl {
-        @UsedByReflection("SplitChromeApplication.java")
         public ChromeApplicationImpl() {}
 
         // Called by the framework for ALL processes. Runs before ContentProviders are created.

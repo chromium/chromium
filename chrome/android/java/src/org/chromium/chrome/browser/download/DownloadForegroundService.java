@@ -5,12 +5,12 @@
 package org.chromium.chrome.browser.download;
 
 import org.chromium.chrome.browser.base.SplitCompatService;
+import org.chromium.chrome.browser.base.SplitCompatUtils;
 
 /** See {@link DownloadForegroundServiceImpl}. */
 public class DownloadForegroundService extends SplitCompatService {
-    // TODO(crbug.com/1126301):  Use R8's -identifiernamestring to verify this and other
-    // SplitCompatService subclasses.
     public DownloadForegroundService() {
-        super("org.chromium.chrome.browser.download.DownloadForegroundServiceImpl");
+        super(SplitCompatUtils.getIdentifierName(
+                "org.chromium.chrome.browser.download.DownloadForegroundServiceImpl"));
     }
 }

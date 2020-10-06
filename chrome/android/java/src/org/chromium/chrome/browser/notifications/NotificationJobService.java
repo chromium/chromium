@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.notifications;
 
 import org.chromium.chrome.browser.base.SplitCompatJobService;
+import org.chromium.chrome.browser.base.SplitCompatUtils;
 
 /** See {@link NotificationJobServiceImpl}. */
 public class NotificationJobService extends SplitCompatJobService {
     public NotificationJobService() {
-        super("org.chromium.chrome.browser.notifications.NotificationJobServiceImpl");
+        super(SplitCompatUtils.getIdentifierName(
+                "org.chromium.chrome.browser.notifications.NotificationJobServiceImpl"));
     }
 }

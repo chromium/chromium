@@ -28,6 +28,9 @@ NEW_COMPATIBLE_ALERTDIALOG_BUILDER_RE = re.compile(
 NEW_ALERTDIALOG_BUILDER_RE = re.compile(
     r'\bnew\sAlertDialog\.Builder\b')
 
+SPLIT_COMPAT_UTILS_IMPL_NAME_RE = re.compile(
+    r'\bSplitCompatUtils\.getIdentifierName\(\s*[^\s"]')
+
 COMMENT_RE = re.compile(r'^\s*(//|/\*|\*)')
 
 BROWSER_ROOT = 'chrome/android/java/src/org/chromium/chrome/browser/'
@@ -47,6 +50,7 @@ def _CommonChecks(input_api, output_api):
   result.extend(_CheckNotificationConstructors(input_api, output_api))
   result.extend(_CheckAlertDialogBuilder(input_api, output_api))
   result.extend(_CheckCompatibleAlertDialogBuilder(input_api, output_api))
+  result.extend(_CheckSplitCompatUtilsIdentifierName(input_api, output_api))
   # Add more checks here
   return result
 
@@ -115,8 +119,9 @@ def _CheckAlertDialogBuilder(input_api, output_api):
   //src/chrome/android/java/src/org/chromium/chrome/browser/vr/VR_JAVA_OWNERS
   '''
   error_files = []
-  result = _CheckReIgnoreComment(input_api, output_api, error_msg, files_to_skip,
-                                 NEW_ALERTDIALOG_BUILDER_RE, error_files)
+  result = _CheckReIgnoreComment(input_api, output_api, error_msg,
+                                 files_to_skip, NEW_ALERTDIALOG_BUILDER_RE,
+                                 error_files)
 
   wrong_builder_errors = []
   wrong_builder_error_msg = '''
@@ -172,6 +177,16 @@ def _CheckCompatibleAlertDialogBuilder(input_api, output_api):
                                NEW_COMPATIBLE_ALERTDIALOG_BUILDER_RE)
 
 
+def _CheckSplitCompatUtilsIdentifierName(input_api, output_api):
+  error_msg = '''
+  SplitCompatUtils.getIdentifierName() not check failed:
+  SplitCompatUtils.getIdentifierName() must be called with a String literal,
+  otherwise R8 may not correctly obfuscate the class name passed in.
+  '''
+  return _CheckReIgnoreComment(input_api, output_api, error_msg, [],
+                               SPLIT_COMPAT_UTILS_IMPL_NAME_RE)
+
+
 def _CheckReIgnoreComment(input_api, output_api, error_msg, files_to_skip,
                           regular_expression, error_files=None):
 
@@ -192,7 +207,7 @@ def _CheckReIgnoreComment(input_api, output_api, error_msg, files_to_skip,
   for f in input_api.AffectedFiles(include_deletes=False,
                                    file_filter=sources):
     previous_line = ''
-    for line_number, line in f.ChangedContents():
+    for line_number, line in enumerate(f.NewContents(), start=1):
       if not CheckLine(f, line_number, line, problems, error_files):
         if previous_line:
           two_lines = '\n'.join([previous_line, line])

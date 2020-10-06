@@ -41,7 +41,8 @@ public class SplitMonochromeApplication extends SplitChromeApplication {
     }
 
     public SplitMonochromeApplication() {
-        super("org.chromium.chrome.browser.MonochromeApplication$MonochromeApplicationImpl");
+        super(SplitCompatUtils.getIdentifierName(
+                "org.chromium.chrome.browser.MonochromeApplication$MonochromeApplicationImpl"));
     }
 
     @Override

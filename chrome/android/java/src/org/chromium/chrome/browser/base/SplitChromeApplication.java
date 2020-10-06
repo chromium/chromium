@@ -16,7 +16,8 @@ public class SplitChromeApplication extends SplitCompatApplication {
     private String mChromeApplicationClassName;
 
     public SplitChromeApplication() {
-        this("org.chromium.chrome.browser.ChromeApplication$ChromeApplicationImpl");
+        this(SplitCompatUtils.getIdentifierName(
+                "org.chromium.chrome.browser.ChromeApplication$ChromeApplicationImpl"));
     }
 
     public SplitChromeApplication(String chromeApplicationClassName) {

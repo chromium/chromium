@@ -8,11 +8,21 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
+import org.chromium.base.annotations.IdentifierNameString;
 import org.chromium.base.compat.ApiHelperForO;
 
 /** Utils for compatibility with isolated splits. */
 public class SplitCompatUtils {
     private SplitCompatUtils() {}
+
+    /**
+     * Gets the obfuscated name for the passed in class name. Important: this MUST be called with a
+     * string literal, otherwise @IdentifierNameString will not work.
+     */
+    @IdentifierNameString
+    public static String getIdentifierName(String className) {
+        return className;
+    }
 
     /** Creates a context which can be used to load code and resources in the chrome split. */
     public static Context createChromeContext(Context base) {
