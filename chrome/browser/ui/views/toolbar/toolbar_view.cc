@@ -353,7 +353,7 @@ void ToolbarView::Update(WebContents* tab) {
     extensions_container_->UpdateAllIcons();
 
   if (reload_)
-    reload_->set_menu_enabled(chrome::IsDebuggerAttachedToCurrentTab(browser_));
+    reload_->SetMenuEnabled(chrome::IsDebuggerAttachedToCurrentTab(browser_));
 
   if (toolbar_account_icon_container_)
     toolbar_account_icon_container_->UpdateAllIcons();

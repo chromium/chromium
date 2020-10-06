@@ -6,8 +6,11 @@
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_RELOAD_BUTTON_H_
 
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/views/chrome_views_export.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 
 class CommandUpdater;
 
@@ -24,10 +27,9 @@ class CommandUpdater;
 class ReloadButton : public ToolbarButton,
                      public ui::SimpleMenuModel::Delegate {
  public:
-  enum class Mode { kReload = 0, kStop };
+  METADATA_HEADER(ReloadButton);
 
-  // The button's class name.
-  static const char kViewClassName[];
+  enum class Mode { kReload = 0, kStop };
 
   explicit ReloadButton(CommandUpdater* command_updater);
   ReloadButton(const ReloadButton&) = delete;
@@ -39,8 +41,9 @@ class ReloadButton : public ToolbarButton,
   void ChangeMode(Mode mode, bool force);
   Mode visible_mode() const { return visible_mode_; }
 
-  // Enable reload drop-down menu.
-  void set_menu_enabled(bool enable) { menu_enabled_ = enable; }
+  // Gets/Sets whether reload drop-down menu is enabled.
+  bool GetMenuEnabled() const;
+  void SetMenuEnabled(bool enable);
 
   // views::View:
   void OnThemeChanged() override;
@@ -48,7 +51,6 @@ class ReloadButton : public ToolbarButton,
   // ToolbarButton:
   void OnMouseExited(const ui::MouseEvent& event) override;
   base::string16 GetTooltipText(const gfx::Point& p) const override;
-  const char* GetClassName() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool ShouldShowMenu() override;
   void ShowDropDownMenu(ui::MenuSourceType source_type) override;
@@ -104,5 +106,9 @@ class ReloadButton : public ToolbarButton,
   // test code can tell whether we did so (as there may be no |browser_|).
   int testing_reload_count_ = 0;
 };
+
+BEGIN_VIEW_BUILDER(CHROME_VIEWS_EXPORT, ReloadButton, ToolbarButton)
+VIEW_BUILDER_PROPERTY(bool, MenuEnabled)
+END_VIEW_BUILDER(VIEWS_EXPORT, ReloadButton)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_RELOAD_BUTTON_H_

@@ -23,6 +23,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/metrics.h"
 #include "ui/views/widget/widget.h"
 
@@ -38,9 +39,6 @@ const gfx::VectorIcon& GetIconForMode(bool is_reload) {
 }  // namespace
 
 // ReloadButton ---------------------------------------------------------------
-
-// static
-const char ReloadButton::kViewClassName[] = "ReloadButton";
 
 ReloadButton::ReloadButton(CommandUpdater* command_updater)
     : ToolbarButton(base::BindRepeating(&ReloadButton::ButtonPressed,
@@ -91,6 +89,14 @@ void ReloadButton::ChangeMode(Mode mode, bool force) {
   }
 }
 
+bool ReloadButton::GetMenuEnabled() const {
+  return menu_enabled_;
+}
+
+void ReloadButton::SetMenuEnabled(bool enable) {
+  menu_enabled_ = enable;
+}
+
 void ReloadButton::OnThemeChanged() {
   ToolbarButton::OnThemeChanged();
   UpdateIcon();
@@ -116,10 +122,6 @@ base::string16 ReloadButton::GetTooltipText(const gfx::Point& p) const {
       IDS_TOOLTIP_RELOAD_WITH_MENU : IDS_TOOLTIP_RELOAD;
   return l10n_util::GetStringUTF16(
       visible_mode_ == Mode::kReload ? reload_tooltip : IDS_TOOLTIP_STOP);
-}
-
-const char* ReloadButton::GetClassName() const {
-  return kViewClassName;
 }
 
 void ReloadButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -227,3 +229,7 @@ void ReloadButton::OnStopToReloadTimer() {
   DCHECK(!IsMenuShowing());
   ChangeMode(intended_mode_, true);
 }
+
+BEGIN_METADATA(ReloadButton, ToolbarButton)
+ADD_PROPERTY_METADATA(bool, MenuEnabled)
+END_METADATA
