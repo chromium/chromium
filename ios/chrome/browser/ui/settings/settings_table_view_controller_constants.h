@@ -28,6 +28,9 @@ extern NSString* const kSettingsVoiceSearchCellId;
 // The accessibility identifier of the Sync and Google services cell.
 extern NSString* const kSettingsGoogleSyncAndServicesCellId;
 
+// The accessibility identifier of the Google services cell.
+extern NSString* const kSettingsGoogleServicesCellId;
+
 // The accessibility identifier of the Passwords cell.
 extern NSString* const kSettingsPasswordsCellId;
 

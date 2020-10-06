@@ -83,6 +83,7 @@ source_set("settings") {
     "resources:settings_content_settings",
     "resources:settings_debug",
     "resources:settings_error",
+    "resources:settings_google_services",
     "resources:settings_info",
     "resources:settings_language_settings",
     "resources:settings_passwords",

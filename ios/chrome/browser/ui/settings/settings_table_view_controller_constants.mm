@@ -17,6 +17,8 @@ NSString* const kSettingsManagedSearchEngineCellId =
 NSString* const kSettingsVoiceSearchCellId = @"kSettingsVoiceSearchCellId";
 NSString* const kSettingsGoogleSyncAndServicesCellId =
     @"kSettingsGoogleSyncAndServicesCellId";
+NSString* const kSettingsGoogleServicesCellId =
+    @"kSettingsGoogleServicesCellId";
 NSString* const kSettingsPasswordsCellId = @"kSettingsPasswordsCellId";
 NSString* const kSettingsPaymentMethodsCellId =
     @"kSettingsPaymentMethodsCellId";

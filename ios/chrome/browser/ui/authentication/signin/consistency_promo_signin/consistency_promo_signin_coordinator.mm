@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
 
+#import "components/signin/public/base/account_consistency_method.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
@@ -75,6 +76,7 @@
 
 - (void)start {
   [super start];
+  DCHECK(base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency));
   self.identityChooserCoordinator = [[IdentityChooserCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser];

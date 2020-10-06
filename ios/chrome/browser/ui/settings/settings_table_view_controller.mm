@@ -21,6 +21,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/util.h"
+#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
@@ -114,6 +115,7 @@ NSString* const kSyncAndGoogleServicesSyncOffImageName =
     @"sync_and_google_services_sync_off";
 NSString* const kSyncAndGoogleServicesSyncOnImageName =
     @"sync_and_google_services_sync_on";
+NSString* const kSettingsGoogleServicesImageName = @"settings_google_services";
 NSString* const kSettingsSearchEngineImageName = @"settings_search_engine";
 NSString* const kSettingsPasswordsImageName = @"settings_passwords";
 NSString* const kSettingsAutofillCreditCardImageName =
@@ -147,7 +149,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSignInButton = kItemTypeEnumZero,
   ItemTypeSigninPromo,
   ItemTypeAccount,
-  ItemGoogleServices,
+  ItemTypeSyncAndGoogleServices,
   ItemTypeHeader,
   ItemTypeSearchEngine,
   ItemTypeManagedDefaultSearchEngine,
@@ -428,12 +430,21 @@ NSString* kDevViewSourceKey = @"DevViewSource";
         toSectionWithIdentifier:SectionIdentifierAccount];
   }
   if (![model hasSectionForSectionIdentifier:SectionIdentifierAccount]) {
-    // Add the Account section for the Google services cell, if the user is
-    // signed-out.
+    // Add the Account section for the Sync & Google services cell, if the user
+    // is signed-out.
     [model addSectionWithIdentifier:SectionIdentifierAccount];
   }
-  [model addItem:[self googleServicesCellItem]
-      toSectionWithIdentifier:SectionIdentifierAccount];
+
+  // Adds experimental Google Services item separate from Sync.
+  if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
+    [model addItem:[self syncCellItem]
+        toSectionWithIdentifier:SectionIdentifierAccount];
+    [model addItem:[self googleServicesCellItem]
+        toSectionWithIdentifier:SectionIdentifierAccount];
+  } else {
+    [model addItem:[self syncAndGoogleServicesCellItem]
+        toSectionWithIdentifier:SectionIdentifierAccount];
+  }
 
   // Defaults section.
   if (@available(iOS 14, *)) {
@@ -547,17 +558,45 @@ NSString* kDevViewSourceKey = @"DevViewSource";
 }
 
 - (TableViewItem*)googleServicesCellItem {
-  // TODO(crbug.com/805214): This branded icon image needs to come from
-  // BrandedImageProvider.
   TableViewImageItem* googleServicesItem =
-      [[TableViewImageItem alloc] initWithType:ItemGoogleServices];
+      [[TableViewImageItem alloc] initWithType:ItemTypeSyncAndGoogleServices];
   googleServicesItem.accessoryType =
       UITableViewCellAccessoryDisclosureIndicator;
   googleServicesItem.title =
       l10n_util::GetNSString(IDS_IOS_GOOGLE_SERVICES_SETTINGS_TITLE);
+  googleServicesItem.accessibilityIdentifier = kSettingsGoogleServicesCellId;
+  googleServicesItem.image =
+      [UIImage imageNamed:kSettingsGoogleServicesImageName];
+  return googleServicesItem;
+}
+
+- (TableViewItem*)syncCellItem {
+  // TODO(crbug.com/805214): This branded icon image needs to come from
+  // BrandedImageProvider.
+  TableViewImageItem* googleServicesItem =
+      [[TableViewImageItem alloc] initWithType:ItemTypeSyncAndGoogleServices];
+  googleServicesItem.accessoryType =
+      UITableViewCellAccessoryDisclosureIndicator;
+  googleServicesItem.title =
+      l10n_util::GetNSString(IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE);
   googleServicesItem.accessibilityIdentifier =
       kSettingsGoogleSyncAndServicesCellId;
-  [self updateGoogleServicesItem:googleServicesItem];
+  [self updateSyncAndGoogleServicesItem:googleServicesItem];
+  return googleServicesItem;
+}
+
+- (TableViewItem*)syncAndGoogleServicesCellItem {
+  // TODO(crbug.com/805214): This branded icon image needs to come from
+  // BrandedImageProvider.
+  TableViewImageItem* googleServicesItem =
+      [[TableViewImageItem alloc] initWithType:ItemTypeSyncAndGoogleServices];
+  googleServicesItem.accessoryType =
+      UITableViewCellAccessoryDisclosureIndicator;
+  googleServicesItem.title =
+      l10n_util::GetNSString(IDS_IOS_GOOGLE_SERVICES_SYNC_SETTINGS_TITLE);
+  googleServicesItem.accessibilityIdentifier =
+      kSettingsGoogleSyncAndServicesCellId;
+  [self updateSyncAndGoogleServicesItem:googleServicesItem];
   return googleServicesItem;
 }
 
@@ -956,7 +995,7 @@ NSString* kDevViewSourceKey = @"DevViewSource";
       controller = [[AccountsTableViewController alloc] initWithBrowser:_browser
                                               closeSettingsOnAddAccount:NO];
       break;
-    case ItemGoogleServices:
+    case ItemTypeSyncAndGoogleServices:
       base::RecordAction(base::UserMetricsAction("Settings.GoogleServices"));
       [self showSyncGoogleService];
       break;
@@ -1232,9 +1271,10 @@ NSString* kDevViewSourceKey = @"DevViewSource";
   }
 }
 
-// Updates the Google services item to display the right icon and status message
-// in the detail text of the cell.
-- (void)updateGoogleServicesItem:(TableViewImageItem*)googleServicesItem {
+// Updates the Sync & Google services item to display the right icon and status
+// message in the detail text of the cell.
+- (void)updateSyncAndGoogleServicesItem:
+    (TableViewImageItem*)googleServicesItem {
   googleServicesItem.detailTextColor = nil;
   syncer::SyncService* syncService =
       ProfileSyncServiceFactory::GetForBrowserState(_browserState);
@@ -1279,15 +1319,15 @@ NSString* kDevViewSourceKey = @"DevViewSource";
 }
 
 // Updates and reloads the Google service cell.
-- (void)reloadGoogleServicesCell {
+- (void)reloadSyncAndGoogleServicesCell {
   NSIndexPath* googleServicesCellIndexPath =
-      [self.tableViewModel indexPathForItemType:ItemGoogleServices
+      [self.tableViewModel indexPathForItemType:ItemTypeSyncAndGoogleServices
                               sectionIdentifier:SectionIdentifierAccount];
   TableViewImageItem* googleServicesItem =
       base::mac::ObjCCast<TableViewImageItem>(
           [self.tableViewModel itemAtIndexPath:googleServicesCellIndexPath]);
   DCHECK(googleServicesItem);
-  [self updateGoogleServicesItem:googleServicesItem];
+  [self updateSyncAndGoogleServicesItem:googleServicesItem];
   [self reconfigureCellsForItems:@[ googleServicesItem ]];
 }
 
@@ -1378,7 +1418,7 @@ NSString* kDevViewSourceKey = @"DevViewSource";
 #pragma mark SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
-  [self reloadGoogleServicesCell];
+  [self reloadSyncAndGoogleServicesCell];
 }
 
 #pragma mark - IdentityRefreshLogic
