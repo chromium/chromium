@@ -242,6 +242,7 @@ void DeduplicateValidUpdatesByGUID(UpdatesPerParentId* updates_per_parent_id) {
          ++updates_iter) {
       const UpdateResponseData& update = *updates_iter;
       DCHECK(!update.entity.is_deleted());
+      DCHECK(update.entity.server_defined_unique_tag.empty());
 
       const std::string& guid_in_specifics =
           update.entity.specifics.bookmark().guid();
@@ -302,51 +303,71 @@ void DeduplicateValidUpdatesByGUID(UpdatesPerParentId* updates_per_parent_id) {
   }
 }
 
-// Groups all valid updates by the server ID of their parent and moves them away
-// from |*updates|. |updates| must not be null.
-UpdatesPerParentId GroupValidUpdatesByParentId(
-    UpdateResponseDataList* updates) {
-  UpdatesPerParentId updates_per_parent_id;
+// Checks that the |update| is valid and returns false otherwise. It is used to
+// verify non-deletion updates. |update| must not be a deletion and a permanent
+// node (they are processed in a different way).
+bool IsValidUpdate(const UpdateResponseData& update) {
+  const EntityData& update_entity = update.entity;
 
-  for (UpdateResponseData& update : *updates) {
+  DCHECK(!update_entity.is_deleted());
+  DCHECK(update_entity.server_defined_unique_tag.empty());
+
+  if (!syncer::UniquePosition::FromProto(update_entity.unique_position)
+           .IsValid()) {
+    // Ignore updates with invalid positions.
+    DLOG(ERROR)
+        << "Remote update with invalid position: "
+        << update_entity.specifics.bookmark().legacy_canonicalized_title();
+    LogProblematicBookmark(RemoteBookmarkUpdateError::kInvalidUniquePosition);
+    return false;
+  }
+  if (!IsValidBookmarkSpecifics(update_entity.specifics.bookmark(),
+                                update_entity.is_folder)) {
+    // Ignore updates with invalid specifics.
+    DLOG(ERROR) << "Remote update with invalid specifics";
+    LogProblematicBookmark(RemoteBookmarkUpdateError::kInvalidSpecifics);
+    return false;
+  }
+  if (!HasExpectedBookmarkGuid(update_entity.specifics.bookmark(),
+                               update_entity.originator_cache_guid,
+                               update_entity.originator_client_item_id)) {
+    // Ignore updates with an unexpected GUID.
+    DLOG(ERROR) << "Remote update with unexpected GUID";
+    LogProblematicBookmark(RemoteBookmarkUpdateError::kUnexpectedGuid);
+    return false;
+  }
+  return true;
+}
+
+struct GroupedUpdates {
+  // |updates_per_parent_id| contains all valid updates grouped by their
+  // |parent_id|. Permanent nodes and deletions are filtered out. Permanent
+  // nodes are stored in a dedicated list |permanent_node_updates|.
+  UpdatesPerParentId updates_per_parent_id;
+  UpdateResponseDataList permanent_node_updates;
+};
+
+// Groups all valid updates by the server ID of their parent. Permanent nodes
+// are grouped in a dedicated |permanent_node_updates| list in a returned value.
+GroupedUpdates GroupValidUpdates(UpdateResponseDataList updates) {
+  GroupedUpdates grouped_updates;
+  for (UpdateResponseData& update : updates) {
     const EntityData& update_entity = update.entity;
     if (update_entity.is_deleted()) {
       continue;
     }
-    // No need to associate permanent nodes with their parent (the root node).
-    // We start merging from the permanent nodes.
     if (!update_entity.server_defined_unique_tag.empty()) {
+      grouped_updates.permanent_node_updates.push_back(std::move(update));
       continue;
     }
-    if (!syncer::UniquePosition::FromProto(update_entity.unique_position)
-             .IsValid()) {
-      // Ignore updates with invalid positions.
-      DLOG(ERROR)
-          << "Remote update with invalid position: "
-          << update_entity.specifics.bookmark().legacy_canonicalized_title();
-      LogProblematicBookmark(RemoteBookmarkUpdateError::kInvalidUniquePosition);
+    if (!IsValidUpdate(update)) {
       continue;
     }
-    if (!IsValidBookmarkSpecifics(update_entity.specifics.bookmark(),
-                                  update_entity.is_folder)) {
-      // Ignore updates with invalid specifics.
-      DLOG(ERROR) << "Remote update with invalid specifics";
-      LogProblematicBookmark(RemoteBookmarkUpdateError::kInvalidSpecifics);
-      continue;
-    }
-    if (!HasExpectedBookmarkGuid(update_entity.specifics.bookmark(),
-                                 update_entity.originator_cache_guid,
-                                 update_entity.originator_client_item_id)) {
-      // Ignore updates with an unexpected GUID.
-      DLOG(ERROR) << "Remote update with unexpected GUID";
-      LogProblematicBookmark(RemoteBookmarkUpdateError::kUnexpectedGuid);
-      continue;
-    }
-
-    updates_per_parent_id[update_entity.parent_id].push_back(std::move(update));
+    grouped_updates.updates_per_parent_id[update_entity.parent_id].push_back(
+        std::move(update));
   }
 
-  return updates_per_parent_id;
+  return grouped_updates;
 }
 
 }  // namespace
@@ -500,31 +521,30 @@ BookmarkModelMerger::RemoteForest BookmarkModelMerger::BuildRemoteForest(
     syncer::UpdateResponseDataList updates) {
   // Filter out invalid remote updates and group the valid ones by the server ID
   // of their parent.
-  UpdatesPerParentId updates_per_parent_id =
-      GroupValidUpdatesByParentId(&updates);
+  GroupedUpdates grouped_updates = GroupValidUpdates(std::move(updates));
 
-  DeduplicateValidUpdatesByGUID(&updates_per_parent_id);
+  DeduplicateValidUpdatesByGUID(&grouped_updates.updates_per_parent_id);
 
   // Construct one tree per permanent entity.
   RemoteForest update_forest;
-  for (UpdateResponseData& update : updates) {
-    if (update.entity.server_defined_unique_tag.empty()) {
-      continue;
-    }
-
+  for (UpdateResponseData& permanent_node_update :
+       grouped_updates.permanent_node_updates) {
     // Make a copy of the string to avoid relying on argument evaluation order.
     const std::string server_defined_unique_tag =
-        update.entity.server_defined_unique_tag;
+        permanent_node_update.entity.server_defined_unique_tag;
+    DCHECK(!server_defined_unique_tag.empty());
 
     update_forest.emplace(
         server_defined_unique_tag,
-        RemoteTreeNode::BuildTree(std::move(update), kMaxBookmarkTreeDepth,
-                                  &updates_per_parent_id));
+        RemoteTreeNode::BuildTree(std::move(permanent_node_update),
+                                  kMaxBookmarkTreeDepth,
+                                  &grouped_updates.updates_per_parent_id));
   }
 
   // All remaining entries in |updates_per_parent_id| must be unreachable from
   // permanent entities, since otherwise they would have been moved away.
-  for (const auto& parent_id_and_updates : updates_per_parent_id) {
+  for (const auto& parent_id_and_updates :
+       grouped_updates.updates_per_parent_id) {
     for (const UpdateResponseData& update : parent_id_and_updates.second) {
       if (!update.entity.is_deleted() &&
           update.entity.specifics.has_bookmark()) {
