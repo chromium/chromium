@@ -6510,7 +6510,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InProductHelp.Config.ParsingEvent" enum="ConfigParsingEvent"
-    expires_after="M85">
+    expires_after="M91">
   <owner>nyquist@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
   <summary>
@@ -6520,7 +6520,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="InProductHelp.Db.Init" enum="BooleanSuccess"
-    expires_after="M85">
+    expires_after="M91">
   <owner>nyquist@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="IPHDatabase" -->
@@ -6531,7 +6531,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="InProductHelp.Db.Load" enum="BooleanSuccess"
-    expires_after="M85">
+    expires_after="M91">
   <owner>nyquist@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="IPHDatabase" -->
@@ -6542,7 +6542,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InProductHelp.Db.TotalEvents" units="events"
-    expires_after="M85">
+    expires_after="M91">
   <owner>nyquist@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
   <summary>
@@ -6552,7 +6552,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="InProductHelp.Db.Update" enum="BooleanSuccess"
-    expires_after="M85">
+    expires_after="M91">
   <owner>nyquist@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="IPHDatabase" -->
@@ -6563,7 +6563,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="InProductHelp.NotifyEventReadyState"
-    enum="BooleanSuccess" expires_after="M85">
+    enum="BooleanSuccess" expires_after="M91">
   <owner>nyquist@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="IPHFeatures" -->
@@ -6637,7 +6637,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InProductHelp.ShouldTriggerHelpUI" enum="TriggerHelpUIResult"
-    expires_after="M85">
+    expires_after="M91">
   <owner>nyquist@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="IPHFeatures" -->
