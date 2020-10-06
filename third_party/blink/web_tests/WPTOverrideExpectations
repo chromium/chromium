@@ -715,8 +715,6 @@ external/wpt/infrastructure/testdriver/actions/multiDevice.html [ Pass Failure ]
 external/wpt/input-events/input-events-exec-command.html [ Failure Pass ]
 external/wpt/input-events/input-events-typing.html [ Pass Failure ]
 external/wpt/intersection-observer/v2/delay-test.html [ Pass Failure ] # wpt_subtest_failure
-external/wpt/js-self-profiling/idlharness.any.html [ Pass ] # wpt_subtest_failure
-external/wpt/js-self-profiling/idlharness.any.worker.html [ Pass ] # wpt_subtest_failure
 external/wpt/kv-storage/key-types.https.html [ Pass Failure ]
 external/wpt/largest-contentful-paint/invisible-images-composited-2.html [ Pass ] # wpt_subtest_failure
 external/wpt/layout-instability/buffer-layout-shift.html [ Timeout Pass ]

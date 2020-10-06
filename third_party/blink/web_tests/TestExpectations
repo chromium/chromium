@@ -6142,13 +6142,6 @@ crbug.com/1049456 fast/scrolling/events/overscroll-event-fired-to-element-with-o
 crbug.com/1081277 fast/scrolling/events/scrollend-event-fired-to-element-with-overscroll-behavior.html [ Pass Failure ]
 crbug.com/1080997 fast/scrolling/events/scrollend-event-fired-to-scrolled-element.html [ Pass Failure ]
 
-# These tests have different output on webkit_layout_tests and
-# not_site_per_process_webkit_layout_tests, as js-self-profiling is only
-# enabled on site-per-process. This means we can't have a consistent
-# -expected.txt file for them, so instead they have to be marked flaky here.
-crbug.com/956688 [ Linux ] external/wpt/js-self-profiling/idlharness.any.html [ Pass Failure ]
-crbug.com/956688 [ Linux ] external/wpt/js-self-profiling/idlharness.any.worker.html [ Pass Failure ]
-
 # "in-multicol-child.html" is laid out in legacy layout due by "multicol" but
 # reference is laid out by LayoutNG.
 crbug.com/829028 [ Mac ] editing/caret/in-multicol-child.html [ Failure ]

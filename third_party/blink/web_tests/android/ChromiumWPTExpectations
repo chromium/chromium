@@ -2829,8 +2829,6 @@ crbug.com/1050754 external/wpt/intersection-observer/v2/simple-occlusion.html [ 
 crbug.com/1050754 external/wpt/intersection-observer/v2/text-editor-occlusion.html [ Failure ]
 crbug.com/1050754 external/wpt/intersection-observer/v2/text-shadow.html [ Failure ]
 crbug.com/1050754 external/wpt/is-input-pending/idlharness.window.html [ Failure ]
-crbug.com/1050754 external/wpt/js-self-profiling/idlharness.any.html [ Failure ]
-crbug.com/1050754 external/wpt/js-self-profiling/idlharness.any.worker.html [ Failure ]
 crbug.com/1050754 external/wpt/largest-contentful-paint/contracted-image.html [ Failure ]
 crbug.com/1050754 external/wpt/largest-contentful-paint/cross-origin-image.sub.html [ Failure ]
 crbug.com/1050754 external/wpt/largest-contentful-paint/expanded-image.html [ Failure ]

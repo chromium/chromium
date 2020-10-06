@@ -860,14 +860,14 @@ void Performance::clearMeasures(const AtomicString& measure_name) {
 ScriptPromise Performance::profile(ScriptState* script_state,
                                    const ProfilerInitOptions* options,
                                    ExceptionState& exception_state) {
-  DCHECK(RuntimeEnabledFeatures::ExperimentalJSProfilerEnabled(
-      ExecutionContext::From(script_state)));
+  auto* execution_context = ExecutionContext::From(script_state);
+  DCHECK(execution_context);
+  DCHECK(
+      RuntimeEnabledFeatures::ExperimentalJSProfilerEnabled(execution_context));
 
-  // The JS Self-Profiling origin trial currently requires site isolation.
-  if (!Platform::Current()->IsLockedToSite()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "performance.profile() requires site-per-process (crbug.com/956688)");
+  if (!execution_context->CrossOriginIsolatedCapability()) {
+    exception_state.ThrowSecurityError(
+        "performance.profile() requires COOP+COEP (web.dev/coop-coep)");
     return ScriptPromise();
   }
 
