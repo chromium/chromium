@@ -20,7 +20,10 @@ feed_deps = [
 ]
 
 if (enable_feed_v1) {
-  feed_deps += [ "//components/feed/core/proto:proto_java" ]
+  feed_deps += [
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library:piet_resources",
+    "//components/feed/core/proto:proto_java",
+  ]
 }
 
 feed_java_sources = [

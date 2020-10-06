@@ -7,14 +7,7 @@
   <dimen name="button_compat_radius">4dp</dimen>
   <!-- Card dimensions. -->
   <dimen name="feed_suggestion_card_action_min_height">48dp</dimen>
-  <!-- More button dimensions. -->
-  <dimen name="more_button_padding">8dp</dimen>
-  <dimen name="feed_more_button_container_top_margins">-20dp</dimen>
   <!-- No content dimensions. -->
   <dimen name="no_content_padding">16dp</dimen>
   <dimen name="no_content_text_padding">8dp</dimen>
-  <!-- Context Menu -->
-  <!-- The Material spec specifies that the width of a menu must be a multiple of 56dp. -->
-  <!-- TODO(crbug.com/1039415): Not feed-specific. Try to unify with the rest of Chrome -->
-  <dimen name="menu_width_multiple">56dp</dimen>
 </resources>

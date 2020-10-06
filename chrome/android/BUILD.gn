@@ -296,7 +296,6 @@ android_library("chrome_java") {
     "//base:base_java",
     "//base:jni_java",
     "//chrome/android/features/keyboard_accessory:public_java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library:piet_resources",
     "//chrome/android/modules/cablev2_authenticator/public:java",
     "//chrome/android/modules/image_editor/provider:java",
     "//chrome/android/modules/image_editor/public:java",

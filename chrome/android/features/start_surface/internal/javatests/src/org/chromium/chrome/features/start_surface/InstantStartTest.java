@@ -64,6 +64,8 @@ import org.chromium.chrome.browser.compositor.layouts.OverviewModeState;
 import org.chromium.chrome.browser.compositor.layouts.StaticLayout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.feed.FeedV1;
+import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -557,6 +559,8 @@ public class InstantStartTest {
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/omniboxonly"})
     public void renderTabSwitcher() throws IOException, InterruptedException {
         // clang-format on
+        if (!FeedV1.IS_AVAILABLE) return; // Test not yet working for FeedV2.
+
         createTabStateFile(new int[] {0, 1, 2});
         createThumbnailBitmapAndWriteToFile(0);
         createThumbnailBitmapAndWriteToFile(1);
@@ -669,6 +673,8 @@ public class InstantStartTest {
     public void renderSingleAsHomepage_SingleTabNoMVTiles()
         throws IOException, InterruptedException {
         // clang-format on
+        if (!FeedV1.IS_AVAILABLE) return; // Test not yet working for FeedV2.
+
         createTabStateFile(new int[] {0});
         createThumbnailBitmapAndWriteToFile(0);
         TabAttributeCache.setTitleForTesting(0, "Google");
@@ -703,6 +709,8 @@ public class InstantStartTest {
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
     public void testFeedLoading() {
         // clang-format on
+        if (!FeedV1.IS_AVAILABLE) return; // Test not yet working for FeedV2.
+
         startMainActivityFromLauncher();
         Assert.assertFalse(mActivityTestRule.getActivity().isTablet());
         Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
@@ -777,6 +785,7 @@ public class InstantStartTest {
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
     public void testShowPlaceholder() {
         // clang-format on
+        if (!FeedV1.IS_AVAILABLE) return; // Test not yet working for FeedV2.
         StartSurfaceConfiguration.setFeedVisibilityForTesting(true);
         startMainActivityFromLauncher();
 
@@ -859,14 +868,26 @@ public class InstantStartTest {
      * @param expanded Whether the header should be expanded.
      */
     private void toggleHeader(boolean expanded) {
-        onView(allOf(instanceOf(RecyclerView.class), withId(R.id.feed_stream_recycler_view)))
-                .perform(RecyclerViewActions.scrollToPosition(ARTICLE_SECTION_HEADER_POSITION),
-                        RecyclerViewActions.actionOnItemAtPosition(
-                                ARTICLE_SECTION_HEADER_POSITION, click()));
+        if (FeedFeatures.isV2Enabled()) {
+            onView(allOf(instanceOf(RecyclerView.class), withId(R.id.feed_stream_recycler_view)))
+                    .perform(RecyclerViewActions.scrollToPosition(ARTICLE_SECTION_HEADER_POSITION));
+            onView(withId(R.id.header_menu)).perform(click());
 
-        waitForView((ViewGroup) mActivityTestRule.getActivity().findViewById(
-                            R.id.feed_stream_recycler_view),
-                allOf(withId(R.id.header_status),
-                        withText(expanded ? R.string.hide_content : R.string.show_content)));
+            onView(withText(expanded ? R.string.ntp_turn_on_feed : R.string.ntp_turn_off_feed))
+                    .perform(click());
+
+            onView(withText(expanded ? R.string.ntp_discover_on : R.string.ntp_discover_off))
+                    .check(matches(isDisplayed()));
+        } else {
+            onView(allOf(instanceOf(RecyclerView.class), withId(R.id.feed_stream_recycler_view)))
+                    .perform(RecyclerViewActions.scrollToPosition(ARTICLE_SECTION_HEADER_POSITION),
+                            RecyclerViewActions.actionOnItemAtPosition(
+                                    ARTICLE_SECTION_HEADER_POSITION, click()));
+
+            waitForView((ViewGroup) mActivityTestRule.getActivity().findViewById(
+                                R.id.feed_stream_recycler_view),
+                    allOf(withId(R.id.header_status),
+                            withText(expanded ? R.string.hide_content : R.string.show_content)));
+        }
     }
 }

@@ -6,6 +6,7 @@ import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/crypto.gni")
 import("//build/config/ui.gni")
+import("//components/feed/features.gni")
 
 grit_defines = []
 
@@ -94,6 +95,13 @@ if (is_android) {
   grit_defines += [
     "-E",
     "ANDROID_JAVA_TAGGED_ONLY=true",
+  ]
+}
+
+if (enable_feed_v1) {
+  grit_defines += [
+    "-D",
+    "enable_feed_v1",
   ]
 }
 

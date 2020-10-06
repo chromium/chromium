@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!-- More button dimensions. -->
+  <dimen name="more_button_padding">8dp</dimen>
+  <dimen name="feed_more_button_container_top_margins">-20dp</dimen>
+  <!-- The Material spec specifies that the width of a menu must be a multiple of 56dp. -->
+  <!-- TODO(crbug.com/1039415): Not feed-specific. Try to unify with the rest of Chrome -->
+  <dimen name="menu_width_multiple">56dp</dimen>
+</resources>

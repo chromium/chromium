@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
 
-  <if expr="is_android or is_ios">
+  <if expr="enable_feed_v1 or is_ios">
     <message name="IDS_NTP_TITLE_NO_SUGGESTIONS" desc="On the New Tab Page, title text explaining there is no content." formatter_data="android_java">
       That’s all for now
     </message>

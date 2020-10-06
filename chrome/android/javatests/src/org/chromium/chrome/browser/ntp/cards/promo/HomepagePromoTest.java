@@ -27,6 +27,7 @@ import androidx.test.espresso.action.GeneralLocation;
 import androidx.test.espresso.action.GeneralSwipeAction;
 import androidx.test.espresso.action.Press;
 import androidx.test.espresso.action.Swipe;
+import androidx.test.espresso.assertion.ViewAssertions;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -48,6 +49,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -262,6 +264,9 @@ public class HomepagePromoTest {
     @SmallTest
     @Features.DisableFeatures({ChromeFeatureList.INTEREST_FEED_V2})
     public void testToggleFeed_WithSignIn() {
+        if (FeedFeatures.isV2Enabled()) {
+            return; // FeedV1 must not be available.
+        }
         // Test to toggle stream when HomepagePromo is hide. Toggle feed should hide promo still.
         launchNewTabPage();
 
@@ -530,16 +535,29 @@ public class HomepagePromoTest {
     }
 
     private void toggleFeedHeader(int feedHeaderPosition, ViewGroup rootView, boolean expanded) {
-        onView(instanceOf(RecyclerView.class))
-                .perform(RecyclerViewActions.scrollToPosition(feedHeaderPosition),
-                        RecyclerViewActions.actionOnItemAtPosition(feedHeaderPosition, click()));
+        if (FeedFeatures.isV2Enabled()) {
+            onView(allOf(instanceOf(RecyclerView.class), withId(R.id.feed_stream_recycler_view)))
+                    .perform(RecyclerViewActions.scrollToPosition(feedHeaderPosition));
+            onView(withId(R.id.header_menu)).perform(click());
 
-        // Scroll to the same position in case the refresh brings the section header out of the
-        // screen.
-        onView(instanceOf(RecyclerView.class))
-                .perform(RecyclerViewActions.scrollToPosition(feedHeaderPosition));
-        waitForView(rootView,
-                allOf(withId(R.id.header_status),
-                        withText(expanded ? R.string.hide_content : R.string.show_content)));
+            onView(withText(expanded ? R.string.ntp_turn_on_feed : R.string.ntp_turn_off_feed))
+                    .perform(click());
+
+            onView(withText(expanded ? R.string.ntp_discover_on : R.string.ntp_discover_off))
+                    .check(ViewAssertions.matches(isDisplayed()));
+        } else {
+            onView(instanceOf(RecyclerView.class))
+                    .perform(RecyclerViewActions.scrollToPosition(feedHeaderPosition),
+                            RecyclerViewActions.actionOnItemAtPosition(
+                                    feedHeaderPosition, click()));
+
+            // Scroll to the same position in case the refresh brings the section header out of
+            // the screen.
+            onView(instanceOf(RecyclerView.class))
+                    .perform(RecyclerViewActions.scrollToPosition(feedHeaderPosition));
+            waitForView(rootView,
+                    allOf(withId(R.id.header_status),
+                            withText(expanded ? R.string.hide_content : R.string.show_content)));
+        }
     }
 }
