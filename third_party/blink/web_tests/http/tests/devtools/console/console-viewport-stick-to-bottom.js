@@ -144,7 +144,7 @@
   function dumpAndContinue(callback) {
     viewport.refresh();
     TestRunner.addResult(
-        'Is at bottom: ' + viewport.element.isScrolledToBottom() + ', should stick: ' + viewport.stickToBottom());
+      'Is at bottom: ' + TestRunner.isScrolledToBottom(viewport.element) + ', should stick: ' + viewport.stickToBottom());
     callback();
   }
 

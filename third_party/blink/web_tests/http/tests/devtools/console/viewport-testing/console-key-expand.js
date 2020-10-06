@@ -275,7 +275,7 @@
   function dumpScrollInfo() {
     viewport.refresh();
     let infoText =
-        'Is at bottom: ' + viewport.element.isScrolledToBottom() + ', should stick: ' + viewport.stickToBottom();
+      'Is at bottom: ' + TestRunner.isScrolledToBottom(viewport.element) + ', should stick: ' + viewport.stickToBottom();
     TestRunner.addResult(infoText);
   }
 

@@ -60,7 +60,7 @@
   function dumpInfo() {
     viewport.refresh();
     let infoText =
-        'Is at bottom: ' + viewport.element.isScrolledToBottom() + ', should stick: ' + viewport.stickToBottom();
+      'Is at bottom: ' + TestRunner.isScrolledToBottom(viewport.element) + ', should stick: ' + viewport.stickToBottom();
     const selectedElement = viewport.renderedElementAt(viewport._virtualSelectedIndex);
     if (selectedElement) {
       const selectedRect = selectedElement.getBoundingClientRect();

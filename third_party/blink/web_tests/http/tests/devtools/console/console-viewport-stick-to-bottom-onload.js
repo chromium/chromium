@@ -21,6 +21,6 @@
   await ConsoleTestRunner.waitForPendingViewportUpdates();
 
   TestRunner.addResult(
-      'Is at bottom: ' + viewport.element.isScrolledToBottom() + ', should stick: ' + viewport.stickToBottom());
+    'Is at bottom: ' + TestRunner.isScrolledToBottom(viewport.element) + ', should stick: ' + viewport.stickToBottom());
   TestRunner.completeTest();
 })();
