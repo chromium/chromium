@@ -50,7 +50,9 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
   // Creates a copy of |other| but uses the "post-layout" fragments to ensure
   // fragment-tree consistency.
   static scoped_refptr<const NGLayoutResult> CloneWithPostLayoutFragments(
-      const NGLayoutResult& other);
+      const NGLayoutResult& other,
+      const base::Optional<PhysicalRect> updated_layout_overflow =
+          base::nullopt);
 
   // Create a copy of NGLayoutResult with |BfcBlockOffset| replaced by the given
   // parameter. Note, when |bfc_block_offset| is |nullopt|, |BfcBlockOffset| is

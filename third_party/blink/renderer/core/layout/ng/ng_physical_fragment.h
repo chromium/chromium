@@ -274,8 +274,16 @@ class CORE_EXPORT NGPhysicalFragment
     return IsCSSBox() && layout_object_->IsEffectiveRootScroller();
   }
 
+  bool ShouldApplyLayoutContainment() const {
+    return IsCSSBox() && layout_object_->ShouldApplyLayoutContainment();
+  }
+
   bool ShouldClipOverflowAlongEitherAxis() const {
     return IsCSSBox() && layout_object_->ShouldClipOverflowAlongEitherAxis();
+  }
+
+  bool ShouldClipOverflowAlongBothAxis() const {
+    return IsCSSBox() && layout_object_->ShouldClipOverflowAlongBothAxis();
   }
 
   bool IsFragmentationContextRoot() const {

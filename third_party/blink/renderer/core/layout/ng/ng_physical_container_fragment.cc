@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_ruby_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_container_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_layout_overflow_calculator.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_outline_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
@@ -91,6 +92,7 @@ NGPhysicalContainerFragment::NGPhysicalContainerFragment(
 
 NGPhysicalContainerFragment::NGPhysicalContainerFragment(
     const NGPhysicalContainerFragment& other,
+    bool recalculate_layout_overflow,
     NGLink* buffer)
     : NGPhysicalFragment(other),
       num_children_(other.num_children_),
@@ -110,8 +112,17 @@ NGPhysicalContainerFragment::NGPhysicalContainerFragment(
     // fragmentainer fragments, as they don't nessecerily have their result
     // stored on the layout-object tree.
     if (post_layout->IsFragmentainerBox()) {
+      const auto& box_fragment = To<NGPhysicalBoxFragment>(*post_layout);
+
+      base::Optional<PhysicalRect> layout_overflow;
+      if (recalculate_layout_overflow) {
+        layout_overflow =
+            NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
+                box_fragment);
+      }
+
       post_layout = NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
-          To<NGPhysicalBoxFragment>(*post_layout));
+          box_fragment, layout_overflow);
     }
     new (&buffer[i].fragment)
         scoped_refptr<const NGPhysicalFragment>(std::move(post_layout));

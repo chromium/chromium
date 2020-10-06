@@ -47,6 +47,9 @@ class CORE_EXPORT NGPhysicalLineBoxFragment final
   // True if descendants were propagated to outside of this fragment.
   bool HasPropagatedDescendants() const { return has_propagated_descendants_; }
 
+  // True if there is any hanging white-space or similar.
+  bool HasHanging() const { return has_hanging_; }
+
   const FontHeight& Metrics() const { return metrics_; }
 
   // The base direction of this line. Also known as the paragraph direction.

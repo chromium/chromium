@@ -39,7 +39,7 @@ The test case checks if caret is drawn properly(especially scrolls properly) ins
     debug('<br>Final caret rect is calculated by following constraints');
     debug('1) ScrollWidth = text content width + caret width');
     debug('2) Caret rect is always within container bounding box (thus subtracting the scroll left)');
-    shouldBe("startCaretRect.left + editableContainer.scrollWidth - editableContainer.scrollLeft - caretWidth", "finalCaretRect.right");
+    shouldBe("startCaretRect.left + editableContainer.scrollWidth - editableContainer.scrollLeft - caretWidth", "finalCaretRect.right", undefined, 1);
     
     document.body.removeChild(editableContainer);
     isSuccessfullyParsed();

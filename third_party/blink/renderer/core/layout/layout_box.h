@@ -655,6 +655,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   virtual bool HasTopOverflow() const;
   virtual bool HasLeftOverflow() const;
 
+  // Sets the layout-overflow from the current set of layout-results.
+  void SetLayoutOverflowFromLayoutResults();
+
   void AddLayoutOverflow(const LayoutRect&);
   void AddSelfVisualOverflow(const PhysicalRect& r) {
     NOT_DESTROYED();
@@ -2311,6 +2314,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   MinMaxSizes intrinsic_logical_widths_;
   LayoutUnit intrinsic_logical_widths_percentage_resolution_block_size_;
 
+  scoped_refptr<const NGLayoutResult> measure_result_;
+  NGLayoutResultList layout_results_;
+
   // LayoutBoxUtils is used for the LayoutNG code querying protected methods on
   // this class, e.g. determining the static-position of OOF elements.
   friend class LayoutBoxUtils;
@@ -2349,8 +2355,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   };
 
   Persistent<LayoutBoxRareData> rare_data_;
-  scoped_refptr<const NGLayoutResult> measure_result_;
-  NGLayoutResultList layout_results_;
 };
 
 template <>

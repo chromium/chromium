@@ -508,6 +508,8 @@ blink_core_sources("layout") {
     "ng/ng_layout_algorithm.h",
     "ng/ng_layout_input_node.cc",
     "ng/ng_layout_input_node.h",
+    "ng/ng_layout_overflow_calculator.cc",
+    "ng/ng_layout_overflow_calculator.h",
     "ng/ng_layout_result.cc",
     "ng/ng_layout_result.h",
     "ng/ng_layout_utils.cc",

@@ -1019,6 +1019,11 @@
       name: "LayoutNGGrid",
     },
     {
+      name: "LayoutNGLayoutOverflow",
+      depends_on: ["LayoutNG", "LayoutNGFragmentItem"],
+      status: "stable",
+    },
+    {
       name: "LayoutNGPrinting",
     },
     {

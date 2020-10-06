@@ -33,6 +33,7 @@ class LayoutNGMixin : public Base {
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
                    HitTestAction) override;
+  RecalcLayoutOverflowResult RecalcLayoutOverflow() override;
 
   bool IsLayoutNGObject() const final { return true; }
 

@@ -454,8 +454,12 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
 
     // Even if we can reuse the result, we may still need to recalculate our
     // overflow. TODO(crbug.com/919415): Explain why.
-    if (box_->NeedsLayoutOverflowRecalc())
-      box_->RecalcLayoutOverflow();
+    if (box_->NeedsLayoutOverflowRecalc()) {
+      if (RuntimeEnabledFeatures::LayoutNGLayoutOverflowEnabled())
+        box_->SetLayoutOverflowFromLayoutResults();
+      else
+        box_->RecalcLayoutOverflow();
+    }
 
     // Return the cached result unless we're marked for layout. We may have
     // added or removed scrollbars during overflow recalculation, which may have
@@ -1128,10 +1132,6 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
   LayoutBlock* block = DynamicTo<LayoutBlock>(box_);
   bool needs_full_invalidation = false;
   if (LIKELY(block)) {
-    LayoutUnit overflow_block_size = layout_result.OverflowBlockSize();
-    if (UNLIKELY(previous_break_token))
-      overflow_block_size += previous_break_token->ConsumedBlockSize();
-
 #if DCHECK_IS_ON()
     block->CheckPositionedObjectsNeedLayout();
 #endif
@@ -1146,15 +1146,22 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
         needs_full_invalidation = true;
     }
 
-    BoxLayoutExtraInput input(*block);
-    SetupBoxLayoutExtraInput(constraint_space, *block, &input);
-
-    // |ComputeOverflow()| below calls |AddVisualOverflowFromChildren()|, which
-    // computes visual overflow from |RootInlineBox| if |ChildrenInline()|
     block->SetNeedsOverflowRecalc(
         LayoutObject::OverflowRecalcType::kOnlyVisualOverflowRecalc);
-    block->ComputeLayoutOverflow(overflow_block_size - borders.block_end -
-                                 scrollbars.block_end);
+
+    if (RuntimeEnabledFeatures::LayoutNGLayoutOverflowEnabled()) {
+      block->SetLayoutOverflowFromLayoutResults();
+    } else {
+      BoxLayoutExtraInput input(*block);
+      SetupBoxLayoutExtraInput(constraint_space, *block, &input);
+
+      LayoutUnit overflow_block_size = layout_result.OverflowBlockSize();
+      if (UNLIKELY(previous_break_token))
+        overflow_block_size += previous_break_token->ConsumedBlockSize();
+
+      block->ComputeLayoutOverflow(overflow_block_size - borders.block_end -
+                                   scrollbars.block_end);
+    }
   }
 
   box_->UpdateAfterLayout();
@@ -1423,6 +1430,22 @@ LogicalSize NGBlockNode::GetAspectRatio() const {
   if (ratio.GetType() == EAspectRatioType::kAutoAndRatio)
     return Style().LogicalAspectRatio();
   return LogicalSize();
+}
+
+base::Optional<TransformationMatrix> NGBlockNode::GetTransformForChildFragment(
+    const NGPhysicalBoxFragment& child_fragment,
+    PhysicalSize size) const {
+  const auto* child_layout_object = child_fragment.GetLayoutObject();
+  DCHECK(child_layout_object);
+
+  if (!child_layout_object->ShouldUseTransformFromContainer(box_))
+    return base::nullopt;
+
+  TransformationMatrix transform;
+  child_layout_object->GetTransformFromContainer(box_, PhysicalOffset(),
+                                                 transform, &size);
+
+  return transform;
 }
 
 bool NGBlockNode::IsCustomLayoutLoaded() const {

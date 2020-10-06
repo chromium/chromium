@@ -30,7 +30,8 @@ bool LayoutNGFlexibleBox::HasLeftOverflow() const {
     return StyleRef().IsLeftToRightDirection() ==
            StyleRef().ResolvedIsRowReverseFlexDirection();
   }
-  return StyleRef().ResolvedIsColumnReverseFlexDirection();
+  return (StyleRef().GetWritingMode() == WritingMode::kVerticalLr) ==
+         StyleRef().ResolvedIsColumnReverseFlexDirection();
 }
 
 void LayoutNGFlexibleBox::UpdateBlockLayout(bool relayout_children) {

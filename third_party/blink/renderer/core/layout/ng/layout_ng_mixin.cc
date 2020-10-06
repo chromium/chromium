@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_layout_part.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 
 namespace blink {
@@ -58,6 +59,75 @@ bool LayoutNGMixin<Base>::NodeAtPoint(HitTestResult& result,
   }
 
   return false;
+}
+
+template <typename Base>
+RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcLayoutOverflow() {
+  if (!RuntimeEnabledFeatures::LayoutNGLayoutOverflowEnabled())
+    return Base::RecalcLayoutOverflow();
+
+  RecalcLayoutOverflowResult child_result;
+  if (Base::ChildNeedsLayoutOverflowRecalc())
+    child_result = Base::RecalcChildLayoutOverflow();
+
+  // Don't attempt to rebuild the fragment tree or recalculate
+  // scrollable-overflow, layout will do this for us.
+  if (Base::NeedsLayout())
+    return RecalcLayoutOverflowResult();
+
+  bool should_recalculate_layout_overflow =
+      Base::SelfNeedsLayoutOverflowRecalc() ||
+      child_result.layout_overflow_changed;
+  bool rebuild_fragment_tree = child_result.rebuild_fragment_tree;
+  bool layout_overflow_changed = false;
+
+  if (rebuild_fragment_tree || should_recalculate_layout_overflow) {
+    for (scoped_refptr<const NGLayoutResult>& layout_result :
+         Base::layout_results_) {
+      const auto& fragment =
+          To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
+      base::Optional<PhysicalRect> layout_overflow;
+
+      // Recalculate our layout-overflow if a child had its layout-overflow
+      // changed, or if we are marked as dirty.
+      if (should_recalculate_layout_overflow) {
+        const PhysicalRect old_layout_overflow = fragment.LayoutOverflow();
+        const PhysicalRect new_layout_overflow =
+            NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
+                fragment);
+
+        // Set the appropriate flags if the layout-overflow changed.
+        if (old_layout_overflow != new_layout_overflow) {
+          layout_overflow = new_layout_overflow;
+          layout_overflow_changed = true;
+          rebuild_fragment_tree = true;
+        }
+      }
+
+      // Create and set a new result (potentially with an updated
+      // layout-overflow) if either:
+      //  - The layout-overflow changed.
+      //  - An arbitrary descendant had its layout-overflow change (as
+      //    indicated by |rebuild_fragment_tree|).
+      if (rebuild_fragment_tree || layout_overflow) {
+        layout_result = NGLayoutResult::CloneWithPostLayoutFragments(
+            *layout_result, layout_overflow);
+      }
+    }
+    Base::SetLayoutOverflowFromLayoutResults();
+  }
+
+  if (layout_overflow_changed && Base::IsScrollContainer())
+    Base::Layer()->GetScrollableArea()->UpdateAfterOverflowRecalc();
+
+  // Only indicate to our parent that our layout overflow changed if we have:
+  //  - No layout containment applied.
+  //  - No clipping (in both axes).
+  layout_overflow_changed = layout_overflow_changed &&
+                            !Base::ShouldApplyLayoutContainment() &&
+                            !Base::ShouldClipOverflowAlongBothAxis();
+
+  return {layout_overflow_changed, rebuild_fragment_tree};
 }
 
 // The current fragment from the last layout cycle for this box.

@@ -40,10 +40,13 @@ ASSERT_SIZE(NGLayoutResult, SameSizeAsNGLayoutResult);
 
 // static
 scoped_refptr<const NGLayoutResult>
-NGLayoutResult::CloneWithPostLayoutFragments(const NGLayoutResult& other) {
+NGLayoutResult::CloneWithPostLayoutFragments(
+    const NGLayoutResult& other,
+    const base::Optional<PhysicalRect> updated_layout_overflow) {
   return base::AdoptRef(new NGLayoutResult(
       other, NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
-                 To<NGPhysicalBoxFragment>(other.PhysicalFragment()))));
+                 To<NGPhysicalBoxFragment>(other.PhysicalFragment()),
+                 updated_layout_overflow)));
 }
 
 NGLayoutResult::NGLayoutResult(

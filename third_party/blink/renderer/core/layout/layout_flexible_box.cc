@@ -298,17 +298,18 @@ bool LayoutFlexibleBox::HasTopOverflow() const {
   NOT_DESTROYED();
   if (IsHorizontalWritingMode())
     return StyleRef().ResolvedIsColumnReverseFlexDirection();
-  return !StyleRef().IsLeftToRightDirection() ^
+  return StyleRef().IsLeftToRightDirection() ==
          StyleRef().ResolvedIsRowReverseFlexDirection();
 }
 
 bool LayoutFlexibleBox::HasLeftOverflow() const {
   NOT_DESTROYED();
   if (IsHorizontalWritingMode()) {
-    return !StyleRef().IsLeftToRightDirection() ^
+    return StyleRef().IsLeftToRightDirection() ==
            StyleRef().ResolvedIsRowReverseFlexDirection();
   }
-  return StyleRef().ResolvedIsColumnReverseFlexDirection();
+  return (StyleRef().GetWritingMode() == WritingMode::kVerticalLr) ==
+         StyleRef().ResolvedIsColumnReverseFlexDirection();
 }
 
 void LayoutFlexibleBox::MergeAnonymousFlexItems(LayoutObject* remove_child) {

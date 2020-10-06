@@ -123,8 +123,8 @@ struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   MinMaxSizes intrinsic_logical_widths;
   LayoutUnit intrinsic_logical_widths_percentage_resolution_block_size;
   void* pointers[4];
-  Persistent<void*> rare_data;
   Vector<scoped_refptr<const NGLayoutResult>, 1> layout_results;
+  Persistent<void*> rare_data;
 };
 
 ASSERT_SIZE(LayoutBox, SameSizeAsLayoutBox);
@@ -725,13 +725,13 @@ void LayoutBox::LayoutSubtreeRoot() {
       RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
     LayoutBlock* cb = ContainingBlock();
     while (NGBlockNode::CanUseNewLayout(*cb) && !cb->NeedsLayout()) {
+      // Create and set a new identical results.
       if (cb->measure_result_) {
         cb->measure_result_ =
             NGLayoutResult::CloneWithPostLayoutFragments(*cb->measure_result_);
       }
       for (scoped_refptr<const NGLayoutResult>& layout_result :
            cb->layout_results_) {
-        // Create and set a new identical result.
         layout_result =
             NGLayoutResult::CloneWithPostLayoutFragments(*layout_result);
       }
@@ -6704,7 +6704,81 @@ bool LayoutBox::HasTopOverflow() const {
 
 bool LayoutBox::HasLeftOverflow() const {
   NOT_DESTROYED();
-  return !StyleRef().IsLeftToRightDirection() && IsHorizontalWritingMode();
+  if (IsHorizontalWritingMode())
+    return !StyleRef().IsLeftToRightDirection();
+  return StyleRef().GetWritingMode() == WritingMode::kVerticalRl;
+}
+
+void LayoutBox::SetLayoutOverflowFromLayoutResults() {
+  NOT_DESTROYED();
+  DCHECK(RuntimeEnabledFeatures::LayoutNGLayoutOverflowEnabled());
+  ClearSelfNeedsLayoutOverflowRecalc();
+  ClearChildNeedsLayoutOverflowRecalc();
+  ClearLayoutOverflow();
+
+  const WritingMode writing_mode = StyleRef().GetWritingMode();
+  base::Optional<PhysicalRect> layout_overflow;
+  LayoutUnit consumed_block_size;
+
+  // Iterate over all the fragments and unite their individual layout-overflow
+  // to determine the final layout-overflow.
+  for (const auto& layout_result : layout_results_) {
+    const auto& fragment =
+        To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
+
+    // In order to correctly unite the overflow, we need to shift an individual
+    // fragment's layout-overflow by previously consumed block-size so far.
+    PhysicalOffset offset_adjust;
+    switch (writing_mode) {
+      case WritingMode::kHorizontalTb:
+        offset_adjust = {LayoutUnit(), consumed_block_size};
+        break;
+      case WritingMode::kVerticalRl:
+      case WritingMode::kSidewaysRl:
+        offset_adjust = {-fragment.Size().width - consumed_block_size,
+                         LayoutUnit()};
+        break;
+      case WritingMode::kVerticalLr:
+      case WritingMode::kSidewaysLr:
+        offset_adjust = {consumed_block_size, LayoutUnit()};
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+
+    PhysicalRect fragment_layout_overflow = fragment.LayoutOverflow();
+    fragment_layout_overflow.offset += offset_adjust;
+
+    // If we are the first fragment just set the layout-overflow.
+    if (!layout_overflow)
+      layout_overflow = fragment_layout_overflow;
+    else
+      layout_overflow->UniteEvenIfEmpty(fragment_layout_overflow);
+
+    if (const auto* break_token = fragment.BreakToken()) {
+      consumed_block_size =
+          To<NGBlockBreakToken>(break_token)->ConsumedBlockSize();
+    }
+  }
+
+  if (!layout_overflow)
+    return;
+
+  // layout-overflow is stored respecting flipped-blocks.
+  if (IsFlippedBlocksWritingMode(writing_mode)) {
+    layout_overflow->offset.left =
+        -layout_overflow->offset.left - layout_overflow->size.width;
+  }
+
+  if (layout_overflow->IsEmpty() ||
+      PhysicalPaddingBoxRect().Contains(*layout_overflow))
+    return;
+
+  DCHECK(!LayoutOverflowIsSet());
+  if (!overflow_)
+    overflow_ = std::make_unique<BoxOverflowModel>();
+  overflow_->layout_overflow.emplace(layout_overflow->ToLayoutRect());
 }
 
 DISABLE_CFI_PERF
@@ -6726,16 +6800,19 @@ void LayoutBox::AddLayoutOverflow(const LayoutRect& rect) {
     // mode.  At this stage that is actually a simplification, since we can
     // treat vertical-lr/rl
     // as the same.
-    if (HasTopOverflow())
+    if (HasTopOverflow()) {
       overflow_rect.ShiftMaxYEdgeTo(
           std::min(overflow_rect.MaxY(), client_box.MaxY()));
-    else
+    } else {
       overflow_rect.ShiftYEdgeTo(std::max(overflow_rect.Y(), client_box.Y()));
-    if (HasLeftOverflow())
+    }
+    if (HasLeftOverflow() !=
+        IsFlippedBlocksWritingMode(StyleRef().GetWritingMode())) {
       overflow_rect.ShiftMaxXEdgeTo(
           std::min(overflow_rect.MaxX(), client_box.MaxX()));
-    else
+    } else {
       overflow_rect.ShiftXEdgeTo(std::max(overflow_rect.X(), client_box.X()));
+    }
 
     // Now re-test with the adjusted rectangle and see if it has become
     // unreachable or fully

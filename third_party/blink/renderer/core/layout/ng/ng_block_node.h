@@ -118,6 +118,19 @@ class CORE_EXPORT NGBlockNode final : public NGLayoutInputNode {
   // Returns the aspect ratio of a replaced element.
   LogicalSize GetAspectRatio() const;
 
+  // Returns the transform to apply to a child (e.g. for layout-overflow).
+  base::Optional<TransformationMatrix> GetTransformForChildFragment(
+      const NGPhysicalBoxFragment& child_fragment,
+      PhysicalSize size) const;
+
+  bool HasLeftOverflow() const { return box_->HasLeftOverflow(); }
+  bool HasTopOverflow() const { return box_->HasTopOverflow(); }
+  bool HasNonVisibleOverflow() const { return box_->HasNonVisibleOverflow(); }
+
+  OverflowClipAxes GetOverflowClipAxes() const {
+    return box_->GetOverflowClipAxes();
+  }
+
   // Returns true if this node should fill the viewport.
   // This occurs when we are in quirks-mode and we are *not* OOF-positioned,
   // floating, or inline-level.

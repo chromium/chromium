@@ -345,11 +345,11 @@ bool NGPaintFragment::HasSelfPaintingLayer() const {
   return PhysicalFragment().HasSelfPaintingLayer();
 }
 
-bool NGPaintFragment::ShouldClipOverflowAlongEitherAxis() const {
+bool NGPaintFragment::ShouldClipOverflowAlongBothAxis() const {
   auto* box_physical_fragment =
       DynamicTo<NGPhysicalBoxFragment>(&PhysicalFragment());
   return box_physical_fragment &&
-         box_physical_fragment->ShouldClipOverflowAlongEitherAxis();
+         box_physical_fragment->ShouldClipOverflowAlongBothAxis();
 }
 
 // Populate descendants from NGPhysicalFragment tree.

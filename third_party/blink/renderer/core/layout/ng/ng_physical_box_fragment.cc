@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -59,8 +60,38 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
   if (builder->inflow_bounds_)
     inflow_bounds = converter.ToPhysical(*builder->inflow_bounds_);
 
-  const PhysicalRect layout_overflow;
-  bool has_layout_overflow = false;
+  PhysicalRect layout_overflow = {PhysicalOffset(), physical_size};
+  if (builder->node_ && !builder->is_legacy_layout_root_) {
+    const NGPhysicalBoxStrut scrollbar =
+        builder->initial_fragment_geometry_->scrollbar.ConvertToPhysical(
+            builder->GetWritingMode(), builder->Direction());
+    NGLayoutOverflowCalculator calculator(
+        To<NGBlockNode>(builder->node_),
+        /* is_css_box */ builder->box_type_ != NGBoxType::kColumnBox, borders,
+        scrollbar, padding, physical_size, builder->GetWritingDirection());
+
+    if (NGFragmentItemsBuilder* items_builder = builder->ItemsBuilder())
+      calculator.AddItems(items_builder->Items(physical_size));
+
+    for (auto& child : builder->children_) {
+      const auto* box_fragment =
+          DynamicTo<NGPhysicalBoxFragment>(*child.fragment);
+      if (!box_fragment)
+        continue;
+
+      calculator.AddChild(
+          *box_fragment,
+          child.offset.ConvertToPhysical(builder->GetWritingDirection(),
+                                         physical_size, box_fragment->Size()));
+    }
+
+    layout_overflow = calculator.Result(inflow_bounds);
+  }
+
+  // For the purposes of object allocation we have layout-overflow if it
+  // differs from the fragment size.
+  bool has_layout_overflow = layout_overflow != PhysicalRect({}, physical_size);
+
   bool has_rare_data =
       builder->mathml_paint_info_ ||
       !builder->oof_positioned_fragmentainer_descendants_.IsEmpty() ||
@@ -92,17 +123,28 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
 // static
 scoped_refptr<const NGPhysicalBoxFragment>
 NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
-    const NGPhysicalBoxFragment& other) {
+    const NGPhysicalBoxFragment& other,
+    const base::Optional<PhysicalRect> updated_layout_overflow) {
+  PhysicalRect layout_overflow = other.LayoutOverflow();
+  bool has_layout_overflow = other.has_layout_overflow_;
+
+  if (updated_layout_overflow) {
+    layout_overflow = *updated_layout_overflow;
+    has_layout_overflow = layout_overflow != PhysicalRect({}, other.Size());
+  }
+
   // The size of the new fragment shouldn't differ from the old one.
   wtf_size_t num_fragment_items = other.Items() ? other.Items()->Size() : 0;
-  size_t byte_size = ByteSize(num_fragment_items, other.num_children_,
-                              other.has_layout_overflow_, other.has_borders_,
-                              other.has_padding_, other.has_inflow_bounds_,
-                              other.has_rare_data_);
+  size_t byte_size =
+      ByteSize(num_fragment_items, other.num_children_, has_layout_overflow,
+               other.has_borders_, other.has_padding_, other.has_inflow_bounds_,
+               other.has_rare_data_);
 
   void* data = ::WTF::Partitions::FastMalloc(
       byte_size, ::WTF::GetStringWithTypeName<NGPhysicalBoxFragment>());
-  new (data) NGPhysicalBoxFragment(PassKey(), other);
+  new (data) NGPhysicalBoxFragment(
+      PassKey(), other, has_layout_overflow, layout_overflow,
+      /* recalculate_layout_overflow */ updated_layout_overflow.has_value());
   return base::AdoptRef(static_cast<NGPhysicalBoxFragment*>(data));
 }
 
@@ -214,9 +256,15 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
 #endif
 }
 
-NGPhysicalBoxFragment::NGPhysicalBoxFragment(PassKey key,
-                                             const NGPhysicalBoxFragment& other)
-    : NGPhysicalContainerFragment(other, children_),
+NGPhysicalBoxFragment::NGPhysicalBoxFragment(
+    PassKey key,
+    const NGPhysicalBoxFragment& other,
+    bool has_layout_overflow,
+    const PhysicalRect& layout_overflow,
+    bool recalculate_layout_overflow)
+    : NGPhysicalContainerFragment(other,
+                                  recalculate_layout_overflow,
+                                  children_),
       baseline_(other.baseline_),
       last_baseline_(other.last_baseline_) {
   if (has_fragment_items_) {
@@ -224,9 +272,10 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(PassKey key,
         const_cast<NGFragmentItems*>(ComputeItemsAddress());
     new (items) NGFragmentItems(*other.ComputeItemsAddress());
   }
+  has_layout_overflow_ = has_layout_overflow;
   if (has_layout_overflow_) {
     *const_cast<PhysicalRect*>(ComputeLayoutOverflowAddress()) =
-        *other.ComputeLayoutOverflowAddress();
+        layout_overflow;
   }
   if (has_borders_) {
     *const_cast<NGPhysicalBoxStrut*>(ComputeBordersAddress()) =

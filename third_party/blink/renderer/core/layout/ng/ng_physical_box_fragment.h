@@ -30,7 +30,9 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   // Creates a copy of |other| but uses the "post-layout" fragments to ensure
   // fragment-tree consistency.
   static scoped_refptr<const NGPhysicalBoxFragment>
-  CloneWithPostLayoutFragments(const NGPhysicalBoxFragment& other);
+  CloneWithPostLayoutFragments(const NGPhysicalBoxFragment& other,
+                               const base::Optional<PhysicalRect>
+                                   updated_layout_overflow = base::nullopt);
 
   using PassKey = util::PassKey<NGPhysicalBoxFragment>;
   NGPhysicalBoxFragment(PassKey,
@@ -45,7 +47,11 @@ class CORE_EXPORT NGPhysicalBoxFragment final
                         bool has_rare_data,
                         WritingMode block_or_line_writing_mode);
 
-  NGPhysicalBoxFragment(PassKey, const NGPhysicalBoxFragment& other);
+  NGPhysicalBoxFragment(PassKey,
+                        const NGPhysicalBoxFragment& other,
+                        bool has_layout_overflow,
+                        const PhysicalRect& layout_overflow,
+                        bool recalculate_layout_overflow);
 
   scoped_refptr<const NGLayoutResult> CloneAsHiddenForPaint() const;
 
