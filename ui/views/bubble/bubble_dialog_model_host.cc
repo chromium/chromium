@@ -187,8 +187,11 @@ void BubbleDialogModelHost::OnDialogInitialized() {
 }
 
 gfx::Size BubbleDialogModelHost::CalculatePreferredSize() const {
-  // TODO(pbos): Move DISTANCE_BUBBLE_PREFERRED_WIDTH into views.
-  const int width = 320 - margins().width();
+  // TODO(pbos): Move DISTANCE_BUBBLE_PREFERRED_WIDTH and
+  // DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH into views. 320 and 448 are inlined
+  // versions of these.
+  const int width =
+      (GetModalType() == ui::MODAL_TYPE_NONE ? 320 : 448) - margins().width();
   return gfx::Size(width, GetHeightForWidth(width));
 }
 
