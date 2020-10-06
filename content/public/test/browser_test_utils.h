@@ -1321,12 +1321,10 @@ class RenderFrameSubmissionObserver
 // This is accomplished by sending an IPC to RenderWidget, then blocking until
 // the ACK is received and processed.
 //
-// When the main thread receives the ACK it is enqueued. The queue is not
-// processed until a new FrameToken is received.
-//
-// So while the ACK can arrive before a CompositorFrame submission occurs. The
-// processing does not occur until after the FrameToken for that frame
-// submission arrives to the main thread.
+// The ACK is sent from compositor thread, when the CompositorFrame is submited
+// to the display compositor
+// TODO(danakj): This class seems to provide the same as
+// RenderFrameSubmissionObserver, consider using that instead.
 class MainThreadFrameObserver {
  public:
   explicit MainThreadFrameObserver(RenderWidgetHost* render_widget_host);

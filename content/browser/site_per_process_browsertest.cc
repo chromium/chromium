@@ -13585,9 +13585,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     }
   )";
   EXPECT_TRUE(ExecuteScript(root, filling_script));
-  MainThreadFrameObserver main_widget_observer(
-      root->current_frame_host()->GetRenderWidgetHost());
-  main_widget_observer.Wait();
+  // This will ensure that browser has received the
+  // FrameHostMsg_UpdateViewportIntersection IPC message from the renderer main
+  // thread.
+  EXPECT_EQ(true,
+            EvalJsAfterLifecycleUpdate(root->current_frame_host(), "", "true"));
 
   // Kill the child frame.
   base::HistogramTester histograms;
@@ -13611,7 +13613,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     frame.scrollIntoView();
   )";
   EXPECT_TRUE(ExecuteScript(root, scrolling_script));
-  main_widget_observer.Wait();
+  // Wait for FrameHostMsg_UpdateViewportIntersection again.
+  EXPECT_EQ(true,
+            EvalJsAfterLifecycleUpdate(root->current_frame_host(), "", "true"));
 
   // Verify that the expected metrics got logged.
   histograms.ExpectUniqueSample(
@@ -13638,10 +13642,8 @@ class SitePerProcessBrowserTestWithoutSadFrameTabReload
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Flaky everywhere: https://crbug.com/1115096
-IN_PROC_BROWSER_TEST_P(
-    SitePerProcessBrowserTestWithoutSadFrameTabReload,
-    DISABLED_ChildFrameCrashMetrics_ScrolledIntoViewAfterTabIsShown) {
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithoutSadFrameTabReload,
+                       ChildFrameCrashMetrics_ScrolledIntoViewAfterTabIsShown) {
   // Start on a page that has a single iframe, which is positioned out of
   // view, and navigate that iframe cross-site.
   GURL main_url(
@@ -13679,14 +13681,16 @@ IN_PROC_BROWSER_TEST_P(
 
   // Scroll the subframe into view and wait until the scrolled frame draws
   // itself.
-  MainThreadFrameObserver main_widget_observer(
-      root->current_frame_host()->GetRenderWidgetHost());
   std::string scrolling_script = R"(
     var frame = document.body.querySelector("iframe");
     frame.scrollIntoView();
   )";
   EXPECT_TRUE(ExecuteScript(root, scrolling_script));
-  main_widget_observer.Wait();
+  // This will ensure that browser has received the
+  // FrameHostMsg_UpdateViewportIntersection IPC message from the renderer main
+  // thread.
+  EXPECT_EQ(true,
+            EvalJsAfterLifecycleUpdate(root->current_frame_host(), "", "true"));
 
   // Verify that the expected metrics got logged.
   histograms.ExpectUniqueSample(
