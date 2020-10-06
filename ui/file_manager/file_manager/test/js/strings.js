@@ -9,15 +9,13 @@ loadTimeData.data = $GRDP;
 
 // Extend with additional fields not found in grdp files.
 loadTimeData.overrideValues({
+  'COPY_IMAGE_ENABLED': false,
   'CROSTINI_ENABLED': true,
-  'DRIVE_BIDIRECTIONAL_NATIVE_MESSAGING_ENABLED': false,
+  'FILES_CAMERA_FOLDER_ENABLED': false,
   'FILES_NG_ENABLED': true,
   'FILES_SINGLE_PARTITION_FORMAT_ENABLED': false,
   'FILES_TRANSFER_DETAILS_ENABLED': true,
   'FILTERS_IN_RECENTS_ENABLED': false,
-  'FEEDBACK_PANEL_ENABLED': false,
-  'GOOGLE_DRIVE_REDEEM_URL': 'http://www.google.com/intl/en/chrome/devices' +
-      '/goodies.html?utm_source=filesapp&utm_medium=banner&utm_campaign=gsg',
   'GOOGLE_DRIVE_OVERVIEW_URL':
       'https://support.google.com/chromebook/?p=filemanager_drive',
   'HIDE_SPACE_INFO': false,
@@ -28,8 +26,6 @@ loadTimeData.overrideValues({
   'ZIP_MOUNT': false,
   'ZIP_PACK': false,
   'ZIP_UNPACK': false,
-  'language': 'en-US',
-  'textdirection': 'ltr',
 });
 
 // Overwrite LoadTimeData.prototype.data setter as nop.
