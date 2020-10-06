@@ -14,6 +14,15 @@
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
+namespace {
+
+constexpr char kGetScreens[] = R"(
+  (async () => {
+    try { const screens = await self.getScreens(); } catch {}
+    return (await navigator.permissions.query({name:'window-placement'})).state;
+  })();
+)";
+
 // Tests of WindowPlacementPermissionContext behavior.
 class WindowPlacementPermissionContextTest : public InProcessBrowserTest {
  public:
@@ -38,17 +47,15 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest, DismissAndDeny) {
   // Auto-dismiss the permission request; user activation should not be granted.
   permission_request_manager->set_auto_response_for_test(
       permissions::PermissionRequestManager::DISMISS);
-  EXPECT_FALSE(
-      EvalJs(tab, "self.getScreens()", content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-          .error.empty());
+  EXPECT_EQ("prompt",
+            EvalJs(tab, kGetScreens, content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_FALSE(tab->GetMainFrame()->HasTransientUserActivation());
 
   // Auto-deny the permission request; user activation should not be granted.
   permission_request_manager->set_auto_response_for_test(
       permissions::PermissionRequestManager::DENY_ALL);
-  EXPECT_FALSE(
-      EvalJs(tab, "self.getScreens()", content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-          .error.empty());
+  EXPECT_EQ("denied",
+            EvalJs(tab, kGetScreens, content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_FALSE(tab->GetMainFrame()->HasTransientUserActivation());
 }
 
@@ -66,8 +73,9 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest, Accept) {
   // Auto-accept the permission request; user activation should be granted.
   permission_request_manager->set_auto_response_for_test(
       permissions::PermissionRequestManager::ACCEPT_ALL);
-  EXPECT_TRUE(
-      EvalJs(tab, "self.getScreens()", content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-          .error.empty());
+  EXPECT_EQ("granted",
+            EvalJs(tab, kGetScreens, content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_TRUE(tab->GetMainFrame()->HasTransientUserActivation());
 }
+
+}  // namespace
