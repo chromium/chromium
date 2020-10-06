@@ -27,6 +27,8 @@ class ShoppingTasksHandler
   void GetPrimaryShoppingTask(GetPrimaryShoppingTaskCallback callback) override;
   void DismissShoppingTask(const std::string& task_name) override;
   void RestoreShoppingTask(const std::string& task_name) override;
+  void OnProductClicked(uint32_t index) override;
+  void OnRelatedSearchClicked(uint32_t index) override;
 
  private:
   mojo::Receiver<shopping_tasks::mojom::ShoppingTasksHandler> receiver_;
