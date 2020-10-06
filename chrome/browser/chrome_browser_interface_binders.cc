@@ -136,6 +136,7 @@
 #endif
 
 #if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 #include "ui/webui/resources/cr_components/customize_themes/customize_themes.mojom.h"
 #endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
@@ -610,7 +611,7 @@ void PopulateChromeWebUIFrameBinders(
       customize_themes::mojom::CustomizeThemesHandlerFactory, NewTabPageUI
 #if !defined(OS_CHROMEOS)
       ,
-      ProfilePickerUI, settings::SettingsUI
+      ProfileCustomizationUI, ProfilePickerUI, settings::SettingsUI
 #endif  // !defined(OS_CHROMEOS)
       >(map);
 

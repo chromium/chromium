@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/customize_themes/chrome_customize_themes_handler.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -17,7 +18,8 @@
 #include "ui/resources/grit/webui_resources.h"
 
 ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
-    : content::WebUIController(web_ui) {
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
+      customize_themes_factory_receiver_(this) {
   content::WebUIDataSource* source = content::WebUIDataSource::Create(
       chrome::kChromeUIProfileCustomizationHost);
   source->SetDefaultResource(IDR_PROFILE_CUSTOMIZATION_HTML);
@@ -34,6 +36,12 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
        IDS_PROFILE_CUSTOMIZATION_DONE_BUTTON_LABEL},
       {"profileCustomizationPickThemeTitle",
        IDS_PROFILE_CUSTOMIZATION_PICK_THEME_TITLE},
+
+      // Color picker strings:
+      {"colorPickerLabel", IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL},
+      {"defaultThemeLabel", IDS_NTP_CUSTOMIZE_DEFAULT_LABEL},
+      {"thirdPartyThemeDescription", IDS_NTP_CUSTOMIZE_3PT_THEME_DESC},
+      {"uninstallThirdPartyThemeButton", IDS_NTP_CUSTOMIZE_3PT_THEME_UNINSTALL},
   };
   webui::AddLocalizedStringsBulk(source, kLocalizedStrings);
 
@@ -53,6 +61,25 @@ ProfileCustomizationUI::~ProfileCustomizationUI() = default;
 void ProfileCustomizationUI::Initialize(base::OnceClosure done_closure) {
   web_ui()->AddMessageHandler(
       std::make_unique<ProfileCustomizationHandler>(std::move(done_closure)));
+}
+
+void ProfileCustomizationUI::BindInterface(
+    mojo::PendingReceiver<
+        customize_themes::mojom::CustomizeThemesHandlerFactory>
+        pending_receiver) {
+  if (customize_themes_factory_receiver_.is_bound())
+    customize_themes_factory_receiver_.reset();
+  customize_themes_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
+void ProfileCustomizationUI::CreateCustomizeThemesHandler(
+    mojo::PendingRemote<customize_themes::mojom::CustomizeThemesClient>
+        pending_client,
+    mojo::PendingReceiver<customize_themes::mojom::CustomizeThemesHandler>
+        pending_handler) {
+  customize_themes_handler_ = std::make_unique<ChromeCustomizeThemesHandler>(
+      std::move(pending_client), std::move(pending_handler),
+      web_ui()->GetWebContents(), Profile::FromWebUI(web_ui()));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ProfileCustomizationUI)

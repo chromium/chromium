@@ -17,6 +17,7 @@ js_library("profile_customization_app") {
   deps = [
     ":profile_customization_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/customize_themes",
   ]
 }
 

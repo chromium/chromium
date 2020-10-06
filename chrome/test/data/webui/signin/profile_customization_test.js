@@ -33,4 +33,8 @@ suite('ProfileCustomizationTest', function() {
     app.$$('#doneButton').click();
     return browserProxy.whenCalled('done');
   });
+
+  test('ThemeSelector', function() {
+    assertTrue(!!app.$$('#themeSelector'));
+  });
 });
