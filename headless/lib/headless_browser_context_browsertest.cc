@@ -151,8 +151,7 @@ class HeadlessBrowserContextIsolationTest
   std::unique_ptr<LoadObserver> load_observer_;
 };
 
-// TODO(https://crbug.com/930356): Re-enable test.
-DISABLED_HEADLESS_ASYNC_DEVTOOLED_TEST_F(HeadlessBrowserContextIsolationTest);
+HEADLESS_ASYNC_DEVTOOLED_TEST_F(HeadlessBrowserContextIsolationTest);
 
 class HeadlessBrowserUserDataDirTest : public HeadlessBrowserTest {
  protected:
