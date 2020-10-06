@@ -91,6 +91,12 @@ public class PlayerManager {
         mPlayerGestureListener.setUserFrustrationDetector(userFrustrationDetector);
     }
 
+    public void setAcceptUserInput(boolean acceptUserInput) {
+        if (mRootFrameCoordinator == null) return;
+
+        mRootFrameCoordinator.setAcceptUserInput(acceptUserInput);
+    }
+
     /**
      * @return Current scroll position of the main frame. null if the player is not
      * initialized.

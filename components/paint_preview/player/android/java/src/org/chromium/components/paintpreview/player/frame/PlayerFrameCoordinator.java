@@ -22,12 +22,18 @@ import org.chromium.components.paintpreview.player.PlayerGestureListener;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Sets up the view and the logic behind it for a Paint Preview frame.
  */
 public class PlayerFrameCoordinator {
     private PlayerFrameMediator mMediator;
+    private PlayerFrameScaleController mScaleController;
+    private PlayerFrameScrollController mScrollController;
     private PlayerFrameView mView;
+    private List<PlayerFrameCoordinator> mSubFrames = new ArrayList<>();
 
     /**
      * Creates a {@link PlayerFrameMediator} and {@link PlayerFrameView} for this component and
@@ -45,23 +51,30 @@ public class PlayerFrameCoordinator {
         mMediator = new PlayerFrameMediator(model, compositorDelegate, gestureHandler, frameGuid,
                 new Size(contentWidth, contentHeight), initialScrollX, initialScrollY);
 
-        PlayerFrameScaleController scaleController = null;
         if (canDetectZoom) {
-            scaleController =
+            mScaleController =
                     new PlayerFrameScaleController(model.get(PlayerFrameProperties.SCALE_MATRIX),
                             mMediator, gestureHandler::onScale);
         }
-        PlayerFrameScrollController scrollController = new PlayerFrameScrollController(
+        mScrollController = new PlayerFrameScrollController(
                 scroller, mMediator, gestureHandler::onScroll, gestureHandler::onFling);
         PlayerFrameGestureDetectorDelegate gestureDelegate = new PlayerFrameGestureDetectorDelegate(
-                scaleController, scrollController, mMediator);
+                mScaleController, mScrollController, mMediator);
 
         mView = new PlayerFrameView(context, canDetectZoom, mMediator, gestureDelegate,
                 firstPaintListener);
         if (overscrollHandler != null) {
-            scrollController.setOverscrollHandler(overscrollHandler);
+            mScrollController.setOverscrollHandler(overscrollHandler);
         }
         PropertyModelChangeProcessor.create(model, mView, PlayerFrameViewBinder::bind);
+    }
+
+    public void setAcceptUserInput(boolean acceptUserInput) {
+        if (mScrollController != null) mScrollController.setAcceptUserInput(acceptUserInput);
+        if (mScaleController != null) mScaleController.setAcceptUserInput(acceptUserInput);
+        for (PlayerFrameCoordinator subFrame : mSubFrames) {
+            subFrame.setAcceptUserInput(acceptUserInput);
+        }
     }
 
     public Point getScrollPosition() {
@@ -78,6 +91,7 @@ public class PlayerFrameCoordinator {
      * @param clipRect The {@link Rect} in which this sub-frame should be shown in.
      */
     public void addSubFrame(PlayerFrameCoordinator subFrame, Rect clipRect) {
+        mSubFrames.add(subFrame);
         mMediator.addSubFrame(subFrame.mView, clipRect, subFrame.getMediator());
         subFrame.mView.getGestureDetector().setParentGestureDetector(mView.getGestureDetector());
     }
@@ -85,7 +99,8 @@ public class PlayerFrameCoordinator {
     /**
      * @return The mediator associated with this component.
      */
-    private PlayerFrameMediator getMediator() {
+    @VisibleForTesting
+    PlayerFrameMediator getMediator() {
         return mMediator;
     }
 
@@ -99,5 +114,15 @@ public class PlayerFrameCoordinator {
     @VisibleForTesting
     public boolean checkRequiredBitmapsLoadedForTest() {
         return mMediator.checkRequiredBitmapsLoadedForTest();
+    }
+
+    @VisibleForTesting
+    PlayerFrameScaleController getScaleControllerForTest() {
+        return mScaleController;
+    }
+
+    @VisibleForTesting
+    PlayerFrameScrollController getScrollControllerForTest() {
+        return mScrollController;
     }
 }
