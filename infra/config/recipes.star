@@ -28,6 +28,10 @@ build_recipe = _recipe_for_package(
 )
 
 build_recipe(
+    name = "recipe:android/androidx_packager",
+)
+
+build_recipe(
     name = "recipe:android/avd_packager",
 )
 

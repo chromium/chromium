@@ -311,6 +311,14 @@ ci.console_view(
 # them, then lexicographically by their name
 
 ci.builder(
+    name = "android-androidx-packager",
+    executable = "recipe:android/androidx_packager",
+    schedule = "0 7 * * 0 *",
+    service_account = "chromium-cipd-builder@chops-service-accounts.iam.gserviceaccount.com",
+    triggered_by = [],
+)
+
+ci.builder(
     name = "android-avd-packager",
     executable = "recipe:android/avd_packager",
     properties = {

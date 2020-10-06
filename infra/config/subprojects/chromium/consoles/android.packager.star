@@ -15,5 +15,9 @@ luci.console_view(
             builder = "ci/android-sdk-packager",
             short_name = "sdk",
         ),
+        luci.console_view_entry(
+            builder = "ci/android-androidx-packager",
+            short_name = "androidx",
+        ),
     ],
 )
