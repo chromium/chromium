@@ -13,7 +13,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
-#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/task/post_task.h"
@@ -518,24 +517,6 @@ void ReportingClient::CreateReportQueue(
                      base::Unretained(instance)));
 }
 
-// static
-void ReportingClient::Setup_test(
-    std::unique_ptr<policy::CloudPolicyClient> client) {
-  auto* instance = GetInstance();
-  instance->build_cloud_policy_client_cb_ = base::BindOnce(
-      [](std::unique_ptr<policy::CloudPolicyClient> client,
-         base::OnceCallback<void(
-             StatusOr<std::unique_ptr<policy::CloudPolicyClient>>)> build_cb) {
-        std::move(build_cb).Run(std::move(client));
-      },
-      std::move(client));
-}
-
-// static
-void ReportingClient::Reset_test() {
-  base::Singleton<ReportingClient>::OnExit(nullptr);
-}
-
 void ReportingClient::OnPushComplete() {
   init_state_tracker_->GetInitState(
       base::BindOnce(&ReportingClient::OnInitState, base::Unretained(this)));
@@ -637,6 +618,26 @@ ReportingClient::BuildUploader(Priority priority) {
   return Uploader::Create(
       base::BindOnce(&UploadClient::EnqueueUpload,
                      base::Unretained(instance->upload_client_.get())));
+}
+
+ReportingClient::TestEnvironment::TestEnvironment(
+    std::unique_ptr<policy::CloudPolicyClient> client)
+    : saved_build_cloud_policy_client_cb_(std::move(
+          ReportingClient::GetInstance()->build_cloud_policy_client_cb_)) {
+  ReportingClient::GetInstance()
+      ->build_cloud_policy_client_cb_ = base::BindOnce(
+      [](std::unique_ptr<policy::CloudPolicyClient> client,
+         base::OnceCallback<void(
+             StatusOr<std::unique_ptr<policy::CloudPolicyClient>>)> build_cb) {
+        std::move(build_cb).Run(std::move(client));
+      },
+      std::move(client));
+}
+
+ReportingClient::TestEnvironment::~TestEnvironment() {
+  ReportingClient::GetInstance()->build_cloud_policy_client_cb_ =
+      std::move(saved_build_cloud_policy_client_cb_);
+  base::Singleton<ReportingClient>::OnExit(nullptr);
 }
 
 }  // namespace reporting

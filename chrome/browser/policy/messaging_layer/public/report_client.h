@@ -151,6 +151,20 @@ class ReportingClient {
     std::unique_ptr<Configuration> client_config_;
   };
 
+  // RAII class for testing ReportingClient - substitutes a cloud policy client
+  // builder to return given client and resets it when destructed.
+  class TestEnvironment {
+   public:
+    explicit TestEnvironment(std::unique_ptr<policy::CloudPolicyClient> client);
+    TestEnvironment(const TestEnvironment& other) = delete;
+    TestEnvironment& operator=(const TestEnvironment& other) = delete;
+    ~TestEnvironment();
+
+   private:
+    ReportingClient::BuildCloudPolicyClientCallback
+        saved_build_cloud_policy_client_cb_;
+  };
+
   ~ReportingClient();
   ReportingClient(const ReportingClient& other) = delete;
   ReportingClient& operator=(const ReportingClient& other) = delete;
@@ -164,12 +178,6 @@ class ReportingClient {
   static void CreateReportQueue(
       std::unique_ptr<ReportQueueConfiguration> config,
       CreateReportQueueCallback create_cb);
-
-  // Sets up the ReportingClient for testing with a specified CloudPolicyClient.
-  static void Setup_test(std::unique_ptr<policy::CloudPolicyClient> client);
-  // Resets the singleton object. Should only be used in tests when the current
-  // TaskEnvironment will be invalidated.
-  static void Reset_test();
 
  private:
   // Uploader is passed to Storage in order to upload messages using the
@@ -222,8 +230,11 @@ class ReportingClient {
   };
 
   friend struct base::DefaultSingletonTraits<ReportingClient>;
+  friend class TestEnvironment;
 
   ReportingClient();
+
+  // Access to singleton instance of ReportingClient.
   static ReportingClient* GetInstance();
 
   void OnPushComplete();
@@ -249,7 +260,6 @@ class ReportingClient {
   std::unique_ptr<UploadClient> upload_client_;
   std::unique_ptr<Configuration> config_;
 };
-
 }  // namespace reporting
 
 #endif  // CHROME_BROWSER_POLICY_MESSAGING_LAYER_PUBLIC_REPORT_CLIENT_H_

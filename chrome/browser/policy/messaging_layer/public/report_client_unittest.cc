@@ -69,16 +69,15 @@ class ReportingClientTest : public testing::Test {
     user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(mock_user_manager));
 #endif  // OS_CHROMEOS
-
     // Provide a mock cloud policy client.
     auto client = std::make_unique<policy::MockCloudPolicyClient>();
     client->SetDMToken(
         policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
-    ReportingClient::Setup_test(std::move(client));
+    test_reporting_ =
+        std::make_unique<ReportingClient::TestEnvironment>(std::move(client));
   }
 
   void TearDown() override {
-    ReportingClient::Reset_test();
 #ifdef OS_CHROMEOS
     user_manager_.reset();
     profile_.reset();
@@ -87,6 +86,7 @@ class ReportingClientTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_envrionment_;
+  std::unique_ptr<ReportingClient::TestEnvironment> test_reporting_;
 #ifdef OS_CHROMEOS
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
