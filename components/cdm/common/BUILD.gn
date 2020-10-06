@@ -2,21 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 static_library("common") {
   sources = [
     "cdm_message_generator.cc",
     "cdm_message_generator.h",
-    "cdm_messages_android.h",
-    "widevine_drm_delegate_android.cc",
-    "widevine_drm_delegate_android.h",
   ]
+
+  if (is_android) {
+    sources += [
+      "cdm_messages_android.h",
+      "widevine_drm_delegate_android.cc",
+      "widevine_drm_delegate_android.h",
+    ]
+  }
 
   deps = [
     "//base",
