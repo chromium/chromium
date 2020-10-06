@@ -606,6 +606,7 @@ crbug.com/609883 [ android qualcomm-adreno-(tm)-418 no-passthrough ] conformance
 crbug.com/793050 [ android qualcomm-adreno-(tm)-418 ] conformance/ogles/GL/all/all_001_to_004.html [ RetryOnFailure ]
 crbug.com/793050 [ android qualcomm-adreno-(tm)-418 ] conformance/ogles/GL/cos/cos_001_to_006.html [ RetryOnFailure ]
 crbug.com/818041 [ android qualcomm-adreno-(tm)-418 ] conformance/ogles/GL/dot/dot_001_to_006.html [ RetryOnFailure ]
+crbug.com/1135659 [ android qualcomm-adreno-(tm)-418 no-passthrough ] conformance/ogles/GL/greaterThan/greaterThan_001_to_008.html [ RetryOnFailure ]
 crbug.com/793050 [ android qualcomm-adreno-(tm)-418 ] conformance/ogles/GL/swizzlers/swizzlers_041_to_048.html [ RetryOnFailure ]
 crbug.com/818041 [ android qualcomm-adreno-(tm)-418 ] conformance/textures/image_bitmap_from_video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ RetryOnFailure ]
 crbug.com/793050 [ android qualcomm-adreno-(tm)-418 ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ RetryOnFailure ]
