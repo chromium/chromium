@@ -3655,7 +3655,7 @@
   {
     "name": "password-change-in-settings",
     "owners": [ "kolos" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 90
   },
   {
     "name": "password-change-support",
@@ -3670,7 +3670,7 @@
   {
     "name": "password-scripts-fetching",
     "owners": [ "kolos" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 90
   },
   {
     "name": "PasswordImport",
