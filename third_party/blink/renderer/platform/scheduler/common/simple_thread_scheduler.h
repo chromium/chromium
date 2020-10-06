@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
 namespace blink {
@@ -64,7 +64,7 @@ class SimpleThreadScheduler : public ThreadScheduler {
       PageScheduler::Delegate*) override;
 
   // Return nullptr
-  AgentGroupScheduler* GetCurrentAgentGroupScheduler() override;
+  WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override;
 
   // Unsupported. Return nullptr, and it may cause a crash.
   std::unique_ptr<RendererPauseHandle> PauseScheduler() override;

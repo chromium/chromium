@@ -78,7 +78,7 @@ NonMainThreadSchedulerImpl::CreatePageScheduler(
   return nullptr;
 }
 
-AgentGroupScheduler*
+WebAgentGroupScheduler*
 NonMainThreadSchedulerImpl::GetCurrentAgentGroupScheduler() {
   NOTREACHED();
   return nullptr;

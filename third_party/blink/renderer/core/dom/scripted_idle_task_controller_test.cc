@@ -7,10 +7,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_idle_request_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_idle_request_options.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
-#include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/scoped_scheduler_overrider.h"
@@ -65,7 +65,8 @@ class MockScriptedIdleTaskControllerScheduler final : public ThreadScheduler {
   std::unique_ptr<RendererPauseHandle> PauseScheduler() override {
     return nullptr;
   }
-  AgentGroupScheduler* GetCurrentAgentGroupScheduler() override {
+  scheduler::WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override {
+    NOTREACHED();
     return nullptr;
   }
   base::TimeTicks MonotonicallyIncreasingVirtualTime() override {

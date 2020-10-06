@@ -224,7 +224,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   AgentGroupSchedulerImpl& EnsureAgentGroupScheduler();
   std::unique_ptr<PageScheduler> CreatePageScheduler(
       PageScheduler::Delegate*) override;
-  AgentGroupScheduler* GetCurrentAgentGroupScheduler() override;
+  WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override;
   void SetCurrentAgentGroupScheduler(
       AgentGroupSchedulerImpl* agent_group_scheduler_impl);
   std::unique_ptr<ThreadScheduler::RendererPauseHandle> PauseScheduler()

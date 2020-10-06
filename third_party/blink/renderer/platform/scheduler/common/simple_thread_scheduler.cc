@@ -6,7 +6,7 @@
 
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -67,7 +67,7 @@ std::unique_ptr<PageScheduler> SimpleThreadScheduler::CreatePageScheduler(
   return nullptr;
 }
 
-AgentGroupScheduler* SimpleThreadScheduler::GetCurrentAgentGroupScheduler() {
+WebAgentGroupScheduler* SimpleThreadScheduler::GetCurrentAgentGroupScheduler() {
   return nullptr;
 }
 

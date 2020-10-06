@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_AGENT_GROUP_SCHEDULER_IMPL_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -20,8 +20,7 @@ class MainThreadTaskQueue;
 
 // AgentGroupScheduler implementation which schedules per-AgentSchedulingGroup
 // tasks.
-class PLATFORM_EXPORT AgentGroupSchedulerImpl
-    : public blink::AgentGroupScheduler {
+class PLATFORM_EXPORT AgentGroupSchedulerImpl : public WebAgentGroupScheduler {
  public:
   explicit AgentGroupSchedulerImpl(
       MainThreadSchedulerImpl& main_thread_scheduler);

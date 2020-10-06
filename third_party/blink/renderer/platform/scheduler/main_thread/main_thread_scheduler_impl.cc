@@ -28,6 +28,7 @@
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/common/page/launching_process_state.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_renderer_process_type.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string_manager.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/renderer_resource_coordinator.h"
@@ -43,7 +44,6 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/page_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/task_type_names.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/widget_scheduler.h"
-#include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "v8/include/v8.h"
@@ -2340,7 +2340,8 @@ std::unique_ptr<PageScheduler> MainThreadSchedulerImpl::CreatePageScheduler(
   return page_scheduler;
 }
 
-AgentGroupScheduler* MainThreadSchedulerImpl::GetCurrentAgentGroupScheduler() {
+WebAgentGroupScheduler*
+MainThreadSchedulerImpl::GetCurrentAgentGroupScheduler() {
   helper_.CheckOnValidThread();
   return current_agent_group_scheduler_;
 }

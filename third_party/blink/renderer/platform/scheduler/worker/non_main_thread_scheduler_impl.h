@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/single_thread_idle_task_runner.h"
@@ -21,7 +22,6 @@
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_task_queue.h"
 
 namespace blink {
-class AgentGroupScheduler;
 namespace scheduler {
 
 class WorkerSchedulerProxy;
@@ -73,7 +73,7 @@ class PLATFORM_EXPORT NonMainThreadSchedulerImpl : public ThreadSchedulerImpl {
 
   std::unique_ptr<PageScheduler> CreatePageScheduler(
       PageScheduler::Delegate*) override;
-  AgentGroupScheduler* GetCurrentAgentGroupScheduler() override;
+  WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override;
   std::unique_ptr<RendererPauseHandle> PauseScheduler() override
       WARN_UNUSED_RESULT;
 
