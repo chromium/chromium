@@ -3019,4 +3019,5 @@ TEST_F(DisplayLockContextTest, GraphicsLayerBitsNotCheckedInLockedSubtree) {
   EXPECT_FALSE(
       target_layer->GetCompositedLayerMapping()->NeedsGraphicsLayerUpdate());
 }
+
 }  // namespace blink

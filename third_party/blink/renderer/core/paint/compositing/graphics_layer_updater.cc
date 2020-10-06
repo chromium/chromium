@@ -155,10 +155,22 @@ void GraphicsLayerUpdater::UpdateRecursive(
     }
   }
 
-  PaintLayer* first_child =
-      layer.GetLayoutObject().ChildPrePaintBlockedByDisplayLock()
-          ? nullptr
-          : layer.FirstChild();
+  PaintLayer* first_child = layer.FirstChild();
+  // If we have children but the update is blocked, then we should clear the
+  // first child to block recursion.
+  if (first_child &&
+      layer.GetLayoutObject().ChildPrePaintBlockedByDisplayLock()) {
+    first_child = nullptr;
+
+    // If we have a forced update, we notify the display lock to ensure that the
+    // forced update resumes after the lock has been removed.
+    if (update_type == kForceUpdate) {
+      auto* context = layer.GetLayoutObject().GetDisplayLockContext();
+      DCHECK(context);
+      context->NotifyForcedGraphicsLayerUpdateBlocked();
+    }
+  }
+
   UpdateContext child_context(context, layer);
   for (PaintLayer* child = first_child; child; child = child->NextSibling()) {
     UpdateRecursive(*child, update_type, child_context,

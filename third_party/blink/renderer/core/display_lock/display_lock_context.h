@@ -166,6 +166,10 @@ class CORE_EXPORT DisplayLockContext final
     needs_graphics_layer_rebuild_ = true;
   }
 
+  void NotifyForcedGraphicsLayerUpdateBlocked() {
+    forced_graphics_layer_update_blocked_ = true;
+  }
+
   // Notify this element will be disconnected.
   void NotifyWillDisconnect();
 
@@ -372,6 +376,8 @@ class CORE_EXPORT DisplayLockContext final
   bool keep_unlocked_until_lifecycle_ = false;
 
   bool needs_graphics_layer_rebuild_ = false;
+
+  bool forced_graphics_layer_update_blocked_ = false;
 
   // This is set to true if we're in the 'auto' mode and had our first
   // intersection / non-intersection notification. This is reset to false if the
