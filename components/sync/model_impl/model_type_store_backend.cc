@@ -51,7 +51,9 @@ ModelTypeStoreBackend::CreateUninitialized() {
   return new ModelTypeStoreBackend(/*env=*/nullptr);
 }
 
-ModelTypeStoreBackend::~ModelTypeStoreBackend() {}
+ModelTypeStoreBackend::~ModelTypeStoreBackend() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 base::Optional<ModelError> ModelTypeStoreBackend::Init(
     const base::FilePath& path) {

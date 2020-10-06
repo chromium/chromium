@@ -45,7 +45,7 @@ class ModelTypeStoreServiceImpl : public ModelTypeStoreService {
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
   // Constructed in the UI thread, used and destroyed in |backend_task_runner_|.
-  const scoped_refptr<ModelTypeStoreBackend> store_backend_;
+  scoped_refptr<ModelTypeStoreBackend> store_backend_;
 
   SEQUENCE_CHECKER(ui_sequence_checker_);
 
