@@ -40,7 +40,6 @@
 
 #if defined(OS_FUCHSIA)
 #include <fuchsia/logger/cpp/fidl.h>
-#include <fuchsia/logger/cpp/fidl_test_base.h>
 #include <lib/fidl/cpp/binding.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/zx/channel.h>
@@ -56,6 +55,7 @@
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
+#include "base/fuchsia/test_log_listener_safe.h"
 #endif  // OS_FUCHSIA
 
 namespace logging {
@@ -714,56 +714,12 @@ namespace nested_test {
 
 #if defined(OS_FUCHSIA)
 
-class TestLogListenerSafe
-    : public fuchsia::logger::testing::LogListenerSafe_TestBase {
- public:
-  TestLogListenerSafe() = default;
-  TestLogListenerSafe(const TestLogListenerSafe&) = delete;
-  TestLogListenerSafe& operator=(const TestLogListenerSafe&) = delete;
-  ~TestLogListenerSafe() override = default;
-
-  void set_on_dump_logs_done(base::OnceClosure on_dump_logs_done) {
-    on_dump_logs_done_ = std::move(on_dump_logs_done);
-  }
-
-  bool DidReceiveString(base::StringPiece message,
-                        fuchsia::logger::LogMessage* logged_message) {
-    for (const auto& log_message : log_messages_) {
-      if (log_message.msg.find(message.as_string()) != std::string::npos) {
-        *logged_message = log_message;
-        return true;
-      }
-    }
-    return false;
-  }
-
-  // LogListener implementation.
-  void LogMany(std::vector<fuchsia::logger::LogMessage> messages,
-               LogManyCallback callback) override {
-    log_messages_.insert(log_messages_.end(),
-                         std::make_move_iterator(messages.begin()),
-                         std::make_move_iterator(messages.end()));
-    callback();
-  }
-
-  void Done() override { std::move(on_dump_logs_done_).Run(); }
-
-  void NotImplemented_(const std::string& name) override {
-    ADD_FAILURE() << "NotImplemented_: " << name;
-  }
-
- private:
-  fuchsia::logger::LogListenerSafePtr log_listener_;
-  std::vector<fuchsia::logger::LogMessage> log_messages_;
-  base::OnceClosure on_dump_logs_done_;
-};
-
 // Verifies that calling the log macro goes to the Fuchsia system logs.
 TEST_F(LoggingTest, FuchsiaSystemLogging) {
   const char kLogMessage[] = "system log!";
   LOG(ERROR) << kLogMessage;
 
-  TestLogListenerSafe listener;
+  base::TestLogListenerSafe listener;
   fidl::Binding<fuchsia::logger::LogListenerSafe> binding(&listener);
 
   fuchsia::logger::LogMessage logged_message;
@@ -780,9 +736,10 @@ TEST_F(LoggingTest, FuchsiaSystemLogging) {
   });
 
   // |dump_logs| checks whether the expected log line has been received yet,
-  // and invokes DumpLogs() if not. It passes itself as the completion callback,
-  // so that when the call completes it can check again for the expected message
-  // and re-invoke DumpLogs(), or quit the loop, as appropriate.
+  // and invokes DumpLogsSafe() if not. It passes itself as the completion
+  // callback, so that when the call completes it can check again for the
+  // expected message and re-invoke DumpLogsSafe(), or quit the loop, as
+  // appropriate.
   base::RepeatingClosure dump_logs = base::BindLambdaForTesting([&]() {
     if (listener.DidReceiveString(kLogMessage, &logged_message)) {
       wait_for_message_loop.Quit();

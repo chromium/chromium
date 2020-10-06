@@ -354,6 +354,7 @@ test("web_engine_integration_tests") {
   data = [ "test/data" ]
   deps = [
     "//base",
+    "//base:test_log_listener_safe",
     "//base/test:run_all_unittests",
     "//fuchsia/base",
     "//fuchsia/base:test_support",

@@ -2645,6 +2645,19 @@ if (is_fuchsia) {
       ":testfidl",
     ]
   }
+
+  source_set("test_log_listener_safe") {
+    testonly = true
+    sources = [
+      "fuchsia/test_log_listener_safe.cc",
+      "fuchsia/test_log_listener_safe.h",
+    ]
+    deps = [
+      ":base",
+      "//testing/gtest",
+    ]
+    public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger" ]
+  }
 }
 
 source_set("base_unittests_tasktraits") {
@@ -3311,6 +3324,7 @@ test("base_unittests") {
 
     deps += [
       ":test_interface_impl",
+      ":test_log_listener_safe",
       ":testfidl",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger",

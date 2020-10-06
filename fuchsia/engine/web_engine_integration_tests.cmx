@@ -10,6 +10,7 @@
       "fuchsia.device.NameProvider",
       "fuchsia.fonts.Provider",
       "fuchsia.intl.PropertyProvider",
+      "fuchsia.logger.Log",
       "fuchsia.logger.LogSink",
       "fuchsia.media.Audio",
       "fuchsia.media.SessionAudioConsumerFactory",
