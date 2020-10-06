@@ -191,10 +191,6 @@ public class DownloadBroadcastManager extends Service {
                     DownloadNotificationUmaHelper.recordDownloadResumptionHistogram(browserStarted
                                     ? UmaDownloadResumption.BROWSER_RUNNING
                                     : UmaDownloadResumption.BROWSER_NOT_RUNNING);
-                    if (!browserStarted) {
-                        DownloadManagerService.getDownloadManagerService()
-                                .onBackgroundDownloadStarted(id.id);
-                    }
                 }
 
                 DownloadStartupUtils.ensureDownloadSystemInitialized(

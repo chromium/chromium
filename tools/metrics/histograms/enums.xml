@@ -48609,6 +48609,9 @@ Called by update_use_counter_css.py.-->
 </enum>
 
 <enum name="MobileDownloadBackgroundDownloadEvent">
+  <obsolete>
+    Removed 2020-10.
+  </obsolete>
   <int value="0" label="Started"/>
   <int value="1" label="Completed"/>
   <int value="2" label="Cancelled"/>

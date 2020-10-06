@@ -619,6 +619,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MobileDownload.Background"
     enum="MobileDownloadBackgroundDownloadEvent" expires_after="2020-10-11">
+  <obsolete>
+    Removed 2020-10.
+  </obsolete>
   <owner>hnakashima@chromium.org</owner>
   <owner>hanxi@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>

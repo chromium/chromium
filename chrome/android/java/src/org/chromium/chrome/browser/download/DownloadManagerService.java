@@ -35,9 +35,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadManagerBridge.DownloadEnqueueRequest;
 import org.chromium.chrome.browser.download.DownloadManagerBridge.DownloadEnqueueResponse;
-import org.chromium.chrome.browser.download.DownloadNotificationUmaHelper.UmaBackgroundDownload;
 import org.chromium.chrome.browser.download.DownloadNotificationUmaHelper.UmaDownloadResumption;
-import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -57,12 +55,9 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
-import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemSchedule;
-import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.PendingState;
-import org.chromium.components.offline_items_collection.UpdateDelta;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserStartupController;
@@ -101,7 +96,6 @@ public class DownloadManagerService implements DownloadController.Observer,
     public static final long UNKNOWN_BYTES_RECEIVED = -1;
 
     private static final Set<String> sFirstSeenDownloadIds = new HashSet<String>();
-    private static final Set<String> sBackgroundDownloadIds = new HashSet<String>();
 
     private static DownloadManagerService sDownloadManagerService;
     private static boolean sIsNetworkListenerDisabled;
@@ -197,44 +191,6 @@ public class DownloadManagerService implements DownloadController.Observer,
             mIsSupportedMimeType = progress.mIsSupportedMimeType;
         }
     }
-
-    private class BackgroundDownloadUmaRecorder implements OfflineContentProvider.Observer {
-        BackgroundDownloadUmaRecorder() {
-            OfflineContentAggregatorFactory.get().addObserver(this);
-        }
-
-        @Override
-        public void onItemUpdated(OfflineItem item, UpdateDelta updateDelta) {
-            if (!LegacyHelpers.isLegacyDownload(item.id)) return;
-            switch (item.state) {
-                case OfflineItemState.COMPLETE:
-                    maybeRecordBackgroundDownload(UmaBackgroundDownload.COMPLETED, item.id.id);
-                    break;
-                case OfflineItemState.CANCELLED:
-                    maybeRecordBackgroundDownload(UmaBackgroundDownload.CANCELLED, item.id.id);
-                    break;
-                case OfflineItemState.INTERRUPTED:
-                    maybeRecordBackgroundDownload(UmaBackgroundDownload.INTERRUPTED, item.id.id);
-                    break;
-                case OfflineItemState.FAILED:
-                    maybeRecordBackgroundDownload(UmaBackgroundDownload.FAILED, item.id.id);
-                    break;
-                case OfflineItemState.PENDING:
-                case OfflineItemState.PAUSED:
-                case OfflineItemState.IN_PROGRESS:
-                default:
-                    break;
-            }
-        }
-
-        @Override
-        public void onItemsAdded(ArrayList<OfflineItem> items) {}
-
-        @Override
-        public void onItemRemoved(ContentId id) {}
-    }
-
-    private BackgroundDownloadUmaRecorder mBackgroundDownloadUmaRecorder;
 
     /**
      * Creates DownloadManagerService.
@@ -385,16 +341,10 @@ public class DownloadManagerService implements DownloadController.Observer,
         DownloadItem item = new DownloadItem(false, downloadInfo);
         if (!downloadInfo.isResumable()) {
             status = DownloadStatus.FAILED;
-            maybeRecordBackgroundDownload(
-                    UmaBackgroundDownload.FAILED, downloadInfo.getDownloadGuid());
         } else if (isAutoResumable) {
             addAutoResumableDownload(item.getId());
         }
 
-        if (status == DownloadStatus.INTERRUPTED) {
-            maybeRecordBackgroundDownload(
-                    UmaBackgroundDownload.INTERRUPTED, downloadInfo.getDownloadGuid());
-        }
         updateDownloadProgress(item, status);
         updateDownloadInfoBar(item);
 
@@ -608,16 +558,12 @@ public class DownloadManagerService implements DownloadController.Observer,
                     mDownloadNotifier.notifyDownloadSuccessful(
                             info, item.getSystemDownloadId(), result.second, isSupportedMimeType);
                     broadcastDownloadSuccessful(info);
-                    maybeRecordBackgroundDownload(
-                            UmaBackgroundDownload.COMPLETED, info.getDownloadGuid());
                 } else {
                     info = DownloadInfo.Builder.fromDownloadInfo(info)
                                    .setFailState(FailState.CANNOT_DOWNLOAD)
                                    .build();
                     mDownloadNotifier.notifyDownloadFailed(info);
                     // TODO(qinmin): get the failure message from native.
-                    maybeRecordBackgroundDownload(
-                            UmaBackgroundDownload.FAILED, info.getDownloadGuid());
                 }
             }
         };
@@ -1045,7 +991,6 @@ public class DownloadManagerService implements DownloadController.Observer,
             DownloadInfoBarController infoBarController = getInfoBarController(isOffTheRecord);
             if (infoBarController != null) infoBarController.onDownloadItemRemoved(id);
         }
-        maybeRecordBackgroundDownload(UmaBackgroundDownload.CANCELLED, id.id);
     }
 
     /**
@@ -1754,34 +1699,6 @@ public class DownloadManagerService implements DownloadController.Observer,
             mAutoResumptionLimit = DownloadManagerServiceJni.get().getAutoResumptionLimit();
         }
         return mAutoResumptionLimit;
-    }
-
-    /**
-     * Called when a background download is started.
-     * @param downloadGuid Download GUID
-     */
-    public void onBackgroundDownloadStarted(String downloadGuid) {
-        DownloadNotificationUmaHelper.recordBackgroundDownloadHistogram(
-                UmaBackgroundDownload.STARTED);
-        sBackgroundDownloadIds.add(downloadGuid);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)) {
-            mBackgroundDownloadUmaRecorder = new BackgroundDownloadUmaRecorder();
-        }
-    }
-
-    /**
-     * Record metrics for a download if it was started in background.
-     * @param event UmaBackgroundDownload event to log
-     * @param downloadGuid Download GUID
-     */
-    private void maybeRecordBackgroundDownload(
-            @UmaBackgroundDownload int event, String downloadGuid) {
-        if (sBackgroundDownloadIds.contains(downloadGuid)) {
-            if (event != UmaBackgroundDownload.INTERRUPTED) {
-                sBackgroundDownloadIds.remove(downloadGuid);
-            }
-            DownloadNotificationUmaHelper.recordBackgroundDownloadHistogram(event);
-        }
     }
 
     /**
