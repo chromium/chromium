@@ -21,6 +21,8 @@ import android.os.IBinder;
 import android.os.Process;
 import android.os.RemoteException;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.android_webview.common.DeveloperModeUtils;
 import org.chromium.android_webview.common.Flag;
 import org.chromium.android_webview.common.FlagOverrideHelper;
@@ -50,6 +52,11 @@ public final class DeveloperUiService extends Service {
     private static final int FRAGMENT_ID_HOME = 0;
     private static final int FRAGMENT_ID_CRASHES = 1;
     private static final int FRAGMENT_ID_FLAGS = 2;
+
+    public static final String NOTIFICATION_TITLE =
+            "WARNING: experimental WebView features enabled";
+    public static final String NOTIFICATION_CONTENT = "Tap to see experimental features.";
+    public static final String NOTIFICATION_TICKER = "Experimental WebView features enabled";
 
     private static final Object sLock = new Object();
     @GuardedBy("sLock")
@@ -221,15 +228,14 @@ public final class DeveloperUiService extends Service {
         notificationIntent.putExtra(FRAGMENT_ID_INTENT_EXTRA, FRAGMENT_ID_FLAGS);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
-        Notification.Builder builder =
-                createNotificationBuilder()
-                        .setContentTitle("WARNING: experimental WebView features enabled")
-                        .setContentText("Tap to see experimental features.")
-                        .setSmallIcon(android.R.drawable.stat_notify_error)
-                        .setContentIntent(pendingIntent)
-                        .setOngoing(true)
-                        .setVisibility(Notification.VISIBILITY_PUBLIC)
-                        .setTicker("Experimental WebView features enabled");
+        Notification.Builder builder = createNotificationBuilder()
+                                               .setContentTitle(NOTIFICATION_TITLE)
+                                               .setContentText(NOTIFICATION_CONTENT)
+                                               .setSmallIcon(android.R.drawable.stat_notify_error)
+                                               .setContentIntent(pendingIntent)
+                                               .setOngoing(true)
+                                               .setVisibility(Notification.VISIBILITY_PUBLIC)
+                                               .setTicker(NOTIFICATION_TICKER);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             builder = builder
@@ -309,5 +315,15 @@ public final class DeveloperUiService extends Service {
         // Apply newFlags
         FlagOverrideHelper helper = new FlagOverrideHelper(ProductionSupportedFlagList.sFlagList);
         helper.applyFlagOverrides(newFlags);
+    }
+
+    @VisibleForTesting
+    public static void clearSharedPrefsForTesting(Context context) {
+        synchronized (sLock) {
+            context.getSharedPreferences(DeveloperUiService.SHARED_PREFS_FILE, Context.MODE_PRIVATE)
+                    .edit()
+                    .clear()
+                    .apply();
+        }
     }
 }

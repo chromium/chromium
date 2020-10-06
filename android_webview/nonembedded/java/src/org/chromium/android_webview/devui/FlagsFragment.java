@@ -433,10 +433,11 @@ public class FlagsFragment extends DevUiBaseFragment {
         TextView flagName = toggleableFlag.findViewById(R.id.flag_name);
         if (state == /* STATE_DEFAULT */ 0) {
             // Unset the compound drawable.
-            flagName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+            flagName.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
         } else { // STATE_ENABLED or STATE_DISABLED
             // Draws a blue circle to the left of the text.
-            flagName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.blue_circle, 0, 0, 0);
+            flagName.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    R.drawable.blue_circle, 0, 0, 0);
         }
     }
 
