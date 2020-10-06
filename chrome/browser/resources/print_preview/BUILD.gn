@@ -40,7 +40,7 @@ if (optimize_webui) {
       "$target_gen_dir/$preprocess_gen_manifest",
     ]
     grd_prefix = "print_preview"
-    out_grd = "$target_gen_dir/print_preview_resources.grd"
+    out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
   }
 }
 

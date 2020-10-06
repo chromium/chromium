@@ -61,7 +61,7 @@ constexpr char kLoadTimeClassesKey[] = "loadTimeClasses";
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
 constexpr char kGeneratedPath[] =
-    "@out_folder@/gen/chrome/browser/resources/extensions/";
+    "@out_folder@/gen/chrome/browser/resources/extensions/preprocessed/";
 #endif
 
 std::string GetLoadTimeClasses(bool in_dev_mode) {

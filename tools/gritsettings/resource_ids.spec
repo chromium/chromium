@@ -137,9 +137,9 @@
   "chrome/browser/resources/extensions/extensions_resources_vulcanized.grd": {
     "includes": [1520],
   },
-  "chrome/browser/resources/extensions/extensions_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/extensions/extensions_resources.grd": {
+    "META": {"sizes": {"includes": [50],}},
     "includes": [1540],
-    "structures": [1560],
   },
   "chrome/browser/resources/history/history_resources_vulcanized.grd": {
     "includes": [1580],

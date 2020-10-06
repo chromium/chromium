@@ -6,11 +6,14 @@ import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_grit.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 import("../optimize_webui.gni")
 
-if (optimize_webui) {
-  preprocess_folder = "preprocessed"
+preprocess_folder = "preprocessed"
+preprocess_manifest = "preprocessed_manifest.json"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 
+if (optimize_webui) {
   optimize_webui("build") {
     host = "extensions"
     input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
@@ -24,65 +27,81 @@ if (optimize_webui) {
     ]
     excludes = [ "chrome://resources/js/cr.m.js" ]
   }
-
-  preprocess_grit("preprocess") {
-    in_folder = "./"
-    out_folder = "$target_gen_dir/$preprocess_folder"
-    in_files = [
-      "drag_and_drop_handler.js",
-      "extensions.js",
-      "item_behavior.js",
-      "item_util.js",
-      "keyboard_shortcut_delegate.js",
-      "navigation_helper.js",
-      "service.js",
-      "shortcut_util.js",
+} else {
+  generate_grd("build_grd") {
+    deps = [
+      ":preprocess",
+      ":preprocess_generated",
     ]
-
-    if (is_chromeos) {
-      in_files += [ "kiosk_browser_proxy.js" ]
-    }
+    manifest_files = [
+      "$target_gen_dir/$preprocess_manifest",
+      "$target_gen_dir/$preprocess_gen_manifest",
+    ]
+    grd_prefix = "extensions"
+    out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
   }
+}
 
-  preprocess_grit("preprocess_generated") {
-    deps = [ ":web_components" ]
-    in_folder = target_gen_dir
-    out_folder = "$target_gen_dir/$preprocess_folder"
-    in_files = [
-      "checkup.js",
-      "code_section.js",
-      "activity_log/activity_log_history_item.js",
-      "activity_log/activity_log_history.js",
-      "activity_log/activity_log.js",
-      "activity_log/activity_log_stream_item.js",
-      "activity_log/activity_log_stream.js",
-      "detail_view.js",
-      "drop_overlay.js",
-      "error_page.js",
-      "host_permissions_toggle_list.js",
-      "icons.js",
-      "install_warnings_dialog.js",
-      "item.js",
-      "item_list.js",
-      "keyboard_shortcuts.js",
-      "load_error.js",
-      "manager.js",
-      "options_dialog.js",
-      "pack_dialog_alert.js",
-      "pack_dialog.js",
-      "runtime_host_permissions.js",
-      "runtime_hosts_dialog.js",
-      "shared_style.js",
-      "shared_vars.js",
-      "shortcut_input.js",
-      "sidebar.js",
-      "toggle_row.js",
-      "toolbar.js",
-    ]
+preprocess_grit("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_manifest"
+  in_files = [
+    "extensions.html",
+    "drag_and_drop_handler.js",
+    "extensions.js",
+    "item_behavior.js",
+    "item_util.js",
+    "keyboard_shortcut_delegate.js",
+    "navigation_helper.js",
+    "service.js",
+    "shortcut_util.js",
+  ]
 
-    if (is_chromeos) {
-      in_files += [ "kiosk_dialog.js" ]
-    }
+  if (is_chromeos) {
+    in_files += [ "kiosk_browser_proxy.js" ]
+  }
+}
+
+preprocess_grit("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [
+    "checkup.js",
+    "code_section.js",
+    "activity_log/activity_log_history_item.js",
+    "activity_log/activity_log_history.js",
+    "activity_log/activity_log.js",
+    "activity_log/activity_log_stream_item.js",
+    "activity_log/activity_log_stream.js",
+    "detail_view.js",
+    "drop_overlay.js",
+    "error_page.js",
+    "host_permissions_toggle_list.js",
+    "icons.js",
+    "install_warnings_dialog.js",
+    "item.js",
+    "item_list.js",
+    "keyboard_shortcuts.js",
+    "load_error.js",
+    "manager.js",
+    "options_dialog.js",
+    "pack_dialog_alert.js",
+    "pack_dialog.js",
+    "runtime_host_permissions.js",
+    "runtime_hosts_dialog.js",
+    "shared_style.js",
+    "shared_vars.js",
+    "shortcut_input.js",
+    "sidebar.js",
+    "toggle_row.js",
+    "toolbar.js",
+  ]
+
+  if (is_chromeos) {
+    in_files += [ "kiosk_dialog.js" ]
   }
 }
 
