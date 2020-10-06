@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_tab_helper.h"
 #import "ios/chrome/browser/infobars/overlays/translate_overlay_tab_helper.h"
 #import "ios/chrome/browser/itunes_urls/itunes_urls_handler_tab_helper.h"
+#import "ios/chrome/browser/link_to_text/link_to_text_tab_helper.h"
 #import "ios/chrome/browser/metrics/pageload_foreground_duration_tab_helper.h"
 #import "ios/chrome/browser/network_activity/network_activity_indicator_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
@@ -215,4 +216,8 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
 
   // Allow the embedder to attach tab helpers.
   ios::GetChromeBrowserProvider()->AttachTabHelpers(web_state);
+
+  if (base::FeatureList::IsEnabled(kSharedHighlightingIOS)) {
+    LinkToTextTabHelper::CreateForWebState(web_state);
+  }
 }
