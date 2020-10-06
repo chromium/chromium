@@ -303,6 +303,7 @@ base::DictionaryValue* ExtensionTabUtil::OpenTab(ExtensionFunction* function,
                                     ? WindowOpenDisposition::NEW_FOREGROUND_TAB
                                     : WindowOpenDisposition::NEW_BACKGROUND_TAB;
   navigate_params.tabstrip_index = index;
+  navigate_params.user_gesture = false;
   navigate_params.tabstrip_add_types = add_types;
   Navigate(&navigate_params);
 

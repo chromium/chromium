@@ -795,7 +795,9 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, ReplaceStateSamePageIsNotRecorded) {
   // requires a real, non-file URL.
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("foo.com", "/title3.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  NavigateParams params(browser(), url, ui::PAGE_TRANSITION_TYPED);
+  params.user_gesture = false;
+  ui_test_utils::NavigateToURL(&params);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 

@@ -2987,25 +2987,13 @@ void NavigationControllerImpl::NavigateWithoutEntry(
   bool should_replace_current_entry =
       params.should_replace_current_entry && entries_.size();
 
-  // Always propagate `has_user_gesture` on Android but only when the request
-  // was originated by the renderer on other platforms. This is merely for
-  // backward compatibility as browser process user gestures create confusion in
-  // many tests.
-  bool has_user_gesture = false;
-#if defined(OS_ANDROID)
-  has_user_gesture = params.has_user_gesture;
-#else
-  if (params.is_renderer_initiated)
-    has_user_gesture = params.has_user_gesture;
-#endif
-
   // Javascript URLs should not create NavigationEntries. All other navigations
   // do, including navigations to chrome renderer debug URLs.
   std::unique_ptr<NavigationEntryImpl> entry;
   if (!params.url.SchemeIs(url::kJavaScriptScheme)) {
     entry = CreateNavigationEntryFromLoadParams(
         node, params, override_user_agent, should_replace_current_entry,
-        has_user_gesture);
+        params.has_user_gesture);
     DiscardPendingEntry(false);
     SetPendingEntry(std::move(entry));
   }
@@ -3056,7 +3044,7 @@ void NavigationControllerImpl::NavigateWithoutEntry(
   std::unique_ptr<NavigationRequest> request =
       CreateNavigationRequestFromLoadParams(
           node, params, override_user_agent, should_replace_current_entry,
-          has_user_gesture, NavigationDownloadPolicy(), reload_type,
+          params.has_user_gesture, NavigationDownloadPolicy(), reload_type,
           pending_entry_, pending_entry_->GetFrameEntry(node));
 
   // If the navigation couldn't start, return immediately and discard the

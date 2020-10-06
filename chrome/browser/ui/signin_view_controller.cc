@@ -66,7 +66,7 @@ void ShowTabOverwritingNTP(Browser* browser, const GURL& url) {
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.window_action = NavigateParams::SHOW_WINDOW;
-  params.user_gesture = true;
+  params.user_gesture = false;
   params.tabstrip_add_types |= TabStripModel::ADD_INHERIT_OPENER;
 
   content::WebContents* contents =
