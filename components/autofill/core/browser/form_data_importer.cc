@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/address_profiles/address_profile_save_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -230,6 +231,8 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
                                                   payments_client,
                                                   app_locale,
                                                   personal_data_manager)),
+      address_profile_save_manager_(
+          std::make_unique<AddressProfileSaveManager>(personal_data_manager)),
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
       local_card_migration_manager_(
           std::make_unique<LocalCardMigrationManager>(client,
@@ -687,7 +690,7 @@ bool FormDataImporter::ImportAddressProfileForSection(
     return false;
 
   std::string guid =
-      personal_data_manager_->SaveImportedProfile(candidate_profile);
+      address_profile_save_manager_->SaveProfile(candidate_profile);
 
   return !guid.empty();
 }
