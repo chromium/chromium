@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view_delegate.h"
 #include "chrome/browser/ui/views/global_media_controls/overlay_media_notification_view.h"
@@ -26,6 +27,7 @@ class MediaNotificationItem;
 }  // namespace media_message_center
 
 namespace views {
+class LabelButton;
 class ImageButton;
 class SlideOutController;
 }  // namespace views
@@ -119,6 +121,7 @@ class MediaNotificationContainerImplView
   const base::string16& GetTitle();
 
   views::ImageButton* GetDismissButtonForTesting();
+  views::Button* GetStopCastingButtonForTesting();
 
   media_message_center::MediaNotificationViewImpl* view_for_testing() {
     DCHECK(!base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI));
@@ -174,6 +177,10 @@ class MediaNotificationContainerImplView
   media_message_center::MediaNotificationView* view_ = nullptr;
   MediaNotificationDeviceSelectorView* audio_device_selector_view_ = nullptr;
 
+  // Only shows up for cast notifications.
+  views::View* stop_button_strip_ = nullptr;
+  views::LabelButton* stop_cast_button_ = nullptr;
+
   SkColor foreground_color_;
   SkColor background_color_;
 
@@ -213,6 +220,8 @@ class MediaNotificationContainerImplView
   views::UniqueWidgetPtr drag_image_widget_;
 
   MediaNotificationService* const service_;
+
+  CastMediaNotificationItem* cast_item_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(MediaNotificationContainerImplView);
 };

@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
@@ -15,6 +16,8 @@
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/media_message_center/media_notification_view_modern_impl.h"
+#include "components/media_router/browser/media_router.h"
+#include "components/media_router/browser/media_router_factory.h"
 #include "components/vector_icons/vector_icons.h"
 #include "media/audio/audio_device_description.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -43,6 +46,9 @@ constexpr int kDismissButtonBackgroundRadius = 15;
 constexpr SkColor kDefaultForegroundColor = SK_ColorBLACK;
 constexpr SkColor kDefaultBackgroundColor = SK_ColorTRANSPARENT;
 constexpr float kDragImageOpacity = 0.7f;
+constexpr gfx::Insets kStopCastButtonStripInsets{6, 15};
+constexpr gfx::Size kStopCastButtonStripSize{400, 30};
+constexpr gfx::Insets kStopCastButtonBorderInsets{4, 8};
 
 // The minimum number of enabled and visible user actions such that we should
 // force the MediaNotificationView to be expanded.
@@ -119,6 +125,9 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
   UpdateDismissButtonIcon();
 
   bool is_cast_notification = item ? item->SourceIsCast() : false;
+  if (is_cast_notification) {
+    cast_item_ = static_cast<CastMediaNotificationItem*>(item.get());
+  }
 
   std::unique_ptr<media_message_center::MediaNotificationView> view;
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI)) {
@@ -135,6 +144,37 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
   }
 
   view_ = swipeable_container_->AddChildView(std::move(view));
+  if (is_cast_notification &&
+      media_router::GlobalMediaControlsCastStartStopEnabled()) {
+    stop_button_strip_ = AddChildView(std::make_unique<views::View>());
+    auto* stop_cast_button_strip_layout =
+        stop_button_strip_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kHorizontal,
+            kStopCastButtonStripInsets));
+    stop_cast_button_strip_layout->set_main_axis_alignment(
+        views::BoxLayout::MainAxisAlignment::kStart);
+    stop_cast_button_strip_layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
+    stop_button_strip_->SetBackground(
+        views::CreateSolidBackground(background_color_));
+    stop_button_strip_->SetPreferredSize(kStopCastButtonStripSize);
+
+    stop_cast_button_ =
+        stop_button_strip_->AddChildView(std::make_unique<views::LabelButton>(
+            this, l10n_util::GetStringUTF16(
+                      IDS_GLOBAL_MEDIA_CONTROLS_STOP_CASTING_BUTTON_LABEL)));
+    stop_cast_button_->SetInkDropMode(InkDropMode::ON);
+    stop_cast_button_->SetHasInkDropActionOnClick(true);
+    stop_cast_button_->SetInkDropBaseColor(foreground_color_);
+    stop_cast_button_->SetInkDropLargeCornerRadius(
+        kStopCastButtonStripSize.height());
+    stop_cast_button_->SetEnabledTextColors(foreground_color_);
+    stop_cast_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
+    stop_cast_button_->SetBorder(views::CreatePaddedBorder(
+        views::CreateRoundedRectBorder(1, kStopCastButtonStripSize.height() / 2,
+                                       foreground_color_),
+        kStopCastButtonBorderInsets));
+  }
 
   if (base::FeatureList::IsEnabled(
           media::kGlobalMediaControlsSeamlessTransfer) &&
@@ -347,10 +387,19 @@ void MediaNotificationContainerImplView::OnColorsChanged(SkColor foreground,
   if (foreground_color_ != foreground) {
     foreground_color_ = foreground;
     UpdateDismissButtonIcon();
+    if (stop_cast_button_) {
+      stop_cast_button_->SetEnabledTextColors(foreground_color_);
+      stop_cast_button_->SetInkDropBaseColor(foreground_color_);
+    }
   }
+
   if (background_color_ != background) {
     background_color_ = background;
     UpdateDismissButtonBackground();
+    if (stop_button_strip_) {
+      stop_button_strip_->SetBackground(
+          views::CreateSolidBackground(background_color_));
+    }
   }
   if (audio_device_selector_view_)
     audio_device_selector_view_->OnColorsChanged(foreground, background);
@@ -404,6 +453,11 @@ void MediaNotificationContainerImplView::ButtonPressed(views::Button* sender,
                                                        const ui::Event& event) {
   if (sender == dismiss_button_) {
     DismissNotification();
+  } else if (sender == stop_cast_button_) {
+    media_router::MediaRouter* router =
+        media_router::MediaRouterFactory::GetApiForBrowserContext(
+            cast_item_->profile());
+    router->TerminateRoute(cast_item_->route_id());
   } else if (sender == this) {
     // If |is_dragging_| is set, this click should be treated as a drag and not
     // fire the |OnContainerClicked()| event.
@@ -446,6 +500,11 @@ const base::string16& MediaNotificationContainerImplView::GetTitle() {
 views::ImageButton*
 MediaNotificationContainerImplView::GetDismissButtonForTesting() {
   return dismiss_button_;
+}
+
+views::Button*
+MediaNotificationContainerImplView::GetStopCastingButtonForTesting() {
+  return stop_cast_button_;
 }
 
 void MediaNotificationContainerImplView::UpdateDismissButtonIcon() {

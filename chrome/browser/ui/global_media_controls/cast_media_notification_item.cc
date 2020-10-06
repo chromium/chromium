@@ -154,7 +154,8 @@ CastMediaNotificationItem::CastMediaNotificationItem(
           profile,
           base::BindRepeating(&CastMediaNotificationItem::ImageChanged,
                               base::Unretained(this))),
-      session_info_(CreateSessionInfo()) {
+      session_info_(CreateSessionInfo()),
+      profile_(profile) {
   metadata_.source_title = GetSourceTitle(route);
   base::UmaHistogramEnumeration(
       kSourceHistogramName, route.is_local() ? Source::kLocalCastSession

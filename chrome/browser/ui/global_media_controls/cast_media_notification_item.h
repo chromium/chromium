@@ -65,6 +65,9 @@ class CastMediaNotificationItem
   mojo::PendingRemote<media_router::mojom::MediaStatusObserver>
   GetObserverPendingRemote();
 
+  const media_router::MediaRoute::Id route_id() { return media_route_id_; }
+  Profile* profile() { return profile_; }
+
   base::WeakPtr<CastMediaNotificationItem> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -128,6 +131,7 @@ class CastMediaNotificationItem
   media_session::mojom::MediaSessionInfoPtr session_info_;
   mojo::Receiver<media_router::mojom::MediaStatusObserver> observer_receiver_{
       this};
+  Profile* profile_;
   base::WeakPtrFactory<CastMediaNotificationItem> weak_ptr_factory_{this};
 };
 

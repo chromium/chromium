@@ -8,8 +8,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/media_message_center/media_notification_controller.h"
+#include "components/media_router/browser/media_router_factory.h"
+#include "components/media_router/browser/test/mock_media_router.h"
 #include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,6 +33,7 @@ namespace {
 
 const char kTestNotificationId[] = "testid";
 const char kOtherTestNotificationId[] = "othertestid";
+const char kRouteId[] = "route_id";
 
 class MockMediaNotificationContainerObserver
     : public MediaNotificationContainerObserver {
@@ -51,6 +57,43 @@ class MockMediaNotificationContainerObserver
   DISALLOW_COPY_AND_ASSIGN(MockMediaNotificationContainerObserver);
 };
 
+media_router::MediaRoute CreateMediaRoute() {
+  media_router::MediaRoute route(kRouteId,
+                                 media_router::MediaSource("source_id"),
+                                 "sink_id", "route_description",
+                                 /* is_local */ true, /* for_display */ true);
+  route.set_media_sink_name("sink_name");
+  return route;
+}
+
+class MockSessionController : public CastMediaSessionController {
+ public:
+  MockSessionController(
+      mojo::Remote<media_router::mojom::MediaController> remote)
+      : CastMediaSessionController(std::move(remote)) {}
+
+  MOCK_METHOD1(Send, void(media_session::mojom::MediaSessionAction));
+  MOCK_METHOD1(OnMediaStatusUpdated, void(media_router::mojom::MediaStatusPtr));
+};
+
+class MockMediaNotificationController
+    : public media_message_center::MediaNotificationController {
+ public:
+  MockMediaNotificationController() = default;
+  ~MockMediaNotificationController() = default;
+
+  MOCK_METHOD(void, ShowNotification, (const std::string&));
+  MOCK_METHOD(void, HideNotification, (const std::string&));
+  MOCK_METHOD(void, RemoveItem, (const std::string&));
+
+  MOCK_METHOD(scoped_refptr<base::SequencedTaskRunner>,
+              GetTaskRunner,
+              (),
+              (const));
+  MOCK_METHOD(void,
+              LogMediaSessionActionButtonPressed,
+              (const std::string&, MediaSessionAction));
+};
 }  // anonymous namespace
 
 class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
@@ -61,12 +104,16 @@ class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
   // ViewsTestBase:
   void SetUp() override {
     ViewsTestBase::SetUp();
+    SetUpCommon(std::make_unique<MediaNotificationContainerImplView>(
+        kTestNotificationId, nullptr, nullptr));
+  }
 
+  void SetUpCommon(std::unique_ptr<MediaNotificationContainerImplView>
+                       notification_container) {
     widget_ = CreateTestWidget();
 
-    notification_container_ = widget_->SetContentsView(
-        std::make_unique<MediaNotificationContainerImplView>(
-            kTestNotificationId, nullptr, nullptr));
+    notification_container_ =
+        widget_->SetContentsView(std::move(notification_container));
 
     observer_ = std::make_unique<MockMediaNotificationContainerObserver>();
     notification_container_->AddObserver(observer_.get());
@@ -289,6 +336,69 @@ class MediaNotificationContainerImplViewOverlayControlsTest
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+// TODO(b/161612403): Remove this class once
+// |media_router::kGlobalMediaControlsCastStartStop| is enabled by default.
+class MediaNotificationContainerImplViewCastTest
+    : public MediaNotificationContainerImplViewTest {
+ public:
+  void SetUp() override {
+    ViewsTestBase::SetUp();
+    feature_list_.InitWithFeatures(
+        {media::kGlobalMediaControlsForCast,
+         media_router::kGlobalMediaControlsCastStartStop,
+         media::kGlobalMediaControlsOverlayControls},
+        {});
+
+    media_router::MediaRouterFactory::GetInstance()->SetTestingFactory(
+        &profile_, base::BindRepeating(&media_router::MockMediaRouter::Create));
+
+    auto session_controller = std::make_unique<MockSessionController>(
+        mojo::Remote<media_router::mojom::MediaController>());
+    session_controller_ = session_controller.get();
+    item_ = std::make_unique<CastMediaNotificationItem>(
+        CreateMediaRoute(), &notification_controller_,
+        std::move(session_controller), &profile_);
+
+    SetUpCommon(std::make_unique<MediaNotificationContainerImplView>(
+        kTestNotificationId, item_->GetWeakPtr(), nullptr));
+  }
+
+  void TearDown() override {
+    // Delete |item_| before |notification_controller_|.
+    item_.reset();
+    MediaNotificationContainerImplViewTest::TearDown();
+  }
+
+  void SimulateStopCastingButtonClicked() {
+    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                         ui::EventTimeForNow(), 0, 0);
+    views::test::ButtonTestApi(
+        notification_container()->GetStopCastingButtonForTesting())
+        .NotifyClick(event);
+  }
+
+  CastMediaNotificationItem* item() { return item_.get(); }
+  Profile* profile() { return &profile_; }
+  MockMediaNotificationController* notification_controller() {
+    return &notification_controller_;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  TestingProfile profile_;
+  std::unique_ptr<CastMediaNotificationItem> item_;
+  MockMediaNotificationController notification_controller_;
+  MockSessionController* session_controller_ = nullptr;
+};
+
+TEST_F(MediaNotificationContainerImplViewCastTest, StopCasting) {
+  auto* mock_router = static_cast<media_router::MockMediaRouter*>(
+      media_router::MediaRouterFactory::GetApiForBrowserContext(profile()));
+  EXPECT_CALL(*mock_router, TerminateRoute(kRouteId));
+
+  SimulateStopCastingButtonClicked();
+}
 
 TEST_F(MediaNotificationContainerImplViewTest, SwipeToDismiss) {
   EXPECT_CALL(observer(), OnContainerDismissed(kTestNotificationId));
