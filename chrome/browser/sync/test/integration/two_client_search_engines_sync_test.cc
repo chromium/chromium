@@ -29,8 +29,12 @@ class TwoClientSearchEnginesSyncTest : public SyncTest {
     }
 
     // Wait for models to load.
-    search_test_utils::WaitForTemplateURLServiceToLoad(
-        TemplateURLServiceFactory::GetForProfile(verifier()));
+    if (use_verifier()) {
+      // Note: The verifier profile isn't used when running against external
+      // servers.
+      search_test_utils::WaitForTemplateURLServiceToLoad(
+          TemplateURLServiceFactory::GetForProfile(verifier()));
+    }
     search_test_utils::WaitForTemplateURLServiceToLoad(
         TemplateURLServiceFactory::GetForProfile(GetProfile(0)));
     search_test_utils::WaitForTemplateURLServiceToLoad(
