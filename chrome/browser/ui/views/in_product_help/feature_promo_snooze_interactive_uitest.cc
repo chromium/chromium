@@ -168,8 +168,9 @@ class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {
       subscription_;
 };
 
+// TODO(crbug.com/1134534) Very flaky
 IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
-                       DismissDoesNotSnooze) {
+                       DISABLED_DismissDoesNotSnooze) {
   ASSERT_NO_FATAL_FAILURE(AttemptTabGroupsIPH(true));
 
   FeaturePromoBubbleView* promo = promo_controller_->promo_bubble_for_testing();
@@ -178,8 +179,9 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
                    true, 0, base::Time(), base::Time());
 }
 
+// TODO(crbug.com/1134535) Very flaky
 IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
-                       SnoozeSetsCorrectTime) {
+                       DISABLED_SnoozeSetsCorrectTime) {
   ASSERT_NO_FATAL_FAILURE(AttemptTabGroupsIPH(true));
 
   FeaturePromoBubbleView* promo = promo_controller_->promo_bubble_for_testing();
@@ -192,7 +194,8 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
                    false, 1, snooze_time_min, snooze_time_max);
 }
 
-IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest, CanReSnooze) {
+// TODO(crbug.com/1134535) Very flaky
+IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest, DISABLED_CanReSnooze) {
   // Simulate the user snoozing the IPH.
   base::TimeDelta snooze_duration = base::TimeDelta::FromHours(26);
   base::Time snooze_time = base::Time::Now() - snooze_duration;
