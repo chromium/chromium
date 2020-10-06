@@ -4,9 +4,9 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/dcheck_always_on.gni")
+import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
-import("//ui/ozone/ozone.gni")
 import("features.gni")
 
 # Generate a buildflag header for compile-time checking of Vulkan support.

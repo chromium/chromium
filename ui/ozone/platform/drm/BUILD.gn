@@ -4,8 +4,8 @@
 
 import("//build/config/chromecast_build.gni")
 import("//build/config/linux/pkg_config.gni")
+import("//build/config/ozone.gni")
 import("//gpu/vulkan/features.gni")
-import("//ui/ozone/ozone.gni")
 
 visibility = [ "//ui/ozone/*" ]
 

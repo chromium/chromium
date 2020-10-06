@@ -6,10 +6,10 @@ import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/linux/pkg_config.gni")
+import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 import("//ui/gl/features.gni")
-import("//ui/ozone/ozone.gni")
 
 declare_args() {
   # Whether service side logging (actual calls into the GL driver) is enabled

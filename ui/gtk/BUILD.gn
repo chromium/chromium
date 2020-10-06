@@ -6,9 +6,9 @@ assert(is_linux || is_chromeos, "This file should only be referenced on Linux")
 
 import("//build/config/features.gni")
 import("//build/config/linux/gtk/gtk.gni")
+import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//printing/buildflags/buildflags.gni")
-import("//ui/ozone/ozone.gni")
 
 component("gtk_ui_delegate") {
   public = [ "gtk_ui_delegate.h" ]
