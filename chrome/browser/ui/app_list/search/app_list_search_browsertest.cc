@@ -149,8 +149,9 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, SearchDoesntCrash) {
 
 // Test that Help App shows up as Release notes if pref shows we have some times
 // left to show it.
+// TODO(b/169711884): Re-enable when suggestion chips are re-enabled.
 IN_PROC_BROWSER_TEST_F(ReleaseNotesSearchBrowserTest,
-                       AppListSearchHasSuggestionChip) {
+                       DISABLED_AppListSearchHasSuggestionChip) {
   web_app::WebAppProvider::Get(GetProfile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();

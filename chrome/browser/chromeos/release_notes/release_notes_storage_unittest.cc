@@ -134,10 +134,24 @@ TEST_F(ReleaseNotesStorageTest, ShouldNotShowReleaseNotesIfFeatureDisabled) {
   EXPECT_EQ(false, release_notes_storage->ShouldNotify());
 }
 
+// Tests that when kReleaseNotesSuggestionChipTimesLeftToShow is 0,
+// ReleaseNotesStorage::ShouldShowSuggestionChip returns false.
+TEST_F(ReleaseNotesStorageTest, DoesNotShowReleaseNotesSuggestionChip) {
+  std::unique_ptr<Profile> profile =
+      SetupStandardEnvironmentAndProfile("test@gmail.com", false);
+  std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
+      std::make_unique<ReleaseNotesStorage>(profile.get());
+  profile.get()->GetPrefs()->SetInteger(
+      prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 0);
+
+  EXPECT_EQ(false, release_notes_storage->ShouldShowSuggestionChip());
+}
+
 // Tests that when kReleaseNotesSuggestionChipTimesLeftToShow is greater than 0,
-// ReleaseNotesStorage::ShouldShowSuggestionChip returns true, and when the
-// value is 0 the method returns false.
-TEST_F(ReleaseNotesStorageTest, ShowReleaseNotesSuggestionChip) {
+// ReleaseNotesStorage::ShouldShowSuggestionChip returns true, and when
+// decreased the method returns false again.
+// TODO(b/169711884): Re-enable when suggestion chips are re-enabled.
+TEST_F(ReleaseNotesStorageTest, DISABLED_ShowReleaseNotesSuggestionChip) {
   std::unique_ptr<Profile> profile =
       SetupStandardEnvironmentAndProfile("test@gmail.com", false);
   std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
@@ -155,7 +169,9 @@ TEST_F(ReleaseNotesStorageTest, ShowReleaseNotesSuggestionChip) {
 
 // Tests that when we mark a notification as shown, we also show the suggestion
 // chip.
-TEST_F(ReleaseNotesStorageTest, ShowSuggestionChipWhenNotificationShown) {
+// TODO(b/169711884): Re-enable when suggestion chips are re-enabled.
+TEST_F(ReleaseNotesStorageTest,
+       DISABLED_ShowSuggestionChipWhenNotificationShown) {
   std::unique_ptr<Profile> profile =
       SetupStandardEnvironmentAndProfile("test@gmail.com", false);
   std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
