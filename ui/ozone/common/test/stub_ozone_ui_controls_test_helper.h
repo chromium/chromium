@@ -9,7 +9,6 @@ namespace ui {
 
 class OzoneUIControlsTestHelper;
 
-OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperX11();
 OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperWayland();
 OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperWindows();
 OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperDrm();

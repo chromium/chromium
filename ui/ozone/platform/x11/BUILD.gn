@@ -108,3 +108,17 @@ source_set("x11_unittests") {
     "//ui/platform_window/x11:x11",
   ]
 }
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "x11_ozone_ui_controls_test_helper.cc",
+    "x11_ozone_ui_controls_test_helper.h",
+  ]
+
+  deps = [
+    "//ui/base/x",
+    "//ui/base/x:test_support",
+  ]
+}
