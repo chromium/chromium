@@ -7,13 +7,6 @@ import("//extensions/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 static_library("router") {
   deps = [
     "//base",
@@ -75,8 +68,6 @@ static_library("router") {
       "event_page_request_manager.h",
       "event_page_request_manager_factory.cc",
       "event_page_request_manager_factory.h",
-      "mojo/media_route_provider_util_win.cc",
-      "mojo/media_route_provider_util_win.h",
       "mojo/media_router_desktop.cc",
       "mojo/media_router_desktop.h",
       "mojo/media_router_mojo_impl.cc",
@@ -133,6 +124,13 @@ static_library("router") {
       "providers/wired_display/wired_display_presentation_receiver_factory.cc",
       "providers/wired_display/wired_display_presentation_receiver_factory.h",
     ]
+
+    if (is_win) {
+      sources += [
+        "mojo/media_route_provider_util_win.cc",
+        "mojo/media_route_provider_util_win.h",
+      ]
+    }
 
     if (enable_openscreen) {
       sources += [

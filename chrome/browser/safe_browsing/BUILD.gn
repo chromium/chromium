@@ -5,13 +5,6 @@
 import("//components/safe_browsing/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 static_library("safe_browsing") {
   sources = [
     "chrome_controller_client.cc",
@@ -66,9 +59,13 @@ static_library("safe_browsing") {
       "settings_reset_prompt/settings_reset_prompt_model.h",
       "settings_reset_prompt/settings_reset_prompt_prefs_manager.cc",
       "settings_reset_prompt/settings_reset_prompt_prefs_manager.h",
-      "settings_reset_prompt/settings_reset_prompt_util_win.cc",
-      "settings_reset_prompt/settings_reset_prompt_util_win.h",
     ]
+    if (is_win) {
+      sources += [
+        "settings_reset_prompt/settings_reset_prompt_util_win.cc",
+        "settings_reset_prompt/settings_reset_prompt_util_win.h",
+      ]
+    }
     deps += [ "//extensions/browser" ]
   }
 
@@ -198,10 +195,6 @@ static_library("safe_browsing") {
         "download_protection/two_phase_uploader.h",
         "incident_reporting/binary_integrity_analyzer.cc",
         "incident_reporting/binary_integrity_analyzer.h",
-        "incident_reporting/binary_integrity_analyzer_mac.cc",
-        "incident_reporting/binary_integrity_analyzer_mac.h",
-        "incident_reporting/binary_integrity_analyzer_win.cc",
-        "incident_reporting/binary_integrity_analyzer_win.h",
         "incident_reporting/binary_integrity_incident.cc",
         "incident_reporting/binary_integrity_incident.h",
         "incident_reporting/delayed_analysis_callback.h",
@@ -211,8 +204,6 @@ static_library("safe_browsing") {
         "incident_reporting/download_metadata_manager.h",
         "incident_reporting/environment_data_collection.cc",
         "incident_reporting/environment_data_collection.h",
-        "incident_reporting/environment_data_collection_win.cc",
-        "incident_reporting/environment_data_collection_win.h",
         "incident_reporting/extension_data_collection.cc",
         "incident_reporting/extension_data_collection.h",
         "incident_reporting/incident.cc",
@@ -228,11 +219,8 @@ static_library("safe_browsing") {
         "incident_reporting/incident_reporting_service.h",
         "incident_reporting/last_download_finder.cc",
         "incident_reporting/last_download_finder.h",
-        "incident_reporting/module_integrity_verifier_win.cc",
-        "incident_reporting/module_integrity_verifier_win.h",
         "incident_reporting/platform_state_store.cc",
         "incident_reporting/platform_state_store.h",
-        "incident_reporting/platform_state_store_win.cc",
         "incident_reporting/preference_validation_delegate.cc",
         "incident_reporting/preference_validation_delegate.h",
         "incident_reporting/resource_request_detector.cc",
@@ -245,9 +233,25 @@ static_library("safe_browsing") {
         "incident_reporting/tracked_preference_incident.h",
         "services_delegate_desktop.cc",
         "services_delegate_desktop.h",
-        "signature_evaluator_mac.h",
-        "signature_evaluator_mac.mm",
       ]
+      if (is_mac) {
+        sources += [
+          "incident_reporting/binary_integrity_analyzer_mac.cc",
+          "incident_reporting/binary_integrity_analyzer_mac.h",
+          "signature_evaluator_mac.h",
+          "signature_evaluator_mac.mm",
+        ]
+      } else if (is_win) {
+        sources += [
+          "incident_reporting/binary_integrity_analyzer_win.cc",
+          "incident_reporting/binary_integrity_analyzer_win.h",
+          "incident_reporting/environment_data_collection_win.cc",
+          "incident_reporting/environment_data_collection_win.h",
+          "incident_reporting/module_integrity_verifier_win.cc",
+          "incident_reporting/module_integrity_verifier_win.h",
+          "incident_reporting/platform_state_store_win.cc",
+        ]
+      }
       public_deps += [
         ":chrome_enterprise_url_lookup_service",
         ":chrome_enterprise_url_lookup_service_factory",
@@ -274,12 +278,14 @@ static_library("safe_browsing") {
         deps += [ "//chrome/browser/safe_browsing/incident_reporting:state_store_data_proto" ]
       }
     } else if (safe_browsing_mode == 2) {
-      sources += [
-        "android/services_delegate_android.cc",
-        "android/services_delegate_android.h",
-        "telemetry/android/android_telemetry_service.cc",
-        "telemetry/android/android_telemetry_service.h",
-      ]
+      if (is_android) {
+        sources += [
+          "android/services_delegate_android.cc",
+          "android/services_delegate_android.h",
+          "telemetry/android/android_telemetry_service.cc",
+          "telemetry/android/android_telemetry_service.h",
+        ]
+      }
       deps += [
         "//chrome/browser/safe_browsing/android",
         "//components/safe_browsing:buildflags",
