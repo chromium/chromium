@@ -431,6 +431,9 @@ class NotificationPlatformBridgeWinImpl
       DLOG(ERROR) << "Failed to remove notification with id "
                   << notification_id.c_str() << " " << std::hex << hr;
     } else {
+      // We expect the notification to be removed from the action center now.
+      displayed_notifications_.erase({profile_id, notification_id});
+
       LogCloseHistogram(CloseStatus::SUCCESS);
     }
   }

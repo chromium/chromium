@@ -76,6 +76,8 @@ class NotificationPlatformBridgeWin : public NotificationPlatformBridge {
                            DisplayWithFakeAC);
   FRIEND_TEST_ALL_PREFIXES(NotificationPlatformBridgeWinUITest,
                            SynchronizeNotifications);
+  FRIEND_TEST_ALL_PREFIXES(NotificationPlatformBridgeWinUITest,
+                           SynchronizeNotificationsAfterClose);
 
   void SynchronizeNotificationsForTesting();
 

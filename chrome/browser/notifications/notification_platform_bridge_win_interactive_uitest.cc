@@ -13,11 +13,13 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind_test_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/win/scoped_hstring.h"
 #include "base/win/windows_version.h"
@@ -467,15 +469,11 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest,
       notifications;
   bridge->SetDisplayedNotificationsForTesting(&notifications);
 
-  bool incognito = true;
-
   notifications.push_back(Microsoft::WRL::Make<FakeIToastNotification>(
       GetToastString(L"P1i", L"Default", true), L"tag"));
   expected_displayed_notifications[{/*profile_id=*/"Default",
                                     /*notification_id=*/"P1i"}] =
       GetNotificationLaunchId(notifications.back().Get());
-
-  incognito = false;
 
   expected_displayed_notifications[{/*profile_id=*/"Default",
                                     /*notification_id=*/"P2i"}] =
@@ -513,6 +511,53 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest,
 
   bridge->SetDisplayedNotificationsForTesting(nullptr);
   bridge->SetExpectedDisplayedNotificationsForTesting(nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest,
+                       SynchronizeNotificationsAfterClose) {
+  if (base::win::GetVersion() < kMinimumWindowsVersion)
+    return;
+
+  NotificationPlatformBridgeWin* bridge = GetBridge();
+  ASSERT_TRUE(bridge);
+  FakeIToastNotifier notifier;
+  bridge->SetNotifierForTesting(&notifier);
+
+  // Show a new notification.
+  message_center::Notification notification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, "notification_id", L"Text1",
+      L"Text2", gfx::Image(), base::string16(), GURL("https://example.com/"),
+      message_center::NotifierId(), message_center::RichNotificationData(),
+      nullptr);
+  base::RunLoop display_run_loop;
+  notifier.SetNotificationShownCallback(base::BindLambdaForTesting(
+      [&display_run_loop](const NotificationLaunchId& launch_id) {
+        display_run_loop.Quit();
+      }));
+  bridge->Display(NotificationHandler::Type::WEB_PERSISTENT,
+                  browser()->profile(), notification, /*metadata=*/nullptr);
+  display_run_loop.Run();
+
+  // The notification should now be in the expected map.
+  EXPECT_EQ(1u, bridge->GetExpectedDisplayedNotificationForTesting().size());
+
+  // Close the notification
+  base::RunLoop close_run_loop;
+  EXPECT_TRUE(base::StatisticsRecorder::SetCallback(
+      "Notifications.Windows.CloseStatus",
+      base::BindLambdaForTesting(
+          [&close_run_loop](const char* histogram_name, uint64_t name_hash,
+                            base::HistogramBase::Sample sample) {
+            close_run_loop.Quit();
+          })));
+  bridge->Close(browser()->profile(), notification.id());
+  close_run_loop.Run();
+
+  // Closing a notification should remove it from the expected map.
+  EXPECT_EQ(0u, bridge->GetExpectedDisplayedNotificationForTesting().size());
+
+  base::StatisticsRecorder::ClearCallback("Notifications.Windows.CloseStatus");
+  bridge->SetNotifierForTesting(nullptr);
 }
 
 // Test calling Display with a fake implementation of the Action Center
