@@ -81,7 +81,7 @@ void RelaunchNotificationControllerPlatformImpl::
   std::string enterprise_display_domain =
       g_browser_process->platform_part()
           ->browser_policy_connector_chromeos()
-          ->GetEnterpriseDisplayDomain();
+          ->GetEnterpriseDomainManager();
   if (past_deadline) {
     SystemTrayClient::Get()->SetUpdateNotificationState(
         ash::NotificationStyle::kAdminRecommended,
@@ -115,7 +115,7 @@ void RelaunchNotificationControllerPlatformImpl::
         relaunch_required_timer_->GetWindowTitle(),
         l10n_util::GetStringFUTF16(
             IDS_RELAUNCH_REQUIRED_BODY,
-            base::UTF8ToUTF16(connector->GetEnterpriseDisplayDomain())));
+            base::UTF8ToUTF16(connector->GetEnterpriseDomainManager())));
   }
 }
 
