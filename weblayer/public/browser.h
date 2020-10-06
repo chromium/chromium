@@ -14,6 +14,7 @@
 namespace weblayer {
 
 class BrowserObserver;
+class BrowserRestoreObserver;
 class Profile;
 class Tab;
 
@@ -68,8 +69,17 @@ class Browser {
   // lightweight restore when full persistence is not desirable.
   virtual std::vector<uint8_t> GetMinimalPersistenceState() = 0;
 
+  // Returns true if this Browser is in the process of restoring the previous
+  // state. That is, PersistenceInfo was supplied to the constructor and
+  // the state is asynchronously being loaded.
+  virtual bool IsRestoringPreviousState() = 0;
+
   virtual void AddObserver(BrowserObserver* observer) = 0;
   virtual void RemoveObserver(BrowserObserver* observer) = 0;
+
+  virtual void AddBrowserRestoreObserver(BrowserRestoreObserver* observer) = 0;
+  virtual void RemoveBrowserRestoreObserver(
+      BrowserRestoreObserver* observer) = 0;
 
   virtual void VisibleSecurityStateOfActiveTabChanged() = 0;
 };

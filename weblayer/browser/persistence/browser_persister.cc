@@ -277,6 +277,9 @@ void BrowserPersister::OnGotCurrentSessionCommands(
   ScheduleRebuildOnNextSave();
 
   RestoreBrowserState(browser_, std::move(commands));
+
+  is_restore_in_progress_ = false;
+  browser_->OnRestoreCompleted();
 }
 
 void BrowserPersister::BuildCommandsForTab(TabImpl* tab, int index_in_browser) {

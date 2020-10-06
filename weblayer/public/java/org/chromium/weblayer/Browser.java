@@ -36,6 +36,7 @@ public class Browser {
     private final UrlBarController mUrlBarController;
 
     private final ObserverList<BrowserControlsOffsetCallback> mBrowserControlsOffsetCallbacks;
+    private final ObserverList<BrowserRestoreCallback> mBrowserRestoreCallbacks;
 
     // Constructor for test mocking.
     protected Browser() {
@@ -43,6 +44,7 @@ public class Browser {
         mTabListCallbacks = null;
         mUrlBarController = null;
         mBrowserControlsOffsetCallbacks = null;
+        mBrowserRestoreCallbacks = null;
     }
 
     Browser(IBrowser impl, BrowserFragment fragment) {
@@ -50,6 +52,7 @@ public class Browser {
         mFragment = fragment;
         mTabListCallbacks = new ObserverList<TabListCallback>();
         mBrowserControlsOffsetCallbacks = new ObserverList<BrowserControlsOffsetCallback>();
+        mBrowserRestoreCallbacks = new ObserverList<BrowserRestoreCallback>();
 
         try {
             mImpl.setClient(new BrowserClientImpl());
@@ -218,6 +221,58 @@ public class Browser {
     public void unregisterTabListCallback(@NonNull TabListCallback callback) {
         ThreadCheck.ensureOnUiThread();
         mTabListCallbacks.removeObserver(callback);
+    }
+
+    /**
+     * Returns true if this Browser is in the process of restoring the previous state.
+     *
+     * @param True if restoring previous state.
+     *
+     * @since 88
+     */
+    public boolean isRestoringPreviousState() {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
+            throw new UnsupportedOperationException();
+        }
+        throwIfDestroyed();
+        try {
+            return mImpl.isRestoringPreviousState();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /**
+     * Adds a BrowserRestoreCallback.
+     *
+     * @param callback The BrowserRestoreCallback.
+     *
+     * @since 88
+     */
+    public void registerBrowserRestoreCallback(@NonNull BrowserRestoreCallback callback) {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
+            throw new UnsupportedOperationException();
+        }
+        throwIfDestroyed();
+        mBrowserRestoreCallbacks.addObserver(callback);
+    }
+
+    /**
+     * Removes a BrowserRestoreCallback.
+     *
+     * @param callback The BrowserRestoreCallback.
+     *
+     * @since 88
+     */
+    public void unregisterBrowserRestoreCallback(@NonNull BrowserRestoreCallback callback) {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
+            throw new UnsupportedOperationException();
+        }
+        throwIfDestroyed();
+        mBrowserRestoreCallbacks.removeObserver(callback);
     }
 
     /**
@@ -465,6 +520,13 @@ public class Browser {
                 } else {
                     callback.onBottomViewOffsetChanged(offset);
                 }
+            }
+        }
+
+        @Override
+        public void onRestoreCompleted() {
+            for (BrowserRestoreCallback callback : mBrowserRestoreCallbacks) {
+                callback.onRestoreCompleted();
             }
         }
     }

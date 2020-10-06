@@ -24,6 +24,7 @@
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/common/weblayer_paths.h"
+#include "weblayer/public/browser_restore_observer.h"
 #include "weblayer/public/navigation.h"
 #include "weblayer/public/navigation_controller.h"
 #include "weblayer/public/navigation_observer.h"
@@ -47,34 +48,12 @@ class BrowserPersisterTestHelper {
 namespace {
 using testing::UnorderedElementsAre;
 
-class BrowserObserverImpl : public BrowserObserver {
- public:
-  static void WaitForNewTab(Browser* browser) {
-    BrowserObserverImpl observer(browser);
-    observer.Wait();
-  }
-
- private:
-  explicit BrowserObserverImpl(Browser* browser) : browser_(browser) {
-    browser_->AddObserver(this);
-  }
-  ~BrowserObserverImpl() override { browser_->RemoveObserver(this); }
-
-  void Wait() { run_loop_.Run(); }
-
-  // BrowserObserver:
-  void OnTabAdded(Tab* tab) override { run_loop_.Quit(); }
-
-  Browser* browser_;
-  base::RunLoop run_loop_;
-};
-
-class BrowserNavigationObserverImpl : public BrowserObserver,
+class BrowserNavigationObserverImpl : public BrowserRestoreObserver,
                                       public NavigationObserver {
  public:
   static void WaitForNewTabToCompleteNavigation(Browser* browser,
                                                 const GURL& url,
-                                                int tab_to_wait_for = 1) {
+                                                size_t tab_to_wait_for = 0) {
     BrowserNavigationObserverImpl observer(browser, url, tab_to_wait_for);
     observer.Wait();
   }
@@ -82,9 +61,9 @@ class BrowserNavigationObserverImpl : public BrowserObserver,
  private:
   BrowserNavigationObserverImpl(Browser* browser,
                                 const GURL& url,
-                                int tab_to_wait_for)
+                                size_t tab_to_wait_for)
       : browser_(browser), url_(url), tab_to_wait_for_(tab_to_wait_for) {
-    browser_->AddObserver(this);
+    browser_->AddBrowserRestoreObserver(this);
   }
   ~BrowserNavigationObserverImpl() override {
     tab_->GetNavigationController()->RemoveObserver(this);
@@ -98,20 +77,19 @@ class BrowserNavigationObserverImpl : public BrowserObserver,
       run_loop_.Quit();
   }
 
-  // BrowserObserver:
-  void OnTabAdded(Tab* tab) override {
-    if (--tab_to_wait_for_ != 0)
-      return;
-
-    browser_->RemoveObserver(this);
-    tab_ = tab;
+  // BrowserRestoreObserver:
+  void OnRestoreCompleted() override {
+    browser_->RemoveBrowserRestoreObserver(this);
+    ASSERT_LT(tab_to_wait_for_, browser_->GetTabs().size());
+    ASSERT_EQ(nullptr, tab_);
+    tab_ = browser_->GetTabs()[tab_to_wait_for_];
     tab_->GetNavigationController()->AddObserver(this);
   }
 
   Browser* browser_;
   const GURL& url_;
   Tab* tab_ = nullptr;
-  int tab_to_wait_for_;
+  const size_t tab_to_wait_for_;
   std::unique_ptr<TestNavigationObserver> navigation_observer_;
   base::RunLoop run_loop_;
 };
@@ -146,6 +124,7 @@ IN_PROC_BROWSER_TEST_F(BrowserPersisterTest, SingleTab) {
 
   std::unique_ptr<BrowserImpl> browser = CreateBrowser(GetProfile(), "x");
   Tab* tab = browser->CreateTab();
+  EXPECT_TRUE(browser->IsRestoringPreviousState());
   const GURL url = embedded_test_server()->GetURL("/simple_page.html");
   NavigateAndWaitForCompletion(url, tab);
   ShutdownBrowserPersisterAndWait(browser.get());
@@ -155,6 +134,7 @@ IN_PROC_BROWSER_TEST_F(BrowserPersisterTest, SingleTab) {
   browser = CreateBrowser(GetProfile(), "x");
   // Should be no tabs while waiting for restore.
   EXPECT_TRUE(browser->GetTabs().empty());
+  EXPECT_TRUE(browser->IsRestoringPreviousState());
   // Wait for the restore and navigation to complete.
   BrowserNavigationObserverImpl::WaitForNewTabToCompleteNavigation(
       browser.get(), url);
@@ -164,6 +144,7 @@ IN_PROC_BROWSER_TEST_F(BrowserPersisterTest, SingleTab) {
   EXPECT_EQ(1, browser->GetTabs()[0]
                    ->GetNavigationController()
                    ->GetNavigationListSize());
+  EXPECT_FALSE(browser->IsRestoringPreviousState());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserPersisterTest, RestoresGuid) {
@@ -276,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(BrowserPersisterTest, TwoTabs) {
     // Wait for the restore and navigation to complete. This waits for the
     // second tab as that was the active one.
     BrowserNavigationObserverImpl::WaitForNewTabToCompleteNavigation(
-        browser.get(), url2, 2);
+        browser.get(), url2, 1);
 
     ASSERT_EQ(2u, browser->GetTabs().size()) << "iteration " << i;
     // The first tab shouldn't have loaded yet, as it's not active.
@@ -331,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(BrowserPersisterTest, MoveBetweenBrowsers) {
   // Restore the browsers.
   browser1 = CreateBrowser(GetProfile(), "x");
   BrowserNavigationObserverImpl::WaitForNewTabToCompleteNavigation(
-      browser1.get(), url1, 1);
+      browser1.get(), url1);
   ASSERT_EQ(1u, browser1->GetTabs().size());
   EXPECT_EQ(1, browser1->GetTabs()[0]
                    ->GetNavigationController()
@@ -339,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(BrowserPersisterTest, MoveBetweenBrowsers) {
 
   browser2 = CreateBrowser(GetProfile(), "y");
   BrowserNavigationObserverImpl::WaitForNewTabToCompleteNavigation(
-      browser2.get(), url2, 2);
+      browser2.get(), url2, 1);
   ASSERT_EQ(2u, browser2->GetTabs().size());
   EXPECT_EQ(1, browser2->GetTabs()[1]
                    ->GetNavigationController()

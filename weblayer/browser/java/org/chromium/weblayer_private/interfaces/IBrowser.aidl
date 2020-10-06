@@ -43,4 +43,7 @@ interface IBrowser {
 
   // Added in 87.
   void setBrowserControlsOffsetsEnabled(in boolean enable) = 13;
+
+  // Added in 88.
+  boolean isRestoringPreviousState() = 14;
 }
