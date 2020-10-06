@@ -10,12 +10,21 @@
 #include "third_party/blink/renderer/platform/graphics/logging_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/ignore_paint_timing_scope.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
 
+// This is just for initializing current_paint_artifact_ to avoid allocation of
+// a PaintArtifacts that might not be used.
+static scoped_refptr<PaintArtifact> EmptyPaintArtifact() {
+  DEFINE_STATIC_REF(PaintArtifact, empty, base::AdoptRef(new PaintArtifact()));
+  DCHECK(empty->IsEmpty());
+  return empty;
+}
+
 PaintController::PaintController(Usage usage)
-    : usage_(usage), current_paint_artifact_(PaintArtifact::Empty()) {
+    : usage_(usage), current_paint_artifact_(EmptyPaintArtifact()) {
   // frame_first_paints_ should have one null frame since the beginning, so
   // that PaintController is robust even if it paints outside of BeginFrame
   // and EndFrame cycles. It will also enable us to combine the first paint
@@ -295,7 +304,7 @@ void PaintController::InvalidateAllInternal() {
   // TODO(wangxianzhu): Rename this to InvalidateAllForTesting() for CAP.
   // Can only be called during layout/paintInvalidation, not during painting.
   DCHECK(new_display_item_list_.IsEmpty());
-  current_paint_artifact_ = PaintArtifact::Empty();
+  current_paint_artifact_ = EmptyPaintArtifact();
   current_cached_subsequences_.clear();
   cache_is_all_invalid_ = true;
 }
@@ -448,12 +457,11 @@ void PaintController::CopyCachedSubsequence(wtf_size_t start_chunk_index,
     auto& cached_chunk = current_paint_artifact_->PaintChunks()[chunk_index];
     auto cached_item_index = cached_chunk.begin_index;
     for (auto& cached_item :
-         current_paint_artifact_->GetDisplayItemList().ItemsInPaintChunk(
-             cached_chunk)) {
+         current_paint_artifact_->GetDisplayItemList().ItemsInRange(
+             cached_chunk.begin_index, cached_chunk.end_index)) {
       SECURITY_CHECK(!cached_item.IsTombstone());
-#if DCHECK_IS_ON()
-      DCHECK(cached_item.Client().IsAlive());
-#endif
+      DCHECK(!cached_item.IsCacheable() ||
+             ClientCacheIsValid(cached_item.Client()));
       auto& item = MoveItemFromCurrentListToNewList(cached_item_index++);
       item.SetMovedFromCachedSubsequence(true);
       DidAppendItem(item);
@@ -501,9 +509,9 @@ void PaintController::CommitNewDisplayItems() {
   new_cached_subsequences_.swap(current_cached_subsequences_);
   new_cached_subsequences_.clear();
 
-  current_paint_artifact_ =
-      PaintArtifact::Create(std::move(new_display_item_list_),
-                            new_paint_chunks_.ReleasePaintChunks());
+  current_paint_artifact_ = base::MakeRefCounted<PaintArtifact>(
+      std::move(new_display_item_list_),
+      new_paint_chunks_.ReleasePaintChunks());
 
   ResetCurrentListIndices();
   out_of_order_item_id_index_map_.clear();
@@ -536,36 +544,31 @@ void PaintController::FinishCycle() {
     if (item.key->IsCacheable())
       item.key->Validate();
   }
-  for (const auto& item : current_paint_artifact_->GetDisplayItemList()) {
-    const auto& client = item.Client();
-    if (item.IsMovedFromCachedSubsequence()) {
-      // We don't need to validate the clients of a display item that is
-      // copied from a cached subsequence, because it should be already
-      // valid. See http://crbug.com/1050090 for more details.
-#if DCHECK_IS_ON()
-      DCHECK(client.IsAlive());
-      DCHECK(client.IsValid() || !client.IsCacheable());
-#endif
-      continue;
-    }
-    client.ClearPartialInvalidationVisualRect();
-    if (client.IsCacheable())
-      client.Validate();
-  }
-  for (const auto& chunk : current_paint_artifact_->PaintChunks()) {
+  for (wtf_size_t i = 0; i < current_paint_artifact_->PaintChunks().size();
+       i++) {
+    auto& chunk = current_paint_artifact_->PaintChunks()[i];
+    chunk.client_is_just_created = false;
     const auto& client = chunk.id.client;
     if (chunk.is_moved_from_cached_subsequence) {
-#if DCHECK_IS_ON()
-      DCHECK(client.IsAlive());
-      DCHECK(client.IsValid() || !client.IsCacheable());
-#endif
+      DCHECK(!chunk.is_cacheable || ClientCacheIsValid(client));
       continue;
     }
     if (client.IsCacheable())
       client.Validate();
-  }
 
-  current_paint_artifact_->FinishCycle();
+    for (const auto& item : current_paint_artifact_->DisplayItemsInChunk(i)) {
+      if (item.IsMovedFromCachedSubsequence()) {
+        // We don't need to validate the clients of a display item that is
+        // copied from a cached subsequence, because it should be already
+        // valid. See http://crbug.com/1050090 for more details.
+        DCHECK(!item.IsCacheable() || ClientCacheIsValid(item.Client()));
+        continue;
+      }
+      item.Client().ClearPartialInvalidationVisualRect();
+      if (item.Client().IsCacheable())
+        item.Client().Validate();
+    }
+  }
 
 #if DCHECK_IS_ON()
   if (VLOG_IS_ON(1)) {

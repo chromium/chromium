@@ -8350,8 +8350,7 @@ TEST_F(WebFrameTest, OverlayFullscreenVideo) {
       return true;
     }
     layer.CapturePaintRecord();
-    if (layer.GetPaintController().GetDisplayItemList().size() > 0 ||
-        layer.GetPaintController().PaintChunks().size() > 0)
+    if (!layer.GetPaintController().GetPaintArtifact().IsEmpty())
       ++actively_painting_layers;
     return true;
   });
@@ -8484,8 +8483,7 @@ TEST_F(WebFrameTest, WebXrImmersiveOverlay) {
       return true;
     }
     layer.CapturePaintRecord();
-    if (layer.GetPaintController().GetDisplayItemList().size() > 0 ||
-        layer.GetPaintController().PaintChunks().size() > 0)
+    if (!layer.GetPaintController().GetPaintArtifact().IsEmpty())
       ++actively_painting_layers;
     return true;
   });

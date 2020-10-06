@@ -59,26 +59,23 @@ void ContentLayerClientImpl::AppendAdditionalInfoAsJSON(
 }
 
 scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
-    scoped_refptr<const PaintArtifact> paint_artifact,
     const PaintChunkSubset& paint_chunks,
     const gfx::Rect& layer_bounds,
     const PropertyTreeState& layer_state) {
-  if (paint_chunks[0].is_cacheable)
-    id_.emplace(paint_chunks[0].id);
+  if (paint_chunks.begin()->is_cacheable)
+    id_.emplace(paint_chunks.begin()->id);
   else
     id_ = base::nullopt;
 
-  const auto& display_item_list = paint_artifact->GetDisplayItemList();
-
 #if DCHECK_IS_ON()
   paint_chunk_debug_data_ = std::make_unique<JSONArray>();
-  for (const auto& chunk : paint_chunks) {
+  for (auto it = paint_chunks.begin(); it != paint_chunks.end(); ++it) {
     auto json = std::make_unique<JSONObject>();
-    json->SetString("data", chunk.ToString());
-    json->SetArray("displayItems",
-                   paint_artifact->GetDisplayItemList().DisplayItemsAsJSON(
-                       chunk.begin_index, chunk.end_index,
-                       DisplayItemList::kShowOnlyDisplayItemTypes));
+    json->SetString("data", it->ToString());
+    json->SetArray(
+        "displayItems",
+        DisplayItemList::DisplayItemsAsJSON(
+            it.DisplayItems(), DisplayItemList::kShowOnlyDisplayItemTypes));
     paint_chunk_debug_data_->PushObject(std::move(json));
   }
 #endif
@@ -91,8 +88,8 @@ scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
   raster_invalidated_ = false;
   gfx::Size old_layer_size = raster_invalidator_.LayerBounds().size();
   DCHECK_EQ(old_layer_size, cc_picture_layer_->bounds());
-  raster_invalidator_.Generate(raster_invalidation_function_, paint_artifact,
-                               paint_chunks, layer_bounds, layer_state);
+  raster_invalidator_.Generate(raster_invalidation_function_, paint_chunks,
+                               layer_bounds, layer_state);
   layer_state_ = layer_state;
 
   base::Optional<RasterUnderInvalidationCheckingParams>
@@ -101,7 +98,7 @@ scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
     raster_under_invalidation_params.emplace(
         *raster_invalidator_.GetTracking(),
         IntRect(0, 0, layer_bounds.width(), layer_bounds.height()),
-        paint_chunks[0].id.client.DebugName());
+        paint_chunks.begin()->id.client.DebugName());
   }
 
   // Note: cc::Layer API assumes the layer bounds start at (0, 0), but the
@@ -123,7 +120,7 @@ scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
 
   cc_display_item_list_ = PaintChunksToCcLayer::Convert(
       paint_chunks, layer_state, layer_bounds.OffsetFromOrigin(),
-      display_item_list, cc::DisplayItemList::kTopLevelDisplayItemList,
+      cc::DisplayItemList::kTopLevelDisplayItemList,
       base::OptionalOrNullptr(raster_under_invalidation_params));
 
   cc_picture_layer_->SetBounds(layer_bounds.size());
@@ -135,7 +132,7 @@ scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
       layer_state.Effect().HasBackdropEffect() ||
       !layer_state.Effect().Filter().IsEmpty());
 
-  paint_artifact->UpdateBackgroundColor(cc_picture_layer_.get(), paint_chunks);
+  PaintChunksToCcLayer::UpdateBackgroundColor(*cc_picture_layer_, paint_chunks);
 
   return cc_picture_layer_;
 }

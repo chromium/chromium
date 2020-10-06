@@ -45,6 +45,8 @@ class TransformPaintPropertyNodeOrAlias;
 // Usage:
 //   auto artifact = TestPaintArtifact().Chunk(0).Chunk(1).Build();
 //   DoSomethingWithArtifact(artifact);
+//  or
+//   DoSomethingWithArtifact(TestPaintArtifact().Chunk(0).Chunk(1).Build());
 //
 class TestPaintArtifact {
   STACK_ALLOCATED();

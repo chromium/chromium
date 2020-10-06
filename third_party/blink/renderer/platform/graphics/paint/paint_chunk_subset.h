@@ -5,77 +5,133 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_CHUNK_SUBSET_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_CHUNK_SUBSET_H_
 
+#include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-struct PaintChunk;
-
-// Provides access to a subset of a Vector<PaintChunk>.
+// Provides access to a subset of paint chunks in a PaintArtifact.
 class PaintChunkSubset {
-  DISALLOW_NEW();
-
  public:
-  PaintChunkSubset(const Vector<PaintChunk>& chunks,
-                   const Vector<wtf_size_t>& subset_indices)
-      : chunks_(chunks), subset_indices_(&subset_indices) {}
+  // A subset containing a single paint chunk initially.
+  PaintChunkSubset(scoped_refptr<const PaintArtifact> paint_artifact,
+                   wtf_size_t chunk_index)
+      : paint_artifact_(std::move(paint_artifact)) {
+    DCHECK(paint_artifact_);
+    DCHECK(UsesSubsetIndices());
+    subset_indices_.push_back(chunk_index);
+  }
 
-  // For convenience, this allows using a Vector<PaintChunk> in place of
-  // PaintChunkSubset to include all paint chunks.
-  PaintChunkSubset(const Vector<PaintChunk>& chunks)
-      : chunks_(chunks), subset_indices_(nullptr) {}
+  // A subset containing the whole PaintArtifact.
+  PaintChunkSubset(scoped_refptr<const PaintArtifact> paint_artifact)
+      : PaintChunkSubset(paint_artifact,
+                         0,
+                         paint_artifact->PaintChunks().size()) {}
+
+  // A subset defined by a range of segments. |end_segment_index| is not
+  // inclusive.
+  PaintChunkSubset(scoped_refptr<const PaintArtifact> paint_artifact,
+                   wtf_size_t begin_index,
+                   wtf_size_t end_index)
+      : paint_artifact_(std::move(paint_artifact)),
+        begin_index_(begin_index),
+        end_index_(end_index) {
+    DCHECK(paint_artifact_);
+    DCHECK_LE(begin_index_, end_index_);
+    DCHECK(!UsesSubsetIndices());
+  }
 
   class Iterator {
     STACK_ALLOCATED();
 
    public:
-    const PaintChunk& operator*() const { return subset_[offset_]; }
-    const PaintChunk* operator->() const { return &subset_[offset_]; }
-    bool operator!=(const Iterator& other) const {
+    const PaintChunk& operator*() const { return GetChunk(); }
+    const PaintChunk* operator->() const { return &GetChunk(); }
+    bool operator==(const Iterator& other) const {
       DCHECK_EQ(&subset_, &other.subset_);
-      return offset_ != other.offset_;
+      return subset_or_chunk_index_ == other.subset_or_chunk_index_;
     }
+    bool operator!=(const Iterator& other) const { return !(*this == other); }
     const Iterator& operator++() {
-      ++offset_;
+      ++subset_or_chunk_index_;
       return *this;
     }
+    Iterator operator+(wtf_size_t offset) const {
+      DCHECK_LT(subset_or_chunk_index_ + offset, subset_.size());
+      return Iterator(subset_, subset_or_chunk_index_ + offset);
+    }
 
-    // The index in the whole paint chunks set.
-    wtf_size_t OriginalIndex() const { return subset_.OriginalIndex(offset_); }
+    // Returns the index of the current PaintChunk in the PaintArtifact.
+    wtf_size_t IndexInPaintArtifact() const {
+      if (subset_.UsesSubsetIndices())
+        return subset_.subset_indices_[subset_or_chunk_index_];
+      return subset_or_chunk_index_;
+    }
+
+    DisplayItemRange DisplayItems() const {
+      auto& chunk = GetChunk();
+      return subset_.paint_artifact_->GetDisplayItemList().ItemsInRange(
+          chunk.begin_index, chunk.end_index);
+    }
 
    private:
     friend class PaintChunkSubset;
-    Iterator(const PaintChunkSubset& subset, wtf_size_t offset)
-        : subset_(subset), offset_(offset) {}
+
+    Iterator(const PaintChunkSubset& subset, wtf_size_t subset_or_chunk_index)
+        : subset_(subset), subset_or_chunk_index_(subset_or_chunk_index) {}
+
+    const PaintChunk& GetChunk() const {
+      return subset_.paint_artifact_->PaintChunks()[IndexInPaintArtifact()];
+    }
 
     const PaintChunkSubset& subset_;
-    wtf_size_t offset_;
+    wtf_size_t subset_or_chunk_index_;
   };
 
-  Iterator begin() const { return Iterator(*this, 0); }
+  using value_type = PaintChunk;
+  using const_iterator = Iterator;
 
-  Iterator end() const { return Iterator(*this, size()); }
+  Iterator begin() const {
+    return Iterator(*this, UsesSubsetIndices() ? 0 : begin_index_);
+  }
+
+  Iterator end() const {
+    return Iterator(*this,
+                    UsesSubsetIndices() ? subset_indices_.size() : end_index_);
+  }
+
+  bool IsEmpty() const {
+    return UsesSubsetIndices() ? subset_indices_.IsEmpty()
+                               : begin_index_ == end_index_;
+  }
 
   wtf_size_t size() const {
-    return subset_indices_ ? subset_indices_->size() : chunks_.size();
+    return UsesSubsetIndices() ? subset_indices_.size()
+                               : end_index_ - begin_index_;
   }
 
-  // |i| is an index in the subset.
-  const PaintChunk& operator[](wtf_size_t i) const {
-    return chunks_[OriginalIndex(i)];
-  }
+  const PaintArtifact& GetPaintArtifact() const { return *paint_artifact_; }
 
-  // |i| is an index in the subset.
-  // Returns the index in the whole paint chunks set.
-  wtf_size_t OriginalIndex(wtf_size_t i) const {
-    return subset_indices_ ? (*subset_indices_)[i] : i;
+  void Merge(const PaintChunkSubset& other) {
+    DCHECK_EQ(paint_artifact_.get(), other.paint_artifact_.get());
+    DCHECK(UsesSubsetIndices());
+    DCHECK(other.UsesSubsetIndices());
+    subset_indices_.AppendVector(other.subset_indices_);
   }
 
  private:
-  const Vector<PaintChunk>& chunks_;
-  const Vector<wtf_size_t>* subset_indices_;
+  bool UsesSubsetIndices() const { return begin_index_ == kNotFound; }
+
+  scoped_refptr<const PaintArtifact> paint_artifact_;
+  // This is used when UsesSubsetIndices() is true.
+  Vector<wtf_size_t> subset_indices_;
+  // These are used when UsesSubsetIndices() is false.
+  wtf_size_t begin_index_ = kNotFound;
+  wtf_size_t end_index_ = kNotFound;
 };
+
+using PaintChunkIterator = PaintChunkSubset::Iterator;
 
 }  // namespace blink
 

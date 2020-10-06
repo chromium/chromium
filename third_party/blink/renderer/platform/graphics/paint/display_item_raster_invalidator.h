@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_RASTER_INVALIDATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_RASTER_INVALIDATOR_H_
 
+#include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
 #include "third_party/blink/renderer/platform/graphics/paint/raster_invalidator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -18,20 +19,14 @@ class DisplayItemRasterInvalidator {
   DisplayItemRasterInvalidator(
       RasterInvalidator& invalidator,
       RasterInvalidator::RasterInvalidationFunction function,
-      const PaintArtifact& old_paint_artifact,
-      const PaintArtifact& new_paint_artifact,
-      const PaintChunk& old_chunk,
-      const PaintChunk& new_chunk,
+      const DisplayItemRange& old_display_items,
+      const DisplayItemRange& new_display_items,
       const ChunkToLayerMapper& mapper)
       : invalidator_(invalidator),
         raster_invalidation_function_(function),
-        old_paint_artifact_(old_paint_artifact),
-        new_paint_artifact_(new_paint_artifact),
-        old_chunk_(old_chunk),
-        new_chunk_(new_chunk),
-        mapper_(mapper) {
-    DCHECK(old_chunk_.Matches(new_chunk_));
-  }
+        old_display_items_(old_display_items),
+        new_display_items_(new_display_items),
+        mapper_(mapper) {}
 
   void Generate();
 
@@ -43,9 +38,9 @@ class DisplayItemRasterInvalidator {
                                            const IntRect&,
                                            PaintInvalidationReason,
                                            RasterInvalidator::ClientIsOldOrNew);
-  ALWAYS_INLINE wtf_size_t
+  ALWAYS_INLINE DisplayItemIterator
   MatchNewDisplayItemInOldChunk(const DisplayItem& new_item,
-                                wtf_size_t& next_old_item_to_match);
+                                DisplayItemIterator& next_old_item_to_match);
   ALWAYS_INLINE void GenerateRasterInvalidation(const DisplayItemClient&,
                                                 const IntRect& old_visual_rect,
                                                 const IntRect& new_visual_rect,
@@ -62,13 +57,11 @@ class DisplayItemRasterInvalidator {
 
   RasterInvalidator& invalidator_;
   RasterInvalidator::RasterInvalidationFunction raster_invalidation_function_;
-  const PaintArtifact& old_paint_artifact_;
-  const PaintArtifact& new_paint_artifact_;
-  const PaintChunk& old_chunk_;
-  const PaintChunk& new_chunk_;
+  const DisplayItemRange& old_display_items_;
+  const DisplayItemRange& new_display_items_;
   const ChunkToLayerMapper& mapper_;
-  // Maps clients to indices of display items in old_chunk_.
-  HashMap<const DisplayItemClient*, Vector<wtf_size_t>>
+  // Maps clients to indices of display items in old_display_items_.
+  HashMap<const DisplayItemClient*, Vector<DisplayItemIterator>>
       old_display_items_index_;
 };
 

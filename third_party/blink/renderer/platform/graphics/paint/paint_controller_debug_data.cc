@@ -124,7 +124,8 @@ void PaintController::DisplayItemListAsJSON::AppendChunksAsJSON(
 
     json_object->SetArray(
         "displayItems",
-        list_.DisplayItemsAsJSON(chunk.begin_index, chunk.end_index, flags_));
+        DisplayItemList::DisplayItemsAsJSON(
+            list_.ItemsInRange(chunk.begin_index, chunk.end_index), flags_));
 
     json_array.PushObject(std::move(json_object));
   }

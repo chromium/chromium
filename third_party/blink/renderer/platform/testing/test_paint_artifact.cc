@@ -127,8 +127,8 @@ TestPaintArtifact& TestPaintArtifact::Uncacheable() {
 }
 
 scoped_refptr<PaintArtifact> TestPaintArtifact::Build() {
-  return PaintArtifact::Create(std::move(display_item_list_),
-                               std::move(paint_chunks_));
+  return base::MakeRefCounted<PaintArtifact>(std::move(display_item_list_),
+                                             std::move(paint_chunks_));
 }
 
 FakeDisplayItemClient& TestPaintArtifact::NewClient() {

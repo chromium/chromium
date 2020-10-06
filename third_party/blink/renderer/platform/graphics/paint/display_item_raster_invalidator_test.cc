@@ -24,9 +24,10 @@ class DisplayItemRasterInvalidatorTest : public PaintControllerTestBase,
   Vector<RasterInvalidationInfo> GenerateRasterInvalidations() {
     GetPaintController().CommitNewDisplayItems();
     invalidator_.Generate(
-        base::DoNothing(), GetPaintController().GetPaintArtifactShared(),
+        base::DoNothing(),
+        PaintChunkSubset(GetPaintController().GetPaintArtifactShared()),
         // The layer rect is big enough not to clip display item raster
-        // invalidation rects.
+        // invalidation rects in the tests.
         IntRect(0, 0, 20000, 20000), PropertyTreeState::Root());
     GetPaintController().FinishCycle();
     GetPaintController().ClearPropertyTreeChangedStateTo(

@@ -1344,10 +1344,8 @@ TEST_P(PaintControllerTest, SmallPaintControllerHasOnePaintChunk) {
   DrawRect(context, client, kBackgroundType, IntRect(0, 0, 100, 100));
 
   CommitAndFinishCycle();
-  const auto& paint_chunks = GetPaintController().PaintChunks();
-  ASSERT_EQ(1u, paint_chunks.size());
-  EXPECT_EQ(0u, paint_chunks[0].begin_index);
-  EXPECT_EQ(1u, paint_chunks[0].end_index);
+  EXPECT_THAT(GetPaintController().PaintChunks(),
+              ElementsAre(IsPaintChunk(0, 1)));
 }
 
 void DrawPath(GraphicsContext& context,

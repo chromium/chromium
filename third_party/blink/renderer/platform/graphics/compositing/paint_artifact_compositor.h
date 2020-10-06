@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/graphics/compositing_reasons.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -42,7 +43,6 @@ class JSONObject;
 class PaintArtifact;
 class PropertyTreeManager;
 class SynthesizedClip;
-struct PaintChunk;
 
 using CompositorScrollCallbacks = cc::ScrollCallbacks;
 
@@ -228,9 +228,8 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
       kOther,
     };
 
-    PendingLayer(scoped_refptr<const PaintArtifact>,
-                 const PaintChunk& first_paint_chunk,
-                 wtf_size_t first_chunk_index,
+    PendingLayer(const PaintChunkSubset&,
+                 const PaintChunkIterator&,
                  CompositingType compositng_type = kOther);
 
     // Merges |guest| into |this| if it can, by appending chunks of |guest|
@@ -277,9 +276,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
     // The rects are in the space of property_tree_state.
     FloatRect bounds;
     FloatRect rect_known_to_be_opaque;
-    scoped_refptr<const PaintArtifact> paint_artifact;
-    // Paint chunk indices from |paint_artifact.PaintChunks()|.
-    Vector<wtf_size_t> paint_chunk_indices;
+    PaintChunkSubset chunks;
     PropertyTreeState property_tree_state;
     FloatPoint offset_of_decomposited_transforms;
     CompositingType compositing_type;
@@ -288,7 +285,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   void UpdateRepaintedLayerProperties(
       const HashSet<const GraphicsLayer*>& repainted_layers) const;
 
-  void DecompositeTransforms(const PaintArtifact&);
+  void DecompositeTransforms();
 
   // Collects the PaintChunks into groups which will end up in the same
   // cc layer. This is the entry point of the layerization algorithm.
@@ -311,9 +308,9 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // recursion, the layerization of the subgroup may be tested for merge &
   // overlap with other chunks in the parent group, if grouping requirement
   // can be satisfied (and the effect node has no direct reason).
-  void LayerizeGroup(scoped_refptr<const PaintArtifact>,
+  void LayerizeGroup(const PaintChunkSubset&,
                      const EffectPaintPropertyNode&,
-                     Vector<PaintChunk>::const_iterator& chunk_cursor);
+                     PaintChunkIterator& chunk_cursor);
   static bool MightOverlap(const PendingLayer&, const PendingLayer&);
   bool DecompositeEffect(const EffectPaintPropertyNode& parent_effect,
                          wtf_size_t first_layer_in_parent_group_index,

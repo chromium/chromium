@@ -86,16 +86,6 @@ class PaintControllerPaintTestBase : public RenderingTest {
       CommitAndFinishCycle();
   }
 
-  bool DisplayItemListContains(const DisplayItemList& display_item_list,
-                               DisplayItemClient& client,
-                               DisplayItem::Type type) const {
-    for (auto& item : display_item_list) {
-      if (item.Client() == client && item.GetType() == type)
-        return true;
-    }
-    return false;
-  }
-
   int NumCachedNewItems() const {
     return RootPaintController().num_cached_new_items_;
   }
