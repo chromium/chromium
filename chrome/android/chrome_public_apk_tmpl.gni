@@ -155,11 +155,6 @@ template("chrome_public_common_apk_or_module_tmpl") {
       "*ic_lock.*",  # Bottom edge seems misaligned.
     ]
 
-    if (min_sdk_version >= 21) {
-      # Resources used by AndroidManifest.xml only for pre-21.
-      resource_exclusion_regex += "|app_single_page_icon"
-    }
-
     # Note most of these, with the exception of resource_exclusion_exceptions,
     # are currently duplicated in system_webview_apk_tmpl.gni.
 

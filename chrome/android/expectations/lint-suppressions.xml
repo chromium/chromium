@@ -332,7 +332,6 @@ Still reading?
     <ignore regexp="The resource `R.string.combined_notification_text` appears to be unused"/>
     <ignore regexp="The resource `R.plurals.public_notification_text` appears to be unused"/>
     <ignore regexp="The resource `R.mipmap.app_shortcut_icon` appears to be unused"/>
-    <ignore regexp="The resource `R.mipmap.app_single_page_icon` appears to be unused"/>
     <ignore regexp="The resource `R.string.app_banner_install` appears to be unused"/>
     <ignore regexp="The resource `R.string.iph_download_indicator_text` appears to be unused"/>
     <!--TODO(crbug.com/1106109): Remove this suppression once Most Visited Tiles header is implemented.-->
