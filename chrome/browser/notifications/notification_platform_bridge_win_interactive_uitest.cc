@@ -23,6 +23,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/win/scoped_hstring.h"
 #include "base/win/windows_version.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_platform_bridge_win.h"
@@ -513,8 +514,16 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest,
   bridge->SetExpectedDisplayedNotificationsForTesting(nullptr);
 }
 
+// Flaky on Windows, tracked at crbug.com/1135576
+#if defined(OS_WIN)
+#define MAYBE_SynchronizeNotificationsAfterClose \
+  DISABLED_SynchronizeNotificationsAfterClose
+#else
+#define MAYBE_SynchronizeNotificationsAfterClose \
+  SynchronizeNotificationsAfterClose
+#endif
 IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest,
-                       SynchronizeNotificationsAfterClose) {
+                       MAYBE_SynchronizeNotificationsAfterClose) {
   if (base::win::GetVersion() < kMinimumWindowsVersion)
     return;
 
