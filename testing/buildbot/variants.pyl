@@ -325,7 +325,7 @@
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M86',
-          'revision': 'version:86.0.4240.16',
+          'revision': 'version:86.0.4240.75',
         }
       ],
     },
