@@ -244,6 +244,7 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, MergeSyncData_NewData) {
                                          &offer_specifics);
 
   EXPECT_CALL(*backend(), CommitChanges());
+  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges());
   StartSyncing({offer_specifics});
 
   // Only the server offer should be present on the client.
@@ -259,6 +260,7 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, MergeSyncData_NoData) {
   table()->SetCreditCardOffers({client_data});
 
   EXPECT_CALL(*backend(), CommitChanges());
+  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges());
   StartSyncing({});
 
   EXPECT_TRUE(GetAllLocalData().empty());
@@ -275,6 +277,7 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, MergeSyncData_LogDataValidity) {
   offer_specifics2.clear_id();
 
   EXPECT_CALL(*backend(), CommitChanges());
+  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges());
   base::HistogramTester histogram_tester;
   StartSyncing({offer_specifics1, offer_specifics2});
 
@@ -292,6 +295,7 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, ApplyStopSyncChanges_ClearAllData) {
   table()->SetCreditCardOffers({client_data});
 
   EXPECT_CALL(*backend(), CommitChanges());
+  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges());
 
   // Passing in a non-null metadata change list indicates to the bridge that
   // sync is stopping but the data type is not disabled.
@@ -311,6 +315,7 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, ApplyStopSyncChanges_KeepAllData) {
 
   // We do not write to DB at all, so we should not commit any changes.
   EXPECT_CALL(*backend(), CommitChanges()).Times(0);
+  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges()).Times(0);
 
   // Passing in a null metadata change list indicates to the bridge that
   // sync is stopping and the data type is disabled.
