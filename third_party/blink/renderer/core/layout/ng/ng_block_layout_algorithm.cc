@@ -2489,7 +2489,7 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
           container_builder_.AdjoiningObjectTypes());
     }
     builder.SetLinesUntilClamp(lines_until_clamp_);
-  } else if (child_data.allow_discard_start_margin) {
+  } else if (child_data.is_resuming_after_break) {
     // If the child is being resumed after a break, margins inside the child may
     // be adjoining with the fragmentainer boundary, regardless of whether the
     // child establishes a new formatting context or not.

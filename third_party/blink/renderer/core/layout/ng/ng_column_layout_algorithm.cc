@@ -561,8 +561,9 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
     scoped_refptr<const NGBlockBreakToken> column_break_token =
         next_column_token;
 
-    bool allow_discard_start_margin =
-        column_break_token && !column_break_token->IsCausedByColumnSpanner();
+    // This is the first column in this fragmentation context if there are no
+    // preceding columns in this row and there are also no preceding rows.
+    bool is_first_fragmentainer = !column_break_token && !BreakToken();
 
     LayoutUnit column_inline_offset(BorderScrollbarPadding().inline_start);
     int actual_column_count = 0;
@@ -578,7 +579,7 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
       // Lay out one column. Each column will become a fragment.
       NGConstraintSpace child_space = CreateConstraintSpaceForColumns(
           ConstraintSpace(), column_size, ColumnPercentageResolutionSize(),
-          allow_discard_start_margin, balance_columns);
+          is_first_fragmentainer, balance_columns);
 
       NGFragmentGeometry fragment_geometry =
           CalculateInitialFragmentGeometry(child_space, Node());
@@ -631,7 +632,7 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
         break;
       }
 
-      allow_discard_start_margin = true;
+      is_first_fragmentainer = false;
     } while (column_break_token);
 
     // TODO(mstensho): Nested column balancing.

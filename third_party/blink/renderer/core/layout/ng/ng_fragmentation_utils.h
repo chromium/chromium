@@ -264,7 +264,7 @@ NGConstraintSpace CreateConstraintSpaceForColumns(
     const NGConstraintSpace& parent_space,
     LogicalSize column_size,
     LogicalSize percentage_resolution_size,
-    bool allow_discard_start_margin,
+    bool is_first_fragmentainer,
     bool balance_columns);
 
 // Return the adjusted child margin to be applied at the end of a fragment.

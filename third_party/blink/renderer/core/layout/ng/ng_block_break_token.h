@@ -72,8 +72,6 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
 
   bool IsForcedBreak() const { return is_forced_break_; }
 
-  bool IsCausedByColumnSpanner() const { return is_caused_by_column_spanner_; }
-
   // Return true if all children have been "seen". When we have reached this
   // point, and resume layout in a fragmentainer, we should only process child
   // break tokens, if any, and not attempt to start laying out nodes that don't
