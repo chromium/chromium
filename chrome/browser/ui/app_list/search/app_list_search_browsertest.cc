@@ -196,14 +196,15 @@ IN_PROC_BROWSER_TEST_F(ReleaseNotesSearchBrowserTest,
 
   auto* result = FindResult(chromeos::default_web_apps::kHelpAppId);
   ASSERT_TRUE(result);
-  // Has Release notes title.
-  EXPECT_EQ(base::UTF16ToASCII(result->title()),
-            "See what's new on your Chrome device");
-  // Displayed in first position.
-  EXPECT_EQ(result->position_priority(), 1.0f);
-  // Has override url defined for updates tab.
-  EXPECT_EQ(result->query_url(), GURL("chrome://help-app/updates"));
-  EXPECT_EQ(result->display_type(), DisplayType::kChip);
+  // Has regular app name as title.
+  // TODO(b/169711884): Should be priority 'What's new" when suggestion chips
+  // are re-enabled.
+  EXPECT_EQ(base::UTF16ToASCII(result->title()), "Explore");
+  // No priority for position.
+  EXPECT_EQ(result->position_priority(), 0);
+  // No override url (will open app at default page).
+  EXPECT_FALSE(result->query_url().has_value());
+  EXPECT_EQ(result->display_type(), DisplayType::kTile);
 }
 
 // Test that Help App shows up normally if pref shows we should no longer show

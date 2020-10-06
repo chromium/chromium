@@ -72,14 +72,8 @@ void ReleaseNotesStorage::MarkNotificationShown() {
 }
 
 bool ReleaseNotesStorage::ShouldShowSuggestionChip() {
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kReleaseNotesNotification)) {
-    return false;
-  }
-
-  const int times_left_to_show = profile_->GetPrefs()->GetInteger(
-      prefs::kReleaseNotesSuggestionChipTimesLeftToShow);
-  return times_left_to_show > 0;
+  // TODO(b/169711884): Re-enable this when we have a working version.
+  return false;
 }
 
 void ReleaseNotesStorage::DecreaseTimesLeftToShowSuggestionChip() {

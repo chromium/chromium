@@ -151,8 +151,8 @@ TEST_P(ReleaseNotesStorageTest, ShowReleaseNotesSuggestionChip) {
 
   profile.get()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 1);
-  EXPECT_EQ(should_show_notification,
-            release_notes_storage->ShouldShowSuggestionChip());
+  // TODO(b/169711884): Should be should_show_notification when suggestion chips are re-enabled.
+  EXPECT_EQ(false, release_notes_storage->ShouldShowSuggestionChip());
 
   release_notes_storage->DecreaseTimesLeftToShowSuggestionChip();
 
