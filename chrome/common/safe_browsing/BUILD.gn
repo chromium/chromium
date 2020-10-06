@@ -6,13 +6,6 @@ import("//chrome/common/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 proto_library("proto") {
   sources = [ "crx_info.proto" ]
 }
@@ -83,24 +76,31 @@ if (safe_browsing_mode == 1) {
     public_deps = [ "//components/safe_browsing/core:csd_proto" ]
   }
 
-  source_set("disk_image_type_sniffer_mac") {
-    sources = [
-      "disk_image_type_sniffer_mac.cc",
-      "disk_image_type_sniffer_mac.h",
-    ]
+  if (is_mac) {
+    source_set("disk_image_type_sniffer_mac") {
+      sources = [
+        "disk_image_type_sniffer_mac.cc",
+        "disk_image_type_sniffer_mac.h",
+      ]
 
-    deps = [ "//base" ]
+      deps = [ "//base" ]
+    }
   }
 
   source_set("binary_feature_extractor") {
     sources = [
       "binary_feature_extractor.cc",
       "binary_feature_extractor.h",
-      "binary_feature_extractor_mac.cc",
-      "binary_feature_extractor_win.cc",
-      "mach_o_image_reader_mac.cc",
-      "mach_o_image_reader_mac.h",
     ]
+    if (is_mac) {
+      sources += [
+        "binary_feature_extractor_mac.cc",
+        "mach_o_image_reader_mac.cc",
+        "mach_o_image_reader_mac.h",
+      ]
+    } else if (is_win) {
+      sources += [ "binary_feature_extractor_win.cc" ]
+    }
     if (is_posix) {
       sources += [ "binary_feature_extractor_posix.cc" ]
     }

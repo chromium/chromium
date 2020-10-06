@@ -260,7 +260,6 @@ static_library("safe_browsing") {
         ":advanced_protection",
         "//chrome/common/safe_browsing:archive_analyzer_results",
         "//chrome/common/safe_browsing:binary_feature_extractor",
-        "//chrome/common/safe_browsing:disk_image_type_sniffer_mac",
         "//chrome/common/safe_browsing:download_type_util",
         "//chrome/services/file_util/public/cpp",
         "//components/content_settings/core/browser",
@@ -274,7 +273,9 @@ static_library("safe_browsing") {
         "//content/public/browser",
         "//net",
       ]
-      if (is_win) {
+      if (is_mac) {
+        deps += [ "//chrome/common/safe_browsing:disk_image_type_sniffer_mac" ]
+      } else if (is_win) {
         deps += [ "//chrome/browser/safe_browsing/incident_reporting:state_store_data_proto" ]
       }
     } else if (safe_browsing_mode == 2) {
