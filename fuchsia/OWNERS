@@ -2,7 +2,3 @@ file://build/fuchsia/OWNERS
 
 per-file SECURITY_OWNERS=set noparent
 per-file SECURITY_OWNERS=file://fuchsia/SECURITY_OWNERS
-
-# COMPONENT: Fuchsia
-# OS: Fuchsia
-# TEAM: cr-fuchsia@chromium.org
