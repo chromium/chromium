@@ -5127,7 +5127,8 @@
     'gpu_fyi_chromeos_release_gtests': [
       # TODO(crbug.com/1087552): Enable once these stop crashing.
       # 'gpu_angle_end2end_gtests',
-      'gpu_angle_unit_gtests',
+      # TODO(crbug.com/1135720): Missing cros wrapper script.
+      # 'gpu_angle_unit_gtests',
       # TODO(crbug.com/1087558): Decide if we want to actually fix/enable these
       # tests on CrOS.
       # 'gpu_angle_white_box_gtests',
