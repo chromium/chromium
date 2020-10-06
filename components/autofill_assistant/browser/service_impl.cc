@@ -11,28 +11,21 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
+#include "components/autofill_assistant/browser/api_key_fetcher.h"
 #include "components/autofill_assistant/browser/client.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
+#include "components/autofill_assistant/browser/server_url_fetcher.h"
 #include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
-#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
-#include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "url/url_canon_stdstring.h"
 
 namespace autofill_assistant {
 namespace {
-
-const char* const kDefaultAutofillAssistantServerUrl =
-    "https://automate-pa.googleapis.com";
-const char* const kScriptEndpoint = "/v1/supportsSite2";
-const char* const kActionEndpoint = "/v1/actions2";
 
 net::NetworkTrafficAnnotationTag traffic_annotation =
     net::DefineNetworkTrafficAnnotation("autofill_service", R"(
@@ -53,42 +46,17 @@ net::NetworkTrafficAnnotationTag traffic_annotation =
           policy_exception_justification: "Not implemented."
         })");
 
-std::string GetAPIKey(version_info::Channel channel) {
-  const auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kAutofillAssistantServerKey)) {
-    return command_line->GetSwitchValueASCII(
-        switches::kAutofillAssistantServerKey);
-  }
-
-  if (google_apis::IsGoogleChromeAPIKeyUsed()) {
-    return channel == version_info::Channel::STABLE
-               ? google_apis::GetAPIKey()
-               : google_apis::GetNonStableAPIKey();
-  }
-  return "";
-}
-
-std::string GetServerUrl() {
-  std::string server_url =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kAutofillAssistantUrl);
-  if (server_url.empty()) {
-    server_url = kDefaultAutofillAssistantServerUrl;
-  }
-  return server_url;
-}
-
 }  // namespace
 
 // static
 std::unique_ptr<ServiceImpl> ServiceImpl::Create(
     content::BrowserContext* context,
     Client* client) {
-  GURL server_url(GetServerUrl());
-  DCHECK(server_url.is_valid());
-
+  ServerUrlFetcher url_fetcher{ServerUrlFetcher::GetDefaultServerUrl()};
   return std::make_unique<ServiceImpl>(
-      GetAPIKey(client->GetChannel()), GURL(GetServerUrl()), context,
+      ApiKeyFetcher().GetAPIKey(client->GetChannel()),
+      url_fetcher.GetSupportsScriptEndpoint(),
+      url_fetcher.GetNextActionsEndpoint(), context,
       std::make_unique<ClientContextImpl>(client),
       client->GetAccessTokenFetcher(),
       /* auth_enabled = */ "false" !=
@@ -97,41 +65,22 @@ std::unique_ptr<ServiceImpl> ServiceImpl::Create(
 }
 
 ServiceImpl::ServiceImpl(const std::string& api_key,
-                         const GURL& server_url,
+                         const GURL& script_server_url,
+                         const GURL& action_server_url,
                          content::BrowserContext* context,
                          std::unique_ptr<ClientContext> client_context,
                          AccessTokenFetcher* access_token_fetcher,
                          bool auth_enabled)
     : context_(context),
+      script_server_url_(script_server_url),
+      script_action_server_url_(action_server_url),
       api_key_(api_key),
       client_context_(std::move(client_context)),
       access_token_fetcher_(access_token_fetcher),
-      fetching_token_(false),
-      auth_enabled_(auth_enabled),
-      weak_ptr_factory_(this) {
-  DCHECK(server_url.is_valid());
-
-  url::StringPieceReplacements<std::string> script_replacements;
-  script_replacements.SetPathStr(kScriptEndpoint);
-  script_server_url_ = server_url.ReplaceComponents(script_replacements);
-
-  url::StringPieceReplacements<std::string> action_replacements;
-  action_replacements.SetPathStr(kActionEndpoint);
-  script_action_server_url_ = server_url.ReplaceComponents(action_replacements);
-  VLOG(1) << "Using script domain " << script_action_server_url_.host();
+      auth_enabled_(auth_enabled) {
+  DCHECK(script_server_url.is_valid());
+  DCHECK(action_server_url.is_valid());
 }
-
-ServiceImpl::ServiceImpl(content::BrowserContext* context,
-                         version_info::Channel channel,
-                         std::unique_ptr<ClientContext> client_context,
-                         AccessTokenFetcher* access_token_fetcher,
-                         bool auth_enabled)
-    : ServiceImpl(GetAPIKey(channel),
-                  GURL(GetServerUrl()),
-                  context,
-                  std::move(client_context),
-                  access_token_fetcher,
-                  auth_enabled) {}
 
 ServiceImpl::~ServiceImpl() {}
 

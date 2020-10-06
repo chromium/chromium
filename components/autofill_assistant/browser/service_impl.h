@@ -45,13 +45,9 @@ class ServiceImpl : public Service {
 
   // |context| and |access_token_fetcher| must remain valid for the lifetime of
   // the service instance.
-  ServiceImpl(content::BrowserContext* context,
-              version_info::Channel channel,
-              std::unique_ptr<ClientContext> client_context,
-              AccessTokenFetcher* access_token_fetcher,
-              bool auth_enabled);
   ServiceImpl(const std::string& api_key,
-              const GURL& server_url,
+              const GURL& script_server_url,
+              const GURL& action_server_url,
               content::BrowserContext* context,
               std::unique_ptr<ClientContext> client_context,
               AccessTokenFetcher* access_token_fetcher,
@@ -130,16 +126,16 @@ class ServiceImpl : public Service {
   AccessTokenFetcher* access_token_fetcher_;
 
   // True while waiting for a response from AccessTokenFetcher.
-  bool fetching_token_;
+  bool fetching_token_ = false;
 
   // Whether requests should be authenticated.
-  bool auth_enabled_;
+  bool auth_enabled_ = true;
 
   // An OAuth 2 token. Empty if not fetched yet or if the token has been
   // invalidated.
   std::string access_token_;
 
-  base::WeakPtrFactory<ServiceImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<ServiceImpl> weak_ptr_factory_{this};
 
   FRIEND_TEST_ALL_PREFIXES(ServiceImplTestSignedInStatus, SetsSignedInStatus);
 
