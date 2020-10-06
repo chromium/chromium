@@ -77,6 +77,10 @@ const char kEnablePreferCompositingToLCDText[] =
 // Enables RGBA_4444 textures.
 const char kEnableRGBA4444Textures[] = "enable-rgba-4444-textures";
 
+// Enables raster side dark mode for images.
+const char kEnableRasterSideDarkModeForImages[] =
+    "enable-raster-side-dark-mode-for-images";
+
 // Enable rasterizer that writes directly to GPU memory associated with tiles.
 const char kEnableZeroCopy[] = "enable-zero-copy";
 

@@ -62,6 +62,12 @@ class CC_PAINT_EXPORT PaintFlags {
   ALWAYS_INLINE SkFilterQuality getFilterQuality() const {
     return static_cast<SkFilterQuality>(bitfields_.filter_quality_);
   }
+  ALWAYS_INLINE bool useDarkModeForImage() const {
+    return bitfields_.use_dark_mode_for_image_;
+  }
+  ALWAYS_INLINE void setUseDarkModeForImage(bool use_dark_mode_for_image) {
+    bitfields_.use_dark_mode_for_image_ = use_dark_mode_for_image;
+  }
   ALWAYS_INLINE SkScalar getStrokeWidth() const { return width_; }
   ALWAYS_INLINE void setStrokeWidth(SkScalar width) { width_ = width; }
   ALWAYS_INLINE SkScalar getStrokeMiter() const { return miter_limit_; }
@@ -195,6 +201,9 @@ class CC_PAINT_EXPORT PaintFlags {
     uint32_t join_type_ : 2;
     uint32_t style_ : 2;
     uint32_t filter_quality_ : 2;
+    // Specifies whether the compositor should use a dark mode filter when
+    // rasterizing image on the draw op with this PaintFlags.
+    uint32_t use_dark_mode_for_image_ : 1;
   };
 
   union {

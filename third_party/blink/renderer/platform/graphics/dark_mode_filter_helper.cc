@@ -4,12 +4,22 @@
 
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter_helper.h"
 
+#include "base/command_line.h"
 #include "base/hash/hash.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_image_cache.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 
 namespace blink {
+
+namespace {
+bool IsRasterSideDarkModeForImagesEnabled() {
+  static bool enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kEnableRasterSideDarkModeForImages);
+  return enabled;
+}
+}  // namespace
 
 // static
 SkColor DarkModeFilterHelper::ApplyToColorIfNeeded(
@@ -37,6 +47,13 @@ void DarkModeFilterHelper::ApplyToImageIfNeeded(GraphicsContext* context,
   // https://crbug.com/1094781.
   if (!context->IsDarkModeEnabled())
     return;
+
+  // For RSDM, just set the dark mode on flags and rest will be taken care at
+  // compositor side.
+  if (image->IsBitmapImage() && IsRasterSideDarkModeForImagesEnabled()) {
+    flags->setUseDarkModeForImage(true);
+    return;
+  }
 
   SkIRect rounded_src = src.roundOut();
   SkIRect rounded_dst = dst.roundOut();
