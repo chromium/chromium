@@ -327,6 +327,10 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
         return JavaScriptUtils.executeJavaScriptAndWaitForResult(mWebContentsRef.get(), script);
     }
 
+    protected String runJavascriptWithAsyncResult(String script) throws TimeoutException {
+        return JavaScriptUtils.runJavascriptWithAsyncResult(mWebContentsRef.get(), script);
+    }
+
     /** Clicks on an HTML node. */
     protected void clickNodeAndWait(String nodeId, CallbackHelper helper) throws TimeoutException {
         int callCount = helper.getCallCount();

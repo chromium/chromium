@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.payments;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryParams;
 
@@ -21,16 +23,23 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
 
     /** @return The singleton instance of this class. */
     public static PaymentAppService getInstance() {
+        if (sInstance == null) {
+            sInstance = new PaymentAppService();
+            sInstance.addFactory(new AutofillPaymentAppFactory());
+            sInstance.addFactory(new PaymentAppServiceBridge());
+            sInstance.addFactory(new AndroidPaymentAppFactory());
+        }
+        return sInstance;
+    }
+
+    @VisibleForTesting
+    public static PaymentAppService getInstanceWithoutFactoryForTest() {
         if (sInstance == null) sInstance = new PaymentAppService();
         return sInstance;
     }
 
     /** Prevent instantiation. */
-    private PaymentAppService() {
-        mFactories.add(new AutofillPaymentAppFactory());
-        mFactories.add(new PaymentAppServiceBridge());
-        mFactories.add(new AndroidPaymentAppFactory());
-    }
+    private PaymentAppService() {}
 
     /** @param factory The factory to add. */
     public void addFactory(PaymentAppFactoryInterface factory) {
