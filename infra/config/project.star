@@ -47,7 +47,6 @@ lucicfg.generator(_generate_project_pyl)
 # https://chromiumdash.appspot.com/branches
 # The 2 highest milestones will be the ones with active branches
 ACTIVE_BRANCHES = [
-    ("m85", 4183),
     ("m86", 4240),
     ("m87", 4280),
 ]

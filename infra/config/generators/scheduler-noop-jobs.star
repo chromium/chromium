@@ -16,22 +16,6 @@ without error.
 load("@stdlib//internal/luci/proto.star", "scheduler_pb")
 load("//project.star", "settings")
 
-# For the chromium project (settings.is_master is True), we have bucket-based
-# milestones for <=M85. We create a no-op job that prefixes the ci bucket name
-# for those milestones. Combined with setting the bucketed_triggers property,
-# this makes it safe to issue triggers for the builders that don't exist for the
-# milestone.
-# For the chromium milestone projects (settings.is_master is False), the
-# milestone project will use the same bucket names, so we create a no-op job for
-# the 'ci' bucket.
-_BRANCH_NOOP_CONFIG = struct(
-    buckets = ["ci-m85"],
-    fmt = "{bucket}-{builder}",
-) if settings.is_master else struct(
-    buckets = ["ci"],
-    fmt = "{builder}",
-)
-
 _NON_BRANCHED_TESTERS = (
     # This tester is triggered by 'Mac Builder', but it is an FYI builder and
     # not mirrored by any branched try builders, so we do not need to run it on
@@ -59,17 +43,19 @@ _NON_BRANCHED_TESTERS = (
 )
 
 _TESTER_NOOP_JOBS = [scheduler_pb.Job(
-    id = _BRANCH_NOOP_CONFIG.fmt.format(bucket = bucket, builder = builder),
+    id = builder,
     schedule = "triggered",
-    acl_sets = [bucket],
+    acl_sets = ["ci"],
     acls = [scheduler_pb.Acl(
         role = scheduler_pb.Acl.TRIGGERER,
         granted_to = "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     )],
     noop = scheduler_pb.NoopTask(),
-) for builder in _NON_BRANCHED_TESTERS for bucket in _BRANCH_NOOP_CONFIG.buckets]
+) for builder in _NON_BRANCHED_TESTERS]
 
 def _add_noop_jobs(ctx):
+    if settings.is_master:
+        return
     cfg = ctx.output["luci-scheduler.cfg"]
     for j in _TESTER_NOOP_JOBS:
         cfg.job.append(j)

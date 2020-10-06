@@ -34,7 +34,7 @@ def _disable_cq_experiments(ctx):
             if not b.experiment_percentage:
                 continue
             project, bucket, builder = b.name.split("/", 2)
-            if project == "chromium" and bucket in ("try", "try-m85"):
+            if project == "chromium" and bucket == "try":
                 b.includable_only = True
                 b.experiment_percentage = 0
                 b.location_regexp.clear()

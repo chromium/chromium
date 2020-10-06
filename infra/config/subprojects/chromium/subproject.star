@@ -9,10 +9,6 @@ exec("./try.star")
 exec("./gpu.try.star")
 exec("./swangle.try.star")
 
-# Execute the M85 config
-branches.exec("./versioned/m85/buckets/ci.star")
-branches.exec("./versioned/m85/buckets/try.star")
-
 # TODO(gbeaty) external_console_view uses new fields/types that aren't present
 # in the version of the protobuf that lint-luci-milo uses, so update protos and
 # then uncomment these (the main console is still reachable via the beta link in

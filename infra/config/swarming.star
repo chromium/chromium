@@ -83,20 +83,6 @@ swarming.task_triggerers(
     ],
 )
 
-# LED users that can trigger try builds via LED.
-swarming.task_triggerers(
-    builder_realm = "try-m85",
-    pool_realm = "pools/try",
-    groups = [
-        "chromium-led-users",
-    ],
-    users = [
-        # An account used by "Build Recipes Tester" builder infra/try bucket
-        # used to tests changes to Chromium recipes using LED before commit.
-        "infra-try-recipes-tester@chops-service-accounts.iam.gserviceaccount.com",
-    ],
-)
-
 # Realm with bots that run isolated tests.
 #
 # Tasks here are triggered directly on Swarming (not via Buildbucket) by various
