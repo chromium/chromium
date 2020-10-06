@@ -82,10 +82,6 @@ class WebAudioSourceProviderImpl::TeeFilter
     const int num_rendered_frames = renderer_->Render(
         delay, delay_timestamp, prior_frames_skipped, audio_bus);
 
-    // Zero out frames after rendering
-    if (origin_tainted_.IsSet())
-      audio_bus->Zero();
-
     // Avoid taking the copy lock for the vast majority of cases.
     if (copy_required_) {
       base::AutoLock auto_lock(copy_lock_);
@@ -94,7 +90,11 @@ class WebAudioSourceProviderImpl::TeeFilter
             media::AudioTimestampHelper::TimeToFrames(delay, sample_rate_);
         std::unique_ptr<media::AudioBus> bus_copy =
             media::AudioBus::Create(audio_bus->channels(), audio_bus->frames());
-        audio_bus->CopyTo(bus_copy.get());
+        // Disable copying when origin is tainted.
+        if (origin_tainted_.IsSet())
+          bus_copy->Zero();
+        else
+          audio_bus->CopyTo(bus_copy.get());
         copy_audio_bus_callback_.Run(std::move(bus_copy),
                                      static_cast<uint32_t>(frames_delayed),
                                      sample_rate_);
@@ -120,6 +120,7 @@ class WebAudioSourceProviderImpl::TeeFilter
   }
 
   void TaintOrigin() { origin_tainted_.Set(); }
+  bool is_tainted() const { return origin_tainted_.IsSet(); }
 
  private:
   AudioRendererSink::RenderCallback* renderer_ = nullptr;
@@ -227,6 +228,13 @@ void WebAudioSourceProviderImpl::ProvideInput(
   DCHECK_EQ(tee_filter_->channels(), bus_wrapper_->channels());
   const int frames = tee_filter_->Render(
       base::TimeDelta(), base::TimeTicks::Now(), 0, bus_wrapper_.get());
+
+  // Zero out frames after rendering for tainted origins.
+  if (tee_filter_->is_tainted()) {
+    bus_wrapper_->Zero();
+    return;
+  }
+
   if (frames < incoming_number_of_frames)
     bus_wrapper_->ZeroFramesPartial(frames, incoming_number_of_frames - frames);
 
