@@ -1,30 +1,6 @@
 oncalls {
-  name: "Chromium"
-  url: "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chrome-build-sheriff"
-}
-oncalls {
-  name: "Android"
-  url: "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chrome-android-sheriff"
-}
-oncalls {
-  name: "iOS"
-  url: "https://rota-ng.appspot.com/legacy/sheriff_ios.json"
-}
-oncalls {
-  name: "GPU"
-  url: "https://rota-ng.appspot.com/legacy/sheriff_gpu.json"
-}
-oncalls {
-  name: "Angle"
-  url: "https://rota-ng.appspot.com/legacy/sheriff_angle.json"
-}
-oncalls {
-  name: "Perf"
-  url: "https://rota-ng.appspot.com/legacy/sheriff_perf.json"
-}
-oncalls {
-  name: "Perfbot"
-  url: "https://rota-ng.appspot.com/legacy/sheriff_perfbot.json"
+  name: "Chromium Branches"
+  url: "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chrome-branch-sheriff"
 }
 oncalls {
   name: "Trooper"
@@ -42,11 +18,6 @@ links {
     text: "symbols"
     url: "https://www.chromium.org/developers/how-tos/debugging-on-windows"
     alt: "Windows Symbols"
-  }
-  links {
-    text: "status"
-    url: "https://chromium-status.appspot.com/"
-    alt: "Current tree status"
   }
 }
 links {
@@ -71,7 +42,7 @@ links {
   name: "Chromium"
   links {
     text: "source"
-    url: "https://chromium.googlesource.com/chromium/src"
+    url: "https://chromium.googlesource.com/chromium/src/+/refs/branch-heads/4280"
     alt: "Chromium source code repository"
   }
   links {
@@ -104,72 +75,32 @@ links {
   name: "Consoles"
   links {
     text: "android"
-    url: "/p/chromium/g/chromium.android"
+    url: "/p/chromium-m87/g/chromium.android"
     alt: "Chromium Android console"
   }
   links {
-    text: "clang"
-    url: "/p/chromium/g/chromium.clang"
-    alt: "Chromium Clang console"
-  }
-  links {
     text: "dawn"
-    url: "/p/chromium/g/chromium.dawn"
+    url: "/p/chromium-m87/g/chromium.dawn"
     alt: "Chromium Dawn console"
   }
   links {
-    text: "fuzz"
-    url: "/p/chromium/g/chromium.fuzz"
-    alt: "Chromium Fuzz console"
-  }
-  links {
     text: "fyi"
-    url: "/p/chromium/g/chromium.fyi"
+    url: "/p/chromium-m87/g/chromium.fyi"
     alt: "Chromium FYI console"
   }
   links {
     text: "gpu"
-    url: "/p/chromium/g/chromium.gpu"
+    url: "/p/chromium-m87/g/chromium.gpu"
     alt: "Chromium GPU console"
   }
   links {
-    text: "perf"
-    url: "/p/chrome/g/chrome.perf/console"
-    alt: "Chromium Perf console"
-  }
-  links {
-    text: "perf.fyi"
-    url: "/p/chrome/g/chrome.perf.fyi/console"
-    alt: "Chromium Perf FYI console"
-  }
-  links {
-    text: "swangle"
-    url: "/p/chromium/g/chromium.swangle"
-    alt: "Chromium SWANGLE console"
-  }
-  links {
-    text: "webrtc"
-    url: "/p/chromium/g/chromium.webrtc"
-    alt: "Chromium WebRTC console"
-  }
-  links {
     text: "chromiumos"
-    url: "/p/chromium/g/chromium.chromiumos"
+    url: "/p/chromium-m87/g/chromium.chromiumos"
     alt: "ChromiumOS console"
   }
 }
 links {
   name: "Branch Consoles"
-  links {
-    text: "m86"
-    url: "/p/chromium-m86/g/main/console"
-    alt: "Beta branch console"
-  }
-  links {
-    text: "m85"
-    url: "/p/chromium/g/main-m85/console"
-    alt: "Stable branch console"
-  }
   links {
     text: "trunk"
     url: "/p/chromium/g/main/console"
@@ -180,47 +111,32 @@ links {
   name: "Tryservers"
   links {
     text: "android"
-    url: "/p/chromium/g/tryserver.chromium.android/builders"
+    url: "/p/chromium-m87/g/tryserver.chromium.android/builders"
     alt: "Android"
   }
   links {
-    text: "angle"
-    url: "/p/chromium/g/tryserver.chromium.angle/builders"
-    alt: "Angle"
-  }
-  links {
     text: "blink"
-    url: "/p/chromium/g/tryserver.blink/builders"
+    url: "/p/chromium-m87/g/tryserver.blink/builders"
     alt: "Blink"
   }
   links {
-    text: "chrome"
-    url: "/p/chrome/g/tryserver.chrome/builders"
-    alt: "Chrome"
-  }
-  links {
     text: "chromiumos"
-    url: "/p/chromium/g/tryserver.chromium.chromiumos/builders"
+    url: "/p/chromium-m87/g/tryserver.chromium.chromiumos/builders"
     alt: "ChromiumOS"
   }
   links {
     text: "linux"
-    url: "/p/chromium/g/tryserver.chromium.linux/builders"
+    url: "/p/chromium-m87/g/tryserver.chromium.linux/builders"
     alt: "Linux"
   }
   links {
     text: "mac"
-    url: "/p/chromium/g/tryserver.chromium.mac/builders"
+    url: "/p/chromium-m87/g/tryserver.chromium.mac/builders"
     alt: "Mac"
   }
   links {
-    text: "swangle"
-    url: "/p/chromium/g/tryserver.chromium.swangle/builders"
-    alt: "SWANGLE"
-  }
-  links {
     text: "win"
-    url: "/p/chromium/g/tryserver.chromium.win/builders"
+    url: "/p/chromium-m87/g/tryserver.chromium.win/builders"
     alt: "Win"
   }
 }
@@ -233,29 +149,17 @@ links {
   }
   links {
     text: "customize"
-    url: "https://chromium.googlesource.com/chromium/src/+/master/infra/config/luci-milo.cfg"
+    url: "https://chromium.googlesource.com/chromium/src/+/refs/branch-heads/4280/infra/config/generated/luci-milo.cfg"
     alt: "Customize this console"
   }
 }
 console_groups {
-  title {
-    text: "Tree Closers"
-    url: "https://chromium-status.appspot.com/"
-  }
-  console_ids: "chromium/chromium"
-  console_ids: "chromium/chromium.win"
-  console_ids: "chromium/chromium.mac"
-  console_ids: "chromium/chromium.linux"
-  console_ids: "chromium/chromium.chromiumos"
-  console_ids: "chrome/chrome"
-  console_ids: "chromium/chromium.memory"
-  console_ids: "chromium/chromium.gpu"
+  console_ids: "chromium-m87/chromium"
+  console_ids: "chromium-m87/chromium.win"
+  console_ids: "chromium-m87/chromium.mac"
+  console_ids: "chromium-m87/chromium.linux"
+  console_ids: "chromium-m87/chromium.chromiumos"
+  console_ids: "chromium-m87/chromium.memory"
+  console_ids: "chromium-m87/chromium.gpu"
+  console_ids: "chromium-m87/chromium.android"
 }
-console_groups {
-  console_ids: "chromium/chromium.android"
-  console_ids: "chrome/chrome.perf"
-  console_ids: "chromium/chromium.gpu.fyi"
-  console_ids: "chromium/chromium.swangle"
-  console_ids: "chromium/chromium.fuzz"
-}
-tree_status_host: "chromium-status.appspot.com"
