@@ -7,6 +7,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/strcat.h"
 #include "base/test/trace_event_analyzer.h"
+#include "build/build_config.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -131,8 +132,16 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, LargestContentfulPaint) {
       lcp_timestamps[2].value());
 }
 
+// Flaky on Win7, see crbug.com/1135527
+#if defined(OS_WIN)
+#define MAYBE_LargestContentfulPaint_SubframeInput \
+  DISABLED_LargestContentfulPaint_SubframeInput
+#else
+#define MAYBE_LargestContentfulPaint_SubframeInput \
+  LargestContentfulPaint_SubframeInput
+#endif
 IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
-                       LargestContentfulPaint_SubframeInput) {
+                       MAYBE_LargestContentfulPaint_SubframeInput) {
   Start();
   Load("/lcp_subframe_input.html");
   auto* sub = ChildFrameAt(web_contents()->GetMainFrame(), 0);
