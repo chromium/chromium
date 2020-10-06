@@ -138,8 +138,7 @@ class ConsumerHost : public perfetto::Consumer, public mojom::ConsumerHost {
   void EnableTracing(
       mojo::PendingReceiver<mojom::TracingSessionHost> tracing_session_host,
       mojo::PendingRemote<mojom::TracingSessionClient> tracing_session_client,
-      const perfetto::TraceConfig& config,
-      mojom::TracingClientPriority priority) override;
+      const perfetto::TraceConfig& config) override;
 
   // perfetto::Consumer implementation.
   // This gets called by the Perfetto service as control signals,

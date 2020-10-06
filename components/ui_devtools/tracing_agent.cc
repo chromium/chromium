@@ -114,8 +114,7 @@ class TracingAgent::PerfettoTracingSession
     on_recording_enabled_callback_ = std::move(on_recording_enabled_callback);
     consumer_host_->EnableTracing(
         tracing_session_host_.BindNewPipeAndPassReceiver(),
-        std::move(tracing_session_client), std::move(perfetto_config),
-        tracing::mojom::TracingClientPriority::kUserInitiated);
+        std::move(tracing_session_client), std::move(perfetto_config));
 
     tracing_session_host_.set_disconnect_handler(
         base::BindOnce(&PerfettoTracingSession::OnTracingSessionFailed,
@@ -201,7 +200,11 @@ class TracingAgent::PerfettoTracingSession
     last_config_for_perfetto_ = std::move(processfilter_stripped_config);
 #endif
 
-    return tracing::GetDefaultPerfettoConfig(chrome_config);
+    return tracing::GetDefaultPerfettoConfig(
+        chrome_config,
+        /*privacy_filtering_enabled=*/false,
+        /*convert_to_legacy_json=*/false,
+        perfetto::protos::gen::ChromeConfig::USER_INITIATED);
   }
 
   void OnTracingSessionFailed() {

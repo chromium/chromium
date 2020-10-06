@@ -145,8 +145,7 @@ class TestTracingClient : public mojom::TracingSessionClient {
 
     consumer_host_->EnableTracing(
         tracing_session_host_.BindNewPipeAndPassReceiver(),
-        receiver_.BindNewPipeAndPassRemote(), std::move(perfetto_config),
-        tracing::mojom::TracingClientPriority::kUserInitiated);
+        receiver_.BindNewPipeAndPassRemote(), std::move(perfetto_config));
 
     tracing_session_host_->RequestBufferUsage(
         base::BindOnce([](base::OnceClosure on_response, bool, float,

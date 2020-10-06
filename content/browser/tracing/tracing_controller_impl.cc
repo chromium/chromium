@@ -403,12 +403,14 @@ bool TracingControllerImpl::StartTracing(
   ConnectToServiceIfNeeded();
 
   perfetto::TraceConfig perfetto_config = tracing::GetDefaultPerfettoConfig(
-      trace_config, /*requires_anonymized_data=*/false);
+      trace_config,
+      /*privacy_filtering_enabled=*/false,
+      /*convert_to_legacy_json=*/true,
+      perfetto::protos::gen::ChromeConfig::USER_INITIATED);
 
   consumer_host_->EnableTracing(
       tracing_session_host_.BindNewPipeAndPassReceiver(),
-      receiver_.BindNewPipeAndPassRemote(), std::move(perfetto_config),
-      tracing::mojom::TracingClientPriority::kUserInitiated);
+      receiver_.BindNewPipeAndPassRemote(), std::move(perfetto_config));
   receiver_.set_disconnect_handler(base::BindOnce(
       &TracingControllerImpl::OnTracingFailed, base::Unretained(this)));
   tracing_session_host_.set_disconnect_handler(base::BindOnce(

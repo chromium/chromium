@@ -625,10 +625,30 @@ ConsumerHost::~ConsumerHost() {
 void ConsumerHost::EnableTracing(
     mojo::PendingReceiver<mojom::TracingSessionHost> tracing_session_host,
     mojo::PendingRemote<mojom::TracingSessionClient> tracing_session_client,
-    const perfetto::TraceConfig& trace_config,
-    mojom::TracingClientPriority priority) {
+    const perfetto::TraceConfig& trace_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!tracing_session_);
+
+  auto priority = mojom::TracingClientPriority::kUnknown;
+  for (const auto& data_source : trace_config.data_sources()) {
+    if (!data_source.has_config() ||
+        !data_source.config().has_chrome_config()) {
+      continue;
+    }
+    switch (data_source.config().chrome_config().client_priority()) {
+      case perfetto::protos::gen::ChromeConfig::BACKGROUND:
+        priority =
+            std::max(priority, mojom::TracingClientPriority::kBackground);
+        break;
+      case perfetto::protos::gen::ChromeConfig::USER_INITIATED:
+        priority =
+            std::max(priority, mojom::TracingClientPriority::kUserInitiated);
+        break;
+      default:
+      case perfetto::protos::gen::ChromeConfig::UNKNOWN:
+        break;
+    }
+  }
 
   // We create our new TracingSession async, if the PerfettoService allows
   // us to, after it's stopped any currently running lower or equal priority

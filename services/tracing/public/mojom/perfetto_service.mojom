@@ -90,6 +90,9 @@ struct ChromeConfig {
   // Whether the final tracing result will be converted to the legacy JSON
   // format.
   bool convert_to_legacy_json;
+
+  // Priority of the tracing session.
+  TracingClientPriority client_priority;
 };
 
 struct DataSourceConfig {
@@ -233,13 +236,13 @@ interface ConsumerHost {
   // Note: Right now only a single concurrent tracing session is supported,
   // as there's no support for multiplexing enabled trace events to multiple
   // consumers. If a new tracing session is attempted while there's an existing
-  // one in progress, the relative priorities will be used to figure out which
-  // one to be able to (keep) tracing; if the priorities are the same, the new
-  // session will take precedence.
+  // one in progress, the relative priorities (configured through
+  // TracingClientPriority in the trace config) will be used to figure out
+  // which one to be able to (keep) tracing; if the priorities are the same,
+  // the new session will take precedence.
   EnableTracing(pending_receiver<TracingSessionHost> tracing_session_host,
                 pending_remote<TracingSessionClient> tracing_session_client,
-                TraceConfig config,
-                TracingClientPriority priority);
+                TraceConfig config);
 };
 
 // Represents the host side of an active tracing session. Closing this

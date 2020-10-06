@@ -154,8 +154,7 @@ class ThreadedPerfettoService : public mojom::TracingSessionClient {
 
     consumer_->EnableTracing(
         tracing_session_host_->BindNewPipeAndPassReceiver(),
-        std::move(tracing_session_client), std::move(config),
-        tracing::mojom::TracingClientPriority::kUserInitiated);
+        std::move(tracing_session_client), std::move(config));
   }
 
   void ReadBuffers(mojo::ScopedDataPipeProducerHandle stream,
@@ -379,7 +378,9 @@ class TracingConsumerTest : public testing::Test,
   }
 
   perfetto::TraceConfig GetDefaultTraceConfig(
-      const std::string& data_source_name) {
+      const std::string& data_source_name,
+      perfetto::protos::gen::ChromeConfig::ClientPriority priority =
+          perfetto::protos::gen::ChromeConfig::UNKNOWN) {
     perfetto::TraceConfig trace_config;
     trace_config.add_buffers()->set_size_kb(32 * 1024);
 
@@ -387,6 +388,7 @@ class TracingConsumerTest : public testing::Test,
         trace_config.add_data_sources()->mutable_config();
     trace_event_config->set_name(data_source_name);
     trace_event_config->set_target_buffer(0);
+    trace_event_config->mutable_chrome_config()->set_client_priority(priority);
 
     return trace_config;
   }
@@ -715,8 +717,7 @@ class MockConsumerHost : public mojom::TracingSessionClient {
   explicit MockConsumerHost(PerfettoService* service)
       : consumer_host_(std::make_unique<ConsumerHost>(service)) {}
 
-  void EnableTracing(const perfetto::TraceConfig& config,
-                     mojom::TracingClientPriority priority) {
+  void EnableTracing(const perfetto::TraceConfig& config) {
     mojo::PendingRemote<tracing::mojom::TracingSessionClient>
         tracing_session_client;
     receiver_.Bind(tracing_session_client.InitWithNewPipeAndPassReceiver());
@@ -726,7 +727,7 @@ class MockConsumerHost : public mojom::TracingSessionClient {
 
     consumer_host_->EnableTracing(
         tracing_session_host_.BindNewPipeAndPassReceiver(),
-        std::move(tracing_session_client), config, priority);
+        std::move(tracing_session_client), config);
     tracing_session_host_.set_disconnect_handler(base::BindOnce(
         &MockConsumerHost::OnConnectionLost, base::Unretained(this)));
   }
@@ -765,34 +766,35 @@ class MockConsumerHost : public mojom::TracingSessionClient {
 
 TEST_F(TracingConsumerTest, TestConsumerPriority) {
   PerfettoService::GetInstance()->SetActiveServicePidsInitialized();
-  auto trace_config = GetDefaultTraceConfig(mojom::kTraceEventDataSourceName);
+  auto trace_config_background =
+      GetDefaultTraceConfig(mojom::kTraceEventDataSourceName,
+                            perfetto::protos::gen ::ChromeConfig::BACKGROUND);
+  auto trace_config_user_initiated = GetDefaultTraceConfig(
+      mojom::kTraceEventDataSourceName,
+      perfetto::protos::gen ::ChromeConfig::USER_INITIATED);
 
   MockConsumerHost background_consumer_1(PerfettoService::GetInstance());
-  background_consumer_1.EnableTracing(
-      trace_config, tracing::mojom::TracingClientPriority::kBackground);
+  background_consumer_1.EnableTracing(trace_config_background);
   background_consumer_1.WaitForTracingEnabled();
 
   // Second consumer of the same priority should cause the first one to
   // be disabled and the second to start.
   MockConsumerHost background_consumer_2(PerfettoService::GetInstance());
-  background_consumer_2.EnableTracing(
-      trace_config, tracing::mojom::TracingClientPriority::kBackground);
+  background_consumer_2.EnableTracing(trace_config_background);
   background_consumer_1.WaitForTracingDisabled();
   background_consumer_2.WaitForTracingEnabled();
 
   // Third consumer will have a higher priority, and should kill the second
   // one.
   MockConsumerHost user_initiated_consumer(PerfettoService::GetInstance());
-  user_initiated_consumer.EnableTracing(
-      trace_config, tracing::mojom::TracingClientPriority::kUserInitiated);
+  user_initiated_consumer.EnableTracing(trace_config_user_initiated);
   background_consumer_2.WaitForTracingDisabled();
   user_initiated_consumer.WaitForTracingEnabled();
 
   // Fourth consumer will be another background consumer, and should be
   // itself killed as the third consumer is still running.
   MockConsumerHost background_consumer_3(PerfettoService::GetInstance());
-  background_consumer_3.EnableTracing(
-      trace_config, tracing::mojom::TracingClientPriority::kBackground);
+  background_consumer_3.EnableTracing(trace_config_background);
   background_consumer_3.WaitForConnectionLost();
 
   // If we close the user initiated consumer, the third background consumer
@@ -800,8 +802,7 @@ TEST_F(TracingConsumerTest, TestConsumerPriority) {
   user_initiated_consumer.DisableTracing();
   user_initiated_consumer.WaitForTracingDisabled();
   user_initiated_consumer.CloseTracingSession();
-  background_consumer_3.EnableTracing(
-      trace_config, tracing::mojom::TracingClientPriority::kBackground);
+  background_consumer_3.EnableTracing(trace_config_background);
   background_consumer_3.WaitForTracingEnabled();
 }
 

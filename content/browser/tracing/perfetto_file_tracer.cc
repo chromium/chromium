@@ -107,8 +107,10 @@ PerfettoFileTracer::PerfettoFileTracer()
   // The output is always proto based. So, enable privacy filtering if argument
   // filter is enabled.
   bool privacy_filtering = chrome_config.IsArgumentFilterEnabled();
-  perfetto::TraceConfig trace_config =
-      tracing::GetDefaultPerfettoConfig(chrome_config, privacy_filtering);
+  perfetto::TraceConfig trace_config = tracing::GetDefaultPerfettoConfig(
+      chrome_config, privacy_filtering,
+      /*convert_to_legacy_json=*/false,
+      perfetto::protos::gen::ChromeConfig::USER_INITIATED);
 
   int duration_in_seconds =
       tracing::TraceStartupConfig::GetInstance()->GetStartupDuration();
@@ -119,8 +121,7 @@ PerfettoFileTracer::PerfettoFileTracer()
 
   consumer_host_->EnableTracing(
       tracing_session_host_.BindNewPipeAndPassReceiver(),
-      receiver_.BindNewPipeAndPassRemote(), std::move(trace_config),
-      tracing::mojom::TracingClientPriority::kBackground);
+      receiver_.BindNewPipeAndPassRemote(), std::move(trace_config));
   receiver_.set_disconnect_handler(base::BindOnce(
       &PerfettoFileTracer::OnTracingSessionEnded, base::Unretained(this)));
   ReadBuffers();
