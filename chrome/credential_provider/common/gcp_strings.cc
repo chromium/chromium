@@ -47,6 +47,8 @@ const wchar_t kDesktopFullName[] = L"WinSta0\\Winlogon";
 // Google Update related registry paths.
 #define GCPW_UPDATE_CLIENT_GUID L"{32987697-A14E-4B89-84D6-630D5431E831}"
 
+const wchar_t kGcpwUpdateClientGuid[] = GCPW_UPDATE_CLIENT_GUID;
+
 const wchar_t kRegUpdaterClientStateAppPath[] =
     L"SOFTWARE\\Google\\Update\\ClientState\\" GCPW_UPDATE_CLIENT_GUID;
 const wchar_t kRegUpdaterClientsAppPath[] =

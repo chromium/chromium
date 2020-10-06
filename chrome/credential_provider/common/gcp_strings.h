@@ -72,6 +72,9 @@ extern const wchar_t kLsaKeyGaiaPassword[];
 extern const wchar_t kDesktopName[];
 extern const wchar_t kDesktopFullName[];
 
+// GUID used by Google Update client for GCPW application.
+extern const wchar_t kGcpwUpdateClientGuid[];
+
 // Google Update related registry paths.
 extern const wchar_t kRegUpdaterClientStateAppPath[];
 extern const wchar_t kRegUpdaterClientsAppPath[];
