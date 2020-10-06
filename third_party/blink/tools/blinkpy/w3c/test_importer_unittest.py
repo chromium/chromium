@@ -382,7 +382,9 @@ class TestImporterTest(LoggingTestCase):
             'https://chromium.googlesource.com'
             '/chromium/src/+/master/docs/testing/web_platform_tests.md\n\n'
             'NOAUTOREVERT=true\n'
-            'No-Export: true')
+            'No-Export: true\n'
+            'Cq-Include-Trybots: luci.chromium.try:linux-wpt-identity-fyi-rel,'
+            'linux-wpt-payments-fyi-rel')
         self.assertEqual(host.executive.calls,
                          [['git', 'log', '-1', '--format=%B']])
 
