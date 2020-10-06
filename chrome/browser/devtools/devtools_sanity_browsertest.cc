@@ -1644,7 +1644,8 @@ bool InterceptURLLoad(content::URLLoaderInterceptor::RequestParams* params) {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, TestNetworkPushTime) {
+// TODO(crbug.com/1046784) Flaky
+IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, DISABLED_TestNetworkPushTime) {
   content::URLLoaderInterceptor interceptor(
       base::BindRepeating(InterceptURLLoad));
 
@@ -1919,7 +1920,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, AutoAttachToWindowOpen) {
   CloseDevToolsWindow();
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, SecondTabAfterDevTools) {
+// TODO(crbug.com/1102964) Flaky
+IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, DISABLED_SecondTabAfterDevTools) {
   OpenDevToolsWindow(kDebuggerTestPage, true);
 
   ui_test_utils::NavigateToURLWithDisposition(
