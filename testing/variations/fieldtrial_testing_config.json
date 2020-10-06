@@ -1448,9 +1448,9 @@
             ],
             "experiments": [
                 {
-                    "name": "UseMap2_20200922",
+                    "name": "UseMap4_20200922",
                     "params": {
-                        "map": "2"
+                        "map": "4"
                     },
                     "enable_features": [
                         "EmojiSuggestAddition"
