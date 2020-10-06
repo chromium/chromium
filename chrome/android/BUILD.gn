@@ -1993,8 +1993,6 @@ template("chrome_public_apk_or_module_tmpl") {
                            ])
     deps = _chrome_public_shared_deps
 
-    enforce_resource_overlays = true
-
     if (_is_bundle_module) {
       deps += [ ":chrome_bundle_module_pak_assets" ]
     } else {
@@ -2351,7 +2349,7 @@ template("chrome_test_apk_tmpl") {
                              "android_manifest_dep",
                              "data_deps",
                              "enable_lint",
-                             "enforce_resource_overlays",
+                             "enforce_resource_overlays_in_tests",
                              "shared_libraries",
                            ])
 
@@ -2468,13 +2466,16 @@ chrome_test_apk_tmpl("chrome_public_test_apk") {
   if (enable_chrome_android_internal) {
     data_deps += [ "//clank/build/bot/filters:chrome_public_test_apk_filters" ]
   }
+
+  # Required by //build/config/android/test/resource_overlay:javatests
+  enforce_resource_overlays_in_tests = true
+
   additional_apks = [
     "//chrome/android/webapk/libs/runtime_library/javatests/apk_with_webapk_service:apk_with_webapk_service",
     "//chrome/android/webapk/shell_apk:javatests_webapk",
     "//chrome/android/webapk/shell_apk/javatests/dex_optimizer:dex_optimizer_apk",
     "//chrome/test/android/chrome_public_test_support:chrome_public_test_support_apk",
   ]
-  enforce_resource_overlays = true
 }
 
 if (enable_vr) {

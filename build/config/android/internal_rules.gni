@@ -2611,8 +2611,9 @@ if (enable_java_templates) {
                  "${invoker.shared_resources_allowlist_locales}" ]
     }
 
-    if (defined(invoker.enforce_resource_overlays) &&
-        invoker.enforce_resource_overlays) {
+    if (!defined(testonly) || !testonly ||
+        (defined(invoker.enforce_resource_overlays_in_tests) &&
+         invoker.enforce_resource_overlays_in_tests)) {
       _args += [ "--dependencies-res-zip-overlays=@FileArg($_rebased_build_config:deps_info:dependency_zip_overlays)" ]
     } else {
       _args += [ "--dependencies-res-zip-overlays=@FileArg($_rebased_build_config:deps_info:dependency_zips)" ]
