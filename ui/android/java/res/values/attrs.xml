@@ -20,21 +20,18 @@
 
     <declare-styleable name="ChipView">
         <attr name="allowMultipleLines" format="boolean"/>
+        <attr name="extendLateralPadding" format="boolean"/>
         <attr name="solidColorChip" format="boolean"/>
         <attr name="textAlignStart" format="boolean"/>
         <attr name="chipColor" format="color"/>
         <attr name="chipStyle" format="reference"/>
         <attr name="cornerRadius" format="dimension"/>
-        <attr name="leadingPadding" format="reference|dimension"/>
-        <attr name="endPadding" format="reference|dimension"/>
         <attr name="iconWidth" format="reference|dimension"/>
         <attr name="iconHeight" format="reference|dimension"/>
         <attr name="useRoundedIcon" format="boolean"/>
         <attr name="primaryTextAppearance" format="reference"/>
         <attr name="endIconWidth" format="reference|dimension"/>
         <attr name="endIconHeight" format="reference|dimension"/>
-        <attr name="endIconStartPadding" format="reference|dimension"/>
-        <attr name="endIconEndPadding" format="reference|dimension"/>
         <attr name="secondaryTextAppearance" format="reference"/>
         <attr name="rippleColor"/>
         <attr name="verticalInset"/>

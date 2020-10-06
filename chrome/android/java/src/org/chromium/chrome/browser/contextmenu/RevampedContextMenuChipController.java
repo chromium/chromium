@@ -83,14 +83,18 @@ class RevampedContextMenuChipController implements View.OnClickListener {
     @VisibleForTesting
     int getChipTextMaxWidthPx() {
         return mContext.getResources().getDimensionPixelSize(R.dimen.context_menu_chip_max_width)
-                // Leading and trailing padding (start and end of chip and
-                // start / end of text).
-                - (3
-                        * mContext.getResources().getDimensionPixelSize(
-                                R.dimen.context_menu_chip_lateral_padding))
-                - (1
-                        * mContext.getResources().getDimensionPixelSize(
-                                R.dimen.chip_element_leading_padding))
+                // Padding before primary icon
+                - mContext.getResources().getDimensionPixelSize(
+                        R.dimen.chip_element_extended_leading_padding)
+                // Padding after primary icon
+                - mContext.getResources().getDimensionPixelSize(
+                        R.dimen.chip_element_leading_padding)
+                // Padding before close icon.
+                - mContext.getResources().getDimensionPixelSize(
+                        R.dimen.chip_end_icon_extended_margin_start)
+                // Padding after close icon.
+                - mContext.getResources().getDimensionPixelSize(
+                        R.dimen.chip_extended_end_padding_with_end_icon)
                 // Primary and close icon width.
                 - (2
                         * mContext.getResources().getDimensionPixelSize(

@@ -43,11 +43,14 @@
     <dimen name="chip_default_height">32dp</dimen>
     <dimen name="chip_end_padding">16dp</dimen>
     <dimen name="chip_element_leading_padding">8dp</dimen>
+    <dimen name="chip_element_extended_leading_padding">16dp</dimen>
     <dimen name="chip_bg_vertical_inset">8dp</dimen>
     <dimen name="chip_background_selected_alpha">@dimen/chip_background_selected_alpha_light</dimen>
     <dimen name="chip_icon_size">20dp</dimen>
     <dimen name="chip_end_icon_margin_start">8dp</dimen>
+    <dimen name="chip_end_icon_extended_margin_start">16dp</dimen>
     <dimen name="chip_end_padding_with_end_icon">6dp</dimen>
+    <dimen name="chip_extended_end_padding_with_end_icon">16dp</dimen>
     <dimen name="chip_text_multiline_vertical_padding">12dp</dimen>
 
     <!-- Dropdown default measures -->

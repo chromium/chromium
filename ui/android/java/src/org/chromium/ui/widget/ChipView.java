@@ -72,18 +72,27 @@ public class ChipView extends LinearLayout {
         TypedArray a = getContext().obtainStyledAttributes(
                 attrs, R.styleable.ChipView, R.attr.chipStyle, 0);
 
-        @Px
-        int leadingElementPadding = a.getDimensionPixelSize(R.styleable.ChipView_leadingPadding,
-                getResources().getDimensionPixelSize(R.dimen.chip_element_leading_padding));
-        @Px
-        int endPadding = a.getDimensionPixelSize(R.styleable.ChipView_endPadding,
-                getResources().getDimensionPixelSize(R.dimen.chip_end_padding));
+        boolean extendLateralPadding =
+                a.getBoolean(R.styleable.ChipView_extendLateralPadding, false);
 
-        mEndIconStartPadding = a.getDimensionPixelSize(R.styleable.ChipView_endIconStartPadding,
-                getResources().getDimensionPixelSize(R.dimen.chip_end_icon_margin_start));
+        @Px
+        int leadingElementPadding = extendLateralPadding
+                ? getResources().getDimensionPixelSize(
+                        R.dimen.chip_element_extended_leading_padding)
+                : getResources().getDimensionPixelSize(R.dimen.chip_element_leading_padding);
 
-        mEndIconEndPadding = a.getDimensionPixelSize(R.styleable.ChipView_endIconEndPadding,
-                getResources().getDimensionPixelSize(R.dimen.chip_end_padding_with_end_icon));
+        // End padding is already longer so no need to adjust in the 'extendLateralPadding' case.
+        @Px
+        int endPadding = getResources().getDimensionPixelSize(R.dimen.chip_end_padding);
+
+        mEndIconStartPadding = extendLateralPadding
+                ? getResources().getDimensionPixelSize(R.dimen.chip_end_icon_extended_margin_start)
+                : getResources().getDimensionPixelSize(R.dimen.chip_end_icon_margin_start);
+
+        mEndIconEndPadding = extendLateralPadding
+                ? getResources().getDimensionPixelSize(
+                        R.dimen.chip_extended_end_padding_with_end_icon)
+                : getResources().getDimensionPixelSize(R.dimen.chip_end_padding_with_end_icon);
 
         boolean solidColorChip = a.getBoolean(R.styleable.ChipView_solidColorChip, false);
         int chipBorderWidthId =
