@@ -248,8 +248,8 @@ blink::ShapeResultView::(anonymous struct)::alignment
 # child class ptr fields before they're initialized.
 blink::CacheEntry::next_
 blink::CacheEntry::prev_
-WTF::LruCache::next_
-WTF::LruCache::prev_
+WTF::LruCache::MappedListNodeWithKey::next_
+WTF::LruCache::MappedListNodeWithKey::prev_
 
 # Populated manually - these pointers crash, due to use-after-move.
 gpu::gles2::PassthroughProgramCache::ProgramCacheValue::program_cache_
