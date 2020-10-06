@@ -5,6 +5,7 @@
 #include "chrome/credential_provider/extension/os_service_manager.h"
 
 #include "chrome/credential_provider/extension/extension_strings.h"
+#include "chrome/credential_provider/gaiacp/logging.h"
 
 namespace credential_provider {
 namespace extension {
@@ -88,6 +89,25 @@ DWORD OSServiceManager::DeleteService() {
   // function, and the service is not running.
   if (!::DeleteService(sc_handle.Get()))
     return ::GetLastError();
+
+  return ERROR_SUCCESS;
+}
+
+DWORD OSServiceManager::StartGCPWService() {
+  ScopedScHandle scm_handle(
+      ::OpenSCManager(nullptr, nullptr, SC_MANAGER_ALL_ACCESS));
+  if (!scm_handle.IsValid())
+    return ::GetLastError();
+
+  ScopedScHandle sc_handle(::OpenService(
+      scm_handle.Get(), kGCPWExtensionServiceName, SERVICE_START));
+  if (!sc_handle.IsValid())
+    return ::GetLastError();
+
+  if (!::StartService(sc_handle.Get(), 0, nullptr))
+    return ::GetLastError();
+
+  LOGFN(INFO) << "GCPW extension started successfully.";
 
   return ERROR_SUCCESS;
 }

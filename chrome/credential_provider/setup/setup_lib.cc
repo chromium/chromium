@@ -27,8 +27,7 @@
 #include "base/win/windows_version.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/extension/extension_strings.h"
-#include "chrome/credential_provider/extension/os_service_manager.h"
-#include "chrome/credential_provider/extension/scoped_handle.h"
+#include "chrome/credential_provider/extension/extension_utils.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
@@ -158,81 +157,6 @@ HRESULT UnregisterDlls(const base::FilePath& dest_path,
 
 }  // namespace
 
-DWORD InstallGCPWExtension(const base::FilePath& extension_exe_path) {
-  credential_provider::extension::OSServiceManager* service_manager =
-      credential_provider::extension::OSServiceManager::Get();
-  SERVICE_STATUS service_status;
-  DWORD error_code = service_manager->GetServiceStatus(&service_status);
-  if (error_code != ERROR_SUCCESS &&
-      error_code != ERROR_SERVICE_DOES_NOT_EXIST) {
-    LOGFN(ERROR) << "service_manager->GetServiceStatus failed win32="
-                 << error_code;
-    return error_code;
-  }
-  if (error_code == ERROR_SUCCESS) {
-    if (service_status.dwCurrentState != SERVICE_STOPPED) {
-      error_code = service_manager->ControlService(SERVICE_CONTROL_STOP,
-                                                   &service_status);
-      if (error_code != ERROR_SUCCESS) {
-        LOGFN(ERROR) << "service_manager->ControlService failed win32="
-                     << error_code;
-        return error_code;
-      }
-    }
-
-    error_code = service_manager->DeleteService();
-    if (error_code != ERROR_SUCCESS) {
-      LOGFN(ERROR) << "service_manager->DeleteService failed win32="
-                   << error_code;
-      return error_code;
-    }
-  }
-
-  credential_provider::extension::ScopedScHandle sc_handle;
-  error_code = service_manager->InstallService(extension_exe_path, &sc_handle);
-  if (error_code != ERROR_SUCCESS) {
-    LOGFN(ERROR) << "service_manager->InstallService failed win32="
-                 << error_code;
-    return error_code;
-  }
-
-  return ERROR_SUCCESS;
-}
-
-DWORD UninstallGCPWExtension() {
-  credential_provider::extension::OSServiceManager* service_manager =
-      credential_provider::extension::OSServiceManager::Get();
-  SERVICE_STATUS service_status;
-  DWORD error_code = service_manager->GetServiceStatus(&service_status);
-  if (error_code != ERROR_SUCCESS &&
-      error_code != ERROR_SERVICE_DOES_NOT_EXIST) {
-    LOGFN(ERROR) << "service_manager->GetServiceStatus failed win32="
-                 << error_code;
-    return error_code;
-  }
-
-  if (error_code == ERROR_SUCCESS) {
-    if (service_status.dwCurrentState != SERVICE_STOPPED) {
-      error_code = service_manager->ControlService(SERVICE_CONTROL_STOP,
-                                                   &service_status);
-      if (error_code != ERROR_SUCCESS) {
-        LOGFN(ERROR) << "service_manager->ControlService failed win32="
-                     << error_code;
-        return error_code;
-      }
-    }
-
-    error_code = service_manager->DeleteService();
-    if (error_code != ERROR_SUCCESS) {
-      LOGFN(ERROR) << "service_manager->DeleteService failed win32="
-                   << error_code;
-      return error_code;
-    }
-  }
-
-  return ERROR_SUCCESS;
-}
-
 HRESULT DoInstall(const base::FilePath& installer_path,
                   const base::string16& product_version,
                   FakesForTesting* fakes) {
@@ -288,9 +212,9 @@ HRESULT DoInstall(const base::FilePath& installer_path,
                  << putHR(hr);
   }
 
-  if (GetGlobalFlagOrDefault(extension::kEnableGCPWExtension, 1)) {
-    DWORD error_code =
-        InstallGCPWExtension(dest_path.Append(kCredentialProviderExtensionExe));
+  if (extension::IsGCPWExtensionEnabled()) {
+    DWORD error_code = extension::InstallGCPWExtension(
+        dest_path.Append(kCredentialProviderExtensionExe));
     if (error_code != ERROR_SUCCESS) {
       LOGFN(ERROR) << "InstallGCPWExtension failed win32=" << error_code;
       return HRESULT_FROM_WIN32(error_code);
@@ -311,7 +235,8 @@ HRESULT DoUninstall(const base::FilePath& installer_path,
   has_failures |= FAILED(UnregisterDlls(dest_path, register_dlls.data(),
                                         register_dlls.size(), fakes));
 
-  has_failures |= FAILED(HRESULT_FROM_WIN32(UninstallGCPWExtension()));
+  has_failures |=
+      FAILED(HRESULT_FROM_WIN32(extension::UninstallGCPWExtension()));
 
   // If the DLLs are unregistered, Credential Provider will not be loaded by
   // Winlogon. Therefore, it is safe to delete the startup sentinel file at this

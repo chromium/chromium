@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "windows.h"
-
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -11,6 +9,7 @@
 #include "base/process/memory.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/win/process_startup_helper.h"
+#include "base/win/windows_types.h"
 #include "chrome/credential_provider/eventlog/gcp_eventlog_messages.h"
 #include "chrome/credential_provider/extension/os_service_manager.h"
 #include "chrome/credential_provider/extension/service.h"

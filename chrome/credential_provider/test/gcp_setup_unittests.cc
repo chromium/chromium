@@ -35,6 +35,7 @@
 #include "chrome/common/chrome_version.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/extension/extension_strings.h"
+#include "chrome/credential_provider/extension/extension_utils.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider_i.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
@@ -250,11 +251,6 @@ void GcpSetupTest::ExpectAllFilesToExist(
   base::FilePath root = installed_path_for_version(product_version);
   EXPECT_EQ(exist, base::PathExists(root));
 
-  base::win::RegKey key;
-  ASSERT_EQ(ERROR_SUCCESS,
-            key.Create(HKEY_LOCAL_MACHINE, kGcpRootKeyName, KEY_READ));
-  DWORD copy_extension_reg;
-  key.ReadValueDW(extension::kEnableGCPWExtension, &copy_extension_reg);
   bool extension_found = false;
   auto install_files = GCPWFiles::Get()->GetEffectiveInstallFiles();
 
@@ -265,7 +261,7 @@ void GcpSetupTest::ExpectAllFilesToExist(
     EXPECT_EQ(exist, base::PathExists(root.Append(install_file)));
   }
 
-  EXPECT_EQ(copy_extension_reg == 1, extension_found);
+  EXPECT_EQ(extension::IsGCPWExtensionEnabled(), extension_found);
 }
 
 void GcpSetupTest::ExpectCredentialProviderToBeRegistered(

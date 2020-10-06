@@ -5,9 +5,9 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_EXTENSION_SCOPED_HANDLE_H_
 #define CHROME_CREDENTIAL_PROVIDER_EXTENSION_SCOPED_HANDLE_H_
 
-#include <windows.h>
 #include "base/macros.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/windows_types.h"
 
 namespace credential_provider {
 namespace extension {

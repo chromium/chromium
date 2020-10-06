@@ -4,6 +4,8 @@
 
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider_module.h"
 
+#include <process.h>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -13,6 +15,8 @@
 #include "base/win/windows_version.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/credential_provider/eventlog/gcp_eventlog_messages.h"
+#include "chrome/credential_provider/extension/extension_utils.h"
+#include "chrome/credential_provider/extension/os_service_manager.h"
 #include "chrome/credential_provider/gaiacp/associated_user_validator.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_base.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider_filter.h"
@@ -39,11 +43,27 @@ void InvalidParameterHandler(const wchar_t* expression,
                << " file=" << (file ? file : L"-") << " line=" << line;
 }
 
+unsigned __stdcall CheckGCPWExtensionStatus(void* param) {
+  LOGFN(VERBOSE);
+  if (!credential_provider::extension::IsGCPWExtensionRunning()) {
+    credential_provider::extension::OSServiceManager* service_manager =
+        credential_provider::extension::OSServiceManager::Get();
+
+    DWORD error_code = service_manager->StartGCPWService();
+    if (error_code != ERROR_SUCCESS) {
+      LOGFN(WARNING) << "Unable to start GCPW extension win32=" << error_code;
+    }
+  }
+  return 0;
+}
+
 }  // namespace
 
 CGaiaCredentialProviderModule::CGaiaCredentialProviderModule()
     : ATL::CAtlDllModuleT<CGaiaCredentialProviderModule>(),
-      exit_manager_(nullptr) {}
+      exit_manager_(nullptr),
+      gcpw_extension_check_performed_(0),
+      crashpad_initialized_(0) {}
 
 CGaiaCredentialProviderModule::~CGaiaCredentialProviderModule() {}
 
@@ -82,6 +102,17 @@ void CGaiaCredentialProviderModule::RefreshTokenHandleValidity() {
     credential_provider::AssociatedUserValidator::Get()
         ->StartRefreshingTokenHandleValidity();
     token_handle_validity_refreshed_ = true;
+  }
+}
+
+void CGaiaCredentialProviderModule::CheckGCPWExtension() {
+  LOGFN(VERBOSE);
+  if (extension::IsGCPWExtensionEnabled() &&
+      ::InterlockedCompareExchange(&gcpw_extension_check_performed_, 1, 0) ==
+          0) {
+    gcpw_extension_checker_thread_handle_ =
+        reinterpret_cast<HANDLE>(_beginthreadex(
+            nullptr, 0, CheckGCPWExtensionStatus, nullptr, 0, nullptr));
   }
 }
 
