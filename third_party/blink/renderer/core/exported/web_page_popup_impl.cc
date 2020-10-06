@@ -632,6 +632,9 @@ WebInputEventResult WebPagePopupImpl::HandleKeyEvent(
       suppress_next_keypress_event_ = true;
     }
   }
+  LocalFrame::NotifyUserActivation(
+      popup_client_->OwnerElement().GetDocument().GetFrame(),
+      mojom::blink::UserActivationNotificationType::kInteraction);
   return MainFrame().GetEventHandler().KeyEvent(event);
 }
 
@@ -678,6 +681,9 @@ WebInputEventResult WebPagePopupImpl::HandleGestureEvent(
       Cancel();
       return WebInputEventResult::kNotHandled;
     }
+    LocalFrame::NotifyUserActivation(
+        popup_client_->OwnerElement().GetDocument().GetFrame(),
+        mojom::blink::UserActivationNotificationType::kInteraction);
     CheckScreenPointInOwnerWindowAndCount(
         event.PositionInScreen(),
         WebFeature::kPopupGestureTapExceedsOwnerWindowBounds);
@@ -691,6 +697,9 @@ void WebPagePopupImpl::HandleMouseDown(LocalFrame& main_frame,
                                        const WebMouseEvent& event) {
   if (IsViewportPointInWindow(event.PositionInWidget().x(),
                               event.PositionInWidget().y())) {
+    LocalFrame::NotifyUserActivation(
+        popup_client_->OwnerElement().GetDocument().GetFrame(),
+        mojom::blink::UserActivationNotificationType::kInteraction);
     CheckScreenPointInOwnerWindowAndCount(
         event.PositionInScreen(),
         WebFeature::kPopupMouseDownExceedsOwnerWindowBounds);

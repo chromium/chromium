@@ -121,6 +121,10 @@ EyeDropperView::EyeDropperView(content::RenderFrameHost* frame,
   HideCursor();
   pre_dispatch_handler_ = std::make_unique<PreEventDispatchHandler>(this);
   widget->Show();
+  // The ignore selection time should be long enough to allow the user to see
+  // the UI.
+  ignore_selection_time_ =
+      base::TimeTicks::Now() + base::TimeDelta::FromMilliseconds(500);
 }
 
 EyeDropperView::~EyeDropperView() {
@@ -245,6 +249,10 @@ void EyeDropperView::OnColorSelected() {
     listener_->ColorSelectionCanceled();
     return;
   }
+
+  // Prevent the user from selecting a color for a period of time.
+  if (base::TimeTicks::Now() <= ignore_selection_time_)
+    return;
 
   // Use the last selected color and notify listener.
   listener_->ColorSelected(selected_color_.value());

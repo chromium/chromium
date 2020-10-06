@@ -24,7 +24,10 @@ function openPickerSuccessfulCallback() {
   const popupDocument = popupWindow.document;
   waitUntilEyeDropperShown(() => testRunner.notifyDone());
   const eyeDropper = popupDocument.querySelector('eye-dropper');
-  eyeDropper.click();
+  const eyeDropperRect = eyeDropper.getBoundingClientRect();
+  eventSender.mouseMoveTo(eyeDropperRect.left + (eyeDropperRect.width / 2), eyeDropperRect.top + (eyeDropperRect.height / 2));
+  eventSender.mouseDown();
+  eventSender.mouseUp();
 }
 </script>
 </body>

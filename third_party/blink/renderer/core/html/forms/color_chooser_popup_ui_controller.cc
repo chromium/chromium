@@ -276,6 +276,9 @@ void ColorChooserPopupUIController::EyeDropperResponseHandler(bool success,
 }
 
 void ColorChooserPopupUIController::OpenEyeDropper() {
+  if (!LocalFrame::HasTransientUserActivation(frame_))
+    return;
+
   frame_->GetBrowserInterfaceBroker().GetInterface(
       eye_dropper_chooser_.BindNewPipeAndPassReceiver(
           frame_->GetTaskRunner(TaskType::kUserInteraction)));
