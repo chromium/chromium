@@ -14,11 +14,6 @@ namespace content {
 ServiceWorkerDiskCache::ServiceWorkerDiskCache()
     : AppCacheDiskCache(/*use_simple_cache=*/true) {}
 
-ServiceWorkerResponseWriter::ServiceWorkerResponseWriter(
-    int64_t resource_id,
-    base::WeakPtr<AppCacheDiskCache> disk_cache)
-    : AppCacheResponseWriter(resource_id, std::move(disk_cache)) {}
-
 ServiceWorkerResponseMetadataWriter::ServiceWorkerResponseMetadataWriter(
     int64_t resource_id,
     base::WeakPtr<AppCacheDiskCache> disk_cache)

@@ -262,8 +262,7 @@ void ServiceWorkerStorageControlImpl::CreateResourceWriter(
     int64_t resource_id,
     mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceWriter> writer) {
   DCHECK_NE(resource_id, blink::mojom::kInvalidServiceWorkerResourceId);
-  mojo::MakeSelfOwnedReceiver(std::make_unique<ServiceWorkerResourceWriterImpl>(
-                                  storage_->CreateResponseWriter(resource_id)),
+  mojo::MakeSelfOwnedReceiver(storage_->CreateResourceWriter(resource_id),
                               std::move(writer));
 }
 

@@ -26,18 +26,8 @@ class CONTENT_EXPORT ServiceWorkerDiskCache : public AppCacheDiskCache {
   ServiceWorkerDiskCache();
 };
 
-// TODO(crbug.com/1060076): Migrate to
-// storage::mojom::ServiceWorkerResourceWriter.
-class CONTENT_EXPORT ServiceWorkerResponseWriter
-    : public AppCacheResponseWriter {
- protected:
-  // Should only be constructed by the storage class.
-  friend class ServiceWorkerStorage;
-
-  ServiceWorkerResponseWriter(int64_t resource_id,
-                              base::WeakPtr<AppCacheDiskCache> disk_cache);
-};
-
+// TODO(crbug.com/1117369): Migrate to
+// storage::mojom::ServiceWorkerResourceMetadataWriter.
 class CONTENT_EXPORT ServiceWorkerResponseMetadataWriter
     : public AppCacheResponseMetadataWriter {
  protected:

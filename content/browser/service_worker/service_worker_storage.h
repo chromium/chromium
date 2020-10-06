@@ -40,7 +40,6 @@ namespace content {
 
 class ServiceWorkerDiskCache;
 class ServiceWorkerResponseMetadataWriter;
-class ServiceWorkerResponseWriter;
 class ServiceWorkerStorageControlImplTest;
 
 namespace service_worker_storage_unittest {
@@ -94,10 +93,6 @@ class CONTENT_EXPORT ServiceWorkerStorage {
       OriginState origin_state,
       int64_t deleted_version_id,
       const std::vector<int64_t>& newly_purgeable_resources)>;
-
-  using ResponseWriterCreationCallback = base::OnceCallback<void(
-      int64_t resource_id,
-      std::unique_ptr<ServiceWorkerResponseWriter> response_writer)>;
 
   using DatabaseStatusCallback =
       base::OnceCallback<void(ServiceWorkerDatabase::Status status)>;
@@ -191,7 +186,7 @@ class CONTENT_EXPORT ServiceWorkerStorage {
   // associated with the disabled disk cache if the storage is disabled.
   std::unique_ptr<ServiceWorkerResourceReaderImpl> CreateResourceReader(
       int64_t resource_id);
-  std::unique_ptr<ServiceWorkerResponseWriter> CreateResponseWriter(
+  std::unique_ptr<ServiceWorkerResourceWriterImpl> CreateResourceWriter(
       int64_t resource_id);
   std::unique_ptr<ServiceWorkerResponseMetadataWriter>
   CreateResponseMetadataWriter(int64_t resource_id);
