@@ -99,6 +99,19 @@ enum HttpFirewallProblem {
   kPotentialFirewall,
 };
 
+// Problems related to the HttpsLatency routine.
+[Extensible]
+enum HttpsLatencyProblem {
+  // One or more DNS resolutions resulted in a failure.
+  kFailedDnsResolutions,
+  // One or more HTTPS requests resulted in a failure.
+  kFailedHttpsRequests,
+  // HTTPS request latency is high.
+  kHighLatency,
+  // HTTPS request latency is very high.
+  kVeryHighLatency,
+};
+
 // This interface is to be used by any clients that need to run specific
 // network-related diagnostics. Expected clients of this interface are
 // NetworkHealth, cros_healthd, and a connectivity diagnostics Web UI (to name
@@ -142,4 +155,9 @@ interface NetworkDiagnosticsRoutines {
   // Tests whether a firewall is blocking HTTP port 80.
   HttpFirewall() => (RoutineVerdict verdict,
       array<HttpFirewallProblem> problems);
+
+  // Tests whether the HTTPS latency is within established tolerance levels for
+  // the system.
+  HttpsLatency() => (RoutineVerdict verdict,
+      array<HttpsLatencyProblem> problems);
 };

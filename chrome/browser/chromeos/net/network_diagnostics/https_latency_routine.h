@@ -1,0 +1,111 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_CHROMEOS_NET_NETWORK_DIAGNOSTICS_HTTPS_LATENCY_ROUTINE_H_
+#define CHROME_BROWSER_CHROMEOS_NET_NETWORK_DIAGNOSTICS_HTTPS_LATENCY_ROUTINE_H_
+
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "base/memory/weak_ptr.h"
+#include "base/optional.h"
+#include "base/time/time.h"
+#include "chrome/browser/chromeos/net/network_diagnostics/http_request_manager.h"
+#include "chrome/browser/chromeos/net/network_diagnostics/network_diagnostics_routine.h"
+#include "net/base/address_list.h"
+#include "net/dns/public/resolve_error_info.h"
+#include "services/network/public/cpp/resolve_host_client_base.h"
+#include "services/network/public/mojom/host_resolver.mojom.h"
+
+class HttpRequestManager;
+
+class Profile;
+
+namespace base {
+class TickClock;
+}  // namespace base
+
+namespace network {
+namespace mojom {
+class NetworkContext;
+}
+}  // namespace network
+
+namespace chromeos {
+namespace network_diagnostics {
+
+// Tests whether the HTTPS latency is within established tolerance levels for
+// the system.
+class HttpsLatencyRoutine : public NetworkDiagnosticsRoutine {
+ public:
+  class HostResolver;
+  using HttpsLatencyRoutineCallback =
+      mojom::NetworkDiagnosticsRoutines::HttpsLatencyCallback;
+
+  HttpsLatencyRoutine();
+  HttpsLatencyRoutine(const HttpsLatencyRoutine&) = delete;
+  HttpsLatencyRoutine& operator=(const HttpsLatencyRoutine&) = delete;
+  ~HttpsLatencyRoutine() override;
+
+  // NetworkDiagnosticsRoutine:
+  void AnalyzeResultsAndExecuteCallback() override;
+
+  // Run the core logic of this routine. Set |callback| to
+  // |routine_completed_callback_|, which is to be executed in
+  // AnalyzeResultsAndExecuteCallback().
+  void RunRoutine(HttpsLatencyRoutineCallback callback);
+
+  // Processes the results of the DNS resolution done by |host_resolver_|.
+  void OnHostResolutionComplete(
+      int result,
+      const net::ResolveErrorInfo& resolve_error_info,
+      const base::Optional<net::AddressList>& resolved_addresses);
+
+  void SetNetworkContextForTesting(
+      network::mojom::NetworkContext* network_context);
+  void SetProfileForTesting(Profile* profile);
+
+  // HttpRequestManager setter for tests.
+  void set_http_request_manager_for_testing(
+      std::unique_ptr<HttpRequestManager> http_request_manager) {
+    http_request_manager_ = std::move(http_request_manager);
+  }
+
+  // Mimics actual time conditions.
+  void set_tick_clock_for_testing(const base::TickClock* tick_clock) {
+    tick_clock_ = tick_clock;
+  }
+
+ private:
+  // Attempts the next DNS resolution.
+  void AttemptNextResolution();
+  // Makes a https request to the host.
+  void MakeHttpsRequest();
+  // Processes the results of an https request.
+  void OnHttpsRequestComplete(bool connected);
+  // Returns the weak pointer to |this|.
+  base::WeakPtr<HttpsLatencyRoutine> weak_ptr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+  bool successfully_resolved_hosts_ = true;
+  bool failed_connection_ = false;
+  const base::TickClock* tick_clock_ = nullptr;  // Unowned
+  base::TimeTicks request_start_time_;
+  base::TimeTicks request_end_time_;
+  std::vector<std::string> hostnames_to_query_dns_;
+  std::vector<std::string> hostnames_to_query_https_;
+  std::vector<base::TimeDelta> latencies_;
+  std::unique_ptr<HostResolver> host_resolver_;
+  std::unique_ptr<HttpRequestManager> http_request_manager_;
+  std::vector<mojom::HttpsLatencyProblem> problems_;
+  HttpsLatencyRoutineCallback routine_completed_callback_;
+  base::WeakPtrFactory<HttpsLatencyRoutine> weak_factory_{this};
+};
+
+}  // namespace network_diagnostics
+}  // namespace chromeos
+
+#endif  // CHROME_BROWSER_CHROMEOS_NET_NETWORK_DIAGNOSTICS_HTTPS_LATENCY_ROUTINE_H_

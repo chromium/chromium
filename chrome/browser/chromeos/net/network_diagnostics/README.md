@@ -146,6 +146,20 @@ Problems:
 * `kFirewallDetected`: Firewall detected.
 * `kPotentialFirewall`: A firewall may potentially exist.
 
+### Google Services Routines
+
+Tests successful communication with various Google domains.
+
+#### HttpsLatency
+
+Tests whether the HTTPS latency is below an acceptable threshold.
+
+Problems:
+* `kFailedDnsResolutions`: One or more DNS resolutions resulted in a failure.
+* `kFailedHttpRequests`: One or more HTTPS requests resulted in a failure.
+* `kSlightlyAboveThreshold`: Average HTTPS request latency is slightly above the expected threshold.
+* `kSignificantlyAboveThreshold`: Average HTTPS request latency is significantly above the expected threshold.
+
 [Network Health and Configuration]: https://docs.google.com/document/d/10DSy-jZXaRo9I9aq1UqERy76t7HkgGvInWk57pHEkzg
 [network_diagnostics.mojom]: https://source.chromium.org/chromium/chromium/src/+/master:chromeos/services/network_health/public/mojom/network_diagnostics.mojom?originalUrl=https:%2F%2Fcs.chromium.org%2F
 [NetworkHealthService]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/chromeos/net/network_health/network_health_service.h?originalUrl=https:%2F%2Fcs.chromium.org%2F

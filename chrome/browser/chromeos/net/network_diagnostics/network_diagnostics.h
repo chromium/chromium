@@ -37,6 +37,7 @@ class NetworkDiagnostics : public mojom::NetworkDiagnosticsRoutines {
   void DnsLatency(DnsLatencyCallback callback) override;
   void DnsResolution(DnsResolutionCallback callback) override;
   void CaptivePortal(CaptivePortalCallback callback) override;
+  void HttpsLatency(HttpsLatencyCallback callback) override;
 
  private:
   // An unowned pointer to the DebugDaemonClient instance.
