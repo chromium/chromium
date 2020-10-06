@@ -43,6 +43,10 @@ void NavigatorUA::MaybeRecordMetrics(const NavigatorUAData& ua_data) {
     return;
   }
 
+  ExecutionContext* context = GetUAExecutionContext();
+  if (!context)
+    return;
+
   // Only instrument low-entropy fields here. The other fields are
   // instrumented separately in NavigatorUAData::getHighEntropyValues().
   IdentifiableTokenBuilder token_builder;
@@ -55,7 +59,6 @@ void NavigatorUA::MaybeRecordMetrics(const NavigatorUAData& ua_data) {
     if (brand->hasVersion())
       token_builder.AddAtomic(brand->version().Utf8());
   }
-  ExecutionContext* context = GetUAExecutionContext();
   IdentifiabilityMetricBuilder(context->UkmSourceID())
       .Set(identifiable_surface, token_builder.GetToken())
       .Record(context->UkmRecorder());
