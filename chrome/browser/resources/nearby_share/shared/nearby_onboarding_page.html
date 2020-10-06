@@ -5,6 +5,7 @@
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="./nearby_page_template.html">
+<link rel="import" href="./nearby_share_settings.html">
 <link rel="import" href="./nearby_share_settings_behavior.html">
 
 <dom-module id="nearby-onboarding-page">
@@ -47,6 +48,7 @@
         sub-title="$i18n{nearbyShareOnboardingPageSubtitle}"
         action-button-label="$i18n{nearbyShareActionsNext}"
         action-button-event-name="next"
+        action-disabled="[[hasErrorMessage_(errorMessage)]]"
         cancel-button-label="$i18n{nearbyShareActionsCancel}"
         cancel-button-event-name="close">
       <div id=center-content slot="content">
@@ -55,7 +57,9 @@
         </iron-icon>
         <div id="device-name-column">
           <cr-input label="$i18n{nearbyShareOnboardingPageDeviceName}"
-              id="deviceName" value="[[settings.deviceName]]" autofocus>
+              id="deviceName" value="[[settings.deviceName]]"
+              on-input="onDeviceNameInput_" error-message="[[errorMessage]]"
+              invalid="[[hasErrorMessage_(errorMessage)]]" autofocus>
           </cr-input>
         </div>
       </div>

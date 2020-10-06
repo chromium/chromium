@@ -44,11 +44,6 @@ const NearbySharedBrowserTest = class extends PolymerTest {
  */
 var NearbyOnboardingPageTest = class extends NearbySharedBrowserTest {
   /** @override */
-  get browsePreload() {
-    return super.browsePreload + 'shared/nearby_onboarding_page.html';
-  }
-
-  /** @override */
   get extraLibraries() {
     return super.extraLibraries.concat([
       'nearby_onboarding_page_test.js',
