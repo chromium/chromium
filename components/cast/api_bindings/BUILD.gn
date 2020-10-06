@@ -18,5 +18,8 @@ source_set("manager") {
     "//third_party/blink/public/common",
   ]
   defines = [ "CAST_COMPONENT_IMPLEMENTATION" ]
-  public_deps = [ "//mojo/public/cpp/bindings" ]
+  public_deps = [
+    "//components/cast/message_port",
+    "//mojo/public/cpp/bindings",
+  ]
 }

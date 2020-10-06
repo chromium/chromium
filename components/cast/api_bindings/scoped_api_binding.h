@@ -12,7 +12,7 @@
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "components/cast/cast_component_export.h"
-#include "third_party/blink/public/common/messaging/web_message_port.h"
+#include "components/cast/message_port/message_port.h"
 
 namespace cast_api_bindings {
 
@@ -22,7 +22,7 @@ class Manager;
 // communication channels, as well as unregistration on object teardown, using
 // RAII semantics.
 class CAST_COMPONENT_EXPORT ScopedApiBinding
-    : public blink::WebMessagePort::MessageReceiver {
+    : public cast_api_bindings::MessagePort::Receiver {
  public:
   // Methods for handling message I/O with bindings scripts.
   class Delegate {
@@ -71,10 +71,12 @@ class CAST_COMPONENT_EXPORT ScopedApiBinding
 
  private:
   // Called when a port is received from the page.
-  void OnPortConnected(blink::WebMessagePort port);
+  void OnPortConnected(std::unique_ptr<cast_api_bindings::MessagePort> port);
 
-  // blink::WebMessagePort::MessageReceiver implementation:
-  bool OnMessage(blink::WebMessagePort::Message message) final;
+  // cast_api_bindings::MessagePort::Receiver implementation:
+  bool OnMessage(
+      base::StringPiece message,
+      std::vector<std::unique_ptr<cast_api_bindings::MessagePort>> ports) final;
   void OnPipeError() final;
 
   Manager* const bindings_manager_;
@@ -82,7 +84,7 @@ class CAST_COMPONENT_EXPORT ScopedApiBinding
   const std::string js_bindings_id_;
 
   // The MessagePort used to receive messages from the receiver JS.
-  blink::WebMessagePort message_port_;
+  std::unique_ptr<cast_api_bindings::MessagePort> message_port_;
 };
 
 }  // namespace cast_api_bindings

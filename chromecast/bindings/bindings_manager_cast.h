@@ -16,8 +16,7 @@ class NamedMessagePortConnectorCast;
 
 // Implements the CastOS BindingsManager.
 class BindingsManagerCast : public BindingsManager,
-                            public CastWebContents::Observer,
-                            public blink::WebMessagePort::MessageReceiver {
+                            public CastWebContents::Observer {
  public:
   explicit BindingsManagerCast(chromecast::CastWebContents* cast_web_contents);
   ~BindingsManagerCast() override;

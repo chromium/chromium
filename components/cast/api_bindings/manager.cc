@@ -22,8 +22,15 @@ void Manager::RegisterPortHandler(base::StringPiece port_name,
   DCHECK(result.second);
 }
 
+void Manager::RegisterPortHandler(base::StringPiece port_name,
+                                  MessagePortProxyConnectedHandler handler) {
+  auto result = port_proxy_handlers_.try_emplace(port_name, std::move(handler));
+  DCHECK(result.second);
+}
+
 void Manager::UnregisterPortHandler(base::StringPiece port_name) {
   size_t deleted = port_handlers_.erase(port_name);
+  deleted += port_proxy_handlers_.erase(port_name);
   DCHECK_EQ(deleted, 1u);
 }
 
@@ -34,6 +41,22 @@ bool Manager::OnPortConnected(base::StringPiece port_name,
 
   auto handler = port_handlers_.find(port_name);
   if (handler == port_handlers_.end()) {
+    LOG(ERROR) << "No handler found for port " << port_name << ".";
+    return false;
+  }
+
+  handler->second.Run(std::move(port));
+  return true;
+}
+
+bool Manager::OnPortConnected(
+    base::StringPiece port_name,
+    std::unique_ptr<cast_api_bindings::MessagePort> port) {
+  if (!port)
+    return false;
+
+  auto handler = port_proxy_handlers_.find(port_name);
+  if (handler == port_proxy_handlers_.end()) {
     LOG(ERROR) << "No handler found for port " << port_name << ".";
     return false;
   }

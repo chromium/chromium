@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/logging.h"
-#include "base/strings/utf_string_conversions.h"
 #include "components/cast/api_bindings/manager.h"
 
 namespace cast_api_bindings {
@@ -41,9 +40,10 @@ ScopedApiBinding::~ScopedApiBinding() {
   }
 }
 
-void ScopedApiBinding::OnPortConnected(blink::WebMessagePort port) {
+void ScopedApiBinding::OnPortConnected(
+    std::unique_ptr<cast_api_bindings::MessagePort> port) {
   message_port_ = std::move(port);
-  message_port_.SetReceiver(this, base::SequencedTaskRunnerHandle::Get());
+  message_port_->SetReceiver(this);
   delegate_->OnConnected();
 }
 
@@ -51,28 +51,23 @@ bool ScopedApiBinding::SendMessage(base::StringPiece data_utf8) {
   DCHECK(delegate_);
 
   DVLOG(1) << "SendMessage: message=" << data_utf8;
-  if (!message_port_.IsValid()) {
+  if (!message_port_->CanPostMessage()) {
     LOG(WARNING)
         << "Attempted to write to unconnected MessagePort, dropping message.";
     return false;
   }
 
-  if (!message_port_.PostMessage(
-          blink::WebMessagePort::Message(base::UTF8ToUTF16(data_utf8)))) {
+  if (!message_port_->PostMessage(data_utf8.as_string())) {
     return false;
   }
 
   return true;
 }
 
-bool ScopedApiBinding::OnMessage(blink::WebMessagePort::Message message) {
-  std::string message_utf8;
-  if (!base::UTF16ToUTF8(message.data.data(), message.data.size(),
-                         &message_utf8)) {
-    return false;
-  }
-
-  return delegate_->OnMessage(message_utf8);
+bool ScopedApiBinding::OnMessage(
+    base::StringPiece message,
+    std::vector<std::unique_ptr<cast_api_bindings::MessagePort>> ports) {
+  return delegate_->OnMessage(message);
 }
 
 void ScopedApiBinding::OnPipeError() {
