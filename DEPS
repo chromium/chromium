@@ -737,7 +737,7 @@ deps = {
   },
 
   'src/third_party/android_sdk/androidx_browser/src': {
-      'url': Var('chromium_git') + '/external/gob/android/platform/frameworks/support/browser.git' + '@' + '37242f782de8096e24dff528b1bcac55a364b756',
+      'url': Var('chromium_git') + '/external/gob/android/platform/frameworks/support/browser.git' + '@' + '65086eb5e52c16778fa7b4f157156d17b176fcb3',
       'condition': 'checkout_android',
   },
 
