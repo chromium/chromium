@@ -61,9 +61,8 @@ void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
     paint_info_before_filtering.ApplyInfiniteCullRect();
   }
 
-  ScopedSVGTransformState transform_state(
-      paint_info_before_filtering, layout_svg_container_,
-      layout_svg_container_.LocalToSVGParentTransform());
+  ScopedSVGTransformState transform_state(paint_info_before_filtering,
+                                          layout_svg_container_);
   {
     base::Optional<ScopedPaintChunkProperties> scoped_paint_chunk_properties;
     if (layout_svg_container_.IsSVGViewportContainer() &&

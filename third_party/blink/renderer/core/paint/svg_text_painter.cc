@@ -24,9 +24,7 @@ void SVGTextPainter::Paint(const PaintInfo& paint_info) {
     if (const auto* transform = properties->Transform())
       block_info.TransformCullRect(*transform);
   }
-  ScopedSVGTransformState transform_state(
-      block_info, layout_svg_text_,
-      layout_svg_text_.LocalToSVGParentTransform());
+  ScopedSVGTransformState transform_state(block_info, layout_svg_text_);
 
   if (block_info.phase == PaintPhase::kForeground)
     SVGModelObjectPainter::RecordHitTestData(layout_svg_text_, block_info);

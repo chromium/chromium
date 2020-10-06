@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
+#include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/page/link_highlight.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/snap_coordinator.h"
@@ -216,6 +217,8 @@ class FragmentPaintPropertyTreeBuilder {
   ALWAYS_INLINE void UpdateTransformIsolationNode();
   ALWAYS_INLINE void UpdateEffectIsolationNode();
   ALWAYS_INLINE void UpdateClipIsolationNode();
+  ALWAYS_INLINE void SetTransformNodeStateForSVGChild(
+      TransformPaintPropertyNode::State&);
 
   bool NeedsPaintPropertyUpdate() const {
     return object_.NeedsPaintPropertyUpdate() ||
@@ -707,13 +710,35 @@ static bool NeedsTransformForSVGChild(
 
 static void SetTransformNodeStateFromAffineTransform(
     TransformPaintPropertyNode::State& state,
-    const AffineTransform& transform,
-    bool disable_2d_translation_optimization) {
-  if (!disable_2d_translation_optimization &&
-      transform.IsIdentityOrTranslation())
+    const AffineTransform& transform) {
+  if (transform.IsIdentityOrTranslation())
     state.transform_and_origin = {FloatSize(transform.E(), transform.F())};
   else
     state.transform_and_origin = {TransformationMatrix(transform)};
+}
+
+void FragmentPaintPropertyTreeBuilder::SetTransformNodeStateForSVGChild(
+    TransformPaintPropertyNode::State& state) {
+  if (full_context_.direct_compositing_reasons &
+      CompositingReason::kActiveTransformAnimation) {
+    // For composited transform animation to work, we need to store transform
+    // origin separately. It's baked in object_.LocalToSVGParentTransform().
+    DCHECK(!To<SVGElement>(object_.GetNode())->HasMainThreadAnimations());
+    // Composited transform animation works only if LocalToSVGParentTransform()
+    // reflect the CSS transform properties. If this fails, we need to exclude
+    // the case in CompositingReasonFinder for kActiveTransformAnimation.
+    DCHECK_EQ(TransformHelper::ComputeTransform(
+                  object_, ComputedStyle::kIncludeTransformOrigin),
+              object_.LocalToSVGParentTransform());
+    state.transform_and_origin = {
+        TransformationMatrix(TransformHelper::ComputeTransform(
+            object_, ComputedStyle::kExcludeTransformOrigin)),
+        FloatPoint3D(TransformHelper::ComputeTransformOrigin(object_))};
+    return;
+  }
+
+  SetTransformNodeStateFromAffineTransform(state,
+                                           object_.LocalToSVGParentTransform());
 }
 
 // SVG does not use the general transform update of |UpdateTransform|, instead
@@ -728,15 +753,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransformForSVGChild(
          context_.current.paint_offset.IsZero());
 
   if (NeedsPaintPropertyUpdate()) {
-    AffineTransform transform = object_.LocalToSVGParentTransform();
     if (NeedsTransformForSVGChild(object_, direct_compositing_reasons)) {
       // The origin is included in the local transform, so leave origin empty.
       TransformPaintPropertyNode::State state;
-      bool disable_2d_translation_optimization =
-          full_context_.direct_compositing_reasons &
-          CompositingReason::kActiveTransformAnimation;
-      SetTransformNodeStateFromAffineTransform(
-          state, transform, disable_2d_translation_optimization);
+      SetTransformNodeStateForSVGChild(state);
 
       // TODO(pdr): There is additional logic in
       // FragmentPaintPropertyTreeBuilder::UpdateTransform that likely needs to
@@ -1869,8 +1889,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform() {
     }
     if (!content_to_parent_space.IsIdentity()) {
       TransformPaintPropertyNode::State state;
-      SetTransformNodeStateFromAffineTransform(state, content_to_parent_space,
-                                               false);
+      SetTransformNodeStateFromAffineTransform(state, content_to_parent_space);
       state.flags.flattens_inherited_transform =
           context_.current.should_flatten_inherited_transform;
       OnUpdate(properties_->UpdateReplacedContentTransform(

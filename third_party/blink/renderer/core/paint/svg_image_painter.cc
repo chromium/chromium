@@ -39,8 +39,7 @@ void SVGImagePainter::Paint(const PaintInfo& paint_info) {
   }
   // Images cannot have children so do not call TransformCullRect.
 
-  ScopedSVGTransformState transform_state(
-      paint_info, layout_svg_image_, layout_svg_image_.LocalSVGTransform());
+  ScopedSVGTransformState transform_state(paint_info, layout_svg_image_);
   {
     ScopedSVGPaintState paint_state(layout_svg_image_, paint_info);
     if (!DrawingRecorder::UseCachedDrawingIfPossible(
