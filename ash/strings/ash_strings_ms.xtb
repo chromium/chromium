@@ -27,6 +27,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="121097972571826261">Maju satu perkataan</translation>
 <translation id="1225748608451425081">Chromebook anda dikunci kerana isu yang diketahui. Anda akan dapat log masuk selepas: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Berhenti memilih</translation>
+<translation id="1239161794459865856"><ph name="FEATURE_NAME" /> disambungkan.</translation>
 <translation id="1247372569136754018">Mikrofon (dalaman)</translation>
 <translation id="1252999807265626933">Mengecas daripada <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Bagaimanakah keadaan cuaca?</translation>
@@ -74,6 +75,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1654477262762802994">Mulakan pertanyaan suara</translation>
 <translation id="1667964833127753507">Mod warna neutral tidak menggunakan warna yang diekstrak daripada kertas dinding, menggantikan warna tersebut dengan sekumpulan warna cerah bertona neutral atau warna gelap.</translation>
 <translation id="1677472565718498478">Berbaki <ph name="TIME" /></translation>
+<translation id="1677507110654891115"><ph name="FEATURE_NAME" /> tidak disambungkan.</translation>
 <translation id="1698080062160024910">Pemasa <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Alamat IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Meja: <ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2369165858548251131">"Helo" dalam bahasa Cina</translation>
 <translation id="2390318262976603432">Tetapan Tempat Peristiwa</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="2405664212338326887">Tidak disambungkan</translation>
 <translation id="2408955596600435184">Masukkan PIN anda</translation>
 <translation id="2412593942846481727">Kemas kini tersedia</translation>
 <translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> ialah sesi terurus yang diurus oleh <ph name="DOMAIN" /></translation>
@@ -243,6 +246,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3364721542077212959">Alatan stilus</translation>
 <translation id="3368922792935385530">Disambungkan</translation>
 <translation id="3371140690572404006">Peranti USB-C (port depan sebelah kanan)</translation>
+<translation id="3375634426936648815">Disambungkan</translation>
 <translation id="3386978599540877378">penggadang skrin penuh</translation>
 <translation id="3400357268283240774">Tetapan tambahan</translation>
 <translation id="3410336247007142655">Tunjukkan tetapan tema gelap</translation>
@@ -323,6 +327,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4181841719683918333">Bahasa</translation>
 <translation id="4195877955194704651">Mengklik butang secara automatik</translation>
 <translation id="4197790712631116042">Dimatikan</translation>
+<translation id="4201033867194214117"><ph name="FEATURE_NAME" /> tidak tersedia.</translation>
 <translation id="4212246570487010370">Teruskan penyemakan imbas</translation>
 <translation id="4212472694152630271">Tukar kepada PIN</translation>
 <translation id="4215497585250573029">Tetapan VPN</translation>
@@ -334,6 +339,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4285498937028063278">Menyahpin</translation>
 <translation id="4294319844246081198">Selamat pagi <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Kosongkan kesemua <ph name="COUNT" /> pemberitahuan</translation>
+<translation id="4302592941791324970">Tidak tersedia</translation>
 <translation id="4303223480529385476">Kembangkan area status</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Anda menekan pintasan papan kekunci untuk kontras tinggi. Adakah anda ingin menghidupkannya?</translation>
@@ -427,6 +433,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5302048478445481009">Bahasa</translation>
 <translation id="5313326810920013265">Tetapan Bluetooth</translation>
 <translation id="5314219114274263156">Perakam skrin diambil</translation>
+<translation id="5329548388331921293">Menyambung…</translation>
 <translation id="5331975486040154427">Peranti USB-C (port belakang sebelah kiri)</translation>
 <translation id="5352250171825660495">Tema gelap dihidupkan</translation>
 <translation id="5379115545237091094">Terlalu banyak percubaan</translation>
@@ -440,6 +447,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5465662442746197494">Perlu bantuan?</translation>
 <translation id="5496819745535887422">Pentadbir anda sedang membalikkan peranti anda. Semua data akan dipadamkan apabila peranti dimulakan semula.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166"><ph name="FEATURE_NAME" /> sedang menyambung.</translation>
 <translation id="553675580533261935">Keluar daripada sesi</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5548285847212963613">Sambungan "<ph name="EXTENSION_NAME" />" boleh membantu menyambung ke rangkaian ini.</translation>

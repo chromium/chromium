@@ -152,6 +152,9 @@ Jika kebijakan ini tidak disetel, setelan default-nya dinonaktifkan bagi penggun
       Jika kebijakan ini disetel ke benar, fitur akan diaktifkan, dan pengguna dapat mengubahnya.
       Kebijakan ini disetel ke salah secara default, emoji tidak akan disarankan dan pengguna tidak dapat menggantinya.</translation>
 <translation id="1243570869342663665">Mengontrol pemfilteran konten khusus dewasa SafeSites.</translation>
+<translation id="1247850578871017740">Jika kebijakan disetel ke nilai yang valid, <ph name="PRODUCT_NAME" /> tidak akan menggunakan versi SSL/TLS lebih rendah dari versi yang ditentukan. Nilai yang tidak dikenal akan diabaikan.
+
+      Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan menampilkan error untuk TLS 1.0 dan TLS 1.1, tetapi pengguna dapat mengabaikannya.</translation>
 <translation id="1252536192437793850">Izinkan situs meminta pengguna memberikan akses ke port serial</translation>
 <translation id="1257550411839719984">Setel direktori download default</translation>
 <translation id="1265053460044691532">Batasi waktu bagi pengguna yang diautentikasi melalui SAML untuk dapat masuk saat offline.</translation>
@@ -2338,6 +2341,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
       Jika kebijakan ini tidak ditetapkan, Safe Browsing akan beroperasi dalam mode Perlindungan Standar tetapi pengguna dapat mengubah setelan ini.
 
       Lihat https://developers.google.com/safe-browsing untuk mengetahui info selengkapnya tentang Safe Browsing.</translation>
+<translation id="4402887080007986374">Versi Persyaratan Layanan Edu Coexistence yang valid</translation>
 <translation id="4408428864159735559">Daftar berbagi file jaringan yang telah dikonfigurasikan sebelumnya.</translation>
 <translation id="4410236409016356088">Aktifkan pembatasan bandwidth jaringan</translation>
 <translation id="441217499641439905">Nonaktifkan Google Drive melalui koneksi seluler di aplikasi File <ph name="PRODUCT_OS_NAME" /></translation>
@@ -2519,6 +2523,13 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
           Untuk melihat contoh pola, buka https://www.chromium.org/developers/how-tos/chrome-frame-getting-started.</translation>
 <translation id="467449052039111439">Buka daftar URL</translation>
 <translation id="4674871290487541952">Mengizinkan algoritme tidak aman dalam pemeriksaan integritas selama penginstalan dan update ekstensi</translation>
+<translation id="4677605038200415894">Jika menyetel kebijakan, Anda akan dapat membuat daftar pola URL yang menentukan situs mana yang otomatis diizinkan untuk mengakses perangkat USB dengan ID vendor dan produk tertentu. Setiap item daftar harus memiliki perangkat dan URL agar kebijakan menjadi valid. Setiap item di perangkat dapat memiliki kolom ID produk dan ID vendor. ID yang Anda hapus akan diperlakukan sebagai karakter pengganti dengan satu pengecualian: Anda tidak dapat menentukan ID produk tanpa menentukan ID vendor. Jika tidak, kebijakan tidak akan valid.
+
+      Model izin USB menggunakan URL peminta dan URL sematan (dari situs bingkai level teratas) untuk mengizinkan URL peminta mengakses perangkat USB. URL peminta mungkin berbeda dengan URL sematan saat situs peminta dimuat dalam iframe. Jadi, kolom "url" dapat berisi hingga dua string yang dipisahkan dengan koma untuk menentukan URL ini. Jika Anda hanya menentukan satu, akses ke perangkat USB terkait akan diizinkan saat URL situs peminta cocok dengan URL ini, terlepas dari status sematan. URL dalam "url" harus berupa URL yang valid. Jika tidak, kebijakan akan diabaikan.
+
+      Tidak menyetel kebijakan berarti <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> akan berlaku, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
+
+      Pola URL dalam kebijakan ini tidak boleh bertentangan dengan pola URL yang dikonfigurasi melalui <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Jika bertentangan, kebijakan ini akan lebih diprioritaskan daripada <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> dan <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="4680936297850947973">Tidak digunakan lagi di M68. Sebagai gantinya, gunakan DefaultPopupsSetting.
 
 Untuk penjelasan selengkapnya, lihat https://www.chromestatus.com/features/5675755719622656.
@@ -3210,6 +3221,8 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Catatan: Pisahkan beberapa nama server dengan koma. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.</translation>
 <translation id="5645779841392247734">Izinkan cookie di situs ini</translation>
 <translation id="5646234199535103501">Kebijakan konfigurasi untuk Konektor Chrome Enterprise OnBulkDataEntry</translation>
+<translation id="5652250453612826983">Mengontrol kebijakan pengawasan orang tua, yang diterapkan hanya ke akun anak.
+      Kebijakan ini tidak disetel di konsol admin, tetapi dikonfigurasi langsung oleh Server Kids API.</translation>
 <translation id="5656177735561364047">Mengaktifkan Fitur Papan Klip Bersama</translation>
 <translation id="5657576769650058122">Jika kebijakan disetel ke Aktif, keyboard virtual di layar (perangkat input Chrome OS) akan tetap diaktifkan. Jika kebijakan disetel ke Nonaktif, keyboard ini akan tetap dinonaktifkan.
 
@@ -3847,6 +3860,21 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="6628043374475466084">Pola URL agar tidak memeriksa konten yang diupload berdasarkan aturan perlindungan data sensitif</translation>
 <translation id="6628120204569232711">Laporkan status penyimpanan</translation>
 <translation id="663685822663765995">Batasi mode warna pencetakan</translation>
+<translation id="6640989746632867803">Jika kebijakan disetel, pengguna tidak dapat mengabaikan keputusan keamanan download.
+
+       Jika kebijakan disetel ke:
+
+      * Blokir download berbahaya, semua download akan diizinkan, kecuali yang menyertakan peringatan keamanan.
+
+      * Blokir download yang berpotensi berbahaya, semua download akan diizinkan, kecuali yang menyertakan peringatan keamanan tentang download yang berpotensi berbahaya.
+
+      * Blokir semua download, semua download akan diblokir.
+
+      Blokir download berbahaya, semua download akan diizinkan, kecuali yang dinilai sebagai malware dengan tingkat keyakinan tinggi. Berbeda dengan download berbahaya, opsi ini tidak mempertimbangkan jenis file, tetapi mempertimbangkan host.
+
+      * Tidak ada batasan khusus, semua download akan melalui batasan keamanan yang biasa berdasarkan hasil analisis keamanan.
+
+      Catatan: Batasan ini berlaku untuk download yang dipicu dari konten halaman web, serta dari opsi menu Download link .... Batasan ini tidak berlaku untuk download halaman yang sedang ditampilkan, atau untuk penyimpanan sebagai PDF dari opsi pencetakan. Baca selengkapnya tentang Safe Browsing (https://developers.google.com/safe-browsing).</translation>
 <translation id="6641981670621198190">Nonaktifkan dukungan untuk API grafis 3D</translation>
 <translation id="6646056064606561298">Mengaktifkan kebijakan pengelolaan daya booting pada tegangan AC.
 
@@ -5519,6 +5547,13 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="8942616385591203339">Kebijakan ini mengontrol apakah Izin Sinkronisasi dapat ditampilkan ke pengguna saat login pertama kali. Kebijakan ini harus disetel ke false jika Izin Sinkronisasi tidak diperlukan bagi pengguna.
       Jika disetel ke false, Izin Sinkronisasi tidak akan ditampilkan.
       Jika disetel ke true atau tidak disetel, Izin Sinkronisasi dapat ditampilkan.</translation>
+<translation id="8943744188513019866">Kebijakan ini menunjukkan versi Persyaratan Layanan Edu Coexistence yang valid saat ini.
+      Kebijakan ini dibandingkan dengan versi terakhir yang diterima oleh orang tua dan digunakan untuk meminta perpanjangan izin orang tua jika diperlukan.
+
+      Jika kebijakan ini disetel, versi Persyaratan Layanan dapat divalidasi.
+      Jika kebijakan ini tidak disetel, validitas Persyaratan Layanan Edu Coexistence tidak dapat diverifikasi.
+
+      Kebijakan ini hanya digunakan untuk pengguna Family Link.</translation>
 <translation id="8943934315109955032">Tidak memeriksa pelanggaran aturan perlindungan data sensitif</translation>
 <translation id="8947415621777543415">Laporkan lokasi perangkat</translation>
 <translation id="8948062138228904066">Daftar server autentikasi yang diizinkan</translation>

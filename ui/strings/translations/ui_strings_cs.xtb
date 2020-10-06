@@ -134,6 +134,7 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">Tlačítko k zobrazení skrytého obsahu</translation>
 <translation id="5278860589123563674">Odeslání se nezdařilo</translation>
+<translation id="5283099933536931082">Aplikace <ph name="APP_ITEM_TITLE" /> vyžaduje vaši pozornost.</translation>
 <translation id="528468243742722775">Konec</translation>
 <translation id="5329858601952122676">&amp;Smazat</translation>
 <translation id="5395308026110844773">Aplikace <ph name="DRAGGED_APP_NAME" /> je nad aplikací <ph name="IN_PLACE_APP" />. Uvolněním vytvoříte složku.</translation>
@@ -144,6 +145,7 @@
 <translation id="5574202486608032840">Systém <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Klávesa šipka vlevo</translation>
+<translation id="5652575806481723716">Aplikace <ph name="FOCUSED_APP_NAME" /> vyžaduje vaši pozornost.</translation>
 <translation id="5675363643668471212">Položka na poličce</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}few{# min}many{# min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktivní dnes}=1{Aktivní včera}few{Aktivní před # dny}many{Aktivní před # dne}other{Aktivní před # dny}}</translation>

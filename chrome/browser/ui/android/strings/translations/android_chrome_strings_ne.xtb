@@ -71,7 +71,7 @@
 <translation id="1430915738399379752">प्रिन्ट गर्नुहोस्</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> आदान प्रदान गर्न सकिएन</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> डाउनलोड सर्भरको समस्याको कारण असफल भयो।</translation>
-<translation id="1506061864768559482">खोज इन्जिन</translation>
+<translation id="1506061864768559482">सर्च इन्जिन</translation>
 <translation id="1513352483775369820">बुकमार्कहरू र वेब इतिहास</translation>
 <translation id="1513858653616922153">पासवर्ड मेट्नुहोस्</translation>
 <translation id="1521774566618522728">आज सक्रिय गरिएको समय</translation>
@@ -117,7 +117,7 @@
 <translation id="1919130412786645364">Chrome मा साइन इन गर्ने अनुमति दिनुहोस्</translation>
 <translation id="1922362554271624559">सुझाव गरिएका भाषाहरू</translation>
 <translation id="1925021887439448749">आफू अनुकूल पारिएको वेब ठेगाना प्रविष्टि गर्नुहोस्</translation>
-<translation id="1928696683969751773">अद्यावधिकहरू</translation>
+<translation id="1928696683969751773">अपडेटहरू</translation>
 <translation id="19288952978244135">Chrome पुनः खोल्नुहोस्।</translation>
 <translation id="1933845786846280168">चयन गरिएको ट्याब</translation>
 <translation id="1943432128510653496">पासवर्डहरू संग्रह गर्नुहोस्</translation>
@@ -326,11 +326,11 @@
 <translation id="3398320232533725830">पुस्तक चिन्ह प्रबन्धक खोल्नुहोस्</translation>
 <translation id="3414952576877147120">आकार:</translation>
 <translation id="3443221991560634068">हालको पृष्ठलाई पुनःलोड गर्नुहोस्</translation>
-<translation id="3478363558367712427">तपाईं आफ्नो खोज इन्जिन रोज्न सक्नुहुन्छ</translation>
+<translation id="3478363558367712427">तपाईं आफ्नो सर्च इन्जिन रोज्न सक्नुहुन्छ</translation>
 <translation id="3492207499832628349">नयाँ इन्कग्निटो ट्याब</translation>
 <translation id="3493531032208478708">सुझाव दिइएको सामग्रीको बारेमा <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="3507132249039706973">मानक सुरक्षा सक्रिय छ</translation>
+<translation id="3507132249039706973">'मानक सुरक्षा' सक्रिय छ</translation>
 <translation id="3509330069915219067">अफलाइन छ। Chrome ले अपडेट उपलब्ध छन् कि छैनन् भन्ने कुरा जाँच गर्न सकेन।</translation>
 <translation id="3513704683820682405">अग्मेन्टेड रियालिटी</translation>
 <translation id="3518985090088779359">स्वीकार र जारी</translation>
@@ -569,7 +569,7 @@
 <translation id="5324858694974489420">अभिभावक सेटिङहरू</translation>
 <translation id="5327248766486351172">नाम</translation>
 <translation id="5342314432463739672">अनुमतिसम्बन्धी अनुरोधहरू</translation>
-<translation id="5355191726083956201">परिष्कृत सुरक्षा सक्रिय छ</translation>
+<translation id="5355191726083956201">'उन्नत सुरक्षा' सक्रिय छ</translation>
 <translation id="5357811892247919462">ट्याब प्राप्त भयो</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> ट्याब खोल्नुहोस्, एउटा ट्याबबाट अर्को ट्याबमा जान ट्याप गर्नुहोस्}other{<ph name="OPEN_TABS_MANY" /> ट्याबहरू खोल्नुहोस्, एउटा ट्याबबाट अर्को ट्याबमा जान ट्याप गर्नुहोस्}}</translation>
 <translation id="5403644198645076998">निश्चित साइटहरूलाई मात्र अनुमति दिनुहोस्</translation>
@@ -666,6 +666,7 @@
 <translation id="5958275228015807058">डाउनलोडरू नामक फोल्डरमा भएका आफ्ना फाइल र पृष्ठहरू भेट्टाउनुहोस्</translation>
 <translation id="5962718611393537961">संक्षिप्त गर्न ट्याप गर्नुहोस्</translation>
 <translation id="5964805880140440652">यो पृष्ठ अर्को यन्त्रसँग आदान प्रदान गर्न Chrome ब्राउजरको सेटिङमा गई सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
+<translation id="5964869237734432770">फोटो विवरण पाउन छाड्नुहोस्</translation>
 <translation id="5979084224081478209">पासवर्डहरूको जाँच गर्नुहोस्</translation>
 <translation id="6000066717592683814">Google लाई पूर्वनिर्धारित खोज इञ्जिनका रूपमा कायम राख्नुहोस्</translation>
 <translation id="6005538289190791541">सिफारिस गरिएको पासवर्ड</translation>
@@ -693,6 +694,7 @@
 <translation id="6157392216611456285"><ph name="APP_NAME" /> छनौट गर्नुहोस्</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> डेटा बचत</translation>
 <translation id="6186394685773237175">अरूले देखेको कुनै पनि पासवर्ड फेला परेन</translation>
+<translation id="6192907950379606605">फोटोका विवरणहरू पाउनुहोस्</translation>
 <translation id="6206830853671714236">कहिले डाउनलोड गर्नु पर्ने हो छनौट गर्नुहोस्</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> होइन?</translation>
 <translation id="6218096829563201111">उस्तै उत्पादनहरू खोज्नुहोस् <ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
@@ -733,7 +735,7 @@
 <translation id="6412673304250309937">Chrome मा भण्डारण गरिएका असुरक्षित साइटको सूची जाँच गरी URL हरू सुरक्षित छन् वा छैनन् भन्ने कुरा यकिन गर्छ। कुनै साइटले तपाईंको पासवर्ड चोरी गर्न खोज्दा वा तपाईंले कुनै हानिकारक फाइल डाउनलोड गर्दा Chrome ले पृष्ठका केही सामग्रीसहित URL हरूलाई सुरक्षित ब्राउजिङमा पठाउन पनि सक्छ।</translation>
 <translation id="641643625718530986">प्रिन्ट गर्नुहोस्...</translation>
 <translation id="6427112570124116297">वेब अनुवाद गर्नुहोस्</translation>
-<translation id="6433501201775827830">आफ्नो खोज इन्जिन छनौट गर्नुहोस्</translation>
+<translation id="6433501201775827830">आफ्नो सर्च इन्जिन छनौट गर्नुहोस्</translation>
 <translation id="6437478888915024427">पृष्ठको जानकारी</translation>
 <translation id="6441734959916820584">नाम अत्यन्तै लामो छ</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# छवि}other{# छविहरू}}</translation>
@@ -761,6 +763,7 @@
 <translation id="6590471736817333463">६०% सम्म डेटा बचत गर्नुहोस्</translation>
 <translation id="6590680911007613645">तपाईंले सुरक्षित गर्न लाग्नुभएको पासवर्ड तपाईंको <ph name="SITE" /> को पासवर्डसँग मेल खान्छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="6593061639179217415">डेस्कटप साइट</translation>
+<translation id="6595046016124923392">तपाईंलाई उपलब्ध गराइने विवरणहरूमा सुधार ल्याउन फोटोहरू Google मा पठाइन्छन्।</translation>
 <translation id="6597891566292541626">QR/बार कोडलाई यस फ्रेमभित्र पार्नुहोस्।</translation>
 <translation id="6600954340915313787">Chrome मा प्रतिलिपि गरियो</translation>
 <translation id="661266467055912436">तपाईं र वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई झन् सुरक्षित पार्छ।</translation>
@@ -802,7 +805,7 @@
 <translation id="688738109438487280">विद्यमान डेटा <ph name="TO_ACCOUNT" /> मा थप्नुहोस्।</translation>
 <translation id="6891726759199484455">आफ्नो पासवर्ड प्रतिलिपि गर्न अनलक गर्नुहोस्</translation>
 <translation id="6896758677409633944">प्रतिलिपि गर्नुहोस्</translation>
-<translation id="6900532703269623216">परिष्कृत सुरक्षा</translation>
+<translation id="6900532703269623216">उन्नत सुरक्षा</translation>
 <translation id="6903907808598579934">सिंकलाई सक्रिय गर्नुहोस्</translation>
 <translation id="6929699136511445623">Android सिस्टम सिंक गर्ने सुविधा सक्षम पार्नुहोस्</translation>
 <translation id="6942665639005891494">सेटिङहरू नामक मेनुको विकल्प प्रयोग गरी पूर्वनिर्धारित डाउनलोड स्थान जुनसुकै बेला परिवर्तन गर्नुहोस्</translation>
@@ -819,6 +822,7 @@
 <translation id="702463548815491781">TalkBack वा पहुँच स्विच गर्नुहोस् नामक सुविधा सक्रिय हुँदा मात्र सिफारिस गरिन्छ</translation>
 <translation id="7029809446516969842">पासवर्डहरू</translation>
 <translation id="703523980599857277">गृहपृष्ठ परिवर्तन गर्नुहोस्</translation>
+<translation id="7054588988317389591">फोटोका विवरणहरू प्राप्त गर्न चाहनुहुन्छ?</translation>
 <translation id="7055152154916055070">रिडिरेक्ट नामक सुविधामाथि रोक लगाइयो:</translation>
 <translation id="7063006564040364415">समक्रमण सर्भरमा जडान गर्न सकेन।</translation>
 <translation id="7071521146534760487">खाताको व्यवस्थापन गर्नुहोस्</translation>
@@ -850,6 +854,7 @@
 <translation id="729975465115245577">तपाईंको यन्त्रमा पासवर्डहरूको फाइल भण्डारण गर्ने कुनै एप छैन।</translation>
 <translation id="7302081693174882195">विवरणहरू: बचत गरिएको डेटाको मात्राअनुसार क्रमबद्ध गरिएको</translation>
 <translation id="7304873321153398381">अफलाइन छ। Chrome ले तपाईंका पासवर्डहरू जाँच्न सकेन।</translation>
+<translation id="7313188324932846546">सिंकसम्बन्धी सेटिङ सेटअप गर्न ट्याप गर्नुहोस्</translation>
 <translation id="7328017930301109123">लाइट मोडमा हुँदा Chrome ले पृष्ठहरू अझ छिटो लोड गर्नुका साथै ६० प्रतिशतसम्म कम डेटा प्रयोग गर्छ।</translation>
 <translation id="7333031090786104871">अघिल्लो साइट अझै थपिँदै</translation>
 <translation id="7340958967809483333">Discover का विकल्पहरू</translation>
@@ -1041,6 +1046,7 @@
 <translation id="8636825310635137004">आफ्ना अन्य यन्त्रहरूबाट आफ्ना ट्याबहरू प्राप्त गर्न सिंकलाई सक्रिय गर्नुहोस्।</translation>
 <translation id="8641930654639604085">वयस्क व्यक्तिहरूका लागि निर्मित साइटहरूमाथि रोक लगाउने प्रयास गर्नुहोस्</translation>
 <translation id="8655129584991699539">तपाईं Chrome का सेटिङहरूमा गई डेटा खाली गर्न सक्नुहुन्छ</translation>
+<translation id="8656747343598256512">आफ्नो Google खातामार्फत यो साइट र Chrome मा साइन इन गर्नुहोस्। तपाईं सिंक गर्ने सुविधा पछि अन गर्न सक्नुहुन्छ।</translation>
 <translation id="8659579665266920523">Chrome मार्फत खोज्ने तरिका</translation>
 <translation id="8662811608048051533">तपाईंलाई प्रायः जसो साइटहरूबाट साइन आउट गर्दछ।</translation>
 <translation id="8664979001105139458">यो नामको फाइल पहिलेदेखि नै विद्यमान छ</translation>
@@ -1060,6 +1066,7 @@
 <translation id="8840953339110955557">यो पृष्ठ अनलाइन संस्करणभन्दा भिन्न हुन सक्छ।</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, ट्याब</translation>
 <translation id="8854223127042600341">आफ्ना अफलाइन फाइलहरू हेर्नुहोस्</translation>
+<translation id="8856607253650333758">विवरणहरू प्राप्त गर्नुहोस्</translation>
 <translation id="8873817150012960745">सुरु गर्न यहाँ ट्याप गर्नुहोस्</translation>
 <translation id="889338405075704026">Chrome को सेटिङमा जानुहोस्</translation>
 <translation id="8898822736010347272">नयाँ खतराहरू पत्ता लगाउन र वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई सुरक्षित राख्न Google लाई तपाईंले हेर्ने केही पृष्ठका URL, प्रणालीसम्बन्धी निश्चित जानकारी र पृष्ठका केही सामग्रीहरू पठाउँछ।</translation>

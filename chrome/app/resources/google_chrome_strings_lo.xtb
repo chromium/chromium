@@ -23,6 +23,7 @@
 <translation id="1553358976309200471">ອັບ​ເດດ Chrome</translation>
 <translation id="1587223624401073077">Google Chrome ກໍາລັງໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານ.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> ອັນຕະລາຍ, ສະນັ້ນ Chrome ໄດ້ບລັອກມັນໄວ້ແລ້ວ.</translation>
+<translation id="1597911401261118146">ເພື່ອກວດເບິ່ງວ່າລະຫັດຜ່ານຂອງທ່ານປອດໄພຈາກການລະເມີດຂໍ້ມູນ ແລະ ບັນຫາຄວາມປອດໄພອື່ນຫຼືບໍ່, ກະລຸນາ <ph name="BEGIN_LINK" />ເຂົ້າສູ່ລະບົບ Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">ເພື່ອເຮັດໃຫ້ Chrome ປອດໄພຂຶ້ນ, ພວກເຮົາປິດໃຊ້ງານບາງສ່ວນການ​ຕໍ່​ເຂົ້າ​ຫາ ທີ່​ບໍ່​ໄດ້​ເຮັດ​ເປັນ​ລາຍ​ການ​ໄວ້​ຢູ່​ໃນ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ແລະ​ອາດ​ຈະ​ຖືກ​ເອົາ​ເພີ່ມ​ເຂົ້າ​ໂດຍ​ທີ່​ທ່ານ​ບໍ່​ຮູ້​ຈັກ.</translation>
 <translation id="162448658176061655">Chrome ຈະກວດຫາຊອບແວທີ່ບໍ່ຕ້ອງການໜຶ່ງຄັ້ງຕໍ່ອາທິດ. ກວດຄັ້ງຫຼ້າສຸດ: ເມື່ອກີ້ນີ້.</translation>
 <translation id="162629503687514352">Chrome OS ບໍ່ສາມາດຊິ້ງຂໍ້ມູນລະຫັດຜ່ານຂອງທ່ານໄດ້.</translation>
@@ -38,6 +39,7 @@
 <translation id="1734234790201236882">Chrome ຈະບັນທຶກລະຫັດຜ່ານນີ້ໃນບັນຊີ Google ຂອງທ່ານ. ທ່ານຈະບໍ່ຈຳເປັນຕ້ອງຈື່ມັນ.</translation>
 <translation id="174539241580958092">Google Chrome ບໍ່ສາມາດຊິງຄ໌ຂໍ້ມູນຂອງທ່ານໄດ້ ເນື່ອງຈາກການລົງຊື່ເຂົ້າ​ໃຊ້ຜິດພາດ.</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1786003790898721085">ກວດໃຫ້ແນ່ໃຈວ່າທ່ານໄດ້ເຂົ້າສູ່ລະບົບ Chrome ໃນ <ph name="TARGET_DEVICE_NAME" /> ຂອງທ່ານແລ້ວລອງສົ່ງໃໝ່.</translation>
 <translation id="1812689907177901597">ໂດຍການປິດສິ່ງນີ້, ທ່ານສາມາດເຂົ້າສູ່ລະບົບເວັບໄຊຂອງ Google ເຊັ່ນ: Gmail ໄດ້ໂດຍບໍ່ຕ້ອງເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="1860536484129686729">Chrome ຕ້ອງການການອະນຸຍາດເພື່ອເຂົ້າເຖິງກ້ອງຖ່າຍຮູບຂອງທ່ານສຳລັບເວັບໄຊນີ້</translation>
 <translation id="1873233029667955273">Google Chrome ບໍ່ແມ່ນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານ</translation>
@@ -82,6 +84,7 @@
 <translation id="3065168410429928842">ແຖບ Chrome</translation>
 <translation id="3080151273017101988">ສືບຕໍ່ແລ່ນແອັບພື້ນຫຼັງ ເມື່ອ Google Chrome ປິດ</translation>
 <translation id="3089968997497233615">ມີ Google Chrome ລຸ້ນໃໝ່ປອດໄພກ່ວາຢູ່.</translation>
+<translation id="3114643501466072395">ເພື່ອກວດເບິ່ງວ່າລະຫັດຜ່ານອື່ນຂອງທ່ານປອດໄພຈາກການລະເມີດຂໍ້ມູນ ແລະ ບັນຫາຄວາມປອດໄພອື່ນຫຼືບໍ່, ກະລຸນາ <ph name="BEGIN_LINK" />ເຂົ້າສູ່ລະບົບ Chrome<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">Chrome OS ບໍ່ສາມາດຊິ້ງຂໍ້ມູນຂອງທ່ານໄດ້.</translation>
 <translation id="3149510190863420837">ແອັບ Chrome</translation>
 <translation id="3360895254066713204">ຕົວຊ່ວຍ Chrome</translation>
@@ -253,6 +256,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8344083974188970894">{NUM_MINS,plural, =1{Chrome ຈະກວດຫາຊອບແວທີ່ບໍ່ຕ້ອງການໜຶ່ງຄັ້ງຕໍ່ອາທິດ. ກວດຄັ້ງຫຼ້າສຸດ: 1 ນາທີກ່ອນ.}other{Chrome ຈະກວດຫາຊອບແວທີ່ບໍ່ຕ້ອງການໜຶ່ງຄັ້ງຕໍ່ອາທິດ. ກວດຄັ້ງຫຼ້າສຸດ: {NUM_MINS} ນາທີກ່ອນ.}}</translation>
 <translation id="8370517070665726704">ລິຂະສິດ <ph name="YEAR" /> Google LLC. ສະຫງວນລິຂະສິດ.</translation>
 <translation id="840084489713044809">Google Chrome ຕ້ອງການສົ່ງອອກລະຫັດຜ່ານຂອງທ່ານ.</translation>
+<translation id="8433638294851456451">ເພື່ອສົ່ງເບີຈາກບ່ອນນີ້ໃຫ້ໂທລະສັບ Android ຂອງທ່ານ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chrome ຢູ່ໃນທັງສອງອຸປະກອນ.</translation>
 <translation id="8498858610309223613">ຫາກໍນຳໃຊ້ການອັບເດດຄວາມປອດໄພພິເສດສຳລັບ Google Chrome. ກະລຸນາປິດເປີດໃໝ່ຕອນນີ້ເລີຍ ແລ້ວພວກເຮົາຈະກູ້ຄືນແຖບຂອງທ່ານ.</translation>
 <translation id="8521348052903287641">ກົດລະບຽບຂາເຂົ້າສໍາລັບ Google Chrome Dev ເພື່ອອະນຸຍາດການຮັບສົ່ງຂໍ້ມູນ mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
@@ -272,6 +276,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="884296878221830158">ມັນຍັງຄວບຄຸມວ່າຈະໃຫ້ສະແດງໜ້າໃດຂຶ້ນ ເມື່ອທ່ານເລີ່ມຕົ້ນເປີດ Chrome ຫຼືຄລິກປຸ່ມໂຮມ.</translation>
 <translation id="8862326446509486874">ທ່ານບໍ່ມີສິດທິທີ່ເໝາະສົມສໍາລັບຕິດຕັ້ງ​ໃນລະດັບລະບົບ. ລອງແລ່ນຕົວຕິດຕັ້ງນີ້ອີກ​ໃນ​ຖານະ​ເປັນ​ຜູ້ຄວບຄຸມ.</translation>
 <translation id="8914504000324227558">ເປີດໃຊ້ Chrome ຄືນໃໝ່</translation>
+<translation id="8922193594870374009">ເພື່ອສົ່ງເບີຈາກ <ph name="ORIGIN" /> ໃຫ້ໂທລະສັບ Android ຂອງທ່ານ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chrome ຢູ່ໃນທັງສອງອຸປະກອນ.</translation>
 <translation id="8999208279178790196">{0,plural, =0{ມີການອັບເດດ Chrome}=1{ມີການອັບເດດ Chrome}other{ມີການອັບເດດ Chrome ເປັນເວລາ # ມື້ແລ້ວ}}</translation>
 <translation id="9026991721384951619">Chrome OS ບໍ່​ສາ​ມາດຊິງຄ໌ຂໍ້​ມູນ​ຂອງ​ທ່ານໄດ້ ​ເພາະ​ວ່າ​ລາຍລະອຽດການລົງຊື່ເຂົ້າບັນ​ຊີຂອງທ່ານຫຼ້າສະໄໝແລ້ວ.</translation>
 <translation id="9067395829937117663">Google Chrome ຕ້ອງການ Windows 7 ຫຼື ສູງກວ່າ.</translation>

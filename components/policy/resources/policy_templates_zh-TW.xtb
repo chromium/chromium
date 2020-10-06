@@ -152,6 +152,9 @@
       如果將這項政策設為 True，系統會啟用這項功能，且使用者將可變更這項設定。
       這項政策的預設值為 False，系統不會提供任何表情符號建議，且使用者無法覆寫這項設定。</translation>
 <translation id="1243570869342663665">控制安全網站成人內容篩選設定。</translation>
+<translation id="1247850578871017740">如果將這項政策設為有效值，<ph name="PRODUCT_NAME" /> 不會使用低於指定版本的 SSL/傳輸層安全標準 (TLS) 版本。系統會忽略無法辨識的值。
+
+      如果未設定這項政策，<ph name="PRODUCT_NAME" /> 會針對 TLS 1.0 和 TLS 1.1 顯示錯誤訊息，但使用者將可略過這個訊息。</translation>
 <translation id="1252536192437793850">允許網站要求使用者授予序列埠的存取權</translation>
 <translation id="1257550411839719984">設定預設的下載目錄</translation>
 <translation id="1265053460044691532">限制透過 SAML 驗證的使用者可離線登入的時間</translation>
@@ -1703,7 +1706,7 @@
 <translation id="3496296378755072552">密碼管理員</translation>
 <translation id="3498109920669229084">你可以透過這項政策，指定不受封鎖清單影響的擴充功能。
 
-       如果將封鎖清單的值設為「<ph name="ALL_EXTENSIONS" />」，系統會封鎖所有擴充功能，使用者只能安裝允許清單中列出的擴充功能。
+       如果將封鎖清單的值設為「<ph name="ALL_EXTENSIONS" />」，系統會封鎖所有擴充功能，使用者只能安裝許可清單中列出的擴充功能。
 
           根據預設，系統會允許所有擴充功能。不過，如果你透過政策封鎖了擴充功能，請使用允許的擴充功能清單來變更該政策。</translation>
 <translation id="3502555714327823858">允許所有雙面列印模式</translation>
@@ -2292,6 +2295,7 @@
       如果不設定這項政策，安全瀏覽功能會在標準防護模式中運作，但使用者可以變更這項設定。
 
       如要進一步瞭解安全瀏覽功能，請前往 https://developers.google.com/safe-browsing。</translation>
+<translation id="4402887080007986374">《Edu Coexistence 服務條款》的有效版本</translation>
 <translation id="4408428864159735559">預先設定的網路檔案共用清單。</translation>
 <translation id="4410236409016356088">允許節流網路頻寬</translation>
 <translation id="441217499641439905">連上行動網路時，禁止在 <ph name="PRODUCT_OS_NAME" />的「檔案」應用程式中使用 Google 雲端硬碟</translation>
@@ -2473,6 +2477,13 @@
           如需模式範例，請參閱 https://www.chromium.org/developers/how-tos/chrome-frame-getting-started。</translation>
 <translation id="467449052039111439">開啟網址清單</translation>
 <translation id="4674871290487541952">針對擴充功能更新與安裝作業進行完整性檢查時，允許使用不安全的演算法</translation>
+<translation id="4677605038200415894">你可以透過這項政策建立網址模式清單，指定哪些網站會自動取得權限，可以存取具有指定廠商和產品 ID 的 USB 裝置。每一個清單項目都必須包含裝置和網址，這項政策才會生效。裝置中的每個項目可以包含廠商 ID 和產品 ID 欄位。如省略任何 ID，系統將視作萬用字元處理，但以下情況例外：如果未指定廠商 ID，也不可指定產品 ID。否則，這項政策將不會生效。
+
+      USB 權限模型會使用要求網址以及頂層頁框網站的嵌入網址，允許要求網址存取 USB 裝置。當要求網站在 iframe 中載入時，要求網址可能與嵌入網址不同。因此，「urls」欄位最多可包含 2 個字串 (以半形逗號分隔)，以指定這些網址。如果只指定一個網址，當要求網站的網址與這個網址相符時，不論其是否為嵌入網址，系統都會授予相應 USB 裝置的存取權。「urls」中的網址必須是有效網址，否則系統會忽略這項政策。
+
+        如果未設定這項政策，系統會套用 <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。
+
+      這項政策中的網址模式不可與透過 <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策設定的網址模式衝突。如果發生衝突，這項政策的優先順序高於 <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> 和 <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" /> 政策。</translation>
 <translation id="4680936297850947973">自 M68 起已淘汰，請改用 DefaultPopupsSetting。
 
       如需完整說明，請前往  https://www.chromestatus.com/features/5675755719622656。
@@ -3159,6 +3170,8 @@
       注意：請以半形逗號分隔伺服器名稱，可使用萬用字元 (<ph name="WILDCARD_VALUE" />)。</translation>
 <translation id="5645779841392247734">允許這些網站的 Cookie</translation>
 <translation id="5646234199535103501">OnBulkDataEntry Chrome Enterprise Connector 的配置政策</translation>
+<translation id="5652250453612826983">控管家長監督政策，這些政策只適用於兒童帳戶。
+      這些政策並非是透過管理控制台設定，而是直接由 Kids API Server 設定。</translation>
 <translation id="5656177735561364047">啟用剪貼簿共用功能</translation>
 <translation id="5657576769650058122">將這項政策設為啟用，即可持續啟用虛擬螢幕小鍵盤 (Chrome 作業系統輸入裝置)。將這項政策設為停用，即可持續停用這個鍵盤。
 
@@ -3787,6 +3800,21 @@
 <translation id="6628043374475466084">不須根據機密資料保護規則檢查上傳內容的網址模式</translation>
 <translation id="6628120204569232711">回報儲存空間狀態</translation>
 <translation id="663685822663765995">限制列印色彩模式</translation>
+<translation id="6640989746632867803">如果設定這項政策，使用者無法略過下載作業安全性判斷。
+
+       這項政策可設定的值：
+
+      * 設為「封鎖危險下載作業」：除了會引發安全性警告的下載作業以外，其他下載作業都可正常執行。
+
+      * 設為「封鎖有安全疑慮的下載作業」：除了有安全疑慮而會引發安全性警告的下載作業以外，其他下載作業都可正常執行。
+
+      * 設為「封鎖所有下載作業」：所有下載作業都會遭到封鎖。
+
+      * 設為「封鎖惡意下載作業」：除了系統判定為極有可能是惡意軟體的檔案以外，其他下載作業都可正常執行。與危險下載作業不同的是，這項評估不會將檔案類型納入考量，但會將主機納入考量。
+
+      * 設為「無特殊限制」：系統會根據安全性的分析結果，檢查下載作業是否符合一般安全限制。
+
+      注意：這些限制適用於由網頁內容以及 [下載連結...] 選單選項所觸發的下載作業，但不適用於目前顯示網頁的下載作業，以及透過列印選項儲存為 PDF 檔的下載作業。如要進一步瞭解「安全瀏覽」功能，請前往 https://developers.google.com/safe-browsing。</translation>
 <translation id="6641981670621198190">停止支援 3D 圖形 API</translation>
 <translation id="6646056064606561298">啟用「連接 AC 電源時啟動」電源管理政策。
 
@@ -5460,6 +5488,13 @@
 <translation id="8942616385591203339">這項政策可控制是否可在使用者初次登入時，向使用者顯示同步處理同意聲明。如果使用者不需要查看同步處理同意聲明，則應設為 false。
       如果設為 false，就不會顯示同步處理同意聲明。
       如果設為 true 或不予設定，則可顯示同步處理同意聲明。</translation>
+<translation id="8943744188513019866">這項政策會指出《Edu Coexistence 服務條款》目前有效的版本。
+      系統會將這個版本與家長上次接受的版本相比，並視需要用於提示家長同意新的版本。
+
+      如果設定這項政策，系統即可驗證《服務條款》的版本。
+      如果不設定這項政策，系統將無法驗證《Edu Coexistence 服務條款》的有效性。
+
+      這項政策只適用於 Family Link 使用者。</translation>
 <translation id="8943934315109955032">不檢查是否違反機密資料保護規則</translation>
 <translation id="8947415621777543415">回報裝置位置</translation>
 <translation id="8948062138228904066">驗證伺服器許可清單</translation>

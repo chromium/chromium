@@ -819,6 +819,7 @@
 <translation id="4277028893293644418">パスワードを再設定</translation>
 <translation id="4279811152705618813">この <ph name="DEVICE_TYPE" /> は <ph name="ENROLLMENT_DOMAIN" /> によって管理されています</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{このカードを Google アカウントに保存しました}other{これらのカードを Google アカウントに保存しました}}</translation>
+<translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> ページのサムネイル</translation>
 <translation id="42981349822642051">展開</translation>
 <translation id="4300675098767811073">多穴パンチ（右）</translation>
 <translation id="4302965934281694568">長3（封筒）</translation>

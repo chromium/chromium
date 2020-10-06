@@ -152,6 +152,9 @@
       Bu politika true (doğru) değerine ayarlanırsa özellik etkinleşir ve kullanıcılar bunu değiştirebilir.
       Bu politika varsayılan olarak false (yanlış) değerine ayarlıdır; hiçbir emoji önerisinde bulunulmaz ve kullanıcılar da bunu geçersiz kılamaz.</translation>
 <translation id="1243570869342663665">SafeSites yetişkinlere uygun içerik filtrelemeyi kontrol et.</translation>
+<translation id="1247850578871017740">Politika geçerli bir değere ayarlanırsa <ph name="PRODUCT_NAME" /> belirtilen sürümden daha eski SSL/TLS sürümlerini kullanmaz. Tanınmayan değerler yok sayılır.
+
+      Bu politika ayarlanmazsa <ph name="PRODUCT_NAME" />; TLS 1.0 ve TLS 1.1 için hata gösterir, ancak kullanıcı bunu atlayabilir.</translation>
 <translation id="1252536192437793850">Sitelerin, seri bağlantı noktasına erişmek için kullanıcıdan izin istemesine izin ver</translation>
 <translation id="1257550411839719984">Varsayılan indirme dizinini ayarlama</translation>
 <translation id="1265053460044691532">SAML kullanarak kimlik doğrulaması yapmış kullanıcının çevrimdışı olarak giriş yapabileceği süreyi sınırla</translation>
@@ -2315,6 +2318,7 @@ politikayı geçersiz kılamaz.
       Bu politika ayarlanmadan bırakılırsa Güvenli Tarama, Standart Koruma modunda çalışır, ancak kullanıcılar bu ayarı değiştirebilir.
 
       Güvenli Tarama ile ilgili daha fazla bilgi edinmek için https://developers.google.com/safe-browsing sayfasına bakın.</translation>
+<translation id="4402887080007986374">Edu Coexistence Hizmet Şartları'nın geçerli sürümü</translation>
 <translation id="4408428864159735559">Önceden yapılandırılmış ağ dosyası paylaşımlarının listesi.</translation>
 <translation id="4410236409016356088">Ağ bant genişliğini daraltmayı etkinleştir</translation>
 <translation id="441217499641439905"><ph name="PRODUCT_OS_NAME" />, Dosyalar uygulamasında hücresel bağlantılar üzerinden Google Drive erişimini devre dışı bırak</translation>
@@ -2497,6 +2501,13 @@ politikayı geçersiz kılamaz.
           Örnek kalıplar için https://www.chromium.org/developers/how-tos/chrome-frame-getting-started adresine bakın.</translation>
 <translation id="467449052039111439">URL listesi aç</translation>
 <translation id="4674871290487541952">Uzantı güncelleme ve yükleme işlemleriyle ilgili bütünlük kontrollerinde güvenli olmayan algoritmalara izin verme</translation>
+<translation id="4677605038200415894">Politikayı ayarlamak, otomatik olarak tedarikçi ve ürün kimlikleri olan USB cihazına erişme izni verilen siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır. Politikanın geçerli olabilmesi için listedeki her öğenin hem cihazları hem de URL'leri içermesi gerekir. Cihazlardaki her öğe, satıcı kimliği ve ürün kimliği alanı içerebilir. Dahil etmediğiniz her kimlik, bir istisna dışında özel bir durum olarak değerlendirilir: Aynı anda satıcı kimliği de belirtilmeden ürün kimliği belirtilemez. Aksi takdirde politika geçerli olmaz.
+
+      USB izin modeli, istekte bulunan URL'nin USB cihazına erişmesine izni vermek için hem istekte bulunan URL'yi hem de yerleştirilmiş URL öğesini (üst düzey çerçeve sitesinin) kullanır. İstekte bulunan site, iFrame içinde yüklendiğinde istekte bulunan URL yerleştirilmiş URL öğesinden farklı olabilir. Bu nedenle, "URL'ler" alanı, bu URL'leri belirtmek için virgülle sınırlandırılmış en fazla 2 dize içerebilir. Yalnızca bir URL belirtirseniz yerleştirme durumundan bağımsız olarak bu URL ile eşleşen istekte bulunan sitenin URL'sine karşılık gelen USB cihazlarına erişim izni verilir. "URL'ler" alanındaki URL'lerin geçerli URL'ler olmaları gerekir; aksi halde, politika yok sayılır.
+
+      Politika ayarlanmadan bırakılırsa <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> (ayarlanmışsa) geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
+
+      Bu politikadaki URL kalıpları, <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> aracılığıyla yapılandırılan kalıplarla çakışmamalıdır. Çakışırsa bu politika, <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> ve <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" /> politikalarına göre daha önceliklidir.</translation>
 <translation id="4680936297850947973">M68 sürümünde kullanımdan kaldırılmıştır. Bunun yerine DefaultPopupsSetting politikasını kullanın.
 
       Tam açıklama için https://www.chromestatus.com/features/5675755719622656 adresine bakın.
@@ -3188,6 +3199,8 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
       Not: Birden fazla sunucu adını virgülle ayırın. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.</translation>
 <translation id="5645779841392247734">Bu sitelerde çerezlere izin ver</translation>
 <translation id="5646234199535103501">OnBulkDataEntry Chrome Enterprise Bağlayıcı için yapılandırma politikası</translation>
+<translation id="5652250453612826983">Yalnızca çocuk hesaplarına uygulanan ebeveyn gözetimi politikalarını kontrol eder.
+      Bu politikalar yönetici konsolunda ayarlanmayıp doğrudan Kids API Server tarafından yapılandırılır.</translation>
 <translation id="5656177735561364047">Paylaşılan Pano Özelliğini Etkinleştir</translation>
 <translation id="5657576769650058122">Politikayı Etkin değerine ayarlamak, dokunmatik sanal klavyeyi (Chrome OS giriş cihazı) açık tutar. Politikayı Devre dışı değerine ayarlamak, bu klavyeyi kapalı tutar.
       Bu politikayı ayarlarsanız kullanıcılar değiştiremez. (Kullanıcılar, sanal klavyenin açılmasına veya kapatılmasına göre daha öncelikli olan erişebilirlik özellikli dokunmatik klavyeyi açabilirler. VirtualKeyboardEnabled politikasına bakın.)
@@ -3818,6 +3831,21 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="6628043374475466084">Yüklenen içeriğin hassas veri koruma kurallarıyla karşılaştırılarak kontrol edilmeyeceği URL kalıpları</translation>
 <translation id="6628120204569232711">Depolama durumunu bildir</translation>
 <translation id="663685822663765995">Renkli yazdırma modunu kısıtla</translation>
+<translation id="6640989746632867803">Politika ayarlanırsa kullanıcılar indirme güvenliği kararlarını atlayamaz.
+
+       Politika:
+
+      * Tehlikeli indirmeleri engelle değerine ayarlanırsa güvenli tarama uyarıları taşıyan indirmeler haricinde tüm indirmelere izin verilir.
+
+      * Tehlikeli olabilecek indirmeleri engelle değerine ayarlanırsa tehlikeli olabileceğine dair güvenlik uyarıları taşıyan indirmeler haricinde tüm indirmelere izin verilir.
+
+      * Tüm indirmeleri engelle değerine ayarlanırsa tüm indirmeler engellenir.
+
+      * Kötü amaçlı indirmeleri engelle değerine ayarlanırsa yüksek olasılıkla kötü amaçlı yazılım olarak değerlendirilen indirmeler dışında tüm indirmelere izin verilir. Tehlikeli indirmelerden farklı olarak, burada dosya türü değil ana makine dikkate alınır.
+
+      * Özel kısıtlama yok değerine ayarlanırsa indirmeler, güvenlik analizi sonuçlarına göre her zamanki güvenlik kısıtlamalarından geçer.
+
+      Not: Bu kısıtlamalar hem web sayfası içeriğinden hem de Bağlantıyı indir... menü seçeneğinden tetiklenen indirmeler için geçerlidir. Görüntülenmekte olan sayfayı indirme ya da yazdırma seçeneklerinden PDF olarak kaydetme için geçerli değildir. Güvenli tarama hakkında daha fazla bilgi edinin (https://developers.google.com/safe-browsing).</translation>
 <translation id="6641981670621198190">3D grafik API'ları için desteği devre dışı bırak</translation>
 <translation id="6646056064606561298">AC'de başlat güç yönetimi politikasını etkinleştirir.
 
@@ -5495,6 +5523,13 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 <translation id="8942616385591203339">Bu politika, Senkronizasyon İzni'nin ilk oturum açma sırasında kullanıcıya gösterilip gösterilemeyeceğini kontrol eder. Kullanıcı için Senkronizasyon İzni'ne hiçbir zaman gerek duyulmuyorsa false (yanlış) değerine ayarlanmalıdır.
       False (yanlış) değerine ayarlanırsa Senkronizasyon İzni görüntülenmez.
       True (doğru) değerine ayarlanır veya hiç ayarlanmazsa Senkronizasyon İzni görüntülenebilir.</translation>
+<translation id="8943744188513019866">Bu politika, Edu Coexistence Hizmet Şartları'nın mevcut geçerli sürümünü gösterir.
+      Ebeveyn tarafından son kabul edilen sürümle karşılaştırılır ve gerektiğinde ebeveyn izni yenileme isteği göndermek için kullanılır.
+
+      Bu politika ayarlandığında Hizmet Şartları sürümü doğrulanabilir.
+      Bu politika ayarlanmadığında Edu Coexistence Hizmet Şartları'nın geçerliliğini doğrulamak mümkün değildir.
+
+      Bu politika yalnızca Family Link kullanıcıları içindir.</translation>
 <translation id="8943934315109955032">Hassas verileri koruma kuralı ihlallerini denetleme</translation>
 <translation id="8947415621777543415">Cihaz konumunu bildir</translation>
 <translation id="8948062138228904066">Kimlik doğrulama sunucusu izin verilenler listesi</translation>

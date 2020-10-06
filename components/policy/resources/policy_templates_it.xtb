@@ -294,6 +294,11 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 
           Se imposti questo criterio, gli utenti non potranno modificarlo o eseguirne l'override.</translation>
 <translation id="1502843533062797703">Attiva blocco inserimento da software di terze parti</translation>
+<translation id="1503863096120373385">Consente di configurare le impostazioni del periodo di validità dei dati di navigazione per <ph name="PRODUCT_NAME" />.
+      Questo criterio consente di controllare il periodo di validità dei dati di navigazione selezionati. Questo criterio non viene applicato se la sincronizzazione è attiva.
+      I tipi di dati disponibili sono i seguenti: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> e <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
+      Chrome rimuove regolarmente i dati dei tipi selezionati che superano il tempo previsto (<ph name="TIME_TO_LIVE_IN_HOURS" />). Poiché l'eliminazione avviene solo in determinati intervalli di tempo, alcuni dati potrebbero durare più a lungo, ma mai oltre il doppio del tempo previsto (<ph name="TIME_TO_LIVE_IN_HOURS" />).
+      </translation>
 <translation id="1507382822467487898">
           Consente di configurare quale indirizzo MAC (media access control) verrà utilizzato quando il dispositivo è inserito in un dock.
 
@@ -1441,6 +1446,26 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3143265893557969814">Se questo criterio viene impostato, tutti i tipi di dati specificati verranno esclusi dalla sincronizzazione sia per Google Sync sia per la sincronizzazione del profilo di roaming. Questa operazione può essere utile per ridurre le dimensioni del profilo di roaming o per limitare il tipo di dati caricati sui server di Google Sync.
 
       Attualmente i tipi di dati per questo criterio sono: "bookmarks", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs", "wifiConfigurations". Per tali nomi viene fatta distinzione tra maiuscole e minuscole.</translation>
+<translation id="3146597555086966130">L'impostazione del criterio consente di configurare le impostazioni del proxy per Chrome e le app ARC, ignorando tutte le opzioni relative al proxy specificate dalla riga di comando.
+
+       Se il criterio non viene configurato, gli utenti possono scegliere le impostazioni del proxy.
+
+       La configurazione del criterio <ph name="PROXY_SETTINGS_POLICY_NAME" /> consente di accettare i seguenti campi:
+         * Il campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> consente di specificare il server proxy utilizzato da Chrome e di impedire agli utenti di modificare le impostazioni del proxy
+         * Il campo <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> è un URL a un file proxy .pac
+         * Il campo <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> è un URL a un server proxy
+         * Il campo <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> è un elenco di host proxy aggirati da <ph name="PRODUCT_NAME" />
+
+       Il campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> è deprecato a favore del campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, che consente di specificare il server proxy utilizzato da Chrome e di impedire agli utenti di modificare le impostazioni del proxy.
+
+        Per il campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, se scegli il valore:
+          * <ph name="PROXY_MODE_ENUM_DIRECT" />, non viene mai utilizzato un proxy e tutti gli altri campi vengono ignorati.
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, viene utilizzato il proxy del sistema e tutti gli altri campi vengono ignorati.
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, tutti gli altri campi vengono ignorati.
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER" />, vengono utilizzati i campi <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, vengono utilizzati i campi <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
+
+      Nota: per esempi più approfonditi, consulta la pagina I progetti di Chromium (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="3152425128389603870">Rendi disponibile la modalità Desktop unificato e attivala per impostazione predefinita</translation>
 <translation id="3159375329008977062">L'utente è abilitato a importare/esportare contenitori Crostini tramite l'interfaccia</translation>
 <translation id="3165808775394012744">Queste norme sono incluse qui in modo che sia più facile rimuoverle.</translation>
@@ -2693,6 +2718,13 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
       Se il criterio non viene impostato, non viene aggiunto alcun sito web all'elenco.
 
       Nota: puoi aggiungere elementi all'elenco anche tramite il criterio <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
+<translation id="5065753964276395784">Questo criterio è deprecato. Usa il criterio <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+       Se il criterio viene configurato, <ph name="PRODUCT_NAME" /> aggira qualsiasi proxy per l'elenco di host fornito. Questo criterio viene applicato solo se il criterio <ph name="PROXY_SETTINGS_POLICY_NAME" /> non è specificato e selezioni <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> con <ph name="PROXY_MODE_POLICY_NAME" />.
+
+       Non configurare questo criterio se hai selezionato una qualsiasi altra modalità per i criterio di impostazione del proxy.
+
+       Nota: per esempi più approfonditi, consulta la pagina I progetti di Chromium (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="5067143124345820993">Whitelist di utenti con accesso</translation>
 <translation id="5073609397321802133">Se il criterio viene impostato su false, gli utenti non possono personalizzare lo sfondo della pagina Nuova scheda. L'eventuale sfondo personalizzato esistente viene rimosso definitivamente anche se il criterio viene impostato su true in un secondo momento.
 
@@ -4140,6 +4172,7 @@ Se questa norma è impostata su True o non è impostata, il modello di oscuramen
       Se il criterio è impostato su <ph name="BR_UNDER_USER_CONTROL" />, agli utenti viene chiesto di utilizzare il backup e ripristino. Se gli utenti attivano il backup e ripristino, i dati delle app Android vengono caricati sui server di backup di Android e ripristinati durante la reinstallazione delle app.
 
       Dopo la configurazione iniziale, gli utenti possono attivare o disattivare il backup e ripristino.</translation>
+<translation id="6986172482189158664">Impostazioni del periodo di validità dei dati di navigazione</translation>
 <translation id="6994082778848658360">Consente di specificare in che modo è possibile usare l'hardware degli elementi di sicurezza su scheda per fornire l'autenticazione a due fattori, se compatibile con questa funzione. Il tasto di accensione del computer viene usato per rilevare la presenza fisica dell'utente.
 
        Se selezioni l'opzione "Disabilitata", non viene fornita l'autenticazione a due fattori.
@@ -4147,6 +4180,13 @@ Se questa norma è impostata su True o non è impostata, il modello di oscuramen
       Se selezioni l'opzione "U2F", il funzionamento dell'autenticazione a due fattori integrata dipenderà dalla specifica FIDO U2F.
 
       Se selezioni l'opzione "U2F_EXTENDED", l'autenticazione a due fattori integrata fornirà le funzioni U2F più alcune estensioni per la singola attestazione.</translation>
+<translation id="6999948519306285655">Questo criterio è deprecato. Usa il criterio <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+       La configurazione del criterio consente di specificare un URL a un file proxy .pac. Questo criterio viene applicato solo se il criterio <ph name="PROXY_SETTINGS_POLICY_NAME" /> non è specificato e selezioni <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> con <ph name="PROXY_MODE_POLICY_NAME" />.
+
+       Non configurare questo criterio se hai selezionato una qualsiasi altra modalità per i criterio di impostazione del proxy.
+
+       Nota: per esempi approfonditi, consulta la pagina I progetti di Chromium (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="7002040773317582266">Il controllo in tempo reale degli URL del frame principale è attivo.</translation>
 <translation id="7003746348783715221">Preferenze di <ph name="PRODUCT_NAME" /></translation>
 <translation id="7008308728445338159">Controlli intercettazione DNS attivi</translation>
@@ -4732,6 +4772,13 @@ Nota. Attualmente i riavvii automatici vengono attivati soltanto durante la visu
 <translation id="7712109699186360774">Chiedi ogni volta che un sito vuole accedere alla fotocamera e/o al microfono</translation>
 <translation id="7713608076604149344">Limitazioni dei download</translation>
 <translation id="7715711044277116530">Percentuale di regolazione del ritardo di oscuramento dello schermo in modalità di presentazione</translation>
+<translation id="7716020145539921591">Questo criterio è deprecato. Usa il criterio <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+       La configurazione del criterio consente di specificare l'URL del server proxy. Questo criterio viene applicato solo se il criterio <ph name="PROXY_SETTINGS_POLICY_NAME" /> non è specificato e selezioni <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> con <ph name="PROXY_MODE_POLICY_NAME" />.
+
+       Non configurare questo criterio se hai selezionato una qualsiasi altra modalità per i criterio di impostazione del proxy.
+
+      Nota: per esempi approfonditi, consulta la pagina I progetti di Chromium (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="7717938661004793600">Configura le funzioni di accessibilità di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7721944091689270995">ID utente <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Se il criterio è impostato su 1, i siti web possono mostrare i popup. Se il criterio è impostato su 2, i popup vengono negati.
@@ -5288,6 +5335,22 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8537051350735478658">Se il criterio è impostato su True, la funzionalità Suggerimenti per le ricerche viene attivata nella barra degli indirizzi di <ph name="PRODUCT_NAME" />. Se il criterio è impostato su False, tale funzionalità viene disattivata.
 
       Se il criterio è configurato, gli utenti non possono apportare modifiche. Se non è configurato, la funzionalità Suggerimenti per le ricerche è attiva all'inizio, ma gli utenti possono disattivarla in qualsiasi momento.</translation>
+<translation id="8542290591179355871">Questo criterio è deprecato. Usa il criterio <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+       Se il criterio viene impostato su Attivato, puoi specificare il server proxy utilizzato da Chrome e impedire agli utenti di modificare le impostazioni del proxy. Chrome e le app ARC ignorano le opzioni relative al proxy specificate dalla riga di comando. Il criterio viene applicato solo se il criterio <ph name="PROXY_SETTINGS_POLICY_NAME" /> non è specificato.
+
+       Vengono ignorate altre opzioni se scegli il valore:
+         * <ph name="PROXY_MODE_ENUM_DIRECT" /> = Non utilizzare mai un server proxy e connettiti sempre direttamente
+         * <ph name="PROXY_MODE_ENUM_SYSTEM" /> = Utilizza le impostazioni del proxy di sistema
+         * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> = Rileva automaticamente il server proxy
+
+       Se scegli di utilizzare:
+         * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> = Server proxy fissi. Puoi specificare ulteriori opzioni con i criteri <ph name="PROXY_SERVER_POLICY_NAME" /> e <ph name="PROXY_BYPASS_LIST_POLICY_NAME" />. Per le app ARC è disponibile solo il server proxy HTTP con la priorità più alta.
+         * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> = Uno script proxy .pac. Utilizza il criterio <ph name="PROXY_PAC_URL_POLICY_NAME" /> per l'URL a un file proxy .pac.
+
+      Se il criterio non viene configurato, gli utenti possono scegliere le impostazioni del proxy.
+
+      Nota: per esempi approfonditi, consulta la pagina I progetti di Chromium (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="8544375438507658205">Renderer HTML predefinito per <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Consente la sincronizzazione di messaggi SMS dal telefono al Chromebook</translation>
 <translation id="8548832052135586762">Consente di impostare solo la stampa a colori, solo la stampa monocromatica oppure nessuna limitazione per la modalità a colori. Se la norma non viene impostata non vengono applicate limitazioni.</translation>

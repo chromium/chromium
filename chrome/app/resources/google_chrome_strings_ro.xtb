@@ -21,6 +21,7 @@
 <translation id="1553358976309200471">Actualizează Chrome</translation>
 <translation id="1587223624401073077">Google Chrome utilizează camera foto.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> este periculos, așadar Chrome l-a blocat.</translation>
+<translation id="1597911401261118146">Ca să verifici dacă parolele sunt protejate împotriva încălcării securității datelor și a altor probleme de securitate, <ph name="BEGIN_LINK" />conectează-te la Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Pentru mai multă siguranță în Chrome, am dezactivat următoarea extensie care nu este inclusă în <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> și care este posibil să fi fost adăugată fără știrea ta.</translation>
 <translation id="162448658176061655">Chrome verifică dacă există software nedorit o dată pe săptămână. Ultima verificare: acum câteva clipe.</translation>
 <translation id="162629503687514352">Sistemul de operare Chrome nu a putut sincroniza parolele.</translation>
@@ -34,6 +35,7 @@
 <translation id="1734234790201236882">Chrome va salva parola în Contul tău Google. Nu va trebui să o reții.</translation>
 <translation id="174539241580958092">Google Chrome nu a putut sincroniza datele din cauza unei erori la conectare.</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1786003790898721085">Asigură-te că te-ai conectat la Chrome pe <ph name="TARGET_DEVICE_NAME" /> și încearcă din nou să trimiți.</translation>
 <translation id="1812689907177901597">Dacă dezactivezi, te poți conecta la site-uri Google ca Gmail fără a te conecta la Chrome</translation>
 <translation id="1860536484129686729">Chrome are nevoie de permisiune ca să acceseze camera foto pentru acest site</translation>
 <translation id="1873233029667955273">Google Chrome nu este browserul prestabilit</translation>
@@ -78,6 +80,7 @@
 <translation id="3065168410429928842">Fila Chrome</translation>
 <translation id="3080151273017101988">Rulează în continuare aplicații în fundal când Google Chrome este închis</translation>
 <translation id="3089968997497233615">Google Chrome este disponibil într-o versiune nouă și mai sigură.</translation>
+<translation id="3114643501466072395">Ca să verifici dacă celelalte parole sunt protejate împotriva încălcării securității datelor și a altor probleme de securitate, <ph name="BEGIN_LINK" />conectează-te la Chrome<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">Sistemul de operare Chrome nu a putut sincroniza datele.</translation>
 <translation id="3149510190863420837">Aplicații Chrome</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
@@ -245,6 +248,7 @@
 <translation id="8344083974188970894">{NUM_MINS,plural, =1{Chrome verifică dacă există software nedorit o dată pe săptămână. Ultima verificare: acum un minut.}few{Chrome verifică dacă există software nedorit o dată pe săptămână. Ultima verificare: acum {NUM_MINS} minute.}other{Chrome verifică dacă există software nedorit o dată pe săptămână. Ultima verificare: acum {NUM_MINS} de minute.}}</translation>
 <translation id="8370517070665726704">Drept de autor <ph name="YEAR" /> Google LLC. Toate drepturile rezervate.</translation>
 <translation id="840084489713044809">Google Chrome vrea să îți exporte parolele.</translation>
+<translation id="8433638294851456451">Pentru a trimite un număr de aici pe telefonul Android, conectează-te la Chrome pe ambele dispozitive.</translation>
 <translation id="8498858610309223613">Tocmai a fost aplicată o actualizare de securitate specială pentru Google Chrome. Repornește acum și filele vor fi restabilite.</translation>
 <translation id="8521348052903287641">Regula de intrare pentru Google Chrome Dev pentru a permite traficul mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
@@ -264,6 +268,7 @@
 <translation id="884296878221830158">Stabilește și ce pagină se afișează când pornești Chrome sau dai clic pe butonul Pagina principală.</translation>
 <translation id="8862326446509486874">Nu ai drepturile adecvate pentru instalarea la nivel de sistem. Încearcă să rulezi din nou programul de instalare ca Administrator.</translation>
 <translation id="8914504000324227558">Relansați Chrome</translation>
+<translation id="8922193594870374009">Pentru a trimite un număr de pe <ph name="ORIGIN" /> pe telefonul Android, conectează-te la Chrome pe ambele dispozitive.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Este disponibilă o actualizare Chrome}=1{Este disponibilă o actualizare Chrome}few{O actualizare Chrome este disponibilă de # zile}other{O actualizare Chrome este disponibilă de # de zile}}</translation>
 <translation id="9026991721384951619">Sistemul de operare Chrome nu a putut sincroniza datele, deoarece detaliile de conectare pentru contul dvs. nu sunt actualizate.</translation>
 <translation id="9067395829937117663">Google Chrome necesită Windows 7 sau o versiune ulterioară.</translation>

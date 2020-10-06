@@ -344,6 +344,7 @@
 <translation id="3568688522516854065">برای اینکه به برگه‌های بازشده در سایر دستگاه‌ها دسترسی داشته باشید، به سیستم وارد شوید و همگام‌سازی را روشن کنید</translation>
 <translation id="3587482841069643663">همه</translation>
 <translation id="3587596251841506391">به بهبود امنیت وب کمک کنید</translation>
+<translation id="3598653140581545904">استفاده از حالت «ناشناس» برای ورود به سیستم</translation>
 <translation id="3599863153486145794">‏سابقه را از همه دستگاه‌های به سیستم واردشده پاک می‌کند. ممکن است حساب Google شما اشکال دیگری از سابقه مرور در <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> داشته باشد.</translation>
 <translation id="3602290021589620013">پیش‌نمایش</translation>
 <translation id="3616113530831147358">صوتی</translation>
@@ -385,6 +386,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">ادغام کردن داده‌های من</translation>
 <translation id="393697183122708255">هیچ جستجوی گفتاری فعالی در دسترس نیست</translation>
+<translation id="3943557322767080599">‏درخواست‌های ورود به سیستم Chrome را وقتی به سیستم «حساب Google» خود وارد می‌شوید نمایش می‌دهد</translation>
 <translation id="395206256282351086">پیشنهادهای جستجو و سایت غیرفعال است</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{‏وقتی آماده شدید، Chrome صفحه را بار می‌کند}one{‏وقتی آماده شدید، Chrome صفحه‌ها را بار می‌کند}other{‏وقتی آماده شدید، Chrome صفحه‌ها را بار می‌کند}}</translation>
 <translation id="3963007978381181125">‏رمزگذاری عبارت ورود شامل روش‌های پرداخت و نشانی‌های موجود در Google Pay نمی‌شود. فقط افرادی که عبارت عبورتان را داشته باشند می‌توانند داده‌های رمزگذاری‌شده‌تان را بخوانند. عبارت عبور به Google ارسال یا در سرورهای آن ذخیره نمی‌شود. اگر عبارت عبورتان را فراموش کنید یا بخواهید این تنظیم را تغییر دهید، باید همگام‌سازی را بازنشانی کنید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
@@ -660,6 +662,7 @@
 <translation id="5937580074298050696"><ph name="AMOUNT" /> صرفه‌جویی‌شده</translation>
 <translation id="5939518447894949180">بازنشانی</translation>
 <translation id="5942872142862698679">‏استفاده از Google برای جستجو</translation>
+<translation id="5951119116059277034">درحال مشاهده صفحه فعال</translation>
 <translation id="5951615825629292797">زبان آماده است، <ph name="APP_NAME" /> را بازراه‌اندازی کنید</translation>
 <translation id="5952764234151283551">‏نشانی وب صفحه‌ای را که باز می‌کنید به Google ارسال می‌کند</translation>
 <translation id="5956665950594638604">‏باز کردن مرکز راهنمایی Chrome در برگه جدید</translation>
@@ -669,6 +672,7 @@
 <translation id="5964805880140440652">‏برای هم‌رسانی این صفحه با دستگاه دیگر، همگام‌سازی را در تنظیمات Chrome روشن کنید.</translation>
 <translation id="5964869237734432770">توقف توضیحات تصویر</translation>
 <translation id="5979084224081478209">بررسی گذرواژه‌ها</translation>
+<translation id="5982307838673692400">بازکردن برگه ناشناس</translation>
 <translation id="6000066717592683814">‏حفظ Google</translation>
 <translation id="6005538289190791541">گذرواژه پیشنهادی</translation>
 <translation id="6014293228235665243">خوانده‌نشده</translation>
@@ -698,6 +702,7 @@
 <translation id="6192907950379606605">دریافت توضیحات تصویر</translation>
 <translation id="6206830853671714236">انتخاب زمان بارگیری</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ایمیل شما نیست؟</translation>
+<translation id="6211386937064921208">درحال پیش‌دید این صفحه</translation>
 <translation id="6218096829563201111">جستجوی محصولات مشابه <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">برای صادر کردن گذرواژه‌ها، قفل را باز کنید</translation>
 <translation id="6232535412751077445">فعال کردن «ردیابی نشود» به این معنی است که درخواستی به ترافیک مرور شما اضافه می‌شود. نتیجه به این بستگی دارد که وب‌سایت به درخواست‌ پاسخ بدهد یا نه و درخواست چگونه تفسیر شود.
@@ -809,6 +814,9 @@
 <translation id="6900532703269623216">محافظت بهبودیافته</translation>
 <translation id="6903907808598579934">روشن کردن همگام‌سازی</translation>
 <translation id="6929699136511445623">‏فعال کردن همگام‌سازی سیستم Android</translation>
+<translation id="6941901516114974832">‏در «حالت ناشناس»، ممکن است فعالیت شما همچنان برای وب‌سایت‌هایی که بازدید می‌کنید، کارفرما یا محل تحصیلتان، و رساننده خدمات اینترنتی‌تان <ph name="BEGIN_BOLD1" />نمایان باشد<ph name="END_BOLD1" />.
+
+داده‌های جلسه «ناشناس» فقط زمانی از Chrome پاک خواهد شد که <ph name="BEGIN_BOLD2" />همه برگه‌های «ناشناس» را ببندید<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">هرزمان بخواهید می‌توانید با استفاده از منوی «تنظیمات»، محل پیش‌فرض بارگیری را تغییر دهید</translation>
 <translation id="6945221475159498467">انتخاب</translation>
 <translation id="6955535239952325894">این تنظیم در مرورگرهای مدیریت‌شده غیرفعال است</translation>

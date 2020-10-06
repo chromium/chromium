@@ -122,6 +122,7 @@
 <translation id="1134009406053225289">シークレット ウィンドウで開く</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />。<ph name="EMOJI_COUNT" /> 件中 <ph name="EMOJI_INDEX" /> 件目。</translation>
 <translation id="1136712381129578788">PIN の入力間違いが許容回数を超えたため、セキュリティ キーがロックされています。ロックを解除するには、セキュリティ キーをいったん取り外し、もう一度挿入してください。</translation>
+<translation id="1137589305610962734">一時データ</translation>
 <translation id="1137673463384776352"><ph name="APP" /> でリンクを開く</translation>
 <translation id="1139343347646843679">Linux の設定中にエラーが発生しました。管理者にお問い合わせください。</translation>
 <translation id="1140351953533677694">Bluetooth デバイスとシリアル デバイスへのアクセス</translation>
@@ -977,6 +978,7 @@
 <translation id="2131077480075264">「<ph name="APP_NAME" />」は「<ph name="IMPORT_NAME" />」で許可されていないためインストールできません</translation>
 <translation id="21354425047973905">PIN を非表示</translation>
 <translation id="2135456203358955318">ドッキング拡大鏡</translation>
+<translation id="2135468118189259524">Google が収集するデータの詳細や理由については、<ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> をご覧ください。</translation>
 <translation id="2135787500304447609">再開(&amp;R)</translation>
 <translation id="2136372518715274136">新しいパスワードを入力</translation>
 <translation id="2136476978468204130">入力したパスフレーズが正しくありません</translation>
@@ -3630,6 +3632,7 @@
 <translation id="5307030433605830021">サポートされていないソースです</translation>
 <translation id="5308380583665731573">接続</translation>
 <translation id="5310281978693206542">リンクをデバイスに送信</translation>
+<translation id="531118851858162334">このアイテムは、Google サービスでの過去のアクティビティに基づいて表示されています。自分のデータの確認や削除、設定の変更は <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> で行うことができます。</translation>
 <translation id="5311304534597152726">次のユーザーとしてログイン:</translation>
 <translation id="5311565231560644461">サイトにバーチャル リアリティ デバイスとデータの使用を許可しない</translation>
 <translation id="5314381603623123224">Chrome の利用規約が 3 月 31 日に更新されます。</translation>
@@ -6209,6 +6212,7 @@
 <translation id="8378714024927312812">組織によって管理されています</translation>
 <translation id="8379878387931047019">このデバイスでは、このウェブサイトからリクエストされているセキュリティ キーのタイプはサポートされていません。</translation>
 <translation id="8379991678458444070">このタブをブックマークに追加すると、すばやくこのタブに戻ることができます</translation>
+<translation id="8380266723152870797">ウィンドウ名</translation>
 <translation id="8382384117483909115">{NUM_TABS,plural, =1{タブを後で読む}other{タブを後で読む}}</translation>
 <translation id="8382913212082956454">メール アドレスをコピー(&amp;E)</translation>
 <translation id="8386091599636877289">ポリシーが見つかりません。</translation>
@@ -6373,6 +6377,7 @@
 <translation id="8592141010104017453">通知を一切表示しない</translation>
 <translation id="859246725979739260">このサイトでは位置情報へのアクセスがブロックされています。</translation>
 <translation id="8593121833493516339">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、お子様向けの Android 機能の向上にご協力ください。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。<ph name="BEGIN_LINK1" />詳細<ph name="END_LINK1" /></translation>
+<translation id="8593735906501637689"><ph name="MODULE_TITLE" /> を削除しました</translation>
 <translation id="8594908476761052472">動画を撮影</translation>
 <translation id="8596540852772265699">カスタム ファイル</translation>
 <translation id="8597845839771543242">プロパティの書式:</translation>

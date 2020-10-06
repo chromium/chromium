@@ -291,6 +291,11 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 
           Se você definir esta política, o usuário não poderá mudá-la ou substituí-la.</translation>
 <translation id="1502843533062797703">Ativar bloqueio de injeção de software de terceiros</translation>
+<translation id="1503863096120373385">Define as configurações do ciclo de vida dos dados de navegação do <ph name="PRODUCT_NAME" />.
+      Esta política controla a duração dos dados de navegação selecionados. Ela não terá efeito se a sincronização estiver ativada.
+      Os tipos de dados disponíveis são: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> e <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
+      O Chrome removerá regularmente dados de tipos selecionados com mais de <ph name="TIME_TO_LIVE_IN_HOURS" />. Como essa exclusão acontece apenas em intervalos específicos, alguns dados podem ser mantidos por mais tempo, mas nunca mais de duas vezes o esperado (<ph name="TIME_TO_LIVE_IN_HOURS" />).
+      </translation>
 <translation id="1507382822467487898">
           Configura qual endereço de controle de acesso de mídia (MAC, na sigla em inglês) será usado quando uma base estiver conectada ao dispositivo.
 
@@ -1442,6 +1447,26 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="3143265893557969814">Se essa política for definida, todos os tipos de dados especificados serão excluídos da sincronização, tanto para o Google Sync quanto para a sincronização de perfil de roaming. Isso pode ser benéfico para reduzir o tamanho do perfil de roaming ou limitar o tipo de dado que será enviado aos servidores do Google Sync.
 
       Atualmente, os tipos de dados para esta política são: "bookmarks", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs", "wifiConfigurations". Esses nomes têm diferenciação de letras maiúsculas e minúsculas.</translation>
+<translation id="3146597555086966130">Se a política for definida, haverá configurações de proxy para Chrome e apps ARC, ignorando todas as opções relacionadas a proxy especificadas na linha de comando.
+
+       Se a política não for definida, os usuários poderão escolher as configurações de proxy.
+
+       Se a política <ph name="PROXY_SETTINGS_POLICY_NAME" /> for definida, os seguintes campos serão aceitos:
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, que permite especificar o servidor proxy usado pelo Chrome e evitar que os usuários mudem as configurações de proxy.
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, um URL de um arquivo proxy .pac.
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, um URL do servidor proxy.
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, uma lista de hosts de proxy ignorados pelo <ph name="PRODUCT_NAME" />.
+
+       O campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> foi substituído pelo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, que permite especificar o servidor proxy usado pelo Chrome e evitar que os usuários mudem as configurações de proxy.
+
+        Para <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, se você escolher o valor:
+          * <ph name="PROXY_MODE_ENUM_DIRECT" />, um proxy nunca será usado e todos os outros campos serão ignorados;
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, o proxy do sistema será usado e todos os outros campos serão ignorados;
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, todos os outros campos serão ignorados;
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER" />, os campos <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> serão usados;
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, os campos <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> serão usados.
+
+      Observação: para ver mais exemplos detalhados, acesse The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett, link em inglês).</translation>
 <translation id="3152425128389603870">Disponibilizar e ativar por padrão a área de trabalho unificada</translation>
 <translation id="3159375329008977062">O usuário tem permissão para exportar/importar contêineres do Crostini por meio da IU</translation>
 <translation id="3165808775394012744">Essas políticas estão incluídas aqui para facilitar a remoção delas.</translation>
@@ -2504,7 +2529,7 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 
       Se a política não tiver definição, <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> será aplicada, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
 
-      Os padrões de URL desta política não podem entrar em conflito com os configurados por meio da <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Se entrarem, esta política terá precedência sobre <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
+      Os padrões de URL desta política não podem entrar em conflito com os configurados pela <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Se entrarem, esta política terá precedência sobre <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="4680936297850947973">Uso suspenso na versão M68. Em vez disso, use DefaultPopupsSetting.
 
       Para ver a explicação detalhada, acesse https://www.chromestatus.com/features/5675755719622656.
@@ -2685,6 +2710,13 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
       Se a política não for definida, nenhum site será adicionado à lista.
 
       Observação: também é possível adicionar elementos à lista por meio da política <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
+<translation id="5065753964276395784">Esta política está obsoleta. Use a <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+       Se a política for definida, o <ph name="PRODUCT_NAME" /> ignorará qualquer proxy em favor da lista de hosts apresentada aqui. Esta política só terá efeito se a <ph name="PROXY_SETTINGS_POLICY_NAME" /> não tiver sido especificada e você tiver selecionado <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> com <ph name="PROXY_MODE_POLICY_NAME" />.
+
+       Não defina esta política se você tiver selecionado qualquer outro modo para políticas de configuração de proxy.
+
+       Observação: para ver mais exemplos detalhados, acesse The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett, link em inglês).</translation>
 <translation id="5067143124345820993">Lista de permissões de login de usuário</translation>
 <translation id="5073609397321802133">Se a política for definida como falsa, a página "Nova guia" não permitirá que os usuários personalizem o plano de fundo. Qualquer plano de fundo personalizado já existente será removido permanentemente, mesmo que a política seja definida como verdadeira mais tarde.
 
@@ -4112,6 +4144,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Se for definida como <ph name="BR_UNDER_USER_CONTROL" />, os usuários verão solicitações para usar o recurso de backup e restauração. Se eles ativarem esse recurso, os dados de app do Android serão enviados para os servidores do Backup do Android e restaurados durante reinstalações de apps compatíveis.
 
       Após a configuração inicial, será possível ativar ou desativar o recurso de backup e restauração.</translation>
+<translation id="6986172482189158664">Configurações do ciclo de vida dos dados de navegação</translation>
 <translation id="6994082778848658360">Especifica como o hardware de elemento seguro integrado pode ser usado para fornecer uma autenticação de segundo fator, se ele for compatível com esse recurso. O botão liga/desliga da máquina é usado para detectar a presença física do usuário.
 
       Se a opção Desativado for selecionada, nenhum segundo fator será fornecido.
@@ -4119,6 +4152,13 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Se a opção U2F for selecionada, o segundo fator integrado se comportará de acordo com a especificação FIDO U2F.
 
       Se a opção U2F_EXTENDED for selecionada, o segundo fator integrado fornecerá as funções de U2F, além de algumas extensões para declaração individual.</translation>
+<translation id="6999948519306285655">Esta política está obsoleta. Use a <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+       Se a política for definida, você poderá especificar um URL de um arquivo proxy .pac. Esta política só terá efeito se a <ph name="PROXY_SETTINGS_POLICY_NAME" /> não tiver sido especificada e você tiver selecionado <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> com <ph name="PROXY_MODE_POLICY_NAME" />.
+
+       Não defina esta política se você tiver selecionado qualquer outro modo para políticas de configuração de proxy.
+
+       Observação: para ver exemplos detalhados, acesse The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett, link em inglês).</translation>
 <translation id="7002040773317582266">A verificação em tempo real de URLs do frame principal está ativada.</translation>
 <translation id="7003746348783715221">Preferências do <ph name="PRODUCT_NAME" /></translation>
 <translation id="7008308728445338159">Verificação de interceptações de DNS ativada</translation>
@@ -4703,6 +4743,13 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 <translation id="7712109699186360774">Perguntar toda vez que um site quiser acessar minha câmera e/ou meu microfone</translation>
 <translation id="7713608076604149344">Restrições de downloads</translation>
 <translation id="7715711044277116530">Percentual pelo qual calcular o intervalo de escurecimento da tela no modo de apresentação</translation>
+<translation id="7716020145539921591">Esta política está obsoleta. Use a <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+       Se a política for definida, você poderá especificar o URL do servidor proxy. Esta política só terá efeito se a <ph name="PROXY_SETTINGS_POLICY_NAME" /> não tiver sido especificada e você tiver selecionado <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> com <ph name="PROXY_MODE_POLICY_NAME" />.
+
+       Não defina esta política se você tiver selecionado qualquer outro modo para políticas de configuração de proxy.
+
+      Observação: para ver exemplos detalhados, acesse The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett, link em inglês).</translation>
 <translation id="7717938661004793600">Configurar recursos de acessibilidade do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7721944091689270995">ID do usuário do <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Se a política for definida como 1, os sites poderão exibir pop-ups. Se ela for definida como 2, os pop-ups serão negados.
@@ -5262,6 +5309,22 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8537051350735478658">Se a política for definida como verdadeira, as sugestões de pesquisa na barra de endereço do <ph name="PRODUCT_NAME" /> serão ativadas. Se ela for definida como falsa, essas sugestões serão desativadas.
 
       Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, as sugestões de pesquisa ficarão inicialmente ativadas, mas os usuários poderão desativá-las quando quiserem.</translation>
+<translation id="8542290591179355871">Esta política está obsoleta. Use a <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+       Se a política for definida como "Ativada", você poderá especificar o servidor proxy usado pelo Chrome e evitar que os usuários mudem as configurações de proxy. O Chrome e os apps ARC ignoram todas as opções relacionadas a proxy especificadas na linha de comando. A política só terá efeito se a <ph name="PROXY_SETTINGS_POLICY_NAME" /> não for especificada.
+
+       Outras opções serão ignoradas se você escolher uma destas:
+         * <ph name="PROXY_MODE_ENUM_DIRECT" />: nunca usar um servidor proxy e sempre conectar diretamente.
+         * <ph name="PROXY_MODE_ENUM_SYSTEM" />: usar as configurações de proxy do sistema.
+         * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />: detectar automaticamente o servidor proxy.
+
+       Se você escolher usar:
+         * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />: servidores proxy corrigidos. Será possível especificar mais opções com <ph name="PROXY_SERVER_POLICY_NAME" /> e <ph name="PROXY_BYPASS_LIST_POLICY_NAME" />. Apenas o servidor proxy HTTP com a maior prioridade está disponível para apps ARC.
+         * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: um script de proxy .pac. Use <ph name="PROXY_PAC_URL_POLICY_NAME" /> no URL de um arquivo proxy .pac.
+
+      Se a política não for definida, os usuários poderão escolher as configurações de proxy.
+
+      Observação: para ver exemplos detalhados, acesse The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett, link em inglês).</translation>
 <translation id="8544375438507658205">Renderizador padrão de HTML para o <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Permite a sincronização de mensagens SMS do smartphone com o Chromebook.</translation>
 <translation id="8548832052135586762">Define a impressão para apenas em cores, apenas monocromática ou sem restrição de modo de cor. Se a política não for definida, não haverá restrição.</translation>

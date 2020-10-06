@@ -344,6 +344,7 @@
 <translation id="3568688522516854065">ඔබගේ වෙනත් උපාංගවලින් ඔබගේ පටිති ලබා ගැනීමට, පුරනය වී සමමුහුර්තය ක්‍රියාත්මක කරන්න</translation>
 <translation id="3587482841069643663">සියළු</translation>
 <translation id="3587596251841506391">වෙබයෙහි ආරක්ෂාව දියුණුවට උදව් ව.</translation>
+<translation id="3598653140581545904">පිරීමට අප්‍රසිද්ධ භාවිත කරන්න</translation>
 <translation id="3599863153486145794">සියලු පුරනය-වූ උපාංගවලින් ඉතිහාසය හිස් කරයි. ඔබේ Google ගිණුමට <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> හිදී බ්‍රවුස් කිරීමේ ඉතිහාසයේ වෙනත් ආකාරයන් තිබිය හැක.</translation>
 <translation id="3602290021589620013">පෙරදසුන</translation>
 <translation id="3616113530831147358">ශබ්ද</translation>
@@ -385,6 +386,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">මගේ දත්ත ඒකාබද්ධ කරන්න</translation>
 <translation id="393697183122708255">ලබා ගත හැකි සබල කළ හඬ සෙවීමක් නැත</translation>
+<translation id="3943557322767080599">ඔබ ඔබගේ Google ගිණුමට පුරන විට Chrome පිරීමේ ප්‍රේරණ පෙන්වන්න</translation>
 <translation id="395206256282351086">සෙවීම් සහ අඩවි යෝජනා අබලයි</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{සූදානම් වූ විට Chrome ඔබේ පිටුව පූරණ කරයි}one{සූදානම් වූ විට Chrome ඔබේ පිටු පූරණ කරයි}other{සූදානම් වූ විට Chrome ඔබේ පිටු පූරණ කරයි}}</translation>
 <translation id="3963007978381181125">මුර-වැකිකඩ සංකේතනයට Google Pay වෙතින් ගෙවීමේ ක්‍රම සහ ලිපින ඇතුළු සංකේතන කළ දත්ත කියවිය හැක්කේ ඔබේ මුර-වැකිකඩ සහිත අයෙකුට පමණයි. මෙම මුර-වැකිකඩ Google වෙත යැවීම හෝ ගබඩා කිරීම සිදු නොවේ. ඔබට ඔබේ මුර-වැකිකඩ අමතක වූයේ නම්, ඔබ සමමුහූර්ත කිරීම අවශ්‍ය වෙයි. <ph name="BEGIN_LINK" />තවත් දැන ගන්න<ph name="END_LINK" /></translation>
@@ -660,6 +662,7 @@
 <translation id="5937580074298050696"><ph name="AMOUNT" /> සුරැකිණි</translation>
 <translation id="5939518447894949180">නැවත සකසන්න</translation>
 <translation id="5942872142862698679">සෙවීම සඳහා Google භාවිත කරමින්</translation>
+<translation id="5951119116059277034">සජීවී පිටුව නරඹමින්</translation>
 <translation id="5951615825629292797">භාෂාව සූදානම්ය, <ph name="APP_NAME" /> යළි අරඹන්න</translation>
 <translation id="5952764234151283551">ඔබ Google වෙත ළඟා වීමට උත්සාහ කරන පිටුවේ URL යවයි</translation>
 <translation id="5956665950594638604">Chrome උදවු මධ්‍යස්ථානය නව ටැබයක විවෘත කරන්න</translation>
@@ -669,6 +672,7 @@
 <translation id="5964805880140440652">මෙම පිටුව වෙනත් උපාංගයට බෙදා ගැනීමට, Chrome සැකසීම් තුළ සමමුහූර්තය සක්‍රීය කරන්න</translation>
 <translation id="5964869237734432770">රූප විස්තර නවත්වන්න</translation>
 <translation id="5979084224081478209">මුරපද පරීක්‍ෂා කරන්න</translation>
+<translation id="5982307838673692400">අප්‍රසිද්ධ ටැබයක් විවෘත කරන්න</translation>
 <translation id="6000066717592683814">Keep Google</translation>
 <translation id="6005538289190791541">යෝජිත මුරපදය</translation>
 <translation id="6014293228235665243">නොකියවූ</translation>
@@ -698,6 +702,7 @@
 <translation id="6192907950379606605">රූප විස්තර ලබා ගන්න</translation>
 <translation id="6206830853671714236">බාගත යුතු අවස්ථාව තෝරන්න</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> නොවේද?</translation>
+<translation id="6211386937064921208">මෙම පිටුව පෙරදසුන් කරමින්</translation>
 <translation id="6218096829563201111">සමාන නිෂ්පාදන සොයන්න <ph name="BEGIN_NEW" />නව<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">ඔබේ මුරපද නිර්යාත කිරීමට අගුළු හරින්න</translation>
 <translation id="6232535412751077445">"හඹා නොයන්න" සබල කිරීමෙන් අදහස් වන්නේ ඔබගේ බ්‍රවුස් කිරීමේ තදබදය සමගින් ඉල්ලීමක් අඩංගු වනු ඇති බවය. වෙබ් අඩවිය ඉල්ලීමට ප්‍රතිචාර දක්වනේද සහ ඉල්ලීම කෙසේ අර්ථ නිරූපණය කරන්නේද යන්න මත කිනම් හෝ ප්‍රතිඵලයක් රඳා පවතියි.
@@ -809,6 +814,9 @@
 <translation id="6900532703269623216">වැඩිදියුණු කළ ආරක්ෂාව</translation>
 <translation id="6903907808598579934">සමමුහුර්තය ක්‍රියාත්මක කරන්න</translation>
 <translation id="6929699136511445623">Android පද්ධති සමමුහුර්තය සබල කරන්න</translation>
+<translation id="6941901516114974832">අප්‍රසිද්ධ තුළ, ඔබ පිවිසෙන වෙබ් අඩවි, ඔබගේ සේවායෝජකයා හෝ පාසල සහ ඔබගේ අන්තර්ජාල සේවා සැපයුම්කරු සඳහා ඔබගේ ක්‍රියාකාරකම් <ph name="BEGIN_BOLD1" />තවම දෘශ්‍යමාන විය හැකිය<ph name="END_BOLD1" />.
+
+ඔබ <ph name="BEGIN_BOLD2" />සියලු අප්‍රසිද්ධ ටැබ වසන විට<ph name="END_BOLD2" /> පමණක් Chrome වෙතින් ඔබගේ අප්‍රසිද්ධ සැසියෙන් දත්ත හිස් කරනු ඇත.</translation>
 <translation id="6942665639005891494">සැකසීමේ මෙනු විකල්පය භාවිතයෙන් ඕනැම වේලාවක පෙරනිමි බාගැනීමේ ස්ථානය වෙනස් කරන්න</translation>
 <translation id="6945221475159498467">තෝරන්න</translation>
 <translation id="6955535239952325894">මෙම සැකසීම කළමනා කෙරෙන බ්‍රවුසර මත අබල කෙරේ</translation>

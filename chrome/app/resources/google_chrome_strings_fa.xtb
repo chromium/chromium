@@ -21,6 +21,7 @@
 <translation id="1553358976309200471">‏به‌روزرسانی Chrome</translation>
 <translation id="1587223624401073077">‏Google Chrome درحال استفاده از دوربین شما است.</translation>
 <translation id="1587325591171447154">‏<ph name="FILE_NAME" /> خطرناک است، بنابراین Chrome آن را مسدود کرده ست.</translation>
+<translation id="1597911401261118146">‏برای بررسی اینکه از گذرواژه‌هایتان دربرابر نقض داده یا دیگر مشکلات امنیتی محافظت می‌شود، <ph name="BEGIN_LINK" />به سیستم Chrome وارد شوید<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">‏برای ایمن‌تر کردن Chrome، افزونه زیر را که در <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> فهرست نشده است و ممکن است بدون اطلاع شما اضافه شده باشد، غیرفعال کردیم.</translation>
 <translation id="162448658176061655">‏Chrome هفته‌ای یک‌بار وجود نرم‌افزارهای ناخواسته را بررسی می‌کند. آخرین بررسی: چند لحظه قبل.</translation>
 <translation id="162629503687514352">‏سیستم‌عامل Chrome نتوانست گذرواژه‌هایتان را همگام‌سازی کند.</translation>
@@ -34,6 +35,7 @@
 <translation id="1734234790201236882">‏Chrome این گذرواژه را در حساب Google شما ذخیره می‌کند. لازم نیست آن را به خاطر بسپارید.</translation>
 <translation id="174539241580958092">‏به دلیل وجود خطا در ورود به سیستم، Google Chrome قادر به همگام‌سازی داده‌های شما نبود.</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1786003790898721085">‏مطمئن شوید در <ph name="TARGET_DEVICE_NAME" /> به سیستم Chrome وارد شده باشید و سپس دوباره ارسال کنید.</translation>
 <translation id="1812689907177901597">‏با خاموش کردن این گزینه، می‌توانید بدون ورود به سیستم Chrome به سیستم سایت‌های Google مانند Gmail وارد شوید</translation>
 <translation id="1860536484129686729">‏Chrome برای این سایت به مجوز دسترسی به دوربین نیاز دارد</translation>
 <translation id="1873233029667955273">‏Google Chrome مرورگر پیش‌فرض شما نیست</translation>
@@ -78,6 +80,7 @@
 <translation id="3065168410429928842">‏برگه Chrome</translation>
 <translation id="3080151273017101988">‏ادامه اجرای برنامه‌ها در پس‌زمینه هنگامیکه Google Chrome بسته می‌شود</translation>
 <translation id="3089968997497233615">‏نسخه جدید و امن تری از Google Chrome موجود است.</translation>
+<translation id="3114643501466072395">‏برای بررسی اینکه از دیگر گذرواژه‌هایتان دربرابر نقض داده یا دیگر مشکلات امنیتی محافظت می‌شود یا نه، <ph name="BEGIN_LINK" />به سیستم Chrome وارد شوید<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">‏سیستم‌عامل Chrome نتوانست داده‌هایتان را همگام‌سازی کند.</translation>
 <translation id="3149510190863420837">‏برنامه‌های Chrome</translation>
 <translation id="3360895254066713204">‏راهنمای Chrome</translation>
@@ -245,6 +248,7 @@
 <translation id="8344083974188970894">{NUM_MINS,plural, =1{‏Chrome هفته‌ای یک‌بار وجود نرم‌افزارهای ناخواسته را بررسی می‌کند. آخرین بررسی: ۱ دقیقه قبل.}one{‏Chrome هفته‌ای یک‌بار وجود نرم‌افزارهای ناخواسته را بررسی می‌کند. آخرین بررسی: {NUM_MINS} دقیقه قبل.}other{‏Chrome هفته‌ای یک‌بار وجود نرم‌افزارهای ناخواسته را بررسی می‌کند. آخرین بررسی: {NUM_MINS} دقیقه قبل.}}</translation>
 <translation id="8370517070665726704">‏حق نسخه‌برداری <ph name="YEAR" /> Google LLC.‎ کلیه حقوق محفوظ است.</translation>
 <translation id="840084489713044809">‏Google Chrome می‌خواهد گذرواژه‌های شما را صادر کند.</translation>
+<translation id="8433638294851456451">‏برای ارسال شماره از اینجا به تلفن Android خود، در هر دو دستگاه به سیستم Chrome وارد شوید.</translation>
 <translation id="8498858610309223613">‏لحظاتی پیش به‌روزرسانی امنیتی ویژه‌ای برای Google Chrome اعمال شد. هم‌اکنون بازراه‌اندازی کنید و ما برگه‌هایتان را بازیابی خواهیم کرد.</translation>
 <translation id="8521348052903287641">‏قانون ترافیک ورودی Google Chrome نسخه Dev برای امکان دادن به ترافیک mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
@@ -264,6 +268,7 @@
 <translation id="884296878221830158">‏این برنامه همچنین صفحه‌ای را که هنگام راه‌اندازی Chrome یا کلیک کردن روی دکمه صفحه اصلی نشان داده می‌شود، کنترل می‌کند.</translation>
 <translation id="8862326446509486874">شما حقوق لازم برای نصب در سطح سیستم را ندارید. دوباره به‌عنوان سرپرست نصب‌کننده را اجرا کنید.</translation>
 <translation id="8914504000324227558">‏راه‌اندازی مجدد Chrome</translation>
+<translation id="8922193594870374009">‏برای ارسال شماره از <ph name="ORIGIN" /> به تلفن Android خود، در هر دو دستگاه به سیستم Chrome وارد شوید.</translation>
 <translation id="8999208279178790196">{0,plural, =0{‏به‌روزرسانی Chrome دردسترس است}=1{‏به‌روزرسانی Chrome دردسترس است}one{‏به‌روزرسانی Chrome از # روز پیش دردسترس است}other{‏به‌روزرسانی Chrome از # روز پیش دردسترس است}}</translation>
 <translation id="9026991721384951619">‏سیستم‌عامل Chrome قادر به همگام‌سازی داده‌هایتان نبود زیرا جزئیات ورود به سیستم حساب شما به‌روز نیست.</translation>
 <translation id="9067395829937117663">‏Google Chrome به Windows 7 یا بالاتر نیاز دارد.</translation>

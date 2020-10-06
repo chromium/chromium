@@ -27,6 +27,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="121097972571826261">Et ord frem</translation>
 <translation id="1225748608451425081">Din Chromebook er låst på grund af et kendt problem. Du kan logge ind om: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Stop med at vælge</translation>
+<translation id="1239161794459865856">Der er forbindelse til <ph name="FEATURE_NAME" />.</translation>
 <translation id="1247372569136754018">Mikrofon (indbygget)</translation>
 <translation id="1252999807265626933">Oplader fra <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Hvordan er vejret?</translation>
@@ -74,6 +75,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1654477262762802994">Start en stemmeforespørgsel</translation>
 <translation id="1667964833127753507">Tilstanden med neutrale farver anvender ikke farver fra baggrunden, men erstatter dem med et sæt lyse og mørke nuancer i neutrale farver.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> tilbage</translation>
+<translation id="1677507110654891115">Der er ikke forbindelse til <ph name="FEATURE_NAME" />.</translation>
 <translation id="1698080062160024910">Timer på <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-adresse: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Skrivebord: <ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2369165858548251131">"Hej" på kinesisk</translation>
 <translation id="2390318262976603432">Lokale indstillinger</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="2405664212338326887">Ikke forbundet</translation>
 <translation id="2408955596600435184">Angiv din pinkode</translation>
 <translation id="2412593942846481727">Der er en tilgængelig opdatering</translation>
 <translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> er en session, der administreres af <ph name="DOMAIN" /></translation>
@@ -243,6 +246,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3364721542077212959">Styluspenværktøjer</translation>
 <translation id="3368922792935385530">Tilsluttet</translation>
 <translation id="3371140690572404006">USB-C-enhed (porten foran i højre side)</translation>
+<translation id="3375634426936648815">Forbundet</translation>
 <translation id="3386978599540877378">luppen i fuld skærm</translation>
 <translation id="3400357268283240774">Yderligere indstillinger</translation>
 <translation id="3410336247007142655">Vis indstillingerne for mørkt tema</translation>
@@ -322,6 +326,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4181841719683918333">Sprog</translation>
 <translation id="4195877955194704651">Knap til automatisk klik</translation>
 <translation id="4197790712631116042">Fra</translation>
+<translation id="4201033867194214117"><ph name="FEATURE_NAME" /> er ikke tilgængelig.</translation>
 <translation id="4212246570487010370">Fortsæt med at gennemse</translation>
 <translation id="4212472694152630271">Skift til pinkode</translation>
 <translation id="4215497585250573029">VPN-indstillinger</translation>
@@ -333,6 +338,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4285498937028063278">Frigør</translation>
 <translation id="4294319844246081198">Godmorgen <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Ryd alle <ph name="COUNT" /> notifikationer</translation>
+<translation id="4302592941791324970">Ikke tilgængelig</translation>
 <translation id="4303223480529385476">Udvid statusområde</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Du trykkede på tastaturgenvejen for høj kontrast. Vil du aktivere indstillingen?</translation>
@@ -426,6 +432,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="5302048478445481009">Sprog</translation>
 <translation id="5313326810920013265">Indstillinger for Bluetooth</translation>
 <translation id="5314219114274263156">Skærmen blev optaget</translation>
+<translation id="5329548388331921293">Opretter forbindelse...</translation>
 <translation id="5331975486040154427">USB-C-enhed (porten bagpå i venstre side)</translation>
 <translation id="5352250171825660495">Mørkt tema er aktiveret</translation>
 <translation id="5379115545237091094">For mange forsøg</translation>
@@ -439,6 +446,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="5465662442746197494">Har du brug for hjælp?</translation>
 <translation id="5496819745535887422">Din administrator gendanner en tidligere version på din enhed. Alle data slettes, når enheden genstartes.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166"><ph name="FEATURE_NAME" /> opretter forbindelse.</translation>
 <translation id="553675580533261935">Afslutter session</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5548285847212963613">Udvidelsen "<ph name="EXTENSION_NAME" />" kan hjælpe med at oprette forbindelse til dette netværk.</translation>

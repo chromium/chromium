@@ -344,6 +344,7 @@
 <translation id="3568688522516854065">ትሮችዎን ከሌሎች መሣሪያዎችዎ በመለያ መግባት እና ስምረትን ማብራት ለማግኘት</translation>
 <translation id="3587482841069643663">ሁሉም</translation>
 <translation id="3587596251841506391">ድር ላይ ደህንነትን ለማሻሻል ያግዙ</translation>
+<translation id="3598653140581545904">በመለያ ለመግባት ማንነት የማያሳውቅ ሁነታን ይጠቀሙ</translation>
 <translation id="3599863153486145794">ታሪክን በመለያ ከገቡ ሁሉም መሣሪያዎች ላይ ያጸዳል። የእርስዎ Google መለያ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> ላይ ሌሎች የአሰሳ ታሪክ ዓይነቶች ሊኖረው ይችላል</translation>
 <translation id="3602290021589620013">ቅድመ-ዕይታ</translation>
 <translation id="3616113530831147358">ድምጽ</translation>
@@ -385,6 +386,7 @@
 <translation id="3927692899758076493">ሳንስ ሰሪፍ</translation>
 <translation id="3928666092801078803">የእኔን ውሂብ አጣምር</translation>
 <translation id="393697183122708255">ምንም የነቃ የድምጽ ፍለጋ አይገኝም</translation>
+<translation id="3943557322767080599">ወደ የእርስዎ Google መለያ ሲገቡ የChrome በመለያ መግቢያ ጥያቄዎችን ያሳይ</translation>
 <translation id="395206256282351086">ፍለጋ እና የጣቢያ አስተያየት ጥቆማዎች ተሰናክለዋል</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome ዝግጁ ሲሆን ገጽዎን ይጭነዋል}one{Chrome ዝግጁ ሲሆን ገጾችዎን ይጭነዋል}other{Chrome ዝግጁ ሲሆን ገጾችዎን ይጭነዋል}}</translation>
 <translation id="3963007978381181125">የእርስዎ የይለፍ ሐረግ ያለው ሰው ብቻ ነው የእርስዎን የተመሰጠረ ውሂብ ማንበብ የሚችለው። የይለፍ ሐረጉ ወደ Google አይላክም እንዲሁም አይከማችም። የእርስዎን የይለፍ ሐረግ ከረሱት ወይም ይህን ቅንብር መለወጥ ከፈለጉ ማሥመሩን ዳግም ማስጀመር ያስፈልገዎታል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
@@ -660,6 +662,7 @@
 <translation id="5937580074298050696"><ph name="AMOUNT" /> ተቀምጧል</translation>
 <translation id="5939518447894949180">ዳግም አስጀምር</translation>
 <translation id="5942872142862698679">ለፍለጋ Googleን መጠቀም</translation>
+<translation id="5951119116059277034">የቀጥታ ስርጭት ገጽን በማየት ላይ</translation>
 <translation id="5951615825629292797">ቋንቋ ዝግጁ ነው፣ <ph name="APP_NAME" />ን እንደገና ያስጀምሩ</translation>
 <translation id="5952764234151283551">ሊደርሱበት እየሞከሩ ያሉትን ገጽ ዩአርኤል ወደ Google ይልካል</translation>
 <translation id="5956665950594638604">የChrome እገዛ ማዕከልን በአዲስ ትር ውስጥ ክፈት</translation>
@@ -669,6 +672,7 @@
 <translation id="5964805880140440652">ይህን ገጽ ለሌላ መሣሪያ ለማጋራት በChrome ቅንብሮች ውስጥ ስምረትን ያብሩ</translation>
 <translation id="5964869237734432770">የምስል መግለጫዎችን አቁም</translation>
 <translation id="5979084224081478209">የይለፍ ቃላትዎን ይፈትሹ</translation>
+<translation id="5982307838673692400">ማንነት የማያሳውቅ ትር ክፈት</translation>
 <translation id="6000066717592683814">Googleን አቆየው</translation>
 <translation id="6005538289190791541">የተጠቆመ የይለፍ ቃል</translation>
 <translation id="6014293228235665243">ያልተነበበ</translation>
@@ -698,6 +702,7 @@
 <translation id="6192907950379606605">የምስል መግለጫዎችን ያግኙ</translation>
 <translation id="6206830853671714236">መቼ ማውረድ እንዳለብዎ ይምረጡ</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> አይደለም?</translation>
+<translation id="6211386937064921208">ይህን ገጽ በቅድመ-ዕይታ በማሳየት ላይ</translation>
 <translation id="6218096829563201111">ተመሳሳይ ምርቶችን ይፈልጉ <ph name="BEGIN_NEW" />አዲስ<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">የይለፍ ቃላትዎን ወደ ውጭ ለመላክ ይክፈቱ</translation>
 <translation id="6232535412751077445">«አትከታተል»ን ማንቃት ማለት አንድ ጥያቄ በአሰሳ ትራፊክዎ ላይ ይካተታል ማለት ነው። ማንኛውም ውጤት አንድ ድር ጣቢያ ለጥያቄው ምላሽ ከሰጠና ጥያቄውን በሚተረጎምበት መንገድ ላይ የሚወሰን ነው።
@@ -809,6 +814,9 @@
 <translation id="6900532703269623216">የላቀ ጥበቃ</translation>
 <translation id="6903907808598579934">ስምረትን አብራ</translation>
 <translation id="6929699136511445623">የAndroid ስርዓት ስምረትን አንቃ</translation>
+<translation id="6941901516114974832">ማንነት በማያሳውቅ ሁኔታ ውስጥ እንቅስቃሴዎ አሁንም እርስዎ ለሚጎበኟቸው ድር ጣቢያዎች፣ ለአሰሪዎ ወይም ለትምህርት ቤትዎ እና ለበይነመረብ አገልግሎት አቅራቢዎ <ph name="BEGIN_BOLD1" />ሊታይ ይችላል<ph name="END_BOLD1" />።
+
+የማንነት የማያሳውቅ ክፍለ-ጊዜዎ ውሂብ ከChrome የሚጠፋው እርስዎ <ph name="BEGIN_BOLD2" />ሁሉንም ማንነት የማያሳውቁ ትሮችን ከዘጉ<ph name="END_BOLD2" /> ብቻ ነው።</translation>
 <translation id="6942665639005891494">የቅንብሮች ምናሌ አማራጩን በመጠቀም ነባሪውን የማውረጃ ቦታ ይጠቀሙ</translation>
 <translation id="6945221475159498467">ይምረጡ</translation>
 <translation id="6955535239952325894">ይህ ቅንብር በሚተዳደሩ አሳሾች ላይ ተሰናክሏል</translation>

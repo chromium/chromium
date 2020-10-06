@@ -122,6 +122,7 @@
 <translation id="1134009406053225289">Ireki ezkutuko moduko leiho batean</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />: <ph name="EMOJI_COUNT" />/<ph name="EMOJI_INDEX" />.</translation>
 <translation id="1136712381129578788">Segurtasun-giltza blokeatuta dago PINa gehiegitan idatzi delako oker. Hura desblokeatzeko, atera ezazu, eta sar ezazu berriro.</translation>
+<translation id="1137589305610962734">aldi baterako datuak</translation>
 <translation id="1137673463384776352">Ireki esteka <ph name="APP" /> aplikazioan</translation>
 <translation id="1139343347646843679">Errore bat gertatu da Linux konfiguratzean. Jarri administratzailearekin harremanetan.</translation>
 <translation id="1140351953533677694">Atzitu Bluetooth bidezko gailuak eta seriekoak</translation>
@@ -982,6 +983,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2131077480075264">Ezin izan da "<ph name="APP_NAME" />" instalatu "<ph name="IMPORT_NAME" />" zerrendan ez dagoelako</translation>
 <translation id="21354425047973905">Ezkutatu PIN kodeak</translation>
 <translation id="2135456203358955318">Lupa ainguratua</translation>
+<translation id="2135468118189259524">Google-k zer datu eta zergatik biltzen dituen jakin nahi baduzu, berriz, joan <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> webgunera.</translation>
 <translation id="2135787500304447609">&amp;Berrekin</translation>
 <translation id="2136372518715274136">Idatzi pasahitz berria</translation>
 <translation id="2136476978468204130">Idatzitako pasaesaldia ez da zuzena</translation>
@@ -3638,6 +3640,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5307030433605830021">Ez da onartzen iturburua</translation>
 <translation id="5308380583665731573">Konektatu</translation>
 <translation id="5310281978693206542">Bidali esteka gailuetara</translation>
+<translation id="531118851858162334">Google-ren zerbitzuak erabiltzean egin dituzun jardueretan oinarrituta ari gara erakusten produktu hau. Jarduera horiei buruzko datuak ikusi eta ezabatu nahi badituzu, edo haiei buruzko ezarpenak aldatu, joan <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webgunera.</translation>
 <translation id="5311304534597152726">Kontu honetan hasiko duzu saioa:</translation>
 <translation id="5311565231560644461">Ez utzi webguneei errealitate birtualeko gailuak eta datuak erabiltzen</translation>
 <translation id="5314381603623123224">Chrome-ren Zerbitzu-baldintzak martxoaren 31n aldatuko dira</translation>
@@ -6222,6 +6225,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8378714024927312812">Erakundeak kudeatzen du</translation>
 <translation id="8379878387931047019">Gailuak ez du onartzen webgune honek eskatzen duen segurtasun-giltzaren mota</translation>
 <translation id="8379991678458444070">Hona bizkor itzuli ahal izateko, egin fitxa honen laster-marka</translation>
+<translation id="8380266723152870797">Leihoaren izena</translation>
 <translation id="8382384117483909115">{NUM_TABS,plural, =1{Irakurri fitxa geroago}other{Irakurri fitxak geroago}}</translation>
 <translation id="8382913212082956454">Kopiatu &amp;helbide elektronikoa</translation>
 <translation id="8386091599636877289">Ez da aurkitu gidalerroa.</translation>
@@ -6386,6 +6390,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8592141010104017453">Ez erakutsi jakinarazpenik</translation>
 <translation id="859246725979739260">Webgune honi blokeatu egin zaio kokapena atzitzeko aukera.</translation>
 <translation id="8593121833493516339">Bidali erabilera- eta diagnostiko-datuak. Bidali diagnostikoak eta gailu zein aplikazioen erabilerari buruzko datuak Google-ri automatikoki haurrak darabiltzan Android zerbitzuak hobetzen laguntzeko. Informazio hori ez da erabiliko haurra identifikatzeko eta, hari esker, sistemaren eta aplikazioen egonkortasuna hobetuko da, besteak beste. Gainera, multzokatutako datu batzuk oso baliagarriak izango dira Google-ren aplikazioak hobetzeko eta bazkideei laguntzeko (adibidez, Android-en garatzaileei). Haurraren kontuko Sareko eta aplikazioetako jarduera gehigarriak ezarpena aktibatuta badago, baliteke datu horiek haren Google-ko kontuan gordetzea. <ph name="BEGIN_LINK1" />Lortu informazio gehiago<ph name="END_LINK1" /></translation>
+<translation id="8593735906501637689"><ph name="MODULE_TITLE" /> kendu da</translation>
 <translation id="8594908476761052472">Grabatu bideoa</translation>
 <translation id="8596540852772265699">Fitxategi pertsonalizatuak</translation>
 <translation id="8597845839771543242">Propietatearen formatua:</translation>

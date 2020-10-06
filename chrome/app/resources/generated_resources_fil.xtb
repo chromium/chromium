@@ -122,6 +122,7 @@
 <translation id="1134009406053225289">Buksan sa incognito window</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> sa <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Na-lock ang security key dahil napakaraming beses nang nailagay ang maling PIN. Para i-unlock ito, alisin at ipasok ulit ito.</translation>
+<translation id="1137589305610962734">pansamantalang data</translation>
 <translation id="1137673463384776352">Buksan ang link sa <ph name="APP" /></translation>
 <translation id="1139343347646843679">Nagka-error habang kino-configure ang Linux. Makipag-ugnayan sa iyong administrator.</translation>
 <translation id="1140351953533677694">I-access ang iyong mga Bluetooth at Serial device</translation>
@@ -982,6 +983,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2131077480075264">Hindi ma-install ang "<ph name="APP_NAME" />" dahil hindi ito pinayagan ng "<ph name="IMPORT_NAME" />"</translation>
 <translation id="21354425047973905">Itago ang Mga PIN</translation>
 <translation id="2135456203358955318">Naka-dock na magnifier</translation>
+<translation id="2135468118189259524">Matuto pa tungkol sa data na kinokolekta ng Google at kung bakit ito kinokolekta ng Google sa <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" />.</translation>
 <translation id="2135787500304447609">&amp;Magpatuloy</translation>
 <translation id="2136372518715274136">Ilagay ang bagong password</translation>
 <translation id="2136476978468204130">Mali ang inilagay mong passphrase</translation>
@@ -3638,6 +3640,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="5307030433605830021">Hindi sinusuportahan ang source</translation>
 <translation id="5308380583665731573">Kumonekta</translation>
 <translation id="5310281978693206542">Ipadala ang Link sa Iyong Mga Device</translation>
+<translation id="531118851858162334">Nakikita mo ang item na ito batay sa iyong nakaraang aktibidad gamit ang mga serbisyo ng Google. Magagawa mong tingnan at i-delete ang iyong data, at baguhin ang mga setting mo sa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="5311304534597152726">Nagsa-sign in bilang</translation>
 <translation id="5311565231560644461">Huwag payagan ang mga site na gamitin ang iyong mga virtual reality device at data</translation>
 <translation id="5314381603623123224">Magbabago na ang Mga Tuntunin ng Serbisyo ng Chrome sa Marso 31</translation>
@@ -6223,6 +6226,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8378714024927312812">Pinapamahalaan ng iyong organisasyon</translation>
 <translation id="8379878387931047019">Hindi sinusuportahan ng device na ito ang uri ng security key na hiniling ng website na ito</translation>
 <translation id="8379991678458444070">Makabalik kaagad dito sa pamamagitan ng pag-bookmark sa tab na ito</translation>
+<translation id="8380266723152870797">Pangalan ng Window</translation>
 <translation id="8382384117483909115">{NUM_TABS,plural, =1{Basahin ang tab sa ibang pagkakataon}one{Basahin ang mga tab sa ibang pagkakataon}other{Basahin ang mga tab sa ibang pagkakataon}}</translation>
 <translation id="8382913212082956454">Kopyahin ang &amp;email address</translation>
 <translation id="8386091599636877289">Hindi nakita ang patakaran.</translation>
@@ -6388,6 +6392,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8592141010104017453">Huwag magpakita ng anumang notification</translation>
 <translation id="859246725979739260">Na-block ang site na ito sa pag-access sa iyong lokasyon.</translation>
 <translation id="8593121833493516339">Magpadala ng data ng paggamit at diagnostic na data. Tumulong sa pagpapaganda ng karanasan ng iyong anak sa Android sa pamamagitan ng awtomatikong pagpapadala ng diagnostic na data, data ng device, at data ng paggamit sa app sa Google. Hindi ito gagamitin para tukuyin ang pagkakakilanlan ng iyong anak, at makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Kung naka-on ang karagdagang Aktibidad sa Web at App para sa iyong anak, maaaring ma-save ang data na ito sa kanyang Google account. <ph name="BEGIN_LINK1" />Matuto Pa<ph name="END_LINK1" /></translation>
+<translation id="8593735906501637689">Inalis ang <ph name="MODULE_TITLE" /></translation>
 <translation id="8594908476761052472">Kumuha ng video</translation>
 <translation id="8596540852772265699">Mga Custom na File</translation>
 <translation id="8597845839771543242">Format ng property:</translation>

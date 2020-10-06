@@ -834,6 +834,7 @@
 <translation id="4277028893293644418">إعادة ضبط كلمة المرور</translation>
 <translation id="4279811152705618813">يدير <ph name="ENROLLMENT_DOMAIN" /> الجهاز <ph name="DEVICE_TYPE" />.</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{‏تم حفظ هذه البطاقة في حسابك على Google}zero{‏تم حفظ هذه البطاقات في حسابك على Google}two{‏تم حفظ هاتين البطاقتين في حسابك على Google}few{‏تم حفظ هذه البطاقات في حسابك على Google}many{‏تم حفظ هذه البطاقات في حسابك على Google}other{‏تم حفظ هذه البطاقات في حسابك على Google}}</translation>
+<translation id="4297502707443874121">صورة مصغّرة لصفحة <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">توسيع</translation>
 <translation id="4300675098767811073">عمل عدة ثقوب يمينًا</translation>
 <translation id="4302965934281694568">‏Chou3 (مغلف)</translation>

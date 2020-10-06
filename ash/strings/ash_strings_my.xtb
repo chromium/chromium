@@ -27,6 +27,7 @@
 <translation id="121097972571826261">စာလုံးအလိုက် ရှေ့သို့သွားရန်</translation>
 <translation id="1225748608451425081">သိထားသည့် ပြဿနာတစ်ခုကြောင့် သင့် Chromebook လော့ခ်ကျသွားသည်။ <ph name="TIME_LEFT" /> နောက်ပိုင်းတွင် လက်မှတ်ထိုးဝင်နိုင်ပါမည်။</translation>
 <translation id="1229194443904279055">ရွေးချယ်ခြင်းကို ရပ်ရန်</translation>
+<translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ချိတ်ဆက်ထားသည်။</translation>
 <translation id="1247372569136754018">မိုက်ခရိုဖုန်း (စက်တွင်း)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />မှ အားသွင်းနေပါသည်</translation>
 <translation id="1255033239764210633">မိုးလေဝသအခြေအနေ ဘယ်လိုရှိလဲ။</translation>
@@ -74,6 +75,7 @@
 <translation id="1654477262762802994">အသံဖြင့် စတင် စုံစမ်းမေးမြန်းရန်</translation>
 <translation id="1667964833127753507">သဘာဝအရောင်မုဒ်သည် နောက်ခံမှ ထုတ်ထားသည့်အရောင်ကို မသုံးပါ၊ ၎င်းတို့ကို သဘာဝအရောင်စပ် အလင်း သို့မဟုတ် အမှောင် အရောင်ဖြင့် အစားထိုးသည်။</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ကျန်ပါသည်</translation>
+<translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ချိတ်ဆက်မထားပါ။</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> တိုင်မာ · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 လိပ်စာ− <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">မျက်နှာပြင်နေရာ - <ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@
 <translation id="2369165858548251131">"Hello" ကို တရုတ်လို ဘယ်လိုပြောလဲ</translation>
 <translation id="2390318262976603432">ဘာသာစကား ဆက်တင်များ</translation>
 <translation id="2391579633712104609">၁၈၀°</translation>
+<translation id="2405664212338326887">ချိတ်ဆက်မထားပါ</translation>
 <translation id="2408955596600435184">သင့်ပင်နံပါတ်ကို ထည့်ပါ</translation>
 <translation id="2412593942846481727">အပ်ဒိတ် ရနိုင်သည်</translation>
 <translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> သည် <ph name="DOMAIN" /> ကကြီးကြပ်ထားသည့် စက်ရှင်ဖြစ်သည်</translation>
@@ -243,6 +246,7 @@
 <translation id="3364721542077212959">စတိုင်လက်စ်ခဲတံ</translation>
 <translation id="3368922792935385530">ချိတ်ဆက်ထားပြီ</translation>
 <translation id="3371140690572404006">USB-C ကိရိယာ (ညာ ပို့တ် အရှေ့ပိုင်း)</translation>
+<translation id="3375634426936648815">ချိတ်ဆက်ထားသည်</translation>
 <translation id="3386978599540877378">မျက်နှာပြင်အပြည့် မှန်ဘီလူး</translation>
 <translation id="3400357268283240774">နောက်ထပ်ဆက်တင်များ</translation>
 <translation id="3410336247007142655">မှောင်သည့်အပြင်အဆင် ဆက်တင်များ ပြရန်</translation>
@@ -322,6 +326,7 @@
 <translation id="4181841719683918333">ဘာသာစကားများ</translation>
 <translation id="4195877955194704651">အလိုအလျောက် နှိပ်ခလုတ်</translation>
 <translation id="4197790712631116042">ပိတ်ရန်</translation>
+<translation id="4201033867194214117"><ph name="FEATURE_NAME" /> မရနိုင်ပါ။</translation>
 <translation id="4212246570487010370">ဆက်တိုက် ရှာကြည့်ခြင်း</translation>
 <translation id="4212472694152630271">ပင်နံပါတ်သို့ပြောင်းရန်</translation>
 <translation id="4215497585250573029">VPN ဆက်တင်များ</translation>
@@ -333,6 +338,7 @@
 <translation id="4285498937028063278">ပင်ဖြုတ်ရန်</translation>
 <translation id="4294319844246081198">မင်္ဂလာ နံနက်ခင်းပါ <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">သတိပေးချက် <ph name="COUNT" /> ခုလုံးကို ဖယ်ရှားပါ</translation>
+<translation id="4302592941791324970">မရနိုင်ပါ</translation>
 <translation id="4303223480529385476">အခြေအနေပြ နေရာကို ချဲ့ရန်</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">ခြားနားချက်မြင့်သည့် လုပ်ဆောင်ချက်အတွက် ကီးဘုတ်ဖြတ်လမ်းလင့်ခ်ကို သင်နှိပ်လိုက်ပါသည်။ ၎င်းကို ဖွင့်လိုပါသလား။</translation>
@@ -426,6 +432,7 @@
 <translation id="5302048478445481009">ဘာသာစကား</translation>
 <translation id="5313326810920013265">ဘလူးတုသ် ဆက်တင်များ</translation>
 <translation id="5314219114274263156">ဖန်သားပြင်ရိုက်ကူးနေသည်</translation>
+<translation id="5329548388331921293">ချိတ်ဆက်နေသည်...</translation>
 <translation id="5331975486040154427">USB-C ကိရိယာ (ကျောဘက် ဘယ် ပို့တ်)</translation>
 <translation id="5352250171825660495">မှောင်သည့်အပြင်အဆင် ဖွင့်ထားသည်</translation>
 <translation id="5379115545237091094">စမ်းသပ်သည့်အကြိမ်ရေ အလွန်များနေပါပြီ</translation>
@@ -439,6 +446,7 @@
 <translation id="5465662442746197494">အကူအညီ လိုပါသလား?</translation>
 <translation id="5496819745535887422">စီမံခန့်ခွဲသူသည် သင့်စက်ပစ္စည်းကို ယခင်အခြေအနေသို့ရောက်အောင် ပြန်လည်သွင်းယူနေပါသည်။ စက်ပစ္စည်းကို ပြန်လည်စတင်လိုက်သည့်အခါ ဒေတာများအားလုံးကို ဖျက်လိုက်ပါမည်။</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166"><ph name="FEATURE_NAME" /> သည် ချိတ်ဆက်နေပါသည်။</translation>
 <translation id="553675580533261935">စက်ရှင်မှ ထွက်နေသည်</translation>
 <translation id="5537725057119320332">သရုပ်ဆောင်​များ</translation>
 <translation id="5548285847212963613">တိုးချဲ့လိုင်း "<ph name="EXTENSION_NAME" />" သည် ဤ ကွန်ယက်အား ချိတ်ဆက်ရန် ကူညီနိုင်သည်။</translation>

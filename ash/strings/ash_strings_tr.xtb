@@ -27,6 +27,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="121097972571826261">Kelime bazında ilerle</translation>
 <translation id="1225748608451425081">Chromebook'unuz, bilinen bir sorun yüzünden kilitlendi. Tekrar oturum açabilmenize <ph name="TIME_LEFT" /> kaldı.</translation>
 <translation id="1229194443904279055">Seçmeyi durdur</translation>
+<translation id="1239161794459865856"><ph name="FEATURE_NAME" /> bağlı.</translation>
 <translation id="1247372569136754018">Mikrofon (dahili)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> güç kaynağından şarj ediliyor</translation>
 <translation id="1255033239764210633">Hava nasıl?</translation>
@@ -74,6 +75,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1654477262762802994">Sesli sorgu başlat</translation>
 <translation id="1667964833127753507">Nötr renk modu, duvar kağıdından çıkarılan renkleri kullanmaz, bunları nötr tonlu açık veya koyu renklerle değiştirir.</translation>
 <translation id="1677472565718498478">Kalan süre: <ph name="TIME" /></translation>
+<translation id="1677507110654891115"><ph name="FEATURE_NAME" /> bağlı değil.</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> zamanlayıcı· <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 adresi: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Masa: <ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2369165858548251131">Çince "Merhaba"</translation>
 <translation id="2390318262976603432">Yerel Ayarlar</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="2405664212338326887">Bağlı değil</translation>
 <translation id="2408955596600435184">PIN'inizi girin</translation>
 <translation id="2412593942846481727">Güncelleme var</translation>
 <translation id="2413728805700750528"><ph name="DISPLAY_NAME" />, <ph name="DOMAIN" /> tarafından yönetilen bir oturumdur</translation>
@@ -243,6 +246,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3364721542077212959">Ekran kalemi araçları</translation>
 <translation id="3368922792935385530">Bağlı</translation>
 <translation id="3371140690572404006">USB-C cihaz (sağ ön bağlantı noktası)</translation>
+<translation id="3375634426936648815">Bağlı</translation>
 <translation id="3386978599540877378">tam ekran büyüteci</translation>
 <translation id="3400357268283240774">Ek ayarlar</translation>
 <translation id="3410336247007142655">Koyu tema ayarlarını göster</translation>
@@ -322,6 +326,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4181841719683918333">Diller</translation>
 <translation id="4195877955194704651">Otomatik tıklamalar düğmesi</translation>
 <translation id="4197790712631116042">Kapalı</translation>
+<translation id="4201033867194214117"><ph name="FEATURE_NAME" /> kullanılamıyor.</translation>
 <translation id="4212246570487010370">Göz atmaya devam edin</translation>
 <translation id="4212472694152630271">PIN'e geç</translation>
 <translation id="4215497585250573029">VPN Ayarları</translation>
@@ -333,6 +338,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4285498937028063278">Sabitlemeyi kaldır</translation>
 <translation id="4294319844246081198">Günaydın <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875"><ph name="COUNT" /> bildirimin tümünü temizle</translation>
+<translation id="4302592941791324970">Kullanılamıyor</translation>
 <translation id="4303223480529385476">Durum alanını genişlet</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Yüksek kontrast kısayoluna bastınız. Bu özelliği açmak istiyor musunuz?</translation>
@@ -426,6 +432,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5302048478445481009">Dil</translation>
 <translation id="5313326810920013265">Bluetooth ayarları</translation>
 <translation id="5314219114274263156">Ekran kaydı alındı</translation>
+<translation id="5329548388331921293">Bağlanıyor...</translation>
 <translation id="5331975486040154427">USB-C cihaz (sol arka bağlantı noktası)</translation>
 <translation id="5352250171825660495">Koyu tema açık</translation>
 <translation id="5379115545237091094">Çok fazla deneme yapıldı</translation>
@@ -439,6 +446,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5465662442746197494">Yardıma mı ihtiyacınız var?</translation>
 <translation id="5496819745535887422">Yöneticiniz cihazınızı ilk haline döndürüyor. Cihaz yeniden başlatıldığında tüm veriler silinecektir.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166"><ph name="FEATURE_NAME" /> bağlanıyor.</translation>
 <translation id="553675580533261935">Oturum kapatılıyor</translation>
 <translation id="5537725057119320332">Yayınla</translation>
 <translation id="5548285847212963613">"<ph name="EXTENSION_NAME" />" uzantısı bu ağa bağlanmaya yardımcı olabilir.</translation>

@@ -23,6 +23,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1553358976309200471">Dateer Chrome op</translation>
 <translation id="1587223624401073077">Google Chrome gebruik tans jou kamera.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> is gevaarlik en daarom het Chrome dit geblokkeer.</translation>
+<translation id="1597911401261118146"><ph name="BEGIN_LINK" />Meld by Chrome aan<ph name="END_LINK" /> om te kyk of jou wagwoorde teen dataskendings en ander sekuriteitkwessies beveilig word.</translation>
 <translation id="1619887657840448962">Om Chrome veiliger te maak, het ons die volgende uitbreiding, wat nie in die <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> gelys word nie en wat dalk sonder jou medewete bygevoeg is, gedeaktiveer.</translation>
 <translation id="162448658176061655">Chrome kyk een keer per week vir ongewenste sagteware. Laas nagegaan: 'n oomblik gelede.</translation>
 <translation id="162629503687514352">Chrome-bedryfstelsel kon nie jou wagwoorde sinkroniseer nie.</translation>
@@ -38,6 +39,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1734234790201236882">Chrome sal hierdie wagwoord in jou Google-rekening stoor. Jy sal dit nie hoef te onthou nie.</translation>
 <translation id="174539241580958092">Google Chrome kon nie jou data sinkroniseer nie weens 'n fout met aanmelding.</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1786003790898721085">Maak seker dat jy by Chrome aangemeld is op jou <ph name="TARGET_DEVICE_NAME" /> en probeer dan weer stuur.</translation>
 <translation id="1812689907177901597">Deur dit af te skakel, kan jy by Google-werwe soos Gmail aanmeld sonder om by Chrome aan te meld</translation>
 <translation id="1860536484129686729">Chrome het toestemming nodig om toegang te kry tot jou kamera vir hierdie werf</translation>
 <translation id="1873233029667955273">Google Chrome is nie jou verstekblaaier nie</translation>
@@ -82,6 +84,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3065168410429928842">Chrome-oortjie</translation>
 <translation id="3080151273017101988">Hou aan om agtergrondprogramme te laat loop wanneer Google Chrome toe is</translation>
 <translation id="3089968997497233615">Daar is 'n nuwe, veiliger weergawe van Google Chrome beskikbaar.</translation>
+<translation id="3114643501466072395"><ph name="BEGIN_LINK" />Meld by Chrome aan<ph name="END_LINK" /> om te kyk of jou ander wagwoorde teen dataskendings en ander sekuriteitkwessies beveilig word.</translation>
 <translation id="3127818369811890733">Chrome-bedryfstelsel kon nie jou data sinkroniseer nie.</translation>
 <translation id="3149510190863420837">Chrome-programme</translation>
 <translation id="3360895254066713204">Chrome-helper</translation>
@@ -253,6 +256,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="8344083974188970894">{NUM_MINS,plural, =1{Chrome kyk een keer per week vir ongewenste sagteware. Laas nagegaan: 1 minuut gelede.}other{Chrome kyk een keer per week vir ongewenste sagteware. Laas nagegaan: {NUM_MINS} minute gelede.}}</translation>
 <translation id="8370517070665726704">Kopiereg <ph name="YEAR" /> Google LLC. Alle regte voorbehou.</translation>
 <translation id="840084489713044809">Google Chrome wil jou wagwoorde uitvoer.</translation>
+<translation id="8433638294851456451">Meld op albei toestelle by Chrome aan om 'n nommer van hier af na jou Android-foon te stuur.</translation>
 <translation id="8498858610309223613">'n Spesiale sekuriteitsopdatering vir Google Chrome is sopas toegepas. Herbegin nou en ons sal jou oortjies teruglaai.</translation>
 <translation id="8521348052903287641">Inkomende reël vir Google Chrome Dev om mDNS-verkeer toe te laat.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
@@ -272,6 +276,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="884296878221830158">Dit beheer ook watter bladsy gewys word wanneer jy Chrome begin of die Tuisknoppie klik.</translation>
 <translation id="8862326446509486874">Jy het nie die gepaste regte vir stelselvlak-installering nie. Probeer om die installeerder weer te laat loop as Administrateur.</translation>
 <translation id="8914504000324227558">Herbegin Chrome</translation>
+<translation id="8922193594870374009">Meld op albei toestelle by Chrome aan om 'n nommer van <ph name="ORIGIN" /> af na jou Android-foon te stuur.</translation>
 <translation id="8999208279178790196">{0,plural, =0{'n Chrome-opdatering is beskikbaar}=1{'n Chrome-opdatering is beskikbaar}other{'n Chrome-opdatering is al # dae lank beskikbaar}}</translation>
 <translation id="9026991721384951619">Chrome-bedrystelsel kon nie jou data sinkroniseer nie, omdat jou rekening se aanmeldbesonderhede verouderd is.</translation>
 <translation id="9067395829937117663">Google Chrome vereis Windows 7 of nuwer.</translation>

@@ -27,6 +27,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="121097972571826261">Dopředu o slovo</translation>
 <translation id="1225748608451425081">Chromebook je zamknut kvůli známému problému. Budete se moci přihlásit po: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Ukončit výběr</translation>
+<translation id="1239161794459865856">Funkce <ph name="FEATURE_NAME" /> je připojena.</translation>
 <translation id="1247372569136754018">Mikrofon (interní)</translation>
 <translation id="1252999807265626933">Zdroj nabíjení: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Jaké je počasí?</translation>
@@ -74,6 +75,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1654477262762802994">Zahájit hlasový dotaz</translation>
 <translation id="1667964833127753507">Neutrální režim barvy nepoužívá barvy z tapety, ale nahrazuje je sadou neutrálních tónů ve světlých nebo tmavých odstínech.</translation>
 <translation id="1677472565718498478">zbývající čas: <ph name="TIME" /></translation>
+<translation id="1677507110654891115">Funkce <ph name="FEATURE_NAME" /> není připojena.</translation>
 <translation id="1698080062160024910">Časovač na <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Adresa IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Plocha: <ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2369165858548251131">„Ahoj“ čínsky</translation>
 <translation id="2390318262976603432">Nastavení národního prostředí</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="2405664212338326887">Nepřipojeno</translation>
 <translation id="2408955596600435184">Zadejte PIN</translation>
 <translation id="2412593942846481727">K dispozici je aktualizace</translation>
 <translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> je návštěvy spravovaná doménou <ph name="DOMAIN" /></translation>
@@ -243,6 +246,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3364721542077212959">Nástroje pro dotykové pero</translation>
 <translation id="3368922792935385530">Připojeno</translation>
 <translation id="3371140690572404006">Zařízení USB Type-C (pravý přední port)</translation>
+<translation id="3375634426936648815">Připojeno</translation>
 <translation id="3386978599540877378">celoobrazovková lupa</translation>
 <translation id="3400357268283240774">Další nastavení</translation>
 <translation id="3410336247007142655">Zobrazit nastavení tmavého motivu</translation>
@@ -322,6 +326,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4181841719683918333">Jazyky</translation>
 <translation id="4195877955194704651">Tlačítko automatických kliknutí</translation>
 <translation id="4197790712631116042">Vypnuto</translation>
+<translation id="4201033867194214117">Funkce <ph name="FEATURE_NAME" /> není dostupná.</translation>
 <translation id="4212246570487010370">Pokračovat v prohlížení</translation>
 <translation id="4212472694152630271">Přepnout na PIN</translation>
 <translation id="4215497585250573029">Nastavení sítě VPN</translation>
@@ -333,6 +338,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4285498937028063278">Odepnout</translation>
 <translation id="4294319844246081198">Dobré ráno, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Vymazat všechna oznámení (<ph name="COUNT" />)</translation>
+<translation id="4302592941791324970">Nedostupné</translation>
 <translation id="4303223480529385476">Rozbalit stavovou oblast</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Stiskli jste klávesovou zkratku pro vysoký kontrast. Chcete ho zapnout?</translation>
@@ -426,6 +432,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5302048478445481009">Jazyk</translation>
 <translation id="5313326810920013265">Nastavení Bluetooth</translation>
 <translation id="5314219114274263156">Záznam obrazovky byl pořízen</translation>
+<translation id="5329548388331921293">Připojování…</translation>
 <translation id="5331975486040154427">Zařízení USB Type-C (levý zadní port)</translation>
 <translation id="5352250171825660495">Tmavý motiv je zapnutý</translation>
 <translation id="5379115545237091094">Příliš mnoho pokusů</translation>
@@ -439,6 +446,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5465662442746197494">Potřebujete pomoc?</translation>
 <translation id="5496819745535887422">Administrátor ve vašem zařízení obnovuje předchozí verzi systému. Po restartu zařízení budou vymazána všechna data.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166">Probíhá připojování funkce <ph name="FEATURE_NAME" />.</translation>
 <translation id="553675580533261935">Ukončení návštěvy</translation>
 <translation id="5537725057119320332">Odeslat</translation>
 <translation id="5548285847212963613">S připojení k této síti může pomoci rozšíření <ph name="EXTENSION_NAME" />.</translation>

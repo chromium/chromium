@@ -27,6 +27,7 @@
 <translation id="121097972571826261">Մեկ բառով առաջ</translation>
 <translation id="1225748608451425081">Ձեր Chromebook-ը կողպվել է խնդրի պատճառով։ Դուք կկարողանաք մուտք գործել <ph name="TIME_LEFT" />ից։</translation>
 <translation id="1229194443904279055">Դադարեցնել տեքստի ընտրությունը</translation>
+<translation id="1239161794459865856">«<ph name="FEATURE_NAME" />» գործառույթը միացված է։</translation>
 <translation id="1247372569136754018">Խոսափող (ներքին)</translation>
 <translation id="1252999807265626933">Լիցքավորվում է <ph name="POWER_SOURCE" />-ից</translation>
 <translation id="1255033239764210633">Ի՞նչ եղանակ է հիմա։</translation>
@@ -74,6 +75,7 @@
 <translation id="1654477262762802994">Հնչեցնել հարցում</translation>
 <translation id="1667964833127753507">Չեզոք գույների ռեժիմում ձեր պաստառների գույները չեն օգտագործվում։ Դրանց փոխարեն միջերեսը գունավորվում է չեզոք բաց կամ մուգ գույնի երանգներով։</translation>
 <translation id="1677472565718498478">Մնացել է <ph name="TIME" /></translation>
+<translation id="1677507110654891115">«<ph name="FEATURE_NAME" />» գործառույթը միացված չէ։</translation>
 <translation id="1698080062160024910">Ժամաչափ՝ <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 հասցե՝ <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Աշխատասեղան՝ <ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@
 <translation id="2369165858548251131">Ինչպես չինարեն ասել «Բարև»</translation>
 <translation id="2390318262976603432">Լեզվի կարգավորումներ</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="2405664212338326887">Միացված չէ</translation>
 <translation id="2408955596600435184">Մուտքագրեք ձեր PIN կոդը</translation>
 <translation id="2412593942846481727">Հասանելի է նոր տարբերակը</translation>
 <translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> աշխատաշրջանը կառավարվում է <ph name="DOMAIN" /> տիրույթի կողմից</translation>
@@ -243,6 +246,7 @@
 <translation id="3364721542077212959">Ստիլուսի գործիքներ</translation>
 <translation id="3368922792935385530">Միացված է</translation>
 <translation id="3371140690572404006">USB-C սարք (առջևի ձախակողմյան միացք)</translation>
+<translation id="3375634426936648815">Միացված է</translation>
 <translation id="3386978599540877378">Լիաէկրան խոշորացույց</translation>
 <translation id="3400357268283240774">Լրացուցիչ կարգավորումներ</translation>
 <translation id="3410336247007142655">Ցույց տալ մուգ թեմայի կարգավորումները</translation>
@@ -322,6 +326,7 @@
 <translation id="4181841719683918333">Լեզուներ</translation>
 <translation id="4195877955194704651">Ավտոմատ սեղմում</translation>
 <translation id="4197790712631116042">Անջատված է</translation>
+<translation id="4201033867194214117">«<ph name="FEATURE_NAME" />» գործառույթը հասանելի չէ։</translation>
 <translation id="4212246570487010370">Շարունակել դիտարկումը</translation>
 <translation id="4212472694152630271">Անցնել PIN կոդով նույնականացմանը</translation>
 <translation id="4215497585250573029">VPN կարգավորումներ</translation>
@@ -333,6 +338,7 @@
 <translation id="4285498937028063278">Ապամրացնել</translation>
 <translation id="4294319844246081198">Բարի լույս, <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Մաքրել բոլոր <ph name="COUNT" /> ծանուցումները</translation>
+<translation id="4302592941791324970">Հասանելի չէ</translation>
 <translation id="4303223480529385476">Ծավալել կարգավիճակի տարածքը</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Դուք սեղմել եք բարձր կոնտրաստի դյուրանցման ստեղները: Ուզում եք միացնե՞լ այն:</translation>
@@ -426,6 +432,7 @@
 <translation id="5302048478445481009">Լեզու</translation>
 <translation id="5313326810920013265">Bluetooth-ի կարգավորումներ</translation>
 <translation id="5314219114274263156">Էկրանը տեսագրվել է</translation>
+<translation id="5329548388331921293">Միացում…</translation>
 <translation id="5331975486040154427">USB-C սարք (հետևի ձախակողմյան միացք)</translation>
 <translation id="5352250171825660495">Մուգ թեման միացված է</translation>
 <translation id="5379115545237091094">Չափազանց շատ փորձեր</translation>
@@ -439,6 +446,7 @@
 <translation id="5465662442746197494">Օգնությո՞ւն է պետք:</translation>
 <translation id="5496819745535887422">Ձեր ադմինիստրատորը վերակայում է ձեր սարքը: Երբ սարքը վերագործարկվի, բոլոր տվյալները կջնջվեն:</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166">«<ph name="FEATURE_NAME" />» գործառույթը միանում է։</translation>
 <translation id="553675580533261935">Ելք աշխատաշրջանից</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5548285847212963613">«<ph name="EXTENSION_NAME" />» կօգնի կապվել այս ցանցին:</translation>

@@ -134,6 +134,7 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> Po</translation>
 <translation id="5266161281976477809">Triangle d'expansion</translation>
 <translation id="5278860589123563674">Échec de l'envoi</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> requiert votre attention.</translation>
 <translation id="528468243742722775">Fin</translation>
 <translation id="5329858601952122676">&amp;Supprimer</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> sur <ph name="IN_PLACE_APP" />. Relâcher pour créer un dossier.</translation>
@@ -144,6 +145,7 @@
 <translation id="5574202486608032840">Système <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Retour</translation>
 <translation id="5613020302032141669">Gauche</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> requiert votre attention.</translation>
 <translation id="5675363643668471212">Élément d'étagère</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}one{# min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Actif aujourd'hui}=1{Actif il y a 1 jour}one{Actif il y a # jour}other{Actif il y a # jours}}</translation>

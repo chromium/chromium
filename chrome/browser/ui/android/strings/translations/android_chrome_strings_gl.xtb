@@ -344,6 +344,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3568688522516854065">Inicia sesión e activa a sincronización para sincronizar as pestanas dos demais dispositivos</translation>
 <translation id="3587482841069643663">Todos</translation>
 <translation id="3587596251841506391">Axudar a mellorar a seguranza na Web</translation>
+<translation id="3598653140581545904">Usar o modo de incógnito para iniciar sesión</translation>
 <translation id="3599863153486145794">Borra o historial de todos os dispositivos que teñen a sesión iniciada. É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="3602290021589620013">Previsualizar</translation>
 <translation id="3616113530831147358">Audio</translation>
@@ -385,6 +386,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Combinar os meus datos</translation>
 <translation id="393697183122708255">A busca por voz non está dispoñible</translation>
+<translation id="3943557322767080599">Mostrar solicitudes de inicio de sesión en Chrome cando inicies sesión na túa Conta de Google</translation>
 <translation id="395206256282351086">Desactiváronse as suxestións de sitios e de busca</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome cargará a páxina cando o dispositivo estea listo}other{Chrome cargará as páxinas cando o dispositivo estea listo}}</translation>
 <translation id="3963007978381181125">A encriptación mediante frase de acceso non inclúe métodos de pago nin enderezos de Google Pay. Só alguén coa túa frase de acceso pode ler os teus datos encriptados. A frase de acceso non se envía nin se almacena en Google. Se a esqueces ou se queres cambiar esta opción de configuración, deberás restablecer a sincronización. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -660,6 +662,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5937580074298050696">Datos aforrados: <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">Restablecer</translation>
 <translation id="5942872142862698679">Uso de Google para a busca</translation>
+<translation id="5951119116059277034">Vendo páxina en directo</translation>
 <translation id="5951615825629292797">O idioma xa está preparado. Reinicia <ph name="APP_NAME" /></translation>
 <translation id="5952764234151283551">Envía a Google o URL dunha páxina á que tentas acceder</translation>
 <translation id="5956665950594638604">Abrir o Centro de Axuda de Chrome nunha nova pestana</translation>
@@ -669,6 +672,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5964805880140440652">Para compartir esta páxina con outro dispositivo, activa a sincronización na configuración de Chrome</translation>
 <translation id="5964869237734432770">Descricións de imaxes: non</translation>
 <translation id="5979084224081478209">Comprobar contrasinais</translation>
+<translation id="5982307838673692400">Abrir unha pestana do modo de incógnito</translation>
 <translation id="6000066717592683814">Manter Google</translation>
 <translation id="6005538289190791541">Contrasinal suxerido</translation>
 <translation id="6014293228235665243">Sen ler</translation>
@@ -698,6 +702,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="6192907950379606605">Obter descricións de imaxes</translation>
 <translation id="6206830853671714236">Escoller cando realizar a descarga</translation>
 <translation id="6210748933810148297">Non es <ph name="EMAIL" />?</translation>
+<translation id="6211386937064921208">Mostrando unha vista previa desta páxina</translation>
 <translation id="6218096829563201111">Buscar produtos similares <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Desbloquea a pantalla para exportar os teus contrasinais</translation>
 <translation id="6232535412751077445">Se activas a opción Do Not Track, incluirase unha solicitude no teu tráfico de navegación. O efecto producido depende de se o sitio web responde á solicitude e da interpretación desta.
@@ -809,6 +814,9 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6900532703269623216">Protección mellorada</translation>
 <translation id="6903907808598579934">Activar sincronización</translation>
 <translation id="6929699136511445623">Activar sincronización do sistema Android</translation>
+<translation id="6941901516114974832">Lembra que ese modo non impide que os sitios web que visites, a túa empresa, o teu centro educativo e o teu fornecedor de servizos de Internet <ph name="BEGIN_BOLD1" />poidan ver a túa actividade<ph name="END_BOLD1" />.
+
+Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />pechar todas as pestanas do modo de incógnito<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Cambia a localización de descarga predeterminada en calquera momento usando a opción do menú Configuración</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6955535239952325894">Esta opción de configuración está desactivada nos navegadores xestionados</translation>

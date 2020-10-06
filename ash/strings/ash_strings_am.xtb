@@ -27,6 +27,7 @@
 <translation id="121097972571826261">በየቃሉ ወደፊት</translation>
 <translation id="1225748608451425081">የእርስዎ Chromebook በአንድ የታወቀ ችግር ምክንያት ተቆልፏል። ከሚከተለው ያህል ጊዜ በኋላ ወደ መለያ መግባት ይችላሉ፦ <ph name="TIME_LEFT" />።</translation>
 <translation id="1229194443904279055">መምረጥ ያቁሙ</translation>
+<translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ተገናኝቷል።</translation>
 <translation id="1247372569136754018">ማይክሮፎን (ውስጣዊ)</translation>
 <translation id="1252999807265626933">ኃይል ከ<ph name="POWER_SOURCE" /> በመሙላት ላይ</translation>
 <translation id="1255033239764210633">የአየር ሁኔታው ምንድነው?</translation>
@@ -74,6 +75,7 @@
 <translation id="1654477262762802994">የድምጽ መጠይቅ ይጀምሩ</translation>
 <translation id="1667964833127753507">ገለልተኛ የቀለም ሁነታ ከልጣፍ የወጡ ቀለማትን አይጠቀምም፣ በገለልተኛ ፈካ ያሉ ወይም ደማቅ ቅልመቶችን ይተካቸዋል።</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ቀርቷል</translation>
+<translation id="1677507110654891115"><ph name="FEATURE_NAME" /> አልተገናኘም።</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ሰዓት ቆጣሪ · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">የIPv6 አድራሻ፦ <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">ዴስክ፦ <ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@
 <translation id="2369165858548251131">«Hello» በቻይንኛ</translation>
 <translation id="2390318262976603432">የቋንቋ ቅንብሮች</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="2405664212338326887">አልተገናኘም</translation>
 <translation id="2408955596600435184">የእርስዎን ፒን ያስገቡ</translation>
 <translation id="2412593942846481727">ዝማኔ ይገኛል</translation>
 <translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> በ<ph name="DOMAIN" /> የሚተዳደር ክፍለ-ጊዜ ነው</translation>
@@ -243,6 +246,7 @@
 <translation id="3364721542077212959">የስቲለስ መሣሪያዎች</translation>
 <translation id="3368922792935385530">ተያይዟል</translation>
 <translation id="3371140690572404006">የUSB-C መሣሪያ (የቀኝ ጎን የፊት ወደብ)</translation>
+<translation id="3375634426936648815">ተገናኝቷል</translation>
 <translation id="3386978599540877378">የሙሉ ማያ ገጽ ማጉያ</translation>
 <translation id="3400357268283240774">ተጨማሪ ቅንብሮች</translation>
 <translation id="3410336247007142655">ጠቆር ያለ የገጽታ ቅንብሮችን አሳይ</translation>
@@ -322,6 +326,7 @@
 <translation id="4181841719683918333">ቋንቋዎች</translation>
 <translation id="4195877955194704651">ራስሰር ጠቅታዎች አዝራር</translation>
 <translation id="4197790712631116042">ጠፍቷል</translation>
+<translation id="4201033867194214117"><ph name="FEATURE_NAME" /> አይገኝም።</translation>
 <translation id="4212246570487010370">ማሰሱን ይቀጥሉ</translation>
 <translation id="4212472694152630271">ወደ ፒን ቀይር</translation>
 <translation id="4215497585250573029">የቪፒኤን ቅንብሮች</translation>
@@ -333,6 +338,7 @@
 <translation id="4285498937028063278">ይንቀሉ</translation>
 <translation id="4294319844246081198">ደህና አደሩ <ph name="GIVEN_NAME" />፣</translation>
 <translation id="4296136865091727875">ሁሉንም <ph name="COUNT" /> ማሳወቂያዎች አጽዳ</translation>
+<translation id="4302592941791324970">አይገኝም</translation>
 <translation id="4303223480529385476">የሁኔታ አካባቢን ዘርጋ</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">የከፍተኛ ንጽጽር የቁልፍ ሰሌዳ አቋራጩን ተጭነዋል። ሊያበሩት ይፈልጋሉ?</translation>
@@ -426,6 +432,7 @@
 <translation id="5302048478445481009">ቋንቋ</translation>
 <translation id="5313326810920013265">የብሉቱዝ ቅንብሮች</translation>
 <translation id="5314219114274263156">የማያ ገጽ ቀረጻ ተቀድቷል</translation>
+<translation id="5329548388331921293">በማገናኘት ላይ...</translation>
 <translation id="5331975486040154427">USB-C መሣሪያ (የግራ ጎን ኋላ ወደብ)</translation>
 <translation id="5352250171825660495">ጠቆር ያለ ገጽታ በርቷል</translation>
 <translation id="5379115545237091094">በጣም ብዙ ሙከራዎች</translation>
@@ -439,6 +446,7 @@
 <translation id="5465662442746197494">እገዛ አስፈለገዎት?</translation>
 <translation id="5496819745535887422">የእርስዎ አስተዳዳሪ የእርስዎን መሣሪያ እየቀነሰው ነው። መሣሪያው ዳግም እንዲጀምር ሲደረግ ሁሉም ውሂብ ይሰረዛል።</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166"><ph name="FEATURE_NAME" /> በመገናኘት ላይ ነው።</translation>
 <translation id="553675580533261935">ከክፍለ-ጊዜ በመውጣት ላይ</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5548285847212963613">«<ph name="EXTENSION_NAME" />» ቅጥያ ወደዚህ አውታረመረብ ለማገናኘት ሊያግዝ ይችላል።</translation>

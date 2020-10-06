@@ -300,6 +300,7 @@
 <translation id="3943857333388298514">ପେଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="394485226368336402">ଅଡିଓ ସେଟିଂସ୍‍</translation>
 <translation id="3962859241508114581">ପୂର୍ବବର୍ତ୍ତୀ ଟ୍ରାକ୍</translation>
+<translation id="3969043077941541451">ବନ୍ଦ ଅଛି</translation>
 <translation id="397105322502079400">ଗଣନା କରାଯାଉଛି…</translation>
 <translation id="3977512764614765090">ବ୍ୟାଟେରୀ <ph name="PERCENTAGE" />% ଅଛି ଏବଂ ଚାର୍ଜ ହେଉଛି।</translation>
 <translation id="3995138139523574647">USB-C ଡିଭାଇସ୍‌ (ଡାହାଣପଟ ପଛ ପୋର୍ଟ)</translation>
@@ -310,6 +311,7 @@
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">ଆପଣ, ଆପଣଙ୍କର ସ୍କ୍ରିନ୍ ସେୟାର୍ କରୁଛନ୍ତି</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ଏକ ଆପ୍ ପାଇଁ ବନ୍ଦ ଅଛି}other{#ଟି ଆପ୍ସ ପାଇଁ ବନ୍ଦ ଅଛି}}</translation>
+<translation id="4066027111132117168"><ph name="REMAINING_TIME" />ରେ</translation>
 <translation id="4072264167173457037">ମଧ୍ୟମ ସିଗ୍ନାଲ୍</translation>
 <translation id="4112140312785995938">ପଛକୁ ଆଣନ୍ତୁ</translation>
 <translation id="4114315158543974537">ଫୋନ୍ ହବ୍ ଚାଲୁ କରନ୍ତୁ</translation>
@@ -564,6 +566,7 @@
 <translation id="6803622936009808957">ଏକାପରି ଡିସ୍‌ପ୍ଲେ କରାଯାଇପାରିଲା ନାହିଁ କାରଣ ସମର୍ଥିତ ରିଜୋଲ୍ୟୁଶନ୍ ମିଳିଲା ନାହିଁ। ଏହା ପରିବର୍ତ୍ତେ ବିସ୍ତାରିତ ଡେସ୍କଟପ୍‍ ଲେଖାଯାଇଛି।</translation>
 <translation id="6818242057446442178">ଗୋଟିଏ ଶବ୍ଦ ପଛକୁ ଫେରନ୍ତୁ</translation>
 <translation id="6820676911989879663">ଏକ ବିରତି ନିଅନ୍ତୁ!</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> ସେ</translation>
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ଗୋଟିଏ ଅଙ୍କ ବାକି ଅଛି}other{#ଟି ଅଙ୍କ ବାକି ଅଛି}}</translation>
 <translation id="6878400149835617132">ସର୍ଟକଟ୍ ବନ୍ଦ କରାଯାଇଛି</translation>
@@ -632,6 +635,7 @@
 <translation id="7600875258240007829">ସମସ୍ତ ବିଜ୍ଞପ୍ତି ଦେଖନ୍ତୁ</translation>
 <translation id="7618774594543487847">ନ୍ୟୁଟ୍ରାଲ୍</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° ଫାରେନହାଇଟ୍</translation>
+<translation id="7633755430369750696">Nearby Share ସେଟିଂସ୍ ଦେଖାନ୍ତୁ।</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" /> ପାଇଁ ସେଟିଂସ୍ ଖୋଲନ୍ତୁ, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ମାଲିକ)</translation>
 <translation id="7647488630410863958">ଆପଣଙ୍କର ବିଜ୍ଞପ୍ତି ଦେଖିବାକୁ ଡିଭାଇସ୍‌ ଅନ୍‌ଲକ୍‌ କରନ୍ତୁ</translation>
@@ -647,6 +651,7 @@
 <translation id="7780159184141939021">ସ୍କ୍ରିନ୍‌କୁ ଘୂରାନ୍ତୁ</translation>
 <translation id="7796353162336583443">ଏକ ନୋଟ୍ ବା ସ୍କ୍ରିନ୍‌ସଟ୍ ନେବାକୁ ଏବଂ Google ଆସିଷ୍ଟାଣ୍ଟ, ଲେଜର୍ ପଏଣ୍ଟର୍ କିମ୍ବା ମ୍ୟାଗ୍ନିଫାଇଂ ଗ୍ଲାସ୍ ବ୍ୟବହାର କରିବାକୁ ସେଲ୍ଫରେ ଥିବା ଷ୍ଟାଇଲସ୍ ବଟନ୍ ଉପରେ ଟାପ୍ କରନ୍ତୁ।</translation>
 <translation id="7798302898096527229">ବାତିଲ୍‌ କରିବାକୁ Search କିମ୍ବା Shift ଦବାନ୍ତୁ।</translation>
+<translation id="781126011916719498">ଆପଣଙ୍କ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ଫାଇଲଗୁଡ଼ିକୁ ଶୀଘ୍ର ଆକ୍ସେସ୍ କରନ୍ତୁ। କୌଣସି ଫାଇଲକୁ ପିନ୍ କରିବା ପାଇଁ ଡାହାଣ-କ୍ଲିକ୍ କରନ୍ତୁ କିମ୍ବା ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତୁ।</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ଓ <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">ଶକ୍ତିଶାଳୀ ସିଗ୍‌‌‌‌‌‌‌ନାଲ୍</translation>
 <translation id="7837740436429729974">ସମୟ ସମାପ୍ତ</translation>
@@ -790,6 +795,7 @@
 <translation id="9089416786594320554">ଇନ୍‌ପୁଟ୍ ପଦ୍ଧତି</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" />ରୁ ଡିସ୍‌ପ୍ଲେ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="9151726767154816831">ଅପ୍‍‍ଡେଟ୍ କରିବା ପାଇଁ ରିଷ୍ଟାର୍ଟ ଓ ପାୱର୍‍ୱାସ୍ କରନ୍ତୁ</translation>
+<translation id="9166331175924255663">Nearby Shareର ଉଚ୍ଚ ଭିଜିବିଲିଟୀକୁ ଟୋଗଲ୍ କରନ୍ତୁ।</translation>
 <translation id="9168436347345867845">ଏହାକୁ ପରେ କରନ୍ତୁ</translation>
 <translation id="9179259655489829027">ଏହି ବୈଶିଷ୍ଟ୍ୟ ଯେକୌଣସି ସାଇନ୍ ଇନ୍ କରିଥିବା ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ ବିନା ପାସ୍‌ୱାର୍ଡରେ ଶୀଘ୍ର ଆକ୍ସେସ୍ କରିବା ପାଇଁ ଆପଣଙ୍କୁ ଅନୁମତି ଦିଏ। କେବଳ ଆପଣ ବିଶ୍ୱାସ କରୁଥିବା ଆକାଉଣ୍ଟଗୁଡ଼ିକରେ ଏହି ବୈଶିଷ୍ଟ୍ୟ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="9183456764293710005">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ ମ୍ୟାଗ୍ନିଫାୟର୍</translation>

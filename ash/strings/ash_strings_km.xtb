@@ -27,6 +27,7 @@
 <translation id="121097972571826261">ទៅមុខមួយពាក្យ</translation>
 <translation id="1225748608451425081">Chromebook របស់អ្នក​ជាប់សោ ដោយសារបញ្ហាដែលស្គាល់។ អ្នកនឹងអាចចូលគណនី បន្ទាប់ពីរយៈពេល៖ <ph name="TIME_LEFT" /> ទៀត។</translation>
 <translation id="1229194443904279055">ឈប់​ជ្រើសរើស</translation>
+<translation id="1239161794459865856">បានភ្ជាប់ <ph name="FEATURE_NAME" />។</translation>
 <translation id="1247372569136754018">មីក្រូហ្វូន (ខាងក្នុង)</translation>
 <translation id="1252999807265626933">កំពុងសាកពី <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">តើអាកាសធាតុ​យ៉ាងម៉េចដែរ?</translation>
@@ -74,6 +75,7 @@
 <translation id="1654477262762802994">ចាប់ផ្ដើម​សំណួរ​ជាសំឡេង</translation>
 <translation id="1667964833127753507">មុខងារពណ៌ស្រាលមិនប្រើពណ៌ដែលបានយកចេញពីផ្ទាំង​រូបភាពទេ ប៉ុន្តែជំនួសពណ៌ទាំងនោះដោយបណ្ដុំពណ៌ក្រមៅ ឬពណ៌ភ្លឺស្រាល។</translation>
 <translation id="1677472565718498478">នៅសល់ <ph name="TIME" /></translation>
+<translation id="1677507110654891115">មិនបានភ្ជាប់ <ph name="FEATURE_NAME" /> ទេ។</translation>
 <translation id="1698080062160024910">កម្មវិធីកំណត់ម៉ោង <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">អាសយដ្ឋាន IPv6 ៖ <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">តុ៖ <ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@
 <translation id="2369165858548251131">"សួស្ដី" ជាភាសាចិន</translation>
 <translation id="2390318262976603432">ការកំណត់ភាសា</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="2405664212338326887">មិន​បាន​ភ្ជាប់ទេ</translation>
 <translation id="2408955596600435184">បញ្ចូល​កូដ PIN របស់​អ្នក</translation>
 <translation id="2412593942846481727">មាន​កំណែថ្មី</translation>
 <translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> គឺជា​រយៈពេល​ចូលប្រើ​ដែល​គ្រប់គ្រង​ដោយ <ph name="DOMAIN" /></translation>
@@ -243,6 +246,7 @@
 <translation id="3364721542077212959">ឧបករណ៍ប៊ិច</translation>
 <translation id="3368922792935385530">បានភ្ជាប់</translation>
 <translation id="3371140690572404006">ឧបករណ៍ USB-C (រន្ធមុខផ្នែកខាងស្តាំ)</translation>
+<translation id="3375634426936648815">បានភ្ជាប់</translation>
 <translation id="3386978599540877378">កម្មវិធីពង្រីក​ពេញ​អេក្រង់</translation>
 <translation id="3400357268283240774">ការកំណត់​បន្ថែម</translation>
 <translation id="3410336247007142655">បង្ហាញការ​កំណត់​រចនាប័ទ្ម​ងងឹត</translation>
@@ -322,6 +326,7 @@
 <translation id="4181841719683918333">ភាសា</translation>
 <translation id="4195877955194704651">ប៊ូតុងចុច​ស្វ័យប្រវត្តិ</translation>
 <translation id="4197790712631116042">បិទ</translation>
+<translation id="4201033867194214117">មិនអាច​ប្រើ <ph name="FEATURE_NAME" /> បានទេ។</translation>
 <translation id="4212246570487010370">ការអានបន្ត</translation>
 <translation id="4212472694152630271">ប្ដូរទៅកូដ PIN</translation>
 <translation id="4215497585250573029">ការ​កំណត់ VPN</translation>
@@ -333,6 +338,7 @@
 <translation id="4285498937028063278">ដកការដៅ</translation>
 <translation id="4294319844246081198">អរុណសួស្ដី <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">សម្អាត​ការ​ជូន​ដំណឹង​ទាំង <ph name="COUNT" /></translation>
+<translation id="4302592941791324970">មិនអាចប្រើបានទេ</translation>
 <translation id="4303223480529385476">ពង្រីក​តំបន់​ស្ថានភាព</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">អ្នក​បានចុច​ផ្លូវកាត់ក្ដារចុច​សម្រាប់កម្រិត​ពន្លឺខ្ពស់។ តើអ្នក​ចង់បើក​វាដែរទេ?</translation>
@@ -426,6 +432,7 @@
 <translation id="5302048478445481009">ភាសា</translation>
 <translation id="5313326810920013265">ការកំណត់​ប៊្លូធូស</translation>
 <translation id="5314219114274263156">បានថតអេក្រង់</translation>
+<translation id="5329548388331921293">កំពុង​ភ្ជាប់...</translation>
 <translation id="5331975486040154427">ឧបករណ៍ USB-C (រន្ធក្រោយផ្នែកខាងឆ្វេង)</translation>
 <translation id="5352250171825660495">រចនាប័ទ្ម​ងងឹតបានបើក</translation>
 <translation id="5379115545237091094">ព្យាយាម​ច្រើនដងពេក</translation>
@@ -439,6 +446,7 @@
 <translation id="5465662442746197494">ត្រូវការជំនួយ?</translation>
 <translation id="5496819745535887422">អ្នកគ្រប់គ្រង​របស់អ្នកកំពុងស្ដារ​ឧបករណ៍​របស់អ្នក។ ទិន្នន័យ​ទាំងអស់​នឹងត្រូវបានលុប នៅពេល​ឧបករណ៍​ចាប់ផ្ដើម​ឡើងវិញ។</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166"><ph name="FEATURE_NAME" /> កំពុងភ្ជាប់។</translation>
 <translation id="553675580533261935">ការ​ចាកចេញ​ពី​សម័យ</translation>
 <translation id="5537725057119320332">ខាស</translation>
 <translation id="5548285847212963613">កម្មវិធីបន្ថែម "<ph name="EXTENSION_NAME" />" អាចជួយភ្ជាប់ទៅបណ្តាញនេះ។</translation>

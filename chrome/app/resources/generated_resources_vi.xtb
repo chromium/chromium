@@ -122,6 +122,7 @@
 <translation id="1134009406053225289">Mở trong cửa sổ ẩn danh</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" />/<ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Khóa bảo mật đã bị khóa do bạn nhập sai mã PIN quá nhiều lần. Để mở khóa, hãy rút ra và cắm lại.</translation>
+<translation id="1137589305610962734">dữ liệu tạm thời</translation>
 <translation id="1137673463384776352">Mở liên kết trong <ph name="APP" /></translation>
 <translation id="1139343347646843679">Đã xảy ra lỗi khi định cấu hình Linux. Vui lòng liên hệ với quản trị viên của bạn.</translation>
 <translation id="1140351953533677694">Truy cập thiết bị tuần tự và Bluetooth của bạn</translation>
@@ -982,6 +983,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2131077480075264">Không thể cài đặt "<ph name="APP_NAME" />" vì "<ph name="IMPORT_NAME" />" không cho phép ứng dụng này</translation>
 <translation id="21354425047973905">Ẩn mã PIN</translation>
 <translation id="2135456203358955318">Phóng to ở vị trí cố định</translation>
+<translation id="2135468118189259524">Truy cập vào <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> để tìm hiểu về dữ liệu mà Google thu thập và lý do thu thập.</translation>
 <translation id="2135787500304447609">&amp;Tiếp tục</translation>
 <translation id="2136372518715274136">Nhập mật khẩu mới</translation>
 <translation id="2136476978468204130">Cụm mật khẩu bạn đã nhập không chính xác</translation>
@@ -3638,6 +3640,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5307030433605830021">Nguồn không được hỗ trợ</translation>
 <translation id="5308380583665731573">Kết nối</translation>
 <translation id="5310281978693206542">Gửi đường liên kết tới thiết bị của bạn</translation>
+<translation id="531118851858162334">Chúng tôi hiển thị mục này dựa trên hoạt động mà bạn thực hiện trước đây thông qua các dịch vụ của Google. Bạn có thể xem hoặc xóa dữ liệu này và thay đổi chế độ cài đặt tại <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="5311304534597152726">Đăng nhập bằng</translation>
 <translation id="5311565231560644461">Không cho phép các trang web sử dụng dữ liệu và thiết bị thực tế ảo của bạn</translation>
 <translation id="5314381603623123224">Điều khoản dịch vụ của Chrome sẽ thay đổi từ ngày 31 tháng 3</translation>
@@ -6223,6 +6226,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8378714024927312812">Do tổ chức của bạn quản lý</translation>
 <translation id="8379878387931047019">Thiết bị này không hỗ trợ loại khóa bảo mật mà trang web này yêu cầu</translation>
 <translation id="8379991678458444070">Đánh dấu thẻ này để quay lại đây nhanh chóng</translation>
+<translation id="8380266723152870797">Tên cửa sổ</translation>
 <translation id="8382384117483909115">{NUM_TABS,plural, =1{Đọc thẻ sau}other{Đọc các thẻ sau}}</translation>
 <translation id="8382913212082956454">Sao chép địa chỉ &amp;email</translation>
 <translation id="8386091599636877289">Không tìm thấy chính sách.</translation>
@@ -6387,6 +6391,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8592141010104017453">Không hiển thị thông báo nào</translation>
 <translation id="859246725979739260">Trang web này đã bị chặn truy cập thông tin vị trí của bạn.</translation>
 <translation id="8593121833493516339">Gửi dữ liệu chẩn đoán và dữ liệu về mức sử dụng. Giúp cải thiện trải nghiệm Android của con bạn bằng cách tự động gửi dữ liệu chẩn đoán cũng như dữ liệu về mức sử dụng ứng dụng và thiết bị cho Google. Những thông tin này sẽ không dùng để nhận dạng con bạn mà giúp tăng độ ổn định của hệ thống và ứng dụng cũng như cải thiện các mặt khác. Một số dữ liệu tổng hợp cũng sẽ hữu ích cho các ứng dụng và đối tác của Google, chẳng hạn như những nhà phát triển Android. Nếu bạn bật mục cài đặt bổ sung Hoạt động trên web và ứng dụng cho con mình thì dữ liệu này có thể được lưu vào Tài khoản Google của trẻ. <ph name="BEGIN_LINK1" />Tìm hiểu thêm<ph name="END_LINK1" /></translation>
+<translation id="8593735906501637689">Đã xóa <ph name="MODULE_TITLE" /></translation>
 <translation id="8594908476761052472">Quay video</translation>
 <translation id="8596540852772265699">Tệp tùy chỉnh</translation>
 <translation id="8597845839771543242">Định dạng thuộc tính:</translation>

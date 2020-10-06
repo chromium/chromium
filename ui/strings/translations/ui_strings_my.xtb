@@ -134,6 +134,7 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">Disclosure triangle</translation>
 <translation id="5278860589123563674">ပို့၍ မရပါ</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> တွင် ကြည့်စရာရှိသည်။</translation>
 <translation id="528468243742722775">အဆုံး</translation>
 <translation id="5329858601952122676">&amp;ဖျက်ရန်</translation>
 <translation id="5395308026110844773">ဖိုင်တွဲပြုလုပ်ရန် <ph name="IN_PLACE_APP" /> ပေါ်တွင် <ph name="DRAGGED_APP_NAME" /> ကို တင်သည်။</translation>
@@ -144,6 +145,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> စနစ်</translation>
 <translation id="5583640892426849032">နောက်ပြန်</translation>
 <translation id="5613020302032141669">ဘယ်မြှား</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> တွင် ကြည့်စရာရှိသည်။</translation>
 <translation id="5675363643668471212">စင်ပစ္စည်း</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{၁ မိနစ်}other{# မိနစ်}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{ယနေ့ အသုံးပြုထားသည်}=1{ပြီးခဲ့သော ၁ ရက်က အသုံးပြုထားသည်}other{ပြီးခဲ့သော # ရက်က အသုံးပြုထားသည်}}</translation>

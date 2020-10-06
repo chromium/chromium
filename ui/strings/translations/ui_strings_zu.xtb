@@ -134,6 +134,7 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">Unxantanthu wokuveza ulwazi</translation>
 <translation id="5278860589123563674">Yehlulekile ukuthumela</translation>
+<translation id="5283099933536931082">I-<ph name="APP_ITEM_TITLE" /> icela ukunakwa kwakho.</translation>
 <translation id="528468243742722775">Qeda</translation>
 <translation id="5329858601952122676">Susa</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> phezu kwe-<ph name="IN_PLACE_APP" />, khulula ukuze udale ifolda.</translation>
@@ -144,6 +145,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> isistimu</translation>
 <translation id="5583640892426849032">I-Backspace</translation>
 <translation id="5613020302032141669">Umcibisholo ongakwesokunxele</translation>
+<translation id="5652575806481723716">I-<ph name="FOCUSED_APP_NAME" /> icela ukunakwa kwakho.</translation>
 <translation id="5675363643668471212">Into yeshelufu</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 iminithi}one{# amaminithi}other{# amaminithi}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Iyasebenza namhlanje}=1{Isebenze ngosuku olungu-1 oludlule}one{Isebenze ngezinsuku ezingu-# ezedlule}other{Isebenze ngezinsuku ezingu-# ezedlule}}</translation>

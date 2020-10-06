@@ -27,6 +27,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="121097972571826261">Áfram um orð</translation>
 <translation id="1225748608451425081">Chromebook er læst vegna þekkts vandamáls. Þú getur skráð þig aftur inn eftir: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Hætta að velja</translation>
+<translation id="1239161794459865856"><ph name="FEATURE_NAME" /> er tengt.</translation>
 <translation id="1247372569136754018">Hljóðnemi (innbyggður)</translation>
 <translation id="1252999807265626933">Verið er að hlaða með <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Hvernig er veðrið?</translation>
@@ -74,6 +75,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1654477262762802994">Hefja raddfyrirspurn</translation>
 <translation id="1667964833127753507">Hlutlaus litastilling notar ekki liti sem dregnir eru úr veggfóðrinu en skiptir þeim þess í stað út fyrir sett af hlutlausum ljósum eða dökkum litbrigðum.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> eftir</translation>
+<translation id="1677507110654891115"><ph name="FEATURE_NAME" /> er ótengt.</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> teljari · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-vistfang: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Skjár: <ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2369165858548251131">„Halló“ á kínversku</translation>
 <translation id="2390318262976603432">Stillingar tungumálskóða</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="2405664212338326887">Ekki tengt</translation>
 <translation id="2408955596600435184">Sláðu inn PIN-númerið þitt</translation>
 <translation id="2412593942846481727">Uppfærsla í boði</translation>
 <translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> er stýrð lota sem er stjórnað af <ph name="DOMAIN" /></translation>
@@ -243,6 +246,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3364721542077212959">Pennaverkfæri</translation>
 <translation id="3368922792935385530">Tengt</translation>
 <translation id="3371140690572404006">USB-C tæki (tengi hægra megin að framan)</translation>
+<translation id="3375634426936648815">Tengt</translation>
 <translation id="3386978599540877378">stækkunargler á öllum skjánum</translation>
 <translation id="3400357268283240774">Viðbótarstillingar</translation>
 <translation id="3410336247007142655">Sýna stillingar fyrir dökkt þema</translation>
@@ -322,6 +326,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4181841719683918333">Tungumál</translation>
 <translation id="4195877955194704651">Hnappur fyrir sjálfvirka smelli</translation>
 <translation id="4197790712631116042">Slökkt</translation>
+<translation id="4201033867194214117"><ph name="FEATURE_NAME" /> er ekki tiltækt.</translation>
 <translation id="4212246570487010370">Halda áfram að fletta</translation>
 <translation id="4212472694152630271">Skipta yfir í PIN-númer</translation>
 <translation id="4215497585250573029">VPN-stillingar</translation>
@@ -333,6 +338,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4285498937028063278">Losa</translation>
 <translation id="4294319844246081198">Góðan dag <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Hreinsa <ph name="COUNT" /> tilkynningar</translation>
+<translation id="4302592941791324970">Ekki tiltækt</translation>
 <translation id="4303223480529385476">Stækka stöðusvæði</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Þú ýttir á flýtilykilinn fyrir mikil birtuskil. Viltu kveikja á þeim?</translation>
@@ -426,6 +432,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5302048478445481009">Tungumál</translation>
 <translation id="5313326810920013265">Bluetooth-stillingar</translation>
 <translation id="5314219114274263156">Skjáupptaka tekin upp</translation>
+<translation id="5329548388331921293">Tengist...</translation>
 <translation id="5331975486040154427">USB-C tæki (tengi vinstra megin að aftan)</translation>
 <translation id="5352250171825660495">Kveikt er á dökku þema</translation>
 <translation id="5379115545237091094">Of margar tilraunir</translation>
@@ -439,6 +446,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5465662442746197494">Þarftu aðstoð?</translation>
 <translation id="5496819745535887422">Kerfisstjórinn þinn er að færa tækið aftur í eldri útgáfu. Öllum gögnum verður eytt við endurræsingu tækisins.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166"><ph name="FEATURE_NAME" /> tengist.</translation>
 <translation id="553675580533261935">Lokar lotu</translation>
 <translation id="5537725057119320332">Senda út</translation>
 <translation id="5548285847212963613">Viðbótin „<ph name="EXTENSION_NAME" />“ getur aðstoðað þig við að tengjast þessu neti.</translation>

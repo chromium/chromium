@@ -27,6 +27,7 @@
 <translation id="121097972571826261">往前一個字詞</translation>
 <translation id="1225748608451425081">由於發生已知問題，因此 Chromebook 已鎖定。您將可在 <ph name="TIME_LEFT" />後登入。</translation>
 <translation id="1229194443904279055">停止選取</translation>
+<translation id="1239161794459865856">「<ph name="FEATURE_NAME" />」已連線。</translation>
 <translation id="1247372569136754018">麥克風 (內置)</translation>
 <translation id="1252999807265626933">正在使用 <ph name="POWER_SOURCE" />充電</translation>
 <translation id="1255033239764210633">天氣點樣？</translation>
@@ -74,6 +75,7 @@
 <translation id="1654477262762802994">開始語音查詢</translation>
 <translation id="1667964833127753507">中性色調模式不會使用從桌布擷取的顏色，而是改用一組中性的淺色或深色調。</translation>
 <translation id="1677472565718498478">電量尚餘 <ph name="TIME" /></translation>
+<translation id="1677507110654891115">「<ph name="FEATURE_NAME" />」並未連線。</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> 計時器 · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 位址：<ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">桌面：<ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@
 <translation id="2369165858548251131">「你好」嘅英文</translation>
 <translation id="2390318262976603432">語言代碼設定</translation>
 <translation id="2391579633712104609">180 度</translation>
+<translation id="2405664212338326887">未連線</translation>
 <translation id="2408955596600435184">請輸入您的 PIN</translation>
 <translation id="2412593942846481727">有可用的更新</translation>
 <translation id="2413728805700750528">「<ph name="DISPLAY_NAME" />」是受 <ph name="DOMAIN" /> 管理的工作階段</translation>
@@ -243,6 +246,7 @@
 <translation id="3364721542077212959">觸控筆工具</translation>
 <translation id="3368922792935385530">已連線</translation>
 <translation id="3371140690572404006">USB-C 裝置 (右側前方連接埠)</translation>
+<translation id="3375634426936648815">已連線</translation>
 <translation id="3386978599540877378">全螢幕放大鏡</translation>
 <translation id="3400357268283240774">其他設定</translation>
 <translation id="3410336247007142655">顯示深色主題背景設定</translation>
@@ -322,6 +326,7 @@
 <translation id="4181841719683918333">語言</translation>
 <translation id="4195877955194704651">自動點擊嘅掣</translation>
 <translation id="4197790712631116042">已關閉</translation>
+<translation id="4201033867194214117">「<ph name="FEATURE_NAME" />」無法使用。</translation>
 <translation id="4212246570487010370">繼續瀏覽</translation>
 <translation id="4212472694152630271">改用 PIN</translation>
 <translation id="4215497585250573029">VPN 設定</translation>
@@ -333,6 +338,7 @@
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="4294319844246081198"><ph name="GIVEN_NAME" />，早晨：</translation>
 <translation id="4296136865091727875">清除全部 <ph name="COUNT" /> 個通知</translation>
+<translation id="4302592941791324970">無法使用</translation>
 <translation id="4303223480529385476">展開狀態區</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">您已按下高對比度的鍵盤快速鍵。確定要旋轉螢幕嗎？</translation>
@@ -426,6 +432,7 @@
 <translation id="5302048478445481009">語言</translation>
 <translation id="5313326810920013265">藍牙設定</translation>
 <translation id="5314219114274263156">已錄影螢幕畫面</translation>
+<translation id="5329548388331921293">正在連線…</translation>
 <translation id="5331975486040154427">USB-C 裝置 (左側後方連接埠)</translation>
 <translation id="5352250171825660495">深色主題背景已開啟</translation>
 <translation id="5379115545237091094">嘗試次數過多</translation>
@@ -439,6 +446,7 @@
 <translation id="5465662442746197494">需要協助嗎？</translation>
 <translation id="5496819745535887422">您的管理員正在回復裝置。所有資料將於裝置重新啟動後刪除。</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166">「<ph name="FEATURE_NAME" />」正在連線。</translation>
 <translation id="553675580533261935">正在結束工作階段</translation>
 <translation id="5537725057119320332">投放</translation>
 <translation id="5548285847212963613">擴充程式「<ph name="EXTENSION_NAME" />」可用來連線至此網絡。</translation>

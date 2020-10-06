@@ -227,6 +227,7 @@
 <translation id="1249643471736608405">বন্ধ করে দেওয়া হয়েছে বলে <ph name="PLUGIN_NAME" /> ব্লক করা হয়েছে</translation>
 <translation id="1251366534849411931">প্রত্যাশিত শুরুর সেকেন্ড ব্র্যাকেট: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">এর ফলে সাইট ও ইনস্টল করা অ্যাপগুলির স্টোর করা <ph name="TOTAL_USAGE" /> ডেটা মুছে যাবে</translation>
+<translation id="125220115284141797">ডিফল্ট</translation>
 <translation id="1252987234827889034">প্রোফাইল ত্রুটি ঘটেছে</translation>
 <translation id="1254593899333212300">সরাসরি ইন্টারনেট সংযোগ</translation>
 <translation id="1259152067760398571">গতকাল নিরাপত্তা সংক্রান্ত পরীক্ষা চালানো হয়েছে</translation>
@@ -318,6 +319,7 @@
 <translation id="1361872463926621533">চালু করার সময় সাউন্ড চালান</translation>
 <translation id="1362865166188278099">যান্ত্রিক সমস্যা হয়েছে। প্রিন্টারটি চেক করুন</translation>
 <translation id="1363585519747660921">ইউএসবি প্রিন্টার কনফিগার করা প্রয়োজন</translation>
+<translation id="1364664799726141130">আপনার যাচাই করা অ্যাকাউন্টের মাধ্যমে এই ডিভাইস অ্যাক্সেস করার অনুমতি নেই। খেয়াল করুন, সেশন আনলক করতে <ph name="ACCOUNT" /> যাচাই করছেন।</translation>
 <translation id="1365180424462182382"><ph name="ENROLLMENT_DOMAIN" /> আপনার <ph name="BEGIN_LINK" />ব্রাউজার ম্যানেজ করে<ph name="END_LINK" /></translation>
 <translation id="1367951781824006909">একটি ফাইল বেছে নিন</translation>
 <translation id="1369149969991017342">অ্যাক্সেস পাল্টান (মাত্র এক অথবা দুইবার অ্যাক্সেস পাল্টে কম্পিউটার নিয়ন্ত্রণ করুন)</translation>
@@ -426,6 +428,7 @@
 <translation id="1486096554574027028">পাসওয়ার্ড খুঁজুন</translation>
 <translation id="1487335504823219454">চালু - কাস্টম সেটিংস</translation>
 <translation id="1489664337021920575">অন্য বিকল্প বেছে নিন</translation>
+<translation id="1492417797159476138">আপনি আগেই এই সাইটের জন্য ইউজারনেমটি সেভ করেছেন</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" />এর জন্য প্রতীক্ষারত...</translation>
 <translation id="1495486559005647033"><ph name="NUM_PRINTERS" />টি অন্যান্য উপলব্ধ ডিভাইস৷</translation>
 <translation id="1495677929897281669">ট্যাবে ফিরে যান</translation>
@@ -651,6 +654,7 @@
 <translation id="173628468822554835">বুঝেছি৷ ডিফল্ট হিসেবে আপনি যেসব নতুন সাইটে যাবেন সেগুলি বিজ্ঞপ্তি পাঠাবে না।</translation>
 <translation id="1736419249208073774">ঘুরে দেখুন</translation>
 <translation id="1737968601308870607">ফাইল বাগ</translation>
+<translation id="174123615272205933">কাস্টম</translation>
 <translation id="1741314857973421784">চালিয়ে যান</translation>
 <translation id="1743570585616704562">শনাক্ত করা যায়নি</translation>
 <translation id="1743970419083351269">ডাউনলোড বার বন্ধ করুন</translation>
@@ -685,6 +689,7 @@
 <translation id="1776712937009046120">ব্যবহারকারী যুক্ত করুন</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
 <translation id="1778457539567749232">'পড়া হয়নি' হিসেবে চিহ্নিত করুন</translation>
+<translation id="1779468444204342338">ন্যূনতম</translation>
 <translation id="1779652936965200207">দয়া করে "<ph name="DEVICE_NAME" />"-এ পাসকীটি লিখুন:</translation>
 <translation id="177989070088644880">অ্যাপ (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">গ্রুপ বন্ধ করুন</translation>
@@ -1457,6 +1462,7 @@
 <translation id="2688196195245426394">ডিভাইসটি সার্ভারে নথিভুক্ত করার সময়ে ত্রুটি: <ph name="CLIENT_ERROR" />৷</translation>
 <translation id="2690024944919328218">ভাষা বিকল্পগুলি দেখান</translation>
 <translation id="2691385045260836588">মডেল</translation>
+<translation id="2691440343905273290">ইনপুট সেটিংস পরিবর্তন করুন</translation>
 <translation id="2693176596243495071">একটি অজানা সমস্যা হয়েছে। অনুগ্রহ করে পরে আবার চেষ্টা করুন বা সমস্যাটি হতে থাকলে আপনার প্রশাসককে জানান।</translation>
 <translation id="2695749433451188613">ইন্টারনেট প্রিন্ট প্রোটোকল (HTTPS)</translation>
 <translation id="2699911226086014512">পিন ভিত্তিক কাজটি সঠিকভাবে করা যায়নি, সমস্যার কোড <ph name="RETRIES" />।</translation>
@@ -2073,6 +2079,7 @@
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" /> এর জন্য আরও অ্যাকশন</translation>
 <translation id="3440761377721825626">আপনার কম্পিউটার অ্যাক্সেস করার জন্য যখন কোনো সাইট কোনো প্লাগ-ইন ব্যবহার করতে চায় তখন জিজ্ঞাসা করবেন</translation>
 <translation id="3441653493275994384">বাছাই করুন</translation>
+<translation id="3441663102605358937">এই অ্যাকাউন্ট যাচাই করতে <ph name="ACCOUNT" />-এ সাইন-ইন করুন</translation>
 <translation id="3445047461171030979">Google Assistant-এর ঝটপট উত্তর</translation>
 <translation id="3445925074670675829">USB-C ডিভাইস</translation>
 <translation id="3446274660183028131">Windows ইনস্টল করতে Parallels Desktop চালু করুন।</translation>
@@ -2823,6 +2830,7 @@
 <translation id="4312866146174492540">অবরুদ্ধ করুন (ডিফল্ট)</translation>
 <translation id="4314815835985389558">সিঙ্ক ম্যানেজ করুন</translation>
 <translation id="4316850752623536204">ডেভেলপার ওয়েবসাইট</translation>
+<translation id="4317820549299924617">যাচাইকরণ সম্পূর্ণ হয়নি</translation>
 <translation id="4320177379694898372">কোনো ইন্টারনেট সংযোগ নেই</translation>
 <translation id="4322394346347055525">অন্যান্য ট্যাব বন্ধ করুন</translation>
 <translation id="4324577459193912240">ফাইলটি অসম্পূর্ণ</translation>
@@ -3668,6 +3676,7 @@
 <translation id="5362741141255528695">ব্যক্তিগত কী ফাইল নির্বাচন করুন৷</translation>
 <translation id="5363109466694494651">পাওয়ারওয়াশ এবং প্রত্যাবর্তন করুন</translation>
 <translation id="5365881113273618889">আপনি যে ফোল্ডার বেছে নিয়েছেন সেটিতে সংবেদনশীল ফাইল আছে। আপনি কি "<ph name="APP_NAME" />"-কে স্থায়ীভাবে লেখার অ্যাক্সেস দেওয়ার ব্যাপারে নিশ্চিত?</translation>
+<translation id="536638840841140142">কোনওটিই নয়</translation>
 <translation id="5368720394188453070">আপনার ফোন লক করা আছে৷ লিখতে আনলক করুন৷</translation>
 <translation id="5368779022775404937"><ph name="REALM" />-এ সাইন-ইন করুন</translation>
 <translation id="5369491905435686894">মাউস অ্যাক্সিলারেশন বিকল্পটি চালু করুন</translation>
@@ -4823,6 +4832,7 @@
 <translation id="6748465660675848252">আপনি এগিয়ে যেতে পারেন, কিন্তু শুধুমাত্র আপনার সিঙ্ক হওয়া ডেটা এবং সেটিংস পুনরুদ্ধার করা হবে৷ সমস্ত স্থানীয় ডেটা হারিয়ে যাবে৷</translation>
 <translation id="6749006854028927059">কোনও সাইট আপনাকে পছন্দের বিজ্ঞাপন দেখানোর মতো কোনও উদ্দেশ্যে বিভিন্ন ওয়েবসাইট জুড়ে আপনার ব্রাউজিং অ্যাক্টিভিটি দেখার জন্য আপনার কুকি ব্যবহার করতে পারবে না। কিছু কিছু সাইটের ফিচার কাজ নাও করতে পারে।</translation>
 <translation id="6750757184909117990">মোবাইল নেটওয়ার্ক বন্ধ করুন</translation>
+<translation id="6750946710563435348">অন্য ইউজারনেম ব্যবহার করুন</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" />(ছদ্মবেশী)</translation>
 <translation id="6757101664402245801">URL কপি করা হয়েছে</translation>
 <translation id="6758056191028427665">আমাদের পরিষেবা কেমন লাগছে তা জানান।</translation>
@@ -5341,6 +5351,7 @@
 <translation id="7377451353532943397">সেন্সর অ্যাক্সেস ব্লক করা চালিয়ে যান</translation>
 <translation id="73786666777299047">Chrome ওয়েব স্টোর খুলুন</translation>
 <translation id="7378812711085314936">ডেটা সংযোগ পান</translation>
+<translation id="7380622428988553498">ডিভাইসের নামে অনুপোযুক্ত অক্ষর আছে</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> আপডেট করা হয়েছে</translation>
 <translation id="7384687527486377545">কীবোর্ড অটো-রিপিট</translation>
 <translation id="7385854874724088939">প্রিন্টের চেষ্টা করার সময় কোন সমস্যা হয়েছে৷  অনুগ্রহ করে আপনার প্রিন্টার চেক করে আবার চেষ্টা করুন৷</translation>
@@ -5389,6 +5400,7 @@
 <translation id="7434969625063495310">প্রিন্ট সার্ভারটি যোগ করা যায়নি। সার্ভার কনফিগারেশন চেক করে আবার চেষ্টা করুন।</translation>
 <translation id="7436921188514130341">নাম পরিবর্তনের সময় একটি ত্রুটি হয়েছিল।</translation>
 <translation id="7438976808740265764">Flash Player ২০২০ সালের ডিসেম্বরের পরে আর ব্যবহার করা যাবে না।</translation>
+<translation id="7439519621174723623">চালিয়ে যেতে ডিভাইসের নাম যোগ করুন</translation>
 <translation id="7441736921018636843">এই সেটিংটি পরিবর্তন করতে, আপনার সিঙ্ক পাসফ্রেজটি সরানোর জন্য <ph name="BEGIN_LINK" />সিঙ্ক রিসেট করুন<ph name="END_LINK" /></translation>
 <translation id="7441830548568730290">অন্যান্য ব্যবহারকারী</translation>
 <translation id="7442465037756169001">আপনার Hangouts Meet Hardware সেট-আপ করার জন্য প্রস্তুত।</translation>
@@ -5630,6 +5642,7 @@
 <translation id="7717134585801378441">সাইট আপনার লোকেশন অ্যাক্সেস করার অনুমতি চাইতে পারে (সাজেস্ট করা হয়েছে)</translation>
 <translation id="7717845620320228976">আপডেটগুলির জন্য চেক করুন</translation>
 <translation id="7719367874908701697">পৃষ্ঠা জুম</translation>
+<translation id="7719588063158526969">ডিভাইসের নাম অত্যধিক দীর্ঘ</translation>
 <translation id="7721179060400456005">উইন্ডোগুলিকে স্ক্রিন জুড়ে দেখানোর অনুমতি দিন।</translation>
 <translation id="7722040605881499779">আপডেটের জন্য প্রয়োজন: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">কাটুন</translation>
@@ -5933,6 +5946,7 @@
 <translation id="8049705080247101012">Google <ph name="EXTENSION_NAME" /> কে ক্ষতিকারক হিসাবে ফ্ল্যাগ করেছে এবং ইনস্টলেশন বন্ধ করা হয়েছে</translation>
 <translation id="8049948037269924837">টাচপ্যাড উল্টো দিকে স্ক্রল করা</translation>
 <translation id="8050038245906040378">Microsoft Commercial Code Signing</translation>
+<translation id="8050191834453426339">আবার যাচাই করুন</translation>
 <translation id="8051193500142930381">যেসব ফিচার ব্যবহার করতে ক্যামেরা দরকার সেগুলি কাজ করবে না</translation>
 <translation id="8051390370038326517">MIDI ডিভাইসগুলির সম্পূর্ণ নিয়ন্ত্রণের অনুমতি <ph name="HOST" />-কে দেওয়া হয়েছে</translation>
 <translation id="8053278772142718589">PKCS #12 টি ফাইল</translation>

@@ -344,6 +344,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3568688522516854065">Log ind, og aktivér synkronisering for at få adgang til dine faner på dine andre enheder</translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3587596251841506391">Gør sikkerheden på nettet bedre</translation>
+<translation id="3598653140581545904">Log ind i inkognitotilstand</translation>
 <translation id="3599863153486145794">Rydder historikken på alle enheder, hvor du er logget ind. Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
 <translation id="3616113530831147358">Lyd</translation>
@@ -385,6 +386,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3927692899758076493">Sans serif</translation>
 <translation id="3928666092801078803">Kombiner mine data</translation>
 <translation id="393697183122708255">Aktiveret talesøgning ikke tilgængelig</translation>
+<translation id="3943557322767080599">Vis Chrome-loginbeskeder, når du logger ind på din Google-konto</translation>
 <translation id="395206256282351086">Søge- og websiteforslag er deaktiveret</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome indlæser din side, når det er muligt}one{Chrome indlæser din side, når det er muligt}other{Chrome indlæser dine sider, når det er muligt}}</translation>
 <translation id="3963007978381181125">Kryptering med adgangssætning omfatter ikke betalingsmetoder og adresser fra Google Pay. Det er kun personer med din adgangssætning, der kan læse dine krypterede data. Adgangssætningen sendes ikke til eller gemmes af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du nulstille synkronisering. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
@@ -660,6 +662,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5937580074298050696">Du har sparet <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">Nulstil</translation>
 <translation id="5942872142862698679">Søgning via Google</translation>
+<translation id="5951119116059277034">Ser onlineside</translation>
 <translation id="5951615825629292797">Sproget er klar til brug – genstart <ph name="APP_NAME" /></translation>
 <translation id="5952764234151283551">Sender webadressen på en side, du forsøger at åbne, til Google</translation>
 <translation id="5956665950594638604">Åbn Hjælp til Chrome i en ny fane</translation>
@@ -669,6 +672,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5964805880140440652">Hvis du vil dele denne side med en anden enhed, skal du aktivere synkronisering i indstillingerne for Chrome</translation>
 <translation id="5964869237734432770">Stop billedbeskrivelser</translation>
 <translation id="5979084224081478209">Tjek adgangskoder</translation>
+<translation id="5982307838673692400">Åbn en inkognitofane</translation>
 <translation id="6000066717592683814">Behold Google</translation>
 <translation id="6005538289190791541">Foreslået adgangskode</translation>
 <translation id="6014293228235665243">Ulæst</translation>
@@ -698,6 +702,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="6192907950379606605">Få billedbeskrivelser</translation>
 <translation id="6206830853671714236">Vælg tidspunkt for download</translation>
 <translation id="6210748933810148297">Ikke <ph name="EMAIL" />?</translation>
+<translation id="6211386937064921208">Forhåndsvisning af denne side</translation>
 <translation id="6218096829563201111">Find lignende produkter <ph name="BEGIN_NEW" />Nyhed<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Lås op for at eksportere dine adgangskoder</translation>
 <translation id="6232535412751077445">Aktivering af "Do Not Track" betyder, at en anmodning medtages i din browsertrafik. Effekten afhænger af, om et website reagerer på anmodningen, og hvordan anmodningen fortolkes.
@@ -809,6 +814,9 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6900532703269623216">Forbedret beskyttelse</translation>
 <translation id="6903907808598579934">Aktivér synkronisering</translation>
 <translation id="6929699136511445623">Aktivér synkronisering af Android-system</translation>
+<translation id="6941901516114974832">I inkognito kan din aktivitet <ph name="BEGIN_BOLD1" />stadig være synlig<ph name="END_BOLD1" /> for de websites, du besøger, din arbejdsgiver, din skole og din internetudbyder.
+
+Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_BOLD2" />lukker alle inkognitofaner<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Du kan til enhver tid ændre standardplaceringen for downloads via menuen Indstillinger</translation>
 <translation id="6945221475159498467">Vælg</translation>
 <translation id="6955535239952325894">Denne indstilling er deaktiveret i administrerede browsere</translation>

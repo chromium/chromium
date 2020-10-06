@@ -23,6 +23,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1553358976309200471">Përditëso Chrome</translation>
 <translation id="1587223624401073077">Google Chrome po përdor kamerën tënde.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> është i rrezikshëm, prandaj Chrome e ka bllokuar.</translation>
+<translation id="1597911401261118146">Për të kontrolluar nëse fjalëkalimet e tua janë të sigurta nga nxjerrjet e paautorizuara të të dhënave dhe probleme të tjera të sigurisë, <ph name="BEGIN_LINK" />identifikohu në Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Për ta bërë më të sigurt Chrome, çaktivizuam shtesën e mëposhtme që nuk është e listuar në <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dhe që mund të jetë shtuar pa dijeninë tënde.</translation>
 <translation id="162448658176061655">Chrome kontrollon për softuerë të padëshiruar një herë në javë. Kontrolli i fundit: një moment më parë.</translation>
 <translation id="162629503687514352">Sistemi operativ Chrome nuk mund t'i sinkronizonte fjalëkalimet e tua.</translation>
@@ -38,6 +39,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1734234790201236882">Chrome do ta ruajë këtë fjalëkalim në llogarinë tënde të Google. Nuk është nevoja që ta mbash mend.</translation>
 <translation id="174539241580958092">Google Chrome nuk mund t'i sinkronizonte të dhënat për shkak të një gabimi gjatë identifikimit.</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1786003790898721085">Sigurohu që të jesh identifikuar në Chrome në pajisjen tënde <ph name="TARGET_DEVICE_NAME" /> dhe më pas provo ta dërgosh përsëri.</translation>
 <translation id="1812689907177901597">Duke çaktivizuar këtë, mund të identifikohesh në sajtet e Google si Gmail pa u identifikuar në Chrome</translation>
 <translation id="1860536484129686729">Chrome ka nevojë për leje për t'u qasur te kamera jote për këtë sajt</translation>
 <translation id="1873233029667955273">Google Chrome nuk është shfletuesi i parazgjedhur</translation>
@@ -82,6 +84,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3065168410429928842">Skeda Chrome</translation>
 <translation id="3080151273017101988">Vazhdo ekzekutimin e aplikacioneve në sfond kur Google Chrome është i mbyllur</translation>
 <translation id="3089968997497233615">Ofrohet një version i ri dhe më i sigurt i Google Chrome.</translation>
+<translation id="3114643501466072395">Për të kontrolluar nëse fjalëkalimet e tjera janë të sigurta nga nxjerrjet e paautorizuara të të dhënave dhe probleme të tjera të sigurisë, <ph name="BEGIN_LINK" />identifikohu në Chrome<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">Sistemi operativ Chrome nuk mund t'i sinkronizonte të dhënat e tua.</translation>
 <translation id="3149510190863420837">Aplikacionet e Chrome</translation>
 <translation id="3360895254066713204">Ndihmësi i Chrome</translation>
@@ -253,6 +256,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8344083974188970894">{NUM_MINS,plural, =1{Chrome kontrollon për softuerë të padëshiruar një herë në javë. Kontrolli i fundit: 1 minutë më parë.}other{Chrome kontrollon për softuerë të padëshiruar një herë në javë. Kontrolli i fundit: {NUM_MINS} minuta më parë.}}</translation>
 <translation id="8370517070665726704">Të drejtat e autorit <ph name="YEAR" /> Google LLC. Të gjitha të drejtat e rezervuara.</translation>
 <translation id="840084489713044809">Google Chrome dëshiron të eksportojë fjalëkalimet e tua.</translation>
+<translation id="8433638294851456451">Për të dërguar një numër nga këtu te telefoni yt Android, identifikohu në Chrome në të dyja pajisjet.</translation>
 <translation id="8498858610309223613">Sapo është zbatuar një përditësim special i sigurisë për Google Chrome. Rinise tani dhe do të restaurojmë skedat e tua.</translation>
 <translation id="8521348052903287641">Rregulli hyrës për Google Chrome Dev për të lejuar trafikun mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
@@ -272,6 +276,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="884296878221830158">Ai kontrollon po ashtu se cila faqe shfaqet kur nis Chrome ose kur klikon te butoni "Kreu".</translation>
 <translation id="8862326446509486874">Nuk ke të drejtat e duhura për instalimin në nivel sistemi. Provo ta ekzekutosh përsëri instaluesin si Administrator.</translation>
 <translation id="8914504000324227558">Rinis Chrome</translation>
+<translation id="8922193594870374009">Për të dërguar një numër nga <ph name="ORIGIN" /> te telefoni yt Android, identifikohu në Chrome në të dyja pajisjet.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ofrohet një përditësim i Chrome}=1{Ofrohet një përditësim i Chrome}other{Një përditësim i Chrome ofrohet prej # ditësh}}</translation>
 <translation id="9026991721384951619">Sistemi operativ Chrome nuk mund të sinkronizonte të dhënat e tua sepse detajet e identifikimit të llogarisë nuk janë të përditësuara.</translation>
 <translation id="9067395829937117663">Google Chrome kërkon Windows 7 ose një version më të lartë.</translation>

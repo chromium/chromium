@@ -21,6 +21,7 @@
 <translation id="1553358976309200471">‏כדאי לעדכן את Chrome</translation>
 <translation id="1587223624401073077">‏Google Chrome משתמש במצלמה שלך.</translation>
 <translation id="1587325591171447154">‏<ph name="FILE_NAME" /> מסוכן, ולכן Chrome חסם אותו.</translation>
+<translation id="1597911401261118146">‏כדי לבדוק אם הסיסמאות האחרות מוגנות מפני פרצות באבטחת מידע ובעיות אבטחה אחרות, <ph name="BEGIN_LINK" />יש להיכנס ל-Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">‏כדי לשפר את האבטחה של Chrome, השבתנו את התוסף הבא שאינו רשום ב-<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> וייתכן שנוסף ללא ידיעתך.</translation>
 <translation id="162448658176061655">‏Chrome מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע. בדיקה אחרונה: לפני כמה רגעים.</translation>
 <translation id="162629503687514352">‏מערכת Chrome OS לא הצליחה לסנכרן את הסיסמאות שלך.</translation>
@@ -34,6 +35,7 @@
 <translation id="1734234790201236882">‏הסיסמה הזאת תישמר על ידי Chrome בחשבון Google. אין צורך לזכור אותה.</translation>
 <translation id="174539241580958092">‏Google Chrome לא הצליח לסנכרן את הנתונים שלך בשל שגיאת כניסה.</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1786003790898721085">‏יש לוודא שנכנסת ל-Chrome ב-<ph name="TARGET_DEVICE_NAME" /> ולשלוח שוב.</translation>
 <translation id="1812689907177901597">‏כיבוי הגדרה זו יאפשר לך להיכנס לאתרי Google, כמו Gmail, בלי להיכנס אל Chrome</translation>
 <translation id="1860536484129686729">‏Chrome זקוק להרשאת גישה למצלמה בשביל האתר הזה</translation>
 <translation id="1873233029667955273">‏Google Chrome‏ אינו דפדפן ברירת המחדל שלך</translation>
@@ -78,6 +80,7 @@
 <translation id="3065168410429928842">‏כרטיסייה של Chrome</translation>
 <translation id="3080151273017101988">‏המשך הפעלת אפליקציות ברקע כאשר Google Chrome סגור</translation>
 <translation id="3089968997497233615">‏גרסה חדשה ובטוחה יותר של Google Chrome זמינה כעת</translation>
+<translation id="3114643501466072395">‏כדי לבדוק אם הסיסמאות האחרות מוגנות מפני פרצות באבטחת מידע ובעיות אבטחה אחרות, <ph name="BEGIN_LINK" />יש להיכנס ל-Chrome<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">‏מערכת Chrome OS לא הצליחה לסנכרן את הנתונים.</translation>
 <translation id="3149510190863420837">‏אפליקציות Chrome</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
@@ -245,6 +248,7 @@
 <translation id="8344083974188970894">{NUM_MINS,plural, =1{‏Chrome מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע. בדיקה אחרונה: לפני דקה אחת.}two{‏Chrome מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע. בדיקה אחרונה: לפני {NUM_MINS} דקות.}many{‏Chrome מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע. בדיקה אחרונה: לפני {NUM_MINS} דקות.}other{‏Chrome מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע. בדיקה אחרונה: לפני {NUM_MINS} דקות.}}</translation>
 <translation id="8370517070665726704">‏Copyright <ph name="YEAR" /> Google LLC.‎ כל הזכויות שמורות.</translation>
 <translation id="840084489713044809">‏Google Chrome רוצה לייצא את הסיסמאות שלך.</translation>
+<translation id="8433638294851456451">‏כדי לשלוח מספר מכאן לטלפון Android, יש להיכנס ל-Chrome בשני המכשירים.</translation>
 <translation id="8498858610309223613">‏בוצע עדכון אבטחה מיוחד של Google Chrome. עכשיו עליך להפעיל מחדש את Chrome ואנחנו נשחזר את הכרטיסיות.</translation>
 <translation id="8521348052903287641">‏כלל נכנס לגרסת הפיתוח של Google Chrome כדי לאפשר תנועת mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
@@ -264,6 +268,7 @@
 <translation id="884296878221830158">‏הגדרה זו גם קובעת איזה דף מוצג כשאתה מפעיל את Chrome או לוחץ על הלחצן 'דף הבית'.</translation>
 <translation id="8862326446509486874">אין לך זכויות שמתאימות להתקנה ברמת המערכת. נסה להפעיל שוב את המתקין כמנהל מערכת.</translation>
 <translation id="8914504000324227558">‏הפעל מחדש את Chrome</translation>
+<translation id="8922193594870374009">‏כדי לשלוח מספר מ-<ph name="ORIGIN" /> לטלפון Android, יש להיכנס אל Chrome בשני המכשירים.</translation>
 <translation id="8999208279178790196">{0,plural, =0{‏יש עדכון זמין ל-Chrome}=1{‏יש עדכון זמין ל-Chrome}two{‏עדכון ל-Chrome זמין כבר # ימים}many{‏עדכון ל-Chrome זמין כבר # ימים}other{‏עדכון ל-Chrome זמין כבר # ימים}}</translation>
 <translation id="9026991721384951619">‏מערכת ההפעלה של Chrome לא הצליחה לסנכרן את הנתונים שלך מפני שפרטי הכניסה של חשבונך אינם מעודכנים.</translation>
 <translation id="9067395829937117663">‏כדי להשתמש ב-Google Chrome יש צורך ב-Windows מגירסה 7 ואילך.</translation>

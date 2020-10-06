@@ -9,6 +9,7 @@
 <translation id="1098170124587656448">Chromium pode protexerte contra violacións da seguranza dos datos, extensións prexudiciais e moito máis</translation>
 <translation id="1104942323762546749">Chromium quere exportar os teus contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="113122355610423240">Chromium é o teu navegador predeterminado</translation>
+<translation id="1131805035311359397">Para comprobar se os teus contrasinais están protexidos fronte a violacións da seguranza dos datos e outros problemas de seguranza, debes <ph name="BEGIN_LINK" />iniciar sesión en Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Acerca de Chromium</translation>
 <translation id="1315551408014407711">Configura o teu novo perfil de Chromium</translation>
 <translation id="1396446129537741364">Chromium está tentando mostrar contrasinais.</translation>
@@ -26,10 +27,12 @@
 <translation id="1929939181775079593">Chromium non responde. Queres volver inicialo agora?</translation>
 <translation id="1966382378801805537">Chromium non pode determinar nin establecer o navegador predeterminado</translation>
 <translation id="2008474315282236005">Esta acción eliminará 1 elemento deste dispositivo. Para recuperar os teus datos máis tarde, inicia sesión en Chromium como <ph name="USER_EMAIL" />.</translation>
+<translation id="2020032459870799438">Para comprobar se os teus outros contrasinais están protexidos fronte a violacións da seguranza dos datos e outros problemas de seguranza, debes <ph name="BEGIN_LINK" />iniciar sesión en Chromium<ph name="END_LINK" />.</translation>
 <translation id="2185166961232948079">Chromium (inicio de sesión de rede, <ph name="PAGE_TITLE" />)</translation>
 <translation id="2225696941839557119">Chromium OS non puido sincronizar os teus contrasinais.</translation>
 <translation id="2241627712206172106">Se compartes un ordenador, os teus amigos e familiares poderán navegar por separado e configurar Chromium como prefiran.</translation>
 <translation id="2294245788148774212">Opcional: Axuda a mellorar as funcións e o rendemento de Chromium OS enviando automaticamente datos de uso e diagnóstico a Google.</translation>
+<translation id="2343156876103232566">Para enviar un número desde aquí ao teu teléfono Android, inicia sesión en Chromium nos dous dispositivos.</translation>
 <translation id="2347108572062610441">Esta extensión cambiou a páxina que se mostra ao iniciar Chromium.</translation>
 <translation id="2396765026452590966">A extensión "<ph name="EXTENSION_NAME" />" cambiou a páxina que se mostra ao iniciar Chromium.</translation>
 <translation id="2483889755041906834">En Chromium</translation>
@@ -75,6 +78,7 @@
 <translation id="3575459661164320785">O teu ordenador ten software daniño. Chromium pode quitalo, restaurar a configuración e desactivar as extensións para que o navegador funcione con normalidade de novo.</translation>
 <translation id="3639635944603682591">Os datos de navegación desta persoa eliminaranse deste dispositivo. Para recuperalos, inicia sesión en Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Hai dispoñible unha actualización nova para Chromium e aplicarase en canto o reinicies.}=1{Hai dispoñible unha actualización nova para Chromium e aplicarase en canto o reinicies. A ventá do modo de incógnito non se volverá abrir.}other{Hai dispoñible unha actualización nova para Chromium e aplicarase en canto o reinicies. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
+<translation id="3651803019964686660">Para enviar un número desde <ph name="ORIGIN" /> ao teu teléfono Android, inicia sesión en Chromium nos dous dispositivos.</translation>
 <translation id="3685209450716071127">Chromium non puido comprobar os teus contrasinais. Verifica a conexión a Internet.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{O teu administrador pídeche que reinicies Chromium para aplicar esta actualización}=1{O teu administrador pídeche que reinicies Chromium para aplicar esta actualización. A ventá do modo de incógnito non se volverá abrir.}other{O teu administrador pídeche que reinicies Chromium para aplicar esta actualización. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
 <translation id="3713809861844741608">Abrir ligazón nunha nova &amp;pestana de Chromium</translation>
@@ -145,6 +149,7 @@
 <translation id="6120345080069858279">Chromium gardará este contrasinal na túa Conta de Google. Non terás que recordalo.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> é perigoso, así que Chromium bloqueouno.</translation>
 <translation id="6134968993075716475">A opción Navegación segura está desactivada. Chromium recomenda activala.</translation>
+<translation id="6183079672144801177">Asegúrate de iniciar sesión en Chromium no teu <ph name="TARGET_DEVICE_NAME" /> e proba a enviar o número de novo.</translation>
 <translation id="6212496753309875659">Este ordenador xa conta cunha versión máis recente de Chromium. Se o software non funciona, desinstala Chromium e téntao de novo.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium reiniciarase agora}=1{Chromium reiniciarase en 1 segundo}other{Chromium reiniciarase en # segundos}}</translation>
 <translation id="623836266260425961">Chromium OS non puido sincronizar os teus datos.</translation>

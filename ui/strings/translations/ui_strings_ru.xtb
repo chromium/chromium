@@ -134,6 +134,7 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
 <translation id="5266161281976477809">Треугольник развертывания</translation>
 <translation id="5278860589123563674">Не удалось поделиться вкладкой</translation>
+<translation id="5283099933536931082">Приложение "<ph name="APP_ITEM_TITLE" />" требует вашего внимания.</translation>
 <translation id="528468243742722775">Завершить</translation>
 <translation id="5329858601952122676">&amp;Удалить</translation>
 <translation id="5395308026110844773">Вы поместили ярлык приложения "<ph name="DRAGGED_APP_NAME" />" над ярлыком приложения "<ph name="IN_PLACE_APP" />". Чтобы создать папку, отпустите палец.</translation>
@@ -144,6 +145,7 @@
 <translation id="5574202486608032840">Система <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Клавиша возврата (Backspace)</translation>
 <translation id="5613020302032141669">Стрелка влево</translation>
+<translation id="5652575806481723716">Приложение "<ph name="FOCUSED_APP_NAME" />" требует вашего внимания.</translation>
 <translation id="5675363643668471212">Объект на панели запуска</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 мин.}one{# мин.}few{# мин.}many{# мин.}other{# мин.}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Последние действия: сегодня}=1{Последние действия: 1 день назад}one{Последние действия: # день назад}few{Последние действия: # дня назад}many{Последние действия: # дней назад}other{Последние действия: # дня назад}}</translation>

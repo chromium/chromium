@@ -27,6 +27,7 @@
 <translation id="121097972571826261">移至下一個字詞</translation>
 <translation id="1225748608451425081">你的 Chromebook 因為已知問題遭到鎖定。你可以在 <ph name="TIME_LEFT" />後登入。</translation>
 <translation id="1229194443904279055">停止選取</translation>
+<translation id="1239161794459865856">「<ph name="FEATURE_NAME" />」已連線。</translation>
 <translation id="1247372569136754018">麥克風 (內部)</translation>
 <translation id="1252999807265626933">正在使用「<ph name="POWER_SOURCE" />」充電</translation>
 <translation id="1255033239764210633">天氣如何？</translation>
@@ -74,6 +75,7 @@
 <translation id="1654477262762802994">啟動語音查詢</translation>
 <translation id="1667964833127753507">中間色模式不會使用從桌布擷取的色彩，而是改用一組中間色的亮色調或深色調。</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> 後用盡</translation>
+<translation id="1677507110654891115">「<ph name="FEATURE_NAME" />」並未連線。</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />的計時器 · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 位址：<ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">桌面：<ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@
 <translation id="2369165858548251131">「你好」的英文</translation>
 <translation id="2390318262976603432">語言代碼設定</translation>
 <translation id="2391579633712104609">180 度</translation>
+<translation id="2405664212338326887">未連線</translation>
 <translation id="2408955596600435184">請輸入你的 PIN 碼</translation>
 <translation id="2412593942846481727">有可用的更新</translation>
 <translation id="2413728805700750528">「<ph name="DISPLAY_NAME" />」是由 <ph name="DOMAIN" /> 管理的工作階段</translation>
@@ -243,6 +246,7 @@
 <translation id="3364721542077212959">觸控筆工具</translation>
 <translation id="3368922792935385530">已連線</translation>
 <translation id="3371140690572404006">USB-C 裝置 (右前方連接埠)</translation>
+<translation id="3375634426936648815">已連線</translation>
 <translation id="3386978599540877378">全螢幕放大鏡</translation>
 <translation id="3400357268283240774">其他設定</translation>
 <translation id="3410336247007142655">顯示深色主題設定</translation>
@@ -300,6 +304,7 @@
 <translation id="3943857333388298514">貼上</translation>
 <translation id="394485226368336402">音訊設定</translation>
 <translation id="3962859241508114581">上一首曲目</translation>
+<translation id="3969043077941541451">關閉</translation>
 <translation id="397105322502079400">計算中…</translation>
 <translation id="3977512764614765090">電池電量：<ph name="PERCENTAGE" />% (充電中)。</translation>
 <translation id="3995138139523574647">USB-C 裝置 (右後方連接埠)</translation>
@@ -310,6 +315,7 @@
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">你正在分享螢幕畫面</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{1 個應用程式已關閉}other{# 個應用程式已關閉}}</translation>
+<translation id="4066027111132117168">開啟，<ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">訊號中等</translation>
 <translation id="4112140312785995938">倒轉</translation>
 <translation id="4114315158543974537">開啟 Phone Hub</translation>
@@ -320,6 +326,7 @@
 <translation id="4181841719683918333">語言</translation>
 <translation id="4195877955194704651">自動點擊按鈕</translation>
 <translation id="4197790712631116042">關閉</translation>
+<translation id="4201033867194214117">「<ph name="FEATURE_NAME" />」無法使用。</translation>
 <translation id="4212246570487010370">繼續瀏覽</translation>
 <translation id="4212472694152630271">切換為 PIN 碼</translation>
 <translation id="4215497585250573029">VPN 設定</translation>
@@ -331,6 +338,7 @@
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="4294319844246081198">早安，<ph name="GIVEN_NAME" />：</translation>
 <translation id="4296136865091727875">清除全部 <ph name="COUNT" /> 則通知</translation>
+<translation id="4302592941791324970">無法使用</translation>
 <translation id="4303223480529385476">展開狀態區</translation>
 <translation id="4321179778687042513">Ctrl</translation>
 <translation id="4321776623976362024">你按下了高對比的鍵盤快速鍵。確定要啟用這項功能嗎？</translation>
@@ -424,6 +432,7 @@
 <translation id="5302048478445481009">語言</translation>
 <translation id="5313326810920013265">藍牙設定</translation>
 <translation id="5314219114274263156">已錄製螢幕畫面</translation>
+<translation id="5329548388331921293">連線中...</translation>
 <translation id="5331975486040154427">USB-C 裝置 (左後方連接埠)</translation>
 <translation id="5352250171825660495">深色主題已開啟</translation>
 <translation id="5379115545237091094">嘗試次數過多</translation>
@@ -437,6 +446,7 @@
 <translation id="5465662442746197494">需要協助嗎？</translation>
 <translation id="5496819745535887422">你的管理員正在復原你的裝置。重新啟動後，裝置上的資料將全數刪除。</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166">「<ph name="FEATURE_NAME" />」正在連線。</translation>
 <translation id="553675580533261935">結束工作階段</translation>
 <translation id="5537725057119320332">投放</translation>
 <translation id="5548285847212963613">「<ph name="EXTENSION_NAME" />」擴充功能可協助連線至這個網路。</translation>
@@ -564,6 +574,7 @@
 <translation id="6803622936009808957">找不到系統支援的解析度，因此無法顯示鏡像。已改為進入延伸桌面。</translation>
 <translation id="6818242057446442178">移至上一個字詞</translation>
 <translation id="6820676911989879663">目前禁止使用裝置！</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="6857811139397017780">啟用 <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{剩餘一個位數}other{剩餘 # 個位數}}</translation>
 <translation id="6878400149835617132">已關閉快速鍵功能</translation>
@@ -632,6 +643,7 @@
 <translation id="7600875258240007829">查看所有通知</translation>
 <translation id="7618774594543487847">中間色</translation>
 <translation id="7624117708979618027">華氏 <ph name="TEMPERATURE_F" />°</translation>
+<translation id="7633755430369750696">顯示鄰近分享設定。</translation>
 <translation id="7642647758716480637">開啟「<ph name="NETWORK_NAME" />」設定，<ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (擁有者)</translation>
 <translation id="7647488630410863958">解鎖裝置即可查看通知</translation>
@@ -647,6 +659,7 @@
 <translation id="7780159184141939021">旋轉螢幕</translation>
 <translation id="7796353162336583443">輕觸檔案櫃的觸控筆圖示即可寫筆記、擷取螢幕畫面，以及使用 Google 助理、雷射筆和放大鏡。</translation>
 <translation id="7798302898096527229">按下搜尋鍵或 Shift 鍵即可取消。</translation>
+<translation id="781126011916719498">快速存取重要的檔案。在檔案上按一下滑鼠右鍵或按住檔案即可加以固定。</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> 小時 <ph name="MINUTE" /> 分鐘</translation>
 <translation id="7829386189513694949">訊號穩定</translation>
 <translation id="7837740436429729974">時間到</translation>
@@ -790,6 +803,7 @@
 <translation id="9089416786594320554">輸入法</translation>
 <translation id="9091626656156419976">「<ph name="DISPLAY_NAME" />」螢幕已移除</translation>
 <translation id="9151726767154816831">重新啟動並執行 Powerwash 即可更新</translation>
+<translation id="9166331175924255663">將鄰近分享功能切換為向附近的所有裝置顯示。</translation>
 <translation id="9168436347345867845">稍後再說</translation>
 <translation id="9179259655489829027">這項功能可讓你快速存取任何已登入的使用者帳戶，不需提供密碼。使用這項功能時，請務必只存取你信任的帳戶。</translation>
 <translation id="9183456764293710005">全螢幕放大鏡</translation>

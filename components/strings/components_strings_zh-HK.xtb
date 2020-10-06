@@ -822,6 +822,7 @@
 <translation id="4277028893293644418">重設密碼</translation>
 <translation id="4279811152705618813">您的 <ph name="DEVICE_TYPE" /> 由 <ph name="ENROLLMENT_DOMAIN" /> 管理</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{此卡已儲存至您的 Google 帳戶}other{這些卡已儲存至您的 Google 帳戶}}</translation>
+<translation id="4297502707443874121">第 <ph name="THUMBNAIL_PAGE" /> 頁嘅縮圖</translation>
 <translation id="42981349822642051">展開</translation>
 <translation id="4300675098767811073">多孔 (右側)</translation>
 <translation id="4302965934281694568">Chou3 (信封)</translation>

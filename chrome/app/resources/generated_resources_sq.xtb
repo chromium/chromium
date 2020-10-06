@@ -122,6 +122,7 @@
 <translation id="1134009406053225289">Hape në dritare "të fshehtë"</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> nga <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Çelësi i sigurisë është i kyçur sepse është futur shumë herë kod PIN i gabuar. Për ta shkyçur, hiqe dhe rifute atë.</translation>
+<translation id="1137589305610962734">të dhënat e përkohshme</translation>
 <translation id="1137673463384776352">Hape lidhjen në <ph name="APP" /></translation>
 <translation id="1139343347646843679">Ndodhi një gabim gjatë konfigurimit të Linux. Kontakto me administratorin tënd.</translation>
 <translation id="1140351953533677694">Qasu në pajisjet e tua me Bluetooth dhe Serial</translation>
@@ -979,6 +980,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2131077480075264">"<ph name="APP_NAME" />" nuk mund të instalohet sepse nuk lejohet nga "<ph name="IMPORT_NAME" />"</translation>
 <translation id="21354425047973905">Fshih kodet PIN</translation>
 <translation id="2135456203358955318">Zmadhuesi i stacionuar</translation>
+<translation id="2135468118189259524">Mëso më shumë rreth të dhënave që grumbullon Google dhe pse në <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" />.</translation>
 <translation id="2135787500304447609">&amp;Vazhdo</translation>
 <translation id="2136372518715274136">Fut fjalëkalimin e ri</translation>
 <translation id="2136476978468204130">Fraza e kalimit që fute është e pasaktë</translation>
@@ -3635,6 +3637,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5307030433605830021">Burimi nuk mbështetet</translation>
 <translation id="5308380583665731573">Lidh</translation>
 <translation id="5310281978693206542">Dërgo lidhjen te pajisjet e tua</translation>
+<translation id="531118851858162334">Këtë artikull po e shikon bazuar në aktivitetin tënd të mëparshëm duke përdorur shërbimet e Google. Mund t'i shikosh të dhënat e tua, t'i fshish ato dhe të ndryshosh cilësimet në <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="5311304534597152726">Identifikuar si</translation>
 <translation id="5311565231560644461">Mos lejo që sajtet të përdorin pajisjet e realitetit virtual dhe të dhënat e tua</translation>
 <translation id="5314381603623123224">Kushtet e shërbimit të Chrome ndryshojnë më 31 mars</translation>
@@ -6218,6 +6221,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8378714024927312812">Menaxhohet nga organizata jote</translation>
 <translation id="8379878387931047019">Kjo pajisje nuk e mbështet llojin e çelësit të sigurisë që kërkohet nga ky sajt uebi</translation>
 <translation id="8379991678458444070">Kthehu këtu shpejt duke e shtuar këtë skedë te faqeshënuesit</translation>
+<translation id="8380266723152870797">Emri i dritares</translation>
 <translation id="8382384117483909115">{NUM_TABS,plural, =1{skedë për t'u lexuar më vonë}other{skeda për t'u lexuar më vonë}}</translation>
 <translation id="8382913212082956454">Kopjo &amp;adresën e mail-it</translation>
 <translation id="8386091599636877289">Politika nuk u gjet.</translation>
@@ -6382,6 +6386,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8592141010104017453">Mos shfaq asnjë njoftim</translation>
 <translation id="859246725979739260">Ky sajt është bllokuar që të mos ketë qasje te vendndodhja jote.</translation>
 <translation id="8593121833493516339">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Ndihmo në përmirësimin e përvojës së fëmijës tënd me Android duke dërguar automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe aplikacioneve. Këto nuk do të përdoren për të identifikuar fëmijën tënd dhe do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Nëse "Aktiviteti shtesë i uebit dhe i aplikacioneve" është i aktivizuar për fëmijën tënd, këto të dhëna mund të ruhen në "Llogarinë e Google" të fëmijës. <ph name="BEGIN_LINK1" />Mëso më shumë<ph name="END_LINK1" /></translation>
+<translation id="8593735906501637689">U hoq: <ph name="MODULE_TITLE" /></translation>
 <translation id="8594908476761052472">Regjistro video</translation>
 <translation id="8596540852772265699">Skedarë të personalizuar</translation>
 <translation id="8597845839771543242">Formati i vetisë:</translation>

@@ -27,6 +27,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="121097972571826261">Söz üzrə irəli keçin</translation>
 <translation id="1225748608451425081">Chromebook cihazınız məlum problemə görə kilidlənib. Bu müddətdən sonra daxil ola biləcəksiniz: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Seçməyi dayandırın</translation>
+<translation id="1239161794459865856"><ph name="FEATURE_NAME" /> qoşulub.</translation>
 <translation id="1247372569136754018">Mikrofon (daxili)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> mənbəsindən qidalanır</translation>
 <translation id="1255033239764210633">Hava necədir?</translation>
@@ -74,6 +75,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1654477262762802994">Səsli sorğuya başlayın</translation>
 <translation id="1667964833127753507">Neytral rəng rejimi divar kağızının çıxarılmış rənglərini istifadə etmir, onları neytral tonlu açıq və ya tünd çalarlarla əvəz edir.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> qaldı</translation>
+<translation id="1677507110654891115"><ph name="FEATURE_NAME" /> qoşulmayıb.</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> taymeri · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 ünvanı: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Masa: <ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2369165858548251131">Çin dilində "Salam"</translation>
 <translation id="2390318262976603432">Yerli ayarlar</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="2405664212338326887">Qoşulmayıb</translation>
 <translation id="2408955596600435184">PİN kodunuzu daxil edin</translation>
 <translation id="2412593942846481727">Güncəlləmə əlçatandır</translation>
 <translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> sessiyası <ph name="DOMAIN" /> tərəfindən idarə olunur</translation>
@@ -243,6 +246,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3364721542077212959">Fırça alətləri</translation>
 <translation id="3368922792935385530">Qoşuludur</translation>
 <translation id="3371140690572404006">USB-C cihazı (ön sağ port)</translation>
+<translation id="3375634426936648815">Qoşulub</translation>
 <translation id="3386978599540877378">tam ekranlı böyüdücü</translation>
 <translation id="3400357268283240774">Əlavə ayarlar</translation>
 <translation id="3410336247007142655">Tünd tema ayarlarını göstərin</translation>
@@ -322,6 +326,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4181841719683918333">Dillər</translation>
 <translation id="4195877955194704651">Avtomatik klik düyməsi</translation>
 <translation id="4197790712631116042">Deaktiv</translation>
+<translation id="4201033867194214117"><ph name="FEATURE_NAME" /> əlçatan deyil.</translation>
 <translation id="4212246570487010370">Axtarmağa davam edin</translation>
 <translation id="4212472694152630271">PIN'ə keçin</translation>
 <translation id="4215497585250573029">VPN Ayarları</translation>
@@ -333,6 +338,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4285498937028063278">Çıxarın</translation>
 <translation id="4294319844246081198">Sabahınız xeyir, <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875"><ph name="COUNT" /> bildirişin hamısını silin</translation>
+<translation id="4302592941791324970">Əlçatan deyil</translation>
 <translation id="4303223480529385476">Status sahəsini genişləndirin</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Yüksək kontrast üçün klaviatura qısayoluna basdınız. Onu aktiv etmək istəyirsiniz?</translation>
@@ -426,6 +432,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5302048478445481009">Dil</translation>
 <translation id="5313326810920013265">Bluetooth ayarları</translation>
 <translation id="5314219114274263156">Ekran çəkilişi tamamlanıb</translation>
+<translation id="5329548388331921293">Qoşulur…</translation>
 <translation id="5331975486040154427">USB-C cihazı (arxa sol port)</translation>
 <translation id="5352250171825660495">Tünd tema aktivdir</translation>
 <translation id="5379115545237091094">Həddindən çox cəhd</translation>
@@ -439,6 +446,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5465662442746197494">Kömək lazımdır?</translation>
 <translation id="5496819745535887422">Administrator bu cihaza geri qayıtdı. Cihaz yenidən başladıldıqda bütün data slinəcək.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166"><ph name="FEATURE_NAME" /> qoşulur.</translation>
 <translation id="553675580533261935">Mövcud sessiya</translation>
 <translation id="5537725057119320332">Yayım</translation>
 <translation id="5548285847212963613">"<ph name="EXTENSION_NAME" />" artırması bu şəbəkəyə qoşulmağa kömək edə bilər.</translation>

@@ -344,6 +344,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3568688522516854065">Pour synchroniser vos onglets sur vos autres appareils, connectez-vous et activez la synchronisation</translation>
 <translation id="3587482841069643663">Tous</translation>
 <translation id="3587596251841506391">Contribuer à la sécurité sur le Web</translation>
+<translation id="3598653140581545904">Utiliser le mode de navigation privée pour se connecter</translation>
 <translation id="3599863153486145794">Efface l'historique de tous les appareils connectés. D'autres formes d'historique de navigation peuvent exister sur votre compte Google à l'adresse <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="3602290021589620013">Aperçu</translation>
 <translation id="3616113530831147358">Audio</translation>
@@ -385,6 +386,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3927692899758076493">Sans empattement</translation>
 <translation id="3928666092801078803">Combiner mes données</translation>
 <translation id="393697183122708255">Aucune recherche vocale activée</translation>
+<translation id="3943557322767080599">Afficher les invites de connexion de Chrome lorsque vous vous connectez à votre compte Google</translation>
 <translation id="395206256282351086">Suggestions de recherche et de site désactivées</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome chargera la page lorsque l'appareil sera en ligne}one{Chrome chargera la page lorsque l'appareil sera en ligne}other{Chrome chargera les pages lorsque l'appareil sera en ligne}}</translation>
 <translation id="3963007978381181125">Le chiffrement par phrase de passe ne couvre pas les modes de paiement ni les adresses de Google Pay. Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. Google ne reçoit ni ne stocke la phrase de passe. Si vous l'oubliez ou souhaitez modifier ce paramètre, vous devrez réinitialiser la synchronisation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -660,6 +662,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5937580074298050696"><ph name="AMOUNT" /> enregistré(s)</translation>
 <translation id="5939518447894949180">Recommencer</translation>
 <translation id="5942872142862698679">Google est utilisé pour la recherche</translation>
+<translation id="5951119116059277034">Affichage de la page en ligne</translation>
 <translation id="5951615825629292797">Langue prête à être utilisée. Redémarrez <ph name="APP_NAME" /></translation>
 <translation id="5952764234151283551">Envoie l'URL d'une page que vous essayez d'atteindre à Google</translation>
 <translation id="5956665950594638604">Centre d'aide de Chrome : nouvel onglet</translation>
@@ -669,6 +672,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5964805880140440652">Pour partager cette page avec un autre appareil, activez la synchronisation dans les paramètres de Chrome</translation>
 <translation id="5964869237734432770">Arrêter les descriptions</translation>
 <translation id="5979084224081478209">Vérifier les mots de passe</translation>
+<translation id="5982307838673692400">Ouvrir un onglet de navigation privée</translation>
 <translation id="6000066717592683814">Conserver Google</translation>
 <translation id="6005538289190791541">Mot de passe suggéré</translation>
 <translation id="6014293228235665243">Non lu</translation>
@@ -698,6 +702,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="6192907950379606605">Obtenir les descriptions</translation>
 <translation id="6206830853671714236">Choisir quand effectuer le téléchargement</translation>
 <translation id="6210748933810148297">Pas <ph name="EMAIL" />?</translation>
+<translation id="6211386937064921208">Affichage de l'aperçu de cette page</translation>
 <translation id="6218096829563201111">Rech. produits similaires <ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Déverrouillez pour exporter vos mots de passe</translation>
 <translation id="6232535412751077445">Si vous activez la fonction « Ne pas faire le suivi », une demande sera incluse dans le trafic lié à votre navigation. Les résultats obtenus dépendent de la réponse du site (s'il répond ou non) et de la manière dont il interprète la demande.
@@ -809,6 +814,9 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6900532703269623216">Protection renforcée</translation>
 <translation id="6903907808598579934">Activer la synchronisation</translation>
 <translation id="6929699136511445623">Activer la synchronisation système pour Android</translation>
+<translation id="6941901516114974832">En mode de navigation privée, votre activité <ph name="BEGIN_BOLD1" />peut rester visible<ph name="END_BOLD1" /> pour les sites Web que vous consultez, votre employeur ou votre établissement scolaire, ainsi que votre fournisseur d'accès Internet.
+
+Les données de votre session de navigation privée ne seront effacées de Chrome que lorsque vous <ph name="BEGIN_BOLD2" />fermerez tous les onglets de navigation privée<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Vous pouvez changer le dossier de téléchargement par défaut en tout temps grâce à l'option de menu Paramètres.</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6955535239952325894">Ce paramètre est désactivé sur les navigateurs gérés</translation>

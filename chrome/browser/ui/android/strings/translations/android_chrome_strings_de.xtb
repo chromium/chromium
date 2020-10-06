@@ -344,6 +344,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3568688522516854065">Melden Sie sich an und aktivieren Sie die Synchronisierung, um Ihre Tabs von Ihren anderen Geräten abzurufen</translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3587596251841506391">Dabei helfen, das Web sicherer zu machen</translation>
+<translation id="3598653140581545904">Im Inkognitomodus anmelden</translation>
 <translation id="3599863153486145794">Löscht den Verlauf auf allen angemeldeten Geräten. Unter <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> sind möglicherweise weitere Arten von Browserverlaufsdaten für Ihr Google-Konto gespeichert.</translation>
 <translation id="3602290021589620013">Vorschau</translation>
 <translation id="3616113530831147358">Audio</translation>
@@ -385,6 +386,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3927692899758076493">Serifenlose Schrift</translation>
 <translation id="3928666092801078803">Daten zusammenführen</translation>
 <translation id="393697183122708255">Keine aktivierte Sprachsuche verfügbar</translation>
+<translation id="3943557322767080599">Aufforderung zur Anmeldung in Chrome anzeigen, wenn Sie sich in Ihrem Google-Konto anmelden</translation>
 <translation id="395206256282351086">Vorschläge für Suchbegriffe und Websites deaktiviert</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome lädt Ihre Seite, sobald diese bereit ist}other{Chrome lädt Ihre Seiten, sobald diese bereit sind}}</translation>
 <translation id="3963007978381181125">Die Passphrasenverschlüsselung enthält keine Zahlungsmethoden oder Adressen von Google Pay. Nur Personen mit Ihrer Passphrase können Ihre verschlüsselten Daten lesen. Die Passphrase wird nicht an Google gesendet oder von Google gespeichert. Falls Sie sie vergessen oder diese Einstellung ändern möchten, müssen Sie die Synchronisierung zurücksetzen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -660,6 +662,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5937580074298050696"><ph name="AMOUNT" /> gespeichert</translation>
 <translation id="5939518447894949180">Zurücksetzen</translation>
 <translation id="5942872142862698679">Suche erfolgt mit Google</translation>
+<translation id="5951119116059277034">Live-Seite wird angezeigt</translation>
 <translation id="5951615825629292797">Sprachpaket heruntergeladen, <ph name="APP_NAME" /> neu starten</translation>
 <translation id="5952764234151283551">Die URL einer Seite, die Sie aufrufen möchten, wird an Google gesendet</translation>
 <translation id="5956665950594638604">Chrome-Hilfe in einem neuen Tab öffnen</translation>
@@ -669,6 +672,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5964805880140440652">Wenn Sie diese Seite mit einem anderen Gerät teilen möchten, aktivieren Sie in den Chrome-Einstellungen die Synchronisierung</translation>
 <translation id="5964869237734432770">Bildbeschreibungen beenden</translation>
 <translation id="5979084224081478209">Passwörter prüfen</translation>
+<translation id="5982307838673692400">Inkognitotab öffnen</translation>
 <translation id="6000066717592683814">Google beibehalten</translation>
 <translation id="6005538289190791541">Vorgeschlagenes Passwort</translation>
 <translation id="6014293228235665243">Ungelesen</translation>
@@ -698,6 +702,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="6192907950379606605">Bildbeschreibungen abrufen</translation>
 <translation id="6206830853671714236">Uhrzeit für den Download auswählen</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ist nicht Ihre E-Mail-Adresse?</translation>
+<translation id="6211386937064921208">Vorschau für diese Seite</translation>
 <translation id="6218096829563201111">Ähnliche Produkte suchen <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Zum Exportieren Ihrer Passwörter entsperren</translation>
 <translation id="6232535412751077445">Wenn Sie das Kästchen "Do Not Track" anklicken, wird mit Ihren Browserzugriffen eine Anforderung gesendet. Wie sich diese Anforderung auswirkt, hängt davon ab, ob eine Website darauf reagiert und wie die Anforderung interpretiert wird.
@@ -809,6 +814,9 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6900532703269623216">Erweitertes Safe Browsing</translation>
 <translation id="6903907808598579934">Synchronisierung aktivieren</translation>
 <translation id="6929699136511445623">Android-Systemsynchronisierung aktivieren</translation>
+<translation id="6941901516114974832">Im Inkognitomodus bleiben Ihre Aktivitäten für Websites, die Sie besuchen, Ihren Arbeitgeber oder Ihre Bildungseinrichtung sowie für Ihren Internetanbieter <ph name="BEGIN_BOLD1" />möglicherweise sichtbar<ph name="END_BOLD1" />.
+
+Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph name="BEGIN_BOLD2" />alle Inkognitotabs geschlossen haben<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Sie können den Standard-Downloadpfad jederzeit über die Option im Menü "Einstellungen" ändern</translation>
 <translation id="6945221475159498467">Auswählen</translation>
 <translation id="6955535239952325894">Diese Einstellung ist bei verwalteten Browsern deaktiviert</translation>

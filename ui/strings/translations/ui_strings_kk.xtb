@@ -134,6 +134,7 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
 <translation id="5266161281976477809">Ашу үшбұрышы</translation>
 <translation id="5278860589123563674">Жіберілмеді</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> қолданбасы назар аударуыңызды сұрайды.</translation>
 <translation id="528468243742722775">Соңы</translation>
 <translation id="5329858601952122676">&amp;Жою</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> қолданбасын <ph name="IN_PLACE_APP" /> үстіне сүйреп әкеліп қойсаңыз, қалта жасалады.</translation>
@@ -144,6 +145,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> жүйесі</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Сол жақ көрсеткісі</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> қолданбасы назар аударуыңызды сұрайды.</translation>
 <translation id="5675363643668471212">Сөредегі элемент</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 мин}other{# мин}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Бүгін қосылды.}=1{1 күн бұрын қосылды.}other{# күн бұрын қосылды.}}</translation>

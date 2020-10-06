@@ -23,6 +23,7 @@
 <translation id="1553358976309200471">Actualizar Chrome</translation>
 <translation id="1587223624401073077">Google Chrome utiliza a túa cámara.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> é perigoso, así que Chrome bloqueouno.</translation>
+<translation id="1597911401261118146">Para comprobar se os teus contrasinais están protexidos fronte a violacións da seguranza dos datos e outros problemas de seguranza, debes <ph name="BEGIN_LINK" />iniciar sesión en Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Para conseguir que Chrome resulte máis seguro, desactivamos a seguinte extensión que non aparece en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e que quizais se engadise sen o teu coñecemento.</translation>
 <translation id="162448658176061655">Chrome comproba se hai software non desexado unha vez á semana. Última comprobación: hai un momento.</translation>
 <translation id="162629503687514352">Chrome OS non puido sincronizar os teus contrasinais.</translation>
@@ -38,6 +39,7 @@
 <translation id="1734234790201236882">Chrome gardará este contrasinal na túa Conta de Google. Non terás que recordalo.</translation>
 <translation id="174539241580958092">Google Chrome non puido sincronizar os teus datos debido a un erro ao iniciar sesión.</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1786003790898721085">Asegúrate de iniciar sesión en Chrome no <ph name="TARGET_DEVICE_NAME" /> e proba a enviar o número de novo.</translation>
 <translation id="1812689907177901597">Ao desactivar esta opción, podes iniciar sesión nos sitios de Google, como Gmail, sen iniciar sesión en Chrome</translation>
 <translation id="1860536484129686729">Chrome necesita permiso para acceder á cámara neste sitio</translation>
 <translation id="1873233029667955273">Google Chrome non é o teu navegador predeterminado</translation>
@@ -82,6 +84,7 @@
 <translation id="3065168410429928842">Pestana de Chrome</translation>
 <translation id="3080151273017101988">Continuar executando aplicacións en segundo plano cando se peche Google Chrome</translation>
 <translation id="3089968997497233615">Está dispoñible unha versión nova e máis segura de Google Chrome.</translation>
+<translation id="3114643501466072395">Para comprobar se os teus outros contrasinais están protexidos fronte a violacións da seguranza dos datos e outros problemas de seguranza, debes <ph name="BEGIN_LINK" />iniciar sesión en Chrome<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">Chrome OS non puido sincronizar os teus datos.</translation>
 <translation id="3149510190863420837">Aplicacións de Chrome</translation>
 <translation id="3360895254066713204">Axudante de Chrome</translation>
@@ -253,6 +256,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8344083974188970894">{NUM_MINS,plural, =1{Chrome comproba se hai software non desexado unha vez á semana. Última comprobación: hai 1 minuto.}other{Chrome comproba se hai software non desexado unha vez á semana. Última comprobación: hai {NUM_MINS} minutos.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os dereitos reservados.</translation>
 <translation id="840084489713044809">Google Chrome quere exportar os teus contrasinais.</translation>
+<translation id="8433638294851456451">Para enviar un número desde aquí ao teu teléfono Android, inicia sesión en Chrome nos dous dispositivos.</translation>
 <translation id="8498858610309223613">Acábase de aplicar unha actualización especial de seguranza para Google Chrome. Reinicia agora o navegador para restaurar as pestanas.</translation>
 <translation id="8521348052903287641">Regra de entrada para que Google Chrome Dev permita tráfico mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
@@ -272,6 +276,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="884296878221830158">Tamén controla que páxina se mostra ao iniciar Chrome ou ao facer clic no botón Inicio.</translation>
 <translation id="8862326446509486874">Non tes os dereitos apropiados para efectuar a instalación a nivel do sistema. Tenta volver executar o instalador como administrador.</translation>
 <translation id="8914504000324227558">Reiniciar Chrome</translation>
+<translation id="8922193594870374009">Para enviar un número desde <ph name="ORIGIN" /> ao teu teléfono Android, inicia sesión en Chrome nos dous dispositivos.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hai unha actualización de Chrome dispoñible}=1{Hai unha actualización de Chrome dispoñible}other{Hai unha actualización de Chrome que leva dispoñible # días}}</translation>
 <translation id="9026991721384951619">Chrome OS non puido sincronizar os teus datos debido a que a información de inicio de sesión na túa conta está caducada.</translation>
 <translation id="9067395829937117663">Google Chrome require Windows 7 ou unha versión posterior.</translation>

@@ -122,6 +122,7 @@
 <translation id="1134009406053225289">Atidaryti nežinomame lange</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> iš <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Saugos raktas užblokuotas, nes per daug kartų įvestas neteisingas PIN kodas. Norėdami jį atblokuoti, išimkite ir įdėkite iš naujo.</translation>
+<translation id="1137589305610962734">laikini duomenys</translation>
 <translation id="1137673463384776352">Atidaryti nuorodą programoje „<ph name="APP" />“</translation>
 <translation id="1139343347646843679">Konfigūruojant „Linux“ įvyko klaida. Susisiekite su administratoriumi.</translation>
 <translation id="1140351953533677694">Pasiekti „Bluetooth“ ir nuosekliuosius įtaisus</translation>
@@ -982,6 +983,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2131077480075264">Nepavyko įdiegti „<ph name="APP_NAME" />“, nes to neleidžia „<ph name="IMPORT_NAME" />“</translation>
 <translation id="21354425047973905">Slėpti PIN kodus</translation>
 <translation id="2135456203358955318">Prie doko prijungtas didintuvas</translation>
+<translation id="2135468118189259524">Sužinokite, kokius duomenis „Google“ renka ir kodėl, apsilankę adresu <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" />.</translation>
 <translation id="2135787500304447609">&amp;Atnaujinti</translation>
 <translation id="2136372518715274136">Įveskite naują slaptažodį</translation>
 <translation id="2136476978468204130">Įvesta slaptafrazė netinka</translation>
@@ -3638,6 +3640,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5307030433605830021">Šaltinis nepalaikomas</translation>
 <translation id="5308380583665731573">Prisijungti</translation>
 <translation id="5310281978693206542">Siųsti nuorodą į savo įrenginius</translation>
+<translation id="531118851858162334">Šis elementas rodomas atsižvelgiant į jūsų ankstesnę veiklą naudojant „Google“ paslaugas. Galite peržiūrėti ar ištrinti duomenis bei keisti nustatymus apsilankę adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="5311304534597152726">Prisijungiama kaip</translation>
 <translation id="5311565231560644461">Neleisti svetainėms naudoti virtualiosios realybės įrenginių ir duomenų</translation>
 <translation id="5314381603623123224">Kovo 31 dieną bus pakeistos „Chrome“ paslaugų teikimo sąlygos</translation>
@@ -6224,6 +6227,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8378714024927312812">Tvarko jūsų organizacija</translation>
 <translation id="8379878387931047019">Šis įrenginys nepalaiko saugos rakto, kurio reikalaujama šioje svetainėje, tipo</translation>
 <translation id="8379991678458444070">Grįžkite čia greičiau pasižymėję šį skirtuką</translation>
+<translation id="8380266723152870797">Lango pavadinimas</translation>
 <translation id="8382384117483909115">{NUM_TABS,plural, =1{Skaityti skirtuką vėliau}one{Skaityti skirtukus vėliau}few{Skaityti skirtukus vėliau}many{Skaityti skirtukus vėliau}other{Skaityti skirtukus vėliau}}</translation>
 <translation id="8382913212082956454">Kopijuoti &amp;el. pašto adresą</translation>
 <translation id="8386091599636877289">Politika nerasta.</translation>
@@ -6388,6 +6392,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8592141010104017453">Visiškai nerodyti pranešimų</translation>
 <translation id="859246725979739260">Ši svetainė užblokuota, kad nepasiektų jūsų vietovės informacijos</translation>
 <translation id="8593121833493516339">Siųskite naudojimo ir diagnostikos duomenis. Padėkite tobulinti vaiko „Android“ funkcijas automatiškai siųsdami „Google“ diagnostikos, įrenginio ir programų naudojimo duomenis. Tai nebus naudojama siekiant nustatyti jūsų vaiko tapatybę ir padės pagerinti sistemos bei programos stabilumą ir teikti kitus patobulinimus. Kai kurie sukaupti duomenys taip pat bus naudingi „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams. Jei papildomas „Žiniatinklio ir programų veiklos“ nustatymas įjungtas vaiko įrenginyje, šie duomenys gali būti išsaugoti vaiko „Google“ paskyroje. <ph name="BEGIN_LINK1" />Sužinokite daugiau<ph name="END_LINK1" /></translation>
+<translation id="8593735906501637689">Pašalintas modulis „<ph name="MODULE_TITLE" />“</translation>
 <translation id="8594908476761052472">Užfiksuoti vaizdo įrašą</translation>
 <translation id="8596540852772265699">Priskirti failai</translation>
 <translation id="8597845839771543242">Nuosavybės formatas:</translation>

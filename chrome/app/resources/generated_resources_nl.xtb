@@ -320,7 +320,7 @@
 <translation id="1361872463926621533">Geluid afspelen bij opstarten</translation>
 <translation id="1362865166188278099">Mechanisch probleem. Controleer de printer.</translation>
 <translation id="1363585519747660921">USB-printer moet worden geconfigureerd</translation>
-<translation id="1364664799726141130">Het account dat je hebt geverifieerd, is niet gemachtigd voor toegang tot dit apparaat. Zorg dat je <ph name="ACCOUNT" /> verifieert om de sessie te ontgrendelen.</translation>
+<translation id="1364664799726141130">Het account dat je hebt geverifieerd, heeft geen toegangsrechten voor dit apparaat. Zorg dat je <ph name="ACCOUNT" /> verifieert om de sessie te ontgrendelen.</translation>
 <translation id="1365180424462182382">Je <ph name="BEGIN_LINK" />browser wordt beheerd<ph name="END_LINK" /> door <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1367951781824006909">Een bestand selecteren</translation>
 <translation id="1369149969991017342">Toegang via schakelaar (de computer bedienen met slechts één of twee schakelaars)</translation>

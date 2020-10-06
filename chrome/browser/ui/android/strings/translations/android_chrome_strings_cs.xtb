@@ -344,6 +344,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="3568688522516854065">Chcete-li získat přístup ke kartám ze svých ostatních zařízení, zapněte synchronizaci</translation>
 <translation id="3587482841069643663">Vše</translation>
 <translation id="3587596251841506391">Zlepšovat bezpečnost na webu</translation>
+<translation id="3598653140581545904">Přihlaste se v anonymním režimu</translation>
 <translation id="3599863153486145794">Vymaže historii ze všech zařízení, na kterých jste přihlášeni. Na stránce <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
 <translation id="3602290021589620013">Náhled</translation>
 <translation id="3616113530831147358">Zvuk</translation>
@@ -385,6 +386,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="3927692899758076493">Bezpatková</translation>
 <translation id="3928666092801078803">Sloučit má data</translation>
 <translation id="393697183122708255">Hlasové vyhledávání není k dispozici</translation>
+<translation id="3943557322767080599">Zobrazovat výzvy k přihlášení do Chromu, když se přihlásíte k účtu Google</translation>
 <translation id="395206256282351086">Návrhy vyhledávacích dotazů a webů jsou vypnuty</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome stránku načte, až bude připraven}few{Chrome stránky načte, až bude připraven}many{Chrome stránky načte, až bude připraven}other{Chrome stránky načte, až bude připraven}}</translation>
 <translation id="3963007978381181125">Šifrování pomocí heslové fráze se nevztahuje na platební metody a adresy ze služby Google Pay. Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslovou frázi. Heslová fráze se neodesílá do Googlu a není na Googlu uložena. Pokud ji zapomenete nebo toto nastavení budete chtít změnit, bude nutné synchronizaci resetovat. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
@@ -660,6 +662,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5937580074298050696">Uspořeno: <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">Resetovat</translation>
 <translation id="5942872142862698679">K vyhledávání se používá Google</translation>
+<translation id="5951119116059277034">Zobrazení aktivní stránky</translation>
 <translation id="5951615825629292797">Jazyk je připraven, restartujte aplikaci <ph name="APP_NAME" /></translation>
 <translation id="5952764234151283551">Odesílá do Googlu adresu URL stránky, na kterou se pokoušíte přejít</translation>
 <translation id="5956665950594638604">Otevřít centrum nápovědy Chrome na nové kartě</translation>
@@ -669,6 +672,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5964805880140440652">Chcete-li tuto stránku sdílet s jiným zařízením, zapněte v nastavení Chromu synchronizaci</translation>
 <translation id="5964869237734432770">Nezobrazovat popisy obrázků</translation>
 <translation id="5979084224081478209">Zkontrolovat hesla</translation>
+<translation id="5982307838673692400">Otevřít anonymní kartu</translation>
 <translation id="6000066717592683814">Ponechat Google</translation>
 <translation id="6005538289190791541">Navrhované heslo</translation>
 <translation id="6014293228235665243">Nepřečtené</translation>
@@ -698,6 +702,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="6192907950379606605">Zobrazovat popisy obrázků</translation>
 <translation id="6206830853671714236">Vyberte, kdy chcete stahovat</translation>
 <translation id="6210748933810148297">Nejste <ph name="EMAIL" />?</translation>
+<translation id="6211386937064921208">Zobrazování náhledu této stránky</translation>
 <translation id="6218096829563201111">Vyhledat podobné produkty <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Chcete-li exportovat hesla, odemkněte zařízení</translation>
 <translation id="6232535412751077445">Pokud povolíte požadavek Do Not Track, bude připojován k datům provozu prohlížení. Účinek tohoto požadavku závisí na tom, zda na něj budou webové stránky reagovat a jak jej budou interpretovat.
@@ -809,6 +814,9 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6900532703269623216">Vylepšená ochrana</translation>
 <translation id="6903907808598579934">Zapnout synchronizaci</translation>
 <translation id="6929699136511445623">Zapnout synchronizaci systému Android</translation>
+<translation id="6941901516114974832">Aktivita v anonymním režimu <ph name="BEGIN_BOLD1" />není skryta<ph name="END_BOLD1" /> před weby, které navštěvujete, před zaměstnavatelem či školou ani před poskytovatelem internetových služeb.
+
+Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zavření všech anonymních karet<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Výchozí umístění pro stažené soubory můžete kdykoliv změnit pomocí možnosti v nabídce Nastavení.</translation>
 <translation id="6945221475159498467">Vybrat</translation>
 <translation id="6955535239952325894">Toto nastavení je ve spravovaných prohlížečích zakázáno</translation>

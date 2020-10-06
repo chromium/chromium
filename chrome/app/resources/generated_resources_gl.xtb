@@ -122,6 +122,7 @@
 <translation id="1134009406053225289">Abre o marcador nunha ventá do modo de incógnito</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> de <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">A chave de seguranza bloqueouse porque se introduciu o PIN demasiadas veces. Para desbloqueala, quítaa e introdúcea de novo.</translation>
+<translation id="1137589305610962734">datos temporais</translation>
 <translation id="1137673463384776352">Abrir ligazón na aplicación <ph name="APP" /></translation>
 <translation id="1139343347646843679">Produciuse un erro ao configurar Linux. Ponte en contacto co teu administrador.</translation>
 <translation id="1140351953533677694">Acceder aos teus dispositivos Bluetooth e en serie</translation>
@@ -981,6 +982,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2131077480075264">Non se pode instalar "<ph name="APP_NAME" />" debido a que "<ph name="IMPORT_NAME" />" non o permite</translation>
 <translation id="21354425047973905">Ocultar PIN</translation>
 <translation id="2135456203358955318">Lupa ancorada</translation>
+<translation id="2135468118189259524">Consulta máis información sobre os datos que recompila Google e por que o fai en <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" />.</translation>
 <translation id="2135787500304447609">Continua&amp;r</translation>
 <translation id="2136372518715274136">Introduce o contrasinal novo</translation>
 <translation id="2136476978468204130">A frase de acceso introducida é incorrecta</translation>
@@ -3637,6 +3639,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5307030433605830021">A fonte non é compatible</translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5310281978693206542">Enviar ligazón aos teus dispositivos</translation>
+<translation id="531118851858162334">Estás vendo este elemento debido á túa actividade anterior nos servizos de Google. Podes ver os teus datos, eliminalos e cambiar a configuración en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="5311304534597152726">Iniciando sesión como</translation>
 <translation id="5311565231560644461">Non permitir que os sitios utilicen os teus datos e dispositivos de realidade virtual</translation>
 <translation id="5314381603623123224">As Condicións de servizo de Chrome cambiarán o 31 de marzo</translation>
@@ -6221,6 +6224,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8378714024927312812">Xestionado pola túa organización</translation>
 <translation id="8379878387931047019">Este dispositivo non é compatible co tipo de chave de seguranza que solicita este sitio web</translation>
 <translation id="8379991678458444070">Engade esta pestana aos marcadores para volver a ela rapidamente</translation>
+<translation id="8380266723152870797">Nome da ventá</translation>
 <translation id="8382384117483909115">{NUM_TABS,plural, =1{Ler pestana máis tarde}other{Ler pestanas máis tarde}}</translation>
 <translation id="8382913212082956454">Copiar &amp;enderezo de correo electrónico</translation>
 <translation id="8386091599636877289">Non se atopou a política.</translation>
@@ -6385,6 +6389,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8592141010104017453">Non mostrar ningunha notificación</translation>
 <translation id="859246725979739260">Impediuse que este sitio acceda á túa localización.</translation>
 <translation id="8593121833493516339">Enviar datos de uso e de diagnóstico. Envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google para axudar a mellorar a experiencia do teu fillo en Android. Esta información non se utilizará para identificar o teu fillo, senón co obxectivo de aumentar a estabilidade do sistema e das aplicacións, e de realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Se está activada a opción de configuración Actividade web e das aplicacións adicional para o teu fillo, estes datos pódense gardar na súa conta de Google <ph name="BEGIN_LINK1" />Máis información<ph name="END_LINK1" /></translation>
+<translation id="8593735906501637689"><ph name="MODULE_TITLE" /> (quitouse)</translation>
 <translation id="8594908476761052472">Gravar vídeo</translation>
 <translation id="8596540852772265699">Ficheiros personalizados</translation>
 <translation id="8597845839771543242">Formato de propiedade:</translation>

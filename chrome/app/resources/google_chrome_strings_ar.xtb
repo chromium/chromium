@@ -21,6 +21,7 @@
 <translation id="1553358976309200471">‏تحديث Chrome‏</translation>
 <translation id="1587223624401073077">‏يستخدم Google Chrome الكاميرا.</translation>
 <translation id="1587325591171447154">‏ملف <ph name="FILE_NAME" /> ضار، لذلك فقد حظره Chrome.</translation>
+<translation id="1597911401261118146">‏للتحقُّق مما إذا كانت كلمات المرور آمنة من عمليات اختراق البيانات ومشاكل الأمان الأخرى، يُرجى <ph name="BEGIN_LINK" />تسجيل الدخول إلى متصفِّح Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">‏لجعل Chrome أكثر أمنًا، أوقفنا الإضافة التالية التي لم تُدرج في <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> وربما تكون قد أضيفت بدون علمك.</translation>
 <translation id="162448658176061655">‏يتحقّق Chrome من وجود أي برامج غير مرغوب فيها مرة واحدة أسبوعيًا. تمّ إجراء آخر عملية تحقُّق قبل قليل.</translation>
 <translation id="162629503687514352">‏تعذّر على نظام التشغيل Chrome مزامنة كلمات المرور.</translation>
@@ -36,6 +37,7 @@
 <translation id="1734234790201236882">‏سيحفظ Chrome كلمة المرور هذه في حسابك على Google ولن تحتاج إلى تذكُّرها.</translation>
 <translation id="174539241580958092">‏تعذر على Google Chrome مزامنة البيانات نظرًا لوجود خطأ في تسجيل الدخول.</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1786003790898721085">‏يُرجى التأكُّد من تسجيل الدخول إلى متصفِّح Chrome على جهازك <ph name="TARGET_DEVICE_NAME" /> ثم محاولة الإرسال مرة أخرى.</translation>
 <translation id="1812689907177901597">‏من خلال إيقاف هذا الإعداد، يمكنك تسجيل الدخول إلى "مواقع Google" مثل Gmail بدون الحاجة إلى تسجيل الدخول إلى Chrome</translation>
 <translation id="1860536484129686729">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا من أجل الموقع الإلكتروني هذا.</translation>
 <translation id="1873233029667955273">‏Google Chrome ليس متصفحك التلقائي.</translation>
@@ -80,6 +82,7 @@
 <translation id="3065168410429928842">‏علامة تبويب Chrome</translation>
 <translation id="3080151273017101988">‏استمرار تشغيل تطبيقات الخلفية عند إغلاق Google Chrome</translation>
 <translation id="3089968997497233615">‏يتوفر إصدار جديد وأكثر أمانًا لمتصفح Google Chrome.</translation>
+<translation id="3114643501466072395">‏للتحقُّق مما إذا كانت كلمات المرور الأخرى آمنة من عمليات اختراق البيانات ومشاكل الأمان الأخرى، يُرجى <ph name="BEGIN_LINK" />تسجيل الدخول إلى متصفِّح Chrome<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">‏تعذّر على نظام التشغيل Chrome مزامنة بياناتك.</translation>
 <translation id="3149510190863420837">‏تطبيقات Chrome</translation>
 <translation id="3360895254066713204">‏مساعد Chrome</translation>
@@ -249,6 +252,7 @@
 <translation id="8344083974188970894">{NUM_MINS,plural, =1{‏يتحقّق Chrome من وجود أي برامج غير مرغوب فيها مرة واحدة أسبوعيًا. تمّ إجراء آخر عملية تحقُّق قبل دقيقة واحدة.}zero{‏يتحقّق Chrome من وجود أي برامج غير مرغوب فيها مرة واحدة أسبوعيًا. تمّ إجراء آخر عملية تحقُّق قبل {NUM_MINS} دقيقة.}two{‏يتحقّق Chrome من وجود أي برامج غير مرغوب فيها مرة واحدة أسبوعيًا. تمّ إجراء آخر عملية تحقُّق قبل دقيقتَين ({NUM_MINS}).}few{‏يتحقّق Chrome من وجود أي برامج غير مرغوب فيها مرة واحدة أسبوعيًا. تمّ إجراء آخر عملية تحقُّق قبل {NUM_MINS} دقائق.}many{‏يتحقّق Chrome من وجود أي برامج غير مرغوب فيها مرة واحدة أسبوعيًا. تمّ إجراء آخر عملية تحقُّق قبل {NUM_MINS} دقيقة.}other{‏يتحقّق Chrome من وجود أي برامج غير مرغوب فيها مرة واحدة أسبوعيًا. تمّ إجراء آخر عملية تحقُّق قبل {NUM_MINS} دقيقة.}}</translation>
 <translation id="8370517070665726704">‏حقوق الطبع والنشر لعام <ph name="YEAR" /> لشركة Google LLC. جميع الحقوق محفوظة.</translation>
 <translation id="840084489713044809">‏يرغب Google Chrome في تصدير كلمات المرور.</translation>
+<translation id="8433638294851456451">‏لإرسال رقم من هذا الجهاز إلى جهازك الذي يعمل بنظام التشغيل Android، يُرجى تسجيل الدخول إلى متصفِّح Chrome على الجهازَين.</translation>
 <translation id="8498858610309223613">‏تم للتو تطبيق تحديث أمان خاص لمتصفِّح Google Chrome. ويمكنك الآن إعادة التشغيل وستتم استعادة علامات التبويب.</translation>
 <translation id="8521348052903287641">‏قاعدة الوارد إلى إصدار مطوري البرامج من Google Chrome للسماح بحركة مرور mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
@@ -268,6 +272,7 @@
 <translation id="884296878221830158">‏كما أنها تتحكم في الصفحة التي تظهر عند تشغيل Chrome أو النقر على زر الصفحة الرئيسية.</translation>
 <translation id="8862326446509486874">لا تملك الحقوق الكافية للتثبيت على مستوى النظام. جرّب تشغيل المثبِّت بصفة مشرف.</translation>
 <translation id="8914504000324227558">‏إعادة تشغيل Chrome</translation>
+<translation id="8922193594870374009">‏لإرسال رقم من <ph name="ORIGIN" /> إلى هاتفك الذي يعمل بنظام التشغيل Android، يُرجى تسجيل الدخول إلى متصفِّح Chrome على الجهازَين.</translation>
 <translation id="8999208279178790196">{0,plural, =0{‏يتوفر تحديث لمتصفح Chrome}=1{‏يتوفر تحديث لمتصفح Chrome}two{‏يتوفر تحديث لمتصفح Chrome منذ يومين}few{‏يتوفر تحديث لمتصفح Chrome منذ # أيام}many{‏يتوفر تحديث لمتصفح Chrome منذ # يومًا}other{‏يتوفر تحديث لمتصفح Chrome منذ # يوم}}</translation>
 <translation id="9026991721384951619">‏تعذر على نظام التشغيل Chrome مزامنة البيانات نظرًا لأن تفاصيل تسجيل الدخول إلى حسابك قديمة.</translation>
 <translation id="9067395829937117663">‏يتطلب متصفح Google Chrome نظام التشغيل Windows 7 أو إصدارًا أحدث.</translation>

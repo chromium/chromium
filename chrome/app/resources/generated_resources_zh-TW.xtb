@@ -122,6 +122,7 @@
 <translation id="1134009406053225289">在無痕式視窗中開啟</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />。第 <ph name="EMOJI_INDEX" /> 個，總共 <ph name="EMOJI_COUNT" /> 個。</translation>
 <translation id="1136712381129578788">由於你輸入太多次錯誤的 PIN 碼，因此安全金鑰已遭到鎖定。如要解鎖，請移除安全金鑰後重新插入。</translation>
+<translation id="1137589305610962734">暫存資料</translation>
 <translation id="1137673463384776352">在「<ph name="APP" />」中開啟連結</translation>
 <translation id="1139343347646843679">設定 Linux 時發生錯誤。請與你的系統管理員聯絡。</translation>
 <translation id="1140351953533677694">存取你的藍牙和序列裝置</translation>
@@ -227,6 +228,7 @@
 <translation id="1249643471736608405">「<ph name="PLUGIN_NAME" />」因已淘汰而遭封鎖</translation>
 <translation id="1251366534849411931">缺少左大括弧：<ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">這會清除網站儲存的資料 (共 <ph name="TOTAL_USAGE" />)，以及所安裝的應用程式</translation>
+<translation id="125220115284141797">預設值</translation>
 <translation id="1252987234827889034">設定檔發生錯誤</translation>
 <translation id="1254593899333212300">直接連線到網際網路</translation>
 <translation id="1259152067760398571">昨天已執行安全檢查</translation>
@@ -318,6 +320,7 @@
 <translation id="1361872463926621533">啟動時播放音效</translation>
 <translation id="1362865166188278099">發生機械故障。請檢查印表機</translation>
 <translation id="1363585519747660921">請設定 USB 印表機</translation>
+<translation id="1364664799726141130">你驗證的帳戶未經授權，無法存取這部裝置。請確認你驗證的是 <ph name="ACCOUNT" />，才能解鎖工作階段。</translation>
 <translation id="1365180424462182382">你的<ph name="BEGIN_LINK" />瀏覽器是由 <ph name="ENROLLMENT_DOMAIN" /> 管理<ph name="END_LINK" /></translation>
 <translation id="1367951781824006909">選擇檔案</translation>
 <translation id="1369149969991017342">開關功能 (使用一或兩種開關就能操控電腦)</translation>
@@ -426,6 +429,7 @@
 <translation id="1486096554574027028">搜尋密碼</translation>
 <translation id="1487335504823219454">開啟 - 自訂設定</translation>
 <translation id="1489664337021920575">選擇其他選項</translation>
+<translation id="1492417797159476138">你已在這個網站上儲存此使用者名稱</translation>
 <translation id="1493892686965953381">正在等待 <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1495486559005647033">還有 <ph name="NUM_PRINTERS" /> 個可用裝置。</translation>
 <translation id="1495677929897281669">返回分頁</translation>
@@ -651,6 +655,7 @@
 <translation id="173628468822554835">我知道了。在預設情況下，你首次造訪的網站將不會傳送通知。</translation>
 <translation id="1736419249208073774">探索</translation>
 <translation id="1737968601308870607">回報錯誤</translation>
+<translation id="174123615272205933">自訂</translation>
 <translation id="1741314857973421784">繼續</translation>
 <translation id="1743570585616704562">無法識別</translation>
 <translation id="1743970419083351269">關閉下載內容列</translation>
@@ -685,6 +690,7 @@
 <translation id="1776712937009046120">新增使用者</translation>
 <translation id="1776883657531386793"><ph name="OID" />：<ph name="INFO" /></translation>
 <translation id="1778457539567749232">標示為未讀取</translation>
+<translation id="1779468444204342338">最小值</translation>
 <translation id="1779652936965200207">請在「<ph name="DEVICE_NAME" />」上輸入以下密碼金鑰：</translation>
 <translation id="177989070088644880">應用程式 (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">關閉群組</translation>
@@ -977,6 +983,7 @@
 <translation id="2131077480075264">由於「<ph name="IMPORT_NAME" />」不允許，因此無法安裝「<ph name="APP_NAME" />」</translation>
 <translation id="21354425047973905">隱藏 PIN 碼</translation>
 <translation id="2135456203358955318">停駐放大鏡</translation>
+<translation id="2135468118189259524">如要瞭解 Google 會收集哪些資料，以及收集這些資料的原因，請前往 <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" />。</translation>
 <translation id="2135787500304447609">繼續(&amp;R)</translation>
 <translation id="2136372518715274136">輸入新密碼</translation>
 <translation id="2136476978468204130">你輸入的通關密語不正確</translation>
@@ -1457,6 +1464,7 @@
 <translation id="2688196195245426394">向伺服器註冊裝置時發生錯誤：<ph name="CLIENT_ERROR" />。</translation>
 <translation id="2690024944919328218">顯示語言選項</translation>
 <translation id="2691385045260836588">型號</translation>
+<translation id="2691440343905273290">變更輸入設定</translation>
 <translation id="2693176596243495071">糟糕！發生不明錯誤，請稍後再試。如果這樣無法解決問題，請與你的管理員聯絡。</translation>
 <translation id="2695749433451188613">網際網路列印通訊協定 (HTTPS)</translation>
 <translation id="2699911226086014512">PIN 碼作業失敗，錯誤代碼為 <ph name="RETRIES" />。</translation>
@@ -2073,6 +2081,7 @@
 <translation id="3440663250074896476">更多可對「<ph name="BOOKMARK_NAME" />」執行的動作</translation>
 <translation id="3440761377721825626">當網站要使用外掛程式存取你的電腦時，必須先詢問你</translation>
 <translation id="3441653493275994384">螢幕</translation>
+<translation id="3441663102605358937">再次登入 <ph name="ACCOUNT" /> 以驗證這個帳戶</translation>
 <translation id="3445047461171030979">Google 助理快速解答</translation>
 <translation id="3445925074670675829">USB-C 裝置</translation>
 <translation id="3446274660183028131">請啟動 Parallels Desktop 以安裝 Windows。</translation>
@@ -2823,6 +2832,7 @@
 <translation id="4312866146174492540">封鎖 (預設)</translation>
 <translation id="4314815835985389558">管理同步功能資料</translation>
 <translation id="4316850752623536204">開發人員網站</translation>
+<translation id="4317820549299924617">未成功進行驗證</translation>
 <translation id="4320177379694898372">沒有網際網路連線</translation>
 <translation id="4322394346347055525">關閉其他分頁</translation>
 <translation id="4324577459193912240">檔案未完成下載</translation>
@@ -3628,6 +3638,7 @@
 <translation id="5307030433605830021">不支援的來源</translation>
 <translation id="5308380583665731573">連線</translation>
 <translation id="5310281978693206542">將連結傳送至裝置</translation>
+<translation id="531118851858162334">這是系統根據你先前使用 Google 服務的活動記錄而顯示的項目。你可以前往 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 查看或刪除自己的資料，也可以變更設定。</translation>
 <translation id="5311304534597152726">使用以下身分登入：</translation>
 <translation id="5311565231560644461">不允許網站使用你的虛擬實境裝置和資料</translation>
 <translation id="5314381603623123224">Chrome《服務條款》將於 3 月 31 日變更</translation>
@@ -3668,6 +3679,7 @@
 <translation id="5362741141255528695">選取秘密金鑰檔案。</translation>
 <translation id="5363109466694494651">執行 Powerwash 並恢復原廠設定</translation>
 <translation id="5365881113273618889">你選取的資料夾包含敏感檔案。你確定要將這個資料夾的寫入權限永久授予「<ph name="APP_NAME" />」嗎？</translation>
+<translation id="536638840841140142">無</translation>
 <translation id="5368720394188453070">你的手機已鎖定，必須解鎖才能繼續操作。</translation>
 <translation id="5368779022775404937">登入 <ph name="REALM" /></translation>
 <translation id="5369491905435686894">啟用滑鼠加速</translation>
@@ -4821,6 +4833,7 @@
 <translation id="6748465660675848252">您可以繼續操作，但系統只會還原您已同步處理的資料和設定。所有本機資料都會遺失。</translation>
 <translation id="6749006854028927059">網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務。某些網站的功能可能無法正常運作。</translation>
 <translation id="6750757184909117990">停用行動數據</translation>
+<translation id="6750946710563435348">使用其他的使用者名稱</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (無痕模式)</translation>
 <translation id="6757101664402245801">已複製網址</translation>
 <translation id="6758056191028427665">請讓我們瞭解你的滿意度。</translation>
@@ -5339,6 +5352,7 @@
 <translation id="7377451353532943397">繼續禁止存取感應器</translation>
 <translation id="73786666777299047">開啟 Chrome 線上應用程式商店</translation>
 <translation id="7378812711085314936">取得數據連線</translation>
+<translation id="7380622428988553498">裝置名稱包含無效字元</translation>
 <translation id="7380768571499464492">已更新「<ph name="PRINTER_NAME" />」</translation>
 <translation id="7384687527486377545">鍵盤自動重複</translation>
 <translation id="7385854874724088939">準備列印時出現錯誤，請檢查你的印表機，然後再試一次。</translation>
@@ -5387,6 +5401,7 @@
 <translation id="7434969625063495310">無法新增列印伺服器。請檢查伺服器設定，然後再試一次。</translation>
 <translation id="7436921188514130341">糟糕！重新命名過程中發生錯誤。</translation>
 <translation id="7438976808740265764">2020 年 12 月之後，系統將停止支援 Flash Player。</translation>
+<translation id="7439519621174723623">新增裝置名稱即可繼續</translation>
 <translation id="7441736921018636843">如要變更這項設定，請<ph name="BEGIN_LINK" />重設同步處理功能<ph name="END_LINK" />以移除同步處理通關密語</translation>
 <translation id="7441830548568730290">其他使用者</translation>
 <translation id="7442465037756169001">現在可以開始設定你的 Hangouts Meet 設備了。</translation>
@@ -5628,6 +5643,7 @@
 <translation id="7717134585801378441">網站可以要求取得你的位置資訊 (建議)</translation>
 <translation id="7717845620320228976">檢查更新</translation>
 <translation id="7719367874908701697">頁面縮放</translation>
+<translation id="7719588063158526969">裝置名稱過長</translation>
 <translation id="7721179060400456005">允許將視窗擴展到其他螢幕上</translation>
 <translation id="7722040605881499779">更新所需空間：<ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">剪下</translation>
@@ -5932,6 +5948,7 @@
 <translation id="8049705080247101012">Google 已將「<ph name="EXTENSION_NAME" />」標示為惡意擴充功能並禁止安裝</translation>
 <translation id="8049948037269924837">觸控板反向捲動</translation>
 <translation id="8050038245906040378">Microsoft 商用程式碼簽署</translation>
+<translation id="8050191834453426339">再次驗證</translation>
 <translation id="8051193500142930381">需要攝影機的功能將無法運作</translation>
 <translation id="8051390370038326517">一律允許 <ph name="HOST" /> 取得 MIDI 裝置的完整控制權限</translation>
 <translation id="8053278772142718589">PKCS #12 檔案</translation>
@@ -6206,6 +6223,7 @@
 <translation id="8378714024927312812">由貴機構管理</translation>
 <translation id="8379878387931047019">這部裝置不支援這個網站所要求的安全金鑰類型</translation>
 <translation id="8379991678458444070">將此分頁加入書籤，日後便能快速開啟這個頁面</translation>
+<translation id="8380266723152870797">視窗名稱</translation>
 <translation id="8382384117483909115">{NUM_TABS,plural, =1{稍後再閱讀分頁}other{稍後再閱讀分頁}}</translation>
 <translation id="8382913212082956454">複製電子郵件地址(&amp;E)</translation>
 <translation id="8386091599636877289">找不到政策。</translation>
@@ -6370,6 +6388,7 @@
 <translation id="8592141010104017453">完全不顯示通知</translation>
 <translation id="859246725979739260">已禁止這個網站存取你的位置資訊。</translation>
 <translation id="8593121833493516339">傳送使用狀況與診斷資料。讓系統自動將診斷資料以及裝置和應用程式的使用狀況資料傳送給 Google，協助改善你的 Android 使用體驗。這些資料將有助於系統和應用程式提高穩定性及做出其他改善，並不會用於識別貴子女的身分。部分匯總資料還能夠為 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提供幫助。如果貴子女的「其他網路和應用程式活動」設定為開啟，系統可能會將這些資料儲存到他們的 Google 帳戶。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
+<translation id="8593735906501637689">已移除「<ph name="MODULE_TITLE" />」</translation>
 <translation id="8594908476761052472">錄影</translation>
 <translation id="8596540852772265699">自訂檔</translation>
 <translation id="8597845839771543242">屬性格式：</translation>

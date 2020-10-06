@@ -134,7 +134,7 @@
 <translation id="1453974140256777690">Сиз чаптаган же тиркеген билдирүү Google Булутка же үчүнчү тараптын кызматтарына талдоо үчүн жөнөтүлөт. Мисалы, анда купуя маалыматтын болуусу текшерилет.</translation>
 <translation id="1455413310270022028">Өчүргүч</translation>
 <translation id="1462245070427461050">JIS B9 (45mm x 64mm)</translation>
-<translation id="1462951478840426066">Мазмундарды жогорку тактык менен түзүү үчүн, компьютердеги ариптерди колдонуңуз</translation>
+<translation id="1462951478840426066">Мазмундарды жогорку тактык менен түзүү үчүн компьютердеги ариптерди колдонуңуз</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">Сол</translation>
 <translation id="1472675084647422956">Дагы көрсөтүү</translation>
@@ -833,6 +833,7 @@
 <translation id="4277028893293644418">Сырсөздү өзгөртүү</translation>
 <translation id="4279811152705618813"><ph name="DEVICE_TYPE" /> түзмөгүңүз <ph name="ENROLLMENT_DOMAIN" /> тарабынан башкарылууда</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Бул карта Google аккаунтуңузга сакталды}other{Бул карталар Google аккаунтуңузга сакталды}}</translation>
+<translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> барагынын эскизи</translation>
 <translation id="42981349822642051">Жайып көрсөтүү</translation>
 <translation id="4300675098767811073">Оң жагын бир нече жолу тешүү</translation>
 <translation id="4302965934281694568">Chou3 (Конверт)</translation>

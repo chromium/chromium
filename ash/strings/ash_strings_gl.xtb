@@ -27,6 +27,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="121097972571826261">Avanzar unha palabra</translation>
 <translation id="1225748608451425081">Bloqueouse o teu Chromebook por un problema coñecido. Poderás iniciar sesión despois de: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Deixar de seleccionar</translation>
+<translation id="1239161794459865856">A función <ph name="FEATURE_NAME" /> está activada.</translation>
 <translation id="1247372569136754018">Micrófono (interno)</translation>
 <translation id="1252999807265626933">Cargando a través de <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Que tempo fai?</translation>
@@ -74,6 +75,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1654477262762802994">Iniciar unha consulta de voz</translation>
 <translation id="1667964833127753507">O modo de cor neutra non usa as cores extraídas dun fondo de pantalla, senón que as substitúe por un conxunto de cores claras ou escuras cun ton neutro.</translation>
 <translation id="1677472565718498478">Tempo restante: <ph name="TIME" /></translation>
+<translation id="1677507110654891115">A función <ph name="FEATURE_NAME" /> non está activada.</translation>
 <translation id="1698080062160024910">Temporizador de <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Enderezo IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Escritorio: <ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2369165858548251131">"Ola" en chinés</translation>
 <translation id="2390318262976603432">Opcións de configuración local</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="2405664212338326887">Función non activada</translation>
 <translation id="2408955596600435184">Introduce o PIN</translation>
 <translation id="2412593942846481727">Hai unha actualización dispoñible</translation>
 <translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> é unha sesión xestionada por <ph name="DOMAIN" /></translation>
@@ -243,6 +246,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3364721542077212959">Ferramentas de lapis óptico</translation>
 <translation id="3368922792935385530">Conectada</translation>
 <translation id="3371140690572404006">Dispositivo USB-C (porto dereito frontal)</translation>
+<translation id="3375634426936648815">Función activada</translation>
 <translation id="3386978599540877378">a lupa de pantalla completa</translation>
 <translation id="3400357268283240774">Configuración adicional</translation>
 <translation id="3410336247007142655">Mostrar configuración do tema escuro</translation>
@@ -323,6 +327,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4195877955194704651">Botón de clics automáticos</translation>
 <translation id="4197790712631116042">Desactivado</translation>
+<translation id="4201033867194214117">A función <ph name="FEATURE_NAME" /> non está dispoñible.</translation>
 <translation id="4212246570487010370">Continuar navegando</translation>
 <translation id="4212472694152630271">Cambiar ao PIN</translation>
 <translation id="4215497585250573029">Configuración de VPN</translation>
@@ -334,6 +339,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4285498937028063278">Deixar de fixar</translation>
 <translation id="4294319844246081198">Bos días, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Borrar as <ph name="COUNT" /> notificacións</translation>
+<translation id="4302592941791324970">Non dispoñible</translation>
 <translation id="4303223480529385476">Despregar área de estado</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Premiches o atallo de teclado para o alto contraste. Queres activalo?</translation>
@@ -427,6 +433,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5302048478445481009">Idioma</translation>
 <translation id="5313326810920013265">Configuración de Bluetooth</translation>
 <translation id="5314219114274263156">Realizouse unha gravación da pantalla</translation>
+<translation id="5329548388331921293">Conectando…</translation>
 <translation id="5331975486040154427">Dispositivo USB-C (porto esquerdo posterior)</translation>
 <translation id="5352250171825660495">O tema escuro está activado</translation>
 <translation id="5379115545237091094">Demasiados intentos</translation>
@@ -440,6 +447,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5465662442746197494">Precisas axuda?</translation>
 <translation id="5496819745535887422">O administrador está instalando unha versión anterior no teu dispositivo. Ao reinicialo, eliminaranse todos os datos.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166">A función <ph name="FEATURE_NAME" /> estase activando.</translation>
 <translation id="553675580533261935">Pechando sesión</translation>
 <translation id="5537725057119320332">Emitir</translation>
 <translation id="5548285847212963613">A extensión "<ph name="EXTENSION_NAME" />" pode axudar a conectarte a esta rede.</translation>

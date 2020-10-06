@@ -27,6 +27,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="121097972571826261">Vorentoe per woord</translation>
 <translation id="1225748608451425081">Jou Chromebook is gesluit weens 'n bekende probleem. Jy sal kan aanmeld ná: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Hou op kies</translation>
+<translation id="1239161794459865856"><ph name="FEATURE_NAME" /> is gekoppel.</translation>
 <translation id="1247372569136754018">Mikrofoon (intern)</translation>
 <translation id="1252999807265626933">Laai vanaf <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Hoe lyk die weer?</translation>
@@ -74,6 +75,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1654477262762802994">Begin 'n stemnavraag</translation>
 <translation id="1667964833127753507">Die neutrale kleurmodus gebruik nie kleure wat van die muurpapier onttrek is nie, maar vervang dit met 'n stel ligte of donker skakerings van neutrale kleure.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> oor</translation>
+<translation id="1677507110654891115"><ph name="FEATURE_NAME" /> is nie gekoppel nie.</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />-afteller · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-adres: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Lessenaar: <ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2369165858548251131">"Hallo" in Chinees</translation>
 <translation id="2390318262976603432">Locale-instellings</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="2405664212338326887">Nie gekoppel nie</translation>
 <translation id="2408955596600435184">Voer jou PIN in</translation>
 <translation id="2412593942846481727">Opdatering is beskikbaar</translation>
 <translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> is 'n bestuurde sessie wat deur <ph name="DOMAIN" /> bestuur word</translation>
@@ -243,6 +246,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3364721542077212959">Stilusnutsgoed</translation>
 <translation id="3368922792935385530">Gekoppel</translation>
 <translation id="3371140690572404006">USB C-toestel (voorste poort aan regterkant)</translation>
+<translation id="3375634426936648815">Gekoppel</translation>
 <translation id="3386978599540877378">die volskermvergrootglas</translation>
 <translation id="3400357268283240774">Bykomende instellings</translation>
 <translation id="3410336247007142655">Wys Donkertema-instellings</translation>
@@ -323,6 +327,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4181841719683918333">Tale</translation>
 <translation id="4195877955194704651">Outomatiese Klikke-knoppie</translation>
 <translation id="4197790712631116042">Af</translation>
+<translation id="4201033867194214117"><ph name="FEATURE_NAME" /> is nie beskikbaar nie.</translation>
 <translation id="4212246570487010370">Hou aan blaai</translation>
 <translation id="4212472694152630271">Skakel oor na PIN</translation>
 <translation id="4215497585250573029">VPN-instellings</translation>
@@ -334,6 +339,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4285498937028063278">Ontspeld</translation>
 <translation id="4294319844246081198">Goeiemôre <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Vee al <ph name="COUNT" /> kennisgewings uit</translation>
+<translation id="4302592941791324970">Nie beskikbaar nie</translation>
 <translation id="4303223480529385476">Vou statusarea uit</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Jy het die sleutelbordkortpad vir hoë kontras gedruk. Wil jy dit aanskakel?</translation>
@@ -427,6 +433,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5302048478445481009">Taal</translation>
 <translation id="5313326810920013265">Bluetooth-instellings</translation>
 <translation id="5314219114274263156">Skermopname is geneem</translation>
+<translation id="5329548388331921293">Koppel tans …</translation>
 <translation id="5331975486040154427">USB C-toestel (agterste poort aan linkerkant)</translation>
 <translation id="5352250171825660495">Donkertema is aan</translation>
 <translation id="5379115545237091094">Te veel pogings</translation>
@@ -440,6 +447,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5465662442746197494">Het jy hulp nodig?</translation>
 <translation id="5496819745535887422">Jou administrateur rol tans jou toestel terug. Alle data sal uitgevee word wanneer die toestel herbegin word.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166"><ph name="FEATURE_NAME" /> koppel tans.</translation>
 <translation id="553675580533261935">Gaan tans uit sessie</translation>
 <translation id="5537725057119320332">Saai uit</translation>
 <translation id="5548285847212963613">Die uitbreiding "<ph name="EXTENSION_NAME" />" kan help om aan hierdie netwerk te verbind.</translation>

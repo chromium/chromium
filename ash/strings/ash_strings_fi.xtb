@@ -27,6 +27,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="121097972571826261">Yksi sana eteenpäin</translation>
 <translation id="1225748608451425081">Chromebook on lukittu tunnetun ongelman takia. Voit kirjautua sisään, kun on kulunut <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Lopeta valitseminen</translation>
+<translation id="1239161794459865856"><ph name="FEATURE_NAME" /> on yhdistetty.</translation>
 <translation id="1247372569136754018">Mikrofoni (sisäinen)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> lataa laitetta.</translation>
 <translation id="1255033239764210633">Miltä päivän sää näyttää?</translation>
@@ -74,6 +75,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1654477262762802994">Aloita puhekysely</translation>
 <translation id="1667964833127753507">Neutraali väritila ei käytä taustakuvasta poimittuja värejä vaan korvaa ne vaaleilla tai tummilla neutraaleilla sävyillä.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> jäljellä</translation>
+<translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ei ole yhdistetty.</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ajastin · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-osoite: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Työpöytä: <ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2369165858548251131">"Hei" kiinaksi</translation>
 <translation id="2390318262976603432">Kieli- ja maa-asetukset</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="2405664212338326887">Ei yhdistetty</translation>
 <translation id="2408955596600435184">Lisää PIN-koodi</translation>
 <translation id="2412593942846481727">Päivitys saatavilla</translation>
 <translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> on hallinnoitu istunto, jota hallinnoi <ph name="DOMAIN" /></translation>
@@ -243,6 +246,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3364721542077212959">Näyttökynätyökalut</translation>
 <translation id="3368922792935385530">Yhdistetty</translation>
 <translation id="3371140690572404006">C-tyypin USB-laite (oikean sivun etummainen portti)</translation>
+<translation id="3375634426936648815">Yhdistetty</translation>
 <translation id="3386978599540877378">koko näytön suurentaja</translation>
 <translation id="3400357268283240774">Lisäasetukset</translation>
 <translation id="3410336247007142655">Näytä tumman teeman asetukset</translation>
@@ -322,6 +326,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4181841719683918333">Kielet</translation>
 <translation id="4195877955194704651">Automaattinen klikkaus ‑painike</translation>
 <translation id="4197790712631116042">Poissa päältä</translation>
+<translation id="4201033867194214117"><ph name="FEATURE_NAME" /> ei ole käytettävissä.</translation>
 <translation id="4212246570487010370">Jatka selaamista</translation>
 <translation id="4212472694152630271">Vaihda PIN-koodiin</translation>
 <translation id="4215497585250573029">VPN-asetukset</translation>
@@ -333,6 +338,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4285498937028063278">Irrota</translation>
 <translation id="4294319844246081198">Huomenta <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Poista kaikki <ph name="COUNT" /> ilmoitusta</translation>
+<translation id="4302592941791324970">Ei käytössä</translation>
 <translation id="4303223480529385476">Laajenna tila-alue</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Painoit suuren kontrastin pikanäppäintä. Haluatko ottaa sen käyttöön?</translation>
@@ -426,6 +432,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5302048478445481009">Kieli</translation>
 <translation id="5313326810920013265">Bluetooth-asetukset</translation>
 <translation id="5314219114274263156">Näytön tallennus valmis</translation>
+<translation id="5329548388331921293">Yhdistetään…</translation>
 <translation id="5331975486040154427">C-tyypin USB-laite (vasemman sivun taaimmainen portti)</translation>
 <translation id="5352250171825660495">Tumma teema on päällä</translation>
 <translation id="5379115545237091094">Liian monta yritystä</translation>
@@ -439,6 +446,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5465662442746197494">Tarvitsetko apua?</translation>
 <translation id="5496819745535887422">Järjestelmänvalvoja palauttaa laitetta. Kaikki data poistetaan laitteen käynnistyessä uudelleen.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166"><ph name="FEATURE_NAME" /> muodostaa yhteyttä.</translation>
 <translation id="553675580533261935">Käyttökerran lopettaminen</translation>
 <translation id="5537725057119320332">Suoratoista</translation>
 <translation id="5548285847212963613">Laajennus <ph name="EXTENSION_NAME" /> voi auttaa muodostamaan yhteyden tähän verkkoon.</translation>

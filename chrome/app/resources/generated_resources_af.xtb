@@ -122,6 +122,7 @@
 <translation id="1134009406053225289">Maak in incognitovenster oop</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />, <ph name="EMOJI_INDEX" /> van <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Die sekuriteitsleutel is gesluit omdat die verkeerde PIN te veel keer ingevoer is. Verwyder dit en sit dit weer in om dit te ontsluit.</translation>
+<translation id="1137589305610962734">tydelike data</translation>
 <translation id="1137673463384776352">Maak skakel in <ph name="APP" /> oop</translation>
 <translation id="1139343347646843679">Kon nie Linux opstel nie. Kontak jou administrateur.</translation>
 <translation id="1140351953533677694">Verkry toegang tot jou Bluetooth- en serietoestelle</translation>
@@ -982,6 +983,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2131077480075264">Kan nie "<ph name="APP_NAME" />" installeer nie omdat dit nie deur "<ph name="IMPORT_NAME" />" toegelaat word nie</translation>
 <translation id="21354425047973905">Versteek PIN-nommers</translation>
 <translation id="2135456203358955318">Gedokte vergrootglas</translation>
+<translation id="2135468118189259524">Kom meer te wete oor die data wat Google insamel en hoekom by <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" />.</translation>
 <translation id="2135787500304447609">Gaan aan</translation>
 <translation id="2136372518715274136">Voer nuwe wagwoord in</translation>
 <translation id="2136476978468204130">Die wagfrase wat jy ingevoer het, is verkeerd</translation>
@@ -3638,6 +3640,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="5307030433605830021">Bron word nie gesteun nie</translation>
 <translation id="5308380583665731573">Koppel</translation>
 <translation id="5310281978693206542">Stuur skakel na jou toestelle toe</translation>
+<translation id="531118851858162334">Jy sien hierdie item op grond van jou vorige aktiwiteit met Google-dienste. Jy kan by <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> jou data sien, dit uitvee en jou instellings verander.</translation>
 <translation id="5311304534597152726">Meld tans aan as</translation>
 <translation id="5311565231560644461">Moenie werwe toelaat om jou virtuelerealiteittoestelle en -data te gebruik nie</translation>
 <translation id="5314381603623123224">Chrome se diensbepalings verander op 31 Maart</translation>
@@ -6223,6 +6226,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8378714024927312812">Bestuur deur jou organisasie</translation>
 <translation id="8379878387931047019">Hierdie toestel steun nie die tipe sekuriteitsleutel wat deur hierdie webwerf versoek word nie</translation>
 <translation id="8379991678458444070">Boekmerk hierdie oortjie om vinnig terug te kom hierheen</translation>
+<translation id="8380266723152870797">Vensternaam</translation>
 <translation id="8382384117483909115">{NUM_TABS,plural, =1{Lees oortjie later}other{Lees oortjies later}}</translation>
 <translation id="8382913212082956454">Kopieer e-posadres</translation>
 <translation id="8386091599636877289">Kon nie beleid kry nie.</translation>
@@ -6387,6 +6391,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8592141010104017453">Moet glad nie kennisgewings wys nie</translation>
 <translation id="859246725979739260">Hierdie werf word gekeer om toegang tot jou ligging te kry</translation>
 <translation id="8593121833493516339">Stuur gebruik- en diagnostiese data. Help om jou kind se Android-ervaring beter te maak deur diagnostiese, toestel- en programgebruikdata outomaties na Google toe te stuur. Dit sal nie gebruik word om jou kind te identifiseer nie en sal met stelsel- en programstabiliteit en ander verbeteringe help. Sekere saamgestelde data sal ook Google-programme en -vennote, soos Android-ontwikkelaars, help. As bykomende Web- en Programaktiwiteit vir jou kind aangeskakel is, kan hierdie data in hul Google-rekening gestoor word. <ph name="BEGIN_LINK1" />Kom meer te wete<ph name="END_LINK1" /></translation>
+<translation id="8593735906501637689"><ph name="MODULE_TITLE" /> is verwyder</translation>
 <translation id="8594908476761052472">Vang video vas</translation>
 <translation id="8596540852772265699">Gepasmaakte lêers</translation>
 <translation id="8597845839771543242">Eiendomsformaat:</translation>

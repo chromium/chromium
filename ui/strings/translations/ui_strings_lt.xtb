@@ -134,6 +134,7 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">Paskelbimo trikampis</translation>
 <translation id="5278860589123563674">Nepavyko išsiųsti</translation>
+<translation id="5283099933536931082">Reikia atkreipti dėmesį į „<ph name="APP_ITEM_TITLE" />“.</translation>
 <translation id="528468243742722775">Baigti</translation>
 <translation id="5329858601952122676">&amp;Pašalinti</translation>
 <translation id="5395308026110844773">„<ph name="DRAGGED_APP_NAME" />“ ant „<ph name="IN_PLACE_APP" />“, paleiskite, kad sukurtumėte aplanką.</translation>
@@ -144,6 +145,7 @@
 <translation id="5574202486608032840">„<ph name="IDS_SHORT_PRODUCT_OS_NAME" />“ sistema</translation>
 <translation id="5583640892426849032">Grįžties klavišas</translation>
 <translation id="5613020302032141669">Rodyklė į kairę</translation>
+<translation id="5652575806481723716">Reikia atkreipti dėmesį į „<ph name="FOCUSED_APP_NAME" />“.</translation>
 <translation id="5675363643668471212">Lentynos elementas</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min.}one{# min.}few{# min.}many{# min.}other{# min.}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktyvus šiandien}=1{Aktyvus prieš 1 d.}one{Aktyvus prieš # d.}few{Aktyvus prieš # d.}many{Aktyvus prieš # d.}other{Aktyvus prieš # d.}}</translation>

@@ -344,6 +344,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3568688522516854065">Để sử dụng các thẻ từ những thiết bị khác, hãy đăng nhập và bật tính năng đồng bộ hóa</translation>
 <translation id="3587482841069643663">Tất cả</translation>
 <translation id="3587596251841506391">Giúp tăng cường an ninh trên web</translation>
+<translation id="3598653140581545904">Dùng chế độ Ẩn danh để đăng nhập</translation>
 <translation id="3599863153486145794">Xóa lịch sử khỏi tất cả các thiết bị đã đăng nhập. Tài khoản Google của bạn có thể có các dạng lịch sử duyệt web khác tại <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="3602290021589620013">Xem trước</translation>
 <translation id="3616113530831147358">Âm thanh</translation>
@@ -385,6 +386,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Kết hợp dữ liệu của tôi</translation>
 <translation id="393697183122708255">Không có tìm kiếm bằng giọng nói đã bật</translation>
+<translation id="3943557322767080599">Hiển thị lời nhắc đăng nhập vào Chrome khi bạn đăng nhập vào Tài khoản Google</translation>
 <translation id="395206256282351086">Tính năng đề xuất trang web và tìm kiếm đã bị tắt</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome sẽ tải trang của bạn khi sẵn sàng}other{Chrome sẽ tải trang của bạn khi sẵn sàng}}</translation>
 <translation id="3963007978381181125">Việc mã hóa cụm mật khẩu không bao gồm địa chỉ và phương thức thanh toán từ Google Pay. Chỉ người có cụm mật khẩu của bạn mới có thể đọc dữ liệu mã hóa. Cụm mật khẩu này sẽ không được gửi đến hay lưu trữ tại Google. Nếu quên cụm mật khẩu hoặc muốn thay đổi tùy chọn cài đặt này, thì bạn cần đặt lại tính năng đồng bộ hóa. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
@@ -660,6 +662,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5937580074298050696">Đã tiết kiệm <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">Đặt lại</translation>
 <translation id="5942872142862698679">Sử dụng Google để tìm kiếm</translation>
+<translation id="5951119116059277034">Đang xem trang hiển thị công khai</translation>
 <translation id="5951615825629292797">Ngôn ngữ đã sẵn sàng, hãy khởi động lại <ph name="APP_NAME" /></translation>
 <translation id="5952764234151283551">Gửi cho Google URL của trang bạn đang cố truy cập</translation>
 <translation id="5956665950594638604">Mở Trung tâm trợ giúp Chrome trong thẻ mới</translation>
@@ -669,6 +672,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5964805880140440652">Để chia sẻ trang này với một thiết bị khác, hãy bật tính năng đồng bộ hóa trong phần cài đặt Chrome</translation>
 <translation id="5964869237734432770">Dừng nhận nội dung mô tả hình ảnh</translation>
 <translation id="5979084224081478209">Kiểm tra mật khẩu</translation>
+<translation id="5982307838673692400">Mở một thẻ Ẩn danh</translation>
 <translation id="6000066717592683814">Giữ Google làm công cụ tìm kiếm mặc định</translation>
 <translation id="6005538289190791541">Mật khẩu đề xuất</translation>
 <translation id="6014293228235665243">Chưa đọc</translation>
@@ -698,6 +702,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="6192907950379606605">Tải nội dung mô tả hình ảnh</translation>
 <translation id="6206830853671714236">Chọn thời điểm tải xuống</translation>
 <translation id="6210748933810148297">Không phải là <ph name="EMAIL" />?</translation>
+<translation id="6211386937064921208">Đang xem trước trang này</translation>
 <translation id="6218096829563201111">Tìm các sản phẩm tương tự <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Mở khóa để xuất mật khẩu của bạn</translation>
 <translation id="6232535412751077445">Bật tính năng “Không theo dõi” nghĩa là một yêu cầu sẽ được đi kèm với lưu lượng duyệt web của bạn. Mọi ảnh hưởng đều phụ thuộc vào việc trang web có phản hồi yêu cầu không và cách thức diễn giải yêu cầu.
@@ -809,6 +814,9 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6900532703269623216">Chế độ bảo vệ nâng cao</translation>
 <translation id="6903907808598579934">Bật đồng bộ hóa</translation>
 <translation id="6929699136511445623">Bật tính năng đồng bộ hóa hệ thống Android</translation>
+<translation id="6941901516114974832">Trong chế độ Ẩn danh, hoạt động của bạn <ph name="BEGIN_BOLD1" />có thể vẫn hiển thị<ph name="END_BOLD1" /> với các trang web mà bạn truy cập, cơ quan/trường học và nhà cung cấp dịch vụ Internet của bạn.
+
+Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn <ph name="BEGIN_BOLD2" />đóng tất cả thẻ Ẩn danh<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Thay đổi vị trí tải xuống mặc định bất cứ lúc nào bằng cách sử dụng tùy chọn menu Cài đặt</translation>
 <translation id="6945221475159498467">Chọn</translation>
 <translation id="6955535239952325894">Tùy chọn cài đặt này bị tắt trên các trình duyệt được quản lý</translation>

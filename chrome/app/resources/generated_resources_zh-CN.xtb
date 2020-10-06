@@ -227,6 +227,7 @@
 <translation id="1249643471736608405">“<ph name="PLUGIN_NAME" />”已被屏蔽，因为它已被弃用</translation>
 <translation id="1251366534849411931">缺少左大括号：<ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">此操作会清除网站及安装的应用存储的 <ph name="TOTAL_USAGE" /> 数据</translation>
+<translation id="125220115284141797">默认</translation>
 <translation id="1252987234827889034">发生个人资料错误</translation>
 <translation id="1254593899333212300">直接连接到互联网</translation>
 <translation id="1259152067760398571">昨天运行过安全检查</translation>
@@ -318,6 +319,7 @@
 <translation id="1361872463926621533">启动时播放声音</translation>
 <translation id="1362865166188278099">发生机械问题，请检查打印机</translation>
 <translation id="1363585519747660921">USB 打印机需要配置</translation>
+<translation id="1364664799726141130">您已验证的帐号无权访问此设备。请确保您验证的帐号是 <ph name="ACCOUNT" /> 以解锁会话。</translation>
 <translation id="1365180424462182382">您的<ph name="BEGIN_LINK" />浏览器<ph name="END_LINK" />由 <ph name="ENROLLMENT_DOMAIN" /> 管理</translation>
 <translation id="1367951781824006909">选择文件</translation>
 <translation id="1369149969991017342">开关控制（只需 1-2 个开关即可控制计算机）</translation>
@@ -426,6 +428,7 @@
 <translation id="1486096554574027028">搜索密码</translation>
 <translation id="1487335504823219454">开启 - 自定义设置</translation>
 <translation id="1489664337021920575">选择其他选项</translation>
+<translation id="1492417797159476138">您已为此网站保存该用户名</translation>
 <translation id="1493892686965953381">正在等待<ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1495486559005647033">另外<ph name="NUM_PRINTERS" />个可用的设备。</translation>
 <translation id="1495677929897281669">返回到标签页</translation>
@@ -648,6 +651,7 @@
 <translation id="173628468822554835">知道了。默认情况下，您访问的新网站不会向您发送通知。</translation>
 <translation id="1736419249208073774">探索</translation>
 <translation id="1737968601308870607">提交错误</translation>
+<translation id="174123615272205933">自定义</translation>
 <translation id="1741314857973421784">继续</translation>
 <translation id="1743570585616704562">无法识别</translation>
 <translation id="1743970419083351269">关闭下载内容栏</translation>
@@ -682,6 +686,7 @@
 <translation id="1776712937009046120">添加用户</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
 <translation id="1778457539567749232">标记为未读</translation>
+<translation id="1779468444204342338">最小值</translation>
 <translation id="1779652936965200207">请在“<ph name="DEVICE_NAME" />”上输入此匹配密钥：</translation>
 <translation id="177989070088644880">应用 (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">关闭群组</translation>
@@ -1454,6 +1459,7 @@
 <translation id="2688196195245426394">向服务器注册设备时出错：<ph name="CLIENT_ERROR" />。</translation>
 <translation id="2690024944919328218">显示语言选项</translation>
 <translation id="2691385045260836588">型号</translation>
+<translation id="2691440343905273290">更改输入设置</translation>
 <translation id="2693176596243495071">糟糕！发生了未知错误。请稍后重试；如果问题依然存在，请与您的管理员联系。</translation>
 <translation id="2695749433451188613">互联网打印协议 (HTTPS)</translation>
 <translation id="2699911226086014512">PIN 码操作失败，错误代码为 <ph name="RETRIES" />。</translation>
@@ -2070,6 +2076,7 @@
 <translation id="3440663250074896476">显示可对“<ph name="BOOKMARK_NAME" />”执行的更多操作</translation>
 <translation id="3440761377721825626">当网站要使用插件访问您的计算机时询问您</translation>
 <translation id="3441653493275994384">屏幕</translation>
+<translation id="3441663102605358937">请重新登录 <ph name="ACCOUNT" /> 以验证此帐号</translation>
 <translation id="3445047461171030979">Google 助理快速解答</translation>
 <translation id="3445925074670675829">USB-C 设备</translation>
 <translation id="3446274660183028131">请启动 Parallels Desktop 以安装 Windows。</translation>
@@ -2820,6 +2827,7 @@
 <translation id="4312866146174492540">屏蔽（默认）</translation>
 <translation id="4314815835985389558">管理同步数据</translation>
 <translation id="4316850752623536204">开发者网站</translation>
+<translation id="4317820549299924617">验证失败</translation>
 <translation id="4320177379694898372">未连接到互联网</translation>
 <translation id="4322394346347055525">关闭其他标签页</translation>
 <translation id="4324577459193912240">文件下载未完成</translation>
@@ -3665,6 +3673,7 @@
 <translation id="5362741141255528695">选择私有密钥文件。</translation>
 <translation id="5363109466694494651">执行 Powerwash 操作并还原</translation>
 <translation id="5365881113273618889">您所选的文件夹中包含敏感文件。确定要向“<ph name="APP_NAME" />”授予对此文件夹的永久写入权限吗？</translation>
+<translation id="536638840841140142">无</translation>
 <translation id="5368720394188453070">配对手机已锁定，需将其解锁才能进入。</translation>
 <translation id="5368779022775404937">登录 <ph name="REALM" /></translation>
 <translation id="5369491905435686894">启用鼠标加速</translation>
@@ -4818,6 +4827,7 @@
 <translation id="6748465660675848252">您可以继续，但系统将只恢复已同步的数据和设置。所有本地数据都将会丢失。</translation>
 <translation id="6749006854028927059">网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。某些网站上的功能可能会无法正常运作。</translation>
 <translation id="6750757184909117990">停用移动网络</translation>
+<translation id="6750946710563435348">使用其他用户名</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" />（无痕）</translation>
 <translation id="6757101664402245801">网址已复制</translation>
 <translation id="6758056191028427665">让我们知道您的满意度。</translation>
@@ -5336,6 +5346,7 @@
 <translation id="7377451353532943397">继续禁止使用传感器</translation>
 <translation id="73786666777299047">打开 Chrome 网上应用店</translation>
 <translation id="7378812711085314936">获取数据网络连接</translation>
+<translation id="7380622428988553498">设备名称包含无效字符</translation>
 <translation id="7380768571499464492">已更新<ph name="PRINTER_NAME" /></translation>
 <translation id="7384687527486377545">键盘自动重复</translation>
 <translation id="7385854874724088939">尝试打印时出现错误。请检查您的打印机，然后重试。</translation>
@@ -5384,6 +5395,7 @@
 <translation id="7434969625063495310">无法添加打印服务器。请检查服务器的配置，然后重试。</translation>
 <translation id="7436921188514130341">糟糕！重命名过程中出错了。</translation>
 <translation id="7438976808740265764">自 2020 年 12 月开始，Flash Player 将不再受支持。</translation>
+<translation id="7439519621174723623">您必须添加设备名称才能继续操作</translation>
 <translation id="7441736921018636843">要更改此设置，请<ph name="BEGIN_LINK" />重置同步功能<ph name="END_LINK" />以移除同步密码</translation>
 <translation id="7441830548568730290">其他用户</translation>
 <translation id="7442465037756169001">您的 Hangouts Meet 设备现已可供设置了。</translation>
@@ -5625,6 +5637,7 @@
 <translation id="7717134585801378441">网站可以请求使用您的位置信息（推荐）</translation>
 <translation id="7717845620320228976">检查是否有更新</translation>
 <translation id="7719367874908701697">网页缩放</translation>
+<translation id="7719588063158526969">设备名称过长</translation>
 <translation id="7721179060400456005">允许窗口跨多个显示屏进行显示</translation>
 <translation id="7722040605881499779">要更新，所需空间为：<ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">剪切</translation>
@@ -5929,6 +5942,7 @@
 <translation id="8049705080247101012">Google 已将“<ph name="EXTENSION_NAME" />”标记为恶意扩展程序并已阻止系统安装它</translation>
 <translation id="8049948037269924837">触控板反向滚动</translation>
 <translation id="8050038245906040378">Microsoft 商业代码签名</translation>
+<translation id="8050191834453426339">再次验证</translation>
 <translation id="8051193500142930381">所有需要使用摄像头的功能都将无法正常运行</translation>
 <translation id="8051390370038326517">始终允许 <ph name="HOST" /> 全面控制 MIDI 设备</translation>
 <translation id="8053278772142718589">PKCS #12 文件</translation>

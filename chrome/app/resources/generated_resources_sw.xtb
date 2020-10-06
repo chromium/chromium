@@ -122,6 +122,7 @@
 <translation id="1134009406053225289">Fungua katika dirisha fiche</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> kati ya <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Tumefunga ufunguo wa usalama kwa sababu umeweka PIN isiyo sahihi mara nyingi mno. Ili kuufungua, uondoe kisha uuweke tena.</translation>
+<translation id="1137589305610962734">data ya muda</translation>
 <translation id="1137673463384776352">Fungua kiungo katika <ph name="APP" /></translation>
 <translation id="1139343347646843679">Hitilafu imetokea wakati wa kuweka mipangilio ya Linux. Tafadhali wasiliana na msimamizi wako.</translation>
 <translation id="1140351953533677694">Fikia vifaa vyako Tambulishi na Bluetooth</translation>
@@ -979,6 +980,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2131077480075264">Imeshindwa kusakinisha "<ph name="APP_NAME" />" kwa sababu hairuhusiwa na "<ph name="IMPORT_NAME" />"</translation>
 <translation id="21354425047973905">Ficha PIN</translation>
 <translation id="2135456203358955318">Kikuzaji kilichofungwa</translation>
+<translation id="2135468118189259524">Pata maelezo kuhusu data ambayo Google hukusanya na madhumuni yake kwa kutembelea <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" />.</translation>
 <translation id="2135787500304447609">&amp;Endelea</translation>
 <translation id="2136372518715274136">Weka nenosiri jipya</translation>
 <translation id="2136476978468204130">Kauli ya siri uliyoweka si sahihi</translation>
@@ -3633,6 +3635,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5307030433605830021">Chanzo hakitumiki</translation>
 <translation id="5308380583665731573">Unganisha</translation>
 <translation id="5310281978693206542">Tuma Kiungo kwenye Vifaa Vyako</translation>
+<translation id="531118851858162334">Unaona kipengee hiki kutokana na shughuli zako za awali kwenye huduma za Google. Unaweza kuona na kufuta data na kubadilisha mipangilio yako katika <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="5311304534597152726">Unaingia katika akaunti ukitumia</translation>
 <translation id="5311565231560644461">Usiruhusu tovuti zitumie data na vifaa vyako vya uhalisia pepe</translation>
 <translation id="5314381603623123224">Sheria na Masharti ya Chrome yanabadilika tarehe 31 Machi</translation>
@@ -6220,6 +6223,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8378714024927312812">Inasimamiwa na shirika lako</translation>
 <translation id="8379878387931047019">Kifaa hiki hakitumii aina hii ya ufunguo wa usalama ulioombwa na tovuti hii</translation>
 <translation id="8379991678458444070">Ili urudi katika sehemu hii kwa haraka, alamisha kichupo hiki</translation>
+<translation id="8380266723152870797">Jina la dirisha</translation>
 <translation id="8382384117483909115">{NUM_TABS,plural, =1{Soma kichupo baadaye}other{Soma vichupo baadaye}}</translation>
 <translation id="8382913212082956454">Nakili barua p&amp;epe</translation>
 <translation id="8386091599636877289">Imeshindwa kupata sera.</translation>
@@ -6384,6 +6388,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8592141010104017453">Usionyeshe arifa kabisa</translation>
 <translation id="859246725979739260">Tovuti hii imezuiwa isifikie maelezo ya mahali ulipo.</translation>
 <translation id="8593121833493516339">Tuma data ya matumizi na uchunguzi. Tusaidie kuboresha jinsi mtoto wako anavyotumia Android kwa kutuma kiotomatiki data ya uchunguzi na matumizi ya kifaa na programu kwa Google. Hatutatumia data hii kumtambulisha mtoto wako na itatusaidia kuboresha uthabiti wa programu na mfumo na maboresho mengine. Baadhi ya maelezo yaliyojumlishwa pia yatasaidia programu za Google na washirika kama vile wasanidi programu za Android. Ikiwa umewasha mipangilio ya historia ya Shughuli za ziada kwenye Wavuti na Programu kwa ajili ya mtoto wako, data hii inaweza kuhifadhiwa kwenye akaunti yake ya Google. <ph name="BEGIN_LINK1" />Pata maelezo zaidi<ph name="END_LINK1" /></translation>
+<translation id="8593735906501637689">Umeondoa <ph name="MODULE_TITLE" /></translation>
 <translation id="8594908476761052472">Rekodi video</translation>
 <translation id="8596540852772265699">Faili Maalum</translation>
 <translation id="8597845839771543242">Muundo wa sifa:</translation>

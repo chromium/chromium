@@ -23,6 +23,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1553358976309200471">Atnaujinkite „Chrome“</translation>
 <translation id="1587223624401073077">„Google Chrome“ naudoja jūsų fotoaparatą.</translation>
 <translation id="1587325591171447154">Failas „<ph name="FILE_NAME" />“ pavojingas, todėl „Chrome“ jį užblokavo.</translation>
+<translation id="1597911401261118146">Jei norite patikrinti, ar slaptažodžiai apsaugoti nuo duomenų saugos pažeidimų bei kitų saugos problemų, <ph name="BEGIN_LINK" />prisijunkite prie „Chrome“<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Kad „Chrome“ būtų saugesnė, išjungėme toliau nurodytą plėtinį, kuris nepateiktas <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> sąraše ir tikriausiai buvo pridėtas be jūsų žinios.</translation>
 <translation id="162448658176061655">Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos. Paskutinį kartą tikrinta: ką tik.</translation>
 <translation id="162629503687514352">„Chrome“ OS nepavyko sinchronizuoti jūsų slaptažodžių.</translation>
@@ -38,6 +39,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1734234790201236882">„Chrome“ išsaugos šį slaptažodį „Google“ paskyroje. Jums nereikia jo prisiminti.</translation>
 <translation id="174539241580958092">„Google Chrome“ negali sinchronizuoti duomenų, nes prisijungiant įvyko klaida.</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1786003790898721085">Įsitikinkite, kad esate prisijungę prie „Chrome“ naudodami „<ph name="TARGET_DEVICE_NAME" />“, ir bandykite siųsti iš naujo.</translation>
 <translation id="1812689907177901597">Jei išjungsite šį nustatymą, prie „Google“ svetainių galėsite prisijungti kaip prie „Gmail“ neprisijungę prie „Chrome“</translation>
 <translation id="1860536484129686729">„Chrome“ reikia leidimo, kad galėtų naudoti fotoaparatą šioje svetainėje</translation>
 <translation id="1873233029667955273">„Google Chrome“ nėra numatytoji naršyklė</translation>
@@ -82,6 +84,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="3065168410429928842">„Chrome“ skirtukas</translation>
 <translation id="3080151273017101988">Uždarius „Google Chrome“ toliau leisti fono programas</translation>
 <translation id="3089968997497233615">Galima nauja, saugesnė „Google Chrome“ versija.</translation>
+<translation id="3114643501466072395">Jei norite patikrinti, ar kiti slaptažodžiai apsaugoti nuo duomenų saugos pažeidimų bei kitų saugos problemų, <ph name="BEGIN_LINK" />prisijunkite prie „Chrome“<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">„Chrome“ OS nepavyko sinchronizuoti jūsų duomenų.</translation>
 <translation id="3149510190863420837">„Chrome“ programos</translation>
 <translation id="3360895254066713204">„Chrome“ pagalbos priemonė</translation>
@@ -253,6 +256,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="8344083974188970894">{NUM_MINS,plural, =1{Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos. Paskutinį kartą tikrinta: prieš 1 minutę.}one{Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos. Paskutinį kartą tikrinta: prieš {NUM_MINS} minutę.}few{Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos. Paskutinį kartą tikrinta: prieš {NUM_MINS} minutes.}many{Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos. Paskutinį kartą tikrinta: prieš {NUM_MINS} minutės.}other{Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos. Paskutinį kartą tikrinta: prieš {NUM_MINS} minučių.}}</translation>
 <translation id="8370517070665726704">Autorių teisės „Google LLC.“, <ph name="YEAR" /> m. Visos teisės saugomos.</translation>
 <translation id="840084489713044809">„Google Chrome“ nori eksportuoti jūsų slaptažodžius.</translation>
+<translation id="8433638294851456451">Jei norite iš čia į „Android“ telefoną išsiųsti numerį, prisijunkite prie „Chrome“ abiejuose įrenginiuose.</translation>
 <translation id="8498858610309223613">Ką tik pritaikytas specialus „Google Chrome“ skirtas saugos naujinys. Dabar paleiskite naršyklę iš naujo ir atkursime visus skirtukus.</translation>
 <translation id="8521348052903287641">„Dev“ versijos „Google Chrome“ skirta taisyklė, pagal kurią leidžiamas gaunamas mDNS srautas.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
@@ -272,6 +276,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="884296878221830158">Ji taip pat kontroliuoja, koks puslapis rodomas, kai paleidžiate „Chrome“ ar spustelėjate pagrindinio puslapio mygtuką.</translation>
 <translation id="8862326446509486874">Neturite reikiamų teisių sistemai įdiegti. Pamėginkite įdiegimo priemonę dar kartą paleisti kaip administratorius.</translation>
 <translation id="8914504000324227558">Iš naujo paleisti „Chrome“</translation>
+<translation id="8922193594870374009">Jei norite iš <ph name="ORIGIN" /> į „Android“ telefoną išsiųsti numerį, prisijunkite prie „Chrome“ abiejuose įrenginiuose.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Pasiekiamas „Chrome“ naujinys}=1{Pasiekiamas „Chrome“ naujinys}one{„Chrome“ naujinys pasiekiamas # dieną}few{„Chrome“ naujinys pasiekiamas # dienas}many{„Chrome“ naujinys pasiekiamas # dienos}other{„Chrome“ naujinys pasiekiamas # dienų}}</translation>
 <translation id="9026991721384951619">„Chrome“ OS negali sinchronizuoti duomenų, nes paskyros išsami prisijungimo informacija yra pasenusi.</translation>
 <translation id="9067395829937117663">Kad būtų galima naudoti „Google Chrome“, reikalinga 7 ar naujesnės versijos „Windows“.</translation>
