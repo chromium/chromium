@@ -108,7 +108,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Profile.CreateResult" enum="ProfileCreateResult"
-    expires_after="2021-01-31">
+    expires_after="2021-04-04">
   <owner>treib@chromium.org</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>msarda@chromium.org</owner>

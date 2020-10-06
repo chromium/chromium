@@ -417,7 +417,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.CardUploadEnabled" enum="AutofillCardUploadEnabled"
-    expires_after="2021-01-31">
+    expires_after="2021-04-04">
   <owner>aneeshali@google.com</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -592,7 +592,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.ExpirationDateFixFlowPromptShown" enum="Boolean"
-    expires_after="2021-02-01">
+    expires_after="2021-04-04">
   <owner>siashah@google.com</owner>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -1410,7 +1410,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.ServerCardLinkClicked" enum="AutofillSyncState"
-    expires_after="2021-01-31">
+    expires_after="2021-04-04">
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill@google.com</owner>
@@ -1515,7 +1515,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.StrikeDatabase.NthStrikeAdded" units="strikes"
-    expires_after="2021-01-31">
+    expires_after="2021-04-04">
 <!-- Name completed by histogram_suffixes name="AutofillStrikeDatabaseProjectType" -->
 
   <owner>jsaul@google.com</owner>
@@ -1527,7 +1527,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.StrikeDatabase.StrikeDatabaseInitFailed"
-    units="attempts" expires_after="2021-01-31">
+    units="attempts" expires_after="2021-04-04">
   <owner>jsaul@google.com</owner>
   <owner>annelim@google.com</owner>
   <summary>

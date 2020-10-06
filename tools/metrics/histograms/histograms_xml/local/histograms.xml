@@ -80,7 +80,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LocalSearchService.MetricsDailyEventInterval"
-    enum="DailyEventIntervalType" expires_after="2021-01-31">
+    enum="DailyEventIntervalType" expires_after="2021-04-04">
   <owner>jiameng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
