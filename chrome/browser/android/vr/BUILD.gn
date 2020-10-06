@@ -61,6 +61,8 @@ static_library("vr_android") {
     "vr_shell_delegate.h",
     "vrcore_install_helper.cc",
     "vrcore_install_helper.h",
+    "xr_install_infobar.cc",
+    "xr_install_infobar.h",
   ]
 
   if (enable_arcore) {
@@ -71,6 +73,8 @@ static_library("vr_android") {
       "arcore_device/arcore_install_helper.h",
       "arcore_device/arcore_java_utils.cc",
       "arcore_device/arcore_java_utils.h",
+      "chrome_arcore_install_helper.cc",
+      "chrome_arcore_install_helper.h",
     ]
   }
 
@@ -85,6 +89,7 @@ static_library("vr_android") {
     "//chrome/common:constants",
     "//components/browser_ui/util/android",
     "//components/content_settings/core/browser",
+    "//components/infobars/core",
     "//components/language/core/browser",
     "//components/omnibox/browser",
     "//components/page_info",

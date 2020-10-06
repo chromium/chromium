@@ -81,6 +81,21 @@
       Site can use MIDI
     </message>
   </if>
+  <if expr="enable_arcore">
+    <!-- ARCore check infobar -->
+    <message name="IDS_AR_CORE_CHECK_INFOBAR_INSTALL_TEXT" desc="Text to be displayed in the ARCore check infobar. When a WebXR page is loaded, if ARCore is needed to display AR content and it is not installed, an infobar will be shown to the user prompting them to install ARCore.">
+      To view augmented reality content, install ARCore
+    </message>
+    <message name="IDS_AR_CORE_CHECK_INFOBAR_UPDATE_TEXT" desc="Text to be displayed in the ARCore check infobar. When a WebXR page is loaded, if ARCore is needed to display AR content and the installed ARCore is not up to date to the version needed by the implementation, an infobar will be shown to the user prompting them to update ARCore.">
+      To view augmented reality content, update ARCore
+    </message>
+    <message name="IDS_AR_CORE_CHECK_INFOBAR_INSTALL_BUTTON" desc="Text to be displayed in the ARCore check infobar confirm button for installing.">
+      Install
+    </message>
+    <message name="IDS_AR_CORE_CHECK_INFOBAR_UPDATE_BUTTON" desc="Title of button that will direct the user to update an app from the market (Play Store)">
+      Update
+    </message>
+  </if>
 
   <!-- VR browser -->
   <!-- TODO(https://crbug.com/731802): Only build these when the VR browser is supported. -->

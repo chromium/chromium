@@ -33,30 +33,9 @@ public interface ArCoreShim {
     }
 
     /**
-     * Equivalent of ArCoreApk.Availability enum.
-     *
-     * For detailed description, please see:
-     * https://developers.google.com/ar/reference/java/arcore/reference/com/google/ar/core/ArCoreApk.Availability
-     */
-    @IntDef({Availability.SUPPORTED_APK_TOO_OLD, Availability.SUPPORTED_INSTALLED,
-            Availability.SUPPORTED_NOT_INSTALLED, Availability.UNKNOWN_CHECKING,
-            Availability.UNKNOWN_ERROR, Availability.UNKNOWN_TIMED_OUT,
-            Availability.UNSUPPORTED_DEVICE_NOT_CAPABLE})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface Availability {
-        int SUPPORTED_APK_TOO_OLD = 0;
-        int SUPPORTED_INSTALLED = 1;
-        int SUPPORTED_NOT_INSTALLED = 2;
-        int UNKNOWN_CHECKING = 3;
-        int UNKNOWN_ERROR = 4;
-        int UNKNOWN_TIMED_OUT = 5;
-        int UNSUPPORTED_DEVICE_NOT_CAPABLE = 6;
-    }
-
-    /**
      * Equivalent of ArCoreApk.checkAvailability.
      */
-    public @Availability int checkAvailability(Context applicationContext);
+    public @ArCoreAvailability int checkAvailability(Context applicationContext);
 
     /**
      * Equivalent of ArCoreApk.requestInstall.

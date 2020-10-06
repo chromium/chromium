@@ -7,10 +7,17 @@
 
 #include "base/android/jni_android.h"
 
+namespace content {
+class WebContents;
+}
+
 // Functions in this file are currently GVR/ArCore specific functions. If other
 // platforms need the same function here, please move it to
 // chrome/browser/vr/*util.cc|h
 namespace vr {
+
+content::WebContents* GetWebContents(int render_process_id,
+                                     int render_frame_id);
 
 base::android::ScopedJavaLocalRef<jobject> GetJavaWebContents(
     int render_process_id,

@@ -23,7 +23,7 @@
 #include "chrome/browser/android/vr/gvr_install_helper.h"
 #include "device/vr/android/gvr/gvr_device_provider.h"
 #if BUILDFLAG(ENABLE_ARCORE)
-#include "chrome/browser/android/vr/arcore_device/arcore_install_helper.h"
+#include "chrome/browser/android/vr/chrome_arcore_install_helper.h"
 #include "device/vr/android/arcore/arcore_device_provider_factory.h"
 #endif  // ENABLE_ARCORE
 #endif  // OS_WIN/OS_ANDROID
@@ -39,7 +39,7 @@ ChromeXrIntegrationClient::GetInstallHelper(
       return std::make_unique<GvrInstallHelper>();
 #if BUILDFLAG(ENABLE_ARCORE)
     case device::mojom::XRDeviceId::ARCORE_DEVICE_ID:
-      return std::make_unique<ArCoreInstallHelper>();
+      return std::make_unique<ChromeArCoreInstallHelper>();
 #endif  // ENABLE_ARCORE
 #endif  // OS_ANDROID
     default:

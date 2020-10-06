@@ -13,9 +13,6 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
-import org.chromium.chrome.browser.ui.messages.infobar.SimpleConfirmInfoBarBuilder;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -68,22 +65,23 @@ public class ArCoreInstallUtils implements ApplicationStatus.ActivityStateListen
         mNativeArCoreInstallUtils = nativeArCoreInstallUtils;
     }
 
-    private static @ArCoreShim.Availability int getArCoreInstallStatus() {
+    @CalledByNative
+    private static @ArCoreAvailability int getArCoreInstallStatus() {
         try {
             return getArCoreShimInstance().checkAvailability(ContextUtils.getApplicationContext());
         } catch (RuntimeException e) {
             Log.w(TAG, "ARCore availability check failed with error: %s", e.toString());
-            return ArCoreShim.Availability.UNSUPPORTED_DEVICE_NOT_CAPABLE;
+            return ArCoreAvailability.UNSUPPORTED_DEVICE_NOT_CAPABLE;
         }
     }
 
     @CalledByNative
     private static boolean shouldRequestInstallSupportedArCore() {
-        @ArCoreShim.Availability
+        @ArCoreAvailability
         int availability = getArCoreInstallStatus();
         // Skip ARCore installation if we are certain that it is already installed.
         // In all other cases, we might as well try to install it and handle installation failures.
-        return availability != ArCoreShim.Availability.SUPPORTED_INSTALLED;
+        return availability != ArCoreAvailability.SUPPORTED_INSTALLED;
     }
 
     @Override
@@ -117,87 +115,31 @@ public class ArCoreInstallUtils implements ApplicationStatus.ActivityStateListen
             return;
         }
 
-        @ArCoreShim.Availability
-        int arCoreAvailability = getArCoreInstallStatus();
+        try {
+            assert sRequestInstallInstance == null;
+            @ArCoreShim.InstallStatus
+            int installStatus = getArCoreShimInstance().requestInstall(activity, true);
 
-        String infobarText = null;
-        String buttonText = null;
-        switch (arCoreAvailability) {
-            case ArCoreShim.Availability.UNSUPPORTED_DEVICE_NOT_CAPABLE:
-                maybeNotifyNativeOnRequestInstallSupportedArCoreResult(false);
-                break;
-            case ArCoreShim.Availability.UNKNOWN_CHECKING:
-            case ArCoreShim.Availability.UNKNOWN_ERROR:
-            case ArCoreShim.Availability.UNKNOWN_TIMED_OUT:
-            case ArCoreShim.Availability.SUPPORTED_NOT_INSTALLED:
-                infobarText = activity.getString(R.string.ar_core_check_infobar_install_text);
-                buttonText = activity.getString(R.string.app_banner_install);
-                break;
-            case ArCoreShim.Availability.SUPPORTED_APK_TOO_OLD:
-                infobarText = activity.getString(R.string.ar_core_check_infobar_update_text);
-                buttonText = activity.getString(R.string.update_from_market);
-                break;
-            case ArCoreShim.Availability.SUPPORTED_INSTALLED:
-                assert false;
-                break;
+            if (installStatus == ArCoreShim.InstallStatus.INSTALL_REQUESTED) {
+                // Install flow will resume in onArCoreRequestInstallReturned, mark that
+                // there is active request. Native code notification will be deferred until
+                // our activity gets resumed.
+                sRequestInstallInstance = ArCoreInstallUtils.this;
+            } else if (installStatus == ArCoreShim.InstallStatus.INSTALLED) {
+                // No need to install - notify native code.
+                maybeNotifyNativeOnRequestInstallSupportedArCoreResult(true);
+            }
+
+        } catch (ArCoreShim.UnavailableDeviceNotCompatibleException e) {
+            sRequestInstallInstance = null;
+            Log.w(TAG, "ARCore installation request failed with exception: %s", e.toString());
+
+            maybeNotifyNativeOnRequestInstallSupportedArCoreResult(false);
+        } catch (ArCoreShim.UnavailableUserDeclinedInstallationException e) {
+            maybeNotifyNativeOnRequestInstallSupportedArCoreResult(false);
         }
-
-        if (infobarText == null || buttonText == null) {
-            // The action was something other than "install" or "update", log this
-            // and exit early to avoid showing an empty infobar.
-            Log.w(TAG, "ARCore unavailable, status code %d", arCoreAvailability);
-            return;
-        }
-
-        SimpleConfirmInfoBarBuilder.Listener listener = new SimpleConfirmInfoBarBuilder.Listener() {
-            @Override
-            public void onInfoBarDismissed() {
-                maybeNotifyNativeOnRequestInstallSupportedArCoreResult(
-                        !shouldRequestInstallSupportedArCore());
-            }
-
-            @Override
-            public boolean onInfoBarButtonClicked(boolean isPrimary) {
-                try {
-                    assert sRequestInstallInstance == null;
-                    @ArCoreShim.InstallStatus
-                    int installStatus = getArCoreShimInstance().requestInstall(activity, true);
-
-                    if (installStatus == ArCoreShim.InstallStatus.INSTALL_REQUESTED) {
-                        // Install flow will resume in onArCoreRequestInstallReturned, mark that
-                        // there is active request. Native code notification will be deferred until
-                        // our activity gets resumed.
-                        sRequestInstallInstance = ArCoreInstallUtils.this;
-                    } else if (installStatus == ArCoreShim.InstallStatus.INSTALLED) {
-                        // No need to install - notify native code.
-                        maybeNotifyNativeOnRequestInstallSupportedArCoreResult(true);
-                    }
-
-                } catch (ArCoreShim.UnavailableDeviceNotCompatibleException e) {
-                    sRequestInstallInstance = null;
-                    Log.w(TAG, "ARCore installation request failed with exception: %s",
-                            e.toString());
-
-                    maybeNotifyNativeOnRequestInstallSupportedArCoreResult(false);
-                } catch (ArCoreShim.UnavailableUserDeclinedInstallationException e) {
-                    maybeNotifyNativeOnRequestInstallSupportedArCoreResult(false);
-                }
-
-                return false;
-            }
-
-            @Override
-            public boolean onInfoBarLinkClicked() {
-                return false;
-            }
-        };
 
         ApplicationStatus.registerStateListenerForActivity(this, activity);
-        // TODO(ijamardo, https://crbug.com/838833): Add icon for AR info bar.
-        SimpleConfirmInfoBarBuilder.create(webContents, listener,
-                InfoBarIdentifier.AR_CORE_UPGRADE_ANDROID, activity,
-                R.drawable.ic_error_outline_googblue_24dp, infobarText, buttonText, null, null,
-                true);
     }
 
     /**

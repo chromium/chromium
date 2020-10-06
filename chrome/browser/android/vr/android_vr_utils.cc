@@ -9,9 +9,8 @@
 
 namespace vr {
 
-base::android::ScopedJavaLocalRef<jobject> GetJavaWebContents(
-    int render_process_id,
-    int render_frame_id) {
+content::WebContents* GetWebContents(int render_process_id,
+                                     int render_frame_id) {
   content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromID(render_process_id, render_frame_id);
   DCHECK(render_frame_host);
@@ -20,7 +19,14 @@ base::android::ScopedJavaLocalRef<jobject> GetJavaWebContents(
       content::WebContents::FromRenderFrameHost(render_frame_host);
   DCHECK(web_contents);
 
-  return web_contents->GetJavaWebContents();
+  return web_contents;
+}
+
+base::android::ScopedJavaLocalRef<jobject> GetJavaWebContents(
+    int render_process_id,
+    int render_frame_id) {
+  return GetWebContents(render_process_id, render_frame_id)
+      ->GetJavaWebContents();
 }
 
 }  // namespace vr

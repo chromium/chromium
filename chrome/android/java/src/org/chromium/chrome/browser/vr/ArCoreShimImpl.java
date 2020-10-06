@@ -11,7 +11,6 @@ import com.google.ar.core.ArCoreApk;
 
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.UsedByReflection;
-import org.chromium.chrome.browser.vr.ArCoreShim.Availability;
 import org.chromium.chrome.browser.vr.ArCoreShim.InstallStatus;
 
 @UsedByReflection("ArCoreJavaUtils.java")
@@ -35,7 +34,7 @@ class ArCoreShimImpl implements ArCoreShim {
     }
 
     @Override
-    public @Availability int checkAvailability(Context applicationContext) {
+    public @ArCoreAvailability int checkAvailability(Context applicationContext) {
         // ARCore's checkAvailability reads shared preferences via ArCoreContentProvider, need to
         // turn off strict mode to allow that.
         // TODO(https://crbug.com/1038757): Remove the disk write context when the disk write is
@@ -60,22 +59,22 @@ class ArCoreShimImpl implements ArCoreShim {
         }
     }
 
-    private @Availability int mapArCoreApkAvailability(ArCoreApk.Availability availability) {
+    private @ArCoreAvailability int mapArCoreApkAvailability(ArCoreApk.Availability availability) {
         switch (availability) {
             case SUPPORTED_APK_TOO_OLD:
-                return Availability.SUPPORTED_APK_TOO_OLD;
+                return ArCoreAvailability.SUPPORTED_APK_TOO_OLD;
             case SUPPORTED_INSTALLED:
-                return Availability.SUPPORTED_INSTALLED;
+                return ArCoreAvailability.SUPPORTED_INSTALLED;
             case SUPPORTED_NOT_INSTALLED:
-                return Availability.SUPPORTED_NOT_INSTALLED;
+                return ArCoreAvailability.SUPPORTED_NOT_INSTALLED;
             case UNKNOWN_CHECKING:
-                return Availability.UNKNOWN_CHECKING;
+                return ArCoreAvailability.UNKNOWN_CHECKING;
             case UNKNOWN_ERROR:
-                return Availability.UNKNOWN_ERROR;
+                return ArCoreAvailability.UNKNOWN_ERROR;
             case UNKNOWN_TIMED_OUT:
-                return Availability.UNKNOWN_TIMED_OUT;
+                return ArCoreAvailability.UNKNOWN_TIMED_OUT;
             case UNSUPPORTED_DEVICE_NOT_CAPABLE:
-                return Availability.UNSUPPORTED_DEVICE_NOT_CAPABLE;
+                return ArCoreAvailability.UNSUPPORTED_DEVICE_NOT_CAPABLE;
             default:
                 throw new RuntimeException(
                         String.format("Unknown value of Availability: %s", availability));
