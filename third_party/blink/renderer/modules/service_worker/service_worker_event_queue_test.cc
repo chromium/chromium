@@ -474,7 +474,7 @@ TEST_F(ServiceWorkerEventQueueTest, SetIdleTimerDelayToZero) {
   }
 }
 
-TEST_F(ServiceWorkerEventQueueTest, EnqueueOffline) {
+TEST_F(ServiceWorkerEventQueueTest, EnqueuOffline) {
   ServiceWorkerEventQueue event_queue(base::DoNothing(), base::DoNothing(),
                                       task_runner(),
                                       task_runner()->GetMockTickClock());
