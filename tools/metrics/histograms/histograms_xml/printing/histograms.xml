@@ -223,8 +223,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterAdded" enum="PrinterProtocol"
-    expires_after="M85">
+    expires_after="2021-10-01">
   <owner>skau@chromium.org</owner>
+  <owner>src/chromeos/printing/OWNERS</owner>
   <summary>
     The protocol for a printer that was added. Used to track printer churn by
     protocol. Only on Chrome OS.
@@ -232,8 +233,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterRemoved" enum="PrinterProtocol"
-    expires_after="M85">
+    expires_after="2021-10-01">
   <owner>skau@chromium.org</owner>
+  <owner>src/chromeos/printing/OWNERS</owner>
   <summary>
     The protocol for a printer that was removed. Used to track printer churn by
     protocol. Only on Chrome OS.
@@ -241,8 +243,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.PrintersDiscovered" units="printers"
-    expires_after="M85">
+    expires_after="2021-10-01">
   <owner>skau@chromium.org</owner>
+  <owner>src/chromeos/printing/OWNERS</owner>
   <summary>
     The number of printers shown in the discovered printers dialog during
     printer set up. Only recorded on Chrome OS.
@@ -250,8 +253,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterSetupResult" enum="PrinterSetupResult"
-    expires_after="M85">
+    expires_after="2021-10-01">
   <owner>skau@chromium.org</owner>
+  <owner>src/chromeos/printing/OWNERS</owner>
   <summary>
     The success or error code for the setup of a CUPS printer. Recorded when
     setup is attempted through the settings dialogs. Only recorded on Chrome OS.
