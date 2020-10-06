@@ -995,6 +995,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
                    HitTestAction) override;
+  // Fast check if |NodeAtPoint| may find a hit.
+  bool MayIntersect(const HitTestResult& result,
+                    const HitTestLocation& hit_test_location,
+                    const PhysicalOffset& accumulated_offset) const;
 
   // This function calculates the preferred widths for an object.
   //

@@ -2238,30 +2238,38 @@ LayoutUnit LayoutBox::AdjustContentBoxLogicalHeightForBoxSizing(
 }
 
 // Hit Testing
+bool LayoutBox::MayIntersect(const HitTestResult& result,
+                             const HitTestLocation& hit_test_location,
+                             const PhysicalOffset& accumulated_offset) const {
+  NOT_DESTROYED();
+  // Check if we need to do anything at all.
+  // If we have clipping, then we can't have any spillout.
+  // TODO(pdr): Why is this optimization not valid for the effective root?
+  if (UNLIKELY(IsEffectiveRootScroller()))
+    return true;
+
+  PhysicalRect overflow_box;
+  if (result.GetHitTestRequest().GetType() &
+      HitTestRequest::kHitTestVisualOverflow) {
+    overflow_box = PhysicalVisualOverflowRectIncludingFilters();
+  } else {
+    // Unite because overflow may not include borders.
+    overflow_box = PhysicalBorderBoxRect();
+    if (!ShouldClipOverflowAlongBothAxis() && HasVisualOverflow())
+      overflow_box.Unite(PhysicalVisualOverflowRect());
+  }
+
+  overflow_box.Move(accumulated_offset);
+  return hit_test_location.Intersects(overflow_box);
+}
+
 bool LayoutBox::HitTestAllPhases(HitTestResult& result,
                                  const HitTestLocation& hit_test_location,
                                  const PhysicalOffset& accumulated_offset,
                                  HitTestFilter hit_test_filter) {
   NOT_DESTROYED();
-  // Check if we need to do anything at all.
-  // If we have clipping, then we can't have any spillout.
-  // TODO(pdr): Why is this optimization not valid for the effective root?
-  if (!IsEffectiveRootScroller()) {
-    PhysicalRect overflow_box;
-    if (result.GetHitTestRequest().GetType() &
-        HitTestRequest::kHitTestVisualOverflow) {
-      overflow_box = PhysicalVisualOverflowRectIncludingFilters();
-    } else {
-      overflow_box = (IsScrollContainer() || ShouldApplyPaintContainment())
-                         ? PhysicalBorderBoxRect()
-                         : PhysicalVisualOverflowRect();
-    }
-
-    PhysicalRect adjusted_overflow_box = overflow_box;
-    adjusted_overflow_box.Move(accumulated_offset);
-    if (!hit_test_location.Intersects(adjusted_overflow_box))
-      return false;
-  }
+  if (!MayIntersect(result, hit_test_location, accumulated_offset))
+    return false;
   return LayoutObject::HitTestAllPhases(result, hit_test_location,
                                         accumulated_offset, hit_test_filter);
 }
@@ -2271,6 +2279,9 @@ bool LayoutBox::NodeAtPoint(HitTestResult& result,
                             const PhysicalOffset& accumulated_offset,
                             HitTestAction action) {
   NOT_DESTROYED();
+  if (!MayIntersect(result, hit_test_location, accumulated_offset))
+    return false;
+
   bool should_hit_test_self = IsInSelfHitTestingPhase(action);
 
   if (should_hit_test_self && IsScrollContainer() &&
