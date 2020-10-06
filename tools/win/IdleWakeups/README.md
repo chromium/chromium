@@ -24,8 +24,11 @@ working set size, number of context switches / sec, and power usage for all
 matched processes. Hit Ctrl-C to stop the measurements and print average and
 median values over the entire measurement interval.
 
-CPU usage is normalized to one CPU core, with 100% meaning one CPU core is
-fully utilized.
+By default, CPU usage is normalized to one CPU core, with 100% meaning one CPU
+core is fully utilized.
+
+To view CPU time in seconds rather than by percentage, use command-line option
+`--cpu-seconds`.
 
 [Intel Power Gadget](https://software.intel.com/en-us/articles/intel-power-gadget-20)
 is required to allow IdleWakeups tool to query power usage.

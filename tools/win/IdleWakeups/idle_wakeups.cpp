@@ -11,12 +11,16 @@
 #include "power_sampler.h"
 #include "system_information_sampler.h"
 
+// Unit for raw CPU usage data from Windows.
+constexpr int kTicksPerSecond = 10000000;
+
 // Result data structure contains a final set of values calculated based on
 // comparison of two snapshots. These are the values that the tool prints
 // in the output.
 struct Result {
   ULONG idle_wakeups_per_sec;
-  double cpu_usage;
+  double cpu_usage_percent;
+  double cpu_usage_seconds;
   ULONGLONG working_set;
   double power;
 };
@@ -27,8 +31,11 @@ typedef std::vector<Result> ResultVector;
 ULONG GetIdleWakeupsPerSec(const Result& r) {
   return r.idle_wakeups_per_sec;
 }
-double GetCpuUsage(const Result& r) {
-  return r.cpu_usage;
+double GetCpuUsagePercent(const Result& r) {
+  return r.cpu_usage_percent;
+}
+double GetCpuUsageSeconds(const Result& r) {
+  return r.cpu_usage_seconds;
 }
 ULONGLONG GetWorkingSet(const Result& r) {
   return r.working_set;
@@ -238,11 +245,9 @@ Result IdleWakeups::DiffSnapshots(const ProcessDataSnapshot& prev_snapshot,
   Result result;
   result.idle_wakeups_per_sec =
       static_cast<ULONG>(idle_wakeups_delta / time_delta);
-  // brucedawson: Don't divide by number of processors so that all numbers are
-  // percentage of a core
-  // result.cpu_usage = (double)cpu_usage_delta * 100 / (time_delta * 10000000 *
-  // NumberOfprocessors());
-  result.cpu_usage = (double)cpu_usage_delta * 100 / (time_delta * 10000000);
+  result.cpu_usage_percent =
+      (double)cpu_usage_delta * 100 / (time_delta * kTicksPerSecond);
+  result.cpu_usage_seconds = (double)cpu_usage_delta / kTicksPerSecond;
   result.working_set = total_working_set;
 
   return result;
@@ -275,16 +280,31 @@ void PrintHeader() {
       "----------\n");
 }
 
-#define RESULT_FORMAT_STRING "    %20lu    %8.2f%c    %6.2f MiB    %4.2f W\n"
+#define RESULT_FORMAT_STRING "    %20lu    %8.2f%c    %7.2f MiB    %5.2f W\n"
 
 int wmain(int argc, wchar_t* argv[]) {
   ctrl_c_pressed = CreateEvent(NULL, FALSE, FALSE, NULL);
   SetConsoleCtrlHandler(HandlerFunction, TRUE);
 
   PowerSampler power_sampler;
-  SystemInformationSampler system_information_sampler(argc > 1 ? argv[1]
-                                                               : L"chrome.exe");
   IdleWakeups the_app;
+
+  // Parse command line for target process name and optional --cpu-seconds flag.
+  wchar_t* target_process_name = nullptr;
+  bool cpu_usage_in_seconds = false;
+  for (int i = 1; i < argc; i++) {
+    if (wcscmp(argv[i], L"--cpu-seconds") == 0)
+      cpu_usage_in_seconds = true;
+    else if (!target_process_name)
+      target_process_name = argv[i];
+
+    // Stop parsing if all possible args have been found.
+    if (cpu_usage_in_seconds && target_process_name)
+      break;
+  }
+  const char cpu_usage_unit = cpu_usage_in_seconds ? 's' : '%';
+  SystemInformationSampler system_information_sampler(
+      target_process_name ? target_process_name : L"chrome.exe");
 
   // Take the initial snapshot.
   std::unique_ptr<ProcessDataSnapshot> previous_snapshot =
@@ -296,7 +316,8 @@ int wmain(int argc, wchar_t* argv[]) {
   size_t final_number_of_processes = initial_number_of_processes;
 
   ULONG cumulative_idle_wakeups_per_sec = 0;
-  double cumulative_cpu_usage = 0.0;
+  double cumulative_cpu_usage_percent = 0.0;
+  double cumulative_cpu_usage_seconds = 0.0;
   ULONGLONG cumulative_working_set = 0;
   double cumulative_energy = 0.0;
   size_t cumulative_processes_created = 0;
@@ -329,12 +350,15 @@ int wmain(int argc, wchar_t* argv[]) {
     result.power = power_sampler.get_power(L"Processor");
 
     printf("%9u processes" RESULT_FORMAT_STRING, (DWORD)number_of_processes,
-           result.idle_wakeups_per_sec, result.cpu_usage, '%',
-           result.working_set / 1024.0, result.power);
+           result.idle_wakeups_per_sec,
+           cpu_usage_in_seconds ? result.cpu_usage_seconds
+                                : result.cpu_usage_percent,
+           cpu_usage_unit, result.working_set / 1024.0, result.power);
 
     if (number_of_processes > 0) {
       cumulative_idle_wakeups_per_sec += result.idle_wakeups_per_sec;
-      cumulative_cpu_usage += result.cpu_usage;
+      cumulative_cpu_usage_percent += result.cpu_usage_percent;
+      cumulative_cpu_usage_seconds += result.cpu_usage_seconds;
       cumulative_working_set += result.working_set;
       cumulative_energy += result.power;
       results.push_back(result);
@@ -353,21 +377,34 @@ int wmain(int argc, wchar_t* argv[]) {
 
   printf("            Average" RESULT_FORMAT_STRING,
          cumulative_idle_wakeups_per_sec / sample_count,
-         cumulative_cpu_usage / sample_count, '%',
-         (cumulative_working_set / 1024.0) / sample_count,
+         (cpu_usage_in_seconds ? cumulative_cpu_usage_seconds
+                               : cumulative_cpu_usage_percent) /
+             sample_count,
+         cpu_usage_unit, (cumulative_working_set / 1024.0) / sample_count,
          cumulative_energy / sample_count);
 
   Result median_result;
 
   median_result.idle_wakeups_per_sec =
       GetMedian<ULONG>(&results, GetIdleWakeupsPerSec);
-  median_result.cpu_usage = GetMedian<double>(&results, GetCpuUsage);
+  median_result.cpu_usage_percent =
+      GetMedian<double>(&results, GetCpuUsagePercent);
+  median_result.cpu_usage_seconds =
+      GetMedian<double>(&results, GetCpuUsageSeconds);
   median_result.working_set = GetMedian<ULONGLONG>(&results, GetWorkingSet);
   median_result.power = GetMedian<double>(&results, GetPower);
 
   printf("             Median" RESULT_FORMAT_STRING,
-         median_result.idle_wakeups_per_sec, median_result.cpu_usage, '%',
-         median_result.working_set / 1024.0, median_result.power);
+         median_result.idle_wakeups_per_sec,
+         cpu_usage_in_seconds ? median_result.cpu_usage_seconds
+                              : median_result.cpu_usage_percent,
+         cpu_usage_unit, median_result.working_set / 1024.0,
+         median_result.power);
+
+  if (cpu_usage_in_seconds) {
+    printf("                Sum    %32.2f%c\n", cumulative_cpu_usage_seconds,
+           cpu_usage_unit);
+  }
 
   printf("\n");
   if (num_idle_snapshots > 0)
