@@ -4,6 +4,8 @@
 
 #include "chromeos/components/phonehub/message_sender_impl.h"
 
+#include <netinet/in.h>
+
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/phonehub/connection_manager.h"
@@ -21,7 +23,7 @@ std::string SerializeMessage(proto::MessageType message_type,
   // Replace the first two characters with |message_type| as a 16-bit int.
   uint16_t* ptr =
       reinterpret_cast<uint16_t*>(const_cast<char*>(message.data()));
-  *ptr = static_cast<uint16_t>(message_type);
+  *ptr = htons(static_cast<uint16_t>(message_type));
   return message;
 }
 

@@ -4,6 +4,7 @@
 
 #include "chromeos/components/phonehub/message_sender_impl.h"
 
+#include <netinet/in.h>
 #include <stdint.h>
 #include <memory>
 #include <string>
@@ -39,7 +40,7 @@ class MessageSenderImplTest : public testing::Test {
     // bytes of |actual_message|.
     uint16_t* actual_message_uint16t_ptr =
         reinterpret_cast<uint16_t*>(const_cast<char*>(actual_message.data()));
-    EXPECT_EQ(static_cast<uint16_t>(expected_message_type),
+    EXPECT_EQ(ntohs(static_cast<uint16_t>(expected_message_type)),
               *actual_message_uint16t_ptr);
 
     const std::string& expected_proto_message =
