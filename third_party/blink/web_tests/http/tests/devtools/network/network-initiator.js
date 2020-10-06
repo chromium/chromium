@@ -45,13 +45,13 @@
       var initiator = request.initiator();
       TestRunner.addResult(request.url() + ': ' + initiator.type);
       if (initiator.url)
-        TestRunner.addResult('    ' + initiator.url + ' ' + initiator.lineNumber);
+        TestRunner.addResult('    ' + initiator.url + ' ' + initiator.lineNumber + ' ' + initiator.columnNumber);
       if (initiator.stack) {
         var stackTrace = initiator.stack;
         for (var i = 0; i < stackTrace.callFrames.length; ++i) {
           var frame = stackTrace.callFrames[i];
           if (frame.lineNumber) {
-            TestRunner.addResult('    ' + frame.functionName + ' ' + frame.url + ' ' + frame.lineNumber);
+            TestRunner.addResult('    ' + frame.functionName + ' ' + frame.url + ' ' + frame.lineNumber + ' ' + frame.columnNumber);
             break;
           }
         }

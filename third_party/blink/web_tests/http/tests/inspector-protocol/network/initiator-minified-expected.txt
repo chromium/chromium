@@ -1,0 +1,8 @@
+Tests that the initiator position is correct even when that initiator is minified.
+http://127.0.0.1:8000/inspector-protocol/network/resources/abe.png
+   http://127.0.0.1:8000/inspector-protocol/network/resources/minified.html:0:154
+http://127.0.0.1:8000/inspector-protocol/network/resources/module.js
+   http://127.0.0.1:8000/inspector-protocol/network/resources/minified.html:0:192
+http://127.0.0.1:8000/inspector-protocol/network/resources/test.css
+   http://127.0.0.1:8000/inspector-protocol/network/resources/minified.html:0:107
+

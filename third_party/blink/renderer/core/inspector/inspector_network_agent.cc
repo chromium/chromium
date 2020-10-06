@@ -1319,6 +1319,8 @@ InspectorNetworkAgent::BuildInitiatorObject(
     initiator_object->setUrl(initiator_info.referrer);
     initiator_object->setLineNumber(
         initiator_info.position.line_.ZeroBasedInt());
+    initiator_object->setColumnNumber(
+        initiator_info.position.column_.ZeroBasedInt());
     return initiator_object;
   }
 
@@ -1362,12 +1364,19 @@ InspectorNetworkAgent::BuildInitiatorObject(
             .setType(protocol::Network::Initiator::TypeEnum::Parser)
             .build();
     initiator_object->setUrl(UrlWithoutFragment(document->Url()).GetString());
-    if (TextPosition::BelowRangePosition() != initiator_info.position)
+    if (TextPosition::BelowRangePosition() != initiator_info.position) {
       initiator_object->setLineNumber(
           initiator_info.position.line_.ZeroBasedInt());
-    else
-      initiator_object->setLineNumber(
-          document->GetScriptableDocumentParser()->LineNumber().ZeroBasedInt());
+      initiator_object->setColumnNumber(
+          initiator_info.position.column_.ZeroBasedInt());
+    } else {
+      initiator_object->setLineNumber(document->GetScriptableDocumentParser()
+                                          ->GetTextPosition()
+                                          .line_.ZeroBasedInt());
+      initiator_object->setColumnNumber(document->GetScriptableDocumentParser()
+                                            ->GetTextPosition()
+                                            .column_.ZeroBasedInt());
+    }
     return initiator_object;
   }
 

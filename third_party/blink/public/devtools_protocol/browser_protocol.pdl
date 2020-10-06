@@ -4570,6 +4570,9 @@ domain Network
       # Initiator line number, set for Parser type or for Script type (when script is importing
       # module) (0-based).
       optional number lineNumber
+      # Initiator column number, set for Parser type or for Script type (when script is importing
+      # module) (0-based).
+      optional number columnNumber
 
   # Cookie object
   type Cookie extends object
