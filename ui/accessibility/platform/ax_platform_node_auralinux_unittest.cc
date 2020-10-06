@@ -13,6 +13,26 @@
 #include "ui/accessibility/platform/ax_platform_node_unittest.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
 
+namespace {
+
+// ATK window activated event will be held until AT-SPI bridge is ready. For
+// those tests using this event, we work that around by faking the state of the
+// AT-SPI bridge. Creating an instance of this class will set it to true during
+// the test and set it back to its default state when the test ends, so it
+// doesn't affect other tests run in the same batch.
+class ScopedAtSpiReady final {
+ public:
+  explicit ScopedAtSpiReady() {
+    ui::AtkUtilAuraLinux::GetInstance()->SetAtSpiReady(true);
+  }
+
+  ~ScopedAtSpiReady() {
+    ui::AtkUtilAuraLinux::GetInstance()->SetAtSpiReady(false);
+  }
+};
+
+}  // namespace
+
 namespace ui {
 
 class AXPlatformNodeAuraLinuxTest : public AXPlatformNodeTest {
@@ -1587,6 +1607,8 @@ class ActivationTester {
 //
 //
 TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkWindowActive) {
+  ScopedAtSpiReady enable_at_spi;
+
   AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kWindow;
@@ -1620,10 +1642,6 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkWindowActive) {
                        *flag = true;
                    }),
                    &saw_active_focus_state_change);
-
-  // ATK window activated event will be held until AT-SPI bridge is ready. We
-  // work that around by faking its state.
-  ui::AtkUtilAuraLinux::GetInstance()->SetAtSpiReady(true);
 
   {
     ActivationTester tester(root_atk_object);
@@ -1711,6 +1729,10 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestPostponedAtkWindowActive) {
     EXPECT_FALSE(tester.saw_activate_);
     EXPECT_FALSE(tester.saw_deactivate_);
   }
+
+  // Set AtSpiReady state back to its default state, so it doesn't affect other
+  // tests run in the same batch.
+  atk_util->SetAtSpiReady(false);
 
   g_object_unref(root_atk_object);
 }
@@ -1815,7 +1837,9 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestFocusTriggersAtkWindowActive) {
   g_object_unref(root_atk_object);
 }
 
-TEST_F(AXPlatformNodeAuraLinuxTest, DISABLED_TestAtkPopupWindowActive) {
+TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkPopupWindowActive) {
+  ScopedAtSpiReady enable_at_spi;
+
   AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kApplication;
