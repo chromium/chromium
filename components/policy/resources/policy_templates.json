@@ -22947,7 +22947,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'owners': ['tellier@google.com', 'rsorokin@chromium.org', 'cros-oac@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome_os:84-'],
+      'supported_on': ['chrome_os:86-'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
