@@ -56,7 +56,6 @@ int XCloseDisplay(Display*);
 int XFlush(Display*);
 xcb_connection_t* XGetXCBConnection(Display* dpy);
 void XSetEventQueueOwner(Display* dpy, enum XEventQueueOwner owner);
-unsigned long XLastKnownRequestProcessed(Display*);
 int (*XSynchronize(Display*, Bool))(Display*);
 int XGetErrorDatabaseText(Display*,
                           const char*,
@@ -67,7 +66,6 @@ int XGetErrorDatabaseText(Display*,
 int XGetErrorText(Display*, int, char*, int);
 XErrorHandler XSetErrorHandler(XErrorHandler);
 XIOErrorHandler XSetIOErrorHandler(XIOErrorHandler);
-int XStoreName(Display*, Window, const char*);
 }
 
 #endif  // UI_GFX_X_X11_H_

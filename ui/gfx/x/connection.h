@@ -113,7 +113,7 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   Event WaitForNextEvent();
 
   // Are there any events, errors, or replies already buffered?
-  bool HasPendingResponses() const;
+  bool HasPendingResponses();
 
   // Dispatch any buffered events, errors, or replies.
   void Dispatch(Delegate* delegate);
@@ -153,13 +153,16 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
     const unsigned int sequence;
     FutureBase::ResponseCallback callback;
+    bool have_response = false;
+    FutureBase::RawReply reply;
+    FutureBase::RawError error;
   };
 
   void InitRootDepthAndVisual();
 
   void AddRequest(unsigned int sequence, FutureBase::ResponseCallback callback);
 
-  bool HasNextResponse() const;
+  bool HasNextResponse();
 
   void PreDispatchEvent(const Event& event);
 
@@ -170,6 +173,11 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   KeySym KeyCodetoKeySym(KeyCode keycode, int column) const;
 
   KeySym TranslateKey(uint32_t keycode, unsigned int modifiers) const;
+
+  // This function is implemented in the generated read_error.cc.
+  void InitErrorParsers();
+
+  std::unique_ptr<Error> ParseError(FutureBase::RawError error_bytes);
 
   XDisplay* const display_;
 
@@ -197,6 +205,10 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   std::list<Event> events_;
 
   std::queue<Request> requests_;
+
+  using ErrorParser =
+      std::unique_ptr<Error> (*)(FutureBase::RawError error_bytes);
+  std::array<ErrorParser, 256> error_parsers_{};
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

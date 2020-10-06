@@ -210,6 +210,32 @@ base::ThreadLocalOwnedPointer<Connection>& GetConnectionTLS() {
   return *tls;
 }
 
+class UnknownError : public Error {
+ public:
+  explicit UnknownError(FutureBase::RawError error_bytes)
+      : error_bytes_(error_bytes) {}
+
+  ~UnknownError() override = default;
+
+  std::string ToString() const override {
+    std::stringstream ss;
+    ss << "x11::UnknownError{";
+    // Errors are always a fixed 32 bytes.
+    for (size_t i = 0; i < 32; i++) {
+      char buf[3];
+      sprintf(buf, "%02x", error_bytes_->data()[i]);
+      ss << "0x" << buf;
+      if (i != 31)
+        ss << ", ";
+    }
+    ss << "}";
+    return ss.str();
+  }
+
+ private:
+  FutureBase::RawError error_bytes_;
+};
+
 }  // namespace
 
 // static
@@ -274,6 +300,8 @@ Connection::Connection(const std::string& address)
   }
 
   ResetKeyboardState();
+
+  InitErrorParsers();
 }
 
 Connection::~Connection() {
@@ -295,14 +323,30 @@ Connection::Request::Request(unsigned int sequence,
     : sequence(sequence), callback(std::move(callback)) {}
 
 Connection::Request::Request(Request&& other)
-    : sequence(other.sequence), callback(std::move(other.callback)) {}
+    : sequence(other.sequence),
+      callback(std::move(other.callback)),
+      have_response(other.have_response),
+      reply(std::move(other.reply)),
+      error(std::move(other.error)) {}
 
 Connection::Request::~Request() = default;
 
-bool Connection::HasNextResponse() const {
-  return !requests_.empty() &&
-         CompareSequenceIds(XLastKnownRequestProcessed(display_),
-                            requests_.front().sequence) >= 0;
+bool Connection::HasNextResponse() {
+  if (requests_.empty())
+    return false;
+  auto& request = requests_.front();
+  if (request.have_response)
+    return true;
+
+  void* reply = nullptr;
+  xcb_generic_error_t* error = nullptr;
+  request.have_response =
+      xcb_poll_for_reply(XcbConnection(), request.sequence, &reply, &error);
+  if (reply)
+    request.reply = base::MakeRefCounted<MallocedRefCountedMemory>(reply);
+  if (error)
+    request.error = base::MakeRefCounted<MallocedRefCountedMemory>(error);
+  return request.have_response;
 }
 
 int Connection::GetFd() {
@@ -374,7 +418,7 @@ Event Connection::WaitForNextEvent() {
   return Event();
 }
 
-bool Connection::HasPendingResponses() const {
+bool Connection::HasPendingResponses() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return !events_.empty() || HasNextResponse();
 }
@@ -425,18 +469,12 @@ void Connection::Dispatch(Delegate* delegate) {
   DCHECK(display_);
 
   auto process_next_response = [&] {
-    xcb_connection_t* connection = XGetXCBConnection(display_);
-    auto request = std::move(requests_.front());
+    DCHECK(!requests_.empty());
+    DCHECK(requests_.front().have_response);
+
+    Request request = std::move(requests_.front());
     requests_.pop();
-
-    void* raw_reply = nullptr;
-    xcb_generic_error_t* raw_error = nullptr;
-    xcb_poll_for_reply(connection, request.sequence, &raw_reply, &raw_error);
-
-    scoped_refptr<MallocedRefCountedMemory> reply;
-    if (raw_reply)
-      reply = base::MakeRefCounted<MallocedRefCountedMemory>(raw_reply);
-    std::move(request.callback).Run(reply, FutureBase::RawError{raw_error});
+    std::move(request.callback).Run(request.reply, request.error);
   };
 
   auto process_next_event = [&] {
@@ -687,6 +725,21 @@ KeySym Connection::TranslateKey(uint32_t key, unsigned int modifiers) const {
       ((sym != upper) || (lower == upper)))
     ConvertCase(syms[0], &lower, &upper);
   return upper;
+}
+
+std::unique_ptr<Error> Connection::ParseError(
+    FutureBase::RawError error_bytes) {
+  if (!error_bytes)
+    return nullptr;
+  struct ErrorHeader {
+    uint8_t response_type;
+    uint8_t error_code;
+    uint16_t sequence;
+  };
+  auto error_code = error_bytes->front_as<ErrorHeader>()->error_code;
+  if (auto parser = error_parsers_[error_code])
+    return parser(error_bytes);
+  return std::make_unique<UnknownError>(error_bytes);
 }
 
 }  // namespace x11

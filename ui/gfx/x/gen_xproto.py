@@ -919,6 +919,14 @@ class GenXproto(FileWriter):
             self.write('x11::Window* GetWindow() { return %s; }' % ret)
         self.write()
 
+    def declare_error(self, error, name):
+        name = adjust_type_name(name[-1] + 'Error')
+        with Indent(self, 'struct %s : public x11::Error {' % name, '};'):
+            self.declare_fields(error.fields)
+            self.write()
+            self.write('std::string ToString() const override;')
+        self.write()
+
     def declare_container(self, struct, struct_name):
         name = struct_name[-1] + self.type_suffix(struct)
         with Indent(self, 'struct %s {' % adjust_type_name(name), '};'):
@@ -1025,8 +1033,9 @@ class GenXproto(FileWriter):
             self.write('Align(&buf, 4);')
             self.write()
             reply_has_fds = reply and any(field.isfd for field in reply.fields)
-            self.write('return x11::SendRequest<%s>(connection_, &buf, %s);' %
-                       (reply_name, 'true' if reply_has_fds else 'false'))
+            self.write(
+                'return x11::SendRequest<%s>(connection_, &buf, %s, "%s");' %
+                (reply_name, 'true' if reply_has_fds else 'false', prefix))
         self.write()
 
         if not reply:
@@ -1066,6 +1075,29 @@ class GenXproto(FileWriter):
                 self.write('DCHECK_LE(buf.offset, 32ul);')
         self.write()
 
+    def define_error(self, error, name):
+        self.namespace = ['x11']
+        name = self.qualtype(error, name)
+        with Indent(self, 'std::string %s::ToString() const {' % name, '}'):
+            self.write('std::stringstream ss_;')
+            self.write('ss_ << "x11::%s{";' % name)
+            fields = [field for field in error.fields if field.visible]
+            for i, field in enumerate(fields):
+                terminator = '' if i == len(fields) - 1 else ' << ", "'
+                self.write('ss_ << ".%s = " << static_cast<uint64_t>(%s)%s;' %
+                           (field.field_name, field.field_name, terminator))
+            self.write('ss_ << "}";')
+            self.write('return ss_.str();')
+        self.write()
+        self.write('template <>')
+        self.write('void ReadError<%s>(' % name)
+        with Indent(self, '    %s* error_, ReadBuffer* buffer) {' % name, '}'):
+            self.write('auto& buf = *buffer;')
+            self.write()
+            self.is_read = True
+            self.copy_container(error, '(*error_)')
+            self.write('DCHECK_LE(buf.offset, 32ul);')
+
     def define_type(self, item, name):
         if name in READ_SPECIAL:
             self.read_special_container(item, name)
@@ -1075,6 +1107,8 @@ class GenXproto(FileWriter):
             self.define_request(item)
         elif item.is_event:
             self.define_event(item, name)
+        elif isinstance(item, self.xcbgen.xtypes.Error):
+            self.define_error(item, name)
 
     def declare_type(self, item, name):
         if item.is_union:
@@ -1083,6 +1117,8 @@ class GenXproto(FileWriter):
             self.declare_request(item)
         elif item.is_event:
             self.declare_event(item, name)
+        elif isinstance(item, self.xcbgen.xtypes.Error):
+            self.declare_error(item, name)
         elif item.is_container:
             self.declare_container(item, name)
         elif isinstance(item, self.xcbgen.xtypes.Enum):
@@ -1314,6 +1350,7 @@ class GenXproto(FileWriter):
         self.write('#include "base/memory/scoped_refptr.h"')
         self.write('#include "base/optional.h"')
         self.write('#include "base/files/scoped_file.h"')
+        self.write('#include "ui/gfx/x/error.h"')
         self.write('#include "ui/gfx/x/xproto_types.h"')
         imports = set(self.module.direct_imports)
         if self.module.namespace.is_ext:
@@ -1601,6 +1638,90 @@ class GenReadEvent(FileWriter):
         self.write('}  // namespace x11')
 
 
+class GenReadError(FileWriter):
+    def __init__(self, gen_dir, genprotos, xcbgen):
+        FileWriter.__init__(self)
+
+        self.gen_dir = gen_dir
+        self.genprotos = genprotos
+        self.xcbgen = xcbgen
+
+    def get_errors_for_proto(self, proto):
+        errors = {}
+        for _, item in proto.module.all:
+            if isinstance(item, self.xcbgen.xtypes.Error):
+                for name in item.opcodes:
+                    id = int(item.opcodes[name])
+                    if id < 0:
+                        continue
+                    name = [adjust_type_name(part) for part in name[1:]]
+                    typename = '::'.join(name) + 'Error'
+                    errors[id] = typename
+        return errors
+
+    def gen_errors_for_proto(self, errors, proto):
+        if proto.module.namespace.is_ext:
+            cond = 'if (%s().present()) {' % proto.proto
+            first_error = '%s().first_error()' % proto.proto
+        else:
+            cond = '{'
+            first_error = '0'
+        with Indent(self, cond, '}'):
+            self.write('uint8_t first_error = %s;' % first_error)
+            for id, name in sorted(errors.items()):
+                with Indent(self, '{', '}'):
+                    self.write('auto error_code = first_error + %d;' % id)
+                    self.write('auto parse = MakeError<%s>;' % name)
+                    self.write('add_parser(error_code, first_error, parse);')
+        self.write()
+
+    def gen_init_error_parsers(self):
+        self.write('uint8_t first_errors[256];')
+        self.write('memset(first_errors, 0, sizeof(first_errors));')
+        self.write()
+        args = 'uint8_t error_code, uint8_t first_error, ErrorParser parser'
+        with Indent(self, 'auto add_parser = [&](%s) {' % args, '};'):
+            cond = ('!error_parsers_[error_code] || ' +
+                    'first_error > first_errors[error_code]')
+            with Indent(self, 'if (%s) {' % cond, '}'):
+                self.write('first_errors[error_code] = error_code;')
+                self.write('error_parsers_[error_code] = parser;')
+        self.write()
+        for proto in self.genprotos:
+            errors = self.get_errors_for_proto(proto)
+            if errors:
+                self.gen_errors_for_proto(errors, proto)
+
+    def gen_source(self):
+        self.file = open(os.path.join(self.gen_dir, 'read_error.cc'), 'w')
+        self.write('#include "ui/gfx/x/connection.h"')
+        self.write('#include "ui/gfx/x/error.h"')
+        self.write('#include "ui/gfx/x/xproto_internal.h"')
+        self.write()
+        for genproto in self.genprotos:
+            self.write('#include "ui/gfx/x/%s.h"' % genproto.proto)
+        self.write()
+        self.write('namespace x11 {')
+        self.write()
+        self.write('namespace {')
+        self.write()
+        self.write('template <typename T>')
+        sig = 'std::unique_ptr<Error> MakeError(FutureBase::RawError error_)'
+        with Indent(self, '%s {' % sig, '}'):
+            self.write('ReadBuffer buf(error_);')
+            self.write('auto error = std::make_unique<T>();')
+            self.write('ReadError(error.get(), &buf);')
+            self.write('return error;')
+        self.write()
+        self.write('}  // namespace')
+        self.write()
+        with Indent(self, 'void Connection::InitErrorParsers() {', '}'):
+            self.gen_init_error_parsers()
+
+        self.write()
+        self.write('}  // namespace x11')
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('xcbproto_dir', type=str)
@@ -1639,8 +1760,9 @@ def main():
     gen_extension_manager.gen_header()
     gen_extension_manager.gen_source()
 
-    gen_read_event = GenReadEvent(args.gen_dir, genprotos)
-    gen_read_event.gen_source()
+    GenReadEvent(args.gen_dir, genprotos).gen_source()
+
+    GenReadError(args.gen_dir, genprotos, xcbgen).gen_source()
 
     return 0
 
