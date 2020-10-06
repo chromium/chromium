@@ -96,7 +96,7 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   void EndDragToOpen(base::Optional<WebUITabStripDragDirection>
                          fling_direction = base::nullopt);
 
-  void TabCounterPressed();
+  void TabCounterPressed(const ui::Event& event);
 
   void SetContainerTargetVisibility(bool target_visible,
                                     WebUITabStripOpenCloseReason reason);
