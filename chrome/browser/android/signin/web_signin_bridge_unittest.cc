@@ -75,6 +75,34 @@ TEST_F(WebSigninBridgeTest,
   identity_test_env_.SetCookieAccounts({cookie_params});
 }
 
+TEST_F(
+    WebSigninBridgeTest,
+    CookiesWithSigninAccountShouldTriggerOnSigninSucceededAfterSigninFailed) {
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("test@gmail.com");
+  base::MockCallback<WebSigninBridge::OnSigninCompletedCallback> callback;
+  std::unique_ptr<WebSigninBridge> web_signin_bridge =
+      CreateWebSigninBridge(account, callback.Get());
+
+  EXPECT_CALL(callback,
+              Run(GoogleServiceAuthError(
+                  GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS)));
+  identity_test_env_.SetPrimaryAccount(account.email);
+  identity_test_env_.SetInvalidRefreshTokenForAccount(account.account_id);
+  identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
+      account.account_id,
+      GoogleServiceAuthError(
+          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+  account_reconcilor_->EnableReconcile();
+  EXPECT_EQ(signin_metrics::AccountReconcilorState::ACCOUNT_RECONCILOR_ERROR,
+            account_reconcilor_->GetState());
+
+  EXPECT_CALL(callback, Run(GoogleServiceAuthError()));
+  identity_test_env_.SetRefreshTokenForAccount(account.account_id);
+  signin::CookieParamsForTest cookie_params{account.email, account.gaia};
+  identity_test_env_.SetCookieAccounts({cookie_params});
+}
+
 TEST_F(WebSigninBridgeTest,
        CookiesWithoutSigninAccountDontTriggerOnSigninSucceeded) {
   AccountInfo signin_account =
