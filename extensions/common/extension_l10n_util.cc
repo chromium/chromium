@@ -246,6 +246,14 @@ bool LocalizeManifest(const extensions::MessageBundle& messages,
   if (!LocalizeManifestValue(key, messages, manifest, error))
     return false;
 
+  // Initialize action.default_title
+  // TODO(devlin): These could easily use something like base::StrCat().
+  key.assign(keys::kAction);
+  key.append(".");
+  key.append(keys::kActionDefaultTitle);
+  if (!LocalizeManifestValue(key, messages, manifest, error))
+    return false;
+
   // Initialize omnibox.keyword.
   if (!LocalizeManifestValue(keys::kOmniboxKeyword, messages, manifest, error))
     return false;
