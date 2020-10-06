@@ -44,6 +44,7 @@ AGGREGATE_THRESHOLD = 20
 # put in.
 _PREDEFINED_NAMES_MAPPING = {
     'BackForwardCache': 'BackForwardCache',
+    'ChromeOS': 'ChromeOS',
     'CustomTabs': 'CustomTabs',
     'CustomTab': 'CustomTabs',
     'DataReductionProxy': 'DataReductionProxy',

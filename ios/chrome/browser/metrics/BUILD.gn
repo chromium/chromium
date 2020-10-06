@@ -299,6 +299,7 @@ generate_expired_histograms_array("expired_histograms_array") {
     "//tools/metrics/histograms/histograms_xml/bluetooth/histograms.xml",
     "//tools/metrics/histograms/histograms_xml/browser/histograms.xml",
     "//tools/metrics/histograms/histograms_xml/chrome/histograms.xml",
+    "//tools/metrics/histograms/histograms_xml/chromeos/histograms.xml",
     "//tools/metrics/histograms/histograms_xml/cloud/histograms.xml",
     "//tools/metrics/histograms/histograms_xml/compositing/histograms.xml",
     "//tools/metrics/histograms/histograms_xml/content/histograms.xml",
