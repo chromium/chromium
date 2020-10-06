@@ -1919,9 +1919,6 @@ crbug.com/752449 [ Mac10.12 ] external/wpt/css/css-fonts/matching/style-ranges-o
 crbug.com/450619 external/wpt/css/css-fonts/font-feature-resolution-001.html [ Failure ]
 crbug.com/450619 external/wpt/css/css-fonts/font-feature-resolution-002.html [ Failure ]
 
-# The WPT asserts browser-specific behavior. Need to modify the test.
-crbug.com/1132458 external/wpt/css/css-fonts/font-display/font-display.html [ Failure ]
-
 # These need a rebaseline due crbug.com/504745 on Windows when they are activated again.
 crbug.com/521124 crbug.com/410145 [ Win7 ] fast/css/font-weight-1.html [ Pass Failure ]
 
