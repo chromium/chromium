@@ -728,23 +728,37 @@ CommandHandler.onCommand = function(command) {
 
         newRange.select();
 
-        new Output()
-            .withoutHints()
-            .withRichSpeechAndBraille(
-                ChromeVoxState.instance.currentRange, prevRange,
-                Output.EventType.NAVIGATE)
-            .onSpeechEnd(continueReading)
-            .go();
-      }.bind(this);
-      const startNode = ChromeVoxState.instance.currentRange.start.node;
-      const collapsedRange = cursors.Range.fromNode(startNode);
-      new Output()
-          .withoutHints()
-          .withRichSpeechAndBraille(
-              collapsedRange, collapsedRange, Output.EventType.NAVIGATE)
-          .onSpeechEnd(continueReading)
-          .go();
+        const o = new Output()
+                      .withoutHints()
+                      .withRichSpeechAndBraille(
+                          ChromeVoxState.instance.currentRange, prevRange,
+                          Output.EventType.NAVIGATE)
+                      .onSpeechEnd(continueReading);
 
+        if (!o.hasSpeech) {
+          continueReading();
+          return;
+        }
+
+        o.go();
+      }.bind(this);
+
+      {
+        const startNode = ChromeVoxState.instance.currentRange.start.node;
+        const collapsedRange = cursors.Range.fromNode(startNode);
+        const o =
+            new Output()
+                .withoutHints()
+                .withRichSpeechAndBraille(
+                    collapsedRange, collapsedRange, Output.EventType.NAVIGATE)
+                .onSpeechEnd(continueReading);
+
+        if (o.hasSpeech) {
+          o.go();
+        } else {
+          continueReading();
+        }
+      }
       return false;
     case 'contextMenu':
       if (ChromeVoxState.instance.currentRange) {

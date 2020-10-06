@@ -3120,3 +3120,16 @@ TEST_F('ChromeVoxBackgroundTest', 'WrapTextFieldAtEndOfDoc', function() {
         .replay();
   });
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'ReadFromHereBlankNodes', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `<a tabindex=0></a><p>start</p><a tabindex=0></a><p>end</p>`;
+  this.runWithLoadedTree(site, function(root) {
+    assertEquals(
+        RoleType.ANCHOR, ChromeVoxState.instance.currentRange.start.node.role);
+
+    mockFeedback.call(doCmd('readFromHere'))
+        .expectSpeech('start', 'end')
+        .replay();
+  });
+});
