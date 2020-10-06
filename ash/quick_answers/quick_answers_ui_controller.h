@@ -22,7 +22,7 @@ class QuickAnswersView;
 class QuickAnswersControllerImpl;
 
 namespace quick_answers {
-class UserConsentView;
+class UserNoticeView;
 }  // namespace quick_answers
 
 // A controller to show/hide and handle interactions for quick
@@ -59,27 +59,24 @@ class ASH_EXPORT QuickAnswersUiController {
 
   void UpdateQuickAnswersBounds(const gfx::Rect& anchor_bounds);
 
-  // Creates a view for user-consent for Quick Answers vertically aligned to the
-  // anchor.
-  void CreateUserConsentView(const gfx::Rect& anchor_bounds,
-                             const base::string16& intent_type,
-                             const base::string16& intent_text);
+  // Creates a view for notifying the user about the Quick Answers feature
+  // vertically aligned to the anchor.
+  void CreateUserNoticeView(const gfx::Rect& anchor_bounds,
+                            const base::string16& intent_type,
+                            const base::string16& intent_text);
 
-  // Returns true if there was a UserConsentView to close.
-  bool CloseUserConsentView();
+  void CloseUserNoticeView();
 
-  // Invoked when user clicks the consent button to grant consent for using
-  // Quick Answers.
-  void OnConsentGrantedButtonPressed();
+  // Invoked when user clicks the 'got it' button to dismiss the notice.
+  void OnAcceptButtonPressed();
 
-  // Invoked when user clicks the settings button related to consent for Quick
-  // Answers.
+  // Invoked when user clicks the settings button on the notice view.
   void OnManageSettingsButtonPressed();
 
-  // Used by the controller to check if the user-consent view is currently
+  // Used by the controller to check if the user notice view is currently
   // showing instead of QuickAnswers.
-  bool is_showing_user_consent_view() const {
-    return user_consent_view_ != nullptr;
+  bool is_showing_user_notice_view() const {
+    return user_notice_view_ != nullptr;
   }
 
   // Used by the controller to check if the QuickAnswers view is currently
@@ -94,8 +91,8 @@ class ASH_EXPORT QuickAnswersUiController {
   const QuickAnswersView* quick_answers_view_for_testing() const {
     return quick_answers_view_;
   }
-  const quick_answers::UserConsentView* notification_view_for_testing() const {
-    return user_consent_view_;
+  const quick_answers::UserNoticeView* notice_view_for_testing() const {
+    return user_notice_view_;
   }
 
  private:
@@ -103,7 +100,7 @@ class ASH_EXPORT QuickAnswersUiController {
 
   // Owned by view hierarchy.
   QuickAnswersView* quick_answers_view_ = nullptr;
-  quick_answers::UserConsentView* user_consent_view_ = nullptr;
+  quick_answers::UserNoticeView* user_notice_view_ = nullptr;
   std::string query_;
 };
 

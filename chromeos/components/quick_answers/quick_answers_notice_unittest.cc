@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/quick_answers/quick_answers_consents.h"
+#include "chromeos/components/quick_answers/quick_answers_notice.h"
 
 #include <memory>
 #include <string>
@@ -17,86 +17,86 @@
 namespace chromeos {
 namespace quick_answers {
 
-class QuickAnswersConsentTest : public testing::Test {
+class QuickAnswersNoticeTest : public testing::Test {
  public:
-  QuickAnswersConsentTest() = default;
+  QuickAnswersNoticeTest() = default;
 
-  ~QuickAnswersConsentTest() override = default;
+  ~QuickAnswersNoticeTest() override = default;
 
   void SetUp() override {
     prefs::RegisterProfilePrefs(pref_service_.registry());
-    consent_ = std::make_unique<QuickAnswersConsent>(&pref_service_);
+    notice_ = std::make_unique<QuickAnswersNotice>(&pref_service_);
   }
 
-  void TearDown() override { consent_.reset(); }
+  void TearDown() override { notice_.reset(); }
 
   PrefService* pref_service() { return &pref_service_; }
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple pref_service_;
-  std::unique_ptr<QuickAnswersConsent> consent_;
+  std::unique_ptr<QuickAnswersNotice> notice_;
 };
 
-TEST_F(QuickAnswersConsentTest, ShouldShowConsentHasConsented) {
-  EXPECT_TRUE(consent_->ShouldShowConsent());
+TEST_F(QuickAnswersNoticeTest, ShouldShowNoticeShouldBeTrueIfUserHasNoticeed) {
+  EXPECT_TRUE(notice_->ShouldShowNotice());
 
   pref_service()->SetBoolean(prefs::kQuickAnswersConsented, true);
 
   // Verify that it is consented.
-  EXPECT_FALSE(consent_->ShouldShowConsent());
+  EXPECT_FALSE(notice_->ShouldShowNotice());
 }
 
-TEST_F(QuickAnswersConsentTest, ShouldShowConsentHasReachedImpressionCap) {
-  EXPECT_TRUE(consent_->ShouldShowConsent());
+TEST_F(QuickAnswersNoticeTest, ShouldShowNoticeHasReachedImpressionCap) {
+  EXPECT_TRUE(notice_->ShouldShowNotice());
 
-  pref_service()->SetInteger(prefs::kQuickAnswersConsentImpressionCount, 3);
+  pref_service()->SetInteger(prefs::kQuickAnswersNoticeImpressionCount, 3);
 
   // Verify that impression cap is reached.
-  EXPECT_FALSE(consent_->ShouldShowConsent());
+  EXPECT_FALSE(notice_->ShouldShowNotice());
 }
 
-TEST_F(QuickAnswersConsentTest, ShouldShowConsentHasReachedDurationCap) {
-  EXPECT_TRUE(consent_->ShouldShowConsent());
+TEST_F(QuickAnswersNoticeTest, ShouldShowNoticeHasReachedDurationCap) {
+  EXPECT_TRUE(notice_->ShouldShowNotice());
 
-  pref_service()->SetInteger(prefs::kQuickAnswersConsentImpressionDuration, 7);
+  pref_service()->SetInteger(prefs::kQuickAnswersNoticeImpressionDuration, 7);
   // Not reach impression duration cap yet.
-  EXPECT_TRUE(consent_->ShouldShowConsent());
+  EXPECT_TRUE(notice_->ShouldShowNotice());
 
-  pref_service()->SetInteger(prefs::kQuickAnswersConsentImpressionDuration, 8);
+  pref_service()->SetInteger(prefs::kQuickAnswersNoticeImpressionDuration, 8);
   // Reach impression duration cap.
-  EXPECT_FALSE(consent_->ShouldShowConsent());
+  EXPECT_FALSE(notice_->ShouldShowNotice());
 }
 
-TEST_F(QuickAnswersConsentTest, AcceptConsent) {
-  EXPECT_TRUE(consent_->ShouldShowConsent());
+TEST_F(QuickAnswersNoticeTest, AcceptNotice) {
+  EXPECT_TRUE(notice_->ShouldShowNotice());
 
-  consent_->StartConsent();
+  notice_->StartNotice();
 
-  // Consent is accepted after 6 seconds.
+  // Notice is accepted after 6 seconds.
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(6));
-  consent_->AcceptConsent(ConsentInteractionType::kAccept);
+  notice_->AcceptNotice(NoticeInteractionType::kAccept);
 
   // Verify that it is consented.
   ASSERT_TRUE(pref_service()->GetBoolean(prefs::kQuickAnswersConsented));
   // Verify that the duration is recorded.
   ASSERT_EQ(6, pref_service()->GetInteger(
-                   prefs::kQuickAnswersConsentImpressionDuration));
+                   prefs::kQuickAnswersNoticeImpressionDuration));
   // Verify that it is consented.
-  EXPECT_FALSE(consent_->ShouldShowConsent());
+  EXPECT_FALSE(notice_->ShouldShowNotice());
 }
 
-TEST_F(QuickAnswersConsentTest, DismissConsent) {
+TEST_F(QuickAnswersNoticeTest, DismissNotice) {
   // Start consent.
-  consent_->StartConsent();
+  notice_->StartNotice();
 
   // Dismiss consent after reaching the impression cap.
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(8));
-  consent_->DismissConsent();
+  notice_->DismissNotice();
 
   // Verify that the impression count is recorded.
   ASSERT_EQ(8, pref_service()->GetInteger(
-                   prefs::kQuickAnswersConsentImpressionDuration));
+                   prefs::kQuickAnswersNoticeImpressionDuration));
 }
 
 }  // namespace quick_answers

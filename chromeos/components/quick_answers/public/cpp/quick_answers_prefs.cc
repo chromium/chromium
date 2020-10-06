@@ -15,18 +15,18 @@ namespace prefs {
 const char kQuickAnswersConsented[] = "settings.quick_answers.consented";
 
 // A preference to keep track of the number of Quick Answers consent impression.
-const char kQuickAnswersConsentImpressionCount[] =
+const char kQuickAnswersNoticeImpressionCount[] =
     "settings.quick_answers.consent.count";
 
 // A preference to keep track of how long (in seconds) the Quick Answers consent
 // has shown to the user.
-const char kQuickAnswersConsentImpressionDuration[] =
+const char kQuickAnswersNoticeImpressionDuration[] =
     "settings.quick_answers.consent.duration";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kQuickAnswersConsented, false);
-  registry->RegisterIntegerPref(kQuickAnswersConsentImpressionCount, 0);
-  registry->RegisterIntegerPref(kQuickAnswersConsentImpressionDuration, 0);
+  registry->RegisterIntegerPref(kQuickAnswersNoticeImpressionCount, 0);
+  registry->RegisterIntegerPref(kQuickAnswersNoticeImpressionDuration, 0);
 }
 
 }  // namespace prefs

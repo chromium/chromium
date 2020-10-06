@@ -7,7 +7,7 @@
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/quick_answers/quick_answers_controller_impl.h"
 #include "ash/quick_answers/ui/quick_answers_view.h"
-#include "ash/quick_answers/ui/user_consent_view.h"
+#include "ash/quick_answers/ui/user_notice_view.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
@@ -29,7 +29,7 @@ QuickAnswersUiController::QuickAnswersUiController(
 
 QuickAnswersUiController::~QuickAnswersUiController() {
   quick_answers_view_ = nullptr;
-  user_consent_view_ = nullptr;
+  user_notice_view_ = nullptr;
 }
 
 void QuickAnswersUiController::CreateQuickAnswersView(
@@ -44,7 +44,7 @@ void QuickAnswersUiController::CreateQuickAnswersView(
     CloseQuickAnswersView();
   }
 
-  DCHECK(!user_consent_view_);
+  DCHECK(!user_notice_view_);
   SetActiveQuery(query);
   quick_answers_view_ = new QuickAnswersView(bounds, title, this);
   quick_answers_view_->GetWidget()->ShowInactive();
@@ -100,33 +100,31 @@ void QuickAnswersUiController::UpdateQuickAnswersBounds(
   if (quick_answers_view_)
     quick_answers_view_->UpdateAnchorViewBounds(anchor_bounds);
 
-  if (user_consent_view_)
-    user_consent_view_->UpdateAnchorViewBounds(anchor_bounds);
+  if (user_notice_view_)
+    user_notice_view_->UpdateAnchorViewBounds(anchor_bounds);
 }
 
-void QuickAnswersUiController::CreateUserConsentView(
+void QuickAnswersUiController::CreateUserNoticeView(
     const gfx::Rect& anchor_bounds,
     const base::string16& intent_type,
     const base::string16& intent_text) {
   DCHECK(!quick_answers_view_);
-  DCHECK(!user_consent_view_);
-  user_consent_view_ = new quick_answers::UserConsentView(
+  DCHECK(!user_notice_view_);
+  user_notice_view_ = new quick_answers::UserNoticeView(
       anchor_bounds, intent_type, intent_text, this);
-  user_consent_view_->GetWidget()->ShowInactive();
+  user_notice_view_->GetWidget()->ShowInactive();
 }
 
-bool QuickAnswersUiController::CloseUserConsentView() {
-  if (user_consent_view_) {
-    user_consent_view_->GetWidget()->Close();
-    user_consent_view_ = nullptr;
-    return true;
+void QuickAnswersUiController::CloseUserNoticeView() {
+  if (user_notice_view_) {
+    user_notice_view_->GetWidget()->Close();
+    user_notice_view_ = nullptr;
   }
-  return false;
 }
 
-void QuickAnswersUiController::OnConsentGrantedButtonPressed() {
-  DCHECK(user_consent_view_);
-  controller_->OnUserConsentGranted();
+void QuickAnswersUiController::OnAcceptButtonPressed() {
+  DCHECK(user_notice_view_);
+  controller_->OnUserNoticeAccepted();
 
   // The Quick-Answer displayed should gain focus if it is created when this
   // button is pressed.
@@ -135,7 +133,7 @@ void QuickAnswersUiController::OnConsentGrantedButtonPressed() {
 }
 
 void QuickAnswersUiController::OnManageSettingsButtonPressed() {
-  controller_->OnConsentSettingsRequestedByUser();
+  controller_->OnNoticeSettingsRequestedByUser();
 }
 
 void QuickAnswersUiController::OnDogfoodButtonPressed() {

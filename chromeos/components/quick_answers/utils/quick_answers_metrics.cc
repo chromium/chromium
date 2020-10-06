@@ -7,7 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "chromeos/components/quick_answers/quick_answers_consents.h"
+#include "chromeos/components/quick_answers/quick_answers_notice.h"
 
 namespace chromeos {
 namespace quick_answers {
@@ -23,9 +23,9 @@ const char kQuickAnswerSelectedContentLength[] =
     "QuickAnswers.SelectedContent.Length";
 const char kDurationSuffix[] = ".Duration";
 
-const char kQuickAnswersConsent[] = "QuickAnswers.Consent";
-const char kQuickAnswersConsentDuration[] = "QuickAnswers.Consent.Duration";
-const char kQuickAnswersConsentImpression[] = "QuickAnswers.Consent.Impression";
+const char kQuickAnswersNotice[] = "QuickAnswers.Consent";
+const char kQuickAnswersNoticeDuration[] = "QuickAnswers.Consent.Duration";
+const char kQuickAnswersNoticeImpression[] = "QuickAnswers.Consent.Impression";
 
 std::string ResultTypeToString(ResultType result_type) {
   switch (result_type) {
@@ -45,13 +45,13 @@ std::string ResultTypeToString(ResultType result_type) {
   }
 }
 
-std::string ConsentInteractionTypeToString(ConsentInteractionType type) {
+std::string NoticeInteractionTypeToString(NoticeInteractionType type) {
   switch (type) {
-    case ConsentInteractionType::kAccept:
+    case NoticeInteractionType::kAccept:
       return "Accept";
-    case ConsentInteractionType::kManageSettings:
+    case NoticeInteractionType::kManageSettings:
       return "ManageSettings";
-    case ConsentInteractionType::kDismiss:
+    case NoticeInteractionType::kDismiss:
       return "Dismiss";
   }
 }
@@ -104,24 +104,24 @@ void RecordActiveImpression(ResultType result_type,
                         /*is_medium_bucketization=*/true);
 }
 
-void RecordConsentInteraction(ConsentInteractionType type,
-                              int nth_impression,
-                              const base::TimeDelta duration) {
-  std::string interaction_type = ConsentInteractionTypeToString(type);
+void RecordNoticeInteraction(NoticeInteractionType type,
+                             int nth_impression,
+                             const base::TimeDelta duration) {
+  std::string interaction_type = NoticeInteractionTypeToString(type);
   base::UmaHistogramExactLinear(
-      base::StringPrintf("%s.%s", kQuickAnswersConsentImpression,
+      base::StringPrintf("%s.%s", kQuickAnswersNoticeImpression,
                          interaction_type.c_str()),
-      nth_impression, kConsentImpressionCap);
+      nth_impression, kNoticeImpressionCap);
   base::UmaHistogramTimes(
-      base::StringPrintf("%s.%s", kQuickAnswersConsentDuration,
+      base::StringPrintf("%s.%s", kQuickAnswersNoticeDuration,
                          interaction_type.c_str()),
       duration);
 }
 
-void RecordConsentImpression(int nth_impression) {
+void RecordNoticeImpression(int nth_impression) {
   // Record every impression event.
-  base::UmaHistogramExactLinear(kQuickAnswersConsent, nth_impression,
-                                kConsentImpressionCap);
+  base::UmaHistogramExactLinear(kQuickAnswersNotice, nth_impression,
+                                kNoticeImpressionCap);
 }
 
 void RecordIntentType(IntentType intent_type) {

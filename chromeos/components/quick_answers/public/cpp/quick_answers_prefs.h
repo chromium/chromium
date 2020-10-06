@@ -12,8 +12,8 @@ namespace quick_answers {
 namespace prefs {
 
 extern const char kQuickAnswersConsented[];
-extern const char kQuickAnswersConsentImpressionCount[];
-extern const char kQuickAnswersConsentImpressionDuration[];
+extern const char kQuickAnswersNoticeImpressionCount[];
+extern const char kQuickAnswersNoticeImpressionDuration[];
 
 // Registers Quick Answers specific profile preferences for browser prefs.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);

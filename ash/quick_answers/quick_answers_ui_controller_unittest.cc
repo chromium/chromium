@@ -56,11 +56,11 @@ TEST_F(QuickAnswersUiControllerTest, TearDownWhileQuickAnswersViewShowing) {
   EXPECT_TRUE(ui_controller()->is_showing_quick_answers_view());
 }
 
-TEST_F(QuickAnswersUiControllerTest, TearDownWhileConsentViewShowing) {
-  EXPECT_FALSE(ui_controller()->is_showing_user_consent_view());
-  ui_controller()->CreateUserConsentView(kDefaultAnchorBoundsInScreen,
-                                         base::string16(), base::string16());
-  EXPECT_TRUE(ui_controller()->is_showing_user_consent_view());
+TEST_F(QuickAnswersUiControllerTest, TearDownWhileNoticeViewShowing) {
+  EXPECT_FALSE(ui_controller()->is_showing_user_notice_view());
+  ui_controller()->CreateUserNoticeView(kDefaultAnchorBoundsInScreen,
+                                        base::string16(), base::string16());
+  EXPECT_TRUE(ui_controller()->is_showing_user_notice_view());
 }
 
 }  // namespace ash

@@ -6,11 +6,11 @@
 
 #include "ash/quick_answers/quick_answers_ui_controller.h"
 #include "ash/quick_answers/ui/quick_answers_view.h"
-#include "ash/quick_answers/ui/user_consent_view.h"
+#include "ash/quick_answers/ui/user_notice_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
-#include "chromeos/components/quick_answers/quick_answers_consents.h"
+#include "chromeos/components/quick_answers/quick_answers_notice.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "services/network/test/test_url_loader_factory.h"
 
@@ -61,7 +61,7 @@ class QuickAnswersControllerTest : public AshTestBase {
         QuickAnswersController::Get());
   }
 
-  // Show the quick answer or notification view (depending on the notification
+  // Show the quick answer or notice view (depending on the notice
   // consent status).
   void ShowView(bool set_visibility = true) {
     // To show the quick answers view, its visibility must be set to 'pending'
@@ -72,18 +72,18 @@ class QuickAnswersControllerTest : public AshTestBase {
                                         kDefaultTitle, {});
   }
 
-  void ShowNotificationView() {
-    // We can only show the notification view if the consent has not been
+  void ShowNoticeView() {
+    // We can only show the notice view if the consent has not been
     // granted, so we add a sanity check here.
-    EXPECT_TRUE(consent_controller()->ShouldShowConsent())
-        << "Can not show notification view as the user consent has already "
+    EXPECT_TRUE(notice_controller()->ShouldShowNotice())
+        << "Can not show notice view as the user consent has already "
            "been given.";
     ShowView();
   }
 
   void ShowQuickAnswersView() {
     // Grant the user consent so the quick answers view is shown.
-    AcceptConsent();
+    AcceptNotice();
     ShowView();
   }
 
@@ -91,14 +91,14 @@ class QuickAnswersControllerTest : public AshTestBase {
     return ui_controller()->quick_answers_view_for_testing();
   }
 
-  const views::View* GetNotificationView() {
-    return ui_controller()->notification_view_for_testing();
+  const views::View* GetNoticeView() {
+    return ui_controller()->notice_view_for_testing();
   }
 
-  void AcceptConsent() {
-    consent_controller()->StartConsent();
-    consent_controller()->AcceptConsent(
-        chromeos::quick_answers::ConsentInteractionType::kAccept);
+  void AcceptNotice() {
+    notice_controller()->StartNotice();
+    notice_controller()->AcceptNotice(
+        chromeos::quick_answers::NoticeInteractionType::kAccept);
   }
 
   void DismissQuickAnswers() {
@@ -109,8 +109,8 @@ class QuickAnswersControllerTest : public AshTestBase {
     return controller()->quick_answers_ui_controller();
   }
 
-  chromeos::quick_answers::QuickAnswersConsent* consent_controller() {
-    return controller()->GetConsentControllerForTesting();
+  chromeos::quick_answers::QuickAnswersNotice* notice_controller() {
+    return controller()->GetNoticeControllerForTesting();
   }
 
  private:
@@ -123,7 +123,7 @@ TEST_F(QuickAnswersControllerTest, ShouldNotShowWhenFeatureNotEligible) {
   ShowView();
 
   // The feature is not eligible, nothing should be shown.
-  EXPECT_FALSE(ui_controller()->is_showing_user_consent_view());
+  EXPECT_FALSE(ui_controller()->is_showing_user_notice_view());
   EXPECT_FALSE(ui_controller()->is_showing_quick_answers_view());
 }
 
@@ -132,62 +132,62 @@ TEST_F(QuickAnswersControllerTest, ShouldNotShowWhenClosed) {
   ShowView(/*set_visibility=*/false);
 
   // The UI is closed and session is inactive, nothing should be shown.
-  EXPECT_FALSE(ui_controller()->is_showing_user_consent_view());
+  EXPECT_FALSE(ui_controller()->is_showing_user_notice_view());
   EXPECT_FALSE(ui_controller()->is_showing_quick_answers_view());
   EXPECT_EQ(controller()->visibility(), QuickAnswersVisibility::kClosed);
 }
 
 TEST_F(QuickAnswersControllerTest,
-       ShouldShowPendingQueryAfterUserAcceptsConsent) {
+       ShouldShowPendingQueryAfterUserAcceptsNotice) {
   ShowView();
   // Without user consent, only the user consent view should show.
-  EXPECT_TRUE(ui_controller()->is_showing_user_consent_view());
+  EXPECT_TRUE(ui_controller()->is_showing_user_notice_view());
   EXPECT_FALSE(ui_controller()->is_showing_quick_answers_view());
 
-  controller()->OnUserConsentGranted();
+  controller()->OnUserNoticeAccepted();
 
   // With user consent granted, the consent view should dismiss and the cached
   // quick answer query should show.
-  EXPECT_FALSE(ui_controller()->is_showing_user_consent_view());
+  EXPECT_FALSE(ui_controller()->is_showing_user_notice_view());
   EXPECT_TRUE(ui_controller()->is_showing_quick_answers_view());
   EXPECT_EQ(controller()->visibility(), QuickAnswersVisibility::kVisible);
 }
 
-TEST_F(QuickAnswersControllerTest, UserConsentAlreadyAccepted) {
-  AcceptConsent();
+TEST_F(QuickAnswersControllerTest, UserNoticeAlreadyAccepted) {
+  AcceptNotice();
   ShowView();
 
   // With user consent already accepted, only the quick answers view should
   // show.
-  EXPECT_FALSE(ui_controller()->is_showing_user_consent_view());
+  EXPECT_FALSE(ui_controller()->is_showing_user_notice_view());
   EXPECT_TRUE(ui_controller()->is_showing_quick_answers_view());
   EXPECT_EQ(controller()->visibility(), QuickAnswersVisibility::kVisible);
 }
 
 TEST_F(QuickAnswersControllerTest,
-       ShouldShowQuickAnswersIfUserIgnoresConsentViewThreeTimes) {
+       ShouldShowQuickAnswersIfUserIgnoresNoticeViewThreeTimes) {
   // Show and dismiss user consent window the first 3 times
   for (int i = 0; i < 3; i++) {
     ShowView();
-    EXPECT_TRUE(ui_controller()->is_showing_user_consent_view())
-        << "Consent view not shown the " << (i + 1) << " time";
+    EXPECT_TRUE(ui_controller()->is_showing_user_notice_view())
+        << "Notice view not shown the " << (i + 1) << " time";
     EXPECT_FALSE(ui_controller()->is_showing_quick_answers_view());
     DismissQuickAnswers();
   }
 
   // The 4th time we should simply show the quick answer.
   ShowView();
-  EXPECT_FALSE(ui_controller()->is_showing_user_consent_view());
+  EXPECT_FALSE(ui_controller()->is_showing_user_notice_view());
   EXPECT_TRUE(ui_controller()->is_showing_quick_answers_view());
 }
 
-TEST_F(QuickAnswersControllerTest, DismissUserConsentView) {
-  ShowNotificationView();
-  EXPECT_TRUE(ui_controller()->is_showing_user_consent_view());
+TEST_F(QuickAnswersControllerTest, DismissUserNoticeView) {
+  ShowNoticeView();
+  EXPECT_TRUE(ui_controller()->is_showing_user_notice_view());
 
   DismissQuickAnswers();
 
-  EXPECT_FALSE(ui_controller()->is_showing_user_consent_view());
+  EXPECT_FALSE(ui_controller()->is_showing_user_notice_view());
   EXPECT_EQ(controller()->visibility(), QuickAnswersVisibility::kClosed);
 }
 
@@ -213,15 +213,15 @@ TEST_F(QuickAnswersControllerTest,
 }
 
 TEST_F(QuickAnswersControllerTest,
-       ShouldUpdateNotificationViewBoundsWhenMenuBoundsChange) {
-  ShowNotificationView();
+       ShouldUpdateNoticeViewBoundsWhenMenuBoundsChange) {
+  ShowNoticeView();
 
   controller()->UpdateQuickAnswersAnchorBounds(BoundsWithXPosition(123));
 
   // We only check the 'x' position as that is guaranteed to be identical
   // between the view and the menu.
-  const views::View* notification_view = GetNotificationView();
-  EXPECT_EQ(123, notification_view->GetBoundsInScreen().x());
+  const views::View* notice_view = GetNoticeView();
+  EXPECT_EQ(123, notice_view->GetBoundsInScreen().x());
 }
 
 }  // namespace ash

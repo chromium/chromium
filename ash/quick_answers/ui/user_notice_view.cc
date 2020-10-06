@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/quick_answers/ui/user_consent_view.h"
+#include "ash/quick_answers/ui/user_notice_view.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/quick_answers/quick_answers_ui_controller.h"
@@ -65,9 +65,9 @@ constexpr SkColor kSettingsButtonTextColor = gfx::kGoogleBlue600;
 constexpr char kA11ySettingsButtonDescText[] =
     "Click to open Google Assistant settings.";
 
-// Grant-Consent button.
-constexpr SkColor kConsentButtonTextColor = gfx::kGoogleGrey200;
-constexpr char kA11yConsentButtonDescText[] =
+// Accept button.
+constexpr SkColor kAcceptButtonTextColor = gfx::kGoogleGrey200;
+constexpr char kA11yAcceptButtonDescText[] =
     "Let Assistant show info such as definition or unit conversion for your "
     "selection.";
 
@@ -125,25 +125,26 @@ class CustomizedLabelButton : public views::MdTextButton {
 
 }  // namespace
 
-// UserConsentView -------------------------------------------------------------
+// UserNoticeView
+// -------------------------------------------------------------
 
-UserConsentView::UserConsentView(const gfx::Rect& anchor_view_bounds,
-                                 const base::string16& intent_type,
-                                 const base::string16& intent_text,
-                                 QuickAnswersUiController* ui_controller)
+UserNoticeView::UserNoticeView(const gfx::Rect& anchor_view_bounds,
+                               const base::string16& intent_type,
+                               const base::string16& intent_text,
+                               QuickAnswersUiController* ui_controller)
     : anchor_view_bounds_(anchor_view_bounds),
       event_handler_(std::make_unique<QuickAnswersPreTargetHandler>(this)),
       ui_controller_(ui_controller),
       focus_search_(std::make_unique<QuickAnswersFocusSearch>(
           this,
-          base::BindRepeating(&UserConsentView::GetFocusableViews,
+          base::BindRepeating(&UserNoticeView::GetFocusableViews,
                               base::Unretained(this)))) {
   if (intent_type.empty() || intent_text.empty()) {
     title_ = l10n_util::GetStringUTF16(
-        IDS_ASH_QUICK_ANSWERS_USER_CONSENT_VIEW_TITLE_TEXT);
+        IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_TITLE_TEXT);
   } else {
     title_ = l10n_util::GetStringFUTF16(
-        IDS_ASH_QUICK_ANSWERS_USER_CONSENT_VIEW_TITLE_TEXT_WITH_INTENT,
+        IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_TITLE_TEXT_WITH_INTENT,
         intent_type, intent_text);
   }
 
@@ -163,19 +164,19 @@ UserConsentView::UserConsentView(const gfx::Rect& anchor_view_bounds,
   GetViewAccessibility().AnnounceText(base::UTF8ToUTF16(kA11yInfoAlertText));
 }
 
-UserConsentView::~UserConsentView() = default;
+UserNoticeView::~UserNoticeView() = default;
 
-const char* UserConsentView::GetClassName() const {
-  return "UserConsentView";
+const char* UserNoticeView::GetClassName() const {
+  return "UserNoticeView";
 }
 
-gfx::Size UserConsentView::CalculatePreferredSize() const {
+gfx::Size UserNoticeView::CalculatePreferredSize() const {
   // View should match width of the anchor.
   auto width = anchor_view_bounds_.width();
   return gfx::Size(width, GetHeightForWidth(width));
 }
 
-void UserConsentView::OnFocus() {
+void UserNoticeView::OnFocus() {
   // Unless screen-reader mode is enabled, transfer the focus to an actionable
   // button, otherwise retain to read out its contents.
   if (!ash::Shell::Get()
@@ -185,22 +186,21 @@ void UserConsentView::OnFocus() {
     settings_button_->RequestFocus();
 }
 
-views::FocusTraversable* UserConsentView::GetPaneFocusTraversable() {
+views::FocusTraversable* UserNoticeView::GetPaneFocusTraversable() {
   return focus_search_.get();
 }
 
-void UserConsentView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+void UserNoticeView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kDialog;
   node_data->SetName(title_);
-  auto desc =
-      base::StringPrintf(kA11yInfoDescTemplate,
-                         l10n_util::GetStringUTF8(
-                             IDS_ASH_QUICK_ANSWERS_USER_CONSENT_VIEW_DESC_TEXT)
-                             .c_str());
+  auto desc = base::StringPrintf(
+      kA11yInfoDescTemplate,
+      l10n_util::GetStringUTF8(IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_DESC_TEXT)
+          .c_str());
   node_data->SetDescription(desc);
 }
 
-std::vector<views::View*> UserConsentView::GetFocusableViews() {
+std::vector<views::View*> UserNoticeView::GetFocusableViews() {
   std::vector<views::View*> focusable_views;
   // The view itself is not included in focus loop, unless screen-reader is on.
   if (ash::Shell::Get()
@@ -210,19 +210,19 @@ std::vector<views::View*> UserConsentView::GetFocusableViews() {
     focusable_views.push_back(this);
   }
   focusable_views.push_back(settings_button_);
-  focusable_views.push_back(consent_button_);
+  focusable_views.push_back(accept_button_);
   if (dogfood_button_)
     focusable_views.push_back(dogfood_button_);
   return focusable_views;
 }
 
-void UserConsentView::ButtonPressed(views::Button* sender,
-                                    const ui::Event& event) {
-  if (sender == consent_button_) {
-    // When user-consent is acknowledged, QuickAnswersView will be displayed
-    // instead of dismissing the menu.
+void UserNoticeView::ButtonPressed(views::Button* sender,
+                                   const ui::Event& event) {
+  if (sender == accept_button_) {
+    // When user notice is acknowledged, QuickAnswersView will be
+    // displayed instead of dismissing the menu.
     event_handler_->set_dismiss_anchor_menu_on_view_closed(false);
-    ui_controller_->OnConsentGrantedButtonPressed();
+    ui_controller_->OnAcceptButtonPressed();
     return;
   }
   if (sender == settings_button_) {
@@ -235,13 +235,13 @@ void UserConsentView::ButtonPressed(views::Button* sender,
   }
 }
 
-void UserConsentView::UpdateAnchorViewBounds(
+void UserNoticeView::UpdateAnchorViewBounds(
     const gfx::Rect& anchor_view_bounds) {
   anchor_view_bounds_ = anchor_view_bounds;
   UpdateWidgetBounds();
 }
 
-void UserConsentView::InitLayout() {
+void UserNoticeView::InitLayout() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetBackground(views::CreateSolidBackground(kMainViewBgColor));
 
@@ -269,7 +269,7 @@ void UserConsentView::InitLayout() {
     AddDogfoodButton();
 }
 
-void UserConsentView::InitContent() {
+void UserNoticeView::InitContent() {
   // Layout.
   content_ = main_view_->AddChildView(std::make_unique<views::View>());
   content_->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -283,13 +283,14 @@ void UserConsentView::InitContent() {
   // Description.
   auto* desc = content_->AddChildView(
       CreateLabel(l10n_util::GetStringUTF16(
-                      IDS_ASH_QUICK_ANSWERS_USER_CONSENT_VIEW_DESC_TEXT),
+                      IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_DESC_TEXT),
                   kDescTextColor, kDescFontSizeDelta));
   desc->SetMultiLine(true);
   // BoxLayout does not necessarily size the height of multi-line labels
   // properly (crbug/682266). The label is thus explicitly sized to the width
-  // (and height) it would need to be for the UserConsentView to be the same
-  // width as the anchor, so its preferred size will be calculated correctly.
+  // (and height) it would need to be for the UserNoticeView to be the
+  // same width as the anchor, so its preferred size will be calculated
+  // correctly.
   int desc_desired_width = anchor_view_bounds_.width() -
                            kMainViewInsets.width() - kContentInsets.width() -
                            kAssistantIconSizeDip;
@@ -299,7 +300,7 @@ void UserConsentView::InitContent() {
   InitButtonBar();
 }
 
-void UserConsentView::InitButtonBar() {
+void UserNoticeView::InitButtonBar() {
   // Layout.
   auto* button_bar = content_->AddChildView(std::make_unique<views::View>());
   auto* layout =
@@ -312,25 +313,24 @@ void UserConsentView::InitButtonBar() {
   auto settings_button = std::make_unique<CustomizedLabelButton>(
       this,
       l10n_util::GetStringUTF16(
-          IDS_ASH_QUICK_ANSWERS_USER_CONSENT_VIEW_MANAGE_SETTINGS_BUTTON),
+          IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_MANAGE_SETTINGS_BUTTON),
       kSettingsButtonTextColor);
   settings_button->GetViewAccessibility().OverrideDescription(
       kA11ySettingsButtonDescText);
   settings_button_ = button_bar->AddChildView(std::move(settings_button));
 
-  // Grant-Consent button.
-  auto consent_button = std::make_unique<CustomizedLabelButton>(
+  auto accept_button = std::make_unique<CustomizedLabelButton>(
       this,
       l10n_util::GetStringUTF16(
-          IDS_ASH_QUICK_ANSWERS_USER_CONSENT_VIEW_GRANT_CONSENT_BUTTON),
-      kConsentButtonTextColor);
-  consent_button->SetProminent(true);
-  consent_button->GetViewAccessibility().OverrideDescription(
-      kA11yConsentButtonDescText);
-  consent_button_ = button_bar->AddChildView(std::move(consent_button));
+          IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_ACCEPT_BUTTON),
+      kAcceptButtonTextColor);
+  accept_button->SetProminent(true);
+  accept_button->GetViewAccessibility().OverrideDescription(
+      kA11yAcceptButtonDescText);
+  accept_button_ = button_bar->AddChildView(std::move(accept_button));
 }
 
-void UserConsentView::InitWidget() {
+void UserNoticeView::InitWidget() {
   views::Widget::InitParams params;
   params.activatable = views::Widget::InitParams::Activatable::ACTIVATABLE_NO;
   params.shadow_elevation = 2;
@@ -353,7 +353,7 @@ void UserConsentView::InitWidget() {
   UpdateWidgetBounds();
 }
 
-void UserConsentView::AddDogfoodButton() {
+void UserNoticeView::AddDogfoodButton() {
   auto* dogfood_view = AddChildView(std::make_unique<views::View>());
   auto* layout =
       dogfood_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -371,7 +371,7 @@ void UserConsentView::AddDogfoodButton() {
   dogfood_button_ = dogfood_view->AddChildView(std::move(dogfood_button));
 }
 
-void UserConsentView::UpdateWidgetBounds() {
+void UserNoticeView::UpdateWidgetBounds() {
   const gfx::Size size = GetPreferredSize();
   int x = anchor_view_bounds_.x();
   int y = anchor_view_bounds_.y() - size.height() - kMarginDip;
