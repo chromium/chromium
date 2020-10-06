@@ -8,13 +8,6 @@ import("//build/util/lastchange.gni")
 import("//testing/test.gni")
 import("//third_party/ffmpeg/ffmpeg_options.gni")
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 action("embed_js_in_cpp") {
   script = "embed_js_in_cpp.py"
 
@@ -77,7 +70,6 @@ source_set("automation_client_lib") {
     "chrome/chrome_desktop_impl.h",
     "chrome/chrome_finder.cc",
     "chrome/chrome_finder.h",
-    "chrome/chrome_finder_mac.mm",
     "chrome/chrome_impl.cc",
     "chrome/chrome_impl.h",
     "chrome/chrome_remote_impl.cc",
@@ -169,6 +161,10 @@ source_set("automation_client_lib") {
     "net/websocket.h",
   ]
 
+  if (is_mac) {
+    sources += [ "chrome/chrome_finder_mac.mm" ]
+  }
+
   # Also compile the generated files.
   sources += get_target_outputs(":embed_js_in_cpp")
   sources += get_target_outputs(":embed_user_data_dir_in_cpp")
@@ -226,8 +222,6 @@ source_set("lib") {
     "key_converter.cc",
     "key_converter.h",
     "keycode_text_conversion.h",
-    "keycode_text_conversion_mac.mm",
-    "keycode_text_conversion_win.cc",
     "logging.cc",
     "logging.h",
     "performance_logger.cc",
@@ -249,6 +243,14 @@ source_set("lib") {
     "window_commands.cc",
     "window_commands.h",
   ]
+
+  if (is_mac) {
+    sources += [ "keycode_text_conversion_mac.mm" ]
+  }
+
+  if (is_win) {
+    sources += [ "keycode_text_conversion_win.cc" ]
+  }
 
   if (use_x11) {
     sources += [ "keycode_text_conversion_x.cc" ]
