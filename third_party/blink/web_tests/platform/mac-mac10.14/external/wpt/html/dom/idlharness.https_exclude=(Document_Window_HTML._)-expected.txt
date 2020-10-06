@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1459 tests; 1376 PASS, 83 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1458 tests; 1375 PASS, 83 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -805,7 +805,6 @@ PASS ElementInternals interface: attribute validationMessage
 PASS ElementInternals interface: operation checkValidity()
 PASS ElementInternals interface: operation reportValidity()
 PASS ElementInternals interface: attribute labels
-PASS ElementInternals interface: attribute shadowRoot
 PASS DataTransfer interface: existence and properties of interface object
 PASS DataTransfer interface object length
 PASS DataTransfer interface object name

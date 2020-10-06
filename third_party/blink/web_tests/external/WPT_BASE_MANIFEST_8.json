@@ -41053,7 +41053,7 @@
        ]
       ],
       "text-indent-100.xht": [
-       "7c498d2b5f9da57f9ad77bcb65405fce2bebe7b2",
+       "977d32170e77c60f6ef9c9c8bcd0f43c8c98da67",
        [
         null,
         [
@@ -41066,7 +41066,7 @@
        ]
       ],
       "text-indent-101.xht": [
-       "5007ff643d87a8db5473752730a08c327ccc160e",
+       "35e155aea8d2435403e0f09aec7dd06942aa1b3d",
        [
         null,
         [
@@ -41079,7 +41079,7 @@
        ]
       ],
       "text-indent-102.xht": [
-       "b187c79f524b755a7f7ae7491832df90f863fb36",
+       "a0352dea21a114007c432cf65a7dab8e775abc4c",
        [
         null,
         [
@@ -42379,7 +42379,7 @@
        ]
       ],
       "white-space-applies-to-002.xht": [
-       "eaf86aad80c3a417b2dd41e7589d46fb68cc5b42",
+       "04e90d7f950b03e0f072a6cdb64621390ec8ebd6",
        [
         null,
         [
@@ -42392,7 +42392,7 @@
        ]
       ],
       "white-space-applies-to-003.xht": [
-       "031e3a8d56272c55932970e16aa8dce7baf6f475",
+       "67ad1e5d103c04aad755c2287289221cede5a14a",
        [
         null,
         [
@@ -42405,7 +42405,7 @@
        ]
       ],
       "white-space-applies-to-005.xht": [
-       "db6a06282dcc4d5046565c0d0dfde4f378e2b80b",
+       "8508a884be405320378c4376385a906345c9ea98",
        [
         null,
         [
@@ -42418,7 +42418,7 @@
        ]
       ],
       "white-space-applies-to-006.xht": [
-       "d750da518be78fafcd8d10c36bf8b55fb3c1a1e4",
+       "b60f51ff757c59d615400036e3b9ab19293a62a8",
        [
         null,
         [
@@ -42431,7 +42431,7 @@
        ]
       ],
       "white-space-applies-to-007.xht": [
-       "c99cdf93346e20a5b933498dbfb05d29a5d3c8ab",
+       "2521a6d8b446b9de8ad398327f044bf5ec734308",
        [
         null,
         [
@@ -42444,7 +42444,7 @@
        ]
       ],
       "white-space-applies-to-008.xht": [
-       "d3fd1fab0a98e9f7d2fd898c67da3ec9651bae0a",
+       "214d844f1a015f66458da61e875e206978f2ddba",
        [
         null,
         [
@@ -42457,7 +42457,7 @@
        ]
       ],
       "white-space-applies-to-009.xht": [
-       "2fef90d7c513607324d97dfde29b0b0f4594e88a",
+       "5328956af61550a684dcaf1cf378764e84790adb",
        [
         null,
         [
@@ -42470,7 +42470,7 @@
        ]
       ],
       "white-space-applies-to-010.xht": [
-       "4c6367859560afbb2474c42b7fe280d42c436603",
+       "affee6ab1a8490ca6f26c9005071ad6acefa1c8d",
        [
         null,
         [
@@ -42483,7 +42483,7 @@
        ]
       ],
       "white-space-applies-to-011.xht": [
-       "31370f896a6b0df13712ce798c74dfb0a907efe7",
+       "f4dcfbe9b0314e73008489abb055efdeca26d7ab",
        [
         null,
         [
@@ -42496,7 +42496,7 @@
        ]
       ],
       "white-space-applies-to-012.xht": [
-       "8819f33f129ec34663683975e76c7ff3cfcd600f",
+       "f4d9ecfe4e07487f2dcf4e01d3033143d0242e3e",
        [
         null,
         [
@@ -42509,7 +42509,7 @@
        ]
       ],
       "white-space-applies-to-013.xht": [
-       "32171998cfdd0caebe8299f0de571f7bbe021561",
+       "4e01932c837e98f2df3bde56db6fcc6929459cbb",
        [
         null,
         [
@@ -42522,7 +42522,7 @@
        ]
       ],
       "white-space-applies-to-014.xht": [
-       "9911721e8dcbfda27a5909a3d4622e46923b8129",
+       "fc9b64125262f0f20f02f91fe044572b76495e5f",
        [
         null,
         [
@@ -42535,7 +42535,7 @@
        ]
       ],
       "white-space-applies-to-015.xht": [
-       "bb11f26d2cf773dc5243c661cebbbe4c78afca0c",
+       "1b8acd7b050039b606718a1ee646a126696fda4a",
        [
         null,
         [
@@ -42886,7 +42886,7 @@
        ]
       ],
       "white-space-nowrap-attribute-001.xht": [
-       "228b4f8c19f0ae07564c8161b898f24f7eb78f8d",
+       "995cf637dd191986eca1061938a19f872ab58e1f",
        [
         null,
         [
@@ -42899,7 +42899,7 @@
        ]
       ],
       "white-space-p-element-001.xht": [
-       "ac7376b134dff0f45e7000de847a205eae0f71c6",
+       "7074b87df9d425b3ffce66549c7d660d7440dc60",
        [
         null,
         [
@@ -42964,7 +42964,7 @@
        ]
       ],
       "white-space-pre-element-001.xht": [
-       "7ec2ba896d44d285ebd49649236bb2dddc534bf4",
+       "a40988144d7e877b6e6295fc813cc20c77ab1977",
        [
         null,
         [
@@ -43022,6 +43022,45 @@
         [
          [
           "/css/CSS2/text/white-space-processing-002-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "white-space-processing-005.xht": [
+       "1237c6830d3823fa0de0a5e49a568493cfb8473b",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/white-space-processing-005-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "white-space-processing-006.xht": [
+       "886e6bdc0595cf5ee9ce21f0e375d97830554c6e",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/white-space-processing-006-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "white-space-processing-007.xht": [
+       "d05501d169df24cfd467b5dc761c549259754595",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/white-space-processing-005-ref.xht",
           "=="
          ]
         ],
@@ -43100,6 +43139,32 @@
         [
          [
           "/css/CSS2/text/white-space-processing-013-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "white-space-processing-014.xht": [
+       "8f4c10f6e024b0837c2a094faca96faee58a4511",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/white-space-processing-014-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "white-space-processing-015.xht": [
+       "329753677b5241ec30c20a135e0a081a9b871130",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/white-space-processing-015-ref.xht",
           "=="
          ]
         ],
@@ -43522,8 +43587,21 @@
         {}
        ]
       ],
+      "white-space-processing-048.xht": [
+       "13a639ab75613ee3fd554dfa50a58b92bbaff7da",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/white-space-processing-048-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "white-space-processing-049.xht": [
-       "5d5602de342ca27fe22e9c689b429b75da2eb70a",
+       "4492d4b64b53df59543bcf3a810e6f9a1e548c3e",
        [
         null,
         [
@@ -81953,6 +82031,19 @@
        {}
       ]
      ],
+     "multicol-fill-balance-004.html": [
+      "1d90cc45f61fb3512eeca3a1905f5d75bf2b640f",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "multicol-gap-000.xht": [
       "88aa17e8b488565dc40398e6e8f1d2e3bf3a97a1",
       [
@@ -83008,6 +83099,19 @@
      ],
      "multicol-span-all-014.html": [
       "ec835686cf2ec9fffbdb04a8c007613381c778b2",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "multicol-span-all-015.html": [
+      "041c211b855e50ad70e65c98af73567848e3534e",
       [
        null,
        [
@@ -175798,8 +175902,24 @@
        "30320ebde2e01f43c6198cb9c590d31b7bd7566c",
        []
       ],
+      "white-space-processing-005-ref.xht": [
+       "e42ddd808579a50c25de8ae9b41e40298964f1f1",
+       []
+      ],
+      "white-space-processing-006-ref.xht": [
+       "76e313a593b504fc5f81e57ece8d39631f63b058",
+       []
+      ],
       "white-space-processing-013-ref.xht": [
        "937cb87d1497d7298c010f8be6b0c5fd476afb9f",
+       []
+      ],
+      "white-space-processing-014-ref.xht": [
+       "9b1bc070d21f0ab81252871fdf08658ca84d4709",
+       []
+      ],
+      "white-space-processing-015-ref.xht": [
+       "d31a52d448e8fcea8da476a8f9e1b8d84cec9ab0",
        []
       ],
       "white-space-processing-016-ref.xht": [
@@ -175824,6 +175944,10 @@
       ],
       "white-space-processing-046-ref.xht": [
        "9c7e0950ba143bfc71fbfece569988d9ff4e940d",
+       []
+      ],
+      "white-space-processing-048-ref.xht": [
+       "ab837b027688853645e16a8a9e97fa98293e0550",
        []
       ],
       "white-space-processing-049-ref.xht": [
@@ -208101,7 +208225,7 @@
      ]
     },
     "historical-expected.txt": [
-     "cfda088aac6a7a59d182bab359d02ff0eddeb46f",
+     "9ba193753d494deaa6774b59d5e7632f65fd88d6",
      []
     ],
     "htmlconstructor": {
@@ -218362,7 +218486,7 @@
       []
      ],
      "idlharness.https_exclude=(Document_Window_HTML._)-expected.txt": [
-      "1b9f3f92f81696d68a769399f61e20faeb17537d",
+      "1b88dda8afcf933d698f0f8115d72cdb2df39315",
       []
      ],
      "idlharness.https_include=(Document_Window)-expected.txt": [
@@ -228875,7 +228999,7 @@
      []
     ],
     "html.idl": [
-     "3bf41f95893847038a22582cbde7a4ec7d70475f",
+     "8bf6d0f52df5e3daac47c4e9a8bd2567b3017d32",
      []
     ],
     "idle-detection.tentative.idl": [
@@ -229019,7 +229143,7 @@
      []
     ],
     "payment-request.idl": [
-     "9b6537c97ec6f476bd941ff929582bb90e04bb9b",
+     "dc0511b0c4b091066a9dcbc94ece9cac28088bde",
      []
     ],
     "performance-timeline.idl": [
@@ -229095,7 +229219,7 @@
      []
     ],
     "sanitizer-api.tentative.idl": [
-     "600ae0514a3094e19813476cd065162b9e0dfb4c",
+     "6778c51bdfd70d13d9e8bdb05a7b87797ec07aa5",
      []
     ],
     "savedata.idl": [
@@ -232719,7 +232843,7 @@
      []
     ],
     "idlharness.https.window-expected.txt": [
-     "cb64769e8b4577bc30d60fdd0ce67f3e11faf43d",
+     "dd488a102bd26faccc66e17a2a192eb6ff7883e9",
      []
     ],
     "idlharness.https.window.js.ini": [
@@ -235640,12 +235764,16 @@
      "c5a213156a161824a4e5c6b96257d131ffb7212c",
      []
     ],
+    "sanitizer-config.tentative-expected.txt": [
+     "aee6d915ffeca6165396fd1cf6415f66ab432b2c",
+     []
+    ],
     "sanitizer-sanitize.tentative-expected.txt": [
-     "c5224d4efab840963aa3acd47e776238cc13cf9e",
+     "d8f17a491d80e76f53740544f4cb72af84ddbc3e",
      []
     ],
     "sanitizer-sanitizeToString.tentative-expected.txt": [
-     "de05576e7ba55e476dde82fdb42f3b9e014089ff",
+     "ca06fef06bd3c15db21c50e87f5d7bf0ffc8c50a",
      []
     ],
     "support": {
@@ -238661,7 +238789,7 @@
      }
     },
     "historical-expected.txt": [
-     "cd93b8b276f16138d4d48e882aec437803767000",
+     "14ab3becdb400c3288a286a31cee5a685fa7e084",
      []
     ],
     "offsetParent-across-shadow-boundaries-expected.txt": [
@@ -240808,7 +240936,7 @@
       []
      ],
      "taskcluster-run.py": [
-      "a4bd72a8c21d4e84b4ebd44fcff3680fd1291017",
+      "49a7d163385628320be85d6e61c27c41314d7f89",
       []
      ],
      "tc": {
@@ -306506,7 +306634,7 @@
        ]
       ],
       "overscroll-deltas.html": [
-       "091cfd0631b454babaeb8c32dd289468b6d509d3",
+       "6f0b77f22eda2ab497859ce8b0bcafc261b66c5a",
        [
         null,
         {
@@ -437616,7 +437744,7 @@
        ]
       ],
       "combining-characters-002.xht": [
-       "4200e1542ba87adcce866f61a05bdb2648b206cf",
+       "3036378968655f073e76ed6ea72369678624d95c",
        [
         null,
         {}
@@ -438379,7 +438507,7 @@
        ]
       ],
       "white-space-control-characters-001.xht": [
-       "40c4727704c961b7e2d147ed8ed4c7b50cfa99c1",
+       "09d66cd49beaad3627f03007185ec3ffb5c89400",
        [
         null,
         {}
@@ -438387,62 +438515,6 @@
       ],
       "white-space-pre-007.xht": [
        "c71d772faebc9bb0b39aae56e66bb28a31058d48",
-       [
-        null,
-        {}
-       ]
-      ],
-      "white-space-processing-005.xht": [
-       "0cc09c00d45f9d2816531ed884cd18d07b9293cb",
-       [
-        null,
-        {}
-       ]
-      ],
-      "white-space-processing-006.xht": [
-       "c67cf83535133b03ce4af0ade1ce47e602b64e4e",
-       [
-        null,
-        {}
-       ]
-      ],
-      "white-space-processing-007.xht": [
-       "4c0a83258102738bee2af29390b569e6576db2b7",
-       [
-        null,
-        {}
-       ]
-      ],
-      "white-space-processing-014.xht": [
-       "75fb87be126ca493aa7747145200993721ef8c94",
-       [
-        null,
-        {}
-       ]
-      ],
-      "white-space-processing-015.xht": [
-       "b123db459ce712ed56182e44b173234684061a61",
-       [
-        null,
-        {}
-       ]
-      ],
-      "white-space-processing-048.xht": [
-       "d4c64697310254290d12012e69902dd03e6cc06c",
-       [
-        null,
-        {}
-       ]
-      ],
-      "white-space-processing-057.xht": [
-       "b54e9b5419bd74c2ef726184812dae399a475309",
-       [
-        null,
-        {}
-       ]
-      ],
-      "white-space-processing-058.xht": [
-       "40007dbbd1015f6454e33e0ccb23253e1ba967e3",
        [
         null,
         {}
@@ -442461,6 +442533,13 @@
       ],
       "select.py": [
        "dcf92e645894187bafcc0acf735cdeeeecd2d088",
+       [
+        null,
+        {}
+       ]
+      ],
+      "shadow_dom.py": [
+       "b52f27429c1965804cbcbb691a74a53a9c10bfdb",
        [
         null,
         {}

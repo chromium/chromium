@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 91 tests; 90 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 93 tests; 92 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS PaymentRequest interface: existence and properties of interface object
@@ -11,6 +11,7 @@ PASS PaymentRequest interface: existence and properties of interface prototype o
 PASS PaymentRequest interface: operation show(optional Promise<PaymentDetailsUpdate>)
 PASS PaymentRequest interface: operation abort()
 PASS PaymentRequest interface: operation canMakePayment()
+PASS PaymentRequest interface: operation hasEnrolledInstrument()
 PASS PaymentRequest interface: attribute id
 PASS PaymentRequest interface: attribute shippingAddress
 PASS PaymentRequest interface: attribute shippingOption
@@ -24,6 +25,7 @@ PASS PaymentRequest interface: paymentRequest must inherit property "show(option
 PASS PaymentRequest interface: calling show(optional Promise<PaymentDetailsUpdate>) on paymentRequest with too few arguments must throw TypeError
 PASS PaymentRequest interface: paymentRequest must inherit property "abort()" with the proper type
 PASS PaymentRequest interface: paymentRequest must inherit property "canMakePayment()" with the proper type
+PASS PaymentRequest interface: paymentRequest must inherit property "hasEnrolledInstrument()" with the proper type
 PASS PaymentRequest interface: paymentRequest must inherit property "id" with the proper type
 PASS PaymentRequest interface: paymentRequest must inherit property "shippingAddress" with the proper type
 PASS PaymentRequest interface: paymentRequest must inherit property "shippingOption" with the proper type
