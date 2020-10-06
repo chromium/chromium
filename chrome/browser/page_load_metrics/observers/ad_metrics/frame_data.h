@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_AD_METRICS_FRAME_DATA_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_AD_METRICS_FRAME_DATA_H_
 
+#include <stdint.h>
+
+#include <unordered_map>
+
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -180,6 +184,14 @@ class FrameData : public base::SupportsWeakPtr<FrameData> {
   // |update_time|.
   void UpdateCpuUsage(base::TimeTicks update_time, base::TimeDelta update);
 
+  // Updates the recorded bytes of memory used by V8 inside this ad frame tree
+  // and returns the delta in memory bytes usage.
+  int64_t UpdateMemoryUsage(FrameTreeNodeId frame_node_id,
+                            uint64_t current_bytes);
+
+  // Returns the delta in memory bytes usage due to frame deletion.
+  int64_t OnFrameDeleted(FrameTreeNodeId frame_node_id);
+
   // Returns how the frame should be treated by the heavy ad intervention.
   // This intervention is triggered when the frame is considered heavy, has not
   // received user gesture, and the intervention feature is enabled. This
@@ -248,6 +260,14 @@ class FrameData : public base::SupportsWeakPtr<FrameData> {
   size_t ad_network_bytes() const { return ad_network_bytes_; }
 
   size_t GetAdNetworkBytesForMime(ResourceMimeType mime_type) const;
+
+  uint64_t v8_current_memory_bytes_used() const {
+    return v8_current_memory_bytes_used_;
+  }
+
+  uint64_t v8_max_memory_bytes_used() const {
+    return v8_max_memory_bytes_used_;
+  }
 
   UserActivationStatus user_activation_status() const {
     return user_activation_status_;
@@ -359,6 +379,19 @@ class FrameData : public base::SupportsWeakPtr<FrameData> {
   // match |frame_bytes| and |frame_network_bytes|.
   size_t ad_bytes_ = 0u;
   size_t ad_network_bytes_ = 0u;
+
+  // Per-frame memory usage by V8 in bytes. Memory data is stored per subframe
+  // in the frame tree.
+  std::unordered_map<FrameTreeNodeId, uint64_t> v8_current_memory_usage_map_;
+
+  // Maximum concurrent memory usage by V8 in this ad frame tree.
+  // Tracks max value of |v8_current_memory_bytes_used_| for this frame tree.
+  uint64_t v8_max_memory_bytes_used_ = 0UL;
+
+  // Current concurrent memory usage by V8 in this ad frame tree.
+  // Computation is best-effort, as it relies on individual asynchronous
+  // per-frame measurements, some of which may be stale.
+  uint64_t v8_current_memory_bytes_used_ = 0UL;
 
   OriginStatus origin_status_;
   OriginStatus creative_origin_status_;

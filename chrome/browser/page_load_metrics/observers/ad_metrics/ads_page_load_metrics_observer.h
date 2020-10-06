@@ -26,10 +26,15 @@
 #include "net/http/http_response_info.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 
+using MeasurementMode =
+    performance_manager::v8_memory::V8PerFrameMemoryRequest::MeasurementMode;
+
 namespace features {
 extern const base::Feature kRestrictedNavigationAdTagging;
 extern const base::Feature kV8PerAdFrameMemoryMonitoring;
 extern const base::FeatureParam<int> kMemoryPollInterval;
+extern const base::FeatureParam<MeasurementMode>::Option memory_poll_modes[];
+extern const base::FeatureParam<MeasurementMode> kMemoryPollMode;
 }
 
 class HeavyAdBlocklist;
@@ -59,9 +64,11 @@ class AdsPageLoadMetricsObserver
   // Aggregates high level summary statistics across FrameData objects.
   struct AggregateFrameInfo {
     AggregateFrameInfo();
-    size_t bytes;
-    size_t network_bytes;
-    size_t num_frames;
+    size_t bytes = 0;
+    size_t network_bytes = 0;
+    size_t num_frames = 0;
+    uint64_t v8_current_memory_bytes = 0;
+    uint64_t v8_max_memory_bytes = 0;
     base::TimeDelta cpu_time;
 
     DISALLOW_COPY_AND_ASSIGN(AggregateFrameInfo);
@@ -143,8 +150,15 @@ class AdsPageLoadMetricsObserver
       performance_manager::RenderProcessHostId render_process_host_id,
       const performance_manager::v8_memory::V8PerFrameMemoryProcessData&
           process_data,
-      const V8PerFrameMemoryObserverAnySeq::FrameDataMap& frame_data) override {
-  }
+      const V8PerFrameMemoryObserverAnySeq::FrameDataMap& frame_data) override;
+
+  void UpdateAggregateMemoryUsage(int64_t bytes,
+                                  FrameData::FrameVisibility visibility);
+
+  void CleanupDeletedFrame(FrameTreeNodeId id,
+                           FrameData* frame_data,
+                           bool update_density_tracker,
+                           bool record_metrics);
 
  private:
   // Object which maps to a FrameData object. This can either own the FrameData
@@ -330,6 +344,13 @@ class AdsPageLoadMetricsObserver
   // lifecycle. Lazily initialized when the first ad is detected.
   std::unique_ptr<performance_manager::v8_memory::V8PerFrameMemoryRequestAnySeq>
       memory_request_;
+
+  // Tracks number of memory updates received.
+  int num_memory_updates_ = 0;
+
+  // Tracks number of per-frame memory measurements missed due to receipt
+  // after the corresponding RenderFrameHost has been destroyed.
+  int num_missed_memory_measurements_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(AdsPageLoadMetricsObserver);
 };

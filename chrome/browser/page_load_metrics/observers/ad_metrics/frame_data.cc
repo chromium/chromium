@@ -261,7 +261,8 @@ void FrameData::MaybeUpdateFrameDepth(
 }
 
 bool FrameData::ShouldRecordFrameForMetrics() const {
-  return bytes() != 0 || !GetTotalCpuUsage().is_zero();
+  return bytes() != 0 || !GetTotalCpuUsage().is_zero() ||
+         v8_max_memory_bytes_used_ > 0;
 }
 
 void FrameData::RecordAdFrameLoadUkmEvent(ukm::SourceId source_id) const {
@@ -401,4 +402,36 @@ FrameData::HeavyAdStatus FrameData::ComputeHeavyAdStatus(
       return HeavyAdStatus::kNetwork;
   }
   return HeavyAdStatus::kNone;
+}
+
+int64_t FrameData::UpdateMemoryUsage(FrameTreeNodeId frame_node_id,
+                                     uint64_t current_bytes) {
+  auto it = v8_current_memory_usage_map_.find(frame_node_id);
+  uint64_t previous_bytes =
+      (it != v8_current_memory_usage_map_.end()) ? it->second : 0UL;
+
+  v8_current_memory_usage_map_[frame_node_id] = current_bytes;
+
+  int64_t delta = current_bytes - previous_bytes;
+  v8_current_memory_bytes_used_ += delta;
+
+  if (v8_current_memory_bytes_used_ > v8_max_memory_bytes_used_)
+    v8_max_memory_bytes_used_ = v8_current_memory_bytes_used_;
+
+  return delta;
+}
+
+int64_t FrameData::OnFrameDeleted(FrameTreeNodeId frame_node_id) {
+  auto it = v8_current_memory_usage_map_.find(frame_node_id);
+
+  if (it == v8_current_memory_usage_map_.end())
+    return 0;
+
+  DCHECK(v8_current_memory_bytes_used_ >= it->second);
+  v8_current_memory_bytes_used_ -= it->second;
+
+  int64_t delta = -it->second;
+  v8_current_memory_usage_map_.erase(it);
+
+  return delta;
 }

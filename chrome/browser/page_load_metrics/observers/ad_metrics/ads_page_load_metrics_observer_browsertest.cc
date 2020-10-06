@@ -31,6 +31,7 @@
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
@@ -56,6 +57,8 @@ namespace {
 
 using OriginStatus = FrameData::OriginStatus;
 using OriginStatusWithThrottling = FrameData::OriginStatusWithThrottling;
+
+using FrameTreeNodeId = int;
 
 const char kCrossOriginHistogramId[] =
     "PageLoad.Clients.Ads.FrameCounts.AdFrames.PerFrame."
@@ -92,6 +95,18 @@ const char kMaxAdDensityByHeightHistogramId[] =
 const char kMaxAdDensityRecordedHistogramId[] =
     "PageLoad.Clients.Ads.AdDensity.Recorded";
 
+const char kMemoryPerFrameMaxHistogramId[] =
+    "PageLoad.Clients.Ads.Memory.PerFrame.Max";
+
+const char kMemoryAggregateMaxHistogramId[] =
+    "PageLoad.Clients.Ads.Memory.Aggregate.Max";
+
+const char kMemoryMainFrameMaxHistogramId[] =
+    "PageLoad.Clients.Ads.Memory.MainFrame.Max";
+
+const char kMemoryUpdateCountHistogramId[] =
+    "PageLoad.Clients.Ads.Memory.UpdateCount";
+
 const char kHttpOkResponseHeader[] =
     "HTTP/1.1 200 OK\r\n"
     "Content-Type: text/html; charset=utf-8\r\n"
@@ -112,6 +127,60 @@ void LoadLargeResource(net::test_server::ControllableHttpResponse* response,
 }
 
 }  // namespace
+
+class MemoryMeasurementWaiter
+    : public performance_manager::v8_memory::V8PerFrameMemoryObserverAnySeq {
+ public:
+  MemoryMeasurementWaiter() = default;
+  ~MemoryMeasurementWaiter() override = default;
+
+  void OnV8MemoryMeasurementAvailable(
+      performance_manager::RenderProcessHostId process_id,
+      const performance_manager::v8_memory::V8PerFrameMemoryProcessData&
+          process_data,
+      const performance_manager::v8_memory::V8PerFrameMemoryObserverAnySeq::
+          FrameDataMap& frame_data) override {
+    // Iterate through frames with available measurements.
+    for (const auto& map_pair : frame_data) {
+      content::GlobalFrameRoutingId frame_routing_id = map_pair.first;
+      content::RenderFrameHost* rfh =
+          content::RenderFrameHost::FromID(frame_routing_id);
+
+      // If the measurement is positive and this is a frame that we're waiting
+      // for, then remove the frame node id from the set of ones awaiting
+      // measurement.
+      if (map_pair.second.v8_bytes_used() > 0) {
+        auto it = expected_frame_ids_.find(rfh->GetFrameTreeNodeId());
+        if (it != expected_frame_ids_.end())
+          expected_frame_ids_.erase(it);
+      }
+    }
+
+    QuitIfDone();
+  }
+
+  bool ExpectationSatisfied() const { return expected_frame_ids_.empty(); }
+
+  // Waits for positive memory measurements to be received for frames
+  // corresponding to each FrameTreeNodeId in |expected_frame_ids|.
+  void WaitForPositiveMeasurementsForFramesWithIds(
+      std::vector<FrameTreeNodeId> expected_frame_ids) {
+    expected_frame_ids_.insert(expected_frame_ids.begin(),
+                               expected_frame_ids.end());
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  void QuitIfDone() {
+    if (!quit_closure_.is_null() && ExpectationSatisfied())
+      std::move(quit_closure_).Run();
+  }
+
+ private:
+  std::set<FrameTreeNodeId> expected_frame_ids_;
+  base::OnceClosure quit_closure_;
+};
 
 class AdsPageLoadMetricsObserverBrowserTest
     : public subresource_filter::SubresourceFilterBrowserTest {
@@ -2260,4 +2329,94 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverWithBackgroundingBrowserTest,
   EXPECT_NE(main_frame->GetProcess(), frame1->GetProcess());
   EXPECT_FALSE(main_frame->GetProcess()->IsProcessBackgrounded());
   EXPECT_TRUE(frame1->GetProcess()->IsProcessBackgrounded());
+}
+
+class AdsMemoryMeasurementBrowserTest
+    : public subresource_filter::SubresourceFilterBrowserTest {
+ public:
+  AdsMemoryMeasurementBrowserTest() = default;
+  ~AdsMemoryMeasurementBrowserTest() override = default;
+
+  void SetUp() override {
+    std::map<std::string, std::string> memory_poll_params = {
+        {"MemoryPollInterval", "1"}, {"MemoryPollMode", "eager_for_testing"}};
+    performance_manager::v8_memory::internal::
+        SetEagerMemoryMeasurementEnabledForTesting(true);
+    std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled = {
+        {subresource_filter::kAdTagging, {{}}},
+        {features::kSitePerProcess, {{}}},
+        {features::kV8PerAdFrameMemoryMonitoring, memory_poll_params}};
+    std::vector<base::Feature> disabled = {};
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
+
+    subresource_filter::SubresourceFilterBrowserTest::SetUp();
+  }
+
+  std::vector<FrameTreeNodeId> GetFrameNodeIds(Browser* browser) {
+    content::WebContents* web_contents =
+        browser->tab_strip_model()->GetActiveWebContents();
+    std::vector<int> frame_node_ids = {
+        web_contents->GetMainFrame()->GetFrameTreeNodeId()};
+
+    std::vector<content::RenderFrameHost*> children =
+        web_contents->GetMainFrame()->GetFramesInSubtree();
+
+    for (auto* child : children)
+      frame_node_ids.push_back(child->GetFrameTreeNodeId());
+
+    return frame_node_ids;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  DISALLOW_COPY_AND_ASSIGN(AdsMemoryMeasurementBrowserTest);
+};
+
+IN_PROC_BROWSER_TEST_F(AdsMemoryMeasurementBrowserTest,
+                       SingleAdFrame_MaxMemoryBytesRecorded) {
+  base::HistogramTester histogram_tester;
+
+  // Instantiate a memory request and waiter to wait for a minimum
+  // number of memory measurements to be received.
+  std::unique_ptr<performance_manager::v8_memory::V8PerFrameMemoryRequestAnySeq>
+      memory_request = std::make_unique<
+          performance_manager::v8_memory::V8PerFrameMemoryRequestAnySeq>(
+          base::TimeDelta::FromSeconds(1), MeasurementMode::kEagerForTesting);
+  auto waiter = std::make_unique<MemoryMeasurementWaiter>();
+  memory_request->AddObserver(waiter.get());
+
+  // cross_site_iframe_factory loads URLs like:
+  // http://b.com:40919/cross_site_iframe_factory.html?b()
+  SetRulesetWithRules({subresource_filter::testing::CreateSuffixRule("b()")});
+  const GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+
+  ui_test_utils::NavigateToURL(browser(), main_url);
+
+  // Wait until we get positive memory measurements for each frame.
+  std::vector<FrameTreeNodeId> frame_node_ids = GetFrameNodeIds(browser());
+  waiter->WaitForPositiveMeasurementsForFramesWithIds(frame_node_ids);
+
+  // Navigate away to force the histogram recording.
+  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+
+  histogram_tester.ExpectTotalCount(kMemoryPerFrameMaxHistogramId, 1);
+  EXPECT_GT(
+      histogram_tester.GetAllSamples(kMemoryPerFrameMaxHistogramId)[0].min, 0);
+
+  histogram_tester.ExpectTotalCount(kMemoryAggregateMaxHistogramId, 1);
+  EXPECT_GT(
+      histogram_tester.GetAllSamples(kMemoryAggregateMaxHistogramId)[0].min, 0);
+
+  histogram_tester.ExpectTotalCount(kMemoryMainFrameMaxHistogramId, 1);
+  EXPECT_GT(
+      histogram_tester.GetAllSamples(kMemoryMainFrameMaxHistogramId)[0].min, 0);
+
+  histogram_tester.ExpectTotalCount(kMemoryUpdateCountHistogramId, 1);
+  EXPECT_GE(
+      histogram_tester.GetAllSamples(kMemoryUpdateCountHistogramId)[0].min, 1);
+
+  memory_request->RemoveObserver(waiter.get());
 }

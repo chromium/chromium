@@ -74,7 +74,18 @@ const base::Feature kV8PerAdFrameMemoryMonitoring{
 
 // Minimum time between memory measurements.
 const base::FeatureParam<int> kMemoryPollInterval = {
-    &kV8PerAdFrameMemoryMonitoring, "kMemoryPollInterval", 40};
+    &kV8PerAdFrameMemoryMonitoring, "MemoryPollInterval", 40};
+
+// Available memory measurement modes.
+const base::FeatureParam<MeasurementMode>::Option memory_poll_modes[] = {
+    {MeasurementMode::kLazy, "lazy"},
+    {MeasurementMode::kBounded, "bounded"},
+    {MeasurementMode::kEagerForTesting, "eager_for_testing"}};
+
+// Memory measurement mode.
+const base::FeatureParam<MeasurementMode> kMemoryPollMode = {
+    &kV8PerAdFrameMemoryMonitoring, "MemoryPollMode", MeasurementMode::kLazy,
+    &memory_poll_modes};
 
 }  // namespace features
 
@@ -221,8 +232,7 @@ FrameData* AdsPageLoadMetricsObserver::FrameInstance::GetOwnedFrame() {
   return nullptr;
 }
 
-AdsPageLoadMetricsObserver::AggregateFrameInfo::AggregateFrameInfo()
-    : bytes(0), network_bytes(0), num_frames(0) {}
+AdsPageLoadMetricsObserver::AggregateFrameInfo::AggregateFrameInfo() = default;
 
 AdsPageLoadMetricsObserver::HeavyAdThresholdNoiseProvider::
     HeavyAdThresholdNoiseProvider(bool use_noise)
@@ -380,7 +390,10 @@ void AdsPageLoadMetricsObserver::UpdateAdFrameData(
 
     if (should_ignore_detected_ad &&
         (ad_id == previous_data->root_frame_tree_node_id())) {
-      page_ad_density_tracker_.RemoveRect(ad_id);
+      CleanupDeletedFrame(ad_id, previous_data,
+                          true /* update_density_tracker */,
+                          false /* record_metrics */);
+
       ad_frames_data_.erase(id_and_data);
 
       // Replace the tracked frame with null frame reference. This
@@ -434,11 +447,10 @@ void AdsPageLoadMetricsObserver::UpdateAdFrameData(
       // memory request and add AdsPLMO as an observer. Without any ads, there
       // would be no reason to monitor ad-frame memory usage and
       // |memory_request_| wouldn't be needed.
-      // TODO(cammie): Add parameter to make this request in lazy mode once
-      // the API has been updated.
       memory_request_ = std::make_unique<
           performance_manager::v8_memory::V8PerFrameMemoryRequestAnySeq>(
-          base::TimeDelta::FromSeconds(features::kMemoryPollInterval.Get()));
+          base::TimeDelta::FromSeconds(features::kMemoryPollInterval.Get()),
+          features::kMemoryPollMode.Get());
       memory_request_->AddObserver(this);
     }
 
@@ -673,15 +685,60 @@ void AdsPageLoadMetricsObserver::OnFrameDeleted(
   if (id_and_data == ad_frames_data_.end())
     return;
 
-  // If the root ad frame has been deleted, flush histograms for the frame. All
-  // child frames should be deleted by this point.
-  if (FrameData* ancestor_data = id_and_data->second.GetOwnedFrame()) {
-    RecordPerFrameMetrics(*ancestor_data, GetDelegate().GetPageUkmSourceId());
-    page_ad_density_tracker_.RemoveRect(id_and_data->first);
+  FrameData* ancestor_data = nullptr;
+  bool is_root_ad = false;
+
+  if ((ancestor_data = id_and_data->second.GetOwnedFrame()))
+    is_root_ad = true;
+  else
+    ancestor_data = id_and_data->second.Get();
+
+  if (ancestor_data) {
+    // If an ad frame has been deleted, update the aggregate memory usage by
+    // removing the entry for this frame.
+    // Moreover, if the root ad frame has been deleted, all child frames should
+    // be deleted by this point, so flush histograms for the frame.
+    CleanupDeletedFrame(id_and_data->first, ancestor_data,
+                        is_root_ad /* update_density_tracker */,
+                        is_root_ad /* record_metrics */);
   }
 
   // Delete the frame data.
   ad_frames_data_.erase(id_and_data);
+}
+
+void AdsPageLoadMetricsObserver::OnV8MemoryMeasurementAvailable(
+    performance_manager::RenderProcessHostId render_process_host_id,
+    const performance_manager::v8_memory::V8PerFrameMemoryProcessData&
+        process_data,
+    const V8PerFrameMemoryObserverAnySeq::FrameDataMap& frame_data) {
+  num_memory_updates_++;
+
+  // Iterate through frames with available measurements.
+  for (const auto& map_pair : frame_data) {
+    content::GlobalFrameRoutingId frame_routing_id = map_pair.first;
+    content::RenderFrameHost* rfh =
+        content::RenderFrameHost::FromID(frame_routing_id);
+
+    if (!rfh) {
+      num_missed_memory_measurements_++;
+      continue;
+    }
+
+    uint64_t bytes_used = map_pair.second.v8_bytes_used();
+
+    FrameTreeNodeId frame_node_id = rfh->GetFrameTreeNodeId();
+    FrameData* ad_frame_data = FindFrameData(frame_node_id);
+
+    if (ad_frame_data) {
+      int64_t delta =
+          ad_frame_data->UpdateMemoryUsage(frame_node_id, bytes_used);
+      UpdateAggregateMemoryUsage(delta, ad_frame_data->visibility());
+    } else if (!rfh->GetParent()) {
+      // |rfh| is the main frame.
+      main_frame_data_->UpdateMemoryUsage(frame_node_id, bytes_used);
+    }
+  }
 }
 
 void AdsPageLoadMetricsObserver::OnAdSubframeDetected(
@@ -975,6 +1032,11 @@ void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForAdTagging(
         aggregate_ad_info.network_bytes * 100 / aggregate_ad_info.bytes);
   }
 
+  if (memory_request_) {
+    ADS_HISTOGRAM("Memory.Aggregate.Max", PAGE_BYTES_HISTOGRAM, visibility,
+                  aggregate_ad_info.v8_max_memory_bytes);
+  }
+
   // Only record same origin and main frame totals for the AnyVisibility suffix
   // as these numbers do not change for different visibility types.
   if (visibility != FrameData::FrameVisibility::kAnyVisibility)
@@ -988,6 +1050,15 @@ void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForAdTagging(
                 main_frame_data_->ad_network_bytes());
   ADS_HISTOGRAM("Bytes.MainFrame.Ads.Total2", PAGE_BYTES_HISTOGRAM, visibility,
                 main_frame_data_->ad_bytes());
+  if (memory_request_) {
+    UMA_HISTOGRAM_COUNTS_1000("PageLoad.Clients.Ads.Memory.MainFrame.Max",
+                              main_frame_data_->v8_max_memory_bytes_used());
+    UMA_HISTOGRAM_COUNTS_1000("PageLoad.Clients.Ads.Memory.UpdateCount",
+                              num_memory_updates_);
+    UMA_HISTOGRAM_COUNTS_1000(
+        "PageLoad.Clients.Ads.Memory.MissedMeasurementCount",
+        num_missed_memory_measurements_);
+  }
 }
 
 void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForHeavyAds() {
@@ -1095,6 +1166,10 @@ void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForAdTagging(
           "Bytes.AdFrames.PerFrame.PercentNetwork2", UMA_HISTOGRAM_PERCENTAGE,
           visibility,
           ad_frame_data.network_bytes() * 100 / ad_frame_data.bytes());
+    }
+    if (memory_request_) {
+      ADS_HISTOGRAM("Memory.PerFrame.Max", PAGE_BYTES_HISTOGRAM, visibility,
+                    ad_frame_data.v8_max_memory_bytes_used());
     }
     ADS_HISTOGRAM("FrameCounts.AdFrames.PerFrame.OriginStatus",
                   UMA_HISTOGRAM_ENUMERATION, visibility,
@@ -1327,4 +1402,46 @@ HeavyAdBlocklist* AdsPageLoadMetricsObserver::GetHeavyAdBlocklist() {
     return nullptr;
 
   return heavy_ad_service->heavy_ad_blocklist();
+}
+
+void AdsPageLoadMetricsObserver::UpdateAggregateMemoryUsage(
+    int64_t delta_bytes,
+    FrameData::FrameVisibility frame_visibility) {
+  // For both the given |frame_visibility| and kAnyVisibility, update the
+  // current aggregate memory usage by adding the needed delta, and then
+  // if the current aggregate usage is greater than the recorded
+  // max aggregate usage, update the max aggregate usage.
+  for (const auto visibility :
+       {FrameData::FrameVisibility::kAnyVisibility, frame_visibility}) {
+    aggregate_ad_info_by_visibility_[static_cast<int>(visibility)]
+        .v8_current_memory_bytes += delta_bytes;
+
+    if (aggregate_ad_info_by_visibility_[static_cast<int>(visibility)]
+            .v8_current_memory_bytes >
+        aggregate_ad_info_by_visibility_[static_cast<int>(visibility)]
+            .v8_max_memory_bytes) {
+      aggregate_ad_info_by_visibility_[static_cast<int>(visibility)]
+          .v8_max_memory_bytes =
+          aggregate_ad_info_by_visibility_[static_cast<int>(visibility)]
+              .v8_current_memory_bytes;
+    }
+  }
+}
+
+void AdsPageLoadMetricsObserver::CleanupDeletedFrame(
+    FrameTreeNodeId id,
+    FrameData* frame_data,
+    bool update_density_tracker,
+    bool record_metrics) {
+  if (!frame_data)
+    return;
+
+  int64_t delta_bytes = frame_data->OnFrameDeleted(id);
+  UpdateAggregateMemoryUsage(delta_bytes, frame_data->visibility());
+
+  if (record_metrics)
+    RecordPerFrameMetrics(*frame_data, GetDelegate().GetPageUkmSourceId());
+
+  if (update_density_tracker)
+    page_ad_density_tracker_.RemoveRect(id);
 }

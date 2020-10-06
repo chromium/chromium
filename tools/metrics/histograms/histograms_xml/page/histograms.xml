@@ -226,6 +226,48 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.Clients.Ads.Memory.MainFrame.Max" units="KiB"
+    expires_after="2021-01-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <summary>
+    The maximum reported number of bytes of memory used by V8 by the main frame
+    in this pageload.
+
+    Only recorded if the page has at least one identified ad frame. Recorded in
+    PageLoadMetrics when the page is destroyed. An ad frame consists of the
+    identified ad frame and all of its children (which may also be ads, but are
+    counted as part of the ancestor ad frame).
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Clients.Ads.Memory.MissedMeasurementCount"
+    units="count" expires_after="2021-01-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <summary>
+    The number of V8 per-frame memory measurements received by
+    AdsPageLoadMetricsObserver after the corresponding RenderFrameHost has
+    already been destroyed. Only recorded if the page has at least one
+    identified ad frame. Recorded in PageLoadMetrics when the page is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Clients.Ads.Memory.UpdateCount" units="count"
+    expires_after="2021-01-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <summary>
+    The number of V8 memory measurement updates received by
+    AdsPageLoadMetricsObserver per pageload. Only recorded if the page has at
+    least one identified ad frame. Recorded in PageLoadMetrics when the page is
+    destroyed.
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.Clients.Ads.Resources.Bytes.Ads2" units="KB"
     expires_after="2021-09-05">
   <owner>johnidel@chromium.org</owner>
@@ -1753,6 +1795,40 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     occurred in the main frame after the page is restored from the back-forward
     cache. Recorded when the user navigates away or closes the page after the
     page was restored from back-forward cache.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Memory.Aggregate.Max" units="KiB"
+    expires_after="2021-01-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <summary>
+    The maximum reported aggregate number of bytes of memory used by V8 by ad
+    frames in this pageload. The value recorded is the maximum simultaneous
+    usage by ad frames during this pageload.
+
+    Only recorded if the page has at least one identified ad frame. Recorded in
+    PageLoadMetrics when the page is destroyed. An ad frame consists of the
+    identified ad frame and all of its children (which may also be ads, but are
+    counted as part of the ancestor ad frame).
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Memory.PerFrame.Max" units="KiB"
+    expires_after="2021-01-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <summary>
+    The maximum reported number of bytes of memory used by V8 by frames in the
+    ad frame tree in this pageload. The value recorded is the maximum
+    simultaneous usage by ad frames in this ad frame tree.
+
+    Only recorded if the page has at least one identified ad frame. Recorded in
+    PageLoadMetrics when the page is destroyed. An ad frame consists of the
+    identified ad frame and all of its children (which may also be ads, but are
+    counted as part of the ancestor ad frame).
   </summary>
 </histogram>
 
