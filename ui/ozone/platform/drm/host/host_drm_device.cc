@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task_runner.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "ui/display/types/display_snapshot.h"
@@ -139,7 +140,12 @@ void HostDrmDevice::GpuConfigureNativeDisplays(
     base::flat_map<int64_t, bool> dummy_statuses;
     for (const auto& config : config_requests)
       dummy_statuses.insert(std::make_pair(config.id, false));
-    std::move(callback).Run(dummy_statuses);
+
+    // Post this task to protect the callstack from accumulating too many
+    // recursive calls to ConfigureDisplaysTask::Run() in cases in which the GPU
+    // process crashes repeatedly.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), dummy_statuses));
   }
 }
 

@@ -76,17 +76,6 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
   // task is done and the task status.
   ResponseCallback callback_;
 
-  // Stores the indexes of pending requests in |requests_|.
-  base::queue<size_t> pending_request_indexes_;
-
-  // Used to keep make sure that synchronous executions do not recurse during
-  // the configuration.
-  bool is_configuring_;
-
-  // Number of display configured. This is used to check whether there are
-  // pending requests.
-  size_t num_displays_configured_;
-
   Status task_status_;
 
   base::WeakPtrFactory<ConfigureDisplaysTask> weak_ptr_factory_{this};

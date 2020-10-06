@@ -96,11 +96,7 @@ ConfigureDisplaysTask::ConfigureDisplaysTask(
     : delegate_(delegate),
       requests_(requests),
       callback_(std::move(callback)),
-      is_configuring_(false),
-      num_displays_configured_(0),
       task_status_(SUCCESS) {
-  for (size_t i = 0; i < requests_.size(); ++i)
-    pending_request_indexes_.push(i);
   delegate_->AddObserver(this);
 }
 
@@ -109,81 +105,46 @@ ConfigureDisplaysTask::~ConfigureDisplaysTask() {
 }
 
 void ConfigureDisplaysTask::Run() {
-  // Synchronous configurators will recursively call Run(). In that case just
-  // defer their call to the next iteration in the while-loop. This is done to
-  // guard against stack overflows if the display has a large list of broken
-  // modes.
-  if (is_configuring_)
-    return;
+  DCHECK(!requests_.empty());
 
-  {
-    base::AutoReset<bool> recursivity_guard(&is_configuring_, true);
-    // The callback passed to delegate_->Configure() could be run synchronously
-    // or async. If it runs synchronously and any display fails and tries to
-    // reconfigure, new requests will get added to |pending_request_indexes_|,
-    // then another attempt to reconfigure will recursively call Run(). However
-    // |is_configuring_| will block the run due to the reason mentioned above.
-    // Hence, after we configure the first set of pending requests (loop over
-    // |current_pending_requests_count|), we check again if the new requests
-    // were added (!pending_request_indexes_.empty()).
-    while (!pending_request_indexes_.empty()) {
-      std::vector<display::DisplayConfigurationParams> config_requests;
-      size_t current_pending_requests_count = pending_request_indexes_.size();
-      for (size_t i = 0; i < current_pending_requests_count; ++i) {
-        size_t index = pending_request_indexes_.front();
-        DisplayConfigureRequest* request = &requests_[index];
-        pending_request_indexes_.pop();
+  std::vector<display::DisplayConfigurationParams> config_requests;
+  for (const auto& request : requests_) {
+    config_requests.emplace_back(request.display->display_id(), request.origin,
+                                 request.mode);
 
-        const bool internal =
-            request->display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL;
-        base::UmaHistogramExactLinear(
-            internal ? "ConfigureDisplays.Internal.Modeset.Resolution"
-                     : "ConfigureDisplays.External.Modeset.Resolution",
-            ComputeDisplayResolutionEnum(request->mode),
-            base::size(kDisplayResolutionSamples) *
-                    base::size(kDisplayResolutionSamples) +
-                2);
-        base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
-            internal ? "ConfigureDisplays.Internal.Modeset.RefreshRate"
-                     : "ConfigureDisplays.External.Modeset.RefreshRate",
-            1, 240, 18, base::HistogramBase::kUmaTargetedHistogramFlag);
-        histogram->Add(request->mode ? std::round(request->mode->refresh_rate())
-                                     : 0);
-
-        display::DisplayConfigurationParams display_config_params(
-            request->display->display_id(), request->origin, request->mode);
-        config_requests.push_back(std::move(display_config_params));
-      }
-      if (!config_requests.empty()) {
-        delegate_->Configure(
-            config_requests,
-            base::BindOnce(&ConfigureDisplaysTask::OnConfigured,
-                           weak_ptr_factory_.GetWeakPtr()));
-      }
-    }
+    const bool internal =
+        request.display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL;
+    base::UmaHistogramExactLinear(
+        internal ? "ConfigureDisplays.Internal.Modeset.Resolution"
+                 : "ConfigureDisplays.External.Modeset.Resolution",
+        ComputeDisplayResolutionEnum(request.mode),
+        base::size(kDisplayResolutionSamples) *
+                base::size(kDisplayResolutionSamples) +
+            2);
+    base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
+        internal ? "ConfigureDisplays.Internal.Modeset.RefreshRate"
+                 : "ConfigureDisplays.External.Modeset.RefreshRate",
+        1, 240, 18, base::HistogramBase::kUmaTargetedHistogramFlag);
+    histogram->Add(request.mode ? std::round(request.mode->refresh_rate()) : 0);
   }
 
-  // Nothing should be modified after the |callback_| is called since the
-  // task may be deleted in the callback.
-  if (num_displays_configured_ == requests_.size())
-    std::move(callback_).Run(task_status_);
+  delegate_->Configure(config_requests,
+                       base::BindOnce(&ConfigureDisplaysTask::OnConfigured,
+                                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ConfigureDisplaysTask::OnConfigurationChanged() {}
 
 void ConfigureDisplaysTask::OnDisplaySnapshotsInvalidated() {
-  base::queue<size_t> empty_queue;
-  pending_request_indexes_.swap(empty_queue);
   // From now on, don't access |requests_[index]->display|; they're invalid.
   task_status_ = ERROR;
   weak_ptr_factory_.InvalidateWeakPtrs();
-  Run();
+  std::move(callback_).Run(task_status_);
 }
 
 void ConfigureDisplaysTask::OnConfigured(
     const base::flat_map<int64_t, bool>& statuses) {
   bool config_success = true;
-
   // Check if all displays are successfully configured.
   for (const auto& status : statuses) {
     int64_t display_id = status.first;
@@ -206,11 +167,11 @@ void ConfigureDisplaysTask::OnConfigured(
         display_success);
   }
 
+  // Update displays upon success or prep |requests_| for reconfiguration.
   if (config_success) {
-    for (const auto& status : statuses) {
-      auto request = GetRequestForDisplayId(status.first, requests_);
-      request->display->set_current_mode(request->mode);
-      request->display->set_origin(request->origin);
+    for (auto& request : requests_) {
+      request.display->set_current_mode(request.mode);
+      request.display->set_origin(request.origin);
     }
   } else {
     bool should_reconfigure = false;
@@ -230,37 +191,25 @@ void ConfigureDisplaysTask::OnConfigured(
         }
       }
     }
-    // When reconfiguring, reconfigure all displays, not only the failing ones
-    // as they could potentially depend on each other.
     if (should_reconfigure) {
-      for (const auto& status : statuses) {
-        auto const_iterator = GetRequestForDisplayId(status.first, requests_);
-        auto request = requests_.erase(const_iterator, const_iterator);
-        size_t index = std::distance(requests_.begin(), request);
-        pending_request_indexes_.push(index);
-      }
-      if (task_status_ == SUCCESS)
-        task_status_ = PARTIAL_SUCCESS;
+      task_status_ = PARTIAL_SUCCESS;
       Run();
       return;
     }
   }
 
-  // If no reconfigurations are happening, update the final state.
-  for (const auto& status : statuses) {
-    auto request = GetRequestForDisplayId(status.first, requests_);
-    bool internal =
-        request->display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL;
+  // Update the final state.
+  for (auto& request : requests_) {
+    bool internal = request.display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL;
     base::UmaHistogramBoolean(
         internal ? "ConfigureDisplays.Internal.Modeset.FinalStatus"
                  : "ConfigureDisplays.External.Modeset.FinalStatus",
         config_success);
   }
 
-  num_displays_configured_ += statuses.size();
   if (!config_success)
     task_status_ = ERROR;
-  Run();
+  std::move(callback_).Run(task_status_);
 }
 
 }  // namespace display
