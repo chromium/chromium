@@ -101,6 +101,11 @@ void FontAccessManagerImpl::EnumerateLocalFonts(
 void FontAccessManagerImpl::DidRequestPermission(
     EnumerateLocalFontsCallback callback,
     blink::mojom::PermissionStatus status) {
+#if !defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
+  std::move(callback).Run(blink::mojom::FontEnumerationStatus::kUnimplemented,
+                          base::ReadOnlySharedMemoryRegion());
+  return;
+#else
   if (status != blink::mojom::PermissionStatus::GRANTED) {
     std::move(callback).Run(
         blink::mojom::FontEnumerationStatus::kPermissionDenied,
@@ -110,7 +115,6 @@ void FontAccessManagerImpl::DidRequestPermission(
 
 // Per-platform delegation for obtaining cached font enumeration data occurs
 // here, after the permission has been granted.
-#if defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
   ipc_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(
                      [](EnumerateLocalFontsCallback callback,
@@ -120,9 +124,6 @@ void FontAccessManagerImpl::DidRequestPermission(
                                results_task_runner, std::move(callback));
                      },
                      std::move(callback), results_task_runner_));
-#else
-  std::move(callback).Run(blink::mojom::FontEnumerationStatus::kUnimplemented,
-                          base::ReadOnlySharedMemoryRegion());
 #endif
 }
 
