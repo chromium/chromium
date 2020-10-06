@@ -419,6 +419,15 @@ external/wpt/media-source/mediasource-invalid-codec.html [ Skip ]
 
 # No browsers implemented the spec behavior, not web compatible, no consensus.
 # https://github.com/w3c/csswg-drafts/issues/1518
+external/wpt/css/CSS2/text/letter-spacing-079.xht [ Skip ]
+external/wpt/css/CSS2/text/letter-spacing-080.xht [ Skip ]
+external/wpt/css/css-text/letter-spacing/letter-spacing-200.html [ Skip ]
+external/wpt/css/css-text/letter-spacing/letter-spacing-201.html [ Skip ]
+external/wpt/css/css-text/letter-spacing/letter-spacing-202.html [ Skip ]
+external/wpt/css/css-text/letter-spacing/letter-spacing-203.html [ Skip ]
+external/wpt/css/css-text/letter-spacing/letter-spacing-204.html [ Skip ]
+external/wpt/css/css-text/letter-spacing/letter-spacing-205.html [ Skip ]
+external/wpt/css/css-text/letter-spacing/letter-spacing-206.html [ Skip ]
 external/wpt/css/css-text/letter-spacing/letter-spacing-bidi-003.xht [ Skip ]
 external/wpt/css/css-text/letter-spacing/letter-spacing-bidi-004.xht [ Skip ]
 external/wpt/css/css-text/letter-spacing/letter-spacing-bidi-005.xht [ Skip ]
