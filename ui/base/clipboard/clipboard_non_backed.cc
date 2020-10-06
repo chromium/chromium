@@ -242,11 +242,10 @@ class ClipboardInternal {
 
   bool IsReadAllowed(const ClipboardDataEndpoint* data_dst) const {
     ClipboardDlpController* dlp_controller = ClipboardDlpController::Get();
-    if (!dlp_controller)
-      return true;
     auto* data = GetData();
-    return dlp_controller->IsDataReadAllowed(data ? data->source() : nullptr,
-                                             data_dst);
+    if (!dlp_controller || !data)
+      return true;
+    return dlp_controller->IsDataReadAllowed(data->source(), data_dst);
   }
 
  private:
@@ -587,8 +586,10 @@ void ClipboardNonBacked::ReadImage(ClipboardBuffer buffer,
                                    ReadImageCallback callback) const {
   DCHECK(CalledOnValidThread());
 
-  if (!clipboard_internal_->IsReadAllowed(data_dst))
+  if (!clipboard_internal_->IsReadAllowed(data_dst)) {
+    std::move(callback).Run(SkBitmap());
     return;
+  }
 
   RecordRead(ClipboardFormatMetric::kImage);
   std::move(callback).Run(clipboard_internal_->ReadImage());
