@@ -1472,6 +1472,24 @@ AutotestPrivateGetVisibleNotificationsFunction::Run() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateRemoveAllNotificationsFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateRemoveAllNotificationsFunction::
+    AutotestPrivateRemoveAllNotificationsFunction() = default;
+AutotestPrivateRemoveAllNotificationsFunction::
+    ~AutotestPrivateRemoveAllNotificationsFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateRemoveAllNotificationsFunction::Run() {
+  DVLOG(1) << "AutotestPrivateRemoveAllNotificationsFunction";
+
+  message_center::MessageCenter::Get()->RemoveAllNotifications(
+      /*by_user=*/false, message_center::MessageCenter::RemoveType::ALL);
+  return RespondNow(NoArguments());
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // AutotestPrivateGetArcStartTimeFunction
 ///////////////////////////////////////////////////////////////////////////////
 

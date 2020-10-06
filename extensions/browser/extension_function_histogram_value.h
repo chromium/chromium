@@ -1578,6 +1578,7 @@ enum HistogramValue {
   TABS_UNGROUP = 1515,
   FILEMANAGERPRIVATEINTERNAL_GETDRIVETHUMBNAIL = 1516,
   FILEMANAGERPRIVATEINTERNAL_GETPDFTHUMBNAIL = 1517,
+  AUTOTESTPRIVATE_REMOVEALLNOTIFICATIONS = 1518,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

@@ -211,6 +211,17 @@ class AutotestPrivateGetVisibleNotificationsFunction
   ResponseAction Run() override;
 };
 
+class AutotestPrivateRemoveAllNotificationsFunction : public ExtensionFunction {
+ public:
+  AutotestPrivateRemoveAllNotificationsFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.removeAllNotifications",
+                             AUTOTESTPRIVATE_REMOVEALLNOTIFICATIONS)
+
+ private:
+  ~AutotestPrivateRemoveAllNotificationsFunction() override;
+  ResponseAction Run() override;
+};
+
 class AutotestPrivateGetPlayStoreStateFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("autotestPrivate.getPlayStoreState",

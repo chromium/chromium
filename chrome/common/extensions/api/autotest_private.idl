@@ -651,6 +651,9 @@ namespace autotestPrivate {
     // Get visible notifications on the system.
     static void getVisibleNotifications(NotificationArrayCallback callback);
 
+    // Remove all notifications.
+    static void removeAllNotifications(VoidCallback callback);
+
     // Get ARC start time.
     static void getArcStartTime(ArcStartTimeCallback callback);
 

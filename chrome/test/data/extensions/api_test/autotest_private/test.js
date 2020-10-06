@@ -146,6 +146,27 @@ var defaultTests = [
     chrome.autotestPrivate.getVisibleNotifications(function(){});
     chrome.test.succeed();
   },
+  function removeAllNotifications() {
+    // Image data URL of a small red dot to use for the notification icon.
+    var red_dot = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA' +
+        'AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO' +
+        '9TXL0Y4OHwAAAABJRU5ErkJggg=='
+    var opts =
+        {type: 'basic', title: 'test', message: 'test', iconUrl: red_dot};
+
+    chrome.notifications.create('test', opts, function() {
+      chrome.autotestPrivate.getVisibleNotifications(function(notifications) {
+        chrome.test.assertTrue(notifications.length > 0);
+        chrome.autotestPrivate.removeAllNotifications(function() {
+          chrome.autotestPrivate.getVisibleNotifications(function(
+              notifications) {
+            chrome.test.assertEq(notifications.length, 0);
+            chrome.test.succeed();
+          });
+        });
+      });
+    });
+  },
   // In this test, ARC is available but not managed and not enabled by default.
   function getPlayStoreState() {
     chrome.autotestPrivate.getPlayStoreState(function(state) {
