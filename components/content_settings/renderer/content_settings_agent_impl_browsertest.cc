@@ -563,43 +563,6 @@ TEST_F(ContentSettingsAgentImplBrowserTest,
   EXPECT_TRUE(agent->AllowScript(true));
 }
 
-TEST_F(ContentSettingsAgentImplBrowserTest, ContentSettingsInterstitialPages) {
-  MockContentSettingsAgentImpl mock_agent(view_->GetMainRenderFrame());
-  // Block scripts.
-  RendererContentSettingRules content_setting_rules;
-  ContentSettingsForOneType& script_setting_rules =
-      content_setting_rules.script_rules;
-  script_setting_rules.push_back(ContentSettingPatternSource(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      base::Value::FromUniquePtrValue(
-          content_settings::ContentSettingToValue(CONTENT_SETTING_BLOCK)),
-      std::string(), false));
-  // Block images.
-  ContentSettingsForOneType& image_setting_rules =
-      content_setting_rules.image_rules;
-  image_setting_rules.push_back(ContentSettingPatternSource(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      base::Value::FromUniquePtrValue(
-          content_settings::ContentSettingToValue(CONTENT_SETTING_BLOCK)),
-      std::string(), false));
-
-  ContentSettingsAgentImpl* agent =
-      ContentSettingsAgentImpl::Get(view_->GetMainRenderFrame());
-  agent->SetContentSettingRules(&content_setting_rules);
-  agent->SetAsInterstitial();
-
-  // Load a page which contains a script.
-  LoadHTML(kScriptHtml);
-
-  // Verify that the script was allowed.
-  EXPECT_EQ(0, mock_agent.on_content_blocked_count());
-
-  // Verify that images are allowed.
-  EXPECT_TRUE(agent->AllowImage(true, mock_agent.image_url()));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(0, mock_agent.on_content_blocked_count());
-}
-
 TEST_F(ContentSettingsAgentImplBrowserTest, MixedAutoupgradesDisabledByRules) {
   MockContentSettingsAgentImpl mock_agent(view_->GetMainRenderFrame());
 

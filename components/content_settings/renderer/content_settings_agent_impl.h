@@ -132,7 +132,6 @@ class ContentSettingsAgentImpl
 
   // mojom::ContentSettingsAgent:
   void SetAllowRunningInsecureContent() override;
-  void SetAsInterstitial() override;
   void SetDisabledMixedContentUpgrades() override;
 
   void OnContentSettingsAgentRequest(
@@ -170,7 +169,6 @@ class ContentSettingsAgentImpl
   // Caches the result of AllowScript.
   base::flat_map<blink::WebFrame*, bool> cached_script_permissions_;
 
-  bool is_interstitial_page_ = false;
   bool mixed_content_autoupgrades_disabled_ = false;
 
   // If true, IsAllowlistedForContentSettings will always return true.

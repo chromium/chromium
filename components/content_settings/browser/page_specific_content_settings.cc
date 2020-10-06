@@ -213,18 +213,6 @@ void PageSpecificContentSettings::WebContentsHandler::OnServiceWorkerAccessed(
     tscs->OnServiceWorkerAccessed(scope, allowed);
 }
 
-void PageSpecificContentSettings::WebContentsHandler::
-    RenderFrameForInterstitialPageCreated(
-        content::RenderFrameHost* render_frame_host) {
-  // We want to tell the renderer-side code to ignore content settings for this
-  // page.
-  mojo::AssociatedRemote<content_settings::mojom::ContentSettingsAgent>
-      content_settings_agent;
-  render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
-      &content_settings_agent);
-  content_settings_agent->SetAsInterstitial();
-}
-
 void PageSpecificContentSettings::WebContentsHandler::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!WillNavigationCreateNewPageSpecificContentSettingsOnCommit(

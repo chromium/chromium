@@ -453,8 +453,6 @@ class PageSpecificContentSettings
         content::RenderFrameHost* rfh);
 
     // content::WebContentsObserver overrides.
-    void RenderFrameForInterstitialPageCreated(
-        content::RenderFrameHost* render_frame_host) override;
     void DidStartNavigation(
         content::NavigationHandle* navigation_handle) override;
     void ReadyToCommitNavigation(

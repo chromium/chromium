@@ -112,10 +112,6 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // interstitial.
   virtual void RenderViewCreated(RenderViewHost* render_view_host) {}
 
-  // Called for every RenderFrameHost that's created for an interstitial.
-  virtual void RenderFrameForInterstitialPageCreated(
-      RenderFrameHost* render_frame_host) {}
-
   // This method is invoked when the RenderView of the current RenderViewHost
   // is ready, e.g. because we recreated it after a crash.
   virtual void RenderViewReady() {}

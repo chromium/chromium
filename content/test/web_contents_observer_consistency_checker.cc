@@ -114,11 +114,6 @@ void WebContentsObserverConsistencyChecker::RenderFrameDeleted(
     CHECK_NE(id.render_frame_host, render_frame_host);
 }
 
-void WebContentsObserverConsistencyChecker::
-    RenderFrameForInterstitialPageCreated(RenderFrameHost* render_frame_host) {
-  // TODO(nick): Record this.
-}
-
 void WebContentsObserverConsistencyChecker::RenderFrameHostChanged(
     RenderFrameHost* old_host,
     RenderFrameHost* new_host) {
