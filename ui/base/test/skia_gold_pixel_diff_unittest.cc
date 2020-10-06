@@ -175,7 +175,7 @@ TEST_F(SkiaGoldPixelDiffTest, DefaultCorpus) {
       mock_pixel,
       LaunchProcess(AllOf(Property(
           &base::CommandLine::GetCommandLineString,
-          HasSubstr(FILE_PATH_LITERAL("source_type:gtest-pixeltests"))))))
+          HasSubstr(FILE_PATH_LITERAL("gtest-pixeltests"))))))
       .Times(1);
   mock_pixel.Init("Prefix");
   bool ret = mock_pixel.CompareScreenshot("test", bitmap);
@@ -194,7 +194,7 @@ TEST_F(SkiaGoldPixelDiffTest, ExplicitCorpus) {
   EXPECT_CALL(mock_pixel,
               LaunchProcess(AllOf(Property(
                   &base::CommandLine::GetCommandLineString,
-                  HasSubstr(FILE_PATH_LITERAL("source_type:corpus"))))))
+                  HasSubstr(FILE_PATH_LITERAL("corpus"))))))
       .Times(1);
   mock_pixel.Init("Prefix", "corpus");
   bool ret = mock_pixel.CompareScreenshot("test", bitmap);

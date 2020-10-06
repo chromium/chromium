@@ -67,11 +67,6 @@ void AppendArgsJustAfterProgram(base::CommandLine& cmd,
                                 base::CommandLine::StringVector args) {
   base::CommandLine::StringVector& argv =
       const_cast<base::CommandLine::StringVector&>(cmd.argv());
-  int args_size = args.size();
-  argv.resize(argv.size() + args_size);
-  for (int i = argv.size() - args_size; i > 1; --i) {
-    argv[i + args_size - 1] = argv[i - 1];
-  }
   argv.insert(argv.begin() + 1, args.begin(), args.end());
 }
 
@@ -238,7 +233,7 @@ bool SkiaGoldPixelDiff::UploadToSkiaGoldServer(
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::CommandLine cmd(GetAbsoluteSrcRelativePath(kSkiaGoldCtl));
   cmd.AppendSwitchASCII("test-name", remote_golden_image_name);
-  cmd.AppendSwitchASCII("add-test-key", "source_type:" + corpus_);
+  cmd.AppendSwitchASCII("corpus", corpus_);
   cmd.AppendSwitchPath("png-file", local_file_path);
   cmd.AppendSwitchPath("work-dir", working_dir_);
 
