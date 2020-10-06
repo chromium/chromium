@@ -79,38 +79,26 @@ Polymer({
     this.fire('certificates-error', {error: error, anchor: this.$.dots});
   },
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onViewTap_(event) {
+  /** @private */
+  onViewClick_() {
     this.closePopupMenu_();
     this.browserProxy_.viewCertificate(this.model.id);
   },
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onEditTap_(event) {
+  /** @private */
+  onEditClick_() {
     this.closePopupMenu_();
     this.dispatchCertificateActionEvent_(CertificateAction.EDIT);
   },
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onDeleteTap_(event) {
+  /** @private */
+  onDeleteClick_() {
     this.closePopupMenu_();
     this.dispatchCertificateActionEvent_(CertificateAction.DELETE);
   },
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onExportTap_(event) {
+  /** @private */
+  onExportClick_() {
     this.closePopupMenu_();
     if (this.certificateType === CertificateType.PERSONAL) {
       this.browserProxy_.exportPersonalCertificate(this.model.id).then(() => {
@@ -158,7 +146,7 @@ Polymer({
   },
 
   /** @private */
-  onDotsTap_() {
+  onDotsClick_() {
     const actionMenu = /** @type {!CrActionMenuElement} */ (this.$.menu.get());
     actionMenu.showAt(this.$.dots);
   },

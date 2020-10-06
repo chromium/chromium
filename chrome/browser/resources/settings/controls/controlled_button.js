@@ -52,7 +52,7 @@ Polymer({
    * @param {!Event} e
    * @private
    */
-  onIndicatorTap_(e) {
+  onIndicatorClick_(e) {
     // Disallow <controlled-button on-click="..."> when controlled.
     e.preventDefault();
     e.stopPropagation();

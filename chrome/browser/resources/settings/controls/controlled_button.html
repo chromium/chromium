@@ -18,14 +18,14 @@
       }
 
       :host([enforced_]) {
-        /* Disable pointer events for this whole element, as outer on-tap gets
-         * triggered when clicking/tapping anywhere in :host. */
+        /* Disable pointer events for this whole element, as outer on-click gets
+         * triggered when clicking anywhere in :host. */
         pointer-events: none;
       }
 
       cr-policy-pref-indicator {
         /* Enable pointer events for the indicator so :hover works. Disable
-         * clicks/taps via onIndicatorTap_ so outer on-tap doesn't trigger. */
+         * clicks via onIndicatorClick_ so outer on-click doesn't trigger. */
         pointer-events: all;
       }
 
@@ -47,7 +47,7 @@
     </cr-button>
 
     <template is="dom-if" if="[[hasPrefPolicyIndicator(pref.*)]]" restamp>
-      <cr-policy-pref-indicator pref="[[pref]]" on-click="onIndicatorTap_"
+      <cr-policy-pref-indicator pref="[[pref]]" on-click="onIndicatorClick_"
           icon-aria-label="[[label]]">
       </cr-policy-pref-indicator>
     </template>

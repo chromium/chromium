@@ -22,28 +22,28 @@
       <cr-policy-indicator indicator-type="[[getPolicyIndicatorType_(model)]]">
       </cr-policy-indicator>
       <cr-icon-button class="icon-more-vert" id="dots"
-          title="[[i18n('moreActions')]]" on-click="onDotsTap_">
+          title="[[i18n('moreActions')]]" on-click="onDotsClick_">
       </cr-icon-button>
       <cr-lazy-render id="menu">
         <template>
           <cr-action-menu role-description="[[i18n('menu')]]">
             <button class="dropdown-item" id="view"
-                on-tap="onViewTap_">
+                on-click="onViewClick_">
               [[i18n('certificateManagerView')]]
             </button>
             <button class="dropdown-item" id="edit"
                 hidden$="[[!canEdit_(model)]]"
-                on-tap="onEditTap_">
+                on-click="onEditClick_">
               [[i18n('edit')]]
             </button>
             <button class="dropdown-item" id="export"
                 hidden$="[[!canExport_(certificateType, model)]]"
-                on-tap="onExportTap_">
+                on-click="onExportClick_">
               [[i18n('certificateManagerExport')]]
             </button>
             <button class="dropdown-item" id="delete"
                 hidden$="[[!canDelete_(model)]]"
-                on-tap="onDeleteTap_">
+                on-click="onDeleteClick_">
               [[i18n('certificateManagerDelete')]]
             </button>
           </cr-action-menu>
