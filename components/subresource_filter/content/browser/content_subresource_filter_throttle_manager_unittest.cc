@@ -175,10 +175,44 @@ class MockPageStateActivationThrottle : public content::NavigationThrottle {
   DISALLOW_COPY_AND_ASSIGN(MockPageStateActivationThrottle);
 };
 
+class TestSubresourceFilterClient : public SubresourceFilterClient {
+ public:
+  TestSubresourceFilterClient() = default;
+  ~TestSubresourceFilterClient() override = default;
+
+  // SubresourceFilterClient:
+  void ShowNotification() override { ++disallowed_notification_count_; }
+  mojom::ActivationLevel OnPageActivationComputed(
+      content::NavigationHandle* navigation_handle,
+      mojom::ActivationLevel effective_activation_level,
+      ActivationDecision* decision) override {
+    return effective_activation_level;
+  }
+  void OnAdsViolationTriggered(
+      content::RenderFrameHost* rfh,
+      mojom::AdsViolation triggered_violation) override {}
+  const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+  GetSafeBrowsingDatabaseManager() override {
+    return database_manager_;
+  }
+
+  void CreateSafeBrowsingDatabaseManager() {
+    database_manager_ =
+        base::MakeRefCounted<CustomTestSafeBrowsingDatabaseManager>();
+  }
+
+  int disallowed_notification_count() const {
+    return disallowed_notification_count_;
+  }
+
+ private:
+  scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
+  int disallowed_notification_count_ = 0;
+};
+
 class ContentSubresourceFilterThrottleManagerTest
     : public content::RenderViewHostTestHarness,
       public content::WebContentsObserver,
-      public SubresourceFilterClient,
       public ::testing::WithParamInterface<PageActivationNotificationTiming> {
  public:
   ContentSubresourceFilterThrottleManagerTest() {}
@@ -202,6 +236,8 @@ class ContentSubresourceFilterThrottleManagerTest
     ASSERT_NO_FATAL_FAILURE(test_ruleset_creator_.CreateRulesetWithRules(
         rules, &test_ruleset_pair_));
 
+    client_ = std::make_unique<TestSubresourceFilterClient>();
+
     // Make the blocking task runner run on the current task runner for the
     // tests, to ensure that the NavigationSimulator properly runs all necessary
     // tasks while waiting for throttle checks to finish.
@@ -213,13 +249,14 @@ class ContentSubresourceFilterThrottleManagerTest
 
     throttle_manager_ =
         std::make_unique<ContentSubresourceFilterThrottleManager>(
-            this, dealer_handle_.get(), web_contents);
+            client_.get(), dealer_handle_.get(), web_contents);
     Observe(web_contents);
   }
 
   void TearDown() override {
     throttle_manager_.reset();
     dealer_handle_.reset();
+    client_.reset();
     base::RunLoop().RunUntilIdle();
     content::RenderViewHostTestHarness::TearDown();
   }
@@ -272,7 +309,9 @@ class ContentSubresourceFilterThrottleManagerTest
     return throttle_manager_->ruleset_handle_for_testing();
   }
 
-  int disallowed_notification_count() { return disallowed_notification_count_; }
+  int disallowed_notification_count() const {
+    return client_->disallowed_notification_count();
+  }
 
  protected:
   // content::WebContentsObserver
@@ -321,23 +360,6 @@ class ContentSubresourceFilterThrottleManagerTest
     agent_map_[host] = std::move(new_agent);
   }
 
-  // SubresourceFilterClient:
-  void ShowNotification() override { ++disallowed_notification_count_; }
-  mojom::ActivationLevel OnPageActivationComputed(
-      content::NavigationHandle* navigation_handle,
-      mojom::ActivationLevel effective_activation_level,
-      ActivationDecision* decision) override {
-    return effective_activation_level;
-  }
-  void OnAdsViolationTriggered(
-      content::RenderFrameHost* rfh,
-      mojom::AdsViolation triggered_violation) override {}
-
-  const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
-  GetSafeBrowsingDatabaseManager() override {
-    return database_manager_;
-  }
-
   ContentSubresourceFilterThrottleManager* throttle_manager() {
     return throttle_manager_.get();
   }
@@ -347,14 +369,13 @@ class ContentSubresourceFilterThrottleManagerTest
   }
 
   void CreateSafeBrowsingDatabaseManager() {
-    database_manager_ =
-        base::MakeRefCounted<CustomTestSafeBrowsingDatabaseManager>();
+    client_->CreateSafeBrowsingDatabaseManager();
   }
 
  private:
   testing::TestRulesetCreator test_ruleset_creator_;
   testing::TestRulesetPair test_ruleset_pair_;
-  scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
+  std::unique_ptr<TestSubresourceFilterClient> client_;
 
   std::unique_ptr<VerifiedRulesetDealer::Handle> dealer_handle_;
 
@@ -367,9 +388,6 @@ class ContentSubresourceFilterThrottleManagerTest
   std::unique_ptr<content::NavigationSimulator> navigation_simulator_;
 
   bool created_safe_browsing_throttle_for_last_navigation_ = false;
-
-  // Incremented on every OnFirstSubresourceLoadDisallowed call.
-  int disallowed_notification_count_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(ContentSubresourceFilterThrottleManagerTest);
 };
