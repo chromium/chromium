@@ -18,6 +18,7 @@
 #include "base/numerics/safe_math.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 
 #if defined(OS_NACL)
 #include "base/os_compat_nacl.h"
@@ -126,8 +127,12 @@ void Time::Explode(bool is_local, Exploded* exploded) const {
 
   // For systems with a Y2038 problem, use ICU as the Explode() implementation.
   if (sizeof(SysTime) < 8) {
+// TODO(b/167763382) Find an alternate solution for Chromecast devices, since
+// adding the icui18n dep significantly increases the binary size.
+#if !BUILDFLAG(IS_CHROMECAST)
     ExplodeUsingIcu(millis_since_unix_epoch, is_local, exploded);
     return;
+#endif  // !BUILDFLAG(IS_CHROMECAST)
   }
 
   // Split the |millis_since_unix_epoch| into separate seconds and millisecond
