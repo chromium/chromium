@@ -200,7 +200,7 @@ LargeBlobData::LargeBlobData(
     : ciphertext_(std::move(ciphertext)), orig_size_(std::move(orig_size)) {
   std::copy(nonce.begin(), nonce.end(), nonce_.begin());
 }
-LargeBlobData::LargeBlobData(LargeBlobKey key, std::vector<uint8_t> blob) {
+LargeBlobData::LargeBlobData(LargeBlobKey key, base::span<const uint8_t> blob) {
   orig_size_ = blob.size();
   crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
   aead.Init(key);

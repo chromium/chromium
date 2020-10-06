@@ -91,11 +91,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
 
   void HandleResponse(
       FidoAuthenticator* authenticator,
+      CtapGetAssertionRequest request,
       base::ElapsedTimer request_timer,
       CtapDeviceResponseCode response_code,
       base::Optional<AuthenticatorGetAssertionResponse> response);
   void HandleNextResponse(
       FidoAuthenticator* authenticator,
+      CtapGetAssertionRequest request,
       CtapDeviceResponseCode response_code,
       base::Optional<AuthenticatorGetAssertionResponse> response);
   void CollectPINThenSendRequest(FidoAuthenticator* authenticator);
@@ -115,12 +117,19 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
                      CtapDeviceResponseCode status,
                      base::Optional<pin::TokenResponse> response);
   void DispatchRequestWithToken(pin::TokenResponse token);
+  void OnGetAssertionSuccess(FidoAuthenticator* authenticator,
+                             CtapGetAssertionRequest request);
+  void OnReadLargeBlobs(
+      FidoAuthenticator* authenticator,
+      CtapDeviceResponseCode status,
+      base::Optional<std::vector<std::pair<LargeBlobKey, std::vector<uint8_t>>>>
+          blobs);
 
   CompletionCallback completion_callback_;
   State state_ = State::kWaitingForTouch;
   CtapGetAssertionRequest request_;
   CtapGetAssertionOptions options_;
-  base::Optional<AndroidClientDataExtensionInput> android_client_data_ext_;
+  base::Optional<pin::TokenResponse> pin_token_;
   // If true, and if at the time the request is dispatched to the first
   // authenticator no other authenticators are available, the request handler
   // will skip the initial touch that is usually required to select a PIN

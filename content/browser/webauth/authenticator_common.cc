@@ -234,6 +234,14 @@ device::CtapGetAssertionRequest CreateCtapGetAssertionRequest(
   if (!options->cable_authentication_data.empty()) {
     request_parameter.cable_extension = options->cable_authentication_data;
   }
+  if (options->large_blob_read) {
+    request_parameter.large_blob_read = true;
+    request_parameter.large_blob_key = true;
+  }
+  if (options->large_blob_write) {
+    request_parameter.large_blob_write = options->large_blob_write;
+    request_parameter.large_blob_key = true;
+  }
   request_parameter.is_incognito_mode = is_incognito;
   return request_parameter;
 }
@@ -482,9 +490,12 @@ blink::mojom::GetAssertionAuthenticatorResponsePtr CreateGetAssertionResponse(
         }
         break;
       }
+      case RequestExtension::kLargeBlob:
+        response->echo_large_blob = true;
+        response->large_blob = response_data.large_blob();
+        break;
       case RequestExtension::kHMACSecret:
       case RequestExtension::kCredProps:
-      case RequestExtension::kLargeBlob:
         NOTREACHED();
         break;
     }
@@ -1094,6 +1105,10 @@ void AuthenticatorCommon::GetAssertion(
           blink::mojom::AuthenticatorStatus::INVALID_DOMAIN);
       return;
     }
+  }
+
+  if (options->large_blob_read || options->large_blob_write) {
+    requested_extensions_.insert(RequestExtension::kLargeBlob);
   }
 
   UMA_HISTOGRAM_COUNTS_100(

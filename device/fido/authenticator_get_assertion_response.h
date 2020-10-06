@@ -73,6 +73,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetAssertionResponse
   }
   void set_large_blob_key(
       const base::span<const uint8_t, kLargeBlobKeyLength> large_blob_key);
+  base::Optional<std::vector<uint8_t>> large_blob() const {
+    return large_blob_;
+  }
+  void set_large_blob(std::vector<uint8_t> large_blob) {
+    large_blob_ = std::move(large_blob);
+  }
 
   // hmac_secret contains the output of the hmac_secret extension.
   base::Optional<base::span<const uint8_t>> hmac_secret() const;
@@ -103,6 +109,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetAssertionResponse
   // returned if the assertion request contains the largeBlobKey extension on a
   // capable authenticator and the credential has an associated large blob key.
   base::Optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key_;
+
+  // The large blob associated with the credential.
+  base::Optional<std::vector<uint8_t>> large_blob_;
 
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorGetAssertionResponse);
 };

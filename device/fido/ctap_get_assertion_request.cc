@@ -119,7 +119,6 @@ base::Optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
     }
 
     const cbor::Value::MapValue& extensions = extensions_it->second.GetMap();
-
     if (opts.reject_all_extensions && !extensions.empty()) {
       return base::nullopt;
     }
@@ -174,6 +173,11 @@ base::Optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
         }
 
         request.hmac_secret.emplace(key->X962(), encrypted_salts, salts_auth);
+      } else if (extension_id == kExtensionLargeBlobKey) {
+        if (!extension.second.is_bool() || !extension.second.GetBool()) {
+          return base::nullopt;
+        }
+        request.large_blob_key = true;
       }
     }
   }
@@ -270,6 +274,10 @@ AsCTAPRequestValuePair(const CtapGetAssertionRequest& request) {
   if (request.android_client_data_ext) {
     extensions.emplace(kExtensionAndroidClientData,
                        AsCBOR(*request.android_client_data_ext));
+  }
+
+  if (request.large_blob_key) {
+    extensions.emplace(kExtensionLargeBlobKey, cbor::Value(true));
   }
 
   if (request.hmac_secret) {

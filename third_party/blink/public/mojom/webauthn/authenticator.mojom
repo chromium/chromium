@@ -169,6 +169,14 @@ struct GetAssertionAuthenticatorResponse {
   // prf_not_evaluated indicates the the PRF inputs could not be processed
   // because of a lack of operating system support.
   bool prf_not_evaluated;
+
+  // True if getClientExtensionResults() called on the returned
+  // PublicKeyCredential instance should contain a `largeBlob` extension output.
+  bool echo_large_blob;
+  // Value that getClientExtensionResults() called on the returned
+  // PublicKeyCredential instance should contain for the `largeBlob`
+  // extension output `blob` parameter.
+  array<uint8>? large_blob;
 };
 
 // Information about the relying party. These fields take arbitrary input.

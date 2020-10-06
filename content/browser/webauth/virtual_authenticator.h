@@ -67,6 +67,11 @@ class CONTENT_EXPORT VirtualAuthenticator
   // credential was found and removed, false otherwise.
   bool RemoveRegistration(const std::vector<uint8_t>& key_handle);
 
+  // Associates a large blob to the credential identified by |key_handle|.
+  // Returns true if the operation was successful, false otherwise.
+  bool SetLargeBlob(base::span<const uint8_t> key_handle,
+                    base::span<const uint8_t> blob);
+
   // Sets whether tests of user presence succeed or not for new requests sent to
   // this authenticator. The default is true.
   void SetUserPresence(bool is_user_present);
@@ -105,6 +110,9 @@ class CONTENT_EXPORT VirtualAuthenticator
   void ClearRegistrations(ClearRegistrationsCallback callback) override;
   void RemoveRegistration(const std::vector<uint8_t>& key_handle,
                           RemoveRegistrationCallback callback) override;
+  void SetLargeBlob(const std::vector<uint8_t>& key_handle,
+                    const std::vector<uint8_t>& blob,
+                    SetLargeBlobCallback callback) override;
 
   void SetUserVerified(bool verified,
                        SetUserVerifiedCallback callback) override;

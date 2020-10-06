@@ -95,6 +95,16 @@ bool VirtualAuthenticator::RemoveRegistration(
   return state_->registrations.erase(key_handle) != 0;
 }
 
+bool VirtualAuthenticator::SetLargeBlob(base::span<const uint8_t> key_handle,
+                                        base::span<const uint8_t> blob) {
+  auto registration = state_->registrations.find(key_handle);
+  if (registration == state_->registrations.end()) {
+    return false;
+  }
+  state_->InjectLargeBlob(&registration->second, blob);
+  return true;
+}
+
 void VirtualAuthenticator::SetUserPresence(bool is_user_present) {
   is_user_present_ = is_user_present;
   state_->simulate_press_callback = base::BindRepeating(
@@ -171,6 +181,12 @@ void VirtualAuthenticator::RemoveRegistration(
     const std::vector<uint8_t>& key_handle,
     RemoveRegistrationCallback callback) {
   std::move(callback).Run(RemoveRegistration(std::move(key_handle)));
+}
+
+void VirtualAuthenticator::SetLargeBlob(const std::vector<uint8_t>& key_handle,
+                                        const std::vector<uint8_t>& blob,
+                                        SetLargeBlobCallback callback) {
+  std::move(callback).Run(SetLargeBlob(key_handle, blob));
 }
 
 void VirtualAuthenticator::SetUserVerified(bool verified,

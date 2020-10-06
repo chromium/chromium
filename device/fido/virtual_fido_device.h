@@ -276,6 +276,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
                            base::Optional<std::string> user_name,
                            base::Optional<std::string> user_display_name);
 
+    // Injects a large blob for the credential. If the credential already has an
+    // associated large blob, replaces it. If the |large_blob| is malformed,
+    // completely replaces its contents.
+    void InjectLargeBlob(RegistrationData* credential,
+                         base::span<const uint8_t> blob);
+
    private:
     friend class base::RefCounted<State>;
     ~State();

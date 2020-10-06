@@ -515,6 +515,17 @@ void OnGetAssertionComplete(
                         WebFeature::kCredentialManagerGetSuccessWithUVM);
     }
 #endif
+    if (credential->echo_large_blob) {
+      DCHECK(
+          RuntimeEnabledFeatures::WebAuthenticationLargeBlobExtensionEnabled());
+      AuthenticationExtensionsLargeBlobOutputs* large_blob_outputs =
+          AuthenticationExtensionsLargeBlobOutputs::Create();
+      if (credential->large_blob) {
+        large_blob_outputs->setBlob(
+            VectorToDOMArrayBuffer(std::move(*credential->large_blob)));
+      }
+      extension_outputs->setLargeBlob(large_blob_outputs);
+    }
     resolver->Resolve(MakeGarbageCollected<PublicKeyCredential>(
         credential->info->id, raw_id, authenticator_response,
         extension_outputs));

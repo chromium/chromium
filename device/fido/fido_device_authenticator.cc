@@ -748,6 +748,7 @@ void FidoDeviceAuthenticator::ReadLargeBlob(
     const std::vector<LargeBlobKey>& large_blob_keys,
     const base::Optional<pin::TokenResponse> pin_uv_auth_token,
     LargeBlobReadCallback callback) {
+  DCHECK(!large_blob_keys.empty());
   FetchLargeBlobArray(
       std::move(pin_uv_auth_token), LargeBlobArrayReader(),
       base::BindOnce(&FidoDeviceAuthenticator::OnHaveLargeBlobArrayForRead,

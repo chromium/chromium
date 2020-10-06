@@ -58,10 +58,6 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionOptions {
   // it will be the first element and all others will have |credential_id|s.
   // Elements are sorted by |credential_id|s, where present.
   std::vector<PRFInput> prf_inputs;
-
-  // large_blob_operation indicates whether we should attempt to read or write a
-  // large blob after a successful assertion.
-  LargeBlobOperation large_blob_operation;
 };
 
 // Object that encapsulates request parameters for AuthenticatorGetAssertion as
@@ -127,6 +123,8 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionRequest {
       alternative_application_parameter;
   base::Optional<HMACSecret> hmac_secret;
   bool large_blob_key = false;
+  bool large_blob_read = false;
+  base::Optional<std::vector<uint8_t>> large_blob_write;
 
   bool is_incognito_mode = false;
   bool is_u2f_only = false;

@@ -39,6 +39,11 @@ class VirtualAuthenticator {
     return clearRegistrationsResponse.keys;
   }
 
+  async setLargeBlob(keyHandle, blob) {
+    let setLargeBlobResponse = await this.virtualAuthenticator_.setLargeBlob(keyHandle, blob);
+    return setLargeBlobResponse.set;
+  }
+
   async setUserPresence(present) {
     return this.virtualAuthenticator_.setUserPresence(present);
   }

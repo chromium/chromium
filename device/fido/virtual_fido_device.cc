@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -18,6 +19,7 @@
 #include "crypto/ec_signature_creator.h"
 #include "crypto/openssl_util.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/large_blob.h"
 #include "device/fido/p256_public_key.h"
 #include "device/fido/public_key.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -425,6 +427,30 @@ bool VirtualFidoDevice::State::InjectResidentKey(
                                     std::move(user_name),
                                     std::move(user_display_name),
                                     /*icon_url=*/base::nullopt));
+}
+
+void VirtualFidoDevice::State::InjectLargeBlob(RegistrationData* credential,
+                                               base::span<const uint8_t> blob) {
+  LargeBlobArrayReader reader;
+  reader.Append(large_blob);
+  std::vector<LargeBlobData> large_blob_array =
+      reader.Materialize().value_or(std::vector<LargeBlobData>());
+
+  if (credential->large_blob_key) {
+    large_blob_array.erase(base::ranges::remove_if(
+        large_blob_array, [&credential](const LargeBlobData& blob) {
+          return blob.Decrypt(*credential->large_blob_key).has_value();
+        }));
+  } else {
+    credential->large_blob_key.emplace();
+    base::RandBytes(credential->large_blob_key->data(),
+                    credential->large_blob_key->size());
+  }
+
+  large_blob_array.insert(large_blob_array.end(),
+                          LargeBlobData(*credential->large_blob_key, blob));
+  LargeBlobArrayWriter writer(large_blob_array);
+  large_blob = writer.Pop(writer.size()).bytes;
 }
 
 // VirtualFidoDevice ----------------------------------------------------------
