@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/config.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//media/media_options.gni")
@@ -217,8 +218,11 @@ test("midi_unittests") {
     sources += [ "midi_manager_alsa_unittest.cc" ]
   }
 
-  # This target should not require the Chrome executable to run.
-  assert_no_deps = [ "//chrome" ]
+  # On LaCrOS, tests use ash-chrome as a window manager, thus the dependency.
+  # On other platforms, this target should not require the Chrome to run.
+  if (!chromeos_is_browser_only) {
+    assert_no_deps = [ "//chrome" ]
+  }
 }
 
 fuzzer_test("midi_webmidi_data_validator_fuzzer") {
