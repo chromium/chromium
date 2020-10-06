@@ -40610,6 +40610,19 @@
         {}
        ]
       ],
+      "text-indent-016.xht": [
+       "51abc502d641763f157a8da61d826041117fa219",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-indent-004-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-indent-017.xht": [
        "1a68e9f75f80f5625f23468bacb2b7034f7b371d",
        [
@@ -310596,6 +310609,16 @@
        }
       ]
      ],
+     "caret-navigation-around-line-break.html": [
+      "eb1499936eb2bc20d0f1a37094ec815fb1177f61",
+      [
+       null,
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
      "caretnavigation.html": [
       "defe7fecfc2850355fe21da8a6d14ed6c5265885",
       [
@@ -439573,13 +439596,6 @@
       ],
       "text-decoration-va-sub-super-004.xht": [
        "e9ba00b24a09742c477fb7b3005601362c073df1",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-indent-016.xht": [
-       "12434f53f1b61a082162ad213fa2ab1b4639f122",
        [
         null,
         {}
