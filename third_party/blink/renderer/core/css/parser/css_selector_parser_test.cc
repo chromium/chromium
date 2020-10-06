@@ -24,6 +24,28 @@ typedef struct {
   const int b;
 } ANPlusBTestCase;
 
+struct SelectorTestCase {
+  // The input string to parse as a selector list.
+  const char* input;
+
+  // The expected serialization of the parsed selector list. If nullptr, then
+  // the expected serialization is the same as the input value.
+  //
+  // For selector list that are expected to fail parsing, use the empty
+  // string "".
+  const char* expected = nullptr;
+};
+
+class SelectorParseTest : public ::testing::TestWithParam<SelectorTestCase> {};
+
+TEST_P(SelectorParseTest, Parse) {
+  auto param = GetParam();
+  SCOPED_TRACE(param.input);
+  CSSSelectorList list = css_test_helpers::ParseSelectorList(param.input);
+  const char* expected = param.expected ? param.expected : param.input;
+  EXPECT_EQ(String(expected), list.SelectorsText());
+}
+
 TEST(CSSSelectorParserTest, ValidANPlusB) {
   ANPlusBTestCase test_cases[] = {
       {"odd", 2, 1},
@@ -387,117 +409,104 @@ TEST(CSSSelectorParserTest, InternalPseudo) {
   }
 }
 
-TEST(CSSSelectorParserTest, InvalidPseudoIsArguments) {
-  // Pseudo-elements are not valid within :is() as per the spec:
-  // https://drafts.csswg.org/selectors-4/#matches
-  const char* test_cases[] = {":is(::-webkit-progress-bar)",
-                              ":is(::-webkit-progress-value)",
-                              ":is(::-webkit-slider-runnable-track)",
-                              ":is(::-webkit-slider-thumb)",
-                              ":is(::after)",
-                              ":is(::backdrop)",
-                              ":is(::before)",
-                              ":is(::cue)",
-                              ":is(::first-letter)",
-                              ":is(::first-line)",
-                              ":is(::grammar-error)",
-                              ":is(::marker)",
-                              ":is(::placeholder)",
-                              ":is(::selection)",
-                              ":is(::slotted)",
-                              ":is(::spelling-error)",
-                              ":is(:after)",
-                              ":is(:before)",
-                              ":is(:cue)",
-                              ":is(:first-letter)",
-                              ":is(:first-line)"};
+// Pseudo-elements are not valid within :is() as per the spec:
+// https://drafts.csswg.org/selectors-4/#matches
+static const SelectorTestCase invalid_pseudo_is_argments_data[] = {
+    // clang-format off
+    {":is(::-webkit-progress-bar)", ""},
+    {":is(::-webkit-progress-value)", ""},
+    {":is(::-webkit-slider-runnable-track)", ""},
+    {":is(::-webkit-slider-thumb)", ""},
+    {":is(::after)", ""},
+    {":is(::backdrop)", ""},
+    {":is(::before)", ""},
+    {":is(::cue)", ""},
+    {":is(::first-letter)", ""},
+    {":is(::first-line)", ""},
+    {":is(::grammar-error)", ""},
+    {":is(::marker)", ""},
+    {":is(::placeholder)", ""},
+    {":is(::selection)", ""},
+    {":is(::slotted)", ""},
+    {":is(::spelling-error)", ""},
+    {":is(:after)", ""},
+    {":is(:before)", ""},
+    {":is(:cue)", ""},
+    {":is(:first-letter)", ""},
+    {":is(:first-line)", ""},
+    // clang-format on
+};
 
-  for (auto* test_case : test_cases) {
-    SCOPED_TRACE(test_case);
-    EXPECT_FALSE(css_test_helpers::ParseSelectorList(test_case).IsValid());
-  }
-}
+INSTANTIATE_TEST_SUITE_P(InvalidPseudoIsArguments,
+                         SelectorParseTest,
+                         testing::ValuesIn(invalid_pseudo_is_argments_data));
 
-TEST(CSSSelectorParserTest, ShadowDomV0WithIsAndWhere) {
-  // To reduce complexity, ShadowDOM v0 features are not supported in
-  // combination with :is/:where.
-  const char* test_cases[] = {
-      // clang-format off
-      ":is(.a) ::content",
-      ":is(.a /deep/ .b)",
-      ":is(::content)",
-      ":is(::shadow)",
-      ":is(::content .a)",
-      ":is(::shadow .b)",
-      ":is(.a)::shadow",
-      ":is(.a) ::content",
-      ":is(.a) ::shadow",
-      "::content :is(.a)",
-      "::shadow :is(.a)",
-      ":is(.a) /deep/ .b",
-      ":.a /deep/ :is(.b)",
-      ":where(.a /deep/ .b)",
-      ":where(.a) ::shadow",
-      // clang-format on
-  };
+// To reduce complexity, ShadowDOM v0 features are not supported in
+// combination with :is/:where.
+static const SelectorTestCase shadow_v0_with_is_where_data[] = {
+    // clang-format off
+    {":is(.a) ::content", ""},
+    {":is(.a /deep/ .b)", ""},
+    {":is(::content)", ""},
+    {":is(::shadow)", ""},
+    {":is(::content .a)", ""},
+    {":is(::shadow .b)", ""},
+    {":is(.a)::shadow", ""},
+    {":is(.a) ::content", ""},
+    {":is(.a) ::shadow", ""},
+    {"::content :is(.a)", ""},
+    {"::shadow :is(.a)", ""},
+    {":is(.a) /deep/ .b", ""},
+    {":.a /deep/ :is(.b)", ""},
+    {":where(.a /deep/ .b)", ""},
+    {":where(.a) ::shadow", ""},
+    // clang-format on
+};
 
-  for (auto* test_case : test_cases) {
-    SCOPED_TRACE(test_case);
-    EXPECT_FALSE(css_test_helpers::ParseSelectorList(test_case).IsValid());
-  }
-}
+INSTANTIATE_TEST_SUITE_P(ShadowDomV0WithIsAndWhere,
+                         SelectorParseTest,
+                         testing::ValuesIn(shadow_v0_with_is_where_data));
 
-TEST(CSSSelectorParserTest, NestedSelectorValidity) {
-  const char* invalid_nesting[] = {
-      // clang-format off
-      // These pseudos only accept compound selectors:
-      "::slotted(:is(.a .b))",
-      "::slotted(:is(.a + .b))",
-      "::slotted(:is(.a, .b + .c))",
-      ":host(:is(.a .b))",
-      ":host(:is(.a + .b))",
-      ":host(:is(.a, .b + .c))",
-      ":host-context(:is(.a .b))",
-      ":host-context(:is(.a + .b))",
-      ":host-context(:is(.a, .b + .c))",
-      "::cue(:is(.a .b))",
-      "::cue(:is(.a + .b))",
-      "::cue(:is(.a, .b + .c))",
-      // clang-format on
-  };
+static const SelectorTestCase is_where_nesting_data[] = {
+    // clang-format off
+    // These pseudos only accept compound selectors:
+    {"::slotted(:is(.a .b))", ""},
+    {"::slotted(:is(.a + .b))", ""},
+    {"::slotted(:is(.a, .b + .c))", ""},
+    {":host(:is(.a .b))", ""},
+    {":host(:is(.a + .b))", ""},
+    {":host(:is(.a, .b + .c))", ""},
+    {":host-context(:is(.a .b))", ""},
+    {":host-context(:is(.a + .b))", ""},
+    {":host-context(:is(.a, .b + .c))", ""},
+    {"::cue(:is(.a .b))", ""},
+    {"::cue(:is(.a + .b))", ""},
+    {"::cue(:is(.a, .b + .c))", ""},
 
-  const char* valid_nesting[] = {
-      // clang-format off
-      ":is(.a, .b)",
-      ":is(.a .b, .c)",
-      ":is(.a :is(.b .c), .d)",
-      ":is(.a :where(.b .c), .d)",
-      ":where(.a :is(.b .c), .d)",
-      "::slotted(:is(.a))",
-      "::slotted(:is(div.a))",
-      "::slotted(:is(.a, .b))",
-      ":host(:is(.a))",
-      ":host(:is(div.a))",
-      ":host(:is(.a, .b))",
-      ":host-context(:is(.a))",
-      ":host-context(:is(div.a))",
-      ":host-context(:is(.a, .b))",
-      "::cue(:is(.a))",
-      "::cue(:is(div.a))",
-      "::cue(:is(.a, .b))",
-      // clang-format on
-  };
+    // Valid selectors:
+    {":is(.a, .b)"},
+    {":is(.a .b, .c)"},
+    {":is(.a :is(.b .c), .d)"},
+    {":is(.a :where(.b .c), .d)"},
+    {":where(.a :is(.b .c), .d)"},
+    {"::slotted(:is(.a))"},
+    {"::slotted(:is(div.a))"},
+    {"::slotted(:is(.a, .b))"},
+    {":host(:is(.a))"},
+    {":host(:is(div.a))"},
+    {":host(:is(.a, .b))"},
+    {":host-context(:is(.a))"},
+    {":host-context(:is(div.a))"},
+    {":host-context(:is(.a, .b))"},
+    {"::cue(:is(.a))"},
+    {"::cue(:is(div.a))"},
+    {"::cue(:is(.a, .b))"},
+    // clang-format on
+};
 
-  for (auto* test_case : invalid_nesting) {
-    SCOPED_TRACE(test_case);
-    EXPECT_FALSE(css_test_helpers::ParseSelectorList(test_case).IsValid());
-  }
-
-  for (auto* test_case : valid_nesting) {
-    SCOPED_TRACE(test_case);
-    EXPECT_TRUE(css_test_helpers::ParseSelectorList(test_case).IsValid());
-  }
-}
+INSTANTIATE_TEST_SUITE_P(NestedSelectorValidity,
+                         SelectorParseTest,
+                         testing::ValuesIn(is_where_nesting_data));
 
 namespace {
 
