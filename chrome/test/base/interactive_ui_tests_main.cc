@@ -19,6 +19,7 @@
 #if defined(USE_OZONE) && defined(OS_LINUX) && !defined(OS_CHROMEOS)
 #include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/views/test/ui_controls_factory_desktop_aura_ozone.h"
 #endif
 #if defined(USE_X11)
 #include "ui/views/test/ui_controls_factory_desktop_aurax11.h"
@@ -59,14 +60,23 @@ class InteractiveUITestSuite : public ChromeTestSuite {
       ui::OzonePlatform::InitParams params;
       params.single_process = true;
       ui::OzonePlatform::InitializeForUI(params);
-    } else
-#endif
-    {
-#if defined(USE_X11)
+
+#if !BUILDFLAG(IS_LACROS)
+      // TODO(1134495): when ozone/wayland implements ui controls test helper,
+      // make lacros also use the ui controls created below.
+      //
+      // ui controls implementation for Ozone desktop.
       ui_controls::InstallUIControlsAura(
-          views::test::CreateUIControlsDesktopAura());
+          views::test::CreateUIControlsDesktopAuraOzone());
+      return;
 #endif
     }
+#endif
+#if defined(USE_X11)
+    DCHECK(!features::IsUsingOzonePlatform());
+    ui_controls::InstallUIControlsAura(
+        views::test::CreateUIControlsDesktopAura());
+#endif
 #else
     ui_controls::EnableUIControls();
 #endif

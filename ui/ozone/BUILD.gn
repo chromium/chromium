@@ -21,6 +21,10 @@ ozone_platform_deps = ozone_external_platform_deps
 # Extra dependencies to pull into ozone_unittests for built platforms.
 ozone_platform_test_deps = ozone_external_platform_test_deps
 
+# Extra dependencies to pull into ui_test_support for built platforms.
+ozone_platform_ui_test_support_deps =
+    ozone_external_platform_ui_test_support_deps
+
 if (ozone_platform_windows) {
   ozone_platforms += [ "windows" ]
   ozone_platform_deps += [ "platform/windows" ]
@@ -62,6 +66,8 @@ platform_list_cc_file = "$target_gen_dir/platform_list.cc"
 platform_list_h_file = "$target_gen_dir/platform_list.h"
 platform_list_txt_file = "$target_gen_dir/platform_list.txt"
 constructor_list_cc_file = "$target_gen_dir/constructor_list.cc"
+
+test_constructor_list_cc_file = "$target_gen_dir/test_constructor_list.cc"
 
 component("ozone_base") {
   sources = [
@@ -147,7 +153,6 @@ source_set("platform") {
     "common/stub_client_native_pixmap_factory.cc",
     "common/stub_client_native_pixmap_factory.h",
     "platform_constructor_list.h",
-    "platform_object.h",
     "platform_object_internal.h",
     "platform_selection.cc",
     "platform_selection.h",
@@ -160,6 +165,7 @@ source_set("platform") {
   ]
 
   public = [
+    "platform_object.h",
     "public/client_native_pixmap_factory_ozone.h",
     "public/ozone_gpu_test_helper.h",
     "public/ozone_platform.h",
@@ -232,6 +238,33 @@ source_set("test_support_internal") {
   public_deps = [ "//base/test:test_support" ]
 }
 
+static_library("ui_test_support") {
+  visibility = []
+  visibility = [ "//ui/views:test_support" ]
+
+  testonly = true
+
+  sources = [
+    "common/test/stub_ozone_ui_controls_test_helper.cc",
+    "common/test/stub_ozone_ui_controls_test_helper.h",
+    "public/ozone_ui_controls_test_helper.cc",
+    test_constructor_list_cc_file,
+  ]
+
+  public = [ "public/ozone_ui_controls_test_helper.h" ]
+
+  deps = [
+    ":generate_test_support_constructor_list",
+    ":ozone",
+    "//ui/base:test_support",
+    "//ui/events:events_base",
+  ]
+
+  deps += ozone_platform_ui_test_support_deps
+
+  allow_circular_includes_from = ozone_platform_ui_test_support_deps
+}
+
 static_library("test_support") {
   visibility = []
   visibility = [
@@ -277,6 +310,24 @@ action("generate_constructor_list") {
     "--typename=ClientNativePixmapFactory",
     "--using=gfx::ClientNativePixmapFactory",
     "--include=\"ui/gfx/client_native_pixmap_factory.h\"",
+    "--include=\"ui/ozone/public/ozone_platform.h\"",
+  ]
+
+  deps = [ ":generate_ozone_platform_list" ]
+}
+
+action("generate_test_support_constructor_list") {
+  script = "generate_constructor_list.py"
+
+  inputs = [ platform_list_txt_file ]
+  outputs = [ test_constructor_list_cc_file ]
+
+  args = [
+    "--platform_list=" + rebase_path(platform_list_txt_file, root_build_dir),
+    "--output_cc=" + rebase_path(test_constructor_list_cc_file, root_build_dir),
+    "--namespace=ui",
+    "--typename=OzoneUIControlsTestHelper",
+    "--include=\"ui/ozone/public/ozone_ui_controls_test_helper.h\"",
     "--include=\"ui/ozone/public/ozone_platform.h\"",
   ]
 

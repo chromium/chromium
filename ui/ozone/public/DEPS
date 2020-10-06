@@ -1,4 +1,5 @@
 include_rules = [
   "+mojo/public",
   "+ui/base/cursor/mojom/cursor_type.mojom-forward.h",
+  "+ui/base/test/ui_controls.h",
 ]

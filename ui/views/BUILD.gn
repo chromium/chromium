@@ -1022,6 +1022,16 @@ source_set("test_support") {
   if (ozone_platform_x11) {
     deps += [ "//ui/base/x" ]
   }
+
+  if (use_ozone && is_desktop_linux) {
+    sources += [
+      "test/test_desktop_screen_ozone.cc",
+      "test/test_desktop_screen_ozone.h",
+      "test/ui_controls_factory_desktop_aura_ozone.cc",
+      "test/ui_controls_factory_desktop_aura_ozone.h",
+    ]
+    deps += [ "//ui/ozone:ui_test_support" ]
+  }
 }
 
 test("views_unittests") {
