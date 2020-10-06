@@ -164,6 +164,12 @@ Polymer({
     if (route === routes.SECURITY) {
       this.metricsBrowserProxy_.recordSafeBrowsingInteractionHistogram(
           SafeBrowsingInteractions.SAFE_BROWSING_SHOWED);
+      const queryParams = Router.getInstance().getQueryParameters();
+      const section = queryParams.get('q');
+      if (section === 'enhanced') {
+        this.$.safeBrowsingEnhanced.expanded = true;
+        this.$.safeBrowsingStandard.expanded = false;
+      }
     }
   },
 

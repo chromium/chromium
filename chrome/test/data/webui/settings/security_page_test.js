@@ -546,6 +546,22 @@ suite('CrSettingsSecurityPageTest', function() {
         await testMetricsBrowserProxy.whenCalled(
             'recordSafeBrowsingInteractionHistogram'));
   });
+
+  test('enhancedProtectionAutoExpanded', function() {
+    // Standard protection should be pre-expanded if there is no param.
+    Router.getInstance().navigateTo(routes.SECURITY);
+    assertFalse(page.$$('#safeBrowsingEnhanced').expanded);
+    assertTrue(page.$$('#safeBrowsingStandard').expanded);
+    // Enhanced protection should be pre-expanded if the param is set to
+    // enhanced.
+    Router.getInstance().navigateTo(
+        routes.SECURITY,
+        /* dynamicParams= */ new URLSearchParams('q=enhanced'));
+    assertEquals(
+        SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
+    assertTrue(page.$$('#safeBrowsingEnhanced').expanded);
+    assertFalse(page.$$('#safeBrowsingStandard').expanded);
+  });
 });
 
 
