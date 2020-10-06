@@ -938,6 +938,63 @@ if (enable_java_templates) {
     }
   }
 
+  # Declare a prebuilt android native library.
+  #
+  # This takes a base directory and library name and then looks for the library
+  # in <base dir>/$android_app_abi/<library name>.
+  #
+  # If you depend on this target, the library is stripped and output to the
+  # same locations non-prebuilt libraries are output.
+  #
+  # Variables
+  #   base_dir: Directory where all ABIs of the library live.
+  #   library_name: Name of the library .so file.
+  #
+  # Example
+  #   android_native_prebuilt("elements_native") {
+  #     base_dir = "//third_party/elements"
+  #     lib_name = "elements.so"
+  #   }
+  template("android_native_prebuilt") {
+    action_with_pydeps(target_name) {
+      forward_variables_from(invoker,
+                             [
+                               "deps",
+                               "testonly",
+                             ])
+      script = "//build/android/gyp/process_native_prebuilt.py"
+      _lib_path = "${invoker.base_dir}/$android_app_abi/${invoker.lib_name}"
+      _stripped_output_path = "$root_out_dir/${invoker.lib_name}"
+      _unstripped_output_path =
+          "$root_out_dir/lib.unstripped/${invoker.lib_name}"
+      inputs = [ _lib_path ]
+      outputs = [
+        _stripped_output_path,
+        _unstripped_output_path,
+      ]
+
+      # Add unstripped output to runtime deps for use by bots during stacktrace
+      # symbolization.
+      data = [ _unstripped_output_path ]
+
+      _rebased_lib_path = rebase_path(_lib_path, root_build_dir)
+      _rebased_stripped_ouput_path =
+          rebase_path(_stripped_output_path, root_build_dir)
+      _rebased_unstripped_ouput_path =
+          rebase_path(_unstripped_output_path, root_build_dir)
+      _strip_tool_path =
+          rebase_path("//buildtools/third_party/eu-strip/bin/eu-strip",
+                      root_build_dir)
+
+      args = [
+        "--strip-path=$_strip_tool_path",
+        "--input-path=$_rebased_lib_path",
+        "--stripped-output-path=$_rebased_stripped_ouput_path",
+        "--unstripped-output-path=$_rebased_unstripped_ouput_path",
+      ]
+    }
+  }
+
   # Declare an Android resources target
   #
   # This creates a resources zip file that will be used when building an Android
