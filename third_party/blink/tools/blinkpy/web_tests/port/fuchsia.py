@@ -331,7 +331,9 @@ class ChromiumFuchsiaDriver(driver.Driver):
         elif self._port._target_device == 'aemu':
             cmd.extend([
                 '--ozone-platform=scenic', '--enable-oop-rasterization',
-                '--use-gl=stub', '--enable-features=UseSkiaRenderer,Vulkan'
+                '--use-vulkan', '--enable-gpu-rasterization',
+                '--force-device-scale-factor=1', '--use-gl=stub',
+                '--enable-features=UseSkiaRenderer,Vulkan'
             ])
         return cmd
 
