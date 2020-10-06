@@ -108,7 +108,6 @@ MediaSource::MediaSource(ExecutionContext* context)
       async_event_queue_(
           MakeGarbageCollected<EventQueue>(context,
                                            TaskType::kMediaElementEvent)),
-      attached_element_(nullptr),
       source_buffers_(
           MakeGarbageCollected<SourceBufferList>(GetExecutionContext(),
                                                  async_event_queue_.Get())),
@@ -291,7 +290,6 @@ void MediaSource::OnReadyStateChange(const ReadyState old_state,
     source_buffers_->item(i)->RemovedFromMediaSource();
   source_buffers_->Clear();
 
-  attached_element_.Clear();
   media_source_attachment_.reset();
   attachment_tracer_ = nullptr;
 
@@ -387,7 +385,6 @@ ExecutionContext* MediaSource::GetExecutionContext() const {
 void MediaSource::Trace(Visitor* visitor) const {
   visitor->Trace(async_event_queue_);
   visitor->Trace(attachment_tracer_);
-  visitor->Trace(attached_element_);
   visitor->Trace(source_buffers_);
   visitor->Trace(active_source_buffers_);
   visitor->Trace(live_seekable_range_);
@@ -402,9 +399,8 @@ void MediaSource::CompleteAttachingToMediaElement(
                                   TRACE_ID_LOCAL(this));
   DCHECK(web_media_source);
   DCHECK(!web_media_source_);
-  DCHECK(attached_element_);
   DCHECK(media_source_attachment_);
-  DCHECK(attachment_tracer_);
+  DCHECK_EQ(!attachment_tracer_, !IsMainThread());
 
   web_media_source_ = std::move(web_media_source);
   SetReadyState(ReadyState::kOpen);
@@ -472,8 +468,9 @@ TimeRanges* MediaSource::Buffered() const {
 }
 
 WebTimeRanges MediaSource::SeekableInternal() const {
-  DCHECK(attached_element_ && media_source_attachment_ && attachment_tracer_)
+  DCHECK(media_source_attachment_)
       << "Seekable should only be used when attached to HTMLMediaElement";
+  DCHECK_EQ(!attachment_tracer_, !IsMainThread());
 
   // Implements MediaSource algorithm for HTMLMediaElement.seekable.
   // http://w3c.github.io/media-source/#htmlmediaelement-extensions
@@ -787,12 +784,6 @@ void MediaSource::SetSourceBufferActive(SourceBuffer* source_buffer,
   active_source_buffers_->insert(insert_position, source_buffer);
 }
 
-// TODO(https://crbug.com/878133): Remove this getter and instead rely on
-// Attachment() to communicate about the media element.
-HTMLMediaElement* MediaSource::MediaElement() const {
-  return attached_element_.Get();
-}
-
 std::pair<scoped_refptr<MediaSourceAttachmentSupplement>, MediaSourceTracer*>
 MediaSource::AttachmentAndTracer() const {
   return std::make_pair(media_source_attachment_, attachment_tracer_);
@@ -810,11 +801,11 @@ void MediaSource::EndOfStreamAlgorithm(
   web_media_source_->MarkEndOfStream(eos_status);
 
   if (eos_status == WebMediaSource::kEndOfStreamStatusNoError) {
-    // The implementation may not have immediately informed the
-    // |attached_element_| (or the element known by the |attachment_tracer_|
-    // for the current |media_source_attachment_|) of the potentially reduced
-    // duration. Prevent app-visible duration race by synchronously running the
-    // duration change algorithm. The MSE spec supports this:
+    // The implementation may not have immediately informed the attached element
+    // (known by the |media_source_attachment_| and |attachment_tracer_|) of the
+    // potentially reduced duration. Prevent app-visible duration race by
+    // synchronously running the duration change algorithm. The MSE spec
+    // supports this:
     // https://www.w3.org/TR/media-source/#end-of-stream-algorithm
     // 2.4.7.3 (If error is not set)
     // Run the duration change algorithm with new duration set to the largest
@@ -844,20 +835,15 @@ void MediaSource::Close() {
 MediaSourceTracer* MediaSource::StartAttachingToMediaElement(
     scoped_refptr<MediaSourceAttachmentSupplement> attachment,
     HTMLMediaElement* element) {
-  if (attached_element_) {
-    DCHECK(media_source_attachment_);
-    DCHECK(attachment_tracer_);
+  if (media_source_attachment_ || attachment_tracer_) {
     return nullptr;
   }
 
-  DCHECK(!media_source_attachment_);
-  DCHECK(!attachment_tracer_);
   DCHECK(IsClosed());
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media",
                                     "MediaSource::StartAttachingToMediaElement",
                                     TRACE_ID_LOCAL(this));
-  attached_element_ = element;
   media_source_attachment_ = attachment;
   attachment_tracer_ =
       MakeGarbageCollected<SameThreadMediaSourceTracer>(element, this);

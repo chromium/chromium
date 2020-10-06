@@ -15,7 +15,9 @@
 
 namespace blink {
 
+class AudioTrackList;
 class MediaSource;
+class VideoTrackList;
 
 // Modules-specific common extension of the core MediaSourceAttachment
 // interface. Includes extra interface methods used by concrete attachments to
@@ -46,6 +48,13 @@ class MediaSourceAttachmentSupplement : public MediaSourceAttachment {
   // rely on the element to correctly pump when it has an error to this
   // attachment (in a cross-thread implementation).
   virtual bool GetElementError(MediaSourceTracer* tracer) = 0;
+
+  // Construct track lists for use by a SourceBuffer.
+  // TODO(https://crbug.com/878133): Update these to support worker-owned
+  // SourceBuffer lists when completing AudioVideoTracks feature support with
+  // MSE-in-Workers.
+  virtual AudioTrackList* CreateAudioTrackList(MediaSourceTracer* tracer) = 0;
+  virtual VideoTrackList* CreateVideoTrackList(MediaSourceTracer* tracer) = 0;
 
   // Add/Remove tracks to/from the media Element's audioTracks() or
   // videoTracks() list. Note that this is synchronous in

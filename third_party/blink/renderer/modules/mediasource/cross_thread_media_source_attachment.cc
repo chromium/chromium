@@ -64,6 +64,22 @@ bool CrossThreadMediaSourceAttachment::GetElementError(
   return true;
 }
 
+AudioTrackList* CrossThreadMediaSourceAttachment::CreateAudioTrackList(
+    MediaSourceTracer* /* tracer */) {
+  // TODO(https://crbug.com/878133): Implement this once worker thread can
+  // create track lists.
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+VideoTrackList* CrossThreadMediaSourceAttachment::CreateVideoTrackList(
+    MediaSourceTracer* /* tracer */) {
+  // TODO(https://crbug.com/878133): Implement this once worker thread can
+  // create track lists.
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 void CrossThreadMediaSourceAttachment::AddAudioTrackToMediaElement(
     MediaSourceTracer* /* tracer */,
     AudioTrack* /* track */) {

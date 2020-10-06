@@ -95,6 +95,26 @@ bool SameThreadMediaSourceAttachment::GetElementError(
   return current_element_error_state;
 }
 
+AudioTrackList* SameThreadMediaSourceAttachment::CreateAudioTrackList(
+    MediaSourceTracer* tracer) {
+  DVLOG(1) << __func__ << " this=" << this;
+
+  VerifyCalledWhileContextsAliveForDebugging();
+
+  HTMLMediaElement* element = GetMediaElement(tracer);
+  return MakeGarbageCollected<AudioTrackList>(*element);
+}
+
+VideoTrackList* SameThreadMediaSourceAttachment::CreateVideoTrackList(
+    MediaSourceTracer* tracer) {
+  DVLOG(1) << __func__ << " this=" << this;
+
+  VerifyCalledWhileContextsAliveForDebugging();
+
+  HTMLMediaElement* element = GetMediaElement(tracer);
+  return MakeGarbageCollected<VideoTrackList>(*element);
+}
+
 void SameThreadMediaSourceAttachment::AddAudioTrackToMediaElement(
     MediaSourceTracer* tracer,
     AudioTrack* track) {

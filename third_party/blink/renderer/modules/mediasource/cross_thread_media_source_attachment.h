@@ -39,6 +39,8 @@ class CrossThreadMediaSourceAttachment final
   void NotifyDurationChanged(MediaSourceTracer* tracer, double duration) final;
   double GetRecentMediaTime(MediaSourceTracer* tracer) final;
   bool GetElementError(MediaSourceTracer* tracer) final;
+  AudioTrackList* CreateAudioTrackList(MediaSourceTracer* tracer) final;
+  VideoTrackList* CreateVideoTrackList(MediaSourceTracer* tracer) final;
   void AddAudioTrackToMediaElement(MediaSourceTracer* tracer,
                                    AudioTrack* track) final;
   void AddVideoTrackToMediaElement(MediaSourceTracer* tracer,

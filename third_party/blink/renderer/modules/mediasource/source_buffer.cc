@@ -127,14 +127,23 @@ SourceBuffer::SourceBuffer(std::unique_ptr<WebSourceBuffer> web_source_buffer,
 
   DCHECK(web_source_buffer_);
   DCHECK(source_);
-  DCHECK(source_->MediaElement());
+
+  scoped_refptr<MediaSourceAttachmentSupplement> attachment;
+  MediaSourceTracer* tracer;
+  std::tie(attachment, tracer) = source_->AttachmentAndTracer();
+  DCHECK(attachment);
+
   if (GetExecutionContext()->IsWindow()) {
     DCHECK(IsMainThread());
+    DCHECK(tracer);  // Same-thread attachments must use a tracer.
 
-    audio_tracks_ =
-        MakeGarbageCollected<AudioTrackList>(*source_->MediaElement());
-    video_tracks_ =
-        MakeGarbageCollected<VideoTrackList>(*source_->MediaElement());
+    // Have the attachment construct our audio and video tracklist members for
+    // us, since it knows how to do this with knowledge of the attached media
+    // element.
+    audio_tracks_ = attachment->CreateAudioTrackList(tracer);
+    DCHECK(audio_tracks_);
+    video_tracks_ = attachment->CreateVideoTrackList(tracer);
+    DCHECK(video_tracks_);
   } else {
     DCHECK(RuntimeEnabledFeatures::MediaSourceInWorkersEnabled() &&
            GetExecutionContext()->IsDedicatedWorkerGlobalScope());
@@ -1001,7 +1010,6 @@ bool SourceBuffer::InitializationSegmentReceived(
     const WebVector<MediaTrackInfo>& new_tracks) {
   DVLOG(3) << __func__ << " this=" << this << " tracks=" << new_tracks.size();
   DCHECK(source_);
-  DCHECK(source_->MediaElement());
 
   scoped_refptr<MediaSourceAttachmentSupplement> attachment;
   MediaSourceTracer* tracer;
@@ -1435,7 +1443,6 @@ bool SourceBuffer::PrepareAppend(double media_time,
 
 bool SourceBuffer::EvictCodedFrames(double media_time, size_t new_data_size) {
   DCHECK(source_);
-  DCHECK(source_->MediaElement());
 
   // Nothing to do if this SourceBuffer does not yet have frames to evict.
   if (!first_initialization_segment_received_)

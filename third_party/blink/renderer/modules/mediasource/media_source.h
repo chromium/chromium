@@ -107,7 +107,6 @@ class MediaSource final : public EventTargetWithInlineData,
   void OpenIfInEndedState();
   bool IsOpen() const;
   void SetSourceBufferActive(SourceBuffer*, bool);
-  HTMLMediaElement* MediaElement() const;
   std::pair<scoped_refptr<MediaSourceAttachmentSupplement>, MediaSourceTracer*>
   AttachmentAndTracer() const;
   void EndOfStreamAlgorithm(const WebMediaSource::EndOfStreamStatus);
@@ -148,11 +147,8 @@ class MediaSource final : public EventTargetWithInlineData,
   // cross-thread, for instance) must be the same semantic as the actual derived
   // type of the tracer. Further, if there is no attachment, then there must be
   // no tracer that's tracking an active attachment.
-  // TODO(https://crbug.com/878133): Remove |attached_element_| once it is fully
-  // replaced by usage of |media_source_attachment_| and |attachment_tracer_|.
   scoped_refptr<MediaSourceAttachmentSupplement> media_source_attachment_;
   Member<MediaSourceTracer> attachment_tracer_;
-  Member<HTMLMediaElement> attached_element_;
   Member<SourceBufferList> source_buffers_;
   Member<SourceBufferList> active_source_buffers_;
 
