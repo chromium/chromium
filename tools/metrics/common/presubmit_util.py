@@ -78,8 +78,9 @@ def DoPresubmit(argv,
     return 0
 
   if presubmit:
-    logging.error('%s is not formatted correctly; run %s to fix.',
-                  original_filename, script_name)
+    if interactive:
+      logging.error('%s is not formatted correctly; run %s to fix.',
+                    original_filename, script_name)
     return 1
 
   # Prompt user to consent on the change.

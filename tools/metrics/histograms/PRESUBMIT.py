@@ -11,13 +11,12 @@ for more details on the presubmit API built into depot_tools.
 def GetPrettyPrintErrors(input_api, output_api, cwd, rel_path, results):
   """Runs pretty-print command for specified file."""
   exit_code = input_api.subprocess.call(
-      [input_api.python_executable, 'pretty_print.py', rel_path, '--presubmit'],
-      cwd=cwd)
+      [input_api.python_executable, 'pretty_print.py', rel_path, '--presubmit',
+       '--non-interactive'], cwd=cwd)
 
   if exit_code != 0:
     error_msg = (
-        '%s is not formatted correctly,  please run pretty_print.py %s to fix.'
-        % (rel_path, rel_path))
+        '%s is not formatted correctly; run git cl format to fix.' % rel_path)
     results.append(output_api.PresubmitError(error_msg))
 
 
