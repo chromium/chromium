@@ -2732,6 +2732,10 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
       return kAtkFootnoteRole;
     case ax::mojom::Role::kDocPageBreak:
       return ATK_ROLE_SEPARATOR;
+    case ax::mojom::Role::kDocPageFooter:
+      return ATK_ROLE_FOOTER;
+    case ax::mojom::Role::kDocPageHeader:
+      return ATK_ROLE_HEADER;
     case ax::mojom::Role::kDocAcknowledgments:
     case ax::mojom::Role::kDocAfterword:
     case ax::mojom::Role::kDocAppendix:
@@ -2746,8 +2750,6 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
     case ax::mojom::Role::kDocGlossary:
     case ax::mojom::Role::kDocIndex:
     case ax::mojom::Role::kDocIntroduction:
-    case ax::mojom::Role::kDocPageFooter:
-    case ax::mojom::Role::kDocPageHeader:
     case ax::mojom::Role::kDocPageList:
     case ax::mojom::Role::kDocPart:
     case ax::mojom::Role::kDocPreface:

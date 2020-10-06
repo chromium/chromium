@@ -5669,6 +5669,12 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
     case ax::mojom::Role::kDescriptionListDetail:
       ia2_role = IA2_ROLE_PARAGRAPH;
       break;
+    case ax::mojom::Role::kDocPageFooter:
+      ia2_role = IA2_ROLE_FOOTER;
+      break;
+    case ax::mojom::Role::kDocPageHeader:
+      ia2_role = IA2_ROLE_HEADER;
+      break;
     case ax::mojom::Role::kDocAcknowledgments:
     case ax::mojom::Role::kDocAfterword:
     case ax::mojom::Role::kDocAppendix:
@@ -5696,8 +5702,6 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
     case ax::mojom::Role::kDocDedication:
     case ax::mojom::Role::kDocEpigraph:
     case ax::mojom::Role::kDocExample:
-    case ax::mojom::Role::kDocPageFooter:
-    case ax::mojom::Role::kDocPageHeader:
     case ax::mojom::Role::kDocPullquote:
     case ax::mojom::Role::kDocQna:
       ia2_role = IA2_ROLE_SECTION;
