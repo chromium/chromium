@@ -278,6 +278,10 @@ const char* ToString(ax::mojom::Role role) {
       return "docNotice";
     case ax::mojom::Role::kDocPageBreak:
       return "docPageBreak";
+    case ax::mojom::Role::kDocPageFooter:
+      return "docPageFooter";
+    case ax::mojom::Role::kDocPageHeader:
+      return "docPageHeader";
     case ax::mojom::Role::kDocPageList:
       return "docPageList";
     case ax::mojom::Role::kDocPart:

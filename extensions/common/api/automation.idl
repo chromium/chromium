@@ -197,6 +197,8 @@
     docNoteRef,
     docNotice,
     docPageBreak,
+    docPageFooter,
+    docPageHeader,
     docPageList,
     docPart,
     docPreface,

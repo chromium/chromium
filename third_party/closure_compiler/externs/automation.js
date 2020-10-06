@@ -203,6 +203,8 @@ chrome.automation.RoleType = {
   DOC_NOTE_REF: 'docNoteRef',
   DOC_NOTICE: 'docNotice',
   DOC_PAGE_BREAK: 'docPageBreak',
+  DOC_PAGE_FOOTER: 'docPageFooter',
+  DOC_PAGE_HEADER: 'docPageHeader',
   DOC_PAGE_LIST: 'docPageList',
   DOC_PART: 'docPart',
   DOC_PREFACE: 'docPreface',

@@ -175,6 +175,8 @@ enum Role {
   kDocNoteRef,
   kDocNotice,
   kDocPageBreak,
+  kDocPageFooter,
+  kDocPageHeader,
   kDocPageList,
   kDocPart,
   kDocPreface,

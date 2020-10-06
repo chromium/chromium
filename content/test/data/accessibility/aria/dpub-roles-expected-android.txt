@@ -29,6 +29,8 @@ android.webkit.WebView focusable focused scrollable
 ++android.view.View role_description='note reference' clickable link name='doc-noteref'
 ++android.view.View role_description='notice' name='doc-notice'
 ++android.view.View role_description='page break' name='doc-pagebreak'
+++android.view.View role_description='page footer' name='doc-pagefooter'
+++android.view.View role_description='page header' name='doc-pageheader'
 ++android.view.View role_description='page list' name='doc-pagelist'
 ++android.view.View role_description='part' name='doc-part'
 ++android.view.View role_description='preface' name='doc-preface'

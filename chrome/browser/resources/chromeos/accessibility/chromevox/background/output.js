@@ -2252,6 +2252,8 @@ Output.ROLE_INFO_ = {
   docNoteRef: {msgId: 'role_doc_note_ref', earconId: 'LINK', inherits: 'link'},
   docNotice: {msgId: 'role_doc_notice', inherits: 'abstractContainer'},
   docPageBreak: {msgId: 'role_doc_page_break', inherits: 'abstractContainer'},
+  docPageFooter: {msgId: 'role_doc_page_footer', inherits: 'abstractContainer'},
+  docPageHeader: {msgId: 'role_doc_page_header', inherits: 'abstractContainer'},
   docPageList: {msgId: 'role_doc_page_list', inherits: 'abstractContainer'},
   docPart: {msgId: 'role_doc_part', inherits: 'abstractContainer'},
   docPreface: {msgId: 'role_doc_preface', inherits: 'abstractContainer'},

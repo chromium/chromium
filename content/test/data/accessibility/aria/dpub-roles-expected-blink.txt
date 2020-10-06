@@ -31,6 +31,8 @@ rootWebArea
 ++++++docNoteRef name='doc-noteref'
 ++++++docNotice name='doc-notice'
 ++++++docPageBreak name='doc-pagebreak'
+++++++docPageFooter name='doc-pagefooter'
+++++++docPageHeader name='doc-pageheader'
 ++++++docPageList name='doc-pagelist'
 ++++++docPart name='doc-part'
 ++++++docPreface name='doc-preface'

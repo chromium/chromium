@@ -106,6 +106,8 @@ RoleMap BuildRoleMap() {
       {ax::mojom::Role::kDocNoteRef, NSAccessibilityLinkRole},
       {ax::mojom::Role::kDocNotice, NSAccessibilityGroupRole},
       {ax::mojom::Role::kDocPageBreak, NSAccessibilitySplitterRole},
+      {ax::mojom::Role::kDocPageFooter, NSAccessibilityGroupRole},
+      {ax::mojom::Role::kDocPageHeader, NSAccessibilityGroupRole},
       {ax::mojom::Role::kDocPageList, NSAccessibilityGroupRole},
       {ax::mojom::Role::kDocPart, NSAccessibilityGroupRole},
       {ax::mojom::Role::kDocPreface, NSAccessibilityGroupRole},

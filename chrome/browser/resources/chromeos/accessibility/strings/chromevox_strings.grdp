@@ -808,6 +808,12 @@
   <message desc="Accessibility role description for page break" name="IDS_CHROMEVOX_ROLE_DOC_PAGE_BREAK">
     Page break
   </message>
+  <message desc="Accessibility role description for page footer" name="IDS_CHROMEVOX_ROLE_DOC_PAGE_FOOTER">
+    Page footer
+  </message>
+  <message desc="Accessibility role description for page header" name="IDS_CHROMEVOX_ROLE_DOC_PAGE_HEADER">
+    Page header
+  </message>
   <message desc="Accessibility role description for page list" name="IDS_CHROMEVOX_ROLE_DOC_PAGE_LIST">
     Page list
   </message>
@@ -1943,7 +1949,7 @@
     Google Assistant
   </message>
 
-  
+
   <message desc="Title of the ChromeVox panel, a window that displays the text ChromeVox is speaking and contains controls to manipulate ChromeVox." name="IDS_CHROMEVOX_PANEL_TITLE">
     ChromeVox Panel
   </message>
@@ -2380,7 +2386,7 @@
     <ph name="font_family_string">$7<ex>Arial</ex></ph>
   </message>
 
-  
+
   <message desc="Spoken to describe color and opacity of text" name="IDS_CHROMEVOX_COLOR_DESCRIPTION">
     <ph name="color">$1<ex>Red</ex></ph>, <ph name="opacity_percentage">$2<ex>50</ex></ph>% opacity.
   </message>

@@ -501,6 +501,12 @@ below:
       <message name="IDS_AX_ROLE_DOC_PAGE_BREAK" desc="Accessibility role description for page break">
         page break
       </message>
+      <message name="IDS_AX_ROLE_DOC_PAGE_FOOTER" desc="Accessibility role description for page footer">
+        page footer
+      </message>
+      <message name="IDS_AX_ROLE_DOC_PAGE_HEADER" desc="Accessibility role description for page header">
+        page header
+      </message>
       <message name="IDS_AX_ROLE_DOC_PAGE_LIST" desc="Accessibility role description for page list">
         page list
       </message>

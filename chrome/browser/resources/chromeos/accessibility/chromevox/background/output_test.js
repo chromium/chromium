@@ -588,6 +588,8 @@ SYNC_TEST_F('ChromeVoxOutputE2ETest', 'MessageIdAndEarconValidity', function() {
     'docNoteRef',
     'docNotice',
     'docPageBreak',
+    'docPageFooter',
+    'docPageHeader',
     'docPageList',
     'docPart',
     'docPreface',

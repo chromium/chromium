@@ -157,6 +157,8 @@ const RoleEntry kRoles[] = {
     {"doc-noteref", ax::mojom::blink::Role::kDocNoteRef},
     {"doc-notice", ax::mojom::blink::Role::kDocNotice},
     {"doc-pagebreak", ax::mojom::blink::Role::kDocPageBreak},
+    {"doc-pagefooter", ax::mojom::blink::Role::kDocPageFooter},
+    {"doc-pageheader", ax::mojom::blink::Role::kDocPageHeader},
     {"doc-pagelist", ax::mojom::blink::Role::kDocPageList},
     {"doc-part", ax::mojom::blink::Role::kDocPart},
     {"doc-preface", ax::mojom::blink::Role::kDocPreface},
@@ -321,6 +323,8 @@ const InternalRoleEntry kInternalRoles[] = {
     {ax::mojom::blink::Role::kDocNoteRef, "DocNoteref"},
     {ax::mojom::blink::Role::kDocNotice, "DocNotice"},
     {ax::mojom::blink::Role::kDocPageBreak, "DocPagebreak"},
+    {ax::mojom::blink::Role::kDocPageFooter, "DocPageFooter"},
+    {ax::mojom::blink::Role::kDocPageHeader, "DocPageHeader"},
     {ax::mojom::blink::Role::kDocPageList, "DocPagelist"},
     {ax::mojom::blink::Role::kDocPart, "DocPart"},
     {ax::mojom::blink::Role::kDocPreface, "DocPreface"},
@@ -4198,6 +4202,8 @@ bool AXObject::NameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kDocEndnote:
     case ax::mojom::blink::Role::kDocFootnote:
     case ax::mojom::blink::Role::kDocPageBreak:
+    case ax::mojom::blink::Role::kDocPageFooter:
+    case ax::mojom::blink::Role::kDocPageHeader:
     case ax::mojom::blink::Role::kDocAbstract:
     case ax::mojom::blink::Role::kDocAcknowledgments:
     case ax::mojom::blink::Role::kDocAfterword:

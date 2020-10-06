@@ -870,6 +870,12 @@ base::string16 BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kDocPageBreak:
       message_id = IDS_AX_ROLE_DOC_PAGE_BREAK;
       break;
+    case ax::mojom::Role::kDocPageFooter:
+      message_id = IDS_AX_ROLE_DOC_PAGE_FOOTER;
+      break;
+    case ax::mojom::Role::kDocPageHeader:
+      message_id = IDS_AX_ROLE_DOC_PAGE_HEADER;
+      break;
     case ax::mojom::Role::kDocPageList:
       message_id = IDS_AX_ROLE_DOC_PAGE_LIST;
       break;
