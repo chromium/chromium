@@ -64,8 +64,7 @@ public class AwContentsRenderTest {
 
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
-        Assert.assertEquals(
-                Color.CYAN, GraphicsTestUtils.sampleBackgroundColorOnUiThread(mAwContents));
+        GraphicsTestUtils.pollForBackgroundColor(mAwContents, Color.CYAN);
 
         setBackgroundColorOnUiThread(Color.YELLOW);
         GraphicsTestUtils.pollForBackgroundColor(mAwContents, Color.YELLOW);

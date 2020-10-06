@@ -1869,6 +1869,18 @@ void LocalFrameView::SetUseColorAdjustBackground(UseColorAdjustBackground use,
     return;
 
   use_color_adjust_background_ = use;
+
+  if (GetFrame().IsMainFrame() && ShouldUseColorAdjustBackground()) {
+    // Pass the dark color-scheme background to the browser process to paint a
+    // dark background in the browser tab while rendering is blocked in order to
+    // avoid flashing the white background in between loading documents. If we
+    // perform a navigation within the same renderer process, we keep the
+    // content background from the previous page while rendering is blocked in
+    // the new page, but for cross process navigations we would paint the
+    // default background (typically white) while the rendering is blocked.
+    GetFrame().DidChangeBackgroundColor(SkColor(BaseBackgroundColor()));
+  }
+
   if (auto* layout_view = GetLayoutView())
     layout_view->SetBackgroundNeedsFullPaintInvalidation();
 }

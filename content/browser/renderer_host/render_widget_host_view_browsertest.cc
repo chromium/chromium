@@ -29,6 +29,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/slow_http_response.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/did_commit_navigation_interceptor.h"
@@ -292,6 +293,55 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
 #endif
 }
 #endif  // !defined(OS_MAC)
+
+namespace {
+
+std::unique_ptr<net::test_server::HttpResponse> HandleSlowStyleSheet(
+    const net::test_server::HttpRequest& request) {
+  auto response = std::make_unique<SlowHttpResponse>(request.relative_url);
+  if (!response->IsHandledUrl())
+    return nullptr;
+  return std::move(response);
+}
+
+class DOMContentLoadedObserver : public WebContentsObserver {
+ public:
+  explicit DOMContentLoadedObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  bool Wait() {
+    run_loop_.Run();
+    return dom_content_loaded_ && !did_paint_;
+  }
+
+ private:
+  // WebContentsObserver:
+  void DOMContentLoaded(RenderFrameHost* render_frame_host) override {
+    dom_content_loaded_ = true;
+    run_loop_.Quit();
+  }
+  void DidFirstVisuallyNonEmptyPaint() override { did_paint_ = true; }
+
+  base::RunLoop run_loop_;
+  bool did_paint_{false};
+  bool dom_content_loaded_{false};
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
+                       ColorSchemeMetaBackground) {
+  embedded_test_server()->RegisterRequestHandler(
+      base::BindRepeating(&HandleSlowStyleSheet));
+  ASSERT_TRUE(embedded_test_server()->Start());
+  DOMContentLoadedObserver observer(shell()->web_contents());
+  shell()->LoadURL(
+      embedded_test_server()->GetURL("/dark_color_scheme_meta_slow.html"));
+  EXPECT_TRUE(observer.Wait());
+  auto bg_color = GetRenderWidgetHostView()->content_background_color();
+  ASSERT_TRUE(bg_color.has_value());
+  EXPECT_EQ(SkColorSetRGB(18, 18, 18), bg_color.value());
+}
 
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewBrowserTestBase,
                        CompositorWorksWhenReusingRenderer) {

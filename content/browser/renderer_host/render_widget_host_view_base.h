@@ -517,12 +517,16 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   void reset_is_evicted() { is_evicted_ = false; }
   bool is_evicted() { return is_evicted_; }
 
+  // SetContentBackgroundColor is called when the renderer wants to update the
+  // view's background color.
+  void SetContentBackgroundColor(SkColor color);
+  base::Optional<SkColor> content_background_color() const {
+    return content_background_color_;
+  }
+
  protected:
   explicit RenderWidgetHostViewBase(RenderWidgetHost* host);
 
-  // SetContentBackgroundColor is called when the render wants to  update the
-  // view's background color.
-  void SetContentBackgroundColor(SkColor color);
   void NotifyObserversAboutShutdown();
 
   virtual MouseWheelPhaseHandler* GetMouseWheelPhaseHandler();
