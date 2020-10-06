@@ -46,6 +46,7 @@ js_modulizer("modulize") {
     "internet_config_test.js",
     "internet_detail_page_tests.js",
     "internet_known_networks_page_tests.js",
+    "internet_page_tests.js",
     "internet_subpage_tests.js",
     "localized_link_test.js",
     "multidevice_feature_item_tests.js",
@@ -97,5 +98,7 @@ js_modulizer("modulize") {
                          "nearby_share.FakeNearbyShareSettings|FakeNearbyShareSettings",
                          "nearby_share.FakeReceiveManager|FakeReceiveManager",
                          "nearby_share.FakeContactManager|FakeContactManager",
+                         "test_util.isVisible|isVisible",
+                         "test_util.waitAfterNextRender|waitAfterNextRender",
                        ]
 }

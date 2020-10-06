@@ -65,6 +65,11 @@
            use_base_dir="false"
            compress="false"
            type="BINDATA" />
+  <include name="IDR_OS_SETTINGS_INTERNET_PAGE_M_JS"
+           file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/internet_page/internet_page.m.js"
+           use_base_dir="false"
+           compress="false"
+           type="BINDATA" />
   <include name="IDR_OS_SETTINGS_INTERNET_SUBPAGE_M_JS"
            file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/internet_page/internet_subpage.m.js"
            use_base_dir="false"
