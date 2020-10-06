@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/hash/sha1.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/protocol/sync.pb.h"
 
@@ -44,6 +45,11 @@ std::string GetUnhashedClientTagFromAutofillWalletSpecifics(
       return std::string();
   }
   return std::string();
+}
+
+std::string GetUnhashedClientTagFromAutofillOfferSpecifics(
+    const sync_pb::AutofillOfferSpecifics& specifics) {
+  return base::NumberToString(specifics.id());
 }
 
 }  // namespace syncer

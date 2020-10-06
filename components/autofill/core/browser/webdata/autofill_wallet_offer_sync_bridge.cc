@@ -7,13 +7,13 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/sync/base/hash_util.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model_impl/client_tag_based_model_type_processor.h"
 #include "components/sync/model_impl/sync_metadata_store_change_list.h"
@@ -27,7 +27,7 @@ static int kAutofillWalletOfferSyncBridgeUserDataKey = 0;
 
 std::string GetClientTagFromSpecifics(
     const sync_pb::AutofillOfferSpecifics& specifics) {
-  return base::NumberToString(specifics.id());
+  return syncer::GetUnhashedClientTagFromAutofillOfferSpecifics(specifics);
 }
 
 std::string GetStorageKeyFromSpecifics(
