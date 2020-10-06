@@ -163,7 +163,7 @@ TEST_F(ReleaseNotesStorageTest, ShowSuggestionChipWhenNotificationShown) {
 
   release_notes_storage->MarkNotificationShown();
 
-  EXPECT_EQ(3, profile.get()->GetPrefs()->GetInteger(
+  EXPECT_EQ(6, profile.get()->GetPrefs()->GetInteger(
                    prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
   EXPECT_EQ(true, release_notes_storage->ShouldShowSuggestionChip());
 }

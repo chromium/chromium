@@ -24,7 +24,7 @@
 
 namespace {
 
-constexpr int kTimesToShowSuggestionChip = 3;
+constexpr int kTimesToShowSuggestionChip = 6;
 
 int GetMilestone() {
   return version_info::GetVersion().components()[0];

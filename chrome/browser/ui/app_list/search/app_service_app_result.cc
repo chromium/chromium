@@ -106,14 +106,6 @@ void AppServiceAppResult::GetContextMenuModel(GetMenuModelCallback callback) {
   context_menu_->GetMenuModel(std::move(callback));
 }
 
-void AppServiceAppResult::OnVisibilityChanged(bool visibility) {
-  if (id() == ash::kReleaseNotesAppId && visibility) {
-    DCHECK(chromeos::ReleaseNotesStorage(profile()).ShouldShowSuggestionChip());
-    chromeos::ReleaseNotesStorage(profile())
-        .DecreaseTimesLeftToShowSuggestionChip();
-  }
-}
-
 ash::SearchResultType AppServiceAppResult::GetSearchResultType() const {
   switch (app_type_) {
     case apps::mojom::AppType::kArc:
@@ -261,7 +253,10 @@ void AppServiceAppResult::HandleSuggestionChip(Profile* profile) {
   // Either of these apps could be shown as the release notes suggestion chip.
   if (id() == ash::kReleaseNotesAppId ||
       id() == chromeos::default_web_apps::kHelpAppId) {
-    SetNotifyVisibilityChange(true);
+    // TODO(b/169711884): Decrease times left only when the chip becomes
+    // visible.
+    chromeos::ReleaseNotesStorage(profile)
+        .DecreaseTimesLeftToShowSuggestionChip();
     // Make sure that if both Continue Reading and Release Notes are available,
     // Release Notes shows up first in the suggestion chip container.
     SetPositionPriority(1.0f);

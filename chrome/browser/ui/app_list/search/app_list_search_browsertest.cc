@@ -155,11 +155,16 @@ IN_PROC_BROWSER_TEST_F(ReleaseNotesSearchBrowserTest,
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
   GetProfile()->GetPrefs()->SetInteger(
-      prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 1);
+      prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 3);
 
   SearchAndWaitForProviders("",
                             {ResultType::kInstalledApp, ResultType::kLauncher});
 
+  // Note: SearchAndWaitForProviders decreases the count multiple times.
+  // TODO(b/169711884): Decrease times left only when the chip becomes visible.
+  const int times_left_to_show = GetProfile()->GetPrefs()->GetInteger(
+      prefs::kReleaseNotesSuggestionChipTimesLeftToShow);
+  EXPECT_EQ(times_left_to_show, 1);
   auto* result = FindResult(chromeos::default_web_apps::kHelpAppId);
   ASSERT_TRUE(result);
   // Has Release notes title.

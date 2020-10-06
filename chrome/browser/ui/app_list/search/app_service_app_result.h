@@ -42,7 +42,6 @@ class AppServiceAppResult : public AppResult {
   // ChromeSearchResult overrides:
   void Open(int event_flags) override;
   void GetContextMenuModel(GetMenuModelCallback callback) override;
-  void OnVisibilityChanged(bool visibility) override;
   AppContextMenu* GetAppContextMenu() override;
 
   // AppContextMenuDelegate overrides:
