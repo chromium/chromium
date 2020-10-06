@@ -23,8 +23,8 @@ def Minify(source):
        tempfile.NamedTemporaryFile(suffix='.js') as outfile:
     infile.write(source)
     infile.flush();
-    node.RunNode([
-        node_modules.PathToUglify(), infile.name, '--output', outfile.name])
+    node.RunNode(
+        [node_modules.PathToTerser(), infile.name, '--output', outfile.name])
     result = outfile.read()
     return result
 
