@@ -188,10 +188,6 @@ source_set("common_sources") {
     sources += [ "common_sandbox_support_linux.h" ]
   }
 
-  if (is_mac) {
-    sources += [ "injection_test_mac.h" ]
-  }
-
   configs += [
     "//build/config:precompiled_headers",
     "//content:content_implementation",
