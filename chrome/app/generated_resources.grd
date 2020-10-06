@@ -5521,6 +5521,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOMIZE_MENU_SHORTCUTS_LABEL" desc="The label for the shortcuts option in the customization menu on the New Tab Page.">
         Shortcuts
       </message>
+      <message name="IDS_NTP_CUSTOMIZE_MENU_MODULES_LABEL" desc="The label for the modules option in the customization menu on the New Tab Page.">
+        Cards
+      </message>
       <message name="IDS_NTP_CUSTOMIZE_MENU_COLOR_LABEL" desc="The label for the colors and themes option in the customization menu on the New Tab Page">
         Color and theme
       </message>
@@ -5547,6 +5550,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_CUSTOMIZE_MY_SHORTCUTS_DESC" desc="The description for the option to show most visited sites in the customization menu on the New Tab Page">
         Shortcuts are curated by you
+      </message>
+      <message name="IDS_NTP_CUSTOMIZE_HIDE_MODULES_LABEL" desc="The label for the option to hide modules in the customization menu on the New Tab Page">
+        Hide cards
+      </message>
+      <message name="IDS_NTP_CUSTOMIZE_HIDE_MODULES_DESC" desc="The description for the option to hide modules in the customization menu on the New Tab Page">
+        Don't show cards on this page
       </message>
       <message name="IDS_NTP_CUSTOMIZE_3PT_THEME_DESC" desc="The description for the installed third-party themes in the customization menu on the New Tab Page">
         Current theme you have installed
