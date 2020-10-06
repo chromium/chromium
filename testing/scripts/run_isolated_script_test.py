@@ -108,7 +108,7 @@ class TypUnittestAdapter(common.BaseIsolatedScriptArgsAdapter):
     self._temp_filter_file.write('\n'.join(filter_list))
     self._temp_filter_file.close()
     arg_name = 'test-list'
-    if KNOWN_TYP_TEST_RUNNERS.intersection(self.rest_args):
+    if any(r in self.rest_args[0] for r in KNOWN_TYP_TEST_RUNNERS):
       arg_name = 'file-list'
 
     return ['--%s=' % arg_name + self._temp_filter_file.name]
