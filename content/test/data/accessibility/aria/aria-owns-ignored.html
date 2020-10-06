@@ -1,0 +1,33 @@
+<!--
+@AURALINUX-DENY:checkable
+-->
+<!-- Make sure that the serialization/deserialization process works without
+  crashing when aria-owns is used with ignored nodes -->
+<hr aria-label="Ordinary presentation element with id">
+<div role="presentation" id="presentational0"></div>
+
+<hr aria-label="An aria-owned element is never ignored">
+<div role="group" aria-owns="presentational1"></div>
+<div role="presentation" id="presentational1">
+  <input type="button" value="button-in-owned-tree">
+</div>
+
+<hr aria-label="Element with aria-owns is never ignored">
+<input type="text" id="textbox">
+<div role="presentation" aria-owns="textbox"></div>
+
+<hr aria-label="Owning an element with an ignored parent serializes cleanly">
+<div role="presentation">
+  <div role="group" aria-owns="checkbox"></div>
+  <div role="presentation">
+    <input type="checkbox" id="checkbox">
+  </div>
+</div>
+
+<hr aria-label="All the above in one">
+<div role="presentation" id="presentational3">
+  <input type="range" id="range">
+</div>
+<div role="presentation">
+  <div role="presentation" aria-owns="presentational3"></div>
+</div>

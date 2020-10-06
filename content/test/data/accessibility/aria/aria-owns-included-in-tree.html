@@ -1,0 +1,64 @@
+<!--
+@AURALINUX-DENY:checkable
+-->
+<!-- Make sure that the serialization/deserialization process works without
+  crashing when aria-owns is used with nodes that normally wouldn't be in the
+  tree, and that any target of an aria-owns is included in the tree -->
+<test-element></test-element>
+<template id="test-contents">
+  <hr aria-label="Control: elements that are not in tree">
+  <span id="presentational0"></span>  <!-- Should not be in tree -->
+  <table>
+    <tbody>  <!-- Should not be in tree -->
+      <td><input></td>
+    </tbody>
+  </table>
+
+  <hr aria-label="An aria-owned element is always in tree">
+  <span role="group" aria-owns="presentational1"></span>
+  <span id="presentational1">  <!-- Should be in tree -->
+    <input type="button" value="button-in-owned-tree">
+  </span>
+
+  <hr aria-label="Element with aria-owns is always in tree">
+  <input type="text" id="textbox">
+  <span aria-owns="textbox"></span>  <!-- Should be in tree -->
+
+  <hr aria-label="Owning an element with unincluded ancestors serializes cleanly">
+  <span>
+    <span role="group" aria-owns="checkbox"></span>
+    <span>
+      <span>
+        <input type="checkbox" id="checkbox">
+      </span>
+    </span>
+  </span>
+
+  <hr aria-label="All the above in one">
+  <table role="none">
+    <tbody aria-owns="td">
+      <td>xyz</td>
+    </tbody>
+  </table>
+  <table role="none">
+    <tbody>  <!-- Not in tree -->
+      <td id="td">
+        <span>
+          <input type="range">
+        </span>
+      </td>
+    </tbody>
+  </table>
+</template>
+<script>
+  class TestElement extends HTMLElement {
+    constructor() {
+      super();
+
+      const template = document.getElementById('test-contents');
+      const instance = template.content.cloneNode(true);
+      this.attachShadow({mode: 'open'}).appendChild(instance);
+    }
+  }
+  customElements.define('test-element', TestElement);
+</script>

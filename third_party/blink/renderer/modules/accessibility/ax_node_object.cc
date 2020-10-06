@@ -3396,14 +3396,11 @@ void AXNodeObject::AddChildren() {
          child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
       if (child->IsMarkerPseudoElement() && AccessibilityIsIgnored())
         continue;
-      AXObject* child_obj = AXObjectCache().GetOrCreate(child);
-      if (child_obj && !AXObjectCache().IsAriaOwned(child_obj))
-        AddChild(child_obj);
+      AddChild(AXObjectCache().GetOrCreate(child));
     }
   } else {
     for (AXObject* obj = RawFirstChild(); obj; obj = obj->RawNextSibling()) {
-      if (!AXObjectCache().IsAriaOwned(obj))
-        AddChild(obj);
+      AddChild(obj);
     }
   }
 
@@ -3417,7 +3414,7 @@ void AXNodeObject::AddChildren() {
   AddAccessibleNodeChildren();
 
   for (const auto& owned_child : owned_children)
-    AddChild(owned_child);
+    AddChild(owned_child, true);
 
   for (const auto& child : children_) {
     if (!child->CachedParentObject())
@@ -3425,16 +3422,29 @@ void AXNodeObject::AddChildren() {
   }
 }
 
-void AXNodeObject::AddChild(AXObject* child) {
+void AXNodeObject::AddChild(AXObject* child, bool is_from_aria_owns) {
   unsigned int index = children_.size();
-  InsertChild(child, index);
+  if (child)
+    InsertChild(child, index, is_from_aria_owns);
 }
 
-void AXNodeObject::InsertChild(AXObject* child, unsigned index) {
+void AXNodeObject::InsertChild(AXObject* child,
+                               unsigned index,
+                               bool is_from_aria_owns) {
   if (!child || !CanHaveChildren())
     return;
 
+  if (is_from_aria_owns) {
+    DCHECK(AXObjectCache().IsAriaOwned(child));
+  } else {
+    // Don't add an aria-owned child to its natural parent, because it will
+    // already be the child of the element with aria-owns.
+    if (AXObjectCache().IsAriaOwned(child))
+      return;
+  }
+
   if (!child->AccessibilityIsIncludedInTree()) {
+    DCHECK(!is_from_aria_owns) << "Owned elements smust be in tree";
     // Child is ignored and not in the tree.
     // Recompute the child's children now as we skip over the ignored object.
     child->SetNeedsToUpdateChildren();
@@ -3443,8 +3453,13 @@ void AXNodeObject::InsertChild(AXObject* child, unsigned index) {
     // unignored descendants as it goes.
     const auto& children = child->ChildrenIncludingIgnored();
     wtf_size_t length = children.size();
-    for (wtf_size_t i = 0; i < length; ++i)
-      children_.insert(index + i, children[i]);
+    for (wtf_size_t i = 0; i < length; ++i) {
+      // If the child was owned, it will be added elsewhere as a direct
+      // child of the object owning it, and not as an indirect child under
+      // an object not included in the tree.
+      if (!AXObjectCache().IsAriaOwned(children[i]))
+        children_.insert(index + i, children[i]);
+    }
   } else if (!child->IsMenuListOption()) {
     // MenuListOptions must only be added in AXMenuListPopup::AddChildren.
     children_.insert(index, child);
