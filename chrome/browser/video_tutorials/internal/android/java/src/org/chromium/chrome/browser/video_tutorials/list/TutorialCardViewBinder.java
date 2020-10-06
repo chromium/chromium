@@ -40,9 +40,8 @@ class TutorialCardViewBinder {
             final ImageView thumbnail = view.findViewById(R.id.thumbnail);
             thumbnail.setImageDrawable(new ColorDrawable(thumbnail.getResources().getColor(
                     org.chromium.components.browser_ui.widget.R.color.image_loading_color)));
-            model.get(TutorialCardProperties.VISUALS_PROVIDER).getVisuals(drawable -> {
-                thumbnail.setImageDrawable(drawable);
-            });
+            model.get(TutorialCardProperties.VISUALS_PROVIDER)
+                    .getVisuals(thumbnail::setImageDrawable);
         } else {
             throw new IllegalArgumentException(
                     "Cannot update the view for propertyKey: " + propertyKey);

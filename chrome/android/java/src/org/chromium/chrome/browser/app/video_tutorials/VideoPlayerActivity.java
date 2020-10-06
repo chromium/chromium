@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.video_tutorials;
+package org.chromium.chrome.browser.app.video_tutorials;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,8 +11,12 @@ import android.util.Pair;
 import android.view.WindowManager;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.video_tutorials.Tutorial;
+import org.chromium.chrome.browser.video_tutorials.VideoTutorialService;
+import org.chromium.chrome.browser.video_tutorials.VideoTutorialServiceFactory;
 import org.chromium.chrome.browser.video_tutorials.player.VideoPlayerCoordinator;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.version_info.VersionConstants;
@@ -26,7 +29,7 @@ import org.chromium.ui.base.WindowAndroid;
  * Java interface for interacting with the native video tutorial service. Responsible for
  * initializing and fetching data fo be shown on the UI.
  */
-public class VideoPlayerActivity extends Activity {
+public class VideoPlayerActivity extends SynchronousInitializationActivity {
     public static final String EXTRA_VIDEO_TUTORIAL = "extra_video_tutorial";
 
     private WindowAndroid mWindowAndroid;
@@ -45,8 +48,7 @@ public class VideoPlayerActivity extends Activity {
         setContentView(mCoordinator.getView());
 
         int featureType = IntentUtils.safeGetIntExtra(getIntent(), EXTRA_VIDEO_TUTORIAL, 0);
-        videoTutorialService.getTutorial(
-                featureType, tutorial -> { mCoordinator.playVideoTutorial(tutorial); });
+        videoTutorialService.getTutorial(featureType, mCoordinator::playVideoTutorial);
     }
 
     private Pair<WebContents, ContentView> createWebContents() {
