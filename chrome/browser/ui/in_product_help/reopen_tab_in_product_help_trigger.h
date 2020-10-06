@@ -44,10 +44,6 @@ class ReopenTabInProductHelpTrigger {
   // triggers IPH.
   void NewTabOpened();
 
-  // Must be called once after IPH finishes. Must only be called after the
-  // callback is called.
-  void HelpDismissed();
-
   static std::map<std::string, std::string> GetFieldTrialParamsForTest(
       int tab_minimum_active_duration_seconds,
       int new_tab_opened_timeout_seconds);

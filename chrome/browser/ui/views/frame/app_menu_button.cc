@@ -43,6 +43,7 @@ void AppMenuButton::CloseMenu() {
 }
 
 void AppMenuButton::OnMenuClosed() {
+  HandleMenuClosed();
   for (AppMenuButtonObserver& observer : observer_list_)
     observer.AppMenuClosed();
 }
@@ -68,3 +69,5 @@ void AppMenuButton::RunMenu(std::unique_ptr<AppMenuModel> menu_model,
   for (AppMenuButtonObserver& observer : observer_list_)
     observer.AppMenuShown();
 }
+
+void AppMenuButton::HandleMenuClosed() {}

@@ -43,10 +43,6 @@ class ReopenTabInProductHelp : public BrowserListObserver, public KeyedService {
   // through CTRL+SHIFT+T or through the recent tabs menu.
   void TabReopened();
 
-  // Must be called when IPH promo finishes showing, whether by use of the
-  // feature or by timing out.
-  void HelpDismissed();
-
  private:
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;

@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
+#include "chrome/browser/ui/in_product_help/feature_promo_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "ui/views/view.h"
@@ -38,11 +39,6 @@ class BrowserAppMenuButton : public AppMenuButton {
   // with the menu.
   void ShowMenu(int run_types);
 
-  // Called to inform the button that it's being used as an anchor for a promo
-  // for |promo_feature|.  When this is non-null, the button is highlighted in a
-  // noticeable color, and the menu item appearance may be affected.
-  void SetPromoFeature(base::Optional<InProductHelpFeature> promo_feature);
-
   // Opens the app menu immediately during a drag-and-drop operation.
   // Used only in testing.
   static bool g_open_app_immediately_for_testing;
@@ -65,6 +61,10 @@ class BrowserAppMenuButton : public AppMenuButton {
   void OnThemeChanged() override;
   // Updates the presentation according to |severity_| and the theme provider.
   void UpdateIcon() override;
+  void HandleMenuClosed() override;
+
+  // ui::PropertyHandler:
+  void AfterPropertyChange(const void* key, int64_t old_value) override;
 
  protected:
   // If the button is being used as an anchor for a promo, returns the best
@@ -77,6 +77,8 @@ class BrowserAppMenuButton : public AppMenuButton {
 
   void UpdateTextAndHighlightColor();
 
+  void SetHasInProductHelpPromo(bool has_in_product_help_promo);
+
   AppMenuIconController::TypeAndSeverity type_and_severity_{
       AppMenuIconController::IconType::NONE,
       AppMenuIconController::Severity::NONE};
@@ -84,8 +86,10 @@ class BrowserAppMenuButton : public AppMenuButton {
   // Our owning toolbar view.
   ToolbarView* const toolbar_view_;
 
-  // The feature, if any, for which this button is anchoring a promo.
-  base::Optional<InProductHelpFeature> promo_feature_;
+  // Determines whether to highlight the button for in-product help.
+  bool has_in_product_help_promo_ = false;
+
+  base::Optional<FeaturePromoController::PromoHandle> reopen_tab_promo_handle_;
 
   std::unique_ptr<ui::TouchUiController::Subscription> subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(

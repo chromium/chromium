@@ -53,6 +53,10 @@ class AppMenuButton : public ToolbarButton {
                int run_flags,
                bool alert_reopen_tab_items);
 
+  // Provided for subclasses to handle menu close, before observers are
+  // notified. Default implementation does nothing.
+  virtual void HandleMenuClosed();
+
  private:
   // App model and menu.
   // Note that the menu should be destroyed before the model it uses, so the

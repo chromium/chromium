@@ -14,13 +14,13 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/in_product_help/mock_feature_promo_controller.h"
 #include "chrome/browser/ui/in_product_help/reopen_tab_in_product_help_trigger.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/feature_engagement/public/tracker.h"
-#include "components/feature_engagement/test/mock_tracker.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,9 +28,8 @@
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Invoke;
+using ::testing::Ref;
 using ::testing::Return;
-
-using MockTracker = ::testing::NiceMock<feature_engagement::test::MockTracker>;
 
 namespace {
 
@@ -52,36 +51,36 @@ class ReopenTabInProductHelpTest : public BrowserWithTestWindowTest {
             kTabMinimumActiveDuration.InSeconds(),
             kNewTabOpenedTimeout.InSeconds()));
   }
-  // We want to use |MockTracker| instead of |Tracker|, so we must override its
-  // factory.
-  TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{feature_engagement::TrackerFactory::GetInstance(),
-             base::BindRepeating(CreateTracker)}};
-  }
 
-  MockTracker* GetMockTracker() {
-    return static_cast<MockTracker*>(
-        feature_engagement::TrackerFactory::GetForBrowserContext(profile()));
+  std::unique_ptr<BrowserWindow> CreateBrowserWindow() override {
+    auto test_window = std::make_unique<TestBrowserWindow>();
+
+    // This test only supports one window.
+    DCHECK(!mock_promo_controller_);
+
+    mock_promo_controller_ = static_cast<MockFeaturePromoController*>(
+        test_window->SetFeaturePromoController(
+            std::make_unique<MockFeaturePromoController>()));
+    return test_window;
   }
 
   base::SimpleTestTickClock* clock() { return &clock_; }
-
- private:
-  // Factory function for our |MockTracker|
-  static std::unique_ptr<KeyedService> CreateTracker(
-      content::BrowserContext* context) {
-    return std::make_unique<MockTracker>();
+  MockFeaturePromoController* mock_promo_controller() {
+    return mock_promo_controller_;
   }
 
+ private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::SimpleTestTickClock clock_;
+
+  MockFeaturePromoController* mock_promo_controller_ = nullptr;
 };
 
 TEST_F(ReopenTabInProductHelpTest, TriggersIPH) {
   ReopenTabInProductHelp reopen_tab_iph(profile(), clock());
 
-  auto* mock_tracker = GetMockTracker();
-  EXPECT_CALL(*mock_tracker, ShouldTriggerHelpUI(_))
+  EXPECT_CALL(*mock_promo_controller(),
+              MaybeShowPromo(Ref(feature_engagement::kIPHReopenTabFeature)))
       .Times(1)
       .WillOnce(Return(true));
 

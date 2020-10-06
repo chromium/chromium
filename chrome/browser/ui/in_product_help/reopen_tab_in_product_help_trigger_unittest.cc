@@ -8,6 +8,9 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
+#include "base/test/bind_test_util.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -33,16 +36,6 @@ constexpr base::TimeDelta kTabMinimumActiveDuration =
 constexpr base::TimeDelta kNewTabOpenedTimeout =
     base::TimeDelta::FromSeconds(5);
 
-void DismissImmediately(ReopenTabInProductHelpTrigger* trigger) {
-  trigger->HelpDismissed();
-}
-
-void DismissAndSetFlag(ReopenTabInProductHelpTrigger* trigger,
-                       bool* triggered) {
-  *triggered = true;
-  trigger->HelpDismissed();
-}
-
 }  // namespace
 
 class ReopenTabInProductHelpTriggerTest : public ::testing::Test {
@@ -62,44 +55,44 @@ class ReopenTabInProductHelpTriggerTest : public ::testing::Test {
 TEST_F(ReopenTabInProductHelpTriggerTest, TriggersIPH) {
   NiceMock<MockTracker> mock_tracker;
 
-  // We expect to send the backend our trigger event and ask if we should
-  // display. After the backend replying yes, we should tell the backend IPH was
-  // dismissed by the user.
   EXPECT_CALL(
       mock_tracker,
       NotifyEvent(Eq(feature_engagement::events::kReopenTabConditionsMet)))
       .Times(1);
-  EXPECT_CALL(mock_tracker, ShouldTriggerHelpUI(_))
-      .Times(1)
-      .WillOnce(Return(true));
-  EXPECT_CALL(mock_tracker, Dismissed(_)).Times(1);
 
   // Instantiate IPH and send sequence of user interactions.
   base::SimpleTestTickClock clock;
   ReopenTabInProductHelpTrigger reopen_tab_iph(&mock_tracker, &clock);
 
-  reopen_tab_iph.SetShowHelpCallback(
-      base::BindRepeating(DismissImmediately, &reopen_tab_iph));
+  base::MockCallback<base::RepeatingCallback<void()>> show_help_callback;
+  reopen_tab_iph.SetShowHelpCallback(show_help_callback.Get());
 
   reopen_tab_iph.ActiveTabClosed(kTabMinimumActiveDuration);
+  EXPECT_CALL(show_help_callback, Run());
   reopen_tab_iph.NewTabOpened();
 }
 
-TEST_F(ReopenTabInProductHelpTriggerTest, RespectsBackendShouldTrigger) {
+TEST_F(ReopenTabInProductHelpTriggerTest, AlwaysCallsBackendOnNewTab) {
   NiceMock<MockTracker> mock_tracker;
 
-  EXPECT_CALL(mock_tracker, ShouldTriggerHelpUI(_))
-      .Times(1)
-      .WillOnce(Return(false));
-  EXPECT_CALL(mock_tracker, Dismissed(_)).Times(0);
+  EXPECT_CALL(
+      mock_tracker,
+      NotifyEvent(Eq(feature_engagement::events::kReopenTabConditionsMet)))
+      .Times(0);
 
   base::SimpleTestTickClock clock;
   ReopenTabInProductHelpTrigger reopen_tab_iph(&mock_tracker, &clock);
 
-  reopen_tab_iph.SetShowHelpCallback(
-      base::BindRepeating(DismissImmediately, &reopen_tab_iph));
+  base::MockCallback<base::RepeatingCallback<void()>> show_help_callback;
+  reopen_tab_iph.SetShowHelpCallback(show_help_callback.Get());
 
-  reopen_tab_iph.ActiveTabClosed(kTabMinimumActiveDuration);
+  EXPECT_CALL(show_help_callback, Run());
+  // Opening a new tab without closing an active tab first:
+  reopen_tab_iph.NewTabOpened();
+
+  EXPECT_CALL(show_help_callback, Run());
+  // Opening a new tab after closing a tab too quickly:
+  reopen_tab_iph.ActiveTabClosed(kTabMinimumActiveDuration / 2);
   reopen_tab_iph.NewTabOpened();
 }
 
@@ -110,6 +103,8 @@ TEST_F(ReopenTabInProductHelpTriggerTest, TabNotActiveLongEnough) {
 
   base::SimpleTestTickClock clock;
   ReopenTabInProductHelpTrigger reopen_tab_iph(&mock_tracker, &clock);
+
+  reopen_tab_iph.SetShowHelpCallback(base::DoNothing::Repeatedly());
 
   reopen_tab_iph.ActiveTabClosed(kTabMinimumActiveDuration / 2);
   reopen_tab_iph.NewTabOpened();
@@ -123,8 +118,7 @@ TEST_F(ReopenTabInProductHelpTriggerTest, RespectsTimeout) {
   base::SimpleTestTickClock clock;
   ReopenTabInProductHelpTrigger reopen_tab_iph(&mock_tracker, &clock);
 
-  reopen_tab_iph.SetShowHelpCallback(
-      base::BindRepeating(DismissImmediately, &reopen_tab_iph));
+  reopen_tab_iph.SetShowHelpCallback(base::DoNothing::Repeatedly());
 
   reopen_tab_iph.ActiveTabClosed(kTabMinimumActiveDuration);
   clock.Advance(kNewTabOpenedTimeout);
@@ -138,17 +132,13 @@ TEST_F(ReopenTabInProductHelpTriggerTest, TriggersTwice) {
       mock_tracker,
       NotifyEvent(Eq(feature_engagement::events::kReopenTabConditionsMet)))
       .Times(2);
-  EXPECT_CALL(mock_tracker, ShouldTriggerHelpUI(_))
-      .Times(2)
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(mock_tracker, Dismissed(_)).Times(2);
 
   base::SimpleTestTickClock clock;
   ReopenTabInProductHelpTrigger reopen_tab_iph(&mock_tracker, &clock);
 
   bool triggered = false;
   reopen_tab_iph.SetShowHelpCallback(
-      base::BindRepeating(DismissAndSetFlag, &reopen_tab_iph, &triggered));
+      base::BindLambdaForTesting([&triggered]() { triggered = true; }));
 
   reopen_tab_iph.ActiveTabClosed(kTabMinimumActiveDuration);
   reopen_tab_iph.NewTabOpened();
@@ -160,32 +150,4 @@ TEST_F(ReopenTabInProductHelpTriggerTest, TriggersTwice) {
   reopen_tab_iph.NewTabOpened();
 
   EXPECT_TRUE(triggered);
-}
-
-// Ensures backend's ShouldTriggerHelpUI() is called whenever a new tab is
-// opened, even if we haven't met our triggering conditions yet.
-TEST_F(ReopenTabInProductHelpTriggerTest, AlwaysCallsBackendOnNewTab) {
-  NiceMock<MockTracker> mock_tracker;
-
-  EXPECT_CALL(
-      mock_tracker,
-      NotifyEvent(Eq(feature_engagement::events::kReopenTabConditionsMet)))
-      .Times(0);
-  EXPECT_CALL(mock_tracker, ShouldTriggerHelpUI(_))
-      .Times(2)
-      .WillRepeatedly(Return(false));
-  EXPECT_CALL(mock_tracker, Dismissed(_)).Times(0);
-
-  base::SimpleTestTickClock clock;
-  ReopenTabInProductHelpTrigger reopen_tab_iph(&mock_tracker, &clock);
-
-  reopen_tab_iph.SetShowHelpCallback(
-      base::BindRepeating(DismissImmediately, &reopen_tab_iph));
-
-  // Opening a new tab without closing an active tab first:
-  reopen_tab_iph.NewTabOpened();
-
-  // Opening a new tab after closing a tab too quickly:
-  reopen_tab_iph.ActiveTabClosed(kTabMinimumActiveDuration / 2);
-  reopen_tab_iph.NewTabOpened();
 }

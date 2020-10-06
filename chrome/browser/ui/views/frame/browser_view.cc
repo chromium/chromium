@@ -75,6 +75,7 @@
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
@@ -1176,7 +1177,12 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
 }
 
 void BrowserView::OnTabRestored(int command_id) {
-  reopen_tab_promo_controller_.OnTabReopened(command_id);
+  // Ignore if a tab other than the last closed tab was restored.
+  if (command_id != AppMenuModel::kMinRecentTabsCommandId &&
+      command_id != IDC_RESTORE_TAB)
+    return;
+  feature_promo_controller_->CloseBubble(
+      feature_engagement::kIPHReopenTabFeature);
 }
 
 void BrowserView::ZoomChangedForActiveTab(bool can_show_bubble) {
@@ -3445,11 +3451,9 @@ std::unique_ptr<content::EyeDropper> BrowserView::OpenEyeDropper(
 }
 
 void BrowserView::ShowInProductHelpPromo(InProductHelpFeature iph_feature) {
+  // TODO(crbug.com/1133016): remove this as it is no longer used.
   switch (iph_feature) {
     case InProductHelpFeature::kIncognitoWindow:
-      break;
-    case InProductHelpFeature::kReopenTab:
-      reopen_tab_promo_controller_.ShowPromo();
       break;
   }
 }

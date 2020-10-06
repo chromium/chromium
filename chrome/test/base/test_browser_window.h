@@ -206,7 +206,7 @@ class TestBrowserWindow : public BrowserWindow {
 
   // Sets the controller returned by GetFeaturePromoController().
   // Deletes the existing one, if any.
-  void SetFeaturePromoController(
+  FeaturePromoController* SetFeaturePromoController(
       std::unique_ptr<FeaturePromoController> feature_promo_controller);
 
  protected:

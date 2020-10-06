@@ -92,20 +92,8 @@ void ReopenTabInProductHelpTrigger::NewTabOpened() {
     ResetTriggerState();
   }
 
-  // Make sure ShouldTriggerHelpUI is always called when a new tab is
-  // opened. This makes testing the UI easier when the feature engagement demo
-  // mode is enabled (in which the first call always returns true). Making the
-  // call not conditional on our triggering conditions means the UI can be
-  // triggered more easily and consistently. In production, this will always
-  // return false anyway since we didn't call NotifyEvent().
-  if (tracker_->ShouldTriggerHelpUI(feature_engagement::kIPHReopenTabFeature)) {
-    DCHECK(cb_);
-    cb_.Run();
-  }
-}
-
-void ReopenTabInProductHelpTrigger::HelpDismissed() {
-  tracker_->Dismissed(feature_engagement::kIPHReopenTabFeature);
+  DCHECK(cb_);
+  cb_.Run();
   ResetTriggerState();
 }
 

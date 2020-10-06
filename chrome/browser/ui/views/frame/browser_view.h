@@ -36,7 +36,6 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller.h"
 #include "chrome/browser/ui/views/frame/web_contents_close_handler.h"
-#include "chrome/browser/ui/views/in_product_help/reopen_tab_promo_controller.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/load_complete_listener.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -934,8 +933,6 @@ class BrowserView : public BrowserWindow,
   // on a particular display, this closure will be called after fullscreen is
   // exited to restore the original pre-fullscreen bounds of the window.
   base::OnceClosure restore_pre_fullscreen_bounds_callback_;
-
-  ReopenTabPromoController reopen_tab_promo_controller_{this};
 
   ScopedObserver<banners::AppBannerManager, banners::AppBannerManager::Observer>
       app_banner_manager_observer_{this};

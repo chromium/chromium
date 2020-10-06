@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 #include "chrome/browser/ui/views/in_product_help/feature_promo_bubble_params.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/grit/generated_resources.h"
@@ -33,6 +34,11 @@ views::View* GetTabGroupsAnchorView(BrowserView* browser_view) {
 // kIPHLiveCaptionFeature:
 views::View* GetMediaButton(BrowserView* browser_view) {
   return browser_view->toolbar()->media_button();
+}
+
+// kIPHReopenTabFeature:
+views::View* GetAppMenuButton(BrowserView* browser_view) {
+  return browser_view->toolbar()->app_menu_button();
 }
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -123,6 +129,26 @@ void FeaturePromoRegistry::RegisterKnownFeatures() {
 
     RegisterFeature(feature_engagement::kIPHLiveCaptionFeature, params,
                     base::BindRepeating(GetMediaButton));
+  }
+
+  {
+    // kIPHReopenTabFeature:
+    FeaturePromoBubbleParams params;
+    params.body_string_specifier = IDS_REOPEN_TAB_PROMO;
+    params.arrow = views::BubbleBorder::Arrow::TOP_RIGHT;
+
+    // TODO(crbug.com/1133016): re-add screenreader string. This
+    // requires some refactoring, since most accelerators are fetched
+    // from BrowserView. This is not available here.
+    //
+    // A couple implementation options:
+    // * Add another callback to fetch accelerator
+    // * Replace FeaturePromoBubbleParams::feature_accelerator with command ID;
+    //   this ID can be looked up with BrowserView::GetAccelerator() on IPH
+    //   show to get the accelerator.
+
+    RegisterFeature(feature_engagement::kIPHReopenTabFeature, params,
+                    base::BindRepeating(GetAppMenuButton));
   }
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)

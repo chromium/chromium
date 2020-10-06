@@ -271,9 +271,10 @@ FeaturePromoController* TestBrowserWindow::GetFeaturePromoController() {
   return feature_promo_controller_.get();
 }
 
-void TestBrowserWindow::SetFeaturePromoController(
+FeaturePromoController* TestBrowserWindow::SetFeaturePromoController(
     std::unique_ptr<FeaturePromoController> feature_promo_controller) {
   feature_promo_controller_ = std::move(feature_promo_controller);
+  return feature_promo_controller_.get();
 }
 
 // TestBrowserWindowOwner -----------------------------------------------------

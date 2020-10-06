@@ -10,7 +10,6 @@
 // Identifies a feature that has in-product help.
 enum class InProductHelpFeature {
   kIncognitoWindow,
-  kReopenTab,
 };
 
 #endif  // CHROME_BROWSER_UI_IN_PRODUCT_HELP_IN_PRODUCT_HELP_H_
