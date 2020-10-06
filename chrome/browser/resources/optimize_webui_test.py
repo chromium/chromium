@@ -81,13 +81,13 @@ import './element_in_dir/element_in_dir.js';
 <script type="module" src="ui.js"></script>
 ''')
 
-  def _write_v3_files_with_resources_to_src_dir(self):
+  def _write_v3_files_with_resources_to_src_dir(self, gen_dir='gen'):
     resources_path = os.path.join(
-        _HERE_DIR.replace('\\', '/'), 'gen', 'ui', 'webui', 'resources',
+        _HERE_DIR.replace('\\', '/'), gen_dir, 'ui', 'webui', 'resources',
         'preprocessed', 'js', 'fake_resource.js')
     os.makedirs(os.path.dirname(resources_path))
 
-    self._tmp_dirs.append('gen')
+    self._tmp_dirs.append(gen_dir)
     with open(resources_path, 'w') as tmp_file:
       tmp_file.write("alert('hello from shared resource');")
 
@@ -178,6 +178,24 @@ import './element_in_dir/element_in_dir.js';
         os.path.normpath(
             '../gen/ui/webui/resources/preprocessed/js/fake_resource.js'),
         depfile_d)
+
+  def testV3OptimizeWithResourcesInNonDefaultToolchain(self):
+    self._write_v3_files_with_resources_to_src_dir(gen_dir='ash_clang_64/gen')
+    args = [
+      '--js_module_in_files', 'ui.js',
+      '--js_out_files', 'ui.rollup.js',
+      '--gen_dir_relpath', 'ash_clang_64/gen',
+    ]
+    self._run_optimize(args)
+
+    ui_rollup_js = self._read_out_file('ui.rollup.js')
+    self.assertIn('hello from shared resource', ui_rollup_js)
+
+    depfile_d = self._read_out_file('depfile.d')
+    self.assertIn(
+        os.path.normpath(
+            '../ash_clang_64/gen/ui/webui/resources/preprocessed/js/'
+            'fake_resource.js'), depfile_d)
 
   def testV3MultiBundleOptimize(self):
     self._write_v3_files_to_src_dir()

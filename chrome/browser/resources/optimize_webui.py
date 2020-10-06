@@ -165,7 +165,7 @@ def _update_dep_file(in_folder, args, manifest):
 # pass it information about the location of the directories and files to exclude
 # from the bundle.
 def _generate_rollup_config(tmp_out_dir, path_to_plugin, in_path, host,
-                            excludes):
+                            excludes, gen_dir_relpath):
   rollup_config_file = os.path.join(tmp_out_dir, 'rollup.config.js')
   excludes_string = '[\'' + '\', \''.join(excludes) + '\']'
   with open(rollup_config_file, 'w') as f:
@@ -174,7 +174,7 @@ def _generate_rollup_config(tmp_out_dir, path_to_plugin, in_path, host,
     f.write('export default({\n')
     f.write('  plugins: [ plugin(\'%s\', \'%s\', \'%s\', \'%s\', %s) ]\n' % (
         _SRC_PATH.replace('\\', '/'),
-        os.path.join(_CWD, 'gen').replace('\\', '/'),
+        os.path.join(_CWD, gen_dir_relpath).replace('\\', '/'),
         in_path.replace('\\', '/'), host, excludes_string))
     f.write('});')
     f.close()
@@ -213,7 +213,8 @@ def _bundle_v3(tmp_out_dir, in_path, out_path, manifest_out_path, args,
   path_to_plugin = os.path.join(
       os.path.abspath(_HERE_PATH), 'tools', 'rollup_plugin.js')
   rollup_config_file = _generate_rollup_config(tmp_out_dir, path_to_plugin,
-                                               in_path, args.host, excludes)
+                                               in_path, args.host, excludes,
+                                               args.gen_dir_relpath)
   rollup_args = [os.path.join(in_path, f) for f in args.js_module_in_files]
 
   # Confirm names are as expected. This is necessary to avoid having to replace
@@ -379,6 +380,9 @@ def main(argv):
   parser.add_argument('--js_out_files', nargs='*', required=True)
   parser.add_argument('--out_folder', required=True)
   parser.add_argument('--js_module_in_files', nargs='*')
+  parser.add_argument('--gen_dir_relpath', default='gen', help='Path of the '
+      'gen directory relative to the out/. If running in the default '
+      'toolchain, the path is gen, otherwise $toolchain_name/gen')
   args = parser.parse_args(argv)
 
   # Either JS module input files (for Polymer 3) or HTML input and output files
