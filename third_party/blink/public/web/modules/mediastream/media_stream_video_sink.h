@@ -25,6 +25,10 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSink : public WebMediaStreamSink {
  public:
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason);
 
+  // Required minimum frames per second needed for the sink. Default is zero
+  // unless overridden.
+  virtual double GetRequiredMinFramesPerSec() const;
+
  protected:
   MediaStreamVideoSink();
   ~MediaStreamVideoSink() override;

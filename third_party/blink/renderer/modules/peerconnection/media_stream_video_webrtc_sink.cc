@@ -11,8 +11,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
-#include "base/timer/timer.h"
-#include "media/base/limits.h"
 #include "third_party/blink/public/web/modules/mediastream/web_media_stream_utils.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
@@ -35,15 +33,6 @@ absl::optional<bool> ToAbslOptionalBool(const base::Optional<bool>& value) {
 }  // namespace
 
 namespace {
-
-// The default number of microseconds that should elapse since the last video
-// frame was received, before requesting a refresh frame.
-const int64_t kDefaultRefreshIntervalMicros =
-    base::Time::kMicrosecondsPerSecond;
-
-// A lower-bound for the refresh interval.
-const int64_t kLowerBoundRefreshIntervalMicros =
-    base::Time::kMicrosecondsPerSecond / media::limits::kMaxFramesPerSecond;
 
 webrtc::VideoTrackInterface::ContentHint ContentHintTypeToWebRtcContentHint(
     WebMediaStreamTrack::ContentHintType content_hint) {
@@ -78,8 +67,6 @@ class MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter
       const scoped_refptr<base::SingleThreadTaskRunner>&
           libjingle_worker_thread,
       const scoped_refptr<WebRtcVideoTrackSource>& source,
-      base::TimeDelta refresh_interval,
-      const base::RepeatingClosure& refresh_callback,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // MediaStreamVideoWebRtcSink can be destroyed on the main render thread or
@@ -100,11 +87,6 @@ class MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter
 
   virtual ~WebRtcVideoSourceAdapter();
 
-  // Called whenever a video frame was just delivered on the IO thread. This
-  // restarts the delay period before the |refresh_timer_| will fire the next
-  // time.
-  void ResetRefreshTimerOnMainThread();
-
   scoped_refptr<base::SingleThreadTaskRunner> render_task_runner_;
 
   // |render_thread_checker_| is bound to the main render thread.
@@ -123,38 +105,17 @@ class MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter
   // main render thread in ReleaseSourceOnMainThread() when
   // the owning MediaStreamVideoWebRtcSink is being destroyed.
   base::Lock video_source_stop_lock_;
-
-  // Requests a refresh frame at regular intervals. The delay on this timer is
-  // reset each time a frame is received so that it will not fire for at least
-  // an additional period. This means refresh frames will only be requested when
-  // the source has halted delivery (e.g., a screen capturer stops sending
-  // frames because the screen is not being updated).
-  //
-  // This mechanism solves a number of problems. First, it will ensure that
-  // remote clients that join a distributed session receive a first video frame
-  // in a timely manner. Second, it will allow WebRTC's internal bandwidth
-  // estimation logic to maintain a more optimal state, since sending a video
-  // frame will "prime it." Third, it allows lossy encoders to clean up
-  // artifacts in a still image.  http://crbug.com/486274
-  base::RepeatingTimer refresh_timer_;
 };
 
 MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::WebRtcVideoSourceAdapter(
     const scoped_refptr<base::SingleThreadTaskRunner>& libjingle_worker_thread,
     const scoped_refptr<WebRtcVideoTrackSource>& source,
-    base::TimeDelta refresh_interval,
-    const base::RepeatingClosure& refresh_callback,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : render_task_runner_(std::move(task_runner)),
       libjingle_worker_thread_(libjingle_worker_thread),
       video_source_(source) {
   DCHECK(render_task_runner_->RunsTasksInCurrentSequence());
   DETACH_FROM_THREAD(io_thread_checker_);
-  if (!refresh_interval.is_zero()) {
-    VLOG(1) << "Starting frame refresh timer with interval "
-            << refresh_interval.InMillisecondsF() << " ms.";
-    refresh_timer_.Start(FROM_HERE, refresh_interval, refresh_callback);
-  }
 }
 
 MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::
@@ -166,13 +127,6 @@ MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::
   // be released on the main render thread before the PeerConnectionFactory has
   // been destroyed. The only way to ensure that is to make sure |video_source_|
   // is released when MediaStreamVideoWebRtcSink() is destroyed.
-}
-
-void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::
-    ResetRefreshTimerOnMainThread() {
-  DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
-  if (refresh_timer_.IsRunning())
-    refresh_timer_.Reset();
 }
 
 void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::
@@ -189,11 +143,6 @@ void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::OnVideoFrameOnIO(
     scoped_refptr<media::VideoFrame> frame,
     base::TimeTicks estimated_capture_time) {
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
-  PostCrossThreadTask(
-      *render_task_runner_.get(), FROM_HERE,
-      CrossThreadBindOnce(
-          &WebRtcVideoSourceAdapter::ResetRefreshTimerOnMainThread,
-          WrapRefCounted(this)));
   PostCrossThreadTask(
       *libjingle_worker_thread_.get(), FROM_HERE,
       CrossThreadBindOnce(&WebRtcVideoSourceAdapter::OnVideoFrameOnWorkerThread,
@@ -220,35 +169,6 @@ MediaStreamVideoWebRtcSink::MediaStreamVideoWebRtcSink(
       ToAbslOptionalBool(video_track->noise_reduction());
 
   bool is_screencast = video_track->is_screencast();
-  base::Optional<double> min_frame_rate = video_track->min_frame_rate();
-  base::Optional<double> max_frame_rate = video_track->max_frame_rate();
-
-  // Enable automatic frame refreshes for the screen capture sources, which will
-  // stop producing frames whenever screen content is not changing. Check the
-  // frameRate constraint to determine the rate of refreshes. If a minimum
-  // frameRate is provided, use that. Otherwise, use the maximum frameRate if it
-  // happens to be less than the default.
-  base::TimeDelta refresh_interval = base::TimeDelta::FromMicroseconds(0);
-  if (is_screencast) {
-    // Start with the default refresh interval, and refine based on constraints.
-    refresh_interval =
-        base::TimeDelta::FromMicroseconds(kDefaultRefreshIntervalMicros);
-    if (min_frame_rate.has_value()) {
-      refresh_interval =
-          base::TimeDelta::FromMicroseconds(base::saturated_cast<int64_t>(
-              base::Time::kMicrosecondsPerSecond / *min_frame_rate));
-    }
-    if (max_frame_rate.has_value()) {
-      const base::TimeDelta alternate_refresh_interval =
-          base::TimeDelta::FromMicroseconds(base::saturated_cast<int64_t>(
-              base::Time::kMicrosecondsPerSecond / *max_frame_rate));
-      refresh_interval = std::max(refresh_interval, alternate_refresh_interval);
-    }
-    if (refresh_interval.InMicroseconds() < kLowerBoundRefreshIntervalMicros) {
-      refresh_interval =
-          base::TimeDelta::FromMicroseconds(kLowerBoundRefreshIntervalMicros);
-    }
-  }
 
   // TODO(pbos): Consolidate WebRtcVideoCapturerAdapter into WebRtcVideoSource
   // by removing the need for and dependency on a cricket::VideoCapturer.
@@ -271,10 +191,6 @@ MediaStreamVideoWebRtcSink::MediaStreamVideoWebRtcSink(
 
   source_adapter_ = base::MakeRefCounted<WebRtcVideoSourceAdapter>(
       factory->GetWebRtcNetworkTaskRunner(), video_source_.get(),
-      refresh_interval,
-      ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-          &MediaStreamVideoWebRtcSink::RequestRefreshFrame,
-          weak_factory_.GetWeakPtr())),
       std::move(task_runner));
 
   MediaStreamVideoSink::ConnectToTrack(
@@ -305,11 +221,6 @@ void MediaStreamVideoWebRtcSink::OnContentHintChanged(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   video_track_->set_content_hint(
       ContentHintTypeToWebRtcContentHint(content_hint));
-}
-
-void MediaStreamVideoWebRtcSink::RequestRefreshFrame() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  RequestRefreshFrameFromVideoTrack(connected_track());
 }
 
 absl::optional<bool>

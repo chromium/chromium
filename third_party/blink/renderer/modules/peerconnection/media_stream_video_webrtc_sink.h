@@ -45,6 +45,8 @@ class MODULES_EXPORT MediaStreamVideoWebRtcSink : public MediaStreamVideoSink {
 
   absl::optional<bool> SourceNeedsDenoisingForTesting() const;
 
+  double GetRequiredMinFramesPerSec() const override { return 1; }
+
  protected:
   // Implementation of MediaStreamSink.
   void OnEnabledChanged(bool enabled) override;
@@ -52,10 +54,6 @@ class MODULES_EXPORT MediaStreamVideoWebRtcSink : public MediaStreamVideoSink {
       WebMediaStreamTrack::ContentHintType content_hint) override;
 
  private:
-  // Helper to request a refresh frame from the source. Called via the callback
-  // passed to WebRtcVideoSourceAdapter.
-  void RequestRefreshFrame();
-
   // Used to DCHECK that we are called on the correct thread.
   THREAD_CHECKER(thread_checker_);
 

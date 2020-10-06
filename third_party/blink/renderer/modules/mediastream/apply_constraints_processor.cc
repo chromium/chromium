@@ -224,6 +224,10 @@ void ApplyConstraintsProcessor::FinalizeVideoRequest() {
   blink::VideoCaptureSettings settings = SelectVideoSettings({format});
 
   if (settings.HasValue()) {
+    if (settings.min_frame_rate().has_value()) {
+      GetCurrentVideoTrack()->SetMinimumFrameRate(
+          settings.min_frame_rate().value());
+    }
     video_source_->ReconfigureTrack(GetCurrentVideoTrack(),
                                     settings.track_adapter_settings());
     ApplyConstraintsSucceeded();

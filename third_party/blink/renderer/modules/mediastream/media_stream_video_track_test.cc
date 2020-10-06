@@ -15,14 +15,19 @@
 #include "base/threading/thread_checker.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_encoded_video_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter_settings.h"
+#include "third_party/blink/renderer/modules/peerconnection/media_stream_video_webrtc_sink.h"
+#include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -43,6 +48,7 @@ const uint8_t kBlackValue = 0x00;
 const uint8_t kColorValue = 0xAB;
 const int kMockSourceWidth = 640;
 const int kMockSourceHeight = 480;
+const double kMinFrameRate = 30.0;
 
 class MediaStreamVideoTrackTest
     : public testing::TestWithParam<ContentHintType> {
@@ -554,6 +560,148 @@ INSTANTIATE_TEST_SUITE_P(,
                          Values(ContentHintType::kVideoMotion,
                                 ContentHintType::kVideoDetail,
                                 ContentHintType::kVideoText));
+
+class MediaStreamVideoTrackRefreshFrameTimerTest
+    : public MediaStreamVideoTrackTest {
+ public:
+  void SetUp() override { InitializeSource(); }
+};
+
+TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
+       SetMinFrameRateForScreenCastTrack) {
+  // |RequestRefreshFrame| should be called exactly twice within kMinFrameRate
+  // interval: First time from |AddSink| and second time from the refresh timer.
+  EXPECT_CALL(*mock_source(), OnRequestRefreshFrame).Times(2);
+  MockMediaStreamVideoSink sink;
+  WebMediaStreamTrack track =
+      CreateTrackWithSettings(VideoTrackAdapterSettings());
+  auto* video_track = MediaStreamVideoTrack::GetVideoTrack(track);
+  video_track->SetMinimumFrameRate(kMinFrameRate);
+  video_track->SetIsScreencastForTesting(true);
+
+  sink.ConnectToTrack(track);
+  test::RunDelayedTasks(base::TimeDelta::FromHz(kMinFrameRate));
+
+  EXPECT_TRUE(video_track->IsRefreshFrameTimerRunningForTesting());
+  video_track->StopAndNotify(base::BindOnce([] {}));
+  EXPECT_FALSE(video_track->IsRefreshFrameTimerRunningForTesting());
+}
+
+TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
+       SetMinFrameRateForNonScreenCastTrack) {
+  // |RequestRefreshFrame| should only be called once from |AddSink| since
+  // refresh frame timer is not running.
+  EXPECT_CALL(*mock_source(), OnRequestRefreshFrame).Times(1);
+  MockMediaStreamVideoSink sink;
+  WebMediaStreamTrack track =
+      CreateTrackWithSettings(VideoTrackAdapterSettings());
+
+  auto* video_track = MediaStreamVideoTrack::GetVideoTrack(track);
+  video_track->SetMinimumFrameRate(kMinFrameRate);
+  // Refresh frame timer will not be run when |is_screencast_| is false.
+  video_track->SetIsScreencastForTesting(false);
+
+  sink.ConnectToTrack(track);
+  test::RunDelayedTasks(base::TimeDelta::FromHz(kMinFrameRate));
+
+  EXPECT_FALSE(video_track->IsRefreshFrameTimerRunningForTesting());
+}
+
+TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest, RequiredRefreshRate) {
+  // Sinks that have a required min frames per sec as 0 will not lead
+  // to video track running the refresh frame timer.
+  EXPECT_CALL(*mock_source(), OnRequestRefreshFrame).Times(1);
+
+  MockMediaStreamVideoSink sink;
+  EXPECT_EQ(sink.GetRequiredMinFramesPerSec(), 0);
+
+  WebMediaStreamTrack track =
+      CreateTrackWithSettings(VideoTrackAdapterSettings());
+  auto* video_track = MediaStreamVideoTrack::GetVideoTrack(track);
+  video_track->SetIsScreencastForTesting(true);
+
+  sink.ConnectToTrack(track);
+  test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
+}
+
+TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
+       RequiredRefreshRateWebRTCSink) {
+  // WebRTC sink has a required min frames per sec set to 1 so when we do
+  // not have any min frame rate set on the video track, this required rate will
+  // be used by the timer.
+  EXPECT_CALL(*mock_source(), OnRequestRefreshFrame).Times(2);
+
+  WebMediaStreamTrack track = MediaStreamVideoTrack::CreateVideoTrack(
+      mock_source(), WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
+      true);
+  MediaStreamVideoTrack::GetVideoTrack(track)->SetIsScreencastForTesting(true);
+
+  Persistent<MediaStreamComponent> media_stream_component = *track;
+  blink::MediaStreamVideoWebRtcSink webrtc_sink(
+      media_stream_component, new blink::MockPeerConnectionDependencyFactory(),
+      blink::scheduler::GetSingleThreadTaskRunnerForTesting());
+  EXPECT_EQ(webrtc_sink.GetRequiredMinFramesPerSec(), 1);
+
+  test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
+}
+
+TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
+       RequiredRefreshRateMultipleSinksAdded) {
+  // |RequestRefreshFrame| will be called once for every sink added (twice here)
+  // and third time from the refresh frame timer started by WebRTC sink. We will
+  // pick the maximum of all the required refresh rates to run the timer.
+  EXPECT_CALL(*mock_source(), OnRequestRefreshFrame).Times(3);
+
+  WebMediaStreamTrack track = MediaStreamVideoTrack::CreateVideoTrack(
+      mock_source(), WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
+      true);
+  MediaStreamVideoTrack::GetVideoTrack(track)->SetIsScreencastForTesting(true);
+
+  // First sink.
+  MockMediaStreamVideoSink sink;
+  EXPECT_EQ(sink.GetRequiredMinFramesPerSec(), 0);
+  sink.ConnectToTrack(track);
+
+  // Second sink.
+  Persistent<MediaStreamComponent> media_stream_component = *track;
+  blink::MediaStreamVideoWebRtcSink webrtc_sink(
+      media_stream_component, new blink::MockPeerConnectionDependencyFactory(),
+      blink::scheduler::GetSingleThreadTaskRunnerForTesting());
+  EXPECT_EQ(webrtc_sink.GetRequiredMinFramesPerSec(), 1);
+
+  test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
+}
+
+TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
+       RequiredRefreshRateMultipleSinksAddedAndRemoved) {
+  // |RequestRefreshFrame| will be called once for every sink added (twice
+  // here). The second sink (webrtc sink) does have a required min frames per
+  // sec but it is removed.
+  EXPECT_CALL(*mock_source(), OnRequestRefreshFrame).Times(2);
+
+  WebMediaStreamTrack track = MediaStreamVideoTrack::CreateVideoTrack(
+      mock_source(), WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
+      true);
+  MediaStreamVideoTrack::GetVideoTrack(track)->SetIsScreencastForTesting(true);
+
+  // First sink.
+  MockMediaStreamVideoSink sink;
+  EXPECT_EQ(sink.GetRequiredMinFramesPerSec(), 0);
+  sink.ConnectToTrack(track);
+
+  // Second sink added and then removed. The destructor for
+  // MediaStreamVideoWebRtcSink calls DisconnectFromTrack.
+  {
+    Persistent<MediaStreamComponent> media_stream_component = *track;
+    blink::MediaStreamVideoWebRtcSink webrtc_sink(
+        media_stream_component,
+        new blink::MockPeerConnectionDependencyFactory(),
+        blink::scheduler::GetSingleThreadTaskRunnerForTesting());
+    EXPECT_EQ(webrtc_sink.GetRequiredMinFramesPerSec(), 1);
+  }
+
+  test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
+}
 
 }  // namespace media_stream_video_track_test
 }  // namespace blink

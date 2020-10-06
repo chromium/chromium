@@ -60,4 +60,8 @@ void MediaStreamVideoSink::OnFrameDropped(
     video_track->OnFrameDropped(reason);
 }
 
+double MediaStreamVideoSink::GetRequiredMinFramesPerSec() const {
+  return 0;
+}
+
 }  // namespace blink

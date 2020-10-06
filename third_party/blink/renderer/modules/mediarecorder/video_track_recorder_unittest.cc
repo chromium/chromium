@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/video_frame_utils.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -428,6 +429,19 @@ TEST_F(VideoTrackRecorderTest, ReleasesFrame) {
   EXPECT_TRUE(frame_is_destroyed);
 
   Mock::VerifyAndClearExpectations(this);
+}
+
+TEST_F(VideoTrackRecorderTest, RequiredRefreshRate) {
+  // |RequestRefreshFrame| will be called first by |AddSink| and the second time
+  // by the refresh timer using the required min fps.
+  EXPECT_CALL(*mock_source_, OnRequestRefreshFrame).Times(2);
+
+  track_->SetIsScreencastForTesting(true);
+  InitializeRecorder(VideoTrackRecorder::CodecId::VP8);
+
+  EXPECT_EQ(video_track_recorder_->GetRequiredMinFramesPerSec(), 1);
+
+  test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

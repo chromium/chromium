@@ -90,6 +90,9 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
       bool is_key_frame)>;
   using OnErrorCB = base::RepeatingClosure;
 
+  // MediaStreamVideoSink implementation
+  double GetRequiredMinFramesPerSec() const override { return 1; }
+
   // Wraps a counter in a class in order to enable use of base::WeakPtr<>.
   // See https://crbug.com/859610 for why this was added.
   class Counter {
