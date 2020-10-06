@@ -17,53 +17,6 @@
 #include "ui/display/types/display_snapshot.h"
 
 namespace display {
-namespace {
-
-// The total number of display zoom factors to enumerate.
-constexpr int kNumOfZoomFactors = 9;
-
-// A pair representing the list of zoom values for a given minimum display
-// resolution width.
-using ZoomListBucket = std::pair<int, std::array<float, kNumOfZoomFactors>>;
-
-// A pair representing the list of zoom values for a given minimum default dsf.
-using ZoomListBucketDsf =
-    std::pair<float, std::array<float, kNumOfZoomFactors>>;
-
-// For displays with a device scale factor of unity, we use a static list of
-// initialized zoom values. For a given resolution width of a display, we can
-// find its associated list of zoom values by simply finding the last bucket
-// with a width less than the given resolution width.
-// Ex. A resolution width of 1024, we will use the bucket with the width of 960.
-constexpr std::array<ZoomListBucket, 8> kZoomListBuckets{{
-    {0, {0.60f, 0.65f, 0.70f, 0.75f, 0.80f, 0.85f, 0.90f, 0.95f, 1.f}},
-    {720, {0.70f, 0.75f, 0.80f, 0.85f, 0.90f, 0.95f, 1.f, 1.05f, 1.10f}},
-    {800, {0.75f, 0.80f, 0.85f, 0.90f, 0.95f, 1.f, 1.05f, 1.10f, 1.15f}},
-    {960, {0.90f, 0.95f, 1.f, 1.05f, 1.10f, 1.15f, 1.20f, 1.25f, 1.30f}},
-    {1280, {0.90f, 1.f, 1.05f, 1.10f, 1.15f, 1.20f, 1.25f, 1.30f, 1.50f}},
-    {1920, {1.f, 1.10f, 1.15f, 1.20f, 1.30f, 1.40f, 1.50f, 1.75f, 2.00f}},
-    {3840, {1.f, 1.10f, 1.20f, 1.40f, 1.60f, 1.80f, 2.00f, 2.20f, 2.40f}},
-    {5120, {1.f, 1.25f, 1.50f, 1.75f, 2.00f, 2.25f, 2.50f, 2.75f, 3.00f}},
-}};
-
-// Displays with a default device scale factor have a static list of initialized
-// zoom values that includes a zoom level to go to the native resolution of the
-// display. Ensure that the list of DSFs are in sync with the list of default
-// device scale factors in display_change_observer.cc.
-constexpr std::array<ZoomListBucketDsf, 7> kZoomListBucketsForDsf{{
-    {1.25f, {0.7f, 1.f / 1.25f, 0.85f, 0.9f, 0.95f, 1.f, 1.1f, 1.2f, 1.3f}},
-    {1.6f, {1.f / 1.6f, 0.7f, 0.75f, 0.8f, 0.85f, 0.9f, 1.f, 1.15f, 1.3f}},
-    {kDsf_1_777,
-     {1.f / kDsf_1_777, 0.65f, 0.75f, 0.8f, 0.9f, 1.f, 1.1f, 1.2f, 1.3f}},
-    {2.f, {1.f / 2.f, 0.6f, 0.7f, 0.8f, 0.9f, 1.f, 1.1f, 1.25f, 1.5f}},
-    {kDsf_2_252,
-     {1.f / kDsf_2_252, 0.6f, 0.7f, 0.8f, 0.9f, 1.f, 1.15f, 1.3f, 1.5f}},
-    {2.4f, {1.f / 2.4f, 0.5f, 0.6f, 0.8f, 0.9f, 1.f, 1.2f, 1.35f, 1.5f}},
-    {kDsf_2_666,
-     {1.f / kDsf_2_666, 0.5f, 0.6f, 0.8f, 0.9f, 1.f, 1.2f, 1.35f, 1.5f}},
-}};
-
-}  // namespace
 
 #if defined(OS_CHROMEOS)
 std::string DisplayPowerStateToString(chromeos::DisplayPowerState state) {

@@ -471,6 +471,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.Display.InternalDisplay.ActiveEffectiveResolution"
+    enum="EffectiveResolution" expires_after="2021-09-01">
+  <owner>malaykeshav@chromium.org</owner>
+  <owner>oshima@chromium.org</owner>
+  <summary>
+    The effective resolution of the internal display after device scale factor
+    and display zoom level has been applied. This is the exact value matching
+    the display's effective resolution. This is emitted at regular intervals.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Display.PrimaryDisplayZoomAtStartup" units="%"
     expires_after="2020-09-06">
   <owner>jamescook@chromium.org</owner>

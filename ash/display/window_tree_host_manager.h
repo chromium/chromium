@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/base/ime/input_method.h"
@@ -204,6 +205,10 @@ class ASH_EXPORT WindowTreeHostManager
   // Stores the cursor's display. The id is used to determine whether the mouse
   // should be moved after a display configuration change.
   int64_t cursor_display_id_for_restore_;
+
+  // A repeating timer to trigger sending UMA metrics for primary display's
+  // effective resolution at fixed intervals.
+  std::unique_ptr<base::RepeatingTimer> effective_resolution_UMA_timer_;
 
   base::WeakPtrFactory<WindowTreeHostManager> weak_ptr_factory_{this};
 

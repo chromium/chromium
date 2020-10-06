@@ -4,6 +4,7 @@
 
 #include "ui/display/manager/display_change_observer.h"
 
+#include <cmath>
 #include <string>
 
 #include "base/strings/stringprintf.h"
@@ -17,9 +18,12 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/range/range_f.h"
 
@@ -228,76 +232,6 @@ TEST_P(DisplayChangeObserverTest, FindDeviceScaleFactor) {
                             0, gfx::Size(3000, 2000)));
   EXPECT_EQ(kDsf_2_666,
             DisplayChangeObserver::FindDeviceScaleFactor(310, gfx::Size()));
-
-  // Valid Displays
-  constexpr gfx::Size kWXGA_768{1366, 768};
-  constexpr gfx::Size kWXGA_800{1280, 800};
-  constexpr gfx::Size kHD_PLUS{1600, 900};
-  constexpr gfx::Size kFHD{1920, 1080};
-  constexpr gfx::Size kWUXGA{1920, 1200};
-  // Dru
-  constexpr gfx::Size kQXGA_P{1536, 2048};
-  constexpr gfx::Size kQHD{2560, 1440};
-  // Chell
-  constexpr gfx::Size kQHD_PLUS{3200, 1800};
-  constexpr gfx::Size kUHD{3840, 2160};
-
-  // Chromebook special panels
-  constexpr gfx::Size kLux{2160, 1440};
-  constexpr gfx::Size kAkaliQHD{2256, 1504};
-  constexpr gfx::Size kLink{2560, 1700};
-  constexpr gfx::Size kEve{2400, 1600};
-  constexpr gfx::Size kNocturne{3000, 2000};
-
-  enum SizeErrorCheckType {
-    kExact,    // Exact match.
-    kEpsilon,  // Matches within epsilon.
-    kSkip,     // Skip testing the error.
-  };
-  constexpr struct Data {
-    const float diagonal_size;
-    const gfx::Size resolution;
-    const float expected_dsf;
-    const gfx::Size expected_dp_size;
-    const bool bad_range;
-    const SizeErrorCheckType screenshot_size_error;
-  } display_configs[] = {
-      // clang-format off
-      // inch, resolution, DSF,        size in DP,  Bad range, size error
-      {10.1f,  kWXGA_800,  1.f,        kWXGA_800,   false,     kExact},
-      {12.1f,  kWXGA_800,  1.0f,       kWXGA_800,   true,      kExact},
-      {11.6f,  kWXGA_768,  1.f,        kWXGA_768,   false,     kExact},
-      {13.3f,  kWXGA_768,  1.f,        kWXGA_768,   true,      kExact},
-      {14.f,   kWXGA_768,  1.f,        kWXGA_768,   true,      kExact},
-      {15.6f,  kWXGA_768,  1.f,        kWXGA_768,   true,      kExact},
-      {9.7f,   kQXGA_P,    2.0f,       {768, 1024}, false,     kExact},
-      {11.6f,  kFHD,       1.6f,       {1200, 675}, false,     kExact},
-      {13.0f,  kFHD,       1.25f,      {1536, 864}, true,      kExact},
-      {13.3f,  kFHD,       1.25f,      {1536, 864}, true,      kExact},
-      {14.f,   kFHD,       1.25f,      {1536, 864}, false,     kExact},
-      {10.1f,  kWUXGA,     kDsf_1_777, {1080, 675}, false,     kExact},
-      {12.2f,  kWUXGA,     1.6f,       {1200, 750}, false,     kExact},
-      {15.6f,  kWUXGA,     1.f,        kWUXGA,      false,     kExact},
-      {12.3f,  kQHD,       2.f,        {1280, 720}, false,     kExact},
-
-      // Non standard panels
-      {11.0f,  kLux,       2.f,        {1080, 720}, false,     kExact},
-      {12.02f, kLux,       1.6f,       {1350, 900}, true,      kExact},
-      {13.3f,  kQHD_PLUS,  kDsf_2_252, {1421, 800}, false,     kSkip},
-      {13.3f,  kAkaliQHD,  1.6f,       {1410, 940}, false,     kExact},
-      {12.3f,  kEve,       2.0f,       {1200, 800}, false,     kExact},
-      {12.85f, kLink,      2.0f,       {1280, 850}, false,     kExact},
-      {12.3f,  kNocturne,  kDsf_2_252, {1332, 888}, false,     kEpsilon},
-      {13.1f,  kUHD,       kDsf_2_666, {1440, 810}, false,     kExact},
-      {15.6f,  kUHD,       2.4f,       {1600, 900}, false,     kEpsilon},
-
-      // Chromebase
-      {19.5,   kHD_PLUS,   1.f,        kHD_PLUS,    true,      kExact},
-      {21.5f,  kFHD,       1.f,        kFHD,        true,      kExact},
-      {23.8f,  kFHD,       1.f,        kFHD,        true,      kExact},
-
-      // clang-format on
-  };
 
   for (auto& entry : display_configs) {
     SCOPED_TRACE(base::StringPrintf(
@@ -546,5 +480,68 @@ TEST_P(DisplayChangeObserverTest, HDRDisplayColorSpaces) {
 INSTANTIATE_TEST_SUITE_P(All,
                          DisplayChangeObserverTest,
                          ::testing::Values(false, true));
+
+#if defined(OS_CHROMEOS)
+using DisplayResolutionTest = testing::Test;
+
+TEST_F(DisplayResolutionTest, CheckEffectiveResoutionUMAIndex) {
+  std::map<int, gfx::Size> effective_resolutions;
+  for (const auto& display_config : display_configs) {
+    gfx::Size size = display_config.resolution;
+    if (size.width() < size.height())
+      size = gfx::Size(size.height(), size.width());
+
+    const float dsf = display_config.expected_dsf;
+
+    std::array<float, kNumOfZoomFactors> zoom_levels;
+
+    if (dsf == 1.f) {
+      for (const ZoomListBucket& zoom_list_bucket : kZoomListBuckets) {
+        if (size.width() >= zoom_list_bucket.first)
+          zoom_levels = zoom_list_bucket.second;
+      }
+    } else {
+      for (const ZoomListBucketDsf& zoom_list_bucket : kZoomListBucketsForDsf) {
+        if (cc::MathUtil::IsWithinEpsilon(dsf, zoom_list_bucket.first))
+          zoom_levels = zoom_list_bucket.second;
+      }
+    }
+
+    for (float zoom_level : zoom_levels) {
+      float effective_scale = 1.f / (zoom_level * dsf);
+      gfx::SizeF effective_resolution_f(size);
+      effective_resolution_f.Scale(effective_scale);
+
+      gfx::Size effective_resolution =
+          gfx::ToEnclosedRectIgnoringError(gfx::RectF(effective_resolution_f),
+                                           0.01f)
+              .size();
+      gfx::Size portrait_effective_resolution = gfx::Size(
+          effective_resolution.height(), effective_resolution.width());
+
+      const int landscape_key =
+          effective_resolution.width() * effective_resolution.height();
+      const int portrait_key = landscape_key - 1;
+
+      auto it = effective_resolutions.find(landscape_key);
+      if (it != effective_resolutions.end())
+        EXPECT_EQ(it->second, effective_resolution);
+      else
+        effective_resolutions[landscape_key] = effective_resolution;
+
+      it = effective_resolutions.find(portrait_key);
+      if (it != effective_resolutions.end())
+        EXPECT_EQ(it->second, portrait_effective_resolution);
+      else
+        effective_resolutions[portrait_key] = portrait_effective_resolution;
+    }
+  }
+
+  // With the current set of display configs and zoom levels, there are only 288
+  // possible effective resolutions for internal displays in chromebooks. Update
+  // this value when adding a new display config.
+  EXPECT_EQ(effective_resolutions.size(), 288ul);
+}
+#endif
 
 }  // namespace display
