@@ -3999,14 +3999,6 @@
         'results_handler': 'layout tests',
       },
     },
-    'soda_gtests': {
-      'browser_tests': {
-        'args': ['--gtest_filter=SpeechRecognitionService*'],
-      },
-      'unit_tests': {
-        'args': ['--gtest_filter=SodaClient*'],
-      },
-    },
     # TODO(https://crbug.com/1057802): Remove these tests once Out-of-Process
     # Storage is on by default.
     'storage_service_gtests': {
