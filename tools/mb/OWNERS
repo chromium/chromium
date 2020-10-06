@@ -1,7 +1,5 @@
 file://infra/OWNERS
 
-# TEAM: infra-dev@chromium.org
-# COMPONENT: Infra>Client>Chrome
 
 # For changing V8-owned Chromium builders.
 machenbach@chromium.org

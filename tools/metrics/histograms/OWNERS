@@ -25,5 +25,3 @@ per-file histograms.xml=tbansal@chromium.org
 per-file histograms.xml=tby@chromium.org # For chrome knowledge team metrics only.
 per-file histograms.xml=chrome-metrics-team+robot@google.com # For bot updates to expiry.
 per-file histograms.xml=set noparent
-
-# COMPONENT: Internals>Metrics

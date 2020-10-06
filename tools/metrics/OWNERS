@@ -3,5 +3,3 @@
 # within about 5 minutes. This approach helps our team to load-balance incoming
 # reviews. Googlers can read more about this at go/gwsq-gerrit.
 file://base/metrics/OWNERS
-
-# COMPONENT: Internals>Metrics
