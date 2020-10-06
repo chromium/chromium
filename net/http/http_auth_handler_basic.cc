@@ -84,7 +84,9 @@ int HttpAuthHandlerBasic::GenerateAuthTokenImpl(
     CompletionOnceCallback callback,
     std::string* auth_token) {
   DCHECK(credentials);
-  // TODO(eroman): is this the right encoding of username/password?
+  // Firefox, Safari and Chromium all use UTF-8 encoding; IE uses iso-8859-1.
+  // RFC7617 does not specify a default encoding, but UTF-8 is the only allowed
+  // value for the optional charset parameter on the challenge.
   std::string base64_username_password;
   base::Base64Encode(base::UTF16ToUTF8(credentials->username()) + ":" +
                          base::UTF16ToUTF8(credentials->password()),
