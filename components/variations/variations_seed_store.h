@@ -35,10 +35,14 @@ class VariationsSeedStore {
   // seed store. This is used by Android Chrome to supply the first run seed,
   // and by Android WebView to supply the seed on every run.
   // |signature_verification_enabled| can be used in unit tests to disable
-  // signature checks on the seed.
+  // signature checks on the seed. If |use_first_run_prefs| is true (default),
+  // then this VariationsSeedStore may modify the Java SharedPreferences ("first
+  // run prefs") which are set during first run; otherwise this will not access
+  // SharedPreferences at all.
   VariationsSeedStore(PrefService* local_state,
                       std::unique_ptr<SeedResponse> initial_seed,
-                      bool signature_verification_enabled);
+                      bool signature_verification_enabled,
+                      bool use_first_run_prefs = true);
   virtual ~VariationsSeedStore();
 
   // Loads the variations seed data from local state into |seed|, as well as the
@@ -204,7 +208,10 @@ class VariationsSeedStore {
   std::string latest_serial_number_;
 
   // Whether to validate signatures on the seed. Always on except in tests.
-  bool signature_verification_enabled_ = true;
+  const bool signature_verification_enabled_;
+
+  // Whether this may read or write to Java "first run" SharedPreferences.
+  const bool use_first_run_prefs_;
 
   DISALLOW_COPY_AND_ASSIGN(VariationsSeedStore);
 };
