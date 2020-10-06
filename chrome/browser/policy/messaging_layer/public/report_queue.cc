@@ -50,42 +50,47 @@ ReportQueue::ReportQueue(std::unique_ptr<ReportQueueConfiguration> config,
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-Status ReportQueue::Enqueue(base::StringPiece record,
-                            EnqueueCallback callback) const {
-  return AddRecord(record, std::move(callback));
+void ReportQueue::Enqueue(base::StringPiece record,
+                          EnqueueCallback callback) const {
+  AddRecord(record, std::move(callback));
 }
 
-Status ReportQueue::Enqueue(const base::Value& record,
-                            EnqueueCallback callback) const {
+void ReportQueue::Enqueue(const base::Value& record,
+                          EnqueueCallback callback) const {
   std::string json_record;
   if (!base::JSONWriter::Write(record, &json_record)) {
-    return Status(error::INVALID_ARGUMENT,
-                  "Provided record was not convertable to a std::string");
+    std::move(callback).Run(
+        Status(error::INVALID_ARGUMENT,
+               "Provided record was not convertable to a std::string"));
+    return;
   }
-  return AddRecord(json_record, std::move(callback));
+  AddRecord(json_record, std::move(callback));
 }
 
-Status ReportQueue::Enqueue(google::protobuf::MessageLite* record,
-                            EnqueueCallback callback) const {
+void ReportQueue::Enqueue(google::protobuf::MessageLite* record,
+                          EnqueueCallback callback) const {
   std::string protobuf_record;
   if (!record->SerializeToString(&protobuf_record)) {
-    return Status(error::INVALID_ARGUMENT,
-                  "Unabled to serialize record to string. Most likely due to "
-                  "unset required fields.");
+    std::move(callback).Run(
+        Status(error::INVALID_ARGUMENT,
+               "Unabled to serialize record to string. Most likely due to "
+               "unset required fields."));
+    return;
   }
   return AddRecord(protobuf_record, std::move(callback));
 }
 
-Status ReportQueue::AddRecord(base::StringPiece record,
-                              EnqueueCallback callback) const {
-  RETURN_IF_ERROR(config_->CheckPolicy());
-  if (!sequenced_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(&ReportQueue::SendRecordToStorage,
-                                    base::Unretained(this), std::string(record),
-                                    std::move(callback)))) {
-    return Status(error::INTERNAL, "Failed to post the record for processing.");
+void ReportQueue::AddRecord(base::StringPiece record,
+                            EnqueueCallback callback) const {
+  const Status status = config_->CheckPolicy();
+  if (!status.ok()) {
+    std::move(callback).Run(status);
+    return;
   }
-  return Status::StatusOK();
+  sequenced_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ReportQueue::SendRecordToStorage, base::Unretained(this),
+                     std::string(record), std::move(callback)));
 }
 
 void ReportQueue::SendRecordToStorage(base::StringPiece record_data,

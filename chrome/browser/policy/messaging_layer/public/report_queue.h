@@ -60,25 +60,25 @@ class ReportQueue {
   // UPLOAD_EVENTS : UploadEventsRequest
   //
   // |record| will be sent as a string with no conversion.
-  virtual Status Enqueue(base::StringPiece record,
-                         EnqueueCallback callback) const;
+  virtual void Enqueue(base::StringPiece record,
+                       EnqueueCallback callback) const;
 
   // |record| will be converted to a JSON string with base::JsonWriter::Write.
-  virtual Status Enqueue(const base::Value& record,
-                         EnqueueCallback callback) const;
+  virtual void Enqueue(const base::Value& record,
+                       EnqueueCallback callback) const;
 
   // |record| will be converted to a string with SerializeToString(). The
   // handler is responsible for converting the record back to a proto with a
   // ParseFromString() call.
-  virtual Status Enqueue(google::protobuf::MessageLite* record,
-                         EnqueueCallback callback) const;
+  virtual void Enqueue(google::protobuf::MessageLite* record,
+                       EnqueueCallback callback) const;
 
  protected:
   ReportQueue(std::unique_ptr<ReportQueueConfiguration> config,
               scoped_refptr<StorageModule> storage);
 
  private:
-  Status AddRecord(base::StringPiece record, EnqueueCallback callback) const;
+  void AddRecord(base::StringPiece record, EnqueueCallback callback) const;
   void SendRecordToStorage(base::StringPiece record,
                            EnqueueCallback callback) const;
 

@@ -34,23 +34,43 @@ using policy::DMToken;
 using reporting::Destination;
 using reporting::Priority;
 
-class TestCallbackWaiter {
+// Usage (in tests only):
+//
+//   TestEvent<ResType> e;
+//   ... Do some async work passing e.cb() as a completion callback of
+//   base::OnceCallback<void(ResType* res)> type which also may perform some
+//   other action specified by |done| callback provided by the caller.
+//   ... = e.result();  // Will wait for e.cb() to be called and return the
+//   collected result.
+//
+template <typename ResType>
+class TestEvent {
  public:
-  TestCallbackWaiter() : run_loop_(std::make_unique<base::RunLoop>()) {}
-
-  virtual void Signal() { run_loop_->Quit(); }
-
-  void Wait() { run_loop_->Run(); }
-  void Reset() {
-    run_loop_.reset();
-    run_loop_ = std::make_unique<base::RunLoop>();
+  TestEvent() : run_loop_(std::make_unique<base::RunLoop>()) {}
+  ~TestEvent() = default;
+  TestEvent(const TestEvent& other) = delete;
+  TestEvent& operator=(const TestEvent& other) = delete;
+  ResType result() {
+    run_loop_->Run();
+    return std::forward<ResType>(result_);
   }
 
- protected:
+  // Completion callback to hand over to the processing method.
+  base::OnceCallback<void(ResType res)> cb() {
+    return base::BindOnce(
+        [](base::RunLoop* run_loop, ResType* result, ResType res) {
+          *result = std::forward<ResType>(res);
+          run_loop->Quit();
+        },
+        base::Unretained(run_loop_.get()), base::Unretained(&result_));
+  }
+
+ private:
   std::unique_ptr<base::RunLoop> run_loop_;
+  ResType result_;
 };
 
-class ReportingClientTest : public testing::Test {
+class ReportClientTest : public testing::Test {
  public:
   void SetUp() override {
 #ifdef OS_CHROMEOS
@@ -99,67 +119,37 @@ class ReportingClientTest : public testing::Test {
 };
 
 // Tests that a ReportQueue can be created using the ReportingClient.
-TEST_F(ReportingClientTest, CreatesReportQueue) {
+TEST_F(ReportClientTest, CreatesReportQueue) {
   auto config_result = ReportQueueConfiguration::Create(
       dm_token_, destination_, priority_, policy_checker_callback_);
   ASSERT_OK(config_result);
 
-  TestCallbackWaiter waiter;
-  StatusOr<std::unique_ptr<ReportQueue>> result;
-  auto create_report_queue_cb = base::BindOnce(
-      [](TestCallbackWaiter* waiter,
-         StatusOr<std::unique_ptr<ReportQueue>>* result,
-         StatusOr<std::unique_ptr<ReportQueue>> create_result) {
-        *result = std::move(create_result);
-        waiter->Signal();
-      },
-      &waiter, &result);
+  TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> a;
   ReportingClient::CreateReportQueue(std::move(config_result.ValueOrDie()),
-                                     std::move(create_report_queue_cb));
-
-  waiter.Wait();
-  waiter.Reset();
-  ASSERT_OK(result);
+                                     a.cb());
+  ASSERT_OK(a.result());
 }
 
 // Ensures that created ReportQueues are actually different.
-TEST_F(ReportingClientTest, CreatesTwoDifferentReportQueues) {
+TEST_F(ReportClientTest, CreatesTwoDifferentReportQueues) {
   auto config_result = ReportQueueConfiguration::Create(
       dm_token_, destination_, priority_, policy_checker_callback_);
   EXPECT_TRUE(config_result.ok());
 
-  TestCallbackWaiter waiter;
-  StatusOr<std::unique_ptr<ReportQueue>> result;
-  auto create_report_queue_cb = base::BindOnce(
-      [](TestCallbackWaiter* waiter,
-         StatusOr<std::unique_ptr<ReportQueue>>* result,
-         StatusOr<std::unique_ptr<ReportQueue>> create_result) {
-        *result = std::move(create_result);
-        waiter->Signal();
-      },
-      &waiter, &result);
+  TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> a1;
   ReportingClient::CreateReportQueue(std::move(config_result.ValueOrDie()),
-                                     std::move(create_report_queue_cb));
-  waiter.Wait();
-  waiter.Reset();
+                                     a1.cb());
+  auto result = a1.result();
   ASSERT_OK(result);
   auto report_queue_1 = std::move(result.ValueOrDie());
 
+  TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> a2;
   config_result = ReportQueueConfiguration::Create(
       dm_token_, destination_, priority_, policy_checker_callback_);
-  create_report_queue_cb = base::BindOnce(
-      [](TestCallbackWaiter* waiter,
-         StatusOr<std::unique_ptr<ReportQueue>>* result,
-         StatusOr<std::unique_ptr<ReportQueue>> create_result) {
-        *result = std::move(create_result);
-        waiter->Signal();
-      },
-      &waiter, &result);
   ReportingClient::CreateReportQueue(std::move(config_result.ValueOrDie()),
-                                     std::move(create_report_queue_cb));
-  waiter.Wait();
+                                     a2.cb());
+  result = a2.result();
   ASSERT_OK(result);
-
   auto report_queue_2 = std::move(result.ValueOrDie());
 
   EXPECT_NE(report_queue_1.get(), report_queue_2.get());

@@ -25,14 +25,45 @@ namespace reporting {
 // It ensures that all ReportQueues are created with the same storage settings.
 //
 // Example Usage:
-// Status SendMessage(google::protobuf::ImportantMessage important_message,
-//                    base::OnceCallback<void(Status)> callback) {
-//   ASSIGN_OR_RETURN(std::unique_ptr<ReportQueueConfiguration> config,
-//                  ReportQueueConfiguration::Create(...));
-//   ASSIGN_OR_RETURN(std::unique_ptr<ReportQueue> report_queue,
-//                  ReportingClient::CreateReportQueue(config));
-//   return report_queue->Enqueue(important_message, callback);
+// void SendMessage(google::protobuf::ImportantMessage important_message,
+//                  reporting::ReportQueue::EnqueueCallback done_cb) {
+//   // Create configuration.
+//   auto config_result = reporting::ReportQueueConfiguration::Create(...);
+//   // Bail out if configuration failed to create.
+//   if (!config_result.ok()) {
+//     std::move(done_cb).Run(config_result.status());
+//     return;
+//   }
+//   // Asynchronously create ReportingQueue.
+//   base::ThreadPool::PostTask(
+//       FROM_HERE,
+//       base::BindOnce(
+//           [](google::protobuf::ImportantMessage important_message,
+//              reporting::ReportQueue::EnqueueCallback done_cb,
+//              std::unique_ptr<reporting::ReportQueueConfiguration> config) {
+//             // Asynchronously create ReportingQueue.
+//             reporting::ReportingClient::CreateReportQueue(
+//                 std::move(config),
+//                 base::BindOnce(
+//                     [](base::StringPiece data,
+//                        reporting::ReportQueue::EnqueueCallback done_cb,
+//                        reporting::StatusOr<std::unique_ptr<
+//                            reporting::ReportQueue>> report_queue_result) {
+//                       // Bail out if queue failed to create.
+//                       if (!report_queue_result.ok()) {
+//                         std::move(done_cb).Run(report_queue_result.status());
+//                         return;
+//                       }
+//                       // Queue created successfully, enqueue the message.
+//                       report_queue_result.ValueOrDie()->Enqueue(
+//                           important_message, std::move(done_cb));
+//                     },
+//                     important_message, std::move(done_cb)));
+//           },
+//           important_message, std::move(done_cb),
+//           std::move(config_result.ValueOrDie())))
 // }
+
 class ReportingClient {
  public:
   struct Configuration {

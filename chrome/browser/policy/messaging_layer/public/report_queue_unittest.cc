@@ -44,52 +44,35 @@ namespace {
 //
 //   TestEvent<ResType> e;
 //   ... Do some async work passing e.cb() as a completion callback of
-//       base::OnceCallback<void(ResType* res)> type which also may perform
-//       some other action specified by |done| callback provided by the caller.
+//   base::OnceCallback<void(ResType* res)> type which also may perform some
+//   other action specified by |done| callback provided by the caller.
 //   ... = e.result();  // Will wait for e.cb() to be called and return the
-//                      // collected result.
-//
-// Or, when the callback is not expected to be invoked:
-//
-//   TestEvent<ResType> e(/*expected_to_complete=*/false);
-//   ... Start work passing e.cb() as a completion callback,
-//       which will not happen.
+//   collected result.
 //
 template <typename ResType>
 class TestEvent {
  public:
-  explicit TestEvent(bool expected_to_complete = true)
-      : expected_to_complete_(expected_to_complete),
-        completed_(base::WaitableEvent::ResetPolicy::MANUAL,
-                   base::WaitableEvent::InitialState::NOT_SIGNALED) {}
-  ~TestEvent() {
-    if (expected_to_complete_) {
-      EXPECT_TRUE(completed_.IsSignaled()) << "Not responded";
-    } else {
-      EXPECT_FALSE(completed_.IsSignaled()) << "Responded";
-    }
-  }
+  TestEvent() : run_loop_(std::make_unique<base::RunLoop>()) {}
+  ~TestEvent() = default;
   TestEvent(const TestEvent& other) = delete;
   TestEvent& operator=(const TestEvent& other) = delete;
   ResType result() {
-    completed_.Wait();
+    run_loop_->Run();
     return std::forward<ResType>(result_);
   }
 
   // Completion callback to hand over to the processing method.
   base::OnceCallback<void(ResType res)> cb() {
-    DCHECK(!completed_.IsSignaled());
     return base::BindOnce(
-        [](base::WaitableEvent* completed, ResType* result, ResType res) {
+        [](base::RunLoop* run_loop, ResType* result, ResType res) {
           *result = std::forward<ResType>(res);
-          completed->Signal();
+          run_loop->Quit();
         },
-        base::Unretained(&completed_), base::Unretained(&result_));
+        base::Unretained(run_loop_.get()), base::Unretained(&result_));
   }
 
  private:
-  bool expected_to_complete_;
-  base::WaitableEvent completed_;
+  std::unique_ptr<base::RunLoop> run_loop_;
   ResType result_;
 };
 
@@ -152,12 +135,9 @@ class ReportQueueTest : public testing::Test {
 TEST_F(ReportQueueTest, SuccessfulStringRecord) {
   constexpr char kTestString[] = "El-Chupacabra";
   TestEvent<Status> a;
-  Status status = report_queue_->Enqueue(kTestString, a.cb());
-  ASSERT_OK(status);
+  report_queue_->Enqueue(kTestString, a.cb());
   EXPECT_OK(a.result());
-
   EXPECT_EQ(test_storage_module()->priority(), priority_);
-
   EXPECT_EQ(test_storage_module()->record().data(), kTestString);
 }
 
@@ -169,8 +149,7 @@ TEST_F(ReportQueueTest, SuccessfulBaseValueRecord) {
   base::Value test_dict(base::Value::Type::DICTIONARY);
   test_dict.SetStringKey(kTestKey, kTestValue);
   TestEvent<Status> a;
-  Status status = report_queue_->Enqueue(test_dict, a.cb());
-  ASSERT_OK(status);
+  report_queue_->Enqueue(test_dict, a.cb());
   EXPECT_OK(a.result());
 
   EXPECT_EQ(test_storage_module()->priority(), priority_);
@@ -187,8 +166,7 @@ TEST_F(ReportQueueTest, SuccessfulProtoRecord) {
   reporting::test::TestMessage test_message;
   test_message.set_test("TEST_MESSAGE");
   TestEvent<Status> a;
-  Status status = report_queue_->Enqueue(&test_message, a.cb());
-  ASSERT_OK(status);
+  report_queue_->Enqueue(&test_message, a.cb());
   EXPECT_OK(a.result());
 
   EXPECT_EQ(test_storage_module()->priority(), priority_);
@@ -212,9 +190,8 @@ TEST_F(ReportQueueTest, CallSuccessCallbackFailure) {
   reporting::test::TestMessage test_message;
   test_message.set_test("TEST_MESSAGE");
   TestEvent<Status> a;
-  Status status = report_queue_->Enqueue(&test_message, a.cb());
-  ASSERT_OK(status);
-  auto result = a.result();
+  report_queue_->Enqueue(&test_message, a.cb());
+  const auto result = a.result();
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error_code(), error::UNKNOWN);
 }
@@ -223,10 +200,11 @@ TEST_F(ReportQueueTest, EnqueueStringFailsOnPolicy) {
   EXPECT_CALL(*this, MockedPolicyCheck)
       .WillOnce(Return(Status(error::UNAUTHENTICATED, "Failing for tests")));
   constexpr char kTestString[] = "El-Chupacabra";
-  TestEvent<Status> a(/*expected_to_complete=*/false);
-  Status status = report_queue_->Enqueue(kTestString, a.cb());
-  EXPECT_FALSE(status.ok());
-  EXPECT_EQ(status.error_code(), error::UNAUTHENTICATED);
+  TestEvent<Status> a;
+  report_queue_->Enqueue(kTestString, a.cb());
+  const auto result = a.result();
+  EXPECT_FALSE(result.ok());
+  EXPECT_EQ(result.error_code(), error::UNAUTHENTICATED);
 }
 
 TEST_F(ReportQueueTest, EnqueueProtoFailsOnPolicy) {
@@ -234,10 +212,11 @@ TEST_F(ReportQueueTest, EnqueueProtoFailsOnPolicy) {
       .WillOnce(Return(Status(error::UNAUTHENTICATED, "Failing for tests")));
   reporting::test::TestMessage test_message;
   test_message.set_test("TEST_MESSAGE");
-  TestEvent<Status> a(/*expected_to_complete=*/false);
-  Status status = report_queue_->Enqueue(&test_message, a.cb());
-  EXPECT_FALSE(status.ok());
-  EXPECT_EQ(status.error_code(), error::UNAUTHENTICATED);
+  TestEvent<Status> a;
+  report_queue_->Enqueue(&test_message, a.cb());
+  const auto result = a.result();
+  EXPECT_FALSE(result.ok());
+  EXPECT_EQ(result.error_code(), error::UNAUTHENTICATED);
 }
 
 TEST_F(ReportQueueTest, EnqueueValueFailsOnPolicy) {
@@ -247,10 +226,11 @@ TEST_F(ReportQueueTest, EnqueueValueFailsOnPolicy) {
   constexpr char kTestValue[] = "TEST_VALUE";
   base::Value test_dict(base::Value::Type::DICTIONARY);
   test_dict.SetStringKey(kTestKey, kTestValue);
-  TestEvent<Status> a(/*expected_to_complete=*/false);
-  Status status = report_queue_->Enqueue(test_dict, a.cb());
-  EXPECT_FALSE(status.ok());
-  EXPECT_EQ(status.error_code(), error::UNAUTHENTICATED);
+  TestEvent<Status> a;
+  report_queue_->Enqueue(test_dict, a.cb());
+  const auto result = a.result();
+  EXPECT_FALSE(result.ok());
+  EXPECT_EQ(result.error_code(), error::UNAUTHENTICATED);
 }
 
 }  // namespace

@@ -23,32 +23,32 @@ class MockReportQueue : public ReportQueue {
   MockReportQueue();
   ~MockReportQueue() override;
 
-  Status Enqueue(base::StringPiece record,
-                 EnqueueCallback callback) const override {
-    return StringPieceEnqueue_(record, std::move(callback));
+  void Enqueue(base::StringPiece record,
+               EnqueueCallback callback) const override {
+    StringPieceEnqueue_(record, std::move(callback));
   }
 
-  Status Enqueue(const base::Value& record,
-                 EnqueueCallback callback) const override {
-    return ValueEnqueue_(record, std::move(callback));
+  void Enqueue(const base::Value& record,
+               EnqueueCallback callback) const override {
+    ValueEnqueue_(record, std::move(callback));
   }
 
-  Status Enqueue(google::protobuf::MessageLite* record,
-                 EnqueueCallback callback) const override {
-    return MessageLiteEnqueue_(record, std::move(callback));
+  void Enqueue(google::protobuf::MessageLite* record,
+               EnqueueCallback callback) const override {
+    MessageLiteEnqueue_(record, std::move(callback));
   }
 
-  MOCK_METHOD(Status,
+  MOCK_METHOD(void,
               StringPieceEnqueue_,
               (base::StringPiece record, EnqueueCallback callback),
               (const));
 
-  MOCK_METHOD(Status,
+  MOCK_METHOD(void,
               ValueEnqueue_,
               (const base::Value& record, EnqueueCallback callback),
               (const));
 
-  MOCK_METHOD(Status,
+  MOCK_METHOD(void,
               MessageLiteEnqueue_,
               (google::protobuf::MessageLite * record,
                EnqueueCallback callback),
