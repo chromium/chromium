@@ -21,6 +21,7 @@
   (begin
     (deny mach-lookup (with no-report)
       (global-name "com.apple.GameController.gamecontrollerd")
+      (global-name "com.apple.UsageTrackingAgent")
       (global-name "com.apple.analyticsd")
       (global-name "com.apple.diagnosticd")
       (global-name "com.apple.pasteboard.1") ; For tests only.
@@ -38,6 +39,7 @@
       (subpath "/Library/Apple")
       (subpath "/Library/Application Support/CrashReporter")
       (subpath "/usr/share/locale")
+      (subpath (user-homedir-path "/Library/Containers"))
     )
     (deny file-read* (with send-signal SIGFPE))
     (deny file-write-data (with no-report)
@@ -77,7 +79,10 @@
 
 ; Needed for VideoToolbox H.264 SW and VP9 decoding - https://crbug.com/1113936
 (if (>= os-version 1016)
-  (allow mach-lookup (global-name "com.apple.trustd.agent"))
+  (begin
+    (allow mach-lookup (global-name "com.apple.trustd.agent"))
+    (allow file-read* (path "/Library/Preferences/com.apple.security.plist"))
+  )
 )
 
 ; Needed for WebGL - https://crbug.com/75343
@@ -120,6 +125,7 @@
 ))
 
 (allow sysctl-read
+  (sysctl-name "hw.busfrequency_max")
   (sysctl-name "hw.cachelinesize")
   (sysctl-name "hw.logicalcpu_max")
   (sysctl-name "hw.memsize")
@@ -130,10 +136,13 @@
 (allow file-read-data
   (path "/Library/MessageTracer/SubmitDiagInfo.default.domains.searchtree")
   (path "/System/Library/MessageTracer/SubmitDiagInfo.default.domains.searchtree")
+  (regex (user-homedir-path #"/Library/Preferences/(.*/)?com\.apple\.driver\..*\.plist"))
   (regex (user-homedir-path #"/Library/Preferences/ByHost/com.apple.AppleGVA.*"))
 )
 
 (allow file-read*
+  (path (user-homedir-path "/Library/Preferences")) ; List contents of preference directories https://crbug.com/1126350#c14.
+  (path (user-homedir-path "/Library/Preferences/ByHost"))
   (subpath "/Library/GPUBundles")
   (subpath "/Library/Video/Plug-Ins")
   (subpath "/System/Library/ColorSync/Profiles")
