@@ -23,6 +23,7 @@
 
 using testing::_;
 using testing::Invoke;
+using testing::Mock;
 using testing::Return;
 using testing::SaveArg;
 using testing::StrictMock;
@@ -160,6 +161,58 @@ TEST_F(EventPageRequestManagerTest, RunRequestsOnConnectionsReady) {
   EXPECT_CALL(request1, Run());
   EXPECT_CALL(request2, Run());
   request_manager_->OnMojoConnectionsReady();
+  ExpectWakeReasonBucketCount(MediaRouteProviderWakeReason::DETACH_ROUTE, 1);
+  ExpectWakeupBucketCount(MediaRouteProviderWakeup::SUCCESS, 1);
+}
+
+TEST_F(EventPageRequestManagerTest, RunRequestsAfterExtensionIdIsSet) {
+  // Unset the extension ID.
+  request_manager_->SetExtensionId("");
+
+  StrictMock<MockRequest> request1;
+  StrictMock<MockRequest> request2;
+  request_manager_->RunOrDefer(
+      base::BindOnce(&MockRequest::Run, base::Unretained(&request1)),
+      MediaRouteProviderWakeReason::DETACH_ROUTE);
+  request_manager_->RunOrDefer(
+      base::BindOnce(&MockRequest::Run, base::Unretained(&request2)),
+      MediaRouteProviderWakeReason::DETACH_ROUTE);
+
+  EXPECT_CALL(request1, Run()).Times(0);
+  EXPECT_CALL(request2, Run()).Times(0);
+
+  // Nothing will happen until the extension ID is set.
+  request_manager_->OnMojoConnectionsReady();
+  EXPECT_TRUE(Mock::VerifyAndClearExpectations(&request1));
+  EXPECT_TRUE(Mock::VerifyAndClearExpectations(&request2));
+
+  // Set the extension ID.
+  request_manager_->SetExtensionId(kExtensionId);
+
+  // Next request wakes the event page.
+  ON_CALL(*process_manager_, IsEventPageSuspended(kExtensionId))
+      .WillByDefault(Return(true));
+  EXPECT_CALL(*process_manager_, WakeEventPage(kExtensionId, _))
+      .WillOnce([](const std::string& extension_id,
+                   base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(true);
+        return true;
+      });
+
+  StrictMock<MockRequest> request3;
+  request_manager_->RunOrDefer(
+      base::BindOnce(&MockRequest::Run, base::Unretained(&request3)),
+      MediaRouteProviderWakeReason::DETACH_ROUTE);
+
+  EXPECT_CALL(request1, Run());
+  EXPECT_CALL(request2, Run());
+  EXPECT_CALL(request3, Run());
+
+  // Now requests will run.
+  ON_CALL(*process_manager_, IsEventPageSuspended(kExtensionId))
+      .WillByDefault(Return(false));
+  request_manager_->OnMojoConnectionsReady();
+
   ExpectWakeReasonBucketCount(MediaRouteProviderWakeReason::DETACH_ROUTE, 1);
   ExpectWakeupBucketCount(MediaRouteProviderWakeup::SUCCESS, 1);
 }

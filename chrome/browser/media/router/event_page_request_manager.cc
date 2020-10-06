@@ -30,7 +30,6 @@ void EventPageRequestManager::RunOrDefer(
     base::OnceClosure request,
     MediaRouteProviderWakeReason wake_reason) {
   if (mojo_connections_ready_) {
-    DCHECK(!media_route_provider_extension_id_.empty());
     std::move(request).Run();
   } else {
     EnqueueRequest(std::move(request));
@@ -75,7 +74,7 @@ void EventPageRequestManager::OnMojoConnectionError() {
 }
 
 content::WebContents* EventPageRequestManager::GetEventPageWebContents() {
-  if (!extension_process_manager_)
+  if (!extension_process_manager_ || media_route_provider_extension_id_.empty())
     return nullptr;
 
   extensions::ExtensionHost* extension_host =
@@ -111,21 +110,23 @@ void EventPageRequestManager::SetWakeReason(
 
 bool EventPageRequestManager::IsEventPageSuspended() const {
   return !extension_process_manager_ ||
+         media_route_provider_extension_id_.empty() ||
          extension_process_manager_->IsEventPageSuspended(
              media_route_provider_extension_id_);
 }
 
 void EventPageRequestManager::AttemptWakeEventPage() {
+  if (!extension_process_manager_ ||
+      media_route_provider_extension_id_.empty()) {
+    return;
+  }
+
   ++wakeup_attempt_count_;
   if (wakeup_attempt_count_ > kMaxWakeupAttemptCount) {
     DrainPendingRequests();
     wakeup_attempt_count_ = 0;
     MediaRouterMojoMetrics::RecordMediaRouteProviderWakeup(
         MediaRouteProviderWakeup::ERROR_TOO_MANY_RETRIES);
-    return;
-  }
-
-  if (!extension_process_manager_) {
     return;
   }
 
