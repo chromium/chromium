@@ -1411,6 +1411,9 @@ base::Optional<MinMaxSizesResult> CalculateMinMaxSizesIgnoringChildren(
     LayoutUnit default_inline_size = node.DefaultIntrinsicContentInlineSize();
     if (default_inline_size != kIndefiniteSize) {
       sizes += default_inline_size;
+      // <textarea>'s intrinsic size should ignore scrollbar existence.
+      if (node.IsTextArea())
+        sizes -= ComputeScrollbarsForNonAnonymous(node).InlineSum();
       return MinMaxSizesResult{sizes,
                                /* depends_on_percentage_block_size */ false};
     }

@@ -176,41 +176,6 @@ bool LayoutTextControlSingleLine::NodeAtPoint(
   return true;
 }
 
-LayoutUnit LayoutTextControlSingleLine::PreferredContentLogicalWidth(
-    float char_width) const {
-  NOT_DESTROYED();
-  int factor;
-  bool includes_decoration =
-      InputElement()->SizeShouldIncludeDecoration(factor);
-  if (factor <= 0)
-    factor = 20;
-
-  LayoutUnit result = LayoutUnit::FromFloatCeil(char_width * factor);
-
-  float max_char_width = 0.f;
-  const Font& font = StyleRef().GetFont();
-  if (HasValidAvgCharWidth(font))
-    max_char_width = roundf(font.PrimaryFont()->MaxCharWidth());
-
-  // For text inputs, IE adds some extra width.
-  if (max_char_width > 0.f)
-    result += max_char_width - char_width;
-
-  if (includes_decoration) {
-    HTMLElement* spin_button = InnerSpinButtonElement();
-    if (LayoutBox* spin_layout_object =
-            spin_button ? spin_button->GetLayoutBox() : nullptr) {
-      result += spin_layout_object->BorderAndPaddingLogicalWidth();
-      // Since the width of spin_layout_object is not calculated yet,
-      // spin_layout_object->LogicalWidth() returns 0. Use the computed logical
-      // width instead.
-      result += spin_layout_object->StyleRef().LogicalWidth().Value();
-    }
-  }
-
-  return result;
-}
-
 LayoutUnit LayoutTextControlSingleLine::ComputeControlLogicalHeight(
     LayoutUnit line_height) const {
   NOT_DESTROYED();

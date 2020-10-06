@@ -160,6 +160,9 @@ class CORE_EXPORT NGLayoutInputNode {
 
   wtf_size_t TableCellRowspan() const;
 
+  bool IsTextArea() const { return box_->IsTextAreaIncludingNG(); }
+  bool IsTextControl() const { return box_->IsTextControlIncludingNG(); }
+
   bool IsMathRoot() const { return box_->IsMathMLRoot(); }
   bool IsMathML() const { return box_->IsMathML(); }
 

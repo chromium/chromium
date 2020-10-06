@@ -1477,8 +1477,8 @@ void LayoutBlock::ScrollbarsChanged(bool horizontal_scrollbar_changed,
 MinMaxSizes LayoutBlock::ComputeIntrinsicLogicalWidths() const {
   NOT_DESTROYED();
   MinMaxSizes sizes;
-  sizes +=
-      BorderAndPaddingLogicalWidth() + ComputeLogicalScrollbars().InlineSum();
+  LayoutUnit scrollbar_thickness = ComputeLogicalScrollbars().InlineSum();
+  sizes += BorderAndPaddingLogicalWidth() + scrollbar_thickness;
 
   // See if we can early out sooner if the logical width is overridden or we're
   // size contained. Note that for multicol containers we need the column gaps.
@@ -1492,6 +1492,9 @@ MinMaxSizes LayoutBlock::ComputeIntrinsicLogicalWidths() const {
     LayoutUnit default_inline_size = DefaultIntrinsicContentInlineSize();
     if (default_inline_size != kIndefiniteSize) {
       sizes.max_size += default_inline_size;
+      // <textarea>'s intrinsic size should ignore scrollbar existence.
+      if (IsTextAreaIncludingNG())
+        sizes -= scrollbar_thickness;
       if (!StyleRef().LogicalWidth().IsPercentOrCalc())
         sizes.min_size = sizes.max_size;
       return sizes;

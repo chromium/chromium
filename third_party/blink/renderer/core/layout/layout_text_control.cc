@@ -24,6 +24,7 @@
 
 #include "base/stl_util.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -217,19 +218,6 @@ float LayoutTextControl::GetAvgCharWidth(const ComputedStyle& style) {
   TextRun text_run =
       ConstructTextRun(font, str, style, TextRun::kAllowTrailingExpansion);
   return font.Width(text_run);
-}
-
-MinMaxSizes LayoutTextControl::ComputeIntrinsicLogicalWidths() const {
-  NOT_DESTROYED();
-  MinMaxSizes sizes;
-  sizes += BorderAndPaddingLogicalWidth();
-
-  // Use average character width. Matches IE.
-  sizes.max_size += PreferredContentLogicalWidth(GetAvgCharWidth(StyleRef()));
-
-  if (!StyleRef().LogicalWidth().IsPercentOrCalc())
-    sizes.min_size = sizes.max_size;
-  return sizes;
 }
 
 void LayoutTextControl::AddOutlineRects(Vector<PhysicalRect>& rects,

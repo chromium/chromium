@@ -66,7 +66,6 @@ class CORE_EXPORT LayoutTextControl : public LayoutBlockFlow {
                              const HitTestLocation&,
                              const PhysicalOffset& accumulated_offset);
 
-  virtual LayoutUnit PreferredContentLogicalWidth(float char_width) const = 0;
   virtual LayoutUnit ComputeControlLogicalHeight(
       LayoutUnit line_height) const = 0;
 
@@ -84,7 +83,6 @@ class CORE_EXPORT LayoutTextControl : public LayoutBlockFlow {
   }
 
  private:
-  MinMaxSizes ComputeIntrinsicLogicalWidths() const final;
   void RemoveLeftoverAnonymousBlock(LayoutBlock*) final { NOT_DESTROYED(); }
 
   void AddOutlineRects(Vector<PhysicalRect>&,
