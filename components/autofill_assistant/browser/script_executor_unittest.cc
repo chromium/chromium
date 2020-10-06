@@ -12,8 +12,8 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/autofill_assistant/browser/fake_script_executor_delegate.h"
-#include "components/autofill_assistant/browser/mock_service.h"
-#include "components/autofill_assistant/browser/service.h"
+#include "components/autofill_assistant/browser/service/mock_service.h"
+#include "components/autofill_assistant/browser/service/service.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

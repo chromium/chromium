@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_IMPL_H_
-#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_IMPL_H_
+#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_SERVICE_IMPL_H_
+#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_SERVICE_IMPL_H_
 
 #include <map>
 #include <memory>
@@ -12,11 +12,11 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "components/autofill_assistant/browser/access_token_fetcher.h"
 #include "components/autofill_assistant/browser/client_context.h"
 #include "components/autofill_assistant/browser/device_context.h"
-#include "components/autofill_assistant/browser/service.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/service/access_token_fetcher.h"
+#include "components/autofill_assistant/browser/service/service.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -144,4 +144,4 @@ class ServiceImpl : public Service {
 
 }  // namespace autofill_assistant
 
-#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_IMPL_H_
+#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_SERVICE_IMPL_H_

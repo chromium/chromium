@@ -7,11 +7,11 @@
 #include "base/logging.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AutofillAssistantLiteService_jni.h"
 #include "chrome/common/channel_info.h"
-#include "components/autofill_assistant/browser/api_key_fetcher.h"
-#include "components/autofill_assistant/browser/lite_service.h"
 #include "components/autofill_assistant/browser/metrics.h"
-#include "components/autofill_assistant/browser/server_url_fetcher.h"
-#include "components/autofill_assistant/browser/service_impl.h"
+#include "components/autofill_assistant/browser/service/api_key_fetcher.h"
+#include "components/autofill_assistant/browser/service/lite_service.h"
+#include "components/autofill_assistant/browser/service/server_url_fetcher.h"
+#include "components/autofill_assistant/browser/service/service_impl.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill_assistant {

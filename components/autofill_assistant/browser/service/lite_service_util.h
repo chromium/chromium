@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_LITE_SERVICE_UTIL_H_
-#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_LITE_SERVICE_UTIL_H_
+#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_LITE_SERVICE_UTIL_H_
+#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_LITE_SERVICE_UTIL_H_
 
 #include <string>
 #include "base/optional.h"
@@ -43,4 +43,4 @@ void AssignUniquePayloadsToPrompts(ActionsResponseProto* proto);
 }  // namespace lite_service_util
 }  // namespace autofill_assistant
 
-#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_LITE_SERVICE_UTIL_H_
+#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_LITE_SERVICE_UTIL_H_

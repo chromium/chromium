@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_assistant/browser/lite_service_util.h"
+#include "components/autofill_assistant/browser/service/lite_service_util.h"
 
 #include <algorithm>
 #include <memory>

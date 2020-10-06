@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_JAVA_SERVICE_H_
-#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_JAVA_SERVICE_H_
+#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_JAVA_SERVICE_H_
+#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_JAVA_SERVICE_H_
 
 #include <memory>
 #include <string>
@@ -11,11 +11,14 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "components/autofill_assistant/browser/service.h"
+#include "components/autofill_assistant/browser/service/service.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
 
+// TODO(arbesser) Move this to chrome/browser/android, it does not belong into
+// components/autofill_assistant. This interface should be callback-based only.
+//
 // Thin C++ wrapper around a service implemented in Java. Intended for use in
 // Java UI tests to inject a Java service as a substitute to the native service.
 class JavaService : public Service {
@@ -56,4 +59,4 @@ class JavaService : public Service {
 
 }  // namespace autofill_assistant
 
-#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_JAVA_SERVICE_H_
+#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_JAVA_SERVICE_H_

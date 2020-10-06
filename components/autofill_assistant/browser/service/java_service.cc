@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_assistant/browser/java_service.h"
+#include "components/autofill_assistant/browser/service/java_service.h"
 
 #include <string>
 #include <vector>

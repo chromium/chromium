@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_H_
-#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_H_
+#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_SERVICE_H_
+#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_SERVICE_H_
 
 #include <string>
 #include <vector>
@@ -56,4 +56,4 @@ class Service {
 
 }  // namespace autofill_assistant
 
-#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_H_
+#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_SERVICE_H_

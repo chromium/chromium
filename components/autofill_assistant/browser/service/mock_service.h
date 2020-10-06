@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_MOCK_SERVICE_H_
-#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_MOCK_SERVICE_H_
+#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_MOCK_SERVICE_H_
+#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_MOCK_SERVICE_H_
 
 #include <map>
 #include <string>
 #include <vector>
 
-#include "components/autofill_assistant/browser/service_impl.h"
+#include "components/autofill_assistant/browser/service/service_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -71,4 +71,4 @@ class MockService : public ServiceImpl {
 
 }  // namespace autofill_assistant
 
-#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_MOCK_SERVICE_H_
+#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_MOCK_SERVICE_H_

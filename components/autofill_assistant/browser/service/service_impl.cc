@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_assistant/browser/service_impl.h"
+#include "components/autofill_assistant/browser/service/service_impl.h"
 
 #include <string>
 #include <utility>
@@ -11,10 +11,10 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
-#include "components/autofill_assistant/browser/api_key_fetcher.h"
 #include "components/autofill_assistant/browser/client.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
-#include "components/autofill_assistant/browser/server_url_fetcher.h"
+#include "components/autofill_assistant/browser/service/api_key_fetcher.h"
+#include "components/autofill_assistant/browser/service/server_url_fetcher.h"
 #include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "content/public/browser/browser_context.h"
