@@ -794,12 +794,15 @@ void OobeInteractiveUITest::SimpleEndToEnd() {
 }
 
 // Disabled on *San bots since they time out.
-#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
-    defined(LEAK_SANITIZER)
-#define MAYBE_SimpleEndToEnd DISABLED_SimpleEndToEnd
-#else
-#define MAYBE_SimpleEndToEnd SimpleEndToEnd
-#endif
+//#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
+//    defined(LEAK_SANITIZER)
+//#define MAYBE_SimpleEndToEnd DISABLED_SimpleEndToEnd
+//#else
+//#define MAYBE_SimpleEndToEnd SimpleEndToEnd
+//#endif
+
+// crbug.com/1135512: Fails on linux-chromeos-chrome, uncomment above section
+// once this bug is fixed.
 
 // Note that this probably the largest test that is run on ChromeOS, and it
 // might be running close to time limits especially on instrumented builds.
@@ -807,7 +810,7 @@ void OobeInteractiveUITest::SimpleEndToEnd() {
 // Please do not disable it for whole ChromeOS, only for specific instrumented
 // bots. Another alternative is to increase respective multiplier in
 // base/test/test_timeouts.h.
-IN_PROC_BROWSER_TEST_P(OobeInteractiveUITest, MAYBE_SimpleEndToEnd) {
+IN_PROC_BROWSER_TEST_P(OobeInteractiveUITest, DISABLED_SimpleEndToEnd) {
   SimpleEndToEnd();
 }
 
@@ -872,12 +875,15 @@ void OobeZeroTouchInteractiveUITest::ZeroTouchEndToEnd() {
 
 // crbug.com/997987. Disabled on MSAN since they time out.
 // crbug.com/1055853: EndToEnd is flaky on Linux Chromium OS ASan LSan
-#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
-    defined(LEAK_SANITIZER)
-#define MAYBE_EndToEnd DISABLED_EndToEnd
-#else
-#define MAYBE_EndToEnd EndToEnd
-#endif
+//#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
+//    defined(LEAK_SANITIZER)
+//#define MAYBE_EndToEnd DISABLED_EndToEnd
+//#else
+//#define MAYBE_EndToEnd EndToEnd
+//#endif
+
+// crbug.com/1135512: Fails on linux-chromeos-chrome, uncomment above section
+// once this bug is fixed.
 
 // Note that this probably the largest test that is run on ChromeOS, and it
 // might be running close to time limits especially on instrumented builds.
@@ -885,7 +891,7 @@ void OobeZeroTouchInteractiveUITest::ZeroTouchEndToEnd() {
 // Please do not disable it for whole ChromeOS, only for specific instrumented
 // bots. Another alternative is to increase respective multiplier in
 // base/test/test_timeouts.h.
-IN_PROC_BROWSER_TEST_P(OobeZeroTouchInteractiveUITest, MAYBE_EndToEnd) {
+IN_PROC_BROWSER_TEST_P(OobeZeroTouchInteractiveUITest, DISABLED_EndToEnd) {
   ZeroTouchEndToEnd();
 }
 
