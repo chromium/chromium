@@ -38,7 +38,7 @@ bool PrimaryAccountMutatorImpl::SetPrimaryAccount(
   if (!pref_service_->GetBoolean(prefs::kSigninAllowed))
     return false;
 
-  if (primary_account_manager_->IsAuthenticated())
+  if (primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync))
     return false;
 
   if (account_info.account_id != account_id || account_info.email.empty())

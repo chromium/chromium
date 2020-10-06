@@ -125,10 +125,7 @@ CoreAccountId IdentityManager::GetPrimaryAccountId(ConsentLevel consent) const {
 }
 
 bool IdentityManager::HasPrimaryAccount(ConsentLevel consent) const {
-  if (consent == ConsentLevel::kNotRequired) {
-    return primary_account_manager_->HasUnconsentedPrimaryAccount();
-  }
-  return primary_account_manager_->IsAuthenticated();
+  return primary_account_manager_->HasPrimaryAccount(consent);
 }
 
 std::unique_ptr<AccessTokenFetcher>

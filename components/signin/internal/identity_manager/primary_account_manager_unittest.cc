@@ -32,6 +32,8 @@
 #include "components/signin/internal/identity_manager/primary_account_policy_manager_impl.h"
 #endif
 
+using signin::ConsentLevel;
+
 class PrimaryAccountManagerTest : public testing::Test,
                                   public PrimaryAccountManager::Observer {
  public:
@@ -107,7 +109,7 @@ class PrimaryAccountManagerTest : public testing::Test,
   }
 
   void ExpectSignInWithRefreshTokenSuccess() {
-    EXPECT_TRUE(manager_->IsAuthenticated());
+    EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
     EXPECT_FALSE(manager_->GetAuthenticatedAccountId().empty());
     EXPECT_FALSE(manager_->GetAuthenticatedAccountInfo().email.empty());
 
@@ -152,14 +154,14 @@ TEST_F(PrimaryAccountManagerTest, SignOut) {
   manager_->SignIn("user@gmail.com");
   manager_->SignOut(signin_metrics::SIGNOUT_TEST,
                     signin_metrics::SignoutDelete::IGNORE_METRIC);
-  EXPECT_FALSE(manager_->IsAuthenticated());
+  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_TRUE(manager_->GetAuthenticatedAccountInfo().email.empty());
   EXPECT_TRUE(manager_->GetAuthenticatedAccountId().empty());
   EXPECT_TRUE(manager_->GetUnconsentedPrimaryAccountInfo().IsEmpty());
   // Should not be persisted anymore
   ShutDownManager();
   CreatePrimaryAccountManager();
-  EXPECT_FALSE(manager_->IsAuthenticated());
+  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_TRUE(manager_->GetAuthenticatedAccountInfo().email.empty());
   EXPECT_TRUE(manager_->GetAuthenticatedAccountId().empty());
   EXPECT_TRUE(manager_->GetUnconsentedPrimaryAccountInfo().IsEmpty());
@@ -174,14 +176,14 @@ TEST_F(PrimaryAccountManagerTest, SignOutRevoke) {
   token_service_.UpdateCredentials(main_account_id, "token");
   token_service_.UpdateCredentials(other_account_id, "token");
   manager_->SignIn("user@gmail.com");
-  EXPECT_TRUE(manager_->IsAuthenticated());
+  EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_EQ(main_account_id, manager_->GetAuthenticatedAccountId());
 
   manager_->SignOut(signin_metrics::SIGNOUT_TEST,
                     signin_metrics::SignoutDelete::IGNORE_METRIC);
 
   // Tokens are revoked.
-  EXPECT_FALSE(manager_->IsAuthenticated());
+  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_TRUE(token_service_.GetAccounts().empty());
 }
 
@@ -197,14 +199,14 @@ TEST_F(PrimaryAccountManagerTest, SignOutDiceNoRevoke) {
   token_service_.UpdateCredentials(main_account_id, "token");
   token_service_.UpdateCredentials(other_account_id, "token");
   manager_->SignIn("user@gmail.com");
-  EXPECT_TRUE(manager_->IsAuthenticated());
+  EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_EQ(main_account_id, manager_->GetAuthenticatedAccountId());
 
   manager_->SignOut(signin_metrics::SIGNOUT_TEST,
                     signin_metrics::SignoutDelete::IGNORE_METRIC);
 
   // Tokens are not revoked.
-  EXPECT_FALSE(manager_->IsAuthenticated());
+  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   std::vector<CoreAccountId> expected_tokens = {main_account_id,
                                                 other_account_id};
   EXPECT_EQ(expected_tokens, token_service_.GetAccounts());
@@ -231,14 +233,14 @@ TEST_F(PrimaryAccountManagerTest, SignOutDiceWithError) {
   ASSERT_TRUE(token_service_.RefreshTokenHasError(main_account_id));
   ASSERT_TRUE(token_service_.RefreshTokenHasError(other_account_id));
 
-  EXPECT_TRUE(manager_->IsAuthenticated());
+  EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_EQ(main_account_id, manager_->GetAuthenticatedAccountId());
 
   manager_->SignOut(signin_metrics::SIGNOUT_TEST,
                     signin_metrics::SignoutDelete::IGNORE_METRIC);
 
   // Only main token is revoked.
-  EXPECT_FALSE(manager_->IsAuthenticated());
+  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   std::vector<CoreAccountId> expected_tokens = {other_account_id};
   EXPECT_EQ(expected_tokens, token_service_.GetAccounts());
 }
@@ -246,7 +248,7 @@ TEST_F(PrimaryAccountManagerTest, SignOutDiceWithError) {
 
 TEST_F(PrimaryAccountManagerTest, SignOutWhileProhibited) {
   CreatePrimaryAccountManager();
-  EXPECT_FALSE(manager_->IsAuthenticated());
+  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_TRUE(manager_->GetAuthenticatedAccountInfo().email.empty());
   EXPECT_TRUE(manager_->GetAuthenticatedAccountId().empty());
 
@@ -255,16 +257,16 @@ TEST_F(PrimaryAccountManagerTest, SignOutWhileProhibited) {
   signin_client()->set_is_signout_allowed(false);
   manager_->SignOut(signin_metrics::SIGNOUT_TEST,
                     signin_metrics::SignoutDelete::IGNORE_METRIC);
-  EXPECT_TRUE(manager_->IsAuthenticated());
+  EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   signin_client()->set_is_signout_allowed(true);
   manager_->SignOut(signin_metrics::SIGNOUT_TEST,
                     signin_metrics::SignoutDelete::IGNORE_METRIC);
-  EXPECT_FALSE(manager_->IsAuthenticated());
+  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
 }
 
 TEST_F(PrimaryAccountManagerTest, UnconsentedSignOutWhileProhibited) {
   CreatePrimaryAccountManager();
-  EXPECT_FALSE(manager_->IsAuthenticated());
+  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_TRUE(manager_->GetAuthenticatedAccountInfo().email.empty());
   EXPECT_TRUE(manager_->GetAuthenticatedAccountId().empty());
 
@@ -272,7 +274,7 @@ TEST_F(PrimaryAccountManagerTest, UnconsentedSignOutWhileProhibited) {
   CoreAccountInfo account_info = account_tracker()->GetAccountInfo(account_id);
   manager_->SetUnconsentedPrimaryAccountInfo(account_info);
   EXPECT_TRUE(manager_->HasUnconsentedPrimaryAccount());
-  EXPECT_FALSE(manager_->IsAuthenticated());
+  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   signin_client()->set_is_signout_allowed(false);
   manager_->SignOut(signin_metrics::SIGNOUT_TEST,
                     signin_metrics::SignoutDelete::IGNORE_METRIC);
@@ -505,10 +507,10 @@ TEST_F(PrimaryAccountManagerTest, RevokeSyncConsent) {
   CreatePrimaryAccountManager();
   CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
   manager_->SignIn("user@gmail.com");
-  EXPECT_TRUE(manager_->IsAuthenticated());
+  EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
 
   manager_->RevokeSyncConsent();
-  EXPECT_FALSE(manager_->IsAuthenticated());
+  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_TRUE(manager_->HasUnconsentedPrimaryAccount());
   EXPECT_EQ(account_id,
             manager_->GetUnconsentedPrimaryAccountInfo().account_id);

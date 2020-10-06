@@ -69,7 +69,7 @@ void PrimaryAccountPolicyManagerImpl::InitializePolicy(
 
 void PrimaryAccountPolicyManagerImpl::OnGoogleServicesUsernamePatternChanged(
     PrimaryAccountManager* primary_account_manager) {
-  if (primary_account_manager->IsAuthenticated() &&
+  if (primary_account_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
       !IsAllowedUsername(
           primary_account_manager->GetAuthenticatedAccountInfo().email)) {
     // Signed in user is invalid according to the current policy so sign
@@ -86,7 +86,8 @@ bool PrimaryAccountPolicyManagerImpl::IsSigninAllowed() const {
 
 void PrimaryAccountPolicyManagerImpl::OnSigninAllowedPrefChanged(
     PrimaryAccountManager* primary_account_manager) {
-  if (!IsSigninAllowed() && primary_account_manager->IsAuthenticated()) {
+  if (!IsSigninAllowed() &&
+      primary_account_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     VLOG(0) << "IsSigninAllowed() set to false, signing out the user";
     primary_account_manager->SignOut(
         signin_metrics::SIGNOUT_PREF_CHANGED,

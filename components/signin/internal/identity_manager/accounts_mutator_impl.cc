@@ -97,7 +97,7 @@ void AccountsMutatorImpl::InvalidateRefreshTokenForPrimaryAccount(
 #if defined(OS_CHROMEOS)
   NOTREACHED();
 #endif
-  DCHECK(primary_account_manager_->IsAuthenticated());
+  DCHECK(primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync));
   CoreAccountInfo primary_account_info =
       primary_account_manager_->GetAuthenticatedAccountInfo();
   AddOrUpdateAccount(primary_account_info.gaia, primary_account_info.email,

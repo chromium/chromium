@@ -29,6 +29,7 @@
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/consent_level.h"
 
 class AccountTrackerService;
 class PrefRegistrySimple;
@@ -102,8 +103,10 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // "Signed in as XXX" in the hotdog menu.
   CoreAccountId GetAuthenticatedAccountId() const;
 
-  // Returns true if there is an authenticated user.
-  bool IsAuthenticated() const;
+  // Returns whether the user's primary account is available. If consent is
+  // |ConsentLevel::kSync| then true implies that the user has blessed this
+  // account for sync.
+  bool HasPrimaryAccount(signin::ConsentLevel consent_level) const;
 
   // Signs a user in. PrimaryAccountManager assumes that |username| can be used
   // to look up the corresponding account_id and gaia_id for this email.

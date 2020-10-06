@@ -117,7 +117,7 @@ CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
   DCHECK(!identity_manager->HasPrimaryAccount());
   PrimaryAccountManager* primary_account_manager =
       identity_manager->GetPrimaryAccountManager();
-  DCHECK(!primary_account_manager->IsAuthenticated());
+  DCHECK(!primary_account_manager->HasPrimaryAccount(ConsentLevel::kSync));
 
   AccountInfo account_info =
       EnsureAccountExists(identity_manager->GetAccountTrackerService(), email);
@@ -125,7 +125,7 @@ CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
 
   primary_account_manager->SignIn(email);
 
-  DCHECK(primary_account_manager->IsAuthenticated());
+  DCHECK(primary_account_manager->HasPrimaryAccount(ConsentLevel::kSync));
   DCHECK(identity_manager->HasPrimaryAccount());
   return identity_manager->GetPrimaryAccountInfo();
 }
