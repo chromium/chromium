@@ -100,6 +100,7 @@ component("printing") {
     "//base",
     "//base:i18n",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//cc/paint",
     "//printing/common",
     "//printing/mojom",
@@ -296,6 +297,7 @@ static_library("test_support") {
   ]
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//skia",
     "//ui/gfx",
   ]
@@ -336,6 +338,7 @@ test("printing_unittests") {
   deps = [
     ":printing",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//mojo/core/test:run_all_unittests",
     "//mojo/public/cpp/test_support:test_utils",
     "//printing/backend/mojom",

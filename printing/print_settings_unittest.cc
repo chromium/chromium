@@ -6,6 +6,7 @@
 
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -55,7 +56,7 @@ TEST(PrintSettingsTest, GetColorModelForModel) {
   }
 }
 
-#if defined(OS_MAC) || defined(OS_CHROMEOS)
+#if defined(OS_MAC) || BUILDFLAG(IS_ASH)
 TEST(PrintSettingsTest, GetIppColorModelForModel) {
   for (int model = static_cast<int>(mojom::ColorModel::kUnknownColorModel);
        model <= static_cast<int>(mojom::ColorModel::kColorModelLast); ++model) {
@@ -63,7 +64,7 @@ TEST(PrintSettingsTest, GetIppColorModelForModel) {
                      .empty());
   }
 }
-#endif  // defined(OS_MAC) || defined(OS_CHROMEOS)
+#endif  // defined(OS_MAC) || BUILDFLAG(IS_ASH)
 #endif  // defined(USE_CUPS)
 
 }  // namespace printing

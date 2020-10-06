@@ -4,14 +4,16 @@
 
 #include "printing/printing_features.h"
 
+#include "build/chromeos_buildflags.h"
+
 namespace printing {
 namespace features {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 // Enables Advanced PPD Attributes.
 const base::Feature kAdvancedPpdAttributes{"AdvancedPpdAttributes",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 #if defined(OS_MAC)
 // Use the CUPS IPP printing backend instead of the original CUPS backend that

@@ -6,6 +6,8 @@
 
 #include <cups/cups.h>
 
+#include "build/chromeos_buildflags.h"
+
 namespace printing {
 
 constexpr char kIppCollate[] = "multiple-document-handling";  // PWG 5100.19
@@ -22,7 +24,7 @@ constexpr char kIppPinEncryption[] = "job-password-encryption";  // PWG 5100.11
 constexpr char kCollated[] = "separate-documents-collated-copies";
 constexpr char kUncollated[] = "separate-documents-uncollated-copies";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 
 constexpr char kIppDocumentAttributes[] =
     "document-creation-attributes";                              // PWG 5100.5
@@ -33,6 +35,6 @@ constexpr char kPinEncryptionNone[] = "none";
 constexpr char kOptionFalse[] = "false";
 constexpr char kOptionTrue[] = "true";
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 }  // namespace printing

@@ -11,6 +11,7 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/page_range.h"
 #include "printing/page_setup.h"
@@ -43,7 +44,7 @@ PRINTING_EXPORT void GetColorModelForModel(mojom::ColorModel color_model,
                                            std::string* color_setting_name,
                                            std::string* color_value);
 
-#if defined(OS_MAC) || defined(OS_CHROMEOS)
+#if defined(OS_MAC) || BUILDFLAG(IS_ASH)
 // Convert from |color_model| to a print-color-mode value from PWG 5100.13.
 PRINTING_EXPORT std::string GetIppColorModelForModel(
     mojom::ColorModel color_model);
@@ -228,7 +229,7 @@ class PRINTING_EXPORT PrintSettings {
   }
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   void set_send_user_info(bool send_user_info) {
     send_user_info_ = send_user_info;
   }
@@ -239,7 +240,7 @@ class PRINTING_EXPORT PrintSettings {
 
   void set_pin_value(const std::string& pin_value) { pin_value_ = pin_value; }
   const std::string& pin_value() const { return pin_value_; }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
   // Cookie generator. It is used to initialize PrintedDocument with its
   // associated PrintSettings, to be sure that each generated PrintedPage is
@@ -325,7 +326,7 @@ class PRINTING_EXPORT PrintSettings {
   AdvancedSettings advanced_settings_;
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   // Whether to send user info.
   bool send_user_info_;
 

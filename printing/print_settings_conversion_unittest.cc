@@ -7,6 +7,7 @@
 #include "base/json/json_reader.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "printing/print_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -60,7 +61,7 @@ TEST(PrintSettingsConversionTest, ConversionTest) {
   std::unique_ptr<PrintSettings> settings =
       PrintSettingsFromJobSettings(value.value());
   ASSERT_TRUE(settings);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   EXPECT_TRUE(settings->send_user_info());
   EXPECT_EQ("username@domain.net", settings->username());
   EXPECT_EQ("0000", settings->pin_value());
@@ -79,7 +80,7 @@ TEST(PrintSettingsConversionTest, ConversionTest) {
 #endif
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 TEST(PrintSettingsConversionTest, ConversionTest_DontSendUsername) {
   base::Optional<base::Value> value = base::JSONReader::Read(kPrinterSettings);
   ASSERT_TRUE(value.has_value());

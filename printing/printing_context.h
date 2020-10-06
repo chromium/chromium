@@ -12,6 +12,7 @@
 #include "base/strings/string16.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/native_drawing_context.h"
 #include "printing/print_settings.h"
@@ -86,7 +87,7 @@ class PRINTING_EXPORT PrintingContext {
   // settings information.
   Result UpdatePrintSettings(base::Value job_settings);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   // Updates Print Settings.
   Result UpdatePrintSettingsFromPOD(
       std::unique_ptr<PrintSettings> job_settings);

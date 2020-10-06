@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "printing/backend/cups_printer.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/printing_features.h"
@@ -284,7 +285,7 @@ TEST_F(PrintBackendCupsIppHelperTest, OmitPapersWithSpecialVendorIds) {
                          "iso b0")));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 TEST_F(PrintBackendCupsIppHelperTest, PinSupported) {
   printer_->SetSupportedOptions("job-password", MakeInteger(ipp_, 4));
   printer_->SetSupportedOptions("job-password-encryption",
@@ -363,6 +364,6 @@ TEST_F(PrintBackendCupsIppHelperTest, AdvancedCaps) {
   EXPECT_EQ(3u, caps.advanced_capabilities[5].values.size());
   histograms.ExpectUniqueSample("Printing.CUPS.IppAttributesCount", 5, 1);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 }  // namespace printing

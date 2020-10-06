@@ -7,9 +7,10 @@
 #include "base/atomic_sequence_num.h"
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
+#include "build/chromeos_buildflags.h"
 #include "printing/units.h"
 
-#if defined(USE_CUPS) && (defined(OS_MAC) || defined(OS_CHROMEOS))
+#if defined(USE_CUPS) && (defined(OS_MAC) || BUILDFLAG(IS_ASH))
 #include <cups/cups.h>
 #endif
 
@@ -182,7 +183,7 @@ void GetColorModelForModel(mojom::ColorModel color_model,
   // all ColorModel values are determinantly handled.
 }
 
-#if defined(OS_MAC) || defined(OS_CHROMEOS)
+#if defined(OS_MAC) || BUILDFLAG(IS_ASH)
 std::string GetIppColorModelForModel(mojom::ColorModel color_model) {
   // Accept |kUnknownColorModel| for consistency with GetColorModelForModel().
   if (color_model == mojom::ColorModel::kUnknownColorModel)
@@ -197,7 +198,7 @@ std::string GetIppColorModelForModel(mojom::ColorModel color_model) {
   return is_color.value() ? CUPS_PRINT_COLOR_MODE_COLOR
                           : CUPS_PRINT_COLOR_MODE_MONOCHROME;
 }
-#endif  // defined(OS_MAC) || defined(OS_CHROMEOS)
+#endif  // defined(OS_MAC) || BUILDFLAG(IS_ASH)
 #endif  // defined(USE_CUPS)
 
 base::Optional<bool> IsColorModelSelected(mojom::ColorModel color_model) {
@@ -280,11 +281,11 @@ void PrintSettings::Clear() {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   advanced_settings_.clear();
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   send_user_info_ = false;
   username_.clear();
   pin_value_.clear();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 }
 
 void PrintSettings::SetPrinterPrintableArea(

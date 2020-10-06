@@ -11,6 +11,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 #include "printing/printing_export.h"
@@ -47,7 +48,7 @@ struct PRINTING_EXPORT PrinterBasicInfo {
 
 using PrinterList = std::vector<PrinterBasicInfo>;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 
 struct PRINTING_EXPORT AdvancedCapabilityValue {
   AdvancedCapabilityValue();
@@ -95,7 +96,7 @@ struct PRINTING_EXPORT AdvancedCapability {
 
 using AdvancedCapabilities = std::vector<AdvancedCapability>;
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 struct PRINTING_EXPORT PrinterSemanticCapsAndDefaults {
   PrinterSemanticCapsAndDefaults();
@@ -133,10 +134,10 @@ struct PRINTING_EXPORT PrinterSemanticCapsAndDefaults {
   std::vector<gfx::Size> dpis;
   gfx::Size default_dpi;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   bool pin_supported = false;
   AdvancedCapabilities advanced_capabilities;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 };
 
 struct PRINTING_EXPORT PrinterCapsAndDefaults {

@@ -4,6 +4,8 @@
 
 #include "printing/backend/print_backend.h"
 
+#include "build/chromeos_buildflags.h"
+
 namespace {
 
 // PrintBackend override for testing.
@@ -19,7 +21,7 @@ PrinterBasicInfo::PrinterBasicInfo(const PrinterBasicInfo& other) = default;
 
 PrinterBasicInfo::~PrinterBasicInfo() = default;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 
 AdvancedCapabilityValue::AdvancedCapabilityValue() = default;
 
@@ -57,7 +59,7 @@ AdvancedCapability::AdvancedCapability(const AdvancedCapability& other) =
 
 AdvancedCapability::~AdvancedCapability() = default;
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 bool PrinterSemanticCapsAndDefaults::Paper::operator==(
     const PrinterSemanticCapsAndDefaults::Paper& other) const {

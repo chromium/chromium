@@ -5,10 +5,11 @@
 #include "printing/printed_document.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "printing/printing_context_linux.h"
 
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
-#error "This file is not used on Android / ChromeOS"
+#if defined(OS_ANDROID) || BUILDFLAG(IS_ASH)
+#error "This file is not used on Android / ChromeOS ash-chrome"
 #endif
 
 namespace printing {
