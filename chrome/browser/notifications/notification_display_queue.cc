@@ -60,6 +60,12 @@ class ScreenCaptureNotificationBlocker
 };
 #endif  // !defined(OS_ANDROID)
 
+bool IsWebNotification(NotificationHandler::Type notification_type) {
+  return notification_type == NotificationHandler::Type::WEB_PERSISTENT ||
+         notification_type == NotificationHandler::Type::WEB_NON_PERSISTENT ||
+         notification_type == NotificationHandler::Type::EXTENSION;
+}
+
 }  // namespace
 
 NotificationDisplayQueue::NotificationDisplayQueue(
@@ -84,11 +90,10 @@ void NotificationDisplayQueue::OnBlockingStateChanged() {
   MaybeDisplayQueuedNotifications();
 }
 
-bool NotificationDisplayQueue::ShouldEnqueueNotifications() {
-  return std::any_of(blockers_.begin(), blockers_.end(),
-                     [](const std::unique_ptr<NotificationBlocker>& blocker) {
-                       return blocker->ShouldBlockNotifications();
-                     });
+bool NotificationDisplayQueue::ShouldEnqueueNotifications(
+    NotificationHandler::Type notification_type) const {
+  return IsWebNotification(notification_type) &&
+         IsAnyNotificationBlockerActive();
 }
 
 void NotificationDisplayQueue::EnqueueNotification(
@@ -112,7 +117,8 @@ void NotificationDisplayQueue::RemoveQueuedNotification(
     queued_notifications_.erase(it);
 }
 
-std::set<std::string> NotificationDisplayQueue::GetQueuedNotificationIds() {
+std::set<std::string> NotificationDisplayQueue::GetQueuedNotificationIds()
+    const {
   std::set<std::string> notification_ids;
   for (const QueuedNotification& queued : queued_notifications_)
     notification_ids.insert(queued.notification.id());
@@ -136,7 +142,7 @@ void NotificationDisplayQueue::SetNotificationBlockers(
 }
 
 void NotificationDisplayQueue::MaybeDisplayQueuedNotifications() {
-  if (ShouldEnqueueNotifications())
+  if (IsAnyNotificationBlockerActive())
     return;
 
   std::vector<QueuedNotification> queued_notifications =
@@ -148,6 +154,13 @@ void NotificationDisplayQueue::MaybeDisplayQueuedNotifications() {
                                            queued.notification,
                                            std::move(queued.metadata));
   }
+}
+
+bool NotificationDisplayQueue::IsAnyNotificationBlockerActive() const {
+  return std::any_of(blockers_.begin(), blockers_.end(),
+                     [](const std::unique_ptr<NotificationBlocker>& blocker) {
+                       return blocker->ShouldBlockNotifications();
+                     });
 }
 
 NotificationDisplayQueue::QueuedNotification::QueuedNotification(

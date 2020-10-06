@@ -113,16 +113,25 @@ class NotificationDisplayQueueTest : public testing::Test {
 
 TEST_F(NotificationDisplayQueueTest, ShouldEnqueueWithoutBlockers) {
   queue().SetNotificationBlockers({});
-  EXPECT_FALSE(queue().ShouldEnqueueNotifications());
+  EXPECT_FALSE(queue().ShouldEnqueueNotifications(
+      NotificationHandler::Type::WEB_PERSISTENT));
 }
 
 TEST_F(NotificationDisplayQueueTest, ShouldEnqueueWithAllowingBlocker) {
-  EXPECT_FALSE(queue().ShouldEnqueueNotifications());
+  EXPECT_FALSE(queue().ShouldEnqueueNotifications(
+      NotificationHandler::Type::WEB_PERSISTENT));
 }
 
 TEST_F(NotificationDisplayQueueTest, ShouldEnqueueWithBlockingBlocker) {
   notification_blocker().SetShouldBlockNotifications(true);
-  EXPECT_TRUE(queue().ShouldEnqueueNotifications());
+  EXPECT_TRUE(queue().ShouldEnqueueNotifications(
+      NotificationHandler::Type::WEB_PERSISTENT));
+}
+
+TEST_F(NotificationDisplayQueueTest, ShouldEnqueueForNonWebNotification) {
+  notification_blocker().SetShouldBlockNotifications(true);
+  EXPECT_FALSE(
+      queue().ShouldEnqueueNotifications(NotificationHandler::Type::TRANSIENT));
 }
 
 TEST_F(NotificationDisplayQueueTest, EnqueueNotification) {

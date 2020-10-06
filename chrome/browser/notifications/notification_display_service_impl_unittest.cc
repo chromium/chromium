@@ -81,8 +81,7 @@ message_center::Notification CreateNotification(const std::string& id) {
       /*message=*/base::string16(), /*icon=*/gfx::Image(),
       /*display_source=*/base::string16(),
       /*origin_url=*/GURL(), message_center::NotifierId(),
-      message_center::RichNotificationData(),
-      base::MakeRefCounted<message_center::NotificationDelegate>());
+      message_center::RichNotificationData(), /*delegate=*/nullptr);
 }
 
 }  // namespace
@@ -151,12 +150,12 @@ class NotificationDisplayServiceImplTest : public testing::Test {
   }
 
   void DisplayNotification(const std::string id) {
-    service_->Display(NotificationHandler::Type::TRANSIENT,
+    service_->Display(NotificationHandler::Type::WEB_PERSISTENT,
                       CreateNotification(id), /*metadata=*/nullptr);
   }
 
   void CloseNotification(const std::string id) {
-    service_->Close(NotificationHandler::Type::TRANSIENT, id);
+    service_->Close(NotificationHandler::Type::WEB_PERSISTENT, id);
   }
 
  private:

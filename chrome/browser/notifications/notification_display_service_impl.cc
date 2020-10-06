@@ -196,7 +196,7 @@ void NotificationDisplayServiceImpl::Display(
   for (auto& observer : observers_)
     observer.OnNotificationDisplayed(notification, metadata.get());
 
-  if (notification_queue_.ShouldEnqueueNotifications()) {
+  if (notification_queue_.ShouldEnqueueNotifications(notification_type)) {
     notification_queue_.EnqueueNotification(notification_type, notification,
                                             std::move(metadata));
   } else {
