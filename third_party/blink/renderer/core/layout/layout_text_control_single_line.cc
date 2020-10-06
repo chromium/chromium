@@ -176,12 +176,6 @@ bool LayoutTextControlSingleLine::NodeAtPoint(
   return true;
 }
 
-LayoutUnit LayoutTextControlSingleLine::ComputeControlLogicalHeight(
-    LayoutUnit line_height) const {
-  NOT_DESTROYED();
-  return line_height;
-}
-
 LayoutUnit LayoutTextControlSingleLine::ScrollWidth() const {
   NOT_DESTROYED();
   // If in preview state, fake the scroll width to prevent that any information

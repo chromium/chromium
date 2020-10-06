@@ -1383,8 +1383,14 @@ LayoutUnit ClampIntrinsicBlockSize(
     return intrinsic_size_override + border_scrollbar_padding.BlockSum();
   } else {
     LayoutUnit default_intrinsic_size = node.DefaultIntrinsicContentBlockSize();
-    if (default_intrinsic_size != kIndefiniteSize)
+    if (default_intrinsic_size != kIndefiniteSize) {
+      // <textarea>'s intrinsic size should ignore scrollbar existence.
+      if (node.IsTextArea()) {
+        return default_intrinsic_size + border_scrollbar_padding.BlockSum() -
+               ComputeScrollbars(space, node).BlockSum();
+      }
       return default_intrinsic_size + border_scrollbar_padding.BlockSum();
+    }
   }
 
   // If we have size containment, we ignore child contributions to intrinsic

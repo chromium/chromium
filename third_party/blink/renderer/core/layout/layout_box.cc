@@ -181,6 +181,52 @@ LayoutUnit TextFieldIntrinsicInlineSize(const HTMLInputElement& input,
   return result;
 }
 
+LayoutUnit TextAreaIntrinsicBlockSize(const HTMLTextAreaElement& textarea,
+                                      const LayoutBox& box) {
+  const auto* inner_editor = textarea.InnerEditorElement();
+  if (!inner_editor) {
+    const LayoutUnit line_height = box.LineHeight(
+        true,
+        box.StyleRef().IsHorizontalWritingMode() ? kHorizontalLine
+                                                 : kVerticalLine,
+        kPositionOfInteriorLineBoxes);
+
+    return line_height * textarea.rows();
+  }
+  DCHECK(inner_editor->GetLayoutBox());
+  const LayoutBox& inner_box = *inner_editor->GetLayoutBox();
+  const ComputedStyle& inner_style = inner_box.StyleRef();
+  // We are able to have a horizontal scrollbar if the overflow style is
+  // scroll, or if its auto and there's no word wrap.
+  int scrollbar_thickness = 0;
+  if (box.StyleRef().OverflowInlineDirection() == EOverflow::kScroll ||
+      (box.StyleRef().OverflowInlineDirection() == EOverflow::kAuto &&
+       inner_style.OverflowWrap() == EOverflowWrap::kNormal))
+    scrollbar_thickness = LayoutTextControl::ScrollbarThickness(box);
+  return inner_box.LineHeight(true,
+                              inner_style.IsHorizontalWritingMode()
+                                  ? kHorizontalLine
+                                  : kVerticalLine,
+                              kPositionOfInteriorLineBoxes) *
+             textarea.rows() +
+         scrollbar_thickness;
+}
+
+LayoutUnit TextFieldIntrinsicBlockSize(const HTMLInputElement& input,
+                                       const LayoutBox& box) {
+  const auto* inner_editor = input.InnerEditorElement();
+  // inner_editor's LayoutBox can be nullptr because web authors can set
+  // display:none to ::-webkit-textfield-decoration-container element.
+  const LayoutBox& target_box = (inner_editor && inner_editor->GetLayoutBox())
+                                    ? *inner_editor->GetLayoutBox()
+                                    : box;
+  return target_box.LineHeight(true,
+                               target_box.StyleRef().IsHorizontalWritingMode()
+                                   ? kHorizontalLine
+                                   : kVerticalLine,
+                               kPositionOfInteriorLineBoxes);
+}
+
 LayoutUnit FileUploadControlIntrinsicInlineSize(const HTMLInputElement& input,
                                                 const LayoutBox& box) {
   // Figure out how big the filename space needs to be for a given number of
@@ -1167,6 +1213,11 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize() const {
       return ListBoxItemHeight(*select, *this) * select->ListBoxSize() -
              ComputeLogicalScrollbars().BlockSum();
     }
+  } else if (IsTextFieldIncludingNG()) {
+    return TextFieldIntrinsicBlockSize(*To<HTMLInputElement>(GetNode()), *this);
+  } else if (IsTextAreaIncludingNG()) {
+    return TextAreaIntrinsicBlockSize(*To<HTMLTextAreaElement>(GetNode()),
+                                      *this);
   }
   return kIndefiniteSize;
 }
@@ -4451,8 +4502,14 @@ void LayoutBox::ComputeLogicalHeight(
   } else {
     LayoutUnit default_height = DefaultIntrinsicContentBlockSize();
     if (default_height != kIndefiniteSize) {
-      height = default_height + BorderAndPaddingLogicalHeight() +
-               ComputeLogicalScrollbars().BlockSum();
+      height = default_height + BorderAndPaddingLogicalHeight();
+      // <textarea>'s intrinsic size should ignore scrollbar existence.
+      if (!IsTextAreaIncludingNG())
+        height += ComputeLogicalScrollbars().BlockSum();
+      // FIXME: The logical height of the inner editor box should have been
+      // added before calling ComputeLogicalHeight to avoid this hack.
+      if (IsTextControlIncludingNG())
+        SetIntrinsicContentLogicalHeight(default_height);
     } else if (ShouldApplySizeContainment() && !IsLayoutGrid()) {
       height = BorderAndPaddingLogicalHeight() +
                ComputeLogicalScrollbars().BlockSum();

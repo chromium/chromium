@@ -56,12 +56,6 @@ bool LayoutTextControlMultiLine::NodeAtPoint(
   return true;
 }
 
-LayoutUnit LayoutTextControlMultiLine::ComputeControlLogicalHeight(
-    LayoutUnit line_height) const {
-  NOT_DESTROYED();
-  return line_height * To<HTMLTextAreaElement>(GetNode())->rows();
-}
-
 LayoutUnit LayoutTextControlMultiLine::BaselinePosition(
     FontBaseline baseline_type,
     bool first_line,

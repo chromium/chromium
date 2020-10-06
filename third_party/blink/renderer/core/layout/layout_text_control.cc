@@ -89,35 +89,6 @@ int LayoutTextControl::ScrollbarThickness(const LayoutBox& box) {
       page.GetChromeClient().WindowToViewportScalar(box.GetFrame(), 1.0f));
 }
 
-void LayoutTextControl::ComputeLogicalHeight(
-    LayoutUnit logical_height,
-    LayoutUnit logical_top,
-    LogicalExtentComputedValues& computed_values) const {
-  NOT_DESTROYED();
-  HTMLElement* inner_editor = InnerEditorElement();
-  DCHECK(inner_editor);
-  if (LayoutBox* inner_editor_box = inner_editor->GetLayoutBox()) {
-    logical_height = ComputeControlLogicalHeight(inner_editor_box->LineHeight(
-        true, kHorizontalLine, kPositionOfInteriorLineBoxes));
-
-    // We are able to have a horizontal scrollbar if the overflow style is
-    // scroll, or if its auto and there's no word wrap.
-    if (StyleRef().OverflowInlineDirection() == EOverflow::kScroll ||
-        (StyleRef().OverflowInlineDirection() == EOverflow::kAuto &&
-         inner_editor->GetLayoutObject()->StyleRef().OverflowWrap() ==
-             EOverflowWrap::kNormal))
-      logical_height += ScrollbarThickness(*this);
-
-    // FIXME: The logical height of the inner text box should have been added
-    // before calling computeLogicalHeight to avoid this hack.
-    SetIntrinsicContentLogicalHeight(logical_height);
-
-    logical_height += BorderAndPaddingHeight();
-  }
-
-  LayoutBox::ComputeLogicalHeight(logical_height, logical_top, computed_values);
-}
-
 void LayoutTextControl::HitInnerEditorElement(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,

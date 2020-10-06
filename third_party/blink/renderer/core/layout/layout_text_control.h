@@ -66,12 +66,6 @@ class CORE_EXPORT LayoutTextControl : public LayoutBlockFlow {
                              const HitTestLocation&,
                              const PhysicalOffset& accumulated_offset);
 
-  virtual LayoutUnit ComputeControlLogicalHeight(
-      LayoutUnit line_height) const = 0;
-
-  void ComputeLogicalHeight(LayoutUnit logical_height,
-                            LayoutUnit logical_top,
-                            LogicalExtentComputedValues&) const override;
   LayoutObject* LayoutSpecialExcludedChild(bool relayout_children,
                                            SubtreeLayoutScope&) override;
 

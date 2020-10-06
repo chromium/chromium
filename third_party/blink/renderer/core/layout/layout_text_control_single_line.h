@@ -64,7 +64,6 @@ class LayoutTextControlSingleLine : public LayoutTextControl {
   LayoutUnit ScrollHeight() const final;
 
   int TextBlockWidth() const;
-  LayoutUnit ComputeControlLogicalHeight(LayoutUnit line_height) const override;
 
   void ComputeVisualOverflow(bool recompute_floats) override;
 
