@@ -106,21 +106,13 @@ class ClipboardTest : public PlatformTest {
 // A mock delegate for testing.
 class MockClipboardDlpController : public ClipboardDlpController {
  public:
-  static MockClipboardDlpController* Init();
+  MockClipboardDlpController();
+  ~MockClipboardDlpController() override;
 
   MOCK_CONST_METHOD2(IsDataReadAllowed,
                      bool(const ClipboardDataEndpoint* const data_src,
                           const ClipboardDataEndpoint* const data_dst));
-
- private:
-  MockClipboardDlpController();
-  ~MockClipboardDlpController() override;
 };
-
-// static
-MockClipboardDlpController* MockClipboardDlpController::Init() {
-  return new MockClipboardDlpController();
-}
 
 MockClipboardDlpController::MockClipboardDlpController() = default;
 
@@ -1096,7 +1088,7 @@ TYPED_TEST(ClipboardTest, WriteImageEmptyParams) {
 // Test that copy/paste would work normally if the dlp controller didn't
 // restrict the clipboard data.
 TYPED_TEST(ClipboardTest, DlpAllowDataRead) {
-  auto* dlp_controller = MockClipboardDlpController::Init();
+  auto dlp_controller = std::make_unique<MockClipboardDlpController>();
   const base::string16 kTestText(base::UTF8ToUTF16("World"));
   {
     ScopedClipboardWriter writer(
@@ -1109,15 +1101,14 @@ TYPED_TEST(ClipboardTest, DlpAllowDataRead) {
   base::string16 read_result;
   this->clipboard().ReadText(ClipboardBuffer::kCopyPaste,
                              /* data_dst = */ nullptr, &read_result);
-  ::testing::Mock::VerifyAndClearExpectations(dlp_controller);
+  ::testing::Mock::VerifyAndClearExpectations(dlp_controller.get());
   EXPECT_EQ(kTestText, read_result);
-  MockClipboardDlpController::DeleteInstance();
 }
 
 // Test that pasting clipboard data would not work if the dlp controller
 // restricted it.
 TYPED_TEST(ClipboardTest, DlpDisallow_ReadText) {
-  auto* dlp_controller = MockClipboardDlpController::Init();
+  auto dlp_controller = std::make_unique<MockClipboardDlpController>();
   const base::string16 kTestText(base::UTF8ToUTF16("World"));
   {
     ScopedClipboardWriter writer(
@@ -1130,19 +1121,17 @@ TYPED_TEST(ClipboardTest, DlpDisallow_ReadText) {
   base::string16 read_result;
   this->clipboard().ReadText(ClipboardBuffer::kCopyPaste,
                              /* data_dst = */ nullptr, &read_result);
-  ::testing::Mock::VerifyAndClearExpectations(dlp_controller);
+  ::testing::Mock::VerifyAndClearExpectations(dlp_controller.get());
   EXPECT_EQ(base::string16(), read_result);
-  MockClipboardDlpController::DeleteInstance();
 }
 
 TYPED_TEST(ClipboardTest, DlpDisallow_ReadImage) {
-  auto* dlp_controller = MockClipboardDlpController::Init();
+  auto dlp_controller = std::make_unique<MockClipboardDlpController>();
   EXPECT_CALL(*dlp_controller, IsDataReadAllowed)
       .WillRepeatedly(testing::Return(false));
   const SkBitmap& image = clipboard_test_util::ReadImage(&this->clipboard());
-  ::testing::Mock::VerifyAndClearExpectations(dlp_controller);
+  ::testing::Mock::VerifyAndClearExpectations(dlp_controller.get());
   EXPECT_EQ(true, image.empty());
-  MockClipboardDlpController::DeleteInstance();
 }
 
 #endif  // defined(OS_CHROMEOS)
