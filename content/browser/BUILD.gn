@@ -2320,8 +2320,6 @@ source_set("browser") {
       "renderer_host/pepper/pepper_file_ref_host.h",
       "renderer_host/pepper/pepper_file_system_browser_host.cc",
       "renderer_host/pepper/pepper_file_system_browser_host.h",
-      "renderer_host/pepper/pepper_flash_file_message_filter.cc",
-      "renderer_host/pepper/pepper_flash_file_message_filter.h",
       "renderer_host/pepper/pepper_gamepad_host.cc",
       "renderer_host/pepper/pepper_gamepad_host.h",
       "renderer_host/pepper/pepper_host_resolver_message_filter.cc",

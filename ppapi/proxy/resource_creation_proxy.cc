@@ -16,9 +16,7 @@
 #include "ppapi/proxy/file_io_resource.h"
 #include "ppapi/proxy/file_ref_resource.h"
 #include "ppapi/proxy/file_system_resource.h"
-#include "ppapi/proxy/flash_drm_resource.h"
 #include "ppapi/proxy/flash_font_file_resource.h"
-#include "ppapi/proxy/flash_menu_resource.h"
 #include "ppapi/proxy/graphics_2d_resource.h"
 #include "ppapi/proxy/host_resolver_private_resource.h"
 #include "ppapi/proxy/host_resolver_resource.h"
@@ -32,7 +30,6 @@
 #include "ppapi/proxy/ppb_audio_proxy.h"
 #include "ppapi/proxy/ppb_broker_proxy.h"
 #include "ppapi/proxy/ppb_buffer_proxy.h"
-#include "ppapi/proxy/ppb_flash_message_loop_proxy.h"
 #include "ppapi/proxy/ppb_graphics_3d_proxy.h"
 #include "ppapi/proxy/ppb_image_data_proxy.h"
 #include "ppapi/proxy/ppb_video_decoder_proxy.h"
@@ -418,31 +415,12 @@ PP_Resource ResourceCreationProxy::CreateBuffer(PP_Instance instance,
   return PPB_Buffer_Proxy::CreateProxyResource(instance, size);
 }
 
-PP_Resource ResourceCreationProxy::CreateFlashDRM(PP_Instance instance) {
-  return (new FlashDRMResource(GetConnection(), instance))->GetReference();
-}
-
 PP_Resource ResourceCreationProxy::CreateFlashFontFile(
     PP_Instance instance,
     const PP_BrowserFont_Trusted_Description* description,
     PP_PrivateFontCharset charset) {
   return (new FlashFontFileResource(
       GetConnection(), instance, description, charset))->GetReference();
-}
-
-PP_Resource ResourceCreationProxy::CreateFlashMenu(
-    PP_Instance instance,
-    const PP_Flash_Menu* menu_data) {
-  scoped_refptr<FlashMenuResource> flash_menu(
-      new FlashMenuResource(GetConnection(), instance));
-  if (!flash_menu->Initialize(menu_data))
-    return 0;
-  return flash_menu->GetReference();
-}
-
-PP_Resource ResourceCreationProxy::CreateFlashMessageLoop(
-    PP_Instance instance) {
-  return PPB_Flash_MessageLoop_Proxy::CreateProxyResource(instance);
 }
 
 PP_Resource ResourceCreationProxy::CreateVideoCapture(PP_Instance instance) {

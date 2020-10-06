@@ -40,13 +40,10 @@
   F(PPB_FileRef_API)                    \
   F(PPB_FileSystem_API)                 \
   F(PPB_Find_API)                       \
-  F(PPB_Flash_Clipboard_API)            \
-  F(PPB_Flash_DRM_API)                  \
   F(PPB_Flash_File_API)                 \
   F(PPB_Flash_FontFile_API)             \
   F(PPB_Flash_Fullscreen_API)           \
   F(PPB_Flash_Functions_API)            \
-  F(PPB_Flash_Menu_API)                 \
   F(PPB_Flash_MessageLoop_API)          \
   F(PPB_Gamepad_API)                    \
   F(PPB_Graphics2D_API)                 \

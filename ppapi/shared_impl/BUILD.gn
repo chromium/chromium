@@ -131,8 +131,6 @@ component("shared_impl") {
 
   if (!is_nacl) {
     sources += [
-      "flash_clipboard_format_registry.cc",
-      "flash_clipboard_format_registry.h",
       "ppb_url_util_shared.cc",
       "ppb_url_util_shared.h",
       "ppb_video_decoder_shared.cc",

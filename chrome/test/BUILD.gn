@@ -5515,7 +5515,6 @@ test("unit_tests") {
 
   if (enable_plugins) {
     sources += [
-      "../browser/component_updater/component_installers_unittest.cc",
       "../browser/metrics/plugin_metrics_provider_unittest.cc",
       "../browser/plugins/chrome_plugin_service_filter_unittest.cc",
       "../browser/plugins/flash_download_interception_unittest.cc",

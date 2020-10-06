@@ -548,8 +548,6 @@ target(link_target_type, "renderer") {
       "pepper/ppb_broker_impl.h",
       "pepper/ppb_buffer_impl.cc",
       "pepper/ppb_buffer_impl.h",
-      "pepper/ppb_flash_message_loop_impl.cc",
-      "pepper/ppb_flash_message_loop_impl.h",
       "pepper/ppb_graphics_3d_impl.cc",
       "pepper/ppb_graphics_3d_impl.h",
       "pepper/ppb_image_data_impl.cc",

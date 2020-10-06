@@ -9,6 +9,7 @@
 #include "content/public/renderer/renderer_ppapi_host.h"
 
 #include "ppapi/c/pp_errors.h"
+#include "ppapi/c/trusted/ppb_browser_font_trusted.h"
 #include "ppapi/host/dispatch_host_message.h"
 #include "ppapi/host/host_message_context.h"
 #include "ppapi/host/ppapi_host.h"

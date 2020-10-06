@@ -1868,17 +1868,6 @@ IN_PROC_BROWSER_TEST_F(PPAPINaClPNaClNonSfiTest,
   RUN_NETWORK_MONITOR_SUBTESTS;
 }
 
-// Flash tests.
-#define RUN_FLASH_SUBTESTS \
-  RunTestViaHTTP( \
-      LIST_TEST(Flash_SetInstanceAlwaysOnTop) \
-      LIST_TEST(Flash_GetCommandLineArgs) \
-  )
-
-IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, Flash) {
-  RUN_FLASH_SUBTESTS;
-}
-
 // In-process WebSocket tests. Note, the WebSocket tests are split into two,
 // because all of them together sometimes take too long on windows:
 // crbug.com/336999
@@ -2138,24 +2127,6 @@ IN_PROC_BROWSER_TEST_F(PPAPINaClPNaClNonSfiTest, MAYBE_PNACL_NONSFI(View)) {
   RUN_VIEW_SUBTESTS;
 }
 
-// FlashMessageLoop tests.
-#define RUN_FLASH_MESSAGE_LOOP_SUBTESTS \
-  RunTest( \
-      LIST_TEST(FlashMessageLoop_Basics) \
-      LIST_TEST(FlashMessageLoop_RunWithoutQuit) \
-      LIST_TEST(FlashMessageLoop_SuspendScriptCallbackWhileRunning) \
-  )
-
-// Disabled due to flakiness http://crbug.com/1036287
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
-#define MAYBE_FlashMessageLoop DISABLED_FlashMessageLoop
-#else
-#define MAYBE_FlashMessageLoop FlashMessageLoop
-#endif
-IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, MAYBE_FlashMessageLoop) {
-  RUN_FLASH_MESSAGE_LOOP_SUBTESTS;
-}
-
 // The compositor test timeouts sometimes, so we have to split it to two
 // subtests.
 #define RUN_COMPOSITOR_SUBTESTS_0 \
@@ -2245,16 +2216,6 @@ TEST_PPAPI_NACL(MAYBE_MessageHandler)
 TEST_PPAPI_NACL(MessageLoop_Basics)
 TEST_PPAPI_NACL(MessageLoop_Post)
 
-// Going forward, Flash APIs will only work out-of-process.
-TEST_PPAPI_OUT_OF_PROCESS(Flash_GetLocalTimeZoneOffset)
-TEST_PPAPI_OUT_OF_PROCESS(Flash_GetProxyForURL)
-TEST_PPAPI_OUT_OF_PROCESS(Flash_GetSetting)
-TEST_PPAPI_OUT_OF_PROCESS(Flash_SetCrashData)
-// http://crbug.com/176822
-#if !defined(OS_WIN) && !defined(OS_MAC)
-TEST_PPAPI_OUT_OF_PROCESS(FlashClipboard)
-#endif
-TEST_PPAPI_OUT_OF_PROCESS(FlashFile)
 // Mac/Aura reach NOTIMPLEMENTED/time out.
 // mac: http://crbug.com/96767
 // aura: http://crbug.com/104384
@@ -2270,16 +2231,6 @@ TEST_PPAPI_OUT_OF_PROCESS(FlashFile)
 TEST_PPAPI_OUT_OF_PROCESS(MAYBE_FlashFullscreen)
 
 TEST_PPAPI_OUT_OF_PROCESS(PDF)
-
-IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, FlashDRM) {
-  RunTest(
-#if (defined(OS_WIN) && BUILDFLAG(ENABLE_RLZ)) || defined(OS_CHROMEOS)
-          // Only implemented on Windows and ChromeOS currently.
-          LIST_TEST(FlashDRM_GetDeviceID)
-#endif
-          LIST_TEST(FlashDRM_GetHmonitor)
-          LIST_TEST(FlashDRM_GetVoucherFile));
-}
 
 #if BUILDFLAG(ENABLE_NACL)
 class PackagedAppTest : public extensions::ExtensionBrowserTest {

@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/proxy/ppapi_messages.h"
-#include "ppapi/proxy/serialized_flash_menu.h"
 #include "ppapi/proxy/serialized_var.h"
 #include "ppapi/shared_impl/host_resource.h"
 #include "ppapi/shared_impl/private/ppb_x509_certificate_private_shared.h"
@@ -471,27 +470,6 @@ void ParamTraits<ppapi::PepperFilePath>::Log(const param_type& p,
   l->append(")");
 }
 
-// SerializedFlashMenu ---------------------------------------------------------
-
-// static
-void ParamTraits<ppapi::proxy::SerializedFlashMenu>::Write(
-    base::Pickle* m,
-    const param_type& p) {
-  p.WriteToMessage(m);
-}
-
-// static
-bool ParamTraits<ppapi::proxy::SerializedFlashMenu>::Read(
-    const base::Pickle* m,
-    base::PickleIterator* iter,
-    param_type* r) {
-  return r->ReadFromMessage(m, iter);
-}
-
-// static
-void ParamTraits<ppapi::proxy::SerializedFlashMenu>::Log(const param_type& p,
-                                                         std::string* l) {
-}
 #endif  // !defined(OS_NACL) && !defined(NACL_WIN64)
 
 // PPB_X509Certificate_Fields --------------------------------------------------

@@ -12,7 +12,6 @@
 #include "content/browser/renderer_host/pepper/pepper_file_io_host.h"
 #include "content/browser/renderer_host/pepper/pepper_file_ref_host.h"
 #include "content/browser/renderer_host/pepper/pepper_file_system_browser_host.h"
-#include "content/browser/renderer_host/pepper/pepper_flash_file_message_filter.h"
 #include "content/browser/renderer_host/pepper/pepper_gamepad_host.h"
 #include "content/browser/renderer_host/pepper/pepper_host_resolver_message_filter.h"
 #include "content/browser/renderer_host/pepper/pepper_network_monitor_host.h"
@@ -209,19 +208,6 @@ ContentBrowserPepperHostFactory::CreateResourceHost(
   if (message.type() == PpapiHostMsg_NetworkMonitor_Create::ID) {
     return std::unique_ptr<ppapi::host::ResourceHost>(
         new PepperNetworkMonitorHost(host_, instance, resource));
-  }
-
-  // Flash interfaces.
-  if (GetPermissions().HasPermission(ppapi::PERMISSION_FLASH)) {
-    switch (message.type()) {
-      case PpapiHostMsg_FlashFile_Create::ID: {
-        scoped_refptr<ppapi::host::ResourceMessageFilter> file_filter(
-            new PepperFlashFileMessageFilter(instance, host_));
-        return std::unique_ptr<ppapi::host::ResourceHost>(
-            new ppapi::host::MessageFilterHost(host_->GetPpapiHost(), instance,
-                                               resource, file_filter));
-      }
-    }
   }
 
   return std::unique_ptr<ppapi::host::ResourceHost>();

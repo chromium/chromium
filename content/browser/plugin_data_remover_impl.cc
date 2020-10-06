@@ -15,7 +15,6 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "content/browser/plugin_service_impl.h"
-#include "content/browser/renderer_host/pepper/pepper_flash_file_message_filter.h"
 #include "content/common/child_process_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -167,7 +166,7 @@ class PluginDataRemoverImpl::Context
 
   IPC::Message* CreatePpapiClearSiteDataMsg(uint64_t max_age) {
     base::FilePath profile_path =
-        PepperFlashFileMessageFilter::GetDataDirName(browser_context_path_);
+        browser_context_path_.Append(kPepperDataDirname);
     // TODO(vtl): This "duplicates" logic in webkit/plugins/ppapi/file_path.cc
     // (which prepends the plugin name to the relative part of the path
     // instead, with the absolute, profile-dependent part being enforced by

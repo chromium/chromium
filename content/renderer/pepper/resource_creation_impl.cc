@@ -9,7 +9,6 @@
 #include "content/renderer/pepper/ppb_audio_impl.h"
 #include "content/renderer/pepper/ppb_broker_impl.h"
 #include "content/renderer/pepper/ppb_buffer_impl.h"
-#include "content/renderer/pepper/ppb_flash_message_loop_impl.h"
 #include "content/renderer/pepper/ppb_graphics_3d_impl.h"
 #include "content/renderer/pepper/ppb_image_data_impl.h"
 #include "content/renderer/pepper/ppb_video_decoder_impl.h"
@@ -91,25 +90,11 @@ PP_Resource ResourceCreationImpl::CreateCameraDevicePrivate(
   return 0;  // Not supported in-process.
 }
 
-PP_Resource ResourceCreationImpl::CreateFlashDRM(PP_Instance instance) {
-  return 0;  // Not supported in-process.
-}
-
 PP_Resource ResourceCreationImpl::CreateFlashFontFile(
     PP_Instance instance,
     const PP_BrowserFont_Trusted_Description* description,
     PP_PrivateFontCharset charset) {
   return 0;  // Not supported in-process.
-}
-
-PP_Resource ResourceCreationImpl::CreateFlashMenu(
-    PP_Instance instance,
-    const PP_Flash_Menu* menu_data) {
-  return 0;  // Not supported in-process.
-}
-
-PP_Resource ResourceCreationImpl::CreateFlashMessageLoop(PP_Instance instance) {
-  return PPB_Flash_MessageLoop_Impl::Create(instance);
 }
 
 PP_Resource ResourceCreationImpl::CreateGraphics3D(PP_Instance instance,

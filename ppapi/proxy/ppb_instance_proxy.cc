@@ -21,10 +21,7 @@
 #include "ppapi/proxy/broker_resource.h"
 #include "ppapi/proxy/browser_font_singleton_resource.h"
 #include "ppapi/proxy/enter_proxy.h"
-#include "ppapi/proxy/flash_clipboard_resource.h"
-#include "ppapi/proxy/flash_file_resource.h"
 #include "ppapi/proxy/flash_fullscreen_resource.h"
-#include "ppapi/proxy/flash_resource.h"
 #include "ppapi/proxy/gamepad_resource.h"
 #include "ppapi/proxy/host_dispatcher.h"
 #include "ppapi/proxy/isolated_file_system_private_resource.h"
@@ -369,28 +366,15 @@ Resource* PPB_Instance_Proxy::GetSingletonResource(PP_Instance instance,
     case BROWSER_FONT_SINGLETON_ID:
       new_singleton = new BrowserFontSingletonResource(connection, instance);
       break;
-    case FLASH_CLIPBOARD_SINGLETON_ID:
-      new_singleton = new FlashClipboardResource(connection, instance);
-      break;
-    case FLASH_FILE_SINGLETON_ID:
-      new_singleton = new FlashFileResource(connection, instance);
-      break;
     case FLASH_FULLSCREEN_SINGLETON_ID:
       new_singleton = new FlashFullscreenResource(connection, instance);
-      break;
-    case FLASH_SINGLETON_ID:
-      new_singleton = new FlashResource(connection, instance,
-          static_cast<PluginDispatcher*>(dispatcher()));
       break;
     case PDF_SINGLETON_ID:
       new_singleton = new PDFResource(connection, instance);
       break;
 #else
     case BROWSER_FONT_SINGLETON_ID:
-    case FLASH_CLIPBOARD_SINGLETON_ID:
-    case FLASH_FILE_SINGLETON_ID:
     case FLASH_FULLSCREEN_SINGLETON_ID:
-    case FLASH_SINGLETON_ID:
     case PDF_SINGLETON_ID:
       NOTREACHED();
       break;

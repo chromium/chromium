@@ -213,20 +213,10 @@ component("proxy") {
       "browser_font_singleton_resource.h",
       "device_enumeration_resource_helper.cc",
       "device_enumeration_resource_helper.h",
-      "flash_clipboard_resource.cc",
-      "flash_clipboard_resource.h",
-      "flash_drm_resource.cc",
-      "flash_drm_resource.h",
-      "flash_file_resource.cc",
-      "flash_file_resource.h",
       "flash_font_file_resource.cc",
       "flash_font_file_resource.h",
       "flash_fullscreen_resource.cc",
       "flash_fullscreen_resource.h",
-      "flash_menu_resource.cc",
-      "flash_menu_resource.h",
-      "flash_resource.cc",
-      "flash_resource.h",
       "host_dispatcher.cc",
       "host_dispatcher.h",
       "host_var_serialization_rules.cc",
@@ -237,8 +227,6 @@ component("proxy") {
       "ppb_broker_proxy.h",
       "ppb_buffer_proxy.cc",
       "ppb_buffer_proxy.h",
-      "ppb_flash_message_loop_proxy.cc",
-      "ppb_flash_message_loop_proxy.h",
       "ppb_var_deprecated_proxy.cc",
       "ppb_var_deprecated_proxy.h",
       "ppb_video_decoder_proxy.cc",
@@ -321,8 +309,6 @@ source_set("ipc_sources") {
     "raw_var_data.h",
     "resource_message_params.cc",
     "resource_message_params.h",
-    "serialized_flash_menu.cc",
-    "serialized_flash_menu.h",
     "serialized_handle.cc",
     "serialized_handle.h",
     "serialized_structs.cc",
@@ -331,9 +317,6 @@ source_set("ipc_sources") {
     "serialized_var.h",
     "var_serialization_rules.h",
   ]
-  if (is_nacl) {
-    sources -= [ "serialized_flash_menu.cc" ]
-  }
 
   configs += [ ":proxy_implementation" ]
 
