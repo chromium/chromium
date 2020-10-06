@@ -540,15 +540,13 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
                                       std::move(it->reported_window_url));
       // Send a coop-access-violation report.
       if (network::IsAccessFromCoopPage(it->report_type)) {
-        // TODO(arthursonzogni): Fill the openeeURL, openerURL and
-        // otherDocumentURL.
         ReportingContext::From(accessing_main_frame.DomWindow())
             ->QueueReport(MakeGarbageCollected<Report>(
                 ReportType::kCoopAccessViolation,
                 accessing_main_frame.GetDocument()->Url().GetString(),
                 MakeGarbageCollected<CoopAccessViolationReportBody>(
-                    std::move(location), it->report_type,
-                    String(property_name))));
+                    std::move(location), it->report_type, String(property_name),
+                    it->reported_window_url)));
       }
     }
 
