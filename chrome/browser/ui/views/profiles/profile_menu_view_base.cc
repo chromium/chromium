@@ -159,12 +159,12 @@ gfx::ImageSkia SizeImageModel(const ui::ImageModel& image_model,
 
 class CircularImageButton : public views::ImageButton {
  public:
-  CircularImageButton(views::ButtonListener* listener,
+  CircularImageButton(PressedCallback callback,
                       const gfx::VectorIcon& icon,
                       const base::string16& text,
                       SkColor background_profile_color = SK_ColorTRANSPARENT,
                       bool show_border = false)
-      : ImageButton(listener),
+      : ImageButton(std::move(callback)),
         icon_(icon),
         background_profile_color_(background_profile_color),
         show_border_(show_border) {
@@ -266,7 +266,7 @@ class AvatarImageView : public views::ImageView {
     }
   }
 
-  // views::ImageVIew:
+  // views::ImageView:
   void OnThemeChanged() override {
     ImageView::OnThemeChanged();
     constexpr int kBadgePadding = 1;
@@ -304,9 +304,11 @@ class AvatarImageView : public views::ImageView {
 
 class SyncButton : public HoverButton {
  public:
-  SyncButton(ProfileMenuViewBase* root_view,
+  SyncButton(PressedCallback callback,
+             ProfileMenuViewBase* root_view,
              const base::string16& clickable_text)
-      : HoverButton(root_view, clickable_text), root_view_(root_view) {}
+      : HoverButton(std::move(callback), clickable_text),
+        root_view_(root_view) {}
 
   // HoverButton:
   void OnThemeChanged() override {
@@ -572,15 +574,18 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
       heading_container_->SetBackground(
           views::CreateSolidBackground(kBackgroundColor));
 
-      views::LabelButton* heading_button = heading_container_->AddChildView(
-          std::make_unique<HoverButton>(this, profile_name));
+      views::LabelButton* heading_button =
+          heading_container_->AddChildView(std::make_unique<HoverButton>(
+              base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
+                                  base::Unretained(this),
+                                  std::move(edit_button_params->edit_action)),
+              profile_name));
       heading_button->SetEnabledTextColors(views::style::GetColor(
           *this, views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
       heading_button->SetTooltipText(edit_button_params->edit_tooltip_text);
       heading_button->SetHorizontalAlignment(gfx::ALIGN_CENTER);
       heading_button->SetBorder(
           views::CreateEmptyBorder(gfx::Insets(kDefaultMargin)));
-      RegisterClickAction(heading_button, edit_button_params->edit_action);
     }
 
     identity_info_container_->AddChildView(std::move(avatar_image_view));
@@ -615,10 +620,11 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
   std::unique_ptr<views::View> edit_button;
   if (edit_button_params.has_value()) {
     edit_button = std::make_unique<CircularImageButton>(
-        this, *edit_button_params->edit_icon,
-        edit_button_params->edit_tooltip_text,
+        base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
+                            base::Unretained(this),
+                            std::move(edit_button_params->edit_action)),
+        *edit_button_params->edit_icon, edit_button_params->edit_tooltip_text,
         background_color.value_or(SK_ColorTRANSPARENT));
-    RegisterClickAction(edit_button.get(), edit_button_params->edit_action);
   }
 
   BuildProfileBackgroundContainer(
@@ -653,9 +659,10 @@ void ProfileMenuViewBase::SetSyncInfo(const SyncInfo& sync_info,
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), kInsidePadding));
 
   if (description.empty()) {
-    views::Button* sync_button = sync_info_container_->AddChildView(
-        std::make_unique<SyncButton>(this, clickable_text));
-    RegisterClickAction(sync_button, std::move(action));
+    sync_info_container_->AddChildView(std::make_unique<SyncButton>(
+        base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
+                            base::Unretained(this), std::move(action)),
+        this, clickable_text));
     return;
   }
 
@@ -692,10 +699,12 @@ void ProfileMenuViewBase::SetSyncInfo(const SyncInfo& sync_info,
   label->SetHandlesTooltips(false);
 
   // Add the prominent button at the bottom.
-  auto button = std::make_unique<views::MdTextButton>(this, clickable_text);
+  auto* button =
+      sync_info_container_->AddChildView(std::make_unique<views::MdTextButton>(
+          base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
+                              base::Unretained(this), std::move(action)),
+          clickable_text));
   button->SetProminent(true);
-  RegisterClickAction(sync_info_container_->AddChildView(std::move(button)),
-                      std::move(action));
 }
 
 void ProfileMenuViewBase::AddShortcutFeatureButton(
@@ -718,12 +727,12 @@ void ProfileMenuViewBase::AddShortcutFeatureButton(
   }
 
   views::Button* button = shortcut_features_container_->AddChildView(
-      std::make_unique<CircularImageButton>(this, icon, text,
-                                            SK_ColorTRANSPARENT,
-                                            /*show_border=*/true));
+      std::make_unique<CircularImageButton>(
+          base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
+                              base::Unretained(this), std::move(action)),
+          icon, text, SK_ColorTRANSPARENT,
+          /*show_border=*/true));
   button->EnableCanvasFlippingForRTLUI(false);
-
-  RegisterClickAction(button, std::move(action));
 }
 
 void ProfileMenuViewBase::AddFeatureButton(const base::string16& text,
@@ -738,16 +747,18 @@ void ProfileMenuViewBase::AddFeatureButton(const base::string16& text,
 
   views::View* button;
   if (&icon == &gfx::kNoneIcon) {
-    button = features_container_->AddChildView(
-        std::make_unique<HoverButton>(this, text));
+    button = features_container_->AddChildView(std::make_unique<HoverButton>(
+        base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
+                            base::Unretained(this), std::move(action)),
+        text));
   } else {
     auto icon_view =
         std::make_unique<FeatureButtonIconView>(icon, icon_to_image_ratio);
-    button = features_container_->AddChildView(
-        std::make_unique<HoverButton>(this, std::move(icon_view), text));
+    button = features_container_->AddChildView(std::make_unique<HoverButton>(
+        base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
+                            base::Unretained(this), std::move(action)),
+        std::move(icon_view), text));
   }
-
-  RegisterClickAction(button, std::move(action));
 }
 
 void ProfileMenuViewBase::SetProfileManagementHeading(
@@ -795,12 +806,13 @@ void ProfileMenuViewBase::AddSelectableProfile(
                                               kSelectableProfileImageSize);
 
   views::Button* button = selectable_profiles_container_->AddChildView(
-      std::make_unique<HoverButton>(this, sized_image, name));
+      std::make_unique<HoverButton>(
+          base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
+                              base::Unretained(this), std::move(action)),
+          sized_image, name));
 
   if (!is_guest && !first_profile_button_)
     first_profile_button_ = button;
-
-  RegisterClickAction(button, std::move(action));
 }
 
 void ProfileMenuViewBase::AddProfileManagementShortcutFeatureButton(
@@ -815,11 +827,11 @@ void ProfileMenuViewBase::AddProfileManagementShortcutFeatureButton(
                         gfx::Insets(0, 0, 0, /*right=*/kMenuEdgeMargin)));
   }
 
-  views::Button* button =
-      profile_mgmt_shortcut_features_container_->AddChildView(
-          std::make_unique<CircularImageButton>(this, icon, text));
-
-  RegisterClickAction(button, std::move(action));
+  profile_mgmt_shortcut_features_container_->AddChildView(
+      std::make_unique<CircularImageButton>(
+          base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
+                              base::Unretained(this), std::move(action)),
+          icon, text));
 }
 
 void ProfileMenuViewBase::AddProfileManagementFeatureButton(
@@ -834,10 +846,10 @@ void ProfileMenuViewBase::AddProfileManagementFeatureButton(
   }
 
   auto icon_button = std::make_unique<ProfileManagementIconView>(icon);
-  views::Button* button = profile_mgmt_features_container_->AddChildView(
-      std::make_unique<HoverButton>(this, std::move(icon_button), text));
-
-  RegisterClickAction(button, std::move(action));
+  profile_mgmt_features_container_->AddChildView(std::make_unique<HoverButton>(
+      base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
+                          base::Unretained(this), std::move(action)),
+      std::move(icon_button), text));
 }
 
 gfx::ImageSkia ProfileMenuViewBase::ColoredImageForMenu(
@@ -867,7 +879,6 @@ int ProfileMenuViewBase::GetMaxHeight() const {
 }
 
 void ProfileMenuViewBase::Reset() {
-  click_actions_.clear();
   RemoveAllChildViews(/*delete_childen=*/true);
 
   auto components = std::make_unique<views::View>();
@@ -972,17 +983,10 @@ bool ProfileMenuViewBase::HandleContextMenu(
   return true;
 }
 
-void ProfileMenuViewBase::ButtonPressed(views::Button* button,
-                                        const ui::Event& event) {
-  DCHECK(!click_actions_[button].is_null());
+void ProfileMenuViewBase::ButtonPressed(base::RepeatingClosure action) {
+  DCHECK(action);
   signin_ui_util::RecordProfileMenuClick(browser()->profile());
-  click_actions_[button].Run();
-}
-
-void ProfileMenuViewBase::RegisterClickAction(views::View* clickable_view,
-                                              base::RepeatingClosure action) {
-  DCHECK(click_actions_.count(clickable_view) == 0);
-  click_actions_[clickable_view] = std::move(action);
+  action.Run();
 }
 
 void ProfileMenuViewBase::UpdateSyncInfoContainerBackground() {

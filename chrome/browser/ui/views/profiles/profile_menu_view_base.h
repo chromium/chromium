@@ -19,7 +19,6 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
 
@@ -36,8 +35,7 @@ class ImageModel;
 // This class provides the UI for different menus that are created by user
 // clicking the avatar button.
 class ProfileMenuViewBase : public content::WebContentsDelegate,
-                            public views::BubbleDialogDelegateView,
-                            public views::ButtonListener {
+                            public views::BubbleDialogDelegateView {
  public:
   // Enumeration of all actionable items in the profile menu.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -188,19 +186,13 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
                          const content::ContextMenuParams& params) override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* button, const ui::Event& event) final;
-
-  void RegisterClickAction(views::View* clickable_view,
-                           base::RepeatingClosure action);
+  void ButtonPressed(base::RepeatingClosure action);
 
   void UpdateSyncInfoContainerBackground();
 
   Browser* const browser_;
 
   views::Button* const anchor_button_;
-
-  std::map<views::View*, base::RepeatingClosure> click_actions_;
 
   // Component containers.
   views::View* heading_container_ = nullptr;
