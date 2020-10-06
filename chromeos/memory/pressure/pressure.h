@@ -26,6 +26,10 @@ CalculateAvailableMemoryUserSpaceKB(const base::SystemMemoryInfoKB& info,
                                     uint64_t min_filelist,
                                     uint64_t ram_swap_weight);
 
+// Export for unittest
+CHROMEOS_EXPORT std::vector<uint64_t> GetMarginFileParts(
+    const std::string& margin_file);
+
 // GetAvailableMemoryKB returns the available memory in KiB.
 CHROMEOS_EXPORT uint64_t GetAvailableMemoryKB();
 

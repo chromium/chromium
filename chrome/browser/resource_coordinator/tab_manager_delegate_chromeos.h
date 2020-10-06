@@ -281,14 +281,6 @@ class TabManagerDelegate::MemoryStat {
 
   // Returns estimated memory to be freed if the process |handle| is killed.
   virtual int EstimatedMemoryFreedKB(base::ProcessHandle handle);
-
- private:
-  // Returns the low memory margin system config. Low memory condition is
-  // reported if available memory is under the number.
-  static int LowMemoryMarginKB();
-
-  // Reads in an integer.
-  static int ReadIntFromFile(const char* file_name, int default_val);
 };
 
 }  // namespace resource_coordinator

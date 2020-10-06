@@ -31,40 +31,14 @@ namespace memory {
 class COMPONENT_EXPORT(CHROMEOS_MEMORY) SystemMemoryPressureEvaluator
     : public util::SystemMemoryPressureEvaluator {
  public:
-  // The SystemMemoryPressureEvaluator reads the pressure levels from the
-  // /sys/kernel/mm/chromeos-low_mem/margin and does not need to be configured.
-  //
-  // NOTE: You should check that the kernel supports notifications by calling
-  // SupportsKernelNotifications() before constructing a new instance of this
-  // class.
   explicit SystemMemoryPressureEvaluator(
       std::unique_ptr<util::MemoryPressureVoter> voter);
   ~SystemMemoryPressureEvaluator() override;
-
-  // GetMarginFileParts returns a vector of the configured margin file values.
-  // The margin file contains two or more values, but we're only concerned with
-  // the first two. The first represents critical memory pressure, the second
-  // is moderate memory pressure level.
-  static std::vector<int> GetMarginFileParts();
-
-  // SupportsKernelNotifications will return true if the kernel supports and is
-  // configured for notifications on memory availability changes.
-  static bool SupportsKernelNotifications();
 
   // ScheduleEarlyCheck is used by the ChromeOS tab manager delegate to force it
   // to quickly recheck pressure levels after a tab discard or some other
   // action.
   void ScheduleEarlyCheck();
-
-  // Returns the moderate pressure threshold as read from the margin file.
-  int ModeratePressureThresholdMBForTesting() const {
-    return moderate_pressure_threshold_mb_;
-  }
-
-  // Returns the critical pressure threshold as read from the margin file.
-  int CriticalPressureThresholdMBForTesting() const {
-    return critical_pressure_threshold_mb_;
-  }
 
   // Returns the current system memory pressure evaluator.
   static SystemMemoryPressureEvaluator* Get();
@@ -72,16 +46,15 @@ class COMPONENT_EXPORT(CHROMEOS_MEMORY) SystemMemoryPressureEvaluator
  protected:
   // This constructor is only used for testing.
   SystemMemoryPressureEvaluator(
-      const std::string& margin_file,
       bool disable_timer_for_testing,
       std::unique_ptr<util::MemoryPressureVoter> voter);
-
-  static std::vector<int> GetMarginFileParts(const std::string& margin_file);
 
   void CheckMemoryPressure();
 
   // Split CheckMemoryPressure and CheckMemoryPressureImpl for testing.
-  void CheckMemoryPressureImpl(uint64_t mem_avail_mb);
+  void CheckMemoryPressureImpl(uint64_t moderate_avail_mb,
+                               uint64_t critical_avail_mb,
+                               uint64_t mem_avail_mb);
 
  private:
   void CheckMemoryPressureAndRecordStatistics();

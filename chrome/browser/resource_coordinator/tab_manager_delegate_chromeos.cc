@@ -216,38 +216,26 @@ class TabManagerDelegate::FocusedProcess {
 
 // TabManagerDelegate::MemoryStat implementation.
 
-// static
-int TabManagerDelegate::MemoryStat::LowMemoryMarginKB() {
-  constexpr int kDefaultLowMemoryMarginMb = 50;
-
-  // A margin file can contain multiple values but the first one
-  // represents the critical memory threshold.
-  std::vector<int> margin_parts =
-      chromeos::memory::SystemMemoryPressureEvaluator::GetMarginFileParts();
-  if (!margin_parts.empty()) {
-    return margin_parts[0] * 1024;
-  }
-
-  return kDefaultLowMemoryMarginMb * 1024;
-}
-
 // Target memory to free is the amount which brings available
 // memory back to the margin.
 int TabManagerDelegate::MemoryStat::TargetMemoryToFreeKB() {
-  uint64_t available_mem_mb;
   if (chromeos::memory::SystemMemoryPressureEvaluator::Get()) {
-    available_mem_mb = chromeos::memory::pressure::GetAvailableMemoryKB();
+    // The first output of GetMemoryMarginsKB() is the critical memory
+    // threshold. Low memory condition is reported if available memory is under
+    // the number.
+    return chromeos::memory::pressure::GetMemoryMarginsKB().first -
+           chromeos::memory::pressure::GetAvailableMemoryKB();
   } else {
     // When TabManager::DiscardTab(LifecycleUnitDiscardReason::EXTERNAL) is
-    // called by a test or an extension, TabManagerDelegate might be used
-    // without chromeos SystemMemoryPressureEvaluator, e.g. the browser test
-    // DiscardTabsWithMinimizedWindow. Set available to 0 to force discarding a
-    // tab to pass the test.
+    // called by an integration test, TabManagerDelegate might be used without
+    // chromeos SystemMemoryPressureEvaluator, e.g. the browser test
+    // DiscardTabsWithMinimizedWindow. Return 50 MB to force discarding a tab to
+    // pass the test.
+    // TODO(vovoy): Remove this code path and modify the related browser tests.
     LOG(WARNING) << "SystemMemoryPressureEvaluator is not available";
-    available_mem_mb = 0;
+    constexpr int kDefaultLowMemoryMarginKb = 50 * 1024;
+    return kDefaultLowMemoryMarginKb;
   }
-
-  return LowMemoryMarginKB() - available_mem_mb;
 }
 
 int TabManagerDelegate::MemoryStat::EstimatedMemoryFreedKB(
@@ -577,13 +565,7 @@ void TabManagerDelegate::LowMemoryKillImpl(
   std::vector<Candidate> candidates =
       GetSortedCandidates(GetLifecycleUnits(), arc_processes);
 
-  // TODO(semenzato): decide if TargetMemoryToFreeKB is doing real
-  // I/O and if it is, move to I/O thread (crbug.com/778703).
-  int target_memory_to_free_kb = 0;
-  {
-    base::ScopedAllowBlocking allow_blocking;
-    target_memory_to_free_kb = mem_stat_->TargetMemoryToFreeKB();
-  }
+  int target_memory_to_free_kb = mem_stat_->TargetMemoryToFreeKB();
 
   MEMORY_LOG(ERROR) << "List of low memory kill candidates "
                        "(sorted from low priority to high priority):";

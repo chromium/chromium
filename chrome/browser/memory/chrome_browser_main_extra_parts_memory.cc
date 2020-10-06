@@ -30,17 +30,12 @@ void ChromeBrowserMainExtraPartsMemory::PostBrowserStart() {
     }
 
 #if defined(OS_CHROMEOS)
-    if (chromeos::memory::SystemMemoryPressureEvaluator::
-            SupportsKernelNotifications()) {
+    if (base::SysInfo::IsRunningOnChromeOS()) {
       cros_evaluator_ =
           std::make_unique<chromeos::memory::SystemMemoryPressureEvaluator>(
               static_cast<util::MultiSourceMemoryPressureMonitor*>(
                   base::MemoryPressureMonitor::Get())
                   ->CreateVoter());
-    } else {
-      LOG_IF(ERROR, base::SysInfo::IsRunningOnChromeOS())
-          << "No MemoryPressureMonitor created because the kernel does not "
-             "have support.";
     }
 #endif
   }

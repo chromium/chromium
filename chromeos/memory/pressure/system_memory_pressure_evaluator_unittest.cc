@@ -40,19 +40,16 @@ void OnMemoryPressure(
 class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
  public:
   TestSystemMemoryPressureEvaluator(
-      const std::string& mock_margin_file,
       bool disable_timer_for_testing,
       std::unique_ptr<util::MemoryPressureVoter> voter)
-      : SystemMemoryPressureEvaluator(mock_margin_file,
-                                      disable_timer_for_testing,
+      : SystemMemoryPressureEvaluator(disable_timer_for_testing,
                                       std::move(voter)) {}
 
-  static std::vector<int> GetMarginFileParts(const std::string& file) {
-    return SystemMemoryPressureEvaluator::GetMarginFileParts(file);
-  }
-
-  void CheckMemoryPressureImpl(uint64_t mem_avail_mb) {
-    SystemMemoryPressureEvaluator::CheckMemoryPressureImpl(mem_avail_mb);
+  void CheckMemoryPressureImpl(uint64_t moderate_avail_mb,
+                               uint64_t critical_avail_mb,
+                               uint64_t mem_avail_mb) {
+    SystemMemoryPressureEvaluator::CheckMemoryPressureImpl(
+        moderate_avail_mb, critical_avail_mb, mem_avail_mb);
   }
 
   ~TestSystemMemoryPressureEvaluator() override = default;
@@ -61,62 +58,9 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
   DISALLOW_COPY_AND_ASSIGN(TestSystemMemoryPressureEvaluator);
 };
 
-TEST(ChromeOSSystemMemoryPressureEvaluatorTest, ParseMarginFileGood) {
-  base::ScopedTempDir tmp_dir;
-  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
-
-  base::FilePath margin_file = tmp_dir.GetPath().Append("margin");
-
-  ASSERT_TRUE(base::WriteFile(margin_file, "123"));
-  const std::vector<int> parts1 =
-      TestSystemMemoryPressureEvaluator::GetMarginFileParts(
-          margin_file.value());
-  ASSERT_EQ(1u, parts1.size());
-  ASSERT_EQ(123, parts1[0]);
-
-  ASSERT_TRUE(base::WriteFile(margin_file, "123 456"));
-  const std::vector<int> parts2 =
-      TestSystemMemoryPressureEvaluator::GetMarginFileParts(
-          margin_file.value());
-  ASSERT_EQ(2u, parts2.size());
-  ASSERT_EQ(123, parts2[0]);
-  ASSERT_EQ(456, parts2[1]);
-}
-
-TEST(ChromeOSSystemMemoryPressureEvaluatorTest, ParseMarginFileBad) {
-  base::ScopedTempDir tmp_dir;
-  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
-  base::FilePath margin_file = tmp_dir.GetPath().Append("margin");
-
-  // An empty margin file is bad.
-  ASSERT_TRUE(base::WriteFile(margin_file, ""));
-  ASSERT_TRUE(
-      TestSystemMemoryPressureEvaluator::GetMarginFileParts(margin_file.value())
-          .empty());
-
-  // The numbers will be in base10, so 4a6 would be invalid.
-  ASSERT_TRUE(base::WriteFile(margin_file, "123 4a6"));
-  ASSERT_TRUE(
-      TestSystemMemoryPressureEvaluator::GetMarginFileParts(margin_file.value())
-          .empty());
-
-  // The numbers must be integers.
-  ASSERT_TRUE(base::WriteFile(margin_file, "123.2 412.3"));
-  ASSERT_TRUE(
-      TestSystemMemoryPressureEvaluator::GetMarginFileParts(margin_file.value())
-          .empty());
-}
-
 TEST(ChromeOSSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
-  // Create a temporary directory for our margin and available files.
-  base::ScopedTempDir tmp_dir;
-  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
-
-  base::FilePath margin_file = tmp_dir.GetPath().Append("margin");
-
-  // Set the margin values to 500 (critical) and 1000 (moderate).
-  const std::string kMarginContents = "500 1000";
-  ASSERT_TRUE(base::WriteFile(margin_file, kMarginContents));
+  uint64_t moderate_avail_mb = 1000;
+  uint64_t critical_avail_mb = 500;
 
   base::test::TaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::UI);
@@ -134,44 +78,39 @@ TEST(ChromeOSSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   monitor.ResetSystemEvaluatorForTesting();
 
   auto evaluator = std::make_unique<TestSystemMemoryPressureEvaluator>(
-      margin_file.value(), /*disable_timer_for_testing=*/true,
-      monitor.CreateVoter());
-
-  // Validate that our margin levels are as expected after being parsed from our
-  // synthetic margin file.
-  ASSERT_EQ(500, evaluator->CriticalPressureThresholdMBForTesting());
-  ASSERT_EQ(1000, evaluator->ModeratePressureThresholdMBForTesting());
+      /*disable_timer_for_testing=*/true, monitor.CreateVoter());
 
   // At this point we have no memory pressure.
   ASSERT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE,
             evaluator->current_vote());
 
   // Moderate Pressure.
-  evaluator->CheckMemoryPressureImpl(900);
+  evaluator->CheckMemoryPressureImpl(moderate_avail_mb, critical_avail_mb, 900);
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE,
             evaluator->current_vote());
 
   // Critical Pressure.
-  evaluator->CheckMemoryPressureImpl(450);
+  evaluator->CheckMemoryPressureImpl(moderate_avail_mb, critical_avail_mb, 450);
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL,
             evaluator->current_vote());
 
   // Moderate Pressure.
-  evaluator->CheckMemoryPressureImpl(550);
+  evaluator->CheckMemoryPressureImpl(moderate_avail_mb, critical_avail_mb, 550);
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE,
             evaluator->current_vote());
 
   // No pressure, note: this will not cause any event.
-  evaluator->CheckMemoryPressureImpl(1150);
+  evaluator->CheckMemoryPressureImpl(moderate_avail_mb, critical_avail_mb,
+                                     1150);
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE,
             evaluator->current_vote());
 
   // Back into moderate.
-  evaluator->CheckMemoryPressureImpl(950);
+  evaluator->CheckMemoryPressureImpl(moderate_avail_mb, critical_avail_mb, 950);
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE,
             evaluator->current_vote());

@@ -4,6 +4,8 @@
 
 #include "chromeos/memory/pressure/pressure.h"
 
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(MemoryPressureTest, CalculateReservedFreeKB) {
@@ -74,4 +76,48 @@ TEST(MemoryPressureTest, CalculateAvailableMemoryUserSpaceKB) {
   available = chromeos::memory::pressure::CalculateAvailableMemoryUserSpaceKB(
       info, reserved_free, min_filelist, ram_swap_weight);
   ASSERT_EQ(available, uint64_t(250 * 1024));
+}
+
+TEST(MemoryPressureTest, ParseMarginFileGood) {
+  base::ScopedTempDir tmp_dir;
+  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
+
+  base::FilePath margin_file = tmp_dir.GetPath().Append("margin");
+
+  ASSERT_TRUE(base::WriteFile(margin_file, "123"));
+  const std::vector<uint64_t> parts1 =
+      chromeos::memory::pressure::GetMarginFileParts(margin_file.value());
+  ASSERT_EQ(1u, parts1.size());
+  ASSERT_EQ(123u, parts1[0]);
+
+  ASSERT_TRUE(base::WriteFile(margin_file, "123 456"));
+  const std::vector<uint64_t> parts2 =
+      chromeos::memory::pressure::GetMarginFileParts(margin_file.value());
+  ASSERT_EQ(2u, parts2.size());
+  ASSERT_EQ(123u, parts2[0]);
+  ASSERT_EQ(456u, parts2[1]);
+}
+
+TEST(MemoryPressureTest, ParseMarginFileBad) {
+  base::ScopedTempDir tmp_dir;
+  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
+  base::FilePath margin_file = tmp_dir.GetPath().Append("margin");
+
+  // An empty margin file is bad.
+  ASSERT_TRUE(base::WriteFile(margin_file, ""));
+  ASSERT_TRUE(
+      chromeos::memory::pressure::GetMarginFileParts(margin_file.value())
+          .empty());
+
+  // The numbers will be in base10, so 4a6 would be invalid.
+  ASSERT_TRUE(base::WriteFile(margin_file, "123 4a6"));
+  ASSERT_TRUE(
+      chromeos::memory::pressure::GetMarginFileParts(margin_file.value())
+          .empty());
+
+  // The numbers must be integers.
+  ASSERT_TRUE(base::WriteFile(margin_file, "123.2 412.3"));
+  ASSERT_TRUE(
+      chromeos::memory::pressure::GetMarginFileParts(margin_file.value())
+          .empty());
 }

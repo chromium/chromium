@@ -27,6 +27,12 @@ constexpr char kRamVsSwapWeight[] =
 // The extra free to trigger kernel memory reclaim earlier.
 constexpr char kExtraFree[] = "/proc/sys/vm/extra_free_kbytes";
 
+// The margin mem file contains the two memory levels, the first is the
+// critical level and the second is the moderate level. Note, this
+// file may contain more values but only the first two are used for
+// memory pressure notifications in chromeos.
+constexpr char kMarginMemFile[] = "/sys/kernel/mm/chromeos-low_mem/margin";
+
 // Values saved for user space available memory calculation.  The value of
 // |reserved_free| should not change unless min_free_kbytes or
 // lowmem_reserve_ratio change.  The value of |min_filelist| and
@@ -173,9 +179,54 @@ uint64_t GetAvailableMemoryKB() {
                                              ram_swap_weight);
 }
 
+std::vector<uint64_t> GetMarginFileParts(const std::string& file) {
+  std::vector<uint64_t> margin_values;
+  std::string margin_contents;
+  if (base::ReadFileToStringNonBlocking(base::FilePath(file),
+                                        &margin_contents)) {
+    std::vector<std::string> margins =
+        base::SplitString(margin_contents, base::kWhitespaceASCII,
+                          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    for (const auto& v : margins) {
+      uint64_t value = 0;
+      if (!base::StringToUint64(v, &value)) {
+        // If any of the values weren't parseable as an uint64_T we return
+        // nothing as the file format is unexpected.
+        LOG(ERROR) << "Unable to parse margin file contents as integer: " << v;
+        return std::vector<uint64_t>();
+      }
+      margin_values.push_back(value);
+    }
+  } else {
+    PLOG_IF(ERROR, base::SysInfo::IsRunningOnChromeOS())
+        << "Unable to read margin file";
+  }
+  return margin_values;
+}
+
+namespace {
+
+// This function would return valid margins even when there are less than 2
+// margin values in the kernel margin file.
+std::pair<uint64_t, uint64_t> GetMemoryMarginsKBImpl() {
+  const std::vector<uint64_t> margin_file_parts(
+      GetMarginFileParts(kMarginMemFile));
+  if (margin_file_parts.size() >= 2) {
+    return {margin_file_parts[0] * 1024, margin_file_parts[1] * 1024};
+  }
+
+  // Critical margin is 5.2% of total memory, moderate margin is 40% of total
+  // memory. See also /usr/share/cros/init/swap.sh on DUT.
+  base::SystemMemoryInfoKB info;
+  CHECK(base::GetSystemMemoryInfo(&info));
+  return {info.total * 13 / 250, info.total * 2 / 5};
+}
+
+}  // namespace
+
 std::pair<uint64_t, uint64_t> GetMemoryMarginsKB() {
-  // TODO(b/149833548): Implement this function.
-  return {0, 0};
+  static std::pair<uint64_t, uint64_t> result(GetMemoryMarginsKBImpl());
+  return result;
 }
 
 void UpdateMemoryParameters() {
