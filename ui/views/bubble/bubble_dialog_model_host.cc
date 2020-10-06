@@ -207,7 +207,11 @@ void BubbleDialogModelHost::Close() {
   // TODO(pbos): Note that this is in place because GridLayout doesn't handle
   // View removal correctly (keeps stale pointers). This is in place to prevent
   // UAFs between Widget::Close() and destroying |this|.
-  SetLayoutManager(nullptr);
+  // TODO(pbos): This uses a non-nullptr LayoutManager only to prevent infinite
+  // recursion in CalculatePreferredSize(). CalculatePreferredSize calls
+  // GetHeightForWidth(), which if there is no LayoutManager calls
+  // GetPreferredSize(). See https://crbug.com/1128500.
+  SetLayoutManager(std::make_unique<GridLayout>());
 
   // TODO(pbos): Consider turning this into for-each-field remove field.
   RemoveAllChildViews(true);
