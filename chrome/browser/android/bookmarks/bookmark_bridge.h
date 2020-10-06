@@ -16,6 +16,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_shim.h"
+#include "chrome/browser/reading_list/android/reading_list_manager.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/common/android/bookmark_id.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -32,7 +33,8 @@ class Profile;
 // bookmark page. This fetches the bookmarks, title, urls, folder
 // hierarchy.
 class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
-                        public PartnerBookmarksShim::Observer {
+                       public PartnerBookmarksShim::Observer,
+                       public ReadingListManager::Observer {
  public:
   BookmarkBridge(JNIEnv* env,
                  const base::android::JavaRef<jobject>& obj,
@@ -279,6 +281,9 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
   void PartnerShimLoaded(PartnerBookmarksShim* shim) override;
   void ShimBeingDeleted(PartnerBookmarksShim* shim) override;
 
+  // Override ReadingListManager::Observer
+  void ReadingListLoaded() override;
+
   Profile* profile_;
   JavaObjectWeakGlobalRef weak_java_ref_;
   bookmarks::BookmarkModel* bookmark_model_;  // weak
@@ -290,6 +295,9 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
   // Information about the Partner bookmarks (must check for IsLoaded()).
   // This is owned by profile.
   PartnerBookmarksShim* partner_bookmarks_shim_;
+
+  // Holds reading list data. A keyed service owned by the profile.
+  ReadingListManager* reading_list_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(BookmarkBridge);
 };

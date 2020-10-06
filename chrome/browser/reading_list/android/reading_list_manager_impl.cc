@@ -9,8 +9,10 @@
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/reading_list/core/reading_list_model.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 using BookmarkNode = bookmarks::BookmarkNode;
@@ -44,10 +46,11 @@ bool SyncToBookmark(const ReadingListEntry& entry, BookmarkNode* bookmark) {
 
 ReadingListManagerImpl::ReadingListManagerImpl(
     ReadingListModel* reading_list_model)
-    : reading_list_model_(reading_list_model), maximum_id_(0L) {
+    : reading_list_model_(reading_list_model), maximum_id_(0L), loaded_(false) {
   DCHECK(reading_list_model_);
   root_ = std::make_unique<BookmarkNode>(maximum_id_++, base::GenerateGUID(),
                                          GURL());
+  root_->SetTitle(l10n_util::GetStringUTF16(IDS_READ_LATER_TITLE));
   DCHECK(root_->is_folder());
   reading_list_model_->AddObserver(this);
 }
@@ -62,6 +65,19 @@ void ReadingListManagerImpl::ReadingListModelLoaded(
   root_->DeleteAll();
   for (const auto& url : model->Keys())
     AddBookmark(model->GetEntryByURL(url));
+
+  loaded_ = true;
+
+  for (Observer& observer : observers_)
+    observer.ReadingListLoaded();
+}
+
+void ReadingListManagerImpl::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ReadingListManagerImpl::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 const BookmarkNode* ReadingListManagerImpl::Add(const GURL& url,
@@ -74,9 +90,31 @@ const BookmarkNode* ReadingListManagerImpl::Add(const GURL& url,
   return AddBookmark(&new_entry);
 }
 
-const BookmarkNode* ReadingListManagerImpl::Get(const GURL& url) {
+const BookmarkNode* ReadingListManagerImpl::Get(const GURL& url) const {
   DCHECK(reading_list_model_->loaded());
   return FindBookmarkByURL(url);
+}
+
+const BookmarkNode* ReadingListManagerImpl::GetNodeByID(int64_t id) const {
+  if (root_->id() == id)
+    return root_.get();
+
+  for (const auto& child : root_->children()) {
+    if (child->id() == id)
+      return child.get();
+  }
+
+  return nullptr;
+}
+
+bool ReadingListManagerImpl::IsReadingListBookmark(
+    const BookmarkNode* node) const {
+  if (!node)
+    return false;
+  if (root_.get() == node)
+    return true;
+
+  return Get(node->url());
 }
 
 void ReadingListManagerImpl::Delete(const GURL& url) {
@@ -115,7 +153,14 @@ void ReadingListManagerImpl::SetReadStatus(const GURL& url, bool read) {
   }
 }
 
-BookmarkNode* ReadingListManagerImpl::FindBookmarkByURL(const GURL& url) {
+bool ReadingListManagerImpl::IsLoaded() const {
+  return loaded_;
+}
+
+BookmarkNode* ReadingListManagerImpl::FindBookmarkByURL(const GURL& url) const {
+  if (!url.is_valid())
+    return nullptr;
+
   for (const auto& child : root_->children()) {
     if (url == child->url())
       return child.get();

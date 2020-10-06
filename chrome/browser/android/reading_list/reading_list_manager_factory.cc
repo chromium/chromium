@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/reading_list/android/empty_reading_list_manager.h"
 #include "chrome/browser/reading_list/android/reading_list_manager_impl.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
@@ -41,4 +42,9 @@ KeyedService* ReadingListManagerFactory::BuildServiceInstanceFor(
   auto* reading_list_model =
       ReadingListModelFactory::GetForBrowserContext(context);
   return new ReadingListManagerImpl(reading_list_model);
+}
+
+content::BrowserContext* ReadingListManagerFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }

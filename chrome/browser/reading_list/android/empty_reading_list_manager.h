@@ -16,14 +16,20 @@ class EmptyReadingListManager : public ReadingListManager {
 
  private:
   // ReadingListManager implementation.
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   const bookmarks::BookmarkNode* Add(const GURL& url,
                                      const std::string& title) override;
-  const bookmarks::BookmarkNode* Get(const GURL& url) override;
+  const bookmarks::BookmarkNode* Get(const GURL& url) const override;
+  const bookmarks::BookmarkNode* GetNodeByID(int64_t id) const override;
+  bool IsReadingListBookmark(
+      const bookmarks::BookmarkNode* node) const override;
   void Delete(const GURL& url) override;
   const bookmarks::BookmarkNode* GetRoot() const override;
   size_t size() const override;
   size_t unread_size() const override;
   void SetReadStatus(const GURL& url, bool read) override;
+  bool IsLoaded() const override;
 };
 
 #endif  // CHROME_BROWSER_READING_LIST_ANDROID_EMPTY_READING_LIST_MANAGER_H_

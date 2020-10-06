@@ -8,14 +8,29 @@ EmptyReadingListManager::EmptyReadingListManager() = default;
 
 EmptyReadingListManager::~EmptyReadingListManager() = default;
 
+void EmptyReadingListManager::AddObserver(Observer* observer) {}
+
+void EmptyReadingListManager::RemoveObserver(Observer* observer) {}
+
 const bookmarks::BookmarkNode* EmptyReadingListManager::Add(
     const GURL& url,
     const std::string& title) {
   return nullptr;
 }
 
-const bookmarks::BookmarkNode* EmptyReadingListManager::Get(const GURL& url) {
+const bookmarks::BookmarkNode* EmptyReadingListManager::Get(
+    const GURL& url) const {
   return nullptr;
+}
+
+const bookmarks::BookmarkNode* EmptyReadingListManager::GetNodeByID(
+    int64_t id) const {
+  return nullptr;
+}
+
+bool EmptyReadingListManager::IsReadingListBookmark(
+    const bookmarks::BookmarkNode* node) const {
+  return false;
 }
 
 void EmptyReadingListManager::Delete(const GURL& url) {}
@@ -33,3 +48,7 @@ size_t EmptyReadingListManager::unread_size() const {
 }
 
 void EmptyReadingListManager::SetReadStatus(const GURL& url, bool read) {}
+
+bool EmptyReadingListManager::IsLoaded() const {
+  return true;
+}

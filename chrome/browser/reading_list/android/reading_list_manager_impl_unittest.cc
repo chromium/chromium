@@ -10,8 +10,10 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_clock.h"
+#include "chrome/browser/reading_list/android/reading_list_manager.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using BookmarkNode = bookmarks::BookmarkNode;
@@ -28,6 +30,15 @@ constexpr char kReadStatusKey[] = "read_status";
 constexpr char kReadStatusRead[] = "true";
 constexpr char kReadStatusUnread[] = "false";
 
+class MockObserver : public ReadingListManager::Observer {
+ public:
+  MockObserver() = default;
+  ~MockObserver() override = default;
+
+  // ReadingListManager::Observer implementation.
+  MOCK_METHOD(void, ReadingListLoaded, (), (override));
+};
+
 class ReadingListManagerImplTest : public testing::Test {
  public:
   ReadingListManagerImplTest() = default;
@@ -38,7 +49,11 @@ class ReadingListManagerImplTest : public testing::Test {
         /*storage_layer=*/nullptr, /*pref_service=*/nullptr, &clock_);
     manager_ =
         std::make_unique<ReadingListManagerImpl>(reading_list_model_.get());
+    manager_->AddObserver(observer());
+    EXPECT_TRUE(manager()->IsLoaded());
   }
+
+  void TearDown() override { manager_->RemoveObserver(observer()); }
 
  protected:
   ReadingListManager* manager() { return manager_.get(); }
@@ -46,11 +61,13 @@ class ReadingListManagerImplTest : public testing::Test {
     return reading_list_model_.get();
   }
   base::SimpleTestClock* clock() { return &clock_; }
+  MockObserver* observer() { return &observer_; }
 
  private:
   base::SimpleTestClock clock_;
   std::unique_ptr<ReadingListModelImpl> reading_list_model_;
   std::unique_ptr<ReadingListManager> manager_;
+  MockObserver observer_;
 };
 
 // Verifies the states without any reading list data.
@@ -96,11 +113,34 @@ TEST_F(ReadingListManagerImplTest, AddGetDelete) {
   EXPECT_EQ(kReadStatusUnread, read_status)
       << "By default the reading list node is marked as unread.";
 
+  // Gets an invalid URL.
+  EXPECT_EQ(nullptr, manager()->Get(GURL("invalid spec")));
+
   // Deletes the node.
   manager()->Delete(url);
   EXPECT_EQ(0u, manager()->size());
   EXPECT_EQ(0u, manager()->unread_size());
   EXPECT_TRUE(manager()->GetRoot()->children().empty());
+}
+
+// Verifies GetNodeByID() and IsReadingListBookmark() works correctly.
+TEST_F(ReadingListManagerImplTest, GetNodeByIDIsReadingListBookmark) {
+  GURL url(kURL);
+  const auto* node = manager()->Add(url, kTitle);
+
+  // Find the root.
+  EXPECT_EQ(manager()->GetRoot(),
+            manager()->GetNodeByID(manager()->GetRoot()->id()));
+  EXPECT_TRUE(manager()->IsReadingListBookmark(manager()->GetRoot()));
+
+  // Find existing node.
+  EXPECT_EQ(node, manager()->GetNodeByID(node->id()));
+  EXPECT_TRUE(manager()->IsReadingListBookmark(node));
+
+  // Non existing node.
+  node = manager()->GetNodeByID(12345);
+  EXPECT_FALSE(node);
+  EXPECT_FALSE(manager()->IsReadingListBookmark(node));
 }
 
 // Verifies Add() the same URL twice will not invalidate returned pointers, and

@@ -24,6 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/BookmarkBridge_jni.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_reader.h"
+#include "chrome/browser/android/reading_list/reading_list_manager_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -84,7 +85,7 @@ class BookmarkTitleComparer {
     }
   }
 
-private:
+ private:
   BookmarkBridge* bookmark_bridge_;  // weak
   const icu::Collator* collator_;
 };
@@ -122,6 +123,10 @@ BookmarkBridge::BookmarkBridge(JNIEnv* env,
       chrome::GetBrowserContextRedirectedInIncognito(profile_));
   partner_bookmarks_shim_->AddObserver(this);
 
+  reading_list_manager_ =
+      ReadingListManagerFactory::GetForBrowserContext(profile_);
+  reading_list_manager_->AddObserver(this);
+
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
       bookmarks::prefs::kEditBookmarksEnabled,
@@ -141,6 +146,7 @@ BookmarkBridge::~BookmarkBridge() {
   bookmark_model_->RemoveObserver(this);
   if (partner_bookmarks_shim_)
     partner_bookmarks_shim_->RemoveObserver(this);
+  reading_list_manager_->RemoveObserver(this);
 }
 
 void BookmarkBridge::Destroy(JNIEnv*, const JavaParamRef<jobject>&) {
@@ -150,8 +156,8 @@ void BookmarkBridge::Destroy(JNIEnv*, const JavaParamRef<jobject>&) {
 static jlong JNI_BookmarkBridge_Init(JNIEnv* env,
                                      const JavaParamRef<jobject>& obj,
                                      const JavaParamRef<jobject>& j_profile) {
-  BookmarkBridge* delegate = new BookmarkBridge(env, obj, j_profile);
-  return reinterpret_cast<intptr_t>(delegate);
+  BookmarkBridge* bridge = new BookmarkBridge(env, obj, j_profile);
+  return reinterpret_cast<intptr_t>(bridge);
 }
 
 jlong BookmarkBridge::GetBookmarkIdForWebContents(
@@ -282,6 +288,9 @@ void BookmarkBridge::GetTopLevelFolderIDs(
         && IsReachable(partner_bookmarks_shim_->GetPartnerBookmarksRoot())) {
       top_level_folders.push_back(
           partner_bookmarks_shim_->GetPartnerBookmarksRoot());
+    }
+    if (reading_list_manager_->GetRoot()) {
+      top_level_folders.push_back(reading_list_manager_->GetRoot());
     }
   }
   std::size_t special_count = top_level_folders.size();
@@ -809,7 +818,7 @@ void BookmarkBridge::StartGroupingUndos(JNIEnv* env,
                                          const JavaParamRef<jobject>& obj) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
-  DCHECK(!grouped_bookmark_actions_.get()); // shouldn't have started already
+  DCHECK(!grouped_bookmark_actions_.get());  // shouldn't have started already
   grouped_bookmark_actions_.reset(
       new bookmarks::ScopedGroupBookmarkActions(bookmark_model_));
 }
@@ -818,7 +827,7 @@ void BookmarkBridge::EndGroupingUndos(JNIEnv* env,
                                        const JavaParamRef<jobject>& obj) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
-  DCHECK(grouped_bookmark_actions_.get()); // should only call after start
+  DCHECK(grouped_bookmark_actions_.get());  // should only call after start
   grouped_bookmark_actions_.reset();
 }
 
@@ -864,6 +873,8 @@ const BookmarkNode* BookmarkBridge::GetNodeByID(long node_id, int type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (type == BookmarkType::BOOKMARK_TYPE_PARTNER) {
     node = partner_bookmarks_shim_->GetNodeByID(static_cast<int64_t>(node_id));
+  } else if (type == BookmarkType::BOOKMARK_TYPE_READING_LIST) {
+    node = reading_list_manager_->GetNodeByID(static_cast<int64_t>(node_id));
   } else {
     node = bookmarks::GetBookmarkNodeByID(bookmark_model_,
                                           static_cast<int64_t>(node_id));
@@ -918,18 +929,23 @@ bool BookmarkBridge::IsManaged(const BookmarkNode* node) const {
 
 const BookmarkNode* BookmarkBridge::GetParentNode(const BookmarkNode* node) {
   DCHECK(IsLoaded());
-  if (node == partner_bookmarks_shim_->GetPartnerBookmarksRoot()) {
+  if (node == partner_bookmarks_shim_->GetPartnerBookmarksRoot())
     return bookmark_model_->mobile_node();
-  } else {
-    return node->parent();
-  }
+
+  if (node == reading_list_manager_->GetRoot())
+    return bookmark_model_->root_node();
+
+  return node->parent();
 }
 
 int BookmarkBridge::GetBookmarkType(const BookmarkNode* node) {
   if (partner_bookmarks_shim_->IsPartnerBookmark(node))
     return BookmarkType::BOOKMARK_TYPE_PARTNER;
-  else
-    return BookmarkType::BOOKMARK_TYPE_NORMAL;
+
+  if (reading_list_manager_->IsReadingListBookmark(node))
+    return BookmarkType::BOOKMARK_TYPE_READING_LIST;
+
+  return BookmarkType::BOOKMARK_TYPE_NORMAL;
 }
 
 bool BookmarkBridge::IsReachable(const BookmarkNode* node) const {
@@ -939,7 +955,8 @@ bool BookmarkBridge::IsReachable(const BookmarkNode* node) const {
 }
 
 bool BookmarkBridge::IsLoaded() const {
-  return (bookmark_model_->loaded() && partner_bookmarks_shim_->IsLoaded());
+  return (bookmark_model_->loaded() && partner_bookmarks_shim_->IsLoaded() &&
+          reading_list_manager_->IsLoaded());
 }
 
 bool BookmarkBridge::IsFolderAvailable(
@@ -1119,6 +1136,10 @@ void BookmarkBridge::PartnerShimLoaded(PartnerBookmarksShim* shim) {
 
 void BookmarkBridge::ShimBeingDeleted(PartnerBookmarksShim* shim) {
   partner_bookmarks_shim_ = nullptr;
+}
+
+void BookmarkBridge::ReadingListLoaded() {
+  NotifyIfDoneLoading();
 }
 
 void BookmarkBridge::ReorderChildren(

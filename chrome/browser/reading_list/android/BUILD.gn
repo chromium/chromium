@@ -22,9 +22,11 @@ source_set("reading_list") {
   # This target should not depend on anything in //chrome/* except the proto library.
   deps = [
     "//base",
+    "//chrome/app:generated_resources",
     "//components/bookmarks/browser",
     "//components/keyed_service/core",
     "//components/reading_list/core",
+    "//ui/base:base",
     "//url",
   ]
 }

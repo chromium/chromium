@@ -27,7 +27,10 @@ class ReadingListManagerFactory : public BrowserContextKeyedServiceFactory {
   ReadingListManagerFactory& operator=(const ReadingListManagerFactory&) =
       delete;
 
+  // BrowserContextKeyedServiceFactory overrides.
   KeyedService* BuildServiceInstanceFor(
+      content::BrowserContext* context) const override;
+  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 
