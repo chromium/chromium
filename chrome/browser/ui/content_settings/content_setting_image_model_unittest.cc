@@ -132,7 +132,7 @@ class FakeSystemGeolocationPermissionsManager
   void SetStatus(SystemPermissionStatus status) { fake_status_ = status; }
 
  private:
-  SystemPermissionStatus fake_status_ = SystemPermissionStatus::kAllowed;
+  SystemPermissionStatus fake_status_ = SystemPermissionStatus::kNotDetermined;
 };
 #endif
 
@@ -318,6 +318,8 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
   EXPECT_FALSE(content_setting_image_model->is_visible());
   EXPECT_TRUE(content_setting_image_model->get_tooltip().empty());
 
+  location_permission_manager->SetStatus(SystemPermissionStatus::kAllowed);
+
   settings_map->SetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
                                          CONTENT_SETTING_ALLOW);
   content_settings->OnContentAllowed(ContentSettingsType::GEOLOCATION);
@@ -331,8 +333,6 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
   settings_map->SetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
                                          CONTENT_SETTING_BLOCK);
   content_settings->OnContentBlocked(ContentSettingsType::GEOLOCATION);
-  //   content_settings->OnGeolocationPermissionSet(requesting_origin,
-  //                                                /*allowed=*/false);
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
   EXPECT_TRUE(HasIcon(*content_setting_image_model));
@@ -357,6 +357,60 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
             l10n_util::GetStringUTF16(IDS_BLOCKED_GEOLOCATION_MESSAGE));
   EXPECT_EQ(content_setting_image_model->explanatory_string_id(),
             IDS_GEOLOCATION_TURNED_OFF);
+}
+
+TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsUndetermined) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kMacCoreLocationImplementation);
+  auto test_location_permission_manager =
+      std::make_unique<FakeSystemGeolocationPermissionsManager>();
+  TestingBrowserProcess::GetGlobal()
+      ->GetTestPlatformPart()
+      ->SetLocationPermissionManager(
+          std::move(test_location_permission_manager));
+
+  PageSpecificContentSettings::CreateForWebContents(
+      web_contents(),
+      std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
+          web_contents()));
+  GURL requesting_origin = GURL("https://www.example.com");
+  NavigateAndCommit(controller_, requesting_origin);
+  PageSpecificContentSettings* content_settings =
+      PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  auto content_setting_image_model =
+      ContentSettingImageModel::CreateForContentType(
+          ContentSettingImageModel::ImageType::GEOLOCATION);
+  EXPECT_FALSE(content_setting_image_model->is_visible());
+  EXPECT_TRUE(content_setting_image_model->get_tooltip().empty());
+
+  // When OS level permission is not determined the UI should show as if it is
+  // blocked. However, the explanatory string is not displayed since we aren't
+  // completely sure yet.
+  settings_map->SetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
+                                         CONTENT_SETTING_ALLOW);
+  content_settings->OnContentAllowed(ContentSettingsType::GEOLOCATION);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_TRUE(content_setting_image_model->is_visible());
+  EXPECT_FALSE(content_setting_image_model->get_tooltip().empty());
+  EXPECT_EQ(content_setting_image_model->get_tooltip(),
+            l10n_util::GetStringUTF16(IDS_BLOCKED_GEOLOCATION_MESSAGE));
+  EXPECT_EQ(content_setting_image_model->explanatory_string_id(), 0);
+
+  // When site permission is blocked it should not make any difference what the
+  // OS level permission is.
+  settings_map->SetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
+                                         CONTENT_SETTING_BLOCK);
+  content_settings->OnContentBlocked(ContentSettingsType::GEOLOCATION);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_TRUE(content_setting_image_model->is_visible());
+  EXPECT_TRUE(HasIcon(*content_setting_image_model));
+  EXPECT_FALSE(content_setting_image_model->get_tooltip().empty());
+  EXPECT_EQ(content_setting_image_model->get_tooltip(),
+            l10n_util::GetStringUTF16(IDS_BLOCKED_GEOLOCATION_MESSAGE));
+  EXPECT_EQ(content_setting_image_model->explanatory_string_id(), 0);
 }
 #endif
 
