@@ -70,6 +70,7 @@ source_set("crash_report_internal") {
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/metrics:previous_session_info",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/sessions:restoration_agent",
     "//ios/chrome/browser/sessions:serialisation",

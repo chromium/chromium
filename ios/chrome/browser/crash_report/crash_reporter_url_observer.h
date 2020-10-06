@@ -11,6 +11,7 @@
 
 #include "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 #include "ios/web/public/web_state_observer.h"
+#include "url/gurl.h"
 
 namespace web {
 class NavigationContext;
@@ -21,7 +22,7 @@ class AllWebStateObservationForwarder;
 // Provides method to set and remove parameter values.
 @protocol CrashReporterParameterSetter
 // Sets a parameter named |key| with value |value|.
-- (void)setReportParameterValue:(NSString*)value forKey:(NSString*)key;
+- (void)setReportParameterURL:(const GURL&)URL forKey:(NSString*)key;
 
 // Deletes the parameter |key|.
 - (void)removeReportParameter:(NSString*)key;
@@ -43,7 +44,7 @@ class CrashReporterURLObserver : public WebStateListObserver,
   // Records the given URL associated to the given id to the list of URLs to
   // send to the crash server. If |pending| is true, the URL is one that is
   // expected to start loading, but hasn't actually been seen yet.
-  void RecordURL(NSString* url, web::WebState* web_state, bool pending);
+  void RecordURL(const GURL& url, web::WebState* web_state, bool pending);
 
   // Observes |webState| by this instance of the CrashReporterURLObserver.
   void ObservePreloadWebState(web::WebState* web_state);

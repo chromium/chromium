@@ -93,6 +93,14 @@ void CreateSyntheticCrashReportForUte(
   AppendConfig(config, "BreakpadServerParameterPrefix_platform",
                base::SysInfo::HardwareModelName());
 
+  for (NSString* key in previous_session.reportParameterURLs.allKeys) {
+    AppendConfig(
+        config,
+        base::StringPrintf("BreakpadServerParameterPrefix_%s",
+                           base::SysNSStringToUTF8(key).c_str()),
+        base::SysNSStringToUTF8(previous_session.reportParameterURLs[key]));
+  }
+
   // Write empty minidump file, as Breakpad can't upload config without the
   // minidump.
   base::File minidump_file(

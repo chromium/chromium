@@ -9,6 +9,8 @@
 
 #include "base/callback_helpers.h"
 
+#include "url/gurl.h"
+
 namespace previous_session_info_constants {
 // Key in the UserDefaults for a boolean value keeping track of memory warnings.
 extern NSString* const kDidSeeMemoryWarningShortlyBeforeTerminating;
@@ -20,6 +22,8 @@ extern NSString* const kPreviousSessionInfoRestoringSession;
 // Key in the UserDefaults for an array which contains the ids for the connected
 // scene sessions on the previous run.
 extern NSString* const kPreviousSessionInfoConnectedSceneSessionIDs;
+// Key in the UserDefaults for a dictionary with navigation URLs.
+extern NSString* const kPreviousSessionInfoURLs;
 
 // The values of this enum are persisted (both to NSUserDefaults and logs) and
 // represent the state of the last session (which may have been running a
@@ -117,6 +121,10 @@ enum class DeviceBatteryState {
 @property(nonatomic, readonly)
     NSMutableSet<NSString*>* connectedSceneSessionsIDs;
 
+// Pending and committed navigation URLs.
+@property(nonatomic, readonly)
+    NSDictionary<NSString*, NSString*>* reportParameterURLs;
+
 // Singleton PreviousSessionInfo. During the lifetime of the app, the returned
 // object is the same, and describes the previous session, even after a new
 // session has started (by calling beginRecordingCurrentSession).
@@ -169,6 +177,10 @@ enum class DeviceBatteryState {
 // Automatically called when ScopedClosureRunner returned from -startRestoration
 // gets destructed.
 - (void)resetSessionRestorationFlag;
+
+// Records information about pending and committed navigation URLs.
+- (void)setReportParameterURL:(const GURL&)URL forKey:(NSString*)key;
+- (void)removeReportParameterForKey:(NSString*)key;
 
 @end
 

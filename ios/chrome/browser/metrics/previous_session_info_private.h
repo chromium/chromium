@@ -20,6 +20,8 @@
 @property(nonatomic, copy) NSString* OSVersion;
 @property(nonatomic, assign) BOOL terminatedDuringSessionRestoration;
 @property(nonatomic, strong) NSMutableSet<NSString*>* connectedSceneSessionsIDs;
+@property(nonatomic, copy)
+    NSDictionary<NSString*, NSString*>* reportParameterURLs;
 
 + (void)resetSharedInstanceForTesting;
 

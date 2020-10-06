@@ -472,4 +472,84 @@ TEST_F(PreviousSessionInfoTest,
       terminatedDuringSessionRestoration]);
 }
 
+// Tests added and removing navigation URLs.
+TEST_F(PreviousSessionInfoTest, ReportParameterURLs) {
+  // Default state.
+  [NSUserDefaults.standardUserDefaults
+      removeObjectForKey:previous_session_info_constants::
+                             kPreviousSessionInfoURLs];
+
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+  EXPECT_FALSE([PreviousSessionInfo sharedInstance].reportParameterURLs);
+
+  // Removing non-existing key does not crash.
+  NSString* const kKey0 = @"url0";
+  [[PreviousSessionInfo sharedInstance] removeReportParameterForKey:kKey0];
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+  EXPECT_FALSE([PreviousSessionInfo sharedInstance].reportParameterURLs);
+
+  // Add first URL.
+  [[PreviousSessionInfo sharedInstance]
+      setReportParameterURL:GURL("https://example.test/path")
+                     forKey:kKey0];
+  NSDictionary<NSString*, NSString*>* URLs =
+      [NSUserDefaults.standardUserDefaults
+          dictionaryForKey:previous_session_info_constants::
+                               kPreviousSessionInfoURLs];
+  EXPECT_NSEQ(@{kKey0 : @"https://example.test/"}, URLs);  // stores only origin
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+  EXPECT_NSEQ(URLs, [[PreviousSessionInfo sharedInstance] reportParameterURLs]);
+
+  // Update first URL.
+  [[PreviousSessionInfo sharedInstance]
+      setReportParameterURL:GURL("https://example2.test/path")
+                     forKey:kKey0];
+  URLs = [NSUserDefaults.standardUserDefaults
+      dictionaryForKey:previous_session_info_constants::
+                           kPreviousSessionInfoURLs];
+  EXPECT_NSEQ(@{kKey0 : @"https://example2.test/"}, URLs);
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+  EXPECT_NSEQ(URLs, [[PreviousSessionInfo sharedInstance] reportParameterURLs]);
+
+  // Add second URL.
+  NSString* const kKey1 = @"url1";
+  [[PreviousSessionInfo sharedInstance]
+      setReportParameterURL:GURL("https://example3.test/path")
+                     forKey:kKey1];
+  URLs = [NSUserDefaults.standardUserDefaults
+      dictionaryForKey:previous_session_info_constants::
+                           kPreviousSessionInfoURLs];
+  NSDictionary<NSString*, NSString*>* expected = @{
+    kKey0 : @"https://example2.test/",
+    kKey1 : @"https://example3.test/",
+  };
+  EXPECT_NSEQ(expected, URLs);
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+  EXPECT_NSEQ(URLs, [[PreviousSessionInfo sharedInstance] reportParameterURLs]);
+
+  // Removing non-existing key does not crash.
+  [[PreviousSessionInfo sharedInstance] removeReportParameterForKey:@"url2"];
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+  EXPECT_NSEQ(URLs, [[PreviousSessionInfo sharedInstance] reportParameterURLs]);
+
+  // Remove first URL.
+  [[PreviousSessionInfo sharedInstance] removeReportParameterForKey:kKey0];
+  URLs = [NSUserDefaults.standardUserDefaults
+      dictionaryForKey:previous_session_info_constants::
+                           kPreviousSessionInfoURLs];
+  EXPECT_NSEQ(@{kKey1 : @"https://example3.test/"}, URLs);
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+  EXPECT_NSEQ(URLs, [[PreviousSessionInfo sharedInstance] reportParameterURLs]);
+
+  // Remove second URL.
+  [[PreviousSessionInfo sharedInstance] removeReportParameterForKey:kKey1];
+  URLs = [NSUserDefaults.standardUserDefaults
+      dictionaryForKey:previous_session_info_constants::
+                           kPreviousSessionInfoURLs];
+  EXPECT_FALSE(URLs);
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+  EXPECT_FALSE([[PreviousSessionInfo sharedInstance] reportParameterURLs]);
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+}
+
 }  // namespace

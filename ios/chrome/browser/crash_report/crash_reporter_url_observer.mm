@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/crash_report/breakpad_helper.h"
+#import "ios/chrome/browser/metrics/previous_session_info.h"
 #import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/web/public/browser_state.h"
@@ -41,16 +42,21 @@ const char kPreloadWebStateGroup[] = "PreloadGroup";
 
 }  // namespace
 
-// A CrashReporterParameterSetter that forward parameters to Breakpad.
-@interface BreakpadParamSetter : NSObject <CrashReporterParameterSetter>
+// A CrashReporterParameterSetter that forward parameters to Breakpad and
+// PreviousSessionInfo.
+@interface CrashReporterParameterSetter
+    : NSObject <CrashReporterParameterSetter>
 @end
 
-@implementation BreakpadParamSetter
+@implementation CrashReporterParameterSetter
 - (void)removeReportParameter:(NSString*)key {
   breakpad_helper::RemoveReportParameter(key);
+  [[PreviousSessionInfo sharedInstance] removeReportParameterForKey:key];
 }
-- (void)setReportParameterValue:(NSString*)value forKey:(NSString*)key {
-  breakpad_helper::AddReportParameter(key, value, true);
+- (void)setReportParameterURL:(const GURL&)URL forKey:(NSString*)key {
+  breakpad_helper::AddReportParameter(key, base::SysUTF8ToNSString(URL.spec()),
+                                      true);
+  [[PreviousSessionInfo sharedInstance] setReportParameterURL:URL forKey:key];
 }
 @end
 
@@ -59,7 +65,7 @@ const char kPreloadWebStateGroup[] = "PreloadGroup";
 // static
 CrashReporterURLObserver* CrashReporterURLObserver::GetSharedInstance() {
   static CrashReporterURLObserver* instance =
-      new CrashReporterURLObserver([[BreakpadParamSetter alloc] init]);
+      new CrashReporterURLObserver([[CrashReporterParameterSetter alloc] init]);
   return instance;
 }
 
@@ -103,7 +109,7 @@ void CrashReporterURLObserver::RemoveWebStateList(
 
 #pragma mark - Record URLs
 
-void CrashReporterURLObserver::RecordURL(NSString* url,
+void CrashReporterURLObserver::RecordURL(const GURL& url,
                                          web::WebState* web_state,
                                          bool pending) {
   DCHECK(!web_state->GetBrowserState()->IsOffTheRecord());
@@ -134,9 +140,9 @@ void CrashReporterURLObserver::RecordURL(NSString* url,
   if (pending) {
     if (reusing_key)
       [params_setter_ removeReportParameter:breakpad_key];
-    [params_setter_ setReportParameterValue:url forKey:pending_key];
+    [params_setter_ setReportParameterURL:url forKey:pending_key];
   } else {
-    [params_setter_ setReportParameterValue:url forKey:breakpad_key];
+    [params_setter_ setReportParameterURL:url forKey:breakpad_key];
     [params_setter_ removeReportParameter:pending_key];
   }
 }
@@ -146,8 +152,7 @@ void CrashReporterURLObserver::RecordURLForWebState(web::WebState* web_state) {
       web_state->GetNavigationManager()->GetPendingItem();
   const GURL& url =
       pending_item ? pending_item->GetURL() : web_state->GetLastCommittedURL();
-  RecordURL(base::SysUTF8ToNSString(url.spec()), web_state,
-            pending_item != nullptr);
+  RecordURL(url, web_state, pending_item != nullptr);
 }
 
 #pragma mark - Start/Stop observing
@@ -256,20 +261,19 @@ void CrashReporterURLObserver::WebStateActivatedAt(
 void CrashReporterURLObserver::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  NSString* url_string =
-      base::SysUTF8ToNSString(navigation_context->GetUrl().spec());
-  if (!url_string.length || web_state->GetBrowserState()->IsOffTheRecord())
+  if (navigation_context->GetUrl().spec().empty() ||
+      web_state->GetBrowserState()->IsOffTheRecord()) {
     return;
-  RecordURL(url_string, web_state, true);
+  }
+  RecordURL(navigation_context->GetUrl(), web_state, true);
 }
 
 void CrashReporterURLObserver::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  NSString* url_string =
-      base::SysUTF8ToNSString(navigation_context->GetUrl().spec());
-
-  if (!url_string.length || web_state->GetBrowserState()->IsOffTheRecord())
+  if (navigation_context->GetUrl().spec().empty() ||
+      web_state->GetBrowserState()->IsOffTheRecord()) {
     return;
-  RecordURL(url_string, web_state, false);
+  }
+  RecordURL(navigation_context->GetUrl(), web_state, false);
 }

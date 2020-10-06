@@ -6,6 +6,7 @@
 
 #include "ios/chrome/browser/crash_report/crash_reporter_url_observer.h"
 
+#include "base/strings/sys_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
@@ -75,8 +76,8 @@ class TestWebState : public web::TestWebState {
   [_params removeObjectForKey:key];
 }
 
-- (void)setReportParameterValue:(NSString*)value forKey:(NSString*)key {
-  [_params setObject:value forKey:key];
+- (void)setReportParameterURL:(const GURL&)URL forKey:(NSString*)key {
+  [_params setObject:base::SysUTF8ToNSString(URL.spec()) forKey:key];
 }
 
 @end
