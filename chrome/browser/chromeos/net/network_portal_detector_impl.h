@@ -182,7 +182,7 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   std::string default_connection_state_;
 
   // Proxy configuration of the default network.
-  std::unique_ptr<base::Value> default_proxy_config_;
+  base::Value default_proxy_config_;
 
   State state_ = STATE_IDLE;
   CaptivePortalStateMap portal_state_map_;

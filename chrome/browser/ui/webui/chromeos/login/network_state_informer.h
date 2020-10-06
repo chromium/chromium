@@ -95,7 +95,7 @@ class NetworkStateInformer
 
   State state_;
   std::string network_path_;
-  std::unique_ptr<base::Value> proxy_config_;
+  base::Value proxy_config_;
 
   base::ObserverList<NetworkStateInformerObserver>::Unchecked observers_;
 

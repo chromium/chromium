@@ -30,15 +30,17 @@ const char kDefaultCellularNetworkPath[] = "/cellular";
 // TODO(tbarzic): Add payment portal method values to shill/dbus-constants.
 constexpr char kPaymentPortalMethodPost[] = "POST";
 
-std::string GetStringFromDictionary(const base::Value* dict, const char* key) {
-  const base::Value* v = dict ? dict->FindKey(key) : nullptr;
-  return v ? v->GetString() : std::string();
+// |dict| may be an empty value, in which case return an empty string.
+std::string GetStringFromDictionary(const base::Value& dict, const char* key) {
+  const std::string* stringp =
+      dict.is_none() ? nullptr : dict.FindStringKey(key);
+  return stringp ? *stringp : std::string();
 }
 
 bool IsCaptivePortalState(const base::Value& properties,
                           const std::string& log_id) {
   std::string state =
-      GetStringFromDictionary(&properties, shill::kStateProperty);
+      GetStringFromDictionary(properties, shill::kStateProperty);
   if (!chromeos::NetworkState::StateIsPortalled(state))
     return false;
   if (!properties.FindKey(shill::kPortalDetectionFailedPhaseProperty) ||
@@ -49,9 +51,9 @@ bool IsCaptivePortalState(const base::Value& properties,
   }
 
   std::string portal_detection_phase = GetStringFromDictionary(
-      &properties, shill::kPortalDetectionFailedPhaseProperty);
+      properties, shill::kPortalDetectionFailedPhaseProperty);
   std::string portal_detection_status = GetStringFromDictionary(
-      &properties, shill::kPortalDetectionFailedStatusProperty);
+      properties, shill::kPortalDetectionFailedStatusProperty);
 
   // Shill reports the phase in which it determined that the device is behind a
   // captive portal. We only want to rely only on incorrect content being
@@ -176,15 +178,16 @@ bool NetworkState::PropertyChanged(const std::string& key,
       return false;
     }
 
-    proxy_config_.reset();
-    if (proxy_config_str.empty())
+    if (proxy_config_str.empty()) {
+      proxy_config_ = base::Value();
       return true;
-
+    }
     std::unique_ptr<base::Value> proxy_config_dict(
         onc::ReadDictionaryFromJson(proxy_config_str));
     if (proxy_config_dict) {
-      proxy_config_ = std::move(proxy_config_dict);
+      proxy_config_ = std::move(*proxy_config_dict);
     } else {
+      proxy_config_ = base::Value();
       NET_LOG(ERROR) << "Failed to parse " << path() << "." << key;
     }
     return true;
@@ -339,23 +342,23 @@ bool NetworkState::IsActive() const {
 
 void NetworkState::IPConfigPropertiesChanged(const base::Value& properties) {
   if (properties.DictEmpty()) {
-    ipv4_config_.reset();
+    ipv4_config_ = base::Value();
     return;
   }
-  ipv4_config_ = std::make_unique<base::Value>(properties.Clone());
+  ipv4_config_ = properties.Clone();
 }
 
 std::string NetworkState::GetIpAddress() const {
-  return GetStringFromDictionary(ipv4_config_.get(), shill::kAddressProperty);
+  return GetStringFromDictionary(ipv4_config_, shill::kAddressProperty);
 }
 
 std::string NetworkState::GetGateway() const {
-  return GetStringFromDictionary(ipv4_config_.get(), shill::kGatewayProperty);
+  return GetStringFromDictionary(ipv4_config_, shill::kGatewayProperty);
 }
 
 GURL NetworkState::GetWebProxyAutoDiscoveryUrl() const {
   std::string url = GetStringFromDictionary(
-      ipv4_config_.get(), shill::kWebProxyAutoDiscoveryUrlProperty);
+      ipv4_config_, shill::kWebProxyAutoDiscoveryUrlProperty);
   if (url.empty())
     return GURL();
   GURL gurl(url);
@@ -517,8 +520,9 @@ std::string NetworkState::GetHexSsid() const {
 
 std::string NetworkState::GetDnsServersAsString() const {
   const base::Value* listv =
-      ipv4_config_ ? ipv4_config_->FindKey(shill::kNameServersProperty)
-                   : nullptr;
+      ipv4_config_.is_none()
+          ? nullptr
+          : ipv4_config_.FindListKey(shill::kNameServersProperty);
   if (!listv)
     return std::string();
   std::string result;
@@ -531,9 +535,8 @@ std::string NetworkState::GetDnsServersAsString() const {
 }
 
 std::string NetworkState::GetNetmask() const {
-  const base::Value* v =
-      ipv4_config_ ? ipv4_config_->FindKey(shill::kPrefixlenProperty) : nullptr;
-  int prefixlen = v ? v->GetInt() : -1;
+  int prefixlen =
+      ipv4_config_.FindIntKey(shill::kPrefixlenProperty).value_or(-1);
   return network_util::PrefixLengthToNetmask(prefixlen);
 }
 

@@ -100,8 +100,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   int priority() const { return priority_; }
 
-  const base::Value* proxy_config() const { return proxy_config_.get(); }
-  const base::Value* ipv4_config() const { return ipv4_config_.get(); }
+  const base::Value& proxy_config() const { return proxy_config_; }
+  const base::Value& ipv4_config() const { return ipv4_config_; }
   std::string GetIpAddress() const;
   std::string GetGateway() const;
   GURL GetWebProxyAutoDiscoveryUrl() const;
@@ -301,7 +301,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   // Cached copy of the Shill Service IPConfig object. For ipv6 properties use
   // the ip_configs_ property in the corresponding DeviceState.
-  std::unique_ptr<base::Value> ipv4_config_;
+  base::Value ipv4_config_;
 
   // Wireless properties, used for icons and Connect logic.
   bool connectable_ = false;
@@ -341,7 +341,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   // TODO(pneubeck): Remove this once (Managed)NetworkConfigurationHandler
   // provides proxy configuration. crbug.com/241775
-  std::unique_ptr<base::Value> proxy_config_;
+  base::Value proxy_config_;
 
   // Set while a network connect request is queued. Cleared on connect or
   // if the request is aborted.

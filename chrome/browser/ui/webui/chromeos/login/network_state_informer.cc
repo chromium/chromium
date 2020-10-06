@@ -208,7 +208,7 @@ bool NetworkStateInformer::UpdateState() {
 
   state_ = new_state;
   network_path_ = new_network_path;
-  proxy_config_.reset();
+  proxy_config_ = base::Value();
 
   if (state_ == ONLINE) {
     for (NetworkStateInformerObserver& observer : observers_)
@@ -221,13 +221,12 @@ bool NetworkStateInformer::UpdateState() {
 bool NetworkStateInformer::UpdateProxyConfig() {
   const NetworkState* default_network =
       NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
-  if (!default_network || !default_network->proxy_config())
+  if (!default_network)
     return false;
 
-  if (proxy_config_ && *proxy_config_ == *default_network->proxy_config())
+  if (proxy_config_ == default_network->proxy_config())
     return false;
-  proxy_config_ =
-      std::make_unique<base::Value>(default_network->proxy_config()->Clone());
+  proxy_config_ = default_network->proxy_config().Clone();
   return true;
 }
 

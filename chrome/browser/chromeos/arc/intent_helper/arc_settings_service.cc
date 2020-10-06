@@ -236,7 +236,7 @@ class ArcSettingsServiceImpl
   // network has changed.
   std::string default_network_name_;
   // Proxy configuration of the default network.
-  base::Optional<base::Value> default_proxy_config_;
+  base::Value default_proxy_config_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcSettingsServiceImpl);
 };
@@ -319,18 +319,15 @@ void ArcSettingsServiceImpl::DefaultNetworkChanged(
   // Trigger a proxy settings sync to ARC if the default network changes.
   if (default_network_name_ != network->name()) {
     default_network_name_ = network->name();
-    default_proxy_config_.reset();
+    default_proxy_config_ = base::Value();
     sync_proxy = true;
   }
   // Trigger a proxy settings sync to ARC if the proxy configuration of the
   // default network changes. Note: this code is only called if kProxy pref is
   // not set.
-  if (network->proxy_config()) {
-    if (!default_proxy_config_ ||
-        (*default_proxy_config_ != *network->proxy_config())) {
-      default_proxy_config_ = network->proxy_config()->Clone();
-      sync_proxy = true;
-    }
+  if (default_proxy_config_ != network->proxy_config()) {
+    default_proxy_config_ = network->proxy_config().Clone();
+    sync_proxy = true;
   }
   if (!sync_proxy)
     return;

@@ -958,8 +958,8 @@ void ManagedNetworkConfigurationHandlerImpl::GetDeviceStateProperties(
     NET_LOG(DEBUG)
         << "GetDeviceStateProperties: Setting IPv4 properties from network: "
         << NetworkId(network);
-    if (network->ipv4_config())
-      ip_configs.Append(network->ipv4_config()->Clone());
+    if (!network->ipv4_config().is_none())
+      ip_configs.Append(network->ipv4_config().Clone());
   } else {
     // Convert the DeviceState IPConfigs dictionary to a ListValue.
     for (const auto iter : device_state->ip_configs().DictItems())

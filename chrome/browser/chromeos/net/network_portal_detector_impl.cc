@@ -198,7 +198,7 @@ void NetworkPortalDetectorImpl::DefaultNetworkChanged(
   if (!default_network) {
     NET_LOG(EVENT) << "Default network changed: None";
 
-    default_proxy_config_.reset();
+    default_proxy_config_ = base::Value();
 
     StopDetection();
 
@@ -217,24 +217,24 @@ void NetworkPortalDetectorImpl::DefaultNetworkChanged(
   default_connection_state_ = default_network->connection_state();
 
   bool proxy_config_changed = false;
-  if (!default_network->proxy_config()) {
-    if (default_proxy_config_) {
+  const base::Value& default_network_proxy_config =
+      default_network->proxy_config();
+  if (default_network_proxy_config.is_none()) {
+    if (!default_proxy_config_.is_none()) {
       proxy_config_changed = true;
-      default_proxy_config_.reset();
+      default_proxy_config_ = base::Value();
     }
-  } else {
-    if (!default_proxy_config_ || network_changed ||
-        (*default_proxy_config_ != *default_network->proxy_config())) {
-      proxy_config_changed = true;
-      default_proxy_config_ = std::make_unique<base::Value>(
-          default_network->proxy_config()->Clone());
-    }
+  } else if (network_changed ||
+             default_proxy_config_ != default_network_proxy_config) {
+    proxy_config_changed = true;
+    default_proxy_config_ = default_network_proxy_config.Clone();
   }
 
   NET_LOG(EVENT) << "Default network changed:"
                  << " id=" << NetworkGuidId(default_network_id_)
                  << " state=" << default_connection_state_
                  << " changed=" << network_changed
+                 << " proxy_config_changed=" << proxy_config_changed
                  << " state_changed=" << connection_state_changed;
 
   if (network_changed || connection_state_changed || proxy_config_changed)
