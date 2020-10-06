@@ -24,7 +24,6 @@ VP9VaapiVideoDecoderDelegate::VP9VaapiVideoDecoderDelegate(
 VP9VaapiVideoDecoderDelegate::~VP9VaapiVideoDecoderDelegate() {
   DCHECK(!picture_params_);
   DCHECK(!slice_params_);
-  DCHECK(!encoded_data_);
 }
 
 scoped_refptr<VP9Picture> VP9VaapiVideoDecoderDelegate::CreateVP9Picture() {
@@ -65,14 +64,13 @@ bool VP9VaapiVideoDecoderDelegate::SubmitDecode(
     if (!slice_params_)
       return false;
   }
-  // |encoded_data_| has to match perfectly |frame_hdr->frame_size| or decoding
-  // will have horrific artifacts.
-  if (!encoded_data_ || encoded_data_->size() != frame_hdr->frame_size) {
-    encoded_data_ = vaapi_wrapper_->CreateVABuffer(VASliceDataBufferType,
-                                                   frame_hdr->frame_size);
-    if (!encoded_data_)
-      return false;
-  }
+  // Always re-create |encoded_data| because reusing the buffer causes horrific
+  // artifacts in decoded buffers. TODO(b/169725321): This seems to be a driver
+  // bug, fix it and reuse the buffer.
+  auto encoded_data = vaapi_wrapper_->CreateVABuffer(VASliceDataBufferType,
+                                                     frame_hdr->frame_size);
+  if (!encoded_data)
+    return false;
 
   pic_param.frame_width = base::checked_cast<uint16_t>(frame_hdr->frame_width);
   pic_param.frame_height =
@@ -167,8 +165,8 @@ bool VP9VaapiVideoDecoderDelegate::SubmitDecode(
         {picture_params_->type(), picture_params_->size(), &pic_param}},
        {slice_params_->id(),
         {slice_params_->type(), slice_params_->size(), &slice_param}},
-       {encoded_data_->id(),
-        {encoded_data_->type(), frame_hdr->frame_size, frame_hdr->data}}});
+       {encoded_data->id(),
+        {encoded_data->type(), frame_hdr->frame_size, frame_hdr->data}}});
 }
 
 bool VP9VaapiVideoDecoderDelegate::OutputPicture(
@@ -199,7 +197,6 @@ void VP9VaapiVideoDecoderDelegate::OnVAContextDestructionSoon() {
   // that will be destroyed soon.
   picture_params_.reset();
   slice_params_.reset();
-  encoded_data_.reset();
 }
 
 }  // namespace media
