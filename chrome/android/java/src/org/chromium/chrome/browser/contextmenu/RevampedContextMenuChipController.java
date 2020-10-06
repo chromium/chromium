@@ -10,8 +10,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -19,6 +21,8 @@ import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ChipView;
 import org.chromium.ui.widget.ViewRectProvider;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 /**
  * A controller to handle chip construction and cross-app communication.
  */
@@ -29,6 +33,20 @@ class RevampedContextMenuChipController implements View.OnClickListener {
     private ChipView mChipView;
     private AnchoredPopupWindow mPopupWindow;
     private Context mContext;
+    @VisibleForTesting
+    @IntDef({ChipEvent.SHOWN, ChipEvent.CLICKED, ChipEvent.DISMISSED})
+    @Retention(RetentionPolicy.SOURCE)
+    protected @interface ChipEvent {
+        int SHOWN = 0;
+        int CLICKED = 1;
+        int DISMISSED = 2;
+        int NUM_ENTRIES = 3;
+    }
+
+    private void recordChipEvent(@ChipEvent int chipEvent) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "ContextMenu.LensChip.Event", chipEvent, ChipEvent.NUM_ENTRIES);
+    }
 
     /**
      * Construct the chip controller.
@@ -89,6 +107,7 @@ class RevampedContextMenuChipController implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if (v == mChipView) {
+            recordChipEvent(ChipEvent.CLICKED);
             mChipClickedCallback.run();
             dismissLensChipIfShowing();
         }
@@ -144,9 +163,13 @@ class RevampedContextMenuChipController implements View.OnClickListener {
         mChipView.addRemoveIcon();
 
         mChipView.setOnClickListener(this);
-        mChipView.setRemoveIconClickListener(v -> { dismissLensChipIfShowing(); });
+        mChipView.setRemoveIconClickListener(v -> {
+            dismissLensChipIfShowing();
+            recordChipEvent(ChipEvent.DISMISSED);
+        });
 
         mPopupWindow.show();
+        recordChipEvent(ChipEvent.SHOWN);
     }
 
     // This method should only be used in test files.  It is not marked
