@@ -678,6 +678,15 @@ class GLCopyTextureCHROMIUMES3Test : public GLCopyTextureCHROMIUMTest {
     EXPECT_TRUE(supports_rgb10_a2);
     return !supports_rgb10_a2;
   }
+
+  bool IsMacArm64() const {
+    DCHECK(!ShouldSkipTest());
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM_FAMILY)
+    return true;
+#else
+    return false;
+#endif
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(CopyType,
@@ -739,6 +748,10 @@ TEST_P(GLCopyTextureCHROMIUMES3Test, BigTexture) {
 TEST_P(GLCopyTextureCHROMIUMES3Test, FormatCombinations) {
   if (ShouldSkipTest())
     return;
+  if (IsMacArm64()) {
+    LOG(INFO) << "TODO(crbug.com/1135372): fails on Apple DTK. Skipping.";
+    return;
+  }
   if (gl_.gpu_preferences().use_passthrough_cmd_decoder) {
     // TODO(geofflang): anglebug.com/1932
     LOG(INFO)
