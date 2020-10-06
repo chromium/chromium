@@ -13841,8 +13841,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
 
 // Verify that hidden tabs with a crashed subframe are not marked for reload
 // when the crashed subframe is hidden with "display:none".
+// Flaky on Mac, see crbug.com/1135595
+#if defined(OS_MAC)
+#define MAYBE_DoNotReloadHiddenTabWithHiddenCrashedSubframe \
+  DISABLED_DoNotReloadHiddenTabWithHiddenCrashedSubframe
+#else
+#define MAYBE_DoNotReloadHiddenTabWithHiddenCrashedSubframe \
+  DoNotReloadHiddenTabWithHiddenCrashedSubframe
+#endif
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
-                       DoNotReloadHiddenTabWithHiddenCrashedSubframe) {
+                       MAYBE_DoNotReloadHiddenTabWithHiddenCrashedSubframe) {
   // Set WebContents to VISIBLE to avoid hitting the |!did_first_set_visible_|
   // case when we hide it later.
   web_contents()->UpdateWebContentsVisibility(Visibility::VISIBLE);
