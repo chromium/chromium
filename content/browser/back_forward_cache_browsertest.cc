@@ -2675,7 +2675,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       blink::scheduler::WebSchedulerTrackedFeature::kWebRTC, FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, LogIpcPostedToCachedFrame) {
+// Flaky on Android, see crbug.com/1135601.
+#if defined(OS_ANDROID)
+#define MAYBE_LogIpcPostedToCachedFrame DISABLED_LogIpcPostedToCachedFrame
+#else
+#define MAYBE_LogIpcPostedToCachedFrame LogIpcPostedToCachedFrame
+#endif
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       MAYBE_LogIpcPostedToCachedFrame) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to a page.
