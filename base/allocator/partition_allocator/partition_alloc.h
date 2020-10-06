@@ -1111,19 +1111,17 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AlignedAllocFlags(
         << (sizeof(size_t) * 8 - base::bits::CountLeadingZeroBits(size - 1));
   }
 
-  // TODO(tasak): Clean up the following condition and PA_CHECK(requested_size
-  // >= size).
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  if (size > MaxDirectMapped()) {
+  // Overflow check. requested_size must be larger or equal to size.
+  if (requested_size < size) {
     if (flags & PartitionAllocReturnNull)
       return nullptr;
     // OutOfMemoryDeathTest.AlignedAlloc requires base::OnNoMemoryInternal
     // (invoked by PartitionExcessiveAllocationSize).
     internal::PartitionExcessiveAllocationSize(size);
-    IMMEDIATE_CRASH();  // Not required, kept as documentation.
+    // internal::PartitionExcessiveAllocationSize(size) causes OOM_CRASH.
+    NOTREACHED();
   }
-#endif
-  PA_CHECK(requested_size >= size);  // Overflow check.
+
   bool no_hooks = flags & PartitionAllocNoHooks;
   void* ptr = no_hooks ? AllocFlagsNoHooks(0, requested_size)
                        : Alloc(requested_size, "");
