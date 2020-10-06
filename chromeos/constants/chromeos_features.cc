@@ -34,7 +34,7 @@ constexpr base::FeatureParam<bool> kAmbientModeFineArtAlbumEnabled{
     &kAmbientModeFeature, "FineArtAlbumEnabled", false};
 
 constexpr base::FeatureParam<bool> kAmbientModeFeaturedPhotoAlbumEnabled{
-    &kAmbientModeFeature, "FeaturedPhotoAlbumEnabled", false};
+    &kAmbientModeFeature, "FeaturedPhotoAlbumEnabled", true};
 
 constexpr base::FeatureParam<bool> kAmbientModeEarthAndSpaceAlbumEnabled{
     &kAmbientModeFeature, "EarthAndSpaceAlbumEnabled", false};
@@ -49,7 +49,7 @@ constexpr base::FeatureParam<bool> kAmbientModePersonalPhotosEnabled{
     &kAmbientModeFeature, "PersonalPhotosEnabled", false};
 
 constexpr base::FeatureParam<bool> kAmbientModeFeaturedPhotosEnabled{
-    &kAmbientModeFeature, "FeaturedPhotosEnabled", false};
+    &kAmbientModeFeature, "FeaturedPhotosEnabled", true};
 
 constexpr base::FeatureParam<bool> kAmbientModeGeoPhotosEnabled{
     &kAmbientModeFeature, "GeoPhotosEnabled", false};
