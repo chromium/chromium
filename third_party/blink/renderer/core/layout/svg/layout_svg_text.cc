@@ -402,16 +402,12 @@ bool LayoutSVGText::IsObjectBoundingBoxValid() const {
 void LayoutSVGText::AddChild(LayoutObject* child, LayoutObject* before_child) {
   NOT_DESTROYED();
   LayoutSVGBlock::AddChild(child, before_child);
-
-  SVGResourcesCache::ClientWasAddedToTree(*child);
   SubtreeStructureChanged(layout_invalidation_reason::kChildChanged);
 }
 
 void LayoutSVGText::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
-  SVGResourcesCache::ClientWillBeRemovedFromTree(*child);
   SubtreeStructureChanged(layout_invalidation_reason::kChildChanged);
-
   LayoutSVGBlock::RemoveChild(child);
 }
 

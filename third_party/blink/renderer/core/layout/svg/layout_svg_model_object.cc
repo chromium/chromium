@@ -178,6 +178,7 @@ void LayoutSVGModelObject::StyleDidChange(StyleDifference diff,
 void LayoutSVGModelObject::InsertedIntoTree() {
   NOT_DESTROYED();
   LayoutObject::InsertedIntoTree();
+  SVGResourcesCache::ClientWasAddedToTree(*this);
   if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
       CompositingReason::kNone) {
     SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
@@ -186,6 +187,7 @@ void LayoutSVGModelObject::InsertedIntoTree() {
 
 void LayoutSVGModelObject::WillBeRemovedFromTree() {
   NOT_DESTROYED();
+  SVGResourcesCache::ClientWillBeRemovedFromTree(*this);
   LayoutObject::WillBeRemovedFromTree();
   if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
       CompositingReason::kNone) {

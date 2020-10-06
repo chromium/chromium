@@ -55,6 +55,7 @@ void LayoutSVGBlock::WillBeDestroyed() {
 void LayoutSVGBlock::InsertedIntoTree() {
   NOT_DESTROYED();
   LayoutBlockFlow::InsertedIntoTree();
+  SVGResourcesCache::ClientWasAddedToTree(*this);
   if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
       CompositingReason::kNone) {
     SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
@@ -63,6 +64,7 @@ void LayoutSVGBlock::InsertedIntoTree() {
 
 void LayoutSVGBlock::WillBeRemovedFromTree() {
   NOT_DESTROYED();
+  SVGResourcesCache::ClientWillBeRemovedFromTree(*this);
   LayoutBlockFlow::WillBeRemovedFromTree();
   if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
       CompositingReason::kNone) {

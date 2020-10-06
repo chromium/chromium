@@ -148,14 +148,12 @@ void LayoutSVGInline::AddChild(LayoutObject* child,
                                LayoutObject* before_child) {
   NOT_DESTROYED();
   LayoutInline::AddChild(child, before_child);
-  SVGResourcesCache::ClientWasAddedToTree(*child);
   LayoutSVGText::NotifySubtreeStructureChanged(
       this, layout_invalidation_reason::kChildChanged);
 }
 
 void LayoutSVGInline::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
-  SVGResourcesCache::ClientWillBeRemovedFromTree(*child);
   LayoutSVGText::NotifySubtreeStructureChanged(
       this, layout_invalidation_reason::kChildChanged);
   LayoutInline::RemoveChild(child);
@@ -164,6 +162,7 @@ void LayoutSVGInline::RemoveChild(LayoutObject* child) {
 void LayoutSVGInline::InsertedIntoTree() {
   NOT_DESTROYED();
   LayoutInline::InsertedIntoTree();
+  SVGResourcesCache::ClientWasAddedToTree(*this);
   if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
       CompositingReason::kNone) {
     SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
@@ -172,6 +171,7 @@ void LayoutSVGInline::InsertedIntoTree() {
 
 void LayoutSVGInline::WillBeRemovedFromTree() {
   NOT_DESTROYED();
+  SVGResourcesCache::ClientWillBeRemovedFromTree(*this);
   LayoutInline::WillBeRemovedFromTree();
   if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
       CompositingReason::kNone) {

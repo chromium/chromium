@@ -91,7 +91,6 @@ void LayoutSVGContainer::AddChild(LayoutObject* child,
                                   LayoutObject* before_child) {
   NOT_DESTROYED();
   LayoutSVGModelObject::AddChild(child, before_child);
-  SVGResourcesCache::ClientWasAddedToTree(*child);
 
   bool should_isolate_descendants =
       (child->IsBlendingAllowed() && child->StyleRef().HasBlendMode()) ||
@@ -102,7 +101,6 @@ void LayoutSVGContainer::AddChild(LayoutObject* child,
 
 void LayoutSVGContainer::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
-  SVGResourcesCache::ClientWillBeRemovedFromTree(*child);
   LayoutSVGModelObject::RemoveChild(child);
 
   bool had_non_isolated_descendants =
