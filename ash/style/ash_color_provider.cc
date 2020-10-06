@@ -301,6 +301,9 @@ void AshColorProvider::RemoveObserver(ColorModeObserver* observer) {
 }
 
 bool AshColorProvider::IsDarkModeEnabled() const {
+  if (override_light_mode_as_default_)
+    return false;
+
   if (!active_user_pref_service_)
     return kDefaultDarkModeEnabled;
   return active_user_pref_service_->GetBoolean(prefs::kDarkModeEnabled);
