@@ -1,13 +1,13 @@
 This is a testharness.js-based test.
-FAIL SanitizerAPI creator without config. assert_object_equals: unexpected property "dropAttributes"
-FAIL SanitizerAPI creator with empty config. assert_object_equals: unexpected property "dropAttributes"
-FAIL SanitizerAPI creator with null as config. assert_object_equals: unexpected property "dropAttributes"
-FAIL SanitizerAPI creator with undefined as config. assert_object_equals: unexpected property "dropAttributes"
-FAIL SanitizerAPI creator with config ignore unknown values. assert_object_equals: unexpected property "dropAttributes"
-FAIL SanitizerAPI config is not editable. assert_object_equals: unexpected property "dropAttributes"
+FAIL SanitizerAPI creator without config. assert_object_equals: expected property "dropElements" missing
+FAIL SanitizerAPI creator with empty config. assert_object_equals: expected property "dropElements" missing
+FAIL SanitizerAPI creator with null as config. assert_object_equals: expected property "dropElements" missing
+FAIL SanitizerAPI creator with undefined as config. assert_object_equals: expected property "dropElements" missing
+FAIL SanitizerAPI creator with config ignore unknown values. assert_object_equals: expected property "dropElements" missing
+PASS SanitizerAPI config is not editable.
 PASS SanitizerAPI creator with config {dropElements: []}.
-FAIL SanitizerAPI creator with config {dropElements: null}. assert_object_equals: unexpected property "dropAttributes"
-FAIL SanitizerAPI creator with config {dropElements: undefined}. assert_object_equals: unexpected property "dropAttributes"
+FAIL SanitizerAPI creator with config {dropElements: null}. Failed to construct 'Sanitizer': The provided value cannot be converted to a sequence.
+FAIL SanitizerAPI creator with config {dropElements: undefined}. assert_object_equals: expected property "dropElements" missing
 PASS SanitizerAPI creator with config {dropElements: 123}.
 PASS SanitizerAPI creator with config {dropElements: div}.
 Harness: the test ran to completion.

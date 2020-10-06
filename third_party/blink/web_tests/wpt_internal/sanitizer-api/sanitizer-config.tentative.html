@@ -8,7 +8,7 @@
 
 <body>
 <script>
-    const default_option = {dropElements: null, dropAttributes: null};
+    const default_option = {};
     test(t => {
       let s = new Sanitizer();
       assert_true(s instanceof Sanitizer);
@@ -44,32 +44,32 @@
       let options = {dropElements: ["div"]};
       let s = new Sanitizer(options);
       assert_true(s instanceof Sanitizer);
-      assert_object_equals(s.creationOptions, {dropElements: ["DIV"], dropAttributes: null});
+      assert_object_equals(s.creationOptions, {dropElements: ["DIV"]});
 
       options.dropElements.push("test");
-      assert_object_equals(s.creationOptions, {dropElements: ["DIV"], dropAttributes: null});
+      assert_object_equals(s.creationOptions, {dropElements: ["DIV"]});
 
       s.creationOptions = {dropElements: ["test", "t"]};
-      assert_object_equals(s.creationOptions, {dropElements: ["DIV"], dropAttributes: null});
+      assert_object_equals(s.creationOptions, {dropElements: ["DIV"]});
 
       s.creationOptions['dropElements'] = [1,2,3];
-      assert_object_equals(s.creationOptions, {dropElements: ["DIV"], dropAttributes: null});
+      assert_object_equals(s.creationOptions, {dropElements: ["DIV"]});
     }, "SanitizerAPI config dropElements is not editable.");
 
     test(t => {
       let options = {dropAttributes: ["onclick"]};
       let s = new Sanitizer(options);
       assert_true(s instanceof Sanitizer);
-      assert_object_equals(s.creationOptions, {dropElements: null, dropAttributes: ["onclick"]});
+      assert_object_equals(s.creationOptions, {dropAttributes: ["onclick"]});
 
       options.dropAttributes.push("test");
-      assert_object_equals(s.creationOptions, {dropElements: null, dropAttributes: ["onclick"]});
+      assert_object_equals(s.creationOptions, {dropAttributes: ["onclick"]});
 
       s.creationOptions = {dropAttributes: ["test", "t"]};
-      assert_object_equals(s.creationOptions, {dropElements: null, dropAttributes: ["onclick"]});
+      assert_object_equals(s.creationOptions, {dropAttributes: ["onclick"]});
 
       s.creationOptions['dropAttributes'] = [1,2,3];
-      assert_object_equals(s.creationOptions, {dropElements: null, dropAttributes: ["onclick"]});
+      assert_object_equals(s.creationOptions, {dropAttributes: ["onclick"]});
     }, "SanitizerAPI config dropAttributes is not editable.");
 
     test(t => {
@@ -77,13 +77,6 @@
       assert_true(s instanceof Sanitizer);
       assert_equals(s.sanitizeToString("<div>balabala<i>test</i></div>"), "<div>balabala<i>test</i></div>");
     }, "SanitizerAPI creator with config {dropElements: []}.")
-
-    test(t => {
-      let s = new Sanitizer({dropElements: null});
-      assert_true(s instanceof Sanitizer);
-      assert_true(s.creationOptions instanceof Object);
-      assert_object_equals(s.creationOptions, default_option);
-    }, "SanitizerAPI creator with config {dropElements: null}.")
 
     test(t => {
       let s = new Sanitizer({dropElements: undefined});
@@ -100,19 +93,15 @@
       assert_throws_js(TypeError, _ => {let s = new Sanitizer({dropElements: "div"})});
     }, "SanitizerAPI creator with config {dropElements: div}.");
 
+    test(t => {
+      assert_throws_js(TypeError, _ => {let s = new Sanitizer({dropElements: null})});
+    }, "SanitizerAPI creator with config {dropElements: null}.")
 
     test(t => {
       let s = new Sanitizer({dropAttributes: []});
       assert_true(s instanceof Sanitizer);
       assert_equals(s.sanitizeToString("<div>balabala<i>test</i></div>"), "<div>balabala<i>test</i></div>");
     }, "SanitizerAPI creator with config {dropAttributes: []}.")
-
-    test(t => {
-      let s = new Sanitizer({dropAttributes: null});
-      assert_true(s instanceof Sanitizer);
-      assert_true(s.creationOptions instanceof Object);
-      assert_object_equals(s.creationOptions, default_option);
-    }, "SanitizerAPI creator with config {dropAttributes: null}.")
 
     test(t => {
       let s = new Sanitizer({dropAttributes: undefined});
@@ -128,6 +117,10 @@
     test(t => {
       assert_throws_js(TypeError, _ => {let s = new Sanitizer({dropAttributes: "div"})});
     }, "SanitizerAPI creator with config {dropAttributes: div}.");
+
+    test(t => {
+      assert_throws_js(TypeError, _ => {let s = new Sanitizer({dropAttributes: null})});
+    }, "SanitizerAPI creator with config {dropAttributes: null}.")
 
 </script>
 </body>

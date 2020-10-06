@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/WICG/sanitizer-api
+// https://wicg.github.io/sanitizer-api/#sanitizer-api
 
 dictionary SanitizerConfig {
-  sequence<DOMString>? dropElements;
-  sequence<DOMString>? dropAttributes;
+  sequence<DOMString> dropElements;
+  sequence<DOMString> dropAttributes;
 };
