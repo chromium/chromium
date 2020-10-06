@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if !defined(OS_CHROMEOS)
-
 #include "services/device/time_zone_monitor/time_zone_monitor.h"
 
 #include <stddef.h>
@@ -203,5 +201,3 @@ std::unique_ptr<TimeZoneMonitor> TimeZoneMonitor::Create(
 }
 
 }  // namespace device
-
-#endif  // !OS_CHROMEOS

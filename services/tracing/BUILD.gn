@@ -9,13 +9,6 @@
 import("//build/config/compiler/compiler.gni")
 import("//services/tracing/public/cpp/stack_sampling/loader_lock_sampling.gni")
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
@@ -91,21 +84,26 @@ source_set("tests") {
   sources = [
     "perfetto/consumer_host_unittest.cc",
     "perfetto/perfetto_integration_unittest.cc",
-    "public/cpp/perfetto/java_heap_profiler/hprof_buffer_android_unittest.cc",
-    "public/cpp/perfetto/java_heap_profiler/hprof_parser_android_unittest.cc",
     "public/cpp/perfetto/producer_test_utils.cc",
     "public/cpp/perfetto/producer_test_utils.h",
     "public/cpp/perfetto/task_runner_unittest.cc",
     "public/cpp/perfetto/trace_event_data_source_unittest.cc",
     "public/cpp/perfetto/trace_packet_tokenizer_unittest.cc",
     "public/cpp/perfetto/traced_value_proto_writer_unittest.cc",
-    "public/cpp/stack_sampling/reached_code_data_source_android_unittest.cc",
     "public/cpp/stack_sampling/tracing_sampler_profiler_unittest.cc",
   ]
 
-  if (is_android && current_cpu == "arm64") {
-    sources +=
-        [ "public/cpp/stack_sampling/stack_unwinder_arm64_android_unittest.cc" ]
+  if (is_android) {
+    sources += [
+      "public/cpp/perfetto/java_heap_profiler/hprof_buffer_android_unittest.cc",
+      "public/cpp/perfetto/java_heap_profiler/hprof_parser_android_unittest.cc",
+      "public/cpp/stack_sampling/reached_code_data_source_android_unittest.cc",
+    ]
+    if (current_cpu == "arm64") {
+      sources += [
+        "public/cpp/stack_sampling/stack_unwinder_arm64_android_unittest.cc",
+      ]
+    }
   }
 
   if (!is_android) {
@@ -135,8 +133,10 @@ source_set("tests") {
     sources += [ "perfetto/system_perfetto_unittest.cc" ]
 
     if (can_unwind_with_cfi_table && is_official_build) {
-      sources +=
-          [ "public/cpp/stack_sampling/stack_unwinder_android_unittest.cc" ]
+      if (is_android) {
+        sources +=
+            [ "public/cpp/stack_sampling/stack_unwinder_android_unittest.cc" ]
+      }
       deps += [
         ":jni_headers",
         ":tracing_test_helper_java",
@@ -145,8 +145,10 @@ source_set("tests") {
   }
 
   if (enable_loader_lock_sampling) {
-    sources +=
-        [ "public/cpp/stack_sampling/loader_lock_sampler_win_unittest.cc" ]
+    if (is_win) {
+      sources +=
+          [ "public/cpp/stack_sampling/loader_lock_sampler_win_unittest.cc" ]
+    }
 
     deps += [ ":loader_lock_sampler_test_strings" ]
     data_deps = [ ":loader_lock_sampler_test_dll" ]

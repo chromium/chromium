@@ -2,13 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 component("memory_instrumentation") {
   sources = [
     "client_process_impl.cc",
@@ -19,9 +12,6 @@ component("memory_instrumentation") {
     "memory_instrumentation.h",
     "os_metrics.cc",
     "os_metrics.h",
-    "os_metrics_linux.cc",
-    "os_metrics_mac.cc",
-    "os_metrics_win.cc",
     "tracing_observer.cc",
     "tracing_observer.h",
     "tracing_observer_proto.cc",
@@ -30,11 +20,16 @@ component("memory_instrumentation") {
     "tracing_observer_traced_value.h",
   ]
 
-  if (is_android) {
-    # Disable the rule that excludes _linux.cc files from Android builds.
-    set_sources_assignment_filter([])
+  if (is_mac) {
+    sources += [ "os_metrics_mac.cc" ]
+  }
+
+  if (is_win) {
+    sources += [ "os_metrics_win.cc" ]
+  }
+
+  if (is_android || is_linux || is_chromeos) {
     sources += [ "os_metrics_linux.cc" ]
-    set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
   }
 
   if (is_fuchsia) {

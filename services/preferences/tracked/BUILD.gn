@@ -2,19 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 source_set("tracked") {
   sources = [
     "device_id.h",
-    "device_id_mac.cc",
-    "device_id_stub.cc",
-    "device_id_win.cc",
     "dictionary_hash_store_contents.cc",
     "dictionary_hash_store_contents.h",
     "hash_store_contents.h",
@@ -28,8 +18,6 @@ source_set("tracked") {
     "pref_hash_store_impl.cc",
     "pref_hash_store_impl.h",
     "pref_hash_store_transaction.h",
-    "registry_hash_store_contents_win.cc",
-    "registry_hash_store_contents_win.h",
     "segregated_pref_store.cc",
     "segregated_pref_store.h",
     "temp_scoped_dir_cleaner.h",
@@ -46,8 +34,16 @@ source_set("tracked") {
     "tracked_split_preference.h",
   ]
 
-  if (is_win || is_mac) {
-    sources -= [ "device_id_stub.cc" ]
+  if (is_win) {
+    sources += [
+      "device_id_win.cc",
+      "registry_hash_store_contents_win.cc",
+      "registry_hash_store_contents_win.h",
+    ]
+  } else if (is_mac) {
+    sources += [ "device_id_mac.cc" ]
+  } else {
+    sources += [ "device_id_stub.cc" ]
   }
 
   # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
@@ -78,10 +74,13 @@ source_set("unit_tests") {
     "pref_hash_calculator_unittest.cc",
     "pref_hash_filter_unittest.cc",
     "pref_hash_store_impl_unittest.cc",
-    "registry_hash_store_contents_win_unittest.cc",
     "segregated_pref_store_unittest.cc",
     "tracked_preferences_migration_unittest.cc",
   ]
+
+  if (is_win) {
+    sources += [ "registry_hash_store_contents_win_unittest.cc" ]
+  }
 
   deps = [
     ":tracked",

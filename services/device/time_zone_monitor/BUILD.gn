@@ -8,25 +8,12 @@ if (is_android) {
   import("//build/config/android/rules.gni")  # For generate_jni().
 }
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 source_set("time_zone_monitor") {
   visibility = [ "//services/device:lib" ]
 
   sources = [
     "time_zone_monitor.cc",
     "time_zone_monitor.h",
-    "time_zone_monitor_android.cc",
-    "time_zone_monitor_android.h",
-    "time_zone_monitor_chromeos.cc",
-    "time_zone_monitor_linux.cc",
-    "time_zone_monitor_mac.mm",
-    "time_zone_monitor_win.cc",
   ]
 
   deps = [
@@ -39,18 +26,29 @@ source_set("time_zone_monitor") {
   public_deps = [ "//services/device/public/mojom" ]
 
   if (is_android) {
+    sources += [
+      "time_zone_monitor_android.cc",
+      "time_zone_monitor_android.h",
+    ]
     deps += [ ":time_zone_monitor_jni_headers" ]
   }
 
   if (is_win) {
+    sources += [ "time_zone_monitor_win.cc" ]
     deps += [ "//ui/gfx" ]
   }
 
+  if (is_linux) {
+    sources += [ "time_zone_monitor_linux.cc" ]
+  }
+
   if (is_chromeos) {
+    sources += [ "time_zone_monitor_chromeos.cc" ]
     deps += [ "//chromeos/settings" ]
   }
 
   if (is_mac) {
+    sources += [ "time_zone_monitor_mac.mm" ]
     frameworks = [ "Foundation.framework" ]
   }
 
