@@ -1703,12 +1703,6 @@ crbug.com/991413 external/wpt/css/css-text/white-space/trailing-other-space-sepa
 crbug.com/991413 external/wpt/css/css-text/white-space/trailing-other-space-separators-break-spaces-014.html [ Skip ]
 crbug.com/991413 external/wpt/css/css-text/white-space/trailing-other-space-separators-break-spaces-015.html [ Skip ]
 
-# Follow up the spec change for out-of-flow
-crbug.com/1024331 external/wpt/css/css-text/line-breaking/line-breaking-016.html [ Failure ]
-crbug.com/1024331 external/wpt/css/css-text/line-breaking/line-breaking-017.html [ Failure ]
-crbug.com/1024331 external/wpt/css/css-text/line-breaking/line-breaking-018.html [ Failure ]
-crbug.com/1024331 external/wpt/css/css-text/line-breaking/line-breaking-019.html [ Failure ]
-
 # Follow up the spec change for U+2010, U+2013
 crbug.com/1052717 external/wpt/css/css-text/line-break/line-break-loose-hyphens-001.html [ Failure ]
 crbug.com/1052717 external/wpt/css/css-text/line-break/line-break-normal-hyphens-002.html [ Failure ]
@@ -2629,8 +2623,6 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 external/wpt/css/CSS2/text/white-space-processing-049.xht [ Failure ]
-crbug.com/626703 external/wpt/css/CSS2/text/white-space-processing-048.xht [ Failure ]
 crbug.com/626703 external/wpt/css/css-backgrounds/border-image-slice-007.htm [ Failure ]
 crbug.com/626703 external/wpt/css/css-backgrounds/border-image-slice-005.htm [ Failure ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/scroll-to-text-fragment/redirects.html [ Timeout ]

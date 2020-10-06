@@ -433,6 +433,14 @@ external/wpt/css/css-text/letter-spacing/letter-spacing-bidi-004.xht [ Skip ]
 external/wpt/css/css-text/letter-spacing/letter-spacing-bidi-005.xht [ Skip ]
 external/wpt/css/css-text/letter-spacing/letter-spacing-nesting-003.xht [ Skip ]
 
+# No active plans to implement the line breaker spec change for out-of-flow objects.
+crbug.com/1024331 external/wpt/css/CSS2/text/white-space-processing-049.xht [ Skip ]
+crbug.com/1024331 external/wpt/css/CSS2/text/white-space-processing-048.xht [ Skip ]
+crbug.com/1024331 external/wpt/css/css-text/line-breaking/line-breaking-016.html [ Skip ]
+crbug.com/1024331 external/wpt/css/css-text/line-breaking/line-breaking-017.html [ Skip ]
+crbug.com/1024331 external/wpt/css/css-text/line-breaking/line-breaking-018.html [ Skip ]
+crbug.com/1024331 external/wpt/css/css-text/line-breaking/line-breaking-019.html [ Skip ]
+
 # CSS Text features that are not planned to implement.
 external/wpt/css/css-text/parsing/word-boundary-detection-computed.html [ Skip ]
 external/wpt/css/css-text/parsing/word-boundary-detection-invalid.html [ Skip ]
