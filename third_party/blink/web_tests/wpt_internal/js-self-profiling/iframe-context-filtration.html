@@ -39,9 +39,9 @@
       assert_true(ProfileUtils.containsFrame(trace, { name: 'parentCollectSample' }),
                   'sampling wrapper function from own (parent) context included in trace');
 
-      assert_true(ProfileUtils.containsResource(trace,
-        'http://127.0.0.1:8000/js-self-profiling/resources/child-frame.html',
-      ), 'child resources are included');
+      const childUrl = iframe.location.href;
+      assert_true(ProfileUtils.containsResource(trace, childUrl),
+                  'child resources are included');
     }, 'functions from child frame are included in profile created by parent frame');
 
     promise_test(async t => {

@@ -20,7 +20,7 @@ crbug.com/933880 http/tests/misc/redirect-to-about-blank.html [ Timeout ]
 http/tests/inspector-protocol/fetch/fetch-oopif.js [ Skip ]
 
 # JS Self-Profiling currently requires site isolation.
-crbug.com/956688 http/tests/js-self-profiling/* [ Skip ]
+crbug.com/956688 wpt_internal/js-self-profiling/* [ Skip ]
 
 crbug.com/1106413 external/wpt/webmessaging/multi-globals/broadcastchannel-current.sub.html [ Failure ]
 crbug.com/1106413 external/wpt/webmessaging/multi-globals/broadcastchannel-incumbent.sub.html [ Failure ]

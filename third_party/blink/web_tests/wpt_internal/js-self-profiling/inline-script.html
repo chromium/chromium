@@ -23,20 +23,19 @@
     promise_test(async t => {
       const trace = await ProfileUtils.profileFunction(inlineScriptFunction);
 
-      assert_true(ProfileUtils.containsResource(trace,
-        'http://127.0.0.1:8000/js-self-profiling/inline-script.html',
-      ), 'inline script resource is included');
+      assert_true(ProfileUtils.containsResource(trace, location.href),
+                  'inline script resource is included');
 
       assert_true(ProfileUtils.containsSubstack(trace, [
         {
           name: 'nestedInlineScriptFunction',
-          resourceId: trace.resources.indexOf('http://127.0.0.1:8000/js-self-profiling/inline-script.html'),
+          resourceId: trace.resources.indexOf(location.href),
           line: 13,
           column: 40,
         },
         {
           name: 'inlineScriptFunction',
-          resourceId: trace.resources.indexOf('http://127.0.0.1:8000/js-self-profiling/inline-script.html'),
+          resourceId: trace.resources.indexOf(location.href),
           line: 17,
           column: 34,
         },

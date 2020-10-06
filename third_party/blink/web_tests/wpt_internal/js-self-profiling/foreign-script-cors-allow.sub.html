@@ -6,7 +6,7 @@
 
   <script src="resources/profile-utils.js"></script>
 
-  <script crossorigin src="http://127.0.0.1:8080/js-self-profiling/resources/external-script.js"></script>
+  <script id="foreign-script" crossorigin src="http://{{hosts[][www1]}}:{{ports[http][0]}}/wpt_internal/js-self-profiling/resources/external-script.js"></script>
 </head>
 <body>
   <script>
@@ -14,9 +14,10 @@
       assert_not_equals(window.externalScriptFunction, undefined);
       const trace = await ProfileUtils.profileFunction(externalScriptFunction);
 
+      const foreignScriptUrl = document.querySelector('#foreign-script').src;
       assert_true(ProfileUtils.containsFrame(trace, {
         name: 'externalScriptFunction',
-        resourceId: trace.resources.indexOf('http://127.0.0.1:8080/js-self-profiling/resources/external-script.js'),
+        resourceId: trace.resources.indexOf(foreignScriptUrl),
       }), 'foreign frame is present');
 
     }, 'function from foreign-origin script with CORS is included in trace');

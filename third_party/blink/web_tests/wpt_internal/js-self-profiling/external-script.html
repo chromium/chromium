@@ -6,32 +6,28 @@
 
   <script src="resources/profile-utils.js"></script>
 
-  <script src="resources/external-script.js"></script>
+  <script id="external-script" src="resources/external-script.js"></script>
 </head>
 <body>
   <script>
-    const BASE_URL = `${window.location.origin}/js-self-profiling`;
-
     promise_test(async t => {
       const trace = await ProfileUtils.profileFunction(function trampoline(sample) {
         externalScriptFunction(sample);
       });
 
-      assert_true(ProfileUtils.containsResource(trace,
-        `${BASE_URL}/resources/external-script.js`,
-      ), 'external resource is included');
+      const scriptUrl = document.querySelector('#external-script').src;
+      assert_true(ProfileUtils.containsResource(trace, scriptUrl),
+                  'external resource is included');
 
       const expectedTrampolineFrame = {
         name: 'trampoline',
         resourceId: trace.resources.indexOf(
-          `${BASE_URL}/external-script.html`
+          location.href,
         ),
       };
       const expectedExternalFrame = {
         name: 'externalScriptFunction',
-        resourceId: trace.resources.indexOf(
-          `${BASE_URL}/resources/external-script.js`,
-        ),
+        resourceId: trace.resources.indexOf(scriptUrl),
         line: EXTERNAL_SCRIPT_FUNCTION_LINE,
         column: EXTERNAL_SCRIPT_FUNCTION_COLUMN,
       };

@@ -6,7 +6,7 @@
 
   <script src="resources/profile-utils.js"></script>
 
-  <script src="http://127.0.0.1:8080/js-self-profiling/resources/external-script.js"></script>
+  <script id="foreign-script" src="http://{{hosts[][www1]}}:{{ports[http][0]}}/wpt_internal/js-self-profiling/resources/external-script.js"></script>
 </head>
 <body>
   <script>
@@ -18,13 +18,13 @@
         name: 'externalScriptFunction',
       }), 'foreign function without CORS is omitted');
 
+      const foreignScriptUrl = document.querySelector('#foreign-script').src;
       assert_false(ProfileUtils.containsFrame(trace, {
-        resourceId: trace.resources.indexOf('http://127.0.0.1:8080/js-self-profiling/resources/external-script.js'),
+        resourceId: trace.resources.indexOf(foreignScriptUrl),
       }), 'no frame exists with non-CORS resource');
 
-      assert_false(ProfileUtils.containsResource(trace,
-        'http://127.0.0.1:8000/js-self-profiling/resources/external-script.js',
-      ), 'foreign resource is omitted');
+      assert_false(ProfileUtils.containsResource(trace, foreignScriptUrl),
+                   'foreign resource is omitted');
 
     }, 'function from foreign-origin script without CORS is not included in trace');
   </script>
