@@ -6234,6 +6234,33 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWithInsecureFormsWarningEnabled,
             security_interstitials::InsecureFormBlockingPage::kTypeForTesting);
 }
 
+// Checks insecure form warning works for forms that submit on a new tab.
+IN_PROC_BROWSER_TEST_F(SSLUITestWithInsecureFormsWarningEnabled,
+                       TestDisplaysInsecureFormSubmissionWarningTargetBlank) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(https_server_.Start());
+
+  std::string replacement_path = GetFilePathWithHostAndPortReplacement(
+      "/ssl/page_displays_insecure_form_target_blank.html",
+      embedded_test_server()->host_port_pair());
+
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server_.GetURL(replacement_path));
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver nav_observer(tab, 1);
+  nav_observer.StartWatchingNewWebContents();
+  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  nav_observer.Wait();
+  tab = browser()->tab_strip_model()->GetActiveWebContents();
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          tab);
+  EXPECT_TRUE(helper->IsDisplayingInterstitial());
+  EXPECT_EQ(helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting()
+                ->GetTypeForTesting(),
+            security_interstitials::InsecureFormBlockingPage::kTypeForTesting);
+}
+
 // Check proceed works correctly on insecure form warning.
 IN_PROC_BROWSER_TEST_F(SSLUITestWithInsecureFormsWarningEnabled,
                        ProceedThroughInsecureFormWarning) {
