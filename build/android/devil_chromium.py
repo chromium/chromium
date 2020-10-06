@@ -11,8 +11,6 @@ from pylib.constants import host_paths
 
 if host_paths.DEVIL_PATH not in sys.path:
   sys.path.append(host_paths.DEVIL_PATH)
-if host_paths.SIX_PATH not in sys.path:
-  sys.path.append(host_paths.SIX_PATH)
 
 from devil import devil_env
 from devil.android.ndk import abis
