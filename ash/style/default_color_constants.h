@@ -19,5 +19,7 @@ constexpr SkColor kPowerButtonMenuFullscreenShieldColor = SK_ColorBLACK;
 constexpr SkColor kLoginShelfButtonLabelColor = gfx::kGoogleGrey100;
 constexpr SkColor kLoginShelfButtonIconColor = SkColorSetRGB(0xEB, 0xEA, 0xED);
 constexpr SkColor kLoginBackgroundBaseColor = SK_ColorBLACK;
+constexpr SkColor kDefaultShelfInkDropColor = SK_ColorBLACK;
+constexpr float kDefaultShelfInkDropOpacity = 0.2f;
 
 #endif  // ASH_STYLE_DEFAULT_COLOR_CONSTANTS_H_
