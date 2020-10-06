@@ -988,7 +988,6 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
 
        Nếu bạn không đặt chính sách này, báo cáo số liệu sử dụng và dữ liệu chẩn đoán sẽ tắt trên các thiết bị không được quản lý và sẽ bật trên các thiết bị được quản lý.</translation>
 <translation id="2454228136871844693">Tối ưu hóa cho độ ổn định.</translation>
-<translation id="2456629156652006573">Riêng tư</translation>
 <translation id="2463034609187171371">Bật bộ thuật toán mật mã DHE trong TLS</translation>
 <translation id="2463365186486772703">Ngôn ngữ của ứng dụng</translation>
 <translation id="2463832514638083341">Chính sách này kiểm soát khoảng thời gian lưu trữ siêu dữ liệu về lệnh in trên thiết bị, tính bằng ngày.
@@ -3514,7 +3513,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 
       Mẫu URL tuân theo định dạng này (https://www.chromium.org/administrators/url-blacklist-filter-format). Tuy nhiên, vì tính hợp lệ của các chứng chỉ của một tên máy chủ cụ thể không phụ thuộc vào tên giao thức, cổng hoặc đường dẫn, nên <ph name="PRODUCT_NAME" /> chỉ xem xét phần tên máy chủ của URL. Không hỗ trợ máy chủ có ký tự đại diện.</translation>
 <translation id="6111936128861357925">Cho phép trò chơi trứng khủng long Phục sinh</translation>
-<translation id="6114416803310251055">không được chấp thuận</translation>
 <translation id="6133088669883929098">Cho phép tất cả các trang web sử dụng tạo khóa</translation>
 <translation id="6135398260575578389">Tính năng Duyệt web an toàn đang hoạt động ở chế độ nâng cao. Chế độ này bảo mật tốt hơn nhưng người dùng sẽ phải chia sẻ thêm thông tin duyệt web với Google.</translation>
 <translation id="6138636318340561140">Kiểm tra trạng thái Duyệt web an toàn của các URL trong thời gian thực</translation>

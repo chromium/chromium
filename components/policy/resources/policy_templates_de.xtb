@@ -964,7 +964,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
        Ist sie nicht konfiguriert, werden Nutzungsdaten und Fehlerberichte nur für verwaltete Geräte gemeldet.</translation>
 <translation id="2454228136871844693">Für eine optimale Stabilität.</translation>
-<translation id="2456629156652006573">Nur privat</translation>
 <translation id="2463034609187171371">DHE-Verschlüsselungssammlungen in TLS aktivieren</translation>
 <translation id="2463365186486772703">Gebietsschema der App</translation>
 <translation id="2463832514638083341">Mit dieser Richtlinie wird festgelegt, wie lange (in Tagen) Metadaten von Druckaufträgen auf einem Gerät gespeichert werden.
@@ -3480,7 +3479,6 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
 
       Ein URL-Muster folgt diesem Format (https://www.chromium.org/administrators/url-blacklist-filter-format). Weil die Gültigkeit von Zertifikaten für einen bestimmten Hostnamen aber nicht vom Schema, Port oder Pfad abhängig ist, wird von <ph name="PRODUCT_NAME" /> nur der Hostname der URL berücksichtigt. Platzhalter-Hosts werden nicht unterstützt.</translation>
 <translation id="6111936128861357925">Easter Egg-Dinosaurierspiel zulassen</translation>
-<translation id="6114416803310251055">Veraltet</translation>
 <translation id="6133088669883929098">Schlüsselgenerierung für alle Websites zulassen</translation>
 <translation id="6135398260575578389">Safe Browsing ist im erweiterten Modus aktiv. Dieser bietet einen besseren Schutz. Es müssen jedoch mehr Browserdaten mit Google geteilt werden.</translation>
 <translation id="6138636318340561140">Safe Browsing-Status von URLs in Echtzeit prüfen</translation>

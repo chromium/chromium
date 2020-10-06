@@ -988,7 +988,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
        Jika kebijakan tidak disetel, pelaporan metrik dan data diagnostik akan dinonaktifkan di perangkat yang tidak terkelola dan akan diaktifkan di perangkat terkelola.</translation>
 <translation id="2454228136871844693">Mengoptimalkan untuk stabilitas.</translation>
-<translation id="2456629156652006573">Hanya Pribadi</translation>
 <translation id="2463034609187171371">Mengaktifkan paket penyandian DHE di TLS</translation>
 <translation id="2463365186486772703">Lokal aplikasi</translation>
 <translation id="2463832514638083341">Kebijakan ini mengontrol jangka waktu penyimpanan metadata pekerjaan cetak di perangkat, dalam hari.
@@ -3508,7 +3507,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Pola URL akan mengikuti format ini ( https://www.chromium.org/administrators/url-blacklist-filter-format ). Namun, karena validitas sertifikat untuk hostname tertentu bukan bagian dari skema, port, atau jalur, <ph name="PRODUCT_NAME" /> hanya akan mempertimbangkan porsi hostname URL. Host karakter pengganti tidak didukung.</translation>
 <translation id="6111936128861357925">Izinkan Game Dinosaur Easter Egg</translation>
-<translation id="6114416803310251055">tak lagi digunakan</translation>
 <translation id="6133088669883929098">Izinkan semua situs menggunakan pembuatan kunci</translation>
 <translation id="6135398260575578389">Safe Browsing aktif dalam mode yang disempurnakan. Mode ini memberikan keamanan yang lebih baik, tetapi perlu membagikan lebih banyak informasi penjelajahan kepada Google.</translation>
 <translation id="6138636318340561140">Memeriksa status Safe Browsing pada URL secara real-time</translation>

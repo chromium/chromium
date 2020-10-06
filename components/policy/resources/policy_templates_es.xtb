@@ -991,7 +991,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
        Si no se establece la política, se desactivarán las métricas y los datos de diagnóstico en los dispositivos no administrados, y se activarán en los dispositivos administrados.</translation>
 <translation id="2454228136871844693">Optimizar para una mejor estabilidad.</translation>
-<translation id="2456629156652006573">Solo para uso privado</translation>
 <translation id="2463034609187171371">Habilita los conjuntos de cifrado DHE en TLS</translation>
 <translation id="2463365186486772703">Configuración regional de la aplicación</translation>
 <translation id="2463832514638083341">Esta política determina el tiempo, en número de días, durante el que se almacenarán en el dispositivo los metadatos de los trabajos de impresión.
@@ -3526,7 +3525,6 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 
       Los patrones de URL tienen este formato: https://www.chromium.org/administrators/url-blacklist-filter-format. Sin embargo, como la validez de los certificados de un determinado nombre de host es independiente del esquema, puerto o ruta, <ph name="PRODUCT_NAME" /> solo tiene en cuenta la parte del nombre del host de la URL. No se admiten hosts comodín.</translation>
 <translation id="6111936128861357925">Permitir el juego del huevo de pascua de dinosaurio</translation>
-<translation id="6114416803310251055">obsoleto</translation>
 <translation id="6133088669883929098">Permitir que todos los sitios web utilicen la generación de claves</translation>
 <translation id="6135398260575578389">Navegación segura está activa en modo mejorado. Este modo proporciona mayor seguridad, pero requiere compartir más información de navegación con Google.</translation>
 <translation id="6138636318340561140">Comprueba en tiempo real el estado de Navegación segura de las URL</translation>

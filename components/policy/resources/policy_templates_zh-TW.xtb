@@ -957,7 +957,6 @@
 
        如果未設定這項政策，系統會在未受管理的裝置上，將指標和診斷資料的報告功能保持停用，並且在受管理的裝置上保持啟用。</translation>
 <translation id="2454228136871844693">穩定性最佳化。</translation>
-<translation id="2456629156652006573">不公開</translation>
 <translation id="2463034609187171371">在傳輸層安全標準 (TLS) 中啟用 DHE 加密套件</translation>
 <translation id="2463365186486772703">應用程式語言代碼</translation>
 <translation id="2463832514638083341">這項政策可控管將列印工作中繼資料儲存在裝置上的時間範圍 (以天為單位)。
@@ -3456,7 +3455,6 @@
 
       網址格式必須符合 https://www.chromium.org/administrators/url-blacklist-filter-format 的規定。不過，判定憑證是否有效與網址配置、通訊埠或路徑皆無關，因此 <ph name="PRODUCT_NAME" /> 只會檢視網址的主機名稱部分 (不支援含萬用字元的主機名稱)。</translation>
 <translation id="6111936128861357925">允許 Dinosaur Easter Egg Game (恐龍復活節彩蛋遊戲)</translation>
-<translation id="6114416803310251055">淘汰的</translation>
 <translation id="6133088669883929098">允許所有網站使用金鑰產生功能</translation>
 <translation id="6135398260575578389">已啟用強化模式中的安全瀏覽功能。這個模式可提供更完善的安全防護機制，但使用者必須提供更多瀏覽資訊給 Google。</translation>
 <translation id="6138636318340561140">即時檢查網址的安全瀏覽狀態</translation>

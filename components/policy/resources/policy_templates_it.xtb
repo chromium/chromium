@@ -973,7 +973,6 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 
        Se il criterio non viene configurato, la segnalazione di metriche e dati diagnostici rimane disattivata sui dispositivi non gestiti e attiva sui dispositivi gestiti.</translation>
 <translation id="2454228136871844693">Ottimizza per aumentare la stabilità.</translation>
-<translation id="2456629156652006573">Solo privato</translation>
 <translation id="2463034609187171371">Attiva i pacchetti di crittografia DHE in TLS</translation>
 <translation id="2463365186486772703">Lingua dell'applicazione</translation>
 <translation id="2463832514638083341">Questo criterio controlla per quanto tempo i metadati dei processi di stampa vengono memorizzati sul dispositivo, con valore espresso in giorni.
@@ -3503,7 +3502,6 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 
       Un pattern URL segue questo formato: https://www.chromium.org/administrators/url-blacklist-filter-format. Tuttavia, poiché la validità dei certificati per un dato nome host è indipendente da schemi, porte o percorsi, <ph name="PRODUCT_NAME" /> considera il nome host solo una parte dell'URL. Gli host con caratteri jolly non sono supportati.</translation>
 <translation id="6111936128861357925">Attiva il gioco del dinosauro</translation>
-<translation id="6114416803310251055">obsoleto</translation>
 <translation id="6133088669883929098">Consenti a tutti i siti di utilizzare la generazione di chiavi</translation>
 <translation id="6135398260575578389">Navigazione sicura è attiva in modalità potenziata. Questa modalità fornisce maggior sicurezza, ma non richiede la condivisione di ulteriori dati di navigazione con Google.</translation>
 <translation id="6138636318340561140">Controlla lo stato degli URL in tempo reale con Navigazione sicura</translation>

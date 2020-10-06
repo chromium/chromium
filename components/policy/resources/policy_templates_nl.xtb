@@ -968,7 +968,6 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
 
        Als je het beleid niet instelt, worden er geen statistieken en diagnostische gegevens gerapporteerd voor onbeheerde apparaten, maar wel voor beheerde apparaten.</translation>
 <translation id="2454228136871844693">Optimaliseren voor stabiliteit.</translation>
-<translation id="2456629156652006573">Alleen privé</translation>
 <translation id="2463034609187171371">DHE-coderingssuites inschakelen in TLS</translation>
 <translation id="2463365186486772703">Landinstelling voor applicatie</translation>
 <translation id="2463832514638083341">Met dit beleid wordt bepaald hoelang (in dagen) de metadata van afdruktaken worden opgeslagen op het apparaat.
@@ -3489,7 +3488,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 
       Voor een URL-patroon wordt deze indeling gehanteerd (https://www.chromium.org/administrators/url-blacklist-filter-format). Aangezien de certificaten geldig zijn voor een bepaalde hostnaam (los van het schema, de poort of het pad), houdt <ph name="PRODUCT_NAME" /> alleen rekening met het hostnaamgedeelte van de URL. Hosts met jokertekens worden niet ondersteund.</translation>
 <translation id="6111936128861357925">Easter egg-dinosaurusgame toestaan</translation>
-<translation id="6114416803310251055">verouderd</translation>
 <translation id="6133088669883929098">Alle sites toestaan sleutels te genereren</translation>
 <translation id="6135398260575578389">Safe Browsing is actief in de uitgebreide modus. Deze modus biedt betere beveiliging, maar vereist dat er meer browsegegevens worden gedeeld met Google.</translation>
 <translation id="6138636318340561140">Safe Browsing-status van URL's in realtime checken</translation>

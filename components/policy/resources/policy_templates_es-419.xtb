@@ -987,7 +987,6 @@ Si habilitas la política, Limpiar Chrome podrá enviar los metadatos de anális
 
        Si no la estableces, se desactivarán los informes sobre datos de diagnóstico y métricas en dispositivos no administrados y se activarán en dispositivos administrados.</translation>
 <translation id="2454228136871844693">Optimiza la estabilidad.</translation>
-<translation id="2456629156652006573">Solo privado</translation>
 <translation id="2463034609187171371">Permitir los paquetes de encriptación DHE en TLS</translation>
 <translation id="2463365186486772703">Configuración regional de la aplicación</translation>
 <translation id="2463832514638083341">Esta política controla la cantidad de días que se almacenan los metadatos de los trabajos de impresión en el dispositivo.
@@ -3506,7 +3505,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       El patrón de una URL tiene el siguiente formato (https://www.chromium.org/administrators/url-blacklist-filter-format). Sin embargo, dado que la validez de los certificados para un nombre de host específico no depende del esquema, el puerto ni la ruta, <ph name="PRODUCT_NAME" /> solo considerará la porción de la URL con el nombre de host. Los hosts con comodines no son compatibles.</translation>
 <translation id="6111936128861357925">Permitir juego del huevo de pascua del dinosaurio</translation>
-<translation id="6114416803310251055">en desuso</translation>
 <translation id="6133088669883929098">Permitir que todos los sitios utilicen la generación de claves</translation>
 <translation id="6135398260575578389">Se activó la Navegación segura en el modo mejorado. Este modo es más seguro, pero requiere que compartas con Google más datos sobre la navegación.</translation>
 <translation id="6138636318340561140">Verifica en tiempo real el estado de la Navegación segura de las URL</translation>
