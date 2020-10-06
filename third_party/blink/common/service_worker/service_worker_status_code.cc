@@ -51,6 +51,8 @@ const char* ServiceWorkerStatusToString(ServiceWorkerStatusCode status) {
       return "Worker disallowed";
     case ServiceWorkerStatusCode::kErrorInvalidArguments:
       return "Invalid arguments";
+    case ServiceWorkerStatusCode::kErrorStorageDisconnected:
+      return "Storage operation error";
   }
   NOTREACHED();
   return "";

@@ -21,6 +21,8 @@
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -39,6 +41,8 @@ blink::ServiceWorkerStatusCode DatabaseStatusToStatusCode(
     case storage::mojom::ServiceWorkerDatabaseStatus::kErrorDisabled:
       return blink::ServiceWorkerStatusCode::kErrorAbort;
       NOTREACHED();
+    case storage::mojom::ServiceWorkerDatabaseStatus::kErrorStorageDisconnected:
+      return blink::ServiceWorkerStatusCode::kErrorStorageDisconnected;
     default:
       return blink::ServiceWorkerStatusCode::kErrorFailed;
   }
@@ -125,8 +129,11 @@ ServiceWorkerRegistry::ServiceWorkerRegistry(
     : context_(context),
       storage_control_(std::make_unique<ServiceWorkerStorageControlImpl>(
           ServiceWorkerStorage::Create(user_data_directory,
-                                       std::move(database_task_runner),
+                                       database_task_runner,
                                        quota_manager_proxy))),
+      user_data_directory_(user_data_directory),
+      database_task_runner_(database_task_runner),
+      quota_manager_proxy_(quota_manager_proxy),
       special_storage_policy_(special_storage_policy) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   DCHECK(context_);
@@ -291,17 +298,17 @@ void ServiceWorkerRegistry::GetStorageUsageForOrigin(
     const url::Origin& origin,
     GetStorageUsageForOriginCallback callback) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  // TODO(crbug.com/1133143): Consider handling disconnection error without
+  // using WrapCallbackWithDefaultInvokeIfNotRun() as it can easily lead to
+  // surprising behavior in the destructor.
   GetRemoteStorageControl()->GetUsageForOrigin(
       origin,
-      base::BindOnce(
-          [](GetStorageUsageForOriginCallback callback,
-             storage::mojom::ServiceWorkerDatabaseStatus database_status,
-             int64_t usage) {
-            blink::ServiceWorkerStatusCode status =
-                DatabaseStatusToStatusCode(database_status);
-            std::move(callback).Run(status, usage);
-          },
-          std::move(callback)));
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&ServiceWorkerRegistry::DidGetStorageUsageForOrigin,
+                         weak_factory_.GetWeakPtr(), std::move(callback)),
+          storage::mojom::ServiceWorkerDatabaseStatus::
+              kErrorStorageDisconnected,
+          /*usage=*/0));
 }
 
 void ServiceWorkerRegistry::GetAllRegistrationsInfos(
@@ -750,6 +757,12 @@ void ServiceWorkerRegistry::DisableDeleteAndStartOverForTesting() {
   is_storage_disabled_ = true;
 }
 
+void ServiceWorkerRegistry::SimulateStorageRestartForTesting() {
+  storage_control_ = std::make_unique<ServiceWorkerStorageControlImpl>(
+      ServiceWorkerStorage::Create(user_data_directory_, database_task_runner_,
+                                   quota_manager_proxy_.get()));
+}
+
 void ServiceWorkerRegistry::Start() {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   if (special_storage_policy_) {
@@ -1147,6 +1160,15 @@ void ServiceWorkerRegistry::DidGetAllRegistrations(
   std::move(callback).Run(blink::ServiceWorkerStatusCode::kOk, infos);
 }
 
+void ServiceWorkerRegistry::DidGetStorageUsageForOrigin(
+    GetStorageUsageForOriginCallback callback,
+    storage::mojom::ServiceWorkerDatabaseStatus database_status,
+    int64_t usage) {
+  blink::ServiceWorkerStatusCode status =
+      DatabaseStatusToStatusCode(database_status);
+  std::move(callback).Run(status, usage);
+}
+
 void ServiceWorkerRegistry::DidStoreRegistration(
     int64_t stored_registration_id,
     uint64_t stored_resources_total_size_bytes,
@@ -1401,9 +1423,18 @@ ServiceWorkerRegistry::GetRemoteStorageControl() {
   if (!remote_storage_control_.is_bound()) {
     storage_control_->Bind(
         remote_storage_control_.BindNewPipeAndPassReceiver());
+    remote_storage_control_.set_disconnect_handler(
+        base::BindOnce(&ServiceWorkerRegistry::OnRemoteStorageDisconnected,
+                       weak_factory_.GetWeakPtr()));
   }
 
   return remote_storage_control_;
+}
+
+void ServiceWorkerRegistry::OnRemoteStorageDisconnected() {
+  remote_storage_control_.reset();
+
+  // TODO(crbug.com/1133143): Add crash recovery logic.
 }
 
 }  // namespace content

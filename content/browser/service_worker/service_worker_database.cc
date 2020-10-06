@@ -272,6 +272,8 @@ const char* ServiceWorkerDatabase::StatusToString(
       return "Database operation not supported";
     case ServiceWorkerDatabase::Status::kErrorDisabled:
       return "Database is disabled";
+    case ServiceWorkerDatabase::Status::kErrorStorageDisconnected:
+      return "Storage is disconnected";
   }
   NOTREACHED();
   return "Database unknown error";

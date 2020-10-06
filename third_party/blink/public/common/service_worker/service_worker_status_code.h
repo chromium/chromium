@@ -78,11 +78,16 @@ enum class ServiceWorkerStatusCode {
   // The arguments to call the API were invalid.
   kErrorInvalidArguments = 20,
 
+  // The storage operation failed due to a Mojo connection error with the
+  // Storage Service. This typically means the process hosting the Storage
+  // Service has crashed.
+  kErrorStorageDisconnected = 21,
+
   // Add new status codes here and update kMaxValue and enums.xml. The next new
-  // status code should be 21.
+  // status code should be 22.
 
   // Note: kMaxValue is needed only for histograms.
-  kMaxValue = kErrorInvalidArguments
+  kMaxValue = kErrorStorageDisconnected,
 };
 
 BLINK_COMMON_EXPORT const char* ServiceWorkerStatusToString(

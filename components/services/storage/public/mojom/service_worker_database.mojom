@@ -23,6 +23,9 @@ enum ServiceWorkerDatabaseStatus {
   kErrorFailed = 4,
   kErrorNotSupported = 5,
   kErrorDisabled = 6,
+  // Mojo connection to the Storage Service is disconnected, typically due to a
+  // crash.
+  kErrorStorageDisconnected = 7,
 };
 
 // Represents a service worker registration data which is stored persistently

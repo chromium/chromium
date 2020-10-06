@@ -23,6 +23,11 @@ namespace content {
 
 namespace {
 
+struct GetStorageUsageForOriginResult {
+  blink::ServiceWorkerStatusCode status;
+  int64_t usage;
+};
+
 void FindCallback(base::OnceClosure quit_closure,
                   base::Optional<blink::ServiceWorkerStatusCode>* result,
                   scoped_refptr<ServiceWorkerRegistration>* found,
@@ -113,6 +118,21 @@ class ServiceWorkerRegistryTest : public testing::Test {
           result = status;
           loop.Quit();
         }));
+    loop.Run();
+    return result;
+  }
+
+  GetStorageUsageForOriginResult GetStorageUsageForOrigin(
+      const url::Origin& origin) {
+    GetStorageUsageForOriginResult result;
+    base::RunLoop loop;
+    registry()->GetStorageUsageForOrigin(
+        origin, base::BindLambdaForTesting(
+                    [&](blink::ServiceWorkerStatusCode status, int64_t usage) {
+                      result.status = status;
+                      result.usage = usage;
+                      loop.Quit();
+                    }));
     loop.Run();
     return result;
   }
@@ -298,6 +318,35 @@ TEST_F(ServiceWorkerRegistryTest, StoragePolicyChange) {
   }
 
   EXPECT_TRUE(registry()->ShouldPurgeOnShutdown(kOrigin));
+}
+
+// Tests that callbacks of storage operations are always called even when the
+// remote storage is disconnected.
+TEST_F(ServiceWorkerRegistryTest, RemoteStorageDisconnection) {
+  const GURL kScope("http://www.example.com/scope/");
+  const GURL kScriptUrl("http://www.example.com/script.js");
+  const auto kOrigin(url::Origin::Create(kScope));
+
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      CreateServiceWorkerRegistrationAndVersion(context(), kScope, kScriptUrl,
+                                                /*resource_id=*/1);
+
+  ASSERT_EQ(StoreRegistration(registration, registration->waiting_version()),
+            blink::ServiceWorkerStatusCode::kOk);
+
+  GetStorageUsageForOriginResult result = GetStorageUsageForOrigin(kOrigin);
+  ASSERT_EQ(result.status, blink::ServiceWorkerStatusCode::kOk);
+
+  // This will disconnect mojo connection of the remote storage.
+  registry()->SimulateStorageRestartForTesting();
+
+  result = GetStorageUsageForOrigin(kOrigin);
+  ASSERT_EQ(result.status,
+            blink::ServiceWorkerStatusCode::kErrorStorageDisconnected);
+
+  // The connection should be recovered automatically.
+  result = GetStorageUsageForOrigin(kOrigin);
+  ASSERT_EQ(result.status, blink::ServiceWorkerStatusCode::kOk);
 }
 
 class ServiceWorkerRegistryOriginTrialsTest : public ServiceWorkerRegistryTest {

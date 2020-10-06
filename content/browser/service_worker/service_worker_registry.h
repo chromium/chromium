@@ -244,6 +244,8 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
 
   void DisableDeleteAndStartOverForTesting();
 
+  void SimulateStorageRestartForTesting();
+
  private:
   friend class ServiceWorkerRegistryTest;
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerRegistryTest, StoragePolicyChange);
@@ -297,6 +299,10 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       GetRegistrationsInfosCallback callback,
       storage::mojom::ServiceWorkerDatabaseStatus database_status,
       RegistrationList registration_data_list);
+  void DidGetStorageUsageForOrigin(
+      GetStorageUsageForOriginCallback callback,
+      storage::mojom::ServiceWorkerDatabaseStatus database_status,
+      int64_t usage);
 
   void DidStoreRegistration(
       int64_t stored_registration_id,
@@ -359,6 +365,8 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   void OnStoragePolicyChanged();
   bool ShouldPurgeOnShutdown(const url::Origin& origin);
 
+  void OnRemoteStorageDisconnected();
+
   // The ServiceWorkerContextCore object must outlive this.
   ServiceWorkerContextCore* const context_;
 
@@ -368,6 +376,10 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   // called via |remote_storage_control_|. An instance of this impl should live
   // in the storage service.
   std::unique_ptr<ServiceWorkerStorageControlImpl> storage_control_;
+
+  const base::FilePath user_data_directory_;
+  scoped_refptr<base::SequencedTaskRunner> database_task_runner_;
+  scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 
   bool is_storage_disabled_ = false;
 

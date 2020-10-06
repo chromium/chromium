@@ -69,6 +69,7 @@ void GetServiceWorkerErrorTypeForRegistration(
     case blink::ServiceWorkerStatusCode::kErrorEventWaitUntilRejected:
     case blink::ServiceWorkerStatusCode::kErrorState:
     case blink::ServiceWorkerStatusCode::kErrorInvalidArguments:
+    case blink::ServiceWorkerStatusCode::kErrorStorageDisconnected:
       // Unexpected, or should have bailed out before calling this, or we don't
       // have a corresponding blink error code yet.
       break;  // Fall through to NOTREACHED().
