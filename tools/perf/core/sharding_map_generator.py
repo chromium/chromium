@@ -87,8 +87,7 @@ def generate_sharding_map(benchmarks_to_shard, timing_data, num_shards, debug):
                                  benchmark_name_to_config)
       else:
         break
-    # Double time_per_shard to account for reference benchmark run.
-    debug_map[shard_name]['expected_total_time'] = time_per_shard * 2
+    debug_map[shard_name]['expected_total_time'] = time_per_shard
     if time_per_shard > max_shard_time:
       max_shard_time = time_per_shard
       max_shard_index = i
@@ -96,16 +95,15 @@ def generate_sharding_map(benchmarks_to_shard, timing_data, num_shards, debug):
       min_shard_time = time_per_shard
       min_shard_index = i
 
-    predicted_shard_timings.append((shard_name, time_per_shard * 2))
+    predicted_shard_timings.append((shard_name, time_per_shard))
 
   sharding_map['extra_infos'] = collections.OrderedDict([
       ('num_stories', num_stories),
-      # Double all the time stats by 2 to account for reference build.
-      ('predicted_min_shard_time', min_shard_time * 2),
+      ('predicted_min_shard_time', min_shard_time),
       ('predicted_min_shard_index', min_shard_index),
-      ('predicted_max_shard_time', max_shard_time * 2),
+      ('predicted_max_shard_time', max_shard_time),
       ('predicted_max_shard_index', max_shard_index),
-      ])
+  ])
 
   if debug:
     sharding_map['extra_infos'].update(debug_map)

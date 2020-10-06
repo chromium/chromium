@@ -116,13 +116,6 @@ def _LoadTimingData(args):
   builder, timing_file_path = args
   data = retrieve_story_timing.FetchAverageStoryTimingData(
       configurations=[builder.name], num_last_days=5)
-  # Running against a reference build doubles our runtime.
-  # Double the expected duration of each story to account
-  # for this. Note that gtest perf tests can't run against
-  # reference builds, so this does not apply to them.
-  if builder.run_reference_build:
-    for story in data:
-      story['duration'] = unicode(float(story['duration']) * 2.0)
   for executable in builder.executables:
     data.append({unicode('duration'): unicode(
                     float(executable.estimated_runtime)),
