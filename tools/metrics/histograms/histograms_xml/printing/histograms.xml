@@ -281,6 +281,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Printing.CUPS.PrintJobsQueued" units="count"
     expires_after="M85">
+  <obsolete>
+    New data not needed 2020-10
+  </obsolete>
   <owner>skau@chromium.org</owner>
   <summary>
     The size of the print queue when a print job is initially queued. When the

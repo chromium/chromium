@@ -282,12 +282,6 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager,
       return false;
     }
 
-    // Records the number of jobs we're currently tracking when a new job is
-    // started.  This is equivalent to print queue size in the current
-    // implementation.
-    UMA_HISTOGRAM_EXACT_LINEAR("Printing.CUPS.PrintJobsQueued", jobs_.size(),
-                               20);
-
     // Create a new print job.
     auto cpj = std::make_unique<CupsPrintJob>(*printer, job_id, title,
                                               total_page_number, source,
