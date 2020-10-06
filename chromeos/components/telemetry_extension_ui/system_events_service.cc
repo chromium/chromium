@@ -26,9 +26,15 @@ void SystemEventsService::AddLidObserver(
   lid_observer_.AddObserver(std::move(observer));
 }
 
+void SystemEventsService::AddPowerObserver(
+    mojo::PendingRemote<health::mojom::PowerObserver> observer) {
+  power_observer_.AddObserver(std::move(observer));
+}
+
 void SystemEventsService::FlushForTesting() {
   bluetooth_observer_.FlushForTesting();
   lid_observer_.FlushForTesting();
+  power_observer_.FlushForTesting();
 }
 
 }  // namespace chromeos

@@ -39,6 +39,11 @@ class TelemetryExtensionUiBrowserTest : public SandboxedWebUiAppTestBase {
   void EmitLidClosedEventPeriodically();
   void EmitLidOpenedEventPeriodically();
 
+  void EmitAcInsertedEventPeriodically();
+  void EmitAcRemovedEventPeriodically();
+  void EmitOsSuspendEventPeriodically();
+  void EmitOsResumeEventPeriodically();
+
  private:
   void RunCallbackPeriodically(const base::RepeatingClosure& callback);
 

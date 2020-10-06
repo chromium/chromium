@@ -78,6 +78,27 @@ void FakeCrosHealthdClient::EmitAcInsertedEventForTesting() {
   fake_service_.EmitAcInsertedEventForTesting();
 }
 
+void FakeCrosHealthdClient::EmitAcRemovedEventForTesting() {
+  // Flush the receiver, so any pending observers are registered before the
+  // event is emitted.
+  receiver_.FlushForTesting();
+  fake_service_.EmitAcRemovedEventForTesting();
+}
+
+void FakeCrosHealthdClient::EmitOsSuspendEventForTesting() {
+  // Flush the receiver, so any pending observers are registered before the
+  // event is emitted.
+  receiver_.FlushForTesting();
+  fake_service_.EmitOsSuspendEventForTesting();
+}
+
+void FakeCrosHealthdClient::EmitOsResumeEventForTesting() {
+  // Flush the receiver, so any pending observers are registered before the
+  // event is emitted.
+  receiver_.FlushForTesting();
+  fake_service_.EmitOsResumeEventForTesting();
+}
+
 void FakeCrosHealthdClient::EmitAdapterAddedEventForTesting() {
   // Flush the receiver, so any pending observers are registered before the
   // event is emitted.

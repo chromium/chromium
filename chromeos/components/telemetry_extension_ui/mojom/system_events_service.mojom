@@ -9,8 +9,8 @@
 // This Mojo interface will go through security review before shipping.
 //
 // This is a subset of the cros_healthd event service interface which is
-// src/chrome/services/cros_healthd/public/mojom/cros_healthd.mojom and
-// src/chrome/services/cros_healthd/public/mojom/cros_healthd_events.mojom.
+// src/chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom and
+// src/chromeos/services/cros_healthd/public/mojom/cros_healthd_events.mojom.
 
 module chromeos.health.mojom;
 
@@ -29,6 +29,13 @@ interface SystemEventsService {
   // The request:
   // * |observer| - lid observer to be added to system events service.
   AddLidObserver(pending_remote<LidObserver> observer);
+
+  // Adds an observer to be notified on power events. The caller can remove the
+  // observer created by this call by closing their end of the message pipe.
+  //
+  // The request:
+  // * |observer| - power observer to be added to system events service.
+  AddPowerObserver(pending_remote<PowerObserver> observer);
 };
 
 // Implemented by clients who desire Bluetooth notifications.
@@ -53,4 +60,17 @@ interface LidObserver {
   OnLidClosed();
   // Fired when the device's lid is opened.
   OnLidOpened();
+};
+
+// Implemented by clients who desire power notifications.
+interface PowerObserver {
+  // Fired when the power cable is plugged in.
+  OnAcInserted();
+  // Fired when the power cable is unplugged.
+  OnAcRemoved();
+  // Fired when the system is going to be suspended.
+  OnOsSuspend();
+  // Fired when the system was resumed after being suspended or when the suspend
+  // process was cancelled.
+  OnOsResume();
 };

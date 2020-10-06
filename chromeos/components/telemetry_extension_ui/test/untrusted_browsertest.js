@@ -499,6 +499,30 @@ UNTRUSTED_TEST('UntrustedLidOpenedEventListener', async () => {
       (resolve) => chromeos.telemetry.addEventListener('lid-opened', resolve));
 });
 
+// Tests that addEventListener receives system ac inserted event.
+UNTRUSTED_TEST('UntrustedAcInsertedEventListener', async () => {
+  await new Promise(
+      (resolve) => chromeos.telemetry.addEventListener('ac-inserted', resolve));
+});
+
+// Tests that addEventListener receives system ac removed event.
+UNTRUSTED_TEST('UntrustedAcRemovedEventListener', async () => {
+  await new Promise(
+      (resolve) => chromeos.telemetry.addEventListener('ac-removed', resolve));
+});
+
+// Tests that addEventListener receives system os suspend event.
+UNTRUSTED_TEST('UntrustedOsSuspendEventListener', async () => {
+  await new Promise(
+      (resolve) => chromeos.telemetry.addEventListener('os-suspend', resolve));
+});
+
+// Tests that addEventListener receives system os resume event.
+UNTRUSTED_TEST('UntrustedOsResumeEventListener', async () => {
+  await new Promise(
+      (resolve) => chromeos.telemetry.addEventListener('os-resume', resolve));
+});
+
 // Tests that TelemetryInfo throws an error if category is unknown.
 UNTRUSTED_TEST('UntrustedRequestTelemetryInfoUnknownCategory', async () => {
   let caughtError = {};

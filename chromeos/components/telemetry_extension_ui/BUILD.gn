@@ -17,6 +17,8 @@ source_set("telemetry_extension_ui") {
     "diagnostics_service_converters.h",
     "lid_observer.cc",
     "lid_observer.h",
+    "power_observer.cc",
+    "power_observer.h",
     "probe_service.cc",
     "probe_service.h",
     "probe_service_converters.cc",

@@ -64,6 +64,25 @@ class MockLidObserver : public health::mojom::LidObserver {
   mojo::Receiver<health::mojom::LidObserver> receiver_;
 };
 
+class MockPowerObserver : public health::mojom::PowerObserver {
+ public:
+  MockPowerObserver() : receiver_{this} {}
+  MockPowerObserver(const MockPowerObserver&) = delete;
+  MockPowerObserver& operator=(const MockPowerObserver&) = delete;
+
+  mojo::PendingRemote<health::mojom::PowerObserver> pending_remote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  MOCK_METHOD(void, OnAcInserted, (), (override));
+  MOCK_METHOD(void, OnAcRemoved, (), (override));
+  MOCK_METHOD(void, OnOsSuspend, (), (override));
+  MOCK_METHOD(void, OnOsResume, (), (override));
+
+ private:
+  mojo::Receiver<health::mojom::PowerObserver> receiver_;
+};
+
 }  // namespace
 
 class SystemEventsServiceTest : public testing::Test {
@@ -76,6 +95,8 @@ class SystemEventsServiceTest : public testing::Test {
         std::make_unique<testing::StrictMock<MockBluetoothObserver>>();
     mock_lid_observer_ =
         std::make_unique<testing::StrictMock<MockLidObserver>>();
+    mock_power_observer_ =
+        std::make_unique<testing::StrictMock<MockPowerObserver>>();
 
     // Force other tasks to be processed.
     cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
@@ -104,12 +125,20 @@ class SystemEventsServiceTest : public testing::Test {
     return mock_lid_observer_->pending_remote();
   }
 
+  mojo::PendingRemote<health::mojom::PowerObserver> power_observer() const {
+    return mock_power_observer_->pending_remote();
+  }
+
   MockBluetoothObserver* mock_bluetooth_observer() const {
     return mock_bluetooth_observer_.get();
   }
 
   MockLidObserver* mock_lid_observer() const {
     return mock_lid_observer_.get();
+  }
+
+  MockPowerObserver* mock_power_observer() const {
+    return mock_power_observer_.get();
   }
 
  private:
@@ -120,6 +149,7 @@ class SystemEventsServiceTest : public testing::Test {
   std::unique_ptr<testing::StrictMock<MockBluetoothObserver>>
       mock_bluetooth_observer_;
   std::unique_ptr<testing::StrictMock<MockLidObserver>> mock_lid_observer_;
+  std::unique_ptr<testing::StrictMock<MockPowerObserver>> mock_power_observer_;
 };
 
 // Tests that in case of cros_healthd crash Bluetooth Observer will reconnect.
@@ -194,6 +224,44 @@ TEST_F(SystemEventsServiceTest, LidObserverReconnect) {
   });
 
   cros_healthd::FakeCrosHealthdClient::Get()->EmitLidClosedEventForTesting();
+  run_loop2.Run();
+}
+
+// Tests that in case of cros_healthd crash Power Observer will reconnect.
+TEST_F(SystemEventsServiceTest, PowerObserverReconnect) {
+  remote_system_events_service()->AddPowerObserver(power_observer());
+
+  base::RunLoop run_loop1;
+  EXPECT_CALL(*mock_power_observer(), OnAcInserted).WillOnce([&run_loop1]() {
+    run_loop1.Quit();
+  });
+  cros_healthd::FakeCrosHealthdClient::Get()->EmitAcInsertedEventForTesting();
+  run_loop1.Run();
+
+  // Shutdown cros_healthd to simulate crash.
+  CrosHealthdClient::Shutdown();
+
+  // Ensure ServiceConnection is disconnected from cros_healthd.
+  cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
+
+  // Restart cros_healthd.
+  CrosHealthdClient::InitializeFake();
+
+  // Ensure disconnect handler is called for power observer from System Event
+  // Service. After this call, we will have a Mojo pending connection task in
+  // Mojo message queue.
+  system_events_service()->FlushForTesting();
+
+  // Ensure that Mojo pending connection task from power observer gets processed
+  // and observer is bound. After this call, we are sure that power observer
+  // reconnected and we can safely emit events.
+  cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
+
+  base::RunLoop run_loop2;
+  EXPECT_CALL(*mock_power_observer(), OnAcInserted).WillOnce([&run_loop2]() {
+    run_loop2.Quit();
+  });
+  cros_healthd::FakeCrosHealthdClient::Get()->EmitAcInsertedEventForTesting();
   run_loop2.Run();
 }
 

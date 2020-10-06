@@ -889,6 +889,10 @@ class SystemEventsProxy {
       ON_BLUETOOTH_DEVICE_PROPERTY_CHANGED: 'bluetooth-device-property-changed',
       ON_LID_CLOSED: 'lid-closed',
       ON_LID_OPENED: 'lid-opened',
+      ON_AC_INSERTED: 'ac-inserted',
+      ON_AC_REMOVED: 'ac-removed',
+      ON_OS_SUSPEND: 'os-suspend',
+      ON_OS_RESUME: 'os-resume',
     };
 
     this.bluetoothObserverCallbackRouter_ =
@@ -921,6 +925,21 @@ class SystemEventsProxy {
 
     getOrCreateSystemEventsService().addLidObserver(
         this.lidObserverCallbackRouter_.$.bindNewPipeAndPassRemote());
+
+    this.powerObserverCallbackRouter_ =
+        new chromeos.health.mojom.PowerObserverCallbackRouter();
+
+    this.powerObserverCallbackRouter_.onAcInserted.addListener(
+        () => this.sendEvent(this.events.ON_AC_INSERTED));
+    this.powerObserverCallbackRouter_.onAcRemoved.addListener(
+        () => this.sendEvent(this.events.ON_AC_REMOVED));
+    this.powerObserverCallbackRouter_.onOsSuspend.addListener(
+        () => this.sendEvent(this.events.ON_OS_SUSPEND));
+    this.powerObserverCallbackRouter_.onOsResume.addListener(
+        () => this.sendEvent(this.events.ON_OS_RESUME));
+
+    getOrCreateSystemEventsService().addPowerObserver(
+        this.powerObserverCallbackRouter_.$.bindNewPipeAndPassRemote());
   }
 
   /**

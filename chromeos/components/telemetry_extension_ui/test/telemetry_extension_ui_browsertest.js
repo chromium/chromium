@@ -435,6 +435,38 @@ var TelemetryExtensionUIWithLidOpenedEventBrowserTest =
   }
 }
 
+var TelemetryExtensionUIWithAcInsertedEventBrowserTest =
+    class extends TelemetryExtensionUIBrowserTest {
+  /** @override */
+  testGenPreamble() {
+    GEN('EmitAcInsertedEventPeriodically();');
+  }
+}
+
+var TelemetryExtensionUIWithAcRemovedEventBrowserTest =
+    class extends TelemetryExtensionUIBrowserTest {
+  /** @override */
+  testGenPreamble() {
+    GEN('EmitAcRemovedEventPeriodically();');
+  }
+}
+
+var TelemetryExtensionUIWithOsSuspendEventBrowserTest =
+    class extends TelemetryExtensionUIBrowserTest {
+  /** @override */
+  testGenPreamble() {
+    GEN('EmitOsSuspendEventPeriodically();');
+  }
+}
+
+var TelemetryExtensionUIWithOsResumeEventBrowserTest =
+    class extends TelemetryExtensionUIBrowserTest {
+  /** @override */
+  testGenPreamble() {
+    GEN('EmitOsResumeEventPeriodically();');
+  }
+}
+
 // Test cases injected into the untrusted context.
 // See implementations in untrusted_browsertest.js.
 //
@@ -517,6 +549,22 @@ const untrustedTests = [
   [
     'UntrustedLidOpenedEventListener',
     'TelemetryExtensionUIWithLidOpenedEventBrowserTest'
+  ],
+  [
+    'UntrustedAcInsertedEventListener',
+    'TelemetryExtensionUIWithAcInsertedEventBrowserTest'
+  ],
+  [
+    'UntrustedAcRemovedEventListener',
+    'TelemetryExtensionUIWithAcRemovedEventBrowserTest'
+  ],
+  [
+    'UntrustedOsSuspendEventListener',
+    'TelemetryExtensionUIWithOsSuspendEventBrowserTest'
+  ],
+  [
+    'UntrustedOsResumeEventListener',
+    'TelemetryExtensionUIWithOsResumeEventBrowserTest'
   ],
 ].forEach(test => registerUntrustedTest(...test));
 

@@ -65,6 +65,15 @@ class COMPONENT_EXPORT(CROS_HEALTHD) FakeCrosHealthdClient
   // Calls the power event OnAcInserted on all registered power observers.
   void EmitAcInsertedEventForTesting();
 
+  // Calls the power event OnAcRemoved on all registered power observers.
+  void EmitAcRemovedEventForTesting();
+
+  // Calls the power event OnOsSuspend on all registered power observers.
+  void EmitOsSuspendEventForTesting();
+
+  // Calls the power event OnOsResume on all registered power observers.
+  void EmitOsResumeEventForTesting();
+
   // Calls the Bluetooth event OnAdapterAdded on all registered Bluetooth
   // observers.
   void EmitAdapterAddedEventForTesting();

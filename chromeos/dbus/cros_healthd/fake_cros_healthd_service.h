@@ -145,6 +145,15 @@ class FakeCrosHealthdService final
   // Calls the power event OnAcInserted for all registered power observers.
   void EmitAcInsertedEventForTesting();
 
+  // Calls the power event OnAcRemoved on all registered power observers.
+  void EmitAcRemovedEventForTesting();
+
+  // Calls the power event OnOsSuspend on all registered power observers.
+  void EmitOsSuspendEventForTesting();
+
+  // Calls the power event OnOsResume on all registered power observers.
+  void EmitOsResumeEventForTesting();
+
   // Calls the Bluetooth event OnAdapterAdded for all registered Bluetooth
   // observers.
   void EmitAdapterAddedEventForTesting();

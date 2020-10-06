@@ -495,6 +495,34 @@ void TelemetryExtensionUiBrowserTest::EmitLidOpenedEventPeriodically() {
   }));
 }
 
+void TelemetryExtensionUiBrowserTest::EmitAcInsertedEventPeriodically() {
+  RunCallbackPeriodically(base::BindRepeating([] {
+    chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+        ->EmitAcInsertedEventForTesting();
+  }));
+}
+
+void TelemetryExtensionUiBrowserTest::EmitAcRemovedEventPeriodically() {
+  RunCallbackPeriodically(base::BindRepeating([] {
+    chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+        ->EmitAcRemovedEventForTesting();
+  }));
+}
+
+void TelemetryExtensionUiBrowserTest::EmitOsSuspendEventPeriodically() {
+  RunCallbackPeriodically(base::BindRepeating([] {
+    chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+        ->EmitOsSuspendEventForTesting();
+  }));
+}
+
+void TelemetryExtensionUiBrowserTest::EmitOsResumeEventPeriodically() {
+  RunCallbackPeriodically(base::BindRepeating([] {
+    chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+        ->EmitOsResumeEventForTesting();
+  }));
+}
+
 void TelemetryExtensionUiBrowserTest::RunCallbackPeriodically(
     const base::RepeatingClosure& callback) {
   callback.Run();

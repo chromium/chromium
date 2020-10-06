@@ -12,6 +12,7 @@
 #include "chromeos/components/telemetry_extension_ui/bluetooth_observer.h"
 #include "chromeos/components/telemetry_extension_ui/lid_observer.h"
 #include "chromeos/components/telemetry_extension_ui/mojom/system_events_service.mojom.h"
+#include "chromeos/components/telemetry_extension_ui/power_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -32,6 +33,9 @@ class SystemEventsService : public health::mojom::SystemEventsService {
   void AddLidObserver(
       mojo::PendingRemote<health::mojom::LidObserver> observer) override;
 
+  void AddPowerObserver(
+      mojo::PendingRemote<health::mojom::PowerObserver> observer) override;
+
   void FlushForTesting();
 
  private:
@@ -39,6 +43,7 @@ class SystemEventsService : public health::mojom::SystemEventsService {
 
   BluetoothObserver bluetooth_observer_;
   LidObserver lid_observer_;
+  PowerObserver power_observer_;
 };
 
 }  // namespace chromeos
