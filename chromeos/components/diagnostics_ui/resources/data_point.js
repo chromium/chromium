@@ -10,7 +10,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 /**
  * @fileoverview
  * 'data-point' shows a single piece of information related to a component. It
- *  consists of a title and description.
+ *  consists of a header and value.
  */
 Polymer({
   is: 'data-point',
@@ -18,7 +18,7 @@ Polymer({
   _template: html`{__html_template__}`,
 
   properties: {
-    title: {
+    header: {
       type: String,
       // TODO(michaelcheco): Remove when localized strings are added.
       value: 'Xxxx',

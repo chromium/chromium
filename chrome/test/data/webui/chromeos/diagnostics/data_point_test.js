@@ -26,26 +26,27 @@ suite('DataPointTest', () => {
   });
 
   /**
-   * @param {string} title
+   * @param {string} header
    * @param {string} value
    */
-  function initializeDataPoint(title, value) {
+  function initializeDataPoint(header, value) {
     assertFalse(!!dataPointElement);
 
     // Add the data point to the DOM.
     dataPointElement = document.createElement('data-point');
     assertTrue(!!dataPointElement);
-    document.body.appendChild(dataPointElement);
-    dataPointElement.title = title;
+    dataPointElement.header = header;
     dataPointElement.value = value;
+    document.body.appendChild(dataPointElement);
+
     return flushTasks();
   }
 
   test('InitializeDataPoint', () => {
-    const title = 'Test title';
+    const header = 'Test header';
     const value = 'Test value';
-    return initializeDataPoint(title, value).then(() => {
-      assertEquals(title, dataPointElement.$$('.title').textContent.trim());
+    return initializeDataPoint(header, value).then(() => {
+      assertEquals(header, dataPointElement.$$('.header').textContent.trim());
       assertEquals(value, dataPointElement.$$('.value').textContent.trim());
     });
   });
