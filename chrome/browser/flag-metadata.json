@@ -458,8 +458,8 @@
   },
   {
     "name": "cast-media-route-provider",
-    "owners": [ "mfoltz", "takumif" ],
-    "expiry_milestone": 87
+    "owners": [ "takumif", "openscreen-eng@google.com" ],
+    "expiry_milestone": 93
   },
   {
     "name": "cct-incognito",
@@ -2712,13 +2712,13 @@
   },
   {
     "name": "global-media-controls-cast-start-stop",
-    "owners": [ "jrw", "takumif" ],
+    "owners": [ "jrw", "takumif", "openscreen-eng@google.com" ],
     "expiry_milestone": 93
   },
   {
     "name": "global-media-controls-for-cast",
     "owners": [ "takumif", "openscreen-eng@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "global-media-controls-for-chromeos",
