@@ -85,17 +85,9 @@ class SVGResourcesCache {
   };
 
  private:
-  struct ResourceUpdateInfo {
-    bool changed;
-    bool needs_layout;
-
-    explicit operator bool() const { return changed; }
-  };
-  SVGResources* AddResourcesFromLayoutObject(LayoutObject&,
-                                             const ComputedStyle&);
+  bool AddResourcesFromLayoutObject(LayoutObject&, const ComputedStyle&);
   bool RemoveResourcesFromLayoutObject(LayoutObject&);
-  ResourceUpdateInfo UpdateResourcesFromLayoutObject(LayoutObject&,
-                                                     const ComputedStyle&);
+  bool UpdateResourcesFromLayoutObject(LayoutObject&, const ComputedStyle&);
 
   typedef HashMap<const LayoutObject*, std::unique_ptr<SVGResources>> CacheMap;
   CacheMap cache_;

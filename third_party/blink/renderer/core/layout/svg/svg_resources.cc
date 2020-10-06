@@ -268,18 +268,6 @@ void SVGResources::LayoutIfNeeded() {
     linked_resource_->LayoutIfNeeded();
 }
 
-bool SVGResources::DifferenceNeedsLayout(const SVGResources* a,
-                                         const SVGResources* b) {
-  bool a_has_bounds_affecting_resource = a && a->clipper_filter_masker_data_;
-  bool b_has_bounds_affecting_resource = b && b->clipper_filter_masker_data_;
-  if (a_has_bounds_affecting_resource != b_has_bounds_affecting_resource)
-    return true;
-  if (!a_has_bounds_affecting_resource)
-    return false;
-  return a->Clipper() != b->Clipper() || a->Filter() != b->Filter() ||
-         a->Masker() != b->Masker();
-}
-
 void SVGResources::ResourceDestroyed(LayoutSVGResourceContainer* resource) {
   DCHECK(resource);
   if (!HasResourceData())

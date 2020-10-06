@@ -120,8 +120,6 @@ class SVGResources {
   void ResourceDestroyed(LayoutSVGResourceContainer*);
   void ClearReferencesTo(LayoutSVGResourceContainer*);
 
-  static bool DifferenceNeedsLayout(const SVGResources*, const SVGResources*);
-
 #if DCHECK_IS_ON()
   void Dump(const LayoutObject*);
 #endif
