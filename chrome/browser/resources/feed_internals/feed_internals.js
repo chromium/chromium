@@ -154,6 +154,18 @@ function setupEventListeners() {
   $('actions-endpoint-override-apply').addEventListener('click', function() {
     pageHandler.overrideFeedHost({url: $('actions-endpoint-override').value});
   });
+
+  $('feed-stream-data-override').addEventListener('click', function() {
+    const file = $('feed-stream-data-file').files[0];
+    if (file && typeof pageHandler.overrideFeedStreamData == 'function') {
+      const reader = new FileReader();
+      reader.readAsArrayBuffer(file);
+      reader.onload = function(evt) {
+        const typedArray = new Uint8Array(reader.result);
+        pageHandler.overrideFeedStreamData([...typedArray]);
+      };
+    }
+  });
 }
 
 function updatePage() {

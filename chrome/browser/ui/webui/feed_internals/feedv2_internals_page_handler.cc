@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/webui/feed_internals/feed_internals.mojom.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/common/user_classifier.h"
+#include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/core/v2/public/feed_stream_api.h"
@@ -147,4 +148,13 @@ void FeedV2InternalsPageHandler::OverrideActionUploadEndpoint(
   return pref_service_->SetString(
       feed::prefs::kActionsEndpointOverride,
       endpoint_url.is_valid() ? endpoint_url.spec() : std::string());
+}
+
+void FeedV2InternalsPageHandler::OverrideFeedStreamData(
+    const std::vector<uint8_t>& data) {
+  feedui::StreamUpdate stream_update;
+  feedui::Slice* slice = stream_update.add_updated_slices()->mutable_slice();
+  slice->set_slice_id("SetByInternalsPage");
+  slice->mutable_xsurface_slice()->set_xsurface_frame(data.data(), data.size());
+  feed_stream_->SetForcedStreamUpdateForDebugging(stream_update);
 }
