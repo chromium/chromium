@@ -152,7 +152,7 @@ class MockUserfaultFDHandler : public UserfaultFDHandler {
   ~MockUserfaultFDHandler() override = default;
 
   MOCK_METHOD3(Pagefault,
-               void(uintptr_t fault_address,
+               bool(uintptr_t fault_address,
                     PagefaultFlags flags,
                     base::PlatformThreadId tid));
   MOCK_METHOD2(Unmapped, void(uintptr_t range_start, uintptr_t range_end));
@@ -224,6 +224,54 @@ TEST_F(UserfaultFDTest, SimpleZeroPageReadFault) {
                                   UserfaultFDHandler::PagefaultFlags,
                                   base::PlatformThreadId) {
         HandleWithZeroRange(uffd_ptr, fault_address, kPageSize);
+        return true;
+      }));
+
+  ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
+
+  base::RunLoop run_loop;
+  ExecuteOffMainThread([&]() {
+    // Now generate a page fault by reading
+    // from the page, this will invoke our
+    // Pagefault handler above which will
+    // zero fill the page for us.
+    EXPECT_EQ(*static_cast<int*>(mem), 0);
+
+    run_loop.Quit();
+  });
+
+  run_loop.Run();
+}
+
+// This test validates that when a fault handler returns false the fault will be
+// re-enqued and redelivered later.
+TEST_F(UserfaultFDTest, SimpleZeroPageReadFaultRetry) {
+  ASSERT_TRUE(CreateUffd());
+
+  std::unique_ptr<StrictMock<MockUserfaultFDHandler>> handler(
+      new StrictMock<MockUserfaultFDHandler>);
+
+  /* Create a simple mapping with no PTEs */
+  ScopedMemory mem(kPageSize);
+  ASSERT_TRUE(mem.is_valid());
+
+  ASSERT_TRUE(uffd_->RegisterRange(UserfaultFD::RegisterMode::kRegisterMissing,
+                                   mem, kPageSize));
+
+  // The first fault handle will return false, the second will return true.
+  auto* uffd_ptr = uffd_.get();
+  EXPECT_CALL(*handler,
+              Pagefault(static_cast<uintptr_t>(mem),
+                        UserfaultFDHandler::PagefaultFlags::kReadFault,
+                        /* we didn't register for tids */ 0))
+      .WillOnce(
+          Invoke([](uintptr_t fault_address, UserfaultFDHandler::PagefaultFlags,
+                    base::PlatformThreadId) { return false; }))
+      .WillOnce(Invoke([uffd_ptr](uintptr_t fault_address,
+                                  UserfaultFDHandler::PagefaultFlags,
+                                  base::PlatformThreadId) {
+        HandleWithZeroRange(uffd_ptr, fault_address, kPageSize);
+        return true;
       }));
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
@@ -273,6 +321,7 @@ TEST_F(UserfaultFDTest, SimpleZeroPageReadFaultWithTid) {
                                   UserfaultFDHandler::PagefaultFlags,
                                   base::PlatformThreadId) {
         HandleWithZeroRange(uffd_ptr, fault_address, kPageSize);
+        return true;
       }));
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
@@ -317,6 +366,7 @@ TEST_F(UserfaultFDTest, SimpleZeroPageWriteFault) {
                                   UserfaultFDHandler::PagefaultFlags,
                                   base::PlatformThreadId) {
         HandleWithZeroRange(uffd_ptr, fault_address, kPageSize);
+        return true;
       }));
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
@@ -371,6 +421,7 @@ TEST_F(UserfaultFDTest, SimpleReadFaultResolveWithCopyPage) {
                                         uintptr_t) {
         HandleWithCopyRange(uffd_ptr, fault_address,
                             reinterpret_cast<uintptr_t>(buf.data()), kPageSize);
+        return true;
       }));
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
@@ -423,6 +474,7 @@ TEST_F(UserfaultFDTest, ReadFaultResolveWithCopyPageForMultiplePages) {
         HandleWithCopyRange(uffd_ptr, fault_address,
                             reinterpret_cast<uintptr_t>(buf.data()),
                             kRegionSize);
+        return true;
       }));
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
@@ -487,6 +539,7 @@ TEST_F(UserfaultFDTest,
         HandleWithCopyRange(uffd_ptr, fault_address,
                             reinterpret_cast<uintptr_t>(pg_fill_buf.data()),
                             kPageSize);
+        return true;
       }));
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
@@ -558,6 +611,7 @@ TEST_F(UserfaultFDTest, ReadFaultRegisteredOnPartialRange) {
         HandleWithCopyRange(uffd_ptr, fault_address,
                             reinterpret_cast<uintptr_t>(pg_fill_buf.data()),
                             kPageSize);
+        return true;
       }));
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
@@ -640,6 +694,7 @@ TEST_F(UserfaultFDTest, WriteFaultRegisteredOnPartialRange) {
         HandleWithCopyRange(uffd_ptr, fault_address,
                             reinterpret_cast<uintptr_t>(pg_fill_buf.data()),
                             kPageSize);
+        return true;
       }));
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));
@@ -994,6 +1049,7 @@ TEST_F(UserfaultFDTest, RemapAndFaultAtNewAddress) {
                                   UserfaultFDHandler::PagefaultFlags,
                                   base::PlatformThreadId) {
         HandleWithZeroRange(uffd_ptr, fault_address, kPageSize);
+        return true;
       }));
 
   // And because the userfaultfd is attached to the VMA when it's remapped and
@@ -1006,6 +1062,7 @@ TEST_F(UserfaultFDTest, RemapAndFaultAtNewAddress) {
                                   UserfaultFDHandler::PagefaultFlags,
                                   base::PlatformThreadId) {
         HandleWithZeroRange(uffd_ptr, fault_address, kPageSize);
+        return true;
       }));
 
   ASSERT_TRUE(uffd_->StartWaitingForEvents(std::move(handler)));

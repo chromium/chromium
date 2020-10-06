@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_MEMORY_USERSPACE_SWAP_USERFAULTFD_H_
 #define CHROMEOS_MEMORY_USERSPACE_SWAP_USERFAULTFD_H_
 
+#include <list>
 #include <memory>
 
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -23,8 +24,22 @@ namespace userspace_swap {
 // receive depend on the features used when the userfaultfd is created. It's
 // always safe to use the UserfaultFD class associated with this handler during
 // a callback, you're guaranteed that a UserfaultFD will always outlive its
-// associated handler. This guarantee exists because the UserfaultFD will join
-// the fault handling thread before completing destruction.
+// associated handler.
+//
+// For the purpose of a fault handler we will refer to the events received as
+// two different types: pagefault events and non-pagefault events. You're
+// guaranteed that pagefault events and non-pagefault events will all be
+// delivered in order with respect to their group. Page fault events that
+// couldn't be handled will be redelivered later until they are able to be
+// handled. This isn't a problem, because when responding to a pagefault event
+// any attempt to resolve it using CopyToRange or ZeroRange would fail if PTEs
+// already exist or the mapping is gone. For those reasons it's important that
+// you always read and handle those non-pagefault events before pagefaults. A
+// more concrete example of this would be: suppose you had a MADV_DONTNEED
+// racing with a pagefault to be handled. If you were to process the pagefault
+// first before observing the Remove event you could potentially restore stale
+// memory when the correct action after the MADV_DONTNEED would be to zero the
+// range.
 class CHROMEOS_EXPORT UserfaultFDHandler {
  public:
   // PagefaultFlags are passed in the Pagefault Handler.
@@ -39,7 +54,12 @@ class CHROMEOS_EXPORT UserfaultFDHandler {
   // Finally if kFeatureThreadID is set when the UserfaultFD is created, |tid|
   // will be set to the thread id that caused the fault, otherwise it will be
   // zero.
-  virtual void Pagefault(uintptr_t fault_address,
+  //
+  // The implementation is responsible for returning true or false, when true
+  // is return it means the fault was handled, when false is returned the fault
+  // will be retried later. The reason for this is you cannot resolve a fault
+  // while mappings are changing.
+  virtual bool Pagefault(uintptr_t fault_address,
                          PagefaultFlags fault_flags,
                          base::PlatformThreadId tid) = 0;
 
@@ -91,7 +111,7 @@ class CHROMEOS_EXPORT UserfaultFD {
     kFeatureRemove = 1 << 2,
     // kFeatureThreadID will cause Pagefault callbacks to include the faulting
     // thread id.
-    kFeatureThreadID = 1 << 3
+    kFeatureThreadID = 1 << 3,
   };
 
   // Note: Although it's documented UFFDIO_REGISTER_MDOE_WP is not actually
@@ -166,7 +186,16 @@ class CHROMEOS_EXPORT UserfaultFD {
 
   void UserfaultFDReadable();
 
-  void DispatchMessage(const uffd_msg& msg);
+  bool DispatchMessage(const uffd_msg& msg);
+
+  // DrainPendingFaults will attempt to deliver any pending fault messages.
+  bool DrainPendingFaults();
+
+  // Because userfaultfd will return -EAGAIN when the memory maps are changing
+  // until the remap, unmap, or remove message has been read off the userfaultfd
+  // we provide a mechanism for users to re-enque the fault to be delivered
+  // again.
+  std::list<uffd_msg> pending_faults_;
 
   // We need to make sure messages are read and posted in order so we prevent
   // two different threads from simultaenously reading and posting.
