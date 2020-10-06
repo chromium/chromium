@@ -20,6 +20,10 @@ declare_args() {
   # Architecture of the host tools included in Fuchsia test targets.
   # Defaults to target_cpu.
   fuchsia_override_host_tool_arch_for_isolated_testing = target_cpu
+
+  # A list that contains additional Fuchsia boot images to include in the test
+  # targets.
+  fuchsia_additional_boot_images = []
 }
 
 # Generates a script which deploys and optionally executes a package on a
@@ -114,6 +118,7 @@ template("fuchsia_package_runner") {
       "//third_party/fuchsia-sdk/sdk/tools/${fuchsia_override_host_tool_arch_for_isolated_testing}/symbolize",
       "//third_party/fuchsia-sdk/sdk/tools/${fuchsia_override_host_tool_arch_for_isolated_testing}/zbi",
     ]
+
     if (target_cpu == "arm64") {
       data += [ "${qemu_arm64_root}/" ]
     } else {
@@ -121,6 +126,10 @@ template("fuchsia_package_runner") {
         "${qemu_root}/",
         "//third_party/llvm-build/Release+Asserts/bin/llvm-symbolizer",
       ]
+    }
+
+    foreach(fuchsia_additional_boot_image, fuchsia_additional_boot_images) {
+      data += [ "${fuchsia_additional_boot_images}/" ]
     }
 
     executable_args = []

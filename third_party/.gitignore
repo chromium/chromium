@@ -80,6 +80,7 @@
 /fontconfig/src
 /freetype/src
 /fuchsia-sdk/images
+/fuchsia-sdk/images-internal
 /fuchsia-sdk/sdk
 /gles2_conform
 /glfw/src

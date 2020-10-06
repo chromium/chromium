@@ -4931,12 +4931,22 @@ hooks = [
   },
 
   {
-    'name': 'fuchsia_sdk',
+    'name': 'Download Fuchsia SDK',
     'pattern': '.',
     'condition': 'checkout_fuchsia',
     'action': [
       'python',
       'src/build/fuchsia/update_sdk.py',
+    ],
+  },
+
+  {
+    'name': 'Download Fuchsia system images',
+    'pattern': '.',
+    'condition': 'checkout_fuchsia',
+    'action': [
+      'python',
+      'src/build/fuchsia/update_images.py',
       '--boot-images={checkout_fuchsia_boot_images}',
     ],
   },
