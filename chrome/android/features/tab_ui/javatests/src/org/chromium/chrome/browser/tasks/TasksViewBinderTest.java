@@ -32,6 +32,7 @@ import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.VOICE_SEA
 
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -45,6 +46,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
@@ -225,7 +227,10 @@ public class TasksViewBinderTest extends DummyUiActivityTestCase {
 
     @Test
     @SmallTest
-    public void testSetIncognitoDescriptionVisibilityAndClickListener() {
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.M,
+            message = "Failing on Lollipop Phone Tester. https://crbug.com/1135286")
+    public void
+    testSetIncognitoDescriptionVisibilityAndClickListener() {
         assertFalse(isViewVisible(R.id.incognito_description_container_layout_stub));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
