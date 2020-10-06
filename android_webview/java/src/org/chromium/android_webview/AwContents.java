@@ -732,7 +732,14 @@ public class AwContents implements SmartClipProvider {
 
         @Override
         public void scrollContainerViewTo(int x, int y) {
-            mInternalAccessAdapter.super_scrollTo(x, y);
+            try {
+                mInternalAccessAdapter.super_scrollTo(x, y);
+            } catch (Throwable e) {
+                AwThreadUtils.postToCurrentLooper(() -> {
+                    Log.e(TAG, "The following exception was raised by scrollContainerViewTo:");
+                    throw e;
+                });
+            }
         }
 
         @Override
