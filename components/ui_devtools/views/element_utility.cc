@@ -34,6 +34,10 @@ void AppendLayerPropertiesMatchedStyle(
   const auto offset = layer->GetSubpixelOffset();
   if (!offset.IsZero())
     ret->emplace_back("layer-subpixel-offset", offset.ToString());
+  const auto& rounded_corners = layer->rounded_corner_radii();
+  if (!rounded_corners.IsEmpty())
+    ret->emplace_back("layer-rounded-corners", rounded_corners.ToString());
+
   const ui::Layer::ShapeRects* alpha_shape_bounds = layer->alpha_shape();
   if (alpha_shape_bounds && alpha_shape_bounds->size()) {
     gfx::Rect bounding_box;
@@ -41,6 +45,7 @@ void AppendLayerPropertiesMatchedStyle(
       bounding_box.Union(shape_bound);
     ret->emplace_back("alpha-shape-bounding-box", bounding_box.ToString());
   }
+
   const cc::Layer* cc_layer = layer->cc_layer_for_testing();
   if (cc_layer) {
     // Property trees must be updated in order to get valid render surface
