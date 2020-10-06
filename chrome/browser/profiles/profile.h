@@ -33,6 +33,7 @@ class ChromeZoomLevelPrefs;
 class ExtensionSpecialStoragePolicy;
 class PrefService;
 class PrefStore;
+class ProfileDestroyer;
 class ProfileKey;
 class TestingProfile;
 
@@ -146,6 +147,7 @@ class Profile : public content::BrowserContext {
 #endif
 
    private:
+    friend class ProfileDestroyer;
     friend std::ostream& operator<<(std::ostream& out,
                                     const OTRProfileID& profile_id);
 

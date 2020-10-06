@@ -59737,6 +59737,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   </int>
 </enum>
 
+<enum name="ProfileDestructionType">
+  <int value="0" label="Immediately"/>
+  <int value="1" label="Delayed"/>
+  <int value="2" label="Delayed and Crashed"/>
+</enum>
+
 <enum name="ProfileErrorType">
   <int value="0" label="History error"/>
   <int value="1" label="Preferences error"/>

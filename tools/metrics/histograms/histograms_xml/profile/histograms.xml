@@ -152,6 +152,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Profile.Destroyer.OffTheRecord" enum="ProfileDestructionType"
+    expires_after="M95">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-privacy-core@google.com</owner>
+  <summary>
+    Track if the off-the-record profile was immidiately destroyed when asked to
+    be destroyed, or was scheduled for a delayed destruction, and possibly was
+    not destroyed properly after the delay and was crashed.
+  </summary>
+</histogram>
+
 <histogram name="Profile.DiceUI.GaiaAccountsStale" enum="BooleanStale"
     expires_after="M80">
   <owner>msarda@chromium.org</owner>
