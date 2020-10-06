@@ -454,7 +454,7 @@
   {
     "name": "camera-system-web-app",
     "owners": [ "chromeos-camera-eng@google.com" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 89
   },
   {
     "name": "cast-media-route-provider",
