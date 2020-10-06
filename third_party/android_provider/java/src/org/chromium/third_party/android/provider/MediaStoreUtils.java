@@ -16,9 +16,11 @@
 
 package org.chromium.third_party.android.provider;
 
+import android.annotation.TargetApi;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.provider.MediaStore.DownloadColumns;
@@ -107,6 +109,7 @@ public class MediaStoreUtils {
          *
          * @see DownloadColumns#DOWNLOAD_URI
          */
+        @TargetApi(Build.VERSION_CODES.Q)
         public void setDownloadUri(@Nullable Uri downloadUri) {
             if (downloadUri == null) {
                 mInsertValues.remove(DownloadColumns.DOWNLOAD_URI);
@@ -121,6 +124,7 @@ public class MediaStoreUtils {
          *
          * @see DownloadColumns#REFERER_URI
          */
+        @TargetApi(Build.VERSION_CODES.Q)
         public void setRefererUri(@Nullable Uri refererUri) {
             if (refererUri == null) {
                 mInsertValues.remove(DownloadColumns.REFERER_URI);
@@ -221,6 +225,7 @@ public class MediaStoreUtils {
      * @param values ContentValues to be set.
      * @param isPending Whether the item is pending.
      */
+    @TargetApi(Build.VERSION_CODES.Q)
     private static void setPendingContentValues(ContentValues values, boolean isPending)
             throws Exception {
         values.put(MediaColumns.IS_PENDING, isPending ? 1 : 0);

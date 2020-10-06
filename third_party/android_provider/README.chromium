@@ -15,3 +15,4 @@ https://android.googlesource.com/platform/cts/+/master/tests/tests/provider/src/
 Local Modifications:
 - Added logs
 - Introduced some helper method.
+- Add @TargetApi(Build.VERSION_CODES.Q).

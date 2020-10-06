@@ -108,6 +108,7 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
+      "//components/download/internal/common:internal_java",
       "//third_party/android_deps:androidx_annotation_annotation_java",
     ]
   }
