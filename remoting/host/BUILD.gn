@@ -372,6 +372,7 @@ static_library("common") {
   if (use_x11) {
     deps += [
       "//remoting/host/linux:x11",
+      "//ui/events/platform/x11",
       "//ui/gfx/x",
     ]
     if (is_desktop_linux) {
