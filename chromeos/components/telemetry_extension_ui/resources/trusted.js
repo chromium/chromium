@@ -880,9 +880,36 @@ class SystemEventsProxy {
     this.iframeReady = iframeReady;
 
     this.events = {
+      ON_BLUETOOTH_ADAPTER_ADDED: 'bluetooth-adapter-added',
+      ON_BLUETOOTH_ADAPTER_REMOVED: 'bluetooth-adapter-removed',
+      ON_BLUETOOTH_ADAPTER_PROPERTY_CHANGED:
+          'bluetooth-adapter-property-changed',
+      ON_BLUETOOTH_DEVICE_ADDED: 'bluetooth-device-added',
+      ON_BLUETOOTH_DEVICE_REMOVED: 'bluetooth-device-removed',
+      ON_BLUETOOTH_DEVICE_PROPERTY_CHANGED: 'bluetooth-device-property-changed',
       ON_LID_CLOSED: 'lid-closed',
       ON_LID_OPENED: 'lid-opened',
     };
+
+    this.bluetoothObserverCallbackRouter_ =
+        new chromeos.health.mojom.BluetoothObserverCallbackRouter();
+
+    this.bluetoothObserverCallbackRouter_.onAdapterAdded.addListener(
+        () => this.sendEvent(this.events.ON_BLUETOOTH_ADAPTER_ADDED));
+    this.bluetoothObserverCallbackRouter_.onAdapterRemoved.addListener(
+        () => this.sendEvent(this.events.ON_BLUETOOTH_ADAPTER_REMOVED));
+    this.bluetoothObserverCallbackRouter_.onAdapterPropertyChanged.addListener(
+        () =>
+            this.sendEvent(this.events.ON_BLUETOOTH_ADAPTER_PROPERTY_CHANGED));
+    this.bluetoothObserverCallbackRouter_.onDeviceAdded.addListener(
+        () => this.sendEvent(this.events.ON_BLUETOOTH_DEVICE_ADDED));
+    this.bluetoothObserverCallbackRouter_.onDeviceRemoved.addListener(
+        () => this.sendEvent(this.events.ON_BLUETOOTH_DEVICE_REMOVED));
+    this.bluetoothObserverCallbackRouter_.onDevicePropertyChanged.addListener(
+        () => this.sendEvent(this.events.ON_BLUETOOTH_DEVICE_PROPERTY_CHANGED));
+
+    getOrCreateSystemEventsService().addBluetoothObserver(
+        this.bluetoothObserverCallbackRouter_.$.bindNewPipeAndPassRemote());
 
     this.lidObserverCallbackRouter_ =
         new chromeos.health.mojom.LidObserverCallbackRouter();

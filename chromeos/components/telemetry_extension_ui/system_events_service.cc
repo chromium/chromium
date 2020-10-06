@@ -16,12 +16,18 @@ SystemEventsService::SystemEventsService(
 
 SystemEventsService::~SystemEventsService() = default;
 
+void SystemEventsService::AddBluetoothObserver(
+    mojo::PendingRemote<health::mojom::BluetoothObserver> observer) {
+  bluetooth_observer_.AddObserver(std::move(observer));
+}
+
 void SystemEventsService::AddLidObserver(
     mojo::PendingRemote<health::mojom::LidObserver> observer) {
   lid_observer_.AddObserver(std::move(observer));
 }
 
 void SystemEventsService::FlushForTesting() {
+  bluetooth_observer_.FlushForTesting();
   lid_observer_.FlushForTesting();
 }
 

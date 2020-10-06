@@ -8,6 +8,8 @@ assert(!is_official_build,
 
 source_set("telemetry_extension_ui") {
   sources = [
+    "bluetooth_observer.cc",
+    "bluetooth_observer.h",
     "convert_ptr.h",
     "diagnostics_service.cc",
     "diagnostics_service.h",

@@ -29,6 +29,13 @@ class TelemetryExtensionUiBrowserTest : public SandboxedWebUiAppTestBase {
 
   void ConfigureProbeServiceToReturnErrors();
 
+  void EmitBluetoothAdapterAddedEventPeriodically();
+  void EmitBluetoothAdapterRemovedEventPeriodically();
+  void EmitBluetoothAdapterPropertyChangedEventPeriodically();
+  void EmitBluetoothDeviceAddedEventPeriodically();
+  void EmitBluetoothDeviceRemovedEventPeriodically();
+  void EmitBluetoothDevicePropertyChangedEventPeriodically();
+
   void EmitLidClosedEventPeriodically();
   void EmitLidOpenedEventPeriodically();
 

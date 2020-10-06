@@ -26,6 +26,27 @@ namespace chromeos {
 
 namespace {
 
+class MockBluetoothObserver : public health::mojom::BluetoothObserver {
+ public:
+  MockBluetoothObserver() : receiver_{this} {}
+  MockBluetoothObserver(const MockBluetoothObserver&) = delete;
+  MockBluetoothObserver& operator=(const MockBluetoothObserver&) = delete;
+
+  mojo::PendingRemote<health::mojom::BluetoothObserver> pending_remote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  MOCK_METHOD(void, OnAdapterAdded, (), (override));
+  MOCK_METHOD(void, OnAdapterRemoved, (), (override));
+  MOCK_METHOD(void, OnAdapterPropertyChanged, (), (override));
+  MOCK_METHOD(void, OnDeviceAdded, (), (override));
+  MOCK_METHOD(void, OnDeviceRemoved, (), (override));
+  MOCK_METHOD(void, OnDevicePropertyChanged, (), (override));
+
+ private:
+  mojo::Receiver<health::mojom::BluetoothObserver> receiver_;
+};
+
 class MockLidObserver : public health::mojom::LidObserver {
  public:
   MockLidObserver() : receiver_{this} {}
@@ -51,6 +72,8 @@ class SystemEventsServiceTest : public testing::Test {
     CrosHealthdClient::InitializeFake();
     system_events_service_ = std::make_unique<SystemEventsService>(
         remote_system_events_service_.BindNewPipeAndPassReceiver());
+    mock_bluetooth_observer_ =
+        std::make_unique<testing::StrictMock<MockBluetoothObserver>>();
     mock_lid_observer_ =
         std::make_unique<testing::StrictMock<MockLidObserver>>();
 
@@ -72,8 +95,17 @@ class SystemEventsServiceTest : public testing::Test {
     return system_events_service_.get();
   }
 
+  mojo::PendingRemote<health::mojom::BluetoothObserver> bluetooth_observer()
+      const {
+    return mock_bluetooth_observer_->pending_remote();
+  }
+
   mojo::PendingRemote<health::mojom::LidObserver> lid_observer() const {
     return mock_lid_observer_->pending_remote();
+  }
+
+  MockBluetoothObserver* mock_bluetooth_observer() const {
+    return mock_bluetooth_observer_.get();
   }
 
   MockLidObserver* mock_lid_observer() const {
@@ -85,8 +117,46 @@ class SystemEventsServiceTest : public testing::Test {
   mojo::Remote<health::mojom::SystemEventsService>
       remote_system_events_service_;
   std::unique_ptr<SystemEventsService> system_events_service_;
+  std::unique_ptr<testing::StrictMock<MockBluetoothObserver>>
+      mock_bluetooth_observer_;
   std::unique_ptr<testing::StrictMock<MockLidObserver>> mock_lid_observer_;
 };
+
+// Tests that in case of cros_healthd crash Bluetooth Observer will reconnect.
+TEST_F(SystemEventsServiceTest, BluetoothObserverReconnect) {
+  remote_system_events_service()->AddBluetoothObserver(bluetooth_observer());
+
+  base::RunLoop run_loop1;
+  EXPECT_CALL(*mock_bluetooth_observer(), OnAdapterAdded)
+      .WillOnce([&run_loop1]() { run_loop1.Quit(); });
+  cros_healthd::FakeCrosHealthdClient::Get()->EmitAdapterAddedEventForTesting();
+  run_loop1.Run();
+
+  // Shutdown cros_healthd to simulate crash.
+  CrosHealthdClient::Shutdown();
+
+  // Ensure ServiceConnection is disconnected from cros_healthd.
+  cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
+
+  // Restart cros_healthd.
+  CrosHealthdClient::InitializeFake();
+
+  // Ensure disconnect handler is called for bluetooth observer from System
+  // Events Service. After this call, we will have a Mojo pending connection
+  // task in Mojo message queue.
+  system_events_service()->FlushForTesting();
+
+  // Ensure that Mojo pending connection task from bluetooth observer gets
+  // processed and observer is bound. After this call, we are sure that
+  // bluetooth observer reconnected and we can safely emit events.
+  cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
+
+  base::RunLoop run_loop2;
+  EXPECT_CALL(*mock_bluetooth_observer(), OnAdapterAdded)
+      .WillOnce([&run_loop2]() { run_loop2.Quit(); });
+  cros_healthd::FakeCrosHealthdClient::Get()->EmitAdapterAddedEventForTesting();
+  run_loop2.Run();
+}
 
 // Tests that in case of cros_healthd crash Lid Observer will reconnect.
 TEST_F(SystemEventsServiceTest, LidObserverReconnect) {

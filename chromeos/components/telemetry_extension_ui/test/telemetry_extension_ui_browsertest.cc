@@ -433,6 +433,54 @@ void TelemetryExtensionUiBrowserTest::ConfigureProbeServiceToReturnErrors() {
       ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
 }
 
+void TelemetryExtensionUiBrowserTest::
+    EmitBluetoothAdapterAddedEventPeriodically() {
+  RunCallbackPeriodically(base::BindRepeating([] {
+    chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+        ->EmitAdapterAddedEventForTesting();
+  }));
+}
+
+void TelemetryExtensionUiBrowserTest::
+    EmitBluetoothAdapterRemovedEventPeriodically() {
+  RunCallbackPeriodically(base::BindRepeating([] {
+    chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+        ->EmitAdapterRemovedEventForTesting();
+  }));
+}
+
+void TelemetryExtensionUiBrowserTest::
+    EmitBluetoothAdapterPropertyChangedEventPeriodically() {
+  RunCallbackPeriodically(base::BindRepeating([] {
+    chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+        ->EmitAdapterPropertyChangedEventForTesting();
+  }));
+}
+
+void TelemetryExtensionUiBrowserTest::
+    EmitBluetoothDeviceAddedEventPeriodically() {
+  RunCallbackPeriodically(base::BindRepeating([] {
+    chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+        ->EmitDeviceAddedEventForTesting();
+  }));
+}
+
+void TelemetryExtensionUiBrowserTest::
+    EmitBluetoothDeviceRemovedEventPeriodically() {
+  RunCallbackPeriodically(base::BindRepeating([] {
+    chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+        ->EmitDeviceRemovedEventForTesting();
+  }));
+}
+
+void TelemetryExtensionUiBrowserTest::
+    EmitBluetoothDevicePropertyChangedEventPeriodically() {
+  RunCallbackPeriodically(base::BindRepeating([] {
+    chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+        ->EmitDevicePropertyChangedEventForTesting();
+  }));
+}
+
 void TelemetryExtensionUiBrowserTest::EmitLidClosedEventPeriodically() {
   RunCallbackPeriodically(base::BindRepeating([] {
     chromeos::cros_healthd::FakeCrosHealthdClient::Get()

@@ -85,6 +85,41 @@ void FakeCrosHealthdClient::EmitAdapterAddedEventForTesting() {
   fake_service_.EmitAdapterAddedEventForTesting();
 }
 
+void FakeCrosHealthdClient::EmitAdapterRemovedEventForTesting() {
+  // Flush the receiver, so any pending observers are registered before the
+  // event is emitted.
+  receiver_.FlushForTesting();
+  fake_service_.EmitAdapterRemovedEventForTesting();
+}
+
+void FakeCrosHealthdClient::EmitAdapterPropertyChangedEventForTesting() {
+  // Flush the receiver, so any pending observers are registered before the
+  // event is emitted.
+  receiver_.FlushForTesting();
+  fake_service_.EmitAdapterPropertyChangedEventForTesting();
+}
+
+void FakeCrosHealthdClient::EmitDeviceAddedEventForTesting() {
+  // Flush the receiver, so any pending observers are registered before the
+  // event is emitted.
+  receiver_.FlushForTesting();
+  fake_service_.EmitDeviceAddedEventForTesting();
+}
+
+void FakeCrosHealthdClient::EmitDeviceRemovedEventForTesting() {
+  // Flush the receiver, so any pending observers are registered before the
+  // event is emitted.
+  receiver_.FlushForTesting();
+  fake_service_.EmitDeviceRemovedEventForTesting();
+}
+
+void FakeCrosHealthdClient::EmitDevicePropertyChangedEventForTesting() {
+  // Flush the receiver, so any pending observers are registered before the
+  // event is emitted.
+  receiver_.FlushForTesting();
+  fake_service_.EmitDevicePropertyChangedEventForTesting();
+}
+
 void FakeCrosHealthdClient::EmitLidClosedEventForTesting() {
   // Flush the receiver, so any pending observers are registered before the
   // event is emitted.

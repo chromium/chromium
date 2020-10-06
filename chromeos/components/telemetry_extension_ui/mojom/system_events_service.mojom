@@ -16,12 +16,35 @@ module chromeos.health.mojom;
 
 // System Events interface exposed by the Telemetry SWX.
 interface SystemEventsService {
+  // Adds an observer to be notified on Bluetooth events. The caller can remove
+  // the observer created by this call by closing their end of the message pipe.
+  //
+  // The request:
+  // * |observer| - Bluetooth observer to be added to system events service.
+  AddBluetoothObserver(pending_remote<BluetoothObserver> observer);
+
   // Adds an observer to be notified on lid events. The caller can remove the
   // observer created by this call by closing their end of the message pipe.
   //
   // The request:
   // * |observer| - lid observer to be added to system events service.
   AddLidObserver(pending_remote<LidObserver> observer);
+};
+
+// Implemented by clients who desire Bluetooth notifications.
+interface BluetoothObserver {
+  // Fired when a Bluetooth adapter is added.
+  OnAdapterAdded();
+  // Fired when a Bluetooth adapter is removed.
+  OnAdapterRemoved();
+  // Fired when a property of a Bluetooth adapter is changed.
+  OnAdapterPropertyChanged();
+  // Fired when a Bluetooth device is added.
+  OnDeviceAdded();
+  // Fired when a Bluetooth device is removed.
+  OnDeviceRemoved();
+  // Fired when a property of a Bluetooth device is changed.
+  OnDevicePropertyChanged();
 };
 
 // Implemented by clients who desire lid notifications.

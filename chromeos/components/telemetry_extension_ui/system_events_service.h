@@ -9,6 +9,7 @@
 #error System events service should only be included in unofficial builds.
 #endif
 
+#include "chromeos/components/telemetry_extension_ui/bluetooth_observer.h"
 #include "chromeos/components/telemetry_extension_ui/lid_observer.h"
 #include "chromeos/components/telemetry_extension_ui/mojom/system_events_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -25,6 +26,9 @@ class SystemEventsService : public health::mojom::SystemEventsService {
   SystemEventsService& operator=(const SystemEventsService&) = delete;
   ~SystemEventsService() override;
 
+  void AddBluetoothObserver(
+      mojo::PendingRemote<health::mojom::BluetoothObserver> observer) override;
+
   void AddLidObserver(
       mojo::PendingRemote<health::mojom::LidObserver> observer) override;
 
@@ -33,6 +37,7 @@ class SystemEventsService : public health::mojom::SystemEventsService {
  private:
   mojo::Receiver<health::mojom::SystemEventsService> receiver_;
 
+  BluetoothObserver bluetooth_observer_;
   LidObserver lid_observer_;
 };
 

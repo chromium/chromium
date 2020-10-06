@@ -69,6 +69,26 @@ class COMPONENT_EXPORT(CROS_HEALTHD) FakeCrosHealthdClient
   // observers.
   void EmitAdapterAddedEventForTesting();
 
+  // Calls the Bluetooth event OnAdapterRemoved on all registered Bluetooth
+  // observers.
+  void EmitAdapterRemovedEventForTesting();
+
+  // Calls the Bluetooth event OnAdapterPropertyChanged on all registered
+  // Bluetooth observers.
+  void EmitAdapterPropertyChangedEventForTesting();
+
+  // Calls the Bluetooth event OnDeviceAdded on all registered Bluetooth
+  // observers.
+  void EmitDeviceAddedEventForTesting();
+
+  // Calls the Bluetooth event OnDeviceRemoved on all registered Bluetooth
+  // observers.
+  void EmitDeviceRemovedEventForTesting();
+
+  // Calls the Bluetooth event OnDevicePropertyChanged on all registered
+  // Bluetooth observers.
+  void EmitDevicePropertyChangedEventForTesting();
+
   // Calls the lid event OnLidClosed on all registered lid observers.
   void EmitLidClosedEventForTesting();
 
