@@ -28,6 +28,8 @@ class AndroidSmsAppHelperDelegate {
   // Returns true if the app was ever installed successfully since the feature
   // was enabled and then been manually uninstalled by the user.
   virtual bool HasAppBeenManuallyUninstalledByUser() = 0;
+  // Returns whether the PWA is currently installed.
+  virtual bool IsAppInstalled() = 0;
   // Returns true when details about installed PWAs is available to query.
   virtual bool IsAppRegistryReady() = 0;
   // Takes a task to run when the app registry is available.  If already

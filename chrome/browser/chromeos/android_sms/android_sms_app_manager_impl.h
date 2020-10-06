@@ -71,6 +71,7 @@ class AndroidSmsAppManagerImpl : public AndroidSmsAppManager {
   void SetUpAndLaunchAndroidSmsApp() override;
   void TearDownAndroidSmsApp() override;
   bool HasAppBeenManuallyUninstalledByUser() override;
+  bool IsAppInstalled() override;
   bool IsAppRegistryReady() override;
   void ExecuteOnAppRegistryReady(base::OnceClosure task) override;
 

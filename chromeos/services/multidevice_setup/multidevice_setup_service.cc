@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/multidevice_setup/account_status_change_delegate_notifier_impl.h"
+#include "chromeos/services/multidevice_setup/android_sms_app_installing_status_observer.h"
 #include "chromeos/services/multidevice_setup/device_reenroller.h"
 #include "chromeos/services/multidevice_setup/grandfathered_easy_unlock_host_disabler.h"
 #include "chromeos/services/multidevice_setup/host_backend_delegate_impl.h"
@@ -31,6 +32,7 @@ void MultiDeviceSetupService::RegisterProfilePrefs(
   HostBackendDelegateImpl::RegisterPrefs(registry);
   HostVerifierImpl::RegisterPrefs(registry);
   GrandfatheredEasyUnlockHostDisabler::RegisterPrefs(registry);
+  AndroidSmsAppInstallingStatusObserver::RegisterPrefs(registry);
   RegisterFeaturePrefs(registry);
 }
 

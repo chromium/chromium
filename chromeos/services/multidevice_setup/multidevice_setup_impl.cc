@@ -141,7 +141,8 @@ MultiDeviceSetupImpl::MultiDeviceSetupImpl(
               ? AndroidSmsAppInstallingStatusObserver::Factory::Create(
                     host_status_provider_.get(),
                     feature_state_manager_.get(),
-                    android_sms_app_helper_delegate)
+                    android_sms_app_helper_delegate,
+                    pref_service)
               : nullptr),
       auth_token_validator_(auth_token_validator) {
   host_status_provider_->AddObserver(this);
