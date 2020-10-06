@@ -36,6 +36,19 @@ void PolicyServiceAndroid::OnPolicyServiceInitialized(PolicyDomain domain) {
       base::android::ScopedJavaLocalRef<jobject>(java_ref_));
 }
 
+void PolicyServiceAndroid::OnPolicyUpdated(const PolicyNamespace& ns,
+                                           const PolicyMap& previous,
+                                           const PolicyMap& current) {
+  DCHECK_EQ(POLICY_DOMAIN_CHROME, ns.domain);
+  DCHECK(java_ref_);
+  PolicyMapAndroid previous_android(previous);
+  PolicyMapAndroid current_android(current);
+  Java_PolicyService_onPolicyUpdated(
+      base::android::AttachCurrentThread(),
+      base::android::ScopedJavaLocalRef<jobject>(java_ref_),
+      previous_android.GetJavaObject(), current_android.GetJavaObject());
+}
+
 bool PolicyServiceAndroid::IsInitializationComplete(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& caller) const {
