@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test for checking position of the svg element when animateMotion's mpath is a circle assert_approx_equals: expected -200 +/- 1 but got 0
+Harness: the test ran to completion.
+

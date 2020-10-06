@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 8695 tests; 8589 PASS, 106 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 8656 tests; 8550 PASS, 106 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS picture.title: 38 tests
 PASS picture.lang: 38 tests
 PASS picture.dir: 68 tests
@@ -108,7 +108,6 @@ FAIL iframe.allowUserMedia: IDL set to -Infinity assert_equals: IDL get expected
 FAIL iframe.allowUserMedia: IDL set to "\0" assert_equals: IDL get expected (boolean) true but got (string) "\0"
 FAIL iframe.allowUserMedia: IDL set to object "test-toString" assert_equals: IDL get expected (boolean) true but got (object) object "test-toString"
 FAIL iframe.allowUserMedia: IDL set to object "test-valueOf" assert_equals: IDL get expected (boolean) true but got (object) object "test-valueOf"
-PASS iframe.allowPaymentRequest: 39 tests
 PASS iframe.width: 38 tests
 PASS iframe.height: 38 tests
 PASS iframe.referrerPolicy: 30 tests
