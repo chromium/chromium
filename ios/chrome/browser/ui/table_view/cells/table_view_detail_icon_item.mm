@@ -198,11 +198,11 @@ const CGFloat kCellLabelsWidthProportion = 3.0f;
 }
 
 - (void)setIconImage:(UIImage*)image {
-  BOOL hidden = (image == nil);
-  if (hidden == _iconImageView.hidden) {
+  if (image == nil && _iconImageView.image == nil) {
     return;
   }
 
+  BOOL hidden = (image == nil);
   _iconImageView.image = image;
   _iconImageView.hidden = hidden;
   if (hidden) {
