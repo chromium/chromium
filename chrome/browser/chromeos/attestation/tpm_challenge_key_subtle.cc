@@ -13,6 +13,8 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/attestation/attestation_ca_client.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
@@ -51,13 +53,15 @@ std::unique_ptr<TpmChallengeKeySubtle> TpmChallengeKeySubtleFactory::Create() {
 
 // static
 std::unique_ptr<TpmChallengeKeySubtle>
-TpmChallengeKeySubtleFactory::CreateForPreparedKey(AttestationKeyType key_type,
-                                                   bool will_register_key,
-                                                   const std::string& key_name,
-                                                   Profile* profile) {
+TpmChallengeKeySubtleFactory::CreateForPreparedKey(
+    AttestationKeyType key_type,
+    bool will_register_key,
+    const std::string& key_name,
+    const std::string& public_key,
+    Profile* profile) {
   auto result = TpmChallengeKeySubtleFactory::Create();
   result->RestorePreparedKeyState(key_type, will_register_key, key_name,
-                                  profile);
+                                  public_key, profile);
   return result;
 }
 
@@ -133,8 +137,10 @@ void TpmChallengeKeySubtleImpl::RestorePreparedKeyState(
     AttestationKeyType key_type,
     bool will_register_key,
     const std::string& key_name,
+    const std::string& public_key,
     Profile* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!will_register_key || !public_key.empty());
 
   // For user keys, a |profile| is strictly necessary.
   DCHECK(key_type != KEY_USER || profile);
@@ -142,6 +148,7 @@ void TpmChallengeKeySubtleImpl::RestorePreparedKeyState(
   key_type_ = key_type;
   will_register_key_ = will_register_key;
   key_name_ = GetKeyNameWithDefault(key_type, key_name);
+  public_key_ = public_key;
   profile_ = profile;
 }
 
@@ -481,6 +488,10 @@ void TpmChallengeKeySubtleImpl::PrepareKeyFinished(
     return;
   }
 
+  if (profile_ && will_register_key_) {
+    public_key_ = prepare_key_result->data;
+  }
+
   std::move(callback_).Run(Result::MakePublicKey(prepare_key_result->data));
 }
 
@@ -554,6 +565,32 @@ void TpmChallengeKeySubtleImpl::RegisterKeyCallback(
   if (!success || return_code != cryptohome::MOUNT_ERROR_NONE) {
     std::move(callback_).Run(
         Result::MakeError(ResultCode::kKeyRegistrationFailedError));
+    return;
+  }
+
+  if (!profile_ || (key_type_ == AttestationKeyType::KEY_DEVICE)) {
+    std::move(callback_).Run(Result::MakeSuccess());
+    return;
+  }
+
+  // TODO(1082459, 1113115): For now only user keys are being explicitly marked
+  // as corporate. All device keys are assumed to be corporate as well. It is
+  // better to mark device keys as well, when there is a way to get
+  // KeyPermissionsService without a profile.
+  platform_keys::KeyPermissionsServiceFactory::GetForBrowserContext(profile_)
+      ->SetCorporateKey(
+          public_key_,
+          base::BindOnce(&TpmChallengeKeySubtleImpl::MarkCorporateKeyCallback,
+                         weak_factory_.GetWeakPtr()));
+}
+
+void TpmChallengeKeySubtleImpl::MarkCorporateKeyCallback(
+    platform_keys::Status status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (status != platform_keys::Status::kSuccess) {
+    std::move(callback_).Run(
+        Result::MakeError(ResultCode::kMarkCorporateKeyFailedError));
     return;
   }
 

@@ -1177,11 +1177,11 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
 
     mock_tpm_challenge_key = PrepareTpmChallengeKey();
 
-    EXPECT_CALL(
-        *mock_tpm_challenge_key,
-        RestorePreparedKeyState(attestation::AttestationKeyType::KEY_USER,
-                                /*will_register_key=*/true,
-                                GetKeyName(kCertProfileId), /*profile=*/_))
+    EXPECT_CALL(*mock_tpm_challenge_key,
+                RestorePreparedKeyState(
+                    attestation::AttestationKeyType::KEY_USER,
+                    /*will_register_key=*/true, GetKeyName(kCertProfileId),
+                    GetPublicKey(), /*profile=*/_))
         .Times(1);
 
     worker = CertProvisioningWorkerFactory::Get()->Deserialize(
@@ -1259,11 +1259,11 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
     EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _)).Times(1);
 
     mock_tpm_challenge_key = PrepareTpmChallengeKey();
-    EXPECT_CALL(
-        *mock_tpm_challenge_key,
-        RestorePreparedKeyState(attestation::AttestationKeyType::KEY_USER,
-                                /*will_register_key=*/true,
-                                GetKeyName(kCertProfileId), /*profile=*/_))
+    EXPECT_CALL(*mock_tpm_challenge_key,
+                RestorePreparedKeyState(
+                    attestation::AttestationKeyType::KEY_USER,
+                    /*will_register_key=*/true, GetKeyName(kCertProfileId),
+                    GetPublicKey(), /*profile=*/_))
         .Times(1);
 
     worker = CertProvisioningWorkerFactory::Get()->Deserialize(

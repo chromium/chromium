@@ -10,6 +10,9 @@
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/chromeos/attestation/tpm_challenge_key_result.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/mock_key_permissions_service.h"
+#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
@@ -101,7 +104,7 @@ class TpmChallengeKeySubtleTest : public ::testing::Test {
   void InitSigninProfile();
   void InitUnaffiliatedProfile();
   void InitAffiliatedProfile();
-  void SetDefaultSettings();
+  void InitAfterProfileCreated();
 
   TestingProfile* CreateUserProfile(bool is_affiliated);
   TestingProfile* GetProfile();
@@ -135,6 +138,7 @@ class TpmChallengeKeySubtleTest : public ::testing::Test {
   StrictMock<chromeos::attestation::MockAttestationFlow> mock_attestation_flow_;
   cryptohome::MockAsyncMethodCaller* mock_async_method_caller_ = nullptr;
   chromeos::FakeCryptohomeClient cryptohome_client_;
+  platform_keys::MockKeyPermissionsService* key_permissions_service_ = nullptr;
 
   TestingProfileManager testing_profile_manager_;
   chromeos::FakeChromeUserManager fake_user_manager_;
@@ -169,27 +173,35 @@ TpmChallengeKeySubtleTest::~TpmChallengeKeySubtleTest() {
 void TpmChallengeKeySubtleTest::InitSigninProfile() {
   testing_profile_ =
       testing_profile_manager_.CreateTestingProfile(chrome::kInitialProfile);
-  SetDefaultSettings();
+  InitAfterProfileCreated();
 }
 
 void TpmChallengeKeySubtleTest::InitUnaffiliatedProfile() {
   testing_profile_ = CreateUserProfile(/*is_affiliated=*/false);
-  SetDefaultSettings();
+  InitAfterProfileCreated();
 }
 
 void TpmChallengeKeySubtleTest::InitAffiliatedProfile() {
   testing_profile_ = CreateUserProfile(/*is_affiliated=*/true);
-  SetDefaultSettings();
+  InitAfterProfileCreated();
   GetProfile()->GetTestingPrefService()->SetManagedPref(
       prefs::kAttestationEnabled, std::make_unique<base::Value>(true));
 }
 
-void TpmChallengeKeySubtleTest::SetDefaultSettings() {
+void TpmChallengeKeySubtleTest::InitAfterProfileCreated() {
   GetInstallAttributes()->SetCloudManaged("google.com", "device_id");
 
   GetCrosSettingsHelper()->ReplaceDeviceSettingsProviderWithStub();
   GetCrosSettingsHelper()->SetBoolean(chromeos::kDeviceAttestationEnabled,
                                       true);
+
+  key_permissions_service_ =
+      static_cast<platform_keys::MockKeyPermissionsService*>(
+          platform_keys::KeyPermissionsServiceFactory::GetInstance()
+              ->SetTestingFactoryAndUse(
+                  GetProfile(),
+                  base::BindRepeating(
+                      &platform_keys::BuildMockKeyPermissionsService)));
 }
 
 TestingProfile* TpmChallengeKeySubtleTest::CreateUserProfile(
@@ -516,6 +528,10 @@ TEST_F(TpmChallengeKeySubtleTest, UserKeyRegisteredSuccess) {
       .WillOnce(RunOnceCallback<3>(
           /*success=*/true, cryptohome::MOUNT_ERROR_NONE));
 
+  EXPECT_CALL(*key_permissions_service_,
+              SetCorporateKey(GetPublicKey(), /*callback=*/_))
+      .WillOnce(RunOnceCallback<1>(platform_keys::Status::kSuccess));
+
   RunThreeStepsAndExpect(key_type, /*will_register_key=*/true, key_name,
                          TpmChallengeKeyResult::MakeSuccess());
 }
@@ -546,7 +562,8 @@ TEST_F(TpmChallengeKeySubtleTest, RestorePreparedKeyState) {
 
   std::unique_ptr<TpmChallengeKeySubtle> challenge_key_subtle =
       TpmChallengeKeySubtleFactory::CreateForPreparedKey(
-          key_type, /*will_register_key=*/true, key_name, GetProfile());
+          key_type, /*will_register_key=*/true, key_name, GetPublicKey(),
+          GetProfile());
 
   EXPECT_CALL(
       *mock_async_method_caller_,
@@ -573,6 +590,10 @@ TEST_F(TpmChallengeKeySubtleTest, RestorePreparedKeyState) {
       .WillOnce(RunOnceCallback<3>(
           /*success=*/true, cryptohome::MOUNT_ERROR_NONE));
 
+  EXPECT_CALL(*key_permissions_service_,
+              SetCorporateKey(GetPublicKey(), /*callback=*/_))
+      .WillOnce(RunOnceCallback<1>(platform_keys::Status::kSuccess));
+
   {
     CallbackObserver callback_observer;
     challenge_key_subtle->StartRegisterKeyStep(callback_observer.GetCallback());
@@ -590,7 +611,8 @@ TEST_F(TpmChallengeKeySubtleTest, KeyRegistrationFailed) {
 
   std::unique_ptr<TpmChallengeKeySubtle> challenge_key_subtle =
       TpmChallengeKeySubtleFactory::CreateForPreparedKey(
-          key_type, /*will_register_key=*/true, key_name, GetProfile());
+          key_type, /*will_register_key=*/true, key_name, GetPublicKey(),
+          GetProfile());
 
   EXPECT_CALL(*mock_async_method_caller_, TpmAttestationRegisterKey)
       .WillOnce(

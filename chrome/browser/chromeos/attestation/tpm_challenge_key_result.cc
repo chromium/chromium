@@ -62,6 +62,8 @@ const char TpmChallengeKeyResult::kDeviceWebBasedAttestationNotOobeErrorMsg[] =
     "Device web based attestation is only available on the OOBE screen.";
 const char TpmChallengeKeyResult::kGetPublicKeyFailedErrorMsg[] =
     "Failed to get public key.";
+const char TpmChallengeKeyResult::kMarkCorporateKeyFailedErrorMsg[] =
+    "Failed to mark key as corporate.";
 
 // static
 TpmChallengeKeyResult TpmChallengeKeyResult::MakeChallengeResponse(
@@ -136,6 +138,8 @@ const char* TpmChallengeKeyResult::GetErrorMessage() const {
       return kDeviceWebBasedAttestationNotOobeErrorMsg;
     case TpmChallengeKeyResultCode::kGetPublicKeyFailedError:
       return kGetPublicKeyFailedErrorMsg;
+    case TpmChallengeKeyResultCode::kMarkCorporateKeyFailedError:
+      return kMarkCorporateKeyFailedErrorMsg;
     case TpmChallengeKeyResultCode::kSuccess:
       // Not an error message.
       NOTREACHED();

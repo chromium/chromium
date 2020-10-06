@@ -34,7 +34,8 @@ enum class TpmChallengeKeyResultCode {
   kChallengeBadBase64Error = 16,
   kDeviceWebBasedAttestationNotOobeError = 17,
   kGetPublicKeyFailedError = 18,
-  kMaxValue = kGetPublicKeyFailedError,
+  kMarkCorporateKeyFailedError = 19,
+  kMaxValue = kMarkCorporateKeyFailedError,
 };
 
 // If |IsSuccess| returns false, |result_code| contains error code and
@@ -62,6 +63,7 @@ struct TpmChallengeKeyResult {
   static const char kChallengeBadBase64ErrorMsg[];
   static const char kDeviceWebBasedAttestationNotOobeErrorMsg[];
   static const char kGetPublicKeyFailedErrorMsg[];
+  static const char kMarkCorporateKeyFailedErrorMsg[];
 
   static TpmChallengeKeyResult MakeChallengeResponse(
       const std::string& challenge_response);

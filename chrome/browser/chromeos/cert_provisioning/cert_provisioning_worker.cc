@@ -889,7 +889,7 @@ void CertProvisioningWorkerImpl::InitAfterDeserialization() {
       attestation::TpmChallengeKeySubtleFactory::CreateForPreparedKey(
           GetVaKeyType(cert_scope_),
           /*will_register_key=*/true, GetKeyName(cert_profile_.profile_id),
-          profile_);
+          public_key_, profile_);
 }
 
 void CertProvisioningWorkerImpl::RegisterForInvalidationTopic() {
