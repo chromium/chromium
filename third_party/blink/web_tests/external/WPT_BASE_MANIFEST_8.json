@@ -39805,12 +39805,12 @@
        ]
       ],
       "letter-spacing-079.xht": [
-       "f771afe302a2036a5ee860b4f9923900a480915f",
+       "31d5612b62a9d292663f9880150adb45356ed54f",
        [
         null,
         [
          [
-          "/css/CSS2/text/letter-spacing-007-ref.xht",
+          "/css/CSS2/text/letter-spacing-079-ref.xht",
           "=="
          ]
         ],
@@ -85578,6 +85578,32 @@
        [
         [
          "/css/css-overflow/clip-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "clip-006.html": [
+      "08f755ad75c452fade0381b8ba8f44dffbf0e797",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "clip-007.html": [
+      "642ea9c3e6f38942ae7d754ca80581f2432107ae",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
          "=="
         ]
        ],
@@ -176366,6 +176392,10 @@
       ],
       "letter-spacing-007-ref.xht": [
        "b61d9defb67d89611b8d9f8547d452bc66d68002",
+       []
+      ],
+      "letter-spacing-079-ref.xht": [
+       "ec24b9871d7e43542f65ff037cce55fda4bd8148",
        []
       ],
       "letter-spacing-091-ref.xht": [
@@ -290765,6 +290795,13 @@
        ]
       ]
      },
+     "scroll-width-height.tentative.html": [
+      "9efaf1bff881264e2da85e28aa911c479d7739cf",
+      [
+       null,
+       {}
+      ]
+     ],
      "zero-column-width-computed-style.html": [
       "46d876f1a150c257be9c37d25a4a4c34d2f1d73d",
       [
