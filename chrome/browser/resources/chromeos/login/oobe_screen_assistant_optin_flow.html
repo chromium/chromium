@@ -2,7 +2,10 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<div class="step hidden" id="assistant-optin-flow"
-    role="group" hidden>
-  <assistant-optin-flow id="assistant-optin-flow-card"></assistant-optin-flow>
-</div>
+<include src="../assistant_optin/assistant_optin_flow.html">
+
+<dom-module id="assistant-optin">
+  <template>
+    <assistant-optin-flow id="card"></assistant-optin-flow>
+  </template>
+</dom-module>

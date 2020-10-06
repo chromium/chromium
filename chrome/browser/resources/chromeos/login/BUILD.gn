@@ -34,6 +34,7 @@ js_type_check("closure_compile") {
     ":oobe_i18n_dropdown",
     ":oobe_network",
     ":oobe_reset",
+    ":oobe_screen_assistant_optin_flow",
     ":oobe_select",
     ":oobe_supervision_transition",
     ":oobe_update",
@@ -245,6 +246,14 @@ js_library("oobe_network") {
 
 js_library("oobe_reset") {
   deps = [
+    "components:oobe_dialog_host_behavior",
+    "components:oobe_i18n_behavior",
+  ]
+}
+
+js_library("oobe_screen_assistant_optin_flow") {
+  deps = [
+    "components:login_screen_behavior",
     "components:oobe_dialog_host_behavior",
     "components:oobe_i18n_behavior",
   ]
