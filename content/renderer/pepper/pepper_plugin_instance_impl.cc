@@ -2664,7 +2664,9 @@ int32_t PepperPluginInstanceImpl::LockMouse(
   if (!HasTransientUserActivation())
     return PP_ERROR_NO_USER_GESTURE;
 
-  // Either mouselock succeeded or a Flash fullscreen is pending.
+  if (!LockMouse(false))
+    return PP_ERROR_FAILED;
+
   lock_mouse_callback_ = callback;
   return PP_OK_COMPLETIONPENDING;
 }
