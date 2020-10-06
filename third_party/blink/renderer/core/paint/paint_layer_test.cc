@@ -2932,4 +2932,17 @@ TEST_P(PaintLayerTest, GlobalRootScrollerHitTest) {
   }
 }
 
+TEST_P(PaintLayerTest, HasNonEmptyChildLayoutObjectsZeroSizeOverflowVisible) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="layer" style="position: relative">
+      <div style="overflow: visible; height: 0; width: 0">text</div>
+    </div>
+  )HTML");
+
+  auto* layer = ToLayoutBox(GetLayoutObjectByElementId("layer"))->Layer();
+  EXPECT_TRUE(layer->HasVisibleContent());
+  EXPECT_FALSE(layer->HasVisibleDescendant());
+  EXPECT_TRUE(layer->HasNonEmptyChildLayoutObjects());
+}
+
 }  // namespace blink
