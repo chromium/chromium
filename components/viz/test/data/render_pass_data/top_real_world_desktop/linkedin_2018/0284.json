@@ -1813,12 +1813,6 @@
          "de_jelly_delta_y": 0.0,
          "is_clipped": true,
          "is_fast_rounded_corner": false,
-         "occluding_damage_rect": {
-            "height": 21,
-            "width": 508,
-            "x": 134,
-            "y": 240
-         },
          "opacity": 1.0,
          "quad_layer_rect": {
             "height": 22,
