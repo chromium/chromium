@@ -47,7 +47,12 @@ PairingLostNotifier::PairingLostNotifier(
       pref_service_(pref_service),
       android_sms_app_helper_delegate_(android_sms_app_helper_delegate) {
   multidevice_setup_client_->AddObserver(this);
-  HandleMessagesFeatureState();
+
+  // Wait until the app registry is loaded before querying for installed PWA
+  // info.
+  android_sms_app_helper_delegate_->ExecuteOnAppRegistryReady(
+      base::BindOnce(&PairingLostNotifier::HandleMessagesFeatureState,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 PairingLostNotifier::~PairingLostNotifier() {
@@ -61,6 +66,10 @@ void PairingLostNotifier::OnFeatureStatesChanged(
 }
 
 void PairingLostNotifier::HandleMessagesFeatureState() {
+  if (!android_sms_app_helper_delegate_->IsAppRegistryReady()) {
+    return;
+  }
+
   multidevice_setup::mojom::FeatureState state =
       multidevice_setup_client_->GetFeatureStates()
           .find(multidevice_setup::mojom::Feature::kMessages)

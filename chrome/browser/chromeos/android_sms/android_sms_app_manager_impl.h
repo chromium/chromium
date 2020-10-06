@@ -35,19 +35,6 @@ enum class PwaDomain;
 
 class AndroidSmsAppManagerImpl : public AndroidSmsAppManager {
  public:
-  AndroidSmsAppManagerImpl(
-      Profile* profile,
-      AndroidSmsAppSetupController* setup_controller,
-      PrefService* pref_service,
-      app_list::AppListSyncableService* app_list_syncable_service,
-      scoped_refptr<base::TaskRunner> task_runner =
-          base::ThreadTaskRunnerHandle::Get());
-  ~AndroidSmsAppManagerImpl() override;
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
- private:
-  friend class AndroidSmsAppManagerImplTest;
-
   // Thin wrapper around static PWA functions which is stubbed out for tests.
   class PwaDelegate {
    public:
@@ -58,7 +45,23 @@ class AndroidSmsAppManagerImpl : public AndroidSmsAppManager {
         const std::string& from_app_id,
         const std::string& to_app_id,
         app_list::AppListSyncableService* app_list_syncable_service);
+    virtual bool IsAppRegistryReady(Profile* profile);
+    virtual void ExecuteOnAppRegistryReady(Profile* profile,
+                                           base::OnceClosure task);
   };
+
+  AndroidSmsAppManagerImpl(
+      Profile* profile,
+      AndroidSmsAppSetupController* setup_controller,
+      PrefService* pref_service,
+      app_list::AppListSyncableService* app_list_syncable_service,
+      std::unique_ptr<PwaDelegate> test_pwa_delegate = nullptr);
+  ~AndroidSmsAppManagerImpl() override;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+ private:
+  friend class AndroidSmsAppManagerImplTest;
 
   // AndroidSmsAppManager:
   base::Optional<GURL> GetCurrentAppUrl() override;
@@ -68,6 +71,8 @@ class AndroidSmsAppManagerImpl : public AndroidSmsAppManager {
   void SetUpAndLaunchAndroidSmsApp() override;
   void TearDownAndroidSmsApp() override;
   bool HasAppBeenManuallyUninstalledByUser() override;
+  bool IsAppRegistryReady() override;
+  void ExecuteOnAppRegistryReady(base::OnceClosure task) override;
 
   base::Optional<PwaDomain> GetInstalledPwaDomain();
   void CompleteAsyncInitialization();
@@ -78,8 +83,6 @@ class AndroidSmsAppManagerImpl : public AndroidSmsAppManager {
   void OnRemoveOldAppResult(const base::Optional<PwaDomain>& migrating_from,
                             bool success);
   void HandleAppSetupFinished();
-
-  void SetPwaDelegateForTesting(std::unique_ptr<PwaDelegate> test_pwa_delegate);
 
   Profile* profile_;
   AndroidSmsAppSetupController* setup_controller_;
@@ -93,9 +96,9 @@ class AndroidSmsAppManagerImpl : public AndroidSmsAppManager {
   // successfully.
   bool is_app_launch_pending_ = false;
 
-  // The installed app URL during the last time that
-  // NotifyInstalledAppUrlChanged() was invoked.
-  base::Optional<GURL> installed_url_at_last_notify_;
+  // The installed app URL, initialized when app registry is ready and updated
+  // any time NotifyInstalledAppUrlChanged() is invoked.
+  base::Optional<GURL> last_installed_url_;
 
   std::unique_ptr<PwaDelegate> pwa_delegate_;
   base::WeakPtrFactory<AndroidSmsAppManagerImpl> weak_ptr_factory_{this};
