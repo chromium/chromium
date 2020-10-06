@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "chrome/browser/metrics/ukm_background_recorder_service.h"
+#include "chrome/browser/background_sync/background_sync_delegate_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -25,13 +25,12 @@ class BackgroundSyncMetricsBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     Profile* profile = browser()->profile();
 
-    recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    auto* ukm_background_service =
-        ukm::UkmBackgroundRecorderFactory::GetForProfile(profile);
-    DCHECK(ukm_background_service);
+    background_sync_delegate_ =
+        std::make_unique<BackgroundSyncDelegateImpl>(profile);
+    background_sync_metrics_ = std::make_unique<BackgroundSyncMetrics>(
+        background_sync_delegate_.get());
 
-    background_sync_metrics_ =
-        std::make_unique<BackgroundSyncMetrics>(ukm_background_service);
+    recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
 
     // Adds the URL to the history so that UKM events for this origin are
     // recorded.
@@ -50,6 +49,7 @@ class BackgroundSyncMetricsBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> recorder_;
   std::unique_ptr<BackgroundSyncMetrics> background_sync_metrics_;
+  std::unique_ptr<BackgroundSyncDelegateImpl> background_sync_delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundSyncMetricsBrowserTest);
 };

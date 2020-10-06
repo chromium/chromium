@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/background_sync/background_sync_metrics.h"
 #include "chrome/browser/engagement/site_engagement_observer.h"
+#include "components/background_sync/background_sync_delegate.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -161,7 +162,9 @@ class BackgroundSyncControllerImpl : public content::BackgroundSyncController,
   // Same lifetime as |profile_|.
   SiteEngagementService* site_engagement_service_;
 
-  BackgroundSyncMetrics background_sync_metrics_;
+  std::unique_ptr<background_sync::BackgroundSyncDelegate>
+      background_sync_delegate_;
+  std::unique_ptr<BackgroundSyncMetrics> background_sync_metrics_;
 
   std::set<url::Origin> suspended_periodic_sync_origins_;
   std::set<url::Origin> periodic_sync_origins_;

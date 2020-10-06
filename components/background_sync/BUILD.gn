@@ -4,6 +4,7 @@
 
 static_library("background_sync") {
   sources = [
+    "background_sync_delegate.h",
     "background_sync_permission_context.cc",
     "background_sync_permission_context.h",
   ]

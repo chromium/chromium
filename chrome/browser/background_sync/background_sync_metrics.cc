@@ -5,16 +5,16 @@
 #include "chrome/browser/background_sync/background_sync_metrics.h"
 
 #include "base/bind.h"
-#include "chrome/browser/metrics/ukm_background_recorder_service.h"
+#include "components/background_sync/background_sync_delegate.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/origin.h"
 
 BackgroundSyncMetrics::BackgroundSyncMetrics(
-    ukm::UkmBackgroundRecorderService* ukm_background_service)
-    : ukm_background_service_(ukm_background_service) {
-  DCHECK(ukm_background_service_);
+    background_sync::BackgroundSyncDelegate* delegate)
+    : delegate_(delegate) {
+  DCHECK(delegate_);
 }
 
 BackgroundSyncMetrics::~BackgroundSyncMetrics() = default;
@@ -23,7 +23,8 @@ void BackgroundSyncMetrics::MaybeRecordOneShotSyncRegistrationEvent(
     const url::Origin& origin,
     bool can_fire,
     bool is_reregistered) {
-  ukm_background_service_->GetBackgroundSourceIdIfAllowed(
+  DCHECK(delegate_);
+  delegate_->GetUkmSourceId(
       origin,
       base::BindOnce(
           &BackgroundSyncMetrics::DidGetBackgroundSourceId,
@@ -37,7 +38,8 @@ void BackgroundSyncMetrics::MaybeRecordPeriodicSyncRegistrationEvent(
     const url::Origin& origin,
     int min_interval,
     bool is_reregistered) {
-  ukm_background_service_->GetBackgroundSourceIdIfAllowed(
+  DCHECK(delegate_);
+  delegate_->GetUkmSourceId(
       origin,
       base::BindOnce(
           &BackgroundSyncMetrics::DidGetBackgroundSourceId,
@@ -52,7 +54,8 @@ void BackgroundSyncMetrics::MaybeRecordOneShotSyncCompletionEvent(
     blink::ServiceWorkerStatusCode status_code,
     int num_attempts,
     int max_attempts) {
-  ukm_background_service_->GetBackgroundSourceIdIfAllowed(
+  DCHECK(delegate_);
+  delegate_->GetUkmSourceId(
       origin, base::BindOnce(
                   &BackgroundSyncMetrics::DidGetBackgroundSourceId,
                   weak_ptr_factory_.GetWeakPtr(),
@@ -67,7 +70,8 @@ void BackgroundSyncMetrics::MaybeRecordPeriodicSyncEventCompletion(
     blink::ServiceWorkerStatusCode status_code,
     int num_attempts,
     int max_attempts) {
-  ukm_background_service_->GetBackgroundSourceIdIfAllowed(
+  DCHECK(delegate_);
+  delegate_->GetUkmSourceId(
       origin, base::BindOnce(
                   &BackgroundSyncMetrics::DidGetBackgroundSourceId,
                   weak_ptr_factory_.GetWeakPtr(),
