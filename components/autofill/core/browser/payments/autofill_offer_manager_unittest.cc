@@ -96,7 +96,7 @@ TEST_F(AutofillOfferManagerTest, UpdateSuggestionsWithOffers_EligibleDiscount) {
   autofill_offer_manager_->UpdateSuggestionsWithOffers(GURL(kTestUrlWithParam),
                                                        suggestions);
 
-  EXPECT_EQ(suggestions[0].offer_label, base::UTF8ToUTF16("$4 cashback"));
+  EXPECT_EQ(suggestions[0].offer_label, base::UTF8ToUTF16("$4 Off"));
 }
 
 TEST_F(AutofillOfferManagerTest, UpdateSuggestionsWithOffers_EligibleCashback) {
@@ -108,7 +108,7 @@ TEST_F(AutofillOfferManagerTest, UpdateSuggestionsWithOffers_EligibleCashback) {
   autofill_offer_manager_->UpdateSuggestionsWithOffers(GURL(kTestUrlWithParam),
                                                        suggestions);
 
-  EXPECT_EQ(suggestions[0].offer_label, base::UTF8ToUTF16("5% cashback"));
+  EXPECT_EQ(suggestions[0].offer_label, base::UTF8ToUTF16("5% Cash Back"));
 }
 
 TEST_F(AutofillOfferManagerTest, UpdateSuggestionsWithOffers_ExpiredOffer) {
