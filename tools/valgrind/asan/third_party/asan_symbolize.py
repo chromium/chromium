@@ -79,12 +79,15 @@ class LLVMSymbolizer(Symbolizer):
     self.pipe = self.open_llvm_symbolizer()
 
   def open_llvm_symbolizer(self):
-    cmd = [self.symbolizer_path,
-           '--use-symbol-table=true',
-           '--demangle=%s' % demangle,
-           '--functions=linkage',
-           '--inlining=true',
-           '--default-arch=%s' % self.default_arch]
+    cmd = [
+        self.symbolizer_path,
+        '--use-symbol-table=true',
+        # TODO(https://crbug.com/1132789) remove this temporary fix.
+        '--%sdemangle' % ("" if demangle else "no-"),
+        '--functions=linkage',
+        '--inlining=true',
+        '--default-arch=%s' % self.default_arch
+    ]
     if self.system == 'Darwin':
       for hint in self.dsym_hints:
         cmd.append('--dsym-hint=%s' % hint)
@@ -399,7 +402,7 @@ class SymbolizationLoop(object):
           use_new_symbolizer = bool(dsym_hints_for_binary - self.dsym_hints)
           self.dsym_hints |= dsym_hints_for_binary
         if self.last_llvm_symbolizer and not use_new_symbolizer:
-            self.llvm_symbolizers[binary] = self.last_llvm_symbolizer
+          self.llvm_symbolizers[binary] = self.last_llvm_symbolizer
         else:
           self.last_llvm_symbolizer = LLVMSymbolizerFactory(
               self.system, arch, self.dsym_hints)
