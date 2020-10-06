@@ -121,8 +121,7 @@ HTMLCanvasElement::HTMLCanvasElement(Document& document)
       PageVisibilityObserver(document.GetPage()),
       CanvasRenderingContextHost(
           CanvasRenderingContextHost::HostType::kCanvasHost,
-          base::make_optional<UkmParameters>(
-              {document.UkmRecorder(), document.UkmSourceID()})),
+          {document.UkmRecorder(), document.UkmSourceID()}),
       size_(kDefaultCanvasWidth, kDefaultCanvasHeight),
       context_creation_was_blocked_(false),
       ignore_reset_(false),
@@ -317,14 +316,14 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
   auto* old_contents_cc_layer = ContentsCcLayer();
   auto* result = GetCanvasRenderingContextInternal(type, attributes);
 
-  if (ukm_params_ && IdentifiabilityStudySettings::Get()->IsTypeAllowed(
-                         IdentifiableSurface::Type::kCanvasRenderingContext)) {
-    IdentifiabilityMetricBuilder(ukm_params_->source_id)
+  if (IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+          IdentifiableSurface::Type::kCanvasRenderingContext)) {
+    IdentifiabilityMetricBuilder(ukm_params_.source_id)
         .Set(IdentifiableSurface::FromTypeAndToken(
                  IdentifiableSurface::Type::kCanvasRenderingContext,
                  CanvasRenderingContext::ContextTypeFromId(type)),
              !!result)
-        .Record(ukm_params_->ukm_recorder);
+        .Record(ukm_params_.ukm_recorder);
   }
 
   if (ContentsCcLayer() != old_contents_cc_layer)
@@ -1075,8 +1074,8 @@ void HTMLCanvasElement::toBlob(V8BlobCallback* callback,
         image_bitmap, options,
         CanvasAsyncBlobCreator::kHTMLCanvasToBlobCallback, callback, start_time,
         GetExecutionContext(),
-        base::make_optional<UkmParameters>(
-            {GetDocument().UkmRecorder(), GetDocument().UkmSourceID()}));
+        UkmParameters{GetDocument().UkmRecorder(),
+                      GetDocument().UkmSourceID()});
   }
 
   // TODO(crbug.com/973801): Report real digest for toBlob().

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_RENDERING_CONTEXT_HOST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_RENDERING_CONTEXT_HOST_H_
 
-#include "base/optional.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -40,8 +39,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
     kCanvasHost,
     kOffscreenCanvasHost,
   };
-  CanvasRenderingContextHost(HostType host_type,
-                             base::Optional<UkmParameters> ukm_params);
+  CanvasRenderingContextHost(HostType host_type, UkmParameters ukm_params);
 
   void RecordCanvasSizeToUMA(const IntSize&);
 
@@ -108,9 +106,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   // blink::CanvasImageSource
   bool IsOffscreenCanvas() const override;
 
-  const base::Optional<UkmParameters>& GetUkmParameters() {
-    return ukm_params_;
-  }
+  const UkmParameters GetUkmParameters() { return ukm_params_; }
 
  protected:
   ~CanvasRenderingContextHost() override {}
@@ -123,7 +119,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   bool did_fail_to_create_resource_provider_ = false;
   bool did_record_canvas_size_to_uma_ = false;
   HostType host_type_ = kNone;
-  base::Optional<UkmParameters> ukm_params_;
+  UkmParameters ukm_params_;
 };
 
 }  // namespace blink
