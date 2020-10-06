@@ -986,15 +986,31 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     }
   }
 
+  // The WebView URL can't always be trusted when multiple pending navigations
+  // are occuring, as a navigation could commit after a new navigation has
+  // started (and thus the WebView URL will be the URL of the new navigation).
+  // See crbug.com/1127025.
+  BOOL hasMultiplePendingNavigations =
+      [self.navigationStates pendingNavigations].count > 1;
+  // When loading an error page that is a placeholder, the webViewURL should be
+  // used as it is the actual URL we want to load.
+  BOOL isErrorPage =
+      !base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
+      !context->IsPlaceholderNavigation();
+
+  BOOL shouldUseContextURL =
+      context ? !isErrorPage && hasMultiplePendingNavigations : NO;
+  GURL documentURL = shouldUseContextURL ? context->GetUrl() : webViewURL;
+
+  // This is the point where the document's URL has actually changed.
+  [self.delegate navigationHandler:self
+                    setDocumentURL:documentURL
+                           context:context];
+
   // No further code relies an existance of pending item, so this navigation can
   // be marked as "committed".
   [self.navigationStates setState:web::WKNavigationState::COMMITTED
                     forNavigation:navigation];
-
-  // This is the point where the document's URL has actually changed.
-  [self.delegate navigationHandler:self
-                    setDocumentURL:webViewURL
-                           context:context];
 
   if (!committedNavigation && context &&
       (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) ||
