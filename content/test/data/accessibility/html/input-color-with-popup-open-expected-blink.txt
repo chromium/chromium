@@ -1,3 +1,4 @@
+#<skip - crbug.com/992297: the accessibility tree is different on Linux>
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
@@ -11,7 +12,7 @@ rootWebArea
 ++++++++++++++++++++genericContainer
 ++++++++++++++++++++++slider horizontal name='Color well' roleDescription='Color well with two-dimensional slider for selecting saturation and lightness' value='X: 227, Y: 0' valueForRange=227.00 minValueForRange=0.00 maxValueForRange=32016.00
 ++++++++++++++++++++genericContainer
-++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer
 ++++++++++++++++++++++genericContainer ignored invisible
 ++++++++++++++++++++++genericContainer
 ++++++++++++++++++++++++slider horizontal name='Hue slider' valueForRange=116.00 minValueForRange=0.00 maxValueForRange=129.00

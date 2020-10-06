@@ -157,9 +157,16 @@ bool IsForcedColorsEnabled() {
   return forced_colors_enabled;
 }
 
-// Enables the eye-dropper in the refresh color-picker.
-const base::Feature kEyeDropper{"EyeDropper",
-                                base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables the eye-dropper in the refresh color-picker for Windows and Mac.
+// This feature will be released for other platforms in later milestones.
+const base::Feature kEyeDropper {
+  "EyeDropper",
+#if defined(OS_WIN) || defined(OS_MAC)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 bool IsEyeDropperEnabled() {
   return IsFormControlsRefreshEnabled() &&
