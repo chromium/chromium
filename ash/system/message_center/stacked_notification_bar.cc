@@ -284,6 +284,8 @@ StackedNotificationBar::StackedNotificationBar(
 
   expand_all_button_->SetVisible(false);
   AddChildView(expand_all_button_);
+
+  SetPaintToLayer();
 }
 
 StackedNotificationBar::~StackedNotificationBar() {
