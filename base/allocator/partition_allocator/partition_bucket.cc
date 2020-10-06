@@ -207,13 +207,16 @@ template <bool thread_safe>
 ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
     PartitionRoot<thread_safe>* root,
     int flags,
-    uint16_t num_partition_pages) {
+    uint16_t num_partition_pages,
+    size_t committed_size) {
   PA_DCHECK(!(reinterpret_cast<uintptr_t>(root->next_partition_page) %
               PartitionPageSize()));
   PA_DCHECK(!(reinterpret_cast<uintptr_t>(root->next_partition_page_end) %
               PartitionPageSize()));
   PA_DCHECK(num_partition_pages <= NumPartitionPagesPerSuperPage());
+  PA_DCHECK(committed_size % SystemPageSize() == 0);
   size_t total_size = PartitionPageSize() * num_partition_pages;
+  PA_DCHECK(committed_size <= total_size);
   size_t num_partition_pages_left =
       (root->next_partition_page_end - root->next_partition_page) >>
       PartitionPageShift();
@@ -224,10 +227,10 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
 
     // Fresh System Pages in the SuperPages are decommited. Commit them
     // before vending them back.
-    SetSystemPagesAccess(ret, total_size, PageReadWrite);
+    SetSystemPagesAccess(ret, committed_size, PageReadWrite);
 
     root->next_partition_page += total_size;
-    root->IncreaseCommittedPages(total_size);
+    root->IncreaseCommittedPages(committed_size);
 
 #if ENABLE_TAG_FOR_MTE_CHECKED_PTR
     PA_DCHECK(root->next_tag_bitmap_page);
@@ -281,7 +284,6 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
     return nullptr;
 
   root->total_size_of_super_pages += kSuperPageSize;
-  root->IncreaseCommittedPages(total_size);
 
   // |total_size| MUST be less than kSuperPageSize - (PartitionPageSize()*2).
   // This is a trustworthy value because num_partition_pages is not user
@@ -295,6 +297,14 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   char* ret = tag_bitmap + kReservedTagBitmapSize;
   root->next_partition_page = ret + total_size;
   root->next_partition_page_end = root->next_super_page - PartitionPageSize();
+
+  // The first slot span is accessible. The given committed_size is equal to
+  // the system-page-aligned size of the slot span.
+  SetSystemPagesAccess(ret + committed_size,
+                       (super_page + kSuperPageSize) - (ret + committed_size),
+                       PageInaccessible);
+  root->IncreaseCommittedPages(committed_size);
+
   // Make the first partition page in the super page a guard page, but leave a
   // hole in the middle.
   // This is where we put page metadata and also a tiny amount of extent
@@ -632,7 +642,8 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
   } else {
     // Third. If we get here, we need a brand new page.
     uint16_t num_partition_pages = get_pages_per_slot_span();
-    void* raw_pages = AllocNewSlotSpan(root, flags, num_partition_pages);
+    void* raw_pages = AllocNewSlotSpan(root, flags, num_partition_pages,
+                                       get_bytes_per_span());
     if (LIKELY(raw_pages != nullptr)) {
       new_page =
           PartitionPage<thread_safe>::FromPointerNoAlignmentCheck(raw_pages);

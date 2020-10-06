@@ -140,7 +140,8 @@ struct PartitionBucket {
   // Returns nullptr on error.
   ALWAYS_INLINE void* AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
                                        int flags,
-                                       uint16_t num_partition_pages)
+                                       uint16_t num_partition_pages,
+                                       size_t committed_size)
       EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 
   // Each bucket allocates a slot span when it runs out of slots.
