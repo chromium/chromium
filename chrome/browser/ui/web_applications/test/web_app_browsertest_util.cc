@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 
-#include "base/one_shot_event.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
@@ -30,7 +29,6 @@
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_app_tab_helper_base.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/web_application_info.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -44,19 +42,6 @@
 
 namespace web_app {
 
-namespace {
-
-void WaitUntilReady(WebAppProvider* provider) {
-  if (provider->on_registry_ready().is_signaled())
-    return;
-
-  base::RunLoop run_loop;
-  provider->on_registry_ready().Post(FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
-}
-
-}  // namespace
-
 AppId InstallWebApp(Profile* profile,
                     std::unique_ptr<WebApplicationInfo> web_app_info) {
   if (web_app_info->title.empty())
@@ -64,9 +49,8 @@ AppId InstallWebApp(Profile* profile,
 
   AppId app_id;
   base::RunLoop run_loop;
-  auto* provider = WebAppProvider::Get(profile);
+  auto* provider = WebAppProviderBase::GetProviderBase(profile);
   DCHECK(provider);
-  WaitUntilReady(provider);
   provider->install_manager().InstallWebAppFromInfo(
       std::move(web_app_info), ForInstallableSite::kYes,
       WebappInstallSource::OMNIBOX_INSTALL_ICON,
@@ -87,9 +71,8 @@ AppId InstallWebAppFromManifest(Browser* browser, const GURL& app_url) {
   AppId app_id;
   base::RunLoop run_loop;
 
-  auto* provider = WebAppProvider::Get(browser->profile());
+  auto* provider = WebAppProviderBase::GetProviderBase(browser->profile());
   DCHECK(provider);
-  WaitUntilReady(provider);
   provider->install_manager().InstallWebAppFromManifestWithFallback(
       browser->tab_strip_model()->GetActiveWebContents(),
       /*force_shortcut_app=*/true, WebappInstallSource::MENU_BROWSER_TAB,
@@ -179,9 +162,8 @@ InstallResultCode PendingAppManagerInstall(
     Profile* profile,
     ExternalInstallOptions install_options) {
   DCHECK(profile);
-  auto* provider = WebAppProvider::Get(profile);
+  auto* provider = WebAppProviderBase::GetProviderBase(profile);
   DCHECK(provider);
-  WaitUntilReady(provider);
   base::RunLoop run_loop;
   InstallResultCode result_code;
 
