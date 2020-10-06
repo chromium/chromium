@@ -2073,6 +2073,10 @@ const char kServiceWorkerOnUIDescription[] =
     "Enables browser process logic related to service workers to run on the UI "
     "thread rather than the IO thread.";
 
+const char kShareByDefaultInCCTName[] = "Enable sharing by default in CCT.";
+const char kShareByDefaultInCCTDescription[] =
+    "Enables a sharing option by default in Chrome Custom Tabs.";
+
 const char kSharedClipboardUIName[] =
     "Enable shared clipboard feature signals to be handled";
 const char kSharedClipboardUIDescription[] =

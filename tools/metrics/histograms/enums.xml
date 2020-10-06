@@ -41701,6 +41701,7 @@ from previous Chrome versions.
   <int value="-1809060811" label="EyeDropper:disabled"/>
   <int value="-1808576075" label="SystemTrayUnified:enabled"/>
   <int value="-1808477331" label="MidiManagerCros:disabled"/>
+  <int value="-1808445397" label="ShareByDefaultInCCT:disabled"/>
   <int value="-1807797669" label="google-doodle-url"/>
   <int value="-1806739839"
       label="UseLookalikesForNavigationSuggestions:disabled"/>
@@ -44218,6 +44219,7 @@ from previous Chrome versions.
       label="WebPaymentsPerMethodCanMakePaymentQuota:disabled"/>
   <int value="740056959" label="ImeServiceConnectable:enabled"/>
   <int value="740619684" label="ExtensionsToolbarMenu:enabled"/>
+  <int value="741219332" label="ShareByDefaultInCCT:enabled"/>
   <int value="742083923" label="MimeHandlerViewInCrossProcessFrame:disabled"/>
   <int value="744342941" label="SafetyCheckChromeCleanerChild:enabled"/>
   <int value="745541471" label="PaintHolding:disabled"/>

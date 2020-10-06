@@ -1191,6 +1191,9 @@ extern const char kSendTabToSelfOmniboxSendingAnimationDescription[];
 extern const char kServiceWorkerOnUIName[];
 extern const char kServiceWorkerOnUIDescription[];
 
+extern const char kShareByDefaultInCCTName[];
+extern const char kShareByDefaultInCCTDescription[];
+
 extern const char kSharedClipboardUIName[];
 extern const char kSharedClipboardUIDescription[];
 
