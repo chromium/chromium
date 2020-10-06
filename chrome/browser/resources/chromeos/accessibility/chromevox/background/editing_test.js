@@ -21,6 +21,13 @@ ChromeVoxEditingTest = class extends ChromeVoxNextE2ETest {
       EventGenerator.sendKeyPress(keyCode, modifiers);
     };
   }
+
+  waitForEditableEvent() {
+    return new Promise(resolve => {
+      DesktopAutomationHandler.instance.textEditHandler_.onEvent = (e) =>
+          resolve(e);
+    });
+  }
 };
 
 
@@ -96,7 +103,7 @@ TEST_F('ChromeVoxEditingTest', 'TextButNoSelectionChange', function() {
           if (input.selectionStart == 0) {
             return;
           }
-          console.log('TIM' + 'ER');
+
           input.value = 'text2';
           window.clearInterval(timer);
         }
@@ -1469,4 +1476,112 @@ TEST_F('ChromeVoxEditingTest', 'NonBreakingSpaceNewLine', function() {
         });
         input.focus();
       });
+});
+
+TEST_F('ChromeVoxEditingTest', 'InputEvents', function() {
+  const site = `<input type="text"></input>`;
+  this.runWithLoadedTree(site, async function(root) {
+    const input = root.find({role: RoleType.TEXT_FIELD});
+    input.focus();
+    await new Promise(resolve => {
+      this.listenOnce(input, 'focus', resolve);
+    });
+
+    let event = await this.waitForEditableEvent();
+    assertEquals(EventType.TEXT_SELECTION_CHANGED, event.type);
+    assertEquals(input, event.target);
+    assertEquals('', input.value);
+
+    this.press(KeyCode.A)();
+
+    // Important to note that there's no document selection changes below.
+    event = await this.waitForEditableEvent();
+    assertEquals(EventType.VALUE_CHANGED, event.type);
+    assertEquals(input, event.target);
+    assertEquals('a', input.value);
+
+    event = await this.waitForEditableEvent();
+    assertEquals(EventType.TEXT_SELECTION_CHANGED, event.type);
+    assertEquals(input, event.target);
+    assertEquals('a', input.value);
+
+    // TODO(accessibility): this extra value change shouldn't happen.
+    // http://crbug.com/1135249.
+    event = await this.waitForEditableEvent();
+    assertEquals(EventType.VALUE_CHANGED, event.type);
+    assertEquals(input, event.target);
+    assertEquals('a', input.value);
+
+    this.press(KeyCode.B)();
+
+    event = await this.waitForEditableEvent();
+    assertEquals(EventType.VALUE_CHANGED, event.type);
+    assertEquals(input, event.target);
+    assertEquals('ab', input.value);
+
+    event = await this.waitForEditableEvent();
+    assertEquals(EventType.TEXT_SELECTION_CHANGED, event.type);
+    assertEquals(input, event.target);
+    assertEquals('ab', input.value);
+  });
+});
+
+TEST_F('ChromeVoxEditingTest', 'TextAreaEvents', function() {
+  const site = `<textarea></textarea>`;
+  this.runWithLoadedTree(site, async function(root) {
+    const textArea = root.find({role: RoleType.TEXT_FIELD});
+    textArea.focus();
+    await new Promise(resolve => {
+      this.listenOnce(textArea, 'focus', resolve);
+    });
+
+    let event = await this.waitForEditableEvent();
+    assertEquals(EventType.DOCUMENT_SELECTION_CHANGED, event.type);
+    assertEquals(textArea, event.target);
+    assertEquals('', textArea.value);
+
+    this.press(KeyCode.A)();
+
+    event = await this.waitForEditableEvent();
+    assertEquals(EventType.DOCUMENT_SELECTION_CHANGED, event.type);
+    assertEquals(textArea, event.target);
+    assertEquals('a', textArea.value);
+
+    this.press(KeyCode.B)();
+
+    event = await this.waitForEditableEvent();
+    assertEquals(EventType.DOCUMENT_SELECTION_CHANGED, event.type);
+    assertEquals(textArea, event.target);
+    assertEquals('ab', textArea.value);
+  });
+});
+
+TEST_F('ChromeVoxEditingTest', 'ContentEditableEvents', function() {
+  const site = `<div role="textbox" contenteditable></div>`;
+  this.runWithLoadedTree(site, async function(root) {
+    const contentEditable = root.find({role: RoleType.TEXT_FIELD});
+    contentEditable.focus();
+    await new Promise(resolve => {
+      this.listenOnce(contentEditable, 'focus', resolve);
+    });
+
+    let event = await this.waitForEditableEvent();
+    assertEquals(EventType.DOCUMENT_SELECTION_CHANGED, event.type);
+    assertEquals(contentEditable, event.target);
+    assertEquals('', contentEditable.value);
+
+    this.press(KeyCode.A)();
+
+    event = await this.waitForEditableEvent();
+    assertEquals(EventType.DOCUMENT_SELECTION_CHANGED, event.type);
+    assertEquals(contentEditable, event.target);
+    assertEquals('a', contentEditable.value);
+
+    this.press(KeyCode.B)();
+
+    event = await this.waitForEditableEvent();
+    assertEquals(EventType.DOCUMENT_SELECTION_CHANGED, event.type);
+    assertEquals(contentEditable, event.target);
+    assertEquals('ab', contentEditable.value);
+  });
 });

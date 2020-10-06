@@ -361,12 +361,35 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
    * @private
    */
   onEditableChanged_(evt) {
-    // Document selections only apply to rich editables, text selections to
-    // non-rich editables.
-    if (evt.type != EventType.DOCUMENT_SELECTION_CHANGED &&
-        (evt.target.state[StateType.RICHLY_EDITABLE] ||
-         evt.target.htmlTag === 'textarea')) {
+    if (!evt.target.state.editable) {
       return;
+    }
+
+    const isInput = evt.target.htmlTag == 'input';
+    const isTextArea = evt.target.htmlTag == 'textarea';
+    const isContentEditable = evt.target.state[StateType.RICHLY_EDITABLE];
+
+    switch (evt.type) {
+      case EventType.TEXT_CHANGED:
+      case EventType.TEXT_SELECTION_CHANGED:
+      case EventType.VALUE_CHANGED:
+        // Known to be duplicated by document selection changes for content
+        // editables and text areas.
+        if (isContentEditable || isTextArea) {
+          return;
+        }
+        break;
+      case EventType.DOCUMENT_SELECTION_CHANGED:
+        // Known to be duplicated by text selection changes.
+        if (isInput) {
+          return;
+        }
+        break;
+      case EventType.FOCUS:
+        // Allowed no matter what.
+        break;
+      default:
+        return;
     }
 
     if (!this.createTextEditHandlerIfNeeded_(evt.target)) {
