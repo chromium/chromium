@@ -8,11 +8,16 @@ import android.annotation.SuppressLint;
 import android.view.View;
 import android.widget.Magnifier;
 
+import org.chromium.base.Log;
+
 /**
  * Implements MagnifierWrapper interface.
  */
 @SuppressLint("NewApi") // Magnifier requires API level 28.
 public class MagnifierWrapperImpl implements MagnifierWrapper {
+    private static final boolean DEBUG = false;
+    private static final String TAG = "Magnifier";
+
     private Magnifier mMagnifier;
     private SelectionPopupControllerImpl.ReadbackViewCallback mCallback;
 
@@ -28,12 +33,14 @@ public class MagnifierWrapperImpl implements MagnifierWrapper {
         View view = mCallback.getReadbackView();
         if (view == null) return;
         if (mMagnifier == null) mMagnifier = new Magnifier(view);
+        if (DEBUG) Log.i(TAG, "show (" + x + ", " + y + ")");
         mMagnifier.show(x, y);
     }
 
     @Override
     public void dismiss() {
         if (mMagnifier != null) {
+            if (DEBUG) Log.i(TAG, "dismiss");
             mMagnifier.dismiss();
             mMagnifier = null;
         }

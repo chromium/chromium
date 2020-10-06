@@ -80,6 +80,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         implements ImeEventObserver, SelectionPopupController, WindowEventObserver, HideablePopup,
                    ContainerViewObserver, UserData {
     private static final String TAG = "SelectionPopupCtlr"; // 20 char limit
+    private static final boolean DEBUG = false;
 
     /**
      * Android Intent size limitations prevent sending over a megabyte of data. Limit
@@ -1286,6 +1287,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     @CalledByNative
     void onSelectionEvent(
             @SelectionEventType int eventType, int left, int top, int right, int bottom) {
+        if (DEBUG) {
+            Log.i(TAG,
+                    "onSelectionEvent: " + eventType + "[(" + left + ", " + top + ")-(" + right
+                            + ", " + bottom + ")]");
+        }
         // Ensure the provided selection coordinates form a non-empty rect, as required by
         // the selection action mode.
         // NOTE: the native side ensures the rectangle is not empty, but that's done using floating
