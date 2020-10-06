@@ -221,17 +221,6 @@ const base::Feature kOmniboxTrendingZeroPrefixSuggestionsOnNTP{
     "OmniboxTrendingZeroPrefixSuggestionsOnNTP",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Feature that configures ZeroSuggestProvider using the "ZeroSuggestVariant"
-// per-page-classification parameter.
-//
-// Generally speaking - do NOT use this for future server-side experiments.
-// Instead, create your a new narrowly scoped base::Feature for each experiment.
-//
-// Because our Field Trial system can only configure this base::Feature in a
-// single study, and does not merge parameters, using this creates conflicts.
-const base::Feature kOnFocusSuggestions{"OmniboxOnFocusSuggestions",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables on-focus suggestions on the Open Web, that are contextual to the
 // current URL. Will only work if user is signed-in and syncing, or is
 // otherwise eligible to send the current page URL to the suggest server.

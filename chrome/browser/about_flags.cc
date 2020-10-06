@@ -1234,67 +1234,6 @@ const FeatureEntry::FeatureVariation kOmniboxBookmarkPathsVariations[] = {
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) ||
         // defined(OS_WIN)
 
-const FeatureEntry::FeatureParam kOmniboxOnFocusSuggestionsParamSERP[] = {
-    {"ZeroSuggestVariant:6:*", "RemoteSendUrl"},
-    {"ZeroSuggestVariant:9:*", "RemoteSendUrl"}};
-#if defined(OS_ANDROID)
-const FeatureEntry::FeatureParam kOmniboxNTPZPSLocal[] = {
-    {"ZeroSuggestVariant:1:*", "Local"},
-    {"ZeroSuggestVariant:7:*", "Local"},
-    {"ZeroSuggestVariant:8:*", "Local"}};
-const FeatureEntry::FeatureParam kOmniboxNTPZPSRemote[] = {
-    {"ZeroSuggestVariant:1:*", "RemoteNoUrl"},
-    {"ZeroSuggestVariant:7:*", "RemoteNoUrl"},
-    {"ZeroSuggestVariant:8:*", "RemoteNoUrl"}};
-const FeatureEntry::FeatureParam kOmniboxNTPZPSRemoteLocal[] = {
-    {"ZeroSuggestVariant:1:*", "RemoteNoUrl,Local"},
-    {"ZeroSuggestVariant:7:*", "RemoteNoUrl,Local"},
-    {"ZeroSuggestVariant:8:*", "RemoteNoUrl,Local"}};
-#else   // !defined(OS_ANDROID)
-const FeatureEntry::FeatureParam kNTPOmniboxZPSRemoteLocal[] = {
-    {"ZeroSuggestVariant:1:*", "RemoteNoUrl,Local"},
-    {"ZeroSuggestVariant:7:*", "RemoteNoUrl,Local"}};
-const FeatureEntry::FeatureParam kNTPOmniboxRealboxZPSRemoteLocal[] = {
-    {"ZeroSuggestVariant:1:*", "RemoteNoUrl,Local"},
-    {"ZeroSuggestVariant:7:*", "RemoteNoUrl,Local"},
-    {"ZeroSuggestVariant:15:*", "RemoteNoUrl,Local"}};
-#endif  // defined(OS_ANDROID)
-
-const FeatureEntry::FeatureVariation kOmniboxOnFocusSuggestionsVariations[] = {
-    {"SERP - RemoteSendURL", kOmniboxOnFocusSuggestionsParamSERP,
-     base::size(kOmniboxOnFocusSuggestionsParamSERP),
-     "t3315869" /* variation_id */},
-#if defined(OS_ANDROID)
-    {"ZPS on NTP: Local History", kOmniboxNTPZPSLocal,
-     base::size(kOmniboxNTPZPSLocal), nullptr},
-    {"ZPS on NTP: Remote History", kOmniboxNTPZPSRemote,
-     base::size(kOmniboxNTPZPSRemote), /* variation_id */ "t3314248"},
-    {"ZPS on NTP: Extended Remote History", kOmniboxNTPZPSRemote,
-     base::size(kOmniboxNTPZPSRemote), /* variation_id */ "t3317456"},
-    {"ZPS on NTP: Onboarding", kOmniboxNTPZPSRemote,
-     base::size(kOmniboxNTPZPSRemote), /* variation_id */ "t3316638"},
-    {"ZPS on NTP: PZPS, Remote, Local", kOmniboxNTPZPSRemoteLocal,
-     base::size(kOmniboxNTPZPSRemoteLocal), /* variation_id */ "t3317569"},
-    {"Contextual Web", kOmniboxNTPZPSRemoteLocal,
-     base::size(kOmniboxNTPZPSRemoteLocal), /* variation_id */ "t3317605"},
-    {"Trending Queries", kOmniboxNTPZPSRemoteLocal,
-     base::size(kOmniboxNTPZPSRemoteLocal), /* variation_id */ "t3317858"},
-#else   // !defined(OS_ANDROID)
-    {"NTP Omnibox - Remote History, Local History", kNTPOmniboxZPSRemoteLocal,
-     base::size(kNTPOmniboxZPSRemoteLocal), nullptr /* variation_id */},
-    {"NTP Omnibox - Remote History + PZPS, Local History",
-     kNTPOmniboxZPSRemoteLocal, base::size(kNTPOmniboxZPSRemoteLocal),
-     "t3317462" /* variation_id */},
-    {"NTP Omnibox/Realbox - Remote History, Local History",
-     kNTPOmniboxRealboxZPSRemoteLocal,
-     base::size(kNTPOmniboxRealboxZPSRemoteLocal), nullptr /* variation_id */},
-    {"NTP Omnibox/Realbox - Remote History + PZPS, Local History",
-     kNTPOmniboxRealboxZPSRemoteLocal,
-     base::size(kNTPOmniboxRealboxZPSRemoteLocal),
-     "t3317462" /* variation_id */},
-#endif  // defined(OS_ANDROID)
-};
-
 const FeatureEntry::FeatureVariation
     kOmniboxOnFocusSuggestionsContextualWebVariations[] = {
         {"GOC Only", {}, 0, "t3317583"},
@@ -3905,13 +3844,6 @@ const FeatureEntry kFeatureEntries[] = {
          omnibox::kOnDeviceHeadProviderNonIncognito,
          kOmniboxOnDeviceHeadSuggestNonIncognitoExperimentVariations,
          "OmniboxOnDeviceHeadSuggestNonIncognito")},
-
-    {"omnibox-on-focus-suggestions",
-     flag_descriptions::kOmniboxOnFocusSuggestionsName,
-     flag_descriptions::kOmniboxOnFocusSuggestionsDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOnFocusSuggestions,
-                                    kOmniboxOnFocusSuggestionsVariations,
-                                    "OmniboxBundledExperimentV1")},
 
     {"omnibox-on-focus-suggestions-contextual-web",
      flag_descriptions::kOmniboxOnFocusSuggestionsContextualWebName,

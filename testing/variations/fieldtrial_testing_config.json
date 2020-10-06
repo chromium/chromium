@@ -4663,24 +4663,6 @@
                     ]
                 }
             ]
-        },
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "iOSExperiments",
-                    "params": {
-                        "ZeroSuggestVariant:1:*": "RemoteNoUrl",
-                        "ZeroSuggestVariant:7:*": "RemoteNoUrl",
-                        "ZeroSuggestVariant:8:*": "RemoteNoUrl"
-                    },
-                    "enable_features": [
-                        "OmniboxOnFocusSuggestions"
-                    ]
-                }
-            ]
         }
     ],
     "OmniboxButtonRowPedalsDesktop": [

@@ -461,7 +461,6 @@ extern const char kHQPBookmarkValueRule[];
 extern const char kHQPTypedValueRule[];
 extern const char kHQPAllowMatchInTLDRule[];
 extern const char kHQPAllowMatchInSchemeRule[];
-extern const char kZeroSuggestVariantRule[];
 extern const char kMeasureSuggestPollingDelayFromLastKeystrokeRule[];
 extern const char kSuggestPollingDelayMsRule[];
 extern const char kHQPMaxVisitsToScoreRule[];

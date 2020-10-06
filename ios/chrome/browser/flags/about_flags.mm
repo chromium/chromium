@@ -185,28 +185,6 @@ const FeatureEntry::FeatureVariation
             nullptr,
         }};
 
-const FeatureEntry::FeatureParam kOmniboxNTPZPSRemote[] = {
-    {"ZeroSuggestVariant:1:*", "RemoteNoUrl"},
-    {"ZeroSuggestVariant:7:*", "RemoteNoUrl"},
-    {"ZeroSuggestVariant:8:*", "RemoteNoUrl"}};
-const FeatureEntry::FeatureParam kOmniboxNTPZPSLocal[] = {
-    {"ZeroSuggestVariant:1:*", "Local"},
-    {"ZeroSuggestVariant:7:*", "Local"},
-    {"ZeroSuggestVariant:8:*", "Local"}};
-const FeatureEntry::FeatureParam kOmniboxNTPZPSRemoteLocal[] = {
-    {"ZeroSuggestVariant:1:*", "RemoteNoUrl,Local"},
-    {"ZeroSuggestVariant:7:*", "RemoteNoUrl,Local"},
-    {"ZeroSuggestVariant:8:*", "RemoteNoUrl,Local"}};
-
-const FeatureEntry::FeatureVariation kOmniboxOnFocusSuggestionsVariations[] = {
-    {"ZPS on NTP: Local History", kOmniboxNTPZPSLocal,
-     base::size(kOmniboxNTPZPSLocal), nullptr /* variation_id */},
-    {"ZPS on NTP: Remote History", kOmniboxNTPZPSRemote,
-     base::size(kOmniboxNTPZPSRemote), "t3316728" /* variation_id */},
-    {"ZPS on NTP: Remote History, Local History", kOmniboxNTPZPSRemoteLocal,
-     base::size(kOmniboxNTPZPSRemoteLocal), "t3316728" /* variation_id */},
-};
-
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches3[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "3"}};
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches4[] = {
@@ -392,12 +370,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          omnibox::kOnDeviceHeadProviderNonIncognito,
          kOmniboxOnDeviceHeadSuggestNonIncognitoExperimentVariations,
          "OmniboxOnDeviceHeadSuggestNonIncognitoIOS")},
-    {"omnibox-on-focus-suggestions",
-     flag_descriptions::kOmniboxOnFocusSuggestionsName,
-     flag_descriptions::kOmniboxOnFocusSuggestionsDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOnFocusSuggestions,
-                                    kOmniboxOnFocusSuggestionsVariations,
-                                    "OmniboxBundledExperimentV1")},
     {"omnibox-ui-max-autocomplete-matches",
      flag_descriptions::kOmniboxUIMaxAutocompleteMatchesName,
      flag_descriptions::kOmniboxUIMaxAutocompleteMatchesDescription,

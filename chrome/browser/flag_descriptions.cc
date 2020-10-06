@@ -1580,11 +1580,6 @@ const char kOmniboxRichEntitiesInLauncherName[] =
 const char kOmniboxRichEntitiesInLauncherDescription[] =
     "Enable rich entity formatting for Omnibox results in the launcher.";
 
-const char kOmniboxOnFocusSuggestionsName[] = "Omnibox on-focus suggestions";
-const char kOmniboxOnFocusSuggestionsDescription[] =
-    "Configures Omnibox on-focus suggestions - suggestions displayed on-focus "
-    "before the user has typed any input";
-
 const char kOmniboxOnFocusSuggestionsContextualWebName[] =
     "Omnibox on-focus suggestions for the contextual Web";
 const char kOmniboxOnFocusSuggestionsContextualWebDescription[] =
