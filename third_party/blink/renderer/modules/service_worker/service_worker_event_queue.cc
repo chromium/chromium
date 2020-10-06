@@ -129,16 +129,7 @@ void ServiceWorkerEventQueue::EnqueueEvent(std::unique_ptr<Event> event) {
   DCHECK(event->type != Event::Type::Pending || did_idle_timeout());
   bool can_start_processing_events =
       !processing_events_ && event->type != Event::Type::Pending;
-
-  const int event_id = NextEventId();
-  // Start counting the timer when an event is enqueued.
-  id_event_map_.insert(
-      event_id, std::make_unique<EventInfo>(
-                    tick_clock_->NowTicks() +
-                        event->custom_timeout.value_or(kEventTimeout),
-                    WTF::Bind(std::move(event->abort_callback), event_id)));
-
-  queue_.emplace(event_id, std::move(event));
+  queue_.emplace_back(std::move(event));
 
   if (!can_start_processing_events)
     return;
@@ -150,11 +141,8 @@ void ServiceWorkerEventQueue::EnqueueEvent(std::unique_ptr<Event> event) {
 void ServiceWorkerEventQueue::ProcessEvents() {
   DCHECK(!processing_events_);
   processing_events_ = true;
-  while (!queue_.empty() && CanStartEvent(*queue_.begin()->second)) {
-    int event_id = queue_.begin()->first;
-    std::unique_ptr<Event> event = std::move(queue_.begin()->second);
-    queue_.erase(queue_.begin());
-    StartEvent(event_id, std::move(event));
+  while (!queue_.IsEmpty() && CanStartEvent(*queue_.front())) {
+    StartEvent(queue_.TakeFirst());
   }
   processing_events_ = false;
 
@@ -166,10 +154,16 @@ void ServiceWorkerEventQueue::ProcessEvents() {
     OnNoInflightEvent();
 }
 
-void ServiceWorkerEventQueue::StartEvent(int event_id,
-                                         std::unique_ptr<Event> event) {
-  DCHECK(HasEvent(event_id));
+void ServiceWorkerEventQueue::StartEvent(std::unique_ptr<Event> event) {
+  DCHECK(CanStartEvent(*event));
   running_offline_events_ = event->type == Event::Type::Offline;
+  const int event_id = NextEventId();
+  DCHECK(!HasEvent(event_id));
+  id_event_map_.insert(
+      event_id, std::make_unique<EventInfo>(
+                    tick_clock_->NowTicks() +
+                        event->custom_timeout.value_or(kEventTimeout),
+                    WTF::Bind(std::move(event->abort_callback), event_id)));
   if (before_start_event_callback_)
     before_start_event_callback_.Run(event->type == Event::Type::Offline);
   std::move(event->start_callback).Run(event_id);
@@ -242,7 +236,6 @@ void ServiceWorkerEventQueue::UpdateStatus() {
       new_id_event_map.insert(it.key, std::move(event_info));
       continue;
     }
-    queue_.erase(it.key);
     std::move(event_info->abort_callback)
         .Run(blink::mojom::ServiceWorkerEventStatus::TIMEOUT);
     should_idle_delay_to_be_zero = true;
@@ -287,7 +280,7 @@ void ServiceWorkerEventQueue::OnNoInflightEvent() {
   running_offline_events_ = false;
   // There might be events in the queue because offline (or non-offline) events
   // can be enqueued during running non-offline (or offline) events.
-  if (!queue_.empty()) {
+  if (!queue_.IsEmpty()) {
     ProcessEvents();
     return;
   }
@@ -296,8 +289,7 @@ void ServiceWorkerEventQueue::OnNoInflightEvent() {
 }
 
 bool ServiceWorkerEventQueue::HasInflightEvent() const {
-  return id_event_map_.size() - queue_.size() > 0 ||
-         num_of_stay_awake_tokens_ > 0;
+  return !id_event_map_.IsEmpty() || num_of_stay_awake_tokens_ > 0;
 }
 
 void ServiceWorkerEventQueue::ResetIdleTimeout() {

@@ -128,7 +128,7 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
   // ServiceWorkerEventQueue periodically updates the timeout state by
   // kUpdateInterval.
   static constexpr base::TimeDelta kUpdateInterval =
-      base::TimeDelta::FromSeconds(10);
+      base::TimeDelta::FromSeconds(30);
 
  private:
   // Represents an event dispatch, which can be queued into |queue_|.
@@ -177,7 +177,7 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
   bool CanStartEvent(const Event& event) const;
 
   // Starts a single event.
-  void StartEvent(int event_id, std::unique_ptr<Event> event);
+  void StartEvent(std::unique_ptr<Event> event);
 
   // Updates the internal states and fires the event timeout callbacks if any.
   // TODO(shimazu): re-implement it by delayed tasks and cancelable callbacks.
@@ -246,9 +246,7 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
   bool did_idle_timeout_ = false;
 
   // Event queue to where all events are enqueued.
-  // We use std::map as a task queue because it's ordered by the `event_id` and
-  // the entries can be effectively erased in random order.
-  std::map<int /* event_id */, std::unique_ptr<Event>> queue_;
+  Deque<std::unique_ptr<Event>> queue_;
 
   // Set to true during running ProcessEvents(). This is used for avoiding to
   // invoke |idle_callback_| or to re-enter ProcessEvents() when calling
