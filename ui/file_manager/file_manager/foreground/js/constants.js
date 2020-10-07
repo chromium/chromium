@@ -54,6 +54,7 @@ constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES = [
   'hosted',
   'modificationTime',
   'modificationByMeTime',
+  'pinned',
   'shared',
   'size',
   'canCopy',
