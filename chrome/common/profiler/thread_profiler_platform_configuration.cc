@@ -127,6 +127,9 @@ class AndroidPlatformConfiguration : public DefaultPlatformConfiguration {
   RuntimeModuleState GetRuntimeModuleState(
       base::Optional<version_info::Channel> release_channel) const override;
 
+  RelativePopulations GetEnableRates(
+      base::Optional<version_info::Channel> release_channel) const override;
+
   void RequestRuntimeModuleInstall() const override;
 
   double GetChildProcessEnableFraction(
@@ -173,6 +176,19 @@ AndroidPlatformConfiguration::GetRuntimeModuleState(
   // The module is installable from the Play Store only for released Chrome so
   // is not available in this build.
   return RuntimeModuleState::kModuleNotAvailable;
+}
+
+ThreadProfilerPlatformConfiguration::RelativePopulations
+AndroidPlatformConfiguration::GetEnableRates(
+    base::Optional<version_info::Channel> release_channel) const {
+  if (release_channel) {
+    CHECK(*release_channel == version_info::Channel::CANARY ||
+          *release_channel == version_info::Channel::DEV);
+    // Use a 50/50 experiment to maximize signal in the relevant metrics.
+    return RelativePopulations{0, 50};
+  }
+
+  return DefaultPlatformConfiguration::GetEnableRates(release_channel);
 }
 
 void AndroidPlatformConfiguration::RequestRuntimeModuleInstall() const {

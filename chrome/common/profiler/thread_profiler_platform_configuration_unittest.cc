@@ -128,13 +128,15 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
                              GetEnableRates) {
   using RelativePopulations =
       ThreadProfilerPlatformConfiguration::RelativePopulations;
-  EXPECT_EQ((RelativePopulations{80, 20}),
-            config()->GetEnableRates(version_info::Channel::CANARY));
 #if defined(OS_ANDROID)
+  EXPECT_EQ((RelativePopulations{0, 50}),
+            config()->GetEnableRates(version_info::Channel::CANARY));
   // Note: death tests aren't supported on Android. Otherwise this test would
   // check that the other inputs result in CHECKs.
 #else
   EXPECT_CHECK_DEATH(config()->GetEnableRates(version_info::Channel::UNKNOWN));
+  EXPECT_EQ((RelativePopulations{80, 20}),
+            config()->GetEnableRates(version_info::Channel::CANARY));
   EXPECT_EQ((RelativePopulations{80, 20}),
             config()->GetEnableRates(version_info::Channel::DEV));
   EXPECT_CHECK_DEATH(config()->GetEnableRates(version_info::Channel::BETA));
