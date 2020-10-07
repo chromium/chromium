@@ -1137,7 +1137,6 @@ if (enable_java_templates) {
   }
 
   template("proguard") {
-    set_sources_assignment_filter([])
     forward_variables_from(invoker,
                            [
                              "data",
@@ -2218,7 +2217,6 @@ if (enable_java_templates) {
   #
   template("prepare_resources") {
     action_with_pydeps(target_name) {
-      set_sources_assignment_filter([])
       forward_variables_from(invoker,
                              [
                                "deps",
@@ -2410,7 +2408,6 @@ if (enable_java_templates) {
   #   proguard_file_main_dex: (optional)
   #
   template("compile_resources") {
-    set_sources_assignment_filter([])
     forward_variables_from(invoker,
                            [
                              "testonly",
@@ -3462,7 +3459,6 @@ if (enable_java_templates) {
     # TODO(crbug.com/1042017): Remove.
     not_needed(invoker, [ "no_build_hooks" ])
 
-    set_sources_assignment_filter([])
     forward_variables_from(invoker, [ "testonly" ])
     _is_prebuilt = defined(invoker.jar_path)
     _is_annotation_processor = invoker.type == "java_annotation_processor"

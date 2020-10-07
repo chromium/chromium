@@ -126,8 +126,6 @@ if (enable_java_templates) {
 
   # JNI target implementation. See generate_jni or generate_jar_jni for usage.
   template("generate_jni_impl") {
-    set_sources_assignment_filter([])
-
     _jni_output_dir = "${target_gen_dir}/${target_name}"
     if (defined(invoker.jni_generator_include)) {
       _jni_generator_include = invoker.jni_generator_include
@@ -423,7 +421,6 @@ if (enable_java_templates) {
   #     include_path = "android/java/templates"
   #   }
   template("java_cpp_template") {
-    set_sources_assignment_filter([])
     forward_variables_from(invoker, [ "testonly" ])
 
     _include_path = "//"
@@ -508,7 +505,6 @@ if (enable_java_templates) {
   #     ]
   #   }
   template("java_cpp_enum") {
-    set_sources_assignment_filter([])
     action_with_pydeps(target_name) {
       forward_variables_from(invoker,
                              [
@@ -578,7 +574,6 @@ if (enable_java_templates) {
   #   A FooSwitches.java file, defining a class named FooSwitches in the package
   #   my.java.package.
   template("java_cpp_strings") {
-    set_sources_assignment_filter([])
     action_with_pydeps(target_name) {
       forward_variables_from(invoker,
                              [
@@ -653,7 +648,6 @@ if (enable_java_templates) {
   #   A FooFeatures.java file, defining a class named FooFeatures in the package
   #   my.java.package.
   template("java_cpp_features") {
-    set_sources_assignment_filter([])
     action_with_pydeps(target_name) {
       forward_variables_from(invoker,
                              [
@@ -4116,7 +4110,6 @@ if (enable_java_templates) {
   #   }
   template("android_aidl") {
     action_with_pydeps(target_name) {
-      set_sources_assignment_filter([])
       forward_variables_from(invoker, [ "testonly" ])
 
       script = "//build/android/gyp/aidl.py"
@@ -4193,7 +4186,6 @@ if (enable_java_templates) {
   #    sources = [ "$proto_path/foo.proto" ]
   #  }
   template("proto_java_library") {
-    set_sources_assignment_filter([])
     forward_variables_from(invoker, [ "testonly" ])
 
     _template_name = target_name

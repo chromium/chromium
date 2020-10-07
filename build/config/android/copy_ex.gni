@@ -22,7 +22,6 @@
 import("//build/config/python.gni")
 
 template("copy_ex") {
-  set_sources_assignment_filter([])
   action_with_pydeps(target_name) {
     forward_variables_from(invoker,
                            [

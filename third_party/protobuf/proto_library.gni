@@ -136,12 +136,6 @@ template("proto_library") {
   assert(defined(invoker.sources), "Need sources for proto_library")
   proto_sources = invoker.sources
 
-  # Don't apply OS-specific sources filtering to the assignments later on.
-  # Platform files should have gotten filtered out in the sources assignment
-  # when this template was invoked. If they weren't, it was on purpose and
-  # this template shouldn't re-apply the filter.
-  set_sources_assignment_filter([])
-
   if (defined(invoker.generate_cc)) {
     generate_cc = invoker.generate_cc
   } else {

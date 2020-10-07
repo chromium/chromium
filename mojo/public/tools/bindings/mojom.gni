@@ -500,12 +500,6 @@ template("mojom") {
     sources_list = invoker.sources
   }
 
-  # Reset sources_assignment_filter for the BUILD.gn file to prevent
-  # regression during the migration of Chromium away from the feature.
-  # See docs/no_sources_assignment_filter.md for more information.
-  # TODO(crbug.com/1018739): remove this when migration is done.
-  set_sources_assignment_filter([])
-
   # Listed sources may be relative to the current target dir, or they may be
   # absolute paths, including paths to generated mojom files. While those are
   # fine as-is for input references, deriving output paths can be more subtle.

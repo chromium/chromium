@@ -317,8 +317,6 @@ template("test") {
         xctest_module_target = "//base/test:google_test_runner"
       }
 
-      # See above call.
-      set_sources_assignment_filter([])
       forward_variables_from(invoker, "*", [ "testonly" ])
 
       # Provide sensible defaults in case invoker did not define any of those

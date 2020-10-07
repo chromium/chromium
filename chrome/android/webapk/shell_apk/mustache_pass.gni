@@ -5,7 +5,6 @@
 import("//build/config/android/rules.gni")
 
 template("mustache_pass") {
-  set_sources_assignment_filter([])
   forward_variables_from(invoker, [ "testonly" ])
 
   assert(defined(invoker.input))

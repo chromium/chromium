@@ -165,7 +165,6 @@ template("repack_locales") {
         bundle_output =
             "{{bundle_resources_dir}}/${_output_locale}.lproj/locale.pak"
       }
-      set_sources_assignment_filter([])
       sources = []
       foreach(_pattern, invoker.source_patterns) {
         sources += [ "${_pattern}${_input_locale}.pak" ]
