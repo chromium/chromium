@@ -985,4 +985,26 @@ TEST_F(AutofillWalletSyncBridgeTest, ApplyStopSyncChanges_KeepData) {
   EXPECT_FALSE(GetAllLocalData().empty());
 }
 
+// This test ensures that an int64 -> int conversion bug we encountered is
+// fixed.
+TEST_F(AutofillWalletSyncBridgeTest,
+       LargeInstrumentIdProvided_CorrectDataStored) {
+  // Create a card to be synced from the server.
+  CreditCard card = test::GetMaskedServerCard();
+  // Set instrument_id to be the largest int64_t.
+  card.set_instrument_id(INT64_MAX);
+  AutofillWalletSpecifics card_specifics;
+  SetAutofillWalletSpecificsFromServerCard(card, &card_specifics);
+
+  StartSyncing({card_specifics});
+
+  std::vector<std::unique_ptr<CreditCard>> cards;
+  table()->GetServerCreditCards(&cards);
+  ASSERT_EQ(1U, cards.size());
+
+  // Make sure that the correct instrument_id was set.
+  EXPECT_EQ(card.instrument_id(), cards[0]->instrument_id());
+  EXPECT_EQ(INT64_MAX, cards[0]->instrument_id());
+}
+
 }  // namespace autofill

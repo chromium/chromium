@@ -348,7 +348,7 @@ sync_pb::SyncEntity CreateSyncWalletCard(const std::string& name,
                                          const std::string& last_four,
                                          const std::string& billing_address_id,
                                          const std::string& nickname,
-                                         int instrument_id) {
+                                         int64_t instrument_id) {
   sync_pb::SyncEntity entity;
   entity.set_name(name);
   entity.set_id_string(name);
