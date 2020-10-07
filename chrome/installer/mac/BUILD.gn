@@ -60,19 +60,22 @@ copy("copies") {
   deps = [
     ":copy_signing",
     "//chrome:entitlements",
-    "//chrome/installer/mac/third_party/bsdiff:goobsdiff",
+    "//chrome/installer/mac/third_party/bsdiff:goobsdiff($host_toolchain)",
     "//chrome/installer/mac/third_party/bsdiff:goobspatch",
     "//chrome/installer/mac/third_party/xz:lzma_decompress",
-    "//chrome/installer/mac/third_party/xz:xz",
+    "//chrome/installer/mac/third_party/xz:xz($host_toolchain)",
     "//chrome/installer/mac/third_party/xz:xzdec",
   ]
 
   sources = [
     "$root_gen_dir/chrome/app-entitlements.plist",
-    "$root_out_dir/goobsdiff",
+    get_label_info(
+            "//chrome/installer/mac/third_party/bsdiff:goobsdiff($host_toolchain)",
+            "root_out_dir") + "/goobsdiff",
     "$root_out_dir/goobspatch",
     "$root_out_dir/liblzma_decompress.dylib",
-    "$root_out_dir/xz",
+    get_label_info("//chrome/installer/mac/third_party/xz:xz($host_toolchain)",
+                   "root_out_dir") + "/xz",
     "$root_out_dir/xzdec",
     "//chrome/app/helper-gpu-entitlements.plist",
     "//chrome/app/helper-plugin-entitlements.plist",
