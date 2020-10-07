@@ -766,6 +766,9 @@ crbug.com/1080397 [ chromeos-board-kevin ] conformance/textures/video/tex-2d-rgb
 crbug.com/1080397 [ chromeos-board-kevin ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
 crbug.com/1108368 [ chromeos-board-kevin ] conformance/misc/shader-precision-format.html [ Failure ]
 
+# Flaky renderer hangs suspected due to some driver issue on Kevin devices.
+crbug.com/1091562 [ chromeos-board-kevin ] * [ RetryOnFailure ]
+
 ########################
 # SwiftShader failures #
 ########################
