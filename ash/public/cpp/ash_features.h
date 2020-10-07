@@ -153,6 +153,12 @@ ASH_PUBLIC_EXPORT extern const base::Feature kEnableBackgroundBlur;
 // preferences, or policy).
 ASH_PUBLIC_EXPORT extern const base::Feature kHideShelfControlsInTabletMode;
 
+// When enabled, the overivew and desk reverse scrolling behaviors are changed
+// and if the user performs the old gestures, a notification or toast will show
+// up.
+// TODO(https://crbug.com/1107183): Remove this after the feature is launched.
+ASH_PUBLIC_EXPORT extern const base::Feature kReverseScrollGestures;
+
 // Enables sliders for setting mic gain levels in the more audio settings
 // section in the system tray.
 ASH_PUBLIC_EXPORT extern const base::Feature kSystemTrayMicGainSetting;
@@ -227,6 +233,8 @@ ASH_PUBLIC_EXPORT bool IsDragFromShelfToHomeOrOverviewEnabled();
 ASH_PUBLIC_EXPORT bool IsReduceDisplayNotificationsEnabled();
 
 ASH_PUBLIC_EXPORT bool IsHideShelfControlsInTabletModeEnabled();
+
+ASH_PUBLIC_EXPORT bool IsReverseScrollGesturesEnabled();
 
 ASH_PUBLIC_EXPORT bool AreContextualNudgesEnabled();
 

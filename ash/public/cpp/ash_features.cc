@@ -118,6 +118,9 @@ const base::Feature kEnableBackgroundBlur{"EnableBackgroundBlur",
 const base::Feature kHideShelfControlsInTabletMode{
     "HideShelfControlsInTabletMode", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kReverseScrollGestures{"EnableReverseScrollGestures",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kSystemTrayMicGainSetting{"SystemTrayMicGainSetting",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -252,6 +255,10 @@ bool IsHideShelfControlsInTabletModeEnabled() {
     return false;
 
   return base::FeatureList::IsEnabled(kHideShelfControlsInTabletMode);
+}
+
+bool IsReverseScrollGesturesEnabled() {
+  return base::FeatureList::IsEnabled(kReverseScrollGestures);
 }
 
 bool AreContextualNudgesEnabled() {
