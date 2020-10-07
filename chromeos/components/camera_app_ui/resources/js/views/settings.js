@@ -226,20 +226,6 @@ export class ResolutionSettings extends BaseSettings {
     this.backVideoItem_ = dom.get('#settings-back-videores', HTMLElement);
 
     /**
-     * @type {!HTMLTemplateElement}
-     * @private
-     */
-    this.resItemTempl_ =
-        dom.get('#resolution-item-template', HTMLTemplateElement);
-
-    /**
-     * @type {!HTMLTemplateElement}
-     * @private
-     */
-    this.extcamItemTempl_ =
-        dom.get('#extcam-resolution-item-template', HTMLTemplateElement);
-
-    /**
      * Device setting of front camera. Null if no front camera.
      * @type {?DeviceSetting}
      * @private
@@ -454,9 +440,8 @@ export class ResolutionSettings extends BaseSettings {
       let /** !HTMLElement */ photoItem;
       let /** !HTMLElement */ videoItem;
       if (deviceId !== focusedId) {
-        const extItem = /** @type {!HTMLElement} */ (
-            document.importNode(this.extcamItemTempl_.content, true));
-        util.setupI18nElements(extItem);
+        const extItem =
+            dom.instantiateTemplate('#extcam-resolution-item-template');
         [titleItem, photoItem, videoItem] =
             dom.getAllFrom(extItem, '.menu-item', HTMLElement);
 
@@ -625,8 +610,7 @@ export class ResolutionSettings extends BaseSettings {
         .forEach((element) => element.parentNode.removeChild(element));
 
     resolutions.forEach((r) => {
-      const item = /** @type {!HTMLElement} */ (
-          document.importNode(this.resItemTempl_.content, true));
+      const item = dom.instantiateTemplate('#resolution-item-template');
       const label = dom.getFrom(item, 'label', HTMLLabelElement);
       util.setInkdropEffect(label);
       const input = dom.getFrom(item, 'input', HTMLInputElement);

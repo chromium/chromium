@@ -290,7 +290,8 @@ export function openHelp() {
 
 /**
  * Sets up i18n messages on DOM subtree by i18n attributes.
- * @param {!HTMLElement} rootElement Root of DOM subtree to be set up with.
+ * @param {!Node} rootElement Root of DOM subtree to be set up
+ *     with.
  */
 export function setupI18nElements(rootElement) {
   const getElements = (attr) => rootElement.querySelectorAll('[' + attr + ']');
