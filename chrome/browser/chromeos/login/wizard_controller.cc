@@ -1416,11 +1416,10 @@ void WizardController::OnOobeFlowFinished() {
 
   // Launch browser and delete login host controller.
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&UserSessionManager::DoBrowserLaunch,
-                     base::Unretained(UserSessionManager::GetInstance()),
-                     ProfileManager::GetActiveUserProfile(),
-                     GetLoginDisplayHost()));
+      FROM_HERE, base::BindOnce(&UserSessionManager::DoBrowserLaunch,
+                                UserSessionManager::GetInstance()->AsWeakPtr(),
+                                ProfileManager::GetActiveUserProfile(),
+                                GetLoginDisplayHost()));
 }
 
 void WizardController::OnDeviceDisabledChecked(bool device_disabled) {
