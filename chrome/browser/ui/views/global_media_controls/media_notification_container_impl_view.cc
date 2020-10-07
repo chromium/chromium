@@ -123,7 +123,13 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
       dismiss_button_container_->AddChildView(std::move(dismiss_button));
   UpdateDismissButtonIcon();
 
-  bool is_cast_notification = item ? item->SourceIsCast() : false;
+  bool is_local_media_session =
+      item ? item->SourceType() ==
+                 media_message_center::SourceType::kLocalMediaSession
+           : false;
+  bool is_cast_notification =
+      item ? item->SourceType() == media_message_center::SourceType::kCast
+           : false;
   if (is_cast_notification) {
     cast_item_ = static_cast<CastMediaNotificationItem*>(item.get());
   }
@@ -177,7 +183,7 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
 
   if (base::FeatureList::IsEnabled(
           media::kGlobalMediaControlsSeamlessTransfer) &&
-      !is_cast_notification) {
+      is_local_media_session) {
     auto cast_controller =
         media_router::GlobalMediaControlsCastStartStopEnabled()
             ? service_->CreateCastDialogControllerForSession(id_)

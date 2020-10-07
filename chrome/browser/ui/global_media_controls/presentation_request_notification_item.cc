@@ -31,6 +31,7 @@ void PresentationRequestNotificationItem::OnMediaSessionActionButtonPressed(
 
 void PresentationRequestNotificationItem::Dismiss() {}
 
-bool PresentationRequestNotificationItem::SourceIsCast() {
-  return false;
+media_message_center::SourceType
+PresentationRequestNotificationItem::SourceType() {
+  return media_message_center::SourceType::kPresentationRequest;
 }

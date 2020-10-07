@@ -68,7 +68,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSessionNotificationItem
   // This will stop the media session associated with this item. The item will
   // then call |MediaNotificationController::RemoveItem()| to ensure removal.
   void Dismiss() override;
-  bool SourceIsCast() override;
+  media_message_center::SourceType SourceType() override;
 
   base::WeakPtr<MediaSessionNotificationItem> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

@@ -165,8 +165,8 @@ void MediaSessionNotificationItem::Dismiss() {
   controller_->RemoveItem(request_id_);
 }
 
-bool MediaSessionNotificationItem::SourceIsCast() {
-  return false;
+media_message_center::SourceType MediaSessionNotificationItem::SourceType() {
+  return media_message_center::SourceType::kLocalMediaSession;
 }
 
 void MediaSessionNotificationItem::SetController(

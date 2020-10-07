@@ -52,7 +52,7 @@ class CastMediaNotificationItem
   void OnMediaSessionActionButtonPressed(
       media_session::mojom::MediaSessionAction action) override;
   void Dismiss() override;
-  bool SourceIsCast() override;
+  media_message_center::SourceType SourceType() override;
 
   // media_router::mojom::MediaStatusObserver:
   void OnMediaStatusUpdated(

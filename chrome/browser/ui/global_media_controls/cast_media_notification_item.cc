@@ -200,8 +200,8 @@ void CastMediaNotificationItem::Dismiss() {
   notification_controller_->HideNotification(media_route_id_);
 }
 
-bool CastMediaNotificationItem::SourceIsCast() {
-  return true;
+media_message_center::SourceType CastMediaNotificationItem::SourceType() {
+  return media_message_center::SourceType::kCast;
 }
 
 void CastMediaNotificationItem::OnMediaStatusUpdated(
