@@ -52,10 +52,6 @@ class POLICY_EXPORT PolicyMapAndroid {
       const base::android::JavaParamRef<jobject>& caller,
       const base::android::JavaRef<jstring>& policy) const;
 
-  jboolean Equals(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& caller,
-                  jlong other) const;
-
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
  private:

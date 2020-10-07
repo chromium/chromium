@@ -4,11 +4,14 @@
 
 package org.chromium.components.policy;
 
-import org.chromium.base.ObserverList;
+import org.chromium.base.CollectionUtil;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeClassQualifiedName;
 import org.chromium.base.annotations.NativeMethods;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Wrapper of the native PolicyService class in the Java layer.
@@ -25,32 +28,20 @@ import org.chromium.base.annotations.NativeMethods;
 @JNINamespace("policy::android")
 public class PolicyService {
     private long mNativePolicyService;
-    private final ObserverList<Observer> mObservers = new ObserverList<Observer>();
+    private final Set<Observer> mObservers = new HashSet<Observer>();
 
     /**
      * Observer interface for observing PolicyService change for Chrome policy
      * domain.
-     *
-     * The default method below may increase method count with Desugar. If there
-     * are more than 10+ observer implementations, please consider use
-     * EmptyObserver instead for default behavior.
      */
     public interface Observer {
-        /**
-         * Invoked when Chrome policy is modified. The native class of both
-         * |previous| and |current| become invalid once the method
-         * returns. Do not use their references outside the method.
-         * @param previous PolicyMap contains values before the update.
-         * @param current PolicyMap contains values after the update.
-         */
-        default void onPolicyUpdated(PolicyMap previous, PolicyMap current) {}
         /**
          * Invoked when Chome policy domain is initialized. Observer must be
          * added before the naitve PolicyService initialization being finished.
          * Use {@link #isInitializationComplete} to check the initialization
          * state before listening to this event.
          */
-        default void onPolicyServiceInitialized() {}
+        void onPolicyServiceInitialized();
     }
 
     /**
@@ -61,7 +52,7 @@ public class PolicyService {
         if (mObservers.isEmpty()) {
             PolicyServiceJni.get().addObserver(mNativePolicyService, PolicyService.this);
         }
-        mObservers.addObserver(observer);
+        mObservers.add(observer);
     }
 
     /**
@@ -69,7 +60,7 @@ public class PolicyService {
      * policy update.
      */
     public void removeObserver(Observer observer) {
-        mObservers.removeObserver(observer);
+        mObservers.remove(observer);
         if (mObservers.isEmpty()) {
             PolicyServiceJni.get().removeObserver(mNativePolicyService, PolicyService.this);
         }
@@ -95,19 +86,7 @@ public class PolicyService {
      */
     @CalledByNative
     private void onPolicyServiceInitialized() {
-        for (Observer observer : mObservers) {
-            observer.onPolicyServiceInitialized();
-        }
-    }
-
-    /**
-     * Pass the onPolicyServiceInitialized event to the |mObservers|.
-     */
-    @CalledByNative
-    private void onPolicyUpdated(PolicyMap previous, PolicyMap current) {
-        for (Observer observer : mObservers) {
-            observer.onPolicyUpdated(previous, current);
-        }
+        CollectionUtil.forEach(mObservers, observer -> observer.onPolicyServiceInitialized());
     }
 
     @CalledByNative
