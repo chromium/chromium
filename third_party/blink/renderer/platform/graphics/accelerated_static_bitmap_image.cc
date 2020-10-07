@@ -244,7 +244,7 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
     return;
   }
 
-  GrContext* shared_gr_context =
+  GrDirectContext* shared_gr_context =
       context_provider_wrapper->ContextProvider()->GetGrContext();
   DCHECK(shared_ri &&
          shared_gr_context);  // context isValid already checked in callers

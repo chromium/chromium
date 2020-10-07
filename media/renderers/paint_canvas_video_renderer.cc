@@ -1272,7 +1272,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
       video_frame->metadata()->read_lock_fences_enabled) {
     if (!raster_context_provider)
       return false;
-    GrContext* gr_context = raster_context_provider->GrContext();
+    GrDirectContext* gr_context = raster_context_provider->GrContext();
     if (!gr_context)
       return false;
 // TODO(crbug.com/1108154): Expand this uploading path to macOS, linux

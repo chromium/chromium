@@ -20,6 +20,7 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 
 namespace viz {
 
@@ -358,7 +359,7 @@ void ClientResourceProvider::ShutdownAndReleaseAllResources() {
 }
 
 ClientResourceProvider::ScopedSkSurface::ScopedSkSurface(
-    GrContext* gr_context,
+    GrDirectContext* gr_context,
     sk_sp<SkColorSpace> color_space,
     GLuint texture_id,
     GLenum texture_target,
