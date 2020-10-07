@@ -10,6 +10,9 @@
 #include "chrome/browser/promo_browser_command/promo_browser_command.mojom-forward.h"
 #include "chrome/browser/search/instant_service_observer.h"
 #include "chrome/browser/search/shopping_tasks/shopping_tasks.mojom.h"
+#if !defined(OFFICIAL_BUILD)
+#include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/1125897
+#endif
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -25,6 +28,9 @@ class WebUI;
 }  // namespace content
 
 class ChromeCustomizeThemesHandler;
+#if !defined(OFFICIAL_BUILD)
+class FooHandler;
+#endif
 class GURL;
 class InstantService;
 class KaleidoscopeDataProviderImpl;
@@ -79,6 +85,13 @@ class NewTabPageUI
       mojo::PendingReceiver<shopping_tasks::mojom::ShoppingTasksHandler>
           pending_receiver);
 
+#if !defined(OFFICIAL_BUILD)
+  // Instantiates the implementor of the foo::mojom::FooHandler mojo interface
+  // passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<foo::mojom::FooHandler> pending_receiver);
+#endif
+
  private:
   // new_tab_page::mojom::PageHandlerFactory:
   void CreatePageHandler(
@@ -113,6 +126,9 @@ class NewTabPageUI
   mojo::Receiver<customize_themes::mojom::CustomizeThemesHandlerFactory>
       customize_themes_factory_receiver_;
   std::unique_ptr<PromoBrowserCommandHandler> promo_browser_command_handler_;
+#if !defined(OFFICIAL_BUILD)
+  std::unique_ptr<FooHandler> foo_handler_;
+#endif
   Profile* profile_;
   InstantService* instant_service_;
   content::WebContents* web_contents_;

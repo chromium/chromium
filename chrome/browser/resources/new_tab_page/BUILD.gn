@@ -32,6 +32,7 @@ js_type_check("closure_compile") {
     "modules:module_descriptor",
     "modules:module_registry",
     "modules:modules",
+    "modules/dummy:foo_proxy",
   ]
 }
 
@@ -336,6 +337,7 @@ if (optimize_webui) {
       "omnibox.mojom-lite.js",
       "promo_browser_command.mojom-lite.js",
       "modules/shopping_tasks/shopping_tasks.mojom-lite.js",
+      "foo.mojom-lite.js",
     ]
   }
 }

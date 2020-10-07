@@ -46,6 +46,10 @@
 #include "ui/resources/grit/webui_resources.h"
 #include "url/url_util.h"
 
+#if !defined(OFFICIAL_BUILD)
+#include "chrome/browser/ui/webui/new_tab_page/foo/foo_handler.h"
+#endif
+
 using content::BrowserContext;
 using content::WebContents;
 
@@ -245,6 +249,10 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
   source->AddResourcePath(
       "modules/shopping_tasks/shopping_tasks.mojom-lite.js",
       IDR_NEW_TAB_PAGE_MODULES_SHOPPING_TASKS_SHOPPING_TASKS_MOJO_LITE_JS);
+#if !defined(OFFICIAL_BUILD)
+  source->AddResourcePath("foo.mojom-lite.js",
+                          IDR_NEW_TAB_PAGE_FOO_MOJO_LITE_JS);
+#endif
 #if BUILDFLAG(OPTIMIZE_WEBUI)
   source->AddResourcePath("new_tab_page.js", IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_JS);
 #endif  // BUILDFLAG(OPTIMIZE_WEBUI)
@@ -367,6 +375,12 @@ void NewTabPageUI::BindInterface(
   shopping_tasks_handler_ = std::make_unique<ShoppingTasksHandler>(
       std::move(pending_receiver), profile_);
 }
+#if !defined(OFFICIAL_BUILD)
+void NewTabPageUI::BindInterface(
+    mojo::PendingReceiver<foo::mojom::FooHandler> pending_page_handler) {
+  foo_handler_ = std::make_unique<FooHandler>(std::move(pending_page_handler));
+}
+#endif
 
 void NewTabPageUI::CreatePageHandler(
     mojo::PendingRemote<new_tab_page::mojom::Page> pending_page,

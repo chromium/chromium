@@ -225,6 +225,10 @@ if (!is_android) {
       "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_js",
       "//skia/public/mojom:mojom_js",
     ]
+    if (!is_official_build) {
+      deps += [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings_js" ]
+    }
+
     if (optimize_webui) {
       deps += [ "//chrome/browser/resources/new_tab_page:optimized_js" ]
     } else {

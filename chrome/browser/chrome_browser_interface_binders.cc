@@ -114,6 +114,9 @@
 #include "chrome/browser/speech/speech_recognition_service_factory.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
+#if !defined(OFFICIAL_BUILD)
+#include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/1125897
+#endif
 #include "chrome/browser/ui/webui/media/media_feeds_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
@@ -614,6 +617,11 @@ void PopulateChromeWebUIFrameBinders(
       ProfileCustomizationUI, ProfilePickerUI, settings::SettingsUI
 #endif  // !defined(OS_CHROMEOS)
       >(map);
+
+#if !defined(OFFICIAL_BUILD)
+  RegisterWebUIControllerInterfaceBinder<foo::mojom::FooHandler, NewTabPageUI>(
+      map);
+#endif  // !defined(OFFICIAL_BUILD)
 
   RegisterWebUIControllerInterfaceBinder<media_feeds::mojom::MediaFeedsStore,
                                          MediaFeedsUI>(map);

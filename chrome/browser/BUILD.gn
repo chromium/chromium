@@ -6132,6 +6132,10 @@ static_library("browser") {
   if (tpm_fallback) {
     defines += [ "TPM_FALLBACK" ]
   }
+
+  if (!is_android && !is_official_build) {
+    deps += [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings" ]
+  }
 }
 
 if (is_android) {

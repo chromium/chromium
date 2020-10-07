@@ -14,10 +14,12 @@ js_library("module_descriptor") {
 js_library("modules") {
   deps = [
     ":module_registry",
-    "dummy:module",
     "kaleidoscope:module",
     "shopping_tasks:module",
   ]
+  if (!is_official_build) {
+    deps += [ "dummy:module" ]
+  }
 }
 
 js_library("module_wrapper") {
@@ -63,6 +65,9 @@ if (optimize_webui) {
       "module_registry.js",
       "shopping_tasks/shopping_tasks_handler_proxy.js",
     ]
+    if (!is_official_build) {
+      in_files += [ "dummy/foo_proxy.js" ]
+    }
   }
 
   preprocess_grit("preprocess_gen") {

@@ -1,0 +1,5 @@
+This directory contains the Mojo definitions for the dummy
+module in NTP, which include an interface for a browser-side
+handler to handle requests from JS. This directory also
+contains FooHandler which is a concrete implementation of
+the handler interface.

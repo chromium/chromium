@@ -4,6 +4,8 @@
   <include name="IDR_NEW_TAB_PAGE_MODULES_DUMMY_MODULE_JS"
       file="${root_gen_dir}/chrome/browser/resources/new_tab_page/modules/dummy/module.js"
       use_base_dir="false" type="BINDATA" compress="false" />
+  <include name="IDR_NEW_TAB_PAGE_MODULES_DUMMY_FOO_PROXY_JS"
+      file="modules/dummy/foo_proxy.js" type="BINDATA" compress="false" />
 </if>
   <include name="IDR_NEW_TAB_PAGE_MODULES_KALEIDOSCOPE_MODULE_JS"
       file="modules/kaleidoscope/module.js"

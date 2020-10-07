@@ -1579,6 +1579,14 @@ static_library("ui") {
         "//google_apis/drive",
       ]
     }
+
+    if (!is_official_build) {
+      sources += [
+        "webui/new_tab_page/foo/foo_handler.cc",
+        "webui/new_tab_page/foo/foo_handler.h",
+      ]
+      deps += [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings" ]
+    }
   }
 
   if (enable_paint_preview) {
