@@ -23,6 +23,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/avatar_menu.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -40,6 +41,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/skia_util.h"
+#include "ui/native_theme/native_theme.h"
 #include "url/url_canon.h"
 
 #if defined(OS_WIN)
@@ -351,6 +353,10 @@ constexpr size_t kPlaceholderAvatarIndex = 0;
 #endif
 
 ui::ImageModel GetGuestAvatar(int size) {
+  if (base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
+    return ui::ImageModel::FromVectorIcon(
+        kUserAccountAvatarIcon, ui::NativeTheme::kColorId_AvatarIcon, size);
+  }
   return ui::ImageModel::FromVectorIcon(kUserAccountAvatarIcon,
                                         gfx::kGoogleGrey500, size);
 }

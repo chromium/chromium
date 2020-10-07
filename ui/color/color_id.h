@@ -16,9 +16,9 @@
   E(kColorAlertHighSeverity, NativeTheme::kColorId_AlertSeverityHigh) \
   E(kColorAlertLowSeverity, NativeTheme::kColorId_AlertSeverityLow) \
   E(kColorAlertMediumSeverity, NativeTheme::kColorId_AlertSeverityMedium) \
-  E_CPONLY(kColorBorderAndSeparatorForeground) \
   E_CPONLY(kColorDisabledForeground) \
   E_CPONLY(kColorItemSelectionBackground) \
+  E_CPONLY(kColorMidground) \
   E_CPONLY(kColorPrimaryBackground) \
   E_CPONLY(kColorPrimaryForeground) \
   E_CPONLY(kColorSecondaryForeground) \
@@ -26,6 +26,8 @@
   E_CPONLY(kColorTextSelectionBackground) \
   \
   /* Further UI element colors */ \
+  E(kColorAvatarHeaderArt, NativeTheme::kColorId_AvatarHeaderArt) \
+  E(kColorAvatarIcon, NativeTheme::kColorId_AvatarIcon) \
   E(kColorBubbleBackground, NativeTheme::kColorId_BubbleBackground) \
   E(kColorBubbleFooterBackground, \
     NativeTheme::kColorId_BubbleFooterBackground) \

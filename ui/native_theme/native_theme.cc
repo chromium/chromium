@@ -36,6 +36,8 @@ NativeThemeColorIdToColorIdMap() {
         {NTCID::kColorId_AlertSeverityHigh, kColorAlertHighSeverity},
         {NTCID::kColorId_AlertSeverityLow, kColorAlertLowSeverity},
         {NTCID::kColorId_AlertSeverityMedium, kColorAlertMediumSeverity},
+        {NTCID::kColorId_AvatarHeaderArt, kColorAvatarHeaderArt},
+        {NTCID::kColorId_AvatarIcon, kColorAvatarIcon},
         {NTCID::kColorId_BubbleBackground, kColorBubbleBackground},
         {NTCID::kColorId_BubbleFooterBackground,
           kColorBubbleFooterBackground},

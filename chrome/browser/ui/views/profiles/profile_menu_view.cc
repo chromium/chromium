@@ -491,10 +491,8 @@ void ProfileMenuView::BuildGuestIdentity() {
                                                 guest_window_count);
   }
 
-  // TODO(crbug.com/1105763): Add asset colors to native theme and update icon
-  // temporary color placeholder to align with the design deck colors.
-  ui::ThemedVectorIcon header_art_icon(&kGuestMenuArtIcon,
-                                       ui::NativeTheme::kColorId_MenuIconColor);
+  ui::ThemedVectorIcon header_art_icon(
+      &kGuestMenuArtIcon, ui::NativeTheme::kColorId_AvatarHeaderArt);
   SetProfileIdentityInfo(
       /*profile_name=*/base::string16(),
       /*background_color=*/SK_ColorTRANSPARENT,

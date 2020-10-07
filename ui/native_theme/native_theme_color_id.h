@@ -14,8 +14,10 @@
   OP(kColorId_DialogBackground),                                               \
   OP(kColorId_DialogForeground),                                               \
   OP(kColorId_BubbleBackground),                                               \
-  OP(kColorId_BubbleForeground),                                               \
   OP(kColorId_BubbleFooterBackground),                                         \
+  /* Avatar and Header Asset */                                                \
+  OP(kColorId_AvatarHeaderArt),                                                \
+  OP(kColorId_AvatarIcon),                                                     \
   /* FocusableBorder */                                                        \
   OP(kColorId_FocusedBorderColor),                                             \
   OP(kColorId_UnfocusedBorderColor),                                           \
