@@ -57,7 +57,7 @@ public class PassphraseActivityTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         // Override before signing in, otherwise regular ProfileSyncService will be created.
         overrideProfileSyncService();
-        mChromeBrowserTestRule.addAndSignInTestAccount();
+        mChromeBrowserTestRule.addTestAccountThenSigninAndEnableSync();
 
         // Create the activity.
         final PassphraseActivity activity = launchPassphraseActivity();

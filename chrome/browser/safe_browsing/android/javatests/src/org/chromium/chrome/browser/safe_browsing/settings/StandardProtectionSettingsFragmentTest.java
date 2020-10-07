@@ -103,7 +103,7 @@ public class StandardProtectionSettingsFragmentTest {
     @SmallTest
     @Feature({"SafeBrowsing"})
     public void testSwitchPasswordLeakDetectionPreference() {
-        mBrowserTestRule.addAndSignInTestAccount();
+        mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         });
@@ -181,7 +181,7 @@ public class StandardProtectionSettingsFragmentTest {
     @Feature({"SafeBrowsing"})
     @Features.EnableFeatures(ChromeFeatureList.SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED)
     public void testPreferencesDisabledInEnhancedProtectionMode() {
-        mBrowserTestRule.addAndSignInTestAccount();
+        mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION);
         });
@@ -203,7 +203,7 @@ public class StandardProtectionSettingsFragmentTest {
     @SmallTest
     @Feature({"SafeBrowsing"})
     public void testPreferencesDisabledInNoProtectionMode() {
-        mBrowserTestRule.addAndSignInTestAccount();
+        mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.NO_SAFE_BROWSING);
         });
@@ -226,7 +226,7 @@ public class StandardProtectionSettingsFragmentTest {
     @Feature({"SafeBrowsing"})
     @Policies.Add({ @Policies.Item(key = "PasswordLeakDetectionEnabled", string = "true") })
     public void testPasswordLeakDetectionPolicyManaged() {
-        mBrowserTestRule.addAndSignInTestAccount();
+        mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
             SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
@@ -248,7 +248,7 @@ public class StandardProtectionSettingsFragmentTest {
     @Feature({"SafeBrowsing"})
     @Policies.Add({ @Policies.Item(key = "SafeBrowsingExtendedReportingEnabled", string = "true") })
     public void testExtendedReportingPolicyManaged() {
-        mBrowserTestRule.addAndSignInTestAccount();
+        mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
             SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);

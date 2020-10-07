@@ -42,7 +42,7 @@ public class LensUtilsTest {
     @Test
     @SmallTest
     public void getShareWithGoogleLensIntentSignedInTest() {
-        mBrowserTestRule.addAndSignInTestAccount();
+        mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
 
         Intent intentNoUri = getShareWithGoogleLensIntentOnUiThread(Uri.EMPTY,
                 /* isIncognito= */ false, 1234L, /* srcUrl */ "", /* titleOrAltText */ "",
@@ -267,7 +267,7 @@ public class LensUtilsTest {
     @SmallTest
     public void
     getShareWithGoogleLensIntentSignedInTest_directIntentEnabled() {
-        mBrowserTestRule.addAndSignInTestAccount();
+        mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
 
         Intent intentNoUri = getShareWithGoogleLensIntentOnUiThread(Uri.EMPTY,
                 /* isIncognito= */ false, 1234L, /* srcUrl */ "", /* titleOrAltText */ "",
@@ -299,7 +299,7 @@ public class LensUtilsTest {
     @Test
     @SmallTest
     public void getShareWithGoogleLensIntentIncognitoTest() {
-        mBrowserTestRule.addAndSignInTestAccount();
+        mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
         Intent intentNoUri = getShareWithGoogleLensIntentOnUiThread(Uri.EMPTY,
                 /* isIncognito= */ true, 1234L, /* srcUrl */ "", /* titleOrAltText */ "",
                 /* intentType= */ IntentType.DEFAULT,
@@ -331,7 +331,7 @@ public class LensUtilsTest {
     @SmallTest
     public void getShareWithGoogleLensIntentWithVariationsTest() {
         LensUtils.setFakeVariationsForTesting(" 123 456 ");
-        mBrowserTestRule.addAndSignInTestAccount();
+        mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
 
         final String contentUrl = "content://image-url";
         Intent intentWithContentUri = getShareWithGoogleLensIntentOnUiThread(Uri.parse(contentUrl),
@@ -356,7 +356,7 @@ public class LensUtilsTest {
     @SmallTest
     public void getShareWithGoogleLensIntentWithVariationsIncognitoTest() {
         LensUtils.setFakeVariationsForTesting(" 123 456 ");
-        mBrowserTestRule.addAndSignInTestAccount();
+        mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
 
         final String contentUrl = "content://image-url";
         Intent intentWithContentUri = getShareWithGoogleLensIntentOnUiThread(Uri.parse(contentUrl),

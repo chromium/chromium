@@ -11,6 +11,7 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /**
@@ -46,7 +47,8 @@ public class ChromeBrowserTestRule implements TestRule {
     /**
      * Add and sign in an account with the default name.
      */
-    public Account addAndSignInTestAccount() {
-        return mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+    public CoreAccountInfo addTestAccountThenSigninAndEnableSync() {
+        Account account = mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        return mAccountManagerTestRule.toCoreAccountInfo(account.name);
     }
 }
