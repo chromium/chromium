@@ -321,7 +321,7 @@
 <translation id="1361872463926621533">Ton beim Start abspielen</translation>
 <translation id="1362865166188278099">Mechanischer Fehler. Drucker prüfen.</translation>
 <translation id="1363585519747660921">USB-Drucker muss konfiguriert werden</translation>
-<translation id="1364664799726141130">Das bestätigte Konto ist nicht berechtigt, auf dieses Gerät zuzugreifen. Prüfen Sie bitte, dass Sie <ph name="ACCOUNT" /> bestätigen, um die Sitzung zu entsperren.</translation>
+<translation id="1364664799726141130">Das bestätigte Konto ist nicht berechtigt, auf dieses Gerät zuzugreifen. Bitte bestätigen Sie <ph name="ACCOUNT" />, um die Sitzung zu entsperren.</translation>
 <translation id="1365180424462182382"><ph name="BEGIN_LINK" />Ihr Browser wird von <ph name="ENROLLMENT_DOMAIN" /> verwaltet<ph name="END_LINK" /></translation>
 <translation id="1367951781824006909">Datei auswählen</translation>
 <translation id="1369149969991017342">Schalterzugriff (zum Steuern des Computers mit nur einem oder zwei Schaltern)</translation>

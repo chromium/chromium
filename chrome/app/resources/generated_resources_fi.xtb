@@ -497,7 +497,7 @@
 <translation id="155865706765934889">Kosketuslevy</translation>
 <translation id="1562119309884184621">Tämän kontaktin lisääminen muistetaan ensi kerralla, kun hän jakaa</translation>
 <translation id="1563702743503072935">Google-tilisi salasanat ovat saatavilla myös tällä laitteella, kun olet kirjautuneena sisään</translation>
-<translation id="1566049601598938765">Verkkosivusto</translation>
+<translation id="1566049601598938765">Sivusto</translation>
 <translation id="15662109988763471">Valittu tulostin ei ole käytettävissä tai sitä ei ole asennettu oikein. Tarkista tulostin tai valitse toinen tulostin.</translation>
 <translation id="1567387640189251553">Laitteeseen on kytketty eri näppäimistö sen jälkeen, kun annoit salasanasi edellisen kerran. Sillä voidaan yrittää kaapata näppäinpainalluksesi.</translation>
 <translation id="1567993339577891801">JavaScript-konsoli</translation>
@@ -2209,7 +2209,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="357889014807611375">maksullinen Wi-Fi</translation>
 <translation id="3581605050355435601">Määritä IP-osoite automaattisesti</translation>
 <translation id="3582057310199111521">Käytetty petollisella sivustolla ja kuului tietosuojaloukkaukseen</translation>
-<translation id="3584169441612580296">Käyttää ja muokata valokuvia, musiikkia ja muuta tietokoneesi mediaa</translation>
+<translation id="3584169441612580296">Käyttää ja muokata kuvia, musiikkia ja muuta tietokoneesi mediaa</translation>
 <translation id="3586806079541226322">Tiedoston avaaminen epäonnistui</translation>
 <translation id="3586931643579894722">Piilota lisätiedot</translation>
 <translation id="3587482841069643663">Kaikki</translation>
@@ -2716,7 +2716,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4133076602192971179">Avaa sovellus muuttaaksesi salasanan</translation>
 <translation id="4136203100490971508">Yövalo sammuu automaattisesti, kun aurinko nousee.</translation>
 <translation id="41365691917097717">Jatkamalla otat ADB-virheenkorjauksen käyttöön Android-sovellusten luomista ja testausta varten. Huomaa, että tämä sallii sellaisten Android-sovellusten asentamisen, joita Google ei ole vahvistanut. Ominaisuuden käytöstä poistaminen edellyttää tehdasasetusten palautusta.</translation>
-<translation id="4138267921960073861">Näytä käyttäjänimet ja valokuvat kirjautumisruudulla</translation>
+<translation id="4138267921960073861">Näytä käyttäjänimet ja kuvat kirjautumisruudulla</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID-laite yhdistetty</translation>
 <translation id="4142052906269098341">Avaa <ph name="DEVICE_TYPE" /> puhelimellasi. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="4142518881503042940">Tallenna havaitut tulostimet profiiliin tai lisää uusi tulostin. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
@@ -2975,7 +2975,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4483049906298469269">Muun kuin oletusarvoisen verkkoyhdyskäytävän ping-kutsu epäonnistui</translation>
 <translation id="4487489714832036847">Chromebookit käyttävät sovelluksia perinteisten ohjelmistojen sijaan. Lataa sovelluksia esim. tuottavuuden parantamista ja viihdettä varten.</translation>
 <translation id="4488502501195719518">Poistetaanko kaikki data?</translation>
-<translation id="449232563137139956">Sivustot näyttävät yleensä kuvituskuvia, esim. valokuvia uutisjutun ohessa tai verkkokaupassa</translation>
+<translation id="449232563137139956">Sivustot näyttävät yleensä kuvituskuvia, esim. kuvia uutisjutun ohessa tai verkkokaupassa</translation>
 <translation id="4493468155686877504">Suositus (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Älä näytä tällä sivulla</translation>
 <translation id="4496054781541092778"><ph name="PERMISSION" /> estetty automaattisesti</translation>
@@ -3135,7 +3135,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4659126640776004816">Tämä ominaisuus otetaan käyttöön, kun kirjaudut Google-tilillesi.</translation>
 <translation id="4660476621274971848">Versiota <ph name="EXPECTED_VERSION" /> odotettiin, mutta versio oli <ph name="NEW_ID" />.</translation>
 <translation id="4660540330091848931">Muutetaan kokoa</translation>
-<translation id="4661407454952063730">Sovellusdata voi olla mitä tahansa dataa, jota sovellus on tallentanut (kehittäjän asetusten perusteella), mukaan lukien yhteystietoja, viestejä ja valokuvia.</translation>
+<translation id="4661407454952063730">Sovellusdata voi olla mitä tahansa dataa, jota sovellus on tallentanut (kehittäjän asetusten perusteella), mukaan lukien yhteystietoja, viestejä ja kuvia.</translation>
 <translation id="4662373422909645029">Ei saa sisältää numeroita</translation>
 <translation id="4662788913887017617">Jaa tämä kirjanmerkki iPhonellesi</translation>
 <translation id="4663373278480897665">Kamera sallittu</translation>
@@ -3757,7 +3757,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="5452974209916053028">Nykyinen incognito-istunto: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
 <translation id="5454166040603940656">palvelulla <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">Virheellinen</translation>
-<translation id="5457459357461771897">Käyttää ja poistaa valokuvia, musiikkia ja muuta tietokoneesi mediaa</translation>
+<translation id="5457459357461771897">Käyttää ja poistaa kuvia, musiikkia ja muuta tietokoneesi mediaa</translation>
 <translation id="5457599981699367932">Selaa vierailijana</translation>
 <translation id="5457991019809708398">Päällä, ei roaming-tilassa</translation>
 <translation id="5458214261780477893">Dvorak</translation>
@@ -4181,7 +4181,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="5951624318208955736">Ruutu</translation>
 <translation id="5955282598396714173">Salasana on vanhentunut. Kirjaudu ulos ja uudelleen sisään, niin voit vaihtaa sen.</translation>
 <translation id="5955304353782037793">sov.</translation>
-<translation id="5955721306465922729">Verkkosivusto haluaa avata tämän sovelluksen.</translation>
+<translation id="5955721306465922729">Sivusto haluaa avata tämän sovelluksen.</translation>
 <translation id="5955809630138889698">Laite ei välttämättä ole yhteensopiva offline-esittelytilan kanssa. Pyydä lisätietoja tukihenkilöltäsi.</translation>
 <translation id="5956585768868398362">Onko tämä haluamasi hakusivu?</translation>
 <translation id="5957613098218939406">Lisäasetukset</translation>
@@ -5815,7 +5815,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7887334752153342268">Monista</translation>
 <translation id="7887864092952184874">Laitepari muodostettu Bluetooth-hiiren kanssa</translation>
 <translation id="7890147169288018054">Katso verkon tietoja, esim. IP- tai MAC-osoite</translation>
-<translation id="7893008570150657497">käyttää valokuvia, musiikkia ja muuta tietokoneesi mediaa</translation>
+<translation id="7893008570150657497">käyttää kuvia, musiikkia ja muuta tietokoneesi mediaa</translation>
 <translation id="7893153962594818789"><ph name="DEVICE_TYPE" /> ei käytä Bluetoothia tällä hetkellä. Lisää salasana ja laita Bluetooth päälle.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Oletus)</translation>
 <translation id="7897865097438730075">Google Cloud Printin tuki päättyy 31. joulukuuta. Ota yhteyttä järjestelmänvalvojaan.</translation>
@@ -5979,7 +5979,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8068253693380742035">Kirjaudu sisään koskettamalla</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">Tulosta kuvana</translation>
-<translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Sovellustiedot voivat olla mitä tahansa tietoja, joita sovellus on tallentanut (kehittäjän asetusten perusteella), mukaan lukien yhteystietoja, viestejä ja valokuvia.<ph name="END_PARAGRAPH1" />
+<translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Sovellustiedot voivat olla mitä tahansa tietoja, joita sovellus on tallentanut (kehittäjän asetusten perusteella), mukaan lukien yhteystietoja, viestejä ja kuvia.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Varmuuskopioidut tiedot eivät kuluta lapsesi tallennustilaa Drivessa.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Voit poistaa tämän palvelun käytöstä asetuksissa.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8074127646604999664">Salli äskettäin suljettujen sivustojen suorittaa tietojen lähettäminen ja vastaanottaminen loppuun</translation>
@@ -6001,7 +6001,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> ei vastaa.</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Varmuuskopioi Google Driveen. Palauta dataa tai vaihda laitetta helposti milloin tahansa. Varmuuskopio sisältää sovellusdatan.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Varmuuskopiot ladataan Googleen ja salataan Google-tilisi salasanalla.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Sovellusdata voi olla mitä tahansa dataa, jota sovellus on tallentanut (kehittäjän asetusten perusteella), mukaan lukien yhteystietoja, viestejä ja valokuvia.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH3" />Sovellusdata voi olla mitä tahansa dataa, jota sovellus on tallentanut (kehittäjän asetusten perusteella), mukaan lukien yhteystietoja, viestejä ja kuvia.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Varmuuskopioitu data ei kuluta Drivessa käytettävissä olevaa tallennustilaasi.<ph name="END_PARAGRAPH4" />
     <ph name="BEGIN_PARAGRAPH5" />Voit poistaa tämän palvelun käytöstä asetuksissa.<ph name="END_PARAGRAPH5" /></translation>
 <translation id="8096740438774030488">Virransäästö akkuvirralla</translation>

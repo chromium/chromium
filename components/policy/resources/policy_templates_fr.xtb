@@ -1620,8 +1620,8 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si cette règle est désactivée ou qu'elle n'est pas configurée, ces versions
       de TLS/DTLS sont désactivées.
 
-      Cette règle est temporaire et sera supprimée dans une future version de
-      <ph name="PRODUCT_NAME" />.</translation>
+      Cette règle est temporaire et sera supprimée dans une future version
+     de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3356657927302977341">Configure <ph name="PRODUCT_NAME" /> pour qu'il utilise les notifications natives sur Linux.
 
 Si cette règle est définie sur "True" ou si elle n'est pas définie, <ph name="PRODUCT_NAME" /> est autorisé à utiliser les notifications natives.
@@ -5786,7 +5786,7 @@ Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> et les applications AR
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre spécifié par l'utilisateur s'applique.
 
       Pour en savoir plus sur les formats d'URL valides, veuillez consulter cette page : https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Sachez toutefois qu'à partir de la version M85, les formats contenant les caractères génériques "*" et "[*.]" dans l'hôte ne sont plus acceptés pour cette règle.</translation>
-<translation id="9073405975862312795">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés communiquent les périodes durant lesquels ils sont utilisés.
+<translation id="9073405975862312795">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés communiquent les périodes durant lesquelles ils sont utilisés.
 
       Si cette règle est désactivée, les appareils enregistrés n'enregistrent et ne communiquent pas ces périodes.</translation>
 <translation id="9077227880520270584">Minuteur de connexion automatique au compte local de l'appareil</translation>

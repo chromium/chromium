@@ -321,7 +321,7 @@
 <translation id="1361872463926621533">Luaj një tingull në nisje</translation>
 <translation id="1362865166188278099">Problem mekanik. Kontrollo printerin</translation>
 <translation id="1363585519747660921">Printeri USB ka nevojë për printim</translation>
-<translation id="1364664799726141130">Llogaria që ke verifikuar nuk është e autorizuar të qaset në këtë pajisje. Sigurohu që ta verifikosh <ph name="ACCOUNT" /> për ta shkyçur sesionin.</translation>
+<translation id="1364664799726141130">Llogaria që ke verifikuar nuk është e autorizuar të qaset në këtë pajisje. Sigurohu që po verifikon <ph name="ACCOUNT" /> për të shkyçur sesionin.</translation>
 <translation id="1365180424462182382"><ph name="BEGIN_LINK" />Shfletuesi yt menaxhohet<ph name="END_LINK" /> nga <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1367951781824006909">Zgjidh një skedar</translation>
 <translation id="1369149969991017342">Qasja me çelës (kontrollo kompjuterin me vetëm një ose dy çelësa)</translation>
@@ -617,7 +617,7 @@
 <translation id="1689945336726856614">Kopjo &amp;URL-në</translation>
 <translation id="1692115862433274081">Përdor një llogari tjetër</translation>
 <translation id="1692118695553449118">Sinkronizimi është aktiv</translation>
-<translation id="1692210323591458290">E purpurt e errët</translation>
+<translation id="1692210323591458290">Vjollcë e errët</translation>
 <translation id="1697150536837697295">Art</translation>
 <translation id="1697686431566694143">Modifiko skedarin</translation>
 <translation id="1698122934742150150">Vetëm sesioni aktual i fshehtë</translation>

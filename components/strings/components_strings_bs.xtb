@@ -462,7 +462,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2792012897584536778">Administratori ovog uređaja su postavili sigurnosnu potvrdu koja im može dozvoliti da vide sadržaj web lokacija koje posjećujete.</translation>
 <translation id="2799020568854403057">Web lokacija koja slijedi sadržava štetne aplikacije</translation>
 <translation id="2799223571221894425">Ponovo pokreni</translation>
-<translation id="2803306138276472711">Sigurno pretraživanje na Googleu je nedavno <ph name="BEGIN_LINK" />otkrilo zlonamjerni softver<ph name="END_LINK" /> na <ph name="SITE" />. Web lokacije koje su inače sigurne, ponekad se zaraze zlonamjernim softverom.</translation>
+<translation id="2803306138276472711">Sigurno pregledanje na Googleu je nedavno <ph name="BEGIN_LINK" />otkrilo zlonamjerni softver<ph name="END_LINK" /> na <ph name="SITE" />. Web lokacije koje su inače sigurne, ponekad se zaraze zlonamjernim softverom.</translation>
 <translation id="2807052079800581569">Y položaj slike</translation>
 <translation id="2824775600643448204">Traka za adresu i pretraživanje</translation>
 <translation id="2826760142808435982">Veza je šifrirana i autentificirana koristeći <ph name="CIPHER" /> i koristi <ph name="KX" /> kao glavni mehanizam za razmjenu.</translation>
@@ -1299,7 +1299,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6203231073485539293">Provjerite internetsku vezu</translation>
 <translation id="6218753634732582820">Ukloniti adresu iz Chromiuma?</translation>
 <translation id="622039917539443112">Paralelno presavijanje</translation>
-<translation id="6221345481584921695">Sigurno pretraživanje na Googleu je nedavno <ph name="BEGIN_LINK" />otkrilo zlonamjerni softver<ph name="END_LINK" /> na <ph name="SITE" />. Web lokacije koje su inače sigurne ponekad budu zaražene zlonamjernim softverom. Zlonamjerni sadržaj dolazi sa hosta <ph name="SUBRESOURCE_HOST" />, koji je poznati distributer ovakvog softvera.</translation>
+<translation id="6221345481584921695">Sigurno pregledanje na Googleu je nedavno <ph name="BEGIN_LINK" />otkrilo zlonamjerni softver<ph name="END_LINK" /> na <ph name="SITE" />. Web lokacije koje su inače sigurne ponekad budu zaražene zlonamjernim softverom. Zlonamjerni sadržaj dolazi sa hosta <ph name="SUBRESOURCE_HOST" />, koji je poznati distributer ovakvog softvera.</translation>
 <translation id="6234122620015464377">Skraćivanje nakon svakog dokumenta</translation>
 <translation id="6240447795304464094">Logotip Google Pay</translation>
 <translation id="6241121617266208201">Sakrij prijedloge</translation>
@@ -1910,7 +1910,7 @@ Dodatni detalji:
 <translation id="8751426954251315517">Pokušajte ponovo kasnije</translation>
 <translation id="8759274551635299824">Ova kartica je istekla</translation>
 <translation id="87601671197631245">Ova web lokacija koristi zastarjelu konfiguraciju sigurnosti, zbog čega može doći do otkrivanja vaših informacija (naprimjer lozinki, poruka ili kreditnih kartica) kada se šalju na ovu web lokaciju.</translation>
-<translation id="8761567432415473239">Usluga Sigurno pretraživanje na Googleu je nedavno <ph name="BEGIN_LINK" />pronašla štetne programe <ph name="END_LINK" /> na web lokaciji <ph name="SITE" />.</translation>
+<translation id="8761567432415473239">Usluga Sigurno pregledanje na Googleu je nedavno <ph name="BEGIN_LINK" />pronašla štetne programe <ph name="END_LINK" /> na web lokaciji <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">USB uređaj</translation>
 <translation id="8774457497170244317">Upravo ste unijeli lozinku na obmanjujućoj web lokaciji. Chrome preporučuje provjeru sačuvanih lozinki za <ph name="WEBSITE_1" /> i druge web lokacije na kojima sada koristite ovu lozinku.</translation>
 <translation id="877985182522063539">A4</translation>

@@ -1306,7 +1306,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       - Añadir a cualquier usuario mientras la política <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> esté habilitada.
 
       Si se le asigna el valor "false" a esta política (o si no se configura), no se aplicarán más reglas a las cuentas de Family Link.
-      Si se le asigna el valor "true" a esta política, se podrán añadir las nuevas cuentas de usuario de Family Link, así como las que se definan en <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />.</translation>
+      Si se le asigna el valor "true" a esta política, se podrán añadir nuevas cuentas de usuario de Family Link aparte de las que se definan en <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="2886969306951284125">Si se habilitan las aplicaciones Android y se asigna el valor "True" a esta política, los dispositivos registrados informarán sobre el estado de Android.
 
       Si se inhabilita la política o no se establece, los dispositivos registrados no informarán sobre el estado de Android.</translation>
@@ -1335,7 +1335,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2919544577647246857">Define la lista de usuarios que pueden iniciar sesión en el dispositivo. Las entradas tienen el formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> (por ejemplo, <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />). Para permitir usuarios arbitrarios en un dominio, utiliza entradas similares a <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
 
       Si no se configura esta política, no se aplicarán restricciones sobre los usuarios que pueden iniciar sesión. Ten en cuenta que sigue siendo necesario configurar adecuadamente la política <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> para crear nuevos usuarios.
-      Si se habilita <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" />, los usuarios de Family Link podrán iniciar sesión, así como las cuentas que se definan en esta política.</translation>
+      Si se habilita <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" />, los usuarios de Family Link podrán iniciar sesión, aparte de las cuentas que se definan en esta política.</translation>
 <translation id="2921222258441684334">Si se asigna el valor 1 a esta política, los sitios web podrán hacer un seguimiento de la ubicación física de los usuarios de forma predeterminada. Si se le asigna el valor 2, se bloqueará este seguimiento de forma predeterminada. Puedes configurar esta política para que pregunte siempre que un sitio quiera hacer un seguimiento de la ubicación física de los usuarios.
 
       Si no se le asigna ningún valor, se aplicará la política <ph name="ASK_GEOLOCATION_POLICY_NAME" />, pero los usuarios podrán cambiar esta opción.</translation>
@@ -2545,7 +2545,7 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 
       El modelo de permisos USB usa la URL solicitante y la URL de inserción (del sitio web marco de nivel superior) para permitir a la URL solicitante que acceda al dispositivo USB. La URL solicitante puede ser distinta a la de inserción si el sitio web solicitante se carga en un iframe. Por lo tanto, el campo "urls" puede contener un máximo de 2 cadenas delimitadas por una coma para especificar estas URL. Si solo especificas una, se otorgará acceso a los dispositivos USB correspondientes cuando la URL del sitio web solicitante coincida con esta URL, independientemente del estado de inserción. Las URL del campo "urls" deben ser URL válidas. De lo contrario, la política se ignorará.
 
-      Si no se le asigna un valor a la política, se aplicará <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> si se ha establecido previamente. Si no, se aplicará la configuración personal del usuario.
+      Si no se le asigna un valor a la política, se aplicará <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> si se ha definido previamente. Si no, se aplicará la configuración personal del usuario.
 
       Los patrones de URL de esta política no deben entrar en conflicto con los de la política <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Si lo hacen, esta política prevalece sobre <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> y <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="4680936297850947973">Obsoleta en M68. Usa DefaultPopupsSetting en su lugar.
@@ -3905,7 +3905,7 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
       Si se le asigna el valor "true", el dispositivo podrá activar la función Powerwash.
       Si no se establece esta política, el valor predeterminado es "true", lo que significa que el dispositivo podrá activar la función Powerwash.
       </translation>
-<translation id="6614020900120353107">Permite controlar si se debe usar el cliente DNS integrado en <ph name="PRODUCT_NAME" />.
+<translation id="6614020900120353107">Controla si se debe usar el cliente DNS integrado en <ph name="PRODUCT_NAME" />.
 
       Esto no decide qué servidores DNS se van a usar, sino solo la pila de software que se utiliza para comunicarse con ellos. Por ejemplo, si el sistema operativo está configurado para utilizar un servidor DNS de empresa, el cliente DNS integrado usaría ese mismo servidor. Sin embargo, es posible que el cliente DNS integrado se dirija a los servidores de formas diferentes con protocolos DNS más modernos, como DNS mediante TLS.
 
@@ -4052,9 +4052,9 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
       Si no se establece la política en un dispositivo administrado, este no podrá ejecutar máquinas virtuales. Los dispositivos no administrados pueden ejecutar máquinas virtuales.</translation>
 <translation id="6786747875388722282">Extensiones</translation>
 <translation id="6786967369487349613">Especificar el directorio de perfiles de itinerancia</translation>
-<translation id="6789422336869764846">Si se habilita la política o no se establece, los dispositivos registrados informarán sobre el estado del conector del modo desarrollador del dispositivo al iniciarse.
+<translation id="6789422336869764846">Si se habilita la política o no se establece, los dispositivos registrados informarán sobre el estado del interruptor del modo desarrollador del dispositivo al iniciarse.
 
-      Si se inhabilita la política, los dispositivos registrados no informarán sobre el estado del conector del modo desarrollador.</translation>
+      Si se inhabilita la política, los dispositivos registrados no informarán sobre el estado del interruptor del modo desarrollador.</translation>
 <translation id="6795485990775913659">Permitir imprimir solo sin PIN</translation>
 <translation id="6810445994095397827">Bloquear JavaScript en estos sitios</translation>
 <translation id="6813263547126514821">Encendido y apagado</translation>

@@ -1332,7 +1332,7 @@ Khi chính sách này được đặt thành false hoặc không được địn
 <translation id="2905984450136807296">Thời gian tồn tại của bộ nhớ đệm lưu trữ dữ liệu xác thực</translation>
 <translation id="2906874737073861391">Danh sách tiện ích trong AppPack</translation>
 <translation id="2908277604670530363">Số lượng tối đa kết nối đồng thời tới máy chủ proxy</translation>
-<translation id="2919544577647246857">Xác định danh sách những người dùng được phép đăng nhập vào thiết bị. Các mục sẽ có dạng <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, chẳng hạn như <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />. Để cho phép người dùng bất kỳ trên một miền, hãy sử dụng các mục có dạng <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
+<translation id="2919544577647246857">Xác định danh sách những người dùng được phép đăng nhập vào thiết bị. Các mục nhập sẽ có dạng <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, chẳng hạn như <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />. Để cho phép người dùng bất kỳ trên một miền, hãy sử dụng các mục nhập có dạng <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
 
       Nếu bạn không định cấu hình chính sách này, thì tất cả người dùng đều được phép đăng nhập. Lưu ý rằng việc tạo người dùng mới sẽ vẫn yêu cầu phải định cấu hình chính sách <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> một cách phù hợp.
       Nếu bạn bật <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" />, người dùng Family Link sẽ được phép bổ sung tài khoản này vào các tài khoản được xác định trong chính sách này.</translation>

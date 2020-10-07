@@ -1257,7 +1257,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6051221802930200923">Une honetan ezin zara joan <ph name="SITE" /> webgunera, ziurtagiri-ainguratzea baitarabil. Sareko erroreak eta erasoak aldi baterakoak izan ohi dira; beraz, geroago funtzionatuko du orriak, segur aski.</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">Presentzia partekatu nahi duzu?</translation>
-<translation id="6057359309778282021">Administratzaileak blokeatu egin du <ph name="ORIGIN_NAME" /> domeinutik <ph name="VM_NAME" /> makina birtualera partekatzeko aukera</translation>
+<translation id="6057359309778282021">Administratzaileak blokeatu egin du <ph name="ORIGIN_NAME" /> domeinutik <ph name="VM_NAME" /> makina birtualera edukia partekatzeko aukera</translation>
 <translation id="6058977677006700226">Gailu guztietan erabili nahi dituzu txartelak?</translation>
 <translation id="6059925163896151826">USB bidezko ailuak</translation>
 <translation id="6060009363608157444">DnsOverHttps moduak ez du balio.</translation>
@@ -1865,7 +1865,7 @@ Xehetasun gehiago:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Ez dago bat datorren pasahitzik. Erakutsi gordetako pasahitz guztiak.</translation>
 <translation id="8625384913736129811">Gorde txartela gailu honetan</translation>
-<translation id="8657078576661269990">Administratzaileak blokeatu egin du <ph name="ORIGIN_NAME" /> domeinutik <ph name="VM_NAME_1" /> eta <ph name="VM_NAME_2" /> makina birtualetara datuak partekatzeko aukera</translation>
+<translation id="8657078576661269990">Administratzaileak blokeatu egin du <ph name="ORIGIN_NAME" /> domeinutik <ph name="VM_NAME_1" /> eta <ph name="VM_NAME_2" /> makina birtualetara edukia partekatzeko aukera</translation>
 <translation id="8663226718884576429">Eskaeraren laburpena, <ph name="TOTAL_LABEL" />, xehetasun gehiago</translation>
 <translation id="867224526087042813">Sinadura</translation>
 <translation id="8676424191133491403">Atzerapenik gabe</translation>

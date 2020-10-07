@@ -27,7 +27,7 @@
 <translation id="121097972571826261">1 語進む</translation>
 <translation id="1225748608451425081">既知の問題により、Chromebook はロックされています。<ph name="TIME_LEFT" /> 後にログインできるようになります。</translation>
 <translation id="1229194443904279055">選択を終了</translation>
-<translation id="1239161794459865856"><ph name="FEATURE_NAME" /> に接続しました。</translation>
+<translation id="1239161794459865856"><ph name="FEATURE_NAME" /> を接続しました。</translation>
 <translation id="1247372569136754018">マイク（内蔵）</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> から充電しています</translation>
 <translation id="1255033239764210633">今日の天気は？</translation>
@@ -75,7 +75,7 @@
 <translation id="1654477262762802994">音声検索を開始</translation>
 <translation id="1667964833127753507">壁紙から抽出した色の代わりに、ライトまたはダークな色調の中間色を使用します。</translation>
 <translation id="1677472565718498478">残り <ph name="TIME" /></translation>
-<translation id="1677507110654891115"><ph name="FEATURE_NAME" /> に接続されていません。</translation>
+<translation id="1677507110654891115"><ph name="FEATURE_NAME" /> は接続されていません。</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> タイマー · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 アドレス: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">デスク: <ph name="DESK_NAME" /></translation>
@@ -446,7 +446,7 @@
 <translation id="5465662442746197494">不明点がある場合</translation>
 <translation id="5496819745535887422">管理者がお使いのデバイスをロールバックしています。デバイスの再起動時にデータはすべて削除されます。</translation>
 <translation id="5519195206574732858">LTE</translation>
-<translation id="5523434445161341166"><ph name="FEATURE_NAME" /> に接続しています。</translation>
+<translation id="5523434445161341166"><ph name="FEATURE_NAME" /> を接続しています。</translation>
 <translation id="553675580533261935">セッションの終了</translation>
 <translation id="5537725057119320332">キャスト</translation>
 <translation id="5548285847212963613">拡張機能「<ph name="EXTENSION_NAME" />」はこのネットワークへの接続をサポートします。</translation>

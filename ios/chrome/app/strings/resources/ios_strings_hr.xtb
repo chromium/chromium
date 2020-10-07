@@ -351,7 +351,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="4840495572919996524">Vaše oznake, povijest, zaporke i druge stavke više se neće sinkronizirati s vašim Google računom.</translation>
 <translation id="4854345657858711387">Postavite šifru zaporke</translation>
 <translation id="4860895144060829044">Poziv</translation>
-<translation id="4872323082491632254">Provjeri zaporke</translation>
+<translation id="4872323082491632254">Provjera zaporki</translation>
 <translation id="4881695831933465202">Otvori</translation>
 <translation id="4901778704868714008">Spremi...</translation>
 <translation id="4904877109095351937">Označi kao pročitano</translation>
@@ -479,7 +479,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6324669097367352121">Postavke prijave</translation>
 <translation id="6337234675334993532">Enkripcija</translation>
 <translation id="633809752005859102">Dogodila se velika pogreška. Poradit ćemo na tome.</translation>
-<translation id="6342069812937806050">Samo sad</translation>
+<translation id="6342069812937806050">Upravo sada</translation>
 <translation id="6344783595350022745">Izbriši tekst</translation>
 <translation id="6346549652287021269">Pokrenuti novo preuzimanje?</translation>
 <translation id="6362362396625799311">Nema anonimnih kartica</translation>

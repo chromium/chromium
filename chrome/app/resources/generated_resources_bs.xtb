@@ -573,7 +573,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="163993578339087550">Usluga <ph name="SERVICE_NAME" /> želi provjeriti koristite li Chrome OS uređaj koji ispunjava uslove.</translation>
 <translation id="1640235262200048077"><ph name="IME_NAME" /> još uvijek ne radi u aplikacijama za Linux</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 With RSA šifriranje</translation>
-<translation id="1641113438599504367">Sigurno pretraživanje</translation>
+<translation id="1641113438599504367">Sigurno pregledanje</translation>
 <translation id="1642494467033190216">Prije nego omogućite ostale funkcije otklanjanja grešaka trebate ukloniti rootfs zaštitu i ponovo pokrenuti uređaj.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA potpis uz SHA-1</translation>
 <translation id="1644574205037202324">Historija</translation>
@@ -871,7 +871,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1979095679518582070">Isključivanjem ove funkcije uređaj će i dalje moći slati informacije potrebne za ključne usluge kao što su ažuriranja sistema i sigurnost.</translation>
 <translation id="1979280758666859181">Prelazite na kanal sa starijom verzijom proizvoda <ph name="PRODUCT_NAME" />. Promjena kanala će se primijeniti kada verzija kanala bude odgovarala verziji koja je trenutno instalirana na vašem uređaju.</translation>
 <translation id="197989455406964291">KDC ne podržava vrstu šifriranja</translation>
-<translation id="1984417487208496350">Bez zaštite (nije preporučeno)</translation>
+<translation id="1984417487208496350">Bez zaštite (ne preporučuje se)</translation>
 <translation id="1987317783729300807">Računi</translation>
 <translation id="1988494864246143197">Web lokacije obično koriste Flash za reproduciranje zvuka, videozapisa ili video igara. Flash Player neće više biti podržan nakon decembra 2020. godine.</translation>
 <translation id="1989112275319619282">Pregledaj</translation>
@@ -1464,7 +1464,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2682498795777673382">Roditelj je izvršio ažuriranje</translation>
 <translation id="2683638487103917598">Folder je sortiran</translation>
 <translation id="2684004000387153598">Da nastavite, kliknite na Uredu, a zatim kliknite na Dodaj osobu da kreirate novi profil za svoju adresu e-pošte.</translation>
-<translation id="2687403674020088961">Blokiraj sve kolačiće (nije preporučeno)</translation>
+<translation id="2687403674020088961">Blokiraj sve kolačiće (ne preporučuje se)</translation>
 <translation id="2687407218262674387">Googleovi uslovi korištenja usluge</translation>
 <translation id="2688196195245426394">Pogreška pri registraciji uređaja na poslužitelju: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Prikaži opcije jezika</translation>
@@ -4530,7 +4530,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="6340071272923955280">Internetski protokol za štampanje (IPPP)</translation>
 <translation id="6340526405444716530">Personalizacija</translation>
 <translation id="6341850831632289108">Otkrivanje vaše fizičke lokacije</translation>
-<translation id="6342069812937806050">Upravo</translation>
+<translation id="6342069812937806050">Maloprije</translation>
 <translation id="6344170822609224263">Pristupiti spisku mrežnih veza</translation>
 <translation id="6344576354370880196">Sačuvani štampači</translation>
 <translation id="6345418402353744910">Vaše korisničko ime i lozinka su obavezni za proxy <ph name="PROXY" /> kako bi administrator mogao konfigurirati vašu mrežu</translation>

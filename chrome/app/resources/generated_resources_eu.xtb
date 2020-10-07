@@ -6401,7 +6401,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8592141010104017453">Ez erakutsi jakinarazpenik</translation>
 <translation id="859246725979739260">Webgune honi blokeatu egin zaio kokapena atzitzeko aukera.</translation>
 <translation id="8593121833493516339">Bidali erabilera- eta diagnostiko-datuak. Bidali diagnostikoak eta gailu zein aplikazioen erabilerari buruzko datuak Google-ri automatikoki haurrak darabiltzan Android zerbitzuak hobetzen laguntzeko. Informazio hori ez da erabiliko haurra identifikatzeko eta, hari esker, sistemaren eta aplikazioen egonkortasuna hobetuko da, besteak beste. Gainera, multzokatutako datu batzuk oso baliagarriak izango dira Google-ren aplikazioak hobetzeko eta bazkideei laguntzeko (adibidez, Android-en garatzaileei). Haurraren kontuko Sareko eta aplikazioetako jarduera gehigarriak ezarpena aktibatuta badago, baliteke datu horiek haren Google-ko kontuan gordetzea. <ph name="BEGIN_LINK1" />Lortu informazio gehiago<ph name="END_LINK1" /></translation>
-<translation id="8593735906501637689"><ph name="MODULE_TITLE" /> kendu da</translation>
+<translation id="8593735906501637689">Kendu da <ph name="MODULE_TITLE" /></translation>
 <translation id="8594908476761052472">Grabatu bideoa</translation>
 <translation id="8596540852772265699">Fitxategi pertsonalizatuak</translation>
 <translation id="8597845839771543242">Propietatearen formatua:</translation>

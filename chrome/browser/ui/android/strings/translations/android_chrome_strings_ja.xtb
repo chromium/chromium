@@ -816,7 +816,7 @@
 <translation id="6929699136511445623">Android システムの同期を有効にする</translation>
 <translation id="6941901516114974832">シークレット モードでも、訪問先のウェブサイト、雇用主または学校、ご利用のインターネット サービス プロバイダには、あなたのアクティビティが<ph name="BEGIN_BOLD1" />知られる可能性があります<ph name="END_BOLD1" />。
 
-シークレット モード セッションのデータは、<ph name="BEGIN_BOLD2" />すべてのシークレット タブを閉じた<ph name="END_BOLD2" />ときにのみ、Chrome から削除されます。</translation>
+シークレット モード セッションでのデータは、<ph name="BEGIN_BOLD2" />すべてのシークレット タブを閉じた<ph name="END_BOLD2" />ときにのみ、Chrome から削除されます。</translation>
 <translation id="6942665639005891494">デフォルトのダウンロード保存先は [設定] メニューでいつでも変更できます</translation>
 <translation id="6945221475159498467">選択</translation>
 <translation id="6955535239952325894">この設定は管理対象のブラウザでは無効です</translation>

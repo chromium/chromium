@@ -1153,9 +1153,9 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2716623398185506073">Wenn die Richtlinie aktiviert ist, werden über registrierte Geräte Hardwarestatistiken und Kennzeichnungen im Zusammenhang mit der Stromversorgung gemeldet.
 
       Ist sie deaktiviert oder nicht konfiguriert, melden registrierte Geräte keine Statistiken zur Stromversorgung.</translation>
-<translation id="2725855586003209701">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird über registrierte Geräte eine Liste mit Gerätenutzern gemeldet, die sich vor Kurzem angemeldet haben.
+<translation id="2725855586003209701">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden über registrierte Geräte alle Gerätenutzer gemeldet, die sich vor Kurzem angemeldet haben.
 
-      Ist die Richtlinie deaktiviert, melden die registrierten Geräte keine Liste mit Nutzern.</translation>
+      Ist die Richtlinie deaktiviert, melden die registrierten Geräte keine Nutzer.</translation>
 <translation id="2731627323327011390">Verwendung von <ph name="PRODUCT_OS_NAME" />-Zertifikaten für ARC-Apps deaktivieren</translation>
 <translation id="2742843273354638707">Hiermit werden die Chrome Web Store App und der zugehörige Fußzeilenlink auf der "Neuer Tab"-Seite und im App Launcher von <ph name="PRODUCT_OS_NAME" /> ausgeblendet.
 
@@ -1283,7 +1283,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Wenn diese Richtlinie auf "False" gesetzt oder nicht konfiguriert ist, gelten für Family Link-Konten keine zusätzlichen Regeln.
       Wenn sie auf "True" gesetzt ist, sind neben den in <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> festgelegten Konten auch neue Family Link-Konten erlaubt.</translation>
-<translation id="2886969306951284125">Wenn Android-Apps an sind und die Richtlinie auf "True" gesetzt ist, werden über registrierte Geräte Android-Statusinformationen gemeldet.
+<translation id="2886969306951284125">Wenn Android-Apps laufen und die Richtlinie auf "True" gesetzt ist, werden über registrierte Geräte Android-Statusinformationen gemeldet.
 
       Ist die Richtlinie deaktiviert oder nicht konfiguriert, melden registrierte Geräte keine Android-Statusinformationen.</translation>
 <translation id="2890645751406497668">Websites automatisch die Berechtigung erteilen, eine Verbindung zu USB-Geräten mit der angegebenen Anbieter-ID und Produkt-ID herzustellen.</translation>
@@ -3351,7 +3351,7 @@ Wenn diese Richtlinie verwendet wird, werden dem Nutzer alle Drucker mit Ausnahm
       Bei den Einträgen in dieser Liste handelt es sich um auf die Erweiterung angepasste Übereinstimmungsmuster (siehe https://developer.chrome.com/extensions/match_patterns). Wenn eine URL mit einem Eintrag in dieser Liste übereinstimmt, können Nutzer eine Datei ganz einfach über diese URL installieren. Sowohl der Speicherort der CRX-Datei als auch die Seite, über die der Download gestartet wird, also die Verweis-URL, müssen durch diese Muster zugelassen sein.
 
       "<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />" hat Vorrang vor dieser Richtlinie. Eine Erweiterung auf der Sperrliste wird folglich nicht installiert, auch wenn sie von einer Website auf dieser Liste stammt.</translation>
-<translation id="5860010874344790473">Wenn die Richtlinie aktiviert ist, werden Systemprotokolle an den Verwaltungsserver gesendet, damit Administratoren die Protokolle überwachen können.
+<translation id="5860010874344790473">Wenn die Richtlinie aktiviert ist, werden Systemprotokolle an den Verwaltungsserver gesendet, damit Administratoren die Protokolle beobachten können.
 
       Ist sie deaktiviert oder nicht konfiguriert, werden keine Systemprotokolle gemeldet.</translation>
 <translation id="5861856285460256766">Konfiguration von Elternzugriffscodes</translation>
@@ -3882,7 +3882,7 @@ Ein Teil der Proxyeinstellungen ist für Android-Apps verfügbar und kann auf fr
 
       Ist sie auf "False" gesetzt, wird der integrierte DNS-Client nie verwendet.
 
-      Wenn diese Richtlinie nicht konfiguriert ist, ist der integrierte DNS-Client unter macOS, Android – sofern weder ein privates DNS noch ein VPN aktiviert ist – und Chrome OS standardmäßig aktiviert. Der Nutzer kann dann über die Bearbeitung von chrome://flags oder die Festlegung eines Befehlszeilen-Flag entscheiden, ob der integrierte DNS-Client verwendet wird oder nicht.</translation>
+      Wenn diese Richtlinie nicht konfiguriert ist, ist der integrierte DNS-Client unter macOS, Android – sofern weder ein privates DNS noch ein VPN aktiviert ist – und Chrome OS standardmäßig aktiviert. Der Nutzer kann dann über die Bearbeitung von chrome://flags oder die Festlegung eines Befehlszeilen-Flag entscheiden, ob der integrierte DNS-Client verwendet werden soll oder nicht.</translation>
 <translation id="6621839881150363218">Wenn die Richtlinie aktiviert ist, werden alle Websites isoliert. Jede Website wird dann in einem eigenen Prozess ausgeführt. Wird die Richtlinie deaktiviert, findet keine explizite Website-Isolierung statt und Feldtests von "IsolateOriginsAndroid" und "SitePerProcessAndroid" sind deaktiviert. Nutzer können die Richtlinie aber manuell aktivieren.
 
       Wenn die Richtlinie nicht konfiguriert ist, können Nutzer diese Einstellung ändern.
@@ -4019,9 +4019,9 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden Nutzer durch den 
       Wenn diese Richtlinie auf einem verwalteten Gerät nicht konfiguriert ist, kann das Gerät keine virtuellen Maschinen ausführen. Nicht verwaltete Geräte können virtuelle Maschinen ausführen.</translation>
 <translation id="6786747875388722282">Erweiterungen</translation>
 <translation id="6786967369487349613">Roaming-Profilverzeichnis festlegen</translation>
-<translation id="6789422336869764846">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird über registrierte Geräte der Status des Entwicklerschalters des Geräts beim Start gemeldet.
+<translation id="6789422336869764846">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird über registrierte Geräte der Status des Entwicklermodus gemeldet, wenn das Gerät startet.
 
-      Ist sie deaktiviert, melden registrierte Geräte den Status des Entwicklerschalters nicht.</translation>
+      Ist sie deaktiviert, melden registrierte Geräte den Status des Entwicklermodus nicht.</translation>
 <translation id="6795485990775913659">Drucken nur ohne PIN zulassen</translation>
 <translation id="6810445994095397827">JavaScript auf diesen Websites blockieren</translation>
 <translation id="6813263547126514821">Stromsparmodus und Herunterfahren</translation>

@@ -964,9 +964,9 @@
 
 
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 Chrome 瀏覽器雲端管理服務的執行個體。</translation>
-<translation id="2448315169529769573">如果將這項政策設為啟用，<ph name="PRODUCT_OS_NAME" />會將使用指標和診斷資料 (包括當機報告) 回報給 Google。如果將這項政策設為停用，系統會停用指標和診斷資料的報告功能。
+<translation id="2448315169529769573">如果將這項政策設為啟用，<ph name="PRODUCT_OS_NAME" /> 會將使用指標和診斷資料 (包括當機報告) 回報給 Google。如果將這項政策設為停用，系統會停用指標和診斷資料的報告功能。
 
-       如果未設定這項政策，系統會在未受管理的裝置上，將指標和診斷資料的報告功能保持停用，並且在受管理的裝置上保持啟用。</translation>
+       如果未設定這項政策，系統會在未受管理的裝置上，將指標和診斷資料的報告功能保持停用，而在受管理的裝置上則保持啟用。</translation>
 <translation id="2454228136871844693">穩定性最佳化。</translation>
 <translation id="2456629156652006573">不公開</translation>
 <translation id="2463034609187171371">在傳輸層安全標準 (TLS) 中啟用 DHE 加密套件</translation>
@@ -1263,7 +1263,7 @@
 
       如果不設定這項政策，系統不會進行篩選，並納入所有列印伺服器。</translation>
 <translation id="2877225735001246144">在交涉 Kerberos 驗證時，停用 CNAME 查詢</translation>
-<translation id="2886215882246310669">這項政策可控管 <ph name="PRODUCT_OS_NAME" />是否允許將新的 Family Link 使用者帳戶加入裝置。
+<translation id="2886215882246310669">這項政策可控管 <ph name="PRODUCT_OS_NAME" /> 是否允許將新的 Family Link 使用者帳戶加入裝置。
       這項政策只有在搭配 <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> 時才會有作用。除了許可清單中定義的帳戶以外，這項政策也會允許 Family Link 帳戶加入裝置。
       這項政策不會影響其他登入政策的行為。特別是在以下情況中，這項政策不會有任何作用：
       - 已透過 <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> 政策停用將新使用者加入裝置的功能。
@@ -4536,7 +4536,7 @@
 <translation id="7458437477941640506">如果作業系統版本比目標版本還新，則不復原至目標版本，且一併停用更新。</translation>
 <translation id="7459601923199346224">控管憑證管理的使用者和裝置政策。</translation>
 <translation id="7464991223784276288">將來自相符網址的 Cookie 限制在目前的工作階段中</translation>
-<translation id="7468182772656807573">你可以透過這項政策，決定監控網路封包的傳送頻率 (以毫秒為單位)。間隔範圍介於 30 秒到 24 小時。系統會將超出範圍的值調整到範圍內。
+<translation id="7468182772656807573">你可以透過這項政策，決定監控網路封包的傳送頻率 (以毫秒為單位)。間隔範圍須介於 30 秒到 24 小時之間。系統會將超出範圍的值調整到範圍內。
 
       如果未設定，系統會套用 3 分鐘的預設間隔。</translation>
 <translation id="7469554574977894907">啟用搜尋建議</translation>

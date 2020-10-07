@@ -321,7 +321,7 @@
 <translation id="1361872463926621533">Spila hljóð við ræsingu</translation>
 <translation id="1362865166188278099">Vélrænt vandamál. Athugaðu prentara</translation>
 <translation id="1363585519747660921">Stilla þarf USB-prentarann</translation>
-<translation id="1364664799726141130">Reikningurinn sem þú staðfestir hefur ekki heimild til aðgangs að þessu tæki. Vertu viss um að þú sért að staðfesta <ph name="ACCOUNT" /> til að taka lotuna úr lás.</translation>
+<translation id="1364664799726141130">Reikningurinn sem þú staðfestir hefur ekki aðgangsheimild að þessu tæki. Vertu viss um að þú sért að staðfesta <ph name="ACCOUNT" /> til að taka lotuna úr lás.</translation>
 <translation id="1365180424462182382"><ph name="ENROLLMENT_DOMAIN" /> <ph name="BEGIN_LINK" />hefur umsjón með vafranum þínum<ph name="END_LINK" /></translation>
 <translation id="1367951781824006909">Velja skrá</translation>
 <translation id="1369149969991017342">Rofaaðgangur (stjórnaðu tölvunni með aðeins einum eða tveimur rofum)</translation>
@@ -692,7 +692,7 @@
 <translation id="1776712937009046120">Bæta notanda við</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
 <translation id="1778457539567749232">Merkja sem ólesið</translation>
-<translation id="1779468444204342338">Lágmarks</translation>
+<translation id="1779468444204342338">Lágmark</translation>
 <translation id="1779652936965200207">Sláðu þennan aðgangslykil inn í „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="177989070088644880">Forrit (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Loka hópi</translation>
@@ -3647,7 +3647,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5307030433605830021">Efnisveita er ekki studd</translation>
 <translation id="5308380583665731573">Tengjast</translation>
 <translation id="5310281978693206542">Senda tengil í tækin þín</translation>
-<translation id="531118851858162334">Þetta atriði er sýnt vegna fyrri virkni þinnar við notkun á Google þjónustum. Þú getur skoðað gögnin þín, eytt þeim og breytt stillingunum á <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="531118851858162334">Þetta atriði er sýnt vegna fyrri notkunar þinnar á Google þjónustum. Þú getur skoðað gögnin þín, eytt þeim og breytt stillingunum á <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="5311304534597152726">Skráir inn sem</translation>
 <translation id="5311565231560644461">Ekki leyfa vefsvæðum að nota sýndarveruleikatæki og -gögn</translation>
 <translation id="5314381603623123224">Þjónustuskilmálar Chrome breytast 31. mars</translation>
@@ -3688,7 +3688,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5362741141255528695">Veldu einkalykilsskrá.</translation>
 <translation id="5363109466694494651">Djúphreinsa og færa í fyrra horf</translation>
 <translation id="5365881113273618889">Mappan sem þú valdir inniheldur viðkvæmar skrár. Ertu viss um að þú viljir veita „<ph name="APP_NAME" />“ varanlegan skrifaðgang að þessari möppu?</translation>
-<translation id="536638840841140142">Engin</translation>
+<translation id="536638840841140142">Engar</translation>
 <translation id="5368720394188453070">Síminn er læstur. Taktu hann úr lás til að komast inn.</translation>
 <translation id="5368779022775404937">Skráðu þig inn á <ph name="REALM" /></translation>
 <translation id="5369491905435686894">Virkja vélbúnaðarhröðun músar</translation>

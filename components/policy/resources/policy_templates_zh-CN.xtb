@@ -967,7 +967,7 @@
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 Chrome 浏览器云管理的实例。</translation>
 <translation id="2448315169529769573">如果此政策已启用，<ph name="PRODUCT_OS_NAME" />便会将使用情况指标和诊断数据（包括崩溃报告）反馈给 Google。如果此政策已停用，系统会关闭指标和诊断数据报告功能。
 
-       如果此政策未设置，在不受管理的设备上，指标和诊断数据报告功能会保持关闭状态，但在受管理的设备上，该功能会保持开启状态。</translation>
+       如果此政策未设置，在不受管理的设备上，指标和诊断数据报告功能会保持关闭状态；但在受管理的设备上，该功能会保持开启状态。</translation>
 <translation id="2454228136871844693">针对稳定性进行优化。</translation>
 <translation id="2456629156652006573">仅限不公开</translation>
 <translation id="2463034609187171371">在 TLS 中启用 DHE 加密套件</translation>
@@ -1270,8 +1270,8 @@
       如果此政策未设置，系统便不会执行过滤，所有打印服务器都会被纳入考虑范围内。</translation>
 <translation id="2877225735001246144">在协商 Kerberos 身份验证时停用 CNAME 查找</translation>
 <translation id="2886215882246310669">控制 <ph name="PRODUCT_OS_NAME" />是否允许在设备上添加新的 Family Link 用户帐号。
-      此政策只能与 <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> 结合使用。它旨在允许添加 Family Link 帐号，以作为对许可名单中所指定帐号的补充。
-      此政策不会影响其他登录政策的行为。具体而言，在以下情况下，此政策不会产生任何影响：
+      此政策只能与 <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> 结合使用。除了许可名单中所指定的帐号外，该政策允许添加 Family Link 帐号。
+      此政策不会影响其他登录政策的行为。具体而言，此政策不会对以下情况产生任何影响：
       - 已通过 <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> 政策禁止向设备添加新用户。
       - 已通过 <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> 政策允许添加所有用户。
 
@@ -1305,7 +1305,7 @@
 <translation id="2919544577647246857">以列表形式指定哪些用户能登录设备。条目应采用 <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> 格式，例如 <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />。若要允许某个网域上的任意用户登录设备，请使用 <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" /> 格式的条目。
 
       如果此政策未配置，任何用户都能登录设备。请注意，倘若涉及到创建新用户，您仍需适当配置 <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> 政策。
-      除了此政策中指定的帐号之外，如果 <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> 已启用，Family Link 用户也能登录设备。</translation>
+      如果 <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> 已启用，除了此政策中指定的帐号之外，Family Link 用户也能登录设备。</translation>
 <translation id="2921222258441684334">如果此政策设为 1，系统会默认允许网站跟踪用户的实际位置。如果此政策设为 2，系统会默认禁止此类跟踪。您可通过设置此政策，让网站在每次想要跟踪用户的实际位置时都先询问用户的意见。
 
       如果此政策未设置，则意味着 <ph name="ASK_GEOLOCATION_POLICY_NAME" /> 政策适用，但用户可以更改此设置。</translation>
@@ -1529,7 +1529,7 @@
       如果此政策未设置，默认值便是 0 度，但用户可以随意更改此值。如果用户更改了默认值，显示屏在重启时将不会重新应用此值。</translation>
 <translation id="3264793472749429012">默认搜索服务提供商的编码</translation>
 <translation id="3273221114520206906">默认 JavaScript 设置</translation>
-<translation id="328347261792478720">默认情况下，浏览器会显示为用户量身定制的媒体推荐内容。如果此政策已停用，系统将对用户隐藏这些建议。如果此政策已启用或未设置，系统会向用户显示媒体推荐内容。</translation>
+<translation id="328347261792478720">默认情况下，浏览器会显示为用户量身定制的媒体推荐内容。如果此政策已停用，系统将对用户隐藏这些推荐内容。如果此政策已启用或未设置，系统则会向用户显示媒体推荐内容。</translation>
 <translation id="3284094172359247914">控制对 WebUSB API 的使用</translation>
 <translation id="3288595667065905535">发布版</translation>
 <translation id="3292147213643666827">允许 <ph name="PRODUCT_NAME" /> 作为 <ph name="CLOUD_PRINT_NAME" />与连接到该计算机的传统打印机之间的代理。
@@ -1579,7 +1579,7 @@
 <translation id="3345682490796432751">如果此政策已启用，过期插件可作为正常插件使用。如果此政策已停用，系统将不会使用过期插件。
 
       如果您不设置此政策，系统会要求用户提供运行过期插件的权限。</translation>
-<translation id="3348799281602260763">如果此政策已启用，WebRTC 对等互连可以降级至已过时的 TLS/DTLS（DTLS 1.0、TLS 1.0 和 TLS 1.1）协议版本。
+<translation id="3348799281602260763">如果此政策已启用，WebRTC 对等连接可以降级至已过时的 TLS/DTLS（DTLS 1.0、TLS 1.0 和 TLS 1.1）协议版本。
       如果此政策已停用或未设置，这些 TLS/DTLS 版本会被停用。
 
       此政策只是暂时性政策，会在未来的 <ph name="PRODUCT_NAME" /> 版本中移除。</translation>
@@ -3848,7 +3848,7 @@
       </translation>
 <translation id="6614020900120353107">控制是否在 <ph name="PRODUCT_NAME" /> 中使用内置 DNS 客户端。
 
-      此政策不会影响使用的 DNS 服务器，只会影响与这些服务器通信时使用的软件堆栈。例如，如果操作系统已配置为使用一台企业 DNS 服务器，内置 DNS 客户端也会使用这台服务器。不过，内置 DNS 客户端可能会使用更新型的 DNS 相关协议（例如 DNS-over-TLS），以不同的方式对各台服务器进行寻址。
+      此政策不会影响使用哪些 DNS 服务器，只会影响与这些服务器通信时使用的软件堆栈。例如，如果操作系统已配置为使用一台企业 DNS 服务器，内置 DNS 客户端也会使用这台服务器。不过，内置 DNS 客户端可能会使用更新型的 DNS 相关协议（例如 DNS-over-TLS），以不同的方式对各台服务器进行寻址。
 
       此政策不会影响 DNS-over-HTTPS。如需更改该行为，请参阅 <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> 政策。
 

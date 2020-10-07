@@ -1335,7 +1335,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2919544577647246857">Menentukan daftar pengguna yang diizinkan untuk login ke perangkat. Entri memiliki format <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, misalnya <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />. Untuk mengizinkan sembarang pengguna di suatu domain, gunakan entri berformat <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
 
       Jika kebijakan ini tidak dikonfigurasi, semua pengguna akan diizinkan untuk login. Perlu diperhatikan bahwa pembuatan pengguna baru tetap mengharuskan kebijakan <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> dikonfigurasi dengan tepat.
-      Jika <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> diaktifkan, pengguna Family Link akan diizinkan untuk ditambahkan ke akun yang ditentukan dalam kebijakan ini.</translation>
+      Jika <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> diaktifkan, selain akun yang ditetapkan dalam kebijakan ini, pengguna Family Link juga akan diizinkan.</translation>
 <translation id="2921222258441684334">Jika kebijakan disetel ke 1, situs akan dapat melacak lokasi fisik pengguna sebagai default. Jika kebijakan disetel ke 2, pelacakan akan ditolak secara default. Anda dapat menyetel kebijakan untuk menanyakan setiap kali situs ingin melacak lokasi fisik pengguna.
 
       Jika kebijakan tidak disetel, kebijakan<ph name="ASK_GEOLOCATION_POLICY_NAME" /> akan berlaku, tetapi pengguna dapat mengubah setelan ini.</translation>
@@ -2358,7 +2358,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
       Jika kebijakan ini tidak ditetapkan, Safe Browsing akan beroperasi dalam mode Perlindungan Standar tetapi pengguna dapat mengubah setelan ini.
 
       Lihat https://developers.google.com/safe-browsing untuk mengetahui info selengkapnya tentang Safe Browsing.</translation>
-<translation id="4402887080007986374">Versi Persyaratan Layanan Edu Coexistence yang valid</translation>
+<translation id="4402887080007986374">Versi Persyaratan Layanan akun sekolah yang valid</translation>
 <translation id="4408428864159735559">Daftar berbagi file jaringan yang telah dikonfigurasikan sebelumnya.</translation>
 <translation id="4410236409016356088">Aktifkan pembatasan bandwidth jaringan</translation>
 <translation id="441217499641439905">Nonaktifkan Google Drive melalui koneksi seluler di aplikasi File <ph name="PRODUCT_OS_NAME" /></translation>
@@ -5629,11 +5629,11 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="8942616385591203339">Kebijakan ini mengontrol apakah Izin Sinkronisasi dapat ditampilkan ke pengguna saat login pertama kali. Kebijakan ini harus disetel ke false jika Izin Sinkronisasi tidak diperlukan bagi pengguna.
       Jika disetel ke false, Izin Sinkronisasi tidak akan ditampilkan.
       Jika disetel ke true atau tidak disetel, Izin Sinkronisasi dapat ditampilkan.</translation>
-<translation id="8943744188513019866">Kebijakan ini menunjukkan versi Persyaratan Layanan Edu Coexistence yang valid saat ini.
+<translation id="8943744188513019866">Kebijakan ini menunjukkan versi Persyaratan Layanan akun sekolah yang valid saat ini.
       Kebijakan ini dibandingkan dengan versi terakhir yang diterima oleh orang tua dan digunakan untuk meminta perpanjangan izin orang tua jika diperlukan.
 
       Jika kebijakan ini disetel, versi Persyaratan Layanan dapat divalidasi.
-      Jika kebijakan ini tidak disetel, validitas Persyaratan Layanan Edu Coexistence tidak dapat diverifikasi.
+      Jika kebijakan ini tidak disetel, validitas Persyaratan Layanan akun sekolah tidak dapat diverifikasi.
 
       Kebijakan ini hanya digunakan untuk pengguna Family Link.</translation>
 <translation id="8943934315109955032">Tidak memeriksa pelanggaran aturan perlindungan data sensitif</translation>

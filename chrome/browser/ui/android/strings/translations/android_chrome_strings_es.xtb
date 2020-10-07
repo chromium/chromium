@@ -331,7 +331,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> sobre el contenido sugerido</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="3507132249039706973">La protección estándar está activada</translation>
-<translation id="3509330069915219067">Sin conexión. Chrome no puede comprobar si hay actualizaciones.</translation>
+<translation id="3509330069915219067">No hay conexión. Chrome no puede comprobar si hay actualizaciones.</translation>
 <translation id="3513704683820682405">Realidad aumentada</translation>
 <translation id="3518985090088779359">Aceptar y continuar</translation>
 <translation id="3522247891732774234">Actualización disponible. Más opciones</translation>
@@ -807,7 +807,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="685850645784703949">Discover de Google: desactivado</translation>
 <translation id="6864459304226931083">Descargar imagen</translation>
 <translation id="6865313869410766144">Datos de Autocompletar formulario</translation>
-<translation id="6882836635272038266">Protección estándar frente a descargas, extensiones y sitios web que son peligrosos.</translation>
+<translation id="6882836635272038266">Protección estándar frente a descargas, extensiones y sitios web que se sabe que son peligrosos.</translation>
 <translation id="688738109438487280">Añade los datos actuales a <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Desbloquea la pantalla para copiar tu contraseña</translation>
 <translation id="6896758677409633944">Copiar</translation>

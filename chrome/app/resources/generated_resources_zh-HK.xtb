@@ -321,7 +321,7 @@
 <translation id="1361872463926621533">啟動時播放音效</translation>
 <translation id="1362865166188278099">發生機件故障。請檢查打印機</translation>
 <translation id="1363585519747660921">USB 列印機需要設定</translation>
-<translation id="1364664799726141130">您已驗證的帳戶無權存取此裝置。請確保您驗證的是 <ph name="ACCOUNT" />，以解鎖工作階段。</translation>
+<translation id="1364664799726141130">您已驗證的帳戶無權存取此裝置。請確保您驗證的是 <ph name="ACCOUNT" />，才能解鎖工作階段。</translation>
 <translation id="1365180424462182382">您的<ph name="BEGIN_LINK" />瀏覽器由 <ph name="END_LINK" /><ph name="ENROLLMENT_DOMAIN" /> 管理</translation>
 <translation id="1367951781824006909">選擇檔案</translation>
 <translation id="1369149969991017342">按鈕控制 (使用一或兩個按鈕就能操控電腦)</translation>
@@ -692,7 +692,7 @@
 <translation id="1776712937009046120">新增使用者</translation>
 <translation id="1776883657531386793"><ph name="OID" />：<ph name="INFO" /></translation>
 <translation id="1778457539567749232">標示為未讀取</translation>
-<translation id="1779468444204342338">最小值</translation>
+<translation id="1779468444204342338">最窄</translation>
 <translation id="1779652936965200207">請在「<ph name="DEVICE_NAME" />」上輸入以下密碼金鑰：</translation>
 <translation id="177989070088644880">應用程式 (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">關閉群組</translation>

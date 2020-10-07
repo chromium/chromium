@@ -351,7 +351,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="4840495572919996524">Vaše oznake, historija, lozinke i drugi podaci neće se više sinhronizirati s vašim Google računom.</translation>
 <translation id="4854345657858711387">Postavite šifru</translation>
 <translation id="4860895144060829044">Pozovi</translation>
-<translation id="4872323082491632254">Provjeri lozinke</translation>
+<translation id="4872323082491632254">Provjerite lozinke</translation>
 <translation id="4881695831933465202">Otvori</translation>
 <translation id="4901778704868714008">Sačuvaj...</translation>
 <translation id="4904877109095351937">Označi kao pročitano</translation>
@@ -400,7 +400,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5457226814769348910">Otvori offline verziju</translation>
 <translation id="5457907402803865181">Greška prilikom sinhroniziranja lozinki.</translation>
 <translation id="5489208564673669003">Da upravljate kolačićima za sve web lokacije, pogledajte <ph name="BEGIN_LINK" />Postavke kolačića<ph name="END_LINK" />.</translation>
-<translation id="5490005495580364134">Blokiraj sve kolačiće (nije preporučeno)</translation>
+<translation id="5490005495580364134">Blokiraj sve kolačiće (ne preporučuje se)</translation>
 <translation id="5508435575041083207">Odjavite se i obrišite podatke s uređaja</translation>
 <translation id="5525269841082836315">Kreirajte pristupni izraz</translation>
 <translation id="5548760955356983418">Handoff vam omogućava da počnete pregledati web lokaciju na ovom uređaju i jednostavno nastavite na Macu. Trenutno otvorena web lokacija će se pojaviti na priključnoj stranici na Macu.
@@ -479,7 +479,7 @@ Također, Handoff mora biti omogućen u odjeljku Općenito u Postavkama, a vaši
 <translation id="6324669097367352121">Postavke prijave</translation>
 <translation id="6337234675334993532">Enkripcija</translation>
 <translation id="633809752005859102">Nešto stvarno nije uredu. Radit ćemo na tome.</translation>
-<translation id="6342069812937806050">Upravo</translation>
+<translation id="6342069812937806050">Maloprije</translation>
 <translation id="6344783595350022745">Izbriši tekst</translation>
 <translation id="6346549652287021269">Pokrenuti novo preuzimanje?</translation>
 <translation id="6362362396625799311">Ne postoje anonimne kartice</translation>

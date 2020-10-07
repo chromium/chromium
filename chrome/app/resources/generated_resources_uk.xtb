@@ -1892,7 +1892,7 @@
 <translation id="3192947282887913208">Аудіофайли</translation>
 <translation id="3199127022143353223">Сервери</translation>
 <translation id="3200310363903241381">{COUNT,plural, =1{Chrome радить негайно перевірити його}one{Chrome радить негайно перевірити їх}few{Chrome радить негайно перевірити їх}many{Chrome радить негайно перевірити їх}other{Chrome радить негайно перевірити їх}}</translation>
-<translation id="3201154330231437478">Увімкнути зворотне прокручування <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
+<translation id="3201154330231437478">Увімкнути зворотне прокручування. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="3201422919974259695">Тут з’являться доступні пристрої USB.</translation>
 <translation id="3202131003361292969">Шлях</translation>
 <translation id="3202173864863109533">Звук на цій вкладці вимкнено.</translation>
