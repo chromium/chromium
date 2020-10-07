@@ -230412,6 +230412,10 @@
      "9e9dbc67ba73753851f158340803a62e0178e893",
      []
     ],
+    "screen-wake-lock.idl": [
+     "56bc8f43e4d08ad81f48eff802f46f7951cbe0a9",
+     []
+    ],
     "scroll-animations.idl": [
      "3ef9f5452906509e5c9bc88bdaf31fbf2b3ff8a8",
      []
@@ -230498,10 +230502,6 @@
     ],
     "wai-aria.idl": [
      "f077afe8f6aae64415d0cdaaafef4ce8de827647",
-     []
-    ],
-    "wake-lock.idl": [
-     "56bc8f43e4d08ad81f48eff802f46f7951cbe0a9",
      []
     ],
     "wasm-js-api.idl": [
@@ -242284,7 +242284,7 @@
       []
      ],
      "lint.py": [
-      "5027da705774f8d306e4d491608e562daa378d0f",
+      "38225ec958862ec793656013226cc03d469b853d",
       []
      ],
      "rules.py": [
@@ -393280,7 +393280,7 @@
    },
    "screen-wake-lock": {
     "idlharness.https.window.js": [
-     "b5eaa14efe2bcd6f686467e86d7832e4804f8710",
+     "11b83c29bd0dae7207fd633860772d44bdac6d97",
      [
       "screen-wake-lock/idlharness.https.window.html",
       {
@@ -416255,6 +416255,13 @@
       ],
       "realtime-conv.html": [
        "930728dc369e434c832ff23cb7cc3cacc8fc4baa",
+       [
+        null,
+        {}
+       ]
+      ],
+      "transferred-buffer-output.html": [
+       "e37a98c3861b6c2f0139b870d745ad0977fff10b",
        [
         null,
         {}
