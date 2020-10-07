@@ -4,6 +4,7 @@
 
 #include "ash/ambient/backdrop/ambient_backend_controller_impl.h"
 
+#include <array>
 #include <string>
 #include <utility>
 #include <vector>
@@ -23,6 +24,7 @@
 #include "base/guid.h"
 #include "base/optional.h"
 #include "base/time/time.h"
+#include "chromeos/assistant/internal/ambient/backdrop_client_config.h"
 #include "chromeos/assistant/internal/proto/google3/backdrop/backdrop.pb.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
@@ -453,6 +455,11 @@ void AmbientBackendControllerImpl::FetchWeather(FetchWeatherCallback callback) {
                     NO_TRAFFIC_ANNOTATION_YET,
                     base::BindOnce(response_handler, std::move(callback),
                                    std::move(backdrop_url_loader)));
+}
+
+const std::array<const char*, 2>&
+AmbientBackendControllerImpl::GetBackupPhotoUrls() const {
+  return chromeos::ambient::kBackupPhotoUrls;
 }
 
 void AmbientBackendControllerImpl::FetchScreenUpdateInfoInternal(
