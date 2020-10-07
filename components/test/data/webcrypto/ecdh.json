@@ -390,7 +390,8 @@
     "error": "OperationError: Length specified for ECDH key derivation is too large. Maximum allowed is 528 bits"
   },
 
-  // The JWK has wrong usages (enc)
+  // Test derivation using a JWK that sets "use": "enc".
+  // Regression test for https://crbug.com/641499
   {
     "public_key": {
       "crv": "P-256",
@@ -408,7 +409,8 @@
       "use": "enc"
     },
 
-    "private_key_error": "DataError: The JWK \"use\" member was inconsistent with that specified by the Web Crypto call. The JWK usage must be a superset of those requested"
+    "length_bits": 256,
+    "derived_bytes": "163FAA3FC4815D47345C8E959F707B2F1D3537E7B2EA1DAEC23CA8D0A242CFF3"
   }
 ]
 

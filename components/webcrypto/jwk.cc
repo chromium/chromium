@@ -37,11 +37,19 @@ namespace webcrypto {
 
 namespace {
 
-// Web Crypto equivalent usage mask for JWK 'use' = 'enc'.
+// |kJwkEncUsage| and |kJwkSigUsage| are a superset of the possible meanings of
+// JWK's {"use":"enc"}, and {"use":"sig"} respectively.
+//
+// TODO(https://crbug.com/1136147): Remove these masks,
+// as they are not consistent with the Web Crypto
+// processing model for JWK. In particular,
+// intersecting the usages after processing the JWK
+// means Chrome can fail with a Syntax error in cases
+// where the spec describes a Data error.
 const blink::WebCryptoKeyUsageMask kJwkEncUsage =
     blink::kWebCryptoKeyUsageEncrypt | blink::kWebCryptoKeyUsageDecrypt |
-    blink::kWebCryptoKeyUsageWrapKey | blink::kWebCryptoKeyUsageUnwrapKey;
-// Web Crypto equivalent usage mask for JWK 'use' = 'sig'.
+    blink::kWebCryptoKeyUsageWrapKey | blink::kWebCryptoKeyUsageUnwrapKey |
+    blink::kWebCryptoKeyUsageDeriveKey | blink::kWebCryptoKeyUsageDeriveBits;
 const blink::WebCryptoKeyUsageMask kJwkSigUsage =
     blink::kWebCryptoKeyUsageSign | blink::kWebCryptoKeyUsageVerify;
 
