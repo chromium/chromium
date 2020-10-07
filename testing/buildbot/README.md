@@ -45,16 +45,16 @@ on trybots.
 run in a particular mode.
 * [timeouts.py](./timeouts.py) -- calculates acceptable timeouts for tests by
 analyzing their execution on
-[swarming](https://github.com/luci/luci-py/tree/master/appengine/swarming).
+[swarming](https://chromium.googlesource.com/infra/luci/luci-py/+/HEAD/appengine/swarming).
 * [manage.py](./manage.py) -- makes sure the buildbot configuration json is in
 a standardized format.
 
 ## How the files are consumed
 ### Buildbot configuration json
 Logic in the
-[Chromium recipe](https://chromium.googlesource.com/chromium/tools/build/+/refs/heads/master/scripts/slave/recipes/chromium.py)
+[Chromium recipe](https://chromium.googlesource.com/chromium/tools/build/+/HEAD/recipes/recipes/chromium.py)
 looks up each builder for each master and test generators in
-[chromium_tests/steps.py](https://chromium.googlesource.com/chromium/tools/build/+/refs/heads/master/scripts/slave/recipe_modules/chromium_tests/steps.py)
+[chromium_tests/steps.py](https://chromium.googlesource.com/chromium/tools/build/+/HEAD/recipes/recipe_modules/chromium_tests/steps.py)
 parse the data. For example, as of
 [a6e11220](https://chromium.googlesource.com/chromium/tools/build/+/a6e11220d97d578d6ba091abd68beba28a004722)
 [generate_gtest](https://chromium.googlesource.com/chromium/tools/build/+/a6e11220d97d578d6ba091abd68beba28a004722/scripts/slave/recipe_modules/chromium_tests/steps.py#416)
@@ -70,7 +70,7 @@ manages most of the waterfalls. It's no longer possible to hand-edit the JSON
 files; presubmit checks forbid doing so.
 
 Note that trybots mirror regular waterfall bots, with the mapping defined in
-[trybots.py](https://chromium.googlesource.com/chromium/tools/build/+/refs/heads/master/scripts/slave/recipe_modules/chromium_tests/trybots.py).
+[trybots.py](https://chromium.googlesource.com/chromium/tools/build/+/HEAD/recipes/recipe_modules/chromium_tests/trybots.py).
 This means that, as of
 [81fcc4bc](https://chromium.googlesource.com/chromium/src/+/81fcc4bc6123ace8dd37db74fd2592e3e15ea46a/testing/buildbot/),
 if you want to edit
@@ -87,7 +87,7 @@ your tryjob). Non-trybot changes have to be landed manually :(.
 When adding tests or bumping timeouts, care must be taken to ensure the
 infrastructure has capacity to handle the extra load.  This is especially true
 for the established
-[Chromium CQ builders](https://chromium.googlesource.com/chromium/src/+/master/infra/config/branch/cq.cfg),
+[Chromium CQ builders](https://chromium.googlesource.com/chromium/src/+/HEAD/infra/config/generated/cq-builders.md),
 as they operate under strict execution requirements. Make sure to get a resource
 owner or a member of Chrome Browser Core EngProd to sign off that there is both
 builder and swarmed test shard capacity available.
