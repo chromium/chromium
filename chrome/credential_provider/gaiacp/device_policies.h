@@ -47,9 +47,6 @@ struct DevicePolicies {
   void MergeWith(const DevicePolicies& other);
 
   bool operator==(const DevicePolicies& other) const;
-
-  // Get a string with comma separated values from domains_allowed_to_login.
-  base::string16 GetAllowedDomainsStr() const;
 };
 
 }  // namespace credential_provider

@@ -45,8 +45,6 @@ const wchar_t kMicrosoftCryptographyMachineGuidRegKey[] = L"MachineGuid";
 
 constexpr wchar_t kRegUserDeviceResourceId[] = L"device_resource_id";
 constexpr wchar_t kRegGlsPath[] = L"gls_path";
-constexpr wchar_t kEmailDomainsKey[] = L"ed";  // deprecated.
-constexpr wchar_t kEmailDomainsKeyNew[] = L"domains_allowed_to_login";
 
 namespace {
 
