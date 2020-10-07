@@ -1028,7 +1028,7 @@
       'android-pie-x86-rel': {
         'mixins': [
           'pie-x86-emulator',
-          'emulator-8-cores',
+          'emulator-4-cores',
           'linux-xenial',
           'x86-64',
         ],

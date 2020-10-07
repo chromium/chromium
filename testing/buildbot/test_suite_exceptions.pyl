@@ -771,7 +771,12 @@
               'name': 'system_images_android_28_google_apis_playstore_x86',
               'path': '.emulator_sdk',
             },
-          ]
+          ],
+          'dimension_sets': [
+            {
+              'machine_type': 'n1-standard-8', # use 8-core to shorten runtime
+            },
+          ],
         },
       },
     },
@@ -981,7 +986,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.content_browsertests.filter',
         ],
         'swarming': {
-          'shards': 15,
+          'shards': 20,
         },
       },
       'linux-blink-heap-concurrent-marking-tsan-rel': {
@@ -2001,7 +2006,12 @@
               'name': 'system_images_android_28_google_apis_playstore_x86',
               'path': '.emulator_sdk',
             },
-          ]
+          ],
+          'dimension_sets': [
+            {
+              'machine_type': 'n1-standard-8', # use 8-core to shorten runtime
+            },
+          ],
         },
       },
     },
@@ -2058,7 +2068,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.content_browsertests.filter',
         ],
         'swarming': {
-          'shards': 15,
+          'shards': 20,
         },
       },
     },
