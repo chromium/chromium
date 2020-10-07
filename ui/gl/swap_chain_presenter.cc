@@ -983,6 +983,9 @@ bool SwapChainPresenter::VideoProcessorBlt(
                content_rect.ToString(), "swap_chain_size",
                swap_chain_size_.ToString());
 
+  // TODO(sunnyps): Ensure output color space for YUV swap chains is Rec709 or
+  // Rec601 so that the conversion from gfx::ColorSpace to DXGI_COLOR_SPACE
+  // doesn't need a |force_yuv| parameter (and the associated plumbing).
   gfx::ColorSpace output_color_space = IsYUVSwapChainFormat(swap_chain_format_)
                                            ? src_color_space
                                            : gfx::ColorSpace::CreateSRGB();
@@ -993,14 +996,12 @@ bool SwapChainPresenter::VideoProcessorBlt(
   if (content_is_hdr)
     output_color_space = gfx::ColorSpace::CreateHDR10();
 
-  if (!layer_tree_->InitializeVideoProcessor(content_rect.size(),
-                                             swap_chain_size_, src_color_space,
-                                             output_color_space)) {
+  if (!layer_tree_->InitializeVideoProcessor(
+          content_rect.size(), swap_chain_size_, src_color_space,
+          output_color_space, swap_chain_,
+          IsYUVSwapChainFormat(swap_chain_format_))) {
     return false;
   }
-  layer_tree_->SetColorspaceForVideoProcessor(
-      src_color_space, output_color_space, swap_chain_,
-      IsYUVSwapChainFormat(swap_chain_format_));
 
   Microsoft::WRL::ComPtr<ID3D11VideoContext> video_context =
       layer_tree_->video_context();

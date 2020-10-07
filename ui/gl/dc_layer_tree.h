@@ -51,15 +51,12 @@ class DCLayerTree {
   // at least given input and output size.  The video processor is shared across
   // layers so the same one can be reused if it's large enough.  Returns true on
   // success.
-  bool InitializeVideoProcessor(const gfx::Size& input_size,
-                                const gfx::Size& output_size,
-                                const gfx::ColorSpace& input_color_space,
-                                const gfx::ColorSpace& output_color_space);
-
-  void SetColorspaceForVideoProcessor(
+  bool InitializeVideoProcessor(
+      const gfx::Size& input_size,
+      const gfx::Size& output_size,
       const gfx::ColorSpace& input_color_space,
       const gfx::ColorSpace& output_color_space,
-      Microsoft::WRL::ComPtr<IDXGISwapChain1> swapchain,
+      Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
       bool is_yuv_swapchain);
 
   void SetNeedsRebuildVisualTree() { needs_rebuild_visual_tree_ = true; }
@@ -101,6 +98,12 @@ class DCLayerTree {
   }
 
  private:
+  void SetColorSpaceForVideoProcessor(
+      const gfx::ColorSpace& input_color_space,
+      const gfx::ColorSpace& output_color_space,
+      Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
+      bool is_yuv_swapchain);
+
   const bool disable_nv12_dynamic_textures_;
   const bool disable_larger_than_screen_overlays_;
   const bool disable_vp_scaling_;
@@ -125,9 +128,7 @@ class DCLayerTree {
   // Current video processor input and output colorspace.
   gfx::ColorSpace video_input_color_space_;
   gfx::ColorSpace video_output_color_space_;
-
-  // Cache the last swapchain that has been set output colorspace.
-  Microsoft::WRL::ComPtr<IDXGISwapChain1> last_swapchain_setting_colorspace_;
+  bool is_yuv_video_output_ = false;
 
   // Set to true if a direct composition visual tree needs rebuild.
   bool needs_rebuild_visual_tree_ = false;
