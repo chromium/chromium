@@ -214,7 +214,7 @@
 #include "ui/events/event_utils.h"
 
 #if BUILDFLAG(PLATFORM_CFM)
-#include "chrome/browser/chromeos/cfm/cfm_chrome_services.h"
+#include "chrome/browser/chromeos/chromebox_for_meetings/cfm_chrome_services.h"
 #endif
 
 #if BUILDFLAG(ENABLE_RLZ)

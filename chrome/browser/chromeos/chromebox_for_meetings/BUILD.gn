@@ -1,0 +1,56 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+assert(is_cfm, "Non-CfM builds cannot depend on this library")
+
+source_set("chromebox_for_meetings") {
+  sources = [
+    "cfm_browser_service.cc",
+    "cfm_browser_service.h",
+    "cfm_chrome_services.cc",
+    "cfm_chrome_services.h",
+    "service_adaptor.cc",
+    "service_adaptor.h",
+  ]
+  deps = [
+    "//chromeos/components/chromebox_for_meetings/features",
+    "//chromeos/services/chromebox_for_meetings/public/mojom",
+  ]
+  public_deps = [
+    "//base",
+    "//chromeos/dbus/chromebox_for_meetings",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_service_context.cc",
+    "fake_service_context.h",
+  ]
+  deps = [
+    ":chromebox_for_meetings",
+    "//base",
+    "//chromeos/dbus/chromebox_for_meetings",
+    "//chromeos/services/chromebox_for_meetings/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "service_adaptor_unittest.cc" ]
+  deps = [
+    ":chromebox_for_meetings",
+    ":test_support",
+    "//base/test:test_support",
+    "//chromeos/services/chromebox_for_meetings/public/cpp:test_support",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+  ]
+}

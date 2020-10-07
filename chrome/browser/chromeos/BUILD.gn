@@ -382,8 +382,8 @@ source_set("chromeos") {
   ]
   if (is_cfm) {
     deps += [
-      "//chrome/browser/chromeos/cfm",
-      "//chromeos/dbus/cfm",
+      "//chrome/browser/chromeos/chromebox_for_meetings",
+      "//chromeos/dbus/chromebox_for_meetings",
     ]
   }
   data_deps = [ ":dbus_service_files" ]
@@ -3880,7 +3880,7 @@ source_set("unit_tests") {
     deps += [ "//device/udev_linux:test_support" ]
   }
   if (is_cfm) {
-    deps += [ "//chrome/browser/chromeos/cfm:unit_tests" ]
+    deps += [ "//chrome/browser/chromeos/chromebox_for_meetings:unit_tests" ]
   }
   data = [ "//chromeos/test/data/" ]
 }

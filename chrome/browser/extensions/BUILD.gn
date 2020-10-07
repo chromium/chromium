@@ -1073,8 +1073,8 @@ static_library("extensions") {
     }
     if (is_cfm) {
       deps += [
-        "//chromeos/services/cfm/public/cpp",
-        "//chromeos/services/cfm/public/mojom",
+        "//chromeos/services/chromebox_for_meetings/public/cpp",
+        "//chromeos/services/chromebox_for_meetings/public/mojom",
       ]
     }
   } else {

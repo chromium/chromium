@@ -39,7 +39,7 @@
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 
 #if BUILDFLAG(PLATFORM_CFM)
-#include "chromeos/dbus/cfm/cfm_hotline_client.h"
+#include "chromeos/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 #endif
 
 namespace {

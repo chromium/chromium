@@ -45,9 +45,9 @@
 
 #if BUILDFLAG(PLATFORM_CFM)
 #include "chromeos/components/chromebox_for_meetings/features/features.h"
-#include "chromeos/services/cfm/public/cpp/appid_util.h"
-#include "chromeos/services/cfm/public/cpp/service_connection.h"
-#include "chromeos/services/cfm/public/mojom/cfm_service_manager.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/appid_util.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #endif
 #endif  // definied(OS_CHROMEOS)
 

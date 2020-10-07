@@ -31,6 +31,7 @@ source_set("unit_tests") {
     "//chromeos/services/secure_channel:unit_tests",
   ]
   if (is_cfm) {
-    deps += [ "//chromeos/services/cfm/public/cpp:unit_tests" ]
+    deps +=
+        [ "//chromeos/services/chromebox_for_meetings/public/cpp:unit_tests" ]
   }
 }
