@@ -34,7 +34,7 @@ class DevToolsListener : public content::DevToolsAgentHostClient {
   // write it into the |store|.
   void GetCoverage(content::DevToolsAgentHost* host,
                    const base::FilePath& store,
-                   const std::string test);
+                   const std::string& test);
 
   // Detaches from a host.
   void Detach(content::DevToolsAgentHost* host);
@@ -42,7 +42,7 @@ class DevToolsListener : public content::DevToolsAgentHostClient {
   // Returns a string that uniquely identifies a host
   // with an optional prefix.
   static std::string HostString(content::DevToolsAgentHost* host,
-                                const std::string prefix);
+                                const std::string& prefix);
 
  private:
   // Enable CDP on host.
@@ -55,7 +55,7 @@ class DevToolsListener : public content::DevToolsAgentHostClient {
   // it into the |store|.
   void StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
                               const base::FilePath& store,
-                              const std::string test);
+                              const std::string& test);
 
   // Stores scripts that are parsed during execution on host.
   void StoreScripts(content::DevToolsAgentHost* host,

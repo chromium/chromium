@@ -58,7 +58,7 @@ bool DevToolsListener::HasCoverage(content::DevToolsAgentHost* host) {
 
 void DevToolsListener::GetCoverage(content::DevToolsAgentHost* host,
                                    const base::FilePath& store,
-                                   const std::string test) {
+                                   const std::string& test) {
   if (HasCoverage(host))
     StopAndStoreJSCoverage(host, store, test);
   navigated_ = false;
@@ -72,7 +72,7 @@ void DevToolsListener::Detach(content::DevToolsAgentHost* host) {
 }
 
 std::string DevToolsListener::HostString(content::DevToolsAgentHost* host,
-                                         const std::string prefix = "") {
+                                         const std::string& prefix = "") {
   std::string result = base::StrCat(
       {prefix, " ", host->GetType(), " title: ", host->GetTitle()});
   std::string description = host->GetDescription();
@@ -114,7 +114,7 @@ bool DevToolsListener::StartJSCoverage(content::DevToolsAgentHost* host) {
 
 void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
                                               const base::FilePath& store,
-                                              const std::string test) {
+                                              const std::string& test) {
   std::string precise_coverage =
       "{\"id\":40,\"method\":\"Profiler.takePreciseCoverage\"}";
   host->DispatchProtocolMessage(this, StringToSpan(precise_coverage));
