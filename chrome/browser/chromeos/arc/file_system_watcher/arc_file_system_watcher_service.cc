@@ -437,6 +437,14 @@ void ArcFileSystemWatcherService::StartWatchingRemovableMedia(
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  // Make sure that there is no removable media entry. Otherwise, the
+  // map assignment will remove the entry after a new entry is
+  // created, possibly causing crash if there is 2 mount events without
+  // unmounting events in between.
+  if (removable_media_watchers_.count(fs_uuid)) {
+    return;
+  }
+
   // Make sure the callback is triggered after the file system is attached in
   // file_task_runner.
   base::FilePath android_path =
