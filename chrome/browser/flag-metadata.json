@@ -2620,6 +2620,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "force-spectre-v2-mitigation",
+    "owners": [ "chromeos-security@google.com" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "force-startup-signin-promo",
     "owners": [ "jlebel", "chrome-signin-team" ],
     // This is required by test teams and dev teams to verify the startup
@@ -4283,6 +4288,11 @@
     "name": "snapshot-draw-view",
     "owners": [ "//ios/chrome/browser/snapshots/OWNERS", "bling-flags" ],
     "expiry_milestone": 90
+  },
+  {
+    "name": "spectre-v2-mitigation",
+    "owners": [ "chromeos-security@google.com" ],
+    "expiry_milestone": 92
   },
   {
     "name": "split-settings-sync",
