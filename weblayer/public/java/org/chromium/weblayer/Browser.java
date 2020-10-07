@@ -228,11 +228,11 @@ public class Browser {
      *
      * @param True if restoring previous state.
      *
-     * @since 88
+     * @since 87
      */
     public boolean isRestoringPreviousState() {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
+        if (WebLayer.getSupportedMajorVersionInternal() < 87) {
             throw new UnsupportedOperationException();
         }
         throwIfDestroyed();
@@ -248,11 +248,11 @@ public class Browser {
      *
      * @param callback The BrowserRestoreCallback.
      *
-     * @since 88
+     * @since 87
      */
     public void registerBrowserRestoreCallback(@NonNull BrowserRestoreCallback callback) {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
+        if (WebLayer.getSupportedMajorVersionInternal() < 87) {
             throw new UnsupportedOperationException();
         }
         throwIfDestroyed();
@@ -264,11 +264,11 @@ public class Browser {
      *
      * @param callback The BrowserRestoreCallback.
      *
-     * @since 88
+     * @since 87
      */
     public void unregisterBrowserRestoreCallback(@NonNull BrowserRestoreCallback callback) {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
+        if (WebLayer.getSupportedMajorVersionInternal() < 87) {
             throw new UnsupportedOperationException();
         }
         throwIfDestroyed();
@@ -346,13 +346,13 @@ public class Browser {
      *
      * @param callback The BrowserControlsOffsetCallback to notify
      *
-     * @since 87
+     * @since 88
      */
     public void registerBrowserControlsOffsetCallback(
             @NonNull BrowserControlsOffsetCallback callback) {
         ThreadCheck.ensureOnUiThread();
         throwIfDestroyed();
-        if (WebLayer.getSupportedMajorVersionInternal() < 87) {
+        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
             throw new UnsupportedOperationException();
         }
         if (mBrowserControlsOffsetCallbacks.isEmpty()) {
@@ -371,12 +371,13 @@ public class Browser {
      *
      * @param callback The BrowserControlsOffsetCallback to remove.
      *
-     * @since 87
+     * @since 88
      */
-    public void unregisterScrollOffsetCallback(@NonNull BrowserControlsOffsetCallback callback) {
+    public void unregisterBrowserControlsOffsetCallback(
+            @NonNull BrowserControlsOffsetCallback callback) {
         ThreadCheck.ensureOnUiThread();
         throwIfDestroyed();
-        if (WebLayer.getSupportedMajorVersionInternal() < 87) {
+        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
             throw new UnsupportedOperationException();
         }
         mBrowserControlsOffsetCallbacks.removeObserver(callback);

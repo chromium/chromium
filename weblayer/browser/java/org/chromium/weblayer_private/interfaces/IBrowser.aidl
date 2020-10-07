@@ -42,8 +42,8 @@ interface IBrowser {
                                       in boolean animate) = 12;
 
   // Added in 87.
-  void setBrowserControlsOffsetsEnabled(in boolean enable) = 13;
+  boolean isRestoringPreviousState() = 14;
 
   // Added in 88.
-  boolean isRestoringPreviousState() = 14;
+  void setBrowserControlsOffsetsEnabled(in boolean enable) = 13;
 }

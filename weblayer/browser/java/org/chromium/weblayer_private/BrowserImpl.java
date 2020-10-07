@@ -501,7 +501,7 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
 
     @CalledByNative
     private void onRestoreCompleted() throws RemoteException {
-        mClient.onRestoreCompleted();
+        if (WebLayerFactoryImpl.getClientMajorVersion() >= 87) mClient.onRestoreCompleted();
     }
 
     public View getFragmentView() {
