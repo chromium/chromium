@@ -713,10 +713,12 @@ class MetaBuildWrapper(object):
         if not config:
           continue
         if isinstance(config, dict):
-          args = {
-              k: FlattenConfig(self.configs, self.mixins, v)['gn_args']
-              for k, v in config.items()
-          }
+          # This is a 'phased' builder. Each key in the config is a different
+          # phase of the builder.
+          args = {}
+          for k, v in config.items():
+            args[k] = gn_helpers.FromGNArgs(
+                FlattenConfig(self.configs, self.mixins, v)['gn_args'])
         elif config.startswith('//'):
           args = config
         else:
