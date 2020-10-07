@@ -232374,6 +232374,10 @@
      "804067cf937eca744f6019e72378071c44dcc205",
      []
     ],
+    "MediaRecorder-stop-expected.txt": [
+     "456c138116c929ecd0f4fc3d23c95ee83e32b71e",
+     []
+    ],
     "OWNERS": [
      "1b523fa56c3385ce987b962b38af6a280d74b7fb",
      []
@@ -372321,7 +372325,7 @@
      ]
     ],
     "MediaRecorder-error.html": [
-     "4daf2d9cd1a6de82165152facf88c4742eb00536",
+     "1c93ed3e3a6ab82504e926486e4edb741cc2e4b6",
      [
       null,
       {}
@@ -372365,7 +372369,7 @@
      ]
     ],
     "MediaRecorder-stop.html": [
-     "bb39b027f0fcac0a4aa63918d56d62296607b5e9",
+     "ad6fa8809f6ad3af26969bbcb6a761280e5d705c",
      [
       null,
       {}
