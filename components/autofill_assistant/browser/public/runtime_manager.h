@@ -18,6 +18,11 @@ class RuntimeManager {
   // Returns the instance of RuntimeManager that was attached to the
   // specified WebContents. Creates a new instance if no instance was attached
   // to |contents| yet.
+  static RuntimeManager* GetOrCreateForWebContents(
+      content::WebContents* contents);
+
+  // Returns the instance of RuntimeManager that was attached to the
+  // specified WebContents. If no instance is attached method will return null.
   static RuntimeManager* GetForWebContents(content::WebContents* contents);
 
   // Add/Remove observers

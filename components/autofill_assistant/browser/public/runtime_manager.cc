@@ -8,9 +8,14 @@
 namespace autofill_assistant {
 
 // static
-RuntimeManager* RuntimeManager::GetForWebContents(
+RuntimeManager* RuntimeManager::GetOrCreateForWebContents(
     content::WebContents* contents) {
   return RuntimeManagerImpl::GetForWebContents(contents);
+}
+
+RuntimeManager* RuntimeManager::GetForWebContents(
+    content::WebContents* contents) {
+  return RuntimeManagerImpl::FromWebContents(contents);
 }
 
 }  // namespace autofill_assistant
