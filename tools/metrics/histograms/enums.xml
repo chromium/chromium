@@ -73299,6 +73299,25 @@ Full version information for the fingerprint enum values:
   <int value="11" label="NonMainThreadSuccess"/>
 </enum>
 
+<enum name="UserActivationTriggerEnum">
+  <summary>
+    The user activation trigger types as defined in
+    blink.mojom.UserActivationNotificationType.
+  </summary>
+  <int value="0" label="kNone"/>
+  <int value="1" label="kInteraction"/>
+  <int value="2" label="kDevTools"/>
+  <int value="3" label="kExtensionEvent"/>
+  <int value="4" label="kExtensionGuestView"/>
+  <int value="5" label="kExtensionMessaging"/>
+  <int value="6" label="kMedia"/>
+  <int value="7" label="kNativeFileSystem"/>
+  <int value="8" label="kPlugin"/>
+  <int value="9" label="kTest"/>
+  <int value="10" label="kWebScriptExec"/>
+  <int value="11" label="kVoiceSearch"/>
+</enum>
+
 <enum name="UserCertContentDisposition">
   <int value="0" label="No Content-Disposition"/>
   <int value="1" label="Content-Disposition"/>

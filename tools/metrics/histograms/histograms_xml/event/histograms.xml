@@ -1594,6 +1594,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Event.UserActivation.TriggerFor{ActivationGatedApiType}"
+    enum="UserActivationTriggerEnum" expires_after="2021-03-31">
+  <owner>mustaq@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Tracks the notification-type for the user activation that resulted in a
+    successful call for an activation-gated API (of type sticky, transient or
+    consuming).
+  </summary>
+  <token key="ActivationGatedApiType">
+    <variant name="Consuming"/>
+    <variant name="Sticky"/>
+    <variant name="Transient"/>
+  </token>
+</histogram>
+
 <histogram name="Event.VizHitTest.AsyncHitTestReasons"
     enum="AsyncHitTestReasons" expires_after="2021-02-21">
   <owner>yigu@chromium.org</owner>
