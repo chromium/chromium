@@ -190,6 +190,12 @@
     "dependencies": ["permission:certificateProvider"],
     "contexts": ["blessed_extension"]
   },
+  "certificateProvider.onCertificatesRequested": {
+    "max_manifest_version": 2
+  },
+  "certificateProvider.onSignDigestRequested": {
+    "max_manifest_version": 2
+  },
   "certificateProviderInternal": {
     "internal": true,
     "dependencies": ["permission:certificateProvider"],
@@ -390,10 +396,12 @@
   },
   "extension.getExtensionTabs": {
     "contexts": ["blessed_extension"],
-    "disallow_for_service_workers": true
+    "disallow_for_service_workers": true,
+    "max_manifest_version": 2
   },
   "extension.getURL": {
-    "contexts": ["blessed_extension", "unblessed_extension", "content_script"]
+    "contexts": ["blessed_extension", "unblessed_extension", "content_script"],
+    "max_manifest_version": 2
   },
   "extension.getViews": [
     {
@@ -417,13 +425,19 @@
     "contexts": ["blessed_extension", "unblessed_extension", "content_script"]
   },
   "extension.lastError": {
-    "contexts": ["blessed_extension", "unblessed_extension", "content_script"]
+    "contexts": ["blessed_extension", "unblessed_extension", "content_script"],
+    "max_manifest_version": 2
   },
   "extension.onRequest": {
-    "contexts": ["blessed_extension", "unblessed_extension", "content_script"]
+    "contexts": ["blessed_extension", "unblessed_extension", "content_script"],
+    "max_manifest_version": 2
+  },
+  "extension.onRequestExternal": {
+    "max_manifest_version": 2
   },
   "extension.sendRequest": {
-    "contexts": ["blessed_extension", "unblessed_extension", "content_script"]
+    "contexts": ["blessed_extension", "unblessed_extension", "content_script"],
+    "max_manifest_version": 2
   },
   "extensionOptionsInternal": {
     "internal": true,
@@ -738,7 +752,8 @@
   "tabs": [{
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["blessed_extension"],
+    "default_parent": true
   }, {
     "channel": "stable",
     "contexts": ["webui"],
@@ -754,6 +769,24 @@
     ],
     "platforms": ["chromeos"]
   }],
+  "tabs.getAllInWindow": {
+    "max_manifest_version": 2
+  },
+  "tabs.getSelected": {
+    "max_manifest_version": 2
+  },
+  "tabs.onActiveChanged": {
+    "max_manifest_version": 2
+  },
+  "tabs.onHighlightChanged": {
+    "max_manifest_version": 2
+  },
+  "tabs.onSelectionChanged": {
+    "max_manifest_version": 2
+  },
+  "tabs.sendRequest": {
+    "max_manifest_version": 2
+  },
   // chrome.terminalPrivate allowed for nassh extensions,
   // chrome-untrusted://crosh, and chrome-untrusted://terminal.
   "terminalPrivate": [{
