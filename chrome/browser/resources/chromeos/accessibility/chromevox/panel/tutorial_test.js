@@ -483,3 +483,72 @@ TEST_F('ChromeVoxTutorialTest', 'EarconLesson', function() {
     mockFeedback.replay();
   });
 });
+
+// Tests that a lesson from the quick orientation blocks ChromeVox execution
+// until the specified keystroke is pressed.
+TEST_F('ChromeVoxTutorialTest', 'QuickOrientationLessonTest', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.simpleDoc, async function(root) {
+    await this.launchAndWaitForTutorial();
+    const tutorial = this.getPanel().iTutorial;
+    const keyboardHandler = ChromeVoxState.instance.keyboardHandler_;
+
+    // Helper functions. For this test, activate commands by hooking into the
+    // BackgroundKeyboardHandler. This is necessary because UserActionMonitor
+    // intercepts key sequences before they are routed to CommandHandler.
+    const getRangeStart = () => {
+      return ChromeVoxState.instance.getCurrentRange().start.node;
+    };
+    const createMockKeyEvent = (keyCode, opt_modifiers) => {
+      const modifiers = opt_modifiers === undefined ? {} : opt_modifiers;
+      const mockEvent = {};
+      mockEvent.keyCode = keyCode;
+      for (const key in modifiers) {
+        mockEvent[key] = modifiers[key];
+      }
+
+      mockEvent.preventDefault = () => {};
+      mockEvent.stopPropagation = () => {};
+      return mockEvent;
+    };
+    const simulateKeyPress = (keyCode, opt_modifiers) => {
+      const keyEvent = createMockKeyEvent(keyCode, opt_modifiers);
+      keyboardHandler.onKeyDown(keyEvent);
+      keyboardHandler.onKeyUp(keyEvent);
+    };
+
+    let firstLessonNode;
+    mockFeedback.expectSpeech('Choose your tutorial experience')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Quick orientation')
+        .call(doCmd('forceClickOnCurrentItem'))
+        .expectSpeech(/Quick Orientation Tutorial, [0-9]+ Lessons/)
+        .call(doCmd('nextObject'))
+        .expectSpeech('Welcome to ChromeVox!')
+        .call(doCmd('forceClickOnCurrentItem'))
+        .expectSpeech(/Welcome to the ChromeVox tutorial./)
+        .call(() => {
+          assertEquals(0, tutorial.activeLessonNum);
+          firstLessonNode = getRangeStart();
+        })
+        .call(simulateKeyPress.bind(this, KeyCode.RIGHT, {searchKeyHeld: true}))
+        .call(() => {
+          assertEquals(firstLessonNode, getRangeStart());
+          assertEquals(0, tutorial.activeLessonNum);
+        })
+        .call(simulateKeyPress.bind(this, KeyCode.LEFT, {searchKeyHeld: true}))
+        .call(() => {
+          assertEquals(firstLessonNode, getRangeStart());
+          assertEquals(0, tutorial.activeLessonNum);
+        })
+        // Pressing space, which is the desired key sequence, should move us to
+        // the next lesson.
+        .call(simulateKeyPress.bind(this, KeyCode.SPACE, {}))
+        .expectSpeech('Essential Keys: Control')
+        .call(() => {
+          assertNotEquals(firstLessonNode, getRangeStart());
+          assertEquals(1, tutorial.activeLessonNum);
+        })
+        .replay();
+  });
+});
