@@ -137,6 +137,9 @@ TEST_F(TextFragmentAnchorMetricsTest, UMAMetricsCollected) {
   histogram_tester_.ExpectTotalCount("TextFragmentAnchor.TableCellMatch", 1);
   histogram_tester_.ExpectUniqueSample("TextFragmentAnchor.TableCellMatch", 0,
                                        1);
+  histogram_tester_.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 1);
+  histogram_tester_.ExpectUniqueSample("TextFragmentAnchor.LinkOpenSource", 0,
+                                       1);
 }
 
 // Test UMA metrics collection when there is no match found
@@ -199,6 +202,10 @@ TEST_F(TextFragmentAnchorMetricsTest, NoMatchFound) {
   histogram_tester_.ExpectTotalCount("TextFragmentAnchor.ListItemMatch", 0);
 
   histogram_tester_.ExpectTotalCount("TextFragmentAnchor.TableCellMatch", 0);
+
+  histogram_tester_.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 1);
+  histogram_tester_.ExpectUniqueSample("TextFragmentAnchor.LinkOpenSource", 0,
+                                       1);
 }
 
 // Test that we don't collect any metrics when there is no text directive
@@ -245,6 +252,8 @@ TEST_F(TextFragmentAnchorMetricsTest, NoTextFragmentAnchor) {
   histogram_tester_.ExpectTotalCount("TextFragmentAnchor.ListItemMatch", 0);
 
   histogram_tester_.ExpectTotalCount("TextFragmentAnchor.TableCellMatch", 0);
+
+  histogram_tester_.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 0);
 }
 
 // Test that the correct metrics are collected when we found a match but didn't
@@ -311,6 +320,10 @@ TEST_F(TextFragmentAnchorMetricsTest, MatchFoundNoScroll) {
 
   histogram_tester_.ExpectTotalCount("TextFragmentAnchor.TableCellMatch", 1);
   histogram_tester_.ExpectUniqueSample("TextFragmentAnchor.TableCellMatch", 0,
+                                       1);
+
+  histogram_tester_.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 1);
+  histogram_tester_.ExpectUniqueSample("TextFragmentAnchor.LinkOpenSource", 0,
                                        1);
 }
 
@@ -405,6 +418,10 @@ TEST_F(TextFragmentAnchorMetricsTest, ExactTextParameters) {
   histogram_tester_.ExpectTotalCount("TextFragmentAnchor.TableCellMatch", 4);
   histogram_tester_.ExpectUniqueSample("TextFragmentAnchor.TableCellMatch", 0,
                                        4);
+
+  histogram_tester_.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 1);
+  histogram_tester_.ExpectUniqueSample("TextFragmentAnchor.LinkOpenSource", 0,
+                                       1);
 }
 
 // Test that the correct metrics are collected for all possible combinations of
@@ -510,6 +527,10 @@ TEST_F(TextFragmentAnchorMetricsTest, TextRangeParameters) {
   histogram_tester_.ExpectTotalCount("TextFragmentAnchor.ListItemMatch", 0);
 
   histogram_tester_.ExpectTotalCount("TextFragmentAnchor.TableCellMatch", 0);
+
+  histogram_tester_.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 1);
+  histogram_tester_.ExpectUniqueSample("TextFragmentAnchor.LinkOpenSource", 0,
+                                       1);
 }
 
 class TextFragmentAnchorScrollMetricsTest
@@ -634,6 +655,10 @@ TEST_P(TextFragmentAnchorScrollMetricsTest, ScrollCancelled) {
 
   histogram_tester_.ExpectTotalCount("TextFragmentAnchor.TableCellMatch", 1);
   histogram_tester_.ExpectUniqueSample("TextFragmentAnchor.TableCellMatch", 0,
+                                       1);
+
+  histogram_tester_.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 1);
+  histogram_tester_.ExpectUniqueSample("TextFragmentAnchor.LinkOpenSource", 0,
                                        1);
 }
 

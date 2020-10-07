@@ -31,6 +31,17 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
       public TextFragmentFinder::Client,
       public blink::mojom::blink::TextFragmentSelectorProducer {
  public:
+  // Update corresponding |LinkGenerationError| in enums.xml.
+  enum LinkGenerationError {
+    kIncorrectSelector,
+    kNoRange,
+    kNoContext,
+    kContextExhausted,
+    kContextLimitReached,
+    kEmptySelection,
+
+    kMaxValue = kContextLimitReached
+  };
   explicit TextFragmentSelectorGenerator() = default;
 
   void BindTextFragmentSelectorProducer(
@@ -139,6 +150,9 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
 
   int num_range_start_words_ = 0;
   int num_range_end_words_ = 0;
+
+  int iteration_ = 0;
+  base::TimeTicks generation_start_time_;
 
   DISALLOW_COPY_AND_ASSIGN(TextFragmentSelectorGenerator);
 };

@@ -40194,6 +40194,15 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="20" label="kOtherReason"/>
 </enum>
 
+<enum name="LinkGenerationError">
+  <int value="0" label="Incorrect selector"/>
+  <int value="1" label="No range available"/>
+  <int value="2" label="No context available"/>
+  <int value="3" label="Available context exhausted"/>
+  <int value="4" label="Context word limit reached"/>
+  <int value="5" label="Empty selection"/>
+</enum>
+
 <enum name="LinkMonitorFailureType">
   <int value="0" label="Local MAC Address Not Found"/>
   <int value="1" label="Client Startup Failure"/>
@@ -70734,6 +70743,11 @@ would be helpful to identify which type is being sent.
   <int value="6" label="TextRangeWithPrefix"/>
   <int value="7" label="TextRangeWithSuffix"/>
   <int value="8" label="TextRangeWithContext"/>
+</enum>
+
+<enum name="TextFragmentLinkOpenSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="SearchEngine"/>
 </enum>
 
 <enum name="TextToSpeechEvent">

@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_selector.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
+#include "third_party/blink/renderer/platform/search_engine_utils.h"
 
 namespace blink {
 
@@ -377,6 +378,7 @@ void TextFragmentAnchor::DidFindMatch(
   did_find_match_ = true;
 
   if (first_match_needs_scroll_) {
+    metrics_->SetSearchEngineSource(HasSearchEngineSource());
     first_match_needs_scroll_ = false;
 
     PhysicalRect bounding_box(ComputeTextRect(range));
@@ -496,6 +498,15 @@ void TextFragmentAnchor::FireBeforeMatchEvent(Element* element) {
 void TextFragmentAnchor::SetTickClockForTesting(
     const base::TickClock* tick_clock) {
   metrics_->SetTickClockForTesting(tick_clock);
+}
+
+bool TextFragmentAnchor::HasSearchEngineSource() {
+  AtomicString referrer = frame_->GetDocument()->referrer();
+  // TODO(crbug.com/1133823): Add test case for valid referrer.
+  if (!referrer)
+    return false;
+
+  return IsKnownSearchEngine(referrer);
 }
 
 }  // namespace blink

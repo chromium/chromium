@@ -95,6 +95,8 @@ class CORE_EXPORT TextFragmentAnchor final : public FragmentAnchor,
 
   void FireBeforeMatchEvent(Element* element);
 
+  bool HasSearchEngineSource();
+
   Vector<TextFragmentFinder> text_fragment_finders_;
 
   Member<LocalFrame> frame_;

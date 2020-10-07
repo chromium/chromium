@@ -28,8 +28,8 @@
 #include "components/omnibox/browser/omnibox_pedal.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/template_url.h"
-#include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -842,7 +842,7 @@ void AutocompleteMatch::LogSearchEngineUsed(
   if (template_url) {
     SearchEngineType search_engine_type =
         match.destination_url.is_valid()
-            ? TemplateURLPrepopulateData::GetEngineType(match.destination_url)
+            ? SearchEngineUtils::GetEngineType(match.destination_url)
             : SEARCH_ENGINE_OTHER;
     UMA_HISTOGRAM_ENUMERATION("Omnibox.SearchEngineType", search_engine_type,
                               SEARCH_ENGINE_MAX);
