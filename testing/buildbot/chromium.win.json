@@ -1837,8 +1837,7 @@
           "--browser-ui-tests-verify-pixels",
           "--enable-pixel-output-in-tests",
           "--test-launcher-filter-file=../../testing/buildbot/filters/pixel_browser_tests.filter",
-          "--git-revision=${got_revision}",
-          "--gtest_filter=-*EyeDropperBrowserTest.*"
+          "--git-revision=${got_revision}"
         ],
         "merge": {
           "args": [],

@@ -67,7 +67,9 @@ class EyeDropperBrowserTest : public UiBrowserTest,
   std::unique_ptr<content::EyeDropper> eye_dropper_;
 };
 
-IN_PROC_BROWSER_TEST_P(EyeDropperBrowserTest, InvokeUi_default) {
+// Invokes the eye dropper.
+// Flaky: https://crbug.com/1131319
+IN_PROC_BROWSER_TEST_P(EyeDropperBrowserTest, DISABLED_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
