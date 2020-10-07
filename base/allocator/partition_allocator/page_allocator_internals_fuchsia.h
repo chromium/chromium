@@ -107,8 +107,8 @@ void* SystemAllocPagesInternal(void* hint,
 
   uint64_t address;
   status =
-      zx::vmar::root_self()->map(vmar_offset, vmo,
-                                 /*vmo_offset=*/0, length, options, &address);
+      zx::vmar::root_self()->map(options, vmar_offset, vmo,
+                                 /*vmo_offset=*/0, length, &address);
   if (status != ZX_OK) {
     // map() is expected to fail if |hint| is set to an already-in-use location.
     if (!hint) {
@@ -151,9 +151,9 @@ bool TrySetSystemPagesAccessInternal(
     void* address,
     size_t length,
     PageAccessibilityConfiguration accessibility) {
-  zx_status_t status = zx::vmar::root_self()->protect(
-      reinterpret_cast<uint64_t>(address), length,
-      PageAccessibilityToZxVmOptions(accessibility));
+  zx_status_t status = zx::vmar::root_self()->protect2(
+      PageAccessibilityToZxVmOptions(accessibility),
+      reinterpret_cast<uint64_t>(address), length);
   return status == ZX_OK;
 }
 
@@ -161,9 +161,9 @@ void SetSystemPagesAccessInternal(
     void* address,
     size_t length,
     PageAccessibilityConfiguration accessibility) {
-  zx_status_t status = zx::vmar::root_self()->protect(
-      reinterpret_cast<uint64_t>(address), length,
-      PageAccessibilityToZxVmOptions(accessibility));
+  zx_status_t status = zx::vmar::root_self()->protect2(
+      PageAccessibilityToZxVmOptions(accessibility),
+      reinterpret_cast<uint64_t>(address), length);
   ZX_CHECK(status == ZX_OK, status);
 }
 
