@@ -75,7 +75,7 @@ class PluginVmInstallerView : public views::BubbleDialogDelegateView,
   // views::BubbleDialogDelegateView implementation.
   void AddedToWidget() override;
 
-  base::string16 GetDownloadProgressMessage(uint64_t downlaoded_bytes,
+  base::string16 GetDownloadProgressMessage(uint64_t bytes_downloaded,
                                             int64_t content_length) const;
   void SetTitleLabel();
   void SetMessageLabel();
