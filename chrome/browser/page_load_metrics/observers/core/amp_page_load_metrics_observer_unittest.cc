@@ -332,6 +332,10 @@ TEST_F(AMPPageLoadMetricsObserverTest, SubFrameMetrics) {
       ->largest_image_paint_size = 1;
   subframe_timing.paint_timing->largest_contentful_paint->largest_image_paint =
       base::TimeDelta::FromMilliseconds(10);
+  subframe_timing.paint_timing->experimental_largest_contentful_paint
+      ->largest_text_paint_size = 3;
+  subframe_timing.paint_timing->experimental_largest_contentful_paint
+      ->largest_text_paint = base::TimeDelta::FromMilliseconds(8);
   subframe_timing.interactive_timing->first_input_timestamp =
       base::TimeDelta::FromMilliseconds(20);
   subframe_timing.interactive_timing->first_input_delay =
@@ -366,6 +370,9 @@ TEST_F(AMPPageLoadMetricsObserverTest, SubFrameMetrics) {
   tester()->test_ukm_recorder().ExpectEntryMetric(
       entry.get(), "SubFrame.PaintTiming.NavigationToLargestContentfulPaint",
       10);
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry.get(),
+      "SubFrame.PaintTiming.NavigationToExperimentalLargestContentfulPaint", 8);
 }
 
 TEST_F(AMPPageLoadMetricsObserverTest, SubFrameMetrics_LayoutInstability) {
@@ -440,6 +447,10 @@ TEST_F(AMPPageLoadMetricsObserverTest, SubFrameMetricsFullNavigation) {
       ->largest_image_paint_size = 1;
   subframe_timing.paint_timing->largest_contentful_paint->largest_image_paint =
       base::TimeDelta::FromMilliseconds(10);
+  subframe_timing.paint_timing->experimental_largest_contentful_paint
+      ->largest_image_paint_size = 1;
+  subframe_timing.paint_timing->experimental_largest_contentful_paint
+      ->largest_image_paint = base::TimeDelta::FromMilliseconds(5);
   subframe_timing.interactive_timing->first_input_timestamp =
       base::TimeDelta::FromMilliseconds(20);
   subframe_timing.interactive_timing->first_input_delay =
@@ -475,6 +486,9 @@ TEST_F(AMPPageLoadMetricsObserverTest, SubFrameMetricsFullNavigation) {
   tester()->test_ukm_recorder().ExpectEntryMetric(
       entry.get(), "SubFrame.PaintTiming.NavigationToLargestContentfulPaint",
       10);
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry.get(),
+      "SubFrame.PaintTiming.NavigationToExperimentalLargestContentfulPaint", 5);
 }
 
 TEST_F(AMPPageLoadMetricsObserverTest, SubFrameRecordOnFullNavigation) {

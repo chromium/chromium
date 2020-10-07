@@ -440,6 +440,17 @@ be describing additional metrics about the same event.
       was not prerendered.
     </summary>
   </metric>
+  <metric
+      name="SubFrame.PaintTiming.NavigationToExperimentalLargestContentfulPaint">
+    <summary>
+      Measures the time in milliseconds from navigation timing's navigation
+      start to the time when the page first paints the experimental largest
+      content (text or image) within viewport, in the AMP subframe. See
+      http://bit.ly/largest_contentful_paint_explainer for more details. Differs
+      from the non-experimental version in that removed content is still
+      considered a valid candidate.
+    </summary>
+  </metric>
   <metric name="SubFrame.PaintTiming.NavigationToFirstContentfulPaint">
     <summary>
       Measures the time in milliseconds from navigation timing's navigation
