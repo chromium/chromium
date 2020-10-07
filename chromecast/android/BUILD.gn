@@ -44,3 +44,36 @@ cast_shared_library("libcast_shell_android") {
     ]
   }
 }
+
+# These are all known //third_party/android_deps targets that chromecast
+# internal code depends on. Reference these targets so if anyone wants to
+# remove these targets upstream, they need to at least add someone from
+# //chromecast OWNERS as a reviewer to make sure it's safe.
+#
+# This list was generated from chromecast/internal using:
+#
+# find | grep BUILD.gn | xargs grep -hi '//third_party/android_deps:' | \
+# grep -v "deps =" | sed 's/ *//g' | sort | uniq
+group("internal_android_deps") {
+  testonly = true
+  public_deps = [
+    "//third_party/android_deps:android_support_v4_java",
+    "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/android_deps:androidx_appcompat_appcompat_java",
+    "//third_party/android_deps:androidx_leanback_leanback_preference_java",
+    "//third_party/android_deps:androidx_legacy_legacy_support_v4_java",
+    "//third_party/android_deps:androidx_localbroadcastmanager_localbroadcastmanager_java",
+    "//third_party/android_deps:androidx_mediarouter_mediarouter_java",
+    "//third_party/android_deps:androidx_preference_preference_java",
+    "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
+    "//third_party/android_deps:androidx_slice_slice_builders_java",
+    "//third_party/android_deps:androidx_slice_slice_core_java",
+    "//third_party/android_deps:androidx_test_core_java",
+    "//third_party/android_deps:androidx_tvprovider_tvprovider_java",
+    "//third_party/android_deps:com_android_support_design_java",
+    "//third_party/android_deps:com_android_support_support_annotations_java",
+    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
+  ]
+}

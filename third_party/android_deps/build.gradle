@@ -136,6 +136,7 @@ dependencies {
     compile "com.android.support:support-fragment:${supportLibVersion}"
 
     compile "com.android.support:support-annotations:${supportLibVersion}"
+    compile "com.android.support:design:${supportLibVersion}"
 
     compile "com.android.support:asynclayoutinflater:${supportLibVersion}"
     compile "com.android.support:collections:${supportLibVersion}"

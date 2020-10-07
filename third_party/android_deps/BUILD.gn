@@ -821,7 +821,10 @@ android_aar_prebuilt("androidx_webkit_webkit_java") {
     ":androidx_core_core_java",
   ]
   resource_overlay = true
-  visibility = [ "//android_webview/tools/system_webview_shell:*" ]
+  visibility = [
+    "//android_webview/tools/system_webview_shell:*",
+    "//third_party/android_deps:*",
+  ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -879,6 +882,24 @@ android_aar_prebuilt("com_android_support_customview_java") {
   deps = [
     ":com_android_support_support_annotations_java",
     ":com_android_support_support_compat_java",
+  ]
+  resource_overlay = true
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+android_aar_prebuilt("com_android_support_design_java") {
+  aar_path = "libs/com_android_support_design/design-28.0.0.aar"
+  info_path = "libs/com_android_support_design/com_android_support_design.info"
+  deps = [
+    ":com_android_support_appcompat_v7_java",
+    ":com_android_support_cardview_v7_java",
+    ":com_android_support_recyclerview_v7_java",
+    ":com_android_support_support_annotations_java",
+    ":com_android_support_support_compat_java",
+    ":com_android_support_support_core_ui_java",
+    ":com_android_support_support_core_utils_java",
+    ":com_android_support_support_fragment_java",
+    ":com_android_support_transition_java",
   ]
   resource_overlay = true
 }
@@ -1302,6 +1323,10 @@ android_aar_prebuilt("com_google_android_material_material_java") {
   aar_path =
       "libs/com_google_android_material_material/material-1.2.0-alpha06.aar"
   info_path = "libs/com_google_android_material_material/com_google_android_material_material.info"
+
+  # Material Design is pulled in via Doubledown, thus this target should not
+  # be directly depended on. Please use :material_design_java instead.
+  visibility = [ ":*" ]
   deps = [
     ":androidx_annotation_annotation_experimental_java",
     ":androidx_annotation_annotation_java",
@@ -1319,10 +1344,6 @@ android_aar_prebuilt("com_google_android_material_material_java") {
 
   # Reduce binary size. https:crbug.com/954584
   ignore_proguard_configs = true
-
-  # Material Design is pulled in via Doubledown, thus this target should not
-  # be directly depended on. Please use :material_design_java instead.
-  visibility = [ ":*" ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1992,6 +2013,54 @@ java_prebuilt("classworlds_classworlds_java") {
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+android_aar_prebuilt("com_android_support_animated_vector_drawable_java") {
+  aar_path = "libs/com_android_support_animated_vector_drawable/animated-vector-drawable-28.0.0.aar"
+  info_path = "libs/com_android_support_animated_vector_drawable/com_android_support_animated_vector_drawable.info"
+
+  # To remove visibility constraint, add this dependency to
+  # //third_party/android_deps/build.gradle.
+  visibility = [ ":*" ]
+  deps = [
+    ":com_android_support_support_core_ui_java",
+    ":com_android_support_support_vector_drawable_java",
+  ]
+  resource_overlay = true
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+android_aar_prebuilt("com_android_support_appcompat_v7_java") {
+  aar_path = "libs/com_android_support_appcompat_v7/appcompat-v7-28.0.0.aar"
+  info_path = "libs/com_android_support_appcompat_v7/com_android_support_appcompat_v7.info"
+
+  # To remove visibility constraint, add this dependency to
+  # //third_party/android_deps/build.gradle.
+  visibility = [ ":*" ]
+  deps = [
+    ":com_android_support_animated_vector_drawable_java",
+    ":com_android_support_collections_java",
+    ":com_android_support_cursoradapter_java",
+    ":com_android_support_support_annotations_java",
+    ":com_android_support_support_compat_java",
+    ":com_android_support_support_core_utils_java",
+    ":com_android_support_support_fragment_java",
+    ":com_android_support_support_vector_drawable_java",
+  ]
+  resource_overlay = true
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+android_aar_prebuilt("com_android_support_cardview_v7_java") {
+  aar_path = "libs/com_android_support_cardview_v7/cardview-v7-28.0.0.aar"
+  info_path = "libs/com_android_support_cardview_v7/com_android_support_cardview_v7.info"
+
+  # To remove visibility constraint, add this dependency to
+  # //third_party/android_deps/build.gradle.
+  visibility = [ ":*" ]
+  deps = [ ":com_android_support_support_annotations_java" ]
+  resource_overlay = true
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("com_android_support_cursoradapter_java") {
   aar_path = "libs/com_android_support_cursoradapter/cursoradapter-28.0.0.aar"
   info_path = "libs/com_android_support_cursoradapter/com_android_support_cursoradapter.info"
@@ -2045,6 +2114,23 @@ android_aar_prebuilt("com_android_support_print_java") {
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+android_aar_prebuilt("com_android_support_recyclerview_v7_java") {
+  aar_path =
+      "libs/com_android_support_recyclerview_v7/recyclerview-v7-28.0.0.aar"
+  info_path = "libs/com_android_support_recyclerview_v7/com_android_support_recyclerview_v7.info"
+
+  # To remove visibility constraint, add this dependency to
+  # //third_party/android_deps/build.gradle.
+  visibility = [ ":*" ]
+  deps = [
+    ":com_android_support_support_annotations_java",
+    ":com_android_support_support_compat_java",
+    ":com_android_support_support_core_ui_java",
+  ]
+  resource_overlay = true
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("com_android_support_slidingpanelayout_java") {
   aar_path =
       "libs/com_android_support_slidingpanelayout/slidingpanelayout-28.0.0.aar"
@@ -2078,6 +2164,39 @@ android_aar_prebuilt("com_android_support_support_media_compat_java") {
 
   # Target has AIDL, but we do not support it yet: http://crbug.com/644439
   ignore_aidl = true
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+android_aar_prebuilt("com_android_support_support_vector_drawable_java") {
+  aar_path = "libs/com_android_support_support_vector_drawable/support-vector-drawable-28.0.0.aar"
+  info_path = "libs/com_android_support_support_vector_drawable/com_android_support_support_vector_drawable.info"
+
+  # To remove visibility constraint, add this dependency to
+  # //third_party/android_deps/build.gradle.
+  visibility = [ ":*" ]
+  deps = [
+    ":com_android_support_support_annotations_java",
+    ":com_android_support_support_compat_java",
+  ]
+  resource_overlay = true
+  create_srcjar = false
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+android_aar_prebuilt("com_android_support_transition_java") {
+  aar_path = "libs/com_android_support_transition/transition-28.0.0.aar"
+  info_path =
+      "libs/com_android_support_transition/com_android_support_transition.info"
+
+  # To remove visibility constraint, add this dependency to
+  # //third_party/android_deps/build.gradle.
+  visibility = [ ":*" ]
+  deps = [
+    ":com_android_support_support_annotations_java",
+    ":com_android_support_support_compat_java",
+  ]
+  resource_overlay = true
+  deps += [ ":com_android_support_support_fragment_java" ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
