@@ -151,6 +151,9 @@ TEST_F(PolicyConverterTest, ConvertToListValue) {
             Convert(Value("[\"baz\", \"blurp\"]"), list_schema));
   EXPECT_EQ("\"hurz\"", Convert(Value("hurz"), list_schema));
   EXPECT_EQ("19", Convert(Value(19), list_schema));
+
+  EXPECT_FALSE(PolicyConverter::ConvertValueToSchema(Value(""), list_schema)
+                   .has_value());
 }
 
 TEST_F(PolicyConverterTest, ConvertFromJavaListToListValue) {
@@ -173,6 +176,9 @@ TEST_F(PolicyConverterTest, ConvertToDictionaryValue) {
             Convert(Value("{\"moose\": true}"), dict_schema));
   EXPECT_EQ("\"fnord\"", Convert(Value("fnord"), dict_schema));
   EXPECT_EQ("1729", Convert(Value(1729), dict_schema));
+
+  EXPECT_FALSE(PolicyConverter::ConvertValueToSchema(Value(""), dict_schema)
+                   .has_value());
 }
 
 }  // namespace android

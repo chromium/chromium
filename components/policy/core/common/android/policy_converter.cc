@@ -165,9 +165,13 @@ base::Optional<base::Value> PolicyConverter::ConvertValueToSchema(
     case base::Value::Type::DICTIONARY:
     case base::Value::Type::LIST: {
       if (value.is_string()) {
+        const std::string str_value = value.GetString();
+        // Do not try to convert empty string to list/dictionaries, since most
+        // likely the value was not simply not set by the UEM.
+        if (str_value.empty())
+          return base::nullopt;
         base::Optional<base::Value> decoded_value = base::JSONReader::Read(
-            value.GetString(),
-            base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+            str_value, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
         if (decoded_value.has_value())
           return decoded_value;
       }
@@ -192,9 +196,14 @@ void PolicyConverter::SetPolicyValue(const std::string& key,
   const PolicyNamespace ns(POLICY_DOMAIN_CHROME, std::string());
   base::Optional<base::Value> converted_value =
       ConvertValueToSchema(std::move(value), schema);
-  policy_bundle_->Get(ns).Set(key, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                              POLICY_SOURCE_PLATFORM,
-                              std::move(converted_value), nullptr);
+  if (converted_value) {
+    // Do not set list/dictionary policies that are sent as empty strings from
+    // the UEM. This is common on Android when the UEM pushes the policy with
+    // managed configurations.
+    policy_bundle_->Get(ns).Set(key, POLICY_LEVEL_MANDATORY,
+                                POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+                                std::move(converted_value), nullptr);
+  }
 }
 
 }  // namespace android
