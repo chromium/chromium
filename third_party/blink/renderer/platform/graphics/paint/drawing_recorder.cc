@@ -12,12 +12,6 @@
 
 namespace blink {
 
-#if DCHECK_IS_ON()
-static bool g_list_modification_check_disabled = false;
-DisableListModificationCheck::DisableListModificationCheck()
-    : disabler_(&g_list_modification_check_disabled, true) {}
-#endif
-
 DrawingRecorder::DrawingRecorder(GraphicsContext& context,
                                  const DisplayItemClient& display_item_client,
                                  DisplayItem::Type display_item_type,
@@ -44,11 +38,6 @@ DrawingRecorder::DrawingRecorder(GraphicsContext& context,
       context.SetDOMNodeId(dom_node_id);
     }
   }
-
-#if DCHECK_IS_ON()
-  initial_display_item_list_size_ =
-      context_.GetPaintController().NewDisplayItemList().size();
-#endif
 }
 
 DrawingRecorder::~DrawingRecorder() {
@@ -56,13 +45,6 @@ DrawingRecorder::~DrawingRecorder() {
     context_.SetDOMNodeId(dom_node_id_to_restore_.value());
 
   context_.SetInDrawingRecorder(false);
-
-#if DCHECK_IS_ON()
-  if (!g_list_modification_check_disabled) {
-    DCHECK(initial_display_item_list_size_ ==
-           context_.GetPaintController().NewDisplayItemList().size());
-  }
-#endif
 
   context_.GetPaintController().CreateAndAppend<DrawingDisplayItem>(
       client_, type_, visual_rect_, context_.EndRecording());

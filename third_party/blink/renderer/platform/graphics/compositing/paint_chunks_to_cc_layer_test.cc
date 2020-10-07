@@ -179,10 +179,13 @@ class TestChunks {
       const EffectPaintPropertyNodeOrAlias& e,
       const IntRect& bounds = IntRect(0, 0, 100, 100),
       const base::Optional<IntRect>& drawable_bounds = base::nullopt) {
+    auto& items = paint_artifact_->GetDisplayItemList();
     auto i = items.size();
     items.AllocateAndConstruct<DrawingDisplayItem>(
         DefaultId().client, DefaultId().type,
         drawable_bounds ? *drawable_bounds : bounds, std::move(record));
+
+    auto& chunks = paint_artifact_->PaintChunks();
     chunks.emplace_back(i, i + 1, DefaultId(),
                         PropertyTreeStateOrAlias(t, c, e));
     chunks.back().bounds = bounds;
@@ -193,19 +196,19 @@ class TestChunks {
                      const ClipPaintPropertyNode& c,
                      const EffectPaintPropertyNode& e,
                      const IntRect& bounds = IntRect(0, 0, 100, 100)) {
-    auto i = items.size();
+    auto& chunks = paint_artifact_->PaintChunks();
+    auto i = paint_artifact_->GetDisplayItemList().size();
     chunks.emplace_back(i, i, DefaultId(), PropertyTreeState(t, c, e));
     chunks.back().bounds = bounds;
   }
 
   PaintChunkSubset Build() {
-    return PaintChunkSubset(base::MakeRefCounted<PaintArtifact>(
-        std::move(items), std::move(chunks)));
+    return PaintChunkSubset(std::move(paint_artifact_));
   }
 
  private:
-  Vector<PaintChunk> chunks;
-  DisplayItemList items;
+  scoped_refptr<PaintArtifact> paint_artifact_ =
+      base::MakeRefCounted<PaintArtifact>();
 };
 
 TEST_P(PaintChunksToCcLayerTest, EffectGroupingSimple) {

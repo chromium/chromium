@@ -34,9 +34,9 @@ class PLATFORM_EXPORT PaintArtifact final : public RefCounted<PaintArtifact> {
   USING_FAST_MALLOC(PaintArtifact);
 
  public:
-  PaintArtifact() = default;
-  PaintArtifact(DisplayItemList, Vector<PaintChunk>);
-  ~PaintArtifact();
+  explicit PaintArtifact(
+      wtf_size_t initial_display_item_list_capacity_in_bytes = 0)
+      : display_item_list_(initial_display_item_list_capacity_in_bytes) {}
 
   PaintArtifact(const PaintArtifact& other) = delete;
   PaintArtifact& operator=(const PaintArtifact& other) = delete;

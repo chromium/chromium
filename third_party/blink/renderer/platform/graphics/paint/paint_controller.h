@@ -93,46 +93,31 @@ class PLATFORM_EXPORT PaintController {
   void UpdateCurrentPaintChunkProperties(const PaintChunk::Id*,
                                          const PropertyTreeStateOrAlias&);
   const PropertyTreeStateOrAlias& CurrentPaintChunkProperties() const {
-    return new_paint_chunks_.CurrentPaintChunkProperties();
+    return paint_chunker_.CurrentPaintChunkProperties();
   }
   // See PaintChunker for documentation of the following methods.
-  wtf_size_t NumNewChunks() const { return new_paint_chunks_.size(); }
-  void SetForceNewChunk(bool force) {
-    new_paint_chunks_.SetForceNewChunk(force);
+  void SetWillForceNewChunk(bool force) {
+    paint_chunker_.SetWillForceNewChunk(force);
   }
-  bool WillForceNewChunk() const {
-    return new_paint_chunks_.WillForceNewChunk();
+  bool WillForceNewChunk() const { return paint_chunker_.WillForceNewChunk(); }
+
+  void EnsureChunk();
+
+  void RecordHitTestData(const DisplayItemClient&, const IntRect&, TouchAction);
+  void RecordScrollHitTestData(
+      const DisplayItemClient&,
+      DisplayItem::Type,
+      const TransformPaintPropertyNode* scroll_translation,
+      const IntRect&);
+  void SetPossibleBackgroundColor(const DisplayItemClient&,
+                                  Color,
+                                  uint64_t area);
+
+  wtf_size_t NumNewChunks() const {
+    return new_paint_artifact_->PaintChunks().size();
   }
   const IntRect& LastChunkBounds() const {
-    return new_paint_chunks_.LastChunk().bounds;
-  }
-
-  void EnsureChunk() { new_paint_chunks_.EnsureChunk(); }
-  void RecordHitTestData(const DisplayItemClient& client,
-                         const IntRect& rect,
-                         TouchAction touch_action) {
-    if (rect.IsEmpty())
-      return;
-    PaintChunk::Id id(client, DisplayItem::kHitTest, current_fragment_);
-    CheckDuplicatePaintChunkId(id);
-    new_paint_chunks_.AddHitTestDataToCurrentChunk(id, rect, touch_action);
-  }
-  void RecordScrollHitTestData(
-      const DisplayItemClient& client,
-      DisplayItem::Type type,
-      const TransformPaintPropertyNode* scroll_translation,
-      const IntRect& rect) {
-    PaintChunk::Id id(client, type, current_fragment_);
-    CheckDuplicatePaintChunkId(id);
-    new_paint_chunks_.CreateScrollHitTestChunk(id, scroll_translation, rect);
-  }
-
-  void SetPossibleBackgroundColor(const DisplayItemClient& client,
-                                  Color color,
-                                  uint64_t area) {
-    PaintChunk::Id id = {client, DisplayItem::kBoxDecorationBackground,
-                         current_fragment_};
-    new_paint_chunks_.ProcessBackgroundColorCandidate(id, color, area);
+    return new_paint_artifact_->PaintChunks().back().bounds;
   }
 
   template <typename DisplayItemClass, typename... Args>
@@ -147,8 +132,9 @@ class PLATFORM_EXPORT PaintController {
                   "kDisplayItemAlignment.");
 
     DisplayItemClass& display_item =
-        new_display_item_list_.AllocateAndConstruct<DisplayItemClass>(
-            std::forward<Args>(args)...);
+        new_paint_artifact_->GetDisplayItemList()
+            .AllocateAndConstruct<DisplayItemClass>(
+                std::forward<Args>(args)...);
     display_item.SetFragment(current_fragment_);
     ProcessNewItem(display_item);
   }
@@ -210,21 +196,23 @@ class PLATFORM_EXPORT PaintController {
 
   // Get the artifact generated after the last commit.
   const PaintArtifact& GetPaintArtifact() const {
-#if DCHECK_IS_ON()
-    DCHECK(new_display_item_list_.IsEmpty());
-    DCHECK(new_paint_chunks_.IsInInitialState());
-    DCHECK(current_paint_artifact_);
-#endif
+    CheckNoNewPaint();
     return *current_paint_artifact_;
   }
   scoped_refptr<const PaintArtifact> GetPaintArtifactShared() const {
-    return base::WrapRefCounted(&GetPaintArtifact());
+    CheckNoNewPaint();
+    return current_paint_artifact_;
   }
   const DisplayItemList& GetDisplayItemList() const {
     return GetPaintArtifact().GetDisplayItemList();
   }
   const Vector<PaintChunk>& PaintChunks() const {
     return GetPaintArtifact().PaintChunks();
+  }
+
+  scoped_refptr<const PaintArtifact> GetNewPaintArtifactShared() const {
+    DCHECK(new_paint_artifact_);
+    return new_paint_artifact_;
   }
 
   class ScopedBenchmarkMode {
@@ -254,10 +242,6 @@ class PLATFORM_EXPORT PaintController {
   void SetFirstPainted();
   void SetTextPainted();
   void SetImagePainted();
-
-  // Returns DisplayItemList added using CreateAndAppend() since beginning or
-  // the last CommitNewDisplayItems(). Use with care.
-  DisplayItemList& NewDisplayItemList() { return new_display_item_list_; }
 
 #if DCHECK_IS_ON()
   void ShowCompactDebugData() const;
@@ -403,6 +387,14 @@ class PLATFORM_EXPORT PaintController {
   bool ShouldInvalidateDisplayItemForBenchmark();
   bool ShouldInvalidateSubsequenceForBenchmark();
 
+  void CheckNoNewPaint() const {
+#if DCHECK_IS_ON()
+    DCHECK(!new_paint_artifact_ || new_paint_artifact_->IsEmpty());
+    DCHECK(paint_chunker_.IsInInitialState());
+    DCHECK(current_paint_artifact_);
+#endif
+  }
+
   Usage usage_;
 
   // The last paint artifact after CommitNewDisplayItems().
@@ -410,8 +402,8 @@ class PLATFORM_EXPORT PaintController {
   scoped_refptr<PaintArtifact> current_paint_artifact_;
 
   // Data being used to build the next paint artifact.
-  DisplayItemList new_display_item_list_;
-  PaintChunker new_paint_chunks_;
+  scoped_refptr<PaintArtifact> new_paint_artifact_;
+  PaintChunker paint_chunker_;
 
   bool cache_is_all_invalid_ = true;
   bool committed_ = false;
@@ -486,7 +478,7 @@ class PLATFORM_EXPORT PaintController {
   static size_t sum_num_subsequences_;
   static size_t sum_num_cached_subsequences_;
 
-  class DisplayItemListAsJSON;
+  class PaintArtifactAsJSON;
 
   DISALLOW_COPY_AND_ASSIGN(PaintController);
 };

@@ -14,13 +14,6 @@
 
 namespace blink {
 
-PaintArtifact::PaintArtifact(DisplayItemList display_items,
-                             Vector<PaintChunk> chunks)
-    : display_item_list_(std::move(display_items)), chunks_(std::move(chunks)) {
-}
-
-PaintArtifact::~PaintArtifact() = default;
-
 size_t PaintArtifact::ApproximateUnsharedMemoryUsage() const {
   size_t total_size = sizeof(*this) + display_item_list_.MemoryUsageInBytes() +
                       chunks_.capacity() * sizeof(chunks_[0]);

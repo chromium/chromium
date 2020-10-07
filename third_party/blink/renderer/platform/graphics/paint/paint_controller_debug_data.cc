@@ -10,17 +10,17 @@
 
 namespace blink {
 
-class PaintController::DisplayItemListAsJSON {
+class PaintController::PaintArtifactAsJSON {
   STACK_ALLOCATED();
 
  public:
-  DisplayItemListAsJSON(const DisplayItemList&,
-                        const CachedSubsequenceMap&,
-                        const Vector<PaintChunk>&,
-                        DisplayItemList::JsonFlags);
+  PaintArtifactAsJSON(const PaintArtifact&,
+                      const CachedSubsequenceMap&,
+                      DisplayItemList::JsonFlags);
 
   String ToString() {
-    return ChunksAsJSONArrayRecursive(0, chunks_.size())->ToPrettyJSONString();
+    return ChunksAsJSONArrayRecursive(0, artifact_.PaintChunks().size())
+        ->ToPrettyJSONString();
   }
 
  private:
@@ -35,21 +35,17 @@ class PaintController::DisplayItemListAsJSON {
     wtf_size_t end_chunk_index;
   };
 
-  const DisplayItemList& list_;
+  const PaintArtifact& artifact_;
   Vector<SubsequenceInfo> subsequences_;
-  Vector<SubsequenceInfo>::const_iterator current_subsequence_;
-  const Vector<PaintChunk>& chunks_;
+  Vector<SubsequenceInfo>::const_iterator next_subsequence_;
   DisplayItemList::JsonFlags flags_;
 };
 
-PaintController::DisplayItemListAsJSON::DisplayItemListAsJSON(
-    const DisplayItemList& list,
+PaintController::PaintArtifactAsJSON::PaintArtifactAsJSON(
+    const PaintArtifact& artifact,
     const CachedSubsequenceMap& subsequence_map,
-    const Vector<PaintChunk>& chunks,
     DisplayItemList::JsonFlags flags)
-    : list_(list),
-      chunks_(chunks),
-      flags_(flags) {
+    : artifact_(artifact), flags_(flags) {
   for (const auto& item : subsequence_map) {
     subsequences_.push_back(SubsequenceInfo{
         item.key, item.value.start_chunk_index, item.value.end_chunk_index});
@@ -61,13 +57,13 @@ PaintController::DisplayItemListAsJSON::DisplayItemListAsJSON(
                          : a.start_chunk_index < b.start_chunk_index;
             });
 
-  current_subsequence_ = subsequences_.begin();
+  next_subsequence_ = subsequences_.begin();
 }
 
 std::unique_ptr<JSONObject>
-PaintController::DisplayItemListAsJSON::SubsequenceAsJSONObjectRecursive() {
-  const auto& subsequence = *current_subsequence_;
-  ++current_subsequence_;
+PaintController::PaintArtifactAsJSON::SubsequenceAsJSONObjectRecursive() {
+  const auto& subsequence = *next_subsequence_;
+  ++next_subsequence_;
 
   auto json_object = std::make_unique<JSONObject>();
 
@@ -82,15 +78,15 @@ PaintController::DisplayItemListAsJSON::SubsequenceAsJSONObjectRecursive() {
 }
 
 std::unique_ptr<JSONArray>
-PaintController::DisplayItemListAsJSON::ChunksAsJSONArrayRecursive(
+PaintController::PaintArtifactAsJSON::ChunksAsJSONArrayRecursive(
     wtf_size_t start_chunk_index,
     wtf_size_t end_chunk_index) {
   auto array = std::make_unique<JSONArray>();
   auto chunk_index = start_chunk_index;
 
-  while (current_subsequence_ != subsequences_.end() &&
-         current_subsequence_->start_chunk_index < end_chunk_index) {
-    const auto& subsequence = *current_subsequence_;
+  while (next_subsequence_ != subsequences_.end() &&
+         next_subsequence_->start_chunk_index < end_chunk_index) {
+    const auto& subsequence = *next_subsequence_;
     DCHECK_GE(subsequence.start_chunk_index, chunk_index);
     DCHECK_LE(subsequence.end_chunk_index, end_chunk_index);
 
@@ -106,13 +102,13 @@ PaintController::DisplayItemListAsJSON::ChunksAsJSONArrayRecursive(
   return array;
 }
 
-void PaintController::DisplayItemListAsJSON::AppendChunksAsJSON(
+void PaintController::PaintArtifactAsJSON::AppendChunksAsJSON(
     wtf_size_t start_chunk_index,
     wtf_size_t end_chunk_index,
     JSONArray& json_array) {
   DCHECK_GT(end_chunk_index, start_chunk_index);
   for (auto i = start_chunk_index; i < end_chunk_index; ++i) {
-    const auto& chunk = chunks_[i];
+    const auto& chunk = artifact_.PaintChunks()[i];
     auto json_object = std::make_unique<JSONObject>();
 
     json_object->SetString(
@@ -122,16 +118,15 @@ void PaintController::DisplayItemListAsJSON::AppendChunksAsJSON(
     if (flags_ & DisplayItemList::kShowPaintRecords)
       json_object->SetString("chunkData", chunk.ToString());
 
-    json_object->SetArray(
-        "displayItems",
-        DisplayItemList::DisplayItemsAsJSON(
-            list_.ItemsInRange(chunk.begin_index, chunk.end_index), flags_));
+    json_object->SetArray("displayItems",
+                          DisplayItemList::DisplayItemsAsJSON(
+                              artifact_.DisplayItemsInChunk(i), flags_));
 
     json_array.PushObject(std::move(json_object));
   }
 }
 
-String PaintController::DisplayItemListAsJSON::ClientName(
+String PaintController::PaintArtifactAsJSON::ClientName(
     const DisplayItemClient& client) const {
   return client.SafeDebugName(flags_ & DisplayItemList::kClientKnownToBeAlive);
 }
@@ -142,22 +137,25 @@ void PaintController::ShowDebugDataInternal(
   // The clients in the current list are known to be alive before FinishCycle().
   if (committed_)
     current_list_flags |= DisplayItemList::kClientKnownToBeAlive;
-  LOG(INFO) << "current display item list: "
-            << DisplayItemListAsJSON(
-                   current_paint_artifact_->GetDisplayItemList(),
-                   current_cached_subsequences_,
-                   current_paint_artifact_->PaintChunks(), current_list_flags)
-                   .ToString()
-                   .Utf8();
+  LOG(INFO) << "current paint artifact: "
+            << (current_paint_artifact_
+                    ? PaintArtifactAsJSON(*current_paint_artifact_,
+                                          current_cached_subsequences_,
+                                          current_list_flags)
+                          .ToString()
+                          .Utf8()
+                    : "null");
 
-  LOG(INFO) << "new display item list: "
-            << DisplayItemListAsJSON(
-                   new_display_item_list_, new_cached_subsequences_,
-                   new_paint_chunks_.PaintChunks(),
-                   // The clients in new_display_item_list_ are all alive.
-                   flags | DisplayItemList::kClientKnownToBeAlive)
-                   .ToString()
-                   .Utf8();
+  LOG(INFO)
+      << "new paint artifact: "
+      << (new_paint_artifact_
+              ? PaintArtifactAsJSON(
+                    *new_paint_artifact_, new_cached_subsequences_,
+                    // The clients in new_display_item_list_ are all alive.
+                    flags | DisplayItemList::kClientKnownToBeAlive)
+                    .ToString()
+                    .Utf8()
+              : "null");
 }
 
 void PaintController::ShowCompactDebugData() const {

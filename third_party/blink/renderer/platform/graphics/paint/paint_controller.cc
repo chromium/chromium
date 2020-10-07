@@ -15,16 +15,13 @@
 
 namespace blink {
 
-// This is just for initializing current_paint_artifact_ to avoid allocation of
-// a PaintArtifacts that might not be used.
-static scoped_refptr<PaintArtifact> EmptyPaintArtifact() {
-  DEFINE_STATIC_REF(PaintArtifact, empty, base::AdoptRef(new PaintArtifact()));
-  DCHECK(empty->IsEmpty());
-  return empty;
-}
-
 PaintController::PaintController(Usage usage)
-    : usage_(usage), current_paint_artifact_(EmptyPaintArtifact()) {
+    : usage_(usage),
+      current_paint_artifact_(usage == kMultiplePaints
+                                  ? base::MakeRefCounted<PaintArtifact>()
+                                  : nullptr),
+      new_paint_artifact_(base::MakeRefCounted<PaintArtifact>()),
+      paint_chunker_(new_paint_artifact_->PaintChunks()) {
   // frame_first_paints_ should have one null frame since the beginning, so
   // that PaintController is robust even if it paints outside of BeginFrame
   // and EndFrame cycles. It will also enable us to combine the first paint
@@ -34,12 +31,61 @@ PaintController::PaintController(Usage usage)
 }
 
 PaintController::~PaintController() {
+#if DCHECK_IS_ON()
   if (usage_ == kMultiplePaints) {
     // New display items should have been committed.
-    DCHECK(new_display_item_list_.IsEmpty());
+    DCHECK(new_paint_artifact_->IsEmpty());
     // And the committed_ flag should have been cleared by FinishCycle().
     DCHECK(!committed_);
   }
+#endif
+}
+
+void PaintController::EnsureChunk() {
+  if (paint_chunker_.EnsureChunk())
+    DidAppendChunk();
+}
+
+void PaintController::RecordHitTestData(const DisplayItemClient& client,
+                                        const IntRect& rect,
+                                        TouchAction touch_action) {
+  if (rect.IsEmpty())
+    return;
+  // In CompositeAfterPaint, we ensure a paint chunk for correct composited
+  // hit testing. In pre-CompositeAfterPaint, this is unnecessary, except that
+  // there is special touch action, and that we have a non-root effect so that
+  // PaintChunksToCcLayer will emit paint operations for filters.
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
+      touch_action == TouchAction::kAuto &&
+      CurrentPaintChunkProperties().Effect().IsRoot())
+    return;
+
+  PaintChunk::Id id(client, DisplayItem::kHitTest, current_fragment_);
+  CheckDuplicatePaintChunkId(id);
+  if (paint_chunker_.AddHitTestDataToCurrentChunk(id, rect, touch_action))
+    DidAppendChunk();
+}
+
+void PaintController::RecordScrollHitTestData(
+    const DisplayItemClient& client,
+    DisplayItem::Type type,
+    const TransformPaintPropertyNode* scroll_translation,
+    const IntRect& rect) {
+  PaintChunk::Id id(client, type, current_fragment_);
+  CheckDuplicatePaintChunkId(id);
+  paint_chunker_.CreateScrollHitTestChunk(id, scroll_translation, rect);
+  DidAppendChunk();
+}
+
+void PaintController::SetPossibleBackgroundColor(
+    const DisplayItemClient& client,
+    Color color,
+    uint64_t area) {
+  PaintChunk::Id id(client, DisplayItem::kBoxDecorationBackground,
+                    current_fragment_);
+  CheckDuplicatePaintChunkId(id);
+  if (paint_chunker_.ProcessBackgroundColorCandidate(id, color, area))
+    DidAppendChunk();
 }
 
 bool PaintController::UseCachedItemIfPossible(const DisplayItemClient& client,
@@ -173,13 +219,13 @@ PaintController::SubsequenceMarkers* PaintController::GetSubsequenceMarkers(
 
 wtf_size_t PaintController::BeginSubsequence() {
   // Force new paint chunk which is required for subsequence caching.
-  SetForceNewChunk(true);
-  return new_paint_chunks_.size();
+  SetWillForceNewChunk(true);
+  return NumNewChunks();
 }
 
 void PaintController::EndSubsequence(const DisplayItemClient& client,
                                      wtf_size_t start_chunk_index) {
-  auto end_chunk_index = new_paint_chunks_.size();
+  auto end_chunk_index = NumNewChunks();
 
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
       IsCheckingUnderInvalidation()) {
@@ -204,7 +250,7 @@ void PaintController::EndSubsequence(const DisplayItemClient& client,
         const auto& old_chunk =
             current_paint_artifact_->PaintChunks()[old_chunk_index];
         const auto& new_chunk =
-            new_paint_chunks_.PaintChunks()[new_chunk_index];
+            new_paint_artifact_->PaintChunks()[new_chunk_index];
         if (!old_chunk.EqualsForUnderInvalidationChecking(new_chunk)) {
           ShowSequenceUnderInvalidationError(
               "under-invalidation: chunk changed", client);
@@ -223,7 +269,7 @@ void PaintController::EndSubsequence(const DisplayItemClient& client,
   }
 
   // Force new paint chunk which is required for subsequence caching.
-  SetForceNewChunk(true);
+  SetWillForceNewChunk(true);
 
   DCHECK(!new_cached_subsequences_.Contains(&client))
       << "Multiple subsequences for client: " << client.DebugName();
@@ -238,17 +284,18 @@ void PaintController::DidAppendItem(DisplayItem& display_item) {
 
 #if DCHECK_IS_ON()
   if (display_item.IsCacheable()) {
+    auto& new_display_item_list = new_paint_artifact_->GetDisplayItemList();
     auto index = FindItemFromIdIndexMap(display_item.GetId(),
                                         new_display_item_id_index_map_,
-                                        new_display_item_list_);
+                                        new_display_item_list);
     if (index != kNotFound) {
       ShowDebugData();
       NOTREACHED() << "DisplayItem " << display_item.AsDebugString().Utf8()
                    << " has duplicated id with previous "
-                   << new_display_item_list_[index].AsDebugString().Utf8()
+                   << new_display_item_list[index].AsDebugString().Utf8()
                    << " (index=" << index << ")";
     }
-    AddToIdIndexMap(display_item.GetId(), new_display_item_list_.size() - 1,
+    AddToIdIndexMap(display_item.GetId(), new_display_item_list.size() - 1,
                     new_display_item_id_index_map_);
   }
 #endif
@@ -263,7 +310,7 @@ void PaintController::ProcessNewItem(DisplayItem& display_item) {
     display_item.SetUncacheable();
   }
 
-  if (new_paint_chunks_.IncrementDisplayItemIndex(display_item))
+  if (paint_chunker_.IncrementDisplayItemIndex(display_item))
     DidAppendChunk();
 
   if (!frame_first_paints_.back().first_painted && display_item.IsDrawing() &&
@@ -281,15 +328,15 @@ void PaintController::ProcessNewItem(DisplayItem& display_item) {
 
 DisplayItem& PaintController::MoveItemFromCurrentListToNewList(
     wtf_size_t index) {
-  return new_display_item_list_.AppendByMoving(
+  return new_paint_artifact_->GetDisplayItemList().AppendByMoving(
       current_paint_artifact_->GetDisplayItemList()[index]);
 }
 
 void PaintController::DidAppendChunk() {
 #if DCHECK_IS_ON()
-  if (new_paint_chunks_.LastChunk().is_cacheable) {
-    AddToIdIndexMap(new_paint_chunks_.LastChunk().id,
-                    new_paint_chunks_.size() - 1,
+  auto& chunks = new_paint_artifact_->PaintChunks();
+  if (chunks.back().is_cacheable) {
+    AddToIdIndexMap(chunks.back().id, chunks.size() - 1,
                     new_paint_chunk_id_index_map_);
   }
 #endif
@@ -303,8 +350,8 @@ void PaintController::InvalidateAll() {
 void PaintController::InvalidateAllInternal() {
   // TODO(wangxianzhu): Rename this to InvalidateAllForTesting() for CAP.
   // Can only be called during layout/paintInvalidation, not during painting.
-  DCHECK(new_display_item_list_.IsEmpty());
-  current_paint_artifact_ = EmptyPaintArtifact();
+  CheckNoNewPaint();
+  current_paint_artifact_ = base::MakeRefCounted<PaintArtifact>();
   current_cached_subsequences_.clear();
   cache_is_all_invalid_ = true;
 }
@@ -320,17 +367,17 @@ void PaintController::UpdateCurrentPaintChunkProperties(
     const PropertyTreeStateOrAlias& properties) {
   if (id) {
     PaintChunk::Id id_with_fragment(*id, current_fragment_);
-    new_paint_chunks_.UpdateCurrentPaintChunkProperties(&id_with_fragment,
-                                                        properties);
+    paint_chunker_.UpdateCurrentPaintChunkProperties(&id_with_fragment,
+                                                     properties);
     CheckDuplicatePaintChunkId(id_with_fragment);
   } else {
-    new_paint_chunks_.UpdateCurrentPaintChunkProperties(nullptr, properties);
+    paint_chunker_.UpdateCurrentPaintChunkProperties(nullptr, properties);
   }
 }
 
 void PaintController::AppendChunkByMoving(PaintChunk&& chunk) {
   CheckDuplicatePaintChunkId(chunk.id);
-  new_paint_chunks_.AppendByMoving(std::move(chunk));
+  paint_chunker_.AppendByMoving(std::move(chunk));
   DidAppendChunk();
 }
 
@@ -448,8 +495,7 @@ void PaintController::CopyCachedSubsequence(wtf_size_t start_chunk_index,
                                             wtf_size_t end_chunk_index) {
 #if DCHECK_IS_ON()
   DCHECK(!RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled());
-  auto properties_before_subsequence =
-      new_paint_chunks_.CurrentPaintChunkProperties();
+  auto properties_before_subsequence = CurrentPaintChunkProperties();
 #endif
 
   for (auto chunk_index = start_chunk_index; chunk_index < end_chunk_index;
@@ -471,7 +517,7 @@ void PaintController::CopyCachedSubsequence(wtf_size_t start_chunk_index,
     AppendChunkByMoving(std::move(cached_chunk));
   }
 
-  SetForceNewChunk(true);
+  SetWillForceNewChunk(true);
 
 #if DCHECK_IS_ON()
   DCHECK_EQ(properties_before_subsequence, CurrentPaintChunkProperties());
@@ -487,11 +533,14 @@ void PaintController::ResetCurrentListIndices() {
 
 DISABLE_CFI_PERF
 void PaintController::CommitNewDisplayItems() {
-  TRACE_EVENT2("blink,benchmark", "PaintController::commitNewDisplayItems",
-               "current_display_list_size",
-               (int)current_paint_artifact_->GetDisplayItemList().size(),
-               "num_non_cached_new_items",
-               (int)new_display_item_list_.size() - num_cached_new_items_);
+  TRACE_EVENT2(
+      "blink,benchmark", "PaintController::commitNewDisplayItems",
+      "current_display_list_size",
+      current_paint_artifact_
+          ? current_paint_artifact_->GetDisplayItemList().size()
+          : 0,
+      "num_non_cached_new_items",
+      new_paint_artifact_->GetDisplayItemList().size() - num_cached_new_items_);
 
   if (usage_ == kMultiplePaints)
     UpdateUMACounts();
@@ -509,16 +558,18 @@ void PaintController::CommitNewDisplayItems() {
   new_cached_subsequences_.swap(current_cached_subsequences_);
   new_cached_subsequences_.clear();
 
-  current_paint_artifact_ = base::MakeRefCounted<PaintArtifact>(
-      std::move(new_display_item_list_),
-      new_paint_chunks_.ReleasePaintChunks());
+  current_paint_artifact_ = std::move(new_paint_artifact_);
+  if (usage_ == kMultiplePaints) {
+    new_paint_artifact_ = base::MakeRefCounted<PaintArtifact>(
+        current_paint_artifact_->GetDisplayItemList().UsedCapacityInBytes());
+    paint_chunker_.ResetChunks(&new_paint_artifact_->PaintChunks());
+  } else {
+    new_paint_artifact_ = nullptr;
+    paint_chunker_.ResetChunks(nullptr);
+  }
 
   ResetCurrentListIndices();
   out_of_order_item_id_index_map_.clear();
-
-  // We'll allocate the initial buffer when we start the next paint.
-  new_display_item_list_ =
-      DisplayItemList(GetDisplayItemList().UsedCapacityInBytes());
 
 #if DCHECK_IS_ON()
   num_indexed_items_ = 0;
@@ -531,11 +582,7 @@ void PaintController::FinishCycle() {
   if (usage_ == kTransient || !committed_)
     return;
 
-#if DCHECK_IS_ON()
-  DCHECK(new_display_item_list_.IsEmpty());
-  DCHECK(new_paint_chunks_.IsInInitialState());
-#endif
-
+  CheckNoNewPaint();
   committed_ = false;
 
   // Validate display item clients that have validly cached subsequence or
@@ -597,16 +644,13 @@ void PaintController::ClearPropertyTreeChangedStateTo(
 size_t PaintController::ApproximateUnsharedMemoryUsage() const {
   size_t memory_usage = sizeof(*this);
 
-  // Memory outside this class due to current_paint_artifact_.
+  // Memory outside this class due to paint artifacts.
   memory_usage += current_paint_artifact_->ApproximateUnsharedMemoryUsage();
+  memory_usage += new_paint_artifact_->ApproximateUnsharedMemoryUsage();
 
   // External objects, shared with the embedder, such as PaintRecord, should be
   // excluded to avoid double counting. It is the embedder's responsibility to
   // count such objects.
-
-  // Memory outside this class due to new_display_item_list_.
-  DCHECK(new_display_item_list_.IsEmpty());
-  memory_usage += new_display_item_list_.MemoryUsageInBytes();
 
   // Memory outside this class due to current_cached_subsequences_ and
   // new_cached_subsequences_.
@@ -683,7 +727,7 @@ void PaintController::CheckUnderInvalidation() {
     return;
   }
 
-  DisplayItem& new_item = new_display_item_list_.Last();
+  DisplayItem& new_item = new_paint_artifact_->GetDisplayItemList().Last();
   auto old_item_index = under_invalidation_checking_begin_;
   DisplayItem* old_item =
       old_item_index < current_paint_artifact_->GetDisplayItemList().size()
@@ -693,11 +737,8 @@ void PaintController::CheckUnderInvalidation() {
   if (!old_item || !new_item.Equals(*old_item)) {
     // If we ever skipped reporting any under-invalidations, report the earliest
     // one.
-    ShowUnderInvalidationError(
-        "under-invalidation: display item changed",
-        new_display_item_list_.Last(),
-        &current_paint_artifact_
-             ->GetDisplayItemList()[under_invalidation_checking_begin_]);
+    ShowUnderInvalidationError("under-invalidation: display item changed",
+                               new_item, old_item);
     CHECK(false);
   }
 
@@ -706,7 +747,7 @@ void PaintController::CheckUnderInvalidation() {
   // non-under-invalidation-checking path to empty the original cached slot,
   // leaving only disappeared or invalidated display items in the old list after
   // painting.
-  new_display_item_list_.RemoveLast();
+  new_paint_artifact_->GetDisplayItemList().RemoveLast();
   MoveItemFromCurrentListToNewList(old_item_index);
 
   ++under_invalidation_checking_begin_;
@@ -753,7 +794,7 @@ void PaintController::CheckDuplicatePaintChunkId(const PaintChunk::Id& id) {
     ShowDebugData();
     NOTREACHED() << "New paint chunk id " << id
                  << " has duplicated id with previous chuck "
-                 << new_paint_chunks_.PaintChunks()[it->value];
+                 << new_paint_artifact_->PaintChunks()[it->value];
   }
 #endif
 }
@@ -765,7 +806,7 @@ size_t PaintController::sum_num_cached_subsequences_ = 0;
 
 void PaintController::UpdateUMACounts() {
   DCHECK_EQ(usage_, kMultiplePaints);
-  sum_num_items_ += new_display_item_list_.size();
+  sum_num_items_ += new_paint_artifact_->GetDisplayItemList().size();
   sum_num_cached_items_ += num_cached_new_items_;
   sum_num_subsequences_ += new_cached_subsequences_.size();
   sum_num_cached_subsequences_ += num_cached_new_subsequences_;

@@ -84,11 +84,6 @@ class PLATFORM_EXPORT DrawingRecorder {
   IntRect visual_rect_;
   base::Optional<DOMNodeId> dom_node_id_to_restore_;
 
-#if DCHECK_IS_ON()
-  // Ensures the list size does not change during the recorder's scope.
-  wtf_size_t initial_display_item_list_size_;
-#endif
-
   DISALLOW_COPY_AND_ASSIGN(DrawingRecorder);
 };
 

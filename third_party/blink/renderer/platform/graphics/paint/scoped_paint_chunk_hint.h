@@ -46,7 +46,7 @@ class ScopedPaintChunkHint {
         previous_force_new_chunk_(paint_controller_.WillForceNewChunk()) {
     if (!previous_force_new_chunk_ && previous_num_chunks_ &&
         !paint_controller_.LastChunkBounds().Contains(visual_rect))
-      paint_controller_.SetForceNewChunk(true);
+      paint_controller_.SetWillForceNewChunk(true);
     // This is after SetForceNewChunk(true) so that the possible new chunk will
     // use the specified id.
     paint_chunk_properties_.emplace(paint_controller, properties, client, type);
@@ -55,7 +55,7 @@ class ScopedPaintChunkHint {
   ~ScopedPaintChunkHint() {
     paint_chunk_properties_ = base::nullopt;
     if (!HasCreatedPaintChunk())
-      paint_controller_.SetForceNewChunk(previous_force_new_chunk_);
+      paint_controller_.SetWillForceNewChunk(previous_force_new_chunk_);
   }
 
   bool HasCreatedPaintChunk() const {
