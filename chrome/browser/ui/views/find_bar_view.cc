@@ -59,10 +59,10 @@ void SetCommonButtonAttributes(views::ImageButton* button) {
 }
 }  // namespace
 
-class FindBarView::MatchCountLabel : public views::Label {
+class FindBarMatchCountLabel : public views::Label {
  public:
-  MatchCountLabel() {}
-  ~MatchCountLabel() override {}
+  FindBarMatchCountLabel() {}
+  ~FindBarMatchCountLabel() override {}
 
   gfx::Size CalculatePreferredSize() const override {
     // We need to return at least 1dip so that box layout adds padding on either
@@ -112,8 +112,11 @@ class FindBarView::MatchCountLabel : public views::Label {
  private:
   base::Optional<find_in_page::FindNotificationDetails> last_result_;
 
-  DISALLOW_COPY_AND_ASSIGN(MatchCountLabel);
+  DISALLOW_COPY_AND_ASSIGN(FindBarMatchCountLabel);
 };
+
+BEGIN_VIEW_BUILDER(/* No Export */, FindBarMatchCountLabel, views::Label)
+END_VIEW_BUILDER(/* No Export */, FindBarMatchCountLabel)
 
 ////////////////////////////////////////////////////////////////////////////////
 // FindBarView, public:
@@ -130,7 +133,7 @@ FindBarView::FindBarView(FindBarHost* host) : find_bar_host_(host) {
       !host->browser_view()->GetProfile()->IsOffTheRecord());
   find_text_ = AddChildView(std::move(find_text));
 
-  auto match_count_text = std::make_unique<MatchCountLabel>();
+  auto match_count_text = std::make_unique<FindBarMatchCountLabel>();
   match_count_text->SetCanProcessEventsWithinSubtree(false);
   match_count_text_ = AddChildView(std::move(match_count_text));
 

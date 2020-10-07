@@ -188,7 +188,7 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
   };                                         \
                                              \
   template <>                                \
-  class export views::Builder<view_class>           \
+  class export views::Builder<view_class>    \
       : public view_class##BuilderT<views::Builder<view_class>>{};
 
 // clang-format on

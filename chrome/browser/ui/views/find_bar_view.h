@@ -17,6 +17,7 @@
 #include "ui/views/view.h"
 
 class FindBarHost;
+class FindBarMatchCountLabel;
 
 namespace find_in_page {
 class FindNotificationDetails;
@@ -86,8 +87,6 @@ class FindBarView : public views::View,
   void OnAfterPaste() override;
 
  private:
-  class MatchCountLabel;
-
   // Starts finding |search_text|.  If the text is empty, stops finding.
   void Find(const base::string16& search_text);
 
@@ -108,7 +107,7 @@ class FindBarView : public views::View,
   // The controls in the window.
   views::Textfield* find_text_;
   std::unique_ptr<views::Painter> find_text_border_;
-  MatchCountLabel* match_count_text_;
+  FindBarMatchCountLabel* match_count_text_;
   views::Separator* separator_;
   views::ImageButton* find_previous_button_;
   views::ImageButton* find_next_button_;
