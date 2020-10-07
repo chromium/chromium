@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/webview/webview.h"
@@ -58,6 +59,11 @@ ReadLaterBubbleView::ReadLaterBubbleView(const Browser* browser,
 }
 
 ReadLaterBubbleView::~ReadLaterBubbleView() = default;
+
+void ReadLaterBubbleView::AddedToWidget() {
+  BubbleDialogDelegateView::AddedToWidget();
+  web_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(GetCornerRadius()));
+}
 
 void ReadLaterBubbleView::ReadingListModelLoaded(
     const ReadingListModel* model) {}

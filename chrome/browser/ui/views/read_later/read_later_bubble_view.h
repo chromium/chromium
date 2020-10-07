@@ -34,6 +34,9 @@ class ReadLaterBubbleView : public views::BubbleDialogDelegateView,
 
   ~ReadLaterBubbleView() override;
 
+  // views::BubbleDialogDelegateView:
+  void AddedToWidget() override;
+
   // ReadingListModelObserver:
   void ReadingListModelLoaded(const ReadingListModel* model) override;
 
