@@ -5764,8 +5764,6 @@ static_library("browser") {
       "plugins/chrome_plugin_service_filter.h",
       "plugins/flash_deprecation_infobar_delegate.cc",
       "plugins/flash_deprecation_infobar_delegate.h",
-      "plugins/flash_download_interception.cc",
-      "plugins/flash_download_interception.h",
       "plugins/flash_permission_context.cc",
       "plugins/flash_permission_context.h",
       "plugins/flash_temporary_permission_tracker.cc",

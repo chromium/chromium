@@ -15,7 +15,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/browser/plugins/flash_download_interception.h"
 #include "chrome/browser/plugins/plugin_finder.h"
 #include "chrome/browser/plugins/plugin_infobar_delegates.h"
 #include "chrome/browser/plugins/plugin_installer.h"
@@ -240,8 +239,7 @@ void PluginObserver::RemovePluginPlaceholderHost(
 void PluginObserver::ShowFlashPermissionBubble() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  FlashDownloadInterception::InterceptFlashDownloadNavigation(
-      web_contents(), web_contents()->GetLastCommittedURL());
+  // TODO(tommycli): This is a no-op now. Delete this method in a followup.
 }
 
 void PluginObserver::CouldNotLoadPlugin(const base::FilePath& plugin_path) {

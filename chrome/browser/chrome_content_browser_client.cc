@@ -573,7 +573,6 @@
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/chrome_content_browser_client_plugins_part.h"
-#include "chrome/browser/plugins/flash_download_interception.h"
 #include "chrome/browser/plugins/plugin_response_interceptor_url_loader_throttle.h"
 #endif
 
@@ -3117,18 +3116,6 @@ bool ChromeContentBrowserClient::CanCreateWindow(
   }
 #endif
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-  HostContentSettingsMap* content_settings =
-      HostContentSettingsMapFactory::GetForProfile(profile);
-  if (FlashDownloadInterception::ShouldStopFlashDownloadAction(
-          content_settings, opener_top_level_frame_url, target_url,
-          user_gesture)) {
-    FlashDownloadInterception::InterceptFlashDownloadNavigation(
-        web_contents, opener_top_level_frame_url);
-    return false;
-  }
-#endif
-
   DCHECK(!prerender::ChromePrerenderContentsDelegate::FromWebContents(
       web_contents));
 
@@ -3902,11 +3889,6 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
     throttles.push_back(
         page_load_metrics::MetricsNavigationThrottle::Create(handle));
   }
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  MaybeAddThrottle(FlashDownloadInterception::MaybeCreateThrottleFor(handle),
-                   &throttles);
-#endif
 
 #if defined(OS_CHROMEOS)
   MaybeAddThrottle(

@@ -1178,7 +1178,6 @@ if (!is_android) {
       "../browser/permissions/permissions_browsertest.cc",
       "../browser/permissions/permissions_browsertest.h",
       "../browser/picture_in_picture/picture_in_picture_window_controller_browsertest.cc",
-      "../browser/plugins/flash_permission_browsertest.cc",
       "../browser/plugins/plugin_power_saver_browsertest.cc",
       "../browser/plugins/plugin_response_interceptor_url_loader_throttle_browsertest.cc",
       "../browser/policy/autoplay_policy_browsertest.cc",
@@ -5615,7 +5614,6 @@ test("unit_tests") {
     sources += [
       "../browser/metrics/plugin_metrics_provider_unittest.cc",
       "../browser/plugins/chrome_plugin_service_filter_unittest.cc",
-      "../browser/plugins/flash_download_interception_unittest.cc",
       "../browser/plugins/flash_temporary_permission_tracker_unittest.cc",
       "../browser/plugins/plugin_finder_unittest.cc",
       "../browser/plugins/plugin_info_host_impl_unittest.cc",
