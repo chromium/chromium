@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -33,7 +32,7 @@ class WebAppNavigateBrowserTest : public WebAppControllerBrowserTestBase {
 
 // This test verifies that navigating with "open_pwa_window_if_possible = true"
 // opens a new app window if there is an installed Web App for the URL.
-IN_PROC_BROWSER_TEST_P(WebAppNavigateBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppNavigateBrowserTest,
                        AppInstalled_OpenAppWindowIfPossible_True) {
   InstallPWA(GetGoogleURL());
 
@@ -51,7 +50,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigateBrowserTest,
 // This test verifies that navigating with "open_pwa_window_if_possible = false"
 // opens a new foreground tab even if there is an installed Web App for the
 // URL.
-IN_PROC_BROWSER_TEST_P(WebAppNavigateBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppNavigateBrowserTest,
                        AppInstalled_OpenAppWindowIfPossible_False) {
   InstallPWA(GetGoogleURL());
 
@@ -68,7 +67,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigateBrowserTest,
 
 // This test verifies that navigating with "open_pwa_window_if_possible = true"
 // opens a new foreground tab when there is no app installed for the URL.
-IN_PROC_BROWSER_TEST_P(WebAppNavigateBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppNavigateBrowserTest,
                        NoAppInstalled_OpenAppWindowIfPossible) {
   int num_tabs = browser()->tab_strip_model()->count();
 
@@ -81,7 +80,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigateBrowserTest,
   EXPECT_EQ(++num_tabs, browser()->tab_strip_model()->count());
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppNavigateBrowserTest, NewPopup) {
+IN_PROC_BROWSER_TEST_F(WebAppNavigateBrowserTest, NewPopup) {
   BrowserList* const browser_list = BrowserList::GetInstance();
   InstallPWA(GetGoogleURL());
 
@@ -130,11 +129,5 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigateBrowserTest, NewPopup) {
     EXPECT_TRUE(browser_list->GetLastActive()->app_controller()->HasAppId());
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebAppNavigateBrowserTest,
-                         ::testing::Values(ProviderType::kBookmarkApps,
-                                           ProviderType::kWebApps),
-                         ProviderTypeParamToString);
 
 }  // namespace web_app

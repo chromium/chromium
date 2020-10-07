@@ -31,15 +31,14 @@ class WebAppProviderBase;
 // ProviderType selects between use of BMO web apps and
 // Extensions-based bookmark apps.
 class WebAppControllerBrowserTestBase
-    : public extensions::ExtensionBrowserTest,
-      public ::testing::WithParamInterface<ProviderType> {
+    : public extensions::ExtensionBrowserTest {
  public:
   WebAppControllerBrowserTestBase();
   WebAppControllerBrowserTestBase(const WebAppControllerBrowserTestBase&) =
       delete;
   WebAppControllerBrowserTestBase& operator=(
       const WebAppControllerBrowserTestBase&) = delete;
-  ~WebAppControllerBrowserTestBase() = 0;
+  ~WebAppControllerBrowserTestBase() override = 0;
 
   WebAppProviderBase& provider();
 
@@ -66,13 +65,11 @@ class WebAppControllerBrowserTestBase
   Browser* NavigateInNewWindowAndAwaitInstallabilityCheck(const GURL&);
 
   base::Optional<AppId> FindAppWithUrlInScope(const GURL& url);
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
 };
 
-class WebAppControllerBrowserTest : public WebAppControllerBrowserTestBase {
+class WebAppControllerBrowserTest
+    : public WebAppControllerBrowserTestBase,
+      public ::testing::WithParamInterface<ProviderType> {
  public:
   WebAppControllerBrowserTest();
   ~WebAppControllerBrowserTest() = 0;

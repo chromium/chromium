@@ -22,15 +22,7 @@
 
 namespace web_app {
 
-WebAppControllerBrowserTestBase::WebAppControllerBrowserTestBase() {
-  if (GetParam() == ProviderType::kWebApps) {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kDesktopPWAsWithoutExtensions}, {});
-  } else {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {features::kDesktopPWAsWithoutExtensions});
-  }
-}
+WebAppControllerBrowserTestBase::WebAppControllerBrowserTestBase() = default;
 
 WebAppControllerBrowserTestBase::~WebAppControllerBrowserTestBase() = default;
 
@@ -106,8 +98,15 @@ base::Optional<AppId> WebAppControllerBrowserTestBase::FindAppWithUrlInScope(
 
 WebAppControllerBrowserTest::WebAppControllerBrowserTest()
     : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-  scoped_feature_list_.InitWithFeatures(
-      {}, {predictors::kSpeculativePreconnectFeature});
+  if (GetParam() == ProviderType::kWebApps) {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kDesktopPWAsWithoutExtensions},
+        {predictors::kSpeculativePreconnectFeature});
+  } else {
+    scoped_feature_list_.InitWithFeatures(
+        {}, {features::kDesktopPWAsWithoutExtensions,
+             predictors::kSpeculativePreconnectFeature});
+  }
 }
 
 WebAppControllerBrowserTest::~WebAppControllerBrowserTest() = default;
