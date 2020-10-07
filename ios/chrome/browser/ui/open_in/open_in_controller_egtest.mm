@@ -49,8 +49,8 @@ id<GREYMatcher> ShareMenuDismissButton() {
 // Tests that open in button appears when opening a PDF, and that tapping on it
 // will open the activity view.
 - (void)testOpenIn {
-  // TODO(crbug.com/983135): The share menu displays in a popover on iPad, which
-  // causes this test to fail.
+  // TODO(crbug.com/1135805): The share menu displays in a popover on iPad,
+  // which causes this test to fail.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Disabled on iPad");
   }
