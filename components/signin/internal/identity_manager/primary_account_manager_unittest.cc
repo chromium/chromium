@@ -273,12 +273,12 @@ TEST_F(PrimaryAccountManagerTest, UnconsentedSignOutWhileProhibited) {
   CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
   CoreAccountInfo account_info = account_tracker()->GetAccountInfo(account_id);
   manager_->SetUnconsentedPrimaryAccountInfo(account_info);
-  EXPECT_TRUE(manager_->HasUnconsentedPrimaryAccount());
+  EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kNotRequired));
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   signin_client()->set_is_signout_allowed(false);
   manager_->SignOut(signin_metrics::SIGNOUT_TEST,
                     signin_metrics::SignoutDelete::IGNORE_METRIC);
-  EXPECT_FALSE(manager_->HasUnconsentedPrimaryAccount());
+  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kNotRequired));
 }
 
 TEST_F(PrimaryAccountManagerTest, ProhibitedAtStartup) {
@@ -511,7 +511,7 @@ TEST_F(PrimaryAccountManagerTest, RevokeSyncConsent) {
 
   manager_->RevokeSyncConsent();
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
-  EXPECT_TRUE(manager_->HasUnconsentedPrimaryAccount());
+  EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kNotRequired));
   EXPECT_EQ(account_id,
             manager_->GetUnconsentedPrimaryAccountInfo().account_id);
 }

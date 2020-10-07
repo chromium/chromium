@@ -149,10 +149,6 @@ CoreAccountInfo PrimaryAccountManager::GetUnconsentedPrimaryAccountInfo()
   return primary_account_info();
 }
 
-bool PrimaryAccountManager::HasUnconsentedPrimaryAccount() const {
-  return !primary_account_info().account_id.empty();
-}
-
 void PrimaryAccountManager::SetUnconsentedPrimaryAccountInfo(
     CoreAccountInfo account_info) {
   if (HasPrimaryAccount(signin::ConsentLevel::kSync)) {

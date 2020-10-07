@@ -158,9 +158,6 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // account. Returns an empty info, if there is no such account.
   CoreAccountInfo GetUnconsentedPrimaryAccountInfo() const;
 
-  // Returns whether the user's unconsented primary account is available.
-  bool HasUnconsentedPrimaryAccount() const;
-
   // Sets the unconsented primary account. The unconsented primary account can
   // only be changed if the user is not authenticated. If the user is
   // authenticated, use Signout() instead.
