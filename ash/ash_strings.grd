@@ -837,6 +837,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_SWITCH_ACCESS_PASTE" desc="The label for the Switch Access menu option to paste into the text field.">
         Paste
       </message>
+      <message name="IDS_ASH_SWITCH_ACCESS_POINT_SCAN" desc="The label for the Switch Access menu option to start point scanning.">
+        Point scanning
+      </message>
       <message name="IDS_ASH_SWITCH_ACCESS_SCROLL_DOWN" desc="The label for the Switch Access menu option to scroll the selected view down.">
         Scroll down
       </message>

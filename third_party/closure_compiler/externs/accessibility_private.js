@@ -98,6 +98,7 @@ chrome.accessibilityPrivate.SwitchAccessMenuAction = {
   MOVE_FORWARD_ONE_WORD_OF_TEXT: 'moveForwardOneWordOfText',
   MOVE_UP_ONE_LINE_OF_TEXT: 'moveUpOneLineOfText',
   PASTE: 'paste',
+  POINT_SCAN: 'pointScan',
   SCROLL_DOWN: 'scrollDown',
   SCROLL_LEFT: 'scrollLeft',
   SCROLL_RIGHT: 'scrollRight',
@@ -307,16 +308,21 @@ chrome.accessibilityPrivate.setSelectToSpeakState = function(state) {};
 
 /**
  * Called by the Accessibility Common extension when
- * onScrollableBoundsForPointRequested has found a scrolling container. |rect| will be
- * the bounds of the nearest scrollable ancestor of the node at the point
- * requested using onScrollableBoundsForPointRequested.
+ * onScrollableBoundsForPointRequested has found a scrolling container. |rect|
+ * will be the bounds of the nearest scrollable ancestor of the node at the
+ * point requested using onScrollableBoundsForPointRequested.
  * @param {!chrome.accessibilityPrivate.ScreenRect} rect
  */
 chrome.accessibilityPrivate.handleScrollableBoundsForPointFound = function(rect) {};
 
 /**
- * Called by the Accessibility Common extension to update the magnifier viewport
- * (e.g. when focus has changed).
+ * Called by the Accessibility Common extension to move |rect| within the
+ * magnifier viewport (e.g. when focus has changed). If |rect| is already
+ * completely within the viewport, magnifier doesn't move. If any edge of |rect|
+ * is outside the viewport (e.g. if rect is larger than or extends partially
+ * beyond the viewport), magnifier will center the overflowing dimensions of the
+ * viewport on center of |rect| (e.g. center viewport vertically if |rect|
+ * extends beyond bottom of screen).
  * @param {!chrome.accessibilityPrivate.ScreenRect} rect Rect to ensure visible
  *     in the magnified viewport.
  */
