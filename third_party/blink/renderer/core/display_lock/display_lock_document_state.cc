@@ -88,10 +88,11 @@ IntersectionObserver& DisplayLockDocumentState::EnsureIntersectionObserver() {
     // have run. This means for the duration of the idle time that follows, we
     // should always have clean layout.
     //
-    // Note that we use 50% margin (on the viewport) so that we get the
+    // Note that we use 150% margin (on the viewport) so that we get the
     // observation before the element enters the viewport.
     intersection_observer_ = IntersectionObserver::Create(
-        {Length::Percent(50.f)}, {std::numeric_limits<float>::min()}, document_,
+        {Length::Percent(150.f)}, {std::numeric_limits<float>::min()},
+        document_,
         WTF::BindRepeating(
             &DisplayLockDocumentState::ProcessDisplayLockActivationObservation,
             WrapWeakPersistent(this)),

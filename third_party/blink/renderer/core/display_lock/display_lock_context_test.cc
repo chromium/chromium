@@ -2824,10 +2824,10 @@ TEST_F(DisplayLockContextRenderingTest,
        AutoReachesStableStateOnContentSmallerThanLockedSize) {
   SetHtmlInnerHTML(R"HTML(
     <style>
-      .spacer { height: 10000px; }
+      .spacer { height: 20000px; }
       .auto {
         content-visibility: auto;
-        contain-intrinsic-size: 1px 10000px;
+        contain-intrinsic-size: 1px 20000px;
       }
       .auto > div {
         height: 3000px;
@@ -2842,7 +2842,7 @@ TEST_F(DisplayLockContextRenderingTest,
 
   UpdateAllLifecyclePhasesForTest();
 
-  GetDocument().scrollingElement()->setScrollTop(19000);
+  GetDocument().scrollingElement()->setScrollTop(29000);
 
   Element* element = GetDocument().getElementById("e1");
 
@@ -2852,35 +2852,35 @@ TEST_F(DisplayLockContextRenderingTest,
   // Initially we start with locked in the viewport.
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(element->GetDisplayLockContext()->IsLocked());
-  EXPECT_EQ(GetDocument().scrollingElement()->scrollTop(), 19000.);
+  EXPECT_EQ(GetDocument().scrollingElement()->scrollTop(), 29000.);
 
   // It gets unlocked because it's in the viewport.
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(element->GetDisplayLockContext()->IsLocked());
-  EXPECT_EQ(GetDocument().scrollingElement()->scrollTop(), 19000.);
+  EXPECT_EQ(GetDocument().scrollingElement()->scrollTop(), 29000.);
 
   // By unlocking it, it shrinks so next time it gets relocked.
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(element->GetDisplayLockContext()->IsLocked());
-  EXPECT_EQ(GetDocument().scrollingElement()->scrollTop(), 19000.);
+  EXPECT_EQ(GetDocument().scrollingElement()->scrollTop(), 29000.);
 
   // It again gets unlocked and shrink.
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(element->GetDisplayLockContext()->IsLocked());
-  EXPECT_EQ(GetDocument().scrollingElement()->scrollTop(), 19000.);
+  EXPECT_EQ(GetDocument().scrollingElement()->scrollTop(), 29000.);
 
   // On the next relock we select the following element as an anchor and thus
   // the scroll top changes to be higher.
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(element->GetDisplayLockContext()->IsLocked());
-  EXPECT_GT(GetDocument().scrollingElement()->scrollTop(), 19000.);
+  EXPECT_GT(GetDocument().scrollingElement()->scrollTop(), 29000.);
 
   // Subsequent updates no longer unlock the element because even if its locked
   // state it is far enough off-screen.
   for (int i = 0; i < 5; ++i) {
     UpdateAllLifecyclePhasesForTest();
     EXPECT_TRUE(element->GetDisplayLockContext()->IsLocked());
-    EXPECT_GT(GetDocument().scrollingElement()->scrollTop(), 19000.);
+    EXPECT_GT(GetDocument().scrollingElement()->scrollTop(), 29000.);
   }
 }
 
@@ -3019,5 +3019,4 @@ TEST_F(DisplayLockContextTest, GraphicsLayerBitsNotCheckedInLockedSubtree) {
   EXPECT_FALSE(
       target_layer->GetCompositedLayerMapping()->NeedsGraphicsLayerUpdate());
 }
-
 }  // namespace blink
