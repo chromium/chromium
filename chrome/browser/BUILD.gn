@@ -4619,6 +4619,8 @@ static_library("browser") {
         "component_updater/third_party_module_list_component_installer_win.h",
         "google/google_update_policy_fetcher_win.cc",
         "google/google_update_policy_fetcher_win.h",
+        "google/google_update_policy_fetcher_win_util.cc",
+        "google/google_update_policy_fetcher_win_util.h",
         "google/google_update_win.cc",
         "google/google_update_win.h",
         "google/switches.cc",

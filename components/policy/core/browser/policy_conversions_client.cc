@@ -153,7 +153,9 @@ Value PolicyConversionsClient::GetPolicyValue(
     value.SetKey("level", Value(Value((policy.level == POLICY_LEVEL_RECOMMENDED)
                                           ? "recommended"
                                           : "mandatory")));
-    value.SetKey("source", Value(kPolicySources[policy.source].name));
+    value.SetKey("source", Value(policy.IsDefaultValue()
+                                     ? "sourceDefault"
+                                     : kPolicySources[policy.source].name));
   } else {
     value.SetKey("scope", Value(policy.scope));
     value.SetKey("level", Value(policy.level));

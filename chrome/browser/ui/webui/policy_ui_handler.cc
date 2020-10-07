@@ -114,7 +114,6 @@
 
 #include "chrome/browser/google/google_update_policy_fetcher_win.h"
 #include "chrome/install_static/install_util.h"
-#include "components/update_client/updater_state.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -450,13 +449,14 @@ class UpdaterStatusProvider : public PolicyStatusProvider {
  public:
   UpdaterStatusProvider();
   ~UpdaterStatusProvider() override = default;
+  void SetUpdaterStatus(std::unique_ptr<GoogleUpdateState> status);
   void GetStatus(base::DictionaryValue* dict) override;
 
  private:
   static std::string FetchActiveDirectoryDomain();
   void OnDomainReceived(std::string domain);
 
-  std::string version_;
+  std::unique_ptr<GoogleUpdateState> updater_status_;
   std::string domain_;
   base::WeakPtrFactory<UpdaterStatusProvider> weak_factory_{this};
 };
@@ -739,12 +739,6 @@ void DeviceActiveDirectoryPolicyStatusProvider::GetStatus(
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 UpdaterStatusProvider::UpdaterStatusProvider() {
-  auto state =
-      update_client::UpdaterState::GetState(install_static::IsSystemInstall());
-  const auto& version = state->find("version");
-  if (version != state->end())
-    version_ = version->second;
-
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::ThreadPool(), base::MayBlock(),
@@ -754,11 +748,24 @@ UpdaterStatusProvider::UpdaterStatusProvider() {
                      weak_factory_.GetWeakPtr()));
 }
 
+void UpdaterStatusProvider::SetUpdaterStatus(
+    std::unique_ptr<GoogleUpdateState> status) {
+  updater_status_ = std::move(status);
+  NotifyStatusChange();
+}
+
 void UpdaterStatusProvider::GetStatus(base::DictionaryValue* dict) {
-  if (!version_.empty())
-    dict->SetString("version", version_);
   if (!domain_.empty())
-    dict->SetString("domain", domain_);
+    dict->SetStringKey("domain", domain_);
+  if (!updater_status_)
+    return;
+  if (!updater_status_->version.empty())
+    dict->SetStringKey("version", updater_status_->version);
+  if (!updater_status_->last_checked_time.is_null()) {
+    dict->SetStringKey(
+        "timeSinceLastRefresh",
+        GetTimeSinceLastRefreshString(updater_status_->last_checked_time));
+  }
 }
 
 // static
@@ -780,7 +787,8 @@ void UpdaterStatusProvider::OnDomainReceived(std::string domain) {
   domain_ = std::move(domain);
   NotifyStatusChange();
 }
-#endif
+
+#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 PolicyUIHandler::PolicyUIHandler() {}
 
@@ -826,6 +834,7 @@ void PolicyUIHandler::AddCommonLocalizedStringsToSource(
       {"unknown", IDS_POLICY_UNKNOWN},
       {"unset", IDS_POLICY_UNSET},
       {"value", IDS_POLICY_LABEL_VALUE},
+      {"sourceDefault", IDS_POLICY_SOURCE_DEFAULT},
   };
   AddLocalizedStringsBulk(source, kStrings);
 
@@ -895,7 +904,7 @@ void PolicyUIHandler::RegisterMessages() {
 #endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  ReloadUpdaterPolicies();
+  ReloadUpdaterPoliciesAndState();
 #endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   if (!user_status_provider_.get())
@@ -1179,7 +1188,7 @@ void PolicyUIHandler::HandleReloadPolicies(const base::ListValue* args) {
 #endif
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  ReloadUpdaterPolicies();
+  ReloadUpdaterPoliciesAndState();
 #endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   GetPolicyService()->RefreshPolicies(base::BindOnce(
@@ -1286,14 +1295,16 @@ void PolicyUIHandler::SendPolicies() {
 }
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-void PolicyUIHandler::SetUpdaterPolicies(
-    std::unique_ptr<policy::PolicyMap> updater_policies) {
-  updater_policies_ = std::move(updater_policies);
+void PolicyUIHandler::SetUpdaterPoliciesAndState(
+    std::unique_ptr<GoogleUpdatePoliciesAndState> updater_policies_and_state) {
+  updater_policies_ = std::move(updater_policies_and_state->policies);
+  static_cast<UpdaterStatusProvider*>(updater_status_provider_.get())
+      ->SetUpdaterStatus(std::move(updater_policies_and_state->state));
   if (updater_policies_)
     SendPolicies();
 }
 
-void PolicyUIHandler::ReloadUpdaterPolicies() {
+void PolicyUIHandler::ReloadUpdaterPoliciesAndState() {
   if (!updater_status_provider_)
     updater_status_provider_ = std::make_unique<UpdaterStatusProvider>();
   base::PostTaskAndReplyWithResult(
@@ -1301,8 +1312,8 @@ void PolicyUIHandler::ReloadUpdaterPolicies() {
           {base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()})
           .get(),
-      FROM_HERE, base::BindOnce(&GetGoogleUpdatePolicies),
-      base::BindOnce(&PolicyUIHandler::SetUpdaterPolicies,
+      FROM_HERE, base::BindOnce(&GetGoogleUpdatePoliciesAndState),
+      base::BindOnce(&PolicyUIHandler::SetUpdaterPoliciesAndState,
                      weak_factory_.GetWeakPtr()));
 }
 

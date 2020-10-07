@@ -171,10 +171,12 @@ cr.define('policy', function() {
                   status.isAffiliated ? 'isAffiliatedYes' : 'isAffiliatedNo'));
         }
       }
-
-      if (scope !== 'updater') {
+      if (status.timeSinceLastRefresh) {
         this.setLabelAndShow_(
             '.time-since-last-refresh', status.timeSinceLastRefresh);
+      }
+
+      if (scope !== 'updater') {
         this.setLabelAndShow_('.refresh-interval', status.refreshInterval);
         this.setLabelAndShow_('.status', status.status);
         this.setLabelAndShow_(
