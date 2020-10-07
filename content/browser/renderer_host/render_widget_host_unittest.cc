@@ -2116,31 +2116,6 @@ TEST_F(RenderWidgetHostTest, NavigateInBackgroundShowsBlank) {
   EXPECT_TRUE(host_->new_content_rendering_timeout_fired());
 }
 
-TEST_F(RenderWidgetHostTest, RendererHangRecordsMetrics) {
-  base::SimpleTestTickClock clock;
-  host_->set_clock_for_testing(&clock);
-  base::HistogramTester tester;
-
-  // RenderWidgetHost makes private the methods it overrides from
-  // InputRouterClient. Call them through the base class.
-  InputRouterClient* input_router_client = host_.get();
-
-  // Do a 3s hang. This shouldn't affect metrics.
-  input_router_client->IncrementInFlightEventCount();
-  clock.Advance(base::TimeDelta::FromSeconds(3));
-  input_router_client->DecrementInFlightEventCount(
-      blink::mojom::InputEventResultSource::kUnknown);
-  tester.ExpectTotalCount("Renderer.Hung.Duration", 0u);
-
-  // Do a 17s hang. This should affect metrics.
-  input_router_client->IncrementInFlightEventCount();
-  clock.Advance(base::TimeDelta::FromSeconds(17));
-  input_router_client->DecrementInFlightEventCount(
-      blink::mojom::InputEventResultSource::kUnknown);
-  tester.ExpectTotalCount("Renderer.Hung.Duration", 1u);
-  tester.ExpectUniqueSample("Renderer.Hung.Duration", 17000, 1);
-}
-
 TEST_F(RenderWidgetHostTest, PendingUserActivationTimeout) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitWithFeatures(

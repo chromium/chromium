@@ -1245,7 +1245,6 @@ void RenderWidgetHostImpl::StartInputEventAckTimeout() {
         FROM_HERE, hung_renderer_delay_,
         base::BindOnce(&RenderWidgetHostImpl::OnInputEventAckTimeout,
                        weak_factory_.GetWeakPtr()));
-    input_event_ack_start_time_ = clock_->NowTicks();
   }
 }
 
@@ -1265,16 +1264,6 @@ bool RenderWidgetHostImpl::IsCurrentlyUnresponsive() {
 
 void RenderWidgetHostImpl::StopInputEventAckTimeout() {
   input_event_ack_timeout_.Stop();
-
-  if (!input_event_ack_start_time_.is_null()) {
-    base::TimeDelta elapsed = clock_->NowTicks() - input_event_ack_start_time_;
-    const base::TimeDelta kMinimumHangTimeToReport =
-        base::TimeDelta::FromSeconds(5);
-    if (elapsed >= kMinimumHangTimeToReport)
-      UMA_HISTOGRAM_LONG_TIMES("Renderer.Hung.Duration", elapsed);
-
-    input_event_ack_start_time_ = TimeTicks();
-  }
   RendererIsResponsive();
 }
 

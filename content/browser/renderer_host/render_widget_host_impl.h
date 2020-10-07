@@ -1233,7 +1233,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   std::unique_ptr<InputRouter> input_router_;
 
   base::OneShotTimer input_event_ack_timeout_;
-  base::TimeTicks input_event_ack_start_time_;
 
   std::unique_ptr<
       RenderProcessHost::BlockStateChangedCallbackList::Subscription>

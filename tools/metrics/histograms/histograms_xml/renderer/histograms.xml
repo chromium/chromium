@@ -34,6 +34,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer.Hung.Duration" units="ms" expires_after="M85">
+  <obsolete>
+    Expired in M85, removed in M88.
+  </obsolete>
   <owner>avi@chromium.org</owner>
   <summary>
     The length of time render processes are hung, in milliseconds. Note that
