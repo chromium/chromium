@@ -12,6 +12,7 @@ import android.os.Build;
 import android.provider.Settings;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
@@ -79,8 +80,8 @@ public class SigninUtils {
     }
 
     @CalledByNative
-    private static void openAccountPickerBottomSheet(
-            WindowAndroid windowAndroid, String continueUrl) {
+    @VisibleForTesting
+    static void openAccountPickerBottomSheet(WindowAndroid windowAndroid, String continueUrl) {
         ThreadUtils.assertOnUiThread();
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());

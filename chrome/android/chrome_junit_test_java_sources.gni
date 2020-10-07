@@ -212,6 +212,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/signin/SigninManagerTest.java",
   "junit/src/org/chromium/chrome/browser/signin/SigninPreferencesManagerTest.java",
   "junit/src/org/chromium/chrome/browser/signin/SigninPromoUtilTest.java",
+  "junit/src/org/chromium/chrome/browser/signin/SigninUtilsAccountPickerTest.java",
   "junit/src/org/chromium/chrome/browser/signin/SigninUtilsStartActivityTest.java",
   "junit/src/org/chromium/chrome/browser/signin/account_picker/AccountPickerDelegateTest.java",
   "junit/src/org/chromium/chrome/browser/signin/account_picker/AccountPickerMediatorTest.java",
