@@ -1795,8 +1795,14 @@ Follow the steps below:
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_PASSWORDS_TITLE" desc="Title for the passwords element of safety check" meaning="Row title to access the passowrd check subpage if a probelm is found with user's saved passwords [CHAR_LIMIT=20]">
         Passwords
       </message>
+      <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_PASSWORDS_DESCRIPTION" desc="Description text on the password element describing what the password check does.">
+        Check for compromised passwords
+      </message>
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_TITLE" desc="Title for the safe browsing element of safety check" meaning="Row title to display the user's safe browsing status [CHAR_LIMIT=20]">
         Safe Browsing
+      </message>
+      <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DESCRIPTION" desc="Description text on the Safe Browsing element describing what the Safe Browsing check does.">
+        Stay protected from dangerous websites
       </message>
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DISABLED_DESC" desc="Detail text for the Safe Browsing check if the user has Safe Browsing disabled">
         Off - Not recommended
