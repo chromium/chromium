@@ -222,4 +222,33 @@ TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
   EXPECT_EQ(expected_ids, drive_notification_observer_->GetNotificationIds());
 }
 
+TEST_F(DriveNotificationManagerTest, UnregisterOnNoObservers) {
+  // By default, we should have registered for default corpus notifications on
+  // initialization.
+  auto subscribed_topics = fake_invalidation_service_->invalidator_registrar()
+                               .GetAllSubscribedTopics();
+
+  // TODO(crbug.com/1029698): replace syncer::Topics with syncer::TopicSet once
+  // |is_public| become the part of dedicated syncer::Topic struct.
+  syncer::Topics expected_topics;
+  expected_topics.emplace(kDefaultCorpusTopic,
+                          syncer::TopicMetadata{/*is_public=*/false});
+  EXPECT_EQ(expected_topics, subscribed_topics);
+
+  // Stop observing drive notification manager.
+  drive_notification_manager_->RemoveObserver(
+      drive_notification_observer_.get());
+
+  subscribed_topics = fake_invalidation_service_->invalidator_registrar()
+                          .GetAllSubscribedTopics();
+  EXPECT_EQ(syncer::Topics(), subscribed_topics);
+
+  // Start observing drive notification manager again. It should subscribe to
+  // the previously subscried topics.
+  drive_notification_manager_->AddObserver(drive_notification_observer_.get());
+  subscribed_topics = fake_invalidation_service_->invalidator_registrar()
+                          .GetAllSubscribedTopics();
+  EXPECT_EQ(expected_topics, subscribed_topics);
+}
+
 }  // namespace drive

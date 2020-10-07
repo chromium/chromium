@@ -50,7 +50,6 @@ DriveNotificationManager::DriveNotificationManager(
       batch_timer_(clock) {
   DCHECK(invalidation_service_);
   RegisterDriveNotifications();
-  RestartPollingTimer();
 }
 
 DriveNotificationManager::~DriveNotificationManager() {
@@ -128,6 +127,11 @@ bool DriveNotificationManager::IsPublicTopic(const syncer::Topic& topic) const {
 void DriveNotificationManager::AddObserver(
     DriveNotificationObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!observers_.might_have_observers()) {
+    UpdateRegisteredDriveNotifications();
+    RestartPollingTimer();
+  }
+
   observers_.AddObserver(observer);
 }
 
@@ -135,6 +139,14 @@ void DriveNotificationManager::RemoveObserver(
     DriveNotificationObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.RemoveObserver(observer);
+
+  if (!observers_.might_have_observers()) {
+    CHECK(invalidation_service_->UpdateInterestedTopics(this,
+                                                        syncer::TopicSet()));
+    polling_timer_.Stop();
+    batch_timer_.Stop();
+    invalidated_change_ids_.clear();
+  }
 }
 
 void DriveNotificationManager::UpdateTeamDriveIds(
@@ -157,8 +169,18 @@ void DriveNotificationManager::UpdateTeamDriveIds(
     }
   }
 
-  if (set_changed) {
+  if (set_changed && observers_.might_have_observers()) {
     UpdateRegisteredDriveNotifications();
+  }
+}
+
+void DriveNotificationManager::ClearTeamDriveIds() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!team_drive_ids_.empty()) {
+    team_drive_ids_.clear();
+    if (observers_.might_have_observers()) {
+      UpdateRegisteredDriveNotifications();
+    }
   }
 }
 
@@ -232,7 +254,7 @@ void DriveNotificationManager::RegisterDriveNotifications() {
 
   invalidation_service_->RegisterInvalidationHandler(this);
 
-  UpdateRegisteredDriveNotifications();
+  push_notification_registered_ = true;
 
   UMA_HISTOGRAM_BOOLEAN("Drive.PushNotificationRegistered",
                         push_notification_registered_);
@@ -251,7 +273,6 @@ void DriveNotificationManager::UpdateRegisteredDriveNotifications() {
   }
 
   CHECK(invalidation_service_->UpdateInterestedTopics(this, topics));
-  push_notification_registered_ = true;
   OnInvalidatorStateChange(invalidation_service_->GetInvalidatorState());
 }
 
