@@ -177,7 +177,7 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   }
   FloatRect VisualRectInLocalSVGCoordinates() const override {
     NOT_DESTROYED();
-    return visual_rect_in_local_svg_coordinates_;
+    return stroke_bounding_box_;
   }
 
   bool NodeAtPoint(HitTestResult&,
@@ -224,7 +224,6 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   FloatRect object_bounding_box_;
   bool object_bounding_box_valid_;
   FloatRect stroke_bounding_box_;
-  FloatRect visual_rect_in_local_svg_coordinates_;
   AffineTransform local_to_border_box_transform_;
   bool is_layout_size_changed_ : 1;
   bool did_screen_scale_factor_change_ : 1;

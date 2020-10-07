@@ -534,9 +534,9 @@ const LayoutObject* LayoutSVGRoot::PushMappingToContainer(
 
 void LayoutSVGRoot::UpdateCachedBoundaries() {
   NOT_DESTROYED();
-  SVGLayoutSupport::ComputeContainerBoundingBoxes(
-      this, object_bounding_box_, object_bounding_box_valid_,
-      stroke_bounding_box_, visual_rect_in_local_svg_coordinates_);
+  SVGLayoutSupport::ComputeContainerBoundingBoxes(this, object_bounding_box_,
+                                                  object_bounding_box_valid_,
+                                                  stroke_bounding_box_);
 }
 
 bool LayoutSVGRoot::NodeAtPoint(HitTestResult& result,

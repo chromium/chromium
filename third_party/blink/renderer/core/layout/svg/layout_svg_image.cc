@@ -172,12 +172,8 @@ void LayoutSVGImage::UpdateLayout() {
   if (EverHadLayout() && bbox_changed)
     SVGResourceInvalidator(*this).InvalidateEffects();
 
-  bool update_parent_boundaries = false;
-  if (needs_boundaries_update_) {
-    local_visual_rect_ = object_bounding_box_;
-    needs_boundaries_update_ = false;
-    update_parent_boundaries = true;
-  }
+  bool update_parent_boundaries = needs_boundaries_update_;
+  needs_boundaries_update_ = false;
 
   if (!needs_transform_update_ && transform_uses_reference_box_) {
     needs_transform_update_ = CheckForImplicitTransformChange(bbox_changed);

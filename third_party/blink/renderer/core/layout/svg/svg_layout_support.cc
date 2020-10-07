@@ -270,8 +270,7 @@ void SVGLayoutSupport::ComputeContainerBoundingBoxes(
     const LayoutObject* container,
     FloatRect& object_bounding_box,
     bool& object_bounding_box_valid,
-    FloatRect& stroke_bounding_box,
-    FloatRect& local_visual_rect) {
+    FloatRect& stroke_bounding_box) {
   object_bounding_box = FloatRect();
   object_bounding_box_valid = false;
   stroke_bounding_box = FloatRect();
@@ -295,8 +294,6 @@ void SVGLayoutSupport::ComputeContainerBoundingBoxes(
     stroke_bounding_box.Unite(
         transform.MapRect(current->VisualRectInLocalSVGCoordinates()));
   }
-
-  local_visual_rect = stroke_bounding_box;
 }
 
 bool SVGLayoutSupport::LayoutSizeOfNearestViewportChanged(

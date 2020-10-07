@@ -92,8 +92,7 @@ class CORE_EXPORT SVGLayoutSupport {
   static void ComputeContainerBoundingBoxes(const LayoutObject* container,
                                             FloatRect& object_bounding_box,
                                             bool& object_bounding_box_valid,
-                                            FloatRect& stroke_bounding_box,
-                                            FloatRect& local_visual_rect);
+                                            FloatRect& stroke_bounding_box);
 
   // Important functions used by nearly all SVG layoutObjects centralizing
   // coordinate transformations / visual rect calculations

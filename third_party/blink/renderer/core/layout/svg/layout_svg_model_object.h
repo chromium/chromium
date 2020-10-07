@@ -52,7 +52,7 @@ class LayoutSVGModelObject : public LayoutObject {
 
   FloatRect VisualRectInLocalSVGCoordinates() const override {
     NOT_DESTROYED();
-    return local_visual_rect_;
+    return StrokeBoundingBox();
   }
 
   void AbsoluteQuads(Vector<FloatQuad>&,
@@ -96,9 +96,6 @@ class LayoutSVGModelObject : public LayoutObject {
   void AddOutlineRects(Vector<PhysicalRect>&,
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const final;
-
- protected:
-  FloatRect local_visual_rect_;
 };
 
 }  // namespace blink
