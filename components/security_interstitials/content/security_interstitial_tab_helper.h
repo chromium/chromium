@@ -82,6 +82,7 @@ class SecurityInterstitialTabHelper
   void OpenReportingPrivacy() override;
   void OpenWhitepaper() override;
   void ReportPhishingError() override;
+  void OpenEnhancedProtectionSettings() override;
 
   // Keeps track of blocking pages for navigations that have encountered
   // certificate errors in this WebContents. When a navigation commits, the

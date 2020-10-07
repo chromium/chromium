@@ -68,6 +68,7 @@ void BlockedInterceptionBlockingPage::PopulateInterstitialStrings(
     base::DictionaryValue* load_time_data) {
   blocked_interception_ui_->PopulateStringsForHTML(load_time_data);
   cert_report_helper()->PopulateExtendedReportingOption(load_time_data);
+  cert_report_helper()->PopulateEnhancedProtectionMessage(load_time_data);
 }
 
 // This handles the commands sent from the interstitial JavaScript.

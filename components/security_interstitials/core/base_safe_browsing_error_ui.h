@@ -144,6 +144,12 @@ class BaseSafeBrowsingErrorUI {
            !is_enhanced_protection_enabled();
   }
 
+  bool CanShowEnhancedProtectionMessage() {
+    // TODO(crbug.com/1130721): Check feature flag, check ep not managed, check
+    // not already in ep. Check not in incognito.
+    return false;
+  }
+
   SBInterstitialReason interstitial_reason() const {
     return interstitial_reason_;
   }

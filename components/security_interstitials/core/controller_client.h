@@ -20,7 +20,9 @@ class MetricsHelper;
 // Constants used to communicate with the JavaScript.
 extern const char kBoxChecked[];
 extern const char kDisplayCheckBox[];
+extern const char kDisplayEnhancedProtectionMessage[];
 extern const char kOptInLink[];
+extern const char kEnhancedProtectionMessage[];
 extern const char kPrivacyLinkHtml[];
 
 // These represent the commands sent from the interstitial JavaScript.
@@ -49,6 +51,8 @@ enum SecurityInterstitialCommand {
   CMD_OPEN_WHITEPAPER = 11,
   // Report a phishing error
   CMD_REPORT_PHISHING_ERROR = 12,
+  // Open enhanced protection settings.
+  CMD_OPEN_ENHANCED_PROTECTION_SETTINGS = 13,
 };
 
 // Provides methods for handling commands from the user, which requires some
@@ -64,6 +68,8 @@ class ControllerClient {
 
   void OpenExtendedReportingPrivacyPolicy(bool open_links_in_new_tab);
   void OpenExtendedReportingWhitepaper(bool open_links_in_new_tab);
+
+  void OpenEnhancedProtectionSettings();
 
   // Helper method which either opens a URL in a new tab or a the current tab
   // based on the display options setting.

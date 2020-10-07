@@ -7,6 +7,7 @@
 #include "base/i18n/time_formatting.h"
 #include "build/build_config.h"
 #include "components/security_interstitials/core/common_string_util.h"
+#include "components/security_interstitials/core/controller_client.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/security_interstitials/core/ssl_error_options_mask.h"
 #include "components/ssl_errors/error_classification.h"
@@ -243,6 +244,10 @@ void SSLErrorUI::HandleCommand(SecurityInterstitialCommand command) {
     }
     case CMD_OPEN_WHITEPAPER: {
       controller_->OpenExtendedReportingWhitepaper(true);
+      break;
+    }
+    case CMD_OPEN_ENHANCED_PROTECTION_SETTINGS: {
+      controller_->OpenEnhancedProtectionSettings();
       break;
     }
     case CMD_OPEN_DATE_SETTINGS:

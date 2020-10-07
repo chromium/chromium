@@ -17,7 +17,10 @@ namespace security_interstitials {
 
 const char kBoxChecked[] = "boxchecked";
 const char kDisplayCheckBox[] = "displaycheckbox";
+const char kDisplayEnhancedProtectionMessage[] =
+    "displayEnhancedProtectionMessage";
 const char kOptInLink[] = "optInLink";
+const char kEnhancedProtectionMessage[] = "enhancedProtectionMessage";
 const char kHelpCenterUrl[] = "https://support.google.com/chrome/";
 
 ControllerClient::ControllerClient(
@@ -55,6 +58,10 @@ void ControllerClient::OpenExtendedReportingWhitepaper(
   whitepaper_url = google_util::AppendGoogleLocaleParam(whitepaper_url,
                                                         GetApplicationLocale());
   OpenURL(open_links_in_new_tab, whitepaper_url);
+}
+
+void ControllerClient::OpenEnhancedProtectionSettings() {
+  // TODO(crbug.com/1130721): Implement this method.
 }
 
 void ControllerClient::OpenURL(bool open_links_in_new_tab, const GURL& url) {

@@ -180,6 +180,9 @@ void CaptivePortalBlockingPage::PopulateInterstitialStrings(
   load_time_data->SetString(
       "optInLink",
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
+  load_time_data->SetString(
+      "enhancedProtectionMessage",
+      l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
   // Explicitly specify other expected fields to empty.
   load_time_data->SetString("openDetails", "");
   load_time_data->SetString("closeDetails", "");
@@ -188,10 +191,14 @@ void CaptivePortalBlockingPage::PopulateInterstitialStrings(
   load_time_data->SetString("recurrentErrorParagraph", "");
   load_time_data->SetBoolean("show_recurrent_error_paragraph", false);
 
-  if (cert_report_helper())
+  if (cert_report_helper()) {
     cert_report_helper()->PopulateExtendedReportingOption(load_time_data);
-  else
+    cert_report_helper()->PopulateEnhancedProtectionMessage(load_time_data);
+  } else {
     load_time_data->SetBoolean(security_interstitials::kDisplayCheckBox, false);
+    load_time_data->SetBoolean(
+        security_interstitials::kDisplayEnhancedProtectionMessage, false);
+  }
 }
 
 void CaptivePortalBlockingPage::CommandReceived(const std::string& command) {

@@ -20,6 +20,7 @@
   <script src="captive_portal.js"></script>
   <script src="ssl.js"></script>
   <script src="extended_reporting.js"></script>
+  <script src="enhanced_protection_message.js"></script>
   <script src="../../common/resources/interstitial_mobile_nav.js"></script>
   <script src="../../common/resources/interstitial_common.js"></script>
   <script src="interstitial_large.js"></script>
@@ -47,6 +48,10 @@
           </div>
           <span id="opt-in-label">$i18nRaw{optInLink}</span>
         </label>
+      </div>
+      <div id="enhanced-protection-message" class="hidden">
+        <!-- TODO(crbug.com/1130721): Add border and icon -->
+        <p>$i18nRaw{enhancedProtectionMessage}</p>
       </div>
     </div>
     <div class="nav-wrapper">

@@ -5598,6 +5598,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(safe_browsing::kSafeBrowsingSecuritySectionUIAndroid)},
 #endif
 
+    {"safe-browsing-enhanced-protection-message-in-interstitials",
+     flag_descriptions::
+         kSafeBrowsingEnhancedProtectionMessageInInterstitialsName,
+     flag_descriptions::
+         kSafeBrowsingEnhancedProtectionMessageInInterstitialsDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         safe_browsing::kEnhancedProtectionMessageInInterstitials)},
+
 #if defined(OS_CHROMEOS)
     {"gesture-properties-dbus-service",
      flag_descriptions::kEnableGesturePropertiesDBusServiceName,

@@ -44,6 +44,9 @@ extern const base::Feature kDownloadRequestWithToken;
 // Enable Chrome Safe Browsing enhanced protection.
 extern const base::Feature kEnhancedProtection;
 
+// Include enhanced protection message in interstitials.
+extern const base::Feature kEnhancedProtectionMessageInInterstitials;
+
 // Controls whether the limited list size experiment is enabled. This experiment
 // limits the number of entries stored in each Safe Browsing list.
 extern const base::Feature kLimitedListSizeForIOS;

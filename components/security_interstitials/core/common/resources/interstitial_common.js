@@ -44,7 +44,9 @@ const SecurityInterstitialCommandId = {
   CMD_OPEN_REPORTING_PRIVACY: 10,
   CMD_OPEN_WHITEPAPER: 11,
   // Report a phishing error.
-  CMD_REPORT_PHISHING_ERROR: 12
+  CMD_REPORT_PHISHING_ERROR: 12,
+  // Open enhanced protection settings.
+  CMD_OPEN_ENHANCED_PROTECTION_SETTINGS: 13,
 };
 
 const HIDDEN_CLASS = 'hidden';
@@ -94,6 +96,9 @@ function sendCommand(cmd) {
         break;
       case SecurityInterstitialCommandId.CMD_REPORT_PHISHING_ERROR:
         certificateErrorPageController.reportPhishingError();
+        break;
+      case SecurityInterstitialCommandId.CMD_OPEN_ENHANCED_PROTECTION_SETTINGS:
+        certificateErrorPageController.openEnhancedProtectionSettings();
         break;
     }
     return;

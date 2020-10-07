@@ -62,6 +62,10 @@ class CertReportHelper {
   // the checkbox.
   void PopulateExtendedReportingOption(base::DictionaryValue* load_time_data);
 
+  // Populates data that JavaScript code on the interstitial uses to show
+  // the enhanced protection message.
+  void PopulateEnhancedProtectionMessage(base::DictionaryValue* load_time_data);
+
   // Allows tests to inject a mock reporter.
   void SetSSLCertReporterForTesting(
       std::unique_ptr<SSLCertReporter> ssl_cert_reporter);
@@ -89,6 +93,9 @@ class CertReportHelper {
   // Checks whether a checkbox should be shown on the page that allows
   // the user to opt in to Safe Browsing extended reporting.
   bool ShouldShowCertificateReporterCheckbox();
+
+  // Checks whether a enhanced protection message should be shown on the page.
+  bool ShouldShowEnhancedProtectionMessage();
 
   // Returns true if a certificate report should be sent for the SSL
   // error for this page.

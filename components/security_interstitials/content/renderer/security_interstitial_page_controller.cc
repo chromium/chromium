@@ -111,6 +111,11 @@ void SecurityInterstitialPageController::ReportPhishingError() {
                   CMD_REPORT_PHISHING_ERROR);
 }
 
+void SecurityInterstitialPageController::OpenEnhancedProtectionSettings() {
+  SendCommand(security_interstitials::SecurityInterstitialCommand::
+                  CMD_OPEN_ENHANCED_PROTECTION_SETTINGS);
+}
+
 void SecurityInterstitialPageController::SendCommand(
     security_interstitials::SecurityInterstitialCommand command) {
   if (!render_frame() || !active_)
@@ -160,6 +165,9 @@ void SecurityInterstitialPageController::SendCommand(
     case security_interstitials::CMD_REPORT_PHISHING_ERROR:
       interface->ReportPhishingError();
       break;
+    case security_interstitials::CMD_OPEN_ENHANCED_PROTECTION_SETTINGS:
+      interface->OpenEnhancedProtectionSettings();
+      break;
     default:
       // Other values in the enum are only used by tests so this
       // method should not be called with them.
@@ -194,7 +202,10 @@ SecurityInterstitialPageController::GetObjectTemplateBuilder(
           .SetMethod("openWhitepaper",
                      &SecurityInterstitialPageController::OpenWhitepaper)
           .SetMethod("reportPhishingError",
-                     &SecurityInterstitialPageController::ReportPhishingError);
+                     &SecurityInterstitialPageController::ReportPhishingError)
+          .SetMethod("openEnhancedProtectionSettings",
+                     &SecurityInterstitialPageController::
+                         OpenEnhancedProtectionSettings);
 }
 
 void SecurityInterstitialPageController::OnDestruct() {}
