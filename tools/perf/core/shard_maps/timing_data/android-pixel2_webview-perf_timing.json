@@ -433,15 +433,7 @@
     },
     {
         "duration": "0.0",
-        "name": "blink_perf.events/EventsDispatchingInDeeplyNestedV0ShadowTrees.html"
-    },
-    {
-        "duration": "0.0",
         "name": "blink_perf.events/EventsDispatchingInDeeplyNestedV1ShadowTrees.html"
-    },
-    {
-        "duration": "0.0",
-        "name": "blink_perf.events/EventsDispatchingInV0ShadowTrees.html"
     },
     {
         "duration": "0.0",

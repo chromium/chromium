@@ -432,16 +432,8 @@
         "name": "blink_perf.events/EventsDispatching.html"
     },
     {
-        "duration": "9.0",
-        "name": "blink_perf.events/EventsDispatchingInDeeplyNestedV0ShadowTrees.html"
-    },
-    {
         "duration": "10.0",
         "name": "blink_perf.events/EventsDispatchingInDeeplyNestedV1ShadowTrees.html"
-    },
-    {
-        "duration": "16.0",
-        "name": "blink_perf.events/EventsDispatchingInV0ShadowTrees.html"
     },
     {
         "duration": "15.0",
