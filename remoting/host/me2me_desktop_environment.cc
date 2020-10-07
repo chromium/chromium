@@ -67,6 +67,9 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
   capabilities += " ";
   capabilities += protocol::kWebrtcIceSdpRestartAction;
 
+  capabilities += " ";
+  capabilities += protocol::kRtcLogTransferCapability;
+
   if (InputInjector::SupportsTouchEvents()) {
     capabilities += " ";
     capabilities += protocol::kTouchEventsCapability;
