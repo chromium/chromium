@@ -73,10 +73,19 @@ RangeAutomationHandler = class extends BaseAutomationHandler {
     // outputted.
     this.addListener_(
         EventType.ARIA_ATTRIBUTE_CHANGED, this.onAriaAttributeChanged);
+    this.addListener_(
+        EventType.AUTO_COMPLETE_CHANGED, this.onAriaAttributeChanged);
+    this.addListener_(
+        EventType.IMAGE_ANNOTATION_CHANGED, this.onAriaAttributeChanged);
+    this.addListener_(EventType.NAME_CHANGED, this.onAriaAttributeChanged);
+    this.addListener_(
+        EventType.DESCRIPTION_CHANGED, this.onAriaAttributeChanged);
+    this.addListener_(EventType.ROLE_CHANGED, this.onAriaAttributeChanged);
     this.addListener_(EventType.AUTOCORRECTION_OCCURED, this.onEventIfInRange);
     this.addListener_(
         EventType.CHECKED_STATE_CHANGED, this.onCheckedStateChanged);
-    this.addListener_(EventType.EXPANDED_CHANGED, this.onEventIfInRange);
+    this.addListener_(EventType.COLLAPSED, this.onEventIfInRange);
+    this.addListener_(EventType.EXPANDED, this.onEventIfInRange);
     this.addListener_(EventType.INVALID_STATUS_CHANGED, this.onEventIfInRange);
     this.addListener_(EventType.LOCATION_CHANGED, this.onLocationChanged);
     this.addListener_(
