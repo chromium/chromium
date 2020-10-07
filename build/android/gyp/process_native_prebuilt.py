@@ -20,14 +20,17 @@ def main(args):
   parser.add_argument('--unstripped-output-path', required=True, help='')
   options = parser.parse_args(args)
 
-  cmd = [
-      options.strip_path,
-      options.input_path,
-      '-o',
-      options.stripped_output_path,
-  ]
-
-  build_utils.CheckOutput(cmd)
+  # eu-strip's output keeps mode from source file which might not be writable
+  # thus it fails to override its output on the next run. AtomicOutput fixes
+  # the issue.
+  with build_utils.AtomicOutput(options.stripped_output_path) as out:
+    cmd = [
+        options.strip_path,
+        options.input_path,
+        '-o',
+        out.name,
+    ]
+    build_utils.CheckOutput(cmd)
   shutil.copyfile(options.input_path, options.unstripped_output_path)
 
 
