@@ -696,22 +696,23 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)willTransitionToLayout:(LayoutSwitcherState)nextState
                     completion:
                         (void (^)(BOOL completed, BOOL finished))completion {
+  TabSwitcherLayout* nextLayout;
+  switch (nextState) {
+    case LayoutSwitcherState::Horizontal:
+      nextLayout = self.horizontalLayout;
+      break;
+    case LayoutSwitcherState::Full:
+      nextLayout = self.gridLayout;
+      break;
+  }
   auto completionBlock = ^(BOOL completed, BOOL finished) {
     completion(completed, finished);
     self.collectionView.scrollEnabled = YES;
+    self.defaultLayout = nextLayout;
   };
-  switch (nextState) {
-    case LayoutSwitcherState::Horizontal:
-      self.gridHorizontalTransitionLayout = [self.collectionView
-          startInteractiveTransitionToCollectionViewLayout:self.horizontalLayout
-                                                completion:completionBlock];
-      break;
-    case LayoutSwitcherState::Full:
-      self.gridHorizontalTransitionLayout = [self.collectionView
-          startInteractiveTransitionToCollectionViewLayout:self.gridLayout
-                                                completion:completionBlock];
-      break;
-  }
+  self.gridHorizontalTransitionLayout = [self.collectionView
+      startInteractiveTransitionToCollectionViewLayout:nextLayout
+                                            completion:completionBlock];
 
   // Stops collectionView scrolling when the animation starts.
   [self.collectionView setContentOffset:self.collectionView.contentOffset
