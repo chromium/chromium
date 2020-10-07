@@ -890,6 +890,8 @@ source_set("chromeos") {
     "child_accounts/event_based_status_reporting_service.h",
     "child_accounts/event_based_status_reporting_service_factory.cc",
     "child_accounts/event_based_status_reporting_service_factory.h",
+    "child_accounts/family_features.cc",
+    "child_accounts/family_features.h",
     "child_accounts/family_user_metrics_service.cc",
     "child_accounts/family_user_metrics_service.h",
     "child_accounts/family_user_metrics_service_factory.cc",
