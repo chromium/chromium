@@ -309,7 +309,7 @@ void OmniboxViewIOS::OnTemporaryTextMaybeChanged(
 
 void OmniboxViewIOS::OnInlineAutocompleteTextMaybeChanged(
     const base::string16& display_text,
-    size_t user_text_start,
+    std::vector<gfx::Range> selections,
     size_t user_text_length) {
   if (display_text == GetText())
     return;

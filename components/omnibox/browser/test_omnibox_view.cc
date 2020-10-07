@@ -72,7 +72,7 @@ void TestOmniboxView::OnTemporaryTextMaybeChanged(
 
 void TestOmniboxView::OnInlineAutocompleteTextMaybeChanged(
     const base::string16& display_text,
-    size_t user_text_start,
+    std::vector<gfx::Range> selections,
     size_t user_text_length) {
   const bool text_changed = text_ != display_text;
   text_ = display_text;

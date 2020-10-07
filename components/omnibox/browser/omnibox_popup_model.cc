@@ -176,8 +176,8 @@ void OmniboxPopupModel::SetSelection(Selection new_selection,
     // If the new selection is a Header, the temporary text is an empty string.
     edit_model_->OnPopupDataChanged(base::string16(),
                                     /*is_temporary_text=*/true,
-                                    base::string16(), base::string16(), keyword,
-                                    is_keyword_hint, base::string16());
+                                    base::string16(), base::string16(), {},
+                                    keyword, is_keyword_hint, base::string16());
   } else if (old_selection.line != selection_.line ||
              (old_selection.IsButtonFocused() &&
               !new_selection.IsButtonFocused() &&
@@ -189,12 +189,12 @@ void OmniboxPopupModel::SetSelection(Selection new_selection,
       edit_model_->OnPopupDataChanged(
           base::string16(),
           /*is_temporary_text=*/false, match.inline_autocompletion,
-          match.prefix_autocompletion, keyword, is_keyword_hint,
-          match.fill_into_edit_additional_text);
+          match.prefix_autocompletion, match.split_autocompletion, keyword,
+          is_keyword_hint, match.fill_into_edit_additional_text);
     } else {
       edit_model_->OnPopupDataChanged(
           match.fill_into_edit,
-          /*is_temporary_text=*/true, base::string16(), base::string16(),
+          /*is_temporary_text=*/true, base::string16(), base::string16(), {},
           keyword, is_keyword_hint, match.fill_into_edit_additional_text);
     }
   }

@@ -1016,18 +1016,17 @@ void OmniboxViewViews::OnTemporaryTextMaybeChanged(
 
 void OmniboxViewViews::OnInlineAutocompleteTextMaybeChanged(
     const base::string16& display_text,
-    size_t user_text_start,
+    std::vector<gfx::Range> selections,
     size_t user_text_length) {
   if (display_text == GetText())
     return;
 
   if (!IsIMEComposing()) {
-    std::vector<gfx::Range> ranges = {
-        {display_text.size(), user_text_length + user_text_start}};
-    if (user_text_start)
-      ranges.push_back({0, user_text_start});
-    SetTextAndSelectedRanges(display_text, ranges);
+    SetTextAndSelectedRanges(display_text, selections);
   } else if (location_bar_view_) {
+    // TODO(manukh) IME should be updated with prefix and split rich
+    // autocompletion if those features launch. Likewise, remove
+    // |user_text_length| param if it can be computed.
     location_bar_view_->SetImeInlineAutocompletion(
         display_text.substr(user_text_length));
   }

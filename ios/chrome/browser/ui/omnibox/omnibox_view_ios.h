@@ -106,7 +106,7 @@ class OmniboxViewIOS : public OmniboxView,
                                    bool save_original_selection,
                                    bool notify_text_changed) override;
   void OnInlineAutocompleteTextMaybeChanged(const base::string16& display_text,
-                                            size_t user_text_start,
+                                            std::vector<gfx::Range> selections,
                                             size_t user_text_length) override;
   void OnBeforePossibleChange() override;
   bool OnAfterPossibleChange(bool allow_keyword_ui_change) override;

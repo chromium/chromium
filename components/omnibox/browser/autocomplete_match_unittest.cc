@@ -498,13 +498,14 @@ TEST(AutocompleteMatchTest, SetAllowedToBeDefault_PrefixAutocompletion) {
 }
 
 TEST(AutocompleteMatchTest, TryRichAutocompletion) {
-  auto test = [](int caseI, const std::string input_text,
+  auto test = [](const std::string input_text,
                  bool input_prevent_inline_autocomplete,
                  const std::string primary_text,
                  const std::string secondary_text, bool expected_return,
                  const std::string expected_inline_autocompletion,
                  const std::string expected_prefix_autocompletion,
                  const std::string expected_fill_into_edit_second_line,
+                 bool expected_swapped_fill_into_edit,
                  bool expected_allowed_to_be_default_match) {
     AutocompleteInput input(base::UTF8ToUTF16(input_text),
                             metrics::OmniboxEventProto::OTHER,
@@ -518,17 +519,15 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
         expected_return);
 
     EXPECT_EQ(base::UTF16ToUTF8(match.inline_autocompletion).c_str(),
-              expected_inline_autocompletion)
-        << "case " << caseI;
+              expected_inline_autocompletion);
     EXPECT_EQ(base::UTF16ToUTF8(match.prefix_autocompletion).c_str(),
-              expected_prefix_autocompletion)
-        << "case " << caseI;
+              expected_prefix_autocompletion);
+    EXPECT_TRUE(match.split_autocompletion.Empty());
     EXPECT_EQ(base::UTF16ToUTF8(match.fill_into_edit_additional_text).c_str(),
-              expected_fill_into_edit_second_line)
-        << "case " << caseI;
+              expected_fill_into_edit_second_line);
+    EXPECT_EQ(match.swapped_fill_into_edit, expected_swapped_fill_into_edit);
     EXPECT_EQ(match.allowed_to_be_default_match,
-              expected_allowed_to_be_default_match)
-        << "case " << caseI;
+              expected_allowed_to_be_default_match);
   };
 
   {
@@ -540,38 +539,60 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
         omnibox::kRichAutocompletion,
         {
             {"RichAutocompletionAutocompleteTitles", "true"},
-            {"RichAutocompletionTwoLineOmnibox", "true"},
             {"RichAutocompletionShowTitles", "true"},
             {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
+            {"RichAutocompletionSplitTitleCompletion", "true"},
+            {"RichAutocompletionSplitUrlCompletion", "true"},
         });
 
     // Prefer autocompleting primary text prefix.
-    test(0, "x", false, "x_mixd_x_primary", "x_mixd_x_secondary", true,
-         "_mixd_x_primary", "", "x_mixd_x_secondary", true);
+    {
+      SCOPED_TRACE("primary prefix");
+      test("x", false, "x_mixd_x_primary", "x_mixd_x_secondary", true,
+           "_mixd_x_primary", "", "x_mixd_x_secondary", false, true);
+    }
 
     // Otherwise, prefer secondary text prefix.
-    test(1, "x", false, "y_mixd_x_primary", "x_mixd_x_secondary", true,
-         "_mixd_x_secondary", "", "y_mixd_x_primary", true);
+    {
+      SCOPED_TRACE("secondary prefix");
+      test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", true,
+           "_mixd_x_secondary", "", "y_mixd_x_primary", true, true);
+    }
 
-    // Otherwise, prefer primary text non-prefix (wordbreak)
-    test(2, "x", false, "y_mixd_x_primary", "y_mixd_x_secondary", true,
-         "_primary", "y_mixd_", "y_mixd_x_secondary", true);
+    // Otherwise, prefer primary text non-prefix (wordbreak).
+    {
+      SCOPED_TRACE("primary non-prefix");
+      test("x", false, "y_mixd_x_primary", "y_mixd_x_secondary", true,
+           "_primary", "y_mixd_", "y_mixd_x_secondary", false, true);
+    }
 
-    // Otherwise, prefer secondary text non-prefix (wordbreak)
-    test(3, "x", false, "y_mid_y_primary", "y_mixd_x_secondary", true,
-         "_secondary", "y_mixd_", "y_mid_y_primary", true);
+    // Otherwise, prefer secondary text non-prefix (wordbreak).
+    {
+      SCOPED_TRACE("secondary non-prefix");
+      test("x", false, "y_mid_y_primary", "y_mixd_x_secondary", true,
+           "_secondary", "y_mixd_", "y_mid_y_primary", true, true);
+    }
 
     // We don't explicitly test that non-wordbreak matches aren't autocompleted,
     // because we rely on providers to not provide suggestions that only match
     // the input at non-wordbreaks.
 
+    // We test split autocompletion in separate test below since it has a few
+    // edge cases.
+
     // Otherwise, don't autocomplete but still set |fill_into_edit_second_line|
-    test(4, "x", false, "y_mid_y_primary", "y_mid_y_secondary", false, "", "",
-         "y_mid_y_secondary", false);
+    {
+      SCOPED_TRACE("no autocompletion applicable");
+      test("x", false, "y_mid_y_primary", "y_mid_y_secondary", false, "", "",
+           "y_mid_y_secondary", false, false);
+    }
 
     // Don't autocomplete if |prevent_inline_autocomplete| is true.
-    test(5, "x", true, "x_mixd_x_primary", "x_mixd_x_secondary", false, "", "",
-         "x_mixd_x_secondary", false);
+    {
+      SCOPED_TRACE("prevent inline autocomplete");
+      test("x", true, "x_mixd_x_primary", "x_mixd_x_secondary", false, "", "",
+           "x_mixd_x_secondary", false, false);
+    }
   }
 
   {
@@ -585,14 +606,98 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
             {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
             {"RichAutocompletionAutocompleteTitlesMinChar", "2"},
             {"RichAutocompletionAutocompleteNonPrefixMinChar", "2"},
+            {"RichAutocompletionSplitCompletionMinChar", "2"},
         });
 
     // Don't autocomplete title and non-prefix if input is less than limits.
-    test(6, "x", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, "", "",
-         "x_mixd_x_secondary", false);
+    {
+      SCOPED_TRACE("min char");
+      test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, "", "",
+           "x_mixd_x_secondary", false, false);
+    }
   }
 
   // Don't autocomplete if IsRichAutocompletionEnabled is disabled
-  test(7, "x", false, "x_mixd_x_primary", "x_mixd_x_secondary", false, "", "",
-       "", false);
+  {
+    SCOPED_TRACE("feature disabled");
+    test("x", false, "x_mixd_x_primary", "x_mixd_x_secondary", false, "", "",
+         "", false, false);
+  }
+}
+
+TEST(AutocompleteMatchTest, TryRichAutocompletionSplit) {
+  auto test = [](const std::string input_text, const std::string primary_text,
+                 const std::string secondary_text, bool expected_return,
+                 const std::vector<gfx::Range> expected_split_autocompletion,
+                 const std::string expected_fill_into_edit_second_line,
+                 bool expected_swapped_fill_into_edit,
+                 bool expected_allowed_to_be_default_match) {
+    AutocompleteInput input(base::UTF8ToUTF16(input_text),
+                            metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+
+    AutocompleteMatch match;
+    EXPECT_EQ(
+        match.TryRichAutocompletion(base::UTF8ToUTF16(primary_text),
+                                    base::UTF8ToUTF16(secondary_text), input),
+        expected_return);
+
+    EXPECT_TRUE(match.inline_autocompletion.empty());
+    EXPECT_TRUE(match.prefix_autocompletion.empty());
+    EXPECT_EQ(match.split_autocompletion.selections,
+              expected_split_autocompletion);
+    EXPECT_EQ(base::UTF16ToUTF8(match.fill_into_edit_additional_text).c_str(),
+              expected_fill_into_edit_second_line);
+    EXPECT_EQ(match.swapped_fill_into_edit, expected_swapped_fill_into_edit);
+    EXPECT_EQ(match.allowed_to_be_default_match,
+              expected_allowed_to_be_default_match);
+  };
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kRichAutocompletion,
+      {
+          {"RichAutocompletionAutocompleteTitles", "true"},
+          {"RichAutocompletionShowTitles", "true"},
+          {"RichAutocompletionSplitTitleCompletion", "true"},
+          {"RichAutocompletionSplitUrlCompletion", "true"},
+      });
+
+  // Prefer primary text, match the first word break occurrence, match the
+  // delimiter, and match trailing delimiters.
+  {
+    SCOPED_TRACE("primary split");
+    test("x_z ", "y_mixd_x_x_primary_z_suf fix",
+         "y_mixd_x_x_secondary_z_suffix", true,
+         {{28, 25}, {24, 20}, {19, 9}, {7, 0}}, "y_mixd_x_x_secondary_z_suffix",
+         false, true);
+  }
+
+  // Match the secondary text if the primary text does not match.
+  {
+    SCOPED_TRACE("secondary split");
+    test("x_z", "y_mixd_x_x_primary_y_suffix", "y_mixd_x_x_secondary_z_suffix",
+         true, {{29, 22}, {21, 9}, {7, 0}}, "y_mixd_x_x_primary_y_suffix", true,
+         true);
+  }
+
+  // Match a distant delimiter if not found adjacent to the word match.
+  {
+    SCOPED_TRACE("primary split, distant delimiter");
+    test("x_z", "y_mixd_xx_primary_z_suffix", "y_mixd_x_x_secondary_z_suffix",
+         true, {{26, 19}, {18, 10}, {9, 8}, {7, 0}},
+         "y_mixd_x_x_secondary_z_suffix", false, true);
+  }
+
+  // Don't match if the delimiter can't be matched.
+  {
+    SCOPED_TRACE("primary split, no delimiter");
+    test("x_z", "x z", "xz", false, {}, "xz", false, false);
+  }
+
+  // Don't match if word order is not preserved.
+  {
+    SCOPED_TRACE("primary split, incorrect order");
+    test("x_y_z", "z_y_x_", "x_z_y_", false, {}, "x_z_y_", false, false);
+  }
 }

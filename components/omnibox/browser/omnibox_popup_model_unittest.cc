@@ -54,12 +54,14 @@ class TestOmniboxEditModel : public OmniboxEditModel {
                           bool is_temporary_text,
                           const base::string16& inline_autocompletion,
                           const base::string16& prefix_autocompletion,
+                          const SplitAutocompletion& split_autocompletion,
                           const base::string16& keyword,
                           bool is_keyword_hint,
                           const base::string16& additional_text) override {
     OmniboxEditModel::OnPopupDataChanged(
         temporary_text, is_temporary_text, inline_autocompletion,
-        prefix_autocompletion, keyword, is_keyword_hint, additional_text);
+        prefix_autocompletion, split_autocompletion, keyword, is_keyword_hint,
+        additional_text);
     text_ = is_temporary_text ? temporary_text : inline_autocompletion;
     is_temporary_text_ = is_temporary_text;
   }
@@ -602,7 +604,7 @@ TEST_F(OmniboxPopupModelTest, PopupInlineAutocompleteAndTemporaryText) {
   // Simulate OmniboxController updating the popup, then check initial state.
   model()->OnPopupDataChanged(base::string16(),
                               /*is_temporary_text=*/false,
-                              base::UTF8ToUTF16("1"), base::string16(),
+                              base::UTF8ToUTF16("1"), base::string16(), {},
                               base::string16(), false, base::string16());
   EXPECT_EQ(Selection(0, OmniboxPopupModel::NORMAL),
             model()->popup_model()->selection());

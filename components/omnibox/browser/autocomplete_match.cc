@@ -78,6 +78,26 @@ bool WordMatchesURLContent(
 
 }  // namespace
 
+SplitAutocompletion::SplitAutocompletion(base::string16 display_text,
+                                         std::vector<gfx::Range> selections)
+    : display_text(display_text), selections(selections) {}
+
+SplitAutocompletion::SplitAutocompletion() = default;
+SplitAutocompletion::SplitAutocompletion(const SplitAutocompletion& copy) =
+    default;
+
+SplitAutocompletion::~SplitAutocompletion() = default;
+
+bool SplitAutocompletion::Empty() const {
+  return selections.empty();
+}
+
+void SplitAutocompletion::Clear() {
+  selections.clear();
+}
+
+// AutocompleteMatch ----------------------------------------------------------
+
 // static
 const char* const AutocompleteMatch::kDocumentTypeStrings[]{
     "none",        "drive_docs", "drive_forms", "drive_sheets", "drive_slides",
@@ -93,8 +113,6 @@ static_assert(
 const char* AutocompleteMatch::DocumentTypeString(DocumentType type) {
   return kDocumentTypeStrings[static_cast<int>(type)];
 }
-
-// AutocompleteMatch ----------------------------------------------------------
 
 // static
 const base::char16 AutocompleteMatch::kInvalidChars[] = {
@@ -130,6 +148,7 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       swapped_fill_into_edit(match.swapped_fill_into_edit),
       inline_autocompletion(match.inline_autocompletion),
       prefix_autocompletion(match.prefix_autocompletion),
+      split_autocompletion(match.split_autocompletion),
       allowed_to_be_default_match(match.allowed_to_be_default_match),
       destination_url(match.destination_url),
       stripped_destination_url(match.stripped_destination_url),
@@ -189,6 +208,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   swapped_fill_into_edit = match.swapped_fill_into_edit;
   inline_autocompletion = match.inline_autocompletion;
   prefix_autocompletion = match.prefix_autocompletion;
+  split_autocompletion = match.split_autocompletion;
   allowed_to_be_default_match = match.allowed_to_be_default_match;
   destination_url = match.destination_url;
   stripped_destination_url = match.stripped_destination_url;
@@ -1125,6 +1145,7 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
     if (IsEmptyAutocompletion()) {
       inline_autocompletion = duplicate_match.inline_autocompletion;
       prefix_autocompletion = duplicate_match.prefix_autocompletion;
+      split_autocompletion = duplicate_match.split_autocompletion;
     }
   }
 
@@ -1208,39 +1229,83 @@ bool AutocompleteMatch::TryRichAutocompletion(
   //   - EITHER |...NonPrefixAll|
   //   - OR, for shortcut provider suggestions, |...NonPrefixShortcutProvider|
   // 2) AND input must be longer than the threshold |...NonPrefixMinChar|
-  if (!(OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefixAll() ||
-        (shortcut_provider &&
-         OmniboxFieldTrial::
-             RichAutocompletionAutocompleteNonPrefixShortcutProvider())) ||
-      input.text().size() <
-          OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefixMinChar())
-    return false;
+  const bool can_autocomplete_non_prefix =
+      (OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefixAll() ||
+       (shortcut_provider &&
+        OmniboxFieldTrial::
+            RichAutocompletionAutocompleteNonPrefixShortcutProvider())) &&
+      input.text().size() >=
+          OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefixMinChar();
 
-  // Try matching a non-prefix the |primary_text|.
-  size_t primary_find_index =
-      FindAtWordbreak(primary_text_lower, input_text_lower);
-  if (primary_find_index != base::string16::npos) {
+  // Try matching a non-prefix of |primary_text|.
+  size_t find_index;
+  if (can_autocomplete_non_prefix &&
+      (find_index = FindAtWordbreak(primary_text_lower, input_text_lower)) !=
+          base::string16::npos) {
     // |fill_into_edit| should already be set to |primary_text|.
     inline_autocompletion =
-        primary_text.substr(primary_find_index + input_text_lower.length());
-    prefix_autocompletion = primary_text.substr(0, primary_find_index);
+        primary_text.substr(find_index + input_text_lower.length());
+    prefix_autocompletion = primary_text.substr(0, find_index);
     allowed_to_be_default_match = true;
     RecordAdditionalInfo("autocompletion", "primary & non-prefix");
     return true;
   }
 
-  // Try matching a non-prefix the |secondary_text|.
-  size_t secondary_find_index =
-      FindAtWordbreak(secondary_text_lower, input_text_lower);
-  if (can_autocomplete_titles && secondary_find_index != base::string16::npos) {
+  // Try matching a non-prefix of |secondary_text|.
+  if (can_autocomplete_non_prefix && can_autocomplete_titles &&
+      (find_index = FindAtWordbreak(secondary_text_lower, input_text_lower)) !=
+          base::string16::npos) {
     fill_into_edit = secondary_text;
     fill_into_edit_additional_text = primary_text;
     swapped_fill_into_edit = true;
     inline_autocompletion =
-        secondary_text.substr(secondary_find_index + input_text_lower.length());
-    prefix_autocompletion = secondary_text.substr(0, secondary_find_index);
+        secondary_text.substr(find_index + input_text_lower.length());
+    prefix_autocompletion = secondary_text.substr(0, find_index);
     allowed_to_be_default_match = true;
     RecordAdditionalInfo("autocompletion", "secondary & non-prefix");
+    return true;
+  }
+
+  const bool can_autocomplete_split_url =
+      OmniboxFieldTrial::RichAutocompletionSplitUrlCompletion() &&
+      input.text().size() >=
+          OmniboxFieldTrial::RichAutocompletionSplitCompletionMinChar();
+
+  // Try split matching (see comments for |split_autocompletion|) with
+  // |primary_text|.
+  std::vector<std::pair<size_t, size_t>> input_words;
+  if (can_autocomplete_split_url &&
+      !(input_words = FindWordsSequentiallyAtWordbreak(primary_text_lower,
+                                                       input_text_lower))
+           .empty()) {
+    // |fill_into_edit| should already be set to |primary_text|.
+    split_autocompletion = SplitAutocompletion(
+        primary_text_lower,
+        InvertAndReverseRanges(primary_text_lower.length(), input_words));
+    allowed_to_be_default_match = true;
+    RecordAdditionalInfo("autocompletion", "primary & split");
+    return true;
+  }
+
+  // Try split matching (see comments for |split_autocompletion|) with
+  // |secondary_text|.
+  const bool can_autocomplete_split_title =
+      OmniboxFieldTrial::RichAutocompletionSplitTitleCompletion() &&
+      input.text().size() >=
+          OmniboxFieldTrial::RichAutocompletionSplitCompletionMinChar();
+
+  if (can_autocomplete_split_title &&
+      !(input_words = FindWordsSequentiallyAtWordbreak(secondary_text_lower,
+                                                       input_text_lower))
+           .empty()) {
+    fill_into_edit = secondary_text;
+    fill_into_edit_additional_text = primary_text;
+    swapped_fill_into_edit = true;
+    split_autocompletion = SplitAutocompletion(
+        secondary_text_lower,
+        InvertAndReverseRanges(secondary_text_lower.length(), input_words));
+    allowed_to_be_default_match = true;
+    RecordAdditionalInfo("autocompletion", "secondary & split");
     return true;
   }
 
@@ -1248,7 +1313,8 @@ bool AutocompleteMatch::TryRichAutocompletion(
 }
 
 bool AutocompleteMatch::IsEmptyAutocompletion() const {
-  return inline_autocompletion.empty() && prefix_autocompletion.empty();
+  return inline_autocompletion.empty() && prefix_autocompletion.empty() &&
+         split_autocompletion.Empty();
 }
 
 #if DCHECK_IS_ON()

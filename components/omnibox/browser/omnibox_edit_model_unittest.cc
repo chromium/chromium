@@ -220,7 +220,7 @@ TEST_F(OmniboxEditModelTest, DISABLED_InlineAutocompleteText) {
   model()->SetUserText(base::ASCIIToUTF16("he"));
   model()->OnPopupDataChanged(base::string16(),
                               /*is_temporary_text=*/false,
-                              base::ASCIIToUTF16("llo"), base::string16(),
+                              base::ASCIIToUTF16("llo"), base::string16(), {},
                               base::string16(), false, base::string16());
   EXPECT_EQ(base::ASCIIToUTF16("hello"), view()->GetText());
   EXPECT_EQ(base::ASCIIToUTF16("llo"), view()->inline_autocompletion());
@@ -233,7 +233,7 @@ TEST_F(OmniboxEditModelTest, DISABLED_InlineAutocompleteText) {
   EXPECT_EQ(base::string16(), view()->inline_autocompletion());
   model()->OnPopupDataChanged(base::string16(),
                               /*is_temporary_text=*/false,
-                              base::ASCIIToUTF16("lo"), base::string16(),
+                              base::ASCIIToUTF16("lo"), base::string16(), {},
                               base::string16(), false, base::string16());
   EXPECT_EQ(base::ASCIIToUTF16("hello"), view()->GetText());
   EXPECT_EQ(base::ASCIIToUTF16("lo"), view()->inline_autocompletion());
@@ -245,7 +245,7 @@ TEST_F(OmniboxEditModelTest, DISABLED_InlineAutocompleteText) {
   model()->SetUserText(base::ASCIIToUTF16("he"));
   model()->OnPopupDataChanged(base::string16(),
                               /*is_temporary_text=*/false,
-                              base::ASCIIToUTF16("llo"), base::string16(),
+                              base::ASCIIToUTF16("llo"), base::string16(), {},
                               base::string16(), false, base::string16());
   EXPECT_EQ(base::ASCIIToUTF16("hello"), view()->GetText());
   EXPECT_EQ(base::ASCIIToUTF16("llo"), view()->inline_autocompletion());
@@ -275,7 +275,7 @@ TEST_F(OmniboxEditModelTest, RespectUnelisionInZeroSuggest) {
   EXPECT_EQ(base::string16(), view()->inline_autocompletion());
   model()->StartZeroSuggestRequest();
   model()->OnPopupDataChanged(base::string16(), /*is_temporary_text=*/false,
-                              base::string16(), base::string16(),
+                              base::string16(), base::string16(), {},
                               base::string16(), false, base::string16());
   EXPECT_EQ(base::ASCIIToUTF16("https://www.example.com/"), view()->GetText());
   EXPECT_FALSE(model()->user_input_in_progress());
@@ -296,7 +296,7 @@ TEST_F(OmniboxEditModelTest, RevertZeroSuggestTemporaryText) {
   model()->StartZeroSuggestRequest();
   model()->OnPopupDataChanged(base::ASCIIToUTF16("fake_temporary_text"),
                               /*is_temporary_text=*/true, base::string16(),
-                              base::string16(), base::string16(), false,
+                              base::string16(), {}, base::string16(), false,
                               base::string16());
 
   // Test that reverting brings back the original input text.
@@ -493,7 +493,7 @@ TEST_F(OmniboxEditModelTest, KeywordModePreservesInlineAutocompleteText) {
   // Set the edit model into an inline autocompletion state.
   view()->SetUserText(base::UTF8ToUTF16("user"));
   view()->OnInlineAutocompleteTextMaybeChanged(base::UTF8ToUTF16("user text"),
-                                               0, 4);
+                                               {{9, 4}}, 4);
 
   // Entering keyword search mode should preserve the full display text as the
   // user text, and select all.
@@ -523,7 +523,7 @@ TEST_F(OmniboxEditModelTest, KeywordModePreservesTemporaryText) {
   // OnPopupDataChanged() is called when the user focuses a suggestion.
   model()->OnPopupDataChanged(base::UTF8ToUTF16("match text"),
                               /*is_temporary_text=*/true, base::string16(),
-                              base::string16(), base::string16(), false,
+                              base::string16(), {}, base::string16(), false,
                               base::string16());
 
   // Entering keyword search mode should preserve temporary text as the user
@@ -539,8 +539,8 @@ TEST_F(OmniboxEditModelTest, CtrlEnterNavigatesToDesiredTLD) {
   // Set the edit model into an inline autocomplete state.
   view()->SetUserText(base::UTF8ToUTF16("foo"));
   model()->StartAutocomplete(false, false);
-  view()->OnInlineAutocompleteTextMaybeChanged(base::UTF8ToUTF16("foobar"), 0,
-                                               3);
+  view()->OnInlineAutocompleteTextMaybeChanged(base::UTF8ToUTF16("foobar"),
+                                               {{6, 3}}, 3);
 
   model()->OnControlKeyChanged(true);
   model()->AcceptInput(WindowOpenDisposition::UNKNOWN);
@@ -555,7 +555,7 @@ TEST_F(OmniboxEditModelTest, CtrlEnterNavigatesToDesiredTLDTemporaryText) {
   model()->StartAutocomplete(false, false);
   model()->OnPopupDataChanged(base::ASCIIToUTF16("foobar"),
                               /*is_temporary_text=*/true, base::string16(),
-                              base::string16(), base::string16(), false,
+                              base::string16(), {}, base::string16(), false,
                               base::string16());
 
   model()->OnControlKeyChanged(true);

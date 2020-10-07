@@ -23,6 +23,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/url_formatter/url_formatter.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
 class AutocompleteProvider;
@@ -45,6 +46,26 @@ const char kACMatchPropertyContentsStartIndex[] = "match contents start index";
 // A match attribute when a default match's score has been boosted with a higher
 // scoring non-default match.
 const char kACMatchPropertyScoreBoostedFrom[] = "score_boosted_from";
+
+// |SplitAutocompletion| helps track the autocompleted portions of a match's
+// text displayed when it is the default suggestion. It is used when the
+// autocompletions are between the user text; i.e. the user text is split. E.g.
+// given user text 'a c', |SplitAutocompletion| could represent 'a [b ]c'.
+struct SplitAutocompletion {
+  SplitAutocompletion(base::string16 display_text,
+                      std::vector<gfx::Range> selections);
+  SplitAutocompletion();
+  SplitAutocompletion(const SplitAutocompletion& copy);
+  ~SplitAutocompletion();
+
+  bool Empty() const;
+  void Clear();
+
+  // The text including both the user input and autocompleted texts.
+  base::string16 display_text;
+  // The locations of the autocompleted texts.
+  std::vector<gfx::Range> selections;
+};
 
 // AutocompleteMatch ----------------------------------------------------------
 
@@ -455,7 +476,8 @@ struct AutocompleteMatch {
                              const AutocompleteInput& input,
                              bool shortcut_provider = false);
 
-  // True if both |inline_autocompletion| & |prefix_autocompletion| are empty.
+  // True if |inline_autocompletion|, |prefix_autocompletion|, and
+  // |split_autocompletion| are all empty.
   bool IsEmptyAutocompletion() const;
 
   // The provider of this match, used to remember which provider the user had
@@ -504,6 +526,12 @@ struct AutocompleteMatch {
   // omnibox, if this match becomes the default match. Always empty if
   // non-prefix autocompletion is disabled.
   base::string16 prefix_autocompletion;
+  // A representation of inline autocompletion that supports splitting the
+  // user input. See |SplitAutocompletion|| comments. Always empty if split
+  // autocompletion is disabled.
+  // TODO(manukh) If split rich autocompletion launches, all 3 autocompletions
+  // can be represented by |split_autocompletion|.
+  SplitAutocompletion split_autocompletion;
 
   // If false, the omnibox should prevent this match from being the
   // default match.  Providers should set this to true only if the

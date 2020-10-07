@@ -30,6 +30,19 @@
 
 #endif
 
+namespace {
+
+// Return true if either non prefix or split autocompletion is enabled.
+bool RichAutocompletionEitherNonPrefixOrSplitEnabled() {
+  return OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefixAll() ||
+         OmniboxFieldTrial::
+             RichAutocompletionAutocompleteNonPrefixShortcutProvider() ||
+         OmniboxFieldTrial::RichAutocompletionSplitTitleCompletion() ||
+         OmniboxFieldTrial::RichAutocompletionSplitUrlCompletion();
+}
+
+}  // namespace
+
 OmniboxView::State::State() = default;
 OmniboxView::State::State(const State& state) = default;
 
@@ -262,9 +275,7 @@ void OmniboxView::GetState(State* state) {
   state->keyword = model()->keyword();
   state->is_keyword_selected = model()->is_keyword_selected();
   GetSelectionBounds(&state->sel_start, &state->sel_end);
-  if (OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefixAll() ||
-      OmniboxFieldTrial::
-          RichAutocompletionAutocompleteNonPrefixShortcutProvider())
+  if (RichAutocompletionEitherNonPrefixOrSplitEnabled())
     state->all_sel_length = GetAllSelectionsLength();
 }
 
@@ -298,9 +309,7 @@ OmniboxView::StateChanges OmniboxView::GetStateChanges(const State& before,
   state_changes.just_deleted_text =
       before.text.length() > after.text.length() &&
       after.sel_start <= std::min(before.sel_start, before.sel_end);
-  if (OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefixAll() ||
-      OmniboxFieldTrial::
-          RichAutocompletionAutocompleteNonPrefixShortcutProvider()) {
+  if (RichAutocompletionEitherNonPrefixOrSplitEnabled()) {
     state_changes.just_deleted_text =
         state_changes.just_deleted_text &&
         after.sel_start <=

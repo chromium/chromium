@@ -1019,7 +1019,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, MAYBE_AcceptKeywordBySpace) {
   // end of text.
   omnibox_view->OnBeforePossibleChange();
   omnibox_view->OnInlineAutocompleteTextMaybeChanged(
-      search_keyword + ASCIIToUTF16("  "), 0, search_keyword.length());
+      search_keyword + ASCIIToUTF16("  "),
+      {{search_keyword.length() + 2, search_keyword.length()}},
+      search_keyword.length());
   omnibox_view->OnAfterPossibleChange(true);
   ASSERT_TRUE(omnibox_view->model()->is_keyword_hint());
   ASSERT_EQ(search_keyword, omnibox_view->model()->keyword());
