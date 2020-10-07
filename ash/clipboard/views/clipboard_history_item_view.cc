@@ -50,10 +50,12 @@ ClipboardHistoryItemView::ContentsView::ContentsView(
 ClipboardHistoryItemView::ContentsView::~ContentsView() = default;
 
 void ClipboardHistoryItemView::ContentsView::OnSelectionChanged() {
-  // Update `delete_button_`'s visibility if the selection state switches.
-  const bool is_selected = container_->IsSelected();
-  if (is_selected != delete_button_->GetVisible())
-    delete_button_->SetVisible(is_selected);
+  // The delete button should be visible when it is under selection.
+  const bool target_visibility =
+      container_->selection_flags_ & SelectionFlag::kDeleteButtonSelected;
+
+  if (target_visibility != delete_button_->GetVisible())
+    delete_button_->SetVisible(target_visibility);
 }
 
 void ClipboardHistoryItemView::ContentsView::InstallDeleteButton() {
@@ -90,7 +92,10 @@ class ash::ClipboardHistoryItemView::MainButton : public views::Button {
   const char* GetClassName() const override { return "MainButton"; }
 
   void PaintButtonContents(gfx::Canvas* canvas) override {
-    if (!container_->IsSelected())
+    // Highlight the main button's background when it is under selection.
+    const bool should_highlight =
+        container_->selection_flags_ & SelectionFlag::kMainButtonSelected;
+    if (!should_highlight)
       return;
 
     // Highlight the background when the menu item is selected or pressed.
@@ -157,7 +162,8 @@ ClipboardHistoryItemView::~ClipboardHistoryItemView() = default;
 ClipboardHistoryItemView::ClipboardHistoryItemView(
     const ClipboardHistoryItem* clipboard_history_item,
     views::MenuItemView* container)
-    : clipboard_history_item_(clipboard_history_item), container_(container) {}
+    : clipboard_history_item_(clipboard_history_item),
+      container_(container) {}
 
 void ClipboardHistoryItemView::Init() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -177,13 +183,14 @@ void ClipboardHistoryItemView::Init() {
       &ClipboardHistoryItemView::OnSelectionChanged, base::Unretained(this)));
 }
 
-bool ClipboardHistoryItemView::IsSelected() const {
-  return container_->IsSelected();
-}
-
 void ClipboardHistoryItemView::OnSelectionChanged() {
-  contents_view_->OnSelectionChanged();
-  main_button_->SchedulePaint();
+  int target_flags = 0;
+  if (container_->IsSelected()) {
+    target_flags |= SelectionFlag::kMainButtonSelected;
+    if (main_button_->IsMouseHovered())
+      target_flags |= SelectionFlag::kDeleteButtonSelected;
+  }
+  SetSelectionFlags(target_flags);
 }
 
 void ClipboardHistoryItemView::RecordButtonPressedHistogram(
@@ -215,6 +222,15 @@ void ClipboardHistoryItemView::ExecuteCommand(int command_id,
   views::MenuDelegate* delegate = container_->GetDelegate();
   DCHECK(delegate->IsCommandEnabled(command_id));
   container_->GetDelegate()->ExecuteCommand(command_id, event.flags());
+}
+
+void ClipboardHistoryItemView::SetSelectionFlags(int selection_flags) {
+  if (selection_flags_ == selection_flags)
+    return;
+
+  selection_flags_ = selection_flags;
+  contents_view_->OnSelectionChanged();
+  main_button_->SchedulePaint();
 }
 
 }  // namespace ash

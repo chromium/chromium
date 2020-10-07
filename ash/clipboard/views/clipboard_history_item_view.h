@@ -19,6 +19,14 @@ class ClipboardHistoryResourceManager;
 // The base class for menu items of the clipboard history menu.
 class ClipboardHistoryItemView : public views::View {
  public:
+  enum SelectionFlag {
+    // The main button is selected.
+    kMainButtonSelected = 1 << 0,
+
+    // The delete button is selected.
+    kDeleteButtonSelected = 1 << 1
+  };
+
   static std::unique_ptr<ClipboardHistoryItemView>
   CreateFromClipboardHistoryItem(
       const ClipboardHistoryItem& item,
@@ -33,11 +41,14 @@ class ClipboardHistoryItemView : public views::View {
   // Initializes the menu item.
   void Init();
 
-  // Returns whether the menu item is under selection.
-  bool IsSelected() const;
-
   // Called when the selection state has changed.
   void OnSelectionChanged();
+
+  int selection_flags() const { return selection_flags_; }
+
+  const views::View* delete_button_for_test() const {
+    return contents_view_->delete_button();
+  }
 
  protected:
   class MainButton;
@@ -110,6 +121,9 @@ class ClipboardHistoryItemView : public views::View {
   // Executes |command_id| on the delegate.
   void ExecuteCommand(int command_id, const ui::Event& event);
 
+  // Updates the child views selection bitset.
+  void SetSelectionFlags(int selection_flag);
+
   // Owned by ClipboardHistoryMenuModelAdapter.
   const ClipboardHistoryItem* const clipboard_history_item_;
 
@@ -118,6 +132,9 @@ class ClipboardHistoryItemView : public views::View {
   ContentsView* contents_view_ = nullptr;
 
   MainButton* main_button_ = nullptr;
+
+  // The bitset indicating the child view(s) under selection.
+  int selection_flags_ = 0;
 
   views::PropertyChangedSubscription subscription_;
 };
