@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "build/build_config.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/ppapi_migration/geometry_conversions.h"
@@ -39,7 +40,13 @@ double GetExpectedCharWidth(bool is_chromeos, size_t i, double expected) {
 // update the GetExpected... functions above. If that becomes too much of a
 // burden, consider changing the checks to just make sure the font metrics look
 // sane.
-TEST_F(AccessibilityTest, GetAccessibilityPage) {
+// Flaky on Linux only.  http://crbug.com/1135988
+#if defined(OS_LINUX)
+#define MAYBE_GetAccessibilityPage DISABLED_GetAccessibilityPage
+#else
+#define MAYBE_GetAccessibilityPage GetAccessibilityPage
+#endif
+TEST_F(AccessibilityTest, MAYBE_GetAccessibilityPage) {
   static constexpr size_t kExpectedTextRunCount = 2;
   struct {
     uint32_t len;
@@ -451,7 +458,13 @@ TEST_F(AccessibilityTest, TestInternalLinkClickActionHandling) {
   EXPECT_TRUE(client.url().empty());
 }
 
-TEST_F(AccessibilityTest, GetAccessibilityLinkInfo) {
+// Flaky on Linux only.  http://crbug.com/1135988
+#if defined(OS_LINUX)
+#define MAYBE_GetAccessibilityLinkInfo DISABLED_GetAccessibilityLinkInfo
+#else
+#define MAYBE_GetAccessibilityLinkInfo GetAccessibilityLinkInfo
+#endif
+TEST_F(AccessibilityTest, MAYBE_GetAccessibilityLinkInfo) {
   // Clone of pp::PDF::PrivateAccessibilityLinkInfo.
   struct {
     std::string url;

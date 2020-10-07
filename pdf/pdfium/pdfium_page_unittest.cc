@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
+#include "build/build_config.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "pdf/pdfium/pdfium_engine.h"
@@ -140,7 +141,13 @@ class PDFiumPageLinkTest : public PDFiumTestBase {
   }
 };
 
-TEST_F(PDFiumPageLinkTest, TestLinkGeneration) {
+// Flaky on Linux only.  http://crbug.com/1135988
+#if defined(OS_LINUX)
+#define MAYBE_TestLinkGeneration DISABLED_TestLinkGeneration
+#else
+#define MAYBE_TestLinkGeneration TestLinkGeneration
+#endif
+TEST_F(PDFiumPageLinkTest, MAYBE_TestLinkGeneration) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("weblinks.pdf"));
@@ -182,7 +189,13 @@ TEST_F(PDFiumPageLinkTest, TestLinkGeneration) {
   EXPECT_EQ(gfx::Rect(82, 67, 161, 21), third_link.bounding_rects[0]);
 }
 
-TEST_F(PDFiumPageLinkTest, TestAnnotLinkGeneration) {
+// Flaky on Linux only.  http://crbug.com/1135988
+#if defined(OS_LINUX)
+#define MAYBE_TestAnnotLinkGeneration DISABLED_TestAnnotLinkGeneration
+#else
+#define MAYBE_TestAnnotLinkGeneration TestAnnotLinkGeneration
+#endif
+TEST_F(PDFiumPageLinkTest, MAYBE_TestAnnotLinkGeneration) {
   struct ExpectedLink {
     int32_t start_char_index;
     int32_t char_count;
@@ -350,7 +363,13 @@ TEST_F(PDFiumPageTextTest, TestTextRunBounds) {
       engine->GetCharBounds(kPageIndex, kSecondRunEndIndex)));
 }
 
-TEST_F(PDFiumPageTextTest, GetTextRunInfo) {
+// Flaky on Linux only.  http://crbug.com/1135988
+#if defined(OS_LINUX)
+#define MAYBE_GetTextRunInfo DISABLED_GetTextRunInfo
+#else
+#define MAYBE_GetTextRunInfo GetTextRunInfo
+#endif
+TEST_F(PDFiumPageTextTest, MAYBE_GetTextRunInfo) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("weblinks.pdf"));
@@ -422,7 +441,13 @@ TEST_F(PDFiumPageTextTest, GetTextRunInfo) {
   ASSERT_FALSE(text_run_info_result.has_value());
 }
 
-TEST_F(PDFiumPageTextTest, TestHighlightTextRunInfo) {
+// Flaky on Linux only.  http://crbug.com/1135988
+#if defined(OS_LINUX)
+#define MAYBE_TestHighlightTextRunInfo DISABLED_TestHighlightTextRunInfo
+#else
+#define MAYBE_TestHighlightTextRunInfo TestHighlightTextRunInfo
+#endif
+TEST_F(PDFiumPageTextTest, MAYBE_TestHighlightTextRunInfo) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("highlights.pdf"));
