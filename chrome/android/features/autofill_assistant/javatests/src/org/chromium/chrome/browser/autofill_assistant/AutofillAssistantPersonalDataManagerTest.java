@@ -54,6 +54,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
@@ -490,6 +491,7 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1136166")
     public void testCreateAndEnterCard() throws Exception {
         // Add a profile for easier address selection.
         mHelper.addDummyProfile("Adam West", "adamwest@google.com");
