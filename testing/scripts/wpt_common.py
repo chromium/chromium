@@ -96,6 +96,49 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         self.fs.write_text_file(self.wpt_output,
                                 json.dumps(output_json))
 
+    def _handle_log_artifact(self, log_artifact, root_node, results_dir,
+                             path_so_far):
+        # If the test passed, there are no artifacts to output. Note that if a
+        # baseline file (*.ini file) exists, an actual of PASS means that the
+        # test matched the baseline, not that the test itself passed. As such,
+        # we still correctly produce artifacts in the case where someone fixes a
+        # baselined test.
+        if root_node["actual"] == "PASS":
+            return
+
+        # Note that the log_artifact is a list of strings, so we join
+        # them on new lines when writing to file.
+        actual_text = "\n".join(log_artifact)
+        actual_subpath = self._write_text_artifact(
+            test_failures.FILENAME_SUFFIX_ACTUAL,
+            results_dir, path_so_far, actual_text)
+        root_node["artifacts"]["actual_text"] = [actual_subpath]
+        # Try to locate the expected output of this test, if it exists.
+        expected_subpath, expected_text = \
+            self._maybe_write_expected_output(results_dir, path_so_far)
+        if expected_subpath:
+            root_node["artifacts"]["expected_text"] = [expected_subpath]
+
+        diff_content = unified_diff(expected_text, actual_text,
+                                    expected_subpath, actual_subpath)
+        diff_subpath = self._write_text_artifact(
+            test_failures.FILENAME_SUFFIX_DIFF, results_dir,
+            path_so_far, diff_content)
+        root_node["artifacts"]["text_diff"] = [diff_subpath]
+        # We pass the text as bytes here because the html_diff library
+        # requires that but the file contents is read-in as unicode.
+        html_diff_content = html_diff(expected_text.encode('utf-8'),
+                                      actual_text.encode('utf-8'))
+        # Ensure the diff itself is properly decoded, to avoid
+        # UnicodeDecodeErrors when writing to file. This can happen if
+        # the diff contains unicode characters but the file is written
+        # as ascii because of the default system-level encoding.
+        html_diff_content = unicode(html_diff_content, 'utf-8')
+        html_diff_subpath = self._write_text_artifact(
+            test_failures.FILENAME_SUFFIX_HTML_DIFF, results_dir,
+            path_so_far, html_diff_content, extension=".html")
+        root_node["artifacts"]["pretty_text_diff"] = [html_diff_subpath]
+
     def _process_test_leaves(self, results_dir, delim, root_node, path_so_far):
         """Finds and processes each test leaf below the specified root.
 
@@ -116,38 +159,8 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
                 return
             log_artifact = root_node["artifacts"].pop("log", None)
             if log_artifact:
-                # Note that the log_artifact is a list of strings, so we join
-                # them on new lines when writing to file.
-                actual_text = "\n".join(log_artifact)
-                actual_subpath = self._write_text_artifact(
-                    test_failures.FILENAME_SUFFIX_ACTUAL,
-                    results_dir, path_so_far, actual_text)
-                root_node["artifacts"]["actual_text"] = [actual_subpath]
-                # Try to locate the expected output of this test, if it exists.
-                expected_subpath, expected_text = \
-                    self._maybe_write_expected_output(results_dir, path_so_far)
-                if expected_subpath:
-                    root_node["artifacts"]["expected_text"] = [expected_subpath]
-
-                diff_content = unified_diff(expected_text, actual_text,
-                                            expected_subpath, actual_subpath)
-                diff_subpath = self._write_text_artifact(
-                    test_failures.FILENAME_SUFFIX_DIFF, results_dir,
-                    path_so_far, diff_content)
-                root_node["artifacts"]["text_diff"] = [diff_subpath]
-                # We pass the text as bytes here because the html_diff library
-                # requires that but the file contents is read-in as unicode.
-                html_diff_content = html_diff(expected_text.encode('utf-8'),
-                                              actual_text.encode('utf-8'))
-                # Ensure the diff itself is properly decoded, to avoid
-                # UnicodeDecodeErrors when writing to file. This can happen if
-                # the diff contains unicode characters but the file is written
-                # as ascii because of the default system-level encoding.
-                html_diff_content = unicode(html_diff_content, 'utf-8')
-                html_diff_subpath = self._write_text_artifact(
-                    test_failures.FILENAME_SUFFIX_HTML_DIFF, results_dir,
-                    path_so_far, html_diff_content, extension=".html")
-                root_node["artifacts"]["pretty_text_diff"] = [html_diff_subpath]
+                self._handle_log_artifact(log_artifact, root_node, results_dir,
+                                          path_so_far)
 
             screenshot_artifact = root_node["artifacts"].pop("screenshots",
                                                              None)

@@ -83,6 +83,9 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
 
     def test_write_log_artifact(self):
         # Ensure that log artifacts are written to the correct location.
+
+        # We only generate an actual.txt if our actual wasn't PASS, so in this
+        # case we shouldn't write anything.
         json_dict = {
             'tests': {
                 'test.html': {
@@ -96,6 +99,20 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
             },
             'path_delimiter': '/',
         }
+        self._create_json_output(json_dict)
+        self.wpt_adapter.do_post_test_run_tasks()
+        written_files = self.wpt_adapter.fs.written_files
+        actual_path = os.path.join("layout-test-results", "test-actual.txt")
+        diff_path = os.path.join("layout-test-results", "test-diff.txt")
+        pretty_diff_path = os.path.join("layout-test-results",
+                                        "test-pretty-diff.html")
+        assert actual_path not in written_files
+        assert diff_path not in written_files
+        assert pretty_diff_path not in written_files
+
+        # Now we change the outcome to be a FAIL, which should generate an
+        # actual.txt
+        json_dict['tests']['test.html']['actual'] = 'FAIL'
         self._create_json_output(json_dict)
         self.wpt_adapter.do_post_test_run_tasks()
         written_files = self.wpt_adapter.fs.written_files
@@ -205,7 +222,7 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
             'tests': {
                 'test.html': {
                     'expected': 'PASS',
-                    'actual': 'PASS',
+                    'actual': 'FAIL',
                     'artifacts': {
                         'wpt_actual_status': ['OK'],
                         'log': ['test.html actual text'],
@@ -269,7 +286,7 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
             'tests': {
                 'variant.html?foo=bar/abc': {
                     'expected': 'PASS',
-                    'actual': 'PASS',
+                    'actual': 'FAIL',
                     'artifacts': {
                         'wpt_actual_status': ['OK'],
                         'log': ['variant bar/abc actual text'],
@@ -323,7 +340,7 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
             'tests': {
                 'dir/multiglob.https.any.worker.html': {
                     'expected': 'PASS',
-                    'actual': 'PASS',
+                    'actual': 'FAIL',
                     'artifacts': {
                         'wpt_actual_status': ['OK'],
                         'log': ['dir/multiglob worker actual text'],
