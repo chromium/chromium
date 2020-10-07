@@ -352,11 +352,11 @@ void HandleAssistantOptInScreen() {
   EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
 
   test::OobeJS()
-      .CreateVisibilityWaiter(true, {"assistant-optin-flow-card", "loading"})
+      .CreateVisibilityWaiter(true, {"assistant-optin-flow", "card", "loading"})
       ->Wait();
 
   std::initializer_list<base::StringPiece> skip_button_path = {
-      "assistant-optin-flow-card", "loading", "skip-button"};
+      "assistant-optin-flow", "card", "loading", "skip-button"};
   test::OobeJS().CreateEnabledWaiter(true, skip_button_path)->Wait();
   test::OobeJS().TapOnPath(skip_button_path);
 
@@ -794,15 +794,12 @@ void OobeInteractiveUITest::SimpleEndToEnd() {
 }
 
 // Disabled on *San bots since they time out.
-//#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
-//    defined(LEAK_SANITIZER)
-//#define MAYBE_SimpleEndToEnd DISABLED_SimpleEndToEnd
-//#else
-//#define MAYBE_SimpleEndToEnd SimpleEndToEnd
-//#endif
-
-// crbug.com/1135512: Fails on linux-chromeos-chrome, uncomment above section
-// once this bug is fixed.
+#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
+    defined(LEAK_SANITIZER)
+#define MAYBE_SimpleEndToEnd DISABLED_SimpleEndToEnd
+#else
+#define MAYBE_SimpleEndToEnd SimpleEndToEnd
+#endif
 
 // Note that this probably the largest test that is run on ChromeOS, and it
 // might be running close to time limits especially on instrumented builds.
@@ -810,7 +807,7 @@ void OobeInteractiveUITest::SimpleEndToEnd() {
 // Please do not disable it for whole ChromeOS, only for specific instrumented
 // bots. Another alternative is to increase respective multiplier in
 // base/test/test_timeouts.h.
-IN_PROC_BROWSER_TEST_P(OobeInteractiveUITest, DISABLED_SimpleEndToEnd) {
+IN_PROC_BROWSER_TEST_P(OobeInteractiveUITest, SimpleEndToEnd) {
   SimpleEndToEnd();
 }
 
@@ -875,15 +872,12 @@ void OobeZeroTouchInteractiveUITest::ZeroTouchEndToEnd() {
 
 // crbug.com/997987. Disabled on MSAN since they time out.
 // crbug.com/1055853: EndToEnd is flaky on Linux Chromium OS ASan LSan
-//#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
-//    defined(LEAK_SANITIZER)
-//#define MAYBE_EndToEnd DISABLED_EndToEnd
-//#else
-//#define MAYBE_EndToEnd EndToEnd
-//#endif
-
-// crbug.com/1135512: Fails on linux-chromeos-chrome, uncomment above section
-// once this bug is fixed.
+#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
+    defined(LEAK_SANITIZER)
+#define MAYBE_EndToEnd DISABLED_EndToEnd
+#else
+#define MAYBE_EndToEnd EndToEnd
+#endif
 
 // Note that this probably the largest test that is run on ChromeOS, and it
 // might be running close to time limits especially on instrumented builds.
@@ -891,7 +885,7 @@ void OobeZeroTouchInteractiveUITest::ZeroTouchEndToEnd() {
 // Please do not disable it for whole ChromeOS, only for specific instrumented
 // bots. Another alternative is to increase respective multiplier in
 // base/test/test_timeouts.h.
-IN_PROC_BROWSER_TEST_P(OobeZeroTouchInteractiveUITest, DISABLED_EndToEnd) {
+IN_PROC_BROWSER_TEST_P(OobeZeroTouchInteractiveUITest, EndToEnd) {
   ZeroTouchEndToEnd();
 }
 
