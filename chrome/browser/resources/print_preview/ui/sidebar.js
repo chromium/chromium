@@ -237,11 +237,4 @@ Polymer({
     const linkContainer = this.$$('print-preview-link-container');
     return !!linkContainer && linkContainer.systemDialogLinkAvailable();
   },
-
-  // <if expr="chromeos">
-  /** @param {boolean} isDriveMounted */
-  setIsDriveMounted(isDriveMounted) {
-    this.$.destinationSettings.setIsDriveMounted(isDriveMounted);
-  },
-  // </if>
 });

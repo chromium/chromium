@@ -341,11 +341,6 @@ Polymer({
           settings.serializedDefaultDestinationSelectionRulesStr,
           settings.userAccounts || null, settings.syncAvailable,
           settings.pdfPrinterDisabled, settings.isDriveMounted || false);
-      // <if expr="chromeos">
-      if (this.saveToDriveFlagEnabled_) {
-        this.$.sidebar.setIsDriveMounted(settings.isDriveMounted);
-      }
-      // </if>
       this.destinationsManaged_ = settings.destinationsManaged;
       this.isInKioskAutoPrintMode_ = settings.isInKioskAutoPrintMode;
 

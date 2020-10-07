@@ -35,7 +35,8 @@ destination_settings_test.TestNames = {
   ResetDestinationOnSignOut: 'reset destination on sign out',
   DisabledSaveAsPdf: 'disabled save as pdf',
   NoDestinations: 'no destinations',
-  EulaIsRetrieved: 'eula is retrieved'
+  EulaIsRetrieved: 'eula is retrieved',
+  DriveIsNotMounted: 'drive is not mounted',
 };
 
 suite(destination_settings_test.suiteName, function() {
@@ -65,6 +66,9 @@ suite(destination_settings_test.suiteName, function() {
 
   /** @type {boolean} */
   let pdfPrinterDisabled = false;
+
+  /** @type {boolean} */
+  let isDriveMounted = true;
 
   /** @type {string} */
   const defaultUser = 'foo@chromium.org';
@@ -125,7 +129,7 @@ suite(destination_settings_test.suiteName, function() {
         // still not loaded.
         destinationSettings.init(
             'FooDevice' /* printerName */, false /* pdfPrinterDisabled */,
-            true /* isDriveMounted */,
+            isDriveMounted,
             '' /* serializedDefaultDestinationSelectionRulesStr */,
             [] /* userAccounts */, true /* syncAvailable */);
         assertFalse(dropdown.loaded);
@@ -199,7 +203,7 @@ suite(destination_settings_test.suiteName, function() {
     destinationSettings.setSetting('recentDestinations', recentDestinations);
     destinationSettings.appKioskMode = false;
     destinationSettings.init(
-        '' /* printerName */, pdfPrinterDisabled, true /* isDriveMounted */,
+        '' /* printerName */, pdfPrinterDisabled, isDriveMounted,
         '' /* serializedDefaultDestinationSelectionRulesStr */, initialAccounts,
         true /* syncAvailable */);
     destinationSettings.state = State.READY;
@@ -938,7 +942,6 @@ suite(destination_settings_test.suiteName, function() {
     });
   });
 
-  if (isChromeOS) {
     /**
      * Tests that destinations with a EULA will fetch the EULA URL when
      * selected.
@@ -1005,5 +1008,21 @@ suite(destination_settings_test.suiteName, function() {
                     expectedUrl, destinationSettings.destination.eulaUrl);
               });
         });
-  }
+
+    // Tests that disabling Google Drive on Chrome OS hides the Save to Drive
+    // destination.
+    test(
+        assert(destination_settings_test.TestNames.DriveIsNotMounted),
+        function() {
+          isDriveMounted = false;
+          initialize();
+
+          return nativeLayer.whenCalled('getPrinterCapabilities')
+              .then(() => {
+                return waitBeforeNextRender(destinationSettings);
+              })
+              .then(() => {
+                assertDropdownItems(['Save as PDF/local/']);
+              });
+        });
 });
