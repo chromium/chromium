@@ -7,6 +7,7 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 // On device head suggest feature uses an on device model which encodes some
 // top queries into a radix tree (https://en.wikipedia.org/wiki/Radix_tree), to
