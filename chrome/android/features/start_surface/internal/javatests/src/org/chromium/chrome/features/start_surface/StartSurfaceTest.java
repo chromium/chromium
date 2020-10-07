@@ -753,9 +753,16 @@ public class StartSurfaceTest {
                             && mActivityTestRule.getActivity()
                                        .getLayoutManager()
                                        .overviewVisible());
+            waitForTabModel();
             // Single surface is shown as homepage. Exit in order to get into tab switcher later.
             pressBack();
         }
+        if (isInstantReturn()) {
+            // TODO(crbug.com/1076274): fix toolbar to avoid wrongly focusing on the toolbar
+            // omnibox.
+            return;
+        }
+
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
         waitForView(withId(R.id.primary_tasks_surface_view), VIEW_GONE);
         assertThat(mActivityTestRule.getActivity().getLayoutManager().getOverviewLayout(),
