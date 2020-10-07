@@ -421,6 +421,8 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
           subresource_loader_factories,
       mojo::PendingReceiver<mojom::blink::ReportingObserver>) override;
   void DispatchInstallEvent(DispatchInstallEventCallback callback) override;
+  void AbortInstallEvent(int event_id,
+                         mojom::blink::ServiceWorkerEventStatus status);
   void DispatchActivateEvent(DispatchActivateEventCallback callback) override;
   void DispatchBackgroundFetchAbortEvent(
       mojom::blink::BackgroundFetchRegistrationPtr registration,

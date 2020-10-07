@@ -30,6 +30,10 @@ class CORE_EXPORT GlobalFetch {
                                 const RequestInit*,
                                 ExceptionState&) = 0;
 
+    // Returns the number of fetch() method calls in the associated execution
+    // context.  This is used for metrics.
+    virtual uint32_t FetchCount() const = 0;
+
     static ScopedFetcher* From(LocalDOMWindow&);
     static ScopedFetcher* From(WorkerGlobalScope&);
 

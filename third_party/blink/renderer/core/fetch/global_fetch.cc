@@ -58,6 +58,8 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
                       const RequestInfo& input,
                       const RequestInit* init,
                       ExceptionState& exception_state) override {
+    fetch_count_ += 1;
+
     ExecutionContext* execution_context = fetch_manager_->GetExecutionContext();
     if (!script_state->ContextIsValid() || !execution_context) {
       // TODO(yhirano): Should this be moved to bindings?
@@ -83,6 +85,8 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
     return promise;
   }
 
+  uint32_t FetchCount() const override { return fetch_count_; }
+
   void Trace(Visitor* visitor) const override {
     visitor->Trace(fetch_manager_);
     ScopedFetcher::Trace(visitor);
@@ -91,6 +95,7 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
 
  private:
   Member<FetchManager> fetch_manager_;
+  uint32_t fetch_count_ = 0;
 };
 
 // static

@@ -48,7 +48,7 @@ RespondWithCallback::RespondWithCallback(
 RespondWithCallback::~RespondWithCallback() = default;
 
 void RespondWithCallback::FinishServiceWorkerRequest() {
-  service_worker_version_->FinishRequest(request_id_, false);
+  service_worker_version_->FinishRequest(request_id_, /*was_handled=*/false);
 }
 
 void RespondWithCallback::MaybeRecordTimeoutMetric(

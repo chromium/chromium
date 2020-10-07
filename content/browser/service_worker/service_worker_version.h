@@ -334,6 +334,12 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // TODO(mek): Use something other than a bool for event status.
   bool FinishRequest(int request_id, bool was_handled);
 
+  // Like FinishRequest(), but includes a count of how many fetches were
+  // performed by the script while handling the event.
+  bool FinishRequestWithFetchCount(int request_id,
+                                   bool was_handled,
+                                   uint32_t fetch_count);
+
   // Finishes an external request that was started by StartExternalRequest().
   ServiceWorkerExternalRequestResult FinishExternalRequest(
       const std::string& request_uuid);

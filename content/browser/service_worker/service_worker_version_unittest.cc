@@ -156,7 +156,7 @@ class ServiceWorkerVersionTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
 
     // And finish request, as if a response to the event was received.
-    EXPECT_TRUE(version_->FinishRequest(request_id, true /* was_handled */));
+    EXPECT_TRUE(version_->FinishRequest(request_id, /*was_handled=*/true));
   }
 
   void SetTickClockForTesting(base::SimpleTestTickClock* tick_clock) {
@@ -752,7 +752,7 @@ TEST_F(ServiceWorkerVersionTest, RequestTimeout) {
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorTimeout,
             error_status.value());
   // Calling FinishRequest should be no-op, since the request timed out.
-  EXPECT_FALSE(version_->FinishRequest(request_id, true /* was_handled */));
+  EXPECT_FALSE(version_->FinishRequest(request_id, /*was_handled=*/true));
 
   // Simulate the renderer aborting the inflight event.
   // This should not crash: https://crbug.com/676984.
@@ -784,7 +784,7 @@ TEST_F(ServiceWorkerVersionTest, RequestNowTimeout) {
   run_loop.Run();
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorTimeout, status.value());
 
-  EXPECT_FALSE(version_->FinishRequest(request_id, true /* was_handled */));
+  EXPECT_FALSE(version_->FinishRequest(request_id, /*was_handled=*/true));
 
   // CONTINUE_ON_TIMEOUT timeouts don't stop the service worker.
   EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version_->running_status());
@@ -809,7 +809,7 @@ TEST_F(ServiceWorkerVersionTest, RequestNowTimeoutKill) {
   run_loop.Run();
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorTimeout, status.value());
 
-  EXPECT_FALSE(version_->FinishRequest(request_id, true /* was_handled */));
+  EXPECT_FALSE(version_->FinishRequest(request_id, /*was_handled=*/true));
 
   // KILL_ON_TIMEOUT timeouts should stop the service worker.
   base::RunLoop().RunUntilIdle();
@@ -871,11 +871,10 @@ TEST_F(ServiceWorkerVersionTest, RequestCustomizedTimeout) {
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorTimeout,
             second_status.value());
 
-  EXPECT_FALSE(
-      version_->FinishRequest(first_request_id, true /* was_handled */));
+  EXPECT_FALSE(version_->FinishRequest(first_request_id, /*was_handled=*/true));
 
   EXPECT_FALSE(
-      version_->FinishRequest(second_request_id, true /* was_handled */));
+      version_->FinishRequest(second_request_id, /*was_handled=*/true));
   base::RunLoop().RunUntilIdle();
 
   // KILL_ON_TIMEOUT timeouts should stop the service worker.
@@ -915,8 +914,7 @@ TEST_F(ServiceWorkerVersionTest, MixedRequestTimeouts) {
   EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version_->running_status());
 
   // Gracefully handle the sync event finishing after the timeout.
-  EXPECT_FALSE(
-      version_->FinishRequest(sync_request_id, true /* was_handled */));
+  EXPECT_FALSE(version_->FinishRequest(sync_request_id, /*was_handled=*/true));
 
   // Verify that the fetch times out later.
   version_->SetAllRequestExpirations(base::TimeTicks::Now());
@@ -926,8 +924,7 @@ TEST_F(ServiceWorkerVersionTest, MixedRequestTimeouts) {
             fetch_status.value());
 
   // Fetch request should no longer exist.
-  EXPECT_FALSE(
-      version_->FinishRequest(fetch_request_id, true /* was_handled */));
+  EXPECT_FALSE(version_->FinishRequest(fetch_request_id, /*was_handled=*/true));
   base::RunLoop().RunUntilIdle();
 
   // Other timeouts do stop the service worker.
@@ -1090,7 +1087,7 @@ TEST_F(ServiceWorkerVersionTest, RendererCrashDuringEvent) {
   EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version_->running_status());
 
   // Request already failed, calling finish should return false.
-  EXPECT_FALSE(version_->FinishRequest(request_id, true /* was_handled */));
+  EXPECT_FALSE(version_->FinishRequest(request_id, /*was_handled=*/true));
 }
 
 TEST_F(ServiceWorkerVersionTest, PingController) {

@@ -906,8 +906,9 @@ void ServiceWorkerGlobalScope::DidHandleInstallEvent(
       TRACE_ID_WITH_SCOPE(kServiceWorkerGlobalScopeTraceScope,
                           TRACE_ID_LOCAL(install_event_id)),
       TRACE_EVENT_FLAG_FLOW_IN, "status", MojoEnumToString(status));
+  GlobalFetch::ScopedFetcher* fetcher = GlobalFetch::ScopedFetcher::From(*this);
   RunEventCallback(&install_event_callbacks_, event_queue_.get(),
-                   install_event_id, status);
+                   install_event_id, status, fetcher->FetchCount());
 }
 
 void ServiceWorkerGlobalScope::DidHandleActivateEvent(
@@ -1678,7 +1679,20 @@ void ServiceWorkerGlobalScope::DispatchInstallEvent(
   event_queue_->EnqueueNormal(
       WTF::Bind(&ServiceWorkerGlobalScope::StartInstallEvent,
                 WrapWeakPersistent(this), std::move(callback)),
-      CreateAbortCallback(&install_event_callbacks_), base::nullopt);
+      WTF::Bind(&ServiceWorkerGlobalScope::AbortInstallEvent,
+                WrapWeakPersistent(this)),
+      base::nullopt);
+}
+
+void ServiceWorkerGlobalScope::AbortInstallEvent(
+    int event_id,
+    mojom::blink::ServiceWorkerEventStatus status) {
+  DCHECK(IsContextThread());
+  auto iter = install_event_callbacks_.find(event_id);
+  DCHECK(iter != install_event_callbacks_.end());
+  GlobalFetch::ScopedFetcher* fetcher = GlobalFetch::ScopedFetcher::From(*this);
+  std::move(iter->value).Run(status, fetcher->FetchCount());
+  install_event_callbacks_.erase(iter);
 }
 
 void ServiceWorkerGlobalScope::StartInstallEvent(

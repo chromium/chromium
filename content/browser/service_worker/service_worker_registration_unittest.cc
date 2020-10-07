@@ -579,7 +579,7 @@ TEST_P(ServiceWorkerActivationTest, NoInflightRequest) {
             version_1_service_worker()->idle_delay().value());
 
   // Finish the request. Activation should happen.
-  version_1->FinishRequest(inflight_request_id(), true /* was_handled */);
+  version_1->FinishRequest(inflight_request_id(), /*was_handled=*/true);
   EXPECT_EQ(version_1.get(), reg->active_version());
   RequestTermination(&version_1_client()->host());
 
@@ -608,7 +608,7 @@ TEST_P(ServiceWorkerActivationTest, SkipWaitingWithInflightRequest) {
   // Finish the request. FinishRequest() doesn't immediately make the worker
   // reach the "no work" state. It needs to be notfied of the idle state by
   // RequestTermination().
-  version_1->FinishRequest(inflight_request_id(), true /* was_handled */);
+  version_1->FinishRequest(inflight_request_id(), /*was_handled=*/true);
 
   EXPECT_EQ(version_1.get(), reg->active_version());
   RequestTermination(&version_1_client()->host());
@@ -629,7 +629,7 @@ TEST_P(ServiceWorkerActivationTest, SkipWaiting) {
 
   // Finish the in-flight request. Since there is a controllee,
   // activation should not happen.
-  version_1->FinishRequest(inflight_request_id(), true /* was_handled */);
+  version_1->FinishRequest(inflight_request_id(), /*was_handled=*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(version_1.get(), reg->active_version());
 

@@ -674,12 +674,19 @@ ServiceWorkerExternalRequestResult ServiceWorkerVersion::StartExternalRequest(
 }
 
 bool ServiceWorkerVersion::FinishRequest(int request_id, bool was_handled) {
+  return FinishRequestWithFetchCount(request_id, was_handled,
+                                     /*fetch_count=*/0);
+}
+
+bool ServiceWorkerVersion::FinishRequestWithFetchCount(int request_id,
+                                                       bool was_handled,
+                                                       uint32_t fetch_count) {
   InflightRequest* request = inflight_requests_.Lookup(request_id);
   if (!request)
     return false;
   ServiceWorkerMetrics::RecordEventDuration(
       request->event_type, tick_clock_->NowTicks() - request->start_time_ticks,
-      was_handled);
+      was_handled, fetch_count);
 
   TRACE_EVENT_ASYNC_END1("ServiceWorker", "ServiceWorkerVersion::Request",
                          request, "Handled", was_handled);
@@ -709,7 +716,7 @@ ServiceWorkerExternalRequestResult ServiceWorkerVersion::FinishExternalRequest(
   if (iter != external_request_uuid_to_request_id_.end()) {
     int request_id = iter->second;
     external_request_uuid_to_request_id_.erase(iter);
-    return FinishRequest(request_id, true)
+    return FinishRequest(request_id, /*was_handled=*/true)
                ? ServiceWorkerExternalRequestResult::kOk
                : ServiceWorkerExternalRequestResult::kBadRequestId;
   }

@@ -315,19 +315,33 @@ void ServiceWorkerMetrics::RecordActivateEventStatus(
 }
 
 void ServiceWorkerMetrics::RecordInstallEventStatus(
-    blink::ServiceWorkerStatusCode status) {
-  UMA_HISTOGRAM_ENUMERATION("ServiceWorker.InstallEventStatus", status);
+    blink::ServiceWorkerStatusCode status,
+    uint32_t fetch_count) {
+  base::UmaHistogramEnumeration("ServiceWorker.InstallEvent.All.Status",
+                                status);
+  base::UmaHistogramCounts1000("ServiceWorker.InstallEvent.All.FetchCount",
+                               fetch_count);
+  if (fetch_count > 0) {
+    base::UmaHistogramEnumeration("ServiceWorker.InstallEvent.WithFetch.Status",
+                                  status);
+  }
 }
 
 void ServiceWorkerMetrics::RecordEventDuration(EventType event,
                                                base::TimeDelta time,
-                                               bool was_handled) {
+                                               bool was_handled,
+                                               uint32_t fetch_count) {
   switch (event) {
     case EventType::ACTIVATE:
       UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.ActivateEvent.Time", time);
       break;
     case EventType::INSTALL:
-      UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.InstallEvent.Time", time);
+      base::UmaHistogramMediumTimes("ServiceWorker.InstallEvent.All.Time",
+                                    time);
+      if (fetch_count) {
+        base::UmaHistogramMediumTimes(
+            "ServiceWorker.InstallEvent.WithFetch.Time", time);
+      }
       break;
     case EventType::FETCH_MAIN_FRAME:
     case EventType::FETCH_SUB_FRAME:

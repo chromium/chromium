@@ -195,8 +195,11 @@ interface ServiceWorker {
 
   // These methods dispatch InstallEvent and ActivateEvent to the
   // ServiceWorkerGlobalScope.
+  // The |fetch_count| return value is the number of network fetches performed
+  // from the service worker context during the event handler.  This is used
+  // for metrics.
   DispatchInstallEvent()
-      => (ServiceWorkerEventStatus status);
+      => (ServiceWorkerEventStatus status, uint32 fetch_count);
   DispatchActivateEvent()
       => (ServiceWorkerEventStatus status);
 
