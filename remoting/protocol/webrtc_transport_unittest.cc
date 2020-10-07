@@ -11,7 +11,11 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
+#include "base/threading/platform_thread.h"
+#include "base/threading/watchdog.h"
+#include "base/time/time.h"
 #include "jingle/glue/thread_wrapper.h"
 #include "net/base/io_buffer.h"
 #include "net/url_request/url_request_context_getter.h"
@@ -34,6 +38,9 @@ namespace {
 
 const char kChannelName[] = "test_channel";
 const char kAuthKey[] = "test_auth_key";
+
+constexpr base::TimeDelta kWaitForThreadJoinTimeout =
+    base::TimeDelta::FromMilliseconds(200);
 
 class TestTransportEventHandler : public WebrtcTransport::EventHandler {
  public:
@@ -147,6 +154,21 @@ class TestMessagePipeEventHandler : public MessagePipe::EventHandler {
   DISALLOW_COPY_AND_ASSIGN(TestMessagePipeEventHandler);
 };
 
+class FakeThreadJoinWatchdog : public base::Watchdog {
+ public:
+  explicit FakeThreadJoinWatchdog(bool* alarm_triggered)
+      : base::Watchdog(kWaitForThreadJoinTimeout,
+                       "Fake Thread Join Watchdog",
+                       /* enabled= */ true),
+        alarm_triggered_(alarm_triggered) {}
+  ~FakeThreadJoinWatchdog() override = default;
+
+  void Alarm() override { *alarm_triggered_ = true; }
+
+ private:
+  bool* alarm_triggered_;
+};
+
 }  // namespace
 
 class WebrtcTransportTest : public testing::Test {
@@ -184,24 +206,35 @@ class WebrtcTransportTest : public testing::Test {
   }
 
   void InitializeConnection() {
-    host_transport_.reset(
-        new WebrtcTransport(jingle_glue::JingleThreadWrapper::current(),
-                            TransportContext::ForTests(TransportRole::SERVER),
-                            &host_event_handler_));
+    host_transport_ = std::make_unique<WebrtcTransport>(
+        jingle_glue::JingleThreadWrapper::current(),
+        TransportContext::ForTests(TransportRole::SERVER),
+        &host_event_handler_);
+
+    host_transport_->SetThreadJoinWatchdogForTests(
+        std::make_unique<FakeThreadJoinWatchdog>(
+            &host_thread_join_alarm_triggered_));
+
     // If offer_to_receive_video and offer_to_receive_audio are both false,
     // there must be a stream present in order to generate a valid SDP offer.
     host_transport_->peer_connection()->AddTransceiver(
         cricket::MEDIA_TYPE_VIDEO);
 
-    host_authenticator_.reset(new FakeAuthenticator(FakeAuthenticator::ACCEPT));
+    host_authenticator_ =
+        std::make_unique<FakeAuthenticator>(FakeAuthenticator::ACCEPT);
     host_authenticator_->set_auth_key(kAuthKey);
 
-    client_transport_.reset(
-        new WebrtcTransport(jingle_glue::JingleThreadWrapper::current(),
-                            TransportContext::ForTests(TransportRole::CLIENT),
-                            &client_event_handler_));
-    client_authenticator_.reset(
-        new FakeAuthenticator(FakeAuthenticator::ACCEPT));
+    client_transport_ = std::make_unique<WebrtcTransport>(
+        jingle_glue::JingleThreadWrapper::current(),
+        TransportContext::ForTests(TransportRole::CLIENT),
+        &client_event_handler_);
+
+    client_transport_->SetThreadJoinWatchdogForTests(
+        std::make_unique<FakeThreadJoinWatchdog>(
+            &client_thread_join_alarm_triggered_));
+
+    client_authenticator_ =
+        std::make_unique<FakeAuthenticator>(FakeAuthenticator::ACCEPT);
     client_authenticator_->set_auth_key(kAuthKey);
   }
 
@@ -236,7 +269,7 @@ class WebrtcTransportTest : public testing::Test {
         base::BindRepeating(&WebrtcTransportTest::QuitRunLoopOnCounter,
                             base::Unretained(this), &counter));
 
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
 
     host_event_handler_.set_connected_callback({});
@@ -311,10 +344,12 @@ class WebrtcTransportTest : public testing::Test {
   std::unique_ptr<WebrtcTransport> host_transport_;
   TestTransportEventHandler host_event_handler_;
   std::unique_ptr<FakeAuthenticator> host_authenticator_;
+  bool host_thread_join_alarm_triggered_ = false;
 
   std::unique_ptr<WebrtcTransport> client_transport_;
   TestTransportEventHandler client_event_handler_;
   std::unique_ptr<FakeAuthenticator> client_authenticator_;
+  bool client_thread_join_alarm_triggered_ = false;
 
   std::unique_ptr<MessagePipe> client_message_pipe_;
   TestMessagePipeEventHandler client_message_pipe_event_handler_;
@@ -338,7 +373,7 @@ TEST_F(WebrtcTransportTest, InvalidAuthKey) {
   client_authenticator_->set_auth_key("Incorrect Key");
   StartConnection();
 
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
 
   EXPECT_EQ(AUTHENTICATION_FAILED, client_error_);
@@ -353,7 +388,7 @@ TEST_F(WebrtcTransportTest, DataStream) {
   InitializeConnection();
   StartConnection();
 
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
 
   EXPECT_TRUE(client_message_pipe_);
@@ -363,7 +398,7 @@ TEST_F(WebrtcTransportTest, DataStream) {
   message.set_text("Hello");
   host_message_pipe_->Send(&message, {});
 
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   client_message_pipe_event_handler_.set_message_callback(
       run_loop_->QuitClosure());
   run_loop_->Run();
@@ -384,7 +419,7 @@ TEST_F(WebrtcTransportTest, DataStreamLate) {
   ExpectClientDataStream();
   CreateHostDataStream();
 
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
 
   EXPECT_TRUE(client_message_pipe_);
@@ -399,7 +434,7 @@ TEST_F(WebrtcTransportTest, TerminateDataChannel) {
   ExpectClientDataStream();
   CreateHostDataStream();
 
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
 
   EXPECT_TRUE(client_message_pipe_);
@@ -416,12 +451,80 @@ TEST_F(WebrtcTransportTest, TerminateDataChannel) {
   // the other side.
   client_message_pipe_.reset();
 
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
 
   // Check that OnHostChannelClosed() has been called.
   EXPECT_EQ(OK, host_error_);
   EXPECT_FALSE(host_message_pipe_);
+}
+
+TEST_F(WebrtcTransportTest,
+       ThreadJoinBlockedDuringConnectionTeardown_WatchdogFired) {
+  InitializeConnection();
+
+  int counter = 2;
+  auto block_before_disarm = base::BindLambdaForTesting([&]() {
+    base::PlatformThread::Sleep(kWaitForThreadJoinTimeout * 2);
+    QuitRunLoopOnCounter(&counter);
+  });
+
+  host_transport_->SetBeforeDisarmThreadJoinWatchdogCallbackForTests(
+      block_before_disarm);
+  client_transport_->SetBeforeDisarmThreadJoinWatchdogCallbackForTests(
+      block_before_disarm);
+
+  StartConnection();
+  WaitUntilConnected();
+
+  ExpectClientDataStream();
+  CreateHostDataStream();
+
+  // Run loop for starting the data stream.
+  run_loop_ = std::make_unique<base::RunLoop>();
+  run_loop_->Run();
+
+  // Run loop for deleting the transports.
+  run_loop_ = std::make_unique<base::RunLoop>();
+  host_transport_.reset();
+  client_transport_.reset();
+  run_loop_->Run();
+
+  EXPECT_EQ(true, host_thread_join_alarm_triggered_);
+  EXPECT_EQ(true, client_thread_join_alarm_triggered_);
+}
+
+TEST_F(WebrtcTransportTest,
+       ThreadJoinNotBlockedDuringConnectionTeardown_WatchdogNotFired) {
+  InitializeConnection();
+
+  int counter = 2;
+  auto not_block_before_disarm =
+      base::BindLambdaForTesting([&]() { QuitRunLoopOnCounter(&counter); });
+
+  host_transport_->SetBeforeDisarmThreadJoinWatchdogCallbackForTests(
+      not_block_before_disarm);
+  client_transport_->SetBeforeDisarmThreadJoinWatchdogCallbackForTests(
+      not_block_before_disarm);
+
+  StartConnection();
+  WaitUntilConnected();
+
+  ExpectClientDataStream();
+  CreateHostDataStream();
+
+  // Run loop for starting the data stream.
+  run_loop_ = std::make_unique<base::RunLoop>();
+  run_loop_->Run();
+
+  // Run loop for deleting the transports.
+  run_loop_ = std::make_unique<base::RunLoop>();
+  host_transport_.reset();
+  client_transport_.reset();
+  run_loop_->Run();
+
+  EXPECT_EQ(false, host_thread_join_alarm_triggered_);
+  EXPECT_EQ(false, client_thread_join_alarm_triggered_);
 }
 
 }  // namespace protocol
