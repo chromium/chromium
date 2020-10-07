@@ -10,5 +10,3 @@ per-file *.java=file://chromecast/android/OWNERS
 alexst@chromium.org
 dnicoara@chromium.org
 spang@chromium.org
-
-# COMPONENT: Chromecast
