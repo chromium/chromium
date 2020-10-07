@@ -20,8 +20,7 @@ namespace file_manager {
 class FileManagerUITest : public InProcessBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // --disable-web-security required to load resources from
-    // files and from chrome://resources/... urls.
+    // --disable-web-security required to load resources from files.
     command_line->AppendSwitch(switches::kDisableWebSecurity);
   }
 
