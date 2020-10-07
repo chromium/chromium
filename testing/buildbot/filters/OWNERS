@@ -6,6 +6,3 @@ per-file fuchsia*=file://build/fuchsia/OWNERS
 # If adding an exclusion for an existing failure (e.g. additional test for
 # feature X that is already not working), please add it beside the existing
 # failures. Otherwise please reach out to network-service-dev@.
-
-# TEAM: infra-dev@chromium.org
-# COMPONENT: Infra>Client>Chrome

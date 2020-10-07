@@ -27,6 +27,3 @@ per-file *oobe*=file://chrome/browser/ui/webui/chromeos/login/OWNERS
 # See crbug.com/1041619.
 per-file variants.pyl=rmhasan@google.com
 per-file variants.pyl=estaab@chromium.org
-
-# TEAM: infra-dev@chromium.org
-# COMPONENT: Infra>Client>Chrome

@@ -4,5 +4,3 @@ file://base/metrics/OWNERS
 #  - You work in the same area as them.
 #  - They are already aware of the field trial being modified.
 per-file fieldtrial_testing_config.json=tbansal@chromium.org
-
-# COMPONENT: Internals>Metrics>Variations
