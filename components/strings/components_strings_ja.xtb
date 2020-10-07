@@ -134,6 +134,7 @@
 <translation id="1453974140256777690">貼り付けまたは添付したテキストは分析のため Google Cloud または第三者に送信されます。たとえば、機密データがないかスキャンされます。</translation>
 <translation id="1455413310270022028">消しゴム</translation>
 <translation id="1462245070427461050">JIS B9</translation>
+<translation id="1462951478840426066">パソコンのフォントを使用して高品質のコンテンツを作成できます</translation>
 <translation id="1463543813647160932">5×7</translation>
 <translation id="1467432559032391204">左</translation>
 <translation id="1472675084647422956">表示項目を増やす</translation>
@@ -221,6 +222,7 @@
 <translation id="17513872634828108">開いているタブ</translation>
 <translation id="1752021286346845558">用紙受け 8</translation>
 <translation id="1753706481035618306">ページ番号</translation>
+<translation id="1757773103848038814">Monospace フォント</translation>
 <translation id="1763864636252898013">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は、ご使用のデバイスのオペレーティング システムによって信頼されているものではありません。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows ネットワーク診断ツールを実行してみてください<ph name="END_LINK" />。</translation>
 <translation id="1772163372082567643">アクセスしているサーバー <ph name="ORIGIN" /> では、サーバーへのすべてのリクエストにオリジン ポリシーを適用することを求めるヘッダーが設定されていますが、ヘッダーの形式が正しくないため、ブラウザは <ph name="SITE" /> のリクエストを満たすことができません。オリジン ポリシーは、サイトのセキュリティやその他のプロパティを設定する目的でサイト運営者が使用するものです。</translation>
@@ -588,6 +590,7 @@
 <translation id="3395827396354264108">受け取り方法</translation>
 <translation id="3399952811970034796">配達先住所</translation>
 <translation id="3402261774528610252">このサイトの読み込みで、TLS 1.0 または TLS 1.1 の接続が使用されました。これらの TLS バージョンのサポートは終了し、今後無効となる予定です。無効になると、このサイトは読み込めなくなります。サーバーで TLS 1.2 以降を有効にする必要があります。</translation>
+<translation id="3411120537985775570"><ph name="ORIGIN_NAME" /> からこの場所への貼り付けは管理者によってブロックされています</translation>
 <translation id="3414952576877147120">サイズ:</translation>
 <translation id="3417660076059365994">アップロードまたは添付したファイルは分析のため Google Cloud または第三者に送信されます。たとえば、機密データやマルウェアがないかスキャンされます。</translation>
 <translation id="3422248202833853650">メモリを解放するために、他のプログラムを終了してみてください。</translation>
@@ -626,6 +629,7 @@
 <translation id="3532844647053365774"><ph name="HOST" /> から、マイクの使用許可を求められています</translation>
 <translation id="3533328374079021623">用紙受け 5</translation>
 <translation id="3539171420378717834">このデバイスにこのカード情報のコピーを保存する</translation>
+<translation id="3552297013052089404">Sans Serif フォント</translation>
 <translation id="3558573058928565255">日中</translation>
 <translation id="3566021033012934673">この接続ではプライバシーが保護されません</translation>
 <translation id="3567778190852720481">企業アカウントでは登録できません（企業アカウントは利用できません）。</translation>
@@ -990,6 +994,7 @@
 <translation id="503069730517007720">「<ph name="SOFTWARE_NAME" />」のルート証明書が必要ですが、インストールされていません。IT 管理者に、「<ph name="SOFTWARE_NAME" />」の設定手順を確認したうえでこの問題を修正するよう依頼してください。<ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google 翻訳について</translation>
 <translation id="503498442187459473"><ph name="HOST" /> から、カメラとマイクの使用許可を求められています</translation>
+<translation id="5039762155821394373">フォントサイズ</translation>
 <translation id="5039804452771397117">許可</translation>
 <translation id="5040262127954254034">プライバシー</translation>
 <translation id="5043480802608081735">コピーしたリンク</translation>
@@ -1256,6 +1261,7 @@
 <translation id="6051221802930200923"><ph name="SITE" /> では証明書ピンニングが使用されているため、現在アクセスできません。通常、ネットワーク エラーやネットワークへの攻撃は一時的なものです。しばらくするとページにアクセスできるようになります。</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">ご自分のアクティブ状態を共有しますか？</translation>
+<translation id="6057359309778282021">管理者が <ph name="ORIGIN_NAME" /> から <ph name="VM_NAME" /> への共有をブロックしました</translation>
 <translation id="6058977677006700226">お使いのどのデバイスでも同じカードを使用できるようにしますか？</translation>
 <translation id="6059925163896151826">USB デバイス</translation>
 <translation id="6060009363608157444">無効な DnsOverHttps モードです。</translation>
@@ -1305,6 +1311,7 @@
         <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">この住所には配達できません。別の住所を選択してください。</translation>
 <translation id="6282194474023008486">郵便番号</translation>
+<translation id="6289939620939689042">ページの色</translation>
 <translation id="6290238015253830360">おすすめの記事がここに表示されます</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Chrome の Google アシスタントを停止しています</translation>
@@ -1461,6 +1468,7 @@
 <translation id="7004583254764674281">Windows Hello を使用してカードをすばやく確認する</translation>
 <translation id="7006930604109697472">このまま送信</translation>
 <translation id="7012363358306927923">中国銀聯</translation>
+<translation id="7014741021609395734">ズームレベル</translation>
 <translation id="7016992613359344582">料金の請求は 1 回限りの場合も繰り返し行われる場合もあり、課金されたかどうかわからないこともあります。</translation>
 <translation id="7029809446516969842">パスワード</translation>
 <translation id="7031646650991750659">インストールした Google Play アプリ</translation>
@@ -1863,6 +1871,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">一致するパスワードがありません。保存したパスワードをすべて表示します。</translation>
 <translation id="8625384913736129811">このカード情報をこのデバイスに保存する</translation>
+<translation id="8657078576661269990">管理者が <ph name="ORIGIN_NAME" /> から <ph name="VM_NAME_1" /> および <ph name="VM_NAME_2" /> への共有をブロックしました</translation>
 <translation id="8663226718884576429">ご注文の概要、<ph name="TOTAL_LABEL" />、その他の詳細</translation>
 <translation id="867224526087042813">署名</translation>
 <translation id="8676424191133491403">今すぐ</translation>
@@ -1875,6 +1884,7 @@
 <translation id="8699041776323235191">HID デバイス</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> への接続は暗号化されていません。</translation>
 <translation id="8705331520020532516">シリアル番号</translation>
+<translation id="8710842507289500830">フォント スタイル</translation>
 <translation id="8718314106902482036">支払い処理を完了できませんでした</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />、<ph name="DESCRIPTION" />、検索候補</translation>
 <translation id="8719528812645237045">多穴パンチ（上）</translation>
@@ -1995,6 +2005,7 @@
 <translation id="9191834167571392248">パンチ（左下）</translation>
 <translation id="9205078245616868884">データは同期パスフレーズで暗号化されます。同期を開始するには、同期パスフレーズを入力してください。</translation>
 <translation id="9207861905230894330">記事を追加できませんでした。</translation>
+<translation id="9213433120051936369">デザインをカスタマイズする</translation>
 <translation id="9215416866750762878">アプリケーションが原因で、Chrome からこのサイトに安全に接続することができません</translation>
 <translation id="9219103736887031265">画像</translation>
 <translation id="933712198907837967">Diners Club</translation>

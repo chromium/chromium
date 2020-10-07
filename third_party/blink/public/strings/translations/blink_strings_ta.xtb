@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">வாரம் <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">டிராக் <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">செக்பாக்ஸ்</translation>
+<translation id="2307576640803031502">பட்டியலில் உள்ளது (<ph name="INDEX" />/<ph name="COUNT" />)</translation>
 <translation id="2311842470354187719">பக்க முறிப்பு</translation>
 <translation id="2335594187091864976">தேதி மற்றும் நேரம் தேர்வுக் கருவி</translation>
 <translation id="2393030564806080191">ஹெக்சாடெசிமல் வண்ண மதிப்பு</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />, <ph name="WEEK_START_DATE" /> அன்று தொடங்குவது</translation>
 <translation id="916607977885256133">பிக்ச்சர்-இன்-பிக்ச்சர்</translation>
 <translation id="9168329111483466115">அடிக்குறிப்பு</translation>
+<translation id="945780513535800434">சில மட்டுமே தேர்ந்தெடுக்கப்பட்டுள்ளன</translation>
 <translation id="954003015749068518">பிக்ச்சர்-இன்-பிக்ச்சர் பயன்முறைக்குச் செல்லும்</translation>
 <translation id="966787709310836684">மெனு</translation>
 </translationbundle>

@@ -126,7 +126,7 @@
 <translation id="1963976881984600709">标准保护</translation>
 <translation id="1966710179511230534">请更新您的登录详细信息。</translation>
 <translation id="1974060860693918893">高级</translation>
-<translation id="1984417487208496350">不提供任何保护（不建议）</translation>
+<translation id="1984417487208496350">不保护（不建议）</translation>
 <translation id="1984705450038014246">同步 Chrome 数据</translation>
 <translation id="1986685561493779662">名称已存在</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" />按钮</translation>
@@ -344,6 +344,7 @@
 <translation id="3568688522516854065">要访问您在其他设备上的标签页，请登录您的帐号并开启同步功能</translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3587596251841506391">帮助我们改善网络安全环境</translation>
+<translation id="3598653140581545904">在无痕模式下登录</translation>
 <translation id="3599863153486145794">清除所有登录过的设备上的历史记录。您的 Google 帐号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="3602290021589620013">预览</translation>
 <translation id="3616113530831147358">音频</translation>
@@ -385,6 +386,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">合并我的数据</translation>
 <translation id="393697183122708255">无法启用语音搜索功能</translation>
+<translation id="3943557322767080599">当您登录 Google 帐号时，向您显示 Chrome 登录提示</translation>
 <translation id="395206256282351086">搜索和网站建议已停用</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{待准备就绪后，Chrome 即会加载您的网页}other{待准备就绪后，Chrome 即会加载您的网页}}</translation>
 <translation id="3963007978381181125">密码加密不包括 Google Pay 中的付款方式和地址。只有知道您密码的人才能读取您的已加密数据。系统不会将该密码发送给 Google，Google 也不会存储该密码。如果您忘记了密码或想更改此设置，则需重置同步设置。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -660,6 +662,7 @@
 <translation id="5937580074298050696">已节省 <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">重置</translation>
 <translation id="5942872142862698679">目前使用的搜索引擎是 Google</translation>
+<translation id="5951119116059277034">正在显示实际网页</translation>
 <translation id="5951615825629292797">可以使用此语言了，请重启 <ph name="APP_NAME" /></translation>
 <translation id="5952764234151283551">将您尝试访问的网页的网址发送给 Google</translation>
 <translation id="5956665950594638604">在新标签页中打开 Chrome 帮助中心</translation>
@@ -669,6 +672,7 @@
 <translation id="5964805880140440652">如果想将此页分享到其他设备，请在 Chrome 设置中开启同步</translation>
 <translation id="5964869237734432770">停止获取图片说明</translation>
 <translation id="5979084224081478209">检查密码</translation>
+<translation id="5982307838673692400">打开一个无痕式标签页</translation>
 <translation id="6000066717592683814">继续使用 Google</translation>
 <translation id="6005538289190791541">建议的密码</translation>
 <translation id="6014293228235665243">未读</translation>
@@ -698,6 +702,7 @@
 <translation id="6192907950379606605">获取图片说明</translation>
 <translation id="6206830853671714236">请选择下载时间</translation>
 <translation id="6210748933810148297">不是 <ph name="EMAIL" />？</translation>
+<translation id="6211386937064921208">正在预览此页</translation>
 <translation id="6218096829563201111">搜索类似商品<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">需解锁才能导出您的密码</translation>
 <translation id="6232535412751077445">如果您启用了“不跟踪”，您的浏览流量中将会包含一项请求。具体影响取决于网站是否会回应该请求以及如何解读该请求。
@@ -809,6 +814,9 @@
 <translation id="6900532703269623216">增强型保护</translation>
 <translation id="6903907808598579934">开启同步功能</translation>
 <translation id="6929699136511445623">启用 Android 系统同步</translation>
+<translation id="6941901516114974832">在无痕模式下，以下各方<ph name="BEGIN_BOLD1" />或许仍能看到<ph name="END_BOLD1" />您的活动：您访问的网站、您的雇主或学校，以及您的互联网服务提供商。
+
+仅当您<ph name="BEGIN_BOLD2" />关闭所有无痕式标签页<ph name="END_BOLD2" />后，系统才会从 Chrome 中清除在您的无痕式会话期间生成的数据。</translation>
 <translation id="6942665639005891494">使用“设置”菜单选项随时更改默认的下载内容保存位置</translation>
 <translation id="6945221475159498467">选择</translation>
 <translation id="6955535239952325894">在受管理的浏览器上，此设置已被停用</translation>

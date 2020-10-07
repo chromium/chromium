@@ -47,6 +47,7 @@
 <translation id="2247351761944213033">हप्ता <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ट्र्याक <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">जाँच बाकस</translation>
+<translation id="2307576640803031502">सूचीमा छ, <ph name="COUNT" /> मध्ये <ph name="INDEX" /> औँ वस्तु</translation>
 <translation id="2311842470354187719">पृष्ठ विच्छेद</translation>
 <translation id="2335594187091864976">मिति र समय टिप्ने</translation>
 <translation id="2393030564806080191">रङको हेक्साडेसिमल मान</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" /> , <ph name="WEEK_START_DATE" />मा सुरु गर्दै</translation>
 <translation id="916607977885256133">Picture in Picture</translation>
 <translation id="9168329111483466115">फुटनोट</translation>
+<translation id="945780513535800434">सबै विकल्पहरूमा चिन्ह लगाइएको छैन</translation>
 <translation id="954003015749068518">picture-in-picture मा प्रवेश गर्नुहोस्‌</translation>
 <translation id="966787709310836684">मेनु</translation>
 </translationbundle>

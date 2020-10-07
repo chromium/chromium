@@ -23,7 +23,7 @@
 <translation id="1553358976309200471">更新 Chrome</translation>
 <translation id="1587223624401073077">Google Chrome 正在使用您的相機。</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> 不安全，因此 Chrome 已封鎖此檔案。</translation>
-<translation id="1597911401261118146">如要檢查密碼是否安全，未受資料外洩或其他安全性問題影響，請<ph name="BEGIN_LINK" />登入 Chrome<ph name="END_LINK" />。</translation>
+<translation id="1597911401261118146">如要檢查密碼是否安全，且未受資料外洩或其他安全性問題影響，請<ph name="BEGIN_LINK" />登入 Chrome<ph name="END_LINK" />。</translation>
 <translation id="1619887657840448962">為鞏固 Chrome 的安全性，我們已將未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中的擴充功能停用，因為它們可能在您不知情的情況下加入瀏覽器。</translation>
 <translation id="162448658176061655">Chrome 每星期會檢查 1 次，查看有否垃圾軟件。上次檢查時間：剛才。</translation>
 <translation id="162629503687514352">Chrome 作業系統無法同步您的密碼。</translation>
@@ -84,7 +84,7 @@
 <translation id="3065168410429928842">Chrome 分頁</translation>
 <translation id="3080151273017101988">Google Chrome 關閉時繼續執行背景應用程式</translation>
 <translation id="3089968997497233615">Google Chrome 推出全新版本，安全性更勝從前。</translation>
-<translation id="3114643501466072395">如要檢查其他密碼是否安全，未受資料外洩或其他安全性問題影響，請<ph name="BEGIN_LINK" />登入 Chrome<ph name="END_LINK" />。</translation>
+<translation id="3114643501466072395">如要檢查其他密碼是否安全，且未受資料外洩或其他安全性問題影響，請<ph name="BEGIN_LINK" />登入 Chrome<ph name="END_LINK" />。</translation>
 <translation id="3127818369811890733">Chrome 作業系統無法同步您的資料。</translation>
 <translation id="3149510190863420837">Chrome 應用程式</translation>
 <translation id="3360895254066713204">Chrome 輔助工具</translation>

@@ -27,6 +27,7 @@
 <translation id="121097972571826261">শব্দ অনুসারে এগিয়ে যান</translation>
 <translation id="1225748608451425081">কোনও পরিচিত সমস্যার কারণে আপনার Chromebook লক হয়ে গেছে। আপনি এতক্ষণ পর আবার সাইন-ইন করতে পারবেন: <ph name="TIME_LEFT" />।</translation>
 <translation id="1229194443904279055">বেছে নেওয়ার কাজটি থামান</translation>
+<translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ফিচারটি কানেক্ট করা আছে।</translation>
 <translation id="1247372569136754018">মাইক্রোফোন (অভ্যন্তরীণ)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> থেকে চার্জ হচ্ছে</translation>
 <translation id="1255033239764210633">আবহাওয়া কি রকম?</translation>
@@ -74,6 +75,7 @@
 <translation id="1654477262762802994">ভয়েস কোয়েরি শুরু করুন</translation>
 <translation id="1667964833127753507">'নিউট্রাল কালার' মোড ওয়ালপেপার থেকে রং নিয়ে ব্যবহার করে না। এর পরিবর্তে নিউট্রাল টোনযুক্ত কিছু হালকা অথবা গাঢ় হিউ ব্যবহার করা হয়।</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> বাকি আছে</translation>
+<translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ফিচারটি কানেক্ট করা নেই।</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />-এর টাইমার · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 ঠিকানা: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">ডেস্ক: <ph name="DESK_NAME" /></translation>
@@ -145,6 +147,7 @@
 <translation id="2369165858548251131">চীনা ভাষায় "হ্যালো"</translation>
 <translation id="2390318262976603432">লোকেল সেটিংস</translation>
 <translation id="2391579633712104609">১৮০°</translation>
+<translation id="2405664212338326887">কানেক্ট করা নেই</translation>
 <translation id="2408955596600435184">আপনার পিন লিখুন</translation>
 <translation id="2412593942846481727">আপডেট উপলভ্য</translation>
 <translation id="2413728805700750528"><ph name="DOMAIN" /> দ্বারা পরিচালিত <ph name="DISPLAY_NAME" /> একটি পরিচালিত সেশন</translation>
@@ -243,6 +246,7 @@
 <translation id="3364721542077212959">স্টাইলাস টুল</translation>
 <translation id="3368922792935385530">সংযুক্ত</translation>
 <translation id="3371140690572404006">USB-C ডিভাইস (ডান দিকের সামনের পোর্ট)</translation>
+<translation id="3375634426936648815">কানেক্ট করা আছে</translation>
 <translation id="3386978599540877378">ফুল-স্ক্রিন ম্যাগনিফায়ার</translation>
 <translation id="3400357268283240774">আরও সেটিংস</translation>
 <translation id="3410336247007142655">'ডার্ক থিম' সেটিংস দেখুন</translation>
@@ -322,6 +326,7 @@
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
 <translation id="4195877955194704651">অটোমেটিক ক্লিক বোতাম</translation>
 <translation id="4197790712631116042">বন্ধ করা আছে</translation>
+<translation id="4201033867194214117"><ph name="FEATURE_NAME" /> উপলভ্য নেই।</translation>
 <translation id="4212246570487010370">ব্রাউজ করা চালিয়ে যান</translation>
 <translation id="4212472694152630271">যাচাইকরণের জন্য পিন ব্যবহার করুন</translation>
 <translation id="4215497585250573029">ভিপিএন সেটিংস</translation>
@@ -333,6 +338,7 @@
 <translation id="4285498937028063278">আনপিন</translation>
 <translation id="4294319844246081198">সুপ্রভাত <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875"><ph name="COUNT" />টি বিজ্ঞপ্তি মুছে ফেলুন</translation>
+<translation id="4302592941791324970">উপলভ্য নেই</translation>
 <translation id="4303223480529385476">স্ট্যাটাস এরিয়া বড় করুন</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">উচ্চ কনট্রাস্টের জন্য আপনি কীবোর্ড শর্টকাট টিপেছেন। আপনি কি এটি চালু করতে চান?</translation>
@@ -426,6 +432,7 @@
 <translation id="5302048478445481009">ভাষা</translation>
 <translation id="5313326810920013265">ব্লুটুথ সেটিংস</translation>
 <translation id="5314219114274263156">স্ক্রিন রেকর্ডিং করা হয়েছে</translation>
+<translation id="5329548388331921293">কানেক্ট করা হচ্ছে...</translation>
 <translation id="5331975486040154427">USB-C ডিভাইস (বাঁ দিকের পিছনের পোর্ট)</translation>
 <translation id="5352250171825660495">ডার্ক থিম চালু আছে</translation>
 <translation id="5379115545237091094">অনেক বেশি চেষ্টা করেছেন</translation>
@@ -439,6 +446,7 @@
 <translation id="5465662442746197494">সাহায্য চান?</translation>
 <translation id="5496819745535887422">আপনার অ্যাডমিনিস্ট্রেটর আপনার ডিভাইসটি রোল ব্যাক করেছেন। ডিভাইসটি রিস্টার্টের সময় সমস্ত ডেটা মুছে ফেলা হবে।</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5523434445161341166"><ph name="FEATURE_NAME" /> কানেক্ট করা হচ্ছে।</translation>
 <translation id="553675580533261935">সেশন থেকে প্রস্থান করছে</translation>
 <translation id="5537725057119320332">কাস্ট করুন</translation>
 <translation id="5548285847212963613">"<ph name="EXTENSION_NAME" />" এক্সটেনশনটি এই নেটওয়ার্কের সাথে সংযোগ স্থাপন করতে সাহায্য করতে পারে৷</translation>

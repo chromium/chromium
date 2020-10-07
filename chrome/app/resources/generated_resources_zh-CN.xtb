@@ -123,6 +123,7 @@
 <translation id="1134009406053225289">在无痕式窗口中打开</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />。第 <ph name="EMOJI_INDEX" /> 个，共 <ph name="EMOJI_COUNT" /> 个。</translation>
 <translation id="1136712381129578788">此安全密钥已被锁定，因为您输错 PIN 码的次数过多。要解锁此密钥，请先将其拔出，然后再重新插入。</translation>
+<translation id="1137589305610962734">临时数据</translation>
 <translation id="1137673463384776352">在<ph name="APP" />中打开链接</translation>
 <translation id="1139343347646843679">配置 Linux 时出错。请与您的管理员联系。</translation>
 <translation id="1140351953533677694">访问您的蓝牙和串行设备</translation>
@@ -867,7 +868,7 @@
 <translation id="1979095679518582070">关闭这项功能，设备仍然可以发送基本服务（例如系统更新和安全服务）所需的信息。</translation>
 <translation id="1979280758666859181">您正将版本更改为较旧版的 <ph name="PRODUCT_NAME" />。该版本的版本号必须与您设备上目前所安装版本的版本号相符，版本变更才会生效。</translation>
 <translation id="197989455406964291">KDC 不支持加密类型</translation>
-<translation id="1984417487208496350">不提供任何保护（不建议）</translation>
+<translation id="1984417487208496350">不保护（不建议）</translation>
 <translation id="1987317783729300807">帐号</translation>
 <translation id="1988494864246143197">网站通常会使用 Flash 来播放音频、视频或视频游戏。2020 年 12 月之后，Flash Player 将不再受支持。</translation>
 <translation id="1989112275319619282">浏览</translation>
@@ -981,6 +982,7 @@
 <translation id="2131077480075264">“<ph name="IMPORT_NAME" />”不允许安装“<ph name="APP_NAME" />”，因为无法进行此项安装</translation>
 <translation id="21354425047973905">隐藏 PIN 码</translation>
 <translation id="2135456203358955318">停靠的放大镜</translation>
+<translation id="2135468118189259524">如需了解 Google 会收集哪些数据及其原因，请访问 <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" />。</translation>
 <translation id="2135787500304447609">继续(&amp;R)</translation>
 <translation id="2136372518715274136">输入新密码</translation>
 <translation id="2136476978468204130">您输入的密码不正确</translation>
@@ -3640,6 +3642,7 @@
 <translation id="5307030433605830021">来源不受支持</translation>
 <translation id="5308380583665731573">连接</translation>
 <translation id="5310281978693206542">将链接发送到您的设备</translation>
+<translation id="531118851858162334">此商品是系统基于您以前使用 Google 服务进行的活动向您显示的。您可在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上查看/删除自己的数据或更改设置。</translation>
 <translation id="5311304534597152726">正在使用以下身份登录：</translation>
 <translation id="5311565231560644461">不允许网站使用您的虚拟实境设备和数据</translation>
 <translation id="5314381603623123224">Chrome 的《服务条款》将于 3 月 31 日变更</translation>
@@ -6228,6 +6231,7 @@
 <translation id="8378714024927312812">由贵单位管理</translation>
 <translation id="8379878387931047019">此设备不支持该网站要求使用的安全密钥的类型</translation>
 <translation id="8379991678458444070">只需为此标签页添加书签，便可在需要时快速返回到此处</translation>
+<translation id="8380266723152870797">窗口名称</translation>
 <translation id="8382384117483909115">{NUM_TABS,plural, =1{稍后阅读这个标签页}other{稍后阅读这些标签页}}</translation>
 <translation id="8382913212082956454">复制电子邮件地址(&amp;E)</translation>
 <translation id="8386091599636877289">找不到此政策。</translation>
@@ -6392,6 +6396,7 @@
 <translation id="8592141010104017453">完全不显示通知</translation>
 <translation id="859246725979739260">此网站无法使用您的位置信息。</translation>
 <translation id="8593121833493516339">发送使用情况数据和诊断数据。通过自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您孩子的 Android 使用体验。这些数据不会被用来辨识您孩子的身份，而是会被用来帮助提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据也会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 帐号中。<ph name="BEGIN_LINK1" />了解详情<ph name="END_LINK1" /></translation>
+<translation id="8593735906501637689">已移除“<ph name="MODULE_TITLE" />”</translation>
 <translation id="8594908476761052472">拍摄视频</translation>
 <translation id="8596540852772265699">自定义文件</translation>
 <translation id="8597845839771543242">属性格式：</translation>

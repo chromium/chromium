@@ -9,7 +9,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1098170124587656448">Chromium peut vous aider à vous protéger, entre autres, contre les violations de données et les extensions malveillantes</translation>
 <translation id="1104942323762546749">Chromium veut exporter vos mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
 <translation id="113122355610423240">Chromium est votre navigateur par défaut</translation>
-<translation id="1131805035311359397">Pour vérifier si vos mots de passe sont en sécurité contre les violations de données et d'autres risques de sécurité <ph name="BEGIN_LINK" />connectez-vous à Chromium<ph name="END_LINK" />.</translation>
+<translation id="1131805035311359397">Pour vérifier si vos mots de passe sont en sécurité contre les violations de données et d'autres risques de sécurité, <ph name="BEGIN_LINK" />connectez-vous à Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">À propos de Chromium</translation>
 <translation id="1315551408014407711">Configurer votre nouveau profil Chromium</translation>
 <translation id="1396446129537741364">Chromium essaie d'afficher les mots de passe.</translation>
@@ -27,7 +27,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1929939181775079593">Chromium ne répond pas. Voulez-vous le relancer maintenant?</translation>
 <translation id="1966382378801805537">Chromium ne parvient pas à déterminer quel est le navigateur par défaut ou à le définir</translation>
 <translation id="2008474315282236005">Cette action entraînera la suppression d'un élément de cet appareil. Pour récupérer vos données plus tard, connectez-vous à Chromium en tant que <ph name="USER_EMAIL" />.</translation>
-<translation id="2020032459870799438">Pour vérifier si vos autres mots de passe sont en sécurité contre les violations de données et d'autres risques de sécurité <ph name="BEGIN_LINK" />connectez-vous à Chromium<ph name="END_LINK" />.</translation>
+<translation id="2020032459870799438">Pour vérifier si vos autres mots de passe sont en sécurité contre les violations de données et d'autres risques de sécurité, <ph name="BEGIN_LINK" />connectez-vous à Chromium<ph name="END_LINK" />.</translation>
 <translation id="2185166961232948079">Chromium – Connexion au réseau – <ph name="PAGE_TITLE" /></translation>
 <translation id="2225696941839557119">Chromium OS n'a pas pu synchroniser vos mots de passe.</translation>
 <translation id="2241627712206172106">Si vous partagez un ordinateur avec vos proches, ceux-ci peuvent configurer Google Chrome comme bon leur semble et naviguer sur le Web à leur manière.</translation>

@@ -670,6 +670,7 @@
 <translation id="5958275228015807058">[ダウンロード] で自分のファイルやページを探すことができます</translation>
 <translation id="5962718611393537961">タップして折りたたむ</translation>
 <translation id="5964805880140440652">このページを別のデバイスと共有するには、Chrome 設定で同期をオンにしてください</translation>
+<translation id="5964869237734432770">画像の説明文の取得を停止する</translation>
 <translation id="5979084224081478209">パスワードを確認</translation>
 <translation id="5982307838673692400">シークレット タブを開く</translation>
 <translation id="6000066717592683814">Google のままにする</translation>
@@ -698,6 +699,7 @@
 <translation id="6157392216611456285"><ph name="APP_NAME" /> を選択する</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> のデータを削減</translation>
 <translation id="6186394685773237175">漏洩した可能性のあるパスワードは見つかりませんでした</translation>
+<translation id="6192907950379606605">画像の説明文を取得する</translation>
 <translation id="6206830853671714236">ダウンロード日時の選択</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ではありませんか？</translation>
 <translation id="6211386937064921208">このページのプレビューを表示しています</translation>
@@ -767,6 +769,7 @@
 <translation id="6590471736817333463">最大 60% のデータを節約</translation>
 <translation id="6590680911007613645">保存するパスワードが <ph name="SITE" /> のパスワードと一致していることを確認してください</translation>
 <translation id="6593061639179217415">PC 版サイト</translation>
+<translation id="6595046016124923392">説明文を生成するために画像が Google に送信されます。</translation>
 <translation id="6597891566292541626">QR コードまたはバーコードをこの枠内に合わせてください。</translation>
 <translation id="6600954340915313787">Chrome にコピー済み</translation>
 <translation id="661266467055912436">すべてのウェブユーザーの安全性を高めます。</translation>
@@ -828,6 +831,7 @@
 <translation id="702463548815491781">TalkBack またはスイッチ アクセスを有効にしている場合におすすめです</translation>
 <translation id="7029809446516969842">パスワード</translation>
 <translation id="703523980599857277">ホームページを変更</translation>
+<translation id="7054588988317389591">画像の説明文を取得しますか？</translation>
 <translation id="7055152154916055070">リダイレクトがブロックされました</translation>
 <translation id="7063006564040364415">同期サーバーに接続できませんでした。</translation>
 <translation id="7071521146534760487">アカウントを管理</translation>
@@ -859,6 +863,7 @@
 <translation id="729975465115245577">お使いのデバイスにはパスワード ファイルを保存するためのアプリがインストールされていません。</translation>
 <translation id="7302081693174882195">詳細: データ節約量の順</translation>
 <translation id="7304873321153398381">オフラインです。Chrome でパスワードを確認できません。</translation>
+<translation id="7313188324932846546">タップして同期を設定する</translation>
 <translation id="7328017930301109123">ライトモードを使用すると、Chrome でページの読み込みが高速化され、データ使用量も最大 60 パーセント抑えることができます。</translation>
 <translation id="7333031090786104871">前のサイトを追加中です</translation>
 <translation id="7340958967809483333">Discover のオプション</translation>
@@ -1050,6 +1055,7 @@
 <translation id="8636825310635137004">他のデバイスと同じタブを使用するには、同期を有効にします。</translation>
 <translation id="8641930654639604085">成人向けのサイトを可能な限りブロックする</translation>
 <translation id="8655129584991699539">Chrome の設定でデータを削除できます</translation>
+<translation id="8656747343598256512">Google アカウントでこのサイトと Chrome にログインします。同期は後でオンにできます。</translation>
 <translation id="8659579665266920523">Chrome で検索するには</translation>
 <translation id="8662811608048051533">ほとんどのサイトからログアウトします。</translation>
 <translation id="8664979001105139458">同じ名前のファイルが存在します</translation>
@@ -1069,6 +1075,7 @@
 <translation id="8840953339110955557">このページはオンライン版とは異なる可能性があります。</translation>
 <translation id="8853345339104747198">「<ph name="TAB_TITLE" />」タブ</translation>
 <translation id="8854223127042600341">オフライン ファイルを表示</translation>
+<translation id="8856607253650333758">説明文を取得</translation>
 <translation id="8873817150012960745">始めるにはここをタップ</translation>
 <translation id="889338405075704026">Chrome 設定に移動</translation>
 <translation id="8898822736010347272">新たな脅威の発見と、すべてのウェブユーザーの保護に役立てるため、アクセスした一部のページの URL、限定的なシステム情報、一部のページ コンテンツを Google に送信します。</translation>

@@ -985,7 +985,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2131077480075264">"<ph name="APP_NAME" />" орното албайт, анткени ага "<ph name="IMPORT_NAME" />" тарабынан уруксат берилген эмес</translation>
 <translation id="21354425047973905">PIN коддорду жашыруу</translation>
 <translation id="2135456203358955318">Жалгаштырылган лупа</translation>
-<translation id="2135468118189259524">Google кайсы маалыматты жана эмне үчүн топтогонун билүү үчүн <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> бөлүмүнө өтүңүз.</translation>
+<translation id="2135468118189259524">Google кандай маалыматты топтоп, кантип пайдалана турганын билүү үчүн <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> бөлүмүнө өтүңүз.</translation>
 <translation id="2135787500304447609">&amp;Улантуу</translation>
 <translation id="2136372518715274136">Жаңы сырсөз киргизүү</translation>
 <translation id="2136476978468204130">Киргизилген купуя сөз айкашы туура эмес</translation>
@@ -3647,7 +3647,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5307030433605830021">Булак колдоого алынбайт</translation>
 <translation id="5308380583665731573">Туташуу</translation>
 <translation id="5310281978693206542">Шилтемени түзмөктөрүңүзгө жөнөтүү</translation>
-<translation id="531118851858162334">Бул нерсе Google кызматтарында буга чейин аткарган аракеттериңиздин негизинде көрсөтүлдү. Маалыматты көрүп, жок кылып жана аккаунтуңуздун жөндөөлөрүн өзгөртүү үчүн төмөнкү дарекке өтүңүз: <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="531118851858162334">Бул нерсе Google кызматтарында буга чейин аткарган аракеттериңиздин негизинде көрсөтүлүүдө. Маалыматтыңызды көрүп, өчүрүп жана аракеттериңизге көз салуу жөндөөлөрүн өзгөртүү үчүн төмөнкү дарекке өтүңүз: <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="5311304534597152726">Төмөнкү катары кирүүдө:</translation>
 <translation id="5311565231560644461">Сайттарга виртуалдык чындык түзмөктөрүңүздү жана дайын-даректериңизди колдонууга тыюу салынсын</translation>
 <translation id="5314381603623123224">Chrome’дун Тейлөө шарттары 31-марттан кийин өзгөргөнү жатат</translation>

@@ -321,7 +321,7 @@
 <translation id="1361872463926621533">Toista ääni käynnistyksen yhteydessä</translation>
 <translation id="1362865166188278099">Mekaaninen ongelma. Tarkista tulostin</translation>
 <translation id="1363585519747660921">USB-tulostin on määritettävä</translation>
-<translation id="1364664799726141130">Vahvistamallasi tilillä ei ole tämän laitteen käyttöoikeuksia. Varmista, että vahvistamasi tili on <ph name="ACCOUNT" />, istunnon avaamiseksi.</translation>
+<translation id="1364664799726141130">Vahvistamallasi tilillä ei ole tämän laitteen käyttöoikeuksia. Avaa istunto varmistamalla, että vahvistamasi tili on <ph name="ACCOUNT" />.</translation>
 <translation id="1365180424462182382"><ph name="BEGIN_LINK" />Selaintasi ylläpitää<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1367951781824006909">Valitse tiedosto</translation>
 <translation id="1369149969991017342">Kytkimen käyttö (ohjaa tietokonetta yhdellä tai kahdella kytkimellä)</translation>
@@ -5413,7 +5413,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7434969625063495310">Tulostuspalvelinta ei voitu asentaa. Tarkista palvelimen asetukset ja yritä uudelleen.</translation>
 <translation id="7436921188514130341">Harmin paikka! Uudelleennimeämisen aikana tapahtui virhe.</translation>
 <translation id="7438976808740265764">Flash Playeria ei enää tueta joulukuun 2020 jälkeen.</translation>
-<translation id="7439519621174723623">Nimeä laite jatkaaksesi</translation>
+<translation id="7439519621174723623">Jatka lisäämällä laitteen nimi</translation>
 <translation id="7441736921018636843">Jos haluat muuttaa tätä, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name="END_LINK" /> poistaaksesi synkronoinnin tunnuslauseen</translation>
 <translation id="7441830548568730290">Muut käyttäjät</translation>
 <translation id="7442465037756169001">Hangouts Meet ‑laitteistosi on valmis määritettäväksi.</translation>

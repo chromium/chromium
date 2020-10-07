@@ -982,7 +982,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2131077480075264">No se pudo instalar "<ph name="APP_NAME" />" porque no tiene permisos de "<ph name="IMPORT_NAME" />".</translation>
 <translation id="21354425047973905">Oculta los PIN</translation>
 <translation id="2135456203358955318">Lupa con vista acoplada</translation>
-<translation id="2135468118189259524">Obtén más información sobre la información que Google recopila (y los motivos para ello) en <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" />.</translation>
+<translation id="2135468118189259524">Obtén más información sobre los datos que Google recopila (y los motivos para ello) en <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" />.</translation>
 <translation id="2135787500304447609">&amp;Reanudar</translation>
 <translation id="2136372518715274136">Ingresa la nueva contraseña</translation>
 <translation id="2136476978468204130">La frase de contraseña que ingresaste es incorrecta</translation>

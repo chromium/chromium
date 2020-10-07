@@ -229,7 +229,7 @@
 <translation id="1249643471736608405"><ph name="PLUGIN_NAME" /> se ha bloqueado porque está obsoleto</translation>
 <translation id="1251366534849411931">Falta una llave de apertura: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Esta acción borrará <ph name="TOTAL_USAGE" /> de datos almacenados por sitios web y aplicaciones instaladas</translation>
-<translation id="125220115284141797">Predeterminado</translation>
+<translation id="125220115284141797">Predeterminados</translation>
 <translation id="1252987234827889034">Se ha producido un error del perfil</translation>
 <translation id="1254593899333212300">Conexión directa a Internet</translation>
 <translation id="1259152067760398571">La comprobación de seguridad se ejecutó ayer</translation>
@@ -657,7 +657,7 @@
 <translation id="173628468822554835">Entendido. De forma predeterminada, los sitios web nuevos a los que accedas no te enviarán notificaciones.</translation>
 <translation id="1736419249208073774">Más información</translation>
 <translation id="1737968601308870607">Incluir error</translation>
-<translation id="174123615272205933">Personalizado</translation>
+<translation id="174123615272205933">Personalizados</translation>
 <translation id="1741314857973421784">Continuar</translation>
 <translation id="1743570585616704562">No se ha reconocido</translation>
 <translation id="1743970419083351269">Cerrar barra de descargas</translation>
@@ -3687,7 +3687,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5362741141255528695">Selecciona un archivo de clave privada.</translation>
 <translation id="5363109466694494651">Powerwash y cambio a versión anterior</translation>
 <translation id="5365881113273618889">La carpeta que has seleccionado contiene archivos confidenciales. ¿Seguro que quieres conceder a "<ph name="APP_NAME" />" acceso de escritura permanente a esta carpeta?</translation>
-<translation id="536638840841140142">No hay</translation>
+<translation id="536638840841140142">Ninguno</translation>
 <translation id="5368720394188453070">Tu teléfono está bloqueado. Desbloquéalo para acceder.</translation>
 <translation id="5368779022775404937">Inicia sesión en <ph name="REALM" /></translation>
 <translation id="5369491905435686894">Habilitar la aceleración del ratón</translation>
@@ -6236,7 +6236,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8378714024927312812">Gestionado por tu organización</translation>
 <translation id="8379878387931047019">Este dispositivo no es compatible con el tipo de llave de seguridad solicitado por el sitio web</translation>
 <translation id="8379991678458444070">Para volver aquí rápidamente, añade esta pestaña a marcadores</translation>
-<translation id="8380266723152870797">Nombre de ventana</translation>
+<translation id="8380266723152870797">Nombre de la ventana</translation>
 <translation id="8382384117483909115">{NUM_TABS,plural, =1{Leer pestaña más tarde}other{Leer pestañas más tarde}}</translation>
 <translation id="8382913212082956454">Copiar dir&amp;ección de correo electrónico</translation>
 <translation id="8386091599636877289">No se ha encontrado la política.</translation>

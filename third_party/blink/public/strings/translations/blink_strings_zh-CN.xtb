@@ -47,6 +47,7 @@
 <translation id="2247351761944213033"><ph name="YEAR" /> 年第 <ph name="WEEKNUMBER" /> 周</translation>
 <translation id="2277199496770840904">字幕轨 <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">复选框</translation>
+<translation id="2307576640803031502">列表中的第 <ph name="INDEX" /> 项，共有 <ph name="COUNT" /> 项</translation>
 <translation id="2311842470354187719">分页符</translation>
 <translation id="2335594187091864976">日期和时间选择器</translation>
 <translation id="2393030564806080191">十六进制颜色值</translation>
@@ -290,6 +291,7 @@
 <translation id="9155987714137265666"><ph name="WEEK" />，从 <ph name="WEEK_START_DATE" />开始</translation>
 <translation id="916607977885256133">画中画</translation>
 <translation id="9168329111483466115">脚注</translation>
+<translation id="945780513535800434">已部分选中</translation>
 <translation id="954003015749068518">进入“画中画”模式</translation>
 <translation id="966787709310836684">菜单</translation>
 </translationbundle>

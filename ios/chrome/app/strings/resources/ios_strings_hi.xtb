@@ -164,7 +164,7 @@
 <translation id="2781331604911854368">चालू है</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">टैब स्विचर को छोड़ें</translation>
-<translation id="2815198996063984598">2. डिफ़ॉल्ट ब्राउज़र ऐप्लिकेशन पर टैप करें</translation>
+<translation id="2815198996063984598">2. Default Browser App पर टैप करें</translation>
 <translation id="2830972654601096923">पते प्रबंधित करें...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">शुरुआती सिंक सेटअप पूरा नहीं हुआ</translation>
@@ -243,9 +243,9 @@
 <translation id="3551320343578183772">टैब बंद करें</translation>
 <translation id="3581564640715911333">दूसरी भाषाओं में पेजों का अनुवाद करने की सुविधा दें</translation>
 <translation id="3588820906588687999">इमेज को 'नए टैब' में खोलें</translation>
-<translation id="359441731697487922">Chrome को अपने डिफ़ॉल्ट ब्राउज़र ऐप्लिकेशन के रूप में सेट करके, आप लिंक अपने-आप खोल सकते हैं.
+<translation id="359441731697487922">Chrome को अपने डिफ़ॉल्ट ब्राउज़र ऐप्लिकेशन के रूप में सेट करने से लिंक अपने-आप Chrome में खुलेंगे.
       
-यह तरीका अपनाएं:</translation>
+इसके लिए यह तरीका अपनाएं:</translation>
 <translation id="3603009562372709545">लिंक URL को कॉपी करें</translation>
 <translation id="3607167657931203000">ऑटोमैटिक भरना</translation>
 <translation id="3609785682760573515">समन्वयित हो रहा है...</translation>

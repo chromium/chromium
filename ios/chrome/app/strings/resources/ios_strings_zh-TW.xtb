@@ -243,7 +243,7 @@
 <translation id="3551320343578183772">關閉分頁</translation>
 <translation id="3581564640715911333">詢問是否要將網頁內容翻譯成其他語言</translation>
 <translation id="3588820906588687999">在新分頁中開啟圖片</translation>
-<translation id="359441731697487922">將 Chrome 設為「預設的瀏覽器應用程式」，即可自動在 Chrome 中開啟連結。
+<translation id="359441731697487922">將 Chrome 設為預設的瀏覽器應用程式，即可自動在 Chrome 中開啟連結。
       
 請按照以下步驟操作：</translation>
 <translation id="3603009562372709545">複製連結網址</translation>
@@ -344,7 +344,7 @@
 <translation id="4808744395915275922">更新</translation>
 <translation id="4818522717893377262">新增語言...</translation>
 <translation id="481968316161811770">Cookie、網站資料</translation>
-<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} 和另外 1 個}other{{domain} 和另外 {count} 個}}</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} 和另外 1 個分頁}other{{domain} 和另外 {count} 個分頁}}</translation>
 <translation id="4826218269716039351">封鎖第三方 Cookie</translation>
 <translation id="48274138579728272">標示為已讀取</translation>
 <translation id="4833786495304741580">自動將使用統計資料和當機報告傳送給 Google。</translation>

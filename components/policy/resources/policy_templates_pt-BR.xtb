@@ -982,7 +982,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
        Se a política não for definida, as informações de métrica e dados de diagnóstico ficarão desativados nos dispositivos não gerenciados e ativados nos dispositivos gerenciados.</translation>
 <translation id="2454228136871844693">Otimiza a estabilidade.</translation>
-<translation id="2456629156652006573">Somente privado</translation>
+<translation id="2456629156652006573">Não listado</translation>
 <translation id="2463034609187171371">Ativar pacotes de criptografia DHE em TLS</translation>
 <translation id="2463365186486772703">Localidade do aplicativo</translation>
 <translation id="2463832514638083341">Esta política controla a duração, em dias, do armazenamento de metadados de trabalhos de impressão no dispositivo.
@@ -1157,7 +1157,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2706708761587205154">Permitir impressão apenas com PIN</translation>
 <translation id="2707873794476722903">O "Navegação segura" está ativo no modo padrão.</translation>
 <translation id="2710534340210290498">Se esta política for definida como falsa, os usuários não conseguirão bloquear a tela, apenas sair da sessão do usuário. Se esta política for definida como verdadeira ou não for definida, os usuários que tiverem feito a autenticação com uma senha poderão bloquear a tela.</translation>
-<translation id="2716623398185506073">Se a política for definida como "Ativada", as estatísticas de hardware e os identificadores relacionados à energia dos dispositivos registrados serão informados.
+<translation id="2716623398185506073">Se a política for definida como "Ativada", as estatísticas de hardware e os identificadores relacionados ao uso de energia dos dispositivos registrados serão informados.
 
       Se a política for definida como "Desativada" ou não for definida, as estatísticas de energia dos dispositivos registrados não serão informadas.</translation>
 <translation id="2725855586003209701">Se a política for definida como "Ativada" ou não for definida, os dispositivos registrados informarão a lista de usuários que fizeram login recentemente.
@@ -1318,7 +1318,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2919544577647246857">Define a lista de usuários que têm permissão para fazer login no dispositivo. As entradas são feitas no formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, como <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />. Para permitir usuários arbitrários em um domínio, use entradas no formato <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
 
       Se esta política não for configurada, não haverá restrições quanto aos usuários autorizados a fazer login. Ainda assim, a criação de novos usuários exigirá que a política <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> seja configurada de forma adequada.
-      Se <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> estiver ativada, os usuários do Family Link também poderão usar as contas definidas nesta política.</translation>
+      Se <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> estiver ativada, outros usuários do Family Link também poderão ser adicionados, além das contas já definidas nesta política.</translation>
 <translation id="2921222258441684334">Se a política for definida como 1, os sites poderão rastrear a localização física dos usuários como o estado padrão. Se a política for definida como 2, será negado o rastreamento como padrão. É possível definir a política para perguntar sempre que um site quiser rastrear a localização física dos usuários.
 
       Se a política não for definida, a <ph name="ASK_GEOLOCATION_POLICY_NAME" /> será aplicada, mas os usuários poderão mudar essa configuração.</translation>
@@ -1559,7 +1559,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Essa política será removida no Chrome 88.
 
       Consulte https://www.chromestatus.com/feature/4664843055398912.</translation>
-<translation id="3302829897293005699">Se a política for definida como "Ativada" ou não for definida, as informações da sessão de quiosque ativa, como versão e código do aplicativo, serão comunicadas pelos dispositivos registrados.
+<translation id="3302829897293005699">Se a política for definida como "Ativada" ou não for definida, as informações da sessão de quiosque ativa, como versão e ID do aplicativo, serão comunicadas pelos dispositivos registrados.
 
       Se a política for definida como "Desativada", os dispositivos registrados não comunicarão as informações da sessão de quiosque.</translation>
 <translation id="3303911765031636277">Política de configuração para o conector OnFileAttached do Chrome Enterprise</translation>
@@ -3865,7 +3865,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       Se ela for definida como falsa, o cliente DNS integrado nunca será usado.
 
-      Se a política não for definida, o cliente DNS integrado será ativado por padrão no macOS, no Android (quando o DNS particular e a VPN não estiverem ativados) e no ChromeOS. Os usuários poderão decidir se o cliente DNS integrado será usado editando chrome://flags ou especificando a sinalização de uma linha de comando.</translation>
+      Se a política não for definida, o cliente DNS integrado será ativado por padrão no macOS, no Android (quando o DNS particular e a VPN não estiverem ativados) e no ChromeOS. Os usuários poderão decidir se o cliente DNS integrado será usado fazendo as alterações em chrome://flags ou especificando a sinalização de uma linha de comando.</translation>
 <translation id="6621839881150363218">Se a política for definida como "Ativada", todos os sites serão isolados e cada um executará um processo próprio. Se a política for definida como "Desativada", não haverá isolamento explícito de sites e as versões de teste de IsolateOriginsAndroid e SitePerProcessAndroid serão desativadas. Os usuários ainda poderão ativar a política manualmente.
 
       Se a política não for definida, os usuários poderão mudar essa configuração.
@@ -4002,9 +4002,9 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Quando a política não for definida em um dispositivo gerenciado, não será possível executar máquinas virtuais. Dispositivos não gerenciados podem executar máquinas virtuais.</translation>
 <translation id="6786747875388722282">Extensões</translation>
 <translation id="6786967369487349613">Configurar o diretório do perfil de roaming</translation>
-<translation id="6789422336869764846">Se a política for definida como "Ativada" ou não for definida, o estado da chave dev dos dispositivos registrados durante a inicialização será informado.
+<translation id="6789422336869764846">Se a política for definida como "Ativada" ou não for definida, o estado da chave do desenvolvedor dos dispositivos registrados durante a inicialização será informado.
 
-      Se a política for definida como "Desativada", o estado da chave dev dos dispositivos registrados não será informado.</translation>
+      Se a política for definida como "Desativada", o estado da chave do desenvolvedor dos dispositivos registrados não será informado.</translation>
 <translation id="6795485990775913659">Permitir impressão apenas sem PIN</translation>
 <translation id="6810445994095397827">Bloquear o JavaScript nestes sites</translation>
 <translation id="6813263547126514821">Ligar e desligar</translation>
@@ -4546,7 +4546,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7458437477941640506">Não faça a reversão para a versão de destino se a versão do SO for mais recente que a de destino. As atualizações também estão desativadas.</translation>
 <translation id="7459601923199346224">Controla as políticas do usuário e dispositivo para o gerenciamento de certificados.</translation>
 <translation id="7464991223784276288">Limita cookies de URLs correspondentes à sessão atual</translation>
-<translation id="7468182772656807573">Se a política for definida, a frequência do envio de pacotes de monitoramento de rede será determinada, em milissegundos. Os intervalos variam de 30 segundos a 24 horas. Valores fora desse intervalo serão fixados nessa faixa.
+<translation id="7468182772656807573">Se a política for definida, a frequência do envio de pacotes de monitoramento de rede será determinada, em milissegundos. Os intervalos variam de 30 segundos a 24 horas. Valores fora desse intervalo serão ajustados dentro dessa faixa.
 
       Se a política não for definida, o intervalo padrão será de 3 minutos.</translation>
 <translation id="7469554574977894907">Ativar sugestões de pesquisa</translation>
@@ -5042,7 +5042,7 @@ Se a política não for definida, a tela de privacidade ficará inicialmente des
           Se você definir esta política, o usuário não poderá alterá-la ou modificá-la.
 
           Se esta política não for definida, o destaque do cursor ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
-<translation id="8164687848393015214">Se a política estiver definida como "Ativada", ela enviará pacotes de monitoramento de rede (<ph name="HEARTBEATS_TERM" />) para o servidor de gerenciamento para monitorar o status on-line, a fim de permitir que o servidor detecte se o dispositivo está off-line.
+<translation id="8164687848393015214">Se a política estiver definida como "Ativada", ela enviará pacotes de monitoramento de rede (<ph name="HEARTBEATS_TERM" />) para o servidor de gerenciamento. Com isso, o status de conexão é monitorado e o servidor consegue detectar se o dispositivo está off-line.
 
       Se a política for definida como "Desativada" ou não for definida, nenhum pacote será enviado.</translation>
 <translation id="816783746144552109">Configurar a versão mínima permitida do Chrome OS para o dispositivo.</translation>

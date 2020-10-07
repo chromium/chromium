@@ -47,7 +47,7 @@
 <translation id="2247351761944213033">Setmana <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Pista <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">casella de selecció</translation>
-<translation id="2307576640803031502">A la llista; element <ph name="INDEX" /> de <ph name="COUNT" /></translation>
+<translation id="2307576640803031502">a la llista; element <ph name="INDEX" /> de <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">salt de pàgina</translation>
 <translation id="2335594187091864976">selector de data i hora</translation>
 <translation id="2393030564806080191">Valor hexadecimal del color</translation>

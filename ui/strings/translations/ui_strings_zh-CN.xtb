@@ -134,6 +134,7 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">开合三角标记</translation>
 <translation id="5278860589123563674">发送失败</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" />中有需要您关注的新动态。</translation>
 <translation id="528468243742722775">结束</translation>
 <translation id="5329858601952122676">删除(&amp;D)</translation>
 <translation id="5395308026110844773">“<ph name="DRAGGED_APP_NAME" />”已拖至“<ph name="IN_PLACE_APP" />”上，松开即可创建文件夹。</translation>
@@ -144,6 +145,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> 系统</translation>
 <translation id="5583640892426849032">退格</translation>
 <translation id="5613020302032141669">向左箭头</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />中有需要您关注的新动态。</translation>
 <translation id="5675363643668471212">任务栏中的项目</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 分钟}other{# 分钟}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{今天曾有活动}=1{1 天前曾有活动}other{# 天前曾有活动}}</translation>

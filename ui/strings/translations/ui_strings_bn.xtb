@@ -134,6 +134,7 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">সম্পূর্ণ দেখার ত্রিভুজ</translation>
 <translation id="5278860589123563674">পাঠানো যায়নি</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> আপনার মনোযোগ আকর্ষণ করতে চাইছে।</translation>
 <translation id="528468243742722775">শেষ</translation>
 <translation id="5329858601952122676">&amp;মুছুন</translation>
 <translation id="5395308026110844773">ফোল্ডার তৈরি করতে <ph name="IN_PLACE_APP" />-এর উপরে <ph name="DRAGGED_APP_NAME" /> টেনে এনে ছেড়ে দিন।</translation>
@@ -144,6 +145,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> সিস্টেম</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Left Arrow</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> আপনার মনোযোগ আকর্ষণ করতে চাইছে।</translation>
 <translation id="5675363643668471212">শেল্ফ আইটেম</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{১ মিনিট}one{# মিনিট}other{# মিনিট}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{আজ ব্যবহার করা হয়েছে}=1{১ দিন আগে ব্যবহার করা হয়েছে}one{# দিন আগে ব্যবহার করা হয়েছে}other{# দিন আগে ব্যবহার করা হয়েছে}}</translation>

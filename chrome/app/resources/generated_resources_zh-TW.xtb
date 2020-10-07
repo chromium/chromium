@@ -1468,7 +1468,7 @@
 <translation id="2688196195245426394">向伺服器註冊裝置時發生錯誤：<ph name="CLIENT_ERROR" />。</translation>
 <translation id="2690024944919328218">顯示語言選項</translation>
 <translation id="2691385045260836588">型號</translation>
-<translation id="2691440343905273290">變更輸入設定</translation>
+<translation id="2691440343905273290">變更輸入法設定</translation>
 <translation id="2693176596243495071">糟糕！發生不明錯誤，請稍後再試。如果這樣無法解決問題，請與你的管理員聯絡。</translation>
 <translation id="2695749433451188613">網際網路列印通訊協定 (HTTPS)</translation>
 <translation id="2699911226086014512">PIN 碼作業失敗，錯誤代碼為 <ph name="RETRIES" />。</translation>
@@ -1891,7 +1891,7 @@
 <translation id="3192947282887913208">音訊檔</translation>
 <translation id="3199127022143353223">伺服器</translation>
 <translation id="3200310363903241381">{COUNT,plural, =1{Chrome 建議你立即檢查這組密碼}other{Chrome 建議你立即檢查這些密碼}}</translation>
-<translation id="3201154330231437478">啟用反向捲動功能<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="3201154330231437478">啟用反向捲動功能 <ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3201422919974259695">可用的 USB 裝置將會顯示在這裡。</translation>
 <translation id="3202131003361292969">路徑</translation>
 <translation id="3202173864863109533">分頁音訊已關閉。</translation>
@@ -2838,7 +2838,7 @@
 <translation id="4312866146174492540">封鎖 (預設)</translation>
 <translation id="4314815835985389558">管理同步功能資料</translation>
 <translation id="4316850752623536204">開發人員網站</translation>
-<translation id="4317820549299924617">未成功進行驗證</translation>
+<translation id="4317820549299924617">驗證失敗</translation>
 <translation id="4320177379694898372">沒有網際網路連線</translation>
 <translation id="4322394346347055525">關閉其他分頁</translation>
 <translation id="4324577459193912240">檔案未完成下載</translation>

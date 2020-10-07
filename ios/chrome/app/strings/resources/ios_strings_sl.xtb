@@ -344,7 +344,7 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="4808744395915275922">Posodobitve</translation>
 <translation id="4818522717893377262">Dodaj jezik …</translation>
 <translation id="481968316161811770">Cookies, Site Data</translation>
-<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ]in še 1}one{{domain} in še {count}}two{{domain} in še {count}}few{{domain} in še {count}}other{{domain} in še {count}}}</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} in še 1}one{{domain} in še {count}}two{{domain} in še {count}}few{{domain} in še {count}}other{{domain} in še {count}}}</translation>
 <translation id="4826218269716039351">Blokiraj piškotke drugih spletnih mest</translation>
 <translation id="48274138579728272">Označi kot prebrano</translation>
 <translation id="4833786495304741580">Samodejno pošilja statistične podatke o uporabi in poročila o zrušitvah Googlu.</translation>

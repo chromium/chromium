@@ -341,7 +341,7 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
 <translation id="1523774894176285446">Für konfigurierte Websites soll ein alternativer Browser geöffnet werden.</translation>
 <translation id="152657506688053119">Liste alternativer URLs für den Standardsuchanbieter</translation>
 <translation id="1530812829012954197">Immer die folgenden URL-Muster im Host-Browser darstellen</translation>
-<translation id="1553532014072799546">Weiße Liste für App-Zeitbeschränkungen</translation>
+<translation id="1553532014072799546">Zulassungsliste für App-Zeitbeschränkungen</translation>
 <translation id="1553956579506604198">Installation externer Erweiterungen blockieren</translation>
 <translation id="1555248923316727072">SAML-Einstellungen zur Verwaltung der Nutzeridentität</translation>
 <translation id="1560205870554624777">Diese Richtlinie steuert, ob die Kerberos-Funktion aktiviert ist. Kerberos ist ein Authentifizierungsprotokoll, das bei Web-Apps und Dateifreigaben zur Authentifizierung verwendet werden kann.
@@ -737,7 +737,7 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 
           Standardmäßig sind alle nativen Nachrichtenhosts zulässig. Wurden jedoch alle nativen Nachrichtenhosts durch eine Richtlinie gesperrt, kann diese Richtlinie mithilfe der Zulassungsliste überschrieben werden.</translation>
 <translation id="2200698565850397198">Sperrliste für natives Messaging konfigurieren</translation>
-<translation id="2201555246697292490">Weiße Liste für natives Messaging konfigurieren</translation>
+<translation id="2201555246697292490">Zulassungsliste für natives Messaging konfigurieren</translation>
 <translation id="2204753382813641270">Automatisches Ausblenden der Ablage verwalten</translation>
 <translation id="2208976000652006649">Parameter für URL der Suche, die POST verwendet</translation>
 <translation id="221019813387144689">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die die Websites angeben, die keine Benachrichtigungen anzeigen dürfen.
@@ -1079,7 +1079,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2587719089023392205"><ph name="PRODUCT_NAME" /> als Standardbrowser festlegen</translation>
 <translation id="2588071938417715443">Diese Richtlinie definiert den Zugriff auf steuerbare Funktionen in der Benutzeroberfläche der lokalen Erkennung (<ph name="CHROME_DEVICES_LINK" />), die sichtbare Geräte in der Umgebung des Nutzers und dessen registrierte Cloud-Geräte zeigt. Unter allen Betriebssystemen (mit Ausnahme von <ph name="PRODUCT_OS_NAME" />) können Nutzer über die Benutzeroberfläche für die lokale Erkennung <ph name="CLOUD_PRINT_NAME" /> auch klassische Drucker hinzufügen, die ihren Computern zugeordnet sind.</translation>
 <translation id="2592091433672667839">Dauer der Inaktivität, bevor im Händlermodus der Bildschirmschoner auf der Anmeldeseite erscheint</translation>
-<translation id="2592162121850992309">Wenn diese Richtlinie auf "true" gesetzt oder nicht konfiguriert ist, wird die Hardwarebeschleunigung aktiviert, sofern eine bestimmte GPU-Funktion nicht auf die schwarze Liste gesetzt wurde.
+<translation id="2592162121850992309">Wenn diese Richtlinie auf "true" gesetzt oder nicht konfiguriert ist, wird die Hardwarebeschleunigung aktiviert, sofern eine bestimmte GPU-Funktion nicht auf die Sperrliste gesetzt wurde.
 
       Wenn diese Richtlinie auf "false" gesetzt ist, wird die Hardwarebeschleunigung deaktiviert.</translation>
 <translation id="2593762551209145088">Safe Browsing ist nie aktiv.</translation>
@@ -1206,7 +1206,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
         Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen <ph name="PER_APP_TIME_LIMITS_ALLOWLIST" />.
         </translation>
-<translation id="2799297758492717491">Autoplay von Medien für eine weiße Liste mit URL-Mustern erlauben</translation>
+<translation id="2799297758492717491">Autoplay von Medien für eine Zulassungsliste mit URL-Mustern erlauben</translation>
 <translation id="2801065672151277034">Zertifikatverwaltungseinstellungen</translation>
 <translation id="2801155097555584385">Den Akkuladestand (%) für benutzerdefiniertes Starten des Ladevorgangs festlegen</translation>
 <translation id="2805707493867224476">Anzeige von Pop-ups für alle Websites zulassen</translation>
@@ -1362,7 +1362,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
         Steht eine Richtlinie auf der Liste, dann wird ihr Wert angewendet, auch wenn sie noch nicht offiziell veröffentlicht wurde.
 
         Diese Richtlinie hat keine Auswirkung auf bereits veröffentlichte Richtlinien.</translation>
-<translation id="3016255526521614822">Auf dem <ph name="PRODUCT_OS_NAME" />-Sperrbildschirm zulässige Notizen-Apps auf die weiße Liste setzen</translation>
+<translation id="3016255526521614822">Auf dem <ph name="PRODUCT_OS_NAME" />-Sperrbildschirm zulässige Notizen-Apps auf die Zulassungsliste setzen</translation>
 <translation id="3020953534071988875">Über diese Richtlinie können Sie festlegen, ob die passive Authentifizierung für Inkognito- und Gastprofile in <ph name="PRODUCT_NAME" /> zulässig ist.
 
       Eine passive Authentifizierung ist eine HTTP-Authentifizierung mit Standardanmeldedaten. Sie wird durchgeführt, wenn keine spezifischen Anmeldedaten über ein Challenge-Response-Verfahren (NTLM, Kerberos oder Negotiate) angegeben werden.
@@ -1635,7 +1635,7 @@ Wird die Richtlinie auf "False" gesetzt , verwendet <ph name="PRODUCT_NAME" /> k
 
       Diese Richtlinie soll einen konsequenten Ausschluss von Plug-ins ermöglichen, wenn die Liste DisabledPlugins Platzhaltereinträge wie "*" zur Deaktivierung aller Plug-ins oder "*Java*" zur Deaktivierung aller Java-Plug-ins enthält, der Administrator jedoch bestimmte Versionen wie "IcedTea Java 2.3" aktivieren möchte. Solche spezifischen Versionen können in dieser Richtlinie angegeben werden.
 
-      Beachten Sie, dass sowohl der Plug-in-Name als auch der Plug-in-Gruppenname ausgenommen werden müssen. Jede Plug-in-Gruppe wird in einem separaten Abschnitt unter "about:plugins" angezeigt, wobei jeder Abschnitt ein oder mehrere Plug-ins enthalten kann. So gehört beispielsweise das Plug-in "Shockwave Flash" der Gruppe "Adobe Flash Player" an. Wenn dieses Plug-in von der schwarzen Liste ausgenommen werden soll, muss in der Ausnahmeliste für beide Namen eine Übereinstimmung vorhanden sein.
+      Beachten Sie, dass sowohl der Plug-in-Name als auch der Plug-in-Gruppenname ausgenommen werden müssen. Jede Plug-in-Gruppe wird in einem separaten Abschnitt unter "about:plugins" angezeigt, wobei jeder Abschnitt ein oder mehrere Plug-ins enthalten kann. So gehört beispielsweise das Plug-in "Shockwave Flash" der Gruppe "Adobe Flash Player" an. Wenn dieses Plug-in von der Sperrliste ausgenommen werden soll, muss in der Ausnahmeliste für beide Namen eine Übereinstimmung vorhanden sein.
 
       Ist diese Richtlinie nicht konfiguriert, werden alle Plug-ins, die mit den Mustern in DisabledPlugins übereinstimmen, deaktiviert. Sie können dann nicht vom Nutzer aktiviert werden.</translation>
 <translation id="3381968327636295719">Standardmäßig Host-Browser verwenden</translation>
@@ -1873,7 +1873,7 @@ Wird die Richtlinie auf "False" gesetzt , verwendet <ph name="PRODUCT_NAME" /> k
 <translation id="3701121231485832347">Legt die Einstellungen für mit <ph name="MS_AD_NAME" /> verwaltete <ph name="PRODUCT_OS_NAME" />-Geräte fest.</translation>
 <translation id="3702518095257671450">Remote-Attestierung</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> – Das einzeilige Feld ist veraltet und wird in Zukunft entfernt. Bitte nutzen Sie das mehrzeilige Textfeld unten.</translation>
-<translation id="3709266154059827597">Schwarze Liste für Installation von Erweiterungen konfigurieren</translation>
+<translation id="3709266154059827597">Sperrliste für Installation von Erweiterungen konfigurieren</translation>
 <translation id="3711895659073496551">Suspend-Modus</translation>
 <translation id="3715569262675717862">Authentifizierung auf Grundlage von Clientzertifikaten</translation>
 <translation id="3727675072430693164">Wenn die Richtlinie aktiviert ist, werden über registrierte Geräte Hardwarestatistiken für SoC-Komponenten gemeldet.
@@ -2004,7 +2004,7 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
       Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, können Anfragen zur Installation von Erweiterungen weder erstellt noch hochgeladen werden.
       Wenn diese Richtlinie aktiviert ist, können Anfragen zur Installation von Erweiterungen erstellt und in der Google Admin-Konsole hochgeladen werden.
 
-      Anfragen zur Installation von Erweiterungen werden erstellt, wenn Nutzer versuchen, eine Erweiterung zu installieren, die weder von <ph name="EXTENSION_INSTALL_WHITELIST" /> noch von <ph name="EXTENSION_SETTINGS" /> auf die weiße Liste gesetzt wurde.
+      Anfragen zur Installation von Erweiterungen werden erstellt, wenn Nutzer versuchen, eine Erweiterung zu installieren, die weder von <ph name="EXTENSION_INSTALL_WHITELIST" /> noch von <ph name="EXTENSION_SETTINGS" /> auf die Zulassungsliste gesetzt wurde.
 
       Diese Richtlinie wird nur angewendet, wenn das Gerät für <ph name="PRODUCT_NAME" /> mit <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> registriert ist.
       Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
@@ -2226,7 +2226,7 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 <translation id="4203643479966921607">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird <ph name="PRODUCT_NAME" /> aktiviert und kann von Nutzern über das App-Menü, Kontextmenüs von Seiten, Mediensteuerelemente auf für Google Cast optimierten Websites und das Symbol von Cast in der Symbolleiste (falls angezeigt) gestartet werden.
 
       Ist die Richtlinie deaktiviert, wird <ph name="PRODUCT_NAME" /> deaktiviert.</translation>
-<translation id="4203879074082863035">Nur Drucker in der weißen Liste werden Nutzern angezeigt</translation>
+<translation id="4203879074082863035">Nur Drucker in der Zulassungsliste werden Nutzern angezeigt</translation>
 <translation id="420512303455129789">Eine Art Wörterbuch, das URLs einem booleschen Parameter zuordnet und dadurch angibt, ob der Zugriff auf den Host erlaubt ("true") oder blockiert ("false") werden soll
 
           Diese Richtlinie dient ausschließlich zur internen Verwendung in <ph name="PRODUCT_NAME" />.</translation>
@@ -2450,7 +2450,7 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 
       Mit dem Wert "Forced" können Seiten ausschließlich im Inkognitomodus geöffnet werden. Der Wert "Forced" funktioniert nicht bei Android Apps, die auf Chrome ausgeführt werden.</translation>
 <translation id="4600786265870346112">Großen Cursor aktivieren</translation>
-<translation id="4604931264910482931">Schwarze Liste für natives Messaging konfigurieren</translation>
+<translation id="4604931264910482931">Sperrliste für natives Messaging konfigurieren</translation>
 <translation id="4607416370554533118">Mit dieser Richtlinie können Sie eine Liste von URL-Mustern erstellen, die Websites angeben, für die Chrome automatisch ein Clientzertifikat auswählen kann. Der Wert ist ein Array von String-JSON-Wörterbüchern. Jedes Wörterbuch muss das Format <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" /> haben, wobei <ph name="URL_PATTERN_PLACEHOLDER" /> ein Muster zum Festlegen der Inhalte ist. <ph name="FILTER_PLACEHOLDER" /> schränkt ein, aus welchen Clientzertifikaten der Browser automatisch auswählt. Unabhängig vom Filter werden nur Zertifikate ausgewählt, die mit der Zertifizierungsanforderung des Servers übereinstimmen.
 
       Beispiele für die Verwendung des Abschnitts <ph name="FILTER_PLACEHOLDER" />:
@@ -2468,7 +2468,7 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
       Wenn die Richtlinie nicht konfiguriert ist, findet für keine Website eine automatische Auswahl statt.</translation>
 <translation id="4617338332148204752">Metatag-Überprüfung in <ph name="PRODUCT_FRAME_NAME" /> überspringen</translation>
 <translation id="462134014569484584">Mit dieser Richtlinie wird der <ph name="PLUGIN_VM_NAME" />-Lizenzschlüssel für dieses Gerät angegeben.</translation>
-<translation id="4625915093043961294">Weiße Liste für Installation von Erweiterungen konfigurieren</translation>
+<translation id="4625915093043961294">Zulassungsliste für Installation von Erweiterungen konfigurieren</translation>
 <translation id="4632343302005518762">Verarbeitung der gelisteten Inhaltstypen durch <ph name="PRODUCT_FRAME_NAME" /> zulassen</translation>
 <translation id="4632566332417930481">Nutzung der Entwicklertools für Erweiterungen, die über die Unternehmensrichtlinie installiert wurden, nicht zulassen und Nutzung der Entwicklertools in anderen Kontexten zulassen</translation>
 <translation id="4649395978608361979">Lokale Druckziele</translation>
@@ -2731,7 +2731,7 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
       Ist die Richtlinie nicht konfiguriert, werden der Liste keine Websites hinzugefügt.
 
       Hinweis: Dieser Liste können auch über die Richtlinie "<ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />" Elemente hinzugefügt werden.</translation>
-<translation id="5067143124345820993">Weiße Liste für Nutzer bei der Anmeldung</translation>
+<translation id="5067143124345820993">Zulassungsliste für Nutzer bei der Anmeldung</translation>
 <translation id="5073609397321802133">Wenn diese Richtlinie auf "false" gesetzt ist, können Nutzer auf der "Neuer Tab"-Seite den Hintergrund nicht anpassen. Falls bereits ein benutzerdefinierter Hintergrund vorhanden ist, wird er dauerhaft entfernt, auch wenn die Richtlinie später auf "true" gesetzt wird.
 
       Wenn die Richtlinie auf "true" gesetzt oder nicht konfiguriert ist, können Nutzer den Hintergrund auf der "Neuer Tab"-Seite anpassen.</translation>
@@ -3139,7 +3139,7 @@ Wenn die in der Richtlinie <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> ange
 
       Wenn die Richtlinie auf "Hochladen und Herunterladen von nicht unterstützten Dateitypen blockieren" (3) gesetzt ist, werden in <ph name="PRODUCT_NAME" /> die Regeln angewendet, die unter "Hochladen von nicht unterstützten Dateitypen blockieren" und "Herunterladen von nicht unterstützten Dateitypen blockieren" beschrieben sind.
       </translation>
-<translation id="5535973522252703021">Weiße Liste für Kerberos-Bevollmächtigungs-Server</translation>
+<translation id="5535973522252703021">Zulassungsliste für Kerberos-Bevollmächtigungs-Server</translation>
 <translation id="5540753481451194959">Mit dieser Richtlinie können Sie das Systemverhalten beim Start festlegen. Wenn diese Einstellung deaktiviert ist, hat das den gleichen Effekt wie wenn sie nicht konfiguriert ist, da <ph name="PRODUCT_NAME" /> ein festgelegtes Verhalten beim Start benötigt.
 
       Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern in <ph name="PRODUCT_NAME" /> nicht geändert werden. Andernfalls können Nutzer sie ändern.
@@ -3585,7 +3585,7 @@ Jedes Listenelement der Richtlinie ist ein Objekt, das aus der obligatorischen K
 Ist diese Einstellung deaktiviert oder nicht konfiguriert, erfasst der Passwortschutzdienst die Salted-Hash-Werte von Passwörtern nur unter https://accounts.google.com.
 
 Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die durch <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" /> verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
-<translation id="6212868225782276239">Alle Drucker außer denen in der schwarzen Liste werden angezeigt.</translation>
+<translation id="6212868225782276239">Alle Drucker außer denen in der Sperrliste werden angezeigt.</translation>
 <translation id="6220835555850906733">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist jede unterstützte Audioausgabe auf den Geräten der Nutzer zulässig.
 
       Ist die Richtlinie deaktiviert, ist keine Audioausgabe zulässig, während Nutzer angemeldet sind.
@@ -3657,7 +3657,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
       Details zu <ph name="CORS" /> erhalten Sie unter <ph name="CORS_HELP_URL" />.
 
       Hinweis: Diese Richtlinie sollte ursprünglich planmäßig in <ph name="PRODUCT_NAME" />-Version 82 entfernt werden, wurde aber erst in Version 84 entfernt.</translation>
-<translation id="6281043242780654992">Konfiguriert Richtlinien für das native Messaging. Hosts für natives Messaging auf der schwarzen Liste können nur geladen werden, wenn sie auch auf der weißen Liste stehen.</translation>
+<translation id="6281043242780654992">Konfiguriert Richtlinien für das native Messaging. Hosts für natives Messaging auf der Sperrliste können nur geladen werden, wenn sie auch auf der Zulassungsliste stehen.</translation>
 <translation id="6282799760374509080">Audioaufzeichnung gestatten oder ablehnen</translation>
 <translation id="6284362063448764300">TLS 1.1</translation>
 <translation id="6310223829319187614">Automatische Vervollständigung des Domainnamens während der Nutzeranmeldung aktivieren</translation>
@@ -5599,7 +5599,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
       für unsichere Quellen gelten.
 
       Auf diese Weise können Organisationen Quellen für ältere Anwendungen,
-      die kein TLS bereitstellen können, auf die weiße Liste setzen oder einen
+      die kein TLS bereitstellen können, auf die Zulassungsliste setzen oder einen
       Testserver für die interne Webentwicklung einrichten, damit die Entwickler
       Funktionen testen können, die einen sicheren Kontext erfordern, ohne TLS
       auf dem Testserver bereitstellen zu müssen. Außerdem wird mit dieser Richtlinie
@@ -5701,7 +5701,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
           Wenn Sie diese Richtlinie konfigurieren, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Ist die Richtlinie nicht konfiguriert, ist die Bedienungshilfe "Objekt mit Tastaturfokus hervorheben" anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
-<translation id="9035964157729712237">Aus der schwarzen Liste auszuschließende Erweiterungs-IDs</translation>
+<translation id="9035964157729712237">Aus der Sperrliste auszuschließende Erweiterungs-IDs</translation>
 <translation id="9038839118379817310">WLAN aktivieren</translation>
 <translation id="9039822628127365650">Wenn diese Richtlinie konfiguriert ist, wird damit die Zeitdauer festgelegt, nach der ein Nutzer automatisch abgemeldet und die Sitzung beendet wird. Der Nutzer erfährt über einen Countdown-Timer in der Taskleiste, wie viel Zeit er noch hat.
 
@@ -5766,7 +5766,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 <translation id="9084985621503260744">Angaben zum Einfluss von Videoaktivitäten auf den Stromsparmodus</translation>
 <translation id="9088433379343318874">Contentanbieter für betreute Nutzer aktivieren</translation>
 <translation id="9088444059179765143">Methode für die automatische Erkennung der Zeitzone konfigurieren</translation>
-<translation id="9096086085182305205">Weiße Liste für Authentifizierungsserver</translation>
+<translation id="9096086085182305205">Zulassungsliste für Authentifizierungsserver</translation>
 <translation id="9105265795073104888">Android-Apps wird nur ein Teil der Proxykonfigurationsoptionen zur Verfügung gestellt. Der Proxy kann in Android-Apps auf freiwilliger Basis verwendet werden. Es ist nicht möglich, die Verwendung eines Proxys zu erzwingen.</translation>
 <translation id="9106865192244721694">WebUSB auf diesen Websites zulassen</translation>
 <translation id="910760342417457561">Legt fest, welche Drucker aus "<ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />" Nutzern zur Verfügung stehen.
@@ -5827,7 +5827,7 @@ Auf <ph name="PRODUCT_OS_NAME" />-Version 75 und höher unterstützt. Bei älte
       Nach dem Neustart wird die Sitzung des Nutzers wiederhergestellt.</translation>
 <translation id="9160028464653564229">Websites nicht erlauben, den Nutzer über die Serial API um Zugriff auf serielle Ports zu bitten</translation>
 <translation id="9167719789236691545">Synchronisierung zwischen Drive und der App "Dateien" von <ph name="PRODUCT_OS_NAME" /> deaktivieren</translation>
-<translation id="9185107612228451403">Hiermit werden erweiterungsbezogene Richtlinien konfiguriert. Auf die schwarze Liste gesetzte Erweiterungen können vom Nutzer nur installiert werden, wenn diese in der weißen Liste enthalten sind. Wenn Sie die automatische Installation von bestimmten Erweiterungen durch <ph name="PRODUCT_NAME" /> erzwingen möchten, können Sie die Erweiterungen in "<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />" angeben. Erweiterungen mit erzwungener Installation werden immer installiert, unabhängig davon, ob sie sich auf der schwarzen Liste befinden.</translation>
+<translation id="9185107612228451403">Hiermit werden erweiterungsbezogene Richtlinien konfiguriert. Auf die Sperrliste gesetzte Erweiterungen können vom Nutzer nur installiert werden, wenn diese in der Zulassungsliste enthalten sind. Wenn Sie die automatische Installation von bestimmten Erweiterungen durch <ph name="PRODUCT_NAME" /> erzwingen möchten, können Sie die Erweiterungen in "<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />" angeben. Erweiterungen mit erzwungener Installation werden immer installiert, unabhängig davon, ob sie sich auf der Sperrliste befinden.</translation>
 <translation id="9187743794267626640">Bereitstellen von externem Speicher deaktivieren</translation>
 <translation id="9190456586252617675">Mit dieser Richtlinie kann der Modus für die Einrichtung von Assistant konfiguriert werden.
 

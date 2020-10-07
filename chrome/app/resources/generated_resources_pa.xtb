@@ -123,6 +123,7 @@
 <translation id="1134009406053225289">ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_COUNT" /> ਵਿੱਚੋਂ <ph name="EMOJI_INDEX" />.</translation>
 <translation id="1136712381129578788">ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਲਾਕ ਹੋ ਗਈ ਹੈ ਕਿਉਂਕਿ ਗਲਤ ਪਿੰਨ ਬਹੁਤ ਵਾਰ ਦਾਖਲ ਕੀਤਾ ਗਿਆ। ਇਸਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ, ਕੱਢ ਕੇ ਮੁੜ-ਪਾਓ।</translation>
+<translation id="1137589305610962734">ਅਸਥਾਈ ਡਾਟਾ</translation>
 <translation id="1137673463384776352"><ph name="APP" /> ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="1139343347646843679">Linux ਦਾ ਸੰਰੂਪਣ ਕਰਨ ਦੌਰਾਨ ਗੜਬੜ ਹੋਈ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="1140351953533677694">ਆਪਣੀ ਬਲੂਟੁੱਥ ਅਤੇ ਸੀਰੀਅਲ ਡਿਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
@@ -984,6 +985,7 @@
 <translation id="2131077480075264">"<ph name="APP_NAME" />" ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ ਕਿਉਂਕਿ "<ph name="IMPORT_NAME" />" ਵੱਲੋਂ ਇਸਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="21354425047973905">ਪਿੰਨਾਂ ਲੁਕਾਓ</translation>
 <translation id="2135456203358955318">ਡੌਕ ਕੀਤਾ ਵਿਸਤਾਰਕ</translation>
+<translation id="2135468118189259524"><ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> 'ਤੇ Google ਵੱਲੋਂ ਇਕੱਤਰ ਕੀਤੇ ਡਾਟੇ ਅਤੇ ਉਸਦੇ ਕਾਰਨਾਂ ਬਾਰੇ ਜਾਣੋ।</translation>
 <translation id="2135787500304447609">&amp;ਦੁਬਾਰਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="2136372518715274136">ਨਵਾਂ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="2136476978468204130">ਤੁਹਾਡੇ ਵੱਲੋਂ ਦਾਖਲ ਕੀਤਾ ਪਾਸਫਰੇਜ਼ ਗਲਤ ਹੈ</translation>
@@ -3643,6 +3645,7 @@
 <translation id="5307030433605830021">ਸਰੋਤ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="5308380583665731573">ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="5310281978693206542">ਲਿੰਕ ਨੂੰ ਆਪਣੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਭੇਜੋ</translation>
+<translation id="531118851858162334">ਤੁਸੀਂ ਇਹ ਆਈਟਮ Google ਸੇਵਾਵਾਂ ਨੂੰ ਵਰਤ ਕੇ ਆਪਣੀ ਪਿਛਲੀ ਸਰਗਰਮੀ ਦੇ ਆਧਾਰ 'ਤੇ ਦੇਖ ਰਹੇ ਹੋ। ਤੁਸੀਂ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 'ਤੇ ਆਪਣੇ ਡਾਟੇ ਨੂੰ ਦੇਖ ਸਕਦੇ ਹੋ, ਇਸਨੂੰ ਮਿਟਾ ਸਕਦੇ ਹੋ ਅਤੇ ਆਪਣੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
 <translation id="5311304534597152726">ਇਸ ਵਜੋਂ ਸਾਈਨ ਇਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="5311565231560644461">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੇ ਆਭਾਸੀ ਵਾਸਤਵਿਕਤਾ ਡੀਵਾਈਸਾਂ ਅਤੇ ਡਾਟੇ ਨੂੰ ਵਰਤਣ ਨਾ ਦਿਓ</translation>
 <translation id="5314381603623123224">Chrome ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮ 31 ਮਾਰਚ ਨੂੰ ਬਦਲ ਰਹੇ ਹਨ</translation>
@@ -6229,6 +6232,7 @@
 <translation id="8378714024927312812">ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="8379878387931047019">ਇਹ ਡੀਵਾਈਸ ਇਸ ਵੈੱਬਸਾਈਟ ਵੱਲੋਂ ਬੇਨਤੀ ਕੀਤੀ ਗਈ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਦੀ ਕਿਸਮ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ ਹੈ</translation>
 <translation id="8379991678458444070">ਇਸ ਟੈਬ ਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ ਤਾਂ ਕਿ ਤੁਸੀਂ ਇੱਥੇ ਤੇਜ਼ੀ ਨਾਲ ਵਾਪਸ ਆ ਸਕੋ</translation>
+<translation id="8380266723152870797">ਵਿੰਡੋ ਦਾ ਨਾਮ</translation>
 <translation id="8382384117483909115">{NUM_TABS,plural, =1{'ਬਾਅਦ ਵਿੱਚ ਪੜ੍ਹੋ' ਟੈਬ}one{'ਬਾਅਦ ਵਿੱਚ ਪੜ੍ਹੋ' ਟੈਬ}other{'ਬਾਅਦ ਵਿੱਚ ਪੜ੍ਹੋ' ਟੈਬਾਂ}}</translation>
 <translation id="8382913212082956454">&amp;ਈਮੇਲ ਪਤਾ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="8386091599636877289">ਨੀਤੀ ਨਹੀਂ ਮਿਲੀ।</translation>
@@ -6393,6 +6397,7 @@
 <translation id="8592141010104017453">ਸੂਚਨਾਵਾਂ ਨੂੰ ਬਿਲਕੁਲ ਵੀ ਨਾ ਦਿਖਾਓ</translation>
 <translation id="859246725979739260">ਇਸ ਸਾਈਟ ਨੂੰ ਤੁਹਾਡੇ ਟਿਕਾਣੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="8593121833493516339">ਵਰਤੋਂ ਅਤੇ ਤਸ਼ਖੀਸ ਡਾਟਾ ਭੇਜੋ। Google ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਤਸ਼ਖੀਸ, ਡੀਵਾਈਸ ਅਤੇ ਐਪ ਵਰਤੋਂ ਡਾਟਾ ਭੇਜ ਕੇ ਆਪਣੇ ਬੱਚੇ ਦਾ Android ਅਨੁਭਵ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ। ਇਸਦੀ ਵਰਤੋਂ ਤੁਹਾਡੇ ਬੱਚੇ ਦੀ ਪਛਾਣ ਕਰਨ ਲਈ ਨਹੀਂ ਕੀਤੀ ਜਾਵੇਗੀ ਅਤੇ ਸਿਸਟਮ ਅਤੇ ਐਪ ਸਥਿਰਤਾ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਮਿਲੇਗੀ। ਕੁਝ ਏਕੀਕ੍ਰਿਤ ਜਾਣਕਾਰੀ Google ਐਪਾਂ ਅਤੇ ਪਾਰਟਨਰਾਂ, ਜਿਵੇਂ ਕਿ Android ਵਿਕਾਸਕਾਰਾਂ, ਦੀ ਵੀ ਮਦਦ ਕਰੇਗੀ। ਜੇ ਤੁਹਾਡੇ ਬੱਚੇ ਲਈ ਵਧੀਕ 'ਵੈੱਬ ਅਤੇ ਐਪ ਸਰਗਰਮੀ' ਚਾਲੂ ਹੋਵੇ, ਤਾਂ ਇਹ ਡਾਟਾ ਉਸਦੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। <ph name="BEGIN_LINK1" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK1" /></translation>
+<translation id="8593735906501637689"><ph name="MODULE_TITLE" /> ਨੂੰ ਹਟਾਇਆ ਗਿਆ</translation>
 <translation id="8594908476761052472">ਵੀਡੀਓ ਕੈਪਚਰ ਕਰੋ</translation>
 <translation id="8596540852772265699">ਵਿਉਂਤਬੱਧ ਫਾਈਲਾਂ</translation>
 <translation id="8597845839771543242">ਪ੍ਰਾਪਰਟੀ ਫੌਰਮੈਟ:</translation>
