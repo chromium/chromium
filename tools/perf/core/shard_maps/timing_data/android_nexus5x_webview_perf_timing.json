@@ -1133,42 +1133,6 @@
     },
     {
         "duration": "0.0",
-        "name": "blink_perf.shadow_dom/v0-changing-classname-with-shadow-dom.html"
-    },
-    {
-        "duration": "0.0",
-        "name": "blink_perf.shadow_dom/v0-changing-classname-without-shadow-dom.html"
-    },
-    {
-        "duration": "0.0",
-        "name": "blink_perf.shadow_dom/v0-changing-select-with-shadow-dom.html"
-    },
-    {
-        "duration": "0.0",
-        "name": "blink_perf.shadow_dom/v0-changing-select-without-shadow-dom.html"
-    },
-    {
-        "duration": "0.0",
-        "name": "blink_perf.shadow_dom/v0-content-reprojection.html"
-    },
-    {
-        "duration": "0.0",
-        "name": "blink_perf.shadow_dom/v0-large-distribution-without-layout.html"
-    },
-    {
-        "duration": "0.0",
-        "name": "blink_perf.shadow_dom/v0-multiple-insertion-points.html"
-    },
-    {
-        "duration": "0.0",
-        "name": "blink_perf.shadow_dom/v0-shadow-reprojection.html"
-    },
-    {
-        "duration": "0.0",
-        "name": "blink_perf.shadow_dom/v0-small-distribution-with-layout.html"
-    },
-    {
-        "duration": "0.0",
         "name": "blink_perf.shadow_dom/v1-distribution-disconnected-and-reconnected.html"
     },
     {

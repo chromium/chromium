@@ -18,7 +18,7 @@
         var i = 0;
         do {
           var host = document.createElement('div');
-          var root = host.createShadowRoot();
+          var root = host.attachShadow({mode:'open'});
           root.appendChild(tmpl.content.cloneNode(true));
           var light = document.createElement('div');
           list.appendChild(host);
@@ -48,6 +48,6 @@
       <div>item</div>
     </div>
   </div>
-  <content></content>
+  <slot></slot>
 </template>
 <section id="list"></section>

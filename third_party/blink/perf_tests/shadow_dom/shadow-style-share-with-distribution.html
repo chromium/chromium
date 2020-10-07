@@ -12,8 +12,8 @@
 <script>
   var listSize = 1000;
   window.onload = function() {
-    var root = document.querySelector('#list').createShadowRoot();
-    root.appendChild(document.createElement('content'));
+    var root = document.querySelector('#list').attachShadow({mode:'open'});
+    root.appendChild(document.createElement('slot'));
 
     PerfTestRunner.measureTime({
       description: "Measures performance of creating and rendering elements with shadow roots (contains class descendant selector styles).",
