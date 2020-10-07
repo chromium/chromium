@@ -23,6 +23,17 @@ Common fixes include:
 
 ## Listing Static Initializers
 
+### Method 1 - Ask compiler to report them
+1. Edit [//build/config/BUILDCONFIG.gn](https://cs.chromium.org/chromium/src/build/config/BUILDCONFIG.gn)
+and add `"//build/config/compiler:wglobal_constructors"` to `default_compiler_configs`
+2. Set GN arg `treat_warnings_as_errors=false`
+3. Compile and look at warnings
+
+This will produce far more warnings than there are static initializers because
+it (seems to) trigger on global variables initialized with constexpr
+constructors.
+
+### Method 2 - Use objdump to report them
 For Linux:
 
     tools/linux/dump-static-initializers.py out/Release/chrome

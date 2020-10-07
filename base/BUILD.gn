@@ -92,18 +92,6 @@ if (is_fuchsia) {
   import("//third_party/fuchsia-sdk/sdk/build/fidl_library.gni")
 }
 
-config("base_flags") {
-  if (is_clang) {
-    cflags = [
-      # Ideally all product code (but no test code) in chrome would have these
-      # flags. But this isn't trivial so start with //base as a minimum
-      # requirement.
-      # https://groups.google.com/a/chromium.org/d/topic/chromium-dev/B9Q5KTD7iCo/discussion
-      "-Wglobal-constructors",
-    ]
-  }
-}
-
 config("base_implementation") {
   defines = [ "BASE_IMPLEMENTATION" ]
   configs = [ "//build/config/compiler:wexit_time_destructors" ]
@@ -1249,10 +1237,10 @@ component("base") {
   frameworks = []
 
   configs += [
-    ":base_flags",
     ":base_implementation",
     "//build/config:precompiled_headers",
     "//build/config/compiler:noshadowing",
+    "//build/config/compiler:wglobal_constructors",
   ]
 
   deps = [

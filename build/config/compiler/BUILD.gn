@@ -1830,9 +1830,18 @@ config("no_exceptions") {
 
 # Warnings ---------------------------------------------------------------------
 
+# Generate a warning for code that might emit a static initializer.
+# See: //docs/static_initializers.md
+# See: https://groups.google.com/a/chromium.org/d/topic/chromium-dev/B9Q5KTD7iCo/discussion
+config("wglobal_constructors") {
+  if (is_clang) {
+    cflags = [ "-Wglobal-constructors" ]
+  }
+}
+
 # This will generate warnings when using Clang if code generates exit-time
 # destructors, which will slow down closing the program.
-# TODO(thakis): Make this a blacklist instead, http://crbug.com/101600
+# TODO(thakis): Make this a blocklist instead, http://crbug.com/101600
 config("wexit_time_destructors") {
   if (is_clang) {
     cflags = [ "-Wexit-time-destructors" ]
