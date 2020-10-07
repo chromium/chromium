@@ -260,8 +260,8 @@ class XRSession final
 
   void OnMojoSpaceReset();
 
-  const device::mojom::blink::VRDisplayInfoPtr& GetVRDisplayInfo() const {
-    return display_info_;
+  const device::mojom::blink::VRStageParametersPtr& GetStageParameters() const {
+    return stage_parameters_;
   }
 
   mojo::PendingAssociatedRemote<
@@ -271,7 +271,7 @@ class XRSession final
   bool EmulatedPosition() const {
     // If we don't have display info then we should be using the identity
     // reference space, which by definition will be emulating the position.
-    if (!display_info_) {
+    if (!pending_view_parameters_.size()) {
       return true;
     }
 
@@ -279,18 +279,16 @@ class XRSession final
   }
 
   // Immersive sessions currently use two views for VR, and only a single view
-  // for smartphone immersive AR mode. Convention is that we use the left eye
-  // if there's only a single view.
-  bool StereoscopicViews() { return display_info_ && display_info_->right_eye; }
+  // for smartphone immersive AR mode.
+  bool StereoscopicViews() { return pending_view_parameters_.size() >= 2; }
 
   void UpdateEyeParameters(
       const device::mojom::blink::VREyeParametersPtr& left_eye,
       const device::mojom::blink::VREyeParametersPtr& right_eye);
   void UpdateStageParameters(
       const device::mojom::blink::VRStageParametersPtr& stage_parameters);
-  // Incremented every time display_info_ is changed, so that other objects that
-  // depend on it can know when they need to update.
-  unsigned int DisplayInfoPtrId() const { return display_info_id_; }
+  // Incremented every time stage_parameters_ is changed, so that other objects
+  // that depend on it can know when they need to update.
   unsigned int StageParametersId() const { return stage_parameters_id_; }
 
   // Returns true if the session recognizes passed in hit_test_source as still
@@ -518,7 +516,9 @@ class XRSession final
   HashSet<uint64_t> hit_test_source_ids_;
   HashSet<uint64_t> hit_test_source_for_transient_input_ids_;
 
+  unsigned int view_parameters_id_ = 0;
   HeapVector<Member<XRViewData>> views_;
+  Vector<device::mojom::blink::VREyeParametersPtr> pending_view_parameters_;
 
   Member<XRInputSourceArray> input_sources_;
   Member<XRWebGLLayer> prev_base_layer_;
@@ -532,9 +532,8 @@ class XRSession final
   HeapHashSet<Member<ScriptPromiseResolver>> request_hit_test_source_promises_;
   HeapVector<Member<XRReferenceSpace>> reference_spaces_;
 
-  unsigned int display_info_id_ = 0;
   unsigned int stage_parameters_id_ = 0;
-  device::mojom::blink::VRDisplayInfoPtr display_info_;
+  device::mojom::blink::VRStageParametersPtr stage_parameters_;
 
   HeapMojoReceiver<device::mojom::blink::XRSessionClient,
                    XRSession,

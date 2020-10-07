@@ -105,8 +105,7 @@ const float kMinDefaultFramebufferScale = 0.1f;
 const float kMaxDefaultFramebufferScale = 1.0f;
 
 // Indices into the views array.
-const unsigned int kMonoOrStereoLeftView = 0;
-const unsigned int kStereoRightView = 1;
+const unsigned int kMonoView = 0;
 
 void UpdateViewFromEyeParameters(
     XRViewData* view,
@@ -470,17 +469,58 @@ void XRSession::updateRenderState(XRRenderStateInit* init,
 void XRSession::UpdateEyeParameters(
     const device::mojom::blink::VREyeParametersPtr& left_eye,
     const device::mojom::blink::VREyeParametersPtr& right_eye) {
-  auto display_info = display_info_.Clone();
-  display_info->left_eye = left_eye.Clone();
-  display_info->right_eye = right_eye.Clone();
-  SetXRDisplayInfo(std::move(display_info));
+  wtf_size_t required_size = left_eye ? 1 : 0;
+  required_size += right_eye ? 1 : 0;
+
+  bool updated = false;
+  if (pending_view_parameters_.size() != required_size) {
+    pending_view_parameters_.resize(required_size);
+    updated = true;
+  }
+
+  wtf_size_t view_index = 0;
+  if (left_eye) {
+    if (!pending_view_parameters_[view_index] ||
+        !pending_view_parameters_[view_index]->Equals(*left_eye)) {
+      pending_view_parameters_[view_index] = left_eye.Clone();
+      updated = true;
+    }
+    view_index++;
+  }
+
+  if (right_eye) {
+    if (!pending_view_parameters_[view_index] ||
+        !pending_view_parameters_[view_index]->Equals(*right_eye)) {
+      pending_view_parameters_[view_index] = right_eye.Clone();
+      updated = true;
+    }
+    view_index++;
+  }
+
+  if (updated) {
+    update_views_next_frame_ = true;
+    view_parameters_id_++;
+  }
 }
 
 void XRSession::UpdateStageParameters(
     const device::mojom::blink::VRStageParametersPtr& stage_parameters) {
-  auto display_info = display_info_.Clone();
-  display_info->stage_parameters = stage_parameters.Clone();
-  SetXRDisplayInfo(std::move(display_info));
+  // We don't necessarily trust the backend to only send us display info changes
+  // when something has actually changed, and a change here can trigger several
+  // other interfaces to recompute data or fire events, so it's worthwhile to
+  // validate that an actual change has occurred.
+  if (stage_parameters_) {
+    // If the new parameters are identical to the old ones we don't need to
+    // update.
+    if (stage_parameters_->Equals(*stage_parameters))
+      return;
+  } else if (!stage_parameters) {
+    // Don't bother updating from null to null either.
+    return;
+  }
+
+  stage_parameters_id_++;
+  stage_parameters_ = stage_parameters.Clone();
 }
 
 ScriptPromise XRSession::requestReferenceSpace(
@@ -1357,13 +1397,14 @@ DoubleSize XRSession::DefaultFramebufferSize() const {
   }
 
   double scale = default_framebuffer_scale_;
-  double width = display_info_->left_eye->render_width;
-  double height = display_info_->left_eye->render_height;
+  double width = 0;
+  double height = 0;
 
-  if (display_info_->right_eye) {
-    width += display_info_->right_eye->render_width;
-    height = std::max(display_info_->left_eye->render_height,
-                      display_info_->right_eye->render_height);
+  // For the moment, concatenate all the views into a big strip.
+  // Won't scale well for displays that use more than a stereo pair.
+  for (const auto& view : pending_view_parameters_) {
+    width += view->render_width;
+    height = std::max(height, static_cast<double>(view->render_height));
   }
 
   return DoubleSize(width * scale, height * scale);
@@ -1766,8 +1807,8 @@ base::Optional<TransformationMatrix> XRSession::GetMojoFrom(
       return TransformationMatrix();
     case device::mojom::blink::XRReferenceSpaceType::kLocalFloor:
     case device::mojom::blink::XRReferenceSpaceType::kBoundedFloor:
-      // Information about -floor spaces is currently stored elsewhere (in stage
-      // parameters of display_info_). It probably should eventually move here.
+      // Information about -floor spaces is currently stored elsewhere (in
+      // stage_parameters_). It probably should eventually move here.
       return base::nullopt;
   }
 }
@@ -2055,34 +2096,8 @@ bool XRSession::RemoveHitTestSource(
 
 void XRSession::SetXRDisplayInfo(
     device::mojom::blink::VRDisplayInfoPtr display_info) {
-  // We don't necessarily trust the backend to only send us display info changes
-  // when something has actually changed, and a change here can trigger several
-  // other interfaces to recompute data or fire events, so it's worthwhile to
-  // validate that an actual change has occurred.
-  if (display_info_) {
-    if (display_info_->Equals(*display_info))
-      return;
-
-    if (display_info_->stage_parameters && display_info->stage_parameters &&
-        !display_info_->stage_parameters->Equals(
-            *(display_info->stage_parameters))) {
-      // Stage parameters changed.
-      stage_parameters_id_++;
-    } else if (!!(display_info_->stage_parameters) !=
-               !!(display_info->stage_parameters)) {
-      // Either stage parameters just became available (sometimes happens if
-      // detecting the bounds doesn't happen until a few seconds into the
-      // session for platforms such as WMR), or the stage parameters just went
-      // away (probably due to tracking loss).
-      stage_parameters_id_++;
-    }
-  } else if (display_info && display_info->stage_parameters) {
-    // Got stage parameters for the first time this session.
-    stage_parameters_id_++;
-  }
-
-  display_info_id_++;
-  display_info_ = std::move(display_info);
+  UpdateEyeParameters(display_info->left_eye, display_info->right_eye);
+  UpdateStageParameters(display_info->stage_parameters);
 }
 
 const HeapVector<Member<XRViewData>>& XRSession::views() {
@@ -2093,23 +2108,26 @@ const HeapVector<Member<XRViewData>>& XRSession::views() {
   // assumes that the views are arranged as follows.
   if (views_dirty_) {
     if (immersive()) {
-      // If we don't already have the views allocated, do so now.
-      if (views_.IsEmpty()) {
-        views_.emplace_back(MakeGarbageCollected<XRViewData>(XRView::kEyeLeft));
-        if (display_info_->right_eye) {
-          views_.emplace_back(
-              MakeGarbageCollected<XRViewData>(XRView::kEyeRight));
-        }
-      }
       // In immersive mode the projection and view matrices must be aligned with
       // the device's physical optics.
-      UpdateViewFromEyeParameters(
-          views_[kMonoOrStereoLeftView], display_info_->left_eye,
-          render_state_->depthNear(), render_state_->depthFar());
-      if (display_info_->right_eye) {
-        UpdateViewFromEyeParameters(
-            views_[kStereoRightView], display_info_->right_eye,
-            render_state_->depthNear(), render_state_->depthFar());
+      if (views_.size() != pending_view_parameters_.size()) {
+        views_.clear();
+      }
+
+      for (wtf_size_t i = 0; i < pending_view_parameters_.size(); ++i) {
+        if (views_.size() <= i) {
+          // TODO(crbug.com/998146): Replace with eyes communicated from the
+          // XR runtime.
+          XRView::XREye eye = i ? XRView::kEyeRight : XRView::kEyeLeft;
+          if (pending_view_parameters_.size() == 1) {
+            eye = XRView::kEyeNone;
+          }
+
+          views_.emplace_back(MakeGarbageCollected<XRViewData>(eye));
+        }
+        UpdateViewFromEyeParameters(views_[i], pending_view_parameters_[i],
+                                    render_state_->depthNear(),
+                                    render_state_->depthFar());
       }
     } else {
       if (views_.IsEmpty()) {
@@ -2130,7 +2148,7 @@ const HeapVector<Member<XRViewData>>& XRSession::views() {
 
       // inlineVerticalFieldOfView should only be null in immersive mode.
       DCHECK(inline_vertical_fov.has_value());
-      views_[kMonoOrStereoLeftView]->UpdateProjectionMatrixFromAspect(
+      views_[kMonoView]->UpdateProjectionMatrixFromAspect(
           inline_vertical_fov.value(), aspect, render_state_->depthNear(),
           render_state_->depthFar());
     }
