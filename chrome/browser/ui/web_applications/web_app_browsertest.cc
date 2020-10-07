@@ -13,6 +13,8 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/themes/custom_theme_supplier.h"
+#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -45,6 +47,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/background_color_change_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -212,6 +215,42 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, BackgroundColor) {
 
   auto* provider = WebAppProviderBase::GetProviderBase(profile());
   EXPECT_EQ(provider->registrar().GetAppBackgroundColor(app_id), SK_ColorBLUE);
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, BackgroundColorChange) {
+  const GURL app_url = GetSecureAppURL();
+  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  web_app_info->start_url = app_url;
+  web_app_info->scope = app_url.GetWithoutFilename();
+  web_app_info->theme_color = SK_ColorBLUE;
+  const AppId app_id = InstallWebApp(std::move(web_app_info));
+
+  Browser* const app_browser = LaunchWebAppBrowser(app_id);
+  content::WebContents* const web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+
+  // Wait for original background color (not cyan) to load.
+  {
+    content::BackgroundColorChangeWaiter waiter(web_contents);
+    waiter.Wait();
+    EXPECT_NE(app_browser->app_controller()->GetBackgroundColor().value(),
+              SK_ColorCYAN);
+  }
+  content::AwaitDocumentOnLoadCompleted(web_contents);
+
+  // Changing background color should update download shelf theme.
+  {
+    content::BackgroundColorChangeWaiter waiter(web_contents);
+    EXPECT_TRUE(content::ExecJs(
+        web_contents, "document.body.style.backgroundColor = 'cyan';"));
+    waiter.Wait();
+    EXPECT_EQ(app_browser->app_controller()->GetBackgroundColor().value(),
+              SK_ColorCYAN);
+    SkColor download_shelf_color;
+    app_browser->app_controller()->GetThemeSupplier()->GetColor(
+        ThemeProperties::COLOR_DOWNLOAD_SHELF, &download_shelf_color);
+    EXPECT_EQ(download_shelf_color, SK_ColorCYAN);
+  }
 }
 
 // This tests that we don't crash when launching a PWA window with an
