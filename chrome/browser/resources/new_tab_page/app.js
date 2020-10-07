@@ -200,6 +200,12 @@ class AppElement extends PolymerElement {
       },
 
       /** @private */
+      modulesVisible_: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
+
+      /** @private */
       middleSlotPromoLoaded_: Boolean,
 
       /** @private */
@@ -216,7 +222,14 @@ class AppElement extends PolymerElement {
         computed: `computePromoAndModulesLoaded_(middleSlotPromoLoaded_,
             modulesLoaded_)`,
         reflectToAttribute: true,
-        observer: 'onPromoAndModulesLoadedChange_',
+      },
+
+      /** @private */
+      modulesLoadedAndVisible_: {
+        type: Boolean,
+        computed: `computeModulesLoadedAndVisible_(promoAndModulesLoaded_,
+            modulesVisible_)`,
+        observer: 'onModulesLoadedAndVisibleChange_',
       },
 
       /**
@@ -259,6 +272,8 @@ class AppElement extends PolymerElement {
     this.backgroundManager_ = BackgroundManager.getInstance();
     /** @private {?number} */
     this.setThemeListenerId_ = null;
+    /** @private {?number} */
+    this.setModulesVisibleListenerId_ = null;
     /** @private {!EventTracker} */
     this.eventTracker_ = new EventTracker();
     this.loadOneGoogleBar_();
@@ -283,6 +298,11 @@ class AppElement extends PolymerElement {
           performance.measure('theme-set');
           this.theme_ = theme;
         });
+    this.setModulesVisibleListenerId_ =
+        this.callbackRouter_.setModulesVisible.addListener(visible => {
+          this.modulesVisible_ = visible;
+        });
+    this.pageHandler_.updateModulesVisible();
     this.eventTracker_.add(window, 'message', (event) => {
       /** @type {!Object} */
       const data = event.data;
@@ -501,6 +521,14 @@ class AppElement extends PolymerElement {
         (!loadTimeData.getBoolean('modulesEnabled') || this.modulesLoaded_);
   }
 
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeModulesLoadedAndVisible_() {
+    return this.promoAndModulesLoaded_ && this.modulesVisible_;
+  }
+
   /** @private */
   async onLazyRendered_() {
     if (!loadTimeData.getBoolean('modulesEnabled')) {
@@ -593,8 +621,10 @@ class AppElement extends PolymerElement {
   }
 
   /** @private */
-  onPromoAndModulesLoadedChange_() {
-    this.pageHandler_.onModulesRendered(BrowserProxy.getInstance().now());
+  onModulesLoadedAndVisibleChange_() {
+    if (this.modulesLoadedAndVisible_) {
+      this.pageHandler_.onModulesRendered(BrowserProxy.getInstance().now());
+    }
   }
 
   /**

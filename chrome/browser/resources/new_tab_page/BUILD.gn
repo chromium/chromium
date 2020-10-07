@@ -253,6 +253,7 @@ html_to_js("web_components_local") {
     "realbox.js",
     "iframe.js",
     "voice_search_overlay.js",
+    "customize_modules.js",
   ]
 }
 
@@ -293,6 +294,7 @@ if (optimize_webui) {
       "customize_dialog.js",
       "voice_search_overlay.js",
       "customize_backgrounds.js",
+      "customize_modules.js",
       "customize_shortcuts.js",
       "iframe.js",
       "mini_page.js",

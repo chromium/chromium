@@ -71,6 +71,8 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   static const char kModuleDismissedHistogram[];
   static const char kModuleRestoredHistogram[];
 
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
   // new_tab_page::mojom::PageHandler:
   void AddMostVisitedTile(const GURL& url,
                           const std::string& title,
@@ -105,6 +107,8 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void GetPromo(GetPromoCallback callback) override;
   void OnDismissModule(const std::string& module_id) override;
   void OnRestoreModule(const std::string& module_id) override;
+  void SetModulesVisible(bool visible) override;
+  void UpdateModulesVisible() override;
   void OnMostVisitedTilesRendered(
       std::vector<new_tab_page::mojom::MostVisitedTilePtr> tiles,
       double time) override;

@@ -341,6 +341,10 @@ interface PageHandler {
   OnDismissModule(string module_id);
   // Called when a module the given id is restored.
   OnRestoreModule(string module_id);
+  // If |visible| the modules will be shown.
+  SetModulesVisible(bool visible);
+  // Triggers a call to |SetModulesVisible| with the current visibility setting.
+  UpdateModulesVisible();
 
   // ======= METRICS =======
   // Logs that |tiles| were displayed / updated at |time|. The first instance of
@@ -437,6 +441,8 @@ interface Page {
   SetFakeboxFocused(bool focused);
   // If |visible| shows the fakebox.
   SetFakeboxVisible(bool visible);
+  // Updates the module visibility.
+  SetModulesVisible(bool visible);
 
   // ======= REALBOX =======
   // Updates the NTP realbox with the autocomplete results.

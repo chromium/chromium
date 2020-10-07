@@ -45,6 +45,8 @@
       type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_INFO_SVG" file="icons/info.svg"
       type="BINDATA" />
+  <include name="IDR_NEW_TAB_PAGE_CARDS_SVG" file="icons/cards.svg"
+      type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_HTML"
       file="new_tab_page.html" type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_SHARED_VARS_CSS"
