@@ -1,8 +1,77 @@
-<div>$i18n{profileCustomizationPickThemeTitle}</div>
+<style include="signin-dialog-shared">
+  :host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
 
-<cr-customize-themes id="themeSelector" auto-confirm-theme-changes>
-</cr-customize-themes>
+  #header {
+    background-color: pink;  /* TODO: use profile color */
+    border-radius: 4px;
+    height: 128px;
+    margin: 8px 8px;
+  }
 
-<cr-button id="doneButton" on-click="onDoneCustomizationClicked_">
-  $i18n{profileCustomizationDoneLabel}
-</cr-button>
+  #nameInput {
+    --cr-input-placeholder-color: var(--google-grey-900);
+    --cr-input-padding-bottom: 8px;
+    --cr-input-padding-top: 8px;
+    height: 32px;
+    margin: 8px auto 16px;
+    maxlength: 16;
+    width: 114px;
+  }
+
+  #lineSeparator {
+    border-top: 1px solid var(--google-grey-refresh-100);
+    margin: 0;
+  }
+
+  #pickThemeContainer {
+    margin: 16px auto auto;
+  }
+
+  #pickThemeTitle {
+    color: var(--cr-secondary-text-color);
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+
+  #themeSelector {
+    --cr-customize-themes-grid-gap: 7px;
+    --cr-customize-themes-icon-size: 36px;
+  }
+
+  .action-container {
+    padding: 0 16px 16px;
+  }
+
+  cr-button {
+    font-size: 12px;
+    width: 111px;
+
+  }
+</style>
+
+<div id="header">
+</div>
+
+<cr-input id="nameInput" placeholder="Placeholder" pattern=".*\\S.*"
+    auto-validate spellcheck="false" autofocus>
+</cr-input>
+
+<hr id="lineSeparator">
+
+<div id="pickThemeContainer">
+  <div id="pickThemeTitle">$i18n{profileCustomizationPickThemeTitle}</div>
+  <cr-customize-themes id="themeSelector" auto-confirm-theme-changes>
+  </cr-customize-themes>
+</div>
+
+<div class="action-container">
+  <cr-button id="doneButton" class="action-button"
+      on-click="onDoneCustomizationClicked_">
+    $i18n{profileCustomizationDoneLabel}
+  </cr-button>
+<div>
