@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.TouchDelegate;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
@@ -23,7 +24,7 @@ import java.util.List;
 /**
  * A location bar implementation specific for smaller/phone screens.
  */
-public class LocationBarPhone extends LocationBarLayout {
+public class LocationBarPhone extends LocationBarLayout implements LocationBar.Phone {
     private static final int ACTION_BUTTON_TOUCH_OVERFLOW_LEFT = 15;
 
     private View mFirstVisibleFocusedView;
@@ -94,6 +95,7 @@ public class LocationBarPhone extends LocationBarLayout {
      * @return Width of child views before the first view that would be visible when location bar is
      *         focused. The first visible, focused view should be either url bar or status icon.
      */
+    @Override
     public int getOffsetOfFirstVisibleFocusedView() {
         int visibleWidth = 0;
         for (int i = 0; i < getChildCount(); i++) {
@@ -112,6 +114,7 @@ public class LocationBarPhone extends LocationBarLayout {
      * @param durationMs Duration of fade animation in milliseconds.
      * @param targetAlpha Target alpha value.
      */
+    @Override
     public void populateFadeAnimations(
             List<Animator> animators, long startDelayMs, long durationMs, float targetAlpha) {
         for (int i = 0; i < getChildCount(); i++) {
@@ -133,6 +136,7 @@ public class LocationBarPhone extends LocationBarLayout {
      *                 animation starting and the unfocus animation starting.
      * @return The offset for the location bar when showing the dse icon.
      */
+    @Override
     public int getLocationBarOffsetForFocusAnimation(boolean hasFocus) {
         if (mStatusCoordinator == null) return 0;
 
@@ -166,6 +170,7 @@ public class LocationBarPhone extends LocationBarLayout {
      *                 animation starting and the unfocus animation starting.
      *  @return The X translation for the URL bar, used in the toolbar animation.
      */
+    @Override
     public float getUrlBarTranslationXForToolbarAnimation(
             float urlExpansionPercent, boolean hasFocus) {
         // This will be called before status view is ready.
@@ -278,6 +283,11 @@ public class LocationBarPhone extends LocationBarLayout {
     }
 
     @Override
+    public FrameLayout.LayoutParams getFrameLayoutParams() {
+        return (FrameLayout.LayoutParams) getLayoutParams();
+    }
+
+    @Override
     protected void updateButtonVisibility() {
         super.updateButtonVisibility();
         updateMicButtonVisibility();
@@ -326,6 +336,11 @@ public class LocationBarPhone extends LocationBarLayout {
         try (TraceEvent e = TraceEvent.scoped("LocationBarPhone.onLayout")) {
             super.onLayout(changed, left, top, right, bottom);
         }
+    }
+
+    @Override
+    public View getViewForDrawing() {
+        return this;
     }
 
     /** Update the status visibility according to the current state held in LocationBar. */

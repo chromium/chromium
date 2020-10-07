@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Location bar for tablet form factors.
  */
-public class LocationBarTablet extends LocationBarLayout {
+public class LocationBarTablet extends LocationBarLayout implements LocationBar.Tablet {
     private static final long MAX_NTP_KEYBOARD_FOCUS_DURATION_MS = 200;
 
     private static final int ICON_FADE_ANIMATION_DURATION_MS = 150;
@@ -187,6 +187,7 @@ public class LocationBarTablet extends LocationBarLayout {
      * @param shouldShowButtons Whether buttons should be displayed in the URL bar when it's not
      *                          focused.
      */
+    @Override
     public void setShouldShowButtonsWhenUnfocused(boolean shouldShowButtons) {
         mShouldShowButtonsWhenUnfocused = shouldShowButtons;
         updateButtonVisibility();
@@ -267,6 +268,7 @@ public class LocationBarTablet extends LocationBarLayout {
      * @return An animator to run for the given view when showing buttons in the unfocused location
      *         bar. This should also be used to create animators for showing toolbar buttons.
      */
+    @Override
     public ObjectAnimator createShowButtonAnimator(View button) {
         if (button.getVisibility() != View.VISIBLE) {
             button.setAlpha(0.f);
@@ -283,6 +285,7 @@ public class LocationBarTablet extends LocationBarLayout {
      * @return An animator to run for the given view when hiding buttons in the unfocused location
      *         bar. This should also be used to create animators for hiding toolbar buttons.
      */
+    @Override
     public ObjectAnimator createHideButtonAnimator(View button) {
         ObjectAnimator buttonAnimator = ObjectAnimator.ofFloat(button, View.ALPHA, 0.f);
         buttonAnimator.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
@@ -299,6 +302,7 @@ public class LocationBarTablet extends LocationBarLayout {
      *                                      the beginning and end of the animation.
      * @return An ArrayList of animators to run.
      */
+    @Override
     public List<Animator> getShowButtonsWhenUnfocusedAnimators(int toolbarStartPaddingDifference) {
         mToolbarStartPaddingDifference = toolbarStartPaddingDifference;
 
@@ -353,6 +357,7 @@ public class LocationBarTablet extends LocationBarLayout {
      *                                      the beginning and end of the animation.
      * @return An ArrayList of animators to run.
      */
+    @Override
     public List<Animator> getHideButtonsWhenUnfocusedAnimators(int toolbarStartPaddingDifference) {
         mToolbarStartPaddingDifference = toolbarStartPaddingDifference;
 

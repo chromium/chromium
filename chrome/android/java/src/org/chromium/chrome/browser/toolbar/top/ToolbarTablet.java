@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.LocationBar;
-import org.chromium.chrome.browser.omnibox.LocationBarTablet;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -85,7 +84,8 @@ public class ToolbarTablet extends ToolbarLayout
     private NavigationPopup mNavigationPopup;
 
     private Boolean mIsIncognito;
-    private LocationBarTablet mLocationBar;
+    private LocationBar mLocationBar;
+    private LocationBar.Tablet mLocationBarTablet;
 
     private final int mStartPaddingWithButtons;
     private final int mStartPaddingWithoutButtons;
@@ -110,7 +110,8 @@ public class ToolbarTablet extends ToolbarLayout
     @Override
     public void onFinishInflate() {
         super.onFinishInflate();
-        mLocationBar = (LocationBarTablet) findViewById(R.id.location_bar);
+        mLocationBar = (LocationBar) findViewById(R.id.location_bar);
+        mLocationBarTablet = (LocationBar.Tablet) mLocationBar;
 
         mHomeButton = findViewById(R.id.home_button);
         mBackButton = findViewById(R.id.back_button);
@@ -391,7 +392,7 @@ public class ToolbarTablet extends ToolbarLayout
         setBackgroundColor(color);
         final int textBoxColor = ToolbarColors.getTextBoxColorForToolbarBackgroundInNonNativePage(
                 getResources(), color, isIncognito());
-        mLocationBar.getBackground().setColorFilter(textBoxColor, PorterDuff.Mode.SRC_IN);
+        mLocationBarTablet.getBackground().setColorFilter(textBoxColor, PorterDuff.Mode.SRC_IN);
 
         mLocationBar.updateVisualsForState();
     }
@@ -428,7 +429,7 @@ public class ToolbarTablet extends ToolbarLayout
 
     @Override
     void updateButtonVisibility() {
-        mLocationBar.updateButtonVisibility();
+        mLocationBarTablet.updateButtonVisibility();
     }
 
     @Override
@@ -616,7 +617,7 @@ public class ToolbarTablet extends ToolbarLayout
             for (ImageButton button : mToolbarButtons) {
                 button.setVisibility(visible ? View.VISIBLE : View.GONE);
             }
-            mLocationBar.setShouldShowButtonsWhenUnfocused(visible);
+            mLocationBarTablet.setShouldShowButtonsWhenUnfocused(visible);
             setStartPaddingBasedOnButtonVisibility(visible);
         }
     }
@@ -657,11 +658,11 @@ public class ToolbarTablet extends ToolbarLayout
 
         // Create animators for all of the toolbar buttons.
         for (ImageButton button : mToolbarButtons) {
-            animators.add(mLocationBar.createShowButtonAnimator(button));
+            animators.add(mLocationBarTablet.createShowButtonAnimator(button));
         }
 
         // Add animators for location bar.
-        animators.addAll(mLocationBar.getShowButtonsWhenUnfocusedAnimators(
+        animators.addAll(mLocationBarTablet.getShowButtonsWhenUnfocusedAnimators(
                 getStartPaddingDifferenceForButtonVisibilityAnimation()));
 
         AnimatorSet set = new AnimatorSet();
@@ -692,11 +693,11 @@ public class ToolbarTablet extends ToolbarLayout
 
         // Create animators for all of the toolbar buttons.
         for (ImageButton button : mToolbarButtons) {
-            animators.add(mLocationBar.createHideButtonAnimator(button));
+            animators.add(mLocationBarTablet.createHideButtonAnimator(button));
         }
 
         // Add animators for location bar.
-        animators.addAll(mLocationBar.getHideButtonsWhenUnfocusedAnimators(
+        animators.addAll(mLocationBarTablet.getHideButtonsWhenUnfocusedAnimators(
                 getStartPaddingDifferenceForButtonVisibilityAnimation()));
 
         AnimatorSet set = new AnimatorSet();
