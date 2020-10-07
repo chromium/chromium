@@ -16,12 +16,17 @@ enum ColorMode {
 
 // The source types from which a scan can be obtained.
 enum SourceType {
+  // An unknown source type.
+  kUnknown,
   // A flatbed that scans a single page.
   kFlatbed,
   // An automatic document feeder that scans a single side of each page.
   kAdfSimplex,
   // An automatic document feeder that scans both sides of each page.
   kAdfDuplex,
+  // The implicit source type used for scanners that do not report any source
+  // options.
+  kDefault,
 };
 
 // The source from which a scan can be obtained.

@@ -44,11 +44,13 @@ struct TypeConverter<mojo_ipc::SourceType, lorgnette::SourceType> {
         return mojo_ipc::SourceType::kAdfSimplex;
       case lorgnette::SOURCE_ADF_DUPLEX:
         return mojo_ipc::SourceType::kAdfDuplex;
+      case lorgnette::SOURCE_DEFAULT:
+        return mojo_ipc::SourceType::kDefault;
       case lorgnette::SOURCE_UNSPECIFIED:
       case lorgnette::SourceType_INT_MIN_SENTINEL_DO_NOT_USE_:
       case lorgnette::SourceType_INT_MAX_SENTINEL_DO_NOT_USE_:
         NOTREACHED();
-        return mojo_ipc::SourceType::kFlatbed;
+        return mojo_ipc::SourceType::kUnknown;
     }
   }
 };
