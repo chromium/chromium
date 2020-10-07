@@ -411,11 +411,13 @@ export function toggleChecked(element, checked) {
  */
 export function bindElementAriaLabelWithState(
     {element, state: s, onLabel, offLabel}) {
-  state.addObserver(s, (value) => {
+  const update = (value) => {
     const label = value ? onLabel : offLabel;
     element.setAttribute('i18n-label', label);
     element.setAttribute('aria-label', browserProxy.getI18nMessage(label));
-  });
+  };
+  update(state.get(s));
+  state.addObserver(s, update);
 }
 
 /**

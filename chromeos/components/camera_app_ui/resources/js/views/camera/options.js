@@ -98,6 +98,13 @@ export class Options {
     this.toggleMic_.addEventListener('click', () => this.updateAudioByMic_());
     this.toggleMirror_.addEventListener('click', () => this.saveMirroring_());
 
+    util.bindElementAriaLabelWithState({
+      element: dom.get('#toggle-timer', Element),
+      state: state.State.TIMER_3SEC,
+      onLabel: 'toggle_timer_3s_button',
+      offLabel: 'toggle_timer_10s_button',
+    });
+
     // Restore saved mirroring states per video device.
     browserProxy.localStorageGet({mirroringToggles: {}})
         .then((values) => this.mirroringToggles_ = values['mirroringToggles']);

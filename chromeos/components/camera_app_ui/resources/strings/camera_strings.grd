@@ -225,8 +225,11 @@
       <message desc="Label for the exporting button." name="IDS_EXPORT_BUTTON">
         Export to disk
       </message>
-      <message desc="Label for the checkbox to toggle the countdown timer." name="IDS_TOGGLE_TIMER_BUTTON">
-        Timer
+      <message desc="Label for the checkbox to toggle the 3 seconds countdown timer." name="IDS_TOGGLE_TIMER_3S_BUTTON">
+        3 seconds timer
+      </message>
+      <message desc="Label for the checkbox to toggle the 10 seconds countdown timer." name="IDS_TOGGLE_TIMER_10S_BUTTON">
+        10 seconds timer
       </message>
       <message desc="Message shown before moving all photos and videos stored in the Camera App to the Downloads folder." name="IDS_MIGRATE_PICTURES_MSG">
         Photos and videos taken with the camera will be moved to the Downloads folder. You can access them in Files.
