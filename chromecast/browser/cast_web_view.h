@@ -16,8 +16,12 @@
 #include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/ui/mojom/ui_service.mojom.h"
 #include "content/public/browser/bluetooth_chooser.h"
-#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
+
+namespace content {
+class RenderFrameHost;
+class WebContents;
+}  // namespace content
 
 namespace chromecast {
 
