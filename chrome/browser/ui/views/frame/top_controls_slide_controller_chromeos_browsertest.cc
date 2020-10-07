@@ -799,8 +799,9 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, MAYBE_TestClosingATab) {
                                TopChromeShownState::kFullyHidden);
 }
 
+// Times out on CrOS. crbug.com/1136011
 IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
-                       TestFocusEditableElements) {
+                       DISABLED_TestFocusEditableElements) {
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
