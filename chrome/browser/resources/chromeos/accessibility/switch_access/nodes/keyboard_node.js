@@ -156,7 +156,7 @@ class KeyboardRootNode extends BasicRootNode {
         SwitchAccessPredicate.isVisible(keyboardObject);
 
     new EventHandler(
-        keyboardObject, chrome.automation.EventType.ARIA_ATTRIBUTE_CHANGED,
+        keyboardObject, chrome.automation.EventType.STATE_CHANGED,
         KeyboardRootNode.checkVisibilityChanged_, {exactMatch: true})
         .start();
   }
