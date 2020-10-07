@@ -122,7 +122,6 @@ class ResourceCreationAPI {
                                   PP_Resource config_id,
                                   PPB_Audio_Callback audio_callback,
                                   void* user_data) = 0;
-  virtual PP_Resource CreateAudioEncoder(PP_Instance instance) = 0;
   virtual PP_Resource CreateAudioTrusted(PP_Instance instance) = 0;
   virtual PP_Resource CreateAudioConfig(PP_Instance instance,
                                         PP_AudioSampleRate sample_rate,

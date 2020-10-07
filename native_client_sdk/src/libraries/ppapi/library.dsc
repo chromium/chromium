@@ -21,7 +21,6 @@
         'pp_array_output.h',
         'ppb_audio_buffer.h',
         'ppb_audio_config.h',
-        'ppb_audio_encoder.h',
         'ppb_audio.h',
         'ppb_console.h',
         'ppb_core.h',

@@ -21,8 +21,6 @@ component("proxy") {
     "../utility/completion_callback_factory.h",
     "audio_buffer_resource.cc",
     "audio_buffer_resource.h",
-    "audio_encoder_resource.cc",
-    "audio_encoder_resource.h",
     "broker_resource.cc",
     "broker_resource.h",
     "camera_capabilities_resource.cc",

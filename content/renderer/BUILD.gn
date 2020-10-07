@@ -470,8 +470,6 @@ target(link_target_type, "renderer") {
       "pepper/message_channel.h",
       "pepper/pepper_audio_controller.cc",
       "pepper/pepper_audio_controller.h",
-      "pepper/pepper_audio_encoder_host.cc",
-      "pepper/pepper_audio_encoder_host.h",
       "pepper/pepper_audio_input_host.cc",
       "pepper/pepper_audio_input_host.h",
       "pepper/pepper_audio_output_host.cc",

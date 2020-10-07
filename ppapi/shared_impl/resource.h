@@ -22,7 +22,6 @@
   F(PPB_Audio_API)                      \
   F(PPB_AudioBuffer_API)                \
   F(PPB_AudioConfig_API)                \
-  F(PPB_AudioEncoder_API)               \
   F(PPB_AudioInput_API)                 \
   F(PPB_AudioOutput_API)                \
   F(PPB_AudioTrusted_API)               \

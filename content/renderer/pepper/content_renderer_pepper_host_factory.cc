@@ -14,7 +14,6 @@
 #include "content/common/content_switches_internal.h"
 #include "content/public/common/content_client.h"
 #include "content/public/renderer/content_renderer_client.h"
-#include "content/renderer/pepper/pepper_audio_encoder_host.h"
 #include "content/renderer/pepper/pepper_audio_input_host.h"
 #include "content/renderer/pepper/pepper_audio_output_host.h"
 #include "content/renderer/pepper/pepper_camera_device_host.h"
@@ -156,9 +155,6 @@ ContentRendererPepperHostFactory::CreateResourceHost(
   // Dev interfaces.
   if (GetPermissions().HasPermission(ppapi::PERMISSION_DEV)) {
     switch (message.type()) {
-      case PpapiHostMsg_AudioEncoder_Create::ID:
-        return std::make_unique<PepperAudioEncoderHost>(host_, instance,
-                                                        resource);
       case PpapiHostMsg_AudioInput_Create::ID:
         return std::make_unique<PepperAudioInputHost>(host_, instance,
                                                       resource);

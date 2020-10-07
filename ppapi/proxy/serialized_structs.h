@@ -91,15 +91,6 @@ struct PPBURLLoader_UpdateProgress_Params {
   int64_t total_bytes_to_be_received;
 };
 
-struct PPB_AudioEncodeParameters {
-  uint32_t channels;
-  uint32_t input_sample_rate;
-  uint32_t input_sample_size;
-  PP_AudioProfile output_profile;
-  uint32_t initial_bitrate;
-  PP_HardwareAcceleration acceleration;
-};
-
 }  // namespace proxy
 }  // namespace ppapi
 

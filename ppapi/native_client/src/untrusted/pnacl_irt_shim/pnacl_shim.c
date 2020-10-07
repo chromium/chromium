@@ -16,7 +16,6 @@
 #include "ppapi/c/dev/ppb_url_util_dev.h"
 #include "ppapi/c/dev/ppb_video_capture_dev.h"
 #include "ppapi/c/dev/ppb_video_decoder_dev.h"
-#include "ppapi/c/ppb_audio_encoder.h"
 #include "ppapi/c/ppb_console.h"
 #include "ppapi/c/ppb_core.h"
 #include "ppapi/c/ppb_file_io.h"
@@ -81,7 +80,6 @@ static int mystrcmp(const char* s1, const char *s2) {
 
 /* BEGIN Declarations for all Wrapper Infos */
 
-static struct __PnaclWrapperInfo Pnacl_WrapperInfo_PPB_AudioEncoder_0_1;
 static struct __PnaclWrapperInfo Pnacl_WrapperInfo_PPB_Console_1_0;
 static struct __PnaclWrapperInfo Pnacl_WrapperInfo_PPB_Core_1_0;
 static struct __PnaclWrapperInfo Pnacl_WrapperInfo_PPB_FileIO_1_0;
@@ -186,65 +184,6 @@ static struct __PnaclWrapperInfo Pnacl_WrapperInfo_PPP_Instance_Private_0_1;
 /* Not generating wrapper methods for PPB_AudioConfig_1_0 */
 
 /* Not generating wrapper methods for PPB_AudioConfig_1_1 */
-
-/* Begin wrapper methods for PPB_AudioEncoder_0_1 */
-
-static PP_Resource Pnacl_M47_PPB_AudioEncoder_Create(PP_Instance instance) {
-  const struct PPB_AudioEncoder_0_1 *iface = Pnacl_WrapperInfo_PPB_AudioEncoder_0_1.real_iface;
-  return iface->Create(instance);
-}
-
-static PP_Bool Pnacl_M47_PPB_AudioEncoder_IsAudioEncoder(PP_Resource resource) {
-  const struct PPB_AudioEncoder_0_1 *iface = Pnacl_WrapperInfo_PPB_AudioEncoder_0_1.real_iface;
-  return iface->IsAudioEncoder(resource);
-}
-
-static int32_t Pnacl_M47_PPB_AudioEncoder_GetSupportedProfiles(PP_Resource audio_encoder, struct PP_ArrayOutput* output, struct PP_CompletionCallback* callback) {
-  const struct PPB_AudioEncoder_0_1 *iface = Pnacl_WrapperInfo_PPB_AudioEncoder_0_1.real_iface;
-  return iface->GetSupportedProfiles(audio_encoder, *output, *callback);
-}
-
-static int32_t Pnacl_M47_PPB_AudioEncoder_Initialize(PP_Resource audio_encoder, uint32_t channels, PP_AudioBuffer_SampleRate input_sample_rate, PP_AudioBuffer_SampleSize input_sample_size, PP_AudioProfile output_profile, uint32_t initial_bitrate, PP_HardwareAcceleration acceleration, struct PP_CompletionCallback* callback) {
-  const struct PPB_AudioEncoder_0_1 *iface = Pnacl_WrapperInfo_PPB_AudioEncoder_0_1.real_iface;
-  return iface->Initialize(audio_encoder, channels, input_sample_rate, input_sample_size, output_profile, initial_bitrate, acceleration, *callback);
-}
-
-static int32_t Pnacl_M47_PPB_AudioEncoder_GetNumberOfSamples(PP_Resource audio_encoder) {
-  const struct PPB_AudioEncoder_0_1 *iface = Pnacl_WrapperInfo_PPB_AudioEncoder_0_1.real_iface;
-  return iface->GetNumberOfSamples(audio_encoder);
-}
-
-static int32_t Pnacl_M47_PPB_AudioEncoder_GetBuffer(PP_Resource audio_encoder, PP_Resource* audio_buffer, struct PP_CompletionCallback* callback) {
-  const struct PPB_AudioEncoder_0_1 *iface = Pnacl_WrapperInfo_PPB_AudioEncoder_0_1.real_iface;
-  return iface->GetBuffer(audio_encoder, audio_buffer, *callback);
-}
-
-static int32_t Pnacl_M47_PPB_AudioEncoder_Encode(PP_Resource audio_encoder, PP_Resource audio_buffer, struct PP_CompletionCallback* callback) {
-  const struct PPB_AudioEncoder_0_1 *iface = Pnacl_WrapperInfo_PPB_AudioEncoder_0_1.real_iface;
-  return iface->Encode(audio_encoder, audio_buffer, *callback);
-}
-
-static int32_t Pnacl_M47_PPB_AudioEncoder_GetBitstreamBuffer(PP_Resource audio_encoder, struct PP_AudioBitstreamBuffer* bitstream_buffer, struct PP_CompletionCallback* callback) {
-  const struct PPB_AudioEncoder_0_1 *iface = Pnacl_WrapperInfo_PPB_AudioEncoder_0_1.real_iface;
-  return iface->GetBitstreamBuffer(audio_encoder, bitstream_buffer, *callback);
-}
-
-static void Pnacl_M47_PPB_AudioEncoder_RecycleBitstreamBuffer(PP_Resource audio_encoder, const struct PP_AudioBitstreamBuffer* bitstream_buffer) {
-  const struct PPB_AudioEncoder_0_1 *iface = Pnacl_WrapperInfo_PPB_AudioEncoder_0_1.real_iface;
-  iface->RecycleBitstreamBuffer(audio_encoder, bitstream_buffer);
-}
-
-static void Pnacl_M47_PPB_AudioEncoder_RequestBitrateChange(PP_Resource audio_encoder, uint32_t bitrate) {
-  const struct PPB_AudioEncoder_0_1 *iface = Pnacl_WrapperInfo_PPB_AudioEncoder_0_1.real_iface;
-  iface->RequestBitrateChange(audio_encoder, bitrate);
-}
-
-static void Pnacl_M47_PPB_AudioEncoder_Close(PP_Resource audio_encoder) {
-  const struct PPB_AudioEncoder_0_1 *iface = Pnacl_WrapperInfo_PPB_AudioEncoder_0_1.real_iface;
-  iface->Close(audio_encoder);
-}
-
-/* End wrapper methods for PPB_AudioEncoder_0_1 */
 
 /* Begin wrapper methods for PPB_Console_1_0 */
 
@@ -3851,20 +3790,6 @@ static struct PP_Var Pnacl_M18_PPP_Instance_Private_GetInstanceObject(PP_Instanc
 
 /* Not generating wrapper interface for PPB_AudioConfig_1_1 */
 
-static const struct PPB_AudioEncoder_0_1 Pnacl_Wrappers_PPB_AudioEncoder_0_1 = {
-    .Create = (PP_Resource (*)(PP_Instance instance))&Pnacl_M47_PPB_AudioEncoder_Create,
-    .IsAudioEncoder = (PP_Bool (*)(PP_Resource resource))&Pnacl_M47_PPB_AudioEncoder_IsAudioEncoder,
-    .GetSupportedProfiles = (int32_t (*)(PP_Resource audio_encoder, struct PP_ArrayOutput output, struct PP_CompletionCallback callback))&Pnacl_M47_PPB_AudioEncoder_GetSupportedProfiles,
-    .Initialize = (int32_t (*)(PP_Resource audio_encoder, uint32_t channels, PP_AudioBuffer_SampleRate input_sample_rate, PP_AudioBuffer_SampleSize input_sample_size, PP_AudioProfile output_profile, uint32_t initial_bitrate, PP_HardwareAcceleration acceleration, struct PP_CompletionCallback callback))&Pnacl_M47_PPB_AudioEncoder_Initialize,
-    .GetNumberOfSamples = (int32_t (*)(PP_Resource audio_encoder))&Pnacl_M47_PPB_AudioEncoder_GetNumberOfSamples,
-    .GetBuffer = (int32_t (*)(PP_Resource audio_encoder, PP_Resource* audio_buffer, struct PP_CompletionCallback callback))&Pnacl_M47_PPB_AudioEncoder_GetBuffer,
-    .Encode = (int32_t (*)(PP_Resource audio_encoder, PP_Resource audio_buffer, struct PP_CompletionCallback callback))&Pnacl_M47_PPB_AudioEncoder_Encode,
-    .GetBitstreamBuffer = (int32_t (*)(PP_Resource audio_encoder, struct PP_AudioBitstreamBuffer* bitstream_buffer, struct PP_CompletionCallback callback))&Pnacl_M47_PPB_AudioEncoder_GetBitstreamBuffer,
-    .RecycleBitstreamBuffer = (void (*)(PP_Resource audio_encoder, const struct PP_AudioBitstreamBuffer* bitstream_buffer))&Pnacl_M47_PPB_AudioEncoder_RecycleBitstreamBuffer,
-    .RequestBitrateChange = (void (*)(PP_Resource audio_encoder, uint32_t bitrate))&Pnacl_M47_PPB_AudioEncoder_RequestBitrateChange,
-    .Close = (void (*)(PP_Resource audio_encoder))&Pnacl_M47_PPB_AudioEncoder_Close
-};
-
 static const struct PPB_Console_1_0 Pnacl_Wrappers_PPB_Console_1_0 = {
     .Log = (void (*)(PP_Instance instance, PP_LogLevel level, struct PP_Var value))&Pnacl_M25_PPB_Console_Log,
     .LogWithSource = (void (*)(PP_Instance instance, PP_LogLevel level, struct PP_Var source, struct PP_Var value))&Pnacl_M25_PPB_Console_LogWithSource
@@ -4877,12 +4802,6 @@ static const struct PPP_Instance_Private_0_1 Pnacl_Wrappers_PPP_Instance_Private
 
 /* Not generating wrapper interface for PPP_PexeStreamHandler_1_0 */
 
-static struct __PnaclWrapperInfo Pnacl_WrapperInfo_PPB_AudioEncoder_0_1 = {
-  .iface_macro = PPB_AUDIOENCODER_INTERFACE_0_1,
-  .wrapped_iface = (const void *) &Pnacl_Wrappers_PPB_AudioEncoder_0_1,
-  .real_iface = NULL
-};
-
 static struct __PnaclWrapperInfo Pnacl_WrapperInfo_PPB_Console_1_0 = {
   .iface_macro = PPB_CONSOLE_INTERFACE_1_0,
   .wrapped_iface = (const void *) &Pnacl_Wrappers_PPB_Console_1_0,
@@ -5442,7 +5361,6 @@ static struct __PnaclWrapperInfo Pnacl_WrapperInfo_PPP_Instance_Private_0_1 = {
 };
 
 static struct __PnaclWrapperInfo *s_ppb_wrappers[] = {
-  &Pnacl_WrapperInfo_PPB_AudioEncoder_0_1,
   &Pnacl_WrapperInfo_PPB_Console_1_0,
   &Pnacl_WrapperInfo_PPB_Core_1_0,
   &Pnacl_WrapperInfo_PPB_FileIO_1_0,

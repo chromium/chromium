@@ -24,14 +24,6 @@ enum PP_VideoProfile {
 };
 
 /**
- * Audio profiles.
- */
-enum PP_AudioProfile {
-  PP_AUDIOPROFILE_OPUS = 0,
-  PP_AUDIOPROFILE_MAX = PP_AUDIOPROFILE_OPUS
-};
-
-/**
  * Hardware acceleration options.
  */
 enum PP_HardwareAcceleration {
@@ -185,37 +177,6 @@ struct PP_VideoProfileDescription_0_1 {
    * both.
    */
   PP_HardwareAcceleration acceleration;
-};
-
-/**
- * Supported audio profile information. See the PPB_AudioEncoder function
- * GetSupportedProfiles() for more details.
- */
-struct PP_AudioProfileDescription {
-  /**
-   * The codec profile.
-   */
-  PP_AudioProfile profile;
-
-  /**
-   * Maximum number of channels that can be encoded.
-   */
-  uint32_t max_channels;
-
-  /**
-   * Sample size.
-   */
-  uint32_t sample_size;
-
-  /**
-   * Sampling rate that can be encoded
-   */
-  uint32_t sample_rate;
-
-  /**
-   * Whether the profile is hardware accelerated.
-   */
-  PP_Bool hardware_accelerated;
 };
 
 /**

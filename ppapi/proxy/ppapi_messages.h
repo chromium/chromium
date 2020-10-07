@@ -135,7 +135,6 @@ IPC_ENUM_TRAITS_MIN_MAX_VALUE(PP_VideoDecoder_Profile,
                               PP_VIDEODECODER_PROFILE_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_VideoFrame_Format, PP_VIDEOFRAME_FORMAT_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_HardwareAcceleration, PP_HARDWAREACCELERATION_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_AudioProfile, PP_AUDIOPROFILE_MAX)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_VideoProfile, PP_VIDEOPROFILE_MAX)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_PrivateDirection, PP_PRIVATEDIRECTION_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_TextRenderingMode, PP_TEXTRENDERINGMODE_LAST)
@@ -582,29 +581,12 @@ IPC_STRUCT_TRAITS_BEGIN(ppapi::PpapiNaClPluginArgs)
   IPC_STRUCT_TRAITS_MEMBER(switch_values)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(PP_AudioProfileDescription)
-  IPC_STRUCT_TRAITS_MEMBER(profile)
-  IPC_STRUCT_TRAITS_MEMBER(max_channels)
-  IPC_STRUCT_TRAITS_MEMBER(sample_size)
-  IPC_STRUCT_TRAITS_MEMBER(sample_rate)
-  IPC_STRUCT_TRAITS_MEMBER(hardware_accelerated)
-IPC_STRUCT_TRAITS_END()
-
 IPC_STRUCT_TRAITS_BEGIN(PP_VideoProfileDescription)
 IPC_STRUCT_TRAITS_MEMBER(profile)
 IPC_STRUCT_TRAITS_MEMBER(max_resolution)
 IPC_STRUCT_TRAITS_MEMBER(max_framerate_numerator)
 IPC_STRUCT_TRAITS_MEMBER(max_framerate_denominator)
 IPC_STRUCT_TRAITS_MEMBER(hardware_accelerated)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::proxy::PPB_AudioEncodeParameters)
-  IPC_STRUCT_TRAITS_MEMBER(channels)
-  IPC_STRUCT_TRAITS_MEMBER(input_sample_rate)
-  IPC_STRUCT_TRAITS_MEMBER(input_sample_size)
-  IPC_STRUCT_TRAITS_MEMBER(output_profile)
-  IPC_STRUCT_TRAITS_MEMBER(initial_bitrate)
-  IPC_STRUCT_TRAITS_MEMBER(acceleration)
 IPC_STRUCT_TRAITS_END()
 
 // These are from the browser to the plugin.
@@ -1072,32 +1054,6 @@ IPC_SYNC_MESSAGE_ROUTED3_1(PpapiHostMsg_PPBAudio_Create,
 IPC_MESSAGE_ROUTED2(PpapiHostMsg_PPBAudio_StartOrStop,
                     ppapi::HostResource /* audio_id */,
                     bool /* play */)
-
-// PPB_AudioEncoder
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_AudioEncoder_Create)
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_AudioEncoder_GetSupportedProfiles)
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_AudioEncoder_GetSupportedProfilesReply,
-                     std::vector<PP_AudioProfileDescription> /* results */)
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_AudioEncoder_Initialize,
-                     ppapi::proxy::PPB_AudioEncodeParameters /* parameters */)
-IPC_MESSAGE_CONTROL5(PpapiPluginMsg_AudioEncoder_InitializeReply,
-                     int32_t /* number_of_samples */,
-                     int32_t /* audio_buffer_count */,
-                     int32_t /* audio_buffer_size */,
-                     int32_t /* bitstream_buffer_count */,
-                     int32_t /* bitstream_buffer_size */)
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_AudioEncoder_Encode, int32_t /* buffer_id */)
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_AudioEncoder_EncodeReply,
-                     int32_t /* buffer_id */)
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_AudioEncoder_BitstreamBufferReady,
-                     int32_t /* buffer_id */)
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_AudioEncoder_RecycleBitstreamBuffer,
-                     int32_t /* buffer_id */)
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_AudioEncoder_RequestBitrateChange,
-                     uint32_t /* bitrate */)
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_AudioEncoder_NotifyError,
-                     int32_t /* error */)
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_AudioEncoder_Close)
 
 // PPB_Core.
 IPC_MESSAGE_ROUTED1(PpapiHostMsg_PPBCore_AddRefResource,

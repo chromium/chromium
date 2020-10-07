@@ -28,8 +28,6 @@ source_set("thunk") {
     "ppb_audio_buffer_thunk.cc",
     "ppb_audio_config_api.h",
     "ppb_audio_config_thunk.cc",
-    "ppb_audio_encoder_api.h",
-    "ppb_audio_encoder_thunk.cc",
     "ppb_audio_input_api.h",
     "ppb_audio_output_api.h",
     "ppb_audio_thunk.cc",

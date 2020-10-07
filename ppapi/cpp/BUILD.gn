@@ -60,8 +60,6 @@ source_set("objects") {
     "audio_buffer.h",
     "audio_config.cc",
     "audio_config.h",
-    "audio_encoder.cc",
-    "audio_encoder.h",
     "completion_callback.h",
     "core.cc",
     "core.h",

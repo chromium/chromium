@@ -57143,7 +57143,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1519132417" label="PPB_FileSystem;1.0"/>
   <int value="1520420939" label="PPB_MouseCursor;1.0"/>
   <int value="1528832860" label="PPB_FileChooser(Dev);0.6"/>
-  <int value="1534600005" label="PPB_AudioEncoder;0.1"/>
+  <int value="1534600005" label="PPB_AudioEncoder;0.1(Removed)"/>
   <int value="1577776196" label="PPB_InputEvent_Private;0.1"/>
   <int value="1616589391" label="PPB_TCPServerSocket_Private;0.2"/>
   <int value="1641037564" label="PPB_VideoSource_Private;0.1"/>

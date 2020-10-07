@@ -3,7 +3,7 @@
  * found in the LICENSE file.
  */
 
-/* From pp_codecs.idl modified Fri Sep 18 10:42:55 2015. */
+/* From pp_codecs.idl modified Fri Mar 29 17:59:41 2019. */
 
 #ifndef PPAPI_C_PP_CODECS_H_
 #define PPAPI_C_PP_CODECS_H_
@@ -41,14 +41,6 @@ typedef enum {
   PP_VIDEOPROFILE_VP9_ANY = 12,
   PP_VIDEOPROFILE_MAX = PP_VIDEOPROFILE_VP9_ANY
 } PP_VideoProfile;
-
-/**
- * Audio profiles.
- */
-typedef enum {
-  PP_AUDIOPROFILE_OPUS = 0,
-  PP_AUDIOPROFILE_MAX = PP_AUDIOPROFILE_OPUS
-} PP_AudioProfile;
 
 /**
  * Hardware acceleration options.
@@ -193,33 +185,6 @@ struct PP_VideoProfileDescription_0_1 {
    * both.
    */
   PP_HardwareAcceleration acceleration;
-};
-
-/**
- * Supported audio profile information. See the PPB_AudioEncoder function
- * GetSupportedProfiles() for more details.
- */
-struct PP_AudioProfileDescription {
-  /**
-   * The codec profile.
-   */
-  PP_AudioProfile profile;
-  /**
-   * Maximum number of channels that can be encoded.
-   */
-  uint32_t max_channels;
-  /**
-   * Sample size.
-   */
-  uint32_t sample_size;
-  /**
-   * Sampling rate that can be encoded
-   */
-  uint32_t sample_rate;
-  /**
-   * Whether the profile is hardware accelerated.
-   */
-  PP_Bool hardware_accelerated;
 };
 
 /**

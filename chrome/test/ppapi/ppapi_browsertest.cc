@@ -1960,11 +1960,6 @@ IN_PROC_BROWSER_TEST_F(PPAPINaClPNaClNonSfiTest,
   RUN_AUDIO_CONFIG_SUBTESTS;
 }
 
-// Flaky on Windows https://crbug.com/1059468#c18
-#if !defined(OS_WIN) || !defined(ARCH_CPU_32_BITS)
-TEST_PPAPI_NACL(AudioEncoder)
-#endif
-
 // PPB_Audio tests.
 #define RUN_AUDIO_SUBTESTS \
   RunTestViaHTTP( \

@@ -32,8 +32,6 @@ test_common_source_files = [
   "tests/test_audio.h",
   "tests/test_audio_config.cc",
   "tests/test_audio_config.h",
-  "tests/test_audio_encoder.cc",
-  "tests/test_audio_encoder.h",
   "tests/test_case.cc",
   "tests/test_case.h",
   "tests/test_console.cc",
