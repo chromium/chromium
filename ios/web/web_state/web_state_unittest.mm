@@ -219,24 +219,27 @@ TEST_F(WebStateTest, Snapshot) {
 
 // Tests that the create PDF method retuns an PDF of a rendered html page.
 TEST_F(WebStateTest, CreateFullPagePdf_ValidURL) {
-  // Load a URL and some HTML in the WebState.
-  NSString* data_html =
-      @"<html><div style='background-color:#FF0000; width:50%; "
-       "height:100%;'></div></html>";
-  GURL url("https://www.chromium.org");
-  web_state()->LoadData([data_html dataUsingEncoding:NSUTF8StringEncoding],
-                        @"text/html", url);
   [[[UIApplication sharedApplication] keyWindow]
       addSubview:web_state()->GetView()];
 
+  // Load a URL and some HTML in the WebState.
+  GURL url("https://www.chromium.org");
   NavigationManager::WebLoadParams load_params(url);
   web_state()->GetNavigationManager()->LoadURLWithParams(load_params);
-  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForPageLoadTimeout, ^bool {
-        return web_state()->GetLastCommittedURL() == url &&
-               !web_state()->IsLoading();
-      }));
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.2));
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+    return web_state()->GetLastCommittedURL() == url &&
+           !web_state()->IsLoading();
+  }));
+
+  NSString* data_html =
+      @"<html><div style='background-color:#FF0000; width:50%; "
+       "height:100%;'></div></html>";
+  web_state()->LoadData([data_html dataUsingEncoding:NSUTF8StringEncoding],
+                        @"text/html", url);
+
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+    return !web_state()->IsLoading();
+  }));
 
   // Create a PDF for this page and validate the data.
   __block NSData* callback_data = nil;
@@ -244,10 +247,9 @@ TEST_F(WebStateTest, CreateFullPagePdf_ValidURL) {
     callback_data = [pdf_document_data copy];
   }));
 
-  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForPageLoadTimeout, ^bool {
-        return callback_data;
-      }));
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+    return callback_data;
+  }));
 
   CGPDFDocumentRef pdf = CGPDFDocumentCreateWithProvider(
       CGDataProviderCreateWithCFData((CFDataRef)callback_data));
