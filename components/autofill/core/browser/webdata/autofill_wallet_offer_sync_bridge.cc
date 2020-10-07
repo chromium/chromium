@@ -190,8 +190,10 @@ void AutofillWalletOfferSyncBridge::MergeRemoteData(
   std::vector<std::unique_ptr<AutofillOfferData>> existing_offers;
   table->GetCreditCardOffers(&existing_offers);
 
-  if (AreAnyItemsDifferent(existing_offers, offer_data))
+  bool offer_data_changed = AreAnyItemsDifferent(existing_offers, offer_data);
+  if (offer_data_changed) {
     table->SetCreditCardOffers(offer_data);
+  }
 
   // Commit the transaction to make sure the data and the metadata with the
   // new progress marker is written down (especially on Android where we
@@ -199,6 +201,11 @@ void AutofillWalletOfferSyncBridge::MergeRemoteData(
   // even if the wallet data has not changed because the model type state incl.
   // the progress marker always changes.
   web_data_backend_->CommitChanges();
+
+  if (offer_data_changed) {
+    // TODO(crbug.com/1112095): Add enum to indicate what actually changed.
+    web_data_backend_->NotifyOfMultipleAutofillChanges();
+  }
 }
 
 AutofillTable* AutofillWalletOfferSyncBridge::GetAutofillTable() {
