@@ -366,12 +366,22 @@ class SelectToSpeak {
         // If the user wants a certain scroll position we will respect that.
         this.scrollToSpokenNode_ = false;
 
-        // Now remove this event listener, we no longer need it.
+        // Now remove these event listeners, we no longer need them.
         root.removeEventListener(
             EventType.SCROLL_POSITION_CHANGED, listener, false);
+        root.removeEventListener(
+            EventType.SCROLL_HORIZONTAL_POSITION_CHANGED, listener, false);
+        root.removeEventListener(
+            EventType.SCROLL_VERTICAL_POSITION_CHANGED, listener, false);
       }
     };
+    // ARC++ fires the first event, Views/Web fire the horizontal/vertical
+    // scroll position changed events via AXEventGenerator.
     root.addEventListener(EventType.SCROLL_POSITION_CHANGED, listener, false);
+    root.addEventListener(
+        EventType.SCROLL_HORIZONTAL_POSITION_CHANGED, listener, false);
+    root.addEventListener(
+        EventType.SCROLL_VERTICAL_POSITION_CHANGED, listener, false);
   }
 
   /**
