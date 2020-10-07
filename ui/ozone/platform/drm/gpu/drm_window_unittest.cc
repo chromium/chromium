@@ -85,6 +85,8 @@ class DrmWindowTest : public testing::Test {
   }
 
  protected:
+  void InitializeDrmState(ui::MockDrmDevice* drm, bool is_atomic = true);
+
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   scoped_refptr<ui::MockDrmDevice> drm_;
@@ -96,6 +98,14 @@ class DrmWindowTest : public testing::Test {
   gfx::PresentationFeedback last_presentation_feedback_;
 
  private:
+  struct PlaneState {
+    std::vector<uint32_t> formats;
+  };
+
+  struct CrtcState {
+    std::vector<PlaneState> planes;
+  };
+
   DISALLOW_COPY_AND_ASSIGN(DrmWindowTest);
 };
 
@@ -107,11 +117,13 @@ void DrmWindowTest::SetUp() {
   drm_ = new ui::MockDrmDevice(std::move(gbm_device));
   screen_manager_ = std::make_unique<ui::ScreenManager>();
 
+  InitializeDrmState(drm_.get());
+
   screen_manager_->AddDisplayController(drm_, kDefaultCrtc, kDefaultConnector);
   std::vector<ui::ScreenManager::ControllerConfigParams> controllers_to_enable;
-  controllers_to_enable.push_back(
-      {1 /*display_id*/, drm_, kDefaultCrtc, kDefaultConnector, gfx::Point(),
-       std::make_unique<drmModeModeInfo>(kDefaultMode)});
+  controllers_to_enable.emplace_back(
+      1 /*display_id*/, drm_, kDefaultCrtc, kDefaultConnector, gfx::Point(),
+      std::make_unique<drmModeModeInfo>(kDefaultMode));
   screen_manager_->ConfigureDisplayControllers(controllers_to_enable);
 
   drm_device_manager_ = std::make_unique<ui::DrmDeviceManager>(nullptr);
@@ -128,6 +140,110 @@ void DrmWindowTest::TearDown() {
   std::unique_ptr<ui::DrmWindow> window =
       screen_manager_->RemoveWindow(kDefaultWidgetHandle);
   window->Shutdown();
+}
+
+void DrmWindowTest::InitializeDrmState(ui::MockDrmDevice* drm, bool is_atomic) {
+  // A Sample of CRTC states.
+  std::vector<CrtcState> crtc_states = {
+      {
+          /* .planes = */
+          {{/* .formats = */ {DRM_FORMAT_XRGB8888}}},
+      },
+      {
+          /* .planes = */
+          {{/* .formats = */ {DRM_FORMAT_XRGB8888}}},
+      },
+  };
+
+  constexpr uint32_t kPlaneIdBase = 300;
+  constexpr uint32_t kInFormatsBlobPropIdBase = 400;
+
+  std::vector<ui::MockDrmDevice::CrtcProperties> crtc_properties(
+      crtc_states.size());
+  std::map<uint32_t, std::string> crtc_property_names = {
+      {1000, "ACTIVE"},
+      {1001, "MODE_ID"},
+  };
+
+  std::vector<ui::MockDrmDevice::ConnectorProperties> connector_properties(3);
+  std::map<uint32_t, std::string> connector_property_names = {
+      {2000, "CRTC_ID"},
+  };
+  for (size_t i = 0; i < connector_properties.size(); ++i) {
+    connector_properties[i].id = kDefaultConnector + i;
+    for (const auto& pair : connector_property_names) {
+      connector_properties[i].properties.push_back(
+          {/* .id = */ pair.first, /* .value = */ 0});
+    }
+  }
+
+  std::vector<ui::MockDrmDevice::PlaneProperties> plane_properties;
+  std::map<uint32_t, std::string> plane_property_names = {
+      // Add all required properties.
+      {3000, "CRTC_ID"},
+      {3001, "CRTC_X"},
+      {3002, "CRTC_Y"},
+      {3003, "CRTC_W"},
+      {3004, "CRTC_H"},
+      {3005, "FB_ID"},
+      {3006, "SRC_X"},
+      {3007, "SRC_Y"},
+      {3008, "SRC_W"},
+      {3009, "SRC_H"},
+      // Defines some optional properties we use for convenience.
+      {3010, "type"},
+      {3011, "IN_FORMATS"},
+  };
+
+  uint32_t plane_id = kPlaneIdBase;
+  uint32_t property_id = kInFormatsBlobPropIdBase;
+
+  for (size_t crtc_idx = 0; crtc_idx < crtc_states.size(); ++crtc_idx) {
+    crtc_properties[crtc_idx].id = kDefaultCrtc + crtc_idx;
+    for (const auto& pair : crtc_property_names) {
+      crtc_properties[crtc_idx].properties.push_back(
+          {/* .id = */ pair.first, /* .value = */ 0});
+    }
+
+    std::vector<ui::MockDrmDevice::PlaneProperties> crtc_plane_properties(
+        crtc_states[crtc_idx].planes.size());
+    for (size_t plane_idx = 0; plane_idx < crtc_states[crtc_idx].planes.size();
+         ++plane_idx) {
+      crtc_plane_properties[plane_idx].id = plane_id++;
+      crtc_plane_properties[plane_idx].crtc_mask = 1 << crtc_idx;
+
+      for (const auto& pair : plane_property_names) {
+        uint64_t value = 0;
+        if (pair.first == 3010) {
+          value =
+              plane_idx == 0 ? DRM_PLANE_TYPE_PRIMARY : DRM_PLANE_TYPE_OVERLAY;
+        } else if (pair.first == 3011) {
+          value = property_id++;
+          drm->SetPropertyBlob(ui::MockDrmDevice::AllocateInFormatsBlob(
+              value, crtc_states[crtc_idx].planes[plane_idx].formats,
+              std::vector<drm_format_modifier>()));
+        } else if (pair.first >= 3001 && pair.first <= 3009) {
+          value = 27;
+        }
+
+        crtc_plane_properties[plane_idx].properties.push_back(
+            {/* .id = */ pair.first, /* .value = */ value});
+      }
+    }
+
+    plane_properties.insert(plane_properties.end(),
+                            crtc_plane_properties.begin(),
+                            crtc_plane_properties.end());
+  }
+
+  std::map<uint32_t, std::string> property_names;
+  property_names.insert(crtc_property_names.begin(), crtc_property_names.end());
+  property_names.insert(connector_property_names.begin(),
+                        connector_property_names.end());
+  property_names.insert(plane_property_names.begin(),
+                        plane_property_names.end());
+  drm->InitializeState(crtc_properties, connector_properties, plane_properties,
+                       property_names, /*is_atomic=*/false);
 }
 
 TEST_F(DrmWindowTest, SetCursorImage) {
@@ -166,14 +282,15 @@ TEST_F(DrmWindowTest, CheckCursorSurfaceAfterChangingDevice) {
   auto gbm_device = std::make_unique<ui::MockGbmDevice>();
   scoped_refptr<ui::MockDrmDevice> drm =
       new ui::MockDrmDevice(std::move(gbm_device));
+  InitializeDrmState(drm.get());
 
   screen_manager_->AddDisplayController(drm, kDefaultCrtc, kDefaultConnector);
 
   std::vector<ui::ScreenManager::ControllerConfigParams> controllers_to_enable;
-  controllers_to_enable.push_back(
-      {2 /*display_id*/, drm, kDefaultCrtc, kDefaultConnector,
-       gfx::Point(0, kDefaultMode.vdisplay),
-       std::make_unique<drmModeModeInfo>(kDefaultMode)});
+  controllers_to_enable.emplace_back(
+      2 /*display_id*/, drm, kDefaultCrtc, kDefaultConnector,
+      gfx::Point(0, kDefaultMode.vdisplay),
+      std::make_unique<drmModeModeInfo>(kDefaultMode));
   screen_manager_->ConfigureDisplayControllers(controllers_to_enable);
 
   // Move window to the display on the new device.

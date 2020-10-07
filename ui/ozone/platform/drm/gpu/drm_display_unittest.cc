@@ -52,14 +52,7 @@ class MockHardwareDisplayPlaneManager : public HardwareDisplayPlaneManager {
                     const std::vector<display::GammaRampRGBEntry>& degamma_lut,
                     const std::vector<display::GammaRampRGBEntry>& gamma_lut));
 
-  bool Modeset(uint32_t crtc_id,
-               uint32_t framebuffer_id,
-               uint32_t connector_id,
-               const drmModeModeInfo& mode,
-               const HardwareDisplayPlaneList& plane_list) override {
-    return false;
-  }
-  bool DisableModeset(uint32_t crtc_id, uint32_t connector) override {
+  bool Commit(CommitRequest commit_request, uint32_t flags) override {
     return false;
   }
   bool Commit(HardwareDisplayPlaneList* plane_list,
