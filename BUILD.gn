@@ -73,6 +73,7 @@ group("gn_all") {
     "//base/util:base_util_unittests",
     "//chrome/installer",
     "//chrome/updater",
+    "//codelabs",
     "//components:components_unittests",
     "//components/gwp_asan:gwp_asan_unittests",
     "//net:net_unittests",

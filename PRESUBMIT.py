@@ -68,6 +68,8 @@ _TEST_CODE_EXCLUDED_PATHS = (
     r'ios[\\/].*_app_interface\.mm$',
     # Views Examples code
     r'ui[\\/]views[\\/]examples[\\/].*',
+    # Chromium Codelab
+    r'codelabs[\\/]*'
 )
 
 _THIRD_PARTY_EXCEPT_BLINK = 'third_party/(?!blink/)'
