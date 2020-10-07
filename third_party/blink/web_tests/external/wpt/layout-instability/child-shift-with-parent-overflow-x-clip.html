@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<title>Layout Instability: parent (with overflow:hidden) and child moved together</title>
+<title>Layout Instability: parent/child moved together with overflow-x: clip</title>
 <link rel="help" href="https://wicg.github.io/layout-instability/" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/util.js"></script>
-<div id="parent" style="position: relative; width: 200px; height: 200px;
-                        border: 50px solid blue; overflow: hidden">
-  <div id="child" style="width: 400px; height: 400px"></div>
+<div id="parent" style="position: relative; width: 100px; height: 100px; border: 100px solid blue; overflow-x: clip">
+  <div id="child" style="width: 1000px; height: 300px"></div>
 </div>
 <script>
 
@@ -20,13 +19,12 @@ promise_test(async () => {
   const parent = document.querySelector("#parent");
   parent.style.top = '100px';
 
-  // Only the parent area should be reported.
-  const expectedScore = computeExpectedScore(300 * (300 + 100), 100);
+  const expectedScore = computeExpectedScore(300 * (400 + 100), 100);
 
   // Observer fires after the frame is painted.
   assert_equals(watcher.score, 0);
   await watcher.promise;
   assert_equals(watcher.score, expectedScore);
-}, 'Parent (with overflow:hidden) and child moved together.');
+}, 'Parent/child movement with overflow-x: clip.');
 
 </script>

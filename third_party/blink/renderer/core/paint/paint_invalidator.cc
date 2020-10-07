@@ -207,7 +207,7 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
   const auto& box = ToLayoutBox(object);
 
   PhysicalRect new_rect = box.PhysicalBorderBoxRect();
-  if (!box.ShouldClipOverflowAlongEitherAxis())
+  if (!box.ShouldClipOverflowAlongBothAxis())
     new_rect.Unite(box.PhysicalLayoutOverflowRect());
   PhysicalRect old_rect = PhysicalRect(PhysicalOffset(), box.PreviousSize());
   if (!box.PreviouslyHadNonVisibleOverflow())
