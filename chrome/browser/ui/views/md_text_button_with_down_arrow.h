@@ -17,6 +17,8 @@ class ButtonListener;
 // right side.
 class MdTextButtonWithDownArrow : public MdTextButton {
  public:
+  MdTextButtonWithDownArrow(PressedCallback callback,
+                            const base::string16& text);
   MdTextButtonWithDownArrow(ButtonListener* listener,
                             const base::string16& text);
   ~MdTextButtonWithDownArrow() override;

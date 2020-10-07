@@ -72,12 +72,6 @@ AuthenticatorRequestSheetView::BuildStepSpecificContent() {
   return nullptr;
 }
 
-void AuthenticatorRequestSheetView::ButtonPressed(views::Button* sender,
-                                                  const ui::Event& event) {
-  DCHECK_EQ(sender, back_arrow_button_);
-  model()->OnBack();
-}
-
 std::unique_ptr<views::View>
 AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
   const int illustration_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -108,7 +102,8 @@ AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
   }
 
   if (model()->IsBackButtonVisible()) {
-    auto back_arrow = views::CreateVectorImageButton(this);
+    auto back_arrow = views::CreateVectorImageButton(base::BindRepeating(
+        &AuthenticatorRequestSheetModel::OnBack, base::Unretained(model())));
     back_arrow->SetFocusForPlatform();
     back_arrow->SetAccessibleName(l10n_util::GetStringUTF16(
         IDS_BACK_BUTTON_AUTHENTICATOR_REQUEST_DIALOG));

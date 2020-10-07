@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -37,8 +36,7 @@ class AuthenticatorRequestSheetView;
 class AuthenticatorRequestDialogView
     : public views::DialogDelegateView,
       public AuthenticatorRequestDialogModel::Observer,
-      public content::WebContentsObserver,
-      public views::ButtonListener {
+      public content::WebContentsObserver {
  public:
   ~AuthenticatorRequestDialogView() override;
 
@@ -80,9 +78,6 @@ class AuthenticatorRequestDialogView
   void OnStepTransition() override;
   void OnSheetModelChanged() override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   void OnVisibilityChanged(content::Visibility visibility) override;
 
  private:
@@ -98,6 +93,8 @@ class AuthenticatorRequestDialogView
 
   // Shows the dialog after creation or after being hidden.
   void Show();
+
+  void OtherTransportsButtonPressed();
 
   void OnDialogClosing();
 

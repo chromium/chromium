@@ -40,7 +40,6 @@ class WebAuthnHoverButton;
 //  +----------------------------------+
 //
 class HoverListView : public views::View,
-                      public views::ButtonListener,
                       public HoverListModel::Observer {
  public:
   explicit HoverListView(std::unique_ptr<HoverListModel> model);
@@ -71,9 +70,6 @@ class HoverListView : public views::View,
   void OnListItemRemoved(int removed_item_view_tag) override;
   void OnListItemChanged(int changed_list_item_tag,
                          HoverListModel::ListItemChangeType type) override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   std::unique_ptr<HoverListModel> model_;
   std::map<int, ListItemViews> tags_to_list_item_views_;

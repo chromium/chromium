@@ -9,7 +9,6 @@
 
 #include "base/macros.h"
 #include "base/strings/string16.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/view.h"
 
@@ -57,8 +56,7 @@ class NonAccessibleImageView;
 // TODO(https://crbug.com/852352): The Web Authentication and Web Payment APIs
 // both use the concept of showing multiple "sheets" in a single dialog. To
 // avoid code duplication, consider factoring out common parts.
-class AuthenticatorRequestSheetView : public views::View,
-                                      public views::ButtonListener {
+class AuthenticatorRequestSheetView : public views::View {
  public:
   explicit AuthenticatorRequestSheetView(
       std::unique_ptr<AuthenticatorRequestSheetModel> model);
@@ -80,9 +78,6 @@ class AuthenticatorRequestSheetView : public views::View,
  protected:
   // Returns the step-specific view the derived sheet wishes to provide, if any.
   virtual std::unique_ptr<views::View> BuildStepSpecificContent();
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
  private:
   // Creates the upper half of the sheet, consisting of a pretty illustration
