@@ -6194,7 +6194,7 @@ crbug.com/1054916 [ Linux ] external/wpt/webxr/dom-overlay/ar_dom_overlay.https.
 
 crbug.com/1048597 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html [ Pass Timeout ]
 
-crbug.com/1056022 [ Fuchsia ] virtual/text-antialias/international/001.html [ Timeout ]
+crbug.com/1067477 [ Fuchsia ] virtual/text-antialias/international/001.html [ Skip ]
 
 # Sheriff 2020-02-28
 crbug.com/1056879 [ Win7 ] external/wpt/webxr/xrSession_requestAnimationFrame_getViewerPose.https.html [ Pass Failure Timeout ]

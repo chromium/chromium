@@ -24,6 +24,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_delegate.h"
+#include "ui/platform_window/platform_window_init_properties.h"
 
 namespace ui {
 
@@ -39,8 +40,7 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow
   // identify it when calling out to other services (e.g. the SemanticsManager).
   ScenicWindow(ScenicWindowManager* window_manager,
                PlatformWindowDelegate* delegate,
-               fuchsia::ui::views::ViewToken view_token,
-               scenic::ViewRefPair view_ref_pair);
+               PlatformWindowInitProperties properties);
   ~ScenicWindow() override;
 
   scenic::Session* scenic_session() { return &scenic_session_; }
@@ -128,8 +128,13 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow
   // Current view size in DIPs.
   gfx::SizeF size_dips_;
 
-  // Current view size in device pixels.
+  // Current view size in device pixels. The size is set to
+  // |PlatformWindowInitProperties.bounds.size()| value until Show() is called
+  // for the first time. After that the size is set to the size of the
+  // corresponding Scenic view.
   gfx::Size size_pixels_;
+
+  bool visible_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ScenicWindow);
 };

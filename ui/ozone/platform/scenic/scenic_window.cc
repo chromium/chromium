@@ -23,21 +23,21 @@ namespace ui {
 
 ScenicWindow::ScenicWindow(ScenicWindowManager* window_manager,
                            PlatformWindowDelegate* delegate,
-                           fuchsia::ui::views::ViewToken view_token,
-                           scenic::ViewRefPair view_ref_pair)
+                           PlatformWindowInitProperties properties)
     : manager_(window_manager),
       delegate_(delegate),
       window_id_(manager_->AddWindow(this)),
       event_dispatcher_(this),
       scenic_session_(manager_->GetScenic()),
       view_(&scenic_session_,
-            std::move(view_token),
-            std::move(view_ref_pair.control_ref),
-            std::move(view_ref_pair.view_ref),
+            std::move(std::move(properties.view_token)),
+            std::move(properties.view_ref_pair.control_ref),
+            std::move(properties.view_ref_pair.view_ref),
             "chromium window"),
       node_(&scenic_session_),
       input_node_(&scenic_session_),
-      render_node_(&scenic_session_) {
+      render_node_(&scenic_session_),
+      size_pixels_(properties.bounds.size()) {
   scenic_session_.set_error_handler(
       fit::bind_member(this, &ScenicWindow::OnScenicError));
   scenic_session_.set_event_handler(
@@ -97,6 +97,11 @@ void ScenicWindow::SetTitle(const base::string16& title) {
 }
 
 void ScenicWindow::Show(bool inactive) {
+  if (visible_)
+    return;
+
+  visible_ = true;
+
   view_.AddChild(node_);
 
   // Call Present2() to ensure that the scenic session commands are processed,
@@ -108,6 +113,10 @@ void ScenicWindow::Show(bool inactive) {
 }
 
 void ScenicWindow::Hide() {
+  if (!visible_)
+    return;
+
+  visible_ = false;
   node_.Detach();
 }
 
@@ -155,6 +164,7 @@ void ScenicWindow::Restore() {
 }
 
 PlatformWindowState ScenicWindow::GetPlatformWindowState() const {
+  NOTIMPLEMENTED();
   return PlatformWindowState::kNormal;
 }
 

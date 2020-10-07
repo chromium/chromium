@@ -49,6 +49,9 @@ void ScenicScreen::OnWindowBoundsChanged(int32_t window_id, gfx::Rect bounds) {
 
 void ScenicScreen::OnWindowMetrics(int32_t window_id,
                                    float device_pixel_ratio) {
+  if (display::Display::HasForceDeviceScaleFactor())
+    return;
+
   auto display_it = std::find_if(displays_.begin(), displays_.end(),
                                  [window_id](display::Display& display) {
                                    return display.id() == window_id;
