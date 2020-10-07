@@ -837,8 +837,8 @@ class LockContentsViewUnitTestWithDeviceDisclosureEnabled
 TEST_F(LockContentsViewUnitTestWithDeviceDisclosureEnabled,
        ShowStatusIndicatorIfEnrolledDevice) {
   // If the device is enrolled, bottom_status_indicator should be visible.
-  Shell::Get()->system_tray_model()->SetEnterpriseDisplayDomain(
-      "BestCompanyEver", false);
+  Shell::Get()->system_tray_model()->SetEnterpriseDomainInfo("BestCompanyEver",
+                                                             false);
 
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
@@ -863,8 +863,8 @@ TEST_F(LockContentsViewUnitTestWithDeviceDisclosureEnabled,
 TEST_F(LockContentsViewUnitTestWithDeviceDisclosureEnabled,
        ShowManagementBubbleOnClickIfEnrolledDevice) {
   // If the device is enrolled, bottom_status_indicator should be visible.
-  Shell::Get()->system_tray_model()->SetEnterpriseDisplayDomain(
-      "BestCompanyEver", false);
+  Shell::Get()->system_tray_model()->SetEnterpriseDomainInfo("BestCompanyEver",
+                                                             false);
 
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
@@ -899,8 +899,8 @@ TEST_F(LockContentsViewUnitTestWithDeviceDisclosureEnabled,
 TEST_F(LockContentsViewUnitTestWithDeviceDisclosureEnabled,
        DoNotShowManagementBubbleOnClickIfAdb) {
   // If the device is enrolled, bottom_status_indicator should be visible.
-  Shell::Get()->system_tray_model()->SetEnterpriseDisplayDomain(
-      "BestCompanyEver", false);
+  Shell::Get()->system_tray_model()->SetEnterpriseDomainInfo("BestCompanyEver",
+                                                             false);
 
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,

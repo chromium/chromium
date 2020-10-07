@@ -358,15 +358,15 @@ void EnterpriseManagedView::Update() {
       Shell::Get()->session_controller();
   SetVisible(session_controller->ShouldDisplayManagedUI() ||
              model->active_directory_managed() ||
-             !model->enterprise_display_domain().empty());
+             !model->enterprise_domain_manager().empty());
 
   if (model->active_directory_managed()) {
     SetTooltipText(
         l10n_util::GetStringUTF16(IDS_ASH_ENTERPRISE_DEVICE_MANAGED));
-  } else if (!model->enterprise_display_domain().empty()) {
+  } else if (!model->enterprise_domain_manager().empty()) {
     SetTooltipText(l10n_util::GetStringFUTF16(
         IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY,
-        base::UTF8ToUTF16(model->enterprise_display_domain())));
+        base::UTF8ToUTF16(model->enterprise_domain_manager())));
   }
 }
 

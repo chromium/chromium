@@ -62,11 +62,11 @@ void SystemTrayModel::SetUse24HourClock(bool use_24_hour) {
   clock()->SetUse24HourClock(use_24_hour);
 }
 
-void SystemTrayModel::SetEnterpriseDisplayDomain(
-    const std::string& enterprise_display_domain,
+void SystemTrayModel::SetEnterpriseDomainInfo(
+    const std::string& enterprise_domain_manager,
     bool active_directory_managed) {
-  enterprise_domain()->SetEnterpriseDisplayDomain(enterprise_display_domain,
-                                                  active_directory_managed);
+  enterprise_domain()->SetEnterpriseDomainInfo(enterprise_domain_manager,
+                                               active_directory_managed);
 }
 
 void SystemTrayModel::SetPerformanceTracingIconVisible(bool visible) {

@@ -100,7 +100,7 @@ class SystemTrayClient : public ash::SystemTrayClient,
   void OnStoreLoaded(policy::CloudPolicyStore* store) override;
   void OnStoreError(policy::CloudPolicyStore* store) override;
 
-  void UpdateEnterpriseDisplayDomain();
+  void UpdateEnterpriseDomainInfo();
 
   // The system tray model in ash.
   ash::SystemTray* const system_tray_;
@@ -117,9 +117,9 @@ class SystemTrayClient : public ash::SystemTrayClient,
   // Update notification body to be overwritten.
   base::string16 update_notification_body_;
 
-  // Avoid sending ash an empty enterprise display domain at startup and
+  // Avoid sending ash an empty enterprise domain manager at startup and
   // suppress duplicate IPCs during the session.
-  std::string last_enterprise_display_domain_;
+  std::string last_enterprise_domain_manager_;
   bool last_active_directory_managed_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(SystemTrayClient);

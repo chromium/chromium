@@ -55,7 +55,7 @@ TEST_F(UnifiedManagedDeviceViewTest, EnterpriseManagedDevice) {
   Shell::Get()
       ->system_tray_model()
       ->enterprise_domain()
-      ->SetEnterpriseDisplayDomain("example.com", active_directory);
+      ->SetEnterpriseDomainInfo("example.com", active_directory);
 
   EXPECT_TRUE(managed_device_view_->GetVisible());
 }
@@ -67,7 +67,7 @@ TEST_F(UnifiedManagedDeviceViewTest, ActiveDirectoryManagedDevice) {
   Shell::Get()
       ->system_tray_model()
       ->enterprise_domain()
-      ->SetEnterpriseDisplayDomain(empty_domain, active_directory);
+      ->SetEnterpriseDomainInfo(empty_domain, active_directory);
 
   EXPECT_TRUE(managed_device_view_->GetVisible());
 }

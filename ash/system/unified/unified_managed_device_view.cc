@@ -82,21 +82,21 @@ void UnifiedManagedDeviceView::Update() {
   SessionControllerImpl* session = Shell::Get()->session_controller();
   EnterpriseDomainModel* model =
       Shell::Get()->system_tray_model()->enterprise_domain();
-  std::string enterprise_domain_name = model->enterprise_display_domain();
+  std::string enterprise_domain_manager = model->enterprise_domain_manager();
 
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kIconColorSecondary);
   if (session->ShouldDisplayManagedUI() || model->active_directory_managed() ||
-      !enterprise_domain_name.empty()) {
+      !enterprise_domain_manager.empty()) {
     // Show enterpised managed UI.
     icon_->SetImage(gfx::CreateVectorIcon(kSystemTrayManagedIcon, icon_color));
 
     base::string16 managed_string =
-        enterprise_domain_name.empty()
+        enterprise_domain_manager.empty()
             ? l10n_util::GetStringUTF16(IDS_ASH_ENTERPRISE_DEVICE_MANAGED)
             : l10n_util::GetStringFUTF16(
                   IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY,
-                  base::UTF8ToUTF16(enterprise_domain_name));
+                  base::UTF8ToUTF16(enterprise_domain_manager));
     label_->SetText(managed_string);
     SetAccessibleName(managed_string);
     SetVisible(true);

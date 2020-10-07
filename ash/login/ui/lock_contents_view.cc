@@ -659,12 +659,12 @@ LockContentsView::LockContentsView(
   bottom_status_indicator_->SetLayoutManager(
       std::move(bottom_status_indicator_layout));
 
-  std::string entreprise_domain_name = Shell::Get()
-                                           ->system_tray_model()
-                                           ->enterprise_domain()
-                                           ->enterprise_display_domain();
-  if (!entreprise_domain_name.empty())
-    ShowEntrepriseDomainName(entreprise_domain_name);
+  std::string enterprise_domain_manager = Shell::Get()
+                                              ->system_tray_model()
+                                              ->enterprise_domain()
+                                              ->enterprise_domain_manager();
+  if (!enterprise_domain_manager.empty())
+    ShowEnterpriseDomainManager(enterprise_domain_manager);
 
   note_action_ = top_header_->AddChildView(
       std::make_unique<NoteActionLaunchButton>(initial_note_action_state));
@@ -690,7 +690,7 @@ LockContentsView::LockContentsView(
   management_bubble_ = new ManagementPopUp(
       l10n_util::GetStringFUTF16(IDS_ASH_LOGIN_ENTERPRISE_MANAGED_POP_UP,
                                  ui::GetChromeOSDeviceName(),
-                                 base::UTF8ToUTF16(entreprise_domain_name)),
+                                 base::UTF8ToUTF16(enterprise_domain_manager)),
       bottom_status_indicator_);
   AddChildView(management_bubble_);
 
@@ -802,8 +802,8 @@ void LockContentsView::FocusPreviousUser() {
   }
 }
 
-void LockContentsView::ShowEntrepriseDomainName(
-    const std::string& entreprise_domain_name) {
+void LockContentsView::ShowEnterpriseDomainManager(
+    const std::string& entreprise_domain_manager) {
   if (!chromeos::features::IsLoginDeviceManagementDisclosureEnabled())
     return;
   bottom_status_indicator_->SetIcon(
@@ -811,7 +811,7 @@ void LockContentsView::ShowEntrepriseDomainName(
       AshColorProvider::ContentLayerType::kIconColorPrimary);
   bottom_status_indicator_->SetText(l10n_util::GetStringFUTF16(
       IDS_ASH_LOGIN_MANAGED_DEVICE_INDICATOR, ui::GetChromeOSDeviceName(),
-      base::UTF8ToUTF16(entreprise_domain_name)));
+      base::UTF8ToUTF16(entreprise_domain_manager)));
   bottom_status_indicator_->SetEnabledTextColors(kBottomStatusManagedFontColor);
   bottom_status_indicator_->set_role_for_accessibility(
       ax::mojom::Role::kButton);

@@ -143,7 +143,8 @@ class ASH_EXPORT LockContentsView
 
   void FocusNextUser();
   void FocusPreviousUser();
-  void ShowEntrepriseDomainName(const std::string& entreprise_domain_name);
+  void ShowEnterpriseDomainManager(
+      const std::string& entreprise_domain_manager);
   void ShowAdbEnabled();
   void ToggleSystemInfo();
   void ShowParentAccessDialog();

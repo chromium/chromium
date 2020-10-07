@@ -62,7 +62,7 @@ TEST_F(UnifiedSystemInfoViewTest, EnterpriseManagedVisible) {
   Shell::Get()
       ->system_tray_model()
       ->enterprise_domain()
-      ->SetEnterpriseDisplayDomain("example.com", active_directory);
+      ->SetEnterpriseDomainInfo("example.com", active_directory);
 
   // EnterpriseManagedView should be shown.
   EXPECT_TRUE(info_view()->enterprise_managed_->GetVisible());
@@ -75,7 +75,7 @@ TEST_F(UnifiedSystemInfoViewTest, EnterpriseManagedVisibleForActiveDirectory) {
   Shell::Get()
       ->system_tray_model()
       ->enterprise_domain()
-      ->SetEnterpriseDisplayDomain(empty_domain, active_directory);
+      ->SetEnterpriseDomainInfo(empty_domain, active_directory);
 
   // EnterpriseManagedView should be shown.
   EXPECT_TRUE(info_view()->enterprise_managed_->GetVisible());

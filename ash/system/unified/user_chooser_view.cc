@@ -178,14 +178,14 @@ base::string16 GetUserItemAccessibleString(int user_index) {
     return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_GUEST_LABEL);
 
   if (user_session->user_info.type == user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
-    std::string display_domain = Shell::Get()
+    std::string domain_manager = Shell::Get()
                                      ->system_tray_model()
                                      ->enterprise_domain()
-                                     ->enterprise_display_domain();
+                                     ->enterprise_domain_manager();
     return l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_PUBLIC_LABEL,
         base::UTF8ToUTF16(user_session->user_info.display_name),
-        base::UTF8ToUTF16(display_domain));
+        base::UTF8ToUTF16(domain_manager));
   }
 
   return l10n_util::GetStringFUTF16(

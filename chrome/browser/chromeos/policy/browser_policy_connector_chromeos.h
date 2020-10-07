@@ -102,6 +102,8 @@ class BrowserPolicyConnectorChromeOS
 
   // Returns the manager of the domain for use in UI if specified, otherwise the
   // enterprise display domain.
+  // TODO(crbug.com/1081272): refactor localization hints for all strings that
+  // depend on this method
   std::string GetEnterpriseDomainManager() const;
 
   // Returns the Kerberos realm (aka Windows Domain) if the device is managed by

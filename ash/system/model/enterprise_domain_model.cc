@@ -20,10 +20,10 @@ void EnterpriseDomainModel::RemoveObserver(EnterpriseDomainObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void EnterpriseDomainModel::SetEnterpriseDisplayDomain(
-    const std::string& enterprise_display_domain,
+void EnterpriseDomainModel::SetEnterpriseDomainInfo(
+    const std::string& enterprise_domain_manager,
     bool active_directory_managed) {
-  enterprise_display_domain_ = enterprise_display_domain;
+  enterprise_domain_manager_ = enterprise_domain_manager;
   active_directory_managed_ = active_directory_managed;
   NotifyChanged();
 }

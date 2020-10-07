@@ -44,10 +44,13 @@ class ASH_PUBLIC_EXPORT SystemTray {
   virtual void SetUse24HourClock(bool use_24_hour) = 0;
 
   // Creates or updates an item in the system tray menu with information about
-  // enterprise management. The item appears if |enterprise_display_domain| is
-  // not empty or |active_directory_managed| is true.
-  virtual void SetEnterpriseDisplayDomain(
-      const std::string& enterprise_display_domain,
+  // enterprise management. |enterprise_domain_manager| may be either a domain
+  // name (foo.com) or an email address (user@foo.com). These strings will not
+  // be sanitized and so must come from a trusted location.
+  // The item appears if |enterprise_domain_manager| is not empty or
+  // |active_directory_managed| is true.
+  virtual void SetEnterpriseDomainInfo(
+      const std::string& enterprise_domain_manager,
       bool active_directory_managed) = 0;
 
   // Shows or hides an item in the system tray indicating that performance
