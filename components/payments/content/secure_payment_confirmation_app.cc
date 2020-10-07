@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/payments/internal_authenticator.h"
+#include "components/payments/content/payment_request_spec.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/payer_data.h"
 #include "content/public/browser/web_contents.h"
@@ -45,12 +46,14 @@ static constexpr int kDefaultTimeoutMinutes = 3;
 //     },
 //     "networkData": "YW=",
 //   }
-// where "networkData" is the base64 encoding of the |networkData| specified in
-// the SecurePaymentConfirmationRequest.
+// where "networkData" is the base64 encoding of the `networkData` specified in
+// the SecurePaymentConfirmationRequest. Sets the `challenge` out-param value to
+// this JSON string.
 std::vector<uint8_t> GetSecurePaymentConfirmationChallenge(
     const std::vector<uint8_t>& network_data,
     const url::Origin& merchant_origin,
-    const mojom::PaymentCurrencyAmountPtr& amount) {
+    const mojom::PaymentCurrencyAmountPtr& amount,
+    std::string* challenge) {
   base::Value total(base::Value::Type::DICTIONARY);
   total.SetKey("currency", base::Value(amount->currency));
   total.SetKey("value", base::Value(amount->value));
@@ -65,14 +68,10 @@ std::vector<uint8_t> GetSecurePaymentConfirmationChallenge(
                           base::Value(base::Base64Encode(network_data)));
   transaction_data.SetKey("merchantData", std::move(merchant_data));
 
-  // TODO(crbug.com/1123054): change to a more robust alternative that does not
-  // depend on the exact whitespace, escaping and ordering of the JSON
-  // serialization.
-  std::string json;
-  bool success = base::JSONWriter::Write(transaction_data, &json);
+  bool success = base::JSONWriter::Write(transaction_data, challenge);
   DCHECK(success) << "Failed to write JSON for " << transaction_data;
 
-  std::string sha256_hash = crypto::SHA256HashString(json);
+  std::string sha256_hash = crypto::SHA256HashString(*challenge);
   std::vector<uint8_t> output_bytes(sha256_hash.begin(), sha256_hash.end());
   return output_bytes;
 }
@@ -86,7 +85,7 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
     const base::string16& label,
     std::vector<uint8_t> credential_id,
     const url::Origin& merchant_origin,
-    const mojom::PaymentCurrencyAmountPtr& total,
+    base::WeakPtr<PaymentRequestSpec> spec,
     mojom::SecurePaymentConfirmationRequestPtr request,
     std::unique_ptr<autofill::InternalAuthenticator> authenticator)
     : PaymentApp(/*icon_resource_id=*/0, PaymentApp::Type::INTERNAL),
@@ -99,7 +98,7 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
       credential_id_(std::move(credential_id)),
       encoded_credential_id_(base::Base64Encode(credential_id_)),
       merchant_origin_(merchant_origin),
-      total_(total.Clone()),
+      spec_(spec),
       request_(std::move(request)),
       authenticator_(std::move(authenticator)) {
   DCHECK_EQ(web_contents_to_observe->GetMainFrame(),
@@ -112,8 +111,10 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
 SecurePaymentConfirmationApp::~SecurePaymentConfirmationApp() = default;
 
 void SecurePaymentConfirmationApp::InvokePaymentApp(Delegate* delegate) {
-  if (!authenticator_)
+  if (!authenticator_ || !spec_)
     return;
+
+  DCHECK(spec_->IsInitialized());
 
   auto options = blink::mojom::PublicKeyCredentialRequestOptions::New();
   options->relying_party_id = effective_relying_party_identity_;
@@ -141,7 +142,8 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(Delegate* delegate) {
 
   // Create a new challenge that is a hash of the transaction data.
   options->challenge = GetSecurePaymentConfirmationChallenge(
-      request_->network_data, merchant_origin_, total_);
+      request_->network_data, merchant_origin_,
+      spec_->GetTotal(/*selected_app=*/this)->amount, &challenge_);
 
   // We are nullifying the security check by design, and the origin that created
   // the credential isn't saved anywhere.
@@ -298,6 +300,7 @@ void SecurePaymentConfirmationApp::OnGetAssertion(
 
   base::DictionaryValue json;
   json.Set("info", std::move(info_json));
+  json.SetString("challenge", challenge_);
   json.SetString("signature", base::Base64Encode(response->signature));
   if (response->user_handle.has_value()) {
     json.SetString("user_handle",

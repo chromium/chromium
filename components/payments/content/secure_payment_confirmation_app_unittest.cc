@@ -5,17 +5,20 @@
 #include "components/payments/content/secure_payment_confirmation_app.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/payments/internal_authenticator.h"
+#include "components/payments/content/payment_request_spec.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/origin.h"
 
@@ -69,10 +72,16 @@ class MockAuthenticator : public autofill::InternalAuthenticator {
 class SecurePaymentConfirmationAppTest : public testing::Test {
  protected:
   SecurePaymentConfirmationAppTest()
-      : label_(base::ASCIIToUTF16("test instrument")),
-        total_(mojom::PaymentCurrencyAmount::New()) {
-    total_->currency = "USD";
-    total_->value = "1.25";
+      : label_(base::ASCIIToUTF16("test instrument")) {
+    mojom::PaymentDetailsPtr details = mojom::PaymentDetails::New();
+    details->total = mojom::PaymentItem::New();
+    details->total->amount = mojom::PaymentCurrencyAmount::New();
+    details->total->amount->currency = "USD";
+    details->total->amount->value = "1.25";
+    std::vector<mojom::PaymentMethodDataPtr> method_data;
+    spec_ = std::make_unique<PaymentRequestSpec>(
+        mojom::PaymentOptions::New(), std::move(details),
+        std::move(method_data), /*observer=*/nullptr, /*app_locale=*/"en-US");
   }
 
   void SetUp() override {
@@ -88,7 +97,7 @@ class SecurePaymentConfirmationAppTest : public testing::Test {
   }
 
   base::string16 label_;
-  mojom::PaymentCurrencyAmountPtr total_;
+  std::unique_ptr<PaymentRequestSpec> spec_;
   std::string network_data_bytes_;
   std::string credential_id_bytes_;
 };
@@ -103,8 +112,8 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
 
   SecurePaymentConfirmationApp app(
       web_contents, "effective_rp.example",
-      /*icon=*/std::make_unique<SkBitmap>(), label_, std::move(credential_id),
-      url::Origin::Create(GURL("https://merchant.example")), total_,
+      /*Icon=*/std::make_unique<SkBitmap>(), label_, std::move(credential_id),
+      url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), std::move(authenticator));
 
   EXPECT_CALL(*mock_authenticator, SetEffectiveOrigin(Eq(url::Origin::Create(

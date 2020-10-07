@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/developer_console_logger.h"
+#include "components/payments/content/initialization_task.h"
 #include "components/payments/content/payment_handler_host.h"
 #include "components/payments/content/payment_request_display_manager.h"
 #include "components/payments/content/payment_request_spec.h"
@@ -43,7 +44,8 @@ class PaymentRequestWebContentsManager;
 class PaymentRequest : public mojom::PaymentRequest,
                        public PaymentHandlerHost::Delegate,
                        public PaymentRequestSpec::Observer,
-                       public PaymentRequestState::Delegate {
+                       public PaymentRequestState::Delegate,
+                       public InitializationTask::Observer {
  public:
   class ObserverForTest {
    public:
@@ -154,6 +156,9 @@ class PaymentRequest : public mojom::PaymentRequest,
   base::WeakPtr<PaymentRequest> GetWeakPtr();
 
  private:
+  // InitializationTask::Observer.
+  void OnInitialized(InitializationTask* initialization_task) override;
+
   // Returns true after init() has been called and the mojo connection has been
   // established. If the mojo connection gets later disconnected, this will
   // returns false.

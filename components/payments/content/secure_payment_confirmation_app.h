@@ -33,6 +33,8 @@ class WebContents;
 
 namespace payments {
 
+class PaymentRequestSpec;
+
 class SecurePaymentConfirmationApp : public PaymentApp,
                                      public content::WebContentsObserver {
  public:
@@ -45,7 +47,7 @@ class SecurePaymentConfirmationApp : public PaymentApp,
       const base::string16& label,
       std::vector<uint8_t> credential_id,
       const url::Origin& merchant_origin,
-      const mojom::PaymentCurrencyAmountPtr& total,
+      base::WeakPtr<PaymentRequestSpec> spec,
       mojom::SecurePaymentConfirmationRequestPtr request,
       std::unique_ptr<autofill::InternalAuthenticator> authenticator);
   ~SecurePaymentConfirmationApp() override;
@@ -103,9 +105,10 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   const std::vector<uint8_t> credential_id_;
   const std::string encoded_credential_id_;
   const url::Origin merchant_origin_;
-  const mojom::PaymentCurrencyAmountPtr total_;
+  const base::WeakPtr<PaymentRequestSpec> spec_;
   const mojom::SecurePaymentConfirmationRequestPtr request_;
   std::unique_ptr<autofill::InternalAuthenticator> authenticator_;
+  std::string challenge_;
 
   base::WeakPtrFactory<SecurePaymentConfirmationApp> weak_ptr_factory_{this};
 };

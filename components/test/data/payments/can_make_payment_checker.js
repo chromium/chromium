@@ -54,18 +54,3 @@ async function canMakePaymentForMethodDataTwice(methodData) { // eslint-disable-
     return e.message;
   }
 }
-
-/**
- * Creates a PaymentRequest with |methodData| and checks hasEnrolledInstrument.
- * @param {object} methodData - The payment method data to build the request.
- * @return {string} - 'true', 'false', or error message on failure.
- */
-async function hasEnrolledInstrumentForMethodData(methodData) { // eslint-disable-line no-unused-vars, max-len
-  try {
-    const request = new PaymentRequest(methodData, kDetails);
-    const result = await request.hasEnrolledInstrument();
-    return result ? 'true' : 'false';
-  } catch (e) {
-    return e.message;
-  }
-}

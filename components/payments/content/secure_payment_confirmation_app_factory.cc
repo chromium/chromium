@@ -231,7 +231,7 @@ void SecurePaymentConfirmationAppFactory::OnAppIconDecoded(
           std::move(icon), instrument->label,
           std::move(instrument->credential_id),
           url::Origin::Create(request->delegate->GetTopOrigin()),
-          request->delegate->GetSpec()->details().total->amount,
+          request->delegate->GetSpec()->AsWeakPtr(),
           std::move(request->mojo_request), std::move(request->authenticator)));
 
   request->delegate->OnDoneCreatingPaymentApps();
