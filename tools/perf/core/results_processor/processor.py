@@ -169,7 +169,7 @@ def GenerateExitCode(test_results):
   """
   if any(r['status'] == 'FAIL' for r in test_results):
     return 1
-  if all(r['status'] == 'SKIP' for r in test_results):
+  if test_results and all(r['status'] == 'SKIP' for r in test_results):
     return 111
   return 0
 
