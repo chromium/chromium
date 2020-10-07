@@ -9,4 +9,5 @@
     <dimen name="download_dialog_radio_button_margin_start">-5dp</dimen>
     <dimen name="download_dialog_checkbox_margin_start">-5dp</dimen>
     <dimen name="download_dialog_checkbox_margin_top">16dp</dimen>
+    <dimen name="download_dialog_location_space_margin_start">49dp</dimen>
 </resources>
