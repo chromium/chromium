@@ -14,6 +14,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/phonehub/interstitial_view_button.h"
 #include "ash/system/phonehub/phone_hub_interstitial_view.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/unified/rounded_label_button.h"
@@ -47,17 +48,21 @@ OnboardingView::OnboardingView(
       IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_DESCRIPTION));
 
   // Add "Dismiss" and "Get started" buttons.
-  auto dismiss = std::make_unique<views::LabelButton>(
-      this, l10n_util::GetStringUTF16(
-                IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_DISMISS_BUTTON));
+  auto dismiss = std::make_unique<InterstitialViewButton>(
+      this,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_DISMISS_BUTTON),
+      /*paint_background=*/false);
   dismiss->SetEnabledTextColors(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));
   dismiss->SetID(PhoneHubViewID::kOnboardingDismissButton);
   content_view_->AddButton(std::move(dismiss));
 
-  auto get_started = std::make_unique<RoundedLabelButton>(
-      this, l10n_util::GetStringUTF16(
-                IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_GET_STARTED_BUTTON));
+  auto get_started = std::make_unique<InterstitialViewButton>(
+      this,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_GET_STARTED_BUTTON),
+      /*paint_background=*/true);
   get_started->SetID(PhoneHubViewID::kOnboardingGetStartedButton);
   content_view_->AddButton(std::move(get_started));
 }
