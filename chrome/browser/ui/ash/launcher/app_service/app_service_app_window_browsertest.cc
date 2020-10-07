@@ -21,8 +21,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/web_application_info.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/arc/arc_service_manager.h"
@@ -353,18 +351,9 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowLacrosBrowserTest, LacrosWindow) {
 }
 
 class AppServiceAppWindowWebAppBrowserTest
-    : public AppServiceAppWindowBrowserTest,
-      public ::testing::WithParamInterface<web_app::ProviderType> {
+    : public AppServiceAppWindowBrowserTest {
  protected:
-  AppServiceAppWindowWebAppBrowserTest() {
-    if (GetParam() == web_app::ProviderType::kWebApps) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    }
-  }
+  AppServiceAppWindowWebAppBrowserTest() = default;
   ~AppServiceAppWindowWebAppBrowserTest() override = default;
 
   // AppServiceAppWindowBrowserTest:
@@ -402,12 +391,10 @@ class AppServiceAppWindowWebAppBrowserTest
  private:
   // For mocking a secure site.
   net::EmbeddedTestServer https_server_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that we have the correct instance for Web apps.
-IN_PROC_BROWSER_TEST_P(AppServiceAppWindowWebAppBrowserTest, WebAppsWindow) {
+IN_PROC_BROWSER_TEST_F(AppServiceAppWindowWebAppBrowserTest, WebAppsWindow) {
   std::string app_id = CreateWebApp();
 
   auto windows = app_service_proxy_->InstanceRegistry().GetWindows(app_id);
@@ -438,7 +425,7 @@ IN_PROC_BROWSER_TEST_P(AppServiceAppWindowWebAppBrowserTest, WebAppsWindow) {
 
 // Tests that web app with multiple open windows can be activated from the app
 // list.
-IN_PROC_BROWSER_TEST_P(AppServiceAppWindowWebAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(AppServiceAppWindowWebAppBrowserTest,
                        LaunchFromAppList) {
   std::string app_id = CreateWebApp();
 
@@ -727,9 +714,3 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, LogicalWindowId) {
   windows = app_service_proxy_->InstanceRegistry().GetWindows(app_id);
   EXPECT_EQ(0u, windows.size());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppServiceAppWindowWebAppBrowserTest,
-                         ::testing::Values(web_app::ProviderType::kBookmarkApps,
-                                           web_app::ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);
