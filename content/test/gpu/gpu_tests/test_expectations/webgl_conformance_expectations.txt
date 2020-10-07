@@ -131,6 +131,9 @@ crbug.com/1082533 [ mac intel ] conformance/textures/misc/texture-copying-and-de
 crbug.com/1018028 [ win vulkan nvidia ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
 crbug.com/1110111 [ win nvidia ] conformance/rendering/point-no-attributes.html [ RetryOnFailure ]
 
+# Skipping new tests
+crbug.com/angleproject/5038 conformance/extensions/ext-color-buffer-half-float.html [ Skip ]
+
 # Need to implement new error semantics
 # https://github.com/KhronosGroup/WebGL/pull/2607
 crbug.com/849572 [ win d3d11 passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
