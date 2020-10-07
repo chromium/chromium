@@ -37,6 +37,7 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/can_commit_status.h"
+#include "content/browser/coop_coep_cross_origin_isolated_info.h"
 #include "content/browser/feature_observer.h"
 #include "content/browser/idle/idle_manager_impl.h"
 #include "content/browser/net/cross_origin_opener_policy_reporter.h"
@@ -578,16 +579,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // determining if a navigation to |dest_url_info| should stay in this
   // RenderFrameHost's SiteInstance.
   //
-  // |is_coop_coep_cross_origin_isolated| should be true if the response for
-  // |dest_url| has set COOP and COEP headers to same-origin and require-corp
-  // respectively.
-  // if |is_coop_coep_cross_origin_isolated| is true,
-  // |coop_coep_cross_origin_isolated_origin| indicates the top level origin
-  // of the page.
+  // |cross_origin_isolated_info| indicates the cross-origin isolation status,
+  // as deduced from COOP and COEP headers.
   bool IsNavigationSameSite(
       const UrlInfo& dest_url_info,
-      bool is_coop_coep_cross_origin_isolated,
-      base::Optional<url::Origin> coop_coep_cross_origin_isolated_origin);
+      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info);
 
   // Returns |frame_origin| if this frame is the top (i.e. root) frame in the
   // frame tree. Otherwise, it returns the top frame's origin.

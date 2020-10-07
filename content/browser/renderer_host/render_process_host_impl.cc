@@ -3188,7 +3188,7 @@ void RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate() {
     return;
 
   GetRendererInterface()->SetIsCrossOriginIsolated(
-      process_lock.is_coop_coep_cross_origin_isolated());
+      process_lock.coop_coep_cross_origin_isolated_info().is_isolated());
 
   if (!process_lock.IsASiteOrOrigin())
     return;

@@ -24,19 +24,14 @@ int BrowsingInstance::next_browsing_instance_id_ = 1;
 
 BrowsingInstance::BrowsingInstance(
     BrowserContext* browser_context,
-    bool is_coop_coep_cross_origin_isolated,
-    const base::Optional<url::Origin>& coop_coep_cross_origin_isolated_origin)
+    const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info)
     : isolation_context_(
           BrowsingInstanceId::FromUnsafeValue(next_browsing_instance_id_++),
           BrowserOrResourceContext(browser_context)),
       active_contents_count_(0u),
       default_process_(nullptr),
       default_site_instance_(nullptr),
-      is_coop_coep_cross_origin_isolated_(is_coop_coep_cross_origin_isolated),
-      coop_coep_cross_origin_isolated_origin_(
-          coop_coep_cross_origin_isolated_origin) {
-  DCHECK(!is_coop_coep_cross_origin_isolated_ ||
-         coop_coep_cross_origin_isolated_origin_.has_value());
+      cross_origin_isolated_info_(cross_origin_isolated_info) {
   DCHECK(browser_context);
 }
 
@@ -224,9 +219,8 @@ BrowsingInstance::~BrowsingInstance() {
 
 SiteInfo BrowsingInstance::ComputeSiteInfoForURL(
     const UrlInfo& url_info) const {
-  return SiteInstanceImpl::ComputeSiteInfo(
-      isolation_context_, url_info, is_coop_coep_cross_origin_isolated_,
-      coop_coep_cross_origin_isolated_origin_);
+  return SiteInstanceImpl::ComputeSiteInfo(isolation_context_, url_info,
+                                           cross_origin_isolated_info_);
 }
 
 }  // namespace content

@@ -2372,8 +2372,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), redirect_isolated_page, isolated_page));
   current_si = current_frame_host()->GetSiteInstance();
   EXPECT_TRUE(current_si->IsCoopCoepCrossOriginIsolated());
-  EXPECT_TRUE(current_si->CoopCoepCrossOriginIsolatedOrigin()->IsSameOriginWith(
-      url::Origin::Create(isolated_page)));
+  EXPECT_TRUE(current_si->GetCoopCoepCrossOriginIsolatedInfo()
+                  .origin()
+                  .IsSameOriginWith(url::Origin::Create(isolated_page)));
 }
 
 // TODO(https://crbug.com/1101339). Test inheritance of the virtual browsing

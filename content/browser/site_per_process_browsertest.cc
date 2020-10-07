@@ -14831,12 +14831,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   IsolationContext isolation_context(controller.GetBrowserContext());
   auto start_url_lock = SiteInstanceImpl::DetermineProcessLock(
       isolation_context, UrlInfo::CreateForTesting(start_url),
-      false /* is_coop_coep_cross_origin_isolated */,
-      base::nullopt /* coop_coep_cross_origin_isolated_origin */);
+      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   auto another_url_lock = SiteInstanceImpl::DetermineProcessLock(
       isolation_context, UrlInfo::CreateForTesting(another_url),
-      false /* is_coop_coep_cross_origin_isolated */,
-      base::nullopt /* coop_coep_cross_origin_isolated_origin */);
+      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   EXPECT_EQ(start_url_lock, policy->GetProcessLock(process_id));
   EXPECT_NE(another_url_lock, policy->GetProcessLock(process_id));
 

@@ -1076,7 +1076,7 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
     SiteInstanceDescriptor descriptor(
         UrlInfo::CreateForTesting(kUrlSameSiteAs1),
         SiteInstanceRelation::RELATED,
-        false /* is_coop_coep_cross_origin_isolated */);
+        CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
     scoped_refptr<SiteInstance> converted_instance =
         ConvertToSiteInstance(rfhm, descriptor, nullptr);
     EXPECT_EQ(current_instance, converted_instance);
@@ -1090,7 +1090,7 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
     SiteInstanceDescriptor descriptor(
         UrlInfo::CreateForTesting(kUrlSameSiteAs2),
         SiteInstanceRelation::RELATED,
-        false /* is_coop_coep_cross_origin_isolated */);
+        CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
     related_instance = ConvertToSiteInstance(rfhm, descriptor, nullptr);
     // If kUrlSameSiteAs2 requires a dedicated process on this platform, this
     // should return a new instance, related to the current and set to the new
@@ -1116,7 +1116,7 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
     SiteInstanceDescriptor descriptor(
         UrlInfo::CreateForTesting(kUrlSameSiteAs1),
         SiteInstanceRelation::UNRELATED,
-        false /* is_coop_coep_cross_origin_isolated */);
+        CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
     scoped_refptr<SiteInstance> converted_instance_1 =
         ConvertToSiteInstance(rfhm, descriptor, nullptr);
     // Should return a new instance, unrelated to the current one, set to the
@@ -1156,7 +1156,7 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
     SiteInstanceDescriptor descriptor(
         UrlInfo::CreateForTesting(kUrlSameSiteAs2),
         SiteInstanceRelation::UNRELATED,
-        false /* is_coop_coep_cross_origin_isolated */);
+        CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
     scoped_refptr<SiteInstance> converted_instance_1 =
         ConvertToSiteInstance(rfhm, descriptor, related_instance.get());
     // Should return a new instance, unrelated to the current, set to the

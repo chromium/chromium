@@ -139,8 +139,7 @@ bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
   SiteInstanceImpl* site_instance = render_frame_host->GetSiteInstance();
   SiteInfo site_info = SiteInstanceImpl::ComputeSiteInfo(
       site_instance->GetIsolationContext(), url_info,
-      site_instance->IsCoopCoepCrossOriginIsolated(),
-      site_instance->CoopCoepCrossOriginIsolatedOrigin());
+      site_instance->GetCoopCoepCrossOriginIsolatedInfo());
   bool should_lock_process = site_info.ShouldLockProcessToSite(
       site_instance->GetIsolationContext(), site_instance->IsGuest());
 
@@ -254,10 +253,9 @@ void Navigator::DidNavigate(
   bool is_cross_document_same_site_navigation =
       !is_same_document_navigation &&
       old_frame_host->IsNavigationSameSite(
-          url_info,
-          render_frame_host->GetSiteInstance()->IsCoopCoepCrossOriginIsolated(),
-          render_frame_host->GetSiteInstance()
-              ->CoopCoepCrossOriginIsolatedOrigin());
+          url_info, render_frame_host->GetSiteInstance()
+                        ->GetCoopCoepCrossOriginIsolatedInfo());
+
   if (is_cross_document_same_site_navigation) {
     UMA_HISTOGRAM_BOOLEAN(
         "BackForwardCache.ProactiveSameSiteBISwap.SameSiteNavigationDidSwap",

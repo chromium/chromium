@@ -1440,8 +1440,7 @@ void NavigationRequest::StartNavigation(bool is_for_commit) {
   starting_site_instance_ =
       frame_tree_node->current_frame_host()->GetSiteInstance();
   site_info_ = GetSiteInfoForCommonParamsURL(
-      starting_site_instance_->IsCoopCoepCrossOriginIsolated(),
-      starting_site_instance_->CoopCoepCrossOriginIsolatedOrigin());
+      starting_site_instance_->GetCoopCoepCrossOriginIsolatedInfo());
 
   // Compute the redirect chain.
   // TODO(clamy): Try to simplify this and have the redirects be part of
@@ -1893,14 +1892,11 @@ void NavigationRequest::OnRequestRedirected(
   RenderProcessHost* expected_process =
       site_instance->HasProcess() ? site_instance->GetProcess() : nullptr;
 
-  bool is_coop_coep_cross_origin_isolated;
-  base::Optional<url::Origin> coop_coep_cross_origin_isolated_origin;
-  frame_tree_node_->render_manager()->GetCoopCoepCrossOriginIsolationInfo(
-      this, &is_coop_coep_cross_origin_isolated,
-      &coop_coep_cross_origin_isolated_origin);
-  WillRedirectRequest(common_params_->referrer->url,
-                      is_coop_coep_cross_origin_isolated,
-                      coop_coep_cross_origin_isolated_origin, expected_process);
+  CoopCoepCrossOriginIsolatedInfo cross_origin_isolated_info =
+      frame_tree_node_->render_manager()->GetCoopCoepCrossOriginIsolationInfo(
+          this);
+  WillRedirectRequest(common_params_->referrer->url, cross_origin_isolated_info,
+                      expected_process);
 }
 
 void NavigationRequest::CheckForIsolationOptIn(const GURL& url) {
@@ -2364,8 +2360,7 @@ void NavigationRequest::OnResponseStarted(
     const IsolationContext& isolation_context = instance->GetIsolationContext();
     auto site_info = SiteInstanceImpl::ComputeSiteInfo(
         isolation_context, GetUrlInfo(),
-        instance->IsCoopCoepCrossOriginIsolated(),
-        instance->CoopCoepCrossOriginIsolatedOrigin());
+        instance->GetCoopCoepCrossOriginIsolatedInfo());
     if (!instance->HasSite() &&
         site_info.RequiresDedicatedProcess(isolation_context)) {
       instance->ConvertToDefaultOrSetSite(GetUrlInfo());
@@ -3377,16 +3372,14 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnCommitSent() {
 }
 
 void NavigationRequest::UpdateSiteInfo(
-    bool is_coop_coep_cross_origin_isolated,
-    const base::Optional<url::Origin>& coop_coep_cross_origin_isolated_origin,
+    const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info,
     RenderProcessHost* post_redirect_process) {
   int post_redirect_process_id = post_redirect_process
                                      ? post_redirect_process->GetID()
                                      : ChildProcessHost::kInvalidUniqueID;
 
   SiteInfo new_site_info =
-      GetSiteInfoForCommonParamsURL(is_coop_coep_cross_origin_isolated,
-                                    coop_coep_cross_origin_isolated_origin);
+      GetSiteInfoForCommonParamsURL(cross_origin_isolated_info);
   if (new_site_info == site_info_ &&
       post_redirect_process_id == expected_render_process_host_id_) {
     return;
@@ -3969,14 +3962,12 @@ void NavigationRequest::WillStartRequest() {
 
 void NavigationRequest::WillRedirectRequest(
     const GURL& new_referrer_url,
-    bool is_coop_coep_cross_origin_isolated,
-    const base::Optional<url::Origin>& coop_coep_cross_origin_isolated_origin,
+    const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info,
     RenderProcessHost* post_redirect_process) {
   EnterChildTraceEvent("WillRedirectRequest", this, "url",
                        common_params_->url.possibly_invalid_spec());
   UpdateStateFollowingRedirect(new_referrer_url);
-  UpdateSiteInfo(is_coop_coep_cross_origin_isolated,
-                 coop_coep_cross_origin_isolated_origin, post_redirect_process);
+  UpdateSiteInfo(cross_origin_isolated_info, post_redirect_process);
 
   if (IsSelfReferentialURL()) {
     SetState(CANCELING);
@@ -4137,14 +4128,12 @@ void NavigationRequest::DidCommitNavigation(
 }
 
 SiteInfo NavigationRequest::GetSiteInfoForCommonParamsURL(
-    bool is_coop_coep_cross_origin_isolated,
-    const base::Optional<url::Origin>& coop_coep_cross_origin_isolated_origin) {
+    const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info) {
   // TODO(alexmos): Using |starting_site_instance_|'s IsolationContext may not
   // be correct for cross-BrowsingInstance redirects.
   return SiteInstanceImpl::ComputeSiteInfo(
       starting_site_instance_->GetIsolationContext(), GetUrlInfo(),
-      is_coop_coep_cross_origin_isolated,
-      coop_coep_cross_origin_isolated_origin);
+      cross_origin_isolated_info);
 }
 
 // TODO(zetamoo): Try to merge this function inside its callers.

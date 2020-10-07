@@ -415,12 +415,10 @@ class CONTENT_EXPORT NavigationRequest
   // redirects. |post_redirect_process| is the renderer process that should
   // handle the navigation following the redirect if it can be handled by an
   // existing RenderProcessHost. Otherwise, it should be null.
-  // |is_coop_coep_cross_origin_isolated| &
-  // |coop_coep_cross_origin_isolated_origin| is the new COOP/COEP info
-  // extracted from the redirect response.
+  // |cross_origin_isolated_info| is the new COOP/COEP info extracted from the
+  // redirect response.
   void UpdateSiteInfo(
-      bool is_coop_coep_cross_origin_isolated,
-      const base::Optional<url::Origin>& coop_coep_cross_origin_isolated_origin,
+      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info,
       RenderProcessHost* post_redirect_process);
 
   int nav_entry_id() const { return nav_entry_id_; }
@@ -950,13 +948,11 @@ class CONTENT_EXPORT NavigationRequest
   // no live process that can be used. In that case, a suitable renderer process
   // will be created at commit time.
   //
-  // |is_coop_coep_cross_origin_isolated| &
-  // |coop_coep_cross_origin_isolated_origin| is the new COOP/COEP info
-  // extracted from the redirect response.
+  // |cross_origin_isolated_info| is the new COOP/COEP info extracted from the
+  // redirect response.
   void WillRedirectRequest(
       const GURL& new_referrer_url,
-      bool is_coop_coep_cross_origin_isolated,
-      const base::Optional<url::Origin>& coop_coep_cross_origin_isolated_origin,
+      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info,
       RenderProcessHost* post_redirect_process);
 
   // Called when the URLRequest will fail.
@@ -987,9 +983,8 @@ class CONTENT_EXPORT NavigationRequest
   // Helper function that computes the SiteInfo for |common_params_.url|.
   // Note: |site_info_| should only be updated with the result of this function.
   SiteInfo GetSiteInfoForCommonParamsURL(
-      bool is_coop_coep_cross_origin_isolated,
-      const base::Optional<url::Origin>&
-          coop_coep_cross_origin_isolated_origin);
+      const CoopCoepCrossOriginIsolatedInfo&
+          cross_origin_isolated_origin_status);
 
   // Updates the state of the navigation handle after encountering a server
   // redirect.

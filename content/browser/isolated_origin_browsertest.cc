@@ -82,8 +82,7 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
   ProcessLock ProcessLockFromUrl(const std::string& url) {
     return ProcessLock(
         SiteInfo(GURL(url), GURL(url), false /* is_origin_keyed */,
-                 false /* is_coop_coep_cross_origin_isolated */,
-                 base::nullopt /* coop_coep_cross_origin_isolated_origin */));
+                 CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated()));
   }
 
   WebContentsImpl* web_contents() const {
@@ -101,8 +100,7 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
     GURL origin_url = url::Origin::Create(url).GetURL();
     return ProcessLock(
         SiteInfo(origin_url, origin_url, false /* is_origin_keyed */,
-                 false /* is_coop_coep_cross_origin_isolated */,
-                 base::nullopt /* coop_coep_cross_origin_isolated_origin */));
+                 CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated()));
   }
 
  private:
@@ -436,8 +434,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
   GURL origin_url = url::Origin::Create(isolated_suborigin_url).GetURL();
   auto expected_isolated_suborigin_lock = ProcessLock(
       SiteInfo(origin_url, origin_url, true /* is_origin_keyed */,
-               false /* is_coop_coep_cross_origin_isolated */,
-               base::nullopt /* coop_coep_cross_origin_isolated_origin */));
+               CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated()));
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(2u, shell()->web_contents()->GetAllFrames().size());
 

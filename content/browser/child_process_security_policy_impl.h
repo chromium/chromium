@@ -82,9 +82,7 @@ class CONTENT_EXPORT ProcessLock {
   // that wants to commit in this process must have COOP/COEP information that
   // matches the values used to create this lock.
   static ProcessLock CreateAllowAnySite(
-      bool is_coop_coep_cross_origin_isolated,
-      const base::Optional<url::Origin>&
-          coop_coep_cross_origin_isolated_origin);
+      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info);
 
   ProcessLock();
   explicit ProcessLock(const SiteInfo& site_info);
@@ -134,17 +132,10 @@ class CONTENT_EXPORT ProcessLock {
   // This property is renderer process global because we ensure that a
   // renderer process host only cross-origin isolated agents or only
   // non-cross-origin isolated agents, not both.
-  bool is_coop_coep_cross_origin_isolated() const {
-    return site_info_.has_value() &&
-           site_info_->is_coop_coep_cross_origin_isolated();
-  }
-
-  // If is_coop_coep_cross_origin_isolated() returns true, this returns the
-  // origin shared across all top level frames in the renderer process.
-  base::Optional<url::Origin> coop_coep_cross_origin_isolated_origin() const {
+  CoopCoepCrossOriginIsolatedInfo coop_coep_cross_origin_isolated_info() const {
     return site_info_.has_value()
-               ? site_info_->coop_coep_cross_origin_isolated_origin()
-               : base::nullopt;
+               ? site_info_->coop_coep_cross_origin_isolated_info()
+               : CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated();
   }
 
   // Returns whether lock_url() is at least at the granularity of a site (i.e.,
@@ -339,9 +330,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       const IsolationContext& isolation_context,
       const url::Origin& origin,
       const UrlInfo& url_info,
-      bool is_coop_coep_cross_origin_isolated,
-      const base::Optional<url::Origin>&
-          coop_coep_cross_origin_isolated_origin);
+      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info);
 
   // This function will check whether |origin| requires process isolation
   // within |isolation_context|, and if so, it will return true and put the

@@ -62,8 +62,7 @@ SiteInfo CreateSimpleSiteInfo(const GURL& process_lock_url,
                               bool is_origin_keyed) {
   return SiteInfo(GURL("https://www.foo.com"), process_lock_url,
                   is_origin_keyed,
-                  false /* is_coop_coep_cross_origin_isolated */,
-                  base::nullopt /* coop_coep_cross_origin_isolated_origin */);
+                  CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
 }
 
 }  // namespace
@@ -447,7 +446,7 @@ TEST_F(SiteInstanceTest, DefaultSiteInstanceDestruction) {
   // are gone.
   auto site_instance = SiteInstanceImpl::CreateForUrlInfo(
       &browser_context, UrlInfo::CreateForTesting(GURL("http://foo.com")),
-      false /* is_coop_coep_cross_origin_isolated */);
+      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_TRUE(site_instance->IsDefaultSiteInstance());
   } else {
@@ -662,15 +661,14 @@ TEST_F(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL) {
   SiteInfo expected_site_info(
       app_url /* site_url */, nonapp_site_url /* process_lock_url */,
       false /* is_origin_keyed */,
-      false /* is_coop_coep_cross_origin_isolated */,
-      base::nullopt /* coop_coep_cross_origin_isolated_origin */);
+      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
 
   // New SiteInstance in a new BrowsingInstance with a predetermined URL.
   {
     scoped_refptr<SiteInstanceImpl> site_instance =
         SiteInstanceImpl::CreateForUrlInfo(
             browser_context.get(), UrlInfo::CreateForTesting(test_url),
-            false /* is_coop_coep_cross_origin_isolated */);
+            CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
     EXPECT_EQ(expected_site_info, site_instance->GetSiteInfo());
   }
 
@@ -681,7 +679,7 @@ TEST_F(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL) {
         SiteInstanceImpl::CreateForUrlInfo(
             browser_context.get(),
             UrlInfo::CreateForTesting(GURL("https://bar.com/")),
-            false /* is_coop_coep_cross_origin_isolated */);
+            CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
     scoped_refptr<SiteInstance> site_instance =
         bar_site_instance->GetRelatedSiteInstance(test_url);
     auto* site_instance_impl =
@@ -774,8 +772,8 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSite) {
       switches::kProcessPerSite));
   std::unique_ptr<TestBrowserContext> browser_context(new TestBrowserContext());
   BrowsingInstance* browsing_instance = new BrowsingInstance(
-      browser_context.get(), false /* is_coop_coep_cross_origin_isolated */,
-      base::nullopt /* coop_coep_cross_origin_isolated_origin */);
+      browser_context.get(),
+      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
 
   const GURL url_a1("http://www.google.com/1.html");
   scoped_refptr<SiteInstanceImpl> site_instance_a1(
@@ -808,8 +806,8 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSite) {
   // A visit to the original site in a new BrowsingInstance (same or different
   // browser context) should return a different SiteInstance.
   BrowsingInstance* browsing_instance2 = new BrowsingInstance(
-      browser_context.get(), false /* is_coop_coep_cross_origin_isolated */,
-      base::nullopt /* coop_coep_cross_origin_isolated_origin */);
+      browser_context.get(),
+      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   // Ensure the new SiteInstance is ref counted so that it gets deleted.
   scoped_refptr<SiteInstanceImpl> site_instance_a2_2(
       browsing_instance2->GetSiteInstanceForURL(
@@ -852,8 +850,8 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSiteInBrowserContext) {
       switches::kProcessPerSite);
   std::unique_ptr<TestBrowserContext> browser_context(new TestBrowserContext());
   scoped_refptr<BrowsingInstance> browsing_instance = new BrowsingInstance(
-      browser_context.get(), false /* is_coop_coep_cross_origin_isolated */,
-      base::nullopt /* coop_coep_cross_origin_isolated_origin */);
+      browser_context.get(),
+      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
 
   const GURL url_a1("http://www.google.com/1.html");
   scoped_refptr<SiteInstanceImpl> site_instance_a1(
@@ -886,8 +884,8 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSiteInBrowserContext) {
   // A visit to the original site in a new BrowsingInstance (same browser
   // context) should return a different SiteInstance with the same process.
   BrowsingInstance* browsing_instance2 = new BrowsingInstance(
-      browser_context.get(), false /* is_coop_coep_cross_origin_isolated */,
-      base::nullopt /* coop_coep_cross_origin_isolated_origin */);
+      browser_context.get(),
+      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   scoped_refptr<SiteInstanceImpl> site_instance_a1_2(
       browsing_instance2->GetSiteInstanceForURL(
           UrlInfo::CreateForTesting(url_a1), false));
@@ -900,8 +898,8 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSiteInBrowserContext) {
   std::unique_ptr<TestBrowserContext> browser_context2(
       new TestBrowserContext());
   BrowsingInstance* browsing_instance3 = new BrowsingInstance(
-      browser_context2.get(), false /* is_coop_coep_cross_origin_isolated */,
-      base::nullopt /* coop_coep_cross_origin_isolated_origin */);
+      browser_context2.get(),
+      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   scoped_refptr<SiteInstanceImpl> site_instance_a2_3(
       browsing_instance3->GetSiteInstanceForURL(
           UrlInfo::CreateForTesting(url_a2), false));
@@ -1469,8 +1467,7 @@ TEST_F(SiteInstanceTest, OriginalURL) {
   SiteInfo expected_site_info(
       app_url /* site_url */, original_url /* process_lock_url */,
       false /* is_origin_keyed */,
-      false /* is_coop_coep_cross_origin_isolated */,
-      base::nullopt /* coop_coep_cross_origin_isolated_origin */);
+      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
 
   // New SiteInstance in a new BrowsingInstance with a predetermined URL.  In
   // this and subsequent cases, the site URL should consist of the effective
@@ -1480,7 +1477,7 @@ TEST_F(SiteInstanceTest, OriginalURL) {
     scoped_refptr<SiteInstanceImpl> site_instance =
         SiteInstanceImpl::CreateForUrlInfo(
             browser_context.get(), UrlInfo::CreateForTesting(original_url),
-            false /* is_coop_coep_cross_origin_isolated */);
+            CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
     EXPECT_EQ(expected_site_info, site_instance->GetSiteInfo());
     EXPECT_EQ(original_url, site_instance->original_url());
   }
@@ -1492,7 +1489,7 @@ TEST_F(SiteInstanceTest, OriginalURL) {
         SiteInstanceImpl::CreateForUrlInfo(
             browser_context.get(),
             UrlInfo::CreateForTesting(GURL("https://bar.com/")),
-            false /* is_coop_coep_cross_origin_isolated */);
+            CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
     scoped_refptr<SiteInstance> site_instance =
         bar_site_instance->GetRelatedSiteInstance(original_url);
     auto* site_instance_impl =
@@ -1520,8 +1517,7 @@ namespace {
 ProcessLock ProcessLockFromString(const std::string& url) {
   return ProcessLock(
       SiteInfo(GURL(url), GURL(url), false /* is_origin_keyed */,
-               false /* is_coop_coep_cross_origin_isolated */,
-               base::nullopt /* coop_coep_cross_origin_isolated_origin */));
+               CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated()));
 }
 
 }  // namespace
@@ -1604,19 +1600,19 @@ TEST_F(SiteInstanceTest, CreateForUrlInfo) {
 
   auto instance1 = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo::CreateForTesting(kNonIsolatedUrl),
-      false /* is_coop_coep_cross_origin_isolated */);
+      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   auto instance2 = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo::CreateForTesting(kIsolatedUrl),
-      false /* is_coop_coep_cross_origin_isolated */);
+      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   auto instance3 = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo::CreateForTesting(kFileUrl),
-      false /* is_coop_coep_cross_origin_isolated */);
+      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   auto instance4 = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo::CreateForTesting(GURL(url::kAboutBlankURL)),
-      false /* is_coop_coep_cross_origin_isolated */);
+      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   auto instance5 = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo::CreateForTesting(kCustomUrl),
-      false /* is_coop_coep_cross_origin_isolated */);
+      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
 
   if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_TRUE(instance1->IsDefaultSiteInstance());
@@ -1679,7 +1675,7 @@ TEST_F(SiteInstanceTest, CreateForUrlInfo) {
   // a site set now.
   auto instance6 = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo::CreateForTesting(kCustomUrl),
-      false /* is_coop_coep_cross_origin_isolated */);
+      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   EXPECT_FALSE(instance6->IsDefaultSiteInstance());
   EXPECT_FALSE(instance6->HasSite());
   EXPECT_FALSE(instance6->DoesSiteInfoForURLMatch(
@@ -1697,7 +1693,7 @@ TEST_F(SiteInstanceTest, CreateForGuest) {
   // any other standard URL.
   auto instance1 = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo::CreateForTesting(kGuestUrl),
-      false /* is_coop_coep_cross_origin_isolated */);
+      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   EXPECT_FALSE(instance1->IsGuest());
   if (AreAllSitesIsolatedForTesting()) {
     EXPECT_NE(kGuestUrl, instance1->GetSiteURL());

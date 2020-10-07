@@ -663,6 +663,8 @@ source_set("browser") {
     "cookie_store/cookie_store_host.h",
     "cookie_store/cookie_store_manager.cc",
     "cookie_store/cookie_store_manager.h",
+    "coop_coep_cross_origin_isolated_info.cc",
+    "coop_coep_cross_origin_isolated_info.h",
     "data_url_loader_factory.cc",
     "data_url_loader_factory.h",
     "device/device_service.cc",

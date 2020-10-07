@@ -114,8 +114,7 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
                        base::Unretained(this)));
 
     request_->WillRedirectRequest(
-        GURL(), false /* is_coop_coep_cross_origin_isolated */,
-        base::nullopt /* coop_coep_cross_origin_isolated_origin */,
+        GURL(), CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated(),
         nullptr /* post_redirect_process */);
   }
 

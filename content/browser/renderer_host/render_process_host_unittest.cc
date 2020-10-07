@@ -39,7 +39,7 @@ class RenderProcessHostUnitTest : public RenderViewHostImplTestHarness {
   scoped_refptr<SiteInstanceImpl> CreateForUrl(const GURL& url) {
     return SiteInstanceImpl::CreateForUrlInfo(
         browser_context(), UrlInfo::CreateForTesting(url),
-        false /* is_coop_coep_cross_origin_isolated */);
+        CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   }
 };
 
@@ -1075,7 +1075,7 @@ TEST_F(SpareRenderProcessHostUnitTest,
   scoped_refptr<SiteInstanceImpl> site_instance =
       SiteInstanceImpl::CreateForUrlInfo(
           browser_context(), UrlInfo::CreateForTesting(GURL("http://foo.com")),
-          false /* is_coop_coep_cross_origin_isolated */);
+          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   RenderProcessHost* site_instance_process = site_instance->GetProcess();
   // We need to ensure the MockRenderProcessHost gets destroyed at the end of
   // the test.

@@ -18,6 +18,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "content/browser/coop_coep_cross_origin_isolated_info.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
@@ -523,10 +524,8 @@ class CONTENT_EXPORT RenderFrameHostManager
 
   // Computes the COOP/COEP information based on the |navigation_request|
   // and current |frame_tree_node_| & |render_frame_host_| info.
-  void GetCoopCoepCrossOriginIsolationInfo(
-      NavigationRequest* navigation_request,
-      bool* is_coop_coep_cross_origin_isolated,
-      base::Optional<url::Origin>* coop_coep_cross_origin_isolated_origin);
+  CoopCoepCrossOriginIsolatedInfo GetCoopCoepCrossOriginIsolationInfo(
+      NavigationRequest* navigation_request);
 
  private:
   friend class NavigatorTest;
@@ -562,11 +561,14 @@ class CONTENT_EXPORT RenderFrameHostManager
   struct CONTENT_EXPORT SiteInstanceDescriptor {
     explicit SiteInstanceDescriptor(content::SiteInstance* site_instance)
         : existing_site_instance(site_instance),
-          relation(SiteInstanceRelation::PREEXISTING) {}
+          relation(SiteInstanceRelation::PREEXISTING),
+          cross_origin_isolated_info(
+              CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated()) {}
 
-    SiteInstanceDescriptor(UrlInfo dest_url_info,
-                           SiteInstanceRelation relation_to_current,
-                           bool is_coop_coep_cross_origin_isolated);
+    SiteInstanceDescriptor(
+        UrlInfo dest_url_info,
+        SiteInstanceRelation relation_to_current,
+        const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info);
 
     // Set with an existing SiteInstance to be reused.
     content::SiteInstance* existing_site_instance;
@@ -584,7 +586,7 @@ class CONTENT_EXPORT RenderFrameHostManager
     // This allows the use of more powerful features such as SharedArrayBuffer.
     // A cross-origin isolated SiteInstance hosts such pages and should only
     // live in cross-origin isolated BrowsingInstances.
-    bool is_coop_coep_cross_origin_isolated = false;
+    CoopCoepCrossOriginIsolatedInfo cross_origin_isolated_info;
   };
 
   // Create a RenderFrameProxyHost owned by this object.
@@ -626,8 +628,7 @@ class CONTENT_EXPORT RenderFrameHostManager
       SiteInstanceImpl* current_instance,
       SiteInstance* destination_instance,
       const UrlInfo& destination_url_info,
-      bool is_coop_coep_cross_origin_isolated,
-      const base::Optional<url::Origin>& coop_coep_cross_origin_isolated_origin,
+      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info,
       bool destination_is_view_source_mode,
       ui::PageTransition transition,
       bool is_failure,
@@ -640,16 +641,14 @@ class CONTENT_EXPORT RenderFrameHostManager
 
   ShouldSwapBrowsingInstance ShouldProactivelySwapBrowsingInstance(
       const UrlInfo& destination_url_info,
-      bool is_coop_coep_cross_origin_isolated,
-      const base::Optional<url::Origin>& coop_coep_cross_origin_isolated_origin,
+      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info,
       bool is_reload,
       bool should_replace_current_entry);
 
   // Returns the SiteInstance to use for the navigation.
   scoped_refptr<SiteInstance> GetSiteInstanceForNavigation(
       const UrlInfo& dest_url_info,
-      bool is_coop_coep_cross_origin_isolated,
-      const base::Optional<url::Origin>& coop_coep_cross_origin_isolated_origin,
+      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info,
       SiteInstanceImpl* source_instance,
       SiteInstanceImpl* dest_instance,
       SiteInstanceImpl* candidate_instance,
@@ -670,12 +669,9 @@ class CONTENT_EXPORT RenderFrameHostManager
   // SiteInstance. The actual SiteInstance can then be obtained calling
   // ConvertToSiteInstance with the descriptor.
   //
-  // |is_coop_coep_cross_origin_isolated| should be true if the response for
-  // |dest_url| has set COOP and COEP headers to same-origin and require-corp
-  // respectively.
-  // if |is_coop_coep_cross_origin_isolated| is true,
-  // |coop_coep_cross_origin_isolated_origin| indicates the top level origin
-  // of the page.
+  // |cross_origin_isolated_info| reflects the cross-origin isolation
+  // information we got from the response for |dest_url|, more specifically the
+  // COOP and COEP headers.
   //
   // |source_instance| is the SiteInstance of the frame that initiated the
   // navigation. |current_instance| is the SiteInstance of the frame that is
@@ -693,8 +689,7 @@ class CONTENT_EXPORT RenderFrameHostManager
   // This is a helper function for GetSiteInstanceForNavigation.
   SiteInstanceDescriptor DetermineSiteInstanceForURL(
       const UrlInfo& dest_url_info,
-      bool is_coop_coep_cross_origin_isolated,
-      const base::Optional<url::Origin>& coop_coep_cross_origin_isolated_origin,
+      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info,
       SiteInstance* source_instance,
       SiteInstance* current_instance,
       SiteInstance* dest_instance,
@@ -728,12 +723,13 @@ class CONTENT_EXPORT RenderFrameHostManager
       const GURL& dest_url);
 
   // Returns true if we can use |source_instance| for |dest_url|.
-  bool CanUseSourceSiteInstance(const GURL& dest_url,
-                                SiteInstance* source_instance,
-                                bool was_server_redirect,
-                                bool is_failure,
-                                bool is_coop_coep_cross_origin_isolated,
-                                bool is_speculative);
+  bool CanUseSourceSiteInstance(
+      const GURL& dest_url,
+      SiteInstance* source_instance,
+      bool was_server_redirect,
+      bool is_failure,
+      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info,
+      bool is_speculative);
 
   // Converts a SiteInstanceDescriptor to the actual SiteInstance it describes.
   // If a |candidate_instance| is provided (is not nullptr) and it matches the
@@ -752,8 +748,7 @@ class CONTENT_EXPORT RenderFrameHostManager
   bool IsCandidateSameSite(
       RenderFrameHostImpl* candidate,
       const UrlInfo& dest_url_info,
-      bool is_coop_coep_cross_origin_isolated,
-      base::Optional<url::Origin> coop_coep_cross_origin_isolated_origin);
+      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info);
 
   // Ensure that we have created all needed proxies for a new RFH with
   // SiteInstance |new_instance|: (1) create swapped-out RVHs and proxies for

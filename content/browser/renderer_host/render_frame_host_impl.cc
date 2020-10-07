@@ -5557,8 +5557,7 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
   const CanCommitStatus can_commit_status = policy->CanCommitOriginAndUrl(
       GetProcess()->GetID(), GetSiteInstance()->GetIsolationContext(), origin,
       UrlInfo(url, false /* origin_requests_isolation */),
-      GetSiteInstance()->IsCoopCoepCrossOriginIsolated(),
-      GetSiteInstance()->CoopCoepCrossOriginIsolatedOrigin());
+      GetSiteInstance()->GetCoopCoepCrossOriginIsolatedInfo());
   if (can_commit_status != CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL) {
     LogCanCommitOriginAndUrlFailureReason("cpspi_disallowed_commit");
     return can_commit_status;
@@ -5936,8 +5935,8 @@ bool RenderFrameHostImpl::ShouldDispatchPagehideAndVisibilitychangeDuringCommit(
     return false;
   }
   if (!old_frame_host->IsNavigationSameSite(
-          dest_url_info, GetSiteInstance()->IsCoopCoepCrossOriginIsolated(),
-          GetSiteInstance()->CoopCoepCrossOriginIsolatedOrigin())) {
+          dest_url_info,
+          GetSiteInstance()->GetCoopCoepCrossOriginIsolatedInfo())) {
     return false;
   }
   DCHECK(frame_tree_node_->IsMainFrame());
@@ -8063,8 +8062,7 @@ void RenderFrameHostImpl::SetLastCommittedSiteInfo(const GURL& url) {
           : SiteInstanceImpl::ComputeSiteInfo(
                 GetSiteInstance()->GetIsolationContext(),
                 UrlInfo(url, false /* origin_requests_isolation */),
-                GetSiteInstance()->IsCoopCoepCrossOriginIsolated(),
-                GetSiteInstance()->CoopCoepCrossOriginIsolatedOrigin());
+                GetSiteInstance()->GetCoopCoepCrossOriginIsolatedInfo());
 
   if (last_committed_site_info_ == site_info)
     return;
@@ -8230,12 +8228,9 @@ RenderFrameHostImpl::CreateMessageFilterForAssociatedReceiver(
 
 bool RenderFrameHostImpl::IsNavigationSameSite(
     const UrlInfo& dest_url_info,
-    bool is_coop_coep_cross_origin_isolated,
-    base::Optional<url::Origin> coop_coep_cross_origin_isolated_origin) {
-  if (GetSiteInstance()->IsCoopCoepCrossOriginIsolated() !=
-          is_coop_coep_cross_origin_isolated ||
-      GetSiteInstance()->CoopCoepCrossOriginIsolatedOrigin() !=
-          coop_coep_cross_origin_isolated_origin) {
+    const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info) {
+  if (GetSiteInstance()->GetCoopCoepCrossOriginIsolatedInfo() !=
+      cross_origin_isolated_info) {
     return false;
   }
   return GetSiteInstance()->IsNavigationSameSite(
