@@ -42,7 +42,10 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"memoryAvailable", IDS_DIAGNOSTICS_MEMORY_AVAILABLE_LABEL},
       {"memoryTitle", IDS_DIAGNOSTICS_MEMORY_TITLE},
       {"powerTime", IDS_DIAGNOSTICS_POWER_TIME_LABEL},
+      {"remainingCharge", IDS_DIAGNOSTICS_REMAINING_CHARGE_LABEL},
+      {"sessionLog", IDS_DIAGNOSTICS_SESSION_LOG_LABEL},
       {"totalMemory", IDS_DIAGNOSTICS_TOTAL_MEMORY_LABEL},
+      {"usedMemory", IDS_DIAGNOSTICS_USED_MEMORY_LABEL},
   };
   for (const auto& str : kLocalizedStrings) {
     html_source->AddLocalizedString(str.name, str.id);

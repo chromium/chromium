@@ -3,8 +3,7 @@
 
 <diagnostics-card>
   <div id="cardTitle" slot="title">[[i18n('batteryTitle')]]</div>
-  <!-- TODO(joonbug): Localize once strings are confirmed -->
-  <percent-bar-chart slot="left-panel" header="Remaining charge"
+  <percent-bar-chart slot="left-panel" header="[[i18n('remainingCharge')]]"
     value="[[batteryChargeStatus_.charge_now_milliamp_hours]]"
     max="[[batteryChargeStatus_.charge_full_now_milliamp_hours]]">
   </percent-bar-chart>

@@ -520,6 +520,15 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_CYCLE_COUNT_LABEL" desc="The label for a battery's cycle count. The cycle count is the number of times the battery has been drained and recharged." translateable="false">
         Cycle count
       </message>
+      <message name="IDS_DIAGNOSTICS_REMAINING_CHARGE_LABEL" desc="The label for the progress bar that displays users' remaining battery charge." translateable="false">
+        Remaining charge
+      </message>
+      <message name="IDS_DIAGNOSTICS_SESSION_LOG_LABEL" desc="The label for the button that opens the session log for the diagnostics app." translateable="false">
+        Session log
+      </message>
+      <message name="IDS_DIAGNOSTICS_USED_MEMORY_LABEL" desc="The label for the progress bar that displays the amount of used memory on a users' device." translateable="false">
+        Used memory
+      </message>
 
     </messages>
   </release>
