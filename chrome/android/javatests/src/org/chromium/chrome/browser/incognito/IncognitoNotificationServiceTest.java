@@ -64,7 +64,7 @@ public class IncognitoNotificationServiceTest {
 
     private void sendClearIncognitoIntent() throws CanceledException {
         PendingIntent clearIntent =
-                IncognitoNotificationService
+                IncognitoNotificationServiceImpl
                         .getRemoveAllIncognitoTabsIntent(InstrumentationRegistry.getTargetContext())
                         .getPendingIntent();
         clearIntent.send();

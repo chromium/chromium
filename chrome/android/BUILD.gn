@@ -767,6 +767,7 @@ junit_binary("chrome_junit_tests") {
 
   deps = [
     ":app_hooks_java",
+    ":base_module_java",
     ":chrome_app_java_resources",
     ":chrome_java",
     ":partner_location_descriptor_proto_java",
@@ -2066,18 +2067,30 @@ android_library("base_monochrome_module_java") {
 # enable_chrome_module is true and //chrome code is in a DFM.
 android_library("base_module_java") {
   sources = [
+    "java/src/com/google/ipc/invalidation/ticl/android2/channel/GcmRegistrationTaskService.java",
     "java/src/org/chromium/chrome/browser/base/SplitChromeApplication.java",
     "java/src/org/chromium/chrome/browser/base/SplitCompatApplication.java",
     "java/src/org/chromium/chrome/browser/base/SplitCompatIntentService.java",
     "java/src/org/chromium/chrome/browser/base/SplitCompatJobService.java",
     "java/src/org/chromium/chrome/browser/base/SplitCompatService.java",
     "java/src/org/chromium/chrome/browser/base/SplitCompatUtils.java",
+    "java/src/org/chromium/chrome/browser/crash/MinidumpUploadService.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadBroadcastManager.java",
     "java/src/org/chromium/chrome/browser/download/DownloadForegroundService.java",
+    "java/src/org/chromium/chrome/browser/incognito/IncognitoNotificationService.java",
+    "java/src/org/chromium/chrome/browser/invalidation/ChromeBrowserSyncAdapterService.java",
+    "java/src/org/chromium/chrome/browser/media/MediaCaptureNotificationService.java",
+    "java/src/org/chromium/chrome/browser/media/ui/ChromeMediaNotificationControllerServices.java",
     "java/src/org/chromium/chrome/browser/notifications/NotificationJobService.java",
     "java/src/org/chromium/chrome/browser/notifications/NotificationService.java",
+    "java/src/org/chromium/chrome/browser/omaha/OmahaClient.java",
+    "java/src/org/chromium/chrome/browser/photo_picker/DecoderService.java",
+    "java/src/org/chromium/chrome/browser/prerender/ChromePrerenderService.java",
+    "java/src/org/chromium/chrome/browser/tracing/TracingNotificationService.java",
   ]
   deps = [
     ":chrome_base_module_resources",
+    "$google_play_services_package:google_play_services_gcm_java",
     "//base:base_java",
     "//components/embedder_support/android:application_java",
     "//components/module_installer/android:module_installer_java",
@@ -2087,6 +2100,13 @@ android_library("base_module_java") {
     # Deps needed for child processes.
     "//components/viz/service:service_java",
     "//content/public/android:content_java",
+
+    # Deps to pull services into base module.
+    # TODO(crbug.com/1126301): Consider moving these to the chrome module to
+    # reduce base dex size.
+    "$google_play_services_package:google_play_services_cast_framework_java",
+    "//components/background_task_scheduler:background_task_scheduler_java",
+    "//third_party/android_sdk/androidx_browser:androidx_browser_java",
   ]
   srcjar_deps = [ ":chrome_product_config" ]
 
@@ -3099,7 +3119,7 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchTabHelper.java",
     "java/src/org/chromium/chrome/browser/contextualsearch/CtrSuppression.java",
     "java/src/org/chromium/chrome/browser/contextualsearch/SimpleSearchTermResolver.java",
-    "java/src/org/chromium/chrome/browser/crash/MinidumpUploadService.java",
+    "java/src/org/chromium/chrome/browser/crash/MinidumpUploadServiceImpl.java",
     "java/src/org/chromium/chrome/browser/crash/PureJavaExceptionHandler.java",
     "java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnection.java",
     "java/src/org/chromium/chrome/browser/database/SQLiteCursor.java",

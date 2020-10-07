@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 
+import androidx.annotation.VisibleForTesting;
+
 /**
  * Service base class which will call through to the given {@link Impl}. This class must be present
  * in the base module, while the Impl can be in the chrome module.
@@ -59,6 +61,11 @@ public class SplitCompatService extends Service {
     }
 
     @Override
+    public boolean onUnbind(Intent intent) {
+        return mImpl.onUnbind(intent);
+    }
+
+    @Override
     public IBinder onBind(Intent intent) {
         return mImpl.onBind(intent);
     }
@@ -67,13 +74,23 @@ public class SplitCompatService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
+    private boolean superOnUnbind(Intent intent) {
+        return super.onUnbind(intent);
+    }
+
+    @VisibleForTesting
+    public void attachBaseContextForTesting(Context context, Impl impl) {
+        mImpl = impl;
+        super.attachBaseContext(context);
+    }
+
     /**
      * Holds the implementation of service logic. Will be called by {@link SplitCompatService}.
      */
     public abstract static class Impl {
         private SplitCompatService mService;
 
-        protected void setService(SplitCompatService service) {
+        protected final void setService(SplitCompatService service) {
             mService = service;
         }
 
@@ -92,6 +109,10 @@ public class SplitCompatService extends Service {
         public void onTaskRemoved(Intent rootIntent) {}
 
         public void onLowMemory() {}
+
+        public boolean onUnbind(Intent intent) {
+            return mService.superOnUnbind(intent);
+        }
 
         public abstract IBinder onBind(Intent intent);
     }

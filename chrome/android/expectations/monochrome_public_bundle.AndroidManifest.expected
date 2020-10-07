@@ -1126,27 +1126,27 @@
         android:exported="false"
         android:name="org.chromium.chrome.browser.media.MediaCaptureNotificationService">
     </service>  # DIFF-ANCHOR: 4f8e62ea
-    <service  # DIFF-ANCHOR: 63d24cf5
+    <service  # DIFF-ANCHOR: 4129c705
         android:exported="false"
-        android:name="org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerDelegate$CastListenerService">
+        android:name="org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerServices$CastListenerService">
       <intent-filter>  # DIFF-ANCHOR: f401157d
         <action android:name="android.intent.action.MEDIA_BUTTON"/>
       </intent-filter>  # DIFF-ANCHOR: f401157d
-    </service>  # DIFF-ANCHOR: 63d24cf5
-    <service  # DIFF-ANCHOR: a4f153af
+    </service>  # DIFF-ANCHOR: 4129c705
+    <service  # DIFF-ANCHOR: c6abf186
         android:exported="false"
-        android:name="org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerDelegate$PlaybackListenerService">
+        android:name="org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerServices$PlaybackListenerService">
       <intent-filter>  # DIFF-ANCHOR: f401157d
         <action android:name="android.intent.action.MEDIA_BUTTON"/>
       </intent-filter>  # DIFF-ANCHOR: f401157d
-    </service>  # DIFF-ANCHOR: a4f153af
-    <service  # DIFF-ANCHOR: 365e9d83
+    </service>  # DIFF-ANCHOR: c6abf186
+    <service  # DIFF-ANCHOR: 4d0d10fe
         android:exported="false"
-        android:name="org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerDelegate$PresentationListenerService">
+        android:name="org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerServices$PresentationListenerService">
       <intent-filter>  # DIFF-ANCHOR: f401157d
         <action android:name="android.intent.action.MEDIA_BUTTON"/>
       </intent-filter>  # DIFF-ANCHOR: f401157d
-    </service>  # DIFF-ANCHOR: 365e9d83
+    </service>  # DIFF-ANCHOR: 4d0d10fe
     <service  # DIFF-ANCHOR: 4b2220c4
         android:exported="false"
         android:name="org.chromium.chrome.browser.notifications.NotificationJobService"

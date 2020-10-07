@@ -91,11 +91,11 @@ public class ChromeMinidumpUploaderDelegate implements MinidumpUploaderDelegate 
 
     @Override
     public void recordUploadSuccess(File minidump) {
-        MinidumpUploadService.incrementCrashSuccessUploadCount(minidump.getAbsolutePath());
+        MinidumpUploadServiceImpl.incrementCrashSuccessUploadCount(minidump.getAbsolutePath());
     }
 
     @Override
     public void recordUploadFailure(File minidump) {
-        MinidumpUploadService.incrementCrashFailureUploadCount(minidump.getAbsolutePath());
+        MinidumpUploadServiceImpl.incrementCrashFailureUploadCount(minidump.getAbsolutePath());
     }
 }

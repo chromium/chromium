@@ -22,7 +22,6 @@ import org.robolectric.shadows.ShadowNotification;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerDelegate.ListenerService;
 import org.chromium.components.browser_ui.media.MediaNotificationController;
 import org.chromium.components.browser_ui.media.MediaSessionHelper;
 import org.chromium.services.media_session.MediaMetadata;
@@ -52,7 +51,7 @@ public class MediaNotificationTitleUpdatedTest extends MediaNotificationTestBase
         super.setUp();
 
         getController().mThrottler.mController = getController();
-        doCallRealMethod().when(getController()).onServiceStarted(any(ListenerService.class));
+        doCallRealMethod().when(getController()).onServiceStarted(any(MockListenerService.class));
         doCallRealMethod()
                 .when(mMockForegroundServiceUtils)
                 .startForegroundService(any(Intent.class));

@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 
+import androidx.annotation.VisibleForTesting;
+
 /**
  * IntentService base class which will call through to the given {@link Impl}. This class must be
  * present in the base module, while the Impl can be in the chrome module.
@@ -39,6 +41,12 @@ public class SplitCompatIntentService extends IntentService {
         mImpl.onHandleIntent(intent);
     }
 
+    @VisibleForTesting
+    public void attachBaseContextForTesting(Context context, Impl impl) {
+        mImpl = impl;
+        super.attachBaseContext(context);
+    }
+
     /**
      * Holds the implementation of service logic. Will be called by {@link
      * SplitCompatIntentService}.
@@ -46,13 +54,16 @@ public class SplitCompatIntentService extends IntentService {
     public abstract static class Impl {
         private SplitCompatIntentService mService;
 
-        private void setService(SplitCompatIntentService service) {
+        protected final void setService(SplitCompatIntentService service) {
             mService = service;
+            onServiceSet();
         }
 
-        protected final IntentService getService() {
+        protected final SplitCompatIntentService getService() {
             return mService;
         }
+
+        protected void onServiceSet() {}
 
         public IBinder onBind(Intent intent) {
             return mService.superOnBind(intent);

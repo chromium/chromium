@@ -34,7 +34,8 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerDelegate.ListenerService;
+import org.chromium.chrome.browser.base.SplitCompatService;
+import org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerDelegate.ListenerServiceImpl;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.components.browser_ui.media.MediaNotificationController;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
@@ -81,9 +82,27 @@ public class MediaNotificationTestBase {
         }
     }
 
-    class MockListenerService extends ListenerService {
-        MockListenerService() {
+    class MockListenerServiceImpl extends ListenerServiceImpl {
+        MockListenerServiceImpl() {
             super(MediaNotificationTestBase.this.getNotificationId());
+        }
+
+        public void setServiceForTesting(SplitCompatService service) {
+            setService(service);
+        }
+    }
+
+    class MockListenerService extends SplitCompatService {
+        private MockListenerServiceImpl mImpl;
+
+        MockListenerService() {
+            super(null);
+            mImpl = spy(new MockListenerServiceImpl());
+            attachBaseContextForTesting(null, mImpl);
+        }
+
+        MockListenerServiceImpl getImpl() {
+            return mImpl;
         }
     }
 
@@ -125,7 +144,7 @@ public class MediaNotificationTestBase {
                         .setId(getNotificationId())
                         .setInstanceId(TAB_ID);
 
-        doNothing().when(getController()).onServiceStarted(any(ListenerService.class));
+        doNothing().when(getController()).onServiceStarted(any(MockListenerService.class));
         // Robolectric does not have "ShadowMediaSession".
         doAnswer(new Answer() {
             @Override
@@ -191,6 +210,8 @@ public class MediaNotificationTestBase {
     private void ensureService() {
         if (mService != null) return;
         mService = spy(new MockListenerService());
+        MockListenerServiceImpl impl = mService.getImpl();
+        impl.setServiceForTesting(mService);
 
         doAnswer(new Answer() {
             @Override
@@ -200,7 +221,7 @@ public class MediaNotificationTestBase {
                 return "service stopped";
             }
         })
-                .when(mService)
+                .when(impl)
                 .stopListenerService();
     }
 

@@ -123,7 +123,7 @@ public class MediaSessionTest {
 
     private void simulateHeadsetUnplug() {
         Intent i = new Intent(InstrumentationRegistry.getTargetContext(),
-                ChromeMediaNotificationControllerDelegate.PlaybackListenerService.class);
+                ChromeMediaNotificationControllerServices.PlaybackListenerService.class);
         i.setAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 
         InstrumentationRegistry.getContext().startService(i);

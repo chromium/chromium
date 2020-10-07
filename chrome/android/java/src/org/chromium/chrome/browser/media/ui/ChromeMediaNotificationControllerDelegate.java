@@ -20,6 +20,7 @@ import androidx.mediarouter.media.MediaRouter;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.base.SplitCompatService;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
@@ -54,15 +55,18 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
     static {
         sMapNotificationIdToOptions = new SparseArray<NotificationOptions>();
 
-        sMapNotificationIdToOptions.put(PlaybackListenerService.NOTIFICATION_ID,
+        sMapNotificationIdToOptions.put(PlaybackListenerServiceImpl.NOTIFICATION_ID,
                 new NotificationOptions(
-                        PlaybackListenerService.class, NotificationConstants.GROUP_MEDIA_PLAYBACK));
-        sMapNotificationIdToOptions.put(PresentationListenerService.NOTIFICATION_ID,
-                new NotificationOptions(PresentationListenerService.class,
+                        ChromeMediaNotificationControllerServices.PlaybackListenerService.class,
+                        NotificationConstants.GROUP_MEDIA_PLAYBACK));
+        sMapNotificationIdToOptions.put(PresentationListenerServiceImpl.NOTIFICATION_ID,
+                new NotificationOptions(
+                        ChromeMediaNotificationControllerServices.PresentationListenerService.class,
                         NotificationConstants.GROUP_MEDIA_PRESENTATION));
-        sMapNotificationIdToOptions.put(CastListenerService.NOTIFICATION_ID,
+        sMapNotificationIdToOptions.put(CastListenerServiceImpl.NOTIFICATION_ID,
                 new NotificationOptions(
-                        CastListenerService.class, NotificationConstants.GROUP_MEDIA_REMOTE));
+                        ChromeMediaNotificationControllerServices.CastListenerService.class,
+                        NotificationConstants.GROUP_MEDIA_REMOTE));
     }
 
     /**
@@ -71,10 +75,10 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
      * each type of notification since one class corresponds to one instance of the service only.
      */
     @VisibleForTesting
-    abstract static class ListenerService extends Service {
+    abstract static class ListenerServiceImpl extends SplitCompatService.Impl {
         private int mNotificationId;
 
-        ListenerService(int notificationId) {
+        ListenerServiceImpl(int notificationId) {
             mNotificationId = notificationId;
         }
 
@@ -97,20 +101,20 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
                 // The service has been started with startForegroundService() but the
                 // notification hasn't been shown. On O it will lead to the app crash.
                 // So show an empty notification before stopping the service.
-                MediaNotificationController.finishStartingForegroundServiceOnO(this,
+                MediaNotificationController.finishStartingForegroundServiceOnO(getService(),
                         createNotificationWrapperBuilder(mNotificationId)
                                 .buildNotificationWrapper());
                 stopListenerService();
             }
-            return START_NOT_STICKY;
+            return Service.START_NOT_STICKY;
         }
 
         @VisibleForTesting
         void stopListenerService() {
             // Call stopForeground to guarantee Android unset the foreground bit.
             ForegroundServiceUtils.getInstance().stopForeground(
-                    this, Service.STOP_FOREGROUND_REMOVE);
-            stopSelf();
+                    getService(), Service.STOP_FOREGROUND_REMOVE);
+            getService().stopSelf();
         }
 
         @VisibleForTesting
@@ -118,7 +122,7 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
             MediaNotificationController controller = getController();
             if (controller == null) return false;
 
-            return controller.processIntent(this, intent);
+            return controller.processIntent(getService(), intent);
         }
 
         @Nullable
@@ -131,10 +135,10 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
      * A {@link ListenerService} for the MediaSession web api.
      * This class is used internally but has to be public to be able to launch the service.
      */
-    public static final class PlaybackListenerService extends ListenerService {
+    public static final class PlaybackListenerServiceImpl extends ListenerServiceImpl {
         static final int NOTIFICATION_ID = R.id.media_playback_notification;
 
-        public PlaybackListenerService() {
+        public PlaybackListenerServiceImpl() {
             super(NOTIFICATION_ID);
         }
 
@@ -142,12 +146,12 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
         public void onCreate() {
             super.onCreate();
             IntentFilter filter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-            registerReceiver(mAudioBecomingNoisyReceiver, filter);
+            getService().registerReceiver(mAudioBecomingNoisyReceiver, filter);
         }
 
         @Override
         public void onDestroy() {
-            unregisterReceiver(mAudioBecomingNoisyReceiver);
+            getService().unregisterReceiver(mAudioBecomingNoisyReceiver);
             super.onDestroy();
         }
 
@@ -158,7 +162,8 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
                     return;
                 }
 
-                Intent i = new Intent(getContext(), PlaybackListenerService.class);
+                Intent i = new Intent(getContext(),
+                        ChromeMediaNotificationControllerServices.PlaybackListenerService.class);
                 i.setAction(intent.getAction());
                 getContext().startService(i);
             }
@@ -169,10 +174,10 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
      * A {@link ListenerService} for casting.
      * This class is used internally but has to be public to be able to launch the service.
      */
-    public static final class PresentationListenerService extends ListenerService {
+    public static final class PresentationListenerServiceImpl extends ListenerServiceImpl {
         static final int NOTIFICATION_ID = R.id.presentation_notification;
 
-        public PresentationListenerService() {
+        public PresentationListenerServiceImpl() {
             super(NOTIFICATION_ID);
         }
     }
@@ -181,10 +186,10 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
      * A {@link ListenerService} for remoting.
      * This class is used internally but has to be public to be able to launch the service.
      */
-    public static final class CastListenerService extends ListenerService {
+    public static final class CastListenerServiceImpl extends ListenerServiceImpl {
         static final int NOTIFICATION_ID = R.id.remote_notification;
 
-        public CastListenerService() {
+        public CastListenerServiceImpl() {
             super(NOTIFICATION_ID);
         }
     }

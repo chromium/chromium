@@ -42,7 +42,7 @@ import org.chromium.chrome.browser.contacts_picker.ChromePickerAdapter;
 import org.chromium.chrome.browser.content_capture.ContentCaptureHistoryDeletionObserver;
 import org.chromium.chrome.browser.crash.CrashUploadCountStore;
 import org.chromium.chrome.browser.crash.LogcatExtractionRunnable;
-import org.chromium.chrome.browser.crash.MinidumpUploadService;
+import org.chromium.chrome.browser.crash.MinidumpUploadServiceImpl;
 import org.chromium.chrome.browser.download.DownloadController;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.OfflineContentAvailabilityStatusProvider;
@@ -53,7 +53,7 @@ import org.chromium.chrome.browser.history.HistoryDeletionBridge;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.incognito.IncognitoTabLauncher;
 import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.media.MediaCaptureNotificationService;
+import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
 import org.chromium.chrome.browser.media.MediaViewerUtils;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.PackageMetrics;
@@ -324,7 +324,7 @@ public class ProcessInitializationHandler {
             @Override
             public void run() {
                 // Clear any media notifications that existed when Chrome was last killed.
-                MediaCaptureNotificationService.clearMediaNotifications();
+                MediaCaptureNotificationServiceImpl.clearMediaNotifications();
 
                 startModerateBindingManagementIfNeeded();
 
@@ -513,7 +513,7 @@ public class ProcessInitializationHandler {
                 // Chrome activity is not running, and hence regular metrics reporting is not
                 // possible. Instead, metrics are temporarily written to prefs; export those prefs
                 // to UMA metrics here.
-                MinidumpUploadService.storeBreakpadUploadStatsInUma(
+                MinidumpUploadServiceImpl.storeBreakpadUploadStatsInUma(
                         CrashUploadCountStore.getInstance());
 
                 // Likewise, this is a good time to process and clean up any pending or stale crash
@@ -529,14 +529,14 @@ public class ProcessInitializationHandler {
 
                 // Now, upload all pending crash reports that are not still in need of logcat data.
                 File[] minidumps = crashFileManager.getMinidumpsReadyForUpload(
-                        MinidumpUploadService.MAX_TRIES_ALLOWED);
+                        MinidumpUploadServiceImpl.MAX_TRIES_ALLOWED);
                 if (minidumps.length > 0) {
                     Log.i(TAG, "Attempting to upload %d accumulated crash dumps.",
                             minidumps.length);
-                    if (MinidumpUploadService.shouldUseJobSchedulerForUploads()) {
-                        MinidumpUploadService.scheduleUploadJob();
+                    if (MinidumpUploadServiceImpl.shouldUseJobSchedulerForUploads()) {
+                        MinidumpUploadServiceImpl.scheduleUploadJob();
                     } else {
-                        MinidumpUploadService.tryUploadAllCrashDumps();
+                        MinidumpUploadServiceImpl.tryUploadAllCrashDumps();
                     }
                 }
 

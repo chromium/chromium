@@ -115,7 +115,7 @@ public class TracingNotificationManager {
                         .setContentText(message)
                         .setOngoing(true)
                         .addAction(R.drawable.ic_stop_white_36dp, MSG_STOP,
-                                TracingNotificationService.getStopRecordingIntent(context));
+                                TracingNotificationServiceImpl.getStopRecordingIntent(context));
         showNotification(sTracingActiveNotificationBuilder.build());
     }
 
@@ -175,8 +175,9 @@ public class TracingNotificationManager {
                         .setContentText(message)
                         .setOngoing(false)
                         .addAction(R.drawable.ic_share_white_24dp, MSG_SHARE,
-                                TracingNotificationService.getShareTraceIntent(context))
-                        .setDeleteIntent(TracingNotificationService.getDiscardTraceIntent(context));
+                                TracingNotificationServiceImpl.getShareTraceIntent(context))
+                        .setDeleteIntent(
+                                TracingNotificationServiceImpl.getDiscardTraceIntent(context));
         showNotification(builder.build());
     }
 

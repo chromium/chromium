@@ -524,7 +524,7 @@
         errorLine1="                mDownloadNotificationService.notifyDownloadPaused(entry.id, entry.fileName, true,"
         errorLine2="                                             ~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadBroadcastManager.java"
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadBroadcastManagerImpl.java"
             line="137"
             column="46"/>
     </issue>
@@ -535,7 +535,7 @@
         errorLine1="                mDownloadNotificationService.notifyDownloadCanceled(entry.id, true);"
         errorLine2="                                             ~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadBroadcastManager.java"
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadBroadcastManagerImpl.java"
             line="143"
             column="46"/>
     </issue>

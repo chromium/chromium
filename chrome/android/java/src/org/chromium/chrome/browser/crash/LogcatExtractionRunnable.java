@@ -68,11 +68,11 @@ public class LogcatExtractionRunnable implements Runnable {
         // the minidump with logcat data, the service can still upload the unaugmented minidump.
         try {
             if (uploadNow) {
-                MinidumpUploadService.tryUploadCrashDumpNow(fileToUpload);
-            } else if (MinidumpUploadService.shouldUseJobSchedulerForUploads()) {
-                MinidumpUploadService.scheduleUploadJob();
+                MinidumpUploadServiceImpl.tryUploadCrashDumpNow(fileToUpload);
+            } else if (MinidumpUploadServiceImpl.shouldUseJobSchedulerForUploads()) {
+                MinidumpUploadServiceImpl.scheduleUploadJob();
             } else {
-                MinidumpUploadService.tryUploadCrashDump(fileToUpload);
+                MinidumpUploadServiceImpl.tryUploadCrashDump(fileToUpload);
             }
         } catch (SecurityException e) {
             Log.w(TAG, e.toString());

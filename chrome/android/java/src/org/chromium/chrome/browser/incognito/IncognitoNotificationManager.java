@@ -53,7 +53,7 @@ public class IncognitoNotificationManager {
                                         INCOGNITO_TABS_OPEN_TAG, INCOGNITO_TABS_OPEN_ID))
                         .setContentTitle(title)
                         .setContentIntent(
-                                IncognitoNotificationService.getRemoveAllIncognitoTabsIntent(
+                                IncognitoNotificationServiceImpl.getRemoveAllIncognitoTabsIntent(
                                         context))
                         .setContentText(actionMessage)
                         .setOngoing(true)
