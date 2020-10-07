@@ -201,7 +201,7 @@ void HoldingSpaceItemView::SetSelected(bool selected) {
       selected_layer_owner_->layer()->bounds());
 }
 
-void HoldingSpaceItemView::AddPin(views::View* parent) {
+views::ToggleImageButton* HoldingSpaceItemView::AddPin(views::View* parent) {
   DCHECK(!pin_);
 
   pin_ = parent->AddChildView(std::make_unique<views::ToggleImageButton>());
@@ -217,8 +217,16 @@ void HoldingSpaceItemView::AddPin(views::View* parent) {
 
   pin_->SetImage(views::Button::STATE_NORMAL, unpinned_icon);
   pin_->SetToggledImage(views::Button::STATE_NORMAL, &pinned_icon);
+
+  pin_->SetImageHorizontalAlignment(
+      views::ToggleImageButton::HorizontalAlignment::ALIGN_CENTER);
+  pin_->SetImageVerticalAlignment(
+      views::ToggleImageButton::VerticalAlignment::ALIGN_MIDDLE);
+
   pin_->set_callback(base::BindRepeating(&HoldingSpaceItemView::OnPinPressed,
                                          base::Unretained(this)));
+
+  return pin_;
 }
 
 void HoldingSpaceItemView::OnPaintFocus(gfx::Canvas* canvas, gfx::Size size) {

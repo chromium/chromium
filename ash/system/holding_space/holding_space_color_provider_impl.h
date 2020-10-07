@@ -20,6 +20,7 @@ class HoldingSpaceColorProviderImpl : public HoldingSpaceColorProvider {
 
  private:
   // HoldingSpaceColorProvider:
+  SkColor GetBackgroundColor() const override;
   SkColor GetFileIconColor() const override;
 };
 

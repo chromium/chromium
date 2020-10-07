@@ -18,6 +18,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceColorProvider {
   // Returns the singleton instance.
   static HoldingSpaceColorProvider* Get();
 
+  // Returns the background color for the bubble.
+  virtual SkColor GetBackgroundColor() const = 0;
+
   // Returns the color to be used for file icons.
   virtual SkColor GetFileIconColor() const = 0;
 

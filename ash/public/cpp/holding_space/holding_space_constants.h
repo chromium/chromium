@@ -31,6 +31,7 @@ constexpr int kHoldingSpaceDownloadsHeaderSpacing = 16;
 constexpr int kHoldingSpacePinIconSize = 20;
 constexpr int kHoldingSpaceRowSpacing = 8;
 constexpr gfx::Insets kHoldingSpaceScreenshotPadding(8);
+constexpr gfx::Size kHoldingSpaceScreenshotPinButtonSize(24, 24);
 constexpr int kHoldingSpaceScreenshotSpacing = 8;
 constexpr gfx::Size kHoldingSpaceScreenshotSize(104, 80);
 constexpr gfx::Insets kHoldingSpaceScreenshotsContainerPadding(8, 0);

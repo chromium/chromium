@@ -12,6 +12,11 @@ HoldingSpaceColorProviderImpl::HoldingSpaceColorProviderImpl() = default;
 
 HoldingSpaceColorProviderImpl::~HoldingSpaceColorProviderImpl() = default;
 
+SkColor HoldingSpaceColorProviderImpl::GetBackgroundColor() const {
+  return AshColorProvider::Get()->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kTransparent80);
+}
+
 SkColor HoldingSpaceColorProviderImpl::GetFileIconColor() const {
   return AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kIconColorPrimary);

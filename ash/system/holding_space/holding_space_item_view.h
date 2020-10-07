@@ -54,7 +54,7 @@ class ASH_EXPORT HoldingSpaceItemView : public views::InkDropHostView {
   bool selected() const { return selected_; }
 
  protected:
-  void AddPin(views::View* parent);
+  views::ToggleImageButton* AddPin(views::View* parent);
 
  private:
   void OnPaintFocus(gfx::Canvas* canvas, gfx::Size size);

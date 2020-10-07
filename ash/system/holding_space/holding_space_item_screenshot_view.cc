@@ -4,12 +4,15 @@
 
 #include "ash/system/holding_space/holding_space_item_screenshot_view.h"
 
+#include "ash/public/cpp/holding_space/holding_space_color_provider.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
@@ -44,7 +47,13 @@ HoldingSpaceItemScreenshotView::HoldingSpaceItemScreenshotView(
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
 
-  AddPin(pin_button_container);
+  views::View* pin = AddPin(pin_button_container);
+
+  // Create contrasting background for the pin icon.
+  pin->SetBackground(views::CreateRoundedRectBackground(
+      HoldingSpaceColorProvider::Get()->GetBackgroundColor(),
+      kHoldingSpaceScreenshotPinButtonSize.width() / 2));
+  pin->SetPreferredSize(kHoldingSpaceScreenshotPinButtonSize);
 }
 
 HoldingSpaceItemScreenshotView::~HoldingSpaceItemScreenshotView() = default;
