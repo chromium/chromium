@@ -440,7 +440,7 @@ class ImageBuffer {
     const rowStride = 3 * thumbnail.width + rowPad;
 
     // Create bitmap image.
-    const pixelDataOffset = 14 + 40;
+    const pixelDataOffset = 14 + 108;
     const fileSize = pixelDataOffset + rowStride * thumbnail.height;
     const bitmap = new DataView(new ArrayBuffer(fileSize));
 
@@ -451,8 +451,8 @@ class ImageBuffer {
     bitmap.setUint32(6, /* Reserved */ 0, true);
     bitmap.setUint32(10, pixelDataOffset, true);
 
-    // DIB BITMAPINFOHEADER 40 bytes.
-    bitmap.setUint32(14, /* HeaderSize */ 40, true);
+    // DIB BITMAPV4HEADER 108 bytes.
+    bitmap.setUint32(14, /* HeaderSize */ 108, true);
     bitmap.setInt32(18, thumbnail.width, true);
     bitmap.setInt32(22, -thumbnail.height /* top-down DIB */, true);
     bitmap.setInt16(26, /* ColorPlanes */ 1, true);
@@ -463,6 +463,49 @@ class ImageBuffer {
     bitmap.setInt32(42, /* YPixelPerMeter */ 0, true);
     bitmap.setUint32(46, /* TotalPalletColors */ 0, true);
     bitmap.setUint32(50, /* ImportantColors */ 0, true);
+
+    bitmap.setUint32(54, /* RedMask */ 0, true);
+    bitmap.setUint32(58, /* GreenMask */ 0, true);
+    bitmap.setUint32(62, /* BlueMask */ 0, true);
+    bitmap.setUint32(66, /* AlphaMask */ 0, true);
+
+    let rx = 0, ry = 0;
+    let gx = 0, gy = 0;
+    let bx = 0, by = 0;
+    let zz = 0, gg = 0;
+
+    if (thumbnail.colorSpace !== 'adobeRgb') {
+      bitmap.setUint8(70, 's'.charCodeAt(0));
+      bitmap.setUint8(71, 'R'.charCodeAt(0));
+      bitmap.setUint8(72, 'G'.charCodeAt(0));
+      bitmap.setUint8(73, 'B'.charCodeAt(0));
+    } else {
+      bitmap.setUint32(70, /* adobeRgb LCS_CALIBRATED_RGB */ 0);
+      rx = Math.round(0.6400 * (1 << 30));
+      ry = Math.round(0.3300 * (1 << 30));
+      gx = Math.round(0.2100 * (1 << 30));
+      gy = Math.round(0.7100 * (1 << 30));
+      bx = Math.round(0.1500 * (1 << 30));
+      by = Math.round(0.0600 * (1 << 30));
+      zz = Math.round(1.0000 * (1 << 30));
+      gg = Math.round(2.1992187 * (1 << 16));
+    }
+
+    // RGB CIEXYZ.
+    bitmap.setUint32( 74, /* R CIEXYZ x */ rx, true);
+    bitmap.setUint32( 78, /* R CIEXYZ y */ ry, true);
+    bitmap.setUint32( 82, /* R CIEXYZ z */ zz, true);
+    bitmap.setUint32( 86, /* G CIEXYZ x */ gx, true);
+    bitmap.setUint32( 90, /* G CIEXYZ y */ gy, true);
+    bitmap.setUint32( 94, /* G CIEXYZ z */ zz, true);
+    bitmap.setUint32( 98, /* B CIEXYZ x */ bx, true);
+    bitmap.setUint32(102, /* B CIEXYZ y */ by, true);
+    bitmap.setUint32(106, /* B CIEXYZ z */ zz, true);
+
+    // RGB gamma.
+    bitmap.setUint32(110, /* R Gamma */ gg, true);
+    bitmap.setUint32(114, /* G Gamma */ gg, true);
+    bitmap.setUint32(118, /* B Gamma */ gg, true);
 
     // Write RGB row pixels in top-down DIB order.
     let output = pixelDataOffset;
