@@ -244,6 +244,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Translate.HrefHint.PrefsFilterStatus"
+    enum="HrefTranslatePrefsFilterStatus" expires_after="2021-06-23">
+  <owner>sclittle@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    For Google navigations, the hrefTranslate hint may trigger a translation
+    automatically. If the hint is present on a Google navigation, record which
+    blocklists came into play when filtering the translation decision according
+    to user prefs. Note that this doesn't necessarily mean that translation
+    didn't happen - it's possible that the hrefTranslate translation overrode
+    one or more of these blocklists depending on which features are active.
+  </summary>
+</histogram>
+
 <histogram name="Translate.HrefHint.Status" enum="HrefTranslateStatus"
     expires_after="2021-02-07">
   <owner>megjablon@google.com</owner>

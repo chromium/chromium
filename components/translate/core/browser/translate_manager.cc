@@ -836,6 +836,8 @@ void TranslateManager::FilterForUserPrefs(
   // Don't translate any user black-listed languages.
   if (!translate_prefs->CanTranslateLanguage(accept_languages,
                                              page_language_code)) {
+    decision->SetIsInLanguageBlocklist();
+
     decision->PreventAutoTranslate();
     decision->PreventShowingUI();
     decision->PreventShowingPredefinedLanguageTranslateUI();
@@ -863,6 +865,8 @@ void TranslateManager::FilterForUserPrefs(
   // Don't translate any user black-listed URLs.
   const GURL& page_url = translate_driver_->GetVisibleURL();
   if (translate_prefs->IsSiteBlacklisted(page_url.HostNoBrackets())) {
+    decision->SetIsInSiteBlocklist();
+
     decision->PreventAutoTranslate();
     decision->PreventShowingUI();
     decision->PreventShowingPredefinedLanguageTranslateUI();
@@ -1016,9 +1020,34 @@ void TranslateManager::RecordDecisionMetrics(
         TranslateBrowserMetrics::ReportTranslateHrefHintStatus(
             TranslateBrowserMetrics::HrefTranslateStatus::kAutoTranslated);
       }
+    } else if (decision.can_show_href_translate_ui()) {
+      TranslateBrowserMetrics::ReportTranslateHrefHintStatus(
+          TranslateBrowserMetrics::HrefTranslateStatus::
+              kUiShownNotAutoTranslated);
     } else {
       TranslateBrowserMetrics::ReportTranslateHrefHintStatus(
-          TranslateBrowserMetrics::HrefTranslateStatus::kNotAutoTranslated);
+          TranslateBrowserMetrics::HrefTranslateStatus::
+              kNoUiShownNotAutoTranslated);
+    }
+
+    if (decision.is_in_language_blocklist()) {
+      if (decision.is_in_site_blocklist()) {
+        TranslateBrowserMetrics::ReportTranslateHrefHintPrefsFilterStatus(
+            TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
+                kBothLanguageAndSiteInBlocklist);
+      } else {
+        TranslateBrowserMetrics::ReportTranslateHrefHintPrefsFilterStatus(
+            TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
+                kLanguageInBlocklist);
+      }
+    } else if (decision.is_in_site_blocklist()) {
+      TranslateBrowserMetrics::ReportTranslateHrefHintPrefsFilterStatus(
+          TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
+              kSiteInBlocklist);
+    } else {
+      TranslateBrowserMetrics::ReportTranslateHrefHintPrefsFilterStatus(
+          TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
+              kNotInBlocklists);
     }
   }
 

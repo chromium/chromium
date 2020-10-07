@@ -33,6 +33,12 @@ struct TranslateTriggerDecision {
   void PreventShowingPredefinedLanguageTranslateUI();
   bool can_show_predefined_language_translate_ui() const;
 
+  void SetIsInLanguageBlocklist() { is_in_language_blocklist_ = true; }
+  bool is_in_language_blocklist() const { return is_in_language_blocklist_; }
+
+  void SetIsInSiteBlocklist() { is_in_site_blocklist_ = true; }
+  bool is_in_site_blocklist() const { return is_in_site_blocklist_; }
+
   void SuppressFromRanker();
   bool should_suppress_from_ranker() const;
   bool IsTriggeringPossible() const;
@@ -69,6 +75,9 @@ struct TranslateTriggerDecision {
   bool can_show_predefined_language_translate_ui_ = true;
 
   bool should_suppress_from_ranker_ = false;
+
+  bool is_in_language_blocklist_ = false;
+  bool is_in_site_blocklist_ = false;
 };
 
 }  // namespace translate
