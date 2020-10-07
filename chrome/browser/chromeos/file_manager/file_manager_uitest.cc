@@ -67,9 +67,16 @@ IN_PROC_BROWSER_TEST_F(FileManagerUITest, CrostiniMount) {
   RunTest("crostiniMount");
 }
 
-// TODO(crbug.com/1135410) Renable this once it won't timeout.
-IN_PROC_BROWSER_TEST_F(FileManagerUITest, DISABLED_CrostiniShare) {
+IN_PROC_BROWSER_TEST_F(FileManagerUITest, CrostiniShare) {
   RunTest("crostiniShare");
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerUITest, CrostiniShareManage) {
+  RunTest("crostiniShareManage");
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerUITest, CrostiniShareVolumes) {
+  RunTest("crostiniShareVolumes");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerUITest, CrostiniTasks) {
@@ -84,9 +91,16 @@ IN_PROC_BROWSER_TEST_F(FileManagerUITest, PluginVm) {
   RunTest("pluginVm");
 }
 
-// TODO(crbug.com/1135410) Renable this once it won't timeout.
-IN_PROC_BROWSER_TEST_F(FileManagerUITest, DISABLED_PluginVmShare) {
+IN_PROC_BROWSER_TEST_F(FileManagerUITest, PluginVmShare) {
   RunTest("pluginVmShare");
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerUITest, PluginVmShareManage) {
+  RunTest("pluginVmShareManage");
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerUITest, PluginVmShareVolumes) {
+  RunTest("pluginVmShareVolumes");
 }
 
 }  // namespace file_manager
