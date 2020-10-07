@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "components/update_client/crx_update_item.h"
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
@@ -21,10 +22,6 @@
 namespace base {
 class ListValue;
 }
-
-namespace update_client {
-struct CrxUpdateItem;
-}  // namespace update_client
 
 class PrefService;
 
