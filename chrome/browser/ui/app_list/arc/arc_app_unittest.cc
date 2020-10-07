@@ -25,7 +25,6 @@
 #include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
@@ -65,7 +64,6 @@
 #include "chrome/browser/ui/ash/launcher/arc_app_shelf_id.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
@@ -341,27 +339,14 @@ enum class ArcState {
   ARC_WITHOUT_PLAY_STORE,
 };
 
-struct ArcAppModelBuilderParam {
-  const ArcState arc_state;
-  const web_app::ProviderType provider_type;
+constexpr ArcState kManagedArcStates[] = {
+    ArcState::ARC_PLAY_STORE_MANAGED_AND_ENABLED,
+    ArcState::ARC_PLAY_STORE_MANAGED_AND_DISABLED,
 };
 
-constexpr ArcAppModelBuilderParam kManagedArcStates[] = {
-    {ArcState::ARC_PLAY_STORE_MANAGED_AND_ENABLED,
-     web_app::ProviderType::kBookmarkApps},
-    {ArcState::ARC_PLAY_STORE_MANAGED_AND_DISABLED,
-     web_app::ProviderType::kBookmarkApps},
-    {ArcState::ARC_PLAY_STORE_MANAGED_AND_ENABLED,
-     web_app::ProviderType::kWebApps},
-    {ArcState::ARC_PLAY_STORE_MANAGED_AND_DISABLED,
-     web_app::ProviderType::kWebApps},
-};
-
-constexpr ArcAppModelBuilderParam kUnmanagedArcStates[] = {
-    {ArcState::ARC_PLAY_STORE_UNMANAGED, web_app::ProviderType::kBookmarkApps},
-    {ArcState::ARC_WITHOUT_PLAY_STORE, web_app::ProviderType::kBookmarkApps},
-    {ArcState::ARC_PLAY_STORE_UNMANAGED, web_app::ProviderType::kWebApps},
-    {ArcState::ARC_WITHOUT_PLAY_STORE, web_app::ProviderType::kWebApps},
+constexpr ArcState kUnmanagedArcStates[] = {
+    ArcState::ARC_PLAY_STORE_UNMANAGED,
+    ArcState::ARC_WITHOUT_PLAY_STORE,
 };
 
 void OnPaiStartedCallback(bool* started_flag) {
@@ -426,19 +411,10 @@ void RemoveArcApps(Profile* profile, FakeAppListModelUpdater* model_updater) {
 
 }  // namespace
 
-class ArcAppModelBuilderTest
-    : public extensions::ExtensionServiceTestBase,
-      public ::testing::WithParamInterface<ArcAppModelBuilderParam> {
+class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
+                               public ::testing::WithParamInterface<ArcState> {
  public:
-  ArcAppModelBuilderTest() {
-    if (GetProviderType() == web_app::ProviderType::kWebApps) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    } else if (GetProviderType() == web_app::ProviderType::kBookmarkApps) {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    }
-  }
+  ArcAppModelBuilderTest() = default;
   ArcAppModelBuilderTest(const ArcAppModelBuilderTest&) = delete;
   ArcAppModelBuilderTest& operator=(const ArcAppModelBuilderTest&) = delete;
   ~ArcAppModelBuilderTest() override {
@@ -476,11 +452,7 @@ class ArcAppModelBuilderTest
     extensions::ExtensionServiceTestBase::TearDown();
   }
 
-  ArcState GetArcState() const { return GetParam().arc_state; }
-
-  web_app::ProviderType GetProviderType() const {
-    return GetParam().provider_type;
-  }
+  ArcState GetArcState() const { return GetParam(); }
 
   ChromeLauncherController* CreateLauncherController() {
     launcher_controller_ = std::make_unique<ChromeLauncherController>(
@@ -828,7 +800,6 @@ class ArcAppModelBuilderTest
   FakeAppListModelUpdater* model_updater() { return model_updater_.get(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   ArcAppTest arc_test_;
   std::unique_ptr<FakeAppListModelUpdater> model_updater_;
   std::unique_ptr<test::TestAppListControllerDelegate> controller_;
