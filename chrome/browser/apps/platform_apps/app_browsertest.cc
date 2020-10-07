@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -110,7 +109,9 @@ class TabsAddedNotificationObserver : public TabStripModelObserver {
       : observations_(observations) {
     browser->tab_strip_model()->AddObserver(this);
   }
-
+  TabsAddedNotificationObserver(const TabsAddedNotificationObserver&) = delete;
+  TabsAddedNotificationObserver& operator=(
+      const TabsAddedNotificationObserver&) = delete;
   ~TabsAddedNotificationObserver() override = default;
 
   // TabStripModelObserver:
@@ -136,8 +137,6 @@ class TabsAddedNotificationObserver : public TabStripModelObserver {
   base::RunLoop run_loop_;
   size_t observations_;
   std::vector<content::WebContents*> observed_tabs_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabsAddedNotificationObserver);
 };
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -1304,6 +1303,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppIncognitoBrowserTest,
 class RestartDeviceTest : public PlatformAppBrowserTest {
  public:
   RestartDeviceTest() = default;
+  RestartDeviceTest(const RestartDeviceTest&) = delete;
+  RestartDeviceTest& operator=(const RestartDeviceTest&) = delete;
   ~RestartDeviceTest() override = default;
 
   // PlatformAppBrowserTest overrides
@@ -1343,8 +1344,6 @@ class RestartDeviceTest : public PlatformAppBrowserTest {
  private:
   chromeos::MockUserManager* mock_user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-
-  DISALLOW_COPY_AND_ASSIGN(RestartDeviceTest);
 };
 
 // Tests that chrome.runtime.restart would request device restart in

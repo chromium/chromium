@@ -57,7 +57,7 @@ void IntentPickerAutoDisplayPref::IncrementCounter() {
   Commit();
 }
 
-bool IntentPickerAutoDisplayPref::HasExceededThreshold() {
+bool IntentPickerAutoDisplayPref::HasExceededThreshold() const {
   return ui_dismissed_counter_ < kDismissThreshold;
 }
 

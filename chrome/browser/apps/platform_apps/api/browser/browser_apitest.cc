@@ -19,6 +19,8 @@ namespace {
 class AppsBrowserApiTest : public extensions::ExtensionApiTest {
  public:
   AppsBrowserApiTest() = default;
+  AppsBrowserApiTest(const AppsBrowserApiTest&) = delete;
+  AppsBrowserApiTest& operator=(const AppsBrowserApiTest&) = delete;
   ~AppsBrowserApiTest() override = default;
 
   // extensions::ExtensionApiTest:
@@ -27,9 +29,6 @@ class AppsBrowserApiTest : public extensions::ExtensionApiTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppsBrowserApiTest);
 };
 
 }  // namespace

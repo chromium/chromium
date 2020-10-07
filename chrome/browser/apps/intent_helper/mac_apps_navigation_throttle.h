@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_APPS_INTENT_HELPER_MAC_APPS_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_APPS_INTENT_HELPER_MAC_APPS_NAVIGATION_THROTTLE_H_
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "chrome/browser/apps/intent_helper/apps_navigation_throttle.h"
 
 // This file implements support for the macOS feature of Universal Links,
@@ -32,6 +36,9 @@ class MacAppsNavigationThrottle : public apps::AppsNavigationThrottle {
 
   explicit MacAppsNavigationThrottle(
       content::NavigationHandle* navigation_handle);
+  MacAppsNavigationThrottle(const MacAppsNavigationThrottle&) = delete;
+  MacAppsNavigationThrottle& operator=(const MacAppsNavigationThrottle&) =
+      delete;
   ~MacAppsNavigationThrottle() override;
 
  private:
@@ -64,8 +71,6 @@ class MacAppsNavigationThrottle : public apps::AppsNavigationThrottle {
       content::WebContents* web_contents,
       IntentPickerAutoDisplayService* ui_auto_display_service,
       const GURL& url) override;
-
-  DISALLOW_COPY_AND_ASSIGN(MacAppsNavigationThrottle);
 };
 
 }  // namespace apps

@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media_galleries/gallery_watch_manager_observer.h"
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
@@ -43,6 +42,9 @@ class MediaGalleriesEventRouter : public extensions::BrowserContextKeyedAPI,
                                   public GalleryWatchManagerObserver,
                                   public extensions::EventRouter::Observer {
  public:
+  MediaGalleriesEventRouter(const MediaGalleriesEventRouter&) = delete;
+  MediaGalleriesEventRouter& operator=(const MediaGalleriesEventRouter&) =
+      delete;
   // KeyedService implementation.
   void Shutdown() override;
 
@@ -85,8 +87,6 @@ class MediaGalleriesEventRouter : public extensions::BrowserContextKeyedAPI,
   Profile* profile_;
 
   base::WeakPtrFactory<MediaGalleriesEventRouter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaGalleriesEventRouter);
 };
 
 class MediaGalleriesGetMediaFileSystemsFunction : public ExtensionFunction {

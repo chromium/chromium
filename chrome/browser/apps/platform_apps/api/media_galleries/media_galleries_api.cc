@@ -17,7 +17,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
@@ -226,6 +225,8 @@ class SelectDirectoryDialog : public ui::SelectFileDialog::Listener,
     select_file_dialog_ = ui::SelectFileDialog::Create(
         this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
   }
+  SelectDirectoryDialog(const SelectDirectoryDialog&) = delete;
+  SelectDirectoryDialog& operator=(const SelectDirectoryDialog&) = delete;
 
   void Show(const base::FilePath& default_path) {
     AddRef();  // Balanced in the two reachable listener outcomes.
@@ -256,13 +257,11 @@ class SelectDirectoryDialog : public ui::SelectFileDialog::Listener,
 
  private:
   friend class base::RefCounted<SelectDirectoryDialog>;
-  ~SelectDirectoryDialog() override {}
+  ~SelectDirectoryDialog() override = default;
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   WebContents* web_contents_;
   Callback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectDirectoryDialog);
 };
 
 // Returns a web contents to use as the source for a prompt showing to the user.
@@ -304,7 +303,7 @@ MediaGalleriesEventRouter::MediaGalleriesEventRouter(
   gallery_watch_manager()->AddObserver(profile_, this);
 }
 
-MediaGalleriesEventRouter::~MediaGalleriesEventRouter() {}
+MediaGalleriesEventRouter::~MediaGalleriesEventRouter() = default;
 
 void MediaGalleriesEventRouter::Shutdown() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

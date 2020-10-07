@@ -6,9 +6,9 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
@@ -36,6 +36,8 @@ std::unique_ptr<base::DictionaryValue> CreateJsonWithFilter(
 class UserTypeFilterTest : public testing::Test {
  public:
   UserTypeFilterTest() = default;
+  UserTypeFilterTest(const UserTypeFilterTest&) = delete;
+  UserTypeFilterTest& operator=(const UserTypeFilterTest&) = delete;
   ~UserTypeFilterTest() override = default;
 
  protected:
@@ -70,8 +72,6 @@ class UserTypeFilterTest : public testing::Test {
  private:
   // To support context of browser threads.
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserTypeFilterTest);
 };
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
