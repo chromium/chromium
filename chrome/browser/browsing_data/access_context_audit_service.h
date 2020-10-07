@@ -8,6 +8,7 @@
 #include "base/updateable_sequenced_task_runner.h"
 #include "chrome/browser/browsing_data/access_context_audit_database.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/browsing_data/content/canonical_cookie_hash.h"
 #include "components/browsing_data/content/local_shared_objects_container.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -27,6 +28,43 @@ class AccessContextAuditService
       public history::HistoryServiceObserver,
       public content::StoragePartition::DataRemovalObserver {
  public:
+  class CookieAccessHelper;
+  void AddObserver(CookieAccessHelper* helper);
+  void RemoveObserver(CookieAccessHelper* helper);
+
+  // A helper class used to report cookie accesses to the audit service. Keeps
+  // an internal record of cookie accesses which have already been seen.
+  // Repeated calls to RecordCookieAccess are ignored until the cookie is
+  // observed as deleted, or the set of seen cookies is cleared via
+  // ClearSeenCookies.
+  class CookieAccessHelper : public base::CheckedObserver {
+   public:
+    explicit CookieAccessHelper(AccessContextAuditService* service);
+    ~CookieAccessHelper() override;
+
+    // Selectively forwards cookie accesses to the audit service based on
+    // whether this helper has previously seen the cookie.
+    void RecordCookieAccess(const net::CookieList& accessed_cookies,
+                            const url::Origin& top_frame_origin);
+
+    // Observer method called by the audit service when a cookie has been
+    // deleted and future accesses should be reported.
+    void OnCookieDeleted(const net::CanonicalCookie& cookie);
+
+    // Resets the internal set of seen cookies, resulting in future reported
+    // accesses to those cookies being forwarded to the service for recording.
+    // This should be called at least prior to every top-frame navigation,
+    // calling more frequently increases accuracy of access timestamps but also
+    // increases performance overhead.
+    void ClearSeenCookies();
+
+   private:
+    AccessContextAuditService* service_;
+    canonical_cookie::CookieHashSet seen_cookies_;
+    ScopedObserver<AccessContextAuditService, CookieAccessHelper>
+        deletion_observer_{this};
+  };
+
   explicit AccessContextAuditService(Profile* profile);
   ~AccessContextAuditService() override;
 
@@ -36,10 +74,6 @@ class AccessContextAuditService
             network::mojom::CookieManager* cookie_manager,
             history::HistoryService* history_service,
             content::StoragePartition* storage_partition);
-
-  // Records accesses for all cookies in |details| against |top_frame_origin|.
-  void RecordCookieAccess(const net::CookieList& accessed_cookies,
-                          const url::Origin& top_frame_origin);
 
   // Records access for |storage_origin|'s storage of |type| against
   // |top_frame_origin|.
@@ -89,7 +123,19 @@ class AccessContextAuditService
 
  private:
   friend class AccessContextAuditServiceTest;
+  FRIEND_TEST_ALL_PREFIXES(AccessContextAuditServiceTest, CookieRecords);
+  FRIEND_TEST_ALL_PREFIXES(AccessContextAuditServiceTest, ExpiredCookies);
+  FRIEND_TEST_ALL_PREFIXES(AccessContextAuditServiceTest, HistoryDeletion);
+  FRIEND_TEST_ALL_PREFIXES(AccessContextAuditServiceTest, AllHistoryDeletion);
+  FRIEND_TEST_ALL_PREFIXES(AccessContextAuditServiceTest,
+                           TimeRangeHistoryDeletion);
+  FRIEND_TEST_ALL_PREFIXES(AccessContextAuditServiceTest, OpaqueOrigins);
   FRIEND_TEST_ALL_PREFIXES(AccessContextAuditServiceTest, SessionOnlyRecords);
+
+  // Records accesses for all cookies in |details| against |top_frame_origin|.
+  // Should only be accessed via the CookieAccessHelper.
+  void RecordCookieAccess(const net::CookieList& accessed_cookies,
+                          const url::Origin& top_frame_origin);
 
   // Removes any records which are session only from the database.
   void ClearSessionOnlyRecords();
@@ -101,6 +147,8 @@ class AccessContextAuditService
 
   base::Clock* clock_;
   Profile* profile_;
+
+  base::ObserverList<CookieAccessHelper> cookie_access_helpers_;
 
   mojo::Receiver<network::mojom::CookieChangeListener>
       cookie_listener_receiver_{this};

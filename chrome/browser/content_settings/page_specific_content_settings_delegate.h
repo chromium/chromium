@@ -5,8 +5,13 @@
 #ifndef CHROME_BROWSER_CONTENT_SETTINGS_PAGE_SPECIFIC_CONTENT_SETTINGS_DELEGATE_H_
 #define CHROME_BROWSER_CONTENT_SETTINGS_PAGE_SPECIFIC_CONTENT_SETTINGS_DELEGATE_H_
 
+#include "build/build_config.h"
 #include "chrome/common/custom_handlers/protocol_handler.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+
+#if !defined(OS_ANDROID)
+#include "chrome/browser/browsing_data/access_context_audit_service.h"
+#endif  // !defined(OS_ANDROID)
 
 namespace chrome {
 
@@ -89,6 +94,8 @@ class PageSpecificContentSettingsDelegate
   void OnWebDatabaseAccessAllowed(const url::Origin& origin) override;
 
   // content::WebContentsObserver:
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
@@ -108,6 +115,11 @@ class PageSpecificContentSettingsDelegate
   // The setting on the pending protocol handler registration. Persisted in case
   // the user opens the bubble and makes changes multiple times.
   ContentSetting pending_protocol_handler_setting_ = CONTENT_SETTING_DEFAULT;
+
+#if !defined(OS_ANDROID)
+  std::unique_ptr<AccessContextAuditService::CookieAccessHelper>
+      cookie_access_helper_;
+#endif  // !defined(OS_ANDROID)
 };
 
 }  // namespace chrome
