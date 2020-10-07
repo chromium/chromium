@@ -6617,3 +6617,4 @@ crbug.com/1133821 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-a
 
 #Sheriff 2020-10-07
 crbug.com/1135405 http/tests/devtools/sources/debugger-pause/debugger-pause-infinite-loop.js [ Pass Timeout ]
+crbug.com/1135978 [ Linux Release ] fast/dom/css-delete-doc.html [ Pass Timeout ]
