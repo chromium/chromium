@@ -11,6 +11,7 @@
 @class ActivityParams;
 @protocol ActivityServicePositioner;
 @protocol ActivityServicePresentation;
+@protocol BookmarksCommands;
 class Browser;
 @protocol QRGenerationCommands;
 
@@ -38,7 +39,9 @@ class Browser;
     presentationProvider;
 
 // Handler for activities that need to be executed within a certain scope.
-@property(nonatomic, readwrite, weak) id<QRGenerationCommands> scopedHandler;
+@property(nonatomic, readwrite, weak)
+    id<BookmarksCommands, QRGenerationCommands>
+        scopedHandler;
 
 @end
 

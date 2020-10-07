@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/ui/activity_services/data/share_to_data_builder.h"
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_positioner.h"
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_presentation.h"
+#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -78,6 +79,7 @@ const char kSharePageLatencyHistogram[] = "IOS.SharePageLatency";
       ios::BookmarkModelFactory::GetForBrowserState(browserState);
   self.mediator =
       [[ActivityServiceMediator alloc] initWithHandler:self.handler
+                                      bookmarksHandler:self.scopedHandler
                                    qrGenerationHandler:self.scopedHandler
                                            prefService:browserState->GetPrefs()
                                          bookmarkModel:bookmarkModel];
