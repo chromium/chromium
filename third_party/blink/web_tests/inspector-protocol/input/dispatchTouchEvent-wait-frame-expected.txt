@@ -1,0 +1,11 @@
+Tests that Input.dispatchTouchEvent waits for a frame before comitting.
+Dispatching event
+touchEventPromise for has not resolved yet
+Paused on debugger statement
+Resumed
+Recieved ack
+Order of events:
+requestAnimationFrame
+setTimeout
+touchstart
+

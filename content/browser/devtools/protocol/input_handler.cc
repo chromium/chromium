@@ -714,13 +714,34 @@ void InputHandler::DispatchMouseEvent(
     callback->sendFailure(Response::InternalError());
     return;
   }
-  widget_host->delegate()
-      ->GetInputEventRouter()
-      ->GetRenderWidgetHostAtPointAsynchronously(
-          widget_host->GetView(), CssPixelsToPointF(x, y, page_scale_factor_),
-          base::BindOnce(&InputHandler::OnWidgetForDispatchMouseEvent,
-                         weak_factory_.GetWeakPtr(), std::move(callback),
-                         std::move(mouse_event), wheel_event));
+
+  auto findWidgetAndDispatchEvent = base::BindOnce(
+      [](base::WeakPtr<InputHandler> self, RenderWidgetHostImpl* widget_host,
+         double x, double y, std::unique_ptr<blink::WebMouseEvent> mouse_event,
+         blink::WebMouseWheelEvent* wheel_event,
+         std::unique_ptr<DispatchMouseEventCallback> callback, bool success) {
+        if (!self.get())
+          return;
+        widget_host->delegate()
+            ->GetInputEventRouter()
+            ->GetRenderWidgetHostAtPointAsynchronously(
+                widget_host->GetView(),
+                CssPixelsToPointF(x, y, self->page_scale_factor_),
+                base::BindOnce(&InputHandler::OnWidgetForDispatchMouseEvent,
+                               self, std::move(callback),
+                               std::move(mouse_event), wheel_event));
+      },
+      weak_factory_.GetWeakPtr(), widget_host, x, y, std::move(mouse_event),
+      wheel_event, std::move(callback));
+  // We make sure the compositor is up to date before
+  // sending a wheel event. Otherwise it wont be
+  // picked up by newly added event listeners on the main thread.
+  if (wheel_event) {
+    widget_host->InsertVisualStateCallback(
+        std::move(findWidgetAndDispatchEvent));
+  } else {
+    std::move(findWidgetAndDispatchEvent).Run(true);
+  }
 }
 
 void InputHandler::OnWidgetForDispatchMouseEvent(
@@ -884,14 +905,23 @@ void InputHandler::DispatchWebTouchEvent(
     return;
   }
 
-  gfx::PointF original(events[0].touches[0].PositionInWidget());
-  widget_host->delegate()
-      ->GetInputEventRouter()
-      ->GetRenderWidgetHostAtPointAsynchronously(
-          widget_host->GetView(), original,
-          base::BindOnce(&InputHandler::OnWidgetForDispatchWebTouchEvent,
-                         weak_factory_.GetWeakPtr(), std::move(callback),
-                         std::move(events)));
+  // We make sure the compositor is up to date before
+  // sending a touch event. Otherwise it wont be
+  // picked up by newly added event listeners on the main thread.
+  widget_host->InsertVisualStateCallback(base::BindOnce(
+      [](base::WeakPtr<InputHandler> self, RenderWidgetHostImpl* widget_host,
+         std::vector<blink::WebTouchEvent> events,
+         std::unique_ptr<DispatchTouchEventCallback> callback, bool success) {
+        gfx::PointF original(events[0].touches[0].PositionInWidget());
+        widget_host->delegate()
+            ->GetInputEventRouter()
+            ->GetRenderWidgetHostAtPointAsynchronously(
+                widget_host->GetView(), original,
+                base::BindOnce(&InputHandler::OnWidgetForDispatchWebTouchEvent,
+                               self, std::move(callback), std::move(events)));
+      },
+      weak_factory_.GetWeakPtr(), widget_host, std::move(events),
+      std::move(callback)));
 }
 
 void InputHandler::OnWidgetForDispatchWebTouchEvent(

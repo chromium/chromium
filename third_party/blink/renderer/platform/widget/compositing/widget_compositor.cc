@@ -7,6 +7,7 @@
 #include "cc/trees/layer_tree_host.h"
 #include "third_party/blink/renderer/platform/widget/compositing/queue_report_time_swap_promise.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
+#include "third_party/blink/renderer/platform/widget/widget_base_client.h"
 
 namespace blink {
 
@@ -97,6 +98,11 @@ void WidgetCompositor::CreateQueueSwapPromise(
     // be aborted early and the swap promises will be broken (see
     // EarlyOut_NoUpdates).
     LayerTreeHost()->SetNeedsAnimateIfNotInsideMainFrame();
+
+    // In web tests the request does not actually cause a commit, because the
+    // compositor is scheduled by the test runner to avoid flakiness. So for
+    // this case we must request a main frame.
+    widget_base_->client()->ScheduleAnimationForWebTests();
   } else if (compositor_task_runner_) {
     // Delete callbacks on the compositor thread.
     compositor_task_runner_->PostTask(
