@@ -334,6 +334,9 @@ void RasterInvalidator::Generate(
 
     if (tracking_info_ && layer_bounds_was_empty && !layer_bounds.IsEmpty() &&
         !new_chunks.IsEmpty()) {
+      // This is useful to track the implicit raster invalidations caused by
+      // change of layerization which has performance impact, especially for
+      // tests under web_tests/paint/invalidation.
       TrackImplicitFullLayerInvalidation(
           layer_client ? *layer_client : new_chunks.begin()->id.client);
     }
@@ -352,16 +355,9 @@ void RasterInvalidator::Generate(
 void RasterInvalidator::TrackImplicitFullLayerInvalidation(
     const DisplayItemClient& layer_client) {
   DCHECK(tracking_info_);
-
-  // Early return if we have already invalidated the whole layer.
-  IntRect full_layer_rect(0, 0, layer_bounds_.width(), layer_bounds_.height());
-  for (const auto& invalidation : tracking_info_->tracking.Invalidations()) {
-    if (invalidation.rect.Contains(full_layer_rect))
-      return;
-  }
-
   tracking_info_->tracking.AddInvalidation(
-      &layer_client, layer_client.DebugName(), full_layer_rect,
+      &layer_client, layer_client.DebugName(),
+      IntRect(IntPoint(), IntSize(layer_bounds_.size())),
       PaintInvalidationReason::kFullLayer);
 }
 

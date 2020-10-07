@@ -72,6 +72,7 @@ GraphicsLayer::GraphicsLayer(GraphicsLayerClient& client)
       contents_visible_(true),
       hit_testable_(false),
       needs_check_raster_invalidation_(false),
+      raster_invalidated_(false),
       should_create_layers_after_paint_(false),
       repainted_(false),
       painting_phase_(kGraphicsLayerPaintAllWithOverflowClip),
@@ -318,6 +319,8 @@ void GraphicsLayer::Paint() {
   DCHECK(layer_state_) << "No layer state for GraphicsLayer: " << DebugName();
   // Generate raster invalidations for SPv1.
   if (!ShouldCreateLayersAfterPaint()) {
+    auto& raster_invalidator = EnsureRasterInvalidator();
+    IntSize old_layer_size(raster_invalidator.LayerBounds().size());
     IntRect layer_bounds(layer_state_->offset, IntSize(Size()));
     PaintChunkSubset chunks(GetPaintController().GetPaintArtifactShared());
     EnsureRasterInvalidator().Generate(raster_invalidation_function_, chunks,
@@ -333,11 +336,19 @@ void GraphicsLayer::Paint() {
           DebugName());
     }
 
-    cc_display_item_list_ = PaintChunksToCcLayer::Convert(
-        chunks, layer_state_->state.Unalias(),
-        gfx::Vector2dF(layer_state_->offset.X(), layer_state_->offset.Y()),
-        cc::DisplayItemList::kTopLevelDisplayItemList,
-        base::OptionalOrNullptr(raster_under_invalidation_params));
+    // If nothing changed in the layer, keep the original display item list.
+    // Here check layer_bounds because RasterInvalidator doesn't issue raster
+    // invalidation when only layer_bounds change.
+    if (raster_invalidated_ || !cc_display_item_list_ ||
+        old_layer_size != layer_bounds.Size() ||
+        raster_under_invalidation_params) {
+      cc_display_item_list_ = PaintChunksToCcLayer::Convert(
+          chunks, layer_state_->state.Unalias(),
+          gfx::Vector2dF(layer_state_->offset.X(), layer_state_->offset.Y()),
+          cc::DisplayItemList::kTopLevelDisplayItemList,
+          base::OptionalOrNullptr(raster_under_invalidation_params));
+      raster_invalidated_ = false;
+    }
   }
 
   needs_check_raster_invalidation_ = false;
@@ -619,6 +630,7 @@ void GraphicsLayer::SetHitTestable(bool should_hit_test) {
 
 void GraphicsLayer::SetContentsNeedsDisplay() {
   if (contents_layer_) {
+    raster_invalidated_ = true;
     contents_layer_->SetNeedsDisplay();
     TrackRasterInvalidation(*this, contents_rect_,
                             PaintInvalidationReason::kFullLayer);
@@ -629,6 +641,7 @@ void GraphicsLayer::SetNeedsDisplay() {
   if (!PaintsContentOrHitTest())
     return;
 
+  raster_invalidated_ = true;
   CcLayer().SetNeedsDisplay();
 
   // Invalidate the paint controller if it exists, but don't bother creating one
@@ -645,6 +658,7 @@ void GraphicsLayer::SetNeedsDisplay() {
 
 void GraphicsLayer::SetNeedsDisplayInRect(const IntRect& rect) {
   DCHECK(PaintsContentOrHitTest());
+  raster_invalidated_ = true;
   CcLayer().SetNeedsDisplayRect(rect);
 }
 

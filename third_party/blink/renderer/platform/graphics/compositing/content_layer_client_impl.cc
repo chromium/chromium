@@ -85,7 +85,6 @@ scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
   if (layer_state != layer_state_)
     cc_picture_layer_->SetSubtreePropertyChanged();
 
-  raster_invalidated_ = false;
   gfx::Size old_layer_size = raster_invalidator_.LayerBounds().size();
   DCHECK_EQ(old_layer_size, cc_picture_layer_->bounds());
   raster_invalidator_.Generate(raster_invalidation_function_, paint_chunks,
@@ -111,9 +110,9 @@ scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
 
   // If nothing changed in the layer, keep the original display item list.
   // Here check layer_bounds because RasterInvalidator doesn't issue raster
-  // invalidation when layer_bounds become empty or non-empty from empty.
-  if (layer_bounds.size() == old_layer_size && !raster_invalidated_ &&
-      !raster_under_invalidation_params && cc_display_item_list_) {
+  // invalidation when only layer_bounds changes.
+  if (cc_display_item_list_ && layer_bounds.size() == old_layer_size &&
+      !raster_under_invalidation_params) {
     DCHECK_EQ(cc_picture_layer_->bounds(), layer_bounds.size());
     return cc_picture_layer_;
   }
@@ -135,6 +134,11 @@ scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
   PaintChunksToCcLayer::UpdateBackgroundColor(*cc_picture_layer_, paint_chunks);
 
   return cc_picture_layer_;
+}
+
+void ContentLayerClientImpl::InvalidateRect(const IntRect& rect) {
+  cc_display_item_list_ = nullptr;
+  cc_picture_layer_->SetNeedsDisplayRect(rect);
 }
 
 }  // namespace blink
