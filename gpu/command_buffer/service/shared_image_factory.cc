@@ -100,7 +100,9 @@ SharedImageFactory::SharedImageFactory(
   if (use_gl) {
     gl_backing_factory_ = std::make_unique<SharedImageBackingFactoryGLTexture>(
         gpu_preferences, workarounds, gpu_feature_info, image_factory,
-        shared_image_manager->batch_access_manager());
+        shared_image_manager->batch_access_manager(),
+        shared_context_state_ ? shared_context_state_->progress_reporter()
+                              : nullptr);
   }
 
   // TODO(ccameron): This block of code should be changed to a switch on

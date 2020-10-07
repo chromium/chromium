@@ -29,6 +29,7 @@
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_test_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -44,6 +45,9 @@
 #include "ui/gl/gl_image_stub.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/init/gl_factory.h"
+#include "ui/gl/progress_reporter.h"
+
+using testing::AtLeast;
 
 namespace gpu {
 namespace {
@@ -79,6 +83,15 @@ bool IsAndroid() {
 #endif
 }
 
+class MockProgressReporter : public gl::ProgressReporter {
+ public:
+  MockProgressReporter() = default;
+  ~MockProgressReporter() override = default;
+
+  // gl::ProgressReporter implementation.
+  MOCK_METHOD0(ReportProgress, void());
+};
+
 class SharedImageBackingFactoryGLTextureTestBase
     : public testing::TestWithParam<std::tuple<bool, viz::ResourceFormat>> {
  public:
@@ -105,7 +118,7 @@ class SharedImageBackingFactoryGLTextureTestBase
     preferences.use_passthrough_cmd_decoder = use_passthrough();
     backing_factory_ = std::make_unique<SharedImageBackingFactoryGLTexture>(
         preferences, workarounds, GpuFeatureInfo(), factory,
-        shared_image_manager_->batch_access_manager());
+        shared_image_manager_->batch_access_manager(), &progress_reporter_);
 
     memory_type_tracker_ = std::make_unique<MemoryTypeTracker>(nullptr);
     shared_image_representation_factory_ =
@@ -118,11 +131,31 @@ class SharedImageBackingFactoryGLTextureTestBase
            gles2::PassthroughCommandDecoderSupported();
   }
 
+  bool can_create_non_scanout_shared_image(viz::ResourceFormat format) const {
+    if (format == viz::ResourceFormat::BGRA_1010102 ||
+        format == viz::ResourceFormat::RGBA_1010102) {
+      return supports_ar30_ || supports_ab30_;
+    } else if (format == viz::ResourceFormat::ETC1) {
+      return supports_etc1_;
+    }
+    return true;
+  }
+
+  bool can_create_scanout_or_gmb_shared_image(
+      viz::ResourceFormat format) const {
+    if (format == viz::ResourceFormat::BGRA_1010102)
+      return supports_ar30_;
+    else if (format == viz::ResourceFormat::RGBA_1010102)
+      return supports_ab30_;
+    return true;
+  }
+
   viz::ResourceFormat get_format() { return std::get<1>(GetParam()); }
 
   GrDirectContext* gr_context() { return context_state_->gr_context(); }
 
  protected:
+  ::testing::NiceMock<MockProgressReporter> progress_reporter_;
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<SharedContextState> context_state_;
@@ -213,6 +246,9 @@ TEST_P(SharedImageBackingFactoryGLTextureTest, Basic) {
     return;
   }
 
+  const bool should_succeed = can_create_non_scanout_shared_image(get_format());
+  if (should_succeed)
+    EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto format = get_format();
   gfx::Size size(256, 256);
@@ -225,12 +261,7 @@ TEST_P(SharedImageBackingFactoryGLTextureTest, Basic) {
       mailbox, format, surface_handle, size, color_space, surface_origin,
       alpha_type, usage, false /* is_thread_safe */);
 
-  // As long as either |chromium_image_ar30| or |chromium_image_ab30| is
-  // enabled, we can create a non-scanout SharedImage with format
-  // viz::ResourceFormat::{BGRA,RGBA}_1010102.
-  if ((format == viz::ResourceFormat::BGRA_1010102 ||
-       format == viz::ResourceFormat::RGBA_1010102) &&
-      !supports_ar30_ && !supports_ab30_) {
+  if (!should_succeed) {
     EXPECT_FALSE(backing);
     return;
   }
@@ -347,6 +378,11 @@ TEST_P(SharedImageBackingFactoryGLTextureTest, Image) {
       bot_config.Matches("mac passthrough")) {
     return;
   }
+
+  const bool should_succeed =
+      can_create_scanout_or_gmb_shared_image(get_format());
+  if (should_succeed)
+    EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto format = get_format();
   gfx::Size size(256, 256);
@@ -359,15 +395,12 @@ TEST_P(SharedImageBackingFactoryGLTextureTest, Image) {
       mailbox, format, surface_handle, size, color_space, surface_origin,
       alpha_type, usage, false /* is_thread_safe */);
 
-  // We can only create a scanout SharedImage with format
-  // viz::ResourceFormat::{BGRA,RGBA}_1010102 if the corresponding
-  // |chromium_image_ar30| or |chromium_image_ab30| is enabled.
-  if ((format == viz::ResourceFormat::BGRA_1010102 && !supports_ar30_) ||
-      (format == viz::ResourceFormat::RGBA_1010102 && !supports_ab30_)) {
+  if (!should_succeed) {
     EXPECT_FALSE(backing);
     return;
   }
   ASSERT_TRUE(backing);
+  ::testing::Mock::VerifyAndClearExpectations(&progress_reporter_);
 
   // Check clearing.
   if (!backing->IsCleared()) {
@@ -472,6 +505,7 @@ TEST_P(SharedImageBackingFactoryGLTextureTest, Image) {
 
   if (!use_passthrough() &&
       context_state_->feature_info()->feature_flags().ext_texture_rg) {
+    EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
     // Create a R-8 image texture, and check that the internal_format is that
     // of the image (GL_RGBA for TextureImageFactory). This only matters for
     // the validating decoder.
@@ -503,6 +537,9 @@ TEST_P(SharedImageBackingFactoryGLTextureTest, InitialData) {
   for (auto format :
        {viz::ResourceFormat::RGBA_8888, viz::ResourceFormat::ETC1,
         viz::ResourceFormat::BGRA_1010102, viz::ResourceFormat::RGBA_1010102}) {
+    const bool should_succeed = can_create_non_scanout_shared_image(format);
+    if (should_succeed)
+      EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
     auto mailbox = Mailbox::GenerateForSharedImage();
     gfx::Size size(256, 256);
     auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -514,22 +551,11 @@ TEST_P(SharedImageBackingFactoryGLTextureTest, InitialData) {
     auto backing = backing_factory_->CreateSharedImage(
         mailbox, format, size, color_space, surface_origin, alpha_type, usage,
         initial_data);
-
-    if (format == viz::ResourceFormat::ETC1 && !supports_etc1_) {
+    ::testing::Mock::VerifyAndClearExpectations(&progress_reporter_);
+    if (!should_succeed) {
       EXPECT_FALSE(backing);
       continue;
     }
-
-    // As long as either |chromium_image_ar30| or |chromium_image_ab30| is
-    // enabled, we can create a non-scanout SharedImage with format
-    // viz::ResourceFormat::{BGRA,RGBA}_1010102.
-    if ((format == viz::ResourceFormat::BGRA_1010102 ||
-         format == viz::ResourceFormat::RGBA_1010102) &&
-        !supports_ar30_ && !supports_ab30_) {
-      EXPECT_FALSE(backing);
-      continue;
-    }
-
     ASSERT_TRUE(backing);
     EXPECT_TRUE(backing->IsCleared());
 
@@ -571,6 +597,10 @@ TEST_P(SharedImageBackingFactoryGLTextureTest, InitialData) {
 }
 
 TEST_P(SharedImageBackingFactoryGLTextureTest, InitialDataImage) {
+  const bool should_succeed =
+      can_create_scanout_or_gmb_shared_image(get_format());
+  if (should_succeed)
+    EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto format = get_format();
   gfx::Size size(256, 256);
@@ -582,12 +612,7 @@ TEST_P(SharedImageBackingFactoryGLTextureTest, InitialDataImage) {
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       initial_data);
-
-  // We can only create a scanout SharedImage with format
-  // viz::ResourceFormat::{BGRA,RGBA}_1010102 if the corresponding
-  // |chromium_image_ar30| or |chromium_image_ab30| is enabled.
-  if ((format == viz::ResourceFormat::BGRA_1010102 && !supports_ar30_) ||
-      (format == viz::ResourceFormat::RGBA_1010102 && !supports_ab30_)) {
+  if (!should_succeed) {
     EXPECT_FALSE(backing);
     return;
   }
@@ -679,6 +704,9 @@ TEST_P(SharedImageBackingFactoryGLTextureTest, InvalidSize) {
 }
 
 TEST_P(SharedImageBackingFactoryGLTextureTest, EstimatedSize) {
+  const bool should_succeed = can_create_non_scanout_shared_image(get_format());
+  if (should_succeed)
+    EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto format = get_format();
   gfx::Size size(256, 256);
@@ -691,12 +719,7 @@ TEST_P(SharedImageBackingFactoryGLTextureTest, EstimatedSize) {
       mailbox, format, surface_handle, size, color_space, surface_origin,
       alpha_type, usage, false /* is_thread_safe */);
 
-  // As long as either |chromium_image_ar30| or |chromium_image_ab30| is
-  // enabled, we can create a non-scanout SharedImage with format
-  // viz::ResourceFormat::{BGRA,RGBA}_1010102.
-  if ((format == viz::ResourceFormat::BGRA_1010102 ||
-       format == viz::ResourceFormat::RGBA_1010102) &&
-      !supports_ar30_ && !supports_ab30_) {
+  if (!should_succeed) {
     EXPECT_FALSE(backing);
     return;
   }
@@ -891,12 +914,7 @@ TEST_P(SharedImageBackingFactoryGLTextureWithGMBTest,
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, kClientId, std::move(handle), format, kNullSurfaceHandle, size,
       color_space, surface_origin, alpha_type, usage);
-
-  // We can only create a GMB SharedImage with format
-  // viz::ResourceFormat::{BGRA,RGBA}_1010102 if the corresponding
-  // |chromium_image_ar30| or |chromium_image_ab30| is enabled.
-  if ((get_format() == viz::ResourceFormat::BGRA_1010102 && !supports_ar30_) ||
-      (get_format() == viz::ResourceFormat::RGBA_1010102 && !supports_ab30_)) {
+  if (!can_create_scanout_or_gmb_shared_image(get_format())) {
     EXPECT_FALSE(backing);
     return;
   }
@@ -952,12 +970,7 @@ TEST_P(SharedImageBackingFactoryGLTextureWithGMBTest,
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, kClientId, std::move(handle), format, kNullSurfaceHandle, size,
       color_space, surface_origin, alpha_type, usage);
-
-  // We can only create a GMB SharedImage with format
-  // viz::ResourceFormat::{BGRA,RGBA}_1010102 if the corresponding
-  // |chromium_image_ar30| or |chromium_image_ab30| is enabled.
-  if ((get_format() == viz::ResourceFormat::BGRA_1010102 && !supports_ar30_) ||
-      (get_format() == viz::ResourceFormat::RGBA_1010102 && !supports_ab30_)) {
+  if (!can_create_scanout_or_gmb_shared_image(get_format())) {
     EXPECT_FALSE(backing);
     return;
   }
@@ -990,12 +1003,7 @@ TEST_P(SharedImageBackingFactoryGLTextureWithGMBTest,
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, kClientId, std::move(handle), format, kNullSurfaceHandle, size,
       color_space, surface_origin, alpha_type, usage);
-
-  // We can only create a GMB SharedImage with format
-  // viz::ResourceFormat::{BGRA,RGBA}_1010102 if the corresponding
-  // |chromium_image_ar30| or |chromium_image_ab30| is enabled.
-  if ((get_format() == viz::ResourceFormat::BGRA_1010102 && !supports_ar30_) ||
-      (get_format() == viz::ResourceFormat::RGBA_1010102 && !supports_ab30_)) {
+  if (!can_create_scanout_or_gmb_shared_image(get_format())) {
     EXPECT_FALSE(backing);
     return;
   }
