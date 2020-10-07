@@ -21,6 +21,7 @@ mojom_component("base") {
     "message_pump_type.mojom",
     "process_id.mojom",
     "read_only_buffer.mojom",
+    "read_only_file.mojom",
     "ref_counted_memory.mojom",
     "shared_memory.mojom",
     "string16.mojom",
@@ -112,6 +113,24 @@ mojom_component("base") {
         },
       ]
       traits_headers = [ "//mojo/public/cpp/base/file_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//mojo/public/cpp/base",
+        "//mojo/public/cpp/base:shared_typemap_traits",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.ReadOnlyFile"
+          cpp = "::base::File"
+          move_only = true
+          nullable_is_same_type = true
+          force_serialize = true
+        },
+      ]
+      traits_headers =
+          [ "//mojo/public/cpp/base/read_only_file_mojom_traits.h" ]
       traits_public_deps = [
         "//base",
         "//mojo/public/cpp/base",
