@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/page_info/chosen_object_view_observer.h"
@@ -78,7 +79,9 @@ ChosenObjectView::ChosenObjectView(
 
   // Create the delete button.
   std::unique_ptr<views::ImageButton> delete_button =
-      views::CreateVectorImageButton(this);
+      views::CreateVectorImageButton(base::BindRepeating(
+          [](ChosenObjectView* view) { view->ExecuteDeleteCommand(); }, this));
+
   views::SetImageFromVectorIcon(
       delete_button.get(), vector_icons::kCloseRoundedIcon,
       views::style::GetColor(*this, views::style::CONTEXT_DIALOG_BODY_TEXT,
@@ -133,8 +136,7 @@ void ChosenObjectView::AddObserver(ChosenObjectViewObserver* observer) {
 
 ChosenObjectView::~ChosenObjectView() {}
 
-void ChosenObjectView::ButtonPressed(views::Button* sender,
-                                     const ui::Event& event) {
+void ChosenObjectView::ExecuteDeleteCommand() {
   // Change the icon to reflect the selected setting.
   UpdateIconImage(/*is_deleted=*/true);
 

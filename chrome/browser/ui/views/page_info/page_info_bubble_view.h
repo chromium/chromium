@@ -25,7 +25,6 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_state/core/security_state.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/widget/widget.h"
@@ -58,7 +57,6 @@ class View;
 class PageInfoBubbleView : public PageInfoBubbleViewBase,
                            public PermissionSelectorRowObserver,
                            public ChosenObjectViewObserver,
-                           public views::ButtonListener,
                            public PageInfoUI {
  public:
   // The width of the column size for permissions and chosen object icons.
@@ -70,7 +68,6 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
 
   enum PageInfoBubbleViewID {
     VIEW_ID_NONE = 0,
-    VIEW_ID_PAGE_INFO_BUTTON_CLOSE,
     VIEW_ID_PAGE_INFO_BUTTON_CHANGE_PASSWORD,
     VIEW_ID_PAGE_INFO_BUTTON_ALLOWLIST_PASSWORD_REUSE,
     VIEW_ID_PAGE_INFO_LABEL_EV_CERTIFICATE_DETAILS,
@@ -127,9 +124,6 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   // ChosenObjectViewObserver:
   void OnChosenObjectDeleted(const PageInfoUI::ChosenObjectInfo& info) override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* button, const ui::Event& event) override;
-
   // PageInfoUI:
   void SetCookieInfo(const CookieInfoList& cookie_info_list) override;
   void SetPermissionInfo(const PermissionInfoList& permission_info_list,
@@ -180,6 +174,9 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
 
   // The button that opens the "Certificate" dialog.
   PageInfoHoverButton* certificate_button_ = nullptr;
+
+  // The button that opens up "Site Settings".
+  views::View* site_settings_link = nullptr;
 
   // The view that contains the "Permissions" table of the bubble.
   views::View* permissions_view_ = nullptr;

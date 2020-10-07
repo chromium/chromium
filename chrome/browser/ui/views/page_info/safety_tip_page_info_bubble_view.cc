@@ -181,10 +181,13 @@ SafetyTipPageInfoBubbleView::SafetyTipPageInfoBubbleView(
   info_link->AddStyleRange(details_range, link_style);
   info_link->SizeToFit(0);
   info_button_ = button_layout->AddView(std::move(info_link));
-
   // Leave site button.
   auto leave_button = std::make_unique<views::MdTextButton>(
-      this,
+      base::BindRepeating(
+          [](SafetyTipPageInfoBubbleView* view) {
+            view->ExecuteLeaveCommand();
+          },
+          this),
       l10n_util::GetStringUTF16(GetSafetyTipLeaveButtonId(safety_tip_status)));
   leave_button->SetProminent(true);
   leave_button->SetID(PageInfoBubbleView::VIEW_ID_PAGE_INFO_BUTTON_LEAVE_SITE);
@@ -233,11 +236,7 @@ void SafetyTipPageInfoBubbleView::OnWidgetDestroying(views::Widget* widget) {
   std::move(close_callback_).Run(action_taken_);
 }
 
-void SafetyTipPageInfoBubbleView::ButtonPressed(views::Button* button,
-                                                const ui::Event& event) {
-  DCHECK_EQ(button->GetID(),
-            PageInfoBubbleView::VIEW_ID_PAGE_INFO_BUTTON_LEAVE_SITE);
-
+void SafetyTipPageInfoBubbleView::ExecuteLeaveCommand() {
   action_taken_ = SafetyTipInteraction::kLeaveSite;
   LeaveSiteFromSafetyTip(
       web_contents(),

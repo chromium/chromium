@@ -49,6 +49,7 @@
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/scoped_views_test_helper.h"
 #include "ui/views/test/test_views_delegate.h"
 
@@ -403,8 +404,7 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithUsbDevice) {
   views::Button* button = static_cast<views::Button*>(children[2]);
   const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                              ui::EventTimeForNow(), 0, 0);
-  static_cast<views::ButtonListener*>(object_view)
-      ->ButtonPressed(button, event);
+  views::test::ButtonTestApi(button).NotifyClick(event);
   api_->SetPermissionInfo(list);
   EXPECT_EQ(kExpectedChildren, api_->permissions_view()->children().size());
   EXPECT_FALSE(store->HasDevicePermission(origin, origin, *device_info));
@@ -461,9 +461,7 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithPolicyUsbDevices) {
   // Policy granted USB permissions should not be able to be deleted.
   const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                              ui::EventTimeForNow(), 0, 0);
-  views::ButtonListener* button_listener =
-      static_cast<views::ButtonListener*>(object_view);
-  button_listener->ButtonPressed(button, event);
+  views::test::ButtonTestApi(button).NotifyClick(event);
   api_->SetPermissionInfo(list);
   EXPECT_EQ(kExpectedChildren + 1, api_->permissions_view()->children().size());
 }
@@ -519,9 +517,7 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithUserAndPolicyUsbDevices) {
     views::Label* desc_label = static_cast<views::Label*>(children[3]);
     EXPECT_EQ(base::ASCIIToUTF16("USB device"), desc_label->GetText());
 
-    views::ButtonListener* button_listener =
-        static_cast<views::ButtonListener*>(object_view);
-    button_listener->ButtonPressed(button, event);
+    views::test::ButtonTestApi(button).NotifyClick(event);
     api_->SetPermissionInfo(list);
     EXPECT_EQ(kExpectedChildren + 1,
               api_->permissions_view()->children().size());
@@ -547,9 +543,7 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithUserAndPolicyUsbDevices) {
     EXPECT_EQ(base::ASCIIToUTF16("USB device allowed by your administrator"),
               desc_label->GetText());
 
-    views::ButtonListener* button_listener =
-        static_cast<views::ButtonListener*>(object_view);
-    button_listener->ButtonPressed(button, event);
+    views::test::ButtonTestApi(button).NotifyClick(event);
     api_->SetPermissionInfo(list);
     EXPECT_EQ(kExpectedChildren + 1,
               api_->permissions_view()->children().size());

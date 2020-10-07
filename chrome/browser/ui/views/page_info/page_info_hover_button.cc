@@ -17,14 +17,15 @@
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/style/typography.h"
 
-PageInfoHoverButton::PageInfoHoverButton(views::ButtonListener* listener,
-                                         const gfx::ImageSkia& image_icon,
-                                         int title_resource_id,
-                                         const base::string16& secondary_text,
-                                         int click_target_id,
-                                         const base::string16& tooltip_text,
-                                         const base::string16& subtitle_text)
-    : HoverButton(listener, base::string16()) {
+PageInfoHoverButton::PageInfoHoverButton(
+    views::Button::PressedCallback callback,
+    const gfx::ImageSkia& image_icon,
+    int title_resource_id,
+    const base::string16& secondary_text,
+    int click_target_id,
+    const base::string16& tooltip_text,
+    const base::string16& subtitle_text)
+    : HoverButton(std::move(callback), base::string16()) {
   label()->SetHandlesTooltips(false);
   auto icon = std::make_unique<NonAccessibleImageView>();
   icon->SetImage(image_icon);

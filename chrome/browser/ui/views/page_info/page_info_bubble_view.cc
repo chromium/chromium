@@ -115,18 +115,6 @@ void AddColumnWithSideMargin(views::GridLayout* layout, int margin, int id) {
   column_set->AddPaddingColumn(views::GridLayout::kFixedSize, margin);
 }
 
-std::unique_ptr<views::View> CreateSiteSettingsLink(
-    const int side_margin,
-    views::ButtonListener* listener) {
-  const base::string16& tooltip =
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_SITE_SETTINGS_TOOLTIP);
-  return std::make_unique<PageInfoHoverButton>(
-      listener, PageInfoUI::GetSiteSettingsIcon(GetRelatedTextColor()),
-      IDS_PAGE_INFO_SITE_SETTINGS_LINK, base::string16(),
-      PageInfoBubbleView::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS,
-      tooltip, base::string16());
-}
-
 }  // namespace
 
 // BubbleHeaderView is the UI element (view) that represents the header of a
@@ -151,7 +139,10 @@ class BubbleHeaderView : public views::View {
   // Adds the change password and mark site as legitimate buttons.
   // If |is_saved_password|, adds a check password button instead of
   // change password button.
-  void AddPasswordReuseButtons(bool is_saved_password);
+  void AddPasswordReuseButtons(
+      bool is_saved_password,
+      views::Button::PressedCallback change_password_callback,
+      views::Button::PressedCallback password_reuse_callback);
 
  private:
   // Owns |this|.
@@ -295,7 +286,10 @@ void BubbleHeaderView::AddResetDecisionsLabel() {
   InvalidateLayout();
 }
 
-void BubbleHeaderView::AddPasswordReuseButtons(bool is_saved_password) {
+void BubbleHeaderView::AddPasswordReuseButtons(
+    bool is_saved_password,
+    views::Button::PressedCallback change_password_callback,
+    views::Button::PressedCallback password_reuse_callback) {
   if (!password_reuse_button_container_->children().empty()) {
     // Ensure all old content is removed from the container before re-adding it.
     password_reuse_button_container_->RemoveAllChildViews(true /* delete */);
@@ -308,13 +302,14 @@ void BubbleHeaderView::AddPasswordReuseButtons(bool is_saved_password) {
   std::unique_ptr<views::MdTextButton> change_password_button;
   if (change_password_template) {
     change_password_button = std::make_unique<views::MdTextButton>(
-        bubble_, l10n_util::GetStringUTF16(change_password_template));
+        change_password_callback,
+        l10n_util::GetStringUTF16(change_password_template));
     change_password_button->SetProminent(true);
     change_password_button->SetID(
         PageInfoBubbleView::VIEW_ID_PAGE_INFO_BUTTON_CHANGE_PASSWORD);
   }
   auto allowlist_password_reuse_button = std::make_unique<views::MdTextButton>(
-      bubble_,
+      password_reuse_callback,
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_ALLOWLIST_PASSWORD_REUSE_BUTTON));
   allowlist_password_reuse_button->SetID(
       PageInfoBubbleView::VIEW_ID_PAGE_INFO_BUTTON_ALLOWLIST_PASSWORD_REUSE);
@@ -543,7 +538,19 @@ PageInfoBubbleView::PageInfoBubbleView(
   if (!profile->IsGuestSession()) {
     layout->StartRowWithPadding(views::GridLayout::kFixedSize, kColumnId,
                                 views::GridLayout::kFixedSize, 0);
-    layout->AddView(CreateSiteSettingsLink(side_margin, this));
+
+    const base::string16& tooltip =
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_SITE_SETTINGS_TOOLTIP);
+    site_settings_link = layout->AddView(std::make_unique<PageInfoHoverButton>(
+        base::BindRepeating(
+            [](PageInfoBubbleView* view) {
+              view->HandleMoreInfoRequest(view->site_settings_link);
+            },
+            this),
+        PageInfoUI::GetSiteSettingsIcon(GetRelatedTextColor()),
+        IDS_PAGE_INFO_SITE_SETTINGS_LINK, base::string16(),
+        PageInfoBubbleView::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS,
+        tooltip, base::string16()));
   }
 
 #if defined(OS_WIN) && BUILDFLAG(ENABLE_VR)
@@ -595,38 +602,6 @@ void PageInfoBubbleView::OnWidgetDestroying(views::Widget* widget) {
     std::move(closing_callback_).Run(widget->closed_reason(), reload_prompt);
 }
 
-void PageInfoBubbleView::ButtonPressed(views::Button* button,
-                                       const ui::Event& event) {
-  switch (button->GetID()) {
-    case PageInfoBubbleView::VIEW_ID_PAGE_INFO_BUTTON_CLOSE:
-      GetWidget()->Close();
-      break;
-    case PageInfoBubbleView::VIEW_ID_PAGE_INFO_BUTTON_CHANGE_PASSWORD:
-      presenter_->OnChangePasswordButtonPressed(web_contents());
-      break;
-    case PageInfoBubbleView::VIEW_ID_PAGE_INFO_BUTTON_ALLOWLIST_PASSWORD_REUSE:
-      GetWidget()->Close();
-      presenter_->OnWhitelistPasswordReuseButtonPressed(web_contents());
-      break;
-    case PageInfoBubbleView::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS:
-    case PageInfoBubbleView::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG:
-    case PageInfoBubbleView::
-        VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER:
-      HandleMoreInfoRequest(button);
-      break;
-    case PageInfoBubbleView::VIEW_ID_PAGE_INFO_HOVER_BUTTON_VR_PRESENTATION:
-      // Ignore clicks on the "VR is presenting" row.
-      break;
-    case PageInfoBubbleView::VIEW_ID_PAGE_INFO_BUTTON_END_VR:
-      GetWidget()->Close();
-#if BUILDFLAG(ENABLE_VR)
-      vr::VrTabHelper::ExitVrPresentation();
-#endif
-      break;
-    default:
-      NOTREACHED();
-  }
-}
 
 gfx::Size PageInfoBubbleView::CalculatePreferredSize() const {
   if (header_ == nullptr && site_settings_view_ == nullptr) {
@@ -673,7 +648,12 @@ void PageInfoBubbleView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
 
     cookie_button_ =
         std::make_unique<PageInfoHoverButton>(
-            this, icon, IDS_PAGE_INFO_COOKIES_BUTTON_TEXT, num_cookies_text,
+            base::BindRepeating(
+                [](PageInfoBubbleView* view) {
+                  view->HandleMoreInfoRequest(view->cookie_button_);
+                },
+                this),
+            icon, IDS_PAGE_INFO_COOKIES_BUTTON_TEXT, num_cookies_text,
             VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG, tooltip,
             base::string16())
             .release();
@@ -857,7 +837,12 @@ void PageInfoBubbleView::SetIdentityInfo(const IdentityInfo& identity_info) {
     }
     certificate_button_ = site_settings_view_->AddChildView(
         std::make_unique<PageInfoHoverButton>(
-            this, icon, IDS_PAGE_INFO_CERTIFICATE_BUTTON_TEXT, secondary_text,
+            base::BindRepeating(
+                [](PageInfoBubbleView* view) {
+                  view->HandleMoreInfoRequest(view->certificate_button_);
+                },
+                this),
+            icon, IDS_PAGE_INFO_CERTIFICATE_BUTTON_TEXT, secondary_text,
             VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER, tooltip,
             subtitle_text)
             .release());
@@ -866,8 +851,21 @@ void PageInfoBubbleView::SetIdentityInfo(const IdentityInfo& identity_info) {
   if (identity_info.show_change_password_buttons) {
     header_->AddPasswordReuseButtons(
         identity_info.safe_browsing_status ==
-        PageInfo::SafeBrowsingStatus::
-            SAFE_BROWSING_STATUS_SAVED_PASSWORD_REUSE);
+            PageInfo::SafeBrowsingStatus::
+                SAFE_BROWSING_STATUS_SAVED_PASSWORD_REUSE,
+        base::BindRepeating(
+            [](PageInfoBubbleView* view) {
+              view->presenter_->OnChangePasswordButtonPressed(
+                  view->web_contents());
+            },
+            this),
+        base::BindRepeating(
+            [](PageInfoBubbleView* view) {
+              view->GetWidget()->Close();
+              view->presenter_->OnWhitelistPasswordReuseButtonPressed(
+                  view->web_contents());
+            },
+            this));
   }
   details_text_ = security_description->details;
   header_->SetDetails(security_description->details);
@@ -890,14 +888,21 @@ void PageInfoBubbleView::SetPageFeatureInfo(const PageFeatureInfo& info) {
 
   auto icon = std::make_unique<NonAccessibleImageView>();
   icon->SetImage(PageInfoUI::GetVrSettingsIcon(GetRelatedTextColor()));
-
   auto exit_button = std::make_unique<views::MdTextButton>(
-      this, l10n_util::GetStringUTF16(IDS_PAGE_INFO_VR_TURN_OFF_BUTTON_TEXT));
+      base::BindRepeating(
+          [](PageInfoBubbleView* view) {
+            view->GetWidget()->Close();
+#if BUILDFLAG(ENABLE_VR)
+            vr::VrTabHelper::ExitVrPresentation();
+#endif
+          },
+          this),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_VR_TURN_OFF_BUTTON_TEXT));
   exit_button->SetID(VIEW_ID_PAGE_INFO_BUTTON_END_VR);
   exit_button->SetProminent(true);
 
   auto button = std::make_unique<HoverButton>(
-      this, std::move(icon),
+      views::Button::PressedCallback(), std::move(icon),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_VR_PRESENTING_TEXT),
       base::string16(), std::move(exit_button),
       false,  // Try not to change the row height while adding secondary view

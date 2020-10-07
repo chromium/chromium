@@ -27,8 +27,7 @@ class Widget;
 // When Chrome displays a safety tip, we create a stripped-down bubble view
 // without all of the details. Safety tip info is still displayed in the usual
 // PageInfoBubbleView, just less prominently.
-class SafetyTipPageInfoBubbleView : public PageInfoBubbleViewBase,
-                                    public views::ButtonListener {
+class SafetyTipPageInfoBubbleView : public PageInfoBubbleViewBase {
  public:
   // If |anchor_view| is nullptr, or has no Widget, |parent_window| may be
   // provided to ensure this bubble is closed when the parent closes.
@@ -48,13 +47,12 @@ class SafetyTipPageInfoBubbleView : public PageInfoBubbleViewBase,
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* button, const ui::Event& event) override;
-
  private:
   friend class SafetyTipPageInfoBubbleViewBrowserTest;
 
   void OpenHelpCenter();
+
+  void ExecuteLeaveCommand();
 
   views::Button* GetLeaveButtonForTesting() { return leave_button_; }
 

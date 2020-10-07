@@ -18,7 +18,6 @@ class PageInfoBubbleViewTestApi;
 }  // namespace test
 
 namespace views {
-class ButtonListener;
 class Label;
 class StyledLabel;
 class View;
@@ -43,7 +42,7 @@ class PageInfoHoverButton : public HoverButton {
   // |-----------------------------------------------------------------|
   // |      | |subtitle_text|                                          |
   // *-----------------------------------------------------------------*
-  PageInfoHoverButton(views::ButtonListener* listener,
+  PageInfoHoverButton(views::Button::PressedCallback callback,
                       const gfx::ImageSkia& image_icon,
                       int title_resource_id,
                       const base::string16& secondary_text,
