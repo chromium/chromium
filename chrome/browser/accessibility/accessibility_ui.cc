@@ -458,8 +458,7 @@ void AccessibilityUIMessageHandler::ToggleAccessibility(
     // accessibility mode buttons are updated.
     AllowJavascript();
     std::unique_ptr<base::DictionaryValue> new_mode(BuildTargetDescriptor(rvh));
-    CallJavascriptFunction("accessibility.showOrRefreshTree",
-                           *(new_mode.get()));
+    CallJavascriptFunction("showOrRefreshTree", *(new_mode.get()));
   }
 }
 
@@ -534,7 +533,6 @@ void AccessibilityUIMessageHandler::RequestWebContentsTree(
   CHECK(IsValidJSValue(request_type_p));
   std::string request_type = *request_type_p;
   CHECK(request_type == kShowOrRefreshTree || request_type == kCopyTree);
-  request_type = "accessibility." + request_type;
 
   const std::string* allow_p = data->FindStringPath("filters.allow");
   CHECK(IsValidJSValue(allow_p));
@@ -597,7 +595,6 @@ void AccessibilityUIMessageHandler::RequestNativeUITree(
   CHECK(IsValidJSValue(request_type_p));
   std::string request_type = *request_type_p;
   CHECK(request_type == kShowOrRefreshTree || request_type == kCopyTree);
-  request_type = "accessibility." + request_type;
 
   const std::string* allow_p = data->FindStringPath("filters.allow");
   CHECK(IsValidJSValue(allow_p));
@@ -696,7 +693,7 @@ void AccessibilityUIMessageHandler::RequestAccessibilityEvents(
     result->SetString(kEventLogsField, event_logs_str);
     event_logs_.clear();
 
-    CallJavascriptFunction("accessibility.startOrStopEvents", *(result.get()));
+    CallJavascriptFunction("startOrStopEvents", *(result.get()));
   }
 }
 

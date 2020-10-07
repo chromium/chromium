@@ -16,6 +16,7 @@ assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
 if (enable_js_type_check) {
   group("closure_compile") {
     deps = [
+      "accessibility:closure_compile",
       "components:closure_compile",
       "engagement:closure_compile",
       "interventions_internals:closure_compile",
