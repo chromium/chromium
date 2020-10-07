@@ -302,7 +302,8 @@ public class ShareDelegateImpl implements ShareDelegate {
                 long shareStartTime, boolean sharingHubEnabled) {
             if (chromeShareExtras.shareDirectly()) {
                 ShareHelper.shareWithLastUsedComponent(params);
-            } else if (sharingHubEnabled && !chromeShareExtras.sharingTabGroup()) {
+            } else if (sharingHubEnabled && !chromeShareExtras.sharingTabGroup()
+                    && tabProvider.get() != null) {
                 // TODO(crbug.com/1085078): Sharing hub is suppressed for tab group sharing.
                 // Re-enable it when tab group sharing is supported by sharing hub.
                 ShareSheetCoordinator coordinator = new ShareSheetCoordinator(controller,
