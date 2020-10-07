@@ -4387,6 +4387,8 @@ static_library("browser") {
       "lacros/account_manager_facade_factory_lacros.cc",
       "lacros/account_manager_facade_lacros.cc",
       "lacros/account_manager_facade_lacros.h",
+      "lacros/account_manager_util.cc",
+      "lacros/account_manager_util.h",
       "lacros/lacros_chrome_service_delegate_impl.cc",
       "lacros/lacros_chrome_service_delegate_impl.h",
       "metrics/lacros_metrics_provider.cc",
