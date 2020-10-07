@@ -628,6 +628,10 @@ const base::Feature kWifiSyncAndroid{"WifiSyncAndroid",
 const base::Feature kImeMozcProto{"ImeMozcProto",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Force enable recreating the LXD DB at LXD launch.
+const base::Feature kCrostiniResetLxdDb{"CrostiniResetLxdDb",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 ////////////////////////////////////////////////////////////////////////////////
 
 bool IsAmbientModeEnabled() {

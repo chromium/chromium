@@ -1212,6 +1212,8 @@ void CrostiniManager::StartLxd(std::string vm_name,
   vm_tools::cicerone::StartLxdRequest request;
   request.set_vm_name(std::move(vm_name));
   request.set_owner_id(owner_id_);
+  request.set_reset_lxd_db(
+      base::FeatureList::IsEnabled(chromeos::features::kCrostiniResetLxdDb));
   GetCiceroneClient()->StartLxd(
       std::move(request),
       base::BindOnce(&CrostiniManager::OnStartLxd,

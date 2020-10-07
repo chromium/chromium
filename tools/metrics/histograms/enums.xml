@@ -41437,6 +41437,7 @@ from previous Chrome versions.
   <int value="-2047822258" label="enable-avfoundation"/>
   <int value="-2047190657" label="SyncUserConsentSeparateType:enabled"/>
   <int value="-2047071651" label="NearbySharing:enabled"/>
+  <int value="-2044939529" label="CrostiniResetLxdDb:disabled"/>
   <int value="-2043331707" label="PasswordScriptsFetching:disabled"/>
   <int value="-2043128632" label="enable-tab-switcher-in-document-mode"/>
   <int value="-2042278511" label="SmartSuggestionForLargeDownloads:disabled"/>
@@ -42607,6 +42608,7 @@ from previous Chrome versions.
   <int value="-948930847" label="EnableOopPrintDrivers:enabled"/>
   <int value="-945806012" label="DownloadsUi:enabled"/>
   <int value="-943304570" label="PaintHolding:enabled"/>
+  <int value="-939676447" label="CrostiniResetLxdDb:enabled"/>
   <int value="-938178614" label="enable-suggestions-with-substring-match"/>
   <int value="-937430451" label="IntensiveWakeUpThrottling:disabled"/>
   <int value="-933377608"

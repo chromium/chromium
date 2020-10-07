@@ -3719,6 +3719,10 @@ const char kCrostiniEnableDlcName[] = "Crostini Enable DLC";
 const char kCrostiniEnableDlcDescription[] =
     "Signal to Crostini that the DLC service is available for use.";
 
+const char kCrostiniResetLxdDbName[] = "Crostini Reset LXD DB on launch";
+const char kCrostiniResetLxdDbDescription[] =
+    "Recreates the LXD database every time we launch it";
+
 const char kCryptAuthV2DeviceActivityStatusName[] =
     "CryptAuth Device Activity Status";
 const char kCryptAuthV2DeviceActivityStatusDescription[] =

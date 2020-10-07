@@ -2145,6 +2145,9 @@ extern const char kCrostiniUseDlcDescription[];
 extern const char kCrostiniEnableDlcName[];
 extern const char kCrostiniEnableDlcDescription[];
 
+extern const char kCrostiniResetLxdDbName[];
+extern const char kCrostiniResetLxdDbDescription[];
+
 extern const char kCryptAuthV2DeviceActivityStatusName[];
 extern const char kCryptAuthV2DeviceActivityStatusDescription[];
 

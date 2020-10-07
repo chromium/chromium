@@ -3050,6 +3050,9 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::features::kVmCameraMicIndicatorsAndNotifications)},
+    {"crostini-reset-lxd-db", flag_descriptions::kCrostiniResetLxdDbName,
+     flag_descriptions::kCrostiniResetLxdDbDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kCrostiniResetLxdDb)},
 #if BUILDFLAG(USE_TCMALLOC)
     {"dynamic-tcmalloc-tuning", flag_descriptions::kDynamicTcmallocName,
      flag_descriptions::kDynamicTcmallocDescription, kOsCrOS,

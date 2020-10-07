@@ -702,6 +702,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "crostini-reset-lxd-db",
+    "owners": [ "davidmunro", "nverne", "sidereal" ],
+    "expiry_milestone": 89
+  },
+  {
     "name": "crostini-use-buster-image",
     "owners": [ "davidmunro@google.com", "benwells" ],
     "expiry_milestone": 90
