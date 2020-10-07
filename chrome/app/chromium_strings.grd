@@ -341,7 +341,7 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
         Make Chromium the default browser
       </message>
       <if expr="chromeos">
-        <message name="IDS_EXTERNAL_PROTOCOL_TITLE" desc="External Protocol Dialog Title">
+        <message name="IDS_EXTERNAL_PROTOCOL_NO_HANDLER_TITLE" desc="External Protocol Dialog Title">
           Chromium OS can't open this page.
         </message>
       </if>

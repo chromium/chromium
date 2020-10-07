@@ -9,11 +9,10 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/chromeos/file_manager/open_util.h"
+#include "chrome/browser/chromeos/guest_os/guest_os_external_protocol_handler.h"
 #include "chrome/browser/platform_util_internal.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -28,9 +27,6 @@ using content::BrowserThread;
 namespace platform_util {
 
 namespace {
-
-const char kGmailComposeUrl[] =
-    "https://mail.google.com/mail/?extsrc=mailto&url=";
 
 void ShowWarningOnOpenOperationResult(Profile* profile,
                                       const base::FilePath& path,
@@ -100,27 +96,16 @@ void OpenItem(Profile* profile,
 }
 
 void OpenExternal(Profile* profile, const GURL& url) {
+  // This code is called either when:
+  // 1. ChromeAppDelegate::NewWindowContentsDelegate::OpenURLFromTab determines
+  // that the currently running chrome is not the system default browser. This
+  // should not happen for Chrome OS (crrev.com/c/2454769).
+  // 2. |url| uses a external protocol and either
+  // ExternalProtocolDialog::OnDialogAccepted invokes this, or the dialog has
+  // previously been accepted with "Always allow ..." and this is called from
+  // ChromeContentBrowserClient::HandleExternalProtocol.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  // This code should be obsolete since we have default handlers in ChromeOS
-  // which should handle this. However - there are two things which make it
-  // necessary to keep it in:
-  // a.) The user might have deleted the default handler in this session.
-  //     In this case we would need to have this in place.
-  // b.) There are several code paths which are not clear if they would call
-  //     this function directly and which would therefore break (e.g.
-  //     "Browser::EmailPageLocation" (to name only one).
-  // As such we should keep this code here.
-  NavigateParams params(profile, url, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-
-  if (url.SchemeIs("mailto")) {
-    std::string string_url = kGmailComposeUrl;
-    string_url.append(url.spec());
-    params.url = GURL(url);
-  }
-
-  Navigate(&params);
+  guest_os::Launch(profile, url);
 }
 
 bool IsBrowserLockedFullscreen(const Browser* browser) {
