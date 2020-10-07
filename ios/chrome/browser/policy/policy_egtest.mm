@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/settings/elements/elements_constants.h"
+#import "ios/chrome/browser/ui/settings/language/language_settings_ui_constants.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
@@ -208,7 +209,7 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
   GREYAssertFalse(
       [ChromeEarlGrey userBooleanPref:autofill::prefs::kAutofillProfileEnabled],
       @"Preference was unexpectedly true");
-  // Open settings menu and tap Address and More settings.
+  // Open settings menu and tap Address and More setting.
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::AddressesAndMoreButton()];
@@ -225,7 +226,7 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
       [ChromeEarlGrey
           userBooleanPref:autofill::prefs::kAutofillCreditCardEnabled],
       @"Preference was unexpectedly true");
-  // Open settings menu and tap Payment Method settings.
+  // Open settings menu and tap Payment Method setting.
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::PaymentMethodsButton()];
@@ -347,6 +348,18 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
 
   VerifyManagedSettingItem(@"blockPopupsContentView_managed",
                            @"block_popups_settings_view_controller");
+}
+
+- (void)testTranslateEnabledSettingsUI {
+  // Disable TranslateEnabled policy.
+  SetPolicy(false, policy::key::kTranslateEnabled);
+
+  // Open settings menu and tap Languages setting.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:chrome_test_util::LanguagesButton()];
+
+  VerifyManagedSettingItem(kTranslateManagedAccessibilityIdentifier,
+                           kLanguageSettingsTableViewAccessibilityIdentifier);
 }
 
 // Test whether the managed item will be shown if a policy is set.

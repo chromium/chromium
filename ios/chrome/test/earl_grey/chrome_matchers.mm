@@ -239,6 +239,10 @@ id<GREYMatcher> PaymentMethodsButton() {
   return [ChromeMatchersAppInterface paymentMethodsButton];
 }
 
+id<GREYMatcher> LanguagesButton() {
+  return [ChromeMatchersAppInterface languagesButton];
+}
+
 id<GREYMatcher> AddCreditCardView() {
   return [ChromeMatchersAppInterface addCreditCardView];
 }

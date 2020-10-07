@@ -476,6 +476,10 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
       buttonWithAccessibilityLabelID:(IDS_AUTOFILL_PAYMENT_METHODS)];
 }
 
++ (id<GREYMatcher>)languagesButton {
+  return grey_accessibilityID(kSettingsLanguagesCellId);
+}
+
 + (id<GREYMatcher>)addCreditCardView {
   return grey_accessibilityID(kAddCreditCardViewID);
 }

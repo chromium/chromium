@@ -182,6 +182,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings/autofill:constants",
     "//ios/chrome/browser/ui/settings/elements:constants",
+    "//ios/chrome/browser/ui/settings/language:language_ui_constants",
     "//ios/chrome/browser/ui/settings/password:password_constants",
     "//ios/chrome/browser/ui/table_view/cells:cells_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

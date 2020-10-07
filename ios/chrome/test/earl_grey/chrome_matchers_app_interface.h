@@ -192,6 +192,9 @@
 // Returns matcher for the "Payment Methods" button in the settings menu.
 + (id<GREYMatcher>)paymentMethodsButton;
 
+// Returns matcher for the "Languages" button in the settings menu.
++ (id<GREYMatcher>)languagesButton;
+
 // Returns matcher for the "Add Credit Card" view in the Settings menu.
 + (id<GREYMatcher>)addCreditCardView;
 
