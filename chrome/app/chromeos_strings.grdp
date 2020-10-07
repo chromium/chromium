@@ -5483,6 +5483,20 @@
       Your device is low on storage. At least <ph name="MINIMUM_SPACE">$1<ex>16GB</ex></ph> of free space is required to use <ph name="APP_NAME">$2<ex>Plugin VM</ex></ph>. To increase free space, delete files from device.
   </message>
 
+  <!-- Strings for camera/mic permission -->
+  <message name="IDS_CAMERA_NOTIFICATION_SOURCE" desc="The name of the source of a camera notification ">
+    Camera
+  </message>
+  <message name="IDS_MIC_NOTIFICATION_SOURCE" desc="The name of the source of a mic notification ">
+    Microphone
+  </message>
+  <message name="IDS_APP_USING_CAMERA_NOTIFICATION_MESSAGE" desc="Message shown in notification when an app is using the camera">
+    <ph name="APP_NAME">$1<ex>Parallels Desktop</ex></ph> is using your camera
+  </message>
+  <message name="IDS_APP_USING_MIC_NOTIFICATION_MESSAGE" desc="Message shown in notification when an app is using the microphone">
+    <ph name="APP_NAME">$1<ex>Parallels Desktop</ex></ph> is using your microphone
+  </message>
+
   <!-- Strings for Account Manager error screen -->
   <message name="IDS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TITLE" desc="Title for the Chrome OS Account Manager error screen when addition of secondary Google Accounts is disabled.">
     Addition of more Google Accounts is disabled

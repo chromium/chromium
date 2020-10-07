@@ -8,6 +8,7 @@
 
 #include "ash/media/media_notification_constants.h"
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -102,21 +103,32 @@ NotificationCounterView::~NotificationCounterView() {
 void NotificationCounterView::Update() {
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
-  size_t notification_count =
-      message_center::MessageCenter::Get()->NotificationCount();
 
   // If flag is set, do not include media notifications in count.
   // TODO(crbug.com/1111881) This code can be removed when OS media controls are
   // launched (expected by M90).
-  if (base::FeatureList::IsEnabled(features::kMediaNotificationsCounter)) {
-    const message_center::NotificationList::Notifications& visible =
-        message_center::MessageCenter::Get()->GetVisibleNotifications();
-    notification_count = std::count_if(
-        visible.begin(), visible.end(),
-        [](message_center::Notification* notification) {
-          return notification->notifier_id().id != kMediaSessionNotifierId;
-        });
-  }
+  const bool dont_count_media_notification =
+      base::FeatureList::IsEnabled(features::kMediaNotificationsCounter);
+
+  const message_center::NotificationList::Notifications& visible =
+      message_center::MessageCenter::Get()->GetVisibleNotifications();
+
+  size_t notification_count = std::count_if(
+      visible.begin(), visible.end(),
+      [dont_count_media_notification](
+          message_center::Notification* notification) {
+        const std::string& notifier = notification->notifier_id().id;
+        // Don't count these notifications since we have `CameraMicTrayItemView`
+        // to show indicators on the systray.
+        if (notifier == kVmCameraNotifierId || notifier == kVmMicNotifierId) {
+          return false;
+        }
+        if (dont_count_media_notification &&
+            notifier == kMediaSessionNotifierId) {
+          return false;
+        }
+        return true;
+      });
 
   if (notification_count == 0 ||
       message_center::MessageCenter::Get()->IsQuietMode() ||

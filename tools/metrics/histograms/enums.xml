@@ -3040,6 +3040,7 @@ Unknown properties are collapsed to zero. -->
   <int value="9" label="OS Settings main page"/>
   <int value="10" label="App Management main view (Plugin VM)"/>
   <int value="11" label="DBus Service (Plugin VM)"/>
+  <int value="12" label="Notification (Plugin VM)"/>
 </enum>
 
 <enum name="AppManagementUserAction">

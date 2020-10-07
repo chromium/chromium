@@ -6,6 +6,7 @@
 
 #include "ash/media/media_notification_constants.h"
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -64,6 +65,10 @@ class NotificationCounterViewTest : public AshTestBase {
 };
 
 TEST_F(NotificationCounterViewTest, CountForDisplay) {
+  // VM camera/mic notifications are ignored by the counter.
+  AddNotification("camera", kVmCameraNotifierId);
+  AddNotification("mic", kVmMicNotifierId);
+
   // Not visible when count == 0.
   notification_counter_view()->Update();
   EXPECT_EQ(0, notification_counter_view()->count_for_display_for_testing());
