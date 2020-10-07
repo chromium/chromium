@@ -27,6 +27,18 @@ public interface ThreadStrictModeInterceptor {
     void install(ThreadPolicy detectors);
 
     /**
+     * Builds ThreadStrictModeInterceptor with the death penalty and with
+     * {@link KnownViolations} exempted.
+     */
+    public static ThreadStrictModeInterceptor buildWithDeathPenaltyAndKnownViolationExemptions() {
+        ThreadStrictModeInterceptor.Builder threadInterceptor =
+                new ThreadStrictModeInterceptor.Builder();
+        threadInterceptor.replaceAllPenaltiesWithDeathPenalty();
+        KnownViolations.addExemptions(threadInterceptor);
+        return threadInterceptor.build();
+    }
+
+    /**
      * Builds a configuration for StrictMode enforcement.
      *
      * The API (but not the implementation) should stay in sync with the API used by

@@ -24,6 +24,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.components.strictmode.ThreadStrictModeInterceptor;
 import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.FullscreenCallback;
 import org.chromium.weblayer.NewTabCallback;
@@ -178,8 +179,8 @@ public class InstrumentationActivity extends FragmentActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         // JaCoCo injects code that does file access, which doesn't work well with strict mode.
         if (!isJaCoCoEnabled()) {
-            StrictMode.setThreadPolicy(
-                    new ThreadPolicy.Builder().detectAll().penaltyLog().penaltyDeath().build());
+            ThreadStrictModeInterceptor.buildWithDeathPenaltyAndKnownViolationExemptions().install(
+                    new ThreadPolicy.Builder().detectAll().build());
             // This doesn't use detectAll() as the untagged sockets policy is encountered in tests
             // using TestServer.
             StrictMode.setVmPolicy(new VmPolicy.Builder()
