@@ -265,15 +265,6 @@ void PageSpecificContentSettingsDelegate::OnWebDatabaseAccessAllowed(
       web_contents());
 #endif  // !defined(OS_ANDROID)
 }
-void PageSpecificContentSettingsDelegate::DidStartNavigation(
-    content::NavigationHandle* navigation_handle) {
-#if !defined(OS_ANDROID)
-  if (cookie_access_helper_ && navigation_handle->IsInMainFrame() &&
-      !navigation_handle->IsSameDocument()) {
-    cookie_access_helper_->ClearSeenCookies();
-  }
-#endif  // !defined(OS_ANDROID)
-}
 
 void PageSpecificContentSettingsDelegate::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
