@@ -14,6 +14,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 
 namespace views {
@@ -103,6 +104,9 @@ class VIEWS_EXPORT Link : public Label {
 
   DISALLOW_COPY_AND_ASSIGN(Link);
 };
+
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Link, Label)
+END_VIEW_BUILDER(VIEWS_EXPORT, Link)
 
 }  // namespace views
 
