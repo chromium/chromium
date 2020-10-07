@@ -217,6 +217,13 @@ class PageAllocator : public v8::PageAllocator {
                       size_t length,
                       size_t alignment,
                       v8::PageAllocator::Permission permissions) override {
+    if (permissions == v8::PageAllocator::Permission::kNoAccessWillJitLater) {
+      // We could use this information to conditionally set the MAP_JIT flag
+      // on Mac-arm64; however this permissions value is intended to be a
+      // short-term solution, so we continue to set MAP_JIT for all V8 pages
+      // for now.
+      permissions = v8::PageAllocator::Permission::kNoAccess;
+    }
     base::PageAccessibilityConfiguration config = GetPageConfig(permissions);
     bool commit = (permissions != v8::PageAllocator::Permission::kNoAccess);
     return base::AllocPages(address, length, alignment, config,
