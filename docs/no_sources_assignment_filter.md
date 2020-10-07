@@ -4,6 +4,11 @@ There is a [strong][0] [consensus][1] that the set_sources_assignment_filter
 feature from GN is a mis-feature and should be removed. This requires that
 Chromium's BUILD.gn file stop using the feature.
 
+This conversion is now complete. There are a few straggler calls to
+`set_sources_assignment_filter([])` that are no longer needed, but
+the Chromium build now no longer sets a default sources assignment filter,
+and all build files must manage `sources` with explicit if statements.
+
 ## Why convert
 
 When set_sources_assignment_filter is called, it configures a list of patterns
@@ -27,8 +32,7 @@ had multiple drawbacks:
     in the whole project, thus it has significant negative impact on the
     performance of gn
 
-Since September 2020, the filter is enabled only for the files that have not
-yet been converted. Eventually, this will be removed.
+Since October 2020, the filter is no longer used.
 
 ## Conversion pattern
 
@@ -73,15 +77,6 @@ to
 Since the second pattern never assign a name that will be filtered out, then
 it is compatible whether the set_sources_assignment_filter feature is used or
 not.
-
-Once conversion is done, remove the following lines from the top of the file
-to avoid regressions:
-
-```
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-sources_assignment_filter = deprecated_default_sources_assignment_filter
-```
-
 
 [0]: https://groups.google.com/a/chromium.org/d/topic/chromium-dev/hyLuCU6g2V4/discussion
 [1]: https://groups.google.com/a/chromium.org/d/topic/gn-dev/oQcYStl_WkI/discussion
