@@ -1353,8 +1353,8 @@ Polymer({
     this.startLoadingTimer_();
     const offlineLogin = this.$['offline-gaia'];
     offlineLogin.reset();
-    if ('enterpriseDisplayDomain' in params)
-      offlineLogin.domain = params['enterpriseDisplayDomain'];
+    if ('enterpriseDomainManager' in params)
+      offlineLogin.manager = params['enterpriseDomainManager'];
     if ('emailDomain' in params)
       offlineLogin.emailDomain = '@' + params['emailDomain'];
     offlineLogin.setEmail(params.email);

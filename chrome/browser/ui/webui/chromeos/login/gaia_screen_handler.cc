@@ -161,6 +161,12 @@ GaiaScreenHandler::GaiaScreenMode GetGaiaScreenMode(const std::string& email,
   return GaiaScreenHandler::GAIA_SCREEN_MODE_DEFAULT;
 }
 
+std::string GetEnterpriseDomainManager() {
+  policy::BrowserPolicyConnectorChromeOS* connector =
+      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  return connector->GetEnterpriseDomainManager();
+}
+
 std::string GetEnterpriseDisplayDomain() {
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
@@ -487,11 +493,15 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   const std::string enterprise_display_domain(GetEnterpriseDisplayDomain());
   const std::string enterprise_enrollment_domain(
       GetEnterpriseEnrollmentDomain());
+  const std::string enterprise_domain_manager(GetEnterpriseDomainManager());
   if (!enterprise_display_domain.empty())
     params.SetString("enterpriseDisplayDomain", enterprise_display_domain);
   if (!enterprise_enrollment_domain.empty()) {
     params.SetString("enterpriseEnrollmentDomain",
                      enterprise_enrollment_domain);
+  }
+  if (!enterprise_domain_manager.empty()) {
+    params.SetString("enterpriseDomainManager", enterprise_domain_manager);
   }
   params.SetBoolean("enterpriseManagedDevice",
                     g_browser_process->platform_part()

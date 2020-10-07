@@ -126,6 +126,9 @@ cr.define('cr.login', function() {
                      // Default is |true|.
     'flow',          // One of 'default', 'enterprise', or 'theftprotection'.
     'enterpriseDisplayDomain',     // Current domain name to be displayed.
+    'enterpriseDomainManager',     // Manager of the current domain. Can be
+                                   // either a domain name (foo.com) or an email
+                                   // address (admin@foo.com).
     'enterpriseEnrollmentDomain',  // Domain in which hosting device is (or
                                    // should be) enrolled.
     'emailDomain',                 // Value used to prefill domain for email.

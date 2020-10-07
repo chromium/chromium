@@ -20,7 +20,7 @@
 
   Attributes:
     'showEnterpriseMessage' - If the "manged by" message should be shown.
-    'domain' - The enterprise domain the device is managed by.
+    'manager' - The entity (email or domain) the device is managed by.
     'emailDomain' - autocomplete domain for the email input.
 
   Events:
@@ -58,8 +58,8 @@
             </div>
             <div id="subtitle-container">
               <div id="managedBy" class="enterprise-info"
-                  hidden$="[[!domain]]">
-                  [[i18nDynamic(locale, 'enterpriseInfoMessage', domain)]]
+                  hidden$="[[!manager]]">
+                  [[i18nDynamic(locale, 'enterpriseInfoMessage', manager)]]
               </div>
             </div>
             <gaia-input-form id="email-input-form"

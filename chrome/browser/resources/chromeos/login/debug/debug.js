@@ -532,7 +532,7 @@ cr.define('cr.ui.login.debug', function() {
           trigger: (screen) => {
             screen.loadAuthExtension({
               screenMode: 1,  // Offline
-              enterpriseDisplayDomain: 'example.com',
+              enterpriseDomainManager: 'example.com',
             });
           },
         },

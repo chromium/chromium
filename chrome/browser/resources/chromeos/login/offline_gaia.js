@@ -21,10 +21,10 @@
       },
 
       /**
-       * Management domain.
+       * Domain manager.
        * @type {?string}
        */
-      domain: {
+      manager: {
         type: String,
         value: '',
       },
@@ -94,7 +94,7 @@
     reset() {
       this.disabled = false;
       this.emailDomain = '';
-      this.domain = '';
+      this.manager = '';
       this.email_ = '';
       this.fullEmail_ = '';
       this.$.emailInput.isInvalid = false;
