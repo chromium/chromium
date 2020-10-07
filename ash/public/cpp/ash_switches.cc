@@ -19,6 +19,10 @@ constexpr base::TimeDelta kAshContextualNudgesMaxInterval =
 
 namespace ash {
 namespace switches {
+  
+// Clear the fast ink buffer upon creation. This is needed on some devices that
+// do not zero out new buffers.
+const char kAshClearFastInkBuffer[] = "ash-clear-fast-ink-buffer";
 
 // Indicates the current color mode of ash.
 const char kAshColorMode[] = "ash-color-mode";
@@ -173,6 +177,11 @@ bool ContextualNudgesResetShownCount() {
 
 bool IsUsingShelfAutoDim() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kEnableDimShelf);
+}
+
+bool ShouldClearFastInkBuffer() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kAshClearFastInkBuffer);
 }
 
 }  // namespace switches

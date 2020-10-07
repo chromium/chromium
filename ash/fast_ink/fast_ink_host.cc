@@ -10,6 +10,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/ash_switches.h"
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/base/math_util.h"
@@ -258,6 +259,21 @@ FastInkHost::FastInkHost(aura::Window* host_window,
                                   gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
                                   gpu::kNullSurfaceHandle);
   LOG_IF(ERROR, !gpu_memory_buffer_) << "Failed to create GPU memory buffer";
+
+  if (ash::switches::ShouldClearFastInkBuffer()) {
+    bool map_result = gpu_memory_buffer_->Map();
+    LOG_IF(ERROR, !map_result) << "Failed to map gpu buffer";
+    uint8_t* memory = static_cast<uint8_t*>(gpu_memory_buffer_->memory(0));
+    if (memory != nullptr) {
+      gfx::Size size = gpu_memory_buffer_->GetSize();
+      int stride = gpu_memory_buffer_->stride(0);
+      // Clear the buffer before usage, since it may be uninitialized.
+      // (http://b/168735625)
+      for (int i = 0; i < size.height(); ++i)
+        memset(memory + i * stride, 0, size.width() * 4);
+    }
+    gpu_memory_buffer_->Unmap();
+  }
 
   frame_sink_holder_ = std::make_unique<LayerTreeFrameSinkHolder>(
       this, host_window_->CreateLayerTreeFrameSink());
