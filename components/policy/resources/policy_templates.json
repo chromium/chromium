@@ -4071,7 +4071,7 @@
       'id': 116,
       'caption': '''Proxy settings''',
       'tags': ['system-security'],
-      'desc': '''"Setting the policy configures the proxy settings for Chrome and ARC-apps, which ignore all proxy-related options specified from the command line.
+      'desc': '''Setting the policy configures the proxy settings for Chrome and ARC-apps, which ignore all proxy-related options specified from the command line.
 
        Leaving the policy unset lets users choose their proxy settings.
 
@@ -19730,7 +19730,7 @@
       },
       'example_value': True,
       'id': 527,
-      'caption': '''"Allow Google Assistant to access screen context"''',
+      'caption': '''Allow Google Assistant to access screen context''',
       'desc': '''Setting the policy to Enabled lets Google Assistant access screen context and send that data to a server. Setting the policy to Disabled keeps Google Assistant from screen context.
 
       Leaving the policy unset lets users decide to turn this feature on or off.''',
@@ -19766,7 +19766,7 @@
       },
       'example_value': True,
       'id': 694,
-      'caption': '''"Allow Quick Answers to access selected content"''',
+      'caption': '''Allow Quick Answers to access selected content''',
       'desc': '''This policy gives Quick Answers permission to access selected content and send the info to server.
 
       If the policy is enabled, Quick Answers will be allowed to access selected content.
