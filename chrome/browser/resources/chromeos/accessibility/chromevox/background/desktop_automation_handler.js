@@ -83,7 +83,7 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
         EventType.SCROLL_VERTICAL_POSITION_CHANGED,
         this.onScrollPositionChanged);
     // Called when a same-page link is followed or the url fragment changes.
-    this.addListener_(EventType.SCROLLED_TO_ANCHOR, this.onEventDefault);
+    this.addListener_(EventType.SCROLLED_TO_ANCHOR, this.onScrolledToAnchor);
     this.addListener_(EventType.SELECTION, this.onSelection);
     this.addListener_(EventType.TEXT_CHANGED, this.onEditableChanged_);
     this.addListener_(
@@ -546,6 +546,29 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
         this.onFocus(event);
       }
     }.bind(this));
+  }
+
+  /**
+   * Provides all feedback once a scrolled to anchor event fires.
+   * @param {!ChromeVoxEvent} evt
+   */
+  onScrolledToAnchor(evt) {
+    if (!evt.target) {
+      return;
+    }
+
+    if (ChromeVoxState.instance.currentRange) {
+      const target = evt.target;
+      const current = ChromeVoxState.instance.currentRange.start.node;
+      if (AutomationUtil.getTopLevelRoot(current) !=
+          AutomationUtil.getTopLevelRoot(target)) {
+        // Ignore this event if the root of the target differs from that of the
+        // current range.
+        return;
+      }
+    }
+
+    this.onEventDefault(evt);
   }
 
   /**
