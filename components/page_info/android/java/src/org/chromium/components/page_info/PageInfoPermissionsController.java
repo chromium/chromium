@@ -75,6 +75,7 @@ public class PageInfoPermissionsController
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         rowParams.title = mTitle;
         rowParams.iconResId = R.drawable.ic_tune_24dp;
+        rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::launchSubpage;
         rowParams.subtitle = getPermissionSummaryString(params.permissions, resources);
         rowParams.visible = rowParams.subtitle != null;

@@ -23,6 +23,7 @@ import android.widget.ScrollView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -203,11 +204,12 @@ public class PageInfoDialog {
     }
 
     private ViewGroup createSheetContainer(Context context, View containerView) {
-        return new ScrollView(context) {
+        return new FadingEdgeScrollView(context, null) {
             @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                 heightMeasureSpec = MeasureSpec.makeMeasureSpec(
-                        containerView != null ? containerView.getHeight() : 0, MeasureSpec.AT_MOST);
+                        containerView != null ? containerView.getHeight() * 90 / 100 : 0,
+                        MeasureSpec.AT_MOST);
                 super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             }
         };
