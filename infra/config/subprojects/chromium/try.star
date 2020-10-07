@@ -732,18 +732,6 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
-    name = "closure_compilation",
-    branch_selector = branches.STANDARD_RELEASES,
-    executable = "recipe:closure_compilation",
-    main_list_view = settings.main_list_view_name,
-    tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/third_party/closure_compiler/.+",
-        ],
-    ),
-)
-
-try_.chromium_linux_builder(
     name = "chromium_presubmit",
     branch_selector = branches.STANDARD_RELEASES,
     executable = "recipe:presubmit",

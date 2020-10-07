@@ -98,10 +98,6 @@ build_recipe(
 )
 
 build_recipe(
-    name = "recipe:closure_compilation",
-)
-
-build_recipe(
     name = "recipe:cronet",
 )
 

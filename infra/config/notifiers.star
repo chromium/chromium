@@ -150,26 +150,6 @@ tree_closure_notifier(
 )
 
 luci.notifier(
-    name = "Closure Compilation Linux",
-    notify_emails = [
-        "dbeam+closure-bots@chromium.org",
-        "fukino+closure-bots@chromium.org",
-        "hirono+closure-bots@chromium.org",
-        "vitalyp@chromium.org",
-    ],
-    on_occurrence = ["FAILURE"],
-    failed_step_regexp = [
-        "update_scripts",
-        "setup_build",
-        "bot_update",
-        "generate_gyp_files",
-        "compile",
-        "generate_v2_gyp_files",
-        "compile_v2",
-    ],
-)
-
-luci.notifier(
     name = "Site Isolation Android",
     notify_emails = [
         "nasko+fyi-bots@chromium.org",

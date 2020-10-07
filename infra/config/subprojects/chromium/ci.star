@@ -113,7 +113,6 @@ ci.console_view(
     branch_selector = branches.STANDARD_RELEASES,
     ordering = {
         None: [
-            "closure_compilation",
             "code_coverage",
             "cronet",
             "mac",
@@ -2181,15 +2180,6 @@ ci.fuzz_libfuzzer_builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 3,
     ),
-)
-
-ci.fyi_builder(
-    name = "Closure Compilation Linux",
-    console_view_entry = ci.console_view_entry(
-        category = "closure_compilation",
-    ),
-    executable = "recipe:closure_compilation",
-    notifies = ["Closure Compilation Linux"],
 )
 
 ci.fyi_builder(

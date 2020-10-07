@@ -889,7 +889,6 @@
       'cast_shell_audio_linux': 'cast_audio_release_trybot',
       'cast_shell_linux': 'cast_release_trybot',
       'chromium_presubmit': 'presubmit',
-      'closure_compilation': 'closure_compilation',
       'fuchsia_arm64': 'release_trybot_fuchsia_arm64',
       'fuchsia-arm64-cast': 'release_trybot_fuchsia_arm64_cast',
       'fuchsia-compile-x64-dbg': 'debug_bot_fuchsia_compile_only',
@@ -1724,11 +1723,6 @@
 
     'clang_tot_win_release_cross': [
       'clang_tot', 'win_cross', 'minimal_symbols', 'shared', 'release', 'dcheck_always_on',
-    ],
-
-    'closure_compilation': [
-      # The closure bots run their own recipe and shouldn't go through MB.
-      'error',
     ],
 
     'codesearch_gen_chromium_android_bot': [
