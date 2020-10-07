@@ -26,9 +26,11 @@ class UploadClient {
   using ReportSuccessfulUploadCallback =
       base::RepeatingCallback<void(SequencingInformation)>;
 
-  static StatusOr<std::unique_ptr<UploadClient>> Create(
+  static void Create(
       std::unique_ptr<policy::CloudPolicyClient> cloud_policy_client,
-      ReportSuccessfulUploadCallback report_success_cb);
+      ReportSuccessfulUploadCallback report_upload_success_cb,
+      base::OnceCallback<void(StatusOr<std::unique_ptr<UploadClient>>)>
+          created_cb);
 
   ~UploadClient();
   UploadClient(const UploadClient& other) = delete;

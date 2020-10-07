@@ -21,6 +21,10 @@
 #include "components/policy/proto/record_constants.pb.h"
 #include "net/base/backoff_entry.h"
 
+#ifdef OS_CHROMEOS
+#include "chrome/browser/profiles/profile.h"
+#endif  // OS_CHROMEOS
+
 namespace reporting {
 
 // DmServerUploadService uploads events to the DMServer. It does not manage
@@ -131,18 +135,20 @@ class DmServerUploadService {
     SEQUENCE_CHECKER(sequence_checker_);
   };
 
-  // Will create a DMServerUploadService with handlers.
-  // On successful completion returns a DMServerUploadService.
-  // If |client| is null, will return error::INVALID_ARGUMENT.
+  // Will asynchronously create a DMServerUploadService with handlers.
+  // On successful completion will call |created_cb| with DMServerUploadService.
+  // If |client| is null, will call |created_cb| with error::INVALID_ARGUMENT.
   // If any handlers fail to create, or the policy::CloudPolicyClient is null,
-  // will return error::UNAVAILABLE.
+  // will call |created_cb| with error::UNAVAILABLE.
   //
   // |client| must not be null.
-  // |completion_cb| should report back to the holder of the created object
-  // whenever a record set is successfully uploaded.
-  static StatusOr<std::unique_ptr<DmServerUploadService>> Create(
+  // |report_upload_success_cb| should report back to the holder of the created
+  // object whenever a record set is successfully uploaded.
+  static void Create(
       std::unique_ptr<policy::CloudPolicyClient> client,
-      ReportSuccessfulUploadCallback completion_cb);
+      ReportSuccessfulUploadCallback report_upload_success_cb,
+      base::OnceCallback<void(StatusOr<std::unique_ptr<DmServerUploadService>>)>
+          created_cb);
   ~DmServerUploadService();
 
   Status EnqueueUpload(std::unique_ptr<std::vector<EncryptedRecord>> record);
@@ -151,7 +157,13 @@ class DmServerUploadService {
   DmServerUploadService(std::unique_ptr<policy::CloudPolicyClient> client,
                         ReportSuccessfulUploadCallback completion_cb);
 
-  Status InitRecordHandlers();
+  static void InitRecordHandlers(
+      std::unique_ptr<DmServerUploadService> uploader,
+#ifdef OS_CHROMEOS
+      Profile* primary_profile,
+#endif  // OS_CHROMEOS
+      base::OnceCallback<void(StatusOr<std::unique_ptr<DmServerUploadService>>)>
+          created_cb);
 
   void UploadCompletion(StatusOr<SequencingInformation>) const;
 

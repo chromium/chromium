@@ -17,15 +17,28 @@
 namespace reporting {
 
 // static
-StatusOr<std::unique_ptr<UploadClient>> UploadClient::Create(
+void UploadClient::Create(
     std::unique_ptr<policy::CloudPolicyClient> cloud_policy_client,
-    ReportSuccessfulUploadCallback report_success_cb) {
+    ReportSuccessfulUploadCallback report_upload_success_cb,
+    base::OnceCallback<void(StatusOr<std::unique_ptr<UploadClient>>)>
+        created_cb) {
   auto upload_client = base::WrapUnique(new UploadClient());
-  ASSIGN_OR_RETURN(upload_client->dm_server_upload_service_,
-                   DmServerUploadService::Create(std::move(cloud_policy_client),
-                                                 report_success_cb));
-
-  return upload_client;
+  DmServerUploadService::Create(
+      std::move(cloud_policy_client), report_upload_success_cb,
+      base::BindOnce(
+          [](std::unique_ptr<UploadClient> upload_client,
+             base::OnceCallback<void(StatusOr<std::unique_ptr<UploadClient>>)>
+                 created_cb,
+             StatusOr<std::unique_ptr<DmServerUploadService>> uploader) {
+            if (!uploader.ok()) {
+              std::move(created_cb).Run(uploader.status());
+              return;
+            }
+            upload_client->dm_server_upload_service_ =
+                std::move(uploader.ValueOrDie());
+            std::move(created_cb).Run(std::move(upload_client));
+          },
+          std::move(upload_client), std::move(created_cb)));
 }
 
 Status UploadClient::EnqueueUpload(
