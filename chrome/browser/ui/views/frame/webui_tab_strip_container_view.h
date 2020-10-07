@@ -11,6 +11,7 @@
 #include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_embedder.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_metrics.h"
@@ -139,10 +140,16 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   views::View* tab_contents_container_;
   views::View* tab_counter_ = nullptr;
 
+#if defined(OS_WIN)
   // If the user interacts with Windows in a way that changes the width of the
   // window, close the top container. This is similar to the auto-close when the
   // user touches outside the tabstrip.
+  //
+  // TODO(dfried, davidbienvenu): we can remove this as soon as we move to the
+  // more modern Windows drag-drop system, avoiding some of the weirdness around
+  // starting drag-drop.
   int old_top_container_width_ = 0;
+#endif  // defined(OS_WIN)
 
   base::Optional<float> current_drag_height_;
 
