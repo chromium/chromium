@@ -1135,6 +1135,11 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
   GLint pack_skip_rows_;
   GLint unpack_image_height_;
   GLint unpack_skip_images_;
+
+ private:
+  void RecordInternalFormatParameter(GLenum internalformat,
+                                     GLint* values,
+                                     GLint length);
 };
 
 }  // namespace blink
