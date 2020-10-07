@@ -6614,3 +6614,6 @@ crbug.com/1131252 virtual/threaded/external/wpt/css/css-transforms/animation/tra
 # Sheriff 2020-09-30
 crbug.com/1133821 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/one-custom-property-animation.https.html [ Pass Failure ]
 crbug.com/1133821 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/two-custom-property-animation.https.html [ Pass Failure ]
+
+#Sheriff 2020-10-07
+crbug.com/1135405 http/tests/devtools/sources/debugger-pause/debugger-pause-infinite-loop.js [ Pass Timeout ]
