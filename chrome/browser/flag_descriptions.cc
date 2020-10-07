@@ -4480,6 +4480,12 @@ const char kZeroCopyVideoCaptureDescription[] =
 
 #if defined(TOOLKIT_VIEWS)
 
+const char kDesktopInProductHelpSnoozeName[] =
+    "Allow snooze on supported in-product help promos";
+const char kDesktopInProductHelpSnoozeDescription[] =
+    "Snoozing an in-product help promo closes it and schedules it to be shown "
+    "later. When enabled, this functionality is allowed on supported promos.";
+
 const char kEnableMDRoundedCornersOnDialogsName[] =
     "MD corners on secondary UI";
 const char kEnableMDRoundedCornersOnDialogsDescription[] =
