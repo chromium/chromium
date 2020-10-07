@@ -159,8 +159,8 @@ class AndroidBLEAdvert
       : env_(env), advert_(std::move(advert)) {
     DCHECK(env_->IsInstanceOf(
         advert_.obj(),
-        env_->FindClass(
-            "org/chromium/chrome/browser/webauth/authenticator/BLEAdvert")));
+        org_chromium_chrome_browser_webauth_authenticator_BLEAdvert_clazz(
+            env)));
   }
 
   ~AndroidBLEAdvert() override {
@@ -183,8 +183,8 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
       : env_(env), cable_authenticator_(cable_authenticator) {
     DCHECK(env_->IsInstanceOf(
         cable_authenticator_.obj(),
-        env_->FindClass("org/chromium/chrome/browser/webauth/authenticator/"
-                        "CableAuthenticator")));
+        org_chromium_chrome_browser_webauth_authenticator_CableAuthenticator_clazz(
+            env)));
   }
 
   // Platform:
@@ -270,8 +270,8 @@ class USBTransport : public device::cablev2::authenticator::Transport {
       : env_(env), usb_device_(std::move(usb_device)) {
     DCHECK(env_->IsInstanceOf(
         usb_device_.obj(),
-        env_->FindClass(
-            "org/chromium/chrome/browser/webauth/authenticator/USBHandler")));
+        org_chromium_chrome_browser_webauth_authenticator_USBHandler_clazz(
+            env)));
   }
 
   ~USBTransport() override { Java_USBHandler_close(env_, usb_device_); }
