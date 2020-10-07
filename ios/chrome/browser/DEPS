@@ -71,6 +71,7 @@ include_rules = [
   "+components/reading_list",
   "+components/rlz",
   "+components/safe_browsing",
+  "+components/safety_check",
   "+components/search",
   "+components/search_engines",
   "+components/search_provider_logos",

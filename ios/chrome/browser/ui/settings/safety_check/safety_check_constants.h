@@ -7,6 +7,24 @@
 
 #import <Foundation/Foundation.h>
 
+// UMA histogram values for Safety check interactions. Some value don't apply to
+// iOS. Note: this should stay in sync with SettingsSafetyCheckInteractions in
+// enums.xml.
+enum class SafetyCheckInteractions {
+  kStarted = 0,
+  kUpdatesRelaunch = 1,
+  kPasswordsManage = 2,
+  kSafeBrowsingManage = 3,
+  kExtensionsReview = 4,
+  kChromeCleanerReboot = 5,
+  kChromeCleanerReview = 6,
+  // New elements go above.
+  kMaxValue = kChromeCleanerReview,
+};
+
+// Address of page with safebrowsing settings pages.
+extern NSString* const kSafeBrowsingSafetyCheckStringURL;
+
 // The NSUserDefaults key for the timestamp of last time safety check found an
 // issue.
 extern NSString* const kTimestampOfLastIssueFoundKey;

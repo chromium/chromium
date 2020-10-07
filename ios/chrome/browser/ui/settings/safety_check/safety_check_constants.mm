@@ -8,5 +8,8 @@
 #error "This file requires ARC support."
 #endif
 
+NSString* const kSafeBrowsingSafetyCheckStringURL =
+    @"chrome://settings/syncSetup";
+
 NSString* const kTimestampOfLastIssueFoundKey =
     @"TimestampOfLastSafetyCheckIssueFound";
