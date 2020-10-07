@@ -55,12 +55,12 @@
       'pid': 17851,
       'tid': 23,
       'ts': 142000,
-      'args': {}
+      'args': {'data': {'stackTrace': []}}
     }
   ];
 
-  var model = PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents);
-  var event = PerformanceTestRunner.mainTrackEvents().find(
+  PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents);
+  const event = PerformanceTestRunner.mainTrackEvents().find(
       e => e.name === TimelineModel.TimelineModel.RecordType.FunctionCall);
   TestRunner.addResult(`${event.startTime} ${event.endTime}`);
   TestRunner.completeTest();
