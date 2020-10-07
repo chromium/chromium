@@ -38,15 +38,17 @@ class InputStreamImpl : public InputStream {
                             base::Unretained(this)));
   }
 
-  ~InputStreamImpl() override = default;
+  ~InputStreamImpl() override { this->Close(); }
 
   InputStreamImpl(const InputStreamImpl&) = delete;
   InputStreamImpl& operator=(const InputStreamImpl&) = delete;
 
   // InputStream:
   ExceptionOr<ByteArray> Read(std::int64_t size) override {
-    if (size <= 0 || size > std::numeric_limits<uint32_t>::max())
+    if (!receive_stream_ || size <= 0 ||
+        size > std::numeric_limits<uint32_t>::max()) {
       return {Exception::kIo};
+    }
 
     pending_read_buffer_ = std::make_unique<ByteArray>(size);
     pending_read_buffer_pos_ = 0;
@@ -64,6 +66,9 @@ class InputStreamImpl : public InputStream {
     return exception_or_received_byte_array_;
   }
   Exception Close() override {
+    if (!receive_stream_)
+      return {Exception::kSuccess};
+
     // Must cancel |receive_stream_watcher_| on the same sequence it was
     // initialized on.
     base::WaitableEvent task_run;
@@ -153,13 +158,16 @@ class OutputStreamImpl : public OutputStream {
                             base::Unretained(this)));
   }
 
-  ~OutputStreamImpl() override = default;
+  ~OutputStreamImpl() override { this->Close(); }
 
   OutputStreamImpl(const OutputStreamImpl&) = delete;
   OutputStreamImpl& operator=(const OutputStreamImpl&) = delete;
 
   // OutputStream:
   Exception Write(const ByteArray& data) override {
+    if (!send_stream_)
+      return {Exception::kIo};
+
     DCHECK(!write_success_);
     pending_write_buffer_ = std::make_unique<ByteArray>(data);
     pending_write_buffer_pos_ = 0;
@@ -185,6 +193,9 @@ class OutputStreamImpl : public OutputStream {
     return {Exception::kSuccess};
   }
   Exception Close() override {
+    if (!send_stream_)
+      return {Exception::kSuccess};
+
     // Must cancel |send_stream_watcher_| on the same sequence it was
     // initialized on.
     base::WaitableEvent task_run;
@@ -278,21 +289,6 @@ BluetoothSocket::BluetoothSocket(
 BluetoothSocket::~BluetoothSocket() {
   if (socket_)
     Close();
-}
-
-InputStream& BluetoothSocket::GetInputStream() {
-  DCHECK(input_stream_);
-  return *input_stream_;
-}
-
-OutputStream& BluetoothSocket::GetOutputStream() {
-  DCHECK(output_stream_);
-  return *output_stream_;
-}
-
-Exception BluetoothSocket::Close() {
-  socket_->Disconnect();
-  socket_.reset();
 
   // These properties must be destroyed on the same sequence they are later run
   // on. See |task_runner_|.
@@ -310,7 +306,32 @@ Exception BluetoothSocket::Close() {
       base::BindOnce(&BluetoothSocket::DestroyOutputStream,
                      base::Unretained(this), count_down_latch_callback));
 
-  return latch.Await();
+  latch.Await();
+}
+
+InputStream& BluetoothSocket::GetInputStream() {
+  DCHECK(input_stream_);
+  return *input_stream_;
+}
+
+OutputStream& BluetoothSocket::GetOutputStream() {
+  DCHECK(output_stream_);
+  return *output_stream_;
+}
+
+Exception BluetoothSocket::Close() {
+  socket_->Disconnect();
+  socket_.reset();
+  Exception input_exception = input_stream_->Close();
+  Exception output_exception = output_stream_->Close();
+  if (input_exception.Ok() && output_exception.Ok())
+    return {Exception::kSuccess};
+  if (!input_exception.Ok())
+    return input_exception;
+  if (!output_exception.Ok())
+    return output_exception;
+  NOTREACHED();
+  return {Exception::kFailed};
 }
 
 api::BluetoothDevice* BluetoothSocket::GetRemoteDevice() {

@@ -141,6 +141,7 @@ class BluetoothSocketTest : public testing::Test {
   void TearDown() override {
     // Destroy here, not in BluetoothSocketTest's destructor, because this is
     // blocking.
+    base::ScopedAllowBaseSyncPrimitivesForTesting testing_;
     bluetooth_socket_.reset();
   }
 
