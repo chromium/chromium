@@ -375,7 +375,7 @@ class COMPONENT_EXPORT(DBUS) DbusDictEntry
 
 template <typename K, typename V>
 auto MakeDbusDictEntry(K&& k, V&& v) {
-  return DbusDictEntry<K, V>(std::move(k), std::move(v));
+  return DbusDictEntry<K, V>(std::forward<K>(k), std::forward<V>(v));
 }
 
 // A convenience class for DbusArray<DbusDictEntry<DbusString, DbusVariant>>,
