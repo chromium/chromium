@@ -452,8 +452,8 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
   // Specify the buffer that we will put in the mailbox.
   scoped_refptr<ColorBuffer> color_buffer_for_mailbox;
   if (preserve_drawing_buffer_ == kDiscard) {
-    // If we can discard the backbuffer, send the old backbuffer directly
-    // into the mailbox, and allocate (or recycle) a new backbuffer.
+    // Send the old backbuffer directly into the mailbox, and allocate
+    // (or recycle) a new backbuffer.
     color_buffer_for_mailbox = back_color_buffer_;
     back_color_buffer_ = CreateOrRecycleColorBuffer();
     if (!back_color_buffer_) {
@@ -463,8 +463,9 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
     AttachColorBufferToReadFramebuffer();
 
     // Explicitly specify that m_fbo (which is now bound to the just-allocated
-    // m_backColorBuffer) is not initialized, to save GPU memory bandwidth for
-    // tile-based GPU architectures.
+    // m_backColorBuffer) is not initialized, to save GPU memory bandwidth on
+    // tile-based GPU architectures. Note that the depth and stencil attachments
+    // are also discarded before multisample resolves, implicit or explicit.
     if (discard_framebuffer_supported_) {
       const GLenum kAttachments[3] = {GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT,
                                       GL_STENCIL_ATTACHMENT};
@@ -1314,9 +1315,23 @@ void DrawingBuffer::ResolveMultisampleFramebufferInternal() {
 }
 
 void DrawingBuffer::ResolveIfNeeded() {
+  DCHECK(state_restorer_);
   if (anti_aliasing_mode_ != kAntialiasingModeNone &&
-      !contents_change_resolved_)
+      !contents_change_resolved_) {
+    if (preserve_drawing_buffer_ == kDiscard &&
+        discard_framebuffer_supported_) {
+      // Discard the depth and stencil buffers as early as possible, before
+      // making any potentially-unneeded calls to BindFramebuffer (even no-ops),
+      // in order to maximize the chances that their storage can be kept in tile
+      // memory.
+      const GLenum kAttachments[2] = {GL_DEPTH_ATTACHMENT,
+                                      GL_STENCIL_ATTACHMENT};
+      state_restorer_->SetFramebufferBindingDirty();
+      gl_->BindFramebuffer(GL_FRAMEBUFFER, fbo_);
+      gl_->DiscardFramebufferEXT(GL_FRAMEBUFFER, 2, kAttachments);
+    }
     ResolveMultisampleFramebufferInternal();
+  }
   contents_change_resolved_ = true;
 
   auto* gl = ContextProvider()->ContextGL();
