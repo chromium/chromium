@@ -188,15 +188,4 @@ std::string SystemWebAppManagerTestParamsToString(
                                    TestProfileType::kIncognito,              \
                                    TestProfileType::kGuest)))
 
-// Instantiate |SUITE| for all install types, on a Chrome OS guest session.
-#define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_GUEST_SESSION_P(SUITE) \
-  INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                           \
-      SUITE,                                                                 \
-      ::testing::Combine(                                                    \
-          ::testing::Values(web_app::ProviderType::kBookmarkApps,            \
-                            web_app::ProviderType::kWebApps),                \
-          ::testing::Values(web_app::InstallationType::kManifestInstall,     \
-                            web_app::InstallationType::kWebAppInfoInstall),  \
-          ::testing::Values(TestProfileType::kGuest)))
-
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APP_MANAGER_BROWSERTEST_H_

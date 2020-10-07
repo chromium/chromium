@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
@@ -19,7 +18,6 @@
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/chromeos/printing/print_management/print_management_uma.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/installable/installable_params.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -37,44 +35,9 @@
 #include "chrome/browser/web_launch/web_launch_files_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
-#include "content/public/common/content_switches.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
-
-namespace {
-// Returns the profile where we should launch System Web Apps into. It returns
-// the most appropriate profile for launching, if the provided |profile| is
-// unsuitable. It returns nullptr if the we can't find a suitable profile.
-Profile* GetProfileForSystemWebAppLaunch(Profile* profile) {
-  DCHECK(profile);
-
-  // We can't launch into certain profiles, and we can't find a suitable
-  // alternative.
-  if (profile->IsSystemProfile())
-    return nullptr;
-#if defined(OS_CHROMEOS)
-  if (chromeos::ProfileHelper::IsSigninProfile(profile))
-    return nullptr;
-#endif
-
-  // For a guest sessions, launch into the primary off-the-record profile, which
-  // is used for browsing in guest sessions. We do this because the "original"
-  // profile of the guest session can't create windows.
-  if (profile->IsGuestSession())
-    return profile->GetPrimaryOTRProfile();
-
-  // We don't support launching SWA in incognito profiles, use the original
-  // profile if an incognito profile is provided (with the exception of guest
-  // session, which is implemented with an incognito profile, thus it is handled
-  // above).
-  if (profile->IsIncognitoProfile())
-    return profile->GetOriginalProfile();
-
-  // Use the profile provided in other scenarios.
-  return profile;
-}
-}  // namespace
 
 namespace web_app {
 namespace {
@@ -159,42 +122,20 @@ Browser* LaunchSystemWebApp(Profile* profile,
                             const GURL& url,
                             base::Optional<apps::AppLaunchParams> params,
                             bool* did_create) {
-  Profile* profile_for_launch = GetProfileForSystemWebAppLaunch(profile);
-  if (profile_for_launch == nullptr || profile_for_launch != profile) {
-    // The provided profile can't launch system web apps. Complain about this so
-    // we can catch the call site, and ask them to pick the right profile.
-    base::debug::DumpWithoutCrashing();
-
-    DVLOG(1) << "LaunchSystemWebApp is called on a profile that can't launch "
-                "system  web apps. Please check the profile you are using is "
-                "correct."
-             << (profile_for_launch
-                     ? "Instead, launch the app into a suitable profile "
-                       "based on your intention."
-                     : "Can't find a suitable profile based on the provided "
-                       "argument. Thus ignore the launch request.");
-
-    NOTREACHED();
-
-    if (profile_for_launch == nullptr)
-      return nullptr;
-  }
-
-  auto* provider = WebAppProvider::Get(profile_for_launch);
+  auto* provider = WebAppProvider::Get(profile);
 
   if (!provider)
     return nullptr;
 
   if (!params) {
-    params = CreateSystemWebAppLaunchParams(profile_for_launch, app_type,
+    params = CreateSystemWebAppLaunchParams(profile, app_type,
                                             display::kInvalidDisplayId);
   }
   if (!params)
     return nullptr;
   params->override_url = url;
 
-  DCHECK_EQ(params->app_id,
-            *GetAppIdForSystemWebApp(profile_for_launch, app_type));
+  DCHECK_EQ(params->app_id, *GetAppIdForSystemWebApp(profile, app_type));
 
   // TODO(crbug/1117655): The file manager records metrics directly when opening
   // a file registered to an app, but can't tell if an SWA will ultimately be
@@ -218,8 +159,7 @@ Browser* LaunchSystemWebApp(Profile* profile,
     browser_type = Browser::TYPE_APP_POPUP;
   if (browser_type == Browser::TYPE_APP_POPUP ||
       provider->system_web_app_manager().IsSingleWindow(app_type)) {
-    browser =
-        FindSystemWebAppBrowser(profile_for_launch, app_type, browser_type);
+    browser = FindSystemWebAppBrowser(profile, app_type, browser_type);
   }
 
   // We create the app window if no existing browser found.
@@ -232,10 +172,9 @@ Browser* LaunchSystemWebApp(Profile* profile,
   // CCA supports responsive UI.
   bool can_resize = app_type != SystemAppType::CAMERA;
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions)) {
-    if (!browser) {
-      browser = CreateWebApplicationWindow(profile_for_launch, params->app_id,
+    if (!browser)
+      browser = CreateWebApplicationWindow(profile, params->app_id,
                                            params->disposition, can_resize);
-    }
 
     // Navigate application window to application's |url| if necessary.
     // Help app always navigates because its url might not match the url inside
@@ -247,10 +186,8 @@ Browser* LaunchSystemWebApp(Profile* profile,
           browser, params->app_id, url, WindowOpenDisposition::CURRENT_TAB);
     }
   } else {
-    if (!browser) {
-      browser =
-          CreateApplicationWindow(profile_for_launch, *params, url, can_resize);
-    }
+    if (!browser)
+      browser = CreateApplicationWindow(profile, *params, url, can_resize);
 
     // Navigate application window to application's |url| if necessary.
     // Help app always navigates because its url might not match the url inside
