@@ -14,8 +14,7 @@
     <includes>
       <include name="IDR_PRINT_PREVIEW_PRINT_PREVIEW_HTML"
                file="print_preview.html"
-               type="chrome_html"
-               preprocess="true" />
+               type="chrome_html" />
       <include name="IDR_PRINT_PREVIEW_PRINT_PREVIEW_ROLLUP_JS"
                file="${root_gen_dir}\chrome\browser\resources\print_preview\print_preview.rollup.js"
                use_base_dir="false"
