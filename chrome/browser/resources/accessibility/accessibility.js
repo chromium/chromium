@@ -4,7 +4,44 @@
 
 import 'chrome://resources/js/action_link.js';
 
+import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
+
+class BrowserProxy {
+  toggleAccessibility(processId, routingId, modeId, shouldRequestTree) {
+    chrome.send('toggleAccessibility', [{
+                  processId,
+                  routingId,
+                  modeId,
+                  shouldRequestTree,
+                }]);
+  }
+
+  requestNativeUITree(sessionId, requestType, allow, allowEmpty, deny) {
+    chrome.send('requestNativeUITree', [{
+                  sessionId,
+                  requestType,
+                  filters: {allow, allowEmpty, deny},
+                }]);
+  }
+
+  requestWebContentsTree(
+      processId, routingId, requestType, allow, allowEmpty, deny) {
+    chrome.send('requestWebContentsTree', [
+      {processId, routingId, requestType, filters: {allow, allowEmpty, deny}}
+    ]);
+  }
+
+  requestAccessibilityEvents(processId, routingId, start) {
+    chrome.send('requestAccessibilityEvents', [{processId, routingId, start}]);
+  }
+
+  setGlobalFlag(flagName, enabled) {
+    chrome.send('setGlobalFlag', [{flagName, enabled}]);
+  }
+}
+
+const browserProxy = new BrowserProxy();
 
 // Note: keep these values in sync with the values in
 // ui/accessibility/ax_mode.h
@@ -59,12 +96,8 @@ function toggleAccessibility(data, element, mode, globalStateName) {
   const tree = $(id + ':tree');
   // If the tree is visible, request a new tree with the updated mode.
   const shouldRequestTree = !!tree && tree.style.display != 'none';
-  chrome.send('toggleAccessibility', [{
-                'processId': data.processId,
-                'routingId': data.routingId,
-                'modeId': mode,
-                'shouldRequestTree': shouldRequestTree
-              }]);
+  browserProxy.toggleAccessibility(
+      data.processId, data.routingId, mode, shouldRequestTree);
 }
 
 function requestTree(data, element) {
@@ -83,21 +116,12 @@ function requestTree(data, element) {
   if (data.type == 'browser') {
     const delay = $('native-ui-delay').value;
     setTimeout(() => {
-      chrome.send(
-          'requestNativeUITree', [{
-            'sessionId': data.sessionId,
-            'requestType': requestType,
-            'filters': {'allow': allow, 'allowEmpty': allowEmpty, 'deny': deny}
-          }]);
+      browserProxy.requestNativeUITree(
+          data.sessionId, requestType, allow, allowEmpty, deny);
     }, delay);
   } else {
-    chrome.send(
-        'requestWebContentsTree', [{
-          'processId': data.processId,
-          'routingId': data.routingId,
-          'requestType': requestType,
-          'filters': {'allow': allow, 'allowEmpty': allowEmpty, 'deny': deny}
-        }]);
+    browserProxy.requestWebContentsTree(
+        data.processId, data.routingId, requestType, allow, allowEmpty, deny);
   }
 }
 
@@ -127,9 +151,8 @@ function requestEvents(data, element) {
       }
     }
   }
-  chrome.send('requestAccessibilityEvents', [
-    {'processId': data.processId, 'routingId': data.routingId, 'start': start}
-  ]);
+  browserProxy.requestAccessibilityEvents(
+      data.processId, data.routingId, start);
 }
 
 function initialize() {
@@ -164,6 +187,10 @@ function initialize() {
   $('filter-allow').value = allow ? allow : '*';
   $('filter-allow-empty').value = allowEmpty ? allowEmpty : '';
   $('filter-deny').value = deny ? deny : '';
+
+  addWebUIListener('copyTree', copyTree);
+  addWebUIListener('showOrRefreshTree', showOrRefreshTree);
+  addWebUIListener('startOrStopEvents', startOrStopEvents);
 }
 
 function bindCheckbox(name, value) {
@@ -175,8 +202,7 @@ function bindCheckbox(name, value) {
     $(name).labels[0].classList.add('disabled');
   }
   $(name).addEventListener('change', function() {
-    chrome.send(
-        'setGlobalFlag', [{'flagName': name, 'enabled': $(name).checked}]);
+    browserProxy.setGlobalFlag(name, $(name).checked);
     document.location.reload();
   });
 }
@@ -418,7 +444,7 @@ function createErrorMessageElement(data) {
   return errorMessageElement;
 }
 
-// Called from C++
+// WebUI listener handler for the 'showOrRefreshTree' event.
 function showOrRefreshTree(data) {
   const id = getIdFromData(data);
   const row = $(id);
@@ -431,7 +457,7 @@ function showOrRefreshTree(data) {
   $(id + ':showOrRefreshTree').focus();
 }
 
-// Called from C++
+// WebUI listener handler for the 'startOrStopEvents' event.
 function startOrStopEvents(data) {
   const id = getIdFromData(data);
   const row = $(id);
@@ -444,7 +470,7 @@ function startOrStopEvents(data) {
   $(id + ':startOrStopEvents').focus();
 }
 
-// Called from C++
+// WebUI listener handler for the 'copyTree' event.
 function copyTree(data) {
   const id = getIdFromData(data);
   const row = $(id);
@@ -500,10 +526,5 @@ function createAccessibilityOutputElement(data, id, type) {
   }
   return treeElement;
 }
-
-// These are the functions we export so they can be called from C++.
-window.copyTree = copyTree;
-window.showOrRefreshTree = showOrRefreshTree;
-window.startOrStopEvents = startOrStopEvents;
 
 document.addEventListener('DOMContentLoaded', initialize);
