@@ -31,7 +31,7 @@
 namespace {
 
 constexpr SkColor kAppBackgroundColor = SK_ColorBLUE;
-constexpr char kAppPath[] = "/web_apps/basic.html";
+constexpr char kAppPath[] = "/web_apps/no_service_worker.html";
 
 }  // namespace
 namespace web_app {
@@ -86,9 +86,8 @@ class WebAppTabStripBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList features_;
 };
 
-// Disabled due to flake. https://crbug.com/1113951
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
-                       DISABLED_CustomTabBarUpdateOnTabSwitch) {
+                       CustomTabBarUpdateOnTabSwitch) {
   App app = InstallAndLaunch();
 
   CustomTabBarView* custom_tab_bar =
