@@ -347,7 +347,23 @@ inline void CheckDidAddFragment(const LayoutBox& box,
                                 const NGPhysicalBoxFragment& fragment) {}
 #endif
 
-}  // anonymous namespace
+// Applies the overflow clip to |result|. For any axis that is clipped, |result|
+// is reset to |no_overflow_rect|. If neither axis is clipped, nothing is
+// changed.
+void ApplyOverflowClip(OverflowClipAxes overflow_clip_axes,
+                       const LayoutRect& no_overflow_rect,
+                       LayoutRect& result) {
+  if (overflow_clip_axes & kOverflowClipX) {
+    result.SetX(no_overflow_rect.X());
+    result.SetWidth(no_overflow_rect.Width());
+  }
+  if (overflow_clip_axes & kOverflowClipY) {
+    result.SetY(no_overflow_rect.Y());
+    result.SetHeight(no_overflow_rect.Height());
+  }
+}
+
+}  // namespace
 
 BoxLayoutExtraInput::BoxLayoutExtraInput(LayoutBox& box) : box(box) {
   box.SetBoxLayoutExtraInput(this);
@@ -7212,10 +7228,15 @@ LayoutRect LayoutBox::VisualOverflowRect() const {
   NOT_DESTROYED();
   if (!VisualOverflowIsSet())
     return BorderBoxRect();
-  if (ShouldClipOverflowAlongEitherAxis() || HasMask())
+  const OverflowClipAxes overflow_clip_axes = GetOverflowClipAxes();
+  if (overflow_clip_axes == kOverflowClipBothAxis || HasMask())
     return overflow_->visual_overflow->SelfVisualOverflowRect();
-  return UnionRect(overflow_->visual_overflow->SelfVisualOverflowRect(),
-                   overflow_->visual_overflow->ContentsVisualOverflowRect());
+  const LayoutRect& self_visual_overflow_rect =
+      overflow_->visual_overflow->SelfVisualOverflowRect();
+  LayoutRect result = overflow_->visual_overflow->ContentsVisualOverflowRect();
+  result.Unite(self_visual_overflow_rect);
+  ApplyOverflowClip(overflow_clip_axes, self_visual_overflow_rect, result);
+  return result;
 }
 
 PhysicalOffset LayoutBox::OffsetPoint(const Element* parent) const {
@@ -7671,14 +7692,7 @@ void LayoutBox::ApplyOverflowClipToLayoutOverflowRect() {
 
   const LayoutRect no_overflow_rect = NoOverflowRect();
   LayoutRect overflow_rect = overflow_->layout_overflow->LayoutOverflowRect();
-  if (overflow_clip_axes & kOverflowClipX) {
-    overflow_rect.SetX(no_overflow_rect.X());
-    overflow_rect.SetWidth(no_overflow_rect.Width());
-  }
-  if (overflow_clip_axes & kOverflowClipY) {
-    overflow_rect.SetY(no_overflow_rect.Y());
-    overflow_rect.SetHeight(no_overflow_rect.Height());
-  }
+  ApplyOverflowClip(overflow_clip_axes, no_overflow_rect, overflow_rect);
   overflow_->layout_overflow->SetLayoutOverflow(overflow_rect);
 }
 
