@@ -59,6 +59,14 @@ Polymer({
 
     categoryHeader: String,
 
+    /** @private */
+    enableContentSettingsRedesign_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('enableContentSettingsRedesign');
+      }
+    },
+
     /**
      * The site serving as the model for the currently open action menu.
      * @private {?SiteException}
@@ -538,4 +546,12 @@ Polymer({
   computeHasDiscardedExceptions_() {
     return this.sites.some(exception => exception.isDiscarded);
   },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getCssClass_() {
+    return this.enableContentSettingsRedesign_ ? 'secondary' : '';
+  }
 });

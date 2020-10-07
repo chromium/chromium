@@ -98,20 +98,29 @@
             <!-- TODO(https://crbug.com/1033607): use corresponding block
                   icons instead of generic ones throughout this page -->
             </settings-category-default-radio-group>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.AUTOMATIC_DOWNLOADS]]"
+                allow-header=
+                    "$i18n{siteSettingsAutomaticDownloadsAllowedExceptions}"
+                block-header=
+                    "$i18n{siteSettingsAutomaticDownloadsBlockedExceptions}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
           <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
-              <category-default-setting
-                  toggle-off-label="$i18n{siteSettingsAutoDownloadBlock}"
-                  toggle-on-label=
-                      "$i18n{siteSettingsAutoDownloadAskRecommended}"
-                  category="[[ContentSettingsTypes.AUTOMATIC_DOWNLOADS]]">
-              </category-default-setting>
+            <category-default-setting
+                toggle-off-label="$i18n{siteSettingsAutoDownloadBlock}"
+                toggle-on-label=
+                    "$i18n{siteSettingsAutoDownloadAskRecommended}"
+                category="[[ContentSettingsTypes.AUTOMATIC_DOWNLOADS]]">
+            </category-default-setting>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.AUTOMATIC_DOWNLOADS]]"
+                block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
-          <category-setting-exceptions
-              category="[[ContentSettingsTypes.AUTOMATIC_DOWNLOADS]]"
-              block-header="$i18n{siteSettingsBlock}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/backgroundSync" no-search>
@@ -130,6 +139,14 @@
                 block-option-label="$i18n{siteSettingsBackgroundSyncBlocked}"
                 block-option-icon="settings:block">
             </settings-category-default-radio-group>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.BACKGROUND_SYNC]]"
+                allow-header=
+                    "$i18n{siteSettingsBackgroundSyncAllowedExceptions}"
+                block-header=
+                    "$i18n{siteSettingsBackgroundSyncBlockedExceptions}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
           <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
             <category-default-setting
@@ -138,12 +155,13 @@
                     "$i18n{siteSettingsAllowRecentlyClosedSitesRecommended}"
                 category="[[ContentSettingsTypes.BACKGROUND_SYNC]]">
             </category-default-setting>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.BACKGROUND_SYNC]]"
+                block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
-          <category-setting-exceptions
-              category="[[ContentSettingsTypes.BACKGROUND_SYNC]]"
-              block-header="$i18n{siteSettingsBlock}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/camera" no-search>
@@ -166,6 +184,12 @@
                     "$i18n{siteSettingsCameraBlockedSubLabel}"
                 block-option-icon="settings:block">
             </settings-category-default-radio-group>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.CAMERA]]" read-only-list
+                allow-header="$i18n{siteSettingsCameraAllowedExceptions}"
+                block-header="$i18n{siteSettingsCameraBlockedExceptions}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
           <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
             <category-default-setting
@@ -174,12 +198,13 @@
                 toggle-on-label=
                     "$i18n{siteSettingsAskBeforeAccessingRecommended}">
             </category-default-setting>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.CAMERA]]" read-only-list
+                block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
-          <category-setting-exceptions
-              category="[[ContentSettingsTypes.CAMERA]]" read-only-list
-              block-header="$i18n{siteSettingsBlock}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/cookies">
@@ -219,6 +244,12 @@
                 block-option-label="$i18n{siteSettingsImagesBlocked}"
                 block-option-icon="settings:block">
             </settings-category-default-radio-group>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.IMAGES]]"
+                allow-header="$i18n{siteSettingsImagesAllowedExceptions}"
+                block-header="$i18n{siteSettingsImagedBlockedExceptions}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
           <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
             <category-default-setting
@@ -226,12 +257,13 @@
                 toggle-off-label="$i18n{siteSettingsDontShowImages}"
                 toggle-on-label="$i18n{siteSettingsShowAllRecommended}">
             </category-default-setting>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.IMAGES]]"
+                block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
-          <category-setting-exceptions
-              category="[[ContentSettingsTypes.IMAGES]]"
-              block-header="$i18n{siteSettingsBlock}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/insecureContent" no-search>
@@ -242,11 +274,24 @@
           <div class="cr-row first">
             $i18n{siteSettingsInsecureContentBlock}
           </div>
-          <category-setting-exceptions
-              category="[[ContentSettingsTypes.MIXEDSCRIPT]]"
-              block-header="$i18n{siteSettingsBlock}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
+          <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.MIXEDSCRIPT]]"
+                allow-header=
+                    "$i18n{siteSettingsInsecureContentAllowedExceptions}"
+                block-header=
+                    "$i18n{siteSettingsInsecureContentBlockedExceptions}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
+          </template>
+          <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.MIXEDSCRIPT]]"
+                block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
+          </template>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/location" no-search>
@@ -267,6 +312,12 @@
                     "$i18n{siteSettingsLocationBlockedSubLabel}"
                 block-option-icon="settings:block">
             </settings-category-default-radio-group>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.GEOLOCATION]]" read-only-list
+                allow-header="$i18n{siteSettingsLocationAllowedExceptions}"
+                block-header="$i18n{siteSettingsLocationBlockedExceptions}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
           <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
             <category-default-setting
@@ -275,12 +326,13 @@
                     "$i18n{siteSettingsAskBeforeAccessingRecommended}"
                 category="[[ContentSettingsTypes.GEOLOCATION]]">
             </category-default-setting>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.GEOLOCATION]]" read-only-list
+                block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
-          <category-setting-exceptions
-              category="[[ContentSettingsTypes.GEOLOCATION]]" read-only-list
-              block-header="$i18n{siteSettingsBlock}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/handlers" no-search>
@@ -321,6 +373,12 @@
                 block-option-label="$i18n{siteSettingsJavascriptBlocked}"
                 block-option-icon="settings:block">
             </settings-category-default-radio-group>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.JAVASCRIPT]]"
+                allow-header="$i18n{siteSettingsJavascriptAllowedExceptions}"
+                block-header="$i18n{siteSettingsJavascriptBlockedExceptions}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
           <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
             <category-default-setting
@@ -328,12 +386,13 @@
                 toggle-on-label="$i18n{siteSettingsAllowedRecommended}"
                 category="[[ContentSettingsTypes.JAVASCRIPT]]">
             </category-default-setting>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.JAVASCRIPT]]"
+                block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
-          <category-setting-exceptions
-              category="[[ContentSettingsTypes.JAVASCRIPT]]"
-              block-header="$i18n{siteSettingsBlock}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/sound" no-search>
@@ -369,11 +428,22 @@
               on-settings-boolean-control-change="onBlockAutoplayToggleChange_"
               no-set-pref>
           </settings-toggle-button>
-          <category-setting-exceptions
-              category="[[ContentSettingsTypes.SOUND]]"
-              block-header="$i18n{siteSettingsBlockSound}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
+          <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.SOUND]]"
+                allow-header="$i18n{siteSettingsSoundAllowedExceptions}"
+                block-header="$i18n{siteSettingsSoundBlockedExceptions}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
+          </template>
+          <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.SOUND]]"
+                block-header="$i18n{siteSettingsBlockSound}"
+                allow-header="$i18n{siteSettingsAllow}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
+          </template>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/microphone" no-search>
@@ -395,6 +465,12 @@
                 block-option-sub-label="$i18n{siteSettingsMicBlockedSubLabel}"
                 block-option-icon="settings:block">
             </settings-category-default-radio-group>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.MIC]]" read-only-list
+                allow-header="$i18n{siteSettingsMicAllowedExceptions}"
+                block-header="$i18n{siteSettingsMicBlockedExceptions}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
           <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
             <category-default-setting
@@ -403,12 +479,13 @@
                 toggle-on-label=
                     "$i18n{siteSettingsAskBeforeAccessingRecommended}">
             </category-default-setting>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.MIC]]" read-only-list
+                block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
-          <category-setting-exceptions
-              category="[[ContentSettingsTypes.MIC]]" read-only-list
-              block-header="$i18n{siteSettingsBlock}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/sensors" no-search>
@@ -428,6 +505,12 @@
                     "$i18n{siteSettingsMotionSensorsBlockedSubLabel}"
                 block-option-icon="settings:block">
             </settings-category-default-radio-group>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.SENSORS]]" read-only-list
+                allow-header="$i18n{siteSettingsMotionSensorsAllowedExceptions}"
+                block-header="$i18n{siteSettingsMotionSensorsBlockedExceptions}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
           <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
             <category-default-setting
@@ -435,12 +518,13 @@
                 toggle-on-label="$i18n{siteSettingsSensorsAllow}"
                 category="[[ContentSettingsTypes.SENSORS]]">
             </category-default-setting>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.SENSORS]]" read-only-list
+                block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
-          <category-setting-exceptions
-              category="[[ContentSettingsTypes.SENSORS]]" read-only-list
-              block-header="$i18n{siteSettingsBlock}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
         </settings-subpage>
      </template>
       <template is="dom-if" route-path="/content/notifications" no-search>
@@ -471,6 +555,7 @@
           <category-setting-exceptions
               category="[[ContentSettingsTypes.NOTIFICATIONS]]"
               block-header="$i18n{siteSettingsBlock}"
+              allow-header="$i18n{siteSettingsAllow}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
         </settings-subpage>
@@ -514,12 +599,28 @@
                 aria-label="$i18n{adobeFlashStorage}"></cr-icon-button>
           </a>
 </if>
-          <category-setting-exceptions
-              category="[[ContentSettingsTypes.PLUGINS]]"
-              block-header="$i18n{siteSettingsBlock}" read-only-list
-              search-filter="[[searchFilter_]]"
-              site-lists-have-discarded-exceptions="{{pluginsHasDiscardedExceptions_}}">
-          </category-setting-exceptions>
+          <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.PLUGINS]]"
+                allow-header="$i18n{siteSettingsFlashAllowedExceptions}"
+                block-header="$i18n{siteSettingsFlashBlockedExceptions}"
+                read-only-list
+                search-filter="[[searchFilter_]]"
+                site-lists-have-discarded-exceptions=
+                    "{{pluginsHasDiscardedExceptions_}}">
+            </category-setting-exceptions>
+          </template>
+          <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.PLUGINS]]"
+                block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
+                read-only-list
+                search-filter="[[searchFilter_]]"
+                site-lists-have-discarded-exceptions=
+                    "{{pluginsHasDiscardedExceptions_}}">
+            </category-setting-exceptions>
+          </template>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/popups" no-search>
@@ -537,6 +638,12 @@
                 block-option-label="$i18n{siteSettingsPopupsBlocked}"
                 block-option-icon="settings:block">
             </settings-category-default-radio-group>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.POPUPS]]"
+                allow-header="$i18n{siteSettingsPopupsAllowedExceptions}"
+                block-header="$i18n{siteSettingsPopupsBlockedExceptions}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
           <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
             <category-default-setting
@@ -544,12 +651,13 @@
                 toggle-off-label="$i18n{siteSettingsBlockedRecommended}"
                 toggle-on-label="$i18n{siteSettingsAllowed}">
             </category-default-setting>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.POPUPS]]"
+                block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
-          <category-setting-exceptions
-              category="[[ContentSettingsTypes.POPUPS]]"
-              block-header="$i18n{siteSettingsBlock}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
         </settings-subpage>
       </template>
       <template is="dom-if" if="[[enableSafeBrowsingSubresourceFilter_]]"
@@ -569,6 +677,13 @@
                   block-option-label="$i18n{siteSettingsAdsBlocked}"
                   block-option-icon="settings:block">
               </settings-category-default-radio-group>
+              <category-setting-exceptions
+                  category="[[ContentSettingsTypes.ADS]]"
+                  read-only-list
+                  allow-header="$i18n{siteSettingsAdsAllowedExceptions}"
+                  block-header="$i18n{siteSettingsAdsBlockedExceptions}"
+                  search-filter="[[searchFilter_]]">
+              </category-setting-exceptions>
             </template>
             <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
               <category-default-setting
@@ -576,13 +691,14 @@
                   toggle-off-label="$i18n{siteSettingsAdsBlockRecommended}"
                   toggle-on-label="$i18n{siteSettingsAllowed}">
               </category-default-setting>
+              <category-setting-exceptions
+                  category="[[ContentSettingsTypes.ADS]]"
+                  read-only-list
+                  block-header="$i18n{siteSettingsBlock}"
+                  allow-header="$i18n{siteSettingsAllow}"
+                  search-filter="[[searchFilter_]]">
+              </category-setting-exceptions>
             </template>
-            <category-setting-exceptions
-                category="[[ContentSettingsTypes.ADS]]"
-                read-only-list
-                block-header="$i18n{siteSettingsBlock}"
-                search-filter="[[searchFilter_]]">
-            </category-setting-exceptions>
           </settings-subpage>
        </template>
      </template>
@@ -603,6 +719,14 @@
                     "$i18n{siteSettingsUnsandboxedPluginsBlocked}"
                 block-option-icon="settings:block">
             </settings-category-default-radio-group>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.UNSANDBOXED_PLUGINS]]"
+                allow-header=
+                    "$i18n{siteSettingsUnsandboxedPluginsAllowedExceptions}"
+                block-header=
+                    "$i18n{siteSettingsUnsandboxedPluginsBlockedExceptions}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
           <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
             <category-default-setting
@@ -611,12 +735,13 @@
                     "$i18n{siteSettingsUnsandboxedPluginsAskRecommended}"
                 category="[[ContentSettingsTypes.UNSANDBOXED_PLUGINS]]">
             </category-default-setting>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.UNSANDBOXED_PLUGINS]]"
+                block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
-          <category-setting-exceptions
-              category="[[ContentSettingsTypes.UNSANDBOXED_PLUGINS]]"
-              block-header="$i18n{siteSettingsBlock}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/midiDevices" no-search>
@@ -635,6 +760,12 @@
                 block-option-label="$i18n{siteSettingsMidiBlocked}"
                 block-option-icon="settings:block">
             </settings-category-default-radio-group>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.MIDI_DEVICES]]" read-only-list
+                allow-header="$i18n{siteSettingsMidiAllowedExceptions}"
+                block-header="$i18n{siteSettingsMidiBlockedExceptions}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
           <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
             <category-default-setting
@@ -643,12 +774,13 @@
                     "$i18n{siteSettingsMidiDevicesAskRecommended}"
                 category="[[ContentSettingsTypes.MIDI_DEVICES]]">
             </category-default-setting>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.MIDI_DEVICES]]" read-only-list
+                block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
-          <category-setting-exceptions
-              category="[[ContentSettingsTypes.MIDI_DEVICES]]" read-only-list
-              block-header="$i18n{siteSettingsBlock}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/usbDevices" no-search>
@@ -740,6 +872,13 @@
                     "$i18n{siteSettingsFileSystemWriteBlocked}"
                 block-option-icon="settings:block">
             </settings-category-default-radio-group>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.FILE_SYSTEM_WRITE]]"
+                read-only-list
+                block-header=
+                    "$i18n{siteSettingsFileSystemWriteBlockedExceptions}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
           <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
             <category-default-setting
@@ -748,13 +887,14 @@
                     "$i18n{siteSettingsFileSystemWriteAskRecommended}"
                 category="[[ContentSettingsTypes.FILE_SYSTEM_WRITE]]">
             </category-default-setting>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.FILE_SYSTEM_WRITE]]"
+                read-only-list
+                block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
-          <category-setting-exceptions
-              category="[[ContentSettingsTypes.FILE_SYSTEM_WRITE]]"
-              read-only-list
-              block-header="$i18n{siteSettingsBlock}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/hidDevices" no-search>
@@ -818,11 +958,24 @@
 <if expr="chromeos">
           <template is="dom-if"
               if="[[prefs.settings.privacy.drm_enabled.value]]">
-            <category-setting-exceptions
-                category="[[ContentSettingsTypes.PROTECTED_CONTENT]]"
-                block-header="$i18n{siteSettingsBlock}"
-                search-filter="[[searchFilter_]]">
-            </category-setting-exceptions>
+            <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+              <category-setting-exceptions
+                  category="[[ContentSettingsTypes.PROTECTED_CONTENT]]"
+                  allow-header=
+                      "$i18n{siteSettingsProtectedContentAllowedExceptions}"
+                  block-header=
+                      "$i18n{siteSettingsProtectedContentBlockedExceptions}"
+                  search-filter="[[searchFilter_]]">
+              </category-setting-exceptions>
+            </template>
+            <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+              <category-setting-exceptions
+                  category="[[ContentSettingsTypes.PROTECTED_CONTENT]]"
+                  block-header="$i18n{siteSettingsBlock}"
+                  allow-header="$i18n{siteSettingsAllow}"
+                  search-filter="[[searchFilter_]]">
+              </category-setting-exceptions>
+            </template>
           </template>
 </if>
         </settings-subpage>
@@ -842,6 +995,12 @@
                 block-option-label="$i18n{siteSettingsClipboardBlocked}"
                 block-option-icon="settings:block">
             </settings-category-default-radio-group>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.CLIPBOARD]]"
+                allow-header="$i18n{siteSettingsClipboardAllowedExceptions}"
+                block-header="$i18n{siteSettingsClipboardBlockedExceptions}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
           <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
             <category-default-setting
@@ -849,12 +1008,13 @@
                 toggle-on-label="$i18n{siteSettingsClipboardAskRecommended}"
                 category="[[ContentSettingsTypes.CLIPBOARD]]">
             </category-default-setting>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.CLIPBOARD]]"
+                block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
-          <category-setting-exceptions
-              category="[[ContentSettingsTypes.CLIPBOARD]]"
-              block-header="$i18n{siteSettingsBlock}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
         </settings-subpage>
       </template>
       <template is="dom-if" if="[[enablePaymentHandlerContentSetting_]]">
@@ -874,6 +1034,14 @@
                   block-option-label="$i18n{siteSettingsPaymentHandlersBlocked}"
                   block-option-icon="settings:block">
               </settings-category-default-radio-group>
+              <category-setting-exceptions
+                  category="[[ContentSettingsTypes.PAYMENT_HANDLER]]"
+                  allow-header=
+                      "$i18n{siteSettingsPaymentHandlersAllowedExceptions}"
+                  block-header=
+                      "$i18n{siteSettingsPaymentHandlersBlockedExceptions}"
+                  search-filter="[[searchFilter_]]">
+              </category-setting-exceptions>
             </template>
             <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
               <category-default-setting
@@ -882,12 +1050,13 @@
                       "$i18n{siteSettingsPaymentHandlerAllowRecommended}"
                   category="[[ContentSettingsTypes.PAYMENT_HANDLER]]">
               </category-default-setting>
+              <category-setting-exceptions
+                  category="[[ContentSettingsTypes.PAYMENT_HANDLER]]"
+                  block-header="$i18n{siteSettingsBlocked}"
+                  allow-header="$i18n{siteSettingsAllow}"
+                  search-filter="[[searchFilter_]]">
+              </category-setting-exceptions>
             </template>
-            <category-setting-exceptions
-                category="[[ContentSettingsTypes.PAYMENT_HANDLER]]"
-                block-header="$i18n{siteSettingsBlocked}"
-                search-filter="[[searchFilter_]]">
-            </category-setting-exceptions>
           </settings-subpage>
        </template>
       </template>
@@ -906,6 +1075,7 @@
                 category="[[ContentSettingsTypes.BLUETOOTH_SCANNING]]"
                 read-only-list
                 block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
                 search-filter="[[searchFilter_]]">
             </category-setting-exceptions>
           </settings-subpage>
@@ -926,6 +1096,13 @@
                 block-option-label="$i18n{siteSettingsVrBlocked}"
                 block-option-icon="settings:block">
             </settings-category-default-radio-group>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.VR]]"
+                read-only-list
+                allow-header="$i18n{siteSettingsVrAllowedExceptions}"
+                block-header="$i18n{siteSettingsVrBlockedExceptions}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
           <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
             <category-default-setting
@@ -934,13 +1111,14 @@
                     "$i18n{siteSettingsVrAskRecommended}"
                 category="[[ContentSettingsTypes.VR]]">
             </category-default-setting>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.VR]]"
+                read-only-list
+                block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
-          <category-setting-exceptions
-              category="[[ContentSettingsTypes.VR]]"
-              read-only-list
-              block-header="$i18n{siteSettingsBlock}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/ar" no-search>
@@ -958,6 +1136,13 @@
                 block-option-label="$i18n{siteSettingsArBlocked}"
                 block-option-icon="settings:block">
             </settings-category-default-radio-group>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.AR]]"
+                read-only-list
+                allow-header="$i18n{siteSettingsArAllowedExceptions}"
+                block-header="$i18n{siteSettingsArBlockedExceptions}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
           <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
             <category-default-setting
@@ -966,13 +1151,14 @@
                     "$i18n{siteSettingsArAskRecommended}"
                 category="[[ContentSettingsTypes.AR]]">
             </category-default-setting>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.AR]]"
+                read-only-list
+                block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
-          <category-setting-exceptions
-              category="[[ContentSettingsTypes.AR]]"
-              read-only-list
-              block-header="$i18n{siteSettingsBlock}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/idleDetection" no-search>
@@ -987,6 +1173,7 @@
           <category-setting-exceptions
               category="[[ContentSettingsTypes.IDLE_DETECTION]]"
               block-header="$i18n{siteSettingsBlock}"
+              allow-header="$i18n{siteSettingsAllow}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
         </settings-subpage>
@@ -1005,6 +1192,7 @@
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.WINDOW_PLACEMENT]]"
                 block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
                 search-filter="[[searchFilter_]]">
             </category-setting-exceptions>
           </settings-subpage>
@@ -1023,6 +1211,7 @@
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.FONT_ACCESS]]"
                 block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
                 search-filter="[[searchFilter_]]">
             </category-setting-exceptions>
           </settings-subpage>

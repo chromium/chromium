@@ -2,7 +2,9 @@
     </style>
     <div id="category">
       <div class="cr-row first">
-        <h2 class="flex">[[categoryHeader]]</h2>
+        <h2 class$="flex [[getCssClass_(enableContentSettingsRedesign_)]]">
+          [[categoryHeader]]
+        </h2>
         <cr-button id="addSite" class="header-aligned-button"
             hidden$="[[!showAddSiteButton_]]" on-click="onAddSiteTap_">
           $i18n{add}

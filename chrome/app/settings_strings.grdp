@@ -1636,6 +1636,9 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_DEFAULT_BEHAVIOR_DESCRIPTION" desc="Description for the site settings default behavior.">
     Sites automatically follow this setting when you visit them
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_CUSTOMIZED_BEHAVIORS" desc="Label for the site settings exceptions.">
+    Customized behaviors
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_DESCRIPTION" desc="Description of the ads content setting.">
     Sites usually show ads so they can provide content or services for free. But, some sites are known to show intrusive or misleading ads.
   </message>
@@ -1644,6 +1647,12 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_BLOCKED" desc="Label for the disabled option of the ads content setting.">
     Block ads on sites that show intrusive or misleading ads (recommended)
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the ads content setting.">
+    Allowed to show any ads
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the ads content setting.">
+    Not allowed to show intrusive or misleading ads
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AR_DESCRIPTION" desc="Description of the augmented reality content setting.">
     Sites usually track your camera position for AR features, like games or heads-up directions
@@ -1654,6 +1663,12 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_AR_BLOCKED" desc="Label for the disabled option of the augmented reality content setting.">
     Block sites from tracking your camera position
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_AR_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the augmented reality content setting.">
+    Allowed to track your camera position
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_AR_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the augmented reality content setting.">
+    Not allowed to track your camera position
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_DOWNLOADS_DESCRIPTION" desc="Description of the automatic downloads content setting.">
     Sites might automatically download related files together to save you time
   </message>
@@ -1663,6 +1678,12 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_DOWNLOADS_BLOCKED" desc="Label for the disabled option of the automatic downloads content setting.">
     Block sites from automatically downloading multiple files
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_DOWNLOADS_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the automatic downloads content setting.">
+    Allowed to automatically download multiple files
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_DOWNLOADS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the automatic downloads content setting.">
+    Not allowed to automatically download multiple files
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BACKGROUND_SYNC_DESCRIPTION" desc="Description of the background sync content setting.">
     After you leave or go offline, sites usually keep syncing to finish tasks, like uploading photos or sending a chat message
   </message>
@@ -1671,6 +1692,12 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BACKGROUND_SYNC_BLOCKED" desc="Label for the disabled option of the background sync content setting.">
     Block closed sites from sending and receiving data
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_BACKGROUND_SYNC_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the background sync content setting.">
+    Allowed to finish sending and receiving data
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_BACKGROUND_SYNC_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the background sync content setting.">
+    Not allowed to finish sending or receiving data
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CAMERA_DESCRIPTION" desc="Description of the camera content setting.">
     Sites usually use your video camera for communication features like video chatting
@@ -1684,6 +1711,12 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_CAMERA_BLOCKED_SUB_LABEL" desc="Sub-label for the disabled option of the camera content setting.">
     Features that need a camera won't work
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_CAMERA_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the camera content setting.">
+    Allowed to use your camera
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_CAMERA_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the camera content setting.">
+    Not allowed to use your camera
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLIPBOARD_DESCRIPTION" desc="Description of the clipboard content setting.">
     Sites usually read your clipboard for features like keeping the formatting of text you copied
   </message>
@@ -1693,6 +1726,12 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLIPBOARD_BLOCKED" desc="Label for the disabled option of the clipboard content setting.">
     Block sites from seeing text and images on your clipboard
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_CLIPBOARD_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the clipboard content setting.">
+    Allowed to see your clipboard
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_CLIPBOARD_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the clipboard content setting.">
+    Not allowed to see your clipboard
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_WRITE_DESCRIPTION" desc="Description of the file system write content setting.">
     Sites usually access files and folders on your device for features like automatically saving your work
   </message>
@@ -1701,6 +1740,9 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_WRITE_BLOCKED" desc="Label for the disabled option of the file system write content setting.">
     Block sites from editing files and folders on your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_WRITE_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the file system write content setting.">
+    Not allowed to edit files and folders on your device
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_DESCRIPTION" desc="Description of the location content setting.">
     Sites usually use your location for relevant features or info, like local news or nearby shops
@@ -1714,6 +1756,12 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_BLOCKED_SUB_LABEL" desc="Sub-label for the disabled option of the location content setting.">
     Features that need your location won't work
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the location content setting.">
+    Allowed to see your location
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_BLOCKED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the blocked content setting.">
+    Not allowed to see your location
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_DESCRIPTION" desc="Description of the images content setting.">
     Sites usually show images to provide illustration, like photos for online stores or news articles
   </message>
@@ -1723,6 +1771,12 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_BLOCKED" desc="Label for the disabled option of the images content setting.">
     Block images
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the images content setting.">
+    Allowed to show images
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the images content setting.">
+    Not allowed to show images
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_DESCRIPTION" desc="Description of the Javascript content setting.">
     Sites usually use Javascript to display interactive features, like video games or web forms
   </message>
@@ -1731,6 +1785,12 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_BLOCKED" desc="Label for the disabled option of the Javascript content setting.">
     Block Javascript
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the Javascript content setting.">
+    Allowed to use Javascript
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the Javascript content setting.">
+    Not allowed to use Javascript
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIC_DESCRIPTION" desc="Description of the microphone content setting.">
     Sites usually use your microphone for communication features like video chatting
@@ -1744,6 +1804,12 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIC_BLOCKED_SUB_LABEL" desc="Sub-label for the disabled option of the microphone content setting.">
     Features that need a microphone won't work
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MIC_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the microphone content setting.">
+    Allowed to use your microphone
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MIC_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the microphone content setting.">
+    Not allowed to use your microphone
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_DESCRIPTION" desc="Description of the MIDI devices content setting.">
     Sites usually connect to MIDI devices for features for creating and editing music
   </message>
@@ -1752,6 +1818,18 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_BLOCKED" desc="Label for the disabled option of the MIDI devices content setting.">
     Block sites from connecting to MIDI devices
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the MIDI devices content setting.">
+    Allowed to connect to MIDI devices
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the MIDI devices content setting.">
+    Not allowed to connect to MIDI devices
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_INSECURE_CONTENT_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the insecure content content setting.">
+    Allowed to show insecure content
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_INSECURE_CONTENT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the insecure content content setting.">
+    Not allowed to show insecure content
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PAYMENT_HANDLERS_DESCRIPTION" desc="Description of the payment handlers content setting.">
     Sites usually install payment handlers for shopping features like easier checkout
@@ -1762,6 +1840,12 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_PAYMENT_HANDLERS_BLOCKED" desc="Label for the disabled option of the payment handlers content setting.">
     Block payment handlers
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PAYMENT_HANDLERS_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the payment handlers content setting.">
+    Allowed to install payment handlers
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PAYMENT_HANDLERS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the payment handlers content setting.">
+    Not allowed to install payment handlers
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FLASH_DESCRIPTION" desc="Description of the Flash content setting.">
     Sites usually use Flash to play audio, video, or video games. Flash Player will no longer be supported after December 2020.
   </message>
@@ -1770,6 +1854,12 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FLASH_BLOCKED" desc="Label for the disabled option of the Flash content setting.">
     Block Flash (recommended)
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FLASH_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the Flash content setting.">
+    Allowed to use Flash
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FLASH_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the Flash content setting.">
+    Not allowed to use Flash
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_POPUPS_DESCRIPTION" desc="Description of the pop-ups content setting.">
     Sites might send pop-ups to show ads, or use redirects to lead you to websites you may not want to visit
@@ -1780,6 +1870,12 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_POPUPS_BLOCKED" desc="Label for the disabled option of the pop-ups content setting.">
     Block pop-ups and redirects (recommended)
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_POPUPS_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the pop-ups content setting.">
+    Allowed to send pop-ups and use redirects
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_POPUPS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the pop-ups content setting.">
+    Not allowed to send pop-ups or use redirects
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_DESCRIPTION" desc="Description of the protected content content setting.">
     When a site plays content protected by copyright, it might ask to recognize your device
   </message>
@@ -1788,6 +1884,12 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_BLOCKED" desc="Label for the disabled option of the protected content content setting.">
     Block protected content
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the protected content content setting.">
+    Allowed to play protected content
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the protected content content setting.">
+    Not allowed to play protected content
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_DESCRIPTION" desc="Description of the motion sensors content setting.">
     Sites usually use your device's motion sensors for features like virtual reality or step counting
@@ -1800,6 +1902,12 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_BLOCKED_SUB_LABEL" desc="Sub label for the disabled option of the motion sensors content setting.">
     Features that need motion sensors won't work
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the motion sensors content setting.">
+    Allowed to use motion sensors
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the motion sensors content setting.">
+    Not allowed to use motion sensors
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS_DESCRIPTION" desc="Description of the serial ports content setting.">
     Sites usually connect to serial devices for data transfer features, like setting up your network
@@ -1819,6 +1927,12 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_SOUND_BLOCKED" desc="Label for the disabled option of the sound content setting.">
     Mute sound
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_SOUND_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the sound content setting.">
+    Allowed to play sound
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_SOUND_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the sound content setting.">
+    Not allowed to play sound
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_UNSANDBOXED_PLUGINS_DESCRIPTION" desc="Description of the unsandboxed plugins content setting.">
     Sites usually use plugins for features like streaming videos or installing apps
   </message>
@@ -1827,6 +1941,12 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_UNSANDBOXED_PLUGINS_BLOCKED" desc="Label for the disabled option of the unsandboxed plugins content setting.">
     Block plugins from accessing your computer
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_UNSANDBOXED_PLUGINS_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the unsandboxed plugins content setting.">
+    Allowed to use a plugin to access your computer
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_UNSANDBOXED_PLUGINS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the unsandboxed plugins content setting.">
+    Not allowed to use a plugin to access your computer
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_USB_DESCRIPTION" desc="Description of the USB devices content setting.">
     Sites usually connect to USB devices for features like printing a document or saving to a storage device
@@ -1845,6 +1965,12 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_VR_BLOCKED" desc="Label for the disabled option of the virtual reality content setting.">
     Block sites from using virtual reality devices and data
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_VR_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the virtual reality content setting.">
+    Allowed to use virtual reality devices and data
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_VR_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the virtual reality content setting.">
+    Not allowed to use virtual reality devices and data
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ZOOM_LEVELS_DESCRIPTION" desc="Description of the zoom levels content setting.">
     You can set how much you zoom in or out on certain websites

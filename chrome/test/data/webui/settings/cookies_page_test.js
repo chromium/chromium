@@ -27,6 +27,12 @@ suite('CrSettingsCookiesPageTest', function() {
   /** @type {!SettingsCookiesPageElement} */
   let page;
 
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enableContentSettingsRedesign: false,
+    });
+  });
+
   setup(function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.instance_ = testMetricsBrowserProxy;
@@ -52,6 +58,7 @@ suite('CrSettingsCookiesPageTest', function() {
 
   test('ElementVisibility', async function() {
     await flushTasks();
+    assertFalse(isChildVisible(page, '#exceptionHeader'));
     assertTrue(isChildVisible(page, '#clearOnExit'));
     assertTrue(isChildVisible(page, '#doNotTrack'));
     assertTrue(isChildVisible(page, '#networkPrediction'));
@@ -193,3 +200,31 @@ suite('CrSettingsCookiesPageTest', function() {
   });
 });
 
+suite('ContentSettingsRedesign', function() {
+  /** @type {!SettingsCookiesPageElement} */
+  let page;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enableContentSettingsRedesign: true,
+    });
+  });
+
+  setup(function() {
+    document.body.innerHTML = '';
+    page = /** @type {!SettingsCookiesPageElement} */ (
+        document.createElement('settings-cookies-page'));
+    page.prefs = {
+      generated: {
+        cookie_session_only: {value: false},
+        cookie_primary_setting:
+            {type: chrome.settingsPrivate.PrefType.NUMBER, value: 0},
+      },
+    };
+    document.body.appendChild(page);
+  });
+
+  test('HeaderVisibility', async function() {
+    assertTrue(isChildVisible(page, '#exceptionHeader'));
+  });
+});

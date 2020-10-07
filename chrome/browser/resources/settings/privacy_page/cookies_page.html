@@ -32,6 +32,10 @@
       settings-collapse-radio-button .bullet-line:last-child {
         padding-bottom: 12px;
       }
+
+      #exceptionHeader {
+        padding: 0 var(--cr-section-padding);
+      }
     </style>
     <picture>
       <source
@@ -136,6 +140,9 @@
     <cr-link-row id="site-data-trigger" class="hr"
         on-click="onSiteDataClick_" label="$i18n{siteSettingsCookieLink}">
     </cr-link-row>
+    <div  id="exceptionHeader" hidden="[[!enableContentSettingsRedesign_]]">
+      <h2>$i18n{siteSettingsCustomizedBehaviors}</h2>
+    </div>
     <site-list id="allowExceptionsList"
         category="[[cookiesContentSettingType_]]"
         category-subtype="[[contentSetting_.ALLOW]]"

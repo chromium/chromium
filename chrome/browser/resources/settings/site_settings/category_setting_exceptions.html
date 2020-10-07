@@ -1,3 +1,11 @@
+    <style include="settings-shared">
+      #exceptionHeader {
+        padding: 0 var(--cr-section-padding);
+      }
+    </style>
+    <div id="exceptionHeader" hidden="[[!enableContentSettingsRedesign_]]">
+      <h2>$i18n{siteSettingsCustomizedBehaviors}</h2>
+    </div>
     <site-list
         has-discarded-exceptions="{{blockSiteListHasDiscardedExceptions_}}"
         category="[[category]]"
@@ -18,7 +26,7 @@
         has-discarded-exceptions="{{allowSiteListHasDiscardedExceptions_}}"
         category="[[category]]"
         category-subtype="[[ContentSetting.ALLOW]]"
-        category-header="$i18n{siteSettingsAllow}"
+        category-header="[[allowHeader]]"
         read-only-list="[[getReadOnlyList_(readOnlyList, defaultManaged_)]]"
         search-filter="[[searchFilter]]"
         hidden$="[[!showAllowSiteList_]]">

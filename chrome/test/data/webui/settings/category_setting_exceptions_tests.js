@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 // clang-format off
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ContentSetting,ContentSettingProvider,ContentSettingsTypes,SiteSettingSource,SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {TestSiteSettingsPrefsBrowserProxy} from 'chrome://test/settings/test_site_settings_prefs_browser_proxy.js';
 import {createContentSettingTypeToValuePair,createDefaultContentSetting,createSiteSettingsPrefs} from 'chrome://test/settings/test_util.js';
+import {isChildVisible} from 'chrome://test/test_util.m.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for category-setting-exceptions. */
@@ -23,6 +25,12 @@ suite('CategorySettingExceptions', function() {
    */
   let browserProxy = null;
 
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enableContentSettingsRedesign: false,
+    });
+  });
+
   // Initialize a category-setting-exceptions before each test.
   setup(function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
@@ -36,6 +44,10 @@ suite('CategorySettingExceptions', function() {
     // The category-setting-exceptions is mainly a container for site-lists.
     // There's not much that merits testing.
     assertTrue(!!testElement);
+  });
+
+  test('header visibility', function() {
+    assertFalse(isChildVisible(testElement, '#exceptionHeader'));
   });
 
   test(
@@ -181,4 +193,29 @@ suite('CategorySettingExceptions', function() {
                 });
         return Promise.all([initializationTest, updateTest]);
       });
+});
+
+suite('ContentSettingsRedesign', function() {
+  /**
+   * A site settings exceptions created before each test.
+   * @type {SiteSettingsExceptionsElement}
+   */
+  let testElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enableContentSettingsRedesign: true,
+    });
+  });
+
+  // Initialize a category-setting-exceptions before each test.
+  setup(function() {
+    PolymerTest.clearBody();
+    testElement = document.createElement('category-setting-exceptions');
+    document.body.appendChild(testElement);
+  });
+
+  test('header visibility', function() {
+    assertTrue(isChildVisible(testElement, '#exceptionHeader'));
+  });
 });
