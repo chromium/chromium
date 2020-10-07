@@ -124,7 +124,7 @@ CastDeviceEntryView::CastDeviceEntryView(views::ButtonListener* button_listener,
     : DeviceEntryUI(sink.id,
                     base::UTF16ToUTF8(sink.friendly_name),
                     CastDialogSinkButton::GetVectorIcon(sink.icon_type)),
-      CastDialogSinkButton(button_listener, sink) {
+      CastDialogSinkButton(PressedCallback(button_listener, this), sink) {
   switch (sink.state) {
     // If the sink state is CONNECTING or DISCONNECTING, a throbber icon will
     // show up. The icon's color remains unchanged.

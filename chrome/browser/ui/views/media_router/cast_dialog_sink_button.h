@@ -19,11 +19,7 @@ namespace media_router {
 // hovered.
 class CastDialogSinkButton : public HoverButton {
  public:
-  CastDialogSinkButton(views::ButtonListener* button_listener,
-                       const UIMediaSink& sink);
-  CastDialogSinkButton(views::ButtonListener* button_listener,
-                       const UIMediaSink& sink,
-                       int button_tag);
+  CastDialogSinkButton(PressedCallback callback, const UIMediaSink& sink);
   ~CastDialogSinkButton() override;
 
   void OverrideStatusText(const base::string16& status_text);

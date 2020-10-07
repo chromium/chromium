@@ -16,7 +16,6 @@
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 class Browser;
@@ -36,7 +35,6 @@ struct UIMediaSink;
 // to devices. The list of devices used to populate the dialog is supplied by
 // CastDialogModel.
 class CastDialogView : public views::BubbleDialogDelegateView,
-                       public views::ButtonListener,
                        public CastDialogController::Observer,
                        public ui::SimpleMenuModel::Delegate {
  public:
@@ -89,9 +87,6 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   // CastDialogController::Observer:
   void OnModelUpdated(const CastDialogModel& model) override;
   void OnControllerInvalidated() override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;

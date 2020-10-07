@@ -20,6 +20,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/test/button_test_api.h"
 
 namespace media_router {
 
@@ -129,8 +130,8 @@ void MediaRouterUiForTest::ChooseSourceType(
   CastDialogView* dialog_view = CastDialogView::GetInstance();
   CHECK(dialog_view);
 
-  dialog_view->ButtonPressed(dialog_view->sources_button_for_test(),
-                             CreateMousePressedEvent());
+  views::test::ButtonTestApi(dialog_view->sources_button_for_test())
+      .NotifyClick(CreateMousePressedEvent());
   int source_index;
   switch (source_type) {
     case CastDialogView::kTab:

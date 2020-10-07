@@ -43,23 +43,6 @@
 
 namespace media_router {
 
-namespace {
-
-// This value is negative so that it doesn't overlap with a sink index.
-constexpr int kAlternativeSourceButtonId = -1;
-
-std::unique_ptr<views::Button> CreateSourcesButton(
-    views::ButtonListener* listener) {
-  auto sources_button = std::make_unique<views::MdTextButtonWithDownArrow>(
-      listener,
-      l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_ALTERNATIVE_SOURCES_BUTTON));
-  sources_button->SetID(kAlternativeSourceButtonId);
-  sources_button->SetEnabled(false);
-  return sources_button;
-}
-
-}  // namespace
-
 // static
 void CastDialogView::ShowDialogWithToolbarAction(
     CastDialogController* controller,
@@ -171,20 +154,6 @@ void CastDialogView::OnControllerInvalidated() {
   // cause the dialog to immediately open again.
 }
 
-void CastDialogView::ButtonPressed(views::Button* sender,
-                                   const ui::Event& event) {
-  if (sender->tag() == kAlternativeSourceButtonId) {
-    ShowSourcesMenu();
-  } else {
-    // SinkPressed() invokes a refresh of the sink list, which deletes the
-    // sink button. So we must call this after the button is done handling the
-    // press event.
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&CastDialogView::SinkPressed,
-                                  weak_factory_.GetWeakPtr(), sender->tag()));
-  }
-}
-
 gfx::Size CastDialogView::CalculatePreferredSize() const {
   const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_BUBBLE_PREFERRED_WIDTH);
@@ -262,7 +231,13 @@ CastDialogView::CastDialogView(views::View* anchor_view,
       metrics_(start_time, activation_location, profile) {
   SetShowCloseButton(true);
   SetButtons(ui::DIALOG_BUTTON_NONE);
-  sources_button_ = SetExtraView(CreateSourcesButton(this));
+  sources_button_ =
+      SetExtraView(std::make_unique<views::MdTextButtonWithDownArrow>(
+          base::BindRepeating(&CastDialogView::ShowSourcesMenu,
+                              base::Unretained(this)),
+          l10n_util::GetStringUTF16(
+              IDS_MEDIA_ROUTER_ALTERNATIVE_SOURCES_BUTTON)));
+  sources_button_->SetEnabled(false);
   ShowNoSinksView();
 }
 
@@ -348,11 +323,11 @@ void CastDialogView::PopulateScrollView(const std::vector<UIMediaSink>& sinks) {
   sink_list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   for (size_t i = 0; i < sinks.size(); i++) {
-    const UIMediaSink& sink = sinks.at(i);
-    CastDialogSinkButton* sink_button =
-        new CastDialogSinkButton(this, sink, /** button_tag */ i);
-    sink_buttons_.push_back(sink_button);
-    sink_list_view->AddChildView(sink_button);
+    sink_buttons_.push_back(
+        sink_list_view->AddChildView(std::make_unique<CastDialogSinkButton>(
+            base::BindRepeating(&CastDialogView::SinkPressed,
+                                base::Unretained(this), i),
+            sinks.at(i))));
   }
   scroll_view_->SetContents(std::move(sink_list_view));
 

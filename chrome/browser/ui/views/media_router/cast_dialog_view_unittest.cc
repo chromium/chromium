@@ -26,6 +26,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/widget.h"
 
 using testing::_;
@@ -114,7 +115,8 @@ class CastDialogViewTest : public ChromeViewsTestBase {
   void SinkPressedAtIndex(int index) {
     ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(0, 0),
                                gfx::Point(0, 0), ui::EventTimeForNow(), 0, 0);
-    dialog_->ButtonPressed(sink_buttons().at(index), mouse_event);
+    views::test::ButtonTestApi(sink_buttons().at(index))
+        .NotifyClick(mouse_event);
     // The request to cast/stop is sent asynchronously, so we must call
     // RunUntilIdle().
     base::RunLoop().RunUntilIdle();
@@ -213,7 +215,7 @@ TEST_F(CastDialogViewTest, ShowSourcesMenu) {
   CastDialogModel model = CreateModelWithSinks(media_sinks);
   InitializeDialogWithModel(model);
   // Press the button to show the sources menu.
-  dialog_->ButtonPressed(sources_button(), CreateMouseEvent());
+  views::test::ButtonTestApi(sources_button()).NotifyClick(CreateMouseEvent());
   // The items should be "tab" (includes tab mirroring and presentation),
   // "desktop", and "local file".
   EXPECT_EQ(3, sources_menu_model()->GetItemCount());
@@ -234,7 +236,7 @@ TEST_F(CastDialogViewTest, CastAlternativeSources) {
   CastDialogModel model = CreateModelWithSinks(std::move(media_sinks));
   InitializeDialogWithModel(model);
   // Press the button to show the sources menu.
-  dialog_->ButtonPressed(sources_button(), CreateMouseEvent());
+  views::test::ButtonTestApi(sources_button()).NotifyClick(CreateMouseEvent());
   // There should be three sources: tab, desktop, and local file.
   ASSERT_EQ(3, sources_menu_model()->GetItemCount());
 
@@ -256,7 +258,7 @@ TEST_F(CastDialogViewTest, CastLocalFile) {
   media_sinks[0].cast_modes = {TAB_MIRROR, LOCAL_FILE};
   CastDialogModel model = CreateModelWithSinks(std::move(media_sinks));
   InitializeDialogWithModel(model);
-  dialog_->ButtonPressed(sources_button(), CreateMouseEvent());
+  views::test::ButtonTestApi(sources_button()).NotifyClick(CreateMouseEvent());
 
 #if defined(OS_WIN)
   ui::SelectedFileInfo file_info{base::FilePath(base::UTF8ToUTF16(file_name)),
@@ -287,7 +289,7 @@ TEST_F(CastDialogViewTest, CancelLocalFileSelection) {
   media_sinks[0].cast_modes = {TAB_MIRROR, LOCAL_FILE};
   CastDialogModel model = CreateModelWithSinks(std::move(media_sinks));
   InitializeDialogWithModel(model);
-  dialog_->ButtonPressed(sources_button(), CreateMouseEvent());
+  views::test::ButtonTestApi(sources_button()).NotifyClick(CreateMouseEvent());
 
   // The tab source should be selected by default.
   ASSERT_EQ(CastDialogView::kTab, sources_menu_model()->GetCommandIdAt(0));
@@ -319,7 +321,8 @@ TEST_F(CastDialogViewTest, DisableUnsupportedSinks) {
   CastDialogModel model = CreateModelWithSinks(std::move(media_sinks));
   InitializeDialogWithModel(model);
 
-  dialog_->ButtonPressed(sources_button(), CreateMouseEvent());
+  views::test::ButtonTestApi test_api(sources_button());
+  test_api.NotifyClick(CreateMouseEvent());
   EXPECT_EQ(CastDialogView::kDesktop, sources_menu_model()->GetCommandIdAt(1));
   sources_menu_model()->ActivatedAt(1);
   // Sink at index 0 doesn't support desktop mirroring, so it should be
@@ -327,7 +330,7 @@ TEST_F(CastDialogViewTest, DisableUnsupportedSinks) {
   EXPECT_FALSE(sink_buttons().at(0)->GetEnabled());
   EXPECT_TRUE(sink_buttons().at(1)->GetEnabled());
 
-  dialog_->ButtonPressed(sources_button(), CreateMouseEvent());
+  test_api.NotifyClick(CreateMouseEvent());
   EXPECT_EQ(CastDialogView::kTab, sources_menu_model()->GetCommandIdAt(0));
   sources_menu_model()->ActivatedAt(0);
   // Both sinks support tab or presentation casting, so they should be enabled.

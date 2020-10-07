@@ -46,7 +46,8 @@ CastToolbarButton::CastToolbarButton(
     Browser* browser,
     MediaRouter* media_router,
     std::unique_ptr<MediaRouterContextualMenu> context_menu)
-    : ToolbarButton(PressedCallback(this, this),
+    : ToolbarButton(base::BindRepeating(&CastToolbarButton::ButtonPressed,
+                                        base::Unretained(this)),
                     context_menu->CreateMenuModel(),
                     /** tab_strip_model*/ nullptr,
                     /** trigger_menu_on_long_press */ false),
@@ -140,21 +141,6 @@ void CastToolbarButton::OnGestureEvent(ui::GestureEvent* event) {
   ToolbarButton::OnGestureEvent(event);
 }
 
-void CastToolbarButton::ButtonPressed(views::Button* sender,
-                                      const ui::Event& event) {
-  MediaRouterDialogController* dialog_controller =
-      MediaRouterDialogController::GetOrCreateForWebContents(
-          browser_->tab_strip_model()->GetActiveWebContents());
-  if (dialog_controller->IsShowingMediaRouterDialog()) {
-    dialog_controller->HideMediaRouterDialog();
-  } else {
-    dialog_controller->ShowMediaRouterDialog(
-        MediaRouterDialogOpenOrigin::TOOLBAR);
-    MediaRouterMetrics::RecordMediaRouterDialogOrigin(
-        MediaRouterDialogOpenOrigin::TOOLBAR);
-  }
-}
-
 void CastToolbarButton::UpdateIcon() {
   using Severity = media_router::IssueInfo::Severity;
   const auto severity =
@@ -192,6 +178,20 @@ void CastToolbarButton::UpdateLayoutInsetDelta() {
   // the insets to match.
   SetLayoutInsetDelta(
       gfx::Insets(ui::TouchUiController::Get()->touch_ui() ? 4 : 0));
+}
+
+void CastToolbarButton::ButtonPressed() {
+  MediaRouterDialogController* dialog_controller =
+      MediaRouterDialogController::GetOrCreateForWebContents(
+          browser_->tab_strip_model()->GetActiveWebContents());
+  if (dialog_controller->IsShowingMediaRouterDialog()) {
+    dialog_controller->HideMediaRouterDialog();
+  } else {
+    dialog_controller->ShowMediaRouterDialog(
+        MediaRouterDialogOpenOrigin::TOOLBAR);
+    MediaRouterMetrics::RecordMediaRouterDialogOrigin(
+        MediaRouterDialogOpenOrigin::TOOLBAR);
+  }
 }
 
 }  // namespace media_router

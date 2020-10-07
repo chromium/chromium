@@ -36,23 +36,6 @@
 #include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
 
-namespace {
-
-auto CreateHelpIcon(views::ButtonListener* listener) {
-  auto help_icon = views::CreateVectorImageButtonWithNativeTheme(
-      listener, vector_icons::kHelpOutlineIcon);
-  help_icon->SetInstallFocusRingOnFocus(true);
-  help_icon->SetFocusForPlatform();
-  help_icon->SetBorder(
-      views::CreateEmptyBorder(media_router::kPrimaryIconBorder));
-  help_icon->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_NO_DEVICES_FOUND_BUTTON));
-  help_icon->SetInkDropMode(views::InkDropHostView::InkDropMode::OFF);
-  return help_icon;
-}
-
-}  // namespace
-
 namespace media_router {
 
 constexpr base::TimeDelta CastDialogNoSinksView::kSearchWaitTime;
@@ -85,19 +68,25 @@ CastDialogNoSinksView::CastDialogNoSinksView(Profile* profile)
 
 CastDialogNoSinksView::~CastDialogNoSinksView() = default;
 
-void CastDialogNoSinksView::ButtonPressed(views::Button* sender,
-                                          const ui::Event& event) {
-  // Opens the help center article for troubleshooting sinks not found in a
-  // new tab. Called when |help_icon| is clicked.
-  NavigateParams params(profile_, GURL(chrome::kCastNoDestinationFoundURL),
-                        ui::PAGE_TRANSITION_LINK);
-  Navigate(&params);
-}
-
 void CastDialogNoSinksView::SetHelpIconView() {
   // Replace the throbber with the help icon.
   RemoveChildViewT(icon_);
-  icon_ = AddChildViewAt(CreateHelpIcon(this), 0);
+  const auto navigate = [](Profile* profile) {
+    NavigateParams params(profile, GURL(chrome::kCastNoDestinationFoundURL),
+                          ui::PAGE_TRANSITION_LINK);
+    Navigate(&params);
+  };
+  auto* icon = AddChildViewAt(views::CreateVectorImageButtonWithNativeTheme(
+                                  base::BindRepeating(navigate, profile_),
+                                  vector_icons::kHelpOutlineIcon),
+                              0);
+  icon->SetInstallFocusRingOnFocus(true);
+  icon->SetFocusForPlatform();
+  icon->SetBorder(views::CreateEmptyBorder(media_router::kPrimaryIconBorder));
+  icon->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_NO_DEVICES_FOUND_BUTTON));
+  icon->SetInkDropMode(views::InkDropHostView::InkDropMode::OFF);
+  icon_ = icon;
 
   label_->SetText(
       l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_STATUS_NO_DEVICES_FOUND));
