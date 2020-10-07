@@ -4768,10 +4768,15 @@ class MockObjectHost : public blink::mojom::RemoteObjectHost {
       mojo::MakeSelfOwnedReceiver(std::make_unique<MockInnerObject>(),
                                   std::move(receiver));
     }
+    reference_count_map_[object_id]++;
+  }
+
+  void AcquireObject(int32_t object_id) override {
+    reference_count_map_[object_id]++;
   }
 
   void ReleaseObject(int32_t object_id) override {
-    release_object_called_[object_id] = true;
+    reference_count_map_[object_id]--;
   }
 
   mojo::PendingRemote<blink::mojom::RemoteObjectHost> GetRemote() {
@@ -4780,15 +4785,15 @@ class MockObjectHost : public blink::mojom::RemoteObjectHost {
 
   MockObject* GetMockObject() const { return mock_object_.get(); }
 
-  bool release_object_called_for_object(int32_t object_id) const {
-    return release_object_called_.at(object_id);
+  int ReferenceCount(int32_t object_id) const {
+    return !reference_count_map_.at(object_id);
   }
 
  private:
   mojo::Receiver<blink::mojom::RemoteObjectHost> receiver_{this};
   std::unique_ptr<MockObject> mock_object_;
-  std::map<int32_t, bool> release_object_called_{{kMainObject.id, false},
-                                                 {kInnerObject.id, false}};
+  std::map<int32_t, int> reference_count_map_{{kMainObject.id, 0},
+                                              {kInnerObject.id, 0}};
 };
 
 class RemoteObjectInjector : public WebContentsObserver {
@@ -4926,16 +4931,13 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, RemoteObjectRelease) {
           web_contents(),
           "globalInner = testObject.getInnerObject(); typeof globalInner; "));
 
-  EXPECT_FALSE(injector.GetObjectHost().release_object_called_for_object(
-      kInnerObject.id));
+  EXPECT_GT(injector.GetObjectHost().ReferenceCount(kInnerObject.id), 0);
   EXPECT_EQ("object", EvalJs(web_contents(), "gc(); typeof globalInner;"));
-  EXPECT_FALSE(injector.GetObjectHost().release_object_called_for_object(
-      kInnerObject.id));
+  EXPECT_GT(injector.GetObjectHost().ReferenceCount(kInnerObject.id), 0);
   EXPECT_EQ(
       "undefined",
       EvalJs(web_contents(), "delete globalInner; gc(); typeof globalInner;"));
-  EXPECT_TRUE(injector.GetObjectHost().release_object_called_for_object(
-      kInnerObject.id));
+  EXPECT_EQ(injector.GetObjectHost().ReferenceCount(kInnerObject.id), 0);
 }
 
 #endif  // OS_ANDROID

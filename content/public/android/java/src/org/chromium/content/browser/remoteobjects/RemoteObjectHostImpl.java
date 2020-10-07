@@ -80,12 +80,21 @@ class RemoteObjectHostImpl implements RemoteObjectHost {
     }
 
     @Override
+    public void acquireObject(int objectId) {
+        RemoteObjectRegistry registry = mRegistry.get();
+        if (registry == null) {
+            return;
+        }
+        registry.refObjectById(objectId);
+    }
+
+    @Override
     public void releaseObject(int objectId) {
         RemoteObjectRegistry registry = mRegistry.get();
         if (registry == null) {
             return;
         }
-        registry.removeObjectById(objectId);
+        registry.unrefObjectById(objectId);
     }
 
     @Override

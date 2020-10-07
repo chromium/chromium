@@ -10,7 +10,8 @@ import static org.hamcrest.Matchers.not;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
+
+import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,7 +19,7 @@ import java.util.Set;
 /**
  * Tests the object registry, which maintains bidirectional object/ID mappings.
  */
-@RunWith(BlockJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 public final class RemoteObjectRegistryTest {
     @Test
     public void testMaintainsRetainingSet() {
@@ -58,7 +59,7 @@ public final class RemoteObjectRegistryTest {
         RemoteObjectRegistry registry = new RemoteObjectRegistry(retainingSet);
         Object o = new Object();
         int id = registry.getObjectId(o);
-        registry.removeObjectById(id);
+        registry.unrefObjectById(id);
         int id2 = registry.getObjectId(o);
         Assert.assertSame(o, registry.getObjectById(id2));
     }

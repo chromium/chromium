@@ -21,6 +21,9 @@ interface RemoteObjectHost {
   // |object_id|.
   GetObject(int32 object_id, pending_receiver<RemoteObject> receiver);
 
+  // Increase the object's reference count when the named object is injected to JS.
+  AcquireObject(int32 object_id);
+
   // Ideally lifetime would be scoped to an associated RemoteObject pipe. This
   // is complicated by the fact that the missing support for associated
   // interfaces in the Mojo Java bindings.
