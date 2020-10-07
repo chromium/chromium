@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/network/public/cpp/web_sandbox_flags.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -610,6 +611,35 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest,
   web_contents()->GetController().GoBack();
   WaitForLoadStop(web_contents());
   EXPECT_TRUE(main_frame_host()->is_mhtml_document());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, SandboxedIframe) {
+  MhtmlArchive mhtml_archive;
+  mhtml_archive.AddHtmlDocument(GURL("http://a.com"), "", R"(
+    <iframe src="http://a.com/unsandboxed.html"        ></iframe>
+    <iframe src="http://a.com/sandboxed.html"   sandbox></iframe>
+  )");
+  mhtml_archive.AddHtmlDocument(GURL("http://a.com/sandboxed.html"), "");
+  mhtml_archive.AddHtmlDocument(GURL("http://a.com/unsandboxed.html"), "");
+  GURL mhtml_url = mhtml_archive.Write("index.mhtml");
+
+  EXPECT_TRUE(NavigateToURL(shell(), mhtml_url));
+
+  RenderFrameHostImpl* rfh_main = main_frame_host();
+  ASSERT_EQ(2u, rfh_main->child_count());
+  RenderFrameHostImpl* rfh_unsandboxed =
+      rfh_main->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_sandboxed =
+      rfh_main->child_at(1)->current_frame_host();
+
+  auto strict_sandbox = network::mojom::WebSandboxFlags::kAll;
+  auto default_mhtml_sandbox =
+      ~network::mojom::WebSandboxFlags::kPopups &
+      ~network::mojom::WebSandboxFlags::kPropagatesToAuxiliaryBrowsingContexts;
+
+  EXPECT_EQ(default_mhtml_sandbox, rfh_main->active_sandbox_flags());
+  EXPECT_EQ(default_mhtml_sandbox, rfh_unsandboxed->active_sandbox_flags());
+  EXPECT_EQ(strict_sandbox, rfh_sandboxed->active_sandbox_flags());
 }
 
 }  // namespace content
