@@ -637,6 +637,7 @@ class PrintRenderFrameHelper
   bool is_scripted_preview_delayed_ = false;
   int ipc_nesting_level_ = 0;
   bool render_frame_gone_ = false;
+  bool delete_pending_ = false;
 
   // If tagged PDF exporting is enabled, we also need to capture an
   // accessibility tree and store it in the metafile. AXTreeSnapshotter should

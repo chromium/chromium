@@ -2071,8 +2071,10 @@ void PrintRenderFrameHelper::IPCReceived() {
 
 void PrintRenderFrameHelper::IPCProcessed() {
   --ipc_nesting_level_;
-  if (ipc_nesting_level_ == 0 && render_frame_gone_)
+  if (ipc_nesting_level_ == 0 && render_frame_gone_ && !delete_pending_) {
+    delete_pending_ = true;
     base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+  }
 }
 
 bool PrintRenderFrameHelper::InitPrintSettings(bool fit_to_paper_size) {
