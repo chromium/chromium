@@ -6,6 +6,7 @@
 #define ASH_WM_OVERVIEW_OVERVIEW_CONSTANTS_H_
 
 #include "ash/ash_export.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/wm/window_mini_view.h"
 #include "base/time/time.h"
 
@@ -34,7 +35,8 @@ constexpr float kOpacity = 0.4f;
 
 // Amount of blur to apply on the wallpaper when we enter or exit overview
 // mode.
-constexpr float kBlurSigma = 10.f;
+constexpr float kBlurSigma =
+    static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault);
 
 }  // namespace overview_constants
 

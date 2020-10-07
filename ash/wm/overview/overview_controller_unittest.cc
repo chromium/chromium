@@ -236,7 +236,7 @@ TEST_F(OverviewControllerTest, AnimationCallbacksForCrossFadeWallpaper) {
   overview_controller->EndOverview();
   EXPECT_FALSE(overview_controller->InOverviewSession());
   EXPECT_EQ(TestOverviewObserver::UNKNOWN, observer.ending_animation_state());
-  EXPECT_EQ(10, wallpaper_widget_controller->GetWallpaperProperty().blur_sigma);
+  EXPECT_EQ(30, wallpaper_widget_controller->GetWallpaperProperty().blur_sigma);
   EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
 
   observer.WaitForEndingAnimationComplete();

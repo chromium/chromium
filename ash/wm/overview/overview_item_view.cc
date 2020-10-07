@@ -9,6 +9,7 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
@@ -56,17 +57,9 @@ constexpr base::TimeDelta kCloseButtonSlowFadeInDelay =
 
 constexpr int kCloseButtonInkDropRadiusDp = 18;
 
-constexpr SkColor kCloseButtonColor = SK_ColorWHITE;
-
 // Value should match the one in
 // ash/resources/vector_icons/overview_window_close.icon.
 constexpr int kCloseButtonIconMarginDp = 5;
-
-// The colors of the close button ripple.
-constexpr SkColor kCloseButtonInkDropRippleColor =
-    SkColorSetA(kCloseButtonColor, 0x0F);
-constexpr SkColor kCloseButtonInkDropRippleHighlightColor =
-    SkColorSetA(kCloseButtonColor, 0x14);
 
 // Shadow values for shadow on overview header views.
 constexpr int kTitleShadowBlur = 28;
@@ -111,14 +104,20 @@ class OverviewCloseButton : public views::ImageButton {
  public:
   explicit OverviewCloseButton(views::ButtonListener* listener)
       : views::ImageButton(listener) {
-    SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
-
     // Add a shadow to the close vector icon.
+    auto* color_provider = AshColorProvider::Get();
+    SkColor color = color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kButtonIconColor);
     gfx::ImageSkia image_shadow =
         gfx::ImageSkiaOperations::CreateImageWithDropShadow(
-            gfx::CreateVectorIcon(kOverviewWindowCloseIcon, kCloseButtonColor),
+            gfx::CreateVectorIcon(kOverviewWindowCloseIcon, color),
             GetIconShadowValues());
     SetImage(views::Button::STATE_NORMAL, image_shadow);
+
+    auto ripple_attributes = color_provider->GetRippleAttributes(color);
+    SetInkDropBaseColor(ripple_attributes.base_color);
+    SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
+    SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
 
     SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
     SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
@@ -143,20 +142,6 @@ class OverviewCloseButton : public views::ImageButton {
     ink_drop->SetAutoHighlightMode(
         views::InkDropImpl::AutoHighlightMode::SHOW_ON_RIPPLE);
     return ink_drop;
-  }
-
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override {
-    return std::make_unique<views::FloodFillInkDropRipple>(
-        size(), gfx::Insets(), GetInkDropCenterBasedOnLastEvent(),
-        kCloseButtonInkDropRippleColor, /*visible_opacity=*/1.f);
-  }
-
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override {
-    auto highlight = std::make_unique<views::InkDropHighlight>(
-        gfx::SizeF(size()), kCloseButtonInkDropRippleHighlightColor);
-    highlight->set_visible_opacity(1.f);
-    return highlight;
   }
 };
 

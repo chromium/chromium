@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/public/cpp/window_properties.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/wm/window_preview_view.h"
 #include "ash/wm/wm_highlight_item_border.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -25,15 +26,11 @@
 namespace ash {
 namespace {
 
-// Foreground label color.
-constexpr SkColor kLabelColor = SK_ColorWHITE;
-
 // The font delta of the window title.
 constexpr int kLabelFontDelta = 2;
 
 // Values of the backdrop.
 constexpr int kBackdropBorderRoundingDp = 4;
-constexpr SkColor kBackdropColor = SkColorSetA(SK_ColorWHITE, 0x24);
 
 base::string16 GetWindowTitle(aura::Window* window) {
   aura::Window* transient_root = wm::GetTransientRoot(window);
@@ -60,7 +57,8 @@ void WindowMiniView::SetBackdropVisibility(bool visible) {
     backdrop_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     ui::Layer* layer = backdrop_view_->layer();
     layer->SetFillsBoundsOpaquely(false);
-    layer->SetColor(kBackdropColor);
+    layer->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
+        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
     layer->SetRoundedCornerRadius(
         gfx::RoundedCornersF(kBackdropBorderRoundingDp));
     layer->SetIsFastRoundedCorner(true);
@@ -146,7 +144,8 @@ WindowMiniView::WindowMiniView(aura::Window* source_window)
       std::make_unique<views::Label>(GetWindowTitle(source_window_)));
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label_->SetAutoColorReadabilityEnabled(false);
-  title_label_->SetEnabledColor(kLabelColor);
+  title_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
   title_label_->SetSubpixelRenderingEnabled(false);
   title_label_->SetFontList(gfx::FontList().Derive(
       kLabelFontDelta, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
