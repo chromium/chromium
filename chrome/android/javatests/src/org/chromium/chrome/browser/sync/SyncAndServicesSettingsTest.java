@@ -63,7 +63,7 @@ public class SyncAndServicesSettingsTest {
     @LargeTest
     @Feature({"Sync", "Preferences"})
     public void testSyncSwitch() {
-        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         SyncTestUtil.waitForSyncActive();
         SyncAndServicesSettings fragment = startSyncAndServicesPreferences();
         final ChromeSwitchPreference syncSwitch = getSyncSwitch(fragment);
@@ -85,7 +85,7 @@ public class SyncAndServicesSettingsTest {
     @LargeTest
     @Feature({"Sync", "Preferences"})
     public void testOpeningSettingsDoesntEnableSync() {
-        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mSyncTestRule.stopSync();
         SyncAndServicesSettings fragment = startSyncAndServicesPreferences();
         closeFragment(fragment);
@@ -99,7 +99,7 @@ public class SyncAndServicesSettingsTest {
     @LargeTest
     @Feature({"Sync", "Preferences"})
     public void testOpeningSettingsDoesntStartEngine() {
-        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mSyncTestRule.stopSync();
         startSyncAndServicesPreferences();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -111,7 +111,7 @@ public class SyncAndServicesSettingsTest {
     @LargeTest
     @Feature({"Sync", "Preferences"})
     public void testDefaultControlStatesWithSyncOffThenOn() {
-        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mSyncTestRule.stopSync();
         SyncAndServicesSettings fragment = startSyncAndServicesPreferences();
         assertSyncOffState(fragment);
@@ -124,7 +124,7 @@ public class SyncAndServicesSettingsTest {
     @LargeTest
     @Feature({"Sync", "Preferences"})
     public void testDefaultControlStatesWithSyncOnThenOff() {
-        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         SyncTestUtil.waitForSyncActive();
         SyncAndServicesSettings fragment = startSyncAndServicesPreferences();
         assertSyncOnState(fragment);
@@ -137,7 +137,7 @@ public class SyncAndServicesSettingsTest {
     @Feature({"Sync", "Preferences"})
     @DisabledTest(message = "https://crbug.com/991135")
     public void testSyncSwitchClearsServerAutofillCreditCards() {
-        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mSyncTestRule.setPaymentsIntegrationEnabled(true);
 
         Assert.assertFalse(

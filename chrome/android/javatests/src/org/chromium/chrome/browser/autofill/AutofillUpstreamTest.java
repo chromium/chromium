@@ -57,7 +57,7 @@ public class AutofillUpstreamTest {
 
     @Before
     public void setUp() {
-        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mServer = new EmbeddedTestServer();
         mServer.initializeNative(InstrumentationRegistry.getContext(),
                 EmbeddedTestServer.ServerHTTPSSetting.USE_HTTP);

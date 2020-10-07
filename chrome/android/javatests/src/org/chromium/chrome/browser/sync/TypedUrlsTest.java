@@ -69,7 +69,7 @@ public class TypedUrlsTest {
 
     @Before
     public void setUp() throws Exception {
-        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         // Make sure the initial state is clean.
         assertClientTypedUrlCount(0);
         assertServerTypedUrlCountWithName(0, URL);

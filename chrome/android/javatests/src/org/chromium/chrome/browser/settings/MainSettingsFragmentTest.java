@@ -158,7 +158,7 @@ public class MainSettingsFragmentTest {
         mRenderTestRule.render(view, "main_settings_signed_out");
 
         // Sign in and render changes.
-        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         SyncTestUtil.waitForSyncActive();
         mRenderTestRule.render(view, "main_settings_signed_in");
     }
@@ -175,7 +175,7 @@ public class MainSettingsFragmentTest {
         mRenderTestRule.render(view, "main_settings_signed_out_safety_check");
 
         // Sign in and render changes.
-        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         SyncTestUtil.waitForSyncActive();
         mRenderTestRule.render(view, "main_settings_signed_in_safety_check");
     }
@@ -347,7 +347,7 @@ public class MainSettingsFragmentTest {
                 mMainSettings.findPreference(MainSettings.PREF_ACCOUNT_SECTION));
 
         // SignIn to see the changes
-        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         SyncTestUtil.waitForSyncActive();
         Assert.assertEquals("SignInPreference should be at the signed in state. ",
                 signInPreference.getState(), State.SIGNED_IN);
@@ -375,7 +375,7 @@ public class MainSettingsFragmentTest {
                 mMainSettings.findPreference(MainSettings.PREF_MANAGE_SYNC).isVisible());
 
         // SignIn to see the changes
-        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         SyncTestUtil.waitForSyncActive();
         Assert.assertEquals("SignInPreference should be at the signed in state. ",
                 signInPreference.getState(), State.SIGNED_IN);

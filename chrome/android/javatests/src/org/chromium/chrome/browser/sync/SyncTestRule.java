@@ -198,7 +198,7 @@ public class SyncTestRule extends ChromeActivityTestRule<ChromeActivity> {
      * this. For most purposes this function should be used as this emulates the basic sign in flow.
      * @return the test account that is signed in.
      */
-    public Account setUpAccountAndSignInForTesting() {
+    public Account setUpAccountAndEnableSyncForTesting() {
         Account account =
                 mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(mProfileSyncService);
         enableUKM();

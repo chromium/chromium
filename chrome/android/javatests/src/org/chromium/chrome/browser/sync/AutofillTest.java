@@ -76,7 +76,7 @@ public class AutofillTest {
 
     @Before
     public void setUp() throws Exception {
-        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         // Make sure the initial state is clean.
         assertClientAutofillProfileCount(0);
         assertServerAutofillProfileCountWithName(0, STREET);

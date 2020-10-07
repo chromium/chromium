@@ -66,7 +66,7 @@ public class PasswordGenerationIntegrationTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         ManualFillingTestHelper.disableServerPredictions();
         mHelper.loadTestPage(FORM_URL, false);
     }
