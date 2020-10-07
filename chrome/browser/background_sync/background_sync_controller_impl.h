@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/engagement/site_engagement_observer.h"
 #include "components/background_sync/background_sync_delegate.h"
 #include "components/background_sync/background_sync_metrics.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
@@ -24,22 +23,19 @@
 #include "content/public/browser/background_sync_registration.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom-forward.h"
-#include "url/gurl.h"
 
 namespace content {
 struct BackgroundSyncParameters;
+class BrowserContext;
 }  // namespace content
 
 namespace url {
 class Origin;
 }  // namespace url
 
-class Profile;
-class SiteEngagementService;
 class GURL;
 
 class BackgroundSyncControllerImpl : public content::BackgroundSyncController,
-                                     public SiteEngagementObserver,
                                      public KeyedService,
                                      public content_settings::Observer {
  public:
@@ -56,11 +52,6 @@ class BackgroundSyncControllerImpl : public content::BackgroundSyncController,
   static const char kMaxSyncEventDurationName[];
   static const char kMinPeriodicSyncEventsInterval[];
 
-  static const int kEngagementLevelNonePenalty = 0;
-  static const int kEngagementLevelHighOrMaxPenalty = 1;
-  static const int kEngagementLevelLowOrMediumPenalty = 2;
-  static const int kEngagementLevelMinimalPenalty = 3;
-
 #if !defined(OS_ANDROID)
   class BackgroundSyncEventKeepAliveImpl : public BackgroundSyncEventKeepAlive {
    public:
@@ -73,7 +64,9 @@ class BackgroundSyncControllerImpl : public content::BackgroundSyncController,
   };
 #endif
 
-  explicit BackgroundSyncControllerImpl(Profile* profile);
+  BackgroundSyncControllerImpl(
+      content::BrowserContext* browser_context,
+      std::unique_ptr<background_sync::BackgroundSyncDelegate> delegate);
   ~BackgroundSyncControllerImpl() override;
 
   // content::BackgroundSyncController overrides.
@@ -114,13 +107,6 @@ class BackgroundSyncControllerImpl : public content::BackgroundSyncController,
   void AddToTrackedOrigins(const url::Origin& origin) override;
   void RemoveFromTrackedOrigins(const url::Origin& origin) override;
 
-  // SiteEngagementObserver overrides.
-  void OnEngagementEvent(
-      content::WebContents* web_contents,
-      const GURL& url,
-      double score,
-      SiteEngagementService::EngagementType engagement_type) override;
-
   // content_settings::Observer overrides.
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
                                const ContentSettingsPattern& secondary_pattern,
@@ -137,7 +123,7 @@ class BackgroundSyncControllerImpl : public content::BackgroundSyncController,
   // the less often periodic sync events will be fired.
   // Returns kEngagementLevelNonePenalty if the engagement level is
   // blink::mojom::EngagementLevel::NONE.
-  int GetSiteEngagementPenalty(const GURL& url);
+  virtual int GetSiteEngagementPenalty(const GURL& url);
 
   // Once we've identified the minimum number of hours between each periodicsync
   // event for an origin, every delay calculated for the origin should be a
@@ -157,16 +143,11 @@ class BackgroundSyncControllerImpl : public content::BackgroundSyncController,
   // KeyedService implementation.
   void Shutdown() override;
 
-  Profile* profile_;  // This object is owned by profile_.
+  content::BrowserContext* browser_context_;
 
-  // Same lifetime as |profile_|.
-  SiteEngagementService* site_engagement_service_;
-
-  std::unique_ptr<background_sync::BackgroundSyncDelegate>
-      background_sync_delegate_;
+  std::unique_ptr<background_sync::BackgroundSyncDelegate> delegate_;
   std::unique_ptr<BackgroundSyncMetrics> background_sync_metrics_;
 
-  std::set<url::Origin> suspended_periodic_sync_origins_;
   std::set<url::Origin> periodic_sync_origins_;
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundSyncControllerImpl);

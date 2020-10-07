@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "chrome/browser/background_sync/background_sync_delegate_impl.h"
 #include "chrome/browser/engagement/site_engagement_score.h"
 #include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -70,7 +71,8 @@ class BackgroundSyncControllerImplTest : public testing::Test {
 
     HistoryServiceFactory::GetInstance()->SetTestingFactory(
         &profile_, base::BindRepeating(&BuildTestHistoryService, sub_dir));
-    controller_ = std::make_unique<BackgroundSyncControllerImpl>(&profile_);
+    controller_ = std::make_unique<BackgroundSyncControllerImpl>(
+        &profile_, std::make_unique<BackgroundSyncDelegateImpl>(&profile_));
   }
 
   void ResetFieldTrialList() {
@@ -256,7 +258,7 @@ TEST_F(BackgroundSyncControllerImplTest,
       delay,
       base::TimeDelta::FromMilliseconds(
           min_gap_between_periodic_sync_events_ms *
-          BackgroundSyncControllerImpl::kEngagementLevelLowOrMediumPenalty));
+          BackgroundSyncDelegateImpl::kEngagementLevelLowOrMediumPenalty));
 
   // Low engagement.
   SiteEngagementService::Get(&profile_)->ResetBaseScoreForURL(
@@ -268,7 +270,7 @@ TEST_F(BackgroundSyncControllerImplTest,
       delay,
       base::TimeDelta::FromMilliseconds(
           min_gap_between_periodic_sync_events_ms *
-          BackgroundSyncControllerImpl::kEngagementLevelLowOrMediumPenalty));
+          BackgroundSyncDelegateImpl::kEngagementLevelLowOrMediumPenalty));
 
   // Minimal engagement.
   SiteEngagementService::Get(&profile_)->ResetBaseScoreForURL(GURL(kExampleUrl),
@@ -278,7 +280,7 @@ TEST_F(BackgroundSyncControllerImplTest,
   EXPECT_EQ(delay,
             base::TimeDelta::FromMilliseconds(
                 min_gap_between_periodic_sync_events_ms *
-                BackgroundSyncControllerImpl::kEngagementLevelMinimalPenalty));
+                BackgroundSyncDelegateImpl::kEngagementLevelMinimalPenalty));
 
   // No engagement.
   SiteEngagementService::Get(&profile_)->ResetBaseScoreForURL(GURL(kExampleUrl),

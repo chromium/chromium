@@ -7,11 +7,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "chrome/browser/background_sync/background_sync_delegate_impl.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/history/core/browser/history_service.h"
@@ -26,10 +21,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-#if defined(OS_ANDROID)
-#include "chrome/browser/android/background_sync_launcher_android.h"
-#endif
 
 // static
 const char BackgroundSyncControllerImpl::kFieldTrialName[] = "BackgroundSync";
@@ -58,51 +49,19 @@ const char BackgroundSyncControllerImpl::kMaxSyncEventDurationName[] =
 const char BackgroundSyncControllerImpl::kMinPeriodicSyncEventsInterval[] =
     "min_periodic_sync_events_interval_sec";
 
-BackgroundSyncControllerImpl::BackgroundSyncControllerImpl(Profile* profile)
-    : SiteEngagementObserver(SiteEngagementService::Get(profile)),
-      profile_(profile),
-      site_engagement_service_(SiteEngagementService::Get(profile)),
-      background_sync_delegate_(
-          std::make_unique<BackgroundSyncDelegateImpl>(profile_)) {
-  DCHECK(profile_);
-  DCHECK(site_engagement_service_);
+BackgroundSyncControllerImpl::BackgroundSyncControllerImpl(
+    content::BrowserContext* browser_context,
+    std::unique_ptr<background_sync::BackgroundSyncDelegate> delegate)
+    : browser_context_(browser_context), delegate_(std::move(delegate)) {
+  DCHECK(browser_context_);
+  DCHECK(delegate_);
 
   background_sync_metrics_ =
-      std::make_unique<BackgroundSyncMetrics>(background_sync_delegate_.get());
-  HostContentSettingsMapFactory::GetForProfile(profile_)->AddObserver(this);
+      std::make_unique<BackgroundSyncMetrics>(delegate_.get());
+  delegate_->GetHostContentSettingsMap()->AddObserver(this);
 }
 
 BackgroundSyncControllerImpl::~BackgroundSyncControllerImpl() = default;
-
-void BackgroundSyncControllerImpl::OnEngagementEvent(
-    content::WebContents* web_contents,
-    const GURL& url,
-    double score,
-    SiteEngagementService::EngagementType engagement_type) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (score == 0.0)
-    return;
-
-  auto origin = url::Origin::Create(url);
-  auto iter = suspended_periodic_sync_origins_.find(origin);
-  if (iter == suspended_periodic_sync_origins_.end())
-    return;
-
-  suspended_periodic_sync_origins_.erase(iter);
-
-  auto* storage_partition = content::BrowserContext::GetStoragePartitionForSite(
-      profile_, url, /* can_create= */ false);
-  if (!storage_partition)
-    return;
-
-  auto* background_sync_context = storage_partition->GetBackgroundSyncContext();
-  if (!background_sync_context)
-    return;
-
-  background_sync_context->RevivePeriodicBackgroundSyncRegistrations(
-      std::move(origin));
-}
 
 void BackgroundSyncControllerImpl::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
@@ -123,7 +82,7 @@ void BackgroundSyncControllerImpl::OnContentSettingChanged(
 
     auto* storage_partition =
         content::BrowserContext::GetStoragePartitionForSite(
-            profile_, origin.GetURL(), /* can_create= */ false);
+            browser_context_, origin.GetURL(), /* can_create= */ false);
     if (!storage_partition)
       continue;
 
@@ -147,9 +106,8 @@ void BackgroundSyncControllerImpl::GetParameterOverrides(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
 #if defined(OS_ANDROID)
-  if (BackgroundSyncLauncherAndroid::ShouldDisableBackgroundSync()) {
+  if (delegate_->ShouldDisableBackgroundSync())
     parameters->disable = true;
-  }
 #endif
 
   std::map<std::string, std::string> field_params;
@@ -283,12 +241,11 @@ void BackgroundSyncControllerImpl::ScheduleBrowserWakeUpWithDelay(
     base::TimeDelta delay) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (profile_->IsOffTheRecord())
+  if (delegate_->IsProfileOffTheRecord())
     return;
 
 #if defined(OS_ANDROID)
-  BackgroundSyncLauncherAndroid::ScheduleBrowserWakeUpWithDelay(sync_type,
-                                                                delay);
+  delegate_->ScheduleBrowserWakeUpWithDelay(sync_type, delay);
 #endif
 }
 
@@ -296,39 +253,16 @@ void BackgroundSyncControllerImpl::CancelBrowserWakeup(
     blink::mojom::BackgroundSyncType sync_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (profile_->IsOffTheRecord())
+  if (delegate_->IsProfileOffTheRecord())
     return;
 
 #if defined(OS_ANDROID)
-  BackgroundSyncLauncherAndroid::CancelBrowserWakeup(sync_type);
+  delegate_->CancelBrowserWakeup(sync_type);
 #endif
 }
 
 int BackgroundSyncControllerImpl::GetSiteEngagementPenalty(const GURL& url) {
-  blink::mojom::EngagementLevel engagement_level =
-      site_engagement_service_->GetEngagementLevel(url);
-  if (engagement_level == blink::mojom::EngagementLevel::NONE) {
-    suspended_periodic_sync_origins_.insert(
-        url::Origin::Create(url.GetOrigin()));
-  }
-
-  switch (engagement_level) {
-    case blink::mojom::EngagementLevel::NONE:
-      // Suspend registration until site_engagement improves.
-      return kEngagementLevelNonePenalty;
-    case blink::mojom::EngagementLevel::MINIMAL:
-      return kEngagementLevelMinimalPenalty;
-    case blink::mojom::EngagementLevel::LOW:
-    case blink::mojom::EngagementLevel::MEDIUM:
-      return kEngagementLevelLowOrMediumPenalty;
-    case blink::mojom::EngagementLevel::HIGH:
-    case blink::mojom::EngagementLevel::MAX:
-      // Very few sites reach max engagement level.
-      return kEngagementLevelHighOrMaxPenalty;
-  }
-
-  NOTREACHED();
-  return kEngagementLevelNonePenalty;
+  return delegate_->GetSiteEngagementPenalty(url);
 }
 
 base::TimeDelta BackgroundSyncControllerImpl::SnapToMaxOriginFrequency(
@@ -371,8 +305,7 @@ base::TimeDelta BackgroundSyncControllerImpl::ApplyMinGapForOrigin(
 bool BackgroundSyncControllerImpl::IsContentSettingBlocked(
     const url::Origin& origin) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
+  auto* host_content_settings_map = delegate_->GetHostContentSettingsMap();
   DCHECK(host_content_settings_map);
 
   auto url = origin.GetURL();
@@ -385,9 +318,8 @@ bool BackgroundSyncControllerImpl::IsContentSettingBlocked(
 
 void BackgroundSyncControllerImpl::Shutdown() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  HostContentSettingsMapFactory::GetForProfile(profile_)->RemoveObserver(this);
-  // Clear the profile as we're not supposed to use it anymore.
-  profile_ = nullptr;
+  delegate_->GetHostContentSettingsMap()->RemoveObserver(this);
+  delegate_->Shutdown();
 }
 
 base::TimeDelta BackgroundSyncControllerImpl::GetNextEventDelay(
@@ -406,7 +338,7 @@ base::TimeDelta BackgroundSyncControllerImpl::GetNextEventDelay(
         return base::TimeDelta();
       case blink::mojom::BackgroundSyncType::PERIODIC:
         int site_engagement_factor =
-            GetSiteEngagementPenalty(registration.origin().GetURL());
+            delegate_->GetSiteEngagementPenalty(registration.origin().GetURL());
         if (!site_engagement_factor)
           return base::TimeDelta::Max();
 
@@ -451,10 +383,7 @@ BackgroundSyncControllerImpl::BackgroundSyncEventKeepAliveImpl::
 
 void BackgroundSyncControllerImpl::NoteSuspendedPeriodicSyncOrigins(
     std::set<url::Origin> suspended_origins) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  for (auto& origin : suspended_origins)
-    suspended_periodic_sync_origins_.insert(std::move(origin));
+  delegate_->NoteSuspendedPeriodicSyncOrigins(std::move(suspended_origins));
 }
 
 void BackgroundSyncControllerImpl::NoteRegisteredPeriodicSyncOrigins(

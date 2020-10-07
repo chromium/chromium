@@ -5,13 +5,19 @@
 #ifndef COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_DELEGATE_H_
 #define COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_DELEGATE_H_
 
+#include <set>
+
 #include "base/callback.h"
 #include "base/optional.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/mojom/background_sync/background_sync.mojom-forward.h"
+#include "url/origin.h"
 
-namespace url {
-class Origin;
-}  // namespace url
+class HostContentSettingsMap;
+
+class GURL;
 
 namespace background_sync {
 
@@ -26,6 +32,38 @@ class BackgroundSyncDelegate {
   virtual void GetUkmSourceId(
       const url::Origin& origin,
       base::OnceCallback<void(base::Optional<ukm::SourceId>)> callback) = 0;
+
+  // Handles browser shutdown.
+  virtual void Shutdown() = 0;
+
+  // Returns the content settings map.
+  virtual HostContentSettingsMap* GetHostContentSettingsMap() = 0;
+
+  // Returns true if the profile associated with the delegate is off-the-record.
+  virtual bool IsProfileOffTheRecord() = 0;
+
+  // Notes the origins for which Periodic Background Sync is suspended.
+  virtual void NoteSuspendedPeriodicSyncOrigins(
+      std::set<url::Origin> suspended_origins) = 0;
+
+  // Gets the site engagement penalty to add to the Periodic Background Sync
+  // interval for the origin corresponding to |url|.
+  virtual int GetSiteEngagementPenalty(const GURL& url) = 0;
+
+#if defined(OS_ANDROID)
+  // Schedules the browser to be woken up when the device is online to process
+  // registrations of type |sync| after a minimum delay |delay|.
+  virtual void ScheduleBrowserWakeUpWithDelay(
+      blink::mojom::BackgroundSyncType sync_type,
+      base::TimeDelta delay) = 0;
+
+  // Cancels browser wakeup for registrations of type |sync_type|.
+  virtual void CancelBrowserWakeup(
+      blink::mojom::BackgroundSyncType sync_type) = 0;
+
+  // Whether Background Sync should be disabled.
+  virtual bool ShouldDisableBackgroundSync() = 0;
+#endif
 };
 
 }  // namespace background_sync

@@ -5,6 +5,7 @@
 #include "chrome/browser/background_sync/background_sync_controller_factory.h"
 
 #include "chrome/browser/background_sync/background_sync_controller_impl.h"
+#include "chrome/browser/background_sync/background_sync_delegate_impl.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -36,7 +37,9 @@ BackgroundSyncControllerFactory::~BackgroundSyncControllerFactory() = default;
 
 KeyedService* BackgroundSyncControllerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new BackgroundSyncControllerImpl(Profile::FromBrowserContext(context));
+  return new BackgroundSyncControllerImpl(
+      context, std::make_unique<BackgroundSyncDelegateImpl>(
+                   Profile::FromBrowserContext(context)));
 }
 
 content::BrowserContext*
