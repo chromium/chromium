@@ -3666,20 +3666,6 @@ void TabStrip::UpdateTabGroupVisuals(tab_groups::TabGroupId group_id) {
     group_views->second->UpdateBounds();
 }
 
-// Overridden to support automation. See automation_proxy_uitest.cc.
-const views::View* TabStrip::GetViewByID(int view_id) const {
-  if (tab_count() > 0) {
-    if (view_id == VIEW_ID_TAB_LAST)
-      return tab_at(tab_count() - 1);
-    if ((view_id >= VIEW_ID_TAB_0) && (view_id < VIEW_ID_TAB_LAST)) {
-      int index = view_id - VIEW_ID_TAB_0;
-      return (index >= 0 && index < tab_count()) ? tab_at(index) : nullptr;
-    }
-  }
-
-  return View::GetViewByID(view_id);
-}
-
 bool TabStrip::OnMousePressed(const ui::MouseEvent& event) {
   UpdateStackedLayoutFromMouseEvent(this, event);
   // We can't return true here, else clicking in an empty area won't drag the

@@ -652,7 +652,6 @@ class TabStrip : public views::View,
   void UpdateTabGroupVisuals(tab_groups::TabGroupId tab_group_id);
 
   // views::View:
-  const views::View* GetViewByID(int id) const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
