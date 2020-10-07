@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "base/test/task_environment.h"
-#include "gpu/ipc/service/gpu_watchdog_thread_v2.h"
 
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
@@ -70,7 +70,7 @@ void GpuWatchdogTest::SetUp() {
   ASSERT_TRUE(base::CurrentThread::IsSet());
 
   // Set watchdog timeout to 1000 milliseconds
-  watchdog_thread_ = gpu::GpuWatchdogThreadImplV2::Create(
+  watchdog_thread_ = gpu::GpuWatchdogThread::Create(
       /*start_backgrounded*/ false,
       /*timeout*/ kGpuWatchdogTimeoutForTesting,
       /*init_factor*/ kInitFactor,
