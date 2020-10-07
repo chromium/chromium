@@ -140,7 +140,8 @@ class FakeWebURLLoader : public blink::WebURLLoader {
       blink::WebData&,
       int64_t&,
       int64_t&,
-      blink::WebBlobInfo&) override {
+      blink::WebBlobInfo&,
+      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>) override {
     client->DidFail(blink::WebURLError(kFailureReason, request->url), 0, 0, 0);
   }
 
@@ -150,6 +151,7 @@ class FakeWebURLLoader : public blink::WebURLLoader {
       int requestor_id,
       bool download_to_network_cache_only,
       bool no_mime_sniffing,
+      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>,
       blink::WebURLLoaderClient* client) override {
     DCHECK(task_runner_handle_);
     async_client_ = client;

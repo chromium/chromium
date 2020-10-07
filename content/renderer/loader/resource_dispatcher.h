@@ -41,6 +41,7 @@ class WaitableEvent;
 }
 
 namespace blink {
+class ResourceLoadInfoNotifierWrapper;
 class ThrottlingURLLoader;
 }
 
@@ -103,7 +104,9 @@ class CONTENT_EXPORT ResourceDispatcher {
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
       base::TimeDelta timeout,
       mojo::PendingRemote<blink::mojom::BlobRegistry> download_to_blob_registry,
-      std::unique_ptr<RequestPeer> peer);
+      std::unique_ptr<RequestPeer> peer,
+      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+          resource_load_info_notifier_wrapper);
 
   // Call this method to initiate the request. If this method succeeds, then
   // the peer's methods will be called asynchronously to report various events.
@@ -122,7 +125,9 @@ class CONTENT_EXPORT ResourceDispatcher {
       uint32_t loader_options,
       std::unique_ptr<RequestPeer> peer,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles);
+      std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
+      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+          resource_load_info_notifier_wrapper);
 
   // Removes a request from the |pending_requests_| list, returning true if the
   // request was found and removed.
@@ -180,7 +185,9 @@ class CONTENT_EXPORT ResourceDispatcher {
     PendingRequestInfo(std::unique_ptr<RequestPeer> peer,
                        network::mojom::RequestDestination request_destination,
                        int render_frame_id,
-                       const GURL& request_url);
+                       const GURL& request_url,
+                       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+                           resource_load_info_notifier_wrapper);
 
     ~PendingRequestInfo();
 
@@ -207,15 +214,16 @@ class CONTENT_EXPORT ResourceDispatcher {
     blink::PreviewsState previews_state =
         blink::PreviewsTypes::PREVIEWS_UNSPECIFIED;
 
-    // These stats will be sent to the browser process.
-    blink::mojom::ResourceLoadInfoPtr resource_load_info;
-
     // For mojo loading.
     std::unique_ptr<blink::ThrottlingURLLoader> url_loader;
     std::unique_ptr<URLLoaderClientImpl> url_loader_client;
 
     // The Client Hints headers that need to be removed from a redirect.
     std::vector<std::string> removed_headers;
+
+    // Used to notify the loading stats.
+    std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+        resource_load_info_notifier_wrapper;
   };
   using PendingRequestMap = std::map<int, std::unique_ptr<PendingRequestInfo>>;
 

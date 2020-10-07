@@ -107,6 +107,7 @@ class WebRemotePlaybackClient;
 class WebServiceWorkerProvider;
 class WebSpellCheckPanelHostClient;
 class WebTextCheckClient;
+class ResourceLoadInfoNotifierWrapper;
 
 class CORE_EXPORT LocalFrameClient : public FrameClient {
  public:
@@ -406,6 +407,11 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   // Returns whether we are associated with a print context who suggests to use
   // printing layout.
   virtual bool UsePrintingLayout() const { return false; }
+
+  virtual std::unique_ptr<ResourceLoadInfoNotifierWrapper>
+  CreateResourceLoadInfoNotifierWrapper() {
+    return nullptr;
+  }
 
   // AppCache ------------------------------------------------------------
   virtual void UpdateSubresourceFactory(

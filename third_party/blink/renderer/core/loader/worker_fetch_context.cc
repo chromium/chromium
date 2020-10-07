@@ -273,6 +273,11 @@ WorkerFetchContext::TakePendingWorkerTimingReceiver(int request_id) {
       request_id);
 }
 
+std::unique_ptr<ResourceLoadInfoNotifierWrapper>
+WorkerFetchContext::CreateResourceLoadInfoNotifierWrapper() {
+  return web_context_->CreateResourceLoadInfoNotifierWrapper();
+}
+
 void WorkerFetchContext::SetFirstPartyCookie(ResourceRequest& out_request) {
   if (out_request.SiteForCookies().IsNull())
     out_request.SetSiteForCookies(GetSiteForCookies());

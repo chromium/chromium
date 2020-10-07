@@ -32,6 +32,8 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
+#include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
+#include "third_party/blink/public/platform/weak_wrapper_resource_load_info_notifier.h"
 #include "third_party/blink/public/platform/web_code_cache_loader.h"
 #include "third_party/blink/public/platform/web_frame_request_blocker.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -409,6 +411,9 @@ void WebWorkerFetchContextImpl::InitializeOnWorkerThread(
   if (pending_resource_load_info_notifier_) {
     resource_load_info_notifier_.Bind(
         std::move(pending_resource_load_info_notifier_));
+    resource_load_info_notifier_.set_disconnect_handler(base::BindOnce(
+        &WebWorkerFetchContextImpl::ResetWeakWrapperResourceLoadInfoNotifier,
+        base::Unretained(this)));
   }
 
   accept_languages_watcher_ = watcher;
@@ -676,6 +681,10 @@ blink::WebString WebWorkerFetchContextImpl::GetAcceptLanguages() const {
   return blink::WebString::FromUTF8(renderer_preferences_.accept_languages);
 }
 
+void WebWorkerFetchContextImpl::ResetWeakWrapperResourceLoadInfoNotifier() {
+  weak_wrapper_resource_load_info_notifier_.reset();
+}
+
 void WebWorkerFetchContextImpl::AddPendingWorkerTimingReceiver(
     int request_id,
     mojo::PendingReceiver<blink::mojom::WorkerTimingContainer> receiver) {
@@ -697,12 +706,34 @@ WebWorkerFetchContextImpl::CloneResourceLoadInfoNotifier() {
   if (pending_resource_load_info_notifier_) {
     resource_load_info_notifier_.Bind(
         std::move(pending_resource_load_info_notifier_));
+    resource_load_info_notifier_.set_disconnect_handler(base::BindOnce(
+        &WebWorkerFetchContextImpl::ResetWeakWrapperResourceLoadInfoNotifier,
+        base::Unretained(this)));
   }
 
   mojo::PendingRemote<blink::mojom::ResourceLoadInfoNotifier> pending_remote;
   resource_load_info_notifier_->Clone(
       pending_remote.InitWithNewPipeAndPassReceiver());
   return std::move(pending_remote);
+}
+
+std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+WebWorkerFetchContextImpl::CreateResourceLoadInfoNotifierWrapper() {
+  // If |resource_load_info_notifier_| is unbound, we will create
+  // ResourceLoadInfoNotifierWrapper without wrapping a ResourceLoadInfoNotifier
+  // and only collect histograms.
+  if (!resource_load_info_notifier_) {
+    return std::make_unique<blink::ResourceLoadInfoNotifierWrapper>(
+        /*resource_load_info_notifier=*/nullptr);
+  }
+
+  if (!weak_wrapper_resource_load_info_notifier_) {
+    weak_wrapper_resource_load_info_notifier_ =
+        std::make_unique<blink::WeakWrapperResourceLoadInfoNotifier>(
+            resource_load_info_notifier_.get());
+  }
+  return std::make_unique<blink::ResourceLoadInfoNotifierWrapper>(
+      weak_wrapper_resource_load_info_notifier_->AsWeakPtr());
 }
 
 }  // namespace content

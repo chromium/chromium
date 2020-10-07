@@ -117,6 +117,7 @@
 struct FrameMsg_MixedContentFound_Params;
 
 namespace blink {
+class WeakWrapperResourceLoadInfoNotifier;
 class WebComputedAXTree;
 class WebContentDecryptionModule;
 class WebElement;
@@ -166,8 +167,8 @@ struct FrameReplicationState;
 
 class CONTENT_EXPORT RenderFrameImpl
     : public RenderFrame,
+      public blink::mojom::ResourceLoadInfoNotifier,
       blink::mojom::AutoplayConfigurationClient,
-      blink::mojom::ResourceLoadInfoNotifier,
       mojom::Frame,
       mojom::FrameNavigationControl,
       mojom::FullscreenVideoElementHandler,
@@ -460,22 +461,22 @@ class CONTENT_EXPORT RenderFrameImpl
   void AddAutoplayFlags(const url::Origin& origin,
                         const int32_t flags) override;
 
-  // These are called for dedicated workers only when
-  // PlzDedicatedWorker is enabled.
   // blink::mojom::ResourceLoadInfoNotifier implementation:
   void NotifyResourceRedirectReceived(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr redirect_response) override;
   void NotifyResourceResponseReceived(
-      blink::mojom::ResourceLoadInfoPtr resource_load_info,
+      int64_t request_id,
+      const GURL& response_url,
       network::mojom::URLResponseHeadPtr head,
+      network::mojom::RequestDestination request_destination,
       int32_t previews_state) override;
-  void NotifyResourceTransferSizeUpdated(int32_t request_id,
+  void NotifyResourceTransferSizeUpdated(int64_t request_id,
                                          int32_t transfer_size_diff) override;
   void NotifyResourceLoadCompleted(
       blink::mojom::ResourceLoadInfoPtr resource_load_info,
       const ::network::URLLoaderCompletionStatus& status) override;
-  void NotifyResourceLoadCanceled(int32_t request_id) override;
+  void NotifyResourceLoadCanceled(int64_t request_id) override;
   void Clone(mojo::PendingReceiver<blink::mojom::ResourceLoadInfoNotifier>
                  pending_resource_load_info_notifier) override;
 
@@ -610,6 +611,8 @@ class CONTENT_EXPORT RenderFrameImpl
       blink::WebDedicatedWorkerHostFactoryClient* factory_client) override;
   std::unique_ptr<blink::WebPrescientNetworking> CreatePrescientNetworking()
       override;
+  std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+  CreateResourceLoadInfoNotifierWrapper() override;
   blink::BlameContext* GetFrameBlameContext() override;
   std::unique_ptr<blink::WebServiceWorkerProvider> CreateServiceWorkerProvider()
       override;
@@ -1360,6 +1363,9 @@ class CONTENT_EXPORT RenderFrameImpl
   std::unique_ptr<RenderAccessibilityManager> render_accessibility_manager_;
 
   std::unique_ptr<FrameBlameContext> blame_context_;
+
+  std::unique_ptr<blink::WeakWrapperResourceLoadInfoNotifier>
+      weak_wrapper_resource_load_info_notifier_;
 
   // Plugins -------------------------------------------------------------------
 #if BUILDFLAG(ENABLE_PLUGINS)

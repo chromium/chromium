@@ -5,6 +5,7 @@
 #include "content/renderer/loader/sync_load_context.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "content/renderer/loader/sync_load_response.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -14,6 +15,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 
 namespace content {
 
@@ -104,17 +106,20 @@ class SyncLoadContextTest : public testing::Test {
       base::WaitableEvent* redirect_or_response_event) {
     loading_thread_.task_runner()->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &SyncLoadContext::StartAsyncWithWaitableEvent, std::move(request),
-            MSG_ROUTING_NONE, loading_thread_.task_runner(),
-            TRAFFIC_ANNOTATION_FOR_TESTS, 0 /* loader_options */,
-            std::move(pending_factory),
-            std::vector<std::unique_ptr<blink::URLLoaderThrottle>>(),
-            out_response, redirect_or_response_event,
-            nullptr /* terminate_sync_load_event */,
-            base::TimeDelta::FromSeconds(60) /* timeout */,
-            mojo::NullRemote() /* download_to_blob_registry */,
-            std::vector<std::string>() /* cors_exempt_header_list */));
+        base::BindOnce(&SyncLoadContext::StartAsyncWithWaitableEvent,
+                       std::move(request), MSG_ROUTING_NONE,
+                       loading_thread_.task_runner(),
+                       TRAFFIC_ANNOTATION_FOR_TESTS, 0 /* loader_options */,
+                       std::move(pending_factory),
+                       std::vector<std::unique_ptr<blink::URLLoaderThrottle>>(),
+                       out_response, redirect_or_response_event,
+                       nullptr /* terminate_sync_load_event */,
+                       base::TimeDelta::FromSeconds(60) /* timeout */,
+                       mojo::NullRemote() /* download_to_blob_registry */,
+                       std::vector<std::string>() /* cors_exempt_header_list */,
+                       std::make_unique<blink::ResourceLoadInfoNotifierWrapper>(
+                           /*resource_load_info_notifier=*/nullptr,
+                           task_environment_.GetMainThreadTaskRunner())));
   }
 
   static void RunSyncLoadContextViaDataPipe(
@@ -151,6 +156,8 @@ class SyncLoadContextTest : public testing::Test {
     mojo::BlockingCopyFromString(expected_data, producer_handle);
   }
 
+ protected:
+  base::test::TaskEnvironment task_environment_;
   base::Thread loading_thread_;
 };
 

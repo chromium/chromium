@@ -19,6 +19,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 
 namespace content {
 
@@ -101,7 +102,9 @@ void SyncLoadContext::StartAsyncWithWaitableEvent(
     base::WaitableEvent* abort_event,
     base::TimeDelta timeout,
     mojo::PendingRemote<blink::mojom::BlobRegistry> download_to_blob_registry,
-    const std::vector<std::string>& cors_exempt_header_list) {
+    const std::vector<std::string>& cors_exempt_header_list,
+    std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+        resource_load_info_notifier_wrapper) {
   auto* context =
       new SyncLoadContext(request.get(), std::move(pending_url_loader_factory),
                           response, redirect_or_response_event, abort_event,
@@ -110,7 +113,8 @@ void SyncLoadContext::StartAsyncWithWaitableEvent(
   context->request_id_ = context->resource_dispatcher_->StartAsync(
       std::move(request), routing_id, std::move(loading_task_runner),
       traffic_annotation, loader_options, base::WrapUnique(context),
-      context->url_loader_factory_, std::move(throttles));
+      context->url_loader_factory_, std::move(throttles),
+      std::move(resource_load_info_notifier_wrapper));
 }
 
 SyncLoadContext::SyncLoadContext(

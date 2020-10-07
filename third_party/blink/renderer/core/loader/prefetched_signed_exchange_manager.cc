@@ -13,6 +13,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
@@ -78,7 +79,9 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
       WebData& data,
       int64_t& encoded_data_length,
       int64_t& encoded_body_length,
-      WebBlobInfo& downloaded_blob) override {
+      WebBlobInfo& downloaded_blob,
+      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+          resource_load_info_notifier_wrapper) override {
     NOTREACHED();
   }
   void LoadAsynchronously(
@@ -87,11 +90,14 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
       int requestor_id,
       bool download_to_network_cache_only,
       bool no_mime_sniffing,
+      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+          resource_load_info_notifier_wrapper,
       WebURLLoaderClient* client) override {
     if (url_loader_) {
       url_loader_->LoadAsynchronously(
           std::move(request), std::move(request_extra_data), requestor_id,
-          download_to_network_cache_only, no_mime_sniffing, client);
+          download_to_network_cache_only, no_mime_sniffing,
+          std::move(resource_load_info_notifier_wrapper), client);
       return;
     }
     // It is safe to use Unretained(client), because |client| is a
@@ -101,6 +107,7 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
         &PrefetchedSignedExchangeLoader::LoadAsynchronously, GetWeakPtr(),
         std::move(request), std::move(request_extra_data), requestor_id,
         download_to_network_cache_only, no_mime_sniffing,
+        std::move(resource_load_info_notifier_wrapper),
         WTF::Unretained(client)));
   }
   void SetDefersLoading(bool value) override {

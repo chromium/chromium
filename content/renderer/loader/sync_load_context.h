@@ -29,6 +29,7 @@ struct ResourceRequest;
 }
 
 namespace blink {
+class ResourceLoadInfoNotifierWrapper;
 class URLLoaderThrottle;
 }
 
@@ -67,7 +68,9 @@ class CONTENT_EXPORT SyncLoadContext : public RequestPeer {
       base::WaitableEvent* abort_event,
       base::TimeDelta timeout,
       mojo::PendingRemote<blink::mojom::BlobRegistry> download_to_blob_registry,
-      const std::vector<std::string>& cors_exempt_header_list);
+      const std::vector<std::string>& cors_exempt_header_list,
+      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+          resource_load_info_notifier_wrapper);
 
   ~SyncLoadContext() override;
 

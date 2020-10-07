@@ -1136,6 +1136,12 @@ bool LocalFrameClientImpl::UsePrintingLayout() const {
   return web_frame_->UsePrintingLayout();
 }
 
+std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+LocalFrameClientImpl::CreateResourceLoadInfoNotifierWrapper() {
+  DCHECK(web_frame_->Client());
+  return web_frame_->Client()->CreateResourceLoadInfoNotifierWrapper();
+}
+
 void LocalFrameClientImpl::UpdateSubresourceFactory(
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle> pending_factory) {
   DCHECK(web_frame_->Client());

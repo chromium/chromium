@@ -31,6 +31,8 @@
 #include "url/gurl.h"
 
 namespace blink {
+class ResourceLoadInfoNotifierWrapper;
+class WeakWrapperResourceLoadInfoNotifier;
 class WebFrameRequestBlocker;
 }  // namespace blink
 
@@ -177,6 +179,9 @@ class CONTENT_EXPORT WebWorkerFetchContextImpl
       blink::mojom::ResourceLoadInfoNotifierInterfaceBase>
   CloneResourceLoadInfoNotifier() override;
 
+  std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+  CreateResourceLoadInfoNotifierWrapper() override;
+
  private:
   class Factory;
   using WorkerTimingContainerReceiverMap =
@@ -243,6 +248,8 @@ class CONTENT_EXPORT WebWorkerFetchContextImpl
 
   // Implements blink::mojom::RendererPreferenceWatcher.
   void NotifyUpdate(blink::mojom::RendererPreferencesPtr new_prefs) override;
+
+  void ResetWeakWrapperResourceLoadInfoNotifier();
 
   // |receiver_| and |service_worker_worker_client_registry_| may be null if
   // this context can't use service workers. See comments for Create().
@@ -351,10 +358,15 @@ class CONTENT_EXPORT WebWorkerFetchContextImpl
   mojo::PendingRemote<blink::mojom::ResourceLoadInfoNotifier>
       pending_resource_load_info_notifier_;
 
-  // Used to send the ResourceLoadInfo of the main script for dedicated
-  // workers only when PlzDedicatedWorker is enabled.
+  // Used to notify the loading stats by ResourceLoadInfo struct for dedicated
+  // workers.
   mojo::Remote<blink::mojom::ResourceLoadInfoNotifier>
       resource_load_info_notifier_;
+
+  // Wrap a raw blink::mojom::ResourceLoadInfoNotifier pointer directed at
+  // |resource_load_info_notifier_|'s receiver.
+  std::unique_ptr<blink::WeakWrapperResourceLoadInfoNotifier>
+      weak_wrapper_resource_load_info_notifier_;
 
   blink::AcceptLanguagesWatcher* accept_languages_watcher_ = nullptr;
 

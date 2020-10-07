@@ -38,6 +38,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -75,7 +76,9 @@ class TestResourceDispatcher : public ResourceDispatcher {
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
       base::TimeDelta timeout,
       mojo::PendingRemote<blink::mojom::BlobRegistry> download_to_blob_registry,
-      std::unique_ptr<RequestPeer> peer) override {
+      std::unique_ptr<RequestPeer> peer,
+      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+          resource_load_info_notifier_wrapper) override {
     *response = std::move(sync_load_response_);
   }
 
@@ -87,8 +90,9 @@ class TestResourceDispatcher : public ResourceDispatcher {
       uint32_t loader_options,
       std::unique_ptr<RequestPeer> peer,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles)
-      override {
+      std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
+      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+          resource_load_info_notifier_wrapper) override {
     EXPECT_FALSE(peer_);
     if (sync_load_response_.head->encoded_body_length != -1)
       EXPECT_TRUE(loader_options & network::mojom::kURLLoadOptionSynchronous);
@@ -305,6 +309,8 @@ class WebURLLoaderImplTest : public testing::Test {
     client()->loader()->LoadAsynchronously(
         std::move(request), /*extra_data=*/nullptr, /*requestor_id=*/0,
         /*download_to_network_cache_only=*/false, /*no_mime_sniffing=*/false,
+        std::make_unique<blink::ResourceLoadInfoNotifierWrapper>(
+            /*resource_load_info_notifier=*/nullptr),
         client());
     ASSERT_TRUE(peer());
   }
@@ -665,7 +671,9 @@ TEST_F(WebURLLoaderImplTest, SyncLengths) {
       /*download_to_network_cache_only=*/false,
       /*pass_response_pipe_to_client=*/false, /*no_mime_sniffing=*/false,
       base::TimeDelta(), nullptr, response, error, data, encoded_data_length,
-      encoded_body_length, downloaded_blob);
+      encoded_body_length, downloaded_blob,
+      std::make_unique<blink::ResourceLoadInfoNotifierWrapper>(
+          /*resource_load_info_notifier=*/nullptr));
 
   EXPECT_EQ(kEncodedBodyLength, encoded_body_length);
   EXPECT_EQ(kEncodedDataLength, encoded_data_length);

@@ -131,18 +131,20 @@ class WorkerMainScriptLoaderTest : public testing::Test {
         const net::RedirectInfo& redirect_info,
         network::mojom::URLResponseHeadPtr redirect_response) override {}
     void NotifyResourceResponseReceived(
-        blink::mojom::ResourceLoadInfoPtr resource_load_info,
+        int64_t request_id,
+        const GURL& final_url,
         network::mojom::URLResponseHeadPtr head,
-        int32_t previews_state) override {
-      resource_load_info_ = std::move(resource_load_info);
-    }
+        network::mojom::RequestDestination request_destination,
+        int32_t previews_state) override {}
     void NotifyResourceTransferSizeUpdated(
-        int32_t request_id,
+        int64_t request_id,
         int32_t transfer_size_diff) override {}
     void NotifyResourceLoadCompleted(
         blink::mojom::ResourceLoadInfoPtr resource_load_info,
-        const ::network::URLLoaderCompletionStatus& status) override {}
-    void NotifyResourceLoadCanceled(int32_t request_id) override {}
+        const ::network::URLLoaderCompletionStatus& status) override {
+      resource_load_info_ = std::move(resource_load_info);
+    }
+    void NotifyResourceLoadCanceled(int64_t request_id) override {}
     void Clone(mojo::PendingReceiver<blink::mojom::ResourceLoadInfoNotifier>
                    pending_resource_load_info_notifier) override {}
 

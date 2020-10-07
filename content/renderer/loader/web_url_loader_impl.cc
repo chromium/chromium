@@ -75,6 +75,7 @@
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_http_load_info.h"
@@ -384,7 +385,9 @@ class WebURLLoaderImpl::Context : public base::RefCounted<Context> {
              bool pass_response_pipe_to_client,
              bool no_mime_sniffing,
              base::TimeDelta timeout_interval,
-             SyncLoadResponse* sync_load_response);
+             SyncLoadResponse* sync_load_response,
+             std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+                 resource_load_info_notifier_wrapper);
 
   void OnUploadProgress(uint64_t position, uint64_t size);
   bool OnReceivedRedirect(const net::RedirectInfo& redirect_info,
@@ -610,7 +613,9 @@ void WebURLLoaderImpl::Context::Start(
     bool pass_response_pipe_to_client,
     bool no_mime_sniffing,
     base::TimeDelta timeout_interval,
-    SyncLoadResponse* sync_load_response) {
+    SyncLoadResponse* sync_load_response,
+    std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+        resource_load_info_notifier_wrapper) {
   DCHECK(request_id_ == -1);
 
   // Notify Blink's scheduler with the initial resource fetch priority.
@@ -701,8 +706,8 @@ void WebURLLoaderImpl::Context::Start(
         std::move(request), requestor_id,
         GetTrafficAnnotationTag(resource_type), loader_options,
         sync_load_response, url_loader_factory_, std::move(throttles),
-        timeout_interval, std::move(download_to_blob_registry),
-        std::move(peer));
+        timeout_interval, std::move(download_to_blob_registry), std::move(peer),
+        std::move(resource_load_info_notifier_wrapper));
     return;
   }
 
@@ -711,7 +716,8 @@ void WebURLLoaderImpl::Context::Start(
   request_id_ = resource_dispatcher_->StartAsync(
       std::move(request), requestor_id, task_runner_,
       GetTrafficAnnotationTag(resource_type), loader_options, std::move(peer),
-      url_loader_factory_, std::move(throttles));
+      url_loader_factory_, std::move(throttles),
+      std::move(resource_load_info_notifier_wrapper));
 
   if (defers_loading_ != NOT_DEFERRING)
     resource_dispatcher_->SetDefersLoading(request_id_, true);
@@ -1083,7 +1089,9 @@ void WebURLLoaderImpl::LoadSynchronously(
     WebData& data,
     int64_t& encoded_data_length,
     int64_t& encoded_body_length,
-    blink::WebBlobInfo& downloaded_blob) {
+    blink::WebBlobInfo& downloaded_blob,
+    std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+        resource_load_info_notifier_wrapper) {
   TRACE_EVENT0("loading", "WebURLLoaderImpl::loadSynchronously");
   SyncLoadResponse sync_load_response;
 
@@ -1094,7 +1102,8 @@ void WebURLLoaderImpl::LoadSynchronously(
   context_->Start(std::move(request), std::move(request_extra_data),
                   requestor_id, download_to_network_cache_only,
                   pass_response_pipe_to_client, no_mime_sniffing,
-                  timeout_interval, &sync_load_response);
+                  timeout_interval, &sync_load_response,
+                  std::move(resource_load_info_notifier_wrapper));
 
   const GURL& final_url = sync_load_response.url;
 
@@ -1141,6 +1150,8 @@ void WebURLLoaderImpl::LoadAsynchronously(
     int requestor_id,
     bool download_to_network_cache_only,
     bool no_mime_sniffing,
+    std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+        resource_load_info_notifier_wrapper,
     WebURLLoaderClient* client) {
   TRACE_EVENT_WITH_FLOW0("loading", "WebURLLoaderImpl::loadAsynchronously",
                          this, TRACE_EVENT_FLAG_FLOW_OUT);
@@ -1150,7 +1161,8 @@ void WebURLLoaderImpl::LoadAsynchronously(
   context_->Start(std::move(request), std::move(request_extra_data),
                   requestor_id, download_to_network_cache_only,
                   /*pass_response_pipe_to_client=*/false, no_mime_sniffing,
-                  base::TimeDelta(), nullptr);
+                  base::TimeDelta(), nullptr,
+                  std::move(resource_load_info_notifier_wrapper));
 }
 
 void WebURLLoaderImpl::Cancel() {

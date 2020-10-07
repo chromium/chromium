@@ -27,6 +27,7 @@
 #include "third_party/blink/public/platform/web_navigation_body_loader.h"
 
 namespace blink {
+class ResourceLoadInfoNotifierWrapper;
 class WebCodeCacheLoader;
 struct WebNavigationParams;
 }  // namespace blink
@@ -36,6 +37,8 @@ struct URLLoaderCompletionStatus;
 }  // namespace network
 
 namespace content {
+
+class RenderFrameImpl;
 
 // Navigation request is started in the browser process, and all redirects
 // and final response are received there. Then we pass URLLoader and
@@ -58,7 +61,7 @@ class CONTENT_EXPORT NavigationBodyLoader
       mojo::ScopedDataPipeConsumerHandle response_body,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      int render_frame_id,
+      RenderFrameImpl* render_frame_impl,
       bool is_main_frame,
       blink::WebNavigationParams* navigation_params);
   ~NavigationBodyLoader() override;
@@ -94,12 +97,13 @@ class CONTENT_EXPORT NavigationBodyLoader
   static constexpr uint32_t kMaxNumConsumedBytesInTask = 64 * 1024;
 
   NavigationBodyLoader(
+      const GURL& original_url,
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      int render_frame_id,
-      blink::mojom::ResourceLoadInfoPtr resource_load_info);
+      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+          resource_load_info_notifier_wrapper);
 
   // blink::WebNavigationBodyLoader
   void SetDefersLoading(bool defers) override;
@@ -134,14 +138,10 @@ class CONTENT_EXPORT NavigationBodyLoader
   void BindURLLoaderAndStartLoadingResponseBodyIfPossible();
 
   // Navigation parameters.
-  const int render_frame_id_;
   network::mojom::URLResponseHeadPtr response_head_;
   mojo::ScopedDataPipeConsumerHandle response_body_;
   network::mojom::URLLoaderClientEndpointsPtr endpoints_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  // This struct holds stats to notify browser process.
-  blink::mojom::ResourceLoadInfoPtr resource_load_info_;
 
   // These bindings are live while loading the response.
   mojo::Remote<network::mojom::URLLoader> url_loader_;
@@ -155,6 +155,10 @@ class CONTENT_EXPORT NavigationBodyLoader
 
   // This loader is live while retrieving the code cache.
   std::unique_ptr<blink::WebCodeCacheLoader> code_cache_loader_;
+
+  // Used to notify the navigation loading stats.
+  std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+      resource_load_info_notifier_wrapper_;
 
   // The final status received from network or cancelation status if aborted.
   network::URLLoaderCompletionStatus status_;
@@ -174,6 +178,9 @@ class CONTENT_EXPORT NavigationBodyLoader
   // which can happen due to nested message loop triggered
   // from iniside BodyDataReceived client notification.
   bool is_in_on_readable_ = false;
+
+  // The original navigation url to start with.
+  const GURL original_url_;
 
   base::WeakPtrFactory<NavigationBodyLoader> weak_factory_{this};
 

@@ -1,6 +1,9 @@
 include_rules = [
+    "+net/base/ip_endpoint.h",
     "+net/base/load_flags.h",
+    "+net/url_request/redirect_info.h",
     "+services/network/public/cpp/features.h",
+    "+services/network/public/mojom/fetch_api.mojom.h",
 ]
 
 specific_include_rules = {

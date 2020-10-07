@@ -4,9 +4,11 @@
 
 module blink.mojom;
 
+import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "third_party/blink/public/mojom/loader/resource_load_info.mojom";
+import "url/mojom/url.mojom";
 
 // This interface is used to notify loading stats of the resource.
 interface ResourceLoadInfoNotifier {
@@ -15,19 +17,21 @@ interface ResourceLoadInfoNotifier {
                                  network.mojom.URLResponseHead redirect_response);
 
   // Called to notify the response has been received.
-  NotifyResourceResponseReceived(ResourceLoadInfo resource_load_info,
+  NotifyResourceResponseReceived(int64 request_id,
+                                 url.mojom.Url response_url,
                                  network.mojom.URLResponseHead head,
+                                 network.mojom.RequestDestination request_destination,
                                  int32 previews_state);
 
   // Called to notify the transfer size is updated.
-  NotifyResourceTransferSizeUpdated(int32 request_id, int32 transfer_size_diff);
+  NotifyResourceTransferSizeUpdated(int64 request_id, int32 transfer_size_diff);
 
   // Called to notify the request has been completed.
   NotifyResourceLoadCompleted(ResourceLoadInfo resource_load_info,
                               network.mojom.URLLoaderCompletionStatus status);
 
   // Called to notify the request has been canceled.
-  NotifyResourceLoadCanceled(int32 request_id);
+  NotifyResourceLoadCanceled(int64 request_id);
 
   // Makes a new endpoint to this ResourceLoadInfoNotifier.
   Clone(pending_receiver<ResourceLoadInfoNotifier> pending_resource_load_info_notifier);

@@ -6,68 +6,12 @@
 #define CONTENT_RENDERER_LOADER_RESOURCE_LOAD_STATS_H_
 
 #include "build/build_config.h"
-#include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
-
-class GURL;
-
-namespace net {
-struct RedirectInfo;
-}  // namespace net
-
-namespace network {
-struct URLLoaderCompletionStatus;
-}  // namespace network
 
 namespace content {
-
-// A collection of methods collecting histograms related to resource load
-// and notifying browser process with loading stats.
-//
-// Each resource load should start with NotifyResourceLoadInitiated,
-// and then pass returned mojom::ResourceLoadInfo to all subsequent
-// calls until NotifyResourceLoadCompleted or NotifyResourceLoadCanceled.
 
 #if defined(OS_ANDROID)
 void NotifyUpdateUserGestureCarryoverInfo(int render_frame_id);
 #endif
-
-blink::mojom::ResourceLoadInfoPtr NotifyResourceLoadInitiated(
-    int render_frame_id,
-    int request_id,
-    const GURL& request_url,
-    const std::string& http_method,
-    const GURL& referrer,
-    network::mojom::RequestDestination request_destination,
-    net::RequestPriority request_priority);
-
-void NotifyResourceRedirectReceived(
-    int render_frame_id,
-    blink::mojom::ResourceLoadInfo* resource_load_info,
-    const net::RedirectInfo& redirect_info,
-    network::mojom::URLResponseHeadPtr redirect_response);
-
-void NotifyResourceResponseReceived(
-    int render_frame_id,
-    blink::mojom::ResourceLoadInfo* resource_load_info,
-    network::mojom::URLResponseHeadPtr response_head,
-    blink::PreviewsState previews_state);
-
-void NotifyResourceTransferSizeUpdated(
-    int render_frame_id,
-    blink::mojom::ResourceLoadInfo* resource_load_info,
-    int transfer_size_diff);
-
-void NotifyResourceLoadCompleted(
-    int render_frame_id,
-    blink::mojom::ResourceLoadInfoPtr resource_load_info,
-    const network::URLLoaderCompletionStatus& status);
-
-void NotifyResourceLoadCanceled(
-    int render_frame_id,
-    blink::mojom::ResourceLoadInfoPtr resource_load_info,
-    int net_error);
 
 }  // namespace content
 

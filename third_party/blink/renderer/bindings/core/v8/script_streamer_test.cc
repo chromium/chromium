@@ -93,7 +93,9 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
         WebData&,
         int64_t& encoded_data_length,
         int64_t& encoded_body_length,
-        WebBlobInfo& downloaded_blob) override {
+        WebBlobInfo& downloaded_blob,
+        std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+            resource_load_info_notifier_wrapper) override {
       NOTREACHED();
     }
     void LoadAsynchronously(
@@ -102,6 +104,8 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
         int requestor_id,
         bool download_to_network_cache_only,
         bool no_mime_sniffing,
+        std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+            resource_load_info_notifier_wrapper,
         WebURLLoaderClient*) override {}
     void SetDefersLoading(bool) override {}
     void DidChangePriority(WebURLRequest::Priority, int) override {

@@ -7,6 +7,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
+#include "third_party/blink/public/common/loader/record_load_histograms.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -336,7 +337,8 @@ void WorkerMainScriptLoader::NotifyResponseReceived(
     resource_load_info_->network_info->remote_endpoint =
         response_head->remote_endpoint;
     resource_loader_info_notifier_->NotifyResourceResponseReceived(
-        resource_load_info_.Clone(), std::move(response_head),
+        /*request_id=*/-1, resource_load_info_->final_url,
+        std::move(response_head), resource_load_info_->request_destination,
         PreviewsTypes::kPreviewsUnspecified);
   }
 }
@@ -366,6 +368,9 @@ void WorkerMainScriptLoader::NotifyRedirectionReceived(
 
 void WorkerMainScriptLoader::NotifyCompleteReceived(
     const network::URLLoaderCompletionStatus& status) {
+  blink::RecordLoadHistograms(
+      url::Origin::Create(resource_load_info_->final_url),
+      resource_load_info_->request_destination, status.error_code);
   if (resource_loader_info_notifier_) {
     resource_load_info_->network_info = blink::mojom::CommonNetworkInfo::New();
     resource_load_info_->original_url = initial_request_url_;

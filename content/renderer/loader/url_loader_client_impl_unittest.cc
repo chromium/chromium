@@ -19,6 +19,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
+#include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 
 namespace content {
@@ -58,7 +59,9 @@ class URLLoaderClientImplTest : public ::testing::Test,
         std::make_unique<TestRequestPeer>(dispatcher_.get(),
                                           &request_peer_context_),
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(this),
-        std::vector<std::unique_ptr<blink::URLLoaderThrottle>>());
+        std::vector<std::unique_ptr<blink::URLLoaderThrottle>>(),
+        std::make_unique<blink::ResourceLoadInfoNotifierWrapper>(
+            /*resource_load_info_notifier=*/nullptr));
     request_peer_context_.request_id = request_id_;
 
     base::RunLoop().RunUntilIdle();

@@ -1107,6 +1107,13 @@ void FrameFetchContext::DidObserveLoadingBehavior(
   GetFrame()->Loader().GetDocumentLoader()->DidObserveLoadingBehavior(behavior);
 }
 
+std::unique_ptr<ResourceLoadInfoNotifierWrapper>
+FrameFetchContext::CreateResourceLoadInfoNotifierWrapper() {
+  if (GetResourceFetcherProperties().IsDetached())
+    return nullptr;
+  return GetLocalFrameClient()->CreateResourceLoadInfoNotifierWrapper();
+}
+
 mojom::blink::ContentSecurityNotifier&
 FrameFetchContext::GetContentSecurityNotifier() const {
   DCHECK(!GetResourceFetcherProperties().IsDetached());

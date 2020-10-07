@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
@@ -44,7 +45,9 @@ void InternetDisconnectedWebURLLoader::LoadSynchronously(
     WebData&,
     int64_t& encoded_data_length,
     int64_t& encoded_body_length,
-    WebBlobInfo& downloaded_blob) {
+    WebBlobInfo& downloaded_blob,
+    std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+        resource_load_info_notifier_wrapper) {
   NOTREACHED();
 }
 
@@ -54,6 +57,8 @@ void InternetDisconnectedWebURLLoader::LoadAsynchronously(
     int requestor_id,
     bool download_to_network_cache_only,
     bool no_mime_sniffing,
+    std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+        resource_load_info_notifier_wrapper,
     WebURLLoaderClient* client) {
   DCHECK(task_runner_handle_);
   task_runner_handle_->GetTaskRunner()->PostTask(
