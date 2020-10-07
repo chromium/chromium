@@ -148,7 +148,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
-#include "third_party/blink/renderer/platform/graphics/paint/graphics_layer_display_item.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -2757,9 +2757,9 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
   // is done into a special canvas. There is no point doing a normal paint step
   // (or animations update) when in this mode.
   bool is_capturing_layout = frame_->GetDocument()->IsCapturingLayout();
-  HashSet<const GraphicsLayer*> repainted_layers;
+  bool repainted = false;
   if (!is_capturing_layout)
-    PaintTree(repainted_layers, benchmark_mode);
+    repainted = PaintTree(benchmark_mode);
 
   if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     if (GetLayoutView()->Compositor()->InCompositingMode()) {
@@ -2779,7 +2779,7 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
   if (!is_capturing_layout) {
     bool needed_update = !paint_artifact_compositor_ ||
                          paint_artifact_compositor_->NeedsUpdate();
-    PushPaintArtifactToCompositor(repainted_layers);
+    PushPaintArtifactToCompositor(repainted);
     ForAllNonThrottledLocalFrameViews([this](LocalFrameView& frame_view) {
       if (auto* scrollable_area = frame_view.GetScrollableArea())
         scrollable_area->UpdateCompositorScrollAnimations();
@@ -2810,11 +2810,8 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
 
     // Notify the controller that the artifact has been pushed and some
     // lifecycle state can be freed (such as raster invalidations).
-    if (paint_controller_) {
+    if (paint_controller_)
       paint_controller_->FinishCycle();
-      paint_controller_->ClearPropertyTreeChangedStateTo(
-          PropertyTreeState::Root());
-    }
 
     if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
       auto* root = GetLayoutView()->Compositor()->PaintRootGraphicsLayer();
@@ -2823,12 +2820,14 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
           // Notify the paint controller that the artifact has been pushed and
           // some lifecycle state can be freed (such as raster invalidations).
           layer.GetPaintController().FinishCycle();
-          layer.GetPaintController().ClearPropertyTreeChangedStateTo(
-              layer.GetPropertyTreeState());
         });
       }
     }
+
+    if (paint_artifact_compositor_)
+      paint_artifact_compositor_->ClearPropertyTreeChangedState();
   }
+
   if (GetPage())
     GetPage()->Animator().ReportFrameAnimations(GetCompositorAnimationHost());
 }
@@ -2893,38 +2892,32 @@ void LocalFrameView::EnqueueScrollEvents() {
 
 static void CollectGraphicsLayersForLayerListRecursively(
     GraphicsContext& context,
-    const GraphicsLayer& root) {
+    const GraphicsLayer& root,
+    Vector<PreCompositedLayerInfo>& pre_composited_layers) {
   ForAllActiveGraphicsLayers(
       root,
-      [&](const GraphicsLayer& layer) { RecordGraphicsLayer(context, layer); },
+      [&](const GraphicsLayer& layer) {
+        if (layer.ShouldCreateLayersAfterPaint()) {
+          pre_composited_layers.push_back(
+              PreCompositedLayerInfo{PaintChunkSubset(
+                  layer.GetPaintController().GetPaintArtifactShared())});
+        } else {
+          pre_composited_layers.push_back(
+              PreCompositedLayerInfo{PaintChunkSubset(), &layer});
+        }
+      },
       [&](const GraphicsLayer& layer, cc::Layer& contents_layer) {
+        PaintChunkSubsetRecorder subset_recorder(context.GetPaintController());
         RecordForeignLayer(
             context, layer, DisplayItem::kForeignLayerContentsWrapper,
             &contents_layer, layer.GetContentsOffsetFromTransformNode(),
             &layer.GetContentsPropertyTreeState());
+        pre_composited_layers.push_back(
+            PreCompositedLayerInfo{subset_recorder.Get()});
       });
 }
 
-static void UpdateLayerDebugInfoRecursively(const GraphicsLayer& root) {
-  ForAllActiveGraphicsLayers(
-      root,
-      [](const GraphicsLayer& layer) {
-        PaintArtifactCompositor::UpdateLayerDebugInfo(
-            layer.CcLayer(),
-            PaintChunk::Id(layer, DisplayItem::kGraphicsLayerWrapper),
-            layer.GetCompositingReasons(),
-            layer.GetRasterInvalidationTracking());
-      },
-      [](const GraphicsLayer& layer, cc::Layer& contents_layer) {
-        PaintArtifactCompositor::UpdateLayerDebugInfo(
-            contents_layer,
-            PaintChunk::Id(layer, DisplayItem::kForeignLayerContentsWrapper),
-            layer.GetCompositingReasons(), nullptr);
-      });
-}
-
-void LocalFrameView::PaintTree(HashSet<const GraphicsLayer*>& repainted_layers,
-                               PaintBenchmarkMode benchmark_mode) {
+bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
   SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
                            LocalFrameUkmAggregator::kPaint);
 
@@ -2940,6 +2933,7 @@ void LocalFrameView::PaintTree(HashSet<const GraphicsLayer*>& repainted_layers,
   ForAllThrottledLocalFrameViews(
       [](LocalFrameView& frame_view) { frame_view.MarkIneligibleToPaint(); });
 
+  bool repainted = false;
   bool needs_clear_repaint_flags = false;
 
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
@@ -3005,7 +2999,9 @@ void LocalFrameView::PaintTree(HashSet<const GraphicsLayer*>& repainted_layers,
       DCHECK(!visual_viewport_needs_repaint_);
 
       paint_controller_->CommitNewDisplayItems();
-      needs_clear_repaint_flags = true;
+      repainted = true;
+      // TODO(paint-dev): Implement repaint-only update for CompositeAfterPaint.
+      SetPaintArtifactCompositorNeedsUpdate();
     }
   } else {
     // A null graphics layer can occur for painting of SVG images that are not
@@ -3014,19 +3010,17 @@ void LocalFrameView::PaintTree(HashSet<const GraphicsLayer*>& repainted_layers,
     // the host page and will be painted during painting of the host page.
     if (GraphicsLayer* root_graphics_layer =
             layout_view->Compositor()->PaintRootGraphicsLayer()) {
-      root_graphics_layer->PaintRecursively(repainted_layers, benchmark_mode);
-      if (!repainted_layers.IsEmpty()) {
-        // If the painted result changed, the recorded hit test data may have
-        // changed which will affect the mapped hit test geometry.
-        if (GetScrollingCoordinator())
-          GetScrollingCoordinator()->NotifyGeometryChanged(this);
-        needs_clear_repaint_flags = true;
-      }
+      repainted = root_graphics_layer->PaintRecursively(benchmark_mode);
+      // If the painted result changed, the recorded hit test data may have
+      // changed which will affect the mapped hit test geometry.
+      if (repainted && GetScrollingCoordinator())
+        GetScrollingCoordinator()->NotifyGeometryChanged(this);
     } else {
       needs_clear_repaint_flags = true;
     }
   }
 
+  needs_clear_repaint_flags |= repainted;
   ForAllNonThrottledLocalFrameViews(
       [needs_clear_repaint_flags](LocalFrameView& frame_view) {
         frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kPaintClean);
@@ -3038,6 +3032,7 @@ void LocalFrameView::PaintTree(HashSet<const GraphicsLayer*>& repainted_layers,
       });
 
   PaintController::ReportUMACounts();
+  return repainted;
 }
 
 const cc::Layer* LocalFrameView::RootCcLayer() const {
@@ -3045,8 +3040,7 @@ const cc::Layer* LocalFrameView::RootCcLayer() const {
                                     : nullptr;
 }
 
-void LocalFrameView::PushPaintArtifactToCompositor(
-    const HashSet<const GraphicsLayer*>& repainted_layers) {
+void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
   TRACE_EVENT0("blink", "LocalFrameView::pushPaintArtifactToCompositor");
   if (!frame_->GetSettings()->GetAcceleratedCompositingEnabled())
     return;
@@ -3065,20 +3059,17 @@ void LocalFrameView::PushPaintArtifactToCompositor(
   SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
                            LocalFrameUkmAggregator::kCompositingCommit);
 
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-      layer_debug_info_enabled_) {
-    if (auto* root = GetLayoutView()->Compositor()->PaintRootGraphicsLayer())
-      UpdateLayerDebugInfoRecursively(*root);
-  }
-
   // Skip updating property trees, pushing cc::Layers, and issuing raster
   // invalidations if possible.
-  // TODO(paint-dev): In CompositeAfterPaint mode, repainted_layers will always
-  // be empty, even if painted output has changed. We need an equivalent signal
-  // to indicate that PAC doesn't need to run the layerization algorithm, but it
-  // does need to update properties on layers that depend on painted output.
-  if (!paint_artifact_compositor_->NeedsUpdate() && !repainted_layers.size()) {
+  // TODO(paint-dev): In CompositeAfterPaint mode, we always set
+  // PaintArtifactCompositor::NeedsUpdate() when anything needs repaint.
+  // We need an equivalent signal to indicate that PAC doesn't need to run the
+  // layerization algorithm, but it does need to update properties on layers
+  // that depend on painted output.
+  if (!paint_artifact_compositor_->NeedsUpdate()) {
     DCHECK(paint_controller_);
+    if (repainted)
+      paint_artifact_compositor_->UpdateRepaintedLayerProperties();
     return;
   }
 
@@ -3109,8 +3100,12 @@ void LocalFrameView::PushPaintArtifactToCompositor(
     }
   }
 
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-      (!paint_controller_ || visual_viewport_needs_repaint_)) {
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    // As if we created a root layer containing all paintings which needs full
+    // layerization.
+    pre_composited_layers_ = {
+        {PaintChunkSubset(paint_controller_->GetPaintArtifactShared())}};
+  } else if (!paint_controller_ || visual_viewport_needs_repaint_) {
     // Before CompositeAfterPaint, we need a transient PaintController to
     // collect the foreign layers, and this doesn't need caching. This shouldn't
     // affect caching status of DisplayItemClients because FinishCycle() is
@@ -3119,22 +3114,32 @@ void LocalFrameView::PushPaintArtifactToCompositor(
     paint_artifact_compositor_->SetNeedsUpdate();
     paint_controller_ =
         std::make_unique<PaintController>(PaintController::kTransient);
+    pre_composited_layers_.clear();
 
     GraphicsContext context(*paint_controller_);
     auto* root = GetLayoutView()->Compositor()->PaintRootGraphicsLayer();
-    if (root)
-      CollectGraphicsLayersForLayerListRecursively(context, *root);
-
-    if (frame_->IsMainFrame()) {
-      if (root == GetLayoutView()->Compositor()->RootGraphicsLayer())
-        frame_->GetPage()->GetVisualViewport().Paint(context);
-      visual_viewport_needs_repaint_ = false;
-    } else {
-      DCHECK(!visual_viewport_needs_repaint_);
+    if (root) {
+      CollectGraphicsLayersForLayerListRecursively(context, *root,
+                                                   pre_composited_layers_);
     }
 
-    // Link highlights paint after all other layers.
-    page->GetLinkHighlight().Paint(context);
+    {
+      PaintChunkSubsetRecorder subset_recorder(context.GetPaintController());
+
+      if (frame_->IsMainFrame()) {
+        if (root == GetLayoutView()->Compositor()->RootGraphicsLayer())
+          frame_->GetPage()->GetVisualViewport().Paint(context);
+        visual_viewport_needs_repaint_ = false;
+      } else {
+        DCHECK(!visual_viewport_needs_repaint_);
+      }
+
+      // Link highlights paint after all other layers.
+      page->GetLinkHighlight().Paint(context);
+
+      pre_composited_layers_.push_back(
+          PreCompositedLayerInfo{subset_recorder.Get()});
+    }
 
     paint_controller_->CommitNewDisplayItems();
   }
@@ -3149,8 +3154,7 @@ void LocalFrameView::PushPaintArtifactToCompositor(
   }
 
   paint_artifact_compositor_->Update(
-      paint_controller_->GetPaintArtifactShared(), viewport_properties,
-      scroll_translation_nodes, repainted_layers);
+      pre_composited_layers_, viewport_properties, scroll_translation_nodes);
 
   probe::LayerTreePainted(&GetFrame());
 }
@@ -4364,11 +4368,11 @@ void LocalFrameView::SetPaintArtifactCompositorNeedsUpdate() {
 
 void LocalFrameView::SetForeignLayerListNeedsUpdate() {
   DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  DCHECK_NE(Lifecycle().GetState(), DocumentLifecycle::kInPaint);
 
   if (LocalFrameView* root = GetFrame().LocalFrameRoot().View()) {
     // We will re-collect foreign layers in PushPaintArtifactsToCompositor().
     root->paint_controller_ = nullptr;
+    root->pre_composited_layers_.clear();
     if (root->paint_artifact_compositor_)
       root->paint_artifact_compositor_->SetNeedsUpdate();
   }

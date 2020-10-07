@@ -83,9 +83,7 @@ bool PaintChunker::EnsureCurrentChunk(const PaintChunk::Id& id) {
 bool PaintChunker::IncrementDisplayItemIndex(const DisplayItem& item) {
   DCHECK(chunks_);
 
-  bool item_forces_new_chunk = item.IsForeignLayer() ||
-                               item.IsGraphicsLayerWrapper() ||
-                               item.IsScrollbar();
+  bool item_forces_new_chunk = item.IsForeignLayer() || item.IsScrollbar();
   if (item_forces_new_chunk)
     SetWillForceNewChunk(true);
 

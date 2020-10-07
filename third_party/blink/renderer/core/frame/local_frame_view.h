@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
@@ -89,7 +90,6 @@ class LayoutSVGRoot;
 class LayoutView;
 class LocalFrame;
 class Page;
-class PaintArtifactCompositor;
 class PaintController;
 class PaintLayer;
 class PaintLayerScrollableArea;
@@ -730,6 +730,10 @@ class CORE_EXPORT LocalFrameView final
 
   PaintLayer* GetFullScreenOverlayLayer() const;
 
+  wtf_size_t PreCompositedLayerCountForTesting() const {
+    return pre_composited_layers_.size();
+  }
+
   void RunPaintBenchmark(int repeat_count, cc::PaintBenchmarkResult& result);
 
  protected:
@@ -808,12 +812,10 @@ class CORE_EXPORT LocalFrameView final
       DocumentLifecycle::LifecycleState target_state);
   void RunPaintLifecyclePhase(PaintBenchmarkMode = PaintBenchmarkMode::kNormal);
 
-  void PaintTree(HashSet<const GraphicsLayer*>& repainted_layers,
-                 PaintBenchmarkMode);
   void UpdateStyleAndLayoutIfNeededRecursive();
 
-  void PushPaintArtifactToCompositor(
-      const HashSet<const GraphicsLayer*>& repainted_layers);
+  bool PaintTree(PaintBenchmarkMode);
+  void PushPaintArtifactToCompositor(bool repainted);
 
   void ClearLayoutSubtreeRootsAndMarkContainingBlocks();
 
@@ -1051,6 +1053,7 @@ class CORE_EXPORT LocalFrameView final
   // frame updates and repaints.
   std::unique_ptr<PaintController> paint_controller_;
   std::unique_ptr<PaintArtifactCompositor> paint_artifact_compositor_;
+  Vector<PreCompositedLayerInfo> pre_composited_layers_;
 
   MainThreadScrollingReasons main_thread_scrolling_reasons_;
 

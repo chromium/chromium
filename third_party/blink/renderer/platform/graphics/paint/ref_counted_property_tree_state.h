@@ -41,10 +41,10 @@ class PLATFORM_EXPORT RefCountedPropertyTreeState {
     return PropertyTreeStateOrAlias(Transform(), Clip(), Effect());
   }
 
-  void ClearChangedToRoot() const {
-    Transform().ClearChangedToRoot();
-    Clip().ClearChangedToRoot();
-    Effect().ClearChangedToRoot();
+  void ClearChangedTo(const PropertyTreeStateOrAlias& to) const {
+    Transform().ClearChangedTo(&to.Transform());
+    Clip().ClearChangedTo(&to.Clip());
+    Effect().ClearChangedTo(&to.Effect());
   }
 
   String ToString() const { return GetPropertyTreeState().ToString(); }

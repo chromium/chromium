@@ -181,10 +181,9 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
                                PaintInvalidationReason);
 
   IntRect InterestRect();
-  void PaintRecursively(HashSet<const GraphicsLayer*>& repainted_layers,
-                        PaintBenchmarkMode = PaintBenchmarkMode::kNormal);
-  // Returns true if this layer is repainted.
-  bool Paint();
+
+  // Returns true if any layer is repainted.
+  bool PaintRecursively(PaintBenchmarkMode = PaintBenchmarkMode::kNormal);
 
   PaintController& GetPaintController() const;
 
@@ -233,6 +232,9 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
     return should_create_layers_after_paint_;
   }
 
+  // Whether this GraphicsLayer is repainted in the last Paint().
+  bool Repainted() const { return repainted_; }
+
  protected:
   String DebugName(const cc::Layer*) const;
 
@@ -251,6 +253,7 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
 
   // Returns true if PaintController::PaintArtifact() changed and needs commit.
   bool PaintWithoutCommit(const IntRect* interest_rect = nullptr);
+  void Paint();
 
   // Adds a child without calling NotifyChildListChange(), so that adding
   // children can be batched before updating.
@@ -288,6 +291,7 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   // paint (in PaintArtifactCompositor). This depends on the display item list
   // and is updated after CommitNewDisplayItems.
   bool should_create_layers_after_paint_ : 1;
+  bool repainted_ : 1;
 
   GraphicsLayerPaintingPhase painting_phase_;
 

@@ -112,7 +112,7 @@ TEST_P(FrameOverlayTest, AcceleratedCompositing) {
     EXPECT_FALSE(graphics_layer->IsHitTestable());
     EXPECT_EQ(PropertyTreeState::Root(),
               graphics_layer->GetPropertyTreeState());
-    graphics_layer->Paint();
+    graphics_layer->PaintRecursively();
     graphics_layer->CapturePaintRecord()->Playback(&canvas);
     graphics_layer->GetPaintController().FinishCycle();
   }
@@ -165,7 +165,7 @@ TEST_P(FrameOverlayTest, DeviceEmulationScale) {
     auto* graphics_layer = frame_overlay->GetGraphicsLayer();
     EXPECT_FALSE(graphics_layer->IsHitTestable());
     EXPECT_EQ(state, graphics_layer->GetPropertyTreeState());
-    graphics_layer->Paint();
+    graphics_layer->PaintRecursively();
     check_paint_results(graphics_layer->GetPaintController());
     graphics_layer->GetPaintController().FinishCycle();
   }

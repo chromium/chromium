@@ -1595,9 +1595,7 @@ TEST_P(FrameThrottlingTest, GraphicsLayerCollection) {
       To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
   auto* frame_document = frame_element->contentDocument();
   EXPECT_FALSE(frame_document->View()->ShouldThrottleRendering());
-  auto* paint_controller = GetDocument().View()->GetPaintController();
-  ASSERT_NE(nullptr, paint_controller);
-  auto display_item_count = paint_controller->GetDisplayItemList().size();
+  auto layer_count = GetDocument().View()->PreCompositedLayerCountForTesting();
 
   // Moving the child fully outside the parent makes it invisible.
   frame_element->setAttribute(kStyleAttr, "transform: translateY(480px)");
@@ -1605,18 +1603,17 @@ TEST_P(FrameThrottlingTest, GraphicsLayerCollection) {
   EXPECT_TRUE(frame_document->View()->ShouldThrottleRendering());
   // Change of throttling clears paint controller, to force re-collection of
   // graphics layers in the next frame.
-  EXPECT_EQ(nullptr, GetDocument().View()->GetPaintController());
+  EXPECT_EQ(0u, GetDocument().View()->PreCompositedLayerCountForTesting());
 
   // Force a frame update. We should re-collect the graphics layers.
   GetDocument().GetPage()->Animator().ScheduleVisualUpdate(
       GetDocument().GetFrame());
   CompositeFrame();
   EXPECT_TRUE(frame_document->View()->ShouldThrottleRendering());
-  paint_controller = GetDocument().View()->GetPaintController();
-  ASSERT_NE(nullptr, paint_controller);
   // We no longer collect the graphics layers of the iframe and the composited
   // content.
-  EXPECT_GT(display_item_count, paint_controller->GetDisplayItemList().size());
+  EXPECT_GT(layer_count,
+            GetDocument().View()->PreCompositedLayerCountForTesting());
 
   // Move the child back to the visible viewport.
   frame_element->setAttribute(kStyleAttr,
@@ -1631,10 +1628,9 @@ TEST_P(FrameThrottlingTest, GraphicsLayerCollection) {
 
   CompositeFrame();
   EXPECT_FALSE(frame_document->View()->ShouldThrottleRendering());
-  paint_controller = GetDocument().View()->GetPaintController();
-  ASSERT_NE(nullptr, paint_controller);
   // Now we should collect all graphics layers again.
-  EXPECT_EQ(display_item_count, paint_controller->GetDisplayItemList().size());
+  EXPECT_EQ(layer_count,
+            GetDocument().View()->PreCompositedLayerCountForTesting());
 }
 
 TEST_P(FrameThrottlingTest, NestedFramesInRemoteFrameHiddenAndShown) {

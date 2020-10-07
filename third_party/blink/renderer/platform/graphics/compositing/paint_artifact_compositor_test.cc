@@ -141,11 +141,11 @@ class PaintArtifactCompositorTest : public testing::Test,
       const ViewportProperties& viewport_properties = ViewportProperties(),
       const WTF::Vector<const TransformPaintPropertyNode*>&
           scroll_translation_nodes = {}) {
-    HashSet<const GraphicsLayer*> repainted_layers;
     paint_artifact_compositor_->SetNeedsUpdate();
-    paint_artifact_compositor_->Update(artifact, viewport_properties,
-                                       scroll_translation_nodes,
-                                       repainted_layers);
+    Vector<PreCompositedLayerInfo> pre_composited_layers = {
+        {PaintChunkSubset(artifact)}};
+    paint_artifact_compositor_->Update(
+        pre_composited_layers, viewport_properties, scroll_translation_nodes);
     layer_tree_->layer_tree_host()->LayoutAndUpdateLayers();
   }
 

@@ -106,10 +106,6 @@ class PLATFORM_EXPORT DisplayItem {
     kForeignLayerViewportScrollbar,
     kForeignLayerLast = kForeignLayerViewportScrollbar,
 
-    kGraphicsLayerWrapperFirst,
-    kGraphicsLayerWrapper = kGraphicsLayerWrapperFirst,
-    kGraphicsLayerWrapperLast = kGraphicsLayerWrapper,
-
     kClipPaintPhaseFirst,
     kClipPaintPhaseLast = kClipPaintPhaseFirst + kPaintPhaseMax,
 
@@ -249,7 +245,6 @@ class PLATFORM_EXPORT DisplayItem {
   DEFINE_PAINT_PHASE_CONVERSION_METHOD(Drawing)
 
   DEFINE_CATEGORY_METHODS(ForeignLayer)
-  DEFINE_CATEGORY_METHODS(GraphicsLayerWrapper)
 
   DEFINE_PAINT_PHASE_CONVERSION_METHOD(Clip)
   DEFINE_PAINT_PHASE_CONVERSION_METHOD(Scroll)

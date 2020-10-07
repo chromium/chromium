@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
-#include "third_party/blink/renderer/platform/graphics/paint/graphics_layer_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
@@ -92,17 +91,12 @@ std::unique_ptr<JSONObject> PaintArtifactCompositor::GetLayersAsJSON(
       }
     }
     if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() && !json_client) {
-      // The cc::Layer may come from a GraphicsLayerDisplayItem.
-      // Find the GraphicsLayer as json_client.
+      // The cc::Layer may come from a GraphicsLayer.
       for (const auto& pending_layer : pending_layers_) {
         if (pending_layer.compositing_type ==
-            PendingLayer::kGraphicsLayerWrapper) {
-          const auto& graphics_layer =
-              static_cast<const GraphicsLayerDisplayItem&>(
-                  pending_layer.FirstDisplayItem())
-                  .GetGraphicsLayer();
-          if (&graphics_layer.CcLayer() == layer.get()) {
-            json_client = &graphics_layer;
+            PendingLayer::kPreCompositedLayer) {
+          if (&pending_layer.graphics_layer->CcLayer() == layer.get()) {
+            json_client = pending_layer.graphics_layer;
             break;
           }
         }
@@ -132,36 +126,31 @@ static void UpdateLayerProperties(const GraphicsLayer& graphics_layer) {
 }
 
 scoped_refptr<cc::Layer> PaintArtifactCompositor::WrappedCcLayerForPendingLayer(
-    const PendingLayer& pending_layer,
-    const HashSet<const GraphicsLayer*>& repainted_layers) {
+    const PendingLayer& pending_layer) {
   if (pending_layer.compositing_type != PendingLayer::kForeignLayer &&
-      pending_layer.compositing_type != PendingLayer::kGraphicsLayerWrapper)
+      pending_layer.compositing_type != PendingLayer::kPreCompositedLayer)
     return nullptr;
-
-  const auto& display_item = pending_layer.FirstDisplayItem();
-  DCHECK(display_item.IsForeignLayer() ||
-         display_item.IsGraphicsLayerWrapper());
-
-  // UpdateTouchActionRects() depends on the layer's offset, but when the
-  // layer's offset changes, we do not call SetNeedsUpdate() (this is an
-  // optimization because the update would only cause an extra commit). This is
-  // only OK if the [Foreign|Graphics]Layer doesn't have hit test data.
-  DCHECK(!pending_layer.FirstPaintChunk().hit_test_data);
 
   cc::Layer* layer = nullptr;
   FloatPoint layer_offset;
-  if (display_item.IsGraphicsLayerWrapper()) {
-    const GraphicsLayer& graphics_layer =
-        static_cast<const GraphicsLayerDisplayItem&>(display_item)
-            .GetGraphicsLayer();
-    DCHECK(!graphics_layer.ShouldCreateLayersAfterPaint());
-    layer = &graphics_layer.CcLayer();
-    layer_offset = FloatPoint(graphics_layer.GetOffsetFromTransformNode());
-    if (repainted_layers.Contains(&graphics_layer))
-      UpdateLayerProperties(graphics_layer);
+  if (pending_layer.compositing_type == PendingLayer::kPreCompositedLayer) {
+    DCHECK(pending_layer.graphics_layer);
+    DCHECK(!pending_layer.graphics_layer->ShouldCreateLayersAfterPaint());
+    layer = &pending_layer.graphics_layer->CcLayer();
+    layer_offset =
+        FloatPoint(pending_layer.graphics_layer->GetOffsetFromTransformNode());
+    if (pending_layer.graphics_layer->Repainted())
+      UpdateLayerProperties(*pending_layer.graphics_layer);
   } else {
+    DCHECK_EQ(pending_layer.compositing_type, PendingLayer::kForeignLayer);
+    // UpdateTouchActionRects() depends on the layer's offset, but when the
+    // layer's offset changes, we do not call SetNeedsUpdate() (this is an
+    // optimization because the update would only cause an extra commit)
+    // This is only OK if the ForeignLayer doesn't have hit test data.
+    DCHECK(!pending_layer.FirstPaintChunk().hit_test_data);
     const auto& foreign_layer_display_item =
-        static_cast<const ForeignLayerDisplayItem&>(display_item);
+        static_cast<const ForeignLayerDisplayItem&>(
+            pending_layer.FirstDisplayItem());
     layer = foreign_layer_display_item.GetLayer();
     layer_offset = FloatPoint(foreign_layer_display_item.Offset());
   }
@@ -288,14 +277,11 @@ PaintArtifactCompositor::CompositedLayerForPendingLayer(
     const PendingLayer& pending_layer,
     Vector<std::unique_ptr<ContentLayerClientImpl>>& new_content_layer_clients,
     Vector<scoped_refptr<cc::Layer>>& new_scroll_hit_test_layers,
-    Vector<scoped_refptr<cc::ScrollbarLayerBase>>& new_scrollbar_layers,
-    const HashSet<const GraphicsLayer*>& repainted_layers) {
-  // If the paint chunk is a foreign layer or placeholder for a GraphicsLayer,
-  // just return its cc::Layer.
-  if (auto cc_layer =
-          WrappedCcLayerForPendingLayer(pending_layer, repainted_layers)) {
+    Vector<scoped_refptr<cc::ScrollbarLayerBase>>& new_scrollbar_layers) {
+  // If the paint chunk is a foreign layer or pre-composited layer, just return
+  // its cc::Layer.
+  if (auto cc_layer = WrappedCcLayerForPendingLayer(pending_layer))
     return cc_layer;
-  }
 
   // If the paint chunk is a scroll hit test layer, lookup/create the layer.
   if (auto scroll_layer = ScrollHitTestLayerForPendingLayer(pending_layer)) {
@@ -436,6 +422,18 @@ PaintArtifactCompositor::PendingLayer::PendingLayer(
           first_chunk->properties.GetPropertyTreeState().Unalias()),
       compositing_type(compositing_type) {
   DCHECK(!RequiresOwnLayer() || first_chunk->size() <= 1u);
+}
+
+PaintArtifactCompositor::PendingLayer::PendingLayer(
+    const PreCompositedLayerInfo& pre_composited_layer)
+    : chunks(pre_composited_layer.chunks),
+      property_tree_state(
+          pre_composited_layer.graphics_layer->GetPropertyTreeState()
+              .Unalias()),
+      graphics_layer(pre_composited_layer.graphics_layer),
+      compositing_type(kPreCompositedLayer) {
+  DCHECK(graphics_layer);
+  DCHECK(!graphics_layer->ShouldCreateLayersAfterPaint());
 }
 
 FloatRect PaintArtifactCompositor::PendingLayer::UniteRectsKnownToBeOpaque(
@@ -864,30 +862,10 @@ void PaintArtifactCompositor::LayerizeGroup(
         compositing_type = PendingLayer::kScrollHitTestLayer;
       } else if (chunk_cursor->size()) {
         const auto& first_display_item = *chunk_cursor.DisplayItems().begin();
-        if (first_display_item.IsForeignLayer()) {
+        if (first_display_item.IsForeignLayer())
           compositing_type = PendingLayer::kForeignLayer;
-        } else if (IsCompositedScrollbar(first_display_item)) {
+        else if (IsCompositedScrollbar(first_display_item))
           compositing_type = PendingLayer::kScrollbarLayer;
-        } else if (first_display_item.IsGraphicsLayerWrapper()) {
-          const auto& graphics_layer =
-              static_cast<const GraphicsLayerDisplayItem&>(first_display_item)
-                  .GetGraphicsLayer();
-          if (graphics_layer.ShouldCreateLayersAfterPaint()) {
-            DCHECK(RuntimeEnabledFeatures::CompositeSVGEnabled());
-            PaintChunkSubset sub_chunks(
-                graphics_layer.GetPaintController().GetPaintArtifactShared());
-            auto cursor = sub_chunks.begin();
-            LayerizeGroup(
-                sub_chunks,
-                graphics_layer.GetPropertyTreeState().Unalias().Effect(),
-                cursor);
-            DCHECK(cursor == sub_chunks.end());
-
-            ++chunk_cursor;
-            continue;
-          }
-          compositing_type = PendingLayer::kGraphicsLayerWrapper;
-        }
       }
 
       pending_layers_.emplace_back(chunks, chunk_cursor, compositing_type);
@@ -941,13 +919,18 @@ void PaintArtifactCompositor::LayerizeGroup(
 }
 
 void PaintArtifactCompositor::CollectPendingLayers(
-    scoped_refptr<const PaintArtifact> paint_artifact) {
-  PaintChunkSubset chunks(std::move(paint_artifact));
-  auto cursor = chunks.begin();
+    const Vector<PreCompositedLayerInfo>& pre_composited_layers) {
   // Shrink, but do not release the backing. Re-use it from the last frame.
   pending_layers_.Shrink(0);
-  LayerizeGroup(chunks, EffectPaintPropertyNode::Root(), cursor);
-  DCHECK(cursor == chunks.end());
+  for (auto& layer : pre_composited_layers) {
+    if (layer.graphics_layer) {
+      pending_layers_.emplace_back(layer);
+      continue;
+    }
+    auto cursor = layer.chunks.begin();
+    LayerizeGroup(layer.chunks, EffectPaintPropertyNode::Root(), cursor);
+    DCHECK(cursor == layer.chunks.end());
+  }
   pending_layers_.ShrinkToReasonableCapacity();
 }
 
@@ -1119,8 +1102,8 @@ static void UpdateCompositorViewportProperties(
 // This algorithm should be O(t+c+e) where t,c,e are the number of transform,
 // clip, and effect nodes in the full tree.
 void PaintArtifactCompositor::DecompositeTransforms() {
-  WTF::HashMap<const TransformPaintPropertyNode*, bool> can_be_decomposited;
-  WTF::HashSet<const void*> clips_and_effects_seen;
+  HashMap<const TransformPaintPropertyNode*, bool> can_be_decomposited;
+  HashSet<const void*> clips_and_effects_seen;
   for (const auto& pending_layer : pending_layers_) {
     const auto& property_state = pending_layer.property_tree_state;
 
@@ -1202,23 +1185,13 @@ void PaintArtifactCompositor::DecompositeTransforms() {
 }
 
 void PaintArtifactCompositor::Update(
-    scoped_refptr<const PaintArtifact> paint_artifact,
+    const Vector<PreCompositedLayerInfo>& pre_composited_layers,
     const ViewportProperties& viewport_properties,
-    const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes,
-    const HashSet<const GraphicsLayer*>& repainted_layers) {
-  DCHECK(NeedsUpdate() || repainted_layers.size());
+    const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes) {
   DCHECK(scroll_translation_nodes.IsEmpty() ||
          RuntimeEnabledFeatures::ScrollUnificationEnabled());
   DCHECK(root_layer_);
-
-  if (!NeedsUpdate()) {
-    // It's possible to get here when there are no paint property updates that
-    // necessitate a compositing update (e.g., a background color changes). In
-    // that case, we just update non-compositing-related cc::Layer properties
-    // for layers that have been repainted, and do nothing else.
-    UpdateRepaintedLayerProperties(repainted_layers);
-    return;
-  }
+  DCHECK(NeedsUpdate());
 
   // The tree will be null after detaching and this update can be ignored.
   // See: WebViewImpl::detachPaintArtifactCompositor().
@@ -1236,7 +1209,7 @@ void PaintArtifactCompositor::Update(
   PropertyTreeManager property_tree_manager(*this, *host->property_trees(),
                                             *root_layer_, layer_list_builder,
                                             g_s_property_tree_sequence_number);
-  CollectPendingLayers(std::move(paint_artifact));
+  CollectPendingLayers(pre_composited_layers);
 
   UpdateCompositorViewportProperties(viewport_properties, property_tree_manager,
                                      host);
@@ -1281,7 +1254,7 @@ void PaintArtifactCompositor::Update(
 
     scoped_refptr<cc::Layer> layer = CompositedLayerForPendingLayer(
         pending_layer, new_content_layer_clients, new_scroll_hit_test_layers,
-        new_scrollbar_layers, repainted_layers);
+        new_scrollbar_layers);
 
     // In Pre-CompositeAfterPaint, touch action rects and non-fast scrollable
     // regions are updated through ScrollingCoordinator.
@@ -1333,26 +1306,6 @@ void PaintArtifactCompositor::Update(
       root_layer_->SetNeedsCommit();
     }
 
-    if (!layer_debug_info_enabled_) {
-      layer->ClearDebugInfo();
-    } else if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() ||
-               !layer->debug_info()) {
-      // About the above condition: in pre-CompositeAfterPaint, debug info of
-      // cc::Layers that are created by GraphicsLayers are updated in
-      // LocalFrameView, so here we only update the other layers that don't
-      // have debug info yet.
-      RasterInvalidationTracking* tracking = nullptr;
-      if (new_content_layer_clients.size() &&
-          &new_content_layer_clients.back()->Layer() == layer) {
-        tracking = new_content_layer_clients.back()
-                       ->GetRasterInvalidator()
-                       .GetTracking();
-      }
-      UpdateLayerDebugInfo(
-          *layer, pending_layer.FirstPaintChunk().id,
-          GetCompositingReasons(pending_layer, previous_pending_layer),
-          tracking);
-    }
     previous_pending_layer = &pending_layer;
   }
 
@@ -1383,6 +1336,8 @@ void PaintArtifactCompositor::Update(
   host->property_trees()->ResetCachedData();
   needs_update_ = false;
 
+  UpdateDebugInfo();
+
   g_s_property_tree_sequence_number++;
 
   DVLOG(2) << "PaintArtifactCompositor::Update() done\n"
@@ -1392,20 +1347,20 @@ void PaintArtifactCompositor::Update(
                   .Utf8();
 }
 
-void PaintArtifactCompositor::UpdateRepaintedLayerProperties(
-    const HashSet<const GraphicsLayer*>& repainted_layers) const {
+void PaintArtifactCompositor::UpdateRepaintedLayerProperties() const {
+  // TODO(paint-dev): Implement repaint-only update for CompositeAfterPaint.
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
   for (const auto& pending_layer : pending_layers_) {
-    if (pending_layer.compositing_type != PendingLayer::kGraphicsLayerWrapper)
+    if (pending_layer.compositing_type != PendingLayer::kPreCompositedLayer)
       continue;
-    const auto& display_item = pending_layer.FirstDisplayItem();
-    DCHECK(display_item.IsGraphicsLayerWrapper());
-    const GraphicsLayer& graphics_layer =
-        static_cast<const GraphicsLayerDisplayItem&>(display_item)
-            .GetGraphicsLayer();
-    if (repainted_layers.Contains(&graphics_layer)) {
-      UpdateLayerProperties(graphics_layer);
-    }
+    DCHECK(pending_layer.graphics_layer);
+    if (pending_layer.graphics_layer->Repainted())
+      UpdateLayerProperties(*pending_layer.graphics_layer);
   }
+
+  UpdateDebugInfo();
 }
 
 bool PaintArtifactCompositor::CanDirectlyUpdateProperties() const {
@@ -1566,13 +1521,16 @@ void PaintArtifactCompositor::SetLayerDebugInfoEnabled(bool enabled) {
   DCHECK(needs_update_);
   layer_debug_info_enabled_ = enabled;
 
-  if (enabled)
+  if (enabled) {
     root_layer_->SetDebugName("root");
-  else
+  } else {
     root_layer_->ClearDebugInfo();
+    for (auto& layer : root_layer_->children())
+      layer->ClearDebugInfo();
+  }
 }
 
-void PaintArtifactCompositor::UpdateLayerDebugInfo(
+static void UpdateLayerDebugInfo(
     cc::Layer& layer,
     const PaintChunk::Id& id,
     CompositingReasons compositing_reasons,
@@ -1599,10 +1557,61 @@ void PaintArtifactCompositor::UpdateLayerDebugInfo(
   }
 }
 
+void PaintArtifactCompositor::UpdateDebugInfo() const {
+  if (!layer_debug_info_enabled_)
+    return;
+
+  auto* content_layer_client_it = content_layer_clients_.begin();
+  auto* scroll_hit_test_layer_it = scroll_hit_test_layers_.begin();
+  auto* scrollbar_layer_it = scrollbar_layers_.begin();
+  const PendingLayer* previous_pending_layer = nullptr;
+  for (const auto& pending_layer : pending_layers_) {
+    cc::Layer* layer;
+    RasterInvalidationTracking* tracking = nullptr;
+    switch (pending_layer.compositing_type) {
+      case PendingLayer::kScrollHitTestLayer:
+        layer = scroll_hit_test_layer_it->get();
+        ++scroll_hit_test_layer_it;
+        break;
+      case PendingLayer::kPreCompositedLayer:
+        tracking =
+            pending_layer.graphics_layer->GetRasterInvalidationTracking();
+        layer = &pending_layer.graphics_layer->CcLayer();
+        break;
+      case PendingLayer::kForeignLayer:
+        layer = static_cast<const ForeignLayerDisplayItem&>(
+                    pending_layer.FirstDisplayItem())
+                    .GetLayer();
+        break;
+      case PendingLayer::kScrollbarLayer:
+        layer = scrollbar_layer_it->get();
+        ++scrollbar_layer_it;
+        break;
+      default:
+        tracking =
+            (*content_layer_client_it)->GetRasterInvalidator().GetTracking();
+        layer = &(*content_layer_client_it)->Layer();
+        ++content_layer_client_it;
+        break;
+    }
+    UpdateLayerDebugInfo(
+        *layer,
+        pending_layer.graphics_layer
+            ? PaintChunk::Id(*pending_layer.graphics_layer,
+                             DisplayItem::kUninitializedType)
+            : pending_layer.FirstPaintChunk().id,
+        GetCompositingReasons(pending_layer, previous_pending_layer), tracking);
+    previous_pending_layer = &pending_layer;
+  }
+}
+
 CompositingReasons PaintArtifactCompositor::GetCompositingReasons(
     const PendingLayer& layer,
     const PendingLayer* previous_layer) const {
   DCHECK(layer_debug_info_enabled_);
+
+  if (layer.graphics_layer)
+    return layer.graphics_layer->GetCompositingReasons();
 
   if (layer.RequiresOwnLayer()) {
     const auto& first_chunk = layer.FirstPaintChunk();
@@ -1664,6 +1673,24 @@ Vector<cc::Layer*> PaintArtifactCompositor::SynthesizedClipLayersForTesting()
   for (const auto& entry : synthesized_clip_cache_)
     synthesized_clip_layers.push_back(entry.synthesized_clip->Layer());
   return synthesized_clip_layers;
+}
+
+void PaintArtifactCompositor::ClearPropertyTreeChangedState() {
+  for (auto& layer : pending_layers_) {
+    layer.property_tree_state.ClearChangedTo(PropertyTreeState::Root());
+    PaintChunkSubset chunks =
+        layer.graphics_layer && layer.graphics_layer->PaintsContentOrHitTest()
+            ? PaintChunkSubset(layer.graphics_layer->GetPaintController()
+                                   .GetPaintArtifactShared())
+            : layer.chunks;
+    for (auto& chunk : chunks) {
+      // Calling |ClearChangedTo| for every chunk could be O(|property nodes|^2)
+      // in the worst case and could be optimized by caching which nodes that
+      // have already been cleared.
+      chunk.properties.GetPropertyTreeState().ClearChangedTo(
+          layer.property_tree_state);
+    }
+  }
 }
 
 void LayerListBuilder::Add(scoped_refptr<cc::Layer> layer) {

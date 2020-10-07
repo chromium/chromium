@@ -14,6 +14,9 @@ namespace blink {
 // Provides access to a subset of paint chunks in a PaintArtifact.
 class PaintChunkSubset {
  public:
+  // An empty subset.
+  PaintChunkSubset() = default;
+
   // A subset containing a single paint chunk initially.
   PaintChunkSubset(scoped_refptr<const PaintArtifact> paint_artifact,
                    wtf_size_t chunk_index)

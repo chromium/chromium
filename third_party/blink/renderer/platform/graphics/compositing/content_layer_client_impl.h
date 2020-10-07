@@ -47,7 +47,7 @@ class PLATFORM_EXPORT ContentLayerClientImpl : public cc::ContentLayerClient,
                                   const cc::Layer&,
                                   JSONObject&) const override;
 
-  const cc::Layer& Layer() const { return *cc_picture_layer_.get(); }
+  cc::Layer& Layer() const { return *cc_picture_layer_.get(); }
   const PropertyTreeState& State() const { return layer_state_; }
 
   bool Matches(const PaintChunk& paint_chunk) const {

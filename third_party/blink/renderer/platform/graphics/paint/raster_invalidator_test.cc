@@ -41,7 +41,7 @@ class RasterInvalidatorTest : public testing::Test,
     ClearGeometryMapperCache();
     for (const auto& chunk : chunks) {
       const_cast<PaintChunk&>(chunk).client_is_just_created = false;
-      chunk.properties.ClearChangedToRoot();
+      chunk.properties.ClearChangedTo(PropertyTreeState::Root());
     }
   }
 

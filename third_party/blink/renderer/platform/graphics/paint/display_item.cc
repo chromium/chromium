@@ -130,22 +130,12 @@ static String ForeignLayerTypeAsDebugString(DisplayItem::Type type) {
   }
 }
 
-static String GraphicsLayerWrapperTypeAsDebugString(DisplayItem::Type type) {
-  switch (type) {
-    DEBUG_STRING_CASE(GraphicsLayerWrapper);
-    DEFAULT_CASE;
-  }
-}
-
 WTF::String DisplayItem::TypeAsDebugString(Type type) {
   if (IsDrawingType(type))
     return DrawingTypeAsDebugString(type);
 
   if (IsForeignLayerType(type))
     return ForeignLayerTypeAsDebugString(type);
-
-  if (IsGraphicsLayerWrapperType(type))
-    return GraphicsLayerWrapperTypeAsDebugString(type);
 
   PAINT_PHASE_BASED_DEBUG_STRINGS(Clip);
   PAINT_PHASE_BASED_DEBUG_STRINGS(Scroll);

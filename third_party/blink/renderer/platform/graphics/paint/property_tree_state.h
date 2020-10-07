@@ -67,10 +67,10 @@ class PLATFORM_EXPORT PropertyTreeStateOrAlias {
     DCHECK(effect_);
   }
 
-  void ClearChangedToRoot() const {
-    Transform().ClearChangedToRoot();
-    Clip().ClearChangedToRoot();
-    Effect().ClearChangedToRoot();
+  void ClearChangedTo(const PropertyTreeStateOrAlias& to) const {
+    Transform().ClearChangedTo(&to.Transform());
+    Clip().ClearChangedTo(&to.Clip());
+    Effect().ClearChangedTo(&to.Effect());
   }
 
   String ToString() const;

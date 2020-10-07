@@ -73,6 +73,7 @@ GraphicsLayer::GraphicsLayer(GraphicsLayerClient& client)
       hit_testable_(false),
       needs_check_raster_invalidation_(false),
       should_create_layers_after_paint_(false),
+      repainted_(false),
       painting_phase_(kGraphicsLayerPaintAllWithOverflowClip),
       parent_(nullptr),
       raster_invalidation_function_(
@@ -264,28 +265,33 @@ IntRect GraphicsLayer::InterestRect() {
   return previous_interest_rect_;
 }
 
-void GraphicsLayer::PaintRecursively(
-    HashSet<const GraphicsLayer*>& repainted_layers,
-    PaintBenchmarkMode benchmark_mode) {
-  ForAllPaintingGraphicsLayers(
-      *this, [benchmark_mode, &repainted_layers](GraphicsLayer& layer) {
-        PaintController::ScopedBenchmarkMode scoped_benchmark_mode(
-            layer.GetPaintController(), benchmark_mode);
-        if (layer.Paint())
-          repainted_layers.insert(&layer);
+bool GraphicsLayer::PaintRecursively(PaintBenchmarkMode benchmark_mode) {
+  bool repainted = false;
+  ForAllActiveGraphicsLayers(
+      *this, [&repainted, benchmark_mode](GraphicsLayer& layer) {
+        if (layer.PaintsContentOrHitTest()) {
+          PaintController::ScopedBenchmarkMode scoped_benchmark_mode(
+              layer.GetPaintController(), benchmark_mode);
+          layer.Paint();
+          repainted |= layer.repainted_;
+        } else {
+          layer.repainted_ = false;
+        }
       });
-
 #if DCHECK_IS_ON()
-  if (!repainted_layers.IsEmpty()) {
+  if (repainted) {
     VLOG(2) << "GraphicsLayer tree:\n"
             << GraphicsLayerTreeAsTextForTesting(
                    this, VLOG_IS_ON(3) ? 0xffffffff : kOutputAsLayerTree)
                    .Utf8();
   }
 #endif
+  return repainted;
 }
 
-bool GraphicsLayer::Paint() {
+void GraphicsLayer::Paint() {
+  repainted_ = false;
+
 #if !DCHECK_IS_ON()
   // TODO(crbug.com/853096): Investigate why we can ever reach here without
   // a valid layer state. Seems to only happen on Android builds.
@@ -294,7 +300,7 @@ bool GraphicsLayer::Paint() {
   // out if client_.ShouldThrottleRendering() was true was added. Throttled
   // layers can of course have a stale or missing layer_state_.
   if (!layer_state_)
-    return false;
+    return;
 #endif
 
   if (PaintWithoutCommit()) {
@@ -303,7 +309,7 @@ bool GraphicsLayer::Paint() {
   } else if (!needs_check_raster_invalidation_ &&
              GetPaintController().GetBenchmarkMode() !=
                  PaintBenchmarkMode::kForceRasterInvalidationAndConvert) {
-    return false;
+    return;
   }
 
   DVLOG(2) << "Painted GraphicsLayer: " << DebugName()
@@ -335,7 +341,7 @@ bool GraphicsLayer::Paint() {
   }
 
   needs_check_raster_invalidation_ = false;
-  return true;
+  repainted_ = true;
 }
 
 void GraphicsLayer::UpdateShouldCreateLayersAfterPaint() {
@@ -350,6 +356,10 @@ void GraphicsLayer::UpdateShouldCreateLayersAfterPaint() {
     CcLayer().SetNeedsDisplay();
     if (raster_invalidator_)
       raster_invalidator_->ClearOldStates();
+    // TODO(wangxianzhu): This is to let LocalFrameView recollect the graphics
+    // layers to regenerate pre_composited_layers_. Will remove when unifying
+    // PaintController for CAP and pre-CAP.
+    NotifyChildListChange();
   }
 }
 

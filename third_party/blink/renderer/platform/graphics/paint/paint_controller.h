@@ -182,13 +182,6 @@ class PLATFORM_EXPORT PaintController {
   // there FinishCycle() at the same time to ensure consistent caching status.
   void FinishCycle();
 
-  // |FinishCycle| clears the property tree changed state but only does this for
-  // non-transient controllers. Until CompositeAfterPaint, the root paint
-  // controller is transient with and this function provides a hook for clearing
-  // the property tree changed state after paint.
-  // TODO(pdr): Remove this when CompositeAfterPaint ships.
-  void ClearPropertyTreeChangedStateTo(const PropertyTreeStateOrAlias&);
-
   // Returns the approximate memory usage, excluding memory likely to be
   // shared with the embedder after copying to WebPaintController.
   // Should only be called after a full document life cycle update.
@@ -213,6 +206,10 @@ class PLATFORM_EXPORT PaintController {
   scoped_refptr<const PaintArtifact> GetNewPaintArtifactShared() const {
     DCHECK(new_paint_artifact_);
     return new_paint_artifact_;
+  }
+  wtf_size_t NewPaintChunkCount() const {
+    DCHECK(new_paint_artifact_);
+    return new_paint_artifact_->PaintChunks().size();
   }
 
   class ScopedBenchmarkMode {

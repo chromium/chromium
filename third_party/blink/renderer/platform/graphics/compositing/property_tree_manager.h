@@ -40,6 +40,7 @@ class TransformPaintPropertyNode;
 
 class PropertyTreeManagerClient {
  public:
+  virtual ~PropertyTreeManagerClient() = default;
   virtual SynthesizedClip& CreateOrReuseSynthesizedClipLayer(
       const ClipPaintPropertyNode&,
       const TransformPaintPropertyNode&,

@@ -630,17 +630,6 @@ void PaintController::FinishCycle() {
 #endif
 }
 
-void PaintController::ClearPropertyTreeChangedStateTo(
-    const PropertyTreeStateOrAlias& to) {
-  // Calling |ClearChangedTo| for every chunk is O(|property nodes|^2) and
-  // could be optimized by caching which nodes that have already been cleared.
-  for (const auto& chunk : current_paint_artifact_->PaintChunks()) {
-    chunk.properties.Transform().ClearChangedTo(&to.Transform());
-    chunk.properties.Clip().ClearChangedTo(&to.Clip());
-    chunk.properties.Effect().ClearChangedTo(&to.Effect());
-  }
-}
-
 size_t PaintController::ApproximateUnsharedMemoryUsage() const {
   size_t memory_usage = sizeof(*this);
 
@@ -784,10 +773,8 @@ void PaintController::CheckDuplicatePaintChunkId(const PaintChunk::Id& id) {
   if (IsSkippingCache())
     return;
 
-  if (DisplayItem::IsGraphicsLayerWrapperType(id.type) ||
-      DisplayItem::IsForeignLayerType(id.type)) {
+  if (DisplayItem::IsForeignLayerType(id.type))
     return;
-  }
 
   auto it = new_paint_chunk_id_index_map_.find(IdAsHashKey(id));
   if (it != new_paint_chunk_id_index_map_.end()) {

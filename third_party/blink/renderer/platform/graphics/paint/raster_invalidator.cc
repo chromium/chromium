@@ -183,12 +183,9 @@ void RasterInvalidator::GenerateRasterInvalidations(
     mapper.SwitchToChunk(new_chunk);
     auto& new_chunk_info = new_chunks_info.emplace_back(*this, mapper, it);
 
-    // Foreign layers and GraphicsLayers take care of raster invalidation by
-    // themselves.
-    if (DisplayItem::IsGraphicsLayerWrapperType(new_chunk.id.type) ||
-        DisplayItem::IsForeignLayerType(new_chunk.id.type)) {
+    // Foreign layers take care of raster invalidation by themselves.
+    if (DisplayItem::IsForeignLayerType(new_chunk.id.type))
       continue;
-    }
 
     if (!new_chunk.is_cacheable) {
       AddRasterInvalidation(

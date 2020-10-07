@@ -280,6 +280,8 @@ Response InspectorLayerTreeAgent::enable() {
 
   inspected_frames_->Root()->View()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kInspector);
+  if (auto* root_layer = RootLayer())
+    root_layer->layer_tree_host()->UpdateLayers();
 
   LayerTreePainted();
   LayerTreeDidChange();

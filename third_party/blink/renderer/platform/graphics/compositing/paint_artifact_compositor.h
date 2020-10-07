@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/layers_as_json.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/property_tree_manager.h"
 #include "third_party/blink/renderer/platform/graphics/compositing_reasons.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
@@ -39,12 +38,27 @@ class Vector2dF;
 namespace blink {
 
 class ContentLayerClientImpl;
+class GraphicsLayer;
 class JSONObject;
-class PaintArtifact;
 class PropertyTreeManager;
 class SynthesizedClip;
 
 using CompositorScrollCallbacks = cc::ScrollCallbacks;
+
+// Information of a composited layer that is created during compositing update
+// in pre-CompositeAfterPaint. In CompositeAfterPaint, this is expected to
+// contain all paint chunks, as if we created one root layer that needs to be
+// future layerized.
+struct PreCompositedLayerInfo {
+  // For now this is used only when graphics_layer == nullptr. This will also
+  // contain the paint chunks for the graphics layer when we unify
+  // PaintController for pre-CAP and CAP.
+  PaintChunkSubset chunks;
+  // If this is not nullptr, we should use the composited layer created by the
+  // GraphicsLayer. Otherwise we should layerize |chunks|. A GraphicsLayer with
+  // ShouldCreateLayersAfterPaint() == true should set this field to nullptr.
+  const GraphicsLayer* graphics_layer = nullptr;
+};
 
 class LayerListBuilder {
  public:
@@ -125,7 +139,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
  public:
   PaintArtifactCompositor(
       base::WeakPtr<CompositorScrollCallbacks> scroll_callbacks);
-  ~PaintArtifactCompositor();
+  ~PaintArtifactCompositor() override;
 
   struct ViewportProperties {
     const TransformPaintPropertyNode* overscroll_elasticity_transform = nullptr;
@@ -135,17 +149,22 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
     const TransformPaintPropertyNode* outer_scroll_translation = nullptr;
   };
 
-  // Updates the layer tree to match the provided paint artifact.
+  // Updates the layer tree to match the provided |pre_composited_layers|.
+  // In pre-CompositeAfterPaint, |pre_composited_layers| contains information
+  // from the GraphicsLayer tree. Some of the pre-composited layers may need
+  // additional layerization. In CompositeAfterPaint, |pre_composited_layers|
+  // should contain just one entry, and we will do a full layerization.
   //
   // |scroll_translation_nodes| is the complete set of scroll nodes, including
   // noncomposited nodes, and is used for Scroll Unification to generate scroll
   // nodes for noncomposited scrollers to complete the compositor's scroll
   // property tree.
-  void Update(
-      scoped_refptr<const PaintArtifact>,
-      const ViewportProperties& viewport_properties,
-      const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes,
-      const HashSet<const GraphicsLayer*>& repainted_layers);
+  void Update(const Vector<PreCompositedLayerInfo>&,
+              const ViewportProperties& viewport_properties,
+              const Vector<const TransformPaintPropertyNode*>&
+                  scroll_translation_nodes);
+
+  void UpdateRepaintedLayerProperties() const;
 
   bool DirectlyUpdateCompositedOpacityValue(const EffectPaintPropertyNode&);
   bool DirectlyUpdateScrollOffsetTransform(const TransformPaintPropertyNode&);
@@ -206,14 +225,9 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
   void SetLayerDebugInfoEnabled(bool);
 
-  // TODO(wangxianzhu): Make this private and refactor when removing
-  // pre-CompositeAfterPaint.
-  static void UpdateLayerDebugInfo(cc::Layer& layer,
-                                   const PaintChunk::Id&,
-                                   CompositingReasons,
-                                   RasterInvalidationTracking*);
-
   Vector<cc::Layer*> SynthesizedClipLayersForTesting() const;
+
+  void ClearPropertyTreeChangedState();
 
  private:
   // A pending layer is a collection of paint chunks that will end up in
@@ -221,7 +235,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   struct PLATFORM_EXPORT PendingLayer {
     enum CompositingType {
       kScrollHitTestLayer,
-      kGraphicsLayerWrapper,
+      kPreCompositedLayer,
       kForeignLayer,
       kScrollbarLayer,
       kOverlap,
@@ -231,6 +245,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
     PendingLayer(const PaintChunkSubset&,
                  const PaintChunkIterator&,
                  CompositingType compositng_type = kOther);
+    explicit PendingLayer(const PreCompositedLayerInfo&);
 
     // Merges |guest| into |this| if it can, by appending chunks of |guest|
     // after chunks of |this|, with appropriate space conversion applied to
@@ -279,6 +294,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
     PaintChunkSubset chunks;
     PropertyTreeState property_tree_state;
     FloatPoint offset_of_decomposited_transforms;
+    const GraphicsLayer* graphics_layer = nullptr;
     CompositingType compositing_type;
   };
 
@@ -289,7 +305,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
   // Collects the PaintChunks into groups which will end up in the same
   // cc layer. This is the entry point of the layerization algorithm.
-  void CollectPendingLayers(scoped_refptr<const PaintArtifact>);
+  void CollectPendingLayers(const Vector<PreCompositedLayerInfo>&);
 
   // This is the internal recursion of collectPendingLayers. This function
   // loops over the list of paint chunks, scoped by an isolated group
@@ -323,8 +339,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
       Vector<std::unique_ptr<ContentLayerClientImpl>>&
           new_content_layer_clients,
       Vector<scoped_refptr<cc::Layer>>& new_scroll_hit_test_layers,
-      Vector<scoped_refptr<cc::ScrollbarLayerBase>>& new_scrollbar_layers,
-      const HashSet<const GraphicsLayer*>& repainted_layers);
+      Vector<scoped_refptr<cc::ScrollbarLayerBase>>& new_scrollbar_layers);
 
   bool PropertyTreeStateChanged(const PropertyTreeState&) const;
 
@@ -339,9 +354,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // Returns the cc::Layer if the pending layer contains a foreign layer or a
   // wrapper of a GraphicsLayer. If it's the latter and the graphics layer has
   // been repainted, also updates the layer properties.
-  scoped_refptr<cc::Layer> WrappedCcLayerForPendingLayer(
-      const PendingLayer&,
-      const HashSet<const GraphicsLayer*>& repainted_layers);
+  scoped_refptr<cc::Layer> WrappedCcLayerForPendingLayer(const PendingLayer&);
 
   // Finds an existing or creates a new scroll hit test layer for the pending
   // layer, returning nullptr if the layer is not a scroll hit test layer.
@@ -379,6 +392,8 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   CompositingReasons GetCompositingReasons(
       const PendingLayer& layer,
       const PendingLayer* previous_layer) const;
+
+  void UpdateDebugInfo() const;
 
   // For notifying blink of composited scrolling.
   base::WeakPtr<CompositorScrollCallbacks> scroll_callbacks_;

@@ -124,8 +124,7 @@ TEST_F(GraphicsLayerTest, PaintRecursively) {
   EXPECT_TRUE(transform2->Changed(PaintPropertyChangeType::kChangedOnlyValues,
                                   transform_root));
   layers_.graphics_layer_client().SetNeedsRepaint(true);
-  HashSet<const GraphicsLayer*> repainted_layers;
-  layers_.graphics_layer().PaintRecursively(repainted_layers);
+  EXPECT_TRUE(layers_.graphics_layer().PaintRecursively());
   layers_.graphics_layer().GetPaintController().FinishCycle();
 }
 
@@ -177,23 +176,21 @@ TEST_F(GraphicsLayerTest, ShouldCreateLayersAfterPaint) {
   });
 
   svg_root_client.SetNeedsRepaint(true);
-  HashSet<const GraphicsLayer*> repainted_layers;
-  layers_.graphics_layer().PaintRecursively(repainted_layers);
-  EXPECT_TRUE(repainted_layers.Contains(svg_root_layer.get()));
+  EXPECT_TRUE(layers_.graphics_layer().PaintRecursively());
+  EXPECT_TRUE(svg_root_layer->Repainted());
   EXPECT_TRUE(svg_root_layer->ShouldCreateLayersAfterPaint());
   svg_root_client.SetNeedsRepaint(false);
   svg_root_layer->GetPaintController().FinishCycle();
 
   svg_root_layer->SetDrawsContent(false);
-  repainted_layers.clear();
-  layers_.graphics_layer().PaintRecursively(repainted_layers);
-  EXPECT_FALSE(repainted_layers.Contains(svg_root_layer.get()));
+  layers_.graphics_layer().PaintRecursively();
+  EXPECT_FALSE(svg_root_layer->Repainted());
   EXPECT_FALSE(svg_root_layer->ShouldCreateLayersAfterPaint());
 
   svg_root_client.SetNeedsRepaint(true);
   svg_root_layer->SetPaintsHitTest(true);
-  layers_.graphics_layer().PaintRecursively(repainted_layers);
-  EXPECT_TRUE(repainted_layers.Contains(svg_root_layer.get()));
+  layers_.graphics_layer().PaintRecursively();
+  EXPECT_TRUE(svg_root_layer->Repainted());
   EXPECT_TRUE(svg_root_layer->ShouldCreateLayersAfterPaint());
   svg_root_layer->GetPaintController().FinishCycle();
 }
