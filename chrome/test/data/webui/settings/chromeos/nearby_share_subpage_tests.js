@@ -218,10 +218,10 @@ suite('NearbyShare', function() {
     await accountManagerBrowserProxy.whenCalled('getAccounts');
     Polymer.dom.flush();
 
+    const profileName = subpage.$$('#profileName');
+    assertEquals('Primary Account', profileName.textContent.trim());
     const profileLabel = subpage.$$('#profileLabel');
     assertEquals('primary@gmail.com', profileLabel.textContent.trim());
-    const deviceLabel = subpage.$$('#accountRowDeviceName');
-    assertEquals('testDevice', deviceLabel.textContent.trim());
   });
 
   test('show receive dialog', function() {

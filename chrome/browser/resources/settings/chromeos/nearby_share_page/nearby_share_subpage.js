@@ -25,6 +25,11 @@ Polymer({
       notify: true,
     },
 
+    profileName_: {
+      type: String,
+      value: '',
+    },
+
     profileLabel_: {
       type: String,
       value: '',
@@ -77,6 +82,7 @@ Polymer({
             return;
           }
 
+          this.profileName_ = accounts[0].fullName;
           this.profileLabel_ = accounts[0].email;
         });
   },
@@ -295,12 +301,12 @@ Polymer({
   },
 
   /**
-   * @param {string} deviceName Customizable name of the device.
+   * @param {string} profileName The user's full name.
    * @param {string} profileLabel The user's email.
    * @return {string} Localized label.
    * @private
    */
-  getAccountRowLabel(deviceName, profileLabel) {
-    return this.i18n('nearbyShareAccountRowLabel', profileLabel, deviceName);
+  getAccountRowLabel(profileName, profileLabel) {
+    return this.i18n('nearbyShareAccountRowLabel', profileName, profileLabel);
   },
 });
