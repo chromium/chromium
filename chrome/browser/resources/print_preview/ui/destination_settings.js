@@ -302,6 +302,8 @@ Polymer({
   /**
    * @param {string} defaultPrinter The system default printer ID.
    * @param {boolean} pdfPrinterDisabled Whether the PDF printer is disabled.
+   * @param {boolean} isDriveMounted Whether Google Drive is mounted. Only used
+        on Chrome OS.
    * @param {string} serializedDefaultDestinationRulesStr String with rules
    *     for selecting a default destination.
    * @param {?Array<string>} userAccounts The signed in user accounts.
@@ -310,8 +312,8 @@ Polymer({
    *     to always send requests to the Google Cloud Print server.
    */
   init(
-      defaultPrinter, pdfPrinterDisabled, serializedDefaultDestinationRulesStr,
-      userAccounts, syncAvailable) {
+      defaultPrinter, pdfPrinterDisabled, isDriveMounted,
+      serializedDefaultDestinationRulesStr, userAccounts, syncAvailable) {
     const cloudPrintInterface = CloudPrintInterfaceImpl.getInstance();
     if (cloudPrintInterface.isConfigured()) {
       this.cloudPrintDisabled_ = false;
@@ -326,7 +328,7 @@ Polymer({
     recentDestinations = recentDestinations.slice(
         0, this.getRecentDestinationsDisplayCount_(recentDestinations));
     this.destinationStore_.init(
-        this.pdfPrinterDisabled_, defaultPrinter,
+        this.pdfPrinterDisabled_, isDriveMounted, defaultPrinter,
         serializedDefaultDestinationRulesStr, recentDestinations);
   },
 

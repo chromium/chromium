@@ -73,7 +73,8 @@ suite(destination_dialog_test.suiteName, function() {
     recentDestinations = [makeRecentDestination(destinations[4])];
     nativeLayer.setLocalDestinations(localDestinations);
     destinationStore.init(
-        false /* pdfPrinterDisabled */, 'FooDevice' /* printerName */,
+        false /* pdfPrinterDisabled */, true /* isDriveMounted */,
+        'FooDevice' /* printerName */,
         '' /* serializedDefaultDestinationSelectionRulesStr */,
         recentDestinations /* recentDestinations */);
 

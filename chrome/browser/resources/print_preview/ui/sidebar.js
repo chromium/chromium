@@ -148,14 +148,19 @@ Polymer({
    * @param {?Array<string>} userAccounts The signed in user accounts.
    * @param {boolean} syncAvailable
    * @param {boolean} pdfPrinterDisabled Whether the PDF printer is disabled.
+   * @param {boolean} isDriveMounted Whether Google Drive is mounted. Only used
+        on Chrome OS.
    */
   init(
       appKioskMode, defaultPrinter, serializedDestinationSelectionRulesStr,
-      userAccounts, syncAvailable, pdfPrinterDisabled) {
+      userAccounts, syncAvailable, pdfPrinterDisabled, isDriveMounted) {
     this.isInAppKioskMode_ = appKioskMode;
-    const saveAsPdfDisabled = this.isInAppKioskMode_ || pdfPrinterDisabled;
+    pdfPrinterDisabled = this.isInAppKioskMode_ || pdfPrinterDisabled;
+    // If PDF printing is disabled, then Save to Drive also needs to be disabled
+    // on Chrome OS.
+    isDriveMounted = !pdfPrinterDisabled && isDriveMounted;
     this.$.destinationSettings.init(
-        defaultPrinter, saveAsPdfDisabled,
+        defaultPrinter, pdfPrinterDisabled, isDriveMounted,
         serializedDestinationSelectionRulesStr, userAccounts, syncAvailable);
   },
 

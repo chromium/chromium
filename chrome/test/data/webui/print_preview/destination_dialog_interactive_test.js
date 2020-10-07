@@ -67,6 +67,7 @@ suite(destination_dialog_interactive_test.suiteName, function() {
     destinationSettings.cloudPrintInterface = cloudPrintInterface;
     destinationSettings.init(
         'FooDevice' /* printerName */, false /* pdfPrinterDisabled */,
+        true /* isDriveMounted */,
         '' /* serializedDefaultDestinationSelectionRulesStr */,
         [] /* userAccounts */, true /* syncAvailable */);
     return nativeLayer.whenCalled('getPrinterCapabilities').then(() => {

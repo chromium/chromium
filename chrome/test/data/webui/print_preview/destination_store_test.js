@@ -32,6 +32,7 @@ destination_store_test.TestNames = {
   MultipleRecentDestinationsAccounts: 'multiple recent destinations accounts',
   LoadAndSelectDestination: 'select loaded destination',
   LoadSaveToDriveCros: 'load Save to Drive Cros',
+  DriveNotMounted: 'drive not mounted',
 };
 
 suite(destination_store_test.suiteName, function() {
@@ -113,7 +114,8 @@ suite(destination_store_test.suiteName, function() {
         DestinationStore.EventType.SELECTED_DESTINATION_CAPABILITIES_READY,
         destinationStore);
     destinationStore.init(
-        initialSettings.pdfPrinterDisabled, initialSettings.printerName,
+        initialSettings.pdfPrinterDisabled, !!initialSettings.isDriveMounted,
+        initialSettings.printerName,
         initialSettings.serializedDefaultDestinationSelectionRulesStr,
         recentDestinations);
     return opt_expectPrinterFailure ? Promise.resolve() : Promise.race([
@@ -523,4 +525,15 @@ suite(destination_store_test.suiteName, function() {
                   Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS));
         });
       });
+
+  // Tests that the SAVE_TO_DRIVE_CROS destination is not loaded on Chrome OS
+  // when Google Drive is not mounted.
+  test(assert(destination_store_test.TestNames.DriveNotMounted), function() {
+    initialSettings.isDriveMounted = false;
+    return setInitialSettings(false).then(function(args) {
+      assertFalse(!!destinationStore.destinations().find(
+          destination => destination.id ===
+              Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS));
+    });
+  });
 });

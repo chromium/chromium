@@ -647,6 +647,10 @@ TEST_F(
     'PrintPreviewDestinationStoreTestCros', 'LoadSaveToDriveCros', function() {
       this.runMochaTest(destination_store_test.TestNames.LoadSaveToDriveCros);
     });
+
+TEST_F('PrintPreviewDestinationStoreTestCros', 'DriveNotMounted', function() {
+  this.runMochaTest(destination_store_test.TestNames.DriveNotMounted);
+});
 GEN('#endif');
 
 // eslint-disable-next-line no-var

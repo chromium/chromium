@@ -340,6 +340,8 @@ export class DestinationStore extends EventTarget {
    * will be automatically selected.
    * @param {boolean} pdfPrinterDisabled Whether the PDF print destination is
    *     disabled in print preview.
+   * @param {boolean} isDriveMounted Whether Google Drive is mounted. Only used
+        on Chrome OS.
    * @param {string} systemDefaultDestinationId ID of the system default
    *     destination.
    * @param {?string} serializedDefaultDestinationSelectionRulesStr Serialized
@@ -348,13 +350,13 @@ export class DestinationStore extends EventTarget {
    *     recentDestinations The recent print destinations.
    */
   init(
-      pdfPrinterDisabled, systemDefaultDestinationId,
+      pdfPrinterDisabled, isDriveMounted, systemDefaultDestinationId,
       serializedDefaultDestinationSelectionRulesStr, recentDestinations) {
     this.pdfPrinterEnabled_ = !pdfPrinterDisabled;
     this.systemDefaultDestinationId_ = systemDefaultDestinationId;
     this.createLocalPdfPrintDestination_();
     // <if expr="chromeos">
-    if (this.saveToDriveFlagEnabled_) {
+    if (this.saveToDriveFlagEnabled_ && isDriveMounted) {
       this.createLocalDrivePrintDestination_();
     }
     // </if>
