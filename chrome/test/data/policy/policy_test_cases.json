@@ -979,7 +979,7 @@
   },
 
   "SyncDisabled": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_test": [
       {
         "policies": { "SyncDisabled": true },
