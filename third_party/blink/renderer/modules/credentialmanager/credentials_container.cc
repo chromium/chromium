@@ -565,7 +565,8 @@ void OnSmsReceive(ScriptPromiseResolver* resolver,
         DOMExceptionCode::kAbortError, "OTP retrieval was cancelled."));
     return;
   }
-  RecordSmsSuccessTime(base::TimeTicks::Now() - start_time);
+  RecordSmsSuccessTime(base::TimeTicks::Now() - start_time, source_id,
+                       recorder);
   RecordSmsOutcome(SMSReceiverOutcome::kSuccess, source_id, recorder);
   resolver->Resolve(MakeGarbageCollected<OTPCredential>(otp));
 }

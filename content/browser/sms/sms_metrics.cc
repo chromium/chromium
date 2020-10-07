@@ -5,10 +5,16 @@
 #include "content/browser/sms/sms_metrics.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 
 namespace content {
 
-void RecordSmsReceiveTime(base::TimeDelta duration) {
+void RecordSmsReceiveTime(base::TimeDelta duration, ukm::SourceId source_id) {
+  ukm::builders::SMSReceiver builder(source_id);
+  builder.SetTimeSmsReceiveMs(
+      ukm::GetExponentialBucketMinForUserTiming(duration.InMilliseconds()));
+  builder.Record(ukm::UkmRecorder::Get());
+
   UMA_HISTOGRAM_MEDIUM_TIMES("Blink.Sms.Receive.TimeSmsReceive", duration);
 }
 
