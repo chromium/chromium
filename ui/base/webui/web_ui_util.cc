@@ -187,10 +187,6 @@ void ParsePathAndScale(const GURL& url,
   ParsePathAndImageSpec(url, path, scale_factor, nullptr);
 }
 
-void ParsePathAndFrame(const GURL& url, std::string* path, int* frame_index) {
-  ParsePathAndImageSpec(url, path, nullptr, frame_index);
-}
-
 void SetLoadTimeDataDefaults(const std::string& app_locale,
                              base::DictionaryValue* localized_strings) {
   localized_strings->SetString("fontfamily", GetFontFamily());

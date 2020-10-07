@@ -62,11 +62,6 @@ void ParsePathAndImageSpec(const GURL& url,
 COMPONENT_EXPORT(UI_BASE)
 void ParsePathAndScale(const GURL& url, std::string* path, float* scale_factor);
 
-// Parses a URL containing some path [{frame}]. If it does not contain a frame
-// index then the default frame index is returned.
-COMPONENT_EXPORT(UI_BASE)
-void ParsePathAndFrame(const GURL& url, std::string* path, int* frame_index);
-
 // Helper function to set some default values (e.g., font family, size,
 // language, and text direction) into the given dictionary. Requires an
 // application locale (i.e. g_browser_process->GetApplicationLocale()).
