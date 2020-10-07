@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
@@ -30,14 +31,13 @@ js_library("google_assistant_page") {
   ]
 }
 
-# TODO: Uncomment as the Polymer3 migration makes progress.
-#js_type_check("closure_compile_module") {
-#  is_polymer3 = true
-#  deps = [
-#    ":google_assistant_browser_proxy.m",
-#    ":google_assistant_page.m"
-#  ]
-#}
+js_type_check("closure_compile_module") {
+ is_polymer3 = true
+ deps = [
+   ":google_assistant_browser_proxy.m",
+   ":google_assistant_page.m"
+ ]
+}
 
 js_library("google_assistant_browser_proxy.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/google_assistant_page/google_assistant_browser_proxy.m.js" ]
@@ -50,7 +50,23 @@ js_library("google_assistant_browser_proxy.m") {
 js_library("google_assistant_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/google_assistant_page/google_assistant_page.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":google_assistant_browser_proxy.m",
+    "//chrome/browser/resources/settings:router.m",
+    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
+    "//chrome/browser/resources/settings/chromeos:metrics_recorder.m",
+    "//chrome/browser/resources/settings/chromeos:os_route.m",
+    "//chrome/browser/resources/settings/controls:controlled_button.m",
+    "//chrome/browser/resources/settings/controls:settings_toggle_button.m",
+    "//chrome/browser/resources/settings/prefs:prefs.m",
+    "//chrome/browser/resources/settings/prefs:prefs_behavior.m",
+    "//chrome/browser/resources/settings/prefs:pref_util.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row.m",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_pref_indicator.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   extra_deps = [ ":google_assistant_page_module" ]
 }
@@ -68,10 +84,13 @@ polymer_modulizer("google_assistant_page") {
   js_file = "google_assistant_page.js"
   html_file = "google_assistant_page.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_modulizer("modulize") {
   input_files = [ "google_assistant_browser_proxy.js" ]
+  namespace_rewrites = os_settings_namespace_rewrites
 }

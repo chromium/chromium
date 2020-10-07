@@ -705,7 +705,7 @@ var OSSettingsGoogleAssistantPageTest = class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return super.browsePreload +
-        'google_assistant_page/google_assistant_page.html';
+        'chromeos/google_assistant_page/google_assistant_page.html';
   }
 
   /** @override */
@@ -719,6 +719,7 @@ var OSSettingsGoogleAssistantPageTest = class extends OSSettingsBrowserTest {
   get extraLibraries() {
     return super.extraLibraries.concat([
       '//ui/webui/resources/js/promise_resolver.js',
+      '//ui/webui/resources/js/util.js',
       BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
       BROWSER_SETTINGS_PATH + '../test_util.js',
       'google_assistant_page_test.js',
@@ -1875,7 +1876,7 @@ TEST_F('OSSettingsResetPageTest', 'AllJsTests', () => {
 
 // Test fixture for the "Search and assistant" page.
 // eslint-disable-next-line no-var
-var OSSettingsSearchPageTest = class extends OSSettingsBrowserTest {
+var OSSettingsOsSearchPageTest = class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return super.browsePreload + 'chromeos/os_search_page/os_search_page.html';
@@ -1892,7 +1893,7 @@ var OSSettingsSearchPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsSearchPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsOsSearchPageTest', 'AllJsTests', () => {
   mocha.run();
 });
 

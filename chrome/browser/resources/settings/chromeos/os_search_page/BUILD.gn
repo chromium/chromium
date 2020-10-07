@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
@@ -21,18 +22,33 @@ js_library("os_search_page") {
   ]
 }
 
-# TODO: Uncomment as the Polymer3 migration makes progress.
-#js_type_check("closure_compile_module") {
-#  is_polymer3 = true
-#  deps = [
-#    ":os_search_page.m"
-#  ]
-#}
+js_type_check("closure_compile_module") {
+ is_polymer3 = true
+ deps = [
+   ":os_search_page.m"
+ ]
+}
 
 js_library("os_search_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_search_page/os_search_page.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    "//chrome/browser/resources/settings:router.m",
+    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
+    "//chrome/browser/resources/settings/chromeos:os_route.m",
+    "//chrome/browser/resources/settings/chromeos/google_assistant_page:google_assistant_page.m",
+    "//chrome/browser/resources/settings/controls:extension_controlled_indicator.m",
+    "//chrome/browser/resources/settings/search_engines_page:search_engines_browser_proxy.m",
+    "//chrome/browser/resources/settings/settings_page:settings_animated_pages.m",
+    "//chrome/browser/resources/settings/settings_page:settings_subpage.m",
+    "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
+    "//third_party/polymer/v3_0/components-chromium/paper-tooltip:paper-tooltip",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row.m",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_pref_indicator.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   extra_deps = [ ":os_search_page_module" ]
 }
@@ -47,4 +63,6 @@ polymer_modulizer("os_search_page") {
   js_file = "os_search_page.js"
   html_file = "os_search_page.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }

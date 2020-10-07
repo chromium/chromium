@@ -475,6 +475,7 @@ group("polymer3_elements") {
     "../about_page:modulize",
     "../prefs:modulize",
     "../prefs:prefs_module",
+    "../search_engines_page:modulize",
     "../settings_page:settings_animated_pages_module",
     "../settings_page:settings_section_module",
     "../settings_page:settings_subpage_module",

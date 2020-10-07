@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+
 /**
  * @fileoverview A helper object used from the google assistant section
  * to interact with the browser.
@@ -9,7 +11,7 @@
 
 cr.define('settings', function() {
   /** @interface */
-  class GoogleAssistantBrowserProxy {
+  /* #export */ class GoogleAssistantBrowserProxy {
     /** Launches into the Google Assistant app settings. */
     showGoogleAssistantSettings() {}
 
@@ -21,7 +23,7 @@ cr.define('settings', function() {
   }
 
   /** @implements {settings.GoogleAssistantBrowserProxy} */
-  class GoogleAssistantBrowserProxyImpl {
+  /* #export */ class GoogleAssistantBrowserProxyImpl {
     /** @override */
     showGoogleAssistantSettings() {
       chrome.send('showGoogleAssistantSettings');

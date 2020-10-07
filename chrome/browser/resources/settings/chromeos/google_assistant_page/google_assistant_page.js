@@ -6,7 +6,7 @@
  * The types of Hotword enable status without Dsp support.
  * @enum {number}
  */
-const DspHotwordState = {
+/* #export */ const DspHotwordState = {
   DEFAULT_ON: 0,
   ALWAYS_ON: 1,
   OFF: 2,
@@ -19,7 +19,7 @@ const DspHotwordState = {
  * chromeos/services/assistant/public/cpp/assistant_prefs.h
  * @enum {number}
  */
-const ConsentStatus = {
+/* #export */ const ConsentStatus = {
   // The status is unknown.
   kUnknown: 0,
 
@@ -42,8 +42,11 @@ Polymer({
   is: 'settings-google-assistant-page',
 
   behaviors: [
-    DeepLinkingBehavior, I18nBehavior, PrefsBehavior,
-    settings.RouteObserverBehavior, WebUIListenerBehavior
+    DeepLinkingBehavior,
+    I18nBehavior,
+    PrefsBehavior,
+    settings.RouteObserverBehavior,
+    WebUIListenerBehavior
   ],
 
   properties: {

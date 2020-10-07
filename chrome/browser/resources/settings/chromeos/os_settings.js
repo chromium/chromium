@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './ambient_mode_page/ambient_mode_page.m.js';
+import './google_assistant_page/google_assistant_page.m.js';
 import './localized_link/localized_link.m.js';
 import './bluetooth_page/bluetooth_page.m.js';
 import './bluetooth_page/bluetooth_subpage.m.js';
@@ -31,6 +32,7 @@ import './os_about_page/os_about_page.m.js';
 import './os_about_page/channel_switcher_dialog.m.js';
 import './os_about_page/detailed_build_info.m.js';
 import './os_about_page/update_warning_dialog.m.js';
+import './os_search_page/os_search_page.m.js';
 
 export {AboutPageBrowserProxyImpl, BrowserChannel, UpdateStatus} from '../about_page/about_page_browser_proxy.m.js';
 export {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.m.js';
@@ -40,12 +42,16 @@ export {ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl} from '../people_pa
 export {PageStatus, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../people_page/sync_browser_proxy.m.js';
 export {CrSettingsPrefs} from '../prefs/prefs_types.m.js';
 export {Route, Router} from '../router.m.js';
+export {SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl} from '../search_engines_page/search_engines_browser_proxy.m.js';
+export {SearchEnginesInfo, SearchEngine} from '../search_engines_page/search_engines_browser_proxy.m.js';
 export {getContactManager, observeContactManager, setContactManagerForTesting} from '../shared/nearby_contact_manager.m.js';
 export {getNearbyShareSettings, observeNearbyShareSettings, setNearbyShareSettingsForTesting} from '../shared/nearby_share_settings.m.js';
 export {NearbySettings, NearbyShareSettingsBehavior} from '../shared/nearby_share_settings_behavior.m.js';
 export {AmbientModeBrowserProxyImpl} from './ambient_mode_page/ambient_mode_browser_proxy.m.js';
 export {AmbientModeTemperatureUnit, AmbientModeTopicSource} from './ambient_mode_page/constants.m.js';
 export {bluetoothApis} from './bluetooth_page/bluetooth_page.m.js';
+export {ConsentStatus, DspHotwordState} from './google_assistant_page/google_assistant_page.m.js';
+export {GoogleAssistantBrowserProxyImpl} from './google_assistant_page/google_assistant_browser_proxy.m.js';
 export {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page/internet_page_browser_proxy.m.js';
 export {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_page/multidevice_browser_proxy.m.js';
 export {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, SmartLockSignInEnabledState} from './multidevice_page/multidevice_constants.m.js';
