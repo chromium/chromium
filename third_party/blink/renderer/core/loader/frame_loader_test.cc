@@ -73,8 +73,8 @@ TEST_F(FrameLoaderSimTest, LoadEventProgressBeforeUnloadCanceled) {
 
   // We'll only allow canceling a beforeunload if there's a sticky user
   // activation present so simulate a user gesture.
-  frame_b->NotifyUserActivationInLocalTree(
-      mojom::UserActivationNotificationType::kTest);
+  LocalFrame::NotifyUserActivation(
+      frame_b, mojom::UserActivationNotificationType::kTest);
 
   auto& chrome_client =
       To<ChromeClientImpl>(WebView().GetPage()->GetChromeClient());

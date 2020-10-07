@@ -543,13 +543,13 @@ void RemoteFrame::UpdateUserActivationState(
     mojom::blink::UserActivationNotificationType notification_type) {
   switch (update_type) {
     case mojom::blink::UserActivationUpdateType::kNotifyActivation:
-      NotifyUserActivationInLocalTree(notification_type);
+      NotifyUserActivationInFrameTree(notification_type);
       break;
     case mojom::blink::UserActivationUpdateType::kConsumeTransientActivation:
-      ConsumeTransientUserActivationInLocalTree();
+      ConsumeTransientUserActivationInFrameTree();
       break;
     case mojom::blink::UserActivationUpdateType::kClearActivation:
-      ClearUserActivationInLocalTree();
+      ClearUserActivationInFrameTree();
       break;
     case mojom::blink::UserActivationUpdateType::
         kNotifyActivationPendingBrowserVerification:

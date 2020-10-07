@@ -185,16 +185,6 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
 
   virtual void DidChangeVisibilityState();
 
-  // This should never be called from outside Frame or WebFrame.
-  void NotifyUserActivationInLocalTree(
-      mojom::blink::UserActivationNotificationType notification_type);
-
-  // This should never be called from outside Frame or WebFrame.
-  bool ConsumeTransientUserActivationInLocalTree();
-
-  // This should never be called from outside Frame or WebFrame.
-  void ClearUserActivationInLocalTree();
-
   // Returns the transient user activation state of this frame.
   bool HasTransientUserActivation() const {
     return user_activation_state_.IsActive();
@@ -388,6 +378,11 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
 
   void ApplyFrameOwnerProperties(
       mojom::blink::FrameOwnerPropertiesPtr properties);
+
+  void NotifyUserActivationInFrameTree(
+      mojom::blink::UserActivationNotificationType notification_type);
+  bool ConsumeTransientUserActivationInFrameTree();
+  void ClearUserActivationInFrameTree();
 
   mutable FrameTree tree_node_;
 

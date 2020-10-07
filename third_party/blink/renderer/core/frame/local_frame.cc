@@ -2142,7 +2142,7 @@ void LocalFrame::NotifyUserActivation(
   GetLocalFrameHostRemote().UpdateUserActivationState(update_type,
                                                       notification_type);
   Client()->NotifyUserActivation();
-  NotifyUserActivationInLocalTree(notification_type);
+  NotifyUserActivationInFrameTree(notification_type);
 }
 
 bool LocalFrame::ConsumeTransientUserActivation(
@@ -2152,7 +2152,7 @@ bool LocalFrame::ConsumeTransientUserActivation(
         mojom::blink::UserActivationUpdateType::kConsumeTransientActivation,
         mojom::blink::UserActivationNotificationType::kNone);
   }
-  return ConsumeTransientUserActivationInLocalTree();
+  return ConsumeTransientUserActivationInFrameTree();
 }
 
 namespace {
