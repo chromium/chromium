@@ -735,7 +735,7 @@ NGConstraintSpace CreateConstraintSpaceForColumns(
     const NGConstraintSpace& parent_space,
     LogicalSize column_size,
     LogicalSize percentage_resolution_size,
-    bool is_first_fragmentainer,
+    bool allow_discard_start_margin,
     bool balance_columns) {
   NGConstraintSpaceBuilder space_builder(
       parent_space, parent_space.GetWritingMode(), /* is_new_fc */ true);
@@ -754,11 +754,12 @@ NGConstraintSpace CreateConstraintSpaceForColumns(
   space_builder.SetIsInColumnBfc();
   if (balance_columns)
     space_builder.SetIsInsideBalancedColumns();
-  if (!is_first_fragmentainer) {
-    // Margins at fragmentainer boundaries should be eaten and truncated to
-    // zero. Note that this doesn't apply to margins at forced breaks, but we'll
-    // deal with those when we get to them. Set up a margin strut that eats all
-    // leading adjacent margins.
+  if (allow_discard_start_margin) {
+    // Unless it's the first column in the multicol container, or the first
+    // column after a spanner, margins at fragmentainer boundaries should be
+    // eaten and truncated to zero. Note that this doesn't apply to margins at
+    // forced breaks, but we'll deal with those when we get to them. Set up a
+    // margin strut that eats all leading adjacent margins.
     space_builder.SetDiscardingMarginStrut();
   }
 

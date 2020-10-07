@@ -78,6 +78,7 @@ class CORE_EXPORT NGBreakToken : public RefCounted<NGBreakToken> {
         flags_(0),
         is_break_before_(false),
         is_forced_break_(false),
+        is_caused_by_column_spanner_(false),
         is_at_block_end_(false),
         break_appeal_(kBreakAppealPerfect),
         has_seen_all_children_(false) {
@@ -104,6 +105,8 @@ class CORE_EXPORT NGBreakToken : public RefCounted<NGBreakToken> {
   unsigned is_break_before_ : 1;
 
   unsigned is_forced_break_ : 1;
+
+  unsigned is_caused_by_column_spanner_ : 1;
 
   // Set when layout is past the block-end border edge. If we break when we're
   // in this state, it means that something is overflowing, and thus establishes

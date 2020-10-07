@@ -45,7 +45,7 @@ struct NGInflowChildData {
   NGMarginStrut margin_strut;
   NGBoxStrut margins;
   bool margins_fully_resolved;
-  bool is_resuming_after_break;
+  bool allow_discard_start_margin;
 };
 
 // A class for general block layout (e.g. a <div> with no special style).
