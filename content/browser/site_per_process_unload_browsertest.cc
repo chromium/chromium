@@ -1578,6 +1578,52 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
   }
 }
 
+// Execute an unload handler from the initial empty document.
+//
+// Start from A1(B2(B3)).
+// B3 is the initial empty document created by B2. An unload handler is added to
+// B3. A1 deletes B2.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       UnloadInInitialEmptyDocument) {
+  // 1. Start from A1(B2).
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  RenderFrameHostImpl* a1 = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* b2 = a1->child_at(0)->current_frame_host();
+
+  // 2. Create a new frame without navigating it. It stays on the initial empty
+  //    document B3. Current state is with A1(B2(B3)).
+  ASSERT_EQ(0u, b2->child_count());
+  EXPECT_TRUE(ExecJs(b2, R"(
+    let iframe = document.createElement("iframe");
+    document.body.appendChild(iframe);
+    iframe.contentWindow.onunload = () => {
+      window.domAutomationController.send("B3 unloaded");
+    }
+  )"));
+  ASSERT_EQ(1u, b2->child_count());
+  RenderFrameHostImpl* b3 = b2->child_at(0)->current_frame_host();
+
+  auto has_unload_handler = [](RenderFrameHostImpl* rfh) {
+    return rfh->GetSuddenTerminationDisablerState(
+        blink::mojom::SuddenTerminationDisablerType::kUnloadHandler);
+  };
+  EXPECT_FALSE(has_unload_handler(a1));
+  EXPECT_FALSE(has_unload_handler(b2));
+  EXPECT_TRUE(has_unload_handler(b3));
+
+  // 3. A1 deletes B2. This triggers the unload handler from B3.
+  DOMMessageQueue dom_message_queue(
+      WebContents::FromRenderFrameHost(web_contents()->GetMainFrame()));
+  ExecuteScriptAsync(a1, "document.querySelector('iframe').remove();");
+
+  // Check the unload handler is executed.
+  std::string message;
+  EXPECT_TRUE(dom_message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"B3 unloaded\"", message);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessSSLBrowserTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
