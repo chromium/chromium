@@ -35,8 +35,6 @@
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -48,8 +46,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/test/test_screen.h"
-
-using web_app::ProviderType;
 
 namespace {
 
@@ -150,18 +146,9 @@ std::unique_ptr<ui::SimpleMenuModel> GetMenuModel(
 
 }  // namespace
 
-class AppContextMenuTest : public AppListTestBase,
-                           public ::testing::WithParamInterface<ProviderType> {
+class AppContextMenuTest : public AppListTestBase {
  public:
-  AppContextMenuTest() {
-    if (GetParam() == web_app::ProviderType::kWebApps) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    } else if (GetParam() == web_app::ProviderType::kBookmarkApps) {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    }
-  }
+  AppContextMenuTest() = default;
   AppContextMenuTest(const AppContextMenuTest&) = delete;
   AppContextMenuTest& operator=(const AppContextMenuTest&) = delete;
   ~AppContextMenuTest() override = default;
@@ -340,7 +327,6 @@ class AppContextMenuTest : public AppListTestBase,
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   display::test::TestScreen test_screen_;
   std::unique_ptr<KeyedService> menu_manager_;
@@ -350,7 +336,7 @@ class AppContextMenuTest : public AppListTestBase,
   apps::AppServiceTest app_service_test_;
 };
 
-TEST_P(AppContextMenuTest, ExtensionApp) {
+TEST_F(AppContextMenuTest, ExtensionApp) {
   for (extensions::LaunchType launch_type = extensions::LAUNCH_TYPE_FIRST;
        launch_type < extensions::NUM_LAUNCH_TYPES;
        launch_type = static_cast<extensions::LaunchType>(launch_type + 1)) {
@@ -371,18 +357,18 @@ TEST_P(AppContextMenuTest, ExtensionApp) {
   }
 }
 
-TEST_P(AppContextMenuTest, ChromeApp) {
+TEST_F(AppContextMenuTest, ChromeApp) {
   TestChromeApp();
 }
 
-TEST_P(AppContextMenuTest, NonExistingExtensionApp) {
+TEST_F(AppContextMenuTest, NonExistingExtensionApp) {
   AppServiceContextMenu menu(menu_delegate(), profile(),
                              "some_non_existing_extension_app", controller());
   std::unique_ptr<ui::MenuModel> menu_model = GetMenuModel(&menu);
   EXPECT_EQ(nullptr, menu_model);
 }
 
-TEST_P(AppContextMenuTest, ArcMenu) {
+TEST_F(AppContextMenuTest, ArcMenu) {
   app_service_test().SetUp(profile());
   ArcAppTest arc_test;
   arc_test.SetUp(profile());
@@ -495,7 +481,7 @@ TEST_P(AppContextMenuTest, ArcMenu) {
   EXPECT_EQ(0, menu->GetItemCount());
 }
 
-TEST_P(AppContextMenuTest, ArcMenuShortcut) {
+TEST_F(AppContextMenuTest, ArcMenuShortcut) {
   app_service_test().SetUp(profile());
   ArcAppTest arc_test;
   arc_test.SetUp(profile());
@@ -559,7 +545,7 @@ TEST_P(AppContextMenuTest, ArcMenuShortcut) {
   }
 }
 
-TEST_P(AppContextMenuTest, ArcMenuStickyItem) {
+TEST_F(AppContextMenuTest, ArcMenuStickyItem) {
   app_service_test().SetUp(profile());
   ArcAppTest arc_test;
   arc_test.SetUp(profile());
@@ -601,7 +587,7 @@ TEST_P(AppContextMenuTest, ArcMenuStickyItem) {
 }
 
 // In suspended state app does not have launch item.
-TEST_P(AppContextMenuTest, ArcMenuSuspendedItem) {
+TEST_F(AppContextMenuTest, ArcMenuSuspendedItem) {
   app_service_test().SetUp(profile());
   ArcAppTest arc_test;
   arc_test.SetUp(profile());
@@ -638,7 +624,7 @@ TEST_P(AppContextMenuTest, ArcMenuSuspendedItem) {
   }
 }
 
-TEST_P(AppContextMenuTest, CommandIdsMatchEnumsForHistograms) {
+TEST_F(AppContextMenuTest, CommandIdsMatchEnumsForHistograms) {
   // Tests that CommandId enums are not changed as the values are used in
   // histograms.
   EXPECT_EQ(9, ash::NOTIFICATION_CONTAINER);
@@ -659,7 +645,7 @@ TEST_P(AppContextMenuTest, CommandIdsMatchEnumsForHistograms) {
 }
 
 // Tests that internal app's context menu is correct.
-TEST_P(AppContextMenuTest, InternalAppMenu) {
+TEST_F(AppContextMenuTest, InternalAppMenu) {
   for (const auto& internal_app : app_list::GetInternalAppList(profile())) {
     controller()->SetAppPinnable(internal_app.app_id,
                                  AppListControllerDelegate::PIN_EDITABLE);
@@ -688,7 +674,7 @@ class AppContextMenuLacrosTest : public AppContextMenuTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_P(AppContextMenuLacrosTest, LacrosApp) {
+TEST_F(AppContextMenuLacrosTest, LacrosApp) {
   app_service_test().SetUp(profile());
   app_service_test().FlushMojoCalls();
 
@@ -704,15 +690,3 @@ TEST_P(AppContextMenuLacrosTest, LacrosApp) {
   AddToStates(menu, MenuState(ash::APP_CONTEXT_MENU_NEW_WINDOW), &states);
   ValidateMenuState(menu_model.get(), states);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppContextMenuTest,
-                         ::testing::Values(ProviderType::kBookmarkApps,
-                                           ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppContextMenuLacrosTest,
-                         ::testing::Values(ProviderType::kBookmarkApps,
-                                           ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);
