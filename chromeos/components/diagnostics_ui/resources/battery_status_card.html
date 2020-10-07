@@ -8,25 +8,26 @@
     value="[[batteryChargeStatus_.charge_now_milliamp_hours]]"
     max="[[batteryChargeStatus_.charge_full_now_milliamp_hours]]">
   </percent-bar-chart>
-  <data-point slot="body" id="currentNow"
+  <data-point slot="body" id="currentNow" header="[[i18n('currentNow')]]"
     value="[[batteryChargeStatus_.current_now_milliamps]]">
   </data-point>
   <data-point slot="body" id="chargeFullDesign"
+    header="[[i18n('chargeFullDesign')]]"
     value="[[batteryHealth_.charge_full_design_milliamp_hours]]">
   </data-point>
-  <data-point slot="body" id="chargeFullNow"
+  <data-point slot="body" id="chargeFullNow" header="[[i18n('chargeFullNow')]]"
     value="[[batteryChargeStatus_.charge_full_now_milliamp_hours]]">
   </data-point>
-  <data-point slot="body" id="chargeNow"
+  <data-point slot="body" id="chargeNow" header="[[i18n('chargeNow')]]"
     value="[[batteryChargeStatus_.charge_now_milliamp_hours]]">
   </data-point>
-  <data-point slot="body" id="powerTime"
+  <data-point slot="body" id="powerTime" header="[[i18n('powerTime')]]"
     value="[[batteryChargeStatus_.power_time]]">
   </data-point>
-  <data-point slot="body" id="adapterStatus"
+  <data-point slot="body" id="adapterStatus" header="[[i18n('adapterStatus')]]"
     value="[[batteryChargeStatus_.power_adapter_status]]">
   </data-point>
-  <data-point slot="body" id="cycleCount"
+  <data-point slot="body" id="cycleCount" header="[[i18n('cycleCount')]]"
     value="[[batteryHealth_.cycle_count]]">
   </data-point>
 </diagnostics-card>

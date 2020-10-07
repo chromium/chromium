@@ -20,9 +20,8 @@ Polymer({
   properties: {
     header: {
       type: String,
-      // TODO(michaelcheco): Remove when localized strings are added.
-      value: 'Xxxx',
     },
+
     value: {
       type: String,
       value: '',
