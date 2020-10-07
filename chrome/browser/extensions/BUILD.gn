@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
-import("//chromeos/services/cfm/public/buildflags/buildflags.gni")
+import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//components/nacl/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
@@ -1030,6 +1030,7 @@ static_library("extensions") {
       "//chromeos/components/camera_app_ui",
       "//chromeos/components/camera_app_ui:mojo_bindings",
       "//chromeos/components/camera_app_ui/resources:chrome_camera_app",
+      "//chromeos/components/chromebox_for_meetings/buildflags",
       "//chromeos/components/proximity_auth",
       "//chromeos/components/remote_apps/mojom",
       "//chromeos/constants",
@@ -1042,7 +1043,6 @@ static_library("extensions") {
       "//chromeos/login/login_state",
       "//chromeos/network",
       "//chromeos/services/assistant/public/cpp",
-      "//chromeos/services/cfm/public/buildflags",
       "//chromeos/services/ime/public/mojom",
       "//chromeos/services/machine_learning/public/cpp",
       "//chromeos/services/machine_learning/public/mojom",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/cfm/public/features/features.h"
+#include "chromeos/components/chromebox_for_meetings/features/features.h"
 
 namespace chromeos {
 namespace cfm {

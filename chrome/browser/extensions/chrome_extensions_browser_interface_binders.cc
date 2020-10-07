@@ -25,8 +25,8 @@
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/components/camera_app_ui/camera_app_ui.h"
+#include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
-#include "chromeos/services/cfm/public/buildflags/buildflags.h"
 #include "chromeos/services/media_perception/public/mojom/media_perception.mojom.h"
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
 #include "extensions/browser/api/extensions_api_client.h"
@@ -44,9 +44,9 @@
 #endif
 
 #if BUILDFLAG(PLATFORM_CFM)
+#include "chromeos/components/chromebox_for_meetings/features/features.h"
 #include "chromeos/services/cfm/public/cpp/appid_util.h"
 #include "chromeos/services/cfm/public/cpp/service_connection.h"
-#include "chromeos/services/cfm/public/features/features.h"
 #include "chromeos/services/cfm/public/mojom/cfm_service_manager.mojom.h"
 #endif
 #endif  // definied(OS_CHROMEOS)

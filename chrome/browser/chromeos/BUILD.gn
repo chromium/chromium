@@ -4,7 +4,7 @@
 
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
-import("//chromeos/services/cfm/public/buildflags/buildflags.gni")
+import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 import("//printing/buildflags/buildflags.gni")
@@ -108,6 +108,7 @@ source_set("chromeos") {
     "//chromeos/components/account_manager",
     "//chromeos/components/camera_app_ui",
     "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
+    "//chromeos/components/chromebox_for_meetings/buildflags",
     "//chromeos/components/diagnostics_ui",
     "//chromeos/components/drivefs",
     "//chromeos/components/drivefs/mojom",
@@ -191,7 +192,6 @@ source_set("chromeos") {
     "//chromeos/resources:print_management_resources_grit",
     "//chromeos/resources:scanning_app_resources_grit",
     "//chromeos/services/assistant/public/cpp",
-    "//chromeos/services/cfm/public/buildflags",
     "//chromeos/services/cros_healthd/public/cpp",
     "//chromeos/services/cros_healthd/public/mojom",
     "//chromeos/services/device_sync",

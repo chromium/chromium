@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chromeos/services/cfm/public/buildflags/buildflags.gni")
+import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 assert(is_cfm, "Non-CfM builds cannot depend on this library")
@@ -20,8 +20,8 @@ source_set("cpp") {
     "//chromeos/services/cfm/public/mojom",
   ]
   public_deps = [
-    "//chromeos/services/cfm/public/buildflags",
-    "//chromeos/services/cfm/public/features",
+    "//chromeos/components/chromebox_for_meetings/buildflags",
+    "//chromeos/components/chromebox_for_meetings/features",
   ]
 }
 

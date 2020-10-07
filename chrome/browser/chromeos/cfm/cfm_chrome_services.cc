@@ -5,8 +5,8 @@
 #include "chrome/browser/chromeos/cfm/cfm_chrome_services.h"
 
 #include "chrome/browser/chromeos/cfm/cfm_browser_service.h"
+#include "chromeos/components/chromebox_for_meetings/features/features.h"
 #include "chromeos/dbus/cfm/cfm_hotline_client.h"
-#include "chromeos/services/cfm/public/features/features.h"
 
 namespace chromeos {
 namespace cfm {

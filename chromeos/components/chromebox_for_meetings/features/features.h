@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_CFM_PUBLIC_FEATURES_FEATURES_H_
-#define CHROMEOS_SERVICES_CFM_PUBLIC_FEATURES_FEATURES_H_
+#ifndef CHROMEOS_COMPONENTS_CHROMEBOX_FOR_MEETINGS_FEATURES_FEATURES_H_
+#define CHROMEOS_COMPONENTS_CHROMEBOX_FOR_MEETINGS_FEATURES_FEATURES_H_
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
@@ -19,4 +19,4 @@ extern const base::Feature kCfmMojoServices;
 }  // namespace cfm
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_CFM_PUBLIC_FEATURES_FEATURES_H_
+#endif  // CHROMEOS_COMPONENTS_CHROMEBOX_FOR_MEETINGS_FEATURES_FEATURES_H_
