@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -120,12 +121,18 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSigninResponseParams(
     return DiceResponseParams();
   }
 
-  if (params.signin_info && params.signin_info->authorization_code.empty() &&
-      !params.signin_info->no_authorization_code) {
-    DLOG(WARNING)
-        << "Missing authorization code  and no authorization code headers"
-        << "in Dice SIGNIN header: " << header_value;
-    return DiceResponseParams();
+  if (params.signin_info) {
+    if (params.signin_info->authorization_code.empty() &&
+        !params.signin_info->no_authorization_code) {
+      DLOG(WARNING)
+          << "Missing authorization code  and no authorization code headers"
+          << "in Dice SIGNIN header: " << header_value;
+      return DiceResponseParams();
+    }
+    // Uma histogram that records whether the authorization code was present or
+    // not.
+    base::UmaHistogramBoolean("Signin.DiceAuthorizationCode",
+                              !params.signin_info->authorization_code.empty());
   }
 
   return params;
