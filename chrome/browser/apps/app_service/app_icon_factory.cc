@@ -953,7 +953,11 @@ void IconLoadingPipeline::OnReadWebAppIcon(
       ++it;
     }
 
-    DCHECK(it != icon_bitmaps.end());
+    if (it == icon_bitmaps.end()) {
+      MaybeApplyEffectsAndComplete(gfx::ImageSkia());
+      return;
+    }
+
     SkBitmap bitmap = it->second;
 
     // Resize |bitmap| to match |icon_scale|.
