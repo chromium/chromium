@@ -112,6 +112,13 @@ TEST_F('AutoclickE2ETest', 'RemovesAndAddsAutoclick', function() {
   this.runWithLoadedTree(
       'data:text/html;charset=utf-8,<p>Cats rock!</p>',
       async function(desktop) {
+        // Turn on screen magnifier so that when we turn off autoclick, the
+        // extension doesn't get unloaded and crash the test.
+        await new Promise(resolve => {
+          chrome.accessibilityFeatures.screenMagnifier.set(
+              {value: true}, resolve);
+        });
+
         // Toggle autoclick off and on, ensure it still works and no crashes.
         await new Promise(resolve => {
           chrome.accessibilityFeatures.autoclick.set({value: false}, resolve);
