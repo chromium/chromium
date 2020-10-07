@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_P(PopupBrowserTest, MoveClampedToCurrentDisplay) {
   const char kOpenPopup[] =
       "open('.', '', 'left=' + (screen.availLeft + 50) + "
       "',top=' + (screen.availTop + 50) + "
-      "',width=300,height=300');";
+      "',width=150,height=100');";
   const char* const kMoveScripts[] = {
       "moveBy(screen.availWidth * 2, 0);",
       "moveBy(screen.availWidth * -2, 0);",
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_P(PopupBrowserTest, ResizeClampedToCurrentDisplay) {
   const char kOpenPopup[] =
       "open('.', '', 'left=' + (screen.availLeft + 50) + "
       "',top=' + (screen.availTop + 50) + "
-      "',width=300,height=300');";
+      "',width=150,height=100');";
   // The popup cannot be resized beyond the current screen by script.
   const char* const kResizeScripts[] = {
       "resizeBy(screen.availWidth * 2, 0);",
