@@ -230,10 +230,12 @@ std::string GetFontFamily() {
 // into Ozone: crbug.com/320050
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
   if (!features::IsUsingOzonePlatform()) {
-    font_family = ui::ResourceBundle::GetSharedInstance()
-                      .GetFont(ui::ResourceBundle::BaseFont)
-                      .GetFontName() +
-                  ", " + font_family;
+    std::string font_name = ui::ResourceBundle::GetSharedInstance()
+                                .GetFont(ui::ResourceBundle::BaseFont)
+                                .GetFontName();
+    // Wrap |font_name| with quotes to ensure it will always be parsed correctly
+    // in CSS.
+    font_family = "\"" + font_name + "\", " + font_family;
   }
 #endif
 
