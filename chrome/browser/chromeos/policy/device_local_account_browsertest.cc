@@ -2811,12 +2811,6 @@ class AmbientAuthenticationManagedGuestSessionTest
     : public policy::DeviceLocalAccountTest,
       public testing::WithParamInterface<net::AmbientAuthAllowedProfileTypes> {
  public:
-  AmbientAuthenticationManagedGuestSessionTest() {
-    // Switching off the feature flags to test policies in isolation.
-    AmbientAuthenticationTestHelper::CookTheFeatureList(
-        scoped_feature_list_,
-        AmbientAuthenticationFeatureState::GUEST_OFF_INCOGNITO_OFF);
-  }
 
   void SetAmbientAuthPolicy(net::AmbientAuthAllowedProfileTypes value) {
     device_local_account_policy_.payload()
@@ -2847,9 +2841,6 @@ class AmbientAuthenticationManagedGuestSessionTest
     DCHECK(browser);
     return browser;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(AmbientAuthenticationManagedGuestSessionTest,

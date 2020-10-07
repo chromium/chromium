@@ -132,9 +132,6 @@ network::mojom::AdditionalCertificatesPtr GetAdditionalCertificates(
 
 // Tests allowing ambient authentication with default credentials based on the
 // profile type.
-// TODO(https://crbug.com/458508): Currently, this is determined by OR of the
-// feature flag and policy. Next steps would be changing the feature value to
-// false after enough heads up and then removing the feature.
 bool IsAmbientAuthAllowedForProfile(Profile* profile) {
   if (profile->IsRegularProfile() && !profile->IsEphemeralGuestProfile())
     return true;
@@ -155,14 +152,10 @@ bool IsAmbientAuthAllowedForProfile(Profile* profile) {
           prefs::kAmbientAuthenticationInPrivateModesEnabled));
 
   if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile()) {
-    return base::FeatureList::IsEnabled(
-               features::kEnableAmbientAuthenticationInGuestSession) ||
-           type == net::AmbientAuthAllowedProfileTypes::GUEST_AND_REGULAR ||
+    return type == net::AmbientAuthAllowedProfileTypes::GUEST_AND_REGULAR ||
            type == net::AmbientAuthAllowedProfileTypes::ALL;
   } else if (profile->IsIncognitoProfile()) {
-    return base::FeatureList::IsEnabled(
-               features::kEnableAmbientAuthenticationInIncognito) ||
-           type == net::AmbientAuthAllowedProfileTypes::INCOGNITO_AND_REGULAR ||
+    return type == net::AmbientAuthAllowedProfileTypes::INCOGNITO_AND_REGULAR ||
            type == net::AmbientAuthAllowedProfileTypes::ALL;
   }
 

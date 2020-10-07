@@ -1065,16 +1065,6 @@
     "expiry_milestone": 83
   },
   {
-    "name": "enable-ambient-authentication-in-guest-session",
-    "owners": [ "rhalavati", "chrome-privacy-core@google.com" ],
-    "expiry_milestone": 87
-  },
-  {
-    "name": "enable-ambient-authentication-in-incognito",
-    "owners": [ "rhalavati", "chrome-privacy-core@google.com" ],
-    "expiry_milestone": 87
-  },
-  {
     "name": "enable-ambient-mode",
     "owners": [ "croissant-eng" ],
     "expiry_milestone": 88

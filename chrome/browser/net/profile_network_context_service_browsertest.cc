@@ -287,14 +287,9 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheChangeBrowsertest,
       "None scoped_feature_list_trial_group None");
 }
 
-class AmbientAuthenticationTestWithPolicy
-    : public policy::PolicyTest,
-      public testing::WithParamInterface<AmbientAuthenticationFeatureState> {
+class AmbientAuthenticationTestWithPolicy : public policy::PolicyTest {
  public:
   AmbientAuthenticationTestWithPolicy() {
-    feature_state_ = GetParam();
-    AmbientAuthenticationTestHelper::CookTheFeatureList(scoped_feature_list_,
-                                                        feature_state_);
     policy::PolicyTest::SetUpInProcessBrowserTestFixture();
   }
 
@@ -314,19 +309,15 @@ class AmbientAuthenticationTestWithPolicy
         non_primary_otr_profile));
     EXPECT_EQ(AmbientAuthenticationTestHelper::IsAmbientAuthAllowedForProfile(
                   incognito_profile),
-              AmbientAuthenticationTestHelper::IsIncognitoAllowedInFeature(
-                  feature_state_) ||
-                  AmbientAuthenticationTestHelper::IsIncognitoAllowedInPolicy(
-                      policy_value));
+              AmbientAuthenticationTestHelper::IsIncognitoAllowedInPolicy(
+                  policy_value));
 // ChromeOS guest sessions don't have the capability to
 // do ambient authentications.
 #if !defined(OS_CHROMEOS)
-    EXPECT_EQ(AmbientAuthenticationTestHelper::IsAmbientAuthAllowedForProfile(
-                  AmbientAuthenticationTestHelper::GetGuestProfile()),
-              AmbientAuthenticationTestHelper::IsGuestAllowedInFeature(
-                  feature_state_) ||
-                  AmbientAuthenticationTestHelper::IsGuestAllowedInPolicy(
-                      policy_value));
+    EXPECT_EQ(
+        AmbientAuthenticationTestHelper::IsAmbientAuthAllowedForProfile(
+            AmbientAuthenticationTestHelper::GetGuestProfile()),
+        AmbientAuthenticationTestHelper::IsGuestAllowedInPolicy(policy_value));
 #endif
   }
 
@@ -338,37 +329,27 @@ class AmbientAuthenticationTestWithPolicy
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  AmbientAuthenticationFeatureState feature_state_;
   policy::PolicyMap policies_;
 };
 
-INSTANTIATE_TEST_CASE_P(
-    AmbientAuthAllFeatureValuesTest,
-    AmbientAuthenticationTestWithPolicy,
-    testing::Values(AmbientAuthenticationFeatureState::GUEST_OFF_INCOGNITO_OFF,
-                    AmbientAuthenticationFeatureState::GUEST_OFF_INCOGNITO_ON,
-                    AmbientAuthenticationFeatureState::GUEST_ON_INCOGNITO_OFF,
-                    AmbientAuthenticationFeatureState::GUEST_ON_INCOGNITO_ON));
-
-IN_PROC_BROWSER_TEST_P(AmbientAuthenticationTestWithPolicy, RegularOnly) {
+IN_PROC_BROWSER_TEST_F(AmbientAuthenticationTestWithPolicy, RegularOnly) {
   EnablePolicyWithValue(net::AmbientAuthAllowedProfileTypes::REGULAR_ONLY);
   IsAmbientAuthAllowedForProfilesTest();
 }
 
-IN_PROC_BROWSER_TEST_P(AmbientAuthenticationTestWithPolicy,
+IN_PROC_BROWSER_TEST_F(AmbientAuthenticationTestWithPolicy,
                        IncognitoAndRegular) {
   EnablePolicyWithValue(
       net::AmbientAuthAllowedProfileTypes::INCOGNITO_AND_REGULAR);
   IsAmbientAuthAllowedForProfilesTest();
 }
 
-IN_PROC_BROWSER_TEST_P(AmbientAuthenticationTestWithPolicy, GuestAndRegular) {
+IN_PROC_BROWSER_TEST_F(AmbientAuthenticationTestWithPolicy, GuestAndRegular) {
   EnablePolicyWithValue(net::AmbientAuthAllowedProfileTypes::GUEST_AND_REGULAR);
   IsAmbientAuthAllowedForProfilesTest();
 }
 
-IN_PROC_BROWSER_TEST_P(AmbientAuthenticationTestWithPolicy, All) {
+IN_PROC_BROWSER_TEST_F(AmbientAuthenticationTestWithPolicy, All) {
   EnablePolicyWithValue(net::AmbientAuthAllowedProfileTypes::ALL);
   IsAmbientAuthAllowedForProfilesTest();
 }

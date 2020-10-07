@@ -25,18 +25,6 @@ enum class AmbientAuthProfileBit {
   GUEST = 1 << 1,
 };
 
-bool AmbientAuthenticationTestHelper::IsIncognitoAllowedInFeature(
-    const AmbientAuthenticationFeatureState& feature_state) {
-  return static_cast<int>(feature_state) &
-         static_cast<int>(AmbientAuthProfileBit::INCOGNITO);
-}
-
-bool AmbientAuthenticationTestHelper::IsGuestAllowedInFeature(
-    const AmbientAuthenticationFeatureState& feature_state) {
-  return static_cast<int>(feature_state) &
-         static_cast<int>(AmbientAuthProfileBit::GUEST);
-}
-
 bool AmbientAuthenticationTestHelper::IsIncognitoAllowedInPolicy(
     int policy_value) {
   return policy_value & static_cast<int>(AmbientAuthProfileBit::INCOGNITO);
@@ -44,31 +32,6 @@ bool AmbientAuthenticationTestHelper::IsIncognitoAllowedInPolicy(
 
 bool AmbientAuthenticationTestHelper::IsGuestAllowedInPolicy(int policy_value) {
   return policy_value & static_cast<int>(AmbientAuthProfileBit::GUEST);
-}
-
-void AmbientAuthenticationTestHelper::CookTheFeatureList(
-    base::test::ScopedFeatureList& scoped_feature_list,
-    const AmbientAuthenticationFeatureState& feature_state) {
-  std::vector<base::Feature> enabled_feature_list;
-  std::vector<base::Feature> disabled_feature_list;
-
-  if (IsIncognitoAllowedInFeature(feature_state)) {
-    enabled_feature_list.push_back(
-        features::kEnableAmbientAuthenticationInIncognito);
-  } else {
-    disabled_feature_list.push_back(
-        features::kEnableAmbientAuthenticationInIncognito);
-  }
-
-  if (IsGuestAllowedInFeature(feature_state)) {
-    enabled_feature_list.push_back(
-        features::kEnableAmbientAuthenticationInGuestSession);
-  } else {
-    disabled_feature_list.push_back(
-        features::kEnableAmbientAuthenticationInGuestSession);
-  }
-  scoped_feature_list.InitWithFeatures(enabled_feature_list,
-                                       disabled_feature_list);
 }
 
 Profile* AmbientAuthenticationTestHelper::GetGuestProfile() {

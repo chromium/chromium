@@ -4995,18 +4995,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSharedClipboardUIDescription, kOsAll,
      FEATURE_VALUE_TYPE(kSharedClipboardUI)},
 
-    {"enable-ambient-authentication-in-incognito",
-     flag_descriptions::kEnableAmbientAuthenticationInIncognitoName,
-     flag_descriptions::kEnableAmbientAuthenticationInIncognitoDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(features::kEnableAmbientAuthenticationInIncognito)},
-
-    {"enable-ambient-authentication-in-guest-session",
-     flag_descriptions::kEnableAmbientAuthenticationInGuestSessionName,
-     flag_descriptions::kEnableAmbientAuthenticationInGuestSessionDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(features::kEnableAmbientAuthenticationInGuestSession)},
-
     {"enable-send-tab-to-self-omnibox-sending-animation",
      flag_descriptions::kSendTabToSelfOmniboxSendingAnimationName,
      flag_descriptions::kSendTabToSelfOmniboxSendingAnimationDescription,

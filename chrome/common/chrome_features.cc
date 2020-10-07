@@ -327,16 +327,6 @@ const base::Feature kDownloadsLocationChange{"DownloadsLocationChange",
 const base::Feature kEnableAllSystemWebApps{"EnableAllSystemWebApps",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Disables ambient authentication in guest sessions.
-const base::Feature kEnableAmbientAuthenticationInGuestSession{
-    "EnableAmbientAuthenticationInGuestSession",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Disables ambient authentication in incognito mode.
-const base::Feature kEnableAmbientAuthenticationInIncognito{
-    "EnableAmbientAuthenticationInIncognito",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 #if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_MAC)
 COMPONENT_EXPORT(CHROME_FEATURES)
 // Enables ephemeral Guest profiles on desktop.
