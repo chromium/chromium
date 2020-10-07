@@ -138,11 +138,14 @@ class OsIntegrationManager {
   }
 
  private:
+  // Callback made all of OsHookType are finished.
+  using OsHooksBarrierCallback =
+      base::RepeatingCallback<void(OsHookType::Type os_hook, bool created)>;
+
   void OnShortcutsCreated(const AppId& app_id,
                           std::unique_ptr<WebApplicationInfo> web_app_info,
                           InstallOsHooksOptions options,
-                          base::RepeatingCallback<void(OsHookType::Type os_hook,
-                                                       bool created)> callback,
+                          OsHooksBarrierCallback callback,
                           bool shortcuts_created);
 
   void RegisterRunOnOsLogin(const AppId& app_id,

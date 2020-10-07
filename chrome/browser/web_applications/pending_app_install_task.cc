@@ -276,6 +276,7 @@ void PendingAppInstallTask::OnWebAppInstalled(bool is_placeholder,
   // configured from somewhere else rather than always true.
   options.os_hooks[OsHookType::kFileHandlers] = true;
   options.os_hooks[OsHookType::kShortcutsMenu] = true;
+  options.os_hooks[OsHookType::kUninstallationViaOsSettings] = true;
 
   os_integration_manager_->InstallOsHooks(
       app_id,

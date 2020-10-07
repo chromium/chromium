@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/components/web_app_uninstallation_via_os_settings_registration.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -111,10 +112,9 @@ void OsIntegrationManager::InstallOsHooks(
   // callback for every type. Developers should double check that Run is
   // called for every OsHookType::Type. If there is any missing type, the
   // InstallOsHooksCallback will not get run.
-  base::RepeatingCallback<void(OsHookType::Type os_hook, bool completed)>
-      barrier = base::BindRepeating(
-          &OsHooksBarrierInfo::Run,
-          base::Owned(new OsHooksBarrierInfo(std::move(callback))));
+  OsHooksBarrierCallback barrier = base::BindRepeating(
+      &OsHooksBarrierInfo::Run,
+      base::Owned(new OsHooksBarrierInfo(std::move(callback))));
 
   // TODO(ortuno): Make adding a shortcut to the applications menu independent
   // from adding a shortcut to desktop.
@@ -149,13 +149,15 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
                                             UninstallOsHooksCallback callback) {
   DCHECK(shortcut_manager_);
 
-  if (suppress_os_hooks_for_testing_)
+  if (suppress_os_hooks_for_testing_) {
+    OsHooksResults os_hooks_results{true};
+    std::move(callback).Run(os_hooks_results);
     return;
+  }
 
-  base::RepeatingCallback<void(OsHookType::Type os_hook, bool completed)>
-      barrier = base::BindRepeating(
-          &OsHooksBarrierInfo::Run,
-          base::Owned(new OsHooksBarrierInfo(std::move(callback))));
+  OsHooksBarrierCallback barrier = base::BindRepeating(
+      &OsHooksBarrierInfo::Run,
+      base::Owned(new OsHooksBarrierInfo(std::move(callback))));
 
   if (os_hooks[OsHookType::kShortcutsMenu] &&
       ShouldRegisterShortcutsMenuWithOs()) {
@@ -188,7 +190,6 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
       barrier.Run(OsHookType::kShortcuts, /*completed=*/true);
     }
   }
-
   // TODO(https://crbug.com/1108109) we should return the result of file handler
   // unregistration and record errors during unregistration.
   if (os_hooks[OsHookType::kFileHandlers])
@@ -196,6 +197,15 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
   barrier.Run(OsHookType::kFileHandlers, /*completed=*/true);
 
   DeleteSharedAppShims(app_id);
+
+  // There is a chance uninstallation point was created with feature flag
+  // enabled so we need to clean it up regardless of feature flag state.
+  if (os_hooks[OsHookType::kUninstallationViaOsSettings] &&
+      ShouldRegisterUninstallationViaOsSettingsWithOs()) {
+    UnegisterUninstallationViaOsSettingsWithOs(app_id, profile_);
+  }
+  barrier.Run(OsHookType::kUninstallationViaOsSettings,
+              /*completed=*/true);
 }
 
 void OsIntegrationManager::UpdateOsHooks(
@@ -286,8 +296,7 @@ void OsIntegrationManager::OnShortcutsCreated(
     const AppId& app_id,
     std::unique_ptr<WebApplicationInfo> web_app_info,
     InstallOsHooksOptions options,
-    base::RepeatingCallback<void(OsHookType::Type os_hook, bool created)>
-        barrier_callback,
+    OsHooksBarrierCallback barrier_callback,
     bool shortcuts_created) {
   DCHECK(file_handler_manager_);
   DCHECK(ui_manager_);
@@ -337,6 +346,19 @@ void OsIntegrationManager::OnShortcutsCreated(
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(barrier_callback, OsHookType::kRunOnOsLogin,
                                   /*completed=*/false));
+  }
+
+  if (options.os_hooks[OsHookType::kUninstallationViaOsSettings] &&
+      base::FeatureList::IsEnabled(
+          features::kEnableWebAppUninstallFromOsSettings) &&
+      ShouldRegisterUninstallationViaOsSettingsWithOs()) {
+    RegisterUninstallationViaOsSettingsWithOs(
+        app_id, registrar_->GetAppShortName(app_id), profile_);
+    barrier_callback.Run(OsHookType::kUninstallationViaOsSettings,
+                         /*completed=*/true);
+  } else {
+    barrier_callback.Run(OsHookType::kUninstallationViaOsSettings,
+                         /*completed=*/false);
   }
 }
 

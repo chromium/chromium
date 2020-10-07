@@ -798,6 +798,7 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
   // configured from somewhere else rather than always true.
   options.os_hooks[OsHookType::kFileHandlers] = true;
   options.os_hooks[OsHookType::kShortcutsMenu] = true;
+  options.os_hooks[OsHookType::kUninstallationViaOsSettings] = true;
 
   auto hooks_created_callback = base::BindOnce(
       &WebAppInstallTask::OnOsHooksCreated, weak_ptr_factory_.GetWeakPtr(),

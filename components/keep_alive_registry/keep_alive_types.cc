@@ -42,6 +42,8 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "APP_LIST_SERVICE_VIEWS";
     case KeepAliveOrigin::APP_LIST_SHOWER:
       return out << "APP_LIST_SHOWER";
+    case KeepAliveOrigin::APP_UNINSTALLATION_FROM_OS_SETTINGS:
+      return out << "APP_UNINSTALLATION_FROM_OS_SETTINGS";
     case KeepAliveOrigin::CHROME_APP_DELEGATE:
       return out << "CHROME_APP_DELEGATE";
     case KeepAliveOrigin::CHROME_VIEWS_DELEGATE:
