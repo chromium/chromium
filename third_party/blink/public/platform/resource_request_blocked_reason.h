@@ -22,6 +22,16 @@ enum class ResourceRequestBlockedReason {
   kCorpNotSameOrigin,
   kCorpNotSameOriginAfterDefaultedToSameOriginByCoep,
   kCorpNotSameSite,
+  // The request was blocked by the WebRequest extensions API's
+  // onBeforeSendHeaders, onBeforeRequest, and onHeadersReceived stages. (This
+  // doesn't cover some other cases, like onAuthRequired and WebSocket
+  // requests.)
+  //
+  // This is a short-term addition to help investigate some Trust Tokens
+  // issuance request failures: see https://crbug.com/1128174.
+  //
+  // TODO(crbug.com/1133944): Remove this once the investigation finishes.
+  kBlockedByExtensionCrbug1128174Investigation,
 };
 }  // namespace blink
 

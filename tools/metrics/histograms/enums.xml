@@ -30223,6 +30223,8 @@ Called by update_feature_policy_enum.py.-->
   <int value="21"
       label="kBlockedBecauseCorpNotSameOriginAfterDefaultedToSameOriginByCoep"/>
   <int value="22" label="kBlockedBecauseCorpNotSameSite"/>
+  <int value="23"
+      label="kBlockedBecauseBlockedByExtensionCrbug1128174Investigation"/>
 </enum>
 
 <enum name="FetchFontName">
