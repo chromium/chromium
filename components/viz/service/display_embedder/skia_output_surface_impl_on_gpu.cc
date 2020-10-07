@@ -988,6 +988,22 @@ void SkiaOutputSurfaceImplOnGpu::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays,
     std::vector<ImageContextImpl*> image_contexts) {
 #if defined(OS_APPLE)
+  DCHECK(context_state_->GrContextIsGL());
+
+  // If |image_contexts| is not empty, it means there is at least one render
+  // pass overlays
+  bool has_render_pass_overlays =
+      !image_contexts.empty() ||
+      std::find_if(overlays.begin(), overlays.end(),
+                   [](const CALayerOverlay& overlay) {
+                     return !!overlay.ddl;
+                   }) != overlays.end();
+
+  // If there are render pass overlays, then a gl context is needed for drawing
+  // the overlay render passes to a backing for being scanned out.
+  if (has_render_pass_overlays && !MakeCurrent(false /* need_fbo0 */))
+    return;
+
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
   promise_image_access_helper_.BeginAccess(std::move(image_contexts),
@@ -1007,6 +1023,8 @@ void SkiaOutputSurfaceImplOnGpu::ScheduleOverlays(
 
     const auto& characterization = overlay.ddl->characterization();
     auto backing = GetOrCreateRenderPassOverlayBacking(characterization);
+    if (!backing)
+      break;
     DCHECK(overlay.mailbox.IsZero());
     overlay.mailbox = backing->mailbox();
     auto scoped_access = backing->BeginScopedWriteAccess(
@@ -1558,6 +1576,7 @@ SkiaOutputSurfaceImplOnGpu::GetOrCreateRenderPassOverlayBacking(
       kOverlayUsage);
   if (!result) {
     LOG(ERROR) << "CreateSharedImage() failed.";
+    MarkContextLost(CONTEXT_LOST_OUT_OF_MEMORY);
     return nullptr;
   }
 
