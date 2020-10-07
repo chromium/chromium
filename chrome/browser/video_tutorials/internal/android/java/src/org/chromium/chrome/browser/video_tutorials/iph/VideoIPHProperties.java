@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.video_tutorials.iph;
 
-import android.graphics.Bitmap;
-
+import org.chromium.components.browser_ui.widget.async_image.AsyncImageView;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -23,8 +22,8 @@ class VideoIPHProperties {
     public static final WritableObjectPropertyKey<String> VIDEO_LENGTH =
             new WritableObjectPropertyKey<>();
 
-    /** The thumbnail associated with the tutorial. */
-    public static final WritableObjectPropertyKey<Bitmap> THUMBNAIL =
+    /** The thumbnail provider to supply thumbnail images. */
+    public static final WritableObjectPropertyKey<AsyncImageView.Factory> THUMBNAIL_PROVIDER =
             new WritableObjectPropertyKey<>();
 
     /** The listener to be invoked when the IPH is clicked. */
@@ -36,6 +35,6 @@ class VideoIPHProperties {
             new WritableObjectPropertyKey<>();
 
     /** All keys associated with the model. */
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
-            VISIBILITY, DISPLAY_TITLE, VIDEO_LENGTH, THUMBNAIL, CLICK_LISTENER, DISMISS_LISTENER};
+    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {VISIBILITY, DISPLAY_TITLE,
+            VIDEO_LENGTH, THUMBNAIL_PROVIDER, CLICK_LISTENER, DISMISS_LISTENER};
 }

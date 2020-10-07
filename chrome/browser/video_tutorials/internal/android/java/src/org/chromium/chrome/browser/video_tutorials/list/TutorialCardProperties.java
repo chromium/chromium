@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.video_tutorials.list;
 
-import android.graphics.drawable.Drawable;
-
-import org.chromium.base.Callback;
+import org.chromium.components.browser_ui.widget.async_image.AsyncImageView;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -16,12 +14,6 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 class TutorialCardProperties {
     /** The view type used by the recycler view to show the tutorial cards. */
     public static final int VIDEO_TUTORIAL_CARD_VIEW_TYPE = 3;
-
-    /** An interface to provide thumbnails for the videos. */
-    interface VisualsProvider {
-        /** Method to get visuals to display the thumbnail image. */
-        void getVisuals(Callback<Drawable> callback);
-    }
 
     /** The title to be shown.*/
     static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
@@ -33,8 +25,8 @@ class TutorialCardProperties {
     static final WritableObjectPropertyKey<Runnable> CLICK_CALLBACK =
             new WritableObjectPropertyKey<>();
 
-    /** The provider to retrieve the visuals for the video thumbnail.*/
-    static final WritableObjectPropertyKey<VisualsProvider> VISUALS_PROVIDER =
+    /** The thumbnail provider to supply thumbnail images. */
+    public static final WritableObjectPropertyKey<AsyncImageView.Factory> VISUALS_PROVIDER =
             new WritableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS =

@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.video_tutorials.iph;
 
+import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.ViewStub;
 
 import org.chromium.base.Callback;
@@ -17,6 +20,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * inflate when the IPH is shown.
  */
 public class VideoIPHCoordinatorImpl implements VideoIPHCoordinator {
+    private final Context mContext;
     private final PropertyModel mModel;
     private final VideoIPHView mView;
     private final ImageFetcher mImageFetcher;
@@ -32,6 +36,7 @@ public class VideoIPHCoordinatorImpl implements VideoIPHCoordinator {
      */
     public VideoIPHCoordinatorImpl(ViewStub viewStub, ImageFetcher imageFetcher,
             Callback<Tutorial> onClickListener, Callback<Tutorial> onDismissListener) {
+        mContext = viewStub.getContext();
         mImageFetcher = imageFetcher;
         mOnClickListener = onClickListener;
         mOnDismissListener = onDismissListener;
@@ -51,10 +56,17 @@ public class VideoIPHCoordinatorImpl implements VideoIPHCoordinator {
         mModel.set(
                 VideoIPHProperties.DISMISS_LISTENER, () -> mOnDismissListener.onResult(tutorial));
 
-        mModel.set(VideoIPHProperties.THUMBNAIL, null);
-        ImageFetcher.Params params = ImageFetcher.Params.create(
-                tutorial.posterUrl, ImageFetcher.VIDEO_TUTORIALS_IPH_UMA_CLIENT_NAME);
-        mImageFetcher.fetchImage(
-                params, bitmap -> mModel.set(VideoIPHProperties.THUMBNAIL, bitmap));
+        mModel.set(VideoIPHProperties.THUMBNAIL_PROVIDER, (consumer, widthPx, heightPx) -> {
+            return () -> {
+                ImageFetcher.Params params = ImageFetcher.Params.create(tutorial.posterUrl,
+                        ImageFetcher.VIDEO_TUTORIALS_IPH_UMA_CLIENT_NAME, widthPx, heightPx);
+                mImageFetcher.fetchImage(params, bitmap -> {
+                    Drawable drawable = bitmap == null
+                            ? null
+                            : new BitmapDrawable(mContext.getResources(), bitmap);
+                    consumer.onResult(drawable);
+                });
+            };
+        });
     }
 }

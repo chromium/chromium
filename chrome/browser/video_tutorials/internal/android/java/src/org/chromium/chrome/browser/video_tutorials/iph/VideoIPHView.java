@@ -4,16 +4,12 @@
 
 package org.chromium.chrome.browser.video_tutorials.iph;
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.ViewStub;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.chrome.browser.video_tutorials.R;
+import org.chromium.components.browser_ui.widget.async_image.AsyncImageView;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -46,14 +42,8 @@ class VideoIPHView {
         view.setText(videoLength);
     }
 
-    private void setThumbnail(@Nullable Bitmap bitmap) {
-        ImageView view = mCardView.findViewById(R.id.thumbnail);
-        if (bitmap == null) {
-            view.setImageDrawable(
-                    new ColorDrawable(view.getResources().getColor(R.color.image_loading_color)));
-        } else {
-            view.setImageBitmap(bitmap);
-        }
+    private View getThumbnailView() {
+        return mCardView.findViewById(R.id.thumbnail);
     }
 
     private void setClickListener(Runnable clickListener) {
@@ -76,12 +66,14 @@ class VideoIPHView {
             view.setTitle(model.get(VideoIPHProperties.DISPLAY_TITLE));
         } else if (propertyKey == VideoIPHProperties.VIDEO_LENGTH) {
             view.setVideoLength(model.get(VideoIPHProperties.VIDEO_LENGTH));
-        } else if (propertyKey == VideoIPHProperties.THUMBNAIL) {
-            view.setThumbnail(model.get(VideoIPHProperties.THUMBNAIL));
         } else if (propertyKey == VideoIPHProperties.CLICK_LISTENER) {
             view.setClickListener(model.get(VideoIPHProperties.CLICK_LISTENER));
         } else if (propertyKey == VideoIPHProperties.DISMISS_LISTENER) {
             view.setDismissListener(model.get(VideoIPHProperties.DISMISS_LISTENER));
+        } else if (propertyKey == VideoIPHProperties.THUMBNAIL_PROVIDER) {
+            AsyncImageView thumbnailView = (AsyncImageView) view.getThumbnailView();
+            thumbnailView.setAsyncImageDrawable(
+                    model.get(VideoIPHProperties.THUMBNAIL_PROVIDER), null);
         }
     }
 }

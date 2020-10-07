@@ -15,7 +15,7 @@
     app:columnCount="1"
     app:rowCount="2">
 
-    <org.chromium.ui.widget.ChromeImageView
+    <org.chromium.components.browser_ui.widget.async_image.AsyncImageView
         android:id="@+id/thumbnail"
         android:layout_width="match_parent"
         android:layout_height="200dp"
@@ -24,6 +24,9 @@
         android:layout_marginEnd="1dp"
         android:scaleType="centerCrop"
         android:adjustViewBounds="true"
+        android:importantForAccessibility="no"
+        app:unavailableSrc="@color/image_loading_color"
+        app:waitingSrc="@color/image_loading_color"
         app:layout_column="0"
         app:layout_row="0"
         app:layout_gravity="center"
@@ -33,12 +36,16 @@
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/action_button"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/ic_play_arrow_white_36dp"
+        android:tint="@color/modern_grey_800"
         app:layout_column="0"
         app:layout_row="0"
         app:layout_gravity="center"
         android:elevation="2dp"
         android:clickable="false"
-        style="@style/LargeMediaPlayButton"/>
+        android:background="@drawable/circular_media_button_background" />
 
     <TextView
         android:id="@+id/video_length"

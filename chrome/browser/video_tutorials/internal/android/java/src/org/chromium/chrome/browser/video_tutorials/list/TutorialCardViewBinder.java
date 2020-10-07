@@ -4,14 +4,13 @@
 
 package org.chromium.chrome.browser.video_tutorials.list;
 
-import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.chrome.browser.video_tutorials.R;
+import org.chromium.components.browser_ui.widget.async_image.AsyncImageView;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -37,11 +36,9 @@ class TutorialCardViewBinder {
             view.setOnClickListener(
                     v -> { model.get(TutorialCardProperties.CLICK_CALLBACK).run(); });
         } else if (propertyKey == TutorialCardProperties.VISUALS_PROVIDER) {
-            final ImageView thumbnail = view.findViewById(R.id.thumbnail);
-            thumbnail.setImageDrawable(new ColorDrawable(thumbnail.getResources().getColor(
-                    org.chromium.components.browser_ui.widget.R.color.image_loading_color)));
-            model.get(TutorialCardProperties.VISUALS_PROVIDER)
-                    .getVisuals(thumbnail::setImageDrawable);
+            AsyncImageView thumbnailView = (AsyncImageView) view.findViewById(R.id.thumbnail);
+            thumbnailView.setAsyncImageDrawable(
+                    model.get(TutorialCardProperties.VISUALS_PROVIDER), null);
         } else {
             throw new IllegalArgumentException(
                     "Cannot update the view for propertyKey: " + propertyKey);
