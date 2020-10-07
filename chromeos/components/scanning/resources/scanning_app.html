@@ -1,9 +1,17 @@
 <div id="header"></div>
 <div>
-  <scanner-select scanners="[[scanners_]]" loaded="[[loaded_]]"
+  <scanner-select id="scannerSelect" scanners="[[scanners_]]"
+      loaded="[[loaded_]]" settings-disabled="[[settingsDisabled_]]"
       selected-scanner-id="{{selectedScannerId}}"></scanner-select>
 </div>
 <div>
-  <source-select sources="[[capabilities_.sources]]"
+  <source-select id="sourceSelect" sources="[[capabilities_.sources]]"
+      settings-disabled="[[settingsDisabled_]]"
       selected-source="{{selectedSource}}"></source-select>
 </div>
+<!-- TODO(jschettler): Replace button label with finalized i18n string. -->
+<cr-button id="scanButton" on-click="onScanClick_"
+    disabled$="[[scanButtonDisabled_]]">
+  Scan
+</cr-button>
+<p id="statusText">[[statusText_]]</p>

@@ -43,12 +43,14 @@ Polymer({
 
     loaded: Boolean,
 
+    settingsDisabled: Boolean,
+
     /** @private */
     disabled_: Boolean,
   },
 
   observers: [
-    'updateDisabled_(scanners.length)',
+    'updateDisabled_(scanners.length, settingsDisabled)',
   ],
 
   /**
@@ -73,11 +75,12 @@ Polymer({
   },
 
   /**
-   * Disables the dropdown based on the number of available scanners.
-   * @param {number} numScanners
+   * Disables the dropdown if settings are disabled or the number of available
+   * scanners is less than the number of required scanners.
    * @private
    */
-  updateDisabled_(numScanners) {
-    this.disabled_ = numScanners < NUM_REQUIRED_SCANNERS;
+  updateDisabled_() {
+    this.disabled_ =
+        this.settingsDisabled || this.scanners.length < NUM_REQUIRED_SCANNERS;
   },
 });

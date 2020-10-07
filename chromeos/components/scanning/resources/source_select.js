@@ -39,12 +39,14 @@ Polymer({
       notify: true,
     },
 
+    settingsDisabled: Boolean,
+
     /** @private */
     disabled_: Boolean,
   },
 
   observers: [
-    'updateDisabled_(sources.length)',
+    'updateDisabled_(sources.length, settingsDisabled)',
   ],
 
   /**
@@ -57,11 +59,12 @@ Polymer({
   },
 
   /**
-   * Disables the dropdown based on the number of available sources.
-   * @param {number} numSources
+   * Disables the dropdown if settings are disabled or the number of available
+   * sources is less than the number of required sources.
    * @private
    */
-  updateDisabled_(numSources) {
-    this.disabled_ = numSources < NUM_REQUIRED_SOURCES;
+  updateDisabled_() {
+    this.disabled_ =
+        this.settingsDisabled || this.sources.length < NUM_REQUIRED_SOURCES;
   },
 });
