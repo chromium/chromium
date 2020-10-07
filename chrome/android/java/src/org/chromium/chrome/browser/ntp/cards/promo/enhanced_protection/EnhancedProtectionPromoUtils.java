@@ -95,8 +95,9 @@ final class EnhancedProtectionPromoUtils {
             SharedPreferencesManager.getInstance().writeInt(timesSeenKey, timesSeen + 1);
         } else if (action == EnhancedProtectionPromoAction.ACCEPTED) {
             RecordUserAction.record("NewTabPage.Promo.EnhancedProtectionPromo.Accepted");
-            RecordHistogram.recordCountHistogram(
-                    "NewTabPage.Promo.EnhancedProtectionPromo.ImpressionUntilAction", timesSeen);
+            RecordHistogram.recordLinearCountHistogram(
+                    "NewTabPage.Promo.EnhancedProtectionPromo.ImpressionUntilAction", timesSeen, 1,
+                    MAX_IMPRESSION_SEEN, MAX_IMPRESSION_SEEN + 1);
         } else if (action == EnhancedProtectionPromoAction.DISMISSED) {
             RecordUserAction.record("NewTabPage.Promo.EnhancedProtectionPromo.Dismissed");
             RecordHistogram.recordLinearCountHistogram(
