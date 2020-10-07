@@ -130,6 +130,8 @@ void RecyclableCompositorMacFactory::RecycleCompositor(
   if (recycling_disabled_)
     return;
 
+  // Invalidate the surface before suspending it.
+  compositor->InvalidateSurface();
   compositor->accelerated_widget_mac_->SetSuspended(true);
 
   // Make this RecyclableCompositorMac recyclable for future instances.
@@ -154,7 +156,10 @@ void RecyclableCompositorMacFactory::RecycleCompositor(
 }
 
 RecyclableCompositorMacFactory::RecyclableCompositorMacFactory()
-    : weak_factory_(this) {}
+    : weak_factory_(this) {
+  if (features::IsUsingSkiaRenderer())
+    recycling_disabled_ = true;
+}
 
 RecyclableCompositorMacFactory::~RecyclableCompositorMacFactory() = default;
 

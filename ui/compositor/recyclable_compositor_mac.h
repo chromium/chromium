@@ -43,11 +43,12 @@ class COMPOSITOR_EXPORT RecyclableCompositorMac
   void UpdateSurface(const gfx::Size& size_pixels,
                      float scale_factor,
                      const gfx::DisplayColorSpaces& display_color_spaces);
-  // Invalidate the compositor's surface information.
-  void InvalidateSurface();
 
  private:
   friend class RecyclableCompositorMacFactory;
+
+  // Invalidate the compositor's surface information.
+  void InvalidateSurface();
 
   // ui::CompositorObserver implementation:
   void OnCompositingDidCommit(ui::Compositor* compositor) override;

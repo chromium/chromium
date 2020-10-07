@@ -243,7 +243,6 @@ void BrowserCompositorMac::TransitionToState(State new_state) {
   if (state_ == HasOwnCompositor) {
     recyclable_compositor_->widget()->ResetNSView();
     recyclable_compositor_->compositor()->SetRootLayer(nullptr);
-    recyclable_compositor_->InvalidateSurface();
     ui::RecyclableCompositorMacFactory::Get()->RecycleCompositor(
         std::move(recyclable_compositor_));
   }
