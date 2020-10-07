@@ -61,18 +61,18 @@ class ExtensionApiTest : public ExtensionBrowserTest {
 
   // Loads |extension_name| and waits for pass / fail notification.
   // |extension_name| is a directory in "chrome/test/data/extensions/api_test".
-  bool RunExtensionTest(const std::string& extension_name);
+  bool RunExtensionTest(const std::string& extension_name) WARN_UNUSED_RESULT;
 
   // Same as RunExtensionTest, except run with the specific |flags| (as defined
   // in the Flags enum).
   bool RunExtensionTestWithFlags(const std::string& extension_name,
                                  int browser_test_flags,
-                                 int api_test_flags);
+                                 int api_test_flags) WARN_UNUSED_RESULT;
 
   // Similar to RunExtensionTest, except sets an additional string argument
   // |customArg| to the test config object.
   bool RunExtensionTestWithArg(const std::string& extension_name,
-                               const char* custom_arg);
+                               const char* custom_arg) WARN_UNUSED_RESULT;
 
   // Similar to RunExtensionTest, except sets an additional string arguments
   // |customArg| to the test config object and |flags| (as defined in the Flags
@@ -80,31 +80,36 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   bool RunExtensionTestWithFlagsAndArg(const std::string& extension_name,
                                        const char* custom_arg,
                                        int browser_test_flags,
-                                       int api_test_flags);
+                                       int api_test_flags) WARN_UNUSED_RESULT;
 
   // Same as RunExtensionTest, but enables the extension for incognito mode.
-  bool RunExtensionTestIncognito(const std::string& extension_name);
+  bool RunExtensionTestIncognito(const std::string& extension_name)
+      WARN_UNUSED_RESULT;
 
   // Same as RunExtensionTest, but ignores any warnings in the manifest.
-  bool RunExtensionTestIgnoreManifestWarnings(
-      const std::string& extension_name);
+  bool RunExtensionTestIgnoreManifestWarnings(const std::string& extension_name)
+      WARN_UNUSED_RESULT;
 
   // Same as RunExtensionTest, allow old manifest ersions.
   bool RunExtensionTestAllowOldManifestVersion(
-      const std::string& extension_name);
+      const std::string& extension_name) WARN_UNUSED_RESULT;
 
   // Same as RunExtensionTest, but loads extension as component.
-  bool RunComponentExtensionTest(const std::string& extension_name);
+  bool RunComponentExtensionTest(const std::string& extension_name)
+      WARN_UNUSED_RESULT;
 
   // Same as RunComponentExtensionTest, but provides extra arg.
   bool RunComponentExtensionTestWithArg(const std::string& extension_name,
-                                        const char* custom_arg);
+                                        const char* custom_arg)
+      WARN_UNUSED_RESULT;
 
   // Same as RunExtensionTest, but disables file access.
-  bool RunExtensionTestNoFileAccess(const std::string& extension_name);
+  bool RunExtensionTestNoFileAccess(const std::string& extension_name)
+      WARN_UNUSED_RESULT;
 
   // Same as RunExtensionTestIncognito, but disables file access.
-  bool RunExtensionTestIncognitoNoFileAccess(const std::string& extension_name);
+  bool RunExtensionTestIncognitoNoFileAccess(const std::string& extension_name)
+      WARN_UNUSED_RESULT;
 
   // If not empty, Load |extension_name|, load |page_url| and wait for pass /
   // fail notification from the extension API on the page. Note that if
@@ -112,56 +117,57 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   // the extension. |extension_name| is a directory in
   // "test/data/extensions/api_test".
   bool RunExtensionSubtest(const std::string& extension_name,
-                           const std::string& page_url);
+                           const std::string& page_url) WARN_UNUSED_RESULT;
 
   // Same as RunExtensionSubtest, except run with the specific |flags|
   // (as defined in the Flags enum).
   bool RunExtensionSubtest(const std::string& extension_name,
                            const std::string& page_url,
                            int browser_test_flags,
-                           int api_test_flags);
+                           int api_test_flags) WARN_UNUSED_RESULT;
 
   // As above but with support for injecting a custom argument into the test
   // config.
   bool RunExtensionSubtestWithArg(const std::string& extension_name,
                                   const std::string& page_url,
-                                  const char* custom_arg);
+                                  const char* custom_arg) WARN_UNUSED_RESULT;
 
   // As above but with support for custom flags defined in Flags above.
   bool RunExtensionSubtestWithArgAndFlags(const std::string& extension_name,
                                           const std::string& page_url,
                                           const char* custom_arg,
                                           int browser_test_flags,
-                                          int api_test_flags);
+                                          int api_test_flags)
+      WARN_UNUSED_RESULT;
 
   // Load |page_url| and wait for pass / fail notification from the extension
   // API on the page.
-  bool RunPageTest(const std::string& page_url);
+  bool RunPageTest(const std::string& page_url) WARN_UNUSED_RESULT;
   bool RunPageTest(const std::string& page_url,
                    int browser_test_flags,
-                   int api_test_flags);
+                   int api_test_flags) WARN_UNUSED_RESULT;
 
   // Similar to RunExtensionTest, except used for running tests in platform app
   // shell windows.
-  bool RunPlatformAppTest(const std::string& extension_name);
+  bool RunPlatformAppTest(const std::string& extension_name) WARN_UNUSED_RESULT;
 
   // Similar to RunPlatformAppTest, except sets an additional string argument
   // |customArg| to the test config object.
   bool RunPlatformAppTestWithArg(const std::string& extension_name,
-                                 const char* custom_arg);
+                                 const char* custom_arg) WARN_UNUSED_RESULT;
 
   // Similar to RunPlatformAppTest, with custom |flags| (as defined in the Flags
   // enum). The kFlagLaunchPlatformApp flag is automatically added.
   bool RunPlatformAppTestWithFlags(const std::string& extension_name,
                                    int browser_test_flags,
-                                   int api_test_flags);
+                                   int api_test_flags) WARN_UNUSED_RESULT;
 
   // Similar to RunPlatformAppTestWithFlags above, except it has an additional
   // string argument |customArg| to the test config object.
   bool RunPlatformAppTestWithFlags(const std::string& extension_name,
                                    const char* custom_arg,
                                    int browser_test_flags,
-                                   int api_test_flags);
+                                   int api_test_flags) WARN_UNUSED_RESULT;
 
   // Start the test server, and store details of its state. Those details
   // will be available to JavaScript tests using chrome.test.getConfig().
@@ -221,7 +227,7 @@ class ExtensionApiTest : public ExtensionBrowserTest {
                             const std::string& test_page,
                             const char* custom_arg,
                             int browser_test_flags,
-                            int api_test_flags);
+                            int api_test_flags) WARN_UNUSED_RESULT;
 
   // Hold details of the test, set in C++, which can be accessed by
   // javascript using chrome.test.getConfig().
