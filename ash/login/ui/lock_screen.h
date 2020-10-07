@@ -18,6 +18,7 @@
 #include "ui/base/clipboard/clipboard.h"
 
 namespace views {
+class View;
 class Widget;
 }
 
@@ -80,6 +81,8 @@ class ASH_EXPORT LockScreen : public TrayActionObserver,
  private:
   explicit LockScreen(ScreenType type);
   ~LockScreen() override;
+
+  std::unique_ptr<views::View> MakeContentsView();
 
   // Shows the lock screen widget, unless the global instance was already
   // destroyed. Called after the first wallpaper becomes ready.
