@@ -82,8 +82,5 @@ public class TileSuggestionProcessor implements SuggestionProcessor {
     }
 
     @Override
-    public void recordItemUsed(PropertyModel model) {}
-
-    @Override
     public void onSuggestionsReceived() {}
 }

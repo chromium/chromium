@@ -16,7 +16,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.omnibox.suggestions.SuggestionViewDelegate;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 
@@ -32,7 +31,6 @@ import java.util.List;
 public class BaseSuggestionView<T extends View> extends SimpleHorizontalLayoutView {
     private final List<ImageView> mActionButtons;
     private final DecoratedSuggestionView<T> mDecoratedView;
-    private SuggestionViewDelegate mDelegate;
     private @Nullable Runnable mOnFocusViaSelectionListener;
 
     /**
@@ -44,11 +42,6 @@ public class BaseSuggestionView<T extends View> extends SimpleHorizontalLayoutVi
         super(view.getContext());
 
         mDecoratedView = new DecoratedSuggestionView<>(getContext());
-        mDecoratedView.setOnClickListener(v -> mDelegate.onSelection());
-        mDecoratedView.setOnLongClickListener(v -> {
-            mDelegate.onLongPress();
-            return true;
-        });
         mDecoratedView.setLayoutParams(LayoutParams.forDynamicView());
         addView(mDecoratedView);
 
@@ -161,15 +154,6 @@ public class BaseSuggestionView<T extends View> extends SimpleHorizontalLayoutVi
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public DecoratedSuggestionView<T> getDecoratedSuggestionView() {
         return mDecoratedView;
-    }
-
-    /**
-     * Set the delegate for the actions on the suggestion view.
-     *
-     * @param delegate Delegate receiving user events.
-     */
-    void setDelegate(SuggestionViewDelegate delegate) {
-        mDelegate = delegate;
     }
 
     /**

@@ -11,6 +11,7 @@ import android.text.Spannable;
 import android.text.style.StyleSpan;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
@@ -20,7 +21,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion.MatchClassification;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionProcessor;
-import org.chromium.chrome.browser.omnibox.suggestions.SuggestionViewDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.chrome.browser.ui.favicon.LargeIconBridge;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -146,14 +146,34 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                                 iconString, action)));
     }
 
+    /**
+     * Process the click event.
+     *
+     * @param suggestion Selected suggestion.
+     * @param position Position of the suggestion on the list.
+     */
+    protected void onSuggestionClicked(@NonNull OmniboxSuggestion suggestion, int position) {
+        mSuggestionHost.onSuggestionClicked(suggestion, position, suggestion.getUrl());
+    }
+
+    /**
+     * Process the long-click event.
+     *
+     * @param suggestion Selected suggestion.
+     * @param position Position of the suggestion on the list.
+     */
+    protected void onSuggestionLongClicked(@NonNull OmniboxSuggestion suggestion, int position) {
+        mSuggestionHost.onSuggestionLongClicked(suggestion, position);
+    }
+
     @Override
     public void populateModel(OmniboxSuggestion suggestion, PropertyModel model, int position) {
-        SuggestionViewDelegate delegate =
-                mSuggestionHost.createSuggestionViewDelegate(this, model, suggestion, position);
-
-        model.set(BaseSuggestionViewProperties.SUGGESTION_DELEGATE, delegate);
+        model.set(BaseSuggestionViewProperties.ON_CLICK,
+                () -> onSuggestionClicked(suggestion, position));
+        model.set(BaseSuggestionViewProperties.ON_LONG_CLICK,
+                () -> onSuggestionLongClicked(suggestion, position));
         model.set(BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION,
-                () -> { mSuggestionHost.setOmniboxEditingText(suggestion.getFillIntoEdit()); });
+                () -> mSuggestionHost.setOmniboxEditingText(suggestion.getFillIntoEdit()));
         model.set(BaseSuggestionViewProperties.DENSITY, mDensity);
         setCustomActions(model, null);
     }

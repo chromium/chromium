@@ -166,15 +166,16 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public void recordItemUsed(PropertyModel model) {
-        RecordUserAction.record("Omnibox.EditUrlSuggestion.Tap");
-    }
-
-    @Override
     public void onUrlFocusChange(boolean hasFocus) {
         if (hasFocus) return;
         mOriginalTitle = null;
         mHasClearedOmniboxForFocus = false;
+    }
+
+    @Override
+    protected void onSuggestionClicked(OmniboxSuggestion suggestion, int position) {
+        super.onSuggestionClicked(suggestion, position);
+        RecordUserAction.record("Omnibox.EditUrlSuggestion.Tap");
     }
 
     /** Invoked when user interacts with Share action button. */

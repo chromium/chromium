@@ -48,14 +48,6 @@ public interface DropdownItemProcessor {
     default void recordItemPresented(PropertyModel model) {}
 
     /**
-     * Record suggestion usage for this processor.
-     * Purpose of this function is to record that the user selected a suggestion created by
-     * this processor.
-     * This call is invoked once for every model created by the processor.
-     */
-    default void recordItemUsed(PropertyModel model) {}
-
-    /**
      * Signals that the dropdown list is about to be populated with new content.
      */
     default void onSuggestionsReceived() {}

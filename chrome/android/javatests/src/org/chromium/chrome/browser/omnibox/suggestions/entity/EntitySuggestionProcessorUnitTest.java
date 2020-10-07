@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.omnibox.suggestions.entity;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import android.graphics.Bitmap;
@@ -114,9 +112,6 @@ public class EntitySuggestionProcessorUnitTest {
 
         mProcessor = new EntitySuggestionProcessor(
                 ContextUtils.getApplicationContext(), mSuggestionHost, () -> mImageFetcher);
-        doReturn(null)
-                .when(mSuggestionHost)
-                .createSuggestionViewDelegate(any(), any(), any(), anyInt());
     }
 
     ImageFetcher.Params createParams(String url) {

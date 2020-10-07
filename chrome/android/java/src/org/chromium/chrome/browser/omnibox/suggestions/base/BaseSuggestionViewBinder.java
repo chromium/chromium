@@ -47,10 +47,7 @@ public final class BaseSuggestionViewBinder<T extends View>
     public void bind(PropertyModel model, BaseSuggestionView<T> view, PropertyKey propertyKey) {
         mContentBinder.bind(model, view.getContentView(), propertyKey);
 
-        if (BaseSuggestionViewProperties.SUGGESTION_DELEGATE == propertyKey) {
-            view.setDelegate(model.get(BaseSuggestionViewProperties.SUGGESTION_DELEGATE));
-            updateContentViewPadding(model, view.getDecoratedSuggestionView());
-        } else if (BaseSuggestionViewProperties.ICON == propertyKey) {
+        if (BaseSuggestionViewProperties.ICON == propertyKey) {
             updateSuggestionIcon(model, view);
             updateContentViewPadding(model, view.getDecoratedSuggestionView());
         } else if (BaseSuggestionViewProperties.DENSITY == propertyKey) {
@@ -66,6 +63,23 @@ public final class BaseSuggestionViewBinder<T extends View>
         } else if (BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION == propertyKey) {
             view.setOnFocusViaSelectionListener(
                     model.get(BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION));
+        } else if (BaseSuggestionViewProperties.ON_CLICK == propertyKey) {
+            Runnable listener = model.get(BaseSuggestionViewProperties.ON_CLICK);
+            if (listener == null) {
+                view.getDecoratedSuggestionView().setOnClickListener(null);
+            } else {
+                view.getDecoratedSuggestionView().setOnClickListener(v -> listener.run());
+            }
+        } else if (BaseSuggestionViewProperties.ON_LONG_CLICK == propertyKey) {
+            Runnable listener = model.get(BaseSuggestionViewProperties.ON_LONG_CLICK);
+            if (listener == null) {
+                view.getDecoratedSuggestionView().setOnLongClickListener(null);
+            } else {
+                view.getDecoratedSuggestionView().setOnLongClickListener(v -> {
+                    listener.run();
+                    return true;
+                });
+            }
         }
     }
 

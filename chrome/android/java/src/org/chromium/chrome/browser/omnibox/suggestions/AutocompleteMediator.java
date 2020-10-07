@@ -474,23 +474,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         return mAutocomplete.getCurrentNativeAutocompleteResult();
     }
 
-    @Override
-    public SuggestionViewDelegate createSuggestionViewDelegate(DropdownItemProcessor processor,
-            PropertyModel model, OmniboxSuggestion suggestion, int position) {
-        return new SuggestionViewDelegate() {
-            @Override
-            public void onSelection() {
-                processor.recordItemUsed(model);
-                AutocompleteMediator.this.onSelection(suggestion, position);
-            }
-
-            @Override
-            public void onLongPress() {
-                AutocompleteMediator.this.onLongPress(suggestion, position);
-            }
-        };
-    }
-
     /** Called when a query tile is selected by the user. */
     void onQueryTileSelected(QueryTile queryTile) {
         // For last level tile, start a search query, unless we want to let user have a chance to
@@ -520,19 +503,22 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      * Triggered when the user selects one of the omnibox suggestions to navigate to.
      * @param suggestion The OmniboxSuggestion which was selected.
      * @param position Position of the suggestion in the drop down view.
+     * @param url The URL associated with the suggestion.
      */
-    private void onSelection(OmniboxSuggestion suggestion, int position) {
+    @Override
+    public void onSuggestionClicked(
+            @NonNull OmniboxSuggestion suggestion, int position, @NonNull GURL url) {
         if (mShowCachedZeroSuggestResults && !mNativeInitialized) {
             mDeferredOnSelection = new DeferredOnSelectionRunnable(suggestion, position) {
                 @Override
                 public void run() {
-                    onSelection(this.mSuggestion, this.mPosition);
+                    onSuggestionClicked(mSuggestion, mPosition, url);
                 }
             };
             return;
         }
 
-        loadUrlFromOmniboxMatch(position, suggestion, mLastActionUpTimestamp, true);
+        loadUrlForOmniboxMatch(position, suggestion, url, mLastActionUpTimestamp, true);
         mDelegate.setKeyboardVisibility(false);
     }
 
@@ -562,7 +548,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         Tab tab = mAutocomplete.findMatchingTabWithUrl(suggestion.getUrl());
         TabWindowManager tabWindowManager = TabWindowManager.getInstance();
         if (tab == null || tabWindowManager == null) {
-            onSelection(suggestion, position);
+            onSuggestionClicked(suggestion, position, suggestion.getUrl());
             return;
         }
 
@@ -599,8 +585,12 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      * Triggered when the user long presses the omnibox suggestion.
      * @param suggestion The suggestion selected.
      * @param position The position of the suggestion.
+     *
+     * TODO(crbug.com/1136107): revisit the event propagation here to make sure we do not try to
+     * execute an action before native is initialize.
      */
-    private void onLongPress(OmniboxSuggestion suggestion, int position) {
+    @Override
+    public void onSuggestionLongClicked(@NonNull OmniboxSuggestion suggestion, int position) {
         RecordUserAction.record("MobileOmniboxDeleteGesture");
         if (!suggestion.isDeletable()) return;
 
@@ -671,18 +661,19 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      *
      * @param suggestion The chosen omnibox suggestion.
      * @param selectedIndex The index of the chosen omnibox suggestion.
+     * @param url The URL associated with the suggestion to navigate to.
      * @param skipCheck Whether to skip an out of bounds check.
      * @return The url to navigate to.
      */
-    private GURL updateSuggestionUrlIfNeeded(
-            OmniboxSuggestion suggestion, int selectedIndex, boolean skipCheck) {
+    private GURL updateSuggestionUrlIfNeeded(@NonNull OmniboxSuggestion suggestion,
+            int selectedIndex, @NonNull GURL url, boolean skipCheck) {
         // Only called once we have suggestions, and don't have a listener though which we can
         // receive suggestions until the native side is ready, so this is safe
         assert mNativeInitialized
             : "updateSuggestionUrlIfNeeded called before native initialization";
         if (suggestion.getType() == OmniboxSuggestionType.VOICE_SUGGEST
                 || suggestion.getType() == OmniboxSuggestionType.TILE_SUGGESTION) {
-            return suggestion.getUrl();
+            return url;
         }
 
         int verifiedIndex = SUGGESTION_NOT_FOUND;
@@ -691,14 +682,14 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         }
 
         // If we do not have the suggestion as part of our results, skip the URL update.
-        if (verifiedIndex == SUGGESTION_NOT_FOUND) return suggestion.getUrl();
+        if (verifiedIndex == SUGGESTION_NOT_FOUND) return url;
 
         // TODO(mariakhomenko): Ideally we want to update match destination URL with new aqs
         // for query in the omnibox and voice suggestions, but it's currently difficult to do.
         GURL updatedUrl = mAutocomplete.updateMatchDestinationUrlWithQueryFormulationTime(
                 verifiedIndex, suggestion.hashCode(), getElapsedTimeSinceInputChange());
 
-        return updatedUrl == null ? suggestion.getUrl() : updatedUrl;
+        return updatedUrl == null ? url : updatedUrl;
     }
 
     /**
@@ -884,6 +875,12 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         }
     }
 
+    /**
+     * Search for a suggestion with the same associated URL as the supplied one.
+     *
+     * @param urlText The URL text to search for.
+     * @param eventTime The timestamp the load was triggered by the user.
+     */
     private void findMatchAndLoadUrl(String urlText, long inputStart) {
         OmniboxSuggestion suggestionMatch;
         boolean inSuggestionList = true;
@@ -905,7 +902,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             if (suggestionMatch == null) return;
         }
 
-        loadUrlFromOmniboxMatch(0, suggestionMatch, inputStart, inSuggestionList);
+        loadUrlForOmniboxMatch(
+                0, suggestionMatch, suggestionMatch.getUrl(), inputStart, inSuggestionList);
     }
 
     /**
@@ -913,15 +911,16 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      *
      * @param matchPosition The position of the selected omnibox suggestion.
      * @param suggestion The suggestion selected.
+     * @param url The URL to load.
      * @param inputStart The timestamp the input was started.
      * @param inVisibleSuggestionList Whether the suggestion is in the visible suggestion list.
      */
-    private void loadUrlFromOmniboxMatch(int matchPosition, OmniboxSuggestion suggestion,
-            long inputStart, boolean inVisibleSuggestionList) {
+    private void loadUrlForOmniboxMatch(int matchPosition, @NonNull OmniboxSuggestion suggestion,
+            @NonNull GURL url, long inputStart, boolean inVisibleSuggestionList) {
         SuggestionsMetrics.recordFocusToOpenTime(System.currentTimeMillis() - mUrlFocusTime);
 
         mOmniboxFocusResultedInNavigation = true;
-        GURL url = updateSuggestionUrlIfNeeded(suggestion, matchPosition, !inVisibleSuggestionList);
+        url = updateSuggestionUrlIfNeeded(suggestion, matchPosition, url, !inVisibleSuggestionList);
 
         // loadUrl modifies AutocompleteController's state clearing the native
         // AutocompleteResults needed by onSuggestionsSelected. Therefore,
