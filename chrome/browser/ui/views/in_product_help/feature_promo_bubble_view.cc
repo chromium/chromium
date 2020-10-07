@@ -77,13 +77,11 @@ class MdIPHBubbleButton : public MdTextButton {
         has_border_(has_border) {
     // Prominent style gives a button hover highlight.
     SetProminent(true);
-    // Button color is the same as IPH bubble's color.
-    SetBgColorOverride(SK_ColorTRANSPARENT);
     // TODO(kerenzhu): IPH bubble uses blue600 as the background color
     // for both regular and dark mode. We might want to use a
     // dark-mode-appropriate background color so that overriding text color
     // is not needed.
-    SetTextColor(ButtonState::STATE_NORMAL, kBubbleButtonTextColor);
+    SetEnabledTextColors(kBubbleButtonTextColor);
     // TODO(crbug/1112244): Temporary fix for Mac. Bubble shouldn't be in
     // inactive style when the bubble loses focus.
     SetTextColor(ButtonState::STATE_DISABLED, kBubbleButtonTextColor);
@@ -96,15 +94,19 @@ class MdIPHBubbleButton : public MdTextButton {
     // Adapted from MdTextButton::UpdateBackgroundColor()
     ui::NativeTheme* theme = GetNativeTheme();
 
-    SkColor bg_color =
-        HasFocus() ? kBubbleButtonFocusedBackgroundColor : SK_ColorTRANSPARENT;
+    // Default button background color is the same as IPH bubble's color.
+    const SkColor kBubbleBackgroundColor = ThemeProperties::GetDefaultColor(
+        ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_BACKGROUND, false);
+
+    SkColor bg_color = HasFocus() ? kBubbleButtonFocusedBackgroundColor
+                                  : kBubbleBackgroundColor;
     if (GetState() == STATE_PRESSED)
-      theme->GetSystemButtonPressedColor(bg_color);
+      bg_color = theme->GetSystemButtonPressedColor(bg_color);
 
     SkColor stroke_color =
         has_border_
             ? theme->GetSystemColor(ui::NativeTheme::kColorId_ButtonBorderColor)
-            : SK_ColorTRANSPARENT;
+            : kBubbleBackgroundColor;
 
     SetBackground(CreateBackgroundFromPainter(
         Painter::CreateRoundRectWith1PxBorderPainter(bg_color, stroke_color,
