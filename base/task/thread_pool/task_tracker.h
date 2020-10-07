@@ -130,20 +130,12 @@ class BASE_EXPORT TaskTracker {
   // no tasks are blocking shutdown).
   bool IsShutdownComplete() const;
 
-  // Records two histograms
-  // 1. ThreadPool.[label].HeartbeatLatencyMicroseconds.[suffix]:
-  //    Now() - posted_time
-  // 2. ThreadPool.[label].NumTasksRunWhileQueuing.[suffix]:
-  //    GetNumTasksRun() - num_tasks_run_when_posted.
+  // Records Now() - posted_time to
+  // ThreadPool.[label].HeartbeatLatencyMicroseconds.[suffix].
   // [label] is the histogram label provided to the constructor.
   // [suffix] is derived from |task_priority|.
-  void RecordHeartbeatLatencyAndTasksRunWhileQueuingHistograms(
-      TaskPriority task_priority,
-      TimeTicks posted_time,
-      int num_tasks_run_when_posted) const;
-
-  // Returns the number of tasks run so far
-  int GetNumTasksRun() const;
+  void RecordHeartbeatLatencyHistogram(TaskPriority task_priority,
+                                       TimeTicks posted_time) const;
 
   TrackedRef<TaskTracker> GetTrackedRef() {
     return tracked_ref_factory_.GetTrackedRef();
@@ -206,8 +198,6 @@ class BASE_EXPORT TaskTracker {
   void RecordLatencyHistogram(TaskPriority priority,
                               TimeTicks posted_time) const;
 
-  void IncrementNumTasksRun();
-
   // Dummy frames to allow identification of shutdown behavior in a stack trace.
   void RunContinueOnShutdown(Task* task);
   void RunSkipOnShutdown(Task* task);
@@ -263,10 +253,6 @@ class BASE_EXPORT TaskTracker {
   // completes.
   std::unique_ptr<WaitableEvent> shutdown_event_ GUARDED_BY(shutdown_lock_);
 
-  // Counter for number of tasks run so far, used to record tasks run while
-  // a task queued to histogram.
-  std::atomic_int num_tasks_run_{0};
-
   // ThreadPool.TaskLatencyMicroseconds.*,
   // ThreadPool.HeartbeatLatencyMicroseconds.*, and
   // ThreadPool.NumTasksRunWhileQueuing.* histograms. The index is a
@@ -278,8 +264,6 @@ class BASE_EXPORT TaskTracker {
       static_cast<TaskPriorityType>(TaskPriority::HIGHEST) + 1;
   HistogramBase* const task_latency_histograms_[kNumTaskPriorities];
   HistogramBase* const heartbeat_latency_histograms_[kNumTaskPriorities];
-  HistogramBase* const
-      num_tasks_run_while_queuing_histograms_[kNumTaskPriorities];
 
   // Ensures all state (e.g. dangling cleaned up workers) is coalesced before
   // destroying the TaskTracker (e.g. in test environments).

@@ -14818,6 +14818,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram base="true" name="ThreadPool.NumTasksRunWhileQueuing" units="tasks"
     expires_after="2019-10-01">
+  <obsolete>
+    Removed 10/2020. Not actively used.
+  </obsolete>
   <owner>fdoray@chromium.org</owner>
   <summary>
     Number of tasks run by ThreadPool while task was queuing (from time task was

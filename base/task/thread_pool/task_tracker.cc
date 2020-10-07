@@ -102,27 +102,6 @@ HistogramBase* GetLatencyHistogram(StringPiece histogram_name,
       HistogramBase::kUmaTargetedHistogramFlag);
 }
 
-// Constructs a histogram to track task count which is logging to
-// "ThreadPool.{histogram_name}.{histogram_label}.{task_type_suffix}".
-HistogramBase* GetCountHistogram(StringPiece histogram_name,
-                                 StringPiece histogram_label,
-                                 StringPiece task_type_suffix) {
-  DCHECK(!histogram_name.empty());
-  DCHECK(!task_type_suffix.empty());
-
-  if (histogram_label.empty())
-    return nullptr;
-
-  // Mimics the UMA_HISTOGRAM_CUSTOM_COUNTS macro.
-  const std::string histogram = JoinString(
-      {"ThreadPool", histogram_name, histogram_label, task_type_suffix}, ".");
-  // 500 was chosen as the maximum number of tasks run while queuing because
-  // values this high would likely indicate an error, beyond which knowing the
-  // actual number of tasks is not informative.
-  return Histogram::FactoryGet(histogram, 1, 500, 50,
-                               HistogramBase::kUmaTargetedHistogramFlag);
-}
-
 // Returns a histogram stored in an array indexed by task priority.
 // TODO(jessemckenna): use the STATIC_HISTOGRAM_POINTER_GROUP macro from
 // histogram_macros.h instead.
@@ -336,16 +315,6 @@ TaskTracker::TaskTracker(StringPiece histogram_label)
           GetLatencyHistogram("HeartbeatLatencyMicroseconds",
                               histogram_label,
                               "UserBlockingTaskPriority")},
-      num_tasks_run_while_queuing_histograms_{
-          GetCountHistogram("NumTasksRunWhileQueuing",
-                            histogram_label,
-                            "BackgroundTaskPriority"),
-          GetCountHistogram("NumTasksRunWhileQueuing",
-                            histogram_label,
-                            "UserVisibleTaskPriority"),
-          GetCountHistogram("NumTasksRunWhileQueuing",
-                            histogram_label,
-                            "UserBlockingTaskPriority")},
       tracked_ref_factory_(this) {}
 
 TaskTracker::~TaskTracker() = default;
@@ -532,27 +501,14 @@ void TaskTracker::RecordLatencyHistogram(TaskPriority priority,
       ->AddTimeMicrosecondsGranularity(task_latency);
 }
 
-void TaskTracker::RecordHeartbeatLatencyAndTasksRunWhileQueuingHistograms(
-    TaskPriority priority,
-    TimeTicks posted_time,
-    int num_tasks_run_when_posted) const {
+void TaskTracker::RecordHeartbeatLatencyHistogram(TaskPriority priority,
+                                                  TimeTicks posted_time) const {
   if (histogram_label_.empty())
     return;
 
   const TimeDelta task_latency = TimeTicks::Now() - posted_time;
   GetHistogramForTaskPriority(priority, heartbeat_latency_histograms_)
       ->AddTimeMicrosecondsGranularity(task_latency);
-
-  GetHistogramForTaskPriority(priority, num_tasks_run_while_queuing_histograms_)
-      ->Add(GetNumTasksRun() - num_tasks_run_when_posted);
-}
-
-int TaskTracker::GetNumTasksRun() const {
-  return num_tasks_run_.load(std::memory_order_relaxed);
-}
-
-void TaskTracker::IncrementNumTasksRun() {
-  num_tasks_run_.fetch_add(1, std::memory_order_relaxed);
 }
 
 void TaskTracker::RunTask(Task task,
@@ -709,7 +665,6 @@ bool TaskTracker::BeforeRunTask(TaskShutdownBehavior shutdown_behavior) {
 }
 
 void TaskTracker::AfterRunTask(TaskShutdownBehavior shutdown_behavior) {
-  IncrementNumTasksRun();
   if (shutdown_behavior == TaskShutdownBehavior::SKIP_ON_SHUTDOWN) {
     DecrementNumItemsBlockingShutdown();
   }

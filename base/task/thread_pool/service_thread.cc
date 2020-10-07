@@ -81,10 +81,8 @@ void ServiceThread::PerformHeartbeatLatencyReport() const {
   // reported latency.
   ThreadPool::PostTask(
       FROM_HERE, {profiled_priority},
-      BindOnce(
-          &TaskTracker::RecordHeartbeatLatencyAndTasksRunWhileQueuingHistograms,
-          Unretained(task_tracker_), profiled_priority, TimeTicks::Now(),
-          task_tracker_->GetNumTasksRun()));
+      BindOnce(&TaskTracker::RecordHeartbeatLatencyHistogram,
+               Unretained(task_tracker_), profiled_priority, TimeTicks::Now()));
 }
 
 }  // namespace internal
