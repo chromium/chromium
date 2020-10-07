@@ -11,6 +11,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace chrome_pdf {
 namespace draw_utils {
@@ -55,17 +56,17 @@ int GetMostVisiblePage(const std::vector<IndexedPage>& visible_pages,
     return -1;
 
   int most_visible_page_index = visible_pages.front().index;
-  double most_visible_page_area = 0.0;
+  float most_visible_page_area = 0;
   for (const auto& visible_page : visible_pages) {
-    double page_area = static_cast<double>(visible_page.rect.size().GetArea());
+    float page_area = gfx::SizeF(visible_page.rect.size()).GetArea();
     // TODO(thestig): Check whether we can remove this check.
-    if (page_area <= 0.0)
+    if (page_area <= 0)
       continue;
 
     gfx::Rect screen_intersect =
         gfx::IntersectRects(visible_screen, visible_page.rect);
-    double intersect_area =
-        static_cast<double>(screen_intersect.size().GetArea()) / page_area;
+    float intersect_area =
+        gfx::SizeF(screen_intersect.size()).GetArea() / page_area;
     if (intersect_area > most_visible_page_area) {
       most_visible_page_index = visible_page.index;
       most_visible_page_area = intersect_area;
