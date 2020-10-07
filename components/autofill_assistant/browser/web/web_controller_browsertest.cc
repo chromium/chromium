@@ -221,19 +221,38 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     }
   }
 
-  void FocusElement(const Selector& selector, const TopPadding top_padding) {
+  void FocusElement(const Selector& selector, const TopPadding& top_padding) {
     base::RunLoop run_loop;
-    web_controller_->FocusElement(
-        selector, top_padding,
-        base::BindOnce(&WebControllerBrowserTest::OnFocusElement,
-                       base::Unretained(this), run_loop.QuitClosure()));
+    ClientStatus result;
+
+    web_controller_->FindElement(
+        selector, /* strict_mode= */ true,
+        base::BindOnce(&WebControllerBrowserTest::FindFocusElementCallback,
+                       base::Unretained(this), top_padding,
+                       run_loop.QuitClosure(), &result));
+
     run_loop.Run();
+    EXPECT_EQ(ACTION_APPLIED, result.proto_status());
   }
 
-  void OnFocusElement(base::OnceClosure done_callback,
-                      const ClientStatus& status) {
-    EXPECT_EQ(ACTION_APPLIED, status.proto_status());
-    std::move(done_callback).Run();
+  void FindFocusElementCallback(
+      const TopPadding& top_padding,
+      base::OnceClosure done_callback,
+      ClientStatus* result_output,
+      const ClientStatus& status,
+      std::unique_ptr<ElementFinder::Result> element_result) {
+    if (!status.ok()) {
+      *result_output = status;
+      std::move(done_callback).Run();
+      return;
+    }
+
+    ASSERT_TRUE(element_result != nullptr);
+    web_controller_->FocusElement(
+        *element_result, top_padding,
+        base::BindOnce(&WebControllerBrowserTest::ElementRetainingCallback,
+                       base::Unretained(this), std::move(element_result),
+                       std::move(done_callback), result_output));
   }
 
   ClientStatus SelectOption(const Selector& selector,
@@ -294,12 +313,34 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
   ClientStatus HighlightElement(const Selector& selector) {
     base::RunLoop run_loop;
     ClientStatus result;
-    web_controller_->HighlightElement(
-        selector, base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
-                                 base::Unretained(this), run_loop.QuitClosure(),
-                                 &result));
+
+    web_controller_->FindElement(
+        selector, /* strict_mode= */ true,
+        base::BindOnce(&WebControllerBrowserTest::FindHighlightElementCallback,
+                       base::Unretained(this), run_loop.QuitClosure(),
+                       &result));
+
     run_loop.Run();
     return result;
+  }
+
+  void FindHighlightElementCallback(
+      base::OnceClosure done_callback,
+      ClientStatus* result_output,
+      const ClientStatus& status,
+      std::unique_ptr<ElementFinder::Result> element_result) {
+    if (!status.ok()) {
+      *result_output = status;
+      std::move(done_callback).Run();
+      return;
+    }
+
+    ASSERT_TRUE(element_result != nullptr);
+    web_controller_->HighlightElement(
+        *element_result,
+        base::BindOnce(&WebControllerBrowserTest::ElementRetainingCallback,
+                       base::Unretained(this), std::move(element_result),
+                       std::move(done_callback), result_output));
   }
 
   ClientStatus GetOuterHtml(const Selector& selector,

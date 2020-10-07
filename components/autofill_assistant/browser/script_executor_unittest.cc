@@ -64,15 +64,13 @@ class ScriptExecutorTest : public testing::Test,
 
     // In this test, "tell" actions always succeed and "click" actions,
     // preceded by finding the element, always fail. The following makes a
-    // click action fail immediately
+    // click action fail immediately.
     ON_CALL(mock_web_controller_, OnFindElement(_, _))
         .WillByDefault(RunOnceCallback<1>(
             ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
 
     ON_CALL(mock_web_controller_, OnElementCheck(_, _))
         .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
-    ON_CALL(mock_web_controller_, OnFocusElement(_, _, _))
-        .WillByDefault(RunOnceCallback<2>(OkClientStatus()));
   }
 
  protected:

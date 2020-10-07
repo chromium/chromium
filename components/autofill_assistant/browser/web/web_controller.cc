@@ -624,63 +624,6 @@ void WebController::OnFindElementResult(
   std::move(callback).Run(status, std::move(result));
 }
 
-void WebController::OnFindElementForFocusElement(
-    const TopPadding& top_padding,
-    base::OnceCallback<void(const ClientStatus&)> callback,
-    const ClientStatus& status,
-    std::unique_ptr<ElementFinder::Result> element_result) {
-  if (!status.ok()) {
-    VLOG(1) << __func__ << " Failed to find the element to focus on.";
-    std::move(callback).Run(status);
-    return;
-  }
-
-  std::string element_object_id = element_result->object_id;
-  InternalWaitForDocumentToBecomeInteractive(
-      settings_->document_ready_check_count, element_object_id,
-      element_result->node_frame_id,
-      base::BindOnce(
-          &WebController::OnWaitDocumentToBecomeInteractiveForFocusElement,
-          weak_ptr_factory_.GetWeakPtr(), top_padding, std::move(callback),
-          std::move(element_result)));
-}
-
-void WebController::OnWaitDocumentToBecomeInteractiveForFocusElement(
-    const TopPadding& top_padding,
-    base::OnceCallback<void(const ClientStatus&)> callback,
-    std::unique_ptr<ElementFinder::Result> target_element,
-    bool result) {
-  if (!result) {
-    std::move(callback).Run(ClientStatus(ELEMENT_UNSTABLE));
-    return;
-  }
-
-  std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
-  AddRuntimeCallArgumentObjectId(target_element->object_id, &arguments);
-  AddRuntimeCallArgument(top_padding.pixels(), &arguments);
-  AddRuntimeCallArgument(top_padding.ratio(), &arguments);
-  devtools_client_->GetRuntime()->CallFunctionOn(
-      runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(target_element->object_id)
-          .SetArguments(std::move(arguments))
-          .SetFunctionDeclaration(std::string(kScrollIntoViewWithPaddingScript))
-          .SetReturnByValue(true)
-          .Build(),
-      target_element->node_frame_id,
-      base::BindOnce(&WebController::OnFocusElement,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void WebController::OnFocusElement(
-    base::OnceCallback<void(const ClientStatus&)> callback,
-    const DevtoolsClient::ReplyStatus& reply_status,
-    std::unique_ptr<runtime::CallFunctionOnResult> result) {
-  ClientStatus status =
-      CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
-  VLOG_IF(1, !status.ok()) << __func__ << " Failed to focus on element.";
-  std::move(callback).Run(status);
-}
-
 void WebController::FillAddressForm(
     const autofill::AutofillProfile* profile,
     const Selector& selector,
@@ -907,27 +850,9 @@ void WebController::OnSelectOption(
 }
 
 void WebController::HighlightElement(
-    const Selector& selector,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  VLOG(3) << __func__ << " " << selector;
-  FindElement(
-      selector,
-      /* strict_mode= */ true,
-      base::BindOnce(&WebController::OnFindElementForHighlightElement,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void WebController::OnFindElementForHighlightElement(
-    base::OnceCallback<void(const ClientStatus&)> callback,
-    const ClientStatus& status,
-    std::unique_ptr<ElementFinder::Result> element_result) {
-  if (!status.ok()) {
-    VLOG(1) << __func__ << " Failed to find the element to highlight.";
-    std::move(callback).Run(status);
-    return;
-  }
-
-  const std::string& object_id = element_result->object_id;
+  const std::string& object_id = element.object_id;
   std::vector<std::unique_ptr<runtime::CallArgument>> argument;
   AddRuntimeCallArgumentObjectId(object_id, &argument);
   devtools_client_->GetRuntime()->CallFunctionOn(
@@ -937,32 +862,29 @@ void WebController::OnFindElementForHighlightElement(
           .SetFunctionDeclaration(std::string(kHighlightElementScript))
           .SetReturnByValue(true)
           .Build(),
-      element_result->node_frame_id,
-      base::BindOnce(&WebController::OnHighlightElement,
+      element.node_frame_id,
+      base::BindOnce(&WebController::OnJavaScriptResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void WebController::OnHighlightElement(
-    base::OnceCallback<void(const ClientStatus&)> callback,
-    const DevtoolsClient::ReplyStatus& reply_status,
-    std::unique_ptr<runtime::CallFunctionOnResult> result) {
-  ClientStatus status =
-      CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
-  VLOG_IF(1, !status.ok()) << __func__ << " Failed to highlight element.";
-  std::move(callback).Run(status);
-}
-
 void WebController::FocusElement(
-    const Selector& selector,
+    const ElementFinder::Result& element,
     const TopPadding& top_padding,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  VLOG(3) << __func__ << " " << selector;
-  DCHECK(!selector.empty());
-  FindElement(selector,
-              /* strict_mode= */ false,
-              base::BindOnce(&WebController::OnFindElementForFocusElement,
-                             weak_ptr_factory_.GetWeakPtr(), top_padding,
-                             std::move(callback)));
+  std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
+  AddRuntimeCallArgumentObjectId(element.object_id, &arguments);
+  AddRuntimeCallArgument(top_padding.pixels(), &arguments);
+  AddRuntimeCallArgument(top_padding.ratio(), &arguments);
+  devtools_client_->GetRuntime()->CallFunctionOn(
+      runtime::CallFunctionOnParams::Builder()
+          .SetObjectId(element.object_id)
+          .SetArguments(std::move(arguments))
+          .SetFunctionDeclaration(std::string(kScrollIntoViewWithPaddingScript))
+          .SetReturnByValue(true)
+          .Build(),
+      element.node_frame_id,
+      base::BindOnce(&WebController::OnJavaScriptResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void WebController::GetFieldValue(

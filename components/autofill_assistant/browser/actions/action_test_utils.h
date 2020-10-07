@@ -18,6 +18,8 @@ MATCHER_P(EqualsElement, element, "") {
 
 namespace test_util {
 
+void MockFindAnyElement(MockActionDelegate& delegate);
+
 ElementFinder::Result MockFindElement(MockActionDelegate& delegate,
                                       const Selector& selector);
 

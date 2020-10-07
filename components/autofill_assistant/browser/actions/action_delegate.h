@@ -199,11 +199,16 @@ class ActionDelegate {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
-  // Focus on element given by |selector|. |top_padding| specifies the padding
-  // between focused element and the top.
+  // Focus on |element|. |top_padding| specifies the padding between the
+  // focused element and the top.
+  // TODO(b/168107066): The selector is only used for storing the previously
+  // selected element and is not being used to resolve it. This is required for
+  // the current implementation of |ScriptExecutor| that repeats the focus
+  // after an interrupt. This dependency should be removed from the signature.
   virtual void FocusElement(
       const Selector& selector,
       const TopPadding& top_padding,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
   // Sets selector of areas that can be manipulated:
@@ -213,9 +218,9 @@ class ActionDelegate {
   virtual void SetTouchableElementArea(
       const ElementAreaProto& touchable_element_area) = 0;
 
-  // Highlight the element given by |selector|.
+  // Highlight the |element|.
   virtual void HighlightElement(
-      const Selector& selector,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
   // Get the value of |selector| and return the result through |callback|. The

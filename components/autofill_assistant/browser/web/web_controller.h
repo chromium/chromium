@@ -91,8 +91,8 @@ class WebController {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
-  // Perform a mouse left button click or a touch tap on the element given by
-  // |selector| and return the result through callback.
+  // Perform a mouse left button click or a touch tap on the |element|
+  // return the result through callback.
   virtual void ClickOrTapElement(
       const ElementFinder::Result& element,
       ClickType click_type,
@@ -122,23 +122,22 @@ class WebController {
                               const autofill::FormFieldData& field_data)>
           callback);
 
-  // Select the option given by |selector| and the value of the option to be
-  // picked.
+  // Select the option to be picked given by the |value| in the |element|.
   virtual void SelectOption(
       const ElementFinder::Result& element,
       const std::string& value,
       DropdownSelectStrategy select_strategy,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
-  // Highlight an element given by |selector|.
+  // Highlight an |element|.
   virtual void HighlightElement(
-      const Selector& selector,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
-  // Focus on element given by |selector|. |top_padding| specifies the padding
-  // between focused element and the top.
+  // Focus on |element|. |top_padding| specifies the padding between the
+  // focused element and the top.
   virtual void FocusElement(
-      const Selector& selector,
+      const ElementFinder::Result& element,
       const TopPadding& top_padding,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
@@ -353,30 +352,9 @@ class WebController {
           callback,
       const autofill::FormData& form_data,
       const autofill::FormFieldData& form_field);
-  void OnFindElementForFocusElement(
-      const TopPadding& top_padding,
-      base::OnceCallback<void(const ClientStatus&)> callback,
-      const ClientStatus& status,
-      std::unique_ptr<ElementFinder::Result> element_result);
-  void OnWaitDocumentToBecomeInteractiveForFocusElement(
-      const TopPadding& top_padding,
-      base::OnceCallback<void(const ClientStatus&)> callback,
-      std::unique_ptr<ElementFinder::Result> target_element,
-      bool result);
-  void OnFocusElement(base::OnceCallback<void(const ClientStatus&)> callback,
-                      const DevtoolsClient::ReplyStatus& reply_status,
-                      std::unique_ptr<runtime::CallFunctionOnResult> result);
   void OnSelectOption(base::OnceCallback<void(const ClientStatus&)> callback,
                       const DevtoolsClient::ReplyStatus& reply_status,
                       std::unique_ptr<runtime::CallFunctionOnResult> result);
-  void OnFindElementForHighlightElement(
-      base::OnceCallback<void(const ClientStatus&)> callback,
-      const ClientStatus& status,
-      std::unique_ptr<ElementFinder::Result> element_result);
-  void OnHighlightElement(
-      base::OnceCallback<void(const ClientStatus&)> callback,
-      const DevtoolsClient::ReplyStatus& reply_status,
-      std::unique_ptr<runtime::CallFunctionOnResult> result);
   void OnFindElementForGetFieldValue(
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback,

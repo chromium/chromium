@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
+#include "components/autofill_assistant/browser/actions/action_delegate_util.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 
@@ -71,8 +72,15 @@ void FocusElementAction::OnWaitForElement(ProcessActionCallback callback,
     return;
   }
 
-  delegate_->FocusElement(
-      selector, top_padding,
+  auto actions = std::make_unique<ActionDelegateUtil::ElementActionVector>();
+  actions->emplace_back(
+      base::BindOnce(&ActionDelegate::WaitForDocumentToBecomeInteractive,
+                     delegate_->GetWeakPtr()));
+  actions->emplace_back(base::BindOnce(&ActionDelegate::FocusElement,
+                                       delegate_->GetWeakPtr(), selector,
+                                       top_padding));
+  ActionDelegateUtil::FindElementAndPerform(
+      delegate_, selector, std::move(actions),
       base::BindOnce(&FocusElementAction::OnFocusElement,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

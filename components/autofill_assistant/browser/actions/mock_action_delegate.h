@@ -141,16 +141,17 @@ class MockActionDelegate : public ActionDelegate {
                     const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
 
-  MOCK_METHOD3(FocusElement,
+  MOCK_METHOD4(FocusElement,
                void(const Selector& selector,
                     const TopPadding& top_padding,
+                    const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
 
   MOCK_METHOD1(SetTouchableElementArea,
                void(const ElementAreaProto& touchable_element_area));
 
   MOCK_METHOD2(HighlightElement,
-               void(const Selector& selector,
+               void(const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
 
   MOCK_METHOD1(CollectUserData,

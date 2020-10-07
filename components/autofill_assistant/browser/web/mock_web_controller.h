@@ -46,13 +46,13 @@ class MockWebController : public WebController {
                     base::OnceCallback<void(const ClientStatus&)>& callback));
 
   void FocusElement(
-      const Selector& selector,
+      const ElementFinder::Result& element,
       const TopPadding& top_padding,
       base::OnceCallback<void(const ClientStatus&)> callback) override {
-    OnFocusElement(selector, top_padding, callback);
+    OnFocusElement(element, top_padding, callback);
   }
   MOCK_METHOD3(OnFocusElement,
-               void(const Selector& selector,
+               void(const ElementFinder::Result& element,
                     const TopPadding& top_padding,
                     base::OnceCallback<void(const ClientStatus&)>& callback));
 

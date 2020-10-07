@@ -16,6 +16,14 @@ namespace test_util {
 using ::testing::_;
 using ::testing::WithArgs;
 
+void MockFindAnyElement(MockActionDelegate& delegate) {
+  ON_CALL(delegate, FindElement(_, _))
+      .WillByDefault(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }));
+}
+
 ElementFinder::Result MockFindElement(MockActionDelegate& delegate,
                                       const Selector& selector) {
   EXPECT_CALL(delegate, FindElement(selector, _))

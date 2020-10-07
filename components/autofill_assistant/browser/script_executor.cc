@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill_assistant/browser/actions/action.h"
+#include "components/autofill_assistant/browser/actions/action_delegate_util.h"
 #include "components/autofill_assistant/browser/batch_element_checker.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
@@ -526,19 +527,19 @@ void ScriptExecutor::SelectOption(
 }
 
 void ScriptExecutor::HighlightElement(
-    const Selector& selector,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  delegate_->GetWebController()->HighlightElement(selector,
-                                                  std::move(callback));
+  delegate_->GetWebController()->HighlightElement(element, std::move(callback));
 }
 
 void ScriptExecutor::FocusElement(
     const Selector& selector,
     const TopPadding& top_padding,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   last_focused_element_selector_ = selector;
   last_focused_element_top_padding_ = top_padding;
-  delegate_->GetWebController()->FocusElement(selector, top_padding,
+  delegate_->GetWebController()->FocusElement(element, top_padding,
                                               std::move(callback));
 }
 
@@ -1208,9 +1209,17 @@ void ScriptExecutor::WaitForDomOperation::RestorePreInterruptScroll() {
     return;
 
   if (!main_script_->last_focused_element_selector_.empty()) {
-    delegate_->GetWebController()->FocusElement(
+    auto actions = std::make_unique<ActionDelegateUtil::ElementActionVector>();
+    actions->emplace_back(
+        base::BindOnce(&ActionDelegate::WaitForDocumentToBecomeInteractive,
+                       main_script_->GetWeakPtr()));
+    actions->emplace_back(base::BindOnce(
+        &ActionDelegate::FocusElement, main_script_->GetWeakPtr(),
         main_script_->last_focused_element_selector_,
-        main_script_->last_focused_element_top_padding_, base::DoNothing());
+        main_script_->last_focused_element_top_padding_));
+    ActionDelegateUtil::FindElementAndPerform(
+        main_script_, main_script_->last_focused_element_selector_,
+        std::move(actions), base::DoNothing());
   }
 }
 

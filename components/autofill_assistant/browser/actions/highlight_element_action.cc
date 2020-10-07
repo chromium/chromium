@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
+#include "components/autofill_assistant/browser/actions/action_delegate_util.h"
 #include "components/autofill_assistant/browser/client_status.h"
 
 namespace autofill_assistant {
@@ -47,8 +48,10 @@ void HighlightElementAction::OnWaitForElement(
     return;
   }
 
-  delegate_->HighlightElement(
-      selector,
+  ActionDelegateUtil::FindElementAndPerform(
+      delegate_, selector,
+      base::BindOnce(&ActionDelegate::HighlightElement,
+                     delegate_->GetWeakPtr()),
       base::BindOnce(&HighlightElementAction::OnHighlightElement,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
