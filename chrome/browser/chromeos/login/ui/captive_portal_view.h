@@ -21,12 +21,6 @@ class CaptivePortalView : public SimpleWebViewDialog {
   // Starts loading.
   void StartLoad();
 
-  // Overridden from views::WidgetDelegate:
-  bool CanResize() const override;
-  ui::ModalType GetModalType() const override;
-  base::string16 GetWindowTitle() const override;
-  bool ShouldShowWindowTitle() const override;
-
   // Overridden from content::WebContentsDelegate:
   void NavigationStateChanged(content::WebContents* source,
                               content::InvalidateTypes changed_flags) override;

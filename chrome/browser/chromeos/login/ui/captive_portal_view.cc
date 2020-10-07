@@ -21,47 +21,35 @@ const char* CaptivePortalStartURL() {
   return captive_portal::CaptivePortalDetector::kDefaultURL;
 }
 
+base::string16 WindowTitleForNetwork(const chromeos::NetworkState* network) {
+  if (!network->name().empty()) {
+    return l10n_util::GetStringFUTF16(IDS_LOGIN_CAPTIVE_PORTAL_WINDOW_TITLE,
+                                      base::ASCIIToUTF16(network->name()));
+  } else {
+    NOTREACHED() << "Captive portal with no active network?";
+    return l10n_util::GetStringFUTF16(IDS_LOGIN_CAPTIVE_PORTAL_WINDOW_TITLE,
+                                      {});
+  }
+}
+
 }  // namespace
 
 namespace chromeos {
 
 CaptivePortalView::CaptivePortalView(Profile* profile,
                                      CaptivePortalWindowProxy* proxy)
-    : SimpleWebViewDialog(profile), proxy_(proxy), redirected_(false) {}
+    : SimpleWebViewDialog(profile), proxy_(proxy), redirected_(false) {
+  SetCanResize(false);
+  SetModalType(ui::MODAL_TYPE_SYSTEM);
+  SetShowTitle(true);
+  SetTitle(WindowTitleForNetwork(
+      NetworkHandler::Get()->network_state_handler()->DefaultNetwork()));
+}
 
 CaptivePortalView::~CaptivePortalView() {}
 
 void CaptivePortalView::StartLoad() {
   SimpleWebViewDialog::StartLoad(GURL(CaptivePortalStartURL()));
-}
-
-bool CaptivePortalView::CanResize() const {
-  return false;
-}
-
-ui::ModalType CaptivePortalView::GetModalType() const {
-  return ui::MODAL_TYPE_SYSTEM;
-}
-
-base::string16 CaptivePortalView::GetWindowTitle() const {
-  base::string16 network_name;
-  const NetworkState* default_network =
-      NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
-  std::string default_network_name =
-      default_network ? default_network->name() : std::string();
-  if (!default_network_name.empty()) {
-    network_name = base::ASCIIToUTF16(default_network_name);
-  } else {
-    DLOG(ERROR)
-        << "No active/default network, but captive portal window is shown.";
-  }
-
-  return l10n_util::GetStringFUTF16(IDS_LOGIN_CAPTIVE_PORTAL_WINDOW_TITLE,
-                                    network_name);
-}
-
-bool CaptivePortalView::ShouldShowWindowTitle() const {
-  return true;
 }
 
 void CaptivePortalView::NavigationStateChanged(
