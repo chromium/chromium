@@ -513,8 +513,7 @@ class PolicyTemplateChecker(object):
           'arc_support',
           'supported_chrome_os_management',
       ):
-        self._Warning('In policy %s: Warning: Unknown key: %s' %
-                      (policy.get('name'), key))
+        self._Error('In policy %s: Unknown key: %s' % (policy.get('name'), key))
 
     # Each policy must have a name.
     self._CheckContains(policy, 'name', str, regexp_check=NO_WHITESPACE)
