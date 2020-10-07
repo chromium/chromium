@@ -16,13 +16,6 @@ import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 # For code inside the build component "headless".
 config("inside_headless_component") {
   defines = [ "HEADLESS_IMPLEMENTATION" ]
@@ -319,11 +312,8 @@ component("headless_non_renderer") {
     "lib/browser/headless_browser_context_options.h",
     "lib/browser/headless_browser_impl.cc",
     "lib/browser/headless_browser_impl.h",
-    "lib/browser/headless_browser_impl_mac.mm",
     "lib/browser/headless_browser_main_parts.cc",
     "lib/browser/headless_browser_main_parts.h",
-    "lib/browser/headless_browser_main_parts_linux.cc",
-    "lib/browser/headless_browser_main_parts_mac.mm",
     "lib/browser/headless_devtools.cc",
     "lib/browser/headless_devtools.h",
     "lib/browser/headless_devtools_agent_host_client.cc",
@@ -339,8 +329,6 @@ component("headless_non_renderer") {
     "lib/browser/headless_quota_permission_context.h",
     "lib/browser/headless_request_context_manager.cc",
     "lib/browser/headless_request_context_manager.h",
-    "lib/browser/headless_shell_application_mac.h",
-    "lib/browser/headless_shell_application_mac.mm",
     "lib/browser/headless_window_tree_host.h",
     "lib/browser/protocol/browser_handler.cc",
     "lib/browser/protocol/browser_handler.h",
@@ -359,6 +347,19 @@ component("headless_non_renderer") {
     "public/headless_devtools_target.h",
     "public/headless_web_contents.h",
   ]
+
+  if (is_mac) {
+    sources += [
+      "lib/browser/headless_browser_impl_mac.mm",
+      "lib/browser/headless_browser_main_parts_mac.mm",
+      "lib/browser/headless_shell_application_mac.h",
+      "lib/browser/headless_shell_application_mac.mm",
+    ]
+  }
+
+  if (is_linux || is_chromeos) {
+    sources += [ "lib/browser/headless_browser_main_parts_linux.cc" ]
+  }
 
   if (use_aura) {
     sources += [
@@ -424,12 +425,15 @@ component("headless_non_renderer") {
       "lib/browser/headless_web_contents_impl.h",
       "lib/headless_content_main_delegate.cc",
       "lib/headless_content_main_delegate.h",
-      "lib/headless_content_main_delegate_mac.mm",
       "lib/renderer/headless_content_renderer_client.cc",
       "lib/renderer/headless_content_renderer_client.h",
       "lib/utility/headless_content_utility_client.cc",
       "lib/utility/headless_content_utility_client.h",
     ]
+
+    if (is_mac) {
+      sources += [ "lib/headless_content_main_delegate_mac.mm" ]
+    }
 
     if (enable_basic_printing) {
       sources += [
@@ -525,12 +529,15 @@ if (!is_component_build) {
       "lib/browser/headless_web_contents_impl.h",
       "lib/headless_content_main_delegate.cc",
       "lib/headless_content_main_delegate.h",
-      "lib/headless_content_main_delegate_mac.mm",
       "lib/renderer/headless_content_renderer_client.cc",
       "lib/renderer/headless_content_renderer_client.h",
       "lib/utility/headless_content_utility_client.cc",
       "lib/utility/headless_content_utility_client.h",
     ]
+
+    if (is_mac) {
+      sources += [ "lib/headless_content_main_delegate_mac.mm" ]
+    }
 
     if (headless_use_embedded_resources) {
       defines = [ "HEADLESS_USE_EMBEDDED_RESOURCES" ]
