@@ -186,8 +186,8 @@
     // This is done with a dispatch to make sure that the view isn't added to
     // the view hierarchy right away, as it is not the expectations of the
     // API.
+    [self.baseViewController contentWillAppearAnimated:animated];
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self.baseViewController contentWillAppearAnimated:animated];
       self.baseViewController.childViewControllerForStatusBarStyle = nil;
 
       self.transitionHandler = [[TabGridTransitionHandler alloc]
