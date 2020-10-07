@@ -6,12 +6,19 @@
 
 #include "ash/public/cpp/network_icon_image_source.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/root_window_controller.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/model/system_tray_model.h"
+#include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
+#include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_item_style.h"
+#include "ash/system/tray/tray_popup_utils.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/string16.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -101,6 +108,9 @@ PhoneStatusView::PhoneStatusView(chromeos::phonehub::PhoneModel* phone_model)
                                            IDS_ASH_STATUS_TRAY_SETTINGS);
   AddView(TriView::Container::END, settings_button_);
 
+  separator->SetVisible(TrayPopupUtils::CanOpenWebUISettings());
+  settings_button_->SetVisible(TrayPopupUtils::CanOpenWebUISettings());
+
   Update();
 }
 
@@ -110,7 +120,9 @@ PhoneStatusView::~PhoneStatusView() {
 
 void PhoneStatusView::ButtonPressed(views::Button* sender,
                                     const ui::Event& event) {
-  // TODO(leandre): implement open settings/other buttons.
+  DCHECK_EQ(settings_button_, sender);
+  DCHECK(TrayPopupUtils::CanOpenWebUISettings());
+  Shell::Get()->system_tray_model()->client()->ShowConnectedDevicesSettings();
 }
 
 void PhoneStatusView::OnModelChanged() {

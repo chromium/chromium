@@ -4,7 +4,11 @@
 
 #include "ash/system/phonehub/phone_hub_notification_controller.h"
 
+#include "ash/public/cpp/system_tray_client.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/model/system_tray_model.h"
+#include "ash/system/tray/tray_popup_utils.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
@@ -142,7 +146,8 @@ void PhoneHubNotificationController::OnNotificationsRemoved(
 }
 
 void PhoneHubNotificationController::OpenSettings() {
-  // TODO(tengs): Open the PhoneHub settings page.
+  DCHECK(TrayPopupUtils::CanOpenWebUISettings());
+  Shell::Get()->system_tray_model()->client()->ShowConnectedDevicesSettings();
 }
 
 void PhoneHubNotificationController::DismissNotification(
@@ -239,8 +244,10 @@ PhoneHubNotificationController::CreateNotification(
       IDS_ASH_PHONE_HUB_NOTIFICATION_INLINE_CANCEL_BUTTON);
   optional_fields.buttons.push_back(cancel_button);
 
-  optional_fields.settings_button_handler =
-      message_center::SettingsButtonHandler::DELEGATE;
+  if (TrayPopupUtils::CanOpenWebUISettings()) {
+    optional_fields.settings_button_handler =
+        message_center::SettingsButtonHandler::DELEGATE;
+  }
 
   return std::make_unique<message_center::Notification>(
       notification_type, cros_id, title, message, icon, display_source,
