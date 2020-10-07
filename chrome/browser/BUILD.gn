@@ -165,8 +165,6 @@ static_library("browser") {
     "background_sync/background_sync_controller_impl.h",
     "background_sync/background_sync_delegate_impl.cc",
     "background_sync/background_sync_delegate_impl.h",
-    "background_sync/background_sync_metrics.cc",
-    "background_sync/background_sync_metrics.h",
     "background_sync/periodic_background_sync_permission_context.cc",
     "background_sync/periodic_background_sync_permission_context.h",
     "bad_message.cc",

@@ -5,6 +5,8 @@
 static_library("background_sync") {
   sources = [
     "background_sync_delegate.h",
+    "background_sync_metrics.cc",
+    "background_sync_metrics.h",
     "background_sync_permission_context.cc",
     "background_sync_permission_context.h",
   ]
@@ -13,6 +15,7 @@ static_library("background_sync") {
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//components/permissions",
+    "//services/metrics/public/cpp:ukm_builders",
     "//third_party/blink/public/common:headers",
   ]
 }
