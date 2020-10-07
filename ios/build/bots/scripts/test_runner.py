@@ -297,30 +297,6 @@ def get_current_xcode_info():
   }
 
 
-def get_xctest_from_app(app):
-  """Gets xctest path for an app.
-
-  Args:
-    app: (str) A path to an app.
-
-  Returns:
-    The xctest path.
-  """
-  plugins_dir = os.path.join(app, 'PlugIns')
-  if not os.path.exists(plugins_dir):
-    # TODO(crbug.com/1001667): Throw error when all device unit test should run
-    # with xctest.
-    LOGGER.warning('PlugIns dir doesn\'t exist in app.\n')
-    return None
-  for plugin in os.listdir(plugins_dir):
-    if plugin.endswith('.xctest'):
-      return os.path.join(plugins_dir, plugin)
-  # TODO(crbug.com/1001667): Throw error when all device unit test should run
-  # with xctest.
-  LOGGER.warning('.xctest doesn\'t exist in app PlugIns dir.\n')
-  return None
-
-
 class TestRunner(object):
   """Base class containing common functionality."""
 
@@ -378,8 +354,6 @@ class TestRunner(object):
     self.test_args = test_args or []
     self.test_cases = test_cases or []
     self.xctest_path = ''
-    # TODO(crbug.com/1006881): Separate "running style" from "parser style"
-    #  for XCtests and Gtests.
     self.xctest = xctest
 
     self.test_results = {}
@@ -586,26 +560,6 @@ class TestRunner(object):
       else:
         raise XCTestConfigError('Wrong config. TestRunner.launch() called from'
                                 ' an unexpected class.')
-
-    # TODO(crbug.com/1085603): Remove when device unit tests have xctest in
-    # configs.
-    elif self.xctest_path:
-
-      if self.__class__.__name__ == 'DeviceTestRunner':
-        # When self.xctest is False and (bool)self.xctest_path is True and it's
-        # using a device runner, this is a XCTest hosted unit test, which is
-        # currently running on real devices.
-        # TODO(crbug.com/1006881): Separate "running style" from "parser style"
-        # for XCtests and Gtests.
-        test_app = test_apps.DeviceXCTestUnitTestsApp(
-            self.app_path,
-            included_tests=self.test_cases,
-            env_vars=self.env_vars,
-            test_args=self.test_args)
-      else:
-        raise XCTestConfigError('Trying to run a DeviceXCTestUnitTestsApp on a'
-                                'non device runner!')
-
     else:
       test_app = test_apps.GTestsApp(
           self.app_path,
@@ -951,7 +905,7 @@ class SimulatorTestRunner(TestRunner):
       A dict of environment variables.
     """
     env = super(SimulatorTestRunner, self).get_launch_env()
-    if self.xctest_path:
+    if self.xctest:
       env['NSUnbufferedIO'] = 'YES'
     return env
 
@@ -1004,10 +958,6 @@ class DeviceTestRunner(TestRunner):
     self.udid = subprocess.check_output(['idevice_id', '--list']).rstrip()
     if len(self.udid.splitlines()) != 1:
       raise DeviceDetectionError(self.udid)
-
-    # GTest-based unittests are invoked via XCTest for all devices
-    # but produce GTest-style log output that is parsed with a GTestLogParser.
-    self.xctest_path = get_xctest_from_app(self.app_path)
 
     self.restart = restart
 
@@ -1101,9 +1051,7 @@ class DeviceTestRunner(TestRunner):
     Returns:
       A list of strings forming the command to launch the test.
     """
-    # TODO(crbug.com/1085603): Remove self.xctest_path check when device unit
-    # tests have xctest in configs.
-    if self.xctest_path or self.xctest:
+    if self.xctest:
       return test_app.command(out_dir, destination, shards)
 
     cmd = [
@@ -1148,7 +1096,7 @@ class DeviceTestRunner(TestRunner):
       A dict of environment variables.
     """
     env = super(DeviceTestRunner, self).get_launch_env()
-    if self.xctest_path:
+    if self.xctest:
       env['NSUnbufferedIO'] = 'YES'
       # e.g. ios_web_shell_egtests
       env['APP_TARGET_NAME'] = os.path.splitext(

@@ -22134,6 +22134,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
@@ -22179,6 +22180,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
@@ -22224,6 +22226,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
@@ -22269,6 +22272,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
@@ -22314,6 +22318,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
@@ -22359,6 +22364,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
@@ -22405,6 +22411,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
@@ -22451,6 +22458,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
@@ -22497,6 +22505,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
@@ -22543,6 +22552,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
@@ -22589,6 +22599,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
@@ -22635,6 +22646,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
@@ -22681,6 +22693,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
@@ -22727,6 +22740,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
@@ -22773,6 +22787,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
@@ -22819,6 +22834,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_signin_eg2tests_module",
@@ -22864,6 +22880,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_signin_eg2tests_module",
@@ -22909,6 +22926,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_signin_eg2tests_module",
@@ -22954,6 +22972,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_signin_eg2tests_module",
@@ -22999,6 +23018,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_signin_eg2tests_module",
@@ -23044,6 +23064,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
@@ -23089,6 +23110,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
@@ -23134,6 +23156,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
@@ -23179,6 +23202,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
@@ -23224,6 +23248,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
@@ -23269,6 +23294,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",
@@ -23315,6 +23341,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",
@@ -23361,6 +23388,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",
@@ -23407,6 +23435,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",
@@ -23453,6 +23482,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",
@@ -23679,6 +23709,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_web_eg2tests_module",
@@ -23724,6 +23755,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_web_eg2tests_module",
@@ -23769,6 +23801,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_web_eg2tests_module",
@@ -23814,6 +23847,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_web_eg2tests_module",
@@ -23859,6 +23893,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_web_eg2tests_module",
@@ -24174,6 +24209,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_showcase_eg2tests_module",
@@ -24219,6 +24255,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_showcase_eg2tests_module",
@@ -24264,6 +24301,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_showcase_eg2tests_module",
@@ -24309,6 +24347,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_showcase_eg2tests_module",
@@ -24354,6 +24393,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_showcase_eg2tests_module",
@@ -24669,6 +24709,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_web_shell_eg2tests_module",
@@ -24714,6 +24755,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_web_shell_eg2tests_module",
@@ -24759,6 +24801,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_web_shell_eg2tests_module",
@@ -24804,6 +24847,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_web_shell_eg2tests_module",
@@ -24849,6 +24893,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_web_shell_eg2tests_module",
@@ -26155,7 +26200,8 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "11e146"
+          "11e146",
+          "--xctest"
         ],
         "isolate_name": "cronet_test",
         "merge": {
@@ -26196,7 +26242,8 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "11e146"
+          "11e146",
+          "--xctest"
         ],
         "isolate_name": "cronet_test",
         "merge": {
@@ -26578,6 +26625,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
@@ -26620,6 +26668,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
@@ -26663,6 +26712,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
@@ -26706,6 +26756,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_signin_eg2tests_module",
@@ -26748,6 +26799,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
@@ -26790,6 +26842,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",
@@ -26875,6 +26928,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_web_eg2tests_module",
@@ -27043,6 +27097,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_showcase_eg2tests_module",
@@ -27169,6 +27224,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12a7209",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_web_shell_eg2tests_module",
@@ -28299,6 +28355,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "11e608c",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
@@ -28343,6 +28400,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "11e608c",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
@@ -28387,6 +28445,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "11e608c",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
@@ -28432,6 +28491,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "11e608c",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
@@ -28477,6 +28537,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "11e608c",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
@@ -28522,6 +28583,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "11e608c",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
@@ -28567,6 +28629,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "11e608c",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_signin_eg2tests_module",
@@ -28611,6 +28674,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "11e608c",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_signin_eg2tests_module",
@@ -28655,6 +28719,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "11e608c",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
@@ -28699,6 +28764,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "11e608c",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
@@ -28743,6 +28809,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "11e608c",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",
@@ -28788,6 +28855,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "11e608c",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",
@@ -28921,6 +28989,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "11e608c",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_web_eg2tests_module",
@@ -28965,6 +29034,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "11e608c",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_web_eg2tests_module",
@@ -29273,6 +29343,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "11e608c",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_showcase_eg2tests_module",
@@ -29317,6 +29388,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "11e608c",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_showcase_eg2tests_module",
@@ -29537,6 +29609,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "11e608c",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_web_shell_eg2tests_module",
@@ -29581,6 +29654,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "11e608c",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_web_shell_eg2tests_module",
@@ -31025,6 +31099,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
@@ -31067,6 +31142,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
@@ -31109,6 +31185,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
@@ -31151,6 +31228,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
@@ -31193,6 +31271,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
@@ -31236,6 +31315,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
@@ -31279,6 +31359,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
@@ -31322,6 +31403,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
@@ -31365,6 +31447,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
@@ -31408,6 +31491,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
@@ -31451,6 +31535,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
@@ -31494,6 +31579,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
@@ -31537,6 +31623,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_signin_eg2tests_module",
@@ -31579,6 +31666,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_signin_eg2tests_module",
@@ -31621,6 +31709,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_signin_eg2tests_module",
@@ -31663,6 +31752,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_signin_eg2tests_module",
@@ -31705,6 +31795,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
@@ -31747,6 +31838,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
@@ -31789,6 +31881,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
@@ -31831,6 +31924,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
@@ -31873,6 +31967,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",
@@ -31916,6 +32011,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",
@@ -31959,6 +32055,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",
@@ -32002,6 +32099,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",
@@ -32171,6 +32269,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_web_eg2tests_module",
@@ -32213,6 +32312,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_web_eg2tests_module",
@@ -32255,6 +32355,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_web_eg2tests_module",
@@ -32297,6 +32398,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_web_eg2tests_module",
@@ -32465,6 +32567,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_showcase_eg2tests_module",
@@ -32507,6 +32610,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_showcase_eg2tests_module",
@@ -32549,6 +32653,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_showcase_eg2tests_module",
@@ -32591,6 +32696,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_showcase_eg2tests_module",
@@ -32801,6 +32907,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_web_shell_eg2tests_module",
@@ -32843,6 +32950,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_web_shell_eg2tests_module",
@@ -32885,6 +32993,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_web_shell_eg2tests_module",
@@ -32927,6 +33036,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_web_shell_eg2tests_module",
@@ -34236,6 +34346,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
@@ -34278,6 +34389,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
@@ -34320,6 +34432,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
@@ -34362,6 +34475,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
@@ -34405,6 +34519,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
@@ -34448,6 +34563,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
@@ -34491,6 +34607,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
@@ -34534,6 +34651,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
@@ -34577,6 +34695,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
@@ -34620,6 +34739,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_signin_eg2tests_module",
@@ -34662,6 +34782,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_signin_eg2tests_module",
@@ -34704,6 +34825,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_signin_eg2tests_module",
@@ -34746,6 +34868,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
@@ -34788,6 +34911,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
@@ -34830,6 +34954,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
@@ -34872,6 +34997,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",
@@ -34915,6 +35041,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",
@@ -34958,6 +35085,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",
@@ -35085,6 +35213,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_web_eg2tests_module",
@@ -35127,6 +35256,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_web_eg2tests_module",
@@ -35169,6 +35299,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_chrome_web_eg2tests_module",
@@ -35337,6 +35468,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_showcase_eg2tests_module",
@@ -35379,6 +35511,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_showcase_eg2tests_module",
@@ -35421,6 +35554,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_showcase_eg2tests_module",
@@ -35589,6 +35723,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_web_shell_eg2tests_module",
@@ -35631,6 +35766,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_web_shell_eg2tests_module",
@@ -35673,6 +35809,7 @@
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
           "12b5018i",
+          "--xctest",
           "--xcode-parallelization"
         ],
         "isolate_name": "ios_web_shell_eg2tests_module",
