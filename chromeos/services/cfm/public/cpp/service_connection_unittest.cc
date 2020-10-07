@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,12 +56,13 @@ class CfmServiceConnectionTest : public testing::Test {
 
 TEST_F(CfmServiceConnectionTest, BindServiceContext) {
   base::RunLoop run_loop;
-  base::MockCallback<FakeServiceConnectionImpl::FakeBootstrapCallback> callback;
-  ON_CALL(callback, Run(_)).WillByDefault(Invoke([&run_loop](bool success) {
-    run_loop.QuitClosure().Run();
-  }));
-  EXPECT_CALL(callback, Run(true)).Times(1);
-  SetCallback(callback.Get());
+
+  bool test_success = false;
+  SetCallback(base::BindLambdaForTesting(
+      [&](mojo::PendingReceiver<mojom::CfmServiceContext>, bool success) {
+        test_success = success;
+        run_loop.QuitClosure().Run();
+      }));
 
   mojo::Remote<::chromeos::cfm::mojom::CfmServiceContext> remote;
   ServiceConnection::GetInstance()->BindServiceContext(
@@ -69,6 +70,7 @@ TEST_F(CfmServiceConnectionTest, BindServiceContext) {
 
   run_loop.Run();
 
+  ASSERT_TRUE(test_success);
   ASSERT_TRUE(remote.is_bound());
 }
 

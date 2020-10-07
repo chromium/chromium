@@ -5,6 +5,9 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [ "cfm_service_manager.mojom" ]
+  sources = [
+    "cfm_browser.mojom",
+    "cfm_service_manager.mojom",
+  ]
   public_deps = [ "//mojo/public/mojom/base" ]
 }

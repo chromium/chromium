@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/cfm/cfm_chrome_services.h"
 
+#include "chrome/browser/chromeos/cfm/cfm_browser_service.h"
 #include "chromeos/dbus/cfm/cfm_hotline_client.h"
 #include "chromeos/services/cfm/public/features/features.h"
 
@@ -17,7 +18,7 @@ void InitializeCfmServices() {
     return;
   }
 
-  // TODO(kdgwill) Add Initial CfM Chromium Service
+  CfmHotlineClient::Get()->AddObserver(CfmBrowserService::GetInstance());
 }
 
 }  // namespace cfm

@@ -3879,6 +3879,9 @@ source_set("unit_tests") {
   if (use_udev) {
     deps += [ "//device/udev_linux:test_support" ]
   }
+  if (is_cfm) {
+    deps += [ "//chrome/browser/chromeos/cfm:unit_tests" ]
+  }
   data = [ "//chromeos/test/data/" ]
 }
 

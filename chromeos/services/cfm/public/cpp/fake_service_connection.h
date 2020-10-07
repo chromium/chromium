@@ -7,7 +7,6 @@
 
 #include <string>
 #include "base/bind.h"
-#include "chromeos/dbus/cfm/cfm_hotline_client.h"
 #include "chromeos/services/cfm/public/cpp/service_connection.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -22,7 +21,8 @@ namespace cfm {
 class FakeServiceConnectionImpl : public ServiceConnection {
  public:
   using FakeBootstrapCallback =
-      CfmHotlineClient::BootstrapMojoConnectionCallback;
+      base::OnceCallback<void(mojo::PendingReceiver<mojom::CfmServiceContext>,
+                              bool)>;
 
   FakeServiceConnectionImpl();
   FakeServiceConnectionImpl(const FakeServiceConnectionImpl&) = delete;
@@ -30,14 +30,14 @@ class FakeServiceConnectionImpl : public ServiceConnection {
       delete;
   ~FakeServiceConnectionImpl() override;
 
-  void BindServiceContext(
-      mojo::PendingReceiver<mojom::CfmServiceContext> receiver) override;
+  void BindServiceContext(mojo::PendingReceiver<mojom::CfmServiceContext>
+                              pending_receiver) override;
 
   void SetCallback(FakeBootstrapCallback callback);
 
  private:
   void CfMContextServiceStarted(
-      mojo::PendingReceiver<mojom::CfmServiceContext> receiver,
+      mojo::PendingReceiver<mojom::CfmServiceContext> pending_receiver,
       bool is_available);
 
   FakeBootstrapCallback callback_;

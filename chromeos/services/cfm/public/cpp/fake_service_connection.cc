@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
+#include "chromeos/dbus/cfm/cfm_hotline_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -21,18 +22,18 @@ FakeServiceConnectionImpl::~FakeServiceConnectionImpl() = default;
 
 // Bind to the CfM Service Context Daemon
 void FakeServiceConnectionImpl::BindServiceContext(
-    mojo::PendingReceiver<mojom::CfmServiceContext> receiver) {
+    mojo::PendingReceiver<mojom::CfmServiceContext> pending_receiver) {
   CfmHotlineClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(&FakeServiceConnectionImpl::CfMContextServiceStarted,
-                     base::Unretained(this), std::move(receiver)));
+                     base::Unretained(this), std::move(pending_receiver)));
 }
 
 void FakeServiceConnectionImpl::CfMContextServiceStarted(
-    mojo::PendingReceiver<mojom::CfmServiceContext> receiver,
+    mojo::PendingReceiver<mojom::CfmServiceContext> pending_receiver,
     bool is_available) {
   if (!is_available || callback_.is_null()) {
-    receiver.reset();
-    std::move(callback_).Run(false);
+    pending_receiver.reset();
+    std::move(callback_).Run(std::move(pending_receiver), false);
     return;
   }
 
@@ -42,7 +43,8 @@ void FakeServiceConnectionImpl::CfMContextServiceStarted(
   DCHECK(file.IsValid());
 
   CfmHotlineClient::Get()->BootstrapMojoConnection(
-      base::ScopedFD(file.TakePlatformFile()), std::move(callback_));
+      base::ScopedFD(file.TakePlatformFile()),
+      base::BindOnce(std::move(callback_), std::move(pending_receiver)));
 }
 
 void FakeServiceConnectionImpl::SetCallback(FakeBootstrapCallback callback) {
