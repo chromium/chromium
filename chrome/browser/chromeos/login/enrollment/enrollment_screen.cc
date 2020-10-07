@@ -75,11 +75,12 @@ bool ShouldAttemptRestart() {
   return false;
 }
 
-// Returns the enterprise display domain after enrollment, or an empty string.
-std::string GetEnterpriseDisplayDomain() {
+// Returns the manager of the domain (either the domain name or the email of the
+// admin of the domain) after enrollment, or an empty string.
+std::string GetEnterpriseDomainManager() {
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  return connector->GetEnterpriseDisplayDomain();
+  return connector->GetEnterpriseDomainManager();
 }
 
 }  // namespace
@@ -382,8 +383,8 @@ void EnrollmentScreen::OnDeviceEnrolled() {
   VLOG(1) << "Device enrolled.";
   enrollment_succeeded_ = true;
   // Some info to be shown on the success screen.
-  view_->SetEnterpriseDomainAndDeviceType(GetEnterpriseDisplayDomain(),
-                                          ui::GetChromeOSDeviceName());
+  view_->SetEnterpriseDomainInfo(GetEnterpriseDomainManager(),
+                                 ui::GetChromeOSDeviceName());
 
   enrollment_helper_->GetDeviceAttributeUpdatePermission();
 
@@ -429,8 +430,8 @@ void EnrollmentScreen::OnDeviceAttributeUpdatePermission(bool granted) {
 
 void EnrollmentScreen::OnRestoreAfterRollbackCompleted() {
   // Pass the enterprise domain and the device type to be shown.
-  view_->SetEnterpriseDomainAndDeviceType(GetEnterpriseDisplayDomain(),
-                                          ui::GetChromeOSDeviceName());
+  view_->SetEnterpriseDomainInfo(GetEnterpriseDomainManager(),
+                                 ui::GetChromeOSDeviceName());
   // Show the success screen
   StartupUtils::MarkDeviceRegistered(
       base::BindOnce(&EnrollmentScreen::ShowEnrollmentStatusOnSuccess,

@@ -138,9 +138,9 @@
             icon1x="oobe-32:enterprise" icon2x="oobe-64:enterprise">
         </hd-iron-icon>
         <!-- Hide the subtitle if the domain could not be determined. -->
-        <div hidden="[[isEmpty_(enrolledDomain_)]]" class="self-start"
+        <div hidden="[[isEmpty_(domainManager_)]]" class="self-start"
             slot="subtitle">
-          <div>[[successText_(locale, deviceName_, enrolledDomain_)]]</div>
+          <div>[[successText_(locale, deviceName_, domainManager_)]]</div>
         </div>
         <div slot="footer" class="flex layout vertical center end-justified">
           <img srcset="images/enrollment_success_illustration_1x.png 1x,

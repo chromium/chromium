@@ -42,7 +42,7 @@ Polymer({
     'doReload',
     'setAdJoinConfiguration',
     'setAdJoinParams',
-    'setEnterpriseDomainAndDeviceType',
+    'setEnterpriseDomainInfo',
     'showAttributePromptStep',
     'showError',
     'showStep',
@@ -59,9 +59,10 @@ Polymer({
     },
 
     /**
-     * Domain the device was enrolled to.
+     * Manager of the enrolled domain. Either a domain (foo.com) or an email
+     * address (admin@foo.com).
      */
-    enrolledDomain_: {
+    domainManager_: {
       type: String,
       value: '',
     },
@@ -356,11 +357,11 @@ Polymer({
   /**
    * Sets the type of the device and the enterprise domain to be shown.
    *
-   * @param {string} enterprise_domain
+   * @param {string} manager
    * @param {string} device_type
    */
-  setEnterpriseDomainAndDeviceType(enterprise_domain, device_type) {
-    this.enrolledDomain_ = enterprise_domain;
+  setEnterpriseDomainInfo(manager, device_type) {
+    this.domainManager_ = manager;
     this.deviceName_ = device_type;
   },
 

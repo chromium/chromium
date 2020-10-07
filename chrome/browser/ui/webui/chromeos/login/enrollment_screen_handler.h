@@ -71,9 +71,8 @@ class EnrollmentScreenHandler
   void SetEnrollmentConfig(Controller* controller,
                            const policy::EnrollmentConfig& config) override;
 
-  void SetEnterpriseDomainAndDeviceType(
-      const std::string& domain,
-      const base::string16& device_type) override;
+  void SetEnterpriseDomainInfo(const std::string& manager,
+                               const base::string16& device_type) override;
   void Show() override;
   void Hide() override;
   void ShowSigninScreen() override;

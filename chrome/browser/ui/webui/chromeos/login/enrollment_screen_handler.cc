@@ -339,10 +339,10 @@ void EnrollmentScreenHandler::ShowEnrollmentSpinnerScreen() {
   ShowStep(kEnrollmentStepWorking);
 }
 
-void EnrollmentScreenHandler::SetEnterpriseDomainAndDeviceType(
-    const std::string& domain,
+void EnrollmentScreenHandler::SetEnterpriseDomainInfo(
+    const std::string& manager,
     const base::string16& device_type) {
-  CallJS("login.OAuthEnrollmentScreen.setEnterpriseDomainAndDeviceType", domain,
+  CallJS("login.OAuthEnrollmentScreen.setEnterpriseDomainInfo", manager,
          device_type);
 }
 
