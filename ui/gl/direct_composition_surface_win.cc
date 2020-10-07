@@ -577,8 +577,6 @@ bool DirectCompositionSurfaceWin::IsHDRSupported() {
         continue;
       }
 
-      base::UmaHistogramSparse("GPU.Output.ColorSpace", desc.ColorSpace);
-
       if (desc.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020) {
         hdr_monitor_found = true;
       }
