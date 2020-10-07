@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/util/multi_window_support.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
+#include "ios/chrome/browser/web_state_list/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_metrics_browser_agent.h"
 #include "ios/net/cookies/cookie_store_ios.h"
 #include "ios/net/cookies/system_cookie_util.h"
@@ -486,10 +487,26 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
                              base::TimeDelta::FromMilliseconds(1),
                              base::TimeDelta::FromHours(24), 50);
 
-  WebStateListMetricsBrowserAgent* webStateListMetrics =
-      WebStateListMetricsBrowserAgent::FromBrowser(currentInterface.browser);
-  if (webStateListMetrics)
-    webStateListMetrics->RecordSessionMetrics();
+  // Record session metrics (currentInterface.browserState may be null during
+  // tests).
+  if (currentInterface.browserState) {
+    ChromeBrowserState* mainChromeBrowserState =
+        currentInterface.browserState->GetOriginalChromeBrowserState();
+
+    SessionMetrics::FromBrowserState(mainChromeBrowserState)
+        ->RecordAndClearSessionMetrics(
+            MetricsToRecordFlags::kOpenedTabCount |
+            MetricsToRecordFlags::kClosedTabCount |
+            MetricsToRecordFlags::kActivatedTabCount);
+
+    if (mainChromeBrowserState->HasOffTheRecordChromeBrowserState()) {
+      ChromeBrowserState* otrChromeBrowserState =
+          mainChromeBrowserState->GetOffTheRecordChromeBrowserState();
+
+      SessionMetrics::FromBrowserState(otrChromeBrowserState)
+          ->RecordAndClearSessionMetrics(MetricsToRecordFlags::kNoMetrics);
+    }
+  }
 
   if (currentInterface.browserState) {
     IOSProfileSessionDurationsService* psdService =

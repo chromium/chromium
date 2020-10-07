@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 #import "ios/web/public/web_state_observer.h"
 
+class SessionMetrics;
+
 class WebStateListMetricsBrowserAgent
     : BrowserObserver,
       public WebStateListObserver,
@@ -19,10 +21,11 @@ class WebStateListMetricsBrowserAgent
       public web::WebStateObserver,
       public BrowserUserData<WebStateListMetricsBrowserAgent> {
  public:
-  WebStateListMetricsBrowserAgent();
   ~WebStateListMetricsBrowserAgent() override;
 
-  void RecordSessionMetrics();
+  // Creates the WebStateListMetricsBrowserAgent associating it with |browser|.
+  static void CreateForBrowser(Browser* browser,
+                               SessionMetrics* session_metrics);
 
   // WebStateListObserver implementation.
   void WebStateInsertedAt(WebStateList* web_state_list,
@@ -39,15 +42,13 @@ class WebStateListMetricsBrowserAgent
                            ActiveWebStateChangeReason reason) override;
 
  private:
-  explicit WebStateListMetricsBrowserAgent(Browser* browser);
+  WebStateListMetricsBrowserAgent(Browser* browser,
+                                  SessionMetrics* session_metrics);
   friend class BrowserUserData<WebStateListMetricsBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
 
   // BrowserObserver methods
   void BrowserDestroyed(Browser* browser) override;
-
-  // Reset metrics counters.
-  void ResetSessionMetrics();
 
   // SessionRestorationObserver implementation.
   void WillStartSessionRestoration() override;
@@ -64,12 +65,12 @@ class WebStateListMetricsBrowserAgent
       web::PageLoadCompletionStatus load_completion_status) override;
 
   // The WebStateList containing all the monitored tabs.
-  WebStateList* web_state_list_;  // weak
+  WebStateList* web_state_list_ = nullptr;
 
-  // Counters for metrics.
-  int inserted_web_state_counter_ = 0;
-  int detached_web_state_counter_ = 0;
-  int activated_web_state_counter_ = 0;
+  // The object storing the metrics.
+  SessionMetrics* session_metrics_ = nullptr;
+
+  // Whether metric recording is paused (for session restoration).
   bool metric_collection_paused_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(WebStateListMetricsBrowserAgent);
