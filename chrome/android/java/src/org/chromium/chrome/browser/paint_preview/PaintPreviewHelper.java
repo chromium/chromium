@@ -41,9 +41,9 @@ public class PaintPreviewHelper {
     private static boolean sHasAttemptedToShowOnRestore;
 
     /**
-     * A map for keeping Activity-specific variables and classes. New entries are added on calls
-     * to {@link #initialize(ChromeActivity, TabModelSelector)}. Entries are automatically removed
-     * when their respective Activity is destroyed.
+     * A map for keeping Activity-specific variables and classes. New entries are added on calls to
+     * {@link #initialize(ChromeActivity, TabModelSelector)}. Entries are automatically removed when
+     * their respective Activity is destroyed.
      */
     private static Map<WindowAndroid, PaintPreviewWindowAndroidHelper> sWindowAndroidHelperMap =
             new HashMap<>();
@@ -51,7 +51,8 @@ public class PaintPreviewHelper {
     /**
      * Initializes the logic required for the Paint Preview on startup feature. Mainly, observes a
      * {@link TabModelSelector} to monitor for initialization completion.
-     * @param activity The ChromeActivity that corresponds to the tabModelSelector.
+     *
+     * @param activity         The ChromeActivity that corresponds to the tabModelSelector.
      * @param tabModelSelector The TabModelSelector to observe.
      */
     public static void initialize(ChromeActivity<?> activity, TabModelSelector tabModelSelector,
@@ -99,13 +100,17 @@ public class PaintPreviewHelper {
         player.setBrowserVisibilityDelegate(
                 windowAndroidHelper.getBrowserControlsManager().getBrowserVisibilityDelegate());
         player.setProgressSimulatorNeededCallback(
-                ()
-                        -> windowAndroidHelper.getLoadProgressCoordinator()
-                                   .simulateLoadProgressCompletion());
+                () -> {
+                    if (windowAndroidHelper.getLoadProgressCoordinator() == null) return;
+                    windowAndroidHelper.getLoadProgressCoordinator()
+                            .simulateLoadProgressCompletion();
+                });
         player.setProgressbarUpdatePreventionCallback(
-                (preventProgressbar)
-                        -> windowAndroidHelper.getLoadProgressCoordinator().setPreventUpdates(
-                                preventProgressbar));
+                (preventProgressbar) -> {
+                    if (windowAndroidHelper.getLoadProgressCoordinator() == null) return;
+                    windowAndroidHelper.getLoadProgressCoordinator().setPreventUpdates(
+                            preventProgressbar);
+                });
         PageLoadMetrics.Observer observer = new PageLoadMetrics.Observer() {
             @Override
             public void onFirstMeaningfulPaint(WebContents webContents, long navigationId,
@@ -115,9 +120,9 @@ public class PaintPreviewHelper {
         };
 
         if (!player.maybeShow(()
-                                      -> PageLoadMetrics.removeObserver(observer),
-                    windowAndroidHelper.getActivityCreationTime(),
-                    () -> UmaUtils.hasComeToForeground() && !UmaUtils.hasComeToBackground())) {
+                        -> PageLoadMetrics.removeObserver(observer),
+                windowAndroidHelper.getActivityCreationTime(),
+                () -> UmaUtils.hasComeToForeground() && !UmaUtils.hasComeToBackground())) {
             return;
         }
 
