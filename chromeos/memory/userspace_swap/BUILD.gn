@@ -43,6 +43,7 @@ component("userspace_swap") {
     "//third_party/zlib/google:compression_utils",
   ]
   sources = [
+    "region.cc",
     "region.h",
     "swap_storage.cc",
     "swap_storage.h",
@@ -67,6 +68,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   sources = [
+    "region_unittest.cc",
     "swap_storage_unittest.cc",
     "userfaultfd_unittest.cc",
     "userspace_swap_unittest.cc",

@@ -7,15 +7,20 @@
 
 #include <sys/uio.h>
 #include <cstdint>
+#include <ostream>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
+#include "base/optional.h"
 #include "base/strings/string_piece.h"
+#include "chromeos/chromeos_export.h"
 
 namespace chromeos {
 namespace memory {
 namespace userspace_swap {
+
+struct RegionOverlap;
 
 // A region describes a block of memory.
 class Region {
@@ -26,13 +31,10 @@ class Region {
   Region() = default;
   Region(Region&&) = default;
   Region(const Region&) = default;
+  ~Region() = default;
   Region& operator=(const Region&) = default;
   Region& operator=(Region&&) = default;
 
-  // To avoid requiring callers to cast pointers or integral types to Regions,
-  // we're flexible and allow any pointer type or any integral type. We convert
-  // them to the types needed for a Region. This simplifies calling code
-  // tremendously. Static asserts enforce that the types are valid.
   template <typename Address, typename Length>
   Region(Address* address, Length length)
       : address(reinterpret_cast<uintptr_t>(const_cast<Address*>(address))),
@@ -66,29 +68,56 @@ class Region {
   Region(const std::vector<T>& vec)
       : Region(vec.data(), vec.size() * sizeof(T)) {}
 
-  // AsIovec will return the iovec representation of this Region.
-  struct iovec AsIovec() const {
-    return {.iov_base = reinterpret_cast<void*>(address), .iov_len = length};
-  }
-
-  base::StringPiece AsStringPiece() const {
-    return base::StringPiece(reinterpret_cast<char*>(address), length);
-  }
-
   template <typename T>
   base::span<T> AsSpan() const {
     return base::span<T>(reinterpret_cast<T*>(address), length);
   }
 
+  struct iovec CHROMEOS_EXPORT AsIovec() const;
+  base::StringPiece CHROMEOS_EXPORT AsStringPiece() const;
+
   bool operator<(const Region& other) const {
-    // Because the standard library treats equality as !less(a,b) && !less(b,a)
-    // our definition of less than will be that this has to be FULLY before
-    // other. Overlapping regions are not allowed and are explicitly checked
-    // before inserting by using find() any overlap would return equal, this
-    // also has the property that you can search for a Region of length 1 to
-    // find the mapping for a fault.
+    // Because the standard library treats equality as !less(a,b) &&
+    // !less(b,a) our definition of less than will be that this has to be
+    // FULLY before other. Overlapping regions are not allowed and are
+    // explicitly checked before inserting by using find() any overlap would
+    // return equal, this also has the property that you can search for a
+    // Region of length 1 to find the mapping for a fault.
     return ((address + length - 1) < other.address);
   }
+
+  // CalculateRegionOverlap can be used to determine how a |range| overlaps with
+  // this region. There are five possible outcomes:
+  //  1. |range| does not overlap at all with this region, in this situation the
+  //  returned RegionOverlap will have none of the members with values.
+  //  2. |range| fully covers this region, in this situaton before and after in
+  //  the RegionOverlap will be empty and intersection will be identical to this
+  //  region.
+  //  3. |range| overlaps from the start of of this region, in this case before
+  //  will be empty and intersection will contain the overlapped portion and
+  //  after will contain the piece that did not intersect.
+  //  4. |range| overlaps from the end of this region, In this case before will
+  //  contain the piece which does not intersect, intersection will contain the
+  //  portion that overlaps and after will be empty.
+  //  5. |range| is fully within this region, in this situation all fields will
+  //  be set, before will contain the part before the intersection, intersection
+  //  will contain an area equal to range, and after will contain the portion
+  //  which doesn't intersect after range.
+  CHROMEOS_EXPORT RegionOverlap
+  CalculateRegionOverlap(const Region& range) const;
+
+  friend std::ostream& operator<<(std::ostream& os, const Region& region);
+};
+
+struct CHROMEOS_EXPORT RegionOverlap {
+  RegionOverlap();
+  ~RegionOverlap();
+
+  RegionOverlap(const RegionOverlap&);
+
+  base::Optional<Region> before;
+  base::Optional<Region> intersection;
+  base::Optional<Region> after;
 };
 
 }  // namespace userspace_swap
