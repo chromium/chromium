@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/safe_browsing/safe_browsing_blocking_page.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
@@ -35,11 +36,15 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
                        std::move(controller_client),
                        display_options) {}
 
+// static
 SafeBrowsingBlockingPage* SafeBrowsingBlockingPage::CreateBlockingPage(
     SafeBrowsingUIManager* ui_manager,
     content::WebContents* web_contents,
     const GURL& main_frame_url,
     const UnsafeResource& unsafe_resource) {
+  // Log the resource type that triggers the safe browsing blocking page.
+  UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.ResourceType",
+                            unsafe_resource.resource_type);
   const UnsafeResourceList unsafe_resources{unsafe_resource};
   content::NavigationEntry* entry =
       security_interstitials::GetNavigationEntryForResource(unsafe_resource);
