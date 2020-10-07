@@ -322,7 +322,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'quiche_revision': 'd10bbe3dc764651fb2579c0291d0770260d7a9b8',
+  'quiche_revision': 'c0588b0ea3a6bf9599b5f275fac62e04dc3a009a',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ios_webkit
   # and whatever else without interference from each other.
