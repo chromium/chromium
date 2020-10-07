@@ -223,6 +223,8 @@ public class SecuritySettingsFragment extends SafeBrowsingSettingsFragmentBase
             metricsSuffix = "SafetyCheck";
         } else if (mAccessPoint == SettingsAccessPoint.SURFACE_EXPLORER_PROMO_SLINGER) {
             metricsSuffix = "SurfaceExplorerPromoSlinger";
+        } else if (mAccessPoint == SettingsAccessPoint.SECURITY_INTERSTITIAL) {
+            metricsSuffix = "SecurityInterstitial";
         } else {
             metricsSuffix = "Default";
         }
