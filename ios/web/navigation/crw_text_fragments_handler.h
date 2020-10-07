@@ -20,6 +20,7 @@ struct Referrer;
 // WebStates' loaded URLs.
 @interface CRWTextFragmentsHandler : CRWWebViewHandler
 
+// Initializes a handler with a |delegate| to retrieve the current WebState.
 - (instancetype)initWithDelegate:(id<CRWWebViewHandlerDelegate>)delegate;
 
 // Checks the WebState's destination URL for Text Fragments. If found, searches

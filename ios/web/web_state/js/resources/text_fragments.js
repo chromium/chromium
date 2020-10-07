@@ -37,27 +37,38 @@ const utils = goog.require(
    * Does the actual work for handleTextFragments.
    */
   const doHandleTextFragments = function(fragments, scroll) {
-    let marks = [];
+    const marks = [];
+    let successCount = 0;
 
     for (const fragment of fragments) {
       // Process the fragments, then filter out any that evaluate to false.
-      let newMarks = utils.processTextFragmentDirective(fragment)
+      const newMarks = utils.processTextFragmentDirective(fragment)
           .filter((mark) => { return !!mark });
 
-      if (Array.isArray(newMarks))
+      if (Array.isArray(newMarks)) {
+        if (newMarks.length > 0) {
+          ++successCount;
+        }
+
         marks.push(...newMarks);
+      }
     }
 
     if (scroll && marks.length > 0)
       utils.scrollElementIntoView(marks[0]);
-
-    // TODO(crbug.com/1099268): Count successes/failures above and log metrics
 
     for (const mark of marks) {
       mark.addEventListener("click", () => {
         utils.removeMarks(marks);
       });
     }
-  }
 
+    __gCrWeb.message.invokeOnHost({
+      command: 'textFragments.response',
+      result: {
+        successCount: successCount,
+        fragmentsCount: fragments.length
+      }
+    });
+  }
 })();
