@@ -9,7 +9,6 @@ import android.net.Uri;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_check.PasswordCheckReferrer;
@@ -23,8 +22,7 @@ public class PasswordCheckupLauncher {
     private static void launchCheckupInAccountWithWindowAndroid(
             String checkupUrl, WindowAndroid windowAndroid) {
         if (windowAndroid.getContext().get() == null) return; // Window not available yet/anymore.
-        ChromeActivity activity = (ChromeActivity) windowAndroid.getActivity().get();
-        launchCheckupInAccountWithActivity(checkupUrl, activity);
+        launchCheckupInAccountWithActivity(checkupUrl, windowAndroid.getActivity().get());
     }
 
     @CalledByNative
