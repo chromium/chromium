@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "base/macros.h"
 
 @class ChromeIdentity;
 @class UIViewController;
@@ -23,7 +22,10 @@ using TrustedVaultSharedKeyList = std::vector<TrustedVaultSharedKey>;
 class ChromeTrustedVaultService {
  public:
   ChromeTrustedVaultService();
+  ChromeTrustedVaultService(const ChromeTrustedVaultService&) = delete;
   virtual ~ChromeTrustedVaultService();
+  ChromeTrustedVaultService& operator=(const ChromeTrustedVaultService&) =
+      delete;
 
   using CallbackList = base::CallbackList<void()>;
   using Subscription = CallbackList::Subscription;
@@ -32,23 +34,22 @@ class ChromeTrustedVaultService {
   // and returns them by calling |callback|.
   virtual void FetchKeys(
       ChromeIdentity* chrome_identity,
-      base::OnceCallback<void(const TrustedVaultSharedKeyList&)> callback);
+      base::OnceCallback<void(const TrustedVaultSharedKeyList&)> callback) = 0;
   // Presents the trusted vault key reauthentication UI for |identity|.
   // Once the reauth is done and the UI is dismissed, |callback| is called.
   // |callback| is not called if the reauthentication is canceled.
   virtual void Reauthentication(ChromeIdentity* chrome_identity,
                                 UIViewController* presentingViewController,
-                                void (^callback)(BOOL success, NSError* error));
+                                void (^callback)(BOOL success,
+                                                 NSError* error)) = 0;
   // Cancels the presented trusted vault key reauthentication UI.
   // The reauthentication callback will not be called.
   // If no reauthentication dialog is not present, |callback| is called
   // synchronously.
-  virtual void CancelReauthentication(BOOL animated, void (^callback)(void));
+  virtual void CancelReauthentication(BOOL animated,
+                                      void (^callback)(void)) = 0;
   virtual std::unique_ptr<Subscription> AddKeysChangedObserver(
-      const base::RepeatingClosure& cb);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeTrustedVaultService);
+      const base::RepeatingClosure& cb) = 0;
 };
 
 }  // namespace ios
