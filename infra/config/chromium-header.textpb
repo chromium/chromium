@@ -11,6 +11,10 @@ oncalls {
   url: "https://rota-ng.appspot.com/legacy/sheriff_ios.json"
 }
 oncalls {
+  name: "ChromeOS"
+  url: "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chromeos-gardeners"
+}
+oncalls {
   name: "GPU"
   url: "https://rota-ng.appspot.com/legacy/sheriff_gpu.json"
 }
