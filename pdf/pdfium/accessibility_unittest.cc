@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "build/build_config.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/ppapi_migration/geometry_conversions.h"
@@ -20,12 +19,12 @@ namespace chrome_pdf {
 
 using AccessibilityTest = PDFiumTestBase;
 
-float GetExpectedBoundsWidth(bool is_chromeos, size_t i, float expected) {
-  return (is_chromeos && i == 0) ? 85.333336f : expected;
+float GetExpectedBoundsWidth(bool using_test_fonts, size_t i, float expected) {
+  return (using_test_fonts && i == 0) ? 85.333336f : expected;
 }
 
-double GetExpectedCharWidth(bool is_chromeos, size_t i, double expected) {
-  if (is_chromeos) {
+double GetExpectedCharWidth(bool using_test_fonts, size_t i, double expected) {
+  if (using_test_fonts) {
     if (i == 25)
       return 13.333343;
     if (i == 26)
@@ -40,13 +39,7 @@ double GetExpectedCharWidth(bool is_chromeos, size_t i, double expected) {
 // update the GetExpected... functions above. If that becomes too much of a
 // burden, consider changing the checks to just make sure the font metrics look
 // sane.
-// Flaky on Linux only.  http://crbug.com/1135988
-#if defined(OS_LINUX)
-#define MAYBE_GetAccessibilityPage DISABLED_GetAccessibilityPage
-#else
-#define MAYBE_GetAccessibilityPage GetAccessibilityPage
-#endif
-TEST_F(AccessibilityTest, MAYBE_GetAccessibilityPage) {
+TEST_F(AccessibilityTest, GetAccessibilityPage) {
   static constexpr size_t kExpectedTextRunCount = 2;
   struct {
     uint32_t len;
@@ -94,7 +87,7 @@ TEST_F(AccessibilityTest, MAYBE_GetAccessibilityPage) {
   EXPECT_EQ(text_runs.size(), page_info.text_run_count);
   EXPECT_EQ(chars.size(), page_info.char_count);
 
-  bool is_chromeos = IsRunningOnChromeOS();
+  bool using_test_fonts = UsingTestFonts();
 
   ASSERT_EQ(kExpectedTextRunCount, text_runs.size());
   for (size_t i = 0; i < kExpectedTextRunCount; ++i) {
@@ -104,7 +97,7 @@ TEST_F(AccessibilityTest, MAYBE_GetAccessibilityPage) {
     EXPECT_FLOAT_EQ(expected.bounds_x, text_runs[i].bounds.point.x) << i;
     EXPECT_FLOAT_EQ(expected.bounds_y, text_runs[i].bounds.point.y) << i;
     float expected_bounds_w =
-        GetExpectedBoundsWidth(is_chromeos, i, expected.bounds_w);
+        GetExpectedBoundsWidth(using_test_fonts, i, expected.bounds_w);
     EXPECT_FLOAT_EQ(expected_bounds_w, text_runs[i].bounds.size.width) << i;
     EXPECT_FLOAT_EQ(expected.bounds_h, text_runs[i].bounds.size.height) << i;
     EXPECT_EQ(PP_PRIVATEDIRECTION_LTR, text_runs[i].direction);
@@ -115,7 +108,7 @@ TEST_F(AccessibilityTest, MAYBE_GetAccessibilityPage) {
     const auto& expected = kExpectedChars[i];
     EXPECT_EQ(expected.unicode_character, chars[i].unicode_character) << i;
     double expected_char_width =
-        GetExpectedCharWidth(is_chromeos, i, expected.char_width);
+        GetExpectedCharWidth(using_test_fonts, i, expected.char_width);
     EXPECT_NEAR(expected_char_width, chars[i].char_width, 0.001) << i;
   }
 }
@@ -458,13 +451,7 @@ TEST_F(AccessibilityTest, TestInternalLinkClickActionHandling) {
   EXPECT_TRUE(client.url().empty());
 }
 
-// Flaky on Linux only.  http://crbug.com/1135988
-#if defined(OS_LINUX)
-#define MAYBE_GetAccessibilityLinkInfo DISABLED_GetAccessibilityLinkInfo
-#else
-#define MAYBE_GetAccessibilityLinkInfo GetAccessibilityLinkInfo
-#endif
-TEST_F(AccessibilityTest, MAYBE_GetAccessibilityLinkInfo) {
+TEST_F(AccessibilityTest, GetAccessibilityLinkInfo) {
   // Clone of pp::PDF::PrivateAccessibilityLinkInfo.
   struct {
     std::string url;
@@ -476,7 +463,7 @@ TEST_F(AccessibilityTest, MAYBE_GetAccessibilityLinkInfo) {
                             {"http://bing.com", 1, 4, 1, {131, 121, 138, 20}},
                             {"http://google.com", 2, 7, 1, {82, 67, 161, 21}}};
 
-  if (IsRunningOnChromeOS()) {
+  if (UsingTestFonts()) {
     expected_link_info[0].bounds = {75, 192, 110, 15};
     expected_link_info[1].bounds = {131, 120, 138, 22};
   }

@@ -8,8 +8,10 @@
 #include <stddef.h>
 
 #include <memory>
+#include <vector>
 
 #include "base/files/file_path.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chrome_pdf {
@@ -26,8 +28,8 @@ class PDFiumTestBase : public testing::Test {
   PDFiumTestBase& operator=(const PDFiumTestBase&) = delete;
   ~PDFiumTestBase() override;
 
-  // Returns true when actually running in a Chrome OS environment.
-  static bool IsRunningOnChromeOS();
+  // Returns true in test environments that use //third_party/test_fonts.
+  static bool UsingTestFonts();
 
  protected:
   // Result of calling InitializeEngineWithoutLoading().
@@ -69,6 +71,17 @@ class PDFiumTestBase : public testing::Test {
 
  private:
   void InitializePDFium();
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  base::FilePath test_fonts_path_;
+#endif
+
+  // Stores custom font paths, if any, in a format compatible with
+  // FPDF_InitLibraryWithConfig(). This must outlive `test_fonts_path_`, as it
+  // may point to it. This must remain valid while PDFium is active, from when
+  // FPDF_InitLibraryWithConfig() first gets called to when
+  // FPDF_DestroyLibrary() gets called.
+  std::vector<const char*> font_paths_;
 };
 
 }  // namespace chrome_pdf
