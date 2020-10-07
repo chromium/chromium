@@ -34,14 +34,6 @@ function handlePathInfo({execPath, profilePath}) {
 }
 
 /**
- * Promise resolution handler for the Flash version to display.
- * @param {string} flashVersion The Flash version to display.
- */
-function handlePluginInfo(flashVersion) {
-  $('flash_version').textContent = flashVersion;
-}
-
-/**
  * Callback from the backend with the OS version to display.
  * @param {string} osVersion The OS version to display.
  */
@@ -84,7 +76,6 @@ function onLoadWork() {
   const includeVariationsCmd = location.search.includes("show-variations-cmd");
   cr.sendWithPromise('requestVariationInfo', includeVariationsCmd)
       .then(handleVariationInfo);
-  cr.sendWithPromise('requestPluginInfo').then(handlePluginInfo);
   cr.sendWithPromise('requestPathInfo').then(handlePathInfo);
 
   if (cr.isChromeOS) {

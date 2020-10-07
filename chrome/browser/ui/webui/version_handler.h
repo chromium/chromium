@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "content/public/common/webplugininfo.h"
 
 // Handler class for Version page operations.
 class VersionHandler : public content::WebUIMessageHandler {
@@ -32,11 +31,6 @@ class VersionHandler : public content::WebUIMessageHandler {
   // with variations list as well as command variations if requested.
   virtual void HandleRequestVariationInfo(const base::ListValue* args);
 
-  // Callback for the "requestPluginInfo" message. This asynchronously requests
-  // the flash version and eventually returns it to the front end along with the
-  // list of variations using |OnGotPlugins|.
-  virtual void HandleRequestPluginInfo(const base::ListValue* args);
-
   // Callback for the "requestPathInfo" message. This resolves asynchronously
   // with |OnGotFilePaths|.
   virtual void HandleRequestPathInfo(const base::ListValue* args);
@@ -47,11 +41,6 @@ class VersionHandler : public content::WebUIMessageHandler {
   void OnGotFilePaths(std::string callback_id,
                       base::string16* executable_path_data,
                       base::string16* profile_path_data);
-
-  // Callback for GetPlugins which responds to the page with the Flash version.
-  // This also initiates the OS Version load on ChromeOS.
-  void OnGotPlugins(std::string callback_id,
-                    const std::vector<content::WebPluginInfo>& plugins);
 
   // Factory for the creating refs in callbacks.
   base::WeakPtrFactory<VersionHandler> weak_ptr_factory_{this};

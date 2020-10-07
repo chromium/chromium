@@ -10,9 +10,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/strings/string16.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -26,15 +24,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "content/public/common/content_constants.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "chrome/browser/plugins/plugin_prefs.h"
-#include "content/public/browser/plugin_service.h"
-#endif
 
 namespace {
 
@@ -76,10 +67,6 @@ void VersionHandler::RegisterMessages() {
       base::BindRepeating(&VersionHandler::HandleRequestVariationInfo,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      version_ui::kRequestPluginInfo,
-      base::BindRepeating(&VersionHandler::HandleRequestPluginInfo,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       version_ui::kRequestPathInfo,
       base::BindRepeating(&VersionHandler::HandleRequestPathInfo,
                           base::Unretained(this)));
@@ -114,24 +101,6 @@ void VersionHandler::HandleRequestVariationInfo(const base::ListValue* args) {
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
 
-void VersionHandler::HandleRequestPluginInfo(const base::ListValue* args) {
-  AllowJavascript();
-
-  std::string callback_id;
-  CHECK_EQ(1U, args->GetSize());
-  CHECK(args->GetString(0, &callback_id));
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  // The Flash version information is needed in the response, so make sure
-  // the plugins are loaded.
-  content::PluginService::GetInstance()->GetPlugins(
-      base::BindOnce(&VersionHandler::OnGotPlugins,
-                     weak_ptr_factory_.GetWeakPtr(), callback_id));
-#else
-  RejectJavascriptCallback(base::Value(callback_id), base::Value());
-#endif
-}
-
 void VersionHandler::HandleRequestPathInfo(const base::ListValue* args) {
   AllowJavascript();
 
@@ -163,30 +132,3 @@ void VersionHandler::OnGotFilePaths(std::string callback_id,
   response.SetKey(version_ui::kKeyProfilePath, base::Value(*profile_path_data));
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-void VersionHandler::OnGotPlugins(
-    std::string callback_id,
-    const std::vector<content::WebPluginInfo>& plugins) {
-  // Obtain the version of the first enabled Flash plugin.
-  std::vector<content::WebPluginInfo> info_array;
-  content::PluginService::GetInstance()->GetPluginInfoArray(
-      GURL(), content::kFlashPluginSwfMimeType, false, &info_array, NULL);
-  std::string flash_version_and_path =
-      l10n_util::GetStringUTF8(IDS_PLUGINS_DISABLED_PLUGIN);
-  PluginPrefs* plugin_prefs =
-      PluginPrefs::GetForProfile(Profile::FromWebUI(web_ui())).get();
-  if (plugin_prefs) {
-    for (size_t i = 0; i < info_array.size(); ++i) {
-      if (plugin_prefs->IsPluginEnabled(info_array[i])) {
-        flash_version_and_path = base::StringPrintf(
-            "%s %s", base::UTF16ToUTF8(info_array[i].version).c_str(),
-            base::UTF16ToUTF8(info_array[i].path.LossyDisplayName()).c_str());
-        break;
-      }
-    }
-  }
-  ResolveJavascriptCallback(base::Value(callback_id),
-                            base::Value(flash_version_and_path));
-}
-#endif  // BUILDFLAG(ENABLE_PLUGINS)

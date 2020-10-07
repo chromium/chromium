@@ -13,7 +13,6 @@ const char kVersionJS[] = "version.js";
 // Message handlers.
 const char kRequestVersionInfo[] = "requestVersionInfo";
 const char kRequestVariationInfo[] = "requestVariationInfo";
-const char kRequestPluginInfo[] = "requestPluginInfo";
 const char kRequestPathInfo[] = "requestPathInfo";
 
 // Named keys used in message handler responses.
@@ -47,10 +46,6 @@ const char kExecutablePathName[] = "executable_path_name";
 #endif
 #if defined(OS_CHROMEOS)
 const char kFirmwareVersion[] = "firmware_version";
-#endif
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
-const char kFlashPlugin[] = "flash_plugin";
-const char kFlashVersion[] = "flash_version";
 #endif
 #if !defined(OS_IOS)
 const char kJSEngine[] = "js_engine";

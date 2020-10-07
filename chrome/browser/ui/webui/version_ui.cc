@@ -188,11 +188,6 @@ void VersionUI::AddVersionDetailStrings(content::WebUIDataSource* html_source) {
                          AndroidAboutAppInfo::GetOsInfo());
   html_source->AddString(version_ui::kGmsVersion,
                          AndroidAboutAppInfo::GetGmsInfo());
-#else
-  html_source->AddString(version_ui::kFlashPlugin, "Flash");
-  // Note that the Flash version is retrieve asynchronously and returned in
-  // VersionHandler::OnGotPlugins. The area is initially blank.
-  html_source->AddString(version_ui::kFlashVersion, std::string());
 #endif  // OS_ANDROID
 
 #if defined(OS_WIN)

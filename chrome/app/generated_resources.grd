@@ -4905,12 +4905,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Component updating
       </message>
 
-      <if expr="enable_plugins">
-        <message name="IDS_PLUGINS_DISABLED_PLUGIN" desc="Text that signifies that the plugin is currently disabled.">
-          (Disabled)
-        </message>
-      </if>
-
       <message name="IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_TITLE" desc="The title of the account chooser dialog.">
         Sign in as
       </message>

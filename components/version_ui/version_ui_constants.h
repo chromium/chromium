@@ -18,7 +18,6 @@ extern const char kVersionJS[];
 // Must match the constants used in the resource files.
 extern const char kRequestVersionInfo[];
 extern const char kRequestVariationInfo[];
-extern const char kRequestPluginInfo[];
 extern const char kRequestPathInfo[];
 
 extern const char kKeyVariationsList[];
@@ -52,10 +51,6 @@ extern const char kExecutablePathName[];
 #endif
 #if defined(OS_CHROMEOS)
 extern const char kFirmwareVersion[];
-#endif
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
-extern const char kFlashPlugin[];
-extern const char kFlashVersion[];
 #endif
 #if !defined(OS_IOS)
 extern const char kJSEngine[];
