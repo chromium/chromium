@@ -4275,8 +4275,6 @@ crbug.com/1050754 external/wpt/webrtc-identity/RTCPeerConnection-peerIdentity.ht
 crbug.com/1050754 external/wpt/webrtc-identity/idlharness.https.window.html [ Failure ]
 crbug.com/1050754 external/wpt/webrtc-insertable-streams/RTCEncodedAudioFrame-serviceworker-failure.https.html [ Failure ]
 crbug.com/1050754 external/wpt/webrtc-insertable-streams/RTCEncodedVideoFrame-serviceworker-failure.https.html [ Failure ]
-crbug.com/1050754 external/wpt/webrtc-quic/RTCQuicStream.https.html [ Failure ]
-crbug.com/1050754 external/wpt/webrtc-quic/RTCQuicTransport.https.html [ Failure ]
 crbug.com/1050754 external/wpt/webrtc-stats/getStats-remote-candidate-address.html [ Timeout ]
 crbug.com/1050754 external/wpt/webrtc-svc/RTCRtpParameters-scalability.html [ Failure ]
 crbug.com/1050754 external/wpt/webrtc/RTCCertificate-postMessage.html [ Failure ]

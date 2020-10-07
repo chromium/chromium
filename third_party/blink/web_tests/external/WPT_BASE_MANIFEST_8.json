@@ -251781,20 +251781,6 @@
      []
     ]
    },
-   "webrtc-quic": {
-    "META.yml": [
-     "740c8d2fe84beafbcb7f98cef29aff2378721132",
-     []
-    ],
-    "RTCQuicStream-helper.js": [
-     "5e1f6030bd8b138fd881264a494d6e35c23c7667",
-     []
-    ],
-    "RTCQuicTransport-helper.js": [
-     "b8d9eaed5aad3a18a583200bc958fc375f2b24da",
-     []
-    ]
-   },
    "webrtc-stats": {
     "META.yml": [
      "10bcf856eb9258e0845f2fdcb6e08c43ebcdf78a",
@@ -419203,22 +419189,6 @@
     ],
     "RTCRtpParameters-encodings.html": [
      "37c1b919b417fa03b2c9566839b529a3c0aae07c",
-     [
-      null,
-      {}
-     ]
-    ]
-   },
-   "webrtc-quic": {
-    "RTCQuicStream.https.html": [
-     "e99914ad40387316e82ed32ed4626888f1011e43",
-     [
-      null,
-      {}
-     ]
-    ],
-    "RTCQuicTransport.https.html": [
-     "cdccaac6c866c970d5620b8f70943b69412cb861",
      [
       null,
       {}

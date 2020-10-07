@@ -43,8 +43,6 @@
     "Notification",
     "PaymentRequest",
     "RTCIceTransport",
-    "RTCQuicStream",
-    "RTCQuicTransport",
     "PermissionStatus",
     "HTMLVideoElementPictureInPicture",
     "PictureInPictureWindow",

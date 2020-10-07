@@ -6279,9 +6279,6 @@ crbug.com/1071909 external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw.
 
 crbug.com/1042694 fast/forms/form-control-with-state-eager-tracing-crashTest.html [ Pass Timeout ]
 
-# QUIC reordered versions to prefer IETF QUIC
-crbug.com/1070747 external/wpt/webrtc-quic/* [ Skip ]
-
 # Stale revalidation shouldn't be blocked:
 crbug.com/1079188 external/wpt/fetch/stale-while-revalidate/revalidate-not-blocked-by-csp.html [ Timeout ]
 
