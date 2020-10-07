@@ -3560,11 +3560,6 @@ TEST_P(QuicNetworkTransactionTest,
 // Much like above test, but verifies that NetworkIsolationKey is respected.
 TEST_P(QuicNetworkTransactionTest,
        ProtocolErrorAfterHandshakeConfirmedThenBrokenWithNetworkIsolationKey) {
-  if (version_.UsesTls()) {
-    // QUIC with TLS1.3 handshake doesn't support 0-rtt.
-    return;
-  }
-
   const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
   const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
@@ -3606,9 +3601,13 @@ TEST_P(QuicNetworkTransactionTest,
                  1, false, GetNthClientInitiatedBidirectionalStreamId(47),
                  quic::QUIC_STREAM_LAST_ERROR));
   std::string quic_error_details = "Data for nonexistent stream";
+  quic::QuicErrorCode quic_error_code = quic::QUIC_INVALID_STREAM_ID;
+  if (version_.HasIetfQuicFrames()) {
+    quic_error_code = quic::QUIC_HTTP_STREAM_WRONG_DIRECTION;
+  }
   quic_data.AddWrite(SYNCHRONOUS,
                      ConstructClientAckAndConnectionClosePacket(
-                         packet_number++, 1, 1, quic::QUIC_INVALID_STREAM_ID,
+                         packet_number++, 1, 1, quic_error_code,
                          quic_error_details, quic::IETF_RST_STREAM));
   quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -4734,11 +4733,6 @@ TEST_P(QuicNetworkTransactionTest, HungAlternativeService) {
 }
 
 TEST_P(QuicNetworkTransactionTest, ZeroRTTWithHttpRace) {
-  if (version_.UsesTls()) {
-    // QUIC with TLS1.3 handshake doesn't support 0-rtt.
-    return;
-  }
-
   MockQuicData mock_quic_data(version_);
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
   int packet_num = 1;
@@ -4759,6 +4753,9 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithHttpRace) {
       ASYNC, ConstructServerDataPacket(
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false, true,
                  ConstructDataFrame("hello!")));
+  if (version_.UsesTls()) {
+    client_maker_->SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  }
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
@@ -4780,11 +4777,6 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithHttpRace) {
 }
 
 TEST_P(QuicNetworkTransactionTest, ZeroRTTWithNoHttpRace) {
-  if (version_.UsesTls()) {
-    // QUIC with TLS1.3 handshake doesn't support 0-rtt.
-    return;
-  }
-
   MockQuicData mock_quic_data(version_);
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
   int packet_number = 1;
@@ -4805,6 +4797,9 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithNoHttpRace) {
       ASYNC, ConstructServerDataPacket(
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false, true,
                  ConstructDataFrame("hello!")));
+  if (version_.UsesTls()) {
+    client_maker_->SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  }
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_number++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
@@ -5517,11 +5512,6 @@ TEST_P(QuicNetworkTransactionTest, NoBrokenAlternateProtocolIfTcpFails) {
 }
 
 TEST_P(QuicNetworkTransactionTest, DelayTCPOnStartWithQuicSupportOnSameIP) {
-  if (version_.UsesTls()) {
-    // QUIC with TLS1.3 handshake doesn't support 0-rtt.
-    return;
-  }
-
   // Tests that TCP job is delayed and QUIC job does not require confirmation
   // if QUIC was recently supported on the same IP on start.
 
@@ -5551,6 +5541,9 @@ TEST_P(QuicNetworkTransactionTest, DelayTCPOnStartWithQuicSupportOnSameIP) {
       ASYNC, ConstructServerDataPacket(
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false, true,
                  ConstructDataFrame("hello!")));
+  if (version_.UsesTls()) {
+    client_maker_->SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  }
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_number++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
@@ -5731,11 +5724,6 @@ TEST_P(QuicNetworkTransactionTest, FailedZeroRttBrokenAlternateProtocol) {
 
 TEST_P(QuicNetworkTransactionTest,
        FailedZeroRttBrokenAlternateProtocolWithNetworkIsolationKey) {
-  if (version_.UsesTls()) {
-    // QUIC with TLS1.3 handshake doesn't support 0-rtt.
-    return;
-  }
-
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       // enabled_features
