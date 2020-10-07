@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
@@ -25,6 +26,7 @@ import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
+import org.chromium.ui.test.util.UiDisableIf;
 
 /** An integration test for PaymentRequestEvent.changePaymentMethod(). */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -101,6 +103,7 @@ public class PaymentHandlerChangePaymentMethodTest {
      */
     @Test
     @Feature({"Payments"})
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // See https://crbug.com/1136100.
     public void testReject() throws Throwable {
         installPaymentHandler();
         mRule.clickNodeAndWait("testReject", mRule.getDismissed());
@@ -114,6 +117,7 @@ public class PaymentHandlerChangePaymentMethodTest {
      */
     @Test
     @Feature({"Payments"})
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // See https://crbug.com/1136100.
     public void testRejectBasicCard() throws Throwable {
         mRule.clickNode("basicCardMethodName");
         installPaymentHandler();
@@ -157,6 +161,7 @@ public class PaymentHandlerChangePaymentMethodTest {
      */
     @Test
     @Feature({"Payments"})
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // See https://crbug.com/1136100.
     public void testDetails() throws Throwable {
         installPaymentHandler();
         mRule.clickNodeAndWait("testDetails", mRule.getDismissed());
