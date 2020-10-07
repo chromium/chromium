@@ -59,7 +59,6 @@ class ASH_EXPORT AmbientController
 
   // SessionObserver:
   void OnLockStateChanged(bool locked) override;
-  void OnFirstSessionStarted() override;
 
   // PowerStatus::Observer:
   void OnPowerStatusChanged() override;
