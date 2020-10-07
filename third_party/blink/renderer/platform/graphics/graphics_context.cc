@@ -130,6 +130,7 @@ GraphicsContext::GraphicsContext(PaintController& paint_controller,
       disable_destruction_checks_(false),
 #endif
       device_scale_factor_(1.0f),
+      dark_mode_filter_(nullptr),
       printing_(false),
       is_painting_preview_(false),
       in_drawing_recorder_(false),
@@ -138,9 +139,6 @@ GraphicsContext::GraphicsContext(PaintController& paint_controller,
   // allocate several here.
   paint_state_stack_.push_back(std::make_unique<GraphicsContextState>());
   paint_state_ = paint_state_stack_.back().get();
-
-  dark_mode_filter_ = std::make_unique<DarkModeFilter>();
-  dark_mode_filter_->UpdateSettings(GetCurrentDarkModeSettings());
 }
 
 GraphicsContext::~GraphicsContext() {
@@ -152,6 +150,15 @@ GraphicsContext::~GraphicsContext() {
     DCHECK(!SaveCount());
   }
 #endif
+}
+
+DarkModeFilter* GraphicsContext::GetDarkModeFilter() {
+  if (!dark_mode_filter_) {
+    dark_mode_filter_ = std::make_unique<DarkModeFilter>();
+    dark_mode_filter_->UpdateSettings(GetCurrentDarkModeSettings());
+  }
+
+  return dark_mode_filter_.get();
 }
 
 void GraphicsContext::UpdateDarkModeSettingsForTest(
