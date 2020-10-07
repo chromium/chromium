@@ -24,10 +24,6 @@ constexpr base::TimeDelta kTopicFetchInterval =
 constexpr base::TimeDelta kPhotoRefreshInterval =
     base::TimeDelta::FromSeconds(60);
 
-// The default interval to fetch backup cache photos.
-constexpr base::TimeDelta kBackupPhotoRefreshDelay =
-    base::TimeDelta::FromMinutes(5);
-
 // The default interval to refresh weather.
 constexpr base::TimeDelta kWeatherRefreshInterval =
     base::TimeDelta::FromMinutes(5);
@@ -50,10 +46,6 @@ constexpr char kPhotoDetailsFileExt[] = ".txt";
 
 // Directory name of ambient mode.
 constexpr char kAmbientModeDirectoryName[] = "ambient-mode";
-
-constexpr char kAmbientModeCacheDirectoryName[] = "cache";
-
-constexpr char kAmbientModeBackupCacheDirectoryName[] = "backup";
 
 // The buffer time to use the access token.
 constexpr base::TimeDelta kTokenUsageTimeBuffer =

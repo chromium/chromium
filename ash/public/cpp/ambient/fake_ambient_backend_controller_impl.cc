@@ -4,7 +4,6 @@
 
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 
-#include <array>
 #include <utility>
 
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
@@ -26,9 +25,6 @@ constexpr AmbientModeTemperatureUnit kTemperatureUnit =
 constexpr char kFakeUrl[] = "chrome://ambient";
 
 constexpr char kFakeDetails[] = "fake-photo-attribution";
-
-constexpr std::array<const char*, 2> kFakeBackupPhotoUrls = {kFakeUrl,
-                                                             kFakeUrl};
 
 AmbientSettings CreateFakeSettings() {
   AmbientSettings settings;
@@ -156,11 +152,6 @@ void FakeAmbientBackendControllerImpl::SetPhotoRefreshInterval(
 void FakeAmbientBackendControllerImpl::FetchWeather(
     FetchWeatherCallback callback) {
   std::move(callback).Run(weather_info_);
-}
-
-const std::array<const char*, 2>&
-FakeAmbientBackendControllerImpl::GetBackupPhotoUrls() const {
-  return kFakeBackupPhotoUrls;
 }
 
 void FakeAmbientBackendControllerImpl::ReplyFetchSettingsAndAlbums(

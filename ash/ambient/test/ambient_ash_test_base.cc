@@ -21,11 +21,9 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/callback.h"
-#include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
-#include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -50,42 +48,18 @@ class TestAmbientURLLoaderImpl : public AmbientURLLoader {
   void Download(
       const std::string& url,
       network::SimpleURLLoader::BodyAsStringCallback callback) override {
+    std::string data = data_ ? *data_ : "test";
     // Pretend to respond asynchronously.
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
-                       std::make_unique<std::string>(data_ ? *data_ : "test")),
+                       std::make_unique<std::string>(data)),
         base::TimeDelta::FromMilliseconds(1));
-  }
-  void DownloadToFile(
-      const std::string& url,
-      network::SimpleURLLoader::DownloadToFileCompleteCallback callback,
-      const base::FilePath& file_path) override {
-    if (!data_) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), base::FilePath()));
-      return;
-    }
-
-    if (!WriteFile(file_path, *data_)) {
-      LOG(WARNING) << "error writing file to file_path: " << file_path;
-
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), base::FilePath()));
-      return;
-    }
-
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), file_path));
   }
 
   void SetData(std::unique_ptr<std::string> data) { data_ = std::move(data); }
 
  private:
-  bool WriteFile(const base::FilePath& file_path, const std::string& data) {
-    base::ScopedBlockingCall blocking(FROM_HERE, base::BlockingType::MAY_BLOCK);
-    return base::WriteFile(file_path, data);
-  }
   // If not null, will return this data.
   std::unique_ptr<std::string> data_;
 };
@@ -378,10 +352,6 @@ void AmbientAshTestBase::FetchImage() {
   photo_controller()->FetchImageForTesting();
 }
 
-void AmbientAshTestBase::FetchBackupImages() {
-  photo_controller()->FetchBackupImagesForTesting();
-}
-
 void AmbientAshTestBase::SetUrlLoaderData(std::unique_ptr<std::string> data) {
   auto* url_loader_ = static_cast<TestAmbientURLLoaderImpl*>(
       photo_controller()->get_url_loader_for_testing());
@@ -389,7 +359,7 @@ void AmbientAshTestBase::SetUrlLoaderData(std::unique_ptr<std::string> data) {
   url_loader_->SetData(std::move(data));
 }
 
-void AmbientAshTestBase::SetImageDecoderImage(const gfx::ImageSkia& image) {
+void AmbientAshTestBase::SeteImageDecoderImage(const gfx::ImageSkia& image) {
   auto* image_decoder = static_cast<TestAmbientImageDecoderImpl*>(
       photo_controller()->get_image_decoder_for_testing());
 
