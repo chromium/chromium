@@ -128,4 +128,7 @@ interface PageHandler {
   // This allows for testing the Feed against a development server.
   OverrideActionUploadEndpoint(url.mojom.Url endpoint_url);
 
+  // Overrides the feed stream data with the payload inside a feedui::Slice for
+  // testing purpose. See go/feed-stream-data-testing for more details.
+  OverrideFeedStreamData(array<uint8> data);
 };

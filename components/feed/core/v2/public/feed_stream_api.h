@@ -170,6 +170,9 @@ class FeedStreamApi {
   virtual void ForceRefreshForDebugging() = 0;
   // Dumps some state information for debugging.
   virtual std::string DumpStateForDebugging() = 0;
+  // Forces to render a StreamUpdate on all subsequent surface attaches.
+  virtual void SetForcedStreamUpdateForDebugging(
+      const feedui::StreamUpdate& stream_update) = 0;
 };
 
 }  // namespace feed

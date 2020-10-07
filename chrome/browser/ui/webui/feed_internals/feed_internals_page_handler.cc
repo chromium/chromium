@@ -182,3 +182,8 @@ void FeedInternalsPageHandler::OverrideActionUploadEndpoint(
     const GURL& endpoint_url) {
   // Not implemented for Feed v1.
 }
+
+void FeedInternalsPageHandler::OverrideFeedStreamData(
+    const std::vector<uint8_t>& data) {
+  // Not implemented for Feed v1.
+}
