@@ -10,7 +10,8 @@ namespace ash {
 // A helper class to set default color mode to light. Color mode is dark by
 // default, which is controlled by pref |kDarkModeEnabled| currently. Some of
 // the components need to be kept as LIGHT by default before launching
-// dark/light mode. E.g. power button menu and system toast.
+// dark/light mode. E.g. power button menu and system toast. Overriding only if
+// the kDarkLightMode feature is disabled.
 class ScopedLightModeAsDefault {
  public:
   ScopedLightModeAsDefault();
