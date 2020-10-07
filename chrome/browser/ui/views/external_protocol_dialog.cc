@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration.h"
@@ -43,6 +44,7 @@ base::string16 GetMessageTextForOrigin(
 
 }  // namespace
 
+#if !defined(OS_CHROMEOS)
 // static
 void ExternalProtocolHandler::RunExternalProtocolDialog(
     const GURL& url,
@@ -63,6 +65,7 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
   new ExternalProtocolDialog(web_contents, url, program_name,
                              initiating_origin);
 }
+#endif  // !defined(OS_CHROMEOS)
 
 ExternalProtocolDialog::ExternalProtocolDialog(
     WebContents* web_contents,

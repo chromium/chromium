@@ -48,6 +48,9 @@ specific_include_rules = {
   "event_rewriter_unittest\.cc": [
     "+ui/events/devices/device_data_manager.h",
   ],
+  "external_protocol_dialog\.cc": [
+    "+chrome/browser/ui/views/external_protocol_dialog.h",
+  ],
   "file_manager_browsertest_base.cc": [
     "+chrome/browser/ui/views/extensions/extension_dialog.h",
     "+chrome/browser/ui/views/select_file_dialog_extension.h",

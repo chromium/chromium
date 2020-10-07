@@ -153,6 +153,8 @@ extern const base::Feature kGamepadVibration;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kGesturePropertiesDBusService;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kGuestOsExternalProtocol;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kHelpAppFirstRun;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kHelpAppReleaseNotes;
