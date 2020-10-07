@@ -3998,7 +3998,7 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
-      'deprecate': True,
+      'deprecated': True,
       'example_value': 'https://internal.site/example.pac',
       'id': 24,
       'caption': '''URL to a proxy .pac file''',
