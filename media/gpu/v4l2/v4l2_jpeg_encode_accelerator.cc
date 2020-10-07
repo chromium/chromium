@@ -962,11 +962,17 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::Initialize() {
     return false;
   }
 
-  output_buffer_pixelformat_ = V4L2_PIX_FMT_JPEG_RAW;
+  // We prefer V4L2_PIX_FMT_JPEG because V4L2_PIX_FMT_JPEG_RAW was rejected
+  // upstream.
+  output_buffer_pixelformat_ = V4L2_PIX_FMT_JPEG;
   if (!device_->Open(V4L2Device::Type::kJpegEncoder,
                      output_buffer_pixelformat_)) {
-    VLOGF(1) << "Failed to open device";
-    return false;
+    output_buffer_pixelformat_ = V4L2_PIX_FMT_JPEG_RAW;
+    if (!device_->Open(V4L2Device::Type::kJpegEncoder,
+                       output_buffer_pixelformat_)) {
+      VLOGF(1) << "Failed to open device";
+      return false;
+    }
   }
 
   // Capabilities check.
@@ -1147,9 +1153,11 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::SetUpJpegParameters(
 
   struct v4l2_ext_controls ctrls;
   struct v4l2_ext_control ctrl;
+  struct v4l2_query_ext_ctrl queryctrl;
 
   memset(&ctrls, 0, sizeof(ctrls));
   memset(&ctrl, 0, sizeof(ctrl));
+  memset(&queryctrl, 0, sizeof(queryctrl));
 
   ctrls.ctrl_class = V4L2_CTRL_CLASS_JPEG;
   ctrls.controls = &ctrl;
@@ -1174,6 +1182,22 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::SetUpJpegParameters(
 
       // We need to prepare our own JPEG Markers.
       PrepareJpegMarkers(coded_size);
+      break;
+
+    case V4L2_PIX_FMT_JPEG:
+      queryctrl.id = V4L2_CID_JPEG_COMPRESSION_QUALITY;
+      queryctrl.type = V4L2_CTRL_TYPE_INTEGER;
+      IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_QUERY_EXT_CTRL, &queryctrl);
+
+      // interpolate the quality value
+      // Map quality value from range 1-100 to min-max.
+      quality = queryctrl.minimum +
+                (quality - 1) * (queryctrl.maximum - queryctrl.minimum) / 99;
+      ctrl.id = V4L2_CID_JPEG_COMPRESSION_QUALITY;
+      ctrl.value = quality;
+      VLOG(1) << "JPEG Quality: max:" << queryctrl.maximum
+              << ", min:" << queryctrl.minimum << ", value:" << quality;
+      IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_S_EXT_CTRLS, &ctrls);
       break;
 
     default:
@@ -1240,7 +1264,9 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::SetInputBufferFormat(
     format.fmt.pix_mp.num_planes = kMaxNV12Plane;
     format.fmt.pix_mp.pixelformat = input_pix_fmt;
     format.fmt.pix_mp.field = V4L2_FIELD_ANY;
-    format.fmt.pix_mp.width = coded_size.width();
+    // set the input buffer resolution with padding and use selection API to
+    // crop the coded size.
+    format.fmt.pix_mp.width = input_layout.planes()[0].stride;
     format.fmt.pix_mp.height = coded_size.height();
 
     auto num_planes = input_layout.num_planes();
@@ -1257,7 +1283,6 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::SetInputBufferFormat(
       // Save V4L2 returned values.
       input_buffer_pixelformat_ = format.fmt.pix_mp.pixelformat;
       input_buffer_num_planes_ = format.fmt.pix_mp.num_planes;
-      input_buffer_height_ = format.fmt.pix_mp.height;
       break;
     }
   }
@@ -1267,13 +1292,49 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::SetInputBufferFormat(
     return false;
   }
 
-  if (format.fmt.pix_mp.width != static_cast<uint32_t>(coded_size.width()) ||
-      format.fmt.pix_mp.height != static_cast<uint32_t>(coded_size.height())) {
-    VLOGF(1) << "Width " << coded_size.width() << "->"
-             << format.fmt.pix_mp.width << ",Height " << coded_size.height()
-             << "->" << format.fmt.pix_mp.height;
+  // It can't allow different width.
+  if (format.fmt.pix_mp.width !=
+      static_cast<uint32_t>(input_layout.planes()[0].stride)) {
+    LOG(WARNING) << "Different stride:" << format.fmt.pix_mp.width
+                 << "!=" << input_layout.planes()[0].stride;
     return false;
   }
+
+  // We can allow our buffer to have larger height than encoder's requirement
+  // because we set the 2nd plane by data_offset now.
+  if (format.fmt.pix_mp.height > static_cast<uint32_t>(coded_size.height())) {
+    if (input_buffer_pixelformat_ == V4L2_PIX_FMT_NV12M) {
+      // Calculate the real buffer height of the DMA buffer from minigbm.
+      uint32_t height_with_padding =
+          input_layout.planes()[0].size / input_layout.planes()[0].stride;
+      if (format.fmt.pix_mp.height > height_with_padding) {
+        LOG(WARNING) << "Encoder requires larger height:"
+                     << format.fmt.pix_mp.height << ">" << height_with_padding;
+        return false;
+      }
+    } else {
+      LOG(WARNING) << "Encoder requires larger height:"
+                   << format.fmt.pix_mp.height << ">" << coded_size.height();
+      return false;
+    }
+  }
+
+  if ((uint32_t)coded_size.width() != format.fmt.pix_mp.width ||
+      (uint32_t)coded_size.height() != format.fmt.pix_mp.height) {
+    v4l2_selection selection = {};
+    selection.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
+    selection.target = V4L2_SEL_TGT_CROP;
+    selection.flags = V4L2_SEL_FLAG_GE | V4L2_SEL_FLAG_LE;
+    selection.r.left = 0;
+    selection.r.top = 0;
+    selection.r.width = coded_size.width();
+    selection.r.height = coded_size.height();
+    if (device_->Ioctl(VIDIOC_S_SELECTION, &selection) != 0) {
+      LOG(WARNING) << "VIDIOC_S_SELECTION Fail";
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -1295,6 +1356,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::SetOutputBufferFormat(
   format.fmt.pix_mp.height = coded_size.height();
   IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_S_FMT, &format);
   DCHECK_EQ(format.fmt.pix_mp.pixelformat, output_buffer_pixelformat_);
+  output_buffer_sizeimage_ = format.fmt.pix_mp.plane_fmt[0].sizeimage;
 
   return true;
 }
@@ -1534,10 +1596,32 @@ size_t V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::FinalizeJpegImage(
         0xFF, JPEG_APP1, static_cast<uint8_t>(exif_segment_size / 256),
         static_cast<uint8_t>(exif_segment_size % 256)};
 
-    // Move compressed data first.
-    size_t compressed_data_offset = sizeof(kJpegStart) + sizeof(kAppSegment) +
-                                    exif_buffer_size + jpeg_markers_.size();
-    memmove(dst_ptr + compressed_data_offset, dst_ptr, buffer_size);
+    if (output_buffer_pixelformat_ == V4L2_PIX_FMT_JPEG_RAW) {
+      // Move compressed data first.
+      size_t compressed_data_offset = sizeof(kJpegStart) + sizeof(kAppSegment) +
+                                      exif_buffer_size + jpeg_markers_.size();
+      if (buffer_size + compressed_data_offset > output_buffer_sizeimage_) {
+        LOG(WARNING) << "JPEG buffer is too small for the EXIF metadata";
+        return 0;
+      }
+      memmove(dst_ptr + compressed_data_offset, dst_ptr, buffer_size);
+    } else if (output_buffer_pixelformat_ == V4L2_PIX_FMT_JPEG) {
+      // Move data after SOI and APP0 marker for exif room.
+      // The JPEG from V4L2_PIX_FMT_JPEG is
+      // SOI-APP0-DQT-marker1-marker2-...-markerN-compressed stream-EOI
+      // |......| <- src_data_offset = len(SOI) + len(APP0)
+      // |...................| <- data_offset = len(SOI) + len(APP1)
+      size_t data_offset =
+          sizeof(kJpegStart) + sizeof(kAppSegment) + exif_buffer_size;
+      size_t app0_length = 2 + ((dst_ptr[4] << 16) | dst_ptr[5]);
+      size_t src_data_offset = sizeof(kJpegStart) + app0_length;
+      buffer_size -= src_data_offset;
+      if (buffer_size + data_offset > output_buffer_sizeimage_) {
+        LOG(WARNING) << "JPEG buffer is too small for the EXIF metadata";
+        return 0;
+      }
+      memmove(dst_ptr + data_offset, dst_ptr + src_data_offset, buffer_size);
+    }
 
     memcpy(dst_ptr, kJpegStart, sizeof(kJpegStart));
     idx += sizeof(kJpegStart);
@@ -1545,7 +1629,10 @@ size_t V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::FinalizeJpegImage(
     idx += sizeof(kAppSegment);
     memcpy(dst_ptr + idx, exif_buffer, exif_buffer_size);
     idx += exif_buffer_size;
-  } else {
+  } else if (output_buffer_pixelformat_ == V4L2_PIX_FMT_JPEG_RAW) {
+    // For no exif_shm we don't need to do anything for V4L2_PIX_FMT_JPEG.
+    // So we only need to know if the format is V4L2_PIX_FMT_JPEG_RAW.
+
     // Application Segment - JFIF standard 1.01.
     static const uint8_t kAppSegment[] = {
         0xFF, JPEG_APP0, 0x00,
@@ -1593,6 +1680,10 @@ size_t V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::FinalizeJpegImage(
         dst_ptr[idx + 1] = JPEG_EOI;
         idx += 2;
       }
+      break;
+
+    case V4L2_PIX_FMT_JPEG:
+      idx += buffer_size;
       break;
 
     default:

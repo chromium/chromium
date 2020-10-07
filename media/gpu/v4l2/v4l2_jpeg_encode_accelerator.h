@@ -358,8 +358,8 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
     // Pixel format of output buffer.
     uint32_t output_buffer_pixelformat_;
 
-    // Height of input buffer returned by driver.
-    uint32_t input_buffer_height_;
+    // sizeimage of output buffer.
+    uint32_t output_buffer_sizeimage_;
 
     // JPEG Quantization table for V4L2_PIX_FMT_JPEG_RAW.
     JpegQuantizationTable quantization_table_[2];

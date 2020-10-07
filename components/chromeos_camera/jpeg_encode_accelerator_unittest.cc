@@ -656,7 +656,8 @@ void JpegClient::StartEncodeDmaBuf(int32_t bitstream_buffer_id) {
 
   libyuv::I420ToNV12(src, width, src + width * height, width / 2,
                      src + width * height * 5 / 4, width / 2, plane_buf[0],
-                     width, plane_buf[1], width, width, height);
+                     input_buffer->stride(0), plane_buf[1],
+                     input_buffer->stride(1), width, height);
 
   auto input_frame = GetVideoFrameFromGpuMemoryBuffer(
       input_buffer.get(), test_image->visible_size, media::PIXEL_FORMAT_NV12);
