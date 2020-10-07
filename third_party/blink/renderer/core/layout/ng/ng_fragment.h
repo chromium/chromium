@@ -20,38 +20,26 @@ class CORE_EXPORT NGFragment {
  public:
   NGFragment(WritingMode writing_mode,
              const NGPhysicalFragment& physical_fragment)
-      : physical_fragment_(physical_fragment),
-        writing_mode_(static_cast<unsigned>(writing_mode)) {}
-
-  WritingMode GetWritingMode() const {
-    return static_cast<WritingMode>(writing_mode_);
-  }
+      : physical_fragment_(physical_fragment), writing_mode_(writing_mode) {}
 
   // Returns the border-box size.
   LayoutUnit InlineSize() const {
-    return GetWritingMode() == WritingMode::kHorizontalTb
+    return writing_mode_ == WritingMode::kHorizontalTb
                ? physical_fragment_.Size().width
                : physical_fragment_.Size().height;
   }
   LayoutUnit BlockSize() const {
-    return GetWritingMode() == WritingMode::kHorizontalTb
+    return writing_mode_ == WritingMode::kHorizontalTb
                ? physical_fragment_.Size().height
                : physical_fragment_.Size().width;
   }
   LogicalSize Size() const {
-    return physical_fragment_.Size().ConvertToLogical(
-        static_cast<WritingMode>(writing_mode_));
+    return physical_fragment_.Size().ConvertToLogical(writing_mode_);
   }
-
-  NGPhysicalFragment::NGFragmentType Type() const {
-    return physical_fragment_.Type();
-  }
-  const ComputedStyle& Style() const { return physical_fragment_.Style(); }
 
  protected:
   const NGPhysicalFragment& physical_fragment_;
-
-  unsigned writing_mode_ : 3;
+  const WritingMode writing_mode_;
 };
 
 }  // namespace blink

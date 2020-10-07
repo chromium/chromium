@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/core/layout/list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
@@ -453,8 +452,8 @@ static void WriteTextFragment(WTF::TextStream& ts,
         DynamicTo<NGPhysicalTextFragment>(paint_fragment->PhysicalFragment());
     if (!physical_text_fragment)
       return;
-    const NGTextFragment fragment(paint_fragment->Style().GetWritingMode(),
-                                  *physical_text_fragment);
+    const NGFragment fragment(paint_fragment->Style().GetWritingMode(),
+                              *physical_text_fragment);
     WriteTextFragment(ts, paint_fragment->GetLayoutObject(),
                       paint_fragment->RectInContainerBlock(),
                       paint_fragment->Style(), physical_text_fragment->Text(),

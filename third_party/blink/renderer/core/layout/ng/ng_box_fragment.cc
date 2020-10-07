@@ -23,7 +23,7 @@ FontHeight NGBoxFragment::BaselineMetrics(const NGLineBoxStrut& margins,
   }
 
   if (const base::Optional<LayoutUnit> baseline = Baseline()) {
-    FontHeight metrics = IsFlippedLinesWritingMode(GetWritingMode())
+    FontHeight metrics = IsFlippedLinesWritingMode(writing_mode_)
                              ? FontHeight(BlockSize() - *baseline, *baseline)
                              : FontHeight(*baseline, BlockSize() - *baseline);
 

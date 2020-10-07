@@ -22,7 +22,7 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
       : NGFragment(writing_mode, physical_fragment), direction_(direction) {}
 
   base::Optional<LayoutUnit> FirstBaseline() const {
-    if (GetWritingMode() != physical_fragment_.Style().GetWritingMode())
+    if (writing_mode_ != physical_fragment_.Style().GetWritingMode())
       return base::nullopt;
 
     return To<NGPhysicalBoxFragment>(physical_fragment_).Baseline();
@@ -37,7 +37,7 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
   //  - The fragment has no baseline.
   //  - The writing modes differ.
   base::Optional<LayoutUnit> Baseline() const {
-    if (GetWritingMode() != physical_fragment_.Style().GetWritingMode())
+    if (writing_mode_ != physical_fragment_.Style().GetWritingMode())
       return base::nullopt;
 
     if (auto last_baseline =
@@ -60,13 +60,13 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
   NGBoxStrut Borders() const {
     const NGPhysicalBoxFragment& physical_box_fragment =
         To<NGPhysicalBoxFragment>(physical_fragment_);
-    return physical_box_fragment.Borders().ConvertToLogical(GetWritingMode(),
+    return physical_box_fragment.Borders().ConvertToLogical(writing_mode_,
                                                             direction_);
   }
   NGBoxStrut Padding() const {
     const NGPhysicalBoxFragment& physical_box_fragment =
         To<NGPhysicalBoxFragment>(physical_fragment_);
-    return physical_box_fragment.Padding().ConvertToLogical(GetWritingMode(),
+    return physical_box_fragment.Padding().ConvertToLogical(writing_mode_,
                                                             direction_);
   }
 
