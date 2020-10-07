@@ -1019,28 +1019,28 @@
     Rate
   </message>
   <message name="IDS_SETTINGS_TEXT_TO_SPEECH_RATE_MINIMUM_LABEL" desc="A label for the minimum side of a slider allowing users to change their text-to-speech speech rate">
-    Slowest
+    Slow
   </message>
   <message name="IDS_SETTINGS_TEXT_TO_SPEECH_RATE_MAXIMUM_LABEL" desc="A label for the maximum side of a slider allowing users to change their text-to-speech speech rate">
-    Fastest
+    Fast
   </message>
   <message name="IDS_SETTINGS_TEXT_TO_SPEECH_PITCH" desc="The pitch of speech in text-to-speech settings.">
     Pitch
   </message>
   <message name="IDS_SETTINGS_TEXT_TO_SPEECH_PITCH_MINIMUM_LABEL" desc="A label for the minimum side of a slider allowing users to change their text-to-speech speech pitch">
-    Lowest
+    Low
   </message>
   <message name="IDS_SETTINGS_TEXT_TO_SPEECH_PITCH_MAXIMUM_LABEL" desc="A label for the maximum side of a slider allowing users to change their text-to-speech speech pitch">
-    Highest
+    High
   </message>
   <message name="IDS_SETTINGS_TEXT_TO_SPEECH_VOLUME" desc="The volume of speech compared to system volume in text-to-speech settings.">
     Volume
   </message>
   <message name="IDS_SETTINGS_TEXT_TO_SPEECH_VOLUME_MINIMUM_LABEL" desc="A label for the minimum side of a slider allowing users to change their text-to-speech speech volume">
-    Quietest
+    Quiet
   </message>
   <message name="IDS_SETTINGS_TEXT_TO_SPEECH_VOLUME_MAXIMUM_LABEL" desc="A label for the maximum side of a slider allowing users to change their text-to-speech speech volume">
-    Loudest
+    Loud
   </message>
   <message name="IDS_SETTINGS_PERCENTAGE" desc="A number displayed as a percentage">
     <ph name="PERCENTAGE">$1<ex>120</ex></ph>%
