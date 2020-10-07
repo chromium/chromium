@@ -1092,7 +1092,8 @@ TEST(AXEventGeneratorTest, NodeBecomesIgnored) {
   EXPECT_THAT(event_generator,
               UnorderedElementsAre(
                   HasEventAtNode(AXEventGenerator::Event::CHILDREN_CHANGED, 2),
-                  HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 4)));
+                  HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 4),
+                  HasEventAtNode(AXEventGenerator::Event::PARENT_CHANGED, 5)));
 }
 
 TEST(AXEventGeneratorTest, NodeBecomesIgnored2) {
@@ -1162,7 +1163,8 @@ TEST(AXEventGeneratorTest, NodeBecomesUnignored) {
               UnorderedElementsAre(
                   HasEventAtNode(AXEventGenerator::Event::CHILDREN_CHANGED, 2),
                   HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 4),
-                  HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 4)));
+                  HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 4),
+                  HasEventAtNode(AXEventGenerator::Event::PARENT_CHANGED, 5)));
 }
 
 TEST(AXEventGeneratorTest, NodeBecomesUnignored2) {
@@ -1201,6 +1203,75 @@ TEST(AXEventGeneratorTest, NodeBecomesUnignored2) {
                   HasEventAtNode(AXEventGenerator::Event::CHILDREN_CHANGED, 2),
                   HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 4),
                   HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 4)));
+}
+
+TEST(AXEventGeneratorTest, NodeInsertedViaRoleChange) {
+  // This test inserts a kSearch in between the kRootWebArea and the kTextField,
+  // but the node id are updated reflecting position in the tree. This results
+  // in node 2's role changing along with node 3 being created and added as a
+  // child of node 2.
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(2);
+  initial_state.nodes[0].id = 1;
+  initial_state.nodes[0].role = ax::mojom::Role::kRootWebArea;
+  initial_state.nodes[0].child_ids.push_back(2);
+  initial_state.nodes[1].id = 2;
+  initial_state.nodes[1].role = ax::mojom::Role::kTextField;
+  AXTree tree(initial_state);
+
+  AXEventGenerator event_generator(&tree);
+  AXTreeUpdate update;
+  update.root_id = 1;
+  update.nodes.resize(3);
+  update.nodes[0].id = 1;
+  update.nodes[0].role = ax::mojom::Role::kRootWebArea;
+  update.nodes[0].child_ids.push_back(2);
+  update.nodes[1].id = 2;
+  update.nodes[1].role = ax::mojom::Role::kSearch;
+  update.nodes[1].child_ids.push_back(3);
+  update.nodes[2].id = 3;
+  update.nodes[2].role = ax::mojom::Role::kTextField;
+  ASSERT_TRUE(tree.Unserialize(update));
+  EXPECT_THAT(event_generator,
+              UnorderedElementsAre(
+                  HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 3),
+                  HasEventAtNode(AXEventGenerator::Event::CHILDREN_CHANGED, 2),
+                  HasEventAtNode(AXEventGenerator::Event::ROLE_CHANGED, 2)));
+}
+
+TEST(AXEventGeneratorTest, NodeInserted) {
+  // This test inserts a kSearch in between the kRootWebArea and the kTextField.
+  // The node ids reflect the creation order, and the kTextField is not changed.
+  // Thus this is more like a reparenting.
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(2);
+  initial_state.nodes[0].id = 1;
+  initial_state.nodes[0].role = ax::mojom::Role::kRootWebArea;
+  initial_state.nodes[0].child_ids.push_back(2);
+  initial_state.nodes[1].id = 2;
+  initial_state.nodes[1].role = ax::mojom::Role::kTextField;
+  AXTree tree(initial_state);
+
+  AXEventGenerator event_generator(&tree);
+  AXTreeUpdate update;
+  update.root_id = 1;
+  update.nodes.resize(3);
+  update.nodes[0].id = 1;
+  update.nodes[0].role = ax::mojom::Role::kRootWebArea;
+  update.nodes[0].child_ids.push_back(3);
+  update.nodes[1].id = 3;
+  update.nodes[1].role = ax::mojom::Role::kSearch;
+  update.nodes[1].child_ids.push_back(2);
+  update.nodes[2].id = 2;
+  update.nodes[2].role = ax::mojom::Role::kTextField;
+  ASSERT_TRUE(tree.Unserialize(update));
+  EXPECT_THAT(event_generator,
+              UnorderedElementsAre(
+                  HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 3),
+                  HasEventAtNode(AXEventGenerator::Event::CHILDREN_CHANGED, 1),
+                  HasEventAtNode(AXEventGenerator::Event::PARENT_CHANGED, 2)));
 }
 
 TEST(AXEventGeneratorTest, SubtreeBecomesUnignored) {
@@ -1426,6 +1497,7 @@ TEST(AXEventGeneratorTest, IgnoredChangedFiredOnAncestorOnly3) {
               UnorderedElementsAre(
                   HasEventAtNode(AXEventGenerator::Event::CHILDREN_CHANGED, 2),
                   HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 1),
+                  HasEventAtNode(AXEventGenerator::Event::PARENT_CHANGED, 2),
                   HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 3),
                   HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 3)));
 }
@@ -1591,6 +1663,7 @@ TEST(AXEventGeneratorTest, IgnoredChangedFiredOnAncestorOnly5) {
                   HasEventAtNode(AXEventGenerator::Event::CHILDREN_CHANGED, 5),
                   HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 6),
                   HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 1),
+                  HasEventAtNode(AXEventGenerator::Event::PARENT_CHANGED, 2),
                   HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 6)));
 }
 
@@ -1674,6 +1747,7 @@ TEST(AXEventGeneratorTest, IgnoredChangedFiredOnAncestorOnly6) {
                   HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 6),
                   HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 7),
                   HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 1),
+                  HasEventAtNode(AXEventGenerator::Event::PARENT_CHANGED, 2),
                   HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 8)));
 }
 
@@ -1858,13 +1932,17 @@ TEST(AXEventGeneratorTest, ActiveDescendantChangeOnDescendant) {
   initial_state.nodes[2].AddIntAttribute(
       ax::mojom::IntAttribute::kActivedescendantId, 5);
   AXTreeUpdate update = initial_state;
+  // Setting the node_id_to_clear causes AXTree::ComputePendingChangesToNode to
+  // create all of the node's children. Since node 3 already exists and remains
+  // in the tree, that (re)created child is reporting a new parent.
   update.node_id_to_clear = 2;
   ASSERT_TRUE(tree.Unserialize(update));
   EXPECT_THAT(
       event_generator,
       UnorderedElementsAre(
           HasEventAtNode(AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED, 3),
-          HasEventAtNode(AXEventGenerator::Event::RELATED_NODE_CHANGED, 3)));
+          HasEventAtNode(AXEventGenerator::Event::RELATED_NODE_CHANGED, 3),
+          HasEventAtNode(AXEventGenerator::Event::PARENT_CHANGED, 3)));
 }
 
 TEST(AXEventGeneratorTest, ImageAnnotationChanged) {

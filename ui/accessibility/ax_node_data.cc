@@ -959,8 +959,12 @@ bool AXNodeData::IsIgnored() const {
          role == ax::mojom::Role::kIgnored;
 }
 
+bool AXNodeData::IsInvisible() const {
+  return HasState(ax::mojom::State::kInvisible);
+}
+
 bool AXNodeData::IsInvisibleOrIgnored() const {
-  return IsIgnored() || HasState(ax::mojom::State::kInvisible);
+  return IsIgnored() || IsInvisible();
 }
 
 bool AXNodeData::IsInvocable() const {

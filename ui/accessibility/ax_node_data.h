@@ -220,6 +220,9 @@ struct AX_BASE_EXPORT AXNodeData {
   // Helper to determine if the data has the ignored state or ignored role.
   bool IsIgnored() const;
 
+  // Helper to determine if the data has the invisible state.
+  bool IsInvisible() const;
+
   // Helper to determine if the data has the ignored state, the invisible state
   // or the ignored role.
   bool IsInvisibleOrIgnored() const;

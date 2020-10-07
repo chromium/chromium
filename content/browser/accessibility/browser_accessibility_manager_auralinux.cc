@@ -120,6 +120,11 @@ void BrowserAccessibilityManagerAuraLinux::FireDescriptionChangedEvent(
   ToBrowserAccessibilityAuraLinux(node)->GetNode()->OnDescriptionChanged();
 }
 
+void BrowserAccessibilityManagerAuraLinux::FireParentChangedEvent(
+    BrowserAccessibility* node) {
+  ToBrowserAccessibilityAuraLinux(node)->GetNode()->OnParentChanged();
+}
+
 void BrowserAccessibilityManagerAuraLinux::FireSortDirectionChangedEvent(
     BrowserAccessibility* node) {
   ToBrowserAccessibilityAuraLinux(node)->GetNode()->OnSortDirectionChanged();
@@ -202,6 +207,9 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
       break;
     case ui::AXEventGenerator::Event::INVALID_STATUS_CHANGED:
       FireEvent(node, ax::mojom::Event::kInvalidStatusChanged);
+      break;
+    case ui::AXEventGenerator::Event::PARENT_CHANGED:
+      FireParentChangedEvent(node);
       break;
     case ui::AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
     case ui::AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:

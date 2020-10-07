@@ -88,9 +88,15 @@ gboolean AccessibilityEventRecorderAuraLinux::OnATKEventReceived(
   g_signal_query(hint->signal_id, &query);
 
   if (instance_) {
-    instance_->ProcessATKEvent(query.signal_name, n_params, params);
+    // "add" and "remove" are details; not part of the signal name itself.
+    gchar* signal_name =
+        g_strcmp0(query.signal_name, "children-changed")
+            ? g_strdup(query.signal_name)
+            : g_strconcat(query.signal_name, ":",
+                          g_quark_to_string(hint->detail), nullptr);
+    instance_->ProcessATKEvent(signal_name, n_params, params);
+    g_free(signal_name);
   }
-
   return true;
 }
 
@@ -245,6 +251,12 @@ void AccessibilityEventRecorderAuraLinux::ProcessATKEvent(
           g_value_get_string(&property_values->new_value);
       log += "DESCRIPTION-CHANGED:";
       log += (new_description) ? new_description : "(null)";
+    } else if (g_strcmp0(property_values->property_name, "accessible-parent") ==
+               0) {
+      log += "PARENT-CHANGED";
+      if (AtkObject* new_parent = static_cast<AtkObject*>(
+              g_value_get_object(&property_values->new_value)))
+        log += " PARENT:(" + AtkObjectToString(new_parent, log_name) + ")";
     } else {
       return;
     }
@@ -255,11 +267,7 @@ void AccessibilityEventRecorderAuraLinux::ProcessATKEvent(
     int index = static_cast<int>(g_value_get_uint(&params[1]));
     log += base::StringPrintf(" index:%d", index);
     AtkObject* child = static_cast<AtkObject*>(g_value_get_pointer(&params[2]));
-
-    // Removed children may become stale references by this point.
-    if (event_name.find("::remove") != std::string::npos)
-      log += " CHILD:(REMOVED)";
-    else if (child)
+    if (child)
       log += " CHILD:(" + AtkObjectToString(child, log_name) + ")";
     else
       log += " CHILD:(NULL)";

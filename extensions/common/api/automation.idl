@@ -85,6 +85,7 @@
     nameChanged,
     objectAttributeChanged,
     otherAttributeChanged,
+    parentChanged,
     placeholderChanged,
     portalActivated,
     positionInSetChanged,

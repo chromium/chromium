@@ -1,0 +1,2 @@
+# TODO: Technically a state-changed:focusable event should probably be fired.
+# No children-changed event is expected because the div was already in the tree.

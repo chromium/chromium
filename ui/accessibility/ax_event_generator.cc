@@ -48,7 +48,9 @@ void RemoveEvent(std::set<AXEventGenerator::EventParams>* node_events,
 }
 
 // If a node toggled its ignored state, don't also fire children-changed because
-// platforms likely will do that in response to ignored-changed.
+// platforms likely will do that in response to ignored-changed. Also do not
+// fire parent-changed on ignored nodes because functionally the parent did not
+// change as far as platform assistive technologies are concerned.
 // Suppress name- and description-changed because those can be emitted as a side
 // effect of calculating alternative text values for a newly-displayed object.
 // Ditto for text attributes such as foreground and background colors, or
@@ -61,6 +63,7 @@ void RemoveEventsDueToIgnoredChanged(
   RemoveEvent(node_events, AXEventGenerator::Event::DESCRIPTION_CHANGED);
   RemoveEvent(node_events, AXEventGenerator::Event::NAME_CHANGED);
   RemoveEvent(node_events, AXEventGenerator::Event::OBJECT_ATTRIBUTE_CHANGED);
+  RemoveEvent(node_events, AXEventGenerator::Event::PARENT_CHANGED);
   RemoveEvent(node_events, AXEventGenerator::Event::SORT_CHANGED);
   RemoveEvent(node_events, AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED);
   RemoveEvent(node_events,
@@ -228,6 +231,24 @@ void AXEventGenerator::OnNodeDataChanged(AXTree* tree,
     tree_events_[node].emplace(Event::CHILDREN_CHANGED,
                                ax::mojom::EventFrom::kNone,
                                tree_->event_intents());
+  }
+
+  // If the ignored state of a node has changed, the inclusion/exclusion of that
+  // node in platform accessibility trees will change. Fire PARENT_CHANGED on
+  // the children of a node whose ignored state changed in order to notify ATs
+  // that existing children may have been reparented.
+  //
+  // We don't fire parent-changed if the invisible state of the node has changed
+  // because when invisibility changes, the entire subtree is being inserted /
+  // removed. For example if the 'hidden' property is changed on list item, we
+  // should not fire parent-changed on the list marker or static text.
+  if (old_node_data.IsIgnored() != new_node_data.IsIgnored() &&
+      !old_node_data.IsInvisible() && !new_node_data.IsInvisible()) {
+    AXNode* node = tree_->GetFromId(new_node_data.id);
+    for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
+      AXNode* child = node->GetUnignoredChildAtIndex(i);
+      AddEvent(child, Event::PARENT_CHANGED);
+    }
   }
 }
 
@@ -621,6 +642,11 @@ void AXEventGenerator::OnSubtreeWillBeReparented(AXTree* tree, AXNode* node) {
   DCHECK_EQ(tree_, tree);
 }
 
+void AXEventGenerator::OnNodeReparented(AXTree* tree, AXNode* node) {
+  DCHECK_EQ(tree_, tree);
+  AddEvent(node, Event::PARENT_CHANGED);
+}
+
 void AXEventGenerator::OnAtomicUpdateFinished(
     AXTree* tree,
     bool root_changed,
@@ -846,6 +872,7 @@ void AXEventGenerator::TrimEventsDueToAncestorIgnoredChanged(
 void AXEventGenerator::PostprocessEvents() {
   std::map<AXNode*, IgnoredChangedStatesBitset> ancestor_ignored_changed_map;
   std::set<AXNode*> removed_subtree_created_nodes;
+  std::set<AXNode*> removed_parent_changed_nodes;
 
   // First pass through |tree_events_|, remove events that we do not need.
   for (auto& iter : tree_events_) {
@@ -887,8 +914,28 @@ void AXEventGenerator::PostprocessEvents() {
       RemoveEvent(&node_events, Event::TEXT_ATTRIBUTE_CHANGED);
     }
 
+    // Don't fire parent changed on this node if any of its ancestors also has
+    // parent changed. However, if the ancestor also has subtree created, it is
+    // possible that the created subtree is actually a newly unignored parent
+    // of an existing node. In that instance, we need to inform ATs that the
+    // existing node's parent has changed on the platform.
+    if (HasEvent(node_events, Event::PARENT_CHANGED)) {
+      while (parent && (tree_events_.find(parent) != tree_events_.end() ||
+                        base::Contains(removed_parent_changed_nodes, parent))) {
+        if ((base::Contains(removed_parent_changed_nodes, parent) ||
+             HasEvent(tree_events_[parent], Event::PARENT_CHANGED)) &&
+            !HasEvent(tree_events_[parent], Event::SUBTREE_CREATED)) {
+          RemoveEvent(&node_events, Event::PARENT_CHANGED);
+          removed_parent_changed_nodes.insert(node);
+          break;
+        }
+        parent = parent->GetUnignoredParent();
+      }
+    }
+
     // Don't fire subtree created on this node if any of its ancestors also has
     // subtree created.
+    parent = node->GetUnignoredParent();
     if (HasEvent(node_events, Event::SUBTREE_CREATED)) {
       while (parent &&
              (tree_events_.find(parent) != tree_events_.end() ||
@@ -1042,6 +1089,8 @@ const char* ToString(AXEventGenerator::Event event) {
       return "objectAttributeChanged";
     case AXEventGenerator::Event::OTHER_ATTRIBUTE_CHANGED:
       return "otherAttributeChanged";
+    case AXEventGenerator::Event::PARENT_CHANGED:
+      return "parentChanged";
     case AXEventGenerator::Event::PLACEHOLDER_CHANGED:
       return "placeholderChanged";
     case AXEventGenerator::Event::PORTAL_ACTIVATED:

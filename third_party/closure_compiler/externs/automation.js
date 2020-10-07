@@ -91,6 +91,7 @@ chrome.automation.EventType = {
   NAME_CHANGED: 'nameChanged',
   OBJECT_ATTRIBUTE_CHANGED: 'objectAttributeChanged',
   OTHER_ATTRIBUTE_CHANGED: 'otherAttributeChanged',
+  PARENT_CHANGED: 'parentChanged',
   PLACEHOLDER_CHANGED: 'placeholderChanged',
   PORTAL_ACTIVATED: 'portalActivated',
   POSITION_IN_SET_CHANGED: 'positionInSetChanged',

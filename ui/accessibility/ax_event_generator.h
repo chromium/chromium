@@ -74,6 +74,7 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
     NAME_CHANGED,
     OBJECT_ATTRIBUTE_CHANGED,
     OTHER_ATTRIBUTE_CHANGED,
+    PARENT_CHANGED,
     PLACEHOLDER_CHANGED,
     PORTAL_ACTIVATED,
     POSITION_IN_SET_CHANGED,
@@ -247,6 +248,7 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
   void OnSubtreeWillBeDeleted(AXTree* tree, AXNode* node) override;
   void OnNodeWillBeReparented(AXTree* tree, AXNode* node) override;
   void OnSubtreeWillBeReparented(AXTree* tree, AXNode* node) override;
+  void OnNodeReparented(AXTree* tree, AXNode* node) override;
   void OnAtomicUpdateFinished(AXTree* tree,
                               bool root_changed,
                               const std::vector<Change>& changes) override;
