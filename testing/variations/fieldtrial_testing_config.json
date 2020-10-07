@@ -700,6 +700,40 @@
             ]
         }
     ],
+    "AutofillConcurrentExperiments": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnableAllImprovementsButNewSectioning",
+                    "enable_features": [
+                        "AutofillAllowHtmlTypeCountryCodesWithFullNames",
+                        "AutofillImportPrefilledCountryAndStateValues",
+                        "AutofillKeepCachedFormValues",
+                        "AutofillProfileImportFromUnfocusableFields",
+                        "AutofillProfileImportFromUnifiedSection",
+                        "AutofillRetrieveFromCacheWithRendererIds",
+                        "AutofillUsePageLanguageToTranslateCountryNames",
+                        "AutofillUseParseCityStateCountryZipCodeInHeuristic",
+                        "AutofillUseVariationCountryCode"
+                    ]
+                },
+                {
+                    "name": "EnableNewSectioning",
+                    "enable_features": [
+                        "AutofillSectionUponRedundantNameInfo"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillCreditCardAuthentication": [
         {
             "platforms": [
@@ -1020,27 +1054,6 @@
                     },
                     "enable_features": [
                         "AutofillUseMobileLabelDisambiguation"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillUseVariationCountryCode": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillUseVariationCountryCode"
                     ]
                 }
             ]

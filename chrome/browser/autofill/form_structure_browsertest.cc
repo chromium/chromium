@@ -159,7 +159,9 @@ FormStructureBrowserTest::FormStructureBrowserTest()
       {autofill::features::kAutofillEnforceMinRequiredFieldsForHeuristics,
        autofill::features::kAutofillEnforceMinRequiredFieldsForQuery,
        autofill::features::kAutofillEnforceMinRequiredFieldsForUpload,
-       autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout});
+       autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout,
+       autofill::features::
+           kAutofillUseParseCityStateCountryZipCodeInHeuristic});
 }
 
 FormStructureBrowserTest::~FormStructureBrowserTest() {}
