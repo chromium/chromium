@@ -66652,7 +66652,7 @@
        ]
       ],
       "font-display.html": [
-       "b688bc2ea9d549f1db09a4fd452536710cfdd06c",
+       "a2b62c0676f4e12b529ede83f7df6e3b4e6765b1",
        [
         null,
         [
@@ -85760,6 +85760,19 @@
        [
         [
          "/css/css-overflow/overflow-body-propagation-010-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "overflow-clip-content-visual-overflow.html": [
+      "8ea8e2c3334e17cfa5c5225df837135e64546f7d",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/overflow-clip-content-visual-overflow-ref.html",
          "=="
         ]
        ],
@@ -126524,6 +126537,19 @@
        [
         [
          "/css/css-will-change/will-change-transform-image-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "will-change-transform-zero-size-child-overflow-visible.html": [
+      "38ddf5ec37fa9f750f17bca32c2986d2f675e00e",
+      [
+       null,
+       [
+        [
+         "/css/css-will-change/will-change-transform-zero-size-child-overflow-visible-ref.html",
          "=="
         ]
        ],
@@ -181988,7 +182014,7 @@
        []
       ],
       "font-display-ref.html": [
-       "2b894ed78c0e1b11fc0d27eaace8a6c39facba6f",
+       "d75644e351fd05660af4901e880fe970c17093d1",
        []
       ]
      },
@@ -192705,7 +192731,7 @@
       []
      ],
      "overflow-body-propagation-008-ref.html": [
-      "91e582aa00ff139338921eec47714dc58d3817cd",
+      "ba9f6e12d44da89656a50d010bef0d1ff7079a5d",
       []
      ],
      "overflow-body-propagation-009-ref.html": [
@@ -192714,6 +192740,10 @@
      ],
      "overflow-body-propagation-010-ref.html": [
       "9e502e7e237de7ffb6dfc754450c70f5f03d297e",
+      []
+     ],
+     "overflow-clip-content-visual-overflow-ref.html": [
+      "378da736ecfcec921fa257273f7369cb253e3b81",
       []
      ],
      "parsing": {
@@ -203249,6 +203279,10 @@
      "will-change-transform-image-ref.html": [
       "d42d5b7fea22d3d2bc2abf782b1efc78f261f69e",
       []
+     ],
+     "will-change-transform-zero-size-child-overflow-visible-ref.html": [
+      "6eaf422d2f2a3990d2268601f4fe78c9cff3881d",
+      []
      ]
     },
     "css-writing-modes": {
@@ -213122,6 +213156,14 @@
       "1759381fdc4141302f1b95868550ead76d9f5ca7",
       []
      ],
+     "screen-wake-lock-report-only.https.html.headers": [
+      "3d729b505638bf5eff87aa091442fff7a73c04fa",
+      []
+     ],
+     "screen-wake-lock-reporting.https.html.headers": [
+      "5d910ce6df801980a26fb191589201f614ed02af",
+      []
+     ],
      "serial-report-only.https.html.headers": [
       "d408ccf6b15685be3db91c1e19a26bdbc42c78cb",
       []
@@ -219609,7 +219651,7 @@
       []
      ],
      "idlharness.https_exclude=(Document_Window_HTML._)-expected.txt": [
-      "1b88dda8afcf933d698f0f8115d72cdb2df39315",
+      "bc4ed79c75aa3bcde8a465f987cf39d04373d9fe",
       []
      ],
      "idlharness.https_include=(Document_Window)-expected.txt": [
@@ -230122,7 +230164,7 @@
      []
     ],
     "html.idl": [
-     "8bf6d0f52df5e3daac47c4e9a8bd2567b3017d32",
+     "37124323e51c25af79ce62ffe017a645c98a6bee",
      []
     ],
     "idle-detection.tentative.idl": [
@@ -230659,6 +230701,12 @@
       []
      ]
     }
+   },
+   "js-self-profiling": {
+    "__dir__.headers": [
+     "63b60e490f47f4db77d33d7a4ca2f5b9a4181de8",
+     []
+    ]
    },
    "keyboard-lock": {
     "META.yml": [
@@ -324613,6 +324661,22 @@
        }
       ]
      ],
+     "screen-wake-lock-report-only.https.html": [
+      "51aa4f90c5f6e26156e095af8ee9e5aa639072ce",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "screen-wake-lock-reporting.https.html": [
+      "ce0cbdca77ad99041d6e51b04bb277fae9426890",
+      [
+       null,
+       {}
+      ]
+     ],
      "serial-report-only.https.html": [
       "11913a2ef77159c3f0c4769cd3cfaf09d942f1ba",
       [
@@ -350132,7 +350196,7 @@
         ]
        ],
        "reporting-observer.html": [
-        "1d73b566105a384a826d7d4f1ad96be075143f63",
+        "c45a468ea8cfec4bda37fff0711df34bb1d17be6",
         [
          null,
          {
@@ -369186,37 +369250,11 @@
     }
    },
    "js-self-profiling": {
-    "idlharness.any.js": [
-     "bbf38ed63523b63fe677c4825587bebb4079c8e9",
+    "idlharness.https.html": [
+     "0b6aa6cf6c851f1ec1f611421993a55f15c31b67",
      [
-      "js-self-profiling/idlharness.any.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/resources/WebIDLParser.js"
-        ],
-        [
-         "script",
-         "/resources/idlharness.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "js-self-profiling/idlharness.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/resources/WebIDLParser.js"
-        ],
-        [
-         "script",
-         "/resources/idlharness.js"
-        ]
-       ]
-      }
+      null,
+      {}
      ]
     ]
    },

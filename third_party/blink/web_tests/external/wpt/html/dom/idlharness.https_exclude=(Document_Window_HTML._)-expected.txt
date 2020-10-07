@@ -796,6 +796,7 @@ PASS ElementInternals interface object name
 PASS ElementInternals interface: existence and properties of interface prototype object
 PASS ElementInternals interface: existence and properties of interface prototype object's "constructor" property
 PASS ElementInternals interface: existence and properties of interface prototype object's @@unscopables property
+PASS ElementInternals interface: attribute shadowRoot
 PASS ElementInternals interface: operation setFormValue((File or USVString or FormData)?, optional (File or USVString or FormData)?)
 PASS ElementInternals interface: attribute form
 FAIL ElementInternals interface: operation setValidity(optional ValidityStateFlags, optional DOMString, optional HTMLElement) assert_equals: property has wrong .length expected 0 but got 1
@@ -805,7 +806,6 @@ PASS ElementInternals interface: attribute validationMessage
 PASS ElementInternals interface: operation checkValidity()
 PASS ElementInternals interface: operation reportValidity()
 PASS ElementInternals interface: attribute labels
-PASS ElementInternals interface: attribute shadowRoot
 PASS DataTransfer interface: existence and properties of interface object
 PASS DataTransfer interface object length
 PASS DataTransfer interface object name
