@@ -4,7 +4,7 @@
 <diagnostics-card>
   <div id="cardTitle" slot="title">[[i18n('memoryTitle')]]</div>
   <!-- TODO(joonbug): Localize once strings are confirmed -->
-  <percent-bar-chart slot="left-panel" title="Used memory"
+  <percent-bar-chart slot="left-panel" header="Used memory"
     value="[[getTotalUsedMemory_(memoryUsage_)]]"
     max="[[memoryUsage_.total_memory_kib]]">
   </percent-bar-chart>

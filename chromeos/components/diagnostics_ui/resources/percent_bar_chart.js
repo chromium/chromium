@@ -19,7 +19,7 @@ Polymer({
   _template: html`{__html_template__}`,
 
   properties: {
-    title: {
+    header: {
       type: String,
     },
 

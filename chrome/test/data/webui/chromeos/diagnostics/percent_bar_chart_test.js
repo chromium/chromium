@@ -26,35 +26,36 @@ suite('PercentBarChartTest', () => {
   });
 
   /**
-   * @param {string} title
+   * @param {string} header
    * @param {number} value
    * @param {number} max
    */
-  function initializePercentBarChart(title, value, max) {
+  function initializePercentBarChart(header, value, max) {
     assertFalse(!!percentBarChartElement);
 
     // Add the element to the DOM.
     percentBarChartElement = document.createElement('percent-bar-chart');
     assertTrue(!!percentBarChartElement);
-    document.body.appendChild(percentBarChartElement);
-    percentBarChartElement.title = title;
+    percentBarChartElement.header = header;
     percentBarChartElement.value = value;
     percentBarChartElement.max = max;
+    document.body.appendChild(percentBarChartElement);
+
     return flushTasks();
   }
 
   test('InitializePercentBarChart', () => {
-    const title = 'Test title';
+    const header = 'Test header';
     const value = 10;
     const max = 30;
     const percent = Math.round(100 * value / max);
-    return initializePercentBarChart(title, value, max).then(() => {
+    return initializePercentBarChart(header, value, max).then(() => {
       const paperProgress = percentBarChartElement.$$('paper-progress');
       assertEquals(value, paperProgress.value);
       assertEquals(max, paperProgress.max);
 
       assertEquals(
-          title, percentBarChartElement.$$('#chartName').textContent.trim());
+          header, percentBarChartElement.$$('#chartName').textContent.trim());
       assertEquals(
           `${percent}`,
           percentBarChartElement.$$('#percentageLabel').textContent.trim());
