@@ -29,6 +29,14 @@ class MediaNotificationBackground;
 class MediaNotificationContainer;
 class MediaNotificationItem;
 
+struct COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) NotificationTheme {
+  SkColor primary_text_color = 0;
+  SkColor secondary_text_color = 0;
+  SkColor enabled_icon_color = 0;
+  SkColor disabled_icon_color = 0;
+  SkColor separator_color = 0;
+};
+
 class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
     : public MediaNotificationView,
       public views::ButtonListener {
@@ -52,12 +60,6 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
     kMaxValue = kSource,
   };
 
-  // Allow MediaNotificationViewImpl show different styled background.
-  enum class BackgroundStyle {
-    kDefault,
-    kAshStyle,
-  };
-
   MediaNotificationViewImpl(
       MediaNotificationContainer* container,
       base::WeakPtr<MediaNotificationItem> item,
@@ -65,7 +67,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
       const base::string16& default_app_name,
       int notification_width,
       bool should_show_icon,
-      BackgroundStyle background_style = BackgroundStyle::kDefault);
+      base::Optional<NotificationTheme> theme = base::nullopt);
   ~MediaNotificationViewImpl() override;
 
   // views::View:
@@ -180,6 +182,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
 
   views::BoxLayout* title_artist_row_layout_ = nullptr;
   const gfx::VectorIcon* vector_header_icon_ = nullptr;
+
+  base::Optional<NotificationTheme> theme_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaNotificationViewImpl);
 };

@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/global_media_controls/media_dialog_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
+#include "components/media_message_center/media_notification_view_impl.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
 class MediaNotificationService;
@@ -33,10 +34,11 @@ class MediaNotificationProviderImpl
   bool HasActiveNotifications() override;
   bool HasFrozenNotifications() override;
   std::unique_ptr<views::View> GetMediaNotificationListView(
-      SkColor separator_color,
       int separator_thickness) override;
   std::unique_ptr<views::View> GetActiveMediaNotificationView() override;
   void OnBubbleClosing() override;
+  void SetColorTheme(
+      const media_message_center::NotificationTheme& color_theme) override;
 
   // MediaDialogDelegate implementations.
   MediaNotificationContainerImpl* ShowMediaSession(
@@ -78,6 +80,8 @@ class MediaNotificationProviderImpl
 
   std::map<const std::string, MediaNotificationContainerImplView*>
       observed_containers_;
+
+  base::Optional<media_message_center::NotificationTheme> color_theme_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_MEDIA_NOTIFICATION_PROVIDER_IMPL_H_

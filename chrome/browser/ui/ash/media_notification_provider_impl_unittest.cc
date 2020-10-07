@@ -128,8 +128,9 @@ TEST_F(MediaNotificationProviderImplTest, NotificationListTest) {
   EXPECT_CALL(*observer(), OnNotificationListViewSizeChanged).Times(2);
   SimulateShowNotification(id_1);
   SimulateShowNotification(id_2);
+  provider()->SetColorTheme(media_message_center::NotificationTheme());
   std::unique_ptr<views::View> view =
-      provider()->GetMediaNotificationListView(SK_ColorBLACK, 1);
+      provider()->GetMediaNotificationListView(1);
 
   auto* notification_list_view =
       static_cast<MediaNotificationListView*>(view.get());

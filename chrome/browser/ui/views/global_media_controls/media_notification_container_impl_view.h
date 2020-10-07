@@ -52,9 +52,8 @@ class MediaNotificationContainerImplView
       const std::string& id,
       base::WeakPtr<media_message_center::MediaNotificationItem> item,
       MediaNotificationService* service,
-      media_message_center::MediaNotificationViewImpl::BackgroundStyle
-          background_style = media_message_center::MediaNotificationViewImpl::
-              BackgroundStyle::kDefault);
+      base::Optional<media_message_center::NotificationTheme> theme =
+          base::nullopt);
   ~MediaNotificationContainerImplView() override;
 
   // views::Button:

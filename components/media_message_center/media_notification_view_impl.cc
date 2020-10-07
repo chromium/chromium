@@ -112,11 +112,12 @@ MediaNotificationViewImpl::MediaNotificationViewImpl(
     const base::string16& default_app_name,
     int notification_width,
     bool should_show_icon,
-    BackgroundStyle background_style)
+    base::Optional<NotificationTheme> theme)
     : container_(container),
       item_(std::move(item)),
       default_app_name_(default_app_name),
-      notification_width_(notification_width) {
+      notification_width_(notification_width),
+      theme_(theme) {
   DCHECK(container_);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -267,7 +268,8 @@ MediaNotificationViewImpl::MediaNotificationViewImpl(
   picture_in_picture_button_ =
       button_row_->AddChildView(std::move(picture_in_picture_button));
 
-  if (background_style == BackgroundStyle::kAshStyle) {
+  // Use ash style background if we do have a theme.
+  if (theme_.has_value()) {
     SetBackground(std::make_unique<MediaNotificationBackgroundAshImpl>());
   } else {
     SetBackground(std::make_unique<MediaNotificationBackgroundImpl>(
@@ -624,16 +626,26 @@ void MediaNotificationViewImpl::UpdateForegroundColor() {
       GetMediaNotificationBackground()->GetBackgroundColor(*this);
   const SkColor foreground =
       GetMediaNotificationBackground()->GetForegroundColor(*this);
-  const SkColor separator_color = SkColorSetA(foreground, 0x1F);
-  const SkColor disabled_icon_color =
-      SkColorSetA(foreground, gfx::kDisabledControlAlpha);
 
-  title_label_->SetEnabledColor(foreground);
-  artist_label_->SetEnabledColor(foreground);
-  header_row_->SetAccentColor(foreground);
+  NotificationTheme theme;
+  if (theme_.has_value()) {
+    theme = *theme_;
+  } else {
+    theme.primary_text_color = foreground;
+    theme.secondary_text_color = foreground;
+    theme.enabled_icon_color = foreground;
+    theme.disabled_icon_color =
+        SkColorSetA(foreground, gfx::kDisabledControlAlpha);
+    theme.separator_color = SkColorSetA(foreground, 0x1F);
+  }
+
+  title_label_->SetEnabledColor(theme.primary_text_color);
+  artist_label_->SetEnabledColor(theme.secondary_text_color);
+  header_row_->SetAccentColor(theme.primary_text_color);
   if (vector_header_icon_) {
     header_row_->SetAppIcon(gfx::CreateVectorIcon(
-        *vector_header_icon_, message_center::kSmallImageSizeMD, foreground));
+        *vector_header_icon_, message_center::kSmallImageSizeMD,
+        theme.enabled_icon_color));
   }
 
   title_label_->SetBackgroundColor(background);
@@ -641,26 +653,28 @@ void MediaNotificationViewImpl::UpdateForegroundColor() {
   header_row_->SetBackgroundColor(background);
 
   pip_button_separator_view_->children().front()->SetBackground(
-      views::CreateSolidBackground(separator_color));
+      views::CreateSolidBackground(theme.separator_color));
 
   // Update play/pause button images.
   views::SetImageFromVectorIconWithColor(
       play_pause_button_,
       *GetVectorIconForMediaAction(MediaSessionAction::kPlay),
-      kMediaButtonIconSize, foreground);
+      kMediaButtonIconSize, theme.enabled_icon_color);
   views::SetToggledImageFromVectorIconWithColor(
       play_pause_button_,
       *GetVectorIconForMediaAction(MediaSessionAction::kPause),
-      kMediaButtonIconSize, foreground, disabled_icon_color);
+      kMediaButtonIconSize, theme.enabled_icon_color,
+      theme.disabled_icon_color);
 
   views::SetImageFromVectorIconWithColor(
       picture_in_picture_button_,
       *GetVectorIconForMediaAction(MediaSessionAction::kEnterPictureInPicture),
-      kMediaButtonIconSize, foreground);
+      kMediaButtonIconSize, theme.enabled_icon_color);
   views::SetToggledImageFromVectorIconWithColor(
       picture_in_picture_button_,
       *GetVectorIconForMediaAction(MediaSessionAction::kExitPictureInPicture),
-      kMediaButtonIconSize, foreground, disabled_icon_color);
+      kMediaButtonIconSize, theme.enabled_icon_color,
+      theme.disabled_icon_color);
 
   // Update action buttons.
   for (views::View* child : playback_button_container_->children()) {
@@ -672,12 +686,12 @@ void MediaNotificationViewImpl::UpdateForegroundColor() {
 
     views::SetImageFromVectorIconWithColor(
         button, *GetVectorIconForMediaAction(GetActionFromButtonTag(*button)),
-        kMediaButtonIconSize, foreground);
+        kMediaButtonIconSize, theme.enabled_icon_color);
 
     button->SchedulePaint();
   }
 
-  container_->OnColorsChanged(foreground, background);
+  container_->OnColorsChanged(theme.enabled_icon_color, background);
 }
 
 std::vector<views::View*> MediaNotificationViewImpl::GetButtons() {

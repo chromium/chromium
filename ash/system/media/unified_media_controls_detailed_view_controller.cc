@@ -33,8 +33,6 @@ views::View* UnifiedMediaControlsDetailedViewController::CreateView() {
   return new UnifiedMediaControlsDetailedView(
       detailed_view_delegate_.get(),
       MediaNotificationProvider::Get()->GetMediaNotificationListView(
-          AshColorProvider::Get()->GetContentLayerColor(
-              AshColorProvider::ContentLayerType::kSeparatorColor),
           kMenuSeparatorWidth));
 }
 

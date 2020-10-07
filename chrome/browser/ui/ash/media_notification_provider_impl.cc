@@ -52,11 +52,11 @@ bool MediaNotificationProviderImpl::HasFrozenNotifications() {
 
 std::unique_ptr<views::View>
 MediaNotificationProviderImpl::GetMediaNotificationListView(
-    SkColor separator_color,
     int separator_thickness) {
   DCHECK(service_);
+  DCHECK(color_theme_);
   auto notification_list_view = std::make_unique<MediaNotificationListView>(
-      MediaNotificationListView::SeparatorStyle(separator_color,
+      MediaNotificationListView::SeparatorStyle(color_theme_->separator_color,
                                                 separator_thickness));
   active_session_view_ = notification_list_view.get();
   service_->SetDialogDelegate(this);
@@ -72,6 +72,11 @@ void MediaNotificationProviderImpl::OnBubbleClosing() {
   service_->SetDialogDelegate(nullptr);
 }
 
+void MediaNotificationProviderImpl::SetColorTheme(
+    const media_message_center::NotificationTheme& color_theme) {
+  color_theme_ = color_theme;
+}
+
 MediaNotificationContainerImpl* MediaNotificationProviderImpl::ShowMediaSession(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
@@ -79,9 +84,7 @@ MediaNotificationContainerImpl* MediaNotificationProviderImpl::ShowMediaSession(
     return nullptr;
 
   auto container = std::make_unique<MediaNotificationContainerImplView>(
-      id, item, service_,
-      media_message_center::MediaNotificationViewImpl::BackgroundStyle::
-          kAshStyle);
+      id, item, service_, color_theme_);
   MediaNotificationContainerImplView* container_ptr = container.get();
   container_ptr->AddObserver(this);
   observed_containers_[id] = container_ptr;

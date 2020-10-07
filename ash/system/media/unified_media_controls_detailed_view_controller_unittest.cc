@@ -13,6 +13,7 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "components/media_message_center/media_notification_view_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using ::testing::_;
@@ -26,9 +27,9 @@ class MockMediaNotificationProvider : MediaNotificationProvider {
   MockMediaNotificationProvider() {
     MediaNotificationProvider::Set(this);
 
-    ON_CALL(*this, GetMediaNotificationListView(_, _))
-        .WillByDefault(
-            [](auto, auto) { return std::make_unique<views::View>(); });
+    ON_CALL(*this, GetMediaNotificationListView(_)).WillByDefault([](auto) {
+      return std::make_unique<views::View>();
+    });
   }
 
   ~MockMediaNotificationProvider() override {
@@ -36,8 +37,7 @@ class MockMediaNotificationProvider : MediaNotificationProvider {
   }
 
   // MediaNotificationProvider implementations.
-  MOCK_METHOD2(GetMediaNotificationListView,
-               std::unique_ptr<views::View>(SkColor, int));
+  MOCK_METHOD1(GetMediaNotificationListView, std::unique_ptr<views::View>(int));
   MOCK_METHOD0(OnBubbleClosing, void());
   std::unique_ptr<views::View> GetActiveMediaNotificationView() override {
     return std::make_unique<views::View>();
@@ -46,6 +46,8 @@ class MockMediaNotificationProvider : MediaNotificationProvider {
   void RemoveObserver(MediaNotificationProviderObserver* observer) override {}
   bool HasActiveNotifications() override { return true; }
   bool HasFrozenNotifications() override { return true; }
+  void SetColorTheme(
+      const media_message_center::NotificationTheme& color_theme) override {}
 };
 
 }  // namespace

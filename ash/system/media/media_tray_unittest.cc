@@ -9,6 +9,7 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/media_message_center/media_notification_view_impl.h"
 #include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/event.h"
@@ -23,9 +24,9 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
   MockMediaNotificationProvider() {
     MediaNotificationProvider::Set(this);
 
-    ON_CALL(*this, GetMediaNotificationListView(_, _))
-        .WillByDefault(
-            [](auto, auto) { return std::make_unique<views::View>(); });
+    ON_CALL(*this, GetMediaNotificationListView(_)).WillByDefault([](auto) {
+      return std::make_unique<views::View>();
+    });
   }
 
   ~MockMediaNotificationProvider() override {
@@ -33,14 +34,15 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
   }
 
   // Medianotificationprovider implementations.
-  MOCK_METHOD2(GetMediaNotificationListView,
-               std::unique_ptr<views::View>(SkColor, int));
+  MOCK_METHOD1(GetMediaNotificationListView, std::unique_ptr<views::View>(int));
   MOCK_METHOD0(GetActiveMediaNotificationView, std::unique_ptr<views::View>());
   MOCK_METHOD0(OnBubbleClosing, void());
   void AddObserver(MediaNotificationProviderObserver* observer) override {}
   void RemoveObserver(MediaNotificationProviderObserver* observer) override {}
   bool HasActiveNotifications() override { return has_active_notifications_; }
   bool HasFrozenNotifications() override { return has_frozen_notifications_; }
+  void SetColorTheme(
+      const media_message_center::NotificationTheme& color_theme) override {}
 
   void SetHasActiveNotifications(bool has_active_notifications) {
     has_active_notifications_ = has_active_notifications;
@@ -157,7 +159,7 @@ TEST_F(MediaTrayTest, ShowAndHideBubbleTest) {
   // Tap the media tray should show the bubble, and media tray should
   // be active. GetMediaNotificationlistview also should be called for
   // getting active notifications.
-  EXPECT_CALL(*provider(), GetMediaNotificationListView(_, _));
+  EXPECT_CALL(*provider(), GetMediaNotificationListView(_));
   SimulateTapOnMediaTray();
   EXPECT_NE(GetBubbleWrapper(), nullptr);
   EXPECT_TRUE(media_tray()->is_active());

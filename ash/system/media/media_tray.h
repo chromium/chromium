@@ -79,6 +79,9 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
  private:
   friend class MediaTrayTest;
 
+  // Called when theme change, set colors for media notification view.
+  void SetNotificationColorTheme();
+
   // Called when global media controls pin pref is changed.
   void OnGlobalMediaControlsPinPrefChanged();
 

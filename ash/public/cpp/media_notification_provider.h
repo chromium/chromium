@@ -10,6 +10,10 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 
+namespace media_message_center {
+struct NotificationTheme;
+}  // namespace media_message_center
+
 namespace views {
 class View;
 }  // namespace views
@@ -40,7 +44,6 @@ class ASH_PUBLIC_EXPORT MediaNotificationProvider {
   // MediaNotificationContainerImpls. Used to populate the dialog on the Ash
   // shelf.
   virtual std::unique_ptr<views::View> GetMediaNotificationListView(
-      SkColor separator_color,
       int separator_thickness) = 0;
 
   // Returns a MediaNotificationContainerimplView for the active MediaSession.
@@ -49,6 +52,10 @@ class ASH_PUBLIC_EXPORT MediaNotificationProvider {
 
   // Used for ash to notify the bubble is closing.
   virtual void OnBubbleClosing() = 0;
+
+  // Set the color theme of media notification view.
+  virtual void SetColorTheme(
+      const media_message_center::NotificationTheme& color_theme) = 0;
 
  protected:
   virtual ~MediaNotificationProvider() = default;

@@ -19,6 +19,7 @@
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/strings/string_util.h"
+#include "components/media_message_center/media_notification_view_impl.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -175,6 +176,7 @@ void MediaTray::PinButton::ButtonPressed(views::Button* sender,
 MediaTray::MediaTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   if (MediaNotificationProvider::Get())
     MediaNotificationProvider::Get()->AddObserver(this);
+  SetNotificationColorTheme();
 
   Shell::Get()->session_controller()->AddObserver(this);
 
@@ -261,8 +263,6 @@ void MediaTray::ShowBubble(bool show_by_click) {
 
   content_view_ = bubble_view->AddChildView(
       MediaNotificationProvider::Get()->GetMediaNotificationListView(
-          AshColorProvider::Get()->GetContentLayerColor(
-              AshColorProvider::ContentLayerType::kSeparatorColor),
           kMenuSeparatorWidth));
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view,
@@ -321,6 +321,24 @@ void MediaTray::UpdateDisplayState() {
                      IsPinnedToShelf();
 
   SetVisiblePreferred(should_show);
+}
+
+void MediaTray::SetNotificationColorTheme() {
+  if (!MediaNotificationProvider::Get())
+    return;
+
+  media_message_center::NotificationTheme theme;
+  theme.primary_text_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary);
+  theme.secondary_text_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary);
+  theme.enabled_icon_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
+  theme.disabled_icon_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kIconColorSecondary);
+  theme.separator_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kSeparatorColor);
+  MediaNotificationProvider::Get()->SetColorTheme(theme);
 }
 
 void MediaTray::OnGlobalMediaControlsPinPrefChanged() {
