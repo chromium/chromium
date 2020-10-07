@@ -71,10 +71,6 @@
         <item name="retrySrc">@drawable/ic_refresh_white_36dp</item>
         <item name="pauseSrc">@drawable/ic_pause_white_36dp</item>
     </style>
-    <style name="AsyncImageView">
-        <item name="unavailableSrc">@drawable/async_image_view_unavailable</item>
-        <item name="waitingSrc">@drawable/async_image_view_waiting</item>
-    </style>
     <style name="LargeMediaPlayButton">
         <item name="android:layout_width">60dp</item>
         <item name="android:layout_height">60dp</item>

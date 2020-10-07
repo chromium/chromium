@@ -17,6 +17,9 @@ import androidx.annotation.StringRes;
 
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.download.R;
+import org.chromium.components.browser_ui.widget.async_image.AutoAnimatorDrawable;
+import org.chromium.components.browser_ui.widget.async_image.ForegroundDrawableCompat;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.widget.ChromeImageButton;
 
 import java.lang.annotation.Retention;

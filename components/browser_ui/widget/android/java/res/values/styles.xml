@@ -84,6 +84,11 @@
         <item name="android:windowExitAnimation">@anim/textbubble_out</item>
     </style>
 
+    <style name="AsyncImageView">
+        <item name="unavailableSrc">@drawable/async_image_view_unavailable</item>
+        <item name="waitingSrc">@drawable/async_image_view_waiting</item>
+    </style>
+
     <style name="ChipAnimation">
         <item name="android:windowEnterAnimation">@anim/chip_in</item>
         <item name="android:windowExitAnimation">@anim/chip_out</item>

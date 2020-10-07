@@ -15,7 +15,7 @@
     app:columnCount="4"
     app:rowCount="4">
 
-    <org.chromium.chrome.browser.download.home.list.view.AsyncImageView
+    <org.chromium.components.browser_ui.widget.async_image.AsyncImageView
         android:id="@+id/thumbnail"
         android:layout_width="113dp"
         android:layout_height="112dp"

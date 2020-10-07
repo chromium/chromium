@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.download.home.list.view;
+package org.chromium.components.browser_ui.widget.async_image;
 
 import android.annotation.TargetApi;
 import android.graphics.drawable.Animatable;
@@ -13,13 +13,12 @@ import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.RotateDrawable;
 import android.graphics.drawable.ScaleDrawable;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.graphics.drawable.DrawableWrapper;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
-
-import org.chromium.base.task.PostTask;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -151,11 +150,13 @@ public class AutoAnimatorDrawable extends DrawableWrapper {
     }
 
     private static final class AutoRestarterCompat extends Animatable2Compat.AnimationCallback {
+        private final Handler mHandler = new Handler(Looper.getMainLooper());
+
         // Animatable2Compat.AnimationCallback implementation.
         @Override
         public void onAnimationEnd(Drawable drawable) {
             if (!(drawable instanceof Animatable)) return;
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+            mHandler.post(() -> {
                 if (drawable.isVisible()) ((Animatable) drawable).start();
             });
         }

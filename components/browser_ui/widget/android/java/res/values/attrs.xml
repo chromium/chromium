@@ -30,6 +30,15 @@
         <attr name="menuBackground" format="reference" />
     </declare-styleable>
 
+    <declare-styleable name="AsyncImageView">
+        <attr name="unavailableSrc" format="reference" />
+        <attr name="waitingSrc" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="ForegroundRoundedCornerImageView">
+        <attr name="foregroundCompat" format="reference" />
+    </declare-styleable>
+
     <declare-styleable name="MaterialProgressBar">
         <attr name="colorBackground" format="reference|color" />
         <attr name="colorProgress" format="reference|color" />

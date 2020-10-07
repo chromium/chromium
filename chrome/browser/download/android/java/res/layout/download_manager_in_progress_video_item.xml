@@ -15,7 +15,7 @@
     app:rowCount="2">
 
     <!-- Set the src attribute in Java to wrap the drawable properly. -->
-    <org.chromium.chrome.browser.download.home.list.view.ForegroundRoundedCornerImageView
+    <org.chromium.components.browser_ui.widget.async_image.ForegroundRoundedCornerImageView
         android:id="@+id/thumbnail"
         android:layout_width="match_parent"
         android:layout_height="200dp"

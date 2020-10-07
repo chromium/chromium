@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.download.home.list.view;
+package org.chromium.components.browser_ui.widget.async_image;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -12,8 +12,9 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 
-import org.chromium.chrome.browser.download.R;
+import org.chromium.components.browser_ui.widget.R;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
+import org.chromium.ui.UiUtils;
 
 /** Helper class that adds foreground drawable support to {@code RoundedCornerImageView}. */
 public class ForegroundRoundedCornerImageView extends RoundedCornerImageView {
@@ -38,7 +39,7 @@ public class ForegroundRoundedCornerImageView extends RoundedCornerImageView {
         TypedArray types = attrs == null
                 ? null
                 : context.obtainStyledAttributes(
-                          attrs, R.styleable.ForegroundRoundedCornerImageView, 0, 0);
+                        attrs, R.styleable.ForegroundRoundedCornerImageView, 0, 0);
 
         mForegroundHelper.setDrawable(AutoAnimatorDrawable.wrap(UiUtils.getDrawable(
                 context, types, R.styleable.ForegroundRoundedCornerImageView_foregroundCompat)));

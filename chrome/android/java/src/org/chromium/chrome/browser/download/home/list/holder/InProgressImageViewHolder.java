@@ -9,9 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.appcompat.content.res.AppCompatResources;
+
 import org.chromium.chrome.browser.download.R;
 import org.chromium.chrome.browser.download.home.list.ListItem;
-import org.chromium.chrome.browser.download.home.list.view.AutoAnimatorDrawable;
+import org.chromium.components.browser_ui.widget.async_image.AutoAnimatorDrawable;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -35,9 +37,8 @@ public class InProgressImageViewHolder extends InProgressViewHolder {
         super(view, true /* constrainCaption */);
 
         mPlaceholder = view.findViewById(R.id.placeholder);
-        mPlaceholder.setImageDrawable(AutoAnimatorDrawable.wrap(
-                org.chromium.chrome.browser.download.home.list.view.UiUtils.getDrawable(
-                        view.getContext(), R.drawable.async_image_view_waiting)));
+        mPlaceholder.setImageDrawable(AutoAnimatorDrawable.wrap(AppCompatResources.getDrawable(
+                view.getContext(), R.drawable.async_image_view_waiting)));
     }
 
     // InProgressViewHolder implementation.

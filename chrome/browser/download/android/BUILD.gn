@@ -178,8 +178,6 @@ android_resources("java_resources") {
     "java/res/drawable-xxhdpi/ic_refresh_white_36dp.png",
     "java/res/drawable-xxxhdpi/ic_refresh_white_24dp.png",
     "java/res/drawable-xxxhdpi/ic_refresh_white_36dp.png",
-    "java/res/drawable/async_image_view_unavailable.xml",
-    "java/res/drawable/async_image_view_waiting.xml",
     "java/res/drawable/circular_progress_bar_background_large.xml",
     "java/res/drawable/circular_progress_bar_background_small.xml",
     "java/res/drawable/circular_progress_bar_determinate_large.xml",

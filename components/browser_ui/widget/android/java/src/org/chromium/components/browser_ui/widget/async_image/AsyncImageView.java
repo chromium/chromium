@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.download.home.list.view;
+package org.chromium.components.browser_ui.widget.async_image;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -12,7 +12,8 @@ import android.util.AttributeSet;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.download.R;
+import org.chromium.components.browser_ui.widget.R;
+import org.chromium.ui.UiUtils;
 
 /**
  * Helper class to handle asynchronously loading an image and displaying it when ready.  This class

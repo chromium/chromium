@@ -12,7 +12,7 @@
     android:layout_height="114dp"
     android:background="@drawable/hairline_border_card_background">
 
-    <org.chromium.chrome.browser.download.home.list.view.AsyncImageView
+    <org.chromium.components.browser_ui.widget.async_image.AsyncImageView
         android:id="@+id/thumbnail"
         android:layout_width="80dp"
         android:layout_height="80dp"

@@ -14,7 +14,7 @@
     android:background="@drawable/group_card_item_border"
     android:paddingStart="@dimen/card_padding">
 
-    <org.chromium.chrome.browser.download.home.list.view.AsyncImageView
+    <org.chromium.components.browser_ui.widget.async_image.AsyncImageView
         android:id="@+id/thumbnail"
         android:layout_width="80dp"
         android:layout_height="80dp"

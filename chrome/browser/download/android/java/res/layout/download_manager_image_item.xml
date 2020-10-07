@@ -13,7 +13,7 @@
     android:clickable="true"
     android:background="@color/default_bg_color_secondary" >
 
-    <org.chromium.chrome.browser.download.home.list.view.AsyncImageView
+    <org.chromium.components.browser_ui.widget.async_image.AsyncImageView
         android:id="@+id/thumbnail"
         android:layout_width="match_parent"
         android:background="@color/modern_grey_300"

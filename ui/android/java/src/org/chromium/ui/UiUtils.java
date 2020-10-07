@@ -6,6 +6,7 @@ package org.chromium.ui;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Typeface;
@@ -27,6 +28,8 @@ import android.widget.ListAdapter;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StyleableRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -344,6 +347,24 @@ public class UiUtils {
             }
         }
         return indexInParent;
+    }
+
+    /**
+     * Loads a {@link Drawable} from an attribute.  Uses {@link AppCompatResources} to support all
+     * modern {@link Drawable} types.
+     * @param context The associated context.
+     * @param attrs The attributes from which to load the drawable resource.
+     * @param attrId The attribute id that holds the drawable resource.
+     * @return A new {@link Drawable} or {@code null} if the attribute wasn't set.
+     */
+    public static @Nullable Drawable getDrawable(
+            Context context, @Nullable TypedArray attrs, @StyleableRes int attrId) {
+        if (attrs == null) return null;
+
+        @DrawableRes
+        int resId = attrs.getResourceId(attrId, -1);
+        if (resId == -1) return null;
+        return AppCompatResources.getDrawable(context, resId);
     }
 
     /**
