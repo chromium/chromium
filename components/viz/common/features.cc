@@ -21,14 +21,15 @@ const base::Feature kForcePreferredIntervalForVideo{
     "ForcePreferredIntervalForVideo", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Use the SkiaRenderer.
+const base::Feature kUseSkiaRenderer {
+  "UseSkiaRenderer",
 #if defined(OS_WIN) || \
     (defined(OS_LINUX) && !(defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMECAST)))
-const base::Feature kUseSkiaRenderer{"UseSkiaRenderer",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
+      base::FEATURE_ENABLED_BY_DEFAULT
 #else
-const base::Feature kUseSkiaRenderer{"UseSkiaRenderer",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+      base::FEATURE_DISABLED_BY_DEFAULT
 #endif
+};
 
 // Kill-switch to disable de-jelly, even if flags/properties indicate it should
 // be enabled.
@@ -55,13 +56,14 @@ const base::Feature kVizForWebView{"VizForWebView",
 const base::Feature kVizFrameSubmissionForWebView{
     "VizFrameSubmissionForWebView", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kUsePreferredIntervalForVideo{
+  "UsePreferredIntervalForVideo",
 #if defined(OS_ANDROID)
-const base::Feature kUsePreferredIntervalForVideo{
-    "UsePreferredIntervalForVideo", base::FEATURE_DISABLED_BY_DEFAULT};
+      base::FEATURE_DISABLED_BY_DEFAULT
 #else
-const base::Feature kUsePreferredIntervalForVideo{
-    "UsePreferredIntervalForVideo", base::FEATURE_ENABLED_BY_DEFAULT};
+      base::FEATURE_ENABLED_BY_DEFAULT
 #endif
+};
 
 // Whether we should use the real buffers corresponding to overlay candidates in
 // order to do a pageflip test rather than allocating test buffers.

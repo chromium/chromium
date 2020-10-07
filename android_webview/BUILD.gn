@@ -653,6 +653,7 @@ android_library("common_java") {
     "//base:base_java",
     "//cc/base:cc_base_java",
     "//components/metrics:metrics_java",
+    "//components/viz:viz_java",
     "//gpu/config:config_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
   ]

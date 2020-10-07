@@ -58,3 +58,18 @@ viz_test("viz_perftests") {
     "//testing:run_perf_test",
   ]
 }
+
+if (is_android) {
+  java_cpp_features("java_features_srcjar") {
+    # External code should depend on ":viz_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "common/features.cc" ]
+    template = "common/java/src/org/chromium/components/viz/common/VizFeatures.java.tmpl"
+  }
+
+  android_library("viz_java") {
+    # Right now, this only includes the Java features. But if we need more Java
+    # files, they should be added here as necessary.
+    srcjar_deps = [ ":java_features_srcjar" ]
+  }
+}
