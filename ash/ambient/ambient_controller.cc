@@ -505,8 +505,9 @@ AmbientBackendModel* AmbientController::GetAmbientBackendModel() {
   return ambient_photo_controller_.ambient_backend_model();
 }
 
-void AmbientController::OnImagesReady() {
-  CreateAndShowWidget();
+void AmbientController::OnImagesChanged() {
+  if (!container_view_)
+    CreateAndShowWidget();
 }
 
 std::unique_ptr<AmbientContainerView> AmbientController::CreateContainerView() {

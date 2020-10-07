@@ -83,17 +83,14 @@ FakeAmbientBackendControllerImpl::~FakeAmbientBackendControllerImpl() = default;
 void FakeAmbientBackendControllerImpl::FetchScreenUpdateInfo(
     int num_topics,
     OnScreenUpdateInfoFetchedCallback callback) {
+  ash::AmbientModeTopic topic;
+  topic.url = kFakeUrl;
+  topic.details = kFakeDetails;
+  topic.related_image_url = kFakeUrl;
+  topic.topic_type = AmbientModeTopicType::kCulturalInstitute;
+
   ash::ScreenUpdate update;
-
-  for (int i = 0; i < num_topics; i++) {
-    ash::AmbientModeTopic topic;
-    topic.url = kFakeUrl;
-    topic.details = kFakeDetails;
-    topic.related_image_url = kFakeUrl;
-    topic.topic_type = AmbientModeTopicType::kCulturalInstitute;
-
-    update.next_topics.emplace_back(topic);
-  }
+  update.next_topics.emplace_back(topic);
 
   // Only respond weather info when there is no active weather testing.
   if (!weather_info_) {

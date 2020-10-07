@@ -36,8 +36,6 @@ struct ASH_EXPORT PhotoWithDetails {
   gfx::ImageSkia photo;
   gfx::ImageSkia related_photo;
   std::string details;
-  // Hash of this image data. Used for de-duping images.
-  std::string hash;
 };
 
 // Stores necessary information fetched from the backdrop server to render
@@ -56,14 +54,11 @@ class ASH_EXPORT AmbientBackendModel {
   void AppendTopics(const std::vector<AmbientModeTopic>& topics);
   const std::vector<AmbientModeTopic>& topics() const { return topics_; }
 
-  // If enough images are loaded to start ambient mode.
-  bool ImagesReady() const;
+  // Prefetch one more image for ShowNextImage animations.
+  bool ShouldFetchImmediately() const;
 
   // Add image to local storage.
   void AddNextImage(const PhotoWithDetails& photo);
-
-  // If the hash matches the hash of the next image to be displayed.
-  bool HashMatchesNextImage(const std::string& hash) const;
 
   // Get/Set the photo refresh interval.
   base::TimeDelta GetPhotoRefreshInterval();
@@ -74,7 +69,6 @@ class ASH_EXPORT AmbientBackendModel {
 
   // Get images from local storage. Could be null image.
   const PhotoWithDetails& GetNextImage() const;
-  const PhotoWithDetails& GetCurrentImage() const { return current_image_; }
 
   // Updates the weather information and notifies observers if the icon image is
   // not null.
@@ -101,7 +95,6 @@ class ASH_EXPORT AmbientBackendModel {
 
   void NotifyTopicsChanged();
   void NotifyImagesChanged();
-  void NotifyImagesReady();
   void NotifyWeatherInfoUpdated();
 
   std::vector<AmbientModeTopic> topics_;
@@ -109,6 +102,9 @@ class ASH_EXPORT AmbientBackendModel {
   // Local cache of downloaded images for photo transition animation.
   PhotoWithDetails current_image_;
   PhotoWithDetails next_image_;
+
+  // The index of currently shown image.
+  int current_image_index_ = 0;
 
   // Current weather information.
   gfx::ImageSkia weather_condition_icon_;
