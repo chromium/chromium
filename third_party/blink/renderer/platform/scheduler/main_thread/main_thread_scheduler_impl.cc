@@ -19,6 +19,7 @@
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
@@ -2357,19 +2358,25 @@ void MainThreadSchedulerImpl::SetCurrentAgentGroupScheduler(
     AgentGroupSchedulerImpl* agent_group_scheduler_impl) {
   helper_.CheckOnValidThread();
   if (current_agent_group_scheduler_) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"), "ASG_scope", this);
+    TRACE_EVENT_NESTABLE_ASYNC_END1(
+        TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
+        "scheduler.agent_scope", current_agent_group_scheduler_,
+        "agent_group_scheduler", current_agent_group_scheduler_);
   } else {
     TRACE_EVENT_NESTABLE_ASYNC_END0(
-        TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"), "MTS_scope", this);
+        TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
+        "scheduler.thread_scope", this);
   }
   current_agent_group_scheduler_ = agent_group_scheduler_impl;
   if (current_agent_group_scheduler_) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"), "ASG_scope", this);
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+        TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
+        "scheduler.agent_scope", current_agent_group_scheduler_,
+        "agent_group_scheduler", current_agent_group_scheduler_);
   } else {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"), "MTS_scope", this);
+        TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
+        "scheduler.thread_scope", this);
   }
 }
 
