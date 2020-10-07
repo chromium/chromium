@@ -319,8 +319,6 @@ void BleMedium::DeviceRemoved(bluetooth::mojom::DeviceInfoPtr device) {
 
     it->second.peripheral_lost_cb(*ble_peripheral, id_uuid_pair.first);
   }
-
-  discovered_ble_peripherals_map_.erase(address);
 }
 
 void BleMedium::AdvertisementReleased(
