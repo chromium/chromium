@@ -23,6 +23,7 @@ class PendingUnsafeResourceStorageTest : public PlatformTest {
     // Create a resource and add it as a pending decision.
     UnsafeResource resource;
     resource.url = url_;
+    resource.navigation_url = url_;
     resource.web_state_getter = web_state_.CreateDefaultGetter();
     resource.threat_type = threat_type_;
     resource.callback =

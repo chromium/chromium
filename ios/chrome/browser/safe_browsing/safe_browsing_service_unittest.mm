@@ -31,6 +31,7 @@
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/prerender/fake_prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
+#import "ios/chrome/browser/safe_browsing/safe_browsing_query_manager.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #import "ios/chrome/test/testing_application_context.h"
@@ -59,6 +60,7 @@ class TestUrlCheckerClient {
   TestUrlCheckerClient(SafeBrowsingService* safe_browsing_service,
                        web::BrowserState* browser_state)
       : safe_browsing_service_(safe_browsing_service) {
+    SafeBrowsingQueryManager::CreateForWebState(&web_state_);
     SafeBrowsingUrlAllowList::CreateForWebState(&web_state_);
     SafeBrowsingUnsafeResourceContainer::CreateForWebState(&web_state_);
     web_state_.SetBrowserState(browser_state);

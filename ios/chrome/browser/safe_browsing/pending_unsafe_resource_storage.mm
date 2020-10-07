@@ -18,9 +18,10 @@ namespace {
 // Returns whether a pending decision exists for |resource|.
 bool IsUnsafeResourcePending(const UnsafeResource& resource) {
   SafeBrowsingUrlAllowList* allow_list = GetAllowListForResource(resource);
+  GURL decision_url = SafeBrowsingUrlAllowList::GetDecisionUrl(resource);
   std::set<SBThreatType> pending_threat_types;
   return allow_list &&
-         allow_list->IsUnsafeNavigationDecisionPending(resource.url,
+         allow_list->IsUnsafeNavigationDecisionPending(decision_url,
                                                        &pending_threat_types) &&
          pending_threat_types.find(resource.threat_type) !=
              pending_threat_types.end();
@@ -104,7 +105,7 @@ void PendingUnsafeResourceStorage::ResourcePolicyObserver::ThreatPolicyUpdated(
     SafeBrowsingUrlAllowList::Policy policy) {
   const UnsafeResource* resource = storage_->resource();
   if (policy == SafeBrowsingUrlAllowList::Policy::kPending ||
-      url != resource->url || threat_type != resource->threat_type) {
+      url != resource->navigation_url || threat_type != resource->threat_type) {
     return;
   }
 
@@ -120,7 +121,7 @@ void PendingUnsafeResourceStorage::ResourcePolicyObserver::
         SafeBrowsingUrlAllowList::Policy policy) {
   const UnsafeResource* resource = storage_->resource();
   if (policy == SafeBrowsingUrlAllowList::Policy::kPending ||
-      url != resource->url ||
+      url != resource->navigation_url ||
       threat_types.find(resource->threat_type) == threat_types.end()) {
     return;
   }

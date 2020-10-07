@@ -15,6 +15,7 @@
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/prerender/fake_prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
+#import "ios/chrome/browser/safe_browsing/safe_browsing_query_manager.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/test_navigation_manager.h"
@@ -65,6 +66,7 @@ class UrlCheckerDelegateImplTest : public PlatformTest {
     // Construct the allow list and unsafe resource container.
     SafeBrowsingUnsafeResourceContainer::CreateForWebState(web_state_.get());
     SafeBrowsingUrlAllowList::CreateForWebState(web_state_.get());
+    SafeBrowsingQueryManager::CreateForWebState(web_state_.get());
     // Set up the test prerender service factory.
     PrerenderServiceFactory::GetInstance()->SetTestingFactory(
         browser_state_.get(),
@@ -197,98 +199,4 @@ TEST_F(UrlCheckerDelegateImplTest, ProceedForAllowedUnsafeNavigation) {
   // Verify the callback state.
   EXPECT_TRUE(callback_state.proceed);
   EXPECT_FALSE(callback_state.show_interstitial);
-}
-
-// Tests that the delegate registers a pending decision, stores the unsafe
-// resource and does not allow unsafe resources to proceed for disallowed
-// navigations on the main frame.
-TEST_F(UrlCheckerDelegateImplTest,
-       DontProceedAndSetUpInterstitialStateForMainFrame) {
-  // Construct the UnsafeResource.
-  safe_browsing::SBThreatType threat_type =
-      safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
-  UnsafeResourceCallbackState callback_state;
-  UnsafeResource resource = CreateUnsafeResource(&callback_state);
-  resource.is_subresource = false;
-  resource.is_subframe = false;
-  resource.resource_type = safe_browsing::ResourceType::kMainFrame;
-  resource.threat_type = threat_type;
-
-  // Instruct the delegate to display the blocking page.
-  delegate_->StartDisplayingBlockingPageHelper(resource, /*method=*/"",
-                                               net::HttpRequestHeaders(),
-                                               /*is_main_frame*/ true,
-                                               /*has_user_gesture=*/true);
-  EXPECT_TRUE(WaitForUnsafeResourceCallbackExecution(&callback_state));
-
-  // Verify the callback state.
-  EXPECT_FALSE(callback_state.proceed);
-  EXPECT_TRUE(callback_state.show_interstitial);
-
-  // Verify that the pending decision is recorded
-  std::set<safe_browsing::SBThreatType> pending_threats;
-  EXPECT_TRUE(allow_list()->IsUnsafeNavigationDecisionPending(
-      resource.url, &pending_threats));
-  EXPECT_EQ(1U, pending_threats.size());
-  EXPECT_FALSE(pending_threats.find(threat_type) == pending_threats.end());
-
-  // Verify that a copy of |resource| without its callback has been added to the
-  // container.
-  EXPECT_TRUE(container()->GetMainFrameUnsafeResource());
-  const UnsafeResource* resource_copy =
-      container()->GetMainFrameUnsafeResource();
-  ASSERT_TRUE(resource_copy);
-  EXPECT_EQ(resource.url, resource_copy->url);
-  EXPECT_EQ(resource.callback_thread, resource_copy->callback_thread);
-  EXPECT_EQ(resource.web_state_getter, resource_copy->web_state_getter);
-  EXPECT_EQ(resource.is_subresource, resource_copy->is_subresource);
-  EXPECT_EQ(resource.is_subframe, resource_copy->is_subframe);
-  EXPECT_EQ(resource.threat_type, resource_copy->threat_type);
-}
-
-// Tests that the delegate registers a pending decision, stores the unsafe
-// resource and does not allow unsafe resources to proceed for disallowed
-// navigations on a sub frame.
-TEST_F(UrlCheckerDelegateImplTest,
-       DontProceedAndSetUpInterstitialStateForSubFrame) {
-  // Construct the UnsafeResource.
-  safe_browsing::SBThreatType threat_type =
-      safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
-  UnsafeResourceCallbackState callback_state;
-  UnsafeResource resource = CreateUnsafeResource(&callback_state);
-  resource.is_subresource = true;
-  resource.is_subframe = true;
-  resource.resource_type = safe_browsing::ResourceType::kSubFrame;
-  resource.threat_type = threat_type;
-
-  // Instruct the delegate to display the blocking page.
-  delegate_->StartDisplayingBlockingPageHelper(resource, /*method=*/"",
-                                               net::HttpRequestHeaders(),
-                                               /*is_main_frame*/ false,
-                                               /*has_user_gesture=*/true);
-  EXPECT_TRUE(WaitForUnsafeResourceCallbackExecution(&callback_state));
-
-  // Verify the callback state.
-  EXPECT_FALSE(callback_state.proceed);
-  EXPECT_TRUE(callback_state.show_interstitial);
-
-  // Verify that the pending decision is recorded
-  std::set<safe_browsing::SBThreatType> pending_threats;
-  EXPECT_TRUE(allow_list()->IsUnsafeNavigationDecisionPending(
-      resource.url, &pending_threats));
-  EXPECT_EQ(1U, pending_threats.size());
-  EXPECT_FALSE(pending_threats.find(threat_type) == pending_threats.end());
-
-  // Verify that a copy of |resource| without its callback has been added to the
-  // container.
-  EXPECT_TRUE(container()->GetSubFrameUnsafeResource(item_.get()));
-  const UnsafeResource* resource_copy =
-      container()->GetSubFrameUnsafeResource(item_.get());
-  ASSERT_TRUE(resource_copy);
-  EXPECT_EQ(resource.url, resource_copy->url);
-  EXPECT_EQ(resource.callback_thread, resource_copy->callback_thread);
-  EXPECT_EQ(resource.web_state_getter, resource_copy->web_state_getter);
-  EXPECT_EQ(resource.is_subresource, resource_copy->is_subresource);
-  EXPECT_EQ(resource.is_subframe, resource_copy->is_subframe);
-  EXPECT_EQ(resource.threat_type, resource_copy->threat_type);
 }

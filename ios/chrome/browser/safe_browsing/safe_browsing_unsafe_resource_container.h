@@ -30,8 +30,11 @@ class SafeBrowsingUnsafeResourceContainer
 
   // Stores a copy of |resource| in the container.  An allow list decision must
   // be pending for |resource| before it is added to the container.
-  void StoreUnsafeResource(
+  void StoreMainFrameUnsafeResource(
       const security_interstitials::UnsafeResource& resource);
+  void StoreSubFrameUnsafeResource(
+      const security_interstitials::UnsafeResource& resource,
+      web::NavigationItem* main_frame_item);
 
   // Returns the pending main frame UnsafeResource, or null if one has not been
   // stored.

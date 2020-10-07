@@ -17,13 +17,14 @@
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
+#import "ios/chrome/browser/safe_browsing/safe_browsing_query_manager.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 #include "url/gurl.h"
 
-namespace safe_browsing {
-class SafeBrowsingUrlCheckerImpl;
+namespace web {
+class NavigationItem;
 }
 
 // A tab helper that uses Safe Browsing to check whether URLs that are being
@@ -39,59 +40,6 @@ class SafeBrowsingTabHelper
  private:
   friend class web::WebStateUserData<SafeBrowsingTabHelper>;
 
-  // Queries the Safe Browsing database using SafeBrowsingUrlCheckerImpls but
-  // doesn't do anything with the result yet. This class may be constructed on
-  // the UI thread but otherwise must only be used and destroyed on the IO
-  // thread.
-  class UrlCheckerClient : public base::SupportsWeakPtr<UrlCheckerClient> {
-   public:
-    UrlCheckerClient();
-    ~UrlCheckerClient();
-
-    UrlCheckerClient(const UrlCheckerClient&) = delete;
-    UrlCheckerClient& operator=(const UrlCheckerClient&) = delete;
-
-    // Queries the database using the given |url_checker|, for a request with
-    // the given |url| and the given HTTP |method|. After receiving a result
-    // from the database, runs the given |callback| on the UI thread with the
-    // result.
-    void CheckUrl(
-        std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl> url_checker,
-        const GURL& url,
-        const std::string& method,
-        base::OnceCallback<void(web::WebStatePolicyDecider::PolicyDecision)>
-            callback);
-
-   private:
-    // Called by |url_checker| with the initial result of performing a url
-    // check. |url_checker| must be non-null. This is an implementation of
-    // SafeBrowsingUrlCheckerImpl::NativeUrlCheckCallBack. |slow_check_notifier|
-    // is an out-parameter; when a non-null value is passed in, it is set to a
-    // callback that receives the final result of the url check.
-    void OnCheckUrlResult(
-        safe_browsing::SafeBrowsingUrlCheckerImpl* url_checker,
-        safe_browsing::SafeBrowsingUrlCheckerImpl::NativeUrlCheckNotifier*
-            slow_check_notifier,
-        bool proceed,
-        bool showed_interstitial);
-
-    // Called by |url_checker| with the final result of performing a url check.
-    // |url_checker| must be non-null. This is an implementation of
-    // SafeBrowsingUrlCheckerImpl::NativeUrlCheckNotifier.
-    void OnCheckComplete(safe_browsing::SafeBrowsingUrlCheckerImpl* url_checker,
-                         bool proceed,
-                         bool showed_interstitial);
-
-    // This maps SafeBrowsingUrlCheckerImpls that have started but not completed
-    // a url check to the callback that should be invoked once the url check is
-    // complete.
-    base::flat_map<
-        std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>,
-        base::OnceCallback<void(web::WebStatePolicyDecider::PolicyDecision)>,
-        base::UniquePtrComparator>
-        active_url_checkers_;
-  };
-
   // A WebStatePolicyDecider that queries the SafeBrowsing database on each
   // request, always allows the request, but uses the result of the
   // SafeBrowsing check to determine whether to allow the corresponding
@@ -99,10 +47,17 @@ class SafeBrowsingTabHelper
   class PolicyDecider : public web::WebStatePolicyDecider,
                         public base::SupportsWeakPtr<PolicyDecider> {
    public:
-    PolicyDecider(web::WebState* web_state,
-                  UrlCheckerClient* url_checker_client);
-
+    PolicyDecider(web::WebState* web_state);
     ~PolicyDecider() override;
+
+    // Returns whether |query| is still relevant.  May return false if
+    // navigations occurred before the URL check has finished.
+    bool IsQueryStale(const SafeBrowsingQueryManager::Query& query);
+
+    // Stores |policy_decision| for |query|.  |query| must not be stale.
+    void HandlePolicyDecision(
+        const SafeBrowsingQueryManager::Query& query,
+        const web::WebStatePolicyDecider::PolicyDecision& policy_decision);
 
     // Notifies the policy decider that a new main frame document has been
     // loaded.
@@ -161,10 +116,8 @@ class SafeBrowsingTabHelper
         const GURL& url,
         web::WebStatePolicyDecider::PolicyDecisionCallback callback);
 
-    // Returns the appropriate UrlCheck callback for |request_info|.
-    web::WebStatePolicyDecider::PolicyDecisionCallback GetUrlCheckCallback(
-        const GURL& url,
-        const web::WebStatePolicyDecider::RequestInfo& request_info);
+    // Returns the pending main frame query for |url|.
+    MainFrameUrlQuery* GetPendingMainFrameQuery(const GURL& url);
 
     // Callback invoked when a main frame query for |url| has finished with
     // |decision|.
@@ -176,7 +129,6 @@ class SafeBrowsingTabHelper
     // |navigation_item_id| has finished with |decision|.
     void OnSubFrameUrlQueryDecided(
         const GURL& url,
-        int navigation_item_id,
         web::WebStatePolicyDecider::PolicyDecision decision);
 
     // Returns the policy decision determined by the results of queries for URLs
@@ -190,8 +142,8 @@ class SafeBrowsingTabHelper
     base::Optional<web::WebStatePolicyDecider::PolicyDecision>
     MainFrameRedirectChainDecision();
 
-    // The URL checker client used to check navigation safety on the IO thread.
-    UrlCheckerClient* url_checker_client_;
+    // The URL check query manager.
+    SafeBrowsingQueryManager* query_manager_;
     // The pending query for the main frame navigation, if any.
     base::Optional<MainFrameUrlQuery> pending_main_frame_query_;
     // The previous query for main frame, navigation, if any. This is tracked
@@ -205,6 +157,27 @@ class SafeBrowsingTabHelper
     // A map associating the pending policy decisions for each URL loaded into a
     // sub frame.
     std::map<const GURL, SubFrameUrlQuery> pending_sub_frame_queries_;
+  };
+
+  // Helper object that observes results of URL check queries.
+  class QueryObserver : public SafeBrowsingQueryManager::Observer {
+   public:
+    QueryObserver(web::WebState* web_state, PolicyDecider* decider);
+    ~QueryObserver() override;
+
+   private:
+    // SafeBrowsingQueryManager::Observer:
+    void SafeBrowsingQueryFinished(
+        SafeBrowsingQueryManager* manager,
+        const SafeBrowsingQueryManager::Query& query,
+        const SafeBrowsingQueryManager::Result& result) override;
+    void SafeBrowsingQueryManagerDestroyed(
+        SafeBrowsingQueryManager* manager) override;
+
+    web::WebState* web_state_ = nullptr;
+    PolicyDecider* policy_decider_ = nullptr;
+    ScopedObserver<SafeBrowsingQueryManager, SafeBrowsingQueryManager::Observer>
+        scoped_observer_{this};
   };
 
   // Helper object that resets state for the policy decider when a navigation is
@@ -232,8 +205,8 @@ class SafeBrowsingTabHelper
 
   explicit SafeBrowsingTabHelper(web::WebState* web_state);
 
-  std::unique_ptr<UrlCheckerClient> url_checker_client_;
   PolicyDecider policy_decider_;
+  QueryObserver query_observer_;
   NavigationObserver navigation_observer_;
 
   WEB_STATE_USER_DATA_KEY_DECL();

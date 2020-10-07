@@ -351,7 +351,7 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForSafeBrowsingError) {
   SafeBrowsingUrlAllowList::FromWebState(&web_state)
       ->AddPendingUnsafeNavigationDecision(resource.url, resource.threat_type);
   SafeBrowsingUnsafeResourceContainer::FromWebState(&web_state)
-      ->StoreUnsafeResource(resource);
+      ->StoreMainFrameUnsafeResource(resource);
 
   NSError* error = [NSError errorWithDomain:kSafeBrowsingErrorDomain
                                        code:kUnsafeResourceErrorCode

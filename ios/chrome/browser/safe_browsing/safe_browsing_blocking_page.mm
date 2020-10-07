@@ -173,7 +173,7 @@ SafeBrowsingBlockingPage::SafeBrowsingControllerClient::
           resource.web_state_getter.Run(),
           CreateMetricsHelper(resource),
           GetApplicationContext()->GetApplicationLocale()),
-      url_(resource.url),
+      url_(SafeBrowsingUrlAllowList::GetDecisionUrl(resource)),
       threat_type_(resource.threat_type) {}
 
 SafeBrowsingBlockingPage::SafeBrowsingControllerClient::

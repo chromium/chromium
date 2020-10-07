@@ -86,25 +86,32 @@ SafeBrowsingUnsafeResourceContainer::operator=(
 SafeBrowsingUnsafeResourceContainer::~SafeBrowsingUnsafeResourceContainer() =
     default;
 
-void SafeBrowsingUnsafeResourceContainer::StoreUnsafeResource(
-    const UnsafeResource& resource) {
+void SafeBrowsingUnsafeResourceContainer::StoreMainFrameUnsafeResource(
+    const security_interstitials::UnsafeResource& resource) {
   DCHECK(!resource.web_state_getter.is_null() &&
          resource.web_state_getter.Run() == web_state_);
-  if (resource.resource_type == safe_browsing::ResourceType::kMainFrame) {
-    // For main frame navigations, the copy is stored in
-    // |main_frame_unsafe_resource_|.  It corresponds with the pending
-    // NavigationItem, which may have not been created yet and will be discarded
-    // after navigation failures.
-    main_frame_unsafe_resource_ = PendingUnsafeResourceStorage(resource);
-  } else {
-    // Unsafe sub frame resources are caused by loads triggered by the committed
-    // main frame navigation.  These are associated with the NavigationItem so
-    // that they persist past reloads.
-    web::NavigationItem* item =
-        web_state_->GetNavigationManager()->GetLastCommittedItem();
-    UnsafeSubresourceContainer::FromNavigationItem(item)->StoreUnsafeResource(
-        resource);
-  }
+  DCHECK_EQ(safe_browsing::ResourceType::kMainFrame, resource.resource_type);
+
+  // For main frame navigations, the copy is stored in
+  // |main_frame_unsafe_resource_|.  It corresponds with the pending
+  // NavigationItem, which may have not been created yet and will be discarded
+  // after navigation failures.
+  main_frame_unsafe_resource_ = PendingUnsafeResourceStorage(resource);
+}
+
+void SafeBrowsingUnsafeResourceContainer::StoreSubFrameUnsafeResource(
+    const security_interstitials::UnsafeResource& resource,
+    web::NavigationItem* main_frame_item) {
+  DCHECK(!resource.web_state_getter.is_null() &&
+         resource.web_state_getter.Run() == web_state_);
+  DCHECK_EQ(safe_browsing::ResourceType::kSubFrame, resource.resource_type);
+  DCHECK(main_frame_item);
+
+  // Unsafe sub frame resources are caused by loads triggered by a committed
+  // main frame navigation.  These are associated with the NavigationItem so
+  // that they persist past reloads.
+  UnsafeSubresourceContainer::FromNavigationItem(main_frame_item)
+      ->StoreUnsafeResource(resource);
 }
 
 const security_interstitials::UnsafeResource*

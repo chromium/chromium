@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
+#include "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/web/public/web_state_user_data.h"
 #include "url/gurl.h"
 
@@ -49,6 +50,11 @@ class SafeBrowsingUrlAllowList
   };
 
   ~SafeBrowsingUrlAllowList() override;
+
+  // Returns the URL under which allow list decisions should be stored for
+  // |resource|.
+  static GURL GetDecisionUrl(
+      const security_interstitials::UnsafeResource& resource);
 
   // Adds and removes observers.
   void AddObserver(Observer* observer);

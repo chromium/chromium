@@ -33,6 +33,7 @@ class SafeBrowsingUnsafeResourceContainerTest : public PlatformTest {
   UnsafeResource MakePendingUnsafeResource(bool is_main_frame) {
     UnsafeResource resource;
     resource.url = GURL("http://www.chromium.test");
+    resource.navigation_url = resource.url;
     resource.threat_type = safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
     resource.callback =
         base::BindRepeating([](bool proceed, bool showed_interstitial) {});
@@ -66,7 +67,7 @@ TEST_F(SafeBrowsingUnsafeResourceContainerTest, MainFrameResource) {
   EXPECT_FALSE(container()->GetMainFrameUnsafeResource());
 
   // Store |resource| in the container.
-  container()->StoreUnsafeResource(resource);
+  container()->StoreMainFrameUnsafeResource(resource);
   const UnsafeResource* resource_copy =
       container()->GetMainFrameUnsafeResource();
   ASSERT_TRUE(resource_copy);
@@ -87,7 +88,7 @@ TEST_F(SafeBrowsingUnsafeResourceContainerTest, SubFrameResource) {
   EXPECT_FALSE(container()->GetSubFrameUnsafeResource(item_.get()));
 
   // Store |resource| in the container.
-  container()->StoreUnsafeResource(resource);
+  container()->StoreSubFrameUnsafeResource(resource, item_.get());
   const UnsafeResource* resource_copy =
       container()->GetSubFrameUnsafeResource(item_.get());
   ASSERT_TRUE(resource_copy);

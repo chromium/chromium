@@ -14,6 +14,13 @@ using safe_browsing::SBThreatType;
 
 WEB_STATE_USER_DATA_KEY_IMPL(SafeBrowsingUrlAllowList)
 
+// static
+GURL SafeBrowsingUrlAllowList::GetDecisionUrl(
+    const security_interstitials::UnsafeResource& resource) {
+  return resource.navigation_url.is_valid() ? resource.navigation_url
+                                            : resource.url;
+}
+
 SafeBrowsingUrlAllowList::SafeBrowsingUrlAllowList(web::WebState* web_state)
     : web_state_(web_state) {}
 
