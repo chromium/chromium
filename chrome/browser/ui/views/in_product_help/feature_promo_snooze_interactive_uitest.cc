@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/in_product_help/feature_promo_bubble_view.h"
 #include "chrome/browser/ui/views/in_product_help/feature_promo_controller_views.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -22,7 +21,10 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/test/ui_controls.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
+#include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -59,12 +61,18 @@ class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {
 
  protected:
   void ClickButton(views::Button* button) {
-    base::RunLoop run_loop;
+    // TODO(crbug.com/1135850): switch back to MoveMouseToCenterAndPress when fixed.
+    ui::MouseEvent mouse_press(ui::ET_MOUSE_PRESSED, gfx::PointF(),
+                               gfx::PointF(), ui::EventTimeForNow(),
+                               ui::EF_LEFT_MOUSE_BUTTON,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+    button->OnMouseEvent(&mouse_press);
 
-    ui_test_utils::MoveMouseToCenterAndPress(
-        button, ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP,
-        run_loop.QuitClosure());
-    run_loop.Run();
+    ui::MouseEvent mouse_release(ui::ET_MOUSE_RELEASED, gfx::PointF(),
+                                 gfx::PointF(), ui::EventTimeForNow(),
+                                 ui::EF_LEFT_MOUSE_BUTTON,
+                                 ui::EF_LEFT_MOUSE_BUTTON);
+    button->OnMouseEvent(&mouse_release);
   }
 
   bool HasSnoozePrefs(const base::Feature& iph_feature) {
@@ -168,9 +176,8 @@ class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {
       subscription_;
 };
 
-// TODO(crbug.com/1134534) Very flaky
 IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
-                       DISABLED_DismissDoesNotSnooze) {
+                       DismissDoesNotSnooze) {
   ASSERT_NO_FATAL_FAILURE(AttemptTabGroupsIPH(true));
 
   FeaturePromoBubbleView* promo = promo_controller_->promo_bubble_for_testing();
@@ -179,9 +186,8 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
                    true, 0, base::Time(), base::Time());
 }
 
-// TODO(crbug.com/1134535) Very flaky
 IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
-                       DISABLED_SnoozeSetsCorrectTime) {
+                       SnoozeSetsCorrectTime) {
   ASSERT_NO_FATAL_FAILURE(AttemptTabGroupsIPH(true));
 
   FeaturePromoBubbleView* promo = promo_controller_->promo_bubble_for_testing();
@@ -194,8 +200,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
                    false, 1, snooze_time_min, snooze_time_max);
 }
 
-// TODO(crbug.com/1134535) Very flaky
-IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest, DISABLED_CanReSnooze) {
+IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest, CanReSnooze) {
   // Simulate the user snoozing the IPH.
   base::TimeDelta snooze_duration = base::TimeDelta::FromHours(26);
   base::Time snooze_time = base::Time::Now() - snooze_duration;
