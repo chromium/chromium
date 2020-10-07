@@ -3995,8 +3995,10 @@ test("unit_tests") {
   }
 
   if (enable_webui_tab_strip) {
-    sources +=
-        [ "../browser/ui/webui/tab_strip/tab_strip_ui_handler_unittest.cc" ]
+    sources += [
+      "../browser/ui/views/toolbar/webui_tab_counter_button_unittest.cc",
+      "../browser/ui/webui/tab_strip/tab_strip_ui_handler_unittest.cc",
+    ]
   }
 
   configs += [ "//build/config:precompiled_headers" ]
@@ -5907,6 +5909,7 @@ test("unit_tests") {
       "../browser/ui/views/frame/test_with_browser_view.h",
       "../browser/ui/views/frame/web_contents_close_handler_unittest.cc",
       "../browser/ui/views/fullscreen_control/fullscreen_control_popup_unittest.cc",
+      "../browser/ui/views/fullscreen_control/fullscreen_control_view_unittest.cc",
       "../browser/ui/views/global_media_controls/media_notification_container_impl_view_unittest.cc",
       "../browser/ui/views/global_media_controls/media_notification_device_selector_view_unittest.cc",
       "../browser/ui/views/global_media_controls/media_notification_list_view_unittest.cc",
@@ -6067,6 +6070,11 @@ test("unit_tests") {
     ]
     data_deps +=
         [ "//components/update_client:recovery_component_tests_bundle_data" ]
+  }
+
+  if (is_win) {
+    sources +=
+        [ "../browser/ui/views/frame/windows_10_caption_button_unittest.cc" ]
   }
 }
 

@@ -25,6 +25,8 @@ Windows10CaptionButton::Windows10CaptionButton(
       frame_view_(frame_view),
       button_type_(button_type) {
   SetAnimateOnStateChange(true);
+  // Not focusable by default, only for accessibility.
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   SetAccessibleName(accessible_name);
 }
 

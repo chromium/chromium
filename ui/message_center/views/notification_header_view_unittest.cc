@@ -19,6 +19,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/view.h"
 
 namespace message_center {
 
@@ -205,4 +206,10 @@ TEST_F(NotificationHeaderViewTest, ColorContrastEnforcement) {
   EXPECT_TRUE(MatchesAppIconColor(expected_color));
   EXPECT_TRUE(MatchesExpandIconColor(expected_color));
 }
+
+TEST_F(NotificationHeaderViewTest, DefaultFocusBehavior) {
+  EXPECT_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY,
+            notification_header_view_->GetFocusBehavior());
+}
+
 }  // namespace message_center

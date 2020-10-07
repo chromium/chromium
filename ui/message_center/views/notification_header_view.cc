@@ -249,6 +249,9 @@ NotificationHeaderView::NotificationHeaderView(views::ButtonListener* listener)
   AddChildView(spacer);
 
   SetPreferredSize(gfx::Size(kNotificationWidth, kHeaderHeight));
+
+  // Not focusable by default, only for accessibility.
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 }
 
 NotificationHeaderView::~NotificationHeaderView() = default;

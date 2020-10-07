@@ -494,7 +494,10 @@ WebUITabCounterButton::WebUITabCounterButton(PressedCallback pressed_callback,
                                              BrowserView* browser_view)
     : Button(std::move(pressed_callback)),
       tab_strip_model_(browser_view->browser()->tab_strip_model()),
-      browser_view_(browser_view) {}
+      browser_view_(browser_view) {
+  // Not focusable by default, only for accessibility.
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+}
 
 WebUITabCounterButton::~WebUITabCounterButton() = default;
 
