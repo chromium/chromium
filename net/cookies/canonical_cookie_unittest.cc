@@ -2098,6 +2098,33 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
 #endif
 }
 
+TEST(CanonicalCookieTest, FromStorage) {
+  base::Time two_hours_ago = base::Time::Now() - base::TimeDelta::FromHours(2);
+  base::Time one_hour_ago = base::Time::Now() - base::TimeDelta::FromHours(1);
+  base::Time one_hour_from_now =
+      base::Time::Now() + base::TimeDelta::FromHours(1);
+
+  std::unique_ptr<CanonicalCookie> cc = CanonicalCookie::FromStorage(
+      "A", "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
+      one_hour_ago, false /*secure*/, false /*httponly*/,
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+      CookieSourceScheme::kSecure);
+  EXPECT_TRUE(cc);
+  EXPECT_EQ("A", cc->Name());
+  EXPECT_EQ("B", cc->Value());
+  EXPECT_EQ("www.foo.com", cc->Domain());
+  EXPECT_EQ("/bar", cc->Path());
+  EXPECT_EQ(two_hours_ago, cc->CreationDate());
+  EXPECT_EQ(one_hour_ago, cc->LastAccessDate());
+  EXPECT_EQ(one_hour_from_now, cc->ExpiryDate());
+  EXPECT_FALSE(cc->IsSecure());
+  EXPECT_FALSE(cc->IsHttpOnly());
+  EXPECT_EQ(CookieSameSite::NO_RESTRICTION, cc->SameSite());
+  EXPECT_EQ(COOKIE_PRIORITY_MEDIUM, cc->Priority());
+  EXPECT_EQ(CookieSourceScheme::kSecure, cc->SourceScheme());
+  EXPECT_FALSE(cc->IsDomainCookie());
+}
+
 TEST(CanonicalCookieTest, IsSetPermittedInContext) {
   GURL url("http://www.example.com/test");
   base::Time current_time = base::Time::Now();

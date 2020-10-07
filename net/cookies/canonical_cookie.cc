@@ -504,6 +504,27 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
   return cc;
 }
 
+// static
+std::unique_ptr<CanonicalCookie> CanonicalCookie::FromStorage(
+    const std::string& name,
+    const std::string& value,
+    const std::string& domain,
+    const std::string& path,
+    const base::Time& creation,
+    const base::Time& expiration,
+    const base::Time& last_access,
+    bool secure,
+    bool httponly,
+    CookieSameSite same_site,
+    CookiePriority priority,
+    CookieSourceScheme source_scheme) {
+  std::unique_ptr<CanonicalCookie> cc(std::make_unique<CanonicalCookie>(
+      name, value, domain, path, creation, expiration, last_access, secure,
+      httponly, same_site, priority, source_scheme));
+  DCHECK(cc->IsCanonical());
+  return cc;
+}
+
 std::string CanonicalCookie::DomainWithoutDot() const {
   return cookie_util::CookieDomainAsHost(domain_);
 }

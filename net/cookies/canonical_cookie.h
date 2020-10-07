@@ -106,6 +106,25 @@ class NET_EXPORT CanonicalCookie {
       CookieSameSite same_site,
       CookiePriority priority);
 
+  // FromStorage is a factory method which is meant for creating a new
+  // CanonicalCookie using properties of a previously existing cookie
+  // that was already ingested into the cookie store.
+  // This should NOT be used to create a new CanonicalCookie that was not
+  // already in the store.
+  static std::unique_ptr<CanonicalCookie> FromStorage(
+      const std::string& name,
+      const std::string& value,
+      const std::string& domain,
+      const std::string& path,
+      const base::Time& creation,
+      const base::Time& expiration,
+      const base::Time& last_access,
+      bool secure,
+      bool httponly,
+      CookieSameSite same_site,
+      CookiePriority priority,
+      CookieSourceScheme source_scheme);
+
   const std::string& Name() const { return name_; }
   const std::string& Value() const { return value_; }
   // We represent the cookie's host-only-flag as the absence of a leading dot in
