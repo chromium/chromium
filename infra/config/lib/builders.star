@@ -151,12 +151,8 @@ _DEFAULT_BUILDERLESS_OS_CATEGORIES = [os_category.LINUX]
 # setting ssd:0 dimension
 _EXCLUDE_BUILDERLESS_SSD_OS_CATEGORIES = [os_category.MAC]
 
-def _chromium_tests_property(*, bucketed_triggers, project_trigger_overrides):
+def _chromium_tests_property(*, project_trigger_overrides):
     chromium_tests = {}
-
-    bucketed_triggers = defaults.get_value("bucketed_triggers", bucketed_triggers)
-    if bucketed_triggers:
-        chromium_tests["bucketed_triggers"] = True
 
     project_trigger_overrides = defaults.get_value("project_trigger_overrides", project_trigger_overrides)
     if project_trigger_overrides:
@@ -254,7 +250,6 @@ defaults = args.defaults(
     auto_builder_dimension = args.COMPUTE,
     builder_group = None,
     builderless = args.COMPUTE,
-    bucketed_triggers = False,
     configure_kitchen = False,
     cores = None,
     cpu = None,
@@ -300,7 +295,6 @@ def builder(
         builder_group = args.DEFAULT,
         pool = args.DEFAULT,
         ssd = args.DEFAULT,
-        bucketed_triggers = args.DEFAULT,
         project_trigger_overrides = args.DEFAULT,
         configure_kitchen = args.DEFAULT,
         goma_backend = args.DEFAULT,
@@ -368,10 +362,6 @@ def builder(
         If True, emits a 'ssd:1' dimension. If False, emits a 'ssd:0' parameter.
         By default, considered False if builderless is considered True and
         otherwise None.
-      * bucketed_triggers - a boolean indicating whether jobs triggered by the
-        builder being defined should have the bucket prepended to the builder name
-        to trigger. If True, the 'bucketed_triggers' field will be set in the
-        '$build/chromium_tests' property. By default, considered False.
       * project_trigger_overrides - a dict mapping the LUCI projects declared in
         recipe BotSpecs to the LUCI project to use when triggering builders. When
         this builder triggers another builder, if the BotSpec for that builder has
@@ -500,7 +490,6 @@ def builder(
         }
 
     chromium_tests = _chromium_tests_property(
-        bucketed_triggers = bucketed_triggers,
         project_trigger_overrides = project_trigger_overrides,
     )
     if chromium_tests != None:

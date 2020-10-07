@@ -132,15 +132,6 @@ branches.exec("//subprojects/webrtc/subproject.star")
 
 branches.exec("//generators/cq-builders-md.star")
 
-# This should be exec'ed before exec'ing scheduler-noop-jobs.star because
-# attempting to read the buildbucket field that is not set for the noop jobs
-# actually causes an empty buildbucket message to be set
-# TODO(https://crbug.com/1062385) The automatic generation of job IDs causes
-# problems when the number of builders with the same name goes from 1 to >1 or
-# vice-versa. This generator makes sure both the bucketed and non-bucketed IDs
-# work so that there aren't transient failures when the configuration changes
-branches.exec("//generators/scheduler-bucketed-jobs.star")
-
 # TODO(https://crbug.com/819899) There are a number of noop jobs for dummy
 # builders defined due to legacy requirements that trybots mirror CI bots
 # no-op scheduler jobs are not supported by the lucicfg libraries, so this
