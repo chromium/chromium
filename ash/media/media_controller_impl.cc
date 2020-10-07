@@ -93,6 +93,12 @@ void MediaControllerImpl::NotifyCaptureState(
     observer.OnMediaCaptureChanged(capture_states);
 }
 
+void MediaControllerImpl::NotifyVmCaptureState(
+    MediaCaptureState capture_state) {
+  for (auto& observer : observers_)
+    observer.OnVmMediaCaptureChanged(capture_state);
+}
+
 void MediaControllerImpl::HandleMediaPlayPause() {
   if (Shell::Get()->session_controller()->IsScreenLocked() &&
       !AreLockScreenMediaKeysEnabled()) {

@@ -190,13 +190,15 @@ This file contains the strings for ash.
       </message>
 
       <!-- Status tray items -->
-      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the status tray and the information on it.">
+      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="The accessible description of the status tray and the information on it.">
         Status tray, time <ph name="time">$1<ex>9:50</ex></ph>,
         <ph name="battery">$2<ex>Battery is full.</ex></ph>
         <ph name="network">$3<ex>Connected to Wifi.</ex></ph>,
-        <ph name="notification">$4<ex>1 notification</ex></ph>,
-        <ph name="ime">$5<ex>Using US keyboard</ex></ph>
-        <ph name="locale">$6<ex>Using English</ex></ph>
+        <ph name="mic">$4<ex>A virtual machine is using your microphone</ex></ph>,
+        <ph name="camera">$5<ex>A virtual machine is using your camera</ex></ph>,
+        <ph name="notification">$6<ex>1 notification</ex></ph>,
+        <ph name="ime">$7<ex>Using US keyboard</ex></ph>
+        <ph name="locale">$8<ex>Using English</ex></ph>
       </message>
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the quick settings bubble and the information in it.">
         Quick Settings, Press search + left to access the notification center.
@@ -2803,6 +2805,14 @@ This file contains the strings for ash.
       <message name="IDS_ASSISTANT_BETTER_ONBOARDING_INTRO" desc="Message shown to introduce Assistant capabilities to the user.">
         I'm your Google Assistant, here to help you throughout your day!
 Here are some things you can try to get started.
+      </message>
+
+      <!-- For CameraMicTrayItemView -->
+      <message name="IDS_ASH_CAMERA_MIC_VM_USING_CAMERA" desc="Tooltip message shown at the systray camera indicator when a VM is using the camera">
+        A virtual machine is using your camera
+      </message>
+      <message name="IDS_ASH_CAMERA_MIC_VM_USING_MIC" desc="Tooltip message shown at the systray microphone indicator when a VM is using the microphone">
+        A virtual machine is using your microphone
       </message>
 
       <message name="IDS_ASH_MESSAGE_CENTER_UNLOCK_TO_PERFORM_ACTION" desc="The short message to encourage user to unlock the device so that Chrome OS can perform the notification action selected by user after unlocking.">

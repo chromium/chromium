@@ -13,6 +13,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/chromeos/camera_mic/vm_camera_mic_manager.h"
 #include "chrome/browser/chromeos/extensions/media_player_api.h"
 #include "chrome/browser/chromeos/extensions/media_player_event_router.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -139,6 +140,11 @@ MediaClientImpl::MediaClientImpl() {
   MediaCaptureDevicesDispatcher::GetInstance()->AddObserver(this);
   BrowserList::AddObserver(this);
 
+  auto* vm_camera_mic_manager = chromeos::VmCameraMicManager::GetForProfile(
+      ProfileManager::GetPrimaryUserProfile());
+  if (vm_camera_mic_manager)
+    vm_camera_mic_manager->AddObserver(this);
+
   DCHECK(!g_media_client);
   g_media_client = this;
 }
@@ -151,6 +157,11 @@ MediaClientImpl::~MediaClientImpl() {
 
   MediaCaptureDevicesDispatcher::GetInstance()->RemoveObserver(this);
   BrowserList::RemoveObserver(this);
+
+  auto* vm_camera_mic_manager = chromeos::VmCameraMicManager::GetForProfile(
+      ProfileManager::GetPrimaryUserProfile());
+  if (vm_camera_mic_manager)
+    vm_camera_mic_manager->RemoveObserver(this);
 }
 
 // static
@@ -238,6 +249,17 @@ void MediaClientImpl::OnBrowserSetLastActive(Browser* browser) {
   active_context_ = browser ? browser->profile() : nullptr;
 
   UpdateForceMediaClientKeyHandling();
+}
+
+void MediaClientImpl::OnVmCameraMicActiveChanged(
+    chromeos::VmCameraMicManager* manager) {
+  using DeviceType = chromeos::VmCameraMicManager::DeviceType;
+  MediaCaptureState state = MediaCaptureState::kNone;
+  if (manager->GetDeviceActive(DeviceType::kCamera))
+    state |= MediaCaptureState::kVideo;
+  if (manager->GetDeviceActive(DeviceType::kMic))
+    state |= MediaCaptureState::kAudio;
+  media_controller_->NotifyVmCaptureState(state);
 }
 
 void MediaClientImpl::EnableCustomMediaKeyHandler(

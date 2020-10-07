@@ -25,6 +25,7 @@
 #include "ash/system/time/time_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
+#include "ash/system/unified/camera_mic_tray_item_view.h"
 #include "ash/system/unified/current_locale_view.h"
 #include "ash/system/unified/ime_mode_view.h"
 #include "ash/system/unified/managed_device_tray_item_view.h"
@@ -128,6 +129,11 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
       current_locale_view_(new CurrentLocaleView(shelf)),
       ime_mode_view_(new ImeModeView(shelf)),
       managed_device_view_(new ManagedDeviceTrayItemView(shelf)),
+      camera_view_(
+          new CameraMicTrayItemView(shelf,
+                                    CameraMicTrayItemView::Type::kCamera)),
+      mic_view_(
+          new CameraMicTrayItemView(shelf, CameraMicTrayItemView::Type::kMic)),
       notification_counter_item_(new NotificationCounterView(shelf)),
       quiet_mode_view_(new QuietModeView(shelf)),
       time_view_(new tray::TimeTrayItemView(shelf)) {
@@ -140,6 +146,8 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
   AddTrayItemToContainer(managed_device_view_);
   AddTrayItemToContainer(notification_counter_item_);
   AddTrayItemToContainer(quiet_mode_view_);
+  AddTrayItemToContainer(camera_view_);
+  AddTrayItemToContainer(mic_view_);
 
   if (features::IsSeparateNetworkIconsEnabled()) {
     network_tray_view_ =
@@ -399,6 +407,12 @@ base::string16 UnifiedSystemTray::GetAccessibleNameForTray() {
 
   status.push_back(network_tray_view_->GetVisible()
                        ? network_tray_view_->GetAccessibleNameString()
+                       : base::EmptyString16());
+  status.push_back(mic_view_->GetVisible()
+                       ? mic_view_->GetAccessibleNameString()
+                       : base::EmptyString16());
+  status.push_back(camera_view_->GetVisible()
+                       ? camera_view_->GetAccessibleNameString()
                        : base::EmptyString16());
   status.push_back(notification_counter_item_->GetVisible()
                        ? notification_counter_item_->GetAccessibleNameString()

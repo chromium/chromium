@@ -9,6 +9,7 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/chromeos/camera_mic/vm_camera_mic_manager.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "ui/base/accelerators/media_keys_listener.h"
@@ -20,6 +21,7 @@ class MediaController;
 
 class MediaClientImpl : public ash::MediaClient,
                         public BrowserListObserver,
+                        public chromeos::VmCameraMicManager::Observer,
                         public MediaCaptureDevicesDispatcher::Observer {
  public:
   MediaClientImpl();
@@ -54,6 +56,10 @@ class MediaClientImpl : public ash::MediaClient,
 
   // BrowserListObserver:
   void OnBrowserSetLastActive(Browser* browser) override;
+
+  // chromeos::VmCameraMicManager::Observer
+  void OnVmCameraMicActiveChanged(
+      chromeos::VmCameraMicManager* manager) override;
 
   // Enables/disables custom media key handling when |context| is the active
   // browser. Media keys will be forwarded to |delegate|.

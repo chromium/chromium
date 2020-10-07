@@ -21,10 +21,10 @@ class Profile;
 namespace chromeos {
 
 // This class manages camera/mic access (and the access notifications) for VMs
-// (crostini and parallels for now). It is only available for the primary
-// profile since all VMs do not support non-primary profiles anyway. We might
-// need to change this if we extend this class to support the browser (and we
-// will need to make the notification ids different for different profiles).
+// (crostini and parallels for now). Like all the VMs, it is only available for
+// the primary and non-incognito profile. We might need to change this if we
+// extend this class to support the browser, in which case we will also need to
+// make the notification ids different for different profiles.
 class VmCameraMicManager : public KeyedService {
  public:
   enum class VmType { kCrostiniVm, kPluginVm };
@@ -39,6 +39,7 @@ class VmCameraMicManager : public KeyedService {
     virtual void OnVmCameraMicActiveChanged(VmCameraMicManager*) {}
   };
 
+  // Return nullptr if the profile is non-primary or incognito.
   static VmCameraMicManager* GetForProfile(Profile* profile);
 
   explicit VmCameraMicManager(Profile* profile);
