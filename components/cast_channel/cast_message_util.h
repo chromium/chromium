@@ -17,8 +17,6 @@ using ::cast::channel::CastMessage;
 using ::cast::channel::DeviceAuthMessage;
 
 // Reserved message namespaces for internal messages.
-static constexpr char kCastInternalNamespacePrefix[] =
-    "urn:x-cast:com.google.cast.";
 static constexpr char kAuthNamespace[] =
     "urn:x-cast:com.google.cast.tp.deviceauth";
 static constexpr char kHeartbeatNamespace[] =
@@ -164,7 +162,7 @@ bool IsCastMessageValid(const CastMessage& message_proto);
 
 // Returns true if |message_namespace| is a namespace reserved for internal
 // messages.
-bool IsCastInternalNamespace(const std::string& message_namespace);
+bool IsCastReservedNamespace(base::StringPiece message_namespace);
 
 // Returns the value in the "type" field or |kOther| if the field is not found.
 // The result is only valid if |payload| is a Cast application protocol message.

@@ -15,12 +15,21 @@ using base::test::ParseJson;
 
 namespace cast_channel {
 
-TEST(CastMessageUtilTest, IsCastInternalNamespace) {
-  EXPECT_TRUE(IsCastInternalNamespace("urn:x-cast:com.google.cast.receiver"));
-  EXPECT_FALSE(IsCastInternalNamespace("urn:x-cast:com.google.youtube"));
-  EXPECT_FALSE(IsCastInternalNamespace("urn:x-cast:com.foo"));
-  EXPECT_FALSE(IsCastInternalNamespace("foo"));
-  EXPECT_FALSE(IsCastInternalNamespace(""));
+TEST(CastMessageUtilTest, IsCastReservedNamespace) {
+  EXPECT_TRUE(
+      IsCastReservedNamespace("urn:x-cast:com.google.cast.receiver.xyzzy"));
+  EXPECT_TRUE(IsCastReservedNamespace("urn:x-cast:com.google.cast.receiver"));
+  EXPECT_FALSE(IsCastReservedNamespace("urn:x-cast:com.google.cast"));
+  EXPECT_FALSE(IsCastReservedNamespace("urn:x-cast:com.google.cast."));
+  EXPECT_FALSE(
+      IsCastReservedNamespace("urn:x-cast:com.google.cast.foo.receiver"));
+  EXPECT_FALSE(
+      IsCastReservedNamespace("urn:x-cast:com.google.cast.receiverfoo"));
+  EXPECT_FALSE(IsCastReservedNamespace("urn:x-cast:com.google.cast.xyzzy"));
+  EXPECT_FALSE(IsCastReservedNamespace("urn:x-cast:com.google.youtube"));
+  EXPECT_FALSE(IsCastReservedNamespace("urn:x-cast:com.foo"));
+  EXPECT_FALSE(IsCastReservedNamespace("foo"));
+  EXPECT_FALSE(IsCastReservedNamespace(""));
 }
 
 TEST(CastMessageUtilTest, CastMessageType) {
