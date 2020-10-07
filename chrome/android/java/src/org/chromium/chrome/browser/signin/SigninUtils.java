@@ -85,6 +85,8 @@ public class SigninUtils {
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
         if (!signinManager.isSignInAllowed()) {
+            AccountPickerDelegate.recordAccountConsistencyPromoAction(
+                    AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED);
             return;
         }
         if (AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts().isEmpty()) {
