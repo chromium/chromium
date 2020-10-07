@@ -6,10 +6,7 @@
 
 #include <vector>
 
-#include "ash/public/cpp/holding_space/holding_space_constants.h"
-#include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash {
@@ -18,22 +15,6 @@ namespace {
 
 content::DownloadManager* download_manager_for_testing = nullptr;
 
-// Helpers ---------------------------------------------------------------------
-
-// Returns true if `download` is sufficiently recent, false otherwise.
-bool IsRecentEnough(Profile* profile, const download::DownloadItem* download) {
-  const base::Time end_time = download->GetEndTime();
-
-  // A `download` must be more recent than the time of the holding space feature
-  // first becoming available.
-  PrefService* prefs = profile->GetPrefs();
-  if (end_time < holding_space_prefs::GetTimeOfFirstAvailability(prefs).value())
-    return false;
-
-  // A `download` must be more recent that `kMaxFileAge`.
-  return end_time >= base::Time::Now() - kMaxFileAge;
-}
-
 }  // namespace
 
 // HoldingSpaceDownloadsDelegate -----------------------------------------------
@@ -41,11 +22,9 @@ bool IsRecentEnough(Profile* profile, const download::DownloadItem* download) {
 HoldingSpaceDownloadsDelegate::HoldingSpaceDownloadsDelegate(
     Profile* profile,
     HoldingSpaceModel* model,
-    ItemDownloadedCallback item_downloaded_callback,
-    DownloadsRestoredCallback downloads_restored_callback)
+    ItemDownloadedCallback item_downloaded_callback)
     : HoldingSpaceKeyedServiceDelegate(profile, model),
-      item_downloaded_callback_(item_downloaded_callback),
-      downloads_restored_callback_(std::move(downloads_restored_callback)) {}
+      item_downloaded_callback_(item_downloaded_callback) {}
 
 HoldingSpaceDownloadsDelegate::~HoldingSpaceDownloadsDelegate() = default;
 
@@ -90,37 +69,18 @@ void HoldingSpaceDownloadsDelegate::OnManagerInitialized() {
   download::SimpleDownloadManager::DownloadVector downloads;
   download_manager->GetAllDownloads(&downloads);
 
-  std::vector<base::FilePath> file_paths;
-
   for (auto* download : downloads) {
     switch (download->GetState()) {
-      case download::DownloadItem::COMPLETE:
-        if (IsRecentEnough(profile(), download))
-          file_paths.push_back(download->GetFullPath());
-        break;
       case download::DownloadItem::IN_PROGRESS:
         download_item_observer_.Add(download);
         break;
+      case download::DownloadItem::COMPLETE:
       case download::DownloadItem::CANCELLED:
       case download::DownloadItem::INTERRUPTED:
       case download::DownloadItem::MAX_DOWNLOAD_STATE:
         break;
     }
   }
-
-  holding_space_util::PartitionFilePathsByExistence(
-      profile(), file_paths,
-      base::BindOnce(
-          [](const base::WeakPtr<HoldingSpaceDownloadsDelegate>& weak_ptr,
-             std::vector<base::FilePath> existing_file_paths,
-             std::vector<base::FilePath> non_existing_file_paths) {
-            if (weak_ptr) {
-              for (const auto& existing_file_path : existing_file_paths)
-                weak_ptr->OnDownloadCompleted(existing_file_path);
-              std::move(weak_ptr->downloads_restored_callback_).Run();
-            }
-          },
-          weak_factory_.GetWeakPtr()));
 }
 
 void HoldingSpaceDownloadsDelegate::ManagerGoingDown(

@@ -21,12 +21,6 @@ HoldingSpaceKeyedServiceDelegate::~HoldingSpaceKeyedServiceDelegate() = default;
 
 void HoldingSpaceKeyedServiceDelegate::Shutdown() {}
 
-void HoldingSpaceKeyedServiceDelegate::NotifyDownloadsRestored() {
-  DCHECK(is_restoring_downloads_);
-  is_restoring_downloads_ = false;
-  OnDownloadsRestored();
-}
-
 void HoldingSpaceKeyedServiceDelegate::NotifyPersistenceRestored() {
   DCHECK(is_restoring_persistence_);
   is_restoring_persistence_ = false;
@@ -47,8 +41,6 @@ void HoldingSpaceKeyedServiceDelegate::OnHoldingSpaceItemAdded(
 
 void HoldingSpaceKeyedServiceDelegate::OnHoldingSpaceItemRemoved(
     const HoldingSpaceItem* item) {}
-
-void HoldingSpaceKeyedServiceDelegate::OnDownloadsRestored() {}
 
 void HoldingSpaceKeyedServiceDelegate::OnPersistenceRestored() {}
 

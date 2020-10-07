@@ -30,14 +30,10 @@ class HoldingSpaceDownloadsDelegate : public HoldingSpaceKeyedServiceDelegate,
   using ItemDownloadedCallback =
       base::RepeatingCallback<void(const base::FilePath&)>;
 
-  // Callback to invoke when all downloads have been restored to holding space.
-  using DownloadsRestoredCallback = base::OnceClosure;
-
   HoldingSpaceDownloadsDelegate(
       Profile* profile,
       HoldingSpaceModel* model,
-      ItemDownloadedCallback item_downloaded_callback,
-      DownloadsRestoredCallback downloads_restored_callback);
+      ItemDownloadedCallback item_downloaded_callback);
   HoldingSpaceDownloadsDelegate(const HoldingSpaceDownloadsDelegate&) = delete;
   HoldingSpaceDownloadsDelegate& operator=(
       const HoldingSpaceDownloadsDelegate&) = delete;
@@ -71,9 +67,6 @@ class HoldingSpaceDownloadsDelegate : public HoldingSpaceKeyedServiceDelegate,
 
   // Callback to invoke when a download is completed.
   ItemDownloadedCallback item_downloaded_callback_;
-
-  // Callback to invoke when all downloads have been restored to holding space.
-  DownloadsRestoredCallback downloads_restored_callback_;
 
   ScopedObserver<content::DownloadManager, content::DownloadManager::Observer>
       download_manager_observer_{this};

@@ -49,10 +49,6 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemAdded(
   if (is_restoring_persistence())
     return;
 
-  // `kDownload` type holding space items have their own persistence mechanism.
-  if (item->type() == HoldingSpaceItem::Type::kDownload)
-    return;
-
   // Write the new |item| to persistent storage.
   ListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
   update->Append(item->Serialize());
@@ -61,10 +57,6 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemAdded(
 void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemRemoved(
     const HoldingSpaceItem* item) {
   if (is_restoring_persistence())
-    return;
-
-  // `kDownload` type holding space items have their own persistence mechanism.
-  if (item->type() == HoldingSpaceItem::Type::kDownload)
     return;
 
   // Remove the |item| from persistent storage.

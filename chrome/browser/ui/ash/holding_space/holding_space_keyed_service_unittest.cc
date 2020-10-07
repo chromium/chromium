@@ -57,7 +57,7 @@ namespace {
 
 std::vector<HoldingSpaceItem::Type> GetHoldingSpaceItemTypes() {
   std::vector<HoldingSpaceItem::Type> types;
-  for (int i = 0; i < static_cast<int>(HoldingSpaceItem::Type::kMaxValue); ++i)
+  for (int i = 0; i <= static_cast<int>(HoldingSpaceItem::Type::kMaxValue); ++i)
     types.push_back(static_cast<HoldingSpaceItem::Type>(i));
   return types;
 }
@@ -477,10 +477,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorage) {
             primary_holding_space_service->thumbnail_loader_for_testing(), type,
             file_path));
 
-    // We do not persist `kDownload` type items.
-    if (type != HoldingSpaceItem::Type::kDownload)
-      persisted_holding_space_items.Append(holding_space_item->Serialize());
-
+    persisted_holding_space_items.Append(holding_space_item->Serialize());
     primary_holding_space_model->AddItem(std::move(holding_space_item));
 
     EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
@@ -493,10 +490,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorage) {
     const auto* holding_space_item =
         primary_holding_space_model->items()[0].get();
 
-    // We do not persist `kDownload` type items.
-    if (holding_space_item->type() != HoldingSpaceItem::Type::kDownload)
-      persisted_holding_space_items.Remove(0, /*out_value=*/nullptr);
-
+    persisted_holding_space_items.Remove(0, /*out_value=*/nullptr);
     primary_holding_space_model->RemoveItem(holding_space_item->id());
 
     EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
@@ -527,10 +521,6 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
 
         // Persist some holding space items of each type.
         for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
-          // We do not persist `kDownload` type items.
-          if (type == HoldingSpaceItem::Type::kDownload)
-            continue;
-
           const base::FilePath file = CreateArbitraryFile(downloads_mount);
           const GURL file_system_url = GetFileSystemUrl(GetProfile(), file);
 
@@ -629,10 +619,6 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistance) {
 
         // Persist some holding space items of each type.
         for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
-          // We do not persist `kDownload` type items.
-          if (type == HoldingSpaceItem::Type::kDownload)
-            continue;
-
           const base::FilePath file = CreateArbitraryFile(downloads_mount);
           const GURL file_system_url = GetFileSystemUrl(GetProfile(), file);
 
@@ -647,10 +633,10 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistance) {
           persisted_holding_space_items_before_restoration->Append(
               fresh_holding_space_item->Serialize());
 
-          // We don't expect the screenshots to still be in persistence or
-          // restoration after model restoration since the file will be older
-          // than the time limit for restored files.
-          if (type != HoldingSpaceItem::Type::kScreenshot) {
+          // Only pinned files are exempt from age checks. In this test, we
+          // expect all holding space items of other types to be removed from
+          // persistence during restoration due to being older than kMaxFileAge.
+          if (type == HoldingSpaceItem::Type::kPinnedFile) {
             persisted_holding_space_items_after_restoration.Append(
                 fresh_holding_space_item->Serialize());
             restored_holding_space_items.push_back(
@@ -712,82 +698,6 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistance) {
             persisted_holding_space_items_after_restoration);
 }
 
-TEST_F(HoldingSpaceKeyedServiceTest, RetrieveHistory) {
-  // Create a test downloads mount point.
-  ScopedDownloadsMountPoint downloads_mount(GetProfile());
-  ASSERT_TRUE(downloads_mount.IsValid());
-
-  std::vector<base::FilePath> virtual_paths;
-  std::vector<base::FilePath> full_paths;
-  content::DownloadManager::DownloadVector download_items_mock;
-
-  content::MockDownloadManager* mock_download_manager = download_manager();
-
-  base::Time initial_testing_time = base::Time::Now();
-
-  for (int i = 0; i < 3; ++i) {
-    const base::FilePath download_item_virtual_path(
-        "Download " + base::NumberToString(i) + ".png");
-    virtual_paths.push_back(download_item_virtual_path);
-    const base::FilePath download_item_full_path =
-        CreateFile(downloads_mount, download_item_virtual_path,
-                   "download " + base::NumberToString(i));
-    full_paths.push_back(download_item_full_path);
-    std::unique_ptr<download::MockDownloadItem> item(
-        CreateMockDownloadItem(download_item_full_path));
-    // Set one item as an download in progress, which will complete afterwards.
-    if (i == 2) {
-      {
-        testing::InSequence s1;
-        EXPECT_CALL(*item, GetState())
-            .WillOnce(testing::Return(download::DownloadItem::IN_PROGRESS));
-        EXPECT_CALL(*item, GetState())
-            .WillOnce(testing::Return(download::DownloadItem::COMPLETE));
-      }
-    } else {
-      EXPECT_CALL(*item, GetState())
-          .WillOnce(testing::Return(download::DownloadItem::COMPLETE));
-      EXPECT_CALL(*item, GetEndTime())
-          .WillOnce(testing::Return(initial_testing_time +
-                                    base::TimeDelta::FromHours(1)));
-    }
-    download_items_mock.push_back(item.release());
-  }
-  EXPECT_CALL(*mock_download_manager, GetAllDownloads(testing::_))
-      .WillOnce(testing::SetArgPointee<0>(download_items_mock));
-
-  holding_space_util::SetNowForTesting(initial_testing_time);
-
-  TestingProfile* secondary_profile = CreateSecondaryProfile();
-  ActivateSecondaryProfile();
-  HoldingSpaceModelAttachedWaiter(secondary_profile).Wait();
-
-  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
-  ASSERT_EQ(2u, model->items().size());
-
-  for (int i = 0; i < static_cast<int>(model->items().size()); ++i) {
-    EXPECT_EQ(full_paths[i], model->items()[i]->file_path());
-    EXPECT_EQ(virtual_paths[i],
-              GetVirtualPathFromUrl(model->items()[i]->file_system_url(),
-                                    downloads_mount.name()));
-  }
-
-  // Notify the holding space service of download completion. It should add
-  // the object to the model.
-  download::MockDownloadItem* in_progress_item =
-      static_cast<download::MockDownloadItem*>(download_items_mock[2]);
-  in_progress_item->NotifyObserversDownloadUpdated();
-
-  ASSERT_EQ(3u, model->items().size());
-  EXPECT_EQ(full_paths[2], model->items()[2]->file_path());
-  EXPECT_EQ(virtual_paths[2],
-            GetVirtualPathFromUrl(model->items()[2]->file_system_url(),
-                                  downloads_mount.name()));
-
-  for (int i = 0; i < 3; i++)
-    delete download_items_mock[i];
-}
-
 TEST_F(HoldingSpaceKeyedServiceTest, AddDownloadItem) {
   TestingProfile* profile = GetProfile();
   // Create a test downloads mount point.
@@ -846,91 +756,6 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddDownloadItem) {
   EXPECT_EQ(download_item_virtual_path,
             GetVirtualPathFromUrl(download_item->file_system_url(),
                                   downloads_mount.name()));
-}
-
-TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderDownloads) {
-  // Create a test downloads mount point.
-  ScopedDownloadsMountPoint downloads_mount(GetProfile());
-  ASSERT_TRUE(downloads_mount.IsValid());
-
-  content::DownloadManager::DownloadVector download_items_mock;
-  base::Time initial_testing_time = base::Time::Now();
-
-  content::MockDownloadManager* mock_download_manager = download_manager();
-
-  const base::FilePath download_item_virtual_path("Download.png");
-  const base::FilePath download_item_full_path =
-      CreateFile(downloads_mount, download_item_virtual_path, "download ");
-  std::unique_ptr<download::MockDownloadItem> item(
-      CreateMockDownloadItem(download_item_full_path));
-  EXPECT_CALL(*item, GetState())
-      .WillOnce(testing::Return(download::DownloadItem::COMPLETE));
-
-  // Set an end time one hour from before kMaxFileAge is met, so it is
-  // considered an older download.
-  EXPECT_CALL(*item, GetEndTime())
-      .WillOnce(testing::Return(initial_testing_time - kMaxFileAge -
-                                base::TimeDelta::FromHours(1)));
-  download_items_mock.push_back(item.get());
-  EXPECT_CALL(*mock_download_manager, GetAllDownloads(testing::_))
-      .WillOnce(testing::SetArgPointee<0>(download_items_mock));
-
-  // Set holding space first enabled time to 1 day before kMaxFileAge is met
-  // from now, so we can make sure downloads are being excluded due to file age
-  // limit, and not due to the holding space first enabled time.
-  TestingProfile* const secondary_profile = CreateSecondaryProfile(
-      base::BindLambdaForTesting([&](TestingPrefStore* pref_store) {
-        base::Time holding_space_start_time =
-            initial_testing_time - kMaxFileAge - base::TimeDelta::FromDays(1);
-        auto time_value = std::make_unique<base::Value>(base::NumberToString(
-            holding_space_start_time.ToDeltaSinceWindowsEpoch()
-                .InMicroseconds()));
-        pref_store->SetValueSilently(
-            "ash.holding_space.time_of_first_availability",
-            std::move(time_value),
-            PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
-      }));
-  ActivateSecondaryProfile();
-  HoldingSpaceModelAttachedWaiter(secondary_profile).Wait();
-
-  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
-  ASSERT_EQ(0u, model->items().size());
-}
-
-TEST_F(HoldingSpaceKeyedServiceTest,
-       RemoveDownloadsBeforeHoldingSpaceFirstEnabled) {
-  // Create a test downloads mount point.
-  ScopedDownloadsMountPoint downloads_mount(GetProfile());
-  ASSERT_TRUE(downloads_mount.IsValid());
-
-  const base::FilePath download_item_virtual_path("Download.png");
-  const base::FilePath download_item_full_path =
-      CreateFile(downloads_mount, download_item_virtual_path, "download ");
-  std::unique_ptr<download::MockDownloadItem> item(
-      CreateMockDownloadItem(download_item_full_path));
-  EXPECT_CALL(*item, GetState())
-      .WillOnce(testing::Return(download::DownloadItem::COMPLETE));
-
-  // Create a file with a download time set to one hour before current time. The
-  // download will be older than holding space.
-  EXPECT_CALL(*item, GetEndTime())
-      .WillOnce(
-          testing::Return(base::Time::Now() - base::TimeDelta::FromHours(1)));
-
-  content::DownloadManager::DownloadVector download_items_mock;
-  download_items_mock.push_back(item.get());
-
-  content::MockDownloadManager* mock_download_manager = download_manager();
-
-  EXPECT_CALL(*mock_download_manager, GetAllDownloads(testing::_))
-      .WillOnce(testing::SetArgPointee<0>(download_items_mock));
-
-  TestingProfile* const secondary_profile = CreateSecondaryProfile();
-  ActivateSecondaryProfile();
-  HoldingSpaceModelAttachedWaiter(secondary_profile).Wait();
-
-  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
-  ASSERT_EQ(0u, model->items().size());
 }
 
 }  // namespace ash
