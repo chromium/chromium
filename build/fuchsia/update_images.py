@@ -17,7 +17,8 @@ import tarfile
 
 from common import GetHostOsFromPlatform, GetHostArchFromPlatform, \
                    DIR_SOURCE_ROOT, IMAGES_ROOT
-from update_sdk import DownloadAndUnpackFromCloudStorage, GetSdkHash, \
+from update_sdk import DownloadAndUnpackFromCloudStorage, \
+                       GetCloudStorageBucket, GetSdkHash, \
                        MakeCleanDirectory, SDK_SIGNATURE_FILE
 
 
@@ -58,14 +59,14 @@ def DownloadSdkBootImages(bucket, sdk_hash, boot_image_names, image_output_dir):
 
     logging.info('Downloading Fuchsia boot images for %s.%s...' %
                  (device_type, arch))
-    if bucket == 'fuchsia':
+    if bucket == 'fuchsia-sdk':
       images_tarball_url = 'gs://{bucket}/development/{sdk_hash}/images/'\
-          '{device_type}-{arch}.tgz'.format(
+          '{device_type}.{arch}.tgz'.format(
               bucket=bucket, sdk_hash=sdk_hash,
               device_type=device_type, arch=arch)
     else:
       images_tarball_url = 'gs://{bucket}/development/{sdk_hash}/images/'\
-          '{device_type}.{arch}.tgz'.format(
+          '{device_type}-{arch}.tgz'.format(
               bucket=bucket, sdk_hash=sdk_hash,
               device_type=device_type, arch=arch)
     DownloadAndUnpackFromCloudStorage(images_tarball_url, image_output_dir)
@@ -85,14 +86,13 @@ def main():
       '--boot-images',
       type=str,
       required=True,
-      nargs='?',
       help='List of boot images to download, represented as a comma separated '
       'list. Wildcards are allowed. ')
   parser.add_argument(
-      '--bucket',
+      '--bucket-override',
       type=str,
-      default='fuchsia',
-      help='The cloud bucket in which the Fuchsia images are stored. Optional')
+      help='Overrides the cloud bucket in which the Fuchsia images are stored. '
+      'If not specified, get the bucket from sdk-bucket.txt.')
   parser.add_argument(
       '--image-root-dir',
       default=IMAGES_ROOT,
@@ -108,7 +108,12 @@ def main():
   # Check whether there's SDK support for this platform.
   GetHostOsFromPlatform()
 
-  sdk_hash = GetSdkHash(args.bucket)
+  if args.bucket_override:
+    bucket = args.bucket_override
+  else:
+    bucket = GetCloudStorageBucket()
+
+  sdk_hash = GetSdkHash(bucket)
   if not sdk_hash:
     return 1
 
@@ -121,7 +126,7 @@ def main():
     MakeCleanDirectory(args.image_root_dir)
 
     try:
-      DownloadSdkBootImages(args.bucket, sdk_hash, args.boot_images,
+      DownloadSdkBootImages(bucket, sdk_hash, args.boot_images,
                             args.image_root_dir)
     except subprocess.CalledProcessError as e:
       logging.error(("command '%s' failed with status %d.%s"), " ".join(e.cmd),
