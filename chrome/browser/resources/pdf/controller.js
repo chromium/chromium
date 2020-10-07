@@ -34,18 +34,6 @@ let SaveDataMessageData;
 /**
  * @typedef {{
  *   type: string,
- *   to: string,
- *   cc: string,
- *   bcc: string,
- *   subject: string,
- *   body: string,
- * }}
- */
-let EmailMessageData;
-
-/**
- * @typedef {{
- *   type: string,
  *   url: string,
  *   grayscale: boolean,
  *   modifiable: boolean,
@@ -449,13 +437,6 @@ export class PluginController extends ContentController {
     }
 
     switch (messageData.type) {
-      case 'email':
-        const emailData = /** @type {!EmailMessageData} */ (messageData);
-        const href = 'mailto:' + emailData.to + '?cc=' + emailData.cc +
-            '&bcc=' + emailData.bcc + '&subject=' + emailData.subject +
-            '&body=' + emailData.body;
-        window.location.href = href;
-        break;
       case 'goToPage':
         this.viewport_.goToPage(
             /** @type {{type: string, page: number}} */ (messageData).page);
