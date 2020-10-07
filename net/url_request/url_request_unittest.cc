@@ -2474,8 +2474,8 @@ TEST_F(URLRequestTest, SameSiteCookiesSpecialScheme) {
   ASSERT_TRUE(https_test_server.Start());
   EmbeddedTestServer http_test_server(EmbeddedTestServer::TYPE_HTTP);
   RegisterDefaultHandlers(&http_test_server);
-  // Ensure they are on different ports.
-  ASSERT_TRUE(http_test_server.Start(https_test_server.port() + 1));
+  ASSERT_TRUE(http_test_server.Start());
+  ASSERT_NE(https_test_server.port(), http_test_server.port());
   // Both hostnames should be 127.0.0.1 (so that we can use the same set of
   // cookies on both, for convenience).
   ASSERT_EQ(https_test_server.host_port_pair().host(),
