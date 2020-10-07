@@ -53,6 +53,8 @@ class BrowserPersister : public sessions::CommandStorageManagerDelegate,
 
   ~BrowserPersister() override;
 
+  bool is_restore_in_progress() const { return is_restore_in_progress_; }
+
   void SaveIfNecessary();
 
   // Returns the key used to encrypt the file. Empty if not encrypted.
@@ -138,6 +140,9 @@ class BrowserPersister : public sessions::CommandStorageManagerDelegate,
                  &TabImpl::AddDataObserver,
                  &TabImpl::RemoveDataObserver>
       data_observer_{this};
+
+  // True while asynchronously reading the state to restore.
+  bool is_restore_in_progress_ = true;
 
   base::WeakPtrFactory<BrowserPersister> weak_factory_{this};
 };

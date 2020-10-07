@@ -18,11 +18,14 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.weblayer.Browser;
+import org.chromium.weblayer.BrowserRestoreCallback;
 import org.chromium.weblayer.Navigation;
 import org.chromium.weblayer.NavigationCallback;
 import org.chromium.weblayer.NavigationController;
 import org.chromium.weblayer.Profile;
 import org.chromium.weblayer.Tab;
+import org.chromium.weblayer.WebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
 import java.util.HashMap;
@@ -42,6 +45,16 @@ public class BrowserFragmentLifecycleTest {
     private Tab getTab() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> mActivityTestRule.getActivity().getTab());
+    }
+
+    private boolean isRestoringPreviousState() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> mActivityTestRule.getActivity().getBrowser().isRestoringPreviousState());
+    }
+
+    private int getSupportedMajorVersion() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> WebLayer.getSupportedMajorVersion(mActivityTestRule.getActivity()));
     }
 
     @Test
@@ -126,12 +139,18 @@ public class BrowserFragmentLifecycleTest {
         extras.putString(InstrumentationActivity.EXTRA_PERSISTENCE_ID, "x");
         final String url = mActivityTestRule.getTestDataURL("simple_page.html");
         mActivityTestRule.launchShellWithUrl(url, extras);
+        if (getSupportedMajorVersion() >= 88) {
+            Assert.assertFalse(isRestoringPreviousState());
+        }
 
         mActivityTestRule.recreateActivity();
 
         Tab tab = getTab();
         Assert.assertNotNull(tab);
         waitForTabToFinishRestore(tab, url);
+        if (getSupportedMajorVersion() >= 88) {
+            Assert.assertFalse(isRestoringPreviousState());
+        }
     }
 
     @Test
@@ -200,7 +219,7 @@ public class BrowserFragmentLifecycleTest {
 
         Map<String, String> initialData = new HashMap<>();
         initialData.put("foo", "bar");
-        restoresTabData(extras, initialData);
+        restoreTabData(extras, initialData);
     }
 
     @Test
@@ -209,10 +228,10 @@ public class BrowserFragmentLifecycleTest {
     public void restoreTabDataAfterRecreate() throws Throwable {
         Map<String, String> initialData = new HashMap<>();
         initialData.put("foo", "bar");
-        restoresTabData(new Bundle(), initialData);
+        restoreTabData(new Bundle(), initialData);
     }
 
-    private void restoresTabData(Bundle extras, Map<String, String> initialData) {
+    private void restoreTabData(Bundle extras, Map<String, String> initialData) {
         String url = mActivityTestRule.getTestDataURL("simple_page.html");
         mActivityTestRule.launchShellWithUrl(url, extras);
 
@@ -281,5 +300,47 @@ public class BrowserFragmentLifecycleTest {
             });
         });
         helper.waitForCallback(callCount, 1);
+    }
+
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(88)
+    public void restoreUsingOnRestoreCompleted() throws Throwable {
+        final String persistenceId = "x";
+        Bundle extras = new Bundle();
+        extras.putString(InstrumentationActivity.EXTRA_PERSISTENCE_ID, persistenceId);
+        CallbackHelper callbackHelper = new CallbackHelper();
+        InstrumentationActivity.registerOnCreatedCallback(
+                new InstrumentationActivity.OnCreatedCallback() {
+                    private int mBrowserCreateCount;
+                    @Override
+                    public void onCreated(Browser browser) {
+                        if (mBrowserCreateCount == 0) {
+                            // Initial creation.
+                            mBrowserCreateCount = 1;
+                            // isRestoringPreviousState() is true for the initial creation as
+                            // persistence code has to check disk, which is async.
+                            Assert.assertTrue(browser.isRestoringPreviousState());
+                        } else if (mBrowserCreateCount == 1) {
+                            // The activity was recreated.
+                            mBrowserCreateCount = 2;
+                            Assert.assertTrue(browser.isRestoringPreviousState());
+                            browser.registerBrowserRestoreCallback(new BrowserRestoreCallback() {
+                                @Override
+                                public void onRestoreCompleted() {
+                                    Assert.assertFalse(browser.isRestoringPreviousState());
+                                    callbackHelper.notifyCalled();
+                                }
+                            });
+                        } else {
+                            Assert.fail("Unexpected phase");
+                        }
+                    }
+                });
+        final String url = mActivityTestRule.getTestDataURL("simple_page.html");
+        mActivityTestRule.launchShellWithUrl(url, extras);
+
+        mActivityTestRule.recreateActivity();
+        callbackHelper.waitForFirst();
     }
 }

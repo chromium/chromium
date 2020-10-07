@@ -58,6 +58,8 @@ public class InstrumentationActivity extends FragmentActivity {
     // that show Page Info UI on its TextView.
     public static final String EXTRA_URLBAR_TEXT_CLICKABLE = "EXTRA_URLBAR_TEXT_CLICKABLE";
 
+    private static OnCreatedCallback sOnCreatedCallback;
+
     private Profile mProfile;
     private Fragment mFragment;
     private Browser mBrowser;
@@ -83,6 +85,25 @@ public class InstrumentationActivity extends FragmentActivity {
         } catch (LinkageError | ClassNotFoundException e) {
         }
         return false;
+    }
+
+    /**
+     * Use this callback for tests that need to be notified synchronously when the Browser has been
+     * created.
+     */
+    public static interface OnCreatedCallback {
+        // Notification that a Browser was created.
+        // This is called on the UI thread.
+        public void onCreated(Browser browser);
+    }
+
+    // Registers a callback that is notified on the UI thread when a Browser is created.
+    public static void registerOnCreatedCallback(OnCreatedCallback callback) {
+        sOnCreatedCallback = callback;
+        // Ideally |callback| would be registered in the Intent, but that isn't possible as to do so
+        // |callback| would have to be a Parceable (which doesn't make sense). As at this time each
+        // test runs in its own process a static is used, if multiple tests were to run in the same
+        // binary, then some state would need to be put in the intent.
     }
 
     public Tab getTab() {
@@ -291,6 +312,12 @@ public class InstrumentationActivity extends FragmentActivity {
         } else {
             setTabCallbacks(mBrowser.getActiveTab());
             setTab(mBrowser.getActiveTab());
+        }
+
+        if (sOnCreatedCallback != null) {
+            sOnCreatedCallback.onCreated(mBrowser);
+            // Don't reset |sOnCreatedCallback| as it's needed for tests that exercise activity
+            // recreation.
         }
     }
 

@@ -310,6 +310,7 @@ source_set("weblayer_lib_base") {
     "public/browser.cc",
     "public/browser.h",
     "public/browser_observer.h",
+    "public/browser_restore_observer.h",
     "public/common/switches.cc",
     "public/common/switches.h",
     "public/cookie_manager.h",

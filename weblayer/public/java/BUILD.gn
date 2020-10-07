@@ -38,6 +38,7 @@ android_library("java") {
     "org/chromium/weblayer/BroadcastReceiver.java",
     "org/chromium/weblayer/Browser.java",
     "org/chromium/weblayer/BrowserFragment.java",
+    "org/chromium/weblayer/BrowserRestoreCallback.java",
     "org/chromium/weblayer/BrowsingDataType.java",
     "org/chromium/weblayer/Callback.java",
     "org/chromium/weblayer/CaptureScreenShotCallback.java",

@@ -24,6 +24,7 @@
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/common/weblayer_paths.h"
 #include "weblayer/public/browser_observer.h"
+#include "weblayer/public/browser_restore_observer.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/callback_android.h"
@@ -329,6 +330,14 @@ Tab* BrowserImpl::CreateTab() {
   return CreateTab(nullptr);
 }
 
+void BrowserImpl::OnRestoreCompleted() {
+  for (BrowserRestoreObserver& obs : browser_restore_observers_)
+    obs.OnRestoreCompleted();
+#if defined(OS_ANDROID)
+  Java_BrowserImpl_onRestoreCompleted(AttachCurrentThread(), java_impl_);
+#endif
+}
+
 void BrowserImpl::PrepareForShutdown() {
   browser_persister_.reset();
 }
@@ -342,12 +351,25 @@ std::vector<uint8_t> BrowserImpl::GetMinimalPersistenceState() {
   return GetMinimalPersistenceState(0);
 }
 
+bool BrowserImpl::IsRestoringPreviousState() {
+  return browser_persister_ && browser_persister_->is_restore_in_progress();
+}
+
 void BrowserImpl::AddObserver(BrowserObserver* observer) {
   browser_observers_.AddObserver(observer);
 }
 
 void BrowserImpl::RemoveObserver(BrowserObserver* observer) {
   browser_observers_.RemoveObserver(observer);
+}
+
+void BrowserImpl::AddBrowserRestoreObserver(BrowserRestoreObserver* observer) {
+  browser_restore_observers_.AddObserver(observer);
+}
+
+void BrowserImpl::RemoveBrowserRestoreObserver(
+    BrowserRestoreObserver* observer) {
+  browser_restore_observers_.RemoveObserver(observer);
 }
 
 void BrowserImpl::VisibleSecurityStateOfActiveTabChanged() {

@@ -14,4 +14,5 @@ interface IBrowserClient {
 
   // Added in 87.
   IRemoteFragment createMediaRouteDialogFragment() = 3;
+  void onRestoreCompleted() = 5;
 }

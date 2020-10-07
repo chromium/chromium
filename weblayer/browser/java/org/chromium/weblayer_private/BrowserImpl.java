@@ -471,6 +471,16 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
         return mUrlBarController;
     }
 
+    @Override
+    public boolean isRestoringPreviousState() {
+        return BrowserImplJni.get().isRestoringPreviousState(mNativeBrowser);
+    }
+
+    @CalledByNative
+    private void onRestoreCompleted() throws RemoteException {
+        if (WebLayerFactoryImpl.getClientMajorVersion() >= 87) mClient.onRestoreCompleted();
+    }
+
     public View getFragmentView() {
         return getViewController().getView();
     }
@@ -617,5 +627,6 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
         void onFragmentStart(long nativeBrowserImpl);
         void onFragmentResume(long nativeBrowserImpl);
         void onFragmentPause(long nativeBrowserImpl);
+        boolean isRestoringPreviousState(long nativeBrowserImpl);
     }
 }
