@@ -23,7 +23,7 @@
 
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/svg_foreign_object_painter.h"
@@ -125,10 +125,13 @@ void LayoutSVGForeignObject::UpdateLayout() {
   // specifying them through CSS.
   SetLocation(LayoutPoint(zoomed_location));
 
-  const bool layout_changed = EverHadLayout() && SelfNeedsLayout();
   LayoutBlock::UpdateLayout();
   DCHECK(!NeedsLayout());
   const bool bounds_changed = old_frame_rect != FrameRect();
+
+  // Invalidate all resources of this client if our reference box changed.
+  if (EverHadLayout() && bounds_changed)
+    SVGResourceInvalidator(*this).InvalidateEffects();
 
   bool update_parent_boundaries = bounds_changed;
   if (UpdateTransformAfterLayout(bounds_changed))
@@ -137,10 +140,6 @@ void LayoutSVGForeignObject::UpdateLayout() {
   // Notify ancestor about our bounds changing.
   if (update_parent_boundaries)
     LayoutSVGBlock::SetNeedsBoundariesUpdate();
-
-  // Invalidate all resources of this client if our layout changed.
-  if (layout_changed)
-    SVGResourcesCache::ClientLayoutChanged(*this);
 
   DCHECK(!needs_transform_update_);
 }

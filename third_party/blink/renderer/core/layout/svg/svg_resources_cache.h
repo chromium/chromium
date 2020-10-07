@@ -52,9 +52,6 @@ class SVGResourcesCache {
   // LayoutSVGResourceContainer.
   static void ClientDestroyed(LayoutObject&);
 
-  // Called from all SVG layoutObjects layout() methods.
-  static void ClientLayoutChanged(LayoutObject&);
-
   // Called from all SVG layoutObjects styleDidChange() methods.
   static void ClientStyleChanged(LayoutObject&,
                                  StyleDifference,

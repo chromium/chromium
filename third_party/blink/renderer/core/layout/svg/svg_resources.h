@@ -237,6 +237,25 @@ class SVGElementResourceClient final
   bool filter_data_dirty_;
 };
 
+// Helper class for handling invalidation of resources (generally after the
+// reference box of a LayoutObject may have changed).
+class SVGResourceInvalidator {
+  STACK_ALLOCATED();
+
+ public:
+  explicit SVGResourceInvalidator(LayoutObject& object);
+
+  // Invalidate any associated clip-path/mask/filter.
+  void InvalidateEffects();
+
+  // Invalidate any associated paints (fill/stroke).
+  void InvalidatePaints();
+
+ private:
+  const SVGResources* resources_;
+  LayoutObject& object_;
+};
+
 }  // namespace blink
 
 #endif

@@ -82,40 +82,6 @@ SVGResources* SVGResourcesCache::CachedResourcesForLayoutObject(
   return ResourcesCache(layout_object.GetDocument()).cache_.at(&layout_object);
 }
 
-void SVGResourcesCache::ClientLayoutChanged(LayoutObject& object) {
-  SVGResources* resources = CachedResourcesForLayoutObject(object);
-  if (!resources)
-    return;
-  // Invalidate the resources if either the LayoutObject itself changed,
-  // or we have filter resources, which could depend on the layout of children.
-  if (!object.SelfNeedsLayout() && !resources->Filter())
-    return;
-  SVGElementResourceClient* client = SVGResources::GetClient(object);
-  InvalidationModeMask invalidation_flags = 0;
-  if (resources->HasClipOrMaskOrFilter())
-    invalidation_flags = SVGResourceClient::kBoundariesInvalidation;
-  bool filter_data_invalidated = false;
-  if (resources->Filter()) {
-    filter_data_invalidated = client->ClearFilterData();
-    invalidation_flags |=
-        filter_data_invalidated ? SVGResourceClient::kPaintInvalidation : 0;
-  }
-  if (LayoutSVGResourcePaintServer* fill = resources->Fill()) {
-    fill->RemoveClientFromCache(*client);
-    invalidation_flags |= SVGResourceClient::kPaintInvalidation;
-  }
-  if (LayoutSVGResourcePaintServer* stroke = resources->Stroke()) {
-    stroke->RemoveClientFromCache(*client);
-    invalidation_flags |= SVGResourceClient::kPaintInvalidation;
-  }
-  if (invalidation_flags) {
-    LayoutSVGResourceContainer::MarkClientForInvalidation(object,
-                                                          invalidation_flags);
-    if (filter_data_invalidated)
-      client->MarkFilterDataDirty();
-  }
-}
-
 static inline bool LayoutObjectCanHaveResources(
     const LayoutObject& layout_object) {
   return layout_object.GetNode() && layout_object.GetNode()->IsSVGElement() &&

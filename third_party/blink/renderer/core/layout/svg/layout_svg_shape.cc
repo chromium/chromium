@@ -283,10 +283,6 @@ void LayoutSVGShape::UpdateLayout() {
   NOT_DESTROYED();
   LayoutAnalyzer::Scope analyzer(*this);
 
-  // Invalidate all resources of this client if our layout changed.
-  if (EverHadLayout() && SelfNeedsLayout())
-    SVGResourcesCache::ClientLayoutChanged(*this);
-
   // The cached stroke may be affected by the ancestor transform, and so needs
   // to be cleared regardless of whether the shape or bounds have changed.
   stroke_path_cache_.reset();
@@ -312,6 +308,13 @@ void LayoutSVGShape::UpdateLayout() {
     needs_boundaries_update_ = false;
 
     update_parent_boundaries = true;
+  }
+
+  // Invalidate all resources of this client if our reference box changed.
+  if (EverHadLayout() && bbox_changed) {
+    SVGResourceInvalidator resource_invalidator(*this);
+    resource_invalidator.InvalidateEffects();
+    resource_invalidator.InvalidatePaints();
   }
 
   if (!needs_transform_update_ && transform_uses_reference_box_) {

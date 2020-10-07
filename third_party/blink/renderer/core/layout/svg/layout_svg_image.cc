@@ -164,13 +164,13 @@ void LayoutSVGImage::UpdateLayout() {
   DCHECK(NeedsLayout());
   LayoutAnalyzer::Scope analyzer(*this);
 
-  // Invalidate all resources of this client if our layout changed.
-  if (EverHadLayout() && SelfNeedsLayout())
-    SVGResourcesCache::ClientLayoutChanged(*this);
-
   FloatPoint old_bbox_location = object_bounding_box_.Location();
   bool bbox_changed = UpdateBoundingBox() ||
                       old_bbox_location != object_bounding_box_.Location();
+
+  // Invalidate all resources of this client if our reference box changed.
+  if (EverHadLayout() && bbox_changed)
+    SVGResourceInvalidator(*this).InvalidateEffects();
 
   bool update_parent_boundaries = false;
   if (needs_boundaries_update_) {

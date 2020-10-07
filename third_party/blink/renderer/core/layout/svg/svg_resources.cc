@@ -808,4 +808,43 @@ void SVGElementResourceClient::Trace(Visitor* visitor) const {
   SVGResourceClient::Trace(visitor);
 }
 
+SVGResourceInvalidator::SVGResourceInvalidator(LayoutObject& object)
+    : resources_(SVGResourcesCache::CachedResourcesForLayoutObject(object)),
+      object_(object) {}
+
+void SVGResourceInvalidator::InvalidateEffects() {
+  if (!resources_)
+    return;
+  if (resources_->Filter()) {
+    SVGElementResourceClient* client = SVGResources::GetClient(object_);
+    if (client->ClearFilterData()) {
+      object_.SetNeedsPaintPropertyUpdate();
+      client->MarkFilterDataDirty();
+    }
+  }
+  if (resources_->Clipper())
+    object_.InvalidateClipPathCache();
+  if (resources_->Masker())
+    object_.SetNeedsPaintPropertyUpdate();
+}
+
+void SVGResourceInvalidator::InvalidatePaints() {
+  if (!resources_)
+    return;
+  bool needs_invalidation = false;
+  SVGElementResourceClient* client = SVGResources::GetClient(object_);
+  if (LayoutSVGResourcePaintServer* fill = resources_->Fill()) {
+    fill->RemoveClientFromCache(*client);
+    needs_invalidation = true;
+  }
+  if (LayoutSVGResourcePaintServer* stroke = resources_->Stroke()) {
+    stroke->RemoveClientFromCache(*client);
+    needs_invalidation = true;
+  }
+  if (!needs_invalidation)
+    return;
+  object_.SetSubtreeShouldDoFullPaintInvalidation(
+      PaintInvalidationReason::kSVGResource);
+}
+
 }  // namespace blink

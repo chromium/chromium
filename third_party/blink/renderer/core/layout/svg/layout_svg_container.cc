@@ -69,9 +69,9 @@ void LayoutSVGContainer::UpdateLayout() {
                                    did_screen_scale_factor_change_,
                                    layout_size_changed);
 
-  // Invalidate all resources of this client if our layout changed.
-  if (EverHadLayout() && NeedsLayout())
-    SVGResourcesCache::ClientLayoutChanged(*this);
+  // Invalidate all resources of this client if our reference box changed.
+  if (EverHadLayout() && (SelfNeedsLayout() || needs_boundaries_update_))
+    SVGResourceInvalidator(*this).InvalidateEffects();
 
   if (needs_boundaries_update_ ||
       transform_change != SVGTransformChange::kNone) {
