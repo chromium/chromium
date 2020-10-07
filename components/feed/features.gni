@@ -14,7 +14,7 @@ declare_args() {
   enable_feed_v1 = is_android
 
   # Whether version 2 of the NTP feed is enabled in the build.
-  enable_feed_v2 = false
+  enable_feed_v2 = is_android
 }
 
 if (is_android && android_channel != "default") {
