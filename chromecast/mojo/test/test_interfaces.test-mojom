@@ -1,0 +1,18 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromecast.test.mojom;
+
+// Simple interfaces for testing.
+interface StringInterface {
+  StringMethod(string s);
+};
+
+interface IntInterface {
+  IntMethod(int32 i);
+};
+
+interface BoolInterface {
+  BoolMethod(bool b);
+};
