@@ -87,8 +87,7 @@ INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ExtensionManagementApiTestWithBackgroundType,
                          ::testing::Values(ContextType::kPersistentBackground));
 
-// Disabled due to timeouts; see https://crbug.com/1132581.
-INSTANTIATE_TEST_SUITE_P(DISABLED_ServiceWorker,
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionManagementApiTestWithBackgroundType,
                          ::testing::Values(ContextType::kServiceWorker));
 
@@ -177,22 +176,29 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
-                       SelfUninstall) {
+// TODO(https://crbug.com/1132581): This uninstall test is flaky for Service
+// Worker-based extensions. This should be an
+// ExtensionManagementApiTestWithBackgroundType test once that issue is
+// resolved.
+IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest, SelfUninstall) {
   ExtensionTestMessageListener listener1("success", false);
-  ASSERT_TRUE(LoadExtensionWithParamFlags(
+  ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("management/self_uninstall_helper")));
-  ASSERT_TRUE(LoadExtensionWithParamFlags(
-      test_data_dir_.AppendASCII("management/self_uninstall")));
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("management/self_uninstall")));
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
+// TODO(https://crbug.com/1132581): This uninstall test is flaky for Service
+// Worker-based extensions. This should be an
+// ExtensionManagementApiTestWithBackgroundType test once that issue is
+// resolved.
+IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
                        SelfUninstallNoPermissions) {
   ExtensionTestMessageListener listener1("success", false);
-  ASSERT_TRUE(LoadExtensionWithParamFlags(
+  ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("management/self_uninstall_helper")));
-  ASSERT_TRUE(LoadExtensionWithParamFlags(
+  ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("management/self_uninstall_noperm")));
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
 }
