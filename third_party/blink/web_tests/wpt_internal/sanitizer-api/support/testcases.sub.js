@@ -12,6 +12,7 @@ const testcases = [
   {config_input: {}, config_value: {}, value: "<html><head></head><body>test</body></html>", result: "test", message: "document"},
   {config_input: {}, config_value: {}, value: "<div>test", result: "<div>test</div>", message: "html without close tag"},
   {config_input: {}, config_value: {}, value: "<script>alert('i am a test')<\/script>", result: "", message: "scripts for default configs"},
+  {config_input: {}, config_value: {}, value: "<p onclick='a= 123'>Click.</p>", result: "<p>Click.</p>", message: "onclick scripts"},
   {config_input: {test: 123}, config_value: {}, value: "test", result: "test", message: "invalid config_input"},
   {config_input: {dropElements: []}, config_value: {dropElements:[]}, value: "test", result: "test", message: "empty dropElements list"},
   {config_input: {dropElements: ["div"]}, config_value: {dropElements:["DIV"]}, value: "<div>test</div><c>bla", result: "<c>bla</c>", message: "test html without close tag with dropElements list ['div']"},

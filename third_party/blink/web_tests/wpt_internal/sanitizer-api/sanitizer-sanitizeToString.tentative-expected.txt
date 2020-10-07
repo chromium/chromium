@@ -13,6 +13,7 @@ PASS SanitizerAPI config: null, sanitizeToString function for null
 PASS SanitizerAPI config: document, sanitizeToString function for document
 PASS SanitizerAPI config: html without close tag, sanitizeToString function for html without close tag
 FAIL SanitizerAPI config: scripts for default configs, sanitizeToString function for scripts for default configs assert_equals: expected "" but got "<script>alert('i am a test')</script>"
+FAIL SanitizerAPI config: onclick scripts, sanitizeToString function for onclick scripts assert_equals: expected "<p>Click.</p>" but got "<p onclick=\"a= 123\">Click.</p>"
 PASS SanitizerAPI config: invalid config_input, sanitizeToString function for invalid config_input
 PASS SanitizerAPI config: empty dropElements list, sanitizeToString function for empty dropElements list
 PASS SanitizerAPI config: test html without close tag with dropElements list ['div'], sanitizeToString function for test html without close tag with dropElements list ['div']
