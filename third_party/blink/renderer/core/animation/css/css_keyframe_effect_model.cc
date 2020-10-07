@@ -84,7 +84,10 @@ void ResolveComputedValues(Element* element, StringKeyframe* keyframe) {
               : CSSPropertyName(property.GetCSSProperty().PropertyID());
       const CSSValue* computed_value =
           StyleResolver::ComputeValue(element, property_name, value);
-      keyframe->SetCSSPropertyValue(property.GetCSSProperty(), *computed_value);
+      if (computed_value) {
+        keyframe->SetCSSPropertyValue(property.GetCSSProperty(),
+                                      *computed_value);
+      }
     }
   }
 }

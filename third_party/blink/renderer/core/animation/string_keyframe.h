@@ -180,6 +180,8 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
     static PropertyResolver* CreateCustomVariableResolver(
         const CSSValue& css_value);
 
+    bool IsValid() const;
+
     const CSSValue* CssValue();
 
     void AppendTo(MutableCSSPropertyValueSet* property_value_set,

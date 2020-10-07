@@ -877,4 +877,18 @@ TEST_F(KeyframeEffectModelTest, EvenlyDistributed3) {
   EXPECT_DOUBLE_EQ(1.0, result[11]);
 }
 
+TEST_F(KeyframeEffectModelTest, RejectInvalidPropertyValue) {
+  StringKeyframe* keyframe = MakeGarbageCollected<StringKeyframe>();
+  keyframe->SetCSSPropertyValue(CSSPropertyID::kBackgroundColor,
+                                "not a valid color",
+                                SecureContextMode::kInsecureContext, nullptr);
+  // Verifty that property is quietly rejected.
+  EXPECT_EQ(0U, keyframe->Properties().size());
+
+  // Verify that a valid property value is accepted.
+  keyframe->SetCSSPropertyValue(CSSPropertyID::kBackgroundColor, "blue",
+                                SecureContextMode::kInsecureContext, nullptr);
+  EXPECT_EQ(1U, keyframe->Properties().size());
+}
+
 }  // namespace blink
