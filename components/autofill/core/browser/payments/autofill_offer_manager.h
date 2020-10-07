@@ -49,7 +49,7 @@ class AutofillOfferManager : public KeyedService,
 
   // Creates a mapping from Suggestion Backend ID's to eligible Credit Card
   // Offers.
-  OffersMap CreateOffersMap(const GURL& last_committed_url) const;
+  OffersMap CreateOffersMap(const GURL& last_committed_url_origin) const;
 
   PersonalDataManager* personal_data_;
   std::set<GURL> eligible_merchant_domains_ = {};
