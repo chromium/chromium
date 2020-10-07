@@ -1,59 +1,58 @@
 # On disabling tests
 
 Sometimes you don't want to run a test that you've written (or that
-you've imported, like conformance tests).
+you've imported, like conformance tests). The test might not be possible to
+run in a particular configuration, or be temporarily broken by another
+change, or be flaky, or simply not work yet. In these cases (and perhaps others),
+you should disable the test :).
 
-There are a number of different ways to "disable" a test.
+There are a number of different ways to do so:
 
 *   If the test is an entire binary or test suite, the first (and
-    simplest) first way is to simply not build (or build, but not run)
-    the test binary, of course.
+    simplest) way is to simply not build (or build, but not run)
+    the test binary, of course. This makes sense for binaries that
+    are specific to particular build configurations (e.g., Android JUnit
+    tests don't need to be built on Windows).
 
-*   The second way (for tests in C++) is to not compile a test in a
-    given configuration, e.g., #ifndef WIN. In this situation, the only
+*   A second way (for tests in C++) is to not compile a test in a
+    given configuration, e.g., `#ifndef WIN`. In this situation, the only
     way you would know the test existed and was disabled would be to
-    examine the source code.  In most cases today, we use this path for
-    tests that will never be enabled, but sometimes we do this to
-    temporarily skip tests as well.
+    parse the source code. We often do this today for tests that will
+    never be enabled in particular build configurations, but sometimes we do
+    this to temporarily skip tests as well.
 
-*   The third way, for GTest-based tests, is a variant of the second
-    way: instead of compiling it out completely, you change the name, so
-    that you simply don't run the test by default. But, at least in this
-    case, you can potentially determine at runtime the list of disabled
-    tests, because the code is still in the binary. And, potentially you
-    can still force the test to be run via a command line flag.
+*   A third way is to take advantage of features in your testing framework to
+    skip over tests. Examples include involve adding `DISABLED_` to the test
+    method name for GTest-based tests, `@unittest.skip` for Python-based tests,
+    or using the
+    [DisabledTest](../../base/test/android/javatests/src/org/chromium/base/test/DisabledTest.java)
+    annotation for JUnit-based Java tests.  In these cases, you don't run the
+    test by default, but you can determine the list of disabled tests at
+    runtime because the tests are present in the executable, and you may still
+    be able to force the test to be run via a command-line flag.
 
-*   A fourth way is for a test harness to skip over a test at runtime
-    for some reason, e.g., the harness determines that you're running on
-    a machine w/ no GPU and so the GPU tests are never invoked. Here you
-    can also ask the harness which tests are being skipped.
+*   Fourth, for test frameworks that support
+    [expectations files or filter files](https://bit.ly/chromium-test-list-format),
+    you can use them to decide what to run and what to skip. This moves
+    the mechanisms out of the source code and into separate files; there are
+    advantages and disadvantages to this. The main advantage is that it
+    can make it easier to write tooling to disable tests, and the main
+    disadvantage is that it moves the mechanism away from the code it affects,
+    potentially making it harder to understand what's going on.
 
-*   A fifth way is for a test harness to run the test, but then have the
-    test detect at runtime that it should skip or exit early (e.g., the
-    test itself could detect there was no GPU). Depending on how the
-    test does this, it may be impossible for you to really detect that
-    this happened, and you'd just view the test as 'passing'.
+*   Finally, the test harness can run the test, but the test itself
+    might detect at runtime that it should exit early for some reason
+    rather than actually executing the code paths you'd normally want to
+    test. For example, if you have a test for some code path that requires
+    a GPU, but there's no GPU on the machine, the test might check for a
+    GPU and exit early with "success".
 
-*   A sixth way is to use [expectations files and filter
-    files](https://bit.ly/chromium-test-list-format), and have the test
-    harness use that file to decide what to run and what to skip.
+If you want to be able to determine a global picture of which tests
+were disabled, you can either parse BUILD files, expectations and filter
+files, and source code to try and figure that out, or require the tests be
+present in test binaries (i.e., not compiled out) and then run the test
+binaries in order to collect the lists of disabled tests and report them
+to a central system.
 
-In theory, we should eventually consistently have either or both of
-expectations files and filter files for all test steps. We still don't
-have this consistently everywhere in Chrome (as of 2020-09-18), but
-folks are working on them expanding the number of kinds of tests that do
-have them. Once we do have them, we can expect people to stop using at
-least the third path.
-
-As you can see from the above, it's difficult if not impossible to
-determine "all of the disabled tests" at any point in time. At best,
-you'd have to decide what subsets of disabled tests that you're
-targeting, and which you'd like to ignore.
-
-You could also choose to "ban" certain approaches, but those bans might
-be hard to enforce, and some approaches may practically be necessary in
-some cases.
-
-Ultimately, the more temporary disabling we can do via the sixth path,
-the better off we probably are: the sixth path is the easiest for us to
-write tooling to support and the most generic of all of the approaches.
+Parsing code can be straightforward for some types of tests, but
+difficult-to-impractical to do correctly for others.
