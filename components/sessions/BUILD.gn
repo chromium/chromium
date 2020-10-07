@@ -8,13 +8,6 @@ if (is_android) {
   import("//build/config/android/config.gni")
 }
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 config("implementation") {
   defines = [ "SESSIONS_IMPLEMENTATION" ]
 }
@@ -191,17 +184,12 @@ static_library("test_support") {
 }
 
 source_set("unit_tests") {
-  if (is_ios) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
   testonly = true
   sources = [
     "core/command_storage_backend_unittest.cc",
     "core/serialized_navigation_entry_unittest.cc",
     "core/session_id_generator_unittest.cc",
     "core/snapshotting_session_backend_unittest.cc",
-    "ios/ios_serialized_navigation_builder_unittest.mm",
-    "ios/ios_serialized_navigation_driver_unittest.cc",
   ]
 
   if (!is_ios) {
@@ -210,6 +198,12 @@ source_set("unit_tests") {
       "content/content_serialized_navigation_driver_unittest.cc",
       "content/navigation_task_id_unittest.cc",
     ]
+  } else {
+    sources += [
+      "ios/ios_serialized_navigation_builder_unittest.mm",
+      "ios/ios_serialized_navigation_driver_unittest.cc",
+    ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   public_deps = [ ":sessions" ]
