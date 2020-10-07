@@ -104,7 +104,7 @@ to specifically `git add` the files you want to commit before calling
 
 Run `git commit`. Be sure to write a useful commit message. Here are some
 [tips for writing good commit messages][uploading-a-change-for-review]. A
-shortcut for combining steps the previous step and this one is `git commit -a -m
+shortcut for combining the previous step and this one is `git commit -a -m
 <commit_message>`.
 
 ## 11. Squash your commits
@@ -133,8 +133,11 @@ with that branch has been merged. In summary, `git rebase-update` cleans up your
 local branches.
 
 You may run into rebase conflicts. Fix them manually before proceeding with
-`git rebase --continue`. Note that rebasing has the potential to break your
-build, so you might want to try re-building afterwards.
+`git rebase --continue`.
+
+Note that rebasing has the potential to break your build, so you might want to
+try re-building afterwards. You need to run `gclient sync -D` before trying to
+build again after a rebase-update, to update third-party dependencies.
 
 ## 13. Upload the CL to Gerrit
 
@@ -204,6 +207,13 @@ Don't use `chrome/OWNERS` as a blanket stamp if your CL makes significant
 changes to subsystems. Click `Submit to CQ` to try your change in the commit
 queue (CQ), which will land it if successful.
 
+Just because your CL made it through the CQ doesn't mean you're in the clear
+yet. There might be internal non-public try job failures, or bugs that went
+unnoticed during the code review process. Consider monitoring the
+[Chromium tree][chromium-tree] for about a day after your CL lands. If
+the Sheriff or anyone else brings any failures to your attention, revert the CL
+first and ask questions later. Gerrit can automatically generate revert CLs.
+
 ## 19. Cleanup
 
 After your CL is landed, you can use `git rebase-update` or `git cl archive` to
@@ -212,6 +222,7 @@ branches. Mark the associated crbug as "fixed".
 
 [//]: # (the reference link section should be alphabetically sorted)
 [build-instructions]: https://chromium.googlesource.com/chromium/src.git/+/master/docs/#Checking-Out-and-Building
+[chromium-tree]: https://ci.chromium.org/p/chromium/g/main/console
 [contributing]: contributing.md
 [simple-chrome]: https://chromium.googlesource.com/chromiumos/docs/+/master/simple_chrome_workflow.md
 [uploading-a-change-for-review]: contributing.md#Uploading-a-change-for-review
