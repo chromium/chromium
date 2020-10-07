@@ -712,6 +712,24 @@ values and will need to deal with them gracefully. See
 [C++ Versioning Considerations](/mojo/public/cpp/bindings/README.md#Versioning-Considerations)
 for details.
 
+### Renaming versioned structs
+It's possible to rename versioned structs by using the `[RenamedFrom]` attribute.
+RenamedFrom
+
+``` cpp
+module asdf.mojom;
+
+// Old version:
+[Stable]
+struct OldStruct {
+};
+
+// New version:
+[Stable, RenamedFrom="asdf.mojom.OldStruct"]
+struct NewStruct {
+};
+```
+
 ## Grammar Reference
 
 Below is the (BNF-ish) context-free grammar of the Mojom language:
