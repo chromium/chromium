@@ -348,16 +348,23 @@ void CaptionBubble::Init() {
       ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kCenter);
   error_message->SetVisible(false);
 
+  views::Button::PressedCallback expand_or_collapse_callback =
+      base::BindRepeating(&CaptionBubble::ExpandOrCollapseButtonPressed,
+                          base::Unretained(this));
   auto expand_button =
-      BuildImageButton(kCaretDownIcon, IDS_LIVE_CAPTION_BUBBLE_EXPAND);
+      BuildImageButton(expand_or_collapse_callback, kCaretDownIcon,
+                       IDS_LIVE_CAPTION_BUBBLE_EXPAND);
   expand_button->SetVisible(!is_expanded_);
 
   auto collapse_button =
-      BuildImageButton(kCaretUpIcon, IDS_LIVE_CAPTION_BUBBLE_COLLAPSE);
+      BuildImageButton(std::move(expand_or_collapse_callback), kCaretUpIcon,
+                       IDS_LIVE_CAPTION_BUBBLE_COLLAPSE);
   collapse_button->SetVisible(is_expanded_);
 
-  auto close_button = BuildImageButton(vector_icons::kCloseRoundedIcon,
-                                       IDS_LIVE_CAPTION_BUBBLE_CLOSE);
+  auto close_button = BuildImageButton(
+      base::BindRepeating(&CaptionBubble::CloseButtonPressed,
+                          base::Unretained(this)),
+      vector_icons::kCloseRoundedIcon, IDS_LIVE_CAPTION_BUBBLE_CLOSE);
 
   title_ = content_container->AddChildView(std::move(title));
   label_ = content_container->AddChildView(std::move(label));
@@ -378,9 +385,10 @@ void CaptionBubble::Init() {
 }
 
 std::unique_ptr<views::ImageButton> CaptionBubble::BuildImageButton(
+    views::Button::PressedCallback callback,
     const gfx::VectorIcon& icon,
     const int tooltip_text_id) {
-  auto button = views::CreateVectorImageButton(this);
+  auto button = views::CreateVectorImageButton(std::move(callback));
   views::SetImageFromVectorIcon(button.get(), icon, kButtonDip, SK_ColorWHITE);
   button->SetTooltipText(l10n_util::GetStringUTF16(tooltip_text_id));
   button->SetInkDropBaseColor(SkColor(gfx::kGoogleGrey600));
@@ -491,27 +499,27 @@ void CaptionBubble::AddedToWidget() {
                                static_cast<BubbleDialogDelegate*>(this));
 }
 
-void CaptionBubble::ButtonPressed(views::Button* sender,
-                                  const ui::Event& event) {
-  if (sender == close_button_) {
-    // TODO(crbug.com/1055150): This histogram currently only reports a single
-    // bucket, but it will eventually be extended to report session starts and
-    // natural session ends (when the audio stream ends).
-    UMA_HISTOGRAM_ENUMERATION(
-        "Accessibility.LiveCaption.Session",
-        CaptionController::SessionEvent::kCloseButtonClicked);
-    if (model_)
-      model_->Close();
-  } else if (sender == expand_button_ || sender == collapse_button_) {
-    is_expanded_ = !is_expanded_;
-    bool button_had_focus = sender->HasFocus();
-    views::Button* new_button =
-        is_expanded_ ? collapse_button_ : expand_button_;
-    OnIsExpandedChanged();
-    // TODO(crbug.com/1055150): Ensure that the button keeps focus on mac.
-    if (button_had_focus)
-      new_button->RequestFocus();
-  }
+void CaptionBubble::CloseButtonPressed() {
+  // TODO(crbug.com/1055150): This histogram currently only reports a single
+  // bucket, but it will eventually be extended to report session starts and
+  // natural session ends (when the audio stream ends).
+  UMA_HISTOGRAM_ENUMERATION(
+      "Accessibility.LiveCaption.Session",
+      CaptionController::SessionEvent::kCloseButtonClicked);
+  if (model_)
+    model_->Close();
+}
+
+void CaptionBubble::ExpandOrCollapseButtonPressed() {
+  is_expanded_ = !is_expanded_;
+  views::Button *old_button = collapse_button_, *new_button = expand_button_;
+  if (is_expanded_)
+    std::swap(old_button, new_button);
+  bool button_had_focus = old_button->HasFocus();
+  OnIsExpandedChanged();
+  // TODO(crbug.com/1055150): Ensure that the button keeps focus on mac.
+  if (button_had_focus)
+    new_button->RequestFocus();
 }
 
 void CaptionBubble::SetModel(CaptionBubbleModel* model) {

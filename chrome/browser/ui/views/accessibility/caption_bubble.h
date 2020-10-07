@@ -38,8 +38,7 @@ class CaptionBubbleFrameView;
 //  A caption bubble that floats above the BrowserView and shows automatically-
 //  generated text captions for audio and media streams from the current tab.
 //
-class CaptionBubble : public views::BubbleDialogDelegateView,
-                      public views::ButtonListener {
+class CaptionBubble : public views::BubbleDialogDelegateView {
  public:
   CaptionBubble(views::View* anchor,
                 BrowserView* browser_view,
@@ -89,12 +88,12 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void AddedToWidget() override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
  private:
   friend class CaptionBubbleControllerViewsTest;
   friend class CaptionBubbleModel;
+
+  void CloseButtonPressed();
+  void ExpandOrCollapseButtonPressed();
 
   // Called by CaptionBubbleModel to notify this object that the model's text
   // has changed. Sets the text of the caption bubble to the model's text.
@@ -120,6 +119,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void UpdateContentSize();
   void Redraw();
   std::unique_ptr<views::ImageButton> BuildImageButton(
+      views::Button::PressedCallback callback,
       const gfx::VectorIcon& icon,
       const int tooltip_text_id);
 
