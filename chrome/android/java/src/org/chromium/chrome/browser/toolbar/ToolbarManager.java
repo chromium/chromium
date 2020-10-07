@@ -1187,6 +1187,13 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     }
 
     /**
+     * @return The current {@link LoadProgressCoordinator}.
+     */
+    public LoadProgressCoordinator getProgressBarCoordinator() {
+        return mProgressBarCoordinator;
+    }
+
+    /**
      * Updates the current button states and calls appropriate abstract visibility methods, giving
      * inheriting classes the chance to update the button visuals as well.
      */

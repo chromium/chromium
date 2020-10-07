@@ -14,6 +14,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.UserData;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -66,6 +67,8 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
     private BrowserStateBrowserControlsVisibilityDelegate mBrowserVisibilityDelegate;
     private int mPersistentToolbarToken = TokenHolder.INVALID_TOKEN;
     private SnackbarManager.SnackbarController mSnackbarController;
+    private Runnable mProgressSimulatorNeededCallback;
+    private Callback<Boolean> mProgressPreventionCallback;
 
     public static TabbedPaintPreviewPlayer get(Tab tab) {
         if (tab.getUserDataHost().getUserData(USER_DATA_KEY) == null) {
@@ -118,6 +121,9 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
         public void onHidden(Tab tab, @TabHidingType int hidingType) {
             releasePersistentToolbar();
             dismissSnackbar();
+            if (mProgressSimulatorNeededCallback != null) {
+                mProgressPreventionCallback.onResult(false);
+            }
 
             if (mPlayerManager == null || !isShowingAndNeedsBadge()) return;
 
@@ -129,7 +135,12 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
 
         @Override
         public void onShown(Tab tab, int type) {
-            if (isShowingAndNeedsBadge()) showToolbarPersistent();
+            if (!isShowingAndNeedsBadge()) return;
+
+            showToolbarPersistent();
+            if (mProgressSimulatorNeededCallback != null) {
+                mProgressPreventionCallback.onResult(true);
+            }
         }
     }
 
@@ -144,6 +155,14 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
     public void setBrowserVisibilityDelegate(
             BrowserStateBrowserControlsVisibilityDelegate browserVisibilityDelegate) {
         mBrowserVisibilityDelegate = browserVisibilityDelegate;
+    }
+
+    public void setProgressSimulatorNeededCallback(Runnable callback) {
+        mProgressSimulatorNeededCallback = callback;
+    }
+
+    public void setProgressbarUpdatePreventionCallback(Callback<Boolean> callback) {
+        mProgressPreventionCallback = callback;
     }
 
     /**
@@ -252,6 +271,7 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
                     }
                 });
         if (exitCause == ExitCause.TAB_FINISHED_LOADING) showUpgradeToast();
+        if (mProgressSimulatorNeededCallback != null) mProgressSimulatorNeededCallback.run();
         mMetricsHelper.recordExitMetrics(exitCause, mSnackbarShownCount);
     }
 
@@ -343,12 +363,14 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
     @Override
     public void onShown() {
         showToolbarPersistent();
+        if (mProgressSimulatorNeededCallback != null) mProgressPreventionCallback.onResult(true);
     }
 
     @Override
     public void onHidden() {
         releasePersistentToolbar();
         dismissSnackbar();
+        if (mProgressSimulatorNeededCallback != null) mProgressPreventionCallback.onResult(false);
     }
 
     @Override

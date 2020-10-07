@@ -9,6 +9,7 @@ import android.os.SystemClock;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -20,6 +21,7 @@ import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressCoordinator;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -52,14 +54,15 @@ public class PaintPreviewHelper {
      * @param activity The ChromeActivity that corresponds to the tabModelSelector.
      * @param tabModelSelector The TabModelSelector to observe.
      */
-    public static void initialize(ChromeActivity<?> activity, TabModelSelector tabModelSelector) {
+    public static void initialize(ChromeActivity<?> activity, TabModelSelector tabModelSelector,
+            Supplier<LoadProgressCoordinator> progressBarCoordinatorSupplier) {
         if (!CachedFeatureFlags.isEnabled(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP)) return;
 
         if (!MultiWindowUtils.getInstance().areMultipleChromeInstancesRunning(activity)) {
             sHasAttemptedToShowOnRestore = false;
         }
-        sWindowAndroidHelperMap.put(
-                activity.getWindowAndroid(), new PaintPreviewWindowAndroidHelper(activity));
+        sWindowAndroidHelperMap.put(activity.getWindowAndroid(),
+                new PaintPreviewWindowAndroidHelper(activity, progressBarCoordinatorSupplier));
 
         // TODO(crbug/1074428): verify this doesn't cause a memory leak if the user exits Chrome
         // prior to onTabStateInitialized being called.
@@ -95,6 +98,14 @@ public class PaintPreviewHelper {
         TabbedPaintPreviewPlayer player = TabbedPaintPreviewPlayer.get(tab);
         player.setBrowserVisibilityDelegate(
                 windowAndroidHelper.getBrowserControlsManager().getBrowserVisibilityDelegate());
+        player.setProgressSimulatorNeededCallback(
+                ()
+                        -> windowAndroidHelper.getLoadProgressCoordinator()
+                                   .simulateLoadProgressCompletion());
+        player.setProgressbarUpdatePreventionCallback(
+                (preventProgressbar)
+                        -> windowAndroidHelper.getLoadProgressCoordinator().setPreventUpdates(
+                                preventProgressbar));
         PageLoadMetrics.Observer observer = new PageLoadMetrics.Observer() {
             @Override
             public void onFirstMeaningfulPaint(WebContents webContents, long navigationId,
@@ -124,16 +135,23 @@ public class PaintPreviewHelper {
         private long mActivityCreationTime;
         private WindowAndroid mWindowAndroid;
         private BrowserControlsManager mBrowserControlsManager;
+        private Supplier<LoadProgressCoordinator> mProgressBarCoordinatorSupplier;
 
-        PaintPreviewWindowAndroidHelper(ChromeActivity<?> chromeActivity) {
+        PaintPreviewWindowAndroidHelper(ChromeActivity<?> chromeActivity,
+                Supplier<LoadProgressCoordinator> progressBarCoordinatorSupplier) {
             mWindowAndroid = chromeActivity.getWindowAndroid();
             mActivityCreationTime = chromeActivity.getOnCreateTimestampMs();
             mBrowserControlsManager = chromeActivity.getBrowserControlsManager();
+            mProgressBarCoordinatorSupplier = progressBarCoordinatorSupplier;
             ApplicationStatus.registerStateListenerForActivity(this, chromeActivity);
         }
 
         long getActivityCreationTime() {
             return mActivityCreationTime;
+        }
+
+        LoadProgressCoordinator getLoadProgressCoordinator() {
+            return mProgressBarCoordinatorSupplier.get();
         }
 
         BrowserControlsManager getBrowserControlsManager() {
