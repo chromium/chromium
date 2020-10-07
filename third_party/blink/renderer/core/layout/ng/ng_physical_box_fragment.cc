@@ -424,6 +424,17 @@ PhysicalRect NGPhysicalBoxFragment::OverflowClipRect(
   return box->OverflowClipRect(location, overlay_scrollbar_clip_behavior);
 }
 
+bool NGPhysicalBoxFragment::MayIntersect(
+    const HitTestResult& result,
+    const HitTestLocation& hit_test_location,
+    const PhysicalOffset& accumulated_offset) const {
+  if (const LayoutBox* box = ToLayoutBoxOrNull(GetLayoutObject()))
+    return box->MayIntersect(result, hit_test_location, accumulated_offset);
+  // TODO(kojii): (!IsCSSBox() || IsInlineBox()) is not supported yet. Implement
+  // if needed. For now, just return |true| not to do early return.
+  return true;
+}
+
 PhysicalRect NGPhysicalBoxFragment::ScrollableOverflow(
     TextHeightType height_type) const {
   DCHECK(GetLayoutObject());

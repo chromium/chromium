@@ -219,6 +219,11 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   // corresponds to children that overflows their parent.
   PhysicalRect ContentsInkOverflow() const;
 
+  // Fast check if |NodeAtPoint| may find a hit.
+  bool MayIntersect(const HitTestResult& result,
+                    const HitTestLocation& hit_test_location,
+                    const PhysicalOffset& accumulated_offset) const;
+
   // Fragment offset is this fragment's offset from parent.
   // Needed to compensate for LayoutInline Legacy code offsets.
   void AddSelfOutlineRects(const PhysicalOffset& additional_offset,

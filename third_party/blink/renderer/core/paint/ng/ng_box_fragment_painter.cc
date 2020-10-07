@@ -1858,17 +1858,9 @@ bool NGBoxFragmentPainter::NodeAtPoint(HitTestResult& result,
 bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
                                        const PhysicalOffset& physical_offset) {
   const NGPhysicalBoxFragment& fragment = PhysicalFragment();
-  if (fragment.IsCSSBox() && !fragment.IsInlineBox() &&
-      !fragment.IsEffectiveRootScroller()) {
-    // Check if we need to do anything at all.
-    // If we have clipping, then we can't have any spillout.
-    PhysicalRect overflow_box = fragment.IsScrollContainer()
-                                    ? fragment.LocalRect()
-                                    : fragment.InkOverflow();
-    overflow_box.Move(physical_offset);
-    if (!hit_test.location.Intersects(overflow_box))
-      return false;
-  }
+  if (!fragment.MayIntersect(*hit_test.result, hit_test.location,
+                             physical_offset))
+    return false;
 
   bool hit_test_self = fragment.IsInSelfHitTestingPhase(hit_test.action);
   if (hit_test_self && box_fragment_.IsScrollContainer() &&
