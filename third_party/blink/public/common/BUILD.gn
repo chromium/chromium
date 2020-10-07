@@ -90,6 +90,7 @@ source_set("headers") {
     "frame/frame_policy.h",
     "frame/frame_visual_properties.h",
     "frame/from_ad_state.h",
+    "frame/transient_allow_fullscreen.h",
     "frame/user_activation_state.h",
     "frame/user_activation_update_source.h",
     "indexeddb/indexed_db_default_mojom_traits.h",

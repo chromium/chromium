@@ -4351,19 +4351,15 @@ void RenderFrameHostImpl::EnterFullscreen(
     blink::mojom::FullscreenOptionsPtr options,
     EnterFullscreenCallback callback) {
   // Consume the user activation when entering fullscreen mode in the browser
-  // side when the renderer is compromised and the fullscreen is not triggered
-  // by a user generated orientation change, because the fullscreen can be
-  // triggered by either a user activation or a user generated orientation
-  // change.
-  // CanEnterFullscreenWithoutUserActivation is always false by default, so it
-  // keeps the current logic that we can enter fullscreen mode either by the
-  // orientation change or successfully consuming the user activation. This
-  // function is used for layout tests to allow fullscreen when mocking screen
-  // screen orientation changes.
+  // side when the renderer is compromised and the fullscreen request is denied.
+  // Fullscreen can only be triggered by: a user activation, a user-generated
+  // screen orientation change, or another feature-specific transient allowance.
+  // CanEnterFullscreenWithoutUserActivation is only ever true in tests, to
+  // allow fullscreen when mocking screen orientation changes.
   // TODO(lanwei): Investigate whether we can terminate the renderer when the
   // user activation has already been consumed.
   if (!delegate_->HasSeenRecentScreenOrientationChange() &&
-      !HasSeenRecentXrOverlaySetup() &&
+      !WindowPlacementAllowsFullscreen() && !HasSeenRecentXrOverlaySetup() &&
       !GetContentClient()
            ->browser()
            ->CanEnterFullscreenWithoutUserActivation()) {
@@ -7113,6 +7109,17 @@ void RenderFrameHostImpl::UpdatePermissionsForNavigation(
   // earlier, when they are received from the renderer.
   if (common_params.post_data)
     GrantFileAccessFromResourceRequestBody(*common_params.post_data);
+}
+
+bool RenderFrameHostImpl::WindowPlacementAllowsFullscreen() {
+  if (!delegate_->IsTransientAllowFullscreenActive())
+    return false;
+  auto* controller =
+      PermissionControllerImpl::FromBrowserContext(GetBrowserContext());
+  return controller &&
+         controller->GetPermissionStatusForFrame(
+             PermissionType::WINDOW_PLACEMENT, this, GetLastCommittedURL()) ==
+             blink::mojom::PermissionStatus::GRANTED;
 }
 
 mojo::AssociatedRemote<mojom::NavigationClient>

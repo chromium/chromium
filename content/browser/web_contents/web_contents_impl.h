@@ -65,6 +65,7 @@
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
+#include "third_party/blink/public/common/frame/transient_allow_fullscreen.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom.h"
@@ -726,6 +727,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       RenderFrameHostImpl* source,
       blink::mojom::TextAutosizerPageInfoPtr page_info) override;
   bool HasSeenRecentScreenOrientationChange() override;
+  bool IsTransientAllowFullscreenActive() const override;
   void CreateNewWidget(AgentSchedulingGroupHost& agent_scheduling_group,
                        int32_t route_id,
                        mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost>
@@ -2136,9 +2138,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Monitors system screen info changes to notify the renderer.
   std::unique_ptr<ScreenChangeMonitor> screen_change_monitor_;
 
-  // This time is used to record the last time we saw a screen orientation
-  // change.
+  // Records the last time we saw a screen orientation change.
   base::TimeTicks last_screen_orientation_change_time_;
+
+  // Manages a transient affordance for this page's frames to enter fullscreen.
+  blink::TransientAllowFullscreen transient_allow_fullscreen_;
 
   // Indicates how many sources are currently suppressing the unresponsive
   // renderer dialog.
