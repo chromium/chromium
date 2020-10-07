@@ -61,14 +61,6 @@ function ImageRequestTask(id, cache, request, callback) {
   this.ifd_ = null;
 
   /**
-   * The color space of the fetched image. Only RAW images provide a
-   * color space at this time, being 'sRgb' or 'adobeRgb'.
-   * @type {?string}
-   * @private
-   */
-  this.colorSpace_ = null;
-
-  /**
    * Used to download remote images using http:// or https:// protocols.
    * @type {XMLHttpRequest}
    * @private
@@ -378,7 +370,6 @@ ImageRequestTask.prototype.downloadOriginal_ = function(onSuccess, onFailure) {
             function(data) {
               this.request_.orientation =
                   ImageOrientation.fromExifOrientation(data.orientation);
-              this.colorSpace_ = data.colorSpace;
               this.ifd_ = data.ifd;
               this.contentType_ = data.mimeType;
               const blob = new Blob([data.thumbnail], {type: data.mimeType});
@@ -605,8 +596,6 @@ ImageRequestTask.prototype.sendImageData_ = function(width, height, data) {
  * @private
  */
 ImageRequestTask.prototype.onImageLoad_ = function() {
-  this.colorSpace_ = this.colorSpace_ || 'sRgb';
-
   // Perform processing if the url is not a data url, or if there are some
   // operations requested.
   let imageChanged = false;
