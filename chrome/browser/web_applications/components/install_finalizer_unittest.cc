@@ -11,10 +11,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
-#include "chrome/browser/web_applications/extensions/bookmark_app_install_finalizer.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/test_web_app_ui_manager.h"
@@ -22,25 +19,13 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/web_application_info.h"
-#include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace web_app {
 
 namespace {
-
-void InitializeEmptyExtensionService(Profile* profile) {
-  // CrxInstaller in BookmarkAppInstallFinalizer needs an ExtensionService, so
-  // create one for the profile.
-  auto* test_system = static_cast<extensions::TestExtensionSystem*>(
-      extensions::ExtensionSystem::Get(profile));
-  test_system->CreateExtensionService(base::CommandLine::ForCurrentProcess(),
-                                      profile->GetPath(),
-                                      false /* autoupdate_enabled */);
-}
 
 struct FinalizeInstallResult {
   AppId installed_app_id;
@@ -49,26 +34,9 @@ struct FinalizeInstallResult {
 
 }  // namespace
 
-// Tests both implementations of InstallFinalizer to ensure same behavior with
-// and without BMO enabled.
-// TODO(crbug.com/1068081): Migrate remaining tests from
-// bookmark_app_install_finalizer_unittest.
-class InstallFinalizerUnitTest
-    : public WebAppTest,
-      public ::testing::WithParamInterface<ProviderType> {
+class InstallFinalizerUnitTest : public WebAppTest {
  public:
-  InstallFinalizerUnitTest() {
-    switch (GetParam()) {
-      case ProviderType::kWebApps:
-        scoped_feature_list_.InitAndEnableFeature(
-            features::kDesktopPWAsWithoutExtensions);
-        break;
-      case ProviderType::kBookmarkApps:
-        scoped_feature_list_.InitAndDisableFeature(
-            features::kDesktopPWAsWithoutExtensions);
-        break;
-    }
-  }
+  InstallFinalizerUnitTest() = default;
   InstallFinalizerUnitTest(const InstallFinalizerUnitTest&) = delete;
   InstallFinalizerUnitTest& operator=(const InstallFinalizerUnitTest&) = delete;
   ~InstallFinalizerUnitTest() override = default;
@@ -83,18 +51,8 @@ class InstallFinalizerUnitTest
     icon_manager_ = std::make_unique<WebAppIconManager>(profile(), registrar(),
                                                         std::move(file_utils));
     ui_manager_ = std::make_unique<TestWebAppUiManager>();
-
-    switch (GetParam()) {
-      case ProviderType::kWebApps:
-        finalizer_ = std::make_unique<WebAppInstallFinalizer>(
-            profile(), icon_manager_.get(), /*legacy_finalizer=*/nullptr);
-        break;
-      case ProviderType::kBookmarkApps:
-        InitializeEmptyExtensionService(profile());
-        finalizer_ = std::make_unique<extensions::BookmarkAppInstallFinalizer>(
-            profile());
-        break;
-    }
+    finalizer_ = std::make_unique<WebAppInstallFinalizer>(
+        profile(), icon_manager_.get(), /*legacy_finalizer=*/nullptr);
 
     finalizer_->SetSubsystems(&registrar(), ui_manager_.get(),
                               &test_registry_controller_->sync_bridge());
@@ -134,15 +92,13 @@ class InstallFinalizerUnitTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
   std::unique_ptr<WebAppIconManager> icon_manager_;
   std::unique_ptr<WebAppUiManager> ui_manager_;
   std::unique_ptr<InstallFinalizer> finalizer_;
-
 };
 
-TEST_P(InstallFinalizerUnitTest, BasicInstallSucceeds) {
+TEST_F(InstallFinalizerUnitTest, BasicInstallSucceeds) {
   auto info = std::make_unique<WebApplicationInfo>();
   info->start_url = GURL("https://foo.example");
   info->title = base::ASCIIToUTF16("Foo Title");
@@ -155,7 +111,7 @@ TEST_P(InstallFinalizerUnitTest, BasicInstallSucceeds) {
   EXPECT_FALSE(result.installed_app_id.empty());
 }
 
-TEST_P(InstallFinalizerUnitTest, InstallStoresLatestWebAppInstallSource) {
+TEST_F(InstallFinalizerUnitTest, InstallStoresLatestWebAppInstallSource) {
   auto info = std::make_unique<WebApplicationInfo>();
   info->start_url = GURL("https://foo.example");
   info->title = base::ASCIIToUTF16("Foo Title");
@@ -171,10 +127,5 @@ TEST_P(InstallFinalizerUnitTest, InstallStoresLatestWebAppInstallSource) {
   EXPECT_EQ(static_cast<WebappInstallSource>(*install_source),
             WebappInstallSource::INTERNAL_DEFAULT);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         InstallFinalizerUnitTest,
-                         ::testing::ValuesIn({ProviderType::kBookmarkApps,
-                                              ProviderType::kWebApps}));
 
 }  // namespace web_app
