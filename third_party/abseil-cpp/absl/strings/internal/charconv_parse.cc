@@ -405,7 +405,7 @@ strings_internal::ParsedFloat ParseFloat(const char* begin, const char* end,
       }
       exponent_adjustment -= static_cast<int>(zeros_skipped);
     }
-    std::size_t post_decimal_digits = ConsumeDigits<base>(
+    int64_t post_decimal_digits = ConsumeDigits<base>(
         begin, end, digits_left, &mantissa, &mantissa_is_inexact);
     begin += post_decimal_digits;
 

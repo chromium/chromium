@@ -129,7 +129,7 @@ class ABSL_MUST_USE_RESULT StatusOr;
 // Example:
 //
 //   absl::StatusOr<int> i = GetCount();
-//   if (foo.ok()) {
+//   if (i.ok()) {
 //     updated_total += *i
 //   }
 //

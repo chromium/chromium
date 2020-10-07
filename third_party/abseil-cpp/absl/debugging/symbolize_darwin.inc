@@ -77,8 +77,8 @@ bool Symbolize(const void* pc, char* out, int out_size) {
 
   char tmp_buf[1024];
   if (debugging_internal::Demangle(symbol.c_str(), tmp_buf, sizeof(tmp_buf))) {
-    int len = strlen(tmp_buf);
-    if (len + 1 <= out_size) {  // +1 for '\0'
+    size_t len = strlen(tmp_buf);
+    if (len + 1 <= static_cast<size_t>(out_size)) {  // +1 for '\0'
       assert(len < sizeof(tmp_buf));
       memmove(out, tmp_buf, len + 1);
     }

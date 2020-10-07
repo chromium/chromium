@@ -145,7 +145,8 @@ class FlagHelpPrettyPrinter {
       }
 
       // Write the token, ending the string first if necessary/possible.
-      if (!new_line && (line_len_ + token.size() >= max_line_len_)) {
+      if (!new_line &&
+          (line_len_ + static_cast<int>(token.size()) >= max_line_len_)) {
         EndLine();
         new_line = true;
       }

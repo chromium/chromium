@@ -90,10 +90,10 @@ using ContainerPointerType =
 // lookup of std::begin and std::end, i.e.
 //   using std::begin;
 //   using std::end;
-//   std::foo(begin(c), end(c);
+//   std::foo(begin(c), end(c));
 // becomes
 //   std::foo(container_algorithm_internal::begin(c),
-//   container_algorithm_internal::end(c));
+//     container_algorithm_internal::end(c));
 // These are meant for internal use only.
 
 template <typename C>
@@ -340,24 +340,43 @@ container_algorithm_internal::ContainerDifferenceType<const C> c_count_if(
 // c_mismatch()
 //
 // Container-based version of the <algorithm> `std::mismatch()` function to
-// return the first element where two ordered containers differ.
+// return the first element where two ordered containers differ. Applies `==` to
+// the first N elements of `c1` and `c2`, where N = min(size(c1), size(c2)).
 template <typename C1, typename C2>
 container_algorithm_internal::ContainerIterPairType<C1, C2>
 c_mismatch(C1& c1, C2& c2) {
-  return std::mismatch(container_algorithm_internal::c_begin(c1),
-                       container_algorithm_internal::c_end(c1),
-                       container_algorithm_internal::c_begin(c2));
+  auto first1 = container_algorithm_internal::c_begin(c1);
+  auto last1 = container_algorithm_internal::c_end(c1);
+  auto first2 = container_algorithm_internal::c_begin(c2);
+  auto last2 = container_algorithm_internal::c_end(c2);
+
+  for (; first1 != last1 && first2 != last2; ++first1, (void)++first2) {
+    if (*first1 != *first2) {
+      break;
+    }
+  }
+
+  return std::make_pair(first1, first2);
 }
 
 // Overload of c_mismatch() for using a predicate evaluation other than `==` as
-// the function's test condition.
+// the function's test condition. Applies `pred`to the first N elements of `c1`
+// and `c2`, where N = min(size(c1), size(c2)).
 template <typename C1, typename C2, typename BinaryPredicate>
 container_algorithm_internal::ContainerIterPairType<C1, C2>
-c_mismatch(C1& c1, C2& c2, BinaryPredicate&& pred) {
-  return std::mismatch(container_algorithm_internal::c_begin(c1),
-                       container_algorithm_internal::c_end(c1),
-                       container_algorithm_internal::c_begin(c2),
-                       std::forward<BinaryPredicate>(pred));
+c_mismatch(C1& c1, C2& c2, BinaryPredicate pred) {
+  auto first1 = container_algorithm_internal::c_begin(c1);
+  auto last1 = container_algorithm_internal::c_end(c1);
+  auto first2 = container_algorithm_internal::c_begin(c2);
+  auto last2 = container_algorithm_internal::c_end(c2);
+
+  for (; first1 != last1 && first2 != last2; ++first1, (void)++first2) {
+    if (!pred(*first1, *first2)) {
+      break;
+    }
+  }
+
+  return std::make_pair(first1, first2);
 }
 
 // c_equal()
