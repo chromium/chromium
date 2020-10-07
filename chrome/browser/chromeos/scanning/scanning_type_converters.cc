@@ -55,6 +55,20 @@ struct TypeConverter<mojo_ipc::SourceType, lorgnette::SourceType> {
   }
 };
 
+template <>
+struct TypeConverter<lorgnette::ColorMode, mojo_ipc::ColorMode> {
+  static lorgnette::ColorMode Convert(mojo_ipc::ColorMode mode) {
+    switch (mode) {
+      case mojo_ipc::ColorMode::kBlackAndWhite:
+        return lorgnette::MODE_LINEART;
+      case mojo_ipc::ColorMode::kGrayscale:
+        return lorgnette::MODE_GRAYSCALE;
+      case mojo_ipc::ColorMode::kColor:
+        return lorgnette::MODE_COLOR;
+    }
+  }
+};
+
 // static
 mojo_ipc::ScannerCapabilitiesPtr TypeConverter<mojo_ipc::ScannerCapabilitiesPtr,
                                                lorgnette::ScannerCapabilities>::
@@ -77,6 +91,18 @@ mojo_ipc::ScannerCapabilitiesPtr TypeConverter<mojo_ipc::ScannerCapabilitiesPtr,
     mojo_caps.resolutions.push_back(res);
 
   return mojo_caps.Clone();
+}
+
+// static
+lorgnette::ScanSettings
+TypeConverter<lorgnette::ScanSettings, mojo_ipc::ScanSettingsPtr>::Convert(
+    const mojo_ipc::ScanSettingsPtr& mojo_settings) {
+  lorgnette::ScanSettings lorgnette_settings;
+  lorgnette_settings.set_source_name(mojo_settings->source_name);
+  lorgnette_settings.set_color_mode(
+      mojo::ConvertTo<lorgnette::ColorMode>(mojo_settings->color_mode));
+  lorgnette_settings.set_resolution(mojo_settings->resolution_dpi);
+  return lorgnette_settings;
 }
 
 }  // namespace mojo

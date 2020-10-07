@@ -10,6 +10,7 @@
 
 namespace lorgnette {
 class ScannerCapabilities;
+class ScanSettings;
 }  // namespace lorgnette
 
 namespace mojo {
@@ -19,6 +20,13 @@ struct TypeConverter<chromeos::scanning::mojom::ScannerCapabilitiesPtr,
                      lorgnette::ScannerCapabilities> {
   static chromeos::scanning::mojom::ScannerCapabilitiesPtr Convert(
       const lorgnette::ScannerCapabilities& lorgnette_caps);
+};
+
+template <>
+struct TypeConverter<lorgnette::ScanSettings,
+                     chromeos::scanning::mojom::ScanSettingsPtr> {
+  static lorgnette::ScanSettings Convert(
+      const chromeos::scanning::mojom::ScanSettingsPtr& mojo_settings);
 };
 
 }  // namespace mojo

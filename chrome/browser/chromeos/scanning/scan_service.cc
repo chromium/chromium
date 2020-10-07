@@ -61,14 +61,8 @@ void ScanService::Scan(const base::UnguessableToken& scanner_id,
 
   base::Time::Now().UTCExplode(&start_time_);
   save_failed_ = false;
-
-  // TODO(jschettler): Create a TypeConverter to convert from
-  // mojo_ipc::ScanSettingsPtr to lorgnette::ScanSettings once the settings are
-  // finalized.
-  lorgnette::ScanSettings settings_proto;
-  settings_proto.set_source_name(settings->source_name);
   lorgnette_scanner_manager_->Scan(
-      scanner_name, settings_proto,
+      scanner_name, mojo::ConvertTo<lorgnette::ScanSettings>(settings),
       base::BindRepeating(&ScanService::OnPageReceived,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ScanService::OnScanCompleted,
