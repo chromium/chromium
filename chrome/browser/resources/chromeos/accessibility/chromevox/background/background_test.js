@@ -3133,3 +3133,30 @@ TEST_F('ChromeVoxBackgroundTest', 'ReadFromHereBlankNodes', function() {
         .replay();
   });
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'ContainerButtons', function() {
+  const mockFeedback = this.createMockFeedback();
+
+  // This pattern can be found in ARC++/YouTube.
+  const site = `
+    <p>videos</p>
+    <div aria-label="Cat Video" role="button">
+      <div role="group">4 minutes, Cat Video</div>
+    </div>
+  `;
+  this.runWithLoadedTree(site, function(root) {
+    const group = root.find({role: RoleType.GROUP});
+
+    Object.defineProperty(group, 'clickable', {
+      get() {
+        return true;
+      }
+    });
+
+    mockFeedback.call(doCmd('nextObject'))
+        .expectSpeech('Cat Video', 'Button')
+        .call(doCmd('nextObject'))
+        .expectSpeech('4 minutes, Cat Video')
+        .replay();
+  });
+});

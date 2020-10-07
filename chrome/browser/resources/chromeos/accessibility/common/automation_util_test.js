@@ -228,7 +228,7 @@ TEST_F(
       this.runWithLoadedTree(
           `
     <div role="button" aria-label="outer">
-      <div role="button" aria-label="inner">
+      <div role="heading" aria-label="inner">
       </div>
     </div>
     `,
