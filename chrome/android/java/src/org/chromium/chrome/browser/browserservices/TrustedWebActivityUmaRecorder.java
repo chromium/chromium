@@ -214,8 +214,14 @@ public class TrustedWebActivityUmaRecorder {
                 error, LocationUpdateError.MAX_VALUE + 1);
     }
 
-    public void recordQualityEnforcementViolation(@QualityEnforcer.ViolationType int type) {
+    public void recordQualityEnforcementViolation(
+            @QualityEnforcer.ViolationType int type, boolean crashed) {
         RecordHistogram.recordEnumeratedHistogram("TrustedWebActivity.QualityEnforcementViolation",
                 type, QualityEnforcer.ViolationType.NUM_ENTRIES);
+        if (crashed) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "TrustedWebActivity.QualityEnforcementViolation.Crashed", type,
+                    QualityEnforcer.ViolationType.NUM_ENTRIES);
+        }
     }
 }

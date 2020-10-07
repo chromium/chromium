@@ -149,23 +149,14 @@ public class QualityEnforcerUnitTest {
 
     @Test
     public void triggerCrash_whenClientSupports() {
-        Bundle result = new Bundle();
-        result.putBoolean("success", true);
-        when(mCustomTabsConnection.sendExtraCallbackWithResult(
-                     any(), eq(QualityEnforcer.CRASH), any()))
-                .thenReturn(result);
-
+        setClientEnable(true);
         navigateToUrlNotFound(TRUSTED_ORIGIN_PAGE);
         verify(mActivity).finish();
     }
 
     @Test
     public void notTriggerCrash_whenClientNotSupport() {
-        Bundle result = new Bundle();
-        result.putBoolean("success", false);
-        when(mCustomTabsConnection.sendExtraCallbackWithResult(
-                     any(), eq(QualityEnforcer.CRASH), any()))
-                .thenReturn(result);
+        setClientEnable(false);
 
         navigateToUrlNotFound(TRUSTED_ORIGIN_PAGE);
         verify(mActivity, never()).finish();
@@ -193,11 +184,7 @@ public class QualityEnforcerUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT_FORCED)
     public void notTriggerCrash_whenClientNotSupportButForced() {
-        Bundle result = new Bundle();
-        result.putBoolean("success", false);
-        when(mCustomTabsConnection.sendExtraCallbackWithResult(
-                     any(), eq(QualityEnforcer.CRASH), any()))
-                .thenReturn(result);
+        setClientEnable(false);
 
         navigateToUrlNotFound(TRUSTED_ORIGIN_PAGE);
         verify(mActivity).finish();
@@ -208,6 +195,24 @@ public class QualityEnforcerUnitTest {
     public void notTriggerCrash_whenFlagIsDisabled() {
         navigateToUrlNotFound(TRUSTED_ORIGIN_PAGE);
         verifyNotTriggered();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT_FORCED)
+    public void triggerNotCrash_whenDigitalAssetLinkFailed() {
+        setClientEnable(true);
+        when(mIntentDataProvider.getUrlToLoad()).thenReturn(UNTRUSTED_PAGE.getSpec());
+        mQualityEnforcer.onFinishNativeInitialization();
+        verifyNotifyClientApp();
+        verify(mActivity, never()).finish();
+    }
+
+    private void setClientEnable(boolean enabled) {
+        Bundle result = new Bundle();
+        result.putBoolean(QualityEnforcer.KEY_SUCCESS, enabled);
+        when(mCustomTabsConnection.sendExtraCallbackWithResult(
+                     any(), eq(QualityEnforcer.CRASH), any()))
+                .thenReturn(result);
     }
 
     private void verifyTriggered404() {
@@ -221,7 +226,6 @@ public class QualityEnforcerUnitTest {
     private void verifyNotifyClientApp() {
         verify(mCustomTabsConnection)
                 .sendExtraCallbackWithResult(any(), eq(QualityEnforcer.CRASH), any());
-        doNothing().when(mActivity).finish();
     }
 
     private void verifyNotTriggered() {
