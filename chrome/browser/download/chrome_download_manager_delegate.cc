@@ -1405,8 +1405,9 @@ void ChromeDownloadManagerDelegate::OnDownloadTargetDetermined(
   if (target_info->result == download::DOWNLOAD_INTERRUPT_REASON_NONE &&
       (mcs == download::DownloadItem::MixedContentStatus::BLOCK ||
        mcs == download::DownloadItem::MixedContentStatus::WARN)) {
-    auto* infobar_service = InfoBarService::FromWebContents(
-        content::DownloadItemUtils::GetWebContents(item));
+    auto* web_contents = content::DownloadItemUtils::GetWebContents(item);
+    auto* infobar_service =
+        web_contents ? InfoBarService::FromWebContents(web_contents) : nullptr;
     if (infobar_service) {
       // There is always an infobar service except when running in a unit test,
       // and those tests assume no infobar is shown.
