@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/synchronization/lock.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/api/video/video_frame_buffer.h"
@@ -40,9 +41,12 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
 
   rtc::scoped_refptr<webrtc::I420BufferInterface> CreateFrameAdapter() const;
 
+  mutable base::Lock adapter_lock_;
+
   // Used to cache result of CreateFrameAdapter. Which is called from const
   // GetI420().
-  mutable rtc::scoped_refptr<webrtc::I420BufferInterface> frame_adapter_;
+  mutable rtc::scoped_refptr<webrtc::I420BufferInterface> frame_adapter_
+      GUARDED_BY(adapter_lock_);
 
   scoped_refptr<media::VideoFrame> frame_;
 
