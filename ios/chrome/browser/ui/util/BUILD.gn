@@ -139,6 +139,7 @@ source_set("unit_tests") {
     "manual_text_framer_unittest.mm",
     "named_guide_unittest.mm",
     "optional_property_animator_unittest.mm",
+    "pasteboard_util_unittest.mm",
     "terms_util_unittest.mm",
     "text_region_mapper_unittest.mm",
     "ui_util_unittest.mm",

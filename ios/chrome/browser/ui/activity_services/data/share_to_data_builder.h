@@ -25,8 +25,11 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
                                     const GURL& share_url);
 
 // Returns a ShareToData object for a single |URL|, and its page's |title|,
-// which is not associated to a WebState.
-ShareToData* ShareToDataForURL(const GURL& URL, NSString* title);
+// which is not associated to a WebState. Will also add |additionalText|, if
+// present.
+ShareToData* ShareToDataForURL(const GURL& URL,
+                               NSString* title,
+                               NSString* additionalText);
 
 }  // namespace activity_services
 

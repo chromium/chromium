@@ -17,6 +17,7 @@
 - (id)initWithShareURL:(const GURL&)shareURL
             visibleURL:(const GURL&)visibleURL
                  title:(NSString*)title
+        additionalText:(NSString*)additionalText
        isOriginalTitle:(BOOL)isOriginalTitle
        isPagePrintable:(BOOL)isPagePrintable
       isPageSearchable:(BOOL)isPageSearchable
@@ -37,6 +38,10 @@
 
 // Title to be shared (not nil).
 @property(nonatomic, readonly, copy) NSString* title;
+
+// Additional text to be shared, such as highlighted text. May be nil.
+@property(nonatomic, readonly, copy) NSString* additionalText;
+
 // Whether the title was provided by the page (i.e., was not generated from
 // the url).
 @property(nonatomic, readonly, assign) BOOL isOriginalTitle;

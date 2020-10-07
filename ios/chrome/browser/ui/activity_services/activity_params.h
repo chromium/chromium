@@ -31,6 +31,13 @@ class GURL;
                       title:(NSString*)title
                    scenario:(ActivityScenario)scenario;
 
+// Initializes an instance configured to share an |URL|, along
+// with its |title| and |additionalText|, for the metrics |scenario|.
+- (instancetype)initWithURL:(const GURL&)URL
+                      title:(NSString*)title
+             additionalText:(NSString*)additionalText
+                   scenario:(ActivityScenario)scenario;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 // Image to be shared.
@@ -42,6 +49,9 @@ class GURL;
 // Title of the content that will be shared. Must be set if |image| or |URL| are
 // set.
 @property(nonatomic, readonly, copy) NSString* title;
+
+// Any additional text to be shared along with the page's details. May be nil.
+@property(nonatomic, readonly, copy) NSString* additionalText;
 
 // Current sharing scenario.
 @property(nonatomic, readonly, assign) ActivityScenario scenario;

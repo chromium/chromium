@@ -10,6 +10,8 @@ source_set("data") {
     "chrome_activity_item_source.h",
     "chrome_activity_item_thumbnail_generator.h",
     "chrome_activity_item_thumbnail_generator.mm",
+    "chrome_activity_text_source.h",
+    "chrome_activity_text_source.mm",
     "chrome_activity_url_source.h",
     "chrome_activity_url_source.mm",
     "share_image_data.h",

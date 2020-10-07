@@ -31,6 +31,7 @@ class FindInPageActivityTest : public PlatformTest {
     return [[ShareToData alloc] initWithShareURL:GURL("https://www.google.com/")
                                       visibleURL:GURL("https://google.com/")
                                            title:@"Some Title"
+                                  additionalText:nil
                                  isOriginalTitle:YES
                                  isPagePrintable:YES
                                 isPageSearchable:is_page_searchable

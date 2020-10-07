@@ -43,7 +43,8 @@ class PrefService;
 
 // Generates an array of activity items to be shared via an activity view for
 // the given |data|.
-- (NSArray<ChromeActivityURLSource*>*)activityItemsForData:(ShareToData*)data;
+- (NSArray<id<ChromeActivityItemSource>>*)activityItemsForData:
+    (ShareToData*)data;
 
 // Generates an array of activities to be added to the activity view for the
 // given |data|.

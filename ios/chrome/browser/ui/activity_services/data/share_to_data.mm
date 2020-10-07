@@ -26,6 +26,7 @@
 - (id)initWithShareURL:(const GURL&)shareURL
             visibleURL:(const GURL&)visibleURL
                  title:(NSString*)title
+        additionalText:(NSString*)additionalText
        isOriginalTitle:(BOOL)isOriginalTitle
        isPagePrintable:(BOOL)isPagePrintable
       isPageSearchable:(BOOL)isPageSearchable
@@ -41,6 +42,7 @@
     _shareURL = shareURL;
     _visibleURL = visibleURL;
     _title = [title copy];
+    _additionalText = [additionalText copy];
     _isOriginalTitle = isOriginalTitle;
     _isPagePrintable = isPagePrintable;
     _isPageSearchable = isPageSearchable;

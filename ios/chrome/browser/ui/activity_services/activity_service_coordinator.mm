@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/activity_services/canonical_url_retriever.h"
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_image_source.h"
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_item_source.h"
+#import "ios/chrome/browser/ui/activity_services/data/chrome_activity_text_source.h"
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_url_source.h"
 #import "ios/chrome/browser/ui/activity_services/data/share_image_data.h"
 #import "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
@@ -202,12 +203,13 @@ const char kSharePageLatencyHistogram[] = "IOS.SharePageLatency";
 #pragma mark - Private Methods: Share URL
 
 // Configures activities and items for a URL and its title, and shows
-// an activity view.
+// an activity view. Also adds another activity item for additional text, if
+// there is any.
 - (void)shareURL {
-  ShareToData* data =
-      activity_services::ShareToDataForURL(self.params.URL, self.params.title);
+  ShareToData* data = activity_services::ShareToDataForURL(
+      self.params.URL, self.params.title, self.params.additionalText);
 
-  NSArray<ChromeActivityURLSource*>* items =
+  NSArray<id<ChromeActivityItemSource>>* items =
       [self.mediator activityItemsForData:data];
   NSArray* activities = [self.mediator applicationActivitiesForData:data];
 

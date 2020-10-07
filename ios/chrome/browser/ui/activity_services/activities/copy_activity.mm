@@ -4,10 +4,11 @@
 
 #import "ios/chrome/browser/ui/activity_services/activities/copy_activity.h"
 
+#import "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
 #import "ios/chrome/browser/ui/util/pasteboard_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
-#include "url/gurl.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -19,16 +20,21 @@ NSString* const kCopyActivityType = @"com.google.chrome.copyActivity";
 
 }  // namespace
 
-@implementation CopyActivity {
-  GURL _URL;
-}
+@interface CopyActivity ()
+
+@property(nonatomic, strong) ShareToData* data;
+
+@end
+
+@implementation CopyActivity
 
 #pragma mark - Public
 
-- (instancetype)initWithURL:(const GURL&)URL {
+- (instancetype)initWithData:(ShareToData*)data {
+  DCHECK(data);
   self = [super init];
   if (self) {
-    _URL = URL;
+    _data = data;
   }
   return self;
 }
@@ -48,7 +54,7 @@ NSString* const kCopyActivityType = @"com.google.chrome.copyActivity";
 }
 
 - (BOOL)canPerformWithActivityItems:(NSArray*)activityItems {
-  return YES;
+  return !!self.data;
 }
 
 - (void)prepareWithActivityItems:(NSArray*)activityItems {
@@ -59,7 +65,11 @@ NSString* const kCopyActivityType = @"com.google.chrome.copyActivity";
 }
 
 - (void)performActivity {
-  StoreURLInPasteboard(_URL);
+  if (self.data.additionalText) {
+    StoreInPasteboard(self.data.additionalText, self.data.shareURL);
+  } else {
+    StoreURLInPasteboard(self.data.shareURL);
+  }
   [self activityDidFinish:YES];
 }
 

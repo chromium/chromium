@@ -43,4 +43,15 @@
   return self;
 }
 
+- (instancetype)initWithURL:(const GURL&)URL
+                      title:(NSString*)title
+             additionalText:(NSString*)additionalText
+                   scenario:(ActivityScenario)scenario {
+  DCHECK(additionalText);
+  if (self = [self initWithURL:URL title:title scenario:scenario]) {
+    _additionalText = [additionalText copy];
+  }
+  return self;
+}
+
 @end

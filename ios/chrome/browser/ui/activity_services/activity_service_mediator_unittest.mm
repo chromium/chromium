@@ -4,12 +4,12 @@
 
 #import "ios/chrome/browser/ui/activity_services/activity_service_mediator.h"
 
-#include "base/test/metrics/histogram_tester.h"
-#include "components/bookmarks/browser/bookmark_model.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/testing_pref_service.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/pref_service.h"
+#import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/activity_services/activities/bookmark_activity.h"
 #import "ios/chrome/browser/ui/activity_services/activities/copy_activity.h"
 #import "ios/chrome/browser/ui/activity_services/activities/find_in_page_activity.h"
@@ -21,7 +21,9 @@
 #import "ios/chrome/browser/ui/activity_services/activity_scenario.h"
 #import "ios/chrome/browser/ui/activity_services/activity_type_util.h"
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_image_source.h"
+#import "ios/chrome/browser/ui/activity_services/data/chrome_activity_item_source.h"
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_item_thumbnail_generator.h"
+#import "ios/chrome/browser/ui/activity_services/data/chrome_activity_text_source.h"
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_url_source.h"
 #import "ios/chrome/browser/ui/activity_services/data/share_image_data.h"
 #import "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
@@ -29,9 +31,9 @@
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_generation_commands.h"
-#include "ios/web/common/user_agent.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "ios/web/common/user_agent.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -85,12 +87,14 @@ class ActivityServiceMediatorTest : public PlatformTest {
 };
 
 // Tests that only one ChromeActivityURLSource is initialized from a ShareToData
-// instance.
-TEST_F(ActivityServiceMediatorTest, ActivityItemsForData_Success) {
+// instance without additional text.
+TEST_F(ActivityServiceMediatorTest,
+       ActivityItemsForData_NoAdditionalText_Success) {
   ShareToData* data =
       [[ShareToData alloc] initWithShareURL:GURL("https://www.google.com/")
                                  visibleURL:GURL("https://google.com/")
                                       title:@"Some Title"
+                             additionalText:nil
                             isOriginalTitle:YES
                             isPagePrintable:YES
                            isPageSearchable:YES
@@ -98,10 +102,36 @@ TEST_F(ActivityServiceMediatorTest, ActivityItemsForData_Success) {
                                   userAgent:web::UserAgentType::MOBILE
                          thumbnailGenerator:mocked_thumbnail_generator_];
 
-  NSArray<ChromeActivityURLSource*>* activityItems =
+  NSArray<id<ChromeActivityItemSource>>* activityItems =
       [mediator_ activityItemsForData:data];
 
   EXPECT_EQ(1U, [activityItems count]);
+  EXPECT_TRUE([activityItems[0] isKindOfClass:[ChromeActivityURLSource class]]);
+}
+
+// Tests that two activity items are created from a ShareToData instance with
+// additional text.
+TEST_F(ActivityServiceMediatorTest,
+       ActivityItemsForData_WithAdditionalText_Success) {
+  ShareToData* data =
+      [[ShareToData alloc] initWithShareURL:GURL("https://www.google.com/")
+                                 visibleURL:GURL("https://google.com/")
+                                      title:@"Some Title"
+                             additionalText:@"Foo, bar!"
+                            isOriginalTitle:YES
+                            isPagePrintable:YES
+                           isPageSearchable:YES
+                           canSendTabToSelf:YES
+                                  userAgent:web::UserAgentType::MOBILE
+                         thumbnailGenerator:mocked_thumbnail_generator_];
+
+  NSArray<id<ChromeActivityItemSource>>* activityItems =
+      [mediator_ activityItemsForData:data];
+
+  EXPECT_EQ(2U, [activityItems count]);
+  EXPECT_TRUE(
+      [activityItems[0] isKindOfClass:[ChromeActivityTextSource class]]);
+  EXPECT_TRUE([activityItems[1] isKindOfClass:[ChromeActivityURLSource class]]);
 }
 
 // Tests that only the CopyActivity and PrintActivity get added for a page that
@@ -111,6 +141,7 @@ TEST_F(ActivityServiceMediatorTest, ActivitiesForData_NotHTTPOrHTTPS) {
       [[ShareToData alloc] initWithShareURL:GURL("chrome://chromium.org/")
                                  visibleURL:GURL("chrome://chromium.org/")
                                       title:@"baz"
+                             additionalText:nil
                             isOriginalTitle:YES
                             isPagePrintable:YES
                            isPageSearchable:YES
@@ -130,6 +161,7 @@ TEST_F(ActivityServiceMediatorTest, ActivitiesForData_HTTP) {
       [[ShareToData alloc] initWithShareURL:GURL("http://example.com")
                                  visibleURL:GURL("http://example.com")
                                       title:@"baz"
+                             additionalText:nil
                             isOriginalTitle:YES
                             isPagePrintable:YES
                            isPageSearchable:YES
@@ -154,6 +186,7 @@ TEST_F(ActivityServiceMediatorTest, ActivitiesForData_HTTPS) {
       [[ShareToData alloc] initWithShareURL:GURL("https://example.com")
                                  visibleURL:GURL("https://example.com")
                                       title:@"baz"
+                             additionalText:nil
                             isOriginalTitle:YES
                             isPagePrintable:YES
                            isPageSearchable:YES
@@ -283,6 +316,7 @@ TEST_F(ActivityServiceMediatorTest, PrintPrefDisabled) {
       [[ShareToData alloc] initWithShareURL:GURL("http://example.com")
                                  visibleURL:GURL("http://example.com")
                                       title:@"baz"
+                             additionalText:nil
                             isOriginalTitle:YES
                             isPagePrintable:YES
                            isPageSearchable:YES

@@ -57,6 +57,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "bookmark_activity_unittest.mm",
+    "copy_activity_unittest.mm",
     "find_in_page_activity_unittest.mm",
     "generate_qr_code_activity_unittest.mm",
     "print_activity_unittest.mm",
@@ -75,6 +76,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/activity_services/data",
     "//ios/chrome/browser/ui/bookmarks:test_support",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/util",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
