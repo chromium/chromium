@@ -98,7 +98,7 @@ TEST_F(AXTreeConverterTest, AllFieldsSetAndEqual) {
       std::vector<int32_t>{kChildId1, kChildId2, kChildId3}, relative_bounds,
       kLabel1, kDescription1, ax::mojom::CheckedState::kMixed);
   source_node_data.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, false);
-  source_node_data.RemoveState(ax::mojom::State::kInvisible);
+  source_node_data.RemoveState(ax::mojom::State::kIgnored);
   auto converted_node = AXNodeDataToSemanticNode(source_node_data);
   EXPECT_EQ(static_cast<uint32_t>(source_node_data.id),
             converted_node.node_id());
