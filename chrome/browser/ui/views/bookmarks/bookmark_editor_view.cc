@@ -44,20 +44,6 @@ using bookmarks::BookmarkExpandedStateTracker;
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
-namespace {
-
-std::unique_ptr<views::LabelButton> CreateNewFolderButton(
-    views::ButtonListener* listener,
-    bool enabled) {
-  auto new_folder_button = std::make_unique<views::MdTextButton>(
-      listener,
-      l10n_util::GetStringUTF16(IDS_BOOKMARK_EDITOR_NEW_FOLDER_BUTTON));
-  new_folder_button->SetEnabled(enabled);
-  return new_folder_button;
-}
-
-}  // namespace
-
 BookmarkEditorView::BookmarkEditorView(
     Profile* profile,
     const BookmarkNode* parent,
@@ -79,8 +65,11 @@ BookmarkEditorView::BookmarkEditorView(
   SetTitle(details_.GetWindowTitleId());
   SetButtonLabel(ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(IDS_SAVE));
   if (show_tree_) {
-    new_folder_button_ =
-        SetExtraView(CreateNewFolderButton(this, bb_model_->loaded()));
+    new_folder_button_ = SetExtraView(std::make_unique<views::MdTextButton>(
+        base::BindRepeating(&BookmarkEditorView::NewFolderButtonPressed,
+                            base::Unretained(this)),
+        l10n_util::GetStringUTF16(IDS_BOOKMARK_EDITOR_NEW_FOLDER_BUTTON)));
+    new_folder_button_->SetEnabled(bb_model_->loaded());
   }
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::CONTROL, views::CONTROL));
@@ -140,13 +129,6 @@ bool BookmarkEditorView::HandleKeyEvent(views::Textfield* sender,
 void BookmarkEditorView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   views::DialogDelegateView::GetAccessibleNodeData(node_data);
   node_data->SetName(l10n_util::GetStringUTF8(IDS_BOOKMARK_EDITOR_TITLE));
-}
-
-void BookmarkEditorView::ButtonPressed(views::Button* sender,
-                                       const ui::Event& event) {
-  DCHECK_EQ(new_folder_button_, sender);
-  DCHECK(tree_view_->GetSelectedNode());
-  NewFolder(tree_model_->AsNode(tree_view_->GetSelectedNode()));
 }
 
 bool BookmarkEditorView::IsCommandIdChecked(int command_id) const {
@@ -422,13 +404,14 @@ void BookmarkEditorView::UserInputChanged() {
   DialogModelChanged();
 }
 
+void BookmarkEditorView::NewFolderButtonPressed() {
+  DCHECK(tree_view_->GetSelectedNode());
+  NewFolder(tree_model_->AsNode(tree_view_->GetSelectedNode()));
+}
+
 void BookmarkEditorView::NewFolder(EditorNode* parent) {
   // Create a new entry parented to the given item.
-  if (!parent) {
-    NOTREACHED();
-    return;
-  }
-
+  DCHECK(parent);
   tree_view_->StartEditing(AddNewFolder(parent));
 }
 

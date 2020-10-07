@@ -19,7 +19,6 @@
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/models/tree_node_model.h"
 #include "ui/views/context_menu_controller.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/controls/tree/tree_view_controller.h"
@@ -46,7 +45,6 @@ class Profile;
 // To use BookmarkEditorView invoke the static show method.
 
 class BookmarkEditorView : public BookmarkEditor,
-                           public views::ButtonListener,
                            public views::TreeViewController,
                            public views::DialogDelegateView,
                            public views::TextfieldController,
@@ -94,9 +92,6 @@ class BookmarkEditorView : public BookmarkEditor,
                        const base::string16& new_contents) override;
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override;
@@ -197,6 +192,8 @@ class BookmarkEditorView : public BookmarkEditor,
   // Invoked when the url or title has possibly changed. Updates the background
   // of Textfields and ok button appropriately.
   void UserInputChanged();
+
+  void NewFolderButtonPressed();
 
   // Creates a new folder as a child of the given node. Starts editing on the
   // new group as well.
