@@ -22,5 +22,3 @@ per-file *_type_converter*.*=set noparent
 per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS
 
 per-file SECURITY_OWNERS=file://ipc/SECURITY_OWNERS
-
-# COMPONENT: Internals>Core
