@@ -1163,9 +1163,17 @@
           'shards': 12,
         }
       },
-      'content_shell_crash_test': {},
+      'content_shell_crash_test': {
+        'resultdb': {
+          'enable': False,
+        }
+      },
       'extension_docserver_python_unittests': {},
-      'flatbuffers_unittests': {},
+      'flatbuffers_unittests': {
+        'resultdb': {
+          'enable': False,
+        }
+      },
       'grit_python_unittests': {},
       'metrics_python_tests': {},
       'telemetry_gpu_unittests': {

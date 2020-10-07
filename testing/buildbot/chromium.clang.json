@@ -24063,6 +24063,9 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "content_shell_crash_test",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -24089,6 +24092,9 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "flatbuffers_unittests",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -26499,6 +26505,9 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "content_shell_crash_test",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -26525,6 +26534,9 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "flatbuffers_unittests",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
