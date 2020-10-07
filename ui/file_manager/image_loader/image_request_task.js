@@ -605,7 +605,7 @@ ImageRequestTask.prototype.sendImageData_ = function(width, height, data) {
  * @private
  */
 ImageRequestTask.prototype.onImageLoad_ = function() {
-  const imageColorSpace = this.colorSpace_ || 'sRgb';
+  this.colorSpace_ = this.colorSpace_ || 'sRgb';
 
   // Perform processing if the url is not a data url, or if there are some
   // operations requested.
@@ -613,10 +613,8 @@ ImageRequestTask.prototype.onImageLoad_ = function() {
   if (!(this.request_.url.match(/^data/) ||
         this.request_.url.match(/^drivefs:/)) ||
       ImageLoaderUtil.shouldProcess(
-          this.image_.width, this.image_.height, this.request_) ||
-      (imageColorSpace !== 'sRgb')) {
+          this.image_.width, this.image_.height, this.request_)) {
     ImageLoaderUtil.resizeAndCrop(this.image_, this.canvas_, this.request_);
-    ImageLoaderUtil.convertColorSpace(this.canvas_, imageColorSpace);
     imageChanged = true;  // The image is now on the <canvas>.
   }
 

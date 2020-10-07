@@ -354,7 +354,7 @@ class ImageBuffer {
 
     const view = new Uint8Array(this.source.buffer, offset, length);
     return {
-      thumbnail: new Uint8Array(view).buffer,
+      thumbnail: this.createImageDataArray_(view, preview).buffer,
       mimeType: 'image/jpeg',
       ifd: this.details_(result, preview.orientation),
       orientation: preview.orientation,
@@ -394,7 +394,7 @@ class ImageBuffer {
 
     const view = new Uint8Array(this.source.buffer, offset, length);
     return {
-      thumbnail: new Uint8Array(view).buffer,
+      thumbnail: this.createImageDataArray_(view, thumbnail).buffer,
       mimeType: 'image/jpeg',
       ifd: this.details_(result, thumbnail.orientation),
       orientation: thumbnail.orientation,
@@ -493,6 +493,30 @@ class ImageBuffer {
       orientation: thumbnail.orientation,
       colorSpace: thumbnail.colorSpace,
     };
+  }
+
+  /**
+   * Converts a |view| of the "preview image" to Uint8Array data. Embeds an
+   * AdobeRGB1998 ICC Color Profile in that data if the preview is JPEG and
+   * it has 'adodeRgb' color space.
+   *
+   * @private
+   * @param {!PiexWasmPreviewImageMetadata} preview
+   * @param {!Uint8Array} view
+   * return {!Uint8Array}
+   */
+  createImageDataArray_(view, preview) {
+    const jpeg = view.byteLength > 2 && view[0] === 0xff && view[1] === 0xd8;
+
+    if (jpeg && preview.colorSpace === 'adobeRgb') {
+      const data = new Uint8Array(view.byteLength + adobeProfile.byteLength);
+      data.set(view.subarray(2), 2 + adobeProfile.byteLength);
+      data.set(adobeProfile, 2);
+      data.set([0xff, 0xd8], 0);
+      return data;
+    }
+
+    return new Uint8Array(view);
   }
 
   /**
