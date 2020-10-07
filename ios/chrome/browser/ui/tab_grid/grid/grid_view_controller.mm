@@ -332,6 +332,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   GridItem* item = self.items[itemIndex];
   [self configureCell:cell withItem:item];
+  // Set the z index of cells so that lower rows are superposed during
+  // transitions between grid and horizontal layouts.
   cell.layer.zPosition = itemIndex;
 
 #if defined(__IPHONE_13_4)
