@@ -33,6 +33,7 @@ export class ViewerThumbnailElement extends PolymerElement {
       clockwiseRotations: {
         type: Number,
         value: 0,
+        observer: 'clockwiseRotationsChanged_',
       },
 
       isActive: {
@@ -45,12 +46,6 @@ export class ViewerThumbnailElement extends PolymerElement {
     };
   }
 
-  static get observers() {
-    return [
-      'styleCanvas_(clockwiseRotations)',
-    ];
-  }
-
   constructor() {
     super();
 
@@ -61,7 +56,12 @@ export class ViewerThumbnailElement extends PolymerElement {
 
   /** @param {!ImageData} imageData */
   set image(imageData) {
-    const canvas = this.getCanvas_();
+    let canvas = this.getCanvas_();
+    if (!canvas) {
+      canvas = document.createElement('canvas');
+      this.shadowRoot.querySelector('#thumbnail').appendChild(canvas);
+    }
+
     canvas.width = imageData.width;
     canvas.height = imageData.height;
 
@@ -76,9 +76,12 @@ export class ViewerThumbnailElement extends PolymerElement {
       return;
     }
 
+    // `canvas` can be `null` in tests because `image` is set only in response
+    // to the plugin.
     const canvas = this.getCanvas_();
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (canvas) {
+      canvas.remove();
+    }
     this.removeAttribute(PAINTED_ATTRIBUTE);
 
     // For tests
@@ -91,12 +94,19 @@ export class ViewerThumbnailElement extends PolymerElement {
         this.shadowRoot.querySelector('#thumbnail'));
   }
 
+  /** @private */
+  clockwiseRotationsChanged_() {
+    if (this.getCanvas_()) {
+      this.styleCanvas_();
+    }
+  }
+
   /**
-   * @return {!HTMLCanvasElement}
+   * @return {?HTMLCanvasElement}
    * @private
    */
   getCanvas_() {
-    return /** @type {!HTMLCanvasElement} */ (
+    return /** @type {?HTMLCanvasElement} */ (
         this.shadowRoot.querySelector('canvas'));
   }
 

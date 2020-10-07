@@ -11,10 +11,12 @@
   #thumbnail {
     align-items: center;
     display: inline-flex;
+    height: 140px;
     justify-content: center;
     margin-bottom: 12px;
     margin-inline-end: auto;
     margin-inline-start: auto;
+    width: 108px;
   }
 
   :host([is-active]) #thumbnail {
@@ -49,7 +51,5 @@
     line-height: 1;
   }
 </style>
-<div id="thumbnail" on-click="onClick_">
-  <canvas width="108" height="140"></canvas>
-</div>
+<div id="thumbnail" on-click="onClick_"></div>
 <div id="pageNumber">[[pageNumber]]</div>
