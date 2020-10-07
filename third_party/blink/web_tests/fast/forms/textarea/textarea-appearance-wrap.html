@@ -1,6 +1,9 @@
+<!DOCTYPE html>
+<!-- TODO(tkent): Rename this file. This doesn't test appearance. -->
 <html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
 <body>
-This tests that textarea wrap attributes work correctly when submitting a form.
 <form action="?" name=f>
  <textarea name=ta_WrapHard cols=5 style="-webkit-appearance:textarea" wrap=hard>123456789</textarea><br>
  <textarea name=ta_WrapSoft cols=5 style="-webkit-appearance:textarea" wrap=soft>123456789</textarea><br>
@@ -10,62 +13,31 @@ This tests that textarea wrap attributes work correctly when submitting a form.
  <textarea name=ta_WrapHardHidden cols=5 style="-webkit-appearance:textarea; visibility:hidden" wrap=hard>123456789</textarea><br>
 </form>
 
-<div id="res"></div>
-
 <script>
-function log(msg) {
-    document.getElementById('res').innerHTML = document.getElementById('res').innerHTML + msg + "<br>";
-}
-    
-if (window.testRunner) {
-    testRunner.dumpAsText();
-    testRunner.waitUntilDone();
-}
-
-var unescapedLineWrap = unescape("%0D%0A");
-
-function assertLineWrap(properties, escapedResult, shouldHaveLineBreakInResult) {
-  var unescapedResult = unescape(escapedResult);
-  var passed = shouldHaveLineBreakInResult ?
-      unescapedResult.indexOf(unescapedLineWrap) != -1 :
-      unescapedResult.indexOf(unescapedLineWrap) == -1
-  if (passed)
-      log("<p>" + properties + ": Success</p>");
-  else
-      log("<p>" + properties + ": Failure. Expected " + (shouldHaveLineBreakInResult ? "" : "no ") +
-          "%0D%A in the result at the line-wrap. <br>Actual form data: " + unescapedResult + "</p>");
+function assertLineWrap(description, formData, name, shouldHaveLineBreakInResult) {
+  const LINE_WRAP = "\r\n";
+  const wireValue = formData.get(name);
+  if (shouldHaveLineBreakInResult) {
+    assert_not_equals(wireValue.indexOf(LINE_WRAP), -1,
+        `"${wireValue}" should contain \\r\\n`);
+  } else {
+    assert_equals(wireValue.indexOf(LINE_WRAP), -1,
+        `"${wireValue}" should not contain \\r\\n`);
+  }
 }
 
-if (document.URL.substring(0, 4) == "file") {
+test(() => {
+  const formData = new FormData(document.f);
 
-    if (document.URL.indexOf('?') == -1) {
-        document.f.submit();
-    } else {
-        var urlString = document.URL.substring(document.URL.indexOf('?')+1, document.URL.length);
-        var index1 = 0;
-        var index2 = urlString.indexOf('ta_WrapSoft');
-        var index3 = urlString.indexOf('ta_WrapOff');
-        var index4 = urlString.indexOf('ta_WrapHardRTL');
-        var index5 = urlString.indexOf('ta_WrapHardBidi');
-        var index6 = urlString.indexOf('ta_WrapHardHidden');
-        var index7 = document.URL.length;
-        var expectedResult;
-        var result;
-        
-        assertLineWrap("wrap=hard", urlString.substring(index1, index2 - 1), true);
-        assertLineWrap("wrap=soft", urlString.substring(index2, index3 - 1), false);
-        assertLineWrap("wrap=off", urlString.substring(index3, index4 - 1), false);
-        assertLineWrap("wrap=hard rtl text", urlString.substring(index4, index5 - 1), true);
-        assertLineWrap("wrap=hard mixed rtl and ltr text", urlString.substring(index5, index6 - 1), true);
-        assertLineWrap("wrap=hard visibility:hidden", urlString.substring(index6, index7 - 1), true);
-
-        if (window.testRunner)
-            testRunner.notifyDone();
-    }
-
-} else {
-    document.write("<p>This test doesn't work directly from bugzilla, please save it to a local file first.</p>");
-}
+  assertLineWrap("wrap=hard", formData, 'ta_WrapHard', true);
+  assertLineWrap("wrap=soft", formData, 'ta_WrapSoft', false);
+  assertLineWrap("wrap=off", formData, 'ta_WrapOff', false);
+  assertLineWrap("wrap=hard rtl text", formData, 'ta_WrapHardRTL', true);
+  assertLineWrap("wrap=hard mixed rtl and ltr text", formData,
+                 'ta_WrapHardBidi', true);
+  assertLineWrap("wrap=hard visibility:hidden", formData, 'ta_WrapHardHidden',
+                 true);
+}, 'This tests that textarea wrap attributes work correctly when submitting a form.');
 </script>
 </body>
 </html>
