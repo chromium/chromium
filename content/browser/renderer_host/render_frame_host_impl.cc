@@ -8663,9 +8663,8 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // are certain security checks that we cannot apply to subframes in MHTML
   // documents. Do not trust renderer data when determining that, rather use
   // the |navigation_request|, which was generated and stays browser side.
-  is_mhtml_document_ =
-      navigation_request->GetMimeType() == "multipart/related" ||
-      navigation_request->GetMimeType() == "message/rfc822";
+  is_mhtml_document_ = navigation_request->IsWaitingToCommit() &&
+                       navigation_request->IsLoadedFromMhtmlArchive();
 
   RecordCrossOriginIsolationMetrics(this);
 

@@ -542,6 +542,11 @@ class CONTENT_EXPORT NavigationRequest
   void SetNavigationClient(
       mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client);
 
+  // Whether the new document loaded will be loaded from an MHTML archive.
+  // Contrary to IsForMhtmlSubframe(), this isn't scoped to subframe, but can't
+  // be called prior to receiving the final response.
+  bool IsLoadedFromMhtmlArchive() const;
+
   // Whether the new document created by this navigation will be loaded from a
   // MHTML document. In this case, the navigation will commit in the main frame
   // process without needing any network requests.
@@ -1474,6 +1479,9 @@ class CONTENT_EXPORT NavigationRequest
   // Similar but only suppresses the error page when the error code is
   // net::ERR_BLOCKED_BY_CLIENT.
   bool silently_ignore_blocked_by_client_ = false;
+
+  // Whether the new document will be loaded from an MHTML archive.
+  bool is_loaded_from_mhtml_archive_ = false;
 
   // Observers listening to cookie access notifications for the network requests
   // made by this navigation.

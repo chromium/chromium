@@ -706,9 +706,7 @@ url::Origin GetOriginForURLLoaderFactoryUnchecked(
 
   // MHTML frames should commit as a opaque origin (and should not be able to
   // make network requests on behalf of the real origin).
-  //
-  // TODO(lukasza): Cover MHTML main frames here.
-  if (navigation_request->IsForMhtmlSubframe())
+  if (navigation_request->IsLoadedFromMhtmlArchive())
     return url::Origin();
 
   // Srcdoc subframes need to inherit their origin from their parent frame.
@@ -3106,6 +3104,10 @@ void NavigationRequest::CommitNavigation() {
 
   AddOldPageInfoToCommitParamsIfNeeded();
 
+  is_loaded_from_mhtml_archive_ = GetMimeType() == "multipart/related" ||
+                                  GetMimeType() == "message/rfc822" ||
+                                  IsForMhtmlSubframe();
+
   if (IsServedFromBackForwardCache()) {
     // Navigations served from the back-forward cache must be a history
     // navigation, and thus should have a valid |pending_history_list_offset|
@@ -3874,6 +3876,11 @@ void NavigationRequest::RegisterThrottleForTesting(
 }
 bool NavigationRequest::IsDeferredForTesting() {
   return throttle_runner_->GetDeferringThrottle() != nullptr;
+}
+
+bool NavigationRequest::IsLoadedFromMhtmlArchive() const {
+  DCHECK_LE(READY_TO_COMMIT, state_);
+  return is_loaded_from_mhtml_archive_;
 }
 
 bool NavigationRequest::IsForMhtmlSubframe() const {
@@ -5031,6 +5038,9 @@ NavigationRequest::ComputeSandboxFlagsToCommit() {
       out |= ~(csp->sandbox);
     }
   }
+
+  // TODO(arthursonzogni): Add the MHTML sandbox flags here. This should
+  // replicate DocumentLoader::CalculateSandboxFlags.
 
   return out;
 }

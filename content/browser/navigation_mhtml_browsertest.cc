@@ -137,9 +137,8 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, IframeFound) {
   RenderFrameHostImpl* sub_document =
       main_document->child_at(0)->current_frame_host();
 
-  // |is_mhtml_document| is confusing. It always returns false for subframe.
   EXPECT_TRUE(main_document->is_mhtml_document());
-  EXPECT_FALSE(sub_document->is_mhtml_document());
+  EXPECT_TRUE(sub_document->is_mhtml_document());
 
   // When the iframe's content is loaded from the MHTML archive, a successful
   // commit using the provided URL happens, even if the resource wasn't loaded
@@ -172,9 +171,8 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, IframeNotFound) {
   RenderFrameHostImpl* sub_document =
       main_document->child_at(0)->current_frame_host();
 
-  // |is_mhtml_document| is confusing. It always returns false for subframe.
   EXPECT_TRUE(main_document->is_mhtml_document());
-  EXPECT_FALSE(sub_document->is_mhtml_document());
+  EXPECT_TRUE(sub_document->is_mhtml_document());
 
   // This should commit as a failed navigation, but the browser side doesn't
   // have enough information to make that determination. On the renderer side,
@@ -209,6 +207,9 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, IframeDataUrlNotFound) {
   EXPECT_EQ(GURL("data:text/html,<iframe></iframe>"),
             sub_document->GetLastCommittedURL());
 
+  EXPECT_TRUE(main_document->is_mhtml_document());
+  EXPECT_FALSE(sub_document->is_mhtml_document());  // Served from data-url.
+
   // Check the iframe is properly loaded. EvalJs("document.body.innerHTML")
   // can't be used, because javascript is disabled. Instead, check it was able
   // to load an iframe.
@@ -235,6 +236,9 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, IframeDataUrlFound) {
   EXPECT_EQ(GURL("data:text/html,<iframe></iframe>"),
             sub_document->GetLastCommittedURL());
 
+  EXPECT_TRUE(main_document->is_mhtml_document());
+  EXPECT_FALSE(sub_document->is_mhtml_document());  // Served from data-url.
+
   // Check the iframe is properly loaded. EvalJs("document.body.innerHTML")
   // can't be used, because javascript is disabled. Instead, check it was able
   // to load an iframe.
@@ -256,6 +260,9 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, IframeAboutSrcdocNoFound) {
   RenderFrameHostImpl* sub_document =
       main_document->child_at(0)->current_frame_host();
   EXPECT_TRUE(sub_document->GetLastCommittedURL().IsAboutSrcdoc());
+
+  EXPECT_TRUE(main_document->is_mhtml_document());
+  EXPECT_TRUE(sub_document->is_mhtml_document());
 
   // Check the iframe is properly loaded. EvalJs("document.body.innerHTML")
   // can't be used, because javascript is disabled. Instead, check it was able
@@ -279,6 +286,9 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, IframeAboutSrcdocFound) {
   RenderFrameHostImpl* sub_document =
       main_document->child_at(0)->current_frame_host();
   EXPECT_TRUE(sub_document->GetLastCommittedURL().IsAboutSrcdoc());
+
+  EXPECT_TRUE(main_document->is_mhtml_document());
+  EXPECT_TRUE(sub_document->is_mhtml_document());
 
   // Check the iframe is properly loaded. EvalJs("document.body.innerHTML")
   // can't be used, because javascript is disabled. Instead, check it was able
@@ -352,6 +362,11 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, IframeAboutBlankFound) {
   ASSERT_EQ(1u, main_document->child_count());
   RenderFrameHostImpl* about_blank_document =
       main_document->child_at(0)->current_frame_host();
+
+  EXPECT_TRUE(main_document->is_mhtml_document());
+  // TODO(arthursonzogni): This should be true here.
+  EXPECT_FALSE(about_blank_document->is_mhtml_document());
+
   // about:blank is loaded from the archive, so it has an iframe.
   // See https://crbug.com/969667
   ASSERT_EQ(1u, about_blank_document->child_count());
@@ -379,6 +394,11 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest,
   ASSERT_EQ(1u, main_document->child_count());
   RenderFrameHostImpl* sub_document =
       main_document->child_at(0)->current_frame_host();
+
+  EXPECT_TRUE(main_document->is_mhtml_document());
+
+  // The |sub_document| is the initial empty document.
+  EXPECT_FALSE(sub_document->is_mhtml_document());
   EXPECT_EQ(GURL(), sub_document->GetLastCommittedURL());
 }
 
@@ -405,6 +425,11 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, IframeJavascriptUrlFound) {
   ASSERT_EQ(1u, main_document->child_count());
   RenderFrameHostImpl* sub_document =
       main_document->child_at(0)->current_frame_host();
+
+  EXPECT_TRUE(main_document->is_mhtml_document());
+
+  // The |sub_document| is the initial empty document.
+  EXPECT_FALSE(sub_document->is_mhtml_document());
   EXPECT_EQ(GURL(), sub_document->GetLastCommittedURL());
 
   EXPECT_EQ(0u, sub_document->child_count());
@@ -428,6 +453,9 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, IframeContentIdFound) {
   ASSERT_EQ(1u, main_document->child_count());
   RenderFrameHostImpl* sub_document =
       main_document->child_at(0)->current_frame_host();
+
+  EXPECT_TRUE(main_document->is_mhtml_document());
+  EXPECT_TRUE(sub_document->is_mhtml_document());
 
   EXPECT_EQ(GURL("cid:iframe"), sub_document->GetLastCommittedURL());
   EXPECT_TRUE(iframe_navigation.has_committed());
@@ -456,6 +484,9 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, IframeContentIdNotFound) {
   RenderFrameHostImpl* sub_document =
       main_document->child_at(0)->current_frame_host();
 
+  EXPECT_TRUE(main_document->is_mhtml_document());
+  EXPECT_TRUE(sub_document->is_mhtml_document());
+
   // This should commit as a failed navigation, but the browser side doesn't
   // have enough information to make that determination. On the renderer side,
   // there's no existing way to turn `CommitNavigation()` into
@@ -483,16 +514,19 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, CspFrameAncestor) {
 
   EXPECT_TRUE(NavigateToURL(shell(), mhtml_url));
 
-  RenderFrameHostImpl* main_frame = main_frame_host();
-  ASSERT_EQ(1u, main_frame->child_count());
-  RenderFrameHostImpl* sub_frame =
-      main_frame->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* main_document = main_frame_host();
+  ASSERT_EQ(1u, main_document->child_count());
+  RenderFrameHostImpl* sub_document =
+      main_document->child_at(0)->current_frame_host();
+
+  EXPECT_TRUE(main_document->is_mhtml_document());
+  EXPECT_TRUE(sub_document->is_mhtml_document());
 
   // Currently, frame-ancestors is not enforced. See https://crbug.com/969711.
   // Check that the iframe is properly loaded. EvalJs("document.body.innerHTML")
   // can't be used, because javascript is disabled. Instead, check it was able
   // to load an iframe.
-  ASSERT_EQ(1u, sub_frame->child_count());
+  ASSERT_EQ(1u, sub_document->child_count());
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest,
