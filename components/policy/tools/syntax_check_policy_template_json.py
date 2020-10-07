@@ -1520,7 +1520,7 @@ class PolicyTemplateChecker(object):
       with open(filename, 'w') as f:
         f.writelines(fixed_lines)
 
-  def _ValidatePolicyAtomicGroups(self, atomic_groups, max_id):
+  def _ValidatePolicyAtomicGroups(self, atomic_groups, max_id, deleted_ids):
     ids = [x['id'] for x in atomic_groups]
     actual_highest_id = max(ids)
     if actual_highest_id != max_id:
@@ -1536,9 +1536,11 @@ class PolicyTemplateChecker(object):
         self._Error('Duplicate atomic group id %s' % (ids[i]))
         return
       ids_set.add(ids[i])
-      if i + 1 != ids[i]:
-        self._Error('Missing atomic group id %s' % (i + 1))
-        return
+      if i > 0 and ids[i - 1] + 1 != ids[i]:
+        for delete_id in range(ids[i - 1] + 1, ids[i]):
+          if delete_id not in deleted_ids:
+            self._Error('Missing atomic group id %s' % (delete_id))
+            return
 
   def Main(self, filename, options, original_file_contents, current_version):
     try:
@@ -1590,6 +1592,13 @@ class PolicyTemplateChecker(object):
         parent_element=None,
         container_name='The root element',
         offending=None)
+    deleted_atomic_policy_group_ids = self._CheckContains(
+        data,
+        'deleted_atomic_policy_group_ids',
+        list,
+        parent_element=None,
+        container_name='The root element',
+        offending=None)
     highest_id = self._CheckContains(
         data,
         'highest_id_currently_used',
@@ -1627,7 +1636,8 @@ class PolicyTemplateChecker(object):
         offending=None)
 
     self._ValidatePolicyAtomicGroups(policy_atomic_group_definitions,
-                                     highest_atomic_group_id)
+                                     highest_atomic_group_id,
+                                     deleted_atomic_policy_group_ids)
     self._CheckDevicePolicyProtoMappingUniqueness(
         device_policy_proto_map, legacy_device_policy_proto_map)
     self._CheckDevicePolicyProtoMappingExistence(

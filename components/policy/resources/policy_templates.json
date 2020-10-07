@@ -24474,6 +24474,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   ],
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 412, 476, 544, 546, 562, 569, 578],
+  'deleted_atomic_policy_group_ids': [],
   'highest_id_currently_used': 791,
   'highest_atomic_group_id_currently_used': 40
 }
