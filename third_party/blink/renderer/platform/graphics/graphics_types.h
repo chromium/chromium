@@ -162,8 +162,6 @@ enum LineJoin {
   kBevelJoin = SkPaint::kBevel_Join
 };
 
-enum HorizontalAlignment { kAlignLeft, kAlignRight, kAlignHCenter };
-
 enum TextBaseline {
   kAlphabeticTextBaseline,
   kTopTextBaseline,
