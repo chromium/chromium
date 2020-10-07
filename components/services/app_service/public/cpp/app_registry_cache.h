@@ -31,7 +31,7 @@ namespace apps {
 //
 // This class is not thread-safe.
 //
-// See //components/services/app_service/README.md for more details.
+// See components/services/app_service/README.md for more details.
 class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
  public:
   class COMPONENT_EXPORT(APP_UPDATE) Observer : public base::CheckedObserver {

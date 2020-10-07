@@ -42,7 +42,7 @@ namespace apps {
 // are const. The constructor caller must guarantee that the AppPtr references
 // remain valid for the lifetime of the AppUpdate.
 //
-// See //components/services/app_service/README.md for more details.
+// See components/services/app_service/README.md for more details.
 class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
  public:
   // Modifies |state| by copying over all of |delta|'s known fields: those
