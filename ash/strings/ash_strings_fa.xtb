@@ -206,12 +206,6 @@
 <translation id="3045488863354895414">بعدازظهر به‌خیر،</translation>
 <translation id="3051128274746680507">نمایه کاربر تحت‌نظارت به‌زودی برداشته می‌شود. برای اطلاعات بیشتر به سیستم وارد شوید.</translation>
 <translation id="3055162170959710888">امروز از این دستگاه به‌مدت <ph name="USED_TIME" /> استفاده کردید</translation>
-<translation id="3076778413190775903">سینی وضعیت، زمان <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="3077734595579995578">تبدیل</translation>
 <translation id="3081696990447829002">بزرگ کردن منو</translation>
 <translation id="3087734570205094154">پایین</translation>

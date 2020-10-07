@@ -206,12 +206,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3045488863354895414">Dobar dan,</translation>
 <translation id="3051128274746680507">Vaš profil korisnika pod nadzorom će uskoro biti uklonjen. Prijavite se da saznate više.</translation>
 <translation id="3055162170959710888">Danas je uređaj korišten <ph name="USED_TIME" /></translation>
-<translation id="3076778413190775903">Statusna traka, vrijeme <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Proširivanje menija</translation>
 <translation id="3087734570205094154">Dolje</translation>
@@ -659,7 +653,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="7780159184141939021">Rotiranje ekrana</translation>
 <translation id="7796353162336583443">Dodirnite gumb pisaljke na polici da biste napisali bilješku, izradili snimku zaslona ili upotrijebili Google asistent, laserski pokazivač ili povećalo.</translation>
 <translation id="7798302898096527229">Za otkazivanje pritisnite tipku za pretraživanje ili Shift.</translation>
-<translation id="781126011916719498">Brzo pristupite uvezenim fajlovima. Kliknite desnim klikom na fajl ili ga dodirnite i zadržite da ga zakačite.</translation>
+<translation id="781126011916719498">Brzo pristupite važnim fajlovima. Kliknite desnim klikom na fajl ili ga dodirnite i zadržite da ga zakačite.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Jak signal</translation>
 <translation id="7837740436429729974">Vrijeme je isteklo</translation>

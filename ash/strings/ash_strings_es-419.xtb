@@ -206,12 +206,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3045488863354895414">Buenas tardes:</translation>
 <translation id="3051128274746680507">Pronto se quitará el perfil de tu usuario supervisado. Accede para obtener más información.</translation>
 <translation id="3055162170959710888">Hoy usaste este dispositivo durante <ph name="USED_TIME" /></translation>
-<translation id="3076778413190775903">Bandeja de estado, hora <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Expandir menú</translation>
 <translation id="3087734570205094154">Inferior</translation>

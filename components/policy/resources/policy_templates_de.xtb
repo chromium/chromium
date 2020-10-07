@@ -295,6 +295,11 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
 
           Wenn Sie diese Richtlinie konfigurieren, kann sie vom Nutzer nicht geändert oder überschrieben werden.</translation>
 <translation id="1502843533062797703">Blockieren von Codeeinschleusungen durch Drittanbieter-Software aktivieren</translation>
+<translation id="1503863096120373385">Konfiguriert die Einstellungen für die Lebensdauer von Browserdaten für <ph name="PRODUCT_NAME" />.
+      Mit dieser Richtlinie wird die Gültigkeitsdauer ausgewählter Browserdaten festgelegt. Diese Richtlinie ist nicht wirksam, wenn die Synchronisierung aktiviert ist.
+      Die folgenden Datentypen sind verfügbar: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> und <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
+      Chrome entfernt regelmäßig Daten ausgewählter Typen, die älter sind als <ph name="TIME_TO_LIVE_IN_HOURS" />. Da Daten nur in bestimmten Intervallen gelöscht werden, können bestimmte Daten etwas länger bestehen bleiben, aber nie mehr als doppelt so lang wie die erwartete(n) <ph name="TIME_TO_LIVE_IN_HOURS" />.
+      </translation>
 <translation id="1507382822467487898">
           Hiermit wird konfiguriert, welche MAC-Adresse (Media Access Control) verwendet wird, wenn das Gerät angedockt wird.
 
@@ -1144,9 +1149,9 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2716623398185506073">Wenn die Richtlinie aktiviert ist, werden über registrierte Geräte Hardwarestatistiken und Kennzeichnungen im Zusammenhang mit der Stromversorgung gemeldet.
 
       Ist sie deaktiviert oder nicht konfiguriert, melden registrierte Geräte keine Statistiken zur Stromversorgung.</translation>
-<translation id="2725855586003209701">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird über registrierte Geräte eine Liste mit Gerätenutzern gemeldet, die sich vor Kurzem angemeldet haben.
+<translation id="2725855586003209701">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden über registrierte Geräte alle Gerätenutzer gemeldet, die sich vor Kurzem angemeldet haben.
 
-      Ist die Richtlinie deaktiviert, melden die registrierten Geräte keine Liste mit Nutzern.</translation>
+      Ist die Richtlinie deaktiviert, melden die registrierten Geräte keine Nutzer.</translation>
 <translation id="2731627323327011390">Verwendung von <ph name="PRODUCT_OS_NAME" />-Zertifikaten für ARC-Apps deaktivieren</translation>
 <translation id="2742843273354638707">Hiermit werden die Chrome Web Store App und der zugehörige Fußzeilenlink auf der "Neuer Tab"-Seite und im App Launcher von <ph name="PRODUCT_OS_NAME" /> ausgeblendet.
 
@@ -1274,7 +1279,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Wenn diese Richtlinie auf "False" gesetzt oder nicht konfiguriert ist, gelten für Family Link-Konten keine zusätzlichen Regeln.
       Wenn sie auf "True" gesetzt ist, sind neben den in <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> festgelegten Konten auch neue Family Link-Konten erlaubt.</translation>
-<translation id="2886969306951284125">Wenn Android-Apps an sind und die Richtlinie auf "True" gesetzt ist, werden über registrierte Geräte Android-Statusinformationen gemeldet.
+<translation id="2886969306951284125">Wenn Android-Apps laufen und die Richtlinie auf "True" gesetzt ist, werden über registrierte Geräte Android-Statusinformationen gemeldet.
 
       Ist die Richtlinie deaktiviert oder nicht konfiguriert, melden registrierte Geräte keine Android-Statusinformationen.</translation>
 <translation id="2890645751406497668">Websites automatisch die Berechtigung erteilen, eine Verbindung zu USB-Geräten mit der angegebenen Anbieter-ID und Produkt-ID herzustellen.</translation>
@@ -1435,6 +1440,26 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="3143265893557969814">Wenn Sie diese Richtlinie konfigurieren, werden alle angegebenen Datentypen von der Synchronisierung ausgeschlossen. Dies gilt sowohl für Google Sync als auch für die Synchronisierung von Roaming-Profilen. Dadurch lässt sich die Größe von Roaming-Profilen reduzieren und Sie können einschränken, welche Arten von Daten auf die Google Sync-Server hochgeladen werden.
 
       Aktuell werden folgende Datentypen unterstützt: "bookmarks", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs" und "wifiConfigurations". Bei diesen Namen muss die Groß- und Kleinschreibung beachtet werden.</translation>
+<translation id="3146597555086966130">"Durch Festlegen der Richtlinie werden die Proxyeinstellungen für Chrome- und ARC-Apps so konfiguriert, dass alle Proxyoptionen, die über die Befehlszeile eingegeben werden, ignoriert werden.
+
+       Wird die Richtlinie nicht konfiguriert, können Nutzer die Proxyeinstellungen auswählen.
+
+       Durch Festlegen der Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />" werden die folgenden Felder übernommen:
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> legt fest, welcher Proxyserver von Chrome verwendet werden soll, und verhindert, dass Nutzer die Proxyeinstellungen ändern
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, die URL zu einer PAC-Proxydatei
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, die URL des Proxyservers
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, eine Liste mit Proxy-Hosts, die von <ph name="PRODUCT_NAME" /> umgangen werden
+
+       Das Feld "<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />" wurde zugunsten des Felds "<ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />" eingestellt, mit dem Sie angeben können, welcher Proxyserver von Chrome verwendet werden soll, und verhindern können, dass Nutzer die Proxyeinstellungen ändern.
+
+        Für "<ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />" können folgende Werte festgelegt werden:
+          * <ph name="PROXY_MODE_ENUM_DIRECT" /> – kein Proxy wird verwendet und alle anderen Felder werden ignoriert.
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" /> – der Proxy des Systems wird verwendet und alle anderen Felder werden ignoriert.
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> – alle anderen Felder werden ignoriert.
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER" /> – die Felder "<ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />" und "<ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />" werden verwendet.
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> – die Felder "<ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />" und "<ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />" werden verwendet.
+
+      Hinweis: Ausführliche Beispiele finden Sie in den Chromium-Projekten ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="3152425128389603870">Unified Desktop verfügbar machen und standardmäßig aktivieren</translation>
 <translation id="3159375329008977062">Nutzer darf Crostini-Container über die Benutzeroberfläche exportieren/importieren</translation>
 <translation id="3165808775394012744">Diese Richtlinien sind hier verfügbar, damit sie einfach entfernt werden können.</translation>
@@ -2687,6 +2712,13 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
       Ist die Richtlinie nicht konfiguriert, werden der Liste keine Websites hinzugefügt.
 
       Hinweis: Dieser Liste können auch über die Richtlinie "<ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />" Elemente hinzugefügt werden.</translation>
+<translation id="5065753964276395784">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />".
+
+       Wenn diese Richtlinie festgelegt ist, umgeht <ph name="PRODUCT_NAME" /> alle Proxys für die hier angegebenen Hosts. Diese Richtlinie ist nur dann wirksam, wenn die Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />" nicht konfiguriert ist und Sie "<ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />" mit "<ph name="PROXY_MODE_POLICY_NAME" />" ausgewählt haben.
+
+       Konfigurieren Sie diese Richtlinie nicht, wenn Sie sich für eine andere Methode zur Festlegung der Proxyrichtlinien entschieden haben.
+
+       Hinweis: Ausführliche Beispiele finden Sie in den Chromium-Projekten ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="5067143124345820993">Zulassungsliste für Nutzer bei der Anmeldung</translation>
 <translation id="5073609397321802133">Wenn diese Richtlinie auf "false" gesetzt ist, können Nutzer auf der "Neuer Tab"-Seite den Hintergrund nicht anpassen. Falls bereits ein benutzerdefinierter Hintergrund vorhanden ist, wird er dauerhaft entfernt, auch wenn die Richtlinie später auf "true" gesetzt wird.
 
@@ -3307,7 +3339,7 @@ Wenn diese Richtlinie verwendet wird, werden dem Nutzer alle Drucker mit Ausnahm
       Bei den Einträgen in dieser Liste handelt es sich um auf die Erweiterung angepasste Übereinstimmungsmuster (siehe https://developer.chrome.com/extensions/match_patterns). Wenn eine URL mit einem Eintrag in dieser Liste übereinstimmt, können Nutzer eine Datei ganz einfach über diese URL installieren. Sowohl der Speicherort der CRX-Datei als auch die Seite, über die der Download gestartet wird, also die Verweis-URL, müssen durch diese Muster zugelassen sein.
 
       "<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />" hat Vorrang vor dieser Richtlinie. Eine Erweiterung auf der Sperrliste wird folglich nicht installiert, auch wenn sie von einer Website auf dieser Liste stammt.</translation>
-<translation id="5860010874344790473">Wenn die Richtlinie aktiviert ist, werden Systemprotokolle an den Verwaltungsserver gesendet, damit Administratoren die Protokolle überwachen können.
+<translation id="5860010874344790473">Wenn die Richtlinie aktiviert ist, werden Systemprotokolle an den Verwaltungsserver gesendet, damit Administratoren die Protokolle beobachten können.
 
       Ist sie deaktiviert oder nicht konfiguriert, werden keine Systemprotokolle gemeldet.</translation>
 <translation id="5861856285460256766">Konfiguration von Elternzugriffscodes</translation>
@@ -3819,7 +3851,7 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
 
       Ist sie auf "False" gesetzt, wird der integrierte DNS-Client nie verwendet.
 
-      Wenn diese Richtlinie nicht konfiguriert ist, ist der integrierte DNS-Client unter macOS, Android – sofern weder ein privates DNS noch ein VPN aktiviert ist – und Chrome OS standardmäßig aktiviert. Der Nutzer kann dann über die Bearbeitung von chrome://flags oder die Festlegung eines Befehlszeilen-Flag entscheiden, ob der integrierte DNS-Client verwendet wird oder nicht.</translation>
+      Wenn diese Richtlinie nicht konfiguriert ist, ist der integrierte DNS-Client unter macOS, Android – sofern weder ein privates DNS noch ein VPN aktiviert ist – und Chrome OS standardmäßig aktiviert. Der Nutzer kann dann über die Bearbeitung von chrome://flags oder die Festlegung eines Befehlszeilen-Flag entscheiden, ob der integrierte DNS-Client verwendet werden soll oder nicht.</translation>
 <translation id="6621839881150363218">Wenn die Richtlinie aktiviert ist, werden alle Websites isoliert. Jede Website wird dann in einem eigenen Prozess ausgeführt. Wird die Richtlinie deaktiviert, findet keine explizite Website-Isolierung statt und Feldtests von "IsolateOriginsAndroid" und "SitePerProcessAndroid" sind deaktiviert. Nutzer können die Richtlinie aber manuell aktivieren.
 
       Wenn die Richtlinie nicht konfiguriert ist, können Nutzer diese Einstellung ändern.
@@ -3956,9 +3988,9 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden Nutzer durch den 
       Wenn diese Richtlinie auf einem verwalteten Gerät nicht konfiguriert ist, kann das Gerät keine virtuellen Maschinen ausführen. Nicht verwaltete Geräte können virtuelle Maschinen ausführen.</translation>
 <translation id="6786747875388722282">Erweiterungen</translation>
 <translation id="6786967369487349613">Roaming-Profilverzeichnis festlegen</translation>
-<translation id="6789422336869764846">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird über registrierte Geräte der Status des Entwicklerschalters des Geräts beim Start gemeldet.
+<translation id="6789422336869764846">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird über registrierte Geräte der Status des Entwicklermodus gemeldet, wenn das Gerät startet.
 
-      Ist sie deaktiviert, melden registrierte Geräte den Status des Entwicklerschalters nicht.</translation>
+      Ist sie deaktiviert, melden registrierte Geräte den Status des Entwicklermodus nicht.</translation>
 <translation id="6795485990775913659">Drucken nur ohne PIN zulassen</translation>
 <translation id="6810445994095397827">JavaScript auf diesen Websites blockieren</translation>
 <translation id="6813263547126514821">Stromsparmodus und Herunterfahren</translation>
@@ -4131,6 +4163,7 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
       Wenn die Richtlinie auf "<ph name="BR_UNDER_USER_CONTROL" />" festgelegt ist, erhalten Nutzer eine Aufforderung, in der sie wählen können, ob sie die Android-Funktion "Sichern und wiederherstellen" nutzen möchten. Aktivieren sie die Funktion, werden App-Daten von Android auf die Android Backup-Server hochgeladen und bei der Neuinstallation von kompatiblen Apps wiederhergestellt.
 
       Nach der Ersteinrichtung können Nutzer selbst entscheiden, ob sie "Sichern und wiederherstellen" nutzen möchten oder nicht.</translation>
+<translation id="6986172482189158664">Einstellungen für die Lebensdauer von Browserdaten</translation>
 <translation id="6994082778848658360">Hiermit wird angegeben, wie die integrierte Secure Element-Hardware zur Zwei-Faktor-Authentifizierung verwendet werden kann, wenn sie mit dieser Funktion kompatibel ist. Mithilfe der Ein-/Aus-Taste des Geräts wird die Anwesenheit des Nutzers ermittelt.
 
       Wenn "Deaktiviert" ausgewählt ist, steht kein zweiter Authentifizierungsfaktor zur Verfügung.
@@ -4138,6 +4171,13 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
       Wenn "U2F" ausgewählt ist, verhält sich die integrierte Hardware gemäß der FIDO U2F-Spezifikation.
 
       Wenn "U2F_EXTENDED" ausgewählt ist, sind durch die integrierte Hardware die U2F-Funktionen plus einige Erweiterungen zur individuellen Bestätigung verfügbar.</translation>
+<translation id="6999948519306285655">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />".
+
+       Durch Festlegen der Richtlinie können Sie die URL zu einer PAC-Proxydatei angeben. Diese Richtlinie ist nur dann wirksam, wenn die Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />" nicht konfiguriert ist und Sie "<ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />" mit "<ph name="PROXY_MODE_POLICY_NAME" />" ausgewählt haben.
+
+       Konfigurieren Sie diese Richtlinie nicht, wenn Sie sich für eine andere Methode zur Festlegung der Proxyrichtlinien entschieden haben.
+
+       Hinweis: Ausführliche Beispiele finden Sie in den Chromium-Projekten ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="7002040773317582266">Die Echtzeitüberprüfung für Mainframe-URLs ist aktiviert.</translation>
 <translation id="7003746348783715221">Einstellungen für <ph name="PRODUCT_NAME" /></translation>
 <translation id="7008308728445338159">DNS-Abfangprüfungen aktiviert</translation>
@@ -4719,6 +4759,13 @@ Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen
 <translation id="7712109699186360774">Nachfragen, wenn eine Website auf meine Kamera bzw. mein Mikrofon zugreifen möchte</translation>
 <translation id="7713608076604149344">Download-Einschränkungen</translation>
 <translation id="7715711044277116530">Prozentsatz für die Skalierung der Spanne für die Bildschirmabdunkelung im Präsentationsmodus</translation>
+<translation id="7716020145539921591">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />".
+
+       Durch Festlegen der Richtlinie können Sie die URL für den Proxyserver angeben. Diese Richtlinie ist nur dann wirksam, wenn die Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />" nicht konfiguriert ist und Sie "<ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />" mit "<ph name="PROXY_MODE_POLICY_NAME" />" ausgewählt haben.
+
+       Konfigurieren Sie diese Richtlinie nicht, wenn Sie sich für eine andere Methode zur Festlegung der Proxyrichtlinien entschieden haben.
+
+      Hinweis: Ausführliche Beispiele finden Sie in den Chromium-Projekten ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="7717938661004793600">Hiermit konfigurieren Sie die Zugänglichkeitsfunktionen für <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7721944091689270995"><ph name="PLUGIN_VM_NAME" />-Nutzer-ID</translation>
 <translation id="7724161903134898864">Wenn die Richtlinie auf "1" gesetzt ist, können Websites Pop-ups anzeigen. Wenn die Richtlinie auf "2" gesetzt ist, werden Pop-ups blockiert.
@@ -5272,6 +5319,22 @@ Die Richtlinie wird in M75 entfernt.</translation>
 <translation id="8537051350735478658">Wenn die Richtlinie auf "True" gesetzt ist, werden die Suchvorschläge in der Adressleiste von <ph name="PRODUCT_NAME" /> aktiviert. Ist sie auf "False" gesetzt, werden die Suchvorschläge deaktiviert.
 
       Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern nicht geändert werden. Wird sie nicht konfiguriert, sind die Suchvorschläge standardmäßig aktiviert, können aber jederzeit von Nutzern deaktiviert werden.</translation>
+<translation id="8542290591179355871">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />".
+
+       Durch Aktivieren der Richtlinie können Sie angeben, welcher Proxyserver von Chrome verwendet werden soll, und verhindern, dass Nutzer die Proxyeinstellungen ändern. Alle Proxyoptionen, die über die Befehlszeile eingegeben werden, werden von Chrome- und ARC-Apps ignoriert. Die Richtlinie ist nur wirksam, wenn die Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />" nicht konfiguriert wurde.
+
+       Bei Auswahl einer der folgenden Einstellungen werden andere Optionen ignoriert:
+         * <ph name="PROXY_MODE_ENUM_DIRECT" /> = nie einen Proxyserver, sondern immer eine direkte Verbindung nutzen
+         * <ph name="PROXY_MODE_ENUM_SYSTEM" /> = Proxyeinstellungen des Systems verwenden
+         * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> = automatische Erkennung des Proxyservers
+
+       Bei Auswahl der Einstellung:
+         * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> = feste Proxyserver. Mit "<ph name="PROXY_SERVER_POLICY_NAME" />" und "<ph name="PROXY_BYPASS_LIST_POLICY_NAME" />" können Sie weitere Optionen festlegen. Nur der HTTP-Proxyserver mit der höchsten Priorität ist für ARC-Apps verfügbar.
+         * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> = PAC-Proxyskript. Mit "<ph name="PROXY_PAC_URL_POLICY_NAME" />" können Sie die URL zu einer PAC-Proxydatei festlegen.
+
+      Wird die Richtlinie nicht konfiguriert, können Nutzer die Proxyeinstellungen auswählen.
+
+      Hinweis: Ausführliche Beispiele finden Sie in den Chromium-Projekten ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="8544375438507658205">Standardanwendung für HTML-Darstellung in <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Zulassen, dass SMS zwischen Smartphone mit Chromebook synchronisiert werden.</translation>
 <translation id="8548832052135586762">Damit wird festgelegt, ob nur in Farbe, nur in Schwarz-Weiß oder ohne Farbmodusbeschränkung gedruckt wird. Ist die Richtlinie nicht konfiguriert, wird keine Einschränkung angewendet.</translation>

@@ -286,6 +286,11 @@
       注意：請以半形逗號分隔伺服器名稱，可使用萬用字元 (<ph name="WILDCARD_VALUE" />)。</translation>
 <translation id="1488406778491620405">「<ph name="PRODUCT_NAME" />」無障礙功能可讓螢幕閱讀器的視障使用者取得無標籤網路圖片的說明。啟用這項功能的使用者將可使用去識別化的 Google 服務，針對未加上標籤的網路圖片取得自動產生的說明。啟用這項功能後，系統會將圖片內容傳送給 Google 伺服器以產生說明內容。系統不會傳送 Cookie 或其他使用者資料，且 Google 不會儲存或記錄任何圖片內容。如果將這項政策設為 True，「<ph name="PRODUCT_NAME" />」功能即會啟用，不過這項設定只會影響螢幕閱讀器或其他類似輔助技術的使用者。如果將這項政策設為 False，使用者將無法啟用這項功能。設好這項政策後，使用者即無法變更或覆寫設定。</translation>
 <translation id="1502843533062797703">啟用禁止第三方軟體置入可執行程式碼的政策</translation>
+<translation id="1503863096120373385">設定 <ph name="PRODUCT_NAME" /> 的瀏覽資料生命週期。
+      這項政策可控管所選瀏覽資料的留存時間。如果啟用了同步功能，這項政策就不會生效。
+      可用的資料類型有 <ph name="DATA_TYPE_BROWSING_HISTORY" />、<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />、<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />、<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、<ph name="DATA_TYPE_PASSWORD" />、<ph name="DATA_TYPE_AUTOFILL" />、<ph name="DATA_TYPE_SITE_SETTINGS" />、<ph name="DATA_TYPE_HOSTED_APP_DATA" />。
+      所選類型的資料存放超過 <ph name="TIME_TO_LIVE_IN_HOURS" />後，Chrome 就會定期移除。由於 Chrome 每隔一段時間才會刪除資料，有些資料可能會留存較久，但存放時間絕不會超過預計時間長度 (<ph name="TIME_TO_LIVE_IN_HOURS" />) 的兩倍。
+      </translation>
 <translation id="1507382822467487898">
           設定當裝置插入座架時，要使用的 MAC (媒體存取控制) 位址。
 
@@ -956,9 +961,9 @@
 
 
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 Chrome 瀏覽器雲端管理服務的執行個體。</translation>
-<translation id="2448315169529769573">如果將這項政策設為啟用，<ph name="PRODUCT_OS_NAME" />會將使用指標和診斷資料 (包括當機報告) 回報給 Google。如果將這項政策設為停用，系統會停用指標和診斷資料的報告功能。
+<translation id="2448315169529769573">如果將這項政策設為啟用，<ph name="PRODUCT_OS_NAME" /> 會將使用指標和診斷資料 (包括當機報告) 回報給 Google。如果將這項政策設為停用，系統會停用指標和診斷資料的報告功能。
 
-       如果未設定這項政策，系統會在未受管理的裝置上，將指標和診斷資料的報告功能保持停用，並且在受管理的裝置上保持啟用。</translation>
+       如果未設定這項政策，系統會在未受管理的裝置上，將指標和診斷資料的報告功能保持停用，而在受管理的裝置上則保持啟用。</translation>
 <translation id="2454228136871844693">穩定性最佳化。</translation>
 <translation id="2463034609187171371">在傳輸層安全標準 (TLS) 中啟用 DHE 加密套件</translation>
 <translation id="2463365186486772703">應用程式語言代碼</translation>
@@ -1254,7 +1259,7 @@
 
       如果不設定這項政策，系統不會進行篩選，並納入所有列印伺服器。</translation>
 <translation id="2877225735001246144">在交涉 Kerberos 驗證時，停用 CNAME 查詢</translation>
-<translation id="2886215882246310669">這項政策可控管 <ph name="PRODUCT_OS_NAME" />是否允許將新的 Family Link 使用者帳戶加入裝置。
+<translation id="2886215882246310669">這項政策可控管 <ph name="PRODUCT_OS_NAME" /> 是否允許將新的 Family Link 使用者帳戶加入裝置。
       這項政策只有在搭配 <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> 時才會有作用。除了許可清單中定義的帳戶以外，這項政策也會允許 Family Link 帳戶加入裝置。
       這項政策不會影響其他登入政策的行為。特別是在以下情況中，這項政策不會有任何作用：
       - 已透過 <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> 政策停用將新使用者加入裝置的功能。
@@ -1423,6 +1428,26 @@
 <translation id="3143265893557969814">如果設定了這項政策，系統會將所有指定的資料類型從同步處理作業 (包含 Google Sync 和漫遊設定檔的同步處理作業) 中排除。這有助於縮減漫遊設定檔的大小，或限制上傳到 Google Sync 伺服器的資料類型。
 
       這項政策目前涵蓋的資料類型為：「bookmarks」、「preferences」、「passwords」、「autofill」、「themes」、「typedUrls」、「extensions」、「apps」、「tabs」、「wifiConfigurations」。這些名稱有大小寫之分。</translation>
+<translation id="3146597555086966130">你可以透過這項政策，設定 Chrome 和 ARC 應用程式的 Proxy 設定，系統會忽略所有從指令列所指定的 Proxy 相關選項。
+
+       如果不設定這項政策，使用者將可選擇要使用的 Proxy 設定。
+
+      設定 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策時，可使用下列欄位：
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> 可讓你指定 Chrome 要使用的 Proxy 伺服器，並禁止使用者變更 Proxy 設定
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> 是 Proxy .pac 檔案的網址
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> 是 Proxy 伺服器的網址
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 是 <ph name="PRODUCT_NAME" /> 會略過的 Proxy 主機清單
+
+       <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> 欄位已遭淘汰，請改用 <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> 欄位，該欄位可讓你指定 Chrome 要使用的 Proxy 伺服器，並禁止使用者變更 Proxy 設定。
+
+        針對 <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />，如果你選擇下列值：
+          * <ph name="PROXY_MODE_ENUM_DIRECT" />，則系統一律不會使用 Proxy，且會忽略所有其他欄位。
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" />，則系統將使用系統 Proxy，並忽略所有其他欄位。
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />，則系統會忽略所有其他欄位。
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER" />，則系統會使用 <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> 和 <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 欄位。
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />，則系統會使用 <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> 和 <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 欄位。
+
+      注意：如需詳細範例，請前往 Chromium 計畫 (網址為https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett)。</translation>
 <translation id="3152425128389603870">允許使用整合桌面並預設為啟用。</translation>
 <translation id="3159375329008977062">允許使用者透過 UI 匯出/匯入 Crostini 容器</translation>
 <translation id="3165808775394012744">這些政策全部集中在這個資料夾裡，方便輕鬆移除。</translation>
@@ -2667,6 +2692,13 @@
       如果未設定這項政策，系統不會將任何網站加入清單。
 
       注意：系統也可以透過 <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> 政策將元素加入這份清單。</translation>
+<translation id="5065753964276395784">這項政策已遭淘汰，請改用 <ph name="PROXY_SETTINGS_POLICY_NAME" />。
+
+       如果設定這項政策，<ph name="PRODUCT_NAME" /> 會略過此清單所含主機的 Proxy。只有在 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策未設定，且你為 <ph name="PROXY_MODE_POLICY_NAME" /> 選取 <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> 時，這項政策才會生效。
+
+       如果你選擇了透過任何其他模式設定 Proxy 政策，請勿設定這項政策。
+
+       注意：如需詳細範例，請前往 Chromium 計畫 (網址為https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett)。</translation>
 <translation id="5067143124345820993">登入使用者許可清單</translation>
 <translation id="5073609397321802133">如果將這項政策設為 False，系統將禁止使用者自訂新分頁的背景。即使日後將這項政策設為 True，系統仍會永久移除任何現有的自訂背景。
 
@@ -4102,6 +4134,7 @@
       如果將這項政策設為 <ph name="BR_UNDER_USER_CONTROL" />，系統會提示使用者使用備份與還原功能。如果使用者啟用這項功能，系統會將 Android 應用程式資料上傳至 Android 備份伺服器，並在使用者重新安裝相容的應用程式時還原資料。
 
       完成初始設定後，使用者可以啟用或停用備份與還原功能。</translation>
+<translation id="6986172482189158664">瀏覽資料生命週期設定</translation>
 <translation id="6994082778848658360">如果你安裝的安全元素硬體和雙重驗證功能相容，就可以使用這項政策來指定如何使用該硬體提供雙重驗證功能。裝置的電源鍵會用來偵測使用者是否真實存在。
 
       如果選取 [已停用]，系統就不會提供雙重驗證功能。
@@ -4109,6 +4142,13 @@
       如果選取 [U2F]，整合式雙重驗證將依照 FIDO U2F 規格運作。
 
       如果選取 [U2F_EXTENDED]，整合式雙重驗證會為個人認證提供 U2F 功能和一些擴充功能。</translation>
+<translation id="6999948519306285655">這項政策已遭淘汰，請改用 <ph name="PROXY_SETTINGS_POLICY_NAME" />。
+
+       你可以透過這項政策，指定 Proxy .pac 檔案的網址。只有在 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策未設定，且你為 <ph name="PROXY_MODE_POLICY_NAME" /> 選取 <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> 時，這項政策才會生效。
+
+       如果你選擇了透過任何其他模式設定 Proxy 政策，請勿設定這項政策。
+
+       注意：如需詳細範例，請前往 Chromium 計畫 (網址為 https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett)。</translation>
 <translation id="7002040773317582266">已啟用主頁框網址的即時檢查功能。</translation>
 <translation id="7003746348783715221"><ph name="PRODUCT_NAME" /> 偏好設定</translation>
 <translation id="7008308728445338159">已啟用 DNS 攔截檢查功能</translation>
@@ -4474,7 +4514,7 @@
 <translation id="7458437477941640506">如果作業系統版本比目標版本還新，則不復原至目標版本，且一併停用更新。</translation>
 <translation id="7459601923199346224">控管憑證管理的使用者和裝置政策。</translation>
 <translation id="7464991223784276288">將來自相符網址的 Cookie 限制在目前的工作階段中</translation>
-<translation id="7468182772656807573">你可以透過這項政策，決定監控網路封包的傳送頻率 (以毫秒為單位)。間隔範圍介於 30 秒到 24 小時。系統會將超出範圍的值調整到範圍內。
+<translation id="7468182772656807573">你可以透過這項政策，決定監控網路封包的傳送頻率 (以毫秒為單位)。間隔範圍須介於 30 秒到 24 小時之間。系統會將超出範圍的值調整到範圍內。
 
       如果未設定，系統會套用 3 分鐘的預設間隔。</translation>
 <translation id="7469554574977894907">啟用搜尋建議</translation>
@@ -4685,6 +4725,13 @@
 <translation id="7712109699186360774">每當有任何網站要使用攝影機和/或麥克風時詢問我</translation>
 <translation id="7713608076604149344">下載限制</translation>
 <translation id="7715711044277116530">簡報模式中的螢幕調暗延遲時間延長百分比</translation>
+<translation id="7716020145539921591">這項政策已遭淘汰，請改用 <ph name="PROXY_SETTINGS_POLICY_NAME" />。
+
+       你可以透過這項政策，指定 Proxy 伺服器的網址。只有在 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策未設定，且你為 <ph name="PROXY_MODE_POLICY_NAME" /> 選取 <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> 時，這項政策才會生效。
+
+       如果你選擇了透過任何其他模式設定 Proxy 政策，請勿設定這項政策。
+
+      注意：如需詳細範例，請前往 Chromium 計畫 (網址為 https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett)。</translation>
 <translation id="7717938661004793600">設定 <ph name="PRODUCT_OS_NAME" /> 無障礙功能。</translation>
 <translation id="7721944091689270995"><ph name="PLUGIN_VM_NAME" /> 使用者 ID</translation>
 <translation id="7724161903134898864">如果將這項政策設為 1，網站即可顯示彈出式視窗。如果將這項政策設為 2，網站將無法顯示彈出式視窗。
@@ -5237,6 +5284,23 @@
 <translation id="8537051350735478658">如果將這項政策設為 True，系統會在 <ph name="PRODUCT_NAME" /> 的網址列中啟用搜尋建議功能。如果將這項政策設為 False，系統會停用這類搜尋建議功能。
 
       如果設定這項政策，使用者將無法變更。如果未設定，系統會先啟用搜尋建議功能，但使用者隨時可以停用。</translation>
+<translation id="8542290591179355871">這項政策已遭淘汰，請改用 <ph name="PROXY_SETTINGS_POLICY_NAME" />。
+
+       如果將這項政策設為啟用，就可指定 Chrome 要使用的 Proxy 伺服器，並禁止使用者變更 Proxy 設定。Chrome 和 ARC 應用程式會忽略所有從指令列所指定的 Proxy 相關選項。只有在 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策未設定時，這項政策才會生效。
+
+          如果你選擇下列項目，系統會忽略其他選項：
+         * <ph name="PROXY_MODE_ENUM_DIRECT" /> = 完全不使用 Proxy 伺服器，一律直接連線
+         * <ph name="PROXY_MODE_ENUM_SYSTEM" /> = 使用系統 Proxy 設定
+         * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> = 自動偵測 Proxy 伺服器
+
+       如果你選擇使用：
+         * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> = 使用固定的 Proxy 伺服器。你可以透過 <ph name="PROXY_SERVER_POLICY_NAME" /> 和 <ph name="PROXY_BYPASS_LIST_POLICY_NAME" /> 指定更多選項。ARC 應用程式只能使用優先級最高的 HTTP Proxy 伺服器。
+
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> = 使用 .pac Proxy 指令碼。使用 <ph name="PROXY_PAC_URL_POLICY_NAME" /> 來指定 Proxy .pac 檔案的網址。
+
+      如果不設定這項政策，使用者將可選擇要使用的 Proxy 設定。
+
+      注意：如需詳細範例，請前往 Chromium 計畫 (網址為 https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett)。</translation>
 <translation id="8544375438507658205">預設 <ph name="PRODUCT_FRAME_NAME" /> 的 HTML 轉譯器</translation>
 <translation id="8544465954173828789">允許將簡訊從手機同步至 Chromebook。</translation>
 <translation id="8548832052135586762">設定僅限彩色列印、僅限單色列印，或是不限制色彩模式。如未設定這項政策，系統會視為未設限制。</translation>

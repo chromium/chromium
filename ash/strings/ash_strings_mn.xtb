@@ -206,12 +206,6 @@
 <translation id="3045488863354895414">Өдрийн мэнд,</translation>
 <translation id="3051128274746680507">Таны хяналттай хэрэглэгчийн профайлыг удахгүй устгана. Нэмэлт мэдээлэл авахын тулд нэвтэрнэ үү.</translation>
 <translation id="3055162170959710888">Та энэ төхөөрөмжийг өнөөдөр <ph name="USED_TIME" /> ашигласан</translation>
-<translation id="3076778413190775903">Төлөвийн мэдээллийн хэсэг, цаг <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="3077734595579995578">Шилжүүлэх</translation>
 <translation id="3081696990447829002">Цэсийг дэлгэх</translation>
 <translation id="3087734570205094154">Доод</translation>
@@ -660,7 +654,7 @@
 <translation id="7780159184141939021">Дэлгэцийг эргүүлсэн</translation>
 <translation id="7796353162336583443">Тэмдэглэл бичих, дэлгэцийн зураг авах, Google Tуслах, лазер чиглүүлэгч эсвэл томруулдаг шил ашиглахын тулд тавиур дээрх мэдрэгч үзэгний товчлуурыг товшино уу.</translation>
 <translation id="7798302898096527229">Цуцлахын тулд Search эсвэл Shift товчлуурыг дарна уу.</translation>
-<translation id="781126011916719498">Чухал файлууддаа шуурхай хандана уу. Файлыг бэхлэхийн тулд баруун талыг товших буюу эсхүл удаан дарна уу.</translation>
+<translation id="781126011916719498">Чухал файлууддаа шуурхай хандана уу. Файлыг бэхлэхийн тулд баруун талыг товших буюу эсвэл удаан дарна уу.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ба <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Сайн дохио</translation>
 <translation id="7837740436429729974">Цаг дууслаа</translation>

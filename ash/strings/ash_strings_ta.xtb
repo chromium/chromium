@@ -206,12 +206,6 @@
 <translation id="3045488863354895414">மதிய வணக்கம்,</translation>
 <translation id="3051128274746680507">உங்கள் மேற்பார்வையிடப்படும் பயனர் சுயவிவரம் விரைவில் அகற்றப்படும். மேலும் அறிய, உள்நுழையவும்.</translation>
 <translation id="3055162170959710888">இந்தச் சாதனத்தை இன்று <ph name="USED_TIME" /> பயன்படுத்தியுள்ளீர்கள்</translation>
-<translation id="3076778413190775903">நிலைத் தட்டு, நேரம் <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">மெனுவை விரி</translation>
 <translation id="3087734570205094154">கீழே</translation>

@@ -206,12 +206,6 @@
 <translation id="3045488863354895414">සුබ අපරභාගයක්,</translation>
 <translation id="3051128274746680507">ඔබේ අධීක්‍ෂණ කෙරෙන පරිශීලක පැතිකඩ ඉක්මනින් ඉවත් කරනු ලැබේ. තවත් දැන ගැනීමට පුරන්න.</translation>
 <translation id="3055162170959710888">ඔබ මෙම උපාංගය අද <ph name="USED_TIME" />කට භාවිත කළා</translation>
-<translation id="3076778413190775903">තත්ත්‍ව තීරුව, වේලාව <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">මෙනුව දිග හරින්න</translation>
 <translation id="3087734570205094154">පතුල</translation>

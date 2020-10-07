@@ -206,12 +206,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3045488863354895414">Boas tardes!</translation>
 <translation id="3051128274746680507">O teu perfil de usuario supervisado eliminarase en breve. Inicia sesión para obter máis información.</translation>
 <translation id="3055162170959710888">Hoxe utilizaches este dispositivo durante <ph name="USED_TIME" /></translation>
-<translation id="3076778413190775903">Bandexa de estado, hora <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="3077734595579995578">maiús</translation>
 <translation id="3081696990447829002">Despregar menú</translation>
 <translation id="3087734570205094154">Parte inferior</translation>

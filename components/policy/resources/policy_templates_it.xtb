@@ -154,7 +154,7 @@
 <translation id="1243570869342663665">Controlla il filtro dei contenuti per adulti di SafeSites.</translation>
 <translation id="1247850578871017740">Se il criterio viene impostato su un valore valido, <ph name="PRODUCT_NAME" /> non utilizza versioni SSL/TLS precedenti alla versione specificata. I valori non riconosciuti vengono ignorati.
 
-      Se il criterio non viene configurato, <ph name="PRODUCT_NAME" /> mostra un errore per TLS 1.0 e TLS 1.1, ma l'utente può ignorarlo.</translation>
+      Se il criterio non viene impostato, <ph name="PRODUCT_NAME" /> mostra un errore per TLS 1.0 e TLS 1.1, ma l'utente può ignorarlo.</translation>
 <translation id="1252536192437793850">Consenti ai siti di chiedere all'utente di concedere l'accesso a una porta seriale</translation>
 <translation id="1257550411839719984">Imposta directory di download predefinita</translation>
 <translation id="1265053460044691532">Limita il tempo per cui un utente autenticato tramite SAML può eseguire l'accesso offline</translation>
@@ -1109,6 +1109,7 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
 
       Nota: puoi aggiungere elementi all'elenco anche tramite i criteri <ph name="USE_IE_SITELIST_POLICY_NAME" /> e <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
 <translation id="264093234299818170">Vengono mostrate tutte le stampanti, tranne quelle indicate nella lista bloccata.</translation>
+<translation id="264252574246191885">Non in elenco</translation>
 <translation id="2647069081229792812">Attiva o disattiva la funzione di modifica dei preferiti</translation>
 <translation id="2649896281375932517">Consenti agli utenti di decidere</translation>
 <translation id="2650049181907741121">Azione da compiere quando l'utente chiude il coperchio</translation>
@@ -1152,9 +1153,9 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
 <translation id="2706708761587205154">Consenti la stampa solo con PIN</translation>
 <translation id="2707873794476722903">Navigazione sicura è attiva in modalità standard.</translation>
 <translation id="2710534340210290498">Se la norma viene impostata su false, gli utenti non potranno bloccare lo schermo (sarà possibile solo la disconnessione dalla sessione utente). Se l'impostazione viene impostata su true o non viene configurata, gli utenti autenticati mediante password potranno bloccare lo schermo.</translation>
-<translation id="2716623398185506073">Se il criterio viene impostato su Attivato, i dispositivi registrati segnalano statistiche hardware e identificatori relativi all'alimentazione.
+<translation id="2716623398185506073">Se il criterio viene impostato su Attivato, i dispositivi registrati segnalano statistiche hardware e identificatori relativi al consumo di energia.
 
-      Se il criterio viene impostato su Disattivato o se non viene configurato, i dispositivi registrati non segnalano statistiche relative all'alimentazione.</translation>
+      Se il criterio viene impostato su Disattivato o se non viene configurato, i dispositivi registrati non segnalano statistiche relative al consumo di energia.</translation>
 <translation id="2725855586003209701">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano l'elenco di utenti dei dispositivi che hanno eseguito l'accesso di recente.
 
       Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano l'elenco di utenti.</translation>
@@ -3236,8 +3237,8 @@ Se questa impostazione viene disattivata o non viene impostata, sia gli utenti l
       Nota: se ci sono più server, separane i nomi utilizzando virgole. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
 <translation id="5645779841392247734">Consenti i cookie in questi siti</translation>
 <translation id="5646234199535103501">Criterio di configurazione per il connettore OnBulkDataEntry di Chrome Enterprise</translation>
-<translation id="5652250453612826983">Consente di controllare i criteri relativi alla supervisione dei genitori che vengono applicati soltanto agli account di minori.
-      Questi criteri non sono configurati nella Console di amministrazione, ma direttamente dal server API Kids.</translation>
+<translation id="5652250453612826983">Consente di controllare i criteri relativi alla supervisione dei genitori. Questi criteri vengono applicati soltanto agli account di minori
+      e non sono configurati nella Console di amministrazione, ma direttamente dal server API Kids.</translation>
 <translation id="5656177735561364047">Attiva la funzione Appunti condivisi</translation>
 <translation id="5657576769650058122">Se il criterio viene attivato, la tastiera virtuale (un dispositivo di immissione Chrome OS) rimane attiva sullo schermo. Se il criterio viene disattivato, questa tastiera rimane disabilitata.
 
@@ -3879,7 +3880,7 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 
       * Blocca download pericolosi, tutti i download vengono consentiti, ad eccezione di quelli contenenti avvisi di sicurezza.
 
-      * Blocca download potenzialmente pericolosi, tutti i download vengono consentiti, ad eccezione di quelli contenenti avvisi di sicurezza che segnalano la potenziale pericolosità di tali download.
+      * Blocca download potenzialmente pericolosi, tutti i download vengono consentiti, ad eccezione di quelli contenenti avvisi di sicurezza che ne segnalano la potenziale pericolosità.
 
       * Blocca tutti i download, tutti i download vengono bloccati.
 
@@ -3887,7 +3888,7 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 
       * Nessuna limitazione speciale, i download sono sottoposti alle normali limitazioni di sicurezza in base ai risultati delle analisi di sicurezza.
 
-      Nota: tali limitazioni vengono applicate ai download attivati dai contenuti delle pagine web, nonché all'opzione del menu "Link di download…" e non al download della pagina attualmente visualizzata né all'opzione di stampa relativa al salvataggio in formato PDF. Leggi ulteriori informazioni sulla funzionalità Navigazione sicura (https://developers.google.com/safe-browsing).</translation>
+      Nota: tali limitazioni vengono applicate ai download attivati dai contenuti delle pagine web, nonché all'opzione del menu "Link di download…". Non vengono applicate al download della pagina attualmente visualizzata né al salvataggio in formato PDF tramite le opzioni di stampa. Leggi ulteriori informazioni sulla funzionalità Navigazione sicura (https://developers.google.com/safe-browsing).</translation>
 <translation id="6641981670621198190">Disattiva supporto per le API grafiche 3D</translation>
 <translation id="6646056064606561298">Consente di attivare la norma di gestione dell'energia relativa all'avvio tramite CA.
 
@@ -3998,9 +3999,9 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
       Se il criterio non è impostato su un dispositivo gestito, quest'ultimo non può eseguire macchine virtuali. I dispositivi non gestiti non possono eseguire macchine virtuali.</translation>
 <translation id="6786747875388722282">Estensioni</translation>
 <translation id="6786967369487349613">Imposta la directory profilo di roaming</translation>
-<translation id="6789422336869764846">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano lo stato dello switch sviluppatore del dispositivo all'avvio.
+<translation id="6789422336869764846">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano lo stato della modalità sviluppatore del dispositivo all'avvio.
 
-      Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano lo stato dello switch sviluppatore.</translation>
+      Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano lo stato della modalità sviluppatore.</translation>
 <translation id="6795485990775913659">Consenti la stampa solo senza PIN</translation>
 <translation id="6810445994095397827">Blocca JavaScript in questi siti</translation>
 <translation id="6813263547126514821">Alimentazione e spegnimento</translation>
@@ -4553,7 +4554,7 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
 <translation id="7458437477941640506">Non eseguire il rollback alla versione target se la versione del sistema operativo è più nuova del target. Anche gli aggiornamenti sono disattivati.</translation>
 <translation id="7459601923199346224">Consente di controllare i criteri relativi agli utenti e ai dispositivi per la gestione dei certificati.</translation>
 <translation id="7464991223784276288">Limita i cookie degli URL corrispondenti alla sessione corrente</translation>
-<translation id="7468182772656807573">Questo criterio consente di stabilire la frequenza di invio, in millisecondi, dei pacchetti di rete di monitoraggio. Gli intervalli sono compresi tra 30 secondi e 24 ore. I valori che non rientrano in questo intervallo verranno fatti rientrare.
+<translation id="7468182772656807573">Questo criterio consente di stabilire la frequenza di invio, in millisecondi, dei pacchetti di rete di monitoraggio. Gli intervalli sono compresi tra 30 secondi e 24 ore. I valori che non rientrano in questo intervallo verranno fatti rientrare nei limiti.
 
       Se il criterio non viene configurato, viene applicato l'intervallo predefinito di 3 minuti.</translation>
 <translation id="7469554574977894907">Attiva suggerimenti di ricerca</translation>
@@ -4805,6 +4806,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7750991880413385988">Apri pagina Nuova scheda</translation>
 <translation id="7754704193130578113">Chiedi dove salvare il file prima di scaricarlo</translation>
 <translation id="7758378441185523981">Attiva l'autenticazione ambientale in base ai tipi di profilo.</translation>
+<translation id="776110834126722255">Deprecato</translation>
 <translation id="7763614521440615342">Mostra suggerimenti di contenuti nella pagina Nuova scheda</translation>
 <translation id="7765753178910647492">Consente di configurare un elenco di funzionalità di <ph name="PRODUCT_OS_NAME" /> da disattivare.
 
@@ -5605,7 +5607,7 @@ https://www.w3.org/TR/secure-contexts/
       che viene confrontata con l'ultima versione accettata dal genitore e utilizzata per suggerire al genitore stesso il rinnovo dell'autorizzazione quando necessario.
 
       Se questo criterio viene configurato, la versione dei Termini di servizio può essere convalidata.
-      Se questo criterio non viene configurato, non è possibile verificare la validità dei Termini di servizio di Edu Coexistence.
+      Se non viene configurato, non è possibile verificare la validità dei Termini di servizio di Edu Coexistence.
 
       Questo criterio viene utilizzato unicamente per gli utenti di Family Link.</translation>
 <translation id="8943934315109955032">Non verificare eventuali violazioni delle regole relative alla protezione dei dati sensibili</translation>

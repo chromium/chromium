@@ -206,12 +206,6 @@
 <translation id="3045488863354895414">ደህና ዋሉ፣</translation>
 <translation id="3051128274746680507">የእርስዎ ክትትል የሚደረግበት የተጠቃሚ መገለጫ በቅርቡ ይወገዳል። ተጨማሪ ለማወቅ በመለያ ይግቡ።</translation>
 <translation id="3055162170959710888">ይህን መሣሪያ ዛሬ ለ<ph name="USED_TIME" /> ተጠቅመውበታል</translation>
-<translation id="3076778413190775903">የሁኔታ መሣቢያ፣ ሰዓት <ph name="TIME" />፣
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />፣
-        <ph name="NOTIFICATION" />፣
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">ምናሌ ዘርጋ</translation>
 <translation id="3087734570205094154">ግርጌ</translation>

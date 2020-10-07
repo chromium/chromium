@@ -206,12 +206,6 @@
 <translation id="3045488863354895414">ສະບາຍດີຕອນບ່າຍ,</translation>
 <translation id="3051128274746680507">ລະບົບຈະລຶບໂປຣໄຟລ໌ຜູ້ໃຊ້ທີ່ມີການຄວບຄຸມເບິ່ງແຍງອອກ ເຂົ້າສູ່ລະບົບເພື່ອຮຽນຮູ້ເພີ່ມເຕີມ.</translation>
 <translation id="3055162170959710888">ທ່ານໄດ້ໃຊ້ອຸປະກອນນີ້ເປັນເວລາ <ph name="USED_TIME" /> ໃນມື້ນີ້</translation>
-<translation id="3076778413190775903">ຖາດສະຖານະ, ເວລາ <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">ຂະຫຍາຍເມນູ</translation>
 <translation id="3087734570205094154">ດ້ານລຸ່ມ</translation>

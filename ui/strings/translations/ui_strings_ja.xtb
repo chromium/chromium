@@ -134,7 +134,7 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">三角形の展開ボタン</translation>
 <translation id="5278860589123563674">送信できませんでした</translation>
-<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> の通知が届いています。</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> から通知が届いています。</translation>
 <translation id="528468243742722775">終了</translation>
 <translation id="5329858601952122676">削除(&amp;D)</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" />を<ph name="IN_PLACE_APP" />の上にドラッグしました。指を離すとフォルダが作成されます。</translation>
@@ -145,7 +145,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> システム</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">左矢印キー</translation>
-<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> の通知が届いています。</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> から通知が届いています。</translation>
 <translation id="5675363643668471212">シェルフ アイテム</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 分}other{# 分}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{アクティブ: 今日}=1{アクティブ: 1 日前}other{アクティブ: # 日前}}</translation>

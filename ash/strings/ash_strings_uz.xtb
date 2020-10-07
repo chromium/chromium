@@ -206,12 +206,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3045488863354895414">Xayrli kun,</translation>
 <translation id="3051128274746680507">Tez orada boshqariluvchi hisobingiz olib tashlanadi. Batafsil axborot olish uchun hisobingizga kiring.</translation>
 <translation id="3055162170959710888">Bu qurilmadan bugun <ph name="USED_TIME" /> foydalandingiz</translation>
-<translation id="3076778413190775903">Holat qatori, vaqt: <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Menyuni ochish</translation>
 <translation id="3087734570205094154">Pastga</translation>

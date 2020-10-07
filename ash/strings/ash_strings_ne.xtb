@@ -206,12 +206,6 @@
 <translation id="3045488863354895414">नमस्ते,</translation>
 <translation id="3051128274746680507">तपाईंको सुपरिवेक्षण गरिएको प्रयोगकर्ताको प्रोफाइल चाँडै नै हटाइने छ। थप जान्न साइन इन गर्नुहोस्।</translation>
 <translation id="3055162170959710888">तपाईंले आज यो यन्त्र <ph name="USED_TIME" /> प्रयोग गर्नुभयो</translation>
-<translation id="3076778413190775903">वस्तुस्थिति ट्रे, समय <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="3077734595579995578">शिफ्ट</translation>
 <translation id="3081696990447829002">मेनु विस्तृत गर्नुहोस्</translation>
 <translation id="3087734570205094154">तल</translation>

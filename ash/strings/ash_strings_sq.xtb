@@ -206,12 +206,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3045488863354895414">Mirëdita,</translation>
 <translation id="3051128274746680507">Profili yt i përdoruesit të kontrolluar do të hiqet së shpejti. Identifikohu për të mësuar më shumë.</translation>
 <translation id="3055162170959710888">Sot e ke përdorur këtë pajisje për <ph name="USED_TIME" /></translation>
-<translation id="3076778413190775903">Tabakaja e statusit, ora <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Zgjero menynë</translation>
 <translation id="3087734570205094154">Në fund</translation>
@@ -643,7 +637,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7600875258240007829">Shiko të gjitha njoftimet</translation>
 <translation id="7618774594543487847">Neutrale</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Shfaq cilësimet e "Ndarjes në afërsi"</translation>
+<translation id="7633755430369750696">Shfaq cilësimet e "Ndarjes në afërsi".</translation>
 <translation id="7642647758716480637">Hap cilësimet për <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (zotëruesi)</translation>
 <translation id="7647488630410863958">Shkyçe pajisjen për të parë njoftimet e tua</translation>
@@ -659,7 +653,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7780159184141939021">Rrotullo ekranin</translation>
 <translation id="7796353162336583443">Trokit te butoni i stilolapsit në raft për të mbajtur një shënim, për të nxjerrë një pamje të ekranit, për të përdorur "Asistentin e Google", treguesin me lazer ose xhamin zmadhues.</translation>
 <translation id="7798302898096527229">Shtyp "Kërko" ose "Shift" për të anuluar</translation>
-<translation id="781126011916719498">Qasu me shpejtësi te skedarët e rëndësishëm. Kliko me të djathtin ose prek dhe mbaje të shtypur për ta gozhduar.</translation>
+<translation id="781126011916719498">Qasu me shpejtësi te skedarët e rëndësishëm. Për të gozhduar një skedar, klikoje atë me butonin djathtas ose preke dhe mbaje shtypur.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> dhe <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sinjal i fortë</translation>
 <translation id="7837740436429729974">Koha mbaroi</translation>

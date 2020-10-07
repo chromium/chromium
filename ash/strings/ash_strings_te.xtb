@@ -206,12 +206,6 @@
 <translation id="3045488863354895414">గుడ్ ఆఫ్టర్‌నూన్,</translation>
 <translation id="3051128274746680507">మీ పర్యవేక్షిత వినియోగదారు ప్రొఫైల్‌ త్వరలో తీసివేయబడుతుంది. మరింత తెలుసుకోవడానికి సైన్ ఇన్ చేయండి.</translation>
 <translation id="3055162170959710888">మీరు ఈ పరికరాన్ని ఈ రోజు <ph name="USED_TIME" /> పాటు ఉపయోగించారు</translation>
-<translation id="3076778413190775903">స్టేటస్ ట్రే, సమయం <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">మెనూని విస్తరించు</translation>
 <translation id="3087734570205094154">దిగువ</translation>
