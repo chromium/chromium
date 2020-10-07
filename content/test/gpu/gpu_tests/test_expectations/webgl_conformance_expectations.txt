@@ -1,5 +1,5 @@
 # tags: [ android
-#         chromeos chromeos-board-kevin
+#         chromeos chromeos-board-kevin chromeos-board-amd64-generic
 #         fuchsia
 #         linux
 #         mac
@@ -724,6 +724,8 @@ crbug.com/957807 [ chromeos ] deqp/data/gles2/shaders/swizzles.html [ Skip ]
 crbug.com/1043953 [ chromeos ] conformance/textures/misc/texture-size-limit.html [ RetryOnFailure ]
 
 crbug.com/1081973 [ chromeos ] conformance/textures/misc/compressed-tex-image.html [ Failure ]
+
+crbug.com/1136106 [ chromeos-board-amd64-generic ] conformance/glsl/constructors/glsl-construct-bvec3.html [ RetryOnFailure ]
 
 # ChromeOS: AMD
 crbug.com/995652 [ chromeos amd ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ Skip ]
