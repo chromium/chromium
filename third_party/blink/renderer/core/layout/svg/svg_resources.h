@@ -226,6 +226,7 @@ class SVGElementResourceClient final
                               const QualifiedName& attribute) override;
 
   void UpdateFilterData(CompositorFilterOperations&);
+  void InvalidateFilterData();
   bool ClearFilterData();
   void MarkFilterDataDirty();
 

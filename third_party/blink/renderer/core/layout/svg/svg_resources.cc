@@ -592,12 +592,7 @@ void SVGResources::ClearClipPathFilterMask(SVGElement& element,
     old_reference_clip->RemoveClient(*client);
   if (style->HasFilter()) {
     style->Filter().RemoveClient(*client);
-    if (client->ClearFilterData()) {
-      LayoutObject* layout_object = element.GetLayoutObject();
-      LayoutSVGResourceContainer::MarkClientForInvalidation(
-          *layout_object, SVGResourceClient::kPaintInvalidation);
-      client->MarkFilterDataDirty();
-    }
+    client->InvalidateFilterData();
   }
   if (StyleSVGResource* masker_resource = style->SvgStyle().MaskerResource())
     masker_resource->RemoveClient(*client);
@@ -700,14 +695,23 @@ void SVGElementResourceClient::ResourceContentChanged(
     return;
   }
 
-  const bool filter_data_invalidated = ClearFilterData();
-  if (filter_data_invalidated)
-    invalidation_mask |= SVGResourceClient::kPaintInvalidation;
+  InvalidateFilterData();
 
-  LayoutSVGResourceContainer::MarkClientForInvalidation(*layout_object,
-                                                        invalidation_mask);
-  if (filter_data_invalidated)
-    MarkFilterDataDirty();
+  if (invalidation_mask & SVGResourceClient::kPaintInvalidation) {
+    // Since LayoutSVGInlineTexts don't have SVGResources (they use their
+    // parent's), they will not be notified of changes to paint servers. So
+    // if the client is one that could have a LayoutSVGInlineText use a
+    // paint invalidation reason that will force paint invalidation of the
+    // entire <text>/<tspan>/... subtree.
+    layout_object->SetSubtreeShouldDoFullPaintInvalidation(
+        PaintInvalidationReason::kSVGResource);
+    layout_object->InvalidateClipPathCache();
+    // Invalidate paint properties to update effects if any.
+    layout_object->SetNeedsPaintPropertyUpdate();
+  }
+
+  if (invalidation_mask & SVGResourceClient::kBoundariesInvalidation)
+    layout_object->SetNeedsBoundariesUpdate();
 
   bool needs_layout =
       invalidation_mask & SVGResourceClient::kLayoutInvalidation;
@@ -745,8 +749,7 @@ void SVGElementResourceClient::FilterPrimitiveChanged(
   LayoutObject* layout_object = element_->GetLayoutObject();
   if (!layout_object)
     return;
-  LayoutSVGResourceContainer::MarkClientForInvalidation(
-      *layout_object, SVGResourceClient::kPaintInvalidation);
+  layout_object->SetNeedsPaintPropertyUpdate();
   MarkFilterDataDirty();
 }
 
@@ -789,6 +792,14 @@ void SVGElementResourceClient::UpdateFilterData(
   filter_data_dirty_ = false;
 }
 
+void SVGElementResourceClient::InvalidateFilterData() {
+  if (!ClearFilterData())
+    return;
+  LayoutObject* layout_object = element_->GetLayoutObject();
+  layout_object->SetNeedsPaintPropertyUpdate();
+  MarkFilterDataDirty();
+}
+
 bool SVGElementResourceClient::ClearFilterData() {
   FilterData* filter_data = filter_data_.Release();
   if (filter_data)
@@ -815,13 +826,8 @@ SVGResourceInvalidator::SVGResourceInvalidator(LayoutObject& object)
 void SVGResourceInvalidator::InvalidateEffects() {
   if (!resources_)
     return;
-  if (resources_->Filter()) {
-    SVGElementResourceClient* client = SVGResources::GetClient(object_);
-    if (client->ClearFilterData()) {
-      object_.SetNeedsPaintPropertyUpdate();
-      client->MarkFilterDataDirty();
-    }
-  }
+  if (resources_->Filter())
+    SVGResources::GetClient(object_)->InvalidateFilterData();
   if (resources_->Clipper())
     object_.InvalidateClipPathCache();
   if (resources_->Masker())

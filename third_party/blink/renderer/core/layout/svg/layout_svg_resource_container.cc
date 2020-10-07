@@ -173,26 +173,6 @@ void LayoutSVGResourceContainer::MarkAllClientsForInvalidation(
   is_invalidating_ = false;
 }
 
-void LayoutSVGResourceContainer::MarkClientForInvalidation(
-    LayoutObject& client,
-    InvalidationModeMask invalidation_mask) {
-  if (invalidation_mask & SVGResourceClient::kPaintInvalidation) {
-    // Since LayoutSVGInlineTexts don't have SVGResources (they use their
-    // parent's), they will not be notified of changes to paint servers. So
-    // if the client is one that could have a LayoutSVGInlineText use a
-    // paint invalidation reason that will force paint invalidation of the
-    // entire <text>/<tspan>/... subtree.
-    client.SetSubtreeShouldDoFullPaintInvalidation(
-        PaintInvalidationReason::kSVGResource);
-    client.InvalidateClipPathCache();
-    // Invalidate paint properties to update effects if any.
-    client.SetNeedsPaintPropertyUpdate();
-  }
-
-  if (invalidation_mask & SVGResourceClient::kBoundariesInvalidation)
-    client.SetNeedsBoundariesUpdate();
-}
-
 void LayoutSVGResourceContainer::InvalidateCacheAndMarkForLayout(
     LayoutInvalidationReasonForTracing reason,
     SubtreeLayoutScope* layout_scope) {
