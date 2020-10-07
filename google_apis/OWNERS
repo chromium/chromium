@@ -1,4 +1,3 @@
 file://components/signin/OWNERS
 
 per-file BUILD.gn=*
-# COMPONENT: Services>SignIn
