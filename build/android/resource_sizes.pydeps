@@ -35,9 +35,9 @@
 ../../third_party/catapult/devil/devil/utils/reraiser_thread.py
 ../../third_party/catapult/devil/devil/utils/timeout_retry.py
 ../../third_party/catapult/devil/devil/utils/watchdog_timer.py
+../../third_party/catapult/third_party/six/six.py
 ../../third_party/catapult/third_party/vinn/vinn/__init__.py
 ../../third_party/catapult/third_party/vinn/vinn/_vinn.py
-../../third_party/catapult/third_party/zipfile/zipfile_2_7_13.py
 ../../third_party/catapult/tracing/tracing/__init__.py
 ../../third_party/catapult/tracing/tracing/value/__init__.py
 ../../third_party/catapult/tracing/tracing/value/convert_chart_json.py
