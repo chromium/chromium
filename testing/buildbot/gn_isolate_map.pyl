@@ -1249,8 +1249,7 @@
   },
   "monochrome_apk_checker": {
     "args": [
-      "--script",
-      "../../chrome/android/monochrome/scripts/monochrome_apk_checker.py",
+      "../../chrome/android/monochrome/scripts/monochrome_python_tests.py",
       "--chrome-apk",
       "apks/ChromePublic.apk",
       "--chrome-pathmap",
@@ -1265,7 +1264,7 @@
       "apks/MonochromePublic.apk.pathmap.txt",
     ],
     "label": "//chrome/android/monochrome:monochrome_apk_checker",
-    "script": "//testing/scripts/monochrome_apk_checker_wrapper.py",
+    "script": "//testing/scripts/run_isolated_script_test.py",
     "type": "script",
   },
   "monochrome_public_test_ar_apk": {

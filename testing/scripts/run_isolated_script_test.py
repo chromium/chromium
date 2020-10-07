@@ -59,6 +59,7 @@ KNOWN_TYP_TEST_RUNNERS = {
     'metrics_python_tests.py',
     'run_mac_signing_tests.py',
     'run_polymer_tools_tests.py',
+    'monochrome_python_tests.py',
 }
 
 
