@@ -164,6 +164,7 @@
 <translation id="2781331604911854368">オン</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">タブ切り替え機能を終了</translation>
+<translation id="2815198996063984598">2. [デフォルトのブラウザアプリ] をタップする</translation>
 <translation id="2830972654601096923">住所を管理...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />、<ph name="STATE" />、<ph name="URL" /></translation>
 <translation id="2840687315230832938">最初の同期設定が終了していません</translation>
@@ -180,6 +181,7 @@
 <translation id="2921219216347069551">ページを共有できない</translation>
 <translation id="2923448633003185837">貼り付けて移動</translation>
 <translation id="292639812446257861">未読にする</translation>
+<translation id="2952581218264071393">1. Chrome の設定を開く</translation>
 <translation id="2958718410589002129">パスワード</translation>
 <translation id="2964349545761222050">サードパーティの Cookie をブロックする</translation>
 <translation id="2969979262385602596">ログインできません。後でもう一度お試しください。</translation>
@@ -216,6 +218,7 @@
 <translation id="3335947283844343239">閉じたタブを開く</translation>
 <translation id="3371831930909698441">翻訳が利用可能です。画面の下の方にオプションがあります。</translation>
 <translation id="3393920035788932672">ポップアップ許可済み</translation>
+<translation id="3399930248910934354">Chrome の設定を開く</translation>
 <translation id="3425644765244388016">カードのニックネーム</translation>
 <translation id="3433057996795775706">このパスワードを削除しても、<ph name="WEBSITE" /> のアカウントは削除されません。他のサイトに被害が及ばないように、<ph name="WEBSITE" /> でパスワードを変更してください。</translation>
 <translation id="3443810440409579745">タブが共有されました。</translation>
@@ -240,6 +243,9 @@
 <translation id="3551320343578183772">タブを閉じる</translation>
 <translation id="3581564640715911333">他の言語のページで翻訳するかどうかを尋ねる</translation>
 <translation id="3588820906588687999">新しいタブで画像を開く</translation>
+<translation id="359441731697487922">Chrome をデフォルトのブラウザアプリに設定すると、自動的に Chrome でリンクを開くことができます。
+      
+次の手順で設定してください。</translation>
 <translation id="3603009562372709545">リンクのURLをコピー</translation>
 <translation id="3607167657931203000">自動入力のデータ</translation>
 <translation id="3609785682760573515">同期しています...</translation>
@@ -338,6 +344,7 @@
 <translation id="4808744395915275922">更新</translation>
 <translation id="4818522717893377262">言語を追加...</translation>
 <translation id="481968316161811770">Cookie、サイトデータ</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} とその他 1 タブ}other{{domain} とその他 {count} タブ}}</translation>
 <translation id="4826218269716039351">サードパーティの Cookie をブロック</translation>
 <translation id="48274138579728272">既読にする</translation>
 <translation id="4833786495304741580">使用統計情報や障害レポートを Google に自動送信します。</translation>
@@ -586,6 +593,7 @@
 <translation id="7456847797759667638">場所を開く...</translation>
 <translation id="7460314822154045102">カメラを使う</translation>
 <translation id="7464701184726199289">すべてのデバイスから同期データを削除します。保存済みのサイト設定は削除されず、普段の閲覧行動を反映した設定などが残る場合があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3.[Chrome] を選択する</translation>
 <translation id="7472734401283673885">会社名</translation>
 <translation id="7473891865547856676">スキップ</translation>
 <translation id="7481312909269577407">進む</translation>
@@ -720,6 +728,7 @@
 <translation id="9087108903408689779">Chrome の推奨パスワード:</translation>
 <translation id="9094033019050270033">パスワードを更新</translation>
 <translation id="9100610230175265781">パスフレーズを入力してください</translation>
+<translation id="9137526406337347448">Google サービス</translation>
 <translation id="9148126808321036104">もう一度ログインする</translation>
 <translation id="9152539721251340337">QR コードを作成</translation>
 <translation id="9157836665414082580">ダイアログを表示しない</translation>

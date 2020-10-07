@@ -1845,7 +1845,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3143515551205905069">Otkaži sinhronizaciju</translation>
 <translation id="3143754809889689516">Reproduciraj od početka</translation>
 <translation id="3144647712221361880">Otvori link kao</translation>
-<translation id="3149510190863420837">Chrome aplikacije</translation>
+<translation id="3149510190863420837">Chromeove aplikacije</translation>
 <translation id="3150693969729403281">Odmah pokrenite sigurnosnu provjeru</translation>
 <translation id="3150927491400159470">Ponovno učitavanje bez keš memorije</translation>
 <translation id="315116470104423982">Mobilni podaci</translation>
@@ -3872,6 +3872,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
     <ph name="BEGIN_PARAGRAPH2" />Isključivanjem ove funkcije uređaj će i dalje moći slati informacije potrebne za ključne usluge kao što su ažuriranja sistema i sigurnost.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Vlasnik može upravljati ovom funkcijom iz menija Postavke &gt; Napredno &gt; Automatsko slanje dijagnostičkih podataka i podataka o korištenju Googleu.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Ako vam je uključena postavka dodatne Aktivnosti na webu i u aplikacijama, ti podaci će možda biti pohranjeni na vašem Google računu. Na stranici account.google.com možete vidjeti i izbrisati svoje podatke te izmijeniti svoje postavke računa.<ph name="END_PARAGRAPH4" /></translation>
+<translation id="5585019845078534178">Kartice</translation>
 <translation id="5585118885427931890">Kreiranje foldera s oznakama nije uspjelo.</translation>
 <translation id="558563010977877295">Otvori određenu stranicu ili skup stranica</translation>
 <translation id="5585898376467608182">Na vašem uređaju ima malo prostora za pohranu. Potrebno je najmanje <ph name="MINIMUM_SPACE" /> slobodnog prostora da koristite aplikaciju <ph name="APP_NAME" />. Da oslobodite prostor, izbrišite fajlove s uređaja.</translation>
@@ -4040,7 +4041,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="5794414402486823030">Uvijek otvori u prikazivaču sistema</translation>
 <translation id="5794476117027678724">Blokiraj web lokacijama prikaz teksta i slika iz međumemorije</translation>
 <translation id="5794700615121138172">Dijeljeni folderi na Linuxu</translation>
-<translation id="5794786537412027208">Napusti sve Chrome aplikacije</translation>
+<translation id="5794786537412027208">Napusti sve Chromeove aplikacije</translation>
 <translation id="5797070761912323120">Google može koristiti vašu historiju za personalizaciju Pretraživanja, oglasa i drugih Googleovih usluga</translation>
 <translation id="5798301976526354562">Veličina teksta (primjenjuje se i na Automatske titlove)</translation>
 <translation id="579915268381781820">Vaš sigurnosni ključ je uklonjen.</translation>
@@ -5897,6 +5898,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="7982789257301363584">Mreža</translation>
 <translation id="7984068253310542383">Preslikavanje <ph name="DISPLAY_NAME" /></translation>
 <translation id="7985283639530788531">Želite li koristiti Touch ID s aplikacijom <ph name="APP_NAME" /> u anonimnom načinu rada?</translation>
+<translation id="79859296434321399">Instalirajte ARCore da vidite sadržaj proširene realnosti</translation>
 <translation id="7986295104073916105">Čitanje i mijenjanje postavki sačuvane lozinke</translation>
 <translation id="7987814697832569482">Uvijek se povezuj preko ovog VPN-a</translation>
 <translation id="7988355189918024273">Omogućavanje funkcija pristupačnosti</translation>
@@ -6368,6 +6370,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8557022314818157177">Nastavite dodirivati sigurnosni ključ dok se otisak prsta ne snimi</translation>
 <translation id="855773602626431402">Na toj je stranici spriječeno pokretanje dodatka izvan testnog okruženja.</translation>
 <translation id="8557930019681227453">Deklaracija</translation>
+<translation id="8558485628462305855">Za prikaz sadržaja proširene realnosti ažurirajte ARCore</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Otvori sve u &amp;novom prozoru}=1{Otvori u &amp;novom prozoru}one{Otvori sve ({COUNT}) u &amp;novom prozoru}few{Otvori sve ({COUNT}) u &amp;novom prozoru}other{Otvori sve ({COUNT}) u &amp;novom prozoru}}</translation>
 <translation id="8561206103590473338">Slon</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>

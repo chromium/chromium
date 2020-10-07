@@ -294,6 +294,11 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 
           Bu politikayı ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılamaz.</translation>
 <translation id="1502843533062797703">Üçüncü taraf yazılımı yerleştirme engellemesini etkinleştirin</translation>
+<translation id="1503863096120373385"><ph name="PRODUCT_NAME" /> için tarama verisi geçerlilik süresi ayarlarını yapılandırır.
+      Bu politika, seçilen tarama verilerinin geçerlilik süresini kontrol eder. Senkronizasyon etkinleştirilirse bu politikanın hiçbir etkisi olmaz.
+      Kullanılabilir veri türleri şunlardır: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> ve <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
+      Chrome, <ph name="TIME_TO_LIVE_IN_HOURS" /> saatten daha eski olan belirli türlerdeki verileri düzenli olarak kaldırır. Bu silme işlemi, yalnızca belirli aralıklarla gerçekleştiğinden bazı verilerin geçerlilik süresi biraz daha uzun olabilir, ancak hiçbir zaman <ph name="TIME_TO_LIVE_IN_HOURS" /> olarak beklenen ömrünün iki katından fazla olmaz.
+      </translation>
 <translation id="1507382822467487898">
           Cihaza bir yerleştirme yuvası bağlandığında hangi MAC (medya erişim denetimi) adresinin kullanılacağını yapılandırır.
 
@@ -1102,6 +1107,7 @@ Bu politika ayarlanmazsa <ph name="PRODUCT_NAME" /> varsayılan 10.000 milisaniy
 
       Not: Bu listeye <ph name="USE_IE_SITELIST_POLICY_NAME" /> ve <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> politikaları aracılığıyla öğeler eklenebileceğini de unutmayın.</translation>
 <translation id="264093234299818170">Engellenenler listesinde olanlar dışında tüm yazıcılar gösterilir.</translation>
+<translation id="264252574246191885">Liste dışı</translation>
 <translation id="2647069081229792812">Yer işareti düzenlemesini etkinleştir veya devre dışı bırak</translation>
 <translation id="2649896281375932517">Kullanıcıların karar vermesine izin ver</translation>
 <translation id="2650049181907741121">Kullanıcı kapağı kapattığında yapılacak işlem</translation>
@@ -1439,6 +1445,26 @@ Bu politika ayarlanmazsa <ph name="PRODUCT_NAME" /> varsayılan 10.000 milisaniy
 <translation id="3143265893557969814">Bu politika ayarlanırsa belirtilen tüm veri türleri hem Google Sync senkronizasyonunun hem de dolaşım profili senkronizasyonunun dışında tutulur. Bu, dolaşım profilinin boyutunu küçültmeye veya Google Sync sunucularına yüklenen veri türlerini sınırlandırmaya yarayabilir.
 
       Şu anda bu politika kapsamında bulunan veri türleri şunlardır: "bookmarks", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs", "wifiConfigurations". Bu adlar büyük/küçük harfe duyarlıdır.</translation>
+<translation id="3146597555086966130">"Politikanın ayarlanması, komut satırında proxy ile ilgili belirtilen tüm seçenekleri yok sayan Chrome ve ARC-uygulamaları için proxy ayarlarını yapılandırır.
+
+       Politika ayarlanmazsa kullanıcılar kendi proxy ayarlarını seçebilir.
+
+       <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikasının ayarlanması, aşağıdaki alanları kabul eder:
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, Chrome'un kullandığı proxy sunucusunu belirtmenizi sağlar ve kullanıcıların proxy ayarlarını değiştirmesini önler
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, proxy .pac dosyası için URL
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, proxy sunucu URL'si
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, <ph name="PRODUCT_NAME" /> tarafından atlanan proxy ana makinesi listesi
+
+       <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> alanı kullanımdan kaldırılmış, yerine Chrome'un kullandığı proxy sunucusunu belirtmenizi sağlayan ve kullanıcıların proxy ayarlarını değiştirmesini önleyen <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> alanı getirilmiştir.
+
+        <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> için aşağıdaki değerleri seçerseniz:
+          * <ph name="PROXY_MODE_ENUM_DIRECT" />, proxy hiçbir zaman kullanılmaz ve diğer tüm alanlar yok sayılır.
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, sisteme ait proxy kullanılır ve diğer tüm alanlar yok sayılır.
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, diğer tüm alanlar yok sayılır.
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER" />, <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> ve <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> alanları kullanılır.
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> ve <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> alanları kullanılır.
+
+      Not: Daha ayrıntılı örnekler için Chromium Projeleri'ni ziyaret edin ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="3152425128389603870">Birleşik Masaüstü'nü kullanılabilir hale getir ve varsayılan olarak aç.</translation>
 <translation id="3159375329008977062">Kullanıcının, kullanıcı arayüzü üzerinden Crostini kapsayıcıları dışa/içe aktarmasına izin verilir</translation>
 <translation id="3165808775394012744">Bu politikalar kolay kaldırılabilmeleri için buraya eklenmiştir.</translation>
@@ -2688,6 +2714,13 @@ politikayı geçersiz kılamaz.
       Politika ayarlanmadan bırakılırsa web siteleri listeye eklenmez.
 
       Not: Bu listeye <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> politikası aracılığıyla öğeler eklenebileceğini de unutmayın.</translation>
+<translation id="5065753964276395784">Bu politika kullanımdan kaldırıldı, lütfen bunun yerine <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikasını kullanın.
+
+       Politikanın ayarlanması, <ph name="PRODUCT_NAME" /> ürününün burada verilen ana bilgisayar listesindeki tüm proxy'leri atladığı anlamına gelir. Bu politika, yalnızca <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikası belirtilmediğinde ve <ph name="PROXY_MODE_POLICY_NAME" /> politikasıyla <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> seçtiğinizde geçerli olur.
+
+       Proxy politikalarının ayarlanmasıyla ilgili olarak başka bir mod seçtiyseniz bu politikayı ayarlamadan bırakın.
+
+       Not: Daha ayrıntılı örnekler için Chromium Projeleri'ni ziyaret edin ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="5067143124345820993">Kullanıcı beyaz listesine giriş yap</translation>
 <translation id="5073609397321802133">Politika false (yanlış) değerine ayarlanırsa Yeni Sekme sayfası kullanıcıların arka planı özelleştirmesine izin vermez. Mevcut herhangi bir özel arka plan, politika daha sonra true (doğru) değerine ayarlansa bile, kalıcı olarak kaldırılacaktır.
 
@@ -4129,6 +4162,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       Politikayı <ph name="BR_UNDER_USER_CONTROL" /> değerine ayarlamak, kullanıcıların yedekleme ve geri yükleme özelliğini kullanmak için istemleri göreceği anlamına gelir. Kullanıcı, yedekleme ve geri yükleme özelliğini açarsa Android uygulama verileri, Android yedekleme sunucularına yüklenip uyumlu uygulamaların yeniden yüklemeleri sırasında geri yüklenir.
 
       Kullanıcılar, ilk kurulumdan sonra yedekleme ve geri yükleme özelliğini açabilir veya kapatabilir.</translation>
+<translation id="6986172482189158664">Tarama Verisi Geçerlilik Süresi Ayarları</translation>
 <translation id="6994082778848658360">Yerleşik güvenli öğe donanımının bu özellikle uyumlu olması halinde iki etmenli kimlik doğrulama sunmak için nasıl kullanılabileceğini belirtir. Kullanıcının fiziksel varlığını algılamak için makinenin güç düğmesi kullanılır.
 
       "Devre dışı" seçilirse ikinci etmen sunulmaz.
@@ -4136,6 +4170,13 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       "U2F" seçilirse entegre edilen ikinci etmen FIDO U2F özelliğine göre davranır.
 
       "U2F_EXTENDED" seçilirse entegre edilen ikinci etmen, U2F işlevlerinin yanı sıra bağımsız doğrulama için bazı uzantılar sunar.</translation>
+<translation id="6999948519306285655">Bu politika kullanımdan kaldırıldı, lütfen bunun yerine <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikasını kullanın.
+
+       Politikanın ayarlanması, proxy .pac dosyası için URL belirtmenizi sağlar. Bu politika, yalnızca <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikası belirtilmediğinde ve <ph name="PROXY_MODE_POLICY_NAME" /> politikasıyla <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> seçtiğinizde geçerli olur.
+
+       Proxy politikalarının ayarlanmasıyla ilgili olarak başka bir mod seçtiyseniz bu politikayı ayarlamadan bırakın.
+
+       Not: Ayrıntılı örnekler için Chromium Projeleri'ni ziyaret edin ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="7002040773317582266">Ana çerçeve URL'lerin gerçek zamanlı kontrolü etkinleştirildi.</translation>
 <translation id="7003746348783715221"><ph name="PRODUCT_NAME" /> tercihleri</translation>
 <translation id="7008308728445338159">DNS müdahale kontrolü etkin</translation>
@@ -4723,6 +4764,13 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7712109699186360774">Bir site kamera ve/veya mikrofona erişmek istediğinde her zaman sor</translation>
 <translation id="7713608076604149344">İndirme kısıtlamaları</translation>
 <translation id="7715711044277116530">Sunum modunda ekranın kararma gecikmesinin ölçekleneceği yüzde</translation>
+<translation id="7716020145539921591">Bu politika kullanımdan kaldırıldı, lütfen bunun yerine <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikasını kullanın.
+
+       Politikanın ayarlanması proxy sunucunun URL'sini belirtmenizi sağlar. Bu politika yalnızca <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikası belirtilmediğinde ve <ph name="PROXY_MODE_POLICY_NAME" /> politikasıyla <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> seçtiğinizde geçerli olur.
+
+       Proxy politikalarının ayarlanmasıyla ilgili olarak başka bir mod seçtiyseniz bu politikayı ayarlamadan bırakın.
+
+      Not: Ayrıntılı örnekler için Chromium Projeleri'ni ziyaret edin ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="7717938661004793600"><ph name="PRODUCT_OS_NAME" /> erişilebilirlik özelliklerini yapılandır.</translation>
 <translation id="7721944091689270995"><ph name="PLUGIN_VM_NAME" /> kullanıcı kimliği</translation>
 <translation id="7724161903134898864">Politikayı 1 değerine ayarlamak web sitelerinde pop-up'lara izin verir. Politikayı 2 değerine ayarlamak pop-up'ları engeller.
@@ -4749,6 +4797,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7750991880413385988">Yeni Sekme Sayfasını aç</translation>
 <translation id="7754704193130578113">İndirmeden önce her dosyanın nereye kaydedileceğini sor</translation>
 <translation id="7758378441185523981">Ambiyans Kimlik Doğrulamasını profil türlerine göre etkinleştir.</translation>
+<translation id="776110834126722255">Kullanımdan kaldırıldı</translation>
 <translation id="7763614521440615342">Yeni Sekme sayfasında içerik önerileri göster</translation>
 <translation id="7765753178910647492">Devre dışı bırakılacak <ph name="PRODUCT_OS_NAME" /> özelliklerini belirlemenize izin verir.
 
@@ -5275,6 +5324,22 @@ Politika ayarlanırsa sınıra uymak için eski anlık görüntüler gerektiğin
 <translation id="8537051350735478658">Politikayı True (Doğru) değerine ayarlamak, <ph name="PRODUCT_NAME" /> ürününün adres çubuğunda arama önerilerini açar. Politikayı False (Yanlış) değerine ayarlamak, arama önerilerini kapatır.
 
       Bu politikayı ayarlarsanız kullanıcılar değiştiremez. Ayarlanmazsa arama önerileri ilk başta açıktır, ancak kullanıcılar istedikleri zaman kapatabilir.</translation>
+<translation id="8542290591179355871">Bu politika kullanımdan kaldırıldı, lütfen bunun yerine <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikasını kullanın.
+
+       Bu politikanın Etkin değerine ayarlanması, Chrome'un kullandığı proxy sunucusunu belirtmenizi sağlar ve kullanıcıların proxy ayarlarını değiştirmesini önler. Chrome ve ARC uygulamaları, komut satırında proxy ile ilgili belirtilen tüm seçenekleri yok sayar. Bu politika, yalnızca <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikası belirtilmediğinde geçerli olur.
+
+       Aşağıdakileri belirlerseniz diğer seçenekler yok sayılır:
+         * <ph name="PROXY_MODE_ENUM_DIRECT" /> = Hiçbir zaman proxy sunucu kullanma ve her zaman doğrudan bağlan
+         * <ph name="PROXY_MODE_ENUM_SYSTEM" /> = Sistem proxy ayarlarını kullan
+         * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> = Proxy sunucuyu otomatik olarak algıla
+
+       Aşağıdakini kullanmayı seçerseniz:
+         * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> = Sabit proxy sunucular. <ph name="PROXY_SERVER_POLICY_NAME" /> ve <ph name="PROXY_BYPASS_LIST_POLICY_NAME" /> ile daha ayrıntılı seçenekler belirtebilirsiniz. ARC uygulamaları için yalnızca en yüksek önceliğe sahip HTTP proxy sunucusu kullanılabilir.
+         * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> = .pac proxy komut dosyası. Proxy .pac dosyasının URL'si için <ph name="PROXY_PAC_URL_POLICY_NAME" /> kullanın.
+
+      Politika ayarlanmazsa kullanıcılar proxy ayarlarını seçebilir.
+
+      Not: Ayrıntılı örnekler için Chromium Projeleri'ni ziyaret edin ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="8544375438507658205"><ph name="PRODUCT_FRAME_NAME" /> için varsayılan HTML oluşturucusu</translation>
 <translation id="8544465954173828789">SMS Mesajlarının telefondan Chromebook'a senkronize edilmesine izin ver</translation>
 <translation id="8548832052135586762">Yazdırmayı yalnızca renkli, yalnızca tek renk veya renk modu kısıtlaması yok değerine ayarlar. Ayarlanmayan politika, kısıtlama yokmuş gibi işlenir.</translation>

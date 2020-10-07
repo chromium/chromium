@@ -164,7 +164,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2781331604911854368">Ativado</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Sair do alternador de guias</translation>
-<translation id="2815198996063984598">2. Toque em "App padrão de navegador"</translation>
+<translation id="2815198996063984598">2. Toque em "App do navegador padrão"</translation>
 <translation id="2830972654601096923">Gerenciar endereços…</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Configuração de sincronização inicial não concluída</translation>
@@ -181,7 +181,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2921219216347069551">Não é possível compartilhar a página</translation>
 <translation id="2923448633003185837">Colar e ir</translation>
 <translation id="292639812446257861">Marcar como não lidas</translation>
-<translation id="2952581218264071393">1. Abra as configurações do Chrome</translation>
+<translation id="2952581218264071393">1. Abrir configurações do Chrome</translation>
 <translation id="2958718410589002129">Senhas</translation>
 <translation id="2964349545761222050">Bloquear cookies de terceiros</translation>
 <translation id="2969979262385602596">Falha durante o login. Tente novamente mais tarde.</translation>
@@ -571,7 +571,7 @@ No entanto, eles não podem usar cookies para ver sua atividade de navegação e
 <translation id="7189598951263744875">Compartilhar...</translation>
 <translation id="7192050974311852563">Iniciar registro</translation>
 <translation id="7203585745079012652">Falar as respostas</translation>
-<translation id="7207383424303353046">Novidade: defina o Chrome como seu app padrão de navegador para abrir sites automaticamente nele. <ph name="BEGIN_LINK" />Abrir Configurações<ph name="END_LINK" /></translation>
+<translation id="7207383424303353046">Novidade: defina o Chrome como seu navegador padrão para abrir sites automaticamente nele. <ph name="BEGIN_LINK" />Abrir Configurações<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Apelido do cartão inválido</translation>
 <translation id="7265758999917665941">Nunca para este site</translation>
 <translation id="7272437679830969316">Não é possível verificar sua identidade. Senha não copiada.</translation>
@@ -728,6 +728,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9087108903408689779">Senha sugerida pelo Chrome:</translation>
 <translation id="9094033019050270033">Atualizar senha</translation>
 <translation id="9100610230175265781">Senha necessária</translation>
+<translation id="9137526406337347448">Serviços do Google</translation>
 <translation id="9148126808321036104">Faça login novamente</translation>
 <translation id="9152539721251340337">Criar um código QR</translation>
 <translation id="9157836665414082580">Bloquear caixas de diálogo</translation>

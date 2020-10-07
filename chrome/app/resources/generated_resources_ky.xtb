@@ -983,7 +983,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2131077480075264">"<ph name="APP_NAME" />" орното албайт, анткени ага "<ph name="IMPORT_NAME" />" тарабынан уруксат берилген эмес</translation>
 <translation id="21354425047973905">PIN коддорду жашыруу</translation>
 <translation id="2135456203358955318">Жалгаштырылган лупа</translation>
-<translation id="2135468118189259524">Google кайсы маалыматты жана эмне үчүн топтогонун билүү үчүн <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> бөлүмүнө өтүңүз.</translation>
+<translation id="2135468118189259524">Google кандай маалыматты топтоп, кантип пайдалана турганын билүү үчүн <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> бөлүмүнө өтүңүз.</translation>
 <translation id="2135787500304447609">&amp;Улантуу</translation>
 <translation id="2136372518715274136">Жаңы сырсөз киргизүү</translation>
 <translation id="2136476978468204130">Киргизилген купуя сөз айкашы туура эмес</translation>
@@ -3640,7 +3640,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5307030433605830021">Булак колдоого алынбайт</translation>
 <translation id="5308380583665731573">Туташуу</translation>
 <translation id="5310281978693206542">Шилтемени түзмөктөрүңүзгө жөнөтүү</translation>
-<translation id="531118851858162334">Бул нерсе Google кызматтарында буга чейин аткарган аракеттериңиздин негизинде көрсөтүлдү. Маалыматты көрүп, жок кылып жана аккаунтуңуздун жөндөөлөрүн өзгөртүү үчүн төмөнкү дарекке өтүңүз: <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="531118851858162334">Бул нерсе Google кызматтарында буга чейин аткарган аракеттериңиздин негизинде көрсөтүлүүдө. Маалыматтыңызды көрүп, өчүрүп жана аракеттериңизге көз салуу жөндөөлөрүн өзгөртүү үчүн төмөнкү дарекке өтүңүз: <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="5311304534597152726">Төмөнкү катары кирүүдө:</translation>
 <translation id="5311565231560644461">Сайттарга виртуалдык чындык түзмөктөрүңүздү жана дайын-даректериңизди колдонууга тыюу салынсын</translation>
 <translation id="5314381603623123224">Chrome’дун Тейлөө шарттары 31-марттан кийин өзгөргөнү жатат</translation>
@@ -3872,6 +3872,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
     <ph name="BEGIN_PARAGRAPH2" />Бул функциянын өчүрүлүшү түзмөктүн тутумунун жаңыртылышына жана коопсуздугуна таасирин тийгизбейт.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Түзмөктүн ээси бул функцияны Жөндөөлөр &gt; Өркүндөтүлгөн жөндөөлөр &gt; Мүчүлүштүктөрдү аныктоо жана колдонуу дайындарын автоматтык түрдө Google'га жөнөтүү аркылуу көзөмөлдөй алат.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Эгер кошумча Колдонмолор жана Интернеттеги аракеттериңиздин таржымалынын жөндөөлөрү күйгүзүлгөн болсо, бул дайындар Google аккаунтуңузга сакталышы мүмкүн. Төмөнкү шилтеме менен өтүп, дайын-даректериңизди көрүп, өчүрүп жана аккаунтуңуздун жөндөөлөрүн өзгөртө аласыз: account.google.com.<ph name="END_PARAGRAPH4" /></translation>
+<translation id="5585019845078534178">Карточкалар</translation>
 <translation id="5585118885427931890">Кыстармалар куржуну түзүлгөн жок.</translation>
 <translation id="558563010977877295">Белгилүү бир баракты же барактар топтомун ачуу</translation>
 <translation id="5585898376467608182">Түзмөгүңүздө бош орун аз калды. <ph name="APP_NAME" /> колдонмосу үчүн кеминде <ph name="MINIMUM_SPACE" /> орун керек. Орун бошотуу үчүн түзмөктөн файлдарды жок кылыңыз.</translation>
@@ -5897,6 +5898,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7982789257301363584">Тармак</translation>
 <translation id="7984068253310542383"><ph name="DISPLAY_NAME" /> чагылдыруу</translation>
 <translation id="7985283639530788531">Touch ID'ни Жашыруун режимде <ph name="APP_NAME" /> менен колдонгуңуз келеби?</translation>
+<translation id="79859296434321399">Кошумчаланган чындыкты көрүү үчүн ARCore кызматын орнотуңуз</translation>
 <translation id="7986295104073916105">Сакталган сырсөз жөндөөлөрүн окуу жана өзгөртүү</translation>
 <translation id="7987814697832569482">Ар дайым ушул VPN аркылуу туташуу</translation>
 <translation id="7988355189918024273">Атайын мүмкүнчүлүктөр иштетилсин</translation>
@@ -6367,6 +6369,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8557022314818157177">Манжаңыздын изин тартуу үчүн, коопсуздук ачкычына бир нече жолу тийиңиз</translation>
 <translation id="855773602626431402">Бул баракта сынамык чөйрөсүнөн тышкары плагиндер иштебейт.</translation>
 <translation id="8557930019681227453">Манифест</translation>
+<translation id="8558485628462305855">Кошумчаланган чындыкты көрүү үчүн ARCore кызматын жаңыртыңыз</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Баарын &amp;жаңы терезеде ачуу}=1{&amp;Жаңы терезеде ачуу}other{Баарын ({COUNT}) &amp;жаңы терезеде ачуу}}</translation>
 <translation id="8561206103590473338">Пил</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>

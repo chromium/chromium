@@ -980,7 +980,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2131077480075264">No se pudo instalar "<ph name="APP_NAME" />" porque no tiene permisos de "<ph name="IMPORT_NAME" />".</translation>
 <translation id="21354425047973905">Oculta los PIN</translation>
 <translation id="2135456203358955318">Lupa con vista acoplada</translation>
-<translation id="2135468118189259524">Obtén más información sobre la información que Google recopila (y los motivos para ello) en <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" />.</translation>
+<translation id="2135468118189259524">Obtén más información sobre los datos que Google recopila (y los motivos para ello) en <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" />.</translation>
 <translation id="2135787500304447609">&amp;Reanudar</translation>
 <translation id="2136372518715274136">Ingresa la nueva contraseña</translation>
 <translation id="2136476978468204130">La frase de contraseña que ingresaste es incorrecta</translation>
@@ -3869,6 +3869,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
     <ph name="BEGIN_PARAGRAPH2" />Si desactivas esta función, no se verá afectada la capacidad del dispositivo de enviar la información que necesita para recibir servicios esenciales, como actualizaciones del sistema y seguridad.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />El propietario puede controlar esta función desde Configuración &gt; Avanzada &gt; Envía a Google datos de uso y diagnóstico automáticamente.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Si también habilitaste la Actividad web y de aplicaciones, es posible que se almacenen estos datos en tu Cuenta de Google. En account.google.com podrás consultar estos datos, borrarlos, y cambiar la configuración de la cuenta.<ph name="END_PARAGRAPH4" /></translation>
+<translation id="5585019845078534178">Tarjetas</translation>
 <translation id="5585118885427931890">No se pudo crear la carpeta de favoritos.</translation>
 <translation id="558563010977877295">Abrir una página específica o un conjunto de páginas</translation>
 <translation id="5585898376467608182">El dispositivo tiene poco espacio de almacenamiento. Se necesitan al menos <ph name="MINIMUM_SPACE" /> de espacio libre para usar <ph name="APP_NAME" />. Si necesitas liberar espacio, borra archivos del dispositivo.</translation>
@@ -5894,6 +5895,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7982789257301363584">Red</translation>
 <translation id="7984068253310542383">Duplicar <ph name="DISPLAY_NAME" /></translation>
 <translation id="7985283639530788531">¿Quieres usar Touch ID con <ph name="APP_NAME" /> en el modo de navegación incógnito?</translation>
+<translation id="79859296434321399">Para ver contenido de realidad aumentada, instala ARCore</translation>
 <translation id="7986295104073916105">Leer y cambiar la configuración guardada de la contraseña</translation>
 <translation id="7987814697832569482">Conectarse siempre a través de esta VPN</translation>
 <translation id="7988355189918024273">Habilitar funciones de accesibilidad</translation>
@@ -6365,6 +6367,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8557022314818157177">Continúa tocando la llave de seguridad hasta que se capture tu huella digital</translation>
 <translation id="855773602626431402">Se impidió que un complemento no incluido en la zona de pruebas se ejecutara en la página.</translation>
 <translation id="8557930019681227453">Manifiesto</translation>
+<translation id="8558485628462305855">Para ver contenido de realidad aumentada, actualiza ARCore</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Abrir todo en una ventana &amp;nueva}=1{Abrir en una ventana &amp;nueva}other{Abrir todo ({COUNT}) en una ventana &amp;nueva}}</translation>
 <translation id="8561206103590473338">Elefante</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>

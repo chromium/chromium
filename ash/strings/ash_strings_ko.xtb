@@ -27,7 +27,7 @@
 <translation id="121097972571826261">한 단어 앞으로 이동</translation>
 <translation id="1225748608451425081">알려진 문제로 인해 Chromebook이 잠겼습니다. <ph name="TIME_LEFT" /> 후에 다시 로그인할 수 있습니다.</translation>
 <translation id="1229194443904279055">선택 중지</translation>
-<translation id="1239161794459865856"><ph name="FEATURE_NAME" /> 기능이 연결되었습니다.</translation>
+<translation id="1239161794459865856"><ph name="FEATURE_NAME" />이 연결되었습니다.</translation>
 <translation id="1247372569136754018">마이크(내부)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />에서 충전 중</translation>
 <translation id="1255033239764210633">날씨가 어때?</translation>
@@ -75,7 +75,7 @@
 <translation id="1654477262762802994">음성 검색 시작</translation>
 <translation id="1667964833127753507">중성 색상 모드는 배경화면에서 추출한 색상을 사용하지 않고 밝거나 어두운 중성 색상으로 대체합니다.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> 남음</translation>
-<translation id="1677507110654891115"><ph name="FEATURE_NAME" /> 기능이 연결되어 있지 않습니다.</translation>
+<translation id="1677507110654891115"><ph name="FEATURE_NAME" />이 연결되어 있지 않습니다.</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> 타이머 · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 주소: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">데스크: <ph name="DESK_NAME" /></translation>
@@ -326,7 +326,7 @@
 <translation id="4181841719683918333">언어</translation>
 <translation id="4195877955194704651">자동 클릭 버튼</translation>
 <translation id="4197790712631116042">사용 안함</translation>
-<translation id="4201033867194214117"><ph name="FEATURE_NAME" /> 기능을 사용할 수 없습니다.</translation>
+<translation id="4201033867194214117"><ph name="FEATURE_NAME" />를 사용할 수 없습니다.</translation>
 <translation id="4212246570487010370">계속 탐색</translation>
 <translation id="4212472694152630271">PIN으로 전환</translation>
 <translation id="4215497585250573029">VPN 설정</translation>
@@ -446,7 +446,7 @@
 <translation id="5465662442746197494">도움이 필요하신가요?</translation>
 <translation id="5496819745535887422">관리자가 내 기기를 롤백하고 있습니다. 기기가 다시 시작되면 모든 데이터가 삭제됩니다.</translation>
 <translation id="5519195206574732858">LTE</translation>
-<translation id="5523434445161341166"><ph name="FEATURE_NAME" /> 기능이 연결을 시도하는 중입니다.</translation>
+<translation id="5523434445161341166"><ph name="FEATURE_NAME" />이 연결을 시도하는 중입니다.</translation>
 <translation id="553675580533261935">세션 종료</translation>
 <translation id="5537725057119320332">전송</translation>
 <translation id="5548285847212963613">확장 프로그램('<ph name="EXTENSION_NAME" />')을 사용하여 이 네트워크에 연결할 수 있습니다.</translation>

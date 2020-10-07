@@ -134,6 +134,7 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">ਵਿਸਤਾਰ ਕਰਨ ਸੰਬੰਧੀ ਤਿਕੋਨ</translation>
 <translation id="5278860589123563674">ਭੇਜਣਾ ਅਸਫਲ ਰਿਹਾ</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ਨੂੰ ਤੁਹਾਡੇ ਧਿਆਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="528468243742722775">ਸਮਾਪਤੀ</translation>
 <translation id="5329858601952122676">&amp;ਮਿਟਾਓ</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> ਦੇ ਉੱਪਰ <ph name="DRAGGED_APP_NAME" />, ਫੋਲਡਰ ਬਣਾਉਣ ਲਈ ਛੱਡੋ।</translation>
@@ -144,6 +145,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> ਸਿਸਟਮ</translation>
 <translation id="5583640892426849032">ਬੈਕਸਪੇਸ</translation>
 <translation id="5613020302032141669">ਖੱਬਾ ਤੀਰ</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ਨੂੰ ਤੁਹਾਡੇ ਧਿਆਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="5675363643668471212">ਸ਼ੈਲਫ ਆਈਟਮ</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 ਮਿੰਟ}one{# ਮਿੰਟ}other{# ਮਿੰਟ}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{ਅੱਜ ਕਿਰਿਆਸ਼ੀਲ}=1{1 ਦਿਨ ਪਹਿਲਾਂ ਕਿਰਿਆਸ਼ੀਲ}other{# ਦਿਨ ਪਹਿਲਾਂ ਕਿਰਿਆਸ਼ੀਲ}}</translation>

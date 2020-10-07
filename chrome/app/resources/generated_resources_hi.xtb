@@ -3871,6 +3871,7 @@
     <ph name="BEGIN_PARAGRAPH2" />इस सुविधा को बंद करने के बाद भी आपका डिवाइस, सिस्टम अपडेट और सुरक्षा जैसी ज़रूरी सेवाएं पाने के लिए जानकारी भेज सकेगा.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />सेटिंग &gt; बेहतर &gt; Google को निदान और इस्तेमाल का डेटा अपने आप भेजें पर जाकर मालिक इस सुविधा को नियंत्रित कर सकता है.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />अगर आपकी वेब और ऐप्लिकेशन की और भी गतिविधि सेटिंग चालू है, तो यह डेटा आपके Google खाते में सेव हो सकता है. आप account.google.com पर अपना डेटा देख सकते हैं, उसे मिटा सकते हैं और अपने खाते की सेटिंग बदल सकते हैं.<ph name="END_PARAGRAPH4" /></translation>
+<translation id="5585019845078534178">कार्ड</translation>
 <translation id="5585118885427931890">बुकमार्क फ़ोल्‍डर नहीं बना सका.</translation>
 <translation id="558563010977877295">कोई खास पेज या पेजों का समूह खोलें</translation>
 <translation id="5585898376467608182">आपके डिवाइस में जगह कम है. <ph name="APP_NAME" /> का इस्तेमाल करने के लिए, कम से कम <ph name="MINIMUM_SPACE" /> खाली जगह की ज़रूरत है. जगह बढ़ाने के लिए डिवाइस से फ़ाइलें मिटाएं.</translation>
@@ -5895,6 +5896,7 @@
 <translation id="7982789257301363584">नेटवर्क</translation>
 <translation id="7984068253310542383"><ph name="DISPLAY_NAME" /> की स्क्रीन शेयर करें</translation>
 <translation id="7985283639530788531">क्या आप 'गुप्त मोड' में 'टच आईडी' का इस्तेमाल <ph name="APP_NAME" /> के साथ करना चाहते हैं?</translation>
+<translation id="79859296434321399">'बढ़ी हुई वास्तविकता' की सामग्री देखने के लिए, ARCore इंस्टॉल करें</translation>
 <translation id="7986295104073916105">सहेजे गए पासवर्ड सेटिंग को पढ़ें और बदलें</translation>
 <translation id="7987814697832569482">हमेशा इस वीपीएन के ज़रिए कनेक्ट करें</translation>
 <translation id="7988355189918024273">सुलभता सुविधाएं चालू करें</translation>
@@ -6366,6 +6368,7 @@
 <translation id="8557022314818157177">अपनी सुरक्षा कुंजी को तब तक छूते रहें, जब तक फ़िंगरप्रिंट कैप्चर न हाे जाए</translation>
 <translation id="855773602626431402">एक सैंडबॉक्‍स नहीं किए गए प्‍लग इन को इस पृष्‍ठ पर चलने से रोका गया था.</translation>
 <translation id="8557930019681227453">मेनिफ़ेस्ट</translation>
+<translation id="8558485628462305855">'बढ़ी हुई वास्तविकता' की सामग्री देखने के लिए, ARCore अपडेट करें</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{सभी यूआरएल को &amp;नई विंडो में खोलें}=1{यूआरएल को &amp;नई विंडो में खोलें}one{दिया गया ({COUNT}) यूआरएल &amp;नई विंडो में खोलें}other{सभी ({COUNT}) यूआरएल को &amp;नई विंडो में खोलें}}</translation>
 <translation id="8561206103590473338">हाथी</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>

@@ -27,7 +27,7 @@
 <translation id="121097972571826261">Вперед на одно слово</translation>
 <translation id="1225748608451425081">Устройство Chromebook заблокировано в связи с известной проблемой. Время, по истечении которого можно будет выполнить вход: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Остановить выбор текста</translation>
-<translation id="1239161794459865856">Функция "<ph name="FEATURE_NAME" />" подключена</translation>
+<translation id="1239161794459865856">Функция "<ph name="FEATURE_NAME" />" подключена.</translation>
 <translation id="1247372569136754018">Микрофон (встроенный)</translation>
 <translation id="1252999807265626933">Подключен источник питания: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Какая сейчас погода?</translation>
@@ -75,7 +75,7 @@
 <translation id="1654477262762802994">Произнесите запрос</translation>
 <translation id="1667964833127753507">В режиме нейтральных цветов не используются оттенки ваших обоев. Вместо них интерфейс будет окрашен в нейтральные светлые или темные цвета.</translation>
 <translation id="1677472565718498478">Ещё <ph name="TIME" /></translation>
-<translation id="1677507110654891115">Функция "<ph name="FEATURE_NAME" />" не подключена</translation>
+<translation id="1677507110654891115">Функция "<ph name="FEATURE_NAME" />" не подключена.</translation>
 <translation id="1698080062160024910">Таймер на <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Адрес IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Рабочий стол "<ph name="DESK_NAME" />"</translation>

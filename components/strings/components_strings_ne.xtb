@@ -593,7 +593,7 @@
 <translation id="3395827396354264108">पिकअप विधि</translation>
 <translation id="3399952811970034796">डेलिभरी गर्ने ठेगाना</translation>
 <translation id="3402261774528610252">यो साइट लोड गर्न प्रयोग गरिएको जडानले प्रचलनबाट हटाइएका TLS १.० वा TLS १.१ प्रयोग गरेको छ र तिनलाई भविष्यमा असक्षम पारिने छ। असक्षम पारेपछि, प्रयोगकर्ताहरू यो साइट लोड गर्न सक्ने छैनन्। सर्भरले TLS १.२ वा त्यसपछिको संस्करण सक्षम पार्नु पर्छ।</translation>
-<translation id="3411120537985775570">तपाईंका एड्मिनले <ph name="ORIGIN_NAME" /> बाट यो स्थानमा पेस्ट गर्ने सुविधा ब्लक गर्नुभएको छ</translation>
+<translation id="3411120537985775570">तपाईंका एड्मिनले <ph name="ORIGIN_NAME" /> बाट यो स्थानमा पेस्ट गर्न रोक लगाउनुभएको छ</translation>
 <translation id="3414952576877147120">आकार:</translation>
 <translation id="3417660076059365994">तपाईंले अपलोड वा एट्याच गर्ने फाइलहरू विश्लेषण गर्ने प्रयोजनका लागि Google Cloud मा वा तेस्रा पक्षकहाँ पठाइन्छन्। उदाहरणका लागि, ती फाइलमा संवेदनशील डेटा वा मालवेयर छन् कि छैनन् भनी जाँच गरिन सक्छ।</translation>
 <translation id="3422248202833853650">मेमोरी खाली गर्न अन्य प्रोग्रामहरूबाट बाहिर निस्की हेर्नुहोस्।</translation>
@@ -830,6 +830,7 @@
 <translation id="4277028893293644418">पासवर्ड रिसेट गर्नुहोस्</translation>
 <translation id="4279811152705618813"><ph name="ENROLLMENT_DOMAIN" /> ले तपाईंको <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{यो कार्डलाई तपाईंको Google खातामा सुरक्षित गरिएको छ।}other{यी कार्डहरूलाई तपाईंको Google खातामा सुरक्षित गरिएको छ}}</translation>
+<translation id="4297502707443874121">पृष्ठ <ph name="THUMBNAIL_PAGE" /> को थम्बनेल</translation>
 <translation id="42981349822642051">विस्तृत गर्नुहोस्</translation>
 <translation id="4300675098767811073">दायाँपट्टि एकभन्दा बढी प्वाल</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
@@ -1268,7 +1269,7 @@
 <translation id="6051221802930200923">उक्त वेबसाइटले प्रमाणपत्रको पिनिङ सुरक्षा व्यवस्थाको प्रयोग गर्ने हुनाले तपाईं अहिले नै <ph name="SITE" /> मा जान सक्नुहुन्न। नेटवर्कसम्बन्धी त्रुटि र आक्रमणहरू सामान्यतया अस्थायी हुन्छन्, त्यसैले यो पृष्ठले पछि सम्भवतः काम गर्नसक्नेछ।</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">आफ्नो उपस्थितिसम्बन्धी जानकारी सेयर गर्ने हो?</translation>
-<translation id="6057359309778282021">तपाईंका एड्मिनले <ph name="ORIGIN_NAME" /> बाट <ph name="VM_NAME" /> मा सेयर गर्ने सुविधा ब्लक गर्नुभएको छ</translation>
+<translation id="6057359309778282021">तपाईंका एड्मिनले <ph name="ORIGIN_NAME" /> बाट <ph name="VM_NAME" /> मा सेयर गर्न रोक लगाउनुभएको छ</translation>
 <translation id="6058977677006700226">तपाईंका सबै यन्त्रहरूमा तपाईंका कार्डहरूको प्रयोग गर्ने हो?</translation>
 <translation id="6059925163896151826">USB सम्बन्धी यन्त्रहरू</translation>
 <translation id="6060009363608157444">अमान्य DnsOverHttps मोड।</translation>
@@ -1879,7 +1880,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">मिल्दो पासवर्ड फेला परेन। सुरक्षित गरिएका सबै पासवर्डहरू देखाउनुहोस्।</translation>
 <translation id="8625384913736129811">यो कार्डलाई यस यन्त्रमा सुरक्षित गर्नुहोस्</translation>
-<translation id="8657078576661269990">तपाईंका एड्मिनले <ph name="ORIGIN_NAME" /> बाट <ph name="VM_NAME_1" /> र <ph name="VM_NAME_2" /> मा सेयर गर्ने सुविधा ब्लक गर्नुभएको छ</translation>
+<translation id="8657078576661269990">तपाईंका एड्मिनले <ph name="ORIGIN_NAME" /> बाट <ph name="VM_NAME_1" /> र <ph name="VM_NAME_2" /> मा सेयर गर्ने रोक लगाउनुभएको छ</translation>
 <translation id="8663226718884576429">अर्डरको सारांश, <ph name="TOTAL_LABEL" />, थप विवरण</translation>
 <translation id="867224526087042813">हस्ताक्षर</translation>
 <translation id="8676424191133491403">विलम्बरहित</translation>
@@ -2014,7 +2015,7 @@
 <translation id="9191834167571392248">फेदको बायाँपट्टि प्वाल</translation>
 <translation id="9205078245616868884">तपाईँको डेटालाई तपाईँको सिंक पासफ्रेजमार्फत इन्क्रिप्ट गरिएको छ। सिंक सुरु गर्न त्यो पासफ्रेज प्रविष्टि गर्नुहोस्।</translation>
 <translation id="9207861905230894330">लेख थप्न असफल भयो।</translation>
-<translation id="9213433120051936369">आफूले चाहेअनुसारको रूपरेखा बनाउनुहोस्</translation>
+<translation id="9213433120051936369">आफूले चाहेअनुसारको रूप बनाउनुहोस्</translation>
 <translation id="9215416866750762878">कुनै अनुप्रयोगले Chrome लाई सुरक्षित रूपमा यो साइटमा जडान हुनबाट रोकिरहेको छ</translation>
 <translation id="9219103736887031265">छविहरू</translation>
 <translation id="933712198907837967">डाइनर्स क्लब</translation>

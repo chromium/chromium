@@ -5897,6 +5897,7 @@
 <translation id="7982789257301363584">Сетка</translation>
 <translation id="7984068253310542383">Адлюстраваць <ph name="DISPLAY_NAME" /></translation>
 <translation id="7985283639530788531">Выкарыстоўваць у рэжыме інкогніта Touch ID у праграме <ph name="APP_NAME" />?</translation>
+<translation id="79859296434321399">Каб праглядаць змесціва ў рэжыме дапоўненай рэальнасці, усталюйце ARCore</translation>
 <translation id="7986295104073916105">Прачытайце і змяніце захаваныя налады пароля</translation>
 <translation id="7987814697832569482">Заўсёды падключацца праз гэты VPN</translation>
 <translation id="7988355189918024273">Уключыць спецыяльныя магчымасці</translation>
@@ -6367,6 +6368,7 @@
 <translation id="8557022314818157177">Каб дадаць адбітак пальца, націскайце на ключ бяспекі</translation>
 <translation id="855773602626431402">Прадухілены запуск не змешчанай у пясочніцу ўбудовы на гэтай старонцы.</translation>
 <translation id="8557930019681227453">Маніфест</translation>
+<translation id="8558485628462305855">Каб праглядаць змесціва ў рэжыме дапоўненай рэальнасці, абнавіце ARCore</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Адкрыць усе ў &amp;новым акне}=1{Адкрыць у &amp;новым акне}one{Адкрыць усе ({COUNT}) у &amp;новым акне}few{Адкрыць усе ({COUNT}) у &amp;новым акне}many{Адкрыць усе ({COUNT}) у &amp;новым акне}other{Адкрыць усе ({COUNT}) у &amp;новым акне}}</translation>
 <translation id="8561206103590473338">Слон</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>

@@ -386,7 +386,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">मेरा डेटा संयोजित करें</translation>
 <translation id="393697183122708255">कोई चालू बोलकर खोजने की सुविधा उपलब्‍ध नहीं है</translation>
-<translation id="3943557322767080599">Google खाते में साइन करने पर, Chrome में साइन इन करने के अनुरोध दिखाएं</translation>
+<translation id="3943557322767080599">Google खाते में साइन इन करने पर, Chrome में साइन इन करने के अनुरोध दिखाएं</translation>
 <translation id="395206256282351086">खोज और साइट सुझाव बंद हैं</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{तैयार होने पर Chrome आपका पेज लोड करेगा}one{तैयार होने पर Chrome आपके पेज लोड करेगा}other{तैयार होने पर Chrome आपके पेज लोड करेगा}}</translation>
 <translation id="3963007978381181125">लंबा पासवर्ड सुरक्षित करने के तरीके में Google Pay से भुगतान करने की विधि और पते शामिल नहीं हैं. सिर्फ़ वह इंसान आपका सुरक्षित किया हुआ डेटा पढ़ सकता है जिसके पास आपका लंबा पासवर्ड है. Google की ओर से लंबा पासवर्ड भेजा या संग्रहित नहीं किया जाता है. अगर आप अपना लंबा पासवर्ड भूल जाते हैं या इस सेटिंग को बदलना चाहते हैं, तो आपको सिंक रीसेट करना होगा. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
@@ -488,7 +488,6 @@
 <translation id="4720982865791209136">Chrome को बेहतर बनाने में सहायता करें. <ph name="BEGIN_LINK" />सर्वे में भाग लें<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">अपने हिसाब से खास साइटें देखें</translation>
 <translation id="4732120983431207637">स्टैक अनवाइंडर</translation>
-<translation id="473775607612524610">अपडेट करें</translation>
 <translation id="4738836084190194332">अंतिम बार सिंक किया गया: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">नया टैब खोलें</translation>
 <translation id="4759238208242260848">डाउनलोड</translation>
@@ -670,7 +669,7 @@
 <translation id="5958275228015807058">डाउनलोड में जाकर अपनी फ़ाइलें और पेज पाएं</translation>
 <translation id="5962718611393537961">छोटा करने के लिए टैप करें</translation>
 <translation id="5964805880140440652">इस पेज को किसी और डिवाइस पर शेयर करने के लिए, Chrome सेटिंग में सिंक की सुविधा चालू करें</translation>
-<translation id="5964869237734432770">इमेज की जानकारी न पाएं</translation>
+<translation id="5964869237734432770">इमेज की जानकारी पाना बंद करें</translation>
 <translation id="5979084224081478209">पासवर्ड जांचें</translation>
 <translation id="5982307838673692400">गुप्त टैब खोलें</translation>
 <translation id="6000066717592683814">Google को डिफ़ॉल्ट बनाए रखें</translation>
@@ -814,7 +813,7 @@
 <translation id="6900532703269623216">बेहतर सुरक्षा मोड</translation>
 <translation id="6903907808598579934">समन्वयन चालू करें</translation>
 <translation id="6929699136511445623">Android सिस्टम सिंक चालू करें</translation>
-<translation id="6941901516114974832">गुप्त मोड में, आपकी गतिविधि उन वेबसाइटों को <ph name="BEGIN_BOLD1" />दिख सकती है <ph name="END_BOLD1" />जिन पर आप जाते हैं. यह गतिविधि, आपकी कंपनी या स्कूल और इंटरनेट सेवा देने वाली कंपनी को भी दिख सकती है.
+<translation id="6941901516114974832">गुप्त मोड में भी, आपकी गतिविधि उन वेबसाइटों को <ph name="BEGIN_BOLD1" />दिख सकती है <ph name="END_BOLD1" />जिन पर आप जाते हैं. यह गतिविधि, आपकी कंपनी या स्कूल और इंटरनेट सेवा देने वाली कंपनी को भी दिख सकती है.
 
 आपके गुप्त सत्र का डेटा Chrome से तब ही मिटेगा, जब आप <ph name="BEGIN_BOLD2" />सभी गुप्त टैब बंद करेंगे<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">सेटिंग मेन्यू विकल्प का इस्तेमाल करके डिफ़ॉल्ट डाउनलोड स्थान किसी भी समय बदलें</translation>
@@ -960,7 +959,6 @@
 <translation id="7971136598759319605">एक दिन पहले सिंक किया गया</translation>
 <translation id="7975379999046275268">पेज की झलक देखें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">ज़्यादा तेज़ी से ब्राउज़ करने और खोजने के लिए पेज पहले से लोड करें</translation>
-<translation id="79859296434321399">'बढ़ी हुई वास्तविकता' की सामग्री देखने के लिए, ARCore इंस्टॉल करें</translation>
 <translation id="7998918019931843664">बंद टैब फिर से खोलें</translation>
 <translation id="8004582292198964060">ब्राउज़र</translation>
 <translation id="8013372441983637696">इस डिवाइस से अपना Chrome डेटा भी हटाएं</translation>
@@ -1040,7 +1038,6 @@
 <translation id="8540136935098276800">सही से फ़ॉर्मैट किया गया यूआरएल डालें</translation>
 <translation id="854522910157234410">यह पेज खोलें</translation>
 <translation id="8555836665334561807">वाई-फ़ाई पर</translation>
-<translation id="8558485628462305855">'बढ़ी हुई वास्तविकता' की सामग्री देखने के लिए, ARCore अपडेट करें</translation>
 <translation id="8559990750235505898">अन्य भाषाओं में पेज का अनुवाद करना ऑफ़र करें</translation>
 <translation id="8560602726703398413">Bookmarks में अपनी पढ़ने की चीज़ों की सूची खोजें</translation>
 <translation id="8561196567344536112">1. सेटिंग\n2 पर जाएं. “ब्राउज़र ऐप्लिकेशन”\n3 पर टैप करें. <ph name="APP_NAME" /> चुनें</translation>

@@ -3871,6 +3871,7 @@ Isibonelo, amanye amawebhusayithi angahle aphendule kulesi sicelo ngokukubonisa 
     <ph name="BEGIN_PARAGRAPH2" />Ukuvala lesi sici akuthinti amandla edivayisi yakho okuthumela ulwazi oludingekayo kumasevisi abalulekile njengezibuyekezo zesistimu nokuphepha.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Umnikazi angalawula lesi sici kusuka Kuzilungiselelo &gt; Okuthuthukile &gt; Thumela ngokuzenzakalelayo idatha yokuxilonga nokusebenzisa ku-Google.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Uma isilungiselelo sakho somsebenzi wewebhu nohlelo lokusebenza sivuliwe, le datha ingalondolozwa ku-akhawunti yakho ye-Google. Ungabona idatha yakho, uyisuse, futhi ushintshe izilungiselelo zakho ze-akhawunti ku-account.google.com.<ph name="END_PARAGRAPH4" /></translation>
+<translation id="5585019845078534178">Amakhadi</translation>
 <translation id="5585118885427931890">Ayikwazanga ukudala ifolda yebhukhimakhi.</translation>
 <translation id="558563010977877295">Vula ikhasi elithile noma isethi yamakhasi</translation>
 <translation id="5585898376467608182">Idivayisi yakho inesitoreji esiphansi. Kudingeka okungenani isikhala esingenalutho esingu- <ph name="MINIMUM_SPACE" /> ukuze usebenzise i-<ph name="APP_NAME" />. Ukuze ukhuphule isikhala esingenalutho, susa amafayela kudivayisi.</translation>
@@ -5897,6 +5898,7 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7982789257301363584">Inethiwekhi</translation>
 <translation id="7984068253310542383">Ukufanisela <ph name="DISPLAY_NAME" /></translation>
 <translation id="7985283639530788531">Ingabe ufuna ukusebenzisa i-Touch ID nge-<ph name="APP_NAME" /> kumodi ye-Incognito?</translation>
+<translation id="79859296434321399">Ukuze ubuke okuqukethwe kwe-augmented reality, faka i-ARCore</translation>
 <translation id="7986295104073916105">Funda uphinde uguqule izilungiselelo ezilondoloziwe zephasiwedi</translation>
 <translation id="7987814697832569482">Njalo xhuma ngale VPN</translation>
 <translation id="7988355189918024273">Nika amandla izici zokufinyeleleka</translation>
@@ -6367,6 +6369,7 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8557022314818157177">Qhubeka nokuthinta ukhiye wokuqinisekisa ubunikazi isigxivizo sakho somunwe size sithwetshulwe</translation>
 <translation id="855773602626431402">I-plugin e-unsandboxed iye yavinjelwa kusukela ekuqaleni kuleli khasi.</translation>
 <translation id="8557930019681227453">Bonakalisa</translation>
+<translation id="8558485628462305855">Ukuze ubuke okuqukethwe kwe-augmented reality, buyekeza i-ARCore</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Vula Konke Ewindini &amp;Elisha}=1{Vula ewindini &amp;elisha}one{Vula Konke ({COUNT}) &amp;Ewindini Elisha}other{Vula Konke ({COUNT}) &amp;Ewindini Elisha}}</translation>
 <translation id="8561206103590473338">Indlovu</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>

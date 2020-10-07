@@ -327,7 +327,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4181841719683918333">Lingue</translation>
 <translation id="4195877955194704651">Pulsante Clic automatici</translation>
 <translation id="4197790712631116042">Off</translation>
-<translation id="4201033867194214117"><ph name="FEATURE_NAME" /> non è disponibile.</translation>
+<translation id="4201033867194214117">La funzionalità <ph name="FEATURE_NAME" /> non è disponibile.</translation>
 <translation id="4212246570487010370">Continua la navigazione</translation>
 <translation id="4212472694152630271">Passa al PIN</translation>
 <translation id="4215497585250573029">Impostazioni VPN</translation>
@@ -447,7 +447,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5465662442746197494">Hai bisogno di assistenza?</translation>
 <translation id="5496819745535887422">L'amministratore sta eseguendo il rollback del tuo dispositivo. Tutti i dati verranno eliminati al momento del riavvio.</translation>
 <translation id="5519195206574732858">LTE</translation>
-<translation id="5523434445161341166"><ph name="FEATURE_NAME" /> sta cercando di connettersi.</translation>
+<translation id="5523434445161341166">La funzionalità <ph name="FEATURE_NAME" /> sta cercando di connettersi.</translation>
 <translation id="553675580533261935">Uscita dalla sessione</translation>
 <translation id="5537725057119320332">Trasmetti</translation>
 <translation id="5548285847212963613">L'estensione "<ph name="EXTENSION_NAME" />" può essere utile per il collegamento a questa rete.</translation>
