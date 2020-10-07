@@ -54,7 +54,7 @@
 }
 
 - (void)bookmarkAction {
-  [self.dispatcher bookmarkPage];
+  [self.dispatcher bookmarkCurrentPage];
 }
 
 - (void)searchAction:(id)sender {

@@ -4108,7 +4108,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 }
 
-- (void)bookmarkPage {
+- (void)bookmarkCurrentPage {
   [self initializeBookmarkInteractionController];
   [_bookmarkInteractionController
       presentBookmarkEditorForWebState:self.currentWebState

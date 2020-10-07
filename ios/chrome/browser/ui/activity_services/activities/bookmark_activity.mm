@@ -89,7 +89,7 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 }
 
 - (void)performActivity {
-  [self.handler bookmarkPage];
+  [self.handler bookmarkCurrentPage];
   [self activityDidFinish:YES];
 }
 
