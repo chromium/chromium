@@ -173,6 +173,26 @@ void HoldingSpaceKeyedService::AddDownload(
                                        download_file)));
 }
 
+void HoldingSpaceKeyedService::AddNearbyShare(
+    const base::FilePath& nearby_share_path) {
+  const bool already_exists =
+      holding_space_model_.GetItem(HoldingSpaceItem::GetFileBackedItemId(
+          HoldingSpaceItem::Type::kNearbyShare, nearby_share_path));
+  if (already_exists)
+    return;
+
+  GURL file_system_url =
+      holding_space_util::ResolveFileSystemUrl(profile_, nearby_share_path);
+  if (file_system_url.is_empty())
+    return;
+
+  AddItem(HoldingSpaceItem::CreateFileBackedItem(
+      HoldingSpaceItem::Type::kNearbyShare, nearby_share_path, file_system_url,
+      holding_space_util::ResolveImage(&thumbnail_loader_,
+                                       HoldingSpaceItem::Type::kNearbyShare,
+                                       nearby_share_path)));
+}
+
 void HoldingSpaceKeyedService::AddItem(std::unique_ptr<HoldingSpaceItem> item) {
   holding_space_model_.AddItem(std::move(item));
 }

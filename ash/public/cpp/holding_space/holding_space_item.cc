@@ -35,6 +35,8 @@ std::string TypeToString(HoldingSpaceItem::Type type) {
       return "download";
     case HoldingSpaceItem::Type::kScreenshot:
       return "screenshot";
+    case HoldingSpaceItem::Type::kNearbyShare:
+      return "nearby_share";
   }
 }
 

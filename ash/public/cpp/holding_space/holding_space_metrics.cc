@@ -50,6 +50,8 @@ std::string ItemTypeToString(HoldingSpaceItem::Type type) {
       return "PinnedFile";
     case HoldingSpaceItem::Type::kScreenshot:
       return "Screenshot";
+    case HoldingSpaceItem::Type::kNearbyShare:
+      return "NearbyShare";
   }
   NOTREACHED();
   return std::string();

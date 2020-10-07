@@ -173,6 +173,11 @@ HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddDownloadFile() {
                  /*file_path=*/CreateTextFile(GetProfile()));
 }
 
+HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddNearbyShareFile() {
+  return AddItem(GetProfile(), HoldingSpaceItem::Type::kNearbyShare,
+                 /*file_path=*/CreateImageFile(GetProfile()));
+}
+
 HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddPinnedFile() {
   return AddItem(GetProfile(), HoldingSpaceItem::Type::kPinnedFile,
                  /*file_path=*/CreateTextFile(GetProfile()));

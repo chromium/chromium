@@ -74,6 +74,9 @@ class HoldingSpaceKeyedService : public KeyedService,
   // Adds a download item backed by the provided absolute file path.
   void AddDownload(const base::FilePath& download_path);
 
+  // Adds a nearby share item backed by the provided absolute file path.
+  void AddNearbyShare(const base::FilePath& nearby_share_path);
+
   // Adds the specified `item` to the holding space model.
   void AddItem(std::unique_ptr<HoldingSpaceItem> item);
 

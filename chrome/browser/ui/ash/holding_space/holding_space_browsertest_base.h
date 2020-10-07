@@ -54,6 +54,9 @@ class HoldingSpaceBrowserTestBase : public InProcessBrowserTest {
   // Adds and returns an arbitrary download file to the holding space.
   HoldingSpaceItem* AddDownloadFile();
 
+  // Adds and returns an arbitrary nearby share file to the holding space.
+  HoldingSpaceItem* AddNearbyShareFile();
+
   // Adds and returns an arbitrary pinned file to the holding space.
   HoldingSpaceItem* AddPinnedFile();
 

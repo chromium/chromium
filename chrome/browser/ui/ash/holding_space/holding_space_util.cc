@@ -32,6 +32,7 @@ gfx::ImageSkia GetPlaceholderImage(HoldingSpaceItem::Type type,
   gfx::Size size;
   switch (type) {
     case HoldingSpaceItem::Type::kDownload:
+    case HoldingSpaceItem::Type::kNearbyShare:
     case HoldingSpaceItem::Type::kPinnedFile:
       size = gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize);
       break;
