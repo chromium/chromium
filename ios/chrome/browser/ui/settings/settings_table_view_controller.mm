@@ -63,6 +63,7 @@
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_coordinator.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_coordinator.h"
@@ -150,6 +151,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSigninPromo,
   ItemTypeAccount,
   ItemTypeSyncAndGoogleServices,
+  ItemTypeGoogleSync,
+  ItemTypeGoogleServices,
   ItemTypeHeader,
   ItemTypeSearchEngine,
   ItemTypeManagedDefaultSearchEngine,
@@ -183,6 +186,7 @@ NSString* kDevViewSourceKey = @"DevViewSource";
     ChromeIdentityServiceObserver,
     GoogleServicesSettingsCoordinatorDelegate,
     IdentityManagerObserverBridgeDelegate,
+    ManageSyncSettingsCoordinatorDelegate,
     PasswordCheckObserver,
     PasswordsCoordinatorDelegate,
     PopoverLabelViewControllerDelegate,
@@ -225,6 +229,7 @@ NSString* kDevViewSourceKey = @"DevViewSource";
   // identity update notifications.
   SigninPromoViewMediator* _signinPromoViewMediator;
   GoogleServicesSettingsCoordinator* _googleServicesSettingsCoordinator;
+  ManageSyncSettingsCoordinator* _manageSyncSettingsCoordinator;
 
   // Privacy coordinator.
   PrivacyCoordinator* _privacyCoordinator;
@@ -437,8 +442,10 @@ NSString* kDevViewSourceKey = @"DevViewSource";
 
   // Adds experimental Google Services item separate from Sync.
   if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
-    [model addItem:[self syncCellItem]
-        toSectionWithIdentifier:SectionIdentifierAccount];
+    if (authService->IsAuthenticated()) {
+      [model addItem:[self googleSyncCellItem]
+          toSectionWithIdentifier:SectionIdentifierAccount];
+    }
     [model addItem:[self googleServicesCellItem]
         toSectionWithIdentifier:SectionIdentifierAccount];
   } else {
@@ -559,7 +566,7 @@ NSString* kDevViewSourceKey = @"DevViewSource";
 
 - (TableViewItem*)googleServicesCellItem {
   TableViewImageItem* googleServicesItem =
-      [[TableViewImageItem alloc] initWithType:ItemTypeSyncAndGoogleServices];
+      [[TableViewImageItem alloc] initWithType:ItemTypeGoogleServices];
   googleServicesItem.accessoryType =
       UITableViewCellAccessoryDisclosureIndicator;
   googleServicesItem.title =
@@ -570,19 +577,18 @@ NSString* kDevViewSourceKey = @"DevViewSource";
   return googleServicesItem;
 }
 
-- (TableViewItem*)syncCellItem {
+- (TableViewItem*)googleSyncCellItem {
   // TODO(crbug.com/805214): This branded icon image needs to come from
   // BrandedImageProvider.
-  TableViewImageItem* googleServicesItem =
-      [[TableViewImageItem alloc] initWithType:ItemTypeSyncAndGoogleServices];
-  googleServicesItem.accessoryType =
-      UITableViewCellAccessoryDisclosureIndicator;
-  googleServicesItem.title =
-      l10n_util::GetNSString(IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE);
-  googleServicesItem.accessibilityIdentifier =
-      kSettingsGoogleSyncAndServicesCellId;
-  [self updateSyncAndGoogleServicesItem:googleServicesItem];
-  return googleServicesItem;
+  TableViewDetailIconItem* googleSyncCellItem =
+      [self detailItemWithType:ItemTypeGoogleSync
+                             text:l10n_util::GetNSString(
+                                      IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE)
+                       detailText:l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+                    iconImageName:kSyncAndGoogleServicesSyncOnImageName
+          accessibilityIdentifier:kSettingsGoogleSyncAndServicesCellId];
+  [self updateGoogleSyncCellItem:googleSyncCellItem];
+  return googleSyncCellItem;
 }
 
 - (TableViewItem*)syncAndGoogleServicesCellItem {
@@ -996,8 +1002,13 @@ NSString* kDevViewSourceKey = @"DevViewSource";
                                               closeSettingsOnAddAccount:NO];
       break;
     case ItemTypeSyncAndGoogleServices:
+    case ItemTypeGoogleServices:
       base::RecordAction(base::UserMetricsAction("Settings.GoogleServices"));
-      [self showSyncGoogleService];
+      [self showGoogleServices];
+      break;
+    case ItemTypeGoogleSync:
+      base::RecordAction(base::UserMetricsAction("Settings.Sync"));
+      [self showGoogleSync];
       break;
     case ItemTypeDefaultBrowser:
       base::RecordAction(
@@ -1156,7 +1167,7 @@ NSString* kDevViewSourceKey = @"DevViewSource";
 
 #pragma mark - Private methods
 
-- (void)showSyncGoogleService {
+- (void)showGoogleServices {
   DCHECK(!_googleServicesSettingsCoordinator);
   _googleServicesSettingsCoordinator =
       [[GoogleServicesSettingsCoordinator alloc]
@@ -1166,6 +1177,15 @@ NSString* kDevViewSourceKey = @"DevViewSource";
   _googleServicesSettingsCoordinator.handler = self.dispatcher;
   _googleServicesSettingsCoordinator.delegate = self;
   [_googleServicesSettingsCoordinator start];
+}
+
+- (void)showGoogleSync {
+  DCHECK(!_manageSyncSettingsCoordinator);
+  _manageSyncSettingsCoordinator = [[ManageSyncSettingsCoordinator alloc]
+      initWithBaseNavigationController:self.navigationController
+                               browser:_browser];
+  _manageSyncSettingsCoordinator.delegate = self;
+  [_manageSyncSettingsCoordinator start];
 }
 
 - (void)showPasswords {
@@ -1318,17 +1338,71 @@ NSString* kDevViewSourceKey = @"DevViewSource";
   DCHECK(googleServicesItem.image);
 }
 
+// Updates the Sync item to display the right icon and status message in the
+// cell.
+- (void)updateGoogleSyncCellItem:(TableViewDetailIconItem*)googleSyncItem {
+  syncer::SyncService* syncService =
+      ProfileSyncServiceFactory::GetForBrowserState(_browserState);
+  SyncSetupService* syncSetupService =
+      SyncSetupServiceFactory::GetForBrowserState(_browserState);
+  if (syncService->GetDisableReasons().Has(
+          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
+    googleSyncItem.detailText = l10n_util::GetNSString(
+        IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_DISABLBED_BY_ADMINISTRATOR_STATUS);
+    googleSyncItem.iconImageName = kSyncAndGoogleServicesSyncOffImageName;
+  } else if (!IsTransientSyncError(syncSetupService->GetSyncServiceState())) {
+    googleSyncItem.detailText =
+        GetSyncErrorDescriptionForSyncSetupService(syncSetupService);
+    googleSyncItem.iconImageName = kSyncAndGoogleServicesSyncErrorImageName;
+  } else if (syncSetupService->IsFirstSetupComplete() &&
+             syncSetupService->IsSyncEnabled()) {
+    googleSyncItem.detailText = l10n_util::GetNSString(IDS_IOS_SETTING_ON);
+    googleSyncItem.iconImageName = kSyncAndGoogleServicesSyncOnImageName;
+  } else {
+    googleSyncItem.detailText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+    googleSyncItem.iconImageName = kSyncAndGoogleServicesSyncOffImageName;
+  }
+}
+
 // Updates and reloads the Google service cell.
 - (void)reloadSyncAndGoogleServicesCell {
-  NSIndexPath* googleServicesCellIndexPath =
-      [self.tableViewModel indexPathForItemType:ItemTypeSyncAndGoogleServices
+  if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
+    bool googleSyncCellInitialized =
+        [self.tableViewModel hasItemForItemType:ItemTypeGoogleSync
                               sectionIdentifier:SectionIdentifierAccount];
-  TableViewImageItem* googleServicesItem =
-      base::mac::ObjCCast<TableViewImageItem>(
-          [self.tableViewModel itemAtIndexPath:googleServicesCellIndexPath]);
-  DCHECK(googleServicesItem);
-  [self updateSyncAndGoogleServicesItem:googleServicesItem];
-  [self reconfigureCellsForItems:@[ googleServicesItem ]];
+    AuthenticationService* authService =
+        AuthenticationServiceFactory::GetForBrowserState(_browserState);
+    if (authService->IsAuthenticated()) {
+      if (!googleSyncCellInitialized) {
+        [self.tableViewModel addItem:[self googleSyncCellItem]
+             toSectionWithIdentifier:SectionIdentifierAccount];
+      } else {
+        NSIndexPath* syncCellIndexPath =
+            [self.tableViewModel indexPathForItemType:ItemTypeGoogleSync
+                                    sectionIdentifier:SectionIdentifierAccount];
+        TableViewDetailIconItem* detailIconItem =
+            base::mac::ObjCCast<TableViewDetailIconItem>(
+                [self.tableViewModel itemAtIndexPath:syncCellIndexPath]);
+        [self updateGoogleSyncCellItem:detailIconItem];
+        [self reconfigureCellsForItems:@[ detailIconItem ]];
+      }
+    } else {
+      if (googleSyncCellInitialized) {
+        [self.tableViewModel removeItemWithType:ItemTypeGoogleSync
+                      fromSectionWithIdentifier:SectionIdentifierAccount];
+      }
+    }
+  } else {
+    NSIndexPath* googleServicesCellIndexPath =
+        [self.tableViewModel indexPathForItemType:ItemTypeSyncAndGoogleServices
+                                sectionIdentifier:SectionIdentifierAccount];
+    TableViewImageItem* googleServicesItem =
+        base::mac::ObjCCast<TableViewImageItem>(
+            [self.tableViewModel itemAtIndexPath:googleServicesCellIndexPath]);
+    DCHECK(googleServicesItem);
+    [self updateSyncAndGoogleServicesItem:googleServicesItem];
+    [self reconfigureCellsForItems:@[ googleServicesItem ]];
+  }
 }
 
 // Check if the default search engine is managed by policy.
@@ -1661,6 +1735,15 @@ NSString* kDevViewSourceKey = @"DevViewSource";
 - (void)didTapLinkURL:(NSURL*)URL {
   GURL convertedURL = net::GURLWithNSURL(URL);
   [self view:nil didTapLinkURL:convertedURL];
+}
+
+#pragma mark - ManageSyncSettingsCoordinatorDelegate
+
+- (void)manageSyncSettingsCoordinatorWasRemoved:
+    (ManageSyncSettingsCoordinator*)coordinator {
+  DCHECK_EQ(_manageSyncSettingsCoordinator, coordinator);
+  [_manageSyncSettingsCoordinator stop];
+  _manageSyncSettingsCoordinator = nil;
 }
 
 @end

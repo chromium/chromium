@@ -20918,6 +20918,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.Sync">
+  <owner>jlebel@chromium.org</owner>
+  <owner>fernandex@chromium.org</owner>
+  <description>
+    Reported when user navigates to Google Sync Settings. iOS only.
+  </description>
+</action>
+
 <action name="Settings.VoiceSearch">
   <owner>rohitrao@chromium.org</owner>
   <owner>sczs@chromium.org</owner>

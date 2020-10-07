@@ -12,6 +12,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/features.h"
+#include "components/signin/public/base/account_consistency_method.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/ukm/ios/features.h"
@@ -122,7 +123,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 @property(nonatomic, assign, readonly) BOOL isSyncDisabledByAdministrator;
 // Returns YES if the user is allowed to turn on sync (even if there is a sync
 // error).
-@property(nonatomic, assign, readonly) BOOL isSyncCanBeAvailable;
+@property(nonatomic, assign, readonly) BOOL shouldDisplaySync;
 // Sync setup service.
 @property(nonatomic, assign, readonly) SyncSetupService* syncSetupService;
 // ** Identity section.
@@ -444,7 +445,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 // reloaded.
 - (BOOL)updateManageSyncItem {
   TableViewModel* model = self.consumer.tableViewModel;
-  if (self.isSyncCanBeAvailable) {
+  if (self.shouldDisplaySync) {
     BOOL needsUpdate = NO;
     if (!self.manageSyncItem) {
       self.manageSyncItem =
@@ -478,7 +479,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 // updated.
 - (BOOL)updateSyncChromeDataItem {
   TableViewModel* model = self.consumer.tableViewModel;
-  if (self.isSyncCanBeAvailable) {
+  if (self.shouldDisplaySync) {
     BOOL needsUpdate = NO;
     if (!self.syncChromeDataSwitchItem) {
       self.syncChromeDataSwitchItem =
@@ -594,8 +595,13 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
           self.mode == GoogleServicesSettingsModeAdvancedSigninSettings);
 }
 
-- (BOOL)isSyncCanBeAvailable {
-  return self.isAuthenticated && !self.isSyncDisabledByAdministrator;
+- (BOOL)shouldDisplaySync {
+  BOOL experimentEnabled =
+      base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency);
+  BOOL firstSetupWithExperiment =
+      !self.syncSetupService->IsFirstSetupComplete() && experimentEnabled;
+  return (firstSetupWithExperiment || !experimentEnabled) &&
+         self.isAuthenticated && !self.isSyncDisabledByAdministrator;
 }
 
 - (ItemArray)nonPersonalizedItems {
