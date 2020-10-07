@@ -100,8 +100,7 @@ static inline bool IsLayoutObjectOfResourceContainer(
 }
 
 void SVGResourcesCache::ClientStyleChanged(LayoutObject& layout_object,
-                                           StyleDifference diff,
-                                           const ComputedStyle& new_style) {
+                                           StyleDifference diff) {
   DCHECK(layout_object.GetNode());
   DCHECK(layout_object.GetNode()->IsSVGElement());
 
@@ -119,8 +118,10 @@ void SVGResourcesCache::ClientStyleChanged(LayoutObject& layout_object,
   // oldStyle/newStyle to see which resources changed to be able to selectively
   // rebuild individual resources, instead of all of them.
   SVGResourcesCache& cache = ResourcesCache(layout_object.GetDocument());
-  if (cache.UpdateResourcesFromLayoutObject(layout_object, new_style))
+  if (cache.UpdateResourcesFromLayoutObject(layout_object,
+                                            layout_object.StyleRef())) {
     layout_object.SetNeedsPaintPropertyUpdate();
+  }
 
   // If this layoutObject is the child of ResourceContainer and it require
   // repainting that changes of CSS properties such as 'visibility',

@@ -172,7 +172,7 @@ void LayoutSVGModelObject::StyleDidChange(StyleDifference diff,
 
   LayoutObject::StyleDidChange(diff, old_style);
   SVGResources::UpdateClipPathFilterMask(*GetElement(), old_style, StyleRef());
-  SVGResourcesCache::ClientStyleChanged(*this, diff, StyleRef());
+  SVGResourcesCache::ClientStyleChanged(*this, diff);
 }
 
 void LayoutSVGModelObject::InsertedIntoTree() {

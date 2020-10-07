@@ -141,7 +141,7 @@ void LayoutSVGBlock::StyleDidChange(StyleDifference diff,
 
   LayoutBlock::StyleDidChange(diff, old_style);
   SVGResources::UpdateClipPathFilterMask(*GetElement(), old_style, StyleRef());
-  SVGResourcesCache::ClientStyleChanged(*this, diff, StyleRef());
+  SVGResourcesCache::ClientStyleChanged(*this, diff);
 }
 
 void LayoutSVGBlock::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,

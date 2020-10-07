@@ -385,7 +385,7 @@ void LayoutSVGRoot::StyleDidChange(StyleDifference diff,
   LayoutReplaced::StyleDidChange(diff, old_style);
   SVGResources::UpdateClipPathFilterMask(To<SVGSVGElement>(*GetNode()),
                                          old_style, StyleRef());
-  SVGResourcesCache::ClientStyleChanged(*this, diff, StyleRef());
+  SVGResourcesCache::ClientStyleChanged(*this, diff);
 }
 
 bool LayoutSVGRoot::IsChildAllowed(LayoutObject* child,
