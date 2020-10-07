@@ -1486,6 +1486,66 @@ FileManagerBrowserTestBase::FileManagerBrowserTestBase() = default;
 
 FileManagerBrowserTestBase::~FileManagerBrowserTestBase() = default;
 
+
+static bool ShouldInspect(content::DevToolsAgentHost* host) {
+  // TODO(crbug.com/v8/10820): Add background_page back in once
+  // coverage can be collected when a background_page and app
+  // share the same v8 isolate.
+  if (host->GetTitle() == "Files" && host->GetType() == "app")
+    return true;
+
+  return false;
+}
+
+bool FileManagerBrowserTestBase::ShouldForceDevToolsAgentHostCreation() {
+  return devtools_code_coverage_;
+}
+
+void FileManagerBrowserTestBase::DevToolsAgentHostCreated(
+    content::DevToolsAgentHost* host) {
+  CHECK(devtools_agent_.find(host) == devtools_agent_.end());
+
+  if (ShouldInspect(host)) {
+    devtools_agent_[host].reset(new DevToolsListener(host, process_id_));
+  }
+}
+
+void FileManagerBrowserTestBase::DevToolsAgentHostAttached(
+    content::DevToolsAgentHost* host) {
+  if (auto* content = host->GetWebContents()) {
+    auto* manager = extensions::ProcessManager::Get(profile());
+    if (auto* extension = manager->GetExtensionForWebContents(content)) {
+      LOG(INFO) << "DevToolsAgentHostAttached: " << extension->name();
+      manager->IncrementLazyKeepaliveCount(
+          extension, extensions::Activity::Type::DEV_TOOLS, "");
+    }
+  }
+}
+
+void FileManagerBrowserTestBase::DevToolsAgentHostNavigated(
+    content::DevToolsAgentHost* host) {
+  if (devtools_agent_.find(host) == devtools_agent_.end())
+    return;
+
+  if (ShouldInspect(host)) {
+    LOG(INFO) << DevToolsListener::HostString(host, __FUNCTION__);
+    devtools_agent_.find(host)->second->Navigated(host);
+  } else {
+    devtools_agent_.find(host)->second->Detach(host);
+  }
+}
+
+void FileManagerBrowserTestBase::DevToolsAgentHostDetached(
+    content::DevToolsAgentHost* host) {}
+
+void FileManagerBrowserTestBase::DevToolsAgentHostCrashed(
+    content::DevToolsAgentHost* host,
+    base::TerminationStatus status) {
+  if (devtools_agent_.find(host) == devtools_agent_.end())
+    return;
+  NOTREACHED();
+}
+
 void FileManagerBrowserTestBase::SetUp() {
   net::NetworkChangeNotifier::SetTestNotificationsOnly(true);
   extensions::ExtensionApiTest::SetUp();
@@ -1586,6 +1646,10 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
 
   if (options.single_partition_format) {
     enabled_features.push_back(chromeos::features::kFilesSinglePartitionFormat);
+  }
+
+  if (command_line->HasSwitch("devtools-code-coverage")) {
+    devtools_code_coverage_ = options.guest_mode != IN_INCOGNITO;
   }
 
   // This is destroyed in |TearDown()|. We cannot initialize this in the
@@ -1732,6 +1796,10 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
   display_service_ =
       std::make_unique<NotificationDisplayServiceTester>(profile());
 
+  process_id_ = base::GetUniqueIdForProcess().GetUnsafeValue();
+  if (devtools_code_coverage_)
+    content::DevToolsAgentHost::AddObserver(this);
+
   content::NetworkConnectionChangeSimulator network_change_simulator;
   network_change_simulator.SetConnectionType(
       options.offline ? network::mojom::ConnectionType::CONNECTION_NONE
@@ -1762,11 +1830,39 @@ void FileManagerBrowserTestBase::TearDown() {
 }
 
 void FileManagerBrowserTestBase::StartTest() {
-  LOG(INFO) << "FileManagerBrowserTest::StartTest " << GetFullTestCaseName();
+  const std::string full_test_name = GetFullTestCaseName();
+  LOG(INFO) << "FileManagerBrowserTest::StartTest " << full_test_name;
   static const base::FilePath test_extension_dir =
       base::FilePath(FILE_PATH_LITERAL("ui/file_manager/integration_tests"));
   LaunchExtension(test_extension_dir, GetTestExtensionManifestName());
   RunTestMessageLoop();
+
+  if (!devtools_code_coverage_)
+    return;
+
+  content::DevToolsAgentHost::RemoveObserver(this);
+  content::RunAllTasksUntilIdle();
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  base::FilePath store;
+  CHECK(base::PathService::Get(base::DIR_EXE, &store));
+  store = store.AppendASCII("coverage").AppendASCII("file_manager");
+  CHECK(base::CreateDirectory(store));
+
+  base::FilePath tests = store.AppendASCII("tests");
+  if (!base::PathExists(tests))
+    CHECK(base::CreateDirectory(tests));
+
+  for (auto& agent : devtools_agent_) {
+    auto* host = agent.first;
+    if (agent.second->HasCoverage(host))
+      agent.second->GetCoverage(host, store, full_test_name);
+    agent.second->Detach(host);
+  }
+
+  content::DevToolsAgentHost::DetachAllClients();
+  content::RunAllTasksUntilIdle();
 }
 
 void FileManagerBrowserTestBase::LaunchExtension(const base::FilePath& path,

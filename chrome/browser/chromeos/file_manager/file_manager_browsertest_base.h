@@ -16,8 +16,10 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/crostini/fake_crostini_features.h"
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
+#include "chrome/browser/chromeos/file_manager/devtools_listener.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/devtools_agent_host_observer.h"
 
 class NotificationDisplayServiceTester;
 class SelectFileDialogExtensionTestFactory;
@@ -40,7 +42,8 @@ class DocumentsProviderTestVolume;
 class MediaViewTestVolume;
 class SmbfsTestVolume;
 
-class FileManagerBrowserTestBase : public extensions::ExtensionApiTest {
+class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
+                                   public extensions::ExtensionApiTest {
  public:
   struct Options {
     Options();
@@ -100,6 +103,15 @@ class FileManagerBrowserTestBase : public extensions::ExtensionApiTest {
  protected:
   FileManagerBrowserTestBase();
   ~FileManagerBrowserTestBase() override;
+
+  // content::DevToolsAgentHostObserver:
+  bool ShouldForceDevToolsAgentHostCreation() override;
+  void DevToolsAgentHostCreated(content::DevToolsAgentHost* host) override;
+  void DevToolsAgentHostAttached(content::DevToolsAgentHost* host) override;
+  void DevToolsAgentHostNavigated(content::DevToolsAgentHost* host) override;
+  void DevToolsAgentHostDetached(content::DevToolsAgentHost* host) override;
+  void DevToolsAgentHostCrashed(content::DevToolsAgentHost* host,
+                                base::TerminationStatus status) override;
 
   // extensions::ExtensionApiTest:
   void SetUp() override;
@@ -188,6 +200,11 @@ class FileManagerBrowserTestBase : public extensions::ExtensionApiTest {
 
   base::HistogramTester histograms_;
   base::UserActionTester user_actions_;
+
+  bool devtools_code_coverage_ = false;
+  std::map<content::DevToolsAgentHost*, std::unique_ptr<DevToolsListener>>
+      devtools_agent_;
+  uint32_t process_id_ = 0;
 
   // Not owned.
   SelectFileDialogExtensionTestFactory* select_factory_;
