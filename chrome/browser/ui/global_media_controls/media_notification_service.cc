@@ -873,19 +873,17 @@ void MediaNotificationService::OnNotificationChanged(
     observer.OnNotificationListChanged();
 
   // Avoid re-examining the supplemental notifications as a side-effect of
-  // showing or hiding a supplemental notification.
+  // hiding a supplemental notification.
   if (!changed_notification_id ||
       base::Contains(supplemental_notifications_, *changed_notification_id))
     return;
 
-  // Show or hide supplemental notifications as necessary.
+  // Hide supplemental notifications if necessary.
   for (const auto& pair : supplemental_notifications_) {
     // If there is an active session associated with the same web contents as
-    // this supplemental notification, hide it; if not, show it.
+    // this supplemental notification, hide it.
     if (HasSessionForWebContents(pair.second)) {
       HideNotification(pair.first);
-    } else {
-      ShowNotification(pair.first);
     }
   }
 }
