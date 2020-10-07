@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "chrome/browser/prerender/isolated/isolated_prerender_tab_helper.h"
+#include "chrome/browser/prerender/isolated/isolated_prerender_prefetch_status.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -210,7 +210,7 @@ class IsolatedPrerenderProxyingURLLoaderFactory
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       const GURL& url,
       bool eligible,
-      base::Optional<IsolatedPrerenderTabHelper::PrefetchStatus> not_used);
+      base::Optional<IsolatedPrerenderPrefetchStatus> not_used);
 
   // Returns true when this factory was created during a NoStatePrefetch.
   // Internally, this means |NotifyPageNavigatedToAfterSRP| has not been called.

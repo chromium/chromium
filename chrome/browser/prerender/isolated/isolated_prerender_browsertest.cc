@@ -35,6 +35,7 @@
 #include "chrome/browser/prerender/isolated/isolated_prerender_features.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_origin_prober.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_params.h"
+#include "chrome/browser/prerender/isolated/isolated_prerender_prefetch_status.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_proxy_configurator.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_service.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_service_factory.h"
@@ -872,7 +873,7 @@ IN_PROC_BROWSER_TEST_F(
   // Navigate again to trigger UKM recording.
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
-  // 6 = |PrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker|.
+  // 6 = |kPrefetchNotEligibleUserHasServiceWorker|
   EXPECT_EQ(base::Optional<int64_t>(6),
             GetUKMMetric(prefetch_url,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
@@ -937,9 +938,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedPrerenderBrowserTest,
   ui_test_utils::NavigateToURL(browser(), prefetch_url);
 
   ASSERT_TRUE(tab_helper->after_srp_metrics());
-  EXPECT_EQ(base::make_optional(IsolatedPrerenderTabHelper::PrefetchStatus::
-                                    kPrefetchNotEligibleUserHasCookies),
-            tab_helper->after_srp_metrics()->prefetch_status_);
+  EXPECT_EQ(
+      base::make_optional(
+          IsolatedPrerenderPrefetchStatus::kPrefetchNotEligibleUserHasCookies),
+      tab_helper->after_srp_metrics()->prefetch_status_);
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedPrerenderBrowserTest,
@@ -965,9 +967,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedPrerenderBrowserTest,
   ui_test_utils::NavigateToURL(browser(), prefetch_url);
 
   ASSERT_TRUE(tab_helper->after_srp_metrics());
-  EXPECT_EQ(base::make_optional(IsolatedPrerenderTabHelper::PrefetchStatus::
-                                    kPrefetchNotEligibleUserHasCookies),
-            tab_helper->after_srp_metrics()->prefetch_status_);
+  EXPECT_EQ(
+      base::make_optional(
+          IsolatedPrerenderPrefetchStatus::kPrefetchNotEligibleUserHasCookies),
+      tab_helper->after_srp_metrics()->prefetch_status_);
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedPrerenderBrowserTest,
@@ -1003,10 +1006,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedPrerenderBrowserTest,
   ui_test_utils::NavigateToURL(browser(), prefetch_url);
 
   ASSERT_TRUE(tab_helper->after_srp_metrics());
-  EXPECT_EQ(
-      base::make_optional(
-          IsolatedPrerenderTabHelper::PrefetchStatus::kPrefetchUsedNoProbe),
-      tab_helper->after_srp_metrics()->prefetch_status_);
+  EXPECT_EQ(base::make_optional(
+                IsolatedPrerenderPrefetchStatus::kPrefetchUsedNoProbe),
+            tab_helper->after_srp_metrics()->prefetch_status_);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1042,10 +1044,9 @@ IN_PROC_BROWSER_TEST_F(
   ui_test_utils::NavigateToURL(browser(), prefetch_url);
 
   ASSERT_TRUE(tab_helper->after_srp_metrics());
-  EXPECT_EQ(
-      base::make_optional(
-          IsolatedPrerenderTabHelper::PrefetchStatus::kPrefetchUsedNoProbe),
-      tab_helper->after_srp_metrics()->prefetch_status_);
+  EXPECT_EQ(base::make_optional(
+                IsolatedPrerenderPrefetchStatus::kPrefetchUsedNoProbe),
+            tab_helper->after_srp_metrics()->prefetch_status_);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1223,8 +1224,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedPrerenderBrowserTest,
       eligible_link_2,
       ukm::builders::PrefetchProxy_AfterSRPClick::kSRPPrefetchEligibleCountName,
       3);
-  // 0 is the value of |PrefetchStatus::kPrefetchUsedNoProbe|. The enum is not
-  // used here intentionally because its value should never change.
+  // 0 is the value of |kPrefetchUsedNoProbe|. The enum is not used here
+  // intentionally because its value should never change.
   VerifyUKMAfterSRP(
       eligible_link_2,
       ukm::builders::PrefetchProxy_AfterSRPClick::kSRPClickPrefetchStatusName,
@@ -1288,8 +1289,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedPrerenderBrowserTest,
       eligible_link_204,
       ukm::builders::PrefetchProxy_AfterSRPClick::kSRPPrefetchEligibleCountName,
       1);
-  // 0 is the value of |PrefetchStatus::kPrefetchUsedNoProbe|. The enum is not
-  // used here intentionally because its value should never change.
+  // 0 is the value of |kPrefetchUsedNoProbe|.  The enum is not used here
+  // intentionally because its value should never change.
   VerifyUKMAfterSRP(
       eligible_link_204,
       ukm::builders::PrefetchProxy_AfterSRPClick::kSRPClickPrefetchStatusName,
@@ -1363,7 +1364,7 @@ IN_PROC_BROWSER_TEST_F(
       prefetch_404_url,
       ukm::builders::PrefetchProxy_AfterSRPClick::kSRPPrefetchEligibleCountName,
       1);
-  // 12 is the value of |PrefetchStatus::kPrefetchFailedNon2XX|. The enum is not
+  // 12 is the value of |kPrefetchFailedNon2XX|. The enum is not
   // used here intentionally because its value should never change.
   VerifyUKMAfterSRP(
       prefetch_404_url,
@@ -1439,8 +1440,8 @@ IN_PROC_BROWSER_TEST_F(
       link_not_on_srp,
       ukm::builders::PrefetchProxy_AfterSRPClick::kSRPPrefetchEligibleCountName,
       1);
-  // 15 is the value of |PrefetchStatus::kNavigatedToLinkNotOnSRP|. The enum is
-  // not used here intentionally because its value should never change.
+  // 15 is the value of |kNavigatedToLinkNotOnSRP|. The enum is not used here
+  // intentionally because its value should never change.
   VerifyUKMAfterSRP(
       link_not_on_srp,
       ukm::builders::PrefetchProxy_AfterSRPClick::kSRPClickPrefetchStatusName,
@@ -1503,9 +1504,8 @@ IN_PROC_BROWSER_TEST_F(
       ineligible_link,
       ukm::builders::PrefetchProxy_AfterSRPClick::kSRPPrefetchEligibleCountName,
       0);
-  // 7 is the value of |PrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps|.
-  // The enum is not used here intentionally because its value should never
-  // change.
+  // 7 is the value of |kPrefetchNotEligibleSchemeIsNotHttps|. The enum is not
+  // used here intentionally because its value should never change.
   VerifyUKMAfterSRP(
       ineligible_link,
       ukm::builders::PrefetchProxy_AfterSRPClick::kSRPClickPrefetchStatusName,
@@ -1583,8 +1583,8 @@ IN_PROC_BROWSER_TEST_F(
       eligible_link_2,
       ukm::builders::PrefetchProxy_AfterSRPClick::kSRPPrefetchEligibleCountName,
       2);
-  // 3 is the value of |PrefetchStatus::kPrefetchNotStarted|. The enum is not
-  // used here intentionally because its value should never change.
+  // 3 is the value of |kPrefetchNotStarted|. The enum is not used here
+  // intentionally because its value should never change.
   VerifyUKMAfterSRP(
       eligible_link_2,
       ukm::builders::PrefetchProxy_AfterSRPClick::kSRPClickPrefetchStatusName,
@@ -2044,7 +2044,7 @@ IN_PROC_BROWSER_TEST_F(
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
   base::RunLoop().RunUntilIdle();
 
-  // 1 = |PrefetchStatus::kPrefetchUsedProbeSuccess|.
+  // 1 = |kPrefetchUsedProbeSuccess|.
   EXPECT_EQ(base::Optional<int64_t>(1),
             GetUKMMetric(eligible_link,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
@@ -2116,7 +2116,7 @@ IN_PROC_BROWSER_TEST_F(
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
   base::RunLoop().RunUntilIdle();
 
-  // 1 = |PrefetchStatus::kPrefetchNotUsedProbeFailed|.
+  // 1 = |kPrefetchNotUsedProbeFailed|.
   EXPECT_EQ(base::Optional<int64_t>(2),
             GetUKMMetric(eligible_link,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
@@ -2570,7 +2570,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedPrerenderWithNSPBrowserTest,
   // recorded and to trigger UKM recording.
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
-  // 16 = |PrefetchStatus::kPrefetchUsedNoProbeWithNSP|.
+  // 16 = |kPrefetchUsedNoProbeWithNSP|.
   EXPECT_EQ(base::Optional<int64_t>(16),
             GetUKMMetric(eligible_link,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
@@ -2794,7 +2794,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedPrerenderWithNSPBrowserTest,
   // Navigate again to trigger UKM recording.
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
-  // 19 = |PrefetchStatus::kPrefetchUsedNoProbeNSPAttemptDenied|.
+  // 19 = |kPrefetchUsedNoProbeNSPAttemptDenied|.
   EXPECT_EQ(base::Optional<int64_t>(19),
             GetUKMMetric(eligible_link,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
@@ -2859,7 +2859,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedPrerenderWithNSPBrowserTest,
   // Navigate again to trigger UKM recording.
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
-  // 22 = |PrefetchStatus::kPrefetchUsedNoProbeNSPNotStarted|.
+  // 22 = |kPrefetchUsedNoProbeNSPNotStarted|.
   EXPECT_EQ(base::Optional<int64_t>(22),
             GetUKMMetric(eligible_link_2,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
@@ -3000,7 +3000,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedPrerenderWithNSPBrowserTest,
   // Navigate again to trigger UKM recording.
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
-  // 16 = |PrefetchStatus::kPrefetchUsedNoProbeWithNSP|.
+  // 16 = |kPrefetchUsedNoProbeWithNSP|.
   EXPECT_EQ(base::Optional<int64_t>(16),
             GetUKMMetric(eligible_link,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
@@ -3064,7 +3064,7 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledIsolatedPrerenderBrowserTest,
   // Navigate again to trigger UKM recording.
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
-  // 17 = |PrefetchStatus::kPrefetchUsedProbeSuccessWithNSP|.
+  // 17 = |kPrefetchUsedProbeSuccessWithNSP|.
   EXPECT_EQ(base::Optional<int64_t>(17),
             GetUKMMetric(eligible_link,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
@@ -3109,7 +3109,7 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledIsolatedPrerenderBrowserTest,
   // Navigate again to trigger UKM recording.
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
-  // 20 = |PrefetchStatus::kPrefetchUsedProbeSuccessNSPAttemptDenied|.
+  // 20 = |kPrefetchUsedProbeSuccessNSPAttemptDenied|.
   EXPECT_EQ(base::Optional<int64_t>(20),
             GetUKMMetric(eligible_link,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
@@ -3174,7 +3174,7 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledIsolatedPrerenderBrowserTest,
   // Navigate again to trigger UKM recording.
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
-  // 23 = |PrefetchStatus::kPrefetchUsedProbeSuccessNSPNotStarted|.
+  // 23 = |kPrefetchUsedProbeSuccessNSPNotStarted|.
   EXPECT_EQ(base::Optional<int64_t>(23),
             GetUKMMetric(eligible_link_2,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
@@ -3243,7 +3243,7 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledIsolatedPrerenderBrowserTest,
   // Navigate again to trigger UKM recording.
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
-  // 18 = |PrefetchStatus::kPrefetchNotUsedProbeFailedWithNSP|.
+  // 18 = |kPrefetchNotUsedProbeFailedWithNSP|.
   EXPECT_EQ(base::Optional<int64_t>(18),
             GetUKMMetric(eligible_link,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
@@ -3295,7 +3295,7 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledIsolatedPrerenderBrowserTest,
   // Navigate again to trigger UKM recording.
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
-  // 21 = |PrefetchStatus::kPrefetchNotUsedProbeFailedNSPAttemptDenied|.
+  // 21 =  |kPrefetchNotUsedProbeFailedNSPAttemptDenied|.
   EXPECT_EQ(base::Optional<int64_t>(21),
             GetUKMMetric(eligible_link,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
@@ -3367,7 +3367,7 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledIsolatedPrerenderBrowserTest,
   // Navigate again to trigger UKM recording.
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
-  // 24 = |PrefetchStatus::kPrefetchNotUsedProbeFailedNSPNotStarted|.
+  // 24 = |kPrefetchNotUsedProbeFailedNSPNotStarted|.
   EXPECT_EQ(base::Optional<int64_t>(24),
             GetUKMMetric(eligible_link_2,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,

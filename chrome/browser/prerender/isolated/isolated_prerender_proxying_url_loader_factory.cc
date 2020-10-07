@@ -75,7 +75,7 @@ void SingleURLEligibilityCheckResult(
     scoped_refptr<SuccessCount> success_count,
     const GURL& url,
     bool eligible,
-    base::Optional<IsolatedPrerenderTabHelper::PrefetchStatus> not_used) {
+    base::Optional<IsolatedPrerenderPrefetchStatus> not_used) {
   if (eligible) {
     success_count->Increment();
   }
@@ -433,7 +433,7 @@ void IsolatedPrerenderProxyingURLLoaderFactory::OnEligibilityResult(
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     const GURL& url,
     bool eligible,
-    base::Optional<IsolatedPrerenderTabHelper::PrefetchStatus> not_used) {
+    base::Optional<IsolatedPrerenderPrefetchStatus> not_used) {
   DCHECK_EQ(request.url, url);
   DCHECK(!previously_cached_subresources_.has_value());
   DCHECK(request.cors_exempt_headers.HasHeader(

@@ -212,9 +212,8 @@ void IsolatedPrerenderURLLoaderInterceptor::InterceptPrefetchedNavigation(
 
   NotifyPrefetchStatusUpdate(
       probe_start_time_.has_value()
-          ? IsolatedPrerenderTabHelper::PrefetchStatus::
-                kPrefetchUsedProbeSuccess
-          : IsolatedPrerenderTabHelper::PrefetchStatus::kPrefetchUsedNoProbe);
+          ? IsolatedPrerenderPrefetchStatus::kPrefetchUsedProbeSuccess
+          : IsolatedPrerenderPrefetchStatus::kPrefetchUsedNoProbe);
 
   std::unique_ptr<IsolatedPrerenderFromStringURLLoader> url_loader =
       std::make_unique<IsolatedPrerenderFromStringURLLoader>(
@@ -245,7 +244,7 @@ void IsolatedPrerenderURLLoaderInterceptor::OnProbeComplete(
   NotifySubresourceManagerOfBadProbe(frame_tree_node_id_, url_);
 
   NotifyPrefetchStatusUpdate(
-      IsolatedPrerenderTabHelper::PrefetchStatus::kPrefetchNotUsedProbeFailed);
+      IsolatedPrerenderPrefetchStatus::kPrefetchNotUsedProbeFailed);
   DoNotInterceptNavigation();
 }
 
@@ -265,7 +264,7 @@ IsolatedPrerenderURLLoaderInterceptor::GetPrefetchedResponse(const GURL& url) {
 }
 
 void IsolatedPrerenderURLLoaderInterceptor::NotifyPrefetchStatusUpdate(
-    IsolatedPrerenderTabHelper::PrefetchStatus status) const {
+    IsolatedPrerenderPrefetchStatus status) const {
   content::WebContents* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
   if (!web_contents) {
