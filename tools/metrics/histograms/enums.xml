@@ -12210,6 +12210,9 @@ Called by update_net_error_codes.py.-->
   <int value="27" label="Share Image (DirectShare)"/>
   <int value="28" label="Search with Google Lens"/>
   <int value="29" label="Copy image"/>
+  <int value="30" label="Shop Similar Products"/>
+  <int value="31" label="Shop image with Google Lens"/>
+  <int value="32" label="Search Similar Products"/>
 </enum>
 
 <enum name="ContextMenuOptionDesktop">
