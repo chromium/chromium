@@ -14,7 +14,6 @@
 #include "base/base_export.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/containers/stack.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -304,11 +303,6 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
   std::unique_ptr<ConditionVariable> idle_workers_stack_cv_for_testing_
       GUARDED_BY(lock_);
 
-  // Stack that contains the timestamps of when workers get cleaned up.
-  // Timestamps get popped off the stack as new workers are added.
-  base::stack<TimeTicks, std::vector<TimeTicks>> cleanup_timestamps_
-      GUARDED_BY(lock_);
-
   // Whether an AdjustMaxTasks() task was posted to the service thread.
   bool adjust_max_tasks_posted_ GUARDED_BY(lock_) = false;
 
@@ -345,10 +339,6 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
   // ThreadGroupImpl::ScopedCommandsExecutor (increase
   // |scheduled_histogram_samples_| size as needed) to defer until after |lock_|
   // release, due to metrics system callbacks which may schedule tasks.
-
-  // ThreadPool.DetachDuration.[thread group name] histogram. Intentionally
-  // leaked.
-  HistogramBase* const detach_duration_histogram_;
 
   // ThreadPool.NumTasksBeforeDetach.[thread group name] histogram.
   // Intentionally leaked.

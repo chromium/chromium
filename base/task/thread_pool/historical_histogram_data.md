@@ -159,3 +159,38 @@ Values in tables below are percentiles.
 | 1                 | 95.66           | 99.9             |
 | 2                 | 97.85           | 99.93            |
 | 5                 | 99.50           | 99.97            |
+
+## Detach Duration
+
+Time elapsed between when a shared worker is detached and when a new shared
+worker is created. Recorded each time a shared worker is created.
+
+Histogram name: ThreadPool.DetachDuration.(Browser/Renderer).Foreground
+Date: October 2020
+
+### Windows
+
+| Percentile  | Browser process (seconds) | Renderer process (seconds) |
+|-------------|---------------------------|----------------------------|
+| 25          | 22                        | 22                         |
+| 50          | 80                        | 65                         |
+| 75          | 301                       | 209                        |
+| 95          | 3468                      | 1801                       |
+
+### Mac
+
+| Percentile  | Browser process (seconds) | Renderer process (seconds) |
+|-------------|---------------------------|----------------------------|
+| 25          | 23                        | 20                         |
+| 50          | 82                        | 57                         |
+| 75          | 285                       | 209                        |
+| 95          | 2720                      | 1665                       |
+
+### Android
+
+| Percentile  | Browser process (seconds) | Renderer process (seconds) |
+|-------------|---------------------------|----------------------------|
+| 25          | 96                        | 97                         |
+| 50          | 362                       | 418                        |
+| 75          | 1161                      | 1307                       |
+| 95          | > 1 hour                  | > 1 hour                   |

@@ -48,7 +48,6 @@ namespace internal {
 
 namespace {
 
-constexpr char kDetachDurationHistogramPrefix[] = "ThreadPool.DetachDuration.";
 constexpr char kNumTasksBeforeDetachHistogramPrefix[] =
     "ThreadPool.NumTasksBeforeDetach.";
 constexpr size_t kMaxNumberOfWorkers = 256;
@@ -348,18 +347,6 @@ ThreadGroupImpl::ThreadGroupImpl(StringPiece histogram_label,
       thread_group_label_(thread_group_label.as_string()),
       priority_hint_(priority_hint),
       idle_workers_stack_cv_for_testing_(lock_.CreateConditionVariable()),
-      // Mimics the UMA_HISTOGRAM_LONG_TIMES macro.
-      detach_duration_histogram_(
-          histogram_label.empty()
-              ? nullptr
-              : Histogram::FactoryTimeGet(
-                    JoinString(
-                        {kDetachDurationHistogramPrefix, histogram_label},
-                        ""),
-                    TimeDelta::FromMilliseconds(1),
-                    TimeDelta::FromHours(1),
-                    50,
-                    HistogramBase::kUmaTargetedHistogramFlag)),
       // Mimics the UMA_HISTOGRAM_COUNTS_1000 macro. When a worker runs more
       // than 1000 tasks before detaching, there is no need to know the exact
       // number of tasks that ran.
@@ -729,7 +716,6 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::CleanupLockRequired(
         outer_->num_tasks_before_detach_histogram_,
         worker_only().num_tasks_since_last_detach);
   }
-  outer_->cleanup_timestamps_.push(subtle::TimeTicksNowIgnoringOverride());
   worker->Cleanup();
   outer_->idle_workers_stack_.Remove(worker);
 
@@ -972,16 +958,6 @@ ThreadGroupImpl::CreateAndRegisterWorkerLockRequired(
   workers_.push_back(worker);
   executor->ScheduleStart(worker);
   DCHECK_LE(workers_.size(), max_tasks_);
-
-  if (!cleanup_timestamps_.empty()) {
-    if (detach_duration_histogram_) {
-      executor->ScheduleAddHistogramSample(
-          detach_duration_histogram_,
-          (subtle::TimeTicksNowIgnoringOverride() - cleanup_timestamps_.top())
-              .InMilliseconds());
-    }
-    cleanup_timestamps_.pop();
-  }
 
   return worker;
 }

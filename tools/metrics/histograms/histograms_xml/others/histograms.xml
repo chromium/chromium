@@ -14771,6 +14771,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram base="true" name="ThreadPool.DetachDuration" units="ms"
     expires_after="M85">
+  <obsolete>
+    Removed 10/2020. Not actively used.
+  </obsolete>
   <owner>fdoray@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
