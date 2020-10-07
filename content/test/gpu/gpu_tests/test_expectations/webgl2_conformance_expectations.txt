@@ -86,6 +86,7 @@ crbug.com/1100470 conformance/textures/misc/exif-orientation.html [ Skip ]
 crbug.com/1082533 [ mac intel ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
 crbug.com/1082533 [ win vulkan passthrough ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
 crbug.com/1018028 [ win vulkan ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
+crbug.com/angleproject/5038 conformance/extensions/ext-color-buffer-half-float.html [ Skip ]
 
 crbug.com/953120 conformance/programs/program-handling.html [ Failure ]
 
