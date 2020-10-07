@@ -54,11 +54,20 @@ class FakeHostResolver : public network::mojom::HostResolver {
     fake_dns_results_ = std::move(fake_dns_results);
   }
 
+  // If set to true, the binding pipe will be disconnected when attempting to
+  // connect.
+  void set_disconnect_during_host_resolution(bool disconnect) {
+    disconnect_ = disconnect;
+  }
+
  private:
   mojo::Receiver<network::mojom::HostResolver> receiver_;
   // Use the list of fake dns results to fake different responses for multiple
   // calls to the host_resolver's ResolveHost().
   std::deque<DnsResult*> fake_dns_results_;
+  // Used to mimic the scenario where network::mojom::HostResolver receiver
+  // is disconnected.
+  bool disconnect_ = false;
 };
 
 }  // namespace network_diagnostics

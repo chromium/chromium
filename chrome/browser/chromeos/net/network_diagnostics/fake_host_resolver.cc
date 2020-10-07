@@ -39,6 +39,10 @@ void FakeHostResolver::ResolveHost(
     network::mojom::ResolveHostParametersPtr optional_parameters,
     mojo::PendingRemote<network::mojom::ResolveHostClient>
         pending_response_client) {
+  if (disconnect_) {
+    receiver_.reset();
+    return;
+  }
   mojo::Remote<network::mojom::ResolveHostClient> response_client(
       std::move(pending_response_client));
   DnsResult* result = fake_dns_results_.front();
