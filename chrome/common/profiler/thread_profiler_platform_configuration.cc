@@ -192,10 +192,8 @@ double AndroidPlatformConfiguration::GetChildProcessEnableFraction(
   if (browser_test_mode_enabled())
     return DefaultPlatformConfiguration::GetChildProcessEnableFraction(process);
 
-  // TODO(https://crbug.com/1135152): Increase enable rate once we've validated
-  // the hypothesis about crash cause, and mitigated the issue.
   if (process == metrics::CallStackProfileParams::RENDERER_PROCESS)
-    return 0.006;
+    return 0.4;
 
   // TODO(https://crbug.com/1004855): Enable for all the default processes.
   return 0.0;
