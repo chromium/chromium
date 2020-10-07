@@ -58,22 +58,6 @@ public class TranslateBridge {
     }
 
     /**
-     * @return The original language code of the given tab. Empty string if no language was detected
-     *         yet.
-     */
-    public static String getOriginalLanguage(Tab tab) {
-        return TranslateBridgeJni.get().getOriginalLanguage(tab.getWebContents());
-    }
-
-    /**
-     * @return The current language code of the given tab. Empty string if no language was detected
-     *         yet.
-     */
-    public static String getCurrentLanguage(Tab tab) {
-        return TranslateBridgeJni.get().getCurrentLanguage(tab.getWebContents());
-    }
-
-    /**
      * @return The best target language based on what the Translate Service knows about the user.
      */
     public static String getTargetLanguage() {
@@ -216,8 +200,6 @@ public class TranslateBridge {
         boolean canManuallyTranslate(WebContents webContents);
         boolean shouldShowManualTranslateIPH(WebContents webContents);
         void setPredefinedTargetLanguage(WebContents webContents, String targetLanguage);
-        String getOriginalLanguage(WebContents webContents);
-        String getCurrentLanguage(WebContents webContents);
         String getTargetLanguage();
         boolean isBlockedLanguage(String language);
         void getModelLanguages(LinkedHashSet<String> set);
