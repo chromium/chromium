@@ -36,10 +36,35 @@ message IdType {
   }
 }
 
+message LocationStandard {
+  enum Format {
+    UNKNOWN = 0;
+    // E164 country codes:
+    // https://en.wikipedia.org/wiki/List_of_country_calling_codes
+    // e.g. +1 for USA
+    E164_CALLING = 1;
+
+    // ISO 3166-1 alpha-2 country codes:
+    // https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
+    ISO_3166_1_ALPHA_2 = 2;
+  }
+}
+
+// LocationHint is used to specify a location as well as format.
+message LocationHint {
+  // Location is the location, provided in the format specified by format.
+  string location = 1;
+
+  // the format of location.
+  LocationStandard.Format format = 2;
+}
+
 message Id {
   IdType.Type type = 1;
   string id = 2;
   string app = 3;
+  string country_code = 4 [deprecated = true];
+  LocationHint location_hint = 5;
 }
 
 message ApiVersion {

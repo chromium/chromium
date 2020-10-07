@@ -5,6 +5,7 @@
 #include "chrome/browser/nearby_sharing/webrtc_signaling_messenger.h"
 
 #include "base/bind_helpers.h"
+#include "base/i18n/timezone.h"
 #include "base/token.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/proto/instantmessaging.pb.h"
 
@@ -16,6 +17,13 @@ constexpr int kMajorVersion = 1;
 constexpr int kMinorVersion = 24;
 constexpr int kPointVersion = 0;
 
+void BuildLocationHint(
+    chrome_browser_nearby_sharing_instantmessaging::LocationHint* hint) {
+  hint->set_location(base::CountryCodeForCurrentTimezone());
+  hint->set_format(chrome_browser_nearby_sharing_instantmessaging::
+                       LocationStandard_Format_ISO_3166_1_ALPHA_2);
+}
+
 void BuildId(chrome_browser_nearby_sharing_instantmessaging::Id* req_id,
              const std::string& id) {
   DCHECK(req_id);
@@ -23,6 +31,7 @@ void BuildId(chrome_browser_nearby_sharing_instantmessaging::Id* req_id,
   req_id->set_app(kAppName);
   req_id->set_type(
       chrome_browser_nearby_sharing_instantmessaging::IdType::NEARBY_ID);
+  BuildLocationHint(req_id->mutable_location_hint());
 }
 
 void BuildHeader(
