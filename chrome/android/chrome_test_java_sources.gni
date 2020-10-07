@@ -303,6 +303,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/ntp/RecentTabsPageTest.java",
   "javatests/src/org/chromium/chrome/browser/ntp/TitleUtilTest.java",
   "javatests/src/org/chromium/chrome/browser/ntp/cards/promo/HomepagePromoTest.java",
+  "javatests/src/org/chromium/chrome/browser/ntp/cards/promo/enhanced_protection/EnhancedProtectionPromoTest.java",
   "javatests/src/org/chromium/chrome/browser/offlinepages/MHTMLPageTest.java",
   "javatests/src/org/chromium/chrome/browser/offlinepages/OfflinePageArchivePublisherBridgeTest.java",
   "javatests/src/org/chromium/chrome/browser/offlinepages/OfflinePageAutoFetchTest.java",

@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.signin.SigninActivity.AccessPoint;
@@ -74,8 +75,12 @@ public class SigninPromoController {
             case SigninAccessPoint.BOOKMARK_MANAGER:
                 return getSigninPromoImpressionsCountBookmarks() < MAX_IMPRESSIONS_BOOKMARKS;
             case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
-                // There is no impression limit for NTP content suggestions.
-                return true;
+                int maxImpressions = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.SIGNIN_PROMO_MAX_IMPRESSIONS_ANDROID, "MaxImpressions",
+                        Integer.MAX_VALUE);
+                return SharedPreferencesManager.getInstance().readInt(
+                               ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP)
+                        < maxImpressions;
             case SigninAccessPoint.RECENT_TABS:
                 // There is no impression limit for Recent Tabs.
                 return true;
@@ -122,8 +127,7 @@ public class SigninPromoController {
                         R.string.signin_promo_description_bookmarks_no_account;
                 break;
             case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
-                // There is no impression limit for NTP content suggestions.
-                mImpressionCountName = null;
+                mImpressionCountName = ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP;
                 mImpressionUserActionName = "Signin_Impression_FromNTPContentSuggestions";
                 mImpressionWithAccountUserActionName =
                         "Signin_ImpressionWithAccount_FromNTPContentSuggestions";

@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.ntp.SnapScrollHelper;
 import org.chromium.chrome.browser.ntp.cards.promo.HomepagePromoController;
+import org.chromium.chrome.browser.ntp.cards.promo.enhanced_protection.EnhancedProtectionPromoController;
 import org.chromium.chrome.browser.ntp.snippets.SectionHeaderView;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.PersonalizedSigninPromoView;
@@ -114,6 +115,11 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     private @Nullable View mHomepagePromoView;
     private @Nullable HomepagePromoController mHomepagePromoController;
 
+    // Enhanced Protection promo view will be not-null once we have it created, until it is
+    // destroyed.
+    private @Nullable View mEnhancedProtectionPromoView;
+    private @Nullable EnhancedProtectionPromoController mEnhancedProtectionPromoController;
+
     // Used when Feed is enabled.
     private @Nullable Stream mStream;
     private @Nullable StreamLifecycleManager mStreamLifecycleManager;
@@ -166,6 +172,22 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             assert mHomepagePromoController != null;
             mHomepagePromoController.dismissPromo();
         }
+    }
+
+    private class EnhancedProtectionPromoHeader implements Header {
+        @Override
+        public View getView() {
+            assert mEnhancedProtectionPromoView != null;
+            return mEnhancedProtectionPromoView;
+        }
+
+        @Override
+        public boolean isDismissible() {
+            return false;
+        }
+
+        @Override
+        public void onDismissed() {}
     }
 
     /**
@@ -267,6 +289,10 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             mHomepagePromoController =
                     new HomepagePromoController(mActivity, mSnackbarManager, mTracker);
         }
+        if (isEnhancedProtectionPromoEnabled()) {
+            mEnhancedProtectionPromoController =
+                    new EnhancedProtectionPromoController(mActivity, mProfile);
+        }
 
         // Mediator should be created before any Stream changes.
         mMediator = new FeedSurfaceMediator(this, snapScrollHelper, mPageNavigationDelegate);
@@ -282,6 +308,9 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mStreamLifecycleManager = null;
         mStreamWrapper.doneWithStream();
         if (mHomepagePromoController != null) mHomepagePromoController.destroy();
+        if (mEnhancedProtectionPromoController != null) {
+            mEnhancedProtectionPromoController.destroy();
+        }
     }
 
     @Override
@@ -365,6 +394,9 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         if (mSectionHeaderView != null) UiUtils.removeViewFromParent(mSectionHeaderView);
         if (mSigninPromoView != null) UiUtils.removeViewFromParent(mSigninPromoView);
         if (mHomepagePromoView != null) UiUtils.removeViewFromParent(mHomepagePromoView);
+        if (mEnhancedProtectionPromoView != null) {
+            UiUtils.removeViewFromParent(mEnhancedProtectionPromoView);
+        }
 
         if (mNtpHeader != null) {
             mStream.setHeaderViews(Arrays.asList(new NonDismissibleHeader(mNtpHeader),
@@ -418,6 +450,12 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
                 mHomepagePromoController.destroy();
                 mHomepagePromoController = null;
             }
+
+            mEnhancedProtectionPromoView = null;
+            if (mEnhancedProtectionPromoController != null) {
+                mEnhancedProtectionPromoController.destroy();
+                mEnhancedProtectionPromoController = null;
+            }
             mStreamWrapper.doneWithStream();
         }
 
@@ -467,7 +505,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     /**
      *  Update header views in the Stream.
      *  */
-    void updateHeaderViews(boolean isSignInPromoVisible, View homepagePromoView) {
+    void updateHeaderViews(boolean isSignInPromoVisible, @Nullable View homepagePromoView,
+            @Nullable View enhancedProtectionPromoView) {
         if (mStream == null) return;
 
         List<Header> headers = new ArrayList<>();
@@ -479,6 +518,11 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         if (homepagePromoView != null) {
             mHomepagePromoView = homepagePromoView;
             headers.add(new HomepagePromoHeader());
+        }
+
+        if (enhancedProtectionPromoView != null) {
+            mEnhancedProtectionPromoView = enhancedProtectionPromoView;
+            headers.add(new EnhancedProtectionPromoHeader());
         }
 
         if (mSectionHeaderView != null) {
@@ -534,6 +578,16 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
 
     HomepagePromoController getHomepagePromoController() {
         return mHomepagePromoController;
+    }
+
+    EnhancedProtectionPromoController getEnhancedProtectionPromoController() {
+        return mEnhancedProtectionPromoController;
+    }
+
+    private boolean isEnhancedProtectionPromoEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD)
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED);
     }
 
     @VisibleForTesting

@@ -1563,6 +1563,22 @@ Unknown properties are collapsed to zero. -->
   <int value="12" label="OFFLINE_CONTENT_NOTIFICATION"/>
 </enum>
 
+<enum name="AndroidEnhancedProtectionPromoAction">
+  <int value="0" label="Promo created">
+    The Android Safe Browsing Enhanced Protection promo was created on the new
+    tab page.
+  </int>
+  <int value="1" label="Promo shown">
+    The Android Safe Browsing Enhanced Protection promo was shown.
+  </int>
+  <int value="2" label="Promo dismissed">
+    User dismissed the Safe Browsing Enhanced Protection promo.
+  </int>
+  <int value="3" label="Promo accepted">
+    User navigated to the Settings page by accepting the promo.
+  </int>
+</enum>
+
 <enum name="AndroidEvictionReason">
   <int value="0" label="TabUnusedTooLong"/>
   <int value="1" label="TabUnusedInSession"/>
