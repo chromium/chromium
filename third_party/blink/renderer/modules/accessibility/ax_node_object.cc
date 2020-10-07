@@ -3453,12 +3453,13 @@ void AXNodeObject::InsertChild(AXObject* child,
     // unignored descendants as it goes.
     const auto& children = child->ChildrenIncludingIgnored();
     wtf_size_t length = children.size();
+    int new_index = index;
     for (wtf_size_t i = 0; i < length; ++i) {
       // If the child was owned, it will be added elsewhere as a direct
       // child of the object owning it, and not as an indirect child under
       // an object not included in the tree.
       if (!AXObjectCache().IsAriaOwned(children[i]))
-        children_.insert(index + i, children[i]);
+        children_.insert(new_index++, children[i]);
     }
   } else if (!child->IsMenuListOption()) {
     // MenuListOptions must only be added in AXMenuListPopup::AddChildren.
