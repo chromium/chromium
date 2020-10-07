@@ -165,6 +165,9 @@ class ASH_EXPORT UnifiedSystemTrayView : public views::View,
   PageIndicatorView* page_indicator_view_for_test() {
     return page_indicator_view_;
   }
+  UnifiedMediaControlsContainer* media_controls_container_for_testing() {
+    return media_controls_container_;
+  }
 
  private:
   class SystemTrayContainer;

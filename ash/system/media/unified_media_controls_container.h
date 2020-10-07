@@ -16,8 +16,16 @@ class UnifiedMediaControlsContainer : public views::View {
   UnifiedMediaControlsContainer();
   ~UnifiedMediaControlsContainer() override = default;
 
+  // Set |should_show_media_controls_|.
   void SetShouldShowMediaControls(bool should_show);
+
+  // Show media controls if necessary. Returns true if media controls
+  // will be shown.
+  bool MaybeShowMediaControls();
+
+  // Set |expanded_amount_| and hide/show media controls correspondingly.
   void SetExpandedAmount(double expanded_amount);
+
   int GetExpandedHeight() const;
 
   // views::View
