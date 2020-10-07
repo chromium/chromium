@@ -34,7 +34,8 @@ constexpr int kToastDurationMs = 2500;
 
 // static
 void EnterpriseClipboardDlpController::Init() {
-  new EnterpriseClipboardDlpController();
+  if (!HasInstance())
+    new EnterpriseClipboardDlpController();
 }
 
 bool EnterpriseClipboardDlpController::IsDataReadAllowed(

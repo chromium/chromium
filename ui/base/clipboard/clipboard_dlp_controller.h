@@ -19,6 +19,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardDlpController {
   // Returns a pointer to the existing instance of the class.
   static ClipboardDlpController* Get();
 
+  // Returns true if an instance exists, without forcing an initialization.
+  static bool HasInstance();
+
   // Deletes the existing instance of the class if it's already created.
   // Indicates that restricting clipboard content is no longer required.
   static void DeleteInstance();

@@ -12,6 +12,11 @@ ClipboardDlpController* ClipboardDlpController::Get() {
 }
 
 // static
+bool ClipboardDlpController::HasInstance() {
+  return g_clipboard_dlp_controller_ != nullptr;
+}
+
+// static
 void ClipboardDlpController::DeleteInstance() {
   if (!g_clipboard_dlp_controller_)
     return;
