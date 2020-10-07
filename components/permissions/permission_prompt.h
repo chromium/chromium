@@ -58,6 +58,9 @@ class PermissionPrompt {
     virtual void Accept() = 0;
     virtual void Deny() = 0;
     virtual void Closing() = 0;
+
+    // Whether the current request has been shown to the user at least once.
+    virtual bool WasCurrentRequestAlreadyDisplayed() = 0;
   };
 
   typedef base::Callback<

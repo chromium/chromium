@@ -33,6 +33,10 @@ GURL TestPermissionBubbleViewDelegate::GetEmbeddingOrigin() const {
   return GURL("https://embedder.example.com");
 }
 
+bool TestPermissionBubbleViewDelegate::WasCurrentRequestAlreadyDisplayed() {
+  return false;
+}
+
 PermissionBubbleBrowserTest::PermissionBubbleBrowserTest() = default;
 
 PermissionBubbleBrowserTest::~PermissionBubbleBrowserTest() = default;

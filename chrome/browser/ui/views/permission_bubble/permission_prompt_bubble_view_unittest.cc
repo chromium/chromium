@@ -52,6 +52,8 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   void Deny() override {}
   void Closing() override {}
 
+  bool WasCurrentRequestAlreadyDisplayed() override { return false; }
+
  private:
   std::vector<std::unique_ptr<permissions::PermissionRequest>> requests_;
   std::vector<permissions::PermissionRequest*> raw_requests_;

@@ -40,6 +40,8 @@ class TestPermissionBubbleViewDelegate
   void Deny() override {}
   void Closing() override {}
 
+  bool WasCurrentRequestAlreadyDisplayed() override;
+
   void set_requests(std::vector<permissions::PermissionRequest*> requests) {
     requests_ = requests;
   }
