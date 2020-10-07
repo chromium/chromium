@@ -200,7 +200,7 @@ bool NTPResourceCache::NewTabHTMLNeedsRefresh() {
 
 NTPResourceCache::WindowType NTPResourceCache::GetWindowType(
     Profile* profile, content::RenderProcessHost* render_host) {
-  if (profile->IsGuestSession()) {
+  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile()) {
     return GUEST;
   } else if (render_host) {
     // Sometimes the |profile| is the parent (non-incognito) version of the user

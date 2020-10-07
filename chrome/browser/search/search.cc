@@ -172,9 +172,11 @@ struct NewTabURLDetails {
       : url(url), state(state) {}
 
   static NewTabURLDetails ForProfile(Profile* profile) {
-    // Incognito has its own New Tab.
-    if (profile->IsOffTheRecord())
+    // Incognito and Guest profiles have their own New Tab.
+    if (profile->IsIncognitoProfile() || profile->IsGuestSession() ||
+        profile->IsEphemeralGuestProfile()) {
       return NewTabURLDetails(GURL(), NEW_TAB_URL_INCOGNITO);
+    }
 
 #if defined(OS_ANDROID)
     const GURL local_url(chrome::kChromeSearchLocalNtpUrl);

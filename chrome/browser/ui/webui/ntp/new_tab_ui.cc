@@ -58,7 +58,7 @@ NewTabUI::NewTabUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
 
   Profile* profile = GetProfile();
 
-  if (!profile->IsGuestSession()) {
+  if (!profile->IsGuestSession() && !profile->IsEphemeralGuestProfile()) {
     web_ui->AddMessageHandler(std::make_unique<ThemeHandler>());
     if (profile->IsOffTheRecord()) {
       web_ui->AddMessageHandler(
