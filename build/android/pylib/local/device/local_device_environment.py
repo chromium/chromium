@@ -100,6 +100,7 @@ class LocalDeviceEnvironment(environment.Environment):
 
   def __init__(self, args, output_manager, _error_func):
     super(LocalDeviceEnvironment, self).__init__(output_manager)
+    self._current_try = 0
     self._denylist = (device_denylist.Denylist(args.denylist_file)
                       if args.denylist_file else None)
     self._device_serials = args.test_devices
@@ -187,6 +188,13 @@ class LocalDeviceEnvironment(environment.Environment):
         monitor.Start()
 
     self.parallel_devices.pMap(prepare_device)
+
+  @property
+  def current_try(self):
+    return self._current_try
+
+  def IncrementCurrentTry(self):
+    self._current_try += 1
 
   @property
   def denylist(self):

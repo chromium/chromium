@@ -1037,6 +1037,10 @@ class LocalDeviceInstrumentationTestRun(
         # that implies that we aren't actively maintaining baselines for the
         # test. This helps prevent unrelated CLs from getting comments posted to
         # them.
+        # Additionally, add the ignore if we're running on a trybot and this is
+        # not our final retry attempt in order to prevent unrelated CLs from
+        # getting spammed if a test is flaky.
+        optional_keys = {}
         with open(json_path) as infile:
           # All the key/value pairs in the JSON file are strings, so convert
           # to a bool.
@@ -1044,13 +1048,20 @@ class LocalDeviceInstrumentationTestRun(
           fail_on_unsupported = json_dict.get('fail_on_unsupported_configs',
                                               'false')
           fail_on_unsupported = fail_on_unsupported.lower() == 'true'
-        should_hide_failure = (
+        running_on_unsupported = (
             device.build_version_sdk not in RENDER_TEST_MODEL_SDK_CONFIGS.get(
                 device.product_model, []) and not fail_on_unsupported)
+        # TODO(skbug.com/10787): Remove the ignore on non-final retry once we
+        # fully switch over to using the Gerrit plugin for surfacing Gold
+        # information since it does not spam people with emails due to automated
+        # comments.
+        not_final_retry = self._env.current_try + 1 != self._env.max_tries
+        tryjob_but_not_final_retry =\
+            not_final_retry and gold_properties.IsTryjobRun()
+        should_hide_failure =\
+            running_on_unsupported or tryjob_but_not_final_retry
         if should_hide_failure:
-          json_dict['ignore'] = '1'
-          with open(json_path, 'w') as outfile:
-            json.dump(json_dict, outfile)
+          optional_keys['ignore'] = '1'
 
         gold_session = self._skia_gold_session_manager.GetSkiaGoldSession(
             keys_input=json_path)
@@ -1060,7 +1071,8 @@ class LocalDeviceInstrumentationTestRun(
               name=render_name,
               png_file=image_path,
               output_manager=self._env.output_manager,
-              use_luci=use_luci)
+              use_luci=use_luci,
+              optional_keys=optional_keys)
         except Exception as e:  # pylint: disable=broad-except
           _FailTestIfNecessary(results)
           _AppendToLog(results, 'Skia Gold comparison raised exception: %s' % e)

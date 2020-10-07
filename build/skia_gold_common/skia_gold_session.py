@@ -82,7 +82,8 @@ class SkiaGoldSession(object):
                     png_file,
                     output_manager,
                     inexact_matching_args=None,
-                    use_luci=True):
+                    use_luci=True,
+                    optional_keys=None):
     """Helper method to run all steps to compare a produced image.
 
     Handles authentication, itnitialization, comparison, and, if necessary,
@@ -101,6 +102,10 @@ class SkiaGoldSession(object):
       use_luci: If true, authentication will use the service account provided by
           the LUCI context. If false, will attempt to use whatever is set up in
           gsutil, which is only supported for local runs.
+      optional_keys: A dict containing optional key/value pairs to pass to Gold
+          for this comparison. Optional keys are keys unrelated to the
+          configuration the image was produced on, e.g. a comment or whether
+          Gold should treat the image as ignored.
 
     Returns:
       A tuple (status, error). |status| is a value from
@@ -118,7 +123,8 @@ class SkiaGoldSession(object):
     compare_rc, compare_stdout = self.Compare(
         name=name,
         png_file=png_file,
-        inexact_matching_args=inexact_matching_args)
+        inexact_matching_args=inexact_matching_args,
+        optional_keys=optional_keys)
     if not compare_rc:
       return self.StatusCodes.SUCCESS, None
 
@@ -227,7 +233,11 @@ class SkiaGoldSession(object):
       self._initialized = True
     return rc, stdout
 
-  def Compare(self, name, png_file, inexact_matching_args=None):
+  def Compare(self,
+              name,
+              png_file,
+              inexact_matching_args=None,
+              optional_keys=None):
     """Compares the given image to images known to Gold.
 
     Triage links can later be retrieved using GetTriageLinks().
@@ -238,6 +248,10 @@ class SkiaGoldSession(object):
       inexact_matching_args: A list of strings containing extra command line
           arguments to pass to Gold for inexact matching. Can be omitted to use
           exact matching.
+      optional_keys: A dict containing optional key/value pairs to pass to Gold
+          for this comparison. Optional keys are keys unrelated to the
+          configuration the image was produced on, e.g. a comment or whether
+          Gold should treat the image as ignored.
 
     Returns:
       A tuple (return_code, output). |return_code| is the return code of the
@@ -266,6 +280,13 @@ class SkiaGoldSession(object):
       logging.info('Using inexact matching arguments for image %s: %s', name,
                    inexact_matching_args)
       compare_cmd.extend(inexact_matching_args)
+
+    optional_keys = optional_keys or {}
+    for k, v in optional_keys.iteritems():
+      compare_cmd.extend([
+          '--add-test-optional-key',
+          '%s:%s' % (k, v),
+      ])
 
     self._ClearTriageLinkFile()
     rc, stdout = self._RunCmdForRcAndOutput(compare_cmd)
