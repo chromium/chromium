@@ -121,13 +121,19 @@ public class FeedListContentManager implements ListContentManager {
             }
 
             FrameLayout enclosingLayout = new FrameLayout(parent.getContext());
-            // Set the left and right margins.
             FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
                     new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-            layoutParams.leftMargin = context.getResources().getDimensionPixelSize(
-                    R.dimen.ntp_header_lateral_margins_v2);
-            layoutParams.rightMargin = layoutParams.leftMargin;
             enclosingLayout.setLayoutParams(layoutParams);
+
+            // Set the left and right paddings.
+            int horizontalPadding = context.getResources().getDimensionPixelSize(
+                    R.dimen.ntp_header_lateral_margins_v2);
+            enclosingLayout.setPadding(/* left */ horizontalPadding, /* top */ 0,
+                    /* right */ horizontalPadding, /* bottom */ 0);
+            // Do not clip children. This ensures that the negative margin use in the feed header
+            // does not subsequently cause the IPH bubble to be clipped.
+            enclosingLayout.setClipToPadding(false);
+            enclosingLayout.setClipChildren(false);
             enclosingLayout.addView(mNativeView);
             return enclosingLayout;
         }
