@@ -82,6 +82,14 @@ class UnitTest(unittest.TestCase):
     self.assertTrue(output.tests['e']['is_flaky'])
     self.assertIsNot(output.tests['e'].get('is_unexpected'), True)
 
+  def test_skip(self):
+    """Test setting expected skip."""
+    test = 'f'
+    output = sju.StdJson()
+    output.mark_skipped(test)
+    self.assertEqual(output.tests['f']['actual'], 'SKIP')
+    self.assertFalse(output.tests['f'].get('is_unexpected', False))
+
   def test_timeout(self):
     """Test setting timeout"""
     test = 'e'

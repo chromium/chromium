@@ -618,6 +618,7 @@ class TestRunner(object):
       # pass before entering the retry block below.
       # For each retry that passes, we want to mark it separately as passed
       # (ie/ "FAIL PASS"), with is_flaky=True.
+      # TODO(crbug.com/1132476): Report failed GTest logs to ResultSink.
       output = sju.StdJson(passed=passed, failed=failed, flaked=flaked)
 
       # Retry failed test cases.

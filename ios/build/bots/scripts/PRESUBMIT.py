@@ -15,6 +15,7 @@ def _RunTestRunnerUnitTests(input_api, output_api):
   files = [
       'coverage_util_test.py',
       'iossim_util_test.py',
+      'result_sink_util_test.py',
       'run_test.py',
       'shard_util_test.py',
       'standard_json_util_test.py',
