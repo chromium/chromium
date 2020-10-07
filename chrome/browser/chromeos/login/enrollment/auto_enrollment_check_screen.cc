@@ -118,6 +118,8 @@ void AutoEnrollmentCheckScreen::ShowImpl() {
           policy::AUTO_ENROLLMENT_STATE_CONNECTION_ERROR ||
       auto_enrollment_controller_->state() ==
           policy::AUTO_ENROLLMENT_STATE_SERVER_ERROR) {
+    VLOG(1) << "AutoEnrollmentCheckScreen::ShowImpl() retrying enrollment"
+            << " check due to failure.";
     auto_enrollment_controller_->Retry();
   } else {
     auto_enrollment_controller_->Start();
@@ -178,6 +180,8 @@ void AutoEnrollmentCheckScreen::UpdateState() {
   // state.
   if (retry)
     auto_enrollment_controller_->Retry();
+
+  VLOG(1) << "AutoEnrollmentCheckScreen::UpdateState() retry = " << retry;
 }
 
 bool AutoEnrollmentCheckScreen::UpdateCaptivePortalStatus(
@@ -261,6 +265,8 @@ void AutoEnrollmentCheckScreen::OnErrorScreenHidden() {
 }
 
 void AutoEnrollmentCheckScreen::SignalCompletion() {
+  VLOG(1) << "AutoEnrollmentCheckScreen::SignalCompletion()";
+
   network_portal_detector::GetInstance()->RemoveObserver(this);
   auto_enrollment_progress_subscription_.reset();
   connect_request_subscription_.reset();

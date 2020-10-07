@@ -911,7 +911,7 @@ void WizardController::OnActiveDirectoryLoginScreenExit() {
 }
 
 void WizardController::SkipToLoginForTesting() {
-  VLOG(1) << "SkipToLoginForTesting.";
+  VLOG(1) << "WizardController::SkipToLoginForTesting()";
   if (current_screen_ && current_screen_->screen_id() == GaiaView::kScreenId)
     return;
   wizard_context_->skip_to_login_for_tests = true;
@@ -1117,7 +1117,7 @@ void WizardController::OnUpdateCompleted() {
 
 void WizardController::OnAutoEnrollmentCheckScreenExit() {
   OnScreenExit(AutoEnrollmentCheckScreenView::kScreenId, kDefaultExitReason);
-
+  VLOG(1) << "WizardController::OnAutoEnrollmentCheckScreenExit()";
   // Check whether the device is disabled. OnDeviceDisabledChecked() will be
   // invoked when the result of this check is known. Until then, the current
   // screen will remain visible and will continue showing a spinner.
@@ -1131,7 +1131,8 @@ void WizardController::OnAutoEnrollmentCheckScreenExit() {
 void WizardController::OnEnrollmentScreenExit(EnrollmentScreen::Result result) {
   OnScreenExit(EnrollmentScreenView::kScreenId,
                EnrollmentScreen::GetResultString(result));
-
+  VLOG(1) << "WizardController::OnEnrollmentScreenExit(result= "
+          << EnrollmentScreen::GetResultString(result) << ").";
   switch (result) {
     case EnrollmentScreen::Result::COMPLETED:
     case EnrollmentScreen::Result::SKIPPED_FOR_TESTS:
@@ -1479,8 +1480,8 @@ void WizardController::OnDeviceDisabledChecked(bool device_disabled) {
   } else if (wizard_context_->enrollment_triggered_early ||
              prescribed_enrollment_config_.should_enroll() ||
              configuration_forced_enrollment) {
-    VLOG(1) << "StartEnrollment from OnDeviceDisabledChecked(device_disabled="
-            << device_disabled << ") "
+    VLOG(1) << "StartEnrollment from OnDeviceDisabledChecked("
+            << "device_disabled=" << device_disabled << ") "
             << "skip_update_enroll_after_eula_="
             << wizard_context_->enrollment_triggered_early
             << ", prescribed_enrollment_config_.should_enroll()="

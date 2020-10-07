@@ -202,6 +202,10 @@ void EnrollmentScreen::OnAuthCleared(const base::Closure& callback) {
 }
 
 bool EnrollmentScreen::MaybeSkip(WizardContext* context) {
+  VLOG(1) << "EnrollmentScreen::MaybeSkip("
+          << "config_.is_forced = " << config_.is_forced()
+          << "skip_to_login_for_tests = " << context->skip_to_login_for_tests
+          << ").";
   if (context->skip_to_login_for_tests && !config_.is_forced()) {
     exit_callback_.Run(Result::SKIPPED_FOR_TESTS);
     return true;

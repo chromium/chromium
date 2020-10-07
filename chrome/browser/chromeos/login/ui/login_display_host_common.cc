@@ -195,8 +195,12 @@ void LoginDisplayHostCommon::StartKiosk(const KioskAppId& kiosk_app_id,
 }
 
 void LoginDisplayHostCommon::CompleteLogin(const UserContext& user_context) {
-  if (GetExistingUserController())
+  if (GetExistingUserController()) {
     GetExistingUserController()->CompleteLogin(user_context);
+  } else {
+    LOG(WARNING) << "LoginDisplayHostCommon::CompleteLogin - Failure : "
+                 << "ExistingUserController not available.";
+  }
 }
 
 void LoginDisplayHostCommon::OnGaiaScreenReady() {
