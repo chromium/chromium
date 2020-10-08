@@ -111,6 +111,7 @@ id AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker);
 
 - (NSString*)valueForRange:(NSRange)range;
 - (NSAttributedString*)attributedValueForRange:(NSRange)range;
+- (NSRect)frameForRange:(NSRange)range;
 
 // Internally-used property.
 @property(nonatomic, readonly) NSPoint origin;

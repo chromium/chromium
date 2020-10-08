@@ -152,6 +152,91 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
+                       TestCoordinatesAreInScreenSpace) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kLoadComplete);
+
+  GURL url(R"HTML(data:text/html, <p>Hello, world!</p>)HTML");
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  waiter.WaitForNotification();
+
+  BrowserAccessibility* text = FindNode(ax::mojom::Role::kStaticText);
+  ASSERT_NE(nullptr, text);
+
+  BrowserAccessibilityCocoa* cocoa_text = ToBrowserAccessibilityCocoa(text);
+  ASSERT_NE(nil, cocoa_text);
+
+  NSPoint position = [[cocoa_text position] pointValue];
+  NSSize size = [[cocoa_text size] sizeValue];
+  NSRect frame = NSMakeRect(position.x, position.y, size.width, size.height);
+
+  NSPoint p0_before = position;
+  NSRect r0_before = [cocoa_text frameForRange:NSMakeRange(0, 5)];
+  EXPECT_TRUE(CGRectContainsRect(frame, r0_before));
+
+  // On macOS geometry accessibility attributes are expected to use the
+  // screen coordinate system with the origin at the bottom left corner.
+  // We need some creativity with testing this because it is challenging
+  // to setup a text element with a precise screen position.
+  //
+  // Content shell's window is pinned to have an origin at (0, 0), so
+  // when its height is changed the content's screen y-coordinate is
+  // changed by the same amount (see below).
+  //
+  //      Y^      original
+  //       |
+  //       +--------------------------------------------+
+  //       |                                            |
+  //       |                                            |
+  //       |                                            |
+  //       |                                            |
+  //     h +---------------------------+                |
+  //       |      Content Shell        |                |
+  //       |---------------------------|                |
+  //     y |Hello, world               |                |
+  //       |                           |                |
+  //       |                           |          Screen|
+  //       +---------------------------+----------------+-->
+  //      0                                               X
+  //
+  //      Y^       content shell enlarged
+  //       |
+  //       +--------------------------------------------+
+  //       |                                            |
+  //       |                                            |
+  //  h+dh +---------------------------+                |
+  //       |      Content Shell        |                |
+  //       |---------------------------|                |
+  //  y+dh |Hello, world               |                |
+  //       |                           |                |
+  //       |                           |                |
+  //       |                           |                |
+  //       |                           |          Screen|
+  //       +---------------------------+----------------+-->
+  //      0                                               X
+  //
+  // This observation allows us to validate the returned
+  // attribute values and catch the most glaring mistakes
+  // in coordinate space handling.
+
+  const int dh = 100;
+  gfx::Size content_size = Shell::GetShellDefaultSize();
+  content_size.Enlarge(0, dh);
+  shell()->ResizeWebContentForTests(content_size);
+
+  NSPoint p0_after = [[cocoa_text position] pointValue];
+  NSRect r0_after = [cocoa_text frameForRange:NSMakeRange(0, 5)];
+
+  ASSERT_EQ(p0_before.y + dh, p0_after.y);
+  ASSERT_EQ(r0_before.origin.y + dh, r0_after.origin.y);
+  ASSERT_EQ(r0_before.size.height, r0_after.size.height);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
                        TestUnlabeledImageRoleDescription) {
   ui::AXTreeUpdate tree;
   tree.root_id = 1;

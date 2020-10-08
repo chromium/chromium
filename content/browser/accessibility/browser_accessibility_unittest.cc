@@ -392,6 +392,69 @@ TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRect) {
 #endif
 }
 
+TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRectPlainTextField) {
+  // Text area with 'Hello' text
+  // rootWebArea
+  // ++textField
+  // ++++genericContainer
+  // ++++++staticText
+  // ++++++++inlineTextBox
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.relative_bounds.bounds = gfx::RectF(0, 0, 800, 600);
+
+  ui::AXNodeData textarea;
+  textarea.id = 2;
+  textarea.role = ax::mojom::Role::kTextField;
+  textarea.SetValue("Hello");
+  textarea.relative_bounds.bounds = gfx::RectF(100, 100, 150, 20);
+  root.child_ids.push_back(2);
+
+  ui::AXNodeData container;
+  container.id = 3;
+  container.role = ax::mojom::Role::kGenericContainer;
+  container.relative_bounds.bounds = textarea.relative_bounds.bounds;
+  textarea.child_ids.push_back(3);
+
+  ui::AXNodeData static_text;
+  static_text.id = 4;
+  static_text.role = ax::mojom::Role::kStaticText;
+  static_text.SetName("Hello");
+  static_text.relative_bounds.bounds = gfx::RectF(100, 100, 50, 10);
+  container.child_ids.push_back(4);
+
+  ui::AXNodeData inline_text1;
+  inline_text1.id = 5;
+  inline_text1.role = ax::mojom::Role::kInlineTextBox;
+  inline_text1.SetName("Hello");
+  inline_text1.relative_bounds.bounds = gfx::RectF(100, 100, 50, 10);
+  inline_text1.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kCharacterOffsets, {10, 20, 30, 40, 50});
+
+  inline_text1.SetTextDirection(ax::mojom::WritingDirection::kLtr);
+  static_text.child_ids.push_back(5);
+
+  std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdate(root, textarea, container, static_text,
+                           inline_text1),
+          test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibility* root_accessible =
+      browser_accessibility_manager->GetRoot();
+  ASSERT_NE(nullptr, root_accessible);
+  BrowserAccessibility* textarea_accessible =
+      root_accessible->PlatformGetChild(0);
+  ASSERT_NE(nullptr, textarea_accessible);
+
+  // Validate the bounds of 'ell'.
+  EXPECT_EQ(gfx::Rect(110, 100, 30, 10),
+            textarea_accessible->GetInnerTextRangeBoundsRect(
+                1, 4, ui::AXCoordinateSystem::kRootFrame,
+                ui::AXClippingBehavior::kUnclipped));
+}
+
 TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRectMultiElement) {
   ui::AXNodeData root;
   root.id = 1;
