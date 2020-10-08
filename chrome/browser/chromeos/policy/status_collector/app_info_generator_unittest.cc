@@ -8,7 +8,6 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -23,12 +22,10 @@
 #include "chrome/browser/web_applications/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/session_manager/core/session_manager.h"
@@ -49,8 +46,6 @@ using ::testing::Matches;
 using ::testing::MatchResultListener;
 using ::testing::Property;
 using ::testing::ResultOf;
-
-using web_app::ProviderType;
 
 namespace em = enterprise_management;
 
@@ -128,17 +123,9 @@ auto MakeActivity(const base::Time& start_time, const base::Time& end_time) {
 
 namespace policy {
 
-class AppInfoGeneratorTest : public ::testing::TestWithParam<ProviderType> {
+class AppInfoGeneratorTest : public ::testing::Test {
  public:
-  AppInfoGeneratorTest() {
-    if (GetParam() == ProviderType::kWebApps) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    } else if (GetParam() == ProviderType::kBookmarkApps) {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    }
-  }
+  AppInfoGeneratorTest() = default;
 
  protected:
   void PushApp(const std::string& app_id,
@@ -259,7 +246,6 @@ class AppInfoGeneratorTest : public ::testing::TestWithParam<ProviderType> {
   base::SimpleTestClock& test_clock() { return test_clock_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   apps::ScopedOmitBuiltInAppsForTesting scoped_omit_built_in_apps_for_testing_;
   apps::ScopedOmitPluginVmAppsForTesting
       scoped_omit_plugin_vm_apps_for_testing_;
@@ -274,7 +260,7 @@ class AppInfoGeneratorTest : public ::testing::TestWithParam<ProviderType> {
   base::SimpleTestClock test_clock_;
 };
 
-TEST_P(AppInfoGeneratorTest, GenerateInventoryList) {
+TEST_F(AppInfoGeneratorTest, GenerateInventoryList) {
   PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
           apps::mojom::AppType::kArc);
   PushApp("b", "SecondApp", apps::mojom::Readiness::kReady, "1.2",
@@ -295,7 +281,7 @@ TEST_P(AppInfoGeneratorTest, GenerateInventoryList) {
                         "", em::AppInfo_AppType_TYPE_CROSTINI)));
 }
 
-TEST_P(AppInfoGeneratorTest, GenerateWebApp) {
+TEST_F(AppInfoGeneratorTest, GenerateWebApp) {
   auto generator = GetReadyGenerator();
   PushApp("c", "App", apps::mojom::Readiness::kUninstalledByUser, "",
           apps::mojom::AppType::kWeb);
@@ -321,7 +307,7 @@ TEST_P(AppInfoGeneratorTest, GenerateWebApp) {
                                       MakeUTCTime("29-MAR-2020 5:00am"))})));
 }
 
-TEST_P(AppInfoGeneratorTest, MultipleInstances) {
+TEST_F(AppInfoGeneratorTest, MultipleInstances) {
   auto generator = GetReadyGenerator();
   PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
           apps::mojom::AppType::kArc);
@@ -347,7 +333,7 @@ TEST_P(AppInfoGeneratorTest, MultipleInstances) {
                                       MakeUTCTime("29-MAR-2020 3:00am"))})));
 }
 
-TEST_P(AppInfoGeneratorTest, ShouldNotReport) {
+TEST_F(AppInfoGeneratorTest, ShouldNotReport) {
   PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
           apps::mojom::AppType::kArc);
 
@@ -359,7 +345,7 @@ TEST_P(AppInfoGeneratorTest, ShouldNotReport) {
   EXPECT_FALSE(result.has_value());
 }
 
-TEST_P(AppInfoGeneratorTest, OnReportedSuccessfully) {
+TEST_F(AppInfoGeneratorTest, OnReportedSuccessfully) {
   auto generator = GetReadyGenerator();
   PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
           apps::mojom::AppType::kArc);
@@ -388,7 +374,7 @@ TEST_P(AppInfoGeneratorTest, OnReportedSuccessfully) {
                                       MakeUTCTime("31-MAR-2020 6:00am"))})));
 }
 
-TEST_P(AppInfoGeneratorTest, OnWillReport) {
+TEST_F(AppInfoGeneratorTest, OnWillReport) {
   auto generator = GetReadyGenerator();
   PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
           apps::mojom::AppType::kArc);
@@ -426,7 +412,7 @@ TEST_P(AppInfoGeneratorTest, OnWillReport) {
                                       MakeUTCTime("31-MAR-2020 8:30pm"))})));
 }
 
-TEST_P(AppInfoGeneratorTest, OnLogoutOnLogin) {
+TEST_F(AppInfoGeneratorTest, OnLogoutOnLogin) {
   PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
           apps::mojom::AppType::kArc);
   auto generator = GetGenerator();
@@ -462,7 +448,7 @@ TEST_P(AppInfoGeneratorTest, OnLogoutOnLogin) {
                                       MakeUTCTime("30-MAR-2020 3:00am"))})));
 }
 
-TEST_P(AppInfoGeneratorTest, OnLocked) {
+TEST_F(AppInfoGeneratorTest, OnLocked) {
   auto generator = GetReadyGenerator();
   PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
           apps::mojom::AppType::kArc);
@@ -484,7 +470,7 @@ TEST_P(AppInfoGeneratorTest, OnLocked) {
                                       MakeUTCTime("29-MAR-2020 2:00am"))})));
 }
 
-TEST_P(AppInfoGeneratorTest, OnUnlocked) {
+TEST_F(AppInfoGeneratorTest, OnUnlocked) {
   auto generator = GetReadyGenerator();
   PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
           apps::mojom::AppType::kArc);
@@ -512,7 +498,7 @@ TEST_P(AppInfoGeneratorTest, OnUnlocked) {
                                       MakeUTCTime("29-MAR-2020 2:05am"))})));
 }
 
-TEST_P(AppInfoGeneratorTest, OnResumeActive) {
+TEST_F(AppInfoGeneratorTest, OnResumeActive) {
   auto generator = GetReadyGenerator();
   PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
           apps::mojom::AppType::kArc);
@@ -540,7 +526,7 @@ TEST_P(AppInfoGeneratorTest, OnResumeActive) {
                                       MakeUTCTime("29-MAR-2020 2:05am"))})));
 }
 
-TEST_P(AppInfoGeneratorTest, OnLoginRemoveOldUsage) {
+TEST_F(AppInfoGeneratorTest, OnLoginRemoveOldUsage) {
   PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
           apps::mojom::AppType::kArc);
   PushApp("b", "SecondApp", apps::mojom::Readiness::kReady, "1.2",
@@ -577,11 +563,5 @@ TEST_P(AppInfoGeneratorTest, OnLoginRemoveOldUsage) {
                         {MakeActivity(MakeUTCTime("29-MAR-2020 12:00am"),
                                       MakeUTCTime("29-MAR-2020 2:00am"))})));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppInfoGeneratorTest,
-                         ::testing::Values(ProviderType::kBookmarkApps,
-                                           ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);
 
 }  // namespace policy
