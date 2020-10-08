@@ -231,7 +231,7 @@ class MockActionDelegate : public ActionDelegate {
                     base::OnceCallback<void(const ClientStatus&)>& callback));
 
   MOCK_METHOD2(GetOuterHtml,
-               void(const Selector& selector,
+               void(const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&,
                                             const std::string&)> callback));
 

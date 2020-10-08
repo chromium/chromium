@@ -178,9 +178,9 @@ class WebController {
       int delay_in_milli,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
-  // Return the outerHTML of |selector|.
+  // Return the outerHTML of |element|.
   virtual void GetOuterHtml(
-      const Selector& selector,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback);
 
@@ -420,11 +420,6 @@ class WebController {
       const ElementFinder::Result& element,
       const std::string& value,
       base::OnceCallback<void(const ClientStatus&)> callback);
-  void OnFindElementForGetOuterHtml(
-      base::OnceCallback<void(const ClientStatus&, const std::string&)>
-          callback,
-      const ClientStatus& status,
-      std::unique_ptr<ElementFinder::Result> element_result);
   void OnGetOuterHtml(base::OnceCallback<void(const ClientStatus&,
                                               const std::string&)> callback,
                       const DevtoolsClient::ReplyStatus& reply_status,

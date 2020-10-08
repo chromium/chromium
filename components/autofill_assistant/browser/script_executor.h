@@ -202,7 +202,7 @@ class ScriptExecutor : public ActionDelegate,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) override;
   void GetOuterHtml(
-      const Selector& selector,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback) override;
   void GetElementTag(

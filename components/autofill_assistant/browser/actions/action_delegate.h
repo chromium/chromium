@@ -257,9 +257,9 @@ class ActionDelegate {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
-  // Return the outerHTML of an element given by |selector|.
+  // Return the outerHTML of an |element|.
   virtual void GetOuterHtml(
-      const Selector& selector,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback) = 0;
 

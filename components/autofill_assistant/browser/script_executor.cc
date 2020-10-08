@@ -613,10 +613,10 @@ void ScriptExecutor::SendKeyboardInput(
 }
 
 void ScriptExecutor::GetOuterHtml(
-    const Selector& selector,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&, const std::string&)>
         callback) {
-  delegate_->GetWebController()->GetOuterHtml(selector, std::move(callback));
+  delegate_->GetWebController()->GetOuterHtml(element, std::move(callback));
 }
 
 void ScriptExecutor::GetElementTag(

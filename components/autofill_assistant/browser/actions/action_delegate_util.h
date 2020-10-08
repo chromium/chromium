@@ -19,6 +19,11 @@ using ElementActionCallback =
 
 using ElementActionVector = std::vector<ElementActionCallback>;
 
+template <typename R>
+using ElementActionGetCallback = base::OnceCallback<void(
+    const ElementFinder::Result&,
+    base::OnceCallback<void(const ClientStatus&, const R&)>)>;
+
 // Finds the element given by the selector. If the resolution fails, it
 // immediately executes the |done| callback. If the resolution succeeds, it
 // executes the |perform| callback with the element and the |done| callback as
@@ -38,6 +43,17 @@ void FindElementAndPerform(
     const Selector& selector,
     std::unique_ptr<ElementActionVector> perform_actions,
     base::OnceCallback<void(const ClientStatus&)> done);
+
+// Finds the element given by the selector. If the resolution fails, it
+// immediately executes the |done| callback with the default value.
+// If the resolution succeeds, it executes the |perform_and_get| callback with
+// the element and the |done| callback as arguments, while retaining the
+// element.
+void FindElementAndGetProperty(
+    /* const */ ActionDelegate* delegate,
+    const Selector& selector,
+    ElementActionGetCallback<std::string> perform_and_get,
+    base::OnceCallback<void(const ClientStatus&, const std::string&)> done);
 
 void ClickOrTapElement(
     /* const */ ActionDelegate* delegate,

@@ -286,6 +286,7 @@ source_set("unit_tests") {
     "actions/show_generic_ui_action_unittest.cc",
     "actions/show_progress_bar_action_unittest.cc",
     "actions/tell_action_unittest.cc",
+    "actions/upload_dom_action_unittest.cc",
     "actions/use_address_action_unittest.cc",
     "actions/use_credit_card_action_unittest.cc",
     "actions/wait_for_document_action_unittest.cc",

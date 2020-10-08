@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
+#include "components/autofill_assistant/browser/actions/action_delegate_util.h"
 #include "components/autofill_assistant/browser/client_status.h"
 
 namespace autofill_assistant {
@@ -22,45 +23,44 @@ UploadDomAction::UploadDomAction(ActionDelegate* delegate,
 UploadDomAction::~UploadDomAction() {}
 
 void UploadDomAction::InternalProcessAction(ProcessActionCallback callback) {
+  process_action_callback_ = std::move(callback);
+
   Selector selector = Selector(proto_.upload_dom().tree_root());
   if (selector.empty()) {
     VLOG(1) << __func__ << ": empty selector";
-    UpdateProcessedAction(INVALID_SELECTOR);
+    EndAction(ClientStatus(INVALID_SELECTOR));
     return;
   }
   delegate_->ShortWaitForElement(
       selector, base::BindOnce(&UploadDomAction::OnWaitForElement,
-                               weak_ptr_factory_.GetWeakPtr(),
-                               std::move(callback), selector));
+                               weak_ptr_factory_.GetWeakPtr(), selector));
 }
 
-void UploadDomAction::OnWaitForElement(ProcessActionCallback callback,
-                                       const Selector& selector,
+void UploadDomAction::OnWaitForElement(const Selector& selector,
                                        const ClientStatus& element_status) {
   if (!element_status.ok()) {
-    UpdateProcessedAction(element_status.proto_status());
-    std::move(callback).Run(std::move(processed_action_proto_));
+    EndAction(element_status);
     return;
   }
 
-  delegate_->GetOuterHtml(
-      selector,
+  ActionDelegateUtil::FindElementAndGetProperty(
+      delegate_, selector,
+      base::BindOnce(&ActionDelegate::GetOuterHtml, delegate_->GetWeakPtr()),
       base::BindOnce(&UploadDomAction::OnGetOuterHtml,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void UploadDomAction::OnGetOuterHtml(ProcessActionCallback callback,
-                                     const ClientStatus& status,
+void UploadDomAction::OnGetOuterHtml(const ClientStatus& status,
                                      const std::string& outer_html) {
-  if (!status.ok()) {
-    UpdateProcessedAction(status);
-    std::move(callback).Run(std::move(processed_action_proto_));
-    return;
+  if (status.ok()) {
+    processed_action_proto_->set_html_source(outer_html);
   }
+  EndAction(status);
+}
 
-  processed_action_proto_->set_html_source(outer_html);
-  UpdateProcessedAction(ACTION_APPLIED);
-  std::move(callback).Run(std::move(processed_action_proto_));
+void UploadDomAction::EndAction(const ClientStatus& status) {
+  UpdateProcessedAction(status);
+  std::move(process_action_callback_).Run(std::move(processed_action_proto_));
 }
 
 }  // namespace autofill_assistant

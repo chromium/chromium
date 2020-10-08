@@ -63,6 +63,47 @@ void OnFindElement(std::unique_ptr<ElementActionVector> perform_actions,
       OkClientStatus());
 }
 
+template <typename R>
+void RetainElementAndExecuteGetCallback(
+    std::unique_ptr<ElementFinder::Result> element,
+    base::OnceCallback<void(const ClientStatus&, const R&)> callback,
+    const ClientStatus& status,
+    const R& result) {
+  DCHECK(element != nullptr);
+  std::move(callback).Run(status, result);
+}
+
+template <typename R>
+void OnFindElementForGet(
+    ElementActionGetCallback<R> perform_and_get,
+    base::OnceCallback<void(const ClientStatus&, const R&)> done,
+    const ClientStatus& element_status,
+    std::unique_ptr<ElementFinder::Result> element_result) {
+  if (!element_status.ok()) {
+    VLOG(1) << __func__ << " Failed to find element.";
+    std::move(done).Run(element_status, R());
+    return;
+  }
+
+  std::move(perform_and_get)
+      .Run(*element_result,
+           base::BindOnce(&RetainElementAndExecuteGetCallback<R>,
+                          std::move(element_result), std::move(done)));
+}
+
+template <typename R>
+void FindElementAndGetImpl(
+    ActionDelegate* delegate,
+    const Selector& selector,
+    ElementActionGetCallback<R> perform_and_get,
+    base::OnceCallback<void(const ClientStatus&, const R&)> done) {
+  DCHECK(!selector.empty());
+  VLOG(3) << __func__ << " " << selector;
+  delegate->FindElement(
+      selector, base::BindOnce(&OnFindElementForGet<R>,
+                               std::move(perform_and_get), std::move(done)));
+}
+
 }  // namespace
 
 void FindElementAndPerform(ActionDelegate* delegate,
@@ -71,7 +112,6 @@ void FindElementAndPerform(ActionDelegate* delegate,
                            base::OnceCallback<void(const ClientStatus&)> done) {
   auto actions = std::make_unique<ElementActionVector>();
   actions->emplace_back(std::move(perform));
-
   FindElementAndPerform(delegate, selector, std::move(actions),
                         std::move(done));
 }
@@ -85,6 +125,15 @@ void FindElementAndPerform(ActionDelegate* delegate,
   delegate->FindElement(
       selector, base::BindOnce(&OnFindElement, std::move(perform_actions),
                                std::move(done)));
+}
+
+void FindElementAndGetProperty(
+    ActionDelegate* delegate,
+    const Selector& selector,
+    ElementActionGetCallback<std::string> perform_and_get,
+    base::OnceCallback<void(const ClientStatus&, const std::string&)> done) {
+  FindElementAndGetImpl<std::string>(
+      delegate, selector, std::move(perform_and_get), std::move(done));
 }
 
 void ClickOrTapElement(ActionDelegate* delegate,

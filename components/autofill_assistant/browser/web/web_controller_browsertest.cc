@@ -347,20 +347,41 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
                             std::string* html_output) {
     base::RunLoop run_loop;
     ClientStatus result;
-    web_controller_->GetOuterHtml(
-        selector, base::BindOnce(&WebControllerBrowserTest::OnGetOuterHtml,
-                                 base::Unretained(this), run_loop.QuitClosure(),
-                                 &result, html_output));
+
+    web_controller_->FindElement(
+        selector, /* strict= */ true,
+        base::BindOnce(
+            &WebControllerBrowserTest::FindGetOuterHtmlElementCallback,
+            base::Unretained(this), run_loop.QuitClosure(), &result,
+            html_output));
+
     run_loop.Run();
     return result;
+  }
+
+  void FindGetOuterHtmlElementCallback(
+      base::OnceClosure done_callback,
+      ClientStatus* result_output,
+      std::string* html_output,
+      const ClientStatus& element_status,
+      std::unique_ptr<ElementFinder::Result> element_result) {
+    EXPECT_EQ(ACTION_APPLIED, element_status.proto_status());
+    ASSERT_TRUE(element_result != nullptr);
+    web_controller_->GetOuterHtml(
+        *element_result,
+        base::BindOnce(&WebControllerBrowserTest::OnGetOuterHtml,
+                       base::Unretained(this), std::move(done_callback),
+                       result_output, html_output, std::move(element_result)));
   }
 
   void OnGetOuterHtml(base::OnceClosure done_callback,
                       ClientStatus* successful_output,
                       std::string* html_output,
+                      std::unique_ptr<ElementFinder::Result> element,
                       const ClientStatus& status,
                       const std::string& html) {
     EXPECT_EQ(ACTION_APPLIED, status.proto_status());
+    EXPECT_TRUE(element != nullptr);
     *successful_output = status;
     *html_output = html;
     std::move(done_callback).Run();

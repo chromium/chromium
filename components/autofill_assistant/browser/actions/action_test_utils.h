@@ -16,6 +16,10 @@ MATCHER_P(EqualsElement, element, "") {
   return arg.object_id == element.object_id;
 }
 
+MATCHER_P(EqualsStatus, status, "") {
+  return arg.proto_status() == status.proto_status();
+}
+
 namespace test_util {
 
 void MockFindAnyElement(MockActionDelegate& delegate);
