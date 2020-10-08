@@ -7,26 +7,31 @@
 namespace chromeos {
 namespace sensors {
 
-FakeSensorHalServer::FakeSensorHalServer() {}
+FakeSensorHalServer::FakeSensorHalServer()
+    : sensor_service_(new FakeSensorService()) {}
 FakeSensorHalServer::~FakeSensorHalServer() = default;
 
 void FakeSensorHalServer::CreateChannel(
     mojo::PendingReceiver<mojom::SensorService> sensor_service_receiver) {
-  DCHECK(!SensorServiceIsValid());
-  sensor_service_receiver_ = std::move(sensor_service_receiver);
+  DCHECK(!sensor_service_->is_bound());
+  sensor_service_->Bind(std::move(sensor_service_receiver));
 }
 
 mojo::PendingRemote<mojom::SensorHalServer> FakeSensorHalServer::PassRemote() {
-  CHECK(!receiver_.is_bound());
-  return receiver_.BindNewPipeAndPassRemote();
+  DCHECK(!receiver_.is_bound());
+  auto pending_remote = receiver_.BindNewPipeAndPassRemote();
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &FakeSensorHalServer::OnServerDisconnect, base::Unretained(this)));
+
+  return pending_remote;
 }
 
-bool FakeSensorHalServer::SensorServiceIsValid() {
-  return sensor_service_receiver_.is_valid();
+void FakeSensorHalServer::OnServerDisconnect() {
+  receiver_.reset();
 }
 
-void FakeSensorHalServer::ResetSensorService() {
-  sensor_service_receiver_.reset();
+FakeSensorService* FakeSensorHalServer::GetSensorService() {
+  return sensor_service_.get();
 }
 
 }  // namespace sensors

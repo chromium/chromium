@@ -17,7 +17,7 @@ void FakeSensorHalClient::SetUpChannel(
 }
 
 mojo::PendingRemote<mojom::SensorHalClient> FakeSensorHalClient::PassRemote() {
-  CHECK(!receiver_.is_bound());
+  DCHECK(!receiver_.is_bound());
   return receiver_.BindNewPipeAndPassRemote();
 }
 

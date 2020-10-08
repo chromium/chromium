@@ -55,7 +55,7 @@ TEST_F(SensorHalDispatcherTest, ServerConnectionError) {
   // Wait until the server and client get the established Mojo channel.
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(fake_server->SensorServiceIsValid());
+  EXPECT_TRUE(fake_server->GetSensorService()->is_bound());
   EXPECT_TRUE(fake_client->SensorServiceIsValid());
 
   // Re-create a new server to simulate a server crash.
@@ -72,7 +72,7 @@ TEST_F(SensorHalDispatcherTest, ServerConnectionError) {
   // client.
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(fake_server->SensorServiceIsValid());
+  EXPECT_TRUE(fake_server->GetSensorService()->is_bound());
   EXPECT_TRUE(fake_client->SensorServiceIsValid());
 }
 
@@ -93,12 +93,12 @@ TEST_F(SensorHalDispatcherTest, ClientConnectionError) {
   // Wait until the server and client get the established Mojo channel.
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(fake_server->SensorServiceIsValid());
+  EXPECT_TRUE(fake_server->GetSensorService()->is_bound());
   EXPECT_TRUE(fake_client->SensorServiceIsValid());
 
   // Re-create a new client to simulate a client crash.
   fake_client = std::make_unique<FakeSensorHalClient>();
-  fake_server->ResetSensorService();
+  fake_server->GetSensorService()->OnServiceDisconnect();
 
   remote_client = fake_client->PassRemote();
   SensorHalDispatcher::GetInstance()->RegisterClient(std::move(remote_client));
@@ -107,7 +107,7 @@ TEST_F(SensorHalDispatcherTest, ClientConnectionError) {
   // client.
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(fake_server->SensorServiceIsValid());
+  EXPECT_TRUE(fake_server->GetSensorService()->is_bound());
   EXPECT_TRUE(fake_client->SensorServiceIsValid());
 }
 
