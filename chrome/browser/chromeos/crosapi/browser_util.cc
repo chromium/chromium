@@ -13,6 +13,9 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
@@ -100,6 +103,20 @@ bool IsLacrosAllowed(Channel channel) {
 
   if (!IsUserTypeAllowed(user))
     return false;
+
+  const Profile* const profile =
+      chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  DCHECK(profile);
+
+  // TODO(https://crbug.com/1135494): Disable Lacros for managed users that
+  // aren't @google using more robust mechanism.
+  if (profile->GetProfilePolicyConnector()->IsManaged()) {
+    const std::string canonical_email = user->GetAccountId().GetUserEmail();
+    if (!base::EndsWith(canonical_email, "@google.com",
+                        base::CompareCase::INSENSITIVE_ASCII)) {
+      return false;
+    }
+  }
 
   switch (channel) {
     case Channel::UNKNOWN:

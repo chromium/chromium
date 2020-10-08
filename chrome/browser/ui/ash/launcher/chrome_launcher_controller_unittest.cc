@@ -50,6 +50,7 @@
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_mode_test_helper.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -1387,8 +1388,14 @@ TEST_P(ChromeLauncherControllerLacrosTest, LacrosPinnedByDefault) {
   auto* fake_user_manager = user_manager.get();
   user_manager::ScopedUserManager scoped_user_manager(std::move(user_manager));
   AccountId account_id = AccountId::FromUserEmail("user@example.com");
-  fake_user_manager->AddUser(account_id);
+  user_manager::User* user = fake_user_manager->AddUser(account_id);
   fake_user_manager->LoginUser(account_id);
+
+  TestingProfile::Builder profile_builder;
+  profile_builder.SetProfileName(account_id.GetUserEmail());
+  std::unique_ptr<TestingProfile> testing_profile = profile_builder.Build();
+  chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+      user, testing_profile.get());
 
   InitLauncherController();
   EXPECT_EQ("Chrome, Lacros", GetPinnedAppStatus());
