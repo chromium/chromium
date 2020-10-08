@@ -84,6 +84,10 @@ template("generate_stubs") {
                              "public_deps",
                              "visibility",
                            ])
+    if (!defined(deps)) {
+      deps = []
+    }
+    deps += [ "//base" ]
     if (!defined(public_deps)) {
       public_deps = []
     }

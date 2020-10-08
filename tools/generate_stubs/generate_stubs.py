@@ -92,6 +92,7 @@ FILE_TYPE_WIN_DEF = 'windows_def'
 #   arg_list: The arguments used to call the stub function.
 STUB_FUNCTION_DEFINITION = (
     """extern %(return_type)s %(name)s(%(params)s) __attribute__((weak));
+DISABLE_CFI_ICALL
 %(return_type)s %(export)s %(name)s(%(params)s) {
   %(return_prefix)s%(name)s_ptr(%(arg_list)s);
 }""")
@@ -110,6 +111,7 @@ STUB_FUNCTION_DEFINITION = (
 #                   argument.
 VARIADIC_STUB_FUNCTION_DEFINITION = (
     """extern %(return_type)s %(name)s(%(params)s) __attribute__((weak));
+DISABLE_CFI_ICALL
 %(return_type)s %(export)s %(name)s(%(params)s) {
   va_list args___;
   va_start(args___, %(last_named_arg)s);
@@ -131,6 +133,7 @@ VARIADIC_STUB_FUNCTION_DEFINITION = (
 #                   argument.
 VOID_VARIADIC_STUB_FUNCTION_DEFINITION = (
     """extern void %(name)s(%(params)s) __attribute__((weak));
+DISABLE_CFI_ICALL
 void %(export)s %(name)s(%(params)s) {
   va_list args___;
   va_start(args___, %(last_named_arg)s);
@@ -179,6 +182,8 @@ IMPLEMENTATION_PREAMBLE = """// This is generated file. Do not modify directly.
 
 #include <map>
 #include <vector>
+
+#include "base/compiler_specific.h"
 """
 
 # The start and end templates for the enum definitions used by the Umbrella
