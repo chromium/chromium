@@ -36,6 +36,7 @@ class FakeSemanticTree
   void Disconnect();
 
   void RunUntilNodeCountAtLeast(size_t count);
+  void RunUntilCommitCountIs(size_t count);
   void SetNodeUpdatedCallback(uint32_t node_id,
                               base::OnceClosure node_updated_callback);
   fuchsia::accessibility::semantics::Node* GetNodeWithId(uint32_t id);
@@ -49,6 +50,10 @@ class FakeSemanticTree
 
   size_t tree_size() const { return nodes_.size(); }
   void Clear();
+
+  size_t num_delete_calls() const { return num_delete_calls_; }
+  size_t num_update_calls() const { return num_update_calls_; }
+  size_t num_commit_calls() const { return num_commit_calls_; }
 
   // fuchsia::accessibility::semantics::SemanticTree implementation.
   void UpdateSemanticNodes(
@@ -66,6 +71,10 @@ class FakeSemanticTree
 
   uint32_t node_wait_id_;
   base::OnceClosure on_node_updated_callback_;
+
+  size_t num_delete_calls_ = 0;
+  size_t num_update_calls_ = 0;
+  size_t num_commit_calls_ = 0;
 };
 
 #endif  // FUCHSIA_ENGINE_BROWSER_FAKE_SEMANTIC_TREE_H_

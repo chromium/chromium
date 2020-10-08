@@ -4,6 +4,8 @@
 
 #include "fuchsia/engine/browser/accessibility_bridge.h"
 
+#include <algorithm>
+
 #include <lib/sys/cpp/component_context.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 
@@ -14,8 +16,6 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace {
-
-constexpr uint32_t kSemanticNodeRootId = 0;
 
 // TODO(https://crbug.com/973095): Update this value based on average and
 // maximum sizes of serialized Semantic Nodes.
@@ -51,60 +51,36 @@ AccessibilityBridge::~AccessibilityBridge() {
 }
 
 void AccessibilityBridge::TryCommit() {
-  if (commit_inflight_ || to_send_.empty())
+  if (commit_inflight_ || (to_delete_.empty() && to_update_.empty()))
     return;
 
-  SemanticUpdateOrDelete::Type current = to_send_.at(0).type;
-  int range_start = 0;
-  for (size_t i = 1; i < to_send_.size(); i++) {
-    if (to_send_.at(i).type == current &&
-        (i - range_start < kMaxNodesPerUpdate)) {
-      continue;
-    } else {
-      DispatchSemanticsMessages(range_start, i - range_start);
-      current = to_send_.at(i).type;
-      range_start = i;
-    }
-  }
-  DispatchSemanticsMessages(range_start, to_send_.size() - range_start);
+  // Deletions come before updates because first the nodes are deleted, and
+  // then we update the parents to no longer point at them.
+  if (!to_delete_.empty())
+    semantic_tree_->DeleteSemanticNodes(std::move(to_delete_));
 
+  size_t start = 0;
+  while (start < to_update_.size()) {
+    // TODO(https://crbug.com/1134727): AccessibilityBridge must respect FIDL
+    // size limits.
+    size_t end =
+        start + std::min(kMaxNodesPerUpdate, to_update_.size() - start);
+    decltype(to_update_) batch;
+    std::move(to_update_.begin() + start, to_update_.begin() + end,
+              std::back_inserter(batch));
+    semantic_tree_->UpdateSemanticNodes(std::move(batch));
+    start = end;
+  }
   semantic_tree_->CommitUpdates(
       fit::bind_member(this, &AccessibilityBridge::OnCommitComplete));
   commit_inflight_ = true;
-  to_send_.clear();
+  to_delete_.clear();
+  to_update_.clear();
 }
-
-void AccessibilityBridge::DispatchSemanticsMessages(size_t start, size_t size) {
-  if (to_send_.at(start).type == SemanticUpdateOrDelete::Type::UPDATE) {
-    std::vector<fuchsia::accessibility::semantics::Node> updates;
-    for (size_t i = start; i < start + size; i++) {
-      DCHECK(to_send_.at(i).type == SemanticUpdateOrDelete::Type::UPDATE);
-      updates.push_back(std::move(to_send_.at(i).update_node));
-    }
-    semantic_tree_->UpdateSemanticNodes(std::move(updates));
-  } else if (to_send_.at(start).type == SemanticUpdateOrDelete::Type::DELETE) {
-    std::vector<uint32_t> deletes;
-    for (size_t i = start; i < start + size; i++) {
-      DCHECK(to_send_.at(i).type == SemanticUpdateOrDelete::Type::DELETE);
-      deletes.push_back(to_send_.at(i).id_to_delete);
-    }
-    semantic_tree_->DeleteSemanticNodes(deletes);
-  }
-}
-
-AccessibilityBridge::SemanticUpdateOrDelete::SemanticUpdateOrDelete(
-    AccessibilityBridge::SemanticUpdateOrDelete&& m)
-    : type(m.type),
-      update_node(std::move(m.update_node)),
-      id_to_delete(m.id_to_delete) {}
-
-AccessibilityBridge::SemanticUpdateOrDelete::SemanticUpdateOrDelete(
-    Type type,
-    fuchsia::accessibility::semantics::Node node,
-    uint32_t id_to_delete)
-    : type(type), update_node(std::move(node)), id_to_delete(id_to_delete) {}
 
 void AccessibilityBridge::OnCommitComplete() {
+  // TODO(https://crbug.com/1134737): Separate updates of atomic updates and
+  // don't allow all of them to be in the same commit.
   commit_inflight_ = false;
   TryCommit();
 }
@@ -200,8 +176,8 @@ void AccessibilityBridge::HitTest(fuchsia::math::PointF local_point,
 void AccessibilityBridge::OnSemanticsModeChanged(
     bool updates_enabled,
     OnSemanticsModeChangedCallback callback) {
-  // TODO(https://crbug.com/1134591): Enabling / disabling semantics can lead to
-  // race conditions.
+  // TODO(https://crbug.com/1134591): Fix the case when enabling / disabling
+  // semantics can lead to race conditions.
   if (enable_semantic_updates_ == updates_enabled)
     return callback();
 
@@ -216,7 +192,8 @@ void AccessibilityBridge::OnSemanticsModeChanged(
     ui::AXMode mode = web_contents_->GetAccessibilityMode();
     mode.set_mode(ui::AXMode::kWebContents, false);
     web_contents_->SetAccessibilityMode(mode);
-    to_send_.clear();
+    to_delete_.clear();
+    to_update_.clear();
     commit_inflight_ = false;
     ax_tree_.Destroy();
     InterruptPendingActions();
@@ -226,29 +203,9 @@ void AccessibilityBridge::OnSemanticsModeChanged(
   callback();
 }
 
-void AccessibilityBridge::DeleteSubtree(ui::AXNode* node) {
-  DCHECK(node);
-
-  // When navigating, page 1, including the root, is deleted after page 2 has
-  // loaded. Since the root id is the same for page 1 and 2, page 2's root id
-  // ends up getting deleted. To handle this, the root will only be updated.
-  if (node->id() != root_id_) {
-    to_send_.push_back(
-        SemanticUpdateOrDelete(SemanticUpdateOrDelete::Type::DELETE, {},
-                               ConvertToFuchsiaNodeId(node->id(), root_id_)));
-  }
-  for (ui::AXNode* child : node->children())
-    DeleteSubtree(child);
-}
-
 void AccessibilityBridge::OnNodeWillBeDeleted(ui::AXTree* tree,
                                               ui::AXNode* node) {
-  DeleteSubtree(node);
-}
-
-void AccessibilityBridge::OnSubtreeWillBeDeleted(ui::AXTree* tree,
-                                                 ui::AXNode* node) {
-  DeleteSubtree(node);
+  to_delete_.push_back(ConvertToFuchsiaNodeId(node->id(), root_id_));
 }
 
 void AccessibilityBridge::OnAtomicUpdateFinished(
@@ -257,26 +214,18 @@ void AccessibilityBridge::OnAtomicUpdateFinished(
     const std::vector<ui::AXTreeObserver::Change>& changes) {
   DCHECK_EQ(tree, &ax_tree_);
   root_id_ = ax_tree_.root()->id();
+  // Changes included here are only nodes that are still on the tree. Since this
+  // indicates the end of an atomic update, it is safe to assume that these
+  // nodes will not change until the next change arrives. Nodes that would be
+  // deleted are already gone, which means that all updates collected here in
+  // |to_update_| are going to be executed after |to_delete_|.
   for (const ui::AXTreeObserver::Change& change : changes) {
-    ui::AXNodeData ax_data;
-    switch (change.type) {
-      case ui::AXTreeObserver::NODE_CREATED:
-      case ui::AXTreeObserver::SUBTREE_CREATED:
-      case ui::AXTreeObserver::NODE_CHANGED:
-        ax_data = change.node->data();
-        if (change.node->id() == root_id_) {
-          ax_data.id = kSemanticNodeRootId;
-        }
-        to_send_.push_back(
-            SemanticUpdateOrDelete(SemanticUpdateOrDelete::Type::UPDATE,
-                                   AXNodeDataToSemanticNode(ax_data), 0));
-        break;
-      case ui::AXTreeObserver::NODE_REPARENTED:
-      case ui::AXTreeObserver::SUBTREE_REPARENTED:
-        DeleteSubtree(change.node);
-        break;
-    }
+    ui::AXNodeData ax_data = change.node->data();
+    ax_data.id = ConvertToFuchsiaNodeId(change.node->id(), root_id_);
+    to_update_.push_back(AXNodeDataToSemanticNode(ax_data));
   }
+  // TODO(https://crbug.com/1134737): Separate updates of atomic updates and
+  // don't allow all of them to be in the same commit.
   TryCommit();
 }
 

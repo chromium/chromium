@@ -43,6 +43,36 @@ fuchsia::math::PointF GetCenterOfBox(fuchsia::ui::gfx::BoundingBox box) {
   return center;
 }
 
+// Creates an AXEventNotificationDetails that contains an AxTreeUpdate that
+// builds a tree from scratch of the form: (1 (2 ... (|tree_size|))).
+content::AXEventNotificationDetails CreateTreeAccessibilityEvent(
+    size_t tree_size) {
+  content::AXEventNotificationDetails event;
+  event.ax_tree_id = ui::AXTreeID ::CreateNewAXTreeID();
+  ui::AXTreeUpdate update;
+  update.root_id = 1;
+  update.nodes.resize(tree_size);
+
+  for (int i = 1; i <= static_cast<int>(tree_size); ++i) {
+    auto& node = update.nodes[i - 1];  // vector 0-indexed, IDs 1-indexed.
+    node.id = i;
+    node.child_ids.push_back(i + 1);
+  }
+
+  // The deepest node does not have any child.
+  update.nodes.back().child_ids.clear();
+  event.updates.push_back(std::move(update));
+  return event;
+}
+
+// Creates an AXEventNotificationDetails that contains |update|.
+content::AXEventNotificationDetails CreateAccessibilityEventWithUpdate(
+    ui::AXTreeUpdate update) {
+  content::AXEventNotificationDetails event;
+  event.updates.push_back(std::move(update));
+  return event;
+}
+
 }  // namespace
 
 class AccessibilityBridgeTest : public cr_fuchsia::WebEngineBrowserTest {
@@ -78,7 +108,17 @@ class AccessibilityBridgeTest : public cr_fuchsia::WebEngineBrowserTest {
 
     frame_ptr_->GetNavigationController(navigation_controller_.NewRequest());
     ASSERT_TRUE(embedded_test_server()->Start());
+
+    // Change the accessibility mode on the Fuchsia side and check that it is
+    // propagated correctly.
+    ASSERT_FALSE(frame_impl_->web_contents_for_test()
+                     ->IsWebContentsOnlyAccessibilityModeForTesting());
+
     semantics_manager_.SetSemanticsModeEnabled(true);
+    base::RunLoop().RunUntilIdle();
+
+    ASSERT_TRUE(frame_impl_->web_contents_for_test()
+                    ->IsWebContentsOnlyAccessibilityModeForTesting());
   }
 
   void LoadPage(base::StringPiece url, base::StringPiece page_title) {
@@ -89,6 +129,17 @@ class AccessibilityBridgeTest : public cr_fuchsia::WebEngineBrowserTest {
     navigation_listener_.RunUntilUrlAndTitleEquals(page_url, page_title);
   }
 
+  // Helper function that checks if |num_deletes|, |num_updates| and
+  // |num_commits| match the ones in the FakeSemanticTree.
+  void CheckCallsToFakeSemanticTree(size_t num_deletes,
+                                    size_t num_updates,
+                                    size_t num_commits) {
+    auto* tree = semantics_manager_.semantic_tree();
+    EXPECT_EQ(tree->num_delete_calls(), num_deletes);
+    EXPECT_EQ(tree->num_update_calls(), num_updates);
+    EXPECT_EQ(tree->num_commit_calls(), num_commits);
+  }
+
  protected:
   fuchsia::web::FramePtr frame_ptr_;
   FrameImpl* frame_impl_;
@@ -96,22 +147,6 @@ class AccessibilityBridgeTest : public cr_fuchsia::WebEngineBrowserTest {
   cr_fuchsia::TestNavigationListener navigation_listener_;
   fuchsia::web::NavigationControllerPtr navigation_controller_;
 };
-
-// Test registration to the SemanticsManager and accessibility mode on
-// WebContents is set correctly.
-IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, RegisterViewRef) {
-  // Change the accessibility mode on the Fuchsia side and check that it is
-  // propagated correctly.
-  ASSERT_FALSE(frame_impl_->web_contents_for_test()
-                   ->IsWebContentsOnlyAccessibilityModeForTesting());
-  semantics_manager_.SetSemanticsModeEnabled(true);
-
-  // Spin the loop to let the FrameImpl receive the mode-change.
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(frame_impl_->web_contents_for_test()
-                  ->IsWebContentsOnlyAccessibilityModeForTesting());
-}
 
 IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, CorrectDataSent) {
   LoadPage(kPage1Path, kPage1Title);
@@ -137,6 +172,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, DataSentWithBatching) {
   // Run until we expect more than a batch's worth of nodes to be present.
   semantics_manager_.semantic_tree()->RunUntilNodeCountAtLeast(kPage2NodeCount);
   EXPECT_TRUE(semantics_manager_.semantic_tree()->GetNodeFromLabel(kNodeName));
+  EXPECT_EQ(semantics_manager_.semantic_tree()->num_delete_calls(), 0u);
+
+  // Checks if the actual batching happened.
+  EXPECT_GE(semantics_manager_.semantic_tree()->num_update_calls(), 18u);
+  EXPECT_EQ(semantics_manager_.semantic_tree()->num_commit_calls(), 1u);
 }
 
 // Check that semantics information is correctly sent when navigating from page
@@ -145,6 +185,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, TestNavigation) {
   LoadPage(kPage1Path, kPage1Title);
 
   semantics_manager_.semantic_tree()->RunUntilNodeCountAtLeast(kPage1NodeCount);
+  EXPECT_EQ(semantics_manager_.semantic_tree()->num_commit_calls(), 1u);
+
   EXPECT_TRUE(
       semantics_manager_.semantic_tree()->GetNodeFromLabel(kPage1Title));
   EXPECT_TRUE(
@@ -155,6 +197,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, TestNavigation) {
   LoadPage(kPage2Path, kPage2Title);
 
   semantics_manager_.semantic_tree()->RunUntilNodeCountAtLeast(kPage2NodeCount);
+  EXPECT_EQ(semantics_manager_.semantic_tree()->num_commit_calls(), 2u);
+
   EXPECT_TRUE(
       semantics_manager_.semantic_tree()->GetNodeFromLabel(kPage2Title));
   EXPECT_TRUE(semantics_manager_.semantic_tree()->GetNodeFromLabel(kNodeName));
@@ -327,6 +371,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, TogglesSemanticsUpdates) {
   LoadPage(kPage1Path, kPage1Title);
 
   semantics_manager_.semantic_tree()->RunUntilNodeCountAtLeast(kPage1NodeCount);
+  EXPECT_EQ(semantics_manager_.semantic_tree()->num_commit_calls(), 1u);
 
   semantics_manager_.SetSemanticsModeEnabled(false);
   base::RunLoop().RunUntilIdle();
@@ -339,7 +384,175 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, TogglesSemanticsUpdates) {
   semantics_manager_.SetSemanticsModeEnabled(true);
   base::RunLoop().RunUntilIdle();
   semantics_manager_.semantic_tree()->RunUntilNodeCountAtLeast(kPage1NodeCount);
+  EXPECT_EQ(semantics_manager_.semantic_tree()->num_commit_calls(), 2u);
 
   ASSERT_TRUE(frame_impl_->web_contents_for_test()
                   ->IsWebContentsOnlyAccessibilityModeForTesting());
+}
+
+// This test performs several tree modifications (insertions, changes, removals
+// and reparentings). All operations must leave the tree in a valid state and
+// also forward the nodes in a way that leaves the tree in the Fuchsia side in a
+// valid state. Note that every time that a new tree is sent to Fuchsia, the
+// FakeSemantiTree checks if the tree is valid.
+IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, TreeModificationsAreForwarded) {
+  AccessibilityBridge* bridge = frame_impl_->accessibility_bridge_for_test();
+  size_t tree_size = 5;
+
+  // The tree has the following form: (1 (2 (3 (4 (5)))))
+  auto tree_accessibility_event = CreateTreeAccessibilityEvent(tree_size);
+  bridge->AccessibilityEventReceived(tree_accessibility_event);
+  semantics_manager_.semantic_tree()->RunUntilNodeCountAtLeast(tree_size);
+  CheckCallsToFakeSemanticTree(/*num_deletes=*/0, /*num_updates=*/1,
+                               /*num_commits=*/1);
+
+  // Adds a new node with ID 6.
+  // (1 (2 (3 (4 (5 6)))))
+  {
+    ui::AXTreeUpdate update;
+    update.root_id = 1;
+    update.nodes.resize(2);
+    update.nodes[0].id = 4;
+    update.nodes[0].child_ids.push_back(5);
+    update.nodes[0].child_ids.push_back(6);
+    update.nodes[1].id = 6;
+
+    bridge->AccessibilityEventReceived(
+        CreateAccessibilityEventWithUpdate(std::move(update)));
+    semantics_manager_.semantic_tree()->RunUntilNodeCountAtLeast(tree_size + 1);
+    CheckCallsToFakeSemanticTree(/*num_deletes=*/0, /*num_updates=*/2,
+                                 /*num_commits=*/2);
+  }
+
+  // Removes the added node 6.
+  // (1 (2 (3 (4 (5)))))
+  {
+    ui::AXTreeUpdate update;
+    update.root_id = 1;
+    update.node_id_to_clear = 4;
+    update.nodes.resize(2);
+    update.nodes[0].id = 4;
+    update.nodes[0].child_ids.push_back(5);
+
+    update.nodes[1].id = 5;
+
+    bridge->AccessibilityEventReceived(
+        CreateAccessibilityEventWithUpdate(std::move(update)));
+
+    semantics_manager_.semantic_tree()->RunUntilCommitCountIs(3);
+    CheckCallsToFakeSemanticTree(/*num_deletes=*/1, /*num_updates=*/3,
+                                 /*num_commits=*/3);
+    EXPECT_EQ(semantics_manager_.semantic_tree()->tree_size(), tree_size);
+  }
+
+  // Reparents node 5 to be a child of node 3.
+  // (1 (2 (3 (4 5))))
+  {
+    ui::AXTreeUpdate update;
+    update.root_id = 1;
+    update.node_id_to_clear = 3;
+    update.nodes.resize(3);
+    update.nodes[0].id = 3;
+    update.nodes[0].child_ids.push_back(4);
+    update.nodes[0].child_ids.push_back(5);
+
+    update.nodes[1].id = 4;
+    update.nodes[2].id = 5;
+
+    bridge->AccessibilityEventReceived(
+        CreateAccessibilityEventWithUpdate(std::move(update)));
+
+    semantics_manager_.semantic_tree()->RunUntilCommitCountIs(4);
+    CheckCallsToFakeSemanticTree(/*num_deletes=*/1, /*num_updates=*/4,
+                                 /*num_commits=*/4);
+    EXPECT_EQ(semantics_manager_.semantic_tree()->tree_size(), tree_size);
+  }
+
+  // Reparents the subtree rooted at node 3 to be a child of node 1.
+  // (1 (2 3 (4 5)))
+  {
+    ui::AXTreeUpdate update;
+    update.root_id = 1;
+    update.node_id_to_clear = 2;
+    update.nodes.resize(5);
+    update.nodes[0].id = 1;
+    update.nodes[0].child_ids.push_back(2);
+    update.nodes[0].child_ids.push_back(3);
+
+    update.nodes[1].id = 2;
+    update.nodes[2].id = 3;
+    update.nodes[2].child_ids.push_back(4);
+    update.nodes[2].child_ids.push_back(5);
+
+    update.nodes[3].id = 4;
+    update.nodes[4].id = 5;
+
+    bridge->AccessibilityEventReceived(
+        CreateAccessibilityEventWithUpdate(std::move(update)));
+
+    semantics_manager_.semantic_tree()->RunUntilCommitCountIs(5);
+    CheckCallsToFakeSemanticTree(/*num_deletes=*/1, /*num_updates=*/5,
+                                 /*num_commits=*/5);
+    EXPECT_EQ(semantics_manager_.semantic_tree()->tree_size(), tree_size);
+  }
+
+  // Deletes the subtree rooted at node 3.
+  // (1 (2))
+  {
+    ui::AXTreeUpdate update;
+    update.root_id = 1;
+    update.node_id_to_clear = 1;
+    update.nodes.resize(2);
+    update.nodes[0].id = 1;
+    update.nodes[0].child_ids.push_back(2);
+
+    update.nodes[1].id = 2;
+
+    bridge->AccessibilityEventReceived(
+        CreateAccessibilityEventWithUpdate(std::move(update)));
+
+    semantics_manager_.semantic_tree()->RunUntilCommitCountIs(6);
+    CheckCallsToFakeSemanticTree(/*num_deletes=*/2, /*num_updates=*/6,
+                                 /*num_commits=*/6);
+    EXPECT_EQ(semantics_manager_.semantic_tree()->tree_size(), 2u);
+  }
+
+  // Give this tree a new root.
+  // (7 (2))
+  {
+    ui::AXTreeUpdate update;
+    update.root_id = 7;
+    update.node_id_to_clear = 1;
+    update.nodes.resize(2);
+    update.nodes[0].id = 7;
+    update.nodes[0].child_ids.push_back(2);
+
+    update.nodes[1].id = 2;
+
+    bridge->AccessibilityEventReceived(
+        CreateAccessibilityEventWithUpdate(std::move(update)));
+
+    semantics_manager_.semantic_tree()->RunUntilCommitCountIs(7);
+    CheckCallsToFakeSemanticTree(/*num_deletes=*/3, /*num_updates=*/7,
+                                 /*num_commits=*/7);
+    EXPECT_EQ(semantics_manager_.semantic_tree()->tree_size(), 2u);
+  }
+
+  // Delete child and change root ID.
+  // (1)
+  {
+    ui::AXTreeUpdate update;
+    update.root_id = 1;
+    update.node_id_to_clear = 7;
+    update.nodes.resize(1);
+    update.nodes[0].id = 1;
+
+    bridge->AccessibilityEventReceived(
+        CreateAccessibilityEventWithUpdate(std::move(update)));
+
+    semantics_manager_.semantic_tree()->RunUntilCommitCountIs(8);
+    CheckCallsToFakeSemanticTree(/*num_deletes=*/4, /*num_updates=*/8,
+                                 /*num_commits=*/8);
+    EXPECT_EQ(semantics_manager_.semantic_tree()->tree_size(), 1u);
+  }
 }
