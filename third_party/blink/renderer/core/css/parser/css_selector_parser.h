@@ -106,6 +106,12 @@ class CORE_EXPORT CSSSelectorParser {
   // for example :host, inner :is()/:where() pseudo classes are also only
   // allowed to contain compound selectors.
   bool inside_compound_pseudo_ = false;
+  // When parsing a compound which includes a pseudo-element, the simple
+  // selectors permitted to follow that pseudo-element may be restricted.
+  // If this is the case, then restricting_pseudo_element_ will be set to the
+  // PseudoType of the pseudo-element causing the restriction.
+  CSSSelector::PseudoType restricting_pseudo_element_ =
+      CSSSelector::kPseudoUnknown;
 
   class DisallowPseudoElementsScope {
     STACK_ALLOCATED();

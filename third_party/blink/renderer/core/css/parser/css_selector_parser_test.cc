@@ -482,6 +482,28 @@ static const SelectorTestCase is_where_nesting_data[] = {
     {"::cue(:is(.a .b))", "::cue(:is())"},
     {"::cue(:is(.a + .b))", "::cue(:is())"},
     {"::cue(:is(.a, .b + .c))", "::cue(:is(.a))"},
+    // Only user-action pseudos + :state() are allowed after kPseudoPart:
+    {"::part(foo):is(.a)", "::part(foo):is()"},
+    {"::part(foo):is(.a:hover)", "::part(foo):is()"},
+    {"::part(foo):is(:hover.a)", "::part(foo):is()"},
+    {"::part(foo):is(:hover + .a)", "::part(foo):is()"},
+    {"::part(foo):is(.a + :hover)", "::part(foo):is()"},
+    {"::part(foo):is(:hover:enabled)", "::part(foo):is()"},
+    {"::part(foo):is(:enabled:hover)", "::part(foo):is()"},
+    {"::part(foo):is(:hover, :where(.a))",
+     "::part(foo):is(:hover, :where())"},
+    {"::part(foo):is(:hover, .a)", "::part(foo):is(:hover)"},
+    {"::part(foo):is(:state(bar), .a)", "::part(foo):is(:state(bar))"},
+    {"::part(foo):is(:enabled)", "::part(foo):is()"},
+    // Only scrollbar pseudos after kPseudoScrollbar:
+    {"::-webkit-scrollbar:is(:focus)", "::-webkit-scrollbar:is()"},
+    // Only :window-inactive after kPseudoSelection:
+    {"::selection:is(:focus)", "::selection:is()"},
+    // Only user-action pseudos after webkit pseudos:
+    {"::-webkit-input-placeholder:is(:enabled)",
+     "::-webkit-input-placeholder:is()"},
+    {"::-webkit-input-placeholder:is(:not(:enabled))",
+     "::-webkit-input-placeholder:is()"},
 
     // Valid selectors:
     {":is(.a, .b)"},
@@ -501,6 +523,19 @@ static const SelectorTestCase is_where_nesting_data[] = {
     {"::cue(:is(.a))"},
     {"::cue(:is(div.a))"},
     {"::cue(:is(.a, .b))"},
+    {"::part(foo):is(:hover)"},
+    {"::part(foo):is(:hover:focus)"},
+    {"::part(foo):is(:is(:hover))"},
+    {"::part(foo):is(:focus, :hover)"},
+    {"::part(foo):is(:focus, :is(:hover))"},
+    {"::part(foo):is(:focus, :state(bar))"},
+    {"::-webkit-scrollbar:is(:enabled)"},
+    {"::selection:is(:window-inactive)"},
+    {"::-webkit-input-placeholder:is(:hover)"},
+    {"::-webkit-input-placeholder:is(:not(:hover))"},
+    {"::-webkit-input-placeholder:where(:hover)"},
+    {"::-webkit-input-placeholder:is()"},
+    {"::-webkit-input-placeholder:is(:where(:hover))"},
     // clang-format on
 };
 

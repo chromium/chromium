@@ -367,11 +367,22 @@ bool IsSimpleSelectorValidAfterPseudoElement(
   if (simple_selector.Match() != CSSSelector::kPseudoClass)
     return false;
   CSSSelector::PseudoType pseudo = simple_selector.GetPseudoType();
-  if (pseudo == CSSSelector::kPseudoNot) {
-    DCHECK(simple_selector.SelectorList());
-    DCHECK(simple_selector.SelectorList()->First());
-    DCHECK(!simple_selector.SelectorList()->First()->TagHistory());
-    pseudo = simple_selector.SelectorList()->First()->GetPseudoType();
+  switch (pseudo) {
+    case CSSSelector::kPseudoIs:
+    case CSSSelector::kPseudoWhere:
+      // The :is() and :where() pseudo-classes are themselves always valid.
+      // CSSSelectorParser::restricting_pseudo_element_ ensures that invalid
+      // nested selectors will be dropped if they are invalid according to
+      // this function.
+      return true;
+    case CSSSelector::kPseudoNot:
+      DCHECK(simple_selector.SelectorList());
+      DCHECK(simple_selector.SelectorList()->First());
+      DCHECK(!simple_selector.SelectorList()->First()->TagHistory());
+      pseudo = simple_selector.SelectorList()->First()->GetPseudoType();
+      break;
+    default:
+      break;
   }
   return IsPseudoClassValidAfterPseudoElement(pseudo, compound_pseudo_element);
 }
@@ -380,35 +391,27 @@ bool IsSimpleSelectorValidAfterPseudoElement(
 
 std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumeCompoundSelector(
     CSSParserTokenRange& range) {
+  base::AutoReset<CSSSelector::PseudoType> reset_restricting(
+      &restricting_pseudo_element_, restricting_pseudo_element_);
+
   std::unique_ptr<CSSParserSelector> compound_selector;
   AtomicString namespace_prefix;
   AtomicString element_name;
-  CSSSelector::PseudoType compound_pseudo_element = CSSSelector::kPseudoUnknown;
   const bool has_q_name = ConsumeName(range, element_name, namespace_prefix);
   if (!has_q_name) {
     compound_selector = ConsumeSimpleSelector(range);
     if (!compound_selector)
       return nullptr;
     if (compound_selector->Match() == CSSSelector::kPseudoElement)
-      compound_pseudo_element = compound_selector->GetPseudoType();
+      restricting_pseudo_element_ = compound_selector->GetPseudoType();
   }
   if (context_->IsHTMLDocument())
     element_name = element_name.LowerASCII();
 
   while (std::unique_ptr<CSSParserSelector> simple_selector =
              ConsumeSimpleSelector(range)) {
-    // TODO(futhark@chromium.org): crbug.com/578131
-    // The UASheetMode check is a work-around to allow this selector in
-    // mediaControls(New).css:
-    // video::-webkit-media-text-track-region-container.scrolling
-    if (context_->Mode() != kUASheetMode &&
-        !IsSimpleSelectorValidAfterPseudoElement(*simple_selector.get(),
-                                                 compound_pseudo_element)) {
-      failed_parsing_ = true;
-      return nullptr;
-    }
     if (simple_selector->Match() == CSSSelector::kPseudoElement)
-      compound_pseudo_element = simple_selector->GetPseudoType();
+      restricting_pseudo_element_ = simple_selector->GetPseudoType();
 
     if (compound_selector)
       compound_selector = AddSimpleSelectorToCompound(
@@ -455,8 +458,15 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumeSimpleSelector(
     selector = ConsumePseudo(range);
   else
     return nullptr;
-  if (!selector)
+  // TODO(futhark@chromium.org): crbug.com/578131
+  // The UASheetMode check is a work-around to allow this selector in
+  // mediaControls(New).css:
+  // video::-webkit-media-text-track-region-container.scrolling
+  if (!selector || (context_->Mode() != kUASheetMode &&
+                    !IsSimpleSelectorValidAfterPseudoElement(
+                        *selector.get(), restricting_pseudo_element_))) {
     failed_parsing_ = true;
+  }
   return selector;
 }
 
