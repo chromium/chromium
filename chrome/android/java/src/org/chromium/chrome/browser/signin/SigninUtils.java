@@ -19,7 +19,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.help.HelpAndFeedback;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.account_picker.AccountConsistencyPromoAction;
@@ -107,7 +107,7 @@ public class SigninUtils {
         TabCreator incognitoTabCreator = activity.getTabCreator(/*incognito=*/true);
         IncognitoInterstitialDelegate incognitoInterstitialDelegate =
                 new IncognitoInterstitialDelegate(activity, regularTabModel, incognitoTabCreator,
-                        HelpAndFeedback.getInstance());
+                        HelpAndFeedbackLauncherImpl.getInstance());
 
         AccountPickerBottomSheetCoordinator coordinator = new AccountPickerBottomSheetCoordinator(
                 windowAndroid.getContext().get(), BottomSheetControllerProvider.from(windowAndroid),

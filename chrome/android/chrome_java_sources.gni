@@ -771,7 +771,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/gsa/GSAHelper.java",
   "java/src/org/chromium/chrome/browser/gsa/GSAServiceClient.java",
   "java/src/org/chromium/chrome/browser/gsa/GSAState.java",
-  "java/src/org/chromium/chrome/browser/help/HelpAndFeedback.java",
   "java/src/org/chromium/chrome/browser/history/BrowsingHistoryBridge.java",
   "java/src/org/chromium/chrome/browser/history/HistoryActivity.java",
   "java/src/org/chromium/chrome/browser/history/HistoryAdapter.java",

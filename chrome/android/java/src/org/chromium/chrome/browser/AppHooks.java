@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.feedback.FeedbackReporter;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.gsa.GSAHelper;
-import org.chromium.chrome.browser.help.HelpAndFeedback;
 import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
@@ -181,14 +180,6 @@ public abstract class AppHooks {
      */
     public HelpAndFeedbackLauncher createHelpAndFeedbackLauncher() {
         return new HelpAndFeedbackLauncherImpl();
-    }
-
-    /**
-     * TODO(crbug.com/1117343): Remove this method when downstream dependency is removed.
-     * Returns a new instance of HelpAndFeedback.
-     */
-    public HelpAndFeedback createHelpAndFeedback() {
-        return new HelpAndFeedback();
     }
 
     public InstantAppsHandler createInstantAppsHandler() {
