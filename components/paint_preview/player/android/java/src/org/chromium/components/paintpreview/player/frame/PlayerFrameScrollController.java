@@ -31,6 +31,7 @@ public class PlayerFrameScrollController {
     private final PlayerFrameMediatorDelegate mMediatorDelegate;
     private final Runnable mOnScrollListener;
     private final Runnable mOnFlingListener;
+    private boolean mAcceptUserInput;
 
     PlayerFrameScrollController(OverScroller scroller, PlayerFrameMediatorDelegate mediatorDelegate,
             @Nullable Runnable onScrollListener, @Nullable Runnable onFlingListener) {
@@ -40,6 +41,7 @@ public class PlayerFrameScrollController {
         mMediatorDelegate = mediatorDelegate;
         mOnScrollListener = onScrollListener;
         mOnFlingListener = onFlingListener;
+        mAcceptUserInput = true;
     }
 
     /**
@@ -69,6 +71,8 @@ public class PlayerFrameScrollController {
      * @returns Whether the fling was consumed.
      */
     public boolean onFling(float velocityX, float velocityY) {
+        if (!mAcceptUserInput) return false;
+
         final float scaleFactor = mViewport.getScale();
         int scaledContentWidth = (int) (mContentSize.getWidth() * scaleFactor);
         int scaledContentHeight = (int) (mContentSize.getHeight() * scaleFactor);
@@ -92,6 +96,13 @@ public class PlayerFrameScrollController {
         mOverscrollHandler.release();
         mIsOverscrolling = false;
         mOverscrollAmount = 0.0f;
+    }
+
+    /**
+     * Enables/disables processing input events for scrolling.
+     */
+    public void setAcceptUserInput(boolean acceptUserInput) {
+        mAcceptUserInput = acceptUserInput;
     }
 
     private boolean maybeHandleOverscroll(float distanceY) {
@@ -121,6 +132,8 @@ public class PlayerFrameScrollController {
     }
 
     private boolean scrollByInternal(float distanceX, float distanceY) {
+        if (!mAcceptUserInput) return false;
+
         if (maybeHandleOverscroll(-distanceY)) return true;
 
         int validDistanceX = 0;

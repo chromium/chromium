@@ -27,6 +27,7 @@ public class PlayerFrameScaleController {
     /** Interface for calling shared methods on the mediator. */
     private final PlayerFrameMediatorDelegate mMediatorDelegate;
     private final Callback<Boolean> mOnScaleListener;
+    private boolean mAcceptUserInput;
 
     PlayerFrameScaleController(Matrix bitmapScaleMatrix,
             PlayerFrameMediatorDelegate mediatorDelegate,
@@ -37,6 +38,7 @@ public class PlayerFrameScaleController {
         mBitmapScaleMatrix = bitmapScaleMatrix;
         mMediatorDelegate = mediatorDelegate;
         mOnScaleListener = onScaleListener;
+        mAcceptUserInput = true;
     }
 
     /**
@@ -70,6 +72,8 @@ public class PlayerFrameScaleController {
      * to improve quality.
      */
     boolean scaleBy(float scaleFactor, float focalPointX, float focalPointY) {
+        if (!mAcceptUserInput) return false;
+
         // This is filtered to only apply to the top level view upstream.
         if (mUncommittedScaleFactor == 0f) {
             mUncommittedScaleFactor = mViewport.getScale();
@@ -162,5 +166,12 @@ public class PlayerFrameScaleController {
         mUncommittedScaleFactor = 0f;
         if (mOnScaleListener != null) mOnScaleListener.onResult(true);
         return true;
+    }
+
+    /**
+     * Enables/disables processing input events for scaling.
+     */
+    public void setAcceptUserInput(boolean acceptUserInput) {
+        mAcceptUserInput = acceptUserInput;
     }
 }

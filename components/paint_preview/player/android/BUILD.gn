@@ -170,6 +170,7 @@ junit_binary("paint_preview_junit_tests") {
     "junit/src/org/chromium/components/paintpreview/player/PlayerUserFrustrationDetectorTest.java",
     "junit/src/org/chromium/components/paintpreview/player/frame/PaintPreviewCustomFlingingShadowScroller.java",
     "junit/src/org/chromium/components/paintpreview/player/frame/PlayerFrameBitmapPainterTest.java",
+    "junit/src/org/chromium/components/paintpreview/player/frame/PlayerFrameCoordinatorTest.java",
     "junit/src/org/chromium/components/paintpreview/player/frame/PlayerFrameMediatorTest.java",
     "junit/src/org/chromium/components/paintpreview/player/frame/PlayerFrameScaleControllerTest.java",
     "junit/src/org/chromium/components/paintpreview/player/frame/PlayerFrameScrollControllerTest.java",

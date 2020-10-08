@@ -245,6 +245,7 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
         if (mTab.getWebContents() != null && scrollPosition != null) {
             mTab.getWebContents().getEventForwarder().scrollTo(scrollPosition.x, scrollPosition.y);
         }
+        mPlayerManager.setAcceptUserInput(false);
         boolean needsAnimation = exitCause == ExitCause.TAB_FINISHED_LOADING
                 || exitCause == ExitCause.SNACK_BAR_ACTION
                 || exitCause == ExitCause.PULL_TO_REFRESH;
