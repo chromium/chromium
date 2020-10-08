@@ -168,9 +168,6 @@ void ZoomMenuModel::Build() {
 // HelpMenuModel
 // Only used in branded builds.
 
-const base::Feature kIncludeBetaForumMenuItem{
-    "IncludeBetaForumMenuItem", base::FEATURE_DISABLED_BY_DEFAULT};
-
 class HelpMenuModel : public ui::SimpleMenuModel {
  public:
   HelpMenuModel(ui::SimpleMenuModel::Delegate* delegate, Browser* browser)
@@ -191,8 +188,6 @@ class HelpMenuModel : public ui::SimpleMenuModel {
     AddItem(IDC_ABOUT, l10n_util::GetStringUTF16(IDS_ABOUT));
 #endif
     AddItemWithStringId(IDC_HELP_PAGE_VIA_MENU, help_string_id);
-    if (base::FeatureList::IsEnabled(kIncludeBetaForumMenuItem))
-      AddItem(IDC_SHOW_BETA_FORUM, l10n_util::GetStringUTF16(IDS_BETA_FORUM));
     if (browser_defaults::kShowHelpMenuItemIcon) {
       ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
       SetIcon(GetIndexOfCommandId(IDC_HELP_PAGE_VIA_MENU),

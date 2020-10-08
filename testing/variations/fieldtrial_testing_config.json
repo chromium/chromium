@@ -3532,24 +3532,6 @@
             ]
         }
     ],
-    "IncludeBetaForumMenuItem": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IncludeBetaForumMenuItem"
-                    ]
-                }
-            ]
-        }
-    ],
     "IncompatibleApplicationsWarning": [
         {
             "platforms": [
