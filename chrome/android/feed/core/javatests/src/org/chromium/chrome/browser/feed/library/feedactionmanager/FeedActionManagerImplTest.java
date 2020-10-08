@@ -32,7 +32,9 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Consumer;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.library.api.common.MutationContext;
+import org.chromium.chrome.browser.feed.library.api.internal.actionmanager.ActionManager;
 import org.chromium.chrome.browser.feed.library.api.internal.common.Model;
 import org.chromium.chrome.browser.feed.library.api.internal.sessionmanager.FeedSessionManager;
 import org.chromium.chrome.browser.feed.library.api.internal.store.LocalActionMutation;
@@ -46,6 +48,8 @@ import org.chromium.chrome.browser.feed.library.common.concurrent.testing.FakeTh
 import org.chromium.chrome.browser.feed.library.common.time.testing.FakeClock;
 import org.chromium.chrome.browser.feed.v1.FeedLoggingBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.feed.core.proto.libraries.api.internal.StreamDataProto.StreamDataOperation;
 import org.chromium.components.feed.core.proto.libraries.api.internal.StreamDataProto.StreamStructure;
@@ -53,6 +57,9 @@ import org.chromium.components.feed.core.proto.libraries.api.internal.StreamData
 import org.chromium.components.feed.core.proto.libraries.api.internal.StreamDataProto.StreamUploadableAction;
 import org.chromium.components.feed.core.proto.wire.ActionPayloadProto.ActionPayload;
 import org.chromium.components.feed.core.proto.wire.ConsistencyTokenProto.ConsistencyToken;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 import java.time.Duration;
@@ -96,6 +103,9 @@ public class FeedActionManagerImplTest {
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
+    @Rule
+    public JniMocker mocker = new JniMocker();
+
     @Mock
     private FeedSessionManager mFeedSessionManager;
     @Mock
@@ -110,6 +120,13 @@ public class FeedActionManagerImplTest {
     private FeedLoggingBridge mFeedLoggingBridge;
     @Mock
     private Runnable mStoreViewActionsRunnable;
+    @Mock
+    private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock
+    private Profile mProfile;
+    @Mock
+    private PrefService mPrefService;
+
     @Captor
     private ArgumentCaptor<Integer> mActionTypeCaptor;
     @Captor
@@ -132,6 +149,11 @@ public class FeedActionManagerImplTest {
     @Before
     public void setUp() throws Exception {
         initMocks(this);
+
+        mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        Profile.setLastUsedProfileForTesting(mProfile);
+        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+
         mActionManager = new FeedActionManagerImpl(mStore, mFakeThreadUtils, getTaskQueue(),
                 mFakeMainThreadRunner, new TestViewHandler(), mFakeClock, mFeedLoggingBridge);
         mActionManager.initialize(mFeedSessionManager);
@@ -150,6 +172,7 @@ public class FeedActionManagerImplTest {
         mViewport = new TestView();
         mViewport.setRectOnScreen(VIEWPORT_RECT);
         mActionManager.setViewport(mViewport);
+        mActionManager.setCanUploadClicksAndViewsWhenNoticeCardIsPresent(false);
     }
 
     @Test
@@ -237,9 +260,26 @@ public class FeedActionManagerImplTest {
     }
 
     @Test
-    public void triggerCreateAndUploadAction() throws Exception {
+    public void triggerCreateAndUploadAction_whenUploadDisabled_byCantUploadWithNotice()
+            throws Exception {
+        mActionManager.setCanUploadClicksAndViewsWhenNoticeCardIsPresent(false);
+        when(mPrefService.getBoolean(Pref.LAST_FETCH_HAD_NOTICE_CARD)).thenReturn(true);
+
         mFakeClock.set(DEFAULT_TIME);
-        mActionManager.createAndUploadAction(CONTENT_ID_STRING, ACTION_PAYLOAD);
+        mActionManager.createAndUploadAction(
+                CONTENT_ID_STRING, ACTION_PAYLOAD, ActionManager.UploadActionType.CLICK);
+        verify(mFeedSessionManager, never()).triggerUploadActions(mActionCaptor.capture());
+    }
+
+    @Test
+    public void triggerCreateAndUploadAction_whenUploadEnabled_byCanUploadWithNotice()
+            throws Exception {
+        mActionManager.setCanUploadClicksAndViewsWhenNoticeCardIsPresent(true);
+        when(mPrefService.getBoolean(Pref.LAST_FETCH_HAD_NOTICE_CARD)).thenReturn(true);
+
+        mFakeClock.set(DEFAULT_TIME);
+        mActionManager.createAndUploadAction(
+                CONTENT_ID_STRING, ACTION_PAYLOAD, ActionManager.UploadActionType.CLICK);
         verify(mFeedSessionManager).triggerUploadActions(mActionCaptor.capture());
         StreamUploadableAction action =
                 (StreamUploadableAction) mActionCaptor.getValue().toArray()[0];
@@ -249,16 +289,35 @@ public class FeedActionManagerImplTest {
     }
 
     @Test
-    public void triggerCreateAndStoreAction() throws Exception {
+    public void triggerCreateAndUploadAction_whenUploadEnabled_byNoClickAction() throws Exception {
+        mActionManager.setCanUploadClicksAndViewsWhenNoticeCardIsPresent(false);
+        when(mPrefService.getBoolean(Pref.LAST_FETCH_HAD_NOTICE_CARD)).thenReturn(true);
+
         mFakeClock.set(DEFAULT_TIME);
-        mActionManager.createAndStoreAction(CONTENT_ID_STRING, ACTION_PAYLOAD);
-        verify(mUploadableActionMutation)
-                .upsert(mUploadableActionCaptor.capture(), mContentIdStringCaptor.capture());
-        StreamUploadableAction action = mUploadableActionCaptor.getValue();
+        mActionManager.createAndUploadAction(
+                CONTENT_ID_STRING, ACTION_PAYLOAD, ActionManager.UploadActionType.MISC);
+        verify(mFeedSessionManager).triggerUploadActions(mActionCaptor.capture());
+        StreamUploadableAction action =
+                (StreamUploadableAction) mActionCaptor.getValue().toArray()[0];
         assertThat(action.getFeatureContentId()).isEqualTo(CONTENT_ID_STRING);
         assertThat(action.getTimestampSeconds()).isEqualTo(DEFAULT_TIME_SECONDS);
         assertThat(action.getPayload()).isEqualTo(ACTION_PAYLOAD);
-        assertThat(mContentIdStringCaptor.getValue()).isEqualTo(CONTENT_ID_STRING);
+    }
+
+    @Test
+    public void triggerCreateAndUploadAction_whenLogEnabled_byNoNoticeCard() throws Exception {
+        mActionManager.setCanUploadClicksAndViewsWhenNoticeCardIsPresent(false);
+        when(mPrefService.getBoolean(Pref.LAST_FETCH_HAD_NOTICE_CARD)).thenReturn(false);
+
+        mFakeClock.set(DEFAULT_TIME);
+        mActionManager.createAndUploadAction(
+                CONTENT_ID_STRING, ACTION_PAYLOAD, ActionManager.UploadActionType.MISC);
+        verify(mFeedSessionManager).triggerUploadActions(mActionCaptor.capture());
+        StreamUploadableAction action =
+                (StreamUploadableAction) mActionCaptor.getValue().toArray()[0];
+        assertThat(action.getFeatureContentId()).isEqualTo(CONTENT_ID_STRING);
+        assertThat(action.getTimestampSeconds()).isEqualTo(DEFAULT_TIME_SECONDS);
+        assertThat(action.getPayload()).isEqualTo(ACTION_PAYLOAD);
     }
 
     @Test

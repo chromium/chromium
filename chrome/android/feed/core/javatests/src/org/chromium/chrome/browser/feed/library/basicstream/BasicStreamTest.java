@@ -34,7 +34,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.robolectric.Robolectric;
@@ -42,6 +44,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadow.api.Shadow;
 
 import org.chromium.base.Consumer;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.library.api.client.knowncontent.ContentMetadata;
 import org.chromium.chrome.browser.feed.library.api.client.knowncontent.KnownContent;
 import org.chromium.chrome.browser.feed.library.api.host.action.ActionApi;
@@ -94,12 +98,18 @@ import org.chromium.chrome.browser.feed.library.testing.shadows.ShadowRecycledVi
 import org.chromium.chrome.browser.feed.shared.stream.Header;
 import org.chromium.chrome.browser.feed.shared.stream.Stream.ContentChangedListener;
 import org.chromium.chrome.browser.feed.shared.stream.Stream.ScrollListener;
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.feed.core.proto.libraries.api.internal.StreamDataProto.UiContext;
 import org.chromium.components.feed.core.proto.libraries.basicstream.internal.StreamSavedInstanceStateProto.StreamSavedInstanceState;
 import org.chromium.components.feed.core.proto.libraries.sharedstream.ScrollStateProto.ScrollState;
 import org.chromium.components.feed.core.proto.libraries.sharedstream.UiRefreshReasonProto.UiRefreshReason;
 import org.chromium.components.feed.core.proto.libraries.sharedstream.UiRefreshReasonProto.UiRefreshReason.Reason;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 import java.util.ArrayList;
@@ -111,6 +121,7 @@ import java.util.Set;
 /** Tests for {@link BasicStream}. */
 @RunWith(LocalRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowRecycledViewPool.class})
+@Features.DisableFeatures(ChromeFeatureList.INTEREST_FEEDV1_CLICKS_AND_VIEWS_CONDITIONAL_UPLOAD)
 public class BasicStreamTest {
     private static final int START_PADDING = 1;
     private static final int END_PADDING = 2;
@@ -136,6 +147,12 @@ public class BasicStreamTest {
                     .put(ConfigKey.SPINNER_DELAY_MS, SPINNER_DELAY_MS)
                     .put(ConfigKey.SPINNER_MINIMUM_SHOW_TIME_MS, SPINNER_MINIMUM_SHOW_TIME_MS)
                     .build();
+
+    @Rule
+    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+
+    @Rule
+    public JniMocker mocker = new JniMocker();
 
     @Mock
     private StreamConfiguration mStreamConfiguration;
@@ -173,6 +190,12 @@ public class BasicStreamTest {
     private TooltipApi mTooltipApi;
     @Mock
     private ActionManager mActionManager;
+    @Mock
+    private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock
+    private Profile mProfile;
+    @Mock
+    private PrefService mPrefService;
 
     private FakeFeedKnownContent mFakeFeedKnownContent;
     private LinearLayoutManagerWithFakePositioning mLayoutManager;
@@ -185,6 +208,12 @@ public class BasicStreamTest {
     @Before
     public void setUp() {
         initMocks(this);
+
+        mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        Profile.setLastUsedProfileForTesting(mProfile);
+        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+        when(mPrefService.getBoolean(Pref.HAS_REACHED_CLICK_AND_VIEW_ACTIONS_UPLOAD_CONDITIONS))
+                .thenReturn(true);
 
         mFakeFeedKnownContent = new FakeFeedKnownContent();
         mHeaders = new ArrayList<>();
@@ -219,6 +248,12 @@ public class BasicStreamTest {
 
         mBasicStream = createBasicStream(mLayoutManager);
         mBasicStream.onCreate(null);
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.INTEREST_FEEDV1_CLICKS_AND_VIEWS_CONDITIONAL_UPLOAD)
+    public void testOnCreate_setReachedUploadConditionsBitInActionManager_whenFeatureEnabled() {
+        verify(mActionManager, times(1)).setCanUploadClicksAndViewsWhenNoticeCardIsPresent(true);
     }
 
     @Test

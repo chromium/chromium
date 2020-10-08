@@ -33,6 +33,10 @@ const char kUserClassifierLastTimeToUseSuggestions[] =
 const char kHostOverrideHost[] = "feed.host_override.host";
 const char kHostOverrideBlessNonce[] = "feed.host_override.bless_nonce";
 
+const char kHasReachedClickAndViewActionsUploadConditions[] =
+    "feed.clicks_and_views_upload_conditions_reached";
+const char kLastFetchHadNoticeCard[] = "feed.last_fetch_had_notice_card";
+
 const char kThrottlerRequestCountListPrefName[] =
     "feedv2.request_throttler.request_counts";
 const char kThrottlerLastRequestTime[] =
@@ -61,6 +65,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(feed::prefs::kMetricsData);
   registry->RegisterStringPref(feed::prefs::kClientInstanceId, "");
   registry->RegisterStringPref(feed::prefs::kActionsEndpointOverride, "");
+  registry->RegisterBooleanPref(
+      feed::prefs::kHasReachedClickAndViewActionsUploadConditions, false);
+  registry->RegisterBooleanPref(feed::prefs::kLastFetchHadNoticeCard, true);
   UserClassifier::RegisterProfilePrefs(registry);
 }
 

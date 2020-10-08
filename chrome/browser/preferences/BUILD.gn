@@ -31,6 +31,7 @@ java_cpp_strings("java_pref_names_srcjar") {
     "//components/autofill/core/common/autofill_prefs.cc",
     "//components/dom_distiller/core/pref_names.cc",
     "//components/embedder_support/pref_names.cc",
+    "//components/feed/core/common/pref_names.cc",
     "//components/feed/core/shared_prefs/pref_names.cc",
     "//components/offline_pages/core/prefetch/prefetch_prefs.cc",
     "//components/password_manager/core/common/password_manager_pref_names.cc",

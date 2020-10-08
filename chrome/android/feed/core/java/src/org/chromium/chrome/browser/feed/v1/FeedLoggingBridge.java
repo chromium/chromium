@@ -24,9 +24,12 @@ import org.chromium.chrome.browser.feed.library.api.host.logging.Task;
 import org.chromium.chrome.browser.feed.library.api.host.logging.ZeroStateShowReason;
 import org.chromium.chrome.browser.feed.library.common.time.Clock;
 import org.chromium.chrome.browser.feed.shared.stream.Stream.ScrollListener;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.feed.core.proto.ui.action.FeedActionProto;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 
 import java.util.List;
@@ -39,6 +42,8 @@ import java.util.concurrent.TimeUnit;
 @JNINamespace("feed")
 public class FeedLoggingBridge implements BasicLoggingApi {
     private static final String TAG = "FeedLoggingBridge";
+    private static final int SHOWN_INDEX_THRESHOLD = 2;
+
     private long mNativeFeedLoggingBridge;
     private static final int MIN_SCROLL_THRESHOLD_DP = 160; // one inch.
     private static final long VISIT_TIME_THRESHOLD = 1000 * 60 * 5; // 5 min in ms.
@@ -47,6 +52,7 @@ public class FeedLoggingBridge implements BasicLoggingApi {
     private boolean mScrolledReported;
     private long mVisitStartTime;
     private Clock mClock;
+    private boolean mHasReachedShownIndexesThreshold;
 
     // This enum is used for UMA, don't move or reassign these numbers.
     public @interface FeedEngagementType {
@@ -71,6 +77,10 @@ public class FeedLoggingBridge implements BasicLoggingApi {
         mScrolledReported = false;
         mClock = clock;
         mVisitStartTime = 0;
+        // Set the initial value to true when the conditional logging feature is disabled because
+        // the threshold isn't needed in that case.
+        mHasReachedShownIndexesThreshold = !ChromeFeatureList.isEnabled(
+                ChromeFeatureList.INTEREST_FEEDV1_CLICKS_AND_VIEWS_CONDITIONAL_UPLOAD);
     }
 
     /** Cleans up native half of this bridge. */
@@ -85,6 +95,8 @@ public class FeedLoggingBridge implements BasicLoggingApi {
 
     @Override
     public void onContentViewed(ContentLoggingData data) {
+        onShownSlice(data.getPositionInStream());
+
         // Bridge could have been destroyed for policy when this is called.
         // See https://crbug.com/901414.
         if (mNativeFeedLoggingBridge == 0) return;
@@ -94,6 +106,18 @@ public class FeedLoggingBridge implements BasicLoggingApi {
                 TimeUnit.SECONDS.toMillis(data.getPublishedTimeSeconds()),
                 TimeUnit.SECONDS.toMillis(data.getTimeContentBecameAvailable()), data.getScore(),
                 data.isAvailableOffline());
+    }
+
+    private void onShownSlice(int index) {
+        if (mHasReachedShownIndexesThreshold) {
+            return;
+        }
+
+        if (index + 1 >= SHOWN_INDEX_THRESHOLD) {
+            mHasReachedShownIndexesThreshold = true;
+            UserPrefs.get(Profile.getLastUsedRegularProfile())
+                    .setBoolean(Pref.HAS_REACHED_CLICK_AND_VIEW_ACTIONS_UPLOAD_CONDITIONS, true);
+        }
     }
 
     @Override

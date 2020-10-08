@@ -85,10 +85,14 @@ import org.chromium.chrome.browser.feed.library.sharedstream.publicapi.scroll.Sc
 import org.chromium.chrome.browser.feed.library.sharedstream.scroll.ScrollListenerNotifier;
 import org.chromium.chrome.browser.feed.shared.stream.Header;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.feed.core.proto.libraries.api.internal.StreamDataProto.UiContext;
 import org.chromium.components.feed.core.proto.libraries.basicstream.internal.StreamSavedInstanceStateProto.StreamSavedInstanceState;
 import org.chromium.components.feed.core.proto.libraries.sharedstream.ScrollStateProto.ScrollState;
 import org.chromium.components.feed.core.proto.libraries.sharedstream.UiRefreshReasonProto.UiRefreshReason;
+import org.chromium.components.user_prefs.UserPrefs;
 
 import java.util.List;
 
@@ -304,6 +308,7 @@ public class BasicStream implements Stream, ModelProviderObserver, OnLayoutChang
         mStreamOfflineMonitor.onDestroy();
         mUiSessionRequestLogger.onDestroy();
         mActionManager.setViewport(null);
+        mActionManager.setCanUploadClicksAndViewsWhenNoticeCardIsPresent(false);
         mIsDestroyed = true;
     }
 
@@ -511,7 +516,17 @@ public class BasicStream implements Stream, ModelProviderObserver, OnLayoutChang
         mRecyclerView.addOnLayoutChangeListener(this);
 
         mActionManager.setViewport(mRecyclerView);
+        mActionManager.setCanUploadClicksAndViewsWhenNoticeCardIsPresent(canUpload());
         addScrollListener(mActionManager.getScrollListener());
+    }
+
+    private boolean canUpload() {
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.INTEREST_FEEDV1_CLICKS_AND_VIEWS_CONDITIONAL_UPLOAD)) {
+            return UserPrefs.get(Profile.getLastUsedRegularProfile())
+                    .getBoolean(Pref.HAS_REACHED_CLICK_AND_VIEW_ACTIONS_UPLOAD_CONDITIONS);
+        }
+        return true;
     }
 
     private void updateAdapterAfterSessionStart(ModelProvider modelProvider) {
