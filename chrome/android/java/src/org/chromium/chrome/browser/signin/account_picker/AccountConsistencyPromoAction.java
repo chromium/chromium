@@ -24,6 +24,7 @@ import java.lang.annotation.RetentionPolicy;
         AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT,
         AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT,
         AccountConsistencyPromoAction.SHOWN,
+        AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED,
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface AccountConsistencyPromoAction {
@@ -64,5 +65,11 @@ public @interface AccountConsistencyPromoAction {
      */
     int SHOWN = 6;
 
-    int MAX = 7;
+    /**
+     * Promo is not shown due to sign-in being disallowed either by an enterprise policy
+     * or by |Allow Chrome sign-in| toggle.
+     */
+    int SUPPRESSED_SIGNIN_NOT_ALLOWED = 7;
+
+    int MAX = 8;
 }
