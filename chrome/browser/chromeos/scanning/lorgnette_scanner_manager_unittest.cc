@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/scanning/lorgnette_scanner_manager.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
@@ -209,7 +210,9 @@ class LorgnetteScannerManagerTest : public testing::Test {
   }
 
   // Handles receiving a page from LorgnetteScannerManager::Scan().
-  void PageCallback(std::string page_data) { scan_data_.push_back(page_data); }
+  void PageCallback(std::string page_data, uint32_t /*page_number*/) {
+    scan_data_.push_back(page_data);
+  }
 
   // Handles completion of LorgnetteScannerManager::Scan().
   void ScanCallback(bool success) {

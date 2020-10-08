@@ -85,7 +85,8 @@ void DocumentScanScanFunction::OnNamesReceived(
           base::BindOnce(&DocumentScanScanFunction::OnScanCompleted, this));
 }
 
-void DocumentScanScanFunction::OnPageReceived(std::string scanned_image) {
+void DocumentScanScanFunction::OnPageReceived(std::string scanned_image,
+                                              uint32_t /*page_number*/) {
   // Take only the first page of the scan.
   if (!scan_data_.has_value()) {
     scan_data_ = std::move(scanned_image);

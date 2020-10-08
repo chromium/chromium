@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_DBUS_FAKE_LORGNETTE_MANAGER_CLIENT_H_
 #define CHROMEOS_DBUS_FAKE_LORGNETTE_MANAGER_CLIENT_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -30,11 +31,12 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeLorgnetteManagerClient
   void GetScannerCapabilities(
       const std::string& device_name,
       DBusMethodCallback<lorgnette::ScannerCapabilities> callback) override;
-  void StartScan(const std::string& device_name,
-                 const lorgnette::ScanSettings& settings,
-                 VoidDBusMethodCallback completion_callback,
-                 base::RepeatingCallback<void(std::string)> page_callback,
-                 base::RepeatingCallback<void(int)> progress_callback) override;
+  void StartScan(
+      const std::string& device_name,
+      const lorgnette::ScanSettings& settings,
+      VoidDBusMethodCallback completion_callback,
+      base::RepeatingCallback<void(std::string, uint32_t)> page_callback,
+      base::RepeatingCallback<void(int)> progress_callback) override;
 
   // Sets the response returned by ListScanners().
   void SetListScannersResponse(

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_SCANNING_LORGNETTE_SCANNER_MANAGER_H_
 #define CHROME_BROWSER_CHROMEOS_SCANNING_LORGNETTE_SCANNER_MANAGER_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -27,7 +28,8 @@ class LorgnetteScannerManager : public KeyedService {
       base::OnceCallback<void(std::vector<std::string> scanner_names)>;
   using GetScannerCapabilitiesCallback = base::OnceCallback<void(
       const base::Optional<lorgnette::ScannerCapabilities>& capabilities)>;
-  using PageCallback = base::RepeatingCallback<void(std::string scan_data)>;
+  using PageCallback = base::RepeatingCallback<void(std::string scan_data,
+                                                    uint32_t page_number)>;
   using ScanCallback = base::OnceCallback<void(bool success)>;
 
   ~LorgnetteScannerManager() override = default;

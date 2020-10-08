@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_DOCUMENT_SCAN_DOCUMENT_SCAN_API_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_DOCUMENT_SCAN_DOCUMENT_SCAN_API_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -34,7 +35,7 @@ class DocumentScanScanFunction : public ExtensionFunction {
   friend class DocumentScanScanFunctionTest;
 
   void OnNamesReceived(std::vector<std::string> scanner_names);
-  void OnPageReceived(std::string scanned_image);
+  void OnPageReceived(std::string scanned_image, uint32_t /*page_number*/);
   void OnScanCompleted(bool success);
 
   base::Optional<std::string> scan_data_;
