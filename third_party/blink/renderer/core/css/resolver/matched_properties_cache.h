@@ -58,7 +58,7 @@ class CORE_EXPORT CachedMatchedProperties final
   void Set(const ComputedStyle&,
            const ComputedStyle& parent_style,
            const MatchedPropertiesVector&,
-           const HashSet<CSSPropertyName>& dependencies);
+           const HashSet<CSSPropertyName>& new_dependencies);
   void Clear();
 
   // True if the computed value for each dependency is equal for the

@@ -520,8 +520,7 @@ FontSelectionValue StyleBuilderConverterBase::ConvertFontStyle(
       return FontSelectionValue(
           To<CSSPrimitiveValue>(values->Item(0)).ComputeDegrees());
     } else {
-      const CSSIdentifierValue* identifier_value =
-          style_range_value->GetFontStyleValue();
+      identifier_value = style_range_value->GetFontStyleValue();
       if (identifier_value->GetValueID() == CSSValueID::kNormal)
         return NormalSlopeValue();
       if (identifier_value->GetValueID() == CSSValueID::kItalic ||
@@ -1007,14 +1006,15 @@ void StyleBuilderConverter::ConvertGridTrackList(
             DynamicTo<cssvalue::CSSGridIntegerRepeatValue>(curr_value.Get())) {
       size_t repetitions = repeated_values->Repetitions();
       for (size_t i = 0; i < repetitions; ++i) {
-        for (auto curr_value : *repeated_values)
-          convert_line_name_or_track_size(*curr_value);
+        for (auto curr_repeat_value : *repeated_values)
+          convert_line_name_or_track_size(*curr_repeat_value);
       }
       if (RuntimeEnabledFeatures::LayoutNGGridEnabled()) {
         Vector<GridTrackSize> repeater_sizes;
-        for (auto curr_value : *repeated_values) {
-          if (!curr_value->IsGridLineNamesValue()) {
-            repeater_sizes.push_back(ConvertGridTrackSize(state, *curr_value));
+        for (auto curr_repeat_value : *repeated_values) {
+          if (!curr_repeat_value->IsGridLineNamesValue()) {
+            repeater_sizes.push_back(
+                ConvertGridTrackSize(state, *curr_repeat_value));
           }
         }
         track_sizes.NGTrackList().AddRepeater(repeater_sizes, repetitions);

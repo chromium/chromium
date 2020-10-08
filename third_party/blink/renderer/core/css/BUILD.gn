@@ -5,6 +5,8 @@
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("css") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "abstract_property_set_css_style_declaration.cc",
     "abstract_property_set_css_style_declaration.h",

@@ -97,9 +97,10 @@ StyleImage* CSSImageValue::CacheImage(
     if (base::FeatureList::IsEnabled(blink::features::kSubresourceRedirect) &&
         params.Url().ProtocolIsInHTTPFamily() &&
         GetNetworkStateNotifier().SaveDataEnabled()) {
-      auto& resource_request = params.MutableResourceRequest();
-      resource_request.SetPreviewsState(resource_request.GetPreviewsState() |
-                                        PreviewsTypes::kSubresourceRedirectOn);
+      auto& subresource_request = params.MutableResourceRequest();
+      subresource_request.SetPreviewsState(
+          subresource_request.GetPreviewsState() |
+          PreviewsTypes::kSubresourceRedirectOn);
     }
 
     if (origin_clean_ != OriginClean::kTrue)

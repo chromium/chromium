@@ -49,7 +49,7 @@ void CachedMatchedProperties::Set(
     const ComputedStyle& style,
     const ComputedStyle& parent_style,
     const MatchedPropertiesVector& properties,
-    const HashSet<CSSPropertyName>& dependencies) {
+    const HashSet<CSSPropertyName>& new_dependencies) {
   for (const auto& new_matched_properties : properties) {
     matched_properties.push_back(new_matched_properties.properties);
     matched_properties_types.push_back(new_matched_properties.types_);
@@ -63,20 +63,20 @@ void CachedMatchedProperties::Set(
 
   DCHECK(
       RuntimeEnabledFeatures::CSSMatchedPropertiesCacheDependenciesEnabled() ||
-      dependencies.IsEmpty());
-  if (dependencies.size()) {
-    DCHECK(dependencies.size() <= StyleResolverState::kMaxDependencies);
+      new_dependencies.IsEmpty());
+  if (new_dependencies.size()) {
+    DCHECK(new_dependencies.size() <= StyleResolverState::kMaxDependencies);
     // Plus one for g_null_atom.
-    this->dependencies =
-        std::make_unique<AtomicString[]>(dependencies.size() + 1);
+    dependencies =
+        std::make_unique<AtomicString[]>(new_dependencies.size() + 1);
 
     size_t index = 0;
-    for (const CSSPropertyName& name : dependencies) {
-      DCHECK_LT(index, dependencies.size());
-      this->dependencies[index++] = name.ToAtomicString();
+    for (const CSSPropertyName& name : new_dependencies) {
+      DCHECK_LT(index, new_dependencies.size());
+      dependencies[index++] = name.ToAtomicString();
     }
-    DCHECK_EQ(index, dependencies.size());
-    this->dependencies[index] = g_null_atom;
+    DCHECK_EQ(index, new_dependencies.size());
+    dependencies[index] = g_null_atom;
   }
 }
 
