@@ -32,6 +32,7 @@
 #import "ios/web/navigation/crw_web_view_navigation_observer_delegate.h"
 #import "ios/web/navigation/crw_wk_navigation_handler.h"
 #import "ios/web/navigation/crw_wk_navigation_states.h"
+#import "ios/web/navigation/error_page_helper.h"
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/navigation/wk_back_forward_list_item_holder.h"
 #import "ios/web/navigation/wk_navigation_util.h"
@@ -822,6 +823,10 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     self.navigationHandler.navigationState = web::WKNavigationState::REQUESTED;
   }
 
+  if ([ErrorPageHelper isErrorPageFileURL:URL]) {
+    context->SetLoadingErrorPage(true);
+  }
+
   web::WKBackForwardListItemHolder* holder =
       web::WKBackForwardListItemHolder::FromNavigationItem(item);
   holder->set_navigation_type(WKNavigationTypeBackForward);
@@ -914,11 +919,9 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     _documentURL = newURL;
     _userInteractionState.SetUserInteractionRegisteredSinceLastUrlChange(false);
   }
-  if (context && !context->IsLoadingHtmlString() &&
-      (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) ||
-       !context->IsLoadingErrorPage()) &&
-      !IsWKInternalUrl(newURL) && !newURL.SchemeIs(url::kAboutScheme) &&
-      self.webView) {
+  if (context && !context->IsLoadingErrorPage() &&
+      !context->IsLoadingHtmlString() && !IsWKInternalUrl(newURL) &&
+      !newURL.SchemeIs(url::kAboutScheme) && self.webView) {
     // On iOS13, WebKit started changing the URL visible webView.URL when
     // opening a new tab and then writing to it, e.g.
     // window.open('javascript:document.write(1)').  This URL is never commited,

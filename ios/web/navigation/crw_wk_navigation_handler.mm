@@ -338,8 +338,7 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
         (!context->IsRendererInitiated() ||
          (context->GetPageTransition() & ui::PAGE_TRANSITION_FORWARD_BACK))) {
       transition = context->GetPageTransition();
-      if (!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-          context->IsLoadingErrorPage()) {
+      if (context->IsLoadingErrorPage()) {
         // loadHTMLString: navigation which loads error page into WKWebView.
         decisionHandler(WKNavigationActionPolicyAllow);
         return;
@@ -625,18 +624,19 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   if (context) {
     // This is already seen and registered navigation.
 
-    if ((!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-         context->IsLoadingErrorPage()) ||
-        (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-         [ErrorPageHelper isErrorPageFileURL:context->GetUrl()])) {
+    if (context->IsLoadingErrorPage()) {
       // This is loadHTMLString: navigation to display error page in web view.
       self.navigationState = web::WKNavigationState::REQUESTED;
       return;
     }
 
-    if ((base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) ||
-         !context->IsPlaceholderNavigation()) &&
-        !IsWKInternalUrl(webViewURL)) {
+    BOOL isErrorPageNavigation =
+        (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
+         [ErrorPageHelper isErrorPageFileURL:webViewURL]) ||
+        (!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
+         context->IsPlaceholderNavigation());
+
+    if (!isErrorPageNavigation && !IsWKInternalUrl(webViewURL)) {
       web::NavigationItem* item =
           web::GetItemWithUniqueID(self.navigationManagerImpl, context);
       if (item) {
@@ -997,14 +997,23 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   // See crbug.com/1127025.
   BOOL hasMultiplePendingNavigations =
       [self.navigationStates pendingNavigations].count > 1;
-  // When loading an error page that is a placeholder, the webViewURL should be
-  // used as it is the actual URL we want to load.
+
+  // When loading an error page, the context has the correct URL whereas the
+  // webView has the file URL.
   BOOL isErrorPage =
+      base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
+      context && context->IsLoadingErrorPage();
+
+  // When loading an error page that is a placeholder (legacy), the webViewURL
+  // should be used as it is the actual URL we want to load.
+  BOOL isLegacyErrorPage =
       !base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-      !context->IsPlaceholderNavigation();
+      context && !context->IsPlaceholderNavigation();
 
   BOOL shouldUseContextURL =
-      context ? !isErrorPage && hasMultiplePendingNavigations : NO;
+      context
+          ? isErrorPage || (!isLegacyErrorPage && hasMultiplePendingNavigations)
+          : NO;
   GURL documentURL = shouldUseContextURL ? context->GetUrl() : webViewURL;
 
   // This is the point where the document's URL has actually changed.
@@ -1017,9 +1026,7 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   [self.navigationStates setState:web::WKNavigationState::COMMITTED
                     forNavigation:navigation];
 
-  if (!committedNavigation && context &&
-      (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) ||
-       !context->IsLoadingErrorPage())) {
+  if (!committedNavigation && context && !context->IsLoadingErrorPage()) {
     self.webStateImpl->OnNavigationFinished(context);
   }
 
@@ -1966,6 +1973,7 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
 
       std::unique_ptr<web::NavigationContextImpl> originalContext =
           [self.navigationStates removeNavigation:navigation];
+      originalContext->SetLoadingErrorPage(true);
       [self.navigationStates setContext:std::move(originalContext)
                           forNavigation:errorNavigation];
       // Return as the context was moved.
@@ -2038,6 +2046,7 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   context->SetNavigationItemUniqueID(item->GetUniqueID());
   context->SetItem(std::move(item));
   context->SetError(error);
+  context->SetLoadingErrorPage(true);
 
   self.webStateImpl->OnNavigationStarted(context.get());
 

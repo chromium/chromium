@@ -408,8 +408,7 @@ enum class BackForwardNavigationType {
   if (IsRestoreSessionUrl(net::GURLWithNSURL(self.webView.URL)))
     return;
 
-  if (!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-      context && context->IsLoadingErrorPage())
+  if (context && context->IsLoadingErrorPage())
     return;
 
   if (!loadSuccess) {
