@@ -285,8 +285,8 @@ bool TryToRestoreWritablePermissions(void* addr, size_t len) {
   return VirtualProtect(addr, len, PAGE_READWRITE, &old_protection);
 #elif defined(OS_FUCHSIA)
   zx_status_t status =
-      zx::vmar::root_self()->protect(reinterpret_cast<uintptr_t>(addr), len,
-                                     ZX_VM_PERM_READ | ZX_VM_PERM_WRITE);
+      zx::vmar::root_self()->protect2(ZX_VM_PERM_READ | ZX_VM_PERM_WRITE,
+                                      reinterpret_cast<uintptr_t>(addr), len);
   return status == ZX_OK;
 #else
   return false;

@@ -103,7 +103,7 @@ bool PlatformSharedMemoryRegion::MapAtInternal(off_t offset,
   if (mode_ != Mode::kReadOnly)
     options |= ZX_VM_PERM_WRITE;
   zx_status_t status = zx::vmar::root_self()->map(
-      /*vmar_offset=*/0, handle_, offset, size, options, &addr);
+      options, /*vmar_offset=*/0, handle_, offset, size, &addr);
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "zx_vmar_map";
     return false;

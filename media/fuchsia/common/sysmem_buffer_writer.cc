@@ -44,8 +44,8 @@ class SysmemBufferWriter::Buffer {
     size_t bytes_to_map = base::bits::Align(offset + size, base::GetPageSize());
     uintptr_t addr;
     zx_status_t status = zx::vmar::root_self()->map(
-        /*vmar_offset=*/0, vmo, /*vmo_offset=*/0, bytes_to_map,
-        ZX_VM_PERM_READ | ZX_VM_PERM_WRITE, &addr);
+        ZX_VM_PERM_READ | ZX_VM_PERM_WRITE, /*vmar_offset=*/0, vmo,
+        /*vmo_offset=*/0, bytes_to_map, &addr);
     if (status != ZX_OK) {
       ZX_DLOG(ERROR, status) << "zx_vmar_map";
       return false;

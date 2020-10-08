@@ -74,7 +74,7 @@ bool CheckReadOnlySharedMemoryFuchsiaHandle(zx::unowned_vmo handle) {
   const uint32_t flags = ZX_VM_PERM_READ | ZX_VM_PERM_WRITE;
   uintptr_t addr;
   const zx_status_t status =
-      zx::vmar::root_self()->map(0, *handle, 0U, kDataSize, flags, &addr);
+      zx::vmar::root_self()->map(flags, 0, *handle, 0U, kDataSize, &addr);
   if (status == ZX_OK) {
     LOG(ERROR) << "zx_vmar_map() should have failed!";
     zx::vmar::root_self()->unmap(addr, kDataSize);

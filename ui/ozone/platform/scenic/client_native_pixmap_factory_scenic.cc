@@ -51,8 +51,9 @@ class ClientNativePixmapFuchsia : public gfx::ClientNativePixmap {
     mapping_size_ = base::bits::Align(mapping_size_, page_size);
 
     zx_status_t status =
-        zx::vmar::root_self()->map(0, handle_.planes[0].vmo, 0, mapping_size_,
-                                   ZX_VM_PERM_READ | ZX_VM_PERM_WRITE, &addr);
+        zx::vmar::root_self()->map(ZX_VM_PERM_READ | ZX_VM_PERM_WRITE, 0,
+                                   handle_.planes[0].vmo, 0, mapping_size_,
+                                   &addr);
     if (status != ZX_OK) {
       ZX_DLOG(ERROR, status) << "zx_vmar_map";
       return false;
