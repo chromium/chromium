@@ -111,6 +111,8 @@ constexpr char kCheckingExpectationsTimeStats[] =
     "Extensions.ForceInstalledTime.CheckingExpectationsStartTo.FinalizingStart";
 constexpr char kFinalizingTimeStats[] =
     "Extensions.ForceInstalledTime.FinalizingStartTo.CRXInstallComplete";
+constexpr char kCrxHeaderInvalidFailureIsCWS[] =
+    "Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsCWS";
 
 }  // namespace
 
@@ -529,6 +531,25 @@ TEST_F(ForceInstalledMetricsTest,
   histogram_tester_.ExpectBucketCount(
       kSandboxUnpackFailureReason, SandboxedUnpackerFailureReason::UNZIP_FAILED,
       1);
+}
+
+// Reporting whether the extension is from CWS or not when the force installed
+// extension fails to install with error CRX_HEADER_INVALID.
+TEST_F(ForceInstalledMetricsTest, ExtensionsCrxHeaderInvalid) {
+  SetupForceList();
+  install_stage_tracker()->ReportSandboxedUnpackerFailureReason(
+      kExtensionId1, SandboxedUnpackerFailureReason::CRX_HEADER_INVALID);
+  auto ext2 = ExtensionBuilder(kExtensionName2).SetID(kExtensionId2).Build();
+  registry()->AddEnabled(ext2.get());
+  force_installed_tracker()->OnExtensionLoaded(profile(), ext2.get());
+  // ForceInstalledMetrics shuts down timer because all extension are either
+  // loaded or failed.
+  EXPECT_FALSE(fake_timer_->IsRunning());
+  histogram_tester_.ExpectTotalCount(kSandboxUnpackFailureReason, 1);
+  histogram_tester_.ExpectBucketCount(
+      kSandboxUnpackFailureReason,
+      SandboxedUnpackerFailureReason::CRX_HEADER_INVALID, 1);
+  histogram_tester_.ExpectBucketCount(kCrxHeaderInvalidFailureIsCWS, true, 1);
 }
 
 // Reporting info when the force installed extension fails to install with error
