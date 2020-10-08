@@ -7,7 +7,10 @@
 #include "base/bind.h"
 #include "chrome/browser/chromeos/borealis/borealis_features.h"
 #include "chrome/browser/chromeos/borealis/borealis_features_factory.h"
+#include "chrome/browser/chromeos/borealis/borealis_prefs.h"
 #include "chrome/browser/chromeos/borealis/borealis_util.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace borealis {
@@ -79,6 +82,9 @@ void BorealisInstallerImpl::InstallationEnded(InstallationResult result) {
   if (result != InstallationResult::kOperationInProgress) {
     state_ = State::kIdle;
     installing_state_ = InstallingState::kInactive;
+  }
+  if (result == InstallationResult::kCompleted) {
+    profile_->GetPrefs()->SetBoolean(prefs::kBorealisInstalledOnDevice, true);
   }
   for (auto& observer : observers_) {
     observer.OnInstallationEnded(result);
