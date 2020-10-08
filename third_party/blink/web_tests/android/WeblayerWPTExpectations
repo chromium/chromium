@@ -3639,7 +3639,7 @@ crbug.com/1050754 external/wpt/screen-wake-lock/wakelock-enabled-on-self-origin-
 crbug.com/1050754 external/wpt/screen-wake-lock/wakelock-onrelease.https.html [ Failure ]
 crbug.com/1050754 external/wpt/screen-wake-lock/wakelock-request-denied.https.html [ Failure ]
 crbug.com/1050754 external/wpt/screen-wake-lock/wakelock-screen-type-on-worker.https.worker.html [ Failure ]
-crbug.com/1050754 external/wpt/screen-wake-lock/wakelock-type.https.any.worker.html [ Failure ]
+crbug.com/1050754 external/wpt/screen-wake-lock/wakelock-type.https.window.html [ Failure ]
 crbug.com/1050754 external/wpt/screen-wake-lock/wakelockpermissiondescriptor.https.html [ Failure ]
 crbug.com/1050754 external/wpt/screen_enumeration/getScreens.tentative.https.window.html [ Failure ]
 crbug.com/1050754 external/wpt/screen_enumeration/getScreens.values.https.html [ Failure ]
