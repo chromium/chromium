@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
+import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemProperties.TEXT;
+
 import android.view.View;
 import android.widget.TextView;
 
@@ -12,9 +14,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 class RevampedContextMenuItemViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (propertyKey == RevampedContextMenuItemProperties.TEXT) {
-            ((TextView) view).setText(model.get(RevampedContextMenuItemProperties.TEXT));
-        } else if (propertyKey == RevampedContextMenuItemProperties.MENU_ID) {
+        if (propertyKey == TEXT) {
+            ((TextView) view).setText(model.get(TEXT));
         }
     }
 }

@@ -14,7 +14,6 @@ import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemPro
 import android.app.Activity;
 import android.util.Pair;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,8 +35,6 @@ import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserverJni
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
-import org.chromium.ui.base.ActivityWindowAndroid;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -60,22 +57,15 @@ public class RevampedContextMenuCoordinatorTest {
 
     private RevampedContextMenuCoordinator mCoordinator;
     private Activity mActivity;
-    private WindowAndroid mWindow;
     private final Profile mProfile = Mockito.mock(Profile.class);
 
     @Before
     public void setUpTest() {
         mActivity = Robolectric.setupActivity(Activity.class);
-        mWindow = new ActivityWindowAndroid(mActivity, false);
-        mCoordinator = new RevampedContextMenuCoordinator(0, null);
+        mCoordinator = new RevampedContextMenuCoordinator(0);
         MockitoAnnotations.initMocks(this);
         mocker.mock(PerformanceHintsObserverJni.TEST_HOOKS, mNativeMock);
         when(mNativeMock.isContextMenuPerformanceInfoEnabled()).thenReturn(false);
-    }
-
-    @After
-    public void tearDownTest() {
-        mWindow.destroy();
     }
 
     @Test
@@ -98,18 +88,18 @@ public class RevampedContextMenuCoordinatorTest {
         rawItems.add(new Pair<>(ContextMenuGroup.IMAGE, groupTwo));
 
         mCoordinator.initializeHeaderCoordinatorForTesting(mActivity, params, mProfile);
-        ModelList itemList = mCoordinator.getItemList(mWindow, rawItems, params);
+        ModelList itemList = mCoordinator.getItemList(mActivity, rawItems, (i) -> {});
 
         assertThat(itemList.get(0).type, equalTo(ListItemType.HEADER));
         assertThat(itemList.get(1).type, equalTo(ListItemType.DIVIDER));
         assertThat(itemList.get(2).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
         assertThat(itemList.get(3).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
         assertThat(itemList.get(4).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(5).type, equalTo(ListItemType.CONTEXT_MENU_SHARE_ITEM));
+        assertThat(itemList.get(5).type, equalTo(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
         assertThat(itemList.get(6).type, equalTo(ListItemType.DIVIDER));
         assertThat(itemList.get(7).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
         assertThat(itemList.get(8).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(9).type, equalTo(ListItemType.CONTEXT_MENU_SHARE_ITEM));
+        assertThat(itemList.get(9).type, equalTo(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
     }
 
     @Test
@@ -130,14 +120,14 @@ public class RevampedContextMenuCoordinatorTest {
         rawItems.add(new Pair<>(ContextMenuGroup.LINK, groupOne));
 
         mCoordinator.initializeHeaderCoordinatorForTesting(mActivity, params, mProfile);
-        ModelList itemList = mCoordinator.getItemList(mWindow, rawItems, params);
+        ModelList itemList = mCoordinator.getItemList(mActivity, rawItems, (i) -> {});
 
         assertThat(itemList.get(0).type, equalTo(ListItemType.HEADER));
         assertThat(itemList.get(1).type, equalTo(ListItemType.DIVIDER));
         assertThat(itemList.get(2).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
         assertThat(itemList.get(3).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
         assertThat(itemList.get(4).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(5).type, equalTo(ListItemType.CONTEXT_MENU_SHARE_ITEM));
+        assertThat(itemList.get(5).type, equalTo(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
     }
 
     @Test
@@ -151,7 +141,7 @@ public class RevampedContextMenuCoordinatorTest {
         rawItems.add(new Pair<>(ContextMenuGroup.LINK, groupOne));
 
         mCoordinator.initializeHeaderCoordinatorForTesting(mActivity, params, mProfile);
-        ModelList itemList = mCoordinator.getItemList(mWindow, rawItems, params);
+        ModelList itemList = mCoordinator.getItemList(mActivity, rawItems, (i) -> {});
 
         assertThat(itemList.get(0).type, equalTo(ListItemType.HEADER));
         assertThat(itemList.get(1).type, equalTo(ListItemType.DIVIDER));
@@ -169,10 +159,10 @@ public class RevampedContextMenuCoordinatorTest {
 
     private ListItem createShareListItem(@Item int item) {
         final PropertyModel model =
-                new PropertyModel.Builder(RevampedContextMenuShareItemProperties.ALL_KEYS)
+                new PropertyModel.Builder(RevampedContextMenuItemWithIconButtonProperties.ALL_KEYS)
                         .with(MENU_ID, ChromeContextMenuItem.getMenuId(item))
                         .with(TEXT, ChromeContextMenuItem.getTitle(mActivity, item, false))
                         .build();
-        return new ListItem(ListItemType.CONTEXT_MENU_SHARE_ITEM, model);
+        return new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON, model);
     }
 }

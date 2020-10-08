@@ -32,13 +32,13 @@ class ChromeContextMenuItem {
     @IntDef({Item.OPEN_IN_NEW_CHROME_TAB, Item.OPEN_IN_CHROME_INCOGNITO_TAB,
             Item.OPEN_IN_BROWSER_ID, Item.OPEN_IN_NEW_TAB, Item.OPEN_IN_INCOGNITO_TAB,
             Item.OPEN_IN_OTHER_WINDOW, Item.OPEN_IN_EPHEMERAL_TAB, Item.COPY_LINK_ADDRESS,
-            Item.COPY_LINK_TEXT, Item.SAVE_LINK_AS, Item.SHARE_LINK, Item.LOAD_ORIGINAL_IMAGE,
-            Item.SAVE_IMAGE, Item.OPEN_IMAGE, Item.OPEN_IMAGE_IN_NEW_TAB,
+            Item.COPY_LINK_TEXT, Item.SAVE_LINK_AS, Item.SHARE_LINK, Item.DIRECT_SHARE_LINK,
+            Item.LOAD_ORIGINAL_IMAGE, Item.SAVE_IMAGE, Item.OPEN_IMAGE, Item.OPEN_IMAGE_IN_NEW_TAB,
             Item.OPEN_IMAGE_IN_EPHEMERAL_TAB, Item.COPY_IMAGE, Item.SEARCH_BY_IMAGE,
             Item.SEARCH_WITH_GOOGLE_LENS, Item.SHOP_SIMILAR_PRODUCTS,
             Item.SHOP_IMAGE_WITH_GOOGLE_LENS, Item.SEARCH_SIMILAR_PRODUCTS, Item.SHARE_IMAGE,
-            Item.CALL, Item.SEND_MESSAGE, Item.ADD_TO_CONTACTS, Item.COPY, Item.SAVE_VIDEO,
-            Item.OPEN_IN_CHROME})
+            Item.DIRECT_SHARE_IMAGE, Item.CALL, Item.SEND_MESSAGE, Item.ADD_TO_CONTACTS, Item.COPY,
+            Item.SAVE_VIDEO, Item.OPEN_IN_CHROME})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Item {
         // Values are numerated from 0 and can't have gaps.
@@ -56,30 +56,32 @@ class ChromeContextMenuItem {
         int COPY_LINK_TEXT = 8;
         int SAVE_LINK_AS = 9;
         int SHARE_LINK = 10;
+        int DIRECT_SHARE_LINK = 11;
         // Image Group
-        int LOAD_ORIGINAL_IMAGE = 11;
-        int SAVE_IMAGE = 12;
-        int OPEN_IMAGE = 13;
-        int OPEN_IMAGE_IN_NEW_TAB = 14;
-        int OPEN_IMAGE_IN_EPHEMERAL_TAB = 15;
-        int COPY_IMAGE = 16;
-        int SEARCH_BY_IMAGE = 17;
-        int SEARCH_WITH_GOOGLE_LENS = 18;
-        int SHOP_SIMILAR_PRODUCTS = 19;
-        int SHOP_IMAGE_WITH_GOOGLE_LENS = 20;
-        int SEARCH_SIMILAR_PRODUCTS = 21;
-        int SHARE_IMAGE = 22;
+        int LOAD_ORIGINAL_IMAGE = 12;
+        int SAVE_IMAGE = 13;
+        int OPEN_IMAGE = 14;
+        int OPEN_IMAGE_IN_NEW_TAB = 15;
+        int OPEN_IMAGE_IN_EPHEMERAL_TAB = 16;
+        int COPY_IMAGE = 17;
+        int SEARCH_BY_IMAGE = 18;
+        int SEARCH_WITH_GOOGLE_LENS = 19;
+        int SHOP_SIMILAR_PRODUCTS = 20;
+        int SHOP_IMAGE_WITH_GOOGLE_LENS = 21;
+        int SEARCH_SIMILAR_PRODUCTS = 22;
+        int SHARE_IMAGE = 23;
+        int DIRECT_SHARE_IMAGE = 24;
         // Message Group
-        int CALL = 23;
-        int SEND_MESSAGE = 24;
-        int ADD_TO_CONTACTS = 25;
-        int COPY = 26;
+        int CALL = 25;
+        int SEND_MESSAGE = 26;
+        int ADD_TO_CONTACTS = 27;
+        int COPY = 28;
         // Video Group
-        int SAVE_VIDEO = 27;
+        int SAVE_VIDEO = 29;
         // Other
-        int OPEN_IN_CHROME = 28;
+        int OPEN_IN_CHROME = 30;
         // ALWAYS UPDATE!
-        int NUM_ENTRIES = 29;
+        int NUM_ENTRIES = 31;
     }
 
     /**
@@ -97,6 +99,7 @@ class ChromeContextMenuItem {
             R.id.contextmenu_copy_link_text, // Item.COPY_LINK_TEXT
             R.id.contextmenu_save_link_as, // Item.SAVE_LINK_AS
             R.id.contextmenu_share_link, // Item.SHARE_LINK
+            R.id.contextmenu_direct_share_link, // Item.DIRECT_SHARE_LINK
             R.id.contextmenu_load_original_image, // Item.LOAD_ORIGINAL_IMAGE
             R.id.contextmenu_save_image, // Item.SAVE_IMAGE
             R.id.contextmenu_open_image, // Item.OPEN_IMAGE
@@ -109,6 +112,7 @@ class ChromeContextMenuItem {
             R.id.contextmenu_shop_image_with_google_lens, // Item.SHOP_IMAGE_WITH_GOOGLE_LENS
             R.id.contextmenu_search_similar_products, // Item.SEARCH_SIMILAR_PRODUCTS
             R.id.contextmenu_share_image, // Item.SHARE_IMAGE
+            R.id.contextmenu_direct_share_image, // Item.DIRECT_SHARE_IMAGE
             R.id.contextmenu_call, // Item.CALL
             R.id.contextmenu_send_message, // Item.SEND_MESSAGE
             R.id.contextmenu_add_to_contacts, // Item.ADD_TO_CONTACTS
@@ -132,6 +136,7 @@ class ChromeContextMenuItem {
             R.string.contextmenu_copy_link_text, // Item.COPY_LINK_TEXT:
             R.string.contextmenu_save_link, // Item.SAVE_LINK_AS:
             R.string.contextmenu_share_link, // Item.SHARE_LINK
+            0, // Item.DIRECT_SHARE_LINK is not handled by this mapping.
             R.string.contextmenu_load_original_image, // Item.LOAD_ORIGINAL_IMAGE:
             R.string.contextmenu_save_image, // Item.SAVE_IMAGE:
             R.string.contextmenu_open_image, // Item.OPEN_IMAGE:
@@ -144,6 +149,7 @@ class ChromeContextMenuItem {
             R.string.contextmenu_shop_image_with_google_lens, // Item.SHOP_IMAGE_WITH_GOOGLE_LENS
             R.string.contextmenu_search_similar_products, // Item.SEARCH_SIMILAR_PRODUCTS
             R.string.contextmenu_share_image, // Item.SHARE_IMAGE
+            0, // Item.DIRECT_SHARE_IMAGE is not handled by this mapping.
             R.string.contextmenu_call, // Item.CALL:
             R.string.contextmenu_send_message, // Item.SEND_MESSAGE:
             R.string.contextmenu_add_to_contacts, // Item.ADD_TO_CONTACTS:

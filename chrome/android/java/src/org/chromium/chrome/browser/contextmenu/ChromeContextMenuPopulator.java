@@ -6,8 +6,9 @@ package org.chromium.chrome.browser.contextmenu;
 
 import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemProperties.MENU_ID;
 import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemProperties.TEXT;
-import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuShareItemProperties.CONTENT_DESC;
-import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuShareItemProperties.IMAGE;
+import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemWithIconButtonProperties.BUTTON_CONTENT_DESC;
+import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemWithIconButtonProperties.BUTTON_IMAGE;
+import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemWithIconButtonProperties.BUTTON_MENU_ID;
 
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -428,7 +429,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                         && UrlUtilities.isDownloadableScheme(mParams.getLinkUrl())) {
                     linkGroup.add(createListItem(Item.SAVE_LINK_AS));
                 }
-                linkGroup.add(createShareListItem(Item.SHARE_LINK));
+                linkGroup.add(createShareListItem(Item.SHARE_LINK, Item.DIRECT_SHARE_LINK));
                 if (UrlUtilities.isTelScheme(mParams.getLinkUrl())) {
                     if (mDelegate.supportsCall()) {
                         linkGroup.add(createListItem(Item.CALL));
@@ -491,7 +492,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             boolean addedShareImageAboveLens = false;
             if (LensUtils.orderShareImageBeforeLens()) {
                 addedShareImageAboveLens = true;
-                imageGroup.add(createShareListItem(Item.SHARE_IMAGE));
+                imageGroup.add(createShareListItem(Item.SHARE_IMAGE, Item.DIRECT_SHARE_IMAGE));
             }
 
             if (mMode == ContextMenuMode.CUSTOM_TAB || mMode == ContextMenuMode.NORMAL) {
@@ -527,7 +528,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             // By default show 'Share Image' after 'Search with Google Lens'.
             // IMPORTANT: Must stay consistent with logic before the above Lens block.
             if (!addedShareImageAboveLens) {
-                imageGroup.add(createShareListItem(Item.SHARE_IMAGE));
+                imageGroup.add(createShareListItem(Item.SHARE_IMAGE, Item.DIRECT_SHARE_IMAGE));
             }
 
             // Show Lens Shopping Menu Item when the Lens Shopping feature is supported.
@@ -707,6 +708,12 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                             .build();
             mShareDelegateSupplier.get().share(
                     linkShareParams, new ChromeShareExtras.Builder().setSaveLastUsed(true).build());
+        } else if (itemId == R.id.contextmenu_direct_share_link) {
+            recordContextMenuSelection(ContextMenuUma.Action.DIRECT_SHARE_LINK);
+            final ShareParams shareParams =
+                    new ShareParams.Builder(getWindow(), mParams.getUrl(), mParams.getUrl())
+                            .build();
+            ShareHelper.shareWithLastUsedComponent(shareParams);
         } else if (itemId == R.id.contextmenu_search_with_google_lens) {
             recordContextMenuSelection(ContextMenuUma.Action.SEARCH_WITH_GOOGLE_LENS);
             searchWithGoogleLens(mDelegate.isIncognito());
@@ -744,6 +751,11 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         } else if (itemId == R.id.contextmenu_share_image) {
             recordContextMenuSelection(ContextMenuUma.Action.SHARE_IMAGE);
             shareImage();
+        } else if (itemId == R.id.contextmenu_direct_share_image) {
+            recordContextMenuSelection(ContextMenuUma.Action.DIRECT_SHARE_IMAGE);
+            retrieveImage(ContextMenuImageFormat.ORIGINAL, (Uri uri) -> {
+                ShareHelper.shareImage(getWindow(), ShareHelper.getLastShareComponentName(), uri);
+            });
         } else if (itemId == R.id.contextmenu_open_in_chrome) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_CHROME);
             mDelegate.onOpenInChrome(mParams.getUrl(), mParams.getPageUrl());
@@ -1081,17 +1093,18 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         return new ListItem(ListItemType.CONTEXT_MENU_ITEM, model);
     }
 
-    private ListItem createShareListItem(@Item int item) {
+    private ListItem createShareListItem(@Item int item, @Item int iconButtonItem) {
         final boolean isLink = item == Item.SHARE_LINK;
         final Pair<Drawable, CharSequence> shareInfo = createRecentShareAppInfo(isLink);
         final PropertyModel model =
-                new PropertyModel.Builder(RevampedContextMenuShareItemProperties.ALL_KEYS)
+                new PropertyModel.Builder(RevampedContextMenuItemWithIconButtonProperties.ALL_KEYS)
                         .with(MENU_ID, ChromeContextMenuItem.getMenuId(item))
                         .with(TEXT, ChromeContextMenuItem.getTitle(mContext, item, false))
-                        .with(IMAGE, shareInfo.first)
-                        .with(CONTENT_DESC, shareInfo.second)
+                        .with(BUTTON_IMAGE, shareInfo.first)
+                        .with(BUTTON_CONTENT_DESC, shareInfo.second)
+                        .with(BUTTON_MENU_ID, ChromeContextMenuItem.getMenuId(iconButtonItem))
                         .build();
-        return new ListItem(ListItemType.CONTEXT_MENU_SHARE_ITEM, model);
+        return new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON, model);
     }
 
     /**

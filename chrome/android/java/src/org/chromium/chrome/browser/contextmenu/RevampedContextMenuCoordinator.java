@@ -5,7 +5,8 @@
 package org.chromium.chrome.browser.contextmenu;
 
 import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemProperties.MENU_ID;
-import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuShareItemProperties.CLICK_LISTENER;
+import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemWithIconButtonProperties.BUTTON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemWithIconButtonProperties.BUTTON_MENU_ID;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -24,8 +25,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.share.ShareHelper;
-import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.widget.ContextMenuDialog;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.WebContents;
@@ -49,12 +48,12 @@ import java.util.List;
 public class RevampedContextMenuCoordinator implements ContextMenuUi {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ListItemType.DIVIDER, ListItemType.HEADER, ListItemType.CONTEXT_MENU_ITEM,
-            ListItemType.CONTEXT_MENU_SHARE_ITEM})
+            ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON})
     public @interface ListItemType {
         int DIVIDER = 0;
         int HEADER = 1;
         int CONTEXT_MENU_ITEM = 2;
-        int CONTEXT_MENU_SHARE_ITEM = 3;
+        int CONTEXT_MENU_ITEM_WITH_ICON_BUTTON = 3;
     }
 
     private static final int INVALID_ITEM_ID = -1;
@@ -66,25 +65,22 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
     private RevampedContextMenuListView mListView;
     private float mTopContentOffsetPx;
     private ContextMenuDialog mDialog;
-    private Runnable mOnShareImageDirectly;
-    private Callback<Boolean> mOnMenuClosed;
+    private Runnable mOnMenuClosed;
 
     /**
      * Constructor that also sets the content offset.
      *
      * @param topContentOffsetPx content offset from the top.
-     * @param onShareImageDirectly ContextMenuHelper method to be used to share the image directly.
      */
-    RevampedContextMenuCoordinator(float topContentOffsetPx, Runnable onShareImageDirectly) {
+    RevampedContextMenuCoordinator(float topContentOffsetPx) {
         mTopContentOffsetPx = topContentOffsetPx;
-        mOnShareImageDirectly = onShareImageDirectly;
     }
 
     @Override
     public void displayMenu(final WindowAndroid window, WebContents webContents,
             ContextMenuParams params, List<Pair<Integer, ModelList>> items,
             Callback<Integer> onItemClicked, final Runnable onMenuShown,
-            final Callback<Boolean> onMenuClosed) {
+            final Runnable onMenuClosed) {
         displayMenuWithLensChip(window, webContents, params, items, onItemClicked, onMenuShown,
                 onMenuClosed, /* lensAsyncManager=*/null);
     }
@@ -98,7 +94,7 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
     void displayMenuWithLensChip(final WindowAndroid window, WebContents webContents,
             ContextMenuParams params, List<Pair<Integer, ModelList>> items,
             Callback<Integer> onItemClicked, final Runnable onMenuShown,
-            final Callback<Boolean> onMenuClosed, @Nullable LensAsyncManager lensAsyncManager) {
+            final Runnable onMenuClosed, @Nullable LensAsyncManager lensAsyncManager) {
         mOnMenuClosed = onMenuClosed;
         final boolean lensShoppingFeatureEnabled = lensAsyncManager != null;
         final boolean isPopup = params.getSourceType() == MenuSourceType.MENU_SOURCE_MOUSE;
@@ -132,7 +128,7 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
         mDialog = createContextMenuDialog(activity, layout, menu, isPopup, touchPointXPx,
                 touchPointYPx, dialogTopMarginPx, dialogBottomMarginPx);
         mDialog.setOnShowListener(dialogInterface -> onMenuShown.run());
-        mDialog.setOnDismissListener(dialogInterface -> mOnMenuClosed.onResult(false));
+        mDialog.setOnDismissListener(dialogInterface -> mOnMenuClosed.run());
 
         mWebContents = webContents;
         int performanceClass = params.isAnchor()
@@ -143,7 +139,7 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
                 activity, performanceClass, params, Profile.fromWebContents(mWebContents));
 
         // The Integer here specifies the {@link ListItemType}.
-        ModelList listItems = getItemList(window, items, params);
+        ModelList listItems = getItemList(activity, items, onItemClicked);
 
         ModelListAdapter adapter = new ModelListAdapter(listItems) {
             @Override
@@ -154,15 +150,16 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
             @Override
             public boolean isEnabled(int position) {
                 return getItemViewType(position) == ListItemType.CONTEXT_MENU_ITEM
-                        || getItemViewType(position) == ListItemType.CONTEXT_MENU_SHARE_ITEM;
+                        || getItemViewType(position)
+                        == ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON;
             }
 
             @Override
             public long getItemId(int position) {
                 if (getItemViewType(position) == ListItemType.CONTEXT_MENU_ITEM
-                        || getItemViewType(position) == ListItemType.CONTEXT_MENU_SHARE_ITEM) {
-                    return ((ListItem) getItem(position))
-                            .model.get(RevampedContextMenuItemProperties.MENU_ID);
+                        || getItemViewType(position)
+                                == ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON) {
+                    return ((ListItem) getItem(position)).model.get(MENU_ID);
                 }
                 return INVALID_ITEM_ID;
             }
@@ -186,9 +183,9 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
                 new LayoutViewBuilder(R.layout.revamped_context_menu_row),
                 RevampedContextMenuItemViewBinder::bind);
         adapter.registerType(
-                ListItemType.CONTEXT_MENU_SHARE_ITEM,
+                ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
                 new LayoutViewBuilder(R.layout.revamped_context_menu_share_row),
-                RevampedContextMenuShareItemViewBinder::bind);
+                RevampedContextMenuItemWithIconButtonViewBinder::bind);
         // clang-format on
 
         mListView.setOnItemClickListener((p, v, pos, id) -> {
@@ -243,8 +240,8 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
     }
 
     @VisibleForTesting
-    ModelList getItemList(
-            WindowAndroid window, List<Pair<Integer, ModelList>> items, ContextMenuParams params) {
+    ModelList getItemList(Activity activity, List<Pair<Integer, ModelList>> items,
+            Callback<Integer> onItemClicked) {
         ModelList itemList = new ModelList();
 
         // Start with the header
@@ -257,34 +254,14 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
             itemList.addAll(group.second);
         }
 
-        // TODO(sinansahin): See if we can avoid this when we refactor the direct share action.
         for (ListItem item : itemList) {
-            if (item.type == ListItemType.CONTEXT_MENU_SHARE_ITEM) {
-                item.model.set(CLICK_LISTENER,
-                        getShareItemClickListener(window,
-                                item.model.get(MENU_ID) == R.id.contextmenu_share_link, params));
+            if (item.type == ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON) {
+                item.model.set(BUTTON_CLICK_LISTENER,
+                        (v) -> clickItem(item.model.get(BUTTON_MENU_ID), activity, onItemClicked));
             }
         }
 
         return itemList;
-    }
-
-    private View.OnClickListener getShareItemClickListener(
-            WindowAndroid window, boolean isLink, ContextMenuParams params) {
-        return (v) -> {
-            ChromeContextMenuPopulator.ContextMenuUma.record(mWebContents, params,
-                    isLink ? ChromeContextMenuPopulator.ContextMenuUma.Action.DIRECT_SHARE_LINK
-                           : ChromeContextMenuPopulator.ContextMenuUma.Action.DIRECT_SHARE_IMAGE);
-            mDialog.setOnDismissListener(dialogInterface -> mOnMenuClosed.onResult(true));
-            dismissDialog();
-            if (isLink) {
-                final ShareParams shareParams =
-                        new ShareParams.Builder(window, params.getUrl(), params.getUrl()).build();
-                ShareHelper.shareWithLastUsedComponent(shareParams);
-            } else {
-                mOnShareImageDirectly.run();
-            }
-        };
     }
 
     private void dismissDialog() {
@@ -342,7 +319,7 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
     public ListItem findItem(int id) {
         for (int i = 0; i < getCount(); i++) {
             final ListItem item = getItem(i);
-            if (item.model.get(RevampedContextMenuItemProperties.MENU_ID) == id) {
+            if (item.model.get(MENU_ID) == id) {
                 return item;
             }
         }

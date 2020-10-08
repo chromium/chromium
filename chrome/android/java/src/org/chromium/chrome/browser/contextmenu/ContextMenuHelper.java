@@ -17,7 +17,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
 import org.chromium.chrome.browser.share.LensUtils;
-import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -44,7 +43,7 @@ public class ContextMenuHelper {
     private WindowAndroid mWindow;
     private Callback<Integer> mCallback;
     private Runnable mOnMenuShown;
-    private Callback<Boolean> mOnMenuClosed;
+    private Runnable mOnMenuClosed;
     private long mMenuShownTimeMs;
     private boolean mSelectedItemBeforeDismiss;
     private boolean mIsIncognito;
@@ -120,8 +119,8 @@ public class ContextMenuHelper {
                         "ContextMenu.Shown.ShoppingDomain", mWebContents != null);
             }
         };
-        mOnMenuClosed = (notAbandoned) -> {
-            recordTimeToTakeActionHistogram(mSelectedItemBeforeDismiss || notAbandoned);
+        mOnMenuClosed = () -> {
+            recordTimeToTakeActionHistogram(mSelectedItemBeforeDismiss);
             mCurrentContextMenu = null;
             if (mCurrentPopulator != null) {
                 mCurrentPopulator.onMenuClosed();
@@ -156,12 +155,12 @@ public class ContextMenuHelper {
         List<Pair<Integer, ModelList>> items =
                 mCurrentPopulator.buildContextMenu(addShoppyMenuItem);
         if (items.isEmpty()) {
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, mOnMenuClosed.bind(false));
+            PostTask.postTask(UiThreadTaskTraits.DEFAULT, mOnMenuClosed);
             return;
         }
 
-        final RevampedContextMenuCoordinator menuCoordinator = new RevampedContextMenuCoordinator(
-                topContentOffsetPx, () -> shareImageWithLastShareComponent());
+        final RevampedContextMenuCoordinator menuCoordinator =
+                new RevampedContextMenuCoordinator(topContentOffsetPx);
         mCurrentContextMenu = menuCoordinator;
 
         if (LensUtils.enableImageChip(mIsIncognito)) {
@@ -182,15 +181,6 @@ public class ContextMenuHelper {
         if (mCurrentContextMenuParams.isImage()) {
             mCurrentPopulator.getThumbnail(menuCoordinator.getOnImageThumbnailRetrievedReference());
         }
-    }
-
-    /**
-     * Share the image that triggered the current context menu with the last app used to share.
-     */
-    private void shareImageWithLastShareComponent() {
-        mCurrentPopulator.retrieveImage(ContextMenuImageFormat.ORIGINAL, (Uri uri) -> {
-            ShareHelper.shareImage(mWindow, ShareHelper.getLastShareComponentName(), uri);
-        });
     }
 
     private void recordTimeToTakeActionHistogram(boolean selectedItem) {

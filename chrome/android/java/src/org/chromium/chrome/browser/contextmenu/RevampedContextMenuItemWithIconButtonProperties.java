@@ -9,17 +9,20 @@ import android.view.View;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-class RevampedContextMenuShareItemProperties extends RevampedContextMenuItemProperties {
-    public static final WritableObjectPropertyKey<Drawable> IMAGE =
+class RevampedContextMenuItemWithIconButtonProperties extends RevampedContextMenuItemProperties {
+    public static final WritableObjectPropertyKey<Drawable> BUTTON_IMAGE =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<CharSequence> CONTENT_DESC =
+    public static final WritableObjectPropertyKey<CharSequence> BUTTON_CONTENT_DESC =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<View.OnClickListener> CLICK_LISTENER =
+    public static final WritableIntPropertyKey BUTTON_MENU_ID = new WritableIntPropertyKey();
+    public static final WritableObjectPropertyKey<View.OnClickListener> BUTTON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(RevampedContextMenuItemProperties.ALL_KEYS,
-                    new PropertyKey[] {IMAGE, CONTENT_DESC, CLICK_LISTENER});
+                    new PropertyKey[] {BUTTON_IMAGE, BUTTON_CONTENT_DESC, BUTTON_MENU_ID,
+                            BUTTON_CLICK_LISTENER});
 }

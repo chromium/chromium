@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
+import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemWithIconButtonProperties.BUTTON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemWithIconButtonProperties.BUTTON_CONTENT_DESC;
+import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemWithIconButtonProperties.BUTTON_IMAGE;
+
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
@@ -12,12 +16,12 @@ import org.chromium.chrome.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-class RevampedContextMenuShareItemViewBinder extends RevampedContextMenuItemViewBinder {
+class RevampedContextMenuItemWithIconButtonViewBinder extends RevampedContextMenuItemViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         RevampedContextMenuItemViewBinder.bind(
                 model, view.findViewById(R.id.menu_row_text), propertyKey);
-        if (propertyKey == RevampedContextMenuShareItemProperties.IMAGE) {
-            Drawable drawable = model.get(RevampedContextMenuShareItemProperties.IMAGE);
+        if (propertyKey == BUTTON_IMAGE) {
+            Drawable drawable = model.get(BUTTON_IMAGE);
             final ImageView imageView = view.findViewById(R.id.menu_row_share_icon);
             imageView.setImageDrawable(drawable);
             imageView.setVisibility(drawable != null ? View.VISIBLE : View.GONE);
@@ -27,15 +31,13 @@ class RevampedContextMenuShareItemViewBinder extends RevampedContextMenuItemView
             // already has padding.
             view.findViewById(R.id.menu_row_text)
                     .setPaddingRelative(padding, 0, drawable != null ? 0 : padding, 0);
-        } else if (propertyKey == RevampedContextMenuShareItemProperties.CONTENT_DESC) {
+        } else if (propertyKey == BUTTON_CONTENT_DESC) {
             ((ImageView) view.findViewById(R.id.menu_row_share_icon))
                     .setContentDescription(view.getContext().getString(
-                            R.string.accessibility_menu_share_via,
-                            model.get(RevampedContextMenuShareItemProperties.CONTENT_DESC)));
-        } else if (propertyKey == RevampedContextMenuShareItemProperties.CLICK_LISTENER) {
+                            R.string.accessibility_menu_share_via, model.get(BUTTON_CONTENT_DESC)));
+        } else if (propertyKey == BUTTON_CLICK_LISTENER) {
             view.findViewById(R.id.menu_row_share_icon)
-                    .setOnClickListener(
-                            model.get(RevampedContextMenuShareItemProperties.CLICK_LISTENER));
+                    .setOnClickListener(model.get(BUTTON_CLICK_LISTENER));
         }
     }
 }

@@ -74,6 +74,7 @@
     <item type="id" name="contextmenu_copy_link_text" />
     <item type="id" name="contextmenu_save_link_as" />
     <item type="id" name="contextmenu_share_link" />
+    <item type="id" name="contextmenu_direct_share_link" />
 
     <!--Image Group -->
     <item type="id" name="contextmenu_load_original_image" />
@@ -85,6 +86,7 @@
     <item type="id" name="contextmenu_search_by_image" />
     <item type="id" name="contextmenu_search_with_google_lens" />
     <item type="id" name="contextmenu_share_image" />
+    <item type="id" name="contextmenu_direct_share_image" />
     <item type="id" name="contextmenu_shop_similar_products" />
     <item type="id" name="contextmenu_shop_image_with_google_lens" />
     <item type="id" name="contextmenu_search_similar_products" />

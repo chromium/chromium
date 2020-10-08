@@ -89,9 +89,9 @@ public class RevampedContextMenuRenderTest extends DummyUiActivityTestCase {
                     new LayoutViewBuilder(R.layout.revamped_context_menu_row),
                     RevampedContextMenuItemViewBinder::bind);
             mAdapter.registerType(
-                    ListItemType.CONTEXT_MENU_SHARE_ITEM,
+                    ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
                     new LayoutViewBuilder(R.layout.revamped_context_menu_share_row),
-                    RevampedContextMenuShareItemViewBinder::bind);
+                    RevampedContextMenuItemWithIconButtonViewBinder::bind);
             // clang-format on
         });
     }
@@ -119,8 +119,8 @@ public class RevampedContextMenuRenderTest extends DummyUiActivityTestCase {
                     ListItemType.CONTEXT_MENU_ITEM, getItemModel("Open in incognito tab"))));
             mListItems.add((new ListItem(
                     ListItemType.CONTEXT_MENU_ITEM, getItemModel("Copy link address"))));
-            mListItems.add((new ListItem(
-                    ListItemType.CONTEXT_MENU_SHARE_ITEM, getShareItemModel("Share link"))));
+            mListItems.add((new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
+                    getShareItemModel("Share link"))));
         });
         mRenderTestRule.render(mFrame, "revamped_context_menu_with_link");
     }
@@ -139,15 +139,15 @@ public class RevampedContextMenuRenderTest extends DummyUiActivityTestCase {
                     ListItemType.CONTEXT_MENU_ITEM, getItemModel("Open in incognito tab"))));
             mListItems.add((new ListItem(
                     ListItemType.CONTEXT_MENU_ITEM, getItemModel("Copy link address"))));
-            mListItems.add((new ListItem(
-                    ListItemType.CONTEXT_MENU_SHARE_ITEM, getShareItemModel("Share link"))));
+            mListItems.add((new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
+                    getShareItemModel("Share link"))));
             mListItems.add(new ListItem(ListItemType.DIVIDER, new PropertyModel()));
             mListItems.add((new ListItem(
                     ListItemType.CONTEXT_MENU_ITEM, getItemModel("Open image in new tab"))));
             mListItems.add(
                     (new ListItem(ListItemType.CONTEXT_MENU_ITEM, getItemModel("Download image"))));
-            mListItems.add((new ListItem(
-                    ListItemType.CONTEXT_MENU_SHARE_ITEM, getShareItemModel("Share image"))));
+            mListItems.add((new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
+                    getShareItemModel("Share image"))));
 
         });
         mRenderTestRule.render(mFrame, "revamped_context_menu_with_image_link");
@@ -186,9 +186,9 @@ public class RevampedContextMenuRenderTest extends DummyUiActivityTestCase {
         final BitmapDrawable drawable = new BitmapDrawable(getActivity().getResources(),
                 BitmapFactory.decodeFile(UrlUtils.getIsolatedTestFilePath(
                         "chrome/test/data/android/UiCapture/dots.png")));
-        return new PropertyModel.Builder(RevampedContextMenuShareItemProperties.ALL_KEYS)
-                .with(RevampedContextMenuShareItemProperties.TEXT, title)
-                .with(RevampedContextMenuShareItemProperties.IMAGE, drawable)
+        return new PropertyModel.Builder(RevampedContextMenuItemWithIconButtonProperties.ALL_KEYS)
+                .with(RevampedContextMenuItemWithIconButtonProperties.TEXT, title)
+                .with(RevampedContextMenuItemWithIconButtonProperties.BUTTON_IMAGE, drawable)
                 .build();
     }
 }
