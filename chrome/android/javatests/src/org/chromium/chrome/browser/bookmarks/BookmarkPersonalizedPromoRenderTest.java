@@ -23,7 +23,6 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -118,7 +117,6 @@ public class BookmarkPersonalizedPromoRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    @DisabledTest(message = "crbug.com/1133426")
     public void testPersonalizedSyncPromoInBookmarkPage(boolean nightModeEnabled) throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(
                 BookmarkPromoHeader.PromoState.PROMO_SYNC_PERSONALIZED);

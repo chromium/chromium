@@ -12,6 +12,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  * Utility functions for dealing with bookmarks in tests.
  */
 public class BookmarkTestUtil {
+    private static final long MAX_TIMEOUT_MS = 4000L;
 
     /**
      * Waits until the bookmark model is loaded, i.e. until
@@ -21,7 +22,8 @@ public class BookmarkTestUtil {
         final BookmarkModel bookmarkModel =
                 TestThreadUtils.runOnUiThreadBlockingNoException(BookmarkModel::new);
 
-        CriteriaHelper.pollUiThread(bookmarkModel::isBookmarkModelLoaded);
+        CriteriaHelper.pollUiThread(bookmarkModel::isBookmarkModelLoaded, MAX_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
         TestThreadUtils.runOnUiThreadBlocking(bookmarkModel::destroy);
     }
