@@ -218,10 +218,17 @@ class BLINK_COMMON_EXPORT FeaturePolicy {
       const url::Origin& origin,
       const FeaturePolicyFeatureList& features);
 
-  // Updates the inherited policy with the declarations from the iframe allow*
-  // attributes.
-  void AddContainerPolicy(const ParsedFeaturePolicy& container_policy,
-                          const FeaturePolicy* parent_policy);
+  bool GetInheritedValueForFeature(
+      const FeaturePolicy* parent_policy,
+      std::pair<mojom::FeaturePolicyFeature, FeaturePolicyFeatureDefault>
+          feature,
+      const ParsedFeaturePolicy& container_policy) const;
+
+  bool GetProposedInheritedValueForFeature(
+      const FeaturePolicy* parent_policy,
+      std::pair<mojom::FeaturePolicyFeature, FeaturePolicyFeatureDefault>
+          feature,
+      const ParsedFeaturePolicy& container_policy) const;
 
   // The origin of the document with which this policy is associated.
   url::Origin origin_;
