@@ -344,9 +344,10 @@ void PrintCompositeClient::RemoveCompositeRequest(int cookie) {
   document_cookie_ = 0;
   initiator_frame_ = nullptr;
 
-  // Clear all stored printed and pending subframes.
+  // Reset state of the client.
   pending_subframes_.clear();
   printed_subframes_.clear();
+  print_render_frames_.clear();
 
   // No longer concurrently compositing this document.
   is_doc_concurrently_composited_ = false;
