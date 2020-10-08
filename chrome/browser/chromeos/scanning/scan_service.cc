@@ -8,7 +8,10 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/files/file_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/scanning/lorgnette_scanner_manager.h"
 #include "chrome/browser/chromeos/scanning/scanning_type_converters.h"
 
@@ -17,6 +20,9 @@ namespace chromeos {
 namespace {
 
 namespace mojo_ipc = scanning::mojom;
+
+// Path to the user's "My files" folder, relative to the root directory.
+constexpr char kMyFilesPath[] = "home/chronos/user/MyFiles";
 
 }  // namespace
 
@@ -36,22 +42,45 @@ void ScanService::GetScanners(GetScannersCallback callback) {
 void ScanService::GetScannerCapabilities(
     const base::UnguessableToken& scanner_id,
     GetScannerCapabilitiesCallback callback) {
-  const auto it = scanner_names_.find(scanner_id);
-  if (it == scanner_names_.end()) {
-    LOG(ERROR) << "Failed to find scanner name using the given scanner id.";
+  const std::string scanner_name = GetScannerName(scanner_id);
+  if (scanner_name.empty())
     std::move(callback).Run(mojo_ipc::ScannerCapabilities::New());
-    return;
-  }
 
   lorgnette_scanner_manager_->GetScannerCapabilities(
-      it->second,
+      scanner_name,
       base::BindOnce(&ScanService::OnScannerCapabilitiesReceived,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ScanService::Scan(const base::UnguessableToken& scanner_id,
+                       mojo_ipc::ScanSettingsPtr settings,
+                       ScanCallback callback) {
+  const std::string scanner_name = GetScannerName(scanner_id);
+  if (scanner_name.empty())
+    std::move(callback).Run(false);
+
+  save_failed_ = false;
+
+  // TODO(jschettler): Create a TypeConverter to convert from
+  // mojo_ipc::ScanSettingsPtr to lorgnette::ScanSettings once the settings are
+  // finalized.
+  lorgnette::ScanSettings settings_proto;
+  settings_proto.set_source_name(settings->source_name);
+  lorgnette_scanner_manager_->Scan(
+      scanner_name, settings_proto,
+      base::BindRepeating(&ScanService::OnPageReceived,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&ScanService::OnScanCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ScanService::BindInterface(
     mojo::PendingReceiver<mojo_ipc::ScanService> pending_receiver) {
   receiver_.Bind(std::move(pending_receiver));
+}
+
+void ScanService::SetRootDirForTesting(const base::FilePath& root_dir) {
+  root_dir_ = root_dir;
 }
 
 void ScanService::Shutdown() {
@@ -87,6 +116,35 @@ void ScanService::OnScannerCapabilitiesReceived(
 
   std::move(callback).Run(
       mojo::ConvertTo<mojo_ipc::ScannerCapabilitiesPtr>(capabilities.value()));
+}
+
+void ScanService::OnPageReceived(std::string scanned_image) {
+  // TODO(jschettler): Add page number to filename.
+  base::Time::Exploded time;
+  base::Time::Now().UTCExplode(&time);
+  const std::string filename = base::StringPrintf(
+      "scan_%02d%02d%02d-%02d%02d%02d.png", time.year, time.month,
+      time.day_of_month, time.hour, time.minute, time.second);
+  const auto file_path = root_dir_.Append(kMyFilesPath).Append(filename);
+  if (!base::WriteFile(file_path, scanned_image)) {
+    LOG(ERROR) << "Failed to save scanned image: " << file_path.value().c_str();
+    save_failed_ = true;
+  }
+}
+
+void ScanService::OnScanCompleted(ScanCallback callback, bool success) {
+  std::move(callback).Run(success && !save_failed_);
+}
+
+std::string ScanService::GetScannerName(
+    const base::UnguessableToken& scanner_id) {
+  const auto it = scanner_names_.find(scanner_id);
+  if (it == scanner_names_.end()) {
+    LOG(ERROR) << "Failed to find scanner name using the given scanner id.";
+    return "";
+  }
+
+  return it->second;
 }
 
 }  // namespace chromeos
