@@ -668,6 +668,15 @@
       },
     },
   },
+  'check_static_initializers': {
+    'modifications': {
+      'Mac Builder': {
+        'args': [
+          '--allow-coverage-initializer',
+        ],
+      },
+    },
+  },
   'checkbins': {
     'remove_from': [
       'linux-archive-dbg',
