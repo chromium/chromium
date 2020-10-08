@@ -46,8 +46,8 @@ declare_args() {
 declare_args() {
   # True to enable the cast renderer.  It is enabled by default for linux and
   # android audio only builds.
-  enable_cast_renderer =
-      is_chromecast && (is_linux || is_chromeos || (is_cast_audio_only && is_android))
+  enable_cast_renderer = is_chromecast && (is_linux || is_chromeos ||
+                                           (is_cast_audio_only && is_android))
 }
 
 # Configures media options for cast.  See media/media_options.gni
@@ -77,10 +77,13 @@ if (enable_cast_renderer) {
     "audio_decoder",
   ]
   if (!is_cast_audio_only) {
+    # These are Cast/Android devices with Video capabilities (and GPU)
     cast_mojo_media_services += [ "video_decoder" ]
+    cast_mojo_media_host = "gpu"
+  } else {
+    # These are Cast/Android devices with only Audio capabilities (no GPU)
+    cast_mojo_media_host = "browser"
   }
-
-  cast_mojo_media_host = "gpu"
 }
 
 # Assert that Chromecast is being built for a supported platform.

@@ -65,7 +65,7 @@ media::mojom::MediaService& GetMediaService() {
         base::BindOnce(&BindReceiverInGpuProcess, std::move(receiver)));
 #elif BUILDFLAG(ENABLE_MOJO_MEDIA_IN_BROWSER_PROCESS)
     static base::NoDestructor<std::unique_ptr<media::MediaService>> service;
-    *service = media::CreateMediaService(std::move(receiver))
+    *service = media::CreateMediaService(std::move(receiver));
 #elif BUILDFLAG(ENABLE_MOJO_MEDIA_IN_UTILITY_PROCESS)
     ServiceProcessHost::Launch(
         std::move(receiver),
