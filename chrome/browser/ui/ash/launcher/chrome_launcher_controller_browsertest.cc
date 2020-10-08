@@ -85,7 +85,6 @@
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -407,24 +406,13 @@ class ShelfAppBrowserTestNoDefaultBrowser : public ShelfAppBrowserTest {
   }
 };
 
-class ShelfWebAppBrowserTest
-    : public ShelfAppBrowserTest,
-      public ::testing::WithParamInterface<web_app::ProviderType> {
+class ShelfWebAppBrowserTest : public ShelfAppBrowserTest {
  protected:
   ShelfWebAppBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    if (GetParam() == web_app::ProviderType::kWebApps) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    } else if (GetParam() == web_app::ProviderType::kBookmarkApps) {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    }
   }
 
   ~ShelfWebAppBrowserTest() override = default;
-
-  web_app::ProviderType provider_type() const { return GetParam(); }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
@@ -470,7 +458,6 @@ class ShelfWebAppBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_;
   content::ContentMockCertVerifier cert_verifier_;
 };
@@ -1190,7 +1177,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AppIDForPinnedHostedApp) {
 
 // Verifies that native browser window properties are properly set when showing
 // an unpinned web app.
-IN_PROC_BROWSER_TEST_P(ShelfWebAppBrowserTest, AppIDForUnpinnedWebApp) {
+IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForUnpinnedWebApp) {
   // Load and navigate to a web app.
   const GURL app_url = GetSecureAppURL();
   const web_app::AppId web_app_id = InstallWebApp(app_url);
@@ -1215,7 +1202,7 @@ IN_PROC_BROWSER_TEST_P(ShelfWebAppBrowserTest, AppIDForUnpinnedWebApp) {
 
 // Verifies that native browser window properties are properly set when showing
 // a pinned web app.
-IN_PROC_BROWSER_TEST_P(ShelfWebAppBrowserTest, AppIDForPinnedWebApp) {
+IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForPinnedWebApp) {
   // Load and navigate to a web app.
   const GURL app_url = GetSecureAppURL();
   const web_app::AppId web_app_id = InstallWebApp(app_url);
@@ -1239,7 +1226,7 @@ IN_PROC_BROWSER_TEST_P(ShelfWebAppBrowserTest, AppIDForPinnedWebApp) {
 
 // Verifies that native browser window properties are properly set when showing
 // a PWA tab.
-IN_PROC_BROWSER_TEST_P(ShelfWebAppBrowserTest, AppIDForPWA) {
+IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForPWA) {
   // Start server and open test page.
   ASSERT_TRUE(embedded_test_server()->Start());
   ui_test_utils::NavigateToURL(
@@ -2259,7 +2246,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, DISABLED_V1AppNavigation) {
 }
 
 // Ensure opening settings and task manager windows create new shelf items.
-IN_PROC_BROWSER_TEST_P(ShelfWebAppBrowserTest, SettingsAndTaskManagerWindows) {
+IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, SettingsAndTaskManagerWindows) {
   // Install the Settings App.
   web_app::WebAppProvider::Get(browser()->profile())
       ->system_web_app_manager()
@@ -2303,7 +2290,7 @@ IN_PROC_BROWSER_TEST_P(ShelfWebAppBrowserTest, SettingsAndTaskManagerWindows) {
 }
 
 // Check that tabbed hosted and web apps have correct shelf presence.
-IN_PROC_BROWSER_TEST_P(ShelfWebAppBrowserTest, TabbedHostedAndWebApps) {
+IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, TabbedHostedAndWebApps) {
   // Load and pin a hosted app.
   const Extension* hosted_app =
       LoadExtension(test_data_dir_.AppendASCII("app1/"));
@@ -2347,7 +2334,7 @@ IN_PROC_BROWSER_TEST_P(ShelfWebAppBrowserTest, TabbedHostedAndWebApps) {
 }
 
 // Check that windowed hosted and web apps have correct shelf presence.
-IN_PROC_BROWSER_TEST_P(ShelfWebAppBrowserTest, WindowedHostedAndWebApps) {
+IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WindowedHostedAndWebApps) {
   // Load and pin a hosted app.
   const Extension* hosted_app =
       LoadExtension(test_data_dir_.AppendASCII("app1/"));
@@ -2407,7 +2394,7 @@ IN_PROC_BROWSER_TEST_P(ShelfWebAppBrowserTest, WindowedHostedAndWebApps) {
 
 // Windowed progressive web apps should have shelf activity indicator showing
 // after install.
-IN_PROC_BROWSER_TEST_P(ShelfWebAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest,
                        WindowedPwasHaveActivityIndicatorSet) {
   // Start server and open test page.
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -2431,7 +2418,7 @@ IN_PROC_BROWSER_TEST_P(ShelfWebAppBrowserTest,
 
 // Windowed shortcut apps should have shelf activity indicator showing after
 // install.
-IN_PROC_BROWSER_TEST_P(ShelfWebAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest,
                        WindowedShortcutAppsHaveActivityIndicatorSet) {
   // Start server and open test page.
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -2453,7 +2440,7 @@ IN_PROC_BROWSER_TEST_P(ShelfWebAppBrowserTest,
       ChromeLauncherController::instance()->shelf_model()->active_shelf_id());
 }
 
-IN_PROC_BROWSER_TEST_P(ShelfWebAppBrowserTest, WebAppPolicy) {
+IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicy) {
   // Install web app.
   GURL app_url = GURL("https://example.org/");
   web_app::AppId app_id = InstallWebApp(app_url);
@@ -2480,7 +2467,7 @@ IN_PROC_BROWSER_TEST_P(ShelfWebAppBrowserTest, WebAppPolicy) {
             GetPinnableForAppID(app_id, profile()));
 }
 
-IN_PROC_BROWSER_TEST_P(ShelfWebAppBrowserTest, WebAppPolicyNonExistentApp) {
+IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicyNonExistentApp) {
   // Don't install the web app.
   GURL app_url = GURL("https://example.org/");
   web_app::AppId app_id = web_app::GenerateAppIdFromURL(app_url);
@@ -2856,11 +2843,5 @@ IN_PROC_BROWSER_TEST_P(PerDeskShelfAppBrowserTest, AppMenus) {
               model_adapter->model()->GetItemCount());
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ShelfWebAppBrowserTest,
-                         ::testing::Values(web_app::ProviderType::kBookmarkApps,
-                                           web_app::ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);
 
 INSTANTIATE_TEST_SUITE_P(All, PerDeskShelfAppBrowserTest, ::testing::Bool());
