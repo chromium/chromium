@@ -1342,7 +1342,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestDisplayNoneWebviewLoad) {
   TestHelper("testDisplayNoneWebviewLoad", "web_view/shim", NO_TEST_SERVER);
 }
 
-#if defined(OS_WIN) || defined(OS_LINUX)
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_Shim_TestDisplayNoneWebviewRemoveChild \
   DISABLED_Shim_TestDisplayNoneWebviewRemoveChild
 #else

@@ -794,7 +794,7 @@ class MachineLevelUserCloudPolicyRobotAuthTest
 };  // namespace policy
 
 // Flaky on linux & win: https://crbug.com/1105167
-#if defined(OS_WIN) || defined(OS_LINUX)
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_Test DISABLED_Test
 #else
 #define MAYBE_Test Test

@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
 
 // TODO(https://crbug.com/1124982): Fix flake on linux-lacros-rel and re-enable
 // this test.
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_OpenDialogWithMediaRouterAction \
   DISABLED_OpenDialogWithMediaRouterAction
 #else

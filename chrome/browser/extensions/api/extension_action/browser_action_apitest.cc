@@ -656,7 +656,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, BrowserActionRemovePopup) {
       << "a specific tab id.";
 }
 
-#if defined(OS_WIN) || defined(OS_LINUX)
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 // Flaky: https://crbug.com/1113904
 #define MAYBE_IncognitoBasic DISABLED_IncognitoBasic
 #else

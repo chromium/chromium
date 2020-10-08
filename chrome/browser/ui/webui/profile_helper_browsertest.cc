@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, OpenNewWindowForProfile) {
 }
 
 // Test is flaky on Lacros. crbug.com/1130131
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_DeleteSoleProfile DISABLED_DeleteSoleProfile
 #else
 #define MAYBE_DeleteSoleProfile DeleteSoleProfile
