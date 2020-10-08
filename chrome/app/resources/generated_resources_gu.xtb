@@ -1893,7 +1893,7 @@
 <translation id="3202131003361292969">પથ</translation>
 <translation id="3202173864863109533">આ ટૅબનો ઑડિઓ મ્યૂટ કરવામાં આવી રહ્યો છે.</translation>
 <translation id="3208321278970793882">ઍપ</translation>
-<translation id="3208584281581115441">હમણાં તપાસો</translation>
+<translation id="3208584281581115441">હમણાં ચેક કરો</translation>
 <translation id="3208703785962634733">પુષ્ટિ થયેલ નથી</translation>
 <translation id="32101887417650595">પ્રિન્ટર સાથે કનેક્ટ કરી શકાતું નથી</translation>
 <translation id="321084946921799184">પીળો અને સફેદ</translation>
@@ -5084,7 +5084,7 @@ USB ડિવાઇસ</translation>
 <translation id="7025190659207909717">મોબાઇલ ડેટા સેવા મેનેજમેન્ટ</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{તમામ URLને &amp;છૂપી વિન્ડોમાં ખોલો}=1{&amp;છૂપી વિન્ડોમાં ખોલો}one{તમામ ({COUNT}) URLને &amp;છૂપી વિન્ડોમાં ખોલો}other{તમામ ({COUNT}) URLને &amp;છૂપી વિન્ડોમાં ખોલો}}</translation>
 <translation id="7029307918966275733">Crostini ઇન્સ્ટૉલ કરેલી નથી. કૃપા કરીને ક્રેડિટ જોવા માટે Crostini ઇન્સ્ટૉલ કરો.</translation>
-<translation id="7029809446516969842">પાસવર્ડ્સ</translation>
+<translation id="7029809446516969842">પાસવર્ડ</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - સિરીઅલ પોર્ટ કનેક્ટ કર્યું</translation>
 <translation id="7036706669646341689">Linux માટે <ph name="DISK_SIZE" /> સ્પેસનો સુઝાવ આપ્યો છે. ખાસી સ્પેસ વધારવા માટે, તમારા ડિવાઇસમાંથી ફાઇલો ડિલીટ કરો.</translation>
 <translation id="7037509989619051237">ટેક્સ્ટ ટૂ સ્પીચના પ્રીવ્યૂ માટે</translation>
@@ -6516,7 +6516,7 @@ USB ડિવાઇસ</translation>
 <translation id="8730621377337864115">થઈ ગયું</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" />ની પરવાનગી માગે છે: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">પોર્ટનો નંબર</translation>
-<translation id="8731851055419582926">ચેક કરેલા પાસવર્ડ</translation>
+<translation id="8731851055419582926">પાસવર્ડ ચેક કર્યા</translation>
 <translation id="8732030010853991079">આ આયકન પર ક્લિક કરીને આ એક્સ્ટેંશનનો ઉપયોગ કરો.</translation>
 <translation id="8732212173949624846">તમારા બધા સાઇન-ઇન કરેલ ઉપકરણો પર તમારા બ્રાઉઝિંગ ઇતિહાસને વાંચો અને બદલો</translation>
 <translation id="8732844209475700754">પ્રાઇવસી, સુરક્ષા અને ડેટા સંગ્રહ સંબંધિત વધુ સેટિંગ</translation>

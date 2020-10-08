@@ -330,7 +330,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="3492207499832628349">Pestanya d'incògnit nova</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /> sobre el contingut suggerit</translation>
 <translation id="3499246418971111862">chrome_codiqr_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="3507132249039706973">Està activada la protecció estàndard</translation>
+<translation id="3507132249039706973">La protecció estàndard està activada</translation>
 <translation id="3509330069915219067">No tens connexió. Chrome no pot cercar actualitzacions.</translation>
 <translation id="3513704683820682405">Realitat augmentada</translation>
 <translation id="3518985090088779359">Accepta i continua</translation>
@@ -969,7 +969,7 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="8027863900915310177">Tria on vols fer la baixada</translation>
 <translation id="8035133914807600019">Carpeta nova…</translation>
 <translation id="8037750541064988519">Queden <ph name="DAYS" /> dies</translation>
-<translation id="8037801708772278989">S'acaba de comprovar</translation>
+<translation id="8037801708772278989">Comprovat ara mateix</translation>
 <translation id="804335162455518893">La targeta SD no s'ha trobat</translation>
 <translation id="805047784848435650">Segons l'historial de navegació</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB disponibles</translation>

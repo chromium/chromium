@@ -206,7 +206,7 @@
 <translation id="1224275271335624810">Snelst</translation>
 <translation id="1225177025209879837">Je verzoek wordt verwerkt...</translation>
 <translation id="1227507814927581609">Verificatie mislukt tijdens verbinden met '<ph name="DEVICE_NAME" />'.</translation>
-<translation id="1230417814058465809">Standaardbeveiliging is ingeschakeld. Gebruik verbeterde beveiliging voor nog meer bescherming.</translation>
+<translation id="1230417814058465809">Standaardbeveiliging staat aan. Gebruik geoptimaliseerde beveiliging voor nog meer bescherming.</translation>
 <translation id="1231733316453485619">Synchronisatie inschakelen?</translation>
 <translation id="1232569758102978740">Naamloos</translation>
 <translation id="1233497634904001272">Tik opnieuw op de beveiligingssleutel om het verzoek te voltooien.</translation>
@@ -3681,7 +3681,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5352033265844765294">Tijdstempel</translation>
 <translation id="5353252989841766347">Wachtwoorden exporteren uit Chrome</translation>
 <translation id="5355099869024327351">Hiermee kan de Assistent meldingen aan jou weergeven</translation>
-<translation id="5355191726083956201">Verbeterde beveiliging is ingeschakeld</translation>
+<translation id="5355191726083956201">Geoptimaliseerde beveiliging staat aan</translation>
 <translation id="5355926466126177564">De extensie '<ph name="EXTENSION_NAME" />' heeft gewijzigd welke pagina wordt weergegeven wanneer je vanuit de omnibox zoekt.</translation>
 <translation id="5359910752122114278">1 resultaat</translation>
 <translation id="5360150013186312835">In werkbalk weergeven</translation>
@@ -4966,7 +4966,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6897363604023044284">Sites kiezen om te wissen</translation>
 <translation id="6898440773573063262">Kiosk-apps kunnen nu worden geconfigureerd voor automatisch starten op dit apparaat.</translation>
 <translation id="6900284862687837908">Achtergrond-app: <ph name="BACKGROUND_APP_URL" /></translation>
-<translation id="6900532703269623216">Verbeterde beveiliging</translation>
+<translation id="6900532703269623216">Geoptimaliseerde beveiliging</translation>
 <translation id="6900651018461749106">Log opnieuw in om <ph name="USER_EMAIL" /> te updaten</translation>
 <translation id="6902066522699286937">Stem om als voorbeeld te beluisteren</translation>
 <translation id="6902336033320348843">Sectie niet ondersteund: <ph name="ERROR_LINE" /></translation>

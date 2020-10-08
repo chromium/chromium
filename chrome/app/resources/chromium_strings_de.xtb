@@ -4,7 +4,7 @@
 <translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium prüft Ihr Gerät einmal pro Woche auf unerwünschte Software. Zuletzt geprüft: vor 1 Stunde.}other{Chromium prüft Ihr Gerät einmal pro Woche auf unerwünschte Software. Zuletzt geprüft: vor {NUM_HOURS} Stunden.}}</translation>
 <translation id="1065672644894730302">Ihre Einstellungen können nicht gelesen werden. Einige Funktionen sind möglicherweise nicht verfügbar und Änderungen an Einstellungen werden nicht gespeichert.</translation>
 <translation id="107513968719897256">Wenn Sie Ihre privaten und die Browsingaktivitäten für <ph name="NEW_USER" />getrennt halten möchten, erstellen Sie ein neues Profil in Chromium</translation>
-<translation id="1098170124587656448">Chromium kann dazu beitragen, Sie beispielsweise vor Datenpannen und schädlichen Erweiterungen zu schützen</translation>
+<translation id="1098170124587656448">Chromium kann helfen, Sie vor Bedrohungen wie Datenpannen und schädlichen Erweiterungen zu schützen</translation>
 <translation id="1104942323762546749">Chromium möchte Ihre Passwörter exportieren. Wenn Sie dies zulassen möchten, geben Sie Ihr Windows-Passwort ein.</translation>
 <translation id="113122355610423240">Chromium ist Ihr Standardbrowser</translation>
 <translation id="1131805035311359397">Wenn Sie prüfen möchten, ob Ihre Passwörter von Datenpannen und anderen Sicherheitsproblemen betroffen sind, <ph name="BEGIN_LINK" />melden Sie sich in Chromium an<ph name="END_LINK" />.</translation>
@@ -70,7 +70,7 @@
 <translation id="328888136576916638">Google API-Schlüssel fehlen. Einige Funktionen von Chromium sind deaktiviert.</translation>
 <translation id="3296368748942286671">Apps weiter im Hintergrund ausführen, wenn Chromium geschlossen wird</translation>
 <translation id="331951419404882060">Chromium OS konnte Ihre Daten aufgrund eines Fehlers bei der Anmeldung nicht synchronisieren.</translation>
-<translation id="347328004046849135">Chromium benachrichtigt Sie, wenn Sie sich mit einem gehackten Passwort anmelden</translation>
+<translation id="347328004046849135">Wenn sich mit einem Passwort anmelden, das gehackt wurde, benachrichtigt Sie Chromium entsprechend.</translation>
 <translation id="3474745554856756813">Dadurch werden <ph name="ITEMS_COUNT" /> Elemente von diesem Gerät gelöscht. Wenn Sie Ihre Daten später abrufen möchten, melden Sie sich als <ph name="USER_EMAIL" /> in Chromium an.</translation>
 <translation id="3509308970982693815">Schließen Sie bitte alle Chromium-Fenster und versuchen Sie es erneut.</translation>
 <translation id="3575459661164320785">Schädliche Software wurde auf Ihrem Computer gefunden. Chromium kann diese Software entfernen, Ihre Einstellungen wiederherstellen und Erweiterungen deaktivieren, sodass Ihr Browser wieder wie gewohnt funktioniert.</translation>
@@ -152,7 +152,7 @@
 <translation id="6219195342503754812">{0,plural, =0{Chromium wird jetzt neu gestartet}=1{Chromium wird in einer Sekunde neu gestartet}other{Chromium wird in # Sekunden neu gestartet}}</translation>
 <translation id="623836266260425961">Chromium OS konnte Ihre Daten nicht synchronisieren.</translation>
 <translation id="6248213926982192922">Chromium als Standardbrowser verwenden</translation>
-<translation id="6266342355635466082">Chromium kann nicht nach Updates suchen. Überprüfen Sie Ihre Internetverbindung.</translation>
+<translation id="6266342355635466082">Chromium kann nicht nach Aktualisierungen suchen. Überprüfen Sie Ihre Internetverbindung.</translation>
 <translation id="6268381023930128611">Von Chromium abmelden?</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> ist möglicherweise schädlich und wurde daher von Chromium blockiert.</translation>
 <translation id="6309712487085796862">Chromium verwendet Ihre Kamera.</translation>

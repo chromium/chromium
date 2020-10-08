@@ -59,7 +59,7 @@
 <translation id="2534507159460261402">Google Pay (in Chrome kopiert)</translation>
 <translation id="2580411288591421699">Die Google Chrome-Version kann nicht installiert werden, da sie aktuell ausgeführt wird. Schließen Sie Google Chrome und versuchen Sie es erneut.</translation>
 <translation id="2586406160782125153">Dadurch werden Ihre Browserdaten von diesem Gerät gelöscht. Wenn Sie Ihre Daten später abrufen möchten, melden Sie sich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
-<translation id="2622559029861875898">Chrome kann nicht nach Updates suchen. Überprüfen Sie Ihre Internetverbindung.</translation>
+<translation id="2622559029861875898">Chrome kann nicht nach Aktualisierungen suchen. Überprüfen Sie Ihre Internetverbindung.</translation>
 <translation id="2644798301485385923">Chrome OS-System</translation>
 <translation id="2652691236519827073">Link in neuem Chrome-Tab öffnen</translation>
 <translation id="2665296953892887393">Absturzberichte und <ph name="UMA_LINK" /> zur Verbesserung von Google Chrome an Google senden</translation>
@@ -122,7 +122,7 @@
 <translation id="4325083532956419387">Chrome OS-Version</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
-<translation id="4335235004908507846">Chrome kann dazu beitragen, Sie beispielsweise vor Datenpannen und schädlichen Erweiterungen zu schützen</translation>
+<translation id="4335235004908507846">Chrome kann helfen, Sie vor Bedrohungen wie Datenpannen und schädlichen Erweiterungen zu schützen</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> wurde zu Chrome hinzugefügt</translation>
 <translation id="4384570495110188418">Chrome kann Ihre Passwörter nicht prüfen, da Sie nicht angemeldet sind</translation>
 <translation id="4407807842708586359">Google Chrome OS</translation>
@@ -255,7 +255,7 @@
 <translation id="8614913330719544658">Google Chrome reagiert nicht. Jetzt neu starten?</translation>
 <translation id="861702415419836452">Chrome benötigt Zugriff auf die Kamera, um eine 3D-Karte Ihrer Umgebung zu erstellen</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome wird in einer Minute neu gestartet}other{Chrome wird in # Minuten neu gestartet}}</translation>
-<translation id="8641606876632989680">Sie werden von Chrome benachrichtigt, falls Sie sich mit einem gehackten Passwort anmelden</translation>
+<translation id="8641606876632989680">Wenn sich mit einem Passwort anmelden, das gehackt wurde, benachrichtigt Sie Chrome entsprechend.</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Die Erweiterung legt auch die Seite fest, die beim Start von Chrome angezeigt wird.</translation>
 <translation id="8681614230122836773">Chrome hat auf Ihrem Computer schädliche Software gefunden</translation>

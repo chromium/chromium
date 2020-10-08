@@ -724,7 +724,7 @@
 <translation id="6333140779060797560">Μοιραστείτε μέσω <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Κρυπτογράφηση</translation>
 <translation id="6341580099087024258">Να γίνεται ερώτηση σχετικά με την τοποθεσία αποθήκευσης των αρχείων</translation>
-<translation id="6342069812937806050">Πριν λίγο</translation>
+<translation id="6342069812937806050">Μόλις τώρα</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ακόμη}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ακόμη}}</translation>
 <translation id="6345878117466430440">Επισήμανση ως αναγνωσμένο</translation>
 <translation id="6364438453358674297">Κατάργηση πρότασης από το ιστορικό;</translation>

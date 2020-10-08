@@ -886,7 +886,7 @@
 <translation id="2002109485265116295">నిజ-సమయం</translation>
 <translation id="2003130567827682533">'<ph name="NAME" />' డేటాను యాక్టివేట్ చేయడానికి, ముందుగా ఒక Wi-Fi నెట్‌వర్క్‌కు కనెక్ట్ చేయండి</translation>
 <translation id="2006638907958895361">లింక్‌ను <ph name="APP" />లో తెరువు</translation>
-<translation id="2007404777272201486">ఒక సమస్యను నివేదించండి...</translation>
+<translation id="2007404777272201486">సమస్యను రిపోర్ట్ చేయండి...</translation>
 <translation id="2010501376126504057">అనుకూల పరికరాలు</translation>
 <translation id="2017334798163366053">పనితీరు డేటా సేకరణను నిలిపివేయి</translation>
 <translation id="2017836877785168846">చిరునామా బార్‌లో చరిత్రను మరియు స్వీయ పూరణలను క్లియర్ చేస్తుంది.</translation>
@@ -1065,7 +1065,7 @@
 <translation id="2218320521449013367">Chrome హానికరమైన సాఫ్ట్‌వేర్‌ను తీసివేస్తున్నప్పుడు ఎర్రర్ ఏర్పడింది</translation>
 <translation id="2218515861914035131">సాధారణ వచనం లాగా అతికించండి</translation>
 <translation id="2220409419896228519">మీకు ఇష్టమైన Google యాప్‌లకు బుక్‌మార్క్‌లను జోడించండి</translation>
-<translation id="2220529011494928058">సమస్యను నివేదించండి</translation>
+<translation id="2220529011494928058">సమస్యను రిపోర్ట్ చేయండి</translation>
 <translation id="2220572644011485463">PIN లేదా పాస్‌వర్డ్</translation>
 <translation id="2224444042887712269">ఈ సెట్టింగ్ <ph name="OWNER_EMAIL" />కి సంబంధించినది.</translation>
 <translation id="2224551243087462610">ఫోల్డర్ పేరును సవరించు</translation>
@@ -2815,7 +2815,7 @@
 <translation id="4276288850178085042">మీ కెమెరాను ఉపయోగించనివ్వకుండా సైట్‌లను బ్లాక్ చేయండి</translation>
 <translation id="4278101229438943600">మీ అసిస్టెంట్ సిద్ధంగా ఉంది</translation>
 <translation id="4278390842282768270">అనుమతించబడింది</translation>
-<translation id="4281844954008187215">సేవా నిబంధనలు</translation>
+<translation id="4281844954008187215">సర్వీస్ నియమాలు</translation>
 <translation id="4282196459431406533">Smart Lock ఆన్‌లో ఉంది</translation>
 <translation id="4285418559658561636">పాస్‌వర్డ్‌ను అప్‌డేట్ చేయి</translation>
 <translation id="4285498937028063278">అన్‌పిన్ చేయి</translation>
@@ -4446,7 +4446,7 @@
 <translation id="6248988683584659830">సెట్టింగ్‌లను వెతకండి</translation>
 <translation id="6249200942125593849">a11yను మేనేజ్ చేయండి</translation>
 <translation id="6251870443722440887">GDI నిర్వహించేవి</translation>
-<translation id="6251889282623539337"><ph name="DOMAIN" /> సేవా నిబంధనలు</translation>
+<translation id="6251889282623539337"><ph name="DOMAIN" /> సర్వీస్ నియమాలు</translation>
 <translation id="625369703868467034">నెట్‌వర్క్ హెల్త్</translation>
 <translation id="6254503684448816922">కీ రాజీ</translation>
 <translation id="6257602895346497974">సమకాలీకరణను ఆన్ చేయి...</translation>
@@ -5561,7 +5561,7 @@
 <translation id="7622768823216805500">మరింత సులభమైన చెక్అవుట్ వంటి షాపింగ్ ఫీచర్‌ల కోసం సాధారణంగా పేమెంట్ హ్యాండ్లర్‌లను సైట్‌లు ఇన్‌స్టాల్ చేస్తాయి</translation>
 <translation id="7622903810087708234">పాస్‌వర్డ్ వివరాలు</translation>
 <translation id="7624337243375417909">caps lock ఆఫ్‌లో ఉంది</translation>
-<translation id="7625568159987162309">సైట్‌లలోని అనుమతులను, నిల్వ చేయబడిన డేటాను చూడండి</translation>
+<translation id="7625568159987162309">వేర్వేరు సైట్‌లకు సంబంధించిన అనుమతులను, అవి నిల్వ చేసిన డేటాను చూడండి</translation>
 <translation id="7628201176665550262">రిఫ్రెష్ రేటు</translation>
 <translation id="7629349498667725376">{COUNT,plural, =1{1 ఫైల్}other{# ఫైల్‌లు}}</translation>
 <translation id="7629827748548208700">టాబ్: <ph name="TAB_NAME" /></translation>
@@ -6431,7 +6431,7 @@
 <translation id="8630903300770275248">పర్యవేక్షించబడే వినియోగదారును దిగుమతి చేయి</translation>
 <translation id="8631032106121706562">పూరేకులు</translation>
 <translation id="863109444997383731">మీకు నోటిఫికేషన్‌లను చూపడం అడగలేని విధంగా సైట్‌లు బ్లాక్ చేయబడతాయి. ఒకవేళ సైట్ గనుక నోటిఫికేషన్‌లను అభ్యర్థిస్తే, చిరునామా బార్‌లో బ్లాక్ చేసినట్లుగా సూచిక కనిపిస్తుంది.</translation>
-<translation id="8633025649649592204">ఇటీవలి కార్యకలాపం</translation>
+<translation id="8633025649649592204">ఇటీవలి యాక్టివిటీ</translation>
 <translation id="8635628933471165173">మళ్ళీ లోడ్ అవుతోంది...</translation>
 <translation id="8637542770513281060">మీ కంప్యూటర్‌లో ఒక సురక్షిత మాడ్యూల్ ఉంది, Chrome OSలో అనేక కీలకమైన భద్రతా ఫీచర్‌లను అమలు చేయడానికి ఇది ఉపయోగించబడుతుంది. Chromebook సహాయ కేంద్రంలో దీని గురించి మరింత తెలుసుకోండి, ఇక్కడికి వెళ్లండి: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8637688295594795546">సిస్టమ్ అప్‌డేట్‌ అందుబాటులో ఉంది. డౌన్‌లోడ్ చేయ‌డానికి సిద్ధం చేస్తోంది...</translation>

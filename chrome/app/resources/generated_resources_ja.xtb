@@ -113,7 +113,7 @@
 <translation id="1123753900084781868">自動字幕起こしは現在ご利用いただけません</translation>
 <translation id="1124772482545689468">ユーザー</translation>
 <translation id="1125550662859510761">表示上のサイズ: <ph name="WIDTH" />x<ph name="HEIGHT" />（ネイティブ）</translation>
-<translation id="1126809382673880764">危険なウェブサイト、ダウンロード、拡張機能から保護されていません。セーフ ブラウジングによる保護については、Gmail や Google 検索といった他の Google サービスで利用可能な場合は引き続き保護されます。</translation>
+<translation id="1126809382673880764">危険なウェブサイト、ダウンロード、拡張機能から保護されていません。セーフ ブラウジングによる保護は、Gmail や Google 検索など他の Google サービスで利用可能な場合は、引き続き有効です。</translation>
 <translation id="112752777279960360">このパソコンで、Android スマートフォンをセキュリティ キーとして使用できるように初めて設定する際は、スマートフォンで Chrome を開き、[設定] &gt; [パスワード] &gt; [スマートフォンをセキュリティ キーとして使用する] に移動します。そして、[新しいデバイスへの接続] をタップし、この QR コードをスキャンします。</translation>
 <translation id="1128109161498068552">システム エクスクルーシブ メッセージを使用して MIDI デバイスにアクセスすることをサイトに許可しない</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -4955,7 +4955,7 @@
 <translation id="6876469544038980967">役に立たなかった</translation>
 <translation id="6878422606530379992">センサーが許可されました</translation>
 <translation id="6880587130513028875">このページの画像はブロックされました。</translation>
-<translation id="6882836635272038266">既知の危険なウェブサイト、ダウンロード、拡張機能から標準的な方法で保護します。</translation>
+<translation id="6882836635272038266">危険だと認識されているウェブサイト、ダウンロード、拡張機能から標準的な方法で保護します。</translation>
 <translation id="6883319974225028188">デバイスの設定を保存できませんでした。</translation>
 <translation id="6885771755599377173">システム情報のプレビュー</translation>
 <translation id="6886476658664859389">NFC セキュリティ キー</translation>
