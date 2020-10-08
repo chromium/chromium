@@ -51,18 +51,35 @@ function assertSafetyCheckChild({
   buttonLabel,
   buttonAriaLabel,
   buttonClass,
-  managedIcon
+  managedIcon,
+  rowClickable
 }) {
   const safetyCheckChild = page.$$('#safetyCheckChild');
-  assertTrue(!!safetyCheckChild);
-  assertTrue(safetyCheckChild.iconStatus === iconStatus);
-  assertTrue(safetyCheckChild.label === label);
-  assertTrue(safetyCheckChild.subLabel === testDisplayString);
-  assertTrue(!buttonLabel || safetyCheckChild.buttonLabel === buttonLabel);
+  assertTrue(!!safetyCheckChild, 'safetyCheckChild is null');
   assertTrue(
-      !buttonAriaLabel || safetyCheckChild.buttonAriaLabel === buttonAriaLabel);
-  assertTrue(!buttonClass || safetyCheckChild.buttonClass === buttonClass);
-  assertTrue(!!managedIcon === !!safetyCheckChild.managedIcon);
+      safetyCheckChild.iconStatus === iconStatus,
+      'unexpected iconStatus: ' + safetyCheckChild.iconStatus);
+  assertTrue(
+      safetyCheckChild.label === label,
+      'unexpected label: ' + safetyCheckChild.label);
+  assertTrue(
+      safetyCheckChild.subLabel === testDisplayString,
+      'unexpected subLabel: ' + safetyCheckChild.subLabel);
+  assertTrue(
+      !buttonLabel || safetyCheckChild.buttonLabel === buttonLabel,
+      'unexpected buttonLabel: ' + safetyCheckChild.buttonLabel);
+  assertTrue(
+      !buttonAriaLabel || safetyCheckChild.buttonAriaLabel === buttonAriaLabel,
+      'unexpected buttonAriaLabel: ' + safetyCheckChild.buttonAriaLabel);
+  assertTrue(
+      !buttonClass || safetyCheckChild.buttonClass === buttonClass,
+      'unexpected buttonClass: ' + safetyCheckChild.buttonClass);
+  assertTrue(
+      !!managedIcon === !!safetyCheckChild.managedIcon,
+      'unexpected managedIcon: ' + safetyCheckChild.managedIcon);
+  assertTrue(
+      !!rowClickable === !!safetyCheckChild.rowClickable,
+      'unexpected rowClickable: ' + safetyCheckChild.rowClickable);
 }
 
 suite('SafetyCheckChromeCleanerUiTests', function() {
@@ -102,6 +119,7 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
 
   teardown(function() {
     page.remove();
+    Router.getInstance().navigateTo(routes.BASIC);
   });
 
   /**
@@ -177,6 +195,102 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
     // Ensure the browser proxy call is done.
     return chromeCleanupBrowserProxy.whenCalled('restartComputer');
   });
+
+  test('chromeCleanerScanningForUwsUiTest', function() {
+    fireSafetyCheckChromeCleanerEvent(
+        SafetyCheckChromeCleanerStatus.SCANNING_FOR_UWS);
+    flush();
+    assertSafetyCheckChild({
+      page: page,
+      iconStatus: SafetyCheckIconStatus.RUNNING,
+      label: 'Device software',
+      rowClickable: true,
+    });
+    // User clicks the row.
+    page.$$('#safetyCheckChild').click();
+    // TODO(crbug.com/1087263): Ensure UMA is logged.
+    // Ensure the correct Settings page is shown.
+    assertEquals(routes.CHROME_CLEANUP, Router.getInstance().getCurrentRoute());
+  });
+
+  test('chromeCleanerRemovingUwsUiTest', function() {
+    fireSafetyCheckChromeCleanerEvent(
+        SafetyCheckChromeCleanerStatus.REMOVING_UWS);
+    flush();
+    assertSafetyCheckChild({
+      page: page,
+      iconStatus: SafetyCheckIconStatus.RUNNING,
+      label: 'Device software',
+      rowClickable: true,
+    });
+    // User clicks the row.
+    page.$$('#safetyCheckChild').click();
+    // TODO(crbug.com/1087263): Ensure UMA is logged.
+    // Ensure the correct Settings page is shown.
+    assertEquals(routes.CHROME_CLEANUP, Router.getInstance().getCurrentRoute());
+  });
+
+  test('chromeCleanerDisabledByAdminUiTest', function() {
+    fireSafetyCheckChromeCleanerEvent(
+        SafetyCheckChromeCleanerStatus.DISABLED_BY_ADMIN);
+    flush();
+    assertSafetyCheckChild({
+      page: page,
+      iconStatus: SafetyCheckIconStatus.INFO,
+      label: 'Device software',
+      managedIcon: true,
+    });
+  });
+
+  test('chromeCleanerErrorUiTest', function() {
+    fireSafetyCheckChromeCleanerEvent(SafetyCheckChromeCleanerStatus.ERROR);
+    flush();
+    assertSafetyCheckChild({
+      page: page,
+      iconStatus: SafetyCheckIconStatus.INFO,
+      label: 'Device software',
+      rowClickable: true,
+    });
+    // User clicks the row.
+    page.$$('#safetyCheckChild').click();
+    // TODO(crbug.com/1087263): Ensure UMA is logged.
+    // Ensure the correct Settings page is shown.
+    assertEquals(routes.CHROME_CLEANUP, Router.getInstance().getCurrentRoute());
+  });
+
+  test('chromeCleanerNoUwsFoundWithTimestampUiTest', function() {
+    fireSafetyCheckChromeCleanerEvent(
+        SafetyCheckChromeCleanerStatus.NO_UWS_FOUND_WITH_TIMESTAMP);
+    flush();
+    assertSafetyCheckChild({
+      page: page,
+      iconStatus: SafetyCheckIconStatus.SAFE,
+      label: 'Device software',
+      rowClickable: true,
+    });
+    // User clicks the row.
+    page.$$('#safetyCheckChild').click();
+    // TODO(crbug.com/1087263): Ensure UMA is logged.
+    // Ensure the correct Settings page is shown.
+    assertEquals(routes.CHROME_CLEANUP, Router.getInstance().getCurrentRoute());
+  });
+
+  test('chromeCleanerNoUwsFoundWithoutTimestampUiTest', function() {
+    fireSafetyCheckChromeCleanerEvent(
+        SafetyCheckChromeCleanerStatus.NO_UWS_FOUND_WITHOUT_TIMESTAMP);
+    flush();
+    assertSafetyCheckChild({
+      page: page,
+      iconStatus: SafetyCheckIconStatus.INFO,
+      label: 'Device software',
+      rowClickable: true,
+    });
+    // User clicks the row.
+    page.$$('#safetyCheckChild').click();
+    // TODO(crbug.com/1087263): Ensure UMA is logged.
+    // Ensure the correct Settings page is shown.
+    assertEquals(routes.CHROME_CLEANUP, Router.getInstance().getCurrentRoute());
+  });
 });
 
 suite('SafetyCheckChromeCleanerFlagDisabledTests', function() {
@@ -199,6 +313,7 @@ suite('SafetyCheckChromeCleanerFlagDisabledTests', function() {
 
   teardown(function() {
     page.remove();
+    Router.getInstance().navigateTo(routes.BASIC);
   });
 
   test('testChromeCleanerNotPresent', function() {

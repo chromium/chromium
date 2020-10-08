@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
+#include "base/time/time.h"
 #include "base/util/type_safety/strong_alias.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -31,6 +32,16 @@
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_scanner_results_win.h"
 #endif
+
+// Delegate for accessing external timestamps, overridden for tests.
+class TimestampDelegate {
+ public:
+  virtual ~TimestampDelegate() = default;
+  virtual base::Time GetSystemTime();
+#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  virtual base::Time FetchChromeCleanerScanCompletionTimestamp();
+#endif
+};
 
 // Settings page UI handler that checks four areas of browser safety:
 // browser updates, password leaks, malicious extensions, and unwanted
@@ -76,8 +87,19 @@ class SafetyCheckHandler
     kChecking = 1,
     kInfected = 2,
     kRebootRequired = 3,
+    kScanningForUws = 4,
+    kRemovingUws = 5,
+    kDisabledByAdmin = 6,
+    kError = 7,
+    kNoUwsFoundWithTimestamp = 8,
+    kNoUwsFoundWithoutTimestamp = 9,
     // New enum values must go above here.
-    kMaxValue = kRebootRequired,
+    kMaxValue = kNoUwsFoundWithoutTimestamp,
+  };
+
+  struct ChromeCleanerResult {
+    SafetyCheckHandler::ChromeCleanerStatus status;
+    base::Time cct_completion_time;
   };
 
   SafetyCheckHandler();
@@ -124,11 +146,17 @@ class SafetyCheckHandler
       password_manager::BulkLeakCheckService* leak_service,
       extensions::PasswordsPrivateDelegate* passwords_delegate,
       extensions::ExtensionPrefs* extension_prefs,
-      extensions::ExtensionServiceInterface* extension_service);
+      extensions::ExtensionServiceInterface* extension_service,
+      std::unique_ptr<TimestampDelegate> timestamp_delegate);
 
   void SetVersionUpdaterForTesting(
       std::unique_ptr<VersionUpdater> version_updater) {
     version_updater_ = std::move(version_updater);
+  }
+
+  void SetTimestampDelegateForTesting(
+      std::unique_ptr<TimestampDelegate> timestamp_delegate) {
+    timestamp_delegate_ = std::move(timestamp_delegate);
   }
 
  private:
@@ -177,7 +205,7 @@ class SafetyCheckHandler
                                ReenabledUser reenabled_user,
                                ReenabledAdmin reenabled_admin);
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  void OnChromeCleanerCheckResult(ChromeCleanerStatus status);
+  void OnChromeCleanerCheckResult(ChromeCleanerResult result);
 #endif
 
   // Methods for building user-visible strings based on the safety check
@@ -194,7 +222,9 @@ class SafetyCheckHandler
                                         ReenabledUser reenabled_user,
                                         ReenabledAdmin reenabled_admin);
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  base::string16 GetStringForChromeCleaner(ChromeCleanerStatus status);
+  base::string16 GetStringForChromeCleaner(ChromeCleanerStatus status,
+                                           base::Time cct_completion_time,
+                                           base::Time system_time);
 #endif
 
   // A generic error state often includes the offline state. This method is used
@@ -282,6 +312,7 @@ class SafetyCheckHandler
   ScopedObserver<password_manager::BulkLeakCheckServiceInterface,
                  password_manager::BulkLeakCheckServiceInterface::Observer>
       observed_leak_check_{this};
+  std::unique_ptr<TimestampDelegate> timestamp_delegate_;
   base::WeakPtrFactory<SafetyCheckHandler> weak_ptr_factory_{this};
 };
 

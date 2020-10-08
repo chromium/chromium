@@ -636,6 +636,8 @@ static_library("ui") {
       "webui/sandbox/sandbox_handler.cc",
       "webui/sandbox/sandbox_handler.h",
     ]
+
+    deps += [ "//components/chrome_cleaner/public/constants:constants" ]
   }
 
   if (is_android) {

@@ -54,6 +54,23 @@ Polymer({
      * @private
      */
     displayString_: String,
+
+    /**
+     * A set of statuses that the entire row is clickable.
+     * @type {!Set<!SafetyCheckChromeCleanerStatus>}
+     * @private
+     */
+    rowClickableStatuses: {
+      readOnly: true,
+      type: Object,
+      value: () => new Set([
+        SafetyCheckChromeCleanerStatus.SCANNING_FOR_UWS,
+        SafetyCheckChromeCleanerStatus.REMOVING_UWS,
+        SafetyCheckChromeCleanerStatus.ERROR,
+        SafetyCheckChromeCleanerStatus.NO_UWS_FOUND_WITH_TIMESTAMP,
+        SafetyCheckChromeCleanerStatus.NO_UWS_FOUND_WITHOUT_TIMESTAMP,
+      ]),
+    },
   },
 
   /** @private {?ChromeCleanupProxy} */
@@ -101,8 +118,15 @@ Polymer({
     switch (this.status_) {
       case SafetyCheckChromeCleanerStatus.HIDDEN:
       case SafetyCheckChromeCleanerStatus.CHECKING:
+      case SafetyCheckChromeCleanerStatus.SCANNING_FOR_UWS:
+      case SafetyCheckChromeCleanerStatus.REMOVING_UWS:
         return SafetyCheckIconStatus.RUNNING;
+      case SafetyCheckChromeCleanerStatus.NO_UWS_FOUND_WITH_TIMESTAMP:
+        return SafetyCheckIconStatus.SAFE;
       case SafetyCheckChromeCleanerStatus.REBOOT_REQUIRED:
+      case SafetyCheckChromeCleanerStatus.DISABLED_BY_ADMIN:
+      case SafetyCheckChromeCleanerStatus.ERROR:
+      case SafetyCheckChromeCleanerStatus.NO_UWS_FOUND_WITHOUT_TIMESTAMP:
         return SafetyCheckIconStatus.INFO;
       case SafetyCheckChromeCleanerStatus.INFECTED:
         return SafetyCheckIconStatus.WARNING;
@@ -176,9 +200,7 @@ Polymer({
                 .SAFETY_CHECK_CHROME_CLEANER_REVIEW_INFECTED_STATE,
             'Settings.SafetyCheck.ChromeCleanerReviewInfectedState');
         // Navigate to Chrome cleaner UI.
-        Router.getInstance().navigateTo(
-            routes.CHROME_CLEANUP,
-            /* dynamicParams= */ null, /* removeSearch= */ true);
+        this.navigateToFoilPage_();
         break;
       case SafetyCheckChromeCleanerStatus.REBOOT_REQUIRED:
         this.logUserInteraction_(
@@ -190,5 +212,41 @@ Polymer({
         // This is a state without an action.
         break;
     }
+  },
+
+  /**
+   * @private
+   * @return {?string}
+   */
+  getManagedIcon_: function() {
+    switch (this.status_) {
+      case SafetyCheckChromeCleanerStatus.DISABLED_BY_ADMIN:
+        return 'cr20:domain';
+      default:
+        return null;
+    }
+  },
+
+  /**
+   * @private
+   * @return {?boolean}
+   */
+  isRowClickable_: function() {
+    return this.rowClickableStatuses.has(this.status_);
+  },
+
+  /** @private */
+  onRowClick_: function() {
+    if (this.isRowClickable_()) {
+      // TODO(crbug.com/1087263): Log caret-based navigation.
+      this.navigateToFoilPage_();
+    }
+  },
+
+  /** @private */
+  navigateToFoilPage_: function() {
+    Router.getInstance().navigateTo(
+        routes.CHROME_CLEANUP,
+        /* dynamicParams= */ null, /* removeSearch= */ true);
   },
 });

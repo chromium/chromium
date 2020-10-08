@@ -8,6 +8,9 @@
       button-label="[[getButtonLabel_(status_)]]"
       button-aria-label="[[getButtonAriaLabel_(status_)]]"
       button-class="[[getButtonClass_(status_)]]"
-      on-button-click="onButtonClick_">
+      on-button-click="onButtonClick_"
+      managed-icon="[[getManagedIcon_(status_)]]"
+      on-click="onRowClick_"
+      row-clickable="[[isRowClickable_(status_)]]">
   </settings-safety-check-child>
 </template>

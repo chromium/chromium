@@ -118,6 +118,12 @@ export const SafetyCheckChromeCleanerStatus = {
   CHECKING: 1,
   INFECTED: 2,
   REBOOT_REQUIRED: 3,
+  SCANNING_FOR_UWS: 4,
+  REMOVING_UWS: 5,
+  DISABLED_BY_ADMIN: 6,
+  ERROR: 7,
+  NO_UWS_FOUND_WITH_TIMESTAMP: 8,
+  NO_UWS_FOUND_WITHOUT_TIMESTAMP: 9,
 };
 
 /** @interface */
@@ -127,7 +133,8 @@ export class SafetyCheckBrowserProxy {
 
   /**
    * Get the display string for the safety check parent, showing how long ago
-   * safety check last ran.`
+   * safety check last ran. Also triggers string updates to be sent to all SC
+   * children that have timestamp-based display strings.
    * @return {!Promise<string>}
    */
   getParentRanDisplayString() {}

@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/optional.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -70,6 +71,7 @@ class TestingSafetyCheckHandler : public SafetyCheckHandler {
   using SafetyCheckHandler::AllowJavascript;
   using SafetyCheckHandler::DisallowJavascript;
   using SafetyCheckHandler::set_web_ui;
+  using SafetyCheckHandler::SetTimestampDelegateForTesting;
   using SafetyCheckHandler::SetVersionUpdaterForTesting;
 
   TestingSafetyCheckHandler(
@@ -78,13 +80,15 @@ class TestingSafetyCheckHandler : public SafetyCheckHandler {
       password_manager::BulkLeakCheckService* leak_service,
       extensions::PasswordsPrivateDelegate* passwords_delegate,
       extensions::ExtensionPrefs* extension_prefs,
-      extensions::ExtensionServiceInterface* extension_service)
+      extensions::ExtensionServiceInterface* extension_service,
+      std::unique_ptr<TimestampDelegate> timestamp_delegate)
       : SafetyCheckHandler(std::move(update_helper),
                            std::move(version_updater),
                            leak_service,
                            passwords_delegate,
                            extension_prefs,
-                           extension_service) {}
+                           extension_service,
+                           std::move(timestamp_delegate)) {}
 };
 
 class TestDestructionVersionUpdater : public TestVersionUpdater {
@@ -98,6 +102,24 @@ class TestDestructionVersionUpdater : public TestVersionUpdater {
 
  private:
   static bool destructor_invoked_;
+};
+
+class TestTimestampDelegate : public TimestampDelegate {
+ public:
+  base::Time GetSystemTime() override {
+    // 1 second before midnight Dec 31st 2020, so that -(24h-1s) is still on the
+    // same day. This test time is hard coded to prevent DST flakiness, see
+    // crbug.com/1066576.
+    return base::Time::FromDoubleT(1609459199).LocalMidnight() -
+           base::TimeDelta::FromSeconds(1);
+  }
+#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  base::Time FetchChromeCleanerScanCompletionTimestamp() override {
+    // 2 seconds before midnight Dec 31st 2020.
+    return base::Time::FromDoubleT(1609459199).LocalMidnight() -
+           base::TimeDelta::FromSeconds(2);
+  }
+#endif
 };
 
 bool TestDestructionVersionUpdater::destructor_invoked_ = false;
@@ -251,10 +273,12 @@ void SafetyCheckHandlerTest::SetUp() {
   test_passwords_delegate_.SetBulkLeakCheckService(test_leak_service_.get());
   test_web_ui_.set_web_contents(web_contents());
   test_extension_prefs_ = extensions::ExtensionPrefs::Get(profile());
+  auto timestamp_delegate = std::make_unique<TestTimestampDelegate>();
   safety_check_ = std::make_unique<TestingSafetyCheckHandler>(
       std::move(update_helper), std::move(version_updater),
       test_leak_service_.get(), &test_passwords_delegate_,
-      test_extension_prefs_, &test_extension_service_);
+      test_extension_prefs_, &test_extension_service_,
+      std::move(timestamp_delegate));
   test_web_ui_.ClearTrackedCalls();
   safety_check_->set_web_ui(&test_web_ui_);
   safety_check_->AllowJavascript();
@@ -1194,40 +1218,47 @@ INSTANTIATE_TEST_SUITE_P(
     SafetyCheckHandlerChromeCleanerIdleTest,
     ::testing::Values(std::make_tuple(
         safe_browsing::ChromeCleanerController::IdleReason::kInitial,
-        SafetyCheckHandler::ChromeCleanerStatus::kHidden,
-        base::UTF8ToUTF16(""))));
+        SafetyCheckHandler::ChromeCleanerStatus::kNoUwsFoundWithTimestamp,
+        base::UTF8ToUTF16("Browser didn't find known harmful software on your "
+                          "computer. Last checked: a moment ago."))));
 
-INSTANTIATE_TEST_SUITE_P(CheckChromeCleaner_ReporterFoundNothing,
-                         SafetyCheckHandlerChromeCleanerIdleTest,
-                         ::testing::Values(std::make_tuple(
-                             safe_browsing::ChromeCleanerController::
-                                 IdleReason::kReporterFoundNothing,
-                             SafetyCheckHandler::ChromeCleanerStatus::kHidden,
-                             base::UTF8ToUTF16(""))));
+INSTANTIATE_TEST_SUITE_P(
+    CheckChromeCleaner_ReporterFoundNothing,
+    SafetyCheckHandlerChromeCleanerIdleTest,
+    ::testing::Values(std::make_tuple(
+        safe_browsing::ChromeCleanerController::IdleReason::
+            kReporterFoundNothing,
+        SafetyCheckHandler::ChromeCleanerStatus::kNoUwsFoundWithTimestamp,
+        base::UTF8ToUTF16("Browser didn't find known harmful software on your "
+                          "computer. Last checked: a moment ago."))));
 
 INSTANTIATE_TEST_SUITE_P(
     CheckChromeCleaner_ReporterFailed,
     SafetyCheckHandlerChromeCleanerIdleTest,
     ::testing::Values(std::make_tuple(
         safe_browsing::ChromeCleanerController::IdleReason::kReporterFailed,
-        SafetyCheckHandler::ChromeCleanerStatus::kHidden,
-        base::UTF8ToUTF16(""))));
+        SafetyCheckHandler::ChromeCleanerStatus::kError,
+        base::UTF8ToUTF16("An error occurred while Browser was checking your "
+                          "computer for harmful software"))));
 
-INSTANTIATE_TEST_SUITE_P(CheckChromeCleaner_ScanningFoundNothing,
-                         SafetyCheckHandlerChromeCleanerIdleTest,
-                         ::testing::Values(std::make_tuple(
-                             safe_browsing::ChromeCleanerController::
-                                 IdleReason::kScanningFoundNothing,
-                             SafetyCheckHandler::ChromeCleanerStatus::kHidden,
-                             base::UTF8ToUTF16(""))));
+INSTANTIATE_TEST_SUITE_P(
+    CheckChromeCleaner_ScanningFoundNothing,
+    SafetyCheckHandlerChromeCleanerIdleTest,
+    ::testing::Values(std::make_tuple(
+        safe_browsing::ChromeCleanerController::IdleReason::
+            kScanningFoundNothing,
+        SafetyCheckHandler::ChromeCleanerStatus::kNoUwsFoundWithTimestamp,
+        base::UTF8ToUTF16("Browser didn't find known harmful software on your "
+                          "computer. Last checked: a moment ago."))));
 
 INSTANTIATE_TEST_SUITE_P(
     CheckChromeCleaner_ScanningFailed,
     SafetyCheckHandlerChromeCleanerIdleTest,
     ::testing::Values(std::make_tuple(
         safe_browsing::ChromeCleanerController::IdleReason::kScanningFailed,
-        SafetyCheckHandler::ChromeCleanerStatus::kHidden,
-        base::UTF8ToUTF16(""))));
+        SafetyCheckHandler::ChromeCleanerStatus::kError,
+        base::UTF8ToUTF16("An error occurred while Browser was checking your "
+                          "computer for harmful software"))));
 
 INSTANTIATE_TEST_SUITE_P(
     CheckChromeCleaner_ConnectionLost,
@@ -1251,24 +1282,28 @@ INSTANTIATE_TEST_SUITE_P(
     SafetyCheckHandlerChromeCleanerIdleTest,
     ::testing::Values(std::make_tuple(
         safe_browsing::ChromeCleanerController::IdleReason::kCleaningFailed,
-        SafetyCheckHandler::ChromeCleanerStatus::kHidden,
-        base::UTF8ToUTF16(""))));
+        SafetyCheckHandler::ChromeCleanerStatus::kError,
+        base::UTF8ToUTF16("An error occurred while Browser was checking your "
+                          "computer for harmful software"))));
 
 INSTANTIATE_TEST_SUITE_P(
     CheckChromeCleaner_CleaningSucceed,
     SafetyCheckHandlerChromeCleanerIdleTest,
     ::testing::Values(std::make_tuple(
         safe_browsing::ChromeCleanerController::IdleReason::kCleaningSucceeded,
-        SafetyCheckHandler::ChromeCleanerStatus::kHidden,
-        base::UTF8ToUTF16(""))));
+        SafetyCheckHandler::ChromeCleanerStatus::kNoUwsFoundWithTimestamp,
+        base::UTF8ToUTF16("Browser didn't find known harmful software on your "
+                          "computer. Last checked: a moment ago."))));
 
-INSTANTIATE_TEST_SUITE_P(CheckChromeCleaner_CleanerDownloadFailed,
-                         SafetyCheckHandlerChromeCleanerIdleTest,
-                         ::testing::Values(std::make_tuple(
-                             safe_browsing::ChromeCleanerController::
-                                 IdleReason::kCleanerDownloadFailed,
-                             SafetyCheckHandler::ChromeCleanerStatus::kHidden,
-                             base::UTF8ToUTF16(""))));
+INSTANTIATE_TEST_SUITE_P(
+    CheckChromeCleaner_CleanerDownloadFailed,
+    SafetyCheckHandlerChromeCleanerIdleTest,
+    ::testing::Values(std::make_tuple(
+        safe_browsing::ChromeCleanerController::IdleReason::
+            kCleanerDownloadFailed,
+        SafetyCheckHandler::ChromeCleanerStatus::kError,
+        base::UTF8ToUTF16("An error occurred while Browser was checking your "
+                          "computer for harmful software"))));
 
 class SafetyCheckHandlerChromeCleanerNonIdleTest
     : public SafetyCheckHandlerTest,
@@ -1303,22 +1338,6 @@ TEST_P(SafetyCheckHandlerChromeCleanerNonIdleTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    CheckChromeCleaner_ReporterRunning,
-    SafetyCheckHandlerChromeCleanerNonIdleTest,
-    ::testing::Values(std::make_tuple(
-        safe_browsing::ChromeCleanerController::State::kReporterRunning,
-        SafetyCheckHandler::ChromeCleanerStatus::kHidden,
-        base::UTF8ToUTF16(""))));
-
-INSTANTIATE_TEST_SUITE_P(
-    CheckChromeCleaner_Scanning,
-    SafetyCheckHandlerChromeCleanerNonIdleTest,
-    ::testing::Values(std::make_tuple(
-        safe_browsing::ChromeCleanerController::State::kScanning,
-        SafetyCheckHandler::ChromeCleanerStatus::kHidden,
-        base::UTF8ToUTF16(""))));
-
-INSTANTIATE_TEST_SUITE_P(
     CheckChromeCleaner_Infected,
     SafetyCheckHandlerChromeCleanerNonIdleTest,
     ::testing::Values(std::make_tuple(
@@ -1344,9 +1363,14 @@ TEST_F(SafetyCheckHandlerTest, CheckChromeCleaner_DisabledByAdmin) {
   const base::DictionaryValue* event =
       GetSafetyCheckStatusChangedWithDataIfExists(
           kChromeCleaner,
-          static_cast<int>(SafetyCheckHandler::ChromeCleanerStatus::kHidden));
+          static_cast<int>(
+              SafetyCheckHandler::ChromeCleanerStatus::kDisabledByAdmin));
   ASSERT_TRUE(event);
-  VerifyDisplayString(event, "");
+  VerifyDisplayString(
+      event,
+      "<a target=\"_blank\" "
+      "href=\"https://support.google.com/chrome?p=your_administrator\">Your "
+      "administrator</a> has disabled Browser's check for harmful software");
 }
 #endif
 
@@ -1359,27 +1383,29 @@ TEST_F(SafetyCheckHandlerTest, CheckParentRanDisplayString) {
       base::TimeDelta::FromSeconds(1);
   // Display strings for given time deltas in seconds.
   std::vector<std::tuple<std::string, int>> tuples{
-      std::make_tuple("Safety check ran a moment ago", 1),
-      std::make_tuple("Safety check ran a moment ago", 59),
-      std::make_tuple("Safety check ran 1 minute ago", 60),
-      std::make_tuple("Safety check ran 2 minutes ago", 60 * 2),
-      std::make_tuple("Safety check ran 59 minutes ago", 60 * 60 - 1),
-      std::make_tuple("Safety check ran 1 hour ago", 60 * 60),
-      std::make_tuple("Safety check ran 2 hours ago", 60 * 60 * 2),
-      std::make_tuple("Safety check ran 23 hours ago", 60 * 60 * 23),
-      std::make_tuple("Safety check ran yesterday", 60 * 60 * 24),
-      std::make_tuple("Safety check ran yesterday", 60 * 60 * 24 * 2 - 1),
-      std::make_tuple("Safety check ran 2 days ago", 60 * 60 * 24 * 2),
-      std::make_tuple("Safety check ran 2 days ago", 60 * 60 * 24 * 3 - 1),
-      std::make_tuple("Safety check ran 3 days ago", 60 * 60 * 24 * 3),
-      std::make_tuple("Safety check ran 3 days ago", 60 * 60 * 24 * 4 - 1)};
+      std::make_tuple("a moment ago", 1),
+      std::make_tuple("a moment ago", 59),
+      std::make_tuple("1 minute ago", 60),
+      std::make_tuple("2 minutes ago", 60 * 2),
+      std::make_tuple("59 minutes ago", 60 * 60 - 1),
+      std::make_tuple("1 hour ago", 60 * 60),
+      std::make_tuple("2 hours ago", 60 * 60 * 2),
+      std::make_tuple("23 hours ago", 60 * 60 * 23),
+      std::make_tuple("yesterday", 60 * 60 * 24),
+      std::make_tuple("yesterday", 60 * 60 * 24 * 2 - 1),
+      std::make_tuple("2 days ago", 60 * 60 * 24 * 2),
+      std::make_tuple("2 days ago", 60 * 60 * 24 * 3 - 1),
+      std::make_tuple("3 days ago", 60 * 60 * 24 * 3),
+      std::make_tuple("3 days ago", 60 * 60 * 24 * 4 - 1)};
   // Test that above time deltas produce the corresponding display strings.
   for (auto tuple : tuples) {
     const base::Time time =
         system_time - base::TimeDelta::FromSeconds(std::get<1>(tuple));
     const base::string16 display_string =
         safety_check_->GetStringForParentRan(time, system_time);
-    EXPECT_EQ(base::UTF8ToUTF16(std::get<0>(tuple)), display_string);
+    EXPECT_EQ(base::UTF8ToUTF16(
+                  base::StrCat({"Safety check ran ", std::get<0>(tuple)})),
+              display_string);
   }
 }
 
@@ -1390,9 +1416,9 @@ TEST_F(SafetyCheckHandlerTest, CheckChromeCleanerRanDisplayString) {
   base::string16 display_string =
       safety_check_->GetStringForChromeCleanerRan(null_time, null_time);
   ReplaceBrowserName(&display_string);
-  EXPECT_EQ(
-      display_string,
-      base::UTF8ToUTF16("Browser checks for unwanted software once a week"));
+  EXPECT_EQ(display_string,
+            base::UTF8ToUTF16(
+                "Browser can check your computer for harmful software"));
   // Test strings with timestamp.
   // 1 second before midnight Dec 31st 2020, so that -(24h-1s) is still on the
   // same day. This test time is hard coded to prevent DST flakiness, see
@@ -1402,48 +1428,20 @@ TEST_F(SafetyCheckHandlerTest, CheckChromeCleanerRanDisplayString) {
       base::TimeDelta::FromSeconds(1);
   // Display strings for given time deltas in seconds.
   std::vector<std::tuple<std::string, int>> tuples{
-      std::make_tuple("Browser checks for unwanted software once a week. Last "
-                      "checked: a moment ago.",
-                      1),
-      std::make_tuple("Browser checks for unwanted software once a week. Last "
-                      "checked: a moment ago.",
-                      59),
-      std::make_tuple("Browser checks for unwanted software once a week. Last "
-                      "checked: 1 minute ago.",
-                      60),
-      std::make_tuple("Browser checks for unwanted software once a week. Last "
-                      "checked: 2 minutes ago.",
-                      60 * 2),
-      std::make_tuple("Browser checks for unwanted software once a week. Last "
-                      "checked: 59 minutes ago.",
-                      60 * 60 - 1),
-      std::make_tuple("Browser checks for unwanted software once a week. Last "
-                      "checked: 1 hour ago.",
-                      60 * 60),
-      std::make_tuple("Browser checks for unwanted software once a week. Last "
-                      "checked: 2 hours ago.",
-                      60 * 60 * 2),
-      std::make_tuple("Browser checks for unwanted software once a week. Last "
-                      "checked: 23 hours ago.",
-                      60 * 60 * 23),
-      std::make_tuple("Browser checks for unwanted software once a week. Last "
-                      "checked: yesterday.",
-                      60 * 60 * 24),
-      std::make_tuple("Browser checks for unwanted software once a week. Last "
-                      "checked: yesterday.",
-                      60 * 60 * 24 * 2 - 1),
-      std::make_tuple("Browser checks for unwanted software once a week. Last "
-                      "checked: 2 days ago.",
-                      60 * 60 * 24 * 2),
-      std::make_tuple("Browser checks for unwanted software once a week. Last "
-                      "checked: 2 days ago.",
-                      60 * 60 * 24 * 3 - 1),
-      std::make_tuple("Browser checks for unwanted software once a week. Last "
-                      "checked: 3 days ago.",
-                      60 * 60 * 24 * 3),
-      std::make_tuple("Browser checks for unwanted software once a week. Last "
-                      "checked: 3 days ago.",
-                      60 * 60 * 24 * 4 - 1)};
+      std::make_tuple("a moment ago.", 1),
+      std::make_tuple("a moment ago.", 59),
+      std::make_tuple("1 minute ago.", 60),
+      std::make_tuple("2 minutes ago.", 60 * 2),
+      std::make_tuple("59 minutes ago.", 60 * 60 - 1),
+      std::make_tuple("1 hour ago.", 60 * 60),
+      std::make_tuple("2 hours ago.", 60 * 60 * 2),
+      std::make_tuple("23 hours ago.", 60 * 60 * 23),
+      std::make_tuple("yesterday.", 60 * 60 * 24),
+      std::make_tuple("yesterday.", 60 * 60 * 24 * 2 - 1),
+      std::make_tuple("2 days ago.", 60 * 60 * 24 * 2),
+      std::make_tuple("2 days ago.", 60 * 60 * 24 * 3 - 1),
+      std::make_tuple("3 days ago.", 60 * 60 * 24 * 3),
+      std::make_tuple("3 days ago.", 60 * 60 * 24 * 4 - 1)};
   // Test that above time deltas produce the corresponding display strings.
   for (auto tuple : tuples) {
     const base::Time time =
@@ -1451,7 +1449,11 @@ TEST_F(SafetyCheckHandlerTest, CheckChromeCleanerRanDisplayString) {
     display_string =
         safety_check_->GetStringForChromeCleanerRan(time, system_time);
     ReplaceBrowserName(&display_string);
-    EXPECT_EQ(base::UTF8ToUTF16(std::get<0>(tuple)), display_string);
+    EXPECT_EQ(base::UTF8ToUTF16(
+                  base::StrCat({"Browser didn't find known harmful software on "
+                                "your computer. Last checked: ",
+                                std::get<0>(tuple)})),
+              display_string);
   }
 }
 #endif
