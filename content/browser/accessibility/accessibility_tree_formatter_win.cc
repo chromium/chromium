@@ -526,9 +526,12 @@ void AccessibilityTreeFormatterWin::AddMSAAProperties(
     ia_state = ia_state_variant.ptr()->intVal;
     std::vector<base::string16> state_strings;
     IAccessibleStateToStringVector(ia_state, &state_strings);
-    std::unique_ptr<base::ListValue> states(new base::ListValue());
-    states->AppendStrings(state_strings);
-    dict->Set("states", std::move(states));
+
+    base::Value::ListStorage states;
+    states.reserve(state_strings.size());
+    for (const auto& str : state_strings)
+      states.push_back(base::Value(str));
+    dict->SetKey("states", base::Value(std::move(states)));
   }
 
   if (SUCCEEDED(node->get_accDescription(variant_self, temp_bstr.Receive()))) {
@@ -610,9 +613,11 @@ bool AccessibilityTreeFormatterWin::AddIA2Properties(
   if (ia2->get_states(&states) == S_OK) {
     IAccessible2StateToStringVector(states, &state_strings);
     // Append IA2 state list to MSAA state
-    base::ListValue* states_list;
-    if (dict->GetList("states", &states_list))
-      states_list->AppendStrings(state_strings);
+    base::Value* states_list = dict->FindListKey("states");
+    if (states_list) {
+      for (const auto& str : state_strings)
+        states_list->Append(str);
+    }
   }
 
   base::win::ScopedBstr temp_bstr;
@@ -624,9 +629,11 @@ bool AccessibilityTreeFormatterWin::AddIA2Properties(
         base::string16(temp_bstr.Get(), temp_bstr.Length()),
         base::string16(1, ';'), base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
 
-    std::unique_ptr<base::ListValue> attributes(new base::ListValue());
-    attributes->AppendStrings(ia2_attributes);
-    dict->Set("attributes", std::move(attributes));
+    base::Value::ListStorage attributes;
+    attributes.reserve(ia2_attributes.size());
+    for (const auto& str : ia2_attributes)
+      attributes.push_back(base::Value(str));
+    dict->SetKey("attributes", base::Value(std::move(attributes)));
   }
   temp_bstr.Reset();
 
@@ -869,7 +876,8 @@ void AccessibilityTreeFormatterWin::AddIA2TextProperties(
       std::vector<base::string16> name_val_pairs =
           SplitString(base::string16(temp_bstr.Get()), base::ASCIIToUTF16(";"),
                       base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-      text_attributes->AppendStrings(name_val_pairs);
+      for (const auto& name_val_pair : name_val_pairs)
+        text_attributes->Append(name_val_pair);
     }
     current_offset = end_offset;
   }

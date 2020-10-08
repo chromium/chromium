@@ -876,7 +876,6 @@ class BASE_EXPORT ListValue : public Value {
   void AppendString(const string16& in_value);
   // DEPRECATED, use Value::Append() in a loop instead.
   void AppendStrings(const std::vector<std::string>& in_values);
-  void AppendStrings(const std::vector<string16>& in_values);
 
   // Appends a Value if it's not already present. Returns true if successful,
   // or false if the value was already
