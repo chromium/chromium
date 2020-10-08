@@ -176,11 +176,10 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   bool IsOnGlThread() const;
   void CopyCameraImageToFramebuffer();
   void OnTransportFrameAvailable(const gfx::Transform& uv_transform);
+  void TransitionProcessingFrameToRendering();
 
-  // Use a helper method to avoid storing the mojo getframedata callback
-  // in a closure owned by the task runner, that would lead to inconsistent
-  // state on session shutdown. See https://crbug.com/1065572.
-  void RunNextGetFrameData();
+  void GetRenderedFrameStats();
+  void FinishRenderingFrame();
 
   bool IsFeatureEnabled(mojom::XRSessionFeature feature);
 
@@ -252,9 +251,6 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
 
   bool restrict_frame_data_ = false;
 
-  base::TimeTicks arcore_update_next_expected_;
-  base::TimeDelta arcore_last_frame_timestamp_;
-  base::TimeDelta arcore_frame_interval_;
   FPSMeter fps_meter_;
 
   mojo::Receiver<mojom::XRFrameDataProvider> frame_data_receiver_{this};
@@ -271,7 +267,9 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
 
   // This closure saves arguments for the next GetFrameData call, including a
   // mojo callback. Must remain owned by ArCoreGl, don't pass it off to the task
-  // runner directly. See RunNextGetFrameData() comments.
+  // runner directly. Storing the mojo getframedata callback in a closure owned
+  // by the task runner would lead to inconsistent state on session shutdown.
+  // See https://crbug.com/1065572.
   base::OnceClosure pending_getframedata_;
 
   mojom::VRDisplayInfoPtr display_info_;

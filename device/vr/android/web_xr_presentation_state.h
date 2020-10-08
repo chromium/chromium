@@ -117,6 +117,8 @@ struct WebXrFrame {
 
   std::unique_ptr<gl::GLFence> gvr_handoff_fence;
 
+  std::unique_ptr<gl::GLFence> render_completion_fence;
+
   // End of elements that need to be reset on Recycle
 
   base::TimeTicks time_pose;
