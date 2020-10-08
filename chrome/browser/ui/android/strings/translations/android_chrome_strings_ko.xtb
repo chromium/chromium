@@ -330,7 +330,7 @@
 <translation id="3492207499832628349">새 시크릿 탭</translation>
 <translation id="3493531032208478708">추천 콘텐츠 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="3507132249039706973">표준 보호 기능이 사용 설정됩니다.</translation>
+<translation id="3507132249039706973">표준 보호 모드를 사용 중입니다.</translation>
 <translation id="3509330069915219067">오프라인 상태입니다. Chrome에서 업데이트를 확인할 수 없습니다.</translation>
 <translation id="3513704683820682405">증강 현실</translation>
 <translation id="3518985090088779359">동의하고 계속</translation>
@@ -571,7 +571,7 @@
 <translation id="5324858694974489420">자녀 보호 설정</translation>
 <translation id="5327248766486351172">이름</translation>
 <translation id="5342314432463739672">권한 요청</translation>
-<translation id="5355191726083956201">향상된 보호 모드가 사용 설정됩니다.</translation>
+<translation id="5355191726083956201">향상된 보호 모드를 사용 중입니다.</translation>
 <translation id="5357811892247919462">탭 수신함</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{열려 있는 탭 <ph name="OPEN_TABS_ONE" />개, 탭 간에 전환하려면 탭하세요.}other{열려 있는 탭 <ph name="OPEN_TABS_MANY" />개, 탭 간에 전환하려면 탭하세요.}}</translation>
 <translation id="5403644198645076998">특정 사이트만 허용</translation>
@@ -723,7 +723,7 @@
 <translation id="6333140779060797560">공유 방법: <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">암호화</translation>
 <translation id="6341580099087024258">파일 저장 위치 묻기</translation>
-<translation id="6342069812937806050">완료됨</translation>
+<translation id="6342069812937806050">방금</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />개}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />개}}</translation>
 <translation id="6345878117466430440">읽음으로 표시</translation>
 <translation id="6364438453358674297">기록에서 제안을 삭제하시겠습니까?</translation>

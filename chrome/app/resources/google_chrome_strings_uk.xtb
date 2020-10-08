@@ -21,7 +21,7 @@
 <translation id="1553358976309200471">Оновити Chrome</translation>
 <translation id="1587223624401073077">Google Chrome використовує вашу камеру.</translation>
 <translation id="1587325591171447154">Файл <ph name="FILE_NAME" /> небезпечний, тому Chrome заблокував його.</translation>
-<translation id="1597911401261118146">Щоб перевірити, чи ваші паролі захищені від порушень безпеки даних та інших проблем, <ph name="BEGIN_LINK" />увійдіть у Chrome<ph name="END_LINK" />.</translation>
+<translation id="1597911401261118146">Щоб перевірити, чи відомі порушення безпеки даних або інші проблеми не заторкнули ваші паролі, <ph name="BEGIN_LINK" />увійдіть у Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Щоб зробити Chrome безпечнішим, ми вимкнули наведене нижче розширення, установлене не із сайту <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> і, можливо, додане без вашого відома.</translation>
 <translation id="162448658176061655">Chrome перевіряє пристрій на наявність небажаного програмного забезпечення один раз на тиждень. Востаннє перевірено щойно.</translation>
 <translation id="162629503687514352">ОС Chrome не вдалося синхронізувати ваші паролі.</translation>
@@ -80,7 +80,7 @@
 <translation id="3065168410429928842">Chrome</translation>
 <translation id="3080151273017101988">Продовжувати роботу фонових програм, коли Google Chrome закрито</translation>
 <translation id="3089968997497233615">Доступна нова, безпечніша версія Google Chrome.</translation>
-<translation id="3114643501466072395">Щоб перевірити, чи ваші паролі захищені від порушень безпеки даних та інших проблем, <ph name="BEGIN_LINK" />увійдіть у Chrome<ph name="END_LINK" />.</translation>
+<translation id="3114643501466072395">Щоб перевірити, чи відомі порушення безпеки даних або інші проблеми не заторкнули інші ваші паролі, <ph name="BEGIN_LINK" />увійдіть у Chrome<ph name="END_LINK" />.</translation>
 <translation id="3127818369811890733">ОС Chrome не вдалося синхронізувати ваші дані.</translation>
 <translation id="3149510190863420837">Додатки Chrome</translation>
 <translation id="3360895254066713204">Помічник Chrome</translation>

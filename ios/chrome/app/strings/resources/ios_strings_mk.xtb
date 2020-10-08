@@ -243,7 +243,7 @@
 <translation id="3551320343578183772">Затвори ја картичката</translation>
 <translation id="3581564640715911333">Понудувај превод на страниците на други јазици</translation>
 <translation id="3588820906588687999">Отворете ја сликата во нова картичка</translation>
-<translation id="359441731697487922">Може да отворате линкови во Chrome автоматски ако ја поставите како стандарден прелистувач.
+<translation id="359441731697487922">Може да отворате линкови во Chrome автоматски ако го поставите како стандарден прелистувач.
       
 Следете ги чекорите подолу:</translation>
 <translation id="3603009562372709545">Копирајте URL на врска</translation>
@@ -344,7 +344,7 @@
 <translation id="4808744395915275922">Ажурирања</translation>
 <translation id="4818522717893377262">Додај јазик…</translation>
 <translation id="481968316161811770">Колачиња, податоци</translation>
-<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{и уште {domain} друг}one{{domain} и {count} друг}other{{domain} и {count} други}}</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} и уште 1}one{{domain} и уште {count}}other{{domain} и уште {count}}}</translation>
 <translation id="4826218269716039351">Се блокираат колачиња од трети страни</translation>
 <translation id="48274138579728272">Означи како прочитано</translation>
 <translation id="4833786495304741580">Автоматски испраќа статистика за користењето и извештаи за падовите во Google.</translation>

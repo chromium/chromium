@@ -134,7 +134,7 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">Tam giác hiển thị</translation>
 <translation id="5278860589123563674">Không gửi được</translation>
-<translation id="5283099933536931082">Bạn cần chú ý đến <ph name="APP_ITEM_TITLE" />.</translation>
+<translation id="5283099933536931082">Có thông báo từ <ph name="APP_ITEM_TITLE" />.</translation>
 <translation id="528468243742722775">Kết thúc</translation>
 <translation id="5329858601952122676">&amp;Xoá</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> nằm trên <ph name="IN_PLACE_APP" />, thả để tạo thư mục.</translation>
@@ -145,7 +145,7 @@
 <translation id="5574202486608032840">Hệ thống <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Mũi tên trái</translation>
-<translation id="5652575806481723716">Bạn cần chú ý đến <ph name="FOCUSED_APP_NAME" />.</translation>
+<translation id="5652575806481723716">Có thông báo từ <ph name="FOCUSED_APP_NAME" />.</translation>
 <translation id="5675363643668471212">Mục trong giá</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 phút}other{# phút}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Hoạt động hôm nay}=1{Hoạt động 1 ngày trước}other{Hoạt động # ngày trước}}</translation>
