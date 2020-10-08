@@ -8,6 +8,7 @@
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace chromeos {
 class AccountManager;
@@ -28,10 +29,14 @@ class AccountManagerAsh : public mojom::AccountManager {
 
   // crosapi::mojom::AccountManager:
   void IsInitialized(IsInitializedCallback callback) override;
+  void AddObserver(AddObserverCallback callback) override;
 
  private:
+  friend class AccountManagerAshTest;
+
   chromeos::AccountManager* const account_manager_;
   mojo::Receiver<mojom::AccountManager> receiver_;
+  mojo::RemoteSet<mojom::AccountManagerObserver> observers_;
 };
 
 }  // namespace crosapi

@@ -4,6 +4,58 @@
 
 module crosapi.mojom;
 
+// Types of accounts which can be stored in Account Manager.
+// This must be kept in sync with
+// //chromeos/components/account_manager/tokens.proto
+[Stable, Extensible]
+enum AccountType {
+  kUnspecified = 0,
+  kGaia = 1,
+  kActiveDirectory = 2,
+};
+
+// Uniquely identifies an account in Account Manager.
+[Stable]
+struct AccountKey {
+  // |id| is obfuscated Gaia id for Gaia accounts.
+  // |id| is the object GUID for Microsoft Active Directory accounts.
+  string id@0;
+
+  // Type of the account - such as Gaia, or Microsoft Active Directory.
+  AccountType account_type@1;
+};
+
+// Information about an account in Account Manager.
+[Stable]
+struct Account {
+  // A unique identifier for this account.
+  AccountKey key@0;
+
+  // The raw, un-canonicalized email id (The.Rock@gmail.com, as opposed to
+  // therock@gmail.com) for this account.
+  string raw_email@1;
+};
+
+// Interface for observers of Chrome OS Account Manager.
+// This interface is implemented by lacros-chrome, and is used by ash-chrome to
+// send account update notifications.
+[Stable]
+interface AccountManagerObserver {
+  // Called when the token for |account| is updated/inserted.
+  // Note: Observers which register with |AccountManager| before its
+  // initialization is complete will get notified when |AccountManager| is fully
+  // initialized.
+  // Note: Observers which register with |AccountManager| after its
+  // initialization is complete will not get an immediate
+  // notification-on-registration.
+  OnTokenUpserted@0(Account account);
+
+  // Called when an account has been removed from Account Manager.
+  // Note: Observers that may have cached access tokens for |account| must clear
+  // their cache entry for this |account| on receiving this callback.
+  OnAccountRemoved@1(Account account);
+};
+
 // Interface for Chrome OS Account Manager.
 // Chrome OS Account Manager is the source of truth for accounts on Chrome OS -
 // including ARC, and Chrome content area. It supports Google accounts and
@@ -12,9 +64,21 @@ module crosapi.mojom;
 // query accounts residing in the Chrome OS Account Manager.
 // ARC++ uses components/arc/mojom/auth.mojom to talk to the Chrome OS Account
 // Manager.
+//
+// Next version: 2
+// Next method id: 2
 [Stable]
 interface AccountManager {
   // Returns |true| if Chrome OS Account Manager has been fully initialized, and
   // |false| otherwise.
   IsInitialized@0() => (bool is_initialized);
+
+  // Creates and returns a new receiver for |AccountManagerObserver|.
+  // This API is supposed to be called by lacros-chrome, fairly early during its
+  // initialization, to receive updates related to accounts stored in Account
+  // Manager.
+  // The connection, and the corresponding remote, is destroyed when |receiver|
+  // is destroyed. This will happen automatically when lacros is shut down.
+  [MinVersion = 1]
+  AddObserver@1() => (pending_receiver<AccountManagerObserver> receiver);
 };

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/crosapi/account_manager_ash.h"
 
+#include <cstddef>
 #include <memory>
 
 #include "base/run_loop.h"
@@ -11,6 +12,8 @@
 #include "base/test/task_environment.h"
 #include "chromeos/components/account_manager/account_manager.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom-test-utils.h"
+#include "chromeos/crosapi/mojom/account_manager.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -34,6 +37,8 @@ class AccountManagerAshTest : public ::testing::Test {
             account_manager_ash_.get());
   }
 
+  void RunAllPendingTasks() { task_environment_.RunUntilIdle(); }
+
   // Returns |true| if initialization was successful.
   bool InitializeAccountManager() {
     base::RunLoop run_loop;
@@ -42,6 +47,8 @@ class AccountManagerAshTest : public ::testing::Test {
     run_loop.Run();
     return account_manager_.IsInitialized();
   }
+
+  size_t GetNumObservers() { return account_manager_ash_->observers_.size(); }
 
   mojom::AccountManagerAsyncWaiter* account_manager_async_waiter() {
     return account_manager_async_waiter_.get();
@@ -73,6 +80,20 @@ TEST_F(AccountManagerAshTest,
   ASSERT_TRUE(InitializeAccountManager());
   account_manager_async_waiter()->IsInitialized(&is_initialized);
   EXPECT_TRUE(is_initialized);
+}
+
+// Test that lacros remotes do not leak.
+TEST_F(AccountManagerAshTest,
+       LacrosRemotesAreAutomaticallyRemovedOnConnectionClose) {
+  EXPECT_EQ(0, GetNumObservers());
+  {
+    mojo::PendingReceiver<mojom::AccountManagerObserver> receiver;
+    account_manager_async_waiter()->AddObserver(&receiver);
+    EXPECT_EQ(1, GetNumObservers());
+  }
+  // Wait for the disconnect handler to be called.
+  RunAllPendingTasks();
+  EXPECT_EQ(0, GetNumObservers());
 }
 
 }  // namespace crosapi

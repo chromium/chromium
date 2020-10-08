@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/callback.h"
 #include "chromeos/components/account_manager/account_manager.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace crosapi {
 
@@ -21,6 +23,13 @@ AccountManagerAsh::~AccountManagerAsh() = default;
 
 void AccountManagerAsh::IsInitialized(IsInitializedCallback callback) {
   std::move(callback).Run(account_manager_->IsInitialized());
+}
+
+void AccountManagerAsh::AddObserver(AddObserverCallback callback) {
+  mojo::Remote<mojom::AccountManagerObserver> remote;
+  auto receiver = remote.BindNewPipeAndPassReceiver();
+  observers_.Add(std::move(remote));
+  std::move(callback).Run(std::move(receiver));
 }
 
 }  // namespace crosapi
