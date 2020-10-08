@@ -36,6 +36,8 @@ import javax.annotation.concurrent.GuardedBy;
 /**
  * Provides information about the current activity's status, and a way
  * to register / unregister listeners for state changes.
+ * TODO(https://crbug.com/470582): ApplicationStatus will not work on WebView/WebLayer, and
+ * should be moved out of base and into //chrome. It should not be relied upon for //components.
  */
 @JNINamespace("base::android")
 public class ApplicationStatus {
