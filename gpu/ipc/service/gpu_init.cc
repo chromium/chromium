@@ -299,10 +299,17 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 #if defined(USE_OZONE)
   // Initialize Ozone GPU after the watchdog in case it hangs. The sandbox
   // may also have started at this point.
+  std::vector<gfx::BufferFormat> supported_buffer_formats_for_texturing;
   if (features::IsUsingOzonePlatform()) {
     ui::OzonePlatform::InitParams params;
     params.single_process = false;
     ui::OzonePlatform::InitializeForGPU(params);
+    // We need to get supported formats before sandboxing to avoid an known
+    // issue which breaks the camera preview. (b/166850715)
+    supported_buffer_formats_for_texturing =
+        ui::OzonePlatform::GetInstance()
+            ->GetSurfaceFactoryOzone()
+            ->GetSupportedFormatsForTexturing();
   }
 #endif
 
@@ -568,11 +575,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 #if defined(USE_OZONE)
   if (features::IsUsingOzonePlatform()) {
     ui::OzonePlatform::GetInstance()->AfterSandboxEntry();
-    const std::vector<gfx::BufferFormat>
-        supported_buffer_formats_for_texturing =
-            ui::OzonePlatform::GetInstance()
-                ->GetSurfaceFactoryOzone()
-                ->GetSupportedFormatsForTexturing();
     gpu_feature_info_.supported_buffer_formats_for_allocation_and_texturing =
         std::move(supported_buffer_formats_for_texturing);
   }
