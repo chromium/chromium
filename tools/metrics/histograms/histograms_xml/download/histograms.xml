@@ -113,8 +113,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.Database.IsAvailable" enum="BooleanAvailable"
-    expires_after="M85">
+    expires_after="never">
+<!-- expires-never: Helpful to track download database issue. -->
+
   <owner>xingliu@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
   <summary>
     Records whether the download database is available when database startup
     completes, before starting any pending downloads. If the database is
