@@ -807,7 +807,7 @@ void OobeInteractiveUITest::SimpleEndToEnd() {
 // Please do not disable it for whole ChromeOS, only for specific instrumented
 // bots. Another alternative is to increase respective multiplier in
 // base/test/test_timeouts.h.
-IN_PROC_BROWSER_TEST_P(OobeInteractiveUITest, SimpleEndToEnd) {
+IN_PROC_BROWSER_TEST_P(OobeInteractiveUITest, MAYBE_SimpleEndToEnd) {
   SimpleEndToEnd();
 }
 
@@ -885,7 +885,7 @@ void OobeZeroTouchInteractiveUITest::ZeroTouchEndToEnd() {
 // Please do not disable it for whole ChromeOS, only for specific instrumented
 // bots. Another alternative is to increase respective multiplier in
 // base/test/test_timeouts.h.
-IN_PROC_BROWSER_TEST_P(OobeZeroTouchInteractiveUITest, EndToEnd) {
+IN_PROC_BROWSER_TEST_P(OobeZeroTouchInteractiveUITest, MAYBE_EndToEnd) {
   ZeroTouchEndToEnd();
 }
 
