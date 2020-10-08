@@ -122,7 +122,7 @@ def GenerateBundleApks(bundle_path,
                           (mode, OPTIMIZE_FOR_OPTIONS))
         cmd_args += ['--optimize-for=' + optimize_for]
 
-      with tempfile.NamedTemporaryFile(suffix='.json') as spec_file:
+      with tempfile.NamedTemporaryFile(mode='w', suffix='.json') as spec_file:
         if device_spec:
           json.dump(device_spec, spec_file)
           spec_file.flush()

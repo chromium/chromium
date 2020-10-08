@@ -455,7 +455,7 @@ def _ComputeInlineMd5(iterable):
   """Computes the md5 of the concatenated parameters."""
   md5 = hashlib.md5()
   for item in iterable:
-    md5.update(str(item))
+    md5.update(str(item).encode('ascii'))
   return md5.hexdigest()
 
 

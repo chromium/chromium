@@ -257,6 +257,11 @@ def CheckOutput(args,
       stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd, env=env)
   stdout, stderr = child.communicate()
 
+  # For Python3:
+  if isinstance(stdout, bytes):
+    stdout = stdout.decode('utf-8')
+    stderr = stderr.decode('utf-8')
+
   if stdout_filter is not None:
     stdout = stdout_filter(stdout)
 

@@ -5,6 +5,8 @@
 
 """Prints the large commits given a .csv file from a telemetry size graph."""
 
+# Our version of pylint doesn't know about python3 yet.
+# pylint: disable=unexpected-keyword-arg
 import argparse
 import collections
 import csv
@@ -19,33 +21,56 @@ import tempfile
 import zipfile
 
 _DIR_SOURCE_ROOT = os.path.normpath(
-    os.path.join(os.path.dirname(__file__), '..', '..'))
+    os.path.join(os.path.dirname(__file__), '../..'))
 
-_GSUTIL = os.path.join(_DIR_SOURCE_ROOT, 'third_party', 'depot_tools',
-                       'gsutil.py')
-_RESOURCE_SIZES = os.path.join(_DIR_SOURCE_ROOT, 'build', 'android',
-                               'resource_sizes.py')
+sys.path.insert(1, os.path.join(_DIR_SOURCE_ROOT, 'build/android/pylib'))
+from utils import app_bundle_utils
+
+_GSUTIL = os.path.join(_DIR_SOURCE_ROOT, 'third_party/depot_tools/gsutil.py')
+_RESOURCE_SIZES = os.path.join(_DIR_SOURCE_ROOT,
+                               'build/android/resource_sizes.py')
+_AAPT2 = os.path.join(_DIR_SOURCE_ROOT,
+                      'third_party/android_build_tools/aapt2/aapt2')
+_KEYSTORE = os.path.join(_DIR_SOURCE_ROOT,
+                         'build/android/chromium-debug.keystore')
+_KEYSTORE_PASSWORD = 'chromium'
+_KEYSTORE_ALIAS = 'chromiumdebugkey'
 
 
 class _Artifact(object):
-  def __init__(self, prefix, name):
+  def __init__(self, prefix, name, staging_dir):
     self.name = name
     self._gs_url = posixpath.join(prefix, name)
-    self._temp = tempfile.NamedTemporaryFile(suffix=posixpath.basename(name))
-    self._path = self._temp.name
+    self._path = os.path.join(staging_dir, name)
     self._resource_sizes_json = None
+
+    os.makedirs(os.path.dirname(self._path), exist_ok=True)
 
   def FetchAndMeasure(self):
     args = [_GSUTIL, 'cp', self._gs_url, self._path]
     logging.warning(' '.join(args))
-    subprocess.check_call(args)
+    if not os.path.exists(self._path):
+      subprocess.check_call(args)
+
+    path_to_measure = self._path
+
+    if self.name.endswith('.aab'):
+      path_to_measure += '.apks'
+      app_bundle_utils.GenerateBundleApks(self._path,
+                                          path_to_measure,
+                                          _AAPT2,
+                                          _KEYSTORE,
+                                          _KEYSTORE_PASSWORD,
+                                          _KEYSTORE_ALIAS,
+                                          minimal=True)
+
     args = [
         _RESOURCE_SIZES,
         '--output-format',
         'chartjson',
         '--output-file',
         '-',
-        self._path,
+        path_to_measure,
     ]
     logging.warning(' '.join(args))
     self._resource_sizes_json = json.loads(subprocess.check_output(args))
@@ -90,23 +115,23 @@ def _DumpCsv(metrics):
   csv_writer.writerow(metrics)
 
 
-def _DownloadAndAnalyze(signed_prefix, unsigned_prefix):
+def _DownloadAndAnalyze(signed_prefix, unsigned_prefix, staging_dir):
   artifacts = []
 
   def make_artifact(name, prefix=signed_prefix):
-    artifacts.append(_Artifact(prefix, name))
+    artifacts.append(_Artifact(prefix, name, staging_dir))
     return artifacts[-1]
 
   webview = make_artifact('arm/AndroidWebview.apk')
   webview64 = make_artifact('arm_64/AndroidWebview.apk')
-  chrome_modern = make_artifact('arm/ChromeModernStable.apks')
-  chrome_modern64 = make_artifact('arm_64/ChromeModernStable.apks')
-  monochrome = make_artifact('arm/MonochromeStable.apks')
-  monochrome64 = make_artifact('arm_64/MonochromeStable.apks')
-  trichrome_chrome = make_artifact('arm/TrichromeChromeGoogleStable.apks')
+  chrome_modern = make_artifact('arm/ChromeModernStable.aab')
+  chrome_modern64 = make_artifact('arm_64/ChromeModernStable.aab')
+  monochrome = make_artifact('arm/MonochromeStable.aab')
+  monochrome64 = make_artifact('arm_64/MonochromeStable.aab')
+  trichrome_chrome = make_artifact('arm/TrichromeChromeGoogleStable.aab')
   trichrome_webview = make_artifact('arm/TrichromeWebViewGoogleStable.apk')
   trichrome_library = make_artifact('arm/TrichromeLibraryGoogleStable.apk')
-  trichrome64_chrome = make_artifact('arm_64/TrichromeChromeGoogleStable.apks')
+  trichrome64_chrome = make_artifact('arm_64/TrichromeChromeGoogleStable.aab')
   trichrome64_webview = make_artifact('arm_64/TrichromeWebViewGoogleStable.apk')
   trichrome64_library = make_artifact('arm_64/TrichromeLibraryGoogleStable.apk')
 
@@ -182,11 +207,22 @@ def main():
       '--signed-bucket',
       required=True,
       help='GCS bucket to find files in. (e.g. "gs://bucket/subdir")')
+  parser.add_argument('--keep-files',
+                      action='store_true',
+                      help='Do not delete downloaded files.')
   options = parser.parse_args()
 
   signed_prefix = posixpath.join(options.signed_bucket, options.version)
   unsigned_prefix = signed_prefix.replace('signed', 'unsigned')
-  _DownloadAndAnalyze(signed_prefix, unsigned_prefix)
+  with tempfile.TemporaryDirectory() as staging_dir:
+    if options.keep_files:
+      staging_dir = 'milestone_apk_sizes-staging'
+      os.makedirs(staging_dir, exist_ok=True)
+
+    _DownloadAndAnalyze(signed_prefix, unsigned_prefix, staging_dir)
+
+    if options.keep_files:
+      print('Saved files to', staging_dir)
 
 
 if __name__ == '__main__':
