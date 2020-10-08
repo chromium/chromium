@@ -407,12 +407,13 @@ TEST_F(HardwareDisplayControllerTest, AcceptUnderlays) {
 }
 
 TEST_F(HardwareDisplayControllerTest, PageflipMirroredControllers) {
-  controller_->AddCrtc(std::make_unique<ui::CrtcController>(
-      drm_.get(), kSecondaryCrtc, kConnectorIdBase + 1));
+  controller_->AddCrtc(
+      std::unique_ptr<ui::CrtcController>(new ui::CrtcController(
+          drm_.get(), kSecondaryCrtc, kConnectorIdBase + 1)));
 
   ui::DrmOverlayPlane plane1(CreateBuffer(), nullptr);
   EXPECT_TRUE(controller_->Modeset(plane1, kDefaultMode));
-  EXPECT_EQ(1, drm_->get_commit_count());
+  EXPECT_EQ(2, drm_->get_commit_count());
 
   ui::DrmOverlayPlane plane2(CreateBuffer(), nullptr);
   std::vector<ui::DrmOverlayPlane> planes;
@@ -421,7 +422,7 @@ TEST_F(HardwareDisplayControllerTest, PageflipMirroredControllers) {
   drm_->RunCallbacks();
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
   EXPECT_EQ(1, page_flips_);
-  EXPECT_EQ(2, drm_->get_commit_count());
+  EXPECT_EQ(3, drm_->get_commit_count());
   // Verify only the displays have a valid framebuffer on the primary plane.
   // First display:
   EXPECT_NE(0u, GetPlanePropertyValue(kPlaneOffset, "FB_ID"));
@@ -432,8 +433,9 @@ TEST_F(HardwareDisplayControllerTest, PageflipMirroredControllers) {
 }
 
 TEST_F(HardwareDisplayControllerTest, PlaneStateAfterRemoveCrtc) {
-  controller_->AddCrtc(std::make_unique<ui::CrtcController>(
-      drm_.get(), kSecondaryCrtc, kConnectorIdBase + 1));
+  controller_->AddCrtc(
+      std::unique_ptr<ui::CrtcController>(new ui::CrtcController(
+          drm_.get(), kSecondaryCrtc, kConnectorIdBase + 1)));
 
   ui::DrmOverlayPlane plane1(CreateBuffer(), nullptr);
   EXPECT_TRUE(controller_->Modeset(plane1, kDefaultMode));

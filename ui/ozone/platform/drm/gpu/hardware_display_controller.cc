@@ -89,21 +89,21 @@ bool HardwareDisplayController::ModesetCrtc(const DrmOverlayPlane& primary,
                                             bool use_current_crtc_mode,
                                             const drmModeModeInfo& mode) {
   DCHECK(primary.buffer.get());
-  CommitRequest commit_request;
-  commit_request.plane_list = &owned_hardware_planes_;
+  bool status = true;
 
   GetDrmDevice()->plane_manager()->BeginFrame(&owned_hardware_planes_);
+  DrmOverlayPlaneList plane_list;
+  plane_list.push_back(primary.Clone());
 
   for (const auto& controller : crtc_controllers_) {
-    drmModeModeInfo modeset_mode =
-        use_current_crtc_mode ? controller->mode() : mode;
-    CrtcRequest crtc_request{controller->crtc(), controller->connector(),
-                             &primary, modeset_mode};
-    commit_request.commit_state.push_back(std::move(crtc_request));
-  }
+    status &=
+        controller->AssignOverlayPlanes(&owned_hardware_planes_, plane_list,
+                                        /*is_modesetting=*/true);
 
-  bool status = GetDrmDevice()->plane_manager()->Commit(
-      std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET);
+    status &= controller->Modeset(
+        primary, use_current_crtc_mode ? controller->mode() : mode,
+        owned_hardware_planes_);
+  }
 
   is_disabled_ = false;
   ResetCursor();
@@ -114,17 +114,16 @@ bool HardwareDisplayController::ModesetCrtc(const DrmOverlayPlane& primary,
 void HardwareDisplayController::Disable() {
   TRACE_EVENT0("drm", "HDC::Disable");
 
-  CommitRequest commit_request;
-  commit_request.plane_list = &owned_hardware_planes_;
+  for (const auto& controller : crtc_controllers_)
+    // TODO(crbug.com/1015104): Modeset and Disable operations should go
+    // together. The current split is due to how the legacy/atomic split
+    // evolved. It should be cleaned up under the more generic
+    // HardwareDisplayPlaneManager{Legacy,Atomic} calls.
+    controller->Disable();
 
-  for (const auto& controller : crtc_controllers_) {
-    CrtcRequest crtc_request{
-        controller->crtc(), controller->connector(), nullptr, {}};
-    commit_request.commit_state.push_back(std::move(crtc_request));
-  }
-
-  GetDrmDevice()->plane_manager()->Commit(std::move(commit_request),
-                                          DRM_MODE_ATOMIC_ALLOW_MODESET);
+  bool ret = GetDrmDevice()->plane_manager()->DisableOverlayPlanes(
+      &owned_hardware_planes_);
+  LOG_IF(ERROR, !ret) << "Can't disable overlays when disabling HDC.";
 
   is_disabled_ = true;
 }
@@ -357,10 +356,8 @@ void HardwareDisplayController::OnPageFlipComplete(
     return;  // Modeset occured during this page flip.
   time_of_last_flip_ = presentation_feedback.timestamp;
   current_planes_ = std::move(pending_planes);
-  for (const auto& controller : crtc_controllers_) {
-    GetDrmDevice()->plane_manager()->ResetModesetBufferOfCrtc(
-        controller->crtc());
-  }
+  for (const auto& controller : crtc_controllers_)
+    controller->OnPageFlipComplete();
   page_flip_request_ = nullptr;
 }
 

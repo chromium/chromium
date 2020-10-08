@@ -9,7 +9,6 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "ui/gfx/presentation_feedback.h"
-#include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_dumb_buffer.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
@@ -23,11 +22,10 @@ CrtcController::CrtcController(const scoped_refptr<DrmDevice>& drm,
                                uint32_t connector)
     : drm_(drm),
       crtc_(crtc),
-      connector_(connector),
-      state_(drm->plane_manager()->GetCrtcStateForCrtcId(crtc)) {}
+      connector_(connector) {}
 
 CrtcController::~CrtcController() {
-  if (!is_disabled()) {
+  if (!is_disabled_) {
     const std::vector<std::unique_ptr<HardwareDisplayPlane>>& all_planes =
         drm_->plane_manager()->planes();
     for (const auto& plane : all_planes) {
@@ -37,12 +35,44 @@ CrtcController::~CrtcController() {
       }
     }
 
-    CommitRequest commit_request;
-    CrtcRequest crtc_request{crtc_, connector_, nullptr, {}};
-    commit_request.commit_state.push_back(std::move(crtc_request));
-    drm_->plane_manager()->Commit(std::move(commit_request),
-                                  DRM_MODE_ATOMIC_ALLOW_MODESET);
+    DisableCursor();
+    drm_->plane_manager()->DisableModeset(crtc_, connector_);
   }
+}
+
+bool CrtcController::Modeset(const DrmOverlayPlane& plane,
+                             const drmModeModeInfo& mode,
+                             const ui::HardwareDisplayPlaneList& plane_list) {
+  if (!drm_->plane_manager()->Modeset(crtc_,
+                                      plane.buffer->opaque_framebuffer_id(),
+                                      connector_, mode, plane_list)) {
+    PLOG(ERROR) << "Failed to modeset: crtc=" << crtc_
+                << " connector=" << connector_
+                << " framebuffer_id=" << plane.buffer->opaque_framebuffer_id()
+                << " mode=" << mode.hdisplay << "x" << mode.vdisplay << "@"
+                << mode.vrefresh;
+    return false;
+  }
+
+  mode_ = mode;
+  is_disabled_ = false;
+
+  // Hold modeset buffer until page flip. This fixes a crash on entering
+  // hardware mirror mode in some circumstances (bug 888553).
+  // TODO(spang): Fix this better by changing how mirrors are set up (bug
+  // 899352).
+  modeset_framebuffer_ = plane.buffer;
+
+  return true;
+}
+
+bool CrtcController::Disable() {
+  if (is_disabled_)
+    return true;
+
+  is_disabled_ = true;
+  DisableCursor();
+  return drm_->plane_manager()->DisableModeset(crtc_, connector_);
 }
 
 bool CrtcController::AssignOverlayPlanes(HardwareDisplayPlaneList* plane_list,
@@ -50,13 +80,12 @@ bool CrtcController::AssignOverlayPlanes(HardwareDisplayPlaneList* plane_list,
                                          bool is_modesetting) {
   // If we're in the process of modesetting, the CRTC is still disabled.
   // Once the modeset is done, we expect it to be enabled.
-  DCHECK(is_modesetting || !is_disabled());
+  DCHECK(is_modesetting || !is_disabled_);
 
   const DrmOverlayPlane* primary = DrmOverlayPlane::GetPrimaryPlane(overlays);
-  if (primary &&
-      !drm_->plane_manager()->ValidatePrimarySize(*primary, state_.mode)) {
+  if (primary && !drm_->plane_manager()->ValidatePrimarySize(*primary, mode_)) {
     VLOG(2) << "Trying to pageflip a buffer with the wrong size. Expected "
-            << ModeSize(state_.mode).ToString() << " got "
+            << mode_.hdisplay << "x" << mode_.vdisplay << " got "
             << primary->buffer->size().ToString() << " for"
             << " crtc=" << crtc_ << " connector=" << connector_;
     return true;
@@ -75,7 +104,7 @@ std::vector<uint64_t> CrtcController::GetFormatModifiers(uint32_t format) {
 }
 
 void CrtcController::SetCursor(uint32_t handle, const gfx::Size& size) {
-  if (is_disabled())
+  if (is_disabled_)
     return;
   if (!drm_->SetCursor(crtc_, handle, size)) {
     PLOG(ERROR) << "drmModeSetCursor: device " << drm_->device_path().value()
@@ -85,9 +114,20 @@ void CrtcController::SetCursor(uint32_t handle, const gfx::Size& size) {
 }
 
 void CrtcController::MoveCursor(const gfx::Point& location) {
-  if (is_disabled())
+  if (is_disabled_)
     return;
   drm_->MoveCursor(crtc_, location);
+}
+
+void CrtcController::OnPageFlipComplete() {
+  modeset_framebuffer_ = nullptr;
+}
+
+void CrtcController::DisableCursor() {
+  if (!drm_->SetCursor(crtc_, 0, gfx::Size())) {
+    PLOG(ERROR) << "drmModeSetCursor: device " << drm_->device_path().value()
+                << " crtc " << crtc_ << " disable";
+  }
 }
 
 }  // namespace ui
