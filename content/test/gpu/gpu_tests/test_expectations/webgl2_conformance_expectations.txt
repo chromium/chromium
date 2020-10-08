@@ -82,7 +82,6 @@ crbug.com/1082455 [ win ] conformance2/renderbuffers/multisampled-depth-renderbu
 crbug.com/1082455 [ linux ] conformance2/renderbuffers/multisampled-depth-renderbuffer-initialization.html [ Failure ]
 crbug.com/1082455 [ android ] conformance2/renderbuffers/multisampled-depth-renderbuffer-initialization.html [ Failure ]
 crbug.com/1082455 [ mac no-passthrough ] conformance2/renderbuffers/multisampled-depth-renderbuffer-initialization.html [ Failure ]
-crbug.com/1100470 conformance/textures/misc/exif-orientation.html [ Skip ]
 crbug.com/1082533 [ mac intel ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
 crbug.com/1082533 [ win vulkan passthrough ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
 crbug.com/1018028 [ win vulkan ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]

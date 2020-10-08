@@ -173,11 +173,12 @@ SkImageInfo GetSkImageInfo(const scoped_refptr<Image>& input) {
 
 // This function results in a readback due to using SkImage::readPixels().
 // Returns transparent black pixels if the input SkImageInfo.bounds() does
-// not intersect with the input image boundaries.
+// not intersect with the input image boundaries. When apply_orientation
+// is true this method will orient the data according to the source's EXIF
+// information.
 Vector<uint8_t> CopyImageData(const scoped_refptr<StaticBitmapImage>& input,
                               const SkImageInfo& info,
-                              const unsigned x = 0,
-                              const unsigned y = 0) {
+                              bool apply_orientation = true) {
   if (info.isEmpty())
     return {};
   PaintImage paint_image = input->PaintImageForCurrentFrame();
@@ -189,16 +190,29 @@ Vector<uint8_t> CopyImageData(const scoped_refptr<StaticBitmapImage>& input,
   Vector<uint8_t> dst_buffer(byte_length);
 
   bool read_pixels_successful =
-      paint_image.readPixels(info, dst_buffer.data(), info.minRowBytes(), x, y);
+      paint_image.readPixels(info, dst_buffer.data(), info.minRowBytes(), 0, 0);
   DCHECK(read_pixels_successful);
   if (!read_pixels_successful)
     return {};
+
+  // Orient the data, and re-read the pixels.
+  if (apply_orientation && !input->HasDefaultOrientation()) {
+    paint_image = Image::ResizeAndOrientImage(
+        paint_image, input->CurrentFrameOrientation(), FloatSize(1, 1), 1,
+        kInterpolationNone);
+    read_pixels_successful = paint_image.readPixels(info, dst_buffer.data(),
+                                                    info.minRowBytes(), 0, 0);
+    DCHECK(read_pixels_successful);
+    if (!read_pixels_successful)
+      return {};
+  }
+
   return dst_buffer;
 }
 
 Vector<uint8_t> CopyImageData(const scoped_refptr<StaticBitmapImage>& input) {
   SkImageInfo info = GetSkImageInfo(input);
-  return CopyImageData(std::move(input), info);
+  return CopyImageData(std::move(input), info, false);
 }
 
 static inline bool ShouldAvoidPremul(
@@ -1058,12 +1072,13 @@ Vector<uint8_t> ImageBitmap::CopyBitmapData(AlphaDisposition alpha_op,
   auto color_type = info.colorType();
   if (color_type == kN32_SkColorType && u8_color_type == kRGBAColorType)
     color_type = kRGBA_8888_SkColorType;
+  // Note that width() and height() here apply EXIF orientation
   info =
       SkImageInfo::Make(width(), height(), color_type,
                         (alpha_op == kPremultiplyAlpha) ? kPremul_SkAlphaType
                                                         : kUnpremul_SkAlphaType,
                         info.refColorSpace());
-  return CopyImageData(image_, info);
+  return CopyImageData(image_, info, true);
 }
 
 Vector<uint8_t> ImageBitmap::CopyBitmapData() {
@@ -1095,7 +1110,7 @@ IntSize ImageBitmap::Size() const {
     return IntSize();
   DCHECK_GT(image_->width(), 0);
   DCHECK_GT(image_->height(), 0);
-  return IntSize(image_->width(), image_->height());
+  return image_->SizeRespectingOrientation();
 }
 
 ScriptPromise ImageBitmap::CreateImageBitmap(ScriptState* script_state,

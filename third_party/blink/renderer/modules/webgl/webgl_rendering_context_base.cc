@@ -5474,10 +5474,12 @@ void WebGLRenderingContextBase::TexImageHelperHTMLImageElement(
     return;
 
   scoped_refptr<Image> image_for_render = image->CachedImage()->GetImage();
-  if (IsA<SVGImage>(image_for_render.get())) {
-    if (canvas()) {
+  bool have_svg_image = IsA<SVGImage>(image_for_render.get());
+  if (have_svg_image || !image_for_render->HasDefaultOrientation()) {
+    if (have_svg_image && canvas()) {
       UseCounter::Count(canvas()->GetDocument(), WebFeature::kSVGInWebGL);
     }
+    // DrawImageIntoBuffer always respects orientation
     image_for_render =
         DrawImageIntoBuffer(std::move(image_for_render), image->width(),
                             image->height(), func_name);
@@ -6013,6 +6015,7 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
                        level, internalformat, width, height, depth, 0, format,
                        type, xoffset, yoffset, zoffset))
     return;
+
   scoped_refptr<StaticBitmapImage> image = bitmap->BitmapImage();
   DCHECK(image);
 
@@ -6039,9 +6042,16 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
     return;
   }
 
+  // Apply orientation if necessary
+  PaintImage paint_image = bitmap->BitmapImage()->PaintImageForCurrentFrame();
+  if (!image->HasDefaultOrientation()) {
+    paint_image = Image::ResizeAndOrientImage(
+        paint_image, image->CurrentFrameOrientation(), FloatSize(1, 1), 1,
+        kInterpolationNone);
+  }
+
   // TODO(kbr): refactor this away to use TexImageImpl on image.
-  sk_sp<SkImage> sk_image =
-      bitmap->BitmapImage()->PaintImageForCurrentFrame().GetSwSkImage();
+  sk_sp<SkImage> sk_image = paint_image.GetSwSkImage();
   if (!sk_image) {
     SynthesizeGLError(GL_OUT_OF_MEMORY, func_name,
                       "ImageBitmap unexpectedly empty");
