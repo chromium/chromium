@@ -207,6 +207,34 @@ class BrowserActionApiLazyTest
               action->GetBadgeBackgroundColor(ExtensionAction::kDefaultTabId));
   }
 
+  void RunEnableTest(base::StringPiece path, bool start_enabled) {
+    ExtensionTestMessageListener ready_listener("ready", true);
+    const Extension* extension =
+        LoadExtensionWithParamFlags(test_data_dir_.AppendASCII(path));
+    ASSERT_TRUE(extension) << message_;
+    // Test that there is a browser action in the toolbar.
+    ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
+
+    ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+    ExtensionAction* action = GetBrowserAction(browser(), *extension);
+
+    // Tell the extension to enable/disable the browser action state and then
+    // catch the result.
+    ResultCatcher catcher;
+    if (start_enabled) {
+      action->SetIsVisible(ExtensionAction::kDefaultTabId, true);
+      ready_listener.Reply("start enabled");
+    } else {
+      action->SetIsVisible(ExtensionAction::kDefaultTabId, false);
+      ready_listener.Reply("start disabled");
+    }
+    EXPECT_TRUE(catcher.GetNextResult());
+
+    // Test that changes were applied.
+    EXPECT_EQ(!start_enabled,
+              action->GetIsVisible(ExtensionAction::kDefaultTabId));
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<extensions::ScopedWorkerBasedExtensionsChannel>
@@ -235,6 +263,14 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, Basic) {
   ExecuteExtensionAction(browser(), extension);
 
   EXPECT_TRUE(catcher.GetNextResult());
+}
+
+IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, Disable) {
+  ASSERT_NO_FATAL_FAILURE(RunEnableTest("browser_action/enable", true));
+}
+
+IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, Enable) {
+  ASSERT_NO_FATAL_FAILURE(RunEnableTest("browser_action/enable", false));
 }
 
 IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, Update) {
