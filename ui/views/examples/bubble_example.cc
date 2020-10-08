@@ -94,21 +94,38 @@ BubbleExample::~BubbleExample() = default;
 void BubbleExample::CreateExampleView(View* container) {
   container->SetLayoutManager(std::make_unique<BoxLayout>(
       BoxLayout::Orientation::kHorizontal, gfx::Insets(), 10));
-  no_shadow_ = container->AddChildView(
-      std::make_unique<LabelButton>(this, ASCIIToUTF16("No Shadow")));
-  no_shadow_opaque_ = container->AddChildView(
-      std::make_unique<LabelButton>(this, ASCIIToUTF16("Opaque Border")));
-  big_shadow_ = container->AddChildView(
-      std::make_unique<LabelButton>(this, ASCIIToUTF16("Big Shadow")));
-  small_shadow_ = container->AddChildView(
-      std::make_unique<LabelButton>(this, ASCIIToUTF16("Small Shadow")));
-  no_assets_ = container->AddChildView(
-      std::make_unique<LabelButton>(this, ASCIIToUTF16("No Assets")));
-  persistent_ = container->AddChildView(
-      std::make_unique<LabelButton>(this, ASCIIToUTF16("Persistent")));
+
+  no_shadow_ = container->AddChildView(std::make_unique<LabelButton>(
+      base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
+                          &no_shadow_, BubbleBorder::NO_SHADOW, false),
+      ASCIIToUTF16("No Shadow")));
+  no_shadow_opaque_ = container->AddChildView(std::make_unique<LabelButton>(
+      base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
+                          &no_shadow_opaque_,
+                          BubbleBorder::NO_SHADOW_OPAQUE_BORDER, false),
+      ASCIIToUTF16("Opaque Border")));
+  big_shadow_ = container->AddChildView(std::make_unique<LabelButton>(
+      base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
+                          &big_shadow_, BubbleBorder::BIG_SHADOW, false),
+      ASCIIToUTF16("Big Shadow")));
+  small_shadow_ = container->AddChildView(std::make_unique<LabelButton>(
+      base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
+                          &small_shadow_, BubbleBorder::SMALL_SHADOW, false),
+      ASCIIToUTF16("Small Shadow")));
+  no_assets_ = container->AddChildView(std::make_unique<LabelButton>(
+      base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
+                          &no_assets_, BubbleBorder::NO_ASSETS, false),
+      ASCIIToUTF16("No Assets")));
+  persistent_ = container->AddChildView(std::make_unique<LabelButton>(
+      base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
+                          &persistent_, BubbleBorder::NO_SHADOW, true),
+      ASCIIToUTF16("Persistent")));
 }
 
-void BubbleExample::ButtonPressed(Button* sender, const ui::Event& event) {
+void BubbleExample::ShowBubble(Button** button,
+                               BubbleBorder::Shadow shadow,
+                               bool persistent,
+                               const ui::Event& event) {
   static int arrow_index = 0, color_index = 0;
   static const int count = base::size(arrows);
   arrow_index = (arrow_index + count + (event.IsShiftDown() ? -1 : 1)) % count;
@@ -119,21 +136,10 @@ void BubbleExample::ButtonPressed(Button* sender, const ui::Event& event) {
     arrow = BubbleBorder::FLOAT;
 
   // |bubble| will be destroyed by its widget when the widget is destroyed.
-  ExampleBubble* bubble = new ExampleBubble(sender, arrow);
+  ExampleBubble* bubble = new ExampleBubble(*button, arrow);
   bubble->set_color(colors[(color_index++) % base::size(colors)]);
-
-  if (sender == no_shadow_)
-    bubble->set_shadow(BubbleBorder::NO_SHADOW);
-  else if (sender == no_shadow_opaque_)
-    bubble->set_shadow(BubbleBorder::NO_SHADOW_OPAQUE_BORDER);
-  else if (sender == big_shadow_)
-    bubble->set_shadow(BubbleBorder::BIG_SHADOW);
-  else if (sender == small_shadow_)
-    bubble->set_shadow(BubbleBorder::SMALL_SHADOW);
-  else if (sender == no_assets_)
-    bubble->set_shadow(BubbleBorder::NO_ASSETS);
-
-  if (sender == persistent_)
+  bubble->set_shadow(shadow);
+  if (persistent)
     bubble->set_close_on_deactivate(false);
 
   BubbleDialogDelegateView::CreateBubble(bubble)->Show();

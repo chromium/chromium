@@ -6,15 +6,19 @@
 #define UI_VIEWS_EXAMPLES_BUBBLE_EXAMPLE_H_
 
 #include "base/macros.h"
-#include "ui/views/controls/button/button.h"
+#include "ui/events/event.h"
+#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/examples/example_base.h"
+#include "ui/views/examples/views_examples_export.h"
 
 namespace views {
+
+class Button;
+
 namespace examples {
 
 // A Bubble example.
-class VIEWS_EXAMPLES_EXPORT BubbleExample : public ExampleBase,
-                                            public ButtonListener {
+class VIEWS_EXAMPLES_EXPORT BubbleExample : public ExampleBase {
  public:
   BubbleExample();
   ~BubbleExample() override;
@@ -23,8 +27,10 @@ class VIEWS_EXAMPLES_EXPORT BubbleExample : public ExampleBase,
   void CreateExampleView(View* container) override;
 
  private:
-  // ButtonListener:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
+  void ShowBubble(Button** button,
+                  BubbleBorder::Shadow shadow,
+                  bool persistent,
+                  const ui::Event& event);
 
   Button* no_shadow_;
   Button* no_shadow_opaque_;

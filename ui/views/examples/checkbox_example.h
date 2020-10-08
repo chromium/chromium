@@ -6,8 +6,8 @@
 #define UI_VIEWS_EXAMPLES_CHECKBOX_EXAMPLE_H_
 
 #include "base/macros.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/examples/example_base.h"
+#include "ui/views/examples/views_examples_export.h"
 
 namespace views {
 class Checkbox;
@@ -15,8 +15,7 @@ class Checkbox;
 namespace examples {
 
 // CheckboxExample exercises a Checkbox control.
-class VIEWS_EXAMPLES_EXPORT CheckboxExample : public ExampleBase,
-                                              public ButtonListener {
+class VIEWS_EXAMPLES_EXPORT CheckboxExample : public ExampleBase {
  public:
   CheckboxExample();
   ~CheckboxExample() override;
@@ -25,9 +24,6 @@ class VIEWS_EXAMPLES_EXPORT CheckboxExample : public ExampleBase,
   void CreateExampleView(View* container) override;
 
  private:
-  // ButtonListener:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
-
   // The only control in this test.
   Checkbox* button_ = nullptr;
 
