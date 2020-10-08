@@ -559,3 +559,6 @@ void IntentPickerBubbleView::PressButtonForTesting(size_t index,
       static_cast<views::Button*>(GetIntentPickerLabelButtonAt(index));
   ButtonPressed(button, event);
 }
+
+BEGIN_METADATA(IntentPickerBubbleView, LocationBarBubbleDelegateView)
+END_METADATA

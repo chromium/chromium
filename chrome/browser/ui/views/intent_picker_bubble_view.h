@@ -62,6 +62,8 @@ class PageActionIconView;
 class IntentPickerBubbleView : public LocationBarBubbleDelegateView,
                                public views::ButtonListener {
  public:
+  METADATA_HEADER(IntentPickerBubbleView);
+
   using AppInfo = apps::IntentPickerAppInfo;
 
   IntentPickerBubbleView(views::View* anchor_view,
@@ -102,6 +104,7 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView,
 
  private:
   friend class IntentPickerBubbleViewTest;
+  friend class IntentPickerBubbleViewBrowserTestChromeOS;
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, NullIcons);
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, NonNullIcons);
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, LabelsPtrVectorSize);
@@ -118,7 +121,7 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView,
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
                            OutOfScopeDoesNotShowBubble);
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           PWAOnlyDoesNotShowBubble);
+                           PWAOnlyShowBubble);
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
                            NotLinkDoesNotShowBubble);
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
