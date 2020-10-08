@@ -221,7 +221,7 @@ void WebExternalWidgetImpl::DidOverscrollForTesting(
 }
 
 void WebExternalWidgetImpl::SetRootLayer(scoped_refptr<cc::Layer> layer) {
-  widget_base_->LayerTreeHost()->SetNonBlinkManagedRootLayer(layer);
+  widget_base_->LayerTreeHost()->SetRootLayer(layer);
 }
 
 void WebExternalWidgetImpl::RecordTimeToFirstActivePaint(

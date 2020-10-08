@@ -639,7 +639,7 @@ class NotifySwapTimesRenderWidgetUnittest : public RenderWidgetUnittest {
     auto root_layer = cc::SolidColorLayer::Create();
     root_layer->SetBounds(gfx::Size(200, 100));
     root_layer->SetBackgroundColor(SK_ColorGREEN);
-    widget()->layer_tree_host()->SetNonBlinkManagedRootLayer(root_layer);
+    widget()->layer_tree_host()->SetRootLayer(root_layer);
 
     auto color_layer = cc::SolidColorLayer::Create();
     color_layer->SetBounds(gfx::Size(100, 100));

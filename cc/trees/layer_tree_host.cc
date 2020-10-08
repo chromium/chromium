@@ -477,7 +477,7 @@ void LayerTreeHost::UpdateDeferMainFrameUpdateInternal() {
 }
 
 bool LayerTreeHost::IsUsingLayerLists() const {
-  return settings_.use_layer_lists && !force_use_property_tree_builder_;
+  return settings_.use_layer_lists;
 }
 
 void LayerTreeHost::CommitComplete() {
@@ -1153,18 +1153,7 @@ void LayerTreeHost::SetRootLayer(scoped_refptr<Layer> root_layer) {
   // This flag is sticky until a new tree comes along.
   gpu_rasterization_histogram_recorded_ = false;
 
-  force_use_property_tree_builder_ = false;
-
   SetNeedsFullTreeSync();
-}
-
-void LayerTreeHost::SetNonBlinkManagedRootLayer(
-    scoped_refptr<Layer> root_layer) {
-  SetRootLayer(std::move(root_layer));
-
-  DCHECK(!root_layer || root_layer_->children().empty());
-  if (IsUsingLayerLists() && root_layer_)
-    force_use_property_tree_builder_ = true;
 }
 
 void LayerTreeHost::RegisterViewportPropertyIds(
