@@ -17,6 +17,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "media/base/mac/color_space_util_mac.h"
 #include "media/base/media_switches.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_types.h"
@@ -648,11 +649,6 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   media::VideoPixelFormat videoPixelFormat = [VideoCaptureDeviceAVFoundation
       FourCCToChromiumPixelFormat:sampleBufferPixelFormat];
 
-  // TODO(julien.isorce): move GetImageBufferColorSpace(CVImageBufferRef)
-  // from media::VTVideoDecodeAccelerator to media/base/mac and call it
-  // here to get the color space. See https://crbug.com/959962.
-  // colorSpace = media::GetImageBufferColorSpace(videoFrame);
-  gfx::ColorSpace colorSpace;
   const media::VideoCaptureFormat captureFormat(
       gfx::Size(dimensions.width, dimensions.height), _frameRate,
       videoPixelFormat);
@@ -660,6 +656,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
   if (CVPixelBufferRef pixelBuffer =
           CMSampleBufferGetImageBuffer(sampleBuffer)) {
+    const gfx::ColorSpace colorSpace =
+        media::GetImageBufferColorSpace(pixelBuffer);
     OSType pixelBufferPixelFormat =
         CVPixelBufferGetPixelFormatType(pixelBuffer);
     DCHECK_EQ(pixelBufferPixelFormat, sampleBufferPixelFormat);
@@ -688,7 +686,11 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
       return;
     }
   }
+
   // Last preference is to read the CMSampleBuffer.
+  gfx::ColorSpace colorSpace;
+  if (@available(macOS 10.11, *))
+    colorSpace = media::GetFormatDescriptionColorSpace(formatDescription);
   [self processSample:sampleBuffer
         captureFormat:captureFormat
            colorSpace:colorSpace
