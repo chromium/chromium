@@ -15,6 +15,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -64,14 +65,19 @@ class FirstVisuallyNonEmptyPaintObserver : public content::WebContentsObserver {
   }
 
   void Wait() {
-    if (web_contents()->GetVisibleURL() == url_ &&
-        web_contents()->CompletedFirstVisuallyNonEmptyPaint()) {
+    if (IsExitConditionSatisfied()) {
       return;
     }
     run_loop_.Run();
+    EXPECT_TRUE(IsExitConditionSatisfied());
   }
 
  private:
+  bool IsExitConditionSatisfied() {
+    return (web_contents()->GetVisibleURL() == url_ &&
+            web_contents()->CompletedFirstVisuallyNonEmptyPaint());
+  }
+
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
   GURL url_;
 };
@@ -93,6 +99,7 @@ class WebViewAddedWaiter : public views::ViewObserver {
   void OnChildViewAdded(views::View* observed_view,
                         views::View* child) override {
     if (child == current_web_view_getter_.Run()) {
+      ASSERT_TRUE(child);
       run_loop_.Quit();
     }
   }
@@ -100,6 +107,37 @@ class WebViewAddedWaiter : public views::ViewObserver {
   base::RunLoop run_loop_;
   base::RepeatingCallback<views::WebView*()> current_web_view_getter_;
   ScopedObserver<views::View, views::ViewObserver> observed_{this};
+};
+
+class BrowserAddedWaiter : public BrowserListObserver {
+ public:
+  explicit BrowserAddedWaiter(size_t total_count) : total_count_(total_count) {
+    BrowserList::AddObserver(this);
+  }
+  ~BrowserAddedWaiter() override { BrowserList::RemoveObserver(this); }
+
+  Browser* Wait() {
+    if (BrowserList::GetInstance()->size() == total_count_)
+      return BrowserList::GetInstance()->GetLastActive();
+    run_loop_.Run();
+    EXPECT_TRUE(browser_);
+    return browser_;
+  }
+
+ private:
+  // BrowserListObserver implementation.
+  void OnBrowserAdded(Browser* browser) override {
+    if (BrowserList::GetInstance()->size() != total_count_)
+      return;
+    browser_ = browser;
+    run_loop_.Quit();
+  }
+
+  const size_t total_count_;
+  Browser* browser_ = nullptr;
+  base::RunLoop run_loop_;
+
+  DISALLOW_COPY_AND_ASSIGN(BrowserAddedWaiter);
 };
 
 // Fake user policy signin service immediately invoking the callbacks.
@@ -174,14 +212,20 @@ class ProfilePickerCreationFlowBrowserTest : public InProcessBrowserTest {
   views::WebView* web_view() { return ProfilePicker::GetWebViewForTesting(); }
 
   void WaitForNewWebView() {
+    ASSERT_TRUE(view());
     WebViewAddedWaiter(
         view(),
         base::BindRepeating(&ProfilePickerCreationFlowBrowserTest::web_view,
                             base::Unretained(this)))
         .Wait();
+    EXPECT_TRUE(web_view());
   }
 
-  content::WebContents* web_contents() { return web_view()->GetWebContents(); }
+  content::WebContents* web_contents() {
+    if (!web_view())
+      return nullptr;
+    return web_view()->GetWebContents();
+  }
 
  private:
   std::unique_ptr<
@@ -241,10 +285,13 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // Simulate closing the UI with "Yes, I'm in".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
       ->SyncConfirmationUIClosed(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
-  base::RunLoop().RunUntilIdle();
+  Browser* new_browser = BrowserAddedWaiter(2u).Wait();
+  FirstVisuallyNonEmptyPaintObserver(
+      new_browser->tab_strip_model()->GetActiveWebContents(),
+      GURL("chrome://newtab/"))
+      .Wait();
 
   // Check expectations when the profile creation flow is done.
-  EXPECT_EQ(2u, BrowserList::GetInstance()->size());
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   ProfileAttributesEntry* entry = nullptr;
