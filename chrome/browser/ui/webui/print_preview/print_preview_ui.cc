@@ -827,6 +827,8 @@ void PrintPreviewUI::OnClosePrintPreviewDialog() {
 void PrintPreviewUI::SetOptionsFromDocument(
     const mojom::OptionsFromDocumentParamsPtr params,
     int32_t request_id) {
+  if (request_id == -1)
+    return;
   handler_->SendPrintPresetOptions(params->is_scaling_disabled, params->copies,
                                    params->duplex, request_id);
 }
@@ -834,6 +836,8 @@ void PrintPreviewUI::SetOptionsFromDocument(
 void PrintPreviewUI::PrintPreviewFailed(int32_t document_cookie,
                                         int32_t request_id) {
   StopWorker(document_cookie);
+  if (request_id == -1)
+    return;
   OnPrintPreviewFailed(request_id);
 }
 
@@ -841,12 +845,16 @@ void PrintPreviewUI::PrintPreviewCancelled(int32_t document_cookie,
                                            int32_t request_id) {
   // Always need to stop the worker.
   StopWorker(document_cookie);
+  if (request_id == -1)
+    return;
   handler_->OnPrintPreviewCancelled(request_id);
 }
 
 void PrintPreviewUI::PrinterSettingsInvalid(int32_t document_cookie,
                                             int32_t request_id) {
   StopWorker(document_cookie);
+  if (request_id == -1)
+    return;
   handler_->OnInvalidPrinterSettings(request_id);
 }
 
