@@ -29,7 +29,9 @@
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
+#include "media/gpu/v4l2/buffer_affinity_tracker.h"
 #include "media/gpu/v4l2/generic_v4l2_device.h"
+#include "ui/gfx/generic_shared_memory_id.h"
 #include "ui/gfx/native_pixmap_handle.h"
 
 #if defined(ARCH_CPU_ARMEL)
@@ -908,6 +910,7 @@ V4L2Queue::V4L2Queue(scoped_refptr<V4L2Device> dev,
                      enum v4l2_buf_type type,
                      base::OnceClosure destroy_cb)
     : type_(type),
+      affinity_tracker_(0),
       device_(dev),
       destroy_cb_(std::move(destroy_cb)),
       weak_this_factory_(this) {
@@ -1097,6 +1100,8 @@ size_t V4L2Queue::AllocateBuffers(size_t count, enum v4l2_memory memory) {
     free_buffers_->ReturnBuffer(i);
   }
 
+  affinity_tracker_.resize(buffers_.size());
+
   DCHECK(free_buffers_);
   DCHECK_EQ(free_buffers_->size(), buffers_.size());
   DCHECK_EQ(queued_buffers_.size(), 0u);
@@ -1117,6 +1122,7 @@ bool V4L2Queue::DeallocateBuffers() {
 
   weak_this_factory_.InvalidateWeakPtrs();
   buffers_.clear();
+  affinity_tracker_.resize(0);
   free_buffers_ = nullptr;
 
   // Free all buffers.
@@ -1182,6 +1188,37 @@ base::Optional<V4L2WritableBufferRef> V4L2Queue::GetFreeBuffer(
   return V4L2BufferRefFactory::CreateWritableRef(
       buffers_[buffer_id.value()]->v4l2_buffer(),
       weak_this_factory_.GetWeakPtr());
+}
+
+base::Optional<V4L2WritableBufferRef> V4L2Queue::GetFreeBufferForFrame(
+    const VideoFrame& frame) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // No buffers allocated at the moment?
+  if (!free_buffers_)
+    return base::nullopt;
+
+  if (memory_ != V4L2_MEMORY_DMABUF) {
+    DVLOGF(1) << "Queue is not DMABUF";
+    return base::nullopt;
+  }
+
+  gfx::GenericSharedMemoryId id;
+  if (auto gmb = frame.GetGpuMemoryBuffer()) {
+    id = gmb->GetId();
+  } else if (frame.HasDmaBufs()) {
+    id = gfx::GenericSharedMemoryId(frame.DmabufFds()[0].get());
+  } else {
+    DVLOGF(1) << "Unsupported frame provided";
+    return base::nullopt;
+  }
+
+  const auto v4l2_id = affinity_tracker_.get_buffer_for_id(id);
+  if (!v4l2_id) {
+    return base::nullopt;
+  }
+
+  return GetFreeBuffer(*v4l2_id);
 }
 
 bool V4L2Queue::QueueBuffer(struct v4l2_buffer* v4l2_buffer,

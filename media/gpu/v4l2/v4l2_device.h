@@ -28,6 +28,7 @@
 #include "media/base/video_frame_layout.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/gpu/v4l2/buffer_affinity_tracker.h"
 #include "media/gpu/v4l2/v4l2_device_poller.h"
 #include "media/video/video_decode_accelerator.h"
 #include "media/video/video_encode_accelerator.h"
@@ -374,6 +375,23 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // return |base::nullopt|.
   base::Optional<V4L2WritableBufferRef> GetFreeBuffer(
       size_t requested_buffer_id);
+  // Return a V4L2 buffer suitable for the passed VideoFrame.
+  //
+  // This method will try as much as possible to always return the same V4L2
+  // buffer when the same frame is passed again, to avoid memory unmap
+  // operations in the kernel driver.
+  //
+  // The operating mode of the queue must be DMABUF, and the VideoFrame must
+  // be backed either by a GpuMemoryBuffer, or by DMABUFs. In the case of
+  // DMABUFs, this method will only work correctly if the same DMABUFs are
+  // passed with each call, i.e. no dup shall be performed.
+  //
+  // This should be the preferred way to obtain buffers when using DMABUF mode,
+  // since it will maximize performance in that case provided the number of
+  // different VideoFrames passed to this method does not exceed the number of
+  // V4L2 buffers allocated on the queue.
+  base::Optional<V4L2WritableBufferRef> GetFreeBufferForFrame(
+      const VideoFrame& frame);
 
   // Attempt to dequeue a buffer, and return a reference to it if one was
   // available.
@@ -443,6 +461,9 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // value will be set to the VideoFrame that has been passed when we queued
   // the buffer, if any.
   std::map<size_t, scoped_refptr<VideoFrame>> queued_buffers_;
+  // Keep track of which buffer was assigned to which frame by
+  // |GetFreeBufferForFrame()| so we reuse the same buffer in subsequent calls.
+  BufferAffinityTracker affinity_tracker_;
 
   scoped_refptr<V4L2Device> device_;
   // Callback to call in this queue's destructor.

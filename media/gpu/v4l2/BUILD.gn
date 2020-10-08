@@ -23,6 +23,8 @@ if (use_v4lplugin) {
 source_set("v4l2") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
+    "buffer_affinity_tracker.cc",
+    "buffer_affinity_tracker.h",
     "generic_v4l2_device.cc",
     "generic_v4l2_device.h",
     "v4l2_decode_surface.cc",
