@@ -462,6 +462,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsFetchFailureReasons) {
       "Net.TrustTokens.FetchFailedReason.Issuance",
       9 /* fetch_manager.cc::FailedReason::kOtherNonBlockReason */,
       /*expected_count=*/1);
+  histograms.ExpectUniqueSample(
+      "Net.TrustTokens.NetErrorForFetchFailure.Issuance", net::ERR_FAILED,
+      /*expected_count=*/1);
 
   // Since issuance failed, there should be no tokens to redeem, so redemption
   // should fail:
@@ -476,6 +479,10 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsFetchFailureReasons) {
   histograms.ExpectUniqueSample(
       "Net.TrustTokens.FetchFailedReason.Redemption",
       8 /* fetch_manager.cc::FailedReason::kTrustTokensError */,
+      /*expected_count=*/1);
+  histograms.ExpectUniqueSample(
+      "Net.TrustTokens.NetErrorForFetchFailure.Redemption",
+      net::ERR_TRUST_TOKEN_OPERATION_FAILED,
       /*expected_count=*/1);
 
   // Execute a cross-site b.test -> a.test issuance that would succeed, were it
@@ -502,6 +509,10 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsFetchFailureReasons) {
       // fetch_manager.cc::FailedReason::
       // kCorpNotSameOriginAfterDefaultedToSameOriginByCoep
       21,
+      /*expected_count=*/1);
+  histograms.ExpectBucketCount(
+      "Net.TrustTokens.NetErrorForFetchFailure.Issuance",
+      net::ERR_BLOCKED_BY_RESPONSE,
       /*expected_count=*/1);
 }
 

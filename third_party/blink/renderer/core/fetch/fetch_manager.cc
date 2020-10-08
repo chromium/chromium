@@ -174,6 +174,18 @@ FailedReason ResourceRequestBlockedReasonToFailedReason(
   }
 }
 
+const char* SerializeTrustTokenOperationType(
+    network::mojom::TrustTokenOperationType operation_type) {
+  switch (operation_type) {
+    case network::mojom::blink::TrustTokenOperationType::kIssuance:
+      return "Issuance";
+    case network::mojom::blink::TrustTokenOperationType::kRedemption:
+      return "Redemption";
+    case network::mojom::blink::TrustTokenOperationType::kSigning:
+      return "Signing";
+  }
+}
+
 // Logs a more descriptive reason why a fetch with Trust Tokens parameters
 // failed. This is a temporary measure for debugging a surprisingly high
 // incidence of "TypeError: Failed to fetch" when executing Trust Tokens
@@ -181,22 +193,23 @@ FailedReason ResourceRequestBlockedReasonToFailedReason(
 void HistogramFetchFailureReasonForTrustTokensOperation(
     network::mojom::blink::TrustTokenOperationType operation_type,
     FailedReason reason) {
-  const char* operation_type_name = "";
-  switch (operation_type) {
-    case network::mojom::blink::TrustTokenOperationType::kIssuance:
-      operation_type_name = "Issuance";
-      break;
-    case network::mojom::blink::TrustTokenOperationType::kRedemption:
-      operation_type_name = "Redemption";
-      break;
-    case network::mojom::blink::TrustTokenOperationType::kSigning:
-      operation_type_name = "Signing";
-      break;
-  }
   base::UmaHistogramEnumeration(
-      base::StrCat(
-          {"Net.TrustTokens.FetchFailedReason", ".", operation_type_name}),
+      base::StrCat({"Net.TrustTokens.FetchFailedReason", ".",
+                    SerializeTrustTokenOperationType(operation_type)}),
       reason);
+}
+
+// Logs a net error describing why a fetch with Trust Tokens parameters
+// failed. This is a temporary measure for debugging a surprisingly high
+// incidence of "TypeError: Failed to fetch" when executing Trust Tokens
+// issuance operations (crbug.com/1128174).
+void HistogramNetErrorForTrustTokensOperation(
+    network::mojom::blink::TrustTokenOperationType operation_type,
+    int net_error) {
+  base::UmaHistogramSparse(
+      base::StrCat({"Net.TrustTokens.NetErrorForFetchFailure", ".",
+                    SerializeTrustTokenOperationType(operation_type)}),
+      net_error);
 }
 
 }  // namespace
@@ -626,6 +639,11 @@ void FetchManager::Loader::DidFinishLoading(uint64_t) {
 }
 
 void FetchManager::Loader::DidFail(const ResourceError& error) {
+  if (fetch_request_data_ && fetch_request_data_->TrustTokenParams()) {
+    HistogramNetErrorForTrustTokensOperation(
+        fetch_request_data_->TrustTokenParams()->type, error.ErrorCode());
+  }
+
   if (error.TrustTokenOperationError() !=
       network::mojom::blink::TrustTokenOperationStatus::kOk) {
     Failed(String(),
