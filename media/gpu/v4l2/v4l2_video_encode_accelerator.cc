@@ -1769,7 +1769,22 @@ bool V4L2VideoEncodeAccelerator::CreateInputBuffers() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   DCHECK(!input_queue_->IsStreaming());
 
-  if (input_queue_->AllocateBuffers(kInputBufferCount, input_memory_type_) <
+  // If using DMABUF input, we want to reuse the same V4L2 buffer index
+  // for the same input buffer as much as possible. But we don't know in advance
+  // how many different input buffers we will get. Therefore we allocate as
+  // many V4L2 buffers as possible (VIDEO_MAX_FRAME == 32). Unused indexes
+  // won't have a tangible cost since they don't have backing memory.
+  size_t num_buffers;
+  switch (input_memory_type_) {
+    case V4L2_MEMORY_DMABUF:
+      num_buffers = VIDEO_MAX_FRAME;
+      break;
+    default:
+      num_buffers = kInputBufferCount;
+      break;
+  }
+
+  if (input_queue_->AllocateBuffers(num_buffers, input_memory_type_) <
       kInputBufferCount) {
     VLOGF(1) << "Failed to allocate V4L2 input buffers.";
     return false;
