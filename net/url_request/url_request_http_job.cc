@@ -292,6 +292,8 @@ void URLRequestHttpJob::Start() {
 
   request_info_.network_isolation_key =
       request_->isolation_info().network_isolation_key();
+  request_info_.possibly_top_frame_origin =
+      request_->isolation_info().top_frame_origin();
   request_info_.load_flags = request_->load_flags();
   request_info_.disable_secure_dns = request_->disable_secure_dns();
   request_info_.traffic_annotation =

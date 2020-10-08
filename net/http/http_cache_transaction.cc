@@ -3439,12 +3439,10 @@ void HttpCache::Transaction::RecordHistograms() {
   // Given that cache_entry_status_ is not ENTRY_UNDEFINED, the request must
   // have started and so request_ should exist.
   DCHECK(request_);
-  if (!request_->network_isolation_key.IsEmpty()) {
-    const url::Origin& top_frame_origin =
-        request_->network_isolation_key.GetTopFrameOrigin().value();
+  if (request_->possibly_top_frame_origin) {
     url::Origin request_origin = url::Origin::Create(request_->url);
-
-    is_third_party = !top_frame_origin.IsSameOriginWith(request_origin);
+    is_third_party =
+        !request_origin.IsSameOriginWith(*request_->possibly_top_frame_origin);
   }
 
   std::string mime_type;

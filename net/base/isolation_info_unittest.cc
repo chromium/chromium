@@ -31,7 +31,9 @@ void DuplicateAndCompare(const IsolationInfo& isolation_info) {
 class IsolationInfoTest : public testing::Test {
  public:
   const url::Origin kOrigin1 = url::Origin::Create(GURL("https://a.foo.test"));
+  const url::Origin kSite1 = url::Origin::Create(GURL("https://foo.test"));
   const url::Origin kOrigin2 = url::Origin::Create(GURL("https://b.bar.test"));
+  const url::Origin kSite2 = url::Origin::Create(GURL("https://bar.test"));
   const url::Origin kOrigin3 = url::Origin::Create(GURL("https://c.baz.test"));
   const url::Origin kOpaqueOrigin;
 };
@@ -195,9 +197,8 @@ TEST_F(IsolationInfoTest, CreateOpaqueAndNonTransient) {
   EXPECT_TRUE(isolation_info.network_isolation_key().IsFullyPopulated());
   EXPECT_FALSE(isolation_info.network_isolation_key().IsTransient());
   EXPECT_TRUE(
-      isolation_info.network_isolation_key().GetTopFrameOrigin()->opaque());
-  EXPECT_TRUE(
-      isolation_info.network_isolation_key().GetFrameOrigin()->opaque());
+      isolation_info.network_isolation_key().GetTopFrameSite()->opaque());
+  EXPECT_TRUE(isolation_info.network_isolation_key().GetFrameSite()->opaque());
   EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
   EXPECT_TRUE(isolation_info.opaque_and_non_transient());
 
@@ -236,8 +237,8 @@ TEST_F(IsolationInfoTest, CreatePartialUpdateTopFrame) {
       IsolationInfo::RedirectMode::kUpdateTopFrame, kNIK);
   EXPECT_EQ(IsolationInfo::RedirectMode::kUpdateTopFrame,
             isolation_info.redirect_mode());
-  EXPECT_EQ(kOrigin1, isolation_info.top_frame_origin());
-  EXPECT_EQ(kOrigin1, isolation_info.frame_origin());
+  EXPECT_EQ(kSite1, isolation_info.top_frame_origin());
+  EXPECT_EQ(kSite1, isolation_info.frame_origin());
   EXPECT_EQ(kNIK, isolation_info.network_isolation_key());
   EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
   EXPECT_FALSE(isolation_info.opaque_and_non_transient());
@@ -251,8 +252,8 @@ TEST_F(IsolationInfoTest, CreatePartialUpdateFrameOnly) {
       IsolationInfo::RedirectMode::kUpdateFrameOnly, kNIK);
   EXPECT_EQ(IsolationInfo::RedirectMode::kUpdateFrameOnly,
             isolation_info.redirect_mode());
-  EXPECT_EQ(kOrigin1, isolation_info.top_frame_origin());
-  EXPECT_EQ(kOrigin2, isolation_info.frame_origin());
+  EXPECT_EQ(kSite1, isolation_info.top_frame_origin());
+  EXPECT_EQ(kSite2, isolation_info.frame_origin());
   EXPECT_EQ(kNIK, isolation_info.network_isolation_key());
   EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
   EXPECT_FALSE(isolation_info.opaque_and_non_transient());
@@ -266,8 +267,8 @@ TEST_F(IsolationInfoTest, CreatePartialUpdateNothing) {
       IsolationInfo::RedirectMode::kUpdateNothing, kNIK);
   EXPECT_EQ(IsolationInfo::RedirectMode::kUpdateNothing,
             isolation_info.redirect_mode());
-  EXPECT_EQ(kOrigin1, isolation_info.top_frame_origin());
-  EXPECT_EQ(kOrigin2, isolation_info.frame_origin());
+  EXPECT_EQ(kSite1, isolation_info.top_frame_origin());
+  EXPECT_EQ(kSite2, isolation_info.frame_origin());
   EXPECT_EQ(kNIK, isolation_info.network_isolation_key());
   EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
   EXPECT_FALSE(isolation_info.opaque_and_non_transient());
@@ -281,8 +282,8 @@ TEST_F(IsolationInfoTest, CreatePartialTransient) {
       IsolationInfo::RedirectMode::kUpdateNothing, kNIK);
   EXPECT_EQ(IsolationInfo::RedirectMode::kUpdateNothing,
             isolation_info.redirect_mode());
-  EXPECT_EQ(*kNIK.GetTopFrameOrigin(), isolation_info.top_frame_origin());
-  EXPECT_EQ(*kNIK.GetFrameOrigin(), isolation_info.frame_origin());
+  EXPECT_EQ(*kNIK.GetTopFrameSite(), isolation_info.top_frame_origin());
+  EXPECT_EQ(*kNIK.GetFrameSite(), isolation_info.frame_origin());
   EXPECT_EQ(kNIK, isolation_info.network_isolation_key());
   EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
   EXPECT_FALSE(isolation_info.opaque_and_non_transient());
@@ -297,8 +298,8 @@ TEST_F(IsolationInfoTest, CreatePartialOpaqueAndNonTransient) {
       IsolationInfo::RedirectMode::kUpdateNothing, kNIK);
   EXPECT_EQ(IsolationInfo::RedirectMode::kUpdateNothing,
             isolation_info.redirect_mode());
-  EXPECT_EQ(*kNIK.GetTopFrameOrigin(), isolation_info.top_frame_origin());
-  EXPECT_EQ(*kNIK.GetFrameOrigin(), isolation_info.frame_origin());
+  EXPECT_EQ(*kNIK.GetTopFrameSite(), isolation_info.top_frame_origin());
+  EXPECT_EQ(*kNIK.GetFrameSite(), isolation_info.frame_origin());
   EXPECT_EQ(kNIK, isolation_info.network_isolation_key());
   EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
   EXPECT_TRUE(isolation_info.opaque_and_non_transient());
@@ -327,13 +328,13 @@ TEST_F(IsolationInfoTest,
       features::kAppendFrameOriginToNetworkIsolationKey);
 
   const NetworkIsolationKey kNIK(kOrigin1, kOrigin1);
-  EXPECT_FALSE(kNIK.GetFrameOrigin());
+  EXPECT_FALSE(kNIK.GetFrameSite());
   IsolationInfo isolation_info = IsolationInfo::CreatePartial(
       IsolationInfo::RedirectMode::kUpdateTopFrame, kNIK);
   EXPECT_EQ(IsolationInfo::RedirectMode::kUpdateTopFrame,
             isolation_info.redirect_mode());
-  EXPECT_EQ(kOrigin1, isolation_info.top_frame_origin());
-  EXPECT_EQ(kOrigin1, isolation_info.frame_origin());
+  EXPECT_EQ(kSite1, isolation_info.top_frame_origin());
+  EXPECT_EQ(kSite1, isolation_info.frame_origin());
   EXPECT_EQ(kNIK, isolation_info.network_isolation_key());
   EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
   EXPECT_FALSE(isolation_info.opaque_and_non_transient());
@@ -348,12 +349,12 @@ TEST_F(IsolationInfoTest,
       features::kAppendFrameOriginToNetworkIsolationKey);
 
   const NetworkIsolationKey kNIK(kOrigin1, kOrigin2);
-  EXPECT_FALSE(kNIK.GetFrameOrigin());
+  EXPECT_FALSE(kNIK.GetFrameSite());
   IsolationInfo isolation_info = IsolationInfo::CreatePartial(
       IsolationInfo::RedirectMode::kUpdateFrameOnly, kNIK);
   EXPECT_EQ(IsolationInfo::RedirectMode::kUpdateFrameOnly,
             isolation_info.redirect_mode());
-  EXPECT_EQ(kOrigin1, isolation_info.top_frame_origin());
+  EXPECT_EQ(kSite1, isolation_info.top_frame_origin());
   ASSERT_TRUE(isolation_info.frame_origin());
   EXPECT_TRUE(isolation_info.frame_origin()->opaque());
   EXPECT_EQ(kNIK, isolation_info.network_isolation_key());
@@ -370,12 +371,12 @@ TEST_F(IsolationInfoTest,
       features::kAppendFrameOriginToNetworkIsolationKey);
 
   const NetworkIsolationKey kNIK(kOrigin1, kOrigin2);
-  EXPECT_FALSE(kNIK.GetFrameOrigin());
+  EXPECT_FALSE(kNIK.GetFrameSite());
   IsolationInfo isolation_info = IsolationInfo::CreatePartial(
       IsolationInfo::RedirectMode::kUpdateNothing, kNIK);
   EXPECT_EQ(IsolationInfo::RedirectMode::kUpdateNothing,
             isolation_info.redirect_mode());
-  EXPECT_EQ(kOrigin1, isolation_info.top_frame_origin());
+  EXPECT_EQ(kSite1, isolation_info.top_frame_origin());
   ASSERT_TRUE(isolation_info.frame_origin());
   EXPECT_TRUE(isolation_info.frame_origin()->opaque());
   EXPECT_EQ(kNIK, isolation_info.network_isolation_key());

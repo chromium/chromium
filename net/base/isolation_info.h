@@ -136,6 +136,10 @@ class NET_EXPORT IsolationInfo {
 
   // These may only be nullopt if created by the empty constructor. If one is
   // nullopt, both are, and SiteForCookies is null.
+  //
+  // Note that these are the values the IsolationInfo was created with. In the
+  // case an IsolationInfo was created from a NetworkIsolationKey, they may be
+  // scheme + eTLD+1 instead of actual origins.
   const base::Optional<url::Origin>& top_frame_origin() const {
     return top_frame_origin_;
   }

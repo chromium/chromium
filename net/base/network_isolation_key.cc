@@ -61,7 +61,7 @@ NetworkIsolationKey::NetworkIsolationKey(const url::Origin& top_frame_origin,
                           false /* opaque_and_non_transient */) {}
 
 NetworkIsolationKey::NetworkIsolationKey()
-    : use_frame_origin_(base::FeatureList::IsEnabled(
+    : use_frame_site_(base::FeatureList::IsEnabled(
           net::features::kAppendFrameOriginToNetworkIsolationKey)) {}
 
 NetworkIsolationKey::NetworkIsolationKey(
@@ -88,9 +88,9 @@ NetworkIsolationKey NetworkIsolationKey::CreateOpaqueAndNonTransient() {
 
 NetworkIsolationKey NetworkIsolationKey::CreateWithNewFrameOrigin(
     const url::Origin& new_frame_origin) const {
-  if (!top_frame_origin_)
+  if (!top_frame_site_)
     return NetworkIsolationKey();
-  NetworkIsolationKey key(top_frame_origin_.value(), new_frame_origin);
+  NetworkIsolationKey key(top_frame_site_.value(), new_frame_origin);
   key.opaque_and_non_transient_ = opaque_and_non_transient_;
   return key;
 }
@@ -103,19 +103,19 @@ std::string NetworkIsolationKey::ToString() const {
     // This key is opaque but not transient.
     DCHECK(opaque_and_non_transient_);
     return "opaque non-transient " +
-           top_frame_origin_->nonce_->token().ToString();
+           top_frame_site_->nonce_->token().ToString();
   }
 
-  return top_frame_origin_->Serialize() +
-         (use_frame_origin_ ? " " + frame_origin_->Serialize() : "");
+  return top_frame_site_->Serialize() +
+         (use_frame_site_ ? " " + frame_site_->Serialize() : "");
 }
 
 std::string NetworkIsolationKey::ToDebugString() const {
-  // The space-separated serialization of |top_frame_origin_| and
-  // |frame_origin_|.
-  std::string return_string = GetOriginDebugString(top_frame_origin_);
-  if (use_frame_origin_) {
-    return_string += " " + GetOriginDebugString(frame_origin_);
+  // The space-separated serialization of |top_frame_site_| and
+  // |frame_site_|.
+  std::string return_string = GetOriginDebugString(top_frame_site_);
+  if (use_frame_site_) {
+    return_string += " " + GetOriginDebugString(frame_site_);
   }
   if (IsFullyPopulated() && IsOpaque() && opaque_and_non_transient_) {
     return_string += " non-transient";
@@ -124,8 +124,8 @@ std::string NetworkIsolationKey::ToDebugString() const {
 }
 
 bool NetworkIsolationKey::IsFullyPopulated() const {
-  return top_frame_origin_.has_value() &&
-         (!use_frame_origin_ || frame_origin_.has_value());
+  return top_frame_site_.has_value() &&
+         (!use_frame_site_ || frame_site_.has_value());
 }
 
 bool NetworkIsolationKey::IsTransient() const {
@@ -148,15 +148,14 @@ bool NetworkIsolationKey::ToValue(base::Value* out_value) const {
     return false;
 
   base::Optional<std::string> top_frame_value =
-      top_frame_origin_->SerializeWithNonce();
+      top_frame_site_->SerializeWithNonce();
   if (!top_frame_value)
     return false;
   *out_value = base::Value(base::Value::Type::LIST);
   out_value->Append(std::move(*top_frame_value));
 
-  if (use_frame_origin_) {
-    base::Optional<std::string> frame_value =
-        frame_origin_->SerializeWithNonce();
+  if (use_frame_site_) {
+    base::Optional<std::string> frame_value = frame_site_->SerializeWithNonce();
     if (!frame_value)
       return false;
     out_value->Append(std::move(*frame_value));
@@ -220,29 +219,27 @@ bool NetworkIsolationKey::FromValue(
 }
 
 bool NetworkIsolationKey::IsEmpty() const {
-  return !top_frame_origin_.has_value() && !frame_origin_.has_value();
+  return !top_frame_site_.has_value() && !frame_site_.has_value();
 }
 
 NetworkIsolationKey::NetworkIsolationKey(const url::Origin& top_frame_origin,
                                          const url::Origin& frame_origin,
                                          bool opaque_and_non_transient)
     : opaque_and_non_transient_(opaque_and_non_transient),
-      use_frame_origin_(base::FeatureList::IsEnabled(
+      use_frame_site_(base::FeatureList::IsEnabled(
           net::features::kAppendFrameOriginToNetworkIsolationKey)),
-      top_frame_origin_(
-          SwitchToRegistrableDomainAndRemovePort(top_frame_origin)),
-      original_top_frame_origin_(top_frame_origin) {
+      top_frame_site_(
+          SwitchToRegistrableDomainAndRemovePort(top_frame_origin)) {
   DCHECK(!opaque_and_non_transient || top_frame_origin.opaque());
-  if (use_frame_origin_) {
+  if (use_frame_site_) {
     DCHECK(!opaque_and_non_transient || frame_origin.opaque());
-    frame_origin_ = SwitchToRegistrableDomainAndRemovePort(frame_origin);
-    original_frame_origin_ = frame_origin;
+    frame_site_ = SwitchToRegistrableDomainAndRemovePort(frame_origin);
   }
 }
 
 bool NetworkIsolationKey::IsOpaque() const {
-  return top_frame_origin_->opaque() ||
-         (use_frame_origin_ && frame_origin_->opaque());
+  return top_frame_site_->opaque() ||
+         (use_frame_site_ && frame_site_->opaque());
 }
 
 }  // namespace net

@@ -194,9 +194,7 @@ bool NetworkServiceNetworkDelegate::OnCanGetCookies(
           ->cookie_settings()
           .IsCookieAccessAllowed(request.url(),
                                  request.site_for_cookies().RepresentativeUrl(),
-                                 request.isolation_info()
-                                     .network_isolation_key()
-                                     .GetTopFrameOrigin());
+                                 request.isolation_info().top_frame_origin());
 
   if (!allowed)
     return false;

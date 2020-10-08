@@ -2219,7 +2219,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
           ->current_frame_host()
           ->ComputeSiteForCookies()
           .IsFirstParty(
-              expected_network_isolation_key.GetTopFrameOrigin()->GetURL()));
+              expected_network_isolation_key.GetTopFrameSite()->GetURL()));
 }
 
 // An iframe that starts at about:blank and is itself nested in a cross-site

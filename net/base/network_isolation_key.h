@@ -33,6 +33,7 @@ class NET_EXPORT NetworkIsolationKey {
  public:
   // Full constructor.  When a request is initiated by the top frame, it must
   // also populate the |frame_origin| parameter when calling this constructor.
+  // Arguments can be either origins or schemeful sites.
   NetworkIsolationKey(const url::Origin& top_frame_origin,
                       const url::Origin& frame_origin);
 
@@ -71,9 +72,8 @@ class NET_EXPORT NetworkIsolationKey {
 
   // Compare keys for equality, true if all enabled fields are equal.
   bool operator==(const NetworkIsolationKey& other) const {
-    return std::tie(top_frame_origin_, frame_origin_,
-                    opaque_and_non_transient_) ==
-           std::tie(other.top_frame_origin_, other.frame_origin_,
+    return std::tie(top_frame_site_, frame_site_, opaque_and_non_transient_) ==
+           std::tie(other.top_frame_site_, other.frame_site_,
                     other.opaque_and_non_transient_);
   }
 
@@ -84,9 +84,8 @@ class NET_EXPORT NetworkIsolationKey {
 
   // Provide an ordering for keys based on all enabled fields.
   bool operator<(const NetworkIsolationKey& other) const {
-    return std::tie(top_frame_origin_, frame_origin_,
-                    opaque_and_non_transient_) <
-           std::tie(other.top_frame_origin_, other.frame_origin_,
+    return std::tie(top_frame_site_, frame_site_, opaque_and_non_transient_) <
+           std::tie(other.top_frame_site_, other.frame_site_,
                     other.opaque_and_non_transient_);
   }
 
@@ -106,20 +105,15 @@ class NET_EXPORT NetworkIsolationKey {
   // disk related to it (e.g., disk cache).
   bool IsTransient() const;
 
-  // Getters for the original top frame and frame origins used as inputs to
-  // construct |this|. This could return different values from what the
-  // isolation key eventually uses based on whether the NIK uses eTLD+1 or not.
-  // WARNING(crbug.com/1032081): Note that these might not return the correct
-  // value associated with a request if the NIK on which this is called is from
-  // a component using multiple requests mapped to the same NIK.
-  const base::Optional<url::Origin>& GetTopFrameOrigin() const {
-    DCHECK_EQ(original_top_frame_origin_.has_value(),
-              top_frame_origin_.has_value());
-    return original_top_frame_origin_;
+  // Getters for the top frame and frame sites. These are actually scheme + site
+  // for HTTP/HTTPS origins, or original origins for other schemes and opaque
+  // origins. These accessors are primarily intended for IPC calls, and to be
+  // able to create an IsolationInfo from a NetworkIsolationKey.
+  const base::Optional<url::Origin>& GetTopFrameSite() const {
+    return top_frame_site_;
   }
-  const base::Optional<url::Origin>& GetFrameOrigin() const {
-    DCHECK_EQ(original_frame_origin_.has_value(), frame_origin_.has_value());
-    return original_frame_origin_;
+  const base::Optional<url::Origin>& GetFrameSite() const {
+    return frame_site_;
   }
 
   // Returns true if all parts of the key are empty.
@@ -143,11 +137,9 @@ class NET_EXPORT NetworkIsolationKey {
   friend class IsolationInfo;
   friend struct mojo::StructTraits<network::mojom::NetworkIsolationKeyDataView,
                                    net::NetworkIsolationKey>;
-  FRIEND_TEST_ALL_PREFIXES(NetworkIsolationKeyWithFrameOriginTest,
-                           UseRegistrableDomain);
 
-  NetworkIsolationKey(const url::Origin& top_frame_origin,
-                      const url::Origin& frame_origin,
+  NetworkIsolationKey(const url::Origin& top_frame_site,
+                      const url::Origin& frame_site,
                       bool opaque_and_non_transient);
 
   bool IsOpaque() const;
@@ -156,20 +148,14 @@ class NET_EXPORT NetworkIsolationKey {
   // created with |CreateOpaqueAndNonTransient|.
   bool opaque_and_non_transient_ = false;
 
-  // Whether or not to use the |frame_origin_| as part of the key.
-  bool use_frame_origin_;
+  // Whether or not to use the |frame_site_| as part of the key.
+  bool use_frame_site_;
 
   // The origin/etld+1 of the top frame of the page making the request.
-  base::Optional<url::Origin> top_frame_origin_;
-
-  // The original top frame origin sent to the constructor of this request.
-  base::Optional<url::Origin> original_top_frame_origin_;
+  base::Optional<url::Origin> top_frame_site_;
 
   // The origin/etld+1 of the frame that initiates the request.
-  base::Optional<url::Origin> frame_origin_;
-
-  // The original frame origin sent to the constructor of this request.
-  base::Optional<url::Origin> original_frame_origin_;
+  base::Optional<url::Origin> frame_site_;
 };
 
 }  // namespace net

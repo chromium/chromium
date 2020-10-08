@@ -17,14 +17,14 @@ template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     StructTraits<network::mojom::NetworkIsolationKeyDataView,
                  net::NetworkIsolationKey> {
-  static const base::Optional<url::Origin>& top_frame_origin(
+  static const base::Optional<url::Origin>& top_frame_site(
       const net::NetworkIsolationKey& input) {
-    return input.GetTopFrameOrigin();
+    return input.GetTopFrameSite();
   }
 
-  static const base::Optional<url::Origin>& frame_origin(
+  static const base::Optional<url::Origin>& frame_site(
       const net::NetworkIsolationKey& input) {
-    return input.GetFrameOrigin();
+    return input.GetFrameSite();
   }
 
   static bool opaque_and_non_transient(const net::NetworkIsolationKey& input) {

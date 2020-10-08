@@ -8,9 +8,13 @@ import "url/mojom/origin.mojom";
 
 // Mapped to net::NetworkIsolationKey.
 struct NetworkIsolationKey {
+  // These are not true origins, but rather schemeful sites | origins, depending
+  // on scheme.
+  //
   // Keeping optional to allow clients that do not populate top frame origin.
   // TODO(crbug.com/910721): This will eventually always be populated.
-  url.mojom.Origin? top_frame_origin;
-  url.mojom.Origin? frame_origin;
+  url.mojom.Origin? top_frame_site;
+  url.mojom.Origin? frame_site;
+
   bool opaque_and_non_transient;
 };

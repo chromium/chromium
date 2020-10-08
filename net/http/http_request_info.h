@@ -15,6 +15,7 @@
 #include "net/socket/socket_tag.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace net {
 
@@ -64,6 +65,14 @@ struct NET_EXPORT HttpRequestInfo {
   // If the request is a Reporting upload, the depth is the max of the depth
   // of the requests reported within it plus 1.
   int reporting_upload_depth;
+
+  // This may the top frame origin associated with a request, or it may be the
+  // top frame site.  Or it may be nullptr.  Only used for histograms.
+  //
+  // TODO(https://crbug.com/1136054): Investigate migrating the one consumer of
+  // this to NetworkIsolationKey::TopFrameSite().  That gives more consistent
+  /// behavior, and may still provide useful metrics.
+  base::Optional<url::Origin> possibly_top_frame_origin;
 };
 
 }  // namespace net

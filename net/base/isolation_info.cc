@@ -132,10 +132,10 @@ IsolationInfo IsolationInfo::CreatePartial(
   if (!network_isolation_key.IsFullyPopulated())
     return IsolationInfo();
 
-  url::Origin top_frame_origin = *network_isolation_key.GetTopFrameOrigin();
+  url::Origin top_frame_origin = *network_isolation_key.GetTopFrameSite();
   url::Origin frame_origin;
-  if (network_isolation_key.GetFrameOrigin().has_value()) {
-    frame_origin = *network_isolation_key.GetFrameOrigin();
+  if (network_isolation_key.GetFrameSite().has_value()) {
+    frame_origin = *network_isolation_key.GetFrameSite();
   } else if (redirect_mode == RedirectMode::kUpdateTopFrame) {
     frame_origin = top_frame_origin;
   } else {
