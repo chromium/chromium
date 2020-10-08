@@ -20,7 +20,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 /**
  * Class for launching the service manager only mode for tests.
  */
-public class ServicificationBackgroundService extends ChromeBackgroundService {
+public class ServicificationBackgroundService extends ChromeBackgroundServiceImpl {
     private boolean mLaunchBrowserCalled;
     private boolean mNativeLoaded;
     private boolean mSupportsServiceManagerOnly;

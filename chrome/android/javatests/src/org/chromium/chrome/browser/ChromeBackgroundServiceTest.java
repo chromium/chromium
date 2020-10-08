@@ -39,7 +39,7 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 public class ChromeBackgroundServiceTest {
     private MockTaskService mTaskService;
 
-    class MockTaskService extends ChromeBackgroundService {
+    class MockTaskService extends ChromeBackgroundServiceImpl {
         private boolean mDidLaunchBrowser;
         private boolean mDidCallOnPersistentSchedulerWakeUp;
         private boolean mDidCallOnBrowserUpgraded;

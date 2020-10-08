@@ -2068,8 +2068,11 @@ android_library("base_monochrome_module_java") {
 android_library("base_module_java") {
   sources = [
     "java/src/com/google/ipc/invalidation/ticl/android2/channel/GcmRegistrationTaskService.java",
+    "java/src/org/chromium/chrome/browser/ChromeBackgroundService.java",
     "java/src/org/chromium/chrome/browser/base/SplitChromeApplication.java",
     "java/src/org/chromium/chrome/browser/base/SplitCompatApplication.java",
+    "java/src/org/chromium/chrome/browser/base/SplitCompatGcmListenerService.java",
+    "java/src/org/chromium/chrome/browser/base/SplitCompatGcmTaskService.java",
     "java/src/org/chromium/chrome/browser/base/SplitCompatIntentService.java",
     "java/src/org/chromium/chrome/browser/base/SplitCompatJobService.java",
     "java/src/org/chromium/chrome/browser/base/SplitCompatRemoteViewsService.java",
@@ -2088,6 +2091,9 @@ android_library("base_module_java") {
     "java/src/org/chromium/chrome/browser/omaha/OmahaClient.java",
     "java/src/org/chromium/chrome/browser/photo_picker/DecoderService.java",
     "java/src/org/chromium/chrome/browser/prerender/ChromePrerenderService.java",
+    "java/src/org/chromium/chrome/browser/services/gcm/ChromeGcmListenerService.java",
+    "java/src/org/chromium/chrome/browser/services/gcm/GCMBackgroundService.java",
+    "java/src/org/chromium/chrome/browser/services/gcm/InvalidationGcmUpstreamSender.java",
     "java/src/org/chromium/chrome/browser/tracing/TracingNotificationService.java",
   ]
   deps = [
