@@ -43,9 +43,7 @@ inline constexpr WebSandboxFlags operator~(WebSandboxFlags flags) {
 
 // The output of |ParseSandboxPolicy(input)|.
 struct WebSandboxFlagsParsingResult {
-  // The complement of the parsed WebSandboxFlags policy.
-  // TODO(arthursonzogni): Update the caller of ParseWebSandboxPolicy(). They
-  // should directly use the policy instead of its complement.
+  // The parsed WebSandboxFlags policy.
   mojom::WebSandboxFlags flags;
 
   // The console error message to be displayed for invalid input. Empty when

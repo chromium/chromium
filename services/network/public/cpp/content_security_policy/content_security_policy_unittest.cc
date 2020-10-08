@@ -1014,9 +1014,9 @@ TEST(ContentSecurityPolicy, ParseSandbox) {
   AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
                                       &policies);
   EXPECT_EQ(policies[0]->sandbox,
-            mojom::WebSandboxFlags::kDownloads |
-                mojom::WebSandboxFlags::kScripts |
-                mojom::WebSandboxFlags::kAutomaticFeatures);
+            ~mojom::WebSandboxFlags::kDownloads &
+                ~mojom::WebSandboxFlags::kScripts &
+                ~mojom::WebSandboxFlags::kAutomaticFeatures);
 }
 
 TEST(ContentSecurityPolicy, ParseSerializedSourceList) {

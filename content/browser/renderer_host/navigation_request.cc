@@ -5024,7 +5024,7 @@ NavigationRequest::ComputeSandboxFlagsToCommit() {
   if (response_head_) {
     for (const auto& csp :
          response_head_->parsed_headers->content_security_policy) {
-      out |= ~(csp->sandbox);
+      out |= csp->sandbox;
     }
   }
 

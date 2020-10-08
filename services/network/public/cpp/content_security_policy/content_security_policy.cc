@@ -784,7 +784,7 @@ void AddContentSecurityPolicyFromHeader(base::StringPiece header,
         {
           auto sandbox = ParseWebSandboxPolicy(directive.second,
                                                mojom::WebSandboxFlags::kNone);
-          out->sandbox = ~sandbox.flags;
+          out->sandbox = sandbox.flags;
           out->parsing_errors.emplace_back(std::move(sandbox.error_message));
         }
         break;
