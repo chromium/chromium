@@ -1844,4 +1844,65 @@ TEST_F(CompositedLayerMappingTest,
   EXPECT_FALSE(GetSquashedLayerInScrollingContents(*mapping, *squashed));
 }
 
+// Unlike CompositingTest.WillChangeTransformHintInSVG, will-change hints on the
+// SVG element itself should not opt into creating layers after paint.
+TEST_F(CompositedLayerMappingTest, WillChangeTransformHintOnSVG) {
+  ScopedCompositeSVGForTest enable_feature(true);
+  SetBodyInnerHTML(R"HTML(
+    <svg width="99" height="99" id="willChange" style="will-change: transform;">
+      <rect width="100%" height="100%" fill="blue"></rect>
+    </svg>
+  )HTML");
+
+  Element* svg = GetDocument().getElementById("willChange");
+  PaintLayer* paint_layer =
+      ToLayoutBoxModelObject(svg->GetLayoutObject())->Layer();
+  GraphicsLayer* graphics_layer = paint_layer->GraphicsLayerBacking();
+  EXPECT_FALSE(graphics_layer->ShouldCreateLayersAfterPaint());
+}
+
+// Test that will-change changes inside SVG correctly update whether the
+// graphics layer should create layers after paint.
+TEST_F(CompositedLayerMappingTest, WillChangeTransformHintInSVGChanged) {
+  ScopedCompositeSVGForTest enable_feature(true);
+  SetBodyInnerHTML(R"HTML(
+    <svg width="99" height="99" id="svg" style="will-change: transform;">
+      <rect id="rect" width="100%" height="100%" fill="blue"></rect>
+    </svg>
+  )HTML");
+
+  Element* svg = GetDocument().getElementById("svg");
+  PaintLayer* paint_layer =
+      ToLayoutBoxModelObject(svg->GetLayoutObject())->Layer();
+  EXPECT_FALSE(
+      paint_layer->GraphicsLayerBacking()->ShouldCreateLayersAfterPaint());
+
+  Element* rect = GetDocument().getElementById("rect");
+  rect->setAttribute(html_names::kStyleAttr, "will-change: transform;");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(
+      paint_layer->GraphicsLayerBacking()->ShouldCreateLayersAfterPaint());
+
+  rect->removeAttribute(html_names::kStyleAttr);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(
+      paint_layer->GraphicsLayerBacking()->ShouldCreateLayersAfterPaint());
+
+  // Remove will-change from the svg element and perform the same tests. The
+  // z-index just ensures a paint layer exists so the test is similar.
+  svg->setAttribute(html_names::kStyleAttr, "z-index: 5;");
+  UpdateAllLifecyclePhasesForTest();
+  paint_layer = ToLayoutBoxModelObject(svg->GetLayoutObject())->Layer();
+  EXPECT_FALSE(paint_layer->GraphicsLayerBacking());
+
+  rect->setAttribute(html_names::kStyleAttr, "will-change: transform;");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(
+      paint_layer->GraphicsLayerBacking()->ShouldCreateLayersAfterPaint());
+
+  rect->removeAttribute(html_names::kStyleAttr);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(paint_layer->GraphicsLayerBacking());
+}
+
 }  // namespace blink

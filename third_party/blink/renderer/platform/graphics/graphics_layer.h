@@ -228,6 +228,7 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   bool PaintWithoutCommitForTesting(
       const base::Optional<IntRect>& interest_rect = base::nullopt);
 
+  void SetShouldCreateLayersAfterPaint(bool);
   bool ShouldCreateLayersAfterPaint() const {
     return should_create_layers_after_paint_;
   }
@@ -247,9 +248,6 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() final;
   bool FillsBoundsCompletely() const override { return false; }
   size_t GetApproximateUnsharedMemoryUsage() const final;
-
-  void UpdateShouldCreateLayersAfterPaint();
-  bool ComputeShouldCreateLayersAfterPaint() const;
 
   // Returns true if PaintController::PaintArtifact() changed and needs commit.
   bool PaintWithoutCommit(const IntRect* interest_rect = nullptr);

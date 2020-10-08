@@ -179,7 +179,6 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
                      const IntRect& interest_rect) const override;
   bool ShouldThrottleRendering() const override;
   bool IsUnderSVGHiddenContainer() const override;
-  bool IsSVGRoot() const override;
   bool IsTrackingRasterInvalidations() const override;
   void GraphicsLayersDidChange() override;
   bool PaintBlockedByDisplayLockIncludingAncestors() const override;

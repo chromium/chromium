@@ -26,11 +26,6 @@ class PLATFORM_EXPORT RefCountedPropertyTreeState {
     return *this = RefCountedPropertyTreeState(property_tree_state);
   }
 
-  bool HasDirectCompositingReasons() const {
-    return Transform().Unalias().HasDirectCompositingReasons() ||
-           Effect().Unalias().HasDirectCompositingReasons();
-  }
-
   const TransformPaintPropertyNodeOrAlias& Transform() const {
     return *transform_;
   }

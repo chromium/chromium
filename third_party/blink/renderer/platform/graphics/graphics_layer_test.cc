@@ -151,48 +151,4 @@ TEST_F(GraphicsLayerTest, ContentsLayer) {
   EXPECT_EQ(nullptr, graphics_layer.ContentsLayer());
 }
 
-TEST_F(GraphicsLayerTest, ShouldCreateLayersAfterPaint) {
-  FakeGraphicsLayerClient svg_root_client;
-  svg_root_client.SetIsSVGRoot(true);
-  auto svg_root_layer = std::make_unique<FakeGraphicsLayer>(svg_root_client);
-  svg_root_layer->SetDrawsContent(true);
-  svg_root_layer->SetHitTestable(true);
-  svg_root_layer->SetLayerState(PropertyTreeState::Root(), IntPoint());
-  layers_.graphics_layer().AddChild(svg_root_layer.get());
-  layers_.graphics_layer().SetDrawsContent(false);
-
-  auto effect = CreateOpacityEffect(EffectPaintPropertyNode::Root(), 1,
-                                    CompositingReason::kWillChangeOpacity);
-  svg_root_client.SetPainter([&](const GraphicsLayer* layer,
-                                 GraphicsContext& context,
-                                 GraphicsLayerPaintingPhase, const IntRect&) {
-    {
-      ScopedPaintChunkProperties properties(context.GetPaintController(),
-                                            *effect, *svg_root_layer,
-                                            kBackgroundType);
-      PaintControllerTestBase::DrawRect(context, *layer, kBackgroundType,
-                                        IntRect(0, 0, 100, 100));
-    }
-  });
-
-  svg_root_client.SetNeedsRepaint(true);
-  EXPECT_TRUE(layers_.graphics_layer().PaintRecursively());
-  EXPECT_TRUE(svg_root_layer->Repainted());
-  EXPECT_TRUE(svg_root_layer->ShouldCreateLayersAfterPaint());
-  svg_root_client.SetNeedsRepaint(false);
-  svg_root_layer->GetPaintController().FinishCycle();
-
-  svg_root_layer->SetDrawsContent(false);
-  layers_.graphics_layer().PaintRecursively();
-  EXPECT_FALSE(svg_root_layer->Repainted());
-  EXPECT_FALSE(svg_root_layer->ShouldCreateLayersAfterPaint());
-
-  svg_root_client.SetNeedsRepaint(true);
-  svg_root_layer->SetPaintsHitTest(true);
-  layers_.graphics_layer().PaintRecursively();
-  EXPECT_TRUE(svg_root_layer->Repainted());
-  EXPECT_TRUE(svg_root_layer->ShouldCreateLayersAfterPaint());
-  svg_root_layer->GetPaintController().FinishCycle();
-}
-
 }  // namespace blink

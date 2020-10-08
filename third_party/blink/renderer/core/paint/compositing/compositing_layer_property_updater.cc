@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
@@ -195,6 +196,14 @@ void CompositingLayerPropertyUpdater::Update(const LayoutObject& object) {
 
     mask_layer->SetLayerState(
         state, snapped_paint_offset + mask_layer->OffsetFromLayoutObject());
+  }
+
+  if (RuntimeEnabledFeatures::CompositeSVGEnabled()) {
+    if (object.IsSVGRoot()) {
+      main_graphics_layer->SetShouldCreateLayersAfterPaint(
+          ToLayoutSVGRoot(object).HasDescendantCompositingReasons() &&
+          main_graphics_layer->PaintsContentOrHitTest());
+    }
   }
 }
 

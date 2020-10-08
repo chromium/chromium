@@ -306,7 +306,6 @@ void GraphicsLayer::Paint() {
 
   if (PaintWithoutCommit()) {
     GetPaintController().CommitNewDisplayItems();
-    UpdateShouldCreateLayersAfterPaint();
   } else if (!needs_check_raster_invalidation_ &&
              GetPaintController().GetBenchmarkMode() !=
                  PaintBenchmarkMode::kForceRasterInvalidationAndConvert) {
@@ -355,10 +354,11 @@ void GraphicsLayer::Paint() {
   repainted_ = true;
 }
 
-void GraphicsLayer::UpdateShouldCreateLayersAfterPaint() {
-  bool new_create_layers_after_paint = ComputeShouldCreateLayersAfterPaint();
-  if (new_create_layers_after_paint != should_create_layers_after_paint_) {
-    should_create_layers_after_paint_ = new_create_layers_after_paint;
+void GraphicsLayer::SetShouldCreateLayersAfterPaint(
+    bool should_create_layers_after_paint) {
+  DCHECK(RuntimeEnabledFeatures::CompositeSVGEnabled());
+  if (should_create_layers_after_paint != should_create_layers_after_paint_) {
+    should_create_layers_after_paint_ = should_create_layers_after_paint;
     // Depending on |should_create_layers_after_paint_|, raster invalidation
     // will happen in via two different code paths. When it changes we need to
     // fully invalidate because the incremental raster invalidations of these
@@ -372,27 +372,6 @@ void GraphicsLayer::UpdateShouldCreateLayersAfterPaint() {
     // PaintController for CAP and pre-CAP.
     NotifyChildListChange();
   }
-}
-
-bool GraphicsLayer::ComputeShouldCreateLayersAfterPaint() const {
-  if (!RuntimeEnabledFeatures::CompositeSVGEnabled())
-    return false;
-  if (!PaintsContentOrHitTest())
-    return false;
-  // Only layerize content under SVG for now. This requires that the SVG root
-  // has a GraphicsLayer.
-  if (!client_.IsSVGRoot())
-    return false;
-  for (const auto& paint_chunk : GetPaintController().PaintChunks()) {
-    const auto& chunk_state = paint_chunk.properties;
-    if (chunk_state.GetPropertyTreeState() == GetPropertyTreeState())
-      continue;
-    // TODO(pdr): Check for direct compositing reasons along the chain from
-    // this state to the layer state.
-    if (chunk_state.HasDirectCompositingReasons())
-      return true;
-  }
-  return false;
 }
 
 bool GraphicsLayer::PaintWithoutCommitForTesting(
