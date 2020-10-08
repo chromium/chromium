@@ -7,11 +7,9 @@
 
 #include "base/macros.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 namespace views {
-class ButtonListener;
 class Checkbox;
 class ImageButton;
 }  // namespace views
@@ -25,7 +23,7 @@ class MigratableCreditCard;
 // A view composed of a checkbox or an image indicating migration results, card
 // network image, card network, last four digits of card number and card
 // expiration date. Used by LocalCardMigrationDialogView.
-class MigratableCardView : public views::View, public views::ButtonListener {
+class MigratableCardView : public views::View {
  public:
   static const char kViewClassName[];
 
@@ -34,23 +32,21 @@ class MigratableCardView : public views::View, public views::ButtonListener {
                      bool should_show_checkbox);
   ~MigratableCardView() override;
 
-  bool IsSelected();
-  std::string GetGuid();
+  bool IsSelected() const;
+  std::string GetGuid() const;
   base::string16 GetCardIdentifierString() const;
-
-  std::unique_ptr<views::View> GetMigratableCardDescriptionView(
-      const MigratableCreditCard& migratable_credit_card,
-      bool should_show_checkbox,
-      ButtonListener* listener);
 
   // views::View
   const char* GetClassName() const override;
 
-  // views::ButtonListener
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
  private:
-  MigratableCreditCard migratable_credit_card_;
+  std::unique_ptr<views::View> GetMigratableCardDescriptionView(
+      const MigratableCreditCard& migratable_credit_card,
+      bool should_show_checkbox);
+
+  void CheckboxPressed();
+
+  const MigratableCreditCard migratable_credit_card_;
 
   // The checkbox_ can remain null if the card list in the local
   // card migration dialog contains only one card.

@@ -41,7 +41,7 @@ MigratableCardView::MigratableCardView(
       provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI)));
 
   AddChildView(GetMigratableCardDescriptionView(migratable_credit_card,
-                                                should_show_checkbox, this)
+                                                should_show_checkbox)
                    .release());
 
   checkbox_uncheck_text_container_ = new views::View();
@@ -73,11 +73,11 @@ MigratableCardView::MigratableCardView(
 
 MigratableCardView::~MigratableCardView() = default;
 
-bool MigratableCardView::IsSelected() {
+bool MigratableCardView::IsSelected() const {
   return !checkbox_ || checkbox_->GetChecked();
 }
 
-std::string MigratableCardView::GetGuid() {
+std::string MigratableCardView::GetGuid() const {
   return migratable_credit_card_.credit_card().guid();
 }
 
@@ -86,11 +86,14 @@ base::string16 MigratableCardView::GetCardIdentifierString() const {
       .CardIdentifierStringForAutofillDisplay();
 }
 
+const char* MigratableCardView::GetClassName() const {
+  return kViewClassName;
+}
+
 std::unique_ptr<views::View>
 MigratableCardView::GetMigratableCardDescriptionView(
     const MigratableCreditCard& migratable_credit_card,
-    bool should_show_checkbox,
-    ButtonListener* listener) {
+    bool should_show_checkbox) {
   auto migratable_card_description_view = std::make_unique<views::View>();
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
 
@@ -112,14 +115,17 @@ MigratableCardView::GetMigratableCardDescriptionView(
   switch (migratable_credit_card.migration_status()) {
     case MigratableCreditCard::MigrationStatus::UNKNOWN: {
       if (should_show_checkbox) {
-        checkbox_ = new views::Checkbox(base::string16(), listener);
+        checkbox_ = migratable_card_description_view->AddChildView(
+            std::make_unique<views::Checkbox>(
+                base::string16(),
+                base::BindRepeating(&MigratableCardView::CheckboxPressed,
+                                    base::Unretained(this))));
         checkbox_->SetChecked(true);
         // TODO(crbug/867194): Currently the ink drop animation circle is
         // cropped by the border of scroll bar view. Find a way to adjust the
         // format.
         checkbox_->SetInkDropMode(views::InkDropHostView::InkDropMode::OFF);
         checkbox_->SetAssociatedLabel(card_description.get());
-        migratable_card_description_view->AddChildView(checkbox_);
       }
       break;
     }
@@ -183,7 +189,14 @@ MigratableCardView::GetMigratableCardDescriptionView(
         views::style::CONTEXT_LABEL, ChromeTextStyle::STYLE_RED));
 
     auto delete_card_from_local_button =
-        views::CreateVectorImageButtonWithNativeTheme(listener, kTrashCanIcon);
+        views::CreateVectorImageButtonWithNativeTheme(
+            base::BindRepeating(
+                [](LocalCardMigrationDialogView* parent_dialog,
+                   std::string guid) {
+                  parent_dialog->DeleteCard(std::move(guid));
+                },
+                parent_dialog_, GetGuid()),
+            kTrashCanIcon);
     delete_card_from_local_button->SetTooltipText(l10n_util::GetStringUTF16(
         IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_TRASH_CAN_BUTTON_TOOLTIP));
     delete_card_from_local_button_ =
@@ -194,26 +207,14 @@ MigratableCardView::GetMigratableCardDescriptionView(
   return migratable_card_description_view;
 }
 
-const char* MigratableCardView::GetClassName() const {
-  return kViewClassName;
-}
-
-void MigratableCardView::ButtonPressed(views::Button* sender,
-                                       const ui::Event& event) {
-  if (sender == checkbox_) {
-    // If the button clicked is a checkbox. Enable/disable the save
-    // button if needed.
-    parent_dialog_->DialogModelChanged();
-    // The warning text will be visible only when user unchecks the checkbox.
-    checkbox_uncheck_text_container_->SetVisible(!checkbox_->GetChecked());
-    InvalidateLayout();
-    parent_dialog_->UpdateLayout();
-  } else {
-    // Otherwise it is the trash can button clicked. Delete the corresponding
-    // card from local storage.
-    DCHECK_EQ(sender, delete_card_from_local_button_);
-    parent_dialog_->DeleteCard(GetGuid());
-  }
+void MigratableCardView::CheckboxPressed() {
+  // If the button clicked is a checkbox. Enable/disable the save
+  // button if needed.
+  parent_dialog_->DialogModelChanged();
+  // The warning text will be visible only when user unchecks the checkbox.
+  checkbox_uncheck_text_container_->SetVisible(!checkbox_->GetChecked());
+  InvalidateLayout();
+  parent_dialog_->UpdateLayout();
 }
 
 }  // namespace autofill

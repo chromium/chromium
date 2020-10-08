@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_SAVE_CARD_MANAGE_CARDS_BUBBLE_VIEWS_H_
 
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
-#include "ui/views/controls/button/button.h"
 
 namespace autofill {
 
@@ -16,8 +15,7 @@ namespace autofill {
 // clicking on the omnibox credit card icon. It contains a description of the
 // credit card that was just saved, a [Manage cards] button that links to the
 // Autofill settings page, and a [Done] button that closes the bubble.
-class SaveCardManageCardsBubbleViews : public SaveCardBubbleViews,
-                                       public views::ButtonListener {
+class SaveCardManageCardsBubbleViews : public SaveCardBubbleViews {
  public:
   // Bubble will be anchored to |anchor_view|.
   SaveCardManageCardsBubbleViews(views::View* anchor_view,
@@ -27,11 +25,6 @@ class SaveCardManageCardsBubbleViews : public SaveCardBubbleViews,
  private:
   std::unique_ptr<views::View> CreateMainContentView() override;
   std::unique_ptr<views::View> CreateSigninPromoView();
-
-  // views::ButtonListener:
-  // The button listener method for the extra view that contains
-  // the Manage cards button.
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   ~SaveCardManageCardsBubbleViews() override;
 
