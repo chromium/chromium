@@ -21,8 +21,6 @@
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "content/public/test/browser_test.h"
@@ -52,20 +50,11 @@ apps::FileHandler GetTestFileHandler(const std::string& action,
 }  // namespace
 
 class WebAppFileHandlerRegistrationLinuxBrowserTest
-    : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<ProviderType> {
+    : public InProcessBrowserTest {
  protected:
   WebAppFileHandlerRegistrationLinuxBrowserTest() {
-    if (GetParam() == ProviderType::kWebApps) {
-      scoped_feature_list_.InitWithFeatures(
-          {blink::features::kFileHandlingAPI,
-           features::kDesktopPWAsWithoutExtensions},
-          {});
-    } else if (GetParam() == ProviderType::kBookmarkApps) {
-      scoped_feature_list_.InitWithFeatures(
-          {blink::features::kFileHandlingAPI},
-          {features::kDesktopPWAsWithoutExtensions});
-    }
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kFileHandlingAPI);
   }
 
   AppRegistrar& registrar() {
@@ -84,7 +73,7 @@ class WebAppFileHandlerRegistrationLinuxBrowserTest
 
 // Verify that the MIME type registration callback is called and that
 // the caller behaves as expected.
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlerRegistrationLinuxBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlerRegistrationLinuxBrowserTest,
                        RegisterMimeTypesOnLinuxCallbackCalledSuccessfully) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(
@@ -118,11 +107,5 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlerRegistrationLinuxBrowserTest,
   EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result_code_.value());
   ASSERT_TRUE(path_reached);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebAppFileHandlerRegistrationLinuxBrowserTest,
-                         ::testing::Values(ProviderType::kBookmarkApps,
-                                           ProviderType::kWebApps),
-                         ProviderTypeParamToString);
 
 }  // namespace web_app
