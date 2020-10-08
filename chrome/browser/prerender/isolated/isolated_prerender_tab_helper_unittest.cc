@@ -409,10 +409,11 @@ TEST_F(IsolatedPrerenderTabHelperTest, FeatureDisabled) {
   EXPECT_FALSE(HasAfterSRPMetrics());
 }
 
-TEST_F(IsolatedPrerenderTabHelperTest, DataSaverDisabled) {
+TEST_F(IsolatedPrerenderTabHelperTest, DataSaverDisabled_Required) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kIsolatePrerenders);
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIsolatePrerenders, {{"lite_mode_only", "true"}});
 
   SetDataSaverEnabled(false);
 
@@ -444,6 +445,28 @@ TEST_F(IsolatedPrerenderTabHelperTest, DataSaverDisabled) {
       "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0);
 
   EXPECT_FALSE(HasAfterSRPMetrics());
+}
+
+TEST_F(IsolatedPrerenderTabHelperTest, DataSaverDisabled_NotRequired) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIsolatePrerenders, {{"lite_mode_only", "false"}});
+
+  SetDataSaverEnabled(false);
+
+  NavigateSomewhere();
+  GURL doc_url("https://www.google.com/search?q=cats");
+  GURL prediction_url("https://www.cat-food.com/");
+  MakeNavigationPrediction(web_contents(), doc_url, {prediction_url});
+
+  EXPECT_EQ(RequestCount(), 1);
+  EXPECT_EQ(predicted_urls_count(), 1U);
+  EXPECT_EQ(prefetch_eligible_count(), 1U);
+  EXPECT_EQ(prefetch_attempted_count(), 1U);
+  EXPECT_EQ(prefetch_successful_count(), 0U);
+  EXPECT_EQ(prefetch_total_redirect_count(), 0U);
+  EXPECT_TRUE(navigation_to_prefetch_start().has_value());
 }
 
 TEST_F(IsolatedPrerenderTabHelperTest, GoogleSRPOnly) {
