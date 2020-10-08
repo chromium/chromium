@@ -5,6 +5,7 @@
 #include "ash/app_list/app_list_color_provider_impl.h"
 
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/default_colors.h"
 
 namespace ash {
 
@@ -14,29 +15,30 @@ AppListColorProviderImpl::AppListColorProviderImpl()
 AppListColorProviderImpl::~AppListColorProviderImpl() = default;
 
 SkColor AppListColorProviderImpl::GetExpandArrowInkDropBaseColor() const {
-  return ash_color_provider_
-      ->GetRippleAttributes(GetExpandArrowIconBackgroundColor())
-      .base_color;
+  return DeprecatedGetShelfInkDropBaseColor(
+      SkColorSetARGB(0x14, 0xFF, 0xFF, 0xFF));
 }
 
 SkColor AppListColorProviderImpl::GetExpandArrowIconBaseColor() const {
-  return ash_color_provider_->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor);
+  return DeprecatedGetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonIconColor, SK_ColorWHITE);
 }
 
 SkColor AppListColorProviderImpl::GetExpandArrowIconBackgroundColor() const {
-  return ash_color_provider_->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+  return DeprecatedGetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
+      SkColorSetARGB(0xF, 0xFF, 0xFF, 0xFF));
 }
 
 SkColor AppListColorProviderImpl::GetAppListBackgroundColor() const {
-  return ash_color_provider_->GetShieldLayerColor(
-      AshColorProvider::ShieldLayerType::kShield80);
+  return DeprecatedGetShieldLayerColor(
+      AshColorProvider::ShieldLayerType::kShield80, gfx::kGoogleGrey900);
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxBackgroundColor() const {
-  return ash_color_provider_->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+  return DeprecatedGetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
+      SK_ColorWHITE);
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxCardBackgroundColor() const {
@@ -46,13 +48,15 @@ SkColor AppListColorProviderImpl::GetSearchBoxCardBackgroundColor() const {
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxPlaceholderTextColor() const {
-  return ash_color_provider_->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary);
+  return DeprecatedGetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary,
+      gfx::kGoogleGrey200);
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxTextColor() const {
-  return ash_color_provider_->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
+  return DeprecatedGetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary,
+      SkColorSetRGB(0x33, 0x33, 0x33));
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxSecondaryTextColor() const {
@@ -61,18 +65,20 @@ SkColor AppListColorProviderImpl::GetSearchBoxSecondaryTextColor() const {
 }
 
 SkColor AppListColorProviderImpl::GetSuggestionChipBackgroundColor() const {
-  return ash_color_provider_->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+  return DeprecatedGetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
+      SkColorSetA(gfx::kGoogleGrey100, 0x14));
 }
 
 SkColor AppListColorProviderImpl::GetSuggestionChipTextColor() const {
-  return ash_color_provider_->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
+  return DeprecatedGetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary,
+      gfx::kGoogleGrey100);
 }
 
 SkColor AppListColorProviderImpl::GetAppListItemTextColor() const {
-  return ash_color_provider_->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
+  return DeprecatedGetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary, SK_ColorBLACK);
 }
 
 SkColor AppListColorProviderImpl::GetPageSwitcherButtonColor() const {
