@@ -215,11 +215,11 @@ class CustomTabBarViewBrowserTest
     Install(std::move(web_app_info));
   }
 
-  Browser* app_browser_;
   BrowserView* browser_view_;
   LocationBarView* location_bar_;
   CustomTabBarView* custom_tab_bar_;
-  web_app::AppBrowserController* app_controller_;
+  Browser* app_browser_ = nullptr;
+  web_app::AppBrowserController* app_controller_ = nullptr;
 
  private:
   void Install(std::unique_ptr<WebApplicationInfo> web_app_info) {
@@ -271,8 +271,8 @@ IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest, IsNotCreatedInPopup) {
 
 IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest,
                        BackToAppButtonIsNotVisibleInOutOfScopePopups) {
-  const GURL& app_url = https_server()->GetURL("app.com", "/ssl/google.html");
-  const GURL& out_of_scope_url = GURL("https://example.com");
+  const GURL app_url = https_server()->GetURL("app.com", "/ssl/google.html");
+  const GURL out_of_scope_url = GURL("https://example.com");
 
   InstallBookmark(app_url);
   EXPECT_TRUE(app_browser_->is_type_app());
@@ -298,7 +298,7 @@ IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest,
 IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest, IsUsedForDesktopPWA) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  const GURL& url = https_server()->GetURL("app.com", "/ssl/google.html");
+  const GURL url = https_server()->GetURL("app.com", "/ssl/google.html");
   InstallPWA(url);
 
   EXPECT_TRUE(app_browser_);
@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest, IsUsedForDesktopPWA) {
 IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest, ShowsWithMixedContent) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  const GURL& url = https_server()->GetURL("app.com", "/ssl/google.html");
+  const GURL url = https_server()->GetURL("app.com", "/ssl/google.html");
   InstallPWA(url);
 
   ASSERT_TRUE(app_browser_);
@@ -345,11 +345,11 @@ IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest, ShowsWithMixedContent) {
 // The custom tab bar should update with the title and location of the current
 // page.
 IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest, TitleAndLocationUpdate) {
-  const GURL& app_url = https_server()->GetURL("app.com", "/ssl/google.html");
+  const GURL app_url = https_server()->GetURL("app.com", "/ssl/google.html");
 
   // This url is out of scope, because the CustomTabBar is not updated when it
   // is not shown.
-  const GURL& navigate_to = https_server()->GetURL("app.com", "/simple.html");
+  const GURL navigate_to = https_server()->GetURL("app.com", "/simple.html");
 
   InstallPWA(app_url);
 
@@ -373,7 +373,7 @@ IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest, TitleAndLocationUpdate) {
 // If the page doesn't specify a title, we should use the origin.
 IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest,
                        UsesLocationInsteadOfEmptyTitles) {
-  const GURL& app_url = https_server()->GetURL("app.com", "/ssl/google.html");
+  const GURL app_url = https_server()->GetURL("app.com", "/ssl/google.html");
   InstallPWA(app_url);
 
   EXPECT_TRUE(app_browser_);
@@ -394,7 +394,7 @@ IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest,
 // Closing the CCT should take you back to the last in scope url.
 IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest,
                        OutOfScopeUrlShouldBeClosable) {
-  const GURL& app_url = https_server()->GetURL("app.com", "/ssl/google.html");
+  const GURL app_url = https_server()->GetURL("app.com", "/ssl/google.html");
   InstallPWA(app_url);
 
   EXPECT_TRUE(app_browser_);
@@ -405,7 +405,7 @@ IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest,
   EXPECT_NE(app_view, browser_view_);
 
   // Perform an inscope navigation.
-  const GURL& other_app_url =
+  const GURL other_app_url =
       https_server()->GetURL("app.com", "/ssl/blank_page.html");
   NavigateAndWait(web_contents, other_app_url);
   EXPECT_FALSE(app_controller_->ShouldShowCustomTabBar());
@@ -432,7 +432,7 @@ IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest,
                        MAYBE_RightClickMenuShowsCopyUrl) {
-  const GURL& app_url = https_server()->GetURL("app.com", "/ssl/google.html");
+  const GURL app_url = https_server()->GetURL("app.com", "/ssl/google.html");
   InstallPWA(app_url);
   EXPECT_TRUE(app_browser_->is_type_app());
 
@@ -465,7 +465,7 @@ IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest,
 // the CustomTabBar.
 IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest,
                        ScopeAboveLaunchURLShouldBeOutOfScopeAndClosable) {
-  const GURL& app_url = https_server()->GetURL("app.com", "/ssl/google.html");
+  const GURL app_url = https_server()->GetURL("app.com", "/ssl/google.html");
   InstallPWA(app_url);
 
   EXPECT_TRUE(app_browser_);
@@ -477,7 +477,7 @@ IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest,
 
   // Navigate to a different page in the app scope, so we have something to come
   // back to.
-  const GURL& other_app_url =
+  const GURL other_app_url =
       https_server()->GetURL("app.com", "/ssl/blank_page.html");
   NavigateAndWait(web_contents, other_app_url);
   EXPECT_FALSE(app_controller_->ShouldShowCustomTabBar());
@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     CustomTabBarViewBrowserTest,
     WhenNoHistoryIsInScopeCloseShouldNavigateToAppLaunchURL) {
-  const GURL& app_url = https_server()->GetURL("app.com", "/ssl/google.html");
+  const GURL app_url = https_server()->GetURL("app.com", "/ssl/google.html");
   InstallPWA(app_url);
 
   EXPECT_TRUE(app_browser_);
@@ -532,8 +532,8 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest,
                        OriginsWithEmojiArePunyCoded) {
-  const GURL& app_url = https_server()->GetURL("app.com", "/ssl/google.html");
-  const GURL& navigate_to = GURL("https://🔒.example/ssl/blank_page.html");
+  const GURL app_url = https_server()->GetURL("app.com", "/ssl/google.html");
+  const GURL navigate_to = GURL("https://🔒.example/ssl/blank_page.html");
 
   InstallPWA(app_url);
 
@@ -554,8 +554,8 @@ IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest,
                        OriginsWithNonASCIICharactersDisplayNormally) {
-  const GURL& app_url = https_server()->GetURL("app.com", "/ssl/google.html");
-  const GURL& navigate_to = GURL("https://ΐ.example/ssl/blank_page.html");
+  const GURL app_url = https_server()->GetURL("app.com", "/ssl/google.html");
+  const GURL navigate_to = GURL("https://ΐ.example/ssl/blank_page.html");
 
   InstallPWA(app_url);
 
@@ -581,9 +581,9 @@ IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest,
   // We install over http because it's the easiest way to get a custom tab bar
   // in scope. A PWA won't be installed over http in the real world (it'd make a
   // shortcut app instead).
-  const GURL& app_url =
+  const GURL app_url =
       embedded_test_server()->GetURL("app.com", "/ssl/google.html");
-  const GURL& out_of_scope_url = GURL("https://example.com");
+  const GURL out_of_scope_url = GURL("https://example.com");
 
   InstallPWA(app_url);
 
@@ -630,9 +630,9 @@ IN_PROC_BROWSER_TEST_P(CustomTabBarViewBrowserTest,
                        BackToAppButtonIsNotVisibleInBookmarkAppOnOrigin) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  const GURL& app_url =
+  const GURL app_url =
       embedded_test_server()->GetURL("app.com", "/ssl/google.html");
-  const GURL& out_of_scope_url = GURL("https://example.com");
+  const GURL out_of_scope_url = GURL("https://example.com");
 
   InstallBookmark(app_url);
   EXPECT_TRUE(app_browser_->is_type_app());
