@@ -15,7 +15,6 @@
 #include "url/origin.h"
 
 namespace blink {
-enum WebMeaningfulLayout;
 class WebFrameWidget;
 class WebView;
 }
