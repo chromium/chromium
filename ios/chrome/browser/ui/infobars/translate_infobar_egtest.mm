@@ -247,12 +247,10 @@ void TestResponseProvider::GetLanguageResponse(
 @interface TranslateInfobarTestCase : WebHttpServerChromeTestCase
 @end
 
-@implementation TranslateInfobarTestCase {
-}
+@implementation TranslateInfobarTestCase
 
 - (void)setUp {
   [super setUp];
-
 
   // Set up the fake URL for the translate script to hit the mock HTTP server.
   GURL translateScriptURL = web::test::HttpServer::MakeUrl(

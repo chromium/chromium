@@ -111,11 +111,6 @@ void ResetAuthentication() {
 void RemoveInfoBarsAndPresentedState() {
   [ChromeTestCaseAppInterface removeInfoBarsAndPresentedState];
 }
-
-UIDeviceOrientation GetCurrentDeviceOrientation() {
-  return [[GREY_REMOTE_CLASS_IN_APP(UIDevice) currentDevice] orientation];
-}
-
 }  // namespace
 
 GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
@@ -228,7 +223,8 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
   [[self class] removeAnyOpenMenusAndInfoBars];
   [[self class] closeAllTabs];
 
-  if (GetCurrentDeviceOrientation() != _originalOrientation) {
+  if ([[GREY_REMOTE_CLASS_IN_APP(UIDevice) currentDevice] orientation] !=
+      _originalOrientation) {
     // Rotate the device back to the original orientation, since some tests
     // attempt to run in other orientations.
     [ChromeEarlGrey rotateDeviceToOrientation:_originalOrientation error:nil];
@@ -365,7 +361,8 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
 
   gIsMockAuthenticationDisabled = NO;
   _tearDownHandler = nil;
-  _originalOrientation = GetCurrentDeviceOrientation();
+  _originalOrientation =
+      [[GREY_REMOTE_CLASS_IN_APP(UIDevice) currentDevice] orientation];
 }
 
 // Returns the method name, e.g. "testSomething" of the test that is currently

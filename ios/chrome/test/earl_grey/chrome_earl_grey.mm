@@ -18,7 +18,6 @@
 #include "ios/web/public/test/element_selector.h"
 #include "net/base/mac/url_conversions.h"
 
-
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;
@@ -86,8 +85,7 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
 }
 
 - (BOOL)isKeyboardShownWithError:(NSError**)error {
-  return
-      [EarlGrey isKeyboardShownWithError:error];
+  return [EarlGrey isKeyboardShownWithError:error];
 }
 
 - (BOOL)isIPadIdiom {

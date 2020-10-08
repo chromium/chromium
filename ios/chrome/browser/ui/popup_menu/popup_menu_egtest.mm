@@ -33,8 +33,7 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
 // Rotate the device back to portrait if needed, since some tests attempt to run
 // in landscape.
 - (void)tearDown {
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
-                                error:nil];
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
   [super tearDown];
 }
 
