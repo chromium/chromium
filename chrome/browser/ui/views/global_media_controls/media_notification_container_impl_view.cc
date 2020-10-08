@@ -8,6 +8,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
@@ -63,8 +64,8 @@ constexpr int kMinMovementSquaredToBeDragging = 10;
 class MediaNotificationContainerImplView::DismissButton
     : public views::ImageButton {
  public:
-  explicit DismissButton(views::ButtonListener* listener)
-      : views::ImageButton(listener) {
+  explicit DismissButton(PressedCallback callback)
+      : views::ImageButton(std::move(callback)) {
     views::ConfigureVectorImageButton(this);
     views::InstallFixedSizeCircleHighlightPathGenerator(
         this, kDismissButtonBackgroundRadius);
@@ -81,7 +82,14 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     MediaNotificationService* service,
     base::Optional<media_message_center::NotificationTheme> theme)
-    : views::Button(this),
+    : views::Button(base::BindRepeating(
+          [](MediaNotificationContainerImplView* view) {
+            // If |is_dragging_| is set, this click should be treated as a drag
+            // and not fire ContainerClicked().
+            if (!view->is_dragging_)
+              view->ContainerClicked();
+          },
+          base::Unretained(this))),
       id_(id),
       foreground_color_(kDefaultForegroundColor),
       background_color_(kDefaultBackgroundColor),
@@ -114,7 +122,9 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
   dismiss_button_container_ = dismiss_button_placeholder_->AddChildView(
       std::move(dismiss_button_container));
 
-  auto dismiss_button = std::make_unique<DismissButton>(this);
+  auto dismiss_button = std::make_unique<DismissButton>(base::BindRepeating(
+      &MediaNotificationContainerImplView::DismissNotification,
+      base::Unretained(this)));
   dismiss_button->SetPreferredSize(kDismissButtonSize);
   dismiss_button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   dismiss_button->SetTooltipText(l10n_util::GetStringUTF16(
@@ -123,16 +133,16 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
       dismiss_button_container_->AddChildView(std::move(dismiss_button));
   UpdateDismissButtonIcon();
 
-  bool is_local_media_session =
-      item ? item->SourceType() ==
-                 media_message_center::SourceType::kLocalMediaSession
-           : false;
-  bool is_cast_notification =
-      item ? item->SourceType() == media_message_center::SourceType::kCast
-           : false;
-  if (is_cast_notification) {
-    cast_item_ = static_cast<CastMediaNotificationItem*>(item.get());
-  }
+  // Compute a few things related to |item| before the construction of |view|
+  // below moves it.
+  const bool is_cast_notification =
+      item && item->SourceType() == media_message_center::SourceType::kCast;
+  auto* const cast_item =
+      is_cast_notification ? static_cast<CastMediaNotificationItem*>(item.get())
+                           : nullptr;
+  const bool is_local_media_session =
+      item && item->SourceType() ==
+                  media_message_center::SourceType::kLocalMediaSession;
 
   std::unique_ptr<media_message_center::MediaNotificationView> view;
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI)) {
@@ -166,8 +176,15 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
 
     stop_cast_button_ =
         stop_button_strip_->AddChildView(std::make_unique<views::LabelButton>(
-            this, l10n_util::GetStringUTF16(
-                      IDS_GLOBAL_MEDIA_CONTROLS_STOP_CASTING_BUTTON_LABEL)));
+            base::BindRepeating(
+                [](CastMediaNotificationItem* cast_item) {
+                  media_router::MediaRouterFactory::GetApiForBrowserContext(
+                      cast_item->profile())
+                      ->TerminateRoute(cast_item->route_id());
+                },
+                base::Unretained(cast_item)),
+            l10n_util::GetStringUTF16(
+                IDS_GLOBAL_MEDIA_CONTROLS_STOP_CASTING_BUTTON_LABEL)));
     stop_cast_button_->SetInkDropMode(InkDropMode::ON);
     stop_cast_button_->SetHasInkDropActionOnClick(true);
     stop_cast_button_->SetInkDropBaseColor(foreground_color_);
@@ -452,25 +469,6 @@ ui::Layer* MediaNotificationContainerImplView::GetSlideOutLayer() {
 
 void MediaNotificationContainerImplView::OnSlideOut() {
   DismissNotification();
-}
-
-void MediaNotificationContainerImplView::ButtonPressed(views::Button* sender,
-                                                       const ui::Event& event) {
-  if (sender == dismiss_button_) {
-    DismissNotification();
-  } else if (sender == stop_cast_button_) {
-    media_router::MediaRouter* router =
-        media_router::MediaRouterFactory::GetApiForBrowserContext(
-            cast_item_->profile());
-    router->TerminateRoute(cast_item_->route_id());
-  } else if (sender == this) {
-    // If |is_dragging_| is set, this click should be treated as a drag and not
-    // fire the |OnContainerClicked()| event.
-    if (!is_dragging_)
-      ContainerClicked();
-  } else {
-    NOTREACHED();
-  }
 }
 
 void MediaNotificationContainerImplView::AddObserver(

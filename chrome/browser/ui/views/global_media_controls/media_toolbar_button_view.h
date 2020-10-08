@@ -20,8 +20,7 @@ class MediaToolbarButtonObserver;
 // of its parent ToolbarView. The icon is made visible when there is an active
 // media session.
 class MediaToolbarButtonView : public ToolbarButton,
-                               public MediaToolbarButtonControllerDelegate,
-                               public views::ButtonListener {
+                               public MediaToolbarButtonControllerDelegate {
  public:
   explicit MediaToolbarButtonView(BrowserView* browser_view);
   ~MediaToolbarButtonView() override;
@@ -35,13 +34,12 @@ class MediaToolbarButtonView : public ToolbarButton,
   void Enable() override;
   void Disable() override;
 
-  // views::ButtonListener implementation.
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // ToolbarButton implementation.
   void UpdateIcon() override;
 
  private:
+  void ButtonPressed();
+
   const Browser* const browser_;
 
   MediaNotificationService* const service_;

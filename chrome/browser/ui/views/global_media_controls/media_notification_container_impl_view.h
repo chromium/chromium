@@ -9,7 +9,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view_delegate.h"
 #include "chrome/browser/ui/views/global_media_controls/overlay_media_notification_view.h"
@@ -18,7 +17,6 @@
 #include "media/audio/audio_device_description.h"
 #include "media/base/media_switches.h"
 #include "ui/views/animation/slide_out_controller_delegate.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -45,7 +43,6 @@ class MediaNotificationContainerImplView
       public MediaNotificationContainerImpl,
       public MediaNotificationDeviceSelectorViewDelegate,
       public views::SlideOutControllerDelegate,
-      public views::ButtonListener,
       public views::FocusChangeListener {
  public:
   MediaNotificationContainerImplView(
@@ -89,9 +86,6 @@ class MediaNotificationContainerImplView
   void OnSlideStarted() override {}
   void OnSlideChanged(bool in_progress) override {}
   void OnSlideOut() override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // MediaNotificationContainerImpl:
   void AddObserver(MediaNotificationContainerObserver* observer) override;
@@ -219,8 +213,6 @@ class MediaNotificationContainerImplView
   views::UniqueWidgetPtr drag_image_widget_;
 
   MediaNotificationService* const service_;
-
-  CastMediaNotificationItem* cast_item_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(MediaNotificationContainerImplView);
 };

@@ -62,18 +62,15 @@ DeviceEntryUI::DeviceEntryUI(const std::string& raw_device_id,
                              const std::string& subtext)
     : raw_device_id_(raw_device_id), device_name_(device_name), icon_(icon) {}
 
-AudioDeviceEntryView::AudioDeviceEntryView(
-    views::ButtonListener* button_listener,
-    SkColor foreground_color,
-    SkColor background_color,
-    const std::string& raw_device_id,
-    const std::string& device_name,
-    const std::string& subtext)
+AudioDeviceEntryView::AudioDeviceEntryView(PressedCallback callback,
+                                           SkColor foreground_color,
+                                           SkColor background_color,
+                                           const std::string& raw_device_id,
+                                           const std::string& device_name)
     : DeviceEntryUI(raw_device_id, device_name, &vector_icons::kHeadsetIcon),
-      HoverButton(button_listener,
+      HoverButton(std::move(callback),
                   GetAudioDeviceIcon(),
-                  base::UTF8ToUTF16(device_name),
-                  base::UTF8ToUTF16(subtext)) {
+                  base::UTF8ToUTF16(device_name)) {
   ChangeEntryColor(static_cast<views::ImageView*>(icon_view()), title(),
                    subtitle(), icon_, foreground_color, background_color);
 
@@ -117,14 +114,17 @@ DeviceEntryUIType AudioDeviceEntryView::GetType() const {
   return DeviceEntryUIType::kAudio;
 }
 
-CastDeviceEntryView::CastDeviceEntryView(views::ButtonListener* button_listener,
-                                         SkColor foreground_color,
-                                         SkColor background_color,
-                                         const media_router::UIMediaSink& sink)
+CastDeviceEntryView::CastDeviceEntryView(
+    base::RepeatingCallback<void(CastDeviceEntryView*)> callback,
+    SkColor foreground_color,
+    SkColor background_color,
+    const media_router::UIMediaSink& sink)
     : DeviceEntryUI(sink.id,
                     base::UTF16ToUTF8(sink.friendly_name),
                     CastDialogSinkButton::GetVectorIcon(sink.icon_type)),
-      CastDialogSinkButton(PressedCallback(button_listener, this), sink) {
+      CastDialogSinkButton(
+          base::BindRepeating(std::move(callback), base::Unretained(this)),
+          sink) {
   switch (sink.state) {
     // If the sink state is CONNECTING or DISCONNECTING, a throbber icon will
     // show up. The icon's color remains unchanged.

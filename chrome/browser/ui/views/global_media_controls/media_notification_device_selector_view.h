@@ -26,7 +26,6 @@ class MediaNotificationDeviceSelectorViewDelegate;
 
 class MediaNotificationDeviceSelectorView
     : public views::View,
-      public views::ButtonListener,
       public IconLabelBubbleView::Delegate,
       public media_router::CastDialogController::Observer {
  public:
@@ -48,9 +47,6 @@ class MediaNotificationDeviceSelectorView
 
   // Called when the audio device switching has become enabled or disabled.
   void UpdateIsAudioDeviceSwitchingEnabled(bool enabled);
-
-  // views::ButtonListener
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // IconLabelBubbleView::Delegate
   SkColor GetIconLabelBubbleSurroundingForegroundColor() const override;
@@ -88,6 +84,7 @@ class MediaNotificationDeviceSelectorView
 
   void UpdateVisibility();
   bool ShouldBeVisible() const;
+  void ExpandButtonPressed();
   void ShowDevices();
   void HideDevices();
   void RemoveDevicesOfType(DeviceEntryUIType type);

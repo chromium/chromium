@@ -102,8 +102,9 @@ MediaNotificationDeviceSelectorView::MediaNotificationDeviceSelectorView(
 
   expand_button_ = expand_button_strip_->AddChildView(
       std::make_unique<ExpandDeviceSelectorButton>(this));
-  expand_button_->set_callback(
-      views::Button::PressedCallback(this, expand_button_));
+  expand_button_->set_callback(base::BindRepeating(
+      &MediaNotificationDeviceSelectorView::ExpandButtonPressed,
+      base::Unretained(this)));
 
   device_entry_views_container_ = AddChildView(std::make_unique<views::View>());
   device_entry_views_container_->SetLayoutManager(
@@ -185,8 +186,11 @@ void MediaNotificationDeviceSelectorView::UpdateAvailableAudioDevices(
   bool current_device_still_exists = false;
   for (auto description : device_descriptions) {
     auto device_entry_view = std::make_unique<AudioDeviceEntryView>(
-        this, foreground_color_, background_color_, description.unique_id,
-        description.device_name, "");
+        base::BindRepeating(
+            &MediaNotificationDeviceSelectorViewDelegate::OnAudioSinkChosen,
+            base::Unretained(delegate_), description.unique_id),
+        foreground_color_, background_color_, description.unique_id,
+        description.device_name);
     device_entry_view->set_tag(next_tag_++);
     device_entry_ui_map_[device_entry_view->tag()] = device_entry_view.get();
     device_entry_views_container_->AddChildView(std::move(device_entry_view));
@@ -218,32 +222,6 @@ void MediaNotificationDeviceSelectorView::OnColorsChanged(
   expand_button_->OnColorsChanged();
 
   SchedulePaint();
-}
-
-void MediaNotificationDeviceSelectorView::ButtonPressed(
-    views::Button* sender,
-    const ui::Event& event) {
-  if (sender == expand_button_) {
-    if (is_expanded_)
-      HideDevices();
-    else
-      ShowDevices();
-
-    delegate_->OnDeviceSelectorViewSizeChanged();
-  } else {
-    auto* device_entry = GetDeviceEntryUI(sender);
-    switch (device_entry->GetType()) {
-      case DeviceEntryUIType::kAudio:
-        delegate_->OnAudioSinkChosen(device_entry->raw_device_id());
-        break;
-      case DeviceEntryUIType::kCast:
-        StartCastSession(static_cast<CastDeviceEntryView*>(device_entry));
-        break;
-      default:
-        NOTREACHED();
-        break;
-    }
-  }
 }
 
 SkColor MediaNotificationDeviceSelectorView::
@@ -330,6 +308,14 @@ bool MediaNotificationDeviceSelectorView::ShouldBeVisible() const {
   return device_entry_views_container_->children().size() > 2;
 }
 
+void MediaNotificationDeviceSelectorView::ExpandButtonPressed() {
+  if (is_expanded_)
+    HideDevices();
+  else
+    ShowDevices();
+  delegate_->OnDeviceSelectorViewSizeChanged();
+}
+
 void MediaNotificationDeviceSelectorView::UpdateIsAudioDeviceSwitchingEnabled(
     bool enabled) {
   if (enabled == is_audio_device_switching_enabled_)
@@ -367,7 +353,10 @@ void MediaNotificationDeviceSelectorView::OnModelUpdated(
   has_cast_device_ = !model.media_sinks().empty();
   for (auto sink : model.media_sinks()) {
     auto device_entry_view = std::make_unique<CastDeviceEntryView>(
-        this, foreground_color_, background_color_, sink);
+        base::BindRepeating(
+            &MediaNotificationDeviceSelectorView::StartCastSession,
+            base::Unretained(this)),
+        foreground_color_, background_color_, sink);
     device_entry_view->set_tag(next_tag_++);
     device_entry_ui_map_[device_entry_view->tag()] = device_entry_view.get();
     device_entry_views_container_->AddChildView(std::move(device_entry_view));

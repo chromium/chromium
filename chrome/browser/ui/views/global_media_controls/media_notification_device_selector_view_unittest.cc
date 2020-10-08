@@ -18,6 +18,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/views/test/button_test_api.h"
 
 using media_router::CastDialogController;
 using media_router::CastDialogModel;
@@ -164,10 +165,9 @@ class MediaNotificationDeviceSelectorViewTest : public ChromeViewsTestBase {
   }
 
   void SimulateButtonClick(views::View* view) {
-    view_->ButtonPressed(
-        static_cast<views::Button*>(view),
-        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                       ui::EventTimeForNow(), 0, 0));
+    views::test::ButtonTestApi(static_cast<views::Button*>(view))
+        .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                    gfx::Point(), ui::EventTimeForNow(), 0, 0));
   }
 
   std::string EntryLabelText(views::View* entry_view) {

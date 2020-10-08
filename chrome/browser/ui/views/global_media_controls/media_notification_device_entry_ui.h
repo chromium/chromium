@@ -42,12 +42,11 @@ class DeviceEntryUI {
 
 class AudioDeviceEntryView : public DeviceEntryUI, public HoverButton {
  public:
-  AudioDeviceEntryView(views::ButtonListener* button_listener,
+  AudioDeviceEntryView(PressedCallback callback,
                        SkColor foreground_color,
                        SkColor background_color,
                        const std::string& raw_device_id,
-                       const std::string& name,
-                       const std::string& subtext = "");
+                       const std::string& name);
   ~AudioDeviceEntryView() override = default;
 
   // DeviceEntryUI
@@ -64,10 +63,11 @@ class AudioDeviceEntryView : public DeviceEntryUI, public HoverButton {
 class CastDeviceEntryView : public DeviceEntryUI,
                             public media_router::CastDialogSinkButton {
  public:
-  CastDeviceEntryView(views::ButtonListener* button_listener,
-                      SkColor foreground_color,
-                      SkColor background_color,
-                      const media_router::UIMediaSink& sink);
+  CastDeviceEntryView(
+      base::RepeatingCallback<void(CastDeviceEntryView*)> callback,
+      SkColor foreground_color,
+      SkColor background_color,
+      const media_router::UIMediaSink& sink);
   ~CastDeviceEntryView() override = default;
 
   // DeviceEntryUI

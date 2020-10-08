@@ -29,7 +29,8 @@
 #include "ui/views/controls/button/button_controller.h"
 
 MediaToolbarButtonView::MediaToolbarButtonView(BrowserView* browser_view)
-    : ToolbarButton(PressedCallback(this, this)),
+    : ToolbarButton(base::BindRepeating(&MediaToolbarButtonView::ButtonPressed,
+                                        base::Unretained(this))),
       browser_(browser_view->browser()),
       service_(MediaNotificationServiceFactory::GetForProfile(
           browser_view->browser()->profile())),
@@ -63,21 +64,6 @@ void MediaToolbarButtonView::AddObserver(MediaToolbarButtonObserver* observer) {
 void MediaToolbarButtonView::RemoveObserver(
     MediaToolbarButtonObserver* observer) {
   observers_.RemoveObserver(observer);
-}
-
-void MediaToolbarButtonView::ButtonPressed(views::Button* sender,
-                                           const ui::Event& event) {
-  if (MediaDialogView::IsShowing()) {
-    MediaDialogView::HideDialog();
-  } else {
-    MediaDialogView::ShowDialog(this, service_);
-
-    feature_promo_controller_->CloseBubble(
-        feature_engagement::kIPHLiveCaptionFeature);
-
-    for (auto& observer : observers_)
-      observer.OnMediaDialogOpened();
-  }
 }
 
 void MediaToolbarButtonView::Show() {
@@ -123,4 +109,18 @@ void MediaToolbarButtonView::UpdateIcon() {
   const gfx::VectorIcon& icon =
       touch_ui ? kMediaToolbarButtonTouchIcon : kMediaToolbarButtonIcon;
   UpdateIconsWithStandardColors(icon);
+}
+
+void MediaToolbarButtonView::ButtonPressed() {
+  if (MediaDialogView::IsShowing()) {
+    MediaDialogView::HideDialog();
+  } else {
+    MediaDialogView::ShowDialog(this, service_);
+
+    feature_promo_controller_->CloseBubble(
+        feature_engagement::kIPHLiveCaptionFeature);
+
+    for (auto& observer : observers_)
+      observer.OnMediaDialogOpened();
+  }
 }
