@@ -68,11 +68,9 @@ bool ScopedJavaSurface::IsValid() const {
 }
 
 // static
-ScopedJavaSurface ScopedJavaSurface::AcquireExternalSurface(jobject surface) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> surface_ref;
-  surface_ref.Reset(env, surface);
-  ScopedJavaSurface scoped_surface(surface_ref);
+ScopedJavaSurface ScopedJavaSurface::AcquireExternalSurface(
+    const base::android::JavaRef<jobject>& surface) {
+  ScopedJavaSurface scoped_surface(surface);
   scoped_surface.auto_release_ = false;
   scoped_surface.is_protected_ = true;
   return scoped_surface;

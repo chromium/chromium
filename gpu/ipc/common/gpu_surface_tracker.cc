@@ -17,14 +17,14 @@ namespace gpu {
 #if defined(OS_ANDROID)
 GpuSurfaceTracker::SurfaceRecord::SurfaceRecord(
     gfx::AcceleratedWidget widget,
-    jobject j_surface,
+    const base::android::JavaRef<jobject>& j_surface,
     bool can_be_used_with_surface_control)
     : widget(widget),
       can_be_used_with_surface_control(can_be_used_with_surface_control) {
-  // TODO(liberato): It would be nice to assert |surface != nullptr|, but we
+  // TODO(liberato): It would be nice to assert |surface|, but we
   // can't.  in_process_context_factory.cc (for tests) actually calls us without
   // a Surface from java.  Presumably, nobody uses it.  crbug.com/712717 .
-  if (j_surface != nullptr)
+  if (j_surface)
     surface = gl::ScopedJavaSurface::AcquireExternalSurface(j_surface);
 }
 #else   // defined(OS_ANDROID)
@@ -98,8 +98,7 @@ gl::ScopedJavaSurface GpuSurfaceTracker::AcquireJavaSurface(
 
   *can_be_used_with_surface_control =
       it->second.can_be_used_with_surface_control;
-  return gl::ScopedJavaSurface::AcquireExternalSurface(
-      j_surface.j_surface().obj());
+  return gl::ScopedJavaSurface::AcquireExternalSurface(j_surface.j_surface());
 }
 #endif
 

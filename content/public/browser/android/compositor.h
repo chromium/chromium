@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_ANDROID_COMPOSITOR_H_
 #define CONTENT_PUBLIC_BROWSER_ANDROID_COMPOSITOR_H_
 
+#include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "cc/resources/ui_resource_bitmap.h"
 #include "cc/trees/layer_tree_host_client.h"
@@ -72,7 +73,7 @@ class CONTENT_EXPORT Compositor {
   virtual const gfx::Size& GetWindowBounds() = 0;
 
   // Set the output surface which the compositor renders into.
-  virtual void SetSurface(jobject surface,
+  virtual void SetSurface(const base::android::JavaRef<jobject>& surface,
                           bool can_be_used_with_surface_control) = 0;
 
   // Set the background color used by the layer tree host.

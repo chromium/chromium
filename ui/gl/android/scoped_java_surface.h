@@ -36,7 +36,8 @@ class GL_EXPORT ScopedJavaSurface {
 
   // Creates a ScopedJavaSurface that is owned externally, i.e.,
   // someone else is responsible to call Surface.release().
-  static ScopedJavaSurface AcquireExternalSurface(jobject surface);
+  static ScopedJavaSurface AcquireExternalSurface(
+      const base::android::JavaRef<jobject>& surface);
 
   ~ScopedJavaSurface();
 
