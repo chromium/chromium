@@ -201,8 +201,8 @@ public class TabPersistentStoreTest {
         }
     }
 
-    private final TabWindowManager.TabModelSelectorFactory mMockTabModelSelectorFactory =
-            new TabWindowManager.TabModelSelectorFactory() {
+    private final TabModelSelectorFactory mMockTabModelSelectorFactory =
+            new TabModelSelectorFactory() {
                 @Override
                 public TabModelSelector buildSelector(Activity activity,
                         TabCreatorManager tabCreatorManager,

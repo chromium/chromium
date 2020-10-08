@@ -19,7 +19,8 @@ public class TabWindowManagerSingleton {
     public static TabWindowManager getInstance() {
         ThreadUtils.assertOnUiThread();
         if (sInstance == null) {
-            sInstance = new TabWindowManager(AsyncTabParamsManagerSingleton.getInstance());
+            sInstance = new TabWindowManager(new DefaultTabModelSelectorFactory(),
+                    AsyncTabParamsManagerSingleton.getInstance());
         }
         return sInstance;
     }

@@ -29,6 +29,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelFilterProvider.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelector.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorFactory.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabModelObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabObserver.java",
