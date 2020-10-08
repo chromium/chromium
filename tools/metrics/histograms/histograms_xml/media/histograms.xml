@@ -1239,6 +1239,35 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.CrosGlobalMediaControls.QuickSettingUserAction"
+    enum="MediaSessionAction" expires_after="2021-10-07">
+  <owner>jazzhsue@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    The action user clicked on the media controls in quick settings.
+  </summary>
+</histogram>
+
+<histogram name="Media.CrosGlobalMediaControls.RepeatUsageInQuickSetting"
+    enum="BooleanIsRepeat" expires_after="2021-10-07">
+  <owner>jazzhsue@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Record each time media controls' sub-menu in quick settings is opened. True
+    if it is a repeat usage.
+  </summary>
+</histogram>
+
+<histogram name="Media.CrosGlobalMediaControls.RepeatUsageOnShelf"
+    enum="BooleanIsRepeat" expires_after="2021-10-07">
+  <owner>jazzhsue@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Record each time global media controls on the shelf is opened. True if it is
+    a repeat usage.
+  </summary>
+</histogram>
+
 <histogram name="Media.D3D11.DecoderLifetimeProgression"
     enum="D3D11LifetimeProgression" expires_after="2020-09-07">
   <owner>liberato@chromium.org</owner>

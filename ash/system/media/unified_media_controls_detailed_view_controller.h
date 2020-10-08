@@ -28,6 +28,8 @@ class ASH_EXPORT UnifiedMediaControlsDetailedViewController
  private:
   friend class UnifiedMediaControlsDetailedViewControllerTest;
 
+  static bool detailed_view_has_shown_;
+
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 };
 

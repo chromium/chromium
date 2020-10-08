@@ -98,6 +98,8 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
 
   views::View* content_view_ = nullptr;
   views::View* empty_state_view_ = nullptr;
+
+  bool bubble_has_shown_ = false;
 };
 
 }  // namespace ash

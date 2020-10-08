@@ -10,9 +10,14 @@
 #include "ash/system/media/unified_media_controls_detailed_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/tray_constants.h"
+#include "base/metrics/histogram_functions.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
+
+// static
+bool UnifiedMediaControlsDetailedViewController::detailed_view_has_shown_ =
+    false;
 
 UnifiedMediaControlsDetailedViewController::
     UnifiedMediaControlsDetailedViewController(
@@ -30,6 +35,12 @@ UnifiedMediaControlsDetailedViewController::
 
 views::View* UnifiedMediaControlsDetailedViewController::CreateView() {
   DCHECK(MediaNotificationProvider::Get());
+
+  base::UmaHistogramBoolean(
+      "Media.CrosGlobalMediaControls.RepeatUsageInQuickSetting",
+      detailed_view_has_shown_);
+  detailed_view_has_shown_ = true;
+
   return new UnifiedMediaControlsDetailedView(
       detailed_view_delegate_.get(),
       MediaNotificationProvider::Get()->GetMediaNotificationListView(

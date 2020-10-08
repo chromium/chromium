@@ -7,6 +7,7 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/system/media/unified_media_controls_view.h"
+#include "base/metrics/histogram_functions.h"
 #include "services/media_session/public/cpp/util.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "services/media_session/public/mojom/media_session_service.mojom.h"
@@ -236,8 +237,12 @@ void UnifiedMediaControlsController::OnMediaControlsViewClicked() {
 
 void UnifiedMediaControlsController::PerformAction(
     media_session::mojom::MediaSessionAction action) {
-  if (!freeze_session_timer_->IsRunning())
-    media_session::PerformMediaSessionAction(action, media_controller_remote_);
+  if (freeze_session_timer_->IsRunning())
+    return;
+
+  base::UmaHistogramEnumeration(
+      "Media.CrosGlobalMediaControls.QuickSettingUserAction", action);
+  media_session::PerformMediaSessionAction(action, media_controller_remote_);
 }
 
 void UnifiedMediaControlsController::ResetPendingData() {

@@ -18,6 +18,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_utils.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -268,6 +269,10 @@ void MediaTray::ShowBubble(bool show_by_click) {
   bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view,
                                                 false /*is_persistent*/);
   SetIsActive(true);
+
+  base::UmaHistogramBoolean("Media.CrosGlobalMediaControls.RepeatUsageOnShelf",
+                            bubble_has_shown_);
+  bubble_has_shown_ = true;
 }
 
 void MediaTray::CloseBubble() {
