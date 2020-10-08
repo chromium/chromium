@@ -83,30 +83,6 @@ void WebWidgetTestProxy::ScheduleAnimationInternal(bool do_raster) {
   }
 }
 
-bool WebWidgetTestProxy::RequestPointerLock(
-    blink::WebLocalFrame* requester_frame,
-    blink::WebWidgetClient::PointerLockCallback callback,
-    bool request_unadjusted_movement) {
-  return event_sender_.RequestPointerLock(requester_frame, std::move(callback));
-}
-
-bool WebWidgetTestProxy::RequestPointerLockChange(
-    blink::WebLocalFrame* requester_frame,
-    blink::WebWidgetClient::PointerLockCallback callback,
-    bool request_unadjusted_movement) {
-  // This isn't implemented yet for web tests.
-  CHECK(false);
-  return false;
-}
-
-void WebWidgetTestProxy::RequestPointerUnlock() {
-  event_sender_.RequestPointerUnlock();
-}
-
-bool WebWidgetTestProxy::IsPointerLocked() {
-  return event_sender_.IsPointerLocked();
-}
-
 bool WebWidgetTestProxy::InterceptStartDragging(
     const blink::WebDragData& data,
     blink::DragOperationsMask mask,

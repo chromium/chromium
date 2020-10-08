@@ -11,7 +11,7 @@
 <script>
     description("Test that pointerlockchange event is dispatched when lock is lost.")
     window.jsTestIsAsync = true;
-    shouldBeDefined("window.eventSender");
+    shouldBeDefined("window.testRunner");
 
     targetDiv1 = document.getElementById("target1");
 
@@ -24,7 +24,7 @@
         function () {
             shouldBe("document.pointerLockElement", "targetDiv1");
             expectOnlyChangeEvent("Host initiated unlock.");
-            eventSender.didLosePointerLock();
+            testRunner.dropPointerLock();
             // doNextStep called by event handler.
         },
         function () {
@@ -36,4 +36,3 @@
 </script>
 </body>
 </html>
-

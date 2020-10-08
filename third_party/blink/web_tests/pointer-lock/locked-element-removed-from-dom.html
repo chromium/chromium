@@ -34,7 +34,7 @@
         function () {
             shouldBe("targetIframe1.contentDocument.pointerLockElement", "targetDiv1");
             shouldBe("targetDiv1.parentElement.parentElement", "targetIframe1.contentDocument.body");
-            expectOnlyErrorEvent("Remove targetDiv1's parent from iframe & immediately lock target2. (main document handler)");
+            expectOnlyChangeEvent("Remove targetDiv1's parent from iframe & immediately lock target2. (main document handler)");
             expectOnlyChangeEvent("Remove targetDiv1's parent from iframe & immediately lock target2. (iframe handler)", targetIframe1.contentDocument);
             targetDiv1.parentElement.parentElement.removeChild(targetDiv1.parentElement);
             targetDiv2.requestPointerLock();

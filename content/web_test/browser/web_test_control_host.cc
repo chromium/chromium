@@ -694,6 +694,7 @@ bool WebTestControlHost::ResetBrowserAfterWebTest() {
   waiting_for_pixel_results_ = false;
   composite_all_frames_node_queue_ = std::queue<Node*>();
   composite_all_frames_node_storage_.clear();
+  next_pointer_lock_action_ = NextPointerLockAction::kWillSucceed;
 
   BlockThirdPartyCookies(false);
   SetBluetoothManualChooser(false);
@@ -999,6 +1000,18 @@ std::unique_ptr<BluetoothChooser> WebTestControlHost::RunBluetoothChooser(
   }
 
   return std::make_unique<WebTestFirstDeviceBluetoothChooser>(event_handler);
+}
+
+void WebTestControlHost::RequestToLockMouse(WebContents* web_contents) {
+  if (next_pointer_lock_action_ == NextPointerLockAction::kTestWillRespond)
+    return;
+
+  web_contents->GotResponseToLockMouseRequest(
+      next_pointer_lock_action_ == NextPointerLockAction::kWillSucceed
+          ? blink::mojom::PointerLockResult::kSuccess
+          : blink::mojom::PointerLockResult::kPermissionDenied);
+
+  next_pointer_lock_action_ = NextPointerLockAction::kWillSucceed;
 }
 
 void WebTestControlHost::PluginCrashed(const base::FilePath& plugin_path,
@@ -1660,6 +1673,25 @@ void WebTestControlHost::RegisterIsolatedFileSystem(
   policy->GrantReadFileSystem(render_process_id, filesystem_id);
 
   std::move(callback).Run(filesystem_id);
+}
+
+void WebTestControlHost::DropPointerLock() {
+  main_window_->web_contents()->DropMouseLockForTesting();
+}
+
+void WebTestControlHost::SetPointerLockWillFail() {
+  next_pointer_lock_action_ = NextPointerLockAction::kWillFail;
+}
+
+void WebTestControlHost::SetPointerLockWillRespondAsynchronously() {
+  next_pointer_lock_action_ = NextPointerLockAction::kTestWillRespond;
+}
+
+void WebTestControlHost::AllowPointerLock() {
+  DCHECK_EQ(next_pointer_lock_action_, NextPointerLockAction::kTestWillRespond);
+  main_window_->web_contents()->GotResponseToLockMouseRequest(
+      blink::mojom::PointerLockResult::kSuccess);
+  next_pointer_lock_action_ = NextPointerLockAction::kWillSucceed;
 }
 
 void WebTestControlHost::GoToOffset(int offset) {

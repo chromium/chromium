@@ -61,15 +61,6 @@ class WebWidgetTestProxy : public RenderWidget {
   // WebWidgetClient implementation.
   void ScheduleAnimation() override;
   void ScheduleAnimationForWebTests() override;
-  bool RequestPointerLock(blink::WebLocalFrame* requester_frame,
-                          blink::WebWidgetClient::PointerLockCallback callback,
-                          bool request_unajusted_movement) override;
-  bool RequestPointerLockChange(
-      blink::WebLocalFrame* requester_frame,
-      blink::WebWidgetClient::PointerLockCallback callback,
-      bool request_unadjusted_movement) override;
-  void RequestPointerUnlock() override;
-  bool IsPointerLocked() override;
   bool InterceptStartDragging(const blink::WebDragData& data,
                               blink::DragOperationsMask mask,
                               const SkBitmap& drag_image,

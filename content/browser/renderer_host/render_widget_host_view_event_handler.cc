@@ -944,6 +944,7 @@ void RenderWidgetHostViewEventHandler::MoveCursorToCenter(
   global_mouse_position_ = gfx::PointF(center_in_screen);
   if (enable_consolidated_movement_ && event) {
     blink::WebMouseEvent mouse_event = ui::MakeWebMouseEvent(*event);
+    mouse_event.SetType(blink::WebMouseEvent::Type::kMouseMove);
     mouse_event.SetModifiers(
         mouse_event.GetModifiers() |
         blink::WebInputEvent::Modifiers::kRelativeMotionEvent);

@@ -135,6 +135,7 @@ class WebTestControlHost : public WebContentsObserver,
   std::unique_ptr<BluetoothChooser> RunBluetoothChooser(
       RenderFrameHost* frame,
       const BluetoothChooser::EventHandler& event_handler);
+  void RequestToLockMouse(WebContents* web_contents);
 
   WebTestResultPrinter* printer() { return printer_.get(); }
   void set_printer(WebTestResultPrinter* printer) { printer_.reset(printer); }
@@ -240,6 +241,10 @@ class WebTestControlHost : public WebContentsObserver,
   void RegisterIsolatedFileSystem(
       const std::vector<base::FilePath>& file_paths,
       RegisterIsolatedFileSystemCallback callback) override;
+  void DropPointerLock() override;
+  void SetPointerLockWillFail() override;
+  void SetPointerLockWillRespondAsynchronously() override;
+  void AllowPointerLock() override;
 
   void DiscardMainWindow();
   void CloseTestOpenedWindows();
@@ -385,6 +390,14 @@ class WebTestControlHost : public WebContentsObserver,
       receiver_bindings_;
 
   base::ScopedTempDir writable_directory_for_tests_;
+
+  enum class NextPointerLockAction {
+    kWillSucceed,
+    kTestWillRespond,
+    kWillFail,
+  };
+  NextPointerLockAction next_pointer_lock_action_ =
+      NextPointerLockAction::kWillSucceed;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

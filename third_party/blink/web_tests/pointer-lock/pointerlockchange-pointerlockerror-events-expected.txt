@@ -26,12 +26,12 @@ PASS onpointerlockerror received after: Lock targetIframe2 (handler for iframe2)
      Unlock targetIframe2 (handler for iframe1).
      Unlock targetIframe2 (handler for iframe2).
 PASS onpointerlockchange received after: Unlock targetIframe2 (handler for iframe1).
-PASS eventSender.setPointerLockWillFailSynchronously is defined.
+PASS testRunner.setPointerLockWillFail is defined.
      Lock with synchronous failure.
 PASS onpointerlockerror received after: Lock with synchronous failure.
-PASS eventSender.setPointerLockWillRespondAsynchronously is defined.
-PASS eventSender.didAcquirePointerLock is defined.
-PASS eventSender.didNotAcquirePointerLock is defined.
+PASS testRunner.setPointerLockWillRespondAsynchronously is defined.
+PASS testRunner.dropPointerLock is defined.
+PASS testRunner.allowPointerLock is defined.
      Lock with asynchronous failure.
 PASS onpointerlockerror received after: Lock with asynchronous failure.
      Lock with asynchronous success.

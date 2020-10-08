@@ -226,19 +226,18 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
                                      const std::string& destination_host,
                                      bool allow_destination_subdomains);
   void AddWebPageOverlay();
+  void AllowPointerLock();
   void SetHighlightAds();
   void CapturePrintingPixelsThen(v8::Local<v8::Function> callback);
   void CheckForLeakedWindows();
   void ClearAllDatabases();
   void ClearTrustTokenState(v8::Local<v8::Function> callback);
   void CopyImageThen(int x, int y, v8::Local<v8::Function> callback);
-  void DidAcquirePointerLock();
-  void DidLosePointerLock();
-  void DidNotAcquirePointerLock();
   void DisableMockScreenOrientation();
   void DispatchBeforeInstallPromptEvent(
       const std::vector<std::string>& event_platforms,
       v8::Local<v8::Function> callback);
+  void DropPointerLock();
   void DumpAsMarkup();
   void DumpAsText();
   void DumpAsTextWithPixelResults();
@@ -325,7 +324,7 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
                      const std::string& embedding_origin);
   void SetPluginsAllowed(bool allowed);
   void SetPluginsEnabled(bool enabled);
-  void SetPointerLockWillFailSynchronously();
+  void SetPointerLockWillFail();
   void SetPointerLockWillRespondAsynchronously();
   void SetPopupBlockingEnabled(bool block_popups);
   void SetPrinting();
@@ -521,6 +520,20 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
       .SetMethod("clearTrustTokenState",
                  &TestRunnerBindings::ClearTrustTokenState)
       .SetMethod("copyImageThen", &TestRunnerBindings::CopyImageThen)
+      // While holding a pointer lock, this breaks the lock. Or if
+      // setPointerLockWillRespondAsynchronously() was called, and a lock is
+      // pending it rejects the lock request.
+      .SetMethod("dropPointerLock", &TestRunnerBindings::DropPointerLock)
+      // When setPointerLockWillRespondAsynchronously() was called, this is used
+      // to respond to the async pointer request.
+      .SetMethod("allowPointerLock", &TestRunnerBindings::AllowPointerLock)
+      // Causes the next pointer lock request to fail in the renderer.
+      .SetMethod("setPointerLockWillFail",
+                 &TestRunnerBindings::SetPointerLockWillFail)
+      // Causes the next pointer lock request to delay until the test calls
+      // either allowPointerLock() or dropPointerLock().
+      .SetMethod("setPointerLockWillRespondAsynchronously",
+                 &TestRunnerBindings::SetPointerLockWillRespondAsynchronously)
       .SetMethod("disableAutoResizeMode",
                  &TestRunnerBindings::DisableAutoResizeMode)
       .SetMethod("disableMockScreenOrientation",
@@ -1932,6 +1945,31 @@ void TestRunnerBindings::CopyImageThen(int x,
 
   WrapV8Callback(std::move(v8_callback))
       .Run(ConvertBitmapToV8(context_scope, std::move(bitmap)));
+}
+
+void TestRunnerBindings::DropPointerLock() {
+  if (invalid_)
+    return;
+  runner_->GetWebTestControlHostRemote()->DropPointerLock();
+}
+
+void TestRunnerBindings::SetPointerLockWillFail() {
+  if (invalid_)
+    return;
+  runner_->GetWebTestControlHostRemote()->SetPointerLockWillFail();
+}
+
+void TestRunnerBindings::SetPointerLockWillRespondAsynchronously() {
+  if (invalid_)
+    return;
+  runner_->GetWebTestControlHostRemote()
+      ->SetPointerLockWillRespondAsynchronously();
+}
+
+void TestRunnerBindings::AllowPointerLock() {
+  if (invalid_)
+    return;
+  runner_->GetWebTestControlHostRemote()->AllowPointerLock();
 }
 
 void TestRunnerBindings::SetCustomTextOutput(const std::string& output) {

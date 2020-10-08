@@ -870,6 +870,10 @@ class WebContents : public PageNavigator,
   // ChromeWebViewPermissionHelperDelegate's structure.
   virtual void GotLockMousePermissionResponse(bool allowed) = 0;
 
+  // Drop the mouse lock if it is currently locked, or reject an
+  // outstanding request if it is pending.
+  virtual void DropMouseLockForTesting() = 0;
+
   // Called when the response to a keyboard mouse lock request has arrived.
   // Returns false if the request is no longer valid, otherwise true.
   virtual bool GotResponseToKeyboardLockRequest(bool allowed) = 0;

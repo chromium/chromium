@@ -41,6 +41,16 @@ WebTestShellPlatformDelegate::RunBluetoothChooser(
   return WebTestControlHost::Get()->RunBluetoothChooser(frame, event_handler);
 }
 
+bool WebTestShellPlatformDelegate::HandleRequestToLockMouse(
+    Shell* shell,
+    WebContents* web_contents,
+    bool user_gesture,
+    bool last_unlocked_by_target) {
+  WebTestControlHost::Get()->RequestToLockMouse(web_contents);
+  // Always indicate that we have handled the request to lock the mouse.
+  return true;
+}
+
 bool WebTestShellPlatformDelegate::ShouldAllowRunningInsecureContent(
     Shell* shell) {
   const base::DictionaryValue& flags =

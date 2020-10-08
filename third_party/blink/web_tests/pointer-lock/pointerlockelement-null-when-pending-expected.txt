@@ -8,7 +8,6 @@ PASS document.pointerLockElement is null
 PASS onpointerlockchange received after: Lock.
 PASS document.pointerLockElement is targetDiv1
      Unlock.
-PASS document.pointerLockElement is targetDiv1
 PASS onpointerlockchange received after: Unlock.
 PASS document.pointerLockElement is null
 PASS successfullyParsed is true

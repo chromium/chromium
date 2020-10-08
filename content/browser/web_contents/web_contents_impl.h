@@ -485,6 +485,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool GotResponseToLockMouseRequest(
       blink::mojom::PointerLockResult result) override;
   void GotLockMousePermissionResponse(bool allowed) override;
+  void DropMouseLockForTesting() override;
   bool GotResponseToKeyboardLockRequest(bool allowed) override;
   bool HasOpener() override;
   RenderFrameHostImpl* GetOpener() override;

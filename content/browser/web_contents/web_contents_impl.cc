@@ -4907,6 +4907,17 @@ void WebContentsImpl::GotLockMousePermissionResponse(bool allowed) {
               : blink::mojom::PointerLockResult::kPermissionDenied);
 }
 
+void WebContentsImpl::DropMouseLockForTesting() {
+  if (mouse_lock_widget_) {
+    mouse_lock_widget_->RejectMouseLockOrUnlockIfNecessary(
+        blink::mojom::PointerLockResult::kUnknownError);
+    for (WebContentsImpl* current = this; current;
+         current = current->GetOuterWebContents()) {
+      current->mouse_lock_widget_ = nullptr;
+    }
+  }
+}
+
 bool WebContentsImpl::GotResponseToKeyboardLockRequest(bool allowed) {
   OPTIONAL_TRACE_EVENT1("content",
                         "WebContentsImpl::GotResponseToKeyboardLockRequest",

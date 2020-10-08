@@ -230,4 +230,18 @@ interface WebTestControlHost {
   [Sync]
   RegisterIsolatedFileSystem(
       array<mojo_base.mojom.FilePath> file_paths) => (string filesystem_id);
+
+  // Drop pointer lock, or disallow a pending request.
+  DropPointerLock();
+
+  // Set that the next pointer lock request will fail.
+  SetPointerLockWillFail();
+
+  // Set that the next pointer lock request will not be processed immediately.
+  // A subsequent call for DropPointerLock or AllowPointerLock will come
+  // from the test at a later point.
+  SetPointerLockWillRespondAsynchronously();
+
+  // Allow a pending pointer lock request.
+  AllowPointerLock();
 };

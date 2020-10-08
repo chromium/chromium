@@ -86,6 +86,13 @@ class ShellPlatformDelegate {
       RenderFrameHost* frame,
       const BluetoothChooser::EventHandler& event_handler);
 
+  // Requests handling of locking the mouse. This returns true if the request
+  // has been handled, otherwise false.
+  virtual bool HandleRequestToLockMouse(Shell* shell,
+                                        WebContents* web_contents,
+                                        bool user_gesture,
+                                        bool last_unlocked_by_target);
+
   // Allows platforms to prevent running insecure content. By default returns
   // false, only allowing what Shell allows on its own.
   virtual bool ShouldAllowRunningInsecureContent(Shell* shell);

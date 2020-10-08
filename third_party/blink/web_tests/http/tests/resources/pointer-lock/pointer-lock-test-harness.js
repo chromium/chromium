@@ -85,4 +85,3 @@ function expectNoEvents(message, targetDocument) {
     eventExpected("onpointerlockchange", message, 0, targetDocument);
     eventExpected("onpointerlockerror", message, 0, targetDocument);
 };
-
