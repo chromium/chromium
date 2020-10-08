@@ -13,7 +13,6 @@
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"
 #include "ui/events/platform/platform_event_source.h"
-#include "ui/gfx/x/x11_error_tracker.h"
 #include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xproto.h"
 
@@ -104,22 +103,25 @@ bool GlobalShortcutListenerX11::RegisterAcceleratorImpl(
   auto modifiers = GetNativeModifiers(accelerator);
   auto keysym = XKeysymForWindowsKeyCode(accelerator.key_code(), false);
   auto keycode = connection_->KeysymToKeycode(static_cast<x11::KeySym>(keysym));
-  gfx::X11ErrorTracker err_tracker;
 
   // Because XGrabKey only works on the exact modifiers mask, we should register
   // our hot keys with modifiers that we want to ignore, including Num lock,
   // Caps lock, Scroll lock. See comment about |kModifiersMasks|.
-  for (auto mask : kModifiersMasks) {
-    connection_->GrabKey({false, x_root_window_, modifiers | mask, keycode,
-                          x11::GrabMode::Async, x11::GrabMode::Async});
+  x11::Future<void> grab_requests[base::size(kModifiersMasks)];
+  for (size_t i = 0; i < base::size(kModifiersMasks); i++) {
+    grab_requests[i] = connection_->GrabKey(
+        {false, x_root_window_, modifiers | kModifiersMasks[i], keycode,
+         x11::GrabMode::Async, x11::GrabMode::Async});
   }
+  connection_->Flush();
+  for (auto& grab_request : grab_requests) {
+    if (grab_request.Sync().error) {
+      // We may have part of the hotkeys registered, clean up.
+      for (auto mask : kModifiersMasks)
+        connection_->UngrabKey({keycode, x_root_window_, modifiers | mask});
 
-  if (err_tracker.FoundNewError()) {
-    // We may have part of the hotkeys registered, clean up.
-    for (auto mask : kModifiersMasks)
-      connection_->UngrabKey({keycode, x_root_window_, modifiers | mask});
-
-    return false;
+      return false;
+    }
   }
 
   registered_hot_keys_.insert(accelerator);

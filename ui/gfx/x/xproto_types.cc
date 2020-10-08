@@ -9,7 +9,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto_internal.h"
-#include "ui/gfx/x/xproto_util.h"
 
 namespace x11 {
 
@@ -94,16 +93,16 @@ FutureBase::~FutureBase() {
     return;
 
   OnResponseImpl(base::BindOnce(
-      [](Connection* connection, const char* request_name, RawReply reply,
-         RawError error) {
-        if (!error)
+      [](Connection* connection, const char* request_name,
+         Connection::ErrorHandler error_handler, RawReply raw_reply,
+         RawError raw_error) {
+        if (!raw_error)
           return;
 
-        LOG(WARNING) << "X error received.  Request: x11::" << request_name
-                     << "Request, Error: "
-                     << connection->ParseError(error)->ToString();
+        auto error = connection->ParseError(raw_error);
+        error_handler.Run(error.get(), request_name);
       },
-      connection_, request_name_));
+      connection_, request_name_, connection_->error_handler_));
 }
 
 FutureBase::FutureBase(FutureBase&& future)

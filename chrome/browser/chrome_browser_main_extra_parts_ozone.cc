@@ -9,7 +9,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 
 #if defined(USE_X11)
-#include "ui/base/x/x11_error_handler.h"
+#include "ui/gfx/x/connection.h"  // nogncheck
 #endif
 
 #if defined(USE_OZONE)
@@ -28,9 +28,6 @@ void ChromeBrowserMainExtraPartsOzone::PreEarlyInitialization() {
     return;
   }
 #endif
-#if defined(USE_X11)
-  ui::SetNullErrorHandlers();
-#endif
 }
 
 void ChromeBrowserMainExtraPartsOzone::PostMainMessageLoopStart() {
@@ -43,7 +40,7 @@ void ChromeBrowserMainExtraPartsOzone::PostMainMessageLoopStart() {
   }
 #endif
 #if defined(USE_X11)
-  ui::SetErrorHandlers(std::move(shutdown_cb));
+  x11::Connection::Get()->SetIOErrorHandler(std::move(shutdown_cb));
 #endif
 }
 
@@ -53,8 +50,5 @@ void ChromeBrowserMainExtraPartsOzone::PostMainMessageLoopRun() {
     ui::OzonePlatform::GetInstance()->PostMainMessageLoopRun();
     return;
   }
-#endif
-#if defined(USE_X11)
-  ui::SetEmptyErrorHandlers();
 #endif
 }

@@ -21,6 +21,9 @@ namespace x11 {
 class COMPONENT_EXPORT(X11) Connection : public XProto,
                                          public ExtensionManager {
  public:
+  using ErrorHandler = base::RepeatingCallback<void(const Error*, const char*)>;
+  using IOErrorHandler = base::OnceClosure;
+
   class Delegate {
    public:
     virtual bool ShouldContinueStream() const = 0;
@@ -118,6 +121,11 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   // Dispatch any buffered events, errors, or replies.
   void Dispatch(Delegate* delegate);
 
+  // Returns the old error handler.
+  ErrorHandler SetErrorHandler(ErrorHandler new_handler);
+
+  void SetIOErrorHandler(IOErrorHandler new_handler);
+
   // Returns the visual data for |id|, or nullptr if the visual with that ID
   // doesn't exist or only exists on a non-default screen.
   const VisualInfo* GetVisualInfoFromId(VisualId id) const;
@@ -209,6 +217,9 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   using ErrorParser =
       std::unique_ptr<Error> (*)(FutureBase::RawError error_bytes);
   std::array<ErrorParser, 256> error_parsers_{};
+
+  ErrorHandler error_handler_;
+  IOErrorHandler io_error_handler_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

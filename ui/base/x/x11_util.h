@@ -406,10 +406,6 @@ static const int kAllDesktops = -1;
 COMPONENT_EXPORT(UI_BASE_X)
 bool GetWindowDesktop(x11::Window window, int* desktop);
 
-// Translates an X11 error code into a printable string.
-COMPONENT_EXPORT(UI_BASE_X)
-std::string GetX11ErrorString(XDisplay* display, int err);
-
 // Implementers of this interface receive a notification for every X window of
 // the main display.
 class EnumerateWindowsDelegate {
@@ -515,11 +511,6 @@ COMPONENT_EXPORT(UI_BASE_X) bool IsWmTiling(WindowManagerName window_manager);
 // Returns true if a compositing manager is present.
 COMPONENT_EXPORT(UI_BASE_X) bool IsCompositingManagerPresent();
 
-// Enable the default X error handlers. These will log the error and abort
-// the process if called. Use SetX11ErrorHandlers() to set your own error
-// handlers.
-COMPONENT_EXPORT(UI_BASE_X) void SetDefaultX11ErrorHandlers();
-
 // Returns true if a given window is in full-screen mode.
 COMPONENT_EXPORT(UI_BASE_X) bool IsX11WindowFullScreen(x11::Window window);
 
@@ -549,14 +540,6 @@ x11::Future<void> SendClientMessage(
     const std::array<uint32_t, 5> data,
     x11::EventMask event_mask = x11::EventMask::SubstructureNotify |
                                 x11::EventMask::SubstructureRedirect);
-
-// --------------------------------------------------------------------------
-// X11 error handling.
-// Sets the X Error Handlers. Passing NULL for either will enable the default
-// error handler, which if called will log the error and abort the process.
-COMPONENT_EXPORT(UI_BASE_X)
-void SetX11ErrorHandlers(XErrorHandler error_handler,
-                         XIOErrorHandler io_error_handler);
 
 // Return true if VulkanSurface is supported.
 COMPONENT_EXPORT(UI_BASE_X) bool IsVulkanSurfaceSupported();

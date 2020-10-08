@@ -21,10 +21,6 @@ namespace gl {
 
 namespace {
 
-static int IgnoreX11Errors(Display*, XErrorEvent*) {
-  return 0;
-}
-
 using GLVersion = std::pair<int, int>;
 
 GLXContext CreateContextAttribs(x11::Connection* connection,
@@ -54,16 +50,8 @@ GLXContext CreateContextAttribs(x11::Connection* connection,
 
   attribs.push_back(0);
 
-  // When creating a context with glXCreateContextAttribsARB, a variety of X11
-  // errors can be generated. To prevent these errors from crashing our process,
-  // we simply ignore them and only look if the GLXContext was created.
-  // Sync to ensure any errors generated are processed.
-
-  connection->Sync();
-  auto old_error_handler = XSetErrorHandler(IgnoreX11Errors);
   GLXContext context = glXCreateContextAttribsARB(connection->display(), config,
                                                   share, true, attribs.data());
-  XSetErrorHandler(old_error_handler);
 
   return context;
 }

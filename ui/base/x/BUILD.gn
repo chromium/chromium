@@ -26,8 +26,6 @@ component("x") {
     "x11_display_manager.h",
     "x11_display_util.cc",
     "x11_display_util.h",
-    "x11_error_handler.cc",
-    "x11_error_handler.h",
     "x11_menu_list.cc",
     "x11_menu_list.h",
     "x11_menu_registrar.cc",

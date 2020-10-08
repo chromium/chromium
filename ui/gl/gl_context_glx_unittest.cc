@@ -8,7 +8,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/x11.h"
-#include "ui/gfx/x/x11_error_tracker.h"
 #include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gl/gl_bindings.h"
@@ -30,8 +29,6 @@ namespace gl {
 TEST(GLContextGLXTest, MAYBE_DoNotDestroyOnFailedMakeCurrent) {
   auto* connection = x11::Connection::Get();
   ASSERT_TRUE(connection && connection->Ready());
-
-  gfx::X11ErrorTracker error_tracker;
 
   auto xwindow = connection->GenerateId<x11::Window>();
   connection->CreateWindow({
@@ -65,7 +62,7 @@ TEST(GLContextGLXTest, MAYBE_DoNotDestroyOnFailedMakeCurrent) {
   // Since this window is override-redirect, syncing is sufficient
   // to ensure the window is destroyed and unmapped.
   connection->Sync();
-  ASSERT_FALSE(error_tracker.FoundNewError());
+  ASSERT_TRUE(connection->Ready());
 
   if (context->MakeCurrent(surface.get())) {
     // With some drivers, MakeCurrent() does not fail for an already-destroyed

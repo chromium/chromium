@@ -37,19 +37,6 @@ using xcb_connection_t = struct xcb_connection_t;
 
 enum XEventQueueOwner { XlibOwnsEventQueue = 0, XCBOwnsEventQueue };
 
-using XErrorEvent = struct _XErrorEvent {
-  int type;
-  Display* display;
-  XID resourceid;
-  unsigned long serial;
-  unsigned char error_code;
-  unsigned char request_code;
-  unsigned char minor_code;
-};
-
-using XErrorHandler = int (*)(Display*, XErrorEvent*);
-using XIOErrorHandler = int (*)(Display*);
-
 Status XInitThreads(void);
 Display* XOpenDisplay(const char*);
 int XCloseDisplay(Display*);
@@ -57,15 +44,6 @@ int XFlush(Display*);
 xcb_connection_t* XGetXCBConnection(Display* dpy);
 void XSetEventQueueOwner(Display* dpy, enum XEventQueueOwner owner);
 int (*XSynchronize(Display*, Bool))(Display*);
-int XGetErrorDatabaseText(Display*,
-                          const char*,
-                          const char*,
-                          const char*,
-                          char*,
-                          int);
-int XGetErrorText(Display*, int, char*, int);
-XErrorHandler XSetErrorHandler(XErrorHandler);
-XIOErrorHandler XSetIOErrorHandler(XIOErrorHandler);
 }
 
 #endif  // UI_GFX_X_X11_H_

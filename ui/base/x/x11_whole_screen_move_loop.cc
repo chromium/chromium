@@ -48,6 +48,23 @@ constexpr x11::ModMask kModifiersMasks[] = {
     x11::ModMask::c_2 | x11::ModMask::Lock | x11::ModMask::c_5,
 };
 
+const char* GrabStatusToString(x11::GrabStatus grab_status) {
+  switch (grab_status) {
+    case x11::GrabStatus::Success:
+      return "Success";
+    case x11::GrabStatus::AlreadyGrabbed:
+      return "AlreadyGrabbed";
+    case x11::GrabStatus::InvalidTime:
+      return "InvalidTime";
+    case x11::GrabStatus::NotViewable:
+      return "NotViewable";
+    case x11::GrabStatus::Frozen:
+      return "Frozen";
+  }
+  NOTREACHED();
+  return "";
+}
+
 }  // namespace
 
 X11WholeScreenMoveLoop::X11WholeScreenMoveLoop(X11MoveLoopDelegate* delegate)
@@ -230,8 +247,7 @@ bool X11WholeScreenMoveLoop::GrabPointer(scoped_refptr<X11Cursor> cursor) {
   auto ret = ui::GrabPointer(grab_input_window_, false, cursor);
   if (ret != x11::GrabStatus::Success) {
     DLOG(ERROR) << "Grabbing pointer for dragging failed: "
-                << ui::GetX11ErrorString(connection->display(),
-                                         static_cast<int>(ret));
+                << GrabStatusToString(ret);
   }
   connection->Flush();
   return ret == x11::GrabStatus::Success;

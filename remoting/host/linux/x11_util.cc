@@ -10,32 +10,6 @@
 
 namespace remoting {
 
-static ScopedXErrorHandler* g_handler = nullptr;
-
-ScopedXErrorHandler::ScopedXErrorHandler(const Handler& handler)
-    : handler_(handler), ok_(true) {
-  // This is a non-exhaustive check for incorrect usage. It doesn't handle the
-  // case where a mix of ScopedXErrorHandler and raw XSetErrorHandler calls are
-  // used, and it disallows nested ScopedXErrorHandlers on the same thread,
-  // despite these being perfectly safe.
-  DCHECK(g_handler == nullptr);
-  g_handler = this;
-  previous_handler_ = XSetErrorHandler(HandleXErrors);
-}
-
-ScopedXErrorHandler::~ScopedXErrorHandler() {
-  g_handler = nullptr;
-  XSetErrorHandler(previous_handler_);
-}
-
-int ScopedXErrorHandler::HandleXErrors(Display* display, XErrorEvent* error) {
-  DCHECK(g_handler != nullptr);
-  g_handler->ok_ = false;
-  if (g_handler->handler_)
-    g_handler->handler_.Run(display, error);
-  return 0;
-}
-
 ScopedXGrabServer::ScopedXGrabServer(x11::Connection* connection)
     : connection_(connection) {
   connection_->GrabServer({});

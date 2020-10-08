@@ -18,7 +18,6 @@
 #include "ui/base/dragdrop/os_exchange_data_provider_factory_ozone.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
 #include "ui/base/x/x11_cursor_factory.h"
-#include "ui/base/x/x11_error_handler.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/display/fake/fake_display_delegate.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"
@@ -73,7 +72,7 @@ class OzonePlatformX11 : public OzonePlatform,
     SetInstance(this);
   }
 
-  ~OzonePlatformX11() override {}
+  ~OzonePlatformX11() override = default;
 
   // OzonePlatform:
   ui::SurfaceFactoryOzone* GetSurfaceFactoryOzone() override {
@@ -231,21 +230,7 @@ class OzonePlatformX11 : public OzonePlatform,
     // Installs the X11 error handlers for the UI process after the
     // main message loop has started. This will allow us to exit cleanly
     // if X exits before we do.
-    SetErrorHandlers(std::move(shutdown_cb));
-  }
-
-  void PostMainMessageLoopRun() override {
-    // Unset the X11 error handlers. The X11 error handlers log the errors using
-    // a |PostTask()| on the message-loop. But since the message-loop is in the
-    // process of terminating, this can cause errors.
-    SetEmptyErrorHandlers();
-  }
-
-  void PreEarlyInitialize() override {
-    // Installs the X11 error handlers for the browser process used during
-    // startup. They simply print error messages and exit because
-    // we can't shutdown properly while creating and initializing services.
-    SetNullErrorHandlers();
+    x11::Connection::Get()->SetIOErrorHandler(std::move(shutdown_cb));
   }
 
  private:
@@ -258,8 +243,6 @@ class OzonePlatformX11 : public OzonePlatform,
     // instead of crashing later. If you are crashing here, make sure there is
     // an X server running and $DISPLAY is set.
     CHECK(x11::Connection::Get()) << "Missing X server or $DISPLAY";
-
-    ui::SetDefaultX11ErrorHandlers();
 
     common_initialized_ = true;
   }

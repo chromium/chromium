@@ -10,9 +10,10 @@
 #include "ui/base/x/x11_menu_list.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/x/x11_window_event_manager.h"
+#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/scoped_ignore_errors.h"
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_atom_cache.h"
-#include "ui/gfx/x/x11_error_tracker.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace {
@@ -66,7 +67,7 @@ void X11MenuRegistrar::OnWindowCreatedOrDestroyed(bool created,
   if (created) {
     // The window might be destroyed if the message pump did not get a chance to
     // run but we can safely ignore the X error.
-    gfx::X11ErrorTracker error_tracker;
+    x11::ScopedIgnoreErrors ignore_errors(x11::Connection::Get());
     XMenuList::GetInstance()->MaybeRegisterMenu(window);
   } else {
     XMenuList::GetInstance()->MaybeUnregisterMenu(window);

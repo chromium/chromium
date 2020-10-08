@@ -56,9 +56,6 @@
 #include "weblayer/common/features.h"
 #endif
 
-#if defined(USE_X11)
-#include "ui/base/x/x11_util.h"  // nogncheck
-#endif
 #if defined(USE_AURA) && defined(USE_X11)
 #include "ui/base/ui_base_features.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"  // nogncheck
@@ -153,10 +150,6 @@ void BrowserMainPartsImpl::PreMainMessageLoopStart() {
 int BrowserMainPartsImpl::PreEarlyInitialization() {
   browser_process_ = std::make_unique<BrowserProcess>(std::move(local_state_));
 
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform())
-    ui::SetDefaultX11ErrorHandlers();
-#endif
 #if defined(USE_AURA) && (defined(OS_LINUX) || defined(OS_CHROMEOS))
   ui::InitializeInputMethodForTesting();
 #endif

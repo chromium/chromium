@@ -280,7 +280,6 @@ int GpuMain(const MainFunctionParams& parameters) {
     if (!features::IsUsingOzonePlatform()) {
       // We need a UI loop so that we can grab the Expose events. See
       // GLSurfaceGLX and https://crbug.com/326995.
-      ui::SetDefaultX11ErrorHandlers();
       if (!gfx::GetXDisplay())
         return RESULT_CODE_GPU_DEAD_ON_ARRIVAL;
       main_thread_task_executor =

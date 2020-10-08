@@ -137,10 +137,6 @@ void ShellBrowserMainParts::PostMainMessageLoopStart() {
 }
 
 int ShellBrowserMainParts::PreEarlyInitialization() {
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform())
-    ui::SetDefaultX11ErrorHandlers();
-#endif
 #if !defined(OS_CHROMEOS) && defined(USE_AURA) && defined(OS_LINUX)
   ui::InitializeInputMethodForTesting();
 #endif

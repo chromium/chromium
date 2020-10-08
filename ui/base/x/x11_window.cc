@@ -35,7 +35,6 @@
 #include "ui/gfx/skia_util.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/x11_atom_cache.h"
-#include "ui/gfx/x/x11_error_tracker.h"
 #include "ui/gfx/x/x11_path.h"
 #include "ui/gfx/x/xfixes.h"
 #include "ui/gfx/x/xinput.h"

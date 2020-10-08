@@ -69,7 +69,6 @@
 #include "ui/gfx/x/sync.h"
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_atom_cache.h"
-#include "ui/gfx/x/x11_error_tracker.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
 
@@ -93,33 +92,6 @@ namespace {
 constexpr int kNetWMStateAdd = 1;
 constexpr int kNetWMStateRemove = 0;
 
-int DefaultX11ErrorHandler(XDisplay* d, XErrorEvent* e) {
-  // This callback can be invoked by drivers very late in thread destruction,
-  // when Chrome TLS is no longer usable. https://crbug.com/849225.
-  if (TLSDestructionCheckerForX11::HasBeenDestroyed())
-    return 0;
-
-  if (base::CurrentThread::Get()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&x11::LogErrorEventDescription, e->serial, e->error_code,
-                       e->request_code, e->minor_code));
-  } else {
-    LOG(ERROR) << "X error received: "
-               << "serial " << e->serial << ", "
-               << "error_code " << static_cast<int>(e->error_code) << ", "
-               << "request_code " << static_cast<int>(e->request_code) << ", "
-               << "minor_code " << static_cast<int>(e->minor_code);
-  }
-  return 0;
-}
-
-int DefaultX11IOErrorHandler(XDisplay* d) {
-  // If there's an IO error it likely means the X server has gone away
-  LOG(ERROR) << "X IO error received (X server probably went away)";
-  _exit(1);
-}
-
 bool SupportsEWMH() {
   static bool supports_ewmh = false;
   static bool supports_ewmh_cached = false;
@@ -142,13 +114,11 @@ bool SupportsEWMH() {
     // _NET_SUPPORTING_WM_CHECK property pointing to itself (to avoid a stale
     // property referencing an ID that's been recycled for another window), so
     // we check that too.
-    gfx::X11ErrorTracker err_tracker;
     x11::Window wm_window_property = x11::Window::None;
-    bool result =
+    supports_ewmh =
         GetProperty(wm_window, gfx::GetAtom("_NET_SUPPORTING_WM_CHECK"),
-                    &wm_window_property);
-    supports_ewmh = !err_tracker.FoundNewError() && result &&
-                    wm_window_property == wm_window;
+                    &wm_window_property) &&
+        wm_window_property == wm_window;
   }
 
   return supports_ewmh;
@@ -165,9 +135,7 @@ bool GetWindowManagerName(std::string* wm_name) {
     return false;
   }
 
-  gfx::X11ErrorTracker err_tracker;
-  bool result = GetStringProperty(wm_window, "_NET_WM_NAME", wm_name);
-  return !err_tracker.FoundNewError() && result;
+  return GetStringProperty(wm_window, "_NET_WM_NAME", wm_name);
 }
 
 // Returns whether the X11 Screen Saver Extension can be used to disable the
@@ -794,12 +762,6 @@ bool GetWindowDesktop(x11::Window window, int* desktop) {
   return GetIntProperty(window, "_NET_WM_DESKTOP", desktop);
 }
 
-std::string GetX11ErrorString(XDisplay* display, int err) {
-  char buffer[256];
-  XGetErrorText(display, err, buffer, base::size(buffer));
-  return buffer;
-}
-
 // Returns true if |window| is a named window.
 bool IsWindowNamed(x11::Window window) {
   return PropertyExists(window, "WM_NAME");
@@ -1011,10 +973,6 @@ bool IsCompositingManagerPresent() {
   return is_compositing_manager_present;
 }
 
-void SetDefaultX11ErrorHandlers() {
-  SetX11ErrorHandlers(nullptr, nullptr);
-}
-
 bool IsX11WindowFullScreen(x11::Window window) {
   // If _NET_WM_STATE_FULLSCREEN is in _NET_SUPPORTED, use the presence or
   // absence of _NET_WM_STATE_FULLSCREEN in _NET_WM_STATE to determine
@@ -1146,13 +1104,6 @@ x11::Future<void> SendClientMessage(x11::Window window,
   x11::ClientMessageEvent event{.format = 32, .window = window, .type = type};
   event.data.data32 = data;
   return SendEvent(event, target, event_mask);
-}
-
-void SetX11ErrorHandlers(XErrorHandler error_handler,
-                         XIOErrorHandler io_error_handler) {
-  XSetErrorHandler(error_handler ? error_handler : DefaultX11ErrorHandler);
-  XSetIOErrorHandler(io_error_handler ? io_error_handler
-                                      : DefaultX11IOErrorHandler);
 }
 
 bool IsVulkanSurfaceSupported() {

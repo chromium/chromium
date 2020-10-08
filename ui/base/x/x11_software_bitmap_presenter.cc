@@ -24,7 +24,6 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/x11.h"
-#include "ui/gfx/x/x11_error_tracker.h"
 #include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_types.h"

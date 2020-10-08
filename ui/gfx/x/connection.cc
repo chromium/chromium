@@ -4,6 +4,7 @@
 
 #include "ui/gfx/x/connection.h"
 
+#include <dlfcn.h>
 #include <xcb/xcb.h>
 #include <xcb/xcbext.h>
 
@@ -210,6 +211,29 @@ base::ThreadLocalOwnedPointer<Connection>& GetConnectionTLS() {
   return *tls;
 }
 
+void DefaultErrorHandler(const x11::Error* error, const char* request_name) {
+  LOG(WARNING) << "X error received.  Request: x11::" << request_name
+               << "Request, Error: " << error->ToString();
+}
+
+void DefaultIOErrorHandler() {
+  LOG(ERROR) << "X connection error received.";
+}
+
+NO_SANITIZE("cfi-icall")
+void XlibSetErrorHandler(int (*handler)(void*, void*)) {
+  using Handler = int (*)(void*, void*);
+  using SetErrorHandlerType = int (*)(Handler);
+  auto* x_set_error_handler = reinterpret_cast<SetErrorHandlerType>(
+      dlsym(RTLD_DEFAULT, "XSetErrorHandler"));
+  x_set_error_handler(handler);
+}
+
+int XlibErrorHandler(void*, void*) {
+  LOG(WARNING) << "Xlib error received";
+  return 0;
+}
+
 class UnknownError : public Error {
  public:
   explicit UnknownError(FutureBase::RawError error_bytes)
@@ -260,7 +284,9 @@ void Connection::Set(std::unique_ptr<x11::Connection> connection) {
 Connection::Connection(const std::string& address)
     : XProto(this),
       display_(OpenNewXDisplay(address)),
-      display_string_(address) {
+      display_string_(address),
+      error_handler_(base::BindRepeating(DefaultErrorHandler)),
+      io_error_handler_(base::BindOnce(DefaultIOErrorHandler)) {
   char* host = nullptr;
   int display = 0;
   xcb_parse_display(address.c_str(), &host, &display, &default_screen_id_);
@@ -302,10 +328,18 @@ Connection::Connection(const std::string& address)
   ResetKeyboardState();
 
   InitErrorParsers();
+
+  // The default Xlib error handler calls exit(1), which we don't want.  This
+  // shouldn't happen in the browser process since only XProto requests are
+  // made, but in the GPU process, GLX can make Xlib requests, so setting an
+  // error handler is necessary.  Importantly, there's also an IO error handler,
+  // and Xlib always calls exit(1) with no way to change this behavior.
+  XlibSetErrorHandler(XlibErrorHandler);
 }
 
 Connection::~Connection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   platform_event_source.reset();
   if (display_)
     XCloseDisplay(display_);
@@ -315,7 +349,10 @@ xcb_connection_t* Connection::XcbConnection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!display())
     return nullptr;
-  return XGetXCBConnection(display());
+  auto* xcb_connection = XGetXCBConnection(display());
+  if (io_error_handler_ && xcb_connection_has_error(xcb_connection))
+    std::move(io_error_handler_).Run();
+  return xcb_connection;
 }
 
 Connection::Request::Request(unsigned int sequence,
@@ -515,6 +552,18 @@ void Connection::Dispatch(Delegate* delegate) {
       break;
     }
   }
+}
+
+Connection::ErrorHandler Connection::SetErrorHandler(ErrorHandler new_handler) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return std::exchange(error_handler_, new_handler);
+}
+
+void Connection::SetIOErrorHandler(IOErrorHandler new_handler) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  io_error_handler_ = std::move(new_handler);
 }
 
 void Connection::InitRootDepthAndVisual() {

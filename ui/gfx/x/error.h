@@ -11,16 +11,16 @@
 
 namespace x11 {
 
+// This class is a generic interface for X11 errors.  Currently the only
+// functionality is printing the error as a human-readable string.
 class COMPONENT_EXPORT(X11) Error {
  public:
   Error();
   virtual ~Error();
 
   virtual std::string ToString() const = 0;
-
- private:
 };
 
 }  // namespace x11
 
-#endif  // UI_GFX_X_EVENT_H_
+#endif  // UI_GFX_X_ERROR_H_
