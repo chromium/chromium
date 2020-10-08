@@ -112,6 +112,8 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
   base::string16 GetString(int max_count,
                            size_t* appended_newlines_count = nullptr);
   AXPlatformNodeWin* owner() const;
+  const AXPositionInstance& start() const { return endpoints_.GetStart(); }
+  const AXPositionInstance& end() const { return endpoints_.GetEnd(); }
   AXPlatformNodeDelegate* GetDelegate(
       const AXPositionInstanceType* position) const;
   AXPlatformNodeDelegate* GetDelegate(const AXTreeID tree_id,
@@ -173,6 +175,9 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
   bool HasCaretOrSelectionInPlainTextField(
       const AXPositionInstance& position) const;
 
+  void SetStart(AXPositionInstance start);
+  void SetEnd(AXPositionInstance end);
+
   static bool TextAttributeIsArrayType(TEXTATTRIBUTEID attribute_id);
   static bool TextAttributeIsUiaReservedValue(
       const base::win::VariantVector& vector);
@@ -181,8 +186,23 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
       const base::win::VariantVector& vector);
 
   Microsoft::WRL::ComPtr<AXPlatformNodeWin> owner_;
-  AXPositionInstance start_;
-  AXPositionInstance end_;
+
+  class TextRangeEndpoints {
+   public:
+    TextRangeEndpoints();
+    ~TextRangeEndpoints();
+    const AXPositionInstance& GetStart() const { return start_; }
+    const AXPositionInstance& GetEnd() const { return end_; }
+    void SetStart(AXPositionInstance new_start) {
+      start_ = std::move(new_start);
+    }
+    void SetEnd(AXPositionInstance new_end) { end_ = std::move(new_end); }
+
+   private:
+    AXPositionInstance start_;
+    AXPositionInstance end_;
+  };
+  TextRangeEndpoints endpoints_;
 };
 
 }  // namespace ui

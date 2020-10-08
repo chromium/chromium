@@ -165,12 +165,12 @@ class AXPlatformNodeTextRangeProviderTest : public ui::AXPlatformNodeWinTest {
  public:
   const AXNodePosition::AXPositionInstance& GetStart(
       const AXPlatformNodeTextRangeProviderWin* text_range) {
-    return text_range->start_;
+    return text_range->start();
   }
 
   const AXNodePosition::AXPositionInstance& GetEnd(
       const AXPlatformNodeTextRangeProviderWin* text_range) {
-    return text_range->end_;
+    return text_range->end();
   }
 
   ui::AXPlatformNodeWin* GetOwner(
