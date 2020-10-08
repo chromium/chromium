@@ -148,9 +148,10 @@ interface ReceiveObserver {
   OnIncomingShare(ShareTarget share_target, string? connection_token);
 };
 
-// Allows the caller to observe changes to, query, or explicitly enter or exit
-// high visibility. Once in high visibility, the caller may observe incoming
-// shares and accept or reject them.
+// Allows the caller to observe changes to or query high visibility, or
+// register/unregister a foreground receive surface, which will cause high
+// visibility to start/stop respectively. Once in high visibility, the caller
+// may observe incoming shares and accept or reject them.
 //
 // This interface runs in the browser process and is bound by os-settings which
 // hosts the ui surface and implements the |ReceiveObserver|.
@@ -161,15 +162,20 @@ interface ReceiveManager {
   // Determine if the user is currently in high visibility.
   IsInHighVisibility() => (bool in_high_visibility);
 
-  // Attempt to explicitly enter high visibility. If |success| is true the
-  // receive manager is in high visibility state. If |success| is false the
-  // receive manager is not in high visibility state.
-  EnterHighVisibility() => (bool success);
+  // Attempt to register the receive manager as a foreground receive surface.
+  // If |success| is true, then the surface has been registered; otherwise it
+  // has not been registered. The foreground surface receives incoming
+  // shares, and once one is registered, high visibility will become active
+  // after a short while. Calling multiple times will have no additional effect.
+  RegisterForegroundReceiveSurface() => (bool success);
 
-  // Attempt to explicitly exit high visibility. If |success| is true the
-  // receive manager is not in high visibility state. If |success| is false the
-  // receive manager is still in high visibility state.
-  ExitHighVisibility() => (bool success);
+  // Attempt to unregister the receive manager as a foreground receive surface.
+  // If |success| is true, then the surface is no longer registered; otherwise,
+  // it is still registered. The foreground surface receives incoming shares,
+  // and once it is no longer registered, high visibility will no longer be
+  // active after a short while. Calling unregister before register will have
+  // no effect.
+  UnregisterForegroundReceiveSurface() => (bool success);
 
   // Accept the incoming share request by the share target id.
   Accept(mojo_base.mojom.UnguessableToken share_target_id) => (bool success);

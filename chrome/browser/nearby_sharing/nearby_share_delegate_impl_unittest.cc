@@ -110,7 +110,7 @@ TEST_F(NearbyShareDelegateImplTest, StartHighVisibilityAndTimeout) {
   delegate_.EnableHighVisibility();
   SetHighVisibilityOn(true);
 
-  EXPECT_CALL(*settings_opener_, ShowSettingsPage(_));
+  EXPECT_CALL(nearby_share_service_, ClearForegroundReceiveSurfaces());
   EXPECT_CALL(controller_, HighVisibilityEnabledChanged(false));
 
   // DisableHighVisibility will be called automatically after the timer fires.
@@ -127,7 +127,7 @@ TEST_F(NearbyShareDelegateImplTest, StartStopHighVisibility) {
   delegate_.EnableHighVisibility();
   SetHighVisibilityOn(true);
 
-  EXPECT_CALL(*settings_opener_, ShowSettingsPage(_));
+  EXPECT_CALL(nearby_share_service_, ClearForegroundReceiveSurfaces());
   EXPECT_CALL(controller_, HighVisibilityEnabledChanged(false));
 
   delegate_.DisableHighVisibility();
@@ -137,9 +137,8 @@ TEST_F(NearbyShareDelegateImplTest, StartStopHighVisibility) {
 TEST_F(NearbyShareDelegateImplTest, ShowOnboardingAndTurnOnHighVisibility) {
   settings_.SetEnabled(false);
 
-  // Called once to start onboarding, once to enter high visibility, and once to
-  // exit high visibility.
-  EXPECT_CALL(*settings_opener_, ShowSettingsPage(_)).Times(3);
+  // Called once to start onboarding and once to enter high visibility
+  EXPECT_CALL(*settings_opener_, ShowSettingsPage(_)).Times(2);
 
   delegate_.EnableHighVisibility();
 
@@ -150,6 +149,7 @@ TEST_F(NearbyShareDelegateImplTest, ShowOnboardingAndTurnOnHighVisibility) {
   settings_.SetEnabled(true);
   SetHighVisibilityOn(true);
 
+  EXPECT_CALL(nearby_share_service_, ClearForegroundReceiveSurfaces());
   EXPECT_CALL(controller_, HighVisibilityEnabledChanged(false));
 
   // DisableHighVisibility will be called automatically after the timer fires.
@@ -186,7 +186,7 @@ TEST_F(NearbyShareDelegateImplTest, StopHighVisibilityOnScreenLock) {
   SetHighVisibilityOn(true);
 
   EXPECT_CALL(controller_, HighVisibilityEnabledChanged(false));
-  EXPECT_CALL(*settings_opener_, ShowSettingsPage(_));
+  EXPECT_CALL(nearby_share_service_, ClearForegroundReceiveSurfaces());
 
   // DisableHighVisibility will be called when the screen locks.
   delegate_.OnLockStateChanged(/*locked=*/true);

@@ -573,6 +573,20 @@ NearbySharingServiceImpl::UnregisterReceiveSurface(
   return StatusCodes::kOk;
 }
 
+NearbySharingService::StatusCodes
+NearbySharingServiceImpl::ClearForegroundReceiveSurfaces() {
+  std::vector<TransferUpdateCallback*> fg_receivers;
+  for (auto& callback : foreground_receive_callbacks_)
+    fg_receivers.push_back(&callback);
+
+  StatusCodes status = StatusCodes::kOk;
+  for (TransferUpdateCallback* callback : fg_receivers) {
+    if (UnregisterReceiveSurface(callback) != StatusCodes::kOk)
+      status = StatusCodes::kError;
+  }
+  return status;
+}
+
 bool NearbySharingServiceImpl::IsInHighVisibility() {
   return in_high_visibility;
 }

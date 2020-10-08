@@ -89,6 +89,9 @@ Polymer({
   /** @private {?nearbyShare.mojom.ReceiveObserverReceiver} */
   observerReceiver_: null,
 
+  /** @private {number} */
+  closeTimeoutId_: 0,
+
   /** @override */
   attached() {
     this.closing_ = false;
@@ -112,8 +115,16 @@ Polymer({
    */
   onHighVisibilityChanged(inHighVisibility) {
     if (inHighVisibility == false) {
-      // TODO(vecore): Show error state to user
-      this.close_();
+      // TODO(crbug/1134745): Exiting high visibility can happen for multiple
+      // reasons (timeout, user cancel, etc). During a receive transfer, it
+      // happens before we start connecting (because we need to stop
+      // advertising) so we need to wait a bit to see if we see an
+      // onIncomingShare event within a reasonable timeout. This is the normal
+      // case and it should happen quickly when it is a real connection. In the
+      // timeout case, we are just exiting high visibility normally and can
+      // close for now, and the small timeout won't impact UX. Ideally we should
+      // refactor to not require the use of a timeout.
+      this.closeTimeoutId_ = setTimeout(this.close_.bind(this), 25);
     }
   },
 
@@ -124,6 +135,7 @@ Polymer({
    * @param {?string} connectionToken
    */
   onIncomingShare(shareTarget, connectionToken) {
+    clearTimeout(this.closeTimeoutId_);
     this.shareTarget = shareTarget;
     this.connectionToken = connectionToken;
     this.showConfirmPage();
@@ -161,7 +173,7 @@ Polymer({
     }
 
     this.closing_ = true;
-    this.receiveManager_.exitHighVisibility().then(() => {
+    this.receiveManager_.unregisterForegroundReceiveSurface().then(() => {
       const dialog = /** @type {!CrDialogElement} */ (this.$.dialog);
       if (dialog.open) {
         dialog.close();
@@ -216,8 +228,8 @@ Polymer({
       return;
     }
 
-    // Request to enter high visibility mode and show the page.
-    this.receiveManager_.enterHighVisibility();
+    // Register a receive surface to enter high visibility and show the page.
+    this.receiveManager_.registerForegroundReceiveSurface();
     this.getViewManager_().switchView(Page.HIGH_VISIBILITY);
   },
 

@@ -281,10 +281,6 @@ Polymer({
       this.$$('#receiveDialog').showHighVisibilityPage();
     }
 
-    if (queryParams.has('stop_receiving')) {
-      this.showReceiveDialog_ = false;
-    }
-
     if (queryParams.has('confirm')) {
       this.showReceiveDialog_ = true;
       Polymer.dom.flush();

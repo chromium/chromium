@@ -18,8 +18,8 @@ cr.define('nearby_share', function() {
       super([
         'addReceiveObserver',
         'isInHighVisibility',
-        'enterHighVisibility',
-        'exitHighVisibility',
+        'registerForegroundReceiveSurface',
+        'unregisterForegroundReceiveSurface',
         'accept',
         'reject',
       ]);
@@ -63,24 +63,24 @@ cr.define('nearby_share', function() {
     /**
      * @return {!Promise<{success: !boolean}>}
      */
-    async enterHighVisibility() {
+    async registerForegroundReceiveSurface() {
       this.inHighVisibility_ = true;
       if (this.observer_) {
         this.observer_.onHighVisibilityChanged(this.inHighVisibility_);
       }
-      this.methodCalled('enterHighVisibility');
+      this.methodCalled('registerForegroundReceiveSurface');
       return {success: this.nextResult_};
     }
 
     /**
      * @return {!Promise<{success: !boolean}>}
      */
-    async exitHighVisibility() {
+    async unregisterForegroundReceiveSurface() {
       this.inHighVisibility_ = false;
       if (this.observer_) {
         this.observer_.onHighVisibilityChanged(this.inHighVisibility_);
       }
-      this.methodCalled('exitHighVisibility');
+      this.methodCalled('unregisterForegroundReceiveSurface');
       return {success: this.nextResult_};
     }
 

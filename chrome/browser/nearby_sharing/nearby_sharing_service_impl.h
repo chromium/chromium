@@ -89,6 +89,7 @@ class NearbySharingServiceImpl
                                      ReceiveSurfaceState state) override;
   StatusCodes UnregisterReceiveSurface(
       TransferUpdateCallback* transfer_callback) override;
+  StatusCodes ClearForegroundReceiveSurfaces() override;
   bool IsInHighVisibility() override;
   StatusCodes SendAttachments(
       const ShareTarget& share_target,

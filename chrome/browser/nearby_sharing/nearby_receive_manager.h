@@ -21,7 +21,8 @@
 // share request has come in. The client can then accept or reject the share.
 // This is a transient object and only lives while os-settings has it bound.
 class NearbyReceiveManager : public nearby_share::mojom::ReceiveManager,
-                             public TransferUpdateCallback {
+                             public TransferUpdateCallback,
+                             public NearbySharingService::Observer {
  public:
   explicit NearbyReceiveManager(NearbySharingService* nearby_sharing_service);
   ~NearbyReceiveManager() override;
@@ -35,23 +36,26 @@ class NearbyReceiveManager : public nearby_share::mojom::ReceiveManager,
       ::mojo::PendingRemote<nearby_share::mojom::ReceiveObserver> observer)
       override;
   void IsInHighVisibility(IsInHighVisibilityCallback callback) override;
-  void EnterHighVisibility(EnterHighVisibilityCallback callback) override;
-  void ExitHighVisibility(ExitHighVisibilityCallback callback) override;
+  void RegisterForegroundReceiveSurface(
+      RegisterForegroundReceiveSurfaceCallback callback) override;
+  void UnregisterForegroundReceiveSurface(
+      UnregisterForegroundReceiveSurfaceCallback callback) override;
   void Accept(const base::UnguessableToken& share_target_id,
               AcceptCallback callback) override;
   void Reject(const base::UnguessableToken& share_target_id,
               RejectCallback callback) override;
 
+  // NearbySharingService::Observer
+  void OnHighVisibilityChanged(bool in_high_visibility) override;
+  void OnShutdown() override {}
+
  private:
-  void SetInHighVisibility(bool in_high_visibility);
-  void NotifyOnHighVisibilityChanged(bool in_high_visibility);
   void NotifyOnIncomingShare(
       const ShareTarget& share_target,
       const base::Optional<std::string>& connection_token);
 
   NearbySharingService* nearby_sharing_service_;
 
-  bool in_high_visibility_ = false;
   base::flat_map<base::UnguessableToken, ShareTarget> share_targets_map_;
   mojo::RemoteSet<nearby_share::mojom::ReceiveObserver> observers_set_;
 };

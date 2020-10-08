@@ -38,6 +38,7 @@ class MockNearbySharingService : public NearbySharingService {
               UnregisterReceiveSurface,
               (TransferUpdateCallback*),
               (override));
+  MOCK_METHOD(StatusCodes, ClearForegroundReceiveSurfaces, (), (override));
   MOCK_METHOD(bool, IsInHighVisibility, (), (override));
   MOCK_METHOD(StatusCodes,
               SendAttachments,

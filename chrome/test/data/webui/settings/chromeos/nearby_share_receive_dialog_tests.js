@@ -116,15 +116,29 @@ suite('NearbyShare', function() {
     });
 
     test(
-        'show high visibility page, exitHighVisibility, closes dialog',
+        'show high visibility page, unregister surface, closes dialog',
         async function() {
           // When attached we enter high visibility mode by default
           assertTrue(isVisible('nearby-share-high-visibility-page'));
           assertFalse(isVisible('nearby-share-confirm-page'));
           // If a share target comes in, we show it.
-          await fakeReceiveManager.exitHighVisibility();
+          await fakeReceiveManager.unregisterForegroundReceiveSurface();
           Polymer.dom.flush();
           assertFalse(isVisible('cr-dialog'));
+        });
+
+    test(
+        'unregister surface, onIncomingShare, does not close dialog',
+        async function() {
+          // When attached we enter high visibility mode by default
+          assertTrue(isVisible('nearby-share-high-visibility-page'));
+          assertFalse(isVisible('nearby-share-confirm-page'));
+          // If a share target comes in, we show it.
+          await fakeReceiveManager.unregisterForegroundReceiveSurface();
+          const target =
+              fakeReceiveManager.simulateShareTargetArrival('testName', '1234');
+          Polymer.dom.flush();
+          assertFalse(dialog.closing_);
         });
   });
 

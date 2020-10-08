@@ -101,6 +101,9 @@ class NearbySharingService : public KeyedService {
   virtual StatusCodes UnregisterReceiveSurface(
       TransferUpdateCallback* transfer_callback) = 0;
 
+  // Unregisters all foreground receive surfaces.
+  virtual StatusCodes ClearForegroundReceiveSurfaces() = 0;
+
   // Returns true if a foreground receive surface is registered.
   virtual bool IsInHighVisibility() = 0;
 

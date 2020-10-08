@@ -18,7 +18,6 @@
 namespace {
 
 const char kStartReceivingQueryParam[] = "receive";
-const char kStopReceivingQueryParam[] = "stop_receiving";
 
 constexpr base::TimeDelta kShutoffTimeout = base::TimeDelta::FromMinutes(5);
 constexpr base::TimeDelta kOnboardingWaitTimeout =
@@ -81,7 +80,7 @@ void NearbyShareDelegateImpl::DisableHighVisibility() {
 
   shutoff_timer_.Stop();
 
-  settings_opener_->ShowSettingsPage(kStopReceivingQueryParam);
+  nearby_share_service_->ClearForegroundReceiveSurfaces();
 }
 
 void NearbyShareDelegateImpl::OnLockStateChanged(bool locked) {
