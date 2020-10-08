@@ -1,13 +1,31 @@
 <style include="diagnostics-shared diagnostics-fonts">
+  #barChartContainer > label {
+    @apply --diagnostics-chart-title-font;
+    color: var(--diagnostics-overview-text-color);
+  }
+
   paper-progress {
+    border-radius: 5px;
+    display: inline-block;
+    width: 300px;
     --paper-progress-active-color: var(--google-blue-500);
     --paper-progress-container-color: var(--google-blue-100);
+    --paper-progress-height: 8px;
   }
+
+  #percentageLabel {
+    @apply --diagnostics-chart-label-font;
+    display: inline;
+    padding-left: 5px;
+  }
+
 </style>
 
 <div id="barChartContainer">
   <label id="chartName">[[header]]</label>
-  <paper-progress id="barChart" value="[[value]]" max="[[max]]"></paper-progress>
-  <!-- TODO(joonbug): Add i18n string for percent number format -->
-  <label id="percentageLabel">[[computePercentage_(value, max)]]</label>
+  <div class="body">
+    <paper-progress id="barChart" value="[[value]]" max="[[max]]"></paper-progress>
+    <!-- TODO(joonbug): Add i18n string for percent number format -->
+    <label id="percentageLabel">[[computePercentage_(value, max)]]</label>
+  </div>
 </div>
