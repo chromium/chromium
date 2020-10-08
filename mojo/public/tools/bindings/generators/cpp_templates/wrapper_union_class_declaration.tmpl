@@ -49,6 +49,11 @@ class {{export_attribute}} {{union.name}} {
                 T, {{union.name}}>::value>::type* = nullptr>
   bool Equals(const T& other) const;
 
+  template <typename T,
+            typename std::enable_if<std::is_same<
+                T, {{union.name}}>::value>::type* = nullptr>
+  bool operator==(const T& rhs) const { return Equals(rhs); }
+
 {%- if union|is_hashable %}
   size_t Hash(size_t seed) const;
 {%- endif %}
