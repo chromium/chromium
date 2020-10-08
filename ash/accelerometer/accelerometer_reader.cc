@@ -17,7 +17,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/numerics/math_constants.h"
 #include "base/observer_list_threadsafe.h"
@@ -616,21 +615,12 @@ bool AccelerometerFileReader::InitializeAccelerometer(
     }
     configuration_.scale[config_index][i] = scale;
   }
-  base::FilePath path =
-      base::FilePath(kAccelerometerDevicePath).Append(name.BaseName());
-  char try_reading;
-  if (base::ReadFile(path, &try_reading, 1) < 0) {
-    logging::SystemErrorCode err_code = logging::GetLastSystemErrorCode();
-    LOG(ERROR) << "Failed to read " << path
-               << " error: " << logging::SystemErrorCodeToString(err_code);
-    return false;
-  }
-
   configuration_.has[config_index] = true;
   configuration_.count++;
 
   ReadingData reading_data;
-  reading_data.path = path;
+  reading_data.path =
+      base::FilePath(kAccelerometerDevicePath).Append(name.BaseName());
   reading_data.sources.push_back(
       static_cast<AccelerometerSource>(config_index));
 
@@ -711,11 +701,9 @@ void AccelerometerFileReader::ReadFileAndNotify() {
     char reading[reading_size];
     int bytes_read = base::ReadFile(reading_data.path, reading, reading_size);
     if (bytes_read < reading_size) {
-      logging::SystemErrorCode err_code = logging::GetLastSystemErrorCode();
       LOG(ERROR) << "Accelerometer Read " << bytes_read << " byte(s), expected "
                  << reading_size << " bytes from accelerometer "
-                 << reading_data.path.MaybeAsASCII()
-                 << " error: " << logging::SystemErrorCodeToString(err_code);
+                 << reading_data.path.MaybeAsASCII();
       return;
     }
     for (AccelerometerSource source : reading_data.sources) {
