@@ -34,11 +34,11 @@ import java.util.Map;
  */
 public class PaintPreviewHelper {
     /**
-     * Tracks whether there has been an attempt to display a paint preview before. We use this to
-     * only attempt to display a paint preview on the first tab restoration that happens after
-     * Chrome startup.
+     * Tracks whether a paint preview should be shown on tab restore. We use this to only attempt
+     * to display a paint preview on the first tab restoration that happens on Chrome startup when
+     * cold.
      */
-    private static boolean sHasAttemptedToShowOnRestore;
+    private static boolean sShouldShowOnRestore;
 
     /**
      * A map for keeping Activity-specific variables and classes. New entries are added on calls to
@@ -49,18 +49,30 @@ public class PaintPreviewHelper {
             new HashMap<>();
 
     /**
+     * Sets whether a Paint Preview should attempt to be shown on restoration of a tab. If the
+     * feature is not enabled this is effectively a no-op. This is used to
+     */
+    public static void setShouldShowOnRestore(boolean shouldShowOnRestore) {
+        sShouldShowOnRestore = shouldShowOnRestore;
+    }
+
+    /**
      * Initializes the logic required for the Paint Preview on startup feature. Mainly, observes a
      * {@link TabModelSelector} to monitor for initialization completion.
      *
      * @param activity         The ChromeActivity that corresponds to the tabModelSelector.
      * @param tabModelSelector The TabModelSelector to observe.
+     * @param willShowStartSurface Whether the start surface will be shown.
+     * @param progressBarCoordinatorSupplier Supplier for the progress bar.
      */
     public static void initialize(ChromeActivity<?> activity, TabModelSelector tabModelSelector,
+            boolean willShowStartSurface,
             Supplier<LoadProgressCoordinator> progressBarCoordinatorSupplier) {
         if (!CachedFeatureFlags.isEnabled(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP)) return;
 
-        if (!MultiWindowUtils.getInstance().areMultipleChromeInstancesRunning(activity)) {
-            sHasAttemptedToShowOnRestore = false;
+        if (MultiWindowUtils.getInstance().areMultipleChromeInstancesRunning(activity)
+                || willShowStartSurface) {
+            sShouldShowOnRestore = false;
         }
         sWindowAndroidHelperMap.put(activity.getWindowAndroid(),
                 new PaintPreviewWindowAndroidHelper(activity, progressBarCoordinatorSupplier));
@@ -86,7 +98,7 @@ public class PaintPreviewHelper {
      */
     public static void showPaintPreviewOnRestore(Tab tab) {
         if (!CachedFeatureFlags.isEnabled(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP)
-                || sHasAttemptedToShowOnRestore
+                || !sShouldShowOnRestore
                 || ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
             return;
         }
@@ -95,7 +107,7 @@ public class PaintPreviewHelper {
                 sWindowAndroidHelperMap.get(tab.getWindowAndroid());
         if (windowAndroidHelper == null) return;
 
-        sHasAttemptedToShowOnRestore = true;
+        sShouldShowOnRestore = false;
         TabbedPaintPreviewPlayer player = TabbedPaintPreviewPlayer.get(tab);
         player.setBrowserVisibilityDelegate(
                 windowAndroidHelper.getBrowserControlsManager().getBrowserVisibilityDelegate());
@@ -171,4 +183,6 @@ public class PaintPreviewHelper {
             }
         }
     }
+
+    private PaintPreviewHelper() {}
 }
