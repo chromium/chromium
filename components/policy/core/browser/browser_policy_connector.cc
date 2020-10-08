@@ -37,6 +37,9 @@ namespace {
 const char kDefaultDeviceManagementServerUrl[] =
     "https://m.google.com/devicemanagement/data/api";
 
+const char kDefaultEncryptedReportingServerUrl[] =
+    "https://chromereporting-pa.googleapis.com/v1/record";
+
 // The URL for the realtime reporting server.
 const char kDefaultRealtimeReportingServerUrl[] =
     "https://chromereporting-pa.googleapis.com/v1/events";
@@ -151,6 +154,15 @@ std::string BrowserPolicyConnector::GetRealtimeReportingUrl() const {
     return command_line->GetSwitchValueASCII(switches::kRealtimeReportingUrl);
   else
     return kDefaultRealtimeReportingServerUrl;
+}
+
+std::string BrowserPolicyConnector::GetEncryptedReportingUrl() const {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kEncryptedReportingUrl) &&
+      IsCommandLineSwitchSupported())
+    return command_line->GetSwitchValueASCII(switches::kEncryptedReportingUrl);
+  else
+    return kDefaultEncryptedReportingServerUrl;
 }
 
 // static

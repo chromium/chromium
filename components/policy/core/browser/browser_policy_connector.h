@@ -63,6 +63,9 @@ class POLICY_EXPORT BrowserPolicyConnector : public BrowserPolicyConnectorBase {
   // Returns the URL for the realtime reporting service endpoint.
   std::string GetRealtimeReportingUrl() const;
 
+  // Returns the URL for the encrypted reporting service endpoint.
+  std::string GetEncryptedReportingUrl() const;
+
   // Check whether a user is known to be non-enterprise. Domains such as
   // gmail.com and googlemail.com are known to not be managed. Also returns
   // false if the username is empty.

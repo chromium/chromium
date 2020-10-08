@@ -14,6 +14,9 @@ const char kDeviceManagementUrl[]           = "device-management-url";
 // Specifies the URL at which to upload real-time reports.
 const char kRealtimeReportingUrl[] = "realtime-reporting-url";
 
+// Specifies the URL at which to upload encrypted reports.
+const char kEncryptedReportingUrl[] = "encrypted-reporting-url";
+
 // Always treat user as affiliated.
 // TODO(antrim): Remove once test servers correctly produce affiliation ids.
 const char kUserAlwaysAffiliated[]  = "user-always-affiliated";
