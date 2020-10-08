@@ -445,7 +445,9 @@ TEST_F(It2MeHostTest, NatTraversalPolicy_Disabled) {
   ASSERT_EQ(It2MeHostState::kDisconnected, last_host_state_);
 }
 
-TEST_F(It2MeHostTest, NatTraversalPolicy_DisabledTransitionCausesDisconnect) {
+// TODO(crbug/1122155): flaky test.
+TEST_F(It2MeHostTest,
+       DISABLED_NatTraversalPolicy_DisabledTransitionCausesDisconnect) {
   StartHost();
   ASSERT_EQ(It2MeHostState::kReceivedAccessCode, last_host_state_);
 
