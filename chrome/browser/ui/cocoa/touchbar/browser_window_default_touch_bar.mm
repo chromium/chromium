@@ -304,7 +304,7 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
     return [self createTabFullscreenTouchBar];
   }
 
-  base::scoped_nsobject<NSTouchBar> touchBar([[ui::NSTouchBar() alloc] init]);
+  base::scoped_nsobject<NSTouchBar> touchBar([[NSTouchBar alloc] init]);
   [touchBar
       setCustomizationIdentifier:ui::GetTouchBarId(kBrowserWindowTouchBarId)];
   [touchBar setDelegate:self];
@@ -359,7 +359,7 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
   }
 
   base::scoped_nsobject<NSCustomTouchBarItem> touchBarItem(
-      [[ui::NSCustomTouchBarItem() alloc] initWithIdentifier:identifier]);
+      [[NSCustomTouchBarItem alloc] initWithIdentifier:identifier]);
   if ([identifier hasSuffix:kBackTouchId]) {
     auto* button = CreateTouchBarButton(vector_icons::kBackArrowIcon, self,
                                         IDC_BACK, IDS_ACCNAME_BACK);
@@ -443,7 +443,7 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
 }
 
 - (NSTouchBar*)createTabFullscreenTouchBar {
-  base::scoped_nsobject<NSTouchBar> touchBar([[ui::NSTouchBar() alloc] init]);
+  base::scoped_nsobject<NSTouchBar> touchBar([[NSTouchBar alloc] init]);
   [touchBar setDelegate:self];
   [touchBar setDefaultItemIdentifiers:@[ ui::GetTouchBarItemId(
                                           kTabFullscreenTouchBarId,

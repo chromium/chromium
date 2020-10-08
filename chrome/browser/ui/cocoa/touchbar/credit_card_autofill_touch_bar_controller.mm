@@ -69,7 +69,7 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
     return nil;
   }
 
-  base::scoped_nsobject<NSTouchBar> touchBar([[ui::NSTouchBar() alloc] init]);
+  base::scoped_nsobject<NSTouchBar> touchBar([[NSTouchBar alloc] init]);
   [touchBar setCustomizationIdentifier:ui::GetTouchBarId(
                                            kCreditCardAutofillTouchBarId)];
   [touchBar setDelegate:self];
@@ -97,13 +97,13 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
                                                kCreditCardTouchId),
                          i];
     base::scoped_nsobject<NSCustomTouchBarItem> item(
-        [[ui::NSCustomTouchBarItem() alloc] initWithIdentifier:cardIdentifier]);
+        [[NSCustomTouchBarItem alloc] initWithIdentifier:cardIdentifier]);
     [item setView:[self createCreditCardButtonAtRow:i]];
     [creditCardItems addObject:item.autorelease()];
   }
 
-  return [ui::NSGroupTouchBarItem() groupItemWithIdentifier:identifier
-                                                      items:creditCardItems];
+  return [NSGroupTouchBarItem groupItemWithIdentifier:identifier
+                                                items:creditCardItems];
 }
 
 - (NSColor*)touchBarSubtextColor {
