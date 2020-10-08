@@ -37,7 +37,7 @@ void SharesheetServiceDelegate::ShowBubble(
 
 void SharesheetServiceDelegate::OnBubbleClosed(
     const base::string16& active_action) {
-  sharesheet_bubble_view_.release();
+  sharesheet_bubble_view_.reset();
   sharesheet_service_->OnBubbleClosed(id_, active_action);
 }
 
