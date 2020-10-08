@@ -27,8 +27,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safe_browsing/settings/EnhancedProtectionSettingsFragment.java",
     "java/src/org/chromium/chrome/browser/safe_browsing/settings/NoProtectionConfirmationDialog.java",
     "java/src/org/chromium/chrome/browser/safe_browsing/settings/RadioButtonGroupSafeBrowsingPreference.java",
+    "java/src/org/chromium/chrome/browser/safe_browsing/settings/SafeBrowsingSettingsFragment.java",
     "java/src/org/chromium/chrome/browser/safe_browsing/settings/SafeBrowsingSettingsFragmentBase.java",
-    "java/src/org/chromium/chrome/browser/safe_browsing/settings/SecuritySettingsFragment.java",
     "java/src/org/chromium/chrome/browser/safe_browsing/settings/StandardProtectionSettingsFragment.java",
   ]
   deps = [
@@ -59,7 +59,7 @@ android_library("java") {
 android_library("javatests") {
   testonly = true
   sources = [
-    "javatests/src/org/chromium/chrome/browser/safe_browsing/settings/SecuritySettingsFragmentTest.java",
+    "javatests/src/org/chromium/chrome/browser/safe_browsing/settings/SafeBrowsingSettingsFragmentTest.java",
     "javatests/src/org/chromium/chrome/browser/safe_browsing/settings/StandardProtectionSettingsFragmentTest.java",
   ]
   deps = [
@@ -91,7 +91,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/layout/radio_button_group_safe_browsing_preference.xml",
     "java/res/xml/enhanced_protection_preferences.xml",
-    "java/res/xml/security_preferences.xml",
+    "java/res/xml/safe_browsing_preferences.xml",
     "java/res/xml/standard_protection_preferences.xml",
   ]
   deps = [

@@ -7,7 +7,7 @@ import android.content.Context;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
-import org.chromium.chrome.browser.safe_browsing.settings.SecuritySettingsFragment;
+import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.content_public.browser.WebContents;
@@ -25,8 +25,8 @@ public class SafeBrowsingSettingsLauncher {
         if (window == null) return;
         Context currentContext = window.getContext().get();
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        settingsLauncher.launchSettingsActivity(currentContext, SecuritySettingsFragment.class,
-                SecuritySettingsFragment.createArguments(
+        settingsLauncher.launchSettingsActivity(currentContext, SafeBrowsingSettingsFragment.class,
+                SafeBrowsingSettingsFragment.createArguments(
                         SettingsAccessPoint.SECURITY_INTERSTITIAL));
     }
 }

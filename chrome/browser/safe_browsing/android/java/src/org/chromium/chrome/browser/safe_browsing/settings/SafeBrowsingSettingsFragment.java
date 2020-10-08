@@ -25,10 +25,9 @@ import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 
 /**
- * Fragment containing security settings.
- * TODO(crbug.com/1097310): Rename it to SafeBrowsingSettingsFragment.
+ * Fragment containing Safe Browsing settings.
  */
-public class SecuritySettingsFragment extends SafeBrowsingSettingsFragmentBase
+public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBase
         implements FragmentSettingsLauncher,
                    RadioButtonGroupSafeBrowsingPreference.OnSafeBrowsingModeDetailsRequested,
                    Preference.OnPreferenceChangeListener {
@@ -36,7 +35,7 @@ public class SecuritySettingsFragment extends SafeBrowsingSettingsFragmentBase
     static final String PREF_TEXT_MANAGED = "text_managed";
     @VisibleForTesting
     static final String PREF_SAFE_BROWSING = "safe_browsing_radio_button_group";
-    public static final String ACCESS_POINT = "SecuritySettingsFragment.AccessPoint";
+    public static final String ACCESS_POINT = "SafeBrowsingSettingsFragment.AccessPoint";
 
     // An instance of SettingsLauncher that is used to launch Safe Browsing subsections.
     private SettingsLauncher mSettingsLauncher;
@@ -99,7 +98,7 @@ public class SecuritySettingsFragment extends SafeBrowsingSettingsFragmentBase
 
     @Override
     protected int getPreferenceResource() {
-        return R.xml.security_preferences;
+        return R.xml.safe_browsing_preferences;
     }
 
     @Override

@@ -41,12 +41,12 @@ import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
- * Tests for {@link SecuritySettingsFragment}.
+ * Tests for {@link SafeBrowsingSettingsFragment}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 // clang-format off
-@Features.EnableFeatures({ChromeFeatureList.SAFE_BROWSING_SECURITY_SECTION_UI})
-public class SecuritySettingsFragmentTest {
+@Features.EnableFeatures({ChromeFeatureList.SAFE_BROWSING_SECTION_UI})
+public class SafeBrowsingSettingsFragmentTest {
     // clang-format on
     private static final String ASSERT_SAFE_BROWSING_STATE_RADIO_BUTTON_GROUP =
             "Incorrect Safe Browsing state in the radio button group.";
@@ -56,8 +56,8 @@ public class SecuritySettingsFragmentTest {
             "Incorrect Safe Browsing state from native.";
 
     @Rule
-    public SettingsActivityTestRule<SecuritySettingsFragment> mTestRule =
-            new SettingsActivityTestRule<>(SecuritySettingsFragment.class);
+    public SettingsActivityTestRule<SafeBrowsingSettingsFragment> mTestRule =
+            new SettingsActivityTestRule<>(SafeBrowsingSettingsFragment.class);
 
     @Mock
     private SettingsLauncher mSettingsLauncher;
@@ -65,7 +65,7 @@ public class SecuritySettingsFragmentTest {
     @Mock
     private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
-    private SecuritySettingsFragment mSecuritySettingsFragment;
+    private SafeBrowsingSettingsFragment mSafeBrowsingSettingsFragment;
     private RadioButtonGroupSafeBrowsingPreference mSafeBrowsingPreference;
     private TextMessagePreference mManagedTextPreference;
 
@@ -76,11 +76,11 @@ public class SecuritySettingsFragmentTest {
 
     private void launchSettingsActivity() {
         mTestRule.startSettingsActivity();
-        mSecuritySettingsFragment = mTestRule.getFragment();
-        mSafeBrowsingPreference = mSecuritySettingsFragment.findPreference(
-                SecuritySettingsFragment.PREF_SAFE_BROWSING);
-        mManagedTextPreference = mSecuritySettingsFragment.findPreference(
-                SecuritySettingsFragment.PREF_TEXT_MANAGED);
+        mSafeBrowsingSettingsFragment = mTestRule.getFragment();
+        mSafeBrowsingPreference = mSafeBrowsingSettingsFragment.findPreference(
+                SafeBrowsingSettingsFragment.PREF_SAFE_BROWSING);
+        mManagedTextPreference = mSafeBrowsingSettingsFragment.findPreference(
+                SafeBrowsingSettingsFragment.PREF_TEXT_MANAGED);
         Assert.assertNotNull(
                 "Safe Browsing preference should not be null.", mSafeBrowsingPreference);
         Assert.assertNotNull("Text managed preference should not be null.", mManagedTextPreference);
@@ -258,10 +258,10 @@ public class SecuritySettingsFragmentTest {
     public void testEnhancedProtectionAuxButtonClicked() {
         launchSettingsActivity();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSecuritySettingsFragment.setSettingsLauncher(mSettingsLauncher);
+            mSafeBrowsingSettingsFragment.setSettingsLauncher(mSettingsLauncher);
             getEnhancedProtectionButton().getAuxButtonForTests().performClick();
             Mockito.verify(mSettingsLauncher)
-                    .launchSettingsActivity(mSecuritySettingsFragment.getContext(),
+                    .launchSettingsActivity(mSafeBrowsingSettingsFragment.getContext(),
                             EnhancedProtectionSettingsFragment.class);
         });
     }
@@ -273,10 +273,10 @@ public class SecuritySettingsFragmentTest {
     public void testStandardProtectionAuxButtonClicked() {
         launchSettingsActivity();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSecuritySettingsFragment.setSettingsLauncher(mSettingsLauncher);
+            mSafeBrowsingSettingsFragment.setSettingsLauncher(mSettingsLauncher);
             getStandardProtectionButton().getAuxButtonForTests().performClick();
             Mockito.verify(mSettingsLauncher)
-                    .launchSettingsActivity(mSecuritySettingsFragment.getContext(),
+                    .launchSettingsActivity(mSafeBrowsingSettingsFragment.getContext(),
                             StandardProtectionSettingsFragment.class);
         });
     }
@@ -357,12 +357,12 @@ public class SecuritySettingsFragmentTest {
     @Feature({"SafeBrowsing"})
     public void testHelpButtonClicked() {
         launchSettingsActivity();
-        mSecuritySettingsFragment.setHelpAndFeedbackLauncher(mHelpAndFeedbackLauncher);
+        mSafeBrowsingSettingsFragment.setHelpAndFeedbackLauncher(mHelpAndFeedbackLauncher);
         onView(withId(R.id.menu_id_targeted_help)).perform(click());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Mockito.verify(mHelpAndFeedbackLauncher)
-                    .show(mSecuritySettingsFragment.getActivity(),
-                            mSecuritySettingsFragment.getString(
+                    .show(mSafeBrowsingSettingsFragment.getActivity(),
+                            mSafeBrowsingSettingsFragment.getString(
                                     R.string.help_context_safe_browsing),
                             Profile.getLastUsedRegularProfile(), null);
         });

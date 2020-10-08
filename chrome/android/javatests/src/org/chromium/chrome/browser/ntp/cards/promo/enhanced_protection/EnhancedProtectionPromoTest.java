@@ -48,7 +48,7 @@ import org.chromium.chrome.browser.ntp.cards.promo.enhanced_protection.EnhancedP
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.safe_browsing.settings.SecuritySettingsFragment;
+import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -155,7 +155,7 @@ public class EnhancedProtectionPromoTest {
 
         Matcher<Intent> isCorrectComponent = hasComponent(SettingsActivity.class.getName());
         Matcher<Intent> isCorrectFragment =
-                hasExtra("show_fragment", SecuritySettingsFragment.class.getName());
+                hasExtra("show_fragment", SafeBrowsingSettingsFragment.class.getName());
         intended(allOf(isCorrectComponent, isCorrectFragment));
 
         Assert.assertEquals("Promo accepted should be recorded once. ", 1,

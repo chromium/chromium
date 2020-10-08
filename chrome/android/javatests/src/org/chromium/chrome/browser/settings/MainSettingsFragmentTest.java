@@ -164,7 +164,7 @@ public class MainSettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.SAFE_BROWSING_SECURITY_SECTION_UI})
+    @EnableFeatures({ChromeFeatureList.SAFE_BROWSING_SECTION_UI})
     @DisableFeatures({ChromeFeatureList.SAFETY_CHECK_ANDROID})
     public void testRenderDifferentSignedInStates() throws IOException {
         launchSettingsActivity();
@@ -182,8 +182,8 @@ public class MainSettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.SAFETY_CHECK_ANDROID,
-            ChromeFeatureList.SAFE_BROWSING_SECURITY_SECTION_UI})
+    @EnableFeatures(
+            {ChromeFeatureList.SAFETY_CHECK_ANDROID, ChromeFeatureList.SAFE_BROWSING_SECTION_UI})
     public void
     testRenderDifferentSignedInStatesWithSafetyCheck() throws IOException {
         launchSettingsActivity();
@@ -326,7 +326,7 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.SAFE_BROWSING_SECURITY_SECTION_UI)
+    @EnableFeatures(ChromeFeatureList.SAFE_BROWSING_SECTION_UI)
     public void testSafeBrowsingSecuritySectionUiFlagOn() {
         launchSettingsActivity();
         assertSettingsExists(MainSettings.PREF_PRIVACY, PrivacySettings.class);

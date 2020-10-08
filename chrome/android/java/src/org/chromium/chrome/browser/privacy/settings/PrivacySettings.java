@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy.secure_dns.SecureDnsSettings;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
-import org.chromium.chrome.browser.safe_browsing.settings.SecuritySettingsFragment;
+import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -76,17 +76,17 @@ public class PrivacySettings
             }
         }
 
-        // If the flag for adding a "Security" section UI is enabled, a "Security" section will be
-        // added under this section and this section will be renamed to "Privacy and security".
-        // See (go/esb-clank-dd) for more context.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SAFE_BROWSING_SECURITY_SECTION_UI)) {
+        // If the flag for adding a "Safe Browsing" section UI is enabled, a "Safe Browsing" section
+        // will be added under this section and this section will be renamed to "Privacy and
+        // security". See (go/esb-clank-dd) for more context.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SAFE_BROWSING_SECTION_UI)) {
             getActivity().setTitle(R.string.prefs_privacy_security);
             Preference safeBrowsingPreference = findPreference(PREF_SAFE_BROWSING);
             safeBrowsingPreference.setSummary(
-                    SecuritySettingsFragment.getSafeBrowsingSummaryString(getContext()));
+                    SafeBrowsingSettingsFragment.getSafeBrowsingSummaryString(getContext()));
             safeBrowsingPreference.setOnPreferenceClickListener((preference) -> {
-                preference.getExtras().putInt(
-                        SecuritySettingsFragment.ACCESS_POINT, SettingsAccessPoint.PARENT_SETTINGS);
+                preference.getExtras().putInt(SafeBrowsingSettingsFragment.ACCESS_POINT,
+                        SettingsAccessPoint.PARENT_SETTINGS);
                 return false;
             });
         } else {
@@ -198,7 +198,7 @@ public class PrivacySettings
         Preference safeBrowsingPreference = findPreference(PREF_SAFE_BROWSING);
         if (safeBrowsingPreference != null && safeBrowsingPreference.isVisible()) {
             safeBrowsingPreference.setSummary(
-                    SecuritySettingsFragment.getSafeBrowsingSummaryString(getContext()));
+                    SafeBrowsingSettingsFragment.getSafeBrowsingSummaryString(getContext()));
         }
 
         Preference usageStatsPref = findPreference(PREF_USAGE_STATS);

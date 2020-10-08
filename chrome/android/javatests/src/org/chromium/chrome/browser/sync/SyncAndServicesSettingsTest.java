@@ -343,20 +343,20 @@ public class SyncAndServicesSettingsTest {
     @Test
     @LargeTest
     @Feature({"Preference"})
-    @EnableFeatures(ChromeFeatureList.SAFE_BROWSING_SECURITY_SECTION_UI)
-    public void testSafeBrowsingSecuritySectionUiFlagOn() {
+    @EnableFeatures(ChromeFeatureList.SAFE_BROWSING_SECTION_UI)
+    public void testSafeBrowsingSafeBrowsingSectionUiFlagOn() {
         final SyncAndServicesSettings syncAndServicesSettings = startSyncAndServicesPreferences();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertNull("Safe Browsing should be null when security section is enabled.",
+            Assert.assertNull("Safe Browsing should be null when Safe Browsing section is enabled.",
                     syncAndServicesSettings.findPreference(
                             SyncAndServicesSettings.PREF_SAFE_BROWSING));
             Assert.assertNull(
-                    "Password leak detection should be null when security section is enabled.",
+                    "Password leak detection should be null when Safe Browsing section is enabled.",
                     syncAndServicesSettings.findPreference(
                             SyncAndServicesSettings.PREF_PASSWORD_LEAK_DETECTION));
             Assert.assertNull(
-                    "Safe Browsing scout should be null when security section is enabled.",
+                    "Safe Browsing scout should be null when Safe Browsing section is enabled.",
                     syncAndServicesSettings.findPreference(
                             SyncAndServicesSettings.PREF_SAFE_BROWSING_SCOUT_REPORTING));
         });

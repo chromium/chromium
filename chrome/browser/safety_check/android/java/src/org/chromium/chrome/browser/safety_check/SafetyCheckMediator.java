@@ -31,7 +31,7 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
-import org.chromium.chrome.browser.safe_browsing.settings.SecuritySettingsFragment;
+import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.safety_check.SafetyCheckBridge.SafetyCheckCommonObserver;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.PasswordsState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
@@ -190,13 +190,13 @@ class SafetyCheckMediator implements PasswordCheck.Observer, SafetyCheckCommonOb
                             SafetyCheckInteractions.SAFE_BROWSING_MANAGE,
                             SafetyCheckInteractions.MAX_VALUE);
                     String safeBrowsingSettingsClassName;
-                    if (ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.SAFE_BROWSING_SECURITY_SECTION_UI)) {
-                        // Open the Security settings since the flag for them is enabled.
-                        safeBrowsingSettingsClassName = SecuritySettingsFragment.class.getName();
+                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.SAFE_BROWSING_SECTION_UI)) {
+                        // Open the Safe Browsing settings since the flag for them is enabled.
+                        safeBrowsingSettingsClassName =
+                                SafeBrowsingSettingsFragment.class.getName();
                         p.getContext().startActivity(settingsLauncher.createSettingsActivityIntent(
                                 p.getContext(), safeBrowsingSettingsClassName,
-                                SecuritySettingsFragment.createArguments(
+                                SafeBrowsingSettingsFragment.createArguments(
                                         SettingsAccessPoint.SAFETY_CHECK)));
                     } else {
                         // Open the Sync and Services settings.

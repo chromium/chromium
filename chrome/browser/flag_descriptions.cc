@@ -3073,11 +3073,11 @@ const char kEnhancedProtectionPromoAndroidDescription[] =
     "Enable enhanced protection promo card for users that have not signed up "
     "for enhanced protection.";
 
-const char kSafeBrowsingSecuritySectionUiAndroidName[] =
-    "Security Section on Android";
-const char kSafeBrowsingSecuritySectionUiAndroidDescription[] =
-    "Add a settings page for configuring security settings. The new security "
-    "page is under Settings > Privacy and security";
+const char kSafeBrowsingSectionUiAndroidName[] =
+    "Safe Browsing Section on Android";
+const char kSafeBrowsingSectionUiAndroidDescription[] =
+    "Add a settings page for configuring Safe Browsing settings. The new Safe "
+    "Browsing page is under Settings > Privacy and security";
 
 const char kSafeBrowsingUseLocalBlacklistsV2Name[] =
     "Use local Safe Browsing blacklists";

@@ -43,7 +43,7 @@
         android:key="safe_browsing"
         android:title="@string/prefs_safe_browsing_title"
         android:summary="@string/prefs_safe_browsing_summary"
-        android:fragment="org.chromium.chrome.browser.safe_browsing.settings.SecuritySettingsFragment"
+        android:fragment="org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment"
         android:order="6"/>
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="sync_and_services_link"

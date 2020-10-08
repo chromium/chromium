@@ -5504,10 +5504,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kEnhancedProtectionPromoCard)},
 
     {"safe-browsing-security-section-ui-android",
-     flag_descriptions::kSafeBrowsingSecuritySectionUiAndroidName,
-     flag_descriptions::kSafeBrowsingSecuritySectionUiAndroidDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(safe_browsing::kSafeBrowsingSecuritySectionUIAndroid)},
+     flag_descriptions::kSafeBrowsingSectionUiAndroidName,
+     flag_descriptions::kSafeBrowsingSectionUiAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(safe_browsing::kSafeBrowsingSectionUIAndroid)},
 #endif
 
     {"safe-browsing-enhanced-protection-message-in-interstitials",

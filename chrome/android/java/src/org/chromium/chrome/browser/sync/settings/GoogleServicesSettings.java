@@ -109,7 +109,7 @@ public class GoogleServicesSettings
         // If security section UI is enabled, Safe Browsing related preferences will be moved to a
         // dedicated "Security" preference page.
         mIsSecurityPreferenceRemoved =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.SAFE_BROWSING_SECURITY_SECTION_UI);
+                ChromeFeatureList.isEnabled(ChromeFeatureList.SAFE_BROWSING_SECTION_UI);
         if (mIsSecurityPreferenceRemoved) {
             removePreference(getPreferenceScreen(), findPreference(PREF_SAFE_BROWSING));
             removePreference(getPreferenceScreen(), findPreference(PREF_PASSWORD_LEAK_DETECTION));

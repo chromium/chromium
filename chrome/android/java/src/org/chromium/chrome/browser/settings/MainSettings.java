@@ -179,7 +179,7 @@ public class MainSettings extends PreferenceFragmentCompat
         // If the flag for adding a "Security" section is enabled, the "Privacy" section will be
         // renamed to a "Privacy and security" section and the "Security" section will be added
         // under the renamed section. See (go/esb-clank-dd) for more context.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SAFE_BROWSING_SECURITY_SECTION_UI)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SAFE_BROWSING_SECTION_UI)) {
             findPreference(PREF_PRIVACY).setTitle(R.string.prefs_privacy_security);
         }
 

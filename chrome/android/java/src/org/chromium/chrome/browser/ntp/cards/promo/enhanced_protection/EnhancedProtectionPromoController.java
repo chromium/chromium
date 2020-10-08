@@ -17,7 +17,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.cards.promo.enhanced_protection.EnhancedProtectionPromoUtils.EnhancedProtectionPromoAction;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
-import org.chromium.chrome.browser.safe_browsing.settings.SecuritySettingsFragment;
+import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.browser_ui.widget.promo.PromoCardCoordinator;
@@ -174,8 +174,8 @@ public class EnhancedProtectionPromoController {
         EnhancedProtectionPromoUtils.recordEnhancedProtectionPromoEvent(
                 EnhancedProtectionPromoAction.ACCEPTED);
         SettingsLauncher launcher = new SettingsLauncherImpl();
-        launcher.launchSettingsActivity(mContext, SecuritySettingsFragment.class,
-                SecuritySettingsFragment.createArguments(
+        launcher.launchSettingsActivity(mContext, SafeBrowsingSettingsFragment.class,
+                SafeBrowsingSettingsFragment.createArguments(
                         SettingsAccessPoint.SURFACE_EXPLORER_PROMO_SLINGER));
     }
 
