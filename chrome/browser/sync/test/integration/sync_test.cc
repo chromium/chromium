@@ -29,6 +29,7 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
@@ -60,6 +61,8 @@
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/engine_impl/sync_scheduler_impl.h"
+#include "components/sync/invalidations/switches.h"
+#include "components/sync/invalidations/sync_invalidations_service_impl.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/fake_server/fake_server_network_resources.h"
 #include "content/public/browser/navigation_entry.h"
@@ -937,7 +940,7 @@ void SyncTest::OnWillCreateBrowserContextServices(
   if (UsingExternalServers()) {
     // DO NOTHING. External live sync servers use GCM to notify profiles of
     // any invalidations in sync'ed data. No need to provide a testing
-    // factory the ProfileInvalidationProvider.
+    // factory for ProfileInvalidationProvider and SyncInvalidationsService.
     return;
   }
   invalidation::ProfileInvalidationProviderFactory::GetInstance()
@@ -946,6 +949,9 @@ void SyncTest::OnWillCreateBrowserContextServices(
           base::BindRepeating(&SyncTest::CreateProfileInvalidationProvider,
                               &profile_to_fcm_network_handler_map_,
                               &fake_instance_id_driver_));
+  SyncInvalidationsServiceFactory::GetInstance()->SetTestingFactory(
+      context, base::BindRepeating(&SyncTest::CreateSyncInvalidationsService,
+                                   &fake_instance_id_driver_));
 }
 
 // static
@@ -987,6 +993,22 @@ std::unique_ptr<KeyedService> SyncTest::CreateProfileInvalidationProvider(
               -> std::unique_ptr<invalidation::InvalidationService> {
             return std::make_unique<invalidation::FakeInvalidationService>();
           }));
+}
+
+// static
+std::unique_ptr<KeyedService> SyncTest::CreateSyncInvalidationsService(
+    instance_id::InstanceIDDriver* instance_id_driver,
+    content::BrowserContext* context) {
+  if (!base::FeatureList::IsEnabled(switches::kSyncSendInterestedDataTypes)) {
+    return nullptr;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(context);
+
+  gcm::GCMDriver* gcm_driver =
+      gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver();
+  return std::make_unique<syncer::SyncInvalidationsServiceImpl>(
+      gcm_driver, instance_id_driver);
 }
 
 void SyncTest::ResetSyncForPrimaryAccount() {

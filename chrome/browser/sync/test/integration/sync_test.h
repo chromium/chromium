@@ -360,6 +360,10 @@ class SyncTest : public PlatformBrowserTest {
       instance_id::InstanceIDDriver* instance_id_driver,
       content::BrowserContext* context);
 
+  static std::unique_ptr<KeyedService> CreateSyncInvalidationsService(
+      instance_id::InstanceIDDriver* instance_id_driver,
+      content::BrowserContext* context);
+
   // Helper to Profile::CreateProfile that handles path creation. It creates
   // a profile then registers it as a testing profile.
   Profile* MakeTestProfile(base::FilePath profile_path, int index);
