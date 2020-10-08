@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "build/build_config.h"
 #include "chrome/test/base/chrome_test_suite.h"
@@ -21,7 +20,9 @@
 class ChromeUnitTestSuite : public ChromeTestSuite {
  public:
   ChromeUnitTestSuite(int argc, char** argv);
-  ~ChromeUnitTestSuite() override;
+  ChromeUnitTestSuite(const ChromeUnitTestSuite&) = delete;
+  ChromeUnitTestSuite& operator=(const ChromeUnitTestSuite&) = delete;
+  ~ChromeUnitTestSuite() override = default;
 
   // base::TestSuite overrides:
   void Initialize() override;
@@ -43,8 +44,6 @@ class ChromeUnitTestSuite : public ChromeTestSuite {
   // task which delays test completion.
   instance_id::ScopedUseFakeInstanceIDAndroid fake_instance_id_android_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeUnitTestSuite);
 };
 
 #endif  // CHROME_TEST_BASE_CHROME_UNIT_TEST_SUITE_H_

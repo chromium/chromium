@@ -6,7 +6,6 @@
 #define CHROME_TEST_BASE_EXTENSION_JS_BROWSER_TEST_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "chrome/test/base/extension_load_waiter_one_shot.h"
 #include "chrome/test/base/javascript_browser_test.h"
 
@@ -17,7 +16,8 @@
 class ExtensionJSBrowserTest : public JavaScriptBrowserTest {
  public:
   ExtensionJSBrowserTest();
-
+  ExtensionJSBrowserTest(const ExtensionJSBrowserTest&) = delete;
+  ExtensionJSBrowserTest& operator=(const ExtensionJSBrowserTest&) = delete;
   ~ExtensionJSBrowserTest() override;
 
  protected:
@@ -32,9 +32,7 @@ class ExtensionJSBrowserTest : public JavaScriptBrowserTest {
 
  private:
   std::unique_ptr<ExtensionLoadWaiterOneShot> load_waiter_;
-  bool libs_loaded_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionJSBrowserTest);
+  bool libs_loaded_ = false;
 };
 
 #endif  // CHROME_TEST_BASE_EXTENSION_JS_BROWSER_TEST_H_

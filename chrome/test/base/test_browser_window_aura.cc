@@ -4,6 +4,8 @@
 
 #include "chrome/test/base/test_browser_window_aura.h"
 
+#include <utility>
+
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "ui/aura/window.h"

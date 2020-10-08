@@ -4,6 +4,8 @@
 
 #include "chrome/test/base/dialog_test_browser_window.h"
 
+#include <utility>
+
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -27,9 +29,7 @@ DialogTestBrowserWindow::DialogTestBrowserWindow() {
 #endif
 }
 
-DialogTestBrowserWindow::~DialogTestBrowserWindow() {
-}
-
+DialogTestBrowserWindow::~DialogTestBrowserWindow() = default;
 
 WebContentsModalDialogHost*
 DialogTestBrowserWindow::GetWebContentsModalDialogHost() {

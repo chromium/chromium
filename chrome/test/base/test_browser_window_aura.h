@@ -5,8 +5,9 @@
 #ifndef CHROME_TEST_BASE_TEST_BROWSER_WINDOW_AURA_H_
 #define CHROME_TEST_BASE_TEST_BROWSER_WINDOW_AURA_H_
 
-#include "base/macros.h"
 #include "chrome/test/base/test_browser_window.h"
+
+#include <memory>
 
 namespace aura {
 class Window;
@@ -20,6 +21,8 @@ class Widget;
 class TestBrowserWindowAura : public TestBrowserWindow {
  public:
   explicit TestBrowserWindowAura(std::unique_ptr<aura::Window> native_window);
+  TestBrowserWindowAura(const TestBrowserWindowAura&) = delete;
+  TestBrowserWindowAura& operator=(const TestBrowserWindowAura&) = delete;
   ~TestBrowserWindowAura() override;
 
   // TestBrowserWindow overrides:
@@ -36,13 +39,13 @@ class TestBrowserWindowAura : public TestBrowserWindow {
  private:
   Browser* browser_;  // not owned
   std::unique_ptr<aura::Window> native_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBrowserWindowAura);
 };
 
 class TestBrowserWindowViews : public TestBrowserWindow {
  public:
   explicit TestBrowserWindowViews(aura::Window* parent = nullptr);
+  TestBrowserWindowViews(const TestBrowserWindowViews&) = delete;
+  TestBrowserWindowViews& operator=(const TestBrowserWindowViews&) = delete;
   ~TestBrowserWindowViews() override;
 
   // TestBrowserWindow overrides:
@@ -59,8 +62,6 @@ class TestBrowserWindowViews : public TestBrowserWindow {
  private:
   Browser* browser_;  // not owned
   std::unique_ptr<views::Widget> widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBrowserWindowViews);
 };
 
 namespace chrome {

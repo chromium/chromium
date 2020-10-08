@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "components/find_in_page/find_result_observer.h"
 #include "components/find_in_page/find_tab_helper.h"
@@ -35,6 +34,8 @@ namespace ui_test_utils {
 class FindResultWaiter : public find_in_page::FindResultObserver {
  public:
   explicit FindResultWaiter(content::WebContents* parent_tab);
+  FindResultWaiter(const FindResultWaiter&) = delete;
+  FindResultWaiter& operator=(const FindResultWaiter&) = delete;
   ~FindResultWaiter() override;
 
   void Wait();
@@ -61,8 +62,6 @@ class FindResultWaiter : public find_in_page::FindResultObserver {
   int current_find_request_id_ = 0;
 
   bool seen_ = false;  // true after transition to expected state has been seen
-
-  DISALLOW_COPY_AND_ASSIGN(FindResultWaiter);
 };
 
 }  // namespace ui_test_utils

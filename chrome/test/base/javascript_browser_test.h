@@ -5,9 +5,9 @@
 #ifndef CHROME_TEST_BASE_JAVASCRIPT_BROWSER_TEST_H_
 #define CHROME_TEST_BASE_JAVASCRIPT_BROWSER_TEST_H_
 
+#include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string16.h"
 #include "base/values.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -15,6 +15,8 @@
 // A base class providing construction of javascript testing assets.
 class JavaScriptBrowserTest : public InProcessBrowserTest {
  public:
+  JavaScriptBrowserTest(const JavaScriptBrowserTest&) = delete;
+  JavaScriptBrowserTest& operator=(const JavaScriptBrowserTest&) = delete;
   // Add a custom helper JS library for your test.
   // If a relative path is specified, it'll be read
   // as relative to the test data dir.
@@ -46,8 +48,6 @@ class JavaScriptBrowserTest : public InProcessBrowserTest {
 
   // User library search paths.
   std::vector<base::FilePath> library_search_paths_;
-
-  DISALLOW_COPY_AND_ASSIGN(JavaScriptBrowserTest);
 };
 
 #endif  // CHROME_TEST_BASE_JAVASCRIPT_BROWSER_TEST_H_

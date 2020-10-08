@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "build/buildflag.h"
 #include "chrome/browser/ui/browser.h"
@@ -30,6 +29,8 @@ class ViewFocusWaiter : public views::ViewObserver {
       : view_(view), target_focused_(focused) {
     view->AddObserver(this);
   }
+  ViewFocusWaiter(const ViewFocusWaiter&) = delete;
+  ViewFocusWaiter& operator=(const ViewFocusWaiter&) = delete;
 
   ~ViewFocusWaiter() override { view_->RemoveObserver(this); }
 
@@ -53,8 +54,6 @@ class ViewFocusWaiter : public views::ViewObserver {
   base::RunLoop run_loop_;
   views::View* view_;
   const bool target_focused_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewFocusWaiter);
 };
 
 }  // namespace

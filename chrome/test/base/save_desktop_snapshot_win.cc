@@ -10,7 +10,6 @@
 
 #include "base/files/file.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -26,6 +25,8 @@ namespace {
 class FrameHolder : public webrtc::DesktopCapturer::Callback {
  public:
   FrameHolder() = default;
+  FrameHolder(const FrameHolder&) = delete;
+  FrameHolder& operator=(const FrameHolder&) = delete;
 
   // Returns the frame that was captured or null in case of failure.
   std::unique_ptr<webrtc::DesktopFrame> TakeFrame() {
@@ -41,7 +42,6 @@ class FrameHolder : public webrtc::DesktopCapturer::Callback {
   }
 
   std::unique_ptr<webrtc::DesktopFrame> frame_;
-  DISALLOW_COPY_AND_ASSIGN(FrameHolder);
 };
 
 // Captures and returns a snapshot of the screen, or an empty bitmap in case of

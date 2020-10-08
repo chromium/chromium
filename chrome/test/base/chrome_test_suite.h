@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "content/public/test/content_test_suite_base.h"
 
 // Test suite for unit and browser tests. Creates services needed by both.
@@ -17,6 +16,8 @@
 class ChromeTestSuite : public content::ContentTestSuiteBase {
  public:
   ChromeTestSuite(int argc, char** argv);
+  ChromeTestSuite(const ChromeTestSuite&) = delete;
+  ChromeTestSuite& operator=(const ChromeTestSuite&) = delete;
   ~ChromeTestSuite() override;
 
  protected:
@@ -30,8 +31,6 @@ class ChromeTestSuite : public content::ContentTestSuiteBase {
 
   // Alternative path to browser binaries.
   base::FilePath browser_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeTestSuite);
 };
 
 #endif  // CHROME_TEST_BASE_CHROME_TEST_SUITE_H_

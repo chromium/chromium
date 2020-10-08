@@ -14,7 +14,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/browsertest_util.h"
 
-ExtensionJSBrowserTest::ExtensionJSBrowserTest() : libs_loaded_(false) {}
+ExtensionJSBrowserTest::ExtensionJSBrowserTest() {}
 
 ExtensionJSBrowserTest::~ExtensionJSBrowserTest() {}
 

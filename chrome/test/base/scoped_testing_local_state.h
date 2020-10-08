@@ -5,7 +5,6 @@
 #ifndef CHROME_TEST_BASE_SCOPED_TESTING_LOCAL_STATE_H_
 #define CHROME_TEST_BASE_SCOPED_TESTING_LOCAL_STATE_H_
 
-#include "base/macros.h"
 #include "components/prefs/testing_pref_service.h"
 
 class TestingBrowserProcess;
@@ -15,6 +14,8 @@ class TestingBrowserProcess;
 class ScopedTestingLocalState {
  public:
   explicit ScopedTestingLocalState(TestingBrowserProcess* browser_process);
+  ScopedTestingLocalState(const ScopedTestingLocalState&) = delete;
+  ScopedTestingLocalState& operator=(const ScopedTestingLocalState&) = delete;
   ~ScopedTestingLocalState();
 
   TestingPrefServiceSimple* Get() {
@@ -24,8 +25,6 @@ class ScopedTestingLocalState {
  private:
   TestingBrowserProcess* browser_process_;
   TestingPrefServiceSimple local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestingLocalState);
 };
 
 #endif  // CHROME_TEST_BASE_SCOPED_TESTING_LOCAL_STATE_H_

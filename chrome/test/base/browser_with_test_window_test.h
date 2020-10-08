@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -98,6 +97,10 @@ class BrowserWithTestWindowTest : public testing::Test {
                 traits...),
             base::trait_helpers::HasTrait<HostedApp,
                                           TaskEnvironmentTraits...>()) {}
+
+  BrowserWithTestWindowTest(const BrowserWithTestWindowTest&) = delete;
+  BrowserWithTestWindowTest& operator=(const BrowserWithTestWindowTest&) =
+      delete;
 
   ~BrowserWithTestWindowTest() override;
 
@@ -242,8 +245,6 @@ class BrowserWithTestWindowTest : public testing::Test {
 
   // Whether the browser is part of a hosted app.
   const bool hosted_app_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserWithTestWindowTest);
 };
 
 #endif  // CHROME_TEST_BASE_BROWSER_WITH_TEST_WINDOW_TEST_H_

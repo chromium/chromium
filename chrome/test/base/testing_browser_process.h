@@ -15,7 +15,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -71,6 +70,9 @@ class TestingBrowserProcess : public BrowserProcess {
 
   // Convenience method to get g_browser_process as a TestingBrowserProcess*.
   static TestingBrowserProcess* GetGlobal();
+
+  TestingBrowserProcess(const TestingBrowserProcess&) = delete;
+  TestingBrowserProcess& operator=(const TestingBrowserProcess&) = delete;
 
   // BrowserProcess overrides:
   void EndSession() override;
@@ -240,8 +242,6 @@ class TestingBrowserProcess : public BrowserProcess {
 #if !defined(OS_ANDROID)
   BuildState build_state_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(TestingBrowserProcess);
 };
 
 // RAII (resource acquisition is initialization) for TestingBrowserProcess.
@@ -261,10 +261,11 @@ class TestingBrowserProcess : public BrowserProcess {
 class TestingBrowserProcessInitializer {
  public:
   TestingBrowserProcessInitializer();
+  TestingBrowserProcessInitializer(const TestingBrowserProcessInitializer&) =
+      delete;
+  TestingBrowserProcessInitializer& operator=(
+      const TestingBrowserProcessInitializer&) = delete;
   ~TestingBrowserProcessInitializer();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestingBrowserProcessInitializer);
 };
 
 #endif  // CHROME_TEST_BASE_TESTING_BROWSER_PROCESS_H_

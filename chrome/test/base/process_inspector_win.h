@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/strings/string16.h"
 
 namespace base {
@@ -24,6 +23,8 @@ class ProcessInspector {
   // any error.
   static std::unique_ptr<ProcessInspector> Create(const base::Process& process);
 
+  ProcessInspector(const ProcessInspector&) = delete;
+  ProcessInspector& operator=(const ProcessInspector&) = delete;
   virtual ~ProcessInspector() = default;
 
   // Returns the parent process PID of the process.
@@ -38,8 +39,6 @@ class ProcessInspector {
  private:
   // Inspects |process|, returning true if all inspections succeed.
   virtual bool Inspect(const base::Process& process) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessInspector);
 };
 
 #endif  // CHROME_TEST_BASE_PROCESS_INSPECTOR_WIN_H_

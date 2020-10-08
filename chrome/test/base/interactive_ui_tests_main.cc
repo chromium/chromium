@@ -38,7 +38,7 @@
 class InteractiveUITestSuite : public ChromeTestSuite {
  public:
   InteractiveUITestSuite(int argc, char** argv) : ChromeTestSuite(argc, argv) {}
-  ~InteractiveUITestSuite() override {}
+  ~InteractiveUITestSuite() override = default;
 
  protected:
   // ChromeTestSuite overrides:
@@ -98,6 +98,10 @@ class InteractiveUITestLauncherDelegate : public ChromeTestLauncherDelegate {
  public:
   explicit InteractiveUITestLauncherDelegate(ChromeTestSuiteRunner* runner)
       : ChromeTestLauncherDelegate(runner) {}
+  InteractiveUITestLauncherDelegate(const InteractiveUITestLauncherDelegate&) =
+      delete;
+  InteractiveUITestLauncherDelegate& operator=(
+      const InteractiveUITestLauncherDelegate&) = delete;
 
  protected:
   // content::TestLauncherDelegate:
@@ -138,9 +142,6 @@ class InteractiveUITestLauncherDelegate : public ChromeTestLauncherDelegate {
     ChromeTestLauncherDelegate::PostRunTest(test_result);
   }
 #endif  // defined(OS_MAC)
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InteractiveUITestLauncherDelegate);
 };
 
 class InteractiveUITestSuiteRunner : public ChromeTestSuiteRunner {

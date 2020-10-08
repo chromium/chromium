@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -32,7 +31,9 @@ class WebUITestPageHandler : public web_ui_test::mojom::TestRunner,
                              public WebUITestHandler {
  public:
   explicit WebUITestPageHandler(content::WebUI* web_ui) : web_ui_(web_ui) {}
-  ~WebUITestPageHandler() override {}
+  WebUITestPageHandler(const WebUITestPageHandler&) = delete;
+  WebUITestPageHandler& operator=(const WebUITestPageHandler&) = delete;
+  ~WebUITestPageHandler() override = default;
 
   // Binds the Mojo test interface to this handler.
   void BindToTestRunnerReceiver(
@@ -50,8 +51,6 @@ class WebUITestPageHandler : public web_ui_test::mojom::TestRunner,
  private:
   content::WebUI* web_ui_;
   mojo::Receiver<web_ui_test::mojom::TestRunner> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebUITestPageHandler);
 };
 
 }  // namespace

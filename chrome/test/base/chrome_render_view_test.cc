@@ -5,7 +5,6 @@
 #include "chrome/test/base/chrome_render_view_test.h"
 
 #include "base/debug/leak_annotations.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/common/chrome_content_client.h"
@@ -70,7 +69,9 @@ class MockAutofillAgent : public AutofillAgent {
                       autofill_assistant_agent,
                       registry) {}
 
-  ~MockAutofillAgent() override {}
+  MockAutofillAgent(const MockAutofillAgent&) = delete;
+  MockAutofillAgent& operator=(const MockAutofillAgent&) = delete;
+  ~MockAutofillAgent() override = default;
 
   void WaitForAutofillDidAssociateFormControl() {
     DCHECK(run_loop_ == nullptr);
@@ -87,8 +88,6 @@ class MockAutofillAgent : public AutofillAgent {
   }
 
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAutofillAgent);
 };
 
 }  // namespace

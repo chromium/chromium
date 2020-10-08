@@ -33,7 +33,7 @@ bool GetNativeWindow(const Browser* browser, gfx::NativeWindow* native_window) {
 }  // namespace
 
 BrowserActivationWaiter::BrowserActivationWaiter(const Browser* browser)
-    : browser_(browser), observed_(false) {
+    : browser_(browser) {
   // When the active browser closes, the next "last active browser" in the
   // BrowserList might not be immediately activated. So we need to wait for the
   // "last active browser" to actually be active.
@@ -43,8 +43,6 @@ BrowserActivationWaiter::BrowserActivationWaiter(const Browser* browser)
   }
   BrowserList::AddObserver(this);
 }
-
-BrowserActivationWaiter::~BrowserActivationWaiter() {}
 
 void BrowserActivationWaiter::WaitForActivation() {
   if (observed_)
@@ -72,7 +70,7 @@ void BrowserActivationWaiter::OnBrowserSetLastActive(Browser* browser) {
 }
 
 BrowserDeactivationWaiter::BrowserDeactivationWaiter(const Browser* browser)
-    : browser_(browser), observed_(false) {
+    : browser_(browser) {
   if (chrome::FindLastActive() != browser_ && !browser->window()->IsActive()) {
     observed_ = true;
     return;

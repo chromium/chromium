@@ -59,8 +59,7 @@ ChromeTestSuite::ChromeTestSuite(int argc, char** argv)
     : content::ContentTestSuiteBase(argc, argv) {
 }
 
-ChromeTestSuite::~ChromeTestSuite() {
-}
+ChromeTestSuite::~ChromeTestSuite() = default;
 
 void ChromeTestSuite::Initialize() {
 #if defined(OS_MAC)

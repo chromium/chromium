@@ -6,8 +6,8 @@
 #define CHROME_TEST_BASE_CHROME_TEST_LAUNCHER_H_
 
 #include <memory>
+#include <string>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "content/public/test/test_launcher.h"
 
@@ -15,13 +15,12 @@
 // instance of ChromeTestSuite.
 class ChromeTestSuiteRunner {
  public:
-  ChromeTestSuiteRunner();
-  virtual ~ChromeTestSuiteRunner();
+  ChromeTestSuiteRunner() = default;
+  ChromeTestSuiteRunner(const ChromeTestSuiteRunner&) = delete;
+  ChromeTestSuiteRunner& operator=(const ChromeTestSuiteRunner&) = delete;
+  virtual ~ChromeTestSuiteRunner() = default;
 
   virtual int RunTestSuite(int argc, char** argv);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeTestSuiteRunner);
 };
 
 // Delegate used for setting up and running chrome browser tests.
@@ -29,6 +28,9 @@ class ChromeTestLauncherDelegate : public content::TestLauncherDelegate {
  public:
   // Does not take ownership of ChromeTestSuiteRunner.
   explicit ChromeTestLauncherDelegate(ChromeTestSuiteRunner* runner);
+  ChromeTestLauncherDelegate(const ChromeTestLauncherDelegate&) = delete;
+  ChromeTestLauncherDelegate& operator=(const ChromeTestLauncherDelegate&) =
+      delete;
   ~ChromeTestLauncherDelegate() override;
 
  protected:
@@ -49,8 +51,6 @@ class ChromeTestLauncherDelegate : public content::TestLauncherDelegate {
 #endif
 
   ChromeTestSuiteRunner* runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeTestLauncherDelegate);
 };
 
 // Launches Chrome browser tests. |parallel_jobs| is number of test jobs to be

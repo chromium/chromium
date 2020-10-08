@@ -6,8 +6,8 @@
 #define CHROME_TEST_BASE_IN_PROCESS_BROWSER_TEST_H_
 
 #include <memory>
+#include <string>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
@@ -127,7 +127,8 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   explicit InProcessBrowserTest(
       std::unique_ptr<views::ViewsDelegate> views_delegate);
 #endif
-
+  InProcessBrowserTest(const InProcessBrowserTest&) = delete;
+  InProcessBrowserTest& operator=(const InProcessBrowserTest&) = delete;
   ~InProcessBrowserTest() override;
 
   // Configures everything for an in process browser test, then invokes
@@ -323,8 +324,6 @@ class InProcessBrowserTest : public content::BrowserTestBase {
 #endif
 
   std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler_;
-
-  DISALLOW_COPY_AND_ASSIGN(InProcessBrowserTest);
 };
 
 // When including either in_process_browser_test.h or android_browser_test.h

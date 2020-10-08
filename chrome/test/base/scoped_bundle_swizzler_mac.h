@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 namespace base {
 namespace mac {
 class ScopedObjCClassSwizzler;
@@ -28,11 +26,12 @@ class ScopedObjCClassSwizzler;
 class ScopedBundleSwizzlerMac {
  public:
   ScopedBundleSwizzlerMac();
+  ScopedBundleSwizzlerMac(const ScopedBundleSwizzlerMac&) = delete;
+  ScopedBundleSwizzlerMac& operator=(const ScopedBundleSwizzlerMac&) = delete;
   ~ScopedBundleSwizzlerMac();
 
  private:
   std::unique_ptr<base::mac::ScopedObjCClassSwizzler> class_swizzler_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedBundleSwizzlerMac);
 };
 
 #endif  // CHROME_TEST_BASE_SCOPED_BUNDLE_SWIZZLER_MAC_H_

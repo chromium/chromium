@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -240,6 +239,10 @@ class WindowedNotificationObserverWithDetails
       int notification_type,
       const content::NotificationSource& source)
       : content::WindowedNotificationObserver(notification_type, source) {}
+  WindowedNotificationObserverWithDetails(
+      const WindowedNotificationObserverWithDetails&) = delete;
+  WindowedNotificationObserverWithDetails& operator=(
+      const WindowedNotificationObserverWithDetails&) = delete;
 
   // Fills |details| with the details of the notification received for |source|.
   bool GetDetailsFor(uintptr_t source, U* details) {
@@ -262,8 +265,6 @@ class WindowedNotificationObserverWithDetails
 
  private:
   std::map<uintptr_t, U> details_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowedNotificationObserverWithDetails);
 };
 
 // Notification observer which waits for navigation events and blocks until
@@ -274,6 +275,8 @@ class UrlLoadObserver : public content::WindowedNotificationObserver {
   // specific source, or from all sources if |source| is
   // NotificationService::AllSources().
   UrlLoadObserver(const GURL& url, const content::NotificationSource& source);
+  UrlLoadObserver(const UrlLoadObserver&) = delete;
+  UrlLoadObserver& operator=(const UrlLoadObserver&) = delete;
   ~UrlLoadObserver() override;
 
   // content::NotificationObserver:
@@ -283,14 +286,14 @@ class UrlLoadObserver : public content::WindowedNotificationObserver {
 
  private:
   GURL url_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlLoadObserver);
 };
 
 // A helper that will wait until a tab is added to a specific Browser.
 class TabAddedWaiter : public TabStripModelObserver {
  public:
   explicit TabAddedWaiter(Browser* browser);
+  TabAddedWaiter(const TabAddedWaiter&) = delete;
+  TabAddedWaiter& operator=(const TabAddedWaiter&) = delete;
   ~TabAddedWaiter() override = default;
 
   void Wait();
@@ -303,8 +306,6 @@ class TabAddedWaiter : public TabStripModelObserver {
 
  private:
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabAddedWaiter);
 };
 
 // Similar to TabAddedWaiter, but will observe tabs added to all Browser
@@ -313,6 +314,8 @@ class AllBrowserTabAddedWaiter : public TabStripModelObserver,
                                  public BrowserListObserver {
  public:
   AllBrowserTabAddedWaiter();
+  AllBrowserTabAddedWaiter(const AllBrowserTabAddedWaiter&) = delete;
+  AllBrowserTabAddedWaiter& operator=(const AllBrowserTabAddedWaiter&) = delete;
   ~AllBrowserTabAddedWaiter() override;
 
   content::WebContents* Wait();
@@ -331,8 +334,6 @@ class AllBrowserTabAddedWaiter : public TabStripModelObserver,
 
   // The last tab that was added.
   content::WebContents* web_contents_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AllBrowserTabAddedWaiter);
 };
 
 // Enumerates all history contents on the backend thread. Returns them in
@@ -340,14 +341,14 @@ class AllBrowserTabAddedWaiter : public TabStripModelObserver,
 class HistoryEnumerator {
  public:
   explicit HistoryEnumerator(Profile* profile);
+  HistoryEnumerator(const HistoryEnumerator&) = delete;
+  HistoryEnumerator& operator=(const HistoryEnumerator&) = delete;
   ~HistoryEnumerator();
 
   std::vector<GURL>& urls() { return urls_; }
 
  private:
   std::vector<GURL> urls_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryEnumerator);
 };
 
 // In general, tests should use WaitForBrowserToClose() and
@@ -360,7 +361,8 @@ class BrowserChangeObserver : public BrowserListObserver {
   };
 
   BrowserChangeObserver(Browser* browser, ChangeType type);
-
+  BrowserChangeObserver(const BrowserChangeObserver&) = delete;
+  BrowserChangeObserver& operator=(const BrowserChangeObserver&) = delete;
   ~BrowserChangeObserver() override;
 
   Browser* Wait();
@@ -374,8 +376,6 @@ class BrowserChangeObserver : public BrowserListObserver {
   Browser* browser_;
   ChangeType type_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserChangeObserver);
 };
 
 }  // namespace ui_test_utils

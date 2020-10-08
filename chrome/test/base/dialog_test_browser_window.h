@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 
@@ -22,6 +21,8 @@ class DialogTestBrowserWindow : public TestBrowserWindow,
                                 public web_modal::WebContentsModalDialogHost {
  public:
   DialogTestBrowserWindow();
+  DialogTestBrowserWindow(const DialogTestBrowserWindow&) = delete;
+  DialogTestBrowserWindow& operator=(const DialogTestBrowserWindow&) = delete;
   ~DialogTestBrowserWindow() override;
 
   // BrowserWindow overrides
@@ -40,8 +41,6 @@ class DialogTestBrowserWindow : public TestBrowserWindow,
 
   // Dummy window for parenting dialogs.
   std::unique_ptr<views::Widget> host_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(DialogTestBrowserWindow);
 };
 
 #endif  // CHROME_TEST_BASE_DIALOG_TEST_BROWSER_WINDOW_H_

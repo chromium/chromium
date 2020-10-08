@@ -5,6 +5,8 @@
 #ifndef CHROME_TEST_BASE_INTERACTIVE_TEST_UTILS_H_
 #define CHROME_TEST_BASE_INTERACTIVE_TEST_UTILS_H_
 
+#include <utility>
+
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -31,7 +33,9 @@ namespace ui_test_utils {
 class BrowserActivationWaiter : public BrowserListObserver {
  public:
   explicit BrowserActivationWaiter(const Browser* browser);
-  ~BrowserActivationWaiter() override;
+  BrowserActivationWaiter(const BrowserActivationWaiter&) = delete;
+  BrowserActivationWaiter& operator=(const BrowserActivationWaiter&) = delete;
+  ~BrowserActivationWaiter() override = default;
 
   // Runs a message loop until the |browser_| supplied to the constructor is
   // activated, or returns immediately if |browser_| has already become active.
@@ -43,10 +47,8 @@ class BrowserActivationWaiter : public BrowserListObserver {
   void OnBrowserSetLastActive(Browser* browser) override;
 
   const Browser* const browser_;
-  bool observed_;
+  bool observed_ = false;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserActivationWaiter);
 };
 
 // Use in browser interactive uitests to wait until a browser is deactivated.
@@ -54,6 +56,9 @@ class BrowserActivationWaiter : public BrowserListObserver {
 class BrowserDeactivationWaiter : public BrowserListObserver {
  public:
   explicit BrowserDeactivationWaiter(const Browser* browser);
+  BrowserDeactivationWaiter(const BrowserDeactivationWaiter&) = delete;
+  BrowserDeactivationWaiter& operator=(const BrowserDeactivationWaiter&) =
+      delete;
   ~BrowserDeactivationWaiter() override;
 
   // Runs a message loop until the |browser_| supplied to the constructor is
@@ -67,10 +72,8 @@ class BrowserDeactivationWaiter : public BrowserListObserver {
   void OnBrowserNoLongerActive(Browser* browser) override;
 
   const Browser* const browser_;
-  bool observed_;
+  bool observed_ = false;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserDeactivationWaiter);
 };
 
 // Brings the native window for |browser| to the foreground and waits until the

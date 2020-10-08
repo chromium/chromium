@@ -21,13 +21,13 @@
 //    public:
 //     explicit MyMixin(InProcessBrowserTestMixinHost* host)
 //         : InProcessBrowserTestMixin(host) {}
+//      MyMixin(const MyMixin&) = delete;
+//      MyMixin& operator=(const MyMixin&) = delete;
 //     ~MyMixin() override = default;
 //
 //     // InProcessBrowserTestMixin:
 //     void SetUpCommandLine(base::CommandLine* command_line) { /* ... */ }
 //
-//    private:
-//     DISALLOW_COPY_AND_ASSIGN(MyMixin);
 //   };
 //
 //
@@ -41,13 +41,13 @@
 //   class SimpleUsage : public MixinBasedInProcessBrowserTest {
 //    public:
 //     SimpleUsage() = default;
+//     SimpleUsage(const SimpleUsage&) = delete;
+//     SimpleUsage& operator=(const SimpleUsage&) = delete;
 //     ~SimpleUsage() override = default;
 //
 //    private:
 //     MyMixin my_mixin_{&mixin_host_};
 //     SomeOtherMixin some_other_mixin_{&mixin_host_};
-//
-//     DISALLOW_COPY_AND_ASSIGN(SimpleUsage);
 //   };
 //
 //
@@ -62,7 +62,10 @@ class InProcessBrowserTestMixinHost;
 class InProcessBrowserTestMixin {
  public:
   explicit InProcessBrowserTestMixin(InProcessBrowserTestMixinHost* host);
-  virtual ~InProcessBrowserTestMixin();
+  InProcessBrowserTestMixin(const InProcessBrowserTestMixin&) = delete;
+  InProcessBrowserTestMixin& operator=(const InProcessBrowserTestMixin&) =
+      delete;
+  virtual ~InProcessBrowserTestMixin() = default;
 
   // See InProcessBrowserTest for docs. The call order is:
   //
@@ -90,15 +93,15 @@ class InProcessBrowserTestMixin {
   virtual void TearDownOnMainThread();
   virtual void TearDownInProcessBrowserTestFixture();
   virtual void TearDown();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InProcessBrowserTestMixin);
 };
 
 // The mixin host executes the callbacks on the mixin instances.
 class InProcessBrowserTestMixinHost final {
  public:
   InProcessBrowserTestMixinHost();
+  InProcessBrowserTestMixinHost(const InProcessBrowserTestMixinHost&) = delete;
+  InProcessBrowserTestMixinHost& operator=(
+      const InProcessBrowserTestMixinHost&) = delete;
   ~InProcessBrowserTestMixinHost();
 
   void SetUp();
@@ -119,14 +122,16 @@ class InProcessBrowserTestMixinHost final {
   friend class InProcessBrowserTestMixin;
 
   std::vector<InProcessBrowserTestMixin*> mixins_;
-
-  DISALLOW_COPY_AND_ASSIGN(InProcessBrowserTestMixinHost);
 };
 
 // An InProcessBrowserTest which supports mixins.
 class MixinBasedInProcessBrowserTest : public InProcessBrowserTest {
  public:
   MixinBasedInProcessBrowserTest();
+  MixinBasedInProcessBrowserTest(const MixinBasedInProcessBrowserTest&) =
+      delete;
+  MixinBasedInProcessBrowserTest& operator=(
+      const MixinBasedInProcessBrowserTest&) = delete;
   ~MixinBasedInProcessBrowserTest() override;
 
   // InProcessBrowserTest:
@@ -144,9 +149,6 @@ class MixinBasedInProcessBrowserTest : public InProcessBrowserTest {
 
  protected:
   InProcessBrowserTestMixinHost mixin_host_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MixinBasedInProcessBrowserTest);
 };
 
 #endif  // CHROME_TEST_BASE_MIXIN_BASED_IN_PROCESS_BROWSER_TEST_H_

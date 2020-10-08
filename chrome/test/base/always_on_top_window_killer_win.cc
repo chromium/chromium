@@ -47,6 +47,8 @@ class WindowEnumerator {
   // child process that timed out.
   WindowEnumerator(RunType run_type,
                    const base::CommandLine* child_command_line);
+  WindowEnumerator(const WindowEnumerator&) = delete;
+  WindowEnumerator& operator=(const WindowEnumerator&) = delete;
   void Run();
 
  private:
@@ -72,8 +74,7 @@ class WindowEnumerator {
   const base::FilePath output_dir_;
   const RunType run_type_;
   const base::CommandLine* const child_command_line_;
-  bool saved_snapshot_;
-  DISALLOW_COPY_AND_ASSIGN(WindowEnumerator);
+  bool saved_snapshot_ = false;
 };
 
 WindowEnumerator::WindowEnumerator(RunType run_type,
@@ -81,8 +82,7 @@ WindowEnumerator::WindowEnumerator(RunType run_type,
     : output_dir_(base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
           kSnapshotOutputDir)),
       run_type_(run_type),
-      child_command_line_(child_command_line),
-      saved_snapshot_(false) {}
+      child_command_line_(child_command_line) {}
 
 void WindowEnumerator::Run() {
   if (run_type_ == RunType::AFTER_TEST_TIMEOUT && !output_dir_.empty()) {

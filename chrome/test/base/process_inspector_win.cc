@@ -99,6 +99,8 @@ template <class Traits>
 class Inspector : public ProcessInspector {
  public:
   Inspector();
+  Inspector(const Inspector&) = delete;
+  Inspector& operator=(const Inspector&) = delete;
 
   // ProcessInspector:
   DWORD GetParentPid() const override;
@@ -112,8 +114,6 @@ class Inspector : public ProcessInspector {
   ProcessExecutionBlock<Traits> peb_;
   RtlUserProcessParameters<Traits> process_parameters_;
   base::string16 command_line_;
-
-  DISALLOW_COPY_AND_ASSIGN(Inspector);
 };
 
 #if !defined(_WIN64)

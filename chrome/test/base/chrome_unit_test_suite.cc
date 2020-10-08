@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
@@ -56,8 +55,12 @@ class ChromeContentBrowserClientWithoutNetworkServiceInitialization
 // Creates a TestingBrowserProcess for each test.
 class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
  public:
-  ChromeUnitTestSuiteInitializer() {}
-  virtual ~ChromeUnitTestSuiteInitializer() {}
+  ChromeUnitTestSuiteInitializer() = default;
+  ChromeUnitTestSuiteInitializer(const ChromeUnitTestSuiteInitializer&) =
+      delete;
+  ChromeUnitTestSuiteInitializer& operator=(
+      const ChromeUnitTestSuiteInitializer&) = delete;
+  ~ChromeUnitTestSuiteInitializer() override = default;
 
   void OnTestStart(const testing::TestInfo& test_info) override {
     content_client_.reset(new ChromeContentClient);
@@ -80,7 +83,7 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
     browser_content_client_.reset();
     utility_content_client_.reset();
     content_client_.reset();
-    content::SetContentClient(NULL);
+    content::SetContentClient(nullptr);
 
     TestingBrowserProcess::DeleteInstance();
   }
@@ -90,16 +93,12 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
   std::unique_ptr<ChromeContentClient> content_client_;
   std::unique_ptr<ChromeContentBrowserClient> browser_content_client_;
   std::unique_ptr<ChromeContentUtilityClient> utility_content_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeUnitTestSuiteInitializer);
 };
 
 }  // namespace
 
 ChromeUnitTestSuite::ChromeUnitTestSuite(int argc, char** argv)
     : ChromeTestSuite(argc, argv) {}
-
-ChromeUnitTestSuite::~ChromeUnitTestSuite() {}
 
 void ChromeUnitTestSuite::Initialize() {
   // Add an additional listener to do the extra initialization for unit tests.
@@ -172,7 +171,7 @@ void ChromeUnitTestSuite::InitializeResourceBundle() {
   // Force unittests to run using en-US so if we test against string
   // output, it'll pass regardless of the system language.
   ui::ResourceBundle::InitSharedInstanceWithLocale(
-      "en-US", NULL, ui::ResourceBundle::LOAD_COMMON_RESOURCES);
+      "en-US", nullptr, ui::ResourceBundle::LOAD_COMMON_RESOURCES);
   base::FilePath resources_pack_path;
   base::PathService::Get(chrome::FILE_RESOURCES_PACK, &resources_pack_path);
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(

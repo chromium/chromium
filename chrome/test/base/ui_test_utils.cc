@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -81,7 +80,6 @@
 #endif
 
 #if defined(TOOLKIT_VIEWS)
-#include "chrome/browser/ui/browser_window.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #endif
@@ -109,6 +107,8 @@ Browser* WaitForBrowserNotInSet(std::set<Browser*> excluded_browsers) {
 class AppModalDialogWaiter : public javascript_dialogs::AppModalDialogObserver {
  public:
   AppModalDialogWaiter() = default;
+  AppModalDialogWaiter(const AppModalDialogWaiter&) = delete;
+  AppModalDialogWaiter& operator=(const AppModalDialogWaiter&) = delete;
   ~AppModalDialogWaiter() override = default;
 
   javascript_dialogs::AppModalDialogController* Wait() {
@@ -156,8 +156,6 @@ class AppModalDialogWaiter : public javascript_dialogs::AppModalDialogObserver {
  private:
   javascript_dialogs::AppModalDialogController* dialog_ = nullptr;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppModalDialogWaiter);
 };
 
 
@@ -168,6 +166,9 @@ class AutocompleteChangeObserver : public AutocompleteController::Observer {
         OmniboxControllerEmitter::GetForBrowserContext(profile));
   }
 
+  AutocompleteChangeObserver(const AutocompleteChangeObserver&) = delete;
+  AutocompleteChangeObserver& operator=(const AutocompleteChangeObserver&) =
+      delete;
   ~AutocompleteChangeObserver() override = default;
 
   void Wait() { run_loop_.Run(); }
@@ -183,8 +184,6 @@ class AutocompleteChangeObserver : public AutocompleteController::Observer {
   base::RunLoop run_loop_;
   ScopedObserver<OmniboxControllerEmitter, AutocompleteController::Observer>
       scoped_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteChangeObserver);
 };
 
 }  // namespace

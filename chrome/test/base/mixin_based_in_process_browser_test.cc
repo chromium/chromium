@@ -13,8 +13,6 @@ InProcessBrowserTestMixin::InProcessBrowserTestMixin(
   host->mixins_.push_back(this);
 }
 
-InProcessBrowserTestMixin::~InProcessBrowserTestMixin() = default;
-
 void InProcessBrowserTestMixin::SetUp() {}
 
 void InProcessBrowserTestMixin::SetUpCommandLine(

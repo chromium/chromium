@@ -52,10 +52,9 @@ INSTANTIATE_TEST_SUITE_P(IPBTP,
 class LoadFailObserver : public content::WebContentsObserver {
  public:
   explicit LoadFailObserver(content::WebContents* contents)
-      : content::WebContentsObserver(contents),
-        failed_load_(false),
-        error_code_(net::OK),
-        resolve_error_info_(net::ResolveErrorInfo(net::OK)) {}
+      : content::WebContentsObserver(contents) {}
+  LoadFailObserver(const LoadFailObserver&) = delete;
+  LoadFailObserver& operator=(const LoadFailObserver&) = delete;
 
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
@@ -76,12 +75,10 @@ class LoadFailObserver : public content::WebContentsObserver {
   const GURL& validated_url() const { return validated_url_; }
 
  private:
-  bool failed_load_;
-  net::Error error_code_;
-  net::ResolveErrorInfo resolve_error_info_;
+  bool failed_load_ = false;
+  net::Error error_code_ = net::OK;
+  net::ResolveErrorInfo resolve_error_info_ = net::ResolveErrorInfo(net::OK);
   GURL validated_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoadFailObserver);
 };
 
 // Tests that InProcessBrowserTest cannot resolve external host, in this case

@@ -11,12 +11,9 @@
 #include "content/public/browser/notification_service.h"
 #include "extensions/browser/extension_host.h"
 
-ExtensionLoadWaiterOneShot::ExtensionLoadWaiterOneShot() : extension_id_(NULL),
-                                             browser_context_(NULL) {
-}
+ExtensionLoadWaiterOneShot::ExtensionLoadWaiterOneShot() = default;
 
-ExtensionLoadWaiterOneShot::~ExtensionLoadWaiterOneShot() {
-}
+ExtensionLoadWaiterOneShot::~ExtensionLoadWaiterOneShot() = default;
 
 void ExtensionLoadWaiterOneShot::WaitForExtension(const char* extension_id,
                                   const base::Closure& load_cb) {
