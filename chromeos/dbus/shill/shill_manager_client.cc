@@ -116,7 +116,7 @@ class ShillManagerClientImpl : public ShillManagerClient {
                                              std::move(error_callback));
   }
 
-  void ConfigureService(const base::DictionaryValue& properties,
+  void ConfigureService(const base::Value& properties,
                         ObjectPathCallback callback,
                         ErrorCallback error_callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
@@ -128,7 +128,7 @@ class ShillManagerClientImpl : public ShillManagerClient {
   }
 
   void ConfigureServiceForProfile(const dbus::ObjectPath& profile_path,
-                                  const base::DictionaryValue& properties,
+                                  const base::Value& properties,
                                   ObjectPathCallback callback,
                                   ErrorCallback error_callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
@@ -140,7 +140,7 @@ class ShillManagerClientImpl : public ShillManagerClient {
         &method_call, std::move(callback), std::move(error_callback));
   }
 
-  void GetService(const base::DictionaryValue& properties,
+  void GetService(const base::Value& properties,
                   ObjectPathCallback callback,
                   ErrorCallback error_callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,

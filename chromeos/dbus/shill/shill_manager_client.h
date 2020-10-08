@@ -25,7 +25,10 @@ class ShillPropertyChangedObserver;
 
 // ShillManagerClient is used to communicate with the Shill Manager
 // service.  All methods should be called from the origin thread which
-// initializes the DBusThreadManager instance.
+// initializes the DBusThreadManager instance. Most methods that make Shill
+// Manager calls pass |callback| which will be invoked if the method call
+// succeeds, and |error_callback| which will be invoked if the method call fails
+// or returns an error response.
 class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
  public:
   typedef ShillClientHelper::DictionaryValueCallback DictionaryValueCallback;
@@ -56,8 +59,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
                                            bool initializing) = 0;
     virtual void SetTechnologyProhibited(const std::string& type,
                                          bool prohibited) = 0;
+    // |network| must be a dictionary describing a Shill network configuration
+    // which will be appended to the results returned from
+    // GetNetworksForGeolocation().
     virtual void AddGeoNetwork(const std::string& technology,
-                               const base::DictionaryValue& network) = 0;
+                               const base::Value& network) = 0;
 
     // Does not create an actual profile in the ProfileClient but update the
     // profiles list and sends a notification to observers. This should only be
@@ -141,55 +147,48 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
       ShillPropertyChangedObserver* observer) = 0;
 
   // Calls GetProperties method.
-  // |callback| is called after the method call succeeds.
   virtual void GetProperties(DictionaryValueCallback callback) = 0;
 
   // Calls GetNetworksForGeolocation method.
-  // |callback| is called after the method call succeeds.
   virtual void GetNetworksForGeolocation(DictionaryValueCallback callback) = 0;
 
   // Calls SetProperty method.
-  // |callback| is called after the method call succeeds.
   virtual void SetProperty(const std::string& name,
                            const base::Value& value,
                            base::OnceClosure callback,
                            ErrorCallback error_callback) = 0;
 
   // Calls RequestScan method.
-  // |callback| is called after the method call succeeds.
   virtual void RequestScan(const std::string& type,
                            base::OnceClosure callback,
                            ErrorCallback error_callback) = 0;
 
   // Calls EnableTechnology method.
-  // |callback| is called after the method call succeeds.
   virtual void EnableTechnology(const std::string& type,
                                 base::OnceClosure callback,
                                 ErrorCallback error_callback) = 0;
 
   // Calls DisableTechnology method.
-  // |callback| is called after the method call succeeds.
   virtual void DisableTechnology(const std::string& type,
                                  base::OnceClosure callback,
                                  ErrorCallback error_callback) = 0;
 
-  // Calls ConfigureService method.
-  // |callback| is called after the method call succeeds.
-  virtual void ConfigureService(const base::DictionaryValue& properties,
+  // Calls Manager.ConfigureService with |properties| which must be a
+  // dictionary value describing a Shill service.
+  virtual void ConfigureService(const base::Value& properties,
                                 ObjectPathCallback callback,
                                 ErrorCallback error_callback) = 0;
 
-  // Calls ConfigureServiceForProfile method.
-  // |callback| is called with the created service if the method call succeeds.
-  virtual void ConfigureServiceForProfile(
-      const dbus::ObjectPath& profile_path,
-      const base::DictionaryValue& properties,
-      ObjectPathCallback callback,
-      ErrorCallback error_callback) = 0;
+  // Calls Manager.ConfigureServiceForProfile for |profile_path| with
+  // |properties| which must be a dictionary value describing a Shill service.
+  virtual void ConfigureServiceForProfile(const dbus::ObjectPath& profile_path,
+                                          const base::Value& properties,
+                                          ObjectPathCallback callback,
+                                          ErrorCallback error_callback) = 0;
 
-  // Calls GetService method.
-  // |callback| is called after the method call succeeds.
-  virtual void GetService(const base::DictionaryValue& properties,
+  // Calls Manager.GetService with |properties| which must be a dictionary value
+  // describing a Service.
+  virtual void GetService(const base::Value& properties,
                           ObjectPathCallback callback,
                           ErrorCallback error_callback) = 0;
 

@@ -465,22 +465,20 @@ void ShillClientHelper::AppendValueDataAsVariant(dbus::MessageWriter* writer,
 // static
 void ShillClientHelper::AppendServicePropertiesDictionary(
     dbus::MessageWriter* writer,
-    const base::DictionaryValue& dictionary) {
-  dbus::MessageWriter array_writer(NULL);
+    const base::Value& dictionary) {
+  dbus::MessageWriter array_writer(nullptr);
   writer->OpenArray("{sv}", &array_writer);
-  for (base::DictionaryValue::Iterator it(dictionary); !it.IsAtEnd();
-       it.Advance()) {
-    dbus::MessageWriter entry_writer(NULL);
+  for (auto it : dictionary.DictItems()) {
+    dbus::MessageWriter entry_writer(nullptr);
     array_writer.OpenDictEntry(&entry_writer);
-    entry_writer.AppendString(it.key());
+    entry_writer.AppendString(it.first);
     // Shill expects Cellular.APN to be a string dictionary, a{ss}. All other
     // properties use a varient dictionary, a{sv}. TODO(stevenjb): Remove this
     // hack if/when we change Shill to accept a{sv} for Cellular.APN.
-    DictionaryType dictionary_type = (it.key() == shill::kCellularApnProperty)
+    DictionaryType dictionary_type = (it.first == shill::kCellularApnProperty)
                                          ? DICTIONARY_TYPE_STRING
                                          : DICTIONARY_TYPE_VARIANT;
-    AppendValueDataAsVariantInternal(&entry_writer, it.value(),
-                                     dictionary_type);
+    AppendValueDataAsVariantInternal(&entry_writer, it.second, dictionary_type);
     array_writer.CloseContainer(&entry_writer);
   }
   writer->CloseContainer(&array_writer);

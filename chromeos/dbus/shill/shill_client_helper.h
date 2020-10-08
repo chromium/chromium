@@ -138,7 +138,7 @@ class ShillClientHelper {
   // Appends a string-to-variant dictionary to the writer as an '{sv}' array.
   // Each value is written using AppendValueDataAsVariant.
   static void AppendServicePropertiesDictionary(dbus::MessageWriter* writer,
-                                                const base::DictionaryValue&);
+                                                const base::Value& dictionary);
 
  protected:
   // Reference / Ownership management. If the number of active refs (observers

@@ -47,14 +47,14 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   void DisableTechnology(const std::string& type,
                          base::OnceClosure callback,
                          ErrorCallback error_callback) override;
-  void ConfigureService(const base::DictionaryValue& properties,
+  void ConfigureService(const base::Value& properties,
                         ObjectPathCallback callback,
                         ErrorCallback error_callback) override;
   void ConfigureServiceForProfile(const dbus::ObjectPath& profile_path,
-                                  const base::DictionaryValue& properties,
+                                  const base::Value& properties,
                                   ObjectPathCallback callback,
                                   ErrorCallback error_callback) override;
-  void GetService(const base::DictionaryValue& properties,
+  void GetService(const base::Value& properties,
                   ObjectPathCallback callback,
                   ErrorCallback error_callback) override;
   void ConnectToBestServices(base::OnceClosure callback,
@@ -76,7 +76,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   void SetTechnologyProhibited(const std::string& type,
                                bool prohibited) override;
   void AddGeoNetwork(const std::string& technology,
-                     const base::DictionaryValue& network) override;
+                     const base::Value& network) override;
   void AddProfile(const std::string& profile_path) override;
   void ClearProperties() override;
   void SetManagerProperty(const std::string& key,
@@ -125,10 +125,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   std::string GetInitialStateForType(const std::string& type, bool* enabled);
 
   // Dictionary of property name -> property value
-  base::DictionaryValue stub_properties_;
+  base::Value stub_properties_{base::Value::Type::DICTIONARY};
 
   // Dictionary of technology -> list of property dictionaries
-  base::DictionaryValue stub_geo_networks_;
+  base::Value stub_geo_networks_{base::Value::Type::DICTIONARY};
 
   // Delay for interactive actions
   base::TimeDelta interactive_delay_;
