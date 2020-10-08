@@ -1,6 +1,7 @@
     <style include="shared-style cr-icons">
       :host {
         display: flex;
+        flex-direction: column;
         height: 100%;
         overflow-x: hidden;
         overflow-y: auto;
@@ -94,36 +95,40 @@
       }
     </style>
 
-    <iron-selector id="menu" selected="{{selectedPage}}"
-        selectable=".page-item" attr-for-selected="path"
-        on-iron-activate="onSelectorActivate_">
-      <a href="/" class="page-item" path="history" on-click="onItemClick_">
-        $i18n{historyMenuItem}
-        <paper-ripple></paper-ripple>
-      </a>
-      <a href="/syncedTabs" class="page-item" path="syncedTabs"
-          on-click="onItemClick_">
-        $i18n{openTabsMenuItem}
-        <paper-ripple></paper-ripple>
-      </a>
-      <div class="separator"></div>
-      <a id="clear-browsing-data"
-          href="chrome://settings/clearBrowserData"
-          on-click="onClearBrowsingDataTap_"
-          disabled$="[[guestSession_]]"
-          tabindex$="[[computeClearBrowsingDataTabIndex_(guestSession_)]]">
-        $i18n{clearBrowsingData}
-        <div class="cr-icon icon-external"></div>
-        <paper-ripple id="cbd-ripple"></paper-ripple>
-      </a>
-      <div id="spacer"></div>
-      <div id="footer" hidden="[[!showFooter_]]">
+    <cr-menu-selector>
+      <iron-selector id="menu" selected="{{selectedPage}}"
+          selectable=".page-item" attr-for-selected="path"
+          on-iron-activate="onSelectorActivate_">
+        <a role="menuitem" href="/" class="page-item" path="history"
+            on-click="onItemClick_">
+          $i18n{historyMenuItem}
+          <paper-ripple></paper-ripple>
+        </a>
+        <a role="menuitem" href="/syncedTabs" class="page-item"
+            path="syncedTabs" on-click="onItemClick_">
+          $i18n{openTabsMenuItem}
+          <paper-ripple></paper-ripple>
+        </a>
         <div class="separator"></div>
-        <managed-footnote></managed-footnote>
-        <div id="google-account-footer"
-             hidden="[[!footerInfo.otherFormsOfHistory]]">
-          <iron-icon icon="cr:info-outline"></iron-icon>
-          <div>$i18nRaw{sidebarFooter}</div>
-        </div>
+        <a role="menuitem" id="clear-browsing-data"
+            href="chrome://settings/clearBrowserData"
+            on-click="onClearBrowsingDataTap_"
+            disabled$="[[guestSession_]]"
+            tabindex$="[[computeClearBrowsingDataTabIndex_(guestSession_)]]">
+          $i18n{clearBrowsingData}
+          <div class="cr-icon icon-external"></div>
+          <paper-ripple id="cbd-ripple"></paper-ripple>
+        </a>
+      </iron-selector>
+    </cr-menu-selector>
+
+    <div id="spacer"></div>
+    <div id="footer" hidden="[[!showFooter_]]">
+      <div class="separator"></div>
+      <managed-footnote></managed-footnote>
+      <div id="google-account-footer"
+          hidden="[[!footerInfo.otherFormsOfHistory]]">
+        <iron-icon icon="cr:info-outline"></iron-icon>
+        <div>$i18nRaw{sidebarFooter}</div>
       </div>
-    </iron-selector>
+    </div>
