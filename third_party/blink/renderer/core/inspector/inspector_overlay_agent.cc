@@ -1357,9 +1357,9 @@ void InspectorOverlayAgent::EnsureEnableFrameOverlay() {
 }
 
 void InspectorOverlayAgent::ClearInspectTool() {
+  inspect_tool_ = nullptr;
   if (!hinge_)
     DisableFrameOverlay();
-  inspect_tool_ = nullptr;
 }
 
 Response InspectorOverlayAgent::SetInspectTool(InspectTool* inspect_tool) {
