@@ -5306,6 +5306,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"diagnostics-app", flag_descriptions::kDiagnosticsAppName,
      flag_descriptions::kDiagnosticsAppDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kDiagnosticsApp)},
+
+    {"enable-hostname-setting", flag_descriptions::kEnableHostnameSettingName,
+     flag_descriptions::kEnableHostnameSettingDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kEnableHostnameSetting)},
 #endif  // OS_CHROMEOS
 
     {"autofill-off-no-server-data",

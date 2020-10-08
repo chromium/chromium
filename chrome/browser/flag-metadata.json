@@ -1659,6 +1659,11 @@
     "expiry_milestone": 77
   },
   {
+    "name": "enable-hostname-setting",
+    "owners": [ "jhawkins" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "enable-image-reader",
     "owners": [ "vikassoni", "khushalsagar" ],
     "expiry_milestone": 90

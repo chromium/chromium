@@ -2256,6 +2256,9 @@ extern const char kEnableDiscoverAppDescription[];
 extern const char kEnableEncryptionMigrationName[];
 extern const char kEnableEncryptionMigrationDescription[];
 
+extern const char kEnableHostnameSettingName[];
+extern const char kEnableHostnameSettingDescription[];
+
 extern const char kEnableGesturePropertiesDBusServiceName[];
 extern const char kEnableGesturePropertiesDBusServiceDescription[];
 

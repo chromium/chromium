@@ -244,6 +244,10 @@ const base::Feature kDriveFsMirroring{"DriveFsMirroring",
 const base::Feature kEmojiSuggestAddition{"EmojiSuggestAddition",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables setting the device hostname.
+const base::Feature kEnableHostnameSetting{"EnableHostnameSetting",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables Device End Of Lifetime warning notifications.
 const base::Feature kEolWarningNotifications{"EolWarningNotifications",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
@@ -660,6 +664,10 @@ bool IsDeepLinkingEnabled() {
 
 bool IsDiagnosticsAppEnabled() {
   return base::FeatureList::IsEnabled(kDiagnosticsApp);
+}
+
+bool IsHostnameSettingEnabled() {
+  return base::FeatureList::IsEnabled(kEnableHostnameSetting);
 }
 
 bool IsImeSandboxEnabled() {
