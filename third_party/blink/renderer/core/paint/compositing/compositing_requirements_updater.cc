@@ -238,6 +238,9 @@ void CompositingRequirementsUpdater::Update(
 
 #if DCHECK_IS_ON()
 static void CheckSubtreeHasNoCompositing(PaintLayer* layer) {
+  if (layer->GetLayoutObject().ChildPrePaintBlockedByDisplayLock())
+    return;
+
   PaintLayerPaintOrderIterator iterator(*layer, kAllChildren);
   while (PaintLayer* cur_layer = iterator.Next()) {
     DCHECK(cur_layer->GetCompositingState() == kNotComposited);
@@ -422,14 +425,15 @@ void CompositingRequirementsUpdater::UpdateRecursive(
   //    e.g. change of stacking order)
   bool recursion_blocked_by_display_lock =
       layer->GetLayoutObject().ChildPrePaintBlockedByDisplayLock();
-  bool skip_children =
-      recursion_blocked_by_display_lock ||
+  bool skip_children_ignoring_display_lock =
       (!layer->DescendantHasDirectOrScrollingCompositingReason() &&
        !needs_recursion_for_composited_scrolling_plus_fixed_or_sticky &&
        !needs_recursion_for_out_of_flow_descendant &&
        layer->GetLayoutObject().ShouldClipOverflowAlongEitherAxis() &&
        !layer->HasCompositingDescendant() &&
        !layer->DescendantMayNeedCompositingRequirementsUpdate());
+  bool skip_children =
+      recursion_blocked_by_display_lock || skip_children_ignoring_display_lock;
 
   if (!skip_children) {
     PaintLayerPaintOrderIterator iterator(*layer, kNegativeZOrderChildren);
@@ -496,7 +500,7 @@ void CompositingRequirementsUpdater::UpdateRecursive(
   }
 
 #if DCHECK_IS_ON()
-  if (skip_children && !recursion_blocked_by_display_lock)
+  if (skip_children)
     CheckSubtreeHasNoCompositing(layer);
 #endif
 
@@ -615,11 +619,11 @@ void CompositingRequirementsUpdater::UpdateRecursive(
   // At this point we have finished collecting all reasons to composite this
   // layer.
   layer->SetCompositingReasons(reasons_to_composite);
-  // If we've skipped recursing down to children but children needed an
-  // update, remember this on the display lock context, so that we can restore
-  // the dirty bit when the lock is unlocked.
-  if (layer->DescendantMayNeedCompositingRequirementsUpdate() &&
-      skip_children) {
+  // If we've skipped recursing down to children, but we would have recursed if
+  // it were not for the display lock, remember this on the display lock
+  // context, so that we can restore the dirty bit and cause recursion when the
+  // lock is unlocked.
+  if (skip_children && !skip_children_ignoring_display_lock) {
     auto* context = layer->GetLayoutObject().GetDisplayLockContext();
     DCHECK(recursion_blocked_by_display_lock);
     DCHECK(context);
