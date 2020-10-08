@@ -349,5 +349,12 @@ if (is_win || is_mac) {
       "//testing/xvfb.py",
       "//third_party/catapult/third_party/typ/",
     ]
+
+    if (is_win) {
+      data_deps = [
+        "//chrome/updater/win:updater",
+        "//chrome/updater/win/installer",
+      ]
+    }
   }
 }
