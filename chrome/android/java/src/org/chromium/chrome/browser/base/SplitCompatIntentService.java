@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.base;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
-import android.os.IBinder;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -30,10 +29,6 @@ public class SplitCompatIntentService extends IntentService {
         mImpl = (Impl) SplitCompatUtils.newInstance(context, mServiceClassName);
         mImpl.setService(this);
         super.attachBaseContext(context);
-    }
-
-    private IBinder superOnBind(Intent intent) {
-        return super.onBind(intent);
     }
 
     @Override
@@ -64,10 +59,6 @@ public class SplitCompatIntentService extends IntentService {
         }
 
         protected void onServiceSet() {}
-
-        public IBinder onBind(Intent intent) {
-            return mService.superOnBind(intent);
-        }
 
         protected abstract void onHandleIntent(Intent intent);
     }

@@ -513,7 +513,7 @@
         errorLine1="        mConnection.cleanUpSession(sessionToken);"
         errorLine2="                    ~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnectionService.java"
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnectionServiceImpl.java"
             line="107"
             column="21"/>
     </issue>
