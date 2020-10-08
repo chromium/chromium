@@ -357,8 +357,12 @@ class WindowCycleView : public views::WidgetDelegateView,
     if (target_it != window_view_map_.end())
       target_it->second->UpdateBorderState(/*show=*/true);
 
-    if (GetWidget() && target_window_)
-      window_view_map_[target_window_]->RequestFocus();
+    if (target_window_) {
+      if (GetWidget())
+        window_view_map_[target_window_]->RequestFocus();
+      else
+        SetInitiallyFocusedView(window_view_map_[target_window_]);
+    }
   }
 
   void HandleWindowDestruction(aura::Window* destroying_window,
@@ -469,10 +473,6 @@ class WindowCycleView : public views::WidgetDelegateView,
   }
 
   aura::Window* GetTargetWindow() { return target_window_; }
-
-  View* GetInitiallyFocusedView() override {
-    return window_view_map_[target_window_];
-  }
 
   const views::View::Views& GetPreviewViewsForTesting() const {
     return mirror_container_->children();
