@@ -6,6 +6,7 @@
 #define UI_VIEWS_LAYOUT_BOX_LAYOUT_VIEW_H_
 
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace gfx {
@@ -63,6 +64,17 @@ class VIEWS_EXPORT BoxLayoutView : public View {
   int collapse_margins_spacing_;
   int default_flex_;
 };
+
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, BoxLayoutView, View)
+VIEW_BUILDER_PROPERTY(BoxLayout::Orientation, Orientation)
+VIEW_BUILDER_PROPERTY(BoxLayout::MainAxisAlignment, MainAxisAlignment)
+VIEW_BUILDER_PROPERTY(BoxLayout::CrossAxisAlignment, CrossAxisAlignment)
+VIEW_BUILDER_PROPERTY(const gfx::Insets, InsideBorderInsets)
+VIEW_BUILDER_PROPERTY(int, MinimumCrossAxisSize)
+VIEW_BUILDER_PROPERTY(int, BetweenChildSpacing)
+VIEW_BUILDER_PROPERTY(int, CollapseMarginsSpacing)
+VIEW_BUILDER_PROPERTY(int, DefaultFlex)
+END_VIEW_BUILDER(VIEWS_EXPORT, BoxLayoutView)
 
 }  // namespace views
 
