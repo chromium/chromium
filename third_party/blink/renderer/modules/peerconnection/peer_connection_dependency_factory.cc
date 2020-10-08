@@ -55,7 +55,6 @@
 #include "third_party/webrtc/media/engine/fake_video_codec_factory.h"
 #include "third_party/webrtc/media/engine/multiplex_codec_factory.h"
 #include "third_party/webrtc/media/engine/webrtc_media_engine.h"
-#include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 #include "third_party/webrtc/modules/video_coding/codecs/h264/include/h264.h"
 #include "third_party/webrtc/rtc_base/openssl_stream_adapter.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
@@ -323,7 +322,9 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
   media_deps.audio_decoder_factory = blink::CreateWebrtcAudioDecoderFactory();
   media_deps.video_encoder_factory = std::move(webrtc_encoder_factory);
   media_deps.video_decoder_factory = std::move(webrtc_decoder_factory);
-  media_deps.audio_processing = webrtc::AudioProcessingBuilder().Create();
+  // Audio Processing Module (APM) instances are owned and handled by the Blink
+  // media stream module.
+  DCHECK_EQ(media_deps.audio_processing, nullptr);
   pcf_deps.media_engine = cricket::CreateMediaEngine(std::move(media_deps));
   pc_factory_ = webrtc::CreateModularPeerConnectionFactory(std::move(pcf_deps));
   CHECK(pc_factory_.get());
