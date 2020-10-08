@@ -54,6 +54,7 @@ public class PageInfoCookiesController
         rowParams.visible = delegate.isSiteSettingsAvailable();
         rowParams.title = mTitle;
         rowParams.iconResId = R.drawable.permission_cookie;
+        rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);
     }
