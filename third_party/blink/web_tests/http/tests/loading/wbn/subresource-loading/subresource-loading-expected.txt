@@ -6,5 +6,5 @@ main frame - didFinishDocumentLoadForFrame
 main frame - didHandleOnloadEventsForFrame
 main frame - didFinishLoadForFrame
 CONSOLE MESSAGE: line 1: Hello from WebBundle
-CONSOLE WARNING: http://127.0.0.1:8000/loading/wbn/resources/wbn/hello.wbn: http://127.0.0.1:8000/loading/wbn/resources/server/hello/notfound.js is not found in the WebBundle.
+CONSOLE WARNING: http://127.0.0.1:8000/loading/wbn/resources/wbn/hello.wbn: http://127.0.0.1:8000/loading/wbn/resources/wbn/server/hello/notfound.js is not found in the WebBundle.
 

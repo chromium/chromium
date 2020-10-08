@@ -209,6 +209,14 @@ bool LinkWebBundle::CanHandleRequest(const KURL& url) const {
                      ": bundled resource must be same origin with the bundle.");
     return false;
   }
+
+  if (!url.GetString().StartsWith(bundle_loader_->url().BaseAsString())) {
+    OnWebBundleError(
+        url.ElidedString() + " cannot be loaded from WebBundle " +
+        bundle_loader_->url().ElidedString() +
+        ": bundled resource path must contain the bundle's path as a prefix.");
+    return false;
+  }
   return true;
 }
 

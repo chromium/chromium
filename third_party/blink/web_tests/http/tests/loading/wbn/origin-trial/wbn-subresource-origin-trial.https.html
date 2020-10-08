@@ -24,7 +24,7 @@ promise_test(async (t) => {
     'Subresource Web Bundles should be supported.');
 
   const wbn_url = 'https://localhost:8443/loading/wbn/resources/wbn/wbn-subresource-origin-trial.wbn';
-  const script_url = 'https://localhost:8443/loading/wbn/resources/server/wbn-subresource-origin-trial/script.js';
+  const script_url = 'https://localhost:8443/loading/wbn/resources/wbn/server/wbn-subresource-origin-trial/script.js';
 
   const SubresourceWebBundles = 3446;  // From web_feature.mojom
   assert_false(window.internals.isUseCounted(document, SubresourceWebBundles));
