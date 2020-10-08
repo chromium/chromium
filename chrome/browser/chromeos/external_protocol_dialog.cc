@@ -32,16 +32,20 @@ namespace {
 
 const int kMessageWidth = 400;
 
-void OnArcHandled(WebContents* web_contents,
-                  const GURL& url,
+void OnArcHandled(const GURL& url,
                   const base::Optional<url::Origin>& initiating_origin,
+                  int render_process_host_id,
+                  int routing_id,
                   bool handled) {
   if (handled)
     return;
 
+  WebContents* web_contents =
+      tab_util::GetWebContentsByID(render_process_host_id, routing_id);
+
   // Display the standard ExternalProtocolDialog if Guest OS has a handler.
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kGuestOsExternalProtocol)) {
+  if (web_contents && base::FeatureList::IsEnabled(
+                          chromeos::features::kGuestOsExternalProtocol)) {
     base::Optional<guest_os::GuestOsRegistryService::Registration>
         registration = guest_os::GetHandler(
             Profile::FromBrowserContext(web_contents->GetBrowserContext()),
@@ -72,14 +76,15 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
   // when possible.
   // TODO(ellyjones): Refactor arc::RunArcExternalProtocolDialog() to take a
   // web_contents directly, which will mean sorting out how lifetimes work in
-  // that code.
+  // that code. Same for OnArcHandled() (crbug.com/1136237).
   int render_process_host_id =
       web_contents->GetRenderViewHost()->GetProcess()->GetID();
   int routing_id = web_contents->GetRenderViewHost()->GetRoutingID();
   arc::RunArcExternalProtocolDialog(
       url, initiating_origin, render_process_host_id, routing_id,
       page_transition, has_user_gesture,
-      base::BindOnce(&OnArcHandled, web_contents, url, initiating_origin));
+      base::BindOnce(&OnArcHandled, url, initiating_origin,
+                     render_process_host_id, routing_id));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
