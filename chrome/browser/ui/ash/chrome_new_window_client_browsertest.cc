@@ -110,13 +110,13 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest,
   EXPECT_EQ(GetLastActiveBrowser()->profile(), profile1);
 
   // Test for incognito windows.
-  // The newly created incoginito window should be created against the current
+  // The newly created incognito window should be created against the current
   // active |browser1|'s profile.
   browser1->window()->Show();
   ChromeNewWindowClient::Get()->NewWindow(/*incognito=*/true);
   EXPECT_EQ(GetLastActiveBrowser()->profile()->GetOriginalProfile(), profile1);
 
-  // The newly created incoginito window should be created against the current
+  // The newly created incognito window should be created against the current
   // active |browser2|'s profile.
   browser2->window()->Show();
   ChromeNewWindowClient::Get()->NewWindow(/*incognito=*/true);

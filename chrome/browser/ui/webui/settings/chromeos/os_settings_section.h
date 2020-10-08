@@ -65,7 +65,7 @@ class OsSettingsSection {
         mojom::SearchResultDefaultRank default_rank,
         const std::string& url_path_with_parameters) = 0;
 
-    // Registers a subpage whose paernt is another subpage in this section.
+    // Registers a subpage whose parent is another subpage in this section.
     virtual void RegisterNestedSubpage(
         int name_message_id,
         mojom::Subpage subpage,
