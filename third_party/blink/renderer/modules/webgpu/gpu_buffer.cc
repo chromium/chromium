@@ -155,24 +155,18 @@ ScriptPromise GPUBuffer::MapAsyncImpl(ScriptState* script_state,
                                       uint64_t offset,
                                       base::Optional<uint64_t> size,
                                       ExceptionState& exception_state) {
+  // Compute the defaulted size which is "until the end of the buffer" or 0 if
+  // offset is past the end of the buffer.
+  uint64_t size_defaulted = 0;
+  if (size) {
+    size_defaulted = *size;
+  } else if (offset <= size_) {
+    size_defaulted = size_ - offset;
+  }
+
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-
-  // Compute the defaulted size (which is "until the end of the buffer".)
-  // (First, guard against overflows on (size_ - offset).)
-  if (offset > size_) {
-    GetProcs().deviceInjectError(device_->GetHandle(), WGPUErrorType_Validation,
-                                 "mapAsync offset is larger than the buffer");
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kOperationError,
-        WTF::String::Format("mapAsync offset (%" PRIu64
-                            " bytes) is larger than the buffer (%" PRIu64
-                            " bytes).",
-                            offset, size_)));
-    return promise;
-  }
-  uint64_t size_defaulted = size ? *size : (size_ - offset);
 
   // Check the offset and size are within the limits of the platform.
   // (Note this also checks for an 8-byte alignment, which is an ArrayBuffer
@@ -289,16 +283,16 @@ void GPUBuffer::OnMapAsyncCallback(ScriptPromiseResolver* resolver,
       break;
     case WGPUBufferMapAsyncStatus_DeviceLost:
       resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError, "Device is lost"));
+          DOMExceptionCode::kAbortError, "Device is lost"));
       break;
     case WGPUBufferMapAsyncStatus_DestroyedBeforeCallback:
       resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError,
+          DOMExceptionCode::kAbortError,
           "Buffer is destroyed before the mapping is resolved"));
       break;
     case WGPUBufferMapAsyncStatus_UnmappedBeforeCallback:
       resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError,
+          DOMExceptionCode::kAbortError,
           "Buffer is unmapped before the mapping is resolved"));
       break;
     default:
