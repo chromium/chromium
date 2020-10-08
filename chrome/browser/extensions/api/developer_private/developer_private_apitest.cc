@@ -4,7 +4,6 @@
 
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
-#include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
@@ -138,18 +137,11 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
   EXPECT_TRUE(DevToolsWindow::GetInstanceForInspectedWebContents(wc));
 }
 
-// Crashes on Linux only.  http://crbug.com/1134506
-#if defined(OS_LINUX)
-#define MAYBE_InspectInactiveServiceWorkerBackground \
-  DISABLED_InspectInactiveServiceWorkerBackground
-#else
-#define MAYBE_InspectInactiveServiceWorkerBackground \
-  InspectInactiveServiceWorkerBackground
-#endif
-
 IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
-                       MAYBE_InspectInactiveServiceWorkerBackground) {
+                       InspectInactiveServiceWorkerBackground) {
   ResultCatcher result_catcher;
+  service_worker_test_utils::TestRegistrationObserver registration_observer(
+      browser()->profile());
   // Load an extension that is service worker based.
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("service_worker")
@@ -157,9 +149,6 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
                         .AppendASCII("inspect"));
   ASSERT_TRUE(extension);
   ASSERT_TRUE(result_catcher.GetNextResult());
-
-  service_worker_test_utils::TestRegistrationObserver registration_observer(
-      browser()->profile());
   registration_observer.WaitForRegistrationStored();
 
   // Stop the service worker.
