@@ -78,6 +78,8 @@ struct PRINTING_EXPORT AdvancedCapability {
   AdvancedCapability(const AdvancedCapability& other);
   ~AdvancedCapability();
 
+  bool operator==(const AdvancedCapability& other) const;
+
   // IPP identifier of the attribute.
   std::string name;
 

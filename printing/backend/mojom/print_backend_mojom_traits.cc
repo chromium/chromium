@@ -3,10 +3,74 @@
 // found in the LICENSE file.
 
 #include "printing/backend/mojom/print_backend_mojom_traits.h"
+
+#include <map>
+
+#include "base/logging.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom-shared.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
+// Implementations of std::less<> here are for purposes of detecting duplicate
+// entries in arrays.  They do not require strict checks of all fields, but
+// instead focus on identifying attributes that would be used to clearly
+// distinguish properties to a user.  E.g., if two entries have the same
+// displayable name but different corresponding values, consider that to be a
+// duplicate for these purposes.
+namespace std {
+
+template <>
+struct less<::gfx::Size> {
+  bool operator()(const ::gfx::Size& lhs, const ::gfx::Size& rhs) const {
+    if (lhs.width() < rhs.width())
+      return true;
+    return lhs.height() < rhs.height();
+  }
+};
+
+template <>
+struct less<::printing::PrinterSemanticCapsAndDefaults::Paper> {
+  bool operator()(
+      const ::printing::PrinterSemanticCapsAndDefaults::Paper& lhs,
+      const ::printing::PrinterSemanticCapsAndDefaults::Paper& rhs) const {
+    if (lhs.display_name < rhs.display_name)
+      return true;
+    return lhs.vendor_id < rhs.vendor_id;
+  }
+};
+
+#if defined(OS_CHROMEOS)
+template <>
+struct less<::printing::AdvancedCapability> {
+  bool operator()(const ::printing::AdvancedCapability& lhs,
+                  const ::printing::AdvancedCapability& rhs) const {
+    if (lhs.name < rhs.name)
+      return true;
+    return lhs.display_name < rhs.display_name;
+  }
+};
+#endif  // defined(OS_CHROMEOS)
+
+}  // namespace std
+
 namespace mojo {
+
+namespace {
+template <class Key>
+class DuplicateChecker {
+ public:
+  bool HasDuplicates(const std::vector<Key>& items) {
+    std::map<Key, bool> items_encountered;
+    for (auto it = items.begin(); it != items.end(); ++it) {
+      auto found = items_encountered.find(*it);
+      if (found != items_encountered.end())
+        return true;
+      items_encountered[*it] = true;
+    }
+    return false;
+  }
+};
+
+}  // namespace
 
 // static
 bool StructTraits<printing::mojom::PaperDataView,
@@ -80,5 +144,87 @@ bool StructTraits<printing::mojom::AdvancedCapabilityDataView,
          data.ReadValues(&out->values);
 }
 #endif  // defined(OS_CHROMEOS)
+
+// static
+bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
+                  printing::PrinterSemanticCapsAndDefaults>::
+    Read(printing::mojom::PrinterSemanticCapsAndDefaultsDataView data,
+         printing::PrinterSemanticCapsAndDefaults* out) {
+  out->collate_capable = data.collate_capable();
+  out->collate_default = data.collate_default();
+  out->copies_max = data.copies_max();
+  if (!data.ReadDuplexModes(&out->duplex_modes) ||
+      !data.ReadDuplexDefault(&out->duplex_default)) {
+    return false;
+  }
+  out->color_changeable = data.color_changeable();
+  out->color_default = data.color_default();
+  if (!data.ReadColorModel(&out->color_model) ||
+      !data.ReadBwModel(&out->bw_model) || !data.ReadPapers(&out->papers) ||
+      !data.ReadUserDefinedPapers(&out->user_defined_papers) ||
+      !data.ReadDefaultPaper(&out->default_paper) ||
+      !data.ReadDpis(&out->dpis) || !data.ReadDefaultDpi(&out->default_dpi)) {
+    return false;
+  }
+
+#if defined(OS_CHROMEOS)
+  out->pin_supported = data.pin_supported();
+  if (!data.ReadAdvancedCapabilities(&out->advanced_capabilities))
+    return false;
+#endif  // defined(OS_CHROMEOS)
+
+  // Extra validity checks.
+
+  // Can not have less than one copy.
+  if (out->copies_max < 1) {
+    DLOG(ERROR) << "Must have copies_max greater than zero.";
+    return false;
+  }
+
+  // There should be at least one item in `papers`.
+  if (out->papers.empty()) {
+    DLOG(ERROR) << "The available papers must not be empty.";
+    return false;
+  }
+
+  // There should not be duplicates in any of the arrays.
+  DuplicateChecker<printing::mojom::DuplexMode> duplex_modes_dup_checker;
+  if (duplex_modes_dup_checker.HasDuplicates(out->duplex_modes)) {
+    DLOG(ERROR) << "Duplicate duplex_modes detected.";
+    return false;
+  }
+
+  DuplicateChecker<printing::PrinterSemanticCapsAndDefaults::Paper>
+      papers_dup_checker;
+  if (papers_dup_checker.HasDuplicates(out->papers)) {
+    DLOG(ERROR) << "Duplicate papers detected.";
+    return false;
+  }
+
+  DuplicateChecker<printing::PrinterSemanticCapsAndDefaults::Paper>
+      user_defined_papers_dup_checker;
+  if (user_defined_papers_dup_checker.HasDuplicates(out->user_defined_papers)) {
+    DLOG(ERROR) << "Duplicate user_defined_papers detected.";
+    return false;
+  }
+
+  DuplicateChecker<gfx::Size> dpis_dup_checker;
+  if (dpis_dup_checker.HasDuplicates(out->dpis)) {
+    DLOG(ERROR) << "Duplicate dpis detected.";
+    return false;
+  }
+
+#if defined(OS_CHROMEOS)
+  DuplicateChecker<printing::AdvancedCapability>
+      advanced_capabilities_dup_checker;
+  if (advanced_capabilities_dup_checker.HasDuplicates(
+          out->advanced_capabilities)) {
+    DLOG(ERROR) << "Duplicate advanced_capabilities detected.";
+    return false;
+  }
+#endif  // defined(OS_CHROMEOS)
+
+  return true;
+}
 
 }  // namespace mojo

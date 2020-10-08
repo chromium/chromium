@@ -7,7 +7,10 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   sources = [ "print_backend.mojom" ]
 
-  deps = [ "//ui/gfx/geometry/mojom" ]
+  deps = [
+    "//printing/mojom",
+    "//ui/gfx/geometry/mojom",
+  ]
 
   cpp_typemaps = [
     {
@@ -15,6 +18,10 @@ mojom("mojom") {
         {
           mojom = "printing.mojom.Paper"
           cpp = "::printing::PrinterSemanticCapsAndDefaults::Paper"
+        },
+        {
+          mojom = "printing.mojom.PrinterSemanticCapsAndDefaults"
+          cpp = "::printing::PrinterSemanticCapsAndDefaults"
         },
       ]
       traits_sources = [ "print_backend_mojom_traits.cc" ]

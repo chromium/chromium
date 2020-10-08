@@ -59,6 +59,12 @@ AdvancedCapability::AdvancedCapability(const AdvancedCapability& other) =
 
 AdvancedCapability::~AdvancedCapability() = default;
 
+bool AdvancedCapability::operator==(const AdvancedCapability& other) const {
+  return name == other.name && display_name == other.display_name &&
+         type == other.type && default_value == other.default_value &&
+         values == other.values;
+}
+
 #endif  // BUILDFLAG(IS_ASH)
 
 bool PrinterSemanticCapsAndDefaults::Paper::operator==(

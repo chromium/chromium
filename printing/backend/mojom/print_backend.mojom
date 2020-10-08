@@ -4,6 +4,7 @@
 
 module printing.mojom;
 
+import "printing/mojom/print.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Paper used by printer semantic capabilities and defaults.
@@ -39,3 +40,25 @@ struct AdvancedCapability {
   array<AdvancedCapabilityValue> values;
 };
 
+// The semantic capabilities and defaults used for a printer.
+struct PrinterSemanticCapsAndDefaults {
+  bool collate_capable = false;
+  bool collate_default = false;
+  int32 copies_max = 1;  // Valid values are only >= 1.
+  array<DuplexMode> duplex_modes;
+  DuplexMode duplex_default = kUnknownDuplexMode;
+  bool color_changeable = false;
+  bool color_default = false;
+  ColorModel color_model = kUnknownColorModel;
+  ColorModel bw_model = kUnknownColorModel;
+  array<Paper> papers;
+  array<Paper> user_defined_papers;
+  Paper default_paper;
+  array<gfx.mojom.Size> dpis;
+  gfx.mojom.Size default_dpi;
+
+  [EnableIf=is_chromeos]
+  bool pin_supported = false;
+  [EnableIf=is_chromeos]
+  array<AdvancedCapability> advanced_capabilities;
+};

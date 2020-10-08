@@ -10,6 +10,7 @@
 
 #include "printing/backend/mojom/print_backend.mojom-shared.h"
 #include "printing/backend/print_backend.h"
+#include "printing/mojom/print.mojom.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace mojo {
@@ -86,6 +87,78 @@ struct StructTraits<printing::mojom::AdvancedCapabilityDataView,
                    ::printing::AdvancedCapability* out);
 };
 #endif  // defined(OS_CHROMEOS)
+
+template <>
+struct StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
+                    printing::PrinterSemanticCapsAndDefaults> {
+  static bool collate_capable(
+      const printing::PrinterSemanticCapsAndDefaults& p) {
+    return p.collate_capable;
+  }
+  static bool collate_default(
+      const printing::PrinterSemanticCapsAndDefaults& p) {
+    return p.collate_default;
+  }
+  static int32_t copies_max(const printing::PrinterSemanticCapsAndDefaults& p) {
+    return p.copies_max;
+  }
+  static const std::vector<printing::mojom::DuplexMode>& duplex_modes(
+      const printing::PrinterSemanticCapsAndDefaults& p) {
+    return p.duplex_modes;
+  }
+  static printing::mojom::DuplexMode duplex_default(
+      const printing::PrinterSemanticCapsAndDefaults& p) {
+    return p.duplex_default;
+  }
+  static bool color_changeable(
+      const printing::PrinterSemanticCapsAndDefaults& p) {
+    return p.color_changeable;
+  }
+  static bool color_default(const printing::PrinterSemanticCapsAndDefaults& p) {
+    return p.color_default;
+  }
+  static printing::mojom::ColorModel color_model(
+      const printing::PrinterSemanticCapsAndDefaults& p) {
+    return p.color_model;
+  }
+  static printing::mojom::ColorModel bw_model(
+      const printing::PrinterSemanticCapsAndDefaults& p) {
+    return p.bw_model;
+  }
+  static const std::vector<printing::PrinterSemanticCapsAndDefaults::Paper>&
+  papers(const printing::PrinterSemanticCapsAndDefaults& p) {
+    return p.papers;
+  }
+  static const std::vector<printing::PrinterSemanticCapsAndDefaults::Paper>&
+  user_defined_papers(const printing::PrinterSemanticCapsAndDefaults& p) {
+    return p.user_defined_papers;
+  }
+  static const printing::PrinterSemanticCapsAndDefaults::Paper& default_paper(
+      const printing::PrinterSemanticCapsAndDefaults& p) {
+    return p.default_paper;
+  }
+  static const std::vector<gfx::Size>& dpis(
+      const printing::PrinterSemanticCapsAndDefaults& p) {
+    return p.dpis;
+  }
+  static const gfx::Size& default_dpi(
+      const printing::PrinterSemanticCapsAndDefaults& p) {
+    return p.default_dpi;
+  }
+
+#if defined(OS_CHROMEOS)
+  static bool pin_supported(const printing::PrinterSemanticCapsAndDefaults& p) {
+    return p.pin_supported;
+  }
+  static const printing::AdvancedCapabilities& advanced_capabilities(
+      const printing::PrinterSemanticCapsAndDefaults& p) {
+    return p.advanced_capabilities;
+  }
+#endif  // defined(OS_CHROMEOS)
+
+  static bool Read(printing::mojom::PrinterSemanticCapsAndDefaultsDataView data,
+                   printing::PrinterSemanticCapsAndDefaults* out);
+};
 
 }  // namespace mojo
 
