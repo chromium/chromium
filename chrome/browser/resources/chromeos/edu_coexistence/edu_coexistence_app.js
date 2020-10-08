@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {EduCoexistenceBrowserProxyImpl} from './edu_coexistence_browser_proxy.js';
 
 
 // import {EduAccountLoginBrowserProxyImpl} from './browser_proxy.js';
@@ -36,15 +37,8 @@ Polymer({
   /** @override */
   created() {},
 
-  onEduAccountAdded_(data) {
-    // TODO(danan): show the final "Account added" screen".
-  },
-
   /** @override */
   ready() {
-    this.addWebUIListener(
-        'edu-account-added', data => this.onEduAccountAdded_(data));
-
     /** @type {CrViewManagerElement} */ (this.$.viewManager)
         .switchView('edu-coexistence-ui');
   },

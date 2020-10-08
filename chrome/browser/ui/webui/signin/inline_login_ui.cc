@@ -33,7 +33,9 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "chrome/browser/ui/webui/chromeos/edu_account_login_handler_chromeos.h"
+#include "chrome/browser/ui/webui/chromeos/edu_coexistence_login_handler_chromeos.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler_chromeos.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -137,6 +139,8 @@ content::WebUIDataSource* CreateWebUIDataSource() {
      IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_CONTROLLER_JS},
     {"chromeos/add_supervision/post_message_api.m.js",
      IDR_ADD_SUPERVISION_POST_MESSAGE_API_M_JS},
+    {"edu_coexistence_browser_proxy.js",
+     IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_BROWSER_PROXY_JS},
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {"googleg.svg", IDR_ACCOUNT_MANAGER_WELCOME_GOOGLE_LOGO_SVG},
@@ -220,9 +224,23 @@ InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
       std::make_unique<chromeos::InlineLoginHandlerChromeOS>(
           base::BindRepeating(&WebDialogUIBase::CloseDialog,
                               weak_factory_.GetWeakPtr(), nullptr /* args */)));
-  web_ui->AddMessageHandler(std::make_unique<chromeos::EduAccountLoginHandler>(
-      base::BindRepeating(&WebDialogUIBase::CloseDialog,
-                          weak_factory_.GetWeakPtr(), nullptr /* args */)));
+  if (profile->IsChild()) {
+    if (!base::FeatureList::IsEnabled(
+            ::supervised_users::kEduCoexistenceFlowV2)) {
+      web_ui->AddMessageHandler(
+          std::make_unique<chromeos::EduAccountLoginHandler>(
+              base::BindRepeating(&WebDialogUIBase::CloseDialog,
+                                  weak_factory_.GetWeakPtr(),
+                                  nullptr /* args */)));
+    } else {
+      web_ui->AddMessageHandler(
+          std::make_unique<chromeos::EduCoexistenceLoginHandler>(
+              base::BindRepeating(&WebDialogUIBase::CloseDialog,
+                                  weak_factory_.GetWeakPtr(),
+                                  nullptr /* args */)));
+    }
+  }
+
 #else
   web_ui->AddMessageHandler(std::make_unique<InlineLoginHandlerImpl>());
 #endif  // defined(OS_CHROMEOS)

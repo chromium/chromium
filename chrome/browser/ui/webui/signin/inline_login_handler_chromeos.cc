@@ -20,7 +20,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/webui/chromeos/edu_coexistence_consent_tracker.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler.h"
 #include "chrome/common/pref_names.h"
@@ -142,6 +144,10 @@ class SigninHelper : public GaiaAuthConsumer {
 
   void CloseDialogAndExit() {
     close_dialog_closure_.Run();
+    Exit();
+  }
+
+  void Exit() {
     base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
   }
 
@@ -252,6 +258,77 @@ class ChildSigninHelper : public SigninHelper {
   base::WeakPtrFactory<ChildSigninHelper> weak_ptr_factory_{this};
 };
 
+class EduCoexistenceChildSigninHelper : public SigninHelper {
+ public:
+  EduCoexistenceChildSigninHelper(
+      chromeos::AccountManager* account_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const std::string& gaia_id,
+      const std::string& email,
+      const std::string& auth_code,
+      const std::string& signin_scoped_device_id,
+      PrefService* pref_service,
+      const content::WebUI* web_ui)
+      : SigninHelper(account_manager,
+                     // EduCoexistenceChildSigninHelper will not be closing the
+                     // dialog. Therefore, passing a void callback.
+                     base::DoNothing(),
+                     url_loader_factory,
+                     gaia_id,
+                     email,
+                     auth_code,
+                     signin_scoped_device_id),
+        pref_service_(pref_service),
+        web_ui_(web_ui),
+        account_email_(email) {}
+
+  EduCoexistenceChildSigninHelper(const EduCoexistenceChildSigninHelper&) =
+      delete;
+  EduCoexistenceChildSigninHelper& operator=(
+      const EduCoexistenceChildSigninHelper&) = delete;
+  ~EduCoexistenceChildSigninHelper() override = default;
+
+ protected:
+  // GaiaAuthConsumer overrides.
+  void OnClientOAuthSuccess(const ClientOAuthResult& result) override {
+    EduCoexistenceConsentTracker::Get()->WaitForEduConsent(
+        web_ui_, account_email_,
+        base::BindOnce(&EduCoexistenceChildSigninHelper::OnConsentLogged,
+                       weak_ptr_factory_.GetWeakPtr(), result.refresh_token));
+  }
+
+  void OnConsentLogged(const std::string& refresh_token, bool success) {
+    if (success) {
+      // The EDU account has been added/reauthenticated. Mark migration to ARC++
+      // as completed.
+      if (arc::IsSecondaryAccountForChildEnabled()) {
+        pref_service_->SetBoolean(prefs::kEduCoexistenceArcMigrationCompleted,
+                                  true);
+      }
+
+      UpsertAccount(refresh_token);
+    } else {
+      LOG(ERROR) << "Could not log parent consent.";
+    }
+
+    // The inline login dialog will be showing an 'account created' screen after
+    // this. Therefore, do not close the dialog; simply destruct self.
+    Exit();
+  }
+
+ private:
+  // Unowned pointer to pref service.
+  PrefService* const pref_service_;
+
+  // Unowned pointer to the WebUI through which the account was added.
+  const content::WebUI* const web_ui_;
+
+  // Added account email.
+  const std::string account_email_;
+
+  base::WeakPtrFactory<EduCoexistenceChildSigninHelper> weak_ptr_factory_{this};
+};
+
 }  // namespace
 
 InlineLoginHandlerChromeOS::InlineLoginHandlerChromeOS(
@@ -333,20 +410,33 @@ void InlineLoginHandlerChromeOS::CompleteLogin(const std::string& email,
   // Child user added a secondary account.
   if (profile->IsChild() &&
       !gaia::AreEmailsSame(primary_account_email, email)) {
-    const std::string* rapt =
-        edu_login_params.FindStringKey("reAuthProofToken");
-    CHECK(rapt);
-    const std::string* parentId =
-        edu_login_params.FindStringKey("parentObfuscatedGaiaId");
-    CHECK(parentId);
-    InlineLoginDialogChromeOS::UpdateEduCoexistenceFlowResult(
-        InlineLoginDialogChromeOS::EduCoexistenceFlowResult::kFlowCompleted);
-    // ChildSigninHelper deletes itself after its work is done.
-    new ChildSigninHelper(
-        account_manager, close_dialog_closure_, profile->GetURLLoaderFactory(),
-        gaia_id, email, auth_code,
-        GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile), gaia_id),
-        identity_manager, profile->GetPrefs(), *parentId, *rapt);
+    if (!base::FeatureList::IsEnabled(
+            supervised_users::kEduCoexistenceFlowV2)) {
+      const std::string* rapt =
+          edu_login_params.FindStringKey("reAuthProofToken");
+      CHECK(rapt);
+      const std::string* parentId =
+          edu_login_params.FindStringKey("parentObfuscatedGaiaId");
+      CHECK(parentId);
+      InlineLoginDialogChromeOS::UpdateEduCoexistenceFlowResult(
+          InlineLoginDialogChromeOS::EduCoexistenceFlowResult::kFlowCompleted);
+
+      // ChildSigninHelper deletes itself after its work is done.
+      new ChildSigninHelper(
+          account_manager, close_dialog_closure_,
+          profile->GetURLLoaderFactory(), gaia_id, email, auth_code,
+          GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile),
+                             gaia_id),
+          identity_manager, profile->GetPrefs(), *parentId, *rapt);
+    } else {
+      new EduCoexistenceChildSigninHelper(
+          account_manager, profile->GetURLLoaderFactory(), gaia_id, email,
+          auth_code,
+          GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile),
+                             gaia_id),
+          profile->GetPrefs(), web_ui());
+    }
+
     return;
   }
 

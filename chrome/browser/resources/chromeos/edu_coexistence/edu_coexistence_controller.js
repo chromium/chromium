@@ -4,6 +4,7 @@
 
 import {PostMessageAPIServer} from '../../chromeos/add_supervision/post_message_api.m.js';
 import {AuthCompletedCredentials, Authenticator, AuthParams} from '../../gaia_auth_host/authenticator.m.js';
+import {EduCoexistenceBrowserProxyImpl} from './edu_coexistence_browser_proxy.js';
 
 /**
  * The methods to expose to the hosted content via the PostMessageAPI.
@@ -61,6 +62,8 @@ export class EduCoexistenceController extends PostMessageAPIServer {
     this.webview_ = webview;
     this.userInfo_ = null;
     this.authCompletedReceived_ = false;
+    this.browserProxy_ = EduCoexistenceBrowserProxyImpl.getInstance();
+
 
     // TODO(danan):  Set auth tokens in appropriate headers.
 
@@ -99,9 +102,11 @@ export class EduCoexistenceController extends PostMessageAPIServer {
 
   /**
    * Loads the flow into the controller.
+   * @param {!AuthParams} data parameters for auth extension.
    */
-  load() {
-    this.webview_.src = this.flowURL_.toString();
+  loadAuthExtension(data) {
+    data.frameUrl = this.flowURL_;
+    this.authExtHost_.load(data.authMode, data);
   }
 
   /**
@@ -123,15 +128,17 @@ export class EduCoexistenceController extends PostMessageAPIServer {
 
   /** @private */
   onAuthReady_() {
-    console.error('Got onAuthReady_');
-    // TODO(danan): do whatever is required after authenticator initialization.
+    this.browserProxy_.authExtensionReady();
   }
 
-  /** @private */
+  /**
+   * @param {!CustomEvent<!AuthCompletedCredentials>} e
+   * @private
+   */
   onAuthCompleted_(e) {
     this.authCompletedReceived_ = true;
-    console.error('Got onAuthCompleted_');
-    this.userInfo_ = e.details;
+    this.userInfo_ = e.detail;
+    this.browserProxy_.completeLogin(e.detail);
   }
 
   /**
@@ -140,37 +147,25 @@ export class EduCoexistenceController extends PostMessageAPIServer {
    * @param {!Array} unused Placeholder unused empty parameter.
    */
   consentValid_(unused) {
-    // TODO(danan): Set up object to wait for GAIA EDU Login page load, by
-    // observing for a page reload using this.webview_.request , and then
-    // this.authExtHost_.load(); Return promise acknowledging receipt.
-    console.error('Got consentValid_');
-    return Promise.resolve();
+    this.browserProxy_.consentValid();
   }
 
   /*
    * @private
-   * @param {!Array} unused Placeholder unused empty parameter.
-   * @return {Promise <{accountCreated: boolean}>} Returns a promise
+   * @param {!Array<string>} An array that contains eduCoexistenceToSVersion.
    * with a boolean indicating that the local account was created.
    */
-  consentLogged_(unused) {
-    // TODO(danan): Send message to owner indicating that the flow successfully
-    // completed
-    console.error('Got consentLogged_');
-    return Promise.resolve();
+  consentLogged_(eduCoexistenceToSVersion) {
+    return this.browserProxy_.consentLogged(
+        this.userInfo_.email, eduCoexistenceToSVersion[0]);
   }
 
   /**
    * @private
    * Attempts to close the widget hosting the flow.
-   * @return {Promise <{closed: boolean}>} If the widget is not closed
-   * this promise will resolve with boolean result indicating whether the
-   * dialog was closed.
    */
   requestClose_() {
-    // TODO(danan): Attempt to close the widget hosting the flow.
-    console.error('Got requestClose_');
-    return Promise.resolve();
+    this.browserProxy_.dialogClose();
   }
 
   /**
@@ -179,8 +174,7 @@ export class EduCoexistenceController extends PostMessageAPIServer {
    * @param {!Array} unused Placeholder unused empty parameter.
    */
   reportError_(unused) {
-    // TODO(danan): Pass the error back up the stack.
-    console.error('Got reportError_');
-    return Promise.resolve();
+    this.browserProxy_.error();
+    // TODO(yilkal): Show the error ui.
   }
 }

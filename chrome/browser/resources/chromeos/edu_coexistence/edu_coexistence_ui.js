@@ -5,8 +5,10 @@
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {EduCoexistenceController} from './edu_coexistence_controller.js';
+import {AuthParams} from '../../gaia_auth_host/authenticator.m.js';
 
+import {EduCoexistenceBrowserProxyImpl} from './edu_coexistence_browser_proxy.js';
+import {EduCoexistenceController} from './edu_coexistence_controller.js';
 
 Polymer({
   is: 'edu-coexistence-ui',
@@ -34,29 +36,37 @@ Polymer({
 
   /** Attempts to close the dialog */
   closeDialog_() {
-    // TODO(danan): call InlineLoginDialog's "Close"
+    EduCoexistenceBrowserProxyImpl.getInstance().dialogClose();
   },
 
-  loadEduCoexistenceController_(data) {
-    // TODO(danan):  use data to parameterize the webview.
-
-    const webview =
-        /** @type {!WebView} */ (this.$.signinFrame);
-
+  /**
+   * @param {!AuthParams} data parameters for auth extension.
+   * @private
+   */
+  loadAuthExtension_(data) {
     // Set up the controller.
-    this.controller_ = new EduCoexistenceController(webview, data);
-    this.controller_.load();
-    webview.addEventListener('contentload', () => {
+    this.controller_.loadAuthExtension(data);
+
+    this.webview_.addEventListener('contentload', () => {
       this.loading_ = false;
-    });
-    webview.addEventListener('loadstart', () => {
-      this.loading_ = true;
     });
   },
 
   /** @override */
   ready() {
     this.addWebUIListener(
-        'coexistence-data', data => this.loadEduCoexistenceController_(data));
+        'load-auth-extension', data => this.loadAuthExtension_(data));
+
+    EduCoexistenceBrowserProxyImpl.getInstance().initializeEduArgs().then(
+        (data) => {
+          this.webview_ =
+              /** @type {!WebView} */ (this.$.signinFrame);
+          this.controller_ = new EduCoexistenceController(this.webview_, data);
+
+          EduCoexistenceBrowserProxyImpl.getInstance().initializeLogin();
+        },
+        (err) => {
+          console.error('There was an error getting edu coexistence data');
+        });
   },
 });
