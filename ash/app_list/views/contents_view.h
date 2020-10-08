@@ -44,7 +44,6 @@ class AssistantPageView;
 class ExpandArrowView;
 class PrivacyContainerView;
 class SearchBoxView;
-class SearchResultAnswerCardView;
 class SearchResultListView;
 class SearchResultPageView;
 class SearchResultTileItemListView;
@@ -134,9 +133,6 @@ class APP_LIST_EXPORT ContentsView : public views::View,
 
   SearchResultPageView* search_results_page_view() const {
     return search_results_page_view_;
-  }
-  SearchResultAnswerCardView* search_result_answer_card_view_for_test() const {
-    return search_result_answer_card_view_;
   }
   SearchResultTileItemListView* search_result_tile_item_list_view_for_test()
       const {
@@ -283,7 +279,6 @@ class APP_LIST_EXPORT ContentsView : public views::View,
   AssistantPageView* assistant_page_view_ = nullptr;
   AppsContainerView* apps_container_view_ = nullptr;
   SearchResultPageView* search_results_page_view_ = nullptr;
-  SearchResultAnswerCardView* search_result_answer_card_view_ = nullptr;
   SearchResultTileItemListView* search_result_tile_item_list_view_ = nullptr;
   SearchResultListView* search_result_list_view_ = nullptr;
   PrivacyContainerView* privacy_container_view_ = nullptr;

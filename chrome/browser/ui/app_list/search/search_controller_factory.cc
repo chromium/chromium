@@ -16,7 +16,6 @@
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/search/answer_card/answer_card_search_provider.h"
 #include "chrome/browser/ui/app_list/search/app_search_provider.h"
 #include "chrome/browser/ui/app_list/search/arc/arc_app_data_search_provider.h"
 #include "chrome/browser/ui/app_list/search/arc/arc_app_reinstall_search_provider.h"
@@ -101,7 +100,6 @@ std::unique_ptr<SearchController> CreateSearchController(
   controller->InitializeRankers();
 
   size_t apps_group_id = controller->AddGroup(kMaxAppsGroupResults);
-  size_t answer_card_group_id = controller->AddGroup(1);
 
   size_t omnibox_group_id = controller->AddGroup(
       ash::AppListConfig::instance().max_search_result_list_items());
@@ -111,11 +109,6 @@ std::unique_ptr<SearchController> CreateSearchController(
       apps_group_id, std::make_unique<AppSearchProvider>(
                          profile, list_controller,
                          base::DefaultClock::GetInstance(), model_updater));
-  if (app_list_features::IsAnswerCardEnabled()) {
-    controller->AddProvider(answer_card_group_id,
-                            std::make_unique<AnswerCardSearchProvider>(
-                                profile, model_updater, list_controller));
-  }
 
   controller->AddProvider(omnibox_group_id, std::make_unique<OmniboxProvider>(
                                                 profile, list_controller));

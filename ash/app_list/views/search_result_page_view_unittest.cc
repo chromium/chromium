@@ -25,22 +25,10 @@
 #include "ui/aura/window.h"
 #include "ui/views/test/views_test_base.h"
 
-namespace {
-
-enum class AnswerCardState {
-  ANSWER_CARD_OFF,
-  ANSWER_CARD_ON_WITH_RESULT,
-  ANSWER_CARD_ON_WITHOUT_RESULT,
-};
-
-}  // namespace
-
 namespace ash {
 namespace test {
 
-class SearchResultPageViewTest
-    : public views::ViewsTestBase,
-      public testing::WithParamInterface<AnswerCardState> {
+class SearchResultPageViewTest : public views::ViewsTestBase {
  public:
   SearchResultPageViewTest() = default;
   ~SearchResultPageViewTest() override = default;
@@ -49,30 +37,14 @@ class SearchResultPageViewTest
   void SetUp() override {
     views::ViewsTestBase::SetUp();
 
-    // Reading test parameters.
-    bool test_with_answer_card = true;
-    if (testing::UnitTest::GetInstance()->current_test_info()->value_param()) {
-      const AnswerCardState answer_card_state = GetParam();
-      test_with_answer_card =
-          answer_card_state != AnswerCardState::ANSWER_CARD_OFF;
-    }
-
     // Setting up the feature set.
     // Zero State will affect the UI behavior significantly. This test works
     // if zero state feature is disabled.
     // TODO(crbug.com/925195): Add different test suites for zero state.
-    if (test_with_answer_card) {
-      scoped_feature_list_.InitWithFeatures(
-          {app_list_features::kEnableAnswerCard},
-          {app_list_features::kEnableZeroStateSuggestions});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {}, {app_list_features::kEnableAnswerCard,
-               app_list_features::kEnableZeroStateSuggestions});
-    }
+    scoped_feature_list_.InitWithFeatures(
+        {}, {app_list_features::kEnableZeroStateSuggestions});
 
     ASSERT_FALSE(app_list_features::IsZeroStateSuggestionsEnabled());
-    ASSERT_EQ(test_with_answer_card, app_list_features::IsAnswerCardEnabled());
 
     // Setting up views.
     delegate_ = std::make_unique<AppListTestViewDelegate>();
@@ -116,16 +88,7 @@ class SearchResultPageViewTest
   DISALLOW_COPY_AND_ASSIGN(SearchResultPageViewTest);
 };
 
-// Instantiate the Boolean which is used to toggle answer cards in
-// the parameterized tests.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SearchResultPageViewTest,
-    ::testing::Values(AnswerCardState::ANSWER_CARD_OFF,
-                      AnswerCardState::ANSWER_CARD_ON_WITHOUT_RESULT,
-                      AnswerCardState::ANSWER_CARD_ON_WITH_RESULT));
-
-TEST_P(SearchResultPageViewTest, ResultsSorted) {
+TEST_F(SearchResultPageViewTest, ResultsSorted) {
   SearchModel::SearchResults* results = GetResults();
 
   // Add 3 results and expect the tile list view to be the first result
@@ -164,7 +127,7 @@ TEST_P(SearchResultPageViewTest, ResultsSorted) {
   EXPECT_EQ(list_view(), view()->result_container_views()[1]);
 }
 
-TEST_P(SearchResultPageViewTest, TileResultsSortedBeforeEmptyListResults) {
+TEST_F(SearchResultPageViewTest, TileResultsSortedBeforeEmptyListResults) {
   SearchModel::SearchResults* results = GetResults();
 
   // Add a tile result with 0 score and leave the list results empty - list
@@ -180,7 +143,7 @@ TEST_P(SearchResultPageViewTest, TileResultsSortedBeforeEmptyListResults) {
   EXPECT_EQ(tile_list_view(), view()->result_container_views()[0]);
 }
 
-TEST_P(SearchResultPageViewTest, ListResultsSortedBeforeEmptyTileResults) {
+TEST_F(SearchResultPageViewTest, ListResultsSortedBeforeEmptyTileResults) {
   SearchModel::SearchResults* results = GetResults();
 
   // Add a list result with 0 score and leave the tile results empty - list

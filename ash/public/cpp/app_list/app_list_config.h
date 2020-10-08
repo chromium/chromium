@@ -193,9 +193,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   double results_list_container_score() const {
     return results_list_container_score_;
   }
-  double answer_card_container_score() const {
-    return answer_card_container_score_;
-  }
 
   gfx::Size grid_icon_size() const {
     return gfx::Size(grid_icon_dimension_, grid_icon_dimension_);
@@ -503,7 +500,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   // always be the first item underneath the search box.
   const double privacy_container_score_ = 4.0;
   const double app_tiles_container_score_ = 3.0;
-  const double answer_card_container_score_ = 2.0;
   const double results_list_container_score_ = 1.0;
 
   // Cardified app list background properties

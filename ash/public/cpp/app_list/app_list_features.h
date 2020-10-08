@@ -18,9 +18,6 @@ namespace app_list_features {
 // Please keep these features sorted.
 // TODO(newcomer|weidongg): Sort these features.
 
-// Enables the answer card in the app list.
-ASH_PUBLIC_EXPORT extern const base::Feature kEnableAnswerCard;
-
 // Enables in-app data search.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppDataSearch;
 
@@ -88,7 +85,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kNewDragSpecInLauncher;
 // Enables rich entity formatting for Omnibox results in the launcher.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableOmniboxRichEntities;
 
-bool ASH_PUBLIC_EXPORT IsAnswerCardEnabled();
 bool ASH_PUBLIC_EXPORT IsAppDataSearchEnabled();
 bool ASH_PUBLIC_EXPORT IsSettingsShortcutSearchEnabled();
 bool ASH_PUBLIC_EXPORT IsZeroStateSuggestionsEnabled();

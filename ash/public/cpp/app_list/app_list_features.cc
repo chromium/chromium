@@ -11,8 +11,6 @@
 
 namespace app_list_features {
 
-const base::Feature kEnableAnswerCard{"EnableAnswerCard",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kEnableAppDataSearch{"EnableAppDataSearch",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kEnableSettingsShortcutSearch{
@@ -58,10 +56,6 @@ const base::Feature kNewDragSpecInLauncher{"NewDragSpecInLauncher",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kEnableOmniboxRichEntities{
     "EnableOmniboxRichEntities", base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool IsAnswerCardEnabled() {
-  return base::FeatureList::IsEnabled(kEnableAnswerCard);
-}
 
 bool IsAppDataSearchEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppDataSearch);
@@ -137,19 +131,6 @@ bool IsNewDragSpecInLauncherEnabled() {
 
 bool IsOmniboxRichEntitiesEnabled() {
   return base::FeatureList::IsEnabled(kEnableOmniboxRichEntities);
-}
-
-std::string AnswerServerUrl() {
-  const std::string experiment_url =
-      base::GetFieldTrialParamValueByFeature(kEnableAnswerCard, "ServerUrl");
-  if (!experiment_url.empty())
-    return experiment_url;
-  return "https://www.google.com/coac";
-}
-
-std::string AnswerServerQuerySuffix() {
-  return base::GetFieldTrialParamValueByFeature(kEnableAnswerCard,
-                                                "QuerySuffix");
 }
 
 std::string AppSearchResultRankerPredictorName() {

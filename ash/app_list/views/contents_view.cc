@@ -17,7 +17,6 @@
 #include "ash/app_list/views/expand_arrow_view.h"
 #include "ash/app_list/views/privacy_container_view.h"
 #include "ash/app_list/views/search_box_view.h"
-#include "ash/app_list/views/search_result_answer_card_view.h"
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/app_list/views/search_result_tile_item_list_view.h"
@@ -124,12 +123,6 @@ void ContentsView::Init(AppListModel* model) {
   privacy_container_view_ =
       search_results_page_view->AddSearchResultContainerView(
           std::make_unique<PrivacyContainerView>(view_delegate));
-
-  if (app_list_features::IsAnswerCardEnabled()) {
-    search_result_answer_card_view_ =
-        search_results_page_view->AddSearchResultContainerView(
-            std::make_unique<SearchResultAnswerCardView>(view_delegate));
-  }
 
   expand_arrow_view_ =
       AddChildView(std::make_unique<ExpandArrowView>(this, app_list_view_));
@@ -877,9 +870,9 @@ void ContentsView::AnimateToViewState(AppListViewState target_view_state,
   }
 
   // Assistant page and search results page may host native views (e.g. for
-  // search result answer cards, or card assistant results). These windows are
-  // descendants of the app list view window layer rather than the page layers,
-  // so they have to be animated separately from their associated page.
+  // card assistant results). These windows are descendants of the app list
+  // view window layer rather than the page layers, so they have to be
+  // animated separately from their associated page.
   for (auto* child_window : GetWidget()->GetNativeWindow()->children()) {
     View* host_view = child_window->GetProperty(views::kHostViewKey);
     if (!host_view)
