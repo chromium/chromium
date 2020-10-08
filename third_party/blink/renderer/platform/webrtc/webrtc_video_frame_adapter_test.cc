@@ -17,18 +17,19 @@ TEST(WebRtcVideoFrameAdapterTest, WidthAndHeight) {
   const gfx::Size kCodedSize(1280, 960);
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
   const gfx::Size kNaturalSize(640, 360);
+  scoped_refptr<WebRtcVideoFrameAdapter::BufferPoolOwner> pool =
+      new WebRtcVideoFrameAdapter::BufferPoolOwner();
 
-  // The adapter should report width and height from the visible rectangle for
+  // The adapter should report width and height from the natural size for
   // VideoFrame backed by owned memory.
   auto owned_memory_frame =
       CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
                       media::VideoFrame::STORAGE_OWNED_MEMORY);
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> owned_memory_frame_adapter(
       new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
-          std::move(owned_memory_frame),
-          WebRtcVideoFrameAdapter::LogStatus::kNoLogging));
-  EXPECT_EQ(owned_memory_frame_adapter->width(), kVisibleRect.width());
-  EXPECT_EQ(owned_memory_frame_adapter->height(), kVisibleRect.height());
+          std::move(owned_memory_frame), pool));
+  EXPECT_EQ(owned_memory_frame_adapter->width(), kNaturalSize.width());
+  EXPECT_EQ(owned_memory_frame_adapter->height(), kNaturalSize.height());
 
   // The adapter should report width and height from the natural size for
   // VideoFrame backed by GpuMemoryBuffer.
@@ -36,9 +37,8 @@ TEST(WebRtcVideoFrameAdapterTest, WidthAndHeight) {
       CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
                       media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> gmb_frame_adapter(
-      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
-          std::move(gmb_frame),
-          WebRtcVideoFrameAdapter::LogStatus::kNoLogging));
+      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(std::move(gmb_frame),
+                                                         pool));
   EXPECT_EQ(gmb_frame_adapter->width(), kNaturalSize.width());
   EXPECT_EQ(gmb_frame_adapter->height(), kNaturalSize.height());
 }
@@ -47,6 +47,24 @@ TEST(WebRtcVideoFrameAdapterTest, ToI420DownScale) {
   const gfx::Size kCodedSize(1280, 960);
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
   const gfx::Size kNaturalSize(640, 360);
+  scoped_refptr<WebRtcVideoFrameAdapter::BufferPoolOwner> pool =
+      new WebRtcVideoFrameAdapter::BufferPoolOwner();
+
+  // The adapter should report width and height from the natural size for
+  // VideoFrame backed by owned memory.
+  auto owned_memory_frame =
+      CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
+                      media::VideoFrame::STORAGE_OWNED_MEMORY);
+  rtc::scoped_refptr<webrtc::VideoFrameBuffer> owned_memory_frame_adapter(
+      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
+          std::move(owned_memory_frame), pool));
+  EXPECT_EQ(owned_memory_frame_adapter->width(), kNaturalSize.width());
+  EXPECT_EQ(owned_memory_frame_adapter->height(), kNaturalSize.height());
+
+  // The I420 frame should have the same size as the natural size
+  auto i420_frame = owned_memory_frame_adapter->ToI420();
+  EXPECT_EQ(i420_frame->width(), kNaturalSize.width());
+  EXPECT_EQ(i420_frame->height(), kNaturalSize.height());
 
   auto gmb_frame =
       CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
@@ -55,14 +73,13 @@ TEST(WebRtcVideoFrameAdapterTest, ToI420DownScale) {
   // The adapter should report width and height from the natural size for
   // VideoFrame backed by GpuMemoryBuffer.
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> gmb_frame_adapter(
-      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
-          std::move(gmb_frame),
-          WebRtcVideoFrameAdapter::LogStatus::kNoLogging));
+      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(std::move(gmb_frame),
+                                                         pool));
   EXPECT_EQ(gmb_frame_adapter->width(), kNaturalSize.width());
   EXPECT_EQ(gmb_frame_adapter->height(), kNaturalSize.height());
 
   // The I420 frame should have the same size as the natural size
-  auto i420_frame = gmb_frame_adapter->ToI420();
+  i420_frame = gmb_frame_adapter->ToI420();
   EXPECT_EQ(i420_frame->width(), kNaturalSize.width());
   EXPECT_EQ(i420_frame->height(), kNaturalSize.height());
 }
