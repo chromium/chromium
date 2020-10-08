@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
@@ -98,9 +99,9 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
       return;
     }
 
-    GetLorgnetteManagerClient()->StartScan(device_name, settings,
-                                           std::move(callback), page_callback,
-                                           base::nullopt);
+    GetLorgnetteManagerClient()->StartScan(
+        device_name, settings, std::move(callback), std::move(page_callback),
+        base::NullCallback());
   }
 
  private:

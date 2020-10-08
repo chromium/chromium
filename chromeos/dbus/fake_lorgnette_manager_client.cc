@@ -38,14 +38,14 @@ void FakeLorgnetteManagerClient::StartScan(
     const lorgnette::ScanSettings& settings,
     VoidDBusMethodCallback completion_callback,
     base::RepeatingCallback<void(std::string)> page_callback,
-    base::Optional<base::RepeatingCallback<void(int)>> progress_callback) {
+    base::RepeatingCallback<void(int)> progress_callback) {
   if (scan_response_.has_value()) {
     for (const std::string& page_data : scan_response_.value()) {
       // Simulate progress reporting for the scan job.
-      if (progress_callback.has_value()) {
+      if (progress_callback) {
         for (int progress : {7, 22, 40, 42, 59, 74, 95}) {
           base::ThreadTaskRunnerHandle::Get()->PostTask(
-              FROM_HERE, base::BindOnce(progress_callback.value(), progress));
+              FROM_HERE, base::BindOnce(progress_callback, progress));
         }
       }
 

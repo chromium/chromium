@@ -54,7 +54,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) LorgnetteManagerClient
       const lorgnette::ScanSettings& settings,
       VoidDBusMethodCallback completion_callback,
       base::RepeatingCallback<void(std::string)> page_callback,
-      base::Optional<base::RepeatingCallback<void(int)>> progress_callback) = 0;
+      base::RepeatingCallback<void(int)> progress_callback) = 0;
 
   // Factory function, creates a new instance and returns ownership.
   // For normal usage, access the singleton via DBusThreadManager::Get().

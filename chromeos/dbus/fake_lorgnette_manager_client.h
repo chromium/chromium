@@ -34,8 +34,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeLorgnetteManagerClient
                  const lorgnette::ScanSettings& settings,
                  VoidDBusMethodCallback completion_callback,
                  base::RepeatingCallback<void(std::string)> page_callback,
-                 base::Optional<base::RepeatingCallback<void(int)>>
-                     progress_callback) override;
+                 base::RepeatingCallback<void(int)> progress_callback) override;
 
   // Sets the response returned by ListScanners().
   void SetListScannersResponse(
