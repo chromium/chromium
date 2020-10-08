@@ -47,7 +47,6 @@ preprocess_grit("preprocess") {
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [
-    "extensions.html",
     "drag_and_drop_handler.js",
     "extensions.js",
     "item_behavior.js",
@@ -56,6 +55,12 @@ preprocess_grit("preprocess") {
     "navigation_helper.js",
     "service.js",
     "shortcut_util.js",
+
+    # TODO(dpapad): Pass these directly to the generate_grd() target above, once
+    # support for that is added, as part of crbug.com/1132403.
+    "extensions.html",
+    "checkup_image_dark.svg",
+    "checkup_image.svg",
   ]
 
   if (is_chromeos) {
