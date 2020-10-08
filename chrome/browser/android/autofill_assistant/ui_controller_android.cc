@@ -325,8 +325,6 @@ void UiControllerAndroid::Attach(content::WebContents* web_contents,
   ui_delegate_ = ui_delegate;
   ui_delegate_->AddObserver(this);
 
-  destroy_timer_.reset();
-
   JNIEnv* env = AttachCurrentThread();
   auto java_web_contents = web_contents->GetJavaWebContents();
   Java_AutofillAssistantUiController_setWebContents(env, java_object_,

@@ -11,7 +11,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/android/autofill_assistant/assistant_bottom_bar_delegate.h"
 #include "chrome/browser/android/autofill_assistant/assistant_collect_user_data_delegate.h"
 #include "chrome/browser/android/autofill_assistant/assistant_form_delegate.h"
@@ -271,10 +270,6 @@ class UiControllerAndroid : public ControllerObserver {
 
   // Restore the UI for the current UIDelegate.
   void RestoreUi();
-
-  // Timer started when reaching the STOPPED state. It allows keeping the UI up
-  // for a few seconds before it destroys itself.
-  std::unique_ptr<base::OneShotTimer> destroy_timer_;
 
   // Java-side AutofillAssistantUiController object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
