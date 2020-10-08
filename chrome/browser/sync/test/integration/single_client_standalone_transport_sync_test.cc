@@ -22,7 +22,6 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/sync/test/integration/os_sync_test.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #endif
@@ -287,9 +286,7 @@ class SingleClientStandaloneTransportOsSyncTest : public OsSyncTest {
  public:
   SingleClientStandaloneTransportOsSyncTest() : OsSyncTest(SINGLE_CLIENT) {
     // Enable in-development types.
-    scoped_features_.InitWithFeatures({features::kDesktopPWAsWithoutExtensions,
-                                       switches::kSyncWifiConfigurations},
-                                      {});
+    scoped_features_.InitAndEnableFeature(switches::kSyncWifiConfigurations);
   }
   ~SingleClientStandaloneTransportOsSyncTest() override = default;
 

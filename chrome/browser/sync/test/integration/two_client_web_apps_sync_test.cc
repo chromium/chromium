@@ -6,7 +6,6 @@
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -17,9 +16,7 @@
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/web_application_info.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -28,33 +25,11 @@
 
 namespace web_app {
 
-// These tests are unified. They test a common subset for Bookmark Apps and
-// Web Apps: they are parametrized (TEST_P) to run twice with BMO flag off and
-// on.
-class TwoClientWebAppsSyncTest
-    : public SyncTest,
-      public ::testing::WithParamInterface<ProviderType> {
+class TwoClientWebAppsSyncTest : public SyncTest {
  public:
-  TwoClientWebAppsSyncTest() : SyncTest(TWO_CLIENT) {
-    switch (GetParam()) {
-      case web_app::ProviderType::kWebApps:
-        scoped_feature_list_.InitAndEnableFeature(
-            features::kDesktopPWAsWithoutExtensions);
-        break;
-      case web_app::ProviderType::kBookmarkApps:
-        scoped_feature_list_.InitAndDisableFeature(
-            features::kDesktopPWAsWithoutExtensions);
-        break;
-    }
-
-    DisableVerifier();
-  }
+  TwoClientWebAppsSyncTest() : SyncTest(TWO_CLIENT) { DisableVerifier(); }
 
   ~TwoClientWebAppsSyncTest() override = default;
-
-  bool IsBookmarkAppsSync() const {
-    return GetParam() == ProviderType::kBookmarkApps;
-  }
 
   AppId InstallApp(const WebApplicationInfo& info, Profile* profile) {
     DCHECK(info.start_url.is_valid());
@@ -99,12 +74,10 @@ class TwoClientWebAppsSyncTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   DISALLOW_COPY_AND_ASSIGN(TwoClientWebAppsSyncTest);
 };
 
-IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, Basic) {
+IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Basic) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
 
@@ -119,16 +92,11 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, Basic) {
   const AppRegistrar& registrar = GetRegistrar(GetProfile(1));
   EXPECT_EQ(base::UTF8ToUTF16(registrar.GetAppShortName(app_id)), info.title);
   EXPECT_EQ(registrar.GetAppStartUrl(app_id), info.start_url);
-  if (IsBookmarkAppsSync()) {
-    EXPECT_EQ(base::UTF8ToUTF16(registrar.GetAppDescription(app_id)),
-              info.description);
-    EXPECT_EQ(registrar.GetAppScope(app_id), info.scope);
-  }
 
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
 }
 
-IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, Minimal) {
+IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Minimal) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
 
@@ -145,7 +113,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, Minimal) {
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
 }
 
-IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, ThemeColor) {
+IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, ThemeColor) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
 
@@ -166,7 +134,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, ThemeColor) {
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
 }
 
-IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, IsLocallyInstalled) {
+IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, IsLocallyInstalled) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
 
@@ -188,7 +156,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, IsLocallyInstalled) {
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
 }
 
-IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, AppFieldsChangeDoesNotSync) {
+IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, AppFieldsChangeDoesNotSync) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
 
@@ -207,11 +175,6 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, AppFieldsChangeDoesNotSync) {
 
   EXPECT_EQ(base::UTF8ToUTF16(registrar1.GetAppShortName(app_id_a)),
             info_a.title);
-  if (IsBookmarkAppsSync()) {
-    EXPECT_EQ(base::UTF8ToUTF16(registrar1.GetAppDescription(app_id_a)),
-              info_a.description);
-    EXPECT_EQ(registrar1.GetAppScope(app_id_a), info_a.scope);
-  }
 
   EXPECT_EQ(registrar1.GetAppThemeColor(app_id_a), info_a.theme_color);
   ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
@@ -245,11 +208,6 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, AppFieldsChangeDoesNotSync) {
   // After sync we should not see the metadata update in Profile 1.
   EXPECT_EQ(base::UTF8ToUTF16(registrar1.GetAppShortName(app_id_a)),
             info_a.title);
-  if (IsBookmarkAppsSync()) {
-    EXPECT_EQ(base::UTF8ToUTF16(registrar1.GetAppDescription(app_id_a)),
-              info_a.description);
-    EXPECT_EQ(registrar1.GetAppScope(app_id_a), info_a.scope);
-  }
 
   EXPECT_EQ(registrar1.GetAppThemeColor(app_id_a), info_a.theme_color);
 
@@ -258,7 +216,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, AppFieldsChangeDoesNotSync) {
 
 // Tests that we don't crash when syncing an icon info with no size.
 // Context: https://crbug.com/1058283
-IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncFaviconOnly) {
+IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncFaviconOnly) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -299,7 +257,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncFaviconOnly) {
 
 // Tests that we don't use the manifest start_url if it differs from what came
 // through sync.
-IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncUsingStartUrlFallback) {
+IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingStartUrlFallback) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -330,7 +288,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncUsingStartUrlFallback) {
 // Pages without a manifest are usually not the correct page to draw information
 // from e.g. login redirects or loading pages.
 // Context: https://crbug.com/1078286
-IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncUsingNameFallback) {
+IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingNameFallback) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -358,7 +316,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncUsingNameFallback) {
 
 // Negative test of SyncUsingNameFallback above. Don't use the app name fallback
 // if there's a name provided by the manifest during sync.
-IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncWithoutUsingNameFallback) {
+IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncWithoutUsingNameFallback) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -383,7 +341,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncWithoutUsingNameFallback) {
             "Basic web app");
 }
 
-IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncUsingIconUrlFallback) {
+IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingIconUrlFallback) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -395,14 +353,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncUsingIconUrlFallback) {
   // one of them to simulate the other winning the "race".
   InstallManager& install_manager =
       WebAppProvider::Get(dest_profile)->install_manager();
-  switch (GetParam()) {
-    case ProviderType::kBookmarkApps:
-      install_manager.DisableWebAppSyncInstallForTesting();
-      break;
-    case ProviderType::kWebApps:
-      install_manager.DisableBookmarkAppSyncInstallForTesting();
-      break;
-  }
+  install_manager.DisableBookmarkAppSyncInstallForTesting();
 
   WebAppInstallObserver dest_install_observer(dest_profile);
 
@@ -444,11 +395,5 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncUsingIconUrlFallback) {
   EXPECT_EQ(GetRegistrar(dest_profile).GetAppThemeColor(synced_app_id),
             SK_ColorBLUE);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         TwoClientWebAppsSyncTest,
-                         ::testing::Values(ProviderType::kBookmarkApps,
-                                           ProviderType::kWebApps),
-                         ProviderTypeParamToString);
 
 }  // namespace web_app

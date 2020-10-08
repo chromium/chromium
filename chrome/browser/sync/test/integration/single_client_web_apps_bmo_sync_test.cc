@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/common/chrome_features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/profile_sync_service.h"
@@ -23,19 +22,14 @@ namespace {
 
 #if defined(OS_CHROMEOS)
 
-// These tests test only the new Web Apps system with next generation sync.
-// (BMO flag is always enabled). WEB_APPS and WebAppSyncBridge are always on.
+// These tests test the new Web Apps system with next generation sync.
 //
 // Chrome OS syncs apps as an OS type.
 class SingleClientWebAppsBmoOsSyncTest : public OsSyncTest {
  public:
   SingleClientWebAppsBmoOsSyncTest() : OsSyncTest(SINGLE_CLIENT) {
-    features_.InitAndEnableFeature(features::kDesktopPWAsWithoutExtensions);
   }
   ~SingleClientWebAppsBmoOsSyncTest() override = default;
-
- private:
-  base::test::ScopedFeatureList features_;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsBmoOsSyncTest,
@@ -55,19 +49,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsBmoOsSyncTest,
 
 #else   // !defined(OS_CHROMEOS)
 
-// These tests test only the new Web Apps system with next generation sync.
-// (BMO flag is always enabled). WEB_APPS and WebAppSyncBridge are always on.
-//
-// See also TwoClientWebAppsBmoSyncTest.
+// These tests test the new Web Apps system with next generation sync.
 class SingleClientWebAppsBmoSyncTest : public SyncTest {
  public:
   SingleClientWebAppsBmoSyncTest() : SyncTest(SINGLE_CLIENT) {
-    features_.InitAndEnableFeature(features::kDesktopPWAsWithoutExtensions);
   }
   ~SingleClientWebAppsBmoSyncTest() override = default;
-
- private:
-  base::test::ScopedFeatureList features_;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsBmoSyncTest,
