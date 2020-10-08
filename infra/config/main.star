@@ -132,12 +132,6 @@ branches.exec("//subprojects/webrtc/subproject.star")
 
 branches.exec("//generators/cq-builders-md.star")
 
-# TODO(https://crbug.com/819899) There are a number of noop jobs for dummy
-# builders defined due to legacy requirements that trybots mirror CI bots
-# no-op scheduler jobs are not supported by the lucicfg libraries, so this
-# generator adds in the necessary no-op jobs
-# The trybots should be update to not require no-op jobs to be triggered so that
-# the no-op jobs can be removed
 exec("//generators/scheduler-noop-jobs.star")
 exec("//generators/sort-consoles.star")
 
