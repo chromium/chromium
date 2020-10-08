@@ -32,18 +32,6 @@ void SortTiles(std::vector<std::unique_ptr<Tile>>* tiles,
 
   // Some tiles do not have scores, so the first step is to calculate scores
   // for them.
-  // To calculate scores for new tiles, ordering from the server response will
-  // be taken into consideration. As the server has already ordered tiles
-  // according to their importance.
-  // For example, if the first tile returned by server never appeared before, we
-  // should set its score to at least the 2nd tile. so that it can show up in
-  // the first place if no other tiles in the back have a higher score. For
-  // a new tile at position x, its score should be the minimum of its neighbors
-  // at position x-1 and x+1. For new tiles showing up at the end, their score
-  // will be set to 0.
-  // For example, if the tile scores are (new_tile, 0.5, 0.7), then the adjusted
-  // score will be (0.5, 0.5, 0.7). Simularly, (0.5, new_tile1, 0.7, new_tile2)
-  // will result in (0.5, 0.5, 0.7, 0).
   double last_score = std::numeric_limits<double>::max();
   base::Time now_time = base::Time::Now();
   TileStats last_tile_stats(now_time, last_score);
@@ -65,6 +53,17 @@ void SortTiles(std::vector<std::unique_ptr<Tile>>* tiles,
       double min_score = std::min(new_score, last_score);
       TileStats new_stats =
           new_score > last_score ? last_tile_stats : iter->second;
+      // For new tiles at the beginning, give them a score higher than the
+      // minimum score, so that they have a chance to show if the top ranked
+      // tiles have not been clicked recently.
+      if (new_tile_index == 0) {
+        double min_score_for_new_front_tiles =
+            TileConfig::GetMinimumScoreForNewFrontTiles();
+        if (min_score < min_score_for_new_front_tiles) {
+          min_score = min_score_for_new_front_tiles;
+          new_stats = TileStats(now_time, min_score);
+        }
+      }
       for (size_t j = new_tile_index; j < i; ++j) {
         tile_stats->emplace((*tiles)[j]->id, new_stats);
         score_map.emplace((*tiles)[j]->id, min_score);

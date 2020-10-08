@@ -50,6 +50,10 @@ extern const char kBackoffMaxDelayInMsKey[];
 // Finch parameter key for lambda in tile score decay calculation.
 extern const char kTileScoreDecayLambdaKey[];
 
+// Finch parameter key representing the minimum scores for new tiles that are in
+// front of others.
+extern const char kMinimumScoreForNewFrontTilesKey[];
+
 class TileConfig {
  public:
   // Gets the URL for the Query Tiles server.
@@ -90,6 +94,9 @@ class TileConfig {
 
   // Get the lambda value used for calculating the tile score decay over time.
   static double GetTileScoreDecayLambda();
+
+  // Get the minimum scrore for newly showing tiles that are in front of others.
+  static double GetMinimumScoreForNewFrontTiles();
 };
 
 }  // namespace query_tiles
