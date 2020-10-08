@@ -6056,7 +6056,7 @@
 <translation id="8152091997436726702">印表機註冊程序逾時。如要註冊印表機，你必須完成印表機的註冊確認程序。</translation>
 <translation id="8154790740888707867">沒有檔案</translation>
 <translation id="815491593104042026">糟糕！由於設定使用的網址 (<ph name="BLOCKED_URL" />) 不安全，導致驗證失敗。請與你的管理員聯絡。</translation>
-<translation id="8155676038687609779">{COUNT,plural, =0{找不到遭外洩的密碼}=1{有 {COUNT} 個密碼遭外洩}other{有 {COUNT} 個密碼遭外洩}}</translation>
+<translation id="8155676038687609779">{COUNT,plural, =0{未發現任何外洩密碼}=1{有 {COUNT} 個密碼遭外洩}other{有 {COUNT} 個密碼遭外洩}}</translation>
 <translation id="8157704005178149728">正在設定監督功能</translation>
 <translation id="8158117992543756526">這部裝置已在 <ph name="MONTH_AND_YEAR" />停止自動更新軟體和安全性。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">憑證信任設定錯誤</translation>

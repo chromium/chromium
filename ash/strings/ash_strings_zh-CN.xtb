@@ -446,7 +446,7 @@
 <translation id="5465662442746197494">需要帮助？</translation>
 <translation id="5496819745535887422">您的管理员正在回滚您的设备。设备重启后，所有数据都会被删除。</translation>
 <translation id="5519195206574732858">LTE</translation>
-<translation id="5523434445161341166">正在连接“<ph name="FEATURE_NAME" />”。</translation>
+<translation id="5523434445161341166">“<ph name="FEATURE_NAME" />”正在连接。</translation>
 <translation id="553675580533261935">退出会话</translation>
 <translation id="5537725057119320332">投射</translation>
 <translation id="5548285847212963613">扩展程序“<ph name="EXTENSION_NAME" />”可帮助连接到此网络。</translation>
