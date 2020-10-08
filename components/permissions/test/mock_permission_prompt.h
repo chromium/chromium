@@ -21,6 +21,7 @@ class MockPermissionPrompt : public PermissionPrompt {
   // PermissionPrompt:
   void UpdateAnchorPosition() override;
   TabSwitchingBehavior GetTabSwitchingBehavior() override;
+  PermissionPromptDisposition GetPromptDisposition() const override;
 
   bool IsVisible();
 

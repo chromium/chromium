@@ -62,6 +62,10 @@ class NotificationPermissionUiSelector {
 
   virtual ~NotificationPermissionUiSelector() {}
 
+  // Determines whether animations should be suppressed because we're very
+  // confident the user does not want notifications (e.g. they're abusive).
+  static bool ShouldSuppressAnimation(QuietUiReason reason);
+
   // Determines the UI to use for the given |request|, and invokes |callback|
   // when done, either synchronously or asynchronously. The |callback| is
   // guaranteed never to be invoked after |this| goes out of scope. Only one

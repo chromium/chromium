@@ -33,6 +33,8 @@ class PermissionPromptAndroid : public permissions::PermissionPrompt,
   // permissions::PermissionPrompt:
   void UpdateAnchorPosition() override;
   TabSwitchingBehavior GetTabSwitchingBehavior() override;
+  permissions::PermissionPromptDisposition GetPromptDisposition()
+      const override;
 
   void Closing();
   void Accept();

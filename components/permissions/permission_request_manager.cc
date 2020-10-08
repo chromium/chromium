@@ -732,18 +732,9 @@ void PermissionRequestManager::OnSelectedUiToUseForNotifications(
 
 PermissionPromptDisposition
 PermissionRequestManager::DetermineCurrentRequestUIDispositionForUMA() {
-#if defined(OS_ANDROID)
-  return ShouldCurrentRequestUseQuietUI()
-             ? PermissionPromptDisposition::MINI_INFOBAR
-             : PermissionPromptDisposition::MODAL_DIALOG;
-#else
-  return !ShouldCurrentRequestUseQuietUI()
-             ? PermissionPromptDisposition::ANCHORED_BUBBLE
-             : ReasonForUsingQuietUi() == QuietUiReason::kTriggeredByCrowdDeny
-                   ? PermissionPromptDisposition::LOCATION_BAR_RIGHT_STATIC_ICON
-                   : PermissionPromptDisposition::
-                         LOCATION_BAR_RIGHT_ANIMATED_ICON;
-#endif
+  if (view_)
+    return view_->GetPromptDisposition();
+  return PermissionPromptDisposition::NONE_VISIBLE;
 }
 
 void PermissionRequestManager::LogWarningToConsole(const char* message) {

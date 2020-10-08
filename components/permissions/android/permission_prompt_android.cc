@@ -10,6 +10,7 @@
 #include "components/infobars/core/infobar_manager.h"
 #include "components/permissions/android/permission_dialog_delegate.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -62,6 +63,13 @@ void PermissionPromptAndroid::UpdateAnchorPosition() {
 permissions::PermissionPrompt::TabSwitchingBehavior
 PermissionPromptAndroid::GetTabSwitchingBehavior() {
   return TabSwitchingBehavior::kKeepPromptAlive;
+}
+
+permissions::PermissionPromptDisposition
+PermissionPromptAndroid::GetPromptDisposition() const {
+  return permission_infobar_
+             ? permissions::PermissionPromptDisposition::MINI_INFOBAR
+             : permissions::PermissionPromptDisposition::MODAL_DIALOG;
 }
 
 void PermissionPromptAndroid::Closing() {

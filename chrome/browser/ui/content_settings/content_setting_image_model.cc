@@ -941,16 +941,11 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
   // Show promo the first time a quiet prompt is shown to the user.
   set_should_show_promo(
       QuietNotificationPermissionUiState::ShouldShowPromo(profile));
-  using QuietUiReason = permissions::PermissionRequestManager::QuietUiReason;
-  switch (manager->ReasonForUsingQuietUi()) {
-    case QuietUiReason::kEnabledInPrefs:
-      set_explanatory_string_id(IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
-      break;
-    case QuietUiReason::kTriggeredByCrowdDeny:
-    case QuietUiReason::kTriggeredDueToAbusiveRequests:
-    case QuietUiReason::kTriggeredDueToAbusiveContent:
-      set_explanatory_string_id(0);
-      break;
+  if (permissions::NotificationPermissionUiSelector::ShouldSuppressAnimation(
+          manager->ReasonForUsingQuietUi())) {
+    set_explanatory_string_id(0);
+  } else {
+    set_explanatory_string_id(IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
   }
   return true;
 }

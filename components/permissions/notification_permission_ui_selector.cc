@@ -6,6 +6,19 @@
 
 namespace permissions {
 
+// static
+bool NotificationPermissionUiSelector::ShouldSuppressAnimation(
+    QuietUiReason reason) {
+  switch (reason) {
+    case QuietUiReason::kEnabledInPrefs:
+      return false;
+    case QuietUiReason::kTriggeredByCrowdDeny:
+    case QuietUiReason::kTriggeredDueToAbusiveRequests:
+    case QuietUiReason::kTriggeredDueToAbusiveContent:
+      return true;
+  }
+}
+
 NotificationPermissionUiSelector::Decision::Decision(
     base::Optional<QuietUiReason> quiet_ui_reason,
     base::Optional<WarningReason> warning_reason)
