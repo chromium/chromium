@@ -204,7 +204,6 @@ ImageDocument::ImageDocument(const DocumentInit& initializer)
       did_shrink_image_(false),
       should_shrink_image_(ShouldShrinkToFit()),
       image_is_loaded_(false),
-      style_mouse_cursor_mode_(kDefault),
       shrink_to_fit_mode_(GetFrame()->GetSettings()->GetViewportEnabled()
                               ? kViewport
                               : kDesktop) {
@@ -394,11 +393,17 @@ void ImageDocument::ImageClicked(int x, int y) {
 
 void ImageDocument::ImageLoaded() {
   image_is_loaded_ = true;
+  UpdateImageStyle();
+}
 
-  if (ShouldShrinkToFit()) {
-    // The checkerboard background needs to be inserted.
-    UpdateImageStyle();
-  }
+ImageDocument::MouseCursorMode ImageDocument::ComputeMouseCursorMode() const {
+  if (!image_is_loaded_)
+    return kDefault;
+  if (shrink_to_fit_mode_ != kDesktop || !ShouldShrinkToFit())
+    return kDefault;
+  if (ImageFitsInWindow())
+    return kDefault;
+  return should_shrink_image_ ? kZoomIn : kZoomOut;
 }
 
 void ImageDocument::UpdateImageStyle() {
@@ -409,35 +414,13 @@ void ImageDocument::UpdateImageStyle() {
     if (shrink_to_fit_mode_ == kViewport)
       image_style.Append("max-width: 100%;");
     image_style.Append("margin: auto;");
-
-    if (image_is_loaded_) {
-      MouseCursorMode new_cursor_mode = kDefault;
-
-      if (shrink_to_fit_mode_ != kViewport) {
-        // In desktop mode, the user can click on the image to zoom in or out.
-        DCHECK_EQ(shrink_to_fit_mode_, kDesktop);
-        if (ImageFitsInWindow()) {
-          new_cursor_mode = kDefault;
-        } else {
-          new_cursor_mode = should_shrink_image_ ? kZoomIn : kZoomOut;
-        }
-      }
-
-      // The only thing that can differ between updates is
-      // the type of cursor being displayed.
-      if (new_cursor_mode == style_mouse_cursor_mode_) {
-        return;
-      }
-      style_mouse_cursor_mode_ = new_cursor_mode;
-
-      if (shrink_to_fit_mode_ == kDesktop) {
-        if (style_mouse_cursor_mode_ == kZoomIn)
-          image_style.Append("cursor: zoom-in;");
-        else if (style_mouse_cursor_mode_ == kZoomOut)
-          image_style.Append("cursor: zoom-out;");
-      }
-    }
   }
+
+  MouseCursorMode cursor_mode = ComputeMouseCursorMode();
+  if (cursor_mode == kZoomIn)
+    image_style.Append("cursor: zoom-in;");
+  else if (cursor_mode == kZoomOut)
+    image_style.Append("cursor: zoom-out;");
 
   image_element_->setAttribute(html_names::kStyleAttr,
                                image_style.ToAtomicString());

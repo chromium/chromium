@@ -2,4 +2,6 @@ CONSOLE ERROR: Refused to apply inline style because it violates the following C
 
 CONSOLE ERROR: Refused to apply inline style because it violates the following Content Security Policy directive: "default-src 'none'". Either the 'unsafe-inline' keyword, a hash ('sha256-VPZ2mdsWWlqXOFgt1tAllbbJhG8t9bh6emP1o9GwJxY='), or a nonce ('nonce-...') is required to enable inline execution. Note also that 'style-src' was not explicitly set, so 'default-src' is used as a fallback.
 
+CONSOLE ERROR: Refused to apply inline style because it violates the following Content Security Policy directive: "default-src 'none'". Either the 'unsafe-inline' keyword, a hash ('sha256-VPZ2mdsWWlqXOFgt1tAllbbJhG8t9bh6emP1o9GwJxY='), or a nonce ('nonce-...') is required to enable inline execution. Note also that 'style-src' was not explicitly set, so 'default-src' is used as a fallback.
+
 Ensure that we don't crash when loading an ImageDocument that sets CSP headers 

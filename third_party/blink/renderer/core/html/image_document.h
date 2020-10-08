@@ -57,6 +57,10 @@ class CORE_EXPORT ImageDocument final : public HTMLDocument {
  private:
   DocumentParser* CreateParser() override;
 
+  enum MouseCursorMode { kDefault, kZoomIn, kZoomOut };
+  // Compute the state of the mouse cursor in the image style.
+  MouseCursorMode ComputeMouseCursorMode() const;
+
   // Calculates how large the div needs to be to properly center the image.
   int CalculateDivWidth();
 
@@ -82,10 +86,6 @@ class CORE_EXPORT ImageDocument final : public HTMLDocument {
 
   // Whether the image has finished loading or not
   bool image_is_loaded_;
-
-  // Desktop: State of the mouse cursor in the image style
-  enum MouseCursorMode { kDefault, kZoomIn, kZoomOut };
-  MouseCursorMode style_mouse_cursor_mode_;
 
   enum ShrinkToFitMode { kViewport, kDesktop };
   ShrinkToFitMode shrink_to_fit_mode_;
