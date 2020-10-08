@@ -86,6 +86,7 @@ dependencies {
     compile "androidx.arch.core:core-common:2.1.0"
     compile "androidx.annotation:annotation-experimental:${androidXSupportLibVersion}"
     compile "androidx.annotation:annotation:${androidXSupportLibVersion}"
+    compile "androidx.legacy:legacy-support-core-utils:1.0.0"
     compile "androidx.lifecycle:lifecycle-runtime:${androidXSupportLibVersion}"
     compile "androidx.transition:transition:${androidXSupportLibVersion}"
     compile "androidx.viewpager2:viewpager2:${androidXSupportLibVersion}"
