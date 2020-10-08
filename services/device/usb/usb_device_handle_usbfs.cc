@@ -356,7 +356,7 @@ void UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::
   for (size_t i = 0; i < MAX_URBS_PER_EVENT; ++i) {
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
-    usbdevfs_urb* urb;
+    usbdevfs_urb* urb = nullptr;
     int rc = HANDLE_EINTR(ioctl(fd_.get(), USBDEVFS_REAPURBNDELAY, &urb));
     if (rc) {
       if (errno == EAGAIN)
