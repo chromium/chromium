@@ -7,7 +7,6 @@
 #include "base/check.h"
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_account_item.h"
-#import "ios/chrome/browser/ui/collection_view/cells/collection_view_footer_item.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_switch_item.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
@@ -97,21 +96,6 @@ void CollectionViewControllerTest::CheckSectionHeaderWithId(
     int expected_title_id,
     int section) {
   CheckSectionHeader(l10n_util::GetNSString(expected_title_id), section);
-}
-
-void CollectionViewControllerTest::CheckSectionFooter(NSString* expected_text,
-                                                      int section) {
-  ASSERT_EQ(1, NumberOfItemsInSection(section));
-  CollectionViewFooterItem* footer_item =
-      base::mac::ObjCCastStrict<CollectionViewFooterItem>(
-          GetCollectionViewItem(section, 0));
-  EXPECT_NSEQ(expected_text, footer_item.text);
-}
-
-void CollectionViewControllerTest::CheckSectionFooterWithId(
-    int expected_text_id,
-    int section) {
-  return CheckSectionFooter(l10n_util::GetNSString(expected_text_id), section);
 }
 
 void CollectionViewControllerTest::CheckTextCellText(NSString* expected_text,

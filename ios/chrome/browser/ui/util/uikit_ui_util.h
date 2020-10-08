@@ -29,14 +29,6 @@ void SetA11yLabelAndUiAutomationName(
     int idsAccessibilityLabel,
     NSString* englishUiAutomationName);
 
-// Sets the given |button|'s width to exactly fit its image and text.  Does not
-// modify the button's height.
-void GetSizeButtonWidthToFit(UIButton* button);
-
-// Translates the given |view|'s frame.  Sets a new frame instead of applying a
-// transform to the existing frame.
-void TranslateFrame(UIView* view, UIOffset offset);
-
 // Returns a UIFont. |fontFace| is one of the defined enumerated values
 // to avoid spelling mistakes.
 UIFont* GetUIFont(int fontFace, bool isBold, CGFloat fontSize);
@@ -50,12 +42,6 @@ void SetUITextFieldScaledFont(UITextField* textField, UIFont* font);
 void MaybeSetUITextFieldScaledFont(BOOL maybe,
                                    UITextField* textField,
                                    UIFont* font);
-
-// Adds a border shadow around |view|.
-void AddBorderShadow(UIView* view, CGFloat offset, UIColor* color);
-
-// Adds a rounded-rectangle border shadow around a view.
-void AddRoundedBorderShadow(UIView* view, CGFloat radius, UIColor* color);
 
 enum CaptureViewOption {
   kNoCaptureOption,      // Equivalent to calling CaptureView without options.
@@ -92,13 +78,6 @@ UIImage* CaptureView(UIView* view, CGFloat scale);
 // Converts input image and returns a grey scaled version.
 UIImage* GreyImage(UIImage* image);
 
-// Returns the color that should be used for the background of all Settings
-// pages.
-UIColor* GetSettingsBackgroundColor();
-
-// Returns the color used as the main color for primary action buttons.
-UIColor* GetPrimaryActionButtonColor();
-
 // Returns an UIColor with |rgb| and |alpha|. The caller should pass the RGB
 // value in hexadecimal as this is the typical way they are provided by UX.
 // For example a call to |UIColorFromRGB(0xFF7D40, 1.0)| returns an orange
@@ -109,11 +88,6 @@ inline UIColor* UIColorFromRGB(int rgb, CGFloat alpha = 1.0) {
                           blue:((CGFloat)(rgb & 0x0000FF)) / 255.0
                          alpha:alpha];
 }
-
-// Returns whether an image contains an alpha channel. If yes, displaying the
-// image will require blending.
-// Intended for use in debug.
-BOOL ImageHasAlphaChannel(UIImage* image);
 
 // Returns the image from the shared resource bundle with the image id
 // |imageID|. If |reversable| is YES and RTL layout is in use, the image
@@ -150,22 +124,6 @@ UIImage* ResizeImage(UIImage* image,
                      ProjectionMode projectionMode,
                      BOOL opaque);
 
-// Returns a slightly blurred image darkened enough to provide contrast for
-// white text to be readable.
-UIImage* DarkenImage(UIImage* image);
-
-// Applies various effects to an image. This method can apply a blur over a
-// |radius|, superimpose a |tintColor| (an alpha of 0.6 on the color is a good
-// approximation to look like iOS tint colors) or saturate the image colors by
-// applying a |saturationDeltaFactor| (negative to desaturate, positive to
-// saturate). The optional |maskImage| is used to limit the effect of the blur
-// and/or saturation to a portion of the image.
-UIImage* BlurImage(UIImage* image,
-                   CGFloat blurRadius,
-                   UIColor* tintColor,
-                   CGFloat saturationDeltaFactor,
-                   UIImage* maskImage);
-
 // Returns an output image where each pixel has RGB values equal to a color and
 // the alpha value sampled from the given image. The RGB values of the image are
 // ignored. If the color has alpha value of less than one, then the entire
@@ -175,9 +133,6 @@ UIImage* TintImage(UIImage* image, UIColor* color);
 // Returns the first responder in the subviews of |view|, or nil if no view in
 // the subtree is the first responder.
 UIView* GetFirstResponderSubview(UIView* view);
-
-// Returns a cropped image using |cropRect| on |image|.
-UIImage* CropImage(UIImage* image, const CGRect& cropRect);
 
 // Returns the interface orientation of the given window in the app.
 UIInterfaceOrientation GetInterfaceOrientation(UIWindow* window);
@@ -191,13 +146,6 @@ UIImage* ImageWithColor(UIColor* color);
 // Returns a circular image of width |width| based on |image| scaled up or
 // down. If the source image is not square, the image is first cropped.
 UIImage* CircularImageFromImage(UIImage* image, CGFloat width);
-
-// Returns the linear interpolated color from |firstColor| to |secondColor| by
-// the given |fraction|. Requires that both colors are in RGB or monochrome
-// color space. |fraction| is a decimal value between 0.0 and 1.0.
-UIColor* InterpolateFromColorToColor(UIColor* firstColor,
-                                     UIColor* secondColor,
-                                     CGFloat fraction);
 
 // Returns true if the window is in portrait orientation or if orientation is
 // unknown.

@@ -17,9 +17,6 @@ bool IsIPadIdiom();
 // Enum for arrays by UI idiom.
 enum InterfaceIdiom { IPHONE_IDIOM, IPAD_IDIOM, INTERFACE_IDIOM_COUNT };
 
-// Array of widths for device idioms in portrait orientation.
-extern const CGFloat kPortraitWidth[INTERFACE_IDIOM_COUNT];
-
 // Returns the height of the screen in the current orientation.
 CGFloat CurrentScreenHeight();
 
@@ -47,9 +44,6 @@ CGRect AlignRectToPixel(CGRect rect);
 // Returns the rectangle resulting from applying AlignPointToPixel() to the
 // origin, and ui::AlignSizeToUpperPixel() to the size.
 CGRect AlignRectOriginAndSizeToPixels(CGRect rect);
-
-// Makes a copy of |rect| with a new origin specified by |x| and |y|.
-CGRect CGRectCopyWithOrigin(CGRect rect, CGFloat x, CGFloat y);
 
 // Returns a square CGRect centered at |x|, |y| with a width of |width|.
 // Both the position and the size of the CGRect will be aligned to points.

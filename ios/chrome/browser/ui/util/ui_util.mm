@@ -23,11 +23,6 @@ bool IsIPadIdiom() {
   return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
 }
 
-const CGFloat kPortraitWidth[INTERFACE_IDIOM_COUNT] = {
-    320,  // IPHONE_IDIOM
-    768   // IPAD_IDIOM
-};
-
 CGFloat CurrentScreenHeight() {
   return [UIScreen mainScreen].bounds.size.height;
 }
@@ -65,10 +60,6 @@ CGRect AlignRectOriginAndSizeToPixels(CGRect rect) {
   rect.origin = AlignPointToPixel(rect.origin);
   rect.size = ui::AlignSizeToUpperPixel(rect.size);
   return rect;
-}
-
-CGRect CGRectCopyWithOrigin(CGRect rect, CGFloat x, CGFloat y) {
-  return CGRectMake(x, y, rect.size.width, rect.size.height);
 }
 
 CGRect CGRectMakeAlignedAndCenteredAt(CGFloat x, CGFloat y, CGFloat width) {

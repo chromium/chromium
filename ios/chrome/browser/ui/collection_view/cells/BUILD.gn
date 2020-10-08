@@ -9,8 +9,6 @@ source_set("cells") {
     "collection_view_account_item.h",
     "collection_view_account_item.mm",
     "collection_view_cell_constants.h",
-    "collection_view_footer_item.h",
-    "collection_view_footer_item.mm",
     "collection_view_item.h",
     "collection_view_item.mm",
     "collection_view_switch_item.h",
@@ -53,7 +51,6 @@ source_set("unit_tests") {
   sources = [
     "MDCCollectionViewCell+Chrome_unittest.mm",
     "collection_view_account_item_unittest.mm",
-    "collection_view_footer_item_unittest.mm",
     "collection_view_item_unittest.mm",
     "collection_view_switch_item_unittest.mm",
   ]

@@ -65,8 +65,6 @@ enum ClearBrowsingDataItemType {
 
 // The manager's consumer.
 @property(nonatomic, weak) id<ClearBrowsingDataConsumer> consumer;
-// Reference to the LinkDelegate for CollectionViewFooterItem.
-@property(nonatomic, weak) id<CollectionViewFooterLinkDelegate> linkDelegate;
 
 // Default init method. |browserState| can't be nil.
 - (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState;
