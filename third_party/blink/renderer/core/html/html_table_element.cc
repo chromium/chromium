@@ -309,7 +309,8 @@ void HTMLTableElement::CollectStyleForPresentationAttribute(
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
   if (name == html_names::kWidthAttr) {
-    AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value);
+    AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value,
+                         kAllowPercentageValues, kDontAllowZeroValues);
   } else if (name == html_names::kHeightAttr) {
     AddHTMLLengthToStyle(style, CSSPropertyID::kHeight, value);
   } else if (name == html_names::kBorderAttr) {

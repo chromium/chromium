@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1640 tests; 1621 PASS, 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1640 tests; 1624 PASS, 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS <hr width="200"> mapping to width
 PASS <hr width="1007"> mapping to width
 PASS <hr width="   00523   "> mapping to width
@@ -717,9 +717,9 @@ PASS <table width=".%"> mapping to width
 PASS <table width=".x"> mapping to width
 PASS <table width=".5"> mapping to width
 PASS <table width=".5%"> mapping to width
-FAIL <table width="0"> mapping to width assert_equals: expected "auto" but got "0px"
-FAIL <table width="0%"> mapping to width assert_equals: expected "auto" but got "0%"
-FAIL <table width="0px"> mapping to width assert_equals: expected "auto" but got "0px"
+PASS <table width="0"> mapping to width
+PASS <table width="0%"> mapping to width
+PASS <table width="0px"> mapping to width
 PASS <table height="200"> mapping to height
 PASS <table height="1007"> mapping to height
 PASS <table height="   00523   "> mapping to height

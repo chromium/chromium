@@ -1240,7 +1240,8 @@ void HTMLElement::DidMoveToNewDocument(Document& old_document) {
 void HTMLElement::AddHTMLLengthToStyle(MutableCSSPropertyValueSet* style,
                                        CSSPropertyID property_id,
                                        const String& value,
-                                       AllowPercentage allow_percentage) {
+                                       AllowPercentage allow_percentage,
+                                       AllowZero allow_zero) {
   HTMLDimension dimension;
   if (!ParseDimensionValue(value, dimension))
     return;
@@ -1250,7 +1251,10 @@ void HTMLElement::AddHTMLLengthToStyle(MutableCSSPropertyValueSet* style,
   }
   if (dimension.IsRelative())
     return;
-  if (dimension.IsPercentage() && allow_percentage != kAllowPercentageValues)
+  if (dimension.IsPercentage() &&
+      allow_percentage == kDontAllowPercentageValues)
+    return;
+  if (dimension.Value() == 0 && allow_zero == kDontAllowZeroValues)
     return;
   CSSPrimitiveValue::UnitType unit =
       dimension.IsPercentage() ? CSSPrimitiveValue::UnitType::kPercentage

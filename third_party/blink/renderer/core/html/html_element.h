@@ -155,10 +155,12 @@ class CORE_EXPORT HTMLElement : public Element {
 
  protected:
   enum AllowPercentage { kDontAllowPercentageValues, kAllowPercentageValues };
+  enum AllowZero { kDontAllowZeroValues, kAllowZeroValues };
   void AddHTMLLengthToStyle(MutableCSSPropertyValueSet*,
                             CSSPropertyID,
                             const String& value,
-                            AllowPercentage = kAllowPercentageValues);
+                            AllowPercentage = kAllowPercentageValues,
+                            AllowZero = kAllowZeroValues);
   void AddHTMLColorToStyle(MutableCSSPropertyValueSet*,
                            CSSPropertyID,
                            const String& color);
