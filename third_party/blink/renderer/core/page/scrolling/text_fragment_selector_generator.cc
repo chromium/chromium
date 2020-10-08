@@ -238,6 +238,8 @@ void TextFragmentSelectorGenerator::GenerateSelector(
   step_ = kExact;
   max_available_prefix_ = "";
   max_available_suffix_ = "";
+  max_available_range_start_ = "";
+  max_available_range_end_ = "";
   num_prefix_words_ = 0;
   num_suffix_words_ = 0;
   iteration_ = 0;
@@ -417,7 +419,6 @@ void TextFragmentSelectorGenerator::GenerateExactSelector() {
 void TextFragmentSelectorGenerator::ExtendRangeSelector() {
   DCHECK_EQ(kRange, step_);
   DCHECK_EQ(kNeedsNewCandidate, state_);
-
   // Give up if range is already too long.
   if (num_range_start_words_ == kMaxRangeWords ||
       num_range_end_words_ == kMaxRangeWords) {
