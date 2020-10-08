@@ -2089,8 +2089,10 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     std::unique_ptr<web::NavigationContextImpl> navigationContext =
         [self.navigationStates removeNavigation:navigation];
     [self loadCancelled];
-    web::NavigationItemImpl* item = web::GetItemWithUniqueID(
-        self.navigationManagerImpl, navigationContext.get());
+    web::NavigationItemImpl* item =
+        navigationContext ? web::GetItemWithUniqueID(self.navigationManagerImpl,
+                                                     navigationContext.get())
+                          : nullptr;
     if (self.navigationManagerImpl->GetPendingItem() == item) {
       self.navigationManagerImpl->DiscardNonCommittedItems();
     }
@@ -2114,7 +2116,9 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     web::NavigationContextImpl* navigationContext =
         [self.navigationStates contextForNavigation:navigation];
     web::NavigationItemImpl* item =
-        web::GetItemWithUniqueID(self.navigationManagerImpl, navigationContext);
+        navigationContext ? web::GetItemWithUniqueID(self.navigationManagerImpl,
+                                                     navigationContext)
+                          : nullptr;
     if (item) {
       // Since the navigation has already been committed, it will retain its
       // back / forward item even though the load has been cancelled. Update the

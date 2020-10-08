@@ -17,6 +17,7 @@ namespace web {
 NavigationItemImpl* GetItemWithUniqueID(
     NavigationManagerImpl* navigation_manager,
     NavigationContextImpl* context) {
+  DCHECK(context);
   if (context->GetItem())
     return context->GetItem();
 
