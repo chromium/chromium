@@ -477,7 +477,8 @@ int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {
     }
 
     if (sct_auditing_delegate_ &&
-        sct_auditing_delegate_->IsSCTAuditingEnabled()) {
+        sct_auditing_delegate_->IsSCTAuditingEnabled() &&
+        cert_verify_result.is_issued_by_known_root) {
       sct_auditing_delegate_->MaybeEnqueueReport(
           HostPortPair(hostname_, port_),
           cert_verify_result.verified_cert.get(), cert_verify_result.scts);
