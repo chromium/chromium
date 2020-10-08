@@ -413,27 +413,27 @@ TEST(CSSSelectorParserTest, InternalPseudo) {
 // https://drafts.csswg.org/selectors-4/#matches
 static const SelectorTestCase invalid_pseudo_is_argments_data[] = {
     // clang-format off
-    {":is(::-webkit-progress-bar)", ""},
-    {":is(::-webkit-progress-value)", ""},
-    {":is(::-webkit-slider-runnable-track)", ""},
-    {":is(::-webkit-slider-thumb)", ""},
-    {":is(::after)", ""},
-    {":is(::backdrop)", ""},
-    {":is(::before)", ""},
-    {":is(::cue)", ""},
-    {":is(::first-letter)", ""},
-    {":is(::first-line)", ""},
-    {":is(::grammar-error)", ""},
-    {":is(::marker)", ""},
-    {":is(::placeholder)", ""},
-    {":is(::selection)", ""},
-    {":is(::slotted)", ""},
-    {":is(::spelling-error)", ""},
-    {":is(:after)", ""},
-    {":is(:before)", ""},
-    {":is(:cue)", ""},
-    {":is(:first-letter)", ""},
-    {":is(:first-line)", ""},
+    {":is(::-webkit-progress-bar)", ":is()"},
+    {":is(::-webkit-progress-value)", ":is()"},
+    {":is(::-webkit-slider-runnable-track)", ":is()"},
+    {":is(::-webkit-slider-thumb)", ":is()"},
+    {":is(::after)", ":is()"},
+    {":is(::backdrop)", ":is()"},
+    {":is(::before)", ":is()"},
+    {":is(::cue)", ":is()"},
+    {":is(::first-letter)", ":is()"},
+    {":is(::first-line)", ":is()"},
+    {":is(::grammar-error)", ":is()"},
+    {":is(::marker)", ":is()"},
+    {":is(::placeholder)", ":is()"},
+    {":is(::selection)", ":is()"},
+    {":is(::slotted)", ":is()"},
+    {":is(::spelling-error)", ":is()"},
+    {":is(:after)", ":is()"},
+    {":is(:before)", ":is()"},
+    {":is(:cue)", ":is()"},
+    {":is(:first-letter)", ":is()"},
+    {":is(:first-line)", ":is()"},
     // clang-format on
 };
 
@@ -446,11 +446,11 @@ INSTANTIATE_TEST_SUITE_P(InvalidPseudoIsArguments,
 static const SelectorTestCase shadow_v0_with_is_where_data[] = {
     // clang-format off
     {":is(.a) ::content", ""},
-    {":is(.a /deep/ .b)", ""},
-    {":is(::content)", ""},
-    {":is(::shadow)", ""},
-    {":is(::content .a)", ""},
-    {":is(::shadow .b)", ""},
+    {":is(.a /deep/ .b)", ":is()"},
+    {":is(::content)", ":is()"},
+    {":is(::shadow)", ":is()"},
+    {":is(::content .a)", ":is()"},
+    {":is(::shadow .b)", ":is()"},
     {":is(.a)::shadow", ""},
     {":is(.a) ::content", ""},
     {":is(.a) ::shadow", ""},
@@ -458,7 +458,7 @@ static const SelectorTestCase shadow_v0_with_is_where_data[] = {
     {"::shadow :is(.a)", ""},
     {":is(.a) /deep/ .b", ""},
     {":.a /deep/ :is(.b)", ""},
-    {":where(.a /deep/ .b)", ""},
+    {":where(.a /deep/ .b)", ":where()"},
     {":where(.a) ::shadow", ""},
     // clang-format on
 };
@@ -470,18 +470,18 @@ INSTANTIATE_TEST_SUITE_P(ShadowDomV0WithIsAndWhere,
 static const SelectorTestCase is_where_nesting_data[] = {
     // clang-format off
     // These pseudos only accept compound selectors:
-    {"::slotted(:is(.a .b))", ""},
-    {"::slotted(:is(.a + .b))", ""},
-    {"::slotted(:is(.a, .b + .c))", ""},
-    {":host(:is(.a .b))", ""},
-    {":host(:is(.a + .b))", ""},
-    {":host(:is(.a, .b + .c))", ""},
-    {":host-context(:is(.a .b))", ""},
-    {":host-context(:is(.a + .b))", ""},
-    {":host-context(:is(.a, .b + .c))", ""},
-    {"::cue(:is(.a .b))", ""},
-    {"::cue(:is(.a + .b))", ""},
-    {"::cue(:is(.a, .b + .c))", ""},
+    {"::slotted(:is(.a .b))", "::slotted(:is())"},
+    {"::slotted(:is(.a + .b))", "::slotted(:is())"},
+    {"::slotted(:is(.a, .b + .c))", "::slotted(:is(.a))"},
+    {":host(:is(.a .b))", ":host(:is())"},
+    {":host(:is(.a + .b))", ":host(:is())"},
+    {":host(:is(.a, .b + .c))", ":host(:is(.a))"},
+    {":host-context(:is(.a .b))", ":host-context(:is())"},
+    {":host-context(:is(.a + .b))", ":host-context(:is())"},
+    {":host-context(:is(.a, .b + .c))", ":host-context(:is(.a))"},
+    {"::cue(:is(.a .b))", "::cue(:is())"},
+    {"::cue(:is(.a + .b))", "::cue(:is())"},
+    {"::cue(:is(.a, .b + .c))", "::cue(:is(.a))"},
 
     // Valid selectors:
     {":is(.a, .b)"},
@@ -508,6 +508,33 @@ INSTANTIATE_TEST_SUITE_P(NestedSelectorValidity,
                          SelectorParseTest,
                          testing::ValuesIn(is_where_nesting_data));
 
+static const SelectorTestCase is_where_forgiving_data[] = {
+    // clang-format off
+    {":is():where()"},
+    {":is(.a, .b):where(.c)"},
+    {":is(.a, :unknown, .b)", ":is(.a, .b)"},
+    {":where(.a, :unknown, .b)", ":where(.a, .b)"},
+    {":is(.a, :unknown)", ":is(.a)"},
+    {":is(:unknown, .a)", ":is(.a)"},
+    {":is(:unknown)", ":is()"},
+    {":is(:unknown, :where(.a))", ":is(:where(.a))"},
+    {":is(:unknown, :where(:unknown))", ":is(:where())"},
+    {":is(.a, :is(.b, :unknown), .c)", ":is(.a, :is(.b), .c)"},
+    {":host(:is(.a, .b + .c, .d))", ":host(:is(.a, .d))"},
+    {":is(,,  ,, )", ":is()"},
+    {":is(.a,,,,)", ":is(.a)"},
+    {":is(,,.a,,)", ":is(.a)"},
+    {":is(,,,,.a)", ":is(.a)"},
+    {":is(@x {,.b,}, .a)", ":is(.a)"},
+    {":is({,.b,} @x, .a)", ":is(.a)"},
+    {":is((@x), .a)", ":is(.a)"},
+    {":is((.b), .a)", ":is(.a)"},
+    // clang-format on
+};
+
+INSTANTIATE_TEST_SUITE_P(IsWhereForgiving,
+                         SelectorParseTest,
+                         testing::ValuesIn(is_where_forgiving_data));
 namespace {
 
 const auto TagLocalName = [](const CSSSelector* selector) {

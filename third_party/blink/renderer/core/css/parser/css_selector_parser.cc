@@ -19,6 +19,23 @@
 
 namespace blink {
 
+namespace {
+
+CSSParserTokenRange ConsumeNestedArgument(CSSParserTokenRange& range) {
+  const CSSParserToken& first = range.Peek();
+  while (!range.AtEnd() && range.Peek().GetType() != kCommaToken) {
+    const CSSParserToken& token = range.Peek();
+    if (token.GetBlockType() == CSSParserToken::kBlockStart) {
+      range.ConsumeBlock();
+      continue;
+    }
+    range.Consume();
+  }
+  return range.MakeSubRange(&first, &range.Peek());
+}
+
+}  // namespace
+
 // static
 CSSSelectorList CSSSelectorParser::ParseSelector(
     CSSParserTokenRange range,
@@ -147,8 +164,52 @@ CSSSelectorList CSSSelectorParser::ConsumeCompoundSelectorList(
 CSSSelectorList CSSSelectorParser::ConsumeNestedSelectorList(
     CSSParserTokenRange& range) {
   if (inside_compound_pseudo_)
-    return ConsumeCompoundSelectorList(range);
-  return ConsumeComplexSelectorList(range);
+    return ConsumeForgivingCompoundSelectorList(range);
+  return ConsumeForgivingComplexSelectorList(range);
+}
+
+CSSSelectorList CSSSelectorParser::ConsumeForgivingComplexSelectorList(
+    CSSParserTokenRange& range) {
+  Vector<std::unique_ptr<CSSParserSelector>> selector_list;
+
+  while (!range.AtEnd()) {
+    base::AutoReset<bool> reset_failure(&failed_parsing_, false);
+    CSSParserTokenRange argument = ConsumeNestedArgument(range);
+    std::unique_ptr<CSSParserSelector> selector =
+        ConsumeComplexSelector(argument);
+    if (selector && !failed_parsing_ && argument.AtEnd())
+      selector_list.push_back(std::move(selector));
+    if (range.Peek().GetType() != kCommaToken)
+      break;
+    range.ConsumeIncludingWhitespace();
+  }
+
+  if (selector_list.IsEmpty())
+    return CSSSelectorList();
+
+  return CSSSelectorList::AdoptSelectorVector(selector_list);
+}
+
+CSSSelectorList CSSSelectorParser::ConsumeForgivingCompoundSelectorList(
+    CSSParserTokenRange& range) {
+  Vector<std::unique_ptr<CSSParserSelector>> selector_list;
+
+  while (!range.AtEnd()) {
+    base::AutoReset<bool> reset_failure(&failed_parsing_, false);
+    CSSParserTokenRange argument = ConsumeNestedArgument(range);
+    std::unique_ptr<CSSParserSelector> selector =
+        ConsumeCompoundSelector(argument);
+    if (selector && !failed_parsing_ && argument.AtEnd())
+      selector_list.push_back(std::move(selector));
+    if (range.Peek().GetType() != kCommaToken)
+      break;
+    range.ConsumeIncludingWhitespace();
+  }
+
+  if (selector_list.IsEmpty())
+    return CSSSelectorList();
+
+  return CSSSelectorList::AdoptSelectorVector(selector_list);
 }
 
 namespace {
@@ -603,7 +664,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       std::unique_ptr<CSSSelectorList> selector_list =
           std::make_unique<CSSSelectorList>();
       *selector_list = ConsumeNestedSelectorList(block);
-      if (!selector_list->IsValid() || !block.AtEnd())
+      if (!block.AtEnd())
         return nullptr;
       selector->SetSelectorList(std::move(selector_list));
       return selector;
@@ -620,7 +681,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       std::unique_ptr<CSSSelectorList> selector_list =
           std::make_unique<CSSSelectorList>();
       *selector_list = ConsumeNestedSelectorList(block);
-      if (!selector_list->IsValid() || !block.AtEnd())
+      if (!block.AtEnd())
         return nullptr;
       selector->SetSelectorList(std::move(selector_list));
       return selector;
