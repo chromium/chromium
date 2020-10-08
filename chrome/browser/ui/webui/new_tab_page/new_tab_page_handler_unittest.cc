@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
@@ -89,6 +90,7 @@ class NewTabPageHandlerTest : public testing::Test {
   content::TestWebContentsFactory factory_;
   content::WebContents* web_contents_;  // Weak. Owned by factory_.
   MockNTPUserDataLogger logger_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<NewTabPageHandler> handler_;
   InstantServiceObserver* instant_service_observer_;
 };
@@ -103,4 +105,27 @@ TEST_F(NewTabPageHandlerTest, SetTheme) {
   EXPECT_CALL(mock_page_, SetTheme(testing::_));
   NtpTheme theme;
   instant_service_observer_->NtpThemeChanged(theme);
+}
+
+TEST_F(NewTabPageHandlerTest, Histograms) {
+  histogram_tester_.ExpectTotalCount(
+      NewTabPageHandler::kModuleDismissedHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      NewTabPageHandler::kModuleRestoredHistogram, 0);
+
+  handler_->OnDismissModule("shopping_tasks");
+  histogram_tester_.ExpectTotalCount(
+      NewTabPageHandler::kModuleDismissedHistogram, 1);
+  histogram_tester_.ExpectTotalCount(
+      std::string(NewTabPageHandler::kModuleDismissedHistogram) +
+          ".shopping_tasks",
+      1);
+
+  handler_->OnRestoreModule("kaleidoscope");
+  histogram_tester_.ExpectTotalCount(
+      NewTabPageHandler::kModuleRestoredHistogram, 1);
+  histogram_tester_.ExpectTotalCount(
+      std::string(NewTabPageHandler::kModuleRestoredHistogram) +
+          ".kaleidoscope",
+      1);
 }
