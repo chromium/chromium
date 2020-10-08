@@ -614,6 +614,10 @@ void NTPUserDataLogger::LogModuleUsage(const std::string& id) {
   base::UmaHistogramExactLinear("NewTabPage.Modules.Usage." + id, 1, 1);
 }
 
+void NTPUserDataLogger::SetModulesVisible(bool visible) {
+  modules_visible_ = visible;
+}
+
 NTPUserDataLogger::NTPUserDataLogger(content::WebContents* contents)
     : content::WebContentsObserver(contents),
       has_emitted_(false),
@@ -737,6 +741,11 @@ void NTPUserDataLogger::EmitNtpStatistics(base::TimeDelta load_time) {
           "NewTabPage.Customized",
           LoggingEventToCustomizedFeature(NTP_BACKGROUND_CUSTOMIZED));
     }
+  }
+
+  if (base::FeatureList::IsEnabled(ntp_features::kModules)) {
+    base::UmaHistogramBoolean("NewTabPage.Modules.VisibleOnNTPLoad",
+                              modules_visible_);
   }
 
   has_emitted_ = true;

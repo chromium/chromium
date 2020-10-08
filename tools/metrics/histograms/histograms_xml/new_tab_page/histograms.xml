@@ -821,6 +821,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Modules.VisibleOnNTPLoad" enum="BooleanVisible"
+    expires_after="M90">
+  <owner>tiborg@chromium.org</owner>
+  <owner>yyushkina@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>Logs whether the NTP modules are visible at NTP load.</summary>
+</histogram>
+
 <histogram name="NewTabPage.MostVisited" enum="MostVisitedTileIndex"
     expires_after="never">
 <!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
