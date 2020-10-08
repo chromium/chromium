@@ -230402,7 +230402,7 @@
      []
     ],
     "presentation-api.idl": [
-     "0757e9b8bf203ad2f5a3ce783f1c1468464a7828",
+     "4f1e4bee835a23c5b7bcf54b5b05f4ded2b08023",
      []
     ],
     "proximity.idl": [
@@ -230454,7 +230454,7 @@
      []
     ],
     "screen-wake-lock.idl": [
-     "56bc8f43e4d08ad81f48eff802f46f7951cbe0a9",
+     "c9d259ebcc4e21faf497be42a169fe4b265bc9a8",
      []
     ],
     "scroll-animations.idl": [
@@ -393526,26 +393526,19 @@
       {}
      ]
     ],
-    "wakelock-type.https.any.js": [
-     "3a1d8c465c7020594affe0cb81c67ea36839b640",
+    "wakelock-type.https.window.js": [
+     "67e935be8e1d20940827c814bdfdf8b879841b5a",
      [
-      "screen-wake-lock/wakelock-type.https.any.html",
+      "screen-wake-lock/wakelock-type.https.window.html",
       {
        "script_metadata": [
         [
-         "title",
-         "navigator.wakeLock.request() with invalid type"
-        ]
-       ]
-      }
-     ],
-     [
-      "screen-wake-lock/wakelock-type.https.any.worker.html",
-      {
-       "script_metadata": [
+         "script",
+         "/resources/testdriver.js"
+        ],
         [
-         "title",
-         "navigator.wakeLock.request() with invalid type"
+         "script",
+         "/resources/testdriver-vendor.js"
         ]
        ]
       }
