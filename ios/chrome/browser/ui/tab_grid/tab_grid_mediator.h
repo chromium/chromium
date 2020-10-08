@@ -23,12 +23,14 @@ class TabRestoreService;
 // for confirmation from the tab grid.
 @protocol TabGridMediatorDelegate <NSObject>
 
-// Shows an action sheet that asks for confirmation when 'Close All' button is
-// tapped.
+// Shows an action sheet, anchored to the UIBarButtonItem, that asks for
+// confirmation when 'Close All' button is tapped.
 - (void)showCloseAllConfirmationActionSheetWitTabGridMediator:
             (TabGridMediator*)tabGridMediator
                                                  numberOfTabs:
-                                                     (NSInteger)numberOfTabs;
+                                                     (NSInteger)numberOfTabs
+                                                       anchor:(UIBarButtonItem*)
+                                                                  buttonAnchor;
 
 @end
 

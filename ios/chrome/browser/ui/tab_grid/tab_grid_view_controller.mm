@@ -1246,13 +1246,15 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 // Shows an action sheet that asks for confirmation when 'Close All' button is
 // tapped.
-- (void)closeAllButtonTappedShowConfirmation:(id)sender {
+- (void)closeAllButtonTappedShowConfirmation:(UIBarButtonItem*)button {
   switch (self.currentPage) {
     case TabGridPageIncognitoTabs:
-      [self.incognitoTabsDelegate showCloseAllConfirmationActionSheet];
+      [self.incognitoTabsDelegate
+          showCloseAllConfirmationActionSheetWithAnchor:button];
       break;
     case TabGridPageRegularTabs:
-      [self.regularTabsDelegate showCloseAllConfirmationActionSheet];
+      [self.regularTabsDelegate
+          showCloseAllConfirmationActionSheetWithAnchor:button];
       break;
     case TabGridPageRemoteTabs:
       NOTREACHED() << "It is invalid to call close all tabs on remote tabs.";

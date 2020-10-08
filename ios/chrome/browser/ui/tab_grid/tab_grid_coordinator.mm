@@ -148,6 +148,7 @@
 - (void)stopChildCoordinatorsWithCompletion:(ProceduralBlock)completion {
   // Recent tabs context menu may be presented on top of the tab grid.
   [self.baseViewController.remoteTabsViewController dismissModals];
+  [self.actionSheetCoordinator stop];
   // History may be presented on top of the tab grid.
   if (self.historyCoordinator) {
     [self.historyCoordinator stopWithCompletion:completion];
@@ -421,7 +422,9 @@
 - (void)showCloseAllConfirmationActionSheetWitTabGridMediator:
             (TabGridMediator*)tabGridMediator
                                                  numberOfTabs:
-                                                     (NSInteger)numberOfTabs {
+                                                     (NSInteger)numberOfTabs
+                                                       anchor:(UIBarButtonItem*)
+                                                                  buttonAnchor {
   if (tabGridMediator == self.regularTabsMediator) {
     base::RecordAction(base::UserMetricsAction(
         "MobileTabGridCloseAllRegularTabsConfirmationPresented"));
@@ -435,19 +438,9 @@
                          browser:self.browser
                            title:nil
                          message:nil
-                            rect:self.baseViewController.view.frame
-                            view:self.baseViewController.view];
+                   barButtonItem:buttonAnchor];
 
-  NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
-  [defaultCenter addObserver:self
-                    selector:@selector(applicationDidEnterBackground:)
-                        name:UIApplicationDidEnterBackgroundNotification
-                      object:nil];
-
-  self.actionSheetCoordinator.popoverArrowDirection = 0;
-  self.actionSheetCoordinator.alertStyle =
-      IsIPadIdiom() ? UIAlertControllerStyleAlert
-                    : UIAlertControllerStyleActionSheet;
+  self.actionSheetCoordinator.alertStyle = UIAlertControllerStyleActionSheet;
 
   [self.actionSheetCoordinator
       addItemWithTitle:base::SysUTF16ToNSString(
@@ -494,12 +487,6 @@
   [self.delegate tabGrid:self
       shouldFinishWithBrowser:self.regularBrowser
                  focusOmnibox:NO];
-}
-
-#pragma mark - Notification callback
-
-- (void)applicationDidEnterBackground:(NSNotification*)notification {
-  [self.actionSheetCoordinator stop];
 }
 
 #pragma mark - HistoryPresentationDelegate

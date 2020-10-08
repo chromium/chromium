@@ -366,11 +366,13 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   SnapshotBrowserAgent::FromBrowser(self.browser)->RemoveAllSnapshots();
 }
 
-- (void)showCloseAllConfirmationActionSheet {
+- (void)showCloseAllConfirmationActionSheetWithAnchor:
+    (UIBarButtonItem*)buttonAnchor {
   [self.delegate
       showCloseAllConfirmationActionSheetWitTabGridMediator:self
                                                numberOfTabs:self.webStateList
-                                                                ->count()];
+                                                                ->count()
+                                                     anchor:buttonAnchor];
 }
 
 #pragma mark GridCommands helpers
