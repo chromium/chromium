@@ -4,8 +4,13 @@
 
 #include "chrome/browser/search/shopping_tasks/shopping_tasks_service.h"
 
+#include "base/stl_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/google/core/common/google_util.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -14,6 +19,7 @@
 namespace {
 const char kNewTabShoppingTasksApiPath[] = "/async/newtab_shopping_tasks";
 const char kXSSIResponsePreamble[] = ")]}'";
+const char kDismissedTasksPrefName[] = "NewTabPage.DismissedShoppingTasks";
 
 GURL GetApiUrl(const std::string& application_locale) {
   GURL google_base_url = google_util::CommandLineGoogleBaseURL();
@@ -30,10 +36,16 @@ ShoppingTasksService::ShoppingTasksService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     Profile* profile,
     const std::string& application_locale)
-    : url_loader_factory_(url_loader_factory),
+    : profile_(profile),
+      url_loader_factory_(url_loader_factory),
       application_locale_(application_locale) {}
 
 ShoppingTasksService::~ShoppingTasksService() = default;
+
+// static
+void ShoppingTasksService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterListPref(kDismissedTasksPrefName);
+}
 
 void ShoppingTasksService::Shutdown() {}
 
@@ -91,6 +103,16 @@ void ShoppingTasksService::GetPrimaryShoppingTask(
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
+void ShoppingTasksService::DismissShoppingTask(const std::string& task_name) {
+  ListPrefUpdate update(profile_->GetPrefs(), kDismissedTasksPrefName);
+  update->AppendIfNotPresent(std::make_unique<base::Value>(task_name));
+}
+
+void ShoppingTasksService::RestoreShoppingTask(const std::string& task_name) {
+  ListPrefUpdate update(profile_->GetPrefs(), kDismissedTasksPrefName);
+  update->EraseListValue(base::Value(task_name));
+}
+
 void ShoppingTasksService::OnDataLoaded(network::SimpleURLLoader* loader,
                                         ShoppingTaskCallback callback,
                                         std::unique_ptr<std::string> response) {
@@ -130,52 +152,64 @@ void ShoppingTasksService::OnJsonParsed(
     std::move(callback).Run(nullptr);
     return;
   }
-  auto* title = shopping_tasks->GetList()[0].FindStringPath("title");
-  auto* task_name = shopping_tasks->GetList()[0].FindStringPath("task_name");
-  auto* products = shopping_tasks->GetList()[0].FindListPath("products");
-  auto* related_searches =
-      shopping_tasks->GetList()[0].FindListPath("related_searches");
-  if (!title || !task_name || !products || !related_searches ||
-      products->GetList().size() == 0) {
-    std::move(callback).Run(nullptr);
+  for (const auto& shopping_task : shopping_tasks->GetList()) {
+    auto* title = shopping_task.FindStringPath("title");
+    auto* task_name = shopping_task.FindStringPath("task_name");
+    auto* products = shopping_task.FindListPath("products");
+    auto* related_searches = shopping_task.FindListPath("related_searches");
+    if (!title || !task_name || !products || !related_searches ||
+        products->GetList().size() == 0) {
+      continue;
+    }
+    if (IsShoppingTaskDismissed(*task_name)) {
+      continue;
+    }
+    std::vector<shopping_tasks::mojom::ProductPtr> mojo_products;
+    for (const auto& product : products->GetList()) {
+      auto* name = product.FindStringPath("name");
+      auto* image_url = product.FindStringPath("image_url");
+      auto* price = product.FindStringPath("price");
+      auto* info = product.FindStringPath("info");
+      auto* target_url = product.FindStringPath("target_url");
+      if (!name || !image_url || !price || !info || !target_url) {
+        continue;
+      }
+      auto mojo_product = shopping_tasks::mojom::Product::New();
+      mojo_product->name = *name;
+      mojo_product->image_url = GURL(*image_url);
+      mojo_product->price = *price;
+      mojo_product->info = *info;
+      mojo_product->target_url = GURL(*target_url);
+      mojo_products.push_back(std::move(mojo_product));
+    }
+    std::vector<shopping_tasks::mojom::RelatedSearchPtr> mojo_related_searches;
+    for (const auto& related_search : related_searches->GetList()) {
+      auto* text = related_search.FindStringPath("text");
+      auto* target_url = related_search.FindStringPath("target_url");
+      if (!text || !target_url) {
+        continue;
+      }
+      auto mojo_related_search = shopping_tasks::mojom::RelatedSearch::New();
+      mojo_related_search->text = *text;
+      mojo_related_search->target_url = GURL(*target_url);
+      mojo_related_searches.push_back(std::move(mojo_related_search));
+    }
+    auto mojo_shopping_task = shopping_tasks::mojom::ShoppingTask::New();
+    mojo_shopping_task->title = *title;
+    mojo_shopping_task->name = *task_name;
+    mojo_shopping_task->products = std::move(mojo_products);
+    mojo_shopping_task->related_searches = std::move(mojo_related_searches);
+    std::move(callback).Run(std::move(mojo_shopping_task));
     return;
   }
-  std::vector<shopping_tasks::mojom::ProductPtr> mojo_products;
-  for (const auto& product : products->GetList()) {
-    auto* name = product.FindStringPath("name");
-    auto* image_url = product.FindStringPath("image_url");
-    auto* price = product.FindStringPath("price");
-    auto* info = product.FindStringPath("info");
-    auto* target_url = product.FindStringPath("target_url");
-    if (!name || !image_url || !price || !info || !target_url) {
-      std::move(callback).Run(nullptr);
-      return;
-    }
-    auto mojo_product = shopping_tasks::mojom::Product::New();
-    mojo_product->name = *name;
-    mojo_product->image_url = GURL(*image_url);
-    mojo_product->price = *price;
-    mojo_product->info = *info;
-    mojo_product->target_url = GURL(*target_url);
-    mojo_products.push_back(std::move(mojo_product));
-  }
-  std::vector<shopping_tasks::mojom::RelatedSearchPtr> mojo_related_searches;
-  for (const auto& related_search : related_searches->GetList()) {
-    auto* text = related_search.FindStringPath("text");
-    auto* target_url = related_search.FindStringPath("target_url");
-    if (!text || !target_url) {
-      std::move(callback).Run(nullptr);
-      return;
-    }
-    auto mojo_related_search = shopping_tasks::mojom::RelatedSearch::New();
-    mojo_related_search->text = *text;
-    mojo_related_search->target_url = GURL(*target_url);
-    mojo_related_searches.push_back(std::move(mojo_related_search));
-  }
-  auto mojo_shopping_task = shopping_tasks::mojom::ShoppingTask::New();
-  mojo_shopping_task->title = *title;
-  mojo_shopping_task->name = *task_name;
-  mojo_shopping_task->products = std::move(mojo_products);
-  mojo_shopping_task->related_searches = std::move(mojo_related_searches);
-  std::move(callback).Run(std::move(mojo_shopping_task));
+  std::move(callback).Run(nullptr);
+}
+
+bool ShoppingTasksService::IsShoppingTaskDismissed(
+    const std::string& task_name) {
+  const base::ListValue* dismissed_tasks =
+      profile_->GetPrefs()->GetList(kDismissedTasksPrefName);
+  DCHECK(dismissed_tasks);
+  return dismissed_tasks->Find(base::Value(task_name)) !=
+         dismissed_tasks->end();
 }

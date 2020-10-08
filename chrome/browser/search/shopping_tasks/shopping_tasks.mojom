@@ -45,4 +45,8 @@ struct ShoppingTask {
 interface ShoppingTasksHandler {
   // Returns the primary shopping task if available.
   GetPrimaryShoppingTask() => (ShoppingTask? shopping_task);
+  // Dismisses the task with the given name and remembers that setting.
+  DismissShoppingTask(string task_name);
+  // Restores the task with the given name and remembers that setting.
+  RestoreShoppingTask(string task_name);
 };

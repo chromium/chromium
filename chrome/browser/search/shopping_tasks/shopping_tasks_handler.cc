@@ -21,3 +21,13 @@ void ShoppingTasksHandler::GetPrimaryShoppingTask(
   ShoppingTasksServiceFactory::GetForProfile(profile_)->GetPrimaryShoppingTask(
       std::move(callback));
 }
+
+void ShoppingTasksHandler::DismissShoppingTask(const std::string& task_name) {
+  ShoppingTasksServiceFactory::GetForProfile(profile_)->DismissShoppingTask(
+      task_name);
+}
+
+void ShoppingTasksHandler::RestoreShoppingTask(const std::string& task_name) {
+  ShoppingTasksServiceFactory::GetForProfile(profile_)->RestoreShoppingTask(
+      task_name);
+}
