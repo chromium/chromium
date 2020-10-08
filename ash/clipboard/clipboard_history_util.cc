@@ -9,6 +9,7 @@
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 
@@ -31,8 +32,16 @@ constexpr ui::ClipboardInternalFormat kPrioritizedFormats[] = {
 base::Optional<ui::ClipboardInternalFormat> CalculateMainFormat(
     const ui::ClipboardData& data) {
   for (const auto& format : kPrioritizedFormats) {
-    if (ContainsFormat(data, format))
+    if (ContainsFormat(data, format)) {
+      if (chromeos::features::IsClipboardHistorySimpleRenderEnabled()) {
+        if (format == ui::ClipboardInternalFormat::kHtml &&
+            (data.markup_data().find("<img") == std::string::npos) &&
+            (data.markup_data().find("<table") == std::string::npos)) {
+          continue;
+        }
+      }
       return format;
+    }
   }
   return base::nullopt;
 }

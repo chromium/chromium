@@ -2250,6 +2250,9 @@ extern const char kDragToSnapInClamshellModeDescription[];
 extern const char kEnhancedClipboardName[];
 extern const char kEnhancedClipboardDescription[];
 
+extern const char kEnhancedClipboardSimpleRenderName[];
+extern const char kEnhancedClipboardSimpleRenderDescription[];
+
 extern const char kMultiDisplayOverviewAndSplitViewName[];
 extern const char kMultiDisplayOverviewAndSplitViewDescription[];
 

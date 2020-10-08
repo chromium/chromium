@@ -3907,6 +3907,12 @@ const char kEnhancedClipboardDescription[] =
     "history. Selecting something from the menu will result in a paste to the "
     "active window.";
 
+const char kEnhancedClipboardSimpleRenderName[] =
+    "Only renders html in the Enhanced Clipboard if there are img or table "
+    "tags";
+const char kEnhancedClipboardSimpleRenderDescription[] =
+    "This will result in less HTML rendering in the Enhanced Clipboard menu.";
+
 const char kMultiDisplayOverviewAndSplitViewName[] =
     "Enable multi-display overview and split view.";
 const char kMultiDisplayOverviewAndSplitViewDescription[] =

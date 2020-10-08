@@ -2419,6 +2419,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "enhanced_clipboard_simple_render",
+    "owners":["newcomer@chromium.org", "gzadina@google.com"],
+    "expiry_milestone": 90
+  },
+  {
     "name": "enhanced-desk-animations",
     "owners": ["sammiequon", "tclaiborne"],
     "expiry_milestone": 92
