@@ -198,7 +198,7 @@ void PostShortcutIOTaskAndReply(
 scoped_refptr<base::TaskRunner> GetShortcutIOTaskRunner();
 
 // Sanitizes |name| and returns a version of it that is safe to use as an
-// on-disk file name .
+// on-disk file name.
 base::FilePath GetSanitizedFileName(const base::string16& name);
 
 base::FilePath GetShortcutDataDir(const ShortcutInfo& shortcut_info);
