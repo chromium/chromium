@@ -261,21 +261,13 @@ class ScopedJavaLocalRef : public JavaRef<T> {
     // We can copy over env_ here as |other| instance must be from the same
     // thread as |this| local ref. (See class comment for multi-threading
     // limitations, and alternatives).
-    Reset(other.env_, other.obj());
+    env_ = JavaRef<T>::SetNewLocalRef(other.env_, other.obj());
   }
 
   void Reset(const JavaRef<T>& other) {
     // If |env_| was not yet set (is still null) it will be attached to the
     // current thread in SetNewLocalRef().
-    Reset(env_, other.obj());
-  }
-
-  // Creates a new local reference to the Java object, unlike the constructor
-  // with the same parameters that takes ownership of the existing reference.
-  // Deprecated. Don't use bare jobjects; use a JavaRef as the input.
-  // TODO(torne): fix existing usage and remove this.
-  void Reset(JNIEnv* env, T obj) {
-    env_ = JavaRef<T>::SetNewLocalRef(env, obj);
+    env_ = JavaRef<T>::SetNewLocalRef(env_, other.obj());
   }
 
   // Releases the local reference to the caller. The caller *must* delete the
