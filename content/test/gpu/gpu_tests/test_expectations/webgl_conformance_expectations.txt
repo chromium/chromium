@@ -14,6 +14,7 @@
 #         qualcomm qualcomm-adreno-(tm)-330 qualcomm-adreno-(tm)-418 qualcomm-adreno-(tm)-420 qualcomm-adreno-(tm)-430
 #         google-0xffff ]
 # tags: [ d3d11 d3d9 metal no-angle opengl opengles vulkan swiftshader ]
+# tags: [ fuchsia-board-qemu-x64 ]
 # tags: [ no-passthrough passthrough ]
 # tags: [ swiftshader-gl no-swiftshader-gl ]
 # tags: [ webgl-version-1 ]
@@ -181,66 +182,36 @@ crbug.com/angleproject/4931 [ win nvidia vulkan passthrough ] conformance/textur
 crbug.com/angleproject/4922 [ win intel vulkan passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 
 ####################
-# Fuchsia failures     #
+# Fuchsia failures #
 ####################
 
-# GPU Process Crashes
-crbug.com/1096746 [ fuchsia ] conformance/canvas/webgl-to-2d-canvas.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/context/context-attribute-preserve-drawing-buffer.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/context/context-hidden-alpha.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/context/context-no-alpha-fbo-with-alpha.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/context/context-size-change.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/extensions/oes-texture-float-with-video.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/extensions/oes-texture-half-float-with-video.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/extensions/oes-vertex-array-object.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/extensions/webgl-compressed-texture-size-limit.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/extensions/webgl-draw-buffers.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/ogles/GL/build/build_057_to_064.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/ogles/GL/gl_FrontFacing/gl_FrontFacing_001_to_001.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/ogles/GL/normalize/normalize_001_to_006.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/rendering/scissor-rect-repeated-rendering.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/state/gl-enable-enum-test.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/textures/image_bitmap_from_image_bitmap/tex-2d-luminance-luminance-unsigned_byte.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/textures/image_bitmap_from_video/* [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/textures/misc/* [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/textures/video/* [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/textures/webgl_canvas/* [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/uniforms/uniform-default-values.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/uniforms/uniform-samplers-test.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] deqp/data/gles2/shaders/conversions.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] deqp/data/gles2/shaders/swizzles.html [ Skip ]
-crbug.com/1096746 [ fuchsia no-passthrough ] conformance/textures/misc/texture-copying-feedback-loops.html [ Skip ]
-crbug.com/1096746 [ fuchsia no-passthrough ] conformance/textures/misc/texture-mips.html [ Skip ]
+# GPU process crashes / Timed out tests
+crbug.com/1136367 [ fuchsia ] conformance/extensions/webgl-compressed-texture-size-limit.html [ Skip ]
+crbug.com/1136367 [ fuchsia ] conformance/textures/misc/texture-size.html [ Skip ]
+crbug.com/1136367 [ fuchsia ] conformance/textures/misc/texture-size-cube-maps.html [ Skip ]
+crbug.com/1136367 [ fuchsia ] conformance/textures/misc/texture-sub-image-cube-maps.html [ Skip ]
+crbug.com/1136367 [ fuchsia ] conformance/uniforms/uniform-default-values.html [ Skip ]
+crbug.com/1136369 [ fuchsia ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Skip ]
+crbug.com/1136369 [ fuchsia ] conformance/uniforms/uniform-samplers-test.html [ Skip ]
+crbug.com/1136369 [ fuchsia ] deqp/data/gles2/shaders/conversions.html [ Skip ]
+crbug.com/1136369 [ fuchsia ] deqp/data/gles2/shaders/functions.html [ Skip ]
+crbug.com/1136369 [ fuchsia ] deqp/data/gles2/shaders/swizzles.html [ Skip ]
+
+# Video not supported on Fuchsia qemu boards.
+[ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/oes-texture-float-with-video.html [ Skip ]
+[ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/oes-texture-half-float-with-video.html [ Skip ]
+[ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/image_bitmap_from_video/* [ Skip ]
+[ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/video/* [ Skip ]
+[ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Skip ]
+[ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-npot-video.html [ Skip ]
+[ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-video-transparent.html [ Skip ]
+[ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-upload-size.html [ Skip ]
 
 # Flaky tests
-crbug.com/1097338 [ fuchsia ] conformance/attribs/gl-disabled-vertex-attrib.html [ Skip ]
-crbug.com/1097338 [ fuchsia ] conformance/attribs/gl-disabled-vertex-attrib-update.html [ Skip ]
-crbug.com/1097338 [ fuchsia ] conformance/canvas/rapid-resizing.html [ Skip ]
-crbug.com/1097338 [ fuchsia ] conformance/buffers/index-validation-copies-indices.html [ Skip ]
-crbug.com/1097338 [ fuchsia ] conformance/canvas/to-data-url-test.html [ Skip ]
-crbug.com/1097338 [ fuchsia ] conformance/canvas/canvas-test.html [ Skip ]
-crbug.com/1097338 [ fuchsia ] conformance/canvas/framebuffer-bindings-unaffected-on-resize.html [ Skip ]
-crbug.com/1097338 [ fuchsia ] conformance/canvas/draw-webgl-to-canvas-test.html [ Skip ]
-crbug.com/1097338 [ fuchsia ] conformance/context/context-creation.html [ Skip ]
-crbug.com/1097338 [ fuchsia ] conformance/context/incorrect-context-object-behaviour.html [ Skip ]
-crbug.com/1097338 [ fuchsia ] conformance/extensions/ext-sRGB.html [ Skip ]
-crbug.com/1097338 [ fuchsia ] conformance/extensions/ext-blend-minmax.html [ Skip ]
-crbug.com/1097338 [ fuchsia ] conformance/glsl/bugs/sampler-struct-function-arg.html [ Skip ]
-crbug.com/1097338 [ fuchsia ] conformance/glsl/bugs/conditional-discard-optimization.html [ Skip ]
-crbug.com/1097338 [ fuchsia ] conformance/glsl/variables/glsl-built-ins.html [ Skip ]
-crbug.com/1097338 [ fuchsia ] conformance/misc/invalid-passed-params.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/rendering/line-rendering-quality.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/rendering/many-draw-calls.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/glsl/functions/glsl-function-fract.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/uniforms/no-over-optimization-on-uniform-array-00.html [ Skip ]
-crbug.com/1096746 [ fuchsia ] conformance/glsl/functions/glsl-function-mix-float.html [ Skip ]
-
-# Fails only on Swarming
-crbug.com/1096746 [ fuchsia ] conformance/glsl/functions/glsl-function-ceil.html [ Skip ]
+crbug.com/1136414 [ fuchsia ] conformance/glsl/functions/glsl-function-ceil.html [ Skip ]
+crbug.com/1136414 [ fuchsia ] conformance/ogles/GL/fract/fract_001_to_006.html [ Skip ]
+crbug.com/1136414 [ fuchsia ] conformance/ogles/GL/build/build_009_to_016.html [ Skip ]
+crbug.com/1136414 [ fuchsia ] conformance/ogles/GL/mat/mat_009_to_016.html [ Skip ]
 
 ####################
 # Win failures     #

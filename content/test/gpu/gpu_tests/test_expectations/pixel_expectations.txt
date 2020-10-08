@@ -5,6 +5,7 @@
 #         linux
 #         win win7 ]
 # tags: [ android-chromium android-webview-instrumentation android-not-webview debug ]
+# tags: [ fuchsia-board-qemu-x64 ]
 # tags: [ skia-renderer no-skia-renderer ]
 # tags: [ use-gl no-use-gl ]
 # tags: [ use-vulkan no-use-vulkan ]
@@ -67,32 +68,13 @@ crbug.com/653538 [ win amd-0x6613 ] Pixel_GpuRasterization_BlueBox [ RetryOnFail
 [ fuchsia ] Pixel_WebGLReadPixelsTabSwitch [ Skip ]
 
 # Fuchsia emulators don't support video
-crbug.com/1084367 [ fuchsia no-use-skia-dawn ] Pixel_Video_BackdropFilter [ Skip ]
-crbug.com/1084367 [ fuchsia no-use-skia-dawn ] Pixel_Video_Context_Loss_MP4 [ Skip ]
-crbug.com/1084367 [ fuchsia no-use-skia-dawn ] Pixel_Video_Context_Loss_VP9 [ Skip ]
-crbug.com/1084367 [ fuchsia no-use-skia-dawn ] Pixel_Video_MP4_DXVA [ Skip ]
-crbug.com/1084367 [ fuchsia no-use-skia-dawn ] Pixel_Video_MP4_Rounded_Corner [ Skip ]
-crbug.com/1084367 [ fuchsia no-use-skia-dawn ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Skip ]
-crbug.com/1084367 [ fuchsia no-use-skia-dawn ] Pixel_Video_MP4_FourColors_Rot_180 [ Skip ]
-crbug.com/1084367 [ fuchsia no-use-skia-dawn ] Pixel_Video_MP4_FourColors_Rot_270 [ Skip ]
-crbug.com/1084367 [ fuchsia no-use-skia-dawn ] Pixel_Video_MP4_FourColors_Rot_90 [ Skip ]
-crbug.com/1084367 [ fuchsia no-use-skia-dawn ] Pixel_Video_MP4 [ Skip ]
-crbug.com/1084367 [ fuchsia no-use-skia-dawn ] Pixel_Video_VP9 [ Skip ]
-crbug.com/1084367 [ fuchsia no-use-skia-dawn ] Pixel_Video_VP9_DXVA [ Skip ]
-crbug.com/1084367 [ fuchsia no-use-skia-dawn ] Pixel_Video_Media_Stream_Incompatible_Stride [ Skip ]
+[ fuchsia fuchsia-board-qemu-x64 no-use-skia-dawn ] Pixel_Video* [ Skip ]
 
 # Fuchsia issues
 crbug.com/1115673 [ fuchsia no-use-skia-dawn ] Pixel_WebGLCopyImage [ Skip ]
 crbug.com/1115673 [ fuchsia ] Pixel_CanvasLowLatencyWebGLDrawImage [ Skip ]
 crbug.com/1115673 [ fuchsia ] Pixel_CanvasLowLatencyWebGLRoundedCorners [ Skip ]
 crbug.com/1115673 [ fuchsia ] Pixel_CanvasLowLatencyWebGLOccluded [ Skip ]
-crbug.com/1096746 [ fuchsia no-use-skia-dawn ] Pixel_WebGL2_BlitFramebuffer_Result_Displayed [ Skip ]
-crbug.com/1096746 [ fuchsia no-use-skia-dawn ] Pixel_WebGL2_ClearBufferfv_Result_Displayed [ Skip ]
-crbug.com/1096746 [ fuchsia no-use-skia-dawn ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Skip ]
-crbug.com/1096746 [ fuchsia no-use-skia-dawn ] Pixel_ScissorTestWithPreserveDrawingBuffer [ Skip ]
-crbug.com/1096746 [ fuchsia no-use-skia-dawn ] Pixel_WebGLGreenTriangle_AA_NoAlpha [ Skip ]
-crbug.com/1096746 [ fuchsia no-use-skia-dawn ] Pixel_WebGLGreenTriangle_NoAA_NoAlpha [ Skip ]
-crbug.com/1096746 [ fuchsia no-use-skia-dawn ] Pixel_WebGLTransparentGreenTriangle_NoAlpha_ImplicitClear [ Skip ]
 
 # Tests running with SwiftShader are skipped on platforms where SwiftShader
 # isn't supported.
@@ -143,9 +125,6 @@ crbug.com/648369 [ linux debug intel ] * [ RetryOnFailure ]
 # Flaky for unknown reasons only on macOS. Not planning to investigate
 # further.
 crbug.com/660461 [ mac ] Pixel_ScissorTestWithPreserveDrawingBuffer [ RetryOnFailure ]
-
-# Flaky on Fuchsia
-crbug.com/1123095 [ Fuchsia ] Pixel_PrecisionRoundedCorner [ Skip ]
 
 # Failing on Nexus 5; haven't investigated why yet.
 crbug.com/773293 [ android no-use-gl qualcomm-adreno-(tm)-330 ] Pixel_WebGL2_BlitFramebuffer_Result_Displayed [ Skip ]
