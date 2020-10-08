@@ -486,3 +486,43 @@ TEST_F(ThumbnailCaptureDriverTest, StopsCaptureAtRetryLimit) {
   EXPECT_EQ(scheduler_.priority(),
             ThumbnailScheduler::TabCapturePriority::kNone);
 }
+
+TEST_F(ThumbnailCaptureDriverTest, DoesNotReCaptureAfterFinalThumbnail) {
+  {
+    InSequence s;
+    EXPECT_CALL(mock_client_, StopCapture()).Times(AnyNumber());
+    EXPECT_CALL(mock_client_, RequestCapture());
+    EXPECT_CALL(mock_client_, StartCapture());
+    EXPECT_CALL(mock_client_, StopCapture()).Times(AnyNumber());
+  }
+
+  capture_driver_.UpdateThumbnailVisibility(true);
+  capture_driver_.UpdatePageVisibility(false);
+
+  capture_driver_.UpdatePageReadiness(
+      ThumbnailReadinessTracker::Readiness::kNotReady);
+  capture_driver_.UpdatePageReadiness(
+      ThumbnailReadinessTracker::Readiness::kReadyForInitialCapture);
+  capture_driver_.SetCapturePermittedByScheduler(true);
+  capture_driver_.SetCanCapture(true);
+  capture_driver_.UpdatePageReadiness(
+      ThumbnailReadinessTracker::Readiness::kReadyForFinalCapture);
+  EXPECT_EQ(scheduler_.priority(),
+            ThumbnailScheduler::TabCapturePriority::kHigh);
+
+  capture_driver_.SetCapturePermittedByScheduler(true);
+  capture_driver_.GotFrame();
+  task_environment_.FastForwardBy(ThumbnailCaptureDriver::kCooldownDelay);
+  EXPECT_EQ(scheduler_.priority(),
+            ThumbnailScheduler::TabCapturePriority::kNone);
+
+  capture_driver_.SetCapturePermittedByScheduler(false);
+
+  capture_driver_.UpdateThumbnailVisibility(false);
+  EXPECT_EQ(scheduler_.priority(),
+            ThumbnailScheduler::TabCapturePriority::kNone);
+
+  capture_driver_.UpdateThumbnailVisibility(true);
+  EXPECT_EQ(scheduler_.priority(),
+            ThumbnailScheduler::TabCapturePriority::kNone);
+}

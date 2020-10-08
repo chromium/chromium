@@ -56,7 +56,10 @@ void ThumbnailCaptureDriver::SetCapturePermittedByScheduler(bool scheduled) {
 void ThumbnailCaptureDriver::UpdateCaptureState() {
   if (!scheduled_) {
     client_->StopCapture();
-    capture_state_ = CaptureState::kNoCapture;
+
+    if (capture_state_ < CaptureState::kHaveFinalCapture)
+      capture_state_ = CaptureState::kNoCapture;
+
     return;
   }
 
