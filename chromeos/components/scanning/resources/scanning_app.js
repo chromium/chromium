@@ -38,11 +38,8 @@ Polymer({
       value: () => [],
     },
 
-    /**
-     * @type {?mojoBase.mojom.UnguessableToken}
-     * @private
-     */
-    selectedScannerId_: Object,
+    /** @type (?string) */
+    selectedScannerId: String,
 
     /**
      * @type {?chromeos.scanning.mojom.ScannerCapabilities}
@@ -50,11 +47,8 @@ Polymer({
      */
     capabilities_: Object,
 
-    /**
-     * @type {?chromeos.scanning.mojom.ScanSource}
-     * @private
-     */
-    selectedSoure_: Object,
+    /** @type {?string} */
+    selectedSource: String,
 
     /** @private */
     loaded_: {
@@ -63,10 +57,7 @@ Polymer({
     },
   },
 
-  listeners: {
-    'selected-scanner-change': 'onSelectedScannerChange_',
-    'selected-source-change': 'onSelectedSourceChange_',
-  },
+  observers: ['onSelectedScannerIdChange_(selectedScannerId)'],
 
   /** @override */
   created() {
@@ -88,7 +79,7 @@ Polymer({
 
     // Set the first source as the selected source since it will be the first
     // option in the dropdown.
-    this.selectedSoure_ = this.capabilities_.sources[0];
+    this.selectedSource = this.capabilities_.sources[0].name;
   },
 
   /**
@@ -109,37 +100,20 @@ Polymer({
     // Since the first scanner is the default option in the dropdown, set the
     // selected ID to the fist scanner's ID until a different scanner is
     // selected.
-    this.selectedScannerId_ = this.scanners_[0].id;
-    this.scanService_.getScannerCapabilities(this.selectedScannerId_)
-        .then(this.onCapabilitiesReceived_.bind(this));
+    this.selectedScannerId = tokenToString(this.scanners_[0].id);
   },
 
   /**
-   * @param {!Event} event
+   * @param {!string} selectedScannerId
    * @private
    */
-  onSelectedScannerChange_(event) {
-    const value = event.detail.value;
-    if (!this.scannerIds_.has(value)) {
+  onSelectedScannerIdChange_(selectedScannerId) {
+    if (!this.scannerIds_.has(selectedScannerId)) {
       return;
     }
 
-    this.selectedScannerId_ = this.scannerIds_.get(value);
-    this.scanService_.getScannerCapabilities(this.selectedScannerId_)
+    this.scanService_
+        .getScannerCapabilities(this.scannerIds_.get(selectedScannerId))
         .then(this.onCapabilitiesReceived_.bind(this));
-  },
-
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onSelectedSourceChange_(event) {
-    const value = event.detail.value;
-    for (const source of this.capabilities_.sources) {
-      if (source.name === value) {
-        this.selectedSoure_ = source;
-        break;
-      }
-    }
   },
 });

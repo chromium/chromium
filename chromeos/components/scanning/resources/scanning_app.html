@@ -1,7 +1,9 @@
 <div id="header"></div>
 <div>
-  <scanner-select scanners="[[scanners_]]" loaded="[[loaded_]]"></scanner-select>
+  <scanner-select scanners="[[scanners_]]" loaded="[[loaded_]]"
+      selected-scanner-id="{{selectedScannerId}}"></scanner-select>
 </div>
 <div>
-  <source-select sources="[[capabilities_.sources]]"></source-select>
+  <source-select sources="[[capabilities_.sources]]"
+      selected-source="{{selectedSource}}"></source-select>
 </div>

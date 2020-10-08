@@ -33,6 +33,12 @@ Polymer({
       value: () => [],
     },
 
+    /** @type {?string} */
+    selectedSource: {
+      type: String,
+      notify: true,
+    },
+
     /** @private */
     disabled_: Boolean,
   },
@@ -48,14 +54,6 @@ Polymer({
    */
   getSourceTypeString_(mojoSourceType) {
     return getSourceTypeString(mojoSourceType);
-  },
-
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onSelectedSourceChange_(event) {
-    this.fire('selected-source-change', event.target);
   },
 
   /**
