@@ -34,7 +34,6 @@
 #include <unicode/uscript.h>
 
 #include "third_party/blink/public/common/css/navigation_controls.h"
-#include "third_party/blink/public/common/css/preferred_color_scheme.h"
 #include "third_party/blink/public/common/web_preferences/viewport_style.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-forward.h"
@@ -276,7 +275,7 @@ class WebSettings {
   virtual void SetLazyImageFirstKFullyLoad3G(int) = 0;
   virtual void SetLazyImageFirstKFullyLoad4G(int) = 0;
   virtual void SetForceDarkModeEnabled(bool) = 0;
-  virtual void SetPreferredColorScheme(PreferredColorScheme) = 0;
+  virtual void SetPreferredColorScheme(blink::mojom::PreferredColorScheme) = 0;
   virtual void SetNavigationControls(NavigationControls) = 0;
   virtual void SetAriaModalPrunesAXTree(bool) = 0;
   virtual void SetUseAXMenuList(bool) = 0;

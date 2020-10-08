@@ -771,7 +771,7 @@ void WebSettingsImpl::SetForceDarkModeEnabled(bool enabled) {
 }
 
 void WebSettingsImpl::SetPreferredColorScheme(
-    PreferredColorScheme color_scheme) {
+    mojom::blink::PreferredColorScheme color_scheme) {
   settings_->SetPreferredColorScheme(color_scheme);
 }
 

@@ -5156,7 +5156,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebPreferences) {
 
   blink::web_pref::WebPreferences prefs =
       web_contents()->GetOrCreateWebPreferences();
-  prefs.preferred_color_scheme = blink::PreferredColorScheme::kDark;
+  prefs.preferred_color_scheme = blink::mojom::PreferredColorScheme::kDark;
   web_contents()->SetWebPreferences(prefs);
 
   // 3) Set WebPreferences to prefer dark color scheme.

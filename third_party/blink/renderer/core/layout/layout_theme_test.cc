@@ -104,7 +104,8 @@ TEST_F(LayoutThemeTest, SystemColorWithColorScheme) {
 
   // Change color scheme to dark.
   ColorSchemeHelper color_scheme_helper(GetDocument());
-  color_scheme_helper.SetPreferredColorScheme(PreferredColorScheme::kDark);
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kDark);
   UpdateAllLifecyclePhasesForTest();
 
   style = dark_element->GetComputedStyle();

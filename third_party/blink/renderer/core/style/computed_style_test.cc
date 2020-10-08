@@ -667,7 +667,8 @@ TEST(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
   const ComputedStyle* initial = &ComputedStyle::InitialStyle();
 
   ColorSchemeHelper color_scheme_helper(dummy_page_holder_->GetDocument());
-  color_scheme_helper.SetPreferredColorScheme(PreferredColorScheme::kDark);
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kDark);
   StyleResolverState state(dummy_page_holder_->GetDocument(),
                            *dummy_page_holder_->GetDocument().documentElement(),
                            initial, initial);
@@ -701,7 +702,8 @@ TEST(ComputedStyleTest, ApplyInternalLightDarkColor) {
   const ComputedStyle* initial = &ComputedStyle::InitialStyle();
 
   ColorSchemeHelper color_scheme_helper(dummy_page_holder_->GetDocument());
-  color_scheme_helper.SetPreferredColorScheme(PreferredColorScheme::kDark);
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kDark);
   StyleResolverState state(dummy_page_holder_->GetDocument(),
                            *dummy_page_holder_->GetDocument().documentElement(),
                            initial, initial);
@@ -744,7 +746,8 @@ TEST(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
   const ComputedStyle* initial = &ComputedStyle::InitialStyle();
 
   ColorSchemeHelper color_scheme_helper(dummy_page_holder_->GetDocument());
-  color_scheme_helper.SetPreferredColorScheme(PreferredColorScheme::kDark);
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kDark);
   StyleResolverState state(dummy_page_holder_->GetDocument(),
                            *dummy_page_holder_->GetDocument().documentElement(),
                            initial, initial);

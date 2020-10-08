@@ -1006,9 +1006,9 @@
     // evaluating the prefers-color-scheme media query.
     {
       name: "preferredColorScheme",
-      initial: "PreferredColorScheme::kLight",
+      initial: "mojom::blink::PreferredColorScheme::kLight",
       invalidate: "ColorScheme",
-      type: "PreferredColorScheme",
+      type: "mojom::blink::PreferredColorScheme",
     },
 
     // Preferred motion-reduction setting from the OS/application passed to the

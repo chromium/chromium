@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_VALUES_CACHED_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_VALUES_CACHED_H_
 
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
@@ -35,7 +36,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
     String media_type;
     blink::mojom::DisplayMode display_mode;
     ColorSpaceGamut color_gamut;
-    PreferredColorScheme preferred_color_scheme;
+    mojom::blink::PreferredColorScheme preferred_color_scheme;
     bool prefers_reduced_motion;
     bool prefers_reduced_data = false;
     ForcedColors forced_colors;
@@ -106,7 +107,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   const String MediaType() const override;
   blink::mojom::DisplayMode DisplayMode() const override;
   ColorSpaceGamut ColorGamut() const override;
-  PreferredColorScheme GetPreferredColorScheme() const override;
+  mojom::blink::PreferredColorScheme GetPreferredColorScheme() const override;
   bool PrefersReducedMotion() const override;
   bool PrefersReducedData() const override;
   ForcedColors GetForcedColors() const override;

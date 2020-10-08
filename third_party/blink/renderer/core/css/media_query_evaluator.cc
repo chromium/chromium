@@ -31,8 +31,8 @@
 
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/common/css/navigation_controls.h"
-#include "third_party/blink/public/common/css/preferred_color_scheme.h"
 #include "third_party/blink/public/common/css/screen_spanning.h"
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
@@ -840,8 +840,7 @@ static bool PrefersColorSchemeMediaFeatureEval(
     const MediaQueryExpValue& value,
     MediaFeaturePrefix,
     const MediaValues& media_values) {
-  PreferredColorScheme preferred_scheme =
-      media_values.GetPreferredColorScheme();
+  auto preferred_scheme = media_values.GetPreferredColorScheme();
 
   if (!value.IsValid())
     return true;
@@ -849,9 +848,9 @@ static bool PrefersColorSchemeMediaFeatureEval(
   if (!value.is_id)
     return false;
 
-  return (preferred_scheme == PreferredColorScheme::kDark &&
+  return (preferred_scheme == mojom::blink::PreferredColorScheme::kDark &&
           value.id == CSSValueID::kDark) ||
-         (preferred_scheme == PreferredColorScheme::kLight &&
+         (preferred_scheme == mojom::blink::PreferredColorScheme::kLight &&
           value.id == CSSValueID::kLight);
 }
 

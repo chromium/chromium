@@ -71,7 +71,6 @@ source_set("headers") {
     "css/navigation_controls.h",
     "css/page_orientation.h",
     "css/page_size_type.h",
-    "css/preferred_color_scheme.h",
     "css/screen_spanning.h",
     "custom_handlers/protocol_handler_utils.h",
     "device_memory/approximated_device_memory.h",

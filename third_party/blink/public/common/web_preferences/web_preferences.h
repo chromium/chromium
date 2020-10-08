@@ -14,10 +14,10 @@
 #include "build/build_config.h"
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/common/css/preferred_color_scheme.h"
 #include "third_party/blink/public/common/web_preferences/autoplay_policy.h"
 #include "third_party/blink/public/common/web_preferences/image_animation_policy.h"
 #include "third_party/blink/public/common/web_preferences/viewport_style.h"
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-shared.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-forward.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-forward.h"
 #include "ui/base/pointer/pointer_device.h"
@@ -291,8 +291,8 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // The preferred color scheme for the web content. The scheme is used to
   // evaluate the prefers-color-scheme media query and resolve UA color scheme
   // to be used based on the supported-color-schemes META tag and CSS property.
-  blink::PreferredColorScheme preferred_color_scheme =
-      blink::PreferredColorScheme::kLight;
+  blink::mojom::PreferredColorScheme preferred_color_scheme =
+      blink::mojom::PreferredColorScheme::kLight;
 
   // Network quality threshold below which resources from iframes are assigned
   // either kVeryLow or kVeryLow Blink priority.

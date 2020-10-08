@@ -191,37 +191,6 @@ bool EnumTraits<blink::mojom::AutoplayPolicy, blink::web_pref::AutoplayPolicy>::
 }
 
 // static
-blink::mojom::PreferredColorScheme EnumTraits<
-    blink::mojom::PreferredColorScheme,
-    blink::PreferredColorScheme>::ToMojom(blink::PreferredColorScheme scheme) {
-  switch (scheme) {
-    case blink::PreferredColorScheme::kDark:
-      return blink::mojom::PreferredColorScheme::kDark;
-    case blink::PreferredColorScheme::kLight:
-      return blink::mojom::PreferredColorScheme::kLight;
-  }
-  NOTREACHED();
-  return blink::mojom::PreferredColorScheme::kLight;
-}
-
-// static
-bool EnumTraits<blink::mojom::PreferredColorScheme,
-                blink::PreferredColorScheme>::
-    FromMojom(blink::mojom::PreferredColorScheme input,
-              blink::PreferredColorScheme* out) {
-  switch (input) {
-    case blink::mojom::PreferredColorScheme::kDark:
-      *out = blink::PreferredColorScheme::kDark;
-      return true;
-    case blink::mojom::PreferredColorScheme::kLight:
-      *out = blink::PreferredColorScheme::kLight;
-      return true;
-  }
-  NOTREACHED();
-  return false;
-}
-
-// static
 blink::mojom::EffectiveConnectionType EnumTraits<
     blink::mojom::EffectiveConnectionType,
     net::EffectiveConnectionType>::ToMojom(net::EffectiveConnectionType type) {
@@ -310,7 +279,6 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       !data.ReadViewportStyle(&out->viewport_style) ||
       !data.ReadAnimationPolicy(&out->animation_policy) ||
       !data.ReadAutoplayPolicy(&out->autoplay_policy) ||
-      !data.ReadPreferredColorScheme(&out->preferred_color_scheme) ||
       !data.ReadLowPriorityIframesThreshold(
           &out->low_priority_iframes_threshold) ||
       !data.ReadNetworkQualityEstimatorWebHoldback(
@@ -474,6 +442,7 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->media_controls_enabled = data.media_controls_enabled();
   out->do_not_update_selection_on_mutating_selection_range =
       data.do_not_update_selection_on_mutating_selection_range();
+  out->preferred_color_scheme = data.preferred_color_scheme();
   out->picture_in_picture_enabled = data.picture_in_picture_enabled();
   out->translate_service_available = data.translate_service_available();
   out->lazy_load_enabled = data.lazy_load_enabled();

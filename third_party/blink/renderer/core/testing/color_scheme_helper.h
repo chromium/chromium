@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_COLOR_SCHEME_HELPER_H_
 
 #include "third_party/blink/public/common/css/forced_colors.h"
-#include "third_party/blink/public/common/css/preferred_color_scheme.h"
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-shared.h"
 
 namespace blink {
 
@@ -25,15 +25,15 @@ class ColorSchemeHelper {
   ~ColorSchemeHelper();
 
   void SetPreferredColorScheme(
-      const PreferredColorScheme preferred_color_scheme);
+      const mojom::PreferredColorScheme preferred_color_scheme);
   void SetForcedColors(Document& document, const ForcedColors forced_colors);
   void SetForcedColors(Page& page, const ForcedColors forced_colors);
 
  private:
   WebThemeEngine* web_theme_engine_ = nullptr;
   Settings& settings_;
-  PreferredColorScheme default_preferred_color_scheme_ =
-      PreferredColorScheme::kLight;
+  mojom::PreferredColorScheme default_preferred_color_scheme_ =
+      mojom::PreferredColorScheme::kLight;
   ForcedColors default_forced_colors_ = ForcedColors::kNone;
 };
 

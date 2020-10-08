@@ -3170,7 +3170,8 @@ bool UpdatePreferredColorSchemesBasedOnURLIfNeeded(WebPreferences* web_prefs,
 #endif
   auto old_preferred_color_scheme = web_prefs->preferred_color_scheme;
   if (force_light)
-    web_prefs->preferred_color_scheme = blink::PreferredColorScheme::kLight;
+    web_prefs->preferred_color_scheme =
+        blink::mojom::PreferredColorScheme::kLight;
   return old_preferred_color_scheme != web_prefs->preferred_color_scheme;
 }
 
@@ -3322,8 +3323,9 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
           delegate->IsPictureInPictureEnabled();
 
       web_prefs->preferred_color_scheme =
-          delegate->IsNightModeEnabled() ? blink::PreferredColorScheme::kDark
-                                         : blink::PreferredColorScheme::kLight;
+          delegate->IsNightModeEnabled()
+              ? blink::mojom::PreferredColorScheme::kDark
+              : blink::mojom::PreferredColorScheme::kLight;
     }
 #endif  // defined(OS_ANDROID)
 
@@ -3463,10 +3465,12 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   auto* native_theme = GetWebTheme();
   switch (native_theme->GetPreferredColorScheme()) {
     case ui::NativeTheme::PreferredColorScheme::kDark:
-      web_prefs->preferred_color_scheme = blink::PreferredColorScheme::kDark;
+      web_prefs->preferred_color_scheme =
+          blink::mojom::PreferredColorScheme::kDark;
       break;
     case ui::NativeTheme::PreferredColorScheme::kLight:
-      web_prefs->preferred_color_scheme = blink::PreferredColorScheme::kLight;
+      web_prefs->preferred_color_scheme =
+          blink::mojom::PreferredColorScheme::kLight;
       break;
   }
 #endif  // !defined(OS_ANDROID)

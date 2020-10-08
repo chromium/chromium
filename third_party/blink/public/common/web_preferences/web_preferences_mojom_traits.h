@@ -9,7 +9,6 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/common/css/preferred_color_scheme.h"
 #include "third_party/blink/public/common/web_preferences/autoplay_policy.h"
 #include "third_party/blink/public/common/web_preferences/image_animation_policy.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -31,16 +30,6 @@ struct BLINK_COMMON_EXPORT EnumTraits<blink::mojom::HoverType, ui::HoverType> {
   static blink::mojom::HoverType ToMojom(ui::HoverType type);
 
   static bool FromMojom(blink::mojom::HoverType input, ui::HoverType* out);
-};
-
-template <>
-struct BLINK_COMMON_EXPORT EnumTraits<blink::mojom::PreferredColorScheme,
-                                      blink::PreferredColorScheme> {
-  static blink::mojom::PreferredColorScheme ToMojom(
-      blink::PreferredColorScheme scheme);
-
-  static bool FromMojom(blink::mojom::PreferredColorScheme input,
-                        blink::PreferredColorScheme* out);
 };
 
 template <>
@@ -755,7 +744,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.autoplay_policy;
   }
 
-  static blink::PreferredColorScheme preferred_color_scheme(
+  static blink::mojom::PreferredColorScheme preferred_color_scheme(
       const blink::web_pref::WebPreferences& r) {
     return r.preferred_color_scheme;
   }

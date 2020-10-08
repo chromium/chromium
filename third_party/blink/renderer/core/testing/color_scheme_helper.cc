@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -35,7 +36,7 @@ ColorSchemeHelper::~ColorSchemeHelper() {
 }
 
 void ColorSchemeHelper::SetPreferredColorScheme(
-    const PreferredColorScheme preferred_color_scheme) {
+    const mojom::blink::PreferredColorScheme preferred_color_scheme) {
   settings_.SetPreferredColorScheme(preferred_color_scheme);
 }
 

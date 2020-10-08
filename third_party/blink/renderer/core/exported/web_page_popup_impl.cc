@@ -324,8 +324,8 @@ void WebPagePopupImpl::Initialize(WebViewImpl* web_view,
   if (const auto* style = popup_client_->OwnerElement().GetComputedStyle()) {
     page_->GetSettings().SetPreferredColorScheme(
         style->UsedColorScheme() == ColorScheme::kDark
-            ? PreferredColorScheme::kDark
-            : PreferredColorScheme::kLight);
+            ? mojom::blink::PreferredColorScheme::kDark
+            : mojom::blink::PreferredColorScheme::kLight);
   }
   popup_client_->CreatePagePopupController(*page_, *this);
 

@@ -1623,7 +1623,7 @@ void ColorScheme::ApplyValue(StyleResolverState& state,
   } else if (const auto* scheme_list = DynamicTo<CSSValueList>(value)) {
     bool prefers_dark =
         state.GetDocument().GetStyleEngine().GetPreferredColorScheme() ==
-        PreferredColorScheme::kDark;
+        mojom::blink::PreferredColorScheme::kDark;
     bool has_dark = false;
     bool has_light = false;
     Vector<AtomicString> color_schemes;

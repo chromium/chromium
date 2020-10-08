@@ -3292,7 +3292,8 @@ TEST_F(StyleCascadeTest, RootColorNotModifiedByEmptyCascade) {
 
 TEST_F(StyleCascadeTest, InitialColor) {
   ColorSchemeHelper color_scheme_helper(GetDocument());
-  color_scheme_helper.SetPreferredColorScheme(PreferredColorScheme::kDark);
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kDark);
 
   TestCascade cascade(GetDocument(), GetDocument().documentElement());
   cascade.Add("color-scheme:dark");

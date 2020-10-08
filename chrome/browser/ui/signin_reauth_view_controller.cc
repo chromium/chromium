@@ -29,8 +29,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "google_apis/gaia/gaia_urls.h"
-#include "third_party/blink/public/common/css/preferred_color_scheme.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 
 namespace {
 
@@ -315,7 +315,7 @@ void SigninReauthViewController::ShowReauthConfirmationDialog() {
   // to use the light mode as well to match the style.
   auto* web_contents = dialog_delegate_->GetWebContents();
   auto prefs = web_contents->GetOrCreateWebPreferences();
-  prefs.preferred_color_scheme = blink::PreferredColorScheme::kLight;
+  prefs.preferred_color_scheme = blink::mojom::PreferredColorScheme::kLight;
   web_contents->SetWebPreferences(prefs);
 
   SigninReauthUI* web_dialog_ui =

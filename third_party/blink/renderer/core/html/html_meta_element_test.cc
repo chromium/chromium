@@ -226,7 +226,8 @@ TEST_F(HTMLMetaElementTest, ColorSchemeParsing) {
 
 TEST_F(HTMLMetaElementTest, ColorSchemeForcedDarkeningAndMQ) {
   ColorSchemeHelper color_scheme_helper(GetDocument());
-  color_scheme_helper.SetPreferredColorScheme(PreferredColorScheme::kDark);
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kDark);
 
   auto* media_query = GetDocument().GetMediaQueryMatcher().MatchMedia(
       "(prefers-color-scheme: dark)");

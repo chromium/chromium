@@ -525,18 +525,20 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
       break;
     }
   }
-  web_prefs->preferred_color_scheme = is_dark_mode_
-                                          ? blink::PreferredColorScheme::kDark
-                                          : blink::PreferredColorScheme::kLight;
+  web_prefs->preferred_color_scheme =
+      is_dark_mode_ ? blink::mojom::PreferredColorScheme::kDark
+                    : blink::mojom::PreferredColorScheme::kLight;
   if (is_dark_mode_) {
     switch (Java_AwSettings_getForceDarkBehaviorLocked(env, obj)) {
       case ForceDarkBehavior::FORCE_DARK_ONLY: {
-        web_prefs->preferred_color_scheme = blink::PreferredColorScheme::kLight;
+        web_prefs->preferred_color_scheme =
+            blink::mojom::PreferredColorScheme::kLight;
         web_prefs->force_dark_mode_enabled = true;
         break;
       }
       case ForceDarkBehavior::MEDIA_QUERY_ONLY: {
-        web_prefs->preferred_color_scheme = blink::PreferredColorScheme::kDark;
+        web_prefs->preferred_color_scheme =
+            blink::mojom::PreferredColorScheme::kDark;
         web_prefs->force_dark_mode_enabled = false;
         break;
       }
@@ -547,13 +549,15 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
       // dark so that dark themed content will be preferred over force
       // darkening.
       case ForceDarkBehavior::PREFER_MEDIA_QUERY_OVER_FORCE_DARK: {
-        web_prefs->preferred_color_scheme = blink::PreferredColorScheme::kDark;
+        web_prefs->preferred_color_scheme =
+            blink::mojom::PreferredColorScheme::kDark;
         web_prefs->force_dark_mode_enabled = true;
         break;
       }
     }
   } else {
-    web_prefs->preferred_color_scheme = blink::PreferredColorScheme::kLight;
+    web_prefs->preferred_color_scheme =
+        blink::mojom::PreferredColorScheme::kLight;
     web_prefs->force_dark_mode_enabled = false;
   }
 }

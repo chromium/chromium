@@ -56,9 +56,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::PermissionStatus,
                           blink::mojom::PermissionStatus::LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(WindowOpenDisposition,
                           WindowOpenDisposition::MAX_VALUE)
-IPC_ENUM_TRAITS_MIN_MAX_VALUE(blink::PreferredColorScheme,
-                              blink::PreferredColorScheme::kDark,
-                              blink::PreferredColorScheme::kMaxValue)
 
 IPC_STRUCT_TRAITS_BEGIN(blink::WebRect)
   IPC_STRUCT_TRAITS_MEMBER(x)

@@ -2145,7 +2145,8 @@ bool StyleEngine::SupportsDarkColorScheme() {
     }
   }
   return has_dark &&
-         (!has_light || preferred_color_scheme_ == PreferredColorScheme::kDark);
+         (!has_light ||
+          preferred_color_scheme_ == mojom::blink::PreferredColorScheme::kDark);
 }
 
 void StyleEngine::UpdateColorScheme() {
@@ -2158,7 +2159,8 @@ void StyleEngine::UpdateColorScheme() {
   ForcedColors old_forced_colors = forced_colors_;
   forced_colors_ = web_theme_engine->GetForcedColors();
 
-  PreferredColorScheme old_preferred_color_scheme = preferred_color_scheme_;
+  mojom::blink::PreferredColorScheme old_preferred_color_scheme =
+      preferred_color_scheme_;
   preferred_color_scheme_ = settings->GetPreferredColorScheme();
   if (const auto* overrides =
           GetDocument().GetPage()->GetMediaFeatureOverrides()) {
@@ -2169,10 +2171,10 @@ void StyleEngine::UpdateColorScheme() {
   if (!SupportsDarkColorScheme() && settings->GetForceDarkModeEnabled()) {
     // Make sure we don't match (prefers-color-scheme: dark) when forced
     // darkening is enabled.
-    preferred_color_scheme_ = PreferredColorScheme::kLight;
+    preferred_color_scheme_ = mojom::blink::PreferredColorScheme::kLight;
   }
   if (GetDocument().Printing())
-    preferred_color_scheme_ = PreferredColorScheme::kLight;
+    preferred_color_scheme_ = mojom::blink::PreferredColorScheme::kLight;
 
   bool color_scheme_changed = false;
   if (forced_colors_ != old_forced_colors ||
@@ -2191,13 +2193,14 @@ void StyleEngine::UpdateColorSchemeMetrics() {
     UseCounter::Count(GetDocument(), WebFeature::kForcedDarkMode);
 
   // True if the preferred color scheme will match dark.
-  if (preferred_color_scheme_ == PreferredColorScheme::kDark)
+  if (preferred_color_scheme_ == mojom::blink::PreferredColorScheme::kDark)
     UseCounter::Count(GetDocument(), WebFeature::kPreferredColorSchemeDark);
 
   // This is equal to kPreferredColorSchemeDark in most cases, but can differ
   // with forced dark mode. With the system in dark mode and forced dark mode
   // enabled, the preferred color scheme can be light while the setting is dark.
-  if (settings->GetPreferredColorScheme() == PreferredColorScheme::kDark) {
+  if (settings->GetPreferredColorScheme() ==
+      mojom::blink::PreferredColorScheme::kDark) {
     UseCounter::Count(GetDocument(),
                       WebFeature::kPreferredColorSchemeDarkSetting);
   }

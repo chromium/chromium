@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/css/preferred_color_scheme.mojom";
 import "third_party/blink/public/mojom/v8_cache_options.mojom";
 import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/string16.mojom";
@@ -17,11 +18,6 @@ enum PointerType {
 enum HoverType {
   kHoverFirstType                            = 1,  // 1 << 0
   kHoverHoverType                            = 2   // 1 << 1
-};
-
-enum PreferredColorScheme {
-  kDark,
-  kLight,
 };
 
 // There are multiple editing details that are different on Windows than

@@ -564,9 +564,10 @@ void CastContentBrowserClient::OverrideWebkitPrefs(
     }
   }
 
-  prefs->preferred_color_scheme = static_cast<blink::PreferredColorScheme>(
-      CastBrowserProcess::GetInstance()->pref_service()->GetInteger(
-          prefs::kWebColorScheme));
+  prefs->preferred_color_scheme =
+      static_cast<blink::mojom::PreferredColorScheme>(
+          CastBrowserProcess::GetInstance()->pref_service()->GetInteger(
+              prefs::kWebColorScheme));
 
   // After all other default settings are set, check and see if there are any
   // specific overrides for the WebContents.

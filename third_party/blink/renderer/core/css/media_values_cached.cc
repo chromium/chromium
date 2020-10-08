@@ -6,8 +6,8 @@
 
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/common/css/navigation_controls.h"
-#include "third_party/blink/public/common/css/preferred_color_scheme.h"
 #include "third_party/blink/public/common/css/screen_spanning.h"
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -34,7 +34,7 @@ MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData()
       strict_mode(true),
       display_mode(blink::mojom::DisplayMode::kBrowser),
       color_gamut(ColorSpaceGamut::kUnknown),
-      preferred_color_scheme(PreferredColorScheme::kLight),
+      preferred_color_scheme(mojom::blink::PreferredColorScheme::kLight),
       prefers_reduced_motion(false),
       forced_colors(ForcedColors::kNone),
       navigation_controls(NavigationControls::kNone),
@@ -192,7 +192,8 @@ ColorSpaceGamut MediaValuesCached::ColorGamut() const {
   return data_.color_gamut;
 }
 
-PreferredColorScheme MediaValuesCached::GetPreferredColorScheme() const {
+mojom::blink::PreferredColorScheme MediaValuesCached::GetPreferredColorScheme()
+    const {
   return data_.preferred_color_scheme;
 }
 

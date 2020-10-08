@@ -188,7 +188,7 @@
 #include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container_manager.h"
 #include "extensions/renderer/renderer_extension_registry.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/common/css/preferred_color_scheme.h"
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
 #endif
@@ -919,7 +919,7 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
             auto* web_view = render_view ? render_view->GetWebView() : nullptr;
             if (web_view) {
               web_view->GetSettings()->SetPreferredColorScheme(
-                  blink::PreferredColorScheme::kLight);
+                  blink::mojom::PreferredColorScheme::kLight);
             }
           }
         } else if (info.name ==

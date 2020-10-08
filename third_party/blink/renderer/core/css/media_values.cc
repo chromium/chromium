@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/common/css/screen_spanning.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
@@ -27,15 +28,16 @@
 
 namespace blink {
 
-PreferredColorScheme CSSValueIDToPreferredColorScheme(CSSValueID id) {
+mojom::blink::PreferredColorScheme CSSValueIDToPreferredColorScheme(
+    CSSValueID id) {
   switch (id) {
     case CSSValueID::kLight:
-      return PreferredColorScheme::kLight;
+      return mojom::blink::PreferredColorScheme::kLight;
     case CSSValueID::kDark:
-      return PreferredColorScheme::kDark;
+      return mojom::blink::PreferredColorScheme::kDark;
     default:
       NOTREACHED();
-      return PreferredColorScheme::kLight;
+      return mojom::blink::PreferredColorScheme::kLight;
   }
 }
 
@@ -180,7 +182,7 @@ ColorSpaceGamut MediaValues::CalculateColorGamut(LocalFrame* frame) {
       frame->GetPage()->GetChromeClient().GetScreenInfo(*frame));
 }
 
-PreferredColorScheme MediaValues::CalculatePreferredColorScheme(
+mojom::blink::PreferredColorScheme MediaValues::CalculatePreferredColorScheme(
     LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->GetSettings());
