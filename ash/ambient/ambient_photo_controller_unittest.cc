@@ -10,6 +10,7 @@
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/model/ambient_backend_model.h"
+#include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
@@ -24,12 +25,27 @@
 #include "base/hash/sha1.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/scoped_observer.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind_test_util.h"
 #include "base/timer/timer.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
+
+namespace {
+class MockAmbientBackendModelObserver : public AmbientBackendModelObserver {
+ public:
+  MockAmbientBackendModelObserver() = default;
+  ~MockAmbientBackendModelObserver() override = default;
+
+  // AmbientBackendModelObserver:
+  MOCK_METHOD(void, OnImagesChanged, (), (override));
+  MOCK_METHOD(void, OnImagesReady, (), (override));
+};
+
+}  // namespace
 
 class AmbientPhotoControllerTest : public AmbientAshTestBase {
  public:
@@ -144,30 +160,32 @@ TEST_F(AmbientPhotoControllerTest, ShouldUpdatePhotoPeriodically) {
 TEST_F(AmbientPhotoControllerTest, ShouldSaveImagesOnDisk) {
   base::FilePath ambient_image_path = GetCacheDir();
 
-  // Start to refresh images. It will download a test image and write it in
-  // |ambient_image_path| in a delayed task.
+  // Start to refresh images. It will download two images immediately and write
+  // them in |ambient_image_path|. It will also download one more image after
+  // fast forward. It will also download the related images and not cache them.
   photo_controller()->StartScreenUpdate();
   FastForwardToNextImage();
 
-  // Count files and directories in ambient_image_path. There should only be
-  // four files that were just created to save image files for this ambient mode
+  // Count files and directories in ambient_image_path. There should be six
+  // files that were just created to save image files for this ambient mode
   // session.
   EXPECT_TRUE(base::PathExists(ambient_image_path));
   auto file_paths = GetFilePathsInDir(ambient_image_path);
-  // Two image files and two attribution files.
-  EXPECT_EQ(file_paths.size(), 4u);
+  // Three image files and three attribution files.
+  EXPECT_EQ(file_paths.size(), 6u);
   for (auto& path : file_paths) {
     // No sub directories.
     EXPECT_FALSE(base::DirectoryExists(path));
   }
 }
 
-// Test that image is save and will be deleted when stopping ambient mode.
+// Test that image is save and will not be deleted when stopping ambient mode.
 TEST_F(AmbientPhotoControllerTest, ShouldNotDeleteImagesOnDisk) {
   base::FilePath ambient_image_path = GetCacheDir();
 
-  // Start to refresh images. It will download a test image and write it in
-  // |ambient_image_path| in a delayed task.
+  // Start to refresh images. It will download two images immediately and write
+  // them in |ambient_image_path|. It will also download one more image after
+  // fast forward. It will also download the related images and not cache them.
   photo_controller()->StartScreenUpdate();
   FastForwardToNextImage();
 
@@ -186,13 +204,13 @@ TEST_F(AmbientPhotoControllerTest, ShouldNotDeleteImagesOnDisk) {
   image = photo_controller()->ambient_backend_model()->GetNextImage();
   EXPECT_TRUE(image.IsNull());
 
-  // Count files and directories in ambient_image_path. There should only be
-  // four files that were just created to save image files for the prior ambient
-  // mode session.
+  // Count files and directories in ambient_image_path. There should be six
+  // files that were just created to save image files for the prior ambient mode
+  // session.
   EXPECT_TRUE(base::PathExists(ambient_image_path));
   auto file_paths = GetFilePathsInDir(ambient_image_path);
-  // Two image files and two attribution files.
-  EXPECT_EQ(file_paths.size(), 4u);
+  // Three image files and three attribution files.
+  EXPECT_EQ(file_paths.size(), 6u);
   for (auto& path : file_paths) {
     // No sub directories.
     EXPECT_FALSE(base::DirectoryExists(path));
@@ -395,6 +413,37 @@ TEST_F(AmbientPhotoControllerTest,
     base::ReadFileToString(path, &data);
     EXPECT_EQ(data, "image data");
   }
+}
+
+TEST_F(AmbientPhotoControllerTest, ShouldNotLoadDuplicateImages) {
+  testing::NiceMock<MockAmbientBackendModelObserver> mock_backend_observer;
+  ScopedObserver<AmbientBackendModel, AmbientBackendModelObserver>
+      scoped_observer{&mock_backend_observer};
+
+  scoped_observer.Add(photo_controller()->ambient_backend_model());
+
+  // All images downloaded will be identical.
+  SetUrlLoaderData(std::make_unique<std::string>("image data"));
+
+  photo_controller()->StartScreenUpdate();
+  // Run the clock so the first photo is loaded.
+  FastForwardTiny();
+
+  // Should contain hash of downloaded data.
+  EXPECT_TRUE(photo_controller()->ambient_backend_model()->HashMatchesNextImage(
+      base::SHA1HashString("image data")));
+  // Only one image should have been loaded.
+  EXPECT_FALSE(photo_controller()->ambient_backend_model()->ImagesReady());
+
+  // Now expect a call because second image is loaded.
+  EXPECT_CALL(mock_backend_observer, OnImagesChanged).Times(1);
+  SetUrlLoaderData(std::make_unique<std::string>("image data 2"));
+  FastForwardToNextImage();
+
+  // Second image should have been loaded.
+  EXPECT_TRUE(photo_controller()->ambient_backend_model()->HashMatchesNextImage(
+      base::SHA1HashString("image data 2")));
+  EXPECT_TRUE(photo_controller()->ambient_backend_model()->ImagesReady());
 }
 
 TEST_F(AmbientPhotoControllerTest, ShouldStartToRefreshWeather) {

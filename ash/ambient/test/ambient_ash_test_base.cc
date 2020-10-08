@@ -50,11 +50,14 @@ class TestAmbientURLLoaderImpl : public AmbientURLLoader {
   void Download(
       const std::string& url,
       network::SimpleURLLoader::BodyAsStringCallback callback) override {
+    // Reply with a unique string each time to avoid check to skip loading
+    // duplicate images.
+    std::unique_ptr<std::string> data = std::make_unique<std::string>(
+        data_ ? *data_ : base::StringPrintf("test_image_%i", count_));
+    count_++;
     // Pretend to respond asynchronously.
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       std::make_unique<std::string>(data_ ? *data_ : "test")),
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(data)),
         base::TimeDelta::FromMilliseconds(1));
   }
   void DownloadToFile(
@@ -86,6 +89,7 @@ class TestAmbientURLLoaderImpl : public AmbientURLLoader {
     base::ScopedBlockingCall blocking(FROM_HERE, base::BlockingType::MAY_BLOCK);
     return base::WriteFile(file_path, data);
   }
+  int count_ = 0;
   // If not null, will return this data.
   std::unique_ptr<std::string> data_;
 };
