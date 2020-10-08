@@ -773,7 +773,8 @@ static bool AnyAttributeMatches(Element& element,
 
   const AtomicString& selector_value = selector.Value();
   TextCaseSensitivity case_sensitivity =
-      (selector.AttributeMatch() == CSSSelector::kCaseInsensitive)
+      (selector.AttributeMatch() ==
+       CSSSelector::AttributeMatchType::kCaseInsensitive)
           ? kTextCaseASCIIInsensitive
           : kTextCaseSensitive;
 

@@ -878,7 +878,8 @@ const CSSSelector* CSSSelector::SerializeCompound(
       }
       if (simple_selector->match_ != kAttributeSet) {
         SerializeString(simple_selector->SerializingValue(), builder);
-        if (simple_selector->AttributeMatch() == kCaseInsensitive)
+        if (simple_selector->AttributeMatch() ==
+            AttributeMatchType::kCaseInsensitive)
           builder.Append(" i");
         builder.Append(']');
       }

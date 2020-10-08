@@ -258,7 +258,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoVideoPersistentAncestor,
   };
 
-  enum AttributeMatchType {
+  enum class AttributeMatchType {
     kCaseSensitive,
     kCaseInsensitive,
   };

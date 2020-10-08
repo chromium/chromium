@@ -504,7 +504,8 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumeAttribute(
       std::make_unique<CSSParserSelector>();
 
   if (block.AtEnd()) {
-    selector->SetAttribute(qualified_name, CSSSelector::kCaseSensitive);
+    selector->SetAttribute(qualified_name,
+                           CSSSelector::AttributeMatchType::kCaseSensitive);
     selector->SetMatch(CSSSelector::kAttributeSet);
     context_->Count(WebFeature::kHasIDClassTagAttribute);
     return selector;
@@ -785,12 +786,12 @@ CSSSelector::MatchType CSSSelectorParser::ConsumeAttributeMatch(
 CSSSelector::AttributeMatchType CSSSelectorParser::ConsumeAttributeFlags(
     CSSParserTokenRange& range) {
   if (range.Peek().GetType() != kIdentToken)
-    return CSSSelector::kCaseSensitive;
+    return CSSSelector::AttributeMatchType::kCaseSensitive;
   const CSSParserToken& flag = range.ConsumeIncludingWhitespace();
   if (EqualIgnoringASCIICase(flag.Value(), "i"))
-    return CSSSelector::kCaseInsensitive;
+    return CSSSelector::AttributeMatchType::kCaseInsensitive;
   failed_parsing_ = true;
-  return CSSSelector::kCaseSensitive;
+  return CSSSelector::AttributeMatchType::kCaseSensitive;
 }
 
 bool CSSSelectorParser::ConsumeANPlusB(CSSParserTokenRange& range,

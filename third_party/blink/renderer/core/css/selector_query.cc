@@ -505,7 +505,8 @@ SelectorQuery::SelectorQuery(CSSSelectorList selector_list)
       // are case sensitive, so we need the same behavior for [id=value].
       if (current->Match() == CSSSelector::kAttributeExact &&
           current->Attribute() == html_names::kIdAttr &&
-          current->AttributeMatch() == CSSSelector::kCaseSensitive) {
+          current->AttributeMatch() ==
+              CSSSelector::AttributeMatchType::kCaseSensitive) {
         selector_id_ = current->Value();
         break;
       }
