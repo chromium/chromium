@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {browserProxy} from '../../browser_proxy/browser_proxy.js';
-import {assertInstanceof} from '../../chrome_util.js';
 import * as dom from '../../dom.js';
 import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
 import * as nav from '../../nav.js';
@@ -109,11 +108,8 @@ export class Preview {
    * @return {!Promise} Promise for the operation.
    */
   async setSource_(stream) {
-    const video =
-        assertInstanceof(document.createElement('video'), HTMLVideoElement);
-    video.id = 'preview-video';
-    video.classList = this.video_.classList;
-    video.muted = true;  // Mute to avoid echo from the captured audio.
+    const node = dom.instantiateTemplate('#preview-video-template');
+    const video = dom.getFrom(node, 'video', HTMLVideoElement);
     await new Promise((resolve) => {
       const handler = () => {
         video.removeEventListener('canplay', handler);
@@ -123,7 +119,7 @@ export class Preview {
       video.srcObject = stream;
     });
     await video.play();
-    this.video_.parentElement.replaceChild(video, this.video_);
+    this.video_.parentElement.replaceChild(node, this.video_);
     this.video_.removeAttribute('srcObject');
     this.video_.load();
     this.video_ = video;

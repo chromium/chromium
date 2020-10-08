@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assertInstanceof} from './chrome_util.js';
+import {setupI18nElements} from './util.js';
 
 // Disables eslint check for closure compiler constructor type.
 /* eslint-disable valid-jsdoc */
@@ -10,7 +11,7 @@ import {assertInstanceof} from './chrome_util.js';
 /**
  * Gets an element matching css selector under the target element and checks its
  * type.
- * @param {(!HTMLElement|!HTMLDocument)} target
+ * @param {!Node} target
  * @param {string} selector
  * @param {function(new: T, ...)} type A user-defined constructor.
  * @return {T}
@@ -23,7 +24,7 @@ export function getFrom(target, selector, type) {
 /**
  * Gets all elements matching css selector under the target element and asserts
  * their type to be specific type.
- * @param {(!HTMLElement|!HTMLDocument)} target
+ * @param {!Node} target
  * @param {string} selector
  * @param {function(new: T, ...)} type A user-defined constructor.
  * @return {!NodeList<T>}
@@ -58,6 +59,18 @@ export function get(selector, type) {
  */
 export function getAll(selector, type) {
   return getAllFrom(document, selector, type);
+}
+
+/**
+ * Instantiates template with the target selector.
+ * @param {string} selector
+ * @return {!Node}
+ */
+export function instantiateTemplate(selector) {
+  const tpl = get(selector, HTMLTemplateElement);
+  const node = document.importNode(tpl.content, true);
+  setupI18nElements(node);
+  return node;
 }
 
 /* eslint-enable valid-jsdoc */
