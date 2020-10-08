@@ -19,7 +19,7 @@ class SequencedTaskRunner;
 
 namespace ash {
 
-class AccelerometerFileReader;
+class AccelerometerProviderInterface;
 
 // Reads an accelerometer device and reports data back to an
 // AccelerometerDelegate.
@@ -64,9 +64,35 @@ class ASH_EXPORT AccelerometerReader {
   // Worker that will run on the base::SequencedTaskRunner provided to
   // Initialize. It will determine accelerometer configuration, read the data,
   // and notify observers.
-  scoped_refptr<AccelerometerFileReader> accelerometer_file_reader_;
+  scoped_refptr<AccelerometerProviderInterface> accelerometer_provider_;
 
   DISALLOW_COPY_AND_ASSIGN(AccelerometerReader);
+};
+
+class AccelerometerProviderInterface
+    : public base::RefCountedThreadSafe<AccelerometerProviderInterface> {
+ public:
+  // Prepare and start async initialization. SetSensorClient function
+  // contains actual code for initialization.
+  virtual void PrepareAndInitialize(
+      scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner) = 0;
+
+  // Add/Remove observers.
+  virtual void AddObserver(AccelerometerReader::Observer* observer) = 0;
+  virtual void RemoveObserver(AccelerometerReader::Observer* observer) = 0;
+
+  // Start/Stop listening to tablet mode controller.
+  virtual void StartListenToTabletModeController() = 0;
+  virtual void StopListenToTabletModeController() = 0;
+
+  // Set emitting events (samples) to observers or not.
+  virtual void SetEmitEvents(bool emit_events) = 0;
+
+ protected:
+  virtual ~AccelerometerProviderInterface() = default;
+
+ private:
+  friend class base::RefCountedThreadSafe<AccelerometerProviderInterface>;
 };
 
 }  // namespace ash

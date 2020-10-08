@@ -127,6 +127,8 @@ component("ash") {
     "accelerators/pre_target_accelerator_handler.h",
     "accelerators/spoken_feedback_toggler.cc",
     "accelerators/spoken_feedback_toggler.h",
+    "accelerometer/accelerometer_file_reader.cc",
+    "accelerometer/accelerometer_file_reader.h",
     "accelerometer/accelerometer_reader.cc",
     "accelerometer/accelerometer_reader.h",
     "accelerometer/accelerometer_types.cc",
