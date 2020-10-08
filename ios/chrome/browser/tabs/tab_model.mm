@@ -16,7 +16,6 @@
 #include "ios/web/public/session/session_certificate_policy_cache.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
-#import "ios/web/public/web_state_observer_bridge.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -82,9 +81,6 @@ void CleanCertificatePolicyCache(
 
   // Used to ensure thread-safety of the certificate policy management code.
   base::CancelableTaskTracker _clearPoliciesTaskTracker;
-
-  // Used to observe owned Tabs' WebStates.
-  std::unique_ptr<web::WebStateObserver> _webStateObserver;
 }
 
 @end
@@ -117,8 +113,6 @@ void CleanCertificatePolicyCache(
     _webStateList = browser->GetWebStateList();
     _browserState = browser->GetBrowserState();
     DCHECK(_browserState);
-
-    _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
 
     _sessionRestorationBrowserAgent =
         SessionRestorationBrowserAgent::FromBrowser(browser);
@@ -172,7 +166,6 @@ void CleanCertificatePolicyCache(
   _webStateList = nullptr;
 
   _clearPoliciesTaskTracker.TryCancelAll();
-  _webStateObserver.reset();
 }
 
 #pragma mark - Notification Handlers
