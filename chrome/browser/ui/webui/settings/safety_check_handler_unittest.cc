@@ -1338,6 +1338,33 @@ TEST_P(SafetyCheckHandlerChromeCleanerNonIdleTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(
+    CheckChromeCleaner_ReporterRunning,
+    SafetyCheckHandlerChromeCleanerNonIdleTest,
+    ::testing::Values(std::make_tuple(
+        safe_browsing::ChromeCleanerController::State::kReporterRunning,
+        SafetyCheckHandler::ChromeCleanerStatus::kScanningForUws,
+        base::UTF8ToUTF16(
+            "Browser is checking your computer for harmful software..."))));
+
+INSTANTIATE_TEST_SUITE_P(
+    CheckChromeCleaner_Scanning,
+    SafetyCheckHandlerChromeCleanerNonIdleTest,
+    ::testing::Values(std::make_tuple(
+        safe_browsing::ChromeCleanerController::State::kScanning,
+        SafetyCheckHandler::ChromeCleanerStatus::kScanningForUws,
+        base::UTF8ToUTF16(
+            "Browser is checking your computer for harmful software..."))));
+
+INSTANTIATE_TEST_SUITE_P(
+    CheckChromeCleaner_Cleaning,
+    SafetyCheckHandlerChromeCleanerNonIdleTest,
+    ::testing::Values(std::make_tuple(
+        safe_browsing::ChromeCleanerController::State::kCleaning,
+        SafetyCheckHandler::ChromeCleanerStatus::kRemovingUws,
+        base::UTF8ToUTF16(
+            "Browser is removing harmful software from your computer..."))));
+
+INSTANTIATE_TEST_SUITE_P(
     CheckChromeCleaner_Infected,
     SafetyCheckHandlerChromeCleanerNonIdleTest,
     ::testing::Values(std::make_tuple(
