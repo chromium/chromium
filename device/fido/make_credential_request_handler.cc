@@ -31,16 +31,23 @@ using ClientPinAvailability =
     AuthenticatorSupportedOptions::ClientPinAvailability;
 using MakeCredentialPINDisposition =
     FidoAuthenticator::MakeCredentialPINDisposition;
+using BioEnrollmentAvailability =
+    AuthenticatorSupportedOptions::BioEnrollmentAvailability;
 
 namespace {
 
 // Permissions requested for PinUvAuthToken. GetAssertion is needed for silent
 // probing of credentials.
-const std::vector<pin::Permissions> GetMakeCredentialRequestPermissions() {
-  static const std::vector<pin::Permissions> kMakeCredentialRequestPermissions =
-      {pin::Permissions::kMakeCredential, pin::Permissions::kGetAssertion,
-       pin::Permissions::kBioEnrollment};
-  return kMakeCredentialRequestPermissions;
+const std::vector<pin::Permissions> GetMakeCredentialRequestPermissions(
+    FidoAuthenticator* authenticator) {
+  std::vector<pin::Permissions> permissions = {
+      pin::Permissions::kMakeCredential, pin::Permissions::kGetAssertion};
+  if (authenticator->Options() &&
+      authenticator->Options()->bio_enrollment_availability ==
+          BioEnrollmentAvailability::kSupportedButUnprovisioned) {
+    permissions.emplace_back(pin::Permissions::kBioEnrollment);
+  }
+  return permissions;
 }
 
 base::Optional<MakeCredentialStatus> ConvertDeviceResponseCode(
@@ -707,7 +714,8 @@ void MakeCredentialRequestHandler::OnHavePIN(
     state_ = State::kRequestWithPIN;
     base::Optional<std::string> rp_id(request->rp.id);
     authenticator_->GetPINToken(
-        std::move(pin), GetMakeCredentialRequestPermissions(), std::move(rp_id),
+        std::move(pin), GetMakeCredentialRequestPermissions(authenticator_),
+        std::move(rp_id),
         base::BindOnce(&MakeCredentialRequestHandler::OnHavePINToken,
                        weak_factory_.GetWeakPtr(), std::move(request)));
     return;
@@ -766,7 +774,8 @@ void MakeCredentialRequestHandler::OnHaveSetPIN(
   state_ = State::kRequestWithPIN;
   base::Optional<std::string> rp_id(request->rp.id);
   authenticator_->GetPINToken(
-      std::move(pin), GetMakeCredentialRequestPermissions(), std::move(rp_id),
+      std::move(pin), GetMakeCredentialRequestPermissions(authenticator_),
+      std::move(rp_id),
       base::BindOnce(&MakeCredentialRequestHandler::OnHavePINToken,
                      weak_factory_.GetWeakPtr(), std::move(request)));
 }
@@ -804,12 +813,10 @@ void MakeCredentialRequestHandler::OnHavePINToken(
     return;
   }
 
-  using BioAvailability =
-      AuthenticatorSupportedOptions::BioEnrollmentAvailability;
   if (authenticator_->Options()->bio_enrollment_availability ==
-          BioAvailability::kSupportedButUnprovisioned ||
+          BioEnrollmentAvailability::kSupportedButUnprovisioned ||
       authenticator_->Options()->bio_enrollment_availability_preview ==
-          BioAvailability::kSupportedButUnprovisioned) {
+          BioEnrollmentAvailability::kSupportedButUnprovisioned) {
     // Authenticator supports biometric enrollment but is not enrolled, offer
     // enrollment with the request.
     state_ = State::kBioEnrollment;
@@ -898,7 +905,7 @@ void MakeCredentialRequestHandler::OnStartUvTokenOrFallback(
 
   base::Optional<std::string> rp_id(request->rp.id);
   authenticator->GetUvToken(
-      std::move(rp_id),
+      GetMakeCredentialRequestPermissions(authenticator), std::move(rp_id),
       base::BindOnce(&MakeCredentialRequestHandler::OnHaveUvToken,
                      weak_factory_.GetWeakPtr(), authenticator,
                      std::move(request)));
@@ -931,7 +938,7 @@ void MakeCredentialRequestHandler::OnUvRetriesResponse(
   observer()->OnRetryUserVerification(response->retries);
   base::Optional<std::string> rp_id(request->rp.id);
   authenticator_->GetUvToken(
-      std::move(rp_id),
+      GetMakeCredentialRequestPermissions(authenticator_), std::move(rp_id),
       base::BindOnce(&MakeCredentialRequestHandler::OnHaveUvToken,
                      weak_factory_.GetWeakPtr(), authenticator_,
                      std::move(request)));

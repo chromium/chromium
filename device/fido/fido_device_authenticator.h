@@ -51,12 +51,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   void GetTouch(base::OnceCallback<void()> callback) override;
   void GetPinRetries(GetRetriesCallback callback) override;
   void GetPINToken(std::string pin,
-                   const std::vector<pin::Permissions>& permissions,
+                   std::vector<pin::Permissions> permissions,
                    base::Optional<std::string> rp_id,
                    GetTokenCallback callback) override;
   void GetUvRetries(GetRetriesCallback callback) override;
   bool CanGetUvToken() override;
-  void GetUvToken(base::Optional<std::string> rp_id,
+  void GetUvToken(std::vector<pin::Permissions> permissions,
+                  base::Optional<std::string> rp_id,
                   GetTokenCallback callback) override;
   void SetPIN(const std::string& pin,
               SetPINCallback callback) override;
@@ -157,7 +158,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
       base::Optional<pin::KeyAgreementResponse> key);
   void OnHaveEphemeralKeyForGetPINToken(
       std::string pin,
-      uint8_t permissions,
+      std::vector<pin::Permissions> permissions,
       base::Optional<std::string> rp_id,
       GetTokenCallback callback,
       CtapDeviceResponseCode status,
@@ -175,6 +176,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
       base::Optional<pin::KeyAgreementResponse> key);
   void OnHaveEphemeralKeyForUvToken(
       base::Optional<std::string> rp_id,
+      std::vector<pin::Permissions> permissions,
       GetTokenCallback callback,
       CtapDeviceResponseCode status,
       base::Optional<pin::KeyAgreementResponse> key);

@@ -4,6 +4,7 @@
 
 #include "device/fido/pin.h"
 
+#include <numeric>
 #include <string>
 #include <utility>
 
@@ -21,6 +22,17 @@
 
 namespace device {
 namespace pin {
+
+namespace {
+
+uint8_t PermissionsToByte(base::span<const pin::Permissions> permissions) {
+  return std::accumulate(permissions.begin(), permissions.end(), 0,
+                         [](uint8_t byte, pin::Permissions flag) {
+                           return byte |= static_cast<uint8_t>(flag);
+                         });
+}
+
+}  // namespace
 
 // HasAtLeastFourCodepoints returns true if |pin| is UTF-8 encoded and contains
 // four or more code points. This reflects the "4 Unicode characters"
@@ -411,10 +423,10 @@ PinTokenWithPermissionsRequest::PinTokenWithPermissionsRequest(
     PINUVAuthProtocol protocol,
     const std::string& pin,
     const KeyAgreementResponse& peer_key,
-    const uint8_t permissions,
+    base::span<const pin::Permissions> permissions,
     const base::Optional<std::string> rp_id)
     : PinTokenRequest(protocol, pin, peer_key),
-      permissions_(permissions),
+      permissions_(PermissionsToByte(permissions)),
       rp_id_(rp_id) {}
 
 // static
@@ -447,8 +459,11 @@ PinTokenWithPermissionsRequest::PinTokenWithPermissionsRequest(
 
 UvTokenRequest::UvTokenRequest(PINUVAuthProtocol protocol,
                                const KeyAgreementResponse& peer_key,
-                               base::Optional<std::string> rp_id)
-    : TokenRequest(protocol, peer_key), rp_id_(rp_id) {}
+                               base::Optional<std::string> rp_id,
+                               base::span<const pin::Permissions> permissions)
+    : TokenRequest(protocol, peer_key),
+      rp_id_(rp_id),
+      permissions_(PermissionsToByte(permissions)) {}
 
 UvTokenRequest::~UvTokenRequest() = default;
 
@@ -463,8 +478,7 @@ AsCTAPRequestValuePair(const UvTokenRequest& request) {
         map->emplace(static_cast<int>(RequestKey::kKeyAgreement),
                      EncodeCOSEPublicKey(request.public_key_));
         map->emplace(static_cast<int>(RequestKey::kPermissions),
-                     static_cast<uint8_t>(Permissions::kMakeCredential) |
-                         static_cast<uint8_t>(Permissions::kGetAssertion));
+                     request.permissions_);
         if (request.rp_id_) {
           map->emplace(static_cast<int>(RequestKey::kPermissionsRPID),
                        *request.rp_id_);

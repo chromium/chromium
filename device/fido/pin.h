@@ -212,7 +212,7 @@ class PinTokenWithPermissionsRequest : public PinTokenRequest {
   PinTokenWithPermissionsRequest(PINUVAuthProtocol protocol,
                                  const std::string& pin,
                                  const KeyAgreementResponse& peer_key,
-                                 const uint8_t permissions,
+                                 base::span<const pin::Permissions> permissions,
                                  const base::Optional<std::string> rp_id);
   PinTokenWithPermissionsRequest(PinTokenWithPermissionsRequest&&);
   PinTokenWithPermissionsRequest(const PinTokenWithPermissionsRequest&) =
@@ -231,7 +231,8 @@ class UvTokenRequest : public TokenRequest {
  public:
   UvTokenRequest(PINUVAuthProtocol protocol,
                  const KeyAgreementResponse& peer_key,
-                 base::Optional<std::string> rp_id);
+                 base::Optional<std::string> rp_id,
+                 base::span<const pin::Permissions> permissions);
   UvTokenRequest(UvTokenRequest&&);
   UvTokenRequest(const UvTokenRequest&) = delete;
   virtual ~UvTokenRequest();
@@ -241,6 +242,7 @@ class UvTokenRequest : public TokenRequest {
 
  private:
   base::Optional<std::string> rp_id_;
+  uint8_t permissions_;
 };
 
 class HMACSecretRequest {

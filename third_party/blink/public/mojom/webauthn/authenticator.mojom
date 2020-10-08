@@ -36,6 +36,8 @@ enum AuthenticatorStatus {
   OPAQUE_DOMAIN,
   INVALID_PROTOCOL,
   BAD_RELYING_PARTY_ID,
+  CANNOT_READ_AND_WRITE_LARGE_BLOB,
+  INVALID_ALLOW_CREDENTIALS_FOR_LARGE_BLOB,
   UNKNOWN_ERROR,
 };
 
@@ -177,6 +179,11 @@ struct GetAssertionAuthenticatorResponse {
   // PublicKeyCredential instance should contain for the `largeBlob`
   // extension output `blob` parameter.
   array<uint8>? large_blob;
+  // True if getClientExtensionResults() called on the returned
+  // PublicKeyCredential instance should contain a `largeBlob` extension output
+  // with a `written` parameter. The value is indicated by |large_blob_written|.
+  bool echo_large_blob_written;
+  bool large_blob_written;
 };
 
 // Information about the relying party. These fields take arbitrary input.

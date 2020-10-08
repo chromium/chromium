@@ -163,6 +163,12 @@ TypeConverter<CredentialManagerError, AuthenticatorStatus>::Convert(
       return CredentialManagerError::INVALID_PROTOCOL;
     case blink::mojom::blink::AuthenticatorStatus::BAD_RELYING_PARTY_ID:
       return CredentialManagerError::BAD_RELYING_PARTY_ID;
+    case blink::mojom::blink::AuthenticatorStatus::
+        CANNOT_READ_AND_WRITE_LARGE_BLOB:
+      return CredentialManagerError::CANNOT_READ_AND_WRITE_LARGE_BLOB;
+    case blink::mojom::blink::AuthenticatorStatus::
+        INVALID_ALLOW_CREDENTIALS_FOR_LARGE_BLOB:
+      return CredentialManagerError::INVALID_ALLOW_CREDENTIALS_FOR_LARGE_BLOB;
     case blink::mojom::blink::AuthenticatorStatus::SUCCESS:
       NOTREACHED();
       break;

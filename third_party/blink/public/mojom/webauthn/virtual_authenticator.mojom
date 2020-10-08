@@ -56,7 +56,9 @@ interface VirtualAuthenticator {
   RemoveRegistration(array<uint8> key_handle) => (bool removed);
   ClearRegistrations() => ();
 
-  // Sets or replaces the per-credential large blob associated to |key_handle|.
+  // Returns the large blob associated with |key_handle|, if any.
+  GetLargeBlob(array<uint8> key_handle) => (array<uint8>? blob);
+  // Sets or replaces the per-credential large blob associated with |key_handle|.
   SetLargeBlob(array<uint8> key_handle, array<uint8> blob) => (bool set);
 
   // Sets whether the authenticator will reply to user verification requests

@@ -52,6 +52,12 @@ constexpr uint8_t kAttestationKey[]{
     0xd7, 0x86, 0x2f, 0x23, 0xab, 0xaf, 0x02, 0x03, 0xb4, 0xb8, 0x91, 0x1b,
     0xa0, 0x56, 0x99, 0x94, 0xe1, 0x01};
 
+// The default large-blob array. This is an empty CBOR array (0x80) followed by
+// LEFT(SHA-256(h'80'), 16).
+constexpr std::array<uint8_t, 17> kDefaultLargeBlobArray = {
+    0x80, 0x76, 0xbe, 0x8b, 0x52, 0x8d, 0x00, 0x75, 0xf7,
+    0xaa, 0xe9, 0x8d, 0x6f, 0xa5, 0x7a, 0x6d, 0x3c};
+
 // CBBFunctionToVector converts a BoringSSL function that writes to a CBB to one
 // that returns a std::vector. Invoke for a function, f, with:
 //   CBBFunctionToVector<decltype(&f), f>(args, to, f);
@@ -357,7 +363,10 @@ VirtualFidoDevice::RegistrationData::operator=(RegistrationData&& other) =
 
 VirtualFidoDevice::State::State()
     : attestation_cert_common_name("Batch Certificate"),
-      individual_attestation_cert_common_name("Individual Certificate") {}
+      individual_attestation_cert_common_name("Individual Certificate") {
+  large_blob.assign(kDefaultLargeBlobArray.begin(),
+                    kDefaultLargeBlobArray.end());
+}
 VirtualFidoDevice::State::~State() = default;
 
 bool VirtualFidoDevice::State::InjectRegistration(
@@ -429,6 +438,28 @@ bool VirtualFidoDevice::State::InjectResidentKey(
                                     /*icon_url=*/base::nullopt));
 }
 
+base::Optional<std::vector<uint8_t>> VirtualFidoDevice::State::GetLargeBlob(
+    const RegistrationData& credential) {
+  if (!credential.large_blob_key) {
+    return base::nullopt;
+  }
+  LargeBlobArrayReader reader;
+  reader.Append(large_blob);
+  base::Optional<std::vector<LargeBlobData>> large_blob_array =
+      reader.Materialize();
+  if (!large_blob_array) {
+    return base::nullopt;
+  }
+  for (const auto& data : *large_blob_array) {
+    base::Optional<std::vector<uint8_t>> blob =
+        data.Decrypt(*credential.large_blob_key);
+    if (blob) {
+      return blob;
+    }
+  }
+  return base::nullopt;
+}
+
 void VirtualFidoDevice::State::InjectLargeBlob(RegistrationData* credential,
                                                base::span<const uint8_t> blob) {
   LargeBlobArrayReader reader;
@@ -451,6 +482,11 @@ void VirtualFidoDevice::State::InjectLargeBlob(RegistrationData* credential,
                           LargeBlobData(*credential->large_blob_key, blob));
   LargeBlobArrayWriter writer(large_blob_array);
   large_blob = writer.Pop(writer.size()).bytes;
+}
+
+void VirtualFidoDevice::State::ClearLargeBlobs() {
+  large_blob.assign(kDefaultLargeBlobArray.begin(),
+                    kDefaultLargeBlobArray.end());
 }
 
 // VirtualFidoDevice ----------------------------------------------------------

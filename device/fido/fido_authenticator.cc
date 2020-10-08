@@ -26,7 +26,7 @@ void FidoAuthenticator::GetPinRetries(
 
 void FidoAuthenticator::GetPINToken(
     std::string pin,
-    const std::vector<pin::Permissions>& permissions,
+    std::vector<pin::Permissions> permissions,
     base::Optional<std::string> rp_id,
     FidoAuthenticator::GetTokenCallback callback) {
   NOTREACHED();
@@ -42,6 +42,7 @@ bool FidoAuthenticator::CanGetUvToken() {
 }
 
 void FidoAuthenticator::GetUvToken(
+    std::vector<pin::Permissions> permissions,
     base::Optional<std::string> rp_id,
     FidoAuthenticator::GetTokenCallback callback) {
   NOTREACHED();

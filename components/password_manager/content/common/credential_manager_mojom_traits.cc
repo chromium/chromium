@@ -102,6 +102,9 @@ bool EnumTraits<blink::mojom::CredentialManagerError,
     case blink::mojom::CredentialManagerError::OPAQUE_DOMAIN:
     case blink::mojom::CredentialManagerError::INVALID_PROTOCOL:
     case blink::mojom::CredentialManagerError::BAD_RELYING_PARTY_ID:
+    case blink::mojom::CredentialManagerError::CANNOT_READ_AND_WRITE_LARGE_BLOB:
+    case blink::mojom::CredentialManagerError::
+        INVALID_ALLOW_CREDENTIALS_FOR_LARGE_BLOB:
     case blink::mojom::CredentialManagerError::UNKNOWN:
       *output = password_manager::CredentialManagerError::UNKNOWN;
       return true;

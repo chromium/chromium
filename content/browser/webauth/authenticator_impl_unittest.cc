@@ -4990,7 +4990,10 @@ TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialLargeBlob) {
 
     device::VirtualCtap2Device::Config config;
     config.pin_support = true;
+    config.pin_uv_auth_token_support = true;
     config.resident_key_support = true;
+    config.ctap2_versions = {std::begin(device::kCtap2Versions2_1),
+                             std::end(device::kCtap2Versions2_1)};
     config.large_blob_support = test.large_blob_support;
     virtual_device_factory_->SetCtap2Config(config);
 
@@ -5021,6 +5024,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialLargeBlob) {
                 virtual_device_factory_->mutable_state()->registrations.size());
     }
     virtual_device_factory_->mutable_state()->registrations.clear();
+    virtual_device_factory_->mutable_state()->ClearLargeBlobs();
   }
 }
 
@@ -5049,7 +5053,10 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionLargeBlobRead) {
     const std::vector<uint8_t> large_blob = {'b', 'l', 'o', 'b'};
     device::VirtualCtap2Device::Config config;
     config.pin_support = true;
+    config.pin_uv_auth_token_support = true;
     config.resident_key_support = true;
+    config.ctap2_versions = {std::begin(device::kCtap2Versions2_1),
+                             std::end(device::kCtap2Versions2_1)};
     config.large_blob_support = test.large_blob_support;
     virtual_device_factory_->SetCtap2Config(config);
     ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
@@ -5074,12 +5081,85 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionLargeBlobRead) {
 
     ASSERT_EQ(AuthenticatorStatus::SUCCESS, result.status);
     EXPECT_TRUE(result.response->echo_large_blob);
+    EXPECT_FALSE(result.response->echo_large_blob_written);
     if (test.did_read_large_blob) {
       EXPECT_EQ(large_blob, *result.response->large_blob);
     } else {
       EXPECT_FALSE(result.response->large_blob.has_value());
     }
     virtual_device_factory_->mutable_state()->registrations.clear();
+    virtual_device_factory_->mutable_state()->ClearLargeBlobs();
+  }
+}
+
+TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionLargeBlobWrite) {
+  constexpr struct {
+    bool large_blob_support;
+    bool large_blob_set;
+    bool large_blob_key_set;
+    bool did_write_large_blob;
+  } kLargeBlobTestCases[] = {
+      // clang-format off
+      // support,  set,   key_set, did_write
+       { true,     true,  true,    true  },
+       { true,     false, false,   false },
+       { true,     false, true,    true  },
+       { false,    false, false,   false },
+      // clang-format on
+  };
+  for (auto& test : kLargeBlobTestCases) {
+    SCOPED_TRACE(::testing::Message() << "support=" << test.large_blob_support);
+    SCOPED_TRACE(::testing::Message() << "set=" << test.large_blob_set);
+    SCOPED_TRACE(::testing::Message() << "key_set=" << test.large_blob_key_set);
+    SCOPED_TRACE(::testing::Message()
+                 << "did_write=" << test.did_write_large_blob);
+
+    const std::vector<uint8_t> large_blob = {'b', 'l', 'o', 'b'};
+    device::VirtualCtap2Device::Config config;
+    config.pin_support = true;
+    config.pin_uv_auth_token_support = true;
+    config.resident_key_support = true;
+    config.ctap2_versions = {std::begin(device::kCtap2Versions2_1),
+                             std::end(device::kCtap2Versions2_1)};
+    config.large_blob_support = test.large_blob_support;
+    virtual_device_factory_->SetCtap2Config(config);
+    const std::vector<uint8_t> cred_id = {4, 3, 2, 1};
+    ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
+        cred_id, kTestRelyingPartyId,
+        /*user_id=*/{{1, 2, 3, 4}}, base::nullopt, base::nullopt));
+
+    if (test.large_blob_set) {
+      virtual_device_factory_->mutable_state()->InjectLargeBlob(
+          &virtual_device_factory_->mutable_state()
+               ->registrations.begin()
+               ->second,
+          large_blob);
+    } else if (test.large_blob_key_set) {
+      virtual_device_factory_->mutable_state()
+          ->registrations.begin()
+          ->second.large_blob_key = {{0}};
+    }
+
+    PublicKeyCredentialRequestOptionsPtr options = get_credential_options();
+    options->allow_credentials = {device::PublicKeyCredentialDescriptor(
+        device::CredentialType::kPublicKey, cred_id)};
+    options->large_blob_write = large_blob;
+    GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
+
+    ASSERT_EQ(AuthenticatorStatus::SUCCESS, result.status);
+    EXPECT_TRUE(result.response->echo_large_blob);
+    EXPECT_FALSE(result.response->large_blob.has_value());
+    EXPECT_TRUE(result.response->echo_large_blob_written);
+    EXPECT_EQ(test.did_write_large_blob, result.response->large_blob_written);
+    if (test.did_write_large_blob) {
+      EXPECT_EQ(large_blob,
+                virtual_device_factory_->mutable_state()->GetLargeBlob(
+                    virtual_device_factory_->mutable_state()
+                        ->registrations.begin()
+                        ->second));
+    }
+    virtual_device_factory_->mutable_state()->registrations.clear();
+    virtual_device_factory_->mutable_state()->ClearLargeBlobs();
   }
 }
 

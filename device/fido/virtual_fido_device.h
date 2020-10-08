@@ -226,11 +226,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     // expected sequence of requests was sent.
     std::vector<size_t> allow_list_sizes;
 
-    // The large-blob array. This is initialized to an empty CBOR array (0x80)
-    // followed by LEFT(SHA-256(h'80'), 16).
-    std::vector<uint8_t> large_blob = {0x80, 0x76, 0xbe, 0x8b, 0x52, 0x8d,
-                                       0x00, 0x75, 0xf7, 0xaa, 0xe9, 0x8d,
-                                       0x6f, 0xa5, 0x7a, 0x6d, 0x3c};
+    // The large-blob array.
+    std::vector<uint8_t> large_blob;
+
     // Buffer that gets progressively filled with large blob fragments until
     // committed.
     std::vector<uint8_t> large_blob_buffer;
@@ -276,11 +274,18 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
                            base::Optional<std::string> user_name,
                            base::Optional<std::string> user_display_name);
 
+    // Returns the large blob associated with the credential, if any.
+    base::Optional<std::vector<uint8_t>> GetLargeBlob(
+        const RegistrationData& credential);
+
     // Injects a large blob for the credential. If the credential already has an
     // associated large blob, replaces it. If the |large_blob| is malformed,
     // completely replaces its contents.
     void InjectLargeBlob(RegistrationData* credential,
                          base::span<const uint8_t> blob);
+
+    // Clears all large blobs resetting |large_blob| to its default value.
+    void ClearLargeBlobs();
 
    private:
     friend class base::RefCounted<State>;

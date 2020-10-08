@@ -55,13 +55,6 @@ CredentialManagementRequest::Version GetCredentialManagementRequestVersion(
              : CredentialManagementRequest::kPreview;
 }
 
-uint8_t PermissionsToByte(const std::vector<pin::Permissions>& permissions) {
-  return std::accumulate(permissions.begin(), permissions.end(), 0,
-                         [](uint8_t byte, pin::Permissions flag) {
-                           return byte |= static_cast<uint8_t>(flag);
-                         });
-}
-
 }  // namespace
 
 FidoDeviceAuthenticator::FidoDeviceAuthenticator(
@@ -229,7 +222,7 @@ void FidoDeviceAuthenticator::GetEphemeralKey(
 
 void FidoDeviceAuthenticator::GetPINToken(
     std::string pin,
-    const std::vector<pin::Permissions>& permissions,
+    std::vector<pin::Permissions> permissions,
     base::Optional<std::string> rp_id,
     GetTokenCallback callback) {
   DCHECK(Options());
@@ -242,13 +235,13 @@ void FidoDeviceAuthenticator::GetPINToken(
 
   GetEphemeralKey(base::BindOnce(
       &FidoDeviceAuthenticator::OnHaveEphemeralKeyForGetPINToken,
-      weak_factory_.GetWeakPtr(), std::move(pin),
-      PermissionsToByte(permissions), std::move(rp_id), std::move(callback)));
+      weak_factory_.GetWeakPtr(), std::move(pin), std::move(permissions),
+      std::move(rp_id), std::move(callback)));
 }
 
 void FidoDeviceAuthenticator::OnHaveEphemeralKeyForGetPINToken(
     std::string pin,
-    uint8_t permissions,
+    std::vector<pin::Permissions> permissions,
     base::Optional<std::string> rp_id,
     GetTokenCallback callback,
     CtapDeviceResponseCode status,
@@ -1048,15 +1041,19 @@ bool FidoDeviceAuthenticator::CanGetUvToken() {
          options_->supports_pin_uv_auth_token;
 }
 
-void FidoDeviceAuthenticator::GetUvToken(base::Optional<std::string> rp_id,
-                                         GetTokenCallback callback) {
-  GetEphemeralKey(base::BindOnce(
-      &FidoDeviceAuthenticator::OnHaveEphemeralKeyForUvToken,
-      weak_factory_.GetWeakPtr(), std::move(rp_id), std::move(callback)));
+void FidoDeviceAuthenticator::GetUvToken(
+    std::vector<pin::Permissions> permissions,
+    base::Optional<std::string> rp_id,
+    GetTokenCallback callback) {
+  GetEphemeralKey(
+      base::BindOnce(&FidoDeviceAuthenticator::OnHaveEphemeralKeyForUvToken,
+                     weak_factory_.GetWeakPtr(), std::move(rp_id),
+                     std::move(permissions), std::move(callback)));
 }
 
 void FidoDeviceAuthenticator::OnHaveEphemeralKeyForUvToken(
     base::Optional<std::string> rp_id,
+    std::vector<pin::Permissions> permissions,
     GetTokenCallback callback,
     CtapDeviceResponseCode status,
     base::Optional<pin::KeyAgreementResponse> key) {
@@ -1068,7 +1065,7 @@ void FidoDeviceAuthenticator::OnHaveEphemeralKeyForUvToken(
   DCHECK(key);
 
   pin::UvTokenRequest request(*chosen_pin_uv_auth_protocol_, *key,
-                              std::move(rp_id));
+                              std::move(rp_id), permissions);
   std::vector<uint8_t> shared_key = request.shared_key();
   RunOperation<pin::UvTokenRequest, pin::TokenResponse>(
       std::move(request), std::move(callback),

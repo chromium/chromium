@@ -319,6 +319,16 @@ DOMException* CredentialManagerErrorToDOMException(
           DOMExceptionCode::kSecurityError,
           "The relying party ID is not a registrable domain suffix of, nor "
           "equal to the current domain.");
+    case CredentialManagerError::CANNOT_READ_AND_WRITE_LARGE_BLOB:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "Only one of the 'largeBlob' extension's 'read' and 'write' "
+          "parameters is allowed at a time");
+    case CredentialManagerError::INVALID_ALLOW_CREDENTIALS_FOR_LARGE_BLOB:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "The 'largeBlob' extension's 'write' parameter can only be used "
+          "with a single credential present on 'allowCredentials'");
     case CredentialManagerError::UNKNOWN:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotReadableError,
@@ -523,6 +533,9 @@ void OnGetAssertionComplete(
       if (credential->large_blob) {
         large_blob_outputs->setBlob(
             VectorToDOMArrayBuffer(std::move(*credential->large_blob)));
+      }
+      if (credential->echo_large_blob_written) {
+        large_blob_outputs->setWritten(credential->large_blob_written);
       }
       extension_outputs->setLargeBlob(large_blob_outputs);
     }
@@ -852,14 +865,6 @@ ScriptPromise CredentialsContainer::get(
               DOMExceptionCode::kNotSupportedError,
               "The 'largeBlob' extension's 'support' parameter is only valid "
               "when creating a credential"));
-          return promise;
-        }
-        if (options->publicKey()->extensions()->largeBlob()->hasWrite() &&
-            options->publicKey()->extensions()->largeBlob()->hasRead()) {
-          resolver->Reject(MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kNotSupportedError,
-              "Only one of the 'largeBlob' extension's 'read' and 'write' "
-              "parameters is allowed at a time"));
           return promise;
         }
       }

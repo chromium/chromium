@@ -79,6 +79,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetAssertionResponse
   void set_large_blob(std::vector<uint8_t> large_blob) {
     large_blob_ = std::move(large_blob);
   }
+  bool large_blob_written() const { return large_blob_written_; }
+  void set_large_blob_written(bool large_blob_written) {
+    large_blob_written_ = large_blob_written;
+  }
 
   // hmac_secret contains the output of the hmac_secret extension.
   base::Optional<base::span<const uint8_t>> hmac_secret() const;
@@ -112,6 +116,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetAssertionResponse
 
   // The large blob associated with the credential.
   base::Optional<std::vector<uint8_t>> large_blob_;
+
+  // Whether a large blob was successfully written as part of this GetAssertion
+  // request.
+  bool large_blob_written_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorGetAssertionResponse);
 };

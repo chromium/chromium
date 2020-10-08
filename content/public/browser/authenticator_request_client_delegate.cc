@@ -135,9 +135,7 @@ void AuthenticatorRequestClientDelegate::StartBioEnrollment(
 void AuthenticatorRequestClientDelegate::OnSampleCollected(
     int bio_samples_remaining) {}
 
-void AuthenticatorRequestClientDelegate::FinishCollectToken() {
-  NOTREACHED();
-}
+void AuthenticatorRequestClientDelegate::FinishCollectToken() {}
 
 void AuthenticatorRequestClientDelegate::OnRetryUserVerification(int attempts) {
 }

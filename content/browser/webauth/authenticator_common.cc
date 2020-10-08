@@ -77,7 +77,9 @@ enum class RequestExtension {
   kHMACSecret,
   kPRF,
   kCredProps,
-  kLargeBlob,
+  kLargeBlobEnable,
+  kLargeBlobRead,
+  kLargeBlobWrite,
 };
 
 namespace client_data {
@@ -397,12 +399,14 @@ CreateMakeCredentialResponse(
           response->cred_props_rk = *response_data.is_resident_key;
         }
         break;
-      case RequestExtension::kLargeBlob:
+      case RequestExtension::kLargeBlobEnable:
         response->echo_large_blob = true;
         response->supports_large_blob =
             response_data.large_blob_key().has_value();
         break;
       case RequestExtension::kAppID:
+      case RequestExtension::kLargeBlobRead:
+      case RequestExtension::kLargeBlobWrite:
         NOTREACHED();
         break;
     }
@@ -490,12 +494,18 @@ blink::mojom::GetAssertionAuthenticatorResponsePtr CreateGetAssertionResponse(
         }
         break;
       }
-      case RequestExtension::kLargeBlob:
+      case RequestExtension::kLargeBlobRead:
         response->echo_large_blob = true;
         response->large_blob = response_data.large_blob();
         break;
+      case RequestExtension::kLargeBlobWrite:
+        response->echo_large_blob = true;
+        response->echo_large_blob_written = true;
+        response->large_blob_written = response_data.large_blob_written();
+        break;
       case RequestExtension::kHMACSecret:
       case RequestExtension::kCredProps:
+      case RequestExtension::kLargeBlobEnable:
         NOTREACHED();
         break;
     }
@@ -966,7 +976,7 @@ void AuthenticatorCommon::MakeCredential(
     requested_extensions_.insert(RequestExtension::kCredProps);
   }
   if (options->large_blob_enable != device::LargeBlobSupport::kNotRequested) {
-    requested_extensions_.insert(RequestExtension::kLargeBlob);
+    requested_extensions_.insert(RequestExtension::kLargeBlobEnable);
   }
   make_credential_options_->large_blob_support = options->large_blob_enable;
   ctap_make_credential_request_->app_id = std::move(appid_exclude);
@@ -1107,8 +1117,23 @@ void AuthenticatorCommon::GetAssertion(
     }
   }
 
-  if (options->large_blob_read || options->large_blob_write) {
-    requested_extensions_.insert(RequestExtension::kLargeBlob);
+  if (options->large_blob_read && options->large_blob_write) {
+    InvokeCallbackAndCleanup(
+        std::move(callback),
+        blink::mojom::AuthenticatorStatus::CANNOT_READ_AND_WRITE_LARGE_BLOB);
+    return;
+  }
+
+  if (options->large_blob_read) {
+    requested_extensions_.insert(RequestExtension::kLargeBlobRead);
+  } else if (options->large_blob_write) {
+    if (options->allow_credentials.size() != 1) {
+      InvokeCallbackAndCleanup(std::move(callback),
+                               blink::mojom::AuthenticatorStatus::
+                                   INVALID_ALLOW_CREDENTIALS_FOR_LARGE_BLOB);
+      return;
+    }
+    requested_extensions_.insert(RequestExtension::kLargeBlobWrite);
   }
 
   UMA_HISTOGRAM_COUNTS_100(

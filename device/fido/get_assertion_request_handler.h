@@ -124,6 +124,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
       CtapDeviceResponseCode status,
       base::Optional<std::vector<std::pair<LargeBlobKey, std::vector<uint8_t>>>>
           blobs);
+  void OnWriteLargeBlob(FidoAuthenticator* authenticator,
+                        CtapDeviceResponseCode status);
 
   CompletionCallback completion_callback_;
   State state_ = State::kWaitingForTouch;

@@ -111,7 +111,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   // |rp_id| binds the token to operations related to a given RP ID. |rp_id|
   // must be set if |permissions| includes MakeCredential or GetAssertion.
   virtual void GetPINToken(std::string pin,
-                           const std::vector<pin::Permissions>& permissions,
+                           std::vector<pin::Permissions> permissions,
                            base::Optional<std::string> rp_id,
                            GetTokenCallback callback);
   // Returns |true| if the authenticator supports GetUvToken.
@@ -121,7 +121,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   // returns true.
   // |rp_id| must be set if the PinUvAuthToken will be used for MakeCredential
   // or GetAssertion.
-  virtual void GetUvToken(base::Optional<std::string> rp_id,
+  virtual void GetUvToken(std::vector<pin::Permissions> permissions,
+                          base::Optional<std::string> rp_id,
                           GetTokenCallback callback);
   // SetPIN sets a new PIN on a device that does not currently have one. The
   // length of |pin| must respect |pin::kMinLength| and |pin::kMaxLength|. It is

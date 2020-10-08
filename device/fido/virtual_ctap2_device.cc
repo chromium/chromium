@@ -58,17 +58,28 @@ constexpr std::array<uint8_t, kAaguidLength> kDeviceAaguid = {
     {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04,
      0x05, 0x06, 0x07, 0x08}};
 
-constexpr uint8_t kSupportedPermissionsMask =
-    static_cast<uint8_t>(pin::Permissions::kMakeCredential) |
-    static_cast<uint8_t>(pin::Permissions::kGetAssertion) |
-    static_cast<uint8_t>(pin::Permissions::kCredentialManagement) |
-    static_cast<uint8_t>(pin::Permissions::kBioEnrollment) |
-    static_cast<uint8_t>(pin::Permissions::kLargeBlobWrite);
 
 struct PinUvAuthTokenPermissions {
   uint8_t permissions;
   base::Optional<std::string> rp_id;
 };
+
+uint8_t GetSupportedPermissionsMask(const VirtualCtap2Device::Config& config) {
+  uint8_t permissions =
+      static_cast<uint8_t>(pin::Permissions::kMakeCredential) |
+      static_cast<uint8_t>(pin::Permissions::kGetAssertion);
+  if (config.credential_management_support) {
+    permissions |=
+        static_cast<uint8_t>(pin::Permissions::kCredentialManagement);
+  }
+  if (config.bio_enrollment_support) {
+    permissions |= static_cast<uint8_t>(pin::Permissions::kBioEnrollment);
+  }
+  if (config.large_blob_support) {
+    permissions |= static_cast<uint8_t>(pin::Permissions::kLargeBlobWrite);
+  }
+  return permissions;
+}
 
 std::vector<uint8_t> ConstructResponse(CtapDeviceResponseCode response_code,
                                        base::span<const uint8_t> data) {
@@ -87,6 +98,7 @@ bool PermissionsRequireRPID(uint8_t permissions) {
 
 CtapDeviceResponseCode ExtractPermissions(
     const cbor::Value::MapValue& request_map,
+    const VirtualCtap2Device::Config& config,
     PinUvAuthTokenPermissions& out_permissions) {
   const auto permissions_it = request_map.find(
       cbor::Value(static_cast<int>(pin::RequestKey::kPermissions)));
@@ -99,7 +111,8 @@ CtapDeviceResponseCode ExtractPermissions(
     return CtapDeviceResponseCode::kCtap1ErrInvalidParameter;
   }
 
-  DCHECK_EQ(out_permissions.permissions & ~kSupportedPermissionsMask, 0);
+  DCHECK_EQ(out_permissions.permissions & ~GetSupportedPermissionsMask(config),
+            0);
 
   const auto permissions_rpid_it = request_map.find(
       cbor::Value(static_cast<int>(pin::RequestKey::kPermissionsRPID)));
@@ -316,8 +329,12 @@ CtapDeviceResponseCode VerifyPINUVAuthToken(
     const cbor::Value& pin_protocol_map_key,
     const cbor::Value& pin_auth_map_key,
     base::span<const uint8_t> pinauth_bytes) {
-  DCHECK(authenticator_info.options.client_pin_availability !=
-         AuthenticatorSupportedOptions::ClientPinAvailability::kNotSupported);
+  DCHECK(
+      authenticator_info.options.client_pin_availability !=
+          AuthenticatorSupportedOptions::ClientPinAvailability::kNotSupported ||
+      (authenticator_info.options.user_verification_availability !=
+       AuthenticatorSupportedOptions::UserVerificationAvailability::
+           kNotSupported));
   DCHECK(authenticator_info.pin_protocols &&
          !authenticator_info.pin_protocols->empty());
 
@@ -547,6 +564,9 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
 
   if (config.large_blob_support) {
     DCHECK(config.resident_key_support);
+    DCHECK(base::Contains(config.ctap2_versions, Ctap2Version::kCtap2_1));
+    DCHECK(config.pin_uv_auth_token_support)
+        << "PinUvAuthToken support is required to write large blobs";
     options_updated = true;
     options.supports_large_blobs = true;
   }
@@ -1684,7 +1704,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
             static_cast<int>(device::pin::Subcommand::
                                  kGetPinUvAuthTokenUsingPinWithPermissions));
         CtapDeviceResponseCode response =
-            ExtractPermissions(request_map, permissions);
+            ExtractPermissions(request_map, config_, permissions);
         if (response != CtapDeviceResponseCode::kSuccess) {
           return response;
         }
@@ -1727,7 +1747,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
 
       PinUvAuthTokenPermissions permissions;
       CtapDeviceResponseCode response =
-          ExtractPermissions(request_map, permissions);
+          ExtractPermissions(request_map, config_, permissions);
       if (response != CtapDeviceResponseCode::kSuccess) {
         return response;
       }

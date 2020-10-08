@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/optional.h"
 #include "content/common/content_export.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/virtual_fido_device.h"
@@ -67,7 +68,12 @@ class CONTENT_EXPORT VirtualAuthenticator
   // credential was found and removed, false otherwise.
   bool RemoveRegistration(const std::vector<uint8_t>& key_handle);
 
-  // Associates a large blob to the credential identified by |key_handle|.
+  // Returns the large blob associated with the credential identified by
+  // |key_handle|, if any.
+  base::Optional<std::vector<uint8_t>> GetLargeBlob(
+      base::span<const uint8_t> key_handle);
+
+  // Associates a large blob with the credential identified by |key_handle|.
   // Returns true if the operation was successful, false otherwise.
   bool SetLargeBlob(base::span<const uint8_t> key_handle,
                     base::span<const uint8_t> blob);
@@ -110,6 +116,8 @@ class CONTENT_EXPORT VirtualAuthenticator
   void ClearRegistrations(ClearRegistrationsCallback callback) override;
   void RemoveRegistration(const std::vector<uint8_t>& key_handle,
                           RemoveRegistrationCallback callback) override;
+  void GetLargeBlob(const std::vector<uint8_t>& key_handle,
+                    GetLargeBlobCallback callback) override;
   void SetLargeBlob(const std::vector<uint8_t>& key_handle,
                     const std::vector<uint8_t>& blob,
                     SetLargeBlobCallback callback) override;

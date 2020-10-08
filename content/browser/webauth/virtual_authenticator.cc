@@ -95,6 +95,15 @@ bool VirtualAuthenticator::RemoveRegistration(
   return state_->registrations.erase(key_handle) != 0;
 }
 
+base::Optional<std::vector<uint8_t>> VirtualAuthenticator::GetLargeBlob(
+    base::span<const uint8_t> key_handle) {
+  auto registration = state_->registrations.find(key_handle);
+  if (registration == state_->registrations.end()) {
+    return base::nullopt;
+  }
+  return state_->GetLargeBlob(registration->second);
+}
+
 bool VirtualAuthenticator::SetLargeBlob(base::span<const uint8_t> key_handle,
                                         base::span<const uint8_t> blob) {
   auto registration = state_->registrations.find(key_handle);
@@ -132,6 +141,11 @@ std::unique_ptr<device::FidoDevice> VirtualAuthenticator::ConstructDevice() {
       }
       config.resident_key_support = has_resident_key_;
       config.large_blob_support = has_large_blob_;
+      if (has_large_blob_ && has_user_verification_) {
+        // Writing a large blob requires obtaining a PinUvAuthToken with
+        // permissions if the authenticator is protected by user verification.
+        config.pin_uv_auth_token_support = true;
+      }
       config.internal_uv_support = has_user_verification_;
       config.is_platform_authenticator =
           attachment_ == device::AuthenticatorAttachment::kPlatform;
@@ -181,6 +195,11 @@ void VirtualAuthenticator::RemoveRegistration(
     const std::vector<uint8_t>& key_handle,
     RemoveRegistrationCallback callback) {
   std::move(callback).Run(RemoveRegistration(std::move(key_handle)));
+}
+
+void VirtualAuthenticator::GetLargeBlob(const std::vector<uint8_t>& key_handle,
+                                        GetLargeBlobCallback callback) {
+  std::move(callback).Run(GetLargeBlob(key_handle));
 }
 
 void VirtualAuthenticator::SetLargeBlob(const std::vector<uint8_t>& key_handle,

@@ -44,6 +44,11 @@ class VirtualAuthenticator {
     return setLargeBlobResponse.set;
   }
 
+  async getLargeBlob(keyHandle) {
+    let getLargeBlobResponse = await this.virtualAuthenticator_.getLargeBlob(keyHandle);
+    return getLargeBlobResponse.blob;
+  }
+
   async setUserPresence(present) {
     return this.virtualAuthenticator_.setUserPresence(present);
   }

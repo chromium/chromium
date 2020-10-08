@@ -45,6 +45,17 @@ namespace {
 
 using PINDisposition = FidoAuthenticator::GetAssertionPINDisposition;
 
+const std::vector<pin::Permissions> GetPinTokenPermissionsFor(
+    const FidoAuthenticator& authenticator,
+    const CtapGetAssertionRequest& request) {
+  std::vector<pin::Permissions> permissions = {pin::Permissions::kGetAssertion};
+  if (request.large_blob_write && authenticator.Options() &&
+      authenticator.Options()->supports_large_blobs) {
+    permissions.emplace_back(pin::Permissions::kLargeBlobWrite);
+  }
+  return permissions;
+}
+
 base::Optional<GetAssertionStatus> ConvertDeviceResponseCode(
     CtapDeviceResponseCode device_response_code) {
   switch (device_response_code) {
@@ -672,7 +683,8 @@ void GetAssertionRequestHandler::OnHavePIN(std::string pin) {
 
   state_ = State::kRequestWithPIN;
   authenticator_->GetPINToken(
-      std::move(pin), {pin::Permissions::kGetAssertion}, request_.rp_id,
+      std::move(pin), GetPinTokenPermissionsFor(*authenticator_, request_),
+      request_.rp_id,
       base::BindOnce(&GetAssertionRequestHandler::OnHavePINToken,
                      weak_factory_.GetWeakPtr()));
 }
@@ -740,7 +752,7 @@ void GetAssertionRequestHandler::OnStartUvTokenOrFallback(
   }
 
   authenticator->GetUvToken(
-      request_.rp_id,
+      GetPinTokenPermissionsFor(*authenticator, request_), request_.rp_id,
       base::BindOnce(&GetAssertionRequestHandler::OnHaveUvToken,
                      weak_factory_.GetWeakPtr(), authenticator));
 }
@@ -771,7 +783,7 @@ void GetAssertionRequestHandler::OnUvRetriesResponse(
   }
   observer()->OnRetryUserVerification(response->retries);
   authenticator_->GetUvToken(
-      request_.rp_id,
+      GetPinTokenPermissionsFor(*authenticator_, request_), request_.rp_id,
       base::BindOnce(&GetAssertionRequestHandler::OnHaveUvToken,
                      weak_factory_.GetWeakPtr(), authenticator_));
 }
@@ -845,7 +857,7 @@ void GetAssertionRequestHandler::DispatchRequestWithToken(
 void GetAssertionRequestHandler::OnGetAssertionSuccess(
     FidoAuthenticator* authenticator,
     CtapGetAssertionRequest request) {
-  if (request.large_blob_read) {
+  if (request.large_blob_read || request.large_blob_write) {
     DCHECK(authenticator->Options()->supports_large_blobs);
     std::vector<LargeBlobKey> keys;
     for (const auto& response : responses_) {
@@ -854,9 +866,18 @@ void GetAssertionRequestHandler::OnGetAssertionSuccess(
       }
     }
     if (!keys.empty()) {
-      authenticator->ReadLargeBlob(
-          keys, pin_token_,
-          base::BindOnce(&GetAssertionRequestHandler::OnReadLargeBlobs,
+      if (request.large_blob_read) {
+        authenticator->ReadLargeBlob(
+            keys, pin_token_,
+            base::BindOnce(&GetAssertionRequestHandler::OnReadLargeBlobs,
+                           weak_factory_.GetWeakPtr(), authenticator));
+        return;
+      }
+      DCHECK(request.large_blob_write);
+      DCHECK_EQ(1u, keys.size());
+      authenticator->WriteLargeBlob(
+          *request.large_blob_write, keys.at(0), pin_token_,
+          base::BindOnce(&GetAssertionRequestHandler::OnWriteLargeBlob,
                          weak_factory_.GetWeakPtr(), authenticator));
       return;
     }
@@ -885,6 +906,19 @@ void GetAssertionRequestHandler::OnReadLargeBlobs(
     FIDO_LOG(ERROR) << "Reading large blob failed with code "
                     << static_cast<int>(status);
   }
+  std::move(completion_callback_)
+      .Run(GetAssertionStatus::kSuccess, std::move(responses_), authenticator);
+}
+
+void GetAssertionRequestHandler::OnWriteLargeBlob(
+    FidoAuthenticator* authenticator,
+    CtapDeviceResponseCode status) {
+  if (status != CtapDeviceResponseCode::kSuccess) {
+    FIDO_LOG(ERROR) << "Writing large blob failed with code "
+                    << static_cast<int>(status);
+  }
+  responses_.at(0).set_large_blob_written(status ==
+                                          CtapDeviceResponseCode::kSuccess);
   std::move(completion_callback_)
       .Run(GetAssertionStatus::kSuccess, std::move(responses_), authenticator);
 }
