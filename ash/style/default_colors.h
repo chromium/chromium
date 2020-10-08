@@ -27,6 +27,9 @@ SkColor DeprecatedGetContentLayerColor(AshColorProvider::ContentLayerType type,
 SkColor DeprecatedGetLoginBackgroundBaseColor(SkColor default_color);
 SkColor DeprecatedGetShelfInkDropBaseColor(SkColor default_color);
 float DeprecatedGetShelfInkDropOpacity(float default_opacity);
+SkColor DeprecatedGetAppStateIndicatorColor(bool active,
+                                            SkColor active_color,
+                                            SkColor default_color);
 }  // namespace ash
 
 #endif  // ASH_STYLE_DEFAULT_COLORS_H_
