@@ -170,3 +170,76 @@ export let MemoryUsageObserver;
  * }}
  */
 export let MemoryUsage;
+
+/**
+ * Enumeration of routines.
+ * @enum {number}
+ */
+export let RoutineName = {
+  kCpuStress: 0,
+  kCpuCache: 1,
+  kFloatingPoint: 2,
+  kPrimeSearch: 3,
+  kMemory: 4,
+  kPower: 5,
+  kCharge: 6,
+  kDischarge: 7,
+};
+
+/**
+ * Type alias for StandardRoutineResult.
+ * @enum {number}
+ */
+export let StandardRoutineResult = {
+  kTestPassed: 0,
+  kTestFailed: 1,
+  kErrorExecuting: 2,
+  kUnableToRun: 3,
+};
+
+/**
+ * Type alias for RoutineResult.
+ * TODO(zentaro): Currently only includes simple result type.
+ * @typedef {{
+ *   simple_result: !StandardRoutineResult
+ * }}
+ */
+export let RoutineResult;
+
+/**
+ * Type alias for RoutineResultInfo.
+ * @typedef {{
+ *   name: !RoutineName,
+ *   result: !RoutineResult,
+ * }}
+ */
+export let RoutineResultInfo;
+
+/**
+ * Type of RoutineRunner.onRoutineResult function.
+ * @typedef {!function(!RoutineResultInfo)}
+ */
+export let RoutineResultFunction;
+
+/**
+ * Type alias for RoutineRunner.
+ * @typedef {{
+ *   onRoutineResult: !RoutineResultFunction,
+ * }}
+ */
+export let RoutineRunner;
+
+/**
+ * Type of SystemRoutineController.RunRoutine function.
+ * @typedef {!function(!RoutineName, !RoutineRunner): !Promise}
+ */
+export let RunRoutineFunction;
+
+/**
+ * Type alias for SystemRoutineControllerInterface.
+ * TODO(zentaro): Replace with a real mojo type when implemented.
+ * @typedef {{
+ *   runRoutine: !RunRoutineFunction,
+ * }}
+ */
+export let SystemRoutineControllerInterface;
