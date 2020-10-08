@@ -36,7 +36,7 @@ class COMPONENT_EXPORT(DBUS) DbusProperties {
     auto interface_it = properties_.find(interface);
     DCHECK(interface_it != properties_.end());
     auto property_it = interface_it->second.find(name);
-    DbusVariant new_value = MakeDbusVariant(std::move(value));
+    DbusVariant new_value = MakeDbusVariant(std::forward<T>(value));
     const bool send_signal =
         emit_signal && (property_it == interface_it->second.end() ||
                         property_it->second != new_value);
