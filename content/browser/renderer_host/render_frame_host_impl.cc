@@ -939,8 +939,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       is_waiting_for_beforeunload_completion_(false),
       beforeunload_dialog_request_cancels_unload_(false),
       unload_ack_is_for_navigation_(false),
-      beforeunload_timeout_delay_(base::TimeDelta::FromMilliseconds(
-          RenderViewHostImpl::kUnloadTimeoutMS)),
+      beforeunload_timeout_delay_(RenderViewHostImpl::kUnloadTimeout),
       was_discarded_(false),
       is_loading_(false),
       nav_entry_id_(0),
@@ -963,8 +962,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       active_sandbox_flags_(network::mojom::WebSandboxFlags::kNone),
       frame_token_(frame_token),
       keep_alive_timeout_(base::TimeDelta::FromSeconds(30)),
-      subframe_unload_timeout_(base::TimeDelta::FromMilliseconds(
-          RenderViewHostImpl::kUnloadTimeoutMS)),
+      subframe_unload_timeout_(RenderViewHostImpl::kUnloadTimeout),
       commit_callback_interceptor_(nullptr),
       media_device_id_salt_base_(
           BrowserContext::CreateRandomMediaDeviceIDSalt()),
@@ -2963,8 +2961,7 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
   }
 
   if (unload_event_monitor_timeout_ && !do_not_delete_for_testing_) {
-    unload_event_monitor_timeout_->Start(base::TimeDelta::FromMilliseconds(
-        RenderViewHostImpl::kUnloadTimeoutMS));
+    unload_event_monitor_timeout_->Start(RenderViewHostImpl::kUnloadTimeout);
   }
 
   // TODO(nasko): If the frame is not live, the RFH should just be deleted by

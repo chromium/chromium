@@ -212,7 +212,7 @@ const int PerProcessRenderViewHostSet::kUserDataKey;
 }  // namespace
 
 // static
-const int64_t RenderViewHostImpl::kUnloadTimeoutMS = 500;
+const base::TimeDelta RenderViewHostImpl::kUnloadTimeout;
 
 ///////////////////////////////////////////////////////////////////////////////
 // RenderViewHost, public:
@@ -628,7 +628,7 @@ void RenderViewHostImpl::ClosePage() {
   is_waiting_for_page_close_completion_ = true;
 
   if (IsRenderViewLive() && !SuddenTerminationAllowed()) {
-    close_timeout_->Start(TimeDelta::FromMilliseconds(kUnloadTimeoutMS));
+    close_timeout_->Start(kUnloadTimeout);
 
     // TODO(creis): Should this be moved to Shutdown?  It may not be called for
     // RenderViewHosts that have been swapped out.

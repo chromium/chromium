@@ -20,6 +20,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/process/kill.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/input/input_device_change_observer.h"
 #include "content/browser/renderer_host/page_lifecycle_state_manager.h"
@@ -359,7 +360,8 @@ class CONTENT_EXPORT RenderViewHostImpl
   // TODO(creis): Move to a private namespace on RenderFrameHostImpl.
   // Delay to wait on closing the WebContents for a beforeunload/unload handler
   // to fire.
-  static const int64_t kUnloadTimeoutMS;
+  static constexpr base::TimeDelta kUnloadTimeout =
+      base::TimeDelta::FromMilliseconds(500);
 
   // The RenderWidgetHost.
   const std::unique_ptr<RenderWidgetHostImpl> render_widget_host_;
