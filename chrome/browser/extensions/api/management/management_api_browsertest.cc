@@ -203,6 +203,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
 }
 
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType, Get) {
+  ExtensionTestMessageListener listener("success", false);
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("management/simple_extension")));
+  ASSERT_TRUE(LoadExtensionWithParamFlags(
+      test_data_dir_.AppendASCII("management/get")));
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+}
+
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        GetSelfNoPermissions) {
   ExtensionTestMessageListener listener1("success", false);

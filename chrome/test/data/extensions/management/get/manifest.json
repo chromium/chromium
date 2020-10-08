@@ -1,0 +1,10 @@
+{
+  "name": "Get Test",
+  "version": "1",
+  "manifest_version": 2,
+  "permissions": ["management"],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  }
+}
