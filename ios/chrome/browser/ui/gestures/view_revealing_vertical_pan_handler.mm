@@ -106,6 +106,19 @@ const CGFloat kAnimationDuration = 0.25f;
   _remainingHeight = _revealedHeight - _peekedHeight;
 }
 
+- (void)setState:(ViewRevealState)state animated:(BOOL)animated {
+  self.nextState = state;
+  [self createAnimatorIfNeeded];
+  if (animated) {
+    [self.animator startAnimation];
+  } else {
+    [self.animator setFractionComplete:1];
+    [self.animator stopAnimation:NO];
+    [self.animator finishAnimationAtPosition:UIViewAnimatingPositionEnd];
+  }
+  [self completeLayoutTransitionSuccessfully:YES];
+}
+
 #pragma mark - Private Methods: Animating
 
 // Called right before an animation block to warn all animatees of a transition
@@ -127,6 +140,8 @@ const CGFloat kAnimationDuration = 0.25f;
 // Called inside the completion block of the current animation. Takes as
 // argument the state to which the animatees did animate to.
 - (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
+  [self.delegate viewRevealingVerticalPanHandler:self
+                                didChangeToState:viewRevealState];
   for (id<ViewRevealingAnimatee> animatee in self.animatees) {
     [animatee didAnimateViewReveal:viewRevealState];
   }
@@ -170,11 +185,11 @@ const CGFloat kAnimationDuration = 0.25f;
     return;
   }
 
-  if (self.currentState == ViewRevealState::Peeked &&
-      self.nextState == ViewRevealState::Revealed) {
+  if (self.nextState == ViewRevealState::Revealed) {
     [self willTransitionToLayout:LayoutSwitcherState::Full];
   } else if (self.currentState == ViewRevealState::Revealed &&
-             self.nextState == ViewRevealState::Peeked) {
+             (self.nextState == ViewRevealState::Peeked ||
+              self.nextState == ViewRevealState::Hidden)) {
     [self willTransitionToLayout:LayoutSwitcherState::Horizontal];
   }
 }
@@ -329,9 +344,15 @@ const CGFloat kAnimationDuration = 0.25f;
 
   [self.animator continueAnimationWithTimingParameters:nil durationFactor:1];
 
+  [self completeLayoutTransitionSuccessfully:!self.animator.reversed];
+}
+
+// If the layout is currently changing, tells the layout provider to
+// finish the transition.
+- (void)completeLayoutTransitionSuccessfully:(BOOL)success {
   if (self.layoutBeingInteractedWith) {
     [self.layoutSwitcherProvider.layoutSwitcher
-        didTransitionToLayoutSuccessfully:!self.animator.reversed];
+        didTransitionToLayoutSuccessfully:success];
     self.gesturesEnabled = NO;
     self.layoutBeingInteractedWith = NO;
   }

@@ -21,6 +21,10 @@ const CGFloat kThumbStripHeight = 168.0f + 22.0f + 22.0f;
 const CGFloat kBVCHeightTabGrid = 108.0f;
 }  // namespace
 
+@interface ThumbStripCoordinator () <ViewRevealingVerticalPanHandlerDelegate>
+
+@end
+
 @implementation ThumbStripCoordinator
 
 #pragma mark - ChromeCoordinator
@@ -31,10 +35,21 @@ const CGFloat kBVCHeightTabGrid = 108.0f;
       initWithPeekedHeight:kThumbStripHeight
        revealedCoverHeight:kBVCHeightTabGrid
             baseViewHeight:baseViewHeight];
+  self.panHandler.delegate = self;
 }
 
 - (void)stop {
   self.panHandler = nil;
+}
+
+#pragma mark - ViewRevealingVerticalPanHandlerDelegate
+
+- (void)viewRevealingVerticalPanHandler:
+            (ViewRevealingVerticalPanHandler*)panHandler
+                       didChangeToState:(ViewRevealState)viewRevealState {
+  if (viewRevealState == ViewRevealState::Hidden) {
+    [self.delegate thumbStripDismissedForThumbStripCoordinator:self];
+  }
 }
 
 @end

@@ -198,4 +198,36 @@ TEST_F(ViewRevealingVerticalPanHandlerTest, DetectPan) {
   SimulatePanGesture(pan_handler, -(kThumbStripHeight * kRevealThreshold));
   EXPECT_EQ(ViewRevealState::Hidden, fake_animatee.state);
 }
+
+// Tests that manually moving the pan handler between the two outer-most states
+// updates everything correctly.
+TEST_F(ViewRevealingVerticalPanHandlerTest, ManualStateChange) {
+  // Create a view revealing vertical pan handler.
+  ViewRevealingVerticalPanHandler* pan_handler =
+      [[ViewRevealingVerticalPanHandler alloc]
+          initWithPeekedHeight:kThumbStripHeight
+           revealedCoverHeight:kBVCHeightTabGrid
+                baseViewHeight:kBaseViewHeight];
+
+  // Create a fake layout switcher and a provider.
+  FakeLayoutSwitcher* fake_layout_switcher = [[FakeLayoutSwitcher alloc] init];
+  FakeLayoutSwitcherProvider* fake_layout_switcher_provider =
+      [[FakeLayoutSwitcherProvider alloc]
+          initWithLayoutSwitcher:fake_layout_switcher];
+  pan_handler.layoutSwitcherProvider = fake_layout_switcher_provider;
+  EXPECT_EQ(LayoutSwitcherState::Horizontal, fake_layout_switcher.state);
+
+  // Create a fake animatee.
+  FakeAnimatee* fake_animatee = [[FakeAnimatee alloc] init];
+  [pan_handler addAnimatee:fake_animatee];
+  EXPECT_EQ(ViewRevealState::Hidden, fake_animatee.state);
+
+  [pan_handler setState:ViewRevealState::Revealed animated:NO];
+  EXPECT_EQ(ViewRevealState::Revealed, fake_animatee.state);
+  EXPECT_EQ(LayoutSwitcherState::Full, fake_layout_switcher.state);
+
+  [pan_handler setState:ViewRevealState::Hidden animated:NO];
+  EXPECT_EQ(ViewRevealState::Hidden, fake_animatee.state);
+  EXPECT_EQ(LayoutSwitcherState::Horizontal, fake_layout_switcher.state);
+}
 }  // namespace

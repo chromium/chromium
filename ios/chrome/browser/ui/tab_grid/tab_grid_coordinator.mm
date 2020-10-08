@@ -57,7 +57,8 @@
                                   RecentTabsContextMenuDelegate,
                                   RecentTabsPresentationDelegate,
                                   TabGridMediatorDelegate,
-                                  TabPresentationDelegate> {
+                                  TabPresentationDelegate,
+                                  ThumbStripCoordinatorDelegate> {
   // Use an explicit ivar instead of synthesizing as the setter isn't using the
   // ivar.
   Browser* _incognitoBrowser;
@@ -181,6 +182,12 @@
 - (void)showTabGrid {
   BOOL animated = !self.animationsDisabledForTesting;
 
+  if (IsThumbStripEnabled()) {
+    [self.thumbStripCoordinator.panHandler setState:ViewRevealState::Revealed
+                                           animated:animated];
+    return;
+  }
+
   // If a BVC is currently being presented, dismiss it.  This will trigger any
   // necessary animations.
   if (self.bvcContainer) {
@@ -213,6 +220,22 @@
 
   // Record when the tab switcher is dismissed.
   base::RecordAction(base::UserMetricsAction("MobileTabGridExited"));
+
+  // If thumb strip is enabled, this will always be true except during initial
+  // setup before the BVC container has been created.
+  if (IsThumbStripEnabled() && self.bvcContainer) {
+    self.bvcContainer.currentBVC = viewController;
+    self.baseViewController.childViewControllerForStatusBarStyle =
+        viewController;
+    [self.baseViewController setNeedsStatusBarAppearanceUpdate];
+    [self.thumbStripCoordinator.panHandler setState:ViewRevealState::Hidden
+                                           animated:YES];
+    if (completion) {
+      completion();
+    }
+    [self.delegate tabGridDismissTransitionDidEnd:self];
+    return;
+  }
 
   // If another BVC is already being presented, swap this one into the
   // container.
@@ -349,6 +372,7 @@
     self.thumbStripCoordinator = [[ThumbStripCoordinator alloc]
         initWithBaseViewController:baseViewController
                            browser:self.browser];
+    self.thumbStripCoordinator.delegate = self;
     [self.thumbStripCoordinator start];
     self.thumbStripCoordinator.panHandler.layoutSwitcherProvider =
         baseViewController;
@@ -552,6 +576,13 @@
     (NSInteger)sectionIdentifier {
   return [self.baseViewController.remoteTabsViewController
       sessionForSectionIdentifier:sectionIdentifier];
+}
+
+#pragma mark - ThumbStripCoordinatorDelegate
+
+- (void)thumbStripDismissedForThumbStripCoordinator:
+    (ThumbStripCoordinator*)thumbStripCoordinator {
+  [self.delegate tabGridDismissTransitionDidEnd:self];
 }
 
 #pragma mark - Private methods

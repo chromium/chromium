@@ -9,11 +9,24 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
+@class ThumbStripCoordinator;
 @class ViewRevealingVerticalPanHandler;
+
+// Delegate for the ThumbStripCoordinator to alert when it is dismissed.
+@protocol ThumbStripCoordinatorDelegate
+
+// Informs the delegate that the thumb strip has been dismissed. I.e. was
+// showing and is now not showing.
+- (void)thumbStripDismissedForThumbStripCoordinator:
+    (ThumbStripCoordinator*)thumbStripCoordinator;
+
+@end
 
 // Coordinator for the thumb strip, which is a 1-row horizontal display of tab
 // miniatures above the toolbar.
 @interface ThumbStripCoordinator : ChromeCoordinator
+
+@property(nonatomic, weak) id<ThumbStripCoordinatorDelegate> delegate;
 
 // The thumb strip's pan gesture handler.
 @property(nonatomic, strong) ViewRevealingVerticalPanHandler* panHandler;

@@ -10,6 +10,19 @@
 #import "ios/chrome/browser/ui/gestures/layout_switcher_provider.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_animatee.h"
 
+@class ViewRevealingVerticalPanHandler;
+
+// Delegate for the ViewRevealingVerticalPanHandler to alert when it changes
+// state.
+@protocol ViewRevealingVerticalPanHandlerDelegate <NSObject>
+
+// Informs the delegate that the pan handler did change state, ending at the
+// given state.
+- (void)viewRevealingVerticalPanHandler:
+            (ViewRevealingVerticalPanHandler*)panHandler
+                       didChangeToState:(ViewRevealState)viewRevealState;
+@end
+
 // Responsible for handling vertical pan gestures to reveal/hide a view behind
 // another.
 // TODO(crbug.com/1123512): Add support for going straight from a Hidden state
@@ -35,6 +48,11 @@
 // to the animatees.
 - (void)addAnimatee:(id<ViewRevealingAnimatee>)animatee;
 
+// Manually sets the state of the pan handler to a specific state, optionally
+// animated.
+- (void)setState:(ViewRevealState)state animated:(BOOL)animated;
+
+@property(nonatomic, weak) id<ViewRevealingVerticalPanHandlerDelegate> delegate;
 // Height of the view that will be revealed after the transition to Peeked
 // state.
 @property(nonatomic, assign, readonly) CGFloat peekedHeight;
