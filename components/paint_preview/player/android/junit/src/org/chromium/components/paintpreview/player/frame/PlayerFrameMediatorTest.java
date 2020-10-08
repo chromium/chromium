@@ -36,6 +36,7 @@ import org.robolectric.shadows.ShadowView;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.UnguessableToken;
+import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
 import org.chromium.components.paintpreview.player.PlayerGestureListener;
@@ -270,8 +271,8 @@ public class PlayerFrameMediatorTest {
         // The bitmap matrix should be empty, but initialized with the correct number of rows and
         // columns. Because we set the initial scale factor to view port width over content width,
         // we should have only one column.
-        Bitmap[][] bitmapMatrix = mModel.get(PlayerFrameProperties.BITMAP_MATRIX);
-        Assert.assertTrue(Arrays.deepEquals(bitmapMatrix, new Bitmap[4][2]));
+        CompressibleBitmap[][] bitmapMatrix = mModel.get(PlayerFrameProperties.BITMAP_MATRIX);
+        Assert.assertTrue(Arrays.deepEquals(bitmapMatrix, new CompressibleBitmap[4][2]));
         Assert.assertEquals(new ArrayList<Pair<View, Rect>>(),
                 mModel.get(PlayerFrameProperties.SUBFRAME_VIEWS));
     }
@@ -558,27 +559,64 @@ public class PlayerFrameMediatorTest {
         Bitmap bitmap03 = Mockito.mock(Bitmap.class);
         Bitmap bitmap13 = Mockito.mock(Bitmap.class);
         Bitmap bitmap23 = Mockito.mock(Bitmap.class);
+        SequencedTaskRunner mockTaskRunner = Mockito.mock(SequencedTaskRunner.class);
+        CompressibleBitmap compressibleBitmap00 =
+                new CompressibleBitmap(bitmap00, mockTaskRunner, true);
+        CompressibleBitmap compressibleBitmap10 =
+                new CompressibleBitmap(bitmap10, mockTaskRunner, true);
+        CompressibleBitmap compressibleBitmap20 =
+                new CompressibleBitmap(bitmap20, mockTaskRunner, true);
+        CompressibleBitmap compressibleBitmap01 =
+                new CompressibleBitmap(bitmap01, mockTaskRunner, true);
+        CompressibleBitmap compressibleBitmap11 =
+                new CompressibleBitmap(bitmap11, mockTaskRunner, true);
+        CompressibleBitmap compressibleBitmap21 =
+                new CompressibleBitmap(bitmap21, mockTaskRunner, true);
+        CompressibleBitmap compressibleBitmap31 =
+                new CompressibleBitmap(bitmap31, mockTaskRunner, true);
+        CompressibleBitmap compressibleBitmap02 =
+                new CompressibleBitmap(bitmap02, mockTaskRunner, true);
+        CompressibleBitmap compressibleBitmap12 =
+                new CompressibleBitmap(bitmap12, mockTaskRunner, true);
+        CompressibleBitmap compressibleBitmap22 =
+                new CompressibleBitmap(bitmap22, mockTaskRunner, true);
+        CompressibleBitmap compressibleBitmap32 =
+                new CompressibleBitmap(bitmap32, mockTaskRunner, true);
+        CompressibleBitmap compressibleBitmap03 =
+                new CompressibleBitmap(bitmap03, mockTaskRunner, true);
+        CompressibleBitmap compressibleBitmap13 =
+                new CompressibleBitmap(bitmap13, mockTaskRunner, true);
+        CompressibleBitmap compressibleBitmap23 =
+                new CompressibleBitmap(bitmap23, mockTaskRunner, true);
 
-        Bitmap[][] expectedBitmapMatrix = new Bitmap[12][8];
-        expectedBitmapMatrix[0][0] = bitmap00;
-        expectedBitmapMatrix[0][1] = bitmap01;
-        expectedBitmapMatrix[0][2] = bitmap02;
-        expectedBitmapMatrix[1][0] = bitmap10;
-        expectedBitmapMatrix[1][1] = bitmap11;
-        expectedBitmapMatrix[1][2] = bitmap12;
-        expectedBitmapMatrix[2][0] = bitmap20;
-        expectedBitmapMatrix[2][1] = bitmap21;
+        CompressibleBitmap[][] expectedBitmapMatrix = new CompressibleBitmap[12][8];
+        expectedBitmapMatrix[0][0] = compressibleBitmap00;
+        expectedBitmapMatrix[0][1] = compressibleBitmap01;
+        expectedBitmapMatrix[0][2] = compressibleBitmap02;
+        expectedBitmapMatrix[1][0] = compressibleBitmap10;
+        expectedBitmapMatrix[1][1] = compressibleBitmap11;
+        expectedBitmapMatrix[1][2] = compressibleBitmap12;
+        expectedBitmapMatrix[2][0] = compressibleBitmap20;
+        expectedBitmapMatrix[2][1] = compressibleBitmap21;
 
         // Call the request callback with mock bitmaps and assert they're added to the model.
-        mCompositorDelegate.mRequestedBitmap.get(0).mBitmapCallback.onResult(bitmap00);
-        mCompositorDelegate.mRequestedBitmap.get(1).mBitmapCallback.onResult(bitmap10);
-        mCompositorDelegate.mRequestedBitmap.get(2).mBitmapCallback.onResult(bitmap01);
-        mCompositorDelegate.mRequestedBitmap.get(3).mBitmapCallback.onResult(bitmap11);
-        mCompositorDelegate.mRequestedBitmap.get(4).mBitmapCallback.onResult(bitmap20);
-        mCompositorDelegate.mRequestedBitmap.get(5).mBitmapCallback.onResult(bitmap02);
-        mCompositorDelegate.mRequestedBitmap.get(6).mBitmapCallback.onResult(bitmap21);
-        mCompositorDelegate.mRequestedBitmap.get(7).mBitmapCallback.onResult(bitmap12);
-        Bitmap[][] mat = mModel.get(PlayerFrameProperties.BITMAP_MATRIX);
+        mCompositorDelegate.mRequestedBitmap.get(0).mBitmapCallback.onResult(
+                compressibleBitmap00.getBitmap());
+        mCompositorDelegate.mRequestedBitmap.get(1).mBitmapCallback.onResult(
+                compressibleBitmap10.getBitmap());
+        mCompositorDelegate.mRequestedBitmap.get(2).mBitmapCallback.onResult(
+                compressibleBitmap01.getBitmap());
+        mCompositorDelegate.mRequestedBitmap.get(3).mBitmapCallback.onResult(
+                compressibleBitmap11.getBitmap());
+        mCompositorDelegate.mRequestedBitmap.get(4).mBitmapCallback.onResult(
+                compressibleBitmap20.getBitmap());
+        mCompositorDelegate.mRequestedBitmap.get(5).mBitmapCallback.onResult(
+                compressibleBitmap02.getBitmap());
+        mCompositorDelegate.mRequestedBitmap.get(6).mBitmapCallback.onResult(
+                compressibleBitmap21.getBitmap());
+        mCompositorDelegate.mRequestedBitmap.get(7).mBitmapCallback.onResult(
+                compressibleBitmap12.getBitmap());
+        CompressibleBitmap[][] mat = mModel.get(PlayerFrameProperties.BITMAP_MATRIX);
         Assert.assertTrue(Arrays.deepEquals(
                 expectedBitmapMatrix, mModel.get(PlayerFrameProperties.BITMAP_MATRIX)));
 
@@ -589,20 +627,26 @@ public class PlayerFrameMediatorTest {
         // tiles. See comments on {@link #testBitmapRequest} for details on which tiles will be
         // requested.
         // Call the request callback with mock bitmaps and assert they're added to the model.
-        expectedBitmapMatrix[2][2] = bitmap22;
-        expectedBitmapMatrix[0][3] = bitmap03;
-        expectedBitmapMatrix[3][1] = bitmap31;
-        expectedBitmapMatrix[1][3] = bitmap13;
-        expectedBitmapMatrix[3][2] = bitmap32;
-        expectedBitmapMatrix[2][3] = bitmap23;
-        mCompositorDelegate.mRequestedBitmap.get(8).mBitmapCallback.onResult(bitmap22);
+        expectedBitmapMatrix[2][2] = compressibleBitmap22;
+        expectedBitmapMatrix[0][3] = compressibleBitmap03;
+        expectedBitmapMatrix[3][1] = compressibleBitmap31;
+        expectedBitmapMatrix[1][3] = compressibleBitmap13;
+        expectedBitmapMatrix[3][2] = compressibleBitmap32;
+        expectedBitmapMatrix[2][3] = compressibleBitmap23;
+        mCompositorDelegate.mRequestedBitmap.get(8).mBitmapCallback.onResult(
+                compressibleBitmap22.getBitmap());
         // Mock a compositing failure for this tile. No bitmaps should be added.
         mCompositorDelegate.mRequestedBitmap.get(9).mErrorCallback.run();
-        mCompositorDelegate.mRequestedBitmap.get(10).mBitmapCallback.onResult(bitmap31);
-        mCompositorDelegate.mRequestedBitmap.get(11).mBitmapCallback.onResult(bitmap03);
-        mCompositorDelegate.mRequestedBitmap.get(12).mBitmapCallback.onResult(bitmap13);
-        mCompositorDelegate.mRequestedBitmap.get(13).mBitmapCallback.onResult(bitmap32);
-        mCompositorDelegate.mRequestedBitmap.get(14).mBitmapCallback.onResult(bitmap23);
+        mCompositorDelegate.mRequestedBitmap.get(10).mBitmapCallback.onResult(
+                compressibleBitmap31.getBitmap());
+        mCompositorDelegate.mRequestedBitmap.get(11).mBitmapCallback.onResult(
+                compressibleBitmap03.getBitmap());
+        mCompositorDelegate.mRequestedBitmap.get(12).mBitmapCallback.onResult(
+                compressibleBitmap13.getBitmap());
+        mCompositorDelegate.mRequestedBitmap.get(13).mBitmapCallback.onResult(
+                compressibleBitmap32.getBitmap());
+        mCompositorDelegate.mRequestedBitmap.get(14).mBitmapCallback.onResult(
+                compressibleBitmap23.getBitmap());
         Assert.assertTrue(Arrays.deepEquals(
                 expectedBitmapMatrix, mModel.get(PlayerFrameProperties.BITMAP_MATRIX)));
 

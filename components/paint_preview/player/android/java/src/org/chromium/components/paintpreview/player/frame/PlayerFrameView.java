@@ -5,7 +5,6 @@
 package org.chromium.components.paintpreview.player.frame;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Rect;
@@ -45,7 +44,7 @@ class PlayerFrameView extends FrameLayout {
         super(context);
         setWillNotDraw(false);
         mDelegate = playerFrameViewDelegate;
-        mBitmapPainter = new PlayerFrameBitmapPainter(this::invalidate, firstPaintListener);
+        mBitmapPainter = new PlayerFrameBitmapPainter(this::postInvalidate, firstPaintListener);
         mGestureDetector =
                 new PlayerFrameGestureDetector(context, canDetectZoom, gestureDetectorDelegate);
     }
@@ -80,7 +79,7 @@ class PlayerFrameView extends FrameLayout {
         layoutSubFrames();
     }
 
-    void updateBitmapMatrix(Bitmap[][] bitmapMatrix) {
+    void updateBitmapMatrix(CompressibleBitmap[][] bitmapMatrix) {
         mBitmapPainter.updateBitmapMatrix(bitmapMatrix);
     }
 
