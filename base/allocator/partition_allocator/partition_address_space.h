@@ -149,37 +149,19 @@ ALWAYS_INLINE internal::pool_handle GetNormalBucketPool() {
   return PartitionAddressSpace::GetNormalBucketPool();
 }
 
-#else  // defined(PA_HAS_64_BITS_POINTERS)
-
-ALWAYS_INLINE internal::pool_handle GetDirectMapPool() {
-  NOTREACHED();
-  return 0;
-}
-
-ALWAYS_INLINE internal::pool_handle GetNormalBucketPool() {
-  NOTREACHED();
-  return 0;
-}
-
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 
 }  // namespace internal
 
-ALWAYS_INLINE bool IsManagedByPartitionAllocDirectMap(const void* address) {
 #if defined(PA_HAS_64_BITS_POINTERS)
+ALWAYS_INLINE bool IsManagedByPartitionAllocDirectMap(const void* address) {
   return internal::PartitionAddressSpace::IsInDirectMapPool(address);
-#else
-  return false;
-#endif
 }
 
 ALWAYS_INLINE bool IsManagedByPartitionAllocNormalBuckets(const void* address) {
-#if defined(PA_HAS_64_BITS_POINTERS)
   return internal::PartitionAddressSpace::IsInNormalBucketPool(address);
-#else
-  return false;
-#endif
 }
+#endif
 
 }  // namespace base
 

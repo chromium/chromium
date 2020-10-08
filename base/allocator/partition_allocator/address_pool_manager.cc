@@ -12,6 +12,7 @@
 #include <limits>
 
 #include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/page_allocator_internal.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/bits.h"
@@ -21,6 +22,18 @@
 
 namespace base {
 namespace internal {
+
+namespace {
+
+base::LazyInstance<AddressPoolManager>::Leaky g_address_pool_manager =
+    LAZY_INSTANCE_INITIALIZER;
+
+}  // namespace
+
+// static
+AddressPoolManager* AddressPoolManager::GetInstance() {
+  return g_address_pool_manager.Pointer();
+}
 
 #if defined(PA_HAS_64_BITS_POINTERS)
 
@@ -54,17 +67,9 @@ bool WARN_UNUSED_RESULT CommitPages(void* address, size_t size) {
   return true;
 }
 
-base::LazyInstance<AddressPoolManager>::Leaky g_address_pool_manager =
-    LAZY_INSTANCE_INITIALIZER;
-
 }  // namespace
 
 constexpr size_t AddressPoolManager::Pool::kMaxBits;
-
-// static
-AddressPoolManager* AddressPoolManager::GetInstance() {
-  return g_address_pool_manager.Pointer();
-}
 
 pool_handle AddressPoolManager::Add(uintptr_t ptr, size_t length) {
   PA_DCHECK(!(ptr & kSuperPageOffsetMask));
@@ -91,7 +96,7 @@ void AddressPoolManager::Remove(pool_handle handle) {
   pool->Reset();
 }
 
-char* AddressPoolManager::Alloc(pool_handle handle, size_t length) {
+char* AddressPoolManager::Alloc(pool_handle handle, void*, size_t length) {
   Pool* pool = GetPool(handle);
   char* ptr = reinterpret_cast<char*>(pool->FindChunk(length));
 
@@ -211,16 +216,126 @@ void AddressPoolManager::Pool::FreeChunk(uintptr_t address, size_t free_size) {
 AddressPoolManager::Pool::Pool() = default;
 AddressPoolManager::Pool::~Pool() = default;
 
-AddressPoolManager::AddressPoolManager() = default;
-AddressPoolManager::~AddressPoolManager() = default;
-
 ALWAYS_INLINE AddressPoolManager::Pool* AddressPoolManager::GetPool(
     pool_handle handle) {
   PA_DCHECK(0 < handle && handle <= kNumPools);
   return &pools_[handle - 1];
 }
 
+#else  // defined(PA_HAS_64_BITS_POINTERS)
+
+namespace {
+
+LazyInstance<Lock>::Leaky g_lock = LAZY_INSTANCE_INITIALIZER;
+
+}  // namespace
+
+Lock& AddressPoolManager::GetLock() {
+  return g_lock.Get();
+}
+
+std::bitset<AddressPoolManager::kDirectMapBits>
+    AddressPoolManager::directmap_bits_;  // GUARDED_BY(GetLock())
+std::bitset<AddressPoolManager::kNormalBucketBits>
+    AddressPoolManager::normal_bucket_bits_;  // GUARDED_BY(GetLock())
+
+template <size_t bitsize>
+void SetBitmap(std::bitset<bitsize>& bitmap,
+               size_t start_bit,
+               size_t bit_length) {
+  const size_t end_bit = start_bit + bit_length;
+  PA_DCHECK(start_bit <= bitsize);
+  PA_DCHECK(end_bit <= bitsize);
+
+  for (size_t i = start_bit; i < end_bit; ++i) {
+    PA_DCHECK(!bitmap.test(i));
+    bitmap.set(i);
+  }
+}
+
+template <size_t bitsize>
+void ResetBitmap(std::bitset<bitsize>& bitmap,
+                 size_t start_bit,
+                 size_t bit_length) {
+  const size_t end_bit = start_bit + bit_length;
+  PA_DCHECK(start_bit <= bitsize);
+  PA_DCHECK(end_bit <= bitsize);
+
+  for (size_t i = start_bit; i < end_bit; ++i) {
+    PA_DCHECK(bitmap.test(i));
+    bitmap.reset(i);
+  }
+}
+
+static_assert(kSuperPageSize % PageAllocationGranularity() == 0,
+              "AddressPoolManager depends on that kSuperPageSize is multiples "
+              "of PageAllocationGranularity().");
+
+char* AddressPoolManager::Alloc(pool_handle handle,
+                                void* requested_address,
+                                size_t length) {
+  PA_DCHECK(!(length & PageAllocationGranularityOffsetMask()));
+  char* ptr = reinterpret_cast<char*>(AllocPages(requested_address, length,
+                                                 kSuperPageSize, PageReadWrite,
+                                                 PageTag::kPartitionAlloc));
+  if (UNLIKELY(!ptr))
+    return nullptr;
+
+  MarkUsed(handle, ptr, length);
+  return ptr;
+}
+
+void AddressPoolManager::Free(pool_handle handle, void* ptr, size_t length) {
+  uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
+  PA_DCHECK(!(ptr_as_uintptr & kSuperPageOffsetMask));
+  PA_DCHECK(!(length & PageAllocationGranularityOffsetMask()));
+  MarkUnused(handle, ptr_as_uintptr, length);
+  FreePages(ptr, length);
+}
+
+void AddressPoolManager::MarkUsed(pool_handle handle,
+                                  const char* address,
+                                  size_t length) {
+  uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(address);
+  AutoLock guard(GetLock());
+  if (handle == kDirectMapHandle) {
+    SetBitmap(directmap_bits_, ptr_as_uintptr / PageAllocationGranularity(),
+              length / PageAllocationGranularity());
+  } else {
+    PA_DCHECK(handle == kNormalBucketHandle);
+    PA_DCHECK(!(length & kSuperPageOffsetMask));
+    SetBitmap(normal_bucket_bits_, ptr_as_uintptr >> kSuperPageShift,
+              length >> kSuperPageShift);
+  }
+}
+
+void AddressPoolManager::MarkUnused(pool_handle handle,
+                                    uintptr_t address,
+                                    size_t length) {
+  AutoLock guard(GetLock());
+  // Currently, address regions allocated by kNormalBucketHandle are never freed
+  // in PartitionAlloc. Thus we have LIKELY for kDirectMapHandle
+  if (LIKELY(handle == kDirectMapHandle)) {
+    ResetBitmap(directmap_bits_, address / PageAllocationGranularity(),
+                length / PageAllocationGranularity());
+  } else {
+    PA_DCHECK(handle == kNormalBucketHandle);
+    PA_DCHECK(!(length & kSuperPageOffsetMask));
+    ResetBitmap(normal_bucket_bits_, address >> kSuperPageShift,
+                length >> kSuperPageShift);
+  }
+}
+
+void AddressPoolManager::ResetForTesting() {
+  AutoLock guard(GetLock());
+  directmap_bits_.reset();
+  normal_bucket_bits_.reset();
+}
+
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
+
+AddressPoolManager::AddressPoolManager() = default;
+AddressPoolManager::~AddressPoolManager() = default;
 
 }  // namespace internal
 }  // namespace base

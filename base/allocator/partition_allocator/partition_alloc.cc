@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/checked_ptr_support.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/oom.h"
@@ -210,11 +211,15 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
 }
 
 void PartitionAllocGlobalUninitForTesting() {
-#if defined(PA_HAS_64_BITS_POINTERS) && \
-    !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  if (IsPartitionAllocGigaCageEnabled())
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  if (features::IsPartitionAllocGigaCageEnabled()) {
+#if defined(PA_HAS_64_BITS_POINTERS)
     internal::PartitionAddressSpace::UninitForTesting();
-#endif
+#else
+    internal::AddressPoolManager::GetInstance()->ResetForTesting();
+#endif  // defined(PA_HAS_64_BITS_POINTERS)
+  }
+#endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   internal::g_oom_handling_function = nullptr;
 }
 
@@ -265,7 +270,7 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
 
 #if defined(PA_HAS_64_BITS_POINTERS)
   // Reserve address space for partition alloc.
-  if (IsPartitionAllocGigaCageEnabled())
+  if (features::IsPartitionAllocGigaCageEnabled())
     internal::PartitionAddressSpace::Init();
 #endif
 

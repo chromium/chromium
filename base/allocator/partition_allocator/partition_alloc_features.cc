@@ -7,10 +7,18 @@
 #include "base/feature_list.h"
 
 namespace base {
+namespace features {
 
+#if defined(PA_HAS_64_BITS_POINTERS)
 // If enabled, PartitionAllocator reserves an address space(named, giga cage)
 // initially and uses a part of the address space for each allocation.
 const Feature kPartitionAllocGigaCage{"PartitionAllocGigaCage",
                                       FEATURE_DISABLED_BY_DEFAULT};
+#else
+// If enabled, PartitionAllocator remembers allocated address space.
+const Feature kPartitionAllocGigaCage{"PartitionAllocGigaCage32bit",
+                                      FEATURE_DISABLED_BY_DEFAULT};
+#endif
 
+}  // namespace features
 }  // namespace base

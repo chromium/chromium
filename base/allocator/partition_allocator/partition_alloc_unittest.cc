@@ -154,7 +154,8 @@ class PartitionAllocTest : public testing::Test {
   ~PartitionAllocTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list.InitWithFeatures({kPartitionAllocGigaCage}, {});
+    scoped_feature_list.InitWithFeatures({features::kPartitionAllocGigaCage},
+                                         {});
     PartitionAllocGlobalInit(HandleOOM);
     allocator.init({PartitionOptions::Alignment::kRegular});
     aligned_allocator.init({PartitionOptions::Alignment::kAlignedAlloc});

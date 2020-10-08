@@ -49,13 +49,9 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
   // Allocate from GigaCage, if enabled. However, the exception to this is when
   // tags aren't allowed, as CheckedPtr assumes that everything inside GigaCage
   // uses tags (specifically, inside the GigaCage's normal bucket pool).
-  if (root->allow_extras && IsPartitionAllocGigaCageEnabled()) {
-#if defined(PA_HAS_64_BITS_POINTERS)
+  if (root->allow_extras && features::IsPartitionAllocGigaCageEnabled()) {
     ptr = internal::AddressPoolManager::GetInstance()->Alloc(GetDirectMapPool(),
-                                                             map_size);
-#else
-    NOTREACHED();
-#endif  // defined(PA_HAS_64_BITS_POINTERS)
+                                                             nullptr, map_size);
   } else {
     ptr = reinterpret_cast<char*>(AllocPages(nullptr, map_size,
                                              kSuperPageAlignment, PageReadWrite,
@@ -268,13 +264,9 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   // Allocate from GigaCage, if enabled. However, the exception to this is when
   // tags aren't allowed, as CheckedPtr assumes that everything inside GigaCage
   // uses tags (specifically, inside the GigaCage's normal bucket pool).
-  if (root->allow_extras && IsPartitionAllocGigaCageEnabled()) {
-#if defined(PA_HAS_64_BITS_POINTERS)
-    super_page = AddressPoolManager::GetInstance()->Alloc(GetNormalBucketPool(),
-                                                          kSuperPageSize);
-#else
-    NOTREACHED();
-#endif
+  if (root->allow_extras && features::IsPartitionAllocGigaCageEnabled()) {
+    super_page = AddressPoolManager::GetInstance()->Alloc(
+        GetNormalBucketPool(), requested_address, kSuperPageSize);
   } else {
     super_page = reinterpret_cast<char*>(
         AllocPages(requested_address, kSuperPageSize, kSuperPageAlignment,
