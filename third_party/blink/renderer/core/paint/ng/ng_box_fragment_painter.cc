@@ -1820,7 +1820,7 @@ BoxPainterBase::FillLayerInfo NGBoxFragmentPainter::GetFillLayerInfo(
   const NGPhysicalBoxFragment& fragment = PhysicalFragment();
   return BoxPainterBase::FillLayerInfo(
       fragment.GetLayoutObject()->GetDocument(), fragment.Style(),
-      fragment.HasNonVisibleOverflow(), color, bg_layer, bleed_avoidance,
+      fragment.IsScrollContainer(), color, bg_layer, bleed_avoidance,
       LayoutObject::ShouldRespectImageOrientation(fragment.GetLayoutObject()),
       box_fragment_.SidesToInclude(),
       fragment.GetLayoutObject()->IsLayoutInline(),

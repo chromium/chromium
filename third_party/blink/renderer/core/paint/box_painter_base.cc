@@ -264,7 +264,7 @@ bool BoxPainterBase::CalculateFillLayerOcclusionCulling(
 BoxPainterBase::FillLayerInfo::FillLayerInfo(
     const Document& doc,
     const ComputedStyle& style,
-    bool has_overflow_clip,
+    bool is_scroll_container,
     Color bg_color,
     const FillLayer& layer,
     BackgroundBleedAvoidance bleed_avoidance,
@@ -278,8 +278,9 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
       sides_to_include(sides_to_include),
       is_bottom_layer(!layer.Next()),
       is_border_fill(layer.Clip() == EFillBox::kBorder),
-      is_clipped_with_local_scrolling(
-          has_overflow_clip && layer.Attachment() == EFillAttachment::kLocal) {
+      is_clipped_with_local_scrolling(is_scroll_container &&
+                                      layer.Attachment() ==
+                                          EFillAttachment::kLocal) {
   // When printing backgrounds is disabled or using economy mode,
   // change existing background colors and images to a solid white background.
   // If there's no bg color or image, leave it untouched to avoid affecting

@@ -111,7 +111,7 @@ class BoxPainterBase {
    public:
     FillLayerInfo(const Document&,
                   const ComputedStyle&,
-                  bool has_overflow_clip,
+                  bool is_scroll_container,
                   Color bg_color,
                   const FillLayer&,
                   BackgroundBleedAvoidance,
