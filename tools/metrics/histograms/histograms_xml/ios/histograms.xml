@@ -700,6 +700,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="IOS.SiriShortcuts.Count" units="shortcuts"
+    expires_after="2021-02-28">
+  <owner>gujen@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <summary>
+    Counts the number of Chrome Siri Shortcuts that the user has created in the
+    Siri Shortcuts app. This is recorded once during startup. The histogram caps
+    at 20 shortcuts, which is an arbitrary but reasonable limit. Note that
+    shortcuts that have multiple actions are not counted if at least one action
+    isn't a Chrome-provided one. For example, a shortcut that opens URLs in
+    Chrome and then opens URLs in another app won't be counted. As such, this
+    metric undercounts the true number of Chrome shortcuts. This is a
+    restriction of the native Shortcuts API.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Spotlight.Action" enum="IOSSpotlightAction"
     expires_after="2021-02-28">
   <owner>eugenebut@chromium.org</owner>

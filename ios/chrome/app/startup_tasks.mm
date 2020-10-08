@@ -7,6 +7,8 @@
 #import <MediaPlayer/MediaPlayer.h>
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/task/post_task.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #include "ios/chrome/app/intents/SearchInChromeIntent.h"
 #include "ios/chrome/browser/application_context.h"
@@ -75,6 +77,26 @@ NSString* const kStartProfileStartupTaskRunners =
          selector:@selector(applicationWillResignActiveNotification:)
              name:UIApplicationWillResignActiveNotification
            object:nil];
+}
+
+- (void)logSiriShortcuts {
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(^{
+        [[INVoiceShortcutCenter sharedCenter]
+            getAllVoiceShortcutsWithCompletion:^(
+                NSArray<INVoiceShortcut*>* voiceShortcuts, NSError* error) {
+              if (error || !voiceShortcuts) {
+                return;
+              }
+
+              // The 20 shortcuts cap is arbitrary but seems like a reasonable
+              // limit.
+              base::UmaHistogramExactLinear(
+                  "IOS.SiriShortcuts.Count",
+                  base::saturated_cast<int>([voiceShortcuts count]), 20);
+            }];
+      }));
 }
 
 #pragma mark - Private methods.

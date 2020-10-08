@@ -20,6 +20,8 @@ class ChromeBrowserState;
 - (void)initializeOmaha;
 // Registers to receive UIApplicationWillResignActiveNotification.
 - (void)registerForApplicationWillResignActiveNotification;
+// Logs the number of Chrome Siri Shortcuts to UMA.
+- (void)logSiriShortcuts;
 
 @end
 

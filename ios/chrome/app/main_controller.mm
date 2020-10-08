@@ -138,6 +138,9 @@ NSString* const kDeleteDownloads = @"DeleteDownloads";
 // Constants for deferred deletion of leftover temporary passwords files.
 NSString* const kDeleteTempPasswords = @"DeleteTempPasswords";
 
+// Constants for deferred UMA logging of existing Siri User shortcuts.
+NSString* const kLogSiriShortcuts = @"LogSiriShortcuts";
+
 // Constants for deferred sending of queued feedback.
 NSString* const kSendQueuedFeedback = @"SendQueuedFeedback";
 
@@ -984,6 +987,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [self scheduleSpotlightResync];
   [self scheduleDeleteTempDownloadsDirectory];
   [self scheduleDeleteTempPasswordsDirectory];
+  [self scheduleLogSiriShortcuts];
   [self scheduleStartupAttemptReset];
   [self startFreeMemoryMonitoring];
   [self scheduleAppDistributionPings];
@@ -1017,6 +1021,15 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       enqueueBlockNamed:kDeleteTempPasswords
                   block:^{
                     password_manager::DeletePasswordsDirectory();
+                  }];
+}
+
+- (void)scheduleLogSiriShortcuts {
+  __weak StartupTasks* startupTasks = _startupTasks;
+  [[DeferredInitializationRunner sharedInstance]
+      enqueueBlockNamed:kLogSiriShortcuts
+                  block:^{
+                    [startupTasks logSiriShortcuts];
                   }];
 }
 
