@@ -1452,4 +1452,36 @@ TEST_F(HTMLPreloadScannerTest,
   Test(test2);
 }
 
+// https://crbug.com/1087854
+TEST_F(HTMLPreloadScannerTest, CSSImportWithSemicolonInUrl) {
+  PreloadScannerTestCase test_cases[] = {
+      {"https://example.test",
+       "<style>@import "
+       "url(\"https://example2.test/css?foo=a;b&bar=d\");</style>",
+       "https://example2.test/css?foo=a;b&bar=d", "https://example.test/",
+       ResourceType::kCSSStyleSheet, 0},
+      {"https://example.test",
+       "<style>@import "
+       "url('https://example2.test/css?foo=a;b&bar=d');</style>",
+       "https://example2.test/css?foo=a;b&bar=d", "https://example.test/",
+       ResourceType::kCSSStyleSheet, 0},
+      {"https://example.test",
+       "<style>@import "
+       "url(https://example2.test/css?foo=a;b&bar=d);</style>",
+       "https://example2.test/css?foo=a;b&bar=d", "https://example.test/",
+       ResourceType::kCSSStyleSheet, 0},
+      {"https://example.test",
+       "<style>@import \"https://example2.test/css?foo=a;b&bar=d\";</style>",
+       "https://example2.test/css?foo=a;b&bar=d", "https://example.test/",
+       ResourceType::kCSSStyleSheet, 0},
+      {"https://example.test",
+       "<style>@import 'https://example2.test/css?foo=a;b&bar=d';</style>",
+       "https://example2.test/css?foo=a;b&bar=d", "https://example.test/",
+       ResourceType::kCSSStyleSheet, 0},
+  };
+
+  for (const auto& test : test_cases)
+    Test(test);
+}
+
 }  // namespace blink

@@ -80,6 +80,8 @@ class CSSPreloadScanner {
   inline void Tokenize(UChar, const SegmentedString&);
   void EmitRule(const SegmentedString&);
 
+  bool HasFinishedRuleValue() const;
+
   State state_ = kInitial;
   StringBuilder rule_;
   StringBuilder rule_value_;

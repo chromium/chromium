@@ -59,6 +59,9 @@ void CSSPreloadScanner::ScanCommon(const Char* begin,
        ++it)
     Tokenize(*it, source);
 
+  if (state_ == kRuleValue || state_ == kAfterRuleValue)
+    EmitRule(source);
+
   requests_ = nullptr;
   predicted_base_element_url_ = nullptr;
 }
@@ -159,15 +162,10 @@ inline void CSSPreloadScanner::Tokenize(UChar c,
     case kRuleValue:
       if (IsHTMLSpace<UChar>(c)) {
         state_ = kAfterRuleValue;
-      } else if (c == ';') {
-        EmitRule(source);
       } else {
         rule_value_.Append(c);
-        // When reading the rule and hitting ')', which signifies the URL end,
-        // emit the rule.
-        if (c == ')') {
-          EmitRule(source);
-        }
+        if (HasFinishedRuleValue())
+          state_ = kAfterRuleValue;
       }
       break;
     case kAfterRuleValue:
@@ -186,6 +184,16 @@ inline void CSSPreloadScanner::Tokenize(UChar c,
       NOTREACHED();
       break;
   }
+}
+
+bool CSSPreloadScanner::HasFinishedRuleValue() const {
+  if (rule_value_.length() < 2 || rule_value_[rule_value_.length() - 2] == '\\')
+    return false;
+  // String
+  if (rule_value_[0] == '\'' || rule_value_[0] == '"')
+    return rule_value_[0] == rule_value_[rule_value_.length() - 1];
+  // url()
+  return rule_value_[rule_value_.length() - 1] == ')';
 }
 
 static String ParseCSSStringOrURL(const String& string) {
