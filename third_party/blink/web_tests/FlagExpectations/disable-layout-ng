@@ -434,12 +434,6 @@ crbug.com/591099 external/wpt/css/css-overflow/webkit-line-clamp-013.html [ Fail
 crbug.com/591099 external/wpt/css/css-overflow/webkit-line-clamp-014.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-overflow/webkit-line-clamp-027.html [ Failure ]
 
-# More than one scrollbar gutter (i.e. the "both" value of scrollbar-gutter)
-crbug.com/710214 wpt_internal/css/css-overflow/scrollbar-gutter-004.html [ Failure ]
-crbug.com/710214 wpt_internal/css/css-overflow/scrollbar-gutter-005.html [ Failure ]
-crbug.com/710214 wpt_internal/css/css-overflow/scrollbar-gutter-009.html [ Failure ]
-crbug.com/710214 wpt_internal/css/css-overflow/scrollbar-gutter-010.html [ Failure ]
-
 # White space, absolute position and paint timing failures from June 5, 2020
 crbug.com/591099 external/wpt/paint-timing/fcp-only/fcp-pseudo-element-visibility.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-position/position-absolute-center-001.tentative.html [ Failure ]
