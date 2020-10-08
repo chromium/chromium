@@ -4,14 +4,17 @@
 
 #include "components/payments/content/test_content_payment_request_delegate.h"
 
+#include <utility>
+
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/core/error_strings.h"
 
 namespace payments {
 
 TestContentPaymentRequestDelegate::TestContentPaymentRequestDelegate(
+    std::unique_ptr<base::SingleThreadTaskExecutor> task_executor,
     autofill::PersonalDataManager* pdm)
-    : core_delegate_(pdm) {}
+    : core_delegate_(std::move(task_executor), pdm) {}
 
 TestContentPaymentRequestDelegate::~TestContentPaymentRequestDelegate() {}
 

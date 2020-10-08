@@ -9,14 +9,14 @@
 namespace payments {
 
 TestChromePaymentRequestDelegate::TestChromePaymentRequestDelegate(
-    content::WebContents* web_contents,
+    content::RenderFrameHost* render_frame_host,
     PaymentRequestDialogView::ObserverForTest* observer,
     PrefService* pref_service,
     bool is_off_the_record,
     bool is_valid_ssl,
     bool is_browser_window_active,
     bool skip_ui_for_basic_card)
-    : ChromePaymentRequestDelegate(web_contents),
+    : ChromePaymentRequestDelegate(render_frame_host),
       region_data_loader_(nullptr),
       observer_(observer),
       pref_service_(pref_service),

@@ -7,10 +7,11 @@
 
 #include "chrome/browser/payments/chrome_payment_request_delegate.h"
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_dialog_view.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace content {
-class WebContents;
-}
+class RenderFrameHost;
+}  // namespace content
 
 namespace payments {
 
@@ -22,7 +23,7 @@ class TestSecurePaymentConfirmationPaymentRequestDelegate
  public:
   // This delegate does not own things passed as pointers.
   TestSecurePaymentConfirmationPaymentRequestDelegate(
-      content::WebContents* web_contents,
+      content::RenderFrameHost* render_frame_host,
       base::WeakPtr<SecurePaymentConfirmationModel> model,
       SecurePaymentConfirmationDialogView::ObserverForTest* observer);
   ~TestSecurePaymentConfirmationPaymentRequestDelegate() override;
@@ -36,7 +37,7 @@ class TestSecurePaymentConfirmationPaymentRequestDelegate
   }
 
  private:
-  content::WebContents* web_contents_;
+  const content::GlobalFrameRoutingId frame_routing_id_;
   base::WeakPtr<SecurePaymentConfirmationModel> model_;
   base::WeakPtr<SecurePaymentConfirmationDialogView> dialog_view_;
 };

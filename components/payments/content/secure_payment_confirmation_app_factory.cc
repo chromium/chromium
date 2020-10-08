@@ -73,7 +73,7 @@ void SecurePaymentConfirmationAppFactory::
         mojom::SecurePaymentConfirmationRequestPtr request,
         std::unique_ptr<autofill::InternalAuthenticator> authenticator,
         bool is_available) {
-  if (!delegate)
+  if (!delegate || !delegate->GetWebContents())
     return;
 
   if (!is_available && !base::FeatureList::IsEnabled(

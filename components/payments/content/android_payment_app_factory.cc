@@ -225,8 +225,11 @@ AndroidPaymentAppFactory::AndroidPaymentAppFactory(
 AndroidPaymentAppFactory::~AndroidPaymentAppFactory() = default;
 
 void AndroidPaymentAppFactory::Create(base::WeakPtr<Delegate> delegate) {
-  auto app_finder = AppFinder::CreateAndSetOwnedBy(delegate->GetWebContents());
-  app_finder->FindApps(communication_, delegate);
+  content::WebContents* web_contents = delegate->GetWebContents();
+  if (web_contents) {
+    auto app_finder = AppFinder::CreateAndSetOwnedBy(web_contents);
+    app_finder->FindApps(communication_, delegate);
+  }
 }
 
 }  // namespace payments

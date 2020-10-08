@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_executor.h"
 #include "components/autofill/core/browser/address_normalizer.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -307,7 +308,9 @@ TEST_F(AutofillPaymentAppTest, HasEnrolledInstrument_NoNumber) {
 TEST_F(AutofillPaymentAppTest, InvokePaymentApp_NormalizationBeforeUnmask) {
   auto personal_data_manager =
       std::make_unique<autofill::TestPersonalDataManager>();
-  TestPaymentRequestDelegate delegate(personal_data_manager.get());
+  TestPaymentRequestDelegate delegate(
+      std::make_unique<base::SingleThreadTaskExecutor>(),
+      personal_data_manager.get());
   delegate.DelayFullCardRequestCompletion();
   delegate.test_address_normalizer()->DelayNormalization();
 
@@ -335,7 +338,9 @@ TEST_F(AutofillPaymentAppTest, InvokePaymentApp_NormalizationBeforeUnmask) {
 TEST_F(AutofillPaymentAppTest, InvokePaymentApp_UnmaskBeforeNormalization) {
   auto personal_data_manager =
       std::make_unique<autofill::TestPersonalDataManager>();
-  TestPaymentRequestDelegate delegate(personal_data_manager.get());
+  TestPaymentRequestDelegate delegate(
+      std::make_unique<base::SingleThreadTaskExecutor>(),
+      personal_data_manager.get());
   delegate.DelayFullCardRequestCompletion();
   delegate.test_address_normalizer()->DelayNormalization();
 

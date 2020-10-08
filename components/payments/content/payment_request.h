@@ -65,7 +65,6 @@ class PaymentRequest : public mojom::PaymentRequest,
   };
 
   PaymentRequest(content::RenderFrameHost* render_frame_host,
-                 content::WebContents* web_contents,
                  std::unique_ptr<ContentPaymentRequestDelegate> delegate,
                  PaymentRequestWebContentsManager* manager,
                  PaymentRequestDisplayManager* display_manager,
@@ -136,9 +135,9 @@ class PaymentRequest : public mojom::PaymentRequest,
   // Called when the payment handler requests to open a payment handler window.
   void OnPaymentHandlerOpenWindowCalled();
 
-  content::WebContents* web_contents() { return web_contents_; }
+  content::WebContents* web_contents();
 
-  const content::GlobalFrameRoutingId& initiator_frame_routing_id() {
+  const content::GlobalFrameRoutingId& initiator_frame_routing_id() const {
     return initiator_frame_routing_id_;
   }
 
@@ -205,7 +204,6 @@ class PaymentRequest : public mojom::PaymentRequest,
 
   void OnAbortResult(bool aborted);
 
-  content::WebContents* web_contents_;
   const content::GlobalFrameRoutingId initiator_frame_routing_id_;
   DeveloperConsoleLogger log_;
   std::unique_ptr<ContentPaymentRequestDelegate> delegate_;

@@ -28,6 +28,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/payment_app_provider.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/stored_payment_app.h"
 #include "content/public/browser/web_contents.h"
@@ -129,8 +130,11 @@ class SelfDeletingServiceWorkerPaymentAppFinder
       ServiceWorkerPaymentAppFinder::GetAllPaymentAppsCallback callback,
       base::OnceClosure finished_using_resources_callback) {
     DCHECK(!verifier_);
+    DCHECK(initiator_render_frame_host);
+    DCHECK(initiator_render_frame_host->IsCurrent());
 
     downloader_ = std::move(downloader);
+
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(initiator_render_frame_host);
     parser_ = std::make_unique<PaymentManifestParser>(
@@ -142,10 +146,9 @@ class SelfDeletingServiceWorkerPaymentAppFinder
     if (may_crawl_for_installable_payment_apps &&
         base::FeatureList::IsEnabled(
             features::kWebPaymentsJustInTimePaymentApp)) {
-      // Construct crawler in constructor to allow it observe the web_contents.
       crawler_ = std::make_unique<InstallablePaymentAppCrawler>(
-          merchant_origin, initiator_render_frame_host, web_contents,
-          downloader_.get(), parser_.get(), cache_.get());
+          merchant_origin, initiator_render_frame_host, downloader_.get(),
+          parser_.get(), cache_.get());
       if (ignore_port_in_origin_comparison_for_testing_)
         crawler_->IgnorePortInOriginComparisonForTesting();
     }
@@ -160,7 +163,7 @@ class SelfDeletingServiceWorkerPaymentAppFinder
         std::move(finished_using_resources_callback);
 
     content::InstalledPaymentAppsFinder::GetInstance(
-        web_contents->GetBrowserContext())
+        initiator_render_frame_host->GetBrowserContext())
         ->GetAllPaymentApps(base::BindOnce(
             &SelfDeletingServiceWorkerPaymentAppFinder::OnGotAllPaymentApps,
             weak_ptr_factory_.GetWeakPtr()));
@@ -402,6 +405,11 @@ void ServiceWorkerPaymentAppFinder::GetAllPaymentApps(
     GetAllPaymentAppsCallback callback,
     base::OnceClosure finished_writing_cache_callback_for_testing) {
   DCHECK(!requested_method_data.empty());
+
+  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
+  if (!rfh || !rfh->IsCurrent())
+    return;
+
   // Do not look up payment handlers for ignored payment methods.
   base::EraseIf(requested_method_data,
                 [&](const mojom::PaymentMethodDataPtr& method_data) {
@@ -416,8 +424,7 @@ void ServiceWorkerPaymentAppFinder::GetAllPaymentApps(
     return;
   }
 
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(rfh_);
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
   auto self_delete_factory =
       SelfDeletingServiceWorkerPaymentAppFinder::CreateAndSetOwnedBy(
           web_contents);
@@ -430,14 +437,13 @@ void ServiceWorkerPaymentAppFinder::GetAllPaymentApps(
     downloader = std::make_unique<payments::PaymentManifestDownloader>(
         std::make_unique<DeveloperConsoleLogger>(web_contents),
         content::BrowserContext::GetDefaultStoragePartition(
-            web_contents->GetBrowserContext())
+            rfh->GetBrowserContext())
             ->GetURLLoaderFactoryForBrowserProcess());
   }
 
   self_delete_factory->GetAllPaymentApps(
-      merchant_origin, rfh_, std::move(downloader), cache,
-      requested_method_data, may_crawl_for_installable_payment_apps,
-      std::move(callback),
+      merchant_origin, rfh, std::move(downloader), cache, requested_method_data,
+      may_crawl_for_installable_payment_apps, std::move(callback),
       std::move(finished_writing_cache_callback_for_testing));
 }
 
@@ -462,7 +468,9 @@ void ServiceWorkerPaymentAppFinder::IgnorePaymentMethodForTest(
 
 ServiceWorkerPaymentAppFinder::ServiceWorkerPaymentAppFinder(
     content::RenderFrameHost* rfh)
-    : rfh_(rfh),
+    : frame_routing_id_(
+          content::GlobalFrameRoutingId(rfh->GetProcess()->GetID(),
+                                        rfh->GetRoutingID())),
       ignored_methods_({methods::kGooglePlayBilling}),
       test_downloader_(nullptr) {}
 

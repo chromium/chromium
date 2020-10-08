@@ -12,10 +12,11 @@
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/secure_payment_confirmation_controller.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace content {
-class WebContents;
-}
+class BrowserContext;
+}  // namespace content
 
 namespace payments {
 
@@ -23,7 +24,8 @@ class PaymentRequestDialog;
 
 class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
  public:
-  explicit ChromePaymentRequestDelegate(content::WebContents* web_contents);
+  explicit ChromePaymentRequestDelegate(
+      content::RenderFrameHost* render_frame_host);
   ~ChromePaymentRequestDelegate() override;
 
   // PaymentRequestDelegate:
@@ -70,10 +72,13 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
   base::WeakPtr<PaymentRequestDialog> shown_dialog_;
 
  private:
+  // Returns the browser context of the `render_frame_host_` or null if not
+  // available.
+  content::BrowserContext* GetBrowserContextOrNull() const;
+
   std::unique_ptr<SecurePaymentConfirmationController> spc_dialog_;
 
-  // Not owned but outlives the PaymentRequest object that owns this.
-  content::WebContents* web_contents_;
+  content::GlobalFrameRoutingId frame_routing_id_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromePaymentRequestDelegate);
 };
