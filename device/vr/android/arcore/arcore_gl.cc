@@ -37,6 +37,7 @@
 #include "ui/gl/android/surface_texture.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_fence_android_native_fence_sync.h"
 #include "ui/gl/gl_fence_egl.h"
 #include "ui/gl/gl_image_ahardwarebuffer.h"
 #include "ui/gl/gl_surface.h"
@@ -529,9 +530,20 @@ void ArCoreGl::GetRenderedFrameStats() {
   DCHECK(webxr_->HaveRenderingFrame());
   vr::WebXrFrame* frame = webxr_->GetRenderingFrame();
 
+  DCHECK(frame->render_completion_fence);
+  base::TimeTicks completion_time =
+      static_cast<gl::GLFenceAndroidNativeFenceSync*>(
+          frame->render_completion_fence.get())
+          ->GetStatusChangeTime();
+  if (completion_time.is_null()) {
+    // The fence status change time is best effort and may be unavailable.
+    // In that case, use wallclock time.
+    DVLOG(3) << __func__ << ": got null completion time, using wallclock";
+    completion_time = base::TimeTicks::Now();
+  }
+
   base::TimeDelta pose_to_submit = frame->time_js_submit - frame->time_pose;
-  base::TimeDelta submit_to_swap =
-      base::TimeTicks::Now() - frame->time_js_submit;
+  base::TimeDelta submit_to_swap = completion_time - frame->time_js_submit;
   TRACE_COUNTER2("gpu", "WebXR frame time (ms)", "javascript",
                  pose_to_submit.InMilliseconds(), "processing",
                  submit_to_swap.InMilliseconds());
