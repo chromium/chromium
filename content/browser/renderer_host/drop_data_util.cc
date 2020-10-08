@@ -117,7 +117,8 @@ DropData DragDataToDropData(const blink::mojom::DragData& drag_data) {
         DCHECK(result.file_contents.empty());
 
         const blink::mojom::DragItemBinaryPtr& binary_item = item->get_binary();
-        result.file_contents.reserve(binary_item->data.size());
+        std::vector<uint8_t> contents = binary_item->data;
+        result.file_contents.assign(contents.begin(), contents.end());
         result.file_contents_source_url = binary_item->source_url;
         result.file_contents_filename_extension =
             binary_item->filename_extension.value();
