@@ -68,8 +68,9 @@ void PromoBrowserCommandHandler::ExecuteCommandWithDisposition(
       base::RecordAction(
           base::UserMetricsAction("NewTabPage_Promos_SafetyCheck"));
       break;
-    case Command::kOpenSafeBrowsingSettings:
-      NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kSafeBrowsingSubPage)),
+    case Command::kOpenSafeBrowsingEnhancedProtectionSettings:
+      NavigateToURL(GURL(chrome::GetSettingsUrl(
+                        chrome::kSafeBrowsingEnhancedProtectionSubPage)),
                     disposition);
       base::RecordAction(
           base::UserMetricsAction("NewTabPage_Promos_EnhancedProtection"));
@@ -87,7 +88,8 @@ void PromoBrowserCommandHandler::EnableCommands() {
   GetCommandUpdater()->UpdateCommandEnabled(
       static_cast<int>(Command::kOpenSafetyCheck), true);
   GetCommandUpdater()->UpdateCommandEnabled(
-      static_cast<int>(Command::kOpenSafeBrowsingSettings), true);
+      static_cast<int>(Command::kOpenSafeBrowsingEnhancedProtectionSettings),
+      true);
 }
 
 CommandUpdater* PromoBrowserCommandHandler::GetCommandUpdater() {
