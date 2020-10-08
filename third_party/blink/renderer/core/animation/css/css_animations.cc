@@ -927,7 +927,8 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
     // After cancellation, transitions must be downgraded or they'll fail
     // to be considered when retriggering themselves. This can happen if
     // the transition is captured through getAnimations then played.
-    if (auto* effect = DynamicTo<KeyframeEffect>(animation->effect()))
+    effect = DynamicTo<KeyframeEffect>(animation->effect());
+    if (effect)
       effect->DowngradeToNormal();
     animation->Update(kTimingUpdateOnDemand);
   }

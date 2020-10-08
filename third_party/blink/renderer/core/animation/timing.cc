@@ -167,11 +167,11 @@ Timing::CalculatedTiming Timing::CalculateTimings(
                           local_time, current_phase, *this);
 
   base::Optional<double> progress;
-  const double iteration_duration = IterationDuration().InSecondsF();
+  const double local_iteration_duration = IterationDuration().InSecondsF();
 
-  const base::Optional<double> overall_progress =
-      CalculateOverallProgress(current_phase, active_time, iteration_duration,
-                               iteration_count, iteration_start);
+  const base::Optional<double> overall_progress = CalculateOverallProgress(
+      current_phase, active_time, local_iteration_duration, iteration_count,
+      iteration_start);
   const base::Optional<double> simple_iteration_progress =
       CalculateSimpleIterationProgress(current_phase, overall_progress,
                                        iteration_start, active_time,
@@ -191,21 +191,21 @@ Timing::CalculatedTiming Timing::CalculateTimings(
   AnimationTimeDelta time_to_next_iteration = AnimationTimeDelta::Max();
   // Conditionally compute the time to next iteration, which is only
   // applicable if the iteration duration is non-zero.
-  if (iteration_duration) {
+  if (local_iteration_duration) {
     const double start_offset =
-        MultiplyZeroAlwaysGivesZero(iteration_start, iteration_duration);
+        MultiplyZeroAlwaysGivesZero(iteration_start, local_iteration_duration);
     DCHECK_GE(start_offset, 0);
     const base::Optional<AnimationTimeDelta> offset_active_time =
         CalculateOffsetActiveTime(active_duration, active_time, start_offset);
     const base::Optional<AnimationTimeDelta> iteration_time =
-        CalculateIterationTime(iteration_duration, active_duration,
+        CalculateIterationTime(local_iteration_duration, active_duration,
                                offset_active_time, start_offset, current_phase,
                                *this);
     if (iteration_time) {
       // active_time cannot be null if iteration_time is not null.
       DCHECK(active_time);
       time_to_next_iteration =
-          AnimationTimeDelta::FromSecondsD(iteration_duration) -
+          AnimationTimeDelta::FromSecondsD(local_iteration_duration) -
           iteration_time.value();
       if (AnimationTimeDelta::FromSecondsD(active_duration) -
               active_time.value() <
