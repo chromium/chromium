@@ -53,6 +53,18 @@ class HatsNotificationController : public message_center::NotificationDelegate,
 
   ~HatsNotificationController() override;
 
+  enum class HatsState {
+    kDeviceSelected = 0,         // Device was selected in roll of dice.
+    kSurveyShownRecently = 1,    // A survey was shown recently on device.
+    kNewDevice = 2,              // Device is too new to show the survey.
+    kNotificationDisplayed = 3,  // Pop up for survey was presented to user.
+    kNotificationDismissed = 4,  // Notification was dismissed by user.
+    kNotificationClicked = 5,    // User clicked on notification to open the
+                                 // survey.
+
+    kMaxValue = kNotificationClicked
+  };
+
   // NotificationDelegate overrides:
   void Initialize(bool is_new_device);
   void Close(bool by_user) override;
@@ -69,6 +81,9 @@ class HatsNotificationController : public message_center::NotificationDelegate,
   Profile* const profile_;
   std::unique_ptr<message_center::Notification> notification_;
   std::unique_ptr<HatsDialog> hats_dialog_;
+
+  HatsState state_ = HatsState::kDeviceSelected;
+
   base::WeakPtrFactory<HatsNotificationController> weak_pointer_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HatsNotificationController);
