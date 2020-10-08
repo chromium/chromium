@@ -482,7 +482,7 @@ body:not([surprise-me-disabled]) [visibleif~='surprise-me-disabled'] {
 }
 
 .top-header-contents #wallpaper-description {
-  color: rgb(128, 134, 139);
+  color: rgb(95, 99, 104); /* google-grey-700 */
   max-width: 312px;
   min-width: 132px;
   overflow: hidden;
@@ -795,7 +795,7 @@ html[dir='rtl'] .daily-refresh-label {
 }
 
 #currently-set-message {
-  color: rgb(128, 134, 139);
+  color: rgb(95, 99, 104); /* google-grey-700 */
   font-size: 13px;
 }
 
