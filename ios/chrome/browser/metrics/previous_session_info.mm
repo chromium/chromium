@@ -66,9 +66,6 @@ DeviceThermalState GetThermalStateFromNSProcessInfoThermalState(
 NSString* const kLastRanVersion = @"LastRanVersion";
 // - The (string) device language.
 NSString* const kLastRanLanguage = @"LastRanLanguage";
-// - The (Integer) representing UIApplicationState.
-NSString* const kPreviousSessionInfoApplicationState =
-    @"PreviousSessionInfoApplicationState";
 // - The (integer) available device storage, in kilobytes.
 NSString* const kPreviousSessionInfoAvailableDeviceStorage =
     @"PreviousSessionInfoAvailableDeviceStorage";
@@ -97,6 +94,8 @@ NSString* const kPreviousSessionInfoMultiWindowEnabled =
 }  // namespace
 
 namespace previous_session_info_constants {
+NSString* const kPreviousSessionInfoApplicationState =
+    @"PreviousSessionInfoApplicationState";
 NSString* const kDidSeeMemoryWarningShortlyBeforeTerminating =
     @"DidSeeMemoryWarning";
 NSString* const kOSStartTime = @"OSStartTime";
@@ -111,6 +110,9 @@ NSString* const kPreviousSessionInfoURLs = @"PreviousSessionInfoURLs";
 
 // Whether beginRecordingCurrentSession was called.
 @property(nonatomic, assign) BOOL didBeginRecordingCurrentSession;
+
+// Whether recording data is in progress.
+@property(nonatomic, assign) BOOL recordingCurrentSession;
 
 // Used for setting and resetting kPreviousSessionInfoRestoringSession flag.
 // Can be greater than one if multiple sessions are being restored in parallel.
@@ -151,10 +153,12 @@ static PreviousSessionInfo* gSharedInstance = nil;
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 
     gSharedInstance->_applicationState.reset();
-    if ([defaults objectForKey:kPreviousSessionInfoApplicationState]) {
-      gSharedInstance->_applicationState =
-          std::make_unique<UIApplicationState>(static_cast<UIApplicationState>(
-              [defaults integerForKey:kPreviousSessionInfoApplicationState]));
+    if ([defaults objectForKey:previous_session_info_constants::
+                                   kPreviousSessionInfoApplicationState]) {
+      gSharedInstance->_applicationState = std::make_unique<UIApplicationState>(
+          static_cast<UIApplicationState>([defaults
+              integerForKey:previous_session_info_constants::
+                                kPreviousSessionInfoApplicationState]));
     }
 
     gSharedInstance.availableDeviceStorage = -1;
@@ -231,7 +235,6 @@ static PreviousSessionInfo* gSharedInstance = nil;
   if (self.didBeginRecordingCurrentSession)
     return;
   self.didBeginRecordingCurrentSession = YES;
-
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 
   // Set the current Chrome version.
@@ -263,7 +266,6 @@ static PreviousSessionInfo* gSharedInstance = nil;
       removeObjectForKey:previous_session_info_constants::
                              kDidSeeMemoryWarningShortlyBeforeTerminating];
 
-  [self updateApplicationState];
   [[NSNotificationCenter defaultCenter]
       addObserver:self
          selector:@selector(updateApplicationState)
@@ -273,6 +275,16 @@ static PreviousSessionInfo* gSharedInstance = nil;
       addObserver:self
          selector:@selector(updateApplicationState)
              name:UIApplicationWillEnterForegroundNotification
+           object:nil];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(protectedDataWillBecomeUnavailable)
+             name:UIApplicationProtectedDataWillBecomeUnavailable
+           object:nil];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(protectedDataDidBecomeAvailable)
+             name:UIApplicationProtectedDataWillBecomeUnavailable
            object:nil];
   [[NSNotificationCenter defaultCenter]
       addObserver:self
@@ -286,36 +298,57 @@ static PreviousSessionInfo* gSharedInstance = nil;
            object:nil];
 
   [UIDevice currentDevice].batteryMonitoringEnabled = YES;
-  [self updateStoredBatteryLevel];
+
   [[NSNotificationCenter defaultCenter]
       addObserver:self
          selector:@selector(updateStoredBatteryLevel)
              name:UIDeviceBatteryLevelDidChangeNotification
            object:nil];
 
-  [self updateStoredBatteryState];
   [[NSNotificationCenter defaultCenter]
       addObserver:self
          selector:@selector(updateStoredBatteryState)
              name:UIDeviceBatteryStateDidChangeNotification
            object:nil];
 
-  [self updateStoredLowPowerMode];
   [[NSNotificationCenter defaultCenter]
       addObserver:self
          selector:@selector(updateStoredLowPowerMode)
              name:NSProcessInfoPowerStateDidChangeNotification
            object:nil];
 
-  [self updateStoredThermalState];
   [[NSNotificationCenter defaultCenter]
       addObserver:self
          selector:@selector(updateStoredThermalState)
              name:NSProcessInfoThermalStateDidChangeNotification
            object:nil];
 
+  [self resumeRecordingCurrentSession];
+}
+
+- (void)resumeRecordingCurrentSession {
+  if (self.recordingCurrentSession)
+    return;
+  self.recordingCurrentSession = YES;
+  [self updateApplicationState];
+  [self updateStoredBatteryLevel];
+  [self updateStoredBatteryState];
+  [self updateStoredLowPowerMode];
+  [self updateStoredThermalState];
   // Save critical state information for crash detection.
-  [defaults synchronize];
+  [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)pauseRecordingCurrentSession {
+  self.recordingCurrentSession = NO;
+}
+
+- (void)protectedDataWillBecomeUnavailable {
+  [self pauseRecordingCurrentSession];
+}
+
+- (void)protectedDataDidBecomeAvailable {
+  [self resumeRecordingCurrentSession];
 }
 
 - (UIApplicationState*)applicationState {
@@ -323,7 +356,7 @@ static PreviousSessionInfo* gSharedInstance = nil;
 }
 
 - (void)updateAvailableDeviceStorage:(NSInteger)availableStorage {
-  if (!self.didBeginRecordingCurrentSession)
+  if (!self.recordingCurrentSession)
     return;
 
   [[NSUserDefaults standardUserDefaults]
@@ -334,11 +367,15 @@ static PreviousSessionInfo* gSharedInstance = nil;
 }
 
 - (void)updateSessionEndTime {
+  if (!self.recordingCurrentSession)
+    return;
   [[NSUserDefaults standardUserDefaults] setObject:[NSDate date]
                                             forKey:kPreviousSessionInfoEndTime];
 }
 
 - (void)updateStoredBatteryLevel {
+  if (!self.recordingCurrentSession)
+    return;
   [[NSUserDefaults standardUserDefaults]
       setFloat:[UIDevice currentDevice].batteryLevel
         forKey:kPreviousSessionInfoBatteryLevel];
@@ -346,14 +383,19 @@ static PreviousSessionInfo* gSharedInstance = nil;
 }
 
 - (void)updateApplicationState {
+  if (!self.recordingCurrentSession)
+    return;
   [[NSUserDefaults standardUserDefaults]
       setInteger:UIApplication.sharedApplication.applicationState
-          forKey:kPreviousSessionInfoApplicationState];
+          forKey:previous_session_info_constants::
+                     kPreviousSessionInfoApplicationState];
 
   [self updateSessionEndTime];
 }
 
 - (void)updateStoredBatteryState {
+  if (!self.recordingCurrentSession)
+    return;
   UIDevice* device = [UIDevice currentDevice];
   // Translate value to an app defined enum as the system could change the
   // underlying values of UIDeviceBatteryState between OS versions.
@@ -370,6 +412,8 @@ static PreviousSessionInfo* gSharedInstance = nil;
 }
 
 - (void)updateStoredLowPowerMode {
+  if (!self.recordingCurrentSession)
+    return;
   BOOL isLowPoweredModeEnabled =
       [[NSProcessInfo processInfo] isLowPowerModeEnabled];
   [[NSUserDefaults standardUserDefaults]
@@ -380,6 +424,8 @@ static PreviousSessionInfo* gSharedInstance = nil;
 }
 
 - (void)updateStoredThermalState {
+  if (!self.recordingCurrentSession)
+    return;
   NSProcessInfo* processInfo = [NSProcessInfo processInfo];
   // Translate value to an app defined enum as the system could change the
   // underlying values of NSProcessInfoThermalState between OS versions.

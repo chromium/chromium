@@ -12,6 +12,8 @@
 #include "url/gurl.h"
 
 namespace previous_session_info_constants {
+// - The (Integer) representing UIApplicationState.
+extern NSString* const kPreviousSessionInfoApplicationState;
 // Key in the UserDefaults for a boolean value keeping track of memory warnings.
 extern NSString* const kDidSeeMemoryWarningShortlyBeforeTerminating;
 // Key in the UserDefaults for a double value which stores OS start time.

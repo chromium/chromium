@@ -25,6 +25,10 @@
 
 + (void)resetSharedInstanceForTesting;
 
+- (void)pauseRecordingCurrentSession;
+- (void)resumeRecordingCurrentSession;
+- (void)updateApplicationState;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_METRICS_PREVIOUS_SESSION_INFO_PRIVATE_H_

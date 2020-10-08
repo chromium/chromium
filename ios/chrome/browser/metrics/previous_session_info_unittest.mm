@@ -552,4 +552,78 @@ TEST_F(PreviousSessionInfoTest, ReportParameterURLs) {
   [PreviousSessionInfo resetSharedInstanceForTesting];
 }
 
+// Tests data collection pausing.
+TEST_F(PreviousSessionInfoTest, PausePreviousSessionInfoCollection) {
+  // Default state.
+  [NSUserDefaults.standardUserDefaults
+      removeObjectForKey:previous_session_info_constants::
+                             kPreviousSessionInfoApplicationState];
+
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+  EXPECT_FALSE([NSUserDefaults.standardUserDefaults
+      valueForKey:previous_session_info_constants::
+                      kPreviousSessionInfoApplicationState]);
+
+  // Start recording. This should update the state.
+  [[PreviousSessionInfo sharedInstance] beginRecordingCurrentSession];
+  EXPECT_TRUE([NSUserDefaults.standardUserDefaults
+      valueForKey:previous_session_info_constants::
+                      kPreviousSessionInfoApplicationState]);
+
+  // Cleanup.
+  [NSUserDefaults.standardUserDefaults
+      removeObjectForKey:previous_session_info_constants::
+                             kPreviousSessionInfoApplicationState];
+  EXPECT_FALSE([NSUserDefaults.standardUserDefaults
+      valueForKey:previous_session_info_constants::
+                      kPreviousSessionInfoApplicationState]);
+
+  // Updating state should work when recording is enabled.
+  [[PreviousSessionInfo sharedInstance] updateApplicationState];
+  EXPECT_TRUE([NSUserDefaults.standardUserDefaults
+      valueForKey:previous_session_info_constants::
+                      kPreviousSessionInfoApplicationState]);
+
+  // Cleanup.
+  [NSUserDefaults.standardUserDefaults
+      removeObjectForKey:previous_session_info_constants::
+                             kPreviousSessionInfoApplicationState];
+  EXPECT_FALSE([NSUserDefaults.standardUserDefaults
+      valueForKey:previous_session_info_constants::
+                      kPreviousSessionInfoApplicationState]);
+
+  // Updating state should be noop when recording is paused.
+  [[PreviousSessionInfo sharedInstance] pauseRecordingCurrentSession];
+  [[PreviousSessionInfo sharedInstance] updateApplicationState];
+  EXPECT_FALSE([NSUserDefaults.standardUserDefaults
+      valueForKey:previous_session_info_constants::
+                      kPreviousSessionInfoApplicationState]);
+
+  // Resume recording should update the state.
+  [[PreviousSessionInfo sharedInstance] resumeRecordingCurrentSession];
+  EXPECT_TRUE([NSUserDefaults.standardUserDefaults
+      valueForKey:previous_session_info_constants::
+                      kPreviousSessionInfoApplicationState]);
+
+  // Cleanup
+  [NSUserDefaults.standardUserDefaults
+      removeObjectForKey:previous_session_info_constants::
+                             kPreviousSessionInfoApplicationState];
+  EXPECT_FALSE([NSUserDefaults.standardUserDefaults
+      valueForKey:previous_session_info_constants::
+                      kPreviousSessionInfoApplicationState]);
+
+  // Updating state should work when recording is enabled.
+  [[PreviousSessionInfo sharedInstance] updateApplicationState];
+  EXPECT_TRUE([NSUserDefaults.standardUserDefaults
+      valueForKey:previous_session_info_constants::
+                      kPreviousSessionInfoApplicationState]);
+
+  // Cleanup.
+  [NSUserDefaults.standardUserDefaults
+      removeObjectForKey:previous_session_info_constants::
+                             kPreviousSessionInfoApplicationState];
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+}
+
 }  // namespace
