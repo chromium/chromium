@@ -8792,6 +8792,63 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   EXPECT_FALSE(new_aggregated_frame.delegated_ink_metadata);
 }
 
+// Tests that changing the color usage results in full-frame damage.
+TEST_F(SurfaceAggregatorValidSurfaceTest, ColorUsageChangeFullFrameDamage) {
+  constexpr float device_scale_factor = 1.0f;
+  const gfx::Rect full_damage_rect(SurfaceSize());
+  const gfx::Rect partial_damage_rect(10, 10, 10, 10);
+  std::vector<Quad> quads = {
+      Quad::SolidColorQuad(SK_ColorRED, gfx::Rect(SurfaceSize()))};
+  std::vector<Pass> passes = {Pass(quads, SurfaceSize())};
+  passes[0].damage_rect = partial_damage_rect;
+
+  // First frame has full damage.
+  {
+    SubmitCompositorFrame(root_sink_.get(), passes, root_local_surface_id_,
+                          device_scale_factor);
+    SurfaceId root_surface_id(root_sink_->frame_sink_id(),
+                              root_local_surface_id_);
+    auto aggregated_frame = AggregateFrame(root_surface_id);
+
+    EXPECT_EQ(gfx::ContentColorUsage::kHDR,
+              aggregated_frame.render_pass_list[0]->content_color_usage);
+    EXPECT_EQ(full_damage_rect,
+              aggregated_frame.render_pass_list[0]->damage_rect);
+  }
+  // Second frame has partial damage.
+  {
+    SubmitCompositorFrame(root_sink_.get(), passes, root_local_surface_id_,
+                          device_scale_factor);
+    SurfaceId root_surface_id(root_sink_->frame_sink_id(),
+                              root_local_surface_id_);
+    auto aggregated_frame = AggregateFrame(root_surface_id);
+
+    EXPECT_EQ(gfx::ContentColorUsage::kHDR,
+              aggregated_frame.render_pass_list[0]->content_color_usage);
+    EXPECT_EQ(partial_damage_rect,
+              aggregated_frame.render_pass_list[0]->damage_rect);
+  }
+  // Finally, change the content_color_usage from HDR to sRGB. The resulting
+  // frame should have full damage.
+  {
+    CompositorFrame compositor_frame = MakeEmptyCompositorFrame();
+    compositor_frame.metadata.content_color_usage =
+        gfx::ContentColorUsage::kSRGB;
+    AddPasses(&compositor_frame.render_pass_list, passes,
+              &compositor_frame.metadata.referenced_surfaces);
+    root_sink_->SubmitCompositorFrame(root_local_surface_id_,
+                                      std::move(compositor_frame));
+    SurfaceId root_surface_id(root_sink_->frame_sink_id(),
+                              root_local_surface_id_);
+    auto aggregated_frame = AggregateFrame(root_surface_id);
+
+    EXPECT_EQ(gfx::ContentColorUsage::kSRGB,
+              aggregated_frame.render_pass_list[0]->content_color_usage);
+    EXPECT_EQ(full_damage_rect,
+              aggregated_frame.render_pass_list[0]->damage_rect);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          SurfaceAggregatorValidSurfaceWithMergingPassesTest,
                          testing::Bool());

@@ -1719,7 +1719,9 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   // Changing color usage will cause the renderer to reshape the output surface,
   // therefore the renderer might expand the damage to the whole frame. The
   // following makes sure SA will produce all the quads to cover the full frame.
-  if (root_content_color_usage_ != prewalk_result.content_color_usage) {
+  bool color_usage_changed =
+      root_content_color_usage_ != prewalk_result.content_color_usage;
+  if (color_usage_changed) {
     root_damage_rect_ = cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
         root_surface_transform_,
         gfx::Rect(root_surface_frame.size_in_pixels()));
@@ -1754,7 +1756,8 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   // The damage on the root render pass should not include the expanded area
   // since Renderer and OverlayProcessor expect the non expanded damage.
   auto* last_pass = dest_pass_list_->back().get();
-  if (!RenderPassNeedsFullDamage(last_pass->id, last_pass->cache_render_pass))
+  if (!color_usage_changed &&
+      !RenderPassNeedsFullDamage(last_pass->id, last_pass->cache_render_pass))
     dest_pass_list_->back()->damage_rect.Intersect(surfaces_damage_rect);
 
   // Now that we've handled our main surface aggregation, apply de-jelly effect
