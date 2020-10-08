@@ -210,7 +210,10 @@ const NetExportView = (function() {
      */
     renderLogging_(info) {
       this.showStateDiv_(kIdStateDivLogging);
-
+      this.setFavicon_(
+          'data:image/svg+xml,<svg version="1.1" ' +
+          'xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">' +
+          '<circle cx="16" cy="16" r="14" fill="red" stroke="black" /></svg>');
       $(kIdStopLoggingButton).onclick = this.onStopLogging_.bind(this);
       $(kIdCaptureModeLogging).textContent = this.getCaptureModeText_(info);
       $(kIdFilePathLogging).textContent = info.file;
@@ -220,6 +223,7 @@ const NetExportView = (function() {
      * Updates the UI to display the state when logging has stopped.
      */
     renderStoppedLogging_(info) {
+      this.setFavicon_('data:image/x-icon;base64,');
       this.showStateDiv_(kIdStateDivStopped);
 
       // The email button is only available in the mobile UI.
@@ -287,6 +291,13 @@ const NetExportView = (function() {
         $(curDivId).hidden = divId !== curDivId;
       }
     },
+
+    /**
+     * Sets the icon for the tab to reflect current capturing state.
+     */
+    setFavicon_(dataUrl) {
+      document.getElementById('fav-icon').href = dataUrl;
+    }
   };
 
   return NetExportView;
