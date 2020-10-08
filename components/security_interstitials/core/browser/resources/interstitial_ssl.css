@@ -27,3 +27,15 @@
 .ssl-opt-in .checkbox::before {
   border-color: #696969;
 }
+
+.ssl-enhanced-protection-message {
+  border: 1px solid #696969;
+}
+
+.ssl-enhanced-protection-message .icon {
+  background-image: url(images/light_bulb_grey.svg);
+}
+
+.ssl-enhanced-protection-message a:link {
+  color: blue;
+}
