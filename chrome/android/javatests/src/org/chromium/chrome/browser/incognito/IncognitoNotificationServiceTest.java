@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.incognito;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import android.annotation.TargetApi;
 import android.app.NotificationManager;
@@ -12,6 +12,7 @@ import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Context;
 import android.os.Build;
+import android.service.notification.StatusBarNotification;
 import android.support.test.InstrumentationRegistry;
 import android.util.Pair;
 
@@ -97,8 +98,8 @@ public class IncognitoNotificationServiceTest {
                     }
                 });
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue(incognitoProfile.isOffTheRecord());
-            Assert.assertTrue(incognitoProfile.isNativeInitialized());
+            assertTrue(incognitoProfile.isOffTheRecord());
+            assertTrue(incognitoProfile.isNativeInitialized());
         });
 
         sendClearIncognitoIntent();
@@ -193,19 +194,23 @@ public class IncognitoNotificationServiceTest {
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     public void testCloseAllIncognitoNotificationIsDisplayed() {
         mActivityTestRule.startMainActivityOnBlankPage();
-
         createTabOnUiThread();
-        createTabOnUiThread();
-
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(
                     mActivityTestRule.getActivity().getTabModelSelector().getModel(true).getCount(),
-                    Matchers.is(2));
+                    Matchers.is(1));
         });
 
         Context context = ContextUtils.getApplicationContext();
         NotificationManager nm =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        assertEquals(1, nm.getActiveNotifications().length);
+        boolean isIncognitoNotificationDisplayed = false;
+        for (StatusBarNotification statusBarNotification : nm.getActiveNotifications()) {
+            if (statusBarNotification.getTag().equals(
+                        IncognitoNotificationManager.INCOGNITO_TABS_OPEN_TAG)) {
+                isIncognitoNotificationDisplayed = true;
+            }
+        }
+        assertTrue(isIncognitoNotificationDisplayed);
     }
 }
