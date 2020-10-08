@@ -155,10 +155,6 @@ class ChromeIdentityService {
   // identitites.
   virtual bool IsValidIdentity(ChromeIdentity* identity);
 
-  // Returns the chrome identity having the email equal to |email| or |nil| if
-  // no matching identity is found.
-  virtual ChromeIdentity* GetIdentityWithEmail(const std::string& email);
-
   // Returns the chrome identity having the gaia ID equal to |gaia_id| or |nil|
   // if no matching identity is found.
   virtual ChromeIdentity* GetIdentityWithGaiaID(const std::string& gaia_id);

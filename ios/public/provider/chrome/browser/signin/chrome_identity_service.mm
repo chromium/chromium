@@ -65,11 +65,6 @@ bool ChromeIdentityService::IsValidIdentity(ChromeIdentity* identity) {
   return false;
 }
 
-ChromeIdentity* ChromeIdentityService::GetIdentityWithEmail(
-    const std::string& email) {
-  return nil;
-}
-
 ChromeIdentity* ChromeIdentityService::GetIdentityWithGaiaID(
     const std::string& gaia_id) {
   return nil;
