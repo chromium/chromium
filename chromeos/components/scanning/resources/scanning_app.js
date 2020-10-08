@@ -85,7 +85,10 @@ Polymer({
 
   /** @override */
   ready() {
-    this.scanService_.getScanners().then(this.onScannersReceived_.bind(this));
+    this.scanService_.getScanners().then(
+        /*@type {!{scanners: !ScannerArr}}*/ (response) => {
+          this.onScannersReceived_(response);
+        });
   },
 
   /**
@@ -137,7 +140,12 @@ Polymer({
 
     this.scanService_
         .getScannerCapabilities(this.scannerIds_.get(selectedScannerId))
-        .then(this.onCapabilitiesReceived_.bind(this));
+        .then(
+            /*@type {!{capabilities:
+                   !chromeos.scanning.mojom.ScannerCapabilities}}*/
+            (response) => {
+              this.onCapabilitiesReceived_(response);
+            });
   },
 
   /** @private */
@@ -163,7 +171,8 @@ Polymer({
         .scan(this.scannerIds_.get(this.selectedScannerId), settings)
         .then(
             /*@type {!{success: boolean}}*/ (response) => {
-                this.onScanCompleted_(response)});
+              this.onScanCompleted_(response);
+            });
   },
 
   /**
