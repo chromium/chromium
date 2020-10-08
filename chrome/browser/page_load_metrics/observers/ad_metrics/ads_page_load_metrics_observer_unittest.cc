@@ -71,7 +71,7 @@ using page_load_metrics::OptionalMin;
 namespace {
 
 using FrameDataMap =
-    AdsPageLoadMetricsObserver::V8PerFrameMemoryObserverAnySeq::FrameDataMap;
+    AdsPageLoadMetricsObserver::V8DetailedMemoryObserverAnySeq::FrameDataMap;
 using FrameTreeNodeId = int;
 
 struct MemoryFrameData {
@@ -142,7 +142,7 @@ FrameDataMap MakeFrameDataMap(int process_id,
 
   for (const auto& entry : data) {
     content::GlobalFrameRoutingId global_id(process_id, entry.frame_id);
-    performance_manager::v8_memory::V8PerFrameMemoryFrameData frame_data;
+    performance_manager::v8_memory::V8DetailedMemoryFrameData frame_data;
     frame_data.set_v8_bytes_used(entry.bytes_used);
     data_map[global_id] = frame_data;
   }
@@ -842,7 +842,7 @@ class AdsPageLoadMetricsObserverTest
         static_cast<performance_manager::RenderProcessHostId>(process_id);
 
     FrameDataMap frame_data = MakeFrameDataMap(process_id, memory_data);
-    performance_manager::v8_memory::V8PerFrameMemoryProcessData process_data;
+    performance_manager::v8_memory::V8DetailedMemoryProcessData process_data;
 
     if (ads_observer_) {
       ads_observer_->OnV8MemoryMeasurementAvailable(pm_process_id, process_data,

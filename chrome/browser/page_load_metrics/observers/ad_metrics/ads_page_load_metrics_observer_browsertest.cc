@@ -129,16 +129,16 @@ void LoadLargeResource(net::test_server::ControllableHttpResponse* response,
 }  // namespace
 
 class MemoryMeasurementWaiter
-    : public performance_manager::v8_memory::V8PerFrameMemoryObserverAnySeq {
+    : public performance_manager::v8_memory::V8DetailedMemoryObserverAnySeq {
  public:
   MemoryMeasurementWaiter() = default;
   ~MemoryMeasurementWaiter() override = default;
 
   void OnV8MemoryMeasurementAvailable(
       performance_manager::RenderProcessHostId process_id,
-      const performance_manager::v8_memory::V8PerFrameMemoryProcessData&
+      const performance_manager::v8_memory::V8DetailedMemoryProcessData&
           process_data,
-      const performance_manager::v8_memory::V8PerFrameMemoryObserverAnySeq::
+      const performance_manager::v8_memory::V8DetailedMemoryObserverAnySeq::
           FrameDataMap& frame_data) override {
     // Iterate through frames with available measurements.
     for (const auto& map_pair : frame_data) {
@@ -2380,9 +2380,9 @@ IN_PROC_BROWSER_TEST_F(AdsMemoryMeasurementBrowserTest,
 
   // Instantiate a memory request and waiter to wait for a minimum
   // number of memory measurements to be received.
-  std::unique_ptr<performance_manager::v8_memory::V8PerFrameMemoryRequestAnySeq>
+  std::unique_ptr<performance_manager::v8_memory::V8DetailedMemoryRequestAnySeq>
       memory_request = std::make_unique<
-          performance_manager::v8_memory::V8PerFrameMemoryRequestAnySeq>(
+          performance_manager::v8_memory::V8DetailedMemoryRequestAnySeq>(
           base::TimeDelta::FromSeconds(1), MeasurementMode::kEagerForTesting);
   auto waiter = std::make_unique<MemoryMeasurementWaiter>();
   memory_request->AddObserver(waiter.get());

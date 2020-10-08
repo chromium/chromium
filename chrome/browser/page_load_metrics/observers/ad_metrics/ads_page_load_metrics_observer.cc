@@ -448,7 +448,7 @@ void AdsPageLoadMetricsObserver::UpdateAdFrameData(
       // would be no reason to monitor ad-frame memory usage and
       // |memory_request_| wouldn't be needed.
       memory_request_ = std::make_unique<
-          performance_manager::v8_memory::V8PerFrameMemoryRequestAnySeq>(
+          performance_manager::v8_memory::V8DetailedMemoryRequestAnySeq>(
           base::TimeDelta::FromSeconds(features::kMemoryPollInterval.Get()),
           features::kMemoryPollMode.Get());
       memory_request_->AddObserver(this);
@@ -707,9 +707,9 @@ void AdsPageLoadMetricsObserver::OnFrameDeleted(
 
 void AdsPageLoadMetricsObserver::OnV8MemoryMeasurementAvailable(
     performance_manager::RenderProcessHostId render_process_host_id,
-    const performance_manager::v8_memory::V8PerFrameMemoryProcessData&
+    const performance_manager::v8_memory::V8DetailedMemoryProcessData&
         process_data,
-    const V8PerFrameMemoryObserverAnySeq::FrameDataMap& frame_data) {
+    const V8DetailedMemoryObserverAnySeq::FrameDataMap& frame_data) {
   num_memory_updates_++;
 
   // Iterate through frames with available measurements.

@@ -19,7 +19,7 @@
 #include "chrome/browser/page_load_metrics/observers/ad_metrics/page_ad_density_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
-#include "components/performance_manager/public/v8_memory/v8_per_frame_memory_decorator.h"
+#include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/core/common/load_policy.h"
@@ -27,7 +27,7 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 
 using MeasurementMode =
-    performance_manager::v8_memory::V8PerFrameMemoryRequest::MeasurementMode;
+    performance_manager::v8_memory::V8DetailedMemoryRequest::MeasurementMode;
 
 namespace features {
 extern const base::Feature kRestrictedNavigationAdTagging;
@@ -43,7 +43,7 @@ class HeavyAdBlocklist;
 // relevant per-frame and whole-page byte statistics.
 class AdsPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver,
-      public performance_manager::v8_memory::V8PerFrameMemoryObserverAnySeq,
+      public performance_manager::v8_memory::V8DetailedMemoryObserverAnySeq,
       public subresource_filter::SubresourceFilterObserver {
  public:
   // Returns a new AdsPageLoadMetricsObserver. If the feature is disabled it
@@ -145,12 +145,12 @@ class AdsPageLoadMetricsObserver
     heavy_ad_threshold_noise_provider_ = std::move(noise_provider);
   }
 
-  // performance_manager::v8_memory::V8PerFrameMemoryObserverAnySeq
+  // performance_manager::v8_memory::V8DetailedMemoryObserverAnySeq
   void OnV8MemoryMeasurementAvailable(
       performance_manager::RenderProcessHostId render_process_host_id,
-      const performance_manager::v8_memory::V8PerFrameMemoryProcessData&
+      const performance_manager::v8_memory::V8DetailedMemoryProcessData&
           process_data,
-      const V8PerFrameMemoryObserverAnySeq::FrameDataMap& frame_data) override;
+      const V8DetailedMemoryObserverAnySeq::FrameDataMap& frame_data) override;
 
   void UpdateAggregateMemoryUsage(int64_t bytes,
                                   FrameData::FrameVisibility visibility);
@@ -342,7 +342,7 @@ class AdsPageLoadMetricsObserver
 
   // Tracks per ad-frame V8 memory measurements for the page during its
   // lifecycle. Lazily initialized when the first ad is detected.
-  std::unique_ptr<performance_manager::v8_memory::V8PerFrameMemoryRequestAnySeq>
+  std::unique_ptr<performance_manager::v8_memory::V8DetailedMemoryRequestAnySeq>
       memory_request_;
 
   // Tracks number of memory updates received.
