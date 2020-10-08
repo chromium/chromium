@@ -54,7 +54,10 @@ source_set("power_save_blocker") {
       ]
     }
     if (use_ozone) {
-      deps += [ "//ui/display:display" ]
+      deps += [
+        "//ui/base:features",
+        "//ui/display:display",
+      ]
     }
   } else if (is_mac) {
     sources += [ "power_save_blocker_mac.cc" ]
