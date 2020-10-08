@@ -139,7 +139,8 @@ TEST_F(BackgroundPageThrottlingTest, TimersThrottledInBackgroundPage) {
               ElementsAre(console_message, console_message, console_message));
 }
 
-// Same test as above, but using timeout=0.
+// Verify that a timer with timeout=0 is not throttled until its timeout is
+// rounded up to 4ms.
 TEST_F(BackgroundPageThrottlingTest,
        ZeroTimeoutTimersThrottledInBackgroundPage) {
   SimRequest main_resource("https://example.com/", "text/html");
@@ -160,11 +161,15 @@ TEST_F(BackgroundPageThrottlingTest,
 
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
-  // 0ms timeouts are rounded up to 1ms (https://crbug.com/402694). When the
-  // nesting level is 5, they are rounded up to 4 ms. The duration of a
-  // throttled wake up is 3ms. Therefore, at the 2 first wake ups, the timer
-  // runs twice. At the third wake up, it runs once.
-  platform_->RunForPeriod(base::TimeDelta::FromSeconds(3));
+  // Initially, timeout is rounded up to 1ms and no throttling is applied
+  // (https://crbug.com/402694). After 4 executions, timeout is rounded up to
+  // 4ms and throttling is applied.
+  constexpr base::TimeDelta k10Ms = base::TimeDelta::FromMilliseconds(10);
+  platform_->RunForPeriod(k10Ms);
+  EXPECT_THAT(FilteredConsoleMessages(),
+              ElementsAre(console_message, console_message, console_message,
+                          console_message));
+  platform_->RunForPeriod(base::TimeDelta::FromSeconds(1) - k10Ms);
   EXPECT_THAT(FilteredConsoleMessages(),
               ElementsAre(console_message, console_message, console_message,
                           console_message, console_message));
