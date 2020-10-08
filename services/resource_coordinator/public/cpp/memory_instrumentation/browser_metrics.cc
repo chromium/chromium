@@ -18,7 +18,6 @@ const char kBrowserHistogramName[] = "Browser";
 const char kExtensionHistogramName[] = "Extension";
 const char kGpuHistogramName[] = "Gpu";
 const char kNetworkServiceHistogramName[] = "NetworkService";
-const char kPaintPreviewCompositorHistogramName[] = "PaintPreviewCompositor";
 const char kRendererHistogramName[] = "Renderer";
 const char kUtilityHistogramName[] = "Utility";
 
@@ -38,8 +37,6 @@ const char* HistogramProcessTypeToString(HistogramProcessType type) {
       return kGpuHistogramName;
     case HistogramProcessType::kNetworkService:
       return kNetworkServiceHistogramName;
-    case HistogramProcessType::kPaintPreviewCompositor:
-      return kPaintPreviewCompositorHistogramName;
     case HistogramProcessType::kRenderer:
       return kRendererHistogramName;
     case HistogramProcessType::kUtility:

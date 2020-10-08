@@ -29,7 +29,6 @@ enum class HistogramProcessType {
   kExtension,
   kGpu,
   kNetworkService,
-  kPaintPreviewCompositor,
   kRenderer,
   kUtility,
 };
