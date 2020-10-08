@@ -4,6 +4,9 @@
 
 #include "device/vr/android/web_xr_presentation_state.h"
 
+#include <iomanip>
+#include <sstream>
+
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
@@ -19,7 +22,7 @@ WebXrFrame::WebXrFrame() = default;
 
 WebXrFrame::~WebXrFrame() = default;
 
-bool WebXrFrame::IsValid() {
+bool WebXrFrame::IsValid() const {
   return index >= 0;
 }
 
@@ -41,22 +44,48 @@ WebXrPresentationState::WebXrPresentationState() {
 
 WebXrPresentationState::~WebXrPresentationState() {}
 
-WebXrFrame* WebXrPresentationState::GetAnimatingFrame() {
+WebXrFrame* WebXrPresentationState::GetAnimatingFrame() const {
   DCHECK(HaveAnimatingFrame());
   DCHECK(animating_frame_->IsValid());
   return animating_frame_;
 }
 
-WebXrFrame* WebXrPresentationState::GetProcessingFrame() {
+WebXrFrame* WebXrPresentationState::GetProcessingFrame() const {
   DCHECK(HaveProcessingFrame());
   DCHECK(processing_frame_->IsValid());
   return processing_frame_;
 }
 
-WebXrFrame* WebXrPresentationState::GetRenderingFrame() {
+WebXrFrame* WebXrPresentationState::GetRenderingFrame() const {
   DCHECK(HaveRenderingFrame());
   DCHECK(rendering_frame_->IsValid());
   return rendering_frame_;
+}
+
+std::string WebXrPresentationState::DebugState() const {
+  std::ostringstream ss;
+
+  ss << "[";
+  if (HaveAnimatingFrame()) {
+    ss << std::setw(3) << GetAnimatingFrame()->index;
+  } else {
+    ss << "---";
+  }
+  ss << "|";
+  if (HaveProcessingFrame()) {
+    ss << std::setw(3) << GetProcessingFrame()->index;
+  } else {
+    ss << "---";
+  }
+  ss << "|";
+  if (HaveRenderingFrame()) {
+    ss << std::setw(3) << GetRenderingFrame()->index;
+  } else {
+    ss << "---";
+  }
+  ss << "]";
+
+  return ss.str();
 }
 
 WebXrPresentationState::FrameIndexType
@@ -65,17 +94,22 @@ WebXrPresentationState::StartFrameAnimating() {
   DCHECK(!idle_frames_.empty());
   animating_frame_ = idle_frames_.front();
   idle_frames_.pop();
+
   animating_frame_->index = next_frame_index_++;
+
+  DVLOG(3) << DebugState() << __func__;
   return animating_frame_->index;
 }
 
 void WebXrPresentationState::TransitionFrameAnimatingToProcessing() {
+  DVLOG(3) << DebugState() << __func__;
   DCHECK(HaveAnimatingFrame());
   DCHECK(animating_frame_->IsValid());
   DCHECK(!animating_frame_->state_locked);
   DCHECK(!HaveProcessingFrame());
   processing_frame_ = animating_frame_;
   animating_frame_ = nullptr;
+  DVLOG(3) << DebugState() << __func__;
 }
 
 void WebXrPresentationState::RecycleUnusedAnimatingFrame() {
@@ -83,23 +117,28 @@ void WebXrPresentationState::RecycleUnusedAnimatingFrame() {
   animating_frame_->Recycle();
   idle_frames_.push(animating_frame_);
   animating_frame_ = nullptr;
+  DVLOG(3) << DebugState() << __func__;
 }
 
 void WebXrPresentationState::TransitionFrameProcessingToRendering() {
+  DVLOG(3) << DebugState() << __func__;
   DCHECK(HaveProcessingFrame());
   DCHECK(processing_frame_->IsValid());
   DCHECK(!processing_frame_->state_locked);
   DCHECK(!HaveRenderingFrame());
   rendering_frame_ = processing_frame_;
   processing_frame_ = nullptr;
+  DVLOG(3) << DebugState() << __func__;
 }
 
 void WebXrPresentationState::EndFrameRendering() {
+  DVLOG(3) << DebugState() << __func__;
   DCHECK(HaveRenderingFrame());
   DCHECK(rendering_frame_->IsValid());
   rendering_frame_->Recycle();
   idle_frames_.push(rendering_frame_);
   rendering_frame_ = nullptr;
+  DVLOG(3) << DebugState() << __func__;
 }
 
 bool WebXrPresentationState::RecycleProcessingFrameIfPossible() {
@@ -112,6 +151,7 @@ bool WebXrPresentationState::RecycleProcessingFrameIfPossible() {
   } else {
     processing_frame_->recycle_once_unlocked = true;
   }
+  DVLOG(3) << DebugState() << __func__;
   return can_cancel;
 }
 

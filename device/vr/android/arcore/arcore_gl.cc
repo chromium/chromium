@@ -273,7 +273,7 @@ bool ArCoreGl::InitializeGl(gfx::AcceleratedWidget drawing_widget) {
 void ArCoreGl::GetFrameData(
     mojom::XRFrameDataRequestOptionsPtr options,
     mojom::XRFrameDataProvider::GetFrameDataCallback callback) {
-  TRACE_EVENT0("gpu", __func__);
+  TRACE_EVENT1("gpu", __func__, "frame", webxr_->PeekNextFrameIndex());
 
   if (webxr_->HaveAnimatingFrame()) {
     DVLOG(3) << __func__ << ": deferring, HaveAnimatingFrame";
