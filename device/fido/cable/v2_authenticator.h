@@ -64,7 +64,7 @@ class Platform {
       GetAssertionCallback callback) = 0;
 
   virtual std::unique_ptr<BLEAdvert> SendBLEAdvert(
-      base::span<uint8_t, 16> payload) = 0;
+      base::span<const uint8_t, kAdvertSize> payload) = 0;
 };
 
 // Transport abstracts a way of transmitting to, and receiving from, the peer.

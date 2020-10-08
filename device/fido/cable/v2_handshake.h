@@ -90,6 +90,20 @@ GURL GetContactURL(const std::string& tunnel_server,
 
 namespace eid {
 
+// Encrypt turns an EID into a BLE advert payload by encrypting and
+// authenticating with |key|.
+COMPONENT_EXPORT(DEVICE_FIDO)
+std::array<uint8_t, kAdvertSize> Encrypt(
+    const CableEidArray& eid,
+    base::span<const uint8_t, kEIDKeySize> key);
+
+// Decrypt turns a BLE advert payload into a plaintext EID (suitable for passing
+// to |FromComponents|) by decrypting with |key|.
+COMPONENT_EXPORT(DEVICE_FIDO)
+base::Optional<CableEidArray> Decrypt(
+    const std::array<uint8_t, kAdvertSize>& advert,
+    base::span<const uint8_t, kEIDKeySize> key);
+
 // TODO(agl): this could probably be a class.
 
 // Components contains the parts of a decrypted EID.
@@ -103,10 +117,6 @@ struct Components {
 // will be true of the result.
 COMPONENT_EXPORT(DEVICE_FIDO)
 CableEidArray FromComponents(const Components& components);
-
-// IsValid returns true if |eid| could have been produced by |FromComponents|.
-COMPONENT_EXPORT(DEVICE_FIDO)
-bool IsValid(const CableEidArray& eid);
 
 // ToComponents explodes a decrypted EID into its components. It's the
 // inverse of |ComponentsToEID|. |IsValid| must be true for the given EID before

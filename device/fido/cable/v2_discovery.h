@@ -5,6 +5,7 @@
 #ifndef DEVICE_FIDO_CABLE_V2_DISCOVERY_H_
 #define DEVICE_FIDO_CABLE_V2_DISCOVERY_H_
 
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -48,8 +49,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery
   void StartInternal() override;
 
   // BLEObserver:
-  void OnBLEAdvertSeen(const std::string& address,
-                       const CableEidArray& eid) override;
+  void OnBLEAdvertSeen(const std::array<uint8_t, kAdvertSize>& advert) override;
 
  private:
   void AddPairing(std::unique_ptr<Pairing> pairing);
@@ -62,9 +62,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery
   const base::Optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
       pairing_callback_;
   std::vector<std::unique_ptr<FidoTunnelDevice>> tunnels_pending_advert_;
-  base::flat_set<CableEidArray> observed_eids_;
+  base::flat_set<std::array<uint8_t, kAdvertSize>> observed_adverts_;
   bool started_ = false;
-  std::vector<CableEidArray> pending_eids_;
+  std::vector<std::array<uint8_t, kAdvertSize>> pending_adverts_;
   base::WeakPtrFactory<Discovery> weak_factory_{this};
 };
 

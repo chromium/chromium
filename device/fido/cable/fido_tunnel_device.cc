@@ -75,15 +75,13 @@ FidoTunnelDevice::FidoTunnelDevice(
     base::OnceCallback<void(std::unique_ptr<Pairing>)> pairing_callback,
     base::span<const uint8_t> secret,
     base::span<const uint8_t, kQRSeedSize> local_identity_seed,
-    const CableEidArray& eid,
     const CableEidArray& decrypted_eid)
     : info_(absl::in_place_type<QRInfo>), id_(RandomId()) {
-  DCHECK(eid::IsValid(decrypted_eid));
   const eid::Components components = eid::ToComponents(decrypted_eid);
 
   QRInfo& info = absl::get<QRInfo>(info_);
   info.pairing_callback = std::move(pairing_callback);
-  info.eid = eid;
+  info.decrypted_eid = decrypted_eid;
   info.local_identity_seed =
       fido_parsing_utils::Materialize(local_identity_seed);
   info.tunnel_server_domain = components.tunnel_server_domain;
@@ -161,29 +159,24 @@ FidoTunnelDevice::~FidoTunnelDevice() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-bool FidoTunnelDevice::MatchEID(const CableEidArray& eid) {
+bool FidoTunnelDevice::MatchAdvert(
+    const std::array<uint8_t, kAdvertSize>& advert) {
   PairedInfo& info = absl::get<PairedInfo>(info_);
 
-  AES_KEY key;
-  CHECK(AES_set_decrypt_key(info.eid_encryption_key.data(),
-                            /*bits=*/8 * info.eid_encryption_key.size(),
-                            &key) == 0);
-  CableEidArray plaintext;
-  static_assert(EXTENT(plaintext) == AES_BLOCK_SIZE, "EIDs are not AES blocks");
-  AES_decrypt(/*in=*/eid.data(), /*out=*/plaintext.data(), &key);
-
-  if (!eid::IsValid(plaintext)) {
+  base::Optional<CableEidArray> plaintext =
+      eid::Decrypt(advert, info.eid_encryption_key);
+  if (!plaintext) {
     return false;
   }
 
-  const eid::Components components = eid::ToComponents(plaintext);
+  const eid::Components components = eid::ToComponents(*plaintext);
   static_assert(EXTENT(components.routing_id) == 3, "");
   if (components.routing_id[0] || components.routing_id[1] ||
       components.routing_id[2]) {
     return false;
   }
 
-  info.eid = eid;
+  info.decrypted_eid = *plaintext;
   info.psk = Derive<EXTENT(*info.psk)>(info.secret, components.nonce,
                                        DerivedValueType::kPSK);
 
@@ -339,14 +332,14 @@ void FidoTunnelDevice::ProcessHandshake(base::span<const uint8_t> data) {
 
   if (auto* info = absl::get_if<QRInfo>(&info_)) {
     base::Optional<ResponderResult> inner_result(cablev2::RespondToHandshake(
-        info->psk, info->eid, info->local_identity_seed, base::nullopt, data,
-        &response));
+        info->psk, info->decrypted_eid, info->local_identity_seed,
+        base::nullopt, data, &response));
     if (inner_result) {
       result.emplace(std::move(*inner_result));
     }
     state_ = State::kHandshakeProcessed;
   } else if (auto* info = absl::get_if<PairedInfo>(&info_)) {
-    if (!info->eid) {
+    if (!info->decrypted_eid) {
       DCHECK_EQ(state_, State::kConnected);
       state_ = State::kWaitingForEID;
       info->handshake_message = fido_parsing_utils::Materialize(data);
@@ -354,7 +347,7 @@ void FidoTunnelDevice::ProcessHandshake(base::span<const uint8_t> data) {
     }
 
     base::Optional<ResponderResult> inner_result(
-        cablev2::RespondToHandshake(*info->psk, *info->eid,
+        cablev2::RespondToHandshake(*info->psk, *info->decrypted_eid,
                                     /*local_identity=*/base::nullopt,
                                     info->peer_identity, data, &response));
     if (inner_result) {

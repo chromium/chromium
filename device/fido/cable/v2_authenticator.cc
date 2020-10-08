@@ -361,10 +361,10 @@ class TunnelTransport : public Transport {
 
     static constexpr std::array<uint8_t, device::cablev2::kRoutingIdSize>
         kZeroRoutingID = {0, 0, 0};
-    const device::CableEidArray eid =
+    const device::CableEidArray plaintext_eid =
         StartAdvertising(routing_id.value_or(kZeroRoutingID));
     std::vector<uint8_t> msg =
-        handshaker_->BuildInitialMessage(eid, BuildGetInfoResponse());
+        handshaker_->BuildInitialMessage(plaintext_eid, BuildGetInfoResponse());
     websocket_client_->Write(msg);
   }
 
@@ -432,18 +432,9 @@ class TunnelTransport : public Transport {
         .routing_id = routing_id,
         .nonce = nonce_,
     };
-    const device::CableEidArray eid_plaintext =
+    const device::CableEidArray eid =
         device::cablev2::eid::FromComponents(components);
-
-    AES_KEY key;
-    CHECK(AES_set_encrypt_key(eid_key_.data(),
-                              /*bits=*/8 * eid_key_.size(), &key) == 0);
-    std::array<uint8_t, AES_BLOCK_SIZE> eid;
-    static_assert(EXTENT(eid_plaintext) == AES_BLOCK_SIZE,
-                  "EIDs are not AES blocks");
-    AES_encrypt(/*in=*/eid_plaintext.data(), /*out=*/eid.data(), &key);
-
-    ble_advert_ = platform_->SendBLEAdvert(eid);
+    ble_advert_ = platform_->SendBLEAdvert(eid::Encrypt(eid, eid_key_));
     return eid;
   }
 

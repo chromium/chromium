@@ -389,13 +389,12 @@ class TestPlatform : public authenticator::Platform {
   }
 
   std::unique_ptr<authenticator::Platform::BLEAdvert> SendBLEAdvert(
-      base::span<uint8_t, 16> payload) override {
+      base::span<const uint8_t, kAdvertSize> payload) override {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(
-            [](Discovery* discovery, std::array<uint8_t, 16> payload) {
-              discovery->OnBLEAdvertSeen(
-                  /*address=*/"", payload);
+            [](Discovery* discovery, std::array<uint8_t, kAdvertSize> payload) {
+              discovery->OnBLEAdvertSeen(payload);
             },
             base::Unretained(discovery_),
             device::fido_parsing_utils::Materialize<EXTENT(payload)>(payload)));

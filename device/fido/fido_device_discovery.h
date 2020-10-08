@@ -32,8 +32,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceDiscovery
    public:
     virtual ~BLEObserver();
 
-    virtual void OnBLEAdvertSeen(const std::string& address,
-                                 const std::array<uint8_t, 16>& eid) = 0;
+    virtual void OnBLEAdvertSeen(const std::array<uint8_t, 20>& advert) = 0;
   };
 
   enum class State {

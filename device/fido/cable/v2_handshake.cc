@@ -19,6 +19,7 @@
 #include "crypto/aead.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "third_party/boringssl/src/include/openssl/aes.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
@@ -77,6 +78,12 @@ std::array<uint8_t, 32> PairingSignature(
              expected_signature.data(), &expected_signature_len) != nullptr);
   CHECK_EQ(expected_signature_len, EXTENT(expected_signature));
   return expected_signature;
+}
+
+// ReservedBitsAreZero returns true if the currently unused bits in |eid| are
+// all set to zero.
+bool ReservedBitsAreZero(const CableEidArray& eid) {
+  return eid[6] == 0 && eid[7] == 0 && (eid[2] >> 6) == 0;
 }
 
 }  // namespace
@@ -139,6 +146,68 @@ GURL GetContactURL(const std::string& tunnel_server,
 
 namespace eid {
 
+std::array<uint8_t, kAdvertSize> Encrypt(
+    const CableEidArray& eid,
+    base::span<const uint8_t, kEIDKeySize> key) {
+  // |eid| is encrypted as an AES block and a 4-byte HMAC is appended. The |key|
+  // is a pair of 256-bit keys, concatenated.
+  DCHECK(ReservedBitsAreZero(eid));
+
+  std::array<uint8_t, kAdvertSize> ret;
+  static_assert(EXTENT(ret) == AES_BLOCK_SIZE + 4, "");
+
+  AES_KEY aes_key;
+  static_assert(EXTENT(key) == 32 + 32, "");
+  CHECK(AES_set_encrypt_key(key.data(), /*bits=*/8 * 32, &aes_key) == 0);
+  static_assert(EXTENT(eid) == AES_BLOCK_SIZE, "EIDs are not AES blocks");
+  AES_encrypt(/*in=*/eid.data(), /*out=*/ret.data(), &aes_key);
+
+  uint8_t hmac[SHA256_DIGEST_LENGTH];
+  unsigned hmac_len;
+  CHECK(HMAC(EVP_sha256(), key.data() + 32, 32, ret.data(), AES_BLOCK_SIZE,
+             hmac, &hmac_len) != nullptr);
+  CHECK_EQ(hmac_len, sizeof(hmac));
+
+  static_assert(sizeof(hmac) >= 4, "");
+  memcpy(ret.data() + AES_BLOCK_SIZE, hmac, 4);
+
+  return ret;
+}
+
+base::Optional<CableEidArray> Decrypt(
+    const std::array<uint8_t, kAdvertSize>& advert,
+    base::span<const uint8_t, kEIDKeySize> key) {
+  // See |Encrypt| about the format.
+  static_assert(EXTENT(advert) == AES_BLOCK_SIZE + 4, "");
+  static_assert(EXTENT(key) == 32 + 32, "");
+
+  uint8_t calculated_hmac[SHA256_DIGEST_LENGTH];
+  unsigned calculated_hmac_len;
+  CHECK(HMAC(EVP_sha256(), key.data() + 32, 32, advert.data(), AES_BLOCK_SIZE,
+             calculated_hmac, &calculated_hmac_len) != nullptr);
+  CHECK_EQ(calculated_hmac_len, sizeof(calculated_hmac));
+
+  if (CRYPTO_memcmp(calculated_hmac, advert.data() + AES_BLOCK_SIZE, 4) != 0) {
+    return base::nullopt;
+  }
+
+  AES_KEY aes_key;
+  CHECK(AES_set_decrypt_key(key.data(), /*bits=*/8 * 32, &aes_key) == 0);
+  CableEidArray plaintext;
+  static_assert(EXTENT(plaintext) == AES_BLOCK_SIZE, "EIDs are not AES blocks");
+  AES_decrypt(/*in=*/advert.data(), /*out=*/plaintext.data(), &aes_key);
+
+  // Ensure that reserved bits are zero. They might be used for new features in
+  // the future but support for those features must be advertised in the QR
+  // code, thus authenticators should not be unilaterally setting any of these
+  // bits.
+  if (!ReservedBitsAreZero(plaintext)) {
+    return base::nullopt;
+  }
+
+  return plaintext;
+}
+
 CableEidArray FromComponents(const Components& components) {
   DCHECK_EQ(components.tunnel_server_domain >> 22, 0u);
 
@@ -159,14 +228,7 @@ CableEidArray FromComponents(const Components& components) {
   return eid;
 }
 
-bool IsValid(const CableEidArray& eid) {
-  static_assert(EXTENT(eid) >= 8, "");
-  return eid[6] == 0 && eid[7] == 0 && (eid[2] >> 6) == 0;
-}
-
 Components ToComponents(const CableEidArray& eid) {
-  DCHECK(IsValid(eid));
-
   Components ret;
   static_assert(EXTENT(eid) == 16, "");
   ret.tunnel_server_domain = static_cast<uint32_t>(eid[0]) |

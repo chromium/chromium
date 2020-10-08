@@ -5,6 +5,8 @@
 #ifndef DEVICE_FIDO_CABLE_FIDO_BLE_UUIDS_H_
 #define DEVICE_FIDO_CABLE_FIDO_BLE_UUIDS_H_
 
+#include <stdint.h>
+
 #include "base/component_export.h"
 
 namespace device {
@@ -26,6 +28,9 @@ extern const char kFidoServiceRevisionBitfieldUUID[];
 // standardized.
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCableAdvertisementUUID16[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCableAdvertisementUUID128[];
+// kCableAdvertisementUUID is the binary form of
+// |kCableAdvertisementUUID128|, the UUID allocated for caBLE adverts.
+COMPONENT_EXPORT(DEVICE_FIDO) extern const uint8_t kCableAdvertisementUUID[16];
 
 }  // namespace device
 

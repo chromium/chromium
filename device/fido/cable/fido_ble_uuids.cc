@@ -21,4 +21,9 @@ const char kCableAdvertisementUUID16[] = "fde2";
 const char kCableAdvertisementUUID128[] =
     "0000fde2-0000-1000-8000-00805f9b34fb";
 
+const uint8_t kCableAdvertisementUUID[16] = {
+    0x00, 0x00, 0xfd, 0xe2, 0x00, 0x00, 0x10, 0x00,
+    0x80, 0x00, 0x00, 0x80, 0x5f, 0x9b, 0x34, 0xfb,
+};
+
 }  // namespace device

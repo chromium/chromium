@@ -54,33 +54,34 @@ void Discovery::StartInternal() {
   started_ = true;
   NotifyDiscoveryStarted(true);
 
-  std::vector<CableEidArray> pending_eids(std::move(pending_eids_));
-  for (const auto& eid : pending_eids) {
-    OnBLEAdvertSeen("", eid);
+  std::vector<std::array<uint8_t, kAdvertSize>> pending_adverts(
+      std::move(pending_adverts_));
+  for (const auto& advert : pending_adverts) {
+    OnBLEAdvertSeen(advert);
   }
 }
 
-void Discovery::OnBLEAdvertSeen(const std::string& address,
-                                const CableEidArray& eid) {
+void Discovery::OnBLEAdvertSeen(
+    const std::array<uint8_t, kAdvertSize>& advert) {
   if (!started_) {
-    pending_eids_.push_back(eid);
+    pending_adverts_.push_back(advert);
     return;
   }
 
-  if (base::Contains(observed_eids_, eid)) {
+  if (base::Contains(observed_adverts_, advert)) {
     return;
   }
-  observed_eids_.insert(eid);
+  observed_adverts_.insert(advert);
 
   // Check whether the EID satisfies any pending tunnels.
   for (std::vector<std::unique_ptr<FidoTunnelDevice>>::iterator i =
            tunnels_pending_advert_.begin();
        i != tunnels_pending_advert_.end(); i++) {
-    if (!(*i)->MatchEID(eid)) {
+    if (!(*i)->MatchAdvert(advert)) {
       continue;
     }
 
-    FIDO_LOG(DEBUG) << "  (" << base::HexEncode(eid)
+    FIDO_LOG(DEBUG) << "  (" << base::HexEncode(advert)
                     << " matches pending tunnel)";
     std::unique_ptr<FidoTunnelDevice> device(std::move(*i));
     tunnels_pending_advert_.erase(i);
@@ -89,22 +90,17 @@ void Discovery::OnBLEAdvertSeen(const std::string& address,
   }
 
   // Check whether the EID matches a QR code.
-  AES_KEY aes_key;
-  CHECK(AES_set_decrypt_key(eid_key_.data(),
-                            /*bits=*/8 * eid_key_.size(), &aes_key) == 0);
-  CableEidArray plaintext;
-  static_assert(EXTENT(plaintext) == AES_BLOCK_SIZE, "EIDs are not AES blocks");
-  AES_decrypt(/*in=*/eid.data(), /*out=*/plaintext.data(), &aes_key);
-  if (cablev2::eid::IsValid(plaintext)) {
-    FIDO_LOG(DEBUG) << "  (" << base::HexEncode(eid) << " matches QR code)";
+  base::Optional<CableEidArray> plaintext = eid::Decrypt(advert, eid_key_);
+  if (plaintext) {
+    FIDO_LOG(DEBUG) << "  (" << base::HexEncode(advert) << " matches QR code)";
     AddDevice(std::make_unique<cablev2::FidoTunnelDevice>(
         network_context_,
         base::BindOnce(&Discovery::AddPairing, weak_factory_.GetWeakPtr()),
-        qr_secret_, local_identity_seed_, eid, plaintext));
+        qr_secret_, local_identity_seed_, *plaintext));
     return;
   }
 
-  FIDO_LOG(DEBUG) << "  (" << base::HexEncode(eid) << ": no v2 match)";
+  FIDO_LOG(DEBUG) << "  (" << base::HexEncode(advert) << ": no v2 match)";
 }
 
 void Discovery::AddPairing(std::unique_ptr<Pairing> pairing) {

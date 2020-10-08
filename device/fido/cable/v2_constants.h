@@ -8,6 +8,9 @@
 namespace device {
 namespace cablev2 {
 
+// kAdvertSize is the number of bytes in an advert. This consists of a 16-byte
+// UUID and a 4-byte UUID.
+constexpr size_t kAdvertSize = 16 + 4;
 // kNonceSize is the number of bytes of nonce in the BLE advert.
 constexpr size_t kNonceSize = 8;
 // kClientNonceSize is the number of bytes of nonce sent by the client, via the
@@ -19,8 +22,9 @@ constexpr size_t kRoutingIdSize = 3;
 // kTunnelIdSize is the number of bytes of opaque tunnel ID, used to identify a
 // specific tunnel to the tunnel service.
 constexpr size_t kTunnelIdSize = 16;
-// kEIDKeySize is the size of the AES key used to encrypt BLE adverts.
-constexpr size_t kEIDKeySize = 32;
+// kEIDKeySize is the size of the key used to encrypt BLE adverts. This is a
+// 256-bit AES key and a 256-bit HMAC key.
+constexpr size_t kEIDKeySize = 32 + 32;
 // kPSKSize is the size of the Noise pre-shared key used in handshakes.
 constexpr size_t kPSKSize = 32;
 // kRootSecretSize is the size of the main key maintained by authenticators.

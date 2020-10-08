@@ -26,6 +26,8 @@ class BLEAdvert implements Closeable {
     private AdvertiseCallback mCallback;
 
     BLEAdvert(byte[] payload) {
+        assert payload.length == 20;
+
         BluetoothLeAdvertiser advertiser =
                 BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser();
         mCallback = new AdvertiseCallback() {
@@ -48,14 +50,26 @@ class BLEAdvert implements Closeable {
                         .build();
         ParcelUuid fidoUuid = new ParcelUuid(UUID.fromString(CABLE_UUID));
 
+        // The first 16 bytes of the payload are encoded into a 16-byte UUID.
         ByteBuffer bb = ByteBuffer.wrap(payload);
         long high = bb.getLong();
         long low = bb.getLong();
-        UUID dataUuid = new UUID(high, low);
+        final UUID uuid16 = new UUID(high, low);
+
+        // The final four bytes of the payload are turned into a 4-byte UUID.
+        // Depending on the value of those four bytes, this might happen to be a
+        // 2-byte UUID, but the desktop handles that.
+        high = (long) bb.getInt();
+        high <<= 32;
+        // This is the fixed suffix for short UUIDs in Bluetooth.
+        high |= 0x1000;
+        low = 0x800000805f9b34fbL;
+        final UUID uuid4 = new UUID(high, low);
 
         AdvertiseData data = (new AdvertiseData.Builder())
                                      .addServiceUuid(fidoUuid)
-                                     .addServiceUuid(new ParcelUuid(dataUuid))
+                                     .addServiceUuid(new ParcelUuid(uuid16))
+                                     .addServiceUuid(new ParcelUuid(uuid4))
                                      .setIncludeDeviceName(false)
                                      .setIncludeTxPowerLevel(false)
                                      .build();

@@ -25,25 +25,37 @@ TEST(CableV2Encoding, TunnelServerURLs) {
   EXPECT_TRUE(url.spec().find("//abcd.net/") != std::string::npos) << url;
 }
 
-TEST(CableV2Encoding, EIDs) {
+TEST(CableV2Encoding, EIDToFromComponents) {
   eid::Components components;
   components.tunnel_server_domain = 0x010203;
   components.routing_id = {9, 10, 11};
   crypto::RandBytes(components.nonce);
 
-  CableEidArray eid = eid::FromComponents(components);
-  EXPECT_TRUE(eid::IsValid(eid));
-  eid::Components components2 = eid::ToComponents(eid);
+  const CableEidArray eid = eid::FromComponents(components);
+  const eid::Components components2 = eid::ToComponents(eid);
 
   EXPECT_EQ(components.routing_id, components2.routing_id);
   EXPECT_EQ(components.tunnel_server_domain, components2.tunnel_server_domain);
   EXPECT_EQ(components.nonce, components2.nonce);
+}
 
-  for (size_t i = 0; i < eid.size(); i++) {
-    eid[i] ^= 0xff;
-  }
+TEST(CableV2Encoding, EIDEncrypt) {
+  eid::Components components;
+  components.tunnel_server_domain = 0x010203;
+  components.routing_id = {9, 10, 11};
+  crypto::RandBytes(components.nonce);
+  const CableEidArray eid = eid::FromComponents(components);
 
-  EXPECT_FALSE(eid::IsValid(eid));
+  uint8_t key[kEIDKeySize];
+  crypto::RandBytes(key);
+  std::array<uint8_t, kAdvertSize> advert = eid::Encrypt(eid, key);
+
+  const base::Optional<CableEidArray> eid2 = eid::Decrypt(advert, key);
+  ASSERT_TRUE(eid2.has_value());
+  EXPECT_TRUE(memcmp(eid.data(), eid2->data(), eid.size()) == 0);
+
+  advert[0] ^= 1;
+  EXPECT_FALSE(eid::Decrypt(advert, key).has_value());
 }
 
 TEST(CableV2Encoding, QRs) {

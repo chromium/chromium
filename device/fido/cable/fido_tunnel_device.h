@@ -5,6 +5,7 @@
 #ifndef DEVICE_FIDO_CABLE_FIDO_TUNNEL_DEVICE_H_
 #define DEVICE_FIDO_CABLE_FIDO_TUNNEL_DEVICE_H_
 
+#include <array>
 #include <vector>
 
 #include "base/callback_forward.h"
@@ -35,7 +36,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
       base::OnceCallback<void(std::unique_ptr<Pairing>)> pairing_callback,
       base::span<const uint8_t> secret,
       base::span<const uint8_t, kQRSeedSize> local_identity_seed,
-      const CableEidArray& eid,
       const CableEidArray& decrypted_eid);
 
   // This constructor is used for pairing-initiated connections.
@@ -44,10 +44,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
 
   ~FidoTunnelDevice() override;
 
-  // MatchEID is only valid for a pairing-initiated connection. It returns true
-  // if the given |eid| matched this pending tunnel and thus this device is now
-  // ready.
-  bool MatchEID(const CableEidArray& eid);
+  // MatchAdvert is only valid for a pairing-initiated connection. It returns
+  // true if the given |advert| matched this pending tunnel and thus this device
+  // is now ready.
+  bool MatchAdvert(const std::array<uint8_t, kAdvertSize>& advert);
 
   // FidoDevice:
   CancelToken DeviceTransact(std::vector<uint8_t> command,
@@ -73,7 +73,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
     QRInfo(const QRInfo&) = delete;
     QRInfo& operator=(const QRInfo&) = delete;
 
-    CableEidArray eid;
+    CableEidArray decrypted_eid;
     std::array<uint8_t, 32> psk;
     base::OnceCallback<void(std::unique_ptr<Pairing>)> pairing_callback;
     std::array<uint8_t, kQRSeedSize> local_identity_seed;
@@ -87,10 +87,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
     PairedInfo(const PairedInfo&) = delete;
     PairedInfo& operator=(const PairedInfo&) = delete;
 
-    std::array<uint8_t, 32> eid_encryption_key;
+    std::array<uint8_t, kEIDKeySize> eid_encryption_key;
     std::array<uint8_t, kP256X962Length> peer_identity;
     std::vector<uint8_t> secret;
-    base::Optional<CableEidArray> eid;
+    base::Optional<CableEidArray> decrypted_eid;
     base::Optional<std::array<uint8_t, 32>> psk;
     base::Optional<std::vector<uint8_t>> handshake_message;
   };

@@ -231,7 +231,8 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
   }
 
   std::unique_ptr<BLEAdvert> SendBLEAdvert(
-      base::span<uint8_t, 16> payload) override {
+      base::span<const uint8_t, device::cablev2::kAdvertSize> payload)
+      override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     return std::make_unique<AndroidBLEAdvert>(
