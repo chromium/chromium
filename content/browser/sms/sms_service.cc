@@ -68,7 +68,7 @@ SmsService::SmsService(
 
 SmsService::~SmsService() {
   if (callback_)
-    CompleteRequest(SmsStatus::kTimeout);
+    CompleteRequest(SmsStatus::kUnhandledRequest);
   DCHECK(!callback_);
 }
 

@@ -11,7 +11,7 @@ import "mojo/public/mojom/base/time.mojom";
 // Proposal: https://github.com/WICG/web-otp
 enum SmsStatus {
   kSuccess,
-  kTimeout,
+  kUnhandledRequest,
   kCancelled,
   kAborted
 };

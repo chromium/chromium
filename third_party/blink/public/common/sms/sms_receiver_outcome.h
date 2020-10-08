@@ -12,7 +12,7 @@ enum class SMSReceiverOutcome {
   // Don't change the meaning of these values because they are being recorded
   // in a metric.
   kSuccess = 0,
-  kTimeout = 1,
+  kUnhandledRequest = 1,
   kConnectionError = 2,
   kCancelled = 3,
   kAborted = 4,
