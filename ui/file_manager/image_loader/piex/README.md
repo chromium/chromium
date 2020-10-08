@@ -3,8 +3,8 @@ Install emscripten https://emscripten.org/docs/getting_started/index.html
 ```shell
   git clone https://github.com/emscripten-core/emsdk.git
   cd emsdk
-  ./emsdk install 1.38.27
-  ./emsdk activate 1.38.27
+  ./emsdk install 1.38.33
+  ./emsdk activate 1.38.33
   source ./emsdk_env.sh
 ```
 
@@ -34,4 +34,4 @@ Release: submit piex.js.wasm piex.out.wasm to the Chromium repository
   git cl upload
 ```
 
-Release Builder: emscripten 1.38.27
+Release Builder: emscripten 1.38.33
