@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/events/event.h"
@@ -36,7 +37,7 @@ class CaptureWindowObserver;
 class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
                                       public ui::LayerDelegate,
                                       public ui::EventHandler,
-                                      public views::ButtonListener {
+                                      public TabletModeObserver {
  public:
   // Creates the bar widget on the given |root| window.
   CaptureModeSession(CaptureModeController* controller, aura::Window* root);
@@ -51,6 +52,10 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   CaptureModeBarView* capture_mode_bar_view() const {
     return capture_mode_bar_view_;
   }
+  views::Widget* dimensions_label_widget() {
+    return dimensions_label_widget_.get();
+  }
+  bool is_selecting_region() const { return is_selecting_region_; }
 
   // Gets the current window selected for |kWindow| capture source. Returns
   // nullptr if no window is available for selection.
@@ -59,6 +64,9 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // Called when either the capture source or type changes.
   void OnCaptureSourceChanged(CaptureModeSource new_source);
   void OnCaptureTypeChanged(CaptureModeType new_type);
+
+  // Called when starting 3-seconds count down before recording video.
+  void StartCountDown(base::OnceClosure countdown_finished_callback);
 
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
@@ -70,12 +78,9 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
-  views::Widget* dimensions_label_widget() {
-    return dimensions_label_widget_.get();
-  }
+  // TabletModeObserver:
+  void OnTabletModeStarted() override;
+  void OnTabletModeEnded() override;
 
  private:
   // Gets the bounds of current window selected for |kWindow| capture source.
@@ -119,24 +124,18 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // exist.
   void UpdateDimensionsLabelBounds();
 
-  // Creates |capture_button_widget_| if it does not exist and then set its
-  // content view to the capture button view.
-  void CreateCaptureButtonWidget();
-
-  // Populates |capture_button_widget_| with its content view which displays the
-  // capture button. |capture_button_widget_| must exist.
-  void UpdateCaptureButtonContents();
-
-  // Updates the bounds of |capture_button_widget_| relative to the current
-  // capture region. Does nothing if |capture_button_widget_| does not exist.
-  void UpdateCaptureButtonBounds();
-
   // Retrieves the anchor points on the current selected region associated with
   // |position|. The anchor points are described as the points that do not
   // change when resizing the capture region while dragging one of the drag
   // affordances. There is one anchor point if |position| is a vertex, and two
   // anchor points if |position| is an edge.
   std::vector<gfx::Point> GetAnchorPointsForPosition(FineTunePosition position);
+
+  // Updates the capture label widget.
+  void UpdateCaptureLabelWidget();
+  void UpdateCaptureLabelWidgetBounds();
+  // Returns true if the capture label should handle the event.
+  bool ShouldCaptureLabelHandleEvent(const gfx::Point& location_in_root);
 
   CaptureModeController* const controller_;
 
@@ -149,15 +148,25 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // The content view of the above widget and owned by its views hierarchy.
   CaptureModeBarView* capture_mode_bar_view_;
 
-  // Widgets which display text and icons during a region capture session.
+  // Widget which displays capture region size during a region capture session.
   std::unique_ptr<views::Widget> dimensions_label_widget_;
-  std::unique_ptr<views::Widget> capture_button_widget_;
+
+  // Widget that shows an optional icon and a message in the middle of the
+  // screen or in the middle of the capture region and prompts the user what to
+  // do next. The icon and message can be different in different capture type
+  // and source and can be empty in some cases. And in video capture mode, when
+  // starting capturing, the widget will transform into a 3-second countdown
+  // timer.
+  std::unique_ptr<views::Widget> capture_label_widget_;
 
   // Stores the data needed to select a region during a region capture session.
-  // There are two phases for a region capture session. The select phase, where
-  // the user can quickly select a region and the fine tune phase, where the
-  // user can reposition and resize the region with a lot of accuracy.
-  bool is_select_phase_ = true;
+  // This variable indicates if the user is currently selecting a region to
+  // capture, it will be true when the first mouse/touch presses down and will
+  // remain true until the mouse/touch releases up. After that, if the capture
+  // region is non empty, the capture session will enter the fine tune phase,
+  // where the user can reposition and resize the region with a lot of accuracy.
+  bool is_selecting_region_ = false;
+
   // The location of the last press and drag events.
   gfx::Point initial_location_in_root_;
   gfx::Point previous_location_in_root_;

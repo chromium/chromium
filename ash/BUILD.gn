@@ -257,6 +257,8 @@ component("ash") {
     "bluetooth_devices_observer.h",
     "cancel_mode.cc",
     "cancel_mode.h",
+    "capture_mode/capture_label_view.cc",
+    "capture_mode/capture_label_view.h",
     "capture_mode/capture_mode_bar_view.cc",
     "capture_mode/capture_mode_bar_view.h",
     "capture_mode/capture_mode_close_button.cc",

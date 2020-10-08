@@ -136,6 +136,9 @@ class ASH_EXPORT CaptureModeController {
   void RecordNumberOfScreenshotsTakenInLastDay();
   void RecordNumberOfScreenshotsTakenInLastWeek();
 
+  // Called when the video record 3-seconds count down finishes.
+  void OnVideoRecordCountDownFinished();
+
   std::unique_ptr<CaptureModeDelegate> delegate_;
 
   CaptureModeType type_ = CaptureModeType::kImage;

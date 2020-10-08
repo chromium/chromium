@@ -279,9 +279,6 @@ void CaptureModeController::PerformCapture() {
     CaptureImage();
   else
     CaptureVideo();
-
-  // The above capture functions should have ended the session.
-  DCHECK(!IsActive());
 }
 
 void CaptureModeController::EndVideoRecording() {
@@ -378,27 +375,9 @@ void CaptureModeController::CaptureVideo() {
   DCHECK_EQ(CaptureModeType::kVideo, type_);
   DCHECK(IsCaptureAllowed());
 
-  const base::Optional<CaptureParams> capture_params = GetCaptureParams();
-  // Stop the capture session now, so the bar doesn't show up in the captured
-  // video.
-  Stop();
-
-  if (!capture_params)
-    return;
-
-  // We provide the service with no crop bounds except when we're capturing a
-  // custom region.
-  DCHECK_EQ(source_ != CaptureModeSource::kRegion,
-            capture_params->bounds.IsEmpty());
-
-  // We enable the software-composited cursor, in order for the video capturer
-  // to be able to record it.
-  is_recording_in_progress_ = true;
-  Shell::Get()->UpdateCursorCompositingEnabled();
-
-  // TODO(afakhry): Call into the recording service.
-
-  ShowStopRecordingButton(capture_params->window->GetRootWindow());
+  capture_mode_session_->StartCountDown(
+      base::BindOnce(&CaptureModeController::OnVideoRecordCountDownFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CaptureModeController::OnImageCaptured(
@@ -517,6 +496,30 @@ void CaptureModeController::RecordNumberOfScreenshotsTakenInLastWeek() {
   base::UmaHistogramCounts1000("Ash.CaptureModeController.ScreenshotsPerWeek",
                                num_screenshots_taken_in_last_week_);
   num_screenshots_taken_in_last_week_ = 0;
+}
+
+void CaptureModeController::OnVideoRecordCountDownFinished() {
+  const base::Optional<CaptureParams> capture_params = GetCaptureParams();
+  // Stop the capture session now, so the bar doesn't show up in the captured
+  // video.
+  Stop();
+
+  if (!capture_params)
+    return;
+
+  // We provide the service with no crop bounds except when we're capturing a
+  // custom region.
+  DCHECK_EQ(source_ != CaptureModeSource::kRegion,
+            capture_params->bounds.IsEmpty());
+
+  // We enable the software-composited cursor, in order for the video capturer
+  // to be able to record it.
+  is_recording_in_progress_ = true;
+  Shell::Get()->UpdateCursorCompositingEnabled();
+
+  // TODO(afakhry): Call into the recording service.
+
+  ShowStopRecordingButton(capture_params->window->GetRootWindow());
 }
 
 }  // namespace ash

@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_close_button.h"
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -153,6 +154,19 @@ class CaptureModeTest : public AshTestBase {
         ->GetNativeWindow();
   }
 
+  void WaitForCountDownToFinish() {
+    auto* controller = CaptureModeController::Get();
+    DCHECK(controller->IsActive());
+    DCHECK_EQ(controller->type(), CaptureModeType::kVideo);
+    while (!controller->is_recording_in_progress()) {
+      base::RunLoop run_loop;
+      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE, run_loop.QuitClosure(),
+          base::TimeDelta::FromMilliseconds(100));
+      run_loop.Run();
+    }
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -220,10 +234,12 @@ TEST_F(CaptureModeTest, VideoRecordingUiBehavior) {
   EXPECT_TRUE(controller->IsActive());
   EXPECT_FALSE(controller->is_recording_in_progress());
   EXPECT_FALSE(IsCursorCompositingEnabled());
+  CaptureLabelView::SetUseDelayForTesting(true);
 
   // Hit Enter to begin recording.
   auto* event_generator = GetEventGenerator();
   SendKey(ui::VKEY_RETURN, event_generator);
+  WaitForCountDownToFinish();
   EXPECT_FALSE(controller->IsActive());
   EXPECT_TRUE(controller->is_recording_in_progress());
 

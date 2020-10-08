@@ -4,6 +4,7 @@
 
 #include "ash/capture_mode/capture_mode_session.h"
 
+#include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_window_observer.h"
@@ -13,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/memory/ptr_util.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/aura/window.h"
@@ -169,16 +171,19 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller,
       base::WrapUnique(capture_mode_bar_view_));
   capture_mode_bar_widget_.Show();
 
+  UpdateCaptureLabelWidget();
   RefreshStackingOrder(parent);
 
   if (controller_->source() == CaptureModeSource::kWindow) {
     capture_window_observer_ =
         std::make_unique<CaptureWindowObserver>(this, controller_->type());
   }
+  TabletModeController::Get()->AddObserver(this);
 }
 
 CaptureModeSession::~CaptureModeSession() {
   Shell::Get()->RemovePreTargetHandler(this);
+  TabletModeController::Get()->RemoveObserver(this);
   SetMouseWarpEnabled(old_mouse_warp_status_);
 }
 
@@ -199,12 +204,24 @@ void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
   SetMouseWarpEnabled(new_source != CaptureModeSource::kRegion);
   UpdateCaptureRegionWidgets();
   layer()->SchedulePaint(layer()->bounds());
+  UpdateCaptureLabelWidget();
 }
 
 void CaptureModeSession::OnCaptureTypeChanged(CaptureModeType new_type) {
   if (controller_->source() == CaptureModeSource::kWindow)
     capture_window_observer_->OnCaptureTypeChanged(new_type);
   capture_mode_bar_view_->OnCaptureTypeChanged(new_type);
+  UpdateCaptureLabelWidget();
+}
+
+void CaptureModeSession::StartCountDown(
+    base::OnceClosure countdown_finished_callback) {
+  DCHECK(capture_label_widget_);
+
+  CaptureLabelView* label_view =
+      static_cast<CaptureLabelView*>(capture_label_widget_->GetContentsView());
+  label_view->StartCountDown(std::move(countdown_finished_callback));
+  UpdateCaptureLabelWidgetBounds();
 }
 
 void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
@@ -243,15 +260,12 @@ void CaptureModeSession::OnTouchEvent(ui::TouchEvent* event) {
   OnLocatedEvent(event, /*is_touch=*/true);
 }
 
-void CaptureModeSession::ButtonPressed(views::Button* sender,
-                                       const ui::Event& event) {
-  if (!capture_button_widget_)
-    return;
+void CaptureModeSession::OnTabletModeStarted() {
+  UpdateCaptureLabelWidget();
+}
 
-  DCHECK_EQ(static_cast<views::LabelButton*>(
-                capture_button_widget_->GetContentsView()),
-            sender);
-  controller_->PerformCapture();  // |this| is destroyed here.
+void CaptureModeSession::OnTabletModeEnded() {
+  UpdateCaptureLabelWidget();
 }
 
 gfx::Rect CaptureModeSession::GetSelectedWindowBounds() const {
@@ -266,6 +280,7 @@ void CaptureModeSession::RefreshStackingOrder(aura::Window* parent_container) {
   auto* parent_container_layer = parent_container->layer();
 
   parent_container_layer->StackAtTop(overlay_layer);
+  parent_container_layer->StackAtTop(capture_label_widget_->GetLayer());
   parent_container_layer->StackAtTop(capture_mode_bar_layer);
 }
 
@@ -312,7 +327,7 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
   border_flags.setLooper(gfx::CreateShadowDrawLooper({kRegionOutlineShadow}));
   canvas->DrawRect(gfx::RectF(region), border_flags);
 
-  if (is_select_phase_)
+  if (is_selecting_region_)
     return;
 
   // Do not show affordance circles when repositioning the whole region.
@@ -382,11 +397,9 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
     return;
   }
 
-  // Let the capture button handle any events within its bounds.
-  if (capture_button_widget_ &&
-      capture_button_widget_->GetNativeWindow()->bounds().Contains(location)) {
+  // Let the capture button handle any events it can handle first.
+  if (ShouldCaptureLabelHandleEvent(location))
     return;
-  }
 
   // Allow events that are located on the capture mode bar to pass through so we
   // can click the buttons.
@@ -419,7 +432,7 @@ void CaptureModeSession::OnLocatedEventPressed(
   initial_location_in_root_ = location_in_root;
   previous_location_in_root_ = location_in_root;
 
-  if (is_select_phase_)
+  if (is_selecting_region_)
     return;
 
   // Calculate the position and anchor points of the current pressed event.
@@ -454,7 +467,7 @@ void CaptureModeSession::OnLocatedEventPressed(
       fine_tune_position_ = FineTunePosition::kCenter;
     } else if (!CaptureModeBarView::GetBounds(current_root_)
                     .Contains(location_in_root)) {
-      is_select_phase_ = true;
+      is_selecting_region_ = true;
       UpdateCaptureRegion(gfx::Rect());
     }
     return;
@@ -469,8 +482,8 @@ void CaptureModeSession::OnLocatedEventDragged(
   previous_location_in_root_ = location_in_root;
 
   // For the select phase, the select region is the rectangle formed by the
-  // press location and the current locatiion.
-  if (is_select_phase_) {
+  // press location and the current location.
+  if (is_selecting_region_) {
     UpdateCaptureRegion(
         GetRectEnclosingPoints({initial_location_in_root_, location_in_root}));
     return;
@@ -510,12 +523,13 @@ void CaptureModeSession::OnLocatedEventReleased(
       gfx::Insets(-kAffordanceCircleRadiusDp - kCaptureRegionBorderStrokePx));
   layer()->SchedulePaint(damage_region);
 
-  if (!is_select_phase_)
+  if (!is_selecting_region_)
     return;
 
   // After first release event, we advance to the next phase.
-  is_select_phase_ = false;
+  is_selecting_region_ = false;
   UpdateCaptureRegionWidgets();
+  UpdateCaptureLabelWidget();
 }
 
 void CaptureModeSession::UpdateCaptureRegion(
@@ -535,6 +549,7 @@ void CaptureModeSession::UpdateCaptureRegion(
 
   controller_->set_user_capture_region(new_capture_region);
   UpdateCaptureRegionWidgets();
+  UpdateCaptureLabelWidget();
 }
 
 void CaptureModeSession::UpdateCaptureRegionWidgets() {
@@ -544,17 +559,11 @@ void CaptureModeSession::UpdateCaptureRegionWidgets() {
   const bool show = controller_->source() == CaptureModeSource::kRegion;
   if (!show) {
     dimensions_label_widget_.reset();
-    capture_button_widget_.reset();
     return;
   }
 
   MaybeCreateAndUpdateDimensionsLabelWidget();
   UpdateDimensionsLabelBounds();
-
-  if (!is_select_phase_)
-    CreateCaptureButtonWidget();
-
-  UpdateCaptureButtonBounds();
 }
 
 void CaptureModeSession::MaybeCreateAndUpdateDimensionsLabelWidget() {
@@ -610,52 +619,6 @@ void CaptureModeSession::UpdateDimensionsLabelBounds() {
   dimensions_label_widget_->SetBounds(bounds);
 }
 
-void CaptureModeSession::CreateCaptureButtonWidget() {
-  if (capture_button_widget_)
-    return;
-
-  // TODO(sammiequon): Add styling to this widget's content views.
-  auto* parent = GetParentContainer(current_root_);
-  capture_button_widget_ = std::make_unique<views::Widget>();
-  capture_button_widget_->Init(
-      CreateWidgetParams(parent, gfx::Rect(), "CaptureModeButton"));
-
-  UpdateCaptureButtonContents();
-
-  capture_button_widget_->Show();
-  parent->StackChildBelow(capture_button_widget_->GetNativeWindow(),
-                          capture_mode_bar_widget_.GetNativeWindow());
-}
-
-void CaptureModeSession::UpdateCaptureButtonContents() {
-  DCHECK(capture_button_widget_);
-
-  // TODO(sammiequon): Add the localized label.
-  auto label_button =
-      std::make_unique<views::LabelButton>(this, base::string16());
-  label_button->SetImage(
-      views::Button::STATE_NORMAL,
-      gfx::CreateVectorIcon(controller_->type() == CaptureModeType::kImage
-                                ? kCaptureModeImageIcon
-                                : kCaptureModeVideoIcon,
-                            SK_ColorBLACK));
-  capture_button_widget_->SetContentsView(std::move(label_button));
-}
-
-void CaptureModeSession::UpdateCaptureButtonBounds() {
-  if (!capture_button_widget_)
-    return;
-
-  // TODO(sammiequon): The widget should be repositioned if the region is too
-  // small or too close to the edge.
-  views::LabelButton* capture_button = static_cast<views::LabelButton*>(
-      capture_button_widget_->GetContentsView());
-  gfx::Rect capture_button_widget_bounds = controller_->user_capture_region();
-  capture_button_widget_bounds.ClampToCenteredSize(
-      capture_button->GetPreferredSize());
-  capture_button_widget_->SetBounds(capture_button_widget_bounds);
-}
-
 std::vector<gfx::Point> CaptureModeSession::GetAnchorPointsForPosition(
     FineTunePosition position) {
   std::vector<gfx::Point> anchor_points;
@@ -700,6 +663,55 @@ std::vector<gfx::Point> CaptureModeSession::GetAnchorPointsForPosition(
   DCHECK(!anchor_points.empty());
   DCHECK_LE(anchor_points.size(), 2u);
   return anchor_points;
+}
+
+void CaptureModeSession::UpdateCaptureLabelWidget() {
+  if (!capture_label_widget_) {
+    capture_label_widget_ = std::make_unique<views::Widget>();
+    auto* parent = GetParentContainer(current_root_);
+    capture_label_widget_->Init(
+        CreateWidgetParams(parent, gfx::Rect(), "CaptureLabel"));
+    capture_label_widget_->SetContentsView(
+        std::make_unique<CaptureLabelView>(this));
+    capture_label_widget_->Show();
+  }
+
+  CaptureLabelView* label_view =
+      static_cast<CaptureLabelView*>(capture_label_widget_->GetContentsView());
+  label_view->UpdateIconAndText();
+  UpdateCaptureLabelWidgetBounds();
+}
+
+void CaptureModeSession::UpdateCaptureLabelWidgetBounds() {
+  DCHECK(capture_label_widget_);
+
+  // For fullscreen and window capture mode, the capture label is placed in the
+  // middle of the screen. For region capture mode, if it's in select phase, the
+  // capture label is also placed in the middle of the screen, and if it's in
+  // fine tune phase, the capture label is placed in middle of the capture
+  // region.
+  gfx::Rect bounds(current_root_->bounds());
+  const gfx::Rect capture_region = controller_->user_capture_region();
+  if (controller_->source() == CaptureModeSource::kRegion &&
+      !is_selecting_region_ && !capture_region.IsEmpty()) {
+    bounds = capture_region;
+  }
+  bounds.ClampToCenteredSize(
+      capture_label_widget_->GetContentsView()->GetPreferredSize());
+  capture_label_widget_->SetBounds(bounds);
+}
+
+bool CaptureModeSession::ShouldCaptureLabelHandleEvent(
+    const gfx::Point& location_in_root) {
+  if (!capture_label_widget_ ||
+      !capture_label_widget_->GetNativeWindow()->bounds().Contains(
+          location_in_root)) {
+    return false;
+  }
+
+  CaptureLabelView* label_view =
+      static_cast<CaptureLabelView*>(capture_label_widget_->GetContentsView());
+  return label_view->ShouldHandleEvent();
 }
 
 }  // namespace ash
