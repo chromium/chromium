@@ -3928,11 +3928,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "reload-sad-tab",
-    "owners": [ "gambard", "bling-flags" ],
-    "expiry_milestone": 85
-  },
-  {
     "name": "remote-copy-image-notification",
     "owners": [ "//chrome/browser/sharing/OWNERS" ],
     "expiry_milestone": 90
