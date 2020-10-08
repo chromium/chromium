@@ -168,10 +168,7 @@ class SystemWebAppWaiter {
 
 class SystemWebAppManagerTest : public WebAppTest {
  public:
-  SystemWebAppManagerTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kDesktopPWAsWithoutExtensions}, {});
-  }
+  SystemWebAppManagerTest() = default;
   SystemWebAppManagerTest(const SystemWebAppManagerTest&) = delete;
   SystemWebAppManagerTest& operator=(const SystemWebAppManagerTest&) = delete;
 
@@ -365,7 +362,6 @@ class SystemWebAppManagerTest : public WebAppTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
   std::unique_ptr<ExternallyInstalledWebAppPrefs>
       externally_installed_app_prefs_;
