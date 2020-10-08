@@ -54,11 +54,10 @@ std::vector<ShellDevToolsBindings*>* GetShellDevtoolsBindingsInstances() {
   return instance.get();
 }
 
-std::unique_ptr<base::DictionaryValue> BuildObjectForResponse(
-    const net::HttpResponseHeaders* rh,
-    bool success,
-    int net_error) {
-  auto response = std::make_unique<base::DictionaryValue>();
+base::DictionaryValue BuildObjectForResponse(const net::HttpResponseHeaders* rh,
+                                             bool success,
+                                             int net_error) {
+  base::DictionaryValue response = base::DictionaryValue();
   int responseCode = 200;
   if (rh) {
     responseCode = rh->response_code();
@@ -66,9 +65,9 @@ std::unique_ptr<base::DictionaryValue> BuildObjectForResponse(
     // In case of no headers, assume file:// URL and failed to load
     responseCode = 404;
   }
-  response->SetInteger("statusCode", responseCode);
-  response->SetInteger("netError", net_error);
-  response->SetString("netErrorName", net::ErrorToString(net_error));
+  response.SetInteger("statusCode", responseCode);
+  response.SetInteger("netError", net_error);
+  response.SetString("netErrorName", net::ErrorToString(net_error));
 
   auto headers = std::make_unique<base::DictionaryValue>();
   size_t iterator = 0;
@@ -79,7 +78,7 @@ std::unique_ptr<base::DictionaryValue> BuildObjectForResponse(
   while (rh && rh->EnumerateHeaderLines(&iterator, &name, &value))
     headers->SetString(name, value);
 
-  response->Set("headers", std::move(headers));
+  response.Set("headers", std::move(headers));
   return response;
 }
 
@@ -123,15 +122,16 @@ class ShellDevToolsBindings::NetworkResourceLoader
     base::Value id(stream_id_);
     base::Value encodedValue(encoded);
 
-    bindings_->CallClientFunction("DevToolsAPI.streamWrite", &id, &chunkValue,
-                                  &encodedValue);
+    bindings_->CallClientFunction("DevToolsAPI", "streamWrite", std::move(id),
+                                  std::move(chunkValue),
+                                  std::move(encodedValue));
     std::move(resume).Run();
   }
 
   void OnComplete(bool success) override {
     auto response = BuildObjectForResponse(response_headers_.get(), success,
                                            loader_->NetError());
-    bindings_->SendMessageAck(request_id_, response.get());
+    bindings_->SendMessageAck(request_id_, std::move(response));
     bindings_->loaders_.erase(bindings_->loaders_.find(this));
   }
 
@@ -241,7 +241,7 @@ void ShellDevToolsBindings::UpdateInspectedWebContents(
     return;
   AttachInternal();
   CallClientFunction(
-      "DevToolsAPI.reattachMainTarget", nullptr, nullptr, nullptr,
+      "DevToolsAPI", "reattachMainTarget", {}, {}, {},
       base::BindOnce([](base::OnceCallback<void()> callback,
                         base::Value) { std::move(callback).Run(); },
                      std::move(callback)));
@@ -276,9 +276,7 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
     agent_host_->DispatchProtocolMessage(
         this, base::as_bytes(base::make_span(protocol_message)));
   } else if (method == "loadCompleted") {
-    web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16("DevToolsAPI.setUseSoftMenu(true);"),
-        base::NullCallback());
+    CallClientFunction("DevToolsAPI", "setUseSoftMenu", base::Value(true));
   } else if (method == "loadNetworkResource" && params->GetSize() == 3) {
     // TODO(pfeldman): handle some of the embedder messages in content.
     std::string url;
@@ -294,7 +292,7 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
       base::DictionaryValue response;
       response.SetInteger("statusCode", 404);
       response.SetBoolean("urlValid", false);
-      SendMessageAck(request_id, &response);
+      SendMessageAck(request_id, std::move(response));
       return;
     }
 
@@ -343,7 +341,7 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
     loaders_.insert(std::move(resource_loader));
     return;
   } else if (method == "getPreferences") {
-    SendMessageAck(request_id, &preferences_);
+    SendMessageAck(request_id, std::move(preferences_));
     return;
   } else if (method == "setPreference") {
     std::string name;
@@ -358,9 +356,8 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
       return;
     preferences_.RemoveKey(name);
   } else if (method == "requestFileSystems") {
-    web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16("DevToolsAPI.fileSystemsLoaded([]);"),
-        base::NullCallback());
+    CallClientFunction("DevToolsAPI", "fileSystemsLoaded",
+                       base::Value(base::Value::Type::LIST));
   } else if (method == "reattach") {
     if (!agent_host_)
       return;
@@ -377,7 +374,7 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
   }
 
   if (request_id)
-    SendMessageAck(request_id, nullptr);
+    SendMessageAck(request_id, {});
 }
 
 void ShellDevToolsBindings::DispatchProtocolMessage(
@@ -386,58 +383,52 @@ void ShellDevToolsBindings::DispatchProtocolMessage(
   base::StringPiece str_message(reinterpret_cast<const char*>(message.data()),
                                 message.size());
   if (str_message.length() < kShellMaxMessageChunkSize) {
-    std::string param;
-    base::EscapeJSONString(str_message, true, &param);
-    std::string code = "DevToolsAPI.dispatchMessage(" + param + ");";
-    base::string16 javascript = base::UTF8ToUTF16(code);
-    web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
-        javascript, base::NullCallback());
-    return;
-  }
+    CallClientFunction("DevToolsAPI", "dispatchMessage",
+                       base::Value(str_message.as_string()));
+  } else {
+    size_t total_size = str_message.length();
+    for (size_t pos = 0; pos < str_message.length();
+         pos += kShellMaxMessageChunkSize) {
+      base::StringPiece str_message_chunk =
+          str_message.substr(pos, kShellMaxMessageChunkSize);
 
-  size_t total_size = str_message.length();
-  for (size_t pos = 0; pos < str_message.length();
-       pos += kShellMaxMessageChunkSize) {
-    std::string param;
-    base::EscapeJSONString(str_message.substr(pos, kShellMaxMessageChunkSize),
-                           true, &param);
-    std::string code = "DevToolsAPI.dispatchMessageChunk(" + param + "," +
-                       std::to_string(pos ? 0 : total_size) + ");";
-    base::string16 javascript = base::UTF8ToUTF16(code);
-    web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
-        javascript, base::NullCallback());
+      CallClientFunction(
+          "DevToolsAPI", "dispatchMessageChunk",
+          base::Value(str_message_chunk.as_string()),
+          base::Value(base::NumberToString(pos ? 0 : total_size)));
+    }
   }
 }
 
 void ShellDevToolsBindings::CallClientFunction(
-    const std::string& function_name,
-    const base::Value* arg1,
-    const base::Value* arg2,
-    const base::Value* arg3,
+    const std::string& object_name,
+    const std::string& method_name,
+    base::Value arg1,
+    base::Value arg2,
+    base::Value arg3,
     base::OnceCallback<void(base::Value)> cb) {
-  std::string javascript = function_name + "(";
-  if (arg1) {
-    std::string json;
-    base::JSONWriter::Write(*arg1, &json);
-    javascript.append(json);
-    if (arg2) {
-      base::JSONWriter::Write(*arg2, &json);
-      javascript.append(", ").append(json);
-      if (arg3) {
-        base::JSONWriter::Write(*arg3, &json);
-        javascript.append(", ").append(json);
+  std::string javascript;
+
+  web_contents()->GetMainFrame()->AllowInjectingJavaScript();
+
+  base::Value arguments(base::Value::Type::LIST);
+  if (!arg1.is_none()) {
+    arguments.Append(std::move(arg1));
+    if (!arg2.is_none()) {
+      arguments.Append(std::move(arg2));
+      if (!arg3.is_none()) {
+        arguments.Append(std::move(arg3));
       }
     }
   }
-  javascript.append(");");
-  web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::UTF8ToUTF16(javascript), std::move(cb));
+  web_contents()->GetMainFrame()->ExecuteJavaScriptMethod(
+      base::ASCIIToUTF16(object_name), base::ASCIIToUTF16(method_name),
+      std::move(arguments), std::move(cb));
 }
 
-void ShellDevToolsBindings::SendMessageAck(int request_id,
-                                           const base::Value* arg) {
-  base::Value id_value(request_id);
-  CallClientFunction("DevToolsAPI.embedderMessageAck", &id_value, arg, nullptr);
+void ShellDevToolsBindings::SendMessageAck(int request_id, base::Value arg) {
+  CallClientFunction("DevToolsAPI", "embedderMessageAck",
+                     base::Value(request_id), std::move(arg));
 }
 
 void ShellDevToolsBindings::AgentHostClosed(DevToolsAgentHost* agent_host) {

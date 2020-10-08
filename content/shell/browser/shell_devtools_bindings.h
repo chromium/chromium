@@ -55,10 +55,11 @@ class ShellDevToolsBindings : public WebContentsObserver,
                                   base::OnceCallback<void()> callback);
 
   void CallClientFunction(
-      const std::string& function_name,
-      const base::Value* arg1,
-      const base::Value* arg2,
-      const base::Value* arg3,
+      const std::string& object_name,
+      const std::string& method_name,
+      const base::Value arg1 = {},
+      const base::Value arg2 = {},
+      const base::Value arg3 = {},
       base::OnceCallback<void(base::Value)> cb = base::NullCallback());
   ~ShellDevToolsBindings() override;
 
@@ -76,7 +77,7 @@ class ShellDevToolsBindings : public WebContentsObserver,
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
   void WebContentsDestroyed() override;
 
-  void SendMessageAck(int request_id, const base::Value* arg1);
+  void SendMessageAck(int request_id, const base::Value arg);
   void AttachInternal();
 
   WebContents* inspected_contents_;
