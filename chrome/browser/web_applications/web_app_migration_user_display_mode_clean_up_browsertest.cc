@@ -46,12 +46,8 @@ class WebAppMigrationUserDisplayModeCleanUpBrowserTest
     : public InProcessBrowserTest {
  public:
   WebAppMigrationUserDisplayModeCleanUpBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {
-            features::kDesktopPWAsWithoutExtensions,
-            features::kDesktopPWAsMigrationUserDisplayModeCleanUp,
-        },
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kDesktopPWAsMigrationUserDisplayModeCleanUp);
     switch (GetTestPreCount()) {
       case 2:
         WebAppMigrationUserDisplayModeCleanUp::DisableForTesting();
