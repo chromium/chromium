@@ -172,7 +172,8 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         } else if (contentTypes.size() == 1
                 && (contentTypes.contains(ContentType.HIGHLIGHTED_TEXT)
                         || contentTypes.contains(ContentType.TEXT))) {
-            setDefaultIconForPreview(AppCompatResources.getDrawable(mContext, R.drawable.text));
+            setDefaultIconForPreview(
+                    AppCompatResources.getDrawable(mContext, R.drawable.text_icon));
             title = "";
             subtitle = mParams.getText();
             setSubtitleMaxLines(2);
