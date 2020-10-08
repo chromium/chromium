@@ -313,8 +313,6 @@ source_set("blink_headers") {
     "web/web_element_collection.h",
     "web/web_embedded_worker.h",
     "web/web_embedded_worker_start_data.h",
-    "web/web_external_widget.h",
-    "web/web_external_widget_client.h",
     "web/web_form_control_element.h",
     "web/web_form_element.h",
     "web/web_frame.h",

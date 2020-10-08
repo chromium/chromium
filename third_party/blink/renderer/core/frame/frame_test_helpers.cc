@@ -801,7 +801,9 @@ void TestWebWidgetClient::WillQueueSyntheticEvent(
       std::make_unique<WebCoalescedInputEvent>(event));
 }
 
-void TestWebWidgetClient::SetCursor(const ui::Cursor& cursor) {}
+void TestWebWidgetClient::SetCursor(const ui::Cursor& cursor) {
+  cursor_set_count_++;
+}
 
 void TestWebWidgetClient::SetToolTipText(
     const String& tooltip_text,

@@ -106,6 +106,14 @@ FloatRect NormalizeRect(const IntRect& to_normalize, const IntRect& base_rect) {
 
 // WebFrameWidget ------------------------------------------------------------
 
+static CreateWebViewFrameWidgetFunction g_create_web_view_frame_widget =
+    nullptr;
+
+void InstallCreateWebViewFrameWidgetHook(
+    CreateWebViewFrameWidgetFunction create_widget) {
+  g_create_web_view_frame_widget = create_widget;
+}
+
 WebFrameWidget* WebFrameWidget::CreateForMainFrame(
     WebWidgetClient* client,
     WebLocalFrame* main_frame,
@@ -132,14 +140,23 @@ WebFrameWidget* WebFrameWidget::CreateForMainFrame(
   DCHECK(main_frame_impl.ViewImpl());
   WebViewImpl& web_view_impl = *main_frame_impl.ViewImpl();
 
-  // Note: this isn't a leak, as the object has a self-reference that the
-  // caller needs to release by calling Close().
-  // TODO(dcheng): Remove the special bridge class for main frame widgets.
-  auto* widget = MakeGarbageCollected<WebViewFrameWidget>(
-      util::PassKey<WebFrameWidget>(), *client, web_view_impl,
-      std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
-      std::move(mojo_widget_host), std::move(mojo_widget),
-      is_for_nested_main_frame, hidden, never_composited);
+  WebViewFrameWidget* widget = nullptr;
+  if (g_create_web_view_frame_widget) {
+    widget = g_create_web_view_frame_widget(
+        util::PassKey<WebFrameWidget>(), *client, web_view_impl,
+        std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
+        std::move(mojo_widget_host), std::move(mojo_widget),
+        is_for_nested_main_frame, hidden, never_composited);
+  } else {
+    // Note: this isn't a leak, as the object has a self-reference that the
+    // caller needs to release by calling Close().
+    // TODO(dcheng): Remove the special bridge class for main frame widgets.
+    widget = MakeGarbageCollected<WebViewFrameWidget>(
+        util::PassKey<WebFrameWidget>(), *client, web_view_impl,
+        std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
+        std::move(mojo_widget_host), std::move(mojo_widget),
+        is_for_nested_main_frame, hidden, never_composited);
+  }
   widget->BindLocalRoot(*main_frame);
   return widget;
 }

@@ -204,6 +204,8 @@ class TestWebWidgetClient : public WebWidgetClient,
   bool AnimationScheduled() const { return animation_scheduled_; }
   void ClearAnimationScheduled() { animation_scheduled_ = false; }
 
+  size_t CursorSetCount() const { return cursor_set_count_; }
+
   bool HaveScrollEventHandlers() const;
   const Vector<std::unique_ptr<blink::WebCoalescedInputEvent>>&
   GetInjectedScrollEvents() const {
@@ -269,6 +271,7 @@ class TestWebWidgetClient : public WebWidgetClient,
       injected_scroll_events_;
   std::unique_ptr<TestWidgetInputHandlerHost> widget_input_handler_host_;
   bool animation_scheduled_ = false;
+  size_t cursor_set_count_ = 0;
   viz::FrameSinkId frame_sink_id_;
   mojo::AssociatedReceiver<mojom::blink::WidgetHost> receiver_{this};
 };

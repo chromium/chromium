@@ -25,8 +25,6 @@ blink_core_sources("exported") {
     "web_dom_message_event.cc",
     "web_element.cc",
     "web_element_collection.cc",
-    "web_external_widget_impl.cc",
-    "web_external_widget_impl.h",
     "web_form_control_element.cc",
     "web_form_element.cc",
     "web_form_element_observer_impl.cc",

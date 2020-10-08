@@ -212,6 +212,32 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   DISALLOW_COPY_AND_ASSIGN(WebViewFrameWidget);
 };
 
+// Convenience type for creation method taken by
+// InstallCreateWebViewFrameWidgetHook(). The method signature matches the
+// WebViewFrameWidget constructor.
+using CreateWebViewFrameWidgetFunction =
+    WebViewFrameWidget* (*)(util::PassKey<WebFrameWidget>,
+                            WebWidgetClient&,
+                            WebViewImpl&,
+                            CrossVariantMojoAssociatedRemote<
+                                mojom::blink::FrameWidgetHostInterfaceBase>
+                                frame_widget_host,
+                            CrossVariantMojoAssociatedReceiver<
+                                mojom::blink::FrameWidgetInterfaceBase>
+                                frame_widget,
+                            CrossVariantMojoAssociatedRemote<
+                                mojom::blink::WidgetHostInterfaceBase>
+                                widget_host,
+                            CrossVariantMojoAssociatedReceiver<
+                                mojom::blink::WidgetInterfaceBase> widget,
+                            bool is_for_nested_main_frame,
+                            bool hidden,
+                            bool never_composited);
+// Overrides the implementation of WebFrameWidget::CreateForMainFrame() function
+// below. Used by tests to override some functionality on WebViewFrameWidget.
+void CORE_EXPORT InstallCreateWebViewFrameWidgetHook(
+    CreateWebViewFrameWidgetFunction create_widget);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WEB_VIEW_FRAME_WIDGET_H_
