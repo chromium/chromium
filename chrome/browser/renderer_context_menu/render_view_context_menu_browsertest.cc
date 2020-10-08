@@ -513,22 +513,9 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
                                           IDC_OPEN_LINK_IN_PROFILE_LAST));
 }
 
-// Flaky crashes on Windows and Chrome OS. https://crbug.com/1119807
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
-#define MAYBE_OpenInAppAbsentForURLsInNonLocallyInstalledApp \
-  DISABLED_OpenInAppAbsentForURLsInNonLocallyInstalledApp
-#else
-#define MAYBE_OpenInAppAbsentForURLsInNonLocallyInstalledApp \
-  OpenInAppAbsentForURLsInNonLocallyInstalledApp
-#endif
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
-                       MAYBE_OpenInAppAbsentForURLsInNonLocallyInstalledApp) {
+                       OpenInAppAbsentForURLsInNonLocallyInstalledApp) {
   const AppId app_id = InstallTestWebApp(GURL(kAppUrl1));
-
-  // Part of the installation process (setting that this is a locally installed
-  // app) runs asynchronously. Wait for that to complete before setting locally
-  // installed to false.
-  base::RunLoop().RunUntilIdle();
 
   {
     WebAppProviderBase* const provider =
@@ -544,7 +531,6 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
         }));
 
     run_loop.Run();
-    base::RunLoop().RunUntilIdle();
   }
 
   std::unique_ptr<TestRenderViewContextMenu> menu =
