@@ -58,9 +58,6 @@ source_set("unit_tests") {
     "externally_installed_web_app_prefs_unittest.cc",
     "install_manager_bookmark_app_unittest.cc",
     "pending_app_install_task_unittest.cc",
-
-    # TODO(crbug.com/1065748): Delete this deprecated unit tests file.
-    "system_web_app_manager_bookmark_apps_unittest.cc",
     "web_app_policy_manager_unittest.cc",
     "web_app_provider_unittest.cc",
   ]
