@@ -442,6 +442,7 @@ void SharedImageBackingAHB::EndOverlayAccess() {
 SharedImageBackingFactoryAHB::SharedImageBackingFactoryAHB(
     const GpuDriverBugWorkarounds& workarounds,
     const GpuFeatureInfo& gpu_feature_info) {
+  DCHECK(base::AndroidHardwareBufferCompat::IsSupportAvailable());
   scoped_refptr<gles2::FeatureInfo> feature_info =
       new gles2::FeatureInfo(workarounds, gpu_feature_info);
   feature_info->Initialize(ContextType::CONTEXT_TYPE_OPENGLES2, false,

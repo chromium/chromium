@@ -56,6 +56,7 @@
 #endif  // defined(OS_FUCHSIA)
 
 #if defined(OS_ANDROID)
+#include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "gpu/command_buffer/service/shared_image_backing_scoped_hardware_buffer_fence_sync.h"
 #endif
@@ -136,7 +137,7 @@ SharedImageFactory::SharedImageFactory(
       interop_backing_factory_ = std::make_unique<SharedImageBackingFactoryAHB>(
           workarounds, gpu_feature_info);
     }
-  } else {
+  } else if (base::AndroidHardwareBufferCompat::IsSupportAvailable()) {
     interop_backing_factory_ = std::make_unique<SharedImageBackingFactoryAHB>(
         workarounds, gpu_feature_info);
   }
