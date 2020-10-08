@@ -1,7 +1,6 @@
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Contains a helper function for deploying and executing a packaged
 executable on a Target."""
 
@@ -31,7 +30,8 @@ def _AttachKernelLogReader(target):
   """Attaches a kernel log reader as a long-running SSH task."""
 
   logging.info('Attaching kernel logger.')
-  return target.RunCommandPiped(['dlog', '-f'], stdin=open(os.devnull, 'r'),
+  return target.RunCommandPiped(['dlog', '-f'],
+                                stdin=open(os.devnull, 'r'),
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.STDOUT)
 
@@ -45,7 +45,7 @@ class SystemLogReader(object):
     self._system_log = None
 
   def __enter__(self):
-      return self
+    return self
 
   def __exit__(self, exc_type, exc_val, exc_tb):
     """Stops the system logging processes and closes the output file."""
@@ -61,10 +61,10 @@ class SystemLogReader(object):
     logging.debug('Writing fuchsia system log to %s' % system_log_file)
 
     self._listener_proc = target.RunCommandPiped(['log_listener'],
-                                                  stdout=subprocess.PIPE,
-                                                  stderr=subprocess.STDOUT)
+                                                 stdout=subprocess.PIPE,
+                                                 stderr=subprocess.STDOUT)
 
-    self._system_log = open(system_log_file,'w', buffering=1)
+    self._system_log = open(system_log_file, 'w', buffering=1)
     self._symbolizer_proc = RunSymbolizer(self._listener_proc.stdout,
                                           self._system_log,
                                           BuildIdsPaths(package_paths))
@@ -89,7 +89,7 @@ class MergedInputStream(object):
     # Disable buffering for the stream to make sure there is no delay in logs.
     self._output_stream = os.fdopen(write_pipe, 'w', 0)
     self._thread = threading.Thread(target=self._Run)
-    self._thread.start();
+    self._thread.start()
 
     return os.fdopen(read_pipe, 'r')
 
@@ -155,6 +155,7 @@ class RunPackageArgs:
       in the package. Omitting this parameter will disable symbolization.
   system_logging: If set, connects a system log reader to the target.
   """
+
   def __init__(self):
     self.symbolizer_config = None
     self.system_logging = False
@@ -170,7 +171,7 @@ def _DrainStreamToStdout(stream, quit_event):
   """Outputs the contents of |stream| until |quit_event| is set."""
 
   while not quit_event.is_set():
-    rlist, _, _ = select.select([ stream ], [], [], 0.1)
+    rlist, _, _ = select.select([stream], [], [], 0.1)
     if rlist:
       line = rlist[0].readline()
       if not line:
@@ -178,8 +179,8 @@ def _DrainStreamToStdout(stream, quit_event):
       print(line.rstrip())
 
 
-def RunPackage(output_dir, target, package_paths, package_name,
-               package_args, args):
+def RunPackage(output_dir, target, package_paths, package_name, package_args,
+               args):
   """Installs the Fuchsia package at |package_path| on the target,
   executes it with |package_args|, and symbolizes its output.
 
@@ -192,17 +193,15 @@ def RunPackage(output_dir, target, package_paths, package_name,
 
   Returns the exit code of the remote package process."""
 
-  system_logger = (
-      _AttachKernelLogReader(target) if args.system_logging else None)
+  system_logger = (_AttachKernelLogReader(target)
+                   if args.system_logging else None)
   try:
     if system_logger:
       # Spin up a thread to asynchronously dump the system log to stdout
       # for easier diagnoses of early, pre-execution failures.
       log_output_quit_event = multiprocessing.Event()
-      log_output_thread = threading.Thread(
-          target=
-          lambda: _DrainStreamToStdout(system_logger.stdout, log_output_quit_event)
-      )
+      log_output_thread = threading.Thread(target=lambda: _DrainStreamToStdout(
+          system_logger.stdout, log_output_quit_event))
       log_output_thread.daemon = True
       log_output_thread.start()
 
@@ -215,11 +214,10 @@ def RunPackage(output_dir, target, package_paths, package_name,
 
       logging.info('Running application.')
       command = ['run', _GetComponentUri(package_name)] + package_args
-      process = target.RunCommandPiped(
-          command,
-          stdin=open(os.devnull, 'r'),
-          stdout=subprocess.PIPE,
-          stderr=subprocess.STDOUT)
+      process = target.RunCommandPiped(command,
+                                       stdin=open(os.devnull, 'r'),
+                                       stdout=subprocess.PIPE,
+                                       stderr=subprocess.STDOUT)
 
       if system_logger:
         output_stream = MergedInputStream(
@@ -240,8 +238,8 @@ def RunPackage(output_dir, target, package_paths, package_name,
       else:
         # The test runner returns an error status code if *any* tests fail,
         # so we should proceed anyway.
-        logging.warning(
-            'Process exited with status code %d.' % process.returncode)
+        logging.warning('Process exited with status code %d.' %
+                        process.returncode)
 
   finally:
     if system_logger:
