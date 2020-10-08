@@ -1290,9 +1290,9 @@ int Element::clientWidth() {
             this, DocumentUpdateReason::kJavaScript);
       }
       if (GetDocument().GetPage()->GetSettings().GetForceZeroLayoutHeight()) {
-        // TODO(sky): deal with OverflowClipRect() being infinite along an
-        // axis (because of overflow: clip and overflow:visible along the
-        // opposite axis).
+        // OverflowClipRect() may return infinite along a particular axis if
+        // |layout_view| is not a scroll-container.
+        DCHECK(layout_view->IsScrollContainer());
         return AdjustForAbsoluteZoom::AdjustLayoutUnit(
                    layout_view->OverflowClipRect(PhysicalOffset()).Width(),
                    layout_view->StyleRef())
@@ -1336,9 +1336,9 @@ int Element::clientHeight() {
             this, DocumentUpdateReason::kJavaScript);
       }
       if (GetDocument().GetPage()->GetSettings().GetForceZeroLayoutHeight()) {
-        // TODO(sky): deal with OverflowClipRect() being infinite along an
-        // axis (because of overflow: clip and overflow:visible along the
-        // opposite axis).
+        // OverflowClipRect() may return infinite along a particular axis if
+        // |layout_view| is not a scroll-container.
+        DCHECK(layout_view->IsScrollContainer());
         return AdjustForAbsoluteZoom::AdjustLayoutUnit(
                    layout_view->OverflowClipRect(PhysicalOffset()).Height(),
                    layout_view->StyleRef())
