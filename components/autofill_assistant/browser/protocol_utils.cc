@@ -15,6 +15,7 @@
 #include "components/autofill_assistant/browser/actions/expect_navigation_action.h"
 #include "components/autofill_assistant/browser/actions/focus_element_action.h"
 #include "components/autofill_assistant/browser/actions/generate_password_for_form_field_action.h"
+#include "components/autofill_assistant/browser/actions/get_element_status_action.h"
 #include "components/autofill_assistant/browser/actions/highlight_element_action.h"
 #include "components/autofill_assistant/browser/actions/navigate_action.h"
 #include "components/autofill_assistant/browser/actions/popup_message_action.h"
@@ -228,6 +229,8 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       return std::make_unique<ConfigureUiStateAction>(delegate, action);
     case ActionProto::ActionInfoCase::kPresaveGeneratedPassword:
       return std::make_unique<PresaveGeneratedPasswordAction>(delegate, action);
+    case ActionProto::ActionInfoCase::kGetElementStatus:
+      return std::make_unique<GetElementStatusAction>(delegate, action);
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET: {
       VLOG(1) << "Encountered action with ACTION_INFO_NOT_SET";
       return std::make_unique<UnsupportedAction>(delegate, action);

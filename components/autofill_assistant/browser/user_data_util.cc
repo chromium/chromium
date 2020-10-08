@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
+#include "components/autofill_assistant/browser/field_formatter.h"
 #include "third_party/libaddressinput/chromium/addressinput_util.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
 
@@ -351,6 +352,36 @@ bool IsCompleteCreditCard(
   }
 
   return true;
+}
+
+ClientStatus GetFormattedAutofillValue(const AutofillValue& autofill_value,
+                                       const UserData* user_data,
+                                       std::string* out_value) {
+  if (autofill_value.profile().identifier().empty() ||
+      autofill_value.value_expression().empty()) {
+    VLOG(1) << "|autofill_value| with empty "
+               "|profile.identifier| or |value_expression|";
+    return ClientStatus(INVALID_ACTION);
+  }
+
+  const autofill::AutofillProfile* address =
+      user_data->selected_address(autofill_value.profile().identifier());
+  if (address == nullptr) {
+    VLOG(1) << "Requested unknown address '"
+            << autofill_value.profile().identifier() << "'";
+    return ClientStatus(PRECONDITION_FAILED);
+  }
+
+  auto value = field_formatter::FormatString(
+      autofill_value.value_expression(),
+      field_formatter::CreateAutofillMappings(*address,
+                                              /* locale= */ "en-US"));
+  if (!value.has_value()) {
+    return ClientStatus(AUTOFILL_INFO_NOT_AVAILABLE);
+  }
+
+  out_value->assign(*value);
+  return OkClientStatus();
 }
 
 }  // namespace autofill_assistant

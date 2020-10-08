@@ -12,7 +12,7 @@
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/actions/action_delegate_util.h"
 #include "components/autofill_assistant/browser/client_status.h"
-#include "components/autofill_assistant/browser/field_formatter.h"
+#include "components/autofill_assistant/browser/user_data_util.h"
 
 namespace autofill_assistant {
 namespace {
@@ -138,34 +138,15 @@ void SetFormFieldValueAction::InternalProcessAction(
                 .values(0));
         break;
       case SetFormFieldValueProto_KeyPress::kAutofillValue: {
-        if (keypress.autofill_value().profile().identifier().empty() ||
-            keypress.autofill_value().value_expression().empty()) {
-          VLOG(1) << "SetFormFieldValueAction: |autofill_value| with empty "
-                     "|profile.identifier| or |value_expression|";
-          FailAction(ClientStatus(INVALID_ACTION), keypress_index);
+        std::string value;
+        ClientStatus autofill_status = GetFormattedAutofillValue(
+            keypress.autofill_value(), delegate_->GetUserData(), &value);
+        if (!autofill_status.ok()) {
+          FailAction(autofill_status, keypress_index);
           return;
         }
 
-        const autofill::AutofillProfile* address =
-            delegate_->GetUserData()->selected_address(
-                keypress.autofill_value().profile().identifier());
-        if (address == nullptr) {
-          VLOG(1) << "SetFormFieldValueAction: requested unknown address '"
-                  << keypress.autofill_value().profile().identifier() << "'";
-          FailAction(ClientStatus(PRECONDITION_FAILED), keypress_index);
-          return;
-        }
-
-        auto value = field_formatter::FormatString(
-            keypress.autofill_value().value_expression(),
-            field_formatter::CreateAutofillMappings(*address,
-                                                    /* locale= */ "en-US"));
-        if (!value.has_value()) {
-          FailAction(ClientStatus(AUTOFILL_INFO_NOT_AVAILABLE), keypress_index);
-          return;
-        }
-
-        field_inputs_.emplace_back(*value);
+        field_inputs_.emplace_back(value);
         break;
       }
       default:

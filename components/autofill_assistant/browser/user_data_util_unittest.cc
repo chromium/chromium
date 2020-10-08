@@ -4,10 +4,16 @@
 
 #include "components/autofill_assistant/browser/user_data_util.h"
 
+#include "base/guid.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string16.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/user_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -669,6 +675,80 @@ TEST(UserDataUtilTest, CompleteCreditCardWithBadNetwork) {
   payment_options_visa.request_payment_method = true;
   payment_options_visa.supported_basic_card_networks.emplace_back("visa");
   EXPECT_TRUE(IsCompleteCreditCard(&card, &address, payment_options_visa));
+}
+
+TEST(UserDataUtilTest, RequestEmptyAutofillValue) {
+  UserData user_data;
+  AutofillValue autofill_value;
+  std::string result;
+
+  EXPECT_EQ(GetFormattedAutofillValue(autofill_value, &user_data, &result)
+                .proto_status(),
+            INVALID_ACTION);
+  EXPECT_EQ(result, "");
+}
+
+TEST(UserDataUtilTest, RequestDataFromUnknownProfile) {
+  UserData user_data;
+  AutofillValue autofill_value;
+  autofill_value.mutable_profile()->set_identifier("none");
+  autofill_value.set_value_expression("value");
+  std::string result;
+
+  EXPECT_EQ(GetFormattedAutofillValue(autofill_value, &user_data, &result)
+                .proto_status(),
+            PRECONDITION_FAILED);
+  EXPECT_EQ(result, "");
+}
+
+TEST(UserDataUtilTest, RequestUnknownDataFromKnownProfile) {
+  UserData user_data;
+  autofill::AutofillProfile contact(base::GenerateGUID(),
+                                    autofill::test::kEmptyOrigin);
+  // Middle name is expected to be empty.
+  autofill::test::SetProfileInfo(&contact, "John", /* middle name */ "", "Doe",
+                                 "", "", "", "", "", "", "", "", "");
+  user_data.selected_addresses_["contact"] =
+      std::make_unique<autofill::AutofillProfile>(contact);
+
+  AutofillValue autofill_value;
+  autofill_value.mutable_profile()->set_identifier("contact");
+  autofill_value.set_value_expression(
+      base::StrCat({"${",
+                    base::NumberToString(static_cast<int>(
+                        autofill::ServerFieldType::NAME_MIDDLE)),
+                    "}"}));
+
+  std::string result;
+
+  EXPECT_EQ(GetFormattedAutofillValue(autofill_value, &user_data, &result)
+                .proto_status(),
+            AUTOFILL_INFO_NOT_AVAILABLE);
+  EXPECT_EQ(result, "");
+}
+
+TEST(UserDataUtilTest, RequestKnownDataFromKnownProfile) {
+  UserData user_data;
+  autofill::AutofillProfile contact(base::GenerateGUID(),
+                                    autofill::test::kEmptyOrigin);
+  autofill::test::SetProfileInfo(&contact, "John", /* middle name */ "", "Doe",
+                                 "", "", "", "", "", "", "", "", "");
+  user_data.selected_addresses_["contact"] =
+      std::make_unique<autofill::AutofillProfile>(contact);
+
+  AutofillValue autofill_value;
+  autofill_value.mutable_profile()->set_identifier("contact");
+  autofill_value.set_value_expression(
+      base::StrCat({"${",
+                    base::NumberToString(static_cast<int>(
+                        autofill::ServerFieldType::NAME_FIRST)),
+                    "}"}));
+
+  std::string result;
+
+  EXPECT_TRUE(
+      GetFormattedAutofillValue(autofill_value, &user_data, &result).ok());
+  EXPECT_EQ(result, "John");
 }
 
 }  // namespace

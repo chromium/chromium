@@ -12,7 +12,7 @@
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/actions/action_delegate_util.h"
 #include "components/autofill_assistant/browser/client_status.h"
-#include "components/autofill_assistant/browser/field_formatter.h"
+#include "components/autofill_assistant/browser/user_data_util.h"
 
 namespace autofill_assistant {
 
@@ -46,34 +46,12 @@ void SelectOptionAction::InternalProcessAction(ProcessActionCallback callback) {
       value_ = select_option.selected_option();
       break;
     case SelectOptionProto::kAutofillValue: {
-      if (select_option.autofill_value().profile().identifier().empty() ||
-          select_option.autofill_value().value_expression().empty()) {
-        VLOG(1) << "SelectOptionAction: |autofill_value| with empty "
-                   "|profile.identifier| or |value_expression|";
-        EndAction(ClientStatus(INVALID_ACTION));
+      ClientStatus autofill_status = GetFormattedAutofillValue(
+          select_option.autofill_value(), delegate_->GetUserData(), &value_);
+      if (!autofill_status.ok()) {
+        EndAction(autofill_status);
         return;
       }
-
-      const autofill::AutofillProfile* address =
-          delegate_->GetUserData()->selected_address(
-              select_option.autofill_value().profile().identifier());
-      if (address == nullptr) {
-        VLOG(1) << "SelectOptionAction: requested unknown address '"
-                << select_option.autofill_value().profile().identifier() << "'";
-        EndAction(ClientStatus(PRECONDITION_FAILED));
-        return;
-      }
-
-      auto value = field_formatter::FormatString(
-          select_option.autofill_value().value_expression(),
-          field_formatter::CreateAutofillMappings(*address,
-                                                  /* locale= */ "en-US"));
-      if (!value.has_value()) {
-        EndAction(ClientStatus(AUTOFILL_INFO_NOT_AVAILABLE));
-        return;
-      }
-
-      value_ = *value;
       break;
     }
     default:

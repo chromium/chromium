@@ -513,6 +513,7 @@ message ActionProto {
     SaveGeneratedPasswordProto save_generated_password = 53;
     ConfigureUiStateProto configure_ui_state = 54;
     PresaveGeneratedPasswordProto presave_generated_password = 55;
+    GetElementStatusProto get_element_status = 56;
   }
 
   // Set to true to make the client remove any contextual information if the
@@ -589,10 +590,11 @@ message ProcessedActionProto {
     WaitForDomProto.Result wait_for_dom_result = 22;
     // Should be set as a result of FormAction.
     FormProto.Result form_result = 21;
-
     WaitForDocumentProto.Result wait_for_document_result = 25;
     // Should be set as a result of ShowGenericUiProto.
     ShowGenericUiProto.Result show_generic_ui_result = 28;
+    // Should be set as a result of GetElementStatusProto.
+    GetElementStatusProto.Result get_element_status_result = 31;
   }
 
   // Reports information about navigation that happened while
@@ -608,7 +610,7 @@ message ProcessedActionProto {
   // selecting a chip on the UI. This is meant for monitoring and debugging.
   optional bool direct_action = 24;
 
-  reserved 26, 27;
+  reserved 3, 4, 6 to 11, 13, 14, 16, 18, 26, 27, 29, 30;
 }
 
 // Extended information about the action status, which provides more details
@@ -2351,4 +2353,76 @@ message SelectionInputProto {
 message PopupMessageProto {
   // Message to show in the popup.
   optional string message = 1;
+}
+
+// Action to get an element's status.
+message GetElementStatusProto {
+  optional SelectorProto element = 1;
+
+  // Compare the element's |value| attribute against this expected match.
+  optional ValueMatch expected_value_match = 2;
+  // TODO(b/169924567): Add expected_inner_text_match
+
+  // If set and a mismatch happens, the action will report an failure status
+  // with |ELEMENT_MISMATCH|. If this flag is set to false, the action will not
+  // fail and simply report the result.
+  optional bool mismatch_should_fail = 3;
+
+  // The result that gets sent as part of |ProcessedActionProto.result_data|.
+  message Result {
+    // The field is considered not empty.
+    optional bool not_empty = 1;
+    // The field matches the expected input.
+    optional bool match_success = 2;
+
+    // For logging and debugging.
+    repeated ComparisonReport reports = 3;
+  }
+
+  message MatchOptions {
+    optional bool case_sensitive = 1;
+    optional bool remove_space = 2;
+  }
+
+  message MatchExpectation {
+    optional MatchOptions match_options = 1;
+
+    oneof match_level {
+      bool full_match = 2;
+      bool contains = 3;
+      bool starts_with = 4;
+      bool ends_with = 5;
+    }
+  }
+
+  message TextMatch {
+    oneof value_source {
+      // The value to check against.
+      string value = 1;
+      // A value from an Autofill source. Note that this must be proceeded by a
+      // |CollectUserDataAction|.
+      AutofillValue autofill_value = 2;
+    }
+
+    // Optional. The expectations to declare this as a matching success. If
+    // left empty, the action will always be treated as successful. This field
+    // is not necessary if the expected value is empty.
+    optional MatchExpectation match_expectation = 3;
+  }
+
+  message ValueMatch {
+    optional TextMatch text_match = 1;
+    // TODO(b/169924567): Add text_filter
+  }
+
+  // TODO(b/169924567): Add InnerTextMatch
+
+  message ComparisonReport {
+    optional MatchOptions match_options = 1;
+
+    optional bool full_match = 2;
+    optional bool contains = 3;
+    optional bool starts_with = 4;
+    optional bool ends_with = 5;
+  }
 }

@@ -198,6 +198,10 @@ enum ProcessedActionStatusProto {
   // generate more specific selectors. See SelectorProto::ProximityFilter.
   TOO_MANY_CANDIDATES = 25;
 
+  // Evaluating the element did report an unexpected mismatch in either value
+  // or text.
+  ELEMENT_MISMATCH = 26;
+
   reserved 15, 23;
 }
 
