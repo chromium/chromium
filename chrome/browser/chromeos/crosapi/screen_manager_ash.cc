@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "ash/wm/desks/desks_util.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
@@ -83,79 +84,6 @@ class SnapshotCapturerBase : public mojom::SnapshotCapturer {
     receivers_.Add(this, std::move(pending_receiver));
   }
 
- private:
-  mojo::ReceiverSet<mojom::SnapshotCapturer> receivers_;
-};
-
-}  // namespace
-
-// TODO(crbug/1094460): Handle display selection and multiple displays.
-class ScreenManagerAsh::ScreenCapturerImpl : public SnapshotCapturerBase {
- public:
-  ScreenCapturerImpl() = default;
-  ~ScreenCapturerImpl() override = default;
-
-  void ListSources(ListSourcesCallback callback) override {
-    std::vector<mojom::SnapshotSourcePtr> screens;
-
-    // TODO(crbug/1094460): Populate this properly.
-    mojom::SnapshotSourcePtr source = mojom::SnapshotSource::New();
-    source->id = 1;
-    screens.push_back(std::move(source));
-
-    std::move(callback).Run(std::move(screens));
-  }
-
-  void TakeSnapshot(uint64_t id, TakeSnapshotCallback callback) override {
-    aura::Window* primary_window = ash::Shell::GetPrimaryRootWindow();
-
-    ui::GrabWindowSnapshotAsync(
-        primary_window, primary_window->bounds(),
-        base::BindOnce(
-            [](TakeSnapshotCallback callback, gfx::Image image) {
-              std::move(callback).Run(/*success=*/true, image.AsBitmap());
-            },
-            std::move(callback)));
-  }
-};
-
-class ScreenManagerAsh::WindowCapturerImpl : public SnapshotCapturerBase {
- public:
-  WindowCapturerImpl() = default;
-  ~WindowCapturerImpl() override = default;
-
-  void ListSources(ListSourcesCallback callback) override {
-    aura::Window* container = ash::Shell::GetContainer(
-        ash::Shell::GetRootWindowForNewWindows(),
-        ash::kShellWindowId_DefaultContainerDeprecated);
-
-    // We need to create a vector that contains window_id and title.
-    std::vector<mojom::SnapshotSourcePtr> windows;
-
-    // The |container| has all the top-level windows in reverse order, e.g. the
-    // most top-level window is at the end. So iterate children reversely to
-    // make sure |windows| is in the expected order.
-    for (auto it = container->children().rbegin();
-         it != container->children().rend(); ++it) {
-      aura::Window* window = *it;
-
-      // TODO(https://crbug.com/1094460): The window is currently not visible
-      // or focusable. If the window later becomes invisible or unfocusable, we
-      // don't bother removing the window from the list. We should handle this
-      // more robustly.
-      if (!window->IsVisible() || !window->CanFocus())
-        continue;
-
-      mojom::SnapshotSourcePtr source = mojom::SnapshotSource::New();
-      source->id = window_list_.LookupOrAddId(window);
-      source->title = base::UTF16ToUTF8(window->GetTitle());
-
-      windows.push_back(std::move(source));
-    }
-
-    std::move(callback).Run(std::move(windows));
-  }
-
   void TakeSnapshot(uint64_t id, TakeSnapshotCallback callback) override {
     aura::Window* window = window_list_.LookupWindow(id);
     if (!window) {
@@ -175,8 +103,97 @@ class ScreenManagerAsh::WindowCapturerImpl : public SnapshotCapturerBase {
             std::move(callback)));
   }
 
- private:
+ protected:
   WindowList window_list_;
+
+ private:
+  mojo::ReceiverSet<mojom::SnapshotCapturer> receivers_;
+};
+
+}  // namespace
+
+class ScreenManagerAsh::ScreenCapturerImpl : public SnapshotCapturerBase {
+ public:
+  ScreenCapturerImpl() = default;
+  ~ScreenCapturerImpl() override = default;
+
+  void ListSources(ListSourcesCallback callback) override {
+    std::vector<mojom::SnapshotSourcePtr> sources;
+
+    aura::Window::Windows root_windows = ash::Shell::GetAllRootWindows();
+    for (aura::Window* root_window : root_windows) {
+      mojom::SnapshotSourcePtr source = mojom::SnapshotSource::New();
+      source->id = window_list_.LookupOrAddId(root_window);
+      source->title = base::UTF16ToUTF8(root_window->GetTitle());
+
+      if (root_window == ash::Shell::GetPrimaryRootWindow()) {
+        sources.insert(sources.begin(), std::move(source));
+      } else {
+        sources.push_back(std::move(source));
+      }
+    }
+
+    std::move(callback).Run(std::move(sources));
+  }
+
+  uint64_t GetPrimaryRootWindowId() {
+    return window_list_.LookupOrAddId(ash::Shell::GetPrimaryRootWindow());
+  }
+};
+
+class ScreenManagerAsh::WindowCapturerImpl : public SnapshotCapturerBase {
+ public:
+  WindowCapturerImpl() = default;
+  ~WindowCapturerImpl() override = default;
+
+  void ListSources(ListSourcesCallback callback) override {
+    // We need to create a vector that contains window_id and title.
+    std::vector<mojom::SnapshotSourcePtr> sources;
+
+    aura::Window::Windows root_windows = ash::Shell::GetAllRootWindows();
+    for (aura::Window* root_window : root_windows) {
+      // The list of desks containers depends on whether the Virtual Desks
+      // feature is enabled or not.
+      for (int desk_id : ash::desks_util::GetDesksContainersIds())
+        AppendWindowsForRoot(root_window, desk_id, &sources);
+
+      AppendWindowsForRoot(root_window,
+                           ash::kShellWindowId_AlwaysOnTopContainer, &sources);
+    }
+
+    std::move(callback).Run(std::move(sources));
+  }
+
+ private:
+  void AppendWindowsForRoot(aura::Window* root_window,
+                            int container_id,
+                            std::vector<mojom::SnapshotSourcePtr>* sources) {
+    aura::Window* container =
+        ash::Shell::GetContainer(root_window, container_id);
+    if (!container)
+      return;
+
+    // The |container| has all the top-level windows in reverse order, e.g.
+    // the most top-level window is at the end. So iterate children reversely
+    // to make sure |windows| is in the expected order.
+    for (auto it = container->children().rbegin();
+         it != container->children().rend(); ++it) {
+      aura::Window* window = *it;
+
+      // TODO(https://crbug.com/1094460): The window is currently not visible
+      // or focusable. If the window later becomes invisible or unfocusable,
+      // we don't bother removing the window from the list. We should handle
+      // this more robustly.
+      if (!window->IsVisible() || !window->CanFocus())
+        continue;
+
+      mojom::SnapshotSourcePtr source = mojom::SnapshotSource::New();
+      source->id = window_list_.LookupOrAddId(window);
+      source->title = base::UTF16ToUTF8(window->GetTitle());
+
+      sources->push_back(std::move(source));
+    }
+  }
 };
 
 ScreenManagerAsh::ScreenManagerAsh() = default;
@@ -189,30 +206,25 @@ void ScreenManagerAsh::BindReceiver(
 
 void ScreenManagerAsh::DeprecatedTakeScreenSnapshot(
     DeprecatedTakeScreenSnapshotCallback callback) {
-  // No need to keep the capturer alive. It just is used to kick off the
-  // request to the windowing system.
   GetScreenCapturerImpl()->TakeSnapshot(
-      0, base::BindOnce(
-             [](DeprecatedTakeScreenSnapshotCallback callback, bool success,
-                const SkBitmap& bitmap) {
-               // Ignore |success| param.
-               std::move(callback).Run(BitmapFromSkBitmap(bitmap));
-             },
-             std::move(callback)));
+      GetScreenCapturerImpl()->GetPrimaryRootWindowId(),
+      base::BindOnce(
+          [](DeprecatedTakeScreenSnapshotCallback callback, bool success,
+             const SkBitmap& bitmap) {
+            // Ignore |success| param.
+            std::move(callback).Run(BitmapFromSkBitmap(bitmap));
+          },
+          std::move(callback)));
 }
 
 void ScreenManagerAsh::DeprecatedListWindows(
     DeprecatedListWindowsCallback callback) {
-  // No need to keep the capturer alive. It just is used to kick off the
-  // request to the windowing system.
   GetWindowCapturerImpl()->ListSources(std::move(callback));
 }
 
 void ScreenManagerAsh::DeprecatedTakeWindowSnapshot(
     uint64_t id,
     DeprecatedTakeWindowSnapshotCallback callback) {
-  // No need to keep the capturer alive. It just is used to kick off the
-  // request to the windowing system.
   GetWindowCapturerImpl()->TakeSnapshot(
       id, base::BindOnce(
               [](DeprecatedTakeWindowSnapshotCallback callback, bool success,
