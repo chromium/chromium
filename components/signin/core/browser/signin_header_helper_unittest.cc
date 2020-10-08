@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -436,6 +437,7 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
 
   {
     // Signin response.
+    base::HistogramTester histogram_tester;
     DiceResponseParams params =
         BuildDiceSigninResponseParams(base::StringPrintf(
             "action=SIGNIN,id=%s,email=%s,authuser=%i,authorization_code=%s",
@@ -446,6 +448,8 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
     EXPECT_EQ(kEmail, params.signin_info->account_info.email);
     EXPECT_EQ(kSessionIndex, params.signin_info->account_info.session_index);
     EXPECT_EQ(kAuthorizationCode, params.signin_info->authorization_code);
+    histogram_tester.ExpectUniqueSample("Signin.DiceAuthorizationCode", true,
+                                        1);
   }
 
   {
@@ -503,9 +507,10 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
   {
     // Signin response with no_authorization_code and missing
     // authorization_code.
+    base::HistogramTester histogram_tester;
     DiceResponseParams params = BuildDiceSigninResponseParams(
-        base::StringPrintf("action=SIGNIN,id=%s,email=%s,authuser=%i,no_"
-                           "authorization_code=true",
+        base::StringPrintf("action=SIGNIN,id=%s,email=%s,authuser=%i,"
+                           "no_authorization_code=true",
                            kGaiaID, kEmail, kSessionIndex));
     EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
     ASSERT_TRUE(params.signin_info);
@@ -514,14 +519,18 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
     EXPECT_EQ(kSessionIndex, params.signin_info->account_info.session_index);
     EXPECT_TRUE(params.signin_info->authorization_code.empty());
     EXPECT_TRUE(params.signin_info->no_authorization_code);
+    histogram_tester.ExpectUniqueSample("Signin.DiceAuthorizationCode", false,
+                                        1);
   }
 
   {
     // Missing authorization code and no_authorization_code.
+    base::HistogramTester histogram_tester;
     DiceResponseParams params = BuildDiceSigninResponseParams(
         base::StringPrintf("action=SIGNIN,id=%s,email=%s,authuser=%i", kGaiaID,
                            kEmail, kSessionIndex));
     EXPECT_EQ(DiceAction::NONE, params.user_intention);
+    histogram_tester.ExpectTotalCount("Signin.DiceAuthorizationCode", 0);
   }
 
   {

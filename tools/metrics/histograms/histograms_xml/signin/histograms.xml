@@ -245,6 +245,18 @@ prefs when the profile is loaded.  -->
   <summary>The total number of accounts in the cookie jar.</summary>
 </histogram>
 
+<histogram name="Signin.DiceAuthorizationCode" enum="BooleanPresent"
+    expires_after="never">
+<!-- expires-never: used to monitor OAuth outages in Dice.  -->
+
+  <owner>droger@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <summary>
+    Recorded when a Dice signin response is received and indicates whether the
+    authorization code was present or not.
+  </summary>
+</histogram>
+
 <histogram name="Signin.DiceResponseHeader" enum="SigninDiceResponseHeader"
     expires_after="never">
 <!-- expires-never: used to monitor the health of the Dice feature and for troubleshooting.  -->
