@@ -155,7 +155,7 @@ void* PartitionAlignedRealloc(const AllocatorDispatch* dispatch,
   // TODO(tasak): Need to compare the new alignment with the address' alignment.
   // If the two alignments are not the same, need to return nullptr with EINVAL.
   if (address) {
-    size_t usage = base::ThreadSafePartitionRoot::GetAllocatedSize(address);
+    size_t usage = base::ThreadSafePartitionRoot::GetUsableSize(address);
     size_t copy_size = usage > size ? size : usage;
     memcpy(new_ptr, address, copy_size);
 
@@ -180,7 +180,7 @@ size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
                                 void* address,
                                 void* context) {
   // TODO(lizeb): Returns incorrect values for aligned allocations.
-  return base::ThreadSafePartitionRoot::GetAllocatedSize(address);
+  return base::ThreadSafePartitionRoot::GetUsableSize(address);
 }
 
 }  // namespace

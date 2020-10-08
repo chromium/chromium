@@ -522,7 +522,7 @@ struct BASE_EXPORT PartitionRoot {
   // Same as |Free()|, bypasses the allocator hooks.
   ALWAYS_INLINE static void FreeNoHooks(void* ptr);
 
-  ALWAYS_INLINE static size_t GetAllocatedSize(void* ptr);
+  ALWAYS_INLINE static size_t GetUsableSize(void* ptr);
   ALWAYS_INLINE size_t GetSize(void* ptr) const;
   ALWAYS_INLINE size_t ActualSize(size_t size);
 
@@ -848,14 +848,18 @@ PartitionAllocGetPageForSize(void* ptr) {
 }  // namespace internal
 
 // static
-// Gets the allocated size of the |ptr|, adjusted for cookie and tag.
-// (if any). Used as malloc_usable_size.
+// Gets the allocated size of the |ptr|, from the point of view of the app, not
+// PartitionAlloc. It can be equal or higher than the requested size. If higher,
+// the overage won't exceed what's actually usable by the app without a risk of
+// running out of an allocated region or into PartitionAlloc's internal data.
+// Used as malloc_usable_size.
 template <bool thread_safe>
-ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetAllocatedSize(void* ptr) {
+ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetUsableSize(void* ptr) {
   Page* page = Page::FromPointerNoAlignmentCheck(ptr);
   auto* root = PartitionRoot<thread_safe>::FromPage(page);
 
   size_t size = page->GetAllocatedSize();
+  // Adjust back by subtracing extras (if any).
   size = internal::PartitionSizeAdjustSubtract(root->allow_extras, size);
   return size;
 }

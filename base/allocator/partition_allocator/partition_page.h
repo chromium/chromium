@@ -121,11 +121,11 @@ struct PartitionPage {
   // allocated size.
   ALWAYS_INLINE size_t GetAllocatedSize() const {
     // Allocated size can be:
-    // - The slot size for small enough buckets.
-    // - Stored exactly, for large buckets (see get_raw_size_ptr()), and
-    //   direct-mapped allocations.
+    // - The slot size for small buckets.
+    // - Stored exactly, for large buckets and direct-mapped allocations (see
+    // the comment in get_raw_size_ptr()).
     size_t result = bucket->slot_size;
-    if (UNLIKELY(get_raw_size_ptr()))  // has row size.
+    if (UNLIKELY(get_raw_size_ptr()))  // has raw size.
       result = get_raw_size();
 
     return result;
@@ -253,7 +253,7 @@ PartitionPage<thread_safe>::FromPointer(void* ptr) {
 template <bool thread_safe>
 ALWAYS_INLINE const size_t* PartitionPage<thread_safe>::get_raw_size_ptr()
     const {
-  // For single-slot buckets which span more than
+  // For direct-map as well as single-slot buckets which span more than
   // |kMaxPartitionPagesPerSlotSpan| partition pages, we have some spare
   // metadata space to store the raw allocation size. We can use this to report
   // better statistics.
