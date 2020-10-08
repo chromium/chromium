@@ -558,6 +558,31 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   self.hasInitializedUI = YES;
 }
 
+// Returns YES if restore prompt can be shown.
+// The restore prompt shouldn't appear if its appearance may be in conflict
+// with the expected behavior by the user.
+// The following cases will not show restore prompt:
+//   1- New tab / Navigation startup parameters are specified.
+//   2- Load URL User activity is queud.
+//   3- Move tab user activity is queued.
+// In these cases if a restore prompt was shown, it may be dismissed immediately
+// and the user will not have a chance to restore the session.
+- (BOOL)shouldShowRestorePrompt {
+  BOOL shouldShow = !self.startupParameters;
+  if (shouldShow && IsSceneStartupSupported()) {
+    if (@available(iOS 13, *)) {
+      for (NSUserActivity* activity in self.sceneState.connectionOptions
+               .userActivities) {
+        if (ActivityIsTabMove(activity) || ActivityIsURLLoad(activity)) {
+          shouldShow = NO;
+          break;
+        }
+      }
+    }
+  }
+  return shouldShow;
+}
+
 // Starts up a single chrome window and its UI.
 - (void)startUpChromeUI {
   DCHECK(!self.browserViewWrangler);
@@ -616,24 +641,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   [self createInitialUI:(startInIncognito ? ApplicationMode::INCOGNITO
                                           : ApplicationMode::NORMAL)];
 
-  // A pending tab move should not display the restore infobar since restoration
-  // will replace the moved tab.
-  BOOL pendingTabMove = NO;
-  if (IsSceneStartupSupported()) {
-    if (@available(iOS 13, *)) {
-      for (NSUserActivity* activity in self.sceneState.connectionOptions
-               .userActivities) {
-        if (ActivityIsTabMove(activity)) {
-          pendingTabMove = YES;
-        }
-      }
-    }
-  }
-
-  if (!self.startupParameters && !pendingTabMove) {
-    // The startup parameters may create new tabs or navigations. If the restore
-    // infobar is displayed now, it may be dismissed immediately and the user
-    // will never be able to restore the session.
+  if ([self shouldShowRestorePrompt]) {
     [self.sceneState.appState.startupInformation
             .restoreHelper showRestorePrompt];
     self.sceneState.appState.startupInformation.restoreHelper = nil;
