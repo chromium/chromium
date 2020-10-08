@@ -839,7 +839,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // showing a glimpse of the tab selector during start up.
         if (!mPendingInitialTabCreation
                 && !(TabUiFeatureUtilities.supportInstantStart(isTablet())
-                        && shouldShowTabSwitcherOnStart())) {
+                        && shouldShowTabSwitcherOnStart() && !hadWarmStart())) {
             setInitialOverviewState();
         }
 
@@ -1149,7 +1149,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // mPendingInitialTabCreation was true then do so now.
         if (hasStartWithNativeBeenCalled()
                 && !(TabUiFeatureUtilities.supportInstantStart(isTablet())
-                        && shouldShowTabSwitcherOnStart())) {
+                        && shouldShowTabSwitcherOnStart() && !hadWarmStart())) {
             setInitialOverviewState();
         }
     }
@@ -1530,8 +1530,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         // When the feature flag {@link ChromeFeatureList.INSTANT_START} turns on phones (not
         // tablet), a view-only start page created on Java will be shown before native is
-        // initialized.
-        if (TabUiFeatureUtilities.supportInstantStart(isTablet())) {
+        // initialized. The {@link prepareToShowStartPagePreNative()} is only called in a cold
+        // start.
+        if (TabUiFeatureUtilities.supportInstantStart(isTablet()) && !hadWarmStart()) {
             prepareToShowStartPagePreNative();
         }
     }
@@ -1541,7 +1542,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
      * an LayoutManagerChrome object, add overview mode observer and so on.
      */
     private void prepareToShowStartPagePreNative() {
-        assert TabUiFeatureUtilities.supportInstantStart(isTablet());
+        assert TabUiFeatureUtilities.supportInstantStart(isTablet() && !hadWarmStart());
         try (TraceEvent e =
                         TraceEvent.scoped("ChromeTabbedActivity.prepareToShowStartPagePreNative")) {
             setupCompositorContentPreNativeForPhone();
