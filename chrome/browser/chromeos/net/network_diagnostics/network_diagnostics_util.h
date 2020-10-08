@@ -49,6 +49,15 @@ std::vector<std::string> GetRandomAndFixedHostsWithScheme(int num_random_hosts,
                                                           int prefix_length,
                                                           std::string scheme);
 
+// Similar to GetRandomAndFixedHostsWithSchemeAndPort, but with |port|, followed
+// by "/", appended to the hosts. E.g. A host will look like:
+// "https://www.google.com:443/".
+std::vector<std::string> GetRandomAndFixedHostsWithSchemeAndPort(
+    int num_random_hosts,
+    int prefix_length,
+    std::string scheme,
+    int port_number);
+
 // Similar to GetRandomHostsWithScheme, but with the 204 path appended to hosts.
 std::vector<std::string> GetRandomHostsWithSchemeAndGenerate204Path(
     int num_hosts,

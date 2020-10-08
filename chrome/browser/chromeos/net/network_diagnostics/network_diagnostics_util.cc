@@ -10,6 +10,7 @@
 
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -97,6 +98,19 @@ std::vector<std::string> GetRandomAndFixedHostsWithScheme(int num_random_hosts,
       GetRandomHostsWithFixedHosts(num_random_hosts, prefix_length);
   for (auto& host : hosts) {
     host = scheme + host;
+  }
+  return hosts;
+}
+
+std::vector<std::string> GetRandomAndFixedHostsWithSchemeAndPort(
+    int num_random_hosts,
+    int prefix_length,
+    std::string scheme,
+    int port_number) {
+  std::vector<std::string> hosts =
+      GetRandomAndFixedHostsWithScheme(num_random_hosts, prefix_length, scheme);
+  for (auto& host : hosts) {
+    host = host + ":" + base::NumberToString(port_number) + "/";
   }
   return hosts;
 }
