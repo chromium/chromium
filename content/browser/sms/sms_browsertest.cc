@@ -63,12 +63,26 @@ class SmsBrowserTest : public ContentBrowserTest {
 
     for (const auto* const entry : entries) {
       const int64_t* metric = ukm_recorder()->GetEntryMetric(entry, "Outcome");
-      if (*metric == static_cast<int>(outcome)) {
+      if (metric && *metric == static_cast<int>(outcome)) {
         SUCCEED();
         return;
       }
     }
     FAIL() << "Expected SMSReceiverOutcome was not recorded";
+  }
+
+  void ExpectTimingUKM(const std::string& metric_name) {
+    auto entries = ukm_recorder()->GetEntriesByName(Entry::kEntryName);
+
+    ASSERT_FALSE(entries.empty());
+
+    for (const auto* const entry : entries) {
+      if (ukm_recorder()->GetEntryMetric(entry, metric_name)) {
+        SUCCEED();
+        return;
+      }
+    }
+    FAIL() << "Expected UKM was not recorded";
   }
 
   void ExpectNoOutcomeUKM() {
@@ -177,6 +191,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, Receive) {
 
   content::FetchHistogramsFromChildProcesses();
   ExpectOutcomeUKM(url, blink::SMSReceiverOutcome::kSuccess);
+  ExpectTimingUKM("TimeSmsReceiveMs");
+  ExpectTimingUKM("TimeSuccessMs");
   histogram_tester.ExpectTotalCount("Blink.Sms.Receive.TimeSuccess", 1);
 }
 

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_SMS_SMS_METRICS_H_
 #define CONTENT_BROWSER_SMS_SMS_METRICS_H_
 
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/sms/sms_receiver_destroyed_reason.h"
 
 namespace base {
@@ -15,7 +16,7 @@ namespace content {
 
 // Records the time from when a call to the API was made to when an SMS has been
 // successfully received.
-void RecordSmsReceiveTime(base::TimeDelta duration);
+void RecordSmsReceiveTime(base::TimeDelta duration, ukm::SourceId source_id);
 
 // Records the time from when a successful SMS was retrieved to when the user
 // presses the Cancel button.

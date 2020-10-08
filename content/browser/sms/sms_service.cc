@@ -131,7 +131,8 @@ void SmsService::OnReceive(const std::string& one_time_code) {
   DCHECK(!start_time_.is_null());
 
   receive_time_ = base::TimeTicks::Now();
-  RecordSmsReceiveTime(receive_time_ - start_time_);
+  RecordSmsReceiveTime(receive_time_ - start_time_,
+                       render_frame_host()->GetPageUkmSourceId());
 
   one_time_code_ = one_time_code;
 
