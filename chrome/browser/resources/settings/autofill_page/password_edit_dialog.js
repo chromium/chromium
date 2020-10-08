@@ -114,7 +114,12 @@ Polymer({
     this.$.dialog.showModal();
     this.usernamesForSameOrigin =
         new Set(this.savedPasswords
-                    .filter(item => item.urls.shown === this.entry.urls.shown)
+                    .filter(
+                        item => item.urls.shown === this.entry.urls.shown &&
+                            (item.isPresentOnDevice() ===
+                                 this.entry.isPresentOnDevice() ||
+                             item.isPresentInAccount() ===
+                                 this.entry.isPresentInAccount()))
                     .map(item => item.username));
   },
 

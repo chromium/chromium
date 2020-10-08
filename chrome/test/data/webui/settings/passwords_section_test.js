@@ -1180,6 +1180,25 @@ suite('PasswordsSection', function() {
         editDialog, [accountEntry.accountId], passwordManager);
   });
 
+  test('editDialogChangeUsernameWhenReusedForDifferentStore', async function() {
+    loadTimeData.overrideValues({editPasswordsInSettings: true});
+
+    const passwords = [
+      createMultiStorePasswordEntry(
+          {url: 'goo.gl', username: 'bart', accountId: 0}),
+      createMultiStorePasswordEntry(
+          {url: 'goo.gl', username: 'mark', deviceId: 0})
+    ];
+    const editDialog =
+        elementFactory.createPasswordEditDialog(passwords[0], passwords);
+
+    // Changing the username to the value which is present for different store
+    // type should work.
+    editDialog.$.usernameInput.value = 'mark';
+    assertFalse(editDialog.$.usernameInput.invalid);
+    assertFalse(editDialog.$.actionButton.disabled);
+  });
+
   // Test verifies that the edit dialog informs the password is stored in the
   // account.
   test('verifyStorageDetailsInEditDialogForAccountPassword', function() {
