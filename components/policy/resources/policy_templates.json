@@ -18544,11 +18544,7 @@
       'supported_on': ['chrome_os:70-'],
       'caption': '''Contorls Network File Shares for ChromeOS availability''',
       'example_value': True,
-      'desc': '''This policy controls whether the Network File Shares feature for <ph name="PRODUCT_NAME">$2<ex>Google Chrome OS</ex></ph> is allowed for a user.
-
-      When this policy is not configured or set to True, users will be able to use Network File Shares.
-
-      When this policy is set to False, users will be unable to use Network File Shares.''',
+      'desc': '''Setting the policy to Enabled lets users use Network File Shares for <ph name="PRODUCT_NAME">$2<ex>Google Chrome OS</ex></ph>. Setting the policy to Disabled means users can't use this feature.''',
     },
     {
       'name': 'WebRtcEventLogCollectionAllowed',
@@ -18629,10 +18625,9 @@
       'caption': '''Controls Network File Share discovery via <ph name="NETBIOS_NAME">NetBIOS</ph>''',
       'example_value': True,
       'default_for_enterprise_users': False,
-      'desc': '''This policy controls whether the Network File Shares feature for <ph name="PRODUCT_NAME">$2<ex>Google Chrome OS</ex></ph> should use the <ph name="NETBIOS_PROTOCOL">NetBIOS Name Query Request protocol</ph> to discover shares on the network.
-      When this policy is set to True, share discovery will use the <ph name="NETBIOS_PROTOCOL">NetBIOS Name Query Request protocol</ph> protocol to discover shares on the network.
-      When this policy is set to False, share discovery will not use the <ph name="NETBIOS_PROTOCOL">NetBIOS Name Query Request protocol</ph> protocol to discover shares.
-      If the policy is left not set, the default is disabled for enterprise-managed users and enabled for non-managed users.''',
+      'desc': '''Setting the policy to Enabled means share discovery (the Network File Shares feature for <ph name="PRODUCT_NAME">$2<ex>Google Chrome OS</ex></ph>) uses the <ph name="NETBIOS_PROTOCOL">NetBIOS Name Query Request protocol</ph> to discover shares on the network. Setting the policy to Disabled means share discovery won't use this protocol to discover shares.
+
+      Leaving the policy unset means the behavior defaults to off for managed users and on for other users.''',
     },
     {
       'name': 'WebAppInstallForceList',
@@ -18943,12 +18938,9 @@
       'caption': '''Controls enabling NTLM as an authentication protocol for SMB mounts''',
       'example_value': True,
       'default_for_enterprise_users': False,
-      'desc': '''This policy controls whether the Network File Shares feature for <ph name="PRODUCT_NAME">$2<ex>Google Chrome OS</ex></ph> will use NTLM for authentication.
+      'desc': '''Setting the policy to Enabled means the Network File Shares feature for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> uses NTLM for authentication to SMB shares if necessary. Setting the policy to Disabled turns off NTLM authentication to SMB shares.
 
-      When this policy is set to True, NTLM will be used for authentication to SMB shares if necessary.
-      When this policy is set to False, NTLM authentication to SMB shares will be disabled.
-
-      If the policy is left not set, the default is disabled for enterprise-managed users and enabled for non-managed users.''',
+      Leaving the policy unset means the behavior defaults to off for managed users and on for other users.''',
     },
     {
       'name': 'NetworkFileSharesPreconfiguredShares',
@@ -18985,9 +18977,15 @@
       'id': 490,
       'caption': '''List of preconfigured network file shares.''',
       'tags': [],
-      'desc': '''Specifies a list of preconfigued network file shares.
+      'desc': '''Setting the policy specifies a list of preset network file shares. Each item is an object with 2 properties: <ph name="SHARE_URL_FIELD_NAME">share_url</ph> and <ph name="MODE_FIELD_NAME">mode</ph>.
 
-      Each list item of the policy is an object with two members: "share_url" and "mode". "share_url" should be the URL of the share and "mode" should be either "drop_down" or "pre_mount". "drop_down" mode indicates that "share_url" will be added to the share discovery drop down. "pre_mount" mode indicates that "share_url" will be mounted.''',
+      The share URL should be <ph name="SHARE_URL_FIELD_NAME">share_url</ph>.
+
+      For <ph name="MODE_FIELD_NAME">mode</ph>, it should be <ph name="MODE_ENUM_DROP_DOWN">drop_down</ph> or <ph name="MODE_ENUM_PRE_MOUNT">pre_mount</ph>:
+
+      * <ph name="MODE_ENUM_DROP_DOWN">drop_down</ph> indicates that <ph name="SHARE_URL_FIELD_NAME">share_url</ph> will be added to the share discovery list.
+
+      * <ph name="MODE_ENUM_PRE_MOUNT">pre_mount</ph> indicates that <ph name="SHARE_URL_FIELD_NAME">share_url</ph> will be mounted.''',
     },
     {
       'name': 'ScreenBrightnessPercent',
