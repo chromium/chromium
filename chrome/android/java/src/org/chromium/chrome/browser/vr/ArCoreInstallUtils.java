@@ -5,29 +5,90 @@
 package org.chromium.chrome.browser.vr;
 
 import android.app.Activity;
+import android.app.Application;
+import android.app.Application.ActivityLifecycleCallbacks;
+import android.os.Bundle;
 
-import org.chromium.base.ActivityState;
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Installs AR DFM and ArCore runtimes.
  */
 @JNINamespace("vr")
-public class ArCoreInstallUtils implements ApplicationStatus.ActivityStateListener {
+public class ArCoreInstallUtils {
+    /**
+     * Helper class to store a reference to the ArCoreInstallUtils instance and activity
+     * that requested an install of ArCore, and await that activity being resumed.
+     */
+    private class InstallRequest implements ActivityLifecycleCallbacks {
+        private ArCoreInstallUtils mInstallInstance;
+        private ImmutableWeakReference<Activity> mWeakActivity;
+        private ImmutableWeakReference<Application> mWeakApplication;
+
+        public InstallRequest(ArCoreInstallUtils instance, Activity activity) {
+            this.mInstallInstance = instance;
+            this.mWeakActivity = new ImmutableWeakReference<Activity>(activity);
+
+            Application application = activity.getApplication();
+            this.mWeakApplication = new ImmutableWeakReference<Application>(application);
+
+            application.registerActivityLifecycleCallbacks(this);
+        }
+
+        public void dispose() {
+            // Clear the ArCoreInstallUtils instance and attempt to unregister from
+            // lifecycle notifications.
+            mInstallInstance = null;
+
+            // If we cannot get the application, then we don't have a need to unregister the
+            // callbacks.
+            final Application application = mWeakApplication.get();
+            if (application == null) return;
+            application.unregisterActivityLifecycleCallbacks(this);
+        }
+
+        @Override
+        public void onActivityResumed(Activity activity) {
+            if (mWeakActivity.get() != activity || mInstallInstance == null) return;
+
+            mInstallInstance.onArCoreRequestInstallReturned(activity);
+        }
+
+        // Unfortunately, ActivityLifecycleCallbacks force us to implement all of the methods, but
+        // we only really care about onActivityResumed for our purposes.
+        @Override
+        public void onActivityCreated(final Activity activity, Bundle savedInstanceState) {}
+
+        @Override
+        public void onActivityDestroyed(Activity activity) {}
+
+        @Override
+        public void onActivityPaused(Activity activity) {}
+
+        @Override
+        public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {}
+
+        @Override
+        public void onActivityStarted(Activity activity) {}
+
+        @Override
+        public void onActivityStopped(Activity activity) {}
+    }
+
     private static final String TAG = "ArCoreInstallUtils";
 
     private long mNativeArCoreInstallUtils;
 
-    // Instance that requested installation of ARCore.
+    // This tracks the relevant information of the instance that requested installation of ARCore.
     // Should be non-null only if there is a pending request to install ARCore.
-    private static ArCoreInstallUtils sRequestInstallInstance;
+    private static InstallRequest sInstallRequest;
 
     // Cached ArCoreShim instance - valid only after AR module was installed and
     // getArCoreShimInstance() was called.
@@ -84,19 +145,6 @@ public class ArCoreInstallUtils implements ApplicationStatus.ActivityStateListen
         return availability != ArCoreAvailability.SUPPORTED_INSTALLED;
     }
 
-    @Override
-    public void onActivityStateChange(Activity activity, int newState) {
-        // We only care about activity state changes if we're the ones that have requested an
-        // install, and then only if it's a resume.
-        if (!(sRequestInstallInstance == this && newState == ActivityState.RESUMED)) return;
-
-        onArCoreRequestInstallReturned(activity);
-
-        // After we've gotten resumed, we no longer need to track activity state.
-        sRequestInstallInstance = null;
-        ApplicationStatus.unregisterActivityStateListener(this);
-    }
-
     private Activity getActivity(final WebContents webContents) {
         if (webContents == null) return null;
         WindowAndroid window = webContents.getTopLevelNativeWindow();
@@ -116,7 +164,7 @@ public class ArCoreInstallUtils implements ApplicationStatus.ActivityStateListen
         }
 
         try {
-            assert sRequestInstallInstance == null;
+            assert sInstallRequest == null;
             @ArCoreShim.InstallStatus
             int installStatus = getArCoreShimInstance().requestInstall(activity, true);
 
@@ -124,22 +172,20 @@ public class ArCoreInstallUtils implements ApplicationStatus.ActivityStateListen
                 // Install flow will resume in onArCoreRequestInstallReturned, mark that
                 // there is active request. Native code notification will be deferred until
                 // our activity gets resumed.
-                sRequestInstallInstance = ArCoreInstallUtils.this;
+                sInstallRequest = new InstallRequest(ArCoreInstallUtils.this, activity);
             } else if (installStatus == ArCoreShim.InstallStatus.INSTALLED) {
                 // No need to install - notify native code.
                 maybeNotifyNativeOnRequestInstallSupportedArCoreResult(true);
             }
 
         } catch (ArCoreShim.UnavailableDeviceNotCompatibleException e) {
-            sRequestInstallInstance = null;
+            sInstallRequest = null;
             Log.w(TAG, "ARCore installation request failed with exception: %s", e.toString());
 
             maybeNotifyNativeOnRequestInstallSupportedArCoreResult(false);
         } catch (ArCoreShim.UnavailableUserDeclinedInstallationException e) {
             maybeNotifyNativeOnRequestInstallSupportedArCoreResult(false);
         }
-
-        ApplicationStatus.registerStateListenerForActivity(this, activity);
     }
 
     /**
@@ -153,6 +199,7 @@ public class ArCoreInstallUtils implements ApplicationStatus.ActivityStateListen
     }
 
     private void onArCoreRequestInstallReturned(Activity activity) {
+        assert sInstallRequest != null;
         try {
             // Since |userRequestedInstall| parameter is false, the below call should
             // throw if ARCore is still not installed - no need to check the result.
@@ -165,6 +212,9 @@ public class ArCoreInstallUtils implements ApplicationStatus.ActivityStateListen
         } catch (ArCoreShim.UnavailableUserDeclinedInstallationException e) {
             maybeNotifyNativeOnRequestInstallSupportedArCoreResult(false);
         }
+
+        sInstallRequest.dispose();
+        sInstallRequest = null;
     }
 
     public static void installArCoreDeviceProviderFactory() {
