@@ -132,26 +132,26 @@ class FlexItem {
            bool depends_on_min_max_sizes = false);
 
   LayoutUnit HypotheticalMainAxisMarginBoxSize() const {
-    return hypothetical_main_content_size + main_axis_border_padding +
+    return hypothetical_main_content_size_ + main_axis_border_padding_ +
            MainAxisMarginExtent();
   }
 
   LayoutUnit FlexBaseMarginBoxSize() const {
-    return flex_base_content_size + main_axis_border_padding +
+    return flex_base_content_size_ + main_axis_border_padding_ +
            MainAxisMarginExtent();
   }
 
   LayoutUnit FlexedBorderBoxSize() const {
-    return flexed_content_size + main_axis_border_padding;
+    return flexed_content_size_ + main_axis_border_padding_;
   }
 
   LayoutUnit FlexedMarginBoxSize() const {
-    return flexed_content_size + main_axis_border_padding +
+    return flexed_content_size_ + main_axis_border_padding_ +
            MainAxisMarginExtent();
   }
 
   LayoutUnit ClampSizeToMinAndMax(LayoutUnit size) const {
-    return min_max_main_sizes.ClampSizeToMinAndMax(size);
+    return min_max_main_sizes_.ClampSizeToMinAndMax(size);
   }
 
   ItemPosition Alignment() const;
@@ -189,36 +189,36 @@ class FlexItem {
                                     bool is_wrap_reverse,
                                     bool is_deprecated_webkit_box);
 
-  const FlexLayoutAlgorithm* algorithm;
-  wtf_size_t line_number;
-  LayoutBox* box;
-  const ComputedStyle& style;
-  const LayoutUnit flex_base_content_size;
-  const MinMaxSizes min_max_main_sizes;
-  const base::Optional<MinMaxSizes> min_max_cross_sizes;
-  const LayoutUnit hypothetical_main_content_size;
-  const LayoutUnit main_axis_border_padding;
-  const LayoutUnit cross_axis_border_padding;
-  NGPhysicalBoxStrut physical_margins;
-  const NGBoxStrut scrollbars;
+  const FlexLayoutAlgorithm* algorithm_;
+  wtf_size_t line_number_;
+  LayoutBox* box_;
+  const ComputedStyle& style_;
+  const LayoutUnit flex_base_content_size_;
+  const MinMaxSizes min_max_main_sizes_;
+  const base::Optional<MinMaxSizes> min_max_cross_sizes_;
+  const LayoutUnit hypothetical_main_content_size_;
+  const LayoutUnit main_axis_border_padding_;
+  const LayoutUnit cross_axis_border_padding_;
+  NGPhysicalBoxStrut physical_margins_;
+  const NGBoxStrut scrollbars_;
 
-  LayoutUnit flexed_content_size;
+  LayoutUnit flexed_content_size_;
 
   // When set by the caller, this should be the size pre-stretching.
-  LayoutUnit cross_axis_size;
+  LayoutUnit cross_axis_size_;
   // The algorithm stores the main axis offset in X and cross axis offset in Y.
-  LayoutPoint desired_location;
+  LayoutPoint desired_location_;
 
-  const bool depends_on_min_max_sizes;
-  bool frozen;
+  const bool depends_on_min_max_sizes_;
+  bool frozen_;
 
   // Legacy partially relies on FlexLayoutAlgorithm::AlignChildren to determine
   // if the child is eligible for stretching (specifically, checking for auto
   // margins). FlexLayoutAlgorithm uses this flag to report back to legacy.
-  bool needs_relayout_for_stretch;
+  bool needs_relayout_for_stretch_;
 
-  NGBlockNode ng_input_node;
-  scoped_refptr<const NGLayoutResult> layout_result;
+  NGBlockNode ng_input_node_;
+  scoped_refptr<const NGLayoutResult> layout_result_;
 };
 
 class FlexItemVectorView {
@@ -265,23 +265,23 @@ class FlexLine {
            double total_flex_shrink,
            double total_weighted_flex_shrink,
            LayoutUnit sum_hypothetical_main_size)
-      : algorithm(algorithm),
-        line_items(std::move(line_items)),
-        container_logical_width(container_logical_width),
-        sum_flex_base_size(sum_flex_base_size),
-        total_flex_grow(total_flex_grow),
-        total_flex_shrink(total_flex_shrink),
-        total_weighted_flex_shrink(total_weighted_flex_shrink),
-        sum_hypothetical_main_size(sum_hypothetical_main_size) {}
+      : algorithm_(algorithm),
+        line_items_(std::move(line_items)),
+        container_logical_width_(container_logical_width),
+        sum_flex_base_size_(sum_flex_base_size),
+        total_flex_grow_(total_flex_grow),
+        total_flex_shrink_(total_flex_shrink),
+        total_weighted_flex_shrink_(total_weighted_flex_shrink),
+        sum_hypothetical_main_size_(sum_hypothetical_main_size) {}
 
   FlexSign Sign() const {
-    return sum_hypothetical_main_size < container_main_inner_size
+    return sum_hypothetical_main_size_ < container_main_inner_size_
                ? kPositiveFlexibility
                : kNegativeFlexibility;
   }
 
   void SetContainerMainInnerSize(LayoutUnit size) {
-    container_main_inner_size = size;
+    container_main_inner_size_ = size;
   }
 
   void FreezeInflexibleItems();
@@ -308,35 +308,35 @@ class FlexLine {
                                 LayoutUnit main_axis_end_offset,
                                 LayoutUnit& cross_axis_offset);
 
-  FlexLayoutAlgorithm* algorithm;
-  FlexItemVectorView line_items;
-  const LayoutUnit container_logical_width;
-  const LayoutUnit sum_flex_base_size;
-  double total_flex_grow;
-  double total_flex_shrink;
-  double total_weighted_flex_shrink;
+  FlexLayoutAlgorithm* algorithm_;
+  FlexItemVectorView line_items_;
+  const LayoutUnit container_logical_width_;
+  const LayoutUnit sum_flex_base_size_;
+  double total_flex_grow_;
+  double total_flex_shrink_;
+  double total_weighted_flex_shrink_;
   // The hypothetical main size of an item is the flex base size clamped
   // according to its min and max main size properties
-  const LayoutUnit sum_hypothetical_main_size;
+  const LayoutUnit sum_hypothetical_main_size_;
 
   // This gets set by SetContainerMainInnerSize
-  LayoutUnit container_main_inner_size;
+  LayoutUnit container_main_inner_size_;
   // initial_free_space is the initial amount of free space in this flexbox.
   // remaining_free_space starts out at the same value but as we place and lay
   // out flex items we subtract from it. Note that both values can be
   // negative.
   // These get set by FreezeInflexibleItems, see spec:
   // https://drafts.csswg.org/css-flexbox/#resolve-flexible-lengths step 3
-  LayoutUnit initial_free_space;
-  LayoutUnit remaining_free_space;
+  LayoutUnit initial_free_space_;
+  LayoutUnit remaining_free_space_;
 
   // These get filled in by ComputeLineItemsPosition
-  LayoutUnit main_axis_offset;
-  LayoutUnit main_axis_extent;
-  LayoutUnit cross_axis_offset;
-  LayoutUnit cross_axis_extent;
-  LayoutUnit max_ascent;
-  LayoutUnit sum_justify_adjustments;
+  LayoutUnit main_axis_offset_;
+  LayoutUnit main_axis_extent_;
+  LayoutUnit cross_axis_offset_;
+  LayoutUnit cross_axis_extent_;
+  LayoutUnit max_ascent_;
+  LayoutUnit sum_justify_adjustments_;
 };
 
 // This class implements the CSS Flexbox layout algorithm:
@@ -459,7 +459,7 @@ class FlexLayoutAlgorithm {
 };
 
 inline const FlexLine* FlexItem::Line() const {
-  return &algorithm->FlexLines()[line_number];
+  return &algorithm_->FlexLines()[line_number_];
 }
 
 }  // namespace blink
