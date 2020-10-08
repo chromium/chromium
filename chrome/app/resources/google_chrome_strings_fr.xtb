@@ -24,7 +24,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1587325591171447154">Chrome a bloqué <ph name="FILE_NAME" />, car ce fichier est dangereux.</translation>
 <translation id="1597911401261118146">Pour vérifier si vos mots de passe sont suffisamment sécurisés afin d'empêcher toute violation de données et d'autres problèmes de sécurité, <ph name="BEGIN_LINK" />connectez-vous à Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Afin de rendre Chromium plus sûr, nous avons désactivé l'extension suivante qui n'est pas répertoriée sur le <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> et qui a pu être ajoutée à votre insu.</translation>
-<translation id="162448658176061655">Chrome vérifie la présence de logiciels indésirables une fois par semaine. Dernière vérification : il y a quelques instants.</translation>
 <translation id="162629503687514352">Impossible de synchroniser vos mots de passe dans Chrome OS.</translation>
 <translation id="1628000112320670027">Obtenir de l'aide avec Chrome</translation>
 <translation id="1662639173275167396">Chrome OS a été créé à partir d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels Open Source<ph name="END_LINK_CROS_OSS" />, tout comme <ph name="BEGIN_LINK_LINUX_OSS" />Linux (Bêta)<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -146,7 +145,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4771048833395599659">Chrome a bloqué ce fichier, car ce dernier peut être dangereux.</translation>
 <translation id="479167709087336770">Le correcteur orthographique utilisé est le même que celui employé dans la recherche Google. Le texte que vous saisissez dans le navigateur est envoyé à Google. Vous pouvez toujours modifier ce comportement dans les paramètres.</translation>
 <translation id="4891791193823137474">Laisser Google Chrome s'exécuter en arrière-plan</translation>
-<translation id="489337168347244450">{NUM_DAYS,plural, =1{Chrome vérifie la présence de logiciels indésirables une fois par semaine. Dernière vérification : il y a 1 jour.}one{Chrome vérifie la présence de logiciels indésirables une fois par semaine. Dernière vérification : il y a {NUM_DAYS} jour.}other{Chrome vérifie la présence de logiciels indésirables une fois par semaine. Dernière vérification : il y a {NUM_DAYS} jours.}}</translation>
 <translation id="4895437082222824641">Ouvrir le lien dans un nouvel ongle&amp;t Chrome</translation>
 <translation id="4953650215774548573">Définir Google Chrome en tant que navigateur par défaut</translation>
 <translation id="495931528404527476">Dans Chrome</translation>
@@ -191,7 +189,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6291549208091401781">Google Chrome est déjà installé pour tous les utilisateurs de votre ordinateur.</translation>
 <translation id="6338556085225130112">Mise à jour de Google Chrome...</translation>
 <translation id="6368958679917195344">Google Chrome OS fonctionne grâce à d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels Open Source<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="6454142105866844106">Chrome vérifie la présence de logiciels indésirables une fois par semaine</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome pour les développeurs</translation>
 <translation id="6566149418543181476">Mise à jour de Google Chrome (<ph name="PROGRESS_PERCENT" />)…</translation>
 <translation id="6676384891291319759">Accéder à Internet</translation>
@@ -210,13 +207,11 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7106741999175697885">Gestionnaire de tâches - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Une nouvelle mise à jour de Chrome est disponible. Elle sera installée dès que vous relancerez le navigateur.}=1{Une nouvelle mise à jour de Chrome est disponible. Elle sera installée dès que vous relancerez le navigateur. Sachez que la fenêtre de navigation privée ne sera pas rouverte.}one{Une nouvelle mise à jour de Chrome est disponible. Elle sera installée dès que vous relancerez le navigateur. Sachez que la fenêtre de navigation privée (#) ne sera pas rouverte.}other{Une nouvelle mise à jour de Chrome est disponible. Elle sera installée dès que vous relancerez le navigateur. Sachez que les # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="7155997830309522122">Si oui, veuillez modifier votre mot de passe enregistré dans Chrome pour qu'il corresponde à votre nouveau mot de passe.</translation>
-<translation id="7236955538461508933">{NUM_HOURS,plural, =1{Chrome vérifie la présence de logiciels indésirables une fois par semaine. Dernière vérification : il y a une heure.}one{Chrome vérifie la présence de logiciels indésirables une fois par semaine. Dernière vérification : il y a {NUM_HOURS} heure.}other{Chrome vérifie la présence de logiciels indésirables une fois par semaine. Dernière vérification : il y a {NUM_HOURS} heures.}}</translation>
 <translation id="7242029209006116544">Vous vous connectez avec un compte géré et donnez le contrôle de votre profil Google Chrome à son administrateur. Vos données Chrome, telles que les applications, les favoris, l'historique, les mots de passe et les autres paramètres, vont être définitivement associées à <ph name="USER_NAME" />. Vous pouvez supprimer ces données via le tableau de bord des comptes Google, mais vous ne pouvez pas les associer à un autre compte. Vous pouvez éventuellement créer un nouveau profil pour maintenir vos données Chrome séparées. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Cette langue est utilisée pour l'UI de Google Chrome</translation>
 <translation id="7296210096911315575">Informations importantes concernant l'utilisation et la sécurité</translation>
 <translation id="7308322188646931570">Pour télécharger des fichiers, Chrome a besoin d'accéder à l'espace de stockage</translation>
 <translation id="7339898014177206373">Nouvelle fenêtre</translation>
-<translation id="7386132805935307836">Chrome vérifie la présence de logiciels indésirables une fois par semaine. Dernière vérification : hier.</translation>
 <translation id="7398801000654795464">Vous étiez connecté à Google Chrome en tant que <ph name="USER_EMAIL_ADDRESS" />. Veuillez utiliser le même compte pour vous reconnecter.</translation>
 <translation id="7408085963519505752">Conditions d'utilisation de Chrome OS</translation>
 <translation id="7419046106786626209">Impossible de synchroniser vos données dans Chrome OS, car la synchronisation n'est pas disponible pour votre domaine.</translation>
@@ -251,7 +246,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="828798499196665338">L'un de tes parents a désactivé l'option "Autorisations des sites, applications et extensions" pour Chrome. Tu ne peux pas activer cette <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Google Chrome est bloqué. Voulez-vous le relancer maintenant ?</translation>
 <translation id="8342675569599923794">Chrome a bloqué ce fichier, car ce dernier est dangereux.</translation>
-<translation id="8344083974188970894">{NUM_MINS,plural, =1{Chrome vérifie la présence de logiciels indésirables une fois par semaine. Dernière vérification : il y a 1 minute.}one{Chrome vérifie la présence de logiciels indésirables une fois par semaine. Dernière vérification : il y a {NUM_MINS} minute.}other{Chrome vérifie la présence de logiciels indésirables une fois par semaine. Dernière vérification : il y a {NUM_MINS} minutes.}}</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
 <translation id="840084489713044809">Google Chrome veut exporter vos mots de passe.</translation>
 <translation id="8433638294851456451">Pour envoyer un numéro d'ici vers votre téléphone Android, connectez-vous à Chrome sur les deux appareils.</translation>

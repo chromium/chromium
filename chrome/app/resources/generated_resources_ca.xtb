@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Només la selecció</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> requereix una llicència</translation>
 <translation id="1223853788495130632">L'administrador us recomana un valor específic per a aquesta configuració.</translation>
-<translation id="1224275271335624810">Màxima</translation>
 <translation id="1225177025209879837">S'està processant la sol·licitud...</translation>
 <translation id="1227507814927581609">Ha fallat l'autenticació mentre es connectava a "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1230417814058465809">Està activada la protecció estàndard. Per augmentar la seguretat, utilitza la protecció millorada.</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">Inscriu-me manualment</translation>
 <translation id="1668979692599483141">Obtén informació sobre els suggeriments</translation>
 <translation id="1670399744444387456">Configuració bàsica</translation>
-<translation id="167160931442925455">Volum màxim</translation>
 <translation id="1673137583248014546"><ph name="URL" /> vol veure la marca i el model de la teva clau de seguretat</translation>
 <translation id="1677306805708094828">No es pot afegir l'<ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Temps restant: <ph name="TIME" /></translation>
@@ -919,7 +917,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">S'està consultant la màquina virtual</translation>
 <translation id="2048182445208425546">Accedir al trànsit de xarxa</translation>
-<translation id="2048243703055695889">Configuració de Compartició Nearby per al dispositiu <ph name="DEVICE_NAME" /> que pertany a <ph name="USER_EMAIL" />.</translation>
 <translation id="2048653237708779538">Acció no disponible</translation>
 <translation id="204914487372604757">Crea la drecera</translation>
 <translation id="2050339315714019657">Vertical</translation>
@@ -1104,7 +1101,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2262477216570151239">Retard abans de la repetició</translation>
 <translation id="2263189956353037928">Tanca la sessió i torna a iniciar-la</translation>
 <translation id="2263371730707937087">Freqüència d'actualització de la pantalla</translation>
-<translation id="2263497240924215535">(Desactivada)</translation>
 <translation id="22665427234727190">Pregunta'm quan un lloc web vulgui accedir a dispositius Bluetooth (opció recomanada)</translation>
 <translation id="2266957463645820432">IPP per USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Intercanviar dades amb un altre dispositiu del domini <ph name="DOMAIN" /></translation>
@@ -2140,7 +2136,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3498215018399854026">En aquests moments no ens hem pogut posar en contacte amb els pares. Torneu-ho a provar.</translation>
 <translation id="3500417806337761827">S'ha produït un error en activar l'ús compartit. Ja hi ha activats massa usos compartits d'SMB.</translation>
 <translation id="3505030558724226696">Revoca l'accés als dispositius</translation>
-<translation id="3507132249039706973">Està activada la protecció estàndard</translation>
+<translation id="3507132249039706973">La protecció estàndard està activada</translation>
 <translation id="3507421388498836150">Permisos actuals de l'extensió <ph name="EXTENSION_NAME" /></translation>
 <translation id="3507888235492474624">Torna a cercar dispositius Bluetooth</translation>
 <translation id="3508492320654304609">Les dades d'inici de sessió no s'han pogut suprimir</translation>
@@ -2288,7 +2284,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3674840410592648165">Els llocs web poden instal·lar gestors de pagament (opció recomanada)</translation>
 <translation id="367645871420407123">deixeu-ho en blanc si voleu establir el valor predeterminat de la imatge de prova com a contrasenya arrel</translation>
 <translation id="3677106374019847299">Introdueix un proveïdor personalitzat</translation>
-<translation id="3677657024345889897">Volum mínim</translation>
 <translation id="3677911431265050325">Sol·licita el lloc web per a mòbils</translation>
 <translation id="3677959414150797585">Inclou aplicacions, pàgines web i molt més. Només envia les estadístiques per millorar els suggeriments si has triat compartir les dades d'ús.</translation>
 <translation id="3678156199662914018">Extensió: <ph name="EXTENSION_NAME" /></translation>
@@ -2477,7 +2472,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3867944738977021751">Camps del certificat</translation>
 <translation id="3869917919960562512">Índex incorrecte.</translation>
 <translation id="3870931306085184145">No hi ha cap contrasenya desada per a <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">El més baix</translation>
 <translation id="3871350334636688135">Passades 24 hores, l'administrador durà a terme una actualització amb què se suprimiran les teves dades locals quan reiniciïs el dispositiu. Desa les dades locals que necessitis a l'emmagatzematge en núvol abans que passin 24 hores.</translation>
 <translation id="3872220884670338524">Més accions, compte desat per a <ph name="USERNAME" /> a <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Allibera espai al disc o el dispositiu deixarà de respondre.</translation>
@@ -4235,7 +4229,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6025215716629925253">Traça de la pila</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" />: hi ha un dispositiu USB connectat</translation>
 <translation id="6028117231645531007">Afegeix una empremta digital</translation>
-<translation id="6029587122245504742">Mínima</translation>
 <translation id="6029594605736587274">s'ha bloquejat <ph name="PERMISSION" /></translation>
 <translation id="6031600495088157824">Opcions d'introducció de text a la barra d'eines</translation>
 <translation id="6032715498678347852">Per permetre que una extensió accedeixi a aquest lloc web, fes-hi clic.</translation>
@@ -4529,7 +4522,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6349101878882523185">Instal·la <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">La sincronització no funciona. Tanca la sessió i torna-la a iniciar.</translation>
 <translation id="6351063337294363751">Pots esborrar les dades de navegació des d'aquest menú</translation>
-<translation id="6352773953037195952">El més alt</translation>
 <translation id="6354918092619878358">Corba el·líptica secp256r1 d'SECG (també coneguda com a X9.62 prime256v1 d'ANSI o NIST P-256)</translation>
 <translation id="635609604405270300">Mantén el dispositiu activat</translation>
 <translation id="63566973648609420">Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les dades que encriptis. La frase de contrasenya no s'envia a Google, ni Google l'emmagatzema. Si l'oblides o vols canviar aquesta configuració, hauràs de <ph name="BEGIN_LINK" />restablir la sincronització<ph name="END_LINK" />.</translation>
@@ -5294,6 +5286,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Aquesta aplicació pot impedir que Chrome funcioni correctament.}other{Aquestes aplicacions poden impedir que Chrome funcioni correctament.}}</translation>
 <translation id="7303281435234579599">S'ha produït un error en configurar el mode de demostració.</translation>
 <translation id="7303900363563182677">No es permet que aquest lloc web vegi el text ni les imatges copiats al porta-retalls</translation>
+<translation id="7304030187361489308">Alt</translation>
 <translation id="7305123176580523628">Impressora USB connectada</translation>
 <translation id="730515362922783851">Intercanviar dades amb un altre dispositiu de la xarxa local o d'Internet</translation>
 <translation id="7306521477691455105">Obre Configuració per connectar <ph name="USB_DEVICE_NAME" /> a <ph name="USB_VM_NAME" /></translation>

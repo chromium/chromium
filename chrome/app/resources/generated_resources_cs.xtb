@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Pouze výběr</translation>
 <translation id="1223484782328004593">Aplikace <ph name="APP_NAME" /> vyžaduje licenci</translation>
 <translation id="1223853788495130632">Váš administrátor doporučuje pro toto nastavení konkrétní hodnotu.</translation>
-<translation id="1224275271335624810">Nejrychlejší</translation>
 <translation id="1225177025209879837">Probíhá zpracování požadavku...</translation>
 <translation id="1227507814927581609">Při připojování k zařízení <ph name="DEVICE_NAME" /> selhalo ověření.</translation>
 <translation id="1230417814058465809">Je zapnutá standardní ochrana. Ještě vyšší zabezpečení poskytuje pokročilá ochrana.</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">Zaregistrovat ručně</translation>
 <translation id="1668979692599483141">Další informace o návrzích</translation>
 <translation id="1670399744444387456">Základní</translation>
-<translation id="167160931442925455">Nejhlasitější</translation>
 <translation id="1673137583248014546"><ph name="URL" /> chce zjistit model a značku vašeho bezpečnostního klíče</translation>
 <translation id="1677306805708094828">Rozšíření <ph name="EXTENSION_TYPE_PARAMETER" /> nelze přidat</translation>
 <translation id="1677472565718498478">zbývající čas: <ph name="TIME" /></translation>
@@ -919,7 +917,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2046702855113914483">Polévka ramen</translation>
 <translation id="204706822916043810">Kontrola virtuálního počítače</translation>
 <translation id="2048182445208425546">Přístup k provozu na síti</translation>
-<translation id="2048243703055695889">Nastavení sdílení nablízko v zařízení <ph name="DEVICE_NAME" /> uživatele <ph name="USER_EMAIL" />.</translation>
 <translation id="2048653237708779538">Akce není k dispozici</translation>
 <translation id="204914487372604757">Vytvořit zástupce</translation>
 <translation id="2050339315714019657">Na výšku</translation>
@@ -1104,7 +1101,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2262477216570151239">Prodleva před opakováním</translation>
 <translation id="2263189956353037928">Odhlásit se a znovu se přihlásit</translation>
 <translation id="2263371730707937087">Obnovovací frekvence obrazovky</translation>
-<translation id="2263497240924215535">(Deaktivováno)</translation>
 <translation id="22665427234727190">Zeptat se, když chce web získat přístup k zařízením Bluetooth (doporučeno)</translation>
 <translation id="2266957463645820432">IPP přes USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Výměna dat s libovolným zařízením v doméně <ph name="DOMAIN" /></translation>
@@ -2288,7 +2284,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3674840410592648165">Weby mohou instalovat obslužné nástroje plateb (doporučeno)</translation>
 <translation id="367645871420407123">Chcete-li heslo uživatele root nastavit na výchozí hodnotu testovacího obrazu, ponechte toto pole prázdné.</translation>
 <translation id="3677106374019847299">Zadejte vlastního poskytovatele</translation>
-<translation id="3677657024345889897">Nejtišší</translation>
 <translation id="3677911431265050325">Požadovat mobilní web</translation>
 <translation id="3677959414150797585">Zahrnuje aplikace, weby apod. Statistiky za účelem vylepšení návrhů budou odesílány, pouze pokud jste se rozhodli sdílet údaje o využití.</translation>
 <translation id="3678156199662914018">Rozšíření: <ph name="EXTENSION_NAME" /></translation>
@@ -2477,7 +2472,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3867944738977021751">Pole certifikátu</translation>
 <translation id="3869917919960562512">Chybný index.</translation>
 <translation id="3870931306085184145">Pro web <ph name="DOMAIN" /> nejsou uložená žádná hesla</translation>
-<translation id="3871092408932389764">Nejnižší</translation>
 <translation id="3871350334636688135">Za 24 hodin administrátor provede jednorázovou aktualizaci. Až zařízení restartujete, tato aktualizace vymaže vaše místní data. Všechna místní data, která potřebujete, si do 24 hodin uložte do cloudového úložiště.</translation>
 <translation id="3872220884670338524">Další akce, uložený účet <ph name="USERNAME" /> v doméně <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Uvolněte místo na disku, jinak zařízení přestane reagovat.</translation>
@@ -4233,7 +4227,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6025215716629925253">Trasování zásobníku</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – připojeno k zařízení USB</translation>
 <translation id="6028117231645531007">Přidat otisk prstu</translation>
-<translation id="6029587122245504742">Nejpomalejší</translation>
 <translation id="6029594605736587274">zablokoval(a) oprávnění <ph name="PERMISSION" /></translation>
 <translation id="6031600495088157824">Možnosti zadávání na liště</translation>
 <translation id="6032715498678347852">Chcete-li rozšíření udělit přístup k tomuto webu, klikněte na něj.</translation>
@@ -4527,7 +4520,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6349101878882523185">Nainstalovat aplikaci <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Synchronizace nefunguje. Zkuste se odhlásit a znovu přihlásit.</translation>
 <translation id="6351063337294363751">Z této nabídky lze vymazat údaje o prohlížení</translation>
-<translation id="6352773953037195952">Nejvyšší</translation>
 <translation id="6354918092619878358">Eliptická křivka SECG secp256r1 (neboli ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Ponechat zařízení zapnuté</translation>
 <translation id="63566973648609420">Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslovou frázi. Heslová fráze se neodesílá do Googlu a není na Googlu uložena. Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, budete muset <ph name="BEGIN_LINK" />synchronizaci resetovat<ph name="END_LINK" />.</translation>
@@ -5292,6 +5284,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Tato aplikace by Chromu mohla bránit ve správném fungování.}few{Tyto aplikace by Chromu mohly bránit ve správném fungování.}many{Tyto aplikace by Chromu mohly bránit ve správném fungování.}other{Tyto aplikace by Chromu mohly bránit ve správném fungování.}}</translation>
 <translation id="7303281435234579599">Jejda! Při nastavování ukázkového režimu se něco pokazilo.</translation>
 <translation id="7303900363563182677">Tomuto webu byl zablokován přístup k textu a obrázkům zkopírovaným do schránky</translation>
+<translation id="7304030187361489308">Vysoký</translation>
 <translation id="7305123176580523628">Byla připojena tiskárna USB</translation>
 <translation id="730515362922783851">Výměna dat s libovolným zařízením v lokální síti nebo internetu</translation>
 <translation id="7306521477691455105">Otevřete Nastavení a připojte zařízení <ph name="USB_DEVICE_NAME" /> k zařízení <ph name="USB_VM_NAME" /></translation>

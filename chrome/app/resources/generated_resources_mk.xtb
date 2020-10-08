@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Само избор</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> бара лиценца</translation>
 <translation id="1223853788495130632">Администраторот препорачува специфична вредност за оваа поставка.</translation>
-<translation id="1224275271335624810">Најбрзо</translation>
 <translation id="1225177025209879837">Се обработува барање...</translation>
 <translation id="1227507814927581609">Автентикацијата не успеа при поврзување со „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="1230417814058465809">Вклучена е „Стандардната заштита“. За уште поголема безбедност, користете ја „Подобрената заштита“.</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">Регистрирајте рачно</translation>
 <translation id="1668979692599483141">Дознајте повеќе за предлозите</translation>
 <translation id="1670399744444387456">Основно</translation>
-<translation id="167160931442925455">Најгласно</translation>
 <translation id="1673137583248014546"><ph name="URL" /> сака да ја види марката и моделот на вашиот безбедносен клуч</translation>
 <translation id="1677306805708094828">Не може да се додаде <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Уште <ph name="TIME" /></translation>
@@ -919,7 +917,6 @@
 <translation id="2046702855113914483">Рамен</translation>
 <translation id="204706822916043810">Се проверува виртуелната машина</translation>
 <translation id="2048182445208425546">Пристап до вашиот мрежен сообраќај</translation>
-<translation id="2048243703055695889">Поставките за „Споделување во близина“ за уредот на <ph name="USER_EMAIL" />, „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="2048653237708779538">Дејството не е достапно</translation>
 <translation id="204914487372604757">Креирај кратенка</translation>
 <translation id="2050339315714019657">Портрет</translation>
@@ -1104,7 +1101,6 @@
 <translation id="2262477216570151239">Доцнење пред повторување</translation>
 <translation id="2263189956353037928">Одјавете се и најавете се повторно</translation>
 <translation id="2263371730707937087">Брзина на освежување на екранот</translation>
-<translation id="2263497240924215535">(Оневозможен)</translation>
 <translation id="22665427234727190">Прашувај кога некој сајт сака да пристапи до Bluetooth-уредите (препорачано)</translation>
 <translation id="2266957463645820432">IPP преку USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Разменете податоци со кој било уред во доменот <ph name="DOMAIN" /></translation>
@@ -2289,7 +2285,6 @@
 <translation id="3674840410592648165">Сајтовите може да инсталираат ракувачи со плаќања (се препорачува)</translation>
 <translation id="367645871420407123">оставете го празно доколку сакате да поставите основна лозинка на стандардната вредност на тест-сликата</translation>
 <translation id="3677106374019847299">Внесете приспособен оператор</translation>
-<translation id="3677657024345889897">Најтивко</translation>
 <translation id="3677911431265050325">Побарај мобилна верзија на сајтот</translation>
 <translation id="3677959414150797585">Вклучува апликации, веб-страници и друго. Статистикa за подобрување на предлозите се испраќа само ако сте одбрале споделување на податоците за користење.</translation>
 <translation id="3678156199662914018">Наставка: <ph name="EXTENSION_NAME" /></translation>
@@ -2478,7 +2473,6 @@
 <translation id="3867944738977021751">Полиња на сертификат</translation>
 <translation id="3869917919960562512">Погрешен индекс.</translation>
 <translation id="3870931306085184145">Нема зачувани лозинки за <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">Најнизок</translation>
 <translation id="3871350334636688135">После 24 часа, вашиот администратор ќе изврши еднократно ажурирање што ќе ги избрише локалните податоци кога ќе го рестартирате уредот. Зачувајте ги сите потребни локални податоци во просторот во облакот во рок од 24 часа.</translation>
 <translation id="3872220884670338524">Повеќе дејства, зачувана сметка за <ph name="USERNAME" /> на <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Ослободете простор на дискот или уредот веќе нема да реагира.</translation>
@@ -4235,7 +4229,6 @@
 <translation id="6025215716629925253">Следи стог</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - поврзан е USB-уред</translation>
 <translation id="6028117231645531007">Додај отпечаток</translation>
-<translation id="6029587122245504742">Најбавно</translation>
 <translation id="6029594605736587274">блокираше <ph name="PERMISSION" /></translation>
 <translation id="6031600495088157824">Опции за внесување во алатникот</translation>
 <translation id="6032715498678347852">Кликнете на екстензијата за да ѝ дадете пристап до сајтов.</translation>
@@ -4529,7 +4522,6 @@
 <translation id="6349101878882523185">Инсталирај <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Синхронизацијата не функционира. Обидете се да се одјавите и да се најавите повторно.</translation>
 <translation id="6351063337294363751">Од ова мени може да ги исчистите податоците од прелистувањето</translation>
-<translation id="6352773953037195952">Највисок</translation>
 <translation id="6354918092619878358">SECG елиптична крива secp256r1 (наречена ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Чувајте го уредот вклучен</translation>
 <translation id="63566973648609420">Само лицата што ја знаат вашата лозинка може да ги прочитаат шифрираните податоци. Лозинката не се испраќа до Google ниту пак се складира. Ако ја заборавите, ќе треба да ја <ph name="BEGIN_LINK" />ресетирате синхронизацијата<ph name="END_LINK" />.</translation>
@@ -5294,6 +5286,7 @@
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Апликацијава може да го спречи Chrome да работи правилно.}one{Апликацииве може да го спречат Chrome да работи правилно.}other{Апликацииве може да го спречат Chrome да работи правилно.}}</translation>
 <translation id="7303281435234579599">Упс! Нешто тргна наопаку при поставување на демо-режимот.</translation>
 <translation id="7303900363563182677">На сајтов му е блокиран пристапот за гледање текст и слики копирани во привремената меморија</translation>
+<translation id="7304030187361489308">Висок</translation>
 <translation id="7305123176580523628">Поврзан е USB-печатач</translation>
 <translation id="730515362922783851">Разменете податоци со кој било уред на локалната мрежа или интернет</translation>
 <translation id="7306521477691455105">Отворете „Поставки“ и поврзете го уредот <ph name="USB_DEVICE_NAME" /> со <ph name="USB_VM_NAME" /></translation>

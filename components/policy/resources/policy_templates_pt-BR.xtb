@@ -41,12 +41,6 @@
 
       Esta política afeta os usuários cujo domínio corresponde apenas ao domínio de inscrição do dispositivo. Para todos os outros usuários, os cookies definidos pelo IdP são transferidos para o perfil do usuário somente durante o primeiro login no dispositivo.</translation>
 <translation id="1029052664284722254">Força a reinicialização do dispositivo quando o usuário sai</translation>
-<translation id="1035385378988781231">Esta política controla se o recurso "Compartilhamento de arquivos de rede" do <ph name="PRODUCT_NAME" /> usará NTLM para a autenticação.
-
-      Quando esta política estiver definida como true, o NTLM será usado na autenticação para compartilhamentos de PMEs, se necessário.
-      Quando esta política estiver definida como false, a autenticação NTLM para compartilhamentos de PMEs será desativada.
-
-      Quando a política não estiver definida, o comportamento padrão será desativar o NTLM para usuários gerenciados por empresas e ativá-lo para usuários não gerenciados.</translation>
 <translation id="1040446814317236570">Ativar a retirada de URL PAC (para https://)</translation>
 <translation id="1046484220783400299">Ativar por um tempo limitado recursos da plataforma Web cujo uso esteja suspenso</translation>
 <translation id="1047128214168693844">Não permitir que nenhum site rastreie a localização física dos usuários</translation>
@@ -86,11 +80,6 @@
 <translation id="1095209545735032039">Bloquear a API Serial nesses sites</translation>
 <translation id="1096105751829466145">Provedor de pesquisa padrão</translation>
 <translation id="1099282607296956954">Ativar o Isolamento de todos os sites</translation>
-<translation id="1107764601871839136">Especifica o ciclo de vida (em horas) do cache do Objeto de Política de Grupo (GPO, na sigla em inglês). Em vez de fazer novamente o download dos GPOs a cada busca da política, o sistema poderá reutilizar os GPOs salvos em cache enquanto as versões deles não forem alteradas. Esta política determina o período máximo em que GPOs salvos em cache poderão ser reutilizados antes de um novo download. As ações de reinicializar e sair limpam o cache.
-
-      Se esta política não for definida, os GPOs salvos em cache poderão ser reutilizados por até 25 horas.
-
-      Se esta política for definida como 0, o armazenamento de GPO em cache será desativado. Isso aumenta a carga do servidor, já que o download dos GPOs será feito novamente a cada busca da política, mesmo se não houver alteração.</translation>
 <translation id="1111470455889178048">Enviar uploads e downloads do usuário para verificação</translation>
 <translation id="1117535567637097036">Os gerenciadores de protocolo definidos por esta política não são usados na manipulação de intents do Android.</translation>
 <translation id="1118093128235245168">Permitir que os sites peçam ao usuário para conceder acesso a um dispositivo USB conectado</translation>
@@ -735,11 +724,6 @@ Se você desativar esta configuração ou deixá-la sem definição, todas as p�
 <translation id="2197625019569762163">Se esta política for definida como verdadeira, o teclado numérico será exibido por padrão para inserir a senha na tela de login. Os usuários ainda podem alternar para o teclado normal.
 
       Se você definir a política, os usuários não poderão mudá-la. Se não for definida ou for definida como falsa, não terá efeito.</translation>
-<translation id="2200041405904405884">Permite especificar quais hosts de mensagens nativas não estão sujeitos à lista de bloqueio.
-
-          Um valor "*" da lista de bloqueio significa que todos os hosts de mensagens nativas serão bloqueados e apenas os hosts de mensagens nativas presentes na lista de permissões poderão ser instalados.
-
-          Por padrão, todos os hosts de mensagens nativas são permitidos, mas se todos eles tiverem sido bloqueados por uma política, a lista de permissões será usada para modificar essa política.</translation>
 <translation id="2200698565850397198">Configurar a lista de bloqueio de mensagens nativas</translation>
 <translation id="2201555246697292490">Configurar a lista de permissões de mensagens nativas</translation>
 <translation id="2204753382813641270">Controlar a ocultação automática da estante</translation>
@@ -812,11 +796,6 @@ Se você desativar esta configuração ou deixá-la sem definição, todas as p�
 <translation id="2307496301287881990">Informar status de tela e gráficos</translation>
 <translation id="2309390639296060546">Configuração padrão de geolocalização</translation>
 <translation id="2327252517317514801">Definir os domínios autorizados a acessar o G Suite</translation>
-<translation id="2328573323851533589">Esta política pode ser usada para ativar ou desativar forçadamente a verificação de vazamento de credenciais no <ph name="PRODUCT_NAME" />.
-
-          Mesmo se a política for definida como verdadeira, o comportamento não será acionado se o Navegação segura for desativado, seja pela política ou pelo usuário. Para forçar o Navegação segura, use a política <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" />.
-
-          Se esta política for ativada ou desativada, o usuário não poderá mudá-la nem substituí-la no <ph name="PRODUCT_NAME" />. Se esta política não for definida, a verificação de vazamento será permitida, mas poderá ser desativada pelo usuário.</translation>
 <translation id="2331354174913096226">O modelo de URI do resolvedor de DNS sobre HTTPS desejado. Para especificar vários resolvedores de DNS sobre HTTPS, separe os modelos de URI correspondentes com espaços.
 
       Se DnsOverHttpsMode estiver definido como <ph name="SECURE_DNS_MODE_SECURE" />, esta política precisará ser definida e não poderá estar vazia.
@@ -962,11 +941,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se essa configuração não for definida, o usuário poderá optar por usar essa função ou não.
 
       Essa configuração foi removida do <ph name="PRODUCT_NAME" /> 29 e de versões superiores.</translation>
-<translation id="2433412232489478893">Esta política controla se o recurso de Compartilhamento de arquivos de rede do <ph name="PRODUCT_NAME" /> é permitido para um usuário.
-
-      Quando esta política não for configurada ou for definida como verdadeira, os usuários poderão usar o Compartilhamento de arquivos de rede.
-
-      Quando esta política for definida como falsa, os usuários não poderão usar o Compartilhamento de arquivos de rede.</translation>
 <translation id="2435052056904485763">Lista de permissões do servidor de delegação Kerberos</translation>
 <translation id="2439793457499023062">Se ela não for definida, e o recurso Varredura do Chrome detectar um software indesejado, os metadados sobre a verificação poderão ser enviados ao Google, de acordo com a política definida por SafeBrowsingExtendedReportingEnabled. Depois, será perguntado ao usuário se ele quer limpar o software indesejado na Varredura do Chrome. O usuário poderá optar por compartilhar resultados da limpeza com o Google para ajudar na detecção de softwares indesejados no futuro. Esses resultados contêm metadados de arquivos, extensões instaladas automaticamente e chaves de registro, conforme descrito no Whitepaper de Privacidade do Chrome.
 
@@ -1448,26 +1422,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="3143265893557969814">Se essa política for definida, todos os tipos de dados especificados serão excluídos da sincronização, tanto para o Google Sync quanto para a sincronização de perfil de roaming. Isso pode ser benéfico para reduzir o tamanho do perfil de roaming ou limitar o tipo de dado que será enviado aos servidores do Google Sync.
 
       Atualmente, os tipos de dados para esta política são: "bookmarks", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs", "wifiConfigurations". Esses nomes têm diferenciação de letras maiúsculas e minúsculas.</translation>
-<translation id="3146597555086966130">Se a política for definida, haverá configurações de proxy para Chrome e apps ARC, ignorando todas as opções relacionadas a proxy especificadas na linha de comando.
-
-       Se a política não for definida, os usuários poderão escolher as configurações de proxy.
-
-       Se a política <ph name="PROXY_SETTINGS_POLICY_NAME" /> for definida, os seguintes campos serão aceitos:
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, que permite especificar o servidor proxy usado pelo Chrome e evitar que os usuários mudem as configurações de proxy.
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, um URL de um arquivo proxy .pac.
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, um URL do servidor proxy.
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, uma lista de hosts de proxy ignorados pelo <ph name="PRODUCT_NAME" />.
-
-       O campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> foi substituído pelo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, que permite especificar o servidor proxy usado pelo Chrome e evitar que os usuários mudem as configurações de proxy.
-
-        Para <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, se você escolher o valor:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />, um proxy nunca será usado e todos os outros campos serão ignorados;
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, o proxy do sistema será usado e todos os outros campos serão ignorados;
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, todos os outros campos serão ignorados;
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER" />, os campos <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> serão usados;
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, os campos <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> serão usados.
-
-      Observação: para ver mais exemplos detalhados, acesse The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett, link em inglês).</translation>
 <translation id="3152425128389603870">Disponibilizar e ativar por padrão a área de trabalho unificada</translation>
 <translation id="3159375329008977062">O usuário tem permissão para exportar/importar contêineres do Crostini por meio da IU</translation>
 <translation id="3165808775394012744">Essas políticas estão incluídas aqui para facilitar a remoção delas.</translation>
@@ -1475,13 +1429,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="316778957754360075">Esta configuração foi descontinuada a partir da versão 29 do <ph name="PRODUCT_NAME" />. O modo recomendado de configurar as coleções de extensões/aplicativos hospedados pela organização é incluir na hospedagem do site os pacotes CRX em ExtensionInstallSources e colocar links de download direto para os pacotes em uma página da Web. É possível criar um iniciador da página da Web usando a política ExtensionInstallForcelist.</translation>
 <translation id="3168968618972302728">Políticas relacionadas à autenticação do Kerberos.</translation>
 <translation id="3171369832001535378">Modelo de nome do host da rede do dispositivo</translation>
-<translation id="3172512016079904926">Permite a instalação de hosts de mensagens nativas no nível do usuário.
-
-          Se esta configuração for ativada, o <ph name="PRODUCT_NAME" /> permitirá o uso de hosts de mensagens nativas instalados no nível do usuário.
-
-          Se esta configuração for desativada, o <ph name="PRODUCT_NAME" /> só usará hosts de mensagens nativas instalados no nível do sistema.
-
-          Se esta configuração não for definida, o <ph name="PRODUCT_NAME" /> permitirá o uso de hosts de mensagens nativas no nível do usuário.</translation>
 <translation id="3177802893484440532">Exigir verificações on-line de OCSP/CRL para âncoras de confiança locais</translation>
 <translation id="3184161739683646075">Controla o modo de DNS sobre HTTPS</translation>
 <translation id="3185009703220253572">desde a versão <ph name="SINCE_VERSION" /></translation>
@@ -1741,11 +1688,6 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
         Se esta política for configurada, <ph name="PRODUCT_NAME" /> tentará se registrar e aplicar a política de nuvem associada a todos os perfis.
 
         O valor desta política é um token de inscrição que pode ser recuperado no Google Admin console.</translation>
-<translation id="3489247539215560634">Se estas configurações forem ativadas, os usuários poderão fazer com que o <ph name="PRODUCT_NAME" /> salve senhas e as forneça automaticamente na próxima vez que eles fizerem login em um site.
-
-          Se estas configurações forem desativadas, os usuários não poderão salvar novas senhas, mas ainda poderão usar as senhas salvas anteriormente.
-
-          Se esta política estiver ativada ou desativada, os usuários não poderão alterá-la ou substituí-la no <ph name="PRODUCT_NAME" />. Se ela não for definida, os usuários poderão salvar senhas ou desativar essa função.</translation>
 <translation id="3492834335089638487">Essa política controla, no lugar do dispositivo, o uso de apps Android de fontes não confiáveis (diferentes da Google Play Store).
 
       Se o valor da política não for definido, a funcionalidade será tratada como não permitida.
@@ -1811,9 +1753,6 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
 <translation id="3577628175311752799">Usar uma política de referenciador padrão de no-referrer-when-downgrade.</translation>
 <translation id="357917253161699596">Permitir que os usuários gerenciem certificados</translation>
 <translation id="3580414086211696382">Controlar o uso da API File System para leitura</translation>
-<translation id="3583230441447348508">Especifica uma lista de compartilhamentos de arquivos de rede pré-configurados.
-
-      Cada item de lista da política é um objeto com dois elementos: "share_url" e "mode". O "share_url" é o URL do compartilhamento, e "mode" é o "drop_down" ou "pre_mount". O modo "drop_down" indica que o "share_url" será adicionado à lista suspensa de descoberta de compartilhamentos. O modo "pre_mount" indica que o "share_url" será ativado.</translation>
 <translation id="3584194414857209694">Ativa políticas experimentais</translation>
 <translation id="3584722841530002134">A definição da política atribui servidores que podem ser delegados pelo <ph name="PRODUCT_NAME" />. Separe vários nomes de servidor usando vírgulas. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
 
@@ -2425,10 +2364,6 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 
       Se esta política não for definida, o usuário poderá desativar qualquer plug-in instalado no sistema.</translation>
 <translation id="4554651132977135445">Modo de processamento loopback da política do usuário</translation>
-<translation id="4554841826517980623">Esta política controla se o recurso "Compartilhamentos de arquivos de rede" do <ph name="PRODUCT_NAME" /> usará o <ph name="NETBIOS_PROTOCOL" /> para encontrar compartilhamentos na rede.
-      Quando esta política estiver definida como True, a detecção de compartilhamentos usará o protocolo <ph name="NETBIOS_PROTOCOL" /> para encontrar compartilhamentos na rede.
-      Quando esta política estiver definida como False, a detecção de compartilhamentos não usará o protocolo <ph name="NETBIOS_PROTOCOL" /> para encontrar compartilhamentos.
-      Quando a política não estiver definida, o padrão será "desativado" para usuários gerenciados por empresa e "ativado" para usuários não gerenciados.</translation>
 <translation id="4555850956567117258">Ativar declaração remota para o usuário</translation>
 <translation id="4557134566541205630">URL da página "Nova guia" do provedor de pesquisa padrão</translation>
 <translation id="4562165737444703281">Permitir que os usuários [ativem/configurem] o encaminhamento de portas do Crostini</translation>
@@ -2524,13 +2459,6 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
           Para ver exemplos de padrões, consulte http://www.chromium.org/developers/how-tos/chrome-frame-getting-started (link em inglês).</translation>
 <translation id="467449052039111439">Abrir uma lista de URLs</translation>
 <translation id="4674871290487541952">Permite algoritmos inseguros em verificações de integridade nas atualizações e instalações de extensão</translation>
-<translation id="4677605038200415894">Se a política for definida, será possível criar uma lista de padrões de URL que especifica quais sites recebem permissão automaticamente para acessar um dispositivo USB com os IDs de produto e de fornecedor especificados. Cada item da lista precisa conter dispositivos e URLs para que a política seja válida. Cada item dos dispositivos pode conter um campo de ID de fornecedor e ID de produto. Todos os IDs omitidos serão tratados como caracteres curinga, com uma exceção: não é possível especificar um ID de produto sem especificar um de fornecedor. Se fizer isso, a política não será válida.
-
-      O modelo de permissões de USB usa o URL solicitante e o de incorporação (do site de frame de nível superior) para permitir que o URL solicitante acesse o dispositivo USB. O URL solicitante pode ser diferente do URL de incorporação quando o site solicitante é carregado em um iframe. Portanto, o campo "URLs" pode conter até duas strings delimitadas por vírgula para especificar esses URLs. Se você especificar apenas uma, o acesso ao dispositivo USB correspondente será concedido quando o URL do site solicitante for igual a esse URL, independente do status de incorporação. Os URLs desse campo precisam ser válidos, caso contrário, a política será ignorada.
-
-      Se a política não tiver definição, <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> será aplicada, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Os padrões de URL desta política não podem entrar em conflito com os configurados pela <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Se entrarem, esta política terá precedência sobre <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="4680936297850947973">Uso suspenso na versão M68. Em vez disso, use DefaultPopupsSetting.
 
       Para ver a explicação detalhada, acesse https://www.chromestatus.com/features/5675755719622656.
@@ -2573,13 +2501,6 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
           Se você definir esta política, o usuário não poderá alterá-la ou modificá-la.
 
           Se esta política não for definida, o áudio mono ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
-<translation id="4764901562691611575">Esta política está obsoleta. Use <ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" />.
-
-          Permite que você especifique quais hosts de mensagens nativas não serão carregados.
-
-          Um valor "*" da lista de bloqueio significa que todos os hosts de mensagens nativas estão nessa lista, a menos que estejam explicitamente mencionados na lista de permissões.
-
-          Se a política não for definida, o <ph name="PRODUCT_NAME" /> carregará todos os hosts de mensagens nativas instalados.</translation>
 <translation id="4771144269610910963">Esta política controla a verificação detalhada de downloads do usuário com o "Navegação segura". Se ela não for definida ou a configuração padrão "Não verificar arquivos" for escolhida, os downloads do usuário não serão verificados pelo "Navegação segura".
 
       Se ela for definida como "Enviar downloads do usuário para verificação", os downloads serão enviados pela rede para que o "Navegação segura" faça a verificação de malware.
@@ -2732,15 +2653,6 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 <translation id="5085647276663819155">Desativar visualização da impressão</translation>
 <translation id="5090209345759901501">Estender a configuração de conteúdo em Flash a todos os conteúdos</translation>
 <translation id="5090791951240382356">Permitir a mescla de políticas de dicionário de diferentes fontes</translation>
-<translation id="5093540029655764852">Especifica a taxa (em dias) em que um cliente altera a senha da conta da máquina dele. A senha é gerada de forma aleatória pelo cliente e não fica visível para o usuário.
-
-      Exatamente como as senhas de usuário, as senhas de máquina devem ser alteradas regularmente. A desativação desta política ou a definição de um número de dias alto pode afetar negativamente a segurança, uma vez que isso proporciona aos possíveis invasores mais tempo para descobrir a senha da conta da máquina e usá-la.
-
-      Se a política não for definida, a senha da conta da máquina será alterada a cada 30 dias.
-
-      Se a política for definida como 0, a alteração da senha da conta da máquina ficará desativada.
-
-      As senhas poderão ficar mais antigas que o número de dias especificado se o cliente ficar off-line por um período mais longo.</translation>
 <translation id="5101600510268095939">Permite definir uma lista de padrões de URL que especificam quais sites não têm permissão para exibir conteúdo misto ativo (bloqueável), ou seja, conteúdo HTTP em sites HTTPS, e em que será feito o upgrade de conteúdo misto passivo (opcionalmente bloqueável).
 
           Se esta política não for definida, o conteúdo misto ativo será bloqueado e o conteúdo misto passivo ganhará um upgrade, mas o usuário poderá definir exceções para dar permissão a sites específicos.
@@ -2858,15 +2770,6 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 
       Aqui, "versão" pode ser uma versão exata, como "61.0.3163.120", ou um prefixo de versão, como "61.0".  </translation>
 <translation id="5247006254130721952">Bloquear downloads perigosos</translation>
-<translation id="5248863213023520115">Define os tipos de criptografia permitidos com solicitações de tíquetes do Kerberos a partir de um servidor <ph name="MS_AD_NAME" />.
-
-      Se a política for definida como "Todos", os tipos de codificação AES "aes256-cts-hmac-sha1-96" e "aes128-cts-hmac-sha1-96", bem como o tipo de codificação RC4 "rc4-hmac", serão permitidos. A codificação AES terá prioridade se o servidor for compatível com os dois tipos. A codificação RC4 não é segura e, se possível, o servidor deverá ser reconfigurado para ser compatível com a codificação AES.
-
-      Se a política for definida como "Forte" ou não for definida, somente os tipos de codificação AES serão permitidos.
-
-      Se a política for definida como "Legado", apenas o tipo de codificação RC4 será permitido. Essa opção não é segura e deverá ser necessária apenas em circunstâncias muito específicas.
-
-      Consulte também https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerberos_client_encryption_types (em inglês).</translation>
 <translation id="5249453807420671499">Os usuários podem adicionar contas do Kerberos</translation>
 <translation id="5252995168844634755">Se a política for definida como verdadeira, a área de trabalho unificada será ativada e permitirá que aplicativos apareçam em várias telas. Os usuários poderão desativar essa configuração para usarem as telas individualmente.
 
@@ -3257,13 +3160,6 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 
           O valor da política só é aplicado quando a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está ativada. Caso contrário, ele não é aplicável.</translation>
 <translation id="5697306356229823047">Reporta os usuários do dispositivo</translation>
-<translation id="5699487516670033016">Especifica o ciclo de vida (em horas) do cache da autenticação de dados. O cache é usado para agilizar o login. Ele contém dados gerais (nome de grupo de trabalho etc.) sobre domínios afiliados, ou seja, domínios confiáveis no computador. Nenhum dado específico do usuário e nenhum dado para domínios não afiliados é armazenado em cache. A reinicialização do dispositivo limpa o cache.
-
-      Se esta política não for definida, os dados de autenticação salvos em cache poderão ser reutilizados por até 73 horas.
-
-      Se esta política for definida como 0, o armazenamento em cache dos dados de autenticação será desativado. Isso pode desacelerar significativamente o login de usuários afiliados, já que os dados específicos do domínio precisam ser buscados a cada login.
-
-      Observe que os dados de domínio são armazenados em cache até para usuários temporários. O cache precisa ser desativado se você quiser impedir o rastreamento de domínio de usuários temporários.</translation>
 <translation id="570062449808736508">Quando essa política estiver definida para uma string não vazia, o WebView lerá as restrições de URL do provedor de conteúdo com o nome de autoridade fornecido.</translation>
 <translation id="5708969689202733975">Configurar os modos de desbloqueio rápido permitidos</translation>
 <translation id="572155275267014074">Configurações do Android</translation>
@@ -3559,11 +3455,6 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 
       Observação: a política afeta todas as saídas de áudio, incluindo recursos de acessibilidade de áudio. Não desative a política se o usuário precisar de um leitor de tela.</translation>
 <translation id="6221175752766085998">Permitir certificados emitidos pelas âncoras de confiança locais sem a extensão subjectAlternativeName</translation>
-<translation id="6222839831045864769">Permite que você especifique quais hosts de mensagens nativas não serão carregados.
-
-          Um valor "*" da lista de bloqueio significa que todos os hosts de mensagens nativas estão nessa lista, a menos que estejam explicitamente mencionados na lista de permissões.
-
-          Se a política não for definida, o <ph name="PRODUCT_NAME" /> carregará todos os hosts de mensagens nativas instalados.</translation>
 <translation id="6224304369267200483">Os URLs/domínios permitidos automaticamente direcionam a declaração da chave de segurança</translation>
 <translation id="6230442621691161858">Esse recurso ativa sugestões de novos conteúdos para você conhecer. Inclui apps, páginas da Web e muito mais.
       Se a política for definida como verdadeira, as sugestões de novos conteúdos serão ativadas.
@@ -4801,13 +4692,6 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 <translation id="7788511847830146438">Por perfil</translation>
 <translation id="780629758750905699">Permitir outras contas do Family Link no dispositivo</translation>
 <translation id="7807139251387225825">Lista de tipos a serem excluídos da sincronização</translation>
-<translation id="7815699949432723208">Esta política está obsoleta. Use <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />.
-
-          Permite especificar quais hosts de mensagens nativas não estão sujeitos à lista de bloqueio.
-
-          Um valor "*" da lista de bloqueio significa que todos os hosts de mensagens nativas serão bloqueados e apenas os hosts de mensagens nativas presentes na lista de permissões poderão ser instalados.
-
-          Por padrão, todos os hosts de mensagens nativas são permitidos, mas se todos eles tiverem sido bloqueados por uma política, a lista de permissões será usada para modificar essa política.</translation>
 <translation id="7818131573217430250">Definir o estado padrão do modo de alto contraste na tela de login</translation>
 <translation id="7823902813460802031">Se a política for definida como "Ativada", o <ph name="PRODUCT_OS_NAME" /> impedirá que o dispositivo entre no modo de desenvolvedor.
 
@@ -5222,13 +5106,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Se a política for definida, snapshots antigos serão excluídos conforme necessário para respeitar o limite. Se a política for definida como 0, nenhum snapshot será criado.</translation>
 <translation id="8451988835943702790">Usar a página "Nova guia" como página inicial</translation>
 <translation id="8455529558077979314">Configurações da tela de privacidade</translation>
-<translation id="8459216513698220096">Especifica se e como a política de usuário da GPO de computador é processada.
-
-      Se a política for definida como "Padrão" ou se não for definida, a política de usuário será lida somente a partir das GPOs de usuário (as GPOs do computador serão ignoradas).
-
-      Se a política for definida como "Mesclar", a política de usuário nas GPOs de usuário será mesclada com a política de usuário nas GPOs de computador (as GPOs de computador terão prioridade).
-
-      Se a política for definida como "Substituir", a política de usuário nas GPOs será substituída pela política de usuário nas GPOs de computador (as GPOs de usuário serão ignoradas).</translation>
 <translation id="8465065632133292531">Parâmetros para URL de instantâneos que usa POST</translation>
 <translation id="8465746466645315861">Se esta política não for definida, o usuário poderá ativar ou desativar a verificação ortográfica nas configurações de idioma.
 
@@ -5371,11 +5248,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8622378389102774881">Se esta política for definida, o host de acesso remoto exigirá a autenticação de clientes para receber um token de autenticação deste URL e poder se conectar. Ela precisa ser usada em conjunto com RemoteAccessHostTokenValidationUrl.
 
           Este recurso será desativado se for deixado vazio ou sem definição.</translation>
-<translation id="8625234016727663537">Permite definir uma lista de URLs que especificam quais sites receberão permissão automaticamente para acessar um dispositivo USB com determinados IDs de produto e de fornecedor na tela de login. Cada item da lista precisa conter os dispositivos e URLs para que a política seja válida. Cada item dos dispositivos pode conter um campo de ID de fornecedor e ID de produto. Os IDs omitidos são tratados como um caractere curinga com uma exceção, e isso impede a especificação de um ID de produto sem também especificar um ID de fornecedor. Caso contrário, a política não será válida e será ignorada.
-
-        O modelo de permissão USB usa o URL do site solicitante ("URL solicitante") e o URL do site de frame de nível superior ("URL de incorporação") para conceder permissão ao URL solicitante para acessar o dispositivo USB. O URL solicitante pode ser diferente do URL de incorporação quando o site solicitante está carregado em um iframe. Portanto, o campo "URLs" pode conter até duas strings de URL delimitadas por uma vírgula para especificar os URLs solicitante e de incorporação, respectivamente. Se apenas um URL for especificado, o acesso aos dispositivos USB correspondentes será concedido quando o URL do site solicitante coincidir com esse URL independentemente do status de incorporação. Os URLs contidos em "URLs" precisam ser válidos. Caso contrário, a política será ignorada.
-
-        Se a política não for definida, o valor padrão global será usado para todos os sites (sem acesso automático).</translation>
 <translation id="8631434304112909927">até a versão <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">A lista de apps de anotação permitidos na tela de bloqueio do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8649763579836720255">Os dispositivos Chrome OS podem usar atestado remoto (acesso confirmado) para receber um certificado emitido pelo Chrome OS CA que declare que o dispositivo é qualificado para reproduzir conteúdo protegido. Este processo envolve o envio de informações de endosso de hardware para o Chrome OS CA que identifiquem com exclusividade o dispositivo.
@@ -5768,7 +5640,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 
       As possibilidades de reversão reais também podem depender dos patches de vulnerabilidade críticos e do modelo.</translation>
 <translation id="9123464369663964441">Permitir que os usuários adicionem exceções para liberar conteúdo misto</translation>
-<translation id="9126014181388780690">"Permitir que o Google Assistente tenha acesso ao contexto da tela"</translation>
 <translation id="9129169595075460149">Se a política for definida como "Ativada", o SafeSearch estará sempre ativo na Pesquisa Google e os usuários não poderão mudar essa configuração.
 
       Se a política for definida como "Desativada" ou não for definida, o SafeSearch não será obrigatório na Pesquisa Google.</translation>
@@ -5837,7 +5708,6 @@ A configuração padrão é permitir que o navegador do host faça a renderizaç
 <translation id="944817693306670849">Definir o tamanho do disco de cache</translation>
 <translation id="949278212566535827">Permitir downloads de arquivos protegidos por senha</translation>
 <translation id="974349541138387272">Especifica o modelo de URI do resolvedor DNS sobre HTTPS desejado</translation>
-<translation id="974479807614498635">"Permitir que o 'Respostas rápidas' acesse conteúdos selecionados"</translation>
 <translation id="981346395360763138">Serviços de localização do Google desativados</translation>
 <translation id="982497069985795632">Ativar verificação ortográfica</translation>
 <translation id="983256325512298435">Define uma lista de protocolos que podem inicializar um aplicativo externo a partir de origens listadas sem notificar o usuário</translation>

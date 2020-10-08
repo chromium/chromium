@@ -25,7 +25,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> is dangerous, so Chrome has blocked it.</translation>
 <translation id="1597911401261118146">To check if your passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK" />sign in to Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">To make Chrome safer, we disabled the following extension that isn't listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> and may have been added without your knowledge.</translation>
-<translation id="162448658176061655">Chrome checks for unwanted software once a week. Last checked: a moment ago.</translation>
 <translation id="162629503687514352">Chrome OS could not sync your passwords.</translation>
 <translation id="1628000112320670027">Get help with Chrome</translation>
 <translation id="1662639173275167396">Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open source software<ph name="END_LINK_CROS_OSS" />, as is <ph name="BEGIN_LINK_LINUX_OSS" />Linux (Beta)<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -147,7 +146,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4771048833395599659">This file may be dangerous, so Chrome has blocked it.</translation>
 <translation id="479167709087336770">This uses the same spell checker that's used in Google search. Text that you type in the browser is sent to Google. You can always change this behaviour in settings.</translation>
 <translation id="4891791193823137474">Let Google Chrome run in the background</translation>
-<translation id="489337168347244450">{NUM_DAYS,plural, =1{Chrome checks for unwanted software once a week. Last checked: 1 day ago.}other{Chrome checks for unwanted software once a week. Last checked: {NUM_DAYS} days ago.}}</translation>
 <translation id="4895437082222824641">Open link in new Chrome &amp;tab</translation>
 <translation id="4953650215774548573">Set Google Chrome as your default browser</translation>
 <translation id="495931528404527476">In Chrome</translation>
@@ -193,7 +191,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6291549208091401781">Google Chrome is already installed for all users on your computer.</translation>
 <translation id="6338556085225130112">Updating Google Chrome</translation>
 <translation id="6368958679917195344">Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="6454142105866844106">Chrome checks for unwanted software once a week</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6566149418543181476">Updating Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6676384891291319759">Access the Internet</translation>
@@ -212,13 +209,11 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7106741999175697885">Task Manager - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{A new update for Chrome is available and will be applied as soon as you relaunch.}=1{A new update for Chrome is available and will be applied as soon as you relaunch. Your Incognito window won't reopen.}other{A new update for Chrome is available and will be applied as soon as you relaunch. Your # Incognito windows won't reopen.}}</translation>
 <translation id="7155997830309522122">If so, please edit your saved password in Chrome so that it matches your new password.</translation>
-<translation id="7236955538461508933">{NUM_HOURS,plural, =1{Chrome checks for unwanted software once a week. Last checked: 1 hour ago.}other{Chrome checks for unwanted software once a week. Last checked: {NUM_HOURS} hours ago.}}</translation>
 <translation id="7242029209006116544">You are signing in with a managed account and giving its administrator control over your Google Chrome profile. Your Chrome data, such as your apps, bookmarks, history, passwords and other settings will become permanently tied to <ph name="USER_NAME" />. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. You can optionally create a new profile to keep your existing Chrome data separate. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">This language is used to display the Google Chrome UI</translation>
 <translation id="7296210096911315575">Important use and safety information</translation>
 <translation id="7308322188646931570">Chrome needs storage access to download files</translation>
 <translation id="7339898014177206373">New window</translation>
-<translation id="7386132805935307836">Chrome checks for unwanted software once a week. Last checked: yesterday.</translation>
 <translation id="7398801000654795464">You were signed in to Chrome as <ph name="USER_EMAIL_ADDRESS" />. Please use the same account to sign in again.</translation>
 <translation id="7408085963519505752">Chrome OS terms</translation>
 <translation id="7419046106786626209">Chrome OS could not sync your data because Sync is not available for your domain.</translation>
@@ -253,7 +248,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="828798499196665338">Your parent has turned off 'Permissions for sites, apps and extensions' for Chrome. Enabling this <ph name="EXTENSION_TYPE_PARAMETER" /> is not allowed.</translation>
 <translation id="8290100596633877290">Whoa! Google Chrome has crashed. Relaunch now?</translation>
 <translation id="8342675569599923794">This file is dangerous, so Chrome has blocked it.</translation>
-<translation id="8344083974188970894">{NUM_MINS,plural, =1{Chrome checks for unwanted software once a week. Last checked: 1 minute ago.}other{Chrome checks for unwanted software once a week. Last checked: {NUM_MINS} minutes ago.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="840084489713044809">Google Chrome wants to export your passwords.</translation>
 <translation id="8433638294851456451">To send a number from here to your Android phone, sign in to Chrome on both devices.</translation>

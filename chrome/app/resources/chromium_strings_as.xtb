@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromiumএ সপ্তাহত এবাৰকৈ অনাকাংক্ষিত ছফ্টৱেৰৰ বাবে পৰীক্ষা কৰে। অন্তিম পৰীক্ষা কৰা হৈছিল: ১ ঘণ্টাৰ আগত।}one{Chromiumএ সপ্তাহত এবাৰকৈ অনাকাংক্ষিত ছফ্টৱেৰৰ বাবে পৰীক্ষা কৰে। অন্তিমবাৰ পৰীক্ষা কৰা হৈছিল: {NUM_HOURS} ঘণ্টাৰ আগত।}other{Chromiumএ সপ্তাহত এবাৰকৈ অনাকাংক্ষিত ছফ্টৱেৰৰ বাবে পৰীক্ষা কৰে। অন্তিমবাৰ পৰীক্ষা কৰা হৈছিল: {NUM_HOURS} ঘণ্টাৰ আগত।}}</translation>
 <translation id="1065672644894730302">আপোনাৰ অগ্ৰাধিকাৰসমূহ পঢ়িব নোৱাৰি।
 
 কিছুমান সুবিধা উপলব্ধ নহ'ব পাৰে আৰু অগ্ৰাধিকাৰসমূহত কৰা সলনি কার্য ছেভ নহ'ব পাৰে।</translation>
@@ -47,7 +46,6 @@
 <translation id="2711502716910134313">Chromium টেব</translation>
 <translation id="2718390899429598676">অতিৰিক্ত সুৰক্ষাৰ বাবে Chromiumএ আপোনাৰ ডেটা এনক্ৰিপ্ট কৰিব।</translation>
 <translation id="2770231113462710648">ইয়ালৈ ডিফ’ল্ট ব্ৰাউজাৰ সলনি কৰক:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromiumএ সপ্তাহত এবাৰকৈ অনাকাংক্ষিত ছফ্টৱেৰৰ বাবে পৰীক্ষা কৰে। অন্তিমবাৰ পৰীক্ষা কৰা হৈছিল: এক মিনিটৰ আগত।}one{Chromiumএ সপ্তাহত এবাৰকৈ অনাকাংক্ষিত ছফ্টৱেৰৰ বাবে পৰীক্ষা কৰে। অন্তিমবাৰ পৰীক্ষা কৰা হৈছিল: {NUM_MINS} মিনিটৰ আগত।}other{Chromiumএ সপ্তাহত এবাৰকৈ অনাকাংক্ষিত ছফ্টৱেৰৰ বাবে পৰীক্ষা কৰে। অন্তিমবাৰ পৰীক্ষা কৰা হৈছিল: {NUM_MINS} মিনিটৰ আগত।}}</translation>
 <translation id="2799223571221894425">পুনৰ লঞ্চ কৰক</translation>
 <translation id="2847479871509788944">Chromiumৰপৰা আঁতৰাওক...</translation>
 <translation id="2853765747879685679">মই Chromium খুলিলে সোধক</translation>
@@ -58,7 +56,6 @@
 <translation id="3032706164202344641">Chromiumএ আপোনাৰ পাছৱর্ডসমূহ পৰীক্ষা কৰিব নোৱাৰে। পাছত আকৌ চেষ্টা কৰক।</translation>
 <translation id="3032787606318309379">Chromiumত যোগ কৰি থকা হৈছে...</translation>
 <translation id="3068515742935458733">Googleলৈ ক্ৰেশ্ব ৰিপ‘ৰ্ট আৰু <ph name="UMA_LINK" /> পঠিয়াই Chromiumক উন্নত কৰাত সহায় কৰক</translation>
-<translation id="3086207596048762442">Chromiumএ সপ্তাহত এবাৰকৈ অনাকাংক্ষিত ছফ্টৱেৰৰ বাবে পৰীক্ষা কৰে</translation>
 <translation id="3103660991484857065">ইনষ্টলাৰে আৰ্কাইভক সংকোচনহীন কৰিব নোৱাৰিলে৷ অনুগ্ৰহ কৰি পুনৰ Chromium ডাউনল’ড কৰক৷</translation>
 <translation id="3130323860337406239">Chromiumএ আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰি আছে।</translation>
 <translation id="3155163173539279776">Chromium পুনৰ লঞ্চ কৰক</translation>
@@ -179,7 +176,6 @@
 <translation id="6847869444787758381">Chromiumএ আপোনাৰ পাছৱৰ্ডসমূহ কেতিয়াবা হেক কৰা হৈছিল নেকি আপোনাক জানিবলৈ দিয়ে</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromiumলৈ প্ৰতিলিপি কৰা হ’ল)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromiumএ সপ্তাহত এবাৰকৈ অনাকাংক্ষিত ছফ্টৱেৰৰ বাবে পৰীক্ষা কৰে। অন্তিমবাৰ পৰীক্ষা কৰা হৈছিল: ১ দিনৰ আগত।}one{Chromiumএ সপ্তাহত এবাৰকৈ অনাকাংক্ষিত ছফ্টৱেৰৰ বাবে পৰীক্ষা কৰে। অন্তিমবাৰ পৰীক্ষা কৰা হৈছিল: {NUM_DAYS} দিনৰ আগত।}other{Chromiumএ সপ্তাহত এবাৰকৈ অনাকাংক্ষিত ছফ্টৱেৰৰ বাবে পৰীক্ষা কৰে। অন্তিমবাৰ পৰীক্ষা কৰা হৈছিল: {NUM_DAYS} দিনৰ আগত।}}</translation>
 <translation id="6893813176749746474">Chromium আপডে’ট কৰা হৈছে, কিন্তু আপুনি সেইটো যোৱা ৩০ দিন ধৰি ব্যৱহাৰ কৰা নাই।</translation>
 <translation id="6964305034639999644">Chromium ইন&amp;ক’গনিট’ ৱিণ্ড’ত লিংকটো খোলক</translation>
 <translation id="6990124437352146030">এই ছাইটটোৰ বাবে মাইক্ৰ'ফ'ন এক্সেছ কৰিবলৈ Chromiumক অনুমতিৰ আৱশ্যক</translation>
@@ -244,7 +240,6 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="8621669128220841554">অনির্দিষ্ট আসোঁৱাহৰ বাবে ইনষ্টলেশ্বন কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি পুনৰ Chromium ডাউনল’ড কৰক।</translation>
 <translation id="8697124171261953979">এইটোৱে আপুনি Chromiumৰ ব্যৱহাৰ আৰম্ভ কৰিলে বা Omniboxৰ পৰা সন্ধান কৰিলে কি পৃষ্ঠা খোল খাব সেয়া নিয়ন্ত্ৰণ কৰে।</translation>
 <translation id="8704119203788522458">এইটো আপোনাৰ Chromium</translation>
-<translation id="8705191560707593947">Chromiumএ সপ্তাহত এবাৰকৈ অনাকাংক্ষিত ছফ্টৱেৰৰ বাবে পৰীক্ষা কৰে। অন্তিমবাৰ পৰীক্ষা কৰা হৈছিল: কালি।</translation>
 <translation id="8796602469536043152">এই ছাইটটোত আপোনাৰ কেমেৰা আৰু মাইক্ৰ’ফ’ন এক্সেছ কৰিবলৈ Chromiumক অনুমতিৰ আৱশ্যক</translation>
 <translation id="8803635938069941624">Chromium OSৰ চৰ্তাৱলী</translation>
 <translation id="8821041990367117597">আপোনাৰ একাউণ্টৰ ছাইন ইনৰ সবিশেষ তথ্যৰ ম্যাদ উকলি যোৱাৰ বাবে ক্ৰ’মিয়ামে আপোনাৰ ডেটা ছিংক কৰিব নোৱাৰিলে৷</translation>
@@ -260,7 +255,6 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="91086099826398415">Chromiumৰ &amp;নতুন টেবত লিংক খোলক</translation>
 <translation id="911206726377975832">লগতে আপোনাৰ ব্ৰাউজিং ডেটাও মচিবনে?</translation>
 <translation id="9158494823179993217">আপোনাৰ ছিষ্টেমৰ প্ৰশাসকে <ph name="TARGET_URL_HOSTNAME" /> এক্সেছ কৰিবলৈ Chromiumক এটা বিকল্প ব্ৰাউজাৰ খুলিবলৈ কনফিগাৰ কৰিছে।</translation>
-<translation id="9164845895615421500">Chromiumএ সপ্তাহত এবাৰকৈ অনাকাংক্ষিত ছফ্টৱেৰৰ বাবে পৰীক্ষা কৰে। অন্তিমবাৰ পৰীক্ষা কৰা হৈছিল: এক মুহূৰ্তৰ আগত।</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromiumএ সঠিকভাৱে কাম নকৰিবও পাৰে কাৰণ এই সংস্কৰণটো Windows XP বা Windows Vistaত আৰু নচলে</translation>
 <translation id="95514773681268843">আপুনি এই ডিভাইচ ব্যৱহাৰ কৰাৰ পূর্বে আপুনি তলত উল্লেখ কৰা সেৱাৰ চর্তাৱলী পঢ়ি সন্মত হোৱাটো <ph name="DOMAIN" />এ বিচাৰে। এই চর্তাৱলীয়ে Chromium OSৰ চর্তাৱলী সম্প্ৰসাৰণ, সংশোধন বা সীমিত নকৰে।</translation>

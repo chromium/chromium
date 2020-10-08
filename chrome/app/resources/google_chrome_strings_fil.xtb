@@ -25,7 +25,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1587325591171447154">Mapanganib ang <ph name="FILE_NAME" />, kaya na-block ito ng Chrome.</translation>
 <translation id="1597911401261118146">Para makita kung ligtas ang iyong mga password mula sa mga paglabag sa data at iba pang isyu sa seguridad, <ph name="BEGIN_LINK" />mag-sign in sa Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Upang mas gawing ligtas ang Chrome, na-disable namin ang sumusunod na extension na hindi nakalista sa <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> na maaaring naidagdag nang hindi mo nalalalaman.</translation>
-<translation id="162448658176061655">Nagsusuri ang Chrome para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: kamakailan lang.</translation>
 <translation id="162629503687514352">Hindi ma-sync ng Chrome OS ang iyong mga password.</translation>
 <translation id="1628000112320670027">Humingi ng tulong sa Chrome</translation>
 <translation id="1662639173275167396">Ginagawang posible ang Chrome OS ng karagdagang <ph name="BEGIN_LINK_CROS_OSS" />open source na software<ph name="END_LINK_CROS_OSS" />, gayundin ng <ph name="BEGIN_LINK_LINUX_OSS" />Linux (Beta)<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -147,7 +146,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4771048833395599659">Maaaring mapanganib ang file na ito, kaya na-block ito ng Chrome.</translation>
 <translation id="479167709087336770">Ginagamit nito ang parehong spellchecker na ginagamit sa paghahanap sa Google. Ipinapadala sa Google ang text na tina-type mo sa browser. Puwede mong baguhin ang gawing ito sa mga setting sa lahat ng oras.</translation>
 <translation id="4891791193823137474">Hayaan ang Google Chrome na tumakbo sa background</translation>
-<translation id="489337168347244450">{NUM_DAYS,plural, =1{Nagsusuri ang Chrome para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: 1 araw ang nakalipas.}one{Nagsusuri ang Chrome para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: {NUM_DAYS} araw ang nakalipas.}other{Nagsusuri ang Chrome para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: {NUM_DAYS} na araw ang nakalipas.}}</translation>
 <translation id="4895437082222824641">Buksan ang link sa bagong &amp;tab ng Chrome</translation>
 <translation id="4953650215774548573">Itakda ang Google Chrome bilang iyong default na browser</translation>
 <translation id="495931528404527476">Sa Chrome</translation>
@@ -193,7 +191,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6291549208091401781">Naka-install na ang Google Chrome para sa lahat ng user sa iyong computer.</translation>
 <translation id="6338556085225130112">Ina-update ang Google Chrome</translation>
 <translation id="6368958679917195344">Ginagawang posible ang Chrome OS ng karagdagang <ph name="BEGIN_LINK_CROS_OSS" />open source na software<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="6454142105866844106">Nagsusuri ang Chrome para sa hindi gustong software nang isang beses sa isang linggo</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Ina-update ang Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6676384891291319759">I-access ang Internet</translation>
@@ -212,13 +209,11 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7106741999175697885">Task Manager - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{May available na bagong update para sa Chrome at ilalapat ito sa sandaling maglunsad ka ulit.}=1{May available na bagong update para sa Chrome at ilalapat ito sa sandaling maglunsad ka ulit. Hindi bubukas ulit ang iyong Incognito window.}one{May available na bagong update para sa Chrome at ilalapat ito sa sandaling maglunsad ka ulit. Hindi bubukas ulit ang iyong # Incognito window.}other{May available na bagong update para sa Chrome at ilalapat ito sa sandaling maglunsad ka ulit. Hindi bubukas ulit ang iyong # na Incognito window.}}</translation>
 <translation id="7155997830309522122">Kung nagawa mo na ito, paki-edit ang iyong naka-save na password sa Chrome para tumugma ito sa bago mong password.</translation>
-<translation id="7236955538461508933">{NUM_HOURS,plural, =1{Nagsusuri ang Chrome para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: 1 oras ang nakalipas.}one{Nagsusuri ang Chrome para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: {NUM_HOURS} oras ang nakalipas.}other{Nagsusuri ang Chrome para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: {NUM_HOURS} na oras ang nakalipas.}}</translation>
 <translation id="7242029209006116544">Nagsa-sign in ka gamit ang isang pinamamahalaang account at nagbibigay sa administrator nito ng kontrol sa iyong profile sa Google Chrome. Permanenteng mauugnay ang iyong data sa Chrome, gaya ng iyong apps, mga bookmark, kasaysayan, password, at iba pang setting sa <ph name="USER_NAME" />. Matatanggal mo ang data na ito sa Google Accounts Dashboard, ngunit hindi mo maiuugnay ang data na ito sa isa pang account. Maaari ka ring gumawa ng bagong profile upang ihiwalay ang iyong umiiral na data sa Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Ginagamit ang wikang ito para ipakita ang Google Chrome UI</translation>
 <translation id="7296210096911315575">Mahalagang impormasyon sa paggamit at kaligtasan</translation>
 <translation id="7308322188646931570">Kailangan ng Chrome ng access sa storage para mag-download ng mga file</translation>
 <translation id="7339898014177206373">Bagong window</translation>
-<translation id="7386132805935307836">Nagsusuri ang Chrome para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: kahapon.</translation>
 <translation id="7398801000654795464">Naka-sign in ka sa Chrome bilang <ph name="USER_EMAIL_ADDRESS" />. Pakigamit ang parehong account upang mag-sign in muli.</translation>
 <translation id="7408085963519505752">Mga tuntunin ng Chrome OS</translation>
 <translation id="7419046106786626209">Hindi ma-sync ng Chrome OS ang iyong data dahil hindi available ang Pag-sync para sa iyong domain.</translation>
@@ -253,7 +248,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="828798499196665338">Na-off ng iyong magulang ang "Mga pahintulot para sa mga site, app, at extension" para sa Chrome. Hindi pinapayagan ang pag-enable sa <ph name="EXTENSION_TYPE_PARAMETER" /> na ito.</translation>
 <translation id="8290100596633877290">Whoa! Nag-crash ang Google Chrome. Ilunsad muli ngayon?</translation>
 <translation id="8342675569599923794">Mapanganib ang file na ito, kaya na-block ito ng Chrome.</translation>
-<translation id="8344083974188970894">{NUM_MINS,plural, =1{Nagsusuri ang Chrome para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: 1 minuto ang nakalipas.}one{Nagsusuri ang Chrome para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: {NUM_MINS} minuto ang nakalipas.}other{Nagsusuri ang Chrome para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: {NUM_MINS} na minuto ang nakalipas.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="840084489713044809">Gustong i-export ng Google Chrome ang iyong mga password.</translation>
 <translation id="8433638294851456451">Para magpadala ng numero sa iyong Android phone mula rito, mag-sign in sa Chrome sa parehong device.</translation>

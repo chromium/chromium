@@ -25,7 +25,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> is gevaarlik en daarom het Chrome dit geblokkeer.</translation>
 <translation id="1597911401261118146"><ph name="BEGIN_LINK" />Meld by Chrome aan<ph name="END_LINK" /> om te kyk of jou wagwoorde teen dataskendings en ander sekuriteitkwessies beveilig word.</translation>
 <translation id="1619887657840448962">Om Chrome veiliger te maak, het ons die volgende uitbreiding, wat nie in die <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> gelys word nie en wat dalk sonder jou medewete bygevoeg is, gedeaktiveer.</translation>
-<translation id="162448658176061655">Chrome kyk een keer per week vir ongewenste sagteware. Laas nagegaan: 'n oomblik gelede.</translation>
 <translation id="162629503687514352">Chrome-bedryfstelsel kon nie jou wagwoorde sinkroniseer nie.</translation>
 <translation id="1628000112320670027">Kry hulp met Chrome</translation>
 <translation id="1662639173275167396">Chrome-bedryfstelsel word deur bykomende <ph name="BEGIN_LINK_CROS_OSS" />oopbronsagteware<ph name="END_LINK_CROS_OSS" /> moontlik gemaak en <ph name="BEGIN_LINK_LINUX_OSS" />Linux (Beta)<ph name="END_LINK_LINUX_OSS" /> ook.</translation>
@@ -147,7 +146,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4771048833395599659">Hierdie lêer kan gevaarlik wees en daarom het Chrome dit geblokkeer.</translation>
 <translation id="479167709087336770">Dit gebruik dieselfde speltoetser wat in Google-soektog gebruik word. Teks wat jy in die blaaier tik, word na Google toe gestuur. Jy kan altyd hierdie gedrag in instellings verander.</translation>
 <translation id="4891791193823137474">Laat Google Chrome in die agtergrond loop.</translation>
-<translation id="489337168347244450">{NUM_DAYS,plural, =1{Chrome kyk een keer per week vir ongewenste sagteware. Laas nagegaan: 1 dag gelede.}other{Chrome kyk een keer per week vir ongewenste sagteware. Laas nagegaan: {NUM_DAYS} dae gelede.}}</translation>
 <translation id="4895437082222824641">Maak skakel in 'n nuwe Chrome-oortjie oop</translation>
 <translation id="4953650215774548573">Stel Google Chrome as jou verstekblaaier</translation>
 <translation id="495931528404527476">In Chrome</translation>
@@ -193,7 +191,6 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6291549208091401781">Google Chrome is reeds vir alle gebruikers op jou rekenaar geïnstalleer.</translation>
 <translation id="6338556085225130112">Dateer tans Google Chrome op</translation>
 <translation id="6368958679917195344">Chrome-bedryfstelsel word moontlik gemaak deur bykomende <ph name="BEGIN_LINK_CROS_OSS" />oopbron-sagteware<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="6454142105866844106">Chrome kyk een keer per week vir ongewenste sagteware</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6566149418543181476">Dateer Google Chrome tans op (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6676384891291319759">Gaan by die internet in</translation>
@@ -212,13 +209,11 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="7106741999175697885">Taakbestuurder – Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{'n Nuwe opdatering vir Chrome is beskikbaar en sal toegepas word sodra jy herbegin.}=1{'n Nuwe opdatering vir Chrome is beskikbaar en sal toegepas word sodra jy herbegin. Jou incognitovenster sal nie weer oopgemaak word nie.}other{'n Nuwe opdatering vir Chrome is beskikbaar en sal toegepas word sodra jy herbegin. Jou # incognitovensters sal nie weer oopgemaak word nie.}}</translation>
 <translation id="7155997830309522122">Indien wel moet jy asseblief jou gestoorde wagwoord in Chrome wysig sodat dit met jou nuwe wagwoord ooreenstem.</translation>
-<translation id="7236955538461508933">{NUM_HOURS,plural, =1{Chrome kyk een keer per week vir ongewenste sagteware. Laas nagegaan: 1 uur gelede.}other{Chrome kyk een keer per week vir ongewenste sagteware. Laas nagegaan: {NUM_HOURS} uur gelede.}}</translation>
 <translation id="7242029209006116544">Jy meld tans aan met 'n bestuurde rekening en gee sy administrateur beheer oor jou Google Chrome-profiel. Jou Chrome-data, soos jou programme, boekmerke, geskiedenis, wagwoorde en ander instellings sal permanent aan <ph name="USER_NAME" /> gekoppel word. Jy sal hierdie data via die Google-rekeningekontroleskerm kan uitvee, maar jy sal hierdie data nie met 'n ander rekening kan assosieer nie. Jou ander opsie is om 'n nuwe profiel te skep om jou Chrome-data apart te hou. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Hierdie taal word gebruik om die Google Chrome UI te wys</translation>
 <translation id="7296210096911315575">Belangrike gebruik- en veiligheidinligting</translation>
 <translation id="7308322188646931570">Chrome het bergingtoegang nodig om lêers af te laai</translation>
 <translation id="7339898014177206373">Nuwe venster</translation>
-<translation id="7386132805935307836">Chrome kyk een keer per week vir ongewenste sagteware. Laas nagegaan: gister.</translation>
 <translation id="7398801000654795464">Jy was as <ph name="USER_EMAIL_ADDRESS" /> by Chrome aangemeld. Gebruik asseblief dieselfde rekening om weer aan te meld.</translation>
 <translation id="7408085963519505752">Chrome-bedryfstelsel se bepalings</translation>
 <translation id="7419046106786626209">Chrome-bedryfstelsel kon nie jou data sinkroniseer nie, omdat sinkronisering nie vir jou domein beskikbaar is nie.</translation>
@@ -253,7 +248,6 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="828798499196665338">Jou ouer het "Toestemmings vir werwe, programme en uitbreidings" vir Chrome afgeskakel. Hierdie <ph name="EXTENSION_TYPE_PARAMETER" /> mag nie geaktiveer word nie.</translation>
 <translation id="8290100596633877290">Sjoe! Google Chrome het omgeval. Herbegin nou?</translation>
 <translation id="8342675569599923794">Hierdie lêer is gevaarlik en daarom het Chrome dit geblokkeer.</translation>
-<translation id="8344083974188970894">{NUM_MINS,plural, =1{Chrome kyk een keer per week vir ongewenste sagteware. Laas nagegaan: 1 minuut gelede.}other{Chrome kyk een keer per week vir ongewenste sagteware. Laas nagegaan: {NUM_MINS} minute gelede.}}</translation>
 <translation id="8370517070665726704">Kopiereg <ph name="YEAR" /> Google LLC. Alle regte voorbehou.</translation>
 <translation id="840084489713044809">Google Chrome wil jou wagwoorde uitvoer.</translation>
 <translation id="8433638294851456451">Meld op albei toestelle by Chrome aan om 'n nommer van hier af na jou Android-foon te stuur.</translation>

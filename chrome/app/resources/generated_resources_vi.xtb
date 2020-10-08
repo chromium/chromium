@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Chỉ lựa chọn</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> yêu cầu giấy phép</translation>
 <translation id="1223853788495130632">Quản trị viên của bạn đề xuất một giá trị cụ thể cho cài đặt này.</translation>
-<translation id="1224275271335624810">Nhanh nhất</translation>
 <translation id="1225177025209879837">Đang xử lý yêu cầu...</translation>
 <translation id="1227507814927581609">Xác thực không thành công trong khi kết nối với "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1230417814058465809">Tính năng Bảo vệ thông thường đang bật. Để tăng cường khả năng bảo mật, hãy sử dụng chế độ bảo vệ nâng cao.</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">Đăng ký theo cách thủ công</translation>
 <translation id="1668979692599483141">Tìm hiểu về các đề xuất</translation>
 <translation id="1670399744444387456">Cơ bản</translation>
-<translation id="167160931442925455">To nhất</translation>
 <translation id="1673137583248014546"><ph name="URL" /> muốn xem nhãn hiệu và kiểu Khóa bảo mật của bạn</translation>
 <translation id="1677306805708094828">Không thể thêm <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Còn <ph name="TIME" /></translation>
@@ -919,7 +917,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2046702855113914483">Mỳ tôm</translation>
 <translation id="204706822916043810">Đang kiểm tra máy ảo</translation>
 <translation id="2048182445208425546">Truy cập lưu lượng mạng của bạn</translation>
-<translation id="2048243703055695889">Tùy chọn cài đặt Chia sẻ lân cận cho thiết bị của <ph name="USER_EMAIL" />, "<ph name="DEVICE_NAME" />".</translation>
 <translation id="2048653237708779538">Không thể thực hiện hành động này</translation>
 <translation id="204914487372604757">Tạo lối tắt</translation>
 <translation id="2050339315714019657">Khổ dọc</translation>
@@ -1104,7 +1101,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2262477216570151239">Độ trễ trước khi lặp lại</translation>
 <translation id="2263189956353037928">Đăng xuất và đăng nhập lại</translation>
 <translation id="2263371730707937087">Tốc độ làm mới màn hình</translation>
-<translation id="2263497240924215535">(Đã tắt)</translation>
 <translation id="22665427234727190">Hỏi khi một trang web muốn truy cập vào các thiết bị Bluetooth (khuyên dùng)</translation>
 <translation id="2266957463645820432">IPP qua USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Trao đổi dữ liệu với bất kỳ thiết bị nào trong miền <ph name="DOMAIN" /></translation>
@@ -2289,7 +2285,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3674840410592648165">Các trang web có thể cài đặt trình xử lý thanh toán (khuyến nghị)</translation>
 <translation id="367645871420407123">bỏ trống nếu bạn muốn đặt mật khẩu gốc về giá trị hình ảnh kiểm tra mặc định</translation>
 <translation id="3677106374019847299">Nhập nhà cung cấp tùy chỉnh</translation>
-<translation id="3677657024345889897">Nhỏ nhất</translation>
 <translation id="3677911431265050325">Yêu cầu trang web dành cho thiết bị di động</translation>
 <translation id="3677959414150797585">Bao gồm ứng dụng, trang web và nhiều nội dung khác. Chỉ gửi số liệu thống kê để cải thiện nội dung đề xuất nếu bạn chọn chia sẻ dữ liệu sử dụng.</translation>
 <translation id="3678156199662914018">Tiện ích: <ph name="EXTENSION_NAME" /></translation>
@@ -2478,7 +2473,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3867944738977021751">Trường Chứng chỉ</translation>
 <translation id="3869917919960562512">Chỉ mục sai.</translation>
 <translation id="3870931306085184145">Chưa lưu mật khẩu nào cho <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">Thấp nhất</translation>
 <translation id="3871350334636688135">Sau 24 giờ, quản trị viên sẽ tiến hành cập nhật một lần để xóa dữ liệu trên thiết bị của bạn khi bạn khởi động lại thiết bị. Hãy lưu mọi dữ liệu trên thiết bị mà bạn cần vào bộ nhớ trên đám mây trong vòng 24 giờ.</translation>
 <translation id="3872220884670338524">Thao tác khác, tài khoản đã lưu cho <ph name="USERNAME" /> trên <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Giải phóng dung lượng đĩa, nếu không thiết bị sẽ không phản hồi.</translation>
@@ -4235,7 +4229,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6025215716629925253">Dấu vết ngăn xếp</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - Đã kết nối thiết bị USB</translation>
 <translation id="6028117231645531007">Thêm vân tay</translation>
-<translation id="6029587122245504742">Chậm nhất</translation>
 <translation id="6029594605736587274">đã chặn <ph name="PERMISSION" /></translation>
 <translation id="6031600495088157824">Các tùy chọn phương thức nhập trên thanh công cụ</translation>
 <translation id="6032715498678347852">Để cấp cho một tiện ích quyền truy cập vào trang web này, hãy nhấp vào tiện ích đó.</translation>
@@ -4529,7 +4522,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6349101878882523185">Cài đặt <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Đồng bộ hóa không hoạt động. Thử đăng xuất và đăng nhập lại.</translation>
 <translation id="6351063337294363751">Bạn có thể xóa dữ liệu duyệt web khỏi menu này</translation>
-<translation id="6352773953037195952">Cao nhất</translation>
 <translation id="6354918092619878358">Đường cong elip SECG secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Luôn bật thiết bị</translation>
 <translation id="63566973648609420">Chỉ người có cụm mật khẩu mới có thể đọc dữ liệu được mã hóa của bạn. Cụm mật khẩu không được gửi tới hoặc được lưu trữ bởi Google. Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi cài đặt này, bạn sẽ cần <ph name="BEGIN_LINK" />đặt lại đồng bộ hóa<ph name="END_LINK" />.</translation>
@@ -5294,6 +5286,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Ứng dụng này có thể khiến Chrome hoạt động không bình thường.}other{Những ứng dụng này có thể khiến Chrome hoạt động không bình thường.}}</translation>
 <translation id="7303281435234579599">Rất tiếc! Đã có sự cố khi thiết lập chế độ minh họa.</translation>
 <translation id="7303900363563182677">Trang web này bị chặn xem văn bản và hình ảnh đã sao chép sang khay nhớ tạm</translation>
+<translation id="7304030187361489308">Cao</translation>
 <translation id="7305123176580523628">Đã kết nối máy in USB</translation>
 <translation id="730515362922783851">Trao đổi dữ liệu với bất kỳ thiết bị nào trên mạng cục bộ hoặc internet</translation>
 <translation id="7306521477691455105">Mở phần Cài đặt để kết nối <ph name="USB_DEVICE_NAME" /> với <ph name="USB_VM_NAME" /></translation>

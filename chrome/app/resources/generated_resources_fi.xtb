@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Vain valinta</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> edellyttää lisenssiä</translation>
 <translation id="1223853788495130632">Järjestelmänvalvoja suosittelee tälle asetukselle tiettyä arvoa.</translation>
-<translation id="1224275271335624810">Nopein</translation>
 <translation id="1225177025209879837">Käsitellään pyyntöä…</translation>
 <translation id="1227507814927581609">Todennus epäonnistui yhdistettäessä laitteeseen <ph name="DEVICE_NAME" />.</translation>
 <translation id="1230417814058465809">Perustason suojaus on päällä. Käytä parannettua suojausta, jos haluat lisäsuojaa.</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">Rekisteröidy manuaalisesti</translation>
 <translation id="1668979692599483141">Lue lisää ehdotuksista</translation>
 <translation id="1670399744444387456">Perusasetukset</translation>
-<translation id="167160931442925455">Äänekkäin</translation>
 <translation id="1673137583248014546"><ph name="URL" /> haluaa nähdä suojausavaimesi merkin ja mallin.</translation>
 <translation id="1677306805708094828">Lisääminen (<ph name="EXTENSION_TYPE_PARAMETER" />) ei onnistu</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> jäljellä</translation>
@@ -919,7 +917,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">Tarkistetaan virtuaalikonetta</translation>
 <translation id="2048182445208425546">Käyttää verkkoliikennettäsi</translation>
-<translation id="2048243703055695889">Lähijakamisen asetukset (käyttäjä: <ph name="USER_EMAIL" />, laite: <ph name="DEVICE_NAME" />)</translation>
 <translation id="2048653237708779538">Toiminto ei ole käytettävissä</translation>
 <translation id="204914487372604757">Luo pikakuvake</translation>
 <translation id="2050339315714019657">Pystysuunta</translation>
@@ -1104,7 +1101,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2262477216570151239">Viive ennen toistoa</translation>
 <translation id="2263189956353037928">Kirjaudu ulos ja kirjaudu takaisin sisään</translation>
 <translation id="2263371730707937087">Näytön päivitysväli</translation>
-<translation id="2263497240924215535">(Pois käytöstä)</translation>
 <translation id="22665427234727190">Kysy aina, jos sivusto pyytää pääsyä Bluetooth-laitteelle (suositus)</translation>
 <translation id="2266957463645820432">IPP–USB-yhteys (IPPUSB)</translation>
 <translation id="2270450558902169558">Vaihtaa tietoja minkä tahansa verkkotunnusta <ph name="DOMAIN" /> käyttävän laitteen kanssa.</translation>
@@ -2289,7 +2285,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3674840410592648165">Sivustot saavat asentaa maksujen käsittelijöitä (suositus)</translation>
 <translation id="367645871420407123">Jätä tyhjäksi, jos haluat asettaa pääkäyttäjän salasanaksi oletustestikuvan arvon.</translation>
 <translation id="3677106374019847299">Lisää oma palveluntarjoaja</translation>
-<translation id="3677657024345889897">Hiljaisin</translation>
 <translation id="3677911431265050325">Pyydä mobiilisivustoa</translation>
 <translation id="3677959414150797585">Sisältää esimerkiksi sovelluksia ja verkkosivuja. Lähettää tilastoja ehdotusten parantamiseksi vain, jos olet sallinut käyttödatan jakamisen.</translation>
 <translation id="3678156199662914018">Laajennus: <ph name="EXTENSION_NAME" /></translation>
@@ -2478,7 +2473,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3867944738977021751">Varmenteen kentät</translation>
 <translation id="3869917919960562512">Väärä numero.</translation>
 <translation id="3870931306085184145">Ei tallennettuja salasanoja: <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">Matalin</translation>
 <translation id="3871350334636688135">24 tunnin päästä järjestelmänvalvoja tekee kertaluontoisen päivityksen, joka poistaa paikallisen datasi, kun käynnistät laitteesi uudelleen. Tallenna kaikki tarvitsemasi paikallinen data pilvitallennustilaan 24 tunnin sisällä.</translation>
 <translation id="3872220884670338524">Lisää toimintoja, tallennettu käyttäjän <ph name="USERNAME" /> tili verkkotunnuksessa <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Vapauta levytilaa, tai laite ei enää vastaa.</translation>
@@ -4232,7 +4226,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6025215716629925253">Pinon jälki</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB-laite yhdistetty</translation>
 <translation id="6028117231645531007">Lisää sormenjälki</translation>
-<translation id="6029587122245504742">Hitain</translation>
 <translation id="6029594605736587274"><ph name="PERMISSION" /> estetty</translation>
 <translation id="6031600495088157824">Syöttövalinnat työkalupalkissa</translation>
 <translation id="6032715498678347852">Anna laajennukselle pääsy sivustolle klikkaamalla laajennusta.</translation>
@@ -4528,7 +4521,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6349101878882523185">Asenna <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Synkronointi ei onnistu. Yritä kirjautua ensin ulos ja sitten takaisin sisään.</translation>
 <translation id="6351063337294363751">Voit tyhjentää selaustiedot tämän valikon kautta.</translation>
-<translation id="6352773953037195952">Korkein</translation>
 <translation id="6354918092619878358">SECG elliptinen käyrä secp256r1 (eli ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Pidä laite päällä</translation>
 <translation id="63566973648609420">Salattuja tietojasi voi lukea vain tunnuslauseesi avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseesi tai haluat muokata tätä asetusta, <ph name="BEGIN_LINK" />synkronointi on nollattava<ph name="END_LINK" />.</translation>
@@ -5293,6 +5285,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Tämä sovellus saattaa estää Chromea toimimasta oikein}other{Nämä sovellukset saattavat estää Chromea toimimasta oikein}}</translation>
 <translation id="7303281435234579599">Hups, jotain meni vikaan esittelytilan määrityksessä.</translation>
 <translation id="7303900363563182677">Tämä sivu ei saa nähdä leikepöydälle kopioitua tekstiä tai kuvia.</translation>
+<translation id="7304030187361489308">Korkea</translation>
 <translation id="7305123176580523628">USB-tulostin yhdistetty</translation>
 <translation id="730515362922783851">Vaihtaa tietoja minkä tahansa paikallisverkossa tai internetissä olevan laitteen kanssa.</translation>
 <translation id="7306521477691455105">Yhdistä <ph name="USB_DEVICE_NAME" /> ja <ph name="USB_VM_NAME" /> avaamalla Asetukset</translation>

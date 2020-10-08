@@ -201,7 +201,6 @@
 <translation id="1221825588892235038">କେବଳ ଚୟନ</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> ଏକ ଲାଇସେନ୍ସ ଆବଶ୍ୟକ କରେ</translation>
 <translation id="1223853788495130632">ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକ ଏହି ସେଟିଂସ୍ ପାଇଁ ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ମୂଲ୍ୟ ସୁପାରିଶ୍ କରିଛନ୍ତି।</translation>
-<translation id="1224275271335624810">ଦ୍ରୁତତମ</translation>
 <translation id="1225177025209879837">ପ୍ରକ୍ରିୟାକରଣ ପାଇଁ ଅନୁରୋଧ...</translation>
 <translation id="1227507814927581609">"<ph name="DEVICE_NAME" />"ରେ ସଂଯୋଗ କରିବା ସମୟରେ ପ୍ରମାଣିକିକରଣ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="1230417814058465809">ମାନକ ସୁରକ୍ଷା ଚାଲୁ ଅଛି। ଆହୁରି ଅଧିକ ସୁରକ୍ଷା ପାଇଁ, ଉନ୍ନତ ସୁରକ୍ଷା ବ୍ୟବହାର କରନ୍ତୁ।</translation>
@@ -594,7 +593,6 @@
 <translation id="1668435968811469751">ମାନୁଆଲୀ ପଞ୍ଜିକରଣ କରନ୍ତୁ</translation>
 <translation id="1668979692599483141">ପ୍ରସ୍ତାବଗୁଡ଼ିକ ବିଷୟରେ ଜାଣନ୍ତୁ</translation>
 <translation id="1670399744444387456">ମୌଳିକ</translation>
-<translation id="167160931442925455">ଅତ୍ୟଧିକ ବେଶି ଶବ୍ଦ</translation>
 <translation id="1673137583248014546"><ph name="URL" /> ଆପଣଙ୍କର ସୁରକ୍ଷା କୀ'ର ନିର୍ମାତା ଏବଂ ମଡେଲ୍ ଦେଖିବାକୁ ଚାହୁଁଛନ୍ତି</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" />କୁ ଯୋଗ କରିପାରିବେ ନାହିଁ</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ବାକି ଅଛି</translation>
@@ -913,7 +911,6 @@
 <translation id="2046702855113914483">ରାମେନ୍</translation>
 <translation id="204706822916043810">ଭର୍ଚୁଆଲ୍ ମେସିନର ଯାଞ୍ଚ କରାଯାଉଛି</translation>
 <translation id="2048182445208425546">ଆପଣଙ୍କର ନେଟ୍‍ୱର୍କ ଟ୍ରାଫିକ୍ ଆକ୍ସେସ୍ କରନ୍ତୁ</translation>
-<translation id="2048243703055695889"><ph name="USER_EMAIL" />ର ଡିଭାଇସ୍, '<ph name="DEVICE_NAME" />' ପାଇଁ Nearby Share ସେଟିଂସ୍।</translation>
 <translation id="2048653237708779538">କାର୍ଯ୍ୟ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="204914487372604757">ସର୍ଟକଟ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="2050339315714019657">ପୋଟ୍ରେଟ୍‌</translation>
@@ -1098,7 +1095,6 @@
 <translation id="2262477216570151239">ପୁନରାବୃତ୍ତିର ପୂର୍ବରୁ ବିଳମ୍ବ</translation>
 <translation id="2263189956353037928">ସାଇନ୍ ଆଉଟ୍ କରି ପୁଣି ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="2263371730707937087">ସ୍କ୍ରିନ୍ ରିଫ୍ରେସ୍ ରେଟ୍</translation>
-<translation id="2263497240924215535">(ଅକ୍ଷମ କରାଯାଇଛି)</translation>
 <translation id="22665427234727190">କୌଣସି ସାଇଟ୍ ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବାକୁ ଚାହିଁଲେ, ପଚାରନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="2266957463645820432">USBରେ IPP (IPPUSB)</translation>
 <translation id="2270450558902169558"><ph name="DOMAIN" /> ଡୋମେନ୍‌ରେ ଥିବା ଯେକୌଣସି ଡିଭାଇସ୍ ସହିତ ଡାଟା ବିନିମୟ କରନ୍ତୁ</translation>
@@ -2282,7 +2278,6 @@
 <translation id="3674840410592648165">ସାଇଟଗୁଡ଼ିକ ପେମେଣ୍ଟ ହ୍ୟାଣ୍ଡଲର୍ ଇନଷ୍ଟଲ୍ କରିପାରିବ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="367645871420407123">ଖାଲି ଛାଡ଼ି ଦିଅନ୍ତୁ ଯଦି ଆପଣ ମୂଳ ପାସ୍‍ୱାର୍ଡକୁ ଡିଫଲ୍ଟ ଟେଷ୍ଟ ଛବି ମୂଲ୍ୟରେ ସେଟ୍ କରିବାକୁ ଚାହାନ୍ତି</translation>
 <translation id="3677106374019847299">କଷ୍ଟମ୍ ପ୍ରଦାନକାରୀ ନାମ ଲେଖନ୍ତୁ</translation>
-<translation id="3677657024345889897">ସର୍ବାଧିକ ନିଃଶଦ୍ଦତା</translation>
 <translation id="3677911431265050325">ମୋବାଇଲ୍ ସାଇଟ୍ ପାଇଁ ଅନୁରୋଧ କରନ୍ତୁ</translation>
 <translation id="3677959414150797585">ଆପ୍, ୱେବପୃଷ୍ଠା ଏବଂ ଆହୁରି ଅନେକ କିଛି ଅନ୍ତର୍ଭୁକ୍ତ କରେ। ଯଦି ଆପଣ ବ୍ୟବହାର ଡାଟା ସେୟାର୍ କରିବାକୁ ବାଛିଥାଆନ୍ତି ତେବେ କେବଳ ପରାମର୍ଶକୁ ଉନ୍ନତ କରିବା ପାଇଁ ପରିସଂଖ୍ୟାନ ପଠାଏ।</translation>
 <translation id="3678156199662914018">ପରିବର୍ଦ୍ଧନ: <ph name="EXTENSION_NAME" /></translation>
@@ -2471,7 +2466,6 @@
 <translation id="3867944738977021751">ସାର୍ଟିଫିକେଟ୍ ଫିଲ୍ଡ</translation>
 <translation id="3869917919960562512">ଭୁଲ୍ ସୂଚୀ।</translation>
 <translation id="3870931306085184145"><ph name="DOMAIN" /> ପାଇଁ କୌଣସି ସେଭ୍‌ ହୋ‍ଇଥିବ ପାସ୍‌ୱର୍ଡ ନାହିଁ</translation>
-<translation id="3871092408932389764">ନିମ୍ନତମ</translation>
 <translation id="3871350334636688135">24 ଘଣ୍ଟା ପରେ ଯେତେବେଳେ ଆପଣ ନିଜର ଡିଭାଇସ୍ ରିଷ୍ଟାର୍ଟ କରିବେ ସେତେବେଳେ ଆପଣଙ୍କର ଆଡ୍‌ମିନିଷ୍ଟ୍ରେଟର୍ ଗୋଟିଏ ଥର ଅପ୍‌ଡେଟ୍ କରିବେ ଯାହା ଆପଣଙ୍କର ସ୍ଥାନୀୟ ଡାଟାକୁ ଡିଲିଟ୍ କରିଦେବ। 24 ଘଣ୍ଟା ମଧ୍ୟରେ କ୍ଲାଉଡ୍ ଷ୍ଟୋରେଜ୍ ପାଇଁ ଆପଣ ଆବଶ୍ୟକ କରୁଥିବା ଯେକୌଣସି ସ୍ଥାନୀୟ ଡାଟାକୁ ସେଭ କରନ୍ତୁ।</translation>
 <translation id="3872220884670338524">ଅଧିକ ପଦକ୍ଷେପ, <ph name="DOMAIN" />ରେ <ph name="USERNAME" /> ପାଇଁ ସେଭ୍ କରାଯାଇଥିବା ଆକାଉଣ୍ଟ</translation>
 <translation id="3872991219937722530">ଡିସ୍କ ସ୍ଥାନ ଖାଲି କରନ୍ତୁ ଅନ୍ୟଥା ଡିଭାଇସ୍ କୌଣସି ପ୍ରତିକ୍ରିୟା ଦେବ ନାହିଁ।</translation>
@@ -3287,7 +3281,7 @@
 <translation id="4878718769565915065">ଏହି ସୁରକ୍ଷା କୀରେ ଏକ ଟିପଚିହ୍ନ ଯୋଗ କରିବା ବିଫଳ ହୋଇଛି</translation>
 <translation id="4879491255372875719">ସ୍ୱଚାଳିତ (ଡିଫଲ୍ଟ)</translation>
 <translation id="4880328057631981605">ଆକ୍ସେସ୍ ପଏଣ୍ଟର ନାମ</translation>
-<translation id="4880827082731008257">ଇତିବୃତ୍ତି ସନ୍ଧାନ କରନ୍ତୁ</translation>
+<translation id="4880827082731008257">ସନ୍ଧାନ ଇତିହାସ</translation>
 <translation id="4881695831933465202">ଖୋଲନ୍ତୁ</translation>
 <translation id="4882312758060467256">ଏହି ସାଇଟ୍‍କୁ ଆକ୍ସେସ୍‌ ଅଛି</translation>
 <translation id="4882831918239250449">ସର୍ଚ୍ଚ, ବିଜ୍ଞପ୍ତି ଏବଂ ଆହୁରି ଅଧିକକୁ ବ୍ୟକ୍ତିଗତକରଣ କରିବା ପାଇଁ ଆପଣଙ୍କର ବ୍ରାଉଜିଂ ଇତିବୃତ୍ତି କିପରି ବ୍ୟବହାର ହେଉଛି ତାହା ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
@@ -4226,7 +4220,6 @@
 <translation id="6025215716629925253">ଷ୍ଟାକ୍ ଟ୍ରେସ୍</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB ଡିଭାଇସ୍ ସଂଯୋଗ ହୋଇଛି</translation>
 <translation id="6028117231645531007">ଟିପଚିହ୍ନ ଯୋଗ କରନ୍ତୁ</translation>
-<translation id="6029587122245504742">ସବୁଠାରୁ ଧୀର</translation>
 <translation id="6029594605736587274"><ph name="PERMISSION" /> ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="6031600495088157824">ଟୁଲବାରରେ ଇନପୁଟ୍ ବିକଳ୍ପଗୁଡ଼ିକ</translation>
 <translation id="6032715498678347852">ଏକ ଏକ୍ସଟେନସନକୁ ଏହି ସାଇଟ୍ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ଦେବାକୁ, ଏଥିରେ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
@@ -4520,7 +4513,6 @@
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ଇନଷ୍ଟଲ୍‍ କରନ୍ତୁ</translation>
 <translation id="6349170655202535379">ସିଙ୍କ୍ କାମ କରୁନାହିଁ ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ ଏବଂ ପୁଣି ସାଇନ୍ ଇନ୍ କରି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6351063337294363751">ଏହି ମେନୁରୁ ଆପଣଙ୍କର ବ୍ରାଉଜିଂ ଡାଟା ଖାଲି କରିପାରିବେ</translation>
-<translation id="6352773953037195952">ସର୍ବୋଚ୍ଚ</translation>
 <translation id="6354918092619878358">SECG ଅଣ୍ଡାକାର ବକ୍ର secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">ଡିଭାଇସ୍‌କୁ ଚାଲୁ ଅବସ୍ଥାରେ ରଖନ୍ତୁ</translation>
 <translation id="63566973648609420">ଆପଣଙ୍କ ଏନ୍‌କ୍ରିପ୍ଟ ହୋଇଥିବା ଡାଟାକୁ କେବଳ ଆପଣଙ୍କ ପାସ୍‍‍ଫ୍ରେଜ୍ ଥିବା ଜଣେ ବ୍ୟକ୍ତି ପଢ଼ିପାରିବେ। Google ଦ୍ବାରା ପାସ୍‍‍ଫ୍ରେଜ୍ ପଠାଯାଏ ନାହିଁ ବା ଷ୍ଟୋର୍ କରାଯାଏନାହିଁ। ଯଦି ଆପଣ ନିଜର ପାସ୍‍‍ଫ୍ରେଜ୍ ଭୁଲିଯାଇଛନ୍ତି କିମ୍ବା ଏହି ସେଟିଂ ପରିବର୍ତ୍ତନ କରିବାକୁ ଚାହୁଁଛନ୍ତି, ତେବେ ଆପଣଙ୍କୁ <ph name="BEGIN_LINK" />ସିଙ୍କ୍ ରିସେଟ୍<ph name="END_LINK" /> କରିବାକୁ ହେବ।</translation>
@@ -5287,6 +5279,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{ଏହି ଆପ୍ଲିକେସନ୍ Chromeକୁ ଠିକ୍ ଭାବରେ କାର୍ଯ୍ୟ କରିବାରୁ ବାଧା ଦେଇପାରେ।}other{ଏହି ଆପ୍ଲିକେସନ୍ Chromeକୁ ଠିକ୍ ଭାବରେ କାର୍ଯ୍ୟ କରିବାରୁ ବାଧା ଦେଇପାରେ।}}</translation>
 <translation id="7303281435234579599">ଓହୋଃ! ଡେମୋ ମୋଡ୍‌ ସେଟ୍‍ କରିବା ସମୟରେ କିଛି ତ୍ରୁଟି ହୋ‍ଇଛି</translation>
 <translation id="7303900363563182677">କ୍ଲିପବୋର୍ଡ୍‌କୁ ଛବି କପି କରିବା ଏବଂ ଟେକ୍ସଟ୍ ଦେଖିବାରୁ ଏହି ସାଇଟ୍‌କୁ ଅବରୋଧ କରିଦିଆଯାଇଛି।</translation>
+<translation id="7304030187361489308">ଉଚ୍ଚ</translation>
 <translation id="7305123176580523628">USB ପ୍ରିଣ୍ଟର୍ ସଂଯୋଗ କରାଯାଇଛି</translation>
 <translation id="730515362922783851">ସ୍ଥାନୀୟ ନେଟ୍‍ୱର୍କ କିମ୍ବା ଇଣ୍ଟର୍ନେଟ୍‌ରେ ଥିବା ଯେକୌଣସି ଡିଭାଇସ୍ ସହିତ ଡାଟା ଆଦାନ-ପ୍ରଦାନ କରନ୍ତୁ</translation>
 <translation id="7306521477691455105"><ph name="USB_DEVICE_NAME" />କୁ <ph name="USB_VM_NAME" />ରେ ସଂଯୋଗ କରିବା ପାଇଁ ସେଟିଂସ୍ ଖୋଲନ୍ତୁ</translation>

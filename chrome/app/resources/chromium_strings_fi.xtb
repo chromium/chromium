@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium tarkistaa ei-toivotut ohjelmistot kerran viikossa. Tarkistettu viimeksi 1 tunti sitten.}other{Chromium tarkistaa ei-toivotut ohjelmistot kerran viikossa. Tarkistettu viimeksi {NUM_HOURS} tuntia sitten}}</translation>
 <translation id="1065672644894730302">Asetuksiasi ei voi lukea. Kaikkia toimintoja ei voi välttämättä käyttää eikä asetuksiin tehtäviä muutoksia tallenneta.</translation>
 <translation id="107513968719897256">Voit luoda uuden profiilin Chromiumissa, jotta henkilökohtainen selaamisesi ja <ph name="NEW_USER" /> pysyvät erillään</translation>
 <translation id="1098170124587656448">Chromium voi auttaa suojaamaan sinua tietosuojaloukkauksilta, haitallisilta laajennuksilta ja muilta</translation>
@@ -45,7 +44,6 @@
 <translation id="2711502716910134313">Chromium-välilehti</translation>
 <translation id="2718390899429598676">Chromium lisää suojausta salaamalla tietosi.</translation>
 <translation id="2770231113462710648">Vaihda oletusselaimeksi:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromium tarkistaa ei-toivotut ohjelmistot kerran viikossa. Tarkistettu viimeksi 1 minuutti sitten.}other{Chromium tarkistaa ei-toivotut ohjelmistot kerran viikossa. Tarkistettu viimeksi {NUM_MINS} minuuttia sitten.}}</translation>
 <translation id="2799223571221894425">Käynnistä uudelleen</translation>
 <translation id="2847479871509788944">Poista Chromiumista…</translation>
 <translation id="2853765747879685679">Kysy, kun avaan Chromiumin</translation>
@@ -56,7 +54,6 @@
 <translation id="3032706164202344641">Chromium ei voi tarkistaa salasanojasi. Yritä myöhemmin uudelleen.</translation>
 <translation id="3032787606318309379">Lisätään Chromiumiin...</translation>
 <translation id="3068515742935458733">Auta parantamaan Chromiumia lähettämällä kaatumisilmoitukset ja <ph name="UMA_LINK" /> Googlelle</translation>
-<translation id="3086207596048762442">Chromium tarkistaa ei-toivotut ohjelmistot kerran viikossa</translation>
 <translation id="3103660991484857065">Asennusohjelma ei pystynyt purkamaan arkistotiedostoa. Lataa Chromium uudelleen.</translation>
 <translation id="3130323860337406239">Chromium käyttää mikrofoniasi.</translation>
 <translation id="3155163173539279776">Käynnistä Chromium uudelleen</translation>
@@ -177,7 +174,6 @@ Kaikki ominaisuudet eivät ehkä ole käytettävissä. Määritä jokin muu prof
 <translation id="6847869444787758381">Chromium ilmoittaa sinulle, jos salasanasi ovat vaarantuneet</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopioitu Chromiumiin)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium tarkistaa ei-toivotut ohjelmistot kerran viikossa. Tarkistettu viimeksi 1 päivä sitten.}other{Chromium tarkistaa ei-toivotut ohjelmistot kerran viikossa. Tarkistettu viimeksi {NUM_DAYS} päivää sitten.}}</translation>
 <translation id="6893813176749746474">Chromium on päivitetty, mutta et ole käyttänyt sitä ainakaan 30 päivään.</translation>
 <translation id="6964305034639999644">Avaa linkki Chromiumin inco&amp;gnito-ikkunassa</translation>
 <translation id="6990124437352146030">Chromium tarvitsee oikeuden käyttää mikrofoniasi tällä sivustolla.</translation>
@@ -242,7 +238,6 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8621669128220841554">Asennus epäonnistui määrittelemättömän virheen vuoksi. Lataa Chromium uudelleen.</translation>
 <translation id="8697124171261953979">Määrittää myös Chromiumin ja omnibox-hakujen aloitussivun.</translation>
 <translation id="8704119203788522458">Tämä on oma Chromiumisi</translation>
-<translation id="8705191560707593947">Chromium tarkistaa ei-toivotut ohjelmistot kerran viikossa. Tarkistettu viimeksi eilen.</translation>
 <translation id="8796602469536043152">Chromium tarvitsee oikeuden käyttää kameraasi ja mikrofoniasi tällä sivustolla.</translation>
 <translation id="8803635938069941624">Chromium-käyttöjärjestelmän käyttöehdot</translation>
 <translation id="8821041990367117597">Chromium ei voinut synkronoida tietoja, sillä tilin kirjautumistiedot ovat vanhentuneet.</translation>
@@ -258,7 +253,6 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="91086099826398415">Avaa linkki uudella Chromiumin välilehdellä</translation>
 <translation id="911206726377975832">Poistetaanko myös selailutiedot?</translation>
 <translation id="9158494823179993217">Järjestelmänvalvojasi on määrittänyt Chromiumin avaamaan toisen selaimen, jolla <ph name="TARGET_URL_HOSTNAME" /> avataan.</translation>
-<translation id="9164845895615421500">Chromium tarkistaa ei-toivotut ohjelmistot kerran viikossa. Tarkistettu viimeksi hetki sitten.</translation>
 <translation id="9190841055450128916">Chromium (saapuva mDNS)</translation>
 <translation id="93478295209880648">Chromium ei välttämättä toimi oikein, koska se ei enää tue Windows XP:tä tai Windows Vistaa.</translation>
 <translation id="95514773681268843"><ph name="DOMAIN" /> edellyttää, että luet ja hyväksyt seuraavat käyttöehdot ennen tämän laitteen käyttöä. Nämä ehdot eivät laajenna, muokkaa tai rajoita Chromium-käyttöliittymän ehtoja.</translation>

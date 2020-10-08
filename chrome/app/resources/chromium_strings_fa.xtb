@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{‏Chromium هفته‌ای یک‌بار وجود نرم‌افزارهای ناخواسته را بررسی می‌کند. آخرین بررسی: ۱ ساعت قبل.}one{‏Chromium هفته‌ای یک‌بار وجود نرم‌افزارهای ناخواسته را بررسی می‌کند. آخرین بررسی: {NUM_HOURS} ساعت قبل.}other{‏Chromium هفته‌ای یک‌بار وجود نرم‌افزارهای ناخواسته را بررسی می‌کند. آخرین بررسی: {NUM_HOURS} ساعت قبل.}}</translation>
 <translation id="1065672644894730302">اولویت‌های شما را نمی‌توان خواند. بعضی ویژگی‌ها ممکن است در دسترس نباشند و تغییرات تنظیمات برگزیده ذخیره نخواهد شد.</translation>
 <translation id="107513968719897256">‏برای جدا کردن مرور شخصی و <ph name="NEW_USER" />، نمایه جدیدی در Chromium ایجاد کنید</translation>
 <translation id="1098170124587656448">‏Chromium می‌تواند به ایمن ماندن شما در برابر نقض داده، افزونه‌های مخرب، و خطرهای دیگر کمک کند</translation>
@@ -45,7 +44,6 @@
 <translation id="2711502716910134313">‏برگه Chromium</translation>
 <translation id="2718390899429598676">‏برای امنیت بیشتر، Chromium داده‌های شما را رمزگذاری می‌کند.</translation>
 <translation id="2770231113462710648">تغییر مرورگر پیش‌فرض به:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{‏Chromium هفته‌ای یک‌بار وجود نرم‌افزارهای ناخواسته را بررسی می‌کند. آخرین بررسی: ۱ دقیقه قبل.}one{‏Chromium هفته‌ای یک‌بار وجود نرم‌افزارهای ناخواسته را بررسی می‌کند. آخرین بررسی: {NUM_MINS} دقیقه قبل.}other{‏Chromium هفته‌ای یک‌بار وجود نرم‌افزارهای ناخواسته را بررسی می‌کند. آخرین بررسی: {NUM_MINS} دقیقه قبل.}}</translation>
 <translation id="2799223571221894425">راه‌اندازی مجدد</translation>
 <translation id="2847479871509788944">‏حذف از Chromium...</translation>
 <translation id="2853765747879685679">‏وقتی Chromium را باز می‌کنم سؤال شود</translation>
@@ -56,7 +54,6 @@
 <translation id="3032706164202344641">‏Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند. بعداً دوباره امتحان کنید.</translation>
 <translation id="3032787606318309379">‏افزودن به Chromium…</translation>
 <translation id="3068515742935458733">‏با ارسال گزارش‌های خرابی و <ph name="UMA_LINK" /> به Google، به بهبود Google کمک کنید</translation>
-<translation id="3086207596048762442">‏Chromium هفته‌ای یک‌بار وجود نرم‌افزارهای ناخواسته را بررسی می‌کند</translation>
 <translation id="3103660991484857065">‏نصب‌کننده در خارج کردن بایگانی از حالت فشرده ناموفق بود. لطفاً دوباره Chromium را بارگیری کنید.</translation>
 <translation id="3130323860337406239">‏Chromium درحال استفاده از میکروفون شما است.</translation>
 <translation id="3155163173539279776">‏اجرای مجدد Chromium</translation>
@@ -176,7 +173,6 @@
 <translation id="6847869444787758381">‏Chromium می‌تواند، اگر گذرواژه‌هایتان در معرض خطر باشد، مطلعتان کند</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">‏Google Pay (در Chromium کپی شد)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{‏Chromium هفته‌ای یک‌بار وجود نرم‌افزارهای ناخواسته را بررسی می‌کند. آخرین بررسی: ۱ روز قبل.}one{‏Chromium هفته‌ای یک‌بار وجود نرم‌افزارهای ناخواسته را بررسی می‌کند. آخرین بررسی: {NUM_DAYS} روز قبل.}other{‏Chromium هفته‌ای یک‌بار وجود نرم‌افزارهای ناخواسته را بررسی می‌کند. آخرین بررسی: {NUM_DAYS} روز قبل.}}</translation>
 <translation id="6893813176749746474">‏Chromium به‌روز شده است اما حداقل ۳۰ روز از آن استفاده نکرده‌اید.</translation>
 <translation id="6964305034639999644">‏باز کردن پیوند در پنجره &amp;ناشناس Chromium</translation>
 <translation id="6990124437352146030">‏Chromium برای این سایت به مجوز دسترسی به میکروفون نیاز دارد</translation>
@@ -240,7 +236,6 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8621669128220841554">‏به دلیل خطای نامشخص، نصب ناموفق بود. لطفاً دوباره Chromium را بارگیری کنید.</translation>
 <translation id="8697124171261953979">‏این برنامه همچنین صفحه‌ای را که هنگام راه‌اندازی Chromium یا جستجو از Omnibox نشان داده می‌شود، کنترل می‌کند.</translation>
 <translation id="8704119203788522458">‏این Chromium شماست</translation>
-<translation id="8705191560707593947">‏Chromium هفته‌ای یک‌بار وجود نرم‌افزارهای ناخواسته را بررسی می‌کند. آخرین بررسی: دیروز.</translation>
 <translation id="8796602469536043152">‏Chromium به مجوز دسترسی به دوربین و میکروفون برای این سایت نیاز دارد</translation>
 <translation id="8803635938069941624">‏شرایط Chromium OS</translation>
 <translation id="8821041990367117597">‏Chromium قادر به همگام‌سازی داده‌های شما نبود زیرا جزئیات ورود به حساب شما به‌روز نیست.</translation>
@@ -256,7 +251,6 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="91086099826398415">‏باز کردن پیوند در &amp;برگه جدید Chromium</translation>
 <translation id="911206726377975832">داده‌های مرور شما نیز حذف شود؟</translation>
 <translation id="9158494823179993217">‏سرپرست سیستم شما برای باز شدن مرورگر جایگزین برای دسترسی به <ph name="TARGET_URL_HOSTNAME" />، Chromium را پیکربندی کرده است.</translation>
-<translation id="9164845895615421500">‏Chromium هفته‌ای یک‌بار وجود نرم‌افزارهای ناخواسته را بررسی می‌کند. آخرین بررسی: چند لحظه قبل.</translation>
 <translation id="9190841055450128916">‏Chromium‏ (mDNS ورودی)</translation>
 <translation id="93478295209880648">‏Chromium ممکن است درست کار نکند زیرا دیگر در Windows XP یا Windows Vista پشتیبانی نمی‌شود</translation>
 <translation id="95514773681268843">‏<ph name="DOMAIN" /> از شما می‌خواهد قبل از استفاده از دستگاه، شرایط خدمات زیر را خوانده و بپذیرید. این شرایط بسط داده نمی‌شوند، اصلاح نمی‌شوند و شرایط سیستم‌عامل Chromium را محدود نمی‌کنند.</translation>

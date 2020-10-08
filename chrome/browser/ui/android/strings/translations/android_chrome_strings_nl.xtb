@@ -571,7 +571,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5324858694974489420">Instellingen voor ouders</translation>
 <translation id="5327248766486351172">Naam</translation>
 <translation id="5342314432463739672">Rechtenverzoeken</translation>
-<translation id="5355191726083956201">Verbeterde beveiliging is ingeschakeld</translation>
+<translation id="5355191726083956201">Geoptimaliseerde beveiliging staat aan</translation>
 <translation id="5357811892247919462">Tabblad ontvangen</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> geopend tabblad, tik om tussen tabbladen te schakelen}other{<ph name="OPEN_TABS_MANY" /> geopende tabbladen, tik om tussen tabbladen te schakelen}}</translation>
 <translation id="5403644198645076998">Alleen bepaalde sites toestaan</translation>
@@ -620,7 +620,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5687809546194252819"><ph name="APP_NAME" /> gebruikt <ph name="LANGUAGE" /> na opnieuw opstarten.</translation>
 <translation id="5691211010013816086">Je hebt <ph name="READING_LIST_COUNT" /> pagina's</translation>
 <translation id="569536719314091526">Vertaal deze pagina in een andere taal via de knop 'Meer opties'</translation>
-<translation id="5696597120588531049">Chrome kan je beschermen tegen gegevenslekken, niet-beveiligde websites en meer</translation>
+<translation id="5696597120588531049">Chrome kan je beschermen tegen gegevenslekken, onveilige websites en meer.</translation>
 <translation id="5697688514913266141">Je bestand wordt opgeslagen in <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Bewerken<ph name="END_LINK2" /></translation>
 <translation id="570347048394355941">Overschakelen naar tabblad</translation>
 <translation id="572328651809341494">Recente tabbladen</translation>
@@ -691,7 +691,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="6122831415929794347">Safe Browsing uitschakelen?</translation>
 <translation id="6127379762771434464">Item verwijderd</translation>
 <translation id="6137022273846704445">Taal van <ph name="APP_NAME" /></translation>
-<translation id="6140709049082532940">Verbeterde beveiliging:</translation>
+<translation id="6140709049082532940">Geoptimaliseerde beveiliging:</translation>
 <translation id="6140912465461743537">Land/regio</translation>
 <translation id="614940544461990577">Probeer dit eens:</translation>
 <translation id="6154478581116148741">Schakel schermvergrendeling in via Instellingen om je wachtwoorden te exporteren vanaf dit apparaat</translation>
@@ -810,7 +810,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties weer te gev
 <translation id="688738109438487280">Bestaande gegevens toevoegen aan <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Ontgrendelen om je wachtwoord te kopiëren</translation>
 <translation id="6896758677409633944">Kopieer</translation>
-<translation id="6900532703269623216">Verbeterde beveiliging</translation>
+<translation id="6900532703269623216">Geoptimaliseerde beveiliging</translation>
 <translation id="6903907808598579934">Synchronisatie inschakelen</translation>
 <translation id="6929699136511445623">Synchronisatie van Android-systeem inschakelen</translation>
 <translation id="6941901516114974832">Je activiteit in de incognitomodus <ph name="BEGIN_BOLD1" />is mogelijk nog altijd zichtbaar<ph name="END_BOLD1" /> voor websites die je bezoekt, je werkgever of school en je internetprovider.

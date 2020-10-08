@@ -25,7 +25,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1587325591171447154">Súbor <ph name="FILE_NAME" /> je nebezpečný, a preto ho Chrome zablokoval.</translation>
 <translation id="1597911401261118146">Ak chcete skontrolovať, či sú vaše heslá chránené pred porušením ochrany údajov a inými bezpečnostnými hrozbami, <ph name="BEGIN_LINK" />prihláste sa do Chromu<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Z dôvodu zvýšenia bezpečnosti prehliadača Chrome sme zakázali nasledujúce rozšírenie, ktoré nie je uvedené v službe <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> a mohlo byť pridané bez vášho vedomia.</translation>
-<translation id="162448658176061655">Chrome kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla pred chvíľou.</translation>
 <translation id="162629503687514352">Systému Chrome OS sa nepodarilo synchronizovať vaše heslá.</translation>
 <translation id="1628000112320670027">Pomoc s Chromom</translation>
 <translation id="1662639173275167396">Chrome OS mohol vzniknúť vďaka ďalšiemu <ph name="BEGIN_LINK_CROS_OSS" />softvéru open source<ph name="END_LINK_CROS_OSS" />, ako je napríklad <ph name="BEGIN_LINK_LINUX_OSS" />Linux (beta)<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -145,7 +144,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4771048833395599659">Tento súbor môže byť nebezpečný, a preto ho Chrome zablokoval.</translation>
 <translation id="479167709087336770">Využíva rovnaký nástroj na kontrolu pravopisu, aký sa používa vo Vyhľadávaní Google. Text zadaný do prehliadača sa odošle Googlu. Toto správanie môžete zmeniť v nastaveniach.</translation>
 <translation id="4891791193823137474">Povoliť prehliadaču Google Chrome spustenie na pozadí</translation>
-<translation id="489337168347244450">{NUM_DAYS,plural, =1{Chrome kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla včera.}few{Chrome kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla pred {NUM_DAYS} dňami.}many{Chrome kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola bola skontrolovaná pred {NUM_DAYS} dňa.}other{Chrome kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola bola skontrolovaná pred {NUM_DAYS} dňami.}}</translation>
 <translation id="4895437082222824641">Otvoriť odkaz na novej &amp;karte Chromu</translation>
 <translation id="4953650215774548573">Nastaviť Google Chrome ako predvolený prehliadač</translation>
 <translation id="495931528404527476">V prehliadači Chrome</translation>
@@ -190,7 +188,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6291549208091401781">Google Chrome už majú nainštalovaný všetci používatelia na vašom počítači.</translation>
 <translation id="6338556085225130112">Chrome sa aktualizuje</translation>
 <translation id="6368958679917195344">Chrome OS mohol vzniknúť vďaka ďalšiemu <ph name="BEGIN_LINK_CROS_OSS" />softvéru s otvoreným zdrojom<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="6454142105866844106">Chrome kontroluje prítomnosť nechceného softvéru raz za týždeň</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6566149418543181476">Aktualizuje sa Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6676384891291319759">Prístup do siete Internet</translation>
@@ -209,13 +206,11 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7106741999175697885">Správca úloh – Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{K dispozícii je aktualizácia pre Chrome, ktorá bude použitá po najbližšom novom spustení.}=1{K dispozícii je aktualizácia pre Chrome, ktorá bude použitá po najbližšom novom spustení. Vaše okno inkognito sa neotvorí.}few{K dispozícii je aktualizácia pre Chrome, ktorá bude použitá po najbližšom novom spustení. Vaše # okná inkognito sa neotvoria.}many{K dispozícii je aktualizácia pre Chrome, ktorá bude použitá po najbližšom novom spustení. Your # Incognito windows won't reopen.}other{K dispozícii je aktualizácia pre Chrome, ktorá bude použitá po najbližšom novom spustení. Vašich # okien inkognito sa neotvorí.}}</translation>
 <translation id="7155997830309522122">Ak áno, upravte svoje uložené heslo v Chrome tak, aby sa zhodovalo s týmto novým heslom.</translation>
-<translation id="7236955538461508933">{NUM_HOURS,plural, =1{Chrome kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla pred hodinou.}few{Chrome kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla pred {NUM_HOURS} hodinami.}many{Chrome kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla pred {NUM_HOURS} hodiny.}other{Chrome kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla pred {NUM_HOURS} hodinami.}}</translation>
 <translation id="7242029209006116544">Prihlasujete sa pomocou spravovaného účtu a jeho správcovi dávate kontrolu nad vaším profilom prehliadača Chrome. Vaše údaje prehliadača Chrome, ako sú aplikácie, záložky, história, heslá a iné nastavenia, sa natrvalo priradia k účtu <ph name="USER_NAME" />. Tieto údaje budete môcť odstrániť len pomocou panela Dashboard v Účtoch Google, ale nebudete ich môcť priradiť k inému účtu. Ak chcete, aby boli existujúce údaje prehliadača Chrome oddelené, môžete vytvoriť nový profil. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">V tomto jazyku sa zobrazuje používateľské rozhranie prehliadača Google Chrome.</translation>
 <translation id="7296210096911315575">Dôležité informácie o používaní a zabezpečení</translation>
 <translation id="7308322188646931570">Chrome potrebuje na sťahovanie súborov prístup k úložisku</translation>
 <translation id="7339898014177206373">Nové okno</translation>
-<translation id="7386132805935307836">Chrome kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla včera.</translation>
 <translation id="7398801000654795464">Do prehliadača Chrome ste boli prihlásený/-á ako <ph name="USER_EMAIL_ADDRESS" />. Ak sa chcete prihlásiť znova, použite rovnaký účet.</translation>
 <translation id="7408085963519505752">Zmluvné podmienky systému OS Chrome</translation>
 <translation id="7419046106786626209">Systému OS Chrome sa nepodarilo synchronizovať vaše údaje, pretože možnosť synchronizácie nie je pre vašu doménu k dispozícii.</translation>
@@ -250,7 +245,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="828798499196665338">Tvoj rodič vypol „Povolenia pre weby, aplikácie a rozšírenia“ v Chrome. Povolenie tohto rozšírenia (<ph name="EXTENSION_TYPE_PARAMETER" />) je zakázané.</translation>
 <translation id="8290100596633877290">Google Chrome zlyhal. Chcete ho spustiť znova?</translation>
 <translation id="8342675569599923794">Tento súbor je nebezpečný, a preto ho Chrome zablokoval.</translation>
-<translation id="8344083974188970894">{NUM_MINS,plural, =1{Chrome kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla pred minútou.}few{Chrome kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla pred {NUM_MINS} minútami.}many{Chrome kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla pred {NUM_MINS} minúty.}other{Chrome kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla pred {NUM_MINS} minútami.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všetky práva vyhradené.</translation>
 <translation id="840084489713044809">Google Chrome sa pokúša exportovať vaše heslá.</translation>
 <translation id="8433638294851456451">Ak chcete odtiaľto odoslať číslo do svojho telefónu s Androidom, prihláste sa v oboch zariadeniach do Chromu.</translation>

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla pred hodinou.}few{Chromium kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla pred {NUM_HOURS} hodinami.}many{Chromium kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla pred {NUM_HOURS} hodiny.}other{Chromium kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla pred {NUM_HOURS} hodinami.}}</translation>
 <translation id="1065672644894730302">Vaše predvoľby sa nedajú načítať.
 
 Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách sa neuložia.</translation>
@@ -47,7 +46,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2711502716910134313">Karta Chromium</translation>
 <translation id="2718390899429598676">V záujme vyššej miery zabezpečenia budú dáta v prehliadači Chromium šifrované.</translation>
 <translation id="2770231113462710648">Zmeniť predvolený prehliadač na:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromium kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla pred minútou.}few{Chromium kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla pred {NUM_MINS} minútami.}many{Chromium kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla pred {NUM_MINS} minúty.}other{Chromium kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla pred {NUM_MINS} minútami.}}</translation>
 <translation id="2799223571221894425">Znova spustiť</translation>
 <translation id="2847479871509788944">Odstrániť z prehliadača Chromium...</translation>
 <translation id="2853765747879685679">Opýtať sa pri otvorení prehliadača Chromium</translation>
@@ -58,7 +56,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3032706164202344641">Chromium nemôže skontrolovať heslá. Skúste to znova neskôr.</translation>
 <translation id="3032787606318309379">Pridáva sa do prehliadača Chromium...</translation>
 <translation id="3068515742935458733">Pomôcť zlepšiť prehliadač Chromium odosielaním správ o zlyhaní a <ph name="UMA_LINK" /> spoločnosti Google</translation>
-<translation id="3086207596048762442">Chromium kontroluje prítomnosť nechceného softvéru raz za týždeň</translation>
 <translation id="3103660991484857065">Inštalačný program pri dekomprimácii archívu zlyhal. Stiahnite prehliadač Chromium znova.</translation>
 <translation id="3130323860337406239">Chromium používa váš mikrofón.</translation>
 <translation id="3155163173539279776">Znova spustiť prehliadač Chromium</translation>
@@ -179,7 +176,6 @@ Niektoré funkcie nemusia byť k dispozícii. Zadajte iný adresár profilu aleb
 <translation id="6847869444787758381">Ak budú vaše heslá napadnuté, Chromium vám to oznámi</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (skopírované do prehliadača Chromium)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla včera.}few{Chromium kontroluje prítomnosť nechceného softvéru raz za týždeň. Naposledy bola skontrolovaná pred {NUM_DAYS} dňami.}many{Chromium kontroluje prítomnosť nechceného softvéru raz za týždeň. Naposledy bola skontrolovaná pred {NUM_DAYS} dňa.}other{Chromium kontroluje prítomnosť nechceného softvéru raz za týždeň. Naposledy bola skontrolovaná pred {NUM_DAYS} dňami.}}</translation>
 <translation id="6893813176749746474">Prehliadač Chromium bol aktualizovaný, ale najmenej 30 dní ste ho nepoužili.</translation>
 <translation id="6964305034639999644">Otvoriť odkaz v okne inko&amp;gnito prehliadača Chromium</translation>
 <translation id="6990124437352146030">Chromium potrebuje povolenie pre tento web na prístup k mikrofónu</translation>
@@ -243,7 +239,6 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8621669128220841554">Inštalácia zlyhala kvôli neznámej chybe. Skúste prehliadač Chromium stiahnuť znova.</translation>
 <translation id="8697124171261953979">Tiež určuje, ktorá stránka sa zobrazí pri spustení prehliadača Chromium alebo pri vyhľadávaní pomocou všeobecného poľa.</translation>
 <translation id="8704119203788522458">Toto je váš prehliadač Chromium</translation>
-<translation id="8705191560707593947">Chromium kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla včera.</translation>
 <translation id="8796602469536043152">Chromium potrebuje povolenie pre tento web na prístup k fotoaparátu a mikrofónu</translation>
 <translation id="8803635938069941624">Zmluvné podmienky systému OS Chromium</translation>
 <translation id="8821041990367117597">Prehliadaču Chromium sa nepodarilo synchronizovať vaše údaje, pretože vaše prihlasovacie údaje účtu sú zastarané.</translation>
@@ -259,7 +254,6 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="91086099826398415">Otvoriť odkaz na novej &amp;karte prehliadača Chromium</translation>
 <translation id="911206726377975832">Chcete tiež odstrániť svoje údaje prehliadania?</translation>
 <translation id="9158494823179993217">Správca systému nakonfiguroval Chromium, aby web <ph name="TARGET_URL_HOSTNAME" /> otváral v alternatívnom prehliadači.</translation>
-<translation id="9164845895615421500">Chromium kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla pred chvíľou.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium nemusí fungovať správne, pretože v systémoch Windows XP a Windows Vista už nie je podporovaný</translation>
 <translation id="95514773681268843">Stránky <ph name="DOMAIN" /> vyžadujú, aby ste si pred používaním tohto zariadenia prečítali nasledujúce Zmluvné podmienky a vyjadrili s nimi súhlas. Tieto zmluvné podmienky nerozširujú, neupravujú ani neobmedzujú Zmluvné podmienky systému Chromium OS.</translation>

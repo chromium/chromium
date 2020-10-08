@@ -112,7 +112,7 @@
 <translation id="1123753900084781868">Live Caption är inte tillgängligt just nu</translation>
 <translation id="1124772482545689468">Användare</translation>
 <translation id="1125550662859510761">Ser ut som <ph name="WIDTH" /> × <ph name="HEIGHT" /> (fast)</translation>
-<translation id="1126809382673880764">Skyddar inte mot farliga webbplatser, nedladdningar och tillägg. Du behåller skydd med Säker webbsökning, där denna funktion är tillgänglig, i andra tjänster från Google, till exempel Gmail och Sök.</translation>
+<translation id="1126809382673880764">Skyddar inte mot farliga webbplatser, nedladdningar och tillägg. Där funktionen är tillgänglig får du fortfarande skydd med Säker webbsökning i andra tjänster från Google, till exempel Gmail och Sök.</translation>
 <translation id="112752777279960360">Om du vill konfigurera att en Android-telefon ska användas som säkerhetsnyckel med datorn för första gången öppnar du Chrome på telefonen och trycker på Inställningar &gt; Lösenord &gt; Använd telefonen som säkerhetsnyckel. Sedan trycker du på Anslut en ny enhet och skannar QR-koden.</translation>
 <translation id="1128109161498068552">Tillåt inte att några webbplatser använder systemexklusiva meddelanden för att komma åt MIDI-enheter</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Endast markering</translation>
 <translation id="1223484782328004593">Licens krävs för <ph name="APP_NAME" /></translation>
 <translation id="1223853788495130632">Administratören rekommenderar ett specifikt värde för den här inställningen.</translation>
-<translation id="1224275271335624810">Snabbast</translation>
 <translation id="1225177025209879837">Begäran bearbetas ...</translation>
 <translation id="1227507814927581609">Autentiseringen misslyckades vid anslutning till <ph name="DEVICE_NAME" />.</translation>
 <translation id="1230417814058465809">Standardskydd är aktiverat. Använd det utökade skyddet för ännu bättre säkerhet.</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">Registrera på egen hand</translation>
 <translation id="1668979692599483141">Läs mer om förslag</translation>
 <translation id="1670399744444387456">Grunder</translation>
-<translation id="167160931442925455">Högst</translation>
 <translation id="1673137583248014546"><ph name="URL" /> vill få tillgång till din säkerhetsnyckels märke och modell.</translation>
 <translation id="1677306805708094828">Det går inte att lägga till <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> kvar</translation>
@@ -919,7 +917,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2046702855113914483">Ramen (nudelsoppa)</translation>
 <translation id="204706822916043810">Den virtuella maskinen kontrolleras</translation>
 <translation id="2048182445208425546">Åtkomst till din nätverkstrafik</translation>
-<translation id="2048243703055695889">Närdelningsinställningar för enheten som tillhör <ph name="USER_EMAIL" />:<ph name="DEVICE_NAME" />.</translation>
 <translation id="2048653237708779538">Åtgärden är inte tillgänglig</translation>
 <translation id="204914487372604757">Skapa genväg</translation>
 <translation id="2050339315714019657">Stående</translation>
@@ -1104,7 +1101,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2262477216570151239">Fördröjning före upprepning</translation>
 <translation id="2263189956353037928">Logga ut och logga in igen</translation>
 <translation id="2263371730707937087">Skärmens uppdateringsfrekvens</translation>
-<translation id="2263497240924215535">(Inaktiverat)</translation>
 <translation id="22665427234727190">Fråga när en webbplats vill få åtkomst till Bluetooth-enheter (rekommenderas)</translation>
 <translation id="2266957463645820432">IPP över USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Utväxla  data med enheter i domänen <ph name="DOMAIN" /></translation>
@@ -2289,7 +2285,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3674840410592648165">Webbplatser får installera betalningshanterare (rekommenderas)</translation>
 <translation id="367645871420407123">lämna tomt om du vill ange rotlösenordet som värde för standardtestbilden</translation>
 <translation id="3677106374019847299">Ange annan leverantör</translation>
-<translation id="3677657024345889897">Lägst</translation>
 <translation id="3677911431265050325">Begär mobilversion</translation>
 <translation id="3677959414150797585">Bland annat appar och webbsidor. Skickar bara statistik för att förbättra förslagen om du har valt att dela data om användning.</translation>
 <translation id="3678156199662914018">Tillägg: <ph name="EXTENSION_NAME" /></translation>
@@ -2478,7 +2473,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3867944738977021751">Certifikatfält</translation>
 <translation id="3869917919960562512">Fel index.</translation>
 <translation id="3870931306085184145">Det finns inga sparade lösenord för <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">Lägst</translation>
 <translation id="3871350334636688135">Efter 24 timmar genomför administratören en engångsuppdatering som raderar din lokala data när du startar om enheten. Spara den lokala data du behöver i molnet inom 24 timmar.</translation>
 <translation id="3872220884670338524">Fler åtgärder, sparat konto för <ph name="USERNAME" /> på <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Frigör diskutrymme för att enheten ska fortsätta svara.</translation>
@@ -3368,7 +3362,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4965808351167763748">Vill du konfigurera den här enheten för Hangouts Meet?</translation>
 <translation id="496888482094675990">Med appen Filer kommer du snabbt åt filer som du har sparat på Google Drive, externa lagringsenheter eller din Chrome OS-enhet.</translation>
 <translation id="4971412780836297815">Öppna när nedladdningen är klar</translation>
-<translation id="4971735654804503942">Snabbare och förebyggande skydd mot farliga webbplatser, nedladdningar och tillägg. En varning om lösenordsläckor visas. Webbinformation måste skickas till Google.</translation>
+<translation id="4971735654804503942">Snabbare, proaktivt skydd mot farliga webbplatser, nedladdningar och tillägg. Du får varningar om lösenordsläckor. Kräver att webbinformationen skickas till Google.</translation>
 <translation id="4972129977812092092">Redigera skrivare</translation>
 <translation id="4972164225939028131">Fel lösenord</translation>
 <translation id="4972737347717125191">Webbplatser får begära tillstånd att använda VR-enheter och VR-data</translation>
@@ -4235,7 +4229,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6025215716629925253">Stack trace</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – ansluten till USB-enhet</translation>
 <translation id="6028117231645531007">Lägg till fingeravtryck</translation>
-<translation id="6029587122245504742">Långsammast</translation>
 <translation id="6029594605736587274"><ph name="PERMISSION" /> har blockerats</translation>
 <translation id="6031600495088157824">Inmatningsalternativ i verktygsfältet</translation>
 <translation id="6032715498678347852">Klicka på tillägget om du vill ge det åtkomst till den här webbplatsen.</translation>
@@ -4529,7 +4522,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6349101878882523185">Installera <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Det går inte att synkronisera. Testa att logga ut och logga in igen.</translation>
 <translation id="6351063337294363751">Du kan rensa webbinformation från den här menyn</translation>
-<translation id="6352773953037195952">Högsta</translation>
 <translation id="6354918092619878358">SECG med elliptisk kurva secp256r1 (kallas även ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Stäng inte av enheten</translation>
 <translation id="63566973648609420">Endast personer som har ditt lösenord kan läsa dina krypterade uppgifter. Lösenordet skickas inte till och sparas inte av Google. Om du glömmer lösenordet måste du <ph name="BEGIN_LINK" />återställa synkroniseringen<ph name="END_LINK" />.</translation>
@@ -5294,6 +5286,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Den här appen kan göra så att Chrome inte fungerar korrekt.}other{De här apparna kan göra så att Chrome inte fungerar korrekt.}}</translation>
 <translation id="7303281435234579599">Något gick fel med konfigureringen av demoläget.</translation>
 <translation id="7303900363563182677">Tillgången till text och bilder som kopierats till Urklipp har blockerats för den här webbplatsen.</translation>
+<translation id="7304030187361489308">Hög</translation>
 <translation id="7305123176580523628">USB-skrivare ansluten</translation>
 <translation id="730515362922783851">Utväxla data med enheter i det lokala nätverket eller via internet</translation>
 <translation id="7306521477691455105">Öppna inställningarna om du vill ansluta <ph name="USB_DEVICE_NAME" /> till <ph name="USB_VM_NAME" /></translation>

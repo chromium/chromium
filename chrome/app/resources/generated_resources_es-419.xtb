@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Solo selección</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> requiere una licencia</translation>
 <translation id="1223853788495130632">El administrador recomienda un valor específico para esta configuración.</translation>
-<translation id="1224275271335624810">Más rápido</translation>
 <translation id="1225177025209879837">Procesando la solicitud...</translation>
 <translation id="1227507814927581609">Error de autenticación al establecer la conexión con "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1230417814058465809">Se activó la protección estándar. Para obtener más seguridad, usa la protección mejorada.</translation>
@@ -595,7 +594,6 @@
 <translation id="1668435968811469751">Inscribirse manualmente</translation>
 <translation id="1668979692599483141">Más información sobre las sugerencias</translation>
 <translation id="1670399744444387456">Básicas</translation>
-<translation id="167160931442925455">Máximo</translation>
 <translation id="1673137583248014546"><ph name="URL" /> desea ver la marca y el modelo de tu llave de seguridad</translation>
 <translation id="1677306805708094828">No se puede agregar la <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Tiempo restante <ph name="TIME" /></translation>
@@ -916,7 +914,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">Revisando la máquina virtual</translation>
 <translation id="2048182445208425546">Acceder al tráfico de la red</translation>
-<translation id="2048243703055695889">Configuración de Compartir con Nearby para el dispositivo de <ph name="USER_EMAIL" />, "<ph name="DEVICE_NAME" />".</translation>
 <translation id="2048653237708779538">La acción no está disponible</translation>
 <translation id="204914487372604757">Crear accesos directos</translation>
 <translation id="2050339315714019657">Vertical</translation>
@@ -1101,7 +1098,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2262477216570151239">Tiempo para repetición</translation>
 <translation id="2263189956353037928">Salir y volver a acceder</translation>
 <translation id="2263371730707937087">Frecuencia de actualización de la pantalla</translation>
-<translation id="2263497240924215535">(Deshabilitado)</translation>
 <translation id="22665427234727190">Preguntar cuando un sitio desee acceder a dispositivos Bluetooth (recomendado)</translation>
 <translation id="2266957463645820432">IPP por USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Intercambiar datos con cualquier dispositivo del dominio <ph name="DOMAIN" /></translation>
@@ -2286,7 +2282,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3674840410592648165">Permitir que los sitios instalen controladores de pago (recomendado)</translation>
 <translation id="367645871420407123">dejar en blanco si quieres configurar la contraseña de raíz en el valor de la imagen de prueba predeterminada</translation>
 <translation id="3677106374019847299">Ingresar un proveedor personalizado</translation>
-<translation id="3677657024345889897">Mínimo</translation>
 <translation id="3677911431265050325">Solicitar sitio móvil</translation>
 <translation id="3677959414150797585">Incluye apps, páginas web y mucho más. Envía estadísticas para mejorar las sugerencias solo si elegiste compartir los datos de uso.</translation>
 <translation id="3678156199662914018">Extensión: <ph name="EXTENSION_NAME" /></translation>
@@ -2475,7 +2470,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3867944738977021751">Campos del certificado</translation>
 <translation id="3869917919960562512">Índice incorrecto.</translation>
 <translation id="3870931306085184145">No hay contraseñas guardadas para <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">Muy bajo</translation>
 <translation id="3871350334636688135">A las 24 horas de que restablezcas tu dispositivo, el administrador realizará una actualización única que borrará tus datos locales. Guarda estos datos en el almacenamiento en la nube antes de que se cumpla este plazo.</translation>
 <translation id="3872220884670338524">Más acciones (cuenta guardada para <ph name="USERNAME" /> en <ph name="DOMAIN" />)</translation>
 <translation id="3872991219937722530">Libera espacio en el disco o el dispositivo dejará de funcionar.</translation>
@@ -4232,7 +4226,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6025215716629925253">Seguimiento de la pila</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" />: Se conectó el dispositivo USB</translation>
 <translation id="6028117231645531007">Agregar huella digital</translation>
-<translation id="6029587122245504742">Más lento</translation>
 <translation id="6029594605736587274">se bloqueó <ph name="PERMISSION" /></translation>
 <translation id="6031600495088157824">Opciones de entrada de la barra de herramientas</translation>
 <translation id="6032715498678347852">Haz clic en una extensión para otorgarle acceso a este sitio.</translation>
@@ -4526,7 +4519,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">La sincronización no funciona. Intenta salir y volver a acceder.</translation>
 <translation id="6351063337294363751">Puedes borrar los datos de navegación desde este menú</translation>
-<translation id="6352773953037195952">Muy alto</translation>
 <translation id="6354918092619878358">Curva elíptica SECG elliptic secp256r1 (también conocido como ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">No apagues el dispositivo</translation>
 <translation id="63566973648609420">Solo las personas que tengan tu frase de contraseña pueden leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si la olvidas o quieres cambiar esta configuración, deberás <ph name="BEGIN_LINK" />restablecer la sincronización<ph name="END_LINK" />.</translation>
@@ -5291,6 +5283,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Es posible que esta app evite que Chrome funcione correctamente.}other{Es posible que estas apps eviten que Chrome funcione correctamente.}}</translation>
 <translation id="7303281435234579599">Hubo un error cuando se intentaba configurar el modo de demostración.</translation>
 <translation id="7303900363563182677">No se permite que este sitio vea el texto ni las imágenes que se copiaron en el portapapeles</translation>
+<translation id="7304030187361489308">Alto</translation>
 <translation id="7305123176580523628">Se conectó la impresora por USB</translation>
 <translation id="730515362922783851">Intercambiar datos con cualquier dispositivo de la red local o Internet</translation>
 <translation id="7306521477691455105">Abre la Configuración para conectar <ph name="USB_DEVICE_NAME" /> con <ph name="USB_VM_NAME" /></translation>

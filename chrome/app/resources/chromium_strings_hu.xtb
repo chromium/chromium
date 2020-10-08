@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{A Chromium hetente egyszer keres nemkívánatos szoftvereket. Legutóbb frissítve: 1 órája.}other{A Chromium hetente egyszer keres nemkívánatos szoftvereket. Legutóbb frissítve: {NUM_HOURS} órája.}}</translation>
 <translation id="1065672644894730302">A beállításait nem sikerült olvasni. Egyes funkciókat esetleg nem ér el, és a beállításaiban végrehajtott módosításokat nem menti a rendszer.</translation>
 <translation id="107513968719897256">Ha elkülönítené egymástól a személyes böngészést és a(z) <ph name="NEW_USER" /> profilos böngészési tevékenységet, hozzon létre új profilt a Chromiumban.</translation>
 <translation id="1098170124587656448">A Chromium segíthet az adatvédelmi incidensek, nem biztonságos bővítmények és egyebek elleni védekezésben</translation>
@@ -45,7 +44,6 @@
 <translation id="2711502716910134313">Chromium lap</translation>
 <translation id="2718390899429598676">A nagyobb biztonság érdekében a Chromium titkosítja az Ön adatait.</translation>
 <translation id="2770231113462710648">Alapértelmezett böngésző beállítása:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{A Chromium hetente egyszer keres nemkívánatos szoftvereket. Legutóbb frissítve: 1 perce.}other{A Chromium hetente egyszer keres nemkívánatos szoftvereket. Legutóbb frissítve: {NUM_MINS} perce.}}</translation>
 <translation id="2799223571221894425">Újraindítás</translation>
 <translation id="2847479871509788944">Eltávolítás a Chromiumból…</translation>
 <translation id="2853765747879685679">Kérdezzen rá a Chromium megnyitásakor</translation>
@@ -56,7 +54,6 @@
 <translation id="3032706164202344641">A Chromium nem tudja ellenőrizni a jelszavait. Próbálkozzon később.</translation>
 <translation id="3032787606318309379">Hozzáadás a Chromiumhoz...</translation>
 <translation id="3068515742935458733">Segítse a Chromium fejlesztését azáltal, hogy elküldi a Google-nak a következőket: hibajelentések és <ph name="UMA_LINK" /></translation>
-<translation id="3086207596048762442">A Chromium hetente egyszer keres nemkívánatos szoftvereket.</translation>
 <translation id="3103660991484857065">Nem sikerült a telepítőnek kibontani a tömörített állományt. Kérjük, töltse le újra a Chromium böngészőt.</translation>
 <translation id="3130323860337406239">A Chromium használja a mikrofont.</translation>
 <translation id="3155163173539279776">A Chromium újraindítása</translation>
@@ -175,7 +172,6 @@
 <translation id="6847869444787758381">A Chromium tájékoztatja arról, ha jelszavai illetéktelen kezekbe kerülnek</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (a Chromiumba másolva)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{A Chromium hetente egyszer keres nemkívánatos szoftvereket. Legutóbb frissítve: 1 napja.}other{A Chromium hetente egyszer keres nemkívánatos szoftvereket. Legutóbb frissítve: {NUM_DAYS} napja.}}</translation>
 <translation id="6893813176749746474">A Chromium frissítése megtörtént, de nem használta a böngészőt legalább 30 napja.</translation>
 <translation id="6964305034639999644">Link megnyitása Chromium-inko&amp;gnitóablakban</translation>
 <translation id="6990124437352146030">A Chromiumnak engedélyre van szüksége ahhoz, hogy hozzáférjen a mikrofonhoz ennél a webhelynél</translation>
@@ -239,7 +235,6 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8621669128220841554">A telepítés egy meg nem határozott hiba miatt nem sikerült. Kérjük, töltse le újra a Chromiumot.</translation>
 <translation id="8697124171261953979">Továbbá azt is szabályozza, hogy melyik oldal jelenik meg a Chromium indításakor vagy a cím- és keresősávban indított kereséskor.</translation>
 <translation id="8704119203788522458">Ez az Ön Chromiumja</translation>
-<translation id="8705191560707593947">A Chromium hetente egyszer keres nemkívánatos szoftvereket. Legutóbb frissítve: tegnap.</translation>
 <translation id="8796602469536043152">A Chromiumnak engedélyre van szüksége ahhoz, hogy hozzáférjen a kamerához és a mikrofonhoz ennél a webhelynél</translation>
 <translation id="8803635938069941624">Chromium OS – Szerződési Feltételek</translation>
 <translation id="8821041990367117597">A Chromium nem tudta szinkronizálni az adatokat, mert a fiók bejelentkezési adatai elavultak.</translation>
@@ -255,7 +250,6 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="91086099826398415">Link megnyi&amp;tása új Chromium-lapon</translation>
 <translation id="911206726377975832">Törli a böngészési adatait is?</translation>
 <translation id="9158494823179993217">Rendszergazdája úgy állította be a Chromiumot, hogy másik böngészőt nyisson meg a(z) <ph name="TARGET_URL_HOSTNAME" /> eléréséhez.</translation>
-<translation id="9164845895615421500">A Chromium hetente egyszer keres nemkívánatos szoftvereket. Legutóbb frissítve: az imént.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Előfordulhat, hogy a Chromium nem működik majd megfelelően, mert a továbbiakban már nem támogatja a következő rendszereket: Windows XP és Windows Vista</translation>
 <translation id="95514773681268843">A(z) <ph name="DOMAIN" /> megköveteli, hogy olvassa, majd fogadja el a következő Általános Szerződési Feltételeket, mielőtt használná ezt az eszközt. Ezek a feltételek nem bővítik, módosítják vagy korlátozzák a Chromium OS feltételeit.</translation>

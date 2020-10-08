@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium kyk een keer per week vir ongewenste sagteware. Laas nagegaan: 1 uur gelede.}other{Chromium kyk een keer per week vir ongewenste sagteware. Laas nagegaan: {NUM_HOURS} uur gelede.}}</translation>
 <translation id="1065672644894730302">Jou voorkeure kan nie gelees word nie.
 
 Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure sal nie gestoor word nie.</translation>
@@ -47,7 +46,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2711502716910134313">Chromium-oortjie</translation>
 <translation id="2718390899429598676">Chromium sal jou data enkripteer vir bykomende sekuriteit.</translation>
 <translation id="2770231113462710648">Verander verstekblaaier na:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromium kyk een keer per week vir ongewenste sagteware. Laas nagegaan: 1 minuut gelede.}other{Chromium kyk een keer per week vir ongewenste sagteware. Laas nagegaan: {NUM_MINS} minute gelede.}}</translation>
 <translation id="2799223571221894425">Begin weer</translation>
 <translation id="2847479871509788944">Verwyder uit Chromium …</translation>
 <translation id="2853765747879685679">Vra wanneer ek Chromium oopmaak</translation>
@@ -58,7 +56,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3032706164202344641">Chromium kan nie jou wagwoorde nagaan nie. Probeer later weer.</translation>
 <translation id="3032787606318309379">Voeg tans by Chromium …</translation>
 <translation id="3068515742935458733">Help om Chromium beter te maak deur omvalverslae en <ph name="UMA_LINK" /> na Google te stuur</translation>
-<translation id="3086207596048762442">Chromium kyk een keer per week vir ongewenste sagteware</translation>
 <translation id="3103660991484857065">Die installeerder kon nie die argief se saampersing omkeer nie. Laai Chromium asseblief weer af.</translation>
 <translation id="3130323860337406239">Chromium gebruik tans jou mikrofoon.</translation>
 <translation id="3155163173539279776">Herbegin Chromium</translation>
@@ -179,7 +176,6 @@ Sommige kenmerke sal dalk nie beskikbaar wees nie. Spesifiseer 'n ander profielg
 <translation id="6847869444787758381">Chromium sal jou laat weet as jou wagwoorde gekompromitteer is</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (na Chromium gekopieer)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium kyk een keer per week vir ongewenste sagteware. Laas nagegaan: 1 dag gelede.}other{Chromium kyk een keer per week vir ongewenste sagteware. Laas nagegaan: {NUM_DAYS} dae gelede.}}</translation>
 <translation id="6893813176749746474">Chromium is opgedateer, maar jy het dit vir minstens 30 dae nie gebruik nie.</translation>
 <translation id="6964305034639999644">Maak skakel in 'n incognitovenster in Chromium oop</translation>
 <translation id="6990124437352146030">Chromium het toestemming nodig om toegang te kry tot jou mikrofoon vir hierdie werf</translation>
@@ -244,7 +240,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8621669128220841554">Kon weens 'n ongespesifiseerde fout nie installeer nie. Laai Chromium asseblief weer af.</translation>
 <translation id="8697124171261953979">Dit beheer ook watter bladsy gewys word wanneer jy Chromium begin of vanuit die omnikassie soek.</translation>
 <translation id="8704119203788522458">Dit is jou Chromium</translation>
-<translation id="8705191560707593947">Chromium kyk een keer per week vir ongewenste sagteware. Laas nagegaan: gister.</translation>
 <translation id="8796602469536043152">Chromium het toestemming nodig om toegang te kry tot jou kamera en mikrofoon vir hierdie werf</translation>
 <translation id="8803635938069941624">Chromium-bedryfstel se bepalings</translation>
 <translation id="8821041990367117597">Chromium kon nie jou data sinkroniseer nie, want jou rekening se aanmeldbesonderhede is verouderd.</translation>
@@ -260,7 +255,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="91086099826398415">Maak skakel in 'n nuwe Chromium-oortjie oop</translation>
 <translation id="911206726377975832">Vee ook jou blaaidata uit?</translation>
 <translation id="9158494823179993217">Jou stelseladministrateur het Chromium opgestel om 'n alternatiewe blaaier oop te maak om na <ph name="TARGET_URL_HOSTNAME" /> toe te gaan.</translation>
-<translation id="9164845895615421500">Chromium kyk een keer per week vir ongewenste sagteware. Laas nagegaan: 'n oomblik gelede.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium sal dalk nie reg werk nie omdat dit nie meer in Windows XP en Windows Vista gesteun word nie</translation>
 <translation id="95514773681268843"><ph name="DOMAIN" /> vereis dat jy die volgende diensbepalings lees en aanvaar voor jy hierdie toestel gebruik. Hierdie bepalings verander, beperk of brei nie die Chromium-bedryfstelseldiensbepalings uit nie.</translation>

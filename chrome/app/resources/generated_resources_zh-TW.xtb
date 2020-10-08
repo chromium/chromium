@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">僅限選取的內容</translation>
 <translation id="1223484782328004593">「<ph name="APP_NAME" />」必須取得授權</translation>
 <translation id="1223853788495130632">管理員為這項設定推薦特定的值。</translation>
-<translation id="1224275271335624810">最快</translation>
 <translation id="1225177025209879837">正在處理要求...</translation>
 <translation id="1227507814927581609">驗證在連線至「<ph name="DEVICE_NAME" />」時失敗。</translation>
 <translation id="1230417814058465809">已啟用標準防護功能。如需更完整的安全防護，請使用強化防護功能。</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">手動註冊</translation>
 <translation id="1668979692599483141">瞭解建議功能</translation>
 <translation id="1670399744444387456">基本</translation>
-<translation id="167160931442925455">最大</translation>
 <translation id="1673137583248014546"><ph name="URL" /> 要求查看安全金鑰的製造商和型號</translation>
 <translation id="1677306805708094828">無法新增<ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> 後用盡</translation>
@@ -919,7 +917,6 @@
 <translation id="2046702855113914483">拉麵</translation>
 <translation id="204706822916043810">正在檢查虛擬機器</translation>
 <translation id="2048182445208425546">存取你的網路流量</translation>
-<translation id="2048243703055695889"><ph name="USER_EMAIL" /> 的裝置「<ph name="DEVICE_NAME" />」的鄰近分享設定。</translation>
 <translation id="2048653237708779538">無法執行操作</translation>
 <translation id="204914487372604757">建立捷徑</translation>
 <translation id="2050339315714019657">直向</translation>
@@ -1104,7 +1101,6 @@
 <translation id="2262477216570151239">重複前延遲時間</translation>
 <translation id="2263189956353037928">登出再重新登入</translation>
 <translation id="2263371730707937087">畫面重新整理頻率</translation>
-<translation id="2263497240924215535">(已停用)</translation>
 <translation id="22665427234727190">網站必須先詢問你，才能存取藍牙裝置 (建議)</translation>
 <translation id="2266957463645820432">USB 型 IPP (IPPUSB)</translation>
 <translation id="2270450558902169558">與 <ph name="DOMAIN" /> 網域中的任何裝置交換資料</translation>
@@ -2288,7 +2284,6 @@
 <translation id="3674840410592648165">網站可以安裝付款處理常式 (建議)</translation>
 <translation id="367645871420407123">如果您要將 Root 密碼設為測試映像檔的預設值，請保留空白</translation>
 <translation id="3677106374019847299">輸入自訂供應商</translation>
-<translation id="3677657024345889897">最小</translation>
 <translation id="3677911431265050325">切換為行動版網站</translation>
 <translation id="3677959414150797585">包括應用程式、網頁等。只有當你選擇提供使用資料時，系統才會傳送統計資料用來改善建議項目。</translation>
 <translation id="3678156199662914018">擴充功能：<ph name="EXTENSION_NAME" /></translation>
@@ -2477,7 +2472,6 @@
 <translation id="3867944738977021751">憑證欄位</translation>
 <translation id="3869917919960562512">錯誤的索引。</translation>
 <translation id="3870931306085184145">未儲存 <ph name="DOMAIN" /> 的密碼</translation>
-<translation id="3871092408932389764">最低</translation>
 <translation id="3871350334636688135">24 小時後，系統管理員會在你重新啟動裝置時執行一次性更新，而這項更新會刪除你的本機資料。請在 24 小時內將你需要的任何本機資料儲存至雲端儲存空間。</translation>
 <translation id="3872220884670338524">更多動作，<ph name="USERNAME" /> 在 <ph name="DOMAIN" /> 上儲存的帳戶</translation>
 <translation id="3872991219937722530">請釋出磁碟空間，否則裝置會無回應。</translation>
@@ -4233,7 +4227,6 @@
 <translation id="6025215716629925253">堆疊追蹤</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - 已連接 USB 裝置</translation>
 <translation id="6028117231645531007">新增指紋</translation>
-<translation id="6029587122245504742">最慢</translation>
 <translation id="6029594605736587274">已封鎖<ph name="PERMISSION" /></translation>
 <translation id="6031600495088157824">工具列中的輸入選項</translation>
 <translation id="6032715498678347852">如要授予擴充功能這個網站的存取權，請按一下該擴充功能。</translation>
@@ -4527,7 +4520,6 @@
 <translation id="6349101878882523185">安裝 <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">同步功能無法正常運作。請嘗試登出，再重新登入。</translation>
 <translation id="6351063337294363751">你可以使用這個選單清除瀏覽資料</translation>
-<translation id="6352773953037195952">最高</translation>
 <translation id="6354918092619878358">SECG 橢圓曲線 secp256r1 (亦稱為 ANSI X9.62 prime256v1、NIST P-256)</translation>
 <translation id="635609604405270300">請讓裝置保持開啟</translation>
 <translation id="63566973648609420">只有知道通關密語的使用者可以讀取你的加密資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果你忘記自己的通關密語，或是想變更這項設定，則必須<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" />。</translation>
@@ -5292,6 +5284,7 @@
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{這個應用程式可能會造成 Chrome 無法正常運作。}other{這些應用程式可能會造成 Chrome 無法正常運作。}}</translation>
 <translation id="7303281435234579599">糟糕！設定示範模式時出了點狀況。</translation>
 <translation id="7303900363563182677">這個網站無法讀取已複製到剪貼簿的文字和圖片</translation>
+<translation id="7304030187361489308">高</translation>
 <translation id="7305123176580523628">已連接 USB 印表機</translation>
 <translation id="730515362922783851">與區域網路或網際網路中的任何裝置交換資料</translation>
 <translation id="7306521477691455105">開啟「設定」頁面即可將「<ph name="USB_DEVICE_NAME" />」連接到「<ph name="USB_VM_NAME" />」</translation>

@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Apenas a seleção</translation>
 <translation id="1223484782328004593">A app <ph name="APP_NAME" /> requer uma licença</translation>
 <translation id="1223853788495130632">O gestor recomenda um valor específico para esta definição.</translation>
-<translation id="1224275271335624810">A mais rápida</translation>
 <translation id="1225177025209879837">A processar o pedido...</translation>
 <translation id="1227507814927581609">A autenticação falhou ao ligar a "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1230417814058465809">A proteção padrão está ativada. Para desfrutar de ainda mais segurança, utilize a proteção melhorada.</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">Inscrever-se manualmente</translation>
 <translation id="1668979692599483141">Saiba mais sobre sugestões</translation>
 <translation id="1670399744444387456">Básico</translation>
-<translation id="167160931442925455">O mais alto</translation>
 <translation id="1673137583248014546"><ph name="URL" /> pretende ver a marca e o modelo da sua Chave de segurança.</translation>
 <translation id="1677306805708094828">Não é possível adicionar <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> restante(s)</translation>
@@ -919,7 +917,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">A verificar a máquina virtual…</translation>
 <translation id="2048182445208425546">Aceder ao tráfego da sua rede</translation>
-<translation id="2048243703055695889">Definições da funcionalidade Partilhar com Nearby para o dispositivo de <ph name="USER_EMAIL" />, "<ph name="DEVICE_NAME" />".</translation>
 <translation id="2048653237708779538">Ação não disponível</translation>
 <translation id="204914487372604757">Criar atalho</translation>
 <translation id="2050339315714019657">Vertical</translation>
@@ -1104,7 +1101,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2262477216570151239">Atraso antes da repetição</translation>
 <translation id="2263189956353037928">Terminar sessão e voltar a iniciar sessão</translation>
 <translation id="2263371730707937087">Taxa de atualização do ecrã</translation>
-<translation id="2263497240924215535">(Desativada)</translation>
 <translation id="22665427234727190">Perguntar quando um site pretender aceder a dispositivos Bluetooth (recomendado)</translation>
 <translation id="2266957463645820432">IPP através de USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Trocar dados com qualquer dispositivo do domínio <ph name="DOMAIN" /></translation>
@@ -2289,7 +2285,6 @@ Pretende pará-lo?</translation>
 <translation id="3674840410592648165">Os sites podem instalar controladores de pagamentos (recomendado)</translation>
 <translation id="367645871420407123">deixe em branco se pretender definir a palavra-passe de raiz como o valor da imagem de teste predefinido.</translation>
 <translation id="3677106374019847299">Introduza o fornecedor personalizado.</translation>
-<translation id="3677657024345889897">O mais baixo</translation>
 <translation id="3677911431265050325">Pedir site para dispositivos móveis</translation>
 <translation id="3677959414150797585">Inclui apps, páginas Web e muito mais. Apenas envia estatísticas para melhorar as sugestões se tiver optado por partilhar os dados de utilização.</translation>
 <translation id="3678156199662914018">Extensão: <ph name="EXTENSION_NAME" /></translation>
@@ -2478,7 +2473,6 @@ Pretende pará-lo?</translation>
 <translation id="3867944738977021751">Campos do certificado</translation>
 <translation id="3869917919960562512">Índice errado.</translation>
 <translation id="3870931306085184145">Nenhuma palavra-passe guardada para <ph name="DOMAIN" />.</translation>
-<translation id="3871092408932389764">A mais baixa</translation>
 <translation id="3871350334636688135">Após 24 horas, o administrador irá efetuar uma atualização única que vai eliminar os seus dados locais quando reiniciar o dispositivo. Tem 24 horas para guardar todos os dados locais de que necessita no armazenamento na nuvem.</translation>
 <translation id="3872220884670338524">Mais ações, conta de <ph name="USERNAME" /> guardada em <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Liberte espaço em disco ou o dispositivo deixará de responder.</translation>
@@ -4236,7 +4230,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6025215716629925253">Rastreio de pilha</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – dispositivo USB ligado</translation>
 <translation id="6028117231645531007">Adicionar impressão digital</translation>
-<translation id="6029587122245504742">A mais lenta</translation>
 <translation id="6029594605736587274">bloqueou <ph name="PERMISSION" /></translation>
 <translation id="6031600495088157824">Opções de introdução na barra de ferramentas</translation>
 <translation id="6032715498678347852">Para conceder a uma extensão o acesso a este site, clique na mesma</translation>
@@ -4530,7 +4523,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6349101878882523185">Instale a aplicação <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">A sincronização não está a funcionar. Experimente terminar e iniciar sessão novamente.</translation>
 <translation id="6351063337294363751">Pode limpar os dados de navegação a partir deste menu</translation>
-<translation id="6352773953037195952">A mais alta</translation>
 <translation id="6354918092619878358">SECG de curva elíptica secp256r1 (também denominada ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Manter o dispositivo ativado</translation>
 <translation id="63566973648609420">Apenas alguém que conheça a sua frase de acesso pode ler os seus dados encriptados. A frase de acesso não é enviada para a Google nem armazenada pela mesma. Se se esquecer da frase de acesso ou pretender alterar esta definição, tem de <ph name="BEGIN_LINK" />repor a sincronização<ph name="END_LINK" />.</translation>
@@ -5295,6 +5287,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Esta aplicação pode impedir o funcionamento correto do Chrome.}other{Estas aplicações podem impedir o funcionamento correto do Chrome.}}</translation>
 <translation id="7303281435234579599">Ups! Ocorreu um erro ao configurar o modo de demonstração.</translation>
 <translation id="7303900363563182677">Este site foi impedido de ver o texto e as imagens copiados para a área de transferência.</translation>
+<translation id="7304030187361489308">Alta</translation>
 <translation id="7305123176580523628">Impressora USB ligada</translation>
 <translation id="730515362922783851">Trocar dados com qualquer dispositivo na rede local ou na Internet</translation>
 <translation id="7306521477691455105">Abra as Definições para ligar o dispositivo <ph name="USB_DEVICE_NAME" /> a <ph name="USB_VM_NAME" /></translation>

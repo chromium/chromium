@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium jednou týdně kontroluje, zda počítač neobsahuje nevyžádaný software. Naposledy zkontrolováno: před hodinou.}few{Chromium jednou týdně kontroluje, zda počítač neobsahuje nevyžádaný software. Naposledy zkontrolováno: před {NUM_HOURS} hodinami.}many{Chromium jednou týdně kontroluje, zda počítač neobsahuje nevyžádaný software. Naposledy zkontrolováno: před {NUM_HOURS} hodiny.}other{Chromium jednou týdně kontroluje, zda počítač neobsahuje nevyžádaný software. Naposledy zkontrolováno: před {NUM_HOURS} hodinami.}}</translation>
 <translation id="1065672644894730302">Nelze číst vaše nastavení.
 
 Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</translation>
@@ -47,7 +46,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2711502716910134313">Karta prohlížeče Chromium</translation>
 <translation id="2718390899429598676">V zájmu lepšího zabezpečení bude Chromium šifrovat vaše data.</translation>
 <translation id="2770231113462710648">Změnit výchozí prohlížeč na:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromium jednou týdně kontroluje, zda počítač neobsahuje nevyžádaný software. Naposledy zkontrolováno: před 1 minutou.}few{Chromium jednou týdně kontroluje, zda počítač neobsahuje nevyžádaný software. Naposledy zkontrolováno: před {NUM_MINS} minutami.}many{Chromium jednou týdně kontroluje, zda počítač neobsahuje nevyžádaný software. Naposledy zkontrolováno: před {NUM_MINS} minuty.}other{Chromium jednou týdně kontroluje, zda počítač neobsahuje nevyžádaný software. Naposledy zkontrolováno: před {NUM_MINS} minutami.}}</translation>
 <translation id="2799223571221894425">Restartovat</translation>
 <translation id="2847479871509788944">Odstranit z prohlížeče Chromium...</translation>
 <translation id="2853765747879685679">Při otevření prohlížeče Chromium se zeptat</translation>
@@ -58,7 +56,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3032706164202344641">Chromium nemůže zkontrolovat hesla. Zkuste to později.</translation>
 <translation id="3032787606318309379">Přidávání do prohlížeče Chromium...</translation>
 <translation id="3068515742935458733">Pomozte aplikaci Chromium zlepšovat tím, že budete společnosti Google zasílat zprávy o selhání a <ph name="UMA_LINK" />.</translation>
-<translation id="3086207596048762442">Chromium jednou týdně kontroluje, zda počítač neobsahuje nevyžádaný software</translation>
 <translation id="3103660991484857065">Instalačnímu programu se nepodařilo rozbalit archiv. Stáhněte prosím Chromium znovu.</translation>
 <translation id="3130323860337406239">Chromium používá váš mikrofon.</translation>
 <translation id="3155163173539279776">Restartovat Chromium</translation>
@@ -179,7 +176,6 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 <translation id="6847869444787758381">Pokud vaše hesla někdo prolomí, Chromium vás o tom bude informovat</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (zkopírováno do prohlížeče Chromium)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium jednou týdně kontroluje, zda počítač neobsahuje nevyžádaný software. Naposledy zkontrolováno: před 1 dnem.}few{Chromium jednou týdně kontroluje, zda počítač neobsahuje nevyžádaný software. Naposledy zkontrolováno: před {NUM_DAYS} dny.}many{Chromium jednou týdně kontroluje, zda počítač neobsahuje nevyžádaný software. Naposledy zkontrolováno: před {NUM_DAYS} dne.}other{Chromium jednou týdně kontroluje, zda počítač neobsahuje nevyžádaný software. Naposledy zkontrolováno: před {NUM_DAYS} dny.}}</translation>
 <translation id="6893813176749746474">Prohlížeč Chromium byl aktualizován, ale minimálně po 30 dnů jste jej nepoužili.</translation>
 <translation id="6964305034639999644">Otevřít odkaz v &amp;anonymním okně prohlížeče Chromium</translation>
 <translation id="6990124437352146030">Chromium pro tento web potřebuje oprávnění k přístupu k mikrofonu</translation>
@@ -243,7 +239,6 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8621669128220841554">Instalace se z neznámého důvodu nezdařila. Stáhněte prosím Chromium znovu.</translation>
 <translation id="8697124171261953979">Také řídí, která stránka se zobrazí po spuštění prohlížeče Chromium nebo při vyhledávání v omniboxu.</translation>
 <translation id="8704119203788522458">Toto je váš prohlížeč Chromium</translation>
-<translation id="8705191560707593947">Chromium jednou týdně kontroluje, zda počítač neobsahuje nevyžádaný software. Naposledy zkontrolováno: včera.</translation>
 <translation id="8796602469536043152">Chromium pro tento web potřebuje oprávnění k přístupu k fotoaparátu a mikrofonu</translation>
 <translation id="8803635938069941624">Smluvní podmínky systému Chromium OS</translation>
 <translation id="8821041990367117597">Prohlížeč Chromium nemůže synchronizovat data, protože vaše přihlašovací údaje k účtu jsou zastaralé.</translation>
@@ -259,7 +254,6 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="91086099826398415">Otevřít odkaz na nové kar&amp;tě prohlížeče Chromium</translation>
 <translation id="911206726377975832">Vymazat také všechna data procházení?</translation>
 <translation id="9158494823179993217">Administrátor systému nakonfiguroval prohlížeč Chromium tak, aby pro přístup k adrese <ph name="TARGET_URL_HOSTNAME" /> otevřel alternativní prohlížeč.</translation>
-<translation id="9164845895615421500">Chromium jednou týdně kontroluje, zda počítač neobsahuje nevyžádaný software. Naposledy zkontrolováno: před chvílí.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Prohlížeč Chromium nemusí fungovat správně, protože v systémech Windows XP a Windows Vista již není podporován</translation>
 <translation id="95514773681268843">Doména <ph name="DOMAIN" /> vyžaduje, abyste si před použitím tohoto zařízení přečetli následující smluvní podmínky a odsouhlasili je. Tyto smluvní podmínky nerozšiřují, neupravují ani neomezují smluvní podmínky systému Chromium OS.</translation>

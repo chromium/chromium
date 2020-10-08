@@ -723,7 +723,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6333140779060797560">Comparte a través de <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Encriptado</translation>
 <translation id="6341580099087024258">Preguntar onde gardar os ficheiros</translation>
-<translation id="6342069812937806050">Só agora</translation>
+<translation id="6342069812937806050">Agora mesmo</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> máis}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> máis}}</translation>
 <translation id="6345878117466430440">Marcar como lido</translation>
 <translation id="6364438453358674297">Queres eliminar a suxestión do historial?</translation>

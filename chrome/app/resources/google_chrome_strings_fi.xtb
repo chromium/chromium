@@ -23,7 +23,6 @@
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> on vaarallinen, joten Chrome on estänyt sen.</translation>
 <translation id="1597911401261118146">Jos haluat tarkistaa, ovatko salasanasi turvassa tietosuojaloukkauksilta ja muilta tietoturvaongelmilta, <ph name="BEGIN_LINK" />kirjaudu Chromeen<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Paransimme Chromen turvallisuutta poistamalla käytöstä sovelluksia, joita <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ei tarjoa ja jotka on voitu lisätä ilman lupaasi.</translation>
-<translation id="162448658176061655">Chrome tarkistaa ei-toivotut ohjelmistot kerran viikossa. Tarkistettu viimeksi hetki sitten.</translation>
 <translation id="162629503687514352">Chrome-käyttöjärjestelmä ei voinut synkronoida salasanojasi.</translation>
 <translation id="1628000112320670027">Ohjeita Chromen käyttöön</translation>
 <translation id="1662639173275167396">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee Chrome-käyttöjärjestelmää, kuten myös <ph name="BEGIN_LINK_LINUX_OSS" />Linuxia (beta)<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -143,7 +142,6 @@
 <translation id="4771048833395599659">Tämä tiedosto voi olla vaarallinen, joten Chrome on estänyt sen.</translation>
 <translation id="479167709087336770">Tämä käyttää samaa oikeinkirjoituksen tarkistusta kuin Google Haku. Selaimeen kirjoittamasi teksti lähetetään Googlelle. Voit vaihtaa valintasi milloin tahansa asetuksista.</translation>
 <translation id="4891791193823137474">Jätä Google Chrome käyntiin taustalle</translation>
-<translation id="489337168347244450">{NUM_DAYS,plural, =1{Chrome tarkistaa ei-toivotut ohjelmistot kerran viikossa. Tarkistettu viimeksi 1 päivä sitten.}other{Chrome tarkistaa ei-toivotut ohjelmistot kerran viikossa. Tarkistettu viimeksi {NUM_DAYS} päivää sitten.}}</translation>
 <translation id="4895437082222824641">Avaa linkki uudella Chromen välilehdellä</translation>
 <translation id="4953650215774548573">Aseta Google Chrome oletusselaimeksi</translation>
 <translation id="495931528404527476">Chromessa</translation>
@@ -185,7 +183,6 @@
 <translation id="6291549208091401781">Google Chrome on jo asennettuna kaikille tietokoneen käyttäjille.</translation>
 <translation id="6338556085225130112">Päivitetään Google Chromea.</translation>
 <translation id="6368958679917195344">Chrome-käyttöjärjestelmää tukee toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="6454142105866844106">Chrome tarkistaa ei-toivotut ohjelmistot kerran viikossa</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6566149418543181476">Päivitetään Google Chromea (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6676384891291319759">Käytä internetiä</translation>
@@ -204,13 +201,11 @@
 <translation id="7106741999175697885">Tehtävänhallinta - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Uusi Chrome-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen.}=1{Uusi Chrome-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen. Incognito-ikkunaasi ei avata uudelleen.}other{Uusi Chrome-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen. # incognito-ikkunaasi ei avata uudelleen.}}</translation>
 <translation id="7155997830309522122">Jos vaihdoit, päivitä muutos Chromen tallennettuihin salasanoihin.</translation>
-<translation id="7236955538461508933">{NUM_HOURS,plural, =1{Chrome tarkistaa ei-toivotut ohjelmistot kerran viikossa. Tarkistettu viimeksi 1 tunti sitten.}other{Chrome tarkistaa ei-toivotut ohjelmistot kerran viikossa. Tarkistettu viimeksi {NUM_HOURS} tuntia sitten}}</translation>
 <translation id="7242029209006116544">Olet kirjautumassa sisään hallinnoidulla tilillä ja antamassa tilin järjestelmänvalvojalle oikeuden hallita Google Chrome -profiiliasi. Chrome-tietosi, kuten sovelluksesi, kirjanmerkkisi, historiasi, salasanasi ja muut asetuksesi, yhdistetään pysyvästi käyttäjätiliin <ph name="USER_NAME" />. Voit poistaa nämä tiedot Google-tilien Hallintapaneelissa, mutta et voi liittää tietoja toiseen tiliin. Voit myös halutessasi luoda uuden profiilin, jos haluat pitää aiemmat Chrome-tietosi erillään. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Google Chrome ‑käyttöliittymä näytetään tällä kielellä</translation>
 <translation id="7296210096911315575">Tärkeää käyttö- ja turvallisuustietoa</translation>
 <translation id="7308322188646931570">Chrome tarvitsee tallennustilan käyttöoikeuden tiedostojen lataamiseen.</translation>
 <translation id="7339898014177206373">Uusi ikkuna</translation>
-<translation id="7386132805935307836">Chrome tarkistaa ei-toivotut ohjelmistot kerran viikossa. Tarkistettu viimeksi eilen.</translation>
 <translation id="7398801000654795464">Chromeen kirjautunut käyttäjä: <ph name="USER_EMAIL_ADDRESS" />. Kirjaudu uudelleen sisään samalla tilillä.</translation>
 <translation id="7408085963519505752">Chrome-käyttöjärjestelmän käyttöehdot</translation>
 <translation id="7419046106786626209">Chrome-käyttöjärjestelmä ei voinut synkronoida tietoja, koska synkronointi ei ole käytettävissä verkkotunnuksessasi.</translation>
@@ -245,7 +240,6 @@
 <translation id="828798499196665338">Vanhempasi ovat laittaneet Chromen sivustojen, sovellusten ja laajennusten käyttöluvat pois päältä. Käyttöönottoa (<ph name="EXTENSION_TYPE_PARAMETER" />) ei sallita.</translation>
 <translation id="8290100596633877290">Hups! Google Chrome kaatui. Käynnistetäänkö uudelleen?</translation>
 <translation id="8342675569599923794">Tämä tiedosto on vaarallinen, joten Chrome on estänyt sen.</translation>
-<translation id="8344083974188970894">{NUM_MINS,plural, =1{Chrome tarkistaa ei-toivotut ohjelmistot kerran viikossa. Tarkistettu viimeksi 1 minuutti sitten.}other{Chrome tarkistaa ei-toivotut ohjelmistot kerran viikossa. Tarkistettu viimeksi {NUM_MINS} minuuttia sitten.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Kaikki oikeudet pidätetään.</translation>
 <translation id="840084489713044809">Google Chrome yrittää viedä salasanojasi tiedostoon.</translation>
 <translation id="8433638294851456451">Jos haluat lähettää numeron täältä Android-puhelimeesi, kirjaudu Chromeen molemmilla laitteilla.</translation>

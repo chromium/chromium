@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Samo izbor</translation>
 <translation id="1223484782328004593">Aplikacija <ph name="APP_NAME" /> zahteva licenco</translation>
 <translation id="1223853788495130632">Skrbnik priporoča za to nastavitev posebno vrednost.</translation>
-<translation id="1224275271335624810">Najhitrejša</translation>
 <translation id="1225177025209879837">Obdelava zahteve ...</translation>
 <translation id="1227507814927581609">Med povezovanjem z napravo »<ph name="DEVICE_NAME" />« ni uspelo preverjanje pristnosti.</translation>
 <translation id="1230417814058465809">Standardna zaščita je vklopljena. Za večjo varnost uporabite izboljšano zaščito.</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">Ročna včlanitev</translation>
 <translation id="1668979692599483141">Preberite več o predlogih</translation>
 <translation id="1670399744444387456">Osnovno</translation>
-<translation id="167160931442925455">Najglasneje</translation>
 <translation id="1673137583248014546"><ph name="URL" /> si želi ogledati znamko in model varnostnega ključa</translation>
 <translation id="1677306805708094828">Ni mogoče dodati tega: <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Še <ph name="TIME" /></translation>
@@ -919,7 +917,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">Preverjanje navideznega računalnika</translation>
 <translation id="2048182445208425546">Dostop do vašega omrežnega prometa</translation>
-<translation id="2048243703055695889">Nastavitve Deljenja v bližini za napravo uporabnika <ph name="USER_EMAIL" />, »<ph name="DEVICE_NAME" />«.</translation>
 <translation id="2048653237708779538">Dejanje ni na voljo</translation>
 <translation id="204914487372604757">Ustvari bližnjico</translation>
 <translation id="2050339315714019657">Pokončno</translation>
@@ -1104,7 +1101,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2262477216570151239">Zakasnitev pred ponovitvijo</translation>
 <translation id="2263189956353037928">Odjava in vnovična prijava</translation>
 <translation id="2263371730707937087">Hitrost osveževanja zaslona</translation>
-<translation id="2263497240924215535">(onemogočeno)</translation>
 <translation id="22665427234727190">Vprašaj, ko želi spletno mesto dostopati do naprav Bluetooth (priporočeno)</translation>
 <translation id="2266957463645820432">IPP prek USB-ja (IPPUSB)</translation>
 <translation id="2270450558902169558">Izmenjava podatkov z vsemi napravami v domeni: <ph name="DOMAIN" /></translation>
@@ -2289,7 +2285,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3674840410592648165">Spletna mesta lahko namestijo rutine za obravnavo plačil (priporočeno)</translation>
 <translation id="367645871420407123">pustite prazno, če želite korensko geslo nastaviti na privzeto vrednost preskusne slike</translation>
 <translation id="3677106374019847299">Vnesite ponudnika po meri</translation>
-<translation id="3677657024345889897">Najtišje</translation>
 <translation id="3677911431265050325">Zahtevaj spletno mesto za mobilno napravo</translation>
 <translation id="3677959414150797585">Vključuje aplikacije, spletne strani in drugo. Pošilja statistične podatke zaradi izboljšanja predlogov, samo če ste izbrali deljenje podatkov o uporabi.</translation>
 <translation id="3678156199662914018">Razširitev: <ph name="EXTENSION_NAME" /></translation>
@@ -2478,7 +2473,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3867944738977021751">Polja potrdila</translation>
 <translation id="3869917919960562512">Napačen indeks.</translation>
 <translation id="3870931306085184145">Ni shranjenih gesel za <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">Najnižja</translation>
 <translation id="3871350334636688135">Po 24 urah bo skrbnik opravil enkratno posodobitev, s katero bodo izbrisani lokalni podatki, ko znova zaženete napravo. Vse lokalne podatke, ki jih potrebujete, v 24 urah shranite v shrambo v oblaku.</translation>
 <translation id="3872220884670338524">Več dejanj, shranjen račun za uporabnika <ph name="USERNAME" /> v domeni <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Sprostite prostor na disku, sicer bo postala naprava neodzivna.</translation>
@@ -2510,7 +2504,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3901991538546252627">Vzpostavljanje povezave z omrežjem <ph name="NAME" /></translation>
 <translation id="3904326018476041253">Lokacijske storitve</translation>
 <translation id="3905761538810670789">Popravi aplikacijo</translation>
-<translation id="3908393983276948098">Vtičnik <ph name="PLUGIN_NAME" /> je zastarel.</translation>
+<translation id="3908393983276948098">Vtičnik <ph name="PLUGIN_NAME" /> je zastarel</translation>
 <translation id="3908501907586732282">Omogoči razširitev</translation>
 <translation id="3909791450649380159">Izrež&amp;i</translation>
 <translation id="39103738135459590">Koda za aktiviranje</translation>
@@ -4237,7 +4231,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6025215716629925253">Sledenje sklada</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – naprava USB povezana</translation>
 <translation id="6028117231645531007">Dodaj prstni odtis</translation>
-<translation id="6029587122245504742">Najpočasnejša</translation>
 <translation id="6029594605736587274">blokirano je dovoljenje <ph name="PERMISSION" /></translation>
 <translation id="6031600495088157824">Možnosti vnosa v orodni vrstici</translation>
 <translation id="6032715498678347852">Če želite razširitvi odobriti dostop do tega spletnega mesta, jo kliknite.</translation>
@@ -4531,7 +4524,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6349101878882523185">Namestite <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Sinhronizacija ne deluje. Poskusite se odjaviti in znova prijaviti.</translation>
 <translation id="6351063337294363751">Podatke o brskanju lahko izbrišete v tem meniju</translation>
-<translation id="6352773953037195952">Najvišja</translation>
 <translation id="6354918092619878358">Eliptična krivulja SECG secp256r1 (oziroma ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Naprava naj ostane vklopljena</translation>
 <translation id="63566973648609420">Vaše šifrirane podatke lahko bere samo oseba z vašim geslom. Geslo ni poslano Googlu in ni shranjeno v Googlu. Če ga pozabite ali če želite spremeniti to nastavitev, boste morali <ph name="BEGIN_LINK" />sinhronizacijo ponastaviti<ph name="END_LINK" />.</translation>
@@ -5296,6 +5288,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Ta aplikacija bi lahko Chromu preprečila normalno delovanje.}one{Te aplikacije bi lahko Chromu preprečile normalno delovanje.}two{Te aplikacije bi lahko Chromu preprečile normalno delovanje.}few{Te aplikacije bi lahko Chromu preprečile normalno delovanje.}other{Te aplikacije bi lahko Chromu preprečile normalno delovanje.}}</translation>
 <translation id="7303281435234579599">Ojoj. Pri nastavljanju predstavitvenega načina je prišlo do napake.</translation>
 <translation id="7303900363563182677">Temu spletnemu mestu je preprečen ogled besedila in slik, shranjenih v odložišče</translation>
+<translation id="7304030187361489308">Visoka</translation>
 <translation id="7305123176580523628">Tiskalnik USB je povezan</translation>
 <translation id="730515362922783851">Izmenjava podatkov s poljubno napravo v lokalnem omrežju ali internetu</translation>
 <translation id="7306521477691455105">Odprite nastavitve, če želite povezati napravo <ph name="USB_DEVICE_NAME" /> z napravo <ph name="USB_VM_NAME" /></translation>

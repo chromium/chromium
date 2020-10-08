@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium, istenmeyen yazılımları haftada bir kontrol eder. Son kontrol: 1 saat önce.}other{Chromium, istenmeyen yazılımları haftada bir kontrol eder. Son kontrol: {NUM_HOURS} saat önce.}}</translation>
 <translation id="1065672644894730302">Tercihleriniz okunamıyor. Bazı özellikler kullanılamayabilir. Tercihlerde yapılan değişiklikler kaydedilmeyecektir.</translation>
 <translation id="107513968719897256">Kişisel hesaptan ve <ph name="NEW_USER" /> hesabından yapılan göz atma işlemlerini birbirinden ayırmak için Chromium'da yeni profil oluşturun</translation>
 <translation id="1098170124587656448">Chromium veri ihlallerine, kötü uzantılara ve diğer tehditlere karşı güvende kalmanıza yardımcı olabilir</translation>
@@ -45,7 +44,6 @@
 <translation id="2711502716910134313">Chromium Sekmesi</translation>
 <translation id="2718390899429598676">Chromium ek güvenlik için verilerinizi şifreler.</translation>
 <translation id="2770231113462710648">Varsayılan tarayıcıyı şuna dönüştür:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromium, istenmeyen yazılımları haftada bir kontrol eder. Son kontrol: 1 dakika önce.}other{Chromium, istenmeyen yazılımları haftada bir kontrol eder. Son kontrol: {NUM_MINS} dakika önce.}}</translation>
 <translation id="2799223571221894425">Yeniden başlat</translation>
 <translation id="2847479871509788944">Chromium'dan kaldır...</translation>
 <translation id="2853765747879685679">Chromium'u açtığımda sor</translation>
@@ -56,7 +54,6 @@
 <translation id="3032706164202344641">Chromium, şifrelerinizi kontrol edemiyor. Daha sonra tekrar deneyin.</translation>
 <translation id="3032787606318309379">Chromium'a ekleniyor ...</translation>
 <translation id="3068515742935458733">Kilitlenme raporlarını ve <ph name="UMA_LINK" /> bilgilerini Google'a göndererek, Chromium'u daha iyi hale getirmeye yardımcı olun</translation>
-<translation id="3086207596048762442">Chromium, istenmeyen yazılımları haftada bir kontrol eder</translation>
 <translation id="3103660991484857065">Yükleyici sıkıştırılmış arşivi açamadı. Lütfen Chromium'u yeniden indirin.</translation>
 <translation id="3130323860337406239">Chromium mikrofonunuzu kullanıyor.</translation>
 <translation id="3155163173539279776">Chromium'u Yeniden Başlat</translation>
@@ -175,7 +172,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6847869444787758381">Chromium, şifrelerinizin güvenliğinin ihlal edilip edilmediğini size bildirir</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium'a kopyalandı)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium, istenmeyen yazılımları haftada bir kontrol eder. Son kontrol: 1 gün önce.}other{Chromium, istenmeyen yazılımları haftada bir kontrol eder. Son kontrol: {NUM_DAYS} gün önce.}}</translation>
 <translation id="6893813176749746474">Chromium güncellendi, ancak programı en azından 30 gündür kullanmıyorsunuz.</translation>
 <translation id="6964305034639999644">Bağlantıyı Chromium &amp;gizli penceresinde aç</translation>
 <translation id="6990124437352146030">Chromium'un bu sitede mikrofonunuza erişmesi için izin gerekiyor</translation>
@@ -240,7 +236,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8621669128220841554">Yükleme belirtilmeyen bir hata nedeniyle başarısız oldu. Lütfen Chromium'u tekrar indirin.</translation>
 <translation id="8697124171261953979">Ayrıca Chromium'u başlattığınızda veya Çok Amaçlı Adres Çubuğu'ndan arama yaptığınızda gösterilecek sayfayı da denetler.</translation>
 <translation id="8704119203788522458">Bu sizin Chromium'unuz</translation>
-<translation id="8705191560707593947">Chromium, istenmeyen yazılımları haftada bir kontrol eder. Son kontrol: Dün.</translation>
 <translation id="8796602469536043152">Chromium'un bu sitede kameranıza ve mikrofonunuza erişmesi için izin gerekiyor</translation>
 <translation id="8803635938069941624">Chromium OS şartları</translation>
 <translation id="8821041990367117597">Hesap oturum açma ayrıntılarınız güncel olmadığından Chromium, verilerinizi senkronize edemedi.</translation>
@@ -256,7 +251,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="91086099826398415">Bağlantıyı Yeni Chromium &amp;sekmesinde aç</translation>
 <translation id="911206726377975832">Tarama verileriniz de silinsin mi?</translation>
 <translation id="9158494823179993217">Sistem yöneticiniz, Chromium'u, <ph name="TARGET_URL_HOSTNAME" /> sitesini alternatif bir tarayıcıda açacak şekilde yapılandırmış.</translation>
-<translation id="9164845895615421500">Chromium, istenmeyen yazılımları haftada bir kontrol eder. Son kontrol: Biraz önce.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium artık Windows XP veya Windows Vista üzerinde desteklenmediği için doğru şekilde çalışmayabilir</translation>
 <translation id="95514773681268843"><ph name="DOMAIN" />, bu cihazı kullanmadan önce aşağıdaki Hizmet Şartları'nı okuyup kabul etmenizi gerektirmektedir. Bu şartlar, Chromium OS Şartları'nın kapsamını genişletmez, değiştirmez veya sınırlamaz.</translation>

@@ -112,7 +112,7 @@
 <translation id="1123753900084781868">Die Funktion "Automatische Untertitel" ist derzeit nicht verfügbar</translation>
 <translation id="1124772482545689468">Nutzer</translation>
 <translation id="1125550662859510761">Auflösung <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativ)</translation>
-<translation id="1126809382673880764">Schützt Sie nicht vor schädlichen Websites, Downloads und Erweiterungen. Sofern verfügbar, sind Sie in anderen Google-Diensten, wie Gmail und der Google Suche, weiterhin durch Safe Browsing geschützt.</translation>
+<translation id="1126809382673880764">Sie werden nicht vor schädlichen Websites, Downloads und Erweiterungen geschützt. Sofern verfügbar, sind Sie in anderen Google-Diensten, wie Gmail und der Google Suche, durch Safe Browsing geschützt.</translation>
 <translation id="112752777279960360">Wenn Sie zum ersten Mal ein Android-Smartphone als Sicherheitsschlüssel für diesen Computer einrichten, öffnen Sie Chrome auf dem Smartphone und tippen Sie auf "Einstellungen" &gt; "Passwörter" &gt; "Smartphone als Sicherheitsschlüssel verwenden". Tippen Sie dann auf "Neues Gerät verbinden" und scannen Sie diesen QR-Code.</translation>
 <translation id="1128109161498068552">Websites nicht gestatten, mittels systemexklusiver Meldungen auf MIDI-Geräte zuzugreifen</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Nur Auswahl</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> benötigt eine Lizenz</translation>
 <translation id="1223853788495130632">Ihr Administrator empfiehlt einen bestimmten Wert für diese Einstellung.</translation>
-<translation id="1224275271335624810">Schnellste</translation>
 <translation id="1225177025209879837">Ihre Anfrage wird verarbeitet...</translation>
 <translation id="1227507814927581609">Beim Herstellen der Verbindung zu "<ph name="DEVICE_NAME" />" ist ein Authentifizierungsfehler aufgetreten.</translation>
 <translation id="1230417814058465809">Standardschutz ist aktiviert. Der erweiterte Schutz bietet noch mehr Sicherheit.</translation>
@@ -595,7 +594,6 @@
 <translation id="1668435968811469751">Manuell anmelden</translation>
 <translation id="1668979692599483141">Weitere Informationen zu Vorschlägen</translation>
 <translation id="1670399744444387456">Grundlegend</translation>
-<translation id="167160931442925455">Am lautesten</translation>
 <translation id="1673137583248014546"><ph name="URL" /> möchte den Hersteller und das Modell Ihres Sicherheitsschlüssels aufrufen</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> kann nicht hinzugefügt werden</translation>
 <translation id="1677472565718498478">Verbleibende Zeit: <ph name="TIME" /> h</translation>
@@ -916,7 +914,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">Die virtuelle Maschine wird geprüft</translation>
 <translation id="2048182445208425546">Auf Ihren Netzwerkverkehr zugreifen</translation>
-<translation id="2048243703055695889">Nearby Share-Einstellungen für das Gerät "<ph name="DEVICE_NAME" />" von <ph name="USER_EMAIL" />.</translation>
 <translation id="2048653237708779538">Aktion nicht verfügbar</translation>
 <translation id="204914487372604757">Verknüpfung erstellen</translation>
 <translation id="2050339315714019657">Hochformat</translation>
@@ -1101,7 +1098,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2262477216570151239">Verzögerung vor Wiederholung</translation>
 <translation id="2263189956353037928">Abmelden und wieder anmelden</translation>
 <translation id="2263371730707937087">Bildschirmaktualisierungsrate</translation>
-<translation id="2263497240924215535">(Deaktiviert)</translation>
 <translation id="22665427234727190">Nachfragen, wenn eine Website auf Bluetooth-Geräte zugreifen möchte (empfohlen)</translation>
 <translation id="2266957463645820432">IPP über USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Daten mit einem beliebigen Gerät in der Domain "<ph name="DOMAIN" />" austauschen</translation>
@@ -2285,7 +2281,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3674840410592648165">Websites dürfen Zahlungs-Handler installieren (empfohlen)</translation>
 <translation id="367645871420407123">Leer lassen, wenn Sie für das Root-Passwort den Standardtestwert festlegen möchten</translation>
 <translation id="3677106374019847299">Benutzerdefinierten Anbieter eingeben</translation>
-<translation id="3677657024345889897">Am leisesten</translation>
 <translation id="3677911431265050325">Mobile Version anfordern</translation>
 <translation id="3677959414150797585">Das kann u. a. Apps und Webseiten einschließen. Statistiken zur Verbesserung von Vorschlägen werden nur gesendet, wenn Sie der Freigabe von Nutzungsdaten zugestimmt haben.</translation>
 <translation id="3678156199662914018">Erweiterung: <ph name="EXTENSION_NAME" /></translation>
@@ -2474,7 +2469,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3867944738977021751">Zertifikatfelder</translation>
 <translation id="3869917919960562512">Falscher Index</translation>
 <translation id="3870931306085184145">Keine gespeicherten Passwörter für <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">Niedrigste</translation>
 <translation id="3871350334636688135">Nach 24 Stunden führt Ihr Administrator ein einmaliges Update durch, bei dem Ihre lokalen Daten gelöscht werden, wenn Sie Ihr Gerät neu starten. Speichern Sie alle lokalen Daten, die Sie benötigen, innerhalb von 24 Stunden in Cloud-Speicher.</translation>
 <translation id="3872220884670338524">Weitere Aktionen; gespeichertes Konto für <ph name="USERNAME" /> in <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Geben Sie Speicherplatz frei oder Ihr Gerät reagiert nicht mehr.</translation>
@@ -4231,7 +4225,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6025215716629925253">Stacktrace</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB-Gerät verbunden</translation>
 <translation id="6028117231645531007">Fingerabdruck hinzufügen</translation>
-<translation id="6029587122245504742">Langsamste</translation>
 <translation id="6029594605736587274"><ph name="PERMISSION" /> blockiert</translation>
 <translation id="6031600495088157824">Eingabeoptionen in Symbolleiste</translation>
 <translation id="6032715498678347852">Wenn eine Erweiterung Zugriff auf diese Website haben soll, klicken Sie sie an.</translation>
@@ -4525,7 +4518,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> installieren</translation>
 <translation id="6349170655202535379">Die Synchronisierung funktioniert nicht. Melden Sie sich ab und dann wieder an.</translation>
 <translation id="6351063337294363751">Über dieses Menü können Sie Ihre Browserdaten löschen</translation>
-<translation id="6352773953037195952">Höchste</translation>
 <translation id="6354918092619878358">Elliptische SECG-Kurve secp256r1 (ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Gerät eingeschaltet lassen</translation>
 <translation id="63566973648609420">Nur Personen mit Ihrer Passphrase können Ihre verschlüsselten Daten lesen. Die Passphrase wird nicht an Google gesendet oder von Google gespeichert. Falls Sie sie vergessen oder diese Einstellung ändern möchten, müssen Sie die <ph name="BEGIN_LINK" />Synchronisierung zurücksetzen<ph name="END_LINK" />.</translation>
@@ -4942,7 +4934,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6876469544038980967">Nicht hilfreich</translation>
 <translation id="6878422606530379992">Sensorennutzung erlaubt</translation>
 <translation id="6880587130513028875">Bilder wurden auf dieser Seite blockiert.</translation>
-<translation id="6882836635272038266">Standardschutz vor Websites, Downloads und Erweiterungen, die bekannterweise schädlich sind.</translation>
+<translation id="6882836635272038266">Standardschutz vor Websites, Downloads und Erweiterungen, die als schädlich bekannt sind.</translation>
 <translation id="6883319974225028188">Hoppla! Das System konnte die Gerätekonfiguration nicht speichern.</translation>
 <translation id="6885771755599377173">Vorschau der Systeminformationen</translation>
 <translation id="6886476658664859389">NFC-Sicherheitsschlüssel</translation>
@@ -5290,6 +5282,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Diese Anwendung könnte verhindern, dass Chrome wie vorgesehen funktioniert.}other{Diese Anwendungen könnten verhindern, dass Chrome wie vorgesehen funktioniert.}}</translation>
 <translation id="7303281435234579599">Beim Einrichten des Demomodus ist ein Fehler aufgetreten.</translation>
 <translation id="7303900363563182677">Diese Website wurde daran gehindert, Texte und Bilder aus der Zwischenablage abzurufen</translation>
+<translation id="7304030187361489308">Hoch</translation>
 <translation id="7305123176580523628">USB-Drucker verbunden</translation>
 <translation id="730515362922783851">Daten mit einem beliebigen Gerät im lokalen Netzwerk oder Internet austauschen</translation>
 <translation id="7306521477691455105">Bitte die Einstellungenöffnen, um <ph name="USB_DEVICE_NAME" /> mit <ph name="USB_VM_NAME" /> zu verbinden</translation>
@@ -5658,7 +5651,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7742706086992565332">Sie können bei bestimmten Websites die maximale oder minimale Vergrößerungsstufe für die Websitedarstellung festlegen</translation>
 <translation id="774377079771918250">Speicherort auswählen</translation>
 <translation id="7744047395460924128">Druckverlauf anzeigen</translation>
-<translation id="7744192722284567281">Bei Datenpanne entdeckt</translation>
+<translation id="7744192722284567281">Bei Datenpanne gefunden</translation>
 <translation id="7750228210027921155">Bild im Bild</translation>
 <translation id="7751260505918304024">Alle anzeigen</translation>
 <translation id="7753735457098489144">Die Installation ist fehlgeschlagen, weil nicht genügend Speicherplatz vorhanden ist. Löschen Sie Dateien aus dem Gerätespeicher, um Speicherplatz freizugeben.</translation>

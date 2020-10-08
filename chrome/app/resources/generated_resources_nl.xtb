@@ -202,10 +202,9 @@
 <translation id="1221825588892235038">Alleen selectie</translation>
 <translation id="1223484782328004593">Je hebt een licentie nodig voor <ph name="APP_NAME" /></translation>
 <translation id="1223853788495130632">Je beheerder raadt een specifieke waarde aan voor deze instelling.</translation>
-<translation id="1224275271335624810">Snelst</translation>
 <translation id="1225177025209879837">Je verzoek wordt verwerkt...</translation>
 <translation id="1227507814927581609">Verificatie mislukt tijdens verbinden met '<ph name="DEVICE_NAME" />'.</translation>
-<translation id="1230417814058465809">Standaardbeveiliging is ingeschakeld. Gebruik verbeterde beveiliging voor nog meer bescherming.</translation>
+<translation id="1230417814058465809">Standaardbeveiliging staat aan. Gebruik geoptimaliseerde beveiliging voor nog meer bescherming.</translation>
 <translation id="1231733316453485619">Synchronisatie inschakelen?</translation>
 <translation id="1232569758102978740">Naamloos</translation>
 <translation id="1233497634904001272">Tik opnieuw op de beveiligingssleutel om het verzoek te voltooien.</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">Handmatig inschrijven</translation>
 <translation id="1668979692599483141">Meer informatie over suggesties</translation>
 <translation id="1670399744444387456">Basis</translation>
-<translation id="167160931442925455">Luidst</translation>
 <translation id="1673137583248014546"><ph name="URL" /> wil het merk en het model van je beveiligingssleutel bekijken</translation>
 <translation id="1677306805708094828">Kan <ph name="EXTENSION_TYPE_PARAMETER" /> niet toevoegen</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> resterend</translation>
@@ -919,7 +917,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2046702855113914483">Noedelsoep</translation>
 <translation id="204706822916043810">De virtuele machine wordt gecontroleerd</translation>
 <translation id="2048182445208425546">Toegang tot je netwerkverkeer</translation>
-<translation id="2048243703055695889">Instellingen voor 'Dichtbij delen' voor het apparaat van <ph name="USER_EMAIL" />, '<ph name="DEVICE_NAME" />'.</translation>
 <translation id="2048653237708779538">Actie niet beschikbaar</translation>
 <translation id="204914487372604757">Snelle link maken</translation>
 <translation id="2050339315714019657">Staand</translation>
@@ -1104,7 +1101,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2262477216570151239">Vertraging vóór herhaling</translation>
 <translation id="2263189956353037928">Uitloggen en weer inloggen</translation>
 <translation id="2263371730707937087">Vernieuwingssnelheid van het scherm</translation>
-<translation id="2263497240924215535">(Uitgeschakeld)</translation>
 <translation id="22665427234727190">Vragen als een site toegang wil krijgen tot bluetooth-apparaten (aanbevolen)</translation>
 <translation id="2266957463645820432">IPP over USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Gegevens uitwisselen met elk apparaat in het domein <ph name="DOMAIN" /></translation>
@@ -2289,7 +2285,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3674840410592648165">Sites kunnen betalingshandlers installeren (aanbevolen)</translation>
 <translation id="367645871420407123">laat dit leeg als je het rootwachtwoord wilt instellen op de waarde van de standaard testimage</translation>
 <translation id="3677106374019847299">Geef een aangepaste provider op</translation>
-<translation id="3677657024345889897">Stilst</translation>
 <translation id="3677911431265050325">Mobiele site opvragen</translation>
 <translation id="3677959414150797585">Omvat apps, webpagina's en meer. Stuurt alleen statistieken om suggesties te verbeteren als je ervoor hebt gekozen gebruiksgegevens te delen.</translation>
 <translation id="3678156199662914018">Extensie: <ph name="EXTENSION_NAME" /></translation>
@@ -2478,7 +2473,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3867944738977021751">Certificaatvelden</translation>
 <translation id="3869917919960562512">Verkeerde index.</translation>
 <translation id="3870931306085184145">Geen opgeslagen wachtwoorden voor <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">Laagste</translation>
 <translation id="3871350334636688135">Na 24 uur voert je beheerder een update uit waarmee je lokale gegevens worden verwijderd wanneer je het apparaat opnieuw opstart. Sla lokale gegevens die je nodig hebt, binnen 24 uur op in de cloudopslag.</translation>
 <translation id="3872220884670338524">Meer acties, opgeslagen account voor <ph name="USERNAME" /> op <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Maak schijfruimte vrij om te voorkomen dat het apparaat niet meer reageert.</translation>
@@ -3674,7 +3668,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5352033265844765294">Tijdstempel</translation>
 <translation id="5353252989841766347">Wachtwoorden exporteren uit Chrome</translation>
 <translation id="5355099869024327351">Hiermee kan de Assistent meldingen aan jou weergeven</translation>
-<translation id="5355191726083956201">Verbeterde beveiliging is ingeschakeld</translation>
+<translation id="5355191726083956201">Geoptimaliseerde beveiliging staat aan</translation>
 <translation id="5355926466126177564">De extensie '<ph name="EXTENSION_NAME" />' heeft gewijzigd welke pagina wordt weergegeven wanneer je vanuit de omnibox zoekt.</translation>
 <translation id="5359910752122114278">1 resultaat</translation>
 <translation id="5360150013186312835">In werkbalk weergeven</translation>
@@ -4235,7 +4229,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6025215716629925253">Stack-tracering</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" />: USB-apparaat verbonden</translation>
 <translation id="6028117231645531007">Vingerafdruk toevoegen</translation>
-<translation id="6029587122245504742">Langzaamst</translation>
 <translation id="6029594605736587274"><ph name="PERMISSION" /> geblokkeerd</translation>
 <translation id="6031600495088157824">Invoeropties in werkbalk</translation>
 <translation id="6032715498678347852">Klik op een extensie om de extensie toegang tot deze site te geven.</translation>
@@ -4529,7 +4522,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6349101878882523185"><ph name="APP_NAME" /> installeren</translation>
 <translation id="6349170655202535379">Synchronisatie werkt niet. Probeer uit en weer in te loggen.</translation>
 <translation id="6351063337294363751">Je kunt je browsergegevens wissen vanuit dit menu</translation>
-<translation id="6352773953037195952">Hoogste</translation>
 <translation id="6354918092619878358">Elliptische SECG-kromme secp256r1 (ook wel ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Apparaat ingeschakeld laten</translation>
 <translation id="63566973648609420">Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtwoordzin wordt niet verzonden naar of opgeslagen door Google. Als je je wachtwoordzin vergeet of deze instelling wilt wijzigen, moet je de <ph name="BEGIN_LINK" />synchronisatie resetten<ph name="END_LINK" />.</translation>
@@ -4957,7 +4949,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6897363604023044284">Sites kiezen om te wissen</translation>
 <translation id="6898440773573063262">Kiosk-apps kunnen nu worden geconfigureerd voor automatisch starten op dit apparaat.</translation>
 <translation id="6900284862687837908">Achtergrond-app: <ph name="BACKGROUND_APP_URL" /></translation>
-<translation id="6900532703269623216">Verbeterde beveiliging</translation>
+<translation id="6900532703269623216">Geoptimaliseerde beveiliging</translation>
 <translation id="6900651018461749106">Log opnieuw in om <ph name="USER_EMAIL" /> te updaten</translation>
 <translation id="6902066522699286937">Stem om als voorbeeld te beluisteren</translation>
 <translation id="6902336033320348843">Sectie niet ondersteund: <ph name="ERROR_LINE" /></translation>
@@ -5294,6 +5286,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Deze app kan ervoor zorgen dat Chrome niet goed functioneert.}other{Deze apps kunnen ervoor zorgen dat Chrome niet goed functioneert.}}</translation>
 <translation id="7303281435234579599">Er is een probleem opgetreden bij het instellen van de demomodus.</translation>
 <translation id="7303900363563182677">Deze site kan geen tekst en afbeeldingen bekijken die naar het klembord zijn gekopieerd</translation>
+<translation id="7304030187361489308">Hoog</translation>
 <translation id="7305123176580523628">USB-printer verbonden</translation>
 <translation id="730515362922783851">Gegevens uitwisselen met elk apparaat op het lokale netwerk of internet</translation>
 <translation id="7306521477691455105">Open Instellingen om <ph name="USB_DEVICE_NAME" /> te verbinden met <ph name="USB_VM_NAME" /></translation>

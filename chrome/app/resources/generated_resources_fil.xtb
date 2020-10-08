@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Pinili lang</translation>
 <translation id="1223484782328004593">Nangangailangan ng lisensya ang <ph name="APP_NAME" /></translation>
 <translation id="1223853788495130632">Inirerekomenda ng iyong administrator ang isang tukoy na halaga para sa setting na ito.</translation>
-<translation id="1224275271335624810">Pinakamabilis</translation>
 <translation id="1225177025209879837">Pinoproseso ang kahilingan...</translation>
 <translation id="1227507814927581609">Nabigo ang pagpapatunay habang kumokonekta sa "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1230417814058465809">Naka-on ang standard na proteksyon. Para sa higit pang seguridad, gamitin ang pinahusay na proteksyon.</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">Magpa-enroll nang manual</translation>
 <translation id="1668979692599483141">Matuto tungkol sa mga suhestyon</translation>
 <translation id="1670399744444387456">Pangunahin</translation>
-<translation id="167160931442925455">Pinakamalakas</translation>
 <translation id="1673137583248014546">Gustong tingnan ng <ph name="URL" /> ang manufacturer at modelo ng iyong Security Key</translation>
 <translation id="1677306805708094828">Hindi maidagdag ang <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> na lang ang natitira</translation>
@@ -919,7 +917,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">Sinusuri ang virtual machine</translation>
 <translation id="2048182445208425546">I-access ang trapiko ng iyong network</translation>
-<translation id="2048243703055695889">Mga setting ng Nearby Share para sa device na '<ph name="DEVICE_NAME" />' ni <ph name="USER_EMAIL" />.</translation>
 <translation id="2048653237708779538">Hindi available ang pagkilos</translation>
 <translation id="204914487372604757">Lumikha ng shortcut sa </translation>
 <translation id="2050339315714019657">Portrait</translation>
@@ -1104,7 +1101,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2262477216570151239">Pagkaantala bago ang pag-uulit</translation>
 <translation id="2263189956353037928">Mag-sign out at mag-sign in muli</translation>
 <translation id="2263371730707937087">Rate ng pag-refresh ng screen</translation>
-<translation id="2263497240924215535">(Hindi Pinagana)</translation>
 <translation id="22665427234727190">Magtanong kapag gusto ng isang site na i-access ang mga Bluetooth device (inirerekomenda)</translation>
 <translation id="2266957463645820432">IPP sa USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Makipagpalit ng data sa device na nasa domain ng <ph name="DOMAIN" /></translation>
@@ -2289,7 +2285,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3674840410592648165">Puwedeng mag-install ang mga site ng mga tagapangasiwa ng pagbabayad (inirerekomenda)</translation>
 <translation id="367645871420407123">iwanang blangko kung gusto mong itakda ang root password sa default na value ng pansubok na larawan</translation>
 <translation id="3677106374019847299">Maglagay ng custom na provider</translation>
-<translation id="3677657024345889897">Pinakamahina</translation>
 <translation id="3677911431265050325">Hilingin ang pang-mobile na site</translation>
 <translation id="3677959414150797585">Kabilang ang mga app, webpage, at higit pa. Magpapadala lang ng mga istatistika para mapahusay ang mga suhestyon kung pinili mong ibahagi ang data ng paggamit.</translation>
 <translation id="3678156199662914018">Extension: <ph name="EXTENSION_NAME" /></translation>
@@ -2478,7 +2473,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3867944738977021751">Mga Certificate Field</translation>
 <translation id="3869917919960562512">Maling index.</translation>
 <translation id="3870931306085184145">Walang naka-save na password para sa <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">Pinakamababa</translation>
 <translation id="3871350334636688135">Pagkalipas ng 24 na oras, magsasagawa ang administrator mo ng isang beses na pag-update na magde-delete sa iyong lokal na data kapag na-restart mo ang iyong device. I-save ang anumang lokal na data na kailangan mo sa cloud storage sa loob ng 24 na oras.</translation>
 <translation id="3872220884670338524">Higit pang pagkilos, naka-save na account para sa <ph name="USERNAME" /> sa <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Magbakante ng espasyo sa disk o hindi gagana nang maayos ang iyong device.</translation>
@@ -4235,7 +4229,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="6025215716629925253">Stack Trace</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - May nakakonektang USB device</translation>
 <translation id="6028117231645531007">Magdagdag ng fingerprint</translation>
-<translation id="6029587122245504742">Pinakamabagal</translation>
 <translation id="6029594605736587274">na-block ang <ph name="PERMISSION" /></translation>
 <translation id="6031600495088157824">Mga opsyon sa pag-input sa toolbar</translation>
 <translation id="6032715498678347852">Para bigyan ng access ang isang extension sa site na ito, i-click ito.</translation>
@@ -4529,7 +4522,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="6349101878882523185">I-install ang <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Hindi gumagana ang pag-sync. Subukang mag-sign out at muling mag-sign in.</translation>
 <translation id="6351063337294363751">Maaari mong i-clear ang iyong data sa pag-browse sa menu na ito</translation>
-<translation id="6352773953037195952">Pinakamataas</translation>
 <translation id="6354918092619878358">SECG elliptic curve secp256r1 (na tinatawag ding ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Panatilihing naka-on ang device</translation>
 <translation id="63566973648609420">Ang taong may alam ng passphrase mo lang ang makakabasa sa iyong naka-encrypt na data. Hindi ipinapadala sa o iniimbak ng Google ang passphrase. Kung makalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, kakailanganin mong <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph name="END_LINK" />.</translation>
@@ -5294,6 +5286,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Maaaring hindi gumana nang maayos ang Chrome dahil sa application na ito.}one{Maaaring hindi gumana nang maayos ang Chrome dahil sa mga application na ito.}other{Maaaring hindi gumana nang maayos ang Chrome dahil sa mga application na ito.}}</translation>
 <translation id="7303281435234579599">Naku! Nagkaproblema habang sine-set up ang demo mode.</translation>
 <translation id="7303900363563182677">Na-block ang site na ito na makita ang text at mga larawang kinopya sa clipboard</translation>
+<translation id="7304030187361489308">Mataas</translation>
 <translation id="7305123176580523628">Nakakonekta ang USB printer</translation>
 <translation id="730515362922783851">Makipagpalit ng data sa anumang device na nasa lokal na network o internet</translation>
 <translation id="7306521477691455105">Buksan ang Mga Setting para ikonekta ang <ph name="USB_DEVICE_NAME" /> sa <ph name="USB_VM_NAME" /></translation>

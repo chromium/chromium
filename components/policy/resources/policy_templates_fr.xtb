@@ -41,12 +41,6 @@
 
       Cette règle ne concerne que les utilisateurs dont le domaine correspond au domaine d'inscription de l'appareil. Pour tous les autres utilisateurs, les cookies définis par le fournisseur d'identification ne sont transférés au profil de l'utilisateur lors de sa première connexion que sur l'appareil.</translation>
 <translation id="1029052664284722254">Forcer le redémarrage de l'appareil en cas de déconnexion de l'utilisateur</translation>
-<translation id="1035385378988781231">Cette règle détermine si la fonctionnalité Partages de fichiers en réseau de votre <ph name="PRODUCT_NAME" /> utilise le protocole NTLM pour l'authentification.
-
-      Si cette règle est définie sur "True", le protocole NTLM sera utilisé pour l'authentification des partages SMB lorsque c'est nécessaire.
-      Si cette règle est définie sur "False", le protocole NTLM ne sera pas utilisé pour l'authentification des partages SMB.
-
-      Si cette règle n'est pas configurée, elle est désactivée par défaut pour les utilisateurs gérés par une entreprise et activée par défaut pour les utilisateurs non gérés.</translation>
 <translation id="1040446814317236570">Activer la suppression des URL via PAC (pour "https://")</translation>
 <translation id="1046484220783400299">Activer les fonctionnalités obsolètes de la plate-forme Web pour une durée limitée</translation>
 <translation id="1047128214168693844">Interdire à tous les sites de suivre la position géographique des utilisateurs</translation>
@@ -86,11 +80,6 @@
 <translation id="1095209545735032039">Bloquer l'API Serial sur ces sites</translation>
 <translation id="1096105751829466145">Moteur de recherche par défaut</translation>
 <translation id="1099282607296956954">Activer l'isolation des sites pour tous les sites</translation>
-<translation id="1107764601871839136">Permet de spécifier la durée de réutilisation (en heures) des objets de stratégie de groupe appelés également "GPO" (Group Policy Objects) qui sont mis en cache. Au lieu de télécharger de nouveau les GPO à chaque récupération de règle, le système peut réutiliser ceux mis en cache tant que leur version ne change pas. Cette règle spécifie la durée maximale pendant laquelle les GPO mis en cache peuvent être réutilisés avant d'être de nouveau téléchargés. Notez que le cache est vidé en cas de redémarrage ou de déconnexion.
-
-      Si cette règle n'est pas définie, les GPO mis en cache peuvent être réutilisés dans un délai maximal de 25 heures.
-
-      Si cette règle est définie sur 0, la mise en cache des GPO est désactivée. Notez que cela augmente la charge du serveur, car les GPO sont de nouveau téléchargés à chaque récupération de règle, même s'ils ne sont pas modifiés.</translation>
 <translation id="1111470455889178048">Envoyer les importations et les téléchargements des utilisateurs pour analyse</translation>
 <translation id="1117535567637097036">Les gestionnaires de protocoles définis par cette règle ne sont pas utilisés pour gérer les intents Android.</translation>
 <translation id="1118093128235245168">Autoriser les sites à demander à l'utilisateur d'accorder l'accès à un appareil USB connecté</translation>
@@ -758,11 +747,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="2197625019569762163">Définissez cette règle sur "True" pour afficher le clavier numérique par défaut lors de la saisie du mot de passe sur l'écran de connexion. Les utilisateurs pourront toujours revenir au clavier normal.
 
       Si vous définissez cette règle, les utilisateurs ne peuvent pas modifier la configuration. Si vous ne la définissez pas ou si vous la définissez sur "False", elle est sans effet.</translation>
-<translation id="2200041405904405884">Permet de spécifier les hôtes de messagerie native à exclure de la liste de blocage.
-
-          Si vous saisissez la valeur "*" dans la liste de blocage, tous les hôtes de messagerie native sont bloqués, et seuls ceux figurant sur la liste d'autorisation sont chargés.
-
-          Par défaut, tous les hôtes de messagerie native sont autorisés. Toutefois, s'ils ont tous été bloqués par une règle, la liste d'autorisation peut être utilisée pour ignorer cette règle.</translation>
 <translation id="2200698565850397198">Configurer la liste de blocage de messagerie native</translation>
 <translation id="2201555246697292490">Configurer la liste blanche de messagerie native</translation>
 <translation id="2204753382813641270">Règle pour masquer automatiquement l'étagère</translation>
@@ -835,11 +819,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="2307496301287881990">Transmettre des états liés aux affichages et aux graphiques</translation>
 <translation id="2309390639296060546">Paramètre de géolocalisation par défaut</translation>
 <translation id="2327252517317514801">Définir les domaines autorisés à accéder à G Suite</translation>
-<translation id="2328573323851533589">Cette règle peut être utilisée pour forcer l'activation ou la désactivation de la vérification de fuite d'identifiants dans <ph name="PRODUCT_NAME" />.
-
-          Sachez que même si cette règle est définie sur "True", ce comportement ne se déclenchera pas si la navigation sécurisée est désactivée (par la règle ou l'utilisateur). Pour forcer l'activation de la navigation sécurisée, utilisez la règle <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" />.
-
-          Si cette règle est activée ou désactivée, les utilisateurs ne peuvent pas la modifier ni l'ignorer dans <ph name="PRODUCT_NAME" />. Si cette règle n'est pas définie, la vérification de fuite d'identifiants est autorisée (l'utilisateur peut la désactiver).</translation>
 <translation id="2331354174913096226">Modèle URI du résolveur DNS-over-HTTPS souhaité. Pour définir plusieurs résolveurs DNS-over-HTTPS, vous devez séparer les modèles URI correspondants à l'aide d'espaces.
 
       Vous devez configurer cette règle si vous avez défini "DnsOverHttpsMode" sur <ph name="SECURE_DNS_MODE_SECURE" />. Elle ne peut pas rester vide.
@@ -985,11 +964,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si vous ne définissez pas ce paramètre, les utilisateurs peuvent choisir d'appliquer cette fonctionnalité ou non.
 
       Ce paramètre a été supprimé de <ph name="PRODUCT_NAME" /> 29 et versions ultérieures.</translation>
-<translation id="2433412232489478893">Cette règle permet de déterminer si la fonctionnalité Partages de fichiers en réseau pour <ph name="PRODUCT_NAME" /> est autorisée pour un utilisateur.
-
-      Si cette règle n'est pas configurée ou définie sur "True", les utilisateurs peuvent utiliser la fonctionnalité Partages de fichiers en réseau.
-
-      Si cette règle est définie sur "False", les utilisateurs ne peuvent pas utiliser la fonctionnalité Partages de fichiers en réseau.</translation>
 <translation id="2435052056904485763">Liste d'autorisation des serveurs de délégation Kerberos</translation>
 <translation id="2439793457499023062">Si cette règle n'est pas configurée et que l'outil Chrome Cleanup détecte des logiciels indésirables, celui-ci peut envoyer à Google des métadonnées concernant l'analyse, conformément à la configuration de la règle SafeBrowsingExtendedReportingEnabled. Chrome Cleanup demande ensuite à l'utilisateur s'il souhaite supprimer les logiciels indésirables détectés. Celui-ci peut choisir de nous communiquer les résultats du nettoyage afin de nous aider à améliorer la détection de ces logiciels. Ces résultats comprennent des métadonnées de fichiers, des extensions installées automatiquement et des clés de registre, tel que décrit dans le livre blanc sur la protection de la vie privée dans Google Chrome.
 
@@ -1470,26 +1444,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3143265893557969814">Si cette règle est configurée, tous les types de données spécifiés ne seront pas synchronisés avec Google Sync ni avec le profil itinérant. Cela peut permettre de réduire la taille du profil itinérant ou de limiter les types de données importés sur les serveurs Google Sync.
 
       Les types de données actuels pour cette règle sont les suivants : "bookmarks", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs" et "wifiConfigurations". Ces noms sont sensibles à la casse.</translation>
-<translation id="3146597555086966130">Permet de configurer les paramètres de proxy pour Chrome et les applications ARC, qui ignorent toutes les options liées au proxy spécifiées à partir de la ligne de commande.
-
-       Si cette règle n'est pas configurée, les utilisateurs peuvent sélectionner les paramètres de proxy.
-
-       Si la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> est configurée, les champs suivants sont proposés :
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> : vous permet de spécifier le serveur proxy que Chrome utilise et qui empêche les utilisateurs de modifier les paramètres de proxy
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> : URL d'un fichier .pac de proxy
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> : URL du serveur proxy
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> : liste d'hôtes proxy que <ph name="PRODUCT_NAME" /> contourne
-
-       Le champ <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> est obsolète et a été remplacé par le champ <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> (qui vous permet de définir le serveur proxy que Chrome utilise et qui empêche les utilisateurs de modifier les paramètres de proxy).
-
-        Dans la règle <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, si vous sélectionnez :
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />, la connexion s'effectue directement sans aucun proxy et tous les autres champs sont ignorés ;
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, le proxy du système est utilisé et tous les autres champs sont ignorés ;
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, tous les autres champs sont ignorés ;
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER" />, les champs <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> et <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> sont utilisés ;
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, les champs <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> et <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> sont utilisés.
-
-      Remarque : Pour consulter des exemples détaillés, accédez au site The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="3152425128389603870">Rendre le mode bureau unifié disponible et l'activer par défaut</translation>
 <translation id="3159375329008977062">L'utilisateur est autorisé à exporter/importer des conteneurs Crostini via l'UI</translation>
 <translation id="3165808775394012744">Ces règles sont incluses ici pour faciliter leur suppression.</translation>
@@ -1497,13 +1451,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="316778957754360075">Ce paramètre a été supprimé à partir de la version 29 de <ph name="PRODUCT_NAME" />. Pour configurer des collections d'extensions et d'applications hébergées par l'organisation, il est recommandé d'inclure le site hébergeant les packages CRX dans ExtensionInstallSources et d'insérer des liens directs de téléchargement dans les packages sur une page Web. Il est possible de créer un lanceur d'applications pour cette page à l'aide de la règle ExtensionInstallForcelist.</translation>
 <translation id="3168968618972302728">Règles relatives à l'authentification Kerberos.</translation>
 <translation id="3171369832001535378">Modèle de nom d'hôte du réseau de l'appareil</translation>
-<translation id="3172512016079904926">Autorise l'installation d'hôtes de messagerie natifs au niveau de l'utilisateur.
-
-          Si ce paramètre est activé, <ph name="PRODUCT_NAME" /> autorise l'utilisation d'hôtes de messagerie natifs installés au niveau de l'utilisateur.
-
-          Si ce paramètre est désactivé, <ph name="PRODUCT_NAME" /> utilise uniquement les hôtes de messagerie natifs installés au niveau du système.
-
-          Si ce paramètre n'est pas défini, <ph name="PRODUCT_NAME" /> autorise l'utilisation d'hôtes de messagerie natifs installés au niveau de l'utilisateur.</translation>
 <translation id="3177802893484440532">Exiger des contrôles OCSP/CRL en ligne pour les ancres d'approbation locales</translation>
 <translation id="3184161739683646075">Contrôle le mode DNS-over-HTTPS</translation>
 <translation id="3185009703220253572">depuis la version <ph name="SINCE_VERSION" /></translation>
@@ -1765,11 +1712,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
         Si cette règle est activée, <ph name="PRODUCT_NAME" /> tente de s'enregistrer et d'appliquer la règle relative au cloud associée à tous les profils.
 
         La valeur de cette règle est un jeton d'inscription qui peut être récupéré depuis la console d'administration Google.</translation>
-<translation id="3489247539215560634">Si ce paramètre est activé, <ph name="PRODUCT_NAME" /> peut mémoriser les mots de passe et les renseigner automatiquement la prochaine fois que les utilisateurs se connectent à un site.
-
-          Si ce paramètre est désactivé, les utilisateurs ne peuvent pas enregistrer de nouveaux mots de passe, mais ils peuvent toujours utiliser des mots de passe préalablement enregistrés.
-
-          Si cette règle est activée ou désactivée, les utilisateurs ne peuvent pas la modifier ni l'ignorer dans <ph name="PRODUCT_NAME" />. Si cette règle n'est pas définie, l'enregistrement des mots de passe est autorisé (mais peut être désactivé par l'utilisateur).</translation>
 <translation id="3492834335089638487">Cette règle permet de contrôler l'utilisation des applications Android provenant de sources non approuvées (autres que le Google Play Store) pour un appareil.
 
       Si la valeur de cette règle n'est pas définie, la règle est considérée comme non autorisée.
@@ -1835,9 +1777,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="3577628175311752799">Utiliser une règle par défaut en matière d'URL de provenance (no-referrer-when-downgrade).</translation>
 <translation id="357917253161699596">Autoriser les utilisateurs à gérer les certificats utilisateur</translation>
 <translation id="3580414086211696382">Contrôler l'utilisation de l'API File System pour l'accès en lecture</translation>
-<translation id="3583230441447348508">Spécifie une liste de partages de fichiers en réseau préconfigurés.
-
-      Dans cette règle, chaque élément de la liste est un objet avec deux membres : "share_url" et "mode". "share_url" devrait correspondre à l'URL du partage et "mode" devrait correspondre à "drop_down" ou "pre_mount". Le mode "drop_down" indique que cette "share_url" sera ajoutée à la liste déroulante de découverte des partages. Le mode "pre_mount" indique que cette "share_url" sera installée.</translation>
 <translation id="3584194414857209694">Activer les règles expérimentales</translation>
 <translation id="3584722841530002134">Permet de spécifier les serveurs que <ph name="PRODUCT_NAME" /> est susceptible d'utiliser. S'il y a plusieurs serveurs, séparez leur nom par une virgule. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.
 
@@ -2449,10 +2388,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Si cette règle n'est pas configurée, l'utilisateur peut désactiver n'importe quel plug-in installé sur le système.</translation>
 <translation id="4554651132977135445">Mode de traitement du bouclage pour les règles relatives aux utilisateurs</translation>
-<translation id="4554841826517980623">Cette règle permet de déterminer si la fonctionnalité Partages de fichiers en réseau pour <ph name="PRODUCT_NAME" /> doit détecter les partages sur le réseau via le protocole <ph name="NETBIOS_PROTOCOL" />.
-      Lorsque cette règle est définie sur "True", la détection des partages sur le réseau s'effectue via le protocole <ph name="NETBIOS_PROTOCOL" />.
-      Lorsque cette règle est définie sur "False", le protocole <ph name="NETBIOS_PROTOCOL" /> n'est pas utilisé pour détecter les partages.
-      Si vous ne configurez pas cette règle, le paramètre sera désactivé par défaut pour les utilisateurs gérés par une entreprise et activé par défaut pour les utilisateurs non gérés.</translation>
 <translation id="4555850956567117258">Activer l'attestation à distance pour l'utilisateur</translation>
 <translation id="4557134566541205630">URL de la page Nouvel onglet du moteur de recherche par défaut</translation>
 <translation id="4562165737444703281">Autoriser les utilisateurs à [activer/configurer] le transfert de port Crostini</translation>
@@ -2548,13 +2483,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
           Pour voir des exemples de formats, accédez à l'adresse https://www.chromium.org/developers/how-tos/chrome-frame-getting-started.</translation>
 <translation id="467449052039111439">Ouvrir une liste d'URL</translation>
 <translation id="4674871290487541952">Autoriser les algorithmes non sécurisés dans les vérifications de l'intégrité des mises à jour et des installations d'extension</translation>
-<translation id="4677605038200415894">Permet d'établir une liste de formats d'URL indiquant les sites automatiquement autorisés à accéder à un appareil USB avec le fournisseur et les ID produit indiqués. Chaque élément de la liste doit contenir des appareils et des URL pour que la règle soit valide. Chaque élément des appareils peut disposer d'un champ d'ID produit et d'ID de fournisseur. Les ID que vous omettez sont traités comme des caractères génériques, à une exception près : vous ne pouvez pas spécifier un ID produit sans définir un ID de fournisseur. Si vous ne respectez pas cette condition, la règle ne sera pas valide.
-
-      Le modèle d'autorisation USB utilise l'URL de requête et l'URL d'intégration (du site du cadre de premier niveau) pour permettre à l'URL de requête d'accéder à l'appareil USB. L'URL de requête peut être différente de l'URL d'intégration si le site à l'origine de la demande est chargé dans un iFrame. Le champ "URL" peut de ce fait contenir jusqu'à deux chaînes d'URL séparées par une virgule, afin d'indiquer ces URL. Si vous ne spécifiez qu'une seule URL, l'accès aux appareils USB concernés est autorisé si l'URL du site à l'origine de la demande correspond à cette URL, quel que soit l'état d'intégration. Si les URL indiquées dans le champ "URL" ne sont pas valides, la règle est ignorée.
-
-      Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> s'applique, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
-
-      Les formats d'URL de cette règle ne doivent pas entrer en conflit avec ceux qui ont été définis dans la règle <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. En cas de conflit, cette règle prévaut sur <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> et <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="4680936297850947973">Règle abandonnée dans la version M68. Utilisez à la place la règle DefaultPopupsSetting.
 
       Pour obtenir une explication complète, consultez la page https://www.chromestatus.com/features/5675755719622656.
@@ -2597,13 +2525,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
           Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
 
           Si cette règle n'est pas définie, l'audio mono est désactivé au départ, mais les utilisateurs peuvent l'activer à tout moment.</translation>
-<translation id="4764901562691611575">Cette règle étant obsolète, veuillez utiliser la règle <ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" /> à la place.
-
-          Celle-ci permet de déterminer quels hôtes de messagerie native ne doivent pas être chargés.
-
-          Si vous saisissez la valeur "*" dans la liste de blocage, tous les hôtes de messagerie native sont bloqués, sauf ceux spécifiquement répertoriés dans la liste d'autorisation.
-
-          Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> charge alors tous les hôtes de messagerie native installés.</translation>
 <translation id="4771144269610910963">Cette règle permet de contrôler l'analyse approfondie des téléchargements des utilisateurs à l'aide de la navigation sécurisée. Si cette règle n'est pas configurée ou si elle est définie sur le paramètre par défaut ("Ne pas analyser les fichiers"), les téléchargements des utilisateurs ne sont pas analysés par la navigation sécurisée.
 
       Si cette règle est définie sur "Envoyer les téléchargements des utilisateurs pour analyse", les téléchargements des utilisateurs sont envoyés sur le réseau à la navigation sécurisée afin d'y être analysés pour détecter les éventuels logiciels malveillants.
@@ -2759,15 +2680,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="5085647276663819155">Désactiver l'aperçu avant impression</translation>
 <translation id="5090209345759901501">Appliquer le paramètre de contenu Flash à tous les contenus</translation>
 <translation id="5090791951240382356">Autoriser la fusion de règles de dictionnaire qui proviennent de sources différentes</translation>
-<translation id="5093540029655764852">Spécifie la fréquence (en jours) à laquelle un client modifie le mot de passe machine. Ce mot de passe, généré de manière aléatoire par le client, n'est pas accessible à l'utilisateur.
-
-      Tout comme les mots de passe utilisateur, les mots de passe machine doivent être modifiés régulièrement. La désactivation de cette règle ou la définition d'un nombre de jours élevé peut nuire à la sécurité, dans la mesure où elle laisse plus de temps aux pirates informatiques pour trouver le mot de passe machine et l'exploiter.
-
-      Si cette règle n'est pas définie, le mot de passe machine est modifié tous les 30 jours.
-
-      Si cette règle indique 0, la modification du mot de passe machine est désactivée.
-
-      Notez que la validité des mots de passe peut dépasser le délai spécifié en cas de mise hors connexion du client pendant une période plus longue.</translation>
 <translation id="5101600510268095939">Permet de définir une liste de formats d'URL indiquant les sites non autorisés à afficher du contenu mixte (contenu HTTP affiché sur des sites HTTPS) blocable (actif), et pour lesquels le contenu mixte blocable de manière facultative (passif) est mis à niveau.
 
           Si cette règle n'est pas configurée, le contenu mixte blocable est bloqué, et le contenu mixte blocable de manière facultative est mis à niveau. Les utilisateurs peuvent définir des exceptions autorisant l'affichage de ce contenu sur des sites spécifiques.
@@ -2887,15 +2799,6 @@ Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> ignore toutes les opti
 
       Dans le cas présent, le terme "version" peut désigner une version exacte telle que "61.0.3163.120" ou le préfixe d'une version tel que "61.0".  </translation>
 <translation id="5247006254130721952">Bloquer les téléchargements dangereux</translation>
-<translation id="5248863213023520115">Définit les types de chiffrement autorisés lors des demandes de tickets Kerberos à partir d'un serveur <ph name="MS_AD_NAME" />.
-
-      Si cette règle indique "All", les types de chiffrement AES "aes256-cts-hmac-sha1-96" et "aes128-cts-hmac-sha1-96", ainsi que le type de chiffrement RC4 "rc4-hmac" sont autorisés. Le chiffrement AES prévaut toujours. Notez que le type de chiffrement RC4 n'est pas sécurisé et qu'il est donc conseillé de reconfigurer le serveur pour qu'il accepte le chiffrement AES, lorsque cela est possible.
-
-      Si cette règle indique "Strong" ou si elle n'est pas configurée, seuls les types de chiffrement AES sont autorisés.
-
-      Si cette règle indique "Legacy", seul le type de chiffrement RC4 est autorisé. Cette option n'est pas sécurisée et doit uniquement être utilisée dans des cas particuliers.
-
-      Consultez également la page https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerberos_client_encryption_types.</translation>
 <translation id="5249453807420671499">Les utilisateurs peuvent ajouter des comptes Kerberos</translation>
 <translation id="5252995168844634755">Si cette règle est définie sur "True", le mode bureau unifié est activé, ce qui permet aux applications de couvrir plusieurs écrans. En cas d'écrans individuels, les utilisateurs peuvent désactiver ce mode.
 
@@ -3294,13 +3197,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
           La valeur de la règle ne s'applique que si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, et pas autrement.</translation>
 <translation id="5697306356229823047">Générer une liste des utilisateurs de l'appareil</translation>
-<translation id="5699487516670033016">Permet de spécifier la durée de réutilisation (en heures) des données d'authentification mises en cache. Le cache est utilisé pour accélérer la connexion. Il contient des données d'ordre général (nom de groupe de travail, etc.) relatives à des domaines affiliés, c'est-à-dire des domaines approuvés par le domaine de la machine. Aucune donnée spécifique à l'utilisateur ou relative à des domaines non affiliés n'est mise en cache. Notez que le cache est vidé en cas de redémarrage de l'appareil.
-
-      Si cette règle n'est pas définie, les données d'authentification mises en cache peuvent être réutilisées dans un délai maximal de 73 heures.
-
-      Si cette règle est définie sur 0, la mise en cache des données d'authentification est désactivée. Cela peut considérablement ralentir la connexion des utilisateurs affiliés, car les données spécifiques à un domaine doivent être récupérées à chaque connexion.
-
-      Notez que les données de domaine sont mises en cache même pour les utilisateurs éphémères. Le cache doit être désactivé si le suivi du domaine des utilisateurs éphémères doit être empêché.</translation>
 <translation id="570062449808736508">Lorsque ce règlement est défini sur une chaîne non vide, WebView lit les restrictions d'URL depuis le fournisseur de contenu portant le nom de l'autorité indiquée.</translation>
 <translation id="5708969689202733975">Configurer les modes de déverrouillage rapide autorisés</translation>
 <translation id="572155275267014074">Paramètres Android</translation>
@@ -3597,11 +3493,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       Remarque : cette règle concerne toutes les sorties audio, y compris les fonctionnalités d'accessibilité audio. Ne la désactivez pas si un utilisateur a besoin d'un lecteur d'écran.</translation>
 <translation id="6221175752766085998">Autoriser les certificats émis par les ancres d'approbation locales sans l'extension subjectAlternativeName</translation>
-<translation id="6222839831045864769">Permet de déterminer quels hôtes de messagerie native ne doivent pas être chargés.
-
-          Si vous saisissez la valeur "*" dans la liste de blocage, tous les hôtes de messagerie native sont bloqués, sauf ceux spécifiquement répertoriés dans la liste d'autorisation.
-
-          Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> charge alors tous les hôtes de messagerie native installés.</translation>
 <translation id="6224304369267200483">URL/domaines automatiquement autorisés à recevoir une attestation de clé de sécurité</translation>
 <translation id="6230442621691161858">Cette fonctionnalité affiche des suggestions de nouveaux contenus à explorer. Les suggestions de contenu concernent des applications, des pages Web et bien plus.
       Si cette règle est définie sur "True", les suggestions de nouveaux contenus à explorer sont activées.
@@ -4838,13 +4729,6 @@ au maximum si un utilisateur se sert de l'appareil.
 <translation id="7788511847830146438">Par profil</translation>
 <translation id="780629758750905699">Autoriser l'ajout de comptes Family Link à l'appareil</translation>
 <translation id="7807139251387225825">Liste des types à exclure de la synchronisation</translation>
-<translation id="7815699949432723208">Cette règle est obsolète (veuillez utiliser la règle <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" /> à la place).
-
-          Permet de spécifier les hôtes de messagerie native à exclure de la liste de blocage.
-
-          Si vous saisissez la valeur "*" dans la liste de blocage, tous les hôtes de messagerie native sont bloqués, et seuls ceux figurant sur la liste d'autorisation sont chargés.
-
-          Par défaut, tous les hôtes de messagerie native sont autorisés. Toutefois, s'ils ont tous été bloqués par une règle, la liste d'autorisation peut être utilisée pour ignorer cette règle.</translation>
 <translation id="7818131573217430250">Définir l'état par défaut du mode Contraste élevé sur l'écran de connexion</translation>
 <translation id="7823902813460802031">Si cette règle est activée, <ph name="PRODUCT_OS_NAME" /> empêche l'appareil de passer en mode développeur.
 
@@ -5268,13 +5152,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Si la règle est définie, les anciens instantanés sont supprimés au fur et à mesure pour respecter la limite. Si la règle est définie sur 0, aucun instantané n'est enregistré.</translation>
 <translation id="8451988835943702790">Utiliser la page "Nouvel onglet" comme page d'accueil</translation>
 <translation id="8455529558077979314">Paramètres de l'écran de confidentialité</translation>
-<translation id="8459216513698220096">Détermine si la règle utilisateur du GPO de l'ordinateur est traitée et la méthode employée.
-
-      Si la règle est définie sur "Par défaut" ou si elle n'est pas configurée, la règle utilisateur n'est lue qu'à partir des GPO utilisateur (les GPO des ordinateurs sont ignorés).
-
-      Si la règle est définie sur "Fusionner", la règle utilisateur des GPO utilisateur est fusionnée avec celle des GPO des ordinateurs (les GPO des ordinateurs sont prioritaires).
-
-      Si la règle est définie sur "Remplacer", la règle utilisateur des GPO des utilisateurs est remplacée par celle des GPO des ordinateurs (les GPO des utilisateurs sont ignorés).</translation>
 <translation id="8465065632133292531">Paramètres pour l'URL instantanée utilisant POST</translation>
 <translation id="8465746466645315861">Si cette règle n'est pas définie, l'utilisateur peut activer ou désactiver la vérification orthographique dans les paramètres de langue.
 
@@ -5409,11 +5286,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8622378389102774881">Si cette règle est définie, l'hôte d'accès à distance exigera des clients qui s'authentifient qu'ils obtiennent un jeton d'authentification à partir de cette URL pour se connecter. Elle doit être utilisée avec la règle RemoteAccessHostTokenValidationUrl.
 
           Cette fonctionnalité est désactivée si la règle est vide ou n'est pas configurée.</translation>
-<translation id="8625234016727663537">Vous permet de définir une liste d'URL spécifiant les sites automatiquement autorisés à accéder à un appareil USB correspondant aux ID de fournisseur et de produit indiqués sur l'écran de connexion. Chaque élément de la liste doit contenir à la fois les appareils et les URL pour que la règle soit valide. Chaque élément des appareils peut comporter un champ d'ID de produit et d'ID de fournisseur. Les ID non renseignés sont traités comme des caractères génériques, à une exception près : un ID de produit ne peut pas être spécifié si un ID de fournisseur n'est pas aussi spécifié. Sinon, la règle n'est pas valide et est ignorée.
-
-        Le modèle d'autorisation USB utilise l'URL du site à l'origine de la demande ("URL de requête") et l'URL du site du cadre de premier niveau ("URL d'intégration") pour autoriser l'URL de requête à accéder à l'appareil USB. L'URL de requête peut être différente de l'URL d'intégration si le site à l'origine de la demande est chargé dans un iFrame. Le champ "URL" peut de ce fait contenir jusqu'à deux chaînes d'URL séparées par une virgule, afin d'indiquer l'URL de requête et l'URL d'intégration, respectivement. Si une seule URL est spécifiée, l'accès aux appareils USB concernés est autorisé si l'URL du site à l'origine de la demande correspond à cette URL, quel que soit l'état d'intégration. Si les URL indiquées dans le champ "URL" ne sont pas valides, la règle est ignorée.
-
-        Si cette règle n'est pas définie, la valeur globale par défaut est utilisée pour tous les sites (pas d'accès automatique).</translation>
 <translation id="8631434304112909927">jusqu'à la version <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">Liste des applications de prise de notes autorisées sur l'écran de verrouillage de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8649763579836720255">Il est possible d'utiliser l'attestation à distance (accès vérifié) pour les appareils Chrome OS afin d'obtenir un certificat délivré par Chrome OS CA qui atteste que vous pouvez lire du contenu protégé sur cet appareil. Ce processus implique l'envoi d'informations relatives au matériel à Chrome OS CA qui permettent d'identifier l'appareil de façon unique.
@@ -5806,7 +5678,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 
       Dans certains cas, les possibilités de rollback réelles dépendent également du modèle d'appareil et des correctifs de vulnérabilité essentiels.</translation>
 <translation id="9123464369663964441">Autoriser les utilisateurs à ajouter des exceptions afin de permettre l'affichage de contenu mixte</translation>
-<translation id="9126014181388780690">"Autoriser l'Assistant Google à accéder au contexte de l'écran"</translation>
 <translation id="9129169595075460149">Si cette règle est activée, SafeSearch est toujours activé dans la recherche Google, et les utilisateurs ne peuvent pas modifier ce paramètre.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, SafeSearch n'est pas appliqué d'office dans la recherche Google.</translation>
@@ -5880,7 +5751,6 @@ Si cette règle n'est pas configurée, ce paramètre est activé et l'utilisateu
 <translation id="944817693306670849">Définir la taille du cache disque</translation>
 <translation id="949278212566535827">Autoriser le téléchargement de fichiers protégés par un mot de passe</translation>
 <translation id="974349541138387272">Permet de définir le modèle URI du résolveur DNS-over-HTTPS souhaité</translation>
-<translation id="974479807614498635">"Autoriser l'option Réponses rapides à accéder au contenu sélectionné"</translation>
 <translation id="981346395360763138">Services de localisation Google</translation>
 <translation id="982497069985795632">Activer la vérification orthographique</translation>
 <translation id="983256325512298435">Établir la liste des protocoles pouvant lancer une application externe à partir d'origines répertoriées sans afficher d'invite</translation>

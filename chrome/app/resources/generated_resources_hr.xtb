@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Samo odabir</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> zahtijeva licencu</translation>
 <translation id="1223853788495130632">Administrator preporučuje određenu vrijednost za tu postavku.</translation>
-<translation id="1224275271335624810">Najbrže</translation>
 <translation id="1225177025209879837">Obrada zahtjeva...</translation>
 <translation id="1227507814927581609">Autentifikacija nije uspjela prilikom povezivanja s uređajem "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1230417814058465809">Uključena je standardna zaštita. Za veću sigurnost koristite poboljšanu zaštitu.</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">Prijavite se ručno</translation>
 <translation id="1668979692599483141">Saznajte više o prijedlozima</translation>
 <translation id="1670399744444387456">Osnovne</translation>
-<translation id="167160931442925455">Najglasnije</translation>
 <translation id="1673137583248014546"><ph name="URL" /> želi vidjeti marku i model vašeg sigurnosnog ključa</translation>
 <translation id="1677306805708094828">Nije moguće dodati <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Još <ph name="TIME" /></translation>
@@ -919,7 +917,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">Provjeravanje virtualnog računala</translation>
 <translation id="2048182445208425546">pristupiti vašem mrežnom prometu</translation>
-<translation id="2048243703055695889">Postavke dijeljenja Android uređajima za uređaj "<ph name="DEVICE_NAME" />" korisnika <ph name="USER_EMAIL" /></translation>
 <translation id="2048653237708779538">Radnja nije dostupna</translation>
 <translation id="204914487372604757">Stvori prečac</translation>
 <translation id="2050339315714019657">Portret</translation>
@@ -1104,7 +1101,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2262477216570151239">Odgoda prije ponavljanja</translation>
 <translation id="2263189956353037928">Odjava i ponovna prijava</translation>
 <translation id="2263371730707937087">Učestalost osvježavanja zaslona</translation>
-<translation id="2263497240924215535">(Onemogućeno)</translation>
 <translation id="22665427234727190">Prikaži upit kada web-lokacija želi pristupiti Bluetooth uređajima (preporučeno)</translation>
 <translation id="2266957463645820432">IPP putem USB-a (IPPUSB)</translation>
 <translation id="2270450558902169558">razmjenjivati podatke s bilo kojim uređajem na domeni <ph name="DOMAIN" /></translation>
@@ -2289,7 +2285,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3674840410592648165">Web-lokacije mogu instalirati rukovatelje plaćanjem (preporučeno)</translation>
 <translation id="367645871420407123">ostavite prazno ako želite postaviti korijensku zaporku na zadanu vrijednost testne slike</translation>
 <translation id="3677106374019847299">Unesite prilagođenog davatelja</translation>
-<translation id="3677657024345889897">Najtiše</translation>
 <translation id="3677911431265050325">Zatraži web-lokaciju za mobilne uređaje</translation>
 <translation id="3677959414150797585">Uključuje aplikacije, web-stranice i još mnogo toga. Šalje statistiku za poboljšanje prijedloga samo ako ste odabrali dijeljenje podataka o upotrebi.</translation>
 <translation id="3678156199662914018">Proširenje: <ph name="EXTENSION_NAME" /></translation>
@@ -2478,7 +2473,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3867944738977021751">Polja certifikata</translation>
 <translation id="3869917919960562512">Pogrešni indeks.</translation>
 <translation id="3870931306085184145">Nema spremljenih zaporki za <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">Najniži</translation>
 <translation id="3871350334636688135">Nakon 24 sata vaš će administrator izvršiti jednokratno ažuriranje kojim će se izbrisati vaši lokalni podaci kada ponovo pokrenete uređaj. Spremite potrebne lokalne podatke u pohranu u oblaku u roku od 24 sata.</translation>
 <translation id="3872220884670338524">Više radnji, spremljeni račun za korisnika <ph name="USERNAME" /> na domeni <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Oslobodite prostor na disku ili će uređaj prestati reagirati.</translation>
@@ -4235,7 +4229,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="6025215716629925253">Trag stoga</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB uređaj povezan</translation>
 <translation id="6028117231645531007">Dodajte otisak prsta</translation>
-<translation id="6029587122245504742">Najsporije</translation>
 <translation id="6029594605736587274">blokirano je dopuštenje <ph name="PERMISSION" /></translation>
 <translation id="6031600495088157824">Opcije unosa na alatnoj traci</translation>
 <translation id="6032715498678347852">Da biste proširenju omogućili pristup web-lokaciji, kliknite ga.</translation>
@@ -4529,7 +4522,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="6349101878882523185">Instalirajte aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Sinkronizacija ne funkcionira. Odjavite se, pa se ponovo prijavite.</translation>
 <translation id="6351063337294363751">Podatke o pregledavanju možete izbrisati putem ovog izbornika</translation>
-<translation id="6352773953037195952">Najviši</translation>
 <translation id="6354918092619878358">SECG eliptična krivulja secp256r1 (poznata i kao ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Neka uređaj ostane uključen</translation>
 <translation id="63566973648609420">Samo osoba koja ima vašu šifru može čitati vaše kriptirane podatke. Šifra se ne šalje Googleu i ne pohranjuje na njemu. Ako zaboravite šifru ili želite promijeniti tu postavku, morat ćete <ph name="BEGIN_LINK" />poništiti sinkronizaciju<ph name="END_LINK" />.</translation>
@@ -5294,6 +5286,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Ova bi aplikacija mogla spriječiti Chrome da pravilno funkcionira.}one{Ova bi aplikacija (ili više njih) mogla spriječiti Chrome da pravilno funkcionira.}few{Ove bi aplikacije mogle spriječiti Chrome da pravilno funkcionira.}other{Ove bi aplikacije mogle spriječiti Chrome da pravilno funkcionira.}}</translation>
 <translation id="7303281435234579599">Ups! Došlo je do pogreške pri postavljanju demo načina.</translation>
 <translation id="7303900363563182677">Toj je web-lokaciji blokiran uvid u tekst i slike kopirane u međuspremnik</translation>
+<translation id="7304030187361489308">Visoka</translation>
 <translation id="7305123176580523628">USB pisač povezan</translation>
 <translation id="730515362922783851">razmjenjivati podatke s bilo kojim uređajem na lokalnoj mreži ili internetu</translation>
 <translation id="7306521477691455105">Otvorite Postavke da biste povezali uređaje <ph name="USB_DEVICE_NAME" /> i <ph name="USB_VM_NAME" /></translation>

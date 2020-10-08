@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium kontrollib soovimatu tarkvara olemasolu kord nädalas. Viimati kontrolliti: 1 tund tagasi.}other{Chromium kontrollib soovimatu tarkvara olemasolu kord nädalas. Viimati kontrolliti: {NUM_HOURS} tundi tagasi.}}</translation>
 <translation id="1065672644894730302">Teie eelistusi ei saa lugeda. Mõned funktsioonid ei pruugi saadaval olla ja eelistuste muudatusi ei salvestata.</translation>
 <translation id="107513968719897256">Isikliku ja kasutaja <ph name="NEW_USER" /> sirvimise eristamiseks looge Chromiumis uus profiil</translation>
 <translation id="1098170124587656448">Chromium aitab teid kaitsta andmetega seotud rikkumiste, ohtlike laienduste ja muu eest</translation>
@@ -45,7 +44,6 @@
 <translation id="2711502716910134313">Chromiumi vaheleht</translation>
 <translation id="2718390899429598676">Turvalisuse suurendamiseks krüptib Chromium teie andmed.</translation>
 <translation id="2770231113462710648">Asenda vaikebrauser:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromium kontrollib soovimatu tarkvara olemasolu kord nädalas. Viimati kontrolliti: 1 minut tagasi.}other{Chromium kontrollib soovimatu tarkvara olemasolu kord nädalas. Viimati kontrolliti: {NUM_MINS} minutit tagasi.}}</translation>
 <translation id="2799223571221894425">Taaskäivita</translation>
 <translation id="2847479871509788944">Chromiumist eemaldamine ...</translation>
 <translation id="2853765747879685679">Küsi, kui ma Chromiumi avan</translation>
@@ -56,7 +54,6 @@
 <translation id="3032706164202344641">Chromium ei saa teie paroole kontrollida. Proovige hiljem uuesti.</translation>
 <translation id="3032787606318309379">Chromiumi lisamine ...</translation>
 <translation id="3068515742935458733">Aidake Chromiumi täiustada, saates Google'ile krahhiaruandeid ja lingi <ph name="UMA_LINK" /></translation>
-<translation id="3086207596048762442">Chromium kontrollib soovimatu tarkvara olemasolu kord nädalas</translation>
 <translation id="3103660991484857065">Installeril ei õnnestunud arhiivi lahti pakkida. Laadige Chromium uuesti alla.</translation>
 <translation id="3130323860337406239">Chromium kasutab teie mikrofoni.</translation>
 <translation id="3155163173539279776">Chromiumi taaskäivitamine</translation>
@@ -177,7 +174,6 @@ On võimalik, et mõni funktsioon ei ole saadaval. Määrake muu profiilikataloo
 <translation id="6847869444787758381">Chromium annab teile teada, kui teie paroolid ohtu satuvad</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopeeritud Chromiumi)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium kontrollib soovimatu tarkvara olemasolu kord nädalas. Viimati kontrolliti: 1 päev tagasi.}other{Chromium kontrollib soovimatu tarkvara olemasolu kord nädalas. Viimati kontrolliti: {NUM_DAYS} päeva tagasi.}}</translation>
 <translation id="6893813176749746474">Chromiumi on värskendatud, kuid te ei ole seda kasutanud vähemalt 30 päeva.</translation>
 <translation id="6964305034639999644">Ava link Chromiumi inko&amp;gnito aknas</translation>
 <translation id="6990124437352146030">Chromium vajab selle saidi puhul luba, et teie mikrofonile juurde pääseda</translation>
@@ -242,7 +238,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8621669128220841554">Installimine ebaõnnestus tundmatu vea tõttu. Laadige Chromium uuesti alla.</translation>
 <translation id="8697124171261953979">Lisaks juhib see seda, mis leht kuvatakse Chromiumi käivitamisel või omnikastikeses otsingu tegemisel.</translation>
 <translation id="8704119203788522458">See on teie Chromium</translation>
-<translation id="8705191560707593947">Chromium kontrollib soovimatu tarkvara olemasolu kord nädalas. Viimati kontrolliti: eile.</translation>
 <translation id="8796602469536043152">Chromium vajab selle saidi puhul luba, et teie kaamerale ja mikrofonile juurde pääseda</translation>
 <translation id="8803635938069941624">Chromium OS-i tingimused</translation>
 <translation id="8821041990367117597">Chromium ei saa andmeid sünkroonida, sest teie konto sisselogimisandmed on aegunud.</translation>
@@ -258,7 +253,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="91086099826398415">Ava link Chromiumi uuel &amp;vahekaardil</translation>
 <translation id="911206726377975832">Kas kustutada ka teie sirvimisandmed?</translation>
 <translation id="9158494823179993217">Teie süsteemiadministraator on konfigureerinud Chromiumi avama alternatiivset brauserit, et saada juurdepääs lehele <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="9164845895615421500">Chromium kontrollib soovimatu tarkvara olemasolu kord nädalas. Viimati kontrolliti: hetk tagasi</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium ei pruugi õigesti töötada, kuna seda ei toetata enam Windows XP-s ega Windows Vistas</translation>
 <translation id="95514773681268843">Domeen <ph name="DOMAIN" /> nõuab, et loete enne selle seadme kasutamist läbi järgmised teenusetingimused ja nõustute nendega. Need tingimused ei laienda, muuda ega piira Chromium OS-i tingimusi.</translation>

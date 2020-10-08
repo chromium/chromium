@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Apenas seleção</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> requer uma licença</translation>
 <translation id="1223853788495130632">Seu administrador recomenda um valor específico para esta configuração.</translation>
-<translation id="1224275271335624810">Máxima</translation>
 <translation id="1225177025209879837">Processando solicitação...</translation>
 <translation id="1227507814927581609">Falha na autenticação ao conectar-se com "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1230417814058465809">A proteção padrão está ativada. Para ter ainda mais segurança, use a proteção aprimorada.</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">Inscrever-se manualmente</translation>
 <translation id="1668979692599483141">Saiba mais sobre sugestões</translation>
 <translation id="1670399744444387456">Básico</translation>
-<translation id="167160931442925455">Volume máximo</translation>
 <translation id="1673137583248014546"><ph name="URL" /> quer ver a marca e o modelo da sua chave de segurança</translation>
 <translation id="1677306805708094828">Não é possível adicionar <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> restante(s)</translation>
@@ -919,7 +917,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2046702855113914483">Lámen</translation>
 <translation id="204706822916043810">Verificando a máquina virtual</translation>
 <translation id="2048182445208425546">Acesse seu tráfego de rede</translation>
-<translation id="2048243703055695889">Configurações do "Compartilhar por proximidade" para o dispositivo de <ph name="USER_EMAIL" /> (<ph name="DEVICE_NAME" />).</translation>
 <translation id="2048653237708779538">Ação indisponível</translation>
 <translation id="204914487372604757">Criar atalho</translation>
 <translation id="2050339315714019657">Retrato</translation>
@@ -1104,7 +1101,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2262477216570151239">Atraso antes da repetição</translation>
 <translation id="2263189956353037928">Sair e fazer login novamente</translation>
 <translation id="2263371730707937087">Taxa de atualização da tela</translation>
-<translation id="2263497240924215535">(Desativada)</translation>
 <translation id="22665427234727190">Perguntar quando um site quiser acessar dispositivos Bluetooth (recomendado)</translation>
 <translation id="2266957463645820432">IPP via USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Trocar dados com qualquer dispositivo no domínio <ph name="DOMAIN" /></translation>
@@ -2290,7 +2286,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3674840410592648165">Os sites podem instalar gerenciadores de pagamento (recomendado)</translation>
 <translation id="367645871420407123">deixe em branco se você quer definir a senha raiz como o valor da imagem de teste padrão</translation>
 <translation id="3677106374019847299">Inserir provedor personalizado</translation>
-<translation id="3677657024345889897">Volume mínimo</translation>
 <translation id="3677911431265050325">Solicitar site móvel</translation>
 <translation id="3677959414150797585">Inclui apps, páginas da Web e muito mais. Envia estatísticas para melhorar as sugestões apenas se você compartilha dados de uso.</translation>
 <translation id="3678156199662914018">Extensão: <ph name="EXTENSION_NAME" /></translation>
@@ -2479,7 +2474,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3867944738977021751">Campos do certificado</translation>
 <translation id="3869917919960562512">Índice incorreto.</translation>
 <translation id="3870931306085184145">Nenhuma senha salva para <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">Mais baixa</translation>
 <translation id="3871350334636688135">Após 24 horas, o administrador fará uma atualização única que excluirá seus dados locais quando você reiniciar o dispositivo. Salve os dados locais que precisar no armazenamento em nuvem em até 24 horas.</translation>
 <translation id="3872220884670338524">Mais ações, contas salvas de <ph name="USERNAME" /> em <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Libere espaço em disco, ou o dispositivo deixará de responder.</translation>
@@ -4237,7 +4231,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6025215716629925253">Rastreamento de pilha</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - Dispositivo USB conectado</translation>
 <translation id="6028117231645531007">Adicionar impressão digital</translation>
-<translation id="6029587122245504742">Mais lenta</translation>
 <translation id="6029594605736587274"><ph name="PERMISSION" /> bloqueada</translation>
 <translation id="6031600495088157824">Opções de entrada na barra de ferramentas</translation>
 <translation id="6032715498678347852">Para conceder a uma extensão acesso a este site, clique nela.</translation>
@@ -4532,7 +4525,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">A sincronização não está funcionando. Tente sair e fazer login novamente.</translation>
 <translation id="6351063337294363751">É possível limpar seus dados de navegação desse menu</translation>
-<translation id="6352773953037195952">Mais alta</translation>
 <translation id="6354918092619878358">Curva elíptica SECG secp256r1 (também conhecida como ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Mantenha o dispositivo ligado</translation>
 <translation id="63566973648609420">Somente uma pessoa que tenha sua senha longa pode ler seus dados criptografados. A senha longa não é enviada para o Google ou armazenada por ele. Se você esquecer sua senha longa ou quiser alterar essa configuração, será necessário <ph name="BEGIN_LINK" />redefinir a sincronização<ph name="END_LINK" />.</translation>
@@ -5297,6 +5289,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Este aplicativo pode impedir que o Chrome funcione adequadamente.}one{Este aplicativo pode impedir que o Chrome funcione adequadamente.}other{Estes aplicativos podem impedir que o Chrome funcione adequadamente.}}</translation>
 <translation id="7303281435234579599">Algo deu errado ao configurar o modo de demonstração.</translation>
 <translation id="7303900363563182677">Este site foi impedido de ver textos e imagens copiados para a área de transferência</translation>
+<translation id="7304030187361489308">Alto</translation>
 <translation id="7305123176580523628">Impressora USB conectada</translation>
 <translation id="730515362922783851">Trocar dados com qualquer dispositivo da rede local ou Internet</translation>
 <translation id="7306521477691455105">Abra as configurações para conectar o <ph name="USB_DEVICE_NAME" /> à VM <ph name="USB_VM_NAME" /></translation>

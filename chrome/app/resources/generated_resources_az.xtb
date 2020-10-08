@@ -200,7 +200,6 @@
 <translation id="1221825588892235038">Yalnız seçim</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> lisenziya tələb edir</translation>
 <translation id="1223853788495130632">Administratorunuz bu ayar üçün xüsusi dəyər tövsiyə edir.</translation>
-<translation id="1224275271335624810">Ən sürətli</translation>
 <translation id="1225177025209879837">Sorğu icra olunur...</translation>
 <translation id="1227507814927581609">"<ph name="DEVICE_NAME" />" cihazına qoşularkən doğrulama uğursuz oldu.</translation>
 <translation id="1230417814058465809">Standart qoruma aktivdir. Təhlükəsizliyi daha da artırmaq üçün qabaqcıl qoruma işlədin.</translation>
@@ -594,7 +593,6 @@
 <translation id="1668435968811469751">Əl ilə qeydiyyatdan keçirin</translation>
 <translation id="1668979692599483141">Təkliflər barədə öyrənin</translation>
 <translation id="1670399744444387456">Əsas</translation>
-<translation id="167160931442925455">Ən yüksək</translation>
 <translation id="1673137583248014546"><ph name="URL" /> Təhülkəsizlik Açarının marka və modelinə baxmaq istəyir</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> artırmasını əlavə etmək mümkün deyil</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> qaldı</translation>
@@ -915,7 +913,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">Virtual cihaz yoxlanılır</translation>
 <translation id="2048182445208425546">Şəbəkə trafikinizə keçin</translation>
-<translation id="2048243703055695889"><ph name="USER_EMAIL" /> adlı istifadəçinin '<ph name="DEVICE_NAME" />' cihazı üçün Yaxındakılarla Paylaşma ayarları.</translation>
 <translation id="2048653237708779538">Əməliyyat əlçatan deyil</translation>
 <translation id="204914487372604757">Qısayol yaradın</translation>
 <translation id="2050339315714019657">Portret</translation>
@@ -1100,7 +1097,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2262477216570151239">Təkrardan əvvəl gecikmə</translation>
 <translation id="2263189956353037928">Hesabdan çıxmaq və yenidən daxil olmaq</translation>
 <translation id="2263371730707937087">Ekranın yenilənmə sürəti</translation>
-<translation id="2263497240924215535">(Deaktiv edildi)</translation>
 <translation id="22665427234727190">Sayt Bluetooth cihazlarına giriş etmək istədikdə icazə tələb edin (tövsiyə edilir)</translation>
 <translation id="2266957463645820432">IPP USB-də (IPPUSB)</translation>
 <translation id="2270450558902169558"><ph name="DOMAIN" /> domenində istənilən cihazla data mübadiləsi edin</translation>
@@ -2284,7 +2280,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3674840410592648165">Saytlar ödəniş emalçıları quraşdıra bilər (tövsiyə olunur)</translation>
 <translation id="367645871420407123">Əgər əsas parolu defolt test şəkil dəyərinə ayarlamaq istəyirsinizsə, boş saxlayın</translation>
 <translation id="3677106374019847299">Fərdi təminatçı daxil edin</translation>
-<translation id="3677657024345889897">Ən səssiz</translation>
 <translation id="3677911431265050325">Mobil saytı tələb edin</translation>
 <translation id="3677959414150797585">Tətbiqlər, veb səhifələr və daha çoxu daxildir. Yalnız istifadə datasını paylaşmağı seçdiyiniz zaman təklifləri yaxşılaşdırmaq üçün statistika göndərir.</translation>
 <translation id="3678156199662914018">Artırma: <ph name="EXTENSION_NAME" /></translation>
@@ -2473,7 +2468,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3867944738977021751">Sertifikat Sahələri</translation>
 <translation id="3869917919960562512">Yanlış indeks.</translation>
 <translation id="3870931306085184145"><ph name="DOMAIN" /> üçün parollar yadda saxlanıldı</translation>
-<translation id="3871092408932389764">Ən alçaq</translation>
 <translation id="3871350334636688135">24 saat sonra administrator cihazı birdəfəlik güncəlləyəcək. Bununla cihazı yenidən başlatdığınız zaman lokal datanızı siləcək. Ehtiyacınız olan lokal datanı 24 saat ərzində buludun yaddaşında saxlayın.</translation>
 <translation id="3872220884670338524"><ph name="DOMAIN" /> domenindəki <ph name="USERNAME" /> üçün daha çox əməliyyat və yadda saxlanmış hesa</translation>
 <translation id="3872991219937722530">Diskdə yer boşaldın əks halda cihaz reaksiya verməyəcək.</translation>
@@ -4226,7 +4220,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6025215716629925253">İz Toplusu</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB cihaz qoşuldu</translation>
 <translation id="6028117231645531007">Barmaq izi əlavə edin</translation>
-<translation id="6029587122245504742">Ən yavaş</translation>
 <translation id="6029594605736587274"><ph name="PERMISSION" /> bloklanıb</translation>
 <translation id="6031600495088157824">Alət panelində daxiletmə seçimləri</translation>
 <translation id="6032715498678347852">Artırmanın bu sayta girişinə icazə vermək üçün ona toxunun.</translation>
@@ -4520,7 +4513,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6349101878882523185"><ph name="APP_NAME" /> tətbiqini quraşdırın</translation>
 <translation id="6349170655202535379">Sinxronizasiya işləmir. Çıxın və yenidən daxil olun.</translation>
 <translation id="6351063337294363751">Bu menyudan axtarış datanızı silə bilərsiniz</translation>
-<translation id="6352773953037195952">Ən yüksək</translation>
 <translation id="6354918092619878358">SECG oval əyrisi secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Cihazı aktiv saxlayın</translation>
 <translation id="63566973648609420">Yalnız parol sözünüzü bilən adam şifrələnmiş məlumatınızı oxuya bilər. Parol söz Google tərəfindən göndərilmir və yadda saxlanılmır. Əgər parol sözü unutmusunuzsa və ya bu ayarı dəyişmək istəyirsinizsə <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlamalısınız<ph name="END_LINK" />.</translation>
@@ -5285,6 +5277,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Bu tətbiq Chrome'un düzgün işləməsinə mane olaq bilər.}other{Bu tətbiqlər Chrome'un düzgün işləməsinə mane ola bilər.}}</translation>
 <translation id="7303281435234579599">Ups! Demo rejimi quraşdırılarkən xəta baş verdi.</translation>
 <translation id="7303900363563182677">Bu səhifənin buferə kopyalanan mətn və şəkilləri görməsi blok edilib</translation>
+<translation id="7304030187361489308">Yüksək</translation>
 <translation id="7305123176580523628">USB printer qoşuldu</translation>
 <translation id="730515362922783851">Datanızı istənilən cihaz ilə yerli şəbəkədə və ya internetdə mübadilə edin</translation>
 <translation id="7306521477691455105"><ph name="USB_DEVICE_NAME" /> cihazını <ph name="USB_VM_NAME" /> cihazına qoşmaq üçün Ayarları açın</translation>

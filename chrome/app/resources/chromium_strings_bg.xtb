@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium проверява за нежелан софтуер веднъж седмично. Последна проверка: преди 1 час.}other{Chromium проверява за нежелан софтуер веднъж седмично. Последна проверка: преди {NUM_HOURS} часа.}}</translation>
 <translation id="1065672644894730302">Предпочитанията ви не могат да бъдат прочетени. Възможно е да няма достъп до някои функции и промените в предпочитанията няма да бъдат запазени.</translation>
 <translation id="107513968719897256">За да бъде личното ви сърфиране отделно от това на <ph name="NEW_USER" />, създайте нов потребителски профил в Chromium</translation>
 <translation id="1098170124587656448">Chromium може да ви защити от нарушения на сигурността на данните, злонамерени разширения и др.</translation>
@@ -45,7 +44,6 @@
 <translation id="2711502716910134313">Раздел в Chromium</translation>
 <translation id="2718390899429598676">За повишаване на сигурността Chromium ще шифрова данните ви.</translation>
 <translation id="2770231113462710648">Промяна на браузъра по подразбиране с/ъс:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromium проверява за нежелан софтуер веднъж седмично. Последна проверка: преди 1 минута.}other{Chromium проверява за нежелан софтуер веднъж седмично. Последна проверка: преди {NUM_MINS} минути.}}</translation>
 <translation id="2799223571221894425">Стартиране отново</translation>
 <translation id="2847479871509788944">Премахване от Chromium...</translation>
 <translation id="2853765747879685679">Запитване, когато отворя Chromium</translation>
@@ -56,7 +54,6 @@
 <translation id="3032706164202344641">Chromium не може да провери паролите ви. Опитайте пак по-късно.</translation>
 <translation id="3032787606318309379">Добавя се към Chromium...</translation>
 <translation id="3068515742935458733">Помогнете ни да подобрим Chromium, като ни изпращате <ph name="UMA_LINK" /> му и сигнали за сривове</translation>
-<translation id="3086207596048762442">Chromium проверява за нежелан софтуер веднъж седмично</translation>
 <translation id="3103660991484857065">Инсталационната програма не успя да декомпресира архива. Моля, изтеглете отново Chromium.</translation>
 <translation id="3130323860337406239">Chromium използва микрофона ви.</translation>
 <translation id="3155163173539279776">Рестартиране на Chromium</translation>
@@ -173,7 +170,6 @@
 <translation id="6847869444787758381">Chromium ви уведомява, ако паролите ви бъдат компрометирани</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (копирано в Chromium)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium проверява за нежелан софтуер веднъж седмично. Последна проверка: преди 1 ден.}other{Chromium проверява за нежелан софтуер веднъж седмично. Последна проверка: преди {NUM_DAYS} дни.}}</translation>
 <translation id="6893813176749746474">Chromium е актуализиран, но не сте го използвали от поне 30 дни.</translation>
 <translation id="6964305034639999644">Отваряне на връзката в прозорец в режим „инко&amp;гнито“ на Chromium</translation>
 <translation id="6990124437352146030">Chromium се нуждае от разрешение за достъп до микрофона ви за този сайт</translation>
@@ -235,7 +231,6 @@
 <translation id="8621669128220841554">Инсталирането не бе успешно поради неизвестна грешка. Моля, изтеглете отново Chromium.</translation>
 <translation id="8697124171261953979">То също контролира коя страница се показва при стартиране на Chromium или при търсене от полето за всичко.</translation>
 <translation id="8704119203788522458">Това е вашият Chromium</translation>
-<translation id="8705191560707593947">Chromium проверява за нежелан софтуер веднъж седмично. Последна проверка: вчера.</translation>
 <translation id="8796602469536043152">Chromium се нуждае от разрешение за достъп до камерата и микрофона ви за този сайт</translation>
 <translation id="8803635938069941624">Общи условия на Chromium OS</translation>
 <translation id="8821041990367117597">Chromium не можа да синхронизира данните ви, защото потребителското име и паролата за вход в профила ви не са актуални.</translation>
@@ -251,7 +246,6 @@
 <translation id="91086099826398415">Отваряне на връзката в нов &amp;раздел на Chromium</translation>
 <translation id="911206726377975832">Да се изтрият ли и данните от сърфирането?</translation>
 <translation id="9158494823179993217">Системният ви администратор е конфигурирал Chromium да отваря алтернативен браузър за достъп до <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="9164845895615421500">Chromium проверява за нежелан софтуер веднъж седмично. Последна проверка: преди малко.</translation>
 <translation id="9190841055450128916">Chromium (входящ трафик за mDNS)</translation>
 <translation id="93478295209880648">Chromium може да не функционира правилно, тъй като вече не се поддържа под Windows XP и Windows Vista</translation>
 <translation id="95514773681268843"><ph name="DOMAIN" /> изисква да прочетете и приемете следните Общи условия, преди да използвате това устройство. Те не разширяват, не променят, нито ограничават Условията на Chromium OS.</translation>

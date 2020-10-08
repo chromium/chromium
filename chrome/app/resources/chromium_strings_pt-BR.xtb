@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{O Chromium verifica se há softwares indesejados uma vez por semana. Última verificação: 1 hora atrás.}one{O Chromium verifica se há softwares indesejados uma vez por semana. Última verificação: {NUM_HOURS} hora atrás.}other{O Chromium verifica se há softwares indesejados uma vez por semana. Última verificação: {NUM_HOURS} horas atrás.}}</translation>
 <translation id="1065672644894730302">Não foi possível ler suas preferências. Alguns recursos podem não estar disponíveis e as alterações nas preferências não serão salvas.</translation>
 <translation id="107513968719897256">Para separar a navegação pessoal da navegação de <ph name="NEW_USER" />, crie um perfil novo no Chromium</translation>
 <translation id="1098170124587656448">O Chromium pode ajudar a proteger você de violações de dados, extensões maliciosas e muito mais</translation>
@@ -45,7 +44,6 @@
 <translation id="2711502716910134313">Guia do Chromium</translation>
 <translation id="2718390899429598676">Para maior segurança, o Chromium criptografará seus dados.</translation>
 <translation id="2770231113462710648">Alterar navegador padrão para:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{O Chromium verifica se há softwares indesejados uma vez por semana. Última verificação: 1 minuto atrás.}one{O Chromium verifica se há softwares indesejados uma vez por semana. Última verificação: {NUM_MINS} minuto atrás.}other{O Chromium verifica se há softwares indesejados uma vez por semana. Última verificação: {NUM_MINS} minutos atrás.}}</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2847479871509788944">Remover do Chromium</translation>
 <translation id="2853765747879685679">Perguntar ao abrir o Chromium</translation>
@@ -56,7 +54,6 @@
 <translation id="3032706164202344641">O Chromium não pode verificar suas senhas. Tente mais tarde.</translation>
 <translation id="3032787606318309379">Adicionando ao Chromium...</translation>
 <translation id="3068515742935458733">Ajude a melhorar o Chromium. Envie relatórios de erros e <ph name="UMA_LINK" /> para o Google</translation>
-<translation id="3086207596048762442">O Chromium verifica se há softwares indesejados uma vez por semana</translation>
 <translation id="3103660991484857065">Ocorreu uma falha no instalador ao descompactar o arquivo. Faça o download do Chromium novamente.</translation>
 <translation id="3130323860337406239">O Chromium está usando seu microfone.</translation>
 <translation id="3155163173539279776">Reiniciar Chromium</translation>
@@ -173,7 +170,6 @@
 <translation id="6847869444787758381">O Chromium avisa se suas senhas forem comprometidas</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiado para o Chromium)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{O Chromium verifica se há softwares indesejados uma vez por semana. Última verificação: 1 dia atrás.}one{O Chromium verifica se há softwares indesejados uma vez por semana. Última verificação: {NUM_DAYS} dia atrás.}other{O Chromium verifica se há softwares indesejados uma vez por semana. Última verificação: {NUM_DAYS} dias atrás.}}</translation>
 <translation id="6893813176749746474">O Chromium foi atualizado, mas não é utilizado há pelo menos 30 dias.</translation>
 <translation id="6964305034639999644">Abrir link na janela &amp;sem rastros do Chromium</translation>
 <translation id="6990124437352146030">O Chromium precisa de permissão para este site acessar seu microfone</translation>
@@ -235,7 +231,6 @@
 <translation id="8621669128220841554">Falha na instalação devido a um erro não especificado. Faça o download do Chromium novamente.</translation>
 <translation id="8697124171261953979">Controla também qual página deve ser exibida quando você inicia o Chromium ou faz uma pesquisa na Omnibox.</translation>
 <translation id="8704119203788522458">Este é seu Chromium</translation>
-<translation id="8705191560707593947">O Chromium verifica se há softwares indesejados uma vez por semana. Última verificação: ontem.</translation>
 <translation id="8796602469536043152">O Chromium precisa de permissão para este site acessar sua câmera e seu microfone</translation>
 <translation id="8803635938069941624">Termos do Chromium OS</translation>
 <translation id="8821041990367117597">O Chromium não pôde sincronizar seus dados, pois os detalhes de login da sua conta estão desatualizados.</translation>
@@ -251,7 +246,6 @@
 <translation id="91086099826398415">Abrir link em nova &amp;guia do Chromium</translation>
 <translation id="911206726377975832">Excluir também dados de navegação?</translation>
 <translation id="9158494823179993217">O administrador do seu sistema configurou o Chromium para abrir um navegador alternativo ao acessar <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="9164845895615421500">O Chromium verifica se há softwares indesejados uma vez por semana. Última verificação: há alguns segundos.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">É possível que o Chromium não funcione corretamente, porque ele não é mais compatível com o Windows XP ou Windows Vista</translation>
 <translation id="95514773681268843"><ph name="DOMAIN" /> requer que você leia e aceite os Termos de Serviço a seguir antes de utilizar o serviço. Esses termos não ampliam, modificam nem limitam os Termos do Chromium OS.</translation>

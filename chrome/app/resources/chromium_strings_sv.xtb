@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium söker efter oönskad programvara en gång i veckan. Senaste genomsökning: 1 timme sedan.}other{Chromium söker efter oönskad programvara en gång i veckan. Senaste genomsökning: {NUM_HOURS} timmar sedan.}}</translation>
 <translation id="1065672644894730302">Det går inte att läsa inställningarna.
 
 Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna sparas inte.</translation>
@@ -47,7 +46,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2711502716910134313">Chromium-flik</translation>
 <translation id="2718390899429598676">Din data krypteras i Chromium för att öka säkerheten.</translation>
 <translation id="2770231113462710648">Ändra standardwebbläsare till:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromium söker efter oönskad programvara en gång i veckan. Senaste genomsökning: 1 minut sedan.}other{Chromium söker efter oönskad programvara en gång i veckan. Senaste genomsökning: {NUM_MINS} minuter sedan.}}</translation>
 <translation id="2799223571221894425">Starta om</translation>
 <translation id="2847479871509788944">Ta bort från Chromium …</translation>
 <translation id="2853765747879685679">Fråga när jag öppnar Chromium</translation>
@@ -58,7 +56,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3032706164202344641">Chromium kan inte kontrollera dina lösenord. Försök igen senare.</translation>
 <translation id="3032787606318309379">Lägger till i Chromium ...</translation>
 <translation id="3068515742935458733">Hjälp oss att göra Chromium bättre genom att skicka felrapporter och <ph name="UMA_LINK" /> till Google</translation>
-<translation id="3086207596048762442">Chromium söker efter oönskad programvara en gång i veckan</translation>
 <translation id="3103660991484857065">Det gick inte att packa upp arkivet med installationsfilen. Ladda ned Chromium igen.</translation>
 <translation id="3130323860337406239">Chromium använder din mikrofon.</translation>
 <translation id="3155163173539279776">Starta om Chromium</translation>
@@ -179,7 +176,6 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog elle
 <translation id="6847869444787758381">Om dina lösenord någonsin skulle läcka ut får du veta det i Chromium</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (har kopierats till Chromium)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium söker efter oönskad programvara en gång i veckan. Senaste genomsökning: 1 dag sedan.}other{Chromium söker efter oönskad programvara en gång i veckan. Senaste genomsökning: {NUM_DAYS} dagar sedan.}}</translation>
 <translation id="6893813176749746474">Chromium har uppdaterats men du har inte använt det på över 30 dagar.</translation>
 <translation id="6964305034639999644">Öppna länken i ett inko&amp;gnitofönster i Chromium.</translation>
 <translation id="6990124437352146030">Du behöver ge Chromium behörighet att använda mikrofonen på webbplatsen</translation>
@@ -244,7 +240,6 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8621669128220841554">Installationen misslyckades på grund av ett okänt fel. Ladda ned Chromium igen.</translation>
 <translation id="8697124171261953979">Det styr också vilken sida som visas när du startar Chromium eller söker i adressfältet.</translation>
 <translation id="8704119203788522458">Det här är Chromium</translation>
-<translation id="8705191560707593947">Chromium söker efter oönskad programvara en gång i veckan. Senaste genomsökning: i går.</translation>
 <translation id="8796602469536043152">Du behöver ge Chromium behörighet att använda kameran och mikrofonen på webbplatsen</translation>
 <translation id="8803635938069941624">Villkor för Chromium OS</translation>
 <translation id="8821041990367117597">Chromium kunde inte synkronisera data eftersom inloggningsuppgifterna för kontot är inaktuella.</translation>
@@ -260,7 +255,6 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="91086099826398415">Öppna länken i en ny &amp;flik i Chromium</translation>
 <translation id="911206726377975832">Vill du även ta bort din webbinformation?</translation>
 <translation id="9158494823179993217">Systemadministratören har konfigurerat Chromium så att <ph name="TARGET_URL_HOSTNAME" /> öppnas i en annan webbläsare.</translation>
-<translation id="9164845895615421500">Chromium söker efter oönskad programvara en gång i veckan. Senaste genomsökning: alldeles nyss.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium kanske inte fungerar ordentligt eftersom den inte längre stöds på Windows XP och Windows Vista</translation>
 <translation id="95514773681268843"><ph name="DOMAIN" /> kräver att du läser och godkänner följande användarvillkor innan du använder enheten. Villkoren varken utökar, ändrar eller begränsar villkoren för Chromium OS.</translation>

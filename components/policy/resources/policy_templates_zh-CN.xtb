@@ -41,12 +41,6 @@
 
       此政策只会影响所在网域与设备注册网域匹配的用户。对于所有其他用户，仅当他们首次在设备上登录时，由 IdP 设置的 Cookie 才会被转移到其个人资料中。</translation>
 <translation id="1029052664284722254">用户退出后强制设备重新启动</translation>
-<translation id="1035385378988781231">此政策用于控制适用于 <ph name="PRODUCT_NAME" />的网络文件共享功能是否将使用 NTLM 进行身份验证。
-
-      如果此政策设为 True，系统会视需要使用 NTLM 对 SMB 共享文件进行身份验证。
-      如果此政策设为 False，系统将停用对 SMB 共享文件的 NTLM 身份验证机制。
-
-      如果此政策未设置，默认情况下，系统会对受企业管理的用户停用身份验证，并对不受管理的用户启用身份验证。</translation>
 <translation id="1040446814317236570">启用 PAC 网址剔除功能（适用于 https:// 类网址）</translation>
 <translation id="1046484220783400299">让已弃用的网络平台功能在限定的时间内发挥功效</translation>
 <translation id="1047128214168693844">不允许任何网站跟踪用户的地理位置</translation>
@@ -86,11 +80,6 @@
 <translation id="1095209545735032039">禁止在这些网站上使用 Serial API</translation>
 <translation id="1096105751829466145">默认搜索服务提供商</translation>
 <translation id="1099282607296956954">为所有网站启用网站隔离功能</translation>
-<translation id="1107764601871839136">指定群组政策对象 (GPO) 缓存的期限（以小时为单位）。系统可以重复使用已缓存的 GPO（前提是它们的版本未变），而不必在每次提取政策时都重新下载 GPO。此政策可指定已缓存的 GPO 在不必重新下载的情况下可被重复使用的时长上限。重新启动和退出帐号会清除缓存。
-
-      如果此政策未设置，已缓存的 GPO 最多可被重复使用 25 小时。
-
-      如果此政策设为 0，系统就会关闭 GPO 缓存。请注意，这样设置会增加服务器负载，因为系统在每次提取政策时都要重新下载 GPO（即使版本未变也是如此）。</translation>
 <translation id="1111470455889178048">发送用户上传内容和下载内容进行扫描</translation>
 <translation id="1117535567637097036">通过此政策设置的协议处理程序不会被用于处理 Android intent。</translation>
 <translation id="1118093128235245168">允许网站请求用户授权其访问所连接的 USB 设备</translation>
@@ -722,11 +711,6 @@
 <translation id="2197625019569762163">如果此政策设为 true，登录屏幕上会默认显示数字键盘以用于输入密码。用户仍能切换到常规键盘。
 
       如果您设置了此政策，用户便无法更改它。如果此政策未设置或设为 false，它将不会产生任何效力。</translation>
-<translation id="2200041405904405884">此政策让您能够指定哪些本地消息传递主机不受屏蔽名单影响。
-
-          屏蔽名单值“*”表示所有本地消息传递主机均已被屏蔽，系统只会加载许可名单中列出的本地消息传递主机。
-
-          默认情况下，所有本地消息传递主机都列在许可名单中，但如果所有本地消息传递主机都已被依照某项政策屏蔽，您可以使用许可名单来覆盖该政策。</translation>
 <translation id="2200698565850397198">配置本地消息传递主机屏蔽名单</translation>
 <translation id="2201555246697292490">配置本地消息传递主机白名单</translation>
 <translation id="2204753382813641270">控制任务栏是否自动隐藏</translation>
@@ -799,11 +783,6 @@
 <translation id="2307496301287881990">报告显示状态和图形状态</translation>
 <translation id="2309390639296060546">默认地理位置设置</translation>
 <translation id="2327252517317514801">指定可访问 G Suite 的网域</translation>
-<translation id="2328573323851533589">此政策可用于在 <ph name="PRODUCT_NAME" /> 中强制启用/强制停用凭据泄露检查功能。
-
-          请注意：如果“安全浏览”功能已（无论是被政策还是被用户）停用，那么即使此政策设为 True，也不会触发相应行为。若想强制开启“安全浏览”功能，请使用 <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> 政策。
-
-          如果您启用了或停用了此政策，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改或覆盖它。如果您未设置此政策，系统将允许执行凭据泄露检查（但该功能可被用户关闭）。</translation>
 <translation id="2331354174913096226">所需 DNS-over-HTTPS 解析器的 URI 模板。要指定多个 DNS-over-HTTPS 解析器，请使用空格将相应的 URI 模板分隔开。
 
       如果 DnsOverHttpsMode 设为 <ph name="SECURE_DNS_MODE_SECURE" />，则必须设置此政策，不能将它留空。
@@ -949,11 +928,6 @@
       如果此设置未指定，那么用户可以决定是否使用此功能。
 
       29 版及更高版本的 <ph name="PRODUCT_NAME" /> 中已取消此设置。</translation>
-<translation id="2433412232489478893">此政策可控制是否允许用户在 <ph name="PRODUCT_NAME" />上使用网络文件共享功能。
-
-      如果未配置此政策或将其设为“True”，用户将能够使用网络文件共享功能。
-
-      如果将此政策设为“False”，用户将无法使用网络文件共享功能。</translation>
 <translation id="2435052056904485763">Kerberos 委派服务器许可名单</translation>
 <translation id="2439793457499023062">如果此政策未设置，当 Chrome 清理功能检测到垃圾软件时，它可能会按照 SafeBrowsingExtendedReportingEnabled 设置的政策向 Google 报告与此项扫描相关的元数据。然后，Chrome 清理功能会询问用户是否要清理垃圾软件。用户可以选择与 Google 分享清理结果，以协助 Google 日后更好地检测垃圾软件。这些结果包括文件元数据、自动安装的扩展程序以及注册表项（如《Chrome 隐私权白皮书》中所述）。
 
@@ -1435,26 +1409,6 @@
 <translation id="3143265893557969814">如果您设置了此政策，所有指定的数据类型都会从同步操作（无论是 Google 同步还是漫游个人资料同步）中排除。这有助于缩减漫游个人资料的大小，或者限制向 Google 同步服务器上传的数据类型。
 
       此政策当前可用的数据类型为：“bookmarks”、“preferences”、“passwords”、“autofill”、“themes”、“typedUrls”、“extensions”、“apps”、“tabs”、“wifiConfiguration”。这些名称区分大小写！</translation>
-<translation id="3146597555086966130">通过设置此政策，您可为 Chrome 和 ARC 应用（它们会忽略通过命令行指定的所有与代理有关的选项）配置代理设置。
-
-       如果您未设置此政策，用户便可自行选择代理设置。
-
-       设置 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策意味着您接受以下字段：
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />，该字段让您能够指定 Chrome 使用的代理服务器，并禁止用户更改代理设置
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />，即代理 .pac 文件的网址
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />，即代理服务器的网址
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />，即 <ph name="PRODUCT_NAME" /> 会绕过的一系列代理主机
-
-       <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> 字段已被弃用且已被 <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> 字段取代，后者让您能够指定 Chrome 使用的代理服务器并禁止用户更改代理设置。
-
-        对于 <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />，如果您选择以下值：
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />，系统永远不会使用代理，并且会忽略所有其他字段。
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />，系统会使用自己的代理，并且会忽略所有其他字段。
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />，系统会忽略所有其他字段。
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER" />，系统会使用 <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> 和 <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 字段。
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />，系统会使用 <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> 和 <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 字段。
-
-      注意：如需查看更详细的示例，请访问 Chromium 项目 ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett )。</translation>
 <translation id="3152425128389603870">使“统一桌面”功能可供用户使用，并使其在默认情况下处于启用状态</translation>
 <translation id="3159375329008977062">允许用户通过界面导出/导入 Crostini 容器</translation>
 <translation id="3165808775394012744">将这些政策列于此处是为了方便您移除它们。</translation>
@@ -1462,13 +1416,6 @@
 <translation id="316778957754360075">此设置从 <ph name="PRODUCT_NAME" />版本 29 起开始弃用。我们建议您将托管 CRX 软件包的网站包含在 ExtensionInstallSources 中，然后将上述软件包的直接下载链接放在某网页上，从而建立一个由企业托管的扩展程序/应用包。相关网页的启动器可使用 ExtensionInstallForcelist 政策创建。</translation>
 <translation id="3168968618972302728">与 Kerberos 身份验证相关的政策。</translation>
 <translation id="3171369832001535378">设备网络主机名模板</translation>
-<translation id="3172512016079904926">启用在用户级权限下安装的本地消息传递主机。
-
-          如果此政策处于启用状态，<ph name="PRODUCT_NAME" /> 将允许使用在用户级权限下安装的本地消息传递主机。
-
-          如果此政策处于停用状态，<ph name="PRODUCT_NAME" /> 将仅使用在系统级权限下安装的本地消息传递主机。
-
-          如果未设置此政策，<ph name="PRODUCT_NAME" /> 将允许使用用户级本地消息传递主机。</translation>
 <translation id="3177802893484440532">要求为本地信任锚执行在线 OCSP/CRL 检查</translation>
 <translation id="3184161739683646075">控制 DNS-over-HTTPS 模式</translation>
 <translation id="3185009703220253572">从版本 <ph name="SINCE_VERSION" /> 开始</translation>
@@ -1727,11 +1674,6 @@
         如果已设置此政策，<ph name="PRODUCT_NAME" /> 将会尝试自行注册并为所有个人资料应用关联的云政策。
 
         此政策的值是一个可从 Google 管理控制台中检索到的注册令牌。</translation>
-<translation id="3489247539215560634">此设置处于启用状态时，用户可以让 <ph name="PRODUCT_NAME" /> 记住密码，并在其下次登录相应网站时自动提供密码。
-
-          此设置处于停用状态时，用户将无法保存新密码，但仍可以使用之前保存的密码。
-
-          此政策处于启用或停用状态时，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改或替换它。如果未设置此政策，则允许保存密码（不过用户可以停用密码保存功能）。</translation>
 <translation id="3492834335089638487">此政策用于控制设备对来源不受信任（不是来自 Google Play 商店）的 Android 应用的使用。
 
       不设置此政策的值等同于禁止使用此功能。
@@ -1797,9 +1739,6 @@
 <translation id="3577628175311752799">使用默认引荐来源网址政策值 no-referrer-when-downgrade。</translation>
 <translation id="357917253161699596">允许用户管理用户证书</translation>
 <translation id="3580414086211696382">控制 File System API 在读取方面的使用</translation>
-<translation id="3583230441447348508">以列表的形式指定一系列预先配置的网络文件共享。
-
-      此政策的每个列表项都是一个包含以下两个成员的对象，“share_url”和“mode”。“share_url”应该是共享文件的网址，“mode”应设为“drop_down”或“pre_mount”。“drop_down”模式表示“share_url”将会添加到共享文件发现下拉菜单中。“pre_mount”模式表示“share_url”将会提前装载。</translation>
 <translation id="3584194414857209694">启用实验性政策</translation>
 <translation id="3584722841530002134">通过设置此政策，您可以指定 <ph name="PRODUCT_NAME" /> 可将用户凭据委派给哪台/哪些服务器。若要指定多个服务器名称，请用英文逗号分隔。允许使用通配符 <ph name="WILDCARD_VALUE" />。
 
@@ -2411,10 +2350,6 @@
 
       如果未设置此政策，则用户可以停用系统中安装的任何插件。</translation>
 <translation id="4554651132977135445">用户政策环回处理模式</translation>
-<translation id="4554841826517980623">此政策用于控制适用于 <ph name="PRODUCT_NAME" />的网络文件共享功能是否应使用“<ph name="NETBIOS_PROTOCOL" />”来搜索网络上的共享文件。
-      如果此政策设为 true，共享文件发现功能将使用“<ph name="NETBIOS_PROTOCOL" />”协议搜索网络上的共享文件。
-      如果此政策设为 false，共享文件发现功能将不使用“<ph name="NETBIOS_PROTOCOL" />”协议来搜索共享文件。
-      如果此政策未设置，默认情况下，系统会对受企业管理的用户停用此政策，并对不受管理的用户启用此政策。</translation>
 <translation id="4555850956567117258">为该用户启用远程认证</translation>
 <translation id="4557134566541205630">默认搜索服务提供商新标签页网址</translation>
 <translation id="4562165737444703281">允许用户 [启用/配置] Crostini 端口转发</translation>
@@ -2510,13 +2445,6 @@
           要查看示例格式，请访问 https://www.chromium.org/developers/how-tos/chrome-frame-getting-started。</translation>
 <translation id="467449052039111439">打开网址列表</translation>
 <translation id="4674871290487541952">在对扩展程序更新和安装进行完整性检查时允许使用不安全的算法</translation>
-<translation id="4677605038200415894">通过设置此政策，您可以创建一个网址格式列表，从而指定自动授权哪些网站访问具有给定供应商 ID 和产品 ID 的 USB 设备。每个列表项都必须包含设备和网址，此政策才会有效。设备部分中的每项都可包含供应商 ID 和产品 ID 字段。您省略的任何 ID 都会被视为通配符，但例外情况是：如果未指定供应商 ID，便无法指定产品 ID。倘若在未指定供应商 ID 的情况下指定产品 ID，此政策将会无效。
-
-      USB 权限模型会使用请求网址（发出请求的网站的网址）和嵌入网址（顶级框架网站的网址）来授权请求网址访问相应 USB 设备。如果发出请求的网站是在 iframe 中加载的，请求网址可能会与嵌入网址不同。因此，“urls”字段最多可包含 2 个以英文逗号分隔的字符串，以分别指定请求网址和嵌入网址。如果仅指定了 1 个网址，那么无论嵌入网址的状态为何，系统将会在请求网站的网址与这个网址相符时授权该网站访问相应 USB 设备。“urls”字段中的网址必须是有效网址，否则系统会忽略此政策。
-
-      如果您不设置此政策，系统会应用 <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />（若已设置）或用户的个人设置（若前者未设置）。
-
-      此政策中的网址格式不应与通过 <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> 配置的网址格式冲突。如果它们存在冲突，此政策优先于 <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> 和 <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />。</translation>
 <translation id="4680936297850947973">已在 M68 中弃用。请改用 DefaultPopupsSetting。
 
       如需完整说明，请访问 https://www.chromestatus.com/features/5675755719622656。
@@ -2559,13 +2487,6 @@
           如果您设置了此政策，用户将无法更改或覆盖它。
 
           如果未设置此政策，则“单声道音频”最初会处于停用状态，但用户可以随时启用该功能。</translation>
-<translation id="4764901562691611575">此政策已被弃用，请改用“<ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" />”政策。
-
-          让您能够指定不应加载哪些本地消息传递主机。
-
-          屏蔽名单值“*”表示所有本地消息传递主机都已被屏蔽，除非是许可名单中明确列出的本地消息传递主机。
-
-          如果此政策未设置，<ph name="PRODUCT_NAME" /> 将会加载所有已安装的本地消息传递主机。</translation>
 <translation id="4771144269610910963">此政策用于控制安全浏览功能对用户下载内容的深度扫描。如果此政策未设置，或设为默认的“不扫描文件”，安全浏览功能将不会扫描用户下载内容。
 
       如果此政策设为“发送用户下载内容进行扫描”，系统就会将用户下载内容通过网络发送给安全浏览功能，以进行恶意软件扫描。
@@ -2718,15 +2639,6 @@
 <translation id="5085647276663819155">停用打印预览</translation>
 <translation id="5090209345759901501">将 Flash 内容设置的涵盖面扩展至所有内容</translation>
 <translation id="5090791951240382356">允许合并来自多个不同来源的字典政策</translation>
-<translation id="5093540029655764852">指定客户端应以怎样的频率（单位：天）更改其设备帐号密码。密码是由客户端随机生成的，不会显示给用户。
-
-      和用户密码一样，设备密码也应定期更改。停用此政策或设置较多的天数可能会对安全性产生不利影响，因为这会让潜在攻击者有更多时间来找出设备帐号密码并使用该密码。
-
-      如果未设置此政策，客户端将会每 30 天更改一次设备帐号密码。
-
-      如果此政策设为 0，客户端则无法更改设备帐号密码。
-
-      请注意，如果客户端在较长时间内一直处于离线状态，那么即使指定的天数已过，密码也可能不会更改。</translation>
 <translation id="5101600510268095939">让您能够设置一系列网址格式，从而指定不允许哪些网站显示可屏蔽的（即主动型）混合内容（即 HTTPS 网站上的 HTTP 内容），以及要为哪些网站升级可选的可屏蔽（即被动型）混合内容。
 
           如果未设置此政策，可屏蔽的混合内容将被屏蔽，同时可选的可屏蔽混合内容将被升级，但用户将能设置例外情况以允许在特定网站上显示此类内容。
@@ -2846,15 +2758,6 @@
 
       此处的“Version”既可以是确切版本（如“61.0.3163.120”），也可以是版本前缀（如“61.0”）。  </translation>
 <translation id="5247006254130721952">拦截有危险的下载内容</translation>
-<translation id="5248863213023520115">设置可使用哪些加密类型从 <ph name="MS_AD_NAME" /> 服务器请求 Kerberos 凭单。
-
-      如果此政策设为“所有”，则允许使用 AES 加密类型“aes256-cts-hmac-sha1-96”和“aes128-cts-hmac-sha1-96”，以及 RC4 加密类型“rc4-hmac”。如果服务器同时支持这两种类型，则优先使用 AES 加密。请注意，RC4 加密不安全，所以如果可能的话，则应重新配置服务器，以支持 AES 加密。
-
-      如果此政策设为“强”或未设置，则仅允许使用 AES 加密类型。
-
-      如果此政策设为“旧版”，则仅允许使用 RC4 加密类型。此选项不安全，因此只有在非常特殊的情况下才应使用它。
-
-      另请访问 https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerberos_client_encryption_types。</translation>
 <translation id="5249453807420671499">用户可以添加 Kerberos 帐号</translation>
 <translation id="5252995168844634755">如果此政策设为 True，系统会开启“统一桌面”功能，使应用能够跨多个显示屏进行显示。用户可为单个显示屏关闭“统一桌面”功能。
 
@@ -3249,13 +3152,6 @@
 
           此政策的值仅在 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策设为启用时才适用，在其他情况下一概不适用。</translation>
 <translation id="5697306356229823047">报告设备用户</translation>
-<translation id="5699487516670033016">指定身份验证数据缓存的期限（以小时为单位）。此缓存用于加快登录速度。此缓存包含与关联领域（即机器领域所信任的领域）相关的一般数据（工作群组名称等）。系统不会缓存特定于用户的数据以及非关联领域的数据。重启设备会清除缓存。
-
-      如果此政策未设置，已缓存的身份验证数据最多可被重复使用 73 小时。
-
-      如果此政策设为 0，系统就会关闭身份验证数据缓存。这样设置可能会显著降低关联用户的登录速度，因为系统在每次登录时都必须提取特定于领域的数据。
-
-      请注意，系统会为所有用户（甚至是临时用户）缓存领域数据。若想阻止跟踪临时用户的领域，则应关闭此缓存。</translation>
 <translation id="570062449808736508">此政策设为非空字符串时，WebView 将读取具有指定机构名称的内容提供方的网址限制条件。</translation>
 <translation id="5708969689202733975">配置所允许的“快速解锁”模式</translation>
 <translation id="572155275267014074">Android 设置</translation>
@@ -3550,11 +3446,6 @@
 
       注意：此政策会影响所有类型（包括音频无障碍功能）的音频输出。如果用户需要使用屏幕阅读器，请勿停用此政策。</translation>
 <translation id="6221175752766085998">允许使用由本地信任锚颁发的缺少 subjectAlternativeName 扩展项的证书</translation>
-<translation id="6222839831045864769">让您能够指定不应加载哪些本地消息传递主机。
-
-          屏蔽名单值“*”表示所有本地消息传递主机都已被屏蔽，除非是许可名单中明确列出的本地消息传递主机。
-
-          如果此政策未设置，<ph name="PRODUCT_NAME" /> 将会加载所有已安装的本地消息传递主机。</translation>
 <translation id="6224304369267200483">自动允许直接安全密钥认证的网址/网域</translation>
 <translation id="6230442621691161858">如果您启用了此功能，系统便会向您推荐各种可供您探索的新内容，包括应用、网页等。
       如果此政策设为 True，系统会启用“可供探索的新内容建议”功能。
@@ -4791,13 +4682,6 @@
 <translation id="7788511847830146438">根据个人资料</translation>
 <translation id="780629758750905699">允许向设备添加 Family Link 帐号</translation>
 <translation id="7807139251387225825">应从同步操作中排除的类型列表</translation>
-<translation id="7815699949432723208">此政策已被弃用，请改用“<ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />”政策。
-
-          此政策让您能够指定哪些本地消息传递主机不受屏蔽名单影响。
-
-          屏蔽名单值“*”表示所有本地消息传递主机均已被屏蔽，系统只会加载许可名单中列出的本地消息传递主机。
-
-          默认情况下，所有本地消息传递主机都列在许可名单中，但如果所有本地消息传递主机都已被依照某项政策屏蔽，您可以使用许可名单来覆盖该政策。</translation>
 <translation id="7818131573217430250">设置登录屏幕上高反差模式的默认状态</translation>
 <translation id="7823902813460802031">如果此政策已启用，<ph name="PRODUCT_OS_NAME" />会阻止相应设备进入开发者模式。
 
@@ -5214,13 +5098,6 @@
       如果设置了此政策，系统便会酌情删除旧快照以遵守此限制。如果此政策设为 0，系统将不会创建任何快照</translation>
 <translation id="8451988835943702790">使用“新标签页”作为主页</translation>
 <translation id="8455529558077979314">隐私保护屏设置</translation>
-<translation id="8459216513698220096">指定是否处理计算机 GPO 中的用户政策以及如何处理。
-
-      如果此政策设为“默认”或未设置，则系统仅会从用户 GPO 读取用户政策（忽略计算机 GPO）。
-
-      如果此政策设为“合并”，则用户 GPO 中的用户政策将与计算机 GPO 中的用户政策合并（计算机 GPO 优先）。
-
-      如果此政策设为“替换”，则计算机 GPO 中的用户政策将替换用户 GPO 中的用户政策（忽略用户 GPO）。</translation>
 <translation id="8465065632133292531">在使用 POST 的即搜即得网址中所需的参数</translation>
 <translation id="8465746466645315861">如果此政策未设置，则用户可以在语言设置中启用或停用拼写检查。
 
@@ -5355,11 +5232,6 @@
 <translation id="8622378389102774881">如果您设置了此政策，远程访问主机将要求身份验证客户端从该网址获取身份验证令牌，以便建立连接。此政策必须与 RemoteAccessHostTokenValidationUrl 结合使用。
 
           如果您未设置此政策或将它留空，系统会停用此功能。</translation>
-<translation id="8625234016727663537">让您能够以列表的形式设置一系列网址，以指定自动授权哪些网站在登录屏幕上访问具有给定供应商 ID 和产品 ID 的 USB 设备。列表中的每项内容都必须包含设备和网址这两个部分，此政策才会有效。设备部分中的每项都可包含供应商 ID 和产品 ID 字段。被省略的任何 ID 都会被视为通配符，但例外情况是：如果未指定供应商 ID，便无法指定产品 ID。否则，此政策将会无效并会被忽略。
-
-        USB 权限模型会使用发出相应请求的网站的网址（“请求网址”）和顶级框架网站的网址（“嵌入网址”）来授权请求网址访问 USB 设备。如果发出请求的网站是在 iframe 中加载的，则请求网址可能会与嵌入网址不同。因此，“urls”字段最多可包含 2 个以英文逗号分隔的网址字符串，以分别指定请求网址和嵌入网址。如果仅指定了 1 个网址，系统将会在请求网址与这个网址相符（无论嵌入网址的状态为何）时向该网站授予对相应 USB 设备的访问权限。“urls”字段中的网址必须是有效网址，否则系统会忽略此政策。
-
-        如果未设置此政策，系统将会对所有网站使用全局默认值（不会自动授予访问权限）。</translation>
 <translation id="8631434304112909927">到版本 <ph name="UNTIL_VERSION" /> 为止</translation>
 <translation id="8631437968147930597">可在 <ph name="PRODUCT_OS_NAME" />锁定屏幕中显示的笔记应用的列表。</translation>
 <translation id="8649763579836720255">Chrome 操作系统设备可使用远程凭证（经验证的访问凭证）来获取由 Chrome OS CA 颁发的证书，以证明该设备符合播放受保护内容的条件。此过程涉及向 Chrome OS CA 发送用于唯一标识设备的硬件背书信息。
@@ -5737,7 +5609,6 @@
 
       实际的回滚可能性或许还取决于设备型号和关键的漏洞补丁程序。</translation>
 <translation id="9123464369663964441">让用户能够添加例外情况以允许显示混合内容</translation>
-<translation id="9126014181388780690">“允许 Google 助理访问屏幕上的上下文内容”</translation>
 <translation id="9129169595075460149">如果此政策已启用，Google 搜索中的安全搜索功能将始终处于启用状态，并且用户无法更改此设置。
 
       如果此政策已停用或未设置，系统将不会在 Google 搜索中强制启用安全搜索功能。</translation>
@@ -5806,7 +5677,6 @@
 <translation id="944817693306670849">设置磁盘缓存大小</translation>
 <translation id="949278212566535827">允许下载受密码保护的文件</translation>
 <translation id="974349541138387272">指定所需 DNS-over-HTTPS 解析器的 URI 模板</translation>
-<translation id="974479807614498635">允许“快速解答”功能访问所选内容</translation>
 <translation id="981346395360763138">已停用 Google 位置信息服务</translation>
 <translation id="982497069985795632">启用拼写检查</translation>
 <translation id="983256325512298435">指定一系列协议以便无需提示用户就能启动所列来源中的外部应用</translation>

@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Samo izabrani sadržaj</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> zahteva licencu</translation>
 <translation id="1223853788495130632">Administrator preporučuje određenu vrednost za ovo podešavanje.</translation>
-<translation id="1224275271335624810">Najbrže</translation>
 <translation id="1225177025209879837">Obrada zahteva...</translation>
 <translation id="1227507814927581609">Potvrda autentičnosti tokom povezivanja sa „<ph name="DEVICE_NAME" />“ nije uspela.</translation>
 <translation id="1230417814058465809">Standardna zaštita je uključena. Koristite naprednu zaštitu da biste se dodatno zaštitili.</translation>
@@ -595,7 +594,6 @@
 <translation id="1668435968811469751">Registrujte se ručno</translation>
 <translation id="1668979692599483141">Saznajte više o predlozima</translation>
 <translation id="1670399744444387456">Osnovna</translation>
-<translation id="167160931442925455">Najglasnije</translation>
 <translation id="1673137583248014546"><ph name="URL" /> želi da vidi proizvođača i model bezbednosnog ključa</translation>
 <translation id="1677306805708094828">Nismo uspeli da dodamo: <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> je preostalo</translation>
@@ -916,7 +914,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">Proverava se virtuelna mašina</translation>
 <translation id="2048182445208425546">Pristup mrežnom saobraćaju</translation>
-<translation id="2048243703055695889">Podešavanja deljenja u blizini za uređaj korisnika <ph name="USER_EMAIL" />, „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="2048653237708779538">Radnja nije dostupna</translation>
 <translation id="204914487372604757">Napravi prečicu</translation>
 <translation id="2050339315714019657">Vertikalno</translation>
@@ -1101,7 +1098,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2262477216570151239">Odlaganje pre ponavljanja</translation>
 <translation id="2263189956353037928">Odjavi me i ponovo me prijavi</translation>
 <translation id="2263371730707937087">Učestalost osvežavanja ekrana</translation>
-<translation id="2263497240924215535">(Onemogućeno)</translation>
 <translation id="22665427234727190">Pitaj kada sajt želi da pristupa Bluetooth uređajima (preporučeno)</translation>
 <translation id="2266957463645820432">IPP preko USB-a (IPPUSB)</translation>
 <translation id="2270450558902169558">Razmena podataka sa bilo kojim uređajem na domenu <ph name="DOMAIN" /></translation>
@@ -1888,7 +1884,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3202131003361292969">Putanja</translation>
 <translation id="3202173864863109533">Zvuk ove kartice je isključen.</translation>
 <translation id="3208321278970793882">Aplikacija</translation>
-<translation id="3208584281581115441">Proverite</translation>
+<translation id="3208584281581115441">Proveri</translation>
 <translation id="3208703785962634733">Nepotvrđeno</translation>
 <translation id="32101887417650595">Povezivanje sa štampačem nije uspelo</translation>
 <translation id="321084946921799184">Žuta i bela</translation>
@@ -2286,7 +2282,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3674840410592648165">Sajtovi mogu da instaliraju obrađivače plaćanja (preporučuje se)</translation>
 <translation id="367645871420407123">ostavite prazno ako želite da podesite osnovnu lozinku na podrazumevanu vrednost slike za testiranje</translation>
 <translation id="3677106374019847299">Unesite prilagođenog dobavljača</translation>
-<translation id="3677657024345889897">Najtiše</translation>
 <translation id="3677911431265050325">Zahtevaj mobilni sajt</translation>
 <translation id="3677959414150797585">Uključuje aplikacije, veb-stranice i drugo. Šalje statistiku da bi se poboljšali predlozi samo ako ste odabrali da delite podatke o korišćenju.</translation>
 <translation id="3678156199662914018">Dodatak: <ph name="EXTENSION_NAME" /></translation>
@@ -2475,7 +2470,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3867944738977021751">Polja sertifikata</translation>
 <translation id="3869917919960562512">Pogrešan indeks.</translation>
 <translation id="3870931306085184145">Nema sačuvanih lozinki za <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">Najniži</translation>
 <translation id="3871350334636688135">Posle 24 sata administrator će obaviti jednokratno ažuriranje koje će izbrisati lokalne podatke kada restartujete uređaj. Sačuvajte potrebne lokalne podatke u prostoru u klaudu u roku od 24 sata.</translation>
 <translation id="3872220884670338524">Još radnji, sačuvan je nalog za <ph name="USERNAME" /> na <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Oslobodite prostor na disku ili će uređaj prestati da se odaziva.</translation>
@@ -4233,7 +4227,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6025215716629925253">Stanje niza</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB uređaj je povezan</translation>
 <translation id="6028117231645531007">Dodaj otisak prsta</translation>
-<translation id="6029587122245504742">Najsporije</translation>
 <translation id="6029594605736587274">funkcija <ph name="PERMISSION" /> je blokirana</translation>
 <translation id="6031600495088157824">Opcije unosa na traci sa alatkama</translation>
 <translation id="6032715498678347852">Da biste dali dodatku pristup za ovaj sajt, kliknite na njega.</translation>
@@ -4527,7 +4520,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6349101878882523185">Instalirajte <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Sinhronizacija ne funkcioniše. Probajte da se odjavite i ponovo prijavite.</translation>
 <translation id="6351063337294363751">Iz ovog menija možete da obrišete podatke pregledanja</translation>
-<translation id="6352773953037195952">Najviši</translation>
 <translation id="6354918092619878358">Eliptična kriva SECG secp256r1 (takođe poznata kao ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Ne isključujte uređaj</translation>
 <translation id="63566973648609420">Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Google ne šalje niti čuva pristupnu frazu. Ako zaboravite pristupnu frazu ili želite da promenite ovo podešavanje, moraćete da <ph name="BEGIN_LINK" />resetujete sinhronizaciju<ph name="END_LINK" />.</translation>
@@ -5292,6 +5284,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Ova aplikacija bi mogla da ometa pravilno funkcionisanje Chrome-a.}one{Ove aplikacije bi mogle da ometaju pravilno funkcionisanje Chrome-a.}few{Ove aplikacije bi mogle da ometaju pravilno funkcionisanje Chrome-a.}other{Ove aplikacije bi mogle da ometaju pravilno funkcionisanje Chrome-a.}}</translation>
 <translation id="7303281435234579599">Ups! Došlo je do problema pri podešavanju režima demonstracije.</translation>
 <translation id="7303900363563182677">Ovom sajtu je blokiran uvid u tekst i slike koji su kopirani u privremenu memoriju</translation>
+<translation id="7304030187361489308">Visok</translation>
 <translation id="7305123176580523628">USB štampač je povezan</translation>
 <translation id="730515362922783851">Razmena podataka sa bilo kojim uređajem na lokalnoj mreži ili internetu</translation>
 <translation id="7306521477691455105">Otvorite Podešavanja da biste povezali <ph name="USB_DEVICE_NAME" /> sa <ph name="USB_VM_NAME" /></translation>

@@ -23,7 +23,6 @@
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> は危険なファイルであるため、Chrome でブロックしました。</translation>
 <translation id="1597911401261118146">パスワードにデータ侵害などセキュリティに関する問題がないかどうかを確認するには、<ph name="BEGIN_LINK" />Chrome にログイン<ph name="END_LINK" />してください。</translation>
 <translation id="1619887657840448962">Chrome をより安全にご利用いただくために、<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />で提供していない次の拡張機能を無効にしました。これは知らないうちに追加された可能性があります。</translation>
-<translation id="162448658176061655">Chrome で週 1 回、望ましくないソフトウェアがないか確認します。前回の確認: 数秒前。</translation>
 <translation id="162629503687514352">Chrome OS でパスワードを同期できませんでした。</translation>
 <translation id="1628000112320670027">Chrome のヘルプを見る</translation>
 <translation id="1662639173275167396">Chrome OS も <ph name="BEGIN_LINK_LINUX_OSS" />Linux（ベータ版）<ph name="END_LINK_LINUX_OSS" />も追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
@@ -122,7 +121,7 @@
 <translation id="4325083532956419387">Chrome OS のバージョン</translation>
 <translation id="4328355335528187361">Google Chrome Dev（mDNS-In）</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
-<translation id="4335235004908507846">Chrome でデータ侵害や不正な拡張機能などの脅威から保護できているか確認します</translation>
+<translation id="4335235004908507846">Chrome でデータ侵害や不正な拡張機能などの脅威から保護されているか確認します</translation>
 <translation id="4343195214584226067">「<ph name="EXTENSION_NAME" />」が Chrome に追加されました</translation>
 <translation id="4384570495110188418">ログインしていないため、Chrome でパスワードを確認できません</translation>
 <translation id="4407807842708586359">Google Chrome OS</translation>
@@ -143,7 +142,6 @@
 <translation id="4771048833395599659">このファイルは危険なファイルの可能性があるため、Chrome でブロックしました。</translation>
 <translation id="479167709087336770">Google 検索と同じスペルチェックが使用されます。ブラウザに入力したテキストは Google に送信されます。この動作はいつでも設定で変更できます。</translation>
 <translation id="4891791193823137474">Google Chrome のバックグラウンドでの実行を許可する</translation>
-<translation id="489337168347244450">{NUM_DAYS,plural, =1{Chrome で週 1 回、望ましくないソフトウェアがないか確認します。前回の確認: 1 日前。}other{Chrome で週 1 回、望ましくないソフトウェアがないか確認します。前回の確認: {NUM_DAYS} 日前。}}</translation>
 <translation id="4895437082222824641">新しい Chrome タブでリンクを開く(&amp;T)</translation>
 <translation id="4953650215774548573">Google Chrome を既定のブラウザとして設定する</translation>
 <translation id="495931528404527476">Chrome 専用</translation>
@@ -185,7 +183,6 @@
 <translation id="6291549208091401781">Google Chrome は既にパソコンのすべてのユーザー対してインストールされています。</translation>
 <translation id="6338556085225130112">Google Chrome を更新しています</translation>
 <translation id="6368958679917195344">Chrome OS は、さらに追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
-<translation id="6454142105866844106">Chrome で週 1 回、望ましくないソフトウェアがないか確認します</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome を更新しています（<ph name="PROGRESS_PERCENT" />）</translation>
 <translation id="6676384891291319759">インターネットにアクセス</translation>
@@ -204,13 +201,11 @@
 <translation id="7106741999175697885">タスク マネージャ - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。}=1{Chrome の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。シークレット ウィンドウは、再起動後は自動的には開きません。}other{Chrome の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="7155997830309522122">その場合は、Chrome に保存したパスワードを編集して、新しいパスワードと一致するようにしてください。</translation>
-<translation id="7236955538461508933">{NUM_HOURS,plural, =1{Chrome で週 1 回、望ましくないソフトウェアがないか確認します。前回の確認: 1 時間前。}other{Chrome で週 1 回、望ましくないソフトウェアがないか確認します。前回の確認: {NUM_HOURS} 時間前。}}</translation>
 <translation id="7242029209006116544">現在、管理対象アカウントでログインしており、あなたの Google Chrome プロフィールを管理者が制御できる状態になっています。あなたの Chrome データ（アプリ、ブックマーク、履歴、パスワードなどの設定）は永続的に <ph name="USER_NAME" /> に関連付けられます。このデータは Google アカウントのダッシュボードを介して削除できますが、このデータを別のアカウントに関連付けることはできなくなります。新しいプロフィールを作成して、既存の Chrome データを別に保管することができます。<ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">この言語が Google Chrome UI の表示に使用されます</translation>
 <translation id="7296210096911315575">使用と安全に関する重要事項</translation>
 <translation id="7308322188646931570">ファイルをダウンロードするには、Chrome でストレージへのアクセスを許可する必要があります</translation>
 <translation id="7339898014177206373">新しいウィンドウ</translation>
-<translation id="7386132805935307836">Chrome で週 1 回、望ましくないソフトウェアがないか確認します。前回の確認: 昨日。</translation>
 <translation id="7398801000654795464">Chrome に <ph name="USER_EMAIL_ADDRESS" /> としてログインしていました。再度ログインするには同じアカウントを使用してください。</translation>
 <translation id="7408085963519505752">Chrome OS 利用規約</translation>
 <translation id="7419046106786626209">お使いのドメインでは同期を利用できないため、Chrome OS はデータを同期できませんでした。</translation>
@@ -245,7 +240,6 @@
 <translation id="828798499196665338">保護者が Chrome の「サイト、アプリ、拡張機能の権限」をオフにしました。この <ph name="EXTENSION_TYPE_PARAMETER" /> を有効にすることはできません。</translation>
 <translation id="8290100596633877290">エラー: Google Chrome で問題が発生しました。今すぐ再起動しますか？</translation>
 <translation id="8342675569599923794">このファイルは危険なファイルであるため、Chrome でブロックしました。</translation>
-<translation id="8344083974188970894">{NUM_MINS,plural, =1{Chrome で週 1 回、望ましくないソフトウェアがないか確認します。前回の確認: 1 分前。}other{Chrome で週 1 回、望ましくないソフトウェアがないか確認します。前回の確認: {NUM_MINS} 分前。}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="840084489713044809">Google Chrome からパスワードをエクスポートするための許可を求められています。</translation>
 <translation id="8433638294851456451">Android スマートフォンに番号を送信するには、両方のデバイスで Chrome にログインしてください。</translation>

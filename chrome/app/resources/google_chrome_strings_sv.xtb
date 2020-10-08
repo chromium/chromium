@@ -25,7 +25,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> är skadlig och har blockerats av Chrome.</translation>
 <translation id="1597911401261118146"><ph name="BEGIN_LINK" />Logga in i Chrome<ph name="END_LINK" /> om du vill kontrollera att dina lösenord skyddas från dataintrång och andra säkerhetsproblem.</translation>
 <translation id="1619887657840448962">Vi har gjort Chromium säkrare genom att inaktivera följande tillägg som inte anges i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> och som kan ha lagts till utan att du vet om det.</translation>
-<translation id="162448658176061655">Chrome söker efter oönskad programvara en gång i veckan. Senaste genomsökning: alldeles nyss.</translation>
 <translation id="162629503687514352">Det gick inte att synkronisera lösenord i Chrome OS.</translation>
 <translation id="1628000112320670027">Få hjälp med Chrome</translation>
 <translation id="1662639173275167396">Chrome OS fungerar tack vare <ph name="BEGIN_LINK_CROS_OSS" />program med öppen källkod<ph name="END_LINK_CROS_OSS" />, liksom <ph name="BEGIN_LINK_LINUX_OSS" />Linux (beta)<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -147,7 +146,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4771048833395599659">Filen kan vara farlig och har blockerats av Chrome.</translation>
 <translation id="479167709087336770">Detta använder samma stavningskontroll som Google Sök. Text som du skriver i webbläsaren skickas till Google. Du kan när som helst ändra detta i inställningarna.</translation>
 <translation id="4891791193823137474">Låt Google Chrome köras i bakgrunden</translation>
-<translation id="489337168347244450">{NUM_DAYS,plural, =1{Chrome söker efter oönskad programvara en gång i veckan. Senaste genomsökning: 1 dag sedan.}other{Chrome söker efter oönskad programvara en gång i veckan. Senaste genomsökning: {NUM_DAYS} dagar sedan.}}</translation>
 <translation id="4895437082222824641">Öppna länkar i en ny flik i Chrome</translation>
 <translation id="4953650215774548573">Ange Google Chrome som standardwebbläsare</translation>
 <translation id="495931528404527476">I Chrome</translation>
@@ -194,7 +192,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6338556085225130112">Uppdaterar Google Chrome
 </translation>
 <translation id="6368958679917195344">Chrome OS fungerar tack vare <ph name="BEGIN_LINK_CROS_OSS" />ytterligare program med öppen källkod<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="6454142105866844106">Chrome söker efter oönskad programvara en gång i veckan</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome uppdateras (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6676384891291319759">Gå ut på Internet</translation>
@@ -213,13 +210,11 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7106741999175697885">Aktivitetshanteraren - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Det finns en ny Chrome-uppdatering som tillämpas så snart du startar om.}=1{Det finns en ny Chrome-uppdatering som tillämpas så snart du startar om. Inkognitofönstret öppnas inte igen.}other{Det finns en ny Chrome-uppdatering som tillämpas så snart du startar om. De # inkognitofönstren öppnas inte igen.}}</translation>
 <translation id="7155997830309522122">Om så är fallet ska du redigera det sparade lösenordet i Chrome så att det matchar det nya lösenordet.</translation>
-<translation id="7236955538461508933">{NUM_HOURS,plural, =1{Chrome söker efter oönskad programvara en gång i veckan. Senaste genomsökning: 1 timme sedan.}other{Chrome söker efter oönskad programvara en gång i veckan. Senaste genomsökning: {NUM_HOURS} timmar sedan.}}</translation>
 <translation id="7242029209006116544">Du loggar in med ett hanterat konto och ger dess administratör kontroll över din Google Chrome-profil. Dina Chrome-uppgifter, t.ex. dina appar, bokmärken, din historik, dina lösenord och andra inställningar, knyts permanent till <ph name="USER_NAME" />. Du kommer att kunna ta bort dessa uppgifter via instrumentpanelen i Google Konton, men du kommer inte att kunna koppla dessa uppgifter till ett annat konto. Du kan skapa en ny profil om du vill hålla dina befintliga Chrome-uppgifter separata. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Användargränssnittet i Google Chrome visas på det här språket</translation>
 <translation id="7296210096911315575">Viktig användnings- och säkerhetsinformation</translation>
 <translation id="7308322188646931570">Du behöver ge Chrome åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>
 <translation id="7339898014177206373">Nytt fönster</translation>
-<translation id="7386132805935307836">Chrome söker efter oönskad programvara en gång i veckan. Senaste genomsökning: i går.</translation>
 <translation id="7398801000654795464">Du var inloggad i Chrome som <ph name="USER_EMAIL_ADDRESS" />. Använd samma konto när du loggar in igen.</translation>
 <translation id="7408085963519505752">Villkor för Chrome OS</translation>
 <translation id="7419046106786626209">Det gick inte att synkronisera data med Chrome OS eftersom synkronisering inte är tillgängligt för din domän.</translation>
@@ -254,7 +249,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="828798499196665338">Din förälder har inaktiverat Behörigheter för webbplatser, appar och tillägg för Chrome. Det är inte tillåtet att aktivera denna <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Hoppsan! Google Chrome har kraschat. Vill du starta om nu?</translation>
 <translation id="8342675569599923794">Filen är farlig och har blockerats av Chrome.</translation>
-<translation id="8344083974188970894">{NUM_MINS,plural, =1{Chrome söker efter oönskad programvara en gång i veckan. Senaste genomsökning: 1 minut sedan.}other{Chrome söker efter oönskad programvara en gång i veckan. Senaste genomsökning: {NUM_MINS} minuter sedan.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med ensamrätt.</translation>
 <translation id="840084489713044809">Lösenorden exporteras från Google Chrome.</translation>
 <translation id="8433638294851456451">Logga in på Chrome på båda enheterna om du vill skicka ett nummer från Android-telefonen.</translation>

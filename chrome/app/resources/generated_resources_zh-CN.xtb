@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">仅限选定内容</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> 必须获得许可</translation>
 <translation id="1223853788495130632">您的管理员建议将此设置设为某个特定值。</translation>
-<translation id="1224275271335624810">最快</translation>
 <translation id="1225177025209879837">正在处理请求…</translation>
 <translation id="1227507814927581609">连接到“<ph name="DEVICE_NAME" />”时身份验证失败。</translation>
 <translation id="1230417814058465809">已开启标准保护。若要进一步提升安全性，请使用增强型保护。</translation>
@@ -595,7 +594,6 @@
 <translation id="1668435968811469751">手动注册</translation>
 <translation id="1668979692599483141">了解建议</translation>
 <translation id="1670399744444387456">基本</translation>
-<translation id="167160931442925455">最大音量</translation>
 <translation id="1673137583248014546"><ph name="URL" /> 想查看您的安全密钥的品牌和型号</translation>
 <translation id="1677306805708094828">无法添加<ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">电量尚余 <ph name="TIME" /></translation>
@@ -916,7 +914,6 @@
 <translation id="2046702855113914483">拉面</translation>
 <translation id="204706822916043810">正在检查虚拟机</translation>
 <translation id="2048182445208425546">获取您的网络流量数据</translation>
-<translation id="2048243703055695889"><ph name="USER_EMAIL" /> 的设备“<ph name="DEVICE_NAME" />”的“附近分享”设置。</translation>
 <translation id="2048653237708779538">无法执行操作</translation>
 <translation id="204914487372604757">创建快捷方式</translation>
 <translation id="2050339315714019657">纵向</translation>
@@ -1101,7 +1098,6 @@
 <translation id="2262477216570151239">重复前的延迟时间</translation>
 <translation id="2263189956353037928">退出并重新登录</translation>
 <translation id="2263371730707937087">屏幕刷新频率</translation>
-<translation id="2263497240924215535">（已停用）</translation>
 <translation id="22665427234727190">在网站想访问蓝牙设备时询问您（推荐）</translation>
 <translation id="2266957463645820432">USB 型 IPP (IPPUSB)</translation>
 <translation id="2270450558902169558">与网域 <ph name="DOMAIN" /> 中的任何设备交换数据</translation>
@@ -2285,7 +2281,6 @@
 <translation id="3674840410592648165">网站可以安装付款处理程序（推荐）</translation>
 <translation id="367645871420407123">如果您要将根密码设为默认的测试图片值，则将此字段留空</translation>
 <translation id="3677106374019847299">请输入自定义提供商</translation>
-<translation id="3677657024345889897">最小音量</translation>
 <translation id="3677911431265050325">请求切换到移动版网站</translation>
 <translation id="3677959414150797585">包括应用、网页等。仅当您已选择分享使用情况数据时，才会发送统计信息以完善建议。</translation>
 <translation id="3678156199662914018">扩展程序：<ph name="EXTENSION_NAME" /></translation>
@@ -2474,7 +2469,6 @@
 <translation id="3867944738977021751">证书字段</translation>
 <translation id="3869917919960562512">索引错误。</translation>
 <translation id="3870931306085184145">尚未保存任何用于登录 <ph name="DOMAIN" /> 的密码</translation>
-<translation id="3871092408932389764">最低</translation>
 <translation id="3871350334636688135">24 小时后，当您重启设备时，您的管理员将会执行一项一次性更新，这项更新会删除您的本地数据。请在 24 小时之内将您需要的所有本地数据保存到云端存储空间。</translation>
 <translation id="3872220884670338524">更多操作，<ph name="USERNAME" /> 在 <ph name="DOMAIN" /> 上的已保存帐号</translation>
 <translation id="3872991219937722530">请释放磁盘空间，否则设备将无响应。</translation>
@@ -4230,7 +4224,6 @@
 <translation id="6025215716629925253">堆叠追踪</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - 已连接 USB 设备</translation>
 <translation id="6028117231645531007">添加指纹</translation>
-<translation id="6029587122245504742">最慢</translation>
 <translation id="6029594605736587274">已禁用<ph name="PERMISSION" /></translation>
 <translation id="6031600495088157824">在工具栏中显示输入选项</translation>
 <translation id="6032715498678347852">若要授权某个扩展程序访问此网站，请点击该扩展程序。</translation>
@@ -4524,7 +4517,6 @@
 <translation id="6349101878882523185">安装“<ph name="APP_NAME" />”</translation>
 <translation id="6349170655202535379">无法同步。请尝试退出并重新登录。</translation>
 <translation id="6351063337294363751">您可以使用此菜单清除浏览数据</translation>
-<translation id="6352773953037195952">最高</translation>
 <translation id="6354918092619878358">SECG 椭圆曲线 secp256r1（又称 ANSI X9.62 prime256v1 或 NIST P-256）</translation>
 <translation id="635609604405270300">请勿关闭设备</translation>
 <translation id="63566973648609420">只有知道您密码的人才能读取您的已加密数据。系统不会将该密码发送给 Google，Google 也不会存储该密码。如果您忘记了密码或想更改此设置，则需<ph name="BEGIN_LINK" />重置同步<ph name="END_LINK" />。</translation>
@@ -5289,6 +5281,7 @@
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{这款应用可能会致使 Chrome 无法正常运行。}other{这些应用可能会致使 Chrome 无法正常运行。}}</translation>
 <translation id="7303281435234579599">糟糕！设置演示模式时出了点问题。</translation>
 <translation id="7303900363563182677">此网站已被阻止查看复制到剪贴板的文字和图片</translation>
+<translation id="7304030187361489308">高</translation>
 <translation id="7305123176580523628">USB 打印机已连接</translation>
 <translation id="730515362922783851">与本地网络或互联网中的任何设备交换数据</translation>
 <translation id="7306521477691455105">请打开“设置”以将 <ph name="USB_DEVICE_NAME" /> 连接到 <ph name="USB_VM_NAME" /></translation>

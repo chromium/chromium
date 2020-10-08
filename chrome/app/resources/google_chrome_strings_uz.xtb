@@ -23,7 +23,6 @@
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> zararli edi, shuning uchun u Chrome tomonidan bloklandi.</translation>
 <translation id="1597911401261118146">Parollarni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalash uchun <ph name="BEGIN_LINK" />Chrome hisobingizga kiring<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Chrome brauzerini xavfsiz holda saqlash uchun <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ro‘yxatida keltirilmagan va sizga bildirmasdan qo‘shilgan bo‘lishi mumkin bo‘lgan quyidagi kengaytma o‘chirib qo‘yiladi.</translation>
-<translation id="162448658176061655">Chrome haftada bir marta zararli dasturlar mavjudligini tekshiradi. Oxirgi marta: hozirgina tekshirilgan.</translation>
 <translation id="162629503687514352">Chrome OS tizimidagi parollaringiz sinxronlanmadi.</translation>
 <translation id="1628000112320670027">Chrome yordam markazi</translation>
 <translation id="1662639173275167396">Chrome OS tizimini ishlab chiqishda <ph name="BEGIN_LINK_LINUX_OSS" />Linux (Beta)<ph name="END_LINK_LINUX_OSS" /> kabi <ph name="BEGIN_LINK_CROS_OSS" />ochiq kodli DT<ph name="END_LINK_CROS_OSS" /> vositalaridan foydalanilgan.</translation>
@@ -144,7 +143,6 @@
 <translation id="4771048833395599659">Bu fayl zararli bo‘lishi mumkin va u Chrome tomonidan bloklandi.</translation>
 <translation id="479167709087336770">Google qidiruvida ishlatiladigan imlo tekshiruvi vositasidan foydalanadi. Brauzerda kiritiladigan matn Google serverlariga yuboriladi. Buni istalgan vaqtda sozlamalar orqali oʻzgartirish mumkin.</translation>
 <translation id="4891791193823137474">Google Chrome fonda ishlashiga ruxsat</translation>
-<translation id="489337168347244450">{NUM_DAYS,plural, =1{Chrome haftada bir marta zararli dasturlar mavjudligini tekshiradi. Oxirgi marta: 1 kun oldin tekshirilgan.}other{Chrome haftada bir marta zararli dasturlar mavjudligini tekshiradi. Oxirgi marta: {NUM_DAYS} kun oldin tekshirilgan.}}</translation>
 <translation id="4895437082222824641">&amp;Havolani yangi varaqda ochish</translation>
 <translation id="4953650215774548573">Google Chrome‘ni standart brauzer etib tayinlash</translation>
 <translation id="495931528404527476">Chrome brauzerida</translation>
@@ -190,7 +188,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="6291549208091401781">Google Chrome allaqachon kompyuterdagi barcha foydalanuvchilar uchun o‘rnatilgan.</translation>
 <translation id="6338556085225130112">Google Chrome yangilanmoqda</translation>
 <translation id="6368958679917195344">Chrome OS paydo bo‘lishida qo‘shimcha <ph name="BEGIN_LINK_CROS_OSS" />ochiq kodli dasturiy ta'minotlarning<ph name="END_LINK_CROS_OSS" /> katta o‘rni bor.</translation>
-<translation id="6454142105866844106">Chrome haftada bir marta zararli dasturlar mavjudligini tekshiradi</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome yangilanmoqda (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6676384891291319759">Internetga ulanish</translation>
@@ -209,13 +206,11 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7106741999175697885">Vazifalar menejeri - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome uchun yangilanish mavjud va brauzer qayta ishga tushirilganda oʻrnatiladi.}=1{Chrome uchun yangilanish mavjud va brauzer qayta ishga tushirilganda oʻrnatiladi. Inkognito oynalar qayta ochilmaydi.}other{Chrome uchun yangilanish mavjud va brauzer qayta ishga tushirilganda oʻrnatiladi. # ta inkognito oyna qayta ochilmaydi.}}</translation>
 <translation id="7155997830309522122">Agar shunday boʻlsa, Chrome brauzeriga saqlangan parolingizni yangi parolingiz bilan bir xil boʻlishi uchun tahrirlang</translation>
-<translation id="7236955538461508933">{NUM_HOURS,plural, =1{Chrome haftada bir marta zararli dasturlar mavjudligini tekshiradi. Oxirgi marta: 1 soat oldin tekshirilgan.}other{Chrome haftada bir marta zararli dasturlar mavjudligini tekshiradi. Oxirgi marta: {NUM_HOURS} soat oldin tekshirilgan.}}</translation>
 <translation id="7242029209006116544">Boshqariladigan hisobga kirish bilan siz administratorga Google Chrome profilingiz sozlamalarini boshqarishiga rozilik bildirasiz. Barcha Chrome ma’lumotlaringiz (m-n, ilovalar, xatcho‘plar, brauzer tarixi, parollar va boshqa sozlamalar kabi) <ph name="USER_NAME" /> hisobiga butunlay bog‘lanadi. Bu ma’lumotlarni Google shaxsiy kabinetida o‘chirish mumkin, lekin boshqa hisobga bog‘lash imkoniyati yo‘q. Chrome ma’lumotlarini saqlab qolish uchun yangi profil yarating. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Google Chrome UI inteyfeysi hozir shu tilda</translation>
 <translation id="7296210096911315575">Foydalanish va xavfsizlik</translation>
 <translation id="7308322188646931570">Yuklab olish uchun Chrome brauzerida omborga saqlash ruxsati bo‘lishi zarur</translation>
 <translation id="7339898014177206373">Yangi oyna</translation>
-<translation id="7386132805935307836">Chrome haftada bir marta zararli dasturlar mavjudligini tekshiradi. Oxirgi marta: kecha tekshirilgan.</translation>
 <translation id="7398801000654795464">Siz Chrome brauzeriga <ph name="USER_EMAIL_ADDRESS" /> hisobi orqali kirgandingiz. O‘sha hisobdan foydalanib yana qaytadan kiring.</translation>
 <translation id="7408085963519505752">Chrome OS shartlari</translation>
 <translation id="7419046106786626209">Ma’lumotlarni sinxronlab bo‘lmadi, chunki domeningizda Sync xizmati mavjud emas.</translation>
@@ -250,7 +245,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="828798499196665338">Chromedagi “Sayt, ilova va kengaytmalarga ruxsat” ota-onangiz tomonidan faolsizlantirilgan. Bu <ph name="EXTENSION_TYPE_PARAMETER" /> yoqilishi taqiqlangan.</translation>
 <translation id="8290100596633877290">Google Chrome ishdan chiqdi. Qaytadan ishga tushirilsinmi?</translation>
 <translation id="8342675569599923794">Bu fayl zararli edi va u Chrome tomonidan bloklandi.</translation>
-<translation id="8344083974188970894">{NUM_MINS,plural, =1{Chrome haftada bir marta zararli dasturlar mavjudligini tekshiradi. Oxirgi marta: 1 daqiqa oldin tekshirilgan.}other{Chrome haftada bir marta zararli dasturlar mavjudligini tekshiradi. Oxirgi marta: {NUM_MINS} daqiqa oldin tekshirilgan.}}</translation>
 <translation id="8370517070665726704">© Google LLC, <ph name="YEAR" /> Barcha huquqlar himoyalangan.</translation>
 <translation id="840084489713044809">Google Chrome parollaringizni eksport qilmoqchi.</translation>
 <translation id="8433638294851456451">Bu yerdan Android telefoningizga raqam yuborish uchun ikkala qurilmada Chrome hisobingizga kiring.</translation>

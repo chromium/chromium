@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium comproba se hai software non desexado unha vez á semana. Última comprobación: hai 1 hora.}other{Chromium comproba se hai software non desexado unha vez á semana. Última comprobación: hai {NUM_HOURS} horas.}}</translation>
 <translation id="1065672644894730302">Non se poden ler as túas preferencias.
 
 É posible que algunhas funcións non estean dispoñibles e que non se garden os cambios nas preferencias.</translation>
@@ -47,7 +46,6 @@
 <translation id="2711502716910134313">Pestana de Chromium</translation>
 <translation id="2718390899429598676">Para obter unha maior seguranza, Chromium encriptará os teus datos.</translation>
 <translation id="2770231113462710648">Cambiar o navegador predeterminado a:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromium comproba se hai software non desexado unha vez á semana. Última comprobación: hai 1 minuto.}other{Chromium comproba se hai software non desexado unha vez á semana. Última comprobación: hai {NUM_MINS} minutos.}}</translation>
 <translation id="2799223571221894425">Iniciar de novo</translation>
 <translation id="2847479871509788944">Eliminar de Chromium...</translation>
 <translation id="2853765747879685679">Preguntar cando abra Chromium</translation>
@@ -58,7 +56,6 @@
 <translation id="3032706164202344641">Chromium non puido comprobar os teus contrasinais. Téntao de novo máis tarde.</translation>
 <translation id="3032787606318309379">Engadindo a Chromium...</translation>
 <translation id="3068515742935458733">Axudar a mellorar Chromium enviando informes sobre fallos e <ph name="UMA_LINK" /> a Google</translation>
-<translation id="3086207596048762442">Chromium comproba se hai software non desexado unha vez á semana</translation>
 <translation id="3103660991484857065">O instalador non puido descomprimir o arquivo. Descarga Chromium de novo.</translation>
 <translation id="3130323860337406239">Chromium está utilizando o teu micrófono.</translation>
 <translation id="3155163173539279776">Reiniciar Chromium</translation>
@@ -179,7 +176,6 @@
 <translation id="6847869444787758381">Chromium permíteche saber se os teus contrasinais están en risco nalgún momento</translation>
 <translation id="6857782730669500492">Chromium: <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiouse en Chromium)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium comproba se hai software non desexado unha vez á semana. Última comprobación: hai 1 día.}other{Chromium comproba se hai software non desexado unha vez á semana. Última comprobación: hai {NUM_DAYS} días.}}</translation>
 <translation id="6893813176749746474">Actualizouse Chromium, pero non o utilizas desde hai polo menos 30 días.</translation>
 <translation id="6964305034639999644">Abrir ligazón nunha ventá do modo de incó&amp;gnito de Chromium</translation>
 <translation id="6990124437352146030">Chromium necesita permiso para acceder ao micrófono neste sitio</translation>
@@ -244,7 +240,6 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8621669128220841554">Non se puido efectuar a instalación debido a un erro. Volve descargar Chromium.</translation>
 <translation id="8697124171261953979">Tamén controla a páxina que se mostra ao iniciar Chromium ou ao realizar unha busca desde Omnibox.</translation>
 <translation id="8704119203788522458">Este é o teu Chromium</translation>
-<translation id="8705191560707593947">Chromium comproba se hai software non desexado unha vez á semana. Última comprobación: onte.</translation>
 <translation id="8796602469536043152">Chromium necesita permiso para acceder á cámara e ao micrófono neste sitio</translation>
 <translation id="8803635938069941624">Condicións de Chromium OS</translation>
 <translation id="8821041990367117597">Chromium non puido sincronizar os teus datos porque os detalles de inicio de sesión da túa conta están desactualizados.</translation>
@@ -260,7 +255,6 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="91086099826398415">Abrir ligazón nunha nova &amp;pestana de Chromium</translation>
 <translation id="911206726377975832">Queres eliminar tamén os teus datos de navegación?</translation>
 <translation id="9158494823179993217">O teu administrador do sistema configurou Chromium para abrir outro navegador co obxectivo de acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="9164845895615421500">Chromium comproba se hai software non desexado unha vez á semana. Última comprobación: hai un momento.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">É posible que Chromium non funcione correctamente porque xa non admite Windows XP nin Windows Vista</translation>
 <translation id="95514773681268843"><ph name="DOMAIN" /> require que leas e aceptes as seguintes Condicións de servizo antes de utilizar este dispositivo. Estas condicións non amplían, modifican nin limitan as condicións de Chromium OS.</translation>

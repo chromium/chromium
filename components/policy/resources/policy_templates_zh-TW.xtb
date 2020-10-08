@@ -41,12 +41,6 @@
 
       這項政策只會影響所屬網域和裝置註冊網域相符的使用者。其他使用者則只有在首次登入裝置時，系統才會將 IdP 設定的 Cookie 轉移到使用者的設定檔。</translation>
 <translation id="1029052664284722254">在使用者登出時一律重新啟動裝置</translation>
-<translation id="1035385378988781231">這項政策可控管是否要為 <ph name="PRODUCT_NAME" /> 的網路檔案共用功能採用 NTLM 驗證機制。
-
-      如果這項政策設為「True」，系統會視需要對 SMB 共用檔案進行 NTLM 驗證。
-      如果這項政策設為「False」，系統將停用 SMB 共用檔案的 NTLM 驗證機制。
-
-      如未設定政策，在預設情況下，系統會為受企業管理的使用者停用驗證，並為未受管理的使用者啟用驗證。</translation>
 <translation id="1040446814317236570">啟用 PAC 網址分解功能 (適用於 https://)</translation>
 <translation id="1046484220783400299">暫時啟用已淘汰網路平台功能</translation>
 <translation id="1047128214168693844">不允許任何網站追蹤使用者的實際位置</translation>
@@ -86,11 +80,6 @@
 <translation id="1095209545735032039">封鎖這些網站上的 Serial API</translation>
 <translation id="1096105751829466145">預設搜尋引擎</translation>
 <translation id="1099282607296956954">為所有網站啟用網站隔離</translation>
-<translation id="1107764601871839136">指定群組原則物件 (GPO) 快取的生命週期 (以小時為單位)。如果快取 GPO 的版本沒有改變，系統可以重複使用該快取 GPO，不必在每次擷取政策時重新下載 GPO。這項政策是用於指定重新下載 GPO 前，重複使用快取 GPO 的時間上限。重新啟動及登出都會清除快取。
-
-      如果你沒有設定這項政策，系統最多會將快取 GPO 重複使用 25 小時。
-
-      如將這項政策設為 0，就代表關閉 GPO 快取功能；請注意，這項設定會增加伺服器負載，因為即使 GPO 沒有更動，系統還是必須在每次擷取政策時重新下載 GPO。</translation>
 <translation id="1111470455889178048">傳送使用者上傳及下載的內容以供掃描</translation>
 <translation id="1117535567637097036">處理 Android 意圖時，系統不會使用透過這項政策設定的通訊協定處理常式。</translation>
 <translation id="1118093128235245168">允許網站要求使用者授權存取已連線的 USB 裝置</translation>
@@ -720,11 +709,6 @@
 <translation id="2197625019569762163">將這項政策設為 True 時，系統預設會在登入畫面顯示數字鍵盤，方便使用者輸入密碼。使用者仍可切換為普通鍵盤。
 
       如果設定這項政策，使用者將無法變更。如果不設定或將其設為 False，這項政策將不會生效。</translation>
-<translation id="2200041405904405884">這項政策可讓你指定不受封鎖清單影響的內建訊息傳遞主機。
-
-          如果將封鎖清單的值設為「*」，系統會封鎖所有內建訊息傳遞主機，只會載入許可清單中列出的內建訊息傳遞主機。
-
-          根據預設，系統會允許所有內建訊息傳遞主機，但如果政策封鎖了所有內建訊息傳遞主機，你可以使用許可清單覆寫該政策。</translation>
 <translation id="2200698565850397198">設定內建訊息傳遞封鎖清單</translation>
 <translation id="2201555246697292490">設定內建訊息傳遞許可清單</translation>
 <translation id="2204753382813641270">控制檔案櫃自動隱藏功能</translation>
@@ -796,11 +780,6 @@
 <translation id="2307496301287881990">回報顯示狀態和圖形狀態</translation>
 <translation id="2309390639296060546">預設地理位置設定</translation>
 <translation id="2327252517317514801">定義可存取 G Suite 的網域</translation>
-<translation id="2328573323851533589">這項政策可用於強制啟用或強制停用 <ph name="PRODUCT_NAME" /> 中的憑證外洩檢查功能。
-
-          請注意，如果安全瀏覽功能已停用 (無論是根據政策設定或使用者自行停用)，即使這項政策設為 True，也不會觸發對應的行為。如要強制啟用安全瀏覽功能，請使用 <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> 政策。
-
-          將這項政策設為啟用或停用後，使用者即無法在 <ph name="PRODUCT_NAME" /> 中變更或覆寫設定。如果不設定這項政策，系統可執行憑證外洩檢查功能 (但使用者可自行停用)。</translation>
 <translation id="2331354174913096226">所需 DNS-over-HTTPS 解析器的 URI 範本。如要指定多個 DNS-over-HTTPS 解析器，請以半形空格分隔相應的 URI 範本。
 
       如果你將 DnsOverHttpsMode 設為 <ph name="SECURE_DNS_MODE_SECURE" />，就必須設定這項政策，不可將其保持空白。
@@ -946,11 +925,6 @@
       如果你未設定這項政策，使用者可以自行決定是否要使用這項功能。
 
       我們已於 <ph name="PRODUCT_NAME" /> 版本 29 及更高版本中移除這項設定。</translation>
-<translation id="2433412232489478893">這項政策可控管是否要允許使用者在 <ph name="PRODUCT_NAME" />使用網路檔案共用功能。
-
-      如果未設定這項政策，或是將這項政策設定為「True」，使用者將可以使用網路檔案共用功能。
-
-      如果將這項政策設定為「False」，則使用者將無法使用網路檔案共用功能。</translation>
 <translation id="2435052056904485763">Kerberos 委派伺服器許可清單</translation>
 <translation id="2439793457499023062">如果不設定這項政策，當 Chrome 清理功能偵測到垃圾軟體時，可能會根據 SafeBrowsingExtendedReportingEnabled 設定的政策，將掃描作業的相關中繼資料回報給 Google。然後，Chrome 清理功能會詢問使用者是否要清除垃圾軟體。使用者可以選擇將清理作業的執行結果提供給 Google，讓日後的垃圾軟體偵測作業更精確。提供的結果包含檔案中繼資料、自動安裝的擴充功能和登錄機碼，詳情請參閱《Chrome 隱私權白皮書》。
 
@@ -1428,26 +1402,6 @@
 <translation id="3143265893557969814">如果設定了這項政策，系統會將所有指定的資料類型從同步處理作業 (包含 Google Sync 和漫遊設定檔的同步處理作業) 中排除。這有助於縮減漫遊設定檔的大小，或限制上傳到 Google Sync 伺服器的資料類型。
 
       這項政策目前涵蓋的資料類型為：「bookmarks」、「preferences」、「passwords」、「autofill」、「themes」、「typedUrls」、「extensions」、「apps」、「tabs」、「wifiConfigurations」。這些名稱有大小寫之分。</translation>
-<translation id="3146597555086966130">你可以透過這項政策，設定 Chrome 和 ARC 應用程式的 Proxy 設定，系統會忽略所有從指令列所指定的 Proxy 相關選項。
-
-       如果不設定這項政策，使用者將可選擇要使用的 Proxy 設定。
-
-      設定 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策時，可使用下列欄位：
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> 可讓你指定 Chrome 要使用的 Proxy 伺服器，並禁止使用者變更 Proxy 設定
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> 是 Proxy .pac 檔案的網址
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> 是 Proxy 伺服器的網址
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 是 <ph name="PRODUCT_NAME" /> 會略過的 Proxy 主機清單
-
-       <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> 欄位已遭淘汰，請改用 <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> 欄位，該欄位可讓你指定 Chrome 要使用的 Proxy 伺服器，並禁止使用者變更 Proxy 設定。
-
-        針對 <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />，如果你選擇下列值：
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />，則系統一律不會使用 Proxy，且會忽略所有其他欄位。
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />，則系統將使用系統 Proxy，並忽略所有其他欄位。
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />，則系統會忽略所有其他欄位。
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER" />，則系統會使用 <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> 和 <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 欄位。
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />，則系統會使用 <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> 和 <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 欄位。
-
-      注意：如需詳細範例，請前往 Chromium 計畫 (網址為https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett)。</translation>
 <translation id="3152425128389603870">允許使用整合桌面並預設為啟用。</translation>
 <translation id="3159375329008977062">允許使用者透過 UI 匯出/匯入 Crostini 容器</translation>
 <translation id="3165808775394012744">這些政策全部集中在這個資料夾裡，方便輕鬆移除。</translation>
@@ -1455,13 +1409,6 @@
 <translation id="316778957754360075">我們已於 <ph name="PRODUCT_NAME" /> 版本 29 移除這項設定。如要設定機構代管的擴充功能/應用程式系列，建議你將代管 CRX 封裝檔的網站加入 ExtensionInstallSources 中，並在網頁上提供該封裝檔的直接下載連結。你可以透過 ExtensionInstallForcelist 政策建立該網頁專用的啟動器。</translation>
 <translation id="3168968618972302728">與 Kerberos 驗證相關的政策。</translation>
 <translation id="3171369832001535378">裝置網路主機名稱範本</translation>
-<translation id="3172512016079904926">這項政策可讓你在使用者層級安裝內建訊息傳遞主機。
-
-          如果啟用這項政策，<ph name="PRODUCT_NAME" /> 就可使用在使用者層級安裝的內建訊息傳遞主機。
-
-          如果停用這項政策，<ph name="PRODUCT_NAME" /> 只能使用在系統層級安裝的內建訊息傳遞主機。
-
-          如果不設定這項政策，<ph name="PRODUCT_NAME" /> 也可在使用者層級使用內建訊息傳遞主機。</translation>
 <translation id="3177802893484440532">需要為本機信任錨點執行線上 OCSP/CRL 檢查</translation>
 <translation id="3184161739683646075">控管 DNS-over-HTTPS 的模式</translation>
 <translation id="3185009703220253572">自第 <ph name="SINCE_VERSION" /> 版起</translation>
@@ -1717,12 +1664,6 @@
 <translation id="3487623755010328395">
         如果設定這項政策，<ph name="PRODUCT_NAME" /> 嘗試自動註冊，並且為所有設定檔套用相關聯的雲端政策。
         這項政策的值是可從 Google 管理控制台擷取的註冊憑證。</translation>
-<translation id="3489247539215560634">如果啟用這項設定，<ph name="PRODUCT_NAME" /> 會記住密碼，並在使用者下次登入網站時自動提供密碼。
-
-          如果停用這項設定，使用者將無法儲存新密碼，但他們
-          仍可使用先前儲存的密碼。
-
-          這項政策一經啟用或停用，使用者即無法在 <ph name="PRODUCT_NAME" /> 中變更或覆寫政策。如果不設定這項政策，系統會允許儲存密碼 (但使用者可以自行關閉這項功能)。</translation>
 <translation id="3492834335089638487">這項政策可控管裝置是否能使用來源不受信任 (並非來自 Google Play 商店) 的 Android 應用程式。
 
       如果不設定這項政策的值，系統會視為禁止使用這項功能。
@@ -1790,9 +1731,6 @@
 <translation id="3577628175311752799">使用預設的參照政策 no-referrer-when-downgrade。</translation>
 <translation id="357917253161699596">允許使用者管理使用者憑證</translation>
 <translation id="3580414086211696382">控管使用 File System API 讀取的權限</translation>
-<translation id="3583230441447348508">指定一組預先設定的網路檔案共用清單。
-
-      這項政策的每個清單項目都是一個物件，由下列兩個元素組成：「share_url」和「mode」。「share_url」是檔案共用網址，「mode」則應設為「drop_down」或「pre_mount」。如果是「drop_down」模式，系統會將「share_url」新增至共用項目搜尋下拉式選單中。如果是「pre_mount」模式，則系統會掛接「share_url」。</translation>
 <translation id="3584194414857209694">啟用實驗性政策</translation>
 <translation id="3584722841530002134">你可以透過這項政策，指派 <ph name="PRODUCT_NAME" /> 可能會委派的目標伺服器。請以半形逗號分隔伺服器名稱，可使用萬用字元 (<ph name="WILDCARD_VALUE" />)。
 
@@ -2403,10 +2341,6 @@
 
       如果不設定這項政策，使用者將可停用系統上安裝的任何外掛程式。</translation>
 <translation id="4554651132977135445">使用者政策回送處理模式</translation>
-<translation id="4554841826517980623">這項政策可控管是否要允許 <ph name="PRODUCT_NAME" />的網路檔案共用功能使用 <ph name="NETBIOS_PROTOCOL" /> 搜尋網路上的共用項目。
-      將這項政策設為 True 時，共用項目搜尋功能會使用 <ph name="NETBIOS_PROTOCOL" /> 通訊協定在網路上搜尋共用項目。
-      將這項政策設為 False 時，共用項目搜尋功能不會使用 <ph name="NETBIOS_PROTOCOL" /> 通訊協定搜尋共用項目。
-      如未設定這項政策，在預設情況下，系統會為受企業管理的使用者停用這項政策，而未受管理的使用者則預設為啟用這項政策。</translation>
 <translation id="4555850956567117258">為使用者啟用遠端認證機制</translation>
 <translation id="4557134566541205630">預設搜尋引擎新分頁網址</translation>
 <translation id="4562165737444703281">允許使用者啟用/設定 Crostini 通訊埠轉送</translation>
@@ -2502,13 +2436,6 @@
           如需模式範例，請參閱 https://www.chromium.org/developers/how-tos/chrome-frame-getting-started。</translation>
 <translation id="467449052039111439">開啟網址清單</translation>
 <translation id="4674871290487541952">針對擴充功能更新與安裝作業進行完整性檢查時，允許使用不安全的演算法</translation>
-<translation id="4677605038200415894">你可以透過這項政策建立網址模式清單，指定哪些網站會自動取得權限，可以存取具有指定廠商和產品 ID 的 USB 裝置。每一個清單項目都必須包含裝置和網址，這項政策才會生效。裝置中的每個項目可以包含廠商 ID 和產品 ID 欄位。如省略任何 ID，系統將視作萬用字元處理，但以下情況例外：如果未指定廠商 ID，也不可指定產品 ID。否則，這項政策將不會生效。
-
-      USB 權限模型會使用要求網址以及頂層頁框網站的嵌入網址，允許要求網址存取 USB 裝置。當要求網站在 iframe 中載入時，要求網址可能與嵌入網址不同。因此，「urls」欄位最多可包含 2 個字串 (以半形逗號分隔)，以指定這些網址。如果只指定一個網址，當要求網站的網址與這個網址相符時，不論其是否為嵌入網址，系統都會授予相應 USB 裝置的存取權。「urls」中的網址必須是有效網址，否則系統會忽略這項政策。
-
-        如果未設定這項政策，系統會套用 <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。
-
-      這項政策中的網址模式不可與透過 <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策設定的網址模式衝突。如果發生衝突，這項政策的優先順序高於 <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> 和 <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" /> 政策。</translation>
 <translation id="4680936297850947973">自 M68 起已淘汰，請改用 DefaultPopupsSetting。
 
       如需完整說明，請前往  https://www.chromestatus.com/features/5675755719622656。
@@ -2551,13 +2478,6 @@
           設定這項政策後，使用者即無法變更或覆寫。
 
           如果不設定這項政策，系統預設會停用單聲道音訊，但使用者隨時可以啟用這項功能。</translation>
-<translation id="4764901562691611575">這項政策已遭淘汰，請改用「<ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" />」政策。
-
-          這項政策可讓你指定不應載入的內建訊息傳遞主機。
-
-          如果將封鎖清單的值設為「*」，系統會封鎖所有內建訊息傳遞主機 (許可清單中明確列出的內建訊息傳遞主機除外)。
-
-          如果不設定這項政策，<ph name="PRODUCT_NAME" /> 會載入所有已安裝的內建訊息傳遞主機。</translation>
 <translation id="4771144269610910963">這項政策可控管安全瀏覽功能是否要對使用者下載的內容進行深度掃描。如果不設定這項政策，或設為預設的「不要掃描檔案」，安全瀏覽功能將不會掃描使用者下載的內容。
 
       如果將這項政策設為「傳送使用者下載內容以供掃描」，系統會將使用者下載的內容透過網路傳送給安全瀏覽功能，進行惡意軟體掃描。
@@ -2716,15 +2636,6 @@
 <translation id="5085647276663819155">停用列印預覽</translation>
 <translation id="5090209345759901501">將 Flash 內容設定套用至所有內容</translation>
 <translation id="5090791951240382356">允許合併不同來源的字典政策</translation>
-<translation id="5093540029655764852">指定用戶端變更本機帳戶密碼的頻率 (以天為單位)。密碼是由用戶端隨機產生，且不會向使用者顯示。
-
-      本機密碼和使用者密碼一樣必須定期變更。如果停用這項政策或設定較長的天數，潛在的攻擊者就有較多時間找出本機帳戶密碼並加以利用，這樣可能會對安全性造成負面影響。
-
-      如果不設定這項政策，本機帳戶密碼每 30 天就會變更一次。
-
-      如果將這項政策設為 0，就會停用本機帳戶密碼變更功能。
-
-      請注意，如果用戶端有很長一段時間處於離線狀態，則即使已過了指定的天數，密碼也可能不會變更。</translation>
 <translation id="5101600510268095939">你可以設定網址模式清單，指定哪些網站不能顯示可封鎖 (亦即使用中) 混合內容 (亦即 HTTPS 網站上的 HTTP 內容)，並指定要升級哪些選擇性可封鎖 (亦即非使用中) 混合內容。
 
          如果不設定這項政策，可封鎖的混合內容將遭到封鎖，且系統會升級選擇性可封鎖混合內容。但使用者可以設定例外網站，允許特定網站顯示可封鎖的混合內容。
@@ -2841,15 +2752,6 @@
 
       此處的「版本」可以指確切版本 (例如「61.0.3163.120」)，也可以指版本前置字元 (例如「61.0」)。  </translation>
 <translation id="5247006254130721952">封鎖危險下載作業</translation>
-<translation id="5248863213023520115">設定可使用哪些類型的加密從 <ph name="MS_AD_NAME" /> 伺服器提出 Kerberos 票證要求。
-
-      如果將這項政策設為「All」，則可使用「aes256-cts-hmac-sha1-96」和「aes128-cts-hmac-sha1-96」類型的 AES 加密以及「rc4-hmac」類型的 RC4 加密。如果伺服器支援 AES 和 RC4 加密，會優先採用 AES 加密。請注意，RC4 的安全性不足，請將伺服器重新設定為使用 AES 加密 (如果伺服器支援這類加密的話)。
-
-      如果將這項政策設為「Strong」或不予設定，則只能使用 AES 加密類型。
-
-      如果將這項政策設為「Legacy」，則只能使用 RC4 加密類型。這個選項並不安全，只有在非常特殊的情況下才需要使用。
-
-      另請參閱 https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerberos_client_encryption_types。</translation>
 <translation id="5249453807420671499">使用者可以新增 Kerberos 帳戶</translation>
 <translation id="5252995168844634755">如果將這項政策設為 True，系統會啟用整合桌面，這個功能可讓應用程式在多個螢幕上展開畫面。使用者可停用個別螢幕的整合桌面。
 
@@ -3244,13 +3146,6 @@
 
           這項政策的值只有在 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策啟用時才適用，在其他情況下一概不適用。</translation>
 <translation id="5697306356229823047">回報裝置使用者</translation>
-<translation id="5699487516670033016">指定驗證資料快取的生命週期 (以小時為單位)。這個快取是用於加快登入速度，其中包含關聯領域的一般資料 (例如工作群組名稱)；關聯領域是指裝置領域所信任的領域。系統不會快取使用者專屬資料和非關聯領域的資料。重新啟動裝置會清除快取。
-
-      如果你沒有設定這項政策，系統最多會將快取驗證資料重複使用 73 小時。
-
-      如將這項政策設為 0，就代表關閉驗證資料快取功能，這可能會導致關聯使用者的登入速度大幅變慢，因為使用者每次登入，系統都必須擷取領域專屬資料。
-
-      請注意，即使是針對暫時性使用者，系統也會快取領域資料。如要避免追蹤暫時性使用者的領域，你必須關閉這項快取功能。</translation>
 <translation id="570062449808736508">如果將這項政策設為非空白字串，WebView 就會讀取內容提供者 (擁有指定授權單位名稱) 的網址限制設定。</translation>
 <translation id="5708969689202733975">設定允許的快速解鎖模式</translation>
 <translation id="572155275267014074">Android 設定</translation>
@@ -3547,11 +3442,6 @@
 
       注意：這項政策會影響所有音訊輸出，包括語音無障礙功能的音訊。如果使用者需要螢幕閱讀器，請勿停用這項政策。</translation>
 <translation id="6221175752766085998">允許由本機信任錨點核發但缺少 subjectAlternativeName 擴充功能的憑證</translation>
-<translation id="6222839831045864769">這項政策可讓你指定不應載入的內建訊息傳遞主機。
-
-          如果將封鎖清單的值設為「*」，系統會封鎖所有內建訊息傳遞主機 (許可清單中明確列出的內建訊息傳遞主機除外)。
-
-          如果不設定這項政策，<ph name="PRODUCT_NAME" /> 會載入所有已安裝的內建訊息傳遞主機。</translation>
 <translation id="6224304369267200483">自動允許直接安全金鑰認證的網址/網域</translation>
 <translation id="6230442621691161858">這項功能可讓系統建議值得探索的新內容，包括應用程式和網頁等等。
       如果將這項政策設為 True，系統即會建議可探索的新內容。
@@ -4781,13 +4671,6 @@
 <translation id="7788511847830146438">根據設定檔</translation>
 <translation id="780629758750905699">允許將 Family Link 帳戶加入裝置</translation>
 <translation id="7807139251387225825">要從同步處理作業中排除的類型清單</translation>
-<translation id="7815699949432723208">這項政策已遭淘汰，請改用「<ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />」政策。
-
-          這項政策可讓你指定不受封鎖清單影響的內建訊息傳遞主機。
-
-          如果將封鎖清單的值設為「*」，系統會封鎖所有內建訊息傳遞主機，只會載入許可清單中列出的內建訊息傳遞主機。
-
-          根據預設，系統會允許所有內建訊息傳遞主機，但如果政策封鎖了所有內建訊息傳遞主機，你可以使用許可清單覆寫該政策。</translation>
 <translation id="7818131573217430250">設定高反差模式在登入畫面的預設狀態</translation>
 <translation id="7823902813460802031">如果將這項政策設為啟用，<ph name="PRODUCT_OS_NAME" />會阻止裝置進入開發人員模式。
 
@@ -5203,13 +5086,6 @@
       如果設定這項政策，系統會視需要刪除較舊的快照，以避免超出限制。如果這項政策設為 0，則系統不會建立任何快照</translation>
 <translation id="8451988835943702790">將新分頁設為首頁</translation>
 <translation id="8455529558077979314">隱私保護畫面設定</translation>
-<translation id="8459216513698220096">指定是否要處理電腦 GPO 中的使用者政策和處理方式。
-
-      如果將這項政策設為「Default」或不予設定，系統只會讀取使用者 GPO 中的使用者政策 (忽略電腦 GPO)。
-
-      如果將這項政策設為「Merge」，使用者 GPO 中的使用者政策會與電腦 GPO 中的使用者政策合併 (優先採用電腦 GPO)。
-
-      如果將這項政策設為「Replace」，電腦 GPO 中的使用者政策會取代使用者 GPO 中的使用者政策 (忽略使用者 GPO)。</translation>
 <translation id="8465065632133292531">使用 POST 的互動智慧搜尋網址參數</translation>
 <translation id="8465746466645315861">如果不設定這項政策，使用者可以在語言設定中啟用或停用拼字檢查功能。
 
@@ -5345,11 +5221,6 @@
 <translation id="8622378389102774881">如果設定這項政策，遠端存取主機會要求用戶端透過此網址取得驗證憑證，驗證通過後才能建立連線。這項政策必須搭配 RemoteAccessHostTokenValidationUrl 使用。
 
           如果設為空白或不設定，系統會停用這項功能。</translation>
-<translation id="8625234016727663537">你可以設定一份網址清單，指定哪些網站會自動取得權限，可以在登入畫面上存取具有指定廠商和產品 ID 的 USB 裝置。清單中的每個項目都必須包含裝置和網址，這項政策才會生效。裝置中的每個項目可以包含廠商 ID 和產品 ID 欄位。如省略任何 ID，系統將視作萬用字元處理，但以下情況例外：如果未指定廠商 ID，也不可指定產品 ID。否則這項政策將不會生效，並會遭到忽略。
-
-        USB 權限模型會使用要求網站的網址 (簡稱「要求網址」) 以及頂層頁框網站的網址 (簡稱「嵌入網址」)，將 USB 裝置的存取權授予要求網址。當要求網站在 iframe 中載入時，要求網址可能與嵌入網址不同。因此，「urls」欄位最多可包含兩個網址字串 (以半形逗號分隔)，以分別指定要求網址和嵌入網址。如果只指定一個網址，當要求網站的網址與這個網址相符時，不論其是否為嵌入網址，系統都會授予相應 USB 裝置的存取權限。「urls」中的網址必須是有效網址，否則系統將忽略這項政策。
-
-        如果不設定這項政策，所有網站都將使用通用預設值 (不會自動取得存取權)。</translation>
 <translation id="8631434304112909927">到第 <ph name="UNTIL_VERSION" /> 版為止</translation>
 <translation id="8631437968147930597"><ph name="PRODUCT_OS_NAME" />螢幕鎖定畫面上允許的筆記應用程式清單</translation>
 <translation id="8649763579836720255">當 Chrome 作業系統 CA 判斷裝置可播放受保護內容，Chrome 作業系統裝置可以使用遠端證明 (已驗證存取權) 取得其所發出的憑證。在此過程中，系統會傳送硬體簽署資訊到識別裝置的 Chrome 作業系統 CA。
@@ -5730,7 +5601,6 @@
 
       實際上能否復原也可能會受到裝置型號和重大漏洞修補程式的影響。</translation>
 <translation id="9123464369663964441">允許使用者新增可載入複合型內容的例外網站</translation>
-<translation id="9126014181388780690">「允許 Google 助理存取畫面內容」</translation>
 <translation id="9129169595075460149">如果將這項政策設為啟用，Google 搜尋中的「安全搜尋」功能會一律啟用，且使用者無法變更這項設定。
 
       如果將這項政策設為停用或不設定，系統就不會強制執行 Google 搜尋的「安全搜尋」功能。</translation>
@@ -5799,7 +5669,6 @@
 <translation id="944817693306670849">設定磁碟快取大小</translation>
 <translation id="949278212566535827">允許下載受密碼保護的檔案</translation>
 <translation id="974349541138387272">指定所需 DNS-over-HTTPS 解析器的 URI 範本</translation>
-<translation id="974479807614498635">「允許快速解答存取所選內容」</translation>
 <translation id="981346395360763138">Google 定位服務已停用</translation>
 <translation id="982497069985795632">啟用拼字檢查</translation>
 <translation id="983256325512298435">定義一組通訊協定清單，其中的通訊協定無須提示使用者，即可啟動已列出來源的外部應用程式</translation>

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium 每星期會檢查 1 次，查看有否垃圾軟件。上次檢查時間：1 小時前。}other{Chromium 每星期會檢查 1 次，查看有否垃圾軟件。上次檢查時間：{NUM_HOURS} 小時前。}}</translation>
 <translation id="1065672644894730302">系統無法讀取您的偏好設定。
 
 部分功能可能無法使用，而系統也不會儲存任何偏好設定的變更。</translation>
@@ -47,7 +46,6 @@
 <translation id="2711502716910134313">Chromium 分頁</translation>
 <translation id="2718390899429598676">為提高安全性，Chromium 會將您的資料加密。</translation>
 <translation id="2770231113462710648">將預設瀏覽器變更為：</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromium 每星期會檢查 1 次，查看有否垃圾軟件。上次檢查時間：1 分鐘前。}other{Chromium 每星期會檢查 1 次，查看有否垃圾軟件。上次檢查時間：{NUM_MINS} 分鐘前。}}</translation>
 <translation id="2799223571221894425">重新啟動</translation>
 <translation id="2847479871509788944">從 Chromium 中移除…</translation>
 <translation id="2853765747879685679">開啟 Chromium 時詢問我</translation>
@@ -58,7 +56,6 @@
 <translation id="3032706164202344641">Chromium 無法檢查密碼，請稍後再試。</translation>
 <translation id="3032787606318309379">正在新增至 Chromium…</translation>
 <translation id="3068515742935458733">將當機報告和<ph name="UMA_LINK" />傳送給 Google，助我們一臂之力，讓 Google Chrome 更臻完美</translation>
-<translation id="3086207596048762442">Chromium 每星期會檢查 1 次有否垃圾軟件</translation>
 <translation id="3103660991484857065">安裝程式無法解壓縮封存檔案，請重新下載 Chromium。</translation>
 <translation id="3130323860337406239">Chromium 正在使用您的麥克風。</translation>
 <translation id="3155163173539279776">重新啟動 Chromium</translation>
@@ -179,7 +176,6 @@
 <translation id="6847869444787758381">Chromium 會通知您密碼是否曾被盜用</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (已複製至 Chromium)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium 每星期會檢查 1 次，查看有否垃圾軟件。上次檢查時間：1 天前。}other{Chromium 每星期會檢查 1 次，查看有否垃圾軟件。上次檢查時間：{NUM_DAYS} 天前。}}</translation>
 <translation id="6893813176749746474">Chromium 已更新，但您已至少超過 30 天沒有使用 Chromium。</translation>
 <translation id="6964305034639999644">在 Chromium 無痕式視窗中開啟連結(&amp;G)</translation>
 <translation id="6990124437352146030">Chromium 需要取得權限，才能讓這個網站存取您的麥克風</translation>
@@ -243,7 +239,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8621669128220841554">不明錯誤導致安裝失敗，請重新下載 Chromium。</translation>
 <translation id="8697124171261953979">這個擴充功能也會控管 Chromium 啟動時或您使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="8704119203788522458">這是您專屬的 Chromium</translation>
-<translation id="8705191560707593947">Chromium 每星期會檢查 1 次，查看有否垃圾軟件。上次檢查時間：昨天。</translation>
 <translation id="8796602469536043152">Chromium 需要取得權限，才能讓這個網站存取您的相機和麥克風</translation>
 <translation id="8803635938069941624">Chromium 作業系統條款</translation>
 <translation id="8821041990367117597">您的帳戶登入詳細資料尚未更新，因此 Chromium 無法同步處理您的數據。</translation>
@@ -259,7 +254,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="91086099826398415">在 Chromium 的新分頁中開啟連結(&amp;T)</translation>
 <translation id="911206726377975832">您要一併刪除瀏覽數據嗎？</translation>
 <translation id="9158494823179993217">系統管理員已設定 Chromium 開啟替代瀏覽器來存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
-<translation id="9164845895615421500">Chromium 每星期會檢查 1 次，查看有否垃圾軟件。上次檢查時間：剛才。</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">由於 Chromium 將不再支援 Windows XP 或 Windows Vista，因此可能無法正常運作</translation>
 <translation id="95514773681268843">在使用這部裝置前，<ph name="DOMAIN" /> 要求您仔細閱讀並接受下列《服務條款》。這些條款不會擴展、修改或限制《Chromium 作業系統條款》。</translation>

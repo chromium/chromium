@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Зөвхөн сонгогдсон</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> лиценз шаарддаг</translation>
 <translation id="1223853788495130632">Таны администратор-аас энэ тохиргоо хийх тодорхой утгыг санал болгож байна.</translation>
-<translation id="1224275271335624810">Хамгийн хурдан</translation>
 <translation id="1225177025209879837">Хүсэлтийг боловсруулж байна...</translation>
 <translation id="1227507814927581609">"<ph name="DEVICE_NAME" />" руу холбогдож байх үед таниулах ажиллагаа амжилтгүй боллоо.</translation>
 <translation id="1230417814058465809">Стандарт хамгаалалт асаалттай байна. Аюулгүй байдлаа улам нэмэгдүүлэхийг хүсвэл сайжруулсан хамгаалалтыг ашиглаарай.</translation>
@@ -594,7 +593,6 @@
 <translation id="1668435968811469751">Гар аргаар бүртгүүлэх</translation>
 <translation id="1668979692599483141">Зөвлөмжийн талаар судлах</translation>
 <translation id="1670399744444387456">Үндсэн</translation>
-<translation id="167160931442925455">Хамгийн чанга</translation>
 <translation id="1673137583248014546"><ph name="URL" /> таны Аюулгүй байдлын түлхүүрийн бүтэц болон загварыг харах хүсэлтэй байна</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" />-г нэмэх боломжгүй байна</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> үлдсэн</translation>
@@ -915,7 +913,6 @@
 <translation id="2046702855113914483">Рамен</translation>
 <translation id="204706822916043810">Виртуал машиныг шалгаж байна</translation>
 <translation id="2048182445208425546">Сүлжээнийхээ ачааллагдсан мэдээлэл рүү нэвтэр</translation>
-<translation id="2048243703055695889"><ph name="USER_EMAIL" />-н '<ph name="DEVICE_NAME" />' төхөөрөмжийн Ойролцоо хуваалцах тохиргоо.</translation>
 <translation id="2048653237708779538">Үйлдэл боломжгүй байна</translation>
 <translation id="204914487372604757">Богино холболт үүсгэх</translation>
 <translation id="2050339315714019657">Хөрөг зураг</translation>
@@ -1100,7 +1097,6 @@
 <translation id="2262477216570151239">Давтахаас өмнөх хоцролт</translation>
 <translation id="2263189956353037928">Гараад, буцаж нэвтрэх</translation>
 <translation id="2263371730707937087">Дэлгэцийг сэргээх хурд</translation>
-<translation id="2263497240924215535">(Идэвхгүй болгосон байна)</translation>
 <translation id="22665427234727190">Сайт Bluetooth төхөөрөмжүүдэд хандах хүсэлтэй үед асуух (санал болгосон)</translation>
 <translation id="2266957463645820432">USB дээрх IPP (IPPUSB)</translation>
 <translation id="2270450558902169558"><ph name="DOMAIN" /> домэйнд холбогдсон ямар ч төхөөрөмжийг ашиглан мэдээлэл солилцоорой</translation>
@@ -2284,7 +2280,6 @@
 <translation id="3674840410592648165">Сайтууд төлбөр хариуцагч суулгах боломжтой (санал болгосон)</translation>
 <translation id="367645871420407123">Хэрэв та тест зургийн өгөгдөлд үндсэн нууц үг тохируулахыг хүсвэл хоосон үлдээнэ үү</translation>
 <translation id="3677106374019847299">Захиалгат нийлүүлэгчийг оруулах</translation>
-<translation id="3677657024345889897">Хамгийн аяархан</translation>
 <translation id="3677911431265050325">Мобайл сайтын хүсэлт тавих</translation>
 <translation id="3677959414150797585">Апп, вэб хуудас болон бусад зүйлийг багтаадаг. Та ашиглалтын өгөгдлийг хуваалцахыг сонгосон тохиолдолд л зөвлөмжүүдийг сайжруулахын тулд статистик илгээдэг.</translation>
 <translation id="3678156199662914018">Өргөтгөл: <ph name="EXTENSION_NAME" /></translation>
@@ -2473,7 +2468,6 @@
 <translation id="3867944738977021751">Гэрчилгээний талбарууд</translation>
 <translation id="3869917919960562512">Буруу индекс.</translation>
 <translation id="3870931306085184145"><ph name="DOMAIN" />-д хадгалсан нууц үг алга</translation>
-<translation id="3871092408932389764">Хамгийн доод</translation>
 <translation id="3871350334636688135">Таны админ 24 цагийн дараа таныг төхөөрөмжөө дахин эхлүүлэх үед дотоод өгөгдлийг устгах нэг удаагийн шинэчлэлт хийнэ. Та хэрэгтэй дотоод өгөгдлөө үүлэн хадгалах санд 24 цагийн дотор хадгална уу.</translation>
 <translation id="3872220884670338524"><ph name="USERNAME" />-н <ph name="DOMAIN" />-д хадгалсан бүртгэлийн бусад үйлдэл</translation>
 <translation id="3872991219937722530">Дискний багтаамжийг нэмэгдүүлнэ үү. Ингээгүй тохиолдолд төхөөрөмж хариу үзүүлэхээ болино.</translation>
@@ -4229,7 +4223,6 @@
 <translation id="6025215716629925253">Stack Trace</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB төхөөрөмжийг холбосон</translation>
 <translation id="6028117231645531007">Хурууны хээ нэмэх</translation>
-<translation id="6029587122245504742">Хамгийн удаан</translation>
 <translation id="6029594605736587274"><ph name="PERMISSION" />-г блоклосон</translation>
 <translation id="6031600495088157824">Самбар дээрх оролтын сонголт</translation>
 <translation id="6032715498678347852">Өргөтгөлд энэ сайтад хандах эрхийг олгохын тулд үүнийг товшино уу.</translation>
@@ -4523,7 +4516,6 @@
 <translation id="6349101878882523185"><ph name="APP_NAME" />-г суулгах</translation>
 <translation id="6349170655202535379">Синк ажиллахгүй байна. Гараад, дахин нэвтэрнэ үү.</translation>
 <translation id="6351063337294363751">Та энэ цэснээс хайлтын өгөгдлөө устгах боломжтой</translation>
-<translation id="6352773953037195952">Хамгийн дээд</translation>
 <translation id="6354918092619878358">SECG зууван муруй secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Төхөөрөмжийг асаалттай хэвээр байлгаарай</translation>
 <translation id="63566973648609420">Зөвхөн таны нэвтрэх үгийг мэддэг хүн л таны шифрлэсэн өгөгдлийг унших боломжтой. Нэвтрэх үгийг Google-д илгээх болон хадгалахгүй. Хэрэв та нэвтрэх үгээ мартсан, эсвэл тохиргоог өөрчлөх бол <ph name="BEGIN_LINK" />синкийг дахин тохируулах<ph name="END_LINK" /> шаардлагатай.</translation>
@@ -5288,6 +5280,7 @@
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Энэ апп Chrome-г хэвийн ажиллахад саад болж байж болзошгүй.}other{Эдгээр апп Chrome-г хэвийн ажиллахад саад болж байж болзошгүй.}}</translation>
 <translation id="7303281435234579599">Уучлаарай, демо горимыг тохируулах явцад алдаа гарлаа.</translation>
 <translation id="7303900363563182677">Энэ сайтыг түр санах ойд хуулсан текст, зураг харахыг хориглосон</translation>
+<translation id="7304030187361489308">Дээд</translation>
 <translation id="7305123176580523628">USB хэвлэгч холбогдсон байна</translation>
 <translation id="730515362922783851">Суурин сүлжээ болон интернэтээр ямар ч төхөөрөмж ашиглан мэдээлэл солилцоорой</translation>
 <translation id="7306521477691455105"><ph name="USB_DEVICE_NAME" />-г <ph name="USB_VM_NAME" />-д холбохын тулд Тохиргоог нээнэ үү</translation>

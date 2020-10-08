@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium વણજોઈતા સૉફ્ટવેર શોધવા માટે અઠવાડિયામાં એક વાર ચેક કરે છે. છેલ્લે ચેક કર્યું: 1 કલાક પહેલાં.}one{Chromium વણજોઈતા સૉફ્ટવેર શોધવા માટે અઠવાડિયામાં એક વાર ચેક કરે છે. છેલ્લે ચેક કર્યું: {NUM_HOURS} કલાક પહેલાં.}other{Chromium વણજોઈતા સૉફ્ટવેર શોધવા માટે અઠવાડિયામાં એક વાર ચેક કરે છે. છેલ્લે ચેક કર્યું: {NUM_HOURS} કલાક પહેલાં.}}</translation>
 <translation id="1065672644894730302">તમારી પસંદગીઓને વાંચી શકાતી નથી.
 
 કેટલીક સુવિધાઓ ઉપલબ્ધ હોઈ શકે છે અને પસંદગીઓ પરના ફેરફારોને સાચવવામાં આવશે નહીં.</translation>
@@ -47,7 +46,6 @@
 <translation id="2711502716910134313">Chromium ટૅબ</translation>
 <translation id="2718390899429598676">ઉમેરેલી સુરક્ષા માટે, Chromium તમારા ડેટાને એન્ક્રિપ્ટ કરશે.</translation>
 <translation id="2770231113462710648">ડિફૉલ્ટ બ્રાઉઝરને આના પર બદલો:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromium વણજોઈતા સૉફ્ટવેર શોધવા માટે અઠવાડિયામાં એક વાર ચેક કરે છે. છેલ્લે ચેક કર્યું: 1 મિનિટ પહેલાં.}one{Chromium વણજોઈતા સૉફ્ટવેર શોધવા માટે અઠવાડિયામાં એક વાર ચેક કરે છે. છેલ્લે ચેક કર્યું: {NUM_MINS} મિનિટ પહેલાં.}other{Chromium વણજોઈતા સૉફ્ટવેર શોધવા માટે અઠવાડિયામાં એક વાર ચેક કરે છે. છેલ્લે ચેક કર્યું: {NUM_MINS} મિનિટ પહેલાં.}}</translation>
 <translation id="2799223571221894425">ફરીથી લોંચ કરો</translation>
 <translation id="2847479871509788944">Chromium માંથી દૂર કરો...</translation>
 <translation id="2853765747879685679">હું Chromium ખોલું ત્યારે પૂછો</translation>
@@ -58,7 +56,6 @@
 <translation id="3032706164202344641">Chromium તમારા પાસવર્ડ ચેક કરી શકતું નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="3032787606318309379">Chromium માં ઉમેરી રહ્યું છે...</translation>
 <translation id="3068515742935458733">ક્રૅશ રિપોર્ટ અને <ph name="UMA_LINK" /> Googleને મોકલીને Chromium ને વધુ સારું બનાવવામાં મદદ કરો.</translation>
-<translation id="3086207596048762442">Chromium વણજોઈતા સૉફ્ટવેર શોધવા માટે અઠવાડિયામાં એક વાર ચેક કરે છે</translation>
 <translation id="3103660991484857065">ઇન્સ્ટૉલર આર્કાઇવને અનકોમ્પ્રેસ કરવામાં નિષ્ફળ. કૃપા કરીને Chromium ફરીથી ડાઉનલોડ કરો.</translation>
 <translation id="3130323860337406239">Chromium તમારા માઇક્રોફોનનો ઉપયોગ કરી રહ્યું છે.</translation>
 <translation id="3155163173539279776">Chromium ને ફરીથી લોંચ કરો</translation>
@@ -179,7 +176,6 @@
 <translation id="6847869444787758381">Chromium વડે તમે તમારા પાસવર્ડમાં ક્યારેક ચેડાં થાય તો તેના વિશે જાણકારી મેળવી શકો છો</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium પર કૉપિ કરેલું છે)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium વણજોઈતા સૉફ્ટવેર શોધવા માટે અઠવાડિયામાં એક વાર ચેક કરે છે. છેલ્લે ચેક કર્યું: 1 દિવસ પહેલાં.}one{Chromium વણજોઈતા સૉફ્ટવેર શોધવા માટે અઠવાડિયામાં એક વાર ચેક કરે છે. છેલ્લે ચેક કર્યું: {NUM_DAYS} દિવસ પહેલાં.}other{Chromium વણજોઈતા સૉફ્ટવેર શોધવા માટે અઠવાડિયામાં એક વાર ચેક કરે છે. છેલ્લે ચેક કર્યું: {NUM_DAYS} દિવસ પહેલાં.}}</translation>
 <translation id="6893813176749746474">Chromium અપડેટ કરવામાં આવ્યું હતું, પણ તમે તેનો 30 દિવસ સુધી ઉપયોગ કર્યો નથી.</translation>
 <translation id="6964305034639999644">Chromium છુ&amp;પી વિંડોમાં લિંક ખોલો</translation>
 <translation id="6990124437352146030">Chromiumને આ સાઇટ માટે તમારા માઇક્રોફોનના ઍક્સેસની પરવાનગીની જરૂર પડે છે</translation>
@@ -244,7 +240,6 @@ Chromium તમારી સેટિંગ્સને પુનઃપ્રા
 <translation id="8621669128220841554">અનુલ્લેખિત ભૂલને કારણે ઇન્સ્ટોલેશન નિષ્ફળ રહ્યું. કૃપા કરીને Chromium ફરીથી ડાઉનલોડ કરો.</translation>
 <translation id="8697124171261953979">જ્યારે તમે Chromium શરૂ કરો અથવા ઑમ્નિબૉક્સ પરથી શોધ કરો ત્યારે કયું પૃષ્ઠ બતાવવામાં આવે તે તેનું પણ નિયંત્રણ કરે છે.</translation>
 <translation id="8704119203788522458">આ તમારું Chromium છે</translation>
-<translation id="8705191560707593947">Chromium વણજોઈતા સૉફ્ટવેર શોધવા માટે અઠવાડિયામાં એક વાર ચેક કરે છે. છેલ્લે ચેક કર્યું: ગઈકાલે.</translation>
 <translation id="8796602469536043152">Chromiumને આ સાઇટ માટે તમારા કૅમેરા અને માઇક્રોફોનના ઍક્સેસની પરવાનગીની જરૂર પડે છે</translation>
 <translation id="8803635938069941624">Chromium OS શરતો</translation>
 <translation id="8821041990367117597">સાઇન ઇન વિગતો જૂની હોવાને કારણે Chromium તમારા ડેટાને સિંક કરી શક્યું નથી.</translation>
@@ -260,7 +255,6 @@ Chromium તમારી સેટિંગ્સને પુનઃપ્રા
 <translation id="91086099826398415">નવા Chromium &amp;ટૅબમાં લિંક ખોલો</translation>
 <translation id="911206726377975832">તમારો બ્રાઉઝિંગ ડેટા પણ ડિલીટ કરી દઈએ?</translation>
 <translation id="9158494823179993217">તમારા સિસ્ટમ વ્યવસ્થાપકે <ph name="TARGET_URL_HOSTNAME" />ને ઍક્સેસ કરવા Chromiumને વૈકલ્પિક બ્રાઉઝર ખોલવા માટે ગોઠવેલું છે.</translation>
-<translation id="9164845895615421500">Chromium વણજોઈતા સૉફ્ટવેર શોધવા માટે અઠવાડિયામાં એક વાર ચેક કરે છે. છેલ્લે ચેક કર્યું: એક પળ પહેલાં.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium યોગ્ય રીતે કાર્ય ન કરે તેવું બની શકે કારણ કે તે હવેથી Windows XP અથવા Windows Vista પર સમર્થિત નથી</translation>
 <translation id="95514773681268843"><ph name="DOMAIN" /> માટે જરૂરી છે કે તમે આ ડિવાઇસનો ઉપયોગ કરતાં પહેલાં નીચેની સેવાની શરતોને વાંચો અને સ્વીકારો. આ શરતો Chromium OS શરતોને વિસ્તૃત, સંશોધિત અથવા મર્યાદિત કરતી નથી.</translation>

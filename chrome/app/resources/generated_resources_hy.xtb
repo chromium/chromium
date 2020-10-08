@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Միայն ընտրվածը</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> հավելվածին հավաստագիր է անհրաժեշտ</translation>
 <translation id="1223853788495130632">Ադմինիստրատորը խորհուրդ է տալիս այս կարգավորման համար որոշակի արժեք ընտրել:</translation>
-<translation id="1224275271335624810">Ամենաարագ</translation>
 <translation id="1225177025209879837">Հարցումը մշակվում է…</translation>
 <translation id="1227507814927581609">«<ph name="DEVICE_NAME" />»-ին կապակցվելիս իսկորոշումը ձախողվեց:</translation>
 <translation id="1230417814058465809">Սովորական պաշտպանությունը միացված է։ Ավելի շատ ապահովության համար օգտագործեք լրացուցիչ պաշտպանությունը։</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">Գրանցել ձեռքով</translation>
 <translation id="1668979692599483141">Առաջարկների մասին</translation>
 <translation id="1670399744444387456">Հիմնական</translation>
-<translation id="167160931442925455">Ամենաբարձր</translation>
 <translation id="1673137583248014546"><ph name="URL" /> կայքն ուզում է տեսնել անվտանգության բանալու արտադրողի և մոդելի անունը</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" />ը չի կարող ավելացվել</translation>
 <translation id="1677472565718498478">Մնացել է <ph name="TIME" /></translation>
@@ -919,7 +917,6 @@
 <translation id="2046702855113914483">Ռամեն</translation>
 <translation id="204706822916043810">Վիրտուալ մեքենան ստուգվում է</translation>
 <translation id="2048182445208425546">Դիտել ձեր ցանցի տվյալների հոսքը</translation>
-<translation id="2048243703055695889">Մոտակա սարքերի հետ փոխանակման կարգավորումներ <ph name="USER_EMAIL" /> օգտատիրոջ «<ph name="DEVICE_NAME" />» սարքի համար։</translation>
 <translation id="2048653237708779538">Գործողությունը հասանելի չէ</translation>
 <translation id="204914487372604757">Ստեղծել դյուրանցում</translation>
 <translation id="2050339315714019657">Ուղղաձիգ</translation>
@@ -1104,7 +1101,6 @@
 <translation id="2262477216570151239">Հապաղում կրկնելուց առաջ</translation>
 <translation id="2263189956353037928">Դուրս գալ ու նորից մտնել</translation>
 <translation id="2263371730707937087">Էկրանի թարմացման հաճախականությունը</translation>
-<translation id="2263497240924215535">(Անջատված է)</translation>
 <translation id="22665427234727190">Հարցնել, երբ որևէ կայք ուզում է օգտագործել Bluetooth սարքեր (խորհուրդ է տրվում)</translation>
 <translation id="2266957463645820432">IPP` USB-ի միջոցով (IPPUSB)</translation>
 <translation id="2270450558902169558">Տվյալներ փոխանակել ցանկացած սարքի հետ <ph name="DOMAIN" /> տիրույթում</translation>
@@ -2289,7 +2285,6 @@
 <translation id="3674840410592648165">Կայքերը կարող են վճարումների մշակիչներ տեղադրել (խորհուրդ է տրվում)</translation>
 <translation id="367645871420407123">մի լրացրեք, եթե ուզում եք կայել արմատային գաղտնաբառը կանխադրված փորձնական պատկերի արժեքի</translation>
 <translation id="3677106374019847299">Մուտքագրեք մատակարարի անվանումը</translation>
-<translation id="3677657024345889897">Ամենացածր</translation>
 <translation id="3677911431265050325">Բջջային տարբերակ</translation>
 <translation id="3677959414150797585">Ներառում է հավելվածներ, կայքեր և այլն։ Ուղարկում է վիճակագրություն՝ առաջարկները բարելավելու համար, միայն եթե դուք որոշել եք կիսվել օգտագործման տվյալներով։</translation>
 <translation id="3678156199662914018">Ընդլայնում` <ph name="EXTENSION_NAME" /></translation>
@@ -2478,7 +2473,6 @@
 <translation id="3867944738977021751">Վկայագրի դաշտեր</translation>
 <translation id="3869917919960562512">Ցուցիչը սխալ է:</translation>
 <translation id="3870931306085184145"><ph name="DOMAIN" /> տիրույթի համար պահված գաղտնաբառեր չկան</translation>
-<translation id="3871092408932389764">Ամենացածր</translation>
 <translation id="3871350334636688135">24 ժամ հետո ձեր ադմինիստրատորը մեկանգամյա թարմացում կկատարի, ինչի արդյունքում ձեր լոկալ տվյալները կջնջվեն, երբ վերագործարկեք սարքը: Մոտակա 24 ժամվա ընթացքում պահեք ձեզ անհրաժեշտ լոկալ տվյալները ամպային տարածքում:</translation>
 <translation id="3872220884670338524">Այլ գործողություններ, պահված հաշիվ <ph name="USERNAME" />-ի համար <ph name="DOMAIN" /> տիրույթում</translation>
 <translation id="3872991219937722530">Ազատեք սկավառակի տարածքը, այլապես սարքը կդադարի աշխատել:</translation>
@@ -4238,7 +4232,6 @@
 <translation id="6025215716629925253">Սթեքի ժամանակագրություն</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB սարքը միացված է</translation>
 <translation id="6028117231645531007">Ավելացնել մատնահետք</translation>
-<translation id="6029587122245504742">Ամենադանդաղ</translation>
 <translation id="6029594605736587274"><ph name="PERMISSION" />՝ արգելափակված է</translation>
 <translation id="6031600495088157824">Ներածման ընտրանքները գործիքագոտում</translation>
 <translation id="6032715498678347852">Սեղմեք ընդլայնման վրա՝ այս կայքը դրան հասանելի դարձնելու համար։</translation>
@@ -4532,7 +4525,6 @@
 <translation id="6349101878882523185">Տեղադրել <ph name="APP_NAME" /> հավելվածը</translation>
 <translation id="6349170655202535379">Համաժամացումը չի աշխատում։ Դուրս եկեք հաշվից ու նորից մուտք գործեք։</translation>
 <translation id="6351063337294363751">Ձեր այցելությունների պատմությունը կարող եք ջնջել այս ընտրացանկից</translation>
-<translation id="6352773953037195952">Ամենաբարձր</translation>
 <translation id="6354918092619878358">SECG օվալաձև կոր secp256r1 (հայտնի է նաև որպես ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Սարքը մի՛ անջատեք</translation>
 <translation id="63566973648609420">Միայն ձեր անցաբառն ունեցող օգտատերը կարող է կարդալ ձեր գաղտնագրված տվյալները: Անցաբառը չի ուղարկվում Google-ին և չի պահվում դրա կողմից: Անցաբառը մոռանալու դեպքում ձեզ անհրաժեշտ կլինի <ph name="BEGIN_LINK" />վերակայել համաժամացումը<ph name="END_LINK" />:</translation>
@@ -5297,6 +5289,7 @@
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Այս հավելվածը կարող է խոչընդոտել Chrome-ի աշխատանքը:}one{Այս հավելվածը կարող է խոչընդոտել Chrome-ի աշխատանքը:}other{Այս հավելվածները կարող են խոչընդոտել Chrome-ի աշխատանքը:}}</translation>
 <translation id="7303281435234579599">Չհաջողվեց կարգավորել դեմո ռեժիմը։</translation>
 <translation id="7303900363563182677">Այս կայքին արգելված է տեսնել սեղմատախտակին պատճենված տեքստը կամ պատկերները</translation>
+<translation id="7304030187361489308">Բարձր</translation>
 <translation id="7305123176580523628">USB տպիչը միացված է</translation>
 <translation id="730515362922783851">Տվյալներ փոխանակել տեղային ցանցի կամ համացանցի ցանկացած սարքի հետ</translation>
 <translation id="7306521477691455105">Բացեք կարգավորումները՝ <ph name="USB_DEVICE_NAME" /> սարքը վիրտուալ մեքենային (<ph name="USB_VM_NAME" />) միացնելու համար</translation>

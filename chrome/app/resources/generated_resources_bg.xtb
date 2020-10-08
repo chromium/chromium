@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Само избраното</translation>
 <translation id="1223484782328004593">Изисква се лиценз за <ph name="APP_NAME" /></translation>
 <translation id="1223853788495130632">Администраторът ви препоръчва конкретна стойност за тази настройка.</translation>
-<translation id="1224275271335624810">Най-бърза</translation>
 <translation id="1225177025209879837">Заявката се обработва...</translation>
 <translation id="1227507814927581609">Удостоверяването не бе успешно при установяването на връзка с/ъс <ph name="DEVICE_NAME" />.</translation>
 <translation id="1230417814058465809">Режимът за стандартна защита е включен. За още по-голяма сигурност използвайте подобрената защита.</translation>
@@ -595,7 +594,6 @@
 <translation id="1668435968811469751">Ръчно записване</translation>
 <translation id="1668979692599483141">Научете повече за предложенията</translation>
 <translation id="1670399744444387456">Основни</translation>
-<translation id="167160931442925455">Най-силно</translation>
 <translation id="1673137583248014546"><ph name="URL" /> иска да разбере марката и модела на ключа ви за сигурност</translation>
 <translation id="1677306805708094828">Не може да се добави <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Оставащо време: <ph name="TIME" /></translation>
@@ -916,7 +914,6 @@
 <translation id="2046702855113914483">Супа „Рамен“</translation>
 <translation id="204706822916043810">Виртуалната машина се проверява</translation>
 <translation id="2048182445208425546">Достъп до трафика ви в мрежата</translation>
-<translation id="2048243703055695889">Настройки за функцията „Споделяне наблизо“ за устройството на <ph name="USER_EMAIL" /> (<ph name="DEVICE_NAME" />).</translation>
 <translation id="2048653237708779538">Действието не може да се извърши</translation>
 <translation id="204914487372604757">Създаване на пряк път</translation>
 <translation id="2050339315714019657">Вертикално</translation>
@@ -1101,7 +1098,6 @@
 <translation id="2262477216570151239">Забавяне преди повтаряне</translation>
 <translation id="2263189956353037928">Изход и повторно влизане</translation>
 <translation id="2263371730707937087">Честота на опресняване на екрана</translation>
-<translation id="2263497240924215535">(Деактивирано)</translation>
 <translation id="22665427234727190">Извеждане на запитване, когато сайт иска достъп до Bluetooth устройства (препоръчително)</translation>
 <translation id="2266957463645820432">IPP през USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Обмен на данни с всяко устройство в домейна <ph name="DOMAIN" /></translation>
@@ -2287,7 +2283,6 @@
 <translation id="3674840410592648165">Сайтовете могат да инсталират инструменти за обработване на плащания (препоръчително)</translation>
 <translation id="367645871420407123">не попълвайте, ако искате паролата на root да е стандартната от тестовия образ</translation>
 <translation id="3677106374019847299">Въведете персонализиран доставчик</translation>
-<translation id="3677657024345889897">Най-тихо</translation>
 <translation id="3677911431265050325">Заявка за мобилния сайт</translation>
 <translation id="3677959414150797585">Включва приложения, уеб страници и др. Изпраща статистически данни, за да подобри предложенията, само ако сте избрали да споделяте данни за употребата.</translation>
 <translation id="3678156199662914018">Разширение: <ph name="EXTENSION_NAME" /></translation>
@@ -2477,7 +2472,6 @@
 <translation id="3867944738977021751">Полета на сертификата</translation>
 <translation id="3869917919960562512">Грешен индекс.</translation>
 <translation id="3870931306085184145">Няма запазени пароли за <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">Най-ниска</translation>
 <translation id="3871350334636688135">След 24 часа администраторът ви ще извърши еднократна актуализация, при която ще бъдат изтрити локалните ви данни, когато рестартирате устройството си. До 24 часа запазете в хранилището в облака локалните данни, които са ви необходими.</translation>
 <translation id="3872220884670338524">Още действия, запазен профил за <ph name="USERNAME" /> в домейна <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Освободете място на диска, в противен случай устройството ви ще престане да реагира.</translation>
@@ -4235,7 +4229,6 @@
 <translation id="6025215716629925253">Проследяване на стека</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – установена е връзка с USB устройство</translation>
 <translation id="6028117231645531007">Добавяне на отпечатъка</translation>
-<translation id="6029587122245504742">Най-бавна</translation>
 <translation id="6029594605736587274">„<ph name="PERMISSION" />“ е блокирано</translation>
 <translation id="6031600495088157824">Опции за въвеждане в лентата с инструменти</translation>
 <translation id="6032715498678347852">Kликнете върху дадено разширение, за да му предоставите достъп до този сайт.</translation>
@@ -4529,7 +4522,6 @@
 <translation id="6349101878882523185">Инсталиране на <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Синхронизирането не работи. Опитайте да излезете от профила си и отново да влезете в него.</translation>
 <translation id="6351063337294363751">Можете да изчистите данните за сърфирането си от това меню</translation>
-<translation id="6352773953037195952">Най-висока</translation>
 <translation id="6354918092619878358">Елиптична крива secp256r1 по SECG (позната и като ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Не изключвайте устройството</translation>
 <translation id="63566973648609420">Само някой с пропуска ви може да прочете шифрованите ви данни – той не се изпраща до Google, нито се съхранява от нас. Ако го забравите или искате да промените тази настройка, ще се наложи <ph name="BEGIN_LINK" />да нулирате синхронизирането<ph name="END_LINK" />.</translation>
@@ -5294,6 +5286,7 @@
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Възможно е това приложение да пречи на Chrome да работи правилно.}other{Възможно е тези приложения да пречат на Chrome да работи правилно.}}</translation>
 <translation id="7303281435234579599">Ами сега! Нещо се обърка при настройването на демонстрационния режим.</translation>
 <translation id="7303900363563182677">Този сайт няма право да преглежда текста и изображенията, копирани в буферната памет</translation>
+<translation id="7304030187361489308">Висока</translation>
 <translation id="7305123176580523628">Принтерът с USB е свързан</translation>
 <translation id="730515362922783851">Обмен на данни с всяко устройство в локалната мрежа или интернет</translation>
 <translation id="7306521477691455105">Отворете настройките, за да свържете <ph name="USB_DEVICE_NAME" /> с(ъс) <ph name="USB_VM_NAME" /></translation>

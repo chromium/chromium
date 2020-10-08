@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Net seleksie</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> vereis 'n lisensie</translation>
 <translation id="1223853788495130632">Jou administrateur beveel 'n spesifieke waarde vir hierdie instelling aan.</translation>
-<translation id="1224275271335624810">Vinnigste</translation>
 <translation id="1225177025209879837">Verwerk tans versoek …</translation>
 <translation id="1227507814927581609">Kon nie staaf terwyl daar aan "<ph name="DEVICE_NAME" />" gekoppel word nie.</translation>
 <translation id="1230417814058465809">Standaardbeskerming is aan. Gebruik verbeterde beskerming vir selfs nog meer sekuriteit.</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">Skryf self in</translation>
 <translation id="1668979692599483141">Kom meer te wete oor voorstelle</translation>
 <translation id="1670399744444387456">Basies</translation>
-<translation id="167160931442925455">Hardste</translation>
 <translation id="1673137583248014546"><ph name="URL" /> wil die maak en model van jou sekuriteitsleutel sien</translation>
 <translation id="1677306805708094828">Kan nie <ph name="EXTENSION_TYPE_PARAMETER" /> byvoeg nie</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> oor</translation>
@@ -919,7 +917,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">Gaan tans die virtuele masjien na</translation>
 <translation id="2048182445208425546">Kry toegang tot jou netwerkverkeer</translation>
-<translation id="2048243703055695889">Naby-instellings vir <ph name="USER_EMAIL" /> se "<ph name="DEVICE_NAME" />"-toestel.</translation>
 <translation id="2048653237708779538">Handeling is nie beskikbaar nie</translation>
 <translation id="204914487372604757">Skep kortpad</translation>
 <translation id="2050339315714019657">Portret</translation>
@@ -1104,7 +1101,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2262477216570151239">Wagtydperk voor herhaling</translation>
 <translation id="2263189956353037928">Meld af en meld weer aan</translation>
 <translation id="2263371730707937087">Skermherlaaitempo</translation>
-<translation id="2263497240924215535">(Gedeaktiveer)</translation>
 <translation id="22665427234727190">Vra wanneer 'n werf toegang tot Bluetooth-toestelle wil hê (aanbeveel)</translation>
 <translation id="2266957463645820432">IPP oor USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Ruil data uit met enige toestel in die domein <ph name="DOMAIN" /></translation>
@@ -2289,7 +2285,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3674840410592648165">Werwe kan betalinghanteerders installeer (aanbeveel)</translation>
 <translation id="367645871420407123">laat leeg as jy die kernwagwoord op die verstektoetsprentwaarde wil stel</translation>
 <translation id="3677106374019847299">Voer gepasmaakte verskaffer in</translation>
-<translation id="3677657024345889897">Sagste</translation>
 <translation id="3677911431265050325">Versoek mobiele werf</translation>
 <translation id="3677959414150797585">Sluit programme, webbladsye en meer in. Stuur net statistieke om voorstelle beter te maak as jy gekies het om gebruiksdata te deel.</translation>
 <translation id="3678156199662914018">Uitbreiding: <ph name="EXTENSION_NAME" /></translation>
@@ -2478,7 +2473,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3867944738977021751">Sertifikaatvelde</translation>
 <translation id="3869917919960562512">Verkeerde indeks.</translation>
 <translation id="3870931306085184145">Geen gestoorde wagwoorde vir <ph name="DOMAIN" /> nie</translation>
-<translation id="3871092408932389764">Laagste</translation>
 <translation id="3871350334636688135">Ná 24 uur sal jou administrateur 'n eenmalige opdatering uitvoer wat jou plaaslike data sal uitvee wanneer jy jou toestel herbegin. Berg enige plaaslike data wat jy moet hê binne 24 uur in wolkberging.</translation>
 <translation id="3872220884670338524">Nog handelinge; het <ph name="USERNAME" /> se rekening op <ph name="DOMAIN" /> gestoor</translation>
 <translation id="3872991219937722530">Maak skyfspasie beskikbaar, anders sal jou toestel nie meer reageer nie.</translation>
@@ -4236,7 +4230,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6025215716629925253">Stapelnasporing</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB-toestel is gekoppel</translation>
 <translation id="6028117231645531007">Voeg vingerafdruk by</translation>
-<translation id="6029587122245504742">Stadigste</translation>
 <translation id="6029594605736587274">het <ph name="PERMISSION" /> geblokkeer</translation>
 <translation id="6031600495088157824">Invoeropsies in nutsbalk</translation>
 <translation id="6032715498678347852">Om aan 'n uitbreiding toegang tot hierdie werf te gee, moet jy dit klik.</translation>
@@ -4530,7 +4523,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6349101878882523185">Installeer <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Sinkronisering werk tans nie. Probeer afmeld en weer aanmeld.</translation>
 <translation id="6351063337294363751">Jy kan jou blaaidata van hierdie kieslys af uitvee</translation>
-<translation id="6352773953037195952">Hoogste</translation>
 <translation id="6354918092619878358">SECG-elliptiesekurwe-secp256r1 (ook bekend as ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Hou toestel aangeskakel</translation>
 <translation id="63566973648609420">Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word nie na Google gestuur of deur Google geberg nie. As jy jou wagfrase vergeet of hierdie instelling wil verander, sal jy <ph name="BEGIN_LINK" />sinkronisering moet terugstel<ph name="END_LINK" />.</translation>
@@ -5295,6 +5287,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Hierdie program kan verhoed dat Chrome behoorlik werk.}other{Hierdie programme kan verhoed dat Chrome behoorlik werk.}}</translation>
 <translation id="7303281435234579599">Oeps! Kon nie demonstrasiemodus opstel nie.</translation>
 <translation id="7303900363563182677">Hierdie werf is geblokkeer om teks en prente wat na die knipbord gekopieer is, te sien</translation>
+<translation id="7304030187361489308">Hoog</translation>
 <translation id="7305123176580523628">USB-drukker is gekoppel</translation>
 <translation id="730515362922783851">Ruil data uit met enige toestel in die plaaslike netwerk of internet</translation>
 <translation id="7306521477691455105">Maak Instellings oop om <ph name="USB_DEVICE_NAME" /> aan <ph name="USB_VM_NAME" /> te koppel</translation>

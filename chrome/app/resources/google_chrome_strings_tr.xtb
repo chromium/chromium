@@ -23,7 +23,6 @@
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> tehlikeli olduğu için Chrome tarafından engellendi.</translation>
 <translation id="1597911401261118146">Şifrelerinizin veri ihlali ve diğer güvenlik sorunlarına karşı güvende olup olmadığını kontrol etmek için <ph name="BEGIN_LINK" />Chrome'da oturum açın<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Chrome'u daha güvenli bir hale getirmek için <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> altında listelenmeyen ve bilginiz dışında eklenmiş olabilecek aşağıdaki uzantıyı devre dışı bıraktık.</translation>
-<translation id="162448658176061655">Chrome, istenmeyen yazılımları haftada bir kontrol eder. Son kontrol: Biraz önce.</translation>
 <translation id="162629503687514352">Chrome OS, şifrelerinizi senkronize edemedi.</translation>
 <translation id="1628000112320670027">Chrome'la ilgili yardım alın</translation>
 <translation id="1662639173275167396">Chrome OS, <ph name="BEGIN_LINK_LINUX_OSS" />Linux'ta (Beta)<ph name="END_LINK_LINUX_OSS" /> olduğu gibi ek <ph name="BEGIN_LINK_CROS_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_CROS_OSS" /> yararlanılarak geliştirilmiştir.</translation>
@@ -143,7 +142,6 @@
 <translation id="4771048833395599659">Bu dosya tehlikeli olabileceği için Chrome tarafından engellendi.</translation>
 <translation id="479167709087336770">Bu işlev, Google Arama'da kullanılan yazım denetiminin aynısını kullanır. Tarayıcıda yazdığınız metin Google'a gönderilir. Bu davranışı istediğiniz zaman ayarlardan değiştirebilirsiniz.</translation>
 <translation id="4891791193823137474">Google Chrome'un arka planda çalışmasına izin ver</translation>
-<translation id="489337168347244450">{NUM_DAYS,plural, =1{Chrome, istenmeyen yazılımları haftada bir kontrol eder. Son kontrol: 1 gün önce.}other{Chrome, istenmeyen yazılımları haftada bir kontrol eder. Son kontrol: {NUM_DAYS} gün önce.}}</translation>
 <translation id="4895437082222824641">Bağlantıyı yeni Chrome &amp;sekmesinde aç</translation>
 <translation id="4953650215774548573">Google Chrome'u varsayılan tarayıcım olarak ayarla</translation>
 <translation id="495931528404527476">Chrome'da</translation>
@@ -187,7 +185,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6291549208091401781">Google Chrome zaten bilgisayarınızdaki tüm kullanıcılar için yüklendi.</translation>
 <translation id="6338556085225130112">Google Chrome güncelleniyor</translation>
 <translation id="6368958679917195344">Chrome OS, ek <ph name="BEGIN_LINK_CROS_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_CROS_OSS" /> yararlanılarak geliştirilmiştir.</translation>
-<translation id="6454142105866844106">Chrome, istenmeyen yazılımları haftada bir kontrol eder</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome güncelleniyor (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6676384891291319759">İnternet'e erişin</translation>
@@ -206,13 +203,11 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7106741999175697885">Görev Yöneticisi - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome için yeni bir güncelleme var. Yeniden başlattığınızda güncelleme hemen uygulanacaktır.}=1{Chrome için yeni bir güncelleme var. Yeniden başlattığınızda güncelleme hemen uygulanacaktır. Gizli pencereniz yeniden açılmayacak.}other{Chrome için yeni bir güncelleme var. Yeniden başlattığınızda güncelleme hemen uygulanacaktır. # Gizli pencereniz yeniden açılmayacak.}}</translation>
 <translation id="7155997830309522122">Değiştirdiyseniz Chrome'da kayıtlı şifrenizi, lütfen yeni şifrenizle aynı olacak şekilde düzenleyin.</translation>
-<translation id="7236955538461508933">{NUM_HOURS,plural, =1{Chrome, istenmeyen yazılımları haftada bir kontrol eder. Son kontrol: 1 saat önce.}other{Chrome, istenmeyen yazılımları haftada bir kontrol eder. Son kontrol: {NUM_HOURS} saat önce.}}</translation>
 <translation id="7242029209006116544">Yönetilen bir hesapla oturum açıyor ve hesabın yöneticisine Google Chrome profilinizi denetleme izni veriyorsunuz. Uygulamalarınız, yer işaretleriniz, geçmişiniz, şifreleriniz ve diğer ayarlarınız gibi Chrome verileriniz kalıcı olarak <ph name="USER_NAME" /> ile bağlantılandırılacaktır. Google Hesapları Hesap Özeti'ni kullanarak bu verileri silebilecek, ancak bu verileri başka bir hesapla ilişkilendiremeyeceksiniz. İsterseniz mevcut Chrome verilerinizi ayrı tutmak için yeni bir profil oluşturabilirsiniz.<ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Bu dil, Google Chrome kullanıcı arayüzünü görüntülemek için kullanılır</translation>
 <translation id="7296210096911315575">Önemli kullanım ve güvenlik bilgileri</translation>
 <translation id="7308322188646931570">Dosya indirmek için Chrome'un depolama alanına erişmesi gerekiyor</translation>
 <translation id="7339898014177206373">Yeni pencere</translation>
-<translation id="7386132805935307836">Chrome, istenmeyen yazılımları haftada bir kontrol eder. Son kontrol: Dün.</translation>
 <translation id="7398801000654795464">Chrome'da <ph name="USER_EMAIL_ADDRESS" /> olarak oturum açtınız. Tekrar oturum açmak için lütfen aynı hesabı kullanın.</translation>
 <translation id="7408085963519505752">Chrome OS Şartları</translation>
 <translation id="7419046106786626209">Senkronizasyon, alan adınızda kullanılamadığından Chrome OS, verilerinizi senkronize edemedi.</translation>
@@ -247,7 +242,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="828798499196665338">Ebeveyniniz, Chrome'a yönelik "Siteler, uygulamalar ve uzantılar için izinler"i kapattı. Bu <ph name="EXTENSION_TYPE_PARAMETER" /> uzantısının etkinleştirilmesine izin verilmiyor.</translation>
 <translation id="8290100596633877290">Of! Google Chrome kilitlendi. Şimdi yeniden başlatılsın mı?</translation>
 <translation id="8342675569599923794">Bu dosya tehlikeli olduğu için Chrome tarafından engellendi.</translation>
-<translation id="8344083974188970894">{NUM_MINS,plural, =1{Chrome, istenmeyen yazılımları haftada bir kontrol eder. Son kontrol: 1 dakika önce.}other{Chrome, istenmeyen yazılımları haftada bir kontrol eder. Son kontrol: {NUM_MINS} dakika önce.}}</translation>
 <translation id="8370517070665726704">Telif hakkı <ph name="YEAR" /> Google LLC. Tüm hakları saklıdır.</translation>
 <translation id="840084489713044809">Google Chrome, şifrelerinizi dışa aktarmak istiyor.</translation>
 <translation id="8433638294851456451">Buradan Android telefonunuza numara göndermek için iki cihazdan da Chrome'da oturum açın.</translation>

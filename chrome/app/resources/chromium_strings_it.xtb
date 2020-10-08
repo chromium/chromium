@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium verifica la presenza di software indesiderato una volta a settimana. Ultima verifica: 1 ora fa.}other{Chromium verifica la presenza di software indesiderato una volta a settimana. Ultima verifica: {NUM_HOURS} ore fa.}}</translation>
 <translation id="1065672644894730302">Impossibile leggere le preferenze. Alcune funzioni potrebbero non essere disponibili e le modifiche alle preferenze non verranno salvate.</translation>
 <translation id="107513968719897256">Per separare la navigazione personale da quella di <ph name="NEW_USER" />, crea un nuovo profilo in Chromium</translation>
 <translation id="1098170124587656448">Chromium può contribuire a proteggerti da violazioni dei dati, estensioni non valide e non solo</translation>
@@ -45,7 +44,6 @@
 <translation id="2711502716910134313">Scheda Chromium</translation>
 <translation id="2718390899429598676">Per maggiore sicurezza, Chromium cripterà i tuoi dati.</translation>
 <translation id="2770231113462710648">Cambia browser predefinito con:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromium verifica la presenza di software indesiderato una volta a settimana. Ultima verifica: 1 minuto fa.}other{Chromium verifica la presenza di software indesiderato una volta a settimana. Ultima verifica: {NUM_MINS} minuti fa.}}</translation>
 <translation id="2799223571221894425">Riavvia</translation>
 <translation id="2847479871509788944">Rimuovi da Chromium...</translation>
 <translation id="2853765747879685679">Chiedi all'apertura di Chromium</translation>
@@ -56,7 +54,6 @@
 <translation id="3032706164202344641">Chromium non può controllare le tue password. Riprova più tardi.</translation>
 <translation id="3032787606318309379">Aggiunta a Chromium in corso...</translation>
 <translation id="3068515742935458733">Aiutaci a migliorare Chromium inviando a Google rapporti sugli arresti anomali e <ph name="UMA_LINK" /></translation>
-<translation id="3086207596048762442">Chromium verifica la presenza di software indesiderato una volta a settimana</translation>
 <translation id="3103660991484857065">Il programma di installazione non è riuscito a decomprimere l'archivio. Scarica di nuovo Chromium.</translation>
 <translation id="3130323860337406239">Chromium sta utilizzando il microfono.</translation>
 <translation id="3155163173539279776">Riavvia Chromium</translation>
@@ -177,7 +174,6 @@ Alcune funzioni potrebbero non essere disponibili. Specifica un'altra directory 
 <translation id="6847869444787758381">Chromium ti avvisa se le tue password vengono compromesse</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiata in Chromium)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium verifica la presenza di software indesiderato una volta a settimana. Ultima verifica: 1 giorno fa.}other{Chromium verifica la presenza di software indesiderato una volta a settimana. Ultima verifica: {NUM_DAYS} giorni fa.}}</translation>
 <translation id="6893813176749746474">Chromium è stato aggiornato ma non lo utilizzi da almeno 30 giorni.</translation>
 <translation id="6964305034639999644">Apri link in una finestra di navigazione in inco&amp;gnito di Chromium</translation>
 <translation id="6990124437352146030">Per questo sito Chromium ha bisogno dell'autorizzazione ad accedere al microfono</translation>
@@ -241,7 +237,6 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8621669128220841554">Installazione non riuscita a causa di un errore imprecisato. Scarica di nuovo Chromium.</translation>
 <translation id="8697124171261953979">Controlla anche la pagina visualizzata all'avvio di Chromium o quando esegui ricerche dalla Omnibox.</translation>
 <translation id="8704119203788522458">Questo è il tuo account Chromium</translation>
-<translation id="8705191560707593947">Chromium verifica la presenza di software indesiderato una volta a settimana. Ultima verifica: ieri.</translation>
 <translation id="8796602469536043152">Per questo sito Chromium ha bisogno dell'autorizzazione ad accedere alla fotocamera e al microfono</translation>
 <translation id="8803635938069941624">Termini di Chromium OS</translation>
 <translation id="8821041990367117597">Impossibile sincronizzare i dati in Chromium perché i dati di accesso dell'account sono obsoleti.</translation>
@@ -257,7 +252,6 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="91086099826398415">Apri link in una nuova &amp;scheda di Chromium</translation>
 <translation id="911206726377975832">Eliminare anche i tuoi dati di navigazione?</translation>
 <translation id="9158494823179993217">L'amministratore di sistema ha configurato Chromium per l'apertura di un browser alternativo per accedere a <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="9164845895615421500">Chromium verifica la presenza di software indesiderato una volta a settimana. Ultima verifica: qualche istante fa.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium potrebbe non funzionare correttamente perché non è più supportato su Windows XP o Windows Vista</translation>
 <translation id="95514773681268843"><ph name="DOMAIN" /> richiede di leggere e accettare i seguenti Termini di servizio prima di utilizzare il dispositivo. Questi termini non ampliano, modificano o limitano i Termini di Chromium OS.</translation>

@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Len výber</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> vyžaduje licenciu</translation>
 <translation id="1223853788495130632">Váš správca odporúča pre toto nastavenie konkrétnu hodnotu.</translation>
-<translation id="1224275271335624810">Najrýchlejšia</translation>
 <translation id="1225177025209879837">Prebieha spracovanie žiadosti...</translation>
 <translation id="1227507814927581609">Overenie totožnosti počas pripájania k zariadeniu <ph name="DEVICE_NAME" /> zlyhalo.</translation>
 <translation id="1230417814058465809">Je zapnutá štandardná ochrana. Lepšie zabezpečenie dosiahnete používaním rozšírenej ochrany.</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">Registrovať ručne</translation>
 <translation id="1668979692599483141">Informácie o návrhoch</translation>
 <translation id="1670399744444387456">Základné</translation>
-<translation id="167160931442925455">Najhlasnejšie</translation>
 <translation id="1673137583248014546"><ph name="URL" /> chce zistiť model a značku vášho bezpečnostného kľúča</translation>
 <translation id="1677306805708094828">Rozšírenie <ph name="EXTENSION_TYPE_PARAMETER" /> sa nedá pridať</translation>
 <translation id="1677472565718498478">Zostávajúci čas: <ph name="TIME" /></translation>
@@ -919,7 +917,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2046702855113914483">Rámen</translation>
 <translation id="204706822916043810">Kontroluje sa virtuálny počítač</translation>
 <translation id="2048182445208425546">Prístup k sieťovej premávke</translation>
-<translation id="2048243703055695889">Nastavenia zdieľania nablízku v zariadení <ph name="DEVICE_NAME" /> používateľa <ph name="USER_EMAIL" />.</translation>
 <translation id="2048653237708779538">Akcia nie je k dispozícii</translation>
 <translation id="204914487372604757">Vytvoriť odkaz</translation>
 <translation id="2050339315714019657">Na výšku</translation>
@@ -1104,7 +1101,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2262477216570151239">Oneskorenie pred opakovaním</translation>
 <translation id="2263189956353037928">Odhlásiť sa a znova prihlásiť</translation>
 <translation id="2263371730707937087">Frekvencia obnovenia obrazovky</translation>
-<translation id="2263497240924215535">(deaktivované)</translation>
 <translation id="22665427234727190">Opýtať sa, keď chce web získať prístup k zariadeniam Bluetooth (odporúčané)</translation>
 <translation id="2266957463645820432">IPP cez USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Vymieňať údaje s ktorýmkoľvek zariadením z domény <ph name="DOMAIN" /></translation>
@@ -2288,7 +2284,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3674840410592648165">Weby môžu inštalovať obslužné nástroje platieb (odporúčané)</translation>
 <translation id="367645871420407123">Ak chcete heslo používateľa typu root nastaviť na predvolenú hodnotu testovacieho obrazu, ponechajte toto pole prázdne.</translation>
 <translation id="3677106374019847299">Zadajte vlastného poskytovateľa</translation>
-<translation id="3677657024345889897">Najtichšie</translation>
 <translation id="3677911431265050325">Vyžiadať mobilný web</translation>
 <translation id="3677959414150797585">Zahŕňa aplikácie, webové stránky a ďalší obsah. Odosiela štatistiky na zlepšovanie návrhov iba vtedy, keď ste vybrali zdieľanie údajov o používaní.</translation>
 <translation id="3678156199662914018">Rozšírenie: <ph name="EXTENSION_NAME" /></translation>
@@ -2477,7 +2472,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3867944738977021751">Polia certifikátu</translation>
 <translation id="3869917919960562512">Nesprávny index.</translation>
 <translation id="3870931306085184145">Žiadne uložené heslá domény <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">Najnižší</translation>
 <translation id="3871350334636688135">Po 24 hodinách správca vykoná jednorazovú aktualizáciu, ktorá pri reštartovaní zariadenia odstráni miestne údaje. Všetky potrebné miestne údaje uložte do cloudového úložiska do 24 hodín.</translation>
 <translation id="3872220884670338524">Ďalšie akcie, uložený účet <ph name="USERNAME" /> v doméne <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Uvoľnite miesto na disku, inak vaše zariadenie prestane reagovať.</translation>
@@ -4234,7 +4228,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="6025215716629925253">Správa Stack Trace</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – Bolo pripojené zariadenie USB</translation>
 <translation id="6028117231645531007">Pridať odtlačok</translation>
-<translation id="6029587122245504742">Najpomalšia</translation>
 <translation id="6029594605736587274">blokujete <ph name="PERMISSION" /></translation>
 <translation id="6031600495088157824">Možnosti vstupu na paneli s nástrojmi</translation>
 <translation id="6032715498678347852">Ak chcete povoliť určitému rozšíreniu prístup k tomuto webu, kliknite naň.</translation>
@@ -4528,7 +4521,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="6349101878882523185">Inštalovať aplikáciu <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Synchronizácia nefunguje. Skúste sa odhlásiť a znovu prihlásiť.</translation>
 <translation id="6351063337294363751">Dáta prehliadania môžete vymazať v tejto ponuke</translation>
-<translation id="6352773953037195952">Najvyšší</translation>
 <translation id="6354918092619878358">Eliptická krivka SECG secp256r1 (známa tiež ako ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Ponechajte zariadenie zapnuté</translation>
 <translation id="63566973648609420">Šifrované údaje môže čítať iba používateľ s prístupovou frázou. Prístupová fráza sa do Googlu neodosiela a Google ju ani neukladá. Ak zabudnete prístupovú frázu alebo budete chcieť zmeniť toto nastavenie zmeniť, musíte <ph name="BEGIN_LINK" />resetovať synchronizáciu<ph name="END_LINK" />.</translation>
@@ -5293,6 +5285,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Táto aplikácia môže brániť Chromu v správnom fungovaní.}few{Tieto aplikácie môžu brániť Chromu v správnom fungovaní.}many{Tieto aplikácie môžu brániť Chromu v správnom fungovaní.}other{Tieto aplikácie môžu brániť Chromu v správnom fungovaní.}}</translation>
 <translation id="7303281435234579599">Ojoj! Pri nastavovaní režimu ukážky sa vyskytol problém.</translation>
 <translation id="7303900363563182677">Tomuto webu bolo zablokované zobrazenie textu a obrázkov skopírovaných do schránky</translation>
+<translation id="7304030187361489308">Vysoký</translation>
 <translation id="7305123176580523628">Bola pripojená tlačiareň USB</translation>
 <translation id="730515362922783851">Vymieňať údaje s ktorýmkoľvek zariadením v miestnej sieti alebo na internete</translation>
 <translation id="7306521477691455105">Otvorte Nastavenia a pripojte <ph name="USB_DEVICE_NAME" /> k zariadeniu <ph name="USB_VM_NAME" /></translation>

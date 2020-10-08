@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Tik pasirinkimas</translation>
 <translation id="1223484782328004593">Norint naudoti programą „<ph name="APP_NAME" />“ reikalinga licencija</translation>
 <translation id="1223853788495130632">Administratorius rekomenduoja naudoti konkrečią šio nustatymo vertę.</translation>
-<translation id="1224275271335624810">Greičiausias</translation>
 <translation id="1225177025209879837">Užklausa apdorojama…</translation>
 <translation id="1227507814927581609">Autentifikuojant tuo metu, kai buvo prisijungiant prie „<ph name="DEVICE_NAME" />“, įvyko klaida.</translation>
 <translation id="1230417814058465809">Įprasta apsauga įjungta. Jei norite apsisaugoti dar labiau, naudokite sustiprintą apsaugą.</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">Registruotis neautomatiškai</translation>
 <translation id="1668979692599483141">Sužinokite apie pasiūlymus</translation>
 <translation id="1670399744444387456">Bendrieji</translation>
-<translation id="167160931442925455">Garsiausiai</translation>
 <translation id="1673137583248014546"><ph name="URL" /> nori sužinoti jūsų saugos rakto tipą ir modelį</translation>
 <translation id="1677306805708094828">Nepavyko pridėti <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Liko <ph name="TIME" /></translation>
@@ -919,7 +917,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2046702855113914483">Ramenai</translation>
 <translation id="204706822916043810">Tikrinamas virtualus įrenginys</translation>
 <translation id="2048182445208425546">Pasiekti tinklo srautą</translation>
-<translation id="2048243703055695889"><ph name="USER_EMAIL" /> įrenginio „<ph name="DEVICE_NAME" />“ bendrinimo netoliese nustatymai.</translation>
 <translation id="2048653237708779538">Negalima atlikti veiksmo</translation>
 <translation id="204914487372604757">Kurti spartųjį klavišą</translation>
 <translation id="2050339315714019657">Stačias</translation>
@@ -1104,7 +1101,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2262477216570151239">Atidėti iki pakartojimo</translation>
 <translation id="2263189956353037928">Atsijungti ir vėl prisijungti</translation>
 <translation id="2263371730707937087">Ekrano atnaujinimo dažnis</translation>
-<translation id="2263497240924215535">(neleista)</translation>
 <translation id="22665427234727190">Klausti, kai svetainė nori pasiekti „Bluetooth“ įrenginius (rekomenduojama)</translation>
 <translation id="2266957463645820432">IPP per USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Keistis duomenimis su bet kuriuo įrenginiu iš domeno <ph name="DOMAIN" /></translation>
@@ -2289,7 +2285,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3674840410592648165">Svetainėse galima diegti mokėjimų dorokles (rekomenduojama)</translation>
 <translation id="367645871420407123">Jei norite nustatyti numatytojo bandomojo vaizdo vertės pagrindinį slaptažodį, palikite lauką tuščią.</translation>
 <translation id="3677106374019847299">Įveskite tinkintą teikėją</translation>
-<translation id="3677657024345889897">Tyliausiai</translation>
 <translation id="3677911431265050325">Pateikti užklausą dėl svetainės mobiliesiems</translation>
 <translation id="3677959414150797585">Įtraukiami tinklalapiai, programos ir daugiau. Siunčiama statistika siekiant patobulinti pasiūlymus, tik jei pasirinkote bendrinti naudojimo duomenis.</translation>
 <translation id="3678156199662914018">Plėtinys: <ph name="EXTENSION_NAME" /></translation>
@@ -2478,7 +2473,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3867944738977021751">Sertifikato laukai</translation>
 <translation id="3869917919960562512">Neteisingas indeksas.</translation>
 <translation id="3870931306085184145">Nėra išsaugotų <ph name="DOMAIN" /> slaptažodžių</translation>
-<translation id="3871092408932389764">Žemiausias</translation>
 <translation id="3871350334636688135">Po 24 valandų administratorius pritaikys vienkartinį naujinį ir bus ištrinti jūsų vietiniai duomenys, kai iš naujo paleisite įrenginį. Visus reikalingus duomenis išsaugokite saugykloje debesyje per 24 valandas.</translation>
 <translation id="3872220884670338524">Daugiau veiksmų, išsaugota <ph name="USERNAME" /> (<ph name="DOMAIN" />) paskyra</translation>
 <translation id="3872991219937722530">Atlaisvinkite vietos diske arba įrenginys nebeatsakys.</translation>
@@ -4236,7 +4230,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6025215716629925253">Dėklo pėdsakas</translation>
 <translation id="6026819612896463875">„<ph name="WINDOW_TITLE" />“ – USB įrenginys prijungtas</translation>
 <translation id="6028117231645531007">Pridėti piršto antspaudą</translation>
-<translation id="6029587122245504742">Lėčiausias</translation>
 <translation id="6029594605736587274">blokuojama: <ph name="PERMISSION" /></translation>
 <translation id="6031600495088157824">Įvesties parinktys įrankių juostoje</translation>
 <translation id="6032715498678347852">Norėdami suteikti plėtiniui prieigą prie šios svetainės, spustelėkite jį.</translation>
@@ -4530,7 +4523,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6349101878882523185">Įdiegti <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Sinchronizavimas neveikia. Bandykite atsijungti ir vėl prisijungti.</translation>
 <translation id="6351063337294363751">Galite išvalyti naršymo duomenis iš šio meniu</translation>
-<translation id="6352773953037195952">Aukščiausias</translation>
 <translation id="6354918092619878358">SECG elipsės formos kreivės secp256r1 (taip pat vadinama ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Neišjunkite įrenginio</translation>
 <translation id="63566973648609420">Tik jūsų slaptafrazę žinantis asmuo gali skaityti šifruotus duomenis. Slaptafrazė nesiunčiama į sistemą „Google“ ir joje nesaugoma. Pamiršę slaptafrazę arba norėdami pakeisti šį nustatymą turėsite <ph name="BEGIN_LINK" />iš naujo nustatyti sinchronizavimą<ph name="END_LINK" />.</translation>
@@ -5295,6 +5287,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Gali būti, kad ši programa neleidžia „Chrome“ tinkamai veikti.}one{Gali būti, kad šios programos neleidžia „Chrome“ tinkamai veikti.}few{Gali būti, kad šios programos neleidžia „Chrome“ tinkamai veikti.}many{Gali būti, kad šios programos neleidžia „Chrome“ tinkamai veikti.}other{Gali būti, kad šios programos neleidžia „Chrome“ tinkamai veikti.}}</translation>
 <translation id="7303281435234579599">Oi, nustatant demonstracinį režimą įvyko klaida.</translation>
 <translation id="7303900363563182677">Šiai svetainei neleidžiama peržiūrėti teksto ir vaizdų, nukopijuotų į iškarpinę</translation>
+<translation id="7304030187361489308">Aukštas</translation>
 <translation id="7305123176580523628">USB spausdintuvas prijungtas</translation>
 <translation id="730515362922783851">Keistis duomenimis su bet kuriuo įrenginiu vietiniame tinkle ar internete</translation>
 <translation id="7306521477691455105">Atidarykite skiltį „Nustatymai“, kad prijungtumėte „<ph name="USB_DEVICE_NAME" />“ prie „<ph name="USB_VM_NAME" />“</translation>

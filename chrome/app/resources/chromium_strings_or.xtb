@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium ସପ୍ତାହକୁ ଥରେ ଅଦରକାରୀ ସଫ୍ଟୱେରର ଯାଞ୍ଚ କରେ। ଗତ ଥର ଯାଞ୍ଚ କରାଯାଇଛି: 1 ଘଣ୍ଟା ପୂର୍ବେ।}other{Chromium ସପ୍ତାହକୁ ଥରେ ଅଦରକାରୀ ସଫ୍ଟୱେରର ଯାଞ୍ଚ କରେ। ଗତ ଥର ଯାଞ୍ଚ କରାଯାଇଛି: {NUM_HOURS} ଘଣ୍ଟା ପୂର୍ବେ।}}</translation>
 <translation id="1065672644894730302">ଆପଣଙ୍କର ଅଗ୍ରାଧିକାରଗୁଡ଼ିକୁ ପଢ଼ାଯାଇପାରିବ ନାହିଁ।
 
 କିଛି ବୈଶିଷ୍ଟ୍ୟ ହୁଏତ ଉପଲବ୍ଧ ନଥାଇପାରେ ଏବଂ ଅଗ୍ରାଧିକାରଗୁଡ଼ିକରେ କରାଯାଇଥିବା ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ସେଭ୍ ନହୋଇପାରେ।</translation>
@@ -47,7 +46,6 @@
 <translation id="2711502716910134313">Chromium ଟାବ୍</translation>
 <translation id="2718390899429598676">ଅତିରିକ୍ତ ସୁରକ୍ଷା ପାଇଁ, Chromium ଆପଣଙ୍କର ଡାଟା ଏନ୍‍କ୍ରିପ୍ଟ କରିବ।</translation>
 <translation id="2770231113462710648">ଏଠାକୁ ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍‌କୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromium ସପ୍ତାହକୁ ଥରେ ଅଦରକାରୀ ସଫ୍ଟୱେରର ଯାଞ୍ଚ କରେ। ଗତ ଥର ଯାଞ୍ଚ କରାଯାଇଛି: 1 ମିନିଟ୍ ପୂର୍ବେ।}other{Chromium ସପ୍ତାହକୁ ଥରେ ଅଦରକାରୀ ସଫ୍ଟୱେରର ଯାଞ୍ଚ କରେ। ଗତ ଥର ଯାଞ୍ଚ କରାଯାଇଛି: {NUM_MINS} ମିନିଟ୍ ପୂର୍ବେ।}}</translation>
 <translation id="2799223571221894425">ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="2847479871509788944">Chromiumରୁ କାଢ଼ିଦିଅନ୍ତୁ...</translation>
 <translation id="2853765747879685679">ମୁଁ Chromium ଖୋଲିଲେ ପଚାରନ୍ତୁ</translation>
@@ -58,7 +56,6 @@
 <translation id="3032706164202344641">Chromium ଆପଣଙ୍କର ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3032787606318309379">Chromiumକୁ ଯୋଗ କରାଯାଉଛି...</translation>
 <translation id="3068515742935458733">Googleକୁ କ୍ରାସ୍ ରିପୋର୍ଟ ଏବଂ <ph name="UMA_LINK" /> ପଠାଇ Chromiumତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
-<translation id="3086207596048762442">Chromium ସପ୍ତାହକୁ ଥରେ ଅଦରକାରୀ ସଫ୍ଟୱେରର ଯାଞ୍ଚ କରେ</translation>
 <translation id="3103660991484857065">ଇନ୍‌ଷ୍ଟଲର୍ ଆର୍କାଇଭ୍ ଅଣସଙ୍କୁଚିତ କରିବାରେ ବିଫଳ ହେଲା। Chromium ପୁଣି ଡାଉନ୍‌ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="3130323860337406239">Chromium ଆପଣଙ୍କର ମାଇକ୍ରୋଫୋନ୍ ବ୍ୟବହାର କରୁଛି।</translation>
 <translation id="3155163173539279776">Chromiumକୁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>
@@ -179,7 +176,6 @@
 <translation id="6847869444787758381">ଆପଣଙ୍କର ପାସ୍‍ୱାର୍ଡଗୁଡ଼ିକ କେବେ ବି ଚୋରି ହୋଇଛି କି ନାହିଁ ତାହା Chromium ଆପଣଙ୍କୁ ଜାଣିବାକୁ ଦିଏ</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google ପେ (Chromiumକୁ କପି କରାଯାଇଛି)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium ସପ୍ତାହକୁ ଥରେ ଅଦରକାରୀ ସଫ୍ଟୱେରର ଯାଞ୍ଚ କରେ। ଗତ ଥର ଯାଞ୍ଚ କରାଯାଇଛି: 1 ଦିନ ପୂର୍ବେ।}other{Chromium ସପ୍ତାହକୁ ଥରେ ଅଦରକାରୀ ସଫ୍ଟୱେରର ଯାଞ୍ଚ କରେ। ଗତ ଥର ଯାଞ୍ଚ କରାଯାଇଛି: {NUM_DAYS} ଦିନ ପୂର୍ବେ।}}</translation>
 <translation id="6893813176749746474">Chromium ଅପ୍‌ଡେଟ୍‌ କରାଯାଇଛି, କିନ୍ତୁ ଆପଣ ଏହାକୁ ଅତିକମ୍‌ରେ 30 ଦିନ ହେଲା ବ୍ୟବହାର କରିନାହାନ୍ତି।</translation>
 <translation id="6964305034639999644">Chromium ଇନ୍‍କ&amp;ଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଲିଙ୍କ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="6990124437352146030">ଏହି ସାଇଟ୍ ପାଇଁ ଆପଣଙ୍କର ମାଇକ୍ରୋଫୋନ୍‌କୁ ଆକ୍ସେସ୍ କରିବାକୁ Chromium ଅନୁମତି ଆବଶ୍ୟକ କରୁଛି</translation>
@@ -243,7 +239,6 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="8621669128220841554">ଅନିର୍ଦ୍ଦିଷ୍ଟ ତ୍ରୁଟି ଯୋଗୁଁ ଇନ୍‌ଷ୍ଟଲେସନ୍ ବିଫଳ ହୋଇଛି। ଦୟାକରି Chromium ପୁଣି ଡାଉନ୍‌ଲୋଡ୍ କରନ୍ତୁ।</translation>
 <translation id="8697124171261953979">ଯେତେବେଳେ ଆପଣ Chromium ଆରମ୍ଭ କରନ୍ତି କିମ୍ବା ବହୁଉପଯୋଗୀ କ୍ଷେତ୍ରରୁ ସନ୍ଧାନ କରନ୍ତି, ସେତେବେଳେ କେଉଁ ପୃଷ୍ଠା ଦେଖାଯିବ ତାହା ମଧ୍ୟ ଏହା ନିୟନ୍ତ୍ରଣ କରେ।</translation>
 <translation id="8704119203788522458">ଏହା ହେଉଛି ଆପଣଙ୍କର Chromium</translation>
-<translation id="8705191560707593947">Chromium ସପ୍ତାହକୁ ଥରେ ଅଦରକାରୀ ସଫ୍ଟୱେରର ଯାଞ୍ଚ କରେ। ଗତ ଥର ଯାଞ୍ଚ କରାଯାଇଛି: ଗତକାଲି।</translation>
 <translation id="8796602469536043152">ଏହି ସାଇଟ୍ ପାଇଁ ଆପଣଙ୍କର କ୍ୟାମେରା ଓ ମାଇକ୍ରୋଫୋନ୍ ଆକ୍ସେସ୍ କରିବାକୁ Chromium ଅନୁମତି ଆବଶ୍ୟକ କରୁଛି</translation>
 <translation id="8803635938069941624">Chromium OS ସର୍ତ୍ତାବଳୀ</translation>
 <translation id="8821041990367117597">ଆପଣଙ୍କର ଆକାଉଣ୍ଟ ସାଇନ୍ ଇନ୍ ବିବରଣୀ ପୁରୁଣା ହୋଇଯାଇଥିବା ଯୋଗୁଁ Chromium ଆପଣଙ୍କର ଡାଟା ସିଙ୍କ୍ କରିପାରିଲା ନାହିଁ।</translation>
@@ -259,7 +254,6 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="91086099826398415">ନୂଆ Chromium &amp;ଟାବ୍‌ରେ ଲିଙ୍କ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="911206726377975832">ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଡାଟା ମଧ୍ୟ ବିଲୋପ କରିବେ?</translation>
 <translation id="9158494823179993217"><ph name="TARGET_URL_HOSTNAME" />କୁ ଆକ୍ସେସ୍‌ କରିବା ପାଇଁ ଏକ ବିକଳ୍ପ ବ୍ରାଉଜର୍‌ ଖୋଲିବାକୁ ଆପଣଙ୍କର ସିଷ୍ଟମ୍ ବ୍ୟବସ୍ଥାପକ Chromium କନ୍‌ଫିଗର୍‌ କରିଛନ୍ତି।</translation>
-<translation id="9164845895615421500">Chromium ସପ୍ତାହକୁ ଥରେ ଅଦରକାରୀ ସଫ୍ଟୱେରର ଯାଞ୍ଚ କରେ। ଗତ ଥର ଯାଞ୍ଚ କରାଯାଇଛି: କିଛି ସମୟ ପୂର୍ବେ।</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium ହୁଏତ ସଠିକ୍ ଭାବେ କାର୍ଯ୍ୟ କରି ନପାରେ କାରଣ ଏହା ଆଉ Windows XP କିମ୍ବା Windows Vistaରେ ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="95514773681268843">ଏହି ଡିଭାଇସ୍‌କୁ ବ୍ୟବହାର କରିବା ପୂର୍ବରୁ ଆପଣ ନିମ୍ନୋକ୍ତ ସେବାର ସର୍ତ୍ତାବଳୀ ପଢ଼ନ୍ତୁ ଏବଂ ସେଗୁଡ଼ିକୁ ସ୍ଵୀକାର କରନ୍ତୁ ବୋଲି <ph name="DOMAIN" /> ଚାହେଁ। ଏହି ସର୍ତ୍ତଗୁଡ଼ିକ Chromium OS ସର୍ତ୍ତଗୁଡ଼ିକୁ ସମ୍ପ୍ରସାରିତ, ଆଂଶିକ ପରିବର୍ତ୍ତନ କିମ୍ବା ସୀମିତ କରେ ନାହିଁ।</translation>

@@ -391,7 +391,7 @@ Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výber
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome stránku načíta, keď bude k dispozícii}few{Chrome stránku načíta, keď bude k dispozícii}many{Chrome stránku načíta, keď bude k dispozícii}other{Chrome stránku načíta, keď bude k dispozícii}}</translation>
 <translation id="3963007978381181125">Šifrovanie prístupovej frázy nezahŕňa spôsoby platby a adresy zo služby Google Pay. Šifrované údaje si môže prečítať iba používateľ s prístupovou frázou. Prístupová fráza sa neodosiela do Googlu ani sa v ňom neuchováva. Ak ju zabudnete alebo chcete toto nastavenie zmeniť, budete musieť resetovať synchronizáciu. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="3967822245660637423">Sťahovanie dokončené</translation>
-<translation id="3969142555815019568">Chrome nemôže kontrolovať heslá</translation>
+<translation id="3969142555815019568">Chrome nemôže skontrolovať heslá</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> sa otvorí v Chrome. Pokračovaním vyjadrujete súhlas so <ph name="BEGIN_LINK1" />zmluvnými podmienkami spoločnosti Google<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />dodatočnými zmluvnými podmienkami prehliadača Google Chrome a systému Chrome OS<ph name="END_LINK2" />. Platí aj <ph name="BEGIN_LINK3" />oznámenie o ochrane súkromia pre účty Google spravované pomocou aplikácie Family Link<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">Synchronizácia prestala fungovať</translation>
 <translation id="3976396876660209797">Odstráňte túto skratku a znova ju vytvorte</translation>
@@ -861,7 +861,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="7293429513719260019">Vybrať jazyk</translation>
 <translation id="729975465115245577">Vaše zariadenie nemá aplikáciu na uloženie súboru s heslami.</translation>
 <translation id="7302081693174882195">Podrobnosti: zoradené podľa množstva ušetrených dát</translation>
-<translation id="7304873321153398381">Offline. Chrome nemôže kontrolovať heslá.</translation>
+<translation id="7304873321153398381">Offline. Chrome nemôže skontrolovať heslá.</translation>
 <translation id="7313188324932846546">Klepnutím nastavte synchronizáciu</translation>
 <translation id="7328017930301109123">V zjednodušenom režime načítava Chrome stránky rýchlejšie a využíva až o 60 percent menej dát.</translation>
 <translation id="7333031090786104871">Pridávanie predchádzajúceho webu stále prebieha</translation>

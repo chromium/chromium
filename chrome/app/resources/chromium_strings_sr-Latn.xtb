@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium proverava da li je prisutan neželjeni softver jednom nedeljno. Poslednji put provereno: pre 1 sat.}one{Chromium proverava da li je prisutan neželjeni softver jednom nedeljno. Poslednji put provereno: pre {NUM_HOURS} sat.}few{Chromium proverava da li je prisutan neželjeni softver jednom nedeljno. Poslednji put provereno: pre {NUM_HOURS} sata.}other{Chromium proverava da li je prisutan neželjeni softver jednom nedeljno. Poslednji put provereno: pre {NUM_HOURS} sati.}}</translation>
 <translation id="1065672644894730302">Podešavanja ne mogu da se pročitaju.
 
 Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.</translation>
@@ -47,7 +46,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2711502716910134313">Kartica Chromium</translation>
 <translation id="2718390899429598676">Chromium će šifrovati podatke radi dodatne sigurnosti.</translation>
 <translation id="2770231113462710648">Promeni podrazumevani pregledač u:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromium proverava da li je prisutan neželjeni softver jednom nedeljno. Poslednji put provereno: pre 1 minut.}one{Chromium proverava da li je prisutan neželjeni softver jednom nedeljno. Poslednji put provereno: pre {NUM_MINS} minut.}few{Chromium proverava da li je prisutan neželjeni softver jednom nedeljno. Poslednji put provereno: pre {NUM_MINS} minuta.}other{Chromium proverava da li je prisutan neželjeni softver jednom nedeljno. Poslednji put provereno: pre {NUM_MINS} minuta.}}</translation>
 <translation id="2799223571221894425">Ponovo pokreni</translation>
 <translation id="2847479871509788944">Ukloni iz Chromium-a...</translation>
 <translation id="2853765747879685679">Pitaj kada otvaram Chromium</translation>
@@ -58,7 +56,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="3032706164202344641">Chromium ne može da vam proverava lozinke. Probajte ponovo kasnije.</translation>
 <translation id="3032787606318309379">Dodavanje u Chromium...</translation>
 <translation id="3068515742935458733">Pomozite nam da poboljšamo Chromium tako što ćete Google-u slati izveštaje o otkazivanju i <ph name="UMA_LINK" /></translation>
-<translation id="3086207596048762442">Chromium proverava da li je prisutan neželjeni softver jednom nedeljno</translation>
 <translation id="3103660991484857065">Program za instalaciju nije uspeo da dekomprimuje arhivu. Preuzmite Chromium ponovo.</translation>
 <translation id="3130323860337406239">Chromium koristi mikrofon.</translation>
 <translation id="3155163173539279776">Ponovo pokreni Chromium</translation>
@@ -179,7 +176,6 @@ Neke funkcije će možda biti nedostupne. Navedite drugi direktorijum profila i
 <translation id="6847869444787758381">Chromium vas obaveštava ako su lozinke ugrožene</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopirano u Chromium)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium proverava da li je prisutan neželjeni softver jednom nedeljno. Poslednji put provereno: pre 1 dan.}one{Chromium proverava da li je prisutan neželjeni softver jednom nedeljno. Poslednji put provereno: pre {NUM_DAYS} dan.}few{Chromium proverava da li je prisutan neželjeni softver jednom nedeljno. Poslednji put provereno: pre {NUM_DAYS} dana.}other{Chromium proverava da li je prisutan neželjeni softver jednom nedeljno. Poslednji put provereno: pre {NUM_DAYS} dana.}}</translation>
 <translation id="6893813176749746474">Chromium je ažuriran, ali ga niste koristili najmanje 30 dana.</translation>
 <translation id="6964305034639999644">Otvori link u Chromium prozoru bez arhi&amp;viranja</translation>
 <translation id="6990124437352146030">Chromium traži dozvolu da pristupi mikrofonu za ovaj sajt</translation>
@@ -244,7 +240,6 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="8621669128220841554">Instalacija nije uspela zbog neodređene greške. Preuzmite Chromium ponovo.</translation>
 <translation id="8697124171261953979">Kontroliše i stranicu koja se prikazuje kada pokrenete Chromium ili pretražujete iz omniboksa.</translation>
 <translation id="8704119203788522458">Ovo je vaš Chromium</translation>
-<translation id="8705191560707593947">Chromium proverava da li je prisutan neželjeni softver jednom nedeljno. Poslednji put provereno: juče.</translation>
 <translation id="8796602469536043152">Chromium traži dozvolu da pristupi kameri i mikrofonu za ovaj sajt</translation>
 <translation id="8803635938069941624">Chromium OS uslovi</translation>
 <translation id="8821041990367117597">Chromium ne može da sinhronizuje podatke zato što su podaci za prijavljivanje na nalog zastareli.</translation>
@@ -260,7 +255,6 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="91086099826398415">Otvori link u novoj Chromium &amp;kartici</translation>
 <translation id="911206726377975832">Želite li da izbrišete i podatke pregledanja?</translation>
 <translation id="9158494823179993217">Administrator sistema je konfigurisao Chromium da otvara alternativni pregledač za pristup URL-u <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="9164845895615421500">Chromium proverava da li je prisutan neželjeni softver jednom nedeljno. Poslednji put provereno: malopre.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium možda neće ispravno funkcionisati zato što više nije podržan na Windows XP-u ili Windows Vista-i</translation>
 <translation id="95514773681268843"><ph name="DOMAIN" /> zahteva da pročitate i prihvatite sledeće Uslove korišćenja usluge pre nego što počnete da koristite ovaj uređaj. Ovi uslovi ne predstavljaju proširenje, izmenu ili ograničenje Uslova za Chromium OS.</translation>

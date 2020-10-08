@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">ਕੇਵਲ ਚੋਣ</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> ਨੂੰ ਲਾਇਸੰਸ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="1223853788495130632">ਤੁਹਾਡਾ ਪ੍ਰਬੰਧਕ ਇਸ ਸੈਟਿੰਗ ਲਈ ਇੱਕ ਖ਼ਾਸ ਵੈਲਯੂ ਦੀ ਸਿਫ਼ਾਰਿਸ਼ ਕਰਦਾ ਹੈ।</translation>
-<translation id="1224275271335624810">ਸਭ ਤੋਂ ਤੇਜ਼</translation>
 <translation id="1225177025209879837">ਪ੍ਰੋਸੈਸਿੰਗ ਬੇਨਤੀ...</translation>
 <translation id="1227507814927581609">"<ph name="DEVICE_NAME" />" ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਵੇਲੇ ਪ੍ਰਮਾਣੀਕਰਨ ਅਸਫਲ।</translation>
 <translation id="1230417814058465809">ਮਿਆਰੀ ਸੁਰੱਖਿਆ ਚਾਲੂ ਹੈ। ਹੋਰ ਵੀ ਜ਼ਿਆਦਾ ਸੁਰੱਖਿਆ ਲਈ, ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਵਰਤੋ।</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">ਹੱਥੀਂ ਦਰਜ ਕਰੋ</translation>
 <translation id="1668979692599483141">ਸੁਝਾਵਾਂ ਬਾਰੇ ਜਾਣੋ</translation>
 <translation id="1670399744444387456">ਮੁਢਲਾ</translation>
-<translation id="167160931442925455">ਸਭ ਤੋਂ ਉੱਚੀ ਅਵਾਜ਼</translation>
 <translation id="1673137583248014546"><ph name="URL" /> ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਦੇ ਨਿਰਮਾਤਾ ਅਤੇ ਮਾਡਲ ਨੂੰ ਦੇਖਣਾ ਚਾਹੁੰਦਾ ਹੈ</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> ਨੂੰ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ਬਾਕੀ</translation>
@@ -919,7 +917,6 @@
 <translation id="2046702855113914483">ਰੈਮਨ</translation>
 <translation id="204706822916043810">ਆਭਾਸੀ ਮਸ਼ੀਨ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="2048182445208425546">ਆਪਣੇ ਨੈੱਟਵਰਕ ਟ੍ਰੈਫਿਕ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
-<translation id="2048243703055695889"><ph name="USER_EMAIL" /> ਦੇ ਡੀਵਾਈਸ ਲਈ 'ਨਜ਼ਦੀਕੀ ਸਾਂਝ' ਸੈਟਿੰਗਾਂ, '<ph name="DEVICE_NAME" />'.</translation>
 <translation id="2048653237708779538">ਕਾਰਵਾਈ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="204914487372604757">ਸ਼ਾਰਟਕੱਟ ਬਣਾਓ</translation>
 <translation id="2050339315714019657">ਪੋਰਟਰੇਟ</translation>
@@ -1104,7 +1101,6 @@
 <translation id="2262477216570151239">ਦੁਹਰਾਉਣ ਤੋਂ ਪਹਿਲਾਂ ਦੇਰੀ</translation>
 <translation id="2263189956353037928">ਸਾਈਨ-ਆਊਟ ਅਤੇ ਵਾਪਸ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="2263371730707937087">ਸਕ੍ਰੀਨ ਦੀ ਰਿਫ੍ਰੈਸ਼ ਦਰ</translation>
-<translation id="2263497240924215535">(ਅਸਮਰਥਿਤ)</translation>
 <translation id="22665427234727190">ਕਿਸੇ ਸਾਈਟ ਵੱਲੋਂ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਵੇਲੇ ਪੁੱਛੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="2266957463645820432">USB 'ਤੇ IPP (IPPUSB)</translation>
 <translation id="2270450558902169558">ਡੋਮੇਨ <ph name="DOMAIN" /> ਵਿੱਚ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ ਨਾਲ ਡਾਟਾ ਐਕਸਚੇਂਜ ਕਰੋ</translation>
@@ -2287,7 +2283,6 @@
 <translation id="3674840410592648165">ਸਾਈਟਾਂ ਭੁਗਤਾਨ ਹੈਂਡਲਰ ਸਥਾਪਤ ਕਰ ਸਕਦੀਆਂ ਹਨ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="367645871420407123">ਜੇਕਰ ਤੁਸੀਂ ਰੂਟ ਪਾਸਵਰਡ ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਟੈਸਟ ਚਿੱਤਰ ਮੁੱਲ 'ਤੇ ਸੈਟ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ ਤਾਂ ਖਾਲੀ ਛੱਡੋ</translation>
 <translation id="3677106374019847299">ਵਿਉਂਤਿਆ ਪ੍ਰਦਾਨਕ ਦਾਖਲ ਕਰੋ</translation>
-<translation id="3677657024345889897">ਸਭ ਤੋਂ ਘੱਟ ਅਵਾਜ਼</translation>
 <translation id="3677911431265050325">ਮੋਬਾਈਲ ਸਾਈਟ ਦੀ ਬੇਨਤੀ ਕਰੋ</translation>
 <translation id="3677959414150797585">ਐਪਾਂ, ਵੈੱਬ-ਪੰਨੇ ਅਤੇ ਬਹੁਤ ਕੁਝ ਸ਼ਾਮਲ ਹਨ। ਤੁਹਾਡੇ ਵੱਲੋਂ ਵਰਤੋਂ ਡਾਟੇ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਦੀ ਚੋਣ ਕੀਤੇ ਜਾਣ 'ਤੇ ਹੀ ਸੁਝਾਵਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਅੰਕੜੇ ਭੇਜੇ ਜਾਂਦੇ ਹਨ।</translation>
 <translation id="3678156199662914018">ਐਕਸਟੈਂਸ਼ਨ: <ph name="EXTENSION_NAME" /></translation>
@@ -2476,7 +2471,6 @@
 <translation id="3867944738977021751">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਖੇਤਰ</translation>
 <translation id="3869917919960562512">ਗ਼ਲਤ ਇੰਡੈਕਸ।</translation>
 <translation id="3870931306085184145"><ph name="DOMAIN" /> ਲਈ ਕੋਈ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਨਹੀਂ</translation>
-<translation id="3871092408932389764">ਸਭ ਤੋਂ ਘੱਟ</translation>
 <translation id="3871350334636688135">24 ਘੰਟਿਆਂ ਬਾਅਦ, ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇੱਕ ਵਾਰ ਅੱਪਡੇਟ ਕਰੇਗਾ ਜਿਸ ਨਾਲ ਤੁਹਾਡੇ ਵੱਲੋਂ ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ 'ਤੇ ਤੁਹਾਡਾ ਸਥਾਨਕ ਡਾਟਾ ਮਿਟ ਜਾਵੇਗਾ। 24 ਘੰਟਿਆਂ ਦੇ ਅੰਦਰ ਆਪਣਾ ਕੋਈ ਵੀ ਲੋੜੀਂਦਾ ਸਥਾਨਕ ਡਾਟਾ ਕਲਾਊਡ ਸਟੋਰੇਜ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।</translation>
 <translation id="3872220884670338524">ਹੋਰ ਕਾਰਵਾਈਆਂ, <ph name="DOMAIN" /> 'ਤੇ <ph name="USERNAME" /> ਲਈ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਖਾਤਾ</translation>
 <translation id="3872991219937722530">ਡਿਸਕ ਜਗ੍ਹਾ ਨੂੰ ਖਾਲੀ ਕਰੋ ਨਹੀਂ ਤਾਂ ਡੀਵਾਈਸ ਪ੍ਰਤੀਕਿਰਿਆਹੀਣ ਬਣ ਜਾਵੇਗੀ।</translation>
@@ -4233,7 +4227,6 @@
 <translation id="6025215716629925253">ਸਟੈਕ ਟ੍ਰੇਸ</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB ਡੀਵਾਈਸ ਕਨੈਕਟ ਕੀਤੀ ਗਈ</translation>
 <translation id="6028117231645531007">ਫਿੰਗਰਪ੍ਰਿੰਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
-<translation id="6029587122245504742">ਸਭ ਤੋਂ ਹੌਲੀ</translation>
 <translation id="6029594605736587274">ਬਲਾਕ ਕੀਤੀ ਗਈ <ph name="PERMISSION" /></translation>
 <translation id="6031600495088157824">ਟੂਲਬਾਰ ਵਿੱਚ ਇਨਪੁੱਟ ਵਿਕਲਪ</translation>
 <translation id="6032715498678347852">ਇਸ ਸਾਈਟ ਨੂੰ ਐਕਸਟੈਂਸ਼ਨ ਪਹੁੰਚ ਦੇਣ ਲਈ, ਇਸ 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
@@ -4527,7 +4520,6 @@
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="6349170655202535379">ਸਮਕਾਲੀਕਰਨ ਕੰਮ ਨਹੀਂ ਕਰ ਰਿਹਾ ਹੈ। ਸਾਈਨ-ਆਊਟ ਕਰਕੇ ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6351063337294363751">ਤੁਸੀਂ ਇਸ ਮੀਨੂ ਤੋਂ ਆਪਣਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਸਾਫ਼ ਕਰ ਸਕਦੇ ਹੋ</translation>
-<translation id="6352773953037195952">ਸਭ ਤੋਂ ਵੱਧ</translation>
 <translation id="6354918092619878358">SECG ਅੰਡਾਕਾਰ ਘੁਮਾਓ secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">ਡੀਵਾਈਸ ਚਾਲੂ ਰੱਖੋ</translation>
 <translation id="63566973648609420">ਤੁਹਾਡੇ ਇਨਕ੍ਰਿਪਟਡ ਡਾਟੇ ਨੂੰ ਸਿਰਫ਼ ਓਹੀ ਵਿਅਕਤੀ ਪੜ੍ਹ ਸਕਦਾ ਹੈ ਜਿਸ ਕੋਲ ਤੁਹਾਡਾ ਪਾਸਫਰੇਜ਼ ਹੋਵੇ। ਪਾਸਫਰੇਜ਼ Google ਨੂੰ ਭੇਜਿਆ ਜਾਂ ਉਸ ਵੱਲੋਂ ਸਟੋਰ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਜੇਕਰ ਤੁਸੀਂ ਆਪਣਾ ਪਾਸਫਰੇਜ਼ ਭੁੱਲ ਜਾਂਦੇ ਹੋ ਜਾਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ ਤੁਹਾਨੂੰ <ph name="BEGIN_LINK" />ਸਮਕਾਲੀਕਰਨ ਨੂੰ ਰੀਸੈੱਟ<ph name="END_LINK" /> ਕਰਨ ਦੀ ਲੋੜ ਪਵੇਗੀ।</translation>
@@ -5292,6 +5284,7 @@
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{ਇਹ ਐਪਲੀਕੇਸ਼ਨ Chrome ਨੂੰ ਸਹੀ ਢੰਗ ਨਾਲ ਕੰਮ ਕਰਨ ਤੋਂ ਰੋਕ ਸਕਦੀ ਹੈ।}one{ਇਹ ਐਪਲੀਕੇਸ਼ਨ Chrome ਨੂੰ ਸਹੀ ਢੰਗ ਨਾਲ ਕੰਮ ਕਰਨ ਤੋਂ ਰੋਕ ਸਕਦੀ ਹੈ।}other{ਇਹ ਐਪਲੀਕੇਸ਼ਨਾਂਂ Chrome ਨੂੰ ਸਹੀ ਢੰਗ ਨਾਲ ਕੰਮ ਕਰਨ ਤੋਂ ਰੋਕ ਸਕਦੀਆਂ ਹਨ।}}</translation>
 <translation id="7303281435234579599">ਓਹੋ! ਡੈਮੋ ਮੋਡ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਦੌਰਾਨ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ।</translation>
 <translation id="7303900363563182677">ਇਸ ਪੰਨੇ ਨੂੰ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤੀ ਲਿਖਤ ਅਤੇ ਚਿੱਤਰਾਂ ਨੂੰ ਦੇਖਣ ਤੋਂ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
+<translation id="7304030187361489308">ਵੱਧ</translation>
 <translation id="7305123176580523628">USB ਪ੍ਰਿੰਟਰ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="730515362922783851">ਸਥਾਨਕ ਨੈੱਟਵਰਕ ਜਾਂ ਇੰਟਰਨੈਟ 'ਤੇ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ ਨਾਲ ਡਾਟਾ ਐਕਸਚੇਂਜ ਕਰੋ</translation>
 <translation id="7306521477691455105"><ph name="USB_DEVICE_NAME" /> ਨੂੰ <ph name="USB_VM_NAME" /> ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>

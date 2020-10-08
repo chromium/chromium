@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium hukagua kama kuna programu isiyotakikana mara moja kwa wiki. Mara ya mwisho kukagua: saa moja iliyopita.}other{Chromium hukagua kama kuna programu isiyotakikana mara moja kwa wiki. Mara ya mwisho kukagua: saa {NUM_HOURS} zilizopita.}}</translation>
 <translation id="1065672644894730302">Mapendeleo yako hayawezi kusomwa.
 
 Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahifadhiwa.</translation>
@@ -47,7 +46,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2711502716910134313">Kichupo cha Chromium</translation>
 <translation id="2718390899429598676">Kwa usalama ulioongezwa, Chromium itasimba data yako kwa njia fiche.</translation>
 <translation id="2770231113462710648">Badilisha kivinjari chaguomsingi kiwe:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromium hukagua kama kuna programu isiyotakikana mara moja kwa wiki. Mara ya mwisho kukagua: dakika moja iliyopita.}other{Chromium hukagua kama kuna programu isiyotakikana mara moja kwa wiki. Mara ya mwisho kukagua: dakika {NUM_MINS} zilizopita.}}</translation>
 <translation id="2799223571221894425">Funga na ufungue</translation>
 <translation id="2847479871509788944">Ondoa kwenye Chromium...</translation>
 <translation id="2853765747879685679">Uliza ninapofungua Chromium</translation>
@@ -58,7 +56,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="3032706164202344641">Chromium imeshindwa kukagua manenosiri yako. Jaribu tena baadaye.</translation>
 <translation id="3032787606318309379">Inaongeza kwenye Chromium...</translation>
 <translation id="3068515742935458733">Saidia kuboresha Chromium kwa kutuma ripoti za kuacha kufanya kazi na <ph name="UMA_LINK" /> kwenda Google</translation>
-<translation id="3086207596048762442">Chromium hukagua kama kuna programu isiyotakikana mara moja kwa wiki</translation>
 <translation id="3103660991484857065">Kisakinishi kilishindwa kufinyuza kumbukumbu. Tafadhali pakua Chromium tena.</translation>
 <translation id="3130323860337406239">Chromium inatumia maikrofoni yako.</translation>
 <translation id="3155163173539279776">Zindua upya Chromium</translation>
@@ -179,7 +176,6 @@ Baadhi ya vipengele huenda visipatikane. Tafadhali bainisha saraka tofauti ya wa
 <translation id="6847869444787758381">Chromium hukuruhusu ujue iwapo manenosiri yako yameathiriwa</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (imenakiliwa kwenye Chromium)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium hukagua kama kuna programu isiyotakikana mara moja kwa wiki. Mara ya mwisho kukagua: siku moja iliyopita.}other{Chromium hukagua kama kuna programu isiyotakikana mara moja kwa wiki. Mara ya mwisho kukagua: siku {NUM_DAYS} zilizopita.}}</translation>
 <translation id="6893813176749746474">Chromium imesasishwa, lakini hujaitumia angalau kwa siku 30.</translation>
 <translation id="6964305034639999644">Fungua kiungo katika dirisha fiche la Chromium</translation>
 <translation id="6990124437352146030">Chromium inahitaji ruhusa ya kufikia maikrofoni yako katika tovuti hii</translation>
@@ -244,7 +240,6 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="8621669128220841554">Usakinishaji ulishindwa kwa sababu ya hitilafu isiyobainika. Tafadhali pakua Chromium tena.</translation>
 <translation id="8697124171261953979">Pia inadhibiti ukurasa unaoonyeshwa unapoanzisha Chromium au unapotafuta kutoka Sanduku Kuu.</translation>
 <translation id="8704119203788522458">Hii ni Chromium yako</translation>
-<translation id="8705191560707593947">Chromium hukagua kama kuna programu isiyotakikana mara moja kwa wiki. Mara ya mwisho kukagua: jana.</translation>
 <translation id="8796602469536043152">Chromium inahitaji ruhusa ya kufikia kamera na maikrofoni yako katika tovuti hii</translation>
 <translation id="8803635938069941624">Masharti ya Chromium OS</translation>
 <translation id="8821041990367117597">Chromium haikuweza kusawazisha data yako kwa sababu maelezo yako ya kuingia katika akaunti yanahitaji kusasishwa.</translation>
@@ -260,7 +255,6 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="91086099826398415">Fungua Kiungo katika kichupo kipya cha Chromium</translation>
 <translation id="911206726377975832">Futa historia yako ya kuvinjari pia?</translation>
 <translation id="9158494823179993217">Msimamizi wa mfumo unaotumia ameweka mipangilio ya Chromium ifungue kivinjari mbadala ili ufikie<ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="9164845895615421500">Chromium hukagua kama kuna programu isiyotakikana mara moja kwa wiki. Mara ya mwisho kukagua: muda mfupi uliopita.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Huenda Chromium isifanye kazi vizuri kwa sababu haitumiki tena kwenye Windows XP au Windows Vista</translation>
 <translation id="95514773681268843"><ph name="DOMAIN" /> huhitaji usome na ukubali Sheria na Masharti yafuatayo kabla ya kutumia kifaa hiki. Masharti haya hayapanui, kurekebisha au kupunguza Masharti ya Chromium OS.</translation>

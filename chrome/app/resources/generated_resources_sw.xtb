@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Kuchagua pekee</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> inahitaji leseni</translation>
 <translation id="1223853788495130632">Msimamizi wako anapendekeza thamani maalum ya mpangilio huu.</translation>
-<translation id="1224275271335624810">Kasi zaidi</translation>
 <translation id="1225177025209879837">Inachakata ombi...</translation>
 <translation id="1227507814927581609">Uthibitishaji ulishindwa wakati wa kuunganishwa kwenye "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1230417814058465809">Kipengele cha ulinzi wa kawaida kimewashwa. Kwa usalama zaidi, tumia kipengele cha usalama ulioboreshwa.</translation>
@@ -595,7 +594,6 @@
 <translation id="1668435968811469751">Jiandikishe mwenyewe</translation>
 <translation id="1668979692599483141">Pata maelezo kuhusu mapendekezo</translation>
 <translation id="1670399744444387456">Msingi</translation>
-<translation id="167160931442925455">Sauti ya juu kabisa</translation>
 <translation id="1673137583248014546"><ph name="URL" /> ingependa kuona muundo na aina ya Ufunguo wako wa Usalama</translation>
 <translation id="1677306805708094828">Huruhusiwi kuweka <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Zimesalia <ph name="TIME" /></translation>
@@ -916,7 +914,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2046702855113914483">Rameni</translation>
 <translation id="204706822916043810">Inakagua mashine pepe</translation>
 <translation id="2048182445208425546">Kufikia maelezo ya shughuli kwenye mtandao wako</translation>
-<translation id="2048243703055695889">Mipangilio ya kipengele cha Uhamishaji wa Karibu ya kifaa cha <ph name="USER_EMAIL" />, '<ph name="DEVICE_NAME" />'.</translation>
 <translation id="2048653237708779538">Kitendo hakipatikani</translation>
 <translation id="204914487372604757">Unda njia mkato</translation>
 <translation id="2050339315714019657">Wima</translation>
@@ -1101,7 +1098,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2262477216570151239">Chelewesha kabla ya kurudia</translation>
 <translation id="2263189956353037928">Ondoka na uingie tena kwenye akaunti</translation>
 <translation id="2263371730707937087">Kiwango cha kuonyesha skrini upya</translation>
-<translation id="2263497240924215535">(Kimelemazwa)</translation>
 <translation id="22665427234727190">Uliza wakati tovuti inataka kufikia vifaa vya Bluetooth (inapendekezwa)</translation>
 <translation id="2266957463645820432">IPP kupitia USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Badilisha data kwa kifaa chochote kwenye kikoa <ph name="DOMAIN" /></translation>
@@ -2286,7 +2282,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3674840410592648165">Tovuti zinaweza kusakinisha vidhibiti vya malipo (inapendekezwa)</translation>
 <translation id="367645871420407123">acha tupu ukitaka kuweka nenosiri msingi kwenye thamani ya picha ya jaribio la chaguomsingi</translation>
 <translation id="3677106374019847299">Weka mtoa huduma maalum</translation>
-<translation id="3677657024345889897">Sauti ya chini kabisa</translation>
 <translation id="3677911431265050325">Omba tovuti ya kifaa cha mkononi</translation>
 <translation id="3677959414150797585">Yanajumuisha programu, kurasa za wavuti na zaidi. Hutuma takwimu za kuboresha mapendekezo iwapo tu umechagua kushiriki data ya matumizi.</translation>
 <translation id="3678156199662914018">Kiendelezi: <ph name="EXTENSION_NAME" /></translation>
@@ -2475,7 +2470,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3867944738977021751">Uga za Cheti</translation>
 <translation id="3869917919960562512">Orodha isiyosahihi.</translation>
 <translation id="3870931306085184145">Hamna manenosiri yaliyohifadhiwa ya <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">Chini kabisa</translation>
 <translation id="3871350334636688135">Baada ya saa 24, msimamizi wako ataweka sasisho la mara moja ambalo litafuta data ya kifaa chako utakapokizima kisha ukiwashe tena. Hifadhi data yoyote ya kifaa unayohitaji kwenye hifadhi ya wingu ndani ya saa 24.</translation>
 <translation id="3872220884670338524">Matendo zaidi, akaunti iliyohifadhiwa ya <ph name="USERNAME" /> kwenye <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Futa maudhui katika hifadhi ya diski la sivyo kifaa chako kitaacha kufanya kazi.</translation>
@@ -4230,7 +4224,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6025215716629925253">Alama ya Bunda</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - Kifaa cha USB kimeunganishwa</translation>
 <translation id="6028117231645531007">Ongeza alama ya kidole</translation>
-<translation id="6029587122245504742">Kasi ya chini zaidi</translation>
 <translation id="6029594605736587274">umezuia <ph name="PERMISSION" /></translation>
 <translation id="6031600495088157824">Chaguo za kuweka data kwenye upau wa vidhibiti</translation>
 <translation id="6032715498678347852">Bofya kiendelezi ili ukipe uwezo wa kufikia tovuti hii.</translation>
@@ -4524,7 +4517,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6349101878882523185">Sakinisha <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Kipengele cha usawazishaji hakifanyi kazi. Jaribu kuondoka na uingie tena katika akaunti.</translation>
 <translation id="6351063337294363751">Unaweza kufuta data yako ya kuvinjari kwenye menyu hii</translation>
-<translation id="6352773953037195952">Juu kabisa</translation>
 <translation id="6354918092619878358">SECG kizingo cha mviringo secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Usizime kifaa</translation>
 <translation id="63566973648609420">Ni mtu mwenye kauli yako ya siri tu anaweza kusoma data yako iliyosimbwa kwa njia fiche. Kauli ya siri haitumwi au kuhifadhiwa na Google. Ukisahau kauli yako ya siri, au unataka kubadilisha mipangilio hii, utahitaji <ph name="BEGIN_LINK" />kuweka upya usawazishaji<ph name="END_LINK" /></translation>
@@ -5289,6 +5281,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Huenda programu hii ikazuia Chrome isifanye kazi inavyostahili.}other{Huenda programu hizi zikazuia Chrome isifanye kazi inavyostahili.}}</translation>
 <translation id="7303281435234579599">Lo! Hitilafu imetokea wakati wa kuweka hali ya onyesho.</translation>
 <translation id="7303900363563182677">Tovuti hii imezuiwa isione maandishi na picha zilizonakiliwa kwenye ubao wa kunakili</translation>
+<translation id="7304030187361489308">Juu</translation>
 <translation id="7305123176580523628">Printa ya USB imeunganishwa</translation>
 <translation id="730515362922783851">Badilisha data kwa kifaa chochote kwenye mtandao au intaneti ya karibu</translation>
 <translation id="7306521477691455105">Fungua Mipangilio ili uunganishe <ph name="USB_DEVICE_NAME" /> kwenye <ph name="USB_VM_NAME" /></translation>

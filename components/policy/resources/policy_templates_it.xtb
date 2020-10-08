@@ -41,12 +41,6 @@
 
       . Questa norma è valida soltanto per gli utenti il cui dominio corrisponde al dominio di registrazione del dispositivo. Per tutti gli altri utenti, i cookie impostati dall'IdP vengono trasferiti al profilo dell'utente soltanto durante il primo accesso sul dispositivo.</translation>
 <translation id="1029052664284722254">Forza il riavvio del dispositivo all'uscita dell'utente</translation>
-<translation id="1035385378988781231">Questa norma consente di stabilire se usare o meno l'autenticazione NTLM per la funzionalità Condivisioni file di rete di <ph name="PRODUCT_NAME" />.
-
-      Se questa norma viene impostata su True, verrà usata l'autenticazione NTLM per le condivisioni SMB, se necessario.
-      Se questa norma viene impostata su False, l'autenticazione NTLM per le condivisioni SMB viene disattivata.
-
-      Se la norma non viene impostata, per impostazione predefinita la norma viene disattivata per gli utenti gestiti dall'azienda, mentre viene attivata per gli utenti non gestiti.</translation>
 <translation id="1040446814317236570">Attiva la rimozione per gli URL PAC (https://)</translation>
 <translation id="1046484220783400299">Consente di attivare le funzioni della piattaforma web obsolete per un periodo di tempo limitato</translation>
 <translation id="1047128214168693844">Non consentire ad alcun sito di monitorare la posizione fisica degli utenti</translation>
@@ -86,11 +80,6 @@
 <translation id="1095209545735032039">Blocca l'API Serial su questi siti</translation>
 <translation id="1096105751829466145">Provider di ricerca predefinito</translation>
 <translation id="1099282607296956954">Attiva isolamento sito per ogni sito</translation>
-<translation id="1107764601871839136">Questa norma consente di specificare la durata in ore della cache dell'Oggetto Criteri di gruppo (GPO). Invece di scaricare di nuovo i GPO a ogni recupero della norma, il sistema può riutilizzare i GPO memorizzati nella cache finché la loro versione non viene modificata. Questa norma consente di specificare per quanto tempo è possibile riutilizzare i GPO memorizzati nella cache prima che vengano scaricati di nuovo. Se esegui il riavvio ed esci, la cache verrà svuotata.
-
-      Se la norma non viene impostata, i GPO memorizzati nella cache possono essere riutilizzati per un periodo massimo di 25 ore.
-
-      Se la norma è impostata su 0, la memorizzazione nella cache del GPO è disattivata. Tieni presente che in questo modo aumenterà il carico del server perché i GPO verranno scaricati nuovamente a ogni recupero della norma, anche se non sono stati modificati.</translation>
 <translation id="1111470455889178048">Invia caricamenti e download degli utenti da analizzare</translation>
 <translation id="1117535567637097036">I gestori di protocollo impostati tramite questa norma non sono utilizzati durante la gestione degli intent di Android.</translation>
 <translation id="1118093128235245168">Consenti ai siti di chiedere all'utente di concedere l'accesso a un dispositivo USB collegato</translation>
@@ -733,11 +722,6 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 <translation id="2197625019569762163">Se questo criterio è impostato su True, per impostazione predefinita viene visualizzata la tastiera numerica per inserire la password nella schermata di accesso. Gli utenti possono comunque passare alla tastiera normale.
 
       Se imposti il criterio, gli utenti non possono modificarlo. Se non è impostato o è impostato su False, non sortisce alcun effetto.</translation>
-<translation id="2200041405904405884">Consente di specificare gli host di messaggi nativi da non inserire nella lista bloccata.
-
-          Il valore * di una lista bloccata indica che tutti gli host di messaggi nativi sono bloccati e che verranno caricati soltanto gli host di messaggi nativi indicati nella lista consentita.
-
-          Per impostazione predefinita sono consentiti tutti gli host di messaggi nativi, ma se sono stati bloccati tutti gli host di messaggi nativi in base al criterio, la lista consentita può essere utilizzata per ignorare tale criterio.</translation>
 <translation id="2200698565850397198">Configura lista bloccata di messaggi nativi</translation>
 <translation id="2201555246697292490">Configura whitelist messaggi nativi</translation>
 <translation id="2204753382813641270">Controlla la visualizzazione automatica dello shelf</translation>
@@ -810,11 +794,6 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 <translation id="2307496301287881990">Segnala stati del display e della grafica</translation>
 <translation id="2309390639296060546">Impostazione di geolocalizzazione predefinita</translation>
 <translation id="2327252517317514801">Definisci i domini autorizzati ad accedere a G Suite</translation>
-<translation id="2328573323851533589">Questo criterio può essere usato per l'attivazione o la disattivazione forzata del controllo della divulgazione di credenziali in <ph name="PRODUCT_NAME" />.
-
-          Tieni presente che, anche se questo criterio viene impostato su True, il comportamento non viene attivato se la funzionalità Navigazione sicura viene disattivata (tramite criterio o dall'utente). Per l'attivazione forzata della funzionalità Navigazione sicura, usa il criterio <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" />.
-
-          Se questo criterio viene attivato o disattivato, gli utenti non possono modificarlo o ignorarlo in <ph name="PRODUCT_NAME" />. Se questo criterio non viene impostato, viene consentito il controllo della divulgazione di credenziali (che può però essere disattivato dall'utente).</translation>
 <translation id="2331354174913096226">Il modello URI del resolver DNS over HTTPS desiderato. Per specificare diversi resolver DNS over HTTPS, separa i modelli URI corrispondenti con gli spazi.
 
       Se il criterio DnsOverHttpsMode viene impostato su <ph name="SECURE_DNS_MODE_SECURE" />, questo criterio deve essere impostato e non può essere vuoto.
@@ -960,11 +939,6 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Se l'impostazione non viene impostata, l'utente può decidere se utilizzare o meno la funzione.
 
       L'impostazione è stata rimossa da <ph name="PRODUCT_NAME" /> 29 e versioni successive.</translation>
-<translation id="2433412232489478893">Questa norma controlla se per un utente è consentita o meno la funzione Condivisioni file di rete per <ph name="PRODUCT_NAME" />.
-
-      Quando questa norma non è configurata o è impostata su True, gli utenti possono utilizzare la funzione Condivisioni file di rete.
-
-      Quando questa norma è impostata su False, gli utenti non possono utilizzare la funzione Condivisioni file di rete.</translation>
 <translation id="2435052056904485763">Lista consentita server di delega Kerberos</translation>
 <translation id="2439793457499023062">Se questo criterio non viene impostato, nel caso in cui Chrome Software Cleaner dovesse rilevare software indesiderato, a Google potrebbero essere segnalati metadati relativi alla scansione in base al criterio stabilito da SafeBrowsingExtendedReportingEnabled. Chrome Software Cleaner chiederà poi all'utente se vuole ripulire il software indesiderato. L'utente può scegliere se condividere i risultati della pulizia con Google per facilitare l'identificazione di software indesiderato in futuro. Questi risultati contengono metadati di file, estensioni installate automaticamente e chiavi del Registro di sistema, come spiegato nel white paper sulla privacy di Chrome.
 
@@ -1447,26 +1421,6 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3143265893557969814">Se questo criterio viene impostato, tutti i tipi di dati specificati verranno esclusi dalla sincronizzazione sia per Google Sync sia per la sincronizzazione del profilo di roaming. Questa operazione può essere utile per ridurre le dimensioni del profilo di roaming o per limitare il tipo di dati caricati sui server di Google Sync.
 
       Attualmente i tipi di dati per questo criterio sono: "bookmarks", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs", "wifiConfigurations". Per tali nomi viene fatta distinzione tra maiuscole e minuscole.</translation>
-<translation id="3146597555086966130">L'impostazione del criterio consente di configurare le impostazioni del proxy per Chrome e le app ARC, ignorando tutte le opzioni relative al proxy specificate dalla riga di comando.
-
-       Se il criterio non viene configurato, gli utenti possono scegliere le impostazioni del proxy.
-
-       La configurazione del criterio <ph name="PROXY_SETTINGS_POLICY_NAME" /> consente di accettare i seguenti campi:
-         * Il campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> consente di specificare il server proxy utilizzato da Chrome e di impedire agli utenti di modificare le impostazioni del proxy
-         * Il campo <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> è un URL a un file proxy .pac
-         * Il campo <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> è un URL a un server proxy
-         * Il campo <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> è un elenco di host proxy aggirati da <ph name="PRODUCT_NAME" />
-
-       Il campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> è deprecato a favore del campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, che consente di specificare il server proxy utilizzato da Chrome e di impedire agli utenti di modificare le impostazioni del proxy.
-
-        Per il campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, se scegli il valore:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />, non viene mai utilizzato un proxy e tutti gli altri campi vengono ignorati.
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, viene utilizzato il proxy del sistema e tutti gli altri campi vengono ignorati.
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, tutti gli altri campi vengono ignorati.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER" />, vengono utilizzati i campi <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, vengono utilizzati i campi <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
-
-      Nota: per esempi più approfonditi, consulta la pagina I progetti di Chromium (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="3152425128389603870">Rendi disponibile la modalità Desktop unificato e attivala per impostazione predefinita</translation>
 <translation id="3159375329008977062">L'utente è abilitato a importare/esportare contenitori Crostini tramite l'interfaccia</translation>
 <translation id="3165808775394012744">Queste norme sono incluse qui in modo che sia più facile rimuoverle.</translation>
@@ -1474,13 +1428,6 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="316778957754360075">Questa impostazione non è più supportata a partire dalla versione 29 di <ph name="PRODUCT_NAME" />. Il metodo consigliato per la configurazione di raccolte di estensioni/app ospitate dall'organizzazione consiste nell'includere il sito che ospita i pacchetti CRX in ExtensionInstallSources e inserire link di download diretti per i pacchetti in una pagina web. È possibile creare una funzione Avvio applicazioni per la pagina web utilizzando la norma ExtensionInstallForcelist.</translation>
 <translation id="3168968618972302728">Criteri relativi all'autenticazione per Kerberos.</translation>
 <translation id="3171369832001535378">Modello del nome host della rete del dispositivo</translation>
-<translation id="3172512016079904926">Consente di attivare l'installazione a livello di utente degli host di messaggistica nativi.
-
-          Se l'impostazione viene attivata, <ph name="PRODUCT_NAME" /> consentirà l'utilizzo degli host di messaggistica nativi installati a livello di utente.
-
-          Se l'impostazione viene disattivata, allora <ph name="PRODUCT_NAME" /> utilizzerà solo gli host di messaggistica nativi installati a livello di sistema.
-
-          Se l'impostazione non è specificata, <ph name="PRODUCT_NAME" /> consentirà l'utilizzo degli host di messaggistica nativi a livello di utente.</translation>
 <translation id="3177802893484440532">Richiedi controlli OCSP/CRL online per i trust anchor</translation>
 <translation id="3184161739683646075">Controlla la modalità di DNS over HTTPS</translation>
 <translation id="3185009703220253572">a partire dalla versione <ph name="SINCE_VERSION" /></translation>
@@ -1743,12 +1690,6 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
         Se è impostata questa norma, <ph name="PRODUCT_NAME" /> proverà a registrarsi e ad applicare a tutti i profili la norma relativa alla cloud associata.
 
         Il valore di questa norma è un token di registrazione che è possibile recuperare dalla Console amministrazione Google.</translation>
-<translation id="3489247539215560634">Se questa impostazione viene attivata, gli utenti possono impostare <ph name="PRODUCT_NAME" /> perché memorizzi le password e le inserisca automaticamente all'accesso successivo a un sito.
-
-          Se invece è disattivata, gli utenti non possono salvare nuove password, ma
-          possono comunque utilizzare quelle memorizzate in precedenza.
-
-          Se questa norma viene attivata o disattivata, gli utenti non possono modificarla o sostituirla in <ph name="PRODUCT_NAME" />. Se questa norma non è impostata, è consentito il salvataggio delle password (ma l'utente può disattivarlo).</translation>
 <translation id="3492834335089638487">Questo criterio consente di controllare l'utilizzo delle app Android di fonti non attendibili (diverse dal Google Play Store) per un dispositivo.
 
       Se il valore di questo criterio non viene impostato, la funzionalità viene considerata vietata.
@@ -1816,9 +1757,6 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 <translation id="3577628175311752799">Utilizza un criterio relativo al referrer predefinito no-referrer-when-downgrade.</translation>
 <translation id="357917253161699596">Consenti agli utenti di gestire i certificati utente</translation>
 <translation id="3580414086211696382">Controlla l'utilizzo dell'API file system per la lettura</translation>
-<translation id="3583230441447348508">Consente di specificare un elenco di condivisioni di file di rete preconfigurate.
-
-      Ogni voce della norma è un oggetto con due componenti: "share_url" e "mode". "share_url" deve essere l'URL della condivisione e "mode" deve essere "drop_down" o "pre_mount". La modalità "drop_down" indica che il valore "share_url" verrà aggiunto al menu a discesa per il rilevamento delle condivisioni. La modalità "pre_mount" indica che il valore "share_url" verrà montato.</translation>
 <translation id="3584194414857209694">Abilita i criteri sperimentali</translation>
 <translation id="3584722841530002134">La configurazione del criterio consente di assegnare i server a cui <ph name="PRODUCT_NAME" /> può delegare le credenziali utente. Se ci sono più server, separane i nomi utilizzando virgole. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.
 
@@ -2430,10 +2368,6 @@ Se questa norma non viene impostata, verranno utilizzate le dimensioni predefini
 
       Se il criterio non è impostato, l'utente può disattivare qualsiasi plug-in installato sul sistema.</translation>
 <translation id="4554651132977135445">Modalità di elaborazione loopback dei criteri relativi agli utenti</translation>
-<translation id="4554841826517980623">Questa norma controlla se per <ph name="PRODUCT_NAME" /> la funzione Condivisioni file di rete debba utilizzare o meno il protocollo <ph name="NETBIOS_PROTOCOL" /> per individuare le condivisioni sulla rete.
-      Quando questa norma è impostata su True, il rilevamento delle condivisioni utilizza il protocollo <ph name="NETBIOS_PROTOCOL" /> per individuare le condivisioni sulla rete.
-      Quando questa norma è impostata su False, il rilevamento delle condivisioni non utilizza il protocollo <ph name="NETBIOS_PROTOCOL" /> per individuare le condivisioni sulla rete.
-      Se la norma viene lasciata senza impostazione, per impostazione predefinita la norma sarà disattivata per gli utenti gestiti dall'azienda, mentre sarà attiva per gli utenti non gestiti.</translation>
 <translation id="4555850956567117258">Attivazione dell'attestazione da remoto per l'utente</translation>
 <translation id="4557134566541205630">URL pagina Nuova scheda provider di ricerca predefinito</translation>
 <translation id="4562165737444703281">Consenti agli utenti di [attivare/configurare] il port forwarding in Crostini</translation>
@@ -2530,13 +2464,6 @@ Se questa norma non viene impostata, verranno utilizzate le dimensioni predefini
           Per avere pattern di esempio, visita il sito https://www.chromium.org/developers/how-tos/chrome-frame-getting-started.</translation>
 <translation id="467449052039111439">Apri un elenco di URL</translation>
 <translation id="4674871290487541952">Consente algoritmi non protetti nei controlli dell'integrità durante gli aggiornamenti e le installazioni delle estensioni</translation>
-<translation id="4677605038200415894">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti a cui viene concessa automaticamente l'autorizzazione di accesso a un dispositivo USB con gli ID fornitore e prodotto indicati. Affinché il criterio sia valido, ogni elemento dell'elenco deve contenere sia dispositivi sia URL. Ogni elemento nei dispositivi può contenere un campo ID fornitore e un campo ID prodotto. Gli eventuali ID omessi vengono considerati caratteri jolly con un'eccezione: non è possibile specificare un ID prodotto senza specificare anche un ID fornitore. In caso contrario, il criterio non è valido.
-
-      Il modello di autorizzazione USB utilizza l'URL richiedente e l'URL di incorporamento (del sito frame di primo livello) per consentire all'URL richiedente di accedere al dispositivo USB. L'URL richiedente potrebbe essere diverso dall'URL di incorporamento quando il sito richiedente viene caricato in un iframe. Di conseguenza il campo "urls" può contenere fino a 2 stringhe delimitate da virgola per specificare questi URL. Se specifichi un solo URL, l'accesso ai dispositivi USB corrispondenti viene concesso quando l'URL del sito richiedente corrisponde all'URL indicato, a prescindere dallo stato di incorporamento. Gli URL indicati nel campo "urls" devono essere validi, altrimenti il criterio viene ignorato.
-
-      Se il criterio non viene configurato, viene applicato il criterio <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
-
-      I pattern URL di questo criterio non devono essere in conflitto con quelli configurati tramite <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. In caso di conflitto, questo criterio ha la precedenza sui criteri <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="4680936297850947973">Ritirata in M68. Usa DefaultPopupsSetting.
 
       Per una spiegazione completa, consulta la pagina https://www.chromestatus.com/features/5675755719622656.
@@ -2579,13 +2506,6 @@ Se questa norma non viene impostata, verranno utilizzate le dimensioni predefini
           Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
 
           Se questo criterio non viene impostato, inizialmente l'audio in formato mono è disattivato, ma l'utente può attivarlo in qualsiasi momento.</translation>
-<translation id="4764901562691611575">Questo criterio è deprecato, al suo posto utilizza "<ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" />".
-
-          Consente di specificare gli host di messaggi nativi che non dovrebbero essere caricati.
-
-          Il valore "*" di una lista bloccata indica che tutti gli host di messaggi nativi sono bloccati, a meno che vengano elencati esplicitamente nella lista consentita.
-
-          Se questo criterio non viene impostato, <ph name="PRODUCT_NAME" /> caricherà tutti gli host di messaggi nativi installati.</translation>
 <translation id="4771144269610910963">Questo criterio consente di controllare l'analisi approfondita dei download degli utenti tramite Navigazione sicura. Se non viene impostato o viene impostata l'opzione predefinita "Non analizzare i file", i download degli utenti non verranno analizzati dalla funzionalità Navigazione sicura.
 
       Se viene impostata l'opzione "Invia download degli utenti da analizzare", i download degli utenti verranno inviati tramite la rete alla funzionalità Navigazione sicura per verificare l'eventuale presenza di malware.
@@ -2743,15 +2663,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="5085647276663819155">Disattiva anteprima di stampa</translation>
 <translation id="5090209345759901501">Applica l'impostazione dei contenuti Flash a tutti i contenuti</translation>
 <translation id="5090791951240382356">Consenti l'unione dei criteri del dizionario provenienti da origini diverse</translation>
-<translation id="5093540029655764852">Consente di specificare la frequenza (in giorni) alla quale un client modifica la password dell'account del computer. La password è generata in modo casuale dal client e non è visibile all'utente.
-
-      Come per le password dell'utente, anche le password del computer andrebbero modificate regolarmente. Se disattivi questa norma o imposti un numero di giorni elevato, la sicurezza ne risentirà negativamente poiché in questo modo concederai più tempo ai potenziali utenti malintenzionati per trovare la password dell'account del computer e utilizzarla.
-
-      Se la norma non viene impostata, la password dell'account del computer viene modificata ogni 30 giorni.
-
-      Se la norma è impostata su 0, la modifica della password dell'account del computer è disattivata.
-
-      Tieni presente che le password potrebbero durare più a lungo rispetto ai giorni specificati se il client è offline per un periodo più lungo di tempo.</translation>
 <translation id="5101600510268095939">Consente di impostare un elenco di pattern URL che specificano i siti non autorizzati a visualizzare contenuti misti (ossia contenuti HTTP su siti HTTPS) bloccabili (ossia attivi) e per i quali i contenuti misti bloccabili facoltativi (ossia passivi) verranno aggiornati.
 
           Se questo criterio non viene impostato, i contenuti misti bloccabili verranno bloccati e quelli bloccabili facoltativi verranno aggiornati, ma gli utenti potranno configurare eccezioni per consentire i contenuti misti per siti specifici.
@@ -2875,15 +2786,6 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 
       Per "versione" si intende sia una versione esatta, ad esempio "61.0.3163.120", sia un prefisso di versione, ad esempio "61.0".  </translation>
 <translation id="5247006254130721952">Blocca download pericolosi</translation>
-<translation id="5248863213023520115">Permette di impostare i tipi di crittografia consentiti quando vengono richiesti ticket Kerberos a un server <ph name="MS_AD_NAME" />.
-
-      Se la norma viene impostata su "Tutto", sono consentiti sia i tipi di crittografia AES "aes256-cts-hmac-sha1-96" e "aes128-cts-hmac-sha1-96" sia il tipo di crittografia RC4 "rc4-hmac". Se il server supporta entrambi i tipi, viene usata preferibilmente la crittografia AES. Tieni presente che la crittografia RC4 è considerata debole e, se possibile, il server dovrebbe essere riconfigurato per supportare la crittografia AES.
-
-      Se la norma viene impostata su "Avanzata" o se non viene impostata, sono consentiti soltanto i tipi di crittografia AES.
-
-      Se la norma viene impostata su "Precedente", è consentito soltanto il tipo di crittografia RC4. Questa opzione non è sicura e dovrebbe essere necessaria soltanto in casi molto specifici.
-
-      Visita anche la pagina https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerberos_client_encryption_types.</translation>
 <translation id="5249453807420671499">Gli utenti possono aggiungere account Kerberos</translation>
 <translation id="5252995168844634755">Se il criterio viene impostato su True, viene attivata la modalità Desktop unificato, che consente di visualizzare le applicazioni su più schermi. Gli utenti possono disattivare questa modalità per singoli schermi.
 
@@ -3279,13 +3181,6 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 
           Il valore del criterio viene applicato solo se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> viene attivato e non è applicabile in caso contrario.</translation>
 <translation id="5697306356229823047">Segnala utenti dispositivo</translation>
-<translation id="5699487516670033016">Consente di specificare la durata in ore della cache. La cache viene utilizzata per velocizzare l'accesso. Contiene dati generali (nome del gruppo di lavoro e così via) riguardo alle aree di autenticazione delle affiliate, come le aree di autenticazione ritenute attendibili dall'area di autenticazione della macchina. Nessun dato specifico dell'utente o delle aree di autenticazione delle affiliate viene memorizzato nella cache. Se il dispositivo viene riavviato, la cache viene svuotata.
-
-      Se la norma non viene impostata, i dati di autenticazione della cache possono essere riutilizzati per un periodo massimo di 73 ore.
-
-      Se la norma viene impostata su 0, la memorizzazione nella cache dei dati di autenticazione viene disattivata. Ciò può rallentare significativamente l'accesso degli utenti affiliati, poiché i dati specifici dell'area di autenticazione devono essere recuperati a ogni accesso.
-
-      Tieni presente che i dati relativi all'area di autenticazione vengono memorizzati nella cache anche per gli utenti temporanei. Per impedire che i dati di autenticazione degli utenti temporanei vengano tracciati è necessario disattivare la cache.</translation>
 <translation id="570062449808736508">Se per questa norma viene impostata una stringa, WebView legge le limitazioni relative agli URL del fornitore di contenuti con il nome dell'autorità indicato.</translation>
 <translation id="5708969689202733975">Configura le modalità di sblocco rapido consentite</translation>
 <translation id="572155275267014074">Impostazioni di Android</translation>
@@ -3582,11 +3477,6 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 
       Nota: il criterio ha effetto su tutti gli output audio, incluse le funzioni di accessibilità audio. Non disattivare il criterio se un utente richiede uno screen reader.</translation>
 <translation id="6221175752766085998">Consenti i certificati privi dell'estensione subjectAlternativeName emessi dai trust anchor locali</translation>
-<translation id="6222839831045864769">Consente di specificare gli host di messaggi nativi che non dovrebbero essere caricati.
-
-          Il valore "*" di una lista bloccata indica che tutti gli host di messaggi nativi sono bloccati, a meno che vengano elencati esplicitamente nella lista consentita.
-
-          Se questo criterio non viene impostato, <ph name="PRODUCT_NAME" /> caricherà tutti gli host di messaggi nativi installati.</translation>
 <translation id="6224304369267200483">URL/domini per cui è consentita automaticamente l'attestazione diretta dei token di sicurezza</translation>
 <translation id="6230442621691161858">Questa funzionalità consente di attivare suggerimenti relativi a nuovi contenuti da esplorare. Sono incluse app, pagine web e altro.
       Se questo criterio viene impostato su True, i suggerimenti relativi a nuovi contenuti da esplorare vengono attivati.
@@ -4830,13 +4720,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7788511847830146438">Per profilo</translation>
 <translation id="780629758750905699">Consenti l'aggiunta di account Family Link al dispositivo</translation>
 <translation id="7807139251387225825">Elenco di tipi di dati che dovrebbero essere esclusi dalla sincronizzazione</translation>
-<translation id="7815699949432723208">Questo criterio è obsoleto. Usa il criterio "<ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />".
-
-          Consente di specificare gli host di messaggi nativi da non inserire nella lista bloccata.
-
-          Il valore * di una lista bloccata indica che tutti gli host di messaggi nativi sono bloccati e che verranno caricati soltanto gli host di messaggi nativi indicati nella lista consentita.
-
-          Per impostazione predefinita sono consentiti tutti gli host di messaggi nativi, ma se sono stati bloccati tutti gli host di messaggi nativi in base al criterio, la lista consentita può essere utilizzata per ignorare tale criterio.</translation>
 <translation id="7818131573217430250">Impostazione stato predefinito modalità ad alto contrasto nella schermata di accesso</translation>
 <translation id="7823902813460802031">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_OS_NAME" /> impedisce al dispositivo di avviare la modalità sviluppatore.
 
@@ -5256,13 +5139,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Se questo criterio viene impostato, le istantanee meno recenti vengono eliminate in base a quanto necessario per rispettare il limite. Se il criterio viene impostato su 0, non vengono acquisite istantanee.</translation>
 <translation id="8451988835943702790">Usa la pagina Nuova scheda come Pagina iniziale</translation>
 <translation id="8455529558077979314">Impostazioni Schermata sulla privacy</translation>
-<translation id="8459216513698220096">Consente di specificare se e come devono essere elaborati i criteri relativi agli utenti del GPO del computer.
-
-      Se vengono impostati su "Default" o non vengono impostati, i criteri relativi agli utenti vengono letti soltanto dai GPO degli utenti (i GPO del computer vengono ignorati).
-
-      Se vengono impostati su "Merge", i criteri relativi agli utenti nei GPO degli utenti vengono uniti a quelli dei GPO del computer (a cui viene data la precedenza).
-
-      Se vengono impostati su "Replace", i criteri relativi agli utenti nei GPO degli utenti vengono sostituiti da quelli dei GPO del computer (i GPO degli utenti vengono ignorati).</translation>
 <translation id="8465065632133292531">Parametri per l'URL istantaneo che utilizza POST</translation>
 <translation id="8465746466645315861">Se il criterio non viene impostato, l'utente può attivare o disattivare il controllo ortografico nelle impostazioni della lingua.
 
@@ -5397,11 +5273,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8622378389102774881">Se questo criterio viene impostato, l'host di accesso remoto richiederà che i client che eseguono l'autenticazione ottengano un token di autenticazione da questo URL perché la connessione avvenga. Deve essere utilizzato insieme a RemoteAccessHostTokenValidationUrl.
 
           Questa funzionalità viene disattivata se il criterio è vuoto o non impostato.</translation>
-<translation id="8625234016727663537">Consente di impostare un elenco di URL che specifica a quali siti verrà concessa automaticamente l'autorizzazione per accedere a un dispositivo USB con gli ID prodotto e fornitore indicati nella schermata di accesso. Perché il criterio sia valido, ogni elemento dell'elenco deve contenere sia dispositivi sia URL. Ogni elemento nei dispositivi può contenere un campo ID fornitore e un campo ID prodotto. Gli eventuali ID omessi verranno considerati caratteri jolly con l'eccezione che non è possibile specificare un ID prodotto senza aver specificato un ID fornitore. In caso contrario, il criterio non sarà valido e verrà ignorato.
-
-        Il modello di autorizzazione USB utilizza l'URL del sito richiedente ("URL richiedente") e l'URL del sito frame di livello principale ("URL di incorporamento") per concedere all'URL richiedente l'autorizzazione di accesso al dispositivo USB. L'URL richiedente può essere diverso dall'URL di incorporamento quando il sito richiedente viene caricato in un iframe. Di conseguenza il campo "URL" può contenere fino a due stringhe URL delimitate da virgola per specificare rispettivamente l'URL richiedente e l'URL di incorporamento. Se è specificato un solo URL, l'accesso ai dispositivi USB corrispondenti viene concesso quando l'URL del sito richiedente corrisponde all'URL, a prescindere dallo stato di incorporamento. Gli URL in "URL" devono essere validi, altrimenti il criterio viene ignorato.
-
-        Se questo criterio non viene impostato, per tutti i siti viene usato il valore predefinito globale (nessun accesso automatico).</translation>
 <translation id="8631434304112909927">fino alla versione <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">L'elenco delle app per scrivere note consentite nella schermata di blocco di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8649763579836720255">I dispositivi Chrome OS possono utilizzare un'attestazione remota (Accesso verificato) per ottenere un certificato emesso dalla CA di Chrome OS in cui si afferma che il dispositivo è idoneo a riprodurre contenuti protetti. Questo processo comporta l'invio alla CA di Chrome OS di informazioni di approvazione dell'hardware che identificano in modo univoco il dispositivo.
@@ -5781,7 +5652,6 @@ https://www.w3.org/TR/secure-contexts/
 
       Le possibilità effettive di eseguire il rollback potrebbero dipendere anche dal modello di dispositivo e dalle patch di vulnerabilità critiche.</translation>
 <translation id="9123464369663964441">Consenti agli utenti di aggiungere eccezioni per consentire contenuti misti</translation>
-<translation id="9126014181388780690">"Consenti all'Assistente Google di accedere al contesto dello schermo"</translation>
 <translation id="9129169595075460149">Se il criterio viene impostato su Attivato, la funzionalità SafeSearch in Ricerca Google è sempre attiva e gli utenti non possono modificare questa impostazione.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, la funzionalità SafeSearch in Ricerca Google non viene applicata.</translation>
@@ -5850,7 +5720,6 @@ https://www.w3.org/TR/secure-contexts/
 <translation id="944817693306670849">Imposta dimensioni cache su disco</translation>
 <translation id="949278212566535827">Consenti download di file protetti da password</translation>
 <translation id="974349541138387272">Specifica il modello URI del resolver DNS over HTTPS desiderato</translation>
-<translation id="974479807614498635">"Consenti a Risposte rapide di accedere ai contenuti selezionati"</translation>
 <translation id="981346395360763138">Servizi di geolocalizzazione di Google disabilitati</translation>
 <translation id="982497069985795632">Attiva il controllo ortografico</translation>
 <translation id="983256325512298435">Definisci un elenco di protocolli che possono lanciare un'applicazione esterna dalle origini elencate senza chiedere conferma all'utente</translation>

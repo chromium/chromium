@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">কেৱল বাছনি কৰাবোৰ</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" />ৰ বাবে এখন অনুজ্ঞাপত্ৰৰ আৱশ্যক</translation>
 <translation id="1223853788495130632">আপোনাৰ প্ৰশাসকে এই ছেটিঙৰ বাবে এটা বিশেষ মানৰ চুপাৰিছ কৰিছে।</translation>
-<translation id="1224275271335624810">দ্ৰুততম</translation>
 <translation id="1225177025209879837">অনুৰোধৰ ওপৰত প্ৰক্ৰিয়া চলি আছে…</translation>
 <translation id="1227507814927581609">"<ph name="DEVICE_NAME" />"ৰ সৈতে সংযোগ কৰি থাকোঁতে বিশ্বাসযোগ্যতাৰ প্ৰমাণ কৰিব পৰা নগ’ল।</translation>
 <translation id="1230417814058465809">সাধাৰণ সুৰক্ষা অন কৰা আছে। আৰু অধিক সুৰক্ষাৰ বাবে বৰ্ধিত সুৰক্ষা ব্যৱহাৰ কৰক।</translation>
@@ -595,7 +594,6 @@
 <translation id="1668435968811469751">মেনুৱেলী পঞ্জীয়ন কৰক</translation>
 <translation id="1668979692599483141">পৰামৰ্শসমূহৰ বিষয়ে জানক</translation>
 <translation id="1670399744444387456">প্ৰাথমিক</translation>
-<translation id="167160931442925455">সৰ্বোচ্চ</translation>
 <translation id="1673137583248014546"><ph name="URL" />এ আপোনাৰ সুৰক্ষা সম্পৰ্কীয় চাবিৰ মেক আৰু ম'ডেল চাব বিচাৰে</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" />ক যোগ দিব নোৱাৰি</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> বাকী</translation>
@@ -916,7 +914,6 @@
 <translation id="2046702855113914483">ৰামেন</translation>
 <translation id="204706822916043810">ভাৰ্ছুৱেল মেচিনটো পৰীক্ষা কৰি থকা হৈছে</translation>
 <translation id="2048182445208425546">আপোনাৰ নেটৱৰ্কৰ ট্ৰেফিক এক্সেছ কৰক</translation>
-<translation id="2048243703055695889"><ph name="USER_EMAIL" />ৰ '<ph name="DEVICE_NAME" />' ডিভাইচৰ নিকটৱৰ্তী শ্বেয়াৰ কৰাৰ সুবিধাটোৰ ছেটিংসমূহ।</translation>
 <translation id="2048653237708779538">কোনো কার্য নাই</translation>
 <translation id="204914487372604757">শ্বৰ্টকাট সৃষ্টি কৰক</translation>
 <translation id="2050339315714019657">প’ৰ্ট্ৰেইট</translation>
@@ -1101,7 +1098,6 @@
 <translation id="2262477216570151239">পুনৰাবৃত্তিৰ পূর্বে হোৱা বিলম্ব</translation>
 <translation id="2263189956353037928">ছাইন আউট হৈ আকৌ ছাইন ইন কৰক</translation>
 <translation id="2263371730707937087">স্ক্ৰীনৰ ৰিফ্ৰেশ্বৰ হাৰ</translation>
-<translation id="2263497240924215535">(অক্ষম কৰা আছে)</translation>
 <translation id="22665427234727190">কোনো ছাইটে ব্লুটুথ ডিভাইচসমূহ এক্সেছ কৰিবলৈ বিচাৰিলে সোধক (চুপাৰিছ কৰা হয়)</translation>
 <translation id="2266957463645820432">USB (IPPUSB)ৰ মাধ্যমেৰে IPP</translation>
 <translation id="2270450558902169558">এই ড’মেইন <ph name="DOMAIN" />ত যিকোনো ডিভাইচৰ জৰিয়তে ডেটা সাল সলনি কৰক</translation>
@@ -2286,7 +2282,6 @@
 <translation id="3674840410592648165">ছাইটসমূহে পৰিশোধৰ নিয়ন্ত্ৰক ইনষ্টল কৰিব পাৰে (চুপাৰিছ কৰা)</translation>
 <translation id="367645871420407123">ডিফ’ল্ট টেষ্ট ইমেজ মানলৈ যদি আপুনি ৰুট পাছৱৰ্ডটো ছেট কৰিব বিচাৰিছে তেন্তে খালী ৰাখক</translation>
 <translation id="3677106374019847299">কাষ্টম প্ৰদানকাৰীৰ নাম দিয়ক</translation>
-<translation id="3677657024345889897">সকলোতকৈ বেছি শান্ত</translation>
 <translation id="3677911431265050325">ম’বাইল ছাইটৰ বাবে অনুৰোধ কৰক</translation>
 <translation id="3677959414150797585">এপ্‌সমূহ, ৱেবছাইটসমূহ আৰু বহুতো অন্তর্ভুক্ত হয়। যদি আপুনি ব্যৱহাৰৰ ডেটা শ্বেয়াৰ কৰিবলৈ বাছনি কৰে কেৱল তেতিয়াহে পৰামর্শসমূহ উন্নত কৰিবলৈ পৰিসংখ্যা পঠিয়ায়।</translation>
 <translation id="3678156199662914018">এক্সটেনশ্বন: <ph name="EXTENSION_NAME" /></translation>
@@ -2475,7 +2470,6 @@
 <translation id="3867944738977021751">প্ৰমাণপত্ৰৰ ক্ষেত্ৰ</translation>
 <translation id="3869917919960562512">ভুল সূচক।</translation>
 <translation id="3870931306085184145"><ph name="DOMAIN" />ৰ কাৰণে ছেভ কৰি থোৱা কোনো পাছৱৰ্ড নাই</translation>
-<translation id="3871092408932389764">সর্বনিম্ন</translation>
 <translation id="3871350334636688135">২৪ ঘণ্টাৰ পাছত, আপুনি নিজৰ ডিভাইচ ৰিষ্টার্ট কৰিলে, আপোনাৰ প্ৰশাসকে এবাৰেই কৰিবলগীয়া আপডে'টটো কৰিব যিয়ে আপোনাৰ স্থানীয় ডেটা মচিব। আপুনি ক্লাউড ষ্ট'ৰেজত ৰাখিব খোজা যিকোনো ডেটা ২৪ ঘণ্টাৰ ভিতৰত ছেভ কৰক।</translation>
 <translation id="3872220884670338524"><ph name="DOMAIN" />ত <ph name="USERNAME" />ৰ অধিক কার্যকলাপ আৰু ছেভ কৰি থোৱা একাউণ্ট</translation>
 <translation id="3872991219937722530">ডিস্কত খালী ঠাই উলিয়াওক অন্যথা ডিভাইচটো কাম নকৰা হৈ যাব।</translation>
@@ -4225,7 +4219,6 @@
 <translation id="6025215716629925253">ষ্টেক ট্ৰেচ</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB ডিভাইচ সংযোগ কৰা হৈছে</translation>
 <translation id="6028117231645531007">ফিংগাৰপ্ৰিণ্ট যোগ কৰক</translation>
-<translation id="6029587122245504742">সকলোতকৈ লেহেমীয়া</translation>
 <translation id="6029594605736587274"><ph name="PERMISSION" /> অৱৰোধ কৰা হৈছে</translation>
 <translation id="6031600495088157824">টুলবাৰত থকা ইনপুটৰ বিকল্পসমূহ</translation>
 <translation id="6032715498678347852">কোনো এক্সটেনশ্বনক এই ছাইটটোলৈ এক্সেছ দিবলৈ এইটোত ক্লিক কৰক।</translation>
@@ -4519,7 +4512,6 @@
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ইনষ্টল কৰক</translation>
 <translation id="6349170655202535379">ছিংক কৰা সুবিধাটোৱে কাম কৰা নাই। এবাৰ ছাইন আউট হৈ আকৌ ছাইন ইন কৰি চেষ্টা কৰক।</translation>
 <translation id="6351063337294363751">আপুনি এই মেনুৰ পৰা নিজৰ ব্ৰাউজিং ডেটা মচিব পাৰিব</translation>
-<translation id="6352773953037195952">উচ্চতম</translation>
 <translation id="6354918092619878358">SECG উপবৃত্তাকাৰ লেখ secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">ডিভাইচ অন কৰি ৰাখক</translation>
 <translation id="63566973648609420">আপোনাৰ পাছফ্ৰেজ জনা কোনোবাইহে আপুনি এনক্ৰিপ্ট কৰি থোৱা ডেটা পঢ়িব পাৰে। পাছফ্ৰেজটো ক’লৈকো পঠিওৱা নহয় আৰু সেইটোGoogleত সঞ্চিত নাথাকে। আপুনি যদি নিজৰ পাছফ্ৰেজটো পাহৰে বা এই ছেটিংটো সলাব বিচাৰে, <ph name="BEGIN_LINK" />ছিংক ৰিছেট<ph name="END_LINK" /> কৰিব লাগিব।</translation>
@@ -5280,6 +5272,7 @@
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{এই এপ্লিকেশ্বনটোৱে Chromeক সঠিকভাৱে কাম কৰাৰ পৰা বাধা প্ৰদান কৰিব পাৰে৷}one{এই এপ্লিকেশ্বনসমূহে Chromeক সঠিকভাৱে কাম কৰাৰ পৰা বাধা প্ৰদান কৰিব পাৰে৷}other{এই এপ্লিকেশ্বনসমূহে Chromeক সঠিকভাৱে কাম কৰাৰ পৰা বাধা প্ৰদান কৰিব পাৰে৷}}</translation>
 <translation id="7303281435234579599">ওঁহ! ডেম’ ম’ড ছেট কৰোঁতে কিবা এটা ভুল হৈছে।</translation>
 <translation id="7303900363563182677">ক্লিপব’ৰ্ডলৈ প্ৰতিলিপি হোৱা পাঠ আৰু প্ৰতিচ্ছবিসমূহ চাব নোৱাৰাকৈ এই ছাইটটোক অৱৰোধ কৰা হৈছে</translation>
+<translation id="7304030187361489308">উচ্চ</translation>
 <translation id="7305123176580523628">ইউএছবি প্ৰিণ্টাৰ সংযোগ কৰা হ’ল</translation>
 <translation id="730515362922783851">ল’কেল নেটৱৰ্ক বা ইণ্টাৰনেটত যিকোনো ডিভাইচৰ সৈতে ডেটা বিনিময় কৰক</translation>
 <translation id="7306521477691455105"><ph name="USB_DEVICE_NAME" />ক <ph name="USB_VM_NAME" />ৰ সৈতে সংযুক্ত কৰিবলৈ ছেটিংসমূহ খোলক</translation>

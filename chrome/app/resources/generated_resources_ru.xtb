@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Только выбранные</translation>
 <translation id="1223484782328004593">Требуется лицензия для <ph name="APP_NAME" /></translation>
 <translation id="1223853788495130632">Администратор рекомендует выбрать определенное значение для этого параметра.</translation>
-<translation id="1224275271335624810">Максимальная</translation>
 <translation id="1225177025209879837">Обработка запроса...</translation>
 <translation id="1227507814927581609">При подключении к "<ph name="DEVICE_NAME" />" произошла ошибка аутентификации.</translation>
 <translation id="1230417814058465809">Стандартная защита включена. Для большей безопасности используйте улучшенную защиту.</translation>
@@ -597,7 +596,6 @@
 <translation id="1668435968811469751">Зарегистрировать вручную</translation>
 <translation id="1668979692599483141">Подробнее о подсказках…</translation>
 <translation id="1670399744444387456">Основные настройки</translation>
-<translation id="167160931442925455">Максимальная громкость</translation>
 <translation id="1673137583248014546">Сайт <ph name="URL" /> запрашивает доступ к производителю и модели вашего Электронного ключа</translation>
 <translation id="1677306805708094828">Невозможно добавить <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Ещё <ph name="TIME" /></translation>
@@ -918,7 +916,6 @@
 <translation id="2046702855113914483">Рамен</translation>
 <translation id="204706822916043810">Проверка виртуальной машины</translation>
 <translation id="2048182445208425546">Доступ к сетевому трафику</translation>
-<translation id="2048243703055695889">Настройки Обмена с окружением для устройства "<ph name="DEVICE_NAME" />" пользователя <ph name="USER_EMAIL" /></translation>
 <translation id="2048653237708779538">Действие недоступно</translation>
 <translation id="204914487372604757">Создать ярлык</translation>
 <translation id="2050339315714019657">Книжная</translation>
@@ -1103,7 +1100,6 @@
 <translation id="2262477216570151239">Задержка перед повторным вводом</translation>
 <translation id="2263189956353037928">Выйти и снова войти</translation>
 <translation id="2263371730707937087">Частота обновления экрана</translation>
-<translation id="2263497240924215535">(отключено)</translation>
 <translation id="22665427234727190">Запрашивать разрешение на доступ сайтов к Bluetooth-устройствам (рекомендуется)</translation>
 <translation id="2266957463645820432">IPP через USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Обмен данными с любыми устройствами в домене <ph name="DOMAIN" /></translation>
@@ -2287,7 +2283,6 @@
 <translation id="3674840410592648165">Разрешить сайтам устанавливать обработчики платежей (рекомендуется)</translation>
 <translation id="367645871420407123">оставьте пустым, чтобы установить значение тестового изображения по умолчанию в качестве пароля суперпользователя</translation>
 <translation id="3677106374019847299">Введите название поставщика услуг</translation>
-<translation id="3677657024345889897">Минимальная громкость</translation>
 <translation id="3677911431265050325">Мобильная версия</translation>
 <translation id="3677959414150797585">Показывать рекомендуемые приложения, веб-страницы и другой контент. Статистику для улучшения рекомендаций мы будем собирать, только если вы разрешите отправку данных об использовании функции.</translation>
 <translation id="3678156199662914018">Расширение: <ph name="EXTENSION_NAME" /></translation>
@@ -2476,7 +2471,6 @@
 <translation id="3867944738977021751">Поля сертификата</translation>
 <translation id="3869917919960562512">Неверный индекс.</translation>
 <translation id="3870931306085184145">Для домена <ph name="DOMAIN" /> нет сохраненных паролей.</translation>
-<translation id="3871092408932389764">Самый низкий</translation>
 <translation id="3871350334636688135">Через 24 часа ваш администратор выполнит разовое обновление. Когда оно вступит в силу, после перезапуска устройства ваши локальные данные будут удалены. У вас есть 24 часа, чтобы сохранить необходимые локальные данные в облачном хранилище.</translation>
 <translation id="3872220884670338524">Сохраненный аккаунт <ph name="USERNAME" /> на сайте <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Если вы не освободите пространство, устройство перестанет отвечать.</translation>
@@ -4233,7 +4227,6 @@
 <translation id="6025215716629925253">Трассировка стека</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" />: подключено USB-устройство</translation>
 <translation id="6028117231645531007">Добавить отпечаток пальца</translation>
-<translation id="6029587122245504742">Минимальная</translation>
 <translation id="6029594605736587274">отключено разрешение "<ph name="PERMISSION" />"</translation>
 <translation id="6031600495088157824">Показать настройки ввода на панели инструментов</translation>
 <translation id="6032715498678347852">Чтобы предоставить расширению доступ к сайту, нажмите на него</translation>
@@ -4527,7 +4520,6 @@
 <translation id="6349101878882523185">Установить приложение "<ph name="APP_NAME" />"</translation>
 <translation id="6349170655202535379">Ошибка синхронизации. Выйдите из аккаунта и войдите ещё раз.</translation>
 <translation id="6351063337294363751">В этом меню можно удалить данные о работе в браузере</translation>
-<translation id="6352773953037195952">Самый высокий</translation>
 <translation id="6354918092619878358">Эллиптическая кривая SECG secp256r1 (она же ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Не выключайте устройство.</translation>
 <translation id="63566973648609420">Ваши зашифрованные данные может прочитать только тот, кто знает кодовую фразу. Она не пересылается и не хранится в Google. Если вы забудете фразу или решите изменить эту настройку, вам придется <ph name="BEGIN_LINK" />сбросить параметры синхронизации<ph name="END_LINK" />.</translation>
@@ -5292,6 +5284,7 @@
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Это приложение может помешать работе Google Chrome.}one{Эти приложения могут помешать работе Google Chrome.}few{Эти приложения могут помешать работе Google Chrome.}many{Эти приложения могут помешать работе Google Chrome.}other{Эти приложения могут помешать работе Google Chrome.}}</translation>
 <translation id="7303281435234579599">Не удалось настроить демонстрационный режим.</translation>
 <translation id="7303900363563182677">У этого сайта нет доступа к тексту и изображениям, скопированным в буфер обмена</translation>
+<translation id="7304030187361489308">Высокий</translation>
 <translation id="7305123176580523628">Принтер подключен по USB</translation>
 <translation id="730515362922783851">Обмен данными с любыми устройствами в локальной сети и Интернете</translation>
 <translation id="7306521477691455105">Чтобы подключить устройство "<ph name="USB_DEVICE_NAME" />" к ВМ "<ph name="USB_VM_NAME" />", откройте настройки.</translation>

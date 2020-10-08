@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Само изабрани садржај</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> захтева лиценцу</translation>
 <translation id="1223853788495130632">Администратор препоручује одређену вредност за ово подешавање.</translation>
-<translation id="1224275271335624810">Најбрже</translation>
 <translation id="1225177025209879837">Обрада захтева...</translation>
 <translation id="1227507814927581609">Потврда аутентичности током повезивања са „<ph name="DEVICE_NAME" />“ није успела.</translation>
 <translation id="1230417814058465809">Стандардна заштита је укључена. Користите напредну заштиту да бисте се додатно заштитили.</translation>
@@ -595,7 +594,6 @@
 <translation id="1668435968811469751">Региструјте се ручно</translation>
 <translation id="1668979692599483141">Сазнајте више о предлозима</translation>
 <translation id="1670399744444387456">Основна</translation>
-<translation id="167160931442925455">Најгласније</translation>
 <translation id="1673137583248014546"><ph name="URL" /> жели да види произвођача и модел безбедносног кључа</translation>
 <translation id="1677306805708094828">Нисмо успели да додамо: <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> је преостало</translation>
@@ -916,7 +914,6 @@
 <translation id="2046702855113914483">Рамен</translation>
 <translation id="204706822916043810">Проверава се виртуелна машина</translation>
 <translation id="2048182445208425546">Приступ мрежном саобраћају</translation>
-<translation id="2048243703055695889">Подешавања дељења у близини за уређај корисника <ph name="USER_EMAIL" />, „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="2048653237708779538">Радња није доступна</translation>
 <translation id="204914487372604757">Направи пречицу</translation>
 <translation id="2050339315714019657">Вертикално</translation>
@@ -1101,7 +1098,6 @@
 <translation id="2262477216570151239">Одлагање пре понављања</translation>
 <translation id="2263189956353037928">Одјави ме и поново ме пријави</translation>
 <translation id="2263371730707937087">Учесталост освежавања екрана</translation>
-<translation id="2263497240924215535">(Онемогућено)</translation>
 <translation id="22665427234727190">Питај када сајт жели да приступа Bluetooth уређајима (препоручено)</translation>
 <translation id="2266957463645820432">IPP преко USB-а (IPPUSB)</translation>
 <translation id="2270450558902169558">Размена података са било којим уређајем на домену <ph name="DOMAIN" /></translation>
@@ -1888,7 +1884,7 @@
 <translation id="3202131003361292969">Путања</translation>
 <translation id="3202173864863109533">Звук ове картице је искључен.</translation>
 <translation id="3208321278970793882">Апликација</translation>
-<translation id="3208584281581115441">Проверите</translation>
+<translation id="3208584281581115441">Провери</translation>
 <translation id="3208703785962634733">Непотврђено</translation>
 <translation id="32101887417650595">Повезивање са штампачем није успело</translation>
 <translation id="321084946921799184">Жута и бела</translation>
@@ -2286,7 +2282,6 @@
 <translation id="3674840410592648165">Сајтови могу да инсталирају обрађиваче плаћања (препоручује се)</translation>
 <translation id="367645871420407123">оставите празно ако желите да подесите основну лозинку на подразумевану вредност слике за тестирање</translation>
 <translation id="3677106374019847299">Унесите прилагођеног добављача</translation>
-<translation id="3677657024345889897">Најтише</translation>
 <translation id="3677911431265050325">Захтевај мобилни сајт</translation>
 <translation id="3677959414150797585">Укључује апликације, веб-странице и друго. Шаље статистику да би се побољшали предлози само ако сте одабрали да делите податке о коришћењу.</translation>
 <translation id="3678156199662914018">Додатак: <ph name="EXTENSION_NAME" /></translation>
@@ -2475,7 +2470,6 @@
 <translation id="3867944738977021751">Поља сертификата</translation>
 <translation id="3869917919960562512">Погрешан индекс.</translation>
 <translation id="3870931306085184145">Нема сачуваних лозинки за <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">Најнижи</translation>
 <translation id="3871350334636688135">После 24 сата администратор ће обавити једнократно ажурирање које ће избрисати локалне податке када рестартујете уређај. Сачувајте потребне локалне податке у простору у клауду у року од 24 сата.</translation>
 <translation id="3872220884670338524">Још радњи, сачуван је налог за <ph name="USERNAME" /> на <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Ослободите простор на диску или ће уређај престати да се одазива.</translation>
@@ -4233,7 +4227,6 @@
 <translation id="6025215716629925253">Стање низа</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB уређај је повезан</translation>
 <translation id="6028117231645531007">Додај отисак прста</translation>
-<translation id="6029587122245504742">Најспорије</translation>
 <translation id="6029594605736587274">функција <ph name="PERMISSION" /> је блокирана</translation>
 <translation id="6031600495088157824">Опције уноса на траци са алаткама</translation>
 <translation id="6032715498678347852">Да бисте дали додатку приступ за овај сајт, кликните на њега.</translation>
@@ -4527,7 +4520,6 @@
 <translation id="6349101878882523185">Инсталирајте <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Синхронизација не функционише. Пробајте да се одјавите и поново пријавите.</translation>
 <translation id="6351063337294363751">Из овог менија можете да обришете податке прегледања</translation>
-<translation id="6352773953037195952">Највиши</translation>
 <translation id="6354918092619878358">Елиптична крива SECG secp256r1 (такође позната као ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Не искључујте уређај</translation>
 <translation id="63566973648609420">Само неко ко има приступну фразу може да чита шифроване податке. Google не шаље нити чува приступну фразу. Ако заборавите приступну фразу или желите да промените ово подешавање, мораћете да <ph name="BEGIN_LINK" />ресетујете синхронизацију<ph name="END_LINK" />.</translation>
@@ -5292,6 +5284,7 @@
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Ова апликација би могла да омета правилно функционисање Chrome-а.}one{Ове апликације би могле да ометају правилно функционисање Chrome-а.}few{Ове апликације би могле да ометају правилно функционисање Chrome-а.}other{Ове апликације би могле да ометају правилно функционисање Chrome-а.}}</translation>
 <translation id="7303281435234579599">Упс! Дошло је до проблема при подешавању режима демонстрације.</translation>
 <translation id="7303900363563182677">Овом сајту је блокиран увид у текст и слике који су копирани у привремену меморију</translation>
+<translation id="7304030187361489308">Висок</translation>
 <translation id="7305123176580523628">USB штампач је повезан</translation>
 <translation id="730515362922783851">Размена података са било којим уређајем на локалној мрежи или интернету</translation>
 <translation id="7306521477691455105">Отворите Подешавања да бисте повезали <ph name="USB_DEVICE_NAME" /> са <ph name="USB_VM_NAME" /></translation>

@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Vetëm zgjedhja</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> kërkon një licencë</translation>
 <translation id="1223853788495130632">Administratori yt rekomandon një vlerë specifike për këtë cilësim.</translation>
-<translation id="1224275271335624810">Më e shpejta</translation>
 <translation id="1225177025209879837">Po përpunon kërkesën...</translation>
 <translation id="1227507814927581609">Dështoi vërtetimi gjatë lidhjes me "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1230417814058465809">"Mbrojtja standarde" është aktive. Për akoma më shumë mbrojtje, përdor "Mbrojtjen e përparuar".</translation>
@@ -595,7 +594,6 @@
 <translation id="1668435968811469751">Regjistrohu manualisht</translation>
 <translation id="1668979692599483141">Mëso për sugjerimet</translation>
 <translation id="1670399744444387456">Themeloret</translation>
-<translation id="167160931442925455">Më i larti</translation>
 <translation id="1673137583248014546"><ph name="URL" /> dëshiron të shohë markën dhe modelin e çelësit tënd të sigurisë</translation>
 <translation id="1677306805708094828">Nuk mund të shtohet kjo <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Koha e mbetur <ph name="TIME" /></translation>
@@ -855,7 +853,7 @@
 <translation id="1970368523891847084">Kalove në modalitetin e videos</translation>
 <translation id="197288927597451399">Mbaje</translation>
 <translation id="1974043046396539880">Pikat e shpërndarjes së CRL-së</translation>
-<translation id="1974060860693918893">I përparuar</translation>
+<translation id="1974060860693918893">Të përparuara</translation>
 <translation id="1974159333077206889">E njëjta audio me të gjithë altoparlantët</translation>
 <translation id="1974821797477522211">Lidhu me rrjetin</translation>
 <translation id="1975841812214822307">Hiq...</translation>
@@ -916,7 +914,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">Po kontrollon pajisjen virtuale</translation>
 <translation id="2048182445208425546">Qasu te trafiku i rrjetit</translation>
-<translation id="2048243703055695889">Cilësimet e "Ndarjes në afërsi" për pajisjen "<ph name="DEVICE_NAME" />" të <ph name="USER_EMAIL" />.</translation>
 <translation id="2048653237708779538">Veprimi nuk ofrohet</translation>
 <translation id="204914487372604757">Krijo shkurtore</translation>
 <translation id="2050339315714019657">Portret (vertikal</translation>
@@ -1101,7 +1098,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2262477216570151239">Vonesa përpara përsëritjes</translation>
 <translation id="2263189956353037928">Dil dhe identifikohu përsëri</translation>
 <translation id="2263371730707937087">Shpejtësia e rifreskimit të ekranit</translation>
-<translation id="2263497240924215535">(I çaktivizuar)</translation>
 <translation id="22665427234727190">Pyet kur një sajt dëshiron të ketë qasje te pajisjet Bluetooth (rekomandohet)</translation>
 <translation id="2266957463645820432">IPP përmes USB-së (IPPUSB)</translation>
 <translation id="2270450558902169558">Shkëmbe të dhëna me çdo pajisje në domenin <ph name="DOMAIN" /></translation>
@@ -2286,7 +2282,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3674840410592648165">Sajtet mund të instalojnë përpunues të pagesave (rekomandohet)</translation>
 <translation id="367645871420407123">lëre bosh nëse dëshiron ta caktosh fjalëkalimin rrënjë në vlerën e parazgjedhur të imazhit testues</translation>
 <translation id="3677106374019847299">Fut ofruesin e personalizuar</translation>
-<translation id="3677657024345889897">Testi i qetësisë</translation>
 <translation id="3677911431265050325">Kërko sajtin për celular</translation>
 <translation id="3677959414150797585">Përfshin aplikacionet, faqet e uebit dhe më shumë. Dërgon statistika për të përmirësuar sugjerimet vetëm nëse ke zgjedhur të ndash të dhënat e përdorimit.</translation>
 <translation id="3678156199662914018">Shtesa: <ph name="EXTENSION_NAME" /></translation>
@@ -2475,7 +2470,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3867944738977021751">Fushat e certifikatës</translation>
 <translation id="3869917919960562512">Indeks i gabuar.</translation>
 <translation id="3870931306085184145">Nuk ka fjalëkalime të ruajtura për <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">Shumë i ulët</translation>
 <translation id="3871350334636688135">Pas 24 orësh, administratori yt do të kryejë një përditësim vetëm një herë që do të fshijë të dhënat e tua lokale kur të rinisësh pajisjen tënde. Ruaj çdo të dhënë lokale që të nevojitet në hapësirën ruajtëse të resë kompjuterike brenda 24 orësh.</translation>
 <translation id="3872220884670338524">Veprime të tjera, llogaria e ruajtur për <ph name="USERNAME" /> në <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Liro hapësirë në disk ose pajisja nuk do të reagojë ndaj komandave.</translation>
@@ -4232,7 +4226,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6025215716629925253">Gjurmë stive</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - pajisja USB e lidhur</translation>
 <translation id="6028117231645531007">Shto gjurmë gishti</translation>
-<translation id="6029587122245504742">Më e ngadalta</translation>
 <translation id="6029594605736587274"><ph name="PERMISSION" /> është bllokuar</translation>
 <translation id="6031600495088157824">Opsionet e hyrjes në shiritin e veglave</translation>
 <translation id="6032715498678347852">Për të lejuar qasjen e një shtese te ky sajt, kliko te shtesa.</translation>
@@ -4518,7 +4511,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6340071272923955280">Protokolli i printimit në internet (IPPS)</translation>
 <translation id="6340526405444716530">Personalizimi</translation>
 <translation id="6341850831632289108">Zbulo vendndodhjen tënde fizike</translation>
-<translation id="6342069812937806050">Vetëm tani</translation>
+<translation id="6342069812937806050">Pikërisht tani</translation>
 <translation id="6344170822609224263">Qasu te lista e lidhjeve të rrjetit</translation>
 <translation id="6344576354370880196">Printerët e ruajtur</translation>
 <translation id="6345418402353744910">Emri i përdoruesit dhe fjalëkalimi yt kërkohen për përfaqësuesin <ph name="PROXY" /> që administratori të mund të konfigurojë rrjetin</translation>
@@ -4526,7 +4519,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6349101878882523185">Instalo <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Sinkronizimi nuk funksionoi. Provo të dalësh dhe të identifikohesh sërish.</translation>
 <translation id="6351063337294363751">Mund t'i pastrosh të dhënat e shfletimit nga kjo meny</translation>
-<translation id="6352773953037195952">Maksimal</translation>
 <translation id="6354918092619878358">Kurba eliptike SECG secp256r1 (e njohur edhe si ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Mbaje pajisjen të aktivizuar</translation>
 <translation id="63566973648609420">Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të koduara. Kjo frazë kalimi nuk dërgohet te Google dhe as nuk ruhet nga ai. Nëse e harron frazën tënde të kalimit apo dëshiron të ndryshosh këtë cilësim, duhet që të <ph name="BEGIN_LINK" />rivendosësh sinkronizimin<ph name="END_LINK" />.</translation>
@@ -5291,6 +5283,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Ky aplikacion mund të pengojë që Chrome të funksionojë siç duhet.}other{Këto aplikacione mund të pengojnë që Chrome të funksionojë siç duhet}}</translation>
 <translation id="7303281435234579599">Mos! Ndodhi një gabim gjatë konfigurimit të modalitetit të demonstrimit.</translation>
 <translation id="7303900363563182677">Ky sajt është bllokuar që të mos shikojë tekstin dhe imazhet e kopjuara te kujtesa e fragmenteve</translation>
+<translation id="7304030187361489308">I lartë</translation>
 <translation id="7305123176580523628">Printeri USB u lidh</translation>
 <translation id="730515362922783851">Shkëmbe të dhëna me çdo pajisje në rrjetin lokal ose në internet</translation>
 <translation id="7306521477691455105">Hap "Cilësimet" për të lidhur <ph name="USB_DEVICE_NAME" /> me <ph name="USB_VM_NAME" /></translation>

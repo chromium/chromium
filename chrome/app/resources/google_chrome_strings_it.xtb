@@ -23,7 +23,6 @@
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> è pericoloso, pertanto è stato bloccato da Chrome.</translation>
 <translation id="1597911401261118146">Per controllare che le tue password siano protette da violazioni dei dati e altri problemi di sicurezza, <ph name="BEGIN_LINK" />accedi a Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Per rendere Chrome più sicuro, abbiamo disattivato la seguente estensione non presente nel <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> che potrebbe essere stata aggiunta a tua insaputa.</translation>
-<translation id="162448658176061655">Chrome verifica la presenza di software indesiderato una volta a settimana. Ultima verifica: qualche istante fa.</translation>
 <translation id="162629503687514352">Impossibile sincronizzare le password in Chrome OS.</translation>
 <translation id="1628000112320670027">Ricevi assistenza per Chrome</translation>
 <translation id="1662639173275167396">La realizzazione di Chrome OS è stata possibile grazie a <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivo, come <ph name="BEGIN_LINK_LINUX_OSS" />Linux (beta)<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -143,7 +142,6 @@
 <translation id="4771048833395599659">Questo file potrebbe essere pericoloso, pertanto è stato bloccato da Chrome.</translation>
 <translation id="479167709087336770">Viene usato lo stesso controllo ortografico utilizzato nella Ricerca Google. Il testo che digiti nel browser viene inviato a Google. Puoi modificare questo comportamento in qualsiasi momento nelle impostazioni.</translation>
 <translation id="4891791193823137474">Lascia Google Chrome in esecuzione in background</translation>
-<translation id="489337168347244450">{NUM_DAYS,plural, =1{Chrome verifica la presenza di software indesiderato una volta a settimana. Ultima verifica: 1 giorno fa.}other{Chrome verifica la presenza di software indesiderato una volta a settimana. Ultima verifica: {NUM_DAYS} giorni fa.}}</translation>
 <translation id="4895437082222824641">Apri link in una nuova &amp;scheda di Chrome</translation>
 <translation id="4953650215774548573">Imposta Google Chrome come browser predefinito</translation>
 <translation id="495931528404527476">In Chrome</translation>
@@ -184,7 +182,6 @@
 <translation id="6291549208091401781">Google Chrome è già installato per tutti gli utenti sul computer.</translation>
 <translation id="6338556085225130112">Aggiornamento di Google Chrome in corso</translation>
 <translation id="6368958679917195344">Chrome OS è reso possibile da <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivi.</translation>
-<translation id="6454142105866844106">Chrome verifica la presenza di software indesiderato una volta a settimana</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome per gli sviluppatori</translation>
 <translation id="6566149418543181476">Aggiornamento di Google Chrome in corso (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6676384891291319759">Accesso a Internet</translation>
@@ -203,13 +200,11 @@
 <translation id="7106741999175697885">Task Manager - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{È disponibile un nuovo aggiornamento di Chrome che verrà installato appena eseguirai il riavvio.}=1{È disponibile un nuovo aggiornamento di Chrome che verrà installato appena eseguirai il riavvio. La finestra di navigazione in incognito non verrà riaperta.}other{È disponibile un nuovo aggiornamento di Chrome che verrà installato appena eseguirai il riavvio. Le # finestre di navigazione in incognito non verranno riaperte.}}</translation>
 <translation id="7155997830309522122">In questo caso, modifica la password salvata su Chrome in modo che corrisponda alla nuova password.</translation>
-<translation id="7236955538461508933">{NUM_HOURS,plural, =1{Chrome verifica la presenza di software indesiderato una volta a settimana. Ultima verifica: 1 ora fa.}other{Chrome verifica la presenza di software indesiderato una volta a settimana. Ultima verifica: {NUM_HOURS} ore fa.}}</translation>
 <translation id="7242029209006116544">Stai per accedere con un account gestito e per dare al relativo amministratore il controllo del tuo profilo Google Chrome. I tuoi dati di Chrome, come app, Preferiti, cronologia, password e altre impostazioni, verranno collegati definitivamente a <ph name="USER_NAME" />. Potrai eliminare questi dati tramite la Dashboard di Google Account, ma non potrai associare questi dati a un altro account. Se preferisci puoi creare un nuovo profilo per mantenere separati i dati di Chrome esistenti. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Questa lingua viene utilizzata per mostrare l'UI di Google Chrome</translation>
 <translation id="7296210096911315575">Informazioni importanti sull'utilizzo e sulla sicurezza</translation>
 <translation id="7308322188646931570">Chrome deve avere accesso allo spazio di archiviazione per poter scaricare file</translation>
 <translation id="7339898014177206373">Nuova finestra</translation>
-<translation id="7386132805935307836">Chrome verifica la presenza di software indesiderato una volta a settimana. Ultima verifica: ieri.</translation>
 <translation id="7398801000654795464">Hai eseguito l'accesso a Chrome come <ph name="USER_EMAIL_ADDRESS" />. Utilizza lo stesso account per eseguire di nuovo l'accesso.</translation>
 <translation id="7408085963519505752">Termini di Chrome OS</translation>
 <translation id="7419046106786626209">Impossibile sincronizzare i dati in Chrome OS perché la sincronizzazione non è disponibile per il tuo dominio.</translation>
@@ -244,7 +239,6 @@
 <translation id="828798499196665338">Uno dei tuoi genitori ha disattivato "Autorizzazioni per siti, app ed estensioni" per Chrome. L'attivazione di <ph name="EXTENSION_TYPE_PARAMETER" /> non è consentita.</translation>
 <translation id="8290100596633877290">Spiacenti, si è verificato un arresto anomalo di Google Chrome. Riavviarlo ora?</translation>
 <translation id="8342675569599923794">Questo file è pericoloso, pertanto è stato bloccato da Chrome.</translation>
-<translation id="8344083974188970894">{NUM_MINS,plural, =1{Chrome verifica la presenza di software indesiderato una volta a settimana. Ultima verifica: 1 minuto fa.}other{Chrome verifica la presenza di software indesiderato una volta a settimana. Ultima verifica: {NUM_MINS} minuti fa.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC Tutti i diritti riservati.</translation>
 <translation id="840084489713044809">Google Chrome vuole esportare le password.</translation>
 <translation id="8433638294851456451">Per inviare un numero da questo dispositivo al tuo telefono Android, accedi a Chrome su entrambi i dispositivi.</translation>

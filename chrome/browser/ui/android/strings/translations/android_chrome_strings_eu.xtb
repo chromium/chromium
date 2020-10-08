@@ -620,7 +620,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5687809546194252819">Berrabiarazi ondoren, <ph name="LANGUAGE" /> erabiliko da <ph name="APP_NAME" /> aplikazioan.</translation>
 <translation id="5691211010013816086"><ph name="READING_LIST_COUNT" /> orri dituzu</translation>
 <translation id="569536719314091526">Itzuli orria edozein hizkuntzatara Aukera gehiago botoia sakatuta</translation>
-<translation id="5696597120588531049">Datuen isilpekotasunaren urratzeen, seguruak ez diren webguneen eta abarren aurrean babes zaitzake Chrome-k</translation>
+<translation id="5696597120588531049">Datuen isilpekotasunaren urratzeen, seguruak ez diren webguneen eta abarren aurrean babes zaitzake Chrome-k.</translation>
 <translation id="5697688514913266141">Zure fitxategia <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> direktorioan gordeko da. <ph name="BEGIN_LINK2" />Editatu<ph name="END_LINK2" />.</translation>
 <translation id="570347048394355941">Aldatu fitxara</translation>
 <translation id="572328651809341494">Azken fitxak</translation>
@@ -967,7 +967,7 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="8027863900915310177">Aukeratu nora deskargatu nahi duzun</translation>
 <translation id="8035133914807600019">Karpeta berria…</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> egun gelditzen dira</translation>
-<translation id="8037801708772278989">Oraintxe bertan egiaztatu du</translation>
+<translation id="8037801708772278989">Oraintxe bertan egiaztatu da</translation>
 <translation id="804335162455518893">Ez da aurkitu SD txartela</translation>
 <translation id="805047784848435650">Arakatze-historian oinarrituta</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB erabilgarri</translation>

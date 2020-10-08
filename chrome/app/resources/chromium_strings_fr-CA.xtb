@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium vérifie la présence de logiciels indésirables une fois par semaine. Dernière vérification : il y a 1 heure.}one{Chromium vérifie la présence de logiciels indésirables une fois par semaine. Dernière vérification : il y a {NUM_HOURS} heure.}other{Chromium vérifie la présence de logiciels indésirables une fois par semaine. Dernière vérification : il y a {NUM_HOURS} heures.}}</translation>
 <translation id="1065672644894730302">Échec de lecture de vos préférences.
 
 Certaines fonctionnalités ne seront peut-être pas disponibles et les modifications apportées à vos préférences ne seront pas enregistrées.</translation>
@@ -47,7 +46,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2711502716910134313">Onglet Chromium</translation>
 <translation id="2718390899429598676">Pour une sécurité accrue, Chromium va chiffrer vos données.</translation>
 <translation id="2770231113462710648">Remplacer le navigateur par défaut par :</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromium vérifie la présence de logiciels indésirables une fois par semaine. Dernière vérification : il y a 1 minute.}one{Chromium vérifie la présence de logiciels indésirables une fois par semaine. Dernière vérification : il y a {NUM_MINS} minute.}other{Chromium vérifie la présence de logiciels indésirables une fois par semaine. Dernière vérification : il y a {NUM_MINS} minutes.}}</translation>
 <translation id="2799223571221894425">Redémarrer</translation>
 <translation id="2847479871509788944">Supprimer de Chromium...</translation>
 <translation id="2853765747879685679">Me demander quand j'ouvre Chromium</translation>
@@ -58,7 +56,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3032706164202344641">Chromium ne peut pas vérifier vos mots de passe. Réessayez plus tard.</translation>
 <translation id="3032787606318309379">Ajout à Chromium en cours...</translation>
 <translation id="3068515742935458733">Aidez-nous à améliorer Chromium en nous envoyant des rapports d'erreur et des <ph name="UMA_LINK" />.</translation>
-<translation id="3086207596048762442">Chromium vérifie la présence de logiciels indésirables une fois par semaine</translation>
 <translation id="3103660991484857065">Le programme d'installation n'a pas réussi à décompresser l'archive. Veuillez télécharger Chromium de nouveau.</translation>
 <translation id="3130323860337406239">Chromium se sert de votre microphone.</translation>
 <translation id="3155163173539279776">Relancer Chromium</translation>
@@ -179,7 +176,6 @@ Certaines fonctionnalités seront peut-être inaccessibles. Veuillez spécifier 
 <translation id="6847869444787758381">Chromium vous informera si jamais vos mots de passe sont compromis</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiée dans Chromium)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium vérifie la présence de logiciels indésirables une fois par semaine. Dernière vérification : il y a 1 jour.}one{Chromium vérifie la présence de logiciels indésirables une fois par semaine. Dernière vérification : il y a {NUM_DAYS} jour.}other{Chromium vérifie la présence de logiciels indésirables une fois par semaine. Dernière vérification : il y a {NUM_DAYS} jours.}}</translation>
 <translation id="6893813176749746474">Chrome a été mis à jour, mais vous ne l'avez pas utilisé depuis au moins 30 jours.</translation>
 <translation id="6964305034639999644">Ouvrir le lien dans une fenêtre de navi&amp;gation privée Chromium</translation>
 <translation id="6990124437352146030">Chromium a besoin de votre autorisation pour accéder à votre micro pour ce site</translation>
@@ -243,7 +239,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8621669128220841554">Échec de l'installation en raison d'une erreur non spécifiée. Veuillez télécharger Chromium à nouveau.</translation>
 <translation id="8697124171261953979">Elle définit également quelle page s'affiche lorsque vous démarrez Chromium ou que vous effectuez une recherche dans l'omnibox.</translation>
 <translation id="8704119203788522458">Voici votre Chromium</translation>
-<translation id="8705191560707593947">Chromium vérifie la présence de logiciels indésirables une fois par semaine. Dernière vérification : hier.</translation>
 <translation id="8796602469536043152">Chromium a besoin de votre autorisation pour accéder à votre appareil photo et à votre micro pour ce site</translation>
 <translation id="8803635938069941624">Conditions d'utilisation de Chromium OS</translation>
 <translation id="8821041990367117597">Chromium n'a pas pu synchroniser vos données, car vos renseignements de connexion ne sont plus à jour.</translation>
@@ -259,7 +254,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="91086099826398415">Ouvrir le lien dans un nouvel ongle&amp;t Chromium</translation>
 <translation id="911206726377975832">Supprimer également vos données de navigation?</translation>
 <translation id="9158494823179993217">Votre administrateur système a configuré Chromium pour ouvrir un autre navigateur afin d'accéder à <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="9164845895615421500">Chromium vérifie la présence de logiciels indésirables une fois par semaine. Dernière vérification : il y a quelques instants.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Il se peut que Chromium ne fonctionne pas correctement, car il n'est plus compatible avec Windows XP ni Windows Vista</translation>
 <translation id="95514773681268843"><ph name="DOMAIN" /> exige que vous lisiez et acceptiez les présentes conditions d'utilisation pour utiliser cet appareil. Ces dernières n'étendent, ne modifient ni ne restreignent les conditions d'utilisation de Chrome OS.</translation>

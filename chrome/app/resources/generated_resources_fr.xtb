@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Sélection uniquement</translation>
 <translation id="1223484782328004593">Une licence est requise pour utiliser <ph name="APP_NAME" /></translation>
 <translation id="1223853788495130632">Votre administrateur recommande une valeur spécifique pour ce paramètre.</translation>
-<translation id="1224275271335624810">La plus rapide</translation>
 <translation id="1225177025209879837">Traitement de la demande en cours…</translation>
 <translation id="1227507814927581609">Échec de l'authentification lors de la connexion à l'appareil "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1230417814058465809">La protection standard est activée. Pour un niveau de sécurité supérieur, activez la protection renforcée.</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">Faire l'inscription manuellement</translation>
 <translation id="1668979692599483141">En savoir plus sur les suggestions</translation>
 <translation id="1670399744444387456">Général</translation>
-<translation id="167160931442925455">Volume maximal</translation>
 <translation id="1673137583248014546"><ph name="URL" /> souhaite voir la marque et le modèle de votre clé de sécurité</translation>
 <translation id="1677306805708094828">Impossible d'ajouter <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Temps restant : <ph name="TIME" /></translation>
@@ -919,7 +917,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">Vérification de la machine virtuelle…</translation>
 <translation id="2048182445208425546">Accéder au trafic de votre réseau</translation>
-<translation id="2048243703055695889">Les paramètres de partage à proximité pour l'appareil "<ph name="DEVICE_NAME" />" du compte <ph name="USER_EMAIL" />.</translation>
 <translation id="2048653237708779538">Action non disponible</translation>
 <translation id="204914487372604757">Créer un raccourci</translation>
 <translation id="2050339315714019657">Portrait</translation>
@@ -1104,7 +1101,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2262477216570151239">Délai avant répétition</translation>
 <translation id="2263189956353037928">Se déconnecter et se reconnecter</translation>
 <translation id="2263371730707937087">Fréquence d'actualisation de l'écran</translation>
-<translation id="2263497240924215535">(désactivée)</translation>
 <translation id="22665427234727190">Me demander lorsqu'un site souhaite accéder aux appareils Bluetooth (recommandé)</translation>
 <translation id="2266957463645820432">IPP sur USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Échanger des données avec n'importe quel appareil dans le domaine suivant : "<ph name="DOMAIN" />"</translation>
@@ -2289,7 +2285,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3674840410592648165">Les sites peuvent installer des gestionnaires de paiement (recommandé)</translation>
 <translation id="367645871420407123">N'indiquez rien si vous voulez définir le mot de passe racine sur la valeur d'image test par défaut.</translation>
 <translation id="3677106374019847299">Saisissez un fournisseur personnalisé</translation>
-<translation id="3677657024345889897">Volume minimal</translation>
 <translation id="3677911431265050325">Demander le site mobile</translation>
 <translation id="3677959414150797585">Les suggestions de contenu concernent des applications, des pages Web et bien plus. Si vous avez choisi de partager les données d'utilisation, des statistiques sont envoyées pour améliorer ces suggestions.</translation>
 <translation id="3678156199662914018">Extension : <ph name="EXTENSION_NAME" /></translation>
@@ -2478,7 +2473,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3867944738977021751">Champs de certificat</translation>
 <translation id="3869917919960562512">Index erroné.</translation>
 <translation id="3870931306085184145">Aucun mot de passe enregistré pour <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">Le plus grave</translation>
 <translation id="3871350334636688135">Dans 24 heures, l'administrateur effectuera une mise à jour exceptionnelle qui entraînera la suppression de vos données locales lorsque vous redémarrerez votre appareil. Veillez à enregistrer dans le cloud toutes les données locales dont vous avez besoin avant que ce délai ne soit écoulé.</translation>
 <translation id="3872220884670338524">Autres actions (compte <ph name="USERNAME" /> enregistré sur <ph name="DOMAIN" />)</translation>
 <translation id="3872991219937722530">Libérez de l'espace disque, car l'appareil risque de ne plus répondre.</translation>
@@ -4236,7 +4230,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6025215716629925253">Trace de la pile</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> –  Appareil USB connecté</translation>
 <translation id="6028117231645531007">Ajouter une empreinte digitale</translation>
-<translation id="6029587122245504742">La plus lente</translation>
 <translation id="6029594605736587274">autorisation "<ph name="PERMISSION" />" bloquée</translation>
 <translation id="6031600495088157824">Options de saisie dans la barre d'outils</translation>
 <translation id="6032715498678347852">Pour autoriser l'accès à ce site pour une extension, cliquez sur celle-ci.</translation>
@@ -4530,7 +4523,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">La synchronisation ne fonctionne pas. Essayez de vous déconnecter, puis de vous reconnecter.</translation>
 <translation id="6351063337294363751">Vous pouvez effacer vos données de navigation à partir de ce menu.</translation>
-<translation id="6352773953037195952">Le plus aigu</translation>
 <translation id="6354918092619878358">Courbe elliptique SECG secp256r1 (également appelée "ANSI X9.62 prime256v1, NIST P-256")</translation>
 <translation id="635609604405270300">N'éteignez pas l'appareil</translation>
 <translation id="63566973648609420">Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. La phrase secrète ne nous est pas envoyée et nous ne la stockons pas. Si vous l'oubliez ou si vous voulez modifier ce paramètre, vous devrez <ph name="BEGIN_LINK" />réinitialiser la synchronisation<ph name="END_LINK" />.</translation>
@@ -5295,6 +5287,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Cette application peut empêcher Chrome de fonctionner correctement.}one{Cette application peut empêcher Chrome de fonctionner correctement.}other{Ces applications peuvent empêcher Chrome de fonctionner correctement.}}</translation>
 <translation id="7303281435234579599">Petit problème… Une erreur s'est produite lors de la configuration du mode de démonstration.</translation>
 <translation id="7303900363563182677">Ce site ne peut pas accéder en lecture au texte ni aux images copiés dans le presse-papiers</translation>
+<translation id="7304030187361489308">Aigu</translation>
 <translation id="7305123176580523628">Imprimante USB connectée</translation>
 <translation id="730515362922783851">Échanger des données avec n'importe quel appareil sur le réseau local ou sur Internet</translation>
 <translation id="7306521477691455105">Ouvrir les paramètres pour connecter le <ph name="USB_DEVICE_NAME" /> à <ph name="USB_VM_NAME" /></translation>

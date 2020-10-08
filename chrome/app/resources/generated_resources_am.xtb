@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">ምርጫ ብቻ</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> ፈቃድ ያስፈልገዋል</translation>
 <translation id="1223853788495130632">አስተዳዳሪዎ ለዚህ ቅንብር አንድ የተወሰነ እሴት ይመክራል።</translation>
-<translation id="1224275271335624810">እጅግ በጣም ፈጣን</translation>
 <translation id="1225177025209879837">ጥያቄን በማካሄድ ላይ...</translation>
 <translation id="1227507814927581609">ከ«<ph name="DEVICE_NAME" />» ጋር በመገናኘት ላይ ሳለ ማረጋገጥ አልተሳካም።</translation>
 <translation id="1230417814058465809">መደበኛ ጥበቃ በርቷል። እንዲያውም ከዚህም ለሚበልጥ ደህንነት የላቀ ጥበቃን ይጠቀሙ።</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">ራስዎ ያስመዝግቡ</translation>
 <translation id="1668979692599483141">ስለአስተያየት ጥቆማዎች ይረዱ</translation>
 <translation id="1670399744444387456">መሠረታዊ</translation>
-<translation id="167160931442925455">በጣም ጮክ ያለ</translation>
 <translation id="1673137583248014546"><ph name="URL" /> የደህንነት ቁልፍዎን ስሪት እና ሞዴል ማየት ይፈልጋል</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" />ን ማከል አይቻልም</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ቀርቷል</translation>
@@ -919,7 +917,6 @@
 <translation id="2046702855113914483">ራመን</translation>
 <translation id="204706822916043810">ምናባዊ ማሽኑን በመፈተሽ ላይ</translation>
 <translation id="2048182445208425546">የእርስዎን የአውታረ መረብ ትራፊክ ይድረስበት</translation>
-<translation id="2048243703055695889">የ<ph name="USER_EMAIL" /> መሣሪያ «<ph name="DEVICE_NAME" />» የአቅራቢያ የማጋሪያ ቅንብሮች።</translation>
 <translation id="2048653237708779538">እርምጃ አይገኝም</translation>
 <translation id="204914487372604757">አቋራጭ ፍጠር</translation>
 <translation id="2050339315714019657">በቁመት</translation>
@@ -1104,7 +1101,6 @@
 <translation id="2262477216570151239">ከመድገም በፊት አዘግይ</translation>
 <translation id="2263189956353037928">ዘግተው ይውጡ እና ተመልሰው ይግቡ</translation>
 <translation id="2263371730707937087">የማያ ገጽ ዕድሳት ፍጥነት</translation>
-<translation id="2263497240924215535">(የተሰናከለ)</translation>
 <translation id="22665427234727190">አንድ ጣቢያ የብሉቱዝ መሣሪያዎችን መድረስ ሲፈልግ ጠይቅ (የሚመከር)</translation>
 <translation id="2266957463645820432">IPP በዩኤስቢ ላይ (IPPUSB)</translation>
 <translation id="2270450558902169558">በ<ph name="DOMAIN" /> ጎራ ውስጥ ካለ ማንኛውም መሣሪያ ጋር ውሂብ ተለዋወጥ</translation>
@@ -2288,7 +2284,6 @@
 <translation id="3674840410592648165">ጣቢያዎች የክፍያ ተቆጣጣሪዎችን መጫን ይችላሉ (የሚመከር)</translation>
 <translation id="367645871420407123">የስር ይለፍ ቃሉ ወደ ነባሪው የሙከራ ምስል እሴት ለማዘጋጀት ከፈለጉ ባዶ እንደሆነ ይተዉት</translation>
 <translation id="3677106374019847299">ብጁ አቅራቢ ያስገቡ</translation>
-<translation id="3677657024345889897">ከሁሉም ጸጥ ያለው</translation>
 <translation id="3677911431265050325">የሞባይል ጣቢያ ጠይቅ</translation>
 <translation id="3677959414150797585">መተግበሪያዎች፣ የድር ገጾች እና ተጨማሪ ያካትታል። የአጠቃቀም ውሂብን ለማጋራት ከመረጡ ብቻ የአስተያየት ጥቆማዎችን ለማሻሻል ስታትስቲክስን ይልካል።</translation>
 <translation id="3678156199662914018">ቅጥያ፦ <ph name="EXTENSION_NAME" /></translation>
@@ -2477,7 +2472,6 @@
 <translation id="3867944738977021751">የሰርቲፊኬት መስኮች</translation>
 <translation id="3869917919960562512">የተሳሳተ መረጃ ጠቋሚ።</translation>
 <translation id="3870931306085184145">ምንም የተቀመጡ የ<ph name="DOMAIN" /> የይለፍ ቃላት የሉም</translation>
-<translation id="3871092408932389764">ዝቅተኛው</translation>
 <translation id="3871350334636688135">ከ24 ሰዓቶች በኋላ መሣሪያዎን ዳግም ሲያስነሱት አስተዳዳሪዎ አካባቢያዊ ውሂብዎን የሚሰርዝ የአንድ ጊዜ ዝማኔ ያከናውናሉ። የሚያስፈልገዎትን ማንኛውም ውሂብ በ24 ሰዓቶች ውስጥ ወደ ደመናው ያስቀምጡት።</translation>
 <translation id="3872220884670338524">ተጨማሪ እርምጃዎች፣ መለያ <ph name="DOMAIN" /> ላይ ለ<ph name="USERNAME" /> ተቀምጧል</translation>
 <translation id="3872991219937722530">የዲስክ ቦታ ያስለቅቁ፣ አለበለዚያ መሣሪያው ምላሽ የማይሰጥ ይሆናል</translation>
@@ -4232,7 +4226,6 @@
 <translation id="6025215716629925253">የቁልል መከታተያ</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - ዩኤስቢ መሣሪያ ተገናኝቷል</translation>
 <translation id="6028117231645531007">የጣት አሻራን አክል</translation>
-<translation id="6029587122245504742">በጣም ቀርፋፋው</translation>
 <translation id="6029594605736587274"><ph name="PERMISSION" /> ታግዷል</translation>
 <translation id="6031600495088157824">በመሣሪያ አሞሌ ላይ የግቤት አማራጮች</translation>
 <translation id="6032715498678347852">ለዚህ ጣቢያ የቅጥያ መዳረሻን ለመስጠት፣ ጠቅ ያድርጉት።</translation>
@@ -4526,7 +4519,6 @@
 <translation id="6349101878882523185"><ph name="APP_NAME" />ን ይጫኑ</translation>
 <translation id="6349170655202535379">ስምረት እየሰራ አይደለም። ዘግተው ወጥተው እና ተመልሰው ለመግባት ይሞክሩ።</translation>
 <translation id="6351063337294363751">የእርስዎን የአሰሳ አደራረግ ውሂብ ከዚህ ምናሌ ላይ ማጽዳት ይችላሉ</translation>
-<translation id="6352773953037195952">ከፍተኛው</translation>
 <translation id="6354918092619878358">የSECG ሞላላ ጥምዝ secp256r1 (እንዲሁም ANSI X9.62 prime256v1, NIST P-256 በመባት የሚታወቅ)</translation>
 <translation id="635609604405270300">መሣሪያውን እንደበራ አቆየው</translation>
 <translation id="63566973648609420">የእርስዎን የይለፍ ሐረግ ያለው ሰው ብቻ ነው የተመሰጠረ ውሂብዎን ማየት የሚችለው። የይለፍ ሐረጉ ለGoogle አይላክም ወይም በእሱ አይከማችም። የይለፍ ሐረግዎን ከረሱት <ph name="BEGIN_LINK" />ስምረትን ዳግም ማስጀመር<ph name="END_LINK" /> ይኖርብዎታል።</translation>
@@ -5291,6 +5283,7 @@
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{ይህ መተግበሪያ Chrome በአግባቡ እንዳይሠራ ሊከላከል ይችላል።}one{እነዚህ መተግበሪያዎች Chrome በአግባቡ እንዳይሠራ ሊከላከሉ ይችላሉ።}other{እነዚህ መተግበሪያዎች Chrome በአግባቡ እንዳይሠራ ሊከላከሉ ይችላሉ።}}</translation>
 <translation id="7303281435234579599">ውይ! የቅንጭብ ማሳያ ሁነታን በማቀናበር ላይ ሳለ የሆነ ነገር ተሳስቷል።</translation>
 <translation id="7303900363563182677">ይህ ጣቢያ ወደ ቅንጥብ ሰሌዳው የተቀዱ ጽሑፍን እና ምስሎችን እንዳይመለከት ታግዷል</translation>
+<translation id="7304030187361489308">ከፍ ያለ</translation>
 <translation id="7305123176580523628">የዩኤስቢ አታሚ ተገናኝቷል</translation>
 <translation id="730515362922783851">በአካባቢ አውታረመረብ ወይም በይነመረብ ላይ ከማናቸውም መሣሪያ ጋር ውሂብ ተለዋወጥ</translation>
 <translation id="7306521477691455105"><ph name="USB_DEVICE_NAME" />ን ለ<ph name="USB_VM_NAME" /> ጋር ለማገናኘት ቅንብሮችን ይክፈቱ</translation>

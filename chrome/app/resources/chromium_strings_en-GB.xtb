@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium checks for unwanted software once a week. Last checked: 1 hour ago.}other{Chromium checks for unwanted software once a week. Last checked: {NUM_HOURS} hours ago.}}</translation>
 <translation id="1065672644894730302">Your preferences cannot be read.
 
 Some features may be unavailable and changes to preferences won't be saved.</translation>
@@ -47,7 +46,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2711502716910134313">Chromium Tab</translation>
 <translation id="2718390899429598676">For added security, Chromium will encrypt your data.</translation>
 <translation id="2770231113462710648">Change default browser to:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromium checks for unwanted software once a week. Last checked: 1 minute ago.}other{Chromium checks for unwanted software once a week. Last checked: {NUM_MINS} minutes ago.}}</translation>
 <translation id="2799223571221894425">Relaunch</translation>
 <translation id="2847479871509788944">Remove from Chromium...</translation>
 <translation id="2853765747879685679">Ask when I open Chromium</translation>
@@ -58,7 +56,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3032706164202344641">Chromium can't check your passwords. Try again later.</translation>
 <translation id="3032787606318309379">Adding to Chromium ...</translation>
 <translation id="3068515742935458733">Help make Chromium better by sending crash reports and <ph name="UMA_LINK" /> to Google</translation>
-<translation id="3086207596048762442">Chromium checks for unwanted software once a week</translation>
 <translation id="3103660991484857065">The installer failed to uncompress archive. Please download Chromium again.</translation>
 <translation id="3130323860337406239">Chromium is using your microphone.</translation>
 <translation id="3155163173539279776">Relaunch Chromium</translation>
@@ -179,7 +176,6 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="6847869444787758381">Chromium lets you know if your passwords are ever compromised</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copied to Chromium)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium checks for unwanted software once a week. Last checked: 1 day ago.}other{Chromium checks for unwanted software once a week. Last checked: {NUM_DAYS} days ago.}}</translation>
 <translation id="6893813176749746474">Chromium has been updated, but you haven't used it for 30 days or more.</translation>
 <translation id="6964305034639999644">Open link in Chromium inco&amp;gnito window</translation>
 <translation id="6990124437352146030">Chromium needs permission to access your microphone for this site</translation>
@@ -244,7 +240,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8621669128220841554">Installation failed due to unspecified error. Please download Chromium again.</translation>
 <translation id="8697124171261953979">It also controls what page is shown when you start Chromium or search from the Omnibox.</translation>
 <translation id="8704119203788522458">This is your Chromium</translation>
-<translation id="8705191560707593947">Chromium checks for unwanted software once a week. Last checked: yesterday.</translation>
 <translation id="8796602469536043152">Chromium needs permission to access your camera and microphone for this site</translation>
 <translation id="8803635938069941624">Chromium OS terms</translation>
 <translation id="8821041990367117597">Chromium could not sync your data because your account sign-in details are out of date.</translation>
@@ -260,7 +255,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="91086099826398415">Open Link in New Chromium &amp;tab</translation>
 <translation id="911206726377975832">Also delete your browsing data?</translation>
 <translation id="9158494823179993217">Your system administrator has configured Chromium to open an alternative browser to access <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="9164845895615421500">Chromium checks for unwanted software once a week. Last checked: a moment ago.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium may not function correctly because it is no longer supported on Windows XP or Windows Vista</translation>
 <translation id="95514773681268843"><ph name="DOMAIN" /> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Chromium OS Terms.</translation>

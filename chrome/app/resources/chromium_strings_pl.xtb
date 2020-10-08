@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{Raz w tygodniu Chromium sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: godzinę temu.}few{Raz w tygodniu Chromium sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_HOURS} godziny temu.}many{Raz w tygodniu Chromium sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_HOURS} godzin temu.}other{Raz w tygodniu Chromium sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_HOURS} godziny temu.}}</translation>
 <translation id="1065672644894730302">Nie można odczytać ustawień. Niektóre funkcje mogą być niedostępne, a zmiany w ustawieniach nie zostaną zapisane.</translation>
 <translation id="107513968719897256">Aby oddzielić przeglądanie osobiste od przeglądania jako <ph name="NEW_USER" />, utwórz nowy profil w Chromium</translation>
 <translation id="1098170124587656448">Chromium pomaga chronić Cię przed naruszeniami bezpieczeństwa danych, niebezpiecznymi rozszerzeniami i innymi zagrożeniami.</translation>
@@ -45,7 +44,6 @@
 <translation id="2711502716910134313">Karta Chromium</translation>
 <translation id="2718390899429598676">Dla większego bezpieczeństwa Chromium szyfruje dane.</translation>
 <translation id="2770231113462710648">Zmień przeglądarkę domyślną na:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{Raz w tygodniu Chromium sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: minutę temu.}few{Raz w tygodniu Chromium sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_MINS} minuty temu.}many{Raz w tygodniu Chromium sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_MINS} minut temu.}other{Raz w tygodniu Chromium sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_MINS} minuty temu.}}</translation>
 <translation id="2799223571221894425">Uruchom ponownie</translation>
 <translation id="2847479871509788944">Usuń z Chromium...</translation>
 <translation id="2853765747879685679">Pytaj, gdy otwieram Chromium</translation>
@@ -56,7 +54,6 @@
 <translation id="3032706164202344641">Chromium nie może sprawdzić Twoich haseł. Spróbuj później.</translation>
 <translation id="3032787606318309379">Dodawanie do Chromium...</translation>
 <translation id="3068515742935458733">Pomóż nam ulepszyć Chromium, przesyłając do Google raporty o awariach i <ph name="UMA_LINK" /></translation>
-<translation id="3086207596048762442">Raz w tygodniu Chromium sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania</translation>
 <translation id="3103660991484857065">Instalator nie może prawidłowo rozpakować archiwum. Pobierz Chromium ponownie.</translation>
 <translation id="3130323860337406239">Chromium używa Twojego mikrofonu.</translation>
 <translation id="3155163173539279776">Ponownie uruchom Chromium</translation>
@@ -175,7 +172,6 @@ Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub uż
 <translation id="6847869444787758381">Chromium poinformuje Cię, jeśli Twoje hasła dostaną się w niepowołane ręce</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (skopiowana do Chromium)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{Raz w tygodniu Chromium sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: 1 dzień temu.}few{Raz w tygodniu Chromium sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_DAYS} dni temu.}many{Raz w tygodniu Chromium sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_DAYS} dni temu.}other{Raz w tygodniu Chromium sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_DAYS} dnia temu.}}</translation>
 <translation id="6893813176749746474">Przeglądarka Chromium została zaktualizowana, ale nie była przez Ciebie używana przez co najmniej 30 dni.</translation>
 <translation id="6964305034639999644">Otwórz link w oknie inco&amp;gnito Chromium</translation>
 <translation id="6990124437352146030">Chromium potrzebuje uprawnień dostępu do mikrofonu na tej stronie</translation>
@@ -239,7 +235,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8621669128220841554">Instalacja nie powiodła się z powodu nieokreślonego błędu. Pobierz Chromium ponownie.</translation>
 <translation id="8697124171261953979">Kontroluje także to, jaka strona wyświetla się po uruchomieniu Chromium lub wyszukiwaniu w omniboksie.</translation>
 <translation id="8704119203788522458">Oto Twoja przeglądarka Chromium</translation>
-<translation id="8705191560707593947">Raz w tygodniu Chromium sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: wczoraj.</translation>
 <translation id="8796602469536043152">Chromium potrzebuje uprawnień dostępu do aparatu i mikrofonu na tej stronie</translation>
 <translation id="8803635938069941624">Warunki korzystania z systemu operacyjnego Chromium</translation>
 <translation id="8821041990367117597">Chromium nie może zsynchronizować danych, ponieważ dane logowania na Twoje konto są nieaktualne.</translation>
@@ -255,7 +250,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="91086099826398415">O&amp;twórz link w nowej karcie Chromium</translation>
 <translation id="911206726377975832">Czy usunąć także dane przeglądania?</translation>
 <translation id="9158494823179993217">Administrator systemu skonfigurował Chromium w taki sposób, by strona <ph name="TARGET_URL_HOSTNAME" /> otwierała się w alternatywnej przeglądarce.</translation>
-<translation id="9164845895615421500">Raz w tygodniu Chromium sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: przed chwilą.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium może działać nieprawidłowo, bo nie jest już zgodny z Windows XP ani Windows Vista</translation>
 <translation id="95514773681268843">Domena <ph name="DOMAIN" /> wymaga, by przed korzystaniem z tego urządzenia przeczytać i zaakceptować Warunki korzystania z usługi. Nie rozszerzają, nie zmieniają ani nie ograniczają one Warunków korzystania z systemu Chromium OS.</translation>

@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">केवळ निवड</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> ला परवान्याची आवश्यकता आहे</translation>
 <translation id="1223853788495130632">या सेटिंगसाठी तुमचा ॲडमिनिस्ट्रेटर विशिष्‍ट मूल्याची शिफारस करतो.</translation>
-<translation id="1224275271335624810">सर्वात जलद</translation>
 <translation id="1225177025209879837">विनंतीवर प्रक्रिया करत आहे...</translation>
 <translation id="1227507814927581609">"<ph name="DEVICE_NAME" />" शी कनेक्ट करताना ऑथेंटिकेशन अयशस्वी झाले.</translation>
 <translation id="1230417814058465809">मानक संरक्षण सुरू आहे. आणखी सुरक्षेसाठी, वर्धित संरक्षण वापरा.</translation>
@@ -597,7 +596,6 @@
 <translation id="1668435968811469751">मॅन्युअली नोंदणी करा</translation>
 <translation id="1668979692599483141">सूचनांबद्दल जाणून घ्या</translation>
 <translation id="1670399744444387456">मूलभूत</translation>
-<translation id="167160931442925455">सर्वात मोठा आवाज</translation>
 <translation id="1673137583248014546"><ph name="URL" /> ला तुमच्या सिक्युरिटी कीची निर्मिती आणि मॉडेल पहायचा आहे</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> जोडू शकत नाही</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> शिल्लक</translation>
@@ -918,7 +916,6 @@
 <translation id="2046702855113914483">रामेन</translation>
 <translation id="204706822916043810">व्हर्च्युअल मशीन तपासत आहे</translation>
 <translation id="2048182445208425546">तुमच्या नेटवर्क रहदारी ॲक्सेस करा</translation>
-<translation id="2048243703055695889"><ph name="USER_EMAIL" /> च्‍या '<ph name="DEVICE_NAME" />' या डिव्‍हाइससाठी Nearby सह शेअरिंग ची सेटिंग्ज.</translation>
 <translation id="2048653237708779538">कृती उपलब्ध नाही</translation>
 <translation id="204914487372604757">शॉर्टकट तयार करा </translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
@@ -1103,7 +1100,6 @@
 <translation id="2262477216570151239">पुनरावृत्तीपूर्वी विलंब</translation>
 <translation id="2263189956353037928">साइन आउट करून परत साइन इन करा</translation>
 <translation id="2263371730707937087">स्क्रीन रिफ्रेश रेट</translation>
-<translation id="2263497240924215535">(अक्षम)</translation>
 <translation id="22665427234727190">साइटला ब्लूटूथ डिव्हाइस अ‍ॅक्सेस करायची असतील तेव्हा विचारा (शिफारस केलेले)</translation>
 <translation id="2266957463645820432">USB (IPPUSB) वर IPP</translation>
 <translation id="2270450558902169558"><ph name="DOMAIN" /> डोमेनमध्ये कोणत्याही डिव्हाइससह डेटा अदलाबदल करा</translation>
@@ -2288,7 +2284,6 @@
 <translation id="3674840410592648165">साइट पेमेंट हँडलर इंस्टॉल करू शकतात (शिफारस केलेले)</translation>
 <translation id="367645871420407123">तुम्ही डीफॉल्ट चाचणी इमेज मूल्यामध्ये मूळ पासवर्ड सेट करू इच्छित असल्यास रिक्त सोडा</translation>
 <translation id="3677106374019847299">कस्टम पुरवठादार एंटर करा</translation>
-<translation id="3677657024345889897">सर्वात शांत</translation>
 <translation id="3677911431265050325">मोबाइल साइटची विनंती करा</translation>
 <translation id="3677959414150797585">अ‍ॅप्स, वेबपेज आणि बऱ्याच गोष्टींचा समावेश आहे. तुम्ही जर वापर डेटा शेअर करण्याचे निवडले असेल तरच सूचनांमध्ये सुधारणा करण्यासाठी आकडेवारी पाठवते.</translation>
 <translation id="3678156199662914018">एक्स्टेंशनः <ph name="EXTENSION_NAME" /></translation>
@@ -2477,7 +2472,6 @@
 <translation id="3867944738977021751">सर्टिफिकेट फील्ड</translation>
 <translation id="3869917919960562512">चुकीची अनुक्रमणिका</translation>
 <translation id="3870931306085184145"><ph name="DOMAIN" /> साठी सेव्ह केलेले पासवर्ड नाहीत</translation>
-<translation id="3871092408932389764">सर्वात कमी</translation>
 <translation id="3871350334636688135">२४ तासानंतर, तुमचा अ‍ॅडमिनिस्ट्रेटर एक वेळ अपडेट करेल जो तुम्ही तुमचे डिव्हाइस रीस्टार्ट कराल तेव्हा तुमचा स्थानिक डेटा हटवेल. तुम्हाला क्लाउड स्टोरेजसाठी आवश्यक असलेला कोणताही स्थानिक डेटा २४ तासांच्या आत सेव्ह करा.</translation>
 <translation id="3872220884670338524">आणखी कृती, <ph name="USERNAME" /> साठीचे खाते <ph name="DOMAIN" /> वर सेव्ह केले</translation>
 <translation id="3872991219937722530">डिस्क स्थान मोकळे करा अन्यथा डिव्हाइस अप्रतिसादात्मक बनेल.</translation>
@@ -4233,7 +4227,6 @@
 <translation id="6025215716629925253">स्टॅक ट्रेस</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB डिव्हाइस कनेक्ट केले</translation>
 <translation id="6028117231645531007">फिंगरप्रिंट जोडा</translation>
-<translation id="6029587122245504742">सर्वात धीमे</translation>
 <translation id="6029594605736587274">ब्लॉक केलेली <ph name="PERMISSION" /></translation>
 <translation id="6031600495088157824">टूलबारमध्ये इनपुट पर्याय</translation>
 <translation id="6032715498678347852">या साइटला एक्स्टेंशन अ‍ॅक्सेस देण्यासाठी, त्यावर क्लिक करा.</translation>
@@ -4527,7 +4520,6 @@
 <translation id="6349101878882523185"><ph name="APP_NAME" /> इंस्टॉल करा</translation>
 <translation id="6349170655202535379">सिंक कार्य करत नाही. साइन आउट करून पुन्हा साइन इन करून पहा.</translation>
 <translation id="6351063337294363751">तुम्ही या मेनूमधून तुमचा ब्राउझिंग डेटा साफ करू शकता</translation>
-<translation id="6352773953037195952">सर्वोच्च</translation>
 <translation id="6354918092619878358">SECG एल्लिपटिक कर्व्ह secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">डिव्हाइस सुरू ठेवा</translation>
 <translation id="63566973648609420">फक्त तुमचा सांकेतिक पासफ्रेझ असलेली एखादी व्यक्ती तुमचा एंक्रिप्ट केलेला डेटा वाचू शकते. सांकेतिक पासफ्रेझ Google कडे पाठविला किंवा त्याद्वारे स्टोअर केला जात नाही.  तुमचा सांकेतिक पासफ्रेझ विसरल्यास किंवा हे सेटिंग बदलू इच्छित असल्यास, तुम्हाला <ph name="BEGIN_LINK" />सिंक रीसेट करण्याची आवश्यकता असेल<ph name="END_LINK" />.</translation>
@@ -5292,6 +5284,7 @@
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{हे अ‍ॅप्लिकेशन Chrome ला योग्यरीत्या कार्य करण्यापासून रोखू शकते.}other{हे अ‍ॅप्लिकेशन Chrome ला योग्यरीत्या कार्य करण्यापासून रोखू शकते.}}</translation>
 <translation id="7303281435234579599">अरेरे! डेमो मोड सेट करताना काहीतरी चूक झाली.</translation>
 <translation id="7303900363563182677">या साइटला क्लिपबोर्डवर कॉपी केलेला मजकूर आणि इमेज पाहण्यापासून ब्लॉक केले आहे</translation>
+<translation id="7304030187361489308">उच्च</translation>
 <translation id="7305123176580523628">USB प्रिंटर कनेक्ट केला आहे</translation>
 <translation id="730515362922783851">स्थानिक नेटवर्क किंवा इंटरनेटवरील कोणत्याही डिव्हाइससह डेटा अदलाबदल करा</translation>
 <translation id="7306521477691455105"><ph name="USB_DEVICE_NAME" /> ला <ph name="USB_VM_NAME" /> शी कनेक्ट करण्यासाठी सेटिंग्ज उघडा</translation>

@@ -23,7 +23,6 @@
 <translation id="1587325591171447154">Plik <ph name="FILE_NAME" /> jest niebezpieczny, dlatego został zablokowany przez Chrome.</translation>
 <translation id="1597911401261118146">Aby sprawdzić, czy Twoje hasła są chronione przed naruszeniami bezpieczeństwa danych i innymi zagrożeniami tego typu, <ph name="BEGIN_LINK" />zaloguj się w Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Aby poprawić bezpieczeństwo Chrome, wyłączyliśmy to rozszerzenie. Nie jest ono dostępne w <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i mogło zostać dodane bez Twojej wiedzy.</translation>
-<translation id="162448658176061655">Raz w tygodniu Chrome sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: przed chwilą.</translation>
 <translation id="162629503687514352">System operacyjny Chrome nie może zsynchronizować haseł.</translation>
 <translation id="1628000112320670027">Pomoc do Chrome</translation>
 <translation id="1662639173275167396">Opracowanie systemu operacyjnego Chrome było możliwe dzięki dodatkowemu <ph name="BEGIN_LINK_CROS_OSS" />oprogramowaniu open source<ph name="END_LINK_CROS_OSS" />. To samo dotyczy funkcji <ph name="BEGIN_LINK_LINUX_OSS" />Linux (Beta)<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -143,7 +142,6 @@
 <translation id="4771048833395599659">Ten plik może być niebezpieczny, dlatego został zablokowany przez Chrome.</translation>
 <translation id="479167709087336770">Będzie stosowany ten sam mechanizm sprawdzania pisowni, który jest używany w wyszukiwarce Google. Tekst wpisywany w przeglądarce jest wysyłany do Google. Zawsze możesz to zmienić w ustawieniach.</translation>
 <translation id="4891791193823137474">Zezwalaj przeglądarce Google Chrome na działanie w tle</translation>
-<translation id="489337168347244450">{NUM_DAYS,plural, =1{Raz w tygodniu Chrome sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: 1 dzień temu.}few{Raz w tygodniu Chrome sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_DAYS} dni temu.}many{Raz w tygodniu Chrome sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_DAYS} dni temu.}other{Raz w tygodniu Chrome sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_DAYS} dnia temu.}}</translation>
 <translation id="4895437082222824641">O&amp;twórz link w nowej karcie Chrome</translation>
 <translation id="4953650215774548573">Ustaw Google Chrome jako domyślną przeglądarkę</translation>
 <translation id="495931528404527476">W Chrome</translation>
@@ -184,7 +182,6 @@
 <translation id="6291549208091401781">Google Chrome jest już zainstalowany dla wszystkich użytkowników tego komputera.</translation>
 <translation id="6338556085225130112">Aktualizuję Google Chrome</translation>
 <translation id="6368958679917195344">Opracowanie systemu operacyjnego Chrome było możliwe dzięki dodatkowemu <ph name="BEGIN_LINK_CROS_OSS" />oprogramowaniu typu open source<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="6454142105866844106">Raz w tygodniu Chrome sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6566149418543181476">Aktualizuję Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6676384891291319759">Skorzystaj z internetu</translation>
@@ -203,13 +200,11 @@
 <translation id="7106741999175697885">Menedżer zadań – Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Dostępna jest aktualizacja Chrome, która zostanie zastosowana natychmiast po ponownym uruchomieniu aplikacji.}=1{Dostępna jest aktualizacja Chrome, która zostanie zastosowana natychmiast po ponownym uruchomieniu aplikacji. Okno incognito nie otworzy się ponownie.}few{Dostępna jest aktualizacja Chrome, która zostanie zastosowana natychmiast po ponownym uruchomieniu aplikacji. # okna incognito nie otworzą się ponownie.}many{Dostępna jest aktualizacja Chrome, która zostanie zastosowana natychmiast po ponownym uruchomieniu aplikacji. # okien incognito nie otworzy się ponownie.}other{Dostępna jest aktualizacja Chrome, która zostanie zastosowana natychmiast po ponownym uruchomieniu aplikacji. # okna incognito nie otworzy się ponownie.}}</translation>
 <translation id="7155997830309522122">Jeśli tak, zaktualizuj je w Chrome, by zapisane hasło było takie samo.</translation>
-<translation id="7236955538461508933">{NUM_HOURS,plural, =1{Raz w tygodniu Chrome sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: godzinę temu.}few{Raz w tygodniu Chrome sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_HOURS} godziny temu.}many{Raz w tygodniu Chrome sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_HOURS} godzin temu.}other{Raz w tygodniu Chrome sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_HOURS} godziny temu.}}</translation>
 <translation id="7242029209006116544">Logujesz się na zarządzane konto i przekazujesz jego administratorowi kontrolę nad swoim profilem Google Chrome. Twoje dane Chrome, takie jak aplikacje, zakładki, historia, hasła i inne ustawienia, zostaną trwale powiązane z użytkownikiem <ph name="USER_NAME" />. Będzie można je usunąć w Panelu kont Google, ale nie będzie można ich powiązać z innym kontem. Możesz też utworzyć nowy profil, by przechowywać swoje dotychczasowe dane Chrome osobno. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Ten język jest używany do wyświetlania UI Google Chrome</translation>
 <translation id="7296210096911315575">Ważne informacje dotyczące użytkowania i bezpieczeństwa</translation>
 <translation id="7308322188646931570">Chrome musi mieć dostęp do pamięci, by pobierać pliki</translation>
 <translation id="7339898014177206373">Nowe okno</translation>
-<translation id="7386132805935307836">Raz w tygodniu Chrome sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: wczoraj.</translation>
 <translation id="7398801000654795464">Byłeś zalogowany w Chrome jako <ph name="USER_EMAIL_ADDRESS" />. Zaloguj się ponownie, korzystając z tego samego konta.</translation>
 <translation id="7408085963519505752">Warunki korzystania z Chrome OS</translation>
 <translation id="7419046106786626209">System operacyjny Chrome nie może zsynchronizować danych, ponieważ synchronizacja jest niedostępna w Twojej domenie.</translation>
@@ -244,7 +239,6 @@
 <translation id="828798499196665338">Rodzic wyłączył „Uprawnienia stron, aplikacji i rozszerzeń” dla Chrome. Włączenie elementu <ph name="EXTENSION_TYPE_PARAMETER" /> jest niedozwolone.</translation>
 <translation id="8290100596633877290">O kurczę! Przeglądarka Google Chrome uległa awarii. Uruchomić ją teraz ponownie?</translation>
 <translation id="8342675569599923794">Ten plik jest niebezpieczny, dlatego został zablokowany przez Chrome.</translation>
-<translation id="8344083974188970894">{NUM_MINS,plural, =1{Raz w tygodniu Chrome sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: minutę temu.}few{Raz w tygodniu Chrome sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_MINS} minuty temu.}many{Raz w tygodniu Chrome sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_MINS} minut temu.}other{Raz w tygodniu Chrome sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_MINS} minuty temu.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="840084489713044809">Google Chrome chce wyeksportować Twoje hasła.</translation>
 <translation id="8433638294851456451">Aby wysłać stąd numer na swój telefon z Androidem, zaloguj się w Chrome na obu urządzeniach.</translation>

@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Solo selezione</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> richiede una licenza</translation>
 <translation id="1223853788495130632">L'amministratore consiglia un valore specifico per questa impostazione.</translation>
-<translation id="1224275271335624810">Massima</translation>
 <translation id="1225177025209879837">Elaborazione della richiesta in corso...</translation>
 <translation id="1227507814927581609">Autenticazione non riuscita durante la connessione a "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1230417814058465809">È attiva la protezione standard. Per una maggiore sicurezza, utilizza la protezione avanzata.</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">Registrazione manuale</translation>
 <translation id="1668979692599483141">Ulteriori informazioni sui suggerimenti</translation>
 <translation id="1670399744444387456">Base</translation>
-<translation id="167160931442925455">Al massimo</translation>
 <translation id="1673137583248014546"><ph name="URL" /> vuole accedere a marca e modello del token di sicurezza</translation>
 <translation id="1677306805708094828">Impossibile aggiungere <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> rimanenti</translation>
@@ -919,7 +917,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">Controllo della macchina virtuale</translation>
 <translation id="2048182445208425546">Accesso al traffico di rete</translation>
-<translation id="2048243703055695889">Impostazioni di Condivisione nelle vicinanze per il dispositivo "<ph name="DEVICE_NAME" />" dell'utente <ph name="USER_EMAIL" />.</translation>
 <translation id="2048653237708779538">Azione non disponibile</translation>
 <translation id="204914487372604757">Crea scorciatoia</translation>
 <translation id="2050339315714019657">Verticale</translation>
@@ -1104,7 +1101,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2262477216570151239">Ritardo prima della ripetizione</translation>
 <translation id="2263189956353037928">Esci e accedi nuovamente</translation>
 <translation id="2263371730707937087">Frequenza di aggiornamento dello schermo</translation>
-<translation id="2263497240924215535">(Disabilitata)</translation>
 <translation id="22665427234727190">Chiedi conferma quando un sito vuole accedere ai dispositivi Bluetooth (opzione consigliata)</translation>
 <translation id="2266957463645820432">IPP over USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Scambiare dati con qualsiasi dispositivo nel dominio <ph name="DOMAIN" /></translation>
@@ -2288,7 +2284,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3674840410592648165">I siti possono installare gestori dei pagamenti (opzione consigliata)</translation>
 <translation id="367645871420407123">lascia vuoto questo campo se desideri impostare la password root sul valore dell'immagine di test predefinita</translation>
 <translation id="3677106374019847299">Inserisci un provider DNS personalizzato</translation>
-<translation id="3677657024345889897">Al minimo</translation>
 <translation id="3677911431265050325">Richiedi sito per dispositivi mobili</translation>
 <translation id="3677959414150797585">Sono incluse app, pagine web e altro. Invia statistiche per migliorare i suggerimenti solo se hai scelto di condividere i dati sull'utilizzo.</translation>
 <translation id="3678156199662914018">Estensione: <ph name="EXTENSION_NAME" /></translation>
@@ -2477,7 +2472,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3867944738977021751">Campi certificato</translation>
 <translation id="3869917919960562512">Indice errato.</translation>
 <translation id="3870931306085184145">Nessuna password salvata per <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">Minimo</translation>
 <translation id="3871350334636688135">Dopo 24 ore, il tuo amministratore eseguirà un aggiornamento una tantum che eliminerà i tuoi dati locali al riavvio del dispositivo. Salva i dati locali che ti servono nello spazio di archiviazione sul cloud entro 24 ore.</translation>
 <translation id="3872220884670338524">Altre azioni, account salvato per <ph name="USERNAME" /> su <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Libera spazio sul disco, altrimenti il dispositivo non risponderà più ai comandi.</translation>
@@ -4234,7 +4228,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6025215716629925253">Analisi dello stack</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - Dispositivo USB collegato</translation>
 <translation id="6028117231645531007">Aggiungi impronta</translation>
-<translation id="6029587122245504742">Minima</translation>
 <translation id="6029594605736587274">autorizzazione <ph name="PERMISSION" /> bloccata</translation>
 <translation id="6031600495088157824">Opzioni di immissione nella barra degli strumenti</translation>
 <translation id="6032715498678347852">Per consentire a un'estensione di accedere a questo sito, fai clic sull'estensione.</translation>
@@ -4528,7 +4521,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6349101878882523185">Installa <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">La sincronizzazione non funziona. Prova a uscire e ad accedere di nuovo.</translation>
 <translation id="6351063337294363751">Puoi cancellare i tuoi dati di navigazione da questo menu</translation>
-<translation id="6352773953037195952">Massimo</translation>
 <translation id="6354918092619878358">Curva ellittica SECG secp256r1 (anche nota come ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Tieni accesi i dispositivi</translation>
 <translation id="63566973648609420">Soltanto chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphrase non viene inviata a Google né memorizzata. Se dimentichi la passphrase o vuoi modificare questa impostazione, dovrai <ph name="BEGIN_LINK" />reimpostare la sincronizzazione<ph name="END_LINK" />.</translation>
@@ -5293,6 +5285,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Questa applicazione potrebbe impedire il corretto funzionamento di Chrome.}other{Queste applicazioni potrebbero impedire il corretto funzionamento di Chrome.}}</translation>
 <translation id="7303281435234579599">Spiacenti. Si è verificato un problema durante la configurazione della modalità demo.</translation>
 <translation id="7303900363563182677">A questo sito è stato impedito di leggere testo e immagini copiati negli appunti</translation>
+<translation id="7304030187361489308">Alto</translation>
 <translation id="7305123176580523628">Stampante USB collegata</translation>
 <translation id="730515362922783851">Scambiare dati con qualsiasi dispositivo sulla rete locale o su Internet</translation>
 <translation id="7306521477691455105">Apri le Impostazioni per collegare <ph name="USB_DEVICE_NAME" /> a <ph name="USB_VM_NAME" /></translation>

@@ -25,7 +25,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1587325591171447154">Failas „<ph name="FILE_NAME" />“ pavojingas, todėl „Chrome“ jį užblokavo.</translation>
 <translation id="1597911401261118146">Jei norite patikrinti, ar slaptažodžiai apsaugoti nuo duomenų saugos pažeidimų bei kitų saugos problemų, <ph name="BEGIN_LINK" />prisijunkite prie „Chrome“<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Kad „Chrome“ būtų saugesnė, išjungėme toliau nurodytą plėtinį, kuris nepateiktas <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> sąraše ir tikriausiai buvo pridėtas be jūsų žinios.</translation>
-<translation id="162448658176061655">Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos. Paskutinį kartą tikrinta: ką tik.</translation>
 <translation id="162629503687514352">„Chrome“ OS nepavyko sinchronizuoti jūsų slaptažodžių.</translation>
 <translation id="1628000112320670027">Gaukite pagalbos dėl „Chrome“</translation>
 <translation id="1662639173275167396">„Chrome“ OS pasiekiama naudojant papildomą <ph name="BEGIN_LINK_CROS_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_CROS_OSS" /> (kaip ir <ph name="BEGIN_LINK_LINUX_OSS" />„Linux“ (beta versija)<ph name="END_LINK_LINUX_OSS" />).</translation>
@@ -147,7 +146,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4771048833395599659">Šis failas gali būti pavojingas, todėl „Chrome“ jį užblokavo.</translation>
 <translation id="479167709087336770">Naudojamas tas pats rašybos tikrinimas kaip ir „Google“ paieškoje. Tekstas, kurį įvedate naršyklėje, nusiunčiamas „Google“. Šį veikimą visada galite pakeisti nustatymuose.</translation>
 <translation id="4891791193823137474">Paleisti „Google Chrome“ fone</translation>
-<translation id="489337168347244450">{NUM_DAYS,plural, =1{Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos. Paskutinį kartą tikrinta prieš 1 dieną.}one{Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos. Paskutinį kartą tikrinta prieš {NUM_DAYS} dieną.}few{Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos. Paskutinį kartą tikrinta prieš {NUM_DAYS} dienas.}many{Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos. Paskutinį kartą tikrinta prieš {NUM_DAYS} dienos.}other{Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos. Paskutinį kartą tikrinta prieš {NUM_DAYS} dienų.}}</translation>
 <translation id="4895437082222824641">Atidaryti nuorodą naujame „Chrome“ &amp;skirtuke</translation>
 <translation id="4953650215774548573">Nustatyti „Google Chrome“ kaip numatytąją naršyklę</translation>
 <translation id="495931528404527476">Naudojant „Chrome“</translation>
@@ -193,7 +191,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6291549208091401781">„Google Chrome“ jau įdiegta visiems kompiuterio naudotojams.</translation>
 <translation id="6338556085225130112">Atnaujinama „Google Chrome“</translation>
 <translation id="6368958679917195344">„Chrome“ OS galima naudojant papildomą <ph name="BEGIN_LINK_CROS_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="6454142105866844106">Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos</translation>
 <translation id="6515495397637126556">„<ph name="PAGE_TITLE" />“ – „Google Chrome Dev“</translation>
 <translation id="6566149418543181476">Atnaujinama „Google Chrome“ (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6676384891291319759">Interneto prieiga</translation>
@@ -212,13 +209,11 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="7106741999175697885">Užduočių tvarkytuvė – „Google Chrome“</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Pasiekiamas naujas „Chrome“ naujinys. Jis bus pritaikytas, kai paleisite „Chrome“ iš naujo.}=1{Pasiekiamas naujas „Chrome“ naujinys. Jis bus pritaikytas, kai paleisite „Chrome“ iš naujo. Inkognito langas nebus atidarytas iš naujo.}one{Pasiekiamas naujas „Chrome“ naujinys. Jis bus pritaikytas, kai paleisite „Chrome“ iš naujo. # inkognito langas nebus atidarytas iš naujo.}few{Pasiekiamas naujas „Chrome“ naujinys. Jis bus pritaikytas, kai paleisite „Chrome“ iš naujo. # inkognito langai nebus atidaryti iš naujo.}many{Pasiekiamas naujas „Chrome“ naujinys. Jis bus pritaikytas, kai paleisite „Chrome“ iš naujo. # inkognito lango nebus atidaryta iš naujo.}other{Pasiekiamas naujas „Chrome“ naujinys. Jis bus pritaikytas, kai paleisite „Chrome“ iš naujo. # inkognito langų nebus atidaryta iš naujo.}}</translation>
 <translation id="7155997830309522122">Jei taip, redaguokite išsaugotą slaptažodį naršyklėje „Chrome“, kad jis atitiktų naują.</translation>
-<translation id="7236955538461508933">{NUM_HOURS,plural, =1{Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos. Paskutinį kartą tikrinta prieš 1 valandą.}one{Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos. Paskutinį kartą tikrinta: prieš {NUM_HOURS} valandą.}few{Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos. Paskutinį kartą tikrinta: prieš {NUM_HOURS} valandas.}many{Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos. Paskutinį kartą tikrinta: prieš {NUM_HOURS} valandos.}other{Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos. Paskutinį kartą tikrinta: prieš {NUM_HOURS} valandų.}}</translation>
 <translation id="7242029209006116544">Prisijungiate su valdoma paskyra ir leidžiate jos administratoriui valdyti jūsų „Google Chrome“ profilį. „Chrome“ duomenys, pvz., programos, žymės, istorija, slaptažodžiai ir kiti nustatymai, bus visam laikui susieti su <ph name="USER_NAME" />. Galėsite ištrinti šiuos duomenis naudodami „Google“ paskyrų informacijos suvestinę, bet negalėsite susieti šių duomenų su kita paskyra. Galite pasirinktinai sukurti naują profilį, kad esami „Chrome“ duomenys būtų saugomi atskirai. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Ši kalba vartojama „Google Chrome“ NS pateikti</translation>
 <translation id="7296210096911315575">Svarbi naudojimo ir saugos informacija</translation>
 <translation id="7308322188646931570">„Chrome“ reikia prieigos prie saugyklos, kad būtų galima atsisiųsti failus</translation>
 <translation id="7339898014177206373">Naujas langas</translation>
-<translation id="7386132805935307836">Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos. Paskutinį kartą tikrinta: vakar.</translation>
 <translation id="7398801000654795464">Buvote prisijungę prie „Chrome“ kaip <ph name="USER_EMAIL_ADDRESS" />. Prisijungdami vėl naudokite tą pačią paskyrą.</translation>
 <translation id="7408085963519505752">„Chrome“ OS sąlygos</translation>
 <translation id="7419046106786626209">„Chrome“ OS negali sinchronizuoti duomenų, nes jūsų domene sinchronizavimas nepasiekiamas.</translation>
@@ -253,7 +248,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="828798499196665338">Jūsų tėvai išjungė svetainių, programų ir plėtinių leidimus sistemoje „Chrome“. Neleidžiama įgalinti šio <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Oi! „Google Chrome“ užstrigo. Paleisti iš naujo dabar?</translation>
 <translation id="8342675569599923794">Šis failas pavojingas, todėl „Chrome“ jį užblokavo.</translation>
-<translation id="8344083974188970894">{NUM_MINS,plural, =1{Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos. Paskutinį kartą tikrinta: prieš 1 minutę.}one{Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos. Paskutinį kartą tikrinta: prieš {NUM_MINS} minutę.}few{Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos. Paskutinį kartą tikrinta: prieš {NUM_MINS} minutes.}many{Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos. Paskutinį kartą tikrinta: prieš {NUM_MINS} minutės.}other{Kartą per savaitę „Chrome“ tikrina, ar nėra nepageidaujamos programinės įrangos. Paskutinį kartą tikrinta: prieš {NUM_MINS} minučių.}}</translation>
 <translation id="8370517070665726704">Autorių teisės „Google LLC.“, <ph name="YEAR" /> m. Visos teisės saugomos.</translation>
 <translation id="840084489713044809">„Google Chrome“ nori eksportuoti jūsų slaptažodžius.</translation>
 <translation id="8433638294851456451">Jei norite iš čia į „Android“ telefoną išsiųsti numerį, prisijunkite prie „Chrome“ abiejuose įrenginiuose.</translation>

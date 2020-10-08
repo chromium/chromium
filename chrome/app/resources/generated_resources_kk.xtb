@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Тек таңдау</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> үшін лицензия қажет</translation>
 <translation id="1223853788495130632">Әкімшіңіз бұл параметр үшін арнайы мәнді ұсынады.</translation>
-<translation id="1224275271335624810">Ең жылдам</translation>
 <translation id="1225177025209879837">Сұрау өңделуде…</translation>
 <translation id="1227507814927581609">"<ph name="DEVICE_NAME" />" құрылғысына қосылу кезінде аутентификация сәтсіз аяқталды.</translation>
 <translation id="1230417814058465809">Стандартты қорғаныс қосулы. Қауіпсіздікті күшейту үшін мықты қорғанысты пайдаланыңыз.</translation>
@@ -595,7 +594,6 @@
 <translation id="1668435968811469751">Қолмен тіркеу</translation>
 <translation id="1668979692599483141">Ұсыныстар туралы ақпарат</translation>
 <translation id="1670399744444387456">Негізгі</translation>
-<translation id="167160931442925455">Ең қатты</translation>
 <translation id="1673137583248014546"><ph name="URL" /> сайты Security Key құрылғысының маркасы мен үлгісін білгісі келеді</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> енгізілмеді.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> қалды</translation>
@@ -916,7 +914,6 @@
 <translation id="2046702855113914483">Рамен</translation>
 <translation id="204706822916043810">Виртуалды құрылғы тексерілуде</translation>
 <translation id="2048182445208425546">Желілік трафигіңізге кіру</translation>
-<translation id="2048243703055695889"><ph name="USER_EMAIL" /> құрылғысына арналған Nearby Share параметрлері, "<ph name="DEVICE_NAME" />".</translation>
 <translation id="2048653237708779538">Әрекет қолжетімді емес</translation>
 <translation id="204914487372604757">Таңбаша жасау</translation>
 <translation id="2050339315714019657">Портреттік</translation>
@@ -1101,7 +1098,6 @@
 <translation id="2262477216570151239">Қайталау алдында кідірту</translation>
 <translation id="2263189956353037928">Шығып, қайта кіру</translation>
 <translation id="2263371730707937087">Экранды жаңарту жиілігі</translation>
-<translation id="2263497240924215535">(Өшірілген)</translation>
 <translation id="22665427234727190">Сайт Bluetooth құрылғыларын пайдаланғысы келгенде, сізден рұқсат сұраy (ұсынылады)</translation>
 <translation id="2266957463645820432">USB арқылы IPP (IPPUSB)</translation>
 <translation id="2270450558902169558">Деректерді <ph name="DOMAIN" /> доменіндегі кез келген құрылғымен айырбастау</translation>
@@ -2286,7 +2282,6 @@
 <translation id="3674840410592648165">Сайттар төлем өңдегіштерін орната алады (ұсынылады).</translation>
 <translation id="367645871420407123">түпкі құпия сөзді әдепкі сынақ кескіні мәніне орнатқыңыз келсе, бос қалдырыңыз</translation>
 <translation id="3677106374019847299">Арнаулы провайдерді енгізу</translation>
-<translation id="3677657024345889897">Ең бәсең</translation>
 <translation id="3677911431265050325">Сайттың мобильдік нұсқасын сұрау</translation>
 <translation id="3677959414150797585">Оған қолданбалар, веб-беттер және тағы басқалар жатады. Пайдаланылуы туралы деректерді бөлісуді таңдасаңыз, ұсыныстарды жақсарту үшін статистиканы жібереді.</translation>
 <translation id="3678156199662914018">Кеңейтім: <ph name="EXTENSION_NAME" /></translation>
@@ -2475,7 +2470,6 @@
 <translation id="3867944738977021751">Сертификат өрістері</translation>
 <translation id="3869917919960562512">Қате индекс.</translation>
 <translation id="3870931306085184145"><ph name="DOMAIN" /> үшін бірде-бір құпия сөз сақталмаған</translation>
-<translation id="3871092408932389764">Ең төмен</translation>
 <translation id="3871350334636688135">24 сағаттан кейін әкімші, құрылғы қайта қосылғаннан кейін, жергілікті деректерді жоятын бір реттік жаңарту әрекетін орындайды. Кез келген қажетті жергілікті деректерді 24 сағатта бұлт жадына сақтаңыз.</translation>
 <translation id="3872220884670338524">Басқа әрекеттер, <ph name="DOMAIN" /> доменінде <ph name="USERNAME" /> үшін сақталған есептік жазба</translation>
 <translation id="3872991219937722530">Дискіде орын босатпасаңыз, құрылғы жауап бермейді.</translation>
@@ -4232,7 +4226,6 @@
 <translation id="6025215716629925253">Стекті бақылау</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB құрылғысы қосылды</translation>
 <translation id="6028117231645531007">Саусақ ізін енгізу</translation>
-<translation id="6029587122245504742">Ең баяу</translation>
 <translation id="6029594605736587274"><ph name="PERMISSION" /> бөгелді</translation>
 <translation id="6031600495088157824">Құралдар тақтасындағы енгізу опциялары</translation>
 <translation id="6032715498678347852">Кеңейтімге сайтқа кіру рұқсатын беру үшін оны басыңыз.</translation>
@@ -4526,7 +4519,6 @@
 <translation id="6349101878882523185"><ph name="APP_NAME" /> қолданбасын орнату</translation>
 <translation id="6349170655202535379">Синхрондалып жатқан жоқ. Жүйеден шығып, қайта кіріп көріңіз.</translation>
 <translation id="6351063337294363751">Осы мәзірден браузерді пайдалану деректерін өшіре аласыз</translation>
-<translation id="6352773953037195952">Ең жоғары</translation>
 <translation id="6354918092619878358">SECG эллипстік қисық сызығы secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Құрылғыны қосулы күйде ұстаңыз</translation>
 <translation id="63566973648609420">Тек құпия фразаны білетін адам ғана шифрланған деректерді оқи алады. Құпия фраза Google қызметіне жіберілмейді және онда сақталмайды. Құпия фразаны ұмытып қалған жағдайда немесе бұл параметрді өзгерткіңіз келгенде, <ph name="BEGIN_LINK" />синхрондауды бастапқы күйіне қайтару<ph name="END_LINK" /> қажет болады.</translation>
@@ -5291,6 +5283,7 @@
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Бұл қолданба Chrome браузерінің дұрыс жұмыс істеуіне кедергі келтіруі мүмкін.}other{Бұл қолданбалар Chrome браузерінің дұрыс жұмыс істеуіне кедергі келтіруі мүмкін.}}</translation>
 <translation id="7303281435234579599">Қап! Демо режимін орнату кезінде бірдеңеден қате кетті.</translation>
 <translation id="7303900363563182677">Буферге көшірілген мәтін мен кескіндер бұл сайтқа көрсетілмейді</translation>
+<translation id="7304030187361489308">Жоғары</translation>
 <translation id="7305123176580523628">USB принтері жалғанды</translation>
 <translation id="730515362922783851">Жергілікті желідегі кез келген құрылғы немесе интернет арқылы деректерді айырбастау</translation>
 <translation id="7306521477691455105"><ph name="USB_DEVICE_NAME" /> құрылғысын <ph name="USB_VM_NAME" /> құрылғысына қосу үшін параметрлерді ашыңыз.</translation>

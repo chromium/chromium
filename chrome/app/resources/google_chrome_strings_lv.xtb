@@ -23,7 +23,6 @@
 <translation id="1587325591171447154">Fails <ph name="FILE_NAME" /> ir bīstams, tādēļ Chrome to bloķēja.</translation>
 <translation id="1597911401261118146">Lai pārbaudītu, vai jūsu paroles ir aizsargātas pret datu pārkāpumiem un citām drošības problēmām, <ph name="BEGIN_LINK" />pierakstieties pārlūkā Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Lai uzlabotu Chrome drošību, mēs atspējojām tālāk norādīto paplašinājumu, kas nav norādīts vietnē <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> un iespējams, tika pievienots, jums nezinot.</translation>
-<translation id="162448658176061655">Chrome meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms neilga brīža.</translation>
 <translation id="162629503687514352">Chrome OS nevarēja sinhronizēt jūsu paroles.</translation>
 <translation id="1628000112320670027">Saņemt palīdzību par Chrome</translation>
 <translation id="1662639173275167396">Chrome OS darbību nodrošina papildu <ph name="BEGIN_LINK_CROS_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_CROS_OSS" />, tāpat kā <ph name="BEGIN_LINK_LINUX_OSS" />Linux (Beta)<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -145,7 +144,6 @@
 <translation id="4771048833395599659">Šis fails var būt bīstams, tāpēc Chrome to bloķēja.</translation>
 <translation id="479167709087336770">Šeit tiek izmantota tāds pats pareizrakstības pārbaudītājs, kāds tiek izmantots Google meklēšanā. Pārlūkprogrammā ievadītais teksts tiek nosūtīts Google serveriem. Jebkurā brīdī varat mainīt šo darbību iestatījumos.</translation>
 <translation id="4891791193823137474">Ļaut Google Chrome darboties fonā</translation>
-<translation id="489337168347244450">{NUM_DAYS,plural, =1{Chrome meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms 1 dienas.}zero{Chrome meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms {NUM_DAYS} dienām.}one{Chrome meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms {NUM_DAYS} dienas.}other{Chrome meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms {NUM_DAYS} dienām.}}</translation>
 <translation id="4895437082222824641">Atvērt saiti jaunā Chrome &amp;cilnē</translation>
 <translation id="4953650215774548573">Iestatīt Google Chrome kā manu noklusējuma pārlūku</translation>
 <translation id="495931528404527476">Pārlūkprogrammā Chrome</translation>
@@ -189,7 +187,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6291549208091401781">Pārlūks Google Chrome jau ir instalēts visiem jūsu datora lietotājiem.</translation>
 <translation id="6338556085225130112">Notiek Google Chrome atjaunināšana</translation>
 <translation id="6368958679917195344">Chrome OS ir kļuvusi iespējama, pateicoties papildu <ph name="BEGIN_LINK_CROS_OSS" />atklātā pirmkoda programmatūrai<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="6454142105866844106">Chrome meklē nevēlamu programmatūru vienreiz nedēļā.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> — Google Chrome izstrādātāju versija</translation>
 <translation id="6566149418543181476">Notiek Google Chrome atjaunināšana (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6676384891291319759">Piekļūt internetam</translation>
@@ -208,13 +205,11 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="7106741999175697885">Uzdevumu pārvaldnieks - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Pieejams Chrome atjauninājums, un tas tiks lietots, tiklīdz restartēsiet pārlūku.}=1{Pieejams Chrome atjauninājums, un tas tiks lietots, tiklīdz restartēsiet pārlūku. Jūsu inkognito režīma logs netiks atkārtoti atvērts.}zero{Pieejams Chrome atjauninājums, un tas tiks lietots, tiklīdz restartēsiet pārlūku. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}one{Pieejams Chrome atjauninājums, un tas tiks lietots, tiklīdz restartēsiet pārlūku. # jūsu inkognito režīma logs netiks atkārtoti atvērts.}other{Pieejams Chrome atjauninājums, un tas tiks lietots, tiklīdz restartēsiet pārlūku. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}}</translation>
 <translation id="7155997830309522122">Ja tā ir, lūdzu, rediģējiet saglabāto paroli pārlūkprogrammā Chrome, lai tā atbilstu jūsu jaunajai parolei.</translation>
-<translation id="7236955538461508933">{NUM_HOURS,plural, =1{Chrome meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms 1 stundas.}zero{Chrome meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms {NUM_HOURS} stundām.}one{Chrome meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms {NUM_HOURS} stundas.}other{Chrome meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms {NUM_HOURS} stundām.}}</translation>
 <translation id="7242029209006116544">Jūs pierakstāties ar pārvaldītu kontu un nodrošināt, ka tā administrators var pārvaldīt jūsu Google Chrome profilu. Jūsu Chrome dati, piemēram, lietotnes, grāmatzīmes, vēsture, paroles un citi iestatījumi tiks neatgriezeniski saistīti ar lietotāju <ph name="USER_NAME" />. Varēsiet dzēst šos datus, izmantojot Google kontu informācijas paneli, taču nevarēsiet saistīt šos datus ar citu kontu. Ja vēlaties, varat izveidot jaunu profilu, lai atsevišķi glabātu Chrome datus. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Šī valoda tiek izmantota, lai attēlotu Google Chrome lietotāja saskarni</translation>
 <translation id="7296210096911315575">Svarīga informācija par izmantošanu un drošību</translation>
 <translation id="7308322188646931570">Pārlūkam Chrome ir nepieciešama piekļuve krātuvei, lai varētu lejupielādēt failus.</translation>
 <translation id="7339898014177206373">Jauns logs</translation>
-<translation id="7386132805935307836">Chrome meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: vakar.</translation>
 <translation id="7398801000654795464">Pārlūkā Chrome iepriekš pierakstījāties kā lietotājs <ph name="USER_EMAIL_ADDRESS" />. Lai pierakstītos vēlreiz, lūdzu, izmantojiet to pašu kontu.</translation>
 <translation id="7408085963519505752">Chrome OS noteikumi</translation>
 <translation id="7419046106786626209">Chrome OS nevarēja sinhronizēt jūsu datus, jo sinhronizācija jūsu domēnā nav pieejama.</translation>
@@ -249,7 +244,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="828798499196665338">Viens no jūsu vecākiem ir izslēdzis “Atļaujas vietnēm, lietotnēm un paplašinājumiem” pārlūkam Chrome. Nav atļauts iespējot šo: <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Eh! Google Chrome ir avarējis. Vai restartēt to tūlīt?</translation>
 <translation id="8342675569599923794">Šis fails ir bīstams, tāpēc Chrome to bloķēja.</translation>
-<translation id="8344083974188970894">{NUM_MINS,plural, =1{Chrome meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms 1 minūtes.}zero{Chrome meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms {NUM_MINS} minūtēm.}one{Chrome meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms {NUM_MINS} minūtes.}other{Chrome meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms {NUM_MINS} minūtēm.}}</translation>
 <translation id="8370517070665726704">Autortiesības: <ph name="YEAR" /> Google LLC. Visas tiesības paturētas.</translation>
 <translation id="840084489713044809">Pārlūkā Google Chrome tiek mēģināts eksportēt jūsu paroles.</translation>
 <translation id="8433638294851456451">Lai nosūtītu numuru no šejienes uz savu Android tālruni, abās ierīcēs pierakstieties pārlūkā Chrome.</translation>

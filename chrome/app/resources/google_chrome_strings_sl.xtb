@@ -25,7 +25,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1587325591171447154">Datoteka <ph name="FILE_NAME" /> je nevarna, zato jo je Chrome blokiral.</translation>
 <translation id="1597911401261118146">Če želite preveriti, ali so gesla varna pred podatkovnimi kršitvami in drugimi varnostnimi težavami, <ph name="BEGIN_LINK" />se prijavite v Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Zaradi večje varnosti smo v Chromu onemogočili to razširitev, ki ni navedena tukaj in je bila morda dodana brez vaše vednosti: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
-<translation id="162448658176061655">Chrome enkrat tedensko preveri, ali je nameščena neželena programska oprema. Nazadnje preverjeno: Pravkar.</translation>
 <translation id="162629503687514352">Chrome OS ni mogel sinhronizirati gesel.</translation>
 <translation id="1628000112320670027">Pomoč za Chrome</translation>
 <translation id="1662639173275167396">OS Chrome omogoča dodatna <ph name="BEGIN_LINK_CROS_OSS" />odprtokodna programska oprema<ph name="END_LINK_CROS_OSS" />, enako kot <ph name="BEGIN_LINK_LINUX_OSS" />Linux (beta)<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -147,7 +146,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4771048833395599659">Ta datoteka je morda nevarna, zato jo je Chrome blokiral.</translation>
 <translation id="479167709087336770">Uporabljeno je isto preverjanje črkovanja kot v Iskanju Google. Besedilo, ki ga vnesete v brskalniku, je poslano Googlu. To lahko kadar koli spremenite v nastavitvah.</translation>
 <translation id="4891791193823137474">Naj se Google Chrome izvaja v ozadju</translation>
-<translation id="489337168347244450">{NUM_DAYS,plural, =1{Chrome enkrat tedensko preveri, ali je nameščena neželena programska oprema. Nazadnje preverjeno: Pred 1 dnevom.}one{Chrome enkrat tedensko preveri, ali je nameščena neželena programska oprema. Nazadnje preverjeno: Pred {NUM_DAYS} dnevom.}two{Chrome enkrat tedensko preveri, ali je nameščena neželena programska oprema. Nazadnje preverjeno: Pred {NUM_DAYS} dnevoma.}few{Chrome enkrat tedensko preveri, ali je nameščena neželena programska oprema. Nazadnje preverjeno: Pred {NUM_DAYS} dnevi.}other{Chrome enkrat tedensko preveri, ali je nameščena neželena programska oprema. Nazadnje preverjeno: Pred {NUM_DAYS} dnevi.}}</translation>
 <translation id="4895437082222824641">Odpiranje povezave na novem &amp;zavihku v Chromu</translation>
 <translation id="4953650215774548573">Nastavitev Google Chroma za privzeti brskalnik</translation>
 <translation id="495931528404527476">V Chromu</translation>
@@ -193,7 +191,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6291549208091401781">Google Chrome je že nameščen za vse uporabnike v računalniku.</translation>
 <translation id="6338556085225130112">Posodabljanje Google Chroma</translation>
 <translation id="6368958679917195344">Sistem Chrome OS uporablja dodatno <ph name="BEGIN_LINK_CROS_OSS" />odprtokodno programsko opremo<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="6454142105866844106">Chrome enkrat tedensko preveri, ali je nameščena neželena programska oprema</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> različica Google Chroma za razvijalce</translation>
 <translation id="6566149418543181476">Posodabljanje Google Chroma (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6676384891291319759">Dostop do interneta</translation>
@@ -212,13 +209,11 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="7106741999175697885">Upravitelj opravil – Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Na voljo je nova posodobitev za Chrome, ki bo nameščena, takoj ko ga znova zaženete.}=1{Na voljo je nova posodobitev za Chrome, ki bo nameščena, takoj ko ga znova zaženete. Okno brez beleženja zgodovine se ne bo znova odprlo.}one{Na voljo je nova posodobitev za Chrome, ki bo nameščena, takoj ko ga znova zaženete. # okno brez beleženja zgodovine se ne bo znova odprlo.}two{Na voljo je nova posodobitev za Chrome, ki bo nameščena, takoj ko ga znova zaženete. # okni brez beleženja zgodovine se ne bosta znova odprli.}few{Na voljo je nova posodobitev za Chrome, ki bo nameščena, takoj ko ga znova zaženete. # okna brez beleženja zgodovine se ne bodo znova odprla.}other{Na voljo je nova posodobitev za Chrome, ki bo nameščena, takoj ko ga znova zaženete. # oken brez beleženja zgodovine se ne bo znova odprlo.}}</translation>
 <translation id="7155997830309522122">Če ste ga, uredite shranjeno geslo v Chromu, da se bo ujemalo z novim geslom.</translation>
-<translation id="7236955538461508933">{NUM_HOURS,plural, =1{Chrome enkrat tedensko preveri, ali je nameščena neželena programska oprema. Nazadnje preverjeno: Pred 1 uro.}one{Chrome enkrat tedensko preveri, ali je nameščena neželena programska oprema. Nazadnje preverjeno: Pred {NUM_HOURS} uro.}two{Chrome enkrat tedensko preveri, ali je nameščena neželena programska oprema. Nazadnje preverjeno: Pred {NUM_HOURS} urama.}few{Chrome enkrat tedensko preveri, ali je nameščena neželena programska oprema. Nazadnje preverjeno: Pred {NUM_HOURS} urami.}other{Chrome enkrat tedensko preveri, ali je nameščena neželena programska oprema. Nazadnje preverjeno: Pred {NUM_HOURS} urami.}}</translation>
 <translation id="7242029209006116544">Prijavljate se z upravljanim računom in s tem njegovemu skrbniku omogočate nadzor vašega profila v Google Chromu. Vaši podatki v Chromu, kot so aplikacije, zaznamki, zgodovina, gesla in druge nastavitve, bodo postali trajno povezani z uporabnikom <ph name="USER_NAME" />. Te podatke boste lahko izbrisali z nadzorno ploščo za Google Račune, vendar jih ne boste mogli povezati z drugim računom. Če želite, lahko ustvarite nov profil, da bodo obstoječi podatki v Chromu ostali ločeni. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Ta jezik se uporablja za prikaz uporabniškega vmesnika za Google Chrome</translation>
 <translation id="7296210096911315575">Pomembne informacije glede uporabe in varnosti</translation>
 <translation id="7308322188646931570">Chrome za prenos datotek potrebuje dostop do shrambe</translation>
 <translation id="7339898014177206373">Novo okno</translation>
-<translation id="7386132805935307836">Chrome enkrat tedensko preveri, ali je nameščena neželena programska oprema. Nazadnje preverjeno: Včeraj.</translation>
 <translation id="7398801000654795464">V Chrome ste bili prijavljeni kot <ph name="USER_EMAIL_ADDRESS" />. Pri vnovični prijavi uporabite isti račun.</translation>
 <translation id="7408085963519505752">Pogoji za Chrome OS</translation>
 <translation id="7419046106786626209">Chrome OS ni mogel sinhronizirati podatkov, ker sinhronizacija ni na voljo za vašo domeno.</translation>
@@ -253,7 +248,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="828798499196665338">Tvoj starš je izklopil »Dovoljenja za spletna mesta, aplikacije in razširitve« za Chrome. Omogočanje tega ni dovoljeno: <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Opa! Google Chrome se je zrušil. Ga želite znova zagnati?</translation>
 <translation id="8342675569599923794">Ta datoteka je nevarna, zato jo je Chrome blokiral.</translation>
-<translation id="8344083974188970894">{NUM_MINS,plural, =1{Chrome enkrat tedensko preveri, ali je nameščena neželena programska oprema. Nazadnje preverjeno: Pred 1 minuto.}one{Chrome enkrat tedensko preveri, ali je nameščena neželena programska oprema. Nazadnje preverjeno: Pred {NUM_MINS} minuto.}two{Chrome enkrat tedensko preveri, ali je nameščena neželena programska oprema. Nazadnje preverjeno: Pred {NUM_MINS} minutama.}few{Chrome enkrat tedensko preveri, ali je nameščena neželena programska oprema. Nazadnje preverjeno: Pred {NUM_MINS} minutami.}other{Chrome enkrat tedensko preveri, ali je nameščena neželena programska oprema. Nazadnje preverjeno: Pred {NUM_MINS} minutami.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Vse pravice pridržane.</translation>
 <translation id="840084489713044809">Google Chrome želi izvoziti gesla.</translation>
 <translation id="8433638294851456451">Če želite poslati telefonsko številko od tukaj v telefon Android, se prijavite v Chrome v obeh napravah.</translation>

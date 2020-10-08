@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{‏Chromium מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע. בדיקה אחרונה: לפני שעה אחת.}two{‏Chromium מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע. בדיקה אחרונה: לפני {NUM_HOURS} שעות.}many{‏Chromium מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע. בדיקה אחרונה: לפני {NUM_HOURS} שעות.}other{‏Chromium מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע. בדיקה אחרונה: לפני {NUM_HOURS} שעות.}}</translation>
 <translation id="1065672644894730302">לא היתה אפשרות לקרוא את ההעדפות שלך. ייתכן שחלק מהתכונות לא יהיו זמינות ושינויים בהעדפות לא יישמרו.</translation>
 <translation id="107513968719897256">‏כדי להפריד בין גלישה אישית לגלישה של <ph name="NEW_USER" />, יש ליצור פרופיל חדש ב-Chromium</translation>
 <translation id="1098170124587656448">‏Chromium עוזר להגן עליך מפני פרצות באבטחת המידע, תוספים לא תקינים ועוד</translation>
@@ -45,7 +44,6 @@
 <translation id="2711502716910134313">‏כרטיסייה של Chromium</translation>
 <translation id="2718390899429598676">‏לשיפור האבטחה, Chromium יצפין את הנתונים.</translation>
 <translation id="2770231113462710648">שנה את דפדפן ברירת המחדל ל:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{‏Chromium מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע. בדיקה אחרונה: לפני דקה אחת.}two{‏Chromium מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע. בדיקה אחרונה: לפני {NUM_MINS} דקות.}many{‏Chromium מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע. בדיקה אחרונה: לפני {NUM_MINS} דקות.}other{‏Chromium מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע. בדיקה אחרונה: לפני {NUM_MINS} דקות.}}</translation>
 <translation id="2799223571221894425">הפעל מחדש</translation>
 <translation id="2847479871509788944">‏הסר מ-Chromium...</translation>
 <translation id="2853765747879685679">‏הצגת שאלה בפתיחה של Chromium</translation>
@@ -56,7 +54,6 @@
 <translation id="3032706164202344641">‏Chromium לא יכול לבדוק את הסיסמאות שלך. כדאי לנסות שוב מאוחר יותר.</translation>
 <translation id="3032787606318309379">‏הוספה ל-Chromium</translation>
 <translation id="3068515742935458733">‏עזור לשפר את Chromium על ידי שליחת דוחות קריסה ו-<ph name="UMA_LINK" /> אל Google</translation>
-<translation id="3086207596048762442">‏Chromium מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע</translation>
 <translation id="3103660991484857065">‏המתקין לא הצליח לבטל את דחיסת הארכיון. הורד שוב את Chromium.</translation>
 <translation id="3130323860337406239">‏Chromium משתמש במיקרופון שלך.</translation>
 <translation id="3155163173539279776">‏הפעל מחדש את Chromium</translation>
@@ -175,7 +172,6 @@
 <translation id="6847869444787758381">‏Chromium מודיע לך אם הסיסמאות שלך נמצאות בסיכון</translation>
 <translation id="6857782730669500492">‏Chromium‏ - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">‏Google Pay (‏הועתק ל-Chromium)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{‏Chromium מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע. בדיקה אחרונה: לפני יום אחד.}two{‏Chromium מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע. בדיקה אחרונה: לפני {NUM_DAYS} ימים.}many{‏Chromium מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע. בדיקה אחרונה: לפני {NUM_DAYS} ימים.}other{‏Chromium מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע. בדיקה אחרונה: לפני {NUM_DAYS} ימים.}}</translation>
 <translation id="6893813176749746474">‏Chromium עודכן, אך לא השתמשת בו לפחות 30 ימים.</translation>
 <translation id="6964305034639999644">‏פתח את הקישור בחלון &amp;גלישה בסתר של Chromium</translation>
 <translation id="6990124437352146030">‏Chromium זקוק להרשאת גישה למיקרופון בשביל האתר הזה</translation>
@@ -240,7 +236,6 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8621669128220841554">‏ההתקנה נכשלה בשל שגיאה לא מזוהה. הורד שוב את Chromium.</translation>
 <translation id="8697124171261953979">‏הגדרה זו גם קובעת איזה דף מוצג כשאתה מפעיל את Chromium או מבצע חיפוש מסרגל הכתובות.</translation>
 <translation id="8704119203788522458">‏זהו ה-Chromium שלך</translation>
-<translation id="8705191560707593947">‏Chromium מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע. בדיקה אחרונה: אתמול.</translation>
 <translation id="8796602469536043152">‏Chromium זקוק להרשאת גישה אל המצלמה והמיקרופון בשביל האתר הזה</translation>
 <translation id="8803635938069941624">‏תנאים עבור מערכת ההפעלה של Chromium</translation>
 <translation id="8821041990367117597">‏Chromium לא הצליח לסנכרן את הנתונים שלך מפני שפרטי הכניסה של חשבונך אינם מעודכנים.</translation>
@@ -256,7 +251,6 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="91086099826398415">‏פתח את הקישור &amp;בכרטיסיית Chromium חדשה</translation>
 <translation id="911206726377975832">למחוק גם את נתוני הגלישה שלך?</translation>
 <translation id="9158494823179993217">‏לפי הגדרת מנהל המערכת, Chromium יפתח דפדפן חלופי כדי לגשת אל <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="9164845895615421500">‏Chromium מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע. בדיקה אחרונה: לפני כמה רגעים.</translation>
 <translation id="9190841055450128916">‏Chromium ‏(mDNS-In)</translation>
 <translation id="93478295209880648">‏ייתכן ש-Chromium לא יפעל כראוי כי הוא כבר לא נתמך ב-Windows XP וב-Windows Vista</translation>
 <translation id="95514773681268843">‏<ph name="DOMAIN" /> דורש שתקרא ותקבל את התנאים וההגבלות הבאים לפני שתשתמש במכשיר הזה. תנאים אלה אינם מרחיבים, משנים או מגבילים את התנאים של מערכת ההפעלה של Chromium.</translation>

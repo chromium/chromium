@@ -23,7 +23,6 @@
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> berbahaya, sehingga Chrome memblokirnya.</translation>
 <translation id="1597911401261118146">Untuk memeriksa apakah sandi Anda aman dari pelanggaran data dan masalah keamanan lainnya, <ph name="BEGIN_LINK" />login ke Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Agar Chrome lebih aman, kami menonaktifkan ekstensi berikut yang tidak tercantum dalam <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dan mungkin telah ditambahkan tanpa sepengetahuan Anda.</translation>
-<translation id="162448658176061655">Chrome memeriksa software yang tidak diinginkan seminggu sekali. Terakhir diperiksa: sesaat yang lalu.</translation>
 <translation id="162629503687514352">Chrome OS tidak dapat menyinkronkan sandi Anda.</translation>
 <translation id="1628000112320670027">Dapatkan bantuan Chrome</translation>
 <translation id="1662639173275167396">Chrome OS terwujud karena adanya <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> tambahan, seperti <ph name="BEGIN_LINK_LINUX_OSS" />Linux (Beta)<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -143,7 +142,6 @@
 <translation id="4771048833395599659">File ini mungkin berbahaya, jadi Chrome telah memblokirnya.</translation>
 <translation id="479167709087336770">Tindakan ini akan menggunakan pemeriksa ejaan yang sama dengan yang digunakan di penelusuran Google. Teks yang Anda ketikkan di browser dikirim ke Google. Anda dapat mengubah perilaku ini di setelan.</translation>
 <translation id="4891791193823137474">Jalankan Google Chrome di latar belakang</translation>
-<translation id="489337168347244450">{NUM_DAYS,plural, =1{Chrome memeriksa software yang tidak diinginkan seminggu sekali. Terakhir diperiksa: 1 hari yang lalu.}other{Chrome memeriksa software yang tidak diinginkan seminggu sekali. Terakhir diperiksa: {NUM_DAYS} hari yang lalu.}}</translation>
 <translation id="4895437082222824641">Buka link di &amp;tab Chrome baru</translation>
 <translation id="4953650215774548573">Setel Google Chrome sebagai browser default Anda</translation>
 <translation id="495931528404527476">Di Chrome</translation>
@@ -185,7 +183,6 @@
 <translation id="6291549208091401781">Google Chrome sudah terpasang untuk semua pengguna di komputer Anda.</translation>
 <translation id="6338556085225130112">Memperbarui Google Chrome</translation>
 <translation id="6368958679917195344">Chrome OS terwujud karena <ph name="BEGIN_LINK_CROS_OSS" />software sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
-<translation id="6454142105866844106">Chrome memeriksa software yang tidak diinginkan seminggu sekali</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Memperbarui Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6676384891291319759">Akses Internet</translation>
@@ -204,13 +201,11 @@
 <translation id="7106741999175697885">Pengelola Tugas - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Update baru untuk Chrome telah tersedia dan akan diterapkan segera setelah diluncurkan kembali.}=1{Update baru untuk Chrome telah tersedia dan akan diterapkan segera setelah diluncurkan kembali. Jendela Samaran Anda tidak akan dibuka kembali.}other{Update baru untuk Chrome telah tersedia dan akan diterapkan segera setelah diluncurkan kembali. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
 <translation id="7155997830309522122">Jika ya, edit sandi Anda yang tersimpan di Chrome agar cocok dengan sandi baru Anda.</translation>
-<translation id="7236955538461508933">{NUM_HOURS,plural, =1{Chrome memeriksa software yang tidak diinginkan seminggu sekali. Terakhir diperiksa: 1 jam yang lalu.}other{Chrome memeriksa software yang tidak diinginkan seminggu sekali. Terakhir diperiksa: {NUM_HOURS} jam yang lalu}}</translation>
 <translation id="7242029209006116544">Anda masuk dengan akun terkelola dan memberikan administratornya kontrol atas profil Google Chrome Anda. Data Chrome Anda, seperti aplikasi, bookmark, histori, sandi, dan setelan lain selamanya akan dikaitkan ke <ph name="USER_NAME" />. Anda dapat menghapus data ini melalui Dasbor Akun Google, namun Anda tidak akan dapat mengaitkan data ini dengan akun yang lain. Anda dapat membuat profil baru secara opsional untuk menjaga agar data Chrome Anda tetap terpisah. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Bahasa ini digunakan untuk menampilkan UI Google Chrome</translation>
 <translation id="7296210096911315575">Penggunaan penting dan informasi keamanan</translation>
 <translation id="7308322188646931570">Chrome memerlukan akses penyimpanan untuk mendownload file</translation>
 <translation id="7339898014177206373">Jendela baru</translation>
-<translation id="7386132805935307836">Chrome memeriksa software yang tidak diinginkan seminggu sekali. Terakhir diperiksa: kemarin.</translation>
 <translation id="7398801000654795464">Anda telah masuk ke Chrome sebagai <ph name="USER_EMAIL_ADDRESS" />. Gunakan akun yang sama untuk masuk kembali.</translation>
 <translation id="7408085963519505752">Persyaratan Chrome OS</translation>
 <translation id="7419046106786626209">Chrome OS tidak dapat menyinkronkan data Anda karena Sinkronisasi tidak tersedia untuk domain Anda.</translation>
@@ -245,7 +240,6 @@
 <translation id="828798499196665338">Orang tuamu telah menonaktifkan "Izin untuk situs, aplikasi, dan ekstensi" untuk Chrome. Tindakan mengaktifkan <ph name="EXTENSION_TYPE_PARAMETER" /> ini tidak diizinkan.</translation>
 <translation id="8290100596633877290">Aduh! Google Chrome ngadat. Luncurkan ulang sekarang?</translation>
 <translation id="8342675569599923794">File ini berbahaya, jadi Chrome telah memblokirnya.</translation>
-<translation id="8344083974188970894">{NUM_MINS,plural, =1{Chrome memeriksa software yang tidak diinginkan seminggu sekali. Terakhir diperiksa: 1 menit yang lalu.}other{Chrome memeriksa software yang tidak diinginkan seminggu sekali. Terakhir diperiksa: {NUM_MINS} menit yang lalu.}}</translation>
 <translation id="8370517070665726704">Hak cipta <ph name="YEAR" /> Google LLC. Semua hak dilindungi undang-undang.</translation>
 <translation id="840084489713044809">Google Chrome ingin mengekspor sandi.</translation>
 <translation id="8433638294851456451">Untuk mengirimkan nomor dari sini ke ponsel Android Anda, login ke Chrome di kedua perangkat.</translation>

@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">التحديد فقط</translation>
 <translation id="1223484782328004593">يتطلّب <ph name="APP_NAME" /> ترخيصًا</translation>
 <translation id="1223853788495130632">يوصي المشرف بقيمة محددة لهذا الإعداد.</translation>
-<translation id="1224275271335624810">الأسرع</translation>
 <translation id="1225177025209879837">جارٍ معالجة الطلب...</translation>
 <translation id="1227507814927581609">تعذّرت المصادقة أثناء الاتصال بالجهاز "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1230417814058465809">الحماية العادية مفعَّلة. لزيادة مستوى الأمان، يمكنك استخدام "الحماية المُحسَّنة".</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">تسجيل يدوي</translation>
 <translation id="1668979692599483141">معرفة المزيد حول الاقتراحات</translation>
 <translation id="1670399744444387456">الإعدادات الأساسية</translation>
-<translation id="167160931442925455">المستوى الأعلى</translation>
 <translation id="1673137583248014546">يريد <ph name="URL" /> الاطّلاع على العلامة التجارية لمفتاح الأمان وطرازه.</translation>
 <translation id="1677306805708094828">يتعذّر تثبيت <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">الوقت المتبقي <ph name="TIME" /></translation>
@@ -919,7 +917,6 @@
 <translation id="2046702855113914483">رامن</translation>
 <translation id="204706822916043810">جارٍ التحقُّق من الآلة الافتراضية</translation>
 <translation id="2048182445208425546">الدخول إلى عدد زيارات شبكتك</translation>
-<translation id="2048243703055695889">إعدادات المشاركة عن قرب للجهاز "<ph name="DEVICE_NAME" />" الخاص بمستخدم حساب <ph name="USER_EMAIL" /></translation>
 <translation id="2048653237708779538">الإجراء غير متاح</translation>
 <translation id="204914487372604757">إنشاء اختصار</translation>
 <translation id="2050339315714019657">رأسي</translation>
@@ -1104,7 +1101,6 @@
 <translation id="2262477216570151239">تأخير قبل التكرار</translation>
 <translation id="2263189956353037928">الخروج وإعادة تسجيل الدخول</translation>
 <translation id="2263371730707937087">معدّل إعادة تحميل الشاشة</translation>
-<translation id="2263497240924215535">(غير مفعّل)</translation>
 <translation id="22665427234727190">طلب الإذن عند محاولة موقع إلكتروني الوصول إلى أجهزة البلوتوث (مقترَح)</translation>
 <translation id="2266957463645820432">‏بروتوكول الطباعة على الإنترنت (IPP) عبر USB (IPPUSB)</translation>
 <translation id="2270450558902169558">تبادل البيانات مع أي جهاز في النطاق <ph name="DOMAIN" /></translation>
@@ -2289,7 +2285,6 @@
 <translation id="3674840410592648165">السماح للمواقع الإلكترونية بتثبيت معالجات الدفع (مُستحسَن)</translation>
 <translation id="367645871420407123">اتركه فارغًا إذا كنت ترغب في تعيين كلمة مرور الجذر إلى قيمة صورة الاختبار التلقائية</translation>
 <translation id="3677106374019847299">إدخال مزوّد مخصّص</translation>
-<translation id="3677657024345889897">المستوى الأدنى</translation>
 <translation id="3677911431265050325">طلب موقع إلكتروني متوافق مع الأجهزة الجوَالة</translation>
 <translation id="3677959414150797585">يتضمن المحتوى المُقترح التطبيقات وصفحات الويب والمزيد. لا يتم إرسال إحصاءات لتحسين المحتوى المُقترح إلا إذا اختَرت مشاركة بيانات الاستخدام.</translation>
 <translation id="3678156199662914018">الإضافة: <ph name="EXTENSION_NAME" /></translation>
@@ -2478,7 +2473,6 @@
 <translation id="3867944738977021751">حقول الشهادة</translation>
 <translation id="3869917919960562512">فهرس خاطئ.</translation>
 <translation id="3870931306085184145">ليست هناك أي كلمات مرور محفوظة لاسم النطاق <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">الأقل</translation>
 <translation id="3871350334636688135">بعد 24 ساعة، سيجري مشرفك تحديثًا لمرة واحدة سيؤدي إلى حذف بياناتك المحلية عند إعادة تشغيل جهازك. يمكنك حفظ أي بيانات محلية تحتاج إليها وتخزينها في السحابة الإلكترونية خلال 24 ساعة.</translation>
 <translation id="3872220884670338524">المزيد من الإجراءات؛ تم حفظ الحساب الذي يحمل اسم المستخدم <ph name="USERNAME" /> على النطاق <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">احرص على تفريغ مساحة على القرص أو سيصبح الجهاز غير مستجيب.</translation>
@@ -4233,7 +4227,6 @@
 <translation id="6025215716629925253">تتبع التكديس</translation>
 <translation id="6026819612896463875">‏<ph name="WINDOW_TITLE" /> - تم توصيل جهاز USB</translation>
 <translation id="6028117231645531007">إضافة بصمة الإصبع</translation>
-<translation id="6029587122245504742">الأبطأ</translation>
 <translation id="6029594605736587274">تم حظر إذن <ph name="PERMISSION" />.</translation>
 <translation id="6031600495088157824">خيارات الإدخال في شريط الأدوات</translation>
 <translation id="6032715498678347852">للسماح للإضافة بالوصول إلى بيانات هذا الموقع الإلكتروني، انقر على الإضافة.</translation>
@@ -4528,7 +4521,6 @@
 <translation id="6349101878882523185">تثبيت <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">المزامنة لا تعمل. جرّب الخروج وتسجيل الدخول مرة أخرى.</translation>
 <translation id="6351063337294363751">يمكنك محو بيانات التصفح من هذه القائمة</translation>
-<translation id="6352773953037195952">الأعلى</translation>
 <translation id="6354918092619878358">‏منحنى SECG ناقص المقطع secp256r1‏ (aka ANSI X9.62 prime256v1‏، NIST P-256)</translation>
 <translation id="635609604405270300">يُرجى إبقاء الجهاز مشغَّلاً</translation>
 <translation id="63566973648609420">‏لا يمكن لأحد قراءة بياناتك المشفرة سوى من لديه عبارة المرور التي تستخدمها. ولا يتم إرسال عبارة المرور إلى شركة Google أو تخزينها لديها. إذا نسيت عبارة المرور أو رغبت في تغيير هذا الإعداد، فسيلزمك <ph name="BEGIN_LINK" />إعادة ضبط المزامنة<ph name="END_LINK" />.</translation>
@@ -5293,6 +5285,7 @@
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{‏قد يمنع هذا التطبيق تشغيل Chrome بشكلٍ صحيح.}zero{‏قد تمنع هذه التطبيقات تشغيل Chrome بشكلٍ صحيح.}two{‏قد يمنع هذان التطبيقان تشغيل Chrome بشكلٍ صحيح.}few{‏قد تمنع هذه التطبيقات تشغيل Chrome بشكلٍ صحيح.}many{‏قد تمنع هذه التطبيقات تشغيل Chrome بشكلٍ صحيح.}other{‏قد تمنع هذه التطبيقات تشغيل Chrome بشكلٍ صحيح.}}</translation>
 <translation id="7303281435234579599">عفوًا، لقد حدث خطأ أثناء إعداد الوضع التجريبي.</translation>
 <translation id="7303900363563182677">تم حظر هذا الموقع من الاطلاع على النصوص والصور التي تم نسخها إلى الحافظة.</translation>
+<translation id="7304030187361489308">مرتفع</translation>
 <translation id="7305123176580523628">‏تم توصيل طابعة USB</translation>
 <translation id="730515362922783851">تبادل البيانات مع أي جهاز على الشبكة المحلية أو الإنترنت</translation>
 <translation id="7306521477691455105">يُرجى الانتقال إلى "الإعدادات" لربط <ph name="USB_DEVICE_NAME" /> بنظام التشغيل <ph name="USB_VM_NAME" />.</translation>

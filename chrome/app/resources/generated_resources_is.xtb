@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Eingöngu val</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> krefst leyfis</translation>
 <translation id="1223853788495130632">Kerfisstjórinn þinn ráðleggur tiltekið gildi fyrir þessa stillingu.</translation>
-<translation id="1224275271335624810">Hraðast</translation>
 <translation id="1225177025209879837">Vinnur úr beiðni...</translation>
 <translation id="1227507814927581609">Auðkenning mistókst þegar tengst var við „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="1230417814058465809">Kveikt er á hefðbundinni vörn. Þú getur aukið öryggið með því að nota aukna vörn.</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">Skrá handvirkt</translation>
 <translation id="1668979692599483141">Kynntu þér tillögur</translation>
 <translation id="1670399744444387456">Grunnatriði</translation>
-<translation id="167160931442925455">Hæst</translation>
 <translation id="1673137583248014546"><ph name="URL" /> vill sjá gerð og útgáfu öryggislykilsins þíns</translation>
 <translation id="1677306805708094828">Ekki er hægt að bæta við <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> eftir</translation>
@@ -919,7 +917,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2046702855113914483">Ramen-núðlur</translation>
 <translation id="204706822916043810">Athugar sýndarvélina</translation>
 <translation id="2048182445208425546">Fá aðgang að netumferð</translation>
-<translation id="2048243703055695889">Stillingar nærdeilingar fyrir tækið sem <ph name="USER_EMAIL" /> á, „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="2048653237708779538">Aðgerð ekki tiltæk</translation>
 <translation id="204914487372604757">Búa til flýtileið</translation>
 <translation id="2050339315714019657">Skammsnið</translation>
@@ -1104,7 +1101,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2262477216570151239">Töf fyrir endurtekningu</translation>
 <translation id="2263189956353037928">Skrá út og skrá inn aftur</translation>
 <translation id="2263371730707937087">Endurnýjunartíðni skjás</translation>
-<translation id="2263497240924215535">(Óvirk)</translation>
 <translation id="22665427234727190">Spyrja þegar vefsvæði vill fá aðgang að Bluetooth-tækjum (ráðlagt)</translation>
 <translation id="2266957463645820432">IPP yfir USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Skiptast á gögnum við hvaða tæki sem er á léninu <ph name="DOMAIN" /></translation>
@@ -2289,7 +2285,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3674840410592648165">Vefsvæði geta sett upp greiðslumiðlara (ráðlagt)</translation>
 <translation id="367645871420407123">skildu þetta eftir autt ef þú vilt stilla rótaraðgangsorðið á sjálfgefið gildi prófunarmyndar</translation>
 <translation id="3677106374019847299">Sláðu inn sérsniðna veitu</translation>
-<translation id="3677657024345889897">Lægst</translation>
 <translation id="3677911431265050325">Biðja um vefsvæði fyrir farsíma</translation>
 <translation id="3677959414150797585">Þ.m.t. forrit, vefsíður og fleira. Sendir aðeins tölfræðiupplýsingar sem eru notaðar til að bæta tillögur ef þú hefur valið að deila notkunarupplýsingum.</translation>
 <translation id="3678156199662914018">Viðbót: <ph name="EXTENSION_NAME" /></translation>
@@ -2478,7 +2473,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3867944738977021751">Vottorðsreitir</translation>
 <translation id="3869917919960562512">Rangur vísir.</translation>
 <translation id="3870931306085184145">Engin vistuð aðgangsorð fyrir <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">Mjög lítil</translation>
 <translation id="3871350334636688135">Eftir sólarhring keyrir kerfisstjóri staka uppfærslu sem eyðir staðbundnu gögnunum þínum þegar þú endurræsir tækið þitt. Vistaðu öll mikilvæg staðbundin gögn á skýjageymslu innan sólarhrings.</translation>
 <translation id="3872220884670338524">Fleiri aðgerðir, reikningur vistaður fyrir <ph name="USERNAME" /> á <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Losaðu um geymslupláss, annars mun tækið þitt hætta að svara.</translation>
@@ -4235,7 +4229,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6025215716629925253">Staflarakning</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB-tæki er tengt</translation>
 <translation id="6028117231645531007">Bæta fingrafari við</translation>
-<translation id="6029587122245504742">Hægast</translation>
 <translation id="6029594605736587274">lokaði á <ph name="PERMISSION" /></translation>
 <translation id="6031600495088157824">Innsláttarvalkostir á tækjastiku</translation>
 <translation id="6032715498678347852">Smelltu á viðbót til að veita henni aðgang að þessu vefsvæði.</translation>
@@ -4529,7 +4522,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6349101878882523185">Setja upp <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Samstilling virkar ekki. Prófaðu að skrá þig út og inn aftur.</translation>
 <translation id="6351063337294363751">Þú getur hreinsað vefskoðunargögn í þessari valmynd</translation>
-<translation id="6352773953037195952">Mjög mikil</translation>
 <translation id="6354918092619878358">SECG sporger ferill secp256r1 (e.þ.s. ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Hafðu kveikt á tækinu</translation>
 <translation id="63566973648609420">Aðeins þeir sem vita aðgangsorðið geta lesið dulkóðuðu gögnin þín. Aðgangsorðið er ekki sent til Google eða vistað þar. Ef þú gleymir aðgangsorðinu eða þig langar að breyta þessari stillingu þarftu að <ph name="BEGIN_LINK" />endurstilla samstillingu<ph name="END_LINK" />.</translation>
@@ -5294,6 +5286,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Þetta forrit gæti komið í veg fyrir að Chrome virki rétt.}one{Þessi forrit gætu komið í veg fyrir að Chrome virki rétt.}other{Þessi forrit gætu komið í veg fyrir að Chrome virki rétt.}}</translation>
 <translation id="7303281435234579599">Úbbs! Eitthvað fór úrskeiðis þegar prufustillingin var sett upp.</translation>
 <translation id="7303900363563182677">Komið var í veg fyrir að þetta vefsvæði sjái texta og myndir sem þú afritar á klippiborðið</translation>
+<translation id="7304030187361489308">Mikil</translation>
 <translation id="7305123176580523628">USB-prentari er tengdur</translation>
 <translation id="730515362922783851">Skiptast á gögnum við hvaða tæki sem er á staðarneti eða internetinu</translation>
 <translation id="7306521477691455105">Opnaðu stillingarnar til að tengja <ph name="USB_DEVICE_NAME" /> við <ph name="USB_VM_NAME" /></translation>

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms 1 stundas.}zero{Chromium meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms {NUM_HOURS} stundām.}one{Chromium meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms {NUM_HOURS} stundas.}other{Chromium meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms {NUM_HOURS} stundām.}}</translation>
 <translation id="1065672644894730302">Jūsu preferences nevar nolasīt. Dažas funkcijas var nebūt pieejamas, un preferenču izmaiņas netiks saglabātas</translation>
 <translation id="107513968719897256">Lai atdalītu personīgo pārlūkošanu no “<ph name="NEW_USER" />” pārlūkošanas, izveidojiet jaunu Chromium profilu</translation>
 <translation id="1098170124587656448">Chromium var palīdzēt aizsargāt jūs pret datu noplūdi, ļaunprātīgiem paplašinājumiem un citiem apdraudējumiem.</translation>
@@ -45,7 +44,6 @@
 <translation id="2711502716910134313">Chromium cilne</translation>
 <translation id="2718390899429598676">Papildu drošības nolūkos Chromium šifrēs jūsu datus.</translation>
 <translation id="2770231113462710648">Mainīt noklusējuma pārlūkprogrammu uz:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromium meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms 1 minūtes.}zero{Chromium meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms {NUM_MINS} minūtēm.}one{Chromium meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms {NUM_MINS} minūtes.}other{Chromium meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms {NUM_MINS} minūtēm.}}</translation>
 <translation id="2799223571221894425">Restartēt</translation>
 <translation id="2847479871509788944">Noņemšana no pārlūka Chromium...</translation>
 <translation id="2853765747879685679">Jautāt, kad atveru pārlūku Chromium</translation>
@@ -56,7 +54,6 @@
 <translation id="3032706164202344641">Pārlūkprogrammā Chromium nevar pārbaudīt jūsu paroles. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="3032787606318309379">Notiek pievienošana pārlūkam Chromium...</translation>
 <translation id="3068515742935458733">Palīdzēt uzlabot Chromium, nosūtot Google serveriem avāriju pārskatus un <ph name="UMA_LINK" /></translation>
-<translation id="3086207596048762442">Chromium meklē nevēlamu programmatūru vienreiz nedēļā.</translation>
 <translation id="3103660991484857065">Instalēšanas programmai neizdevās atarhivēt arhīvu. Lejupielādējiet Chromium vēlreiz.</translation>
 <translation id="3130323860337406239">Pārlūkā Chromium tiek izmantots jūsu mikrofons.</translation>
 <translation id="3155163173539279776">Restartēt Chromium</translation>
@@ -177,7 +174,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="6847869444787758381">Ja jūsu paroles kādreiz tiks apdraudētas, pārlūkā Chromium saņemsiet paziņojumu</translation>
 <translation id="6857782730669500492">Chromium — <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopēts pārlūkā Chromium)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms 1 dienas.}zero{Chromium meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms {NUM_DAYS} dienām.}one{Chromium meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms {NUM_DAYS} dienas.}other{Chromium meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms {NUM_DAYS} dienām.}}</translation>
 <translation id="6893813176749746474">Pārlūks Chromium ir atjaunināts, bet jūs neesat to izmantojis vismaz 30 dienas.</translation>
 <translation id="6964305034639999644">Atvērt saiti inko&amp;gnito režīma logā</translation>
 <translation id="6990124437352146030">Pārlūkam Chromium ir nepieciešama atļauja piekļūt jūsu mikrofonam šajā vietnē.</translation>
@@ -240,7 +236,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="8621669128220841554">Instalēšana neizdevās nenoteiktas kļūdas dēļ. Lejupielādējiet pārlūku Chromium vēlreiz.</translation>
 <translation id="8697124171261953979">Tas nosaka arī to, kāda lapa tiks rādīta, kad atvērsiet pārlūku Chromium vai meklēsiet, izmantojot universālo lodziņu.</translation>
 <translation id="8704119203788522458">Šis ir jūsu Chromium</translation>
-<translation id="8705191560707593947">Chromium meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: vakar.</translation>
 <translation id="8796602469536043152">Pārlūkam Chromium ir nepieciešama atļauja piekļūt jūsu kamerai un mikrofonam šajā vietnē.</translation>
 <translation id="8803635938069941624">Chromium OS noteikumi</translation>
 <translation id="8821041990367117597">Chromium nevarēja sinhronizēt jūsu datus, jo jūsu konta pierakstīšanās informācija ir novecojusi.</translation>
@@ -256,7 +251,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="91086099826398415">Atvērt saiti jaunā Chromium &amp;cilnē</translation>
 <translation id="911206726377975832">Vai dzēst arī pārlūkošanas datus?</translation>
 <translation id="9158494823179993217">Sistēmas administrators ir konfigurējis Chromium, lai vietne <ph name="TARGET_URL_HOSTNAME" /> tiktu atvērta papildu pārlūkā.</translation>
-<translation id="9164845895615421500">Chromium meklē nevēlamu programmatūru vienreiz nedēļā. Pēdējoreiz pārbaudīts: pirms neilga brīža.</translation>
 <translation id="9190841055450128916">Chromium (mDNS ienākošie savienojumi)</translation>
 <translation id="93478295209880648">Iespējams, Chromium nedarbosies pareizi, jo tas vairs netiek atbalstīts operētājsistēmās Windows XP un Windows Vista.</translation>
 <translation id="95514773681268843">Pirms šīs ierīces lietošanas jums ir jāizlasa un jāapstiprina tālāk sniegtie domēna <ph name="DOMAIN" /> pakalpojumu sniegšanas noteikumi. Šie noteikumi nepaplašina, nepārveido vai neierobežo operētājsistēmas Chromium OS noteikumus.</translation>

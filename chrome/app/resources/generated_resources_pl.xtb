@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Tylko zaznaczenie</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> wymaga licencji</translation>
 <translation id="1223853788495130632">Administrator zaleca konkretną wartość dla tego ustawienia.</translation>
-<translation id="1224275271335624810">Najszybciej</translation>
 <translation id="1225177025209879837">Przetwarzam żądanie...</translation>
 <translation id="1227507814927581609">Podczas łączenia się z urządzeniem „<ph name="DEVICE_NAME" />” nie powiodło się uwierzytelnianie.</translation>
 <translation id="1230417814058465809">Włączona jest standardowa ochrona. Jeśli zależy Ci na większym bezpieczeństwie, użyj wzmocnionej ochrony.</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">Zarejestruj się samodzielnie</translation>
 <translation id="1668979692599483141">Więcej informacji o sugestiach</translation>
 <translation id="1670399744444387456">Podstawowe</translation>
-<translation id="167160931442925455">Najgłośniej</translation>
 <translation id="1673137583248014546"><ph name="URL" /> chce odczytać markę i model Twojego klucza bezpieczeństwa</translation>
 <translation id="1677306805708094828">Nie można dodać elementu <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Pozostało <ph name="TIME" /></translation>
@@ -915,7 +913,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">Sprawdzam maszynę wirtualną</translation>
 <translation id="2048182445208425546">Dostęp do ruchu sieciowego</translation>
-<translation id="2048243703055695889">Ustawienia udostępniania w pobliżu dla urządzenia „<ph name="DEVICE_NAME" />” użytkownika <ph name="USER_EMAIL" />.</translation>
 <translation id="2048653237708779538">Czynność niedostępna</translation>
 <translation id="204914487372604757">Utwórz skrót</translation>
 <translation id="2050339315714019657">Pionowo</translation>
@@ -1100,7 +1097,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2262477216570151239">Opóźnienie przed powtarzaniem</translation>
 <translation id="2263189956353037928">Wyloguj się i zaloguj się ponownie</translation>
 <translation id="2263371730707937087">Częstotliwość odświeżania ekranu</translation>
-<translation id="2263497240924215535">(Wyłączone)</translation>
 <translation id="22665427234727190">Pytaj, gdy strona chce uzyskać dostęp do urządzeń Bluetooth (zalecane)</translation>
 <translation id="2266957463645820432">IPP przez USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Wymiana danych z dowolnym urządzeniem w domenie <ph name="DOMAIN" /></translation>
@@ -2285,7 +2281,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3674840410592648165">Strony mogą instalować moduły obsługi płatności (zalecane)</translation>
 <translation id="367645871420407123">pozostaw puste, jeśli chcesz ustawić hasło główne na domyślną wartość obrazu testowego</translation>
 <translation id="3677106374019847299">Wpisz dostawcę niestandardowego</translation>
-<translation id="3677657024345889897">Najciszej</translation>
 <translation id="3677911431265050325">Otwórz stronę mobilną</translation>
 <translation id="3677959414150797585">Obejmuje między innymi aplikacje i strony internetowe. Wysyła statystyki, by ulepszać podpowiedzi, tylko wtedy, gdy zostało wybrane udostępnianie danych o korzystaniu.</translation>
 <translation id="3678156199662914018">Rozszerzenie: <ph name="EXTENSION_NAME" /></translation>
@@ -2474,7 +2469,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3867944738977021751">Pola certyfikatu</translation>
 <translation id="3869917919960562512">Błędny indeks.</translation>
 <translation id="3870931306085184145">Brak zapisanych haseł do <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">Najniższy</translation>
 <translation id="3871350334636688135">Za 24 godziny administrator wykona jednorazową aktualizację, która usunie Twoje dane lokalne po ponownym uruchomieniu urządzenia. Zapisz w chmurze wszystkie potrzebne dane lokalne przed upływem 24 godzin.</translation>
 <translation id="3872220884670338524">Więcej czynności, zapisane konto użytkownika <ph name="USERNAME" /> w domenie <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Zwolnij miejsce na dysku, ponieważ w przeciwnym razie urządzenie przestanie odpowiadać.</translation>
@@ -4231,7 +4225,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6025215716629925253">Zrzut stosu</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – połączono z urządzeniem USB</translation>
 <translation id="6028117231645531007">Dodaj odcisk palca</translation>
-<translation id="6029587122245504742">Najwolniej</translation>
 <translation id="6029594605736587274">zablokował(a) uprawnienie: <ph name="PERMISSION" /></translation>
 <translation id="6031600495088157824">Opcje wprowadzania na pasku narzędzi</translation>
 <translation id="6032715498678347852">Aby przyznać rozszerzeniu dostęp do tej strony, kliknij je.</translation>
@@ -4525,7 +4518,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6349101878882523185">Zainstaluj aplikację <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Synchronizacja nie działa. Wyloguj się i zaloguj się ponownie.</translation>
 <translation id="6351063337294363751">Używając tego menu, możesz wyczyścić dane przeglądania</translation>
-<translation id="6352773953037195952">Najwyższy</translation>
 <translation id="6354918092619878358">Kryptografia krzywych eliptycznych SECG secp256r1 (inne nazwy: ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Nie wyłączaj urządzenia</translation>
 <translation id="63566973648609420">Twoje zaszyfrowane dane może odczytać tylko ktoś znający hasło. Google nie otrzyma Twojego hasła ani nie będzie go przechowywać. Jeśli je zapomnisz lub zechcesz zmienić to ustawienie, musisz <ph name="BEGIN_LINK" />zresetować synchronizację<ph name="END_LINK" />.</translation>
@@ -5290,6 +5282,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Ta aplikacja może uniemożliwiać prawidłowe działanie Chrome.}few{Te aplikacje mogą uniemożliwiać prawidłowe działanie Chrome.}many{Te aplikacje mogą uniemożliwiać prawidłowe działanie Chrome.}other{Te aplikacje mogą uniemożliwiać prawidłowe działanie Chrome.}}</translation>
 <translation id="7303281435234579599">Ups! Podczas konfigurowania trybu demonstracyjnego coś poszło nie tak.</translation>
 <translation id="7303900363563182677">Ta witryna nie ma dostępu do tekstu ani obrazów skopiowanych do schowka</translation>
+<translation id="7304030187361489308">Wysoki</translation>
 <translation id="7305123176580523628">Podłączono drukarkę USB</translation>
 <translation id="730515362922783851">Wymiana danych z dowolnym urządzeniem w sieci lokalnej lub internecie</translation>
 <translation id="7306521477691455105">Otwórz Ustawienia, by połączyć urządzenie <ph name="USB_DEVICE_NAME" /> z: <ph name="USB_VM_NAME" /></translation>

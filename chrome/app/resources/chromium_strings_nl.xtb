@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium checkt één keer per week op ongewenste software. Laatst gecheckt: 1 uur geleden.}other{Chromium checkt één keer per week op ongewenste software. Laatst gecheckt: {NUM_HOURS} uur geleden.}}</translation>
 <translation id="1065672644894730302">Je voorkeuren kunnen niet worden gelezen.
 
 Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren worden niet opgeslagen.</translation>
@@ -47,7 +46,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2711502716910134313">Chromium-tabblad</translation>
 <translation id="2718390899429598676">Je gegevens worden voor extra beveiliging door Chromium gecodeerd.</translation>
 <translation id="2770231113462710648">Standaardbrowser wijzigen in:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromium checkt één keer per week op ongewenste software. Laatst gecheckt: 1 minuut geleden.}other{Chromium checkt één keer per week op ongewenste software. Laatst gecheckt: {NUM_MINS} minuten geleden.}}</translation>
 <translation id="2799223571221894425">Opnieuw starten</translation>
 <translation id="2847479871509788944">Verwijderen uit Chromium…</translation>
 <translation id="2853765747879685679">Vragen als ik Chromium open</translation>
@@ -58,7 +56,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3032706164202344641">Chromium kan je wachtwoorden niet checken. Probeer het later opnieuw.</translation>
 <translation id="3032787606318309379">Toevoegen aan Chromium...</translation>
 <translation id="3068515742935458733">Help ons Chromium te verbeteren door crashrapporten en <ph name="UMA_LINK" /> naar Google te verzenden</translation>
-<translation id="3086207596048762442">Chromium checkt één keer per week op ongewenste software</translation>
 <translation id="3103660991484857065">Het installatieprogramma kan het archief niet uitpakken. Download Chromium opnieuw.</translation>
 <translation id="3130323860337406239">Chromium gebruikt je microfoon.</translation>
 <translation id="3155163173539279776">Chromium opnieuw starten</translation>
@@ -179,7 +176,6 @@ Sommige functies zijn mogelijk niet beschikbaar. Geef een andere profieldirector
 <translation id="6847869444787758381">Chromium laat het je weten als je wachtwoorden mogelijk niet veilig meer zijn</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (gekopieerd naar Chromium)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium checkt één keer per week op ongewenste software. Laatst gecheckt: 1 dag geleden.}other{Chromium checkt één keer per week op ongewenste software. Laatst gecheckt: {NUM_DAYS} dagen geleden.}}</translation>
 <translation id="6893813176749746474">Chromium is bijgewerkt, maar je hebt het programma minstens 30 dagen niet gebruikt.</translation>
 <translation id="6964305034639999644">Link openen in een Chromium-inco&amp;gnitovenster</translation>
 <translation id="6990124437352146030">Chromium heeft toegangsrechten voor je microfoon nodig voor deze site</translation>
@@ -243,7 +239,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8621669128220841554">De installatie is mislukt wegens een onbekende fout. Download Chromium opnieuw.</translation>
 <translation id="8697124171261953979">Hiermee wordt ook gecontroleerd welke pagina wordt weergegeven wanneer je Chromium start of vanuit de omnibox zoekt.</translation>
 <translation id="8704119203788522458">Personaliseer jouw Chromium</translation>
-<translation id="8705191560707593947">Chromium checkt één keer per week op ongewenste software. Laatst gecheckt: gisteren.</translation>
 <translation id="8796602469536043152">Chromium heeft toegangsrechten voor je camera en microfoon nodig voor deze site</translation>
 <translation id="8803635938069941624">Voorwaarden van Chromium OS</translation>
 <translation id="8821041990367117597">Chromium kan je gegevens niet synchroniseren, omdat de inloggegevens voor je account zijn verouderd.</translation>
@@ -259,7 +254,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="91086099826398415">Link openen op een nieuw Chromium-&amp;tabblad</translation>
 <translation id="911206726377975832">Ook browsegegevens wissen?</translation>
 <translation id="9158494823179993217">Je systeembeheerder heeft geconfigureerd dat Chromium een alternatieve browser opent voor toegang tot <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="9164845895615421500">Chromium checkt één keer per week op ongewenste software. Laatst gecheckt: minder dan een minuut geleden.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium werkt mogelijk niet naar behoren omdat dit niet langer wordt ondersteund op Windows XP en Windows Vista</translation>
 <translation id="95514773681268843"><ph name="DOMAIN" /> vereist dat je de volgende Servicevoorwaarden leest en accepteert voordat je dit apparaat gebruikt. Deze voorwaarden zijn geen uitbreiding, aanpassing of beperking van de Voorwaarden van Chromium OS.</translation>

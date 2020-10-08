@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium haftada bir marta zararli dasturlar mavjudligini tekshiradi. Oxirgi marta: 1 soat oldin tekshirilgan.}other{Chromium haftada bir marta zararli dasturlar mavjudligini tekshiradi. Oxirgi marta: {NUM_HOURS} soat oldin tekshirilgan.}}</translation>
 <translation id="1065672644894730302">Sozlamalarni ko‘rib bo‘lmadi. Ba’zi funksiyalar mavjud emas va o‘zgartirilgan sozlamalar saqlanmaydi.</translation>
 <translation id="107513968719897256">Internetni <ph name="NEW_USER" /> bilan alohida kezish maqsadida Chromiumda yangi profil oching</translation>
 <translation id="1098170124587656448">Chromium maʼlumotlaringizni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalaydi</translation>
@@ -45,7 +44,6 @@
 <translation id="2711502716910134313">Chromium sahifasi</translation>
 <translation id="2718390899429598676">Xavfsizlik himoyasini oshirish maqsadida Chromium ma’lumotlaringizni shifrlaydi.</translation>
 <translation id="2770231113462710648">Standart brauzer etib tayinlash:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromium haftada bir marta zararli dasturlar mavjudligini tekshiradi. Oxirgi marta: 1 daqiqa oldin tekshirilgan.}other{Chromium haftada bir marta zararli dasturlar mavjudligini tekshiradi. Oxirgi marta: {NUM_MINS} daqiqa oldin tekshirilgan.}}</translation>
 <translation id="2799223571221894425">Qaytadan ishga tushirish</translation>
 <translation id="2847479871509788944">Chromium‘dan o‘chirish...</translation>
 <translation id="2853765747879685679">Chromium ochilganda soʻralsin</translation>
@@ -56,7 +54,6 @@
 <translation id="3032706164202344641">Chromium parollaringizni tekshira olmadi. Keyinroq qayta urining.</translation>
 <translation id="3032787606318309379">Chromium‘ga o‘rnatilmoqda...</translation>
 <translation id="3068515742935458733">Google‘ga ishdan chiqishlar hisoboti va <ph name="UMA_LINK" />‘ni jo‘natib Chromium yaxshilanishiga yordam berish.</translation>
-<translation id="3086207596048762442">Chromium haftada bir marta zararli dasturlar mavjudligini tekshiradi</translation>
 <translation id="3103660991484857065">O‘rnatish dasturi arxivni ajrata olmadi. Chromium’ni qayta yuklab oling.</translation>
 <translation id="3130323860337406239">Chromium mikrofondan foydalanmoqda.</translation>
 <translation id="3155163173539279776">Chromium’ni qayta ishga tushiring</translation>
@@ -175,7 +172,6 @@ Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tay
 <translation id="6847869444787758381">Parollaringiz oshkor etilsa, Chromium bu haqida xabar qiladi</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium brauzeriga nusxalandi)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium haftada bir marta zararli dasturlar mavjudligini tekshiradi. Oxirgi marta: 1 kun oldin tekshirilgan.}other{Chromium haftada bir marta zararli dasturlar mavjudligini tekshiradi. Oxirgi marta: {NUM_DAYS} kun oldin tekshirilgan.}}</translation>
 <translation id="6893813176749746474">Chromium yangilandi, lekin siz undan 30 kun davomida foydalanmadingiz.</translation>
 <translation id="6964305034639999644">Havolani Chromium &amp;inkognito oynasida ochish</translation>
 <translation id="6990124437352146030">Bu sayt mikrofoningizdan foydalanishi uchun Chromium brauzeriga ruxsat berishingiz lozim</translation>
@@ -240,7 +236,6 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8621669128220841554">O‘rnatish vaqtida kutilmagan xatolik yuz berdi. Chromium‘ni qaytadan yuklab oling.</translation>
 <translation id="8697124171261953979">Bundan tashqari kengaytma Chromium boshlash sahifasini va omniboksdagi so‘rovlar uchun foydalaniladigan birlamchi qidiruv tizimini o‘zgartirdi.</translation>
 <translation id="8704119203788522458">Bu sizning shaxsiy Chromium brauzeringiz</translation>
-<translation id="8705191560707593947">Chromium haftada bir marta zararli dasturlar mavjudligini tekshiradi. Oxirgi marta: kecha tekshirilgan.</translation>
 <translation id="8796602469536043152">Bu sayt kamera va mikrofoningizdan foydalanishi uchun Chromium brauzeriga ruxsat berishingiz lozim</translation>
 <translation id="8803635938069941624">Chromium OS shartlari</translation>
 <translation id="8821041990367117597">Chromium ma’lumotlaringizni sinxronlay olmadi, chunki hisobingiz haqidagi ma’lumotlar eskirgan.</translation>
@@ -256,7 +251,6 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="91086099826398415">Havolani yangi Chromium varaqda ochish</translation>
 <translation id="911206726377975832">Brauzer faoliyati haqidagi ma’lumotlar ham tozalansinmi?</translation>
 <translation id="9158494823179993217">Tizim administratori <ph name="TARGET_URL_HOSTNAME" /> havolasini muqobil brauzerda ochiladigan qilib sozlagan.</translation>
-<translation id="9164845895615421500">Chromium haftada bir marta zararli dasturlar mavjudligini tekshiradi. Oxirgi marta: hozirgina tekshirilgan.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium brauzeri Windows XP yoki Windows Vista tizimlarida ishlamay qolishi mumkin, chunki uning yangi versiyalarida bu tizimlar ta’minoti to‘xtatiladi</translation>
 <translation id="95514773681268843"><ph name="DOMAIN" /> bu qurilmadan foydalanishdan oldin quyidagi Xizmat shartlarini o‘qib, qabul qilishingizni talab qiladi. Bu shartlar Chromium OS shartlarini kengaytirmaydi, o‘zgartirmaydi yoki cheklamaydi.</translation>

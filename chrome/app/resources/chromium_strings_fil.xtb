@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
-<translation id="1060499346270045814">{NUM_HOURS,plural, =1{Nagsusuri ang Chromium para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: 1 oras ang nakalipas.}one{Nagsusuri ang Chromium para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: {NUM_HOURS} oras ang nakalipas.}other{Nagsusuri ang Chromium para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: {NUM_HOURS} na oras ang nakalipas.}}</translation>
 <translation id="1065672644894730302">Hindi mabasa ang iyong mga kagustuhan.
 
 Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago sa mga kagustuhan.</translation>
@@ -47,7 +46,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2711502716910134313">Tab ng Chromium</translation>
 <translation id="2718390899429598676">Para sa karagdagang seguridad, ie-encrypt ng Chromium ang iyong data.</translation>
 <translation id="2770231113462710648">Baguhin ang default na browser sa:</translation>
-<translation id="2797461000988640326">{NUM_MINS,plural, =1{Nagsusuri ang Chromium para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: 1 minuto ang nakalipas.}one{Nagsusuri ang Chromium para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: {NUM_MINS} minuto ang nakalipas.}other{Nagsusuri ang Chromium para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: {NUM_MINS} na minuto ang nakalipas.}}</translation>
 <translation id="2799223571221894425">Ilunsad Muli</translation>
 <translation id="2847479871509788944">Alisin sa Chromium...</translation>
 <translation id="2853765747879685679">Magtanong kapag binuksan ko ang Chromium</translation>
@@ -58,7 +56,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3032706164202344641">Hindi masuri ng Chromium ang iyong mga password. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="3032787606318309379">Idinaragdag sa Chromium...</translation>
 <translation id="3068515742935458733">Tumulong na gawing mas mahusay ang Chromium sa pamamagitan ng pagpapadala ng mga ulat ng pag-crash at <ph name="UMA_LINK" /> sa Google</translation>
-<translation id="3086207596048762442">Nagsusuri ang Chromium para sa hindi gustong software nang isang beses sa isang linggo</translation>
 <translation id="3103660991484857065">Nabigong i-uncompress ng installer ang archive. Mangyaring i-download muli ang Chromium.</translation>
 <translation id="3130323860337406239">Ginagamit ng Chromium ang iyong mikropono.</translation>
 <translation id="3155163173539279776">Muling ilunsad ang Chromium</translation>
@@ -179,7 +176,6 @@ Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktory
 <translation id="6847869444787758381">Ipinapaalam sa iyo ng Chromium kung nakompromiso ang mga password mo</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kinopya sa Chromium)</translation>
-<translation id="6863846675160669383">{NUM_DAYS,plural, =1{Nagsusuri ang Chromium para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: 1 araw ang nakalipas.}one{Nagsusuri ang Chromium para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: {NUM_DAYS} araw ang nakalipas.}other{Nagsusuri ang Chromium para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: {NUM_DAYS} na araw ang nakalipas.}}</translation>
 <translation id="6893813176749746474">Na-update na ang Chromium, ngunit hindi mo pa ito nagagamit sa loob ng hindi bababa sa 30 araw.</translation>
 <translation id="6964305034639999644">Buksan ang link sa inco&amp;gnito window ng Chromium</translation>
 <translation id="6990124437352146030">Kailangan ng Chromium ng pahintulot na i-access ang iyong mikropono para sa site na ito</translation>
@@ -244,7 +240,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8621669128220841554">Nabigo ang pag-install dahil sa hindi natukoy na error. Mangyaring i-download muli ang Chromium.</translation>
 <translation id="8697124171261953979">Kinokontrol din nito kung anong pahina ang ipinapakita kapag sinimulan mo ang Chromium o naghanap mula sa Omnibox.</translation>
 <translation id="8704119203788522458">Ito ang iyong Chromium</translation>
-<translation id="8705191560707593947">Nagsusuri ang Chromium para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: kahapon.</translation>
 <translation id="8796602469536043152">Kailangan ng Chromium ng pahintulot na i-access ang iyong camera at mikropono para sa site na ito</translation>
 <translation id="8803635938069941624">Mga tuntunin ng Chromium OS</translation>
 <translation id="8821041990367117597">Hindi mai-sync ng Chromium ang iyong data dahil hindi napapanahon ang mga detalye sa pag-sign in ng iyong account.</translation>
@@ -260,7 +255,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="91086099826398415">Buksan ang Link sa bagong &amp;tab ng Chromium</translation>
 <translation id="911206726377975832">Tatanggalin din ang iyong data sa pag-browse?</translation>
 <translation id="9158494823179993217">Na-configure ng iyong system administrator ang Chromium na magbukas ng alternatibong browser para i-access ang <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="9164845895615421500">Nagsusuri ang Chromium para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: kamakailan lang.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Maaaring hindi gumana nang maayos ang Chromium dahil hindi na ito sinusuportahan sa Windows XP o Windows Vista</translation>
 <translation id="95514773681268843">Kinakailangan ng <ph name="DOMAIN" /> na basahin mo at tanggapin ang sumusunod na Mga Tuntunin ng Serbisyo bago gamitin ang device na ito. Hindi pinapalawak, binabago o nililimitahan ng mga tuntuning ito ang Mga Tuntunin ng Chromium OS.</translation>

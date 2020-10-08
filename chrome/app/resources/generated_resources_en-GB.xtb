@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Selection only</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> requires a licence</translation>
 <translation id="1223853788495130632">Your administrator recommends a specific value for this setting.</translation>
-<translation id="1224275271335624810">Fastest</translation>
 <translation id="1225177025209879837">Processing request...</translation>
 <translation id="1227507814927581609">Authentication failed while connecting to "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1230417814058465809">Standard protection is on. For even more security, use enhanced protection.</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">Enrol manually</translation>
 <translation id="1668979692599483141">Learn about suggestions</translation>
 <translation id="1670399744444387456">Basic</translation>
-<translation id="167160931442925455">Loudest</translation>
 <translation id="1673137583248014546"><ph name="URL" /> wants to see the make and model of your Security Key</translation>
 <translation id="1677306805708094828">Can't add <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> left</translation>
@@ -919,7 +917,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">Checking the virtual machine</translation>
 <translation id="2048182445208425546">Access your network traffic</translation>
-<translation id="2048243703055695889">Nearby Share settings for <ph name="USER_EMAIL" />'s device, '<ph name="DEVICE_NAME" />'.</translation>
 <translation id="2048653237708779538">Action not available</translation>
 <translation id="204914487372604757">Create shortcut</translation>
 <translation id="2050339315714019657">Portrait</translation>
@@ -1104,7 +1101,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2262477216570151239">Delay before repeat</translation>
 <translation id="2263189956353037928">Sign out &amp; sign back in</translation>
 <translation id="2263371730707937087">Screen refresh rate</translation>
-<translation id="2263497240924215535">(Disabled)</translation>
 <translation id="22665427234727190">Ask when a site wants to access HID devices (recommended)</translation>
 <translation id="2266957463645820432">IPP over USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Exchange data with any device in the domain <ph name="DOMAIN" /></translation>
@@ -2289,7 +2285,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3674840410592648165">Sites can install payment handlers (recommended)</translation>
 <translation id="367645871420407123">leave empty if you want to set the root password to the default test image value</translation>
 <translation id="3677106374019847299">Enter custom provider</translation>
-<translation id="3677657024345889897">Quietest</translation>
 <translation id="3677911431265050325">Request mobile site</translation>
 <translation id="3677959414150797585">Includes apps, web pages and more. Sends statistics to improve suggestions only if you’ve chosen to share usage data.</translation>
 <translation id="3678156199662914018">Extension: <ph name="EXTENSION_NAME" /></translation>
@@ -2478,7 +2473,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3867944738977021751">Certificate Fields</translation>
 <translation id="3869917919960562512">Wrong index.</translation>
 <translation id="3870931306085184145">No saved passwords for <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">Lowest</translation>
 <translation id="3871350334636688135">After 24 hours, your administrator will perform a one-off update that will delete your local data when you restart your device. Save any local data that you need to cloud storage within 24 hours.</translation>
 <translation id="3872220884670338524">More actions, saved account for <ph name="USERNAME" /> on <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Free up disk space or device will become unresponsive.</translation>
@@ -4235,7 +4229,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6025215716629925253">Stack Trace</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB device connected</translation>
 <translation id="6028117231645531007">Add fingerprint</translation>
-<translation id="6029587122245504742">Slowest</translation>
 <translation id="6029594605736587274">blocked <ph name="PERMISSION" /></translation>
 <translation id="6031600495088157824">Input options in toolbar</translation>
 <translation id="6032715498678347852">To give an extension access to this site, click it.</translation>
@@ -4529,7 +4522,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6349101878882523185">Install <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Sync isn’t working. Try signing out and back in again.</translation>
 <translation id="6351063337294363751">You can clear your browsing data from this menu</translation>
-<translation id="6352773953037195952">Highest</translation>
 <translation id="6354918092619878358">SECG elliptic curve secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Keep device turned on</translation>
 <translation id="63566973648609420">Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you'll need to <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />.</translation>
@@ -5294,6 +5286,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{This application could prevent Chrome from working properly.}other{These applications could prevent Chrome from working properly.}}</translation>
 <translation id="7303281435234579599">Oops! Something went wrong while setting up demo mode.</translation>
 <translation id="7303900363563182677">This site has been blocked from seeing text and images copied to the clipboard</translation>
+<translation id="7304030187361489308">High</translation>
 <translation id="7305123176580523628">USB printer connected</translation>
 <translation id="730515362922783851">Exchange data with any device on the local network or Internet</translation>
 <translation id="7306521477691455105">Open Settings to connect <ph name="USB_DEVICE_NAME" /> to <ph name="USB_VM_NAME" /></translation>

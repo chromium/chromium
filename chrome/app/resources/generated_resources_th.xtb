@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">เนื้อหาที่เลือกเท่านั้น</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> ต้องมีใบอนุญาต</translation>
 <translation id="1223853788495130632">ผู้ดูแลระบบของคุณแนะนำให้ใช้ค่าเฉพาะสำหรับการตั้งค่านี้</translation>
-<translation id="1224275271335624810">เร็วที่สุด</translation>
 <translation id="1225177025209879837">กำลังดำเนินการตามคำขอ...</translation>
 <translation id="1227507814927581609">การตรวจสอบสิทธิ์ล้มเหลวขณะที่เชื่อมต่อกับ "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1230417814058465809">การปกป้องแบบมาตรฐานเปิดอยู่ ใช้การปกป้องที่ปรับปรุงแล้วเพื่อความปลอดภัยมากขึ้น</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">ลงทะเบียนด้วยตนเอง</translation>
 <translation id="1668979692599483141">ดูข้อมูลเกี่ยวกับคำแนะนำ</translation>
 <translation id="1670399744444387456">พื้นฐาน</translation>
-<translation id="167160931442925455">เสียงดังที่สุด</translation>
 <translation id="1673137583248014546"><ph name="URL" /> ต้องการดูยี่ห้อและรุ่นของคีย์ความปลอดภัย</translation>
 <translation id="1677306805708094828">เพิ่ม<ph name="EXTENSION_TYPE_PARAMETER" />ไม่ได้</translation>
 <translation id="1677472565718498478">ใช้ได้อีก <ph name="TIME" /></translation>
@@ -919,7 +917,6 @@
 <translation id="2046702855113914483">ราเม็ง</translation>
 <translation id="204706822916043810">กำลังตรวจสอบเครื่องเสมือน</translation>
 <translation id="2048182445208425546">เข้าถึงปริมาณการใช้งานเครือข่าย</translation>
-<translation id="2048243703055695889">การตั้งค่าการแชร์ใกล้เคียงสำหรับอุปกรณ์ "<ph name="DEVICE_NAME" />" ของ <ph name="USER_EMAIL" /></translation>
 <translation id="2048653237708779538">การดำเนินการไม่พร้อมให้ใช้งาน</translation>
 <translation id="204914487372604757">สร้างทางลัด</translation>
 <translation id="2050339315714019657">แนวตั้ง</translation>
@@ -1104,7 +1101,6 @@
 <translation id="2262477216570151239">หน่วงเวลาก่อนพิมพ์ซ้ำ</translation>
 <translation id="2263189956353037928">ออกจากระบบและลงชื่อเข้าใช้ใหม่</translation>
 <translation id="2263371730707937087">อัตราการรีเฟรชหน้าจอ</translation>
-<translation id="2263497240924215535">(ปิดการใช้งาน)</translation>
 <translation id="22665427234727190">ถามเมื่อเว็บไซต์ต้องการเข้าถึงอุปกรณ์บลูทูธ (แนะนำ)</translation>
 <translation id="2266957463645820432">IPP ผ่าน USB (IPPUSB)</translation>
 <translation id="2270450558902169558">แลกเปลี่ยนข้อมูลกับอุปกรณ์ในโดเมน <ph name="DOMAIN" /></translation>
@@ -2289,7 +2285,6 @@
 <translation id="3674840410592648165">เว็บไซต์ติดตั้งเครื่องจัดการการชำระเงินได้ (แนะนำ)</translation>
 <translation id="367645871420407123">เว้นว่างไว้หากคุณต้องการตั้งรหัสผ่านระดับรูทเป็นภาพทดสอบเริ่มต้น</translation>
 <translation id="3677106374019847299">ป้อนชื่อผู้ให้บริการที่กำหนดเอง</translation>
-<translation id="3677657024345889897">เสียงเบาที่สุด</translation>
 <translation id="3677911431265050325">ขอเว็บไซต์ในอุปกรณ์เคลื่อนที่</translation>
 <translation id="3677959414150797585">รวมแอป หน้าเว็บ และอื่นๆ ส่งสถิติเพื่อปรับปรุงคำแนะนำต่อเมื่อคุณเลือกที่จะแชร์ข้อมูลการใช้งาน</translation>
 <translation id="3678156199662914018">ส่วนขยาย: <ph name="EXTENSION_NAME" /></translation>
@@ -2478,7 +2473,6 @@
 <translation id="3867944738977021751">สาขาใบรับรอง</translation>
 <translation id="3869917919960562512">ดัชนีไม่ถูกต้อง</translation>
 <translation id="3870931306085184145">ไม่มีรหัสผ่านที่บันทึกไว้สำหรับ <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">ต่ำสุด</translation>
 <translation id="3871350334636688135">เมื่อผ่านไป 24 ชั่วโมง ผู้ดูแลระบบจะดำเนินการอัปเดตแบบครั้งเดียวซึ่งจะลบข้อมูลในเครื่องเมื่อคุณรีสตาร์ทอุปกรณ์ โปรดบันทึกข้อมูลในเครื่องที่คุณจำเป็นต้องใช้ลงในพื้นที่เก็บข้อมูลระบบคลาวด์ภายใน 24 ชั่วโมง</translation>
 <translation id="3872220884670338524">การดำเนินการอื่นๆ บัญชีที่บันทึกไว้ของ <ph name="USERNAME" /> ใน <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">เพิ่มพื้นที่ว่างในดิสก์ มิเช่นนั้นอุปกรณ์จะไม่ตอบสนองต่อการทำงาน</translation>
@@ -4235,7 +4229,6 @@
 <translation id="6025215716629925253">Stack Trace</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - เชื่อมต่ออุปกรณ์ USB อยู่</translation>
 <translation id="6028117231645531007">เพิ่มลายนิ้วมือ</translation>
-<translation id="6029587122245504742">ช้าที่สุด</translation>
 <translation id="6029594605736587274">บล็อกการเข้าถึง<ph name="PERMISSION" /></translation>
 <translation id="6031600495088157824">ตัวเลือกการป้อนข้อมูลในแถบเครื่องมือ</translation>
 <translation id="6032715498678347852">หากต้องการให้สิทธิ์เข้าถึงเว็บไซต์นี้แก่ส่วนขยาย ให้คลิกส่วนขยาย</translation>
@@ -4529,7 +4522,6 @@
 <translation id="6349101878882523185">ติดตั้ง <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">การซิงค์ไม่ทำงาน ลองออกจากระบบแล้วลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="6351063337294363751">คุณสามารถล้างข้อมูลการท่องเว็บจากเมนูนี้ได้</translation>
-<translation id="6352773953037195952">สูงสุด</translation>
 <translation id="6354918092619878358">SECG elliptic curve secp256r1 (เรียกอีกอย่างว่า ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">โปรดเปิดอุปกรณ์ไว้</translation>
 <translation id="63566973648609420">เฉพาะผู้ที่มีรหัสผ่านของคุณเท่านั้นจึงจะสามารถอ่านข้อมูลที่เข้ารหัสของคุณได้ Google จะไม่ส่งหรือจัดเก็บรหัสผ่านนี้ หากคุณลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ คุณจะต้อง<ph name="BEGIN_LINK" />รีเซ็ตการซิงค์<ph name="END_LINK" /></translation>
@@ -5294,6 +5286,7 @@
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{แอปพลิเคชันนี้อาจทำให้ Chrome ทำงานไม่ถูกต้อง}other{แอปพลิเคชันเหล่านี้อาจทำให้ Chrome ทำงานไม่ถูกต้อง}}</translation>
 <translation id="7303281435234579599">อ๊ะ! เกิดข้อผิดพลาดขณะตั้งค่าโหมดสาธิต</translation>
 <translation id="7303900363563182677">เว็บไซต์นี้ถูกบล็อกไม่ให้ดูข้อความและรูปภาพที่คัดลอกไปยังคลิปบอร์ด</translation>
+<translation id="7304030187361489308">สูง</translation>
 <translation id="7305123176580523628">เชื่อมต่อเครื่องพิมพ์ USB แล้ว</translation>
 <translation id="730515362922783851">แลกเปลี่ยนข้อมูลกับอุปกรณ์ที่อยู่ในเครือข่ายเฉพาะที่หรืออินเทอร์เน็ต</translation>
 <translation id="7306521477691455105">เปิดการตั้งค่าเพื่อเชื่อมต่อ <ph name="USB_DEVICE_NAME" /> กับ <ph name="USB_VM_NAME" /></translation>

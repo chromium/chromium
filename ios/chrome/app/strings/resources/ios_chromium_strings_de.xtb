@@ -32,10 +32,10 @@
 <translation id="4681781466797808448">Chromium-Scanner aktivieren</translation>
 <translation id="4787850887676698916">Hier werden Tabs angezeigt, die Sie auf Ihren anderen Geräten in Chromium geöffnet haben.</translation>
 <translation id="4828317641996116749">Chromium konnte nicht alle Passwörter prüfen. Versuchen Sie es später noch einmal.</translation>
-<translation id="4985291216379576555">Offline, Chromium kann nicht nach Updates suchen</translation>
+<translation id="4985291216379576555">Offline, Chromium kann nicht nach Aktualisierungen suchen</translation>
 <translation id="4999538639245140991">Sie melden sich von einem Konto ab, das von <ph name="SIGNOUT_MANAGED_DOMAIN" /> verwaltet wird. Dadurch werden Ihre Chromium-Daten von diesem Gerät gelöscht. Sie bleiben jedoch in Ihrem Google-Konto erhalten.</translation>
 <translation id="5224391634244552924">Keine gespeicherten Passwörter. Chromium kann Ihre Passwörter prüfen, wenn Sie sie speichern.</translation>
-<translation id="5308226104666789935">Chromium kann nicht nach Updates suchen</translation>
+<translation id="5308226104666789935">Chromium kann nicht nach Aktualisierungen suchen</translation>
 <translation id="5521125884468363740">Melden Sie sich an und aktivieren Sie die Synchronisierung, um Ihre Tabs überall dort aufzurufen, wo Sie Chromium verwenden</translation>
 <translation id="5573014823074921752">Chromium-Tipp: Wenn Sie weitere Tab-Optionen sehen möchten, berühren und halten Sie die Schaltfläche "Tabs anzeigen" in der Symbolleiste. Diese befindet sich unten oder oben auf dem Bildschirm.</translation>
 <translation id="5700709190537129682">Chromium kann Ihre Passwörter nicht prüfen</translation>
@@ -51,7 +51,7 @@
 <translation id="7099326575020694068">Chromium kann die Kamera nicht im Modus "Geteilte Ansicht" nutzen</translation>
 <translation id="7118091470949186573">Sie können jetzt Chromium jederzeit nutzen, wenn Sie in Nachrichten, Dokumenten und anderen Apps auf Links tippen.</translation>
 <translation id="7208566199746267865">Mit Chromium sparen Sie Zeit, da Sie Ihre Konten im Web verwenden können. In den Einstellungen haben Sie die Möglichkeit, Konten hinzuzufügen oder zu entfernen.</translation>
-<translation id="725427773388857052">Chromium kann dazu beitragen, Sie beispielsweise vor Datenpannen und unsicheren Websites zu schützen</translation>
+<translation id="725427773388857052">Chromium kann helfen, Sie vor Bedrohungen wie Datenpannen und schädlichen Erweiterungen zu schützen</translation>
 <translation id="7269362888766543920">Einige Add-ons führen zum Ausfall von Chromium. Bitte deinstallieren Sie diese Add-ons.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Die ausgewählten Daten wurden aus Chromium und von allen synchronisierten Geräten entfernt. Eventuell finden Sie unter history.google.com weitere Arten von Browserverlaufsdaten wie Suchanfragen oder Aktivitäten anderer Google-Dienste für Ihr Google-Konto.</translation>

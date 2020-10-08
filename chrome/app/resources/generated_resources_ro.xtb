@@ -202,7 +202,6 @@
 <translation id="1221825588892235038">Numai elementele selectate</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> necesită licență</translation>
 <translation id="1223853788495130632">Administratorul dvs. recomandă o valoare specifică pentru această setare.</translation>
-<translation id="1224275271335624810">Cea mai rapidă</translation>
 <translation id="1225177025209879837">Se procesează solicitarea...</translation>
 <translation id="1227507814927581609">Autentificarea nu a reușit în timpul conectării la „<ph name="DEVICE_NAME" />”.</translation>
 <translation id="1230417814058465809">Protecția standard este activată. Pentru securitate sporită, folosește protecția îmbunătățită.</translation>
@@ -598,7 +597,6 @@
 <translation id="1668435968811469751">Înregistrează-te manual</translation>
 <translation id="1668979692599483141">Află mai multe despre sugestii</translation>
 <translation id="1670399744444387456">De bază</translation>
-<translation id="167160931442925455">Cel mai tare</translation>
 <translation id="1673137583248014546"><ph name="URL" /> dorește să vadă marca și modelul cheii de securitate</translation>
 <translation id="1677306805708094828">Nu s-a putut adăuga <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Timp rămas: <ph name="TIME" /></translation>
@@ -919,7 +917,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2046702855113914483">Supă ramen</translation>
 <translation id="204706822916043810">Se verifică mașina virtuală</translation>
 <translation id="2048182445208425546">Accesează traficul de rețea</translation>
-<translation id="2048243703055695889">Setările Nearby Share pentru dispozitivul utilizatorului <ph name="USER_EMAIL" />, „<ph name="DEVICE_NAME" />”.</translation>
 <translation id="2048653237708779538">Acțiunea nu este disponibilă</translation>
 <translation id="204914487372604757">Creează o comandă rapidă</translation>
 <translation id="2050339315714019657">Portret</translation>
@@ -1104,7 +1101,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2262477216570151239">Durată înainte de repetare</translation>
 <translation id="2263189956353037928">Deconectează-te și reconectează-te</translation>
 <translation id="2263371730707937087">Rata de actualizare a ecranului</translation>
-<translation id="2263497240924215535">(dezactivat)</translation>
 <translation id="22665427234727190">Anunță-mă dacă un site vrea să acceseze dispozitive Bluetooth (recomandat)</translation>
 <translation id="2266957463645820432">IPP prin USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Fă schimb de date cu orice dispozitiv din domeniul <ph name="DOMAIN" /></translation>
@@ -2289,7 +2285,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3674840410592648165">Site-urile pot instala handlere pentru plăți (recomandat)</translation>
 <translation id="367645871420407123">nu completa dacă dorești să setezi parola directorului rădăcină la valoarea prestabilită a imaginii de test</translation>
 <translation id="3677106374019847299">Introdu un furnizor personalizat</translation>
-<translation id="3677657024345889897">Cel mai încet</translation>
 <translation id="3677911431265050325">Solicită site mobil</translation>
 <translation id="3677959414150797585">Include aplicații, pagini web și altele. Trimite statistici pentru a îmbunătăți sugestiile numai dacă ai ales să permiți accesul la datele de utilizare.</translation>
 <translation id="3678156199662914018">Extensie: <ph name="EXTENSION_NAME" /></translation>
@@ -2478,7 +2473,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3867944738977021751">Câmpuri certificat</translation>
 <translation id="3869917919960562512">Index greșit.</translation>
 <translation id="3870931306085184145">Nu s-au salvat parole pentru <ph name="DOMAIN" /></translation>
-<translation id="3871092408932389764">Cea mai scăzută</translation>
 <translation id="3871350334636688135">După 24 de ore, administratorul va face o actualizare unică ce va șterge datele locale când repornești dispozitivul. Salvează datele locale de care ai nevoie în stocarea în cloud în cel mult 24 de ore.</translation>
 <translation id="3872220884670338524">Mai multe acțiuni, cont salvat pentru <ph name="USERNAME" /> pe <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Eliberează spațiu pe hard disk sau dispozitivul nu va mai răspunde la comenzi.</translation>
@@ -4235,7 +4229,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6025215716629925253">Urmărire stivă</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – dispozitivul USB a fost conectat</translation>
 <translation id="6028117231645531007">Adaugă amprenta</translation>
-<translation id="6029587122245504742">Cea mai lentă</translation>
 <translation id="6029594605736587274"><ph name="PERMISSION" /> a fost blocată</translation>
 <translation id="6031600495088157824">Opțiunile de introducere a textului din bara de instrumente</translation>
 <translation id="6032715498678347852">Pentru a permite accesul unei extensii la acest site, dă clic pe extensie.</translation>
@@ -4529,7 +4522,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6349101878882523185">Instalează <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">Sincronizarea nu funcționează. Deconectează-te și conectează-te din nou.</translation>
 <translation id="6351063337294363751">Poți șterge datele de navigare din acest meniu</translation>
-<translation id="6352773953037195952">Cea mai înaltă</translation>
 <translation id="6354918092619878358">Curbură eliptică SECG secp256r1 (cunoscută și sub numele de ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Păstrează dispozitivul activat</translation>
 <translation id="63566973648609420">Numai un utilizator care are expresia de acces poate citi datele criptate. Expresia de acces nu este trimisă sau stocată la Google. Dacă uiți expresia de acces sau dorești să modifici această setare, va fi necesar să <ph name="BEGIN_LINK" />resetezi sincronizarea<ph name="END_LINK" />.</translation>
@@ -5294,6 +5286,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Această aplicație poate împiedica funcționarea corectă a browserului Chrome.}few{Aceste aplicații pot împiedica funcționarea corectă a browserului Chrome.}other{Aceste aplicații pot împiedica funcționarea corectă a browserului Chrome.}}</translation>
 <translation id="7303281435234579599">Hopa! A apărut o eroare la configurarea modului demo.</translation>
 <translation id="7303900363563182677">Accesarea textului și a imaginilor copiate în clipboard de către acest site a fost blocată</translation>
+<translation id="7304030187361489308">Înaltă</translation>
 <translation id="7305123176580523628">Imprimantă USB conectată</translation>
 <translation id="730515362922783851">Fă schimb de date cu orice dispozitiv din rețeaua locală sau de pe internet</translation>
 <translation id="7306521477691455105">Deschide Setările pentru a conecta <ph name="USB_DEVICE_NAME" /> la <ph name="USB_VM_NAME" /></translation>

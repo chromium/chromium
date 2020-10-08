@@ -25,7 +25,6 @@
 <translation id="1587325591171447154"><ph name="FILE_NAME" />은(는) 위험하므로 Chrome에서 차단했습니다.</translation>
 <translation id="1597911401261118146">암호가 정보 유출 및 다른 보안 문제로부터 안전한지 확인하려면 <ph name="BEGIN_LINK" />Chrome에 로그인<ph name="END_LINK" />하세요.</translation>
 <translation id="1619887657840448962">Google에서는 Chrome의 보안을 강화하기 위해 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />에 표시되지 않고 사용자가 모르게 추가되었을 수 있는 다음 확장 프로그램의 사용을 중지했습니다.</translation>
-<translation id="162448658176061655">Chrome에서 일주일에 한 번 원치 않는 소프트웨어가 있는지 확인합니다. 최근 확인: 조금 전</translation>
 <translation id="162629503687514352">Chrome OS에서 비밀번호를 동기화할 수 없습니다.</translation>
 <translation id="1628000112320670027">Chrome 도움말 보기</translation>
 <translation id="1662639173275167396"><ph name="BEGIN_LINK_LINUX_OSS" />Linux(베타)<ph name="END_LINK_LINUX_OSS" />와 마찬가지로, Chrome OS는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
@@ -147,7 +146,6 @@
 <translation id="4771048833395599659">이 파일은 위험할 수있으므로 Chrome에서 차단했습니다.</translation>
 <translation id="479167709087336770">Google 검색과 동일한 맞춤법 검사기가 사용됩니다. 브라우저에 입력되는 텍스트는 Google로 전송됩니다. 설정에서 언제든지 이 동작을 변경할 수 있습니다.</translation>
 <translation id="4891791193823137474">백그라운드에서 Chrome을 실행</translation>
-<translation id="489337168347244450">{NUM_DAYS,plural, =1{Chrome에서 일주일에 한 번 원치 않는 소프트웨어가 있는지 확인합니다. 최근 확인: 1일 전}other{Chrome에서 일주일에 한 번 원치 않는 소프트웨어가 있는지 확인합니다. 최근 확인: {NUM_DAYS}일 전}}</translation>
 <translation id="4895437082222824641">새 Chrome 탭에서 링크 열기(&amp;T)</translation>
 <translation id="4953650215774548573">Chrome을 기본 브라우저로 설정</translation>
 <translation id="495931528404527476">Chrome</translation>
@@ -193,7 +191,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6291549208091401781">컴퓨터에 Chrome이 이미 설치되어 있으며 모든 사용자가 사용할 수 있습니다.</translation>
 <translation id="6338556085225130112">Chrome 업데이트 중</translation>
 <translation id="6368958679917195344">Chrome OS는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용했습니다.</translation>
-<translation id="6454142105866844106">Chrome에서 일주일에 한 번 원치 않는 소프트웨어가 있는지 확인합니다.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - 개발자용 Chrome</translation>
 <translation id="6566149418543181476">Chrome 업데이트 중(<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6676384891291319759">인터넷 연결</translation>
@@ -212,13 +209,11 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7106741999175697885">작업 관리자 - Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{새 Chrome 업데이트가 있습니다. Chrome을 다시 실행하면 업데이트가 바로 적용됩니다.}=1{새 Chrome 업데이트가 있습니다. Chrome을 다시 실행하면 업데이트가 바로 적용됩니다. 시크릿 창이 다시 열리지 않습니다.}other{새 Chrome 업데이트가 있습니다. Chrome을 다시 실행하면 업데이트가 바로 적용됩니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="7155997830309522122">그렇다면 Chrome에 저장된 비밀번호가 새로운 비밀번호와 일치하도록 수정해 주세요.</translation>
-<translation id="7236955538461508933">{NUM_HOURS,plural, =1{Chrome에서 일주일에 한 번 원치 않는 소프트웨어가 있는지 확인합니다. 최근 확인: 1시간 전}other{Chrome에서 일주일에 한 번 원치 않는 소프트웨어가 있는지 확인합니다. 최근 확인: {NUM_HOURS}시간 전}}</translation>
 <translation id="7242029209006116544">관리 계정으로 로그인하고 관리자에게 Chrome 프로필에 대한 제어권을 부여하려고 합니다. 앱, 북마크, 방문 기록, 비밀번호 및 기타 설정과 같은 Chrome 데이터가 <ph name="USER_NAME" /> 계정에 영구적으로 연결됩니다. 이후 이 데이터를 Google 계정 대시보드에서 삭제할 수는 있지만 다른 계정에 연결할 수는 없습니다. 기존 Chrome 데이터를 유지하려면 새 프로필을 만드는 방법이 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Chrome UI가 이 언어로 표시됩니다.</translation>
 <translation id="7296210096911315575">사용 및 안전 관련 주요 정보</translation>
 <translation id="7308322188646931570">파일을 다운로드하려면 Chrome에 저장소 액세스 권한이 있어야 합니다</translation>
 <translation id="7339898014177206373">새 창</translation>
-<translation id="7386132805935307836">Chrome에서 일주일에 한 번 원치 않는 소프트웨어가 있는지 확인합니다. 최근 확인: 어제</translation>
 <translation id="7398801000654795464"><ph name="USER_EMAIL_ADDRESS" />(으)로 Chrome에 로그인되어 있습니다. 같은 계정으로 다시 로그인해 주세요.</translation>
 <translation id="7408085963519505752">Chrome OS 이용약관</translation>
 <translation id="7419046106786626209">내 도메인에서 동기화를 사용할 수 없으므로 Chrome OS에서 데이터를 동기화하지 못했습니다.</translation>
@@ -253,7 +248,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="828798499196665338">부모님이 Chrome의 ‘사이트, 앱, 확장 프로그램에 대한 권한’을 사용 중지하셨습니다. 이 <ph name="EXTENSION_TYPE_PARAMETER" /> 사용은 허용되지 않습니다.</translation>
 <translation id="8290100596633877290">Chrome이 다운되었습니다. 다시 시작하시겠습니까?</translation>
 <translation id="8342675569599923794">이 파일은 위험하므로 Chrome에서 차단했습니다.</translation>
-<translation id="8344083974188970894">{NUM_MINS,plural, =1{Chrome에서 일주일에 한 번 원치 않는 소프트웨어가 있는지 확인합니다. 최근 확인: 1분 전}other{Chrome에서 일주일에 한 번 원치 않는 소프트웨어가 있는지 확인합니다. 최근 확인: {NUM_MINS}분 전}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="840084489713044809">Chrome에서 비밀번호를 내보내려고 합니다.</translation>
 <translation id="8433638294851456451">여기에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
