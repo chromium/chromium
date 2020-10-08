@@ -19,6 +19,9 @@ export function getSourceTypeString(mojoSourceType) {
       return 'Document Feeder (Simplex)';
     case chromeos.scanning.mojom.SourceType.kAdfDuplex:
       return 'Document Feeder (Duplex)';
+    case chromeos.scanning.mojom.SourceType.kDefault:
+      return 'Default';
+    case chromeos.scanning.mojom.SourceType.kUnknown:
     default:
       assertNotReached();
       return 'Unknown';
