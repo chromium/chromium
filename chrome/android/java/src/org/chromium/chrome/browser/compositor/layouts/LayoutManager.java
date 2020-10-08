@@ -475,9 +475,6 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
 
         // Initialize Layouts
         mStaticLayout.onFinishNativeInitialization();
-        if (mTabModelSelector == null) {
-            setTabModelSelector(selector);
-        }
 
         // Contextual Search scene overlay.
         mContextualSearchPanel = new ContextualSearchPanel(mContext, this, mOverlayPanelManager);
@@ -500,6 +497,12 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
         // Set the dynamic resource loader for all overlay panels.
         mOverlayPanelManager.setDynamicResourceLoader(dynamicResourceLoader);
         mOverlayPanelManager.setContainerView(mContentContainer);
+
+        // The {@link setTabModelSelector} should be called after all of the initialization above
+        // complete. See https://crbug.com/1132948.
+        if (mTabModelSelector == null) {
+            setTabModelSelector(selector);
+        }
     }
 
     // TODO(hanxi): Passes the TabModelSelectorSupplier in the constructor since the
