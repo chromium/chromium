@@ -834,6 +834,10 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "linux-blink-web-tests-force-accessibility-rel",
+)
+
+try_.chromium_linux_builder(
     name = "linux-clang-tidy-dbg",
     executable = "recipe:tricium_clang_tidy_wrapper",
     goma_jobs = goma.jobs.J150,

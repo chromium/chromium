@@ -370,6 +370,11 @@
           '--additional-driver-flag=--enable-features=BlinkHeapConcurrentMarking',
         ],
       },
+      'linux-blink-web-tests-force-accessibility-rel': {
+        'args': [
+          '--additional-driver-flag=--force-renderer-accessibility',
+        ],
+      },
       'linux-code-coverage': {
         'args': [
           '--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw',

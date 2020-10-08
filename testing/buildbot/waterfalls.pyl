@@ -5798,6 +5798,17 @@
           'linux-xenial',
         ],
       },
+      'linux-blink-web-tests-force-accessibility-rel': {
+        'additional_compile_targets': [
+          'blink_tests',
+        ],
+        'mixins': [
+          'linux-xenial',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+        },
+      },
       'linux-layout-tests-edit-ng': {
         'additional_compile_targets': [
           'blink_tests',
