@@ -4,7 +4,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -35,10 +34,7 @@ namespace web_app {
 
 class WebAppIconManagerBrowserTest : public InProcessBrowserTest {
  public:
-  WebAppIconManagerBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kDesktopPWAsWithoutExtensions}, {});
-  }
+  WebAppIconManagerBrowserTest() = default;
   WebAppIconManagerBrowserTest(const WebAppIconManagerBrowserTest&) = delete;
   WebAppIconManagerBrowserTest& operator=(const WebAppIconManagerBrowserTest&) =
       delete;
@@ -61,7 +57,6 @@ class WebAppIconManagerBrowserTest : public InProcessBrowserTest {
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_;
   apps::AppServiceTest app_service_test_;
 
