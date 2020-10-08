@@ -20,6 +20,12 @@ namespace {
   EXPECT_EQ(expected_count, iterator.RepeatCount());                        \
   EXPECT_EQ(expected_start + expected_count - 1, iterator.RangeTrackEnd()); \
   EXPECT_TRUE(iterator.IsRangeCollapsed());
+#define EXPECT_GRID_AREA(area, expected_row_start, expected_row_end, \
+                         expected_column_start, expected_column_end) \
+  EXPECT_EQ(area.rows.StartLine(), expected_row_start);              \
+  EXPECT_EQ(area.rows.EndLine(), expected_row_end);                  \
+  EXPECT_EQ(area.columns.StartLine(), expected_column_start);        \
+  EXPECT_EQ(area.columns.EndLine(), expected_column_end);
 }  // namespace
 class NGGridLayoutAlgorithmTest
     : public NGBaseLayoutAlgorithmTest,
@@ -64,6 +70,14 @@ class NGGridLayoutAlgorithmTest
     Vector<MinMaxSizes> results;
     for (const auto& item : algorithm.items_) {
       results.push_back(item.min_max_sizes);
+    }
+    return results;
+  }
+
+  Vector<GridArea> GridItemGridAreas(const NGGridLayoutAlgorithm& algorithm) {
+    Vector<GridArea> results;
+    for (const auto& item : algorithm.items_) {
+      results.push_back(item.resolved_position);
     }
     return results;
   }
@@ -724,6 +738,81 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesImplicitMixed) {
 
   EXPECT_RANGE(2u, 1u, row_iterator);
   EXPECT_FALSE(row_iterator.MoveToNextRange());
+}
+
+TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmAutoGridPositions) {
+  if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
+    return;
+
+  SetBodyInnerHTML(R"HTML(
+  <style>
+      body {
+        font: 10px/1 Ahem;
+      }
+      #grid {
+        display: grid;
+        width: 400px;
+        height: 400px;
+        grid-template-columns: 100px 100px;
+        grid-template-rows: 100px 100px;
+      }
+      .grid_item1 {
+        display: block;
+        width: 100px;
+        height: 100px;
+        grid-row: 2;
+        grid-column: 2;
+      }
+      .grid_item2 {
+        display: block;
+        width: 90px;
+        height: 90px;
+      }
+      .grid_item3 {
+        display: block;
+        width: 80px;
+        height: 80px;
+      }
+      .grid_item4 {
+        display: block;
+        width: 70px;
+        height: 70px;
+        grid-row: 1;
+        grid-column: 1;
+      }
+    </style>
+    <div id="wrapper">
+      <div id="grid">
+        <div class="grid_item1">1</div>
+        <div class="grid_item2">2</div>
+        <div class="grid_item3">3</div>
+        <div class="grid_item4">4</div>
+      </div>
+    </div>
+
+  )HTML");
+
+  NGBlockNode node(ToLayoutBox(GetLayoutObjectByElementId("grid")));
+
+  NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      WritingMode::kHorizontalTb, TextDirection::kLtr,
+      LogicalSize(LayoutUnit(500), LayoutUnit(500)), false, true);
+
+  NGFragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node);
+
+  NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  EXPECT_EQ(GridItemCount(algorithm), 0U);
+  algorithm.Layout();
+  EXPECT_EQ(GridItemCount(algorithm), 4U);
+
+  Vector<GridArea> grid_positions = GridItemGridAreas(algorithm);
+  ASSERT_EQ(grid_positions.size(), 4U);
+
+  EXPECT_GRID_AREA(grid_positions[0], 1U, 2U, 1U, 2U);
+  EXPECT_GRID_AREA(grid_positions[1], 0U, 1U, 1U, 2U);
+  EXPECT_GRID_AREA(grid_positions[2], 1U, 2U, 0U, 1U);
+  EXPECT_GRID_AREA(grid_positions[3], 0U, 1U, 0U, 1U);
 }
 
 TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmGridPositions) {

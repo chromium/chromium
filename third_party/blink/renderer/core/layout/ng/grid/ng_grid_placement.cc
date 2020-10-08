@@ -242,7 +242,7 @@ bool NGGridPlacement::DoesItemOverlap(wtf_size_t major_start,
     // No collision if both start and end are on the same side of the item.
     wtf_size_t item_major_start = grid_item.StartLine(major_direction_);
     wtf_size_t item_major_end = grid_item.EndLine(major_direction_);
-    if (major_end < item_major_start)
+    if (major_end <= item_major_start)
       continue;
     if (major_start >= item_major_end)
       continue;
@@ -252,7 +252,7 @@ bool NGGridPlacement::DoesItemOverlap(wtf_size_t major_start,
       continue;
     wtf_size_t item_minor_start = grid_item.StartLine(minor_direction_);
     wtf_size_t item_minor_end = grid_item.EndLine(minor_direction_);
-    if (minor_end < item_minor_start)
+    if (minor_end <= item_minor_start)
       continue;
     if (minor_start >= item_minor_end)
       continue;
