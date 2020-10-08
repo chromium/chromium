@@ -62,7 +62,7 @@ namespace trace_event_internal {
 
 // Copy of function with the same name from Perfetto client library.
 template <typename T>
-static constexpr bool IsValidTraceLambdaImpl(
+constexpr bool IsValidTraceLambdaImpl(
     typename std::enable_if<static_cast<bool>(
         sizeof(std::declval<T>()(std::declval<perfetto::EventContext>()),
                0))>::type* = nullptr) {
@@ -70,12 +70,12 @@ static constexpr bool IsValidTraceLambdaImpl(
 }
 
 template <typename T>
-static constexpr bool IsValidTraceLambdaImpl(...) {
+constexpr bool IsValidTraceLambdaImpl(...) {
   return false;
 }
 
 template <typename T>
-static constexpr bool IsValidTraceLambda() {
+constexpr bool IsValidTraceLambda() {
   return IsValidTraceLambdaImpl<T>(nullptr);
 }
 
@@ -93,28 +93,52 @@ CreateTrackEvent(char phase,
                  base::TimeTicks timestamp,
                  bool explicit_track);
 
+base::trace_event::TracePacketHandle BASE_EXPORT CreateTracePacket();
+
+bool BASE_EXPORT ShouldEmitTrackDescriptor(
+    uint64_t track_uuid,
+    base::trace_event::TrackEventHandle::IncrementalState* incr_state);
+
+template <typename TrackType>
+void WriteTrackDescriptor(const TrackType& track) {
+  base::trace_event::TracePacketHandle packet = CreateTracePacket();
+  if (!packet)
+    return;
+  perfetto::internal::TrackRegistry::Get()->SerializeTrack(
+      track, packet.TakePerfettoHandle());
+}
+
 template <
     typename TrackEventArgumentFunction = void (*)(perfetto::EventContext),
     typename ArgumentFunctionCheck = typename std::enable_if<
         IsValidTraceLambda<TrackEventArgumentFunction>()>::type>
-static inline void AddTraceEvent(char phase,
-                                 const unsigned char* category_group_enabled,
-                                 const char* name,
-                                 unsigned int flags,
-                                 const perfetto::Track& track,
-                                 base::TimeTicks timestamp,
-                                 TrackEventArgumentFunction argument_func) {
-  base::trace_event::TrackEventHandle track_event =
-      CreateTrackEvent(phase, category_group_enabled, name, flags, timestamp,
-                       track.uuid != perfetto::Track().uuid);
-  if (!track_event)
-    return;
+inline void AddTraceEvent(char phase,
+                          const unsigned char* category_group_enabled,
+                          const char* name,
+                          unsigned int flags,
+                          const perfetto::Track& track,
+                          base::TimeTicks timestamp,
+                          TrackEventArgumentFunction argument_func) {
+  bool emit_track_descriptor = false;
+  {
+    base::trace_event::TrackEventHandle track_event =
+        CreateTrackEvent(phase, category_group_enabled, name, flags, timestamp,
+                         track.uuid != perfetto::Track().uuid);
+    if (!track_event)
+      return;
 
-  if (track)
-    track_event->set_track_uuid(track.uuid);
+    if (track) {
+      track_event->set_track_uuid(track.uuid);
+      emit_track_descriptor = ShouldEmitTrackDescriptor(
+          track.uuid, track_event.incremental_state());
+    }
 
-  argument_func(perfetto::EventContext(track_event.get(),
-                                       track_event.incremental_state()));
+    argument_func(perfetto::EventContext(track_event.get(),
+                                         track_event.incremental_state()));
+  }
+
+  if (emit_track_descriptor)
+    WriteTrackDescriptor(track);
 }
 
 template <
@@ -124,12 +148,12 @@ template <
     typename TrackType,
     typename TrackTypeCheck = typename std::enable_if<
         std::is_convertible<TrackType, perfetto::Track>::value>::type>
-static inline void AddTraceEvent(char phase,
-                                 const unsigned char* category_group_enabled,
-                                 const char* name,
-                                 unsigned int flags,
-                                 const TrackType& track,
-                                 TrackEventArgumentFunction argument_func) {
+inline void AddTraceEvent(char phase,
+                          const unsigned char* category_group_enabled,
+                          const char* name,
+                          unsigned int flags,
+                          const TrackType& track,
+                          TrackEventArgumentFunction argument_func) {
   AddTraceEvent(phase, category_group_enabled, name, flags, track,
                 base::TimeTicks(), argument_func);
 }
@@ -138,11 +162,11 @@ template <
     typename TrackEventArgumentFunction = void (*)(perfetto::EventContext),
     typename ArgumentFunctionCheck = typename std::enable_if<
         IsValidTraceLambda<TrackEventArgumentFunction>()>::type>
-static inline void AddTraceEvent(char phase,
-                                 const unsigned char* category_group_enabled,
-                                 const char* name,
-                                 unsigned int flags,
-                                 TrackEventArgumentFunction argument_func) {
+inline void AddTraceEvent(char phase,
+                          const unsigned char* category_group_enabled,
+                          const char* name,
+                          unsigned int flags,
+                          TrackEventArgumentFunction argument_func) {
   AddTraceEvent(phase, category_group_enabled, name, flags, perfetto::Track(),
                 base::TimeTicks(), argument_func);
 }

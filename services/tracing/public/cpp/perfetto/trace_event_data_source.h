@@ -230,6 +230,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource
       const base::TimeTicks& now,
       const base::ThreadTicks& thread_now,
       base::trace_event::ThreadInstructionCount thread_instruction_now);
+  static base::trace_event::TracePacketHandle OnAddTracePacket();
 
   // Extracts UMA histogram names that should be logged in traces and logs their
   // starting values.
