@@ -63,6 +63,11 @@ bool IsReverseScrollOn() {
 
 // Reverse an offset when the reverse scrolling is on.
 float GetOffset(float offset) {
+  // The handler code uses the new directions which is the reverse of the old
+  // handler code. Reverse the offset if the ReverseScrollGestures feature is
+  // disabled so that the users get old behavior.
+  if (!features::IsReverseScrollGesturesEnabled())
+    return -offset;
   return IsNaturalScrollOn() ? -offset : offset;
 }
 
@@ -132,7 +137,7 @@ bool Handle3FingerVerticalScroll(float scroll_y) {
     // show notification; in M88, swip up will only show notification; in M89
     // the notification is removed.
     if (GetOffset(scroll_y) > 0) {
-      if (IsNaturalScrollOn())
+      if (!features::IsReverseScrollGesturesEnabled() || IsNaturalScrollOn())
         return false;
 
       ShowOverviewGestureNotification();
@@ -148,7 +153,7 @@ bool Handle3FingerVerticalScroll(float scroll_y) {
     // but show notification; in M88, swip down will only show notification; in
     // M89 the notification is removed.
     if (GetOffset(scroll_y) < 0) {
-      if (IsNaturalScrollOn())
+      if (!features::IsReverseScrollGesturesEnabled() || IsNaturalScrollOn())
         return false;
 
       ShowOverviewGestureNotification();
@@ -171,8 +176,8 @@ bool HandleDesksSwitchHorizontalScroll(float scroll_x) {
   if (std::fabs(scroll_x) < WmGestureHandler::kHorizontalThresholdDp)
     return false;
 
-  if (!IsNaturalScrollOn()) {
-    if (scroll_x > 0 && !DesksController::Get()->GetNextDesk() &&
+  if (features::IsReverseScrollGesturesEnabled() && !IsNaturalScrollOn()) {
+    if (GetOffset(scroll_x) > 0 && !DesksController::Get()->GetNextDesk() &&
         DesksController::Get()->GetPreviousDesk()) {
       if (!gDidWrongLastDeskGesture) {
         gDidWrongLastDeskGesture = true;
@@ -180,7 +185,7 @@ bool HandleDesksSwitchHorizontalScroll(float scroll_x) {
         ShowReverseGestureToast(kSwitchLastDeskToastId,
                                 IDS_CHANGE_LAST_DESK_REVERSE_GESTURE);
       }
-    } else if (scroll_x < 0 &&
+    } else if (GetOffset(scroll_x) < 0 &&
                !DesksController::Get()->GetPreviousDesk() &&
                DesksController::Get()->GetNextDesk()) {
       if (!gDidWrongNextDeskGesture) {
