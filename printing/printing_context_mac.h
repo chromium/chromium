@@ -90,6 +90,10 @@ class PRINTING_EXPORT PrintingContextMac : public PrintingContext {
   // Returns true if color mode is set.
   bool SetOutputColor(int color_mode);
 
+  // Sets resolution in PMPrintSettings.
+  // Returns true if resolution is set.
+  bool SetResolution(const gfx::Size& dpi_size);
+
   // The native print info object.
   base::scoped_nsobject<NSPrintInfo> print_info_;
 

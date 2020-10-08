@@ -183,7 +183,6 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
     return nullptr;
   }
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   base::Optional<int> dpi_horizontal =
       job_settings.FindIntKey(kSettingDpiHorizontal);
   base::Optional<int> dpi_vertical =
@@ -191,7 +190,6 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
   if (!dpi_horizontal.has_value() || !dpi_vertical.has_value())
     return nullptr;
   settings->set_dpi_xy(dpi_horizontal.value(), dpi_vertical.value());
-#endif
 
   settings->set_collate(collate.value());
   settings->set_copies(copies.value());

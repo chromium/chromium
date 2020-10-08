@@ -66,7 +66,6 @@ TEST(PrintSettingsConversionTest, ConversionTest) {
   EXPECT_EQ("username@domain.net", settings->username());
   EXPECT_EQ("0000", settings->pin_value());
 #endif
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   EXPECT_EQ(settings->dpi_horizontal(), 300);
   EXPECT_EQ(settings->dpi_vertical(), 300);
   value->SetIntKey("dpiVertical", 600);
@@ -77,7 +76,6 @@ TEST(PrintSettingsConversionTest, ConversionTest) {
   EXPECT_TRUE(value->RemoveKey("dpiVertical"));
   settings = PrintSettingsFromJobSettings(value.value());
   EXPECT_FALSE(settings);
-#endif
 }
 
 #if BUILDFLAG(IS_ASH)
