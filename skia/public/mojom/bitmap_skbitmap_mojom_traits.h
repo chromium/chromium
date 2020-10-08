@@ -30,6 +30,17 @@ struct COMPONENT_EXPORT(SKIA_SHARED_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(SKIA_SHARED_TRAITS)
+    StructTraits<skia::mojom::UnsafeBitmapDataView, SkBitmap> {
+  static bool IsNull(const SkBitmap& b);
+  static void SetToNull(SkBitmap* b);
+  static const SkImageInfo& image_info(const SkBitmap& b);
+  static uint64_t row_bytes(const SkBitmap& b);
+  static mojo_base::BigBufferView pixel_data(const SkBitmap& b);
+  static bool Read(skia::mojom::UnsafeBitmapDataView data, SkBitmap* b);
+};
+
+template <>
+struct COMPONENT_EXPORT(SKIA_SHARED_TRAITS)
     StructTraits<skia::mojom::InlineBitmapDataView, SkBitmap> {
   static bool IsNull(const SkBitmap& b);
   static void SetToNull(SkBitmap* b);

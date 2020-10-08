@@ -15,6 +15,23 @@ struct Bitmap {
   mojo_base.mojom.BigBuffer pixel_data;
 };
 
+// Similar to above, but the generated bindings avoid copying pixel data on the
+// receiving side of an IPC message. That can be a valuable optimization for
+// large bitmaps. However, this is unsafe for some applications as it leaves
+// open the possibility for the sender to continue to modify the pixel data,
+// which could lead to TOCTOU issues. Use this type *only* when the sender is
+// trusted.
+//
+// NOTE: It is important that the fields of this struct exactly match the
+// fields of the Bitmap struct. This enables stable interfaces to freely
+// migrate between these two types in a compatible fashion.
+[Stable]
+struct UnsafeBitmap {
+  ImageInfo image_info;
+  uint64 row_bytes;
+  mojo_base.mojom.BigBuffer pixel_data;
+};
+
 // NOTE: This should only be used when an SkBitmap MUST be serialized as raw
 // bytes (i.e. it's not OK for shared memory to be used, as above).
 struct InlineBitmap {

@@ -58,6 +58,11 @@ mojom("mojom") {
           nullable_is_same_type = true
         },
         {
+          mojom = "skia.mojom.UnsafeBitmap"
+          cpp = "::SkBitmap"
+          nullable_is_same_type = true
+        },
+        {
           mojom = "skia.mojom.InlineBitmap"
           cpp = "::SkBitmap"
           nullable_is_same_type = true
