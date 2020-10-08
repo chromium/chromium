@@ -44,8 +44,7 @@
             .contentElement;
     var entries = Array.from(paneElement.querySelectorAll('.breakpoint-entry'));
     for (var entry of entries) {
-      var uiLocation =
-          entry[Sources.JavaScriptBreakpointsSidebarPane._locationSymbol];
+      var uiLocation = Sources.JavaScriptBreakpointsSidebarPane.retrieveLocationForElement(entry);
       if (Bindings.CompilerScriptMapping.StubProjectID ===
           uiLocation.uiSourceCode.project().id())
         return SourcesTestRunner.waitBreakpointSidebarPane().then(

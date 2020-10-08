@@ -58,7 +58,7 @@
       return TestRunner.textContentWithLineBreaks(pane._emptyElement);
     var entries = Array.from(pane.contentElement.querySelectorAll('.breakpoint-entry'));
     for (var entry of entries) {
-      var uiLocation = entry[Sources.JavaScriptBreakpointsSidebarPane._locationSymbol];
+      var uiLocation = Sources.JavaScriptBreakpointsSidebarPane.retrieveLocationForElement(entry);
       TestRunner.addResult('    ' + uiLocation.uiSourceCode.url() + ':' + uiLocation.lineNumber);
     }
   }
