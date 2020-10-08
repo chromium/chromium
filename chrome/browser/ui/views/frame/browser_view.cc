@@ -172,7 +172,9 @@
 #include "content/public/common/content_switches.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_mode_observer.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/hit_test.h"
@@ -512,13 +514,42 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
+// BrowserView::AccessibilityModeObserver:
+
+class BrowserView::AccessibilityModeObserver : public ui::AXModeObserver {
+ public:
+  explicit AccessibilityModeObserver(BrowserView* browser_view)
+      : browser_view_(browser_view) {
+    ui::AXPlatformNode::AddAXModeObserver(this);
+  }
+  ~AccessibilityModeObserver() override {
+    ui::AXPlatformNode::RemoveAXModeObserver(this);
+  }
+
+ private:
+  // ui::AXModeObserver:
+  void OnAXModeAdded(ui::AXMode mode) override {
+    // This will have the effect of turning tablet mode off if a screen reader
+    // is enabled while Chrome is already open. It will not return the browser
+    // to tablet mode if the user kills their screen reader.
+    if (mode.has_mode(ui::AXMode::kScreenReader))
+      browser_view_->MaybeInitializeWebUITabStrip();
+  }
+
+  BrowserView* const browser_view_;
+};
+
+///////////////////////////////////////////////////////////////////////////////
 // BrowserView, public:
 
 // static
 const char BrowserView::kViewClassName[] = "BrowserView";
 
 BrowserView::BrowserView(std::unique_ptr<Browser> browser)
-    : views::ClientView(nullptr, nullptr), browser_(std::move(browser)) {
+    : views::ClientView(nullptr, nullptr),
+      browser_(std::move(browser)),
+      accessibility_mode_observer_(
+          std::make_unique<AccessibilityModeObserver>(this)) {
   SetShowIcon(::ShouldShowWindowIcon(browser_.get()));
   SetHasWindowSizeControls(!chrome::IsRunningInForcedAppMode());
   SetCanResize(browser_->can_resize());

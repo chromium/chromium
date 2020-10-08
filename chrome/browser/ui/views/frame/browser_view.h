@@ -617,6 +617,7 @@ class BrowserView : public BrowserWindow,
   friend class TopControlsSlideControllerTest;
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, BrowserView);
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, AccessibleWindowTitle);
+  class AccessibilityModeObserver;
 
   // If the browser is in immersive full screen mode, it will reveal the
   // tabstrip for a short duration. This is useful for shortcuts that perform
@@ -802,6 +803,13 @@ class BrowserView : public BrowserWindow,
 
   // the webui based tabstrip, when applicable. see https://crbug.com/989131.
   WebUITabStripContainerView* webui_tab_strip_ = nullptr;
+
+  // Allows us to react to changes in accessibility mode.
+  // TODO(dfried): this is only used to disable WebUI tabstrip (see above) while
+  // that mode has accessibile mode issues (e.g. crbug.com/1136185,
+  // crbug.com/1136236). Having an observer object allows for the browser to
+  // change mode if it enters or leaves accessibility mode.
+  std::unique_ptr<AccessibilityModeObserver> accessibility_mode_observer_;
 
   // The Toolbar containing the navigation buttons, menus and the address bar.
   ToolbarView* toolbar_ = nullptr;
