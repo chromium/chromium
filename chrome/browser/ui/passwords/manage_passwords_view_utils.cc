@@ -227,12 +227,6 @@ void NavigateToManagePasswordsPage(Browser* browser,
                                    ManagePasswordsReferrer referrer) {
   UMA_HISTOGRAM_ENUMERATION("PasswordManager.ManagePasswordsReferrer",
                             referrer);
-  if (password_manager_util::IsSyncingWithNormalEncryption(
-          ProfileSyncServiceFactory::GetForProfile(browser->profile()))) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "PasswordManager.ManagePasswordsReferrerSignedInAndSyncing", referrer);
-  }
-
   chrome::ShowPasswordManager(browser);
 }
 

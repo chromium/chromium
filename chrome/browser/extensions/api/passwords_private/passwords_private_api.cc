@@ -44,15 +44,6 @@ PasswordsPrivateRecordPasswordsPageAccessInSettingsFunction::Run() {
   UMA_HISTOGRAM_ENUMERATION(
       "PasswordManager.ManagePasswordsReferrer",
       password_manager::ManagePasswordsReferrer::kChromeSettings);
-  if (password_manager_util::IsSyncingWithNormalEncryption(
-          ProfileSyncServiceFactory::GetForProfile(
-              Profile::FromBrowserContext(browser_context())))) {
-    // We record this second histogram to better understand the impact of the
-    // Google Password Manager experiment for signed in and syncing users.
-    UMA_HISTOGRAM_ENUMERATION(
-        "PasswordManager.ManagePasswordsReferrerSignedInAndSyncing",
-        password_manager::ManagePasswordsReferrer::kChromeSettings);
-  }
   return RespondNow(NoArguments());
 }
 

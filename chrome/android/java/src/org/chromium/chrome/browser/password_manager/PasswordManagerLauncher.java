@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.password_manager;
 import android.app.Activity;
 
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -32,13 +31,9 @@ public class PasswordManagerLauncher {
      */
     public static void showPasswordSettings(
             Activity activity, @ManagePasswordsReferrer int referrer) {
-        if (isSyncingPasswordsWithoutCustomPassphrase()) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "PasswordManager.ManagePasswordsReferrerSignedInAndSyncing", referrer,
-                    ManagePasswordsReferrer.MAX_VALUE + 1);
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_CHANGE_IN_SETTINGS)) {
-                PasswordScriptsFetcherBridge.prewarmCache();
-            }
+        if (isSyncingPasswordsWithoutCustomPassphrase()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_CHANGE_IN_SETTINGS)) {
+            PasswordScriptsFetcherBridge.prewarmCache();
         }
 
         PasswordManagerHelper.showPasswordSettings(activity, referrer, new SettingsLauncherImpl());
