@@ -66,9 +66,6 @@ class PasswordBubbleViewBase : public LocationBarBubbleDelegateView {
 
   ~PasswordBubbleViewBase() override;
 
-  // views::BubbleDialogDelegateView:
-  ax::mojom::Role GetAccessibleWindowRole() override;
-
  private:
   // views::BubbleDialogDelegateView:
   void Init() override;

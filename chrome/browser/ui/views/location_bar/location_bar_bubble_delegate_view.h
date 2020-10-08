@@ -65,6 +65,7 @@ class LocationBarBubbleDelegateView : public views::BubbleDialogDelegateView,
       content::NavigationHandle* navigation_handle) override;
 
   // views::BubbleDialogDelegateView:
+  ax::mojom::Role GetAccessibleWindowRole() override;
   gfx::Rect GetAnchorBoundsInScreen() const override;
 
   // If the bubble is not anchored to a view, places the bubble in the top right
@@ -108,6 +109,8 @@ class LocationBarBubbleDelegateView : public views::BubbleDialogDelegateView,
   // A flag controlling bubble closure when the main frame navigates to a
   // different origin.
   bool close_on_main_frame_origin_navigation_ = false;
+
+  DisplayReason display_reason_ = AUTOMATIC;
 
   DISALLOW_COPY_AND_ASSIGN(LocationBarBubbleDelegateView);
 };

@@ -156,14 +156,6 @@ void PasswordBubbleViewBase::Init() {
   SetShowTitle(!controller->GetTitle().empty());
 }
 
-ax::mojom::Role PasswordBubbleViewBase::GetAccessibleWindowRole() {
-  // This bubble is displayed as non-modal when users finish typing their
-  // password. In absence of a focus change event, ATs will not notice the
-  // bubble unless an alert event is emitted, so we need it to have an
-  // alert role.
-  return ax::mojom::Role::kAlertDialog;
-}
-
 void PasswordBubbleViewBase::OnWidgetClosing(views::Widget* widget) {
   LocationBarBubbleDelegateView::OnWidgetClosing(widget);
   if (widget != GetWidget())
