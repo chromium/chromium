@@ -13,10 +13,10 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.VerifiesOnN;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.ChromeTabModelFilterFactory;
+import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -57,9 +57,6 @@ public class TabWindowManager implements ActivityStateListener {
                 NextTabPolicySupplier nextTabPolicySupplier, int selectorIndex);
     }
 
-    /** The singleton reference. */
-    private static TabWindowManager sInstance;
-
     private final AsyncTabParamsManager mAsyncTabParamsManager;
 
     private TabModelSelectorFactory mSelectorFactory = new DefaultTabModelSelectorFactory();
@@ -67,17 +64,6 @@ public class TabWindowManager implements ActivityStateListener {
     private List<TabModelSelector> mSelectors = new ArrayList<>();
 
     private Map<Activity, TabModelSelector> mAssignments = new HashMap<>();
-
-    /**
-     * @return The singleton instance of {@link TabWindowManager}.
-     */
-    public static TabWindowManager getInstance() {
-        ThreadUtils.assertOnUiThread();
-        if (sInstance == null) {
-            sInstance = new TabWindowManager(AsyncTabParamsManagerSingleton.getInstance());
-        }
-        return sInstance;
-    }
 
     /**
      * Called to request a {@link TabModelSelector} based on {@code index}. Note that the
@@ -228,7 +214,7 @@ public class TabWindowManager implements ActivityStateListener {
         mSelectorFactory = factory;
     }
 
-    private TabWindowManager(AsyncTabParamsManager asyncTabParamsManager) {
+    public TabWindowManager(AsyncTabParamsManager asyncTabParamsManager) {
         mAsyncTabParamsManager = asyncTabParamsManager;
         ApplicationStatus.registerStateListenerForAllActivities(this);
 
@@ -252,9 +238,14 @@ public class TabWindowManager implements ActivityStateListener {
             if (MultiInstanceManager.shouldMergeOnStartup(activity)) {
                 mergeTabs = mergeTabs
                         && (!MultiWindowUtils.getInstance().isInMultiDisplayMode(activity)
-                                || getInstance().getNumberOfAssignedTabModelSelectors() == 0);
+                                || TabWindowManagerSingleton.getInstance()
+                                                .getNumberOfAssignedTabModelSelectors()
+                                        == 0);
             } else {
-                mergeTabs = mergeTabs && getInstance().getNumberOfAssignedTabModelSelectors() == 0;
+                mergeTabs = mergeTabs
+                        && TabWindowManagerSingleton.getInstance()
+                                        .getNumberOfAssignedTabModelSelectors()
+                                == 0;
             }
             if (mergeTabs) {
                 MultiInstanceManager.mergedOnStartup();

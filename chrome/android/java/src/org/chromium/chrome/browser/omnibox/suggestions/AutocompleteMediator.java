@@ -30,6 +30,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
+import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.document.ChromeIntentUtil;
@@ -546,7 +547,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     @Override
     public void onSwitchToTab(OmniboxSuggestion suggestion, int position) {
         Tab tab = mAutocomplete.findMatchingTabWithUrl(suggestion.getUrl());
-        TabWindowManager tabWindowManager = TabWindowManager.getInstance();
+        TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
         if (tab == null || tabWindowManager == null) {
             onSuggestionClicked(suggestion, position, suggestion.getUrl());
             return;

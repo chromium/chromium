@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.document.ChromeIntentUtil;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
@@ -21,7 +22,6 @@ import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitio
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -102,7 +102,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
             } else if (ACTION_SCREEN_CAPTURE_STOP.equals(action)) {
                 // Notify native to stop screen capture when the STOP button in notification
                 // is clicked.
-                final Tab tab = TabWindowManager.getInstance().getTabById(notificationId);
+                final Tab tab = TabWindowManagerSingleton.getInstance().getTabById(notificationId);
                 if (tab != null) {
                     MediaCaptureDevicesDispatcherAndroid.notifyStopped(tab.getWebContents());
                 }
@@ -285,9 +285,9 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
         intent.putExtra(NOTIFICATION_ID_EXTRA, tabId);
         intent.putExtra(NOTIFICATION_MEDIA_URL_EXTRA, url.getSpec());
         intent.putExtra(NOTIFICATION_MEDIA_TYPE_EXTRA, mediaType);
-        if (TabWindowManager.getInstance().getTabById(tabId) != null) {
+        if (TabWindowManagerSingleton.getInstance().getTabById(tabId) != null) {
             intent.putExtra(NOTIFICATION_MEDIA_IS_INCOGNITO,
-                    TabWindowManager.getInstance().getTabById(tabId).isIncognito());
+                    TabWindowManagerSingleton.getInstance().getTabById(tabId).isIncognito());
         }
         context.startService(intent);
     }

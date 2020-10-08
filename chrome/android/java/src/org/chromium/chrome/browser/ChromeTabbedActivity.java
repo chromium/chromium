@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.ChromeNextTabPolicySupplier;
+import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
@@ -136,7 +137,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
 import org.chromium.chrome.browser.tasks.EngagementTimeUtil;
 import org.chromium.chrome.browser.tasks.JourneyManager;
@@ -1544,7 +1544,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         mNextTabPolicySupplier = new ChromeNextTabPolicySupplier(mOverviewModeBehaviorSupplier);
         mTabModelSelectorImpl =
-                (TabModelSelectorImpl) TabWindowManager.getInstance().requestSelector(
+                (TabModelSelectorImpl) TabWindowManagerSingleton.getInstance().requestSelector(
                         this, this, mNextTabPolicySupplier, index);
         if (mTabModelSelectorImpl == null) {
             Toast.makeText(
@@ -2051,7 +2051,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         super.onSaveInstanceState(outState);
         CipherFactory.getInstance().saveToBundle(outState);
         outState.putBoolean("is_incognito_selected", getCurrentTabModel().isIncognito());
-        outState.putInt(WINDOW_INDEX, TabWindowManager.getInstance().getIndexForWindow(this));
+        outState.putInt(
+                WINDOW_INDEX, TabWindowManagerSingleton.getInstance().getIndexForWindow(this));
     }
 
     @Override

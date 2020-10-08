@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.ChromeTabModelFilterFactory;
+import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
@@ -265,7 +266,7 @@ public class TabPersistentStoreTest {
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TabWindowManager.getInstance().onActivityStateChange(
+            TabWindowManagerSingleton.getInstance().onActivityStateChange(
                     mChromeActivity, ActivityState.DESTROYED);
         });
         mMockDirectory.tearDown();
@@ -696,7 +697,7 @@ public class TabPersistentStoreTest {
                 TestThreadUtils.runOnUiThreadBlocking(new Callable<TestTabModelSelector>() {
                     @Override
                     public TestTabModelSelector call() {
-                        TabWindowManager tabWindowManager = TabWindowManager.getInstance();
+                        TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
                         tabWindowManager.setTabModelSelectorFactory(mMockTabModelSelectorFactory);
                         // Clear any existing TestTabModelSelector (required when
                         // createAndRestoreRealTabModelImpls is called multiple times in one test).
