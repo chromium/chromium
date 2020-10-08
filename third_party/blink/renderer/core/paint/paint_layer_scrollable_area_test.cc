@@ -994,6 +994,28 @@ TEST_P(PaintLayerScrollableAreaTest,
   EXPECT_NE(nullptr, properties->ScrollTranslation());
 }
 
+TEST_P(PaintLayerScrollableAreaTest, ScrollWith3DPreserveParent) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller {
+        overflow-y: scroll;
+        height: 200px;
+        width: 200px;
+        background: white;
+      }
+    </style>
+    <div style='transform-style: preserve-3d;'>
+      <div id='scroller'>
+        <div style='height: 2000px;'></div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* scroller = ToLayoutBox(GetLayoutObjectByElementId("scroller"));
+  EXPECT_EQ(kBackgroundPaintInGraphicsLayer,
+            scroller->ComputeBackgroundPaintLocationIfComposited());
+}
+
 TEST_P(PaintLayerScrollableAreaTest,
        ScrollWithLocalAttachmentBackgroundInMainLayer) {
   SetBodyInnerHTML(R"HTML(

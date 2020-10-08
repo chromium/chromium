@@ -198,6 +198,14 @@ LayoutBoxModelObject::ComputeBackgroundPaintLocationIfComposited() const {
     }
     return kBackgroundPaintInGraphicsLayer;
   }
+
+  // It can't paint in the scrolling contents because it has different 3d
+  // context than the scrolling contents.
+  if (!StyleRef().Preserves3D() && Parent() &&
+      Parent()->StyleRef().Preserves3D()) {
+    return kBackgroundPaintInGraphicsLayer;
+  }
+
   return paint_location;
 }
 

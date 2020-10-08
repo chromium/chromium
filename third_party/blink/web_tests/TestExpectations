@@ -73,9 +73,6 @@ crbug.com/887140 virtual/hdr/video-canvas-alpha.html [ Failure ]
 # Tested by paint/background/root-element-background-transparency.html for now.
 external/wpt/css/compositing/root-element-background-transparency.html [ Failure ]
 
-# PaintPropertyTreeBuilder bug.
-crbug.com/1116358 external/wpt/css/css-transforms/scrolalble-scroll-3d-transform-z.html [ Failure ]
-
 # ====== Synchronous, budgeted HTML parser tests from here ======
 
 ### virtual/synchronous_html_parser/http/tests/preload/
