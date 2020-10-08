@@ -5,6 +5,7 @@
 #include "content/browser/service_worker/service_worker_registry.h"
 
 #include "base/test/bind_test_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
@@ -95,6 +96,19 @@ class ServiceWorkerRegistryTest : public testing::Test {
     InitializeTestHelper();
   }
 
+  std::vector<url::Origin> GetRegisteredOrigins() {
+    std::vector<url::Origin> result;
+    base::RunLoop loop;
+    registry()->GetRemoteStorageControl()->GetRegisteredOrigins(
+        base::BindLambdaForTesting(
+            [&](const std::vector<url::Origin>& origins) {
+              result = origins;
+              loop.Quit();
+            }));
+    loop.Run();
+    return result;
+  }
+
   blink::ServiceWorkerStatusCode FindRegistrationForClientUrl(
       const GURL& document_url,
       scoped_refptr<ServiceWorkerRegistration>* registration) {
@@ -162,6 +176,55 @@ class ServiceWorkerRegistryTest : public testing::Test {
   scoped_refptr<storage::MockSpecialStoragePolicy> special_storage_policy_;
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
 };
+
+TEST_F(ServiceWorkerRegistryTest, RegisteredOriginCount) {
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(GetRegisteredOrigins().empty());
+    histogram_tester.ExpectUniqueSample("ServiceWorker.RegisteredOriginCount",
+                                        0, 1);
+  }
+
+  std::pair<GURL, GURL> scope_and_script_pairs[] = {
+      {GURL("https://www.example.com/scope/"),
+       GURL("https://www.example.com/script.js")},
+      {GURL("https://www.example.com/scope/foo"),
+       GURL("https://www.example.com/script.js")},
+      {GURL("https://www.test.com/scope/foobar"),
+       GURL("https://www.test.com/script.js")},
+      {GURL("https://example.com/scope/"),
+       GURL("https://example.com/script.js")},
+  };
+  std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
+  int64_t dummy_resource_id = 1;
+  for (const auto& pair : scope_and_script_pairs) {
+    registrations.emplace_back(CreateServiceWorkerRegistrationAndVersion(
+        context(), pair.first, pair.second, dummy_resource_id));
+    ++dummy_resource_id;
+  }
+
+  // Store all registrations.
+  for (const auto& registration : registrations) {
+    EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
+              StoreRegistration(registration, registration->waiting_version()));
+  }
+
+  SimulateRestart();
+
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_EQ(3UL, GetRegisteredOrigins().size());
+    histogram_tester.ExpectUniqueSample("ServiceWorker.RegisteredOriginCount",
+                                        3, 1);
+  }
+
+  // Re-initializing shouldn't re-record the histogram.
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_EQ(3UL, GetRegisteredOrigins().size());
+    histogram_tester.ExpectTotalCount("ServiceWorker.RegisteredOriginCount", 0);
+  }
+}
 
 TEST_F(ServiceWorkerRegistryTest, FindRegistration_LongestScopeMatch) {
   const GURL kDocumentUrl("http://www.example.com/scope/foo");

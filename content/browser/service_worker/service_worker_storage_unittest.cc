@@ -16,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
@@ -315,10 +314,6 @@ class ServiceWorkerStorageTest : public testing::Test {
   ServiceWorkerDatabase* database() { return storage()->database_.get(); }
 
  protected:
-  const std::set<url::Origin>& registered_origins() {
-    return storage()->registered_origins_;
-  }
-
   void LazyInitialize() { storage()->LazyInitializeForTest(); }
 
   blink::ServiceWorkerStatusCode StoreRegistration(
@@ -1907,59 +1902,6 @@ TEST_F(ServiceWorkerStorageDiskTest, ScriptResponseTime) {
             waiting_version->script_response_time_for_devtools_);
   EXPECT_EQ(response_head.response_time,
             waiting_version->GetInfo().script_response_time);
-}
-
-TEST_F(ServiceWorkerStorageDiskTest, RegisteredOriginCount) {
-  {
-    base::HistogramTester histogram_tester;
-    LazyInitialize();
-    EXPECT_TRUE(registered_origins().empty());
-    histogram_tester.ExpectUniqueSample("ServiceWorker.RegisteredOriginCount",
-                                        0, 1);
-  }
-
-  std::pair<GURL, GURL> scope_and_script_pairs[] = {
-      {GURL("https://www.example.com/scope/"),
-       GURL("https://www.example.com/script.js")},
-      {GURL("https://www.example.com/scope/foo"),
-       GURL("https://www.example.com/script.js")},
-      {GURL("https://www.test.com/scope/foobar"),
-       GURL("https://www.test.com/script.js")},
-      {GURL("https://example.com/scope/"),
-       GURL("https://example.com/script.js")},
-  };
-  std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
-  int64_t dummy_resource_id = 1;
-  for (const auto& pair : scope_and_script_pairs) {
-    registrations.emplace_back(CreateServiceWorkerRegistrationAndVersion(
-        context(), pair.first, pair.second, dummy_resource_id));
-    ++dummy_resource_id;
-  }
-
-  // Store all registrations.
-  for (const auto& registration : registrations) {
-    EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-              StoreRegistration(registration, registration->waiting_version()));
-  }
-
-  // Simulate browser shutdown and restart.
-  registrations.clear();
-  InitializeTestHelper();
-  {
-    base::HistogramTester histogram_tester;
-    LazyInitialize();
-    EXPECT_EQ(3UL, registered_origins().size());
-    histogram_tester.ExpectUniqueSample("ServiceWorker.RegisteredOriginCount",
-                                        3, 1);
-  }
-
-  // Re-initializing shouldn't re-record the histogram.
-  {
-    base::HistogramTester histogram_tester;
-    LazyInitialize();
-    EXPECT_EQ(3UL, registered_origins().size());
-    histogram_tester.ExpectTotalCount("ServiceWorker.RegisteredOriginCount", 0);
-  }
 }
 
 // Tests reading storage usage from database.
