@@ -231,7 +231,6 @@ bool HeadlessContentMainDelegate::BasicStartupComplete(int* exit_code) {
   command_line->AppendSwitch(::blink::switches::kAllowPreCommitInput);
 
 #if defined(OS_WIN)
-  command_line->AppendSwitch(sandbox::policy::switches::kNoSandbox);
   command_line->AppendSwitch(
       ::switches::kDisableGpuProcessForDX12InfoCollection);
 #endif
