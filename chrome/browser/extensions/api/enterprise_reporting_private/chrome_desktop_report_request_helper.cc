@@ -189,12 +189,6 @@ OSStatus ReadEncryptedSecret(std::string* password, bool force_recreate) {
   if (status == noErr) {
     *password = std::string(static_cast<char*>(password_data), password_length);
     keychain.ItemFreeContent(password_data);
-    bool keep_password;
-    status = RecreateKeychainItemIfNecessary(
-        kServiceName, kAccountName, *password, item_ref.get(), &keep_password);
-
-    if (!keep_password)
-      password->clear();
     return status;
   }
 
