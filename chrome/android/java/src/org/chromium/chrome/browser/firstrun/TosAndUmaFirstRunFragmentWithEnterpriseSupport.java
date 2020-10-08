@@ -236,10 +236,13 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
         if (policyService.isInitializationComplete()) {
             updateCctTosPolicy();
         } else {
-            mPolicyServiceObserver = () -> {
-                policyService.removeObserver(mPolicyServiceObserver);
-                mPolicyServiceObserver = null;
-                updateCctTosPolicy();
+            mPolicyServiceObserver = new PolicyService.Observer() {
+                @Override
+                public void onPolicyServiceInitialized() {
+                    policyService.removeObserver(mPolicyServiceObserver);
+                    mPolicyServiceObserver = null;
+                    updateCctTosPolicy();
+                }
             };
             policyService.addObserver(mPolicyServiceObserver);
         }

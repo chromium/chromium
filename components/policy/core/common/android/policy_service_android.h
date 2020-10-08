@@ -47,6 +47,9 @@ class POLICY_EXPORT PolicyServiceAndroid : public PolicyService::Observer {
   // PolicyService::Observer implementation.
   // Pass the event to the Java observers.
   void OnPolicyServiceInitialized(PolicyDomain domain) override;
+  void OnPolicyUpdated(const PolicyNamespace& ns,
+                       const PolicyMap& previous,
+                       const PolicyMap& current) override;
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 

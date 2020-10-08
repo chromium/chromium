@@ -66,6 +66,11 @@ public class PolicyMap {
         return PolicyMapJni.get().getDictValue(mNativePolicyMap, PolicyMap.this, policy);
     }
 
+    public boolean isEqual(PolicyMap other) {
+        if (this == other) return true;
+        return PolicyMapJni.get().equals(mNativePolicyMap, PolicyMap.this, other.mNativePolicyMap);
+    }
+
     @CalledByNative
     private PolicyMap(long nativePolicyMap) {
         mNativePolicyMap = nativePolicyMap;
@@ -85,5 +90,7 @@ public class PolicyMap {
         String getListValue(long nativePolicyMap, PolicyMap caller, String policy);
         @NativeClassQualifiedName("PolicyMapAndroid")
         String getDictValue(long nativePolicyMap, PolicyMap caller, String policy);
+        @NativeClassQualifiedName("PolicyMapAndroid")
+        boolean equals(long nativePolicyMap, PolicyMap caller, long nativeOtherPolicyMap);
     }
 }
