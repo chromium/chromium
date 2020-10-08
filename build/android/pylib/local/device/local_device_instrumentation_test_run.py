@@ -1058,9 +1058,13 @@ class LocalDeviceInstrumentationTestRun(
         not_final_retry = self._env.current_try + 1 != self._env.max_tries
         tryjob_but_not_final_retry =\
             not_final_retry and gold_properties.IsTryjobRun()
-        should_hide_failure =\
+        should_ignore_in_gold =\
             running_on_unsupported or tryjob_but_not_final_retry
-        if should_hide_failure:
+        # We still want to fail the test even if we're ignoring the image in
+        # Gold if we're running on a supported configuration, so
+        # should_ignore_in_gold != should_hide_failure.
+        should_hide_failure = running_on_unsupported
+        if should_ignore_in_gold:
           optional_keys['ignore'] = '1'
 
         gold_session = self._skia_gold_session_manager.GetSkiaGoldSession(
