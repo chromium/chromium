@@ -7,6 +7,12 @@
       "backgroundColor": "#FFFFFF"
     },
     {
+      "name": "LayoutView #document",
+      "bounds": [300, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFF00"
+    },
+    {
       "name": "LayoutNGBlockFlow BODY",
       "bounds": [284, 84],
       "drawsContent": false,

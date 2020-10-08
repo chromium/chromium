@@ -6,6 +6,7 @@
 #include "base/test/bind_test_util.h"
 #include "cc/layers/picture_layer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_hit_test_result.h"
 #include "third_party/blink/public/web/web_settings.h"
@@ -980,6 +981,12 @@ TEST_P(FrameThrottlingTest, ThrottledTopLevelEventHandlerIgnored) {
   WebView().GetSettings()->SetJavaScriptEnabled(true);
   EXPECT_EQ(0u, TouchHandlerRegionSize());
 
+  // This test covers the case where a non-composited iframe is throttled. With
+  // this flag enabled, that is impossible, because only cross-origin iframes
+  // can be throttled.
+  if (base::FeatureList::IsEnabled(features::kCompositeCrossOriginIframes))
+    return;
+
   // Create a frame which is throttled and has two different types of
   // top-level touchstart handlers.
   SimRequest main_resource("https://example.com/", "text/html");
@@ -1026,6 +1033,12 @@ TEST_P(FrameThrottlingTest, ThrottledTopLevelEventHandlerIgnored) {
 TEST_P(FrameThrottlingTest, ThrottledEventHandlerIgnored) {
   WebView().GetSettings()->SetJavaScriptEnabled(true);
   EXPECT_EQ(0u, TouchHandlerRegionSize());
+
+  // This test covers the case where a non-composited iframe is throttled. With
+  // this flag enabled, that is impossible, because only cross-origin iframes
+  // can be throttled.
+  if (base::FeatureList::IsEnabled(features::kCompositeCrossOriginIframes))
+    return;
 
   // Create a frame which is throttled and has a non-top-level touchstart
   // handler.
@@ -1130,8 +1143,12 @@ TEST_P(FrameThrottlingTest, PaintingViaGraphicsLayerIsThrottled) {
   EXPECT_TRUE(frame_element->contentDocument()->View()->CanThrottleRendering());
 
   // If painting of the iframe is throttled, we should only receive drawing
-  // commands for the main frame.
-  auto commands_throttled = Compositor().PaintFrame();
+  // commands for the main frame. We have to explicitly schedule a frame here
+  // because the iframe becoming throttled will affect the painted output;
+  // but it will not by itself schedule an animation frame, because it doesn't
+  // need display.
+  GetDocument().View()->ScheduleAnimation();
+  auto commands_throttled = CompositeFrame();
   EXPECT_EQ(5u, commands_throttled.DrawCount());
   EXPECT_FALSE(Compositor().NeedsBeginFrame());
 }
