@@ -5,11 +5,29 @@
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
-TEST(HTMLTextAreaElementTest, SanitizeUserInputValue) {
+class HTMLTextAreaElementTest : public testing::WithParamInterface<bool>,
+                                private ScopedLayoutNGTextAreaForTest,
+                                public RenderingTest {
+ public:
+  HTMLTextAreaElementTest() : ScopedLayoutNGTextAreaForTest(GetParam()) {}
+
+ protected:
+  HTMLTextAreaElement& TestElement() {
+    Element* element = GetDocument().getElementById("test");
+    DCHECK(element);
+    return To<HTMLTextAreaElement>(*element);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All, HTMLTextAreaElementTest, testing::Bool());
+
+TEST_P(HTMLTextAreaElementTest, SanitizeUserInputValue) {
   UChar kLeadSurrogate = 0xD800;
   EXPECT_EQ("", HTMLTextAreaElement::SanitizeUserInputValue("", 0));
   EXPECT_EQ("", HTMLTextAreaElement::SanitizeUserInputValue("a", 0));
@@ -31,6 +49,66 @@ TEST(HTMLTextAreaElementTest, SanitizeUserInputValue) {
   EXPECT_EQ("a\rcd", HTMLTextAreaElement::SanitizeUserInputValue("a\rcdef", 4));
   EXPECT_EQ("a\r\ncd",
             HTMLTextAreaElement::SanitizeUserInputValue("a\r\ncdef", 4));
+}
+
+TEST_P(HTMLTextAreaElementTest, ValueWithHardLineBreaks) {
+  LoadAhem();
+
+  // The textarea can contain four letters in each of lines.
+  SetBodyContent(R"HTML(
+    <textarea id=test wrap=hard
+              style="font:10px Ahem; width:40px; height:200px;"></textarea>
+  )HTML");
+  HTMLTextAreaElement& textarea = TestElement();
+  RunDocumentLifecycle();
+  EXPECT_TRUE(textarea.ValueWithHardLineBreaks().IsEmpty());
+
+  textarea.setValue("12345678");
+  RunDocumentLifecycle();
+  EXPECT_EQ("1234\n5678", textarea.ValueWithHardLineBreaks());
+
+  textarea.setValue("1234567890\n");
+  RunDocumentLifecycle();
+  EXPECT_EQ("1234\n5678\n90\n", textarea.ValueWithHardLineBreaks());
+
+  Document& doc = GetDocument();
+  auto* inner_editor = textarea.InnerEditorElement();
+  inner_editor->setTextContent("");
+  // We set the value same as the previous one, but the value consists of four
+  // Text nodes.
+  inner_editor->appendChild(Text::Create(doc, "12"));
+  inner_editor->appendChild(Text::Create(doc, "34"));
+  inner_editor->appendChild(Text::Create(doc, "5678"));
+  inner_editor->appendChild(Text::Create(doc, "90"));
+  inner_editor->appendChild(doc.CreateRawElement(html_names::kBrTag));
+  RunDocumentLifecycle();
+  // Should be "1234\n5678\n90".  The legacy behavior is wrong.
+  EXPECT_EQ(GetParam() ? "1234\n5678\n90" : "1234567890",
+            textarea.ValueWithHardLineBreaks());
+}
+
+TEST_P(HTMLTextAreaElementTest, ValueWithHardLineBreaksRtl) {
+  LoadAhem();
+
+  SetBodyContent(R"HTML(
+    <textarea id=test wrap=hard style="font:10px Ahem; width:160px;"></textarea>
+  )HTML");
+  HTMLTextAreaElement& textarea = TestElement();
+
+#define LTO "\xE2\x80\xAD"
+#define RTO "\xE2\x80\xAE"
+  textarea.setValue(
+      String::FromUTF8(RTO "Hebrew" LTO " English " RTO "Arabic" LTO));
+  // This textarea is rendered as:
+  //    -----------------
+  //    | EnglishwerbeH |
+  //    |cibarA         |
+  //     ----------------
+  RunDocumentLifecycle();
+  EXPECT_EQ(String::FromUTF8(RTO "Hebrew" LTO " English \n" RTO "Arabic" LTO),
+            textarea.ValueWithHardLineBreaks());
+#undef LTO
+#undef RTO
 }
 
 }  // namespace blink

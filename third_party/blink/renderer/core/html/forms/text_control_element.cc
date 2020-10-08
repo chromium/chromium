@@ -55,6 +55,9 @@
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
@@ -65,6 +68,26 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
+
+namespace {
+
+Position GetNextSoftBreak(const NGOffsetMapping& mapping,
+                          NGInlineCursor& cursor) {
+  while (cursor) {
+    DCHECK(cursor.Current().IsLineBox()) << cursor.Current();
+    const auto* break_token = cursor.Current().InlineBreakToken();
+    DCHECK(break_token);
+    cursor.MoveToNextLine();
+    // We don't need to emit a LF for the last line.
+    if (!cursor)
+      return Position();
+    if (!break_token->IsForcedBreak())
+      return mapping.GetFirstPosition(break_token->TextOffset());
+  }
+  return Position();
+}
+
+}  // namespace
 
 TextControlElement::TextControlElement(const QualifiedName& tag_name,
                                        Document& doc)
@@ -915,6 +938,44 @@ String TextControlElement::ValueWithHardLineBreaks() const {
   auto* layout_object = To<LayoutBlockFlow>(inner_text->GetLayoutObject());
   if (!layout_object)
     return value();
+
+  if (layout_object->IsLayoutNGObject()) {
+    const auto* items = layout_object->FragmentItems();
+    if (!items)
+      return value();
+    const auto* mapping = NGInlineNode::GetOffsetMapping(layout_object);
+    if (!mapping)
+      return value();
+    NGInlineCursor cursor(*items);
+    Position break_position = GetNextSoftBreak(*mapping, cursor);
+    StringBuilder result;
+    for (Node& node : NodeTraversal::DescendantsOf(*inner_text)) {
+      if (IsA<HTMLBRElement>(node)) {
+        DCHECK_EQ(&node, inner_text->lastChild());
+        if (&node != inner_text->lastChild())
+          result.Append(kNewlineCharacter);
+      } else if (auto* text_node = DynamicTo<Text>(node)) {
+        String data = text_node->data();
+        unsigned length = data.length();
+        unsigned position = 0;
+        while (break_position.AnchorNode() == node &&
+               static_cast<unsigned>(break_position.OffsetInContainerNode()) <=
+                   length) {
+          unsigned break_offset = break_position.OffsetInContainerNode();
+          if (break_offset > position) {
+            result.Append(data, position, break_offset - position);
+            position = break_offset;
+            result.Append(kNewlineCharacter);
+          }
+          break_position = GetNextSoftBreak(*mapping, cursor);
+        }
+        result.Append(data, position, length - position);
+      }
+      while (break_position.AnchorNode() == node)
+        break_position = GetNextSoftBreak(*mapping, cursor);
+    }
+    return result.ToString();
+  }
 
   Node* break_node;
   unsigned break_offset;

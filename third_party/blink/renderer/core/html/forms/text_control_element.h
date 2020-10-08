@@ -233,6 +233,8 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   String value_before_set_suggested_value_;
 
   FRIEND_TEST_ALL_PREFIXES(TextControlElementTest, IndexForPosition);
+  FRIEND_TEST_ALL_PREFIXES(HTMLTextAreaElementTest, ValueWithHardLineBreaks);
+  FRIEND_TEST_ALL_PREFIXES(HTMLTextAreaElementTest, ValueWithHardLineBreaksRtl);
 };
 
 inline bool IsTextControl(const Node& node) {
