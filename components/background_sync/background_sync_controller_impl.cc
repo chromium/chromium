@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/background_sync/background_sync_controller_impl.h"
+#include "components/background_sync/background_sync_controller_impl.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/history/core/browser/history_service.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/background_sync_context.h"
