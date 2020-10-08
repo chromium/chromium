@@ -22,29 +22,34 @@ AccessContextAuditService::CookieAccessHelper::CookieAccessHelper(
   DCHECK(service);
   deletion_observer_.Add(service);
 }
-AccessContextAuditService::CookieAccessHelper::~CookieAccessHelper() = default;
+
+AccessContextAuditService::CookieAccessHelper::~CookieAccessHelper() {
+  FlushCookieRecords();
+}
 
 void AccessContextAuditService::CookieAccessHelper::OnCookieDeleted(
     const net::CanonicalCookie& cookie) {
-  seen_cookies_.erase(cookie);
+  accessed_cookies_.erase(cookie);
 }
 
 void AccessContextAuditService::CookieAccessHelper::RecordCookieAccess(
     const net::CookieList& accessed_cookies,
     const url::Origin& top_frame_origin) {
-  net::CookieList new_cookies;
-  for (const auto& cookie : accessed_cookies) {
-    if (!seen_cookies_.count(cookie)) {
-      new_cookies.push_back(cookie);
-      seen_cookies_.insert(cookie);
-    }
+  if (top_frame_origin != last_seen_top_frame_origin_) {
+    FlushCookieRecords();
+    last_seen_top_frame_origin_ = top_frame_origin;
   }
-  if (!new_cookies.empty())
-    service_->RecordCookieAccess(new_cookies, top_frame_origin);
+
+  for (const auto& cookie : accessed_cookies)
+    accessed_cookies_.insert(cookie);
 }
 
-void AccessContextAuditService::CookieAccessHelper::ClearSeenCookies() {
-  seen_cookies_.clear();
+void AccessContextAuditService::CookieAccessHelper::FlushCookieRecords() {
+  if (accessed_cookies_.empty())
+    return;
+
+  service_->RecordCookieAccess(accessed_cookies_, last_seen_top_frame_origin_);
+  accessed_cookies_.clear();
 }
 
 AccessContextAuditService::AccessContextAuditService(Profile* profile)
@@ -84,7 +89,7 @@ bool AccessContextAuditService::Init(
 }
 
 void AccessContextAuditService::RecordCookieAccess(
-    const net::CookieList& accessed_cookies,
+    const canonical_cookie::CookieHashSet& accessed_cookies,
     const url::Origin& top_frame_origin) {
   // Opaque top frame origins are not supported.
   if (top_frame_origin.opaque())
@@ -129,6 +134,9 @@ void AccessContextAuditService::GetAllAccessRecords(
   if (!user_visible_tasks_in_progress++)
     database_task_runner_->UpdatePriority(base::TaskPriority::USER_VISIBLE);
 
+  for (auto& helper : cookie_access_helpers_)
+    helper.FlushCookieRecords();
+
   database_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&AccessContextAuditDatabase::GetAllRecords, database_),
@@ -160,6 +168,7 @@ void AccessContextAuditService::RemoveAllRecordsForOriginKeyedStorage(
 }
 
 void AccessContextAuditService::Shutdown() {
+  DCHECK(!cookie_access_helpers_.might_have_observers());
   ClearSessionOnlyRecords();
 }
 

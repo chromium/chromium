@@ -687,51 +687,42 @@ TEST_F(AccessContextAuditServiceTest, CookieAccessHelper) {
       base::nullopt /* server_time */);
 
   // Record access to the cookie via a helper.
-  AccessContextAuditService::CookieAccessHelper helper(service());
-  helper.RecordCookieAccess({*test_cookie}, kTopFrameOrigin);
-
-  // Confirm cookie access has been recorded.
-  auto records = GetAllAccessRecords();
-  EXPECT_EQ(1u, records.size());
-  CheckContainsCookieRecord(test_cookie.get(), kTopFrameOrigin, kAccessTime1,
-                            records);
+  auto helper = std::make_unique<AccessContextAuditService::CookieAccessHelper>(
+      service());
+  helper->RecordCookieAccess({*test_cookie}, kTopFrameOrigin);
 
   // Reaccess the cookie at a later time.
   const base::Time kAccessTime2 =
       clock()->Now() + base::TimeDelta::FromMinutes(1);
   clock()->SetNow(kAccessTime2);
-  helper.RecordCookieAccess({*test_cookie}, kTopFrameOrigin);
+  helper->RecordCookieAccess({*test_cookie}, kTopFrameOrigin);
 
-  // The only record should match the first access.
-  records = GetAllAccessRecords();
-  EXPECT_EQ(1u, records.size());
-  CheckContainsCookieRecord(test_cookie.get(), kTopFrameOrigin, kAccessTime1,
-                            records);
-
-  // Clear seen cookies on the helper and reaccess the cookie, and confirm that
-  // the database record is also updated.
-  helper.ClearSeenCookies();
-  helper.RecordCookieAccess({*test_cookie}, kTopFrameOrigin);
-
-  records = GetAllAccessRecords();
+  // The only record should match the second access.
+  auto records = GetAllAccessRecords();
   EXPECT_EQ(1u, records.size());
   CheckContainsCookieRecord(test_cookie.get(), kTopFrameOrigin, kAccessTime2,
                             records);
 
   // Inform the audit service that the cookie has been deleted, which should
-  // cause the helper to clear it from the set of accessed cookies.
+  // cause the helper to clear it from the set of accessed cookies and remove
+  // the database record.
   service()->OnCookieChange(
       net::CookieChangeInfo(*test_cookie, net::CookieAccessResult(),
                             net::CookieChangeCause::EXPLICIT));
 
-  // Update the access time and reaccess the cookie, this should update the
-  // record in the database as the deletion should have cleared it from the set
-  // of seen cookies.
+  // Flush the helper and ensure that no cookie access is recorded.
+  helper->FlushCookieRecords();
+  records = GetAllAccessRecords();
+  EXPECT_EQ(0u, records.size());
+
+  // Record a cookie access and delete the helper, the access should be flushed
+  // to the service.
   const base::Time kAccessTime3 =
       clock()->Now() + base::TimeDelta::FromMinutes(1);
   clock()->SetNow(kAccessTime3);
-  helper.RecordCookieAccess({*test_cookie}, kTopFrameOrigin);
+  helper->RecordCookieAccess({*test_cookie}, kTopFrameOrigin);
 
+  helper.reset();
   records = GetAllAccessRecords();
   EXPECT_EQ(1u, records.size());
   CheckContainsCookieRecord(test_cookie.get(), kTopFrameOrigin, kAccessTime3,

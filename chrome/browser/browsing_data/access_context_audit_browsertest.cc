@@ -498,6 +498,51 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, MultipleAccesses) {
     EXPECT_EQ(record.last_access_time, clock.Now());
 }
 
+IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, TabClosed) {
+  // Ensure closing a tab correctly flushes access records.
+  NavigateToTopLevelPage();
+  NavigateToEmbeddedPage();
+
+  // Close the previous tab, but keep the browser active to ensure the profile
+  // does not begin destruction.
+  AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED);
+  browser()->tab_strip_model()->CloseWebContentsAt(0,
+                                                   TabStripModel::CLOSE_NONE);
+
+  auto records = GetAllAccessRecords();
+  auto cookies = GetAllCookies();
+  unsigned expected_cookie_records =
+      2 * kEmbeddedPageCookieCount + kTopLevelPageCookieCount;
+  unsigned expected_origin_storage_records = 3 * kOriginStorageTypes.size();
+  EXPECT_EQ(records.size(),
+            expected_cookie_records + expected_origin_storage_records);
+
+  CheckContainsCookieAndRecord(cookies, records, top_level_origin(), "embedder",
+                               kTopLevelHost, "/",
+                               /*compare_host_only*/ true);
+  CheckContainsCookieAndRecord(cookies, records, top_level_origin(),
+                               "session_only", kEmbeddedHost, "/",
+                               /*compare_host_only*/ true);
+  CheckContainsCookieAndRecord(cookies, records, top_level_origin(),
+                               "persistent", kEmbeddedHost, "/",
+                               /*compare_host_only*/ true);
+  CheckContainsCookieAndRecord(cookies, records, embedded_origin(),
+                               "persistent", kEmbeddedHost, "/",
+                               /*compare_host_only*/ true);
+  CheckContainsCookieAndRecord(cookies, records, embedded_origin(),
+                               "session_only", kEmbeddedHost, "/",
+                               /*compare_host_only*/ true);
+  CheckContainsOriginStorageRecords(records, kOriginStorageTypes,
+                                    top_level_origin(), top_level_origin(),
+                                    /* compare__host_only */ true);
+  CheckContainsOriginStorageRecords(records, kOriginStorageTypes,
+                                    embedded_origin(), top_level_origin(),
+                                    /* compare__host_only */ true);
+  CheckContainsOriginStorageRecords(records, kOriginStorageTypes,
+                                    embedded_origin(), embedded_origin(),
+                                    /* compare_host_only */ true);
+}
+
 class AccessContextAuditSessionRestoreBrowserTest
     : public AccessContextAuditBrowserTest {
  public:

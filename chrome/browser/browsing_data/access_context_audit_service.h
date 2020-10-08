@@ -33,34 +33,37 @@ class AccessContextAuditService
   void RemoveObserver(CookieAccessHelper* helper);
 
   // A helper class used to report cookie accesses to the audit service. Keeps
-  // an internal record of cookie accesses which have already been seen.
-  // Repeated calls to RecordCookieAccess are ignored until the cookie is
-  // observed as deleted, or the set of seen cookies is cleared via
-  // ClearSeenCookies.
+  // an in-memory set of cookie accesses which are flushed to the audit service
+  // when a different top_frame_origin is provided, or when the helper is
+  // destroyed. Helpers should not outlive the audit service, this is DCHECK
+  // enforced on audit service shutdown.
   class CookieAccessHelper : public base::CheckedObserver {
    public:
     explicit CookieAccessHelper(AccessContextAuditService* service);
     ~CookieAccessHelper() override;
 
-    // Selectively forwards cookie accesses to the audit service based on
-    // whether this helper has previously seen the cookie.
+    // Adds the list of |accessed_cookies| to the in memory set of accessed
+    // cookies. If |top_frame_origin| has a different value than previously
+    // provided to this function, then first the set of accessed cookies is
+    // flushed to the database and cleared.
     void RecordCookieAccess(const net::CookieList& accessed_cookies,
                             const url::Origin& top_frame_origin);
 
     // Observer method called by the audit service when a cookie has been
-    // deleted and future accesses should be reported.
+    // deleted and should be removed from the in-memory set of accessed cookies.
     void OnCookieDeleted(const net::CanonicalCookie& cookie);
 
-    // Resets the internal set of seen cookies, resulting in future reported
-    // accesses to those cookies being forwarded to the service for recording.
-    // This should be called at least prior to every top-frame navigation,
-    // calling more frequently increases accuracy of access timestamps but also
-    // increases performance overhead.
-    void ClearSeenCookies();
-
    private:
+    friend class AccessContextAuditService;
+    FRIEND_TEST_ALL_PREFIXES(AccessContextAuditServiceTest, CookieAccessHelper);
+
+    // Clear the in-memory set of accessed cookies after passing them to the
+    // audit service for persisting to disk.
+    void FlushCookieRecords();
+
     AccessContextAuditService* service_;
-    canonical_cookie::CookieHashSet seen_cookies_;
+    canonical_cookie::CookieHashSet accessed_cookies_;
+    url::Origin last_seen_top_frame_origin_;
     ScopedObserver<AccessContextAuditService, CookieAccessHelper>
         deletion_observer_{this};
   };
@@ -134,8 +137,9 @@ class AccessContextAuditService
 
   // Records accesses for all cookies in |details| against |top_frame_origin|.
   // Should only be accessed via the CookieAccessHelper.
-  void RecordCookieAccess(const net::CookieList& accessed_cookies,
-                          const url::Origin& top_frame_origin);
+  void RecordCookieAccess(
+      const canonical_cookie::CookieHashSet& accessed_cookies,
+      const url::Origin& top_frame_origin);
 
   // Removes any records which are session only from the database.
   void ClearSessionOnlyRecords();
