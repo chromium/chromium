@@ -76,6 +76,7 @@ target(link_target_type, "child") {
     "//components/webcrypto",
     "//content/app/resources",
     "//content/common",
+    "//content/common:mojo_bindings",
     "//content/public/common:common_sources",
     "//crypto:platform",
     "//device/gamepad/public/cpp:switches",
