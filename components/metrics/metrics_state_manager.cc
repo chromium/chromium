@@ -216,6 +216,10 @@ int64_t MetricsStateManager::GetInstallDate() const {
   return ReadInstallDate(local_state_);
 }
 
+int MetricsStateManager::GetLowEntropySource() {
+  return entropy_state_.GetLowEntropySource();
+}
+
 void MetricsStateManager::ForceClientIdCreation() {
   // TODO(asvitkine): Ideally, all tests would actually set up consent properly,
   // so the command-line check wouldn't be needed here.
@@ -373,10 +377,6 @@ std::string MetricsStateManager::GetHighEntropySource() {
   // this, because field trial setup happens at Chrome initialization.
   DCHECK(!initial_client_id_.empty());
   return entropy_state_.GetHighEntropySource(initial_client_id_);
-}
-
-int MetricsStateManager::GetLowEntropySource() {
-  return entropy_state_.GetLowEntropySource();
 }
 
 int MetricsStateManager::GetOldLowEntropySource() {

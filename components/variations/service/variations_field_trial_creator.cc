@@ -432,7 +432,8 @@ bool VariationsFieldTrialCreator::SetupFieldTrials(
         low_entropy_provider,
     std::unique_ptr<base::FeatureList> feature_list,
     PlatformFieldTrials* platform_field_trials,
-    SafeSeedManager* safe_seed_manager) {
+    SafeSeedManager* safe_seed_manager,
+    base::Optional<int> low_entropy_source_value) {
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kEnableBenchmarking) ||
@@ -468,11 +469,13 @@ bool VariationsFieldTrialCreator::SetupFieldTrials(
 
   VariationsIdsProvider* http_header_provider =
       VariationsIdsProvider::GetInstance();
+  http_header_provider->SetLowEntropySourceValue(low_entropy_source_value);
   // Force the variation ids selected in chrome://flags and/or specified using
   // the command-line flag.
   auto result = http_header_provider->ForceVariationIds(
       variation_ids,
       command_line->GetSwitchValueASCII(switches::kForceVariationIds));
+
   switch (result) {
     case VariationsIdsProvider::ForceIdsResult::INVALID_SWITCH_ENTRY:
       ExitWithMessage(base::StringPrintf("Invalid --%s list specified.",

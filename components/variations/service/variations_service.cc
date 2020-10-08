@@ -999,7 +999,8 @@ bool VariationsService::SetupFieldTrials(
   return field_trial_creator_.SetupFieldTrials(
       kEnableGpuBenchmarking, kEnableFeatures, kDisableFeatures, variation_ids,
       extra_overrides, CreateLowEntropyProvider(), std::move(feature_list),
-      platform_field_trials, &safe_seed_manager_);
+      platform_field_trials, &safe_seed_manager_,
+      state_manager_->GetLowEntropySource());
 }
 
 void VariationsService::OverrideCachedUIStrings() {

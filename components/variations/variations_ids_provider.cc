@@ -110,6 +110,18 @@ VariationsIdsProvider::GetVariationsVectorForWebPropertiesKeys() {
   return GetVariationsVectorImpl(web_properties_keys);
 }
 
+void VariationsIdsProvider::SetLowEntropySourceValue(
+    base::Optional<int> low_entropy_source_value) {
+  // The low entropy source value is an integer that is between 0 and 7999,
+  // inclusive. See components/metrics/metrics_state_manager.cc for the logic to
+  // generate it.
+  if (low_entropy_source_value) {
+    DCHECK(low_entropy_source_value.value() >= 0 &&
+           low_entropy_source_value.value() <= 7999);
+  }
+  low_entropy_source_value_ = low_entropy_source_value;
+}
+
 VariationsIdsProvider::ForceIdsResult VariationsIdsProvider::ForceVariationIds(
     const std::vector<std::string>& variation_ids,
     const std::string& command_line_variation_ids) {

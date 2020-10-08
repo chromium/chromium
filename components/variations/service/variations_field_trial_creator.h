@@ -70,6 +70,8 @@ class VariationsFieldTrialCreator {
   // |safe_seed_manager| should be notified of the combined server and client
   // state that was activated to create the field trials (only when the return
   // value is true).
+  // |low_entropy_source_value| contains the low entropy source value that was
+  // used for client-side randomization of variations.
   // |extra_overrides| gives a list of feature overrides that should be applied
   // after the features explicitly disabled/enabled from the command line via
   // --disable-features and --enable-features, but before field trials.
@@ -88,7 +90,8 @@ class VariationsFieldTrialCreator {
           low_entropy_provider,
       std::unique_ptr<base::FeatureList> feature_list,
       PlatformFieldTrials* platform_field_trials,
-      SafeSeedManager* safe_seed_manager);
+      SafeSeedManager* safe_seed_manager,
+      base::Optional<int> low_entropy_source_value);
 
   // Returns all of the client state used for filtering studies.
   // As a side-effect, may update the stored permanent consistency country.

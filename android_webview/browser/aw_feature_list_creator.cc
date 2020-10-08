@@ -216,14 +216,16 @@ void AwFeatureListCreator::SetUpFieldTrials() {
 
   // Populate FieldTrialList. Since low_entropy_provider is null, it will fall
   // back to the provider we previously gave to FieldTrialList, which is a low
-  // entropy provider.
+  // entropy provider. The X-Client-Data header is not reported on WebView, so
+  // we pass an empty object as the |low_entropy_source_value|.
   variations_field_trial_creator_->SetupFieldTrials(
       cc::switches::kEnableGpuBenchmarking, switches::kEnableFeatures,
       switches::kDisableFeatures, std::vector<std::string>(),
       content::GetSwitchDependentFeatureOverrides(
           *base::CommandLine::ForCurrentProcess()),
       /*low_entropy_provider=*/nullptr, std::make_unique<base::FeatureList>(),
-      aw_field_trials_.get(), &ignored_safe_seed_manager);
+      aw_field_trials_.get(), &ignored_safe_seed_manager,
+      /*low_entropy_source_value=*/base::nullopt);
 }
 
 void AwFeatureListCreator::CreateLocalState() {

@@ -96,6 +96,10 @@ class VariationsIdsProvider : public base::FieldTrialList::Observer,
   // related keys.
   std::vector<VariationID> GetVariationsVectorForWebPropertiesKeys();
 
+  // Sets low entropy source value that was used for client-side randomization
+  // of variations.
+  void SetLowEntropySourceValue(base::Optional<int> low_entropy_source_value);
+
   // Result of ForceVariationIds() call.
   enum class ForceIdsResult {
     SUCCESS,
@@ -217,6 +221,10 @@ class VariationsIdsProvider : public base::FieldTrialList::Observer,
 
   // Guards access to variables below.
   base::Lock lock_;
+
+  // Low entropy source value from client that was used for client-side
+  // randomization of variations.
+  base::Optional<int> low_entropy_source_value_;
 
   // Whether or not we've initialized the caches.
   bool variation_ids_cache_initialized_;
