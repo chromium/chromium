@@ -70,6 +70,7 @@ GEN('#include "content/public/test/browser_test.h"');
   ]],
   ['PsimFlowUi', 'cellular_setup/psim_flow_ui_test.js',[
     './cellular_setup/fake_cellular_setup_delegate.js',
+    './cellular_setup/fake_cellular_setup_remote.js',
   ]],
   ['SetupSelectionFlow', 'cellular_setup/setup_selection_flow_test.js',[
     './cellular_setup/fake_cellular_setup_delegate.js',

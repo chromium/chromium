@@ -17,8 +17,11 @@ js_modulizer("modulize") {
     "setup_selection_flow_test.js",
     "sim_detect_page_test.js",
     "fake_cellular_setup_delegate.js",
+    "fake_cellular_setup_remote.js",
   ]
-  namespace_rewrites =
-      cr_components_chromeos_namespace_rewrites +
-      [ "cellular_setup.FakeCellularSetupDelegate|FakeCellularSetupDelegate" ]
+  namespace_rewrites = cr_components_chromeos_namespace_rewrites + [
+                         "cellular_setup.FakeCellularSetupDelegate|FakeCellularSetupDelegate",
+                         "cellular_setup.FakeCarrierPortalHandlerRemote|FakeCarrierPortalHandlerRemote",
+                         "cellular_setup.FakeCellularSetupRemote|FakeCellularSetupRemote",
+                       ]
 }

@@ -78,6 +78,8 @@ cr.define('cellularSetup', function() {
       nameOfCarrierPendingSetup: {
         type: String,
         notify: true,
+        computed: 'getCarrierText(' +
+            'selectedPSimPageName_, cellularMetadata_.*)',
       },
 
       /**
@@ -133,9 +135,9 @@ cr.define('cellularSetup', function() {
 
     /**
      * Provides an interface to the CellularSetup Mojo service.
-     * @private {?cellular_setup.MojoInterfaceProvider}
+     * @private {?chromeos.cellularSetup.mojom.CellularSetupRemote}
      */
-    mojoInterfaceProvider_: null,
+    cellularSetupRemote_: null,
 
     /**
      * Delegate responsible for routing activation started/finished events.
@@ -159,8 +161,7 @@ cr.define('cellularSetup', function() {
 
     /** @override */
     created() {
-      this.mojoInterfaceProvider_ =
-          cellular_setup.MojoInterfaceProviderImpl.getInstance();
+      this.cellularSetupRemote_ = cellular_setup.getCellularSetupRemote();
     },
 
     /**
@@ -265,6 +266,15 @@ cr.define('cellularSetup', function() {
     },
 
     /** @private */
+    getCarrierText() {
+      if (this.selectedPSimPageName_ === PSimPageName.PROVISIONING &&
+          this.cellularMetadata_) {
+        return this.cellularMetadata_.carrier;
+      }
+      return '';
+    },
+
+    /** @private */
     updateShowError_() {
       switch (this.state_) {
         case PSimUIState.TIMEOUT_START_ACTIVATION:
@@ -293,7 +303,6 @@ cr.define('cellularSetup', function() {
         case PSimUIState.WAITING_FOR_USER_PAYMENT:
         case PSimUIState.ACTIVATION_SUCCESS:
           this.selectedPSimPageName_ = PSimPageName.PROVISIONING;
-          this.nameOfCarrierPendingSetup = 'TODO: network title';
           return;
         case PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH:
         case PSimUIState.TIMEOUT_FINISH_ACTIVATION:
@@ -356,7 +365,7 @@ cr.define('cellularSetup', function() {
                */
               (this));
 
-      this.mojoInterfaceProvider_.getMojoServiceRemote()
+      this.cellularSetupRemote_
           .startActivation(
               this.activationDelegateReceiver_.$.bindNewPipeAndPassRemote())
           .then(

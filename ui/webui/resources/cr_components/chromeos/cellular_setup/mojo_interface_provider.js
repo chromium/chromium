@@ -2,37 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+// clang-format off
+// #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+// #import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
+// #import 'chrome://resources/mojo/chromeos/services/cellular_setup/public/mojom/cellular_setup.mojom-lite.js';
+// clang-format on
 
 cr.define('cellular_setup', function() {
-  /** @interface */
-  /* #export */ class MojoInterfaceProvider {
-    /** @return {!chromeos.cellularSetup.mojom.CellularSetupRemote} */
-    getMojoServiceRemote() {}
+  let cellularRemote = null;
+
+  /**
+   * @param {?chromeos.cellularSetup.mojom.CellularSetupRemote}
+   *        testCellularRemote A test cellular remote
+   */
+  /* #export */ function setCellularSetupRemoteForTesting(testCellularRemote) {
+    cellularRemote = testCellularRemote;
   }
 
-  /** @implements {cellular_setup.MojoInterfaceProvider} */
-  /* #export */ class MojoInterfaceProviderImpl {
-    constructor() {
-      /** @private {?chromeos.cellularSetup.mojom.CellularSetupRemote} */
-      this.remote_ = null;
+  /**
+   * @returns {!chromeos.cellularSetup.mojom.CellularSetupRemote}
+   */
+  /* #export */ function getCellularSetupRemote() {
+    if (cellularRemote) {
+      return cellularRemote;
     }
 
-    /** @override */
-    getMojoServiceRemote() {
-      if (!this.remote_) {
-        this.remote_ = chromeos.cellularSetup.mojom.CellularSetup.getRemote();
-      }
+    cellularRemote = chromeos.cellularSetup.mojom.CellularSetup.getRemote();
 
-      return this.remote_;
-    }
+    return cellularRemote;
   }
-
-  cr.addSingletonGetter(MojoInterfaceProviderImpl);
 
   // #cr_define_end
-  return {
-    MojoInterfaceProvider: MojoInterfaceProvider,
-    MojoInterfaceProviderImpl: MojoInterfaceProviderImpl,
-  };
+  return {setCellularSetupRemoteForTesting, getCellularSetupRemote};
 });

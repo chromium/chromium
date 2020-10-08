@@ -85,6 +85,7 @@ if (optimize_webui) {
       "../../../../../ui/webui/resources:preprocess",
     ]
     excludes = [
+      "chrome://resources/mojo/chromeos/services/cellular_setup/public/mojom/cellular_setup.mojom-lite.js",
       "chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js",
       "chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js",
       "chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js",
