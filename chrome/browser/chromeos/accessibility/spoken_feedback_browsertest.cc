@@ -871,6 +871,26 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, SmartStickyMode) {
   sm_.ExpectSpeech("Sticky mode enabled");
   sm_.ExpectSpeech("start");
 
+  // Try a few jump commands and linear nav with no Search modifier. We never
+  // leave sticky mode.
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_E); });
+  sm_.ExpectSpeech("Edit text");
+
+  sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_F); });
+  sm_.ExpectSpeech("Edit text");
+
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_RIGHT); });
+  sm_.ExpectSpeech("end");
+
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_F); });
+  sm_.ExpectSpeech("Edit text");
+
+  sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_E); });
+  sm_.ExpectSpeech("Edit text");
+
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_LEFT); });
+  sm_.ExpectSpeech("start");
+
   // Now, navigate with sticky mode off.
   sm_.Call([this]() { SendStickyKeyCommand(); });
   sm_.ExpectSpeech("Sticky mode disabled");
