@@ -182,7 +182,8 @@ class ArcFileSystemWatcherServiceFactory
 // directory.
 class ArcFileSystemWatcherService::FileSystemWatcher {
  public:
-  using Callback = base::Callback<void(const std::vector<std::string>& paths)>;
+  using Callback =
+      base::RepeatingCallback<void(const std::vector<std::string>& paths)>;
 
   FileSystemWatcher(const Callback& callback,
                     const base::FilePath& cros_dir,
