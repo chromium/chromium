@@ -110,7 +110,7 @@ class Executive(object):
 
         if kill_tree is True, the whole process group will be killed.
 
-        Will fail silently if pid does not exist or insufficient permissions.
+        Will fail silently if pid does not exist.
         """
         if sys.platform == 'win32':
             # Workaround for race condition that occurs when the browser is
@@ -136,7 +136,9 @@ class Executive(object):
                 os.killpg(os.getpgid(pid), signal.SIGKILL)
             else:
                 os.kill(pid, signal.SIGKILL)
-            os.waitpid(pid, os.WNOHANG)
+            # At this point if no exception has been raised, the kill has
+            # succeeded, so we can safely use a blocking wait.
+            os.waitpid(pid, 0)
         except OSError as error:
             if error.errno == errno.ESRCH:
                 _log.debug("PID %s does not exist.", pid)
