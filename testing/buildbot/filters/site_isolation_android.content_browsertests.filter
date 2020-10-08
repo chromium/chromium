@@ -2,6 +2,6 @@
 -RenderFrameHostManagerTest.ForegroundNavigationIsNeverBackgroundedWithSpareProcess
 
 # https://crbug.com/906256
--BlockedSchemeNavigationBrowserTest.PDF_NavigationFromFrame_TopFrameHasBlockedScheme_Block/1
--BlockedSchemeNavigationBrowserTest.PDF_NavigationFromFrame_Block/1
+-All/BlockedSchemeNavigationBrowserTest.PDF_NavigationFromFrame_TopFrameHasBlockedScheme_Block*
+-All/BlockedSchemeNavigationBrowserTest.PDF_NavigationFromFrame_Block*
 
