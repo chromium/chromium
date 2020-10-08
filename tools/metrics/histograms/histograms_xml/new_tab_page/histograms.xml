@@ -1135,6 +1135,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.ShoppingTasks.ProductClick" units="index"
+    expires_after="2021-01-01">
+  <owner>tiborg@chromium.org</owner>
+  <owner>yyushkina@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logged when a user clicked on a product in the shopping tasks module. The
+    value is equal to the index of the product.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.ShoppingTasks.RelatedSearchClick" units="index"
+    expires_after="2021-01-01">
+  <owner>tiborg@chromium.org</owner>
+  <owner>yyushkina@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logged when a user clicked on a related search pill in the shopping tasks
+    module. The value is equal to the index of the pill.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Snippets.DatabaseLoadTime" units="ms"
     expires_after="M85">
   <owner>treib@chromium.org</owner>

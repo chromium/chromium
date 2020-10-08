@@ -41,8 +41,24 @@ class ShoppingTasksModuleElement extends PolymerElement {
     this.intersectionObserver_ = null;
   }
 
-  /** @private */
-  onClick_() {
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onProductClick_(e) {
+    const index = this.$.productsRepeat.indexForElement(e.target);
+    ShoppingTasksHandlerProxy.getInstance().handler.onProductClicked(index);
+    this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
+  }
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onPillClick_(e) {
+    const index = this.$.relatedSearchesRepeat.indexForElement(e.target);
+    ShoppingTasksHandlerProxy.getInstance().handler.onRelatedSearchClicked(
+        index);
     this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
   }
 

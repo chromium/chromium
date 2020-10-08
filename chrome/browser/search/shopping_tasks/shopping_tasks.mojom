@@ -49,4 +49,8 @@ interface ShoppingTasksHandler {
   DismissShoppingTask(string task_name);
   // Restores the task with the given name and remembers that setting.
   RestoreShoppingTask(string task_name);
+  // Logs that the product at position |index| has been clicked.
+  OnProductClicked(uint32 index);
+  // Logs that the related search pill at position |index| has been clicked.
+  OnRelatedSearchClicked(uint32 index);
 };

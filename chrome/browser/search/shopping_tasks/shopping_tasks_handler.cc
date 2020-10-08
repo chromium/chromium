@@ -4,6 +4,7 @@
 
 #include "chrome/browser/search/shopping_tasks/shopping_tasks_handler.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/shopping_tasks/shopping_tasks_service.h"
 #include "chrome/browser/search/shopping_tasks/shopping_tasks_service_factory.h"
@@ -30,4 +31,13 @@ void ShoppingTasksHandler::DismissShoppingTask(const std::string& task_name) {
 void ShoppingTasksHandler::RestoreShoppingTask(const std::string& task_name) {
   ShoppingTasksServiceFactory::GetForProfile(profile_)->RestoreShoppingTask(
       task_name);
+}
+
+void ShoppingTasksHandler::OnProductClicked(uint32_t index) {
+  base::UmaHistogramCounts100("NewTabPage.ShoppingTasks.ProductClick", index);
+}
+
+void ShoppingTasksHandler::OnRelatedSearchClicked(uint32_t index) {
+  base::UmaHistogramCounts100("NewTabPage.ShoppingTasks.RelatedSearchClick",
+                              index);
 }
