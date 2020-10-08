@@ -23,6 +23,7 @@
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/file_transfer/file_transfer_message_handler.h"
+#include "remoting/host/file_transfer/rtc_log_file_operations.h"
 #include "remoting/host/host_extension_session.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
@@ -41,6 +42,10 @@
 #include "remoting/protocol/session_config.h"
 #include "remoting/protocol/video_frame_pump.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
+
+namespace {
+constexpr char kRtcLogTransferDataChannelPrefix[] = "rtc-log-transfer-";
+}  // namespace
 
 namespace remoting {
 
@@ -182,6 +187,13 @@ void ClientSession::SetCapabilities(
     data_channel_manager_.RegisterCreateHandlerCallback(
         kFileTransferDataChannelPrefix,
         base::BindRepeating(&ClientSession::CreateFileTransferMessageHandler,
+                            base::Unretained(this)));
+  }
+
+  if (HasCapability(capabilities_, protocol::kRtcLogTransferCapability)) {
+    data_channel_manager_.RegisterCreateHandlerCallback(
+        kRtcLogTransferDataChannelPrefix,
+        base::BindRepeating(&ClientSession::CreateRtcLogTransferMessageHandler,
                             base::Unretained(this)));
   }
 
@@ -830,6 +842,14 @@ void ClientSession::CreateFileTransferMessageHandler(
   // up.
   new FileTransferMessageHandler(channel_name, std::move(pipe),
                                  desktop_environment_->CreateFileOperations());
+}
+
+void ClientSession::CreateRtcLogTransferMessageHandler(
+    const std::string& channel_name,
+    std::unique_ptr<protocol::MessagePipe> pipe) {
+  new FileTransferMessageHandler(
+      channel_name, std::move(pipe),
+      std::make_unique<RtcLogFileOperations>(connection_.get()));
 }
 
 void ClientSession::CreateActionMessageHandler(

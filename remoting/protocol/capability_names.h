@@ -15,6 +15,7 @@ constexpr char kSendInitialResolution[] = "sendInitialResolution";
 constexpr char kRateLimitResizeRequests[] = "rateLimitResizeRequests";
 
 constexpr char kFileTransferCapability[] = "fileTransfer";
+constexpr char kRtcLogTransferCapability[] = "rtcLogTransfer";
 
 // TODO(joedow): Ideally these would be dynamically created via the
 // DataChannelManager, we should consider moving them there if we begin using
