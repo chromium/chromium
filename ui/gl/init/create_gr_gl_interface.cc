@@ -203,7 +203,7 @@ const GLubyte* GetStringHook(const char* gl_version_string,
   }
 }
 
-const char* kBlacklistExtensions[] = {
+const char* kBlocklistExtensions[] = {
     "GL_APPLE_framebuffer_multisample",
     "GL_ARB_ES3_1_compatibility",
     "GL_ARB_draw_indirect",
@@ -237,7 +237,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   // Depending on the advertised version and extensions, skia checks for
   // existence of entrypoints. However some of those we don't yet handle in
   // gl_bindings, so we need to fake the version to the maximum fully supported
-  // by the bindings (GL 4.1 or ES 3.0), and blacklist extensions that skia
+  // by the bindings (GL 4.1 or ES 3.0), and blocklist extensions that skia
   // handles but bindings don't.
   // TODO(piman): add bindings for missing entrypoints.
   GrGLFunction<GrGLGetStringFn> get_string;
@@ -274,7 +274,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
     LOG(ERROR) << "Failed to initialize extensions";
     return nullptr;
   }
-  for (const char* extension : kBlacklistExtensions)
+  for (const char* extension : kBlocklistExtensions)
     extensions.remove(extension);
 
   GrGLInterface* interface = new GrGLInterface();

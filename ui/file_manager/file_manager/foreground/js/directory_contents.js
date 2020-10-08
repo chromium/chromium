@@ -438,7 +438,7 @@ class FileFilter extends cr.EventTarget {
   }
 
   /**
-   * Show/Hide uncommon Android folders which are not whitelisted.
+   * Show/Hide uncommon Android folders.
    * @param {boolean} visible True if uncommon folders should be visible to the
    *     user.
    */
@@ -448,8 +448,7 @@ class FileFilter extends cr.EventTarget {
         if (entry.filesystem && entry.filesystem.name !== 'android_files') {
           return true;
         }
-        // If |entry| is an Android top-level folder which is not whitelisted or
-        // its sub folder, it should be hidden.
+        // Hide top-level folder or sub-folders that should be hidden.
         if (entry.fullPath) {
           const components = entry.fullPath.split('/');
           if (components[1] &&

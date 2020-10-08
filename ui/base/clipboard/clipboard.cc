@@ -181,7 +181,7 @@ base::PlatformThreadId Clipboard::GetAndValidateThreadID() {
 
   // A Clipboard instance must be allocated for every thread that uses the
   // clipboard. To prevented unbounded memory use, CHECK that the current thread
-  // was whitelisted to use the clipboard. This is a CHECK rather than a DCHECK
+  // was allowlisted to use the clipboard. This is a CHECK rather than a DCHECK
   // to catch incorrect usage in production (e.g. https://crbug.com/872737).
   CHECK(AllowedThreads().empty() || base::Contains(AllowedThreads(), id));
 

@@ -364,12 +364,12 @@ bool DirectCompositionSurfaceWin::IsDirectCompositionSupported() {
     if (gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE)
       return false;
 
-    // Blacklist direct composition if MCTU.dll or MCTUX.dll are injected. These
+    // Blocklist direct composition if MCTU.dll or MCTUX.dll are injected. These
     // are user mode drivers for display adapters from Magic Control Technology
     // Corporation.
     if (GetModuleHandle(TEXT("MCTU.dll")) ||
         GetModuleHandle(TEXT("MCTUX.dll"))) {
-      DLOG(ERROR) << "Blacklisted due to third party modules";
+      DLOG(ERROR) << "Blocklisted due to third party modules";
       return false;
     }
 

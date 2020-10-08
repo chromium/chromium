@@ -25,7 +25,7 @@ class GL_EXPORT GpuSwitchingManager {
   // Called when a GPU switch is noticed by the system. In the browser process
   // this is occurs as a result of a system observer. In the GPU process, this
   // occurs as a result of an IPC from the browser. The system observer is kept
-  // in the browser process only so that any workarounds or blacklisting can
+  // in the browser process only so that any workarounds or blocklisting can
   // be applied there.
   //
   // The GpuPreference argument is a heuristic indicating whether the

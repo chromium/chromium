@@ -849,8 +849,8 @@ TEST_F(CALayerTreeTest, AVLayer) {
   }
 }
 
-// Ensure that blacklisting AVSampleBufferDisplayLayer works.
-TEST_F(CALayerTreeTest, AVLayerBlacklist) {
+// Ensure that blocklisting AVSampleBufferDisplayLayer works.
+TEST_F(CALayerTreeTest, AVLayerBlocklist) {
   CALayerProperties properties;
   properties.gl_image = CreateGLImage(
       gfx::Size(256, 256), gfx::BufferFormat::YUV_420_BIPLANAR, false);

@@ -809,7 +809,7 @@ void GetEGLInitDisplays(bool supports_angle_d3d,
   // If no display has been explicitly requested and the DefaultANGLEOpenGL
   // experiment is enabled, try creating OpenGL displays first.
   // TODO(oetuaho@nvidia.com): Only enable this path on specific GPUs with a
-  // blacklist entry. http://crbug.com/693090
+  // blocklist entry. http://crbug.com/693090
   if (supports_angle_opengl && use_angle_default &&
       base::FeatureList::IsEnabled(features::kDefaultANGLEOpenGL)) {
     AddInitDisplay(init_displays, ANGLE_OPENGL);
