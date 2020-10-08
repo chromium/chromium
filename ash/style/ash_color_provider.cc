@@ -71,6 +71,12 @@ void AttemptRestartChrome() {
   Shell::Get()->session_controller()->AttemptRestartChrome();
 }
 
+// AshColorProvider is kind of NativeTheme of ChromeOS. This will notify the
+// View::OnThemeChanged to live update the colors on color mode/theme changes.
+void NotifyThemeChanges() {
+  ui::NativeTheme::GetInstanceForNativeUi()->NotifyObservers();
+}
+
 }  // namespace
 
 AshColorProvider::AshColorProvider() {
@@ -406,12 +412,16 @@ void AshColorProvider::NotifyDarkModeEnabledPrefChange() {
   const bool is_enabled = IsDarkModeEnabled();
   for (auto& observer : observers_)
     observer.OnColorModeChanged(is_enabled);
+
+  NotifyThemeChanges();
 }
 
 void AshColorProvider::NotifyColorModeThemedPrefChange() {
   const bool is_themed = IsThemed();
   for (auto& observer : observers_)
     observer.OnColorModeThemed(is_themed);
+
+  NotifyThemeChanges();
 }
 
 }  // namespace ash

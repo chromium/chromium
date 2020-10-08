@@ -248,8 +248,6 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
 
     layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF{kUnifiedTrayCornerRadius});
-    layer()->SetColor(AshColorProvider::Get()->GetBaseLayerColor(
-        AshColorProvider::BaseLayerType::kTransparent80));
     layer()->SetFillsBoundsOpaquely(false);
     layer()->SetIsFastRoundedCorner(true);
     layer()->SetBackgroundBlur(kUnifiedMenuBackgroundBlur);
@@ -467,6 +465,15 @@ void TrayBubbleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 const char* TrayBubbleView::GetClassName() const {
   return "TrayBubbleView";
+}
+
+void TrayBubbleView::OnThemeChanged() {
+  views::BubbleDialogDelegateView::OnThemeChanged();
+  DCHECK(layer());
+  if (layer()->type() != ui::LAYER_SOLID_COLOR)
+    return;
+  layer()->SetColor(AshColorProvider::Get()->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kTransparent80));
 }
 
 void TrayBubbleView::MouseMovedOutOfHost() {

@@ -152,36 +152,37 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   void set_gesture_dragging(bool dragging) { is_gesture_dragging_ = dragging; }
   bool is_gesture_dragging() const { return is_gesture_dragging_; }
 
-  // Overridden from views::WidgetDelegate.
+  // views::WidgetDelegate:
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
   bool WidgetHasHitTestMask() const override;
   void GetWidgetHitTestMask(SkPath* mask) const override;
   base::string16 GetAccessibleWindowTitle() const override;
 
-  // Overridden from views::BubbleDialogDelegateView.
+  // views::BubbleDialogDelegateView:
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
                                 views::Widget* bubble_widget) const override;
   void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   ui::LayerType GetLayerType() const override;
 
-  // Overridden from views::View.
+  // views::View:
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
-  // Overridden from MouseWatcherListener
+  // views::MouseWatcherListener:
   void MouseMovedOutOfHost() override;
 
  protected:
-  // Overridden from views::BubbleDialogDelegateView.
+  // views::BubbleDialogDelegateView:
   ax::mojom::Role GetAccessibleWindowRole() override;
 
-  // Overridden from views::View.
+  // views::View:
   void ChildPreferredSizeChanged(View* child) override;
 
   // Changes the insets from the bubble border. These were initially set using
