@@ -290,8 +290,12 @@ void CaptureModeController::EndVideoRecording() {
 }
 
 bool CaptureModeController::IsCaptureAllowed() const {
-  // TODO(afakhry): Fill in here.
-  return true;
+  const base::Optional<CaptureParams> capture_params = GetCaptureParams();
+  if (!capture_params)
+    return false;
+  return delegate_->IsCaptureAllowed(
+      capture_params->window, capture_params->bounds,
+      /*for_video=*/type_ == CaptureModeType::kVideo);
 }
 
 base::Optional<CaptureModeController::CaptureParams>

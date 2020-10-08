@@ -20,4 +20,10 @@ bool TestCaptureModeDelegate::Uses24HourFormat() const {
   return false;
 }
 
+bool TestCaptureModeDelegate::IsCaptureAllowed(const aura::Window* window,
+                                               const gfx::Rect& bounds,
+                                               bool for_video) const {
+  return true;
+}
+
 }  // namespace ash

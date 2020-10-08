@@ -6,12 +6,26 @@
 
 #include "base/files/file_path.h"
 #include "base/i18n/time_formatting.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/screenshot_area.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/prefs/pref_service.h"
+#include "ui/aura/window.h"
+
+namespace {
+
+ScreenshotArea ConvertToScreenshotArea(const aura::Window* window,
+                                       const gfx::Rect& bounds) {
+  return window->IsRootWindow()
+             ? ScreenshotArea::CreateForPartialWindow(window, bounds)
+             : ScreenshotArea::CreateForWindow(window);
+}
+
+}  // namespace
 
 ChromeCaptureModeDelegate::ChromeCaptureModeDelegate() = default;
 
@@ -37,4 +51,14 @@ bool ChromeCaptureModeDelegate::Uses24HourFormat() const {
   if (profile)
     return profile->GetPrefs()->GetBoolean(prefs::kUse24HourClock);
   return base::GetHourClockType() == base::k24HourClock;
+}
+
+bool ChromeCaptureModeDelegate::IsCaptureAllowed(const aura::Window* window,
+                                                 const gfx::Rect& bounds,
+                                                 bool for_video) const {
+  policy::DlpContentManager* dlp_content_manager =
+      policy::DlpContentManager::Get();
+  const ScreenshotArea area = ConvertToScreenshotArea(window, bounds);
+  // TODO(poromov): Implement check for video capture.
+  return for_video ? true : !dlp_content_manager->IsScreenshotRestricted(area);
 }

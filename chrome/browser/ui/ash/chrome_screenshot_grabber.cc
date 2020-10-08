@@ -277,31 +277,6 @@ void EnsureLocalDirectoryExists(
 
 }  // namespace
 
-// static
-ScreenshotArea ScreenshotArea::CreateForAllRootWindows() {
-  return ScreenshotArea(ScreenshotType::kAllRootWindows, nullptr,
-                        base::nullopt);
-}
-
-// static
-ScreenshotArea ScreenshotArea::CreateForWindow(const aura::Window* window) {
-  return ScreenshotArea(ScreenshotType::kWindow, window, base::nullopt);
-}
-
-// static
-ScreenshotArea ScreenshotArea::CreateForPartialWindow(
-    const aura::Window* window,
-    const gfx::Rect rect) {
-  return ScreenshotArea(ScreenshotType::kPartialWindow, window, rect);
-}
-
-ScreenshotArea::ScreenshotArea(const ScreenshotArea& area) = default;
-
-ScreenshotArea::ScreenshotArea(ScreenshotType type,
-                               const aura::Window* window,
-                               base::Optional<const gfx::Rect> rect)
-    : type(type), window(window), rect(rect) {}
-
 ChromeScreenshotGrabber::ChromeScreenshotGrabber()
     : screenshot_grabber_(new ui::ScreenshotGrabber) {
   DCHECK(!g_chrome_screenshot_grabber_instance);

@@ -7,9 +7,17 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 
+namespace aura {
+class Window;
+}  // namespace aura
+
 namespace base {
 class FilePath;
 }  // namespace base
+
+namespace gfx {
+class Rect;
+}  // namespace gfx
 
 namespace ash {
 
@@ -32,6 +40,12 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // vs. 2:00 PM). This is used to build the file name of the captured image or
   // video.
   virtual bool Uses24HourFormat() const = 0;
+
+  // Returns whether capture of the region defined by |window| and |bounds|
+  // is currently allowed or not.
+  virtual bool IsCaptureAllowed(const aura::Window* window,
+                                const gfx::Rect& bounds,
+                                bool for_video) const = 0;
 };
 
 }  // namespace ash

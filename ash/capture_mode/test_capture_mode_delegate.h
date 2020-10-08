@@ -20,6 +20,9 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   base::FilePath GetActiveUserDownloadsDir() const override;
   void ShowScreenCaptureItemInFolder(const base::FilePath& file_path) override;
   bool Uses24HourFormat() const override;
+  bool IsCaptureAllowed(const aura::Window* window,
+                        const gfx::Rect& bounds,
+                        bool for_video) const override;
 };
 
 }  // namespace ash
