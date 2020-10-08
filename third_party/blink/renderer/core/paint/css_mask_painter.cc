@@ -27,7 +27,6 @@ base::Optional<IntRect> CSSMaskPainter::MaskBoundingBox(
           SVGResources::ReferenceBoxForEffects(object);
       const float reference_box_zoom =
           object.IsSVGForeignObject() ? object.StyleRef().EffectiveZoom() : 1;
-      masker->ClearInvalidationMask();
       return EnclosingIntRect(
           masker->ResourceBoundingBox(reference_box, reference_box_zoom));
     }
