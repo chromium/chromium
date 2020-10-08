@@ -14,9 +14,9 @@ void TestAppRegistryController::Init(base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
-void TestAppRegistryController::SetAppUserDisplayMode(
-    const AppId& app_id,
-    DisplayMode display_mode) {}
+void TestAppRegistryController::SetAppUserDisplayMode(const AppId& app_id,
+                                                      DisplayMode display_mode,
+                                                      bool is_user_action) {}
 
 void TestAppRegistryController::SetAppIsDisabled(const AppId& app_id,
                                                  bool is_disabled) {}

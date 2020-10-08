@@ -2355,7 +2355,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WindowedHostedAndWebApps) {
       WebAppProviderBase::GetProviderBase(browser()->profile());
   DCHECK(provider);
   provider->registry_controller().SetAppUserDisplayMode(
-      web_app_id, web_app::DisplayMode::kStandalone);
+      web_app_id, web_app::DisplayMode::kStandalone, /*is_user_action=*/false);
 
   // The apps should be closed.
   EXPECT_EQ(ash::STATUS_CLOSED,

@@ -108,7 +108,8 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutBrowserTest,
   NavigateToURLAndWait(browser(), GetInstallableAppURL());
   AppId app_id = InstallShortcutAppForCurrentUrl();
   // Change launch container to open in window.
-  registry_controller().SetAppUserDisplayMode(app_id, DisplayMode::kStandalone);
+  registry_controller().SetAppUserDisplayMode(app_id, DisplayMode::kStandalone,
+                                              /*is_user_action=*/false);
 
   Browser* new_browser =
       NavigateInNewWindowAndAwaitInstallabilityCheck(GetInstallableAppURL());

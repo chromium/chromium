@@ -180,12 +180,12 @@ void WebAppUiManagerImpl::UninstallAndReplaceIfExists(
           case extensions::LaunchContainer::kLaunchContainerWindow:
           case extensions::LaunchContainer::kLaunchContainerPanelDeprecated:
             app_registry_controller_->SetAppUserDisplayMode(
-                to_app, DisplayMode::kStandalone);
+                to_app, DisplayMode::kStandalone, /*is_user_action=*/false);
             break;
           case extensions::LaunchContainer::kLaunchContainerTab:
           case extensions::LaunchContainer::kLaunchContainerNone:
             app_registry_controller_->SetAppUserDisplayMode(
-                to_app, DisplayMode::kBrowser);
+                to_app, DisplayMode::kBrowser, /*is_user_action=*/false);
             break;
         }
 

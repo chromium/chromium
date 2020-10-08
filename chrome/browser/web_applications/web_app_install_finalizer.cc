@@ -172,7 +172,8 @@ void WebAppInstallFinalizer::FinalizeInstall(
   // TODO(crbug.com/897314): Store this as a display mode on WebApp to
   // participate in the DB transactional model.
   registry_controller().SetExperimentalTabbedWindowMode(
-      app_id, web_app_info.enable_experimental_tabbed_window);
+      app_id, web_app_info.enable_experimental_tabbed_window,
+      /*is_user_action=*/false);
 
   CommitCallback commit_callback = base::BindOnce(
       &WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall,

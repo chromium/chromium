@@ -15,8 +15,10 @@ AppRegistryController::AppRegistryController(Profile* profile)
 
 AppRegistryController::~AppRegistryController() = default;
 
-void AppRegistryController::SetExperimentalTabbedWindowMode(const AppId& app_id,
-                                                            bool enabled) {
+void AppRegistryController::SetExperimentalTabbedWindowMode(
+    const AppId& app_id,
+    bool enabled,
+    bool is_user_action) {
   if (enabled) {
     DCHECK(base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip));
     UpdateBoolWebAppPref(profile()->GetPrefs(), app_id,
@@ -24,7 +26,7 @@ void AppRegistryController::SetExperimentalTabbedWindowMode(const AppId& app_id,
 
     // Set non-experimental window mode to standalone for when the user disables
     // this flag.
-    SetAppUserDisplayMode(app_id, DisplayMode::kStandalone);
+    SetAppUserDisplayMode(app_id, DisplayMode::kStandalone, is_user_action);
   } else {
     RemoveWebAppPref(profile()->GetPrefs(), app_id,
                      kExperimentalTabbedWindowMode);
