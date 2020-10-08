@@ -194,7 +194,14 @@
       {
         "name": "openSettings",
         "type": "function",
-        "description": "Opens chrome://settings/languages page.",
+        "description": "Opens chrome://os-settings/osLanguages page.",
+        "parameters": [
+        ]
+      },
+      {
+        "name": "openSuggestionSettings",
+        "type": "function",
+        "description": "Opens chrome://os-settings/osLanguages/smartInputs page.",
         "parameters": [
         ]
       },

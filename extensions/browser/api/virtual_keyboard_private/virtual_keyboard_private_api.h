@@ -140,6 +140,19 @@ class VirtualKeyboardPrivateOpenSettingsFunction
   ResponseAction Run() override;
 };
 
+class VirtualKeyboardPrivateOpenSuggestionSettingsFunction
+    : public VirtualKeyboardPrivateFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("virtualKeyboardPrivate.openSuggestionSettings",
+                             VIRTUALKEYBOARDPRIVATE_OPENSUGGESTIONSETTINGS)
+
+ protected:
+  ~VirtualKeyboardPrivateOpenSuggestionSettingsFunction() override = default;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 class VirtualKeyboardPrivateSetContainerBehaviorFunction
     : public VirtualKeyboardPrivateFunction {
  public:

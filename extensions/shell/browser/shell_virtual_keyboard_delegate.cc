@@ -57,7 +57,11 @@ bool ShellVirtualKeyboardDelegate::ShowLanguageSettings() {
   return false;
 }
 
-bool ShellVirtualKeyboardDelegate::IsLanguageSettingsEnabled() {
+bool ShellVirtualKeyboardDelegate::ShowSuggestionSettings() {
+  return false;
+}
+
+bool ShellVirtualKeyboardDelegate::IsSettingsEnabled() {
   return false;
 }
 

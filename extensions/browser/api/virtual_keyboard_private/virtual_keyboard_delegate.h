@@ -51,7 +51,7 @@ class VirtualKeyboardDelegate {
 
   // Indicate if settings are accessible and enabled based on current state.
   // For example, settings should be blocked when the session is locked.
-  virtual bool IsLanguageSettingsEnabled() = 0;
+  virtual bool IsSettingsEnabled() = 0;
 
   // Sets the state of the hotrod virtual keyboad.
   virtual void SetHotrodKeyboard(bool enable) = 0;
@@ -75,6 +75,9 @@ class VirtualKeyboardDelegate {
 
   // Launches the settings app. Returns true if successful.
   virtual bool ShowLanguageSettings() = 0;
+
+  // Launches Suggestions page in settings app. Retusn true is successful.
+  virtual bool ShowSuggestionSettings() = 0;
 
   // Sets virtual keyboard window mode.
   virtual bool SetVirtualKeyboardMode(

@@ -26183,6 +26183,24 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="VirtualKeyboard.OpenLanguageSettings">
+  <owner>myy@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <description>
+    Emitted when user click the link to open Language setting page in ChromeOS
+    from the virtual keyboard.
+  </description>
+</action>
+
+<action name="VirtualKeyboard.OpenSuggestionSettings">
+  <owner>myy@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <description>
+    Emitted when user click the link to open Suggestion setting page in ChromeOS
+    from the virtual keyboard.
+  </description>
+</action>
+
 <action name="VirtualKeyboardLoaded">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

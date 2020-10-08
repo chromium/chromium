@@ -128,8 +128,16 @@ void VirtualKeyboardPrivateGetKeyboardConfigFunction::OnKeyboardConfig(
 
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateOpenSettingsFunction::Run() {
-  if (!delegate()->IsLanguageSettingsEnabled() ||
-      !delegate()->ShowLanguageSettings()) {
+  if (!delegate()->IsSettingsEnabled() || !delegate()->ShowLanguageSettings()) {
+    return RespondNow(Error(kUnknownError));
+  }
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+VirtualKeyboardPrivateOpenSuggestionSettingsFunction::Run() {
+  if (!delegate()->IsSettingsEnabled() ||
+      !delegate()->ShowSuggestionSettings()) {
     return RespondNow(Error(kUnknownError));
   }
   return RespondNow(NoArguments());

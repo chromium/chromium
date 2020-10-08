@@ -43,7 +43,8 @@ class ChromeVirtualKeyboardDelegate : public VirtualKeyboardDelegate {
                     const std::string& key_name,
                     int modifiers) override;
   bool ShowLanguageSettings() override;
-  bool IsLanguageSettingsEnabled() override;
+  bool ShowSuggestionSettings() override;
+  bool IsSettingsEnabled() override;
   bool SetVirtualKeyboardMode(int mode_enum,
                               gfx::Rect target_bounds,
                               OnSetModeCallback on_set_mode_callback) override;

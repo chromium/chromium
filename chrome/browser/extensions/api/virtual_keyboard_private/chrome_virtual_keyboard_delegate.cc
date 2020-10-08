@@ -252,7 +252,8 @@ bool ChromeVirtualKeyboardDelegate::ShowLanguageSettings() {
   if (keyboard_client->is_keyboard_enabled())
     keyboard_client->HideKeyboard(ash::HideReason::kUser);
 
-  base::RecordAction(base::UserMetricsAction("OpenLanguageOptionsDialog"));
+  base::RecordAction(
+      base::UserMetricsAction("VirtualKeyboard.OpenLanguageSettings"));
   const std::string path =
       base::FeatureList::IsEnabled(
           ::chromeos::features::kLanguageSettingsUpdate)
@@ -260,6 +261,20 @@ bool ChromeVirtualKeyboardDelegate::ShowLanguageSettings() {
           : chromeos::settings::mojom::kLanguagesAndInputDetailsSubpagePath;
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       ProfileManager::GetActiveUserProfile(), path);
+  return true;
+}
+
+bool ChromeVirtualKeyboardDelegate::ShowSuggestionSettings() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  auto* keyboard_client = ChromeKeyboardControllerClient::Get();
+  if (keyboard_client->is_keyboard_enabled())
+    keyboard_client->HideKeyboard(ash::HideReason::kUser);
+
+  base::RecordAction(
+      base::UserMetricsAction("VirtualKeyboard.OpenSuggestionSettings"));
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+      ProfileManager::GetActiveUserProfile(),
+      chromeos::settings::mojom::kSmartInputsSubpagePath);
   return true;
 }
 
@@ -349,7 +364,7 @@ bool ChromeVirtualKeyboardDelegate::SetRequestedKeyboardState(int state_enum) {
   return true;
 }
 
-bool ChromeVirtualKeyboardDelegate::IsLanguageSettingsEnabled() {
+bool ChromeVirtualKeyboardDelegate::IsSettingsEnabled() {
   return (user_manager::UserManager::Get()->IsUserLoggedIn() &&
           !chromeos::UserAddingScreen::Get()->IsRunning() &&
           !(chromeos::ScreenLocker::default_screen_locker() &&
