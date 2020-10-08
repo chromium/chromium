@@ -268,10 +268,7 @@ class TestPendingAppInstallFinalizer : public InstallFinalizer {
 
 class PendingAppInstallTaskTest : public ChromeRenderViewHostTestHarness {
  public:
-  PendingAppInstallTaskTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {features::kDesktopPWAsWithoutExtensions});
-  }
+  PendingAppInstallTaskTest() = default;
   PendingAppInstallTaskTest(const PendingAppInstallTaskTest&) = delete;
   PendingAppInstallTaskTest& operator=(const PendingAppInstallTaskTest&) =
       delete;
@@ -363,8 +360,6 @@ class PendingAppInstallTaskTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   WebAppInstallManager* install_manager_ = nullptr;
   TestAppRegistrar* registrar_ = nullptr;
   TestDataRetriever* data_retriever_ = nullptr;
