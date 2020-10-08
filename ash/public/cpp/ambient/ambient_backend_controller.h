@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_AMBIENT_AMBIENT_BACKEND_CONTROLLER_H_
 #define ASH_PUBLIC_CPP_AMBIENT_AMBIENT_BACKEND_CONTROLLER_H_
 
+#include <array>
 #include <string>
 #include <vector>
 
@@ -156,6 +157,10 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
 
   // Fetch the weather information.
   virtual void FetchWeather(FetchWeatherCallback) = 0;
+
+  // Get stock photo urls to cache in advance in case Ambient mode is started
+  // without internet access.
+  virtual const std::array<const char*, 2>& GetBackupPhotoUrls() const = 0;
 };
 
 }  // namespace ash

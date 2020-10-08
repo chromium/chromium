@@ -141,9 +141,11 @@ class AmbientAshTestBase : public AshTestBase {
 
   void FetchImage();
 
+  void FetchBackupImages();
+
   void SetUrlLoaderData(std::unique_ptr<std::string> data);
 
-  void SeteImageDecoderImage(const gfx::ImageSkia& image);
+  void SetImageDecoderImage(const gfx::ImageSkia& image);
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

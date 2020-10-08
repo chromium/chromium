@@ -323,6 +323,11 @@ void AmbientController::OnLockStateChanged(bool locked) {
   }
 }
 
+void AmbientController::OnFirstSessionStarted() {
+  if (IsAmbientModeEnabled())
+    ambient_photo_controller_.ScheduleFetchBackupImages();
+}
+
 void AmbientController::OnPowerStatusChanged() {
   if (ambient_ui_model_.ui_visibility() != AmbientUiVisibility::kShown) {
     // No action needed if ambient screen is not shown.
