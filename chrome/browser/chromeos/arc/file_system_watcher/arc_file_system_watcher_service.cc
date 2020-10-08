@@ -69,6 +69,12 @@ constexpr base::FilePath::CharType kAndroidMyFilesDownloadsDir[] =
 const base::TimeDelta kBuildTimestampMapDelay =
     base::TimeDelta::FromMilliseconds(1000);
 
+// Providing the similar guarantee as
+// /proc/sys/fs/inotify/max_queued_events
+// It probably does not make sense to store more than the max queued limit in
+// inotify, since the inotify system degrades when that happens anyway.
+const size_t kMaxTimestampMapSize = 16384;
+
 // Compares two TimestampMaps and returns the list of file paths added/removed
 // or whose timestamp have changed.
 std::vector<base::FilePath> CollectChangedPaths(
@@ -118,6 +124,8 @@ TimestampMap BuildTimestampMap(base::FilePath cros_dir,
                                   base::FileEnumerator::FILES);
   for (base::FilePath cros_path = enumerator.Next(); !cros_path.empty();
        cros_path = enumerator.Next()) {
+    if (timestamp_map.size() >= kMaxTimestampMapSize)
+      break;
     // Skip non-media files for efficiency.
     if (!HasAndroidSupportedMediaExtension(cros_path))
       continue;
