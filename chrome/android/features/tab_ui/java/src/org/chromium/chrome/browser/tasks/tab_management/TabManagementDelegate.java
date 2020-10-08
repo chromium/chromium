@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -114,7 +115,8 @@ public interface TabManagementDelegate {
      * @return the {@link StartSurface}
      */
     StartSurface createStartSurface(ChromeActivity activity, ScrimCoordinator scrimCoordinator,
-            BottomSheetController sheetController);
+            BottomSheetController sheetController,
+            OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier);
 
     /**
      * Create a {@link TabGroupModelFilter} for the given {@link TabModel}.

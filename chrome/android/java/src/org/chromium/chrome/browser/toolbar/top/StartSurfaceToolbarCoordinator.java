@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.toolbar.TabSwitcherButtonView;
 import org.chromium.chrome.browser.toolbar.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -59,7 +60,8 @@ public class StartSurfaceToolbarCoordinator {
             OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             ObservableSupplier<Boolean> identityDiscStateSupplier, ThemeColorProvider provider,
             MenuButtonCoordinator menuButtonCoordinator,
-            Supplier<ButtonData> identityDiscButtonSupplier) {
+            Supplier<ButtonData> identityDiscButtonSupplier,
+            OneshotSupplier<StartSurface> startSurfaceSupplier) {
         mStub = startSurfaceToolbarStub;
 
         overviewModeBehaviorSupplier.onAvailable(
@@ -94,7 +96,8 @@ public class StartSurfaceToolbarCoordinator {
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue(),
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH.getValue(),
                 StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue(),
-                menuButtonCoordinator, identityDiscStateSupplier, identityDiscButtonSupplier);
+                menuButtonCoordinator, identityDiscStateSupplier, identityDiscButtonSupplier,
+                startSurfaceSupplier);
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;

@@ -26,12 +26,13 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.OverviewModeObserver;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeState;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -42,6 +43,8 @@ import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.chrome.features.start_surface.StartSurface;
+import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -60,17 +63,22 @@ class StartSurfaceToolbarMediator {
     private OverviewModeBehavior mOverviewModeBehavior;
     private OverviewModeObserver mOverviewModeObserver;
     private MenuButtonCoordinator mMenuButtonCoordinator;
-    @OverviewModeState
+    @StartSurfaceState
     private int mOverviewModeState;
     private boolean mIsGoogleSearchEngine;
+
+    private StartSurface mStartSurface;
+    private StartSurface.StateObserver mStartSurfaceStateObserver;
+    private CallbackController mCallbackController = new CallbackController();
 
     StartSurfaceToolbarMediator(PropertyModel model, Callback<IPHCommandBuilder> showIPHCallback,
             boolean hideIncognitoSwitchWhenNoTabs, boolean hideIncognitoSwitchOnHomePage,
             boolean showNewTabAndIdentityDiscAtStart, MenuButtonCoordinator menuButtonCoordinator,
             ObservableSupplier<Boolean> identityDiscStateSupplier,
-            Supplier<ButtonData> identityDiscButtonSupplier) {
+            Supplier<ButtonData> identityDiscButtonSupplier,
+            OneshotSupplier<StartSurface> startSurfaceSupplier) {
         mPropertyModel = model;
-        mOverviewModeState = OverviewModeState.NOT_SHOWN;
+        mOverviewModeState = StartSurfaceState.NOT_SHOWN;
         mShowIPHCallback = showIPHCallback;
         mHideIncognitoSwitchWhenNoTabs = hideIncognitoSwitchWhenNoTabs;
         mHideIncognitoSwitchOnHomePage = hideIncognitoSwitchOnHomePage;
@@ -82,6 +90,20 @@ class StartSurfaceToolbarMediator {
             if (!canShowHint && !mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE)) return;
             updateIdentityDisc(mIdentityDiscButtonSupplier.get());
         });
+
+        startSurfaceSupplier.onAvailable(mCallbackController.makeCancelable(this::setStartSurface));
+    }
+
+    void setStartSurface(StartSurface startSurface) {
+        mStartSurface = startSurface;
+        mStartSurfaceStateObserver = (newState, shouldShowToolbar) -> {
+            mOverviewModeState = newState;
+            updateIncognitoSwitchVisibility();
+            updateNewTabButtonVisibility();
+            updateLogoVisibility(mIsGoogleSearchEngine);
+            updateIdentityDisc(mIdentityDiscButtonSupplier.get());
+        };
+        startSurface.addStateChangeObserver(mStartSurfaceStateObserver);
     }
 
     void onNativeLibraryReady() {
@@ -109,6 +131,13 @@ class StartSurfaceToolbarMediator {
         if (mOverviewModeObserver != null) {
             mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);
         }
+        if (mStartSurface != null) {
+            mStartSurface.removeStateChangeObserver(mStartSurfaceStateObserver);
+        }
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
+        }
     }
 
     void setOnNewTabClickHandler(View.OnClickListener listener) {
@@ -134,7 +163,7 @@ class StartSurfaceToolbarMediator {
     }
 
     private void updateIncognitoSwitchVisibility() {
-        if (mOverviewModeState == OverviewModeState.SHOWN_HOMEPAGE && mHideIncognitoSwitchOnHomePage
+        if (mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE && mHideIncognitoSwitchOnHomePage
                 || mShowNewTabAndIdentityDiscAtStart) {
             mPropertyModel.set(INCOGNITO_SWITCHER_VISIBLE, false);
             return;
@@ -185,19 +214,10 @@ class StartSurfaceToolbarMediator {
         mOverviewModeBehavior = overviewModeBehavior;
         mOverviewModeObserver = new EmptyOverviewModeObserver() {
             @Override
-            public void onOverviewModeStateChanged(
-                    @OverviewModeState int overviewModeState, boolean showTabSwitcherToolbar) {
-                mOverviewModeState = overviewModeState;
-                updateIncognitoSwitchVisibility();
-                updateNewTabButtonVisibility();
-                updateLogoVisibility(mIsGoogleSearchEngine);
-                updateIdentityDisc(mIdentityDiscButtonSupplier.get());
-            }
-            @Override
             public void onOverviewModeStartedShowing(boolean showToolbar) {
                 updateIncognitoSwitchVisibility();
-                if (mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_OMNIBOX_ONLY
-                        || mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_TRENDY_TERMS
+                if (mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_OMNIBOX_ONLY
+                        || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_TRENDY_TERMS
                         || mShowNewTabAndIdentityDiscAtStart) {
                     mPropertyModel.set(NEW_TAB_BUTTON_AT_START, true);
                 }
@@ -222,10 +242,10 @@ class StartSurfaceToolbarMediator {
     private void updateLogoVisibility(boolean isGoogleSearchEngine) {
         mIsGoogleSearchEngine = isGoogleSearchEngine;
         boolean shouldShowLogo =
-                (mOverviewModeState == OverviewModeState.SHOWN_HOMEPAGE
-                        || mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_TASKS_ONLY
-                        || mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_OMNIBOX_ONLY
-                        || mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_TRENDY_TERMS)
+                (mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE
+                        || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_TASKS_ONLY
+                        || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_OMNIBOX_ONLY
+                        || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_TRENDY_TERMS)
                 && mIsGoogleSearchEngine;
         mPropertyModel.set(LOGO_IS_VISIBLE, shouldShowLogo);
     }
@@ -250,16 +270,16 @@ class StartSurfaceToolbarMediator {
     private void updateNewTabButtonVisibility() {
         // This toolbar is only shown for tab switcher when accessibility is enabled. Note that
         // OverviewListLayout will be shown as the tab switcher instead of the star surface.
-        boolean isShownTabswitcherState = mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER
-                || mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_TASKS_ONLY
-                || mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_OMNIBOX_ONLY
-                || mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_TRENDY_TERMS
+        boolean isShownTabswitcherState = mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER
+                || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_TASKS_ONLY
+                || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_OMNIBOX_ONLY
+                || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_TRENDY_TERMS
                 || ChromeAccessibilityUtil.get().isAccessibilityEnabled();
         mPropertyModel.set(NEW_TAB_BUTTON_IS_VISIBLE, isShownTabswitcherState);
     }
 
     @VisibleForTesting
-    @OverviewModeState
+    @StartSurfaceState
     int getOverviewModeStateForTesting() {
         return mOverviewModeState;
     }

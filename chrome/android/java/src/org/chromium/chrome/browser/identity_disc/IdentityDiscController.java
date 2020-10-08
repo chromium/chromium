@@ -15,7 +15,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeState;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -32,6 +31,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -153,8 +153,8 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         return mButtonData;
     }
 
-    public ButtonData getForStartSurface(@OverviewModeState int overviewModeState) {
-        if (overviewModeState != OverviewModeState.SHOWN_HOMEPAGE) {
+    public ButtonData getForStartSurface(@StartSurfaceState int overviewModeState) {
+        if (overviewModeState != StartSurfaceState.SHOWN_HOMEPAGE) {
             mButtonData.canShow = false;
             return mButtonData;
         }

@@ -60,7 +60,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromePhone;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromeTablet;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeState;
 import org.chromium.chrome.browser.compositor.layouts.StaticLayout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
@@ -358,7 +357,7 @@ public class InstantStartTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             startSurfaceCoordinator.getController().setOverviewState(
-                    OverviewModeState.SHOWN_TABSWITCHER);
+                    StartSurfaceState.SHOWN_TABSWITCHER);
         });
         CriteriaHelper.pollUiThread(startSurfaceCoordinator::isSecondaryTaskInitPendingForTesting);
 

@@ -17,10 +17,6 @@ public class EmptyOverviewModeObserver implements OverviewModeObserver {
     public void onOverviewModeFinishedShowing() {}
 
     @Override
-    public void onOverviewModeStateChanged(
-            @OverviewModeState int overviewModeState, boolean showTabSwitcherToolbar) {}
-
-    @Override
     public void onOverviewModeStartedHiding(boolean showToolbar, boolean delayAnimation) {}
 
     @Override

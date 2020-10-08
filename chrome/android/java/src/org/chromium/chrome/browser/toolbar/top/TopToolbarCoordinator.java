@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 
@@ -109,6 +110,7 @@ public class TopToolbarCoordinator implements Toolbar {
      *        invalidate the drawing surface.  This will give the object that registers as the host
      *        for the {@link Invalidator} a chance to defer the actual invalidate to sync drawing.
      * @param identityDiscButtonSupplier Supplier of Identity Disc button.
+     * @param startSurfaceSupplier Supplier of the StartSurface.
      */
     public TopToolbarCoordinator(ToolbarControlContainer controlContainer,
             ToolbarLayout toolbarLayout, ToolbarDataProvider toolbarDataProvider,
@@ -123,8 +125,8 @@ public class TopToolbarCoordinator implements Toolbar {
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             ObservableSupplier<Boolean> homeButtonVisibilitySupplier,
             ObservableSupplier<Boolean> identityDiscStateSupplier,
-            Callback<Runnable> invalidatorCallback,
-            Supplier<ButtonData> identityDiscButtonSupplier) {
+            Callback<Runnable> invalidatorCallback, Supplier<ButtonData> identityDiscButtonSupplier,
+            OneshotSupplier<StartSurface> startSurfaceSupplier) {
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
         mOptionalButtonController = new OptionalBrowsingModeButtonController(buttonDataProviders,
@@ -145,7 +147,8 @@ public class TopToolbarCoordinator implements Toolbar {
                         controlContainer.getRootView().findViewById(R.id.tab_switcher_toolbar_stub),
                         userEducationHelper, overviewModeBehaviorSupplier,
                         identityDiscStateSupplier, overviewThemeColorProvider,
-                        overviewModeMenuButtonCoordinator, identityDiscButtonSupplier);
+                        overviewModeMenuButtonCoordinator, identityDiscButtonSupplier,
+                        startSurfaceSupplier);
             } else {
                 mTabSwitcherModeCoordinatorPhone = new TabSwitcherModeTTCoordinatorPhone(
                         controlContainer.getRootView().findViewById(R.id.tab_switcher_toolbar_stub),

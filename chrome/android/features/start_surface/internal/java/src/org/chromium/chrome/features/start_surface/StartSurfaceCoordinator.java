@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -90,7 +91,8 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     // TODO(http://crbug.com/1093421): Remove dependency on ChromeActivity.
     public StartSurfaceCoordinator(ChromeActivity activity, ScrimCoordinator scrimCoordinator,
-            BottomSheetController sheetController) {
+            BottomSheetController sheetController,
+            OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier) {
         mActivity = activity;
         mScrimCoordinator = scrimCoordinator;
         mSurfaceMode = computeSurfaceMode();
@@ -118,7 +120,8 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mSurfaceMode, mActivity.getNightModeStateProvider(),
                 mActivity.getBrowserControlsManager(), this::isActivityFinishingOrDestroyed,
                 excludeMVTiles,
-                StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue());
+                StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue(),
+                startSurfaceOneshotSupplier);
 
         // Show feed loading image.
         if (mStartSurfaceMediator.shouldShowFeedPlaceholder()) {
@@ -126,6 +129,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                     mActivity, mTasksSurface.getBodyViewContainer(), false);
             mFeedLoadingCoordinator.setUpLoadingView();
         }
+        startSurfaceOneshotSupplier.set(this);
     }
 
     boolean isShowingTabSwitcher() {
@@ -150,8 +154,13 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     @Override
-    public void setStateChangeObserver(StartSurface.StateObserver observer) {
-        mStartSurfaceMediator.setStateChangeObserver(observer);
+    public void addStateChangeObserver(StateObserver observer) {
+        mStartSurfaceMediator.addStateChangeObserver(observer);
+    }
+
+    @Override
+    public void removeStateChangeObserver(StateObserver observer) {
+        mStartSurfaceMediator.removeStateChangeObserver(observer);
     }
 
     @Override

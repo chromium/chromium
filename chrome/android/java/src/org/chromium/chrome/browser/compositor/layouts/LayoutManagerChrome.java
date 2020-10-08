@@ -117,14 +117,7 @@ public class LayoutManagerChrome
                 TabManagementDelegate tabManagementDelegate =
                         TabManagementModuleProvider.getDelegate();
                 assert tabManagementDelegate != null;
-                startSurface.setStateChangeObserver(new StartSurface.StateObserver() {
-                    @Override
-                    public void onStateChanged(@OverviewModeState int overviewModeState,
-                            boolean shouldShowTabSwitcherToolbar) {
-                        notifyObserversStateChanged(
-                                overviewModeState, shouldShowTabSwitcherToolbar);
-                    }
-                });
+
                 final ObservableSupplier<? extends BrowserControlsStateProvider>
                         browserControlsSupplier = mHost.getBrowserControlsManagerSupplier();
                 mOverviewLayout = tabManagementDelegate.createStartSurfaceLayout(context, this,
@@ -620,16 +613,6 @@ public class LayoutManagerChrome
         mOverviewModeBehaviorSupplier.onAvailable((unused) -> {
             for (OverviewModeObserver overviewModeObserver : mOverviewModeObservers) {
                 overviewModeObserver.onOverviewModeFinishedHiding();
-            }
-        });
-    }
-
-    private void notifyObserversStateChanged(
-            @OverviewModeState int overviewModeState, boolean shouldShowTabSwitcherToolbar) {
-        mOverviewModeBehaviorSupplier.onAvailable((unused) -> {
-            for (OverviewModeObserver overviewModeObserver : mOverviewModeObservers) {
-                overviewModeObserver.onOverviewModeStateChanged(
-                        overviewModeState, shouldShowTabSwitcherToolbar);
             }
         });
     }

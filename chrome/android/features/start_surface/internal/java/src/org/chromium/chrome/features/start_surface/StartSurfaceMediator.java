@@ -41,8 +41,8 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeState;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
@@ -114,6 +114,7 @@ class StartSurfaceMediator
     private final SecondaryTasksSurfaceInitializer mSecondaryTasksSurfaceInitializer;
     @SurfaceMode
     private final int mSurfaceMode;
+    private final ObserverList<StartSurface.StateObserver> mStateObservers = new ObserverList<>();
 
     // Boolean histogram used to record whether cached
     // ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE is consistent with
@@ -133,12 +134,10 @@ class StartSurfaceMediator
     private NightModeStateProvider mNightModeStateProvider;
     @Nullable
     UrlFocusChangeListener mUrlFocusChangeListener;
-    @Nullable
-    private StartSurface.StateObserver mStateObserver;
-    @OverviewModeState
-    private int mOverviewModeState;
-    @OverviewModeState
-    private int mPreviousOverviewModeState;
+    @StartSurfaceState
+    private int mStartSurfaceState;
+    @StartSurfaceState
+    private int mPreviousStartSurfaceState;
     private boolean mIsOmniboxFocused;
     @Nullable
     private TabModel mNormalTabModel;
@@ -151,6 +150,7 @@ class StartSurfaceMediator
     private ActivityStateChecker mActivityStateChecker;
     private boolean mExcludeMVTiles;
     private boolean mShowStackTabSwitcher;
+    private OneshotSupplier<StartSurface> mStartSurfaceSupplier;
     /**
      * The value of {@link Pref#ARTICLES_LIST_VISIBLE} on Startup. Getting this value for recording
      * the consistency of {@link ChromePreferenceKeys#FEED_ARTICLES_LIST_VISIBLE} with {@link
@@ -170,7 +170,7 @@ class StartSurfaceMediator
             @SurfaceMode int surfaceMode, NightModeStateProvider nightModeStateProvider,
             BrowserControlsStateProvider browserControlsStateProvider,
             ActivityStateChecker activityStateChecker, boolean excludeMVTiles,
-            boolean showStackTabSwitcher) {
+            boolean showStackTabSwitcher, OneshotSupplier<StartSurface> startSurfaceSupplier) {
         mController = controller;
         mTabModelSelector = tabModelSelector;
         mPropertyModel = propertyModel;
@@ -181,6 +181,7 @@ class StartSurfaceMediator
         mActivityStateChecker = activityStateChecker;
         mExcludeMVTiles = excludeMVTiles;
         mShowStackTabSwitcher = showStackTabSwitcher;
+        mStartSurfaceSupplier = startSurfaceSupplier;
 
         if (mPropertyModel != null) {
             assert mSurfaceMode == SurfaceMode.SINGLE_PANE || mSurfaceMode == SurfaceMode.TWO_PANES
@@ -233,14 +234,14 @@ class StartSurfaceMediator
                 mNormalTabModelObserver = new TabModelObserver() {
                     @Override
                     public void willCloseTab(Tab tab, boolean animate) {
-                        if (mOverviewModeState == OverviewModeState.SHOWN_HOMEPAGE
+                        if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
                                 && mNormalTabModel.getCount() <= 1) {
                             setTabCarouselVisibility(false);
                         }
                     }
                     @Override
                     public void tabClosureUndone(Tab tab) {
-                        if (mOverviewModeState == OverviewModeState.SHOWN_HOMEPAGE) {
+                        if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
                             setTabCarouselVisibility(true);
                         }
                     }
@@ -248,7 +249,7 @@ class StartSurfaceMediator
                     @Override
                     public void restoreCompleted() {
                         if (!(mPropertyModel.get(IS_SHOWING_OVERVIEW)
-                                    && mOverviewModeState == OverviewModeState.SHOWN_HOMEPAGE)) {
+                                    && mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE)) {
                             return;
                         }
                         setTabCarouselVisibility(
@@ -270,7 +271,7 @@ class StartSurfaceMediator
                         int bottomControlsHeight, int bottomControlsMinHeight) {
                     // Only pad single pane home page since tabs grid has already been
                     // padded for the bottom bar.
-                    if (mOverviewModeState == OverviewModeState.SHOWN_HOMEPAGE) {
+                    if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
                         mPropertyModel.set(BOTTOM_BAR_HEIGHT, bottomControlsHeight);
                     }
                 }
@@ -305,8 +306,8 @@ class StartSurfaceMediator
             }
         }
         mController.addOverviewModeObserver(this);
-        mPreviousOverviewModeState = OverviewModeState.NOT_SHOWN;
-        mOverviewModeState = OverviewModeState.NOT_SHOWN;
+        mPreviousStartSurfaceState = StartSurfaceState.NOT_SHOWN;
+        mStartSurfaceState = StartSurfaceState.NOT_SHOWN;
     }
 
     void initWithNative(@Nullable FakeboxDelegate fakeboxDelegate,
@@ -324,7 +325,7 @@ class StartSurfaceMediator
 
             if (mController.overviewVisible()) {
                 mFakeboxDelegate.addUrlFocusChangeListener(mUrlFocusChangeListener);
-                if (mOverviewModeState == OverviewModeState.SHOWN_HOMEPAGE
+                if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
                         && mFeedSurfaceCreator != null) {
                     setExploreSurfaceVisibility(!mIsIncognito);
                 }
@@ -354,8 +355,8 @@ class StartSurfaceMediator
     }
 
     boolean isShowingTabSwitcher() {
-        return mOverviewModeState == OverviewModeState.SHOWING_TABSWITCHER
-                || mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER;
+        return mStartSurfaceState == StartSurfaceState.SHOWING_TABSWITCHER
+                || mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER;
     }
 
     void setSecondaryTasksSurfacePropertyModel(PropertyModel propertyModel) {
@@ -368,8 +369,12 @@ class StartSurfaceMediator
         mSecondaryTasksSurfacePropertyModel.set(IS_VOICE_RECOGNITION_BUTTON_VISIBLE, false);
     }
 
-    void setStateChangeObserver(StartSurface.StateObserver observer) {
-        mStateObserver = observer;
+    void addStateChangeObserver(StartSurface.StateObserver observer) {
+        mStateObservers.addObserver(observer);
+    }
+
+    void removeStateChangeObserver(StartSurface.StateObserver observer) {
+        mStateObservers.removeObserver(observer);
     }
 
     // Implements StartSurface.Controller
@@ -378,61 +383,67 @@ class StartSurfaceMediator
         return mController.overviewVisible();
     }
 
+    // TODO(crbug.com/1115757): After crrev.com/c/2315823, Overview state and Startsurface state are
+    // two different things, audit the wording usage and see if we can rename this method to
+    // setStartSurfaceState.
     @Override
-    public void setOverviewState(@OverviewModeState int state) {
+    public void setOverviewState(@StartSurfaceState int state) {
         // TODO(crbug.com/1039691): Refactor into state and trigger to separate SHOWING and SHOWN
         // states.
 
-        if (mPropertyModel == null || state == mOverviewModeState) return;
+        if (mPropertyModel == null || state == mStartSurfaceState) return;
 
         // Cache previous state.
-        if (mOverviewModeState != OverviewModeState.NOT_SHOWN) {
-            mPreviousOverviewModeState = mOverviewModeState;
+        if (mStartSurfaceState != StartSurfaceState.NOT_SHOWN) {
+            mPreviousStartSurfaceState = mStartSurfaceState;
         }
 
-        mOverviewModeState = state;
+        mStartSurfaceState = state;
         setOverviewStateInternal();
 
         // Immediately transition from SHOWING to SHOWN state if overview is visible but state not
         // SHOWN. This is only necessary when the new state is a SHOWING state.
         if (mPropertyModel.get(IS_SHOWING_OVERVIEW)
-                && mOverviewModeState != OverviewModeState.NOT_SHOWN
-                && !isShownState(mOverviewModeState)) {
+                && mStartSurfaceState != StartSurfaceState.NOT_SHOWN
+                && !isShownState(mStartSurfaceState)) {
             // Compute SHOWN state before updating previous state, because the previous state is
             // still needed to compute the shown state.
-            @OverviewModeState
+            @StartSurfaceState
             int shownState = computeOverviewStateShown();
 
             // Cache previous state
-            mPreviousOverviewModeState = mOverviewModeState;
+            mPreviousStartSurfaceState = mStartSurfaceState;
 
-            mOverviewModeState = shownState;
+            mStartSurfaceState = shownState;
             setOverviewStateInternal();
         }
         notifyStateChange();
 
         // Metrics collection
-        if (mOverviewModeState == OverviewModeState.SHOWN_HOMEPAGE) {
+        if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
             RecordUserAction.record("StartSurface.SinglePane.Home");
-        } else if (mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER) {
+        } else if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER) {
             RecordUserAction.record("StartSurface.SinglePane.Tabswitcher");
-        } else if (mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_TWO_PANES) {
+        } else if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER_TWO_PANES) {
             RecordUserAction.record("StartSurface.TwoPanes");
             String defaultOnUserActionString = mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE)
                     ? "ExploreSurface"
                     : "HomeSurface";
             RecordUserAction.record("StartSurface.TwoPanes.DefaultOn" + defaultOnUserActionString);
-        } else if (mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_TASKS_ONLY) {
+        } else if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER_TASKS_ONLY) {
             RecordUserAction.record("StartSurface.TasksOnly");
-        } else if (mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_OMNIBOX_ONLY) {
+        } else if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER_OMNIBOX_ONLY) {
             RecordUserAction.record("StartSurface.OmniboxOnly");
-        } else if (mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_TRENDY_TERMS) {
+        } else if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER_TRENDY_TERMS) {
             RecordUserAction.record("StartSurface.TrendyTerms");
         }
     }
 
+    // TODO(crbug.com/1115757): After crrev.com/c/2315823, Overview state and Startsurface state are
+    // two different things, audit the wording usage and see if we can rename this method to
+    // setStartSurfaceStateInternal.
     private void setOverviewStateInternal() {
-        if (mOverviewModeState == OverviewModeState.SHOWN_HOMEPAGE) {
+        if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
             mPropertyModel.set(IS_SHOWING_STACK_TAB_SWITCHER, false);
 
             setExploreSurfaceVisibility(!mIsIncognito && mFeedSurfaceCreator != null);
@@ -458,7 +469,7 @@ class StartSurfaceMediator
                     BOTTOM_BAR_HEIGHT, mBrowserControlsStateProvider.getBottomControlsHeight());
             mNormalTabModel.addObserver(mNormalTabModelObserver);
 
-        } else if (mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER) {
+        } else if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER) {
             mPropertyModel.set(IS_SHOWING_STACK_TAB_SWITCHER, mShowStackTabSwitcher);
 
             setTabCarouselVisibility(false);
@@ -466,7 +477,7 @@ class StartSurfaceMediator
             setFakeBoxVisibility(false);
             setSecondaryTasksSurfaceVisibility(true);
             setExploreSurfaceVisibility(false);
-        } else if (mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_TWO_PANES) {
+        } else if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER_TWO_PANES) {
             // Show Explore Surface if last visible pane explore.
             setExploreSurfaceVisibility(
                     ReturnToStartSurfaceUtil.shouldShowExploreSurface() && !mIsIncognito);
@@ -478,35 +489,38 @@ class StartSurfaceMediator
                                            .getDimensionPixelSize(R.dimen.ss_bottom_bar_height));
             mPropertyModel.set(IS_BOTTOM_BAR_VISIBLE, !mIsIncognito);
 
-        } else if (mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_TASKS_ONLY) {
+        } else if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER_TASKS_ONLY) {
             setMVTilesVisibility(!mIsIncognito);
             setExploreSurfaceVisibility(false);
             setFakeBoxVisibility(true);
-        } else if (mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_OMNIBOX_ONLY) {
+        } else if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER_OMNIBOX_ONLY) {
             setMVTilesVisibility(false);
             setExploreSurfaceVisibility(false);
             setFakeBoxVisibility(true);
-        } else if (mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_TRENDY_TERMS) {
+        } else if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER_TRENDY_TERMS) {
             setMVTilesVisibility(false);
             setExploreSurfaceVisibility(false);
             setFakeBoxVisibility(true);
             setTrendyTermsVisibility(true);
-        } else if (mOverviewModeState == OverviewModeState.NOT_SHOWN) {
+        } else if (mStartSurfaceState == StartSurfaceState.NOT_SHOWN) {
             if (mSecondaryTasksSurfacePropertyModel != null) {
                 setSecondaryTasksSurfaceVisibility(false);
             }
         }
 
-        if (isShownState(mOverviewModeState)) {
+        if (isShownState(mStartSurfaceState)) {
             setIncognitoModeDescriptionVisibility(mIsIncognito
                     && (mTabModelSelector.getModel(true).getCount() <= 0 || mShowStackTabSwitcher));
         }
     }
 
+    // TODO(crbug.com/1115757): After crrev.com/c/2315823, Overview state and Startsurface state are
+    // two different things, audit the wording usage and see if we can rename this method to
+    // getStartSurfaceState.
     @VisibleForTesting
-    @OverviewModeState
+    @StartSurfaceState
     public int getOverviewState() {
-        return mOverviewModeState;
+        return mStartSurfaceState;
     }
 
     @Override
@@ -536,12 +550,12 @@ class StartSurfaceMediator
 
             // if OvervieModeState is NOT_SHOWN, default to SHOWING_TABSWITCHER. This should only
             // happen when entering Start through SwipeDown gesture on URL bar.
-            if (mOverviewModeState == OverviewModeState.NOT_SHOWN) {
-                mOverviewModeState = OverviewModeState.SHOWING_TABSWITCHER;
+            if (mStartSurfaceState == StartSurfaceState.NOT_SHOWN) {
+                mStartSurfaceState = StartSurfaceState.SHOWING_TABSWITCHER;
             }
 
             // set OverviewModeState
-            @OverviewModeState
+            @StartSurfaceState
             int shownState = computeOverviewStateShown();
             assert (isShownState(shownState));
             setOverviewState(shownState);
@@ -576,18 +590,18 @@ class StartSurfaceMediator
 
     @Override
     public boolean onBackPressed() {
-        if (mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER
+        if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER
                 // Secondary tasks surface is used as the main surface in incognito mode.
                 && !mIsIncognito) {
             // If we reached tabswitcher from HomePage.
-            if (mPreviousOverviewModeState == OverviewModeState.SHOWN_HOMEPAGE) {
-                setOverviewState(OverviewModeState.SHOWN_HOMEPAGE);
+            if (mPreviousStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
+                setOverviewState(StartSurfaceState.SHOWN_HOMEPAGE);
                 return true;
             }
         }
 
         if (mPropertyModel != null && mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE)
-                && mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_TWO_PANES) {
+                && mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER_TWO_PANES) {
             setExploreSurfaceVisibility(false);
             notifyStateChange();
             return true;
@@ -621,7 +635,7 @@ class StartSurfaceMediator
 
     @Override
     public boolean isHomePageShowing() {
-        return mOverviewModeState == OverviewModeState.SHOWN_HOMEPAGE;
+        return mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
     }
 
     // Implements TabSwitcher.OverviewModeObserver.
@@ -663,7 +677,7 @@ class StartSurfaceMediator
             if (mBrowserControlsObserver != null) {
                 mBrowserControlsStateProvider.removeObserver(mBrowserControlsObserver);
             }
-            setOverviewState(OverviewModeState.NOT_SHOWN);
+            setOverviewState(StartSurfaceState.NOT_SHOWN);
             RecordUserAction.record("StartSurface.Hidden");
         }
         for (StartSurface.OverviewModeObserver observer : mObservers) {
@@ -689,7 +703,7 @@ class StartSurfaceMediator
     // inside. Implements View.OnClickListener, which listens for the more tabs button.
     @Override
     public void onClick(View v) {
-        assert mOverviewModeState == OverviewModeState.SHOWN_HOMEPAGE;
+        assert mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
 
         if (mSecondaryTasksSurfacePropertyModel == null && !mShowStackTabSwitcher) {
             mSecondaryTasksSurfaceController = mSecondaryTasksSurfaceInitializer.initialize();
@@ -697,7 +711,7 @@ class StartSurfaceMediator
         }
 
         RecordUserAction.record("StartSurface.SinglePane.MoreTabs");
-        setOverviewState(OverviewModeState.SHOWN_TABSWITCHER);
+        setOverviewState(StartSurfaceState.SHOWN_TABSWITCHER);
     }
 
     public boolean shouldShowFeedPlaceholder() {
@@ -730,7 +744,7 @@ class StartSurfaceMediator
 
         mPropertyModel.set(IS_EXPLORE_SURFACE_VISIBLE, isVisible);
 
-        if (mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_TWO_PANES) {
+        if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER_TWO_PANES) {
             // Update the 'BOTTOM_BAR_SELECTED_TAB_POSITION' property to reflect the change. This is
             // needed when clicking back button on the explore surface.
             mPropertyModel.set(BOTTOM_BAR_SELECTED_TAB_POSITION, isVisible ? 1 : 0);
@@ -760,7 +774,7 @@ class StartSurfaceMediator
             }
             if (mSecondaryTasksSurfacePropertyModel != null) {
                 mSecondaryTasksSurfacePropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE,
-                        mIsIncognito && mOverviewModeState == OverviewModeState.SHOWN_HOMEPAGE);
+                        mIsIncognito && mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE);
                 mSecondaryTasksSurfacePropertyModel.set(IS_INCOGNITO, mIsIncognito);
             }
             if (mSecondaryTasksSurfaceController != null) {
@@ -775,18 +789,23 @@ class StartSurfaceMediator
     }
 
     private void notifyStateChange() {
-        if (mStateObserver != null) {
-            mStateObserver.onStateChanged(mOverviewModeState, shouldShowTabSwitcherToolbar());
-        }
+        // StartSurface is being supplied with OneShotSupplier, notification sends after
+        // StartSurface is available to avoid missing events. More detail see:
+        // https://crrev.com/c/2427428.
+        mStartSurfaceSupplier.onAvailable((unused) -> {
+            for (StartSurface.StateObserver observer : mStateObservers) {
+                observer.onStateChanged(mStartSurfaceState, shouldShowTabSwitcherToolbar());
+            }
+        });
     }
 
     private boolean hasFakeSearchBox() {
         // No fake search box on the explore pane in two panes mode.
-        if (mOverviewModeState == OverviewModeState.SHOWN_HOMEPAGE
-                || mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_TASKS_ONLY
-                || mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_OMNIBOX_ONLY
-                || mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_TRENDY_TERMS
-                || (mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_TWO_PANES
+        if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
+                || mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER_TASKS_ONLY
+                || mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER_OMNIBOX_ONLY
+                || mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER_TRENDY_TERMS
+                || (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER_TWO_PANES
                         && !mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE))) {
             return true;
         }
@@ -796,10 +815,10 @@ class StartSurfaceMediator
     @VisibleForTesting
     public boolean shouldShowTabSwitcherToolbar() {
         // Always show in TABSWITCHER
-        if (mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER) return true;
+        if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER) return true;
 
         // Never show on explore pane.
-        if (mOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER_TWO_PANES
+        if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER_TWO_PANES
                 && mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE)) {
             return false;
         }
@@ -865,54 +884,56 @@ class StartSurfaceMediator
         }
     }
 
-    @OverviewModeState
-
+    // TODO(crbug.com/1115757): After crrev.com/c/2315823, Overview state and Startsurface state are
+    // two different things, audit the wording usage and see if we can rename this method to
+    // computeStartSurfaceState.
+    @StartSurfaceState
     private int computeOverviewStateShown() {
         if (mSurfaceMode == SurfaceMode.SINGLE_PANE) {
-            if (mOverviewModeState == OverviewModeState.SHOWING_PREVIOUS) {
-                assert mPreviousOverviewModeState == OverviewModeState.SHOWN_HOMEPAGE
-                        || mPreviousOverviewModeState == OverviewModeState.SHOWN_TABSWITCHER
-                        || mPreviousOverviewModeState == OverviewModeState.NOT_SHOWN;
+            if (mStartSurfaceState == StartSurfaceState.SHOWING_PREVIOUS) {
+                assert mPreviousStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
+                        || mPreviousStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER
+                        || mPreviousStartSurfaceState == StartSurfaceState.NOT_SHOWN;
 
                 // This class would be re-instantiated after changing theme, then
                 // mPreviousOverviewModeState will be reset to OverviewModeState.NOT_SHOWN. We
                 // default to OverviewModeState.SHOWN_HOMEPAGE in this case when SHOWING_PREVIOUS.
-                return mPreviousOverviewModeState == OverviewModeState.NOT_SHOWN
-                        ? OverviewModeState.SHOWN_HOMEPAGE
-                        : mPreviousOverviewModeState;
-            } else if (mOverviewModeState == OverviewModeState.SHOWING_START) {
-                return OverviewModeState.SHOWN_HOMEPAGE;
-            } else if (mOverviewModeState == OverviewModeState.SHOWING_TABSWITCHER) {
-                return OverviewModeState.SHOWN_TABSWITCHER;
-            } else if (mOverviewModeState == OverviewModeState.SHOWING_HOMEPAGE) {
-                return OverviewModeState.SHOWN_HOMEPAGE;
+                return mPreviousStartSurfaceState == StartSurfaceState.NOT_SHOWN
+                        ? StartSurfaceState.SHOWN_HOMEPAGE
+                        : mPreviousStartSurfaceState;
+            } else if (mStartSurfaceState == StartSurfaceState.SHOWING_START) {
+                return StartSurfaceState.SHOWN_HOMEPAGE;
+            } else if (mStartSurfaceState == StartSurfaceState.SHOWING_TABSWITCHER) {
+                return StartSurfaceState.SHOWN_TABSWITCHER;
+            } else if (mStartSurfaceState == StartSurfaceState.SHOWING_HOMEPAGE) {
+                return StartSurfaceState.SHOWN_HOMEPAGE;
             } else {
-                assert (isShownState(mOverviewModeState)
-                        || mOverviewModeState == OverviewModeState.NOT_SHOWN);
-                return mOverviewModeState;
+                assert (isShownState(mStartSurfaceState)
+                        || mStartSurfaceState == StartSurfaceState.NOT_SHOWN);
+                return mStartSurfaceState;
             }
         }
         if (mSurfaceMode == SurfaceMode.TWO_PANES) {
-            return OverviewModeState.SHOWN_TABSWITCHER_TWO_PANES;
+            return StartSurfaceState.SHOWN_TABSWITCHER_TWO_PANES;
         }
         if (mSurfaceMode == SurfaceMode.TASKS_ONLY) {
-            return OverviewModeState.SHOWN_TABSWITCHER_TASKS_ONLY;
+            return StartSurfaceState.SHOWN_TABSWITCHER_TASKS_ONLY;
         }
         if (mSurfaceMode == SurfaceMode.OMNIBOX_ONLY) {
-            return OverviewModeState.SHOWN_TABSWITCHER_OMNIBOX_ONLY;
+            return StartSurfaceState.SHOWN_TABSWITCHER_OMNIBOX_ONLY;
         }
         if (mSurfaceMode == SurfaceMode.TRENDY_TERMS) {
-            return OverviewModeState.SHOWN_TABSWITCHER_TRENDY_TERMS;
+            return StartSurfaceState.SHOWN_TABSWITCHER_TRENDY_TERMS;
         }
-        return OverviewModeState.DISABLED;
+        return StartSurfaceState.DISABLED;
     }
 
-    private boolean isShownState(@OverviewModeState int state) {
-        return state == OverviewModeState.SHOWN_HOMEPAGE
-                || state == OverviewModeState.SHOWN_TABSWITCHER
-                || state == OverviewModeState.SHOWN_TABSWITCHER_TWO_PANES
-                || state == OverviewModeState.SHOWN_TABSWITCHER_TASKS_ONLY
-                || state == OverviewModeState.SHOWN_TABSWITCHER_OMNIBOX_ONLY
-                || state == OverviewModeState.SHOWN_TABSWITCHER_TRENDY_TERMS;
+    private boolean isShownState(@StartSurfaceState int state) {
+        return state == StartSurfaceState.SHOWN_HOMEPAGE
+                || state == StartSurfaceState.SHOWN_TABSWITCHER
+                || state == StartSurfaceState.SHOWN_TABSWITCHER_TWO_PANES
+                || state == StartSurfaceState.SHOWN_TABSWITCHER_TASKS_ONLY
+                || state == StartSurfaceState.SHOWN_TABSWITCHER_OMNIBOX_ONLY
+                || state == StartSurfaceState.SHOWN_TABSWITCHER_TRENDY_TERMS;
     }
 }

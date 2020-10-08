@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import org.chromium.base.SysUtils;
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -93,8 +94,10 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
 
     @Override
     public StartSurface createStartSurface(ChromeActivity activity,
-            ScrimCoordinator scrimCoordinator, BottomSheetController sheetController) {
-        return StartSurfaceDelegate.createStartSurface(activity, scrimCoordinator, sheetController);
+            ScrimCoordinator scrimCoordinator, BottomSheetController sheetController,
+            OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier) {
+        return StartSurfaceDelegate.createStartSurface(
+                activity, scrimCoordinator, sheetController, startSurfaceOneshotSupplier);
     }
 
     @Override

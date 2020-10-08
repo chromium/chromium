@@ -7,7 +7,6 @@ package org.chromium.chrome.features.start_surface;
 import android.os.SystemClock;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeState;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 
 /** Interface to communicate with the start surface. */
@@ -23,23 +22,29 @@ public interface StartSurface {
     /**
      * An observer that is notified when the start surface internal state, excluding
      * the states notified in {@link OverviewModeObserver}, is changed.
+     *
+     * TODO(crbug.com/1115757): After crrev.com/c/2315823, Overview state and Startsurface state are
+     * two different things, let's audit the usage of this observer.
      */
     interface StateObserver {
         /**
          * Called when the internal state is changed.
-         * @param overviewModeState the {@link OverviewModeState}.
+         * @param overviewModeState the {@link StartSurfaceState}.
          * @param shouldShowTabSwitcherToolbar Whether or not should show the Tab switcher toolbar.
          */
         void onStateChanged(
-                @OverviewModeState int overviewModeState, boolean shouldShowTabSwitcherToolbar);
+                @StartSurfaceState int overviewModeState, boolean shouldShowTabSwitcherToolbar);
     }
 
     /**
-     * Set the given {@link StateObserver}.
-     * Note that this will override the previous observer.
-     * @param observer The given observer.
+     * @param observer Registers {@code observer} for the {@link StartSurfaceState} changes.
      */
-    void setStateChangeObserver(StateObserver observer);
+    void addStateChangeObserver(StateObserver observer);
+
+    /**
+     * @param observer Unregisters {@code observer} for the {@link StartSurfaceState} changes.
+     */
+    void removeStateChangeObserver(StateObserver observer);
 
     /**
      * Defines an interface to pass out tab selecting event.
@@ -114,10 +119,10 @@ public interface StartSurface {
         void showOverview(boolean animate);
 
         /**
-         * Sets the state {@link OverviewModeState}.
-         * @param state the {@link OverviewModeState} to show.
+         * Sets the state {@link StartSurfaceState}.
+         * @param state the {@link StartSurfaceState} to show.
          */
-        void setOverviewState(@OverviewModeState int state);
+        void setOverviewState(@StartSurfaceState int state);
 
         /**
          * Called by the TabSwitcherLayout when the system back button is pressed.

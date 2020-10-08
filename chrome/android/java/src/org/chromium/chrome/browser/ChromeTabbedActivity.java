@@ -65,7 +65,6 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromePhone;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromeTablet;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeController;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeState;
 import org.chromium.chrome.browser.compositor.layouts.phone.StackLayout;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -159,6 +158,7 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
+import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -561,8 +561,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 if (tabManagementDelegate != null) {
                     StartSurface startSurface = tabManagementDelegate.createStartSurface(this,
                             mRootUiCoordinator.getScrimCoordinator(),
-                            mRootUiCoordinator.getBottomSheetController());
-                    mStartSurfaceSupplier.set(startSurface);
+                            mRootUiCoordinator.getBottomSheetController(), mStartSurfaceSupplier);
                 }
             }
             mLayoutManager = new LayoutManagerChromePhone(compositorViewHolder, mContentContainer,
@@ -626,7 +625,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 if (isInOverviewMode() && !StartSurfaceConfiguration.isStartSurfaceEnabled()) {
                     hideOverview();
                 } else {
-                    showOverview(OverviewModeState.SHOWING_TABSWITCHER);
+                    showOverview(StartSurfaceState.SHOWING_TABSWITCHER);
                 }
             };
             OnClickListener newTabClickHandler = v -> {
@@ -649,7 +648,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             Supplier<Boolean> showStartSurfaceSupplier = () -> {
                 if (ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePageOnPhone(
                             isTablet())) {
-                    showOverview(OverviewModeState.SHOWING_HOMEPAGE);
+                    showOverview(StartSurfaceState.SHOWING_HOMEPAGE);
                     return true;
                 }
                 return false;
@@ -931,13 +930,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         getOnCreateTimestampMs());
             }
             mOverviewShownOnStart = true;
-            showOverview(OverviewModeState.SHOWING_START);
+            showOverview(StartSurfaceState.SHOWING_START);
             return;
         }
 
         if (getActivityTab() == null && !isOverviewVisible) {
             mOverviewShownOnStart = true;
-            showOverview(OverviewModeState.SHOWING_START);
+            showOverview(StartSurfaceState.SHOWING_START);
         }
 
         if (isMainIntentFromLauncher(getIntent()) && mOverviewModeController.overviewVisible()) {
@@ -1812,7 +1811,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // the tab and go back to the start surface.
         if (type == TabLaunchType.FROM_START_SURFACE) {
             getCurrentTabModel().closeTab(currentTab);
-            showOverview(OverviewModeState.SHOWING_PREVIOUS);
+            showOverview(StartSurfaceState.SHOWING_PREVIOUS);
             return true;
         }
 
@@ -1885,7 +1884,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getCurrentTabModel().closeTab(tabToClose, false, true, false);
 
                 // If there is no next tab to open, enter overview mode.
-                if (!hasNextTab) showOverview(OverviewModeState.SHOWING_START);
+                if (!hasNextTab) showOverview(StartSurfaceState.SHOWING_START);
             }, CLOSE_TAB_ON_MINIMIZE_DELAY_MS);
         }
     }
@@ -1984,11 +1983,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
     }
 
-    private void showOverview(@OverviewModeState int state) {
-        assert (state == OverviewModeState.SHOWING_TABSWITCHER
-                || state == OverviewModeState.SHOWING_HOMEPAGE
-                || state == OverviewModeState.SHOWING_PREVIOUS
-                || state == OverviewModeState.SHOWING_START);
+    // TODO(crbug.com/1115757): After crrev.com/c/2315823, Overview state and Startsurface state are
+    // two different things, we actual can split this into two methods: showOverview() and
+    // showStartSurface(state). Let's do some auditing and clean up before perform the actual split.
+    private void showOverview(@StartSurfaceState int state) {
+        assert (state == StartSurfaceState.SHOWING_TABSWITCHER
+                || state == StartSurfaceState.SHOWING_HOMEPAGE
+                || state == StartSurfaceState.SHOWING_PREVIOUS
+                || state == StartSurfaceState.SHOWING_START);
         if (mStartSurfaceSupplier.get() != null) {
             mStartSurfaceSupplier.get().getController().setOverviewState(state);
         }
@@ -2029,7 +2031,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             if (TabUiFeatureUtilities.supportInstantStart(isTablet())
                     || (getTabModelSelector().isTabStateInitialized()
                             && isLayoutManagerCreated())) {
-                showOverview(OverviewModeState.SHOWING_HOMEPAGE);
+                showOverview(StartSurfaceState.SHOWING_HOMEPAGE);
             }
             return true;
         }

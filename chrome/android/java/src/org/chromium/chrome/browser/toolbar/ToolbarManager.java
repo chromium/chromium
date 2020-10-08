@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.OverviewModeObserver;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeState;
 import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
@@ -93,7 +92,9 @@ import org.chromium.chrome.browser.ui.appmenu.MenuButtonDelegate;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
+import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -149,7 +150,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private BookmarkBridge.BookmarkModelObserver mBookmarksObserver;
     private FindToolbarObserver mFindToolbarObserver;
     private OverviewModeObserver mOverviewModeObserver;
-    private @OverviewModeState int mOverviewModeState = OverviewModeState.NOT_SHOWN;
+    private @StartSurfaceState int mStartSurfaceState = StartSurfaceState.NOT_SHOWN;
 
     private OverviewModeBehavior mOverviewModeBehavior;
     private OneshotSupplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
@@ -195,6 +196,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private Supplier<Boolean> mShowStartSurfaceSupplier;
     private final ScrimCoordinator mScrimCoordinator;
 
+    private StartSurface mStartSurface;
+    private StartSurface.StateObserver mStartSurfaceStateObserver;
+
     /**
      * Creates a ToolbarManager object.
      * @param controlsSizer The {@link BrowserControlsSizer} for the activity.
@@ -219,6 +223,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * @param overviewModeBehaviorSupplier Supplier of the overview mode manager for the current
      *                                     profile.
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
+     * @param startSurfaceSupplier Supplier of the StartSurface.
      */
     public ToolbarManager(ChromeActivity activity, BrowserControlsSizer controlsSizer,
             FullscreenManager fullscreenManager, ToolbarControlContainer controlContainer,
@@ -234,7 +239,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
             boolean shouldShowUpdateBadge,
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            OneshotSupplier<StartSurface> startSurfaceSupplier) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
         mBrowserControlsSizer = controlsSizer;
@@ -321,8 +327,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         mToolbar = createTopToolbarCoordinator(controlContainer, toolbarLayout, buttonDataProviders,
                 browsingModeThemeColorProvider, startSurfaceMenuButtonCoordinator, invalidator,
-                identityDiscController);
-
+                identityDiscController, startSurfaceSupplier);
         mActionModeController =
                 new ActionModeController(mActivity, mActionBarDelegate, toolbarActionModeCallback);
 
@@ -576,14 +581,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             }
 
             @Override
-            public void onOverviewModeStateChanged(
-                    @OverviewModeState int overviewModeState, boolean showTabSwitcherToolbar) {
-                assert StartSurfaceConfiguration.isStartSurfaceEnabled();
-                mOverviewModeState = overviewModeState;
-                mToolbar.updateTabSwitcherToolbarState(showTabSwitcherToolbar);
-            }
-
-            @Override
             public void onOverviewModeStartedHiding(boolean showToolbar, boolean delayAnimation) {
                 mToolbar.setTabSwitcherMode(false, showToolbar, delayAnimation);
                 updateButtonStatus();
@@ -622,6 +619,16 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         mFindToolbarManager = findToolbarManager;
         mFindToolbarManager.addObserver(mFindToolbarObserver);
+
+        startSurfaceSupplier.onAvailable(mCallbackController.makeCancelable((startSurface) -> {
+            mStartSurface = startSurface;
+            mStartSurfaceStateObserver = (newState, shouldShowToolbar) -> {
+                assert StartSurfaceConfiguration.isStartSurfaceEnabled();
+                mToolbar.updateTabSwitcherToolbarState(shouldShowToolbar);
+            };
+            mStartSurface.addStateChangeObserver(mStartSurfaceStateObserver);
+        }));
+
         TraceEvent.end("ToolbarManager.ToolbarManager");
     }
 
@@ -630,20 +637,26 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             List<ButtonDataProvider> buttonDataProviders,
             ThemeColorProvider browsingModeThemeColorProvider,
             MenuButtonCoordinator startSurfaceMenuButtonCoordinator, Invalidator invalidator,
-            IdentityDiscController identityDiscController) {
+            IdentityDiscController identityDiscController,
+            OneshotSupplier<StartSurface> startSurfaceSupplier) {
         TopToolbarCoordinator toolbar = new TopToolbarCoordinator(controlContainer, toolbarLayout,
                 mLocationBarModel, mToolbarTabController,
                 new UserEducationHelper(mActivity, mHandler, TrackerFactory::getTrackerForProfile),
                 buttonDataProviders, mOverviewModeBehaviorSupplier, browsingModeThemeColorProvider,
                 mAppThemeColorProvider, mMenuButtonCoordinator, startSurfaceMenuButtonCoordinator,
                 mMenuButtonCoordinator.getMenuButtonHelperSupplier(), mTabModelSelectorSupplier,
-                mHomeButtonVisibilitySupplier, mIdentityDiscStateSupplier, (client) -> {
+                mHomeButtonVisibilitySupplier, mIdentityDiscStateSupplier,
+                (client)
+                        -> {
                     if (invalidator != null) {
                         invalidator.invalidate(client);
                     } else {
                         client.run();
                     }
-                }, () -> identityDiscController.getForStartSurface(mOverviewModeState));
+                },
+                ()
+                        -> identityDiscController.getForStartSurface(mStartSurfaceState),
+                startSurfaceSupplier);
         mHomepageStateListener =
                 () -> mHomeButtonVisibilitySupplier.set(HomepageManager.isHomepageEnabled());
         HomepageManager.getInstance().addListener(mHomepageStateListener);
@@ -938,6 +951,12 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
+        }
+
+        if (mStartSurface != null) {
+            mStartSurface.removeStateChangeObserver(mStartSurfaceStateObserver);
+            mStartSurface = null;
+            mStartSurfaceStateObserver = null;
         }
 
         mActivity.unregisterComponentCallbacks(mComponentCallbacks);

@@ -30,9 +30,9 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ViewUtils;
@@ -136,7 +136,7 @@ public final class ShareButtonControllerTest {
                         -> mActivityTestRule.getActivity()
                                    .getStartSurface()
                                    .getController()
-                                   .setOverviewState(OverviewModeState.SHOWING_START));
+                                   .setOverviewState(StartSurfaceState.SHOWING_START));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getActivity().getLayoutManager().showOverview(false));
 

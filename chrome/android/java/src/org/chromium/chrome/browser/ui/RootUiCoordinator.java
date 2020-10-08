@@ -538,7 +538,7 @@ public class RootUiCoordinator
                     mScrimCoordinator, mActionModeControllerCallback, mFindToolbarManager,
                     mProfileSupplier, mBookmarkBridgeSupplier, mCanAnimateBrowserControls,
                     mOverviewModeBehaviorSupplier, mAppMenuSupplier, shouldShowMenuUpdateBadge(),
-                    mTabModelSelectorSupplier);
+                    mTabModelSelectorSupplier, mStartSurfaceSupplier);
             if (!mActivity.supportsAppMenu()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

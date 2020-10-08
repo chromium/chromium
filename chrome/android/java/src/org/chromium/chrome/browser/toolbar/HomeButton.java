@@ -18,13 +18,12 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
-import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
@@ -33,7 +32,10 @@ import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.toolbar.ThemeColorProvider.TintObserver;
+import org.chromium.chrome.features.start_surface.StartSurface;
+import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /**
@@ -56,17 +58,16 @@ public class HomeButton extends ChromeImageButton
     /** The {@link ActivityTabProvider} used to know if the active tab is on the NTP. */
     private ActivityTabProvider mActivityTabProvider;
 
-    /** The {@link OverviewModeBehavior} used to observe overview state changes.  */
-    private OverviewModeBehavior mOverviewModeBehavior;
-
-    /** The {@link OvervieModeObserver} observing the OverviewModeBehavior  */
-    private OverviewModeBehavior.OverviewModeObserver mOverviewModeObserver;
-
     // Test related members
     private static boolean sSaveContextMenuForTests;
     private ContextMenu mMenuForTests;
 
     private SettingsLauncher mSettingsLauncher;
+
+    private ObservableSupplier<StartSurface> mStartSurfaceSupplier;
+    private Callback<StartSurface> mStartSurfaceSupplierObserver;
+    private StartSurface mStartSurface;
+    private StartSurface.StateObserver mStartSurfaceStateObserver;
 
     public HomeButton(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -75,18 +76,6 @@ public class HomeButton extends ChromeImageButton
         setImageDrawable(ContextCompat.getDrawable(context, homeButtonIcon));
         HomepageManager.getInstance().addListener(this);
         updateContextMenuListener();
-
-        mOverviewModeObserver = new EmptyOverviewModeObserver() {
-            @Override
-            public void onOverviewModeStateChanged(
-                    @OverviewModeState int overviewModeState, boolean showTabSwitcherToolbar) {
-                if (overviewModeState == OverviewModeState.SHOWN_HOMEPAGE) {
-                    updateButtonEnabledState(false);
-                } else {
-                    updateButtonEnabledState(null);
-                }
-            }
-        };
 
         mSettingsLauncher = new SettingsLauncherImpl();
     }
@@ -104,9 +93,12 @@ public class HomeButton extends ChromeImageButton
 
         HomepageManager.getInstance().removeListener(this);
 
-        if (mOverviewModeBehavior != null) {
-            mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);
-            mOverviewModeObserver = null;
+        if (mStartSurfaceSupplier != null) {
+            mStartSurfaceSupplier.removeObserver(mStartSurfaceSupplierObserver);
+        }
+
+        if (mStartSurface != null) {
+            mStartSurface.removeStateChangeObserver(mStartSurfaceStateObserver);
         }
     }
 
@@ -115,10 +107,26 @@ public class HomeButton extends ChromeImageButton
         mThemeColorProvider.addTintObserver(this);
     }
 
-    public void setOverviewModeBehavior(OverviewModeBehavior overviewModeBehavior) {
-        assert overviewModeBehavior != null;
-        mOverviewModeBehavior = overviewModeBehavior;
-        mOverviewModeBehavior.addOverviewModeObserver(mOverviewModeObserver);
+    public void setStartSurfaceSupplier(ObservableSupplier<StartSurface> startSurfaceSupplier) {
+        assert ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage();
+
+        mStartSurfaceSupplier = startSurfaceSupplier;
+        mStartSurfaceSupplierObserver = (startSurface) -> {
+            // TODO(crbug.com/1084528): Replace with OneShotSupplier when it is available.
+            assert startSurface != null;
+            assert mStartSurface == null : "The StartSurface should be set at most once.";
+
+            mStartSurface = startSurface;
+            mStartSurfaceStateObserver = (newState, shouldShowToolbar) -> {
+                if (newState == StartSurfaceState.SHOWN_HOMEPAGE) {
+                    updateButtonEnabledState(false);
+                } else {
+                    updateButtonEnabledState(null);
+                }
+            };
+            startSurface.addStateChangeObserver(mStartSurfaceStateObserver);
+        };
+        mStartSurfaceSupplier.addObserver(mStartSurfaceSupplierObserver);
     }
 
     @Override

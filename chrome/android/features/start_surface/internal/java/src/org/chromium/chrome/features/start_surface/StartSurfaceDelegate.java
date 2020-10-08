@@ -7,6 +7,7 @@ package org.chromium.chrome.features.start_surface;
 import android.content.Context;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -28,7 +29,9 @@ public class StartSurfaceDelegate {
     }
 
     public static StartSurface createStartSurface(ChromeActivity activity,
-            ScrimCoordinator scrimCoordinator, BottomSheetController sheetController) {
-        return new StartSurfaceCoordinator(activity, scrimCoordinator, sheetController);
+            ScrimCoordinator scrimCoordinator, BottomSheetController sheetController,
+            OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier) {
+        return new StartSurfaceCoordinator(
+                activity, scrimCoordinator, sheetController, startSurfaceOneshotSupplier);
     }
 }
