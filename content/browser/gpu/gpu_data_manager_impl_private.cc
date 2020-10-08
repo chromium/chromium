@@ -88,7 +88,6 @@
 #endif  // OS_MAC
 #if defined(OS_WIN)
 #include "base/base_paths_win.h"
-#include "base/win/windows_version.h"
 #include "ui/display/win/screen_win.h"
 #endif  // OS_WIN
 #if BUILDFLAG(IS_CHROMECAST)
@@ -116,23 +115,6 @@ NOINLINE void FatalGpuProcessLaunchFailureOnBackground() {
 #endif
 
 #if defined(OS_WIN)
-int GetGpuBlocklistHistogramValueWin(gpu::GpuFeatureStatus status) {
-  // The enums are defined as:
-  //   Enabled VERSION_PRE_XP = 0,
-  //   Blocklisted VERSION_PRE_XP = 1,
-  //   Disabled VERSION_PRE_XP = 2,
-  //   Software VERSION_PRE_XP = 3,
-  //   Unknown VERSION_PRE_XP = 4,
-  //   Enabled VERSION_XP = 5,
-  //   ...
-  static const base::win::Version version = base::win::GetVersion();
-  if (version == base::win::Version::WIN_LAST)
-    return -1;
-  DCHECK_NE(gpu::kGpuFeatureStatusMax, status);
-  int entry_index = static_cast<int>(version) * gpu::kGpuFeatureStatusMax;
-  return entry_index + static_cast<int>(status);
-}
-
 // This function checks the created file to ensure it wasn't redirected
 // to another location using a symbolic link or a hard link.
 bool ValidateFileHandle(HANDLE cache_file_handle,
@@ -281,15 +263,6 @@ void UpdateFeatureStats(const gpu::GpuFeatureInfo& gpu_feature_info) {
       command_line.HasSwitch(switches::kDisableWebGL),
       (command_line.HasSwitch(switches::kDisableWebGL) ||
        command_line.HasSwitch(switches::kDisableWebGL2))};
-#if defined(OS_WIN)
-  const std::string kGpuBlocklistFeatureHistogramNamesWin[] = {
-      "GPU.BlacklistFeatureTestResultsWindows2.Accelerated2dCanvas",
-      "GPU.BlacklistFeatureTestResultsWindows2.GpuCompositing",
-      "GPU.BlacklistFeatureTestResultsWindows2.GpuRasterization",
-      "GPU.BlacklistFeatureTestResultsWindows2.OopRasterization",
-      "GPU.BlacklistFeatureTestResultsWindows2.Webgl",
-      "GPU.BlacklistFeatureTestResultsWindows2.Webgl2"};
-#endif
   const size_t kNumFeatures =
       sizeof(kGpuFeatures) / sizeof(gpu::GpuFeatureType);
   for (size_t i = 0; i < kNumFeatures; ++i) {
@@ -304,17 +277,6 @@ void UpdateFeatureStats(const gpu::GpuFeatureInfo& gpu_feature_info) {
         gpu::kGpuFeatureStatusMax + 1,
         base::HistogramBase::kUmaTargetedHistogramFlag);
     histogram_pointer->Add(value);
-#if defined(OS_WIN)
-    int value_win = GetGpuBlocklistHistogramValueWin(value);
-    if (value_win >= 0) {
-      int32_t max_sample = static_cast<int32_t>(base::win::Version::WIN_LAST) *
-                           gpu::kGpuFeatureStatusMax;
-      histogram_pointer = base::LinearHistogram::FactoryGet(
-          kGpuBlocklistFeatureHistogramNamesWin[i], 1, max_sample,
-          max_sample + 1, base::HistogramBase::kUmaTargetedHistogramFlag);
-      histogram_pointer->Add(value_win);
-    }
-#endif
   }
 }
 

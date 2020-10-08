@@ -34546,6 +34546,9 @@ Called by update_feature_policy_enum.py.-->
 </enum>
 
 <enum name="GPUBlacklistFeatureTestResultsWindows2">
+  <obsolete>
+    Removed in Oct 2020.
+  </obsolete>
   <summary>
     Results of testing against a GPU feature being allowed, blacklisted,
     disabled, fallback to software, or undefined in various Windows

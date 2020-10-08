@@ -210,6 +210,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="GPU.BlacklistFeatureTestResultsWindows2"
     enum="GPUBlacklistFeatureTestResultsWindows2" expires_after="2020-05-10">
+  <obsolete>
+    Removed in Oct 2020.
+  </obsolete>
   <owner>vmiura@chromium.org</owner>
   <summary>
     Counts number of browser invocations for which a GPU feature is
