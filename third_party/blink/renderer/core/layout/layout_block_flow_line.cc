@@ -2609,7 +2609,7 @@ void LayoutBlockFlow::CheckLinesForTextOverflow() {
   ellipsis_width = (font == first_line_font) ? first_line_ellipsis_width : 0;
 
   if (!ellipsis_width) {
-    const SimpleFontData* font_data = font.PrimaryFont();
+    font_data = font.PrimaryFont();
     DCHECK(font_data);
     if (font_data &&
         font_data->GlyphForCharacter(kHorizontalEllipsisCharacter)) {
@@ -2742,15 +2742,15 @@ void LayoutBlockFlow::TryPlacingEllipsisOnAtomicInlines(
           continue;
         // Root boxes can vary in width so move our offset out to allow
         // comparison with the right hand edge of the block.
-        LayoutUnit logical_left_offset = box->LogicalLeft();
+        LayoutUnit line_logical_left_offset = box->LogicalLeft();
         max_root_box_width =
             std::max<LayoutUnit>(curr->LogicalWidth(), max_root_box_width);
-        if (logical_left_offset < 0)
-          logical_left_offset += max_root_box_width - curr->LogicalWidth();
+        if (line_logical_left_offset < 0)
+          line_logical_left_offset += max_root_box_width - curr->LogicalWidth();
         InlineBox* truncation_box = nullptr;
         curr->PlaceEllipsis(selected_ellipsis_str, ltr, block_left_edge,
                             block_right_edge, ellipsis_width,
-                            logical_left_offset, &truncation_box);
+                            line_logical_left_offset, &truncation_box);
         placed_ellipsis = true;
       }
     }

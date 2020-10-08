@@ -128,10 +128,10 @@ void ColumnBalancer::TraverseChildren(const LayoutObject& object) {
       // We need to get to the border edge before processing content inside
       // this child. If the child is floated, we're currently at the margin
       // edge.
-      auto old_flow_thread_offset = flow_thread_offset_;
+      auto old_flow_thread_child_offset = flow_thread_offset_;
       flow_thread_offset_ += border_edge_offset;
       TraverseSubtree(child_box);
-      flow_thread_offset_ = old_flow_thread_offset;
+      flow_thread_offset_ = old_flow_thread_child_offset;
     }
     previous_break_after_value = child_box.BreakAfter();
     ExamineBoxBeforeLeaving(child_box, logical_height);

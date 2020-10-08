@@ -79,8 +79,7 @@ struct NGInlineBoxState {
   // Compute text metrics for a box. All text in a box share the same
   // metrics.
   // The computed metrics is included into the line height of the current box.
-  void ComputeTextMetrics(const ComputedStyle& style,
-                          FontBaseline baseline_type);
+  void ComputeTextMetrics(const ComputedStyle&, FontBaseline baseline_type);
   void EnsureTextMetrics(const ComputedStyle&, FontBaseline);
   void ResetTextMetrics();
 

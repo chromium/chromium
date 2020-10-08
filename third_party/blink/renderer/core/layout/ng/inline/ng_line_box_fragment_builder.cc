@@ -51,12 +51,12 @@ void NGLineBoxFragmentBuilder::AddChildren(NGLogicalLineItems& children) {
 
   for (auto& child : children) {
     if (child.layout_result) {
-      DCHECK(!child.fragment);
+      DCHECK(!child.text_fragment);
       AddChild(child.layout_result->PhysicalFragment(), child.Offset());
       child.layout_result.reset();
-    } else if (child.fragment) {
-      AddChild(std::move(child.fragment), child.Offset());
-      DCHECK(!child.fragment);
+    } else if (child.text_fragment) {
+      AddChild(std::move(child.text_fragment), child.Offset());
+      DCHECK(!child.text_fragment);
     } else if (child.out_of_flow_positioned_box) {
       AddOutOfFlowInlineChildCandidate(
           NGBlockNode(ToLayoutBox(child.out_of_flow_positioned_box)),
@@ -71,7 +71,7 @@ void NGLineBoxFragmentBuilder::PropagateChildrenData(
   for (unsigned index = 0; index < children.size(); ++index) {
     auto& child = children[index];
     if (child.layout_result) {
-      DCHECK(!child.fragment);
+      DCHECK(!child.text_fragment);
       PropagateChildData(child.layout_result->PhysicalFragment(),
                          child.Offset());
 

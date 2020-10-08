@@ -1330,7 +1330,7 @@ void LayoutText::ComputePreferredLogicalWidths(
       text_, style_to_use.LocaleForLineBreakIterator());
   bool needs_word_spacing = false;
   bool ignoring_spaces = false;
-  bool is_space = false;
+  bool is_whitespace = false;
   bool first_word = true;
   bool first_line = true;
   int next_breakable = -1;
@@ -1394,48 +1394,48 @@ void LayoutText::ComputePreferredLogicalWidths(
       text_direction = run->Direction();
     }
 
-    bool previous_character_is_space = is_space;
+    bool previous_character_is_whitespace = is_whitespace;
     bool is_newline = false;
     if (c == kNewlineCharacter) {
       if (style_to_use.PreserveNewline()) {
         has_break_ = true;
         is_newline = true;
-        is_space = false;
+        is_whitespace = false;
       } else {
-        is_space = true;
+        is_whitespace = true;
       }
     } else if (c == kTabulationCharacter) {
       if (!style_to_use.CollapseWhiteSpace()) {
         has_tab_ = true;
-        is_space = false;
+        is_whitespace = false;
       } else {
-        is_space = true;
+        is_whitespace = true;
       }
     } else if (c == kSpaceCharacter) {
-      is_space = true;
+      is_whitespace = true;
     } else if (c == kNoBreakSpaceCharacter) {
-      is_space = false;
+      is_whitespace = false;
     } else {
-      is_space = false;
+      is_whitespace = false;
       contains_only_whitespace_or_nbsp_ =
           static_cast<unsigned>(OnlyWhitespaceOrNbsp::kNo);
     }
 
     bool is_breakable_location =
-        is_newline || (is_space && style_to_use.AutoWrap()) ||
+        is_newline || (is_whitespace && style_to_use.AutoWrap()) ||
         break_all_or_break_word == EWordBreak::kBreakWord;
     if (!i)
       has_breakable_start_ = is_breakable_location;
     if (i == len - 1) {
       has_breakable_end_ = is_breakable_location;
-      has_end_white_space_ = is_newline || is_space;
+      has_end_white_space_ = is_newline || is_whitespace;
     }
 
     if (!ignoring_spaces && style_to_use.CollapseWhiteSpace() &&
-        previous_character_is_space && is_space)
+        previous_character_is_whitespace && is_whitespace)
       ignoring_spaces = true;
 
-    if (ignoring_spaces && !is_space)
+    if (ignoring_spaces && !is_whitespace)
       ignoring_spaces = false;
 
     // Ignore spaces and soft hyphens
@@ -1608,17 +1608,17 @@ void LayoutText::ComputePreferredLogicalWidths(
           max_width_ = curr_max_width;
         curr_max_width = 0;
       } else {
-        TextRun run =
+        TextRun text_run =
             ConstructTextRun(f, this, i, 1, style_to_use, text_direction);
-        run.SetCharactersLength(len - i);
-        DCHECK_GE(run.CharactersLength(), run.length());
-        run.SetTabSize(!StyleRef().CollapseWhiteSpace(),
-                       StyleRef().GetTabSize());
-        run.SetXPos(lead_width + curr_max_width);
+        text_run.SetCharactersLength(len - i);
+        DCHECK_GE(text_run.CharactersLength(), text_run.length());
+        text_run.SetTabSize(!StyleRef().CollapseWhiteSpace(),
+                            StyleRef().GetTabSize());
+        text_run.SetXPos(lead_width + curr_max_width);
 
-        curr_max_width += f.Width(run);
+        curr_max_width += f.Width(text_run);
         needs_word_spacing =
-            is_space && !previous_character_is_space && i == len - 1;
+            is_whitespace && !previous_character_is_whitespace && i == len - 1;
       }
       DCHECK_EQ(last_word_boundary, i);
       last_word_boundary++;

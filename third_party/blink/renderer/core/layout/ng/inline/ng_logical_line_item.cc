@@ -60,8 +60,8 @@ void NGLogicalLineItems::CreateTextFragments(WritingMode writing_mode,
                              child.MarginSize());
       }
       text_builder.SetIsHiddenForPaint(child.is_hidden_for_paint);
-      DCHECK(!child.fragment);
-      child.fragment = text_builder.ToTextFragment();
+      DCHECK(!child.text_fragment);
+      child.text_fragment = text_builder.ToTextFragment();
     }
   }
 }

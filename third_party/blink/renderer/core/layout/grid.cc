@@ -203,8 +203,7 @@ DoublyLinkedList<ListGrid::GridCell>::AddResult ListGrid::GridTrack::Insert(
       size_t next_row_index = direction_ == kForColumns ? index + 1 : Index();
       auto next_cell =
           base::WrapUnique(new GridCell(next_row_index, next_col_index));
-      auto result = InsertAfter(next_cell.get(), cell);
-      if (result.is_new_entry)
+      if (InsertAfter(next_cell.get(), cell).is_new_entry)
         next_cell.release();
     }
     cell = cell->Next();

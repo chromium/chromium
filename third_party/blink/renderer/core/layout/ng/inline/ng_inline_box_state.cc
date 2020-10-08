@@ -35,19 +35,19 @@ FontHeight ComputeEmphasisMarkOutsets(const ComputedStyle& style) {
 
 }  // namespace
 
-void NGInlineBoxState::ComputeTextMetrics(const ComputedStyle& style,
+void NGInlineBoxState::ComputeTextMetrics(const ComputedStyle& styleref,
                                           FontBaseline baseline_type) {
-  text_metrics = style.GetFontHeight(baseline_type);
+  text_metrics = styleref.GetFontHeight(baseline_type);
   text_top = -text_metrics.ascent;
   text_height = text_metrics.LineHeight();
 
-  FontHeight emphasis_marks_outsets = ComputeEmphasisMarkOutsets(style);
+  FontHeight emphasis_marks_outsets = ComputeEmphasisMarkOutsets(styleref);
   if (emphasis_marks_outsets.IsEmpty()) {
-    text_metrics.AddLeading(style.ComputedLineHeightAsFixed());
+    text_metrics.AddLeading(styleref.ComputedLineHeightAsFixed());
   } else {
     FontHeight emphasis_marks_metrics = text_metrics;
     emphasis_marks_metrics += emphasis_marks_outsets;
-    text_metrics.AddLeading(style.ComputedLineHeightAsFixed());
+    text_metrics.AddLeading(styleref.ComputedLineHeightAsFixed());
     text_metrics.Unite(emphasis_marks_metrics);
     // TODO: Is this correct to include into text_metrics? How do we use
     // text_metrics after this point?
@@ -55,7 +55,7 @@ void NGInlineBoxState::ComputeTextMetrics(const ComputedStyle& style,
 
   metrics.Unite(text_metrics);
 
-  include_used_fonts = style.LineHeight().IsNegative();
+  include_used_fonts = styleref.LineHeight().IsNegative();
 }
 
 void NGInlineBoxState::ResetTextMetrics() {
@@ -63,10 +63,10 @@ void NGInlineBoxState::ResetTextMetrics() {
   text_top = text_height = LayoutUnit();
 }
 
-void NGInlineBoxState::EnsureTextMetrics(const ComputedStyle& style,
+void NGInlineBoxState::EnsureTextMetrics(const ComputedStyle& styleref,
                                          FontBaseline baseline_type) {
   if (text_metrics.IsEmpty())
-    ComputeTextMetrics(style, baseline_type);
+    ComputeTextMetrics(styleref, baseline_type);
 }
 
 void NGInlineBoxState::AccumulateUsedFonts(const ShapeResultView* shape_result,
@@ -699,8 +699,9 @@ NGInlineLayoutStateStack::BoxData::CreateBoxFragment(
       box.AddChild(child.layout_result->PhysicalFragment(),
                    child.rect.offset - rect.offset);
       child.layout_result.reset();
-    } else if (child.fragment) {
-      box.AddChild(std::move(child.fragment), child.rect.offset - rect.offset);
+    } else if (child.text_fragment) {
+      box.AddChild(std::move(child.text_fragment),
+                   child.rect.offset - rect.offset);
     }
   }
 

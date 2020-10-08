@@ -5,6 +5,8 @@
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("layout") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "api/hit_test_action.h",
     "api/line_layout_api_shim.h",

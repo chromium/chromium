@@ -77,14 +77,14 @@ ResolveInlineLengthInternal(const NGConstraintSpace&,
                             const base::Optional<MinMaxSizes>&,
                             const Length&);
 
-// Same as ResolveInlineLengthInternal, except here |content_size| roughly plays
-// the part of |MinMaxSizes|.
+// Same as ResolveInlineLengthInternal, except here |intrinsic_size| roughly
+// plays the part of |MinMaxSizes|.
 CORE_EXPORT LayoutUnit ResolveBlockLengthInternal(
     const NGConstraintSpace&,
     const ComputedStyle&,
     const NGBoxStrut& border_padding,
     const Length&,
-    LayoutUnit content_size,
+    LayoutUnit intrinsic_size,
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max =
         nullptr);
 
@@ -241,7 +241,7 @@ inline LayoutUnit ResolveMainBlockLength(
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     const Length& length,
-    LayoutUnit content_size,
+    LayoutUnit intrinsic_size,
     LengthResolvePhase phase,
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max =
         nullptr) {
@@ -249,10 +249,10 @@ inline LayoutUnit ResolveMainBlockLength(
                BlockLengthUnresolvable(
                    constraint_space, length, phase,
                    opt_percentage_resolution_block_size_for_min_max)))
-    return content_size;
+    return intrinsic_size;
 
   return ResolveBlockLengthInternal(
-      constraint_space, style, border_padding, length, content_size,
+      constraint_space, style, border_padding, length, intrinsic_size,
       opt_percentage_resolution_block_size_for_min_max);
 }
 
@@ -314,7 +314,7 @@ MinMaxSizes ComputeMinMaxBlockSize(
     const NGConstraintSpace&,
     const ComputedStyle&,
     const NGBoxStrut& border_padding,
-    LayoutUnit content_size,
+    LayoutUnit intrinsic_size,
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max =
         nullptr);
 
@@ -366,7 +366,7 @@ CORE_EXPORT LayoutUnit
 ComputeBlockSizeForFragment(const NGConstraintSpace&,
                             const ComputedStyle&,
                             const NGBoxStrut& border_padding,
-                            LayoutUnit content_size,
+                            LayoutUnit intrinsic_size,
                             base::Optional<LayoutUnit> inline_size);
 
 // Intrinsic size for replaced elements is computed as:

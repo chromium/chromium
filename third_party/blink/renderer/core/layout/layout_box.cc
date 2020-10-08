@@ -331,10 +331,10 @@ LayoutUnit MenuListIntrinsicBlockSize(const HTMLSelectElement& select,
 
 #if DCHECK_IS_ON()
 void CheckDidAddFragment(const LayoutBox& box,
-                         const NGPhysicalBoxFragment& fragment) {
+                         const NGPhysicalBoxFragment& new_fragment) {
   // If |HasFragmentItems|, |ChildrenInline()| should be true.
   // |HasFragmentItems| uses this condition to optimize .
-  if (fragment.HasItems())
+  if (new_fragment.HasItems())
     DCHECK(box.ChildrenInline());
 
   for (const NGPhysicalBoxFragment& fragment : box.PhysicalFragments()) {
@@ -3840,8 +3840,9 @@ bool LayoutBox::MapToVisualRectInAncestorSpaceInternal(
 
     // If the ancestor is below the container, then we need to map the rect into
     // ancestor's coordinates.
-    PhysicalOffset container_offset = ancestor->OffsetFromAncestor(container);
-    transform_state.Move(-container_offset, accumulation);
+    PhysicalOffset ancestor_container_offset =
+        ancestor->OffsetFromAncestor(container);
+    transform_state.Move(-ancestor_container_offset, accumulation);
     return true;
   }
 

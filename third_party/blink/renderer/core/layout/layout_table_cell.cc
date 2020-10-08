@@ -652,7 +652,7 @@ CollapsedBorderValue LayoutTableCell::ComputeCollapsedStartBorder() const {
 
   // (6) The end border of the preceding column.
   if (cell_preceding) {
-    LayoutTable::ColAndColGroup col_and_col_group =
+    col_and_col_group =
         table->ColElementAtAbsoluteColumn(AbsoluteColumnIndex() - 1);
     // Only apply the colgroup's border if this cell touches the colgroup edge.
     if (col_and_col_group.colgroup &&
@@ -783,7 +783,7 @@ CollapsedBorderValue LayoutTableCell::ComputeCollapsedEndBorder() const {
 
   // (6) The start border of the next column.
   if (!in_end_column) {
-    LayoutTable::ColAndColGroup col_and_col_group =
+    col_and_col_group =
         table->ColElementAtAbsoluteColumn(AbsoluteColumnIndex() + ColSpan());
     if (col_and_col_group.colgroup &&
         col_and_col_group.adjoins_start_border_of_col_group) {

@@ -497,8 +497,8 @@ float TextAutosizer::Inflate(LayoutObject* parent,
   }
 
   if (parent->IsListItemIncludingNG()) {
-    float multiplier = ClusterMultiplier(cluster);
-    ApplyMultiplier(parent, multiplier, layouter);
+    float list_item_multiplier = ClusterMultiplier(cluster);
+    ApplyMultiplier(parent, list_item_multiplier, layouter);
 
     // The list item has to be treated special because we can have a tree such
     // that you have a list item for a form inside it. The list marker then ends
@@ -515,7 +515,7 @@ float TextAutosizer::Inflate(LayoutObject* parent,
     // it.
     for (LayoutObject* walker = marker; walker;
          walker = walker->NextInPreOrder(marker)) {
-      ApplyMultiplier(walker, multiplier, layouter);
+      ApplyMultiplier(walker, list_item_multiplier, layouter);
       walker->SetIntrinsicLogicalWidthsDirty(kMarkOnlyThis);
     }
   }

@@ -131,7 +131,7 @@ LayoutUnit NGLineTruncator::TruncateLine(LayoutUnit line_width,
                                          NGLogicalLineItems* line_box,
                                          NGInlineLayoutStateStack* box_states) {
   DCHECK(std::all_of(line_box->begin(), line_box->end(),
-                     [](const auto& item) { return !item.fragment; }));
+                     [](const auto& item) { return !item.text_fragment; }));
 
   // Shape the ellipsis and compute its inline size.
   SetupEllipsis();
@@ -404,8 +404,8 @@ LayoutUnit NGLineTruncator::TruncateLineInTheMiddle(
 void NGLineTruncator::HideChild(NGLogicalLineItem* child) {
   DCHECK(child->HasInFlowFragment());
 
-  if (const NGPhysicalTextFragment* text = child->fragment.get()) {
-    child->fragment = text->CloneAsHiddenForPaint();
+  if (const NGPhysicalTextFragment* text = child->text_fragment.get()) {
+    child->text_fragment = text->CloneAsHiddenForPaint();
     return;
   }
 
@@ -493,7 +493,7 @@ bool NGLineTruncator::TruncateChild(
     const NGLogicalLineItem& child,
     base::Optional<NGLogicalLineItem>* truncated_child) {
   DCHECK(truncated_child && !*truncated_child);
-  DCHECK(!child.fragment);
+  DCHECK(!child.text_fragment);
 
   // If the space is not enough, try the next child.
   if (space_for_child <= 0 && !is_first_child)

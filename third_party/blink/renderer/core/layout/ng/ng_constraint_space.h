@@ -59,15 +59,6 @@ enum class NGTableCellChildLayoutMode {
   kLayout              // A table cell child, in the "layout" mode.
 };
 
-// Percentages are frequently the same as the available-size, zero, or
-// indefinite (thanks non-quirks mode)! This enum encodes this information.
-enum NGPercentageStorage {
-  kSameAsAvailable,
-  kZero,
-  kIndefinite,
-  kRareDataPercentage
-};
-
 // Some layout algorithms (flow, tables) calculate their alignment baseline
 // differently if they are within an atomic-inline context.
 //
@@ -96,6 +87,15 @@ class CORE_EXPORT NGConstraintSpace final {
   USING_FAST_MALLOC(NGConstraintSpace);
 
  public:
+  // Percentages are frequently the same as the available-size, zero, or
+  // indefinite (thanks non-quirks mode)! This enum encodes this information.
+  enum NGPercentageStorage {
+    kSameAsAvailable,
+    kZero,
+    kIndefinite,
+    kRareDataPercentage
+  };
+
   // To ensure that the bfc_offset_, rare_data_ union doesn't get polluted,
   // always initialize the bfc_offset_.
   NGConstraintSpace() : bfc_offset_() {}

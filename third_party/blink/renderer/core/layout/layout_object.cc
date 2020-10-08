@@ -3859,7 +3859,8 @@ void LayoutObject::ScheduleRelayout() {
       view->ScheduleRelayout();
   } else {
     if (IsRooted()) {
-      if (LayoutView* layout_view = View()) {
+      layout_view = View();
+      if (layout_view) {
         if (LocalFrameView* frame_view = layout_view->GetFrameView())
           frame_view->ScheduleRelayoutOfSubtree(this);
       }

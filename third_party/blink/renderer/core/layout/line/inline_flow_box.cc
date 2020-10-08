@@ -656,8 +656,8 @@ void InlineFlowBox::ComputeLogicalBoxHeights(
     InlineFlowBox* inline_flow_box =
         curr->IsInlineFlowBox() ? ToInlineFlowBox(curr) : nullptr;
 
-    bool affects_ascent = false;
-    bool affects_descent = false;
+    bool child_affects_ascent = false;
+    bool child_affects_descent = false;
 
     // The verticalPositionForBox function returns the distance between the
     // child box's baseline and the root box's baseline. The value is negative
@@ -670,7 +670,8 @@ void InlineFlowBox::ComputeLogicalBoxHeights(
     LayoutUnit ascent;
     LayoutUnit descent;
     root_box->AscentAndDescentForBox(curr, text_box_data_map, ascent, descent,
-                                     affects_ascent, affects_descent);
+                                     child_affects_ascent,
+                                     child_affects_descent);
 
     LayoutUnit box_height(ascent + descent);
     if (curr->VerticalAlign() == EVerticalAlign::kTop) {
@@ -695,12 +696,13 @@ void InlineFlowBox::ComputeLogicalBoxHeights(
       // we're willing to initially set maxAscent/Descent to negative values.
       ascent -= curr->LogicalTop();
       descent += curr->LogicalTop();
-      if (affects_ascent && (max_ascent < ascent || !set_max_ascent)) {
+      if (child_affects_ascent && (max_ascent < ascent || !set_max_ascent)) {
         max_ascent = ascent;
         set_max_ascent = true;
       }
 
-      if (affects_descent && (max_descent < descent || !set_max_descent)) {
+      if (child_affects_descent &&
+          (max_descent < descent || !set_max_descent)) {
         max_descent = descent;
         set_max_descent = true;
       }

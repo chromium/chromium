@@ -249,8 +249,7 @@ void LayoutRubyRun::UpdateLayout() {
   // the first line of the LayoutRubyBase.
   LayoutUnit last_line_ruby_text_bottom = rt->LogicalHeight();
   LayoutUnit first_line_ruby_text_top;
-  RootInlineBox* root_box = rt->LastRootBox();
-  if (root_box) {
+  if (RootInlineBox* root_box = rt->LastRootBox()) {
     // In order to align, we have to ignore negative leading.
     first_line_ruby_text_top = rt->FirstRootBox()->LogicalTopLayoutOverflow();
     last_line_ruby_text_bottom = root_box->LogicalBottomLayoutOverflow();

@@ -614,17 +614,17 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
           LengthResolvePhase::kLayout);
     }
 
-    base::Optional<LayoutUnit> intrinsic_block_size;
+    base::Optional<LayoutUnit> calculated_intrinsic_block_size;
     auto IntrinsicBlockSizeFunc = [&]() -> LayoutUnit {
-      if (!intrinsic_block_size) {
+      if (!calculated_intrinsic_block_size) {
         NGConstraintSpace child_space = BuildSpaceForIntrinsicBlockSize(
             child, physical_child_margins,
             min_max_sizes_in_cross_axis_direction);
         scoped_refptr<const NGLayoutResult> layout_result =
             child.Layout(child_space, /* break_token */ nullptr);
-        intrinsic_block_size = layout_result->IntrinsicBlockSize();
+        calculated_intrinsic_block_size = layout_result->IntrinsicBlockSize();
       }
-      return *intrinsic_block_size;
+      return *calculated_intrinsic_block_size;
     };
 
     // The logic that calculates flex_base_border_box assumes that the used

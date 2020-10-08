@@ -1959,16 +1959,16 @@ LayoutUnit LayoutBlockFlow::CollapseMargins(
   if (logical_top < before_collapse_logical_top) {
     LayoutUnit old_logical_height = LogicalHeight();
     SetLogicalHeight(logical_top);
-    LayoutBlockFlow* previous_block_flow =
+    LayoutBlockFlow* previous_block_flow_in_fc =
         PreviousBlockFlowInFormattingContext(child);
-    while (previous_block_flow) {
-      auto lowest_float = previous_block_flow->LogicalTop() +
-                          previous_block_flow->LowestFloatLogicalBottom();
+    while (previous_block_flow_in_fc) {
+      auto lowest_float = previous_block_flow_in_fc->LogicalTop() +
+                          previous_block_flow_in_fc->LowestFloatLogicalBottom();
       if (lowest_float <= logical_top)
         break;
-      AddOverhangingFloats(previous_block_flow, false);
-      previous_block_flow =
-          PreviousBlockFlowInFormattingContext(*previous_block_flow);
+      AddOverhangingFloats(previous_block_flow_in_fc, false);
+      previous_block_flow_in_fc =
+          PreviousBlockFlowInFormattingContext(*previous_block_flow_in_fc);
     }
     SetLogicalHeight(old_logical_height);
   }
@@ -4809,21 +4809,21 @@ PositionWithAffinity LayoutBlockFlow::PositionForPoint(
 
     if (closest_box->GetLineLayoutItem().IsAtomicInlineLevel()) {
       // We want to pass the original point other than a corrected one.
-      LayoutPoint point(point_in_logical_contents);
+      LayoutPoint adjusted_point(point_in_logical_contents);
       if (!IsHorizontalWritingMode())
-        point = point.TransposedPoint();
+        adjusted_point = adjusted_point.TransposedPoint();
       return PositionForPointRespectingEditingBoundaries(
           LineLayoutBox(closest_box->GetLineLayoutItem()),
-          FlipForWritingMode(point));
+          FlipForWritingMode(adjusted_point));
     }
 
     // pass the box a top position that is inside it
-    LayoutPoint point(point_in_logical_contents.X(),
-                      closest_box->Root().BlockDirectionPointInLine());
+    LayoutPoint adjusted_point(point_in_logical_contents.X(),
+                               closest_box->Root().BlockDirectionPointInLine());
     if (!IsHorizontalWritingMode())
-      point = point.TransposedPoint();
+      adjusted_point = adjusted_point.TransposedPoint();
     return closest_box->GetLineLayoutItem().PositionForPoint(
-        FlipForWritingMode(point));
+        FlipForWritingMode(adjusted_point));
   }
 
   if (last_root_box_with_children) {
@@ -4932,8 +4932,7 @@ void LayoutBlockFlow::AddOutlineRects(
     }
   }
 
-  if (const LayoutInline* inline_element_continuation =
-          InlineElementContinuation()) {
+  if (inline_element_continuation) {
     inline_element_continuation->AddOutlineRects(
         rects,
         additional_offset + (inline_element_continuation->ContainingBlock()

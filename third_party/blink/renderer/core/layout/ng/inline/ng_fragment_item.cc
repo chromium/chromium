@@ -150,8 +150,8 @@ NGFragmentItem::NGFragmentItem(NGLogicalLineItem&& line_item,
                                WritingMode writing_mode) {
   DCHECK(line_item.CanCreateFragmentItem());
 
-  if (line_item.fragment) {
-    new (this) NGFragmentItem(*line_item.fragment);
+  if (line_item.text_fragment) {
+    new (this) NGFragmentItem(*line_item.text_fragment);
     return;
   }
 

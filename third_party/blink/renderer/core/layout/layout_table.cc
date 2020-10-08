@@ -1862,10 +1862,10 @@ void LayoutTable::UpdateCollapsedOuterBorders() const {
   // widths of all cells in the last row. See the CSS 2.1 spec, section 17.6.2.
   const auto* bottom_section = BottomNonEmptySection();
   DCHECK(bottom_section);
-  unsigned row = bottom_section->NumRows() - 1;
-  unsigned bottom_cols = bottom_section->NumCols(row);
+  unsigned row_index = bottom_section->NumRows() - 1;
+  unsigned bottom_cols = bottom_section->NumCols(row_index);
   for (unsigned col = 0; col < bottom_cols; ++col) {
-    if (const auto* cell = bottom_section->PrimaryCellAt(row, col)) {
+    if (const auto* cell = bottom_section->PrimaryCellAt(row_index, col)) {
       collapsed_outer_border_after_ = std::max(
           collapsed_outer_border_after_, cell->CollapsedOuterBorderAfter());
     }

@@ -67,13 +67,14 @@ static int GetHeightForLineCount(const LayoutBlockFlow* block_flow,
   LayoutBox* normal_flow_child_without_lines = nullptr;
   for (LayoutBox* obj = block_flow->FirstChildBox(); obj;
        obj = obj->NextSiblingBox()) {
-    auto* block_flow = DynamicTo<LayoutBlockFlow>(obj);
-    if (block_flow && ShouldCheckLines(block_flow)) {
-      int result = GetHeightForLineCount(block_flow, line_count, false, count);
+    auto* child_block_flow = DynamicTo<LayoutBlockFlow>(obj);
+    if (child_block_flow && ShouldCheckLines(child_block_flow)) {
+      int result =
+          GetHeightForLineCount(child_block_flow, line_count, false, count);
       if (result != -1)
         return (result + obj->Location().Y() +
-                (include_bottom ? (block_flow->BorderBottom() +
-                                   block_flow->PaddingBottom())
+                (include_bottom ? (child_block_flow->BorderBottom() +
+                                   child_block_flow->PaddingBottom())
                                 : LayoutUnit()))
             .ToInt();
     } else if (!obj->IsFloatingOrOutOfFlowPositioned()) {

@@ -91,7 +91,7 @@ struct NGLogicalLineItem {
                     LogicalOffset offset,
                     LayoutUnit inline_size,
                     UBiDiLevel bidi_level)
-      : fragment(std::move(fragment)),
+      : text_fragment(std::move(fragment)),
         rect(offset, LogicalSize()),
         inline_size(inline_size),
         bidi_level(bidi_level) {}
@@ -99,7 +99,7 @@ struct NGLogicalLineItem {
                     LayoutUnit block_offset,
                     LayoutUnit inline_size,
                     UBiDiLevel bidi_level)
-      : fragment(std::move(fragment)),
+      : text_fragment(std::move(fragment)),
         rect(LayoutUnit(), block_offset, LayoutUnit(), LayoutUnit()),
         inline_size(inline_size),
         bidi_level(bidi_level) {}
@@ -125,11 +125,11 @@ struct NGLogicalLineItem {
     return layout_result && layout_result->PhysicalFragment().IsInlineBox();
   }
   bool HasInFlowFragment() const {
-    return fragment || inline_item ||
+    return text_fragment || inline_item ||
            (layout_result && !layout_result->PhysicalFragment().IsFloating());
   }
   bool HasInFlowOrFloatingFragment() const {
-    return fragment || inline_item || layout_result;
+    return text_fragment || inline_item || layout_result;
   }
   bool HasOutOfFlowFragment() const { return out_of_flow_positioned_box; }
   bool HasFragment() const {
@@ -166,7 +166,7 @@ struct NGLogicalLineItem {
   const NGPhysicalFragment* PhysicalFragment() const {
     if (layout_result)
       return &layout_result->PhysicalFragment();
-    return fragment.get();
+    return text_fragment.get();
   }
   const LayoutObject* GetLayoutObject() const;
   LayoutObject* GetMutableLayoutObject() const;
@@ -184,7 +184,7 @@ struct NGLogicalLineItem {
   }
 
   scoped_refptr<const NGLayoutResult> layout_result;
-  scoped_refptr<const NGPhysicalTextFragment> fragment;
+  scoped_refptr<const NGPhysicalTextFragment> text_fragment;
 
   // Data to create a text fragment from.
   const NGInlineItem* inline_item = nullptr;

@@ -31,12 +31,6 @@ namespace blink {
 class LayoutTable;
 class LayoutTableCell;
 
-enum CellsToProcess { kAllCells, kNonEmptyCells, kEmptyCells };
-
-enum DistributionMode { kExtraWidth, kInitialWidth, kLeftoverWidth };
-
-enum DistributionDirection { kStartToEnd, kEndToStart };
-
 class TableLayoutAlgorithmAuto final : public TableLayoutAlgorithm {
  public:
   TableLayoutAlgorithmAuto(LayoutTable*);
@@ -53,6 +47,10 @@ class TableLayoutAlgorithmAuto final : public TableLayoutAlgorithm {
   void WillChangeTableLayout() override {}
 
  private:
+  enum CellsToProcess { kAllCells, kNonEmptyCells, kEmptyCells };
+  enum DistributionMode { kExtraWidth, kInitialWidth, kLeftoverWidth };
+  enum DistributionDirection { kStartToEnd, kEndToStart };
+
   void FullRecalc();
   void RecalcColumn(unsigned eff_col);
 

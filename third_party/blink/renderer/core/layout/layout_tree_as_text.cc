@@ -757,8 +757,10 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
       ts << " negative z-order list(" << neg_list.size() << ")\n";
       ++curr_indent;
     }
-    for (auto* layer : neg_list)
-      WriteLayers(ts, root_layer, layer, curr_indent, behavior, marked_layer);
+    for (auto* child_layer : neg_list) {
+      WriteLayers(ts, root_layer, child_layer, curr_indent, behavior,
+                  marked_layer);
+    }
   }
 
   if (should_paint) {
@@ -777,8 +779,10 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
       ts << " normal flow list(" << normal_flow_list.size() << ")\n";
       ++curr_indent;
     }
-    for (auto* layer : normal_flow_list)
-      WriteLayers(ts, root_layer, layer, curr_indent, behavior, marked_layer);
+    for (auto* child_layer : normal_flow_list) {
+      WriteLayers(ts, root_layer, child_layer, curr_indent, behavior,
+                  marked_layer);
+    }
   }
 
   const auto& pos_list = ChildLayers(layer, kPositiveZOrderChildren);
@@ -789,8 +793,10 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
       ts << " positive z-order list(" << pos_list.size() << ")\n";
       ++curr_indent;
     }
-    for (auto* layer : pos_list)
-      WriteLayers(ts, root_layer, layer, curr_indent, behavior, marked_layer);
+    for (auto* child_layer : pos_list) {
+      WriteLayers(ts, root_layer, child_layer, curr_indent, behavior,
+                  marked_layer);
+    }
   }
 }
 

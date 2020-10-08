@@ -645,9 +645,9 @@ void LayoutInline::SplitInlines(LayoutBlockFlow* from_block,
   // correct rendering for performance).
   for (int i = static_cast<int>(inlines_to_clone.size()) - 2; i >= 0; --i) {
     // Hook the clone up as a continuation of |currentInline|.
-    LayoutBoxModelObject* old_cont = current_parent->Continuation();
+    LayoutBoxModelObject* old_descendant_cont = current_parent->Continuation();
     current_parent->SetContinuation(clone_inline);
-    clone_inline->SetContinuation(old_cont);
+    clone_inline->SetContinuation(old_descendant_cont);
 
     // Create a new clone.
     LayoutInline* current = inlines_to_clone[i];

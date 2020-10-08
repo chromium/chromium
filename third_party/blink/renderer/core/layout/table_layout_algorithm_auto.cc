@@ -514,14 +514,14 @@ int TableLayoutAlgorithmAuto::CalcEffectiveLogicalWidth() {
     if (cell_min_logical_width > span_min_logical_width) {
       if (all_cols_are_fixed) {
         for (unsigned pos = eff_col; fixed_width > 0 && pos < last_col; ++pos) {
-          int cell_logical_width = std::max(
+          int col_logical_width = std::max(
               layout_struct_[pos].effective_min_logical_width,
               static_cast<int>(cell_min_logical_width *
                                layout_struct_[pos].logical_width.Value() /
                                fixed_width));
           fixed_width -= layout_struct_[pos].logical_width.Value();
-          cell_min_logical_width -= cell_logical_width;
-          layout_struct_[pos].effective_min_logical_width = cell_logical_width;
+          cell_min_logical_width -= col_logical_width;
+          layout_struct_[pos].effective_min_logical_width = col_logical_width;
         }
       } else if (all_cols_are_percent) {
         // In this case, we just split the colspan's min amd max widths
@@ -846,9 +846,9 @@ void TableLayoutAlgorithmAuto::UpdateLayout() {
 
 template <typename Total,
           Length::Type lengthType,
-          CellsToProcess cellsToProcess,
-          DistributionMode distributionMode,
-          DistributionDirection distributionDirection>
+          TableLayoutAlgorithmAuto::CellsToProcess cellsToProcess,
+          TableLayoutAlgorithmAuto::DistributionMode distributionMode,
+          TableLayoutAlgorithmAuto::DistributionDirection distributionDirection>
 void TableLayoutAlgorithmAuto::DistributeWidthToColumns(int& available,
                                                         Total total) {
   // TODO(alancutter): Make this work correctly for calc lengths.
