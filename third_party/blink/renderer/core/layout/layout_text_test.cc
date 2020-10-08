@@ -1282,4 +1282,55 @@ TEST_P(ParameterizedLayoutTextTest, VisualRectInDocumentSVGTspanTB) {
   EXPECT_EQ(expected, target->VisualRectInDocument(kUseGeometryMapper));
 }
 
+TEST_P(ParameterizedLayoutTextTest, PositionForPointAtLeading) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    body {
+      margin: 0;
+      font-size: 10px;
+      line-height: 3;
+      font-family: Ahem;
+    }
+    #container {
+      width: 5ch;
+    }
+    </style>
+    <div id="container">line1 line2</div>
+  )HTML");
+  LayoutObject* container = GetLayoutObjectByElementId("container");
+  LayoutText* text = ToLayoutText(container->SlowFirstChild());
+  // The 1st line is at {0, 0}x{50,30} and 2nd line is {0,30}x{50,30}, with
+  // 10px half-leading, 10px text, and  10px half-leading. {10, 30} is the
+  // middle of the two lines, at the half-leading.
+
+  // line 1
+  // Note: All |PositionForPoint()| should return "line1"[1].
+  EXPECT_EQ(Position(text->GetNode(), LayoutNGEnabled() ? 1 : 7),
+            text->PositionForPoint({10, 0}).GetPosition());
+  EXPECT_EQ(Position(text->GetNode(), LayoutNGEnabled() ? 1 : 7),
+            text->PositionForPoint({10, 5}).GetPosition());
+  EXPECT_EQ(Position(text->GetNode(), 1),
+            text->PositionForPoint({10, 10}).GetPosition());
+  EXPECT_EQ(Position(text->GetNode(), 1),
+            text->PositionForPoint({10, 15}).GetPosition());
+  EXPECT_EQ(Position(text->GetNode(), LayoutNGEnabled() ? 1 : 7),
+            text->PositionForPoint({10, 20}).GetPosition());
+  EXPECT_EQ(Position(text->GetNode(), LayoutNGEnabled() ? 1 : 7),
+            text->PositionForPoint({10, 25}).GetPosition());
+  // line 2
+  EXPECT_EQ(Position(text->GetNode(), 7),
+            text->PositionForPoint({10, 30}).GetPosition());
+  EXPECT_EQ(Position(text->GetNode(), 7),
+            text->PositionForPoint({10, 35}).GetPosition());
+  EXPECT_EQ(Position(text->GetNode(), 7),
+            text->PositionForPoint({10, 40}).GetPosition());
+  EXPECT_EQ(Position(text->GetNode(), 7),
+            text->PositionForPoint({10, 45}).GetPosition());
+  EXPECT_EQ(Position(text->GetNode(), 7),
+            text->PositionForPoint({10, 50}).GetPosition());
+  EXPECT_EQ(Position(text->GetNode(), 7),
+            text->PositionForPoint({10, 55}).GetPosition());
+}
+
 }  // namespace blink

@@ -863,6 +863,10 @@ PositionWithAffinity LayoutText::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
+    // Because of Texts in "position:relative" can be outside of line box, we
+    // attempt to find a fragment containing |point|.
+    // See All/LayoutViewHitTestTest.HitTestHorizontal/* and
+    // All/LayoutViewHitTestTest.HitTestVerticalRL/*
     NGInlineCursor cursor;
     for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
       if (!EnclosingIntRect(cursor.Current().RectInContainerBlock())
@@ -878,7 +882,8 @@ PositionWithAffinity LayoutText::PositionForPoint(
                                          position_with_affinity.Affinity());
       }
     }
-    return CreatePositionWithAffinity(0);
+    // Try for leading and trailing spaces between lines.
+    return ContainingNGBlockFlow()->PositionForPoint(*this, point);
   }
 
   DCHECK(CanUseInlineBox(*this));
