@@ -124,8 +124,10 @@ TimestampMap BuildTimestampMap(base::FilePath cros_dir,
                                   base::FileEnumerator::FILES);
   for (base::FilePath cros_path = enumerator.Next(); !cros_path.empty();
        cros_path = enumerator.Next()) {
-    if (timestamp_map.size() >= kMaxTimestampMapSize)
+    if (timestamp_map.size() >= kMaxTimestampMapSize) {
+      LOG(WARNING) << "The timestamp map size exceeds max limit";
       break;
+    }
     // Skip non-media files for efficiency.
     if (!HasAndroidSupportedMediaExtension(cros_path))
       continue;
