@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/in_product_help/feature_promo_bubble_view.h"
 #include "chrome/browser/ui/views/in_product_help/feature_promo_controller_views.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -22,7 +21,10 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/test/ui_controls.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
+#include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -59,12 +61,18 @@ class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {
 
  protected:
   void ClickButton(views::Button* button) {
-    base::RunLoop run_loop;
+    // TODO(crbug.com/1135850): switch back to MoveMouseToCenterAndPress when fixed.
+    ui::MouseEvent mouse_press(ui::ET_MOUSE_PRESSED, gfx::PointF(),
+                               gfx::PointF(), ui::EventTimeForNow(),
+                               ui::EF_LEFT_MOUSE_BUTTON,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+    button->OnMouseEvent(&mouse_press);
 
-    ui_test_utils::MoveMouseToCenterAndPress(
-        button, ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP,
-        run_loop.QuitClosure());
-    run_loop.Run();
+    ui::MouseEvent mouse_release(ui::ET_MOUSE_RELEASED, gfx::PointF(),
+                                 gfx::PointF(), ui::EventTimeForNow(),
+                                 ui::EF_LEFT_MOUSE_BUTTON,
+                                 ui::EF_LEFT_MOUSE_BUTTON);
+    button->OnMouseEvent(&mouse_release);
   }
 
   bool HasSnoozePrefs(const base::Feature& iph_feature) {
