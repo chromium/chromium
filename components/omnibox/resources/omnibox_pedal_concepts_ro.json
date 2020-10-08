@@ -1,7 +1,7 @@
 {
   "schema": "pedal_concepts_runtime",
   "schema_version": 1,
-  "data_version": 15497154,
+  "data_version": 15538875,
   "tokenize_characters": " -",
   "dictionary": [
     "a",
@@ -340,10 +340,10 @@
               57
             ],
             [
-              19
+              15
             ],
             [
-              15
+              19
             ],
             [
               37
@@ -363,11 +363,11 @@
               59
             ],
             [
-              47,
+              27,
               32
             ],
             [
-              27,
+              47,
               32
             ],
             [
@@ -427,10 +427,10 @@
               50
             ],
             [
-              50
+              1
             ],
             [
-              1
+              50
             ]
           ]
         }

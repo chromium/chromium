@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 1,
-  "time_generated": "2020-09-03T21:54:20.815505007+00:00",
+  "time_generated": "2020-10-02T21:15:29.942050517+00:00",
   "primary_language_code": "en",
   "locales": [
     {
@@ -13,7 +13,13 @@
         "synonyms": [
           "በዚህ ውስጥ",
           "እንዴት",
+          "አድርግ",
           "ውስጥ",
+          "ውስጥ",
+          "የእኔ",
+          "እኔ",
+          "ለ",
+          "በ",
           "ለ"
         ]
       },
@@ -26,8 +32,8 @@
               "single": true,
               "synonyms": [
                 "google chrome",
-                "አሳሽ",
                 "ማሰስ",
+                "አሳሽ",
                 "chrome"
               ]
             },
@@ -48,10 +54,9 @@
               "synonyms": [
                 "መሸጎጫ",
                 "ኩኪዎች",
-                "ታሪክ",
-                "ውሂብ",
                 "መረጃ",
-                "መረጃ"
+                "ታሪክ",
+                "ውሂብ"
               ]
             }
           ]
@@ -72,9 +77,9 @@
               "required": true,
               "single": true,
               "synonyms": [
+                "አስቀምጥ",
                 "አቀናባሪ",
                 "አቀናብር",
-                "አስቀምጥ",
                 "ይመልከቱ",
                 "አርትዕ",
                 "አዘምን",
@@ -109,10 +114,10 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "አቀናብር",
                 "አስቀምጥ",
-                "አዘምን",
+                "አቀናብር",
                 "አርትዕ",
+                "አዘምን",
                 "ለውጥ"
               ]
             },
@@ -121,11 +126,9 @@
               "single": true,
               "synonyms": [
                 "የክሬዲት ካርድ መረጃ",
-                "የክሬዲት ካርድ መረጃ",
                 "የመክፈያ ዘዴዎች",
                 "ክሬዲት ካርዶች",
                 "ክሬዲት ካርድ",
-                "የካርድ መረጃ",
                 "የካርድ መረጃ",
                 "ክፍያዎች",
                 "ካርዶች",
@@ -152,8 +155,8 @@
               "synonyms": [
                 "አስጀምር",
                 "አስገባ",
-                "ጀምር",
                 "ክፈት",
+                "ጀምር",
                 "ፍጠር"
               ]
             },
@@ -197,8 +200,8 @@
               "single": true,
               "synonyms": [
                 "ይህ ገጽ",
-                "ገጽ",
-                "ይህ"
+                "ይህ",
+                "ገጽ"
               ]
             }
           ]
@@ -266,8 +269,8 @@
               "single": true,
               "synonyms": [
                 "google chrome",
-                "متصفّح",
                 "تصفُّح",
+                "متصفّح",
                 "chrome"
               ]
             },
@@ -276,10 +279,10 @@
               "single": true,
               "synonyms": [
                 "إزالة",
+                "حجب",
                 "حذف",
-                "مسح",
                 "محو",
-                "حجب"
+                "مسح"
               ]
             },
             {
@@ -288,7 +291,6 @@
               "synonyms": [
                 "ذاكرة التخزين المؤقت",
                 "ملفات تعريف الارتباط",
-                "معلومات",
                 "معلومات",
                 "بيانات",
                 "سجلّ"
@@ -312,11 +314,11 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "تعديل",
                 "إدارة",
-                "تحديث",
-                "تغيير",
                 "إظهار",
+                "تحديث",
+                "تعديل",
+                "تغيير",
                 "مدير",
                 "حفظ",
                 "عرض"
@@ -361,9 +363,7 @@
               "single": true,
               "synonyms": [
                 "معلومات بطاقة الائتمان",
-                "معلومات بطاقة الائتمان",
                 "بطاقات الائتمان",
-                "معلومات البطاقة",
                 "معلومات البطاقة",
                 "بطاقة ائتمان",
                 "طرق الدفع",
@@ -390,8 +390,8 @@
               "required": false,
               "single": true,
               "synonyms": [
-                "تشغيل",
                 "إنشاء",
+                "تشغيل",
                 "دخول",
                 "بدء",
                 "فتح"
@@ -459,9 +459,9 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "ترقية",
                 "تثبيت",
-                "تحديث"
+                "تحديث",
+                "ترقية"
               ]
             }
           ]
@@ -494,8 +494,8 @@
               "required": false,
               "single": true,
               "synonyms": [
-                "сърфиране",
                 "браузване",
+                "сърфиране",
                 "браузъра",
                 "браузър",
                 "google chrome",
@@ -506,21 +506,20 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "премахване",
                 "изчистване",
+                "премахване",
                 "изтриване",
-                "премахни",
-                "премахна",
-                "премахва",
                 "изчиства",
+                "премахва",
+                "премахна",
                 "премахне",
-                "изчисти",
-                "изчистя",
+                "премахни",
                 "изтрива",
                 "изчисти",
+                "изчистя",
+                "изтрие",
                 "изтрий",
                 "изтрия",
-                "изтрие",
                 "трие"
               ]
             },
@@ -533,8 +532,8 @@
                 "информация",
                 "бисквитки",
                 "историята",
-                "история",
                 "данните",
+                "история",
                 "данни",
                 "кеша",
                 "кеш"
@@ -560,52 +559,52 @@
               "single": true,
               "synonyms": [
                 "актуализиране",
-                "актуализирай",
                 "актуализация",
+                "актуализирай",
                 "актуализират",
+                "актуализира",
                 "редактиране",
                 "управляване",
-                "актуализира",
                 "редактирай",
-                "редактират",
                 "редактирам",
+                "редактират",
                 "управление",
                 "управлявай",
                 "управляват",
-                "редактира",
-                "управлява",
                 "запазване",
                 "записване",
                 "запомняне",
-                "редакция",
-                "мениджър",
-                "променят",
+                "редактира",
+                "управлява",
                 "записват",
                 "запомнят",
-                "промяна",
-                "промени",
-                "променя",
+                "мениджър",
+                "променят",
+                "редакция",
                 "запазят",
                 "записва",
                 "запомни",
                 "запомня",
                 "покажат",
-                "сменят",
-                "запази",
-                "запазя",
-                "запиши",
-                "запиша",
+                "промени",
+                "променя",
+                "промяна",
                 "виждам",
                 "виждат",
+                "запази",
+                "запазя",
+                "запиша",
+                "запиши",
                 "покажа",
-                "покажи",
                 "покаже",
-                "смени",
-                "смяна",
-                "сменя",
+                "покажи",
+                "сменят",
                 "запис",
-                "видя",
-                "види"
+                "смени",
+                "сменя",
+                "смяна",
+                "види",
+                "видя"
               ]
             },
             {
@@ -616,10 +615,10 @@
                 "данните за вход",
                 "идентификация",
                 "данни за вход",
-                "паролите",
                 "паролата",
-                "пароли",
-                "парола"
+                "паролите",
+                "парола",
+                "пароли"
               ]
             }
           ]
@@ -642,38 +641,38 @@
               "single": true,
               "synonyms": [
                 "актуализиране",
-                "актуализирай",
                 "актуализация",
+                "актуализирай",
                 "актуализират",
+                "актуализира",
                 "редактиране",
                 "управляване",
-                "актуализира",
                 "редактирай",
-                "редактират",
                 "редактирам",
+                "редактират",
                 "управление",
                 "управлявай",
                 "управляват",
-                "редактира",
-                "управлява",
                 "запазване",
                 "записване",
                 "запомняне",
-                "редакция",
-                "променят",
+                "редактира",
+                "управлява",
                 "записват",
                 "запомнят",
-                "промяна",
-                "промени",
-                "променя",
+                "променят",
+                "редакция",
                 "запазят",
                 "записва",
                 "запомни",
                 "запомня",
+                "промени",
+                "променя",
+                "промяна",
                 "запази",
                 "запазя",
-                "запиши",
                 "запиша",
+                "запиши",
                 "запис"
               ]
             },
@@ -685,14 +684,14 @@
                 "информация кредитната карта",
                 "информацията кредитна карта",
                 "информация кредитна карта",
-                "номер кредитната карта",
                 "данни кредитната карта",
-                "номер кредитна карта",
+                "номер кредитната карта",
                 "данни кредитна карта",
+                "номер кредитна карта",
                 "информация картата",
+                "информация карта",
                 "кредитната карта",
                 "кредитните карти",
-                "информация карта",
                 "кредитна карта",
                 "кредитни карти",
                 "начини плащане",
@@ -724,27 +723,27 @@
               "single": true,
               "synonyms": [
                 "стартиране",
-                "създаване",
-                "стартирам",
                 "стартирай",
+                "стартирам",
+                "създаване",
                 "отваряне",
                 "стартира",
                 "създавам",
-                "пускане",
                 "влизане",
                 "отварям",
-                "пускам",
+                "пускане",
                 "влизам",
-                "отворя",
                 "отваря",
                 "отвори",
-                "създам",
+                "отворя",
+                "пускам",
                 "създай",
+                "създам",
+                "влиза",
+                "вляза",
                 "пуска",
                 "пусна",
                 "пусни",
-                "влиза",
-                "вляза",
                 "влез"
               ]
             },
@@ -753,18 +752,18 @@
               "single": true,
               "synonyms": [
                 "поверително сърфиране",
-                "прозорец инкогнито",
                 "инкогнито прозорец",
                 "поверителен раздел",
+                "прозорец инкогнито",
                 "поверителен режим",
-                "раздел инкогнито",
                 "инкогнито раздел",
+                "раздел инкогнито",
                 "частно сърфиране",
-                "режим инкогнито",
                 "инкогнито режим",
                 "поверителен таб",
-                "таб инкогнито",
+                "режим инкогнито",
                 "инкогнито таб",
+                "таб инкогнито",
                 "частен раздел",
                 "частен режим",
                 "частен таб",
@@ -798,8 +797,8 @@
                 "смяна език",
                 "друг език",
                 "превежда",
-                "преведи",
                 "преведа",
+                "преведи",
                 "превод"
               ]
             },
@@ -833,26 +832,26 @@
               "single": true,
               "synonyms": [
                 "актуализиране",
-                "надстройване",
-                "актуализирам",
                 "актуализирай",
-                "инсталиране",
+                "актуализирам",
+                "надстройване",
                 "актуализира",
-                "надстройва",
-                "инсталирам",
+                "инсталиране",
                 "инсталирай",
+                "инсталирам",
+                "надстройва",
                 "обновяване",
                 "инсталира",
                 "ъпгрейдна",
                 "ъпгрейдни",
-                "надстроя",
                 "надстрой",
-                "ъпдейтна",
+                "надстроя",
                 "ъпдейтва",
+                "ъпдейтна",
                 "ъпдейтни",
                 "ъпгрейд",
-                "обновя",
                 "обнови",
+                "обновя",
                 "ъпдейт"
               ]
             }
@@ -902,8 +901,6 @@
               "synonyms": [
                 "মিটিয়ে দিন",
                 "সরিয়ে দিন",
-                "মুছে দিন",
-                "মুছে দিন",
                 "মুছে দিন"
               ]
             },
@@ -913,10 +910,9 @@
               "synonyms": [
                 "ক্যাশে ফাইল",
                 "ইতিহাস",
+                "কুকি",
                 "ডেটা",
-                "তথ্য",
-                "তথ্য",
-                "কুকি"
+                "তথ্য"
               ]
             }
           ]
@@ -943,8 +939,8 @@
                 "ম্যানেজার",
                 "এডিট করুন",
                 "সেভ করুন",
-                "দেখুন",
-                "দেখান"
+                "দেখান",
+                "দেখুন"
               ]
             },
             {
@@ -952,7 +948,6 @@
               "single": true,
               "synonyms": [
                 "ক্রেডেনশিয়াল",
-                "পাসওয়ার্ড",
                 "পাসওয়ার্ড"
               ]
             }
@@ -986,13 +981,9 @@
               "single": true,
               "synonyms": [
                 "ক্রেডিট কার্ডের তথ্য",
-                "ক্রেডিট কার্ডের তথ্য",
                 "পেমেন্ট পদ্ধতি",
                 "ক্রেডিট কার্ড",
-                "ক্রেডিট কার্ড",
                 "কার্ডের তথ্য",
-                "কার্ডের তথ্য",
-                "পেমেন্ট",
                 "পেমেন্ট",
                 "কার্ড"
               ]
@@ -1016,9 +1007,9 @@
               "single": true,
               "synonyms": [
                 "এন্টার করুন",
+                "তৈরি করুন",
                 "লঞ্চ করুন",
                 "শুরু করুন",
-                "তৈরি করুন",
                 "খুলুন"
               ]
             },
@@ -1140,14 +1131,14 @@
               "single": true,
               "synonyms": [
                 "suprimeix",
-                "suprimir",
                 "eliminar",
                 "esborrar",
-                "netejar",
+                "suprimir",
                 "elimina",
                 "esborra",
-                "treure",
+                "netejar",
                 "neteja",
+                "treure",
                 "treu"
               ]
             },
@@ -1183,10 +1174,10 @@
               "single": true,
               "synonyms": [
                 "administrador",
-                "administrar",
                 "actualitzar",
-                "administra",
+                "administrar",
                 "actualitza",
+                "administra",
                 "gestionar",
                 "modificar",
                 "gestiona",
@@ -1194,13 +1185,13 @@
                 "canviar",
                 "guardar",
                 "mostrar",
+                "canvia",
                 "editar",
                 "gestor",
-                "canvia",
                 "guarda",
                 "mostra",
-                "edita",
                 "desar",
+                "edita",
                 "veure",
                 "desa"
               ]
@@ -1232,21 +1223,21 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "administrar",
                 "actualitzar",
-                "administra",
+                "administrar",
                 "actualitza",
+                "administra",
                 "gestionar",
                 "modificar",
                 "gestiona",
                 "modifica",
                 "canviar",
                 "guardar",
-                "editar",
                 "canvia",
+                "editar",
                 "guarda",
-                "edita",
                 "desar",
+                "edita",
                 "desa"
               ]
             },
@@ -1258,15 +1249,15 @@
                 "info targeta de crèdit",
                 "informació targeta",
                 "mètodes pagament",
-                "targetes crèdit",
                 "mètode pagament",
-                "targeta crèdit",
+                "targetes crèdit",
                 "formes pagament",
+                "targeta crèdit",
                 "forma pagament",
                 "info targeta",
                 "pagaments",
-                "targetes",
-                "pagament"
+                "pagament",
+                "targetes"
               ]
             }
           ]
@@ -1292,11 +1283,11 @@
                 "llança",
                 "entrar",
                 "inicia",
-                "obrir",
                 "crear",
                 "entra",
-                "obre",
-                "crea"
+                "obrir",
+                "crea",
+                "obre"
               ]
             },
             {
@@ -1307,8 +1298,8 @@
                 "pestanya d'incògnit",
                 "finestra incògnit",
                 "pestanya incògnit",
-                "mode d'incògnit",
                 "finestra privada",
+                "mode d'incògnit",
                 "pestanya privada",
                 "mode incògnit",
                 "mode privat",
@@ -1370,10 +1361,10 @@
               "synonyms": [
                 "actualitzar versió",
                 "actualitza versió",
-                "instal·lar",
                 "actualitzar",
-                "instal·la",
-                "actualitza"
+                "instal·lar",
+                "actualitza",
+                "instal·la"
               ]
             }
           ]
@@ -1388,9 +1379,12 @@
         "single": false,
         "synonyms": [
           "uvnitř",
+          "můj",
           "pro",
           "jak",
-          "v"
+          "na",
+          "v",
+          "k"
         ]
       },
       "pedals": [
@@ -1450,10 +1444,10 @@
                 "spravovat",
                 "správce",
                 "zobrazit",
-                "upravit",
-                "změnit",
+                "ukázat",
                 "uložit",
-                "ukázat"
+                "upravit",
+                "změnit"
               ]
             },
             {
@@ -1486,8 +1480,8 @@
                 "aktualizovat",
                 "spravovat",
                 "upravovat",
-                "změnit",
-                "uložit"
+                "uložit",
+                "změnit"
               ]
             },
             {
@@ -1498,8 +1492,8 @@
                 "údaje o platební kartě",
                 "informace o kartě",
                 "platební metody",
-                "platební karty",
                 "platební karta",
+                "platební karty",
                 "údaje o kartě",
                 "platba",
                 "platby",
@@ -1526,8 +1520,8 @@
               "synonyms": [
                 "otevřít",
                 "vytvořit",
-                "zahájit",
                 "vstoupit",
+                "zahájit",
                 "spustit"
               ]
             },
@@ -1593,8 +1587,8 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "nainstalovat",
                 "aktualizovat",
+                "nainstalovat",
                 "upgradovat"
               ]
             }
@@ -1651,8 +1645,8 @@
                 "browseroplysninger",
                 "browserhistorik",
                 "browsercookies",
-                "oplysninger",
                 "browserdata",
+                "oplysninger",
                 "historik",
                 "cookies",
                 "cache",
@@ -1679,8 +1673,8 @@
               "synonyms": [
                 "administrator",
                 "administrer",
-                "rediger",
                 "opdater",
+                "rediger",
                 "skift",
                 "gem",
                 "vis",
@@ -1730,8 +1724,8 @@
                 "betalingsmetoder",
                 "kortoplysninger",
                 "betalingskort",
-                "kreditkort",
                 "betalinger",
+                "kreditkort",
                 "betaling",
                 "kort"
               ]
@@ -1755,10 +1749,10 @@
               "single": true,
               "synonyms": [
                 "anvend",
-                "start",
                 "opret",
-                "åbn",
-                "brug"
+                "start",
+                "brug",
+                "åbn"
               ]
             },
             {
@@ -1768,8 +1762,8 @@
                 "inkognitotilstand",
                 "inkognitovindue",
                 "privat tilstand",
-                "privat vindue",
                 "inkognitofane",
+                "privat vindue",
                 "privat fane",
                 "inkognito"
               ]
@@ -1914,8 +1908,8 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "verwalten",
                 "anschauen",
+                "verwalten",
                 "anzeigen",
                 "ändern"
               ]
@@ -1958,8 +1952,8 @@
                 "karteninformationen",
                 "kreditkartendaten",
                 "kredit karte",
-                "kreditkarte",
-                "kartendaten"
+                "kartendaten",
+                "kreditkarte"
               ]
             }
           ]
@@ -2031,8 +2025,8 @@
                 "diese seite",
                 "webseite",
                 "website",
-                "seite",
-                "diese"
+                "diese",
+                "seite"
               ]
             }
           ]
@@ -2113,9 +2107,7 @@
               "single": true,
               "synonyms": [
                 "εκκαθάριση",
-                "εκκαθάριση",
                 "κατάργηση",
-                "διαγραφή",
                 "διαγραφή"
               ]
             },
@@ -2124,10 +2116,9 @@
               "single": true,
               "synonyms": [
                 "πληροφορίες",
-                "πληροφορίες",
                 "κρυφή μνήμη",
-                "ιστορικό",
                 "δεδομένα",
+                "ιστορικό",
                 "cookie"
               ]
             }
@@ -2151,8 +2142,8 @@
               "synonyms": [
                 "διαχειριστής",
                 "επεξεργασία",
-                "διαχείριση",
                 "αποθήκευση",
+                "διαχείριση",
                 "ενημέρωση",
                 "εμφάνιση",
                 "προβολή",
@@ -2187,8 +2178,8 @@
               "single": true,
               "synonyms": [
                 "επεξεργασία",
-                "διαχείριση",
                 "αποθήκευση",
+                "διαχείριση",
                 "ενημέρωση",
                 "αλλαγή"
               ]
@@ -2202,8 +2193,8 @@
                 "πληροφορίες κάρτας",
                 "πιστωτικές κάρτες",
                 "πιστωτική κάρτα",
-                "τρόποι πληρωμής",
                 "στοιχεία κάρτας",
+                "τρόποι πληρωμής",
                 "πληρωμές",
                 "πληρωμή",
                 "κάρτες"
@@ -2228,8 +2219,8 @@
               "single": true,
               "synonyms": [
                 "δημιουργία",
-                "εκκίνηση",
                 "εισαγωγή",
+                "εκκίνηση",
                 "άνοιγμα",
                 "έναρξη"
               ]
@@ -2297,7 +2288,6 @@
               "single": true,
               "synonyms": [
                 "εγκατάσταση",
-                "ενημέρωση",
                 "ενημέρωση"
               ]
             }
@@ -2347,8 +2337,8 @@
               "synonyms": [
                 "delete",
                 "remove",
-                "erase",
                 "clear",
+                "erase",
                 "wipe"
               ]
             },
@@ -2357,8 +2347,8 @@
               "single": true,
               "synonyms": [
                 "information",
-                "history",
                 "cookies",
+                "history",
                 "cache",
                 "data",
                 "info"
@@ -2383,13 +2373,13 @@
               "single": true,
               "synonyms": [
                 "manager",
+                "change",
                 "manage",
                 "update",
-                "change",
                 "edit",
                 "save",
-                "view",
-                "show"
+                "show",
+                "view"
               ]
             },
             {
@@ -2419,9 +2409,9 @@
               "required": true,
               "single": true,
               "synonyms": [
+                "change",
                 "manage",
                 "update",
-                "change",
                 "edit",
                 "save"
               ]
@@ -2431,8 +2421,8 @@
               "single": true,
               "synonyms": [
                 "credit card information",
-                "credit card info",
                 "card information",
+                "credit card info",
                 "payment methods",
                 "credit cards",
                 "credit card",
@@ -2460,10 +2450,10 @@
               "required": false,
               "single": true,
               "synonyms": [
-                "launch",
                 "create",
-                "start",
+                "launch",
                 "enter",
+                "start",
                 "open"
               ]
             },
@@ -2531,9 +2521,9 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "upgrade",
                 "install",
                 "updates",
+                "upgrade",
                 "update"
               ]
             }
@@ -2583,8 +2573,8 @@
               "synonyms": [
                 "delete",
                 "remove",
-                "erase",
                 "clear",
+                "erase",
                 "wipe"
               ]
             },
@@ -2593,8 +2583,8 @@
               "single": true,
               "synonyms": [
                 "information",
-                "history",
                 "cookies",
+                "history",
                 "cache",
                 "data",
                 "info"
@@ -2619,13 +2609,13 @@
               "single": true,
               "synonyms": [
                 "manager",
+                "change",
                 "manage",
                 "update",
-                "change",
                 "edit",
                 "save",
-                "view",
-                "show"
+                "show",
+                "view"
               ]
             },
             {
@@ -2655,9 +2645,9 @@
               "required": true,
               "single": true,
               "synonyms": [
+                "change",
                 "manage",
                 "update",
-                "change",
                 "edit",
                 "save"
               ]
@@ -2667,8 +2657,8 @@
               "single": true,
               "synonyms": [
                 "credit card information",
-                "credit card info",
                 "card information",
+                "credit card info",
                 "payment methods",
                 "credit cards",
                 "credit card",
@@ -2696,10 +2686,10 @@
               "required": false,
               "single": true,
               "synonyms": [
-                "launch",
                 "create",
-                "start",
+                "launch",
                 "enter",
+                "start",
                 "open"
               ]
             },
@@ -2765,8 +2755,8 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "upgrade",
                 "install",
+                "upgrade",
                 "update"
               ]
             }
@@ -2818,15 +2808,14 @@
                 "eliminar",
                 "suprimir",
                 "retirar",
-                "quitar",
-                "borrar"
+                "borrar",
+                "quitar"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
-                "información",
                 "información",
                 "historial",
                 "cookies",
@@ -2901,8 +2890,6 @@
               "single": true,
               "synonyms": [
                 "información de la tarjeta de crédito",
-                "información de la tarjeta de crédito",
-                "información de la tarjeta",
                 "información de la tarjeta",
                 "tarjetas de crédito",
                 "tarjeta de crédito",
@@ -2931,8 +2918,8 @@
               "single": true,
               "synonyms": [
                 "iniciar",
-                "lanzar",
                 "entrar",
+                "lanzar",
                 "abrir",
                 "crear"
               ]
@@ -3051,8 +3038,8 @@
               "synonyms": [
                 "eliminar",
                 "suprimir",
-                "quitar",
                 "borrar",
+                "quitar",
                 "sacar"
               ]
             },
@@ -3135,8 +3122,6 @@
               "single": true,
               "synonyms": [
                 "información de la tarjeta de crédito",
-                "información de la tarjeta de crédito",
-                "información de la tarjeta",
                 "información de la tarjeta",
                 "tarjetas de crédito",
                 "tarjeta de crédito",
@@ -3280,8 +3265,8 @@
               "single": true,
               "synonyms": [
                 "tühjenda",
-                "kustuta",
-                "eemalda"
+                "eemalda",
+                "kustuta"
               ]
             },
             {
@@ -3289,8 +3274,8 @@
               "single": true,
               "synonyms": [
                 "küpsisefailid",
-                "vahemälu",
                 "küpsised",
+                "vahemälu",
                 "ajalugu",
                 "andmed",
                 "teave"
@@ -3329,7 +3314,6 @@
               "single": true,
               "synonyms": [
                 "paroolid",
-                "paroolid",
                 "mandaat"
               ]
             }
@@ -3365,10 +3349,10 @@
                 "krediitkaardi teave",
                 "krediitkaarditeave",
                 "krediitkaardid",
-                "krediitkaart",
                 "kaardi teave",
-                "makseviisid",
+                "krediitkaart",
                 "kaarditeave",
+                "makseviisid",
                 "kaardid",
                 "maksed",
                 "makse"
@@ -3439,7 +3423,6 @@
               "single": true,
               "synonyms": [
                 "see leht",
-                "see leht",
                 "leht"
               ]
             }
@@ -3509,9 +3492,8 @@
               "single": true,
               "synonyms": [
                 "حذف کردن",
-                "پاک کردن",
-                "پاک کردن",
                 "محو کردن",
+                "پاک کردن",
                 "برداشتن"
               ]
             },
@@ -3521,7 +3503,6 @@
               "synonyms": [
                 "حافظه پنهان",
                 "کوکی‌ها",
-                "اطلاعات",
                 "اطلاعات",
                 "سابقه",
                 "داده"
@@ -3546,9 +3527,9 @@
               "single": true,
               "synonyms": [
                 "به‌روزرسانی کردن",
-                "ویرایش کردن",
                 "مدیریت کردن",
                 "مشاهده کردن",
+                "ویرایش کردن",
                 "تغییر دادن",
                 "ذخیره کردن",
                 "نمایش",
@@ -3594,11 +3575,9 @@
               "single": true,
               "synonyms": [
                 "اطلاعات کارت اعتباری",
-                "اطلاعات کارت اعتباری",
                 "کارت‌های اعتباری",
                 "روش‌های پرداخت",
                 "کارت‌ اعتباری",
-                "اطلاعات کارت",
                 "اطلاعات کارت",
                 "پرداخت‌ها",
                 "کارت‌ها",
@@ -3635,11 +3614,11 @@
               "single": true,
               "synonyms": [
                 "پنجره ناشناس",
+                "برگه ناشناس",
                 "حالت ناشناس",
                 "پنجره خصوصی",
-                "برگه ناشناس",
-                "حالت خصوصی",
                 "برگه خصوصی",
+                "حالت خصوصی",
                 "ناشناس"
               ]
             }
@@ -3661,8 +3640,8 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "تغییر زبان",
-                "ترجمه کردن"
+                "ترجمه کردن",
+                "تغییر زبان"
               ]
             },
             {
@@ -3721,8 +3700,8 @@
               "synonyms": [
                 "google chrome",
                 "selaaminen",
-                "selain",
-                "chrome"
+                "chrome",
+                "selain"
               ]
             },
             {
@@ -3758,8 +3737,8 @@
               "single": true,
               "synonyms": [
                 "google chrome",
-                "selain",
-                "chrome"
+                "chrome",
+                "selain"
               ]
             },
             {
@@ -3772,8 +3751,8 @@
                 "tallenna",
                 "muokkaa",
                 "näytä",
-                "muuta",
-                "katso"
+                "katso",
+                "muuta"
               ]
             },
             {
@@ -3795,8 +3774,8 @@
               "single": true,
               "synonyms": [
                 "google chrome",
-                "selain",
-                "chrome"
+                "chrome",
+                "selain"
               ]
             },
             {
@@ -3817,9 +3796,9 @@
                 "luottokorttien tiedot",
                 "luottokorttitiedot",
                 "korttien tiedot",
+                "korttitiedot",
                 "luottokortit",
                 "luottokortti",
-                "korttitiedot",
                 "maksukortit",
                 "maksutavat",
                 "maksut",
@@ -3836,8 +3815,8 @@
               "single": true,
               "synonyms": [
                 "google chrome",
-                "selain",
-                "chrome"
+                "chrome",
+                "selain"
               ]
             },
             {
@@ -3874,8 +3853,8 @@
               "single": true,
               "synonyms": [
                 "google chrome",
-                "selain",
-                "chrome"
+                "chrome",
+                "selain"
               ]
             },
             {
@@ -3905,8 +3884,8 @@
               "single": true,
               "synonyms": [
                 "google chrome",
-                "selain",
-                "chrome"
+                "chrome",
+                "selain"
               ]
             },
             {
@@ -3975,9 +3954,8 @@
               "single": true,
               "synonyms": [
                 "impormasyon",
-                "impormasyon",
-                "history",
                 "cookies",
+                "history",
                 "cache",
                 "data"
               ]
@@ -4002,10 +3980,10 @@
               "synonyms": [
                 "pamahalaan",
                 "i-update",
-                "manager",
                 "baguhin",
-                "tingnan",
                 "ipakita",
+                "manager",
+                "tingnan",
                 "i-edit",
                 "i-save"
               ]
@@ -4049,9 +4027,7 @@
               "single": true,
               "synonyms": [
                 "impormasyon ng credit card",
-                "impormasyon ng credit card",
                 "mga paraan ng pagbabayad",
-                "impormasyon ng card",
                 "impormasyon ng card",
                 "mga credit card",
                 "mga pagbabayad",
@@ -4080,8 +4056,8 @@
               "synonyms": [
                 "ilunsad",
                 "simulan",
-                "ilagay",
-                "buksan"
+                "buksan",
+                "ilagay"
               ]
             },
             {
@@ -4148,8 +4124,8 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "i-upgrade",
                 "i-install",
+                "i-upgrade",
                 "i-update"
               ]
             }
@@ -4241,15 +4217,14 @@
                 "gestionnaire",
                 "mets à jour",
                 "met à jour",
-                "met à jour",
                 "actualiser",
                 "configurer",
                 "actualise",
                 "modifier",
                 "changer",
                 "modifie",
-                "gérer",
                 "change",
+                "gérer",
                 "gère"
               ]
             },
@@ -4285,8 +4260,8 @@
                 "mets à jour",
                 "mise à jour",
                 "modification",
-                "met à jour",
                 "enregistrer",
+                "met à jour",
                 "sauvegarder",
                 "actualiser",
                 "changement",
@@ -4305,17 +4280,17 @@
                 "informations carte bancaire",
                 "informations de paiement",
                 "infos cartes de crédit",
-                "infos carte de crédit",
                 "informations bancaires",
+                "infos carte de crédit",
                 "informations de carte",
                 "données de paiement",
                 "cartes de paiement",
                 "données bancaires",
-                "cartes de crédit",
                 "carte de paiement",
-                "mode de paiement",
-                "cartes bancaires",
+                "cartes de crédit",
                 "carte de crédit",
+                "cartes bancaires",
+                "mode de paiement",
                 "infos bancaires",
                 "carte bancaire",
                 "cartes"
@@ -4342,17 +4317,17 @@
                 "sélectionner",
                 "sélectionne",
                 "démarrer",
-                "naviguer",
                 "démarre",
+                "naviguer",
                 "choisir",
                 "choisis",
                 "choisit",
                 "lancer",
-                "passer",
                 "ouvrir",
+                "passer",
                 "lance",
-                "passe",
-                "ouvre"
+                "ouvre",
+                "passe"
               ]
             },
             {
@@ -4362,10 +4337,10 @@
                 "navigation confidentielle",
                 "fenêtre confidentielle",
                 "mode confidentialité",
-                "navigation privée",
                 "confidentiellement",
-                "fenêtre privée",
+                "navigation privée",
                 "confidentialité",
+                "fenêtre privée",
                 "onglet incognito",
                 "fenetre privée",
                 "mode incognito",
@@ -4408,7 +4383,6 @@
               "single": true,
               "synonyms": [
                 "cette page",
-                "cette page",
                 "page",
                 "site"
               ]
@@ -4432,17 +4406,17 @@
               "single": true,
               "synonyms": [
                 "mettre à niveau",
-                "mettre à jour",
                 "mets à niveau",
+                "mettre à jour",
                 "mise à niveau",
                 "met à niveau",
+                "installation",
                 "mets à jour",
                 "mise à jour",
-                "installation",
                 "met à jour",
                 "actualiser",
-                "installer",
                 "actualise",
+                "installer",
                 "installe"
               ]
             },
@@ -4498,9 +4472,8 @@
               "required": true,
               "single": true,
               "synonyms": [
+                "કાઢી નાખો",
                 "ડિલીટ કરો",
-                "કાઢી નાખો",
-                "કાઢી નાખો",
                 "વાઇપ કરો",
                 "સાફ કરો"
               ]
@@ -4511,9 +4484,8 @@
               "synonyms": [
                 "ઇતિહાસ",
                 "માહિતી",
-                "માહિતી",
-                "ડેટા",
                 "કુકી",
+                "ડેટા",
                 "કૅશ"
               ]
             }
@@ -4536,11 +4508,11 @@
               "single": true,
               "synonyms": [
                 "ફેરફાર કરો",
-                "મેનેજ કરો",
                 "અપડેટ કરો",
+                "મેનેજ કરો",
                 "મેનેજર",
-                "સાચવો",
                 "બતાવો",
+                "સાચવો",
                 "બદલો",
                 "જુઓ"
               ]
@@ -4550,7 +4522,6 @@
               "single": true,
               "synonyms": [
                 "લૉગ ઇન વિગત",
-                "પાસવર્ડ",
                 "પાસવર્ડ"
               ]
             }
@@ -4573,8 +4544,8 @@
               "single": true,
               "synonyms": [
                 "ફેરફાર કરો",
-                "મેનેજ કરો",
                 "અપડેટ કરો",
+                "મેનેજ કરો",
                 "સાચવો",
                 "બદલો"
               ]
@@ -4584,11 +4555,8 @@
               "single": true,
               "synonyms": [
                 "ક્રેડિટ કાર્ડની માહિતી",
-                "ક્રેડિટ કાર્ડની માહિતી",
                 "કાર્ડની માહિતી",
                 "ચુકવણી પદ્ધતિઓ",
-                "કાર્ડની માહિતી",
-                "ક્રેડિટ કાર્ડ",
                 "ક્રેડિટ કાર્ડ",
                 "ચુકવણીઓ",
                 "ચુકવણી",
@@ -4626,10 +4594,10 @@
               "synonyms": [
                 "ખાનગી વિંડો",
                 "છુપી વિંડો",
-                "ખાનગી મોડ",
                 "ખાનગી ટૅબ",
-                "છૂપો મોડ",
+                "ખાનગી મોડ",
                 "છૂપી ટૅબ",
+                "છૂપો મોડ",
                 "છૂપા"
               ]
             }
@@ -4697,7 +4665,16 @@
         "required": false,
         "single": false,
         "synonyms": [
-          "בפנים"
+          "בפנים",
+          "לעשות",
+          "בתוך",
+          "איך",
+          "שלי",
+          "אני",
+          "אל",
+          "ה",
+          "ב",
+          "ב"
         ]
       },
       "pedals": [
@@ -4709,8 +4686,8 @@
               "single": true,
               "synonyms": [
                 "google chrome",
-                "דפדפן",
                 "גלישה",
+                "דפדפן",
                 "chrome"
               ]
             },
@@ -4719,11 +4696,26 @@
               "single": true,
               "synonyms": [
                 "איפוס נתונים",
-                "מחיקה",
                 "למחוק",
-                "ניקוי",
                 "לנקות",
+                "מחיקה",
+                "ניקוי",
                 "הסרה"
+              ]
+            },
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "קובצי cookie",
+                "היסטוריה",
+                "הסטוריה",
+                "נתונים",
+                "עוגיות",
+                "מטמון",
+                "פרטים",
+                "קוקיז",
+                "מידע"
               ]
             }
           ]
@@ -4744,21 +4736,21 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "עריכה",
+                "להציג",
+                "לעדכן",
                 "לערוך",
+                "לצפות",
+                "לשמור",
+                "לשנות",
                 "ניהול",
                 "עדכון",
-                "לעדכן",
-                "שינוי",
-                "לשנות",
-                "שמירה",
-                "לשמור",
+                "עריכה",
                 "צפייה",
-                "לצפות",
-                "להציג",
-                "מנהל",
+                "שינוי",
+                "שמירה",
+                "הצגה",
                 "לנהל",
-                "הצגה"
+                "מנהל"
               ]
             },
             {
@@ -4768,8 +4760,8 @@
                 "פרטי כניסה",
                 "שם משתמש",
                 "סיסמאות",
-                "סיסמה",
-                "סיסמא"
+                "סיסמא",
+                "סיסמה"
               ]
             }
           ]
@@ -4790,16 +4782,30 @@
               "required": true,
               "single": true,
               "synonyms": [
+                "לעדכן",
+                "לערוך",
+                "לשמור",
+                "לשנות",
                 "ניהול",
                 "עדכון",
-                "לעדכן",
                 "עריכה",
-                "לערוך",
                 "שינוי",
-                "לשנות",
                 "שמירה",
-                "לשמור",
                 "לנהל"
+              ]
+            },
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "פרטי כרטיס אשראי",
+                "כרטיסי אשראי",
+                "אמצעי תשלום",
+                "כרטיס אשראי",
+                "פרטי אשראי",
+                "כרטיסים",
+                "תשלומים",
+                "תשלום"
               ]
             }
           ]
@@ -4821,15 +4827,15 @@
               "single": true,
               "synonyms": [
                 "להפעיל",
-                "להשיק",
                 "הפעלה",
-                "להזין",
-                "פתיחה",
-                "לפתוח",
                 "יצירה",
+                "להזין",
+                "להשיק",
                 "ליצור",
-                "השקה",
-                "הזנה"
+                "לפתוח",
+                "פתיחה",
+                "הזנה",
+                "השקה"
               ]
             },
             {
@@ -4865,10 +4871,10 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "שינוי שפה",
                 "לשנות שפה",
-                "תרגום",
-                "לתרגם"
+                "שינוי שפה",
+                "לתרגם",
+                "תרגום"
               ]
             },
             {
@@ -4900,11 +4906,11 @@
               "single": true,
               "synonyms": [
                 "להתקין",
-                "שדרוג",
-                "לשדרג",
                 "התקנה",
+                "לעדכן",
+                "לשדרג",
                 "עדכון",
-                "לעדכן"
+                "שדרוג"
               ]
             }
           ]
@@ -4958,7 +4964,6 @@
                 "वाइप करें",
                 "मिटाएंं",
                 "मिटाएं",
-                "मिटाएं",
                 "हटाएं"
               ]
             },
@@ -4968,10 +4973,9 @@
               "synonyms": [
                 "कैश मेमोरी",
                 "जानकारी",
-                "जानकारी",
                 "इतिहास",
-                "डेटा",
-                "कुकी"
+                "कुकी",
+                "डेटा"
               ]
             }
           ]
@@ -4993,14 +4997,14 @@
               "single": true,
               "synonyms": [
                 "प्रबंधित करें",
-                "बदलाव करें",
                 "अपडेट करें",
+                "बदलाव करें",
                 "सेव करें",
                 "प्रबंधक",
-                "मैनेजर",
                 "दिखाएं",
-                "बदलें",
-                "देखें"
+                "मैनेजर",
+                "देखें",
+                "बदलें"
               ]
             },
             {
@@ -5008,7 +5012,6 @@
               "single": true,
               "synonyms": [
                 "क्रेडेंशियल",
-                "पासवर्ड",
                 "पासवर्ड"
               ]
             }
@@ -5042,11 +5045,8 @@
               "single": true,
               "synonyms": [
                 "क्रेडिट कार्ड की जानकारी",
-                "क्रेडिट कार्ड की जानकारी",
                 "पैसे चुकाने के तरीके",
                 "कार्ड की जानकारी",
-                "कार्ड की जानकारी",
-                "क्रेडिट कार्ड",
                 "क्रेडिट कार्ड",
                 "पैसे चुकाएं",
                 "भुगतान",
@@ -5073,8 +5073,8 @@
               "synonyms": [
                 "लॉन्च करें",
                 "शुरू करें",
-                "डालें",
                 "खोलें",
+                "डालें",
                 "बनाएं"
               ]
             },
@@ -5084,10 +5084,10 @@
               "synonyms": [
                 "गुप्त विंडो",
                 "निजी विंडो",
-                "गुप्त मोड",
                 "गुप्त टैब",
-                "निजी मोड",
+                "गुप्त मोड",
                 "निजी टैब",
+                "निजी मोड",
                 "गुप्त"
               ]
             }
@@ -5222,9 +5222,9 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "uređivanje",
-                "upravljanje",
                 "ažuriranje",
+                "upravljanje",
+                "uređivanje",
                 "upravitelj",
                 "spremanje",
                 "promjena",
@@ -5237,10 +5237,10 @@
               "single": true,
               "synonyms": [
                 "vjerodajnice",
-                "zaporke",
+                "lozinka",
                 "lozinke",
                 "zaporka",
-                "lozinka"
+                "zaporke"
               ]
             }
           ]
@@ -5261,8 +5261,8 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "upravljanje",
                 "ažuriranje",
+                "upravljanje",
                 "uređivanje",
                 "spremanje",
                 "promjena"
@@ -5276,11 +5276,11 @@
                 "podaci o kreditnoj kartici",
                 "informacije o kartici",
                 "načini plaćanja",
-                "kreditne kartice",
                 "kreditna kartica",
+                "kreditne kartice",
                 "info o kartici",
-                "plaćanje",
                 "plaćanja",
+                "plaćanje",
                 "kartice"
               ]
             }
@@ -5314,10 +5314,10 @@
               "synonyms": [
                 "anonimna kartica",
                 "privatna kartica",
-                "anonimni prozor",
                 "anonimni način",
-                "privatni prozor",
+                "anonimni prozor",
                 "privatni način",
+                "privatni prozor",
                 "anonimno"
               ]
             }
@@ -5371,8 +5371,8 @@
               "single": true,
               "synonyms": [
                 "instaliranje",
-                "nadogradnja",
-                "ažuriranje"
+                "ažuriranje",
+                "nadogradnja"
               ]
             }
           ]
@@ -5406,8 +5406,8 @@
               "required": false,
               "single": true,
               "synonyms": [
-                "google chrome",
                 "böngészési",
+                "google chrome",
                 "böngésző",
                 "chrome"
               ]
@@ -5454,9 +5454,9 @@
               "single": true,
               "synonyms": [
                 "megjelenítése",
-                "szerkesztése",
-                "módosítása",
                 "megtekintése",
+                "módosítása",
+                "szerkesztése",
                 "frissítése",
                 "kezelése",
                 "mentése",
@@ -5490,8 +5490,8 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "szerkesztése",
                 "módosítása",
+                "szerkesztése",
                 "frissítése",
                 "kezelése",
                 "mentése"
@@ -5649,10 +5649,6 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "hapus",
-                "hapus",
-                "hapus",
-                "hapus",
                 "hapus"
               ]
             },
@@ -5689,8 +5685,8 @@
                 "pengelola",
                 "tampilkan",
                 "kelola",
-                "update",
                 "simpan",
+                "update",
                 "lihat",
                 "edit",
                 "ubah"
@@ -5701,7 +5697,6 @@
               "single": true,
               "synonyms": [
                 "kredensial",
-                "sandi",
                 "sandi"
               ]
             }
@@ -5724,8 +5719,8 @@
               "single": true,
               "synonyms": [
                 "kelola",
-                "update",
                 "simpan",
+                "update",
                 "edit",
                 "ubah"
               ]
@@ -5739,9 +5734,7 @@
                 "metode pembayaran",
                 "informasi kartu",
                 "kartu kredit",
-                "kartu kredit",
                 "info kartu",
-                "pembayaran",
                 "pembayaran",
                 "kartu"
               ]
@@ -5765,22 +5758,22 @@
               "single": true,
               "synonyms": [
                 "luncurkan",
-                "mulai",
                 "masuk",
-                "buka",
-                "buat"
+                "mulai",
+                "buat",
+                "buka"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
-                "jendela samaran",
                 "jendela pribadi",
-                "mode samaran",
+                "jendela samaran",
                 "mode pribadi",
-                "tab samaran",
+                "mode samaran",
                 "tab pribadi",
+                "tab samaran",
                 "samaran"
               ]
             }
@@ -5802,15 +5795,14 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "ubah bahasa",
-                "terjemahkan"
+                "terjemahkan",
+                "ubah bahasa"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
-                "halaman ini",
                 "halaman ini",
                 "ini"
               ]
@@ -5897,8 +5889,8 @@
               "synonyms": [
                 "cancellare",
                 "eliminare",
-                "rimuovere",
                 "resettare",
+                "rimuovere",
                 "svuotare"
               ]
             },
@@ -5933,12 +5925,12 @@
               "single": true,
               "synonyms": [
                 "visualizzare",
-                "modificare",
                 "aggiornare",
+                "modificare",
                 "cambiare",
                 "mostrare",
-                "manager",
                 "gestire",
+                "manager",
                 "salvare"
               ]
             },
@@ -5947,7 +5939,6 @@
               "single": true,
               "synonyms": [
                 "credenziali",
-                "password",
                 "password"
               ]
             }
@@ -5984,11 +5975,11 @@
                 "dati di carte di credito",
                 "informazioni di carte",
                 "metodi di pagamento",
-                "carte di credito",
                 "carta di credito",
+                "carte di credito",
                 "dati di carte",
-                "pagamento",
                 "pagamenti",
+                "pagamento",
                 "carte"
               ]
             }
@@ -6010,8 +6001,8 @@
               "required": false,
               "single": true,
               "synonyms": [
-                "lanciare",
                 "attivare",
+                "lanciare",
                 "avviare",
                 "aprire",
                 "creare"
@@ -6080,8 +6071,8 @@
               "single": true,
               "synonyms": [
                 "eseguire l'upgrade",
-                "installare",
-                "aggiornare"
+                "aggiornare",
+                "installare"
               ]
             }
           ]
@@ -6117,8 +6108,8 @@
                 "ブラウジング",
                 "ブラウザー",
                 "google chrome",
-                "ブラウザ",
                 "クローム",
+                "ブラウザ",
                 "chrome"
               ]
             },
@@ -6127,10 +6118,10 @@
               "single": true,
               "synonyms": [
                 "クリア",
-                "消す",
                 "削除",
-                "消去",
                 "抹消",
+                "消す",
+                "消去",
                 "除去"
               ]
             },
@@ -6158,8 +6149,8 @@
                 "グーグルクローム",
                 "ブラウザー",
                 "google chrome",
-                "ブラウザ",
                 "クローム",
+                "ブラウザ",
                 "chrome"
               ]
             },
@@ -6171,10 +6162,10 @@
                 "リニューアル",
                 "再設定",
                 "変える",
-                "管理",
-                "更新",
+                "一新",
                 "変更",
-                "一新"
+                "更新",
+                "管理"
               ]
             },
             {
@@ -6198,8 +6189,8 @@
                 "グーグルクローム",
                 "ブラウザー",
                 "google chrome",
-                "ブラウザ",
                 "クローム",
+                "ブラウザ",
                 "chrome"
               ]
             },
@@ -6208,13 +6199,13 @@
               "single": true,
               "synonyms": [
                 "アップデート",
-                "チェンジ",
                 "スイッチ",
+                "チェンジ",
                 "変える",
-                "更新",
-                "編集",
+                "一新",
                 "変更",
-                "一新"
+                "更新",
+                "編集"
               ]
             },
             {
@@ -6229,8 +6220,8 @@
                 "お支払い",
                 "口座情報",
                 "カード",
-                "支払い",
-                "クレカ"
+                "クレカ",
+                "支払い"
               ]
             }
           ]
@@ -6245,8 +6236,8 @@
                 "グーグルクローム",
                 "ブラウザー",
                 "google chrome",
-                "ブラウザ",
                 "クローム",
+                "ブラウザ",
                 "chrome"
               ]
             },
@@ -6255,12 +6246,12 @@
               "single": true,
               "synonyms": [
                 "使い方",
-                "起動",
-                "開始",
-                "開く",
                 "オン",
+                "使う",
                 "有効",
-                "使う"
+                "起動",
+                "開く",
+                "開始"
               ]
             },
             {
@@ -6270,8 +6261,8 @@
                 "プライベートブラウジング",
                 "シークレットウィンドウ",
                 "シークレットモード",
-                "プライベートモード",
                 "プライバシーモード",
+                "プライベートモード",
                 "シークレットタブ",
                 "プライベートタブ",
                 "シークレット"
@@ -6289,8 +6280,8 @@
                 "グーグルクローム",
                 "ブラウザー",
                 "google chrome",
-                "ブラウザ",
                 "クローム",
+                "ブラウザ",
                 "chrome"
               ]
             },
@@ -6299,9 +6290,9 @@
               "single": true,
               "synonyms": [
                 "トランスレーション",
-                "言語設定",
                 "言語切替",
                 "言語変更",
+                "言語設定",
                 "別言語",
                 "翻訳",
                 "訳"
@@ -6313,8 +6304,8 @@
               "synonyms": [
                 "このページ",
                 "ページ",
-                "これ",
-                "この"
+                "この",
+                "これ"
               ]
             }
           ]
@@ -6329,8 +6320,8 @@
                 "グーグルクローム",
                 "ブラウザー",
                 "google chrome",
-                "ブラウザ",
                 "クローム",
+                "ブラウザ",
                 "chrome"
               ]
             },
@@ -6339,8 +6330,8 @@
               "single": true,
               "synonyms": [
                 "アップグレード",
-                "インストール",
                 "アップデート",
+                "インストール",
                 "ダウンロード",
                 "最新版",
                 "更新"
@@ -6393,8 +6384,6 @@
               "synonyms": [
                 "ತೆರವುಗೊಳಿಸಿ",
                 "ತೆಗೆದುಹಾಕಿ",
-                "ಅಳಿಸಿ",
-                "ಅಳಿಸಿ",
                 "ಅಳಿಸಿ"
               ]
             },
@@ -6405,7 +6394,6 @@
                 "ಕುಕೀಗಳು",
                 "ಇತಿಹಾಸ",
                 "ಕ್ಯಾಷ್",
-                "ಮಾಹಿತಿ",
                 "ಮಾಹಿತಿ",
                 "ಡೇಟಾ"
               ]
@@ -6477,11 +6465,9 @@
               "single": true,
               "synonyms": [
                 "ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಮಾಹಿತಿ",
-                "ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಮಾಹಿತಿ",
                 "ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್‌ಗಳು",
                 "ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್‌",
                 "ಪಾವತಿ ವಿಧಾನಗಳು",
-                "ಕಾರ್ಡ್ ಮಾಹಿತಿ",
                 "ಕಾರ್ಡ್ ಮಾಹಿತಿ",
                 "ಕಾರ್ಡ್‌ಗಳು",
                 "ಪಾವತಿಗಳು",
@@ -6553,8 +6539,8 @@
               "single": true,
               "synonyms": [
                 "ಈ ಪುಟ",
-                "ಪುಟ",
-                "ಇದು"
+                "ಇದು",
+                "ಪುಟ"
               ]
             }
           ]
@@ -6591,7 +6577,18 @@
         "required": false,
         "single": false,
         "synonyms": [
-          "내부"
+          "어떻게",
+          "내부",
+          "이내",
+          "하다",
+          "안에",
+          "위에",
+          "에게",
+          "하나",
+          "그",
+          "이",
+          "내",
+          "나"
         ]
       },
       "pedals": [
@@ -6604,8 +6601,7 @@
               "synonyms": [
                 "브라우저",
                 "chrome",
-                "탐색",
-                "chrome"
+                "탐색"
               ]
             },
             {
@@ -6615,8 +6611,8 @@
                 "완전 삭제",
                 "지우기",
                 "삭제",
-                "제거",
-                "정리"
+                "정리",
+                "제거"
               ]
             },
             {
@@ -6625,9 +6621,8 @@
               "synonyms": [
                 "데이터",
                 "기록",
+                "정보",
                 "캐시",
-                "정보",
-                "정보",
                 "쿠키"
               ]
             }
@@ -6641,7 +6636,6 @@
               "single": true,
               "synonyms": [
                 "브라우저",
-                "chrome",
                 "chrome"
               ]
             },
@@ -6651,11 +6645,11 @@
               "synonyms": [
                 "업데이트",
                 "관리자",
-                "수정",
                 "관리",
                 "변경",
-                "저장",
                 "보기",
+                "수정",
+                "저장",
                 "표시"
               ]
             },
@@ -6664,7 +6658,6 @@
               "single": true,
               "synonyms": [
                 "사용자 인증 정보",
-                "비밀번호",
                 "비밀번호"
               ]
             }
@@ -6678,7 +6671,6 @@
               "single": true,
               "synonyms": [
                 "브라우저",
-                "chrome",
                 "chrome"
               ]
             },
@@ -6688,8 +6680,8 @@
               "synonyms": [
                 "업데이트",
                 "관리",
-                "수정",
                 "변경",
+                "수정",
                 "저장"
               ]
             },
@@ -6698,15 +6690,11 @@
               "single": true,
               "synonyms": [
                 "신용카드 정보",
-                "신용카드 정보",
-                "카드 정보",
                 "결제 수단",
                 "카드 정보",
                 "신용카드",
-                "신용카드",
-                "카드",
                 "결제",
-                "결제"
+                "카드"
               ]
             }
           ]
@@ -6719,7 +6707,6 @@
               "single": true,
               "synonyms": [
                 "브라우저",
-                "chrome",
                 "chrome"
               ]
             },
@@ -6728,22 +6715,22 @@
               "single": true,
               "synonyms": [
                 "만들기",
-                "실행",
                 "시작",
-                "입력",
-                "열기"
+                "실행",
+                "열기",
+                "입력"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
-                "시크릿 모드",
                 "비공개 모드",
-                "시크릿 창",
+                "시크릿 모드",
                 "비공개 창",
-                "시크릿 탭",
                 "비공개 탭",
+                "시크릿 창",
+                "시크릿 탭",
                 "시크릿"
               ]
             }
@@ -6757,7 +6744,6 @@
               "single": true,
               "synonyms": [
                 "브라우저",
-                "chrome",
                 "chrome"
               ]
             },
@@ -6774,8 +6760,7 @@
               "single": true,
               "synonyms": [
                 "이 페이지",
-                "페이지",
-                "이"
+                "페이지"
               ]
             }
           ]
@@ -6788,7 +6773,6 @@
               "single": true,
               "synonyms": [
                 "브라우저",
-                "chrome",
                 "chrome"
               ]
             },
@@ -6812,7 +6796,27 @@
         "required": false,
         "single": false,
         "synonyms": [
-          "viduje"
+          "viduje",
+          "kaip",
+          "mano",
+          "n",
+          "a",
+          "n",
+          "a",
+          "n",
+          "a",
+          "n",
+          "a",
+          "n",
+          "a",
+          "n",
+          "a",
+          "n",
+          "a",
+          "n",
+          "a",
+          "n",
+          "a"
         ]
       },
       "pedals": [
@@ -6835,7 +6839,6 @@
               "synonyms": [
                 "pašalinti",
                 "ištrinti",
-                "ištrinti",
                 "išvalyti",
                 "naikinti"
               ]
@@ -6845,11 +6848,10 @@
               "single": true,
               "synonyms": [
                 "informacija",
-                "informacija",
-                "istorija",
-                "talpykla",
                 "duomenys",
-                "slapukai"
+                "istorija",
+                "slapukai",
+                "talpykla"
               ]
             }
           ]
@@ -6871,12 +6873,12 @@
               "single": true,
               "synonyms": [
                 "peržiūrėti",
-                "valdytojas",
                 "atnaujinti",
                 "išsaugoti",
+                "valdytojas",
                 "redaguoti",
-                "tvarkyti",
                 "pakeisti",
+                "tvarkyti",
                 "rodyti"
               ]
             },
@@ -6910,8 +6912,8 @@
                 "atnaujinti",
                 "išsaugoti",
                 "redaguoti",
-                "tvarkyti",
-                "pakeisti"
+                "pakeisti",
+                "tvarkyti"
               ]
             },
             {
@@ -6919,14 +6921,12 @@
               "single": true,
               "synonyms": [
                 "kredito kortelės informacija",
-                "kredito kortelės informacija",
-                "kortelės informacija",
                 "kortelės informacija",
                 "kredito kortelės",
                 "mokėjimo metodai",
                 "kredito kortelė",
-                "mokėjimas",
                 "mokėjimai",
+                "mokėjimas",
                 "kortelės"
               ]
             }
@@ -6951,8 +6951,8 @@
                 "atidaryti",
                 "paleisti",
                 "pradėti",
-                "įvesti",
-                "sukurti"
+                "sukurti",
+                "įvesti"
               ]
             },
             {
@@ -6962,7 +6962,6 @@
                 "inkognito skirtukas",
                 "inkognito režimas",
                 "privatus skirtukas",
-                "inkognito režimas",
                 "privatus režimas",
                 "inkognito langas",
                 "privatus langas"
@@ -7017,8 +7016,8 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "naujovinti",
                 "atnaujinti",
+                "naujovinti",
                 "įdiegti"
               ]
             }
@@ -7033,7 +7032,27 @@
         "required": false,
         "single": false,
         "synonyms": [
-          "iekšpusē"
+          "iekšpusē",
+          "mans",
+          "cik",
+          "n",
+          "a",
+          "n",
+          "a",
+          "n",
+          "a",
+          "n",
+          "a",
+          "n",
+          "a",
+          "n",
+          "a",
+          "n",
+          "a",
+          "n",
+          "a",
+          "n",
+          "a"
         ]
       },
       "pedals": [
@@ -7054,8 +7073,8 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "notīrīt",
                 "iztīrīt",
+                "notīrīt",
                 "izdzēst",
                 "noņemt",
                 "dzēst"
@@ -7092,13 +7111,13 @@
               "single": true,
               "synonyms": [
                 "pārvaldnieks",
-                "pārvaldīt",
                 "atjaunināt",
+                "pārvaldīt",
                 "rediģēt",
                 "saglabāt",
                 "mainīt",
-                "skatīt",
-                "rādīt"
+                "rādīt",
+                "skatīt"
               ]
             },
             {
@@ -7128,8 +7147,8 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "pārvaldīt",
                 "atjaunināt",
+                "pārvaldīt",
                 "rediģēt",
                 "saglabāt",
                 "mainīt"
@@ -7146,8 +7165,8 @@
                 "maksājumu veidi",
                 "kredītkartes",
                 "kredītkarte",
-                "maksājums",
                 "maksājumi",
+                "maksājums",
                 "kartes"
               ]
             }
@@ -7171,8 +7190,8 @@
               "synonyms": [
                 "ievadīt",
                 "izveidot",
-                "palaist",
                 "atvērt",
+                "palaist",
                 "sākt"
               ]
             },
@@ -7239,8 +7258,8 @@
               "single": true,
               "synonyms": [
                 "atjaunināt",
-                "jaunināt",
-                "instalēt"
+                "instalēt",
+                "jaunināt"
               ]
             }
           ]
@@ -7289,7 +7308,6 @@
                 "നീക്കം ചെയ്യുക",
                 "ഇല്ലാതാക്കുക",
                 "മായ്‌ക്കുക",
-                "മായ്ക്കുക",
                 "മായ്ക്കുക"
               ]
             },
@@ -7297,9 +7315,8 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "വിവരങ്ങൾ",
-                "വിവരങ്ങൾ",
                 "കുക്കികൾ",
+                "വിവരങ്ങൾ",
                 "ചരിത്രം",
                 "ഡാറ്റ",
                 "കാഷെ"
@@ -7372,11 +7389,9 @@
               "single": true,
               "synonyms": [
                 "ക്രെഡിറ്റ് കാർഡ് വിവരങ്ങൾ",
-                "ക്രെഡിറ്റ് കാർഡ് വിവരങ്ങൾ",
                 "ക്രെഡിറ്റ് കാർഡുകൾ",
                 "പേയ്‌മെന്റ് രീതികൾ",
                 "ക്രെഡിറ്റ് കാർഡ്",
-                "കാർഡ് വിവരങ്ങൾ",
                 "കാർഡ് വിവരങ്ങൾ",
                 "പേയ്‌മെന്റുകൾ",
                 "പേയ്‌മെന്റ്",
@@ -7413,10 +7428,9 @@
               "single": true,
               "synonyms": [
                 "സ്വകാര്യ വിൻഡോ",
-                "സ്വകാര്യ മോഡ്",
                 "സ്വകാര്യ ടാബ്",
+                "സ്വകാര്യ മോഡ്",
                 "അദൃശ്യ വിൻഡോ",
-                "അദൃശ്യ മോഡ്",
                 "അദൃശ്യ ടാബ്",
                 "അദൃശ്യ മോഡ്"
               ]
@@ -7486,7 +7500,19 @@
         "required": false,
         "single": false,
         "synonyms": [
-          "आत"
+          "सुरू करा",
+          "यामधील",
+          "यासाठी",
+          "एखादा",
+          "मध्ये",
+          "माझे",
+          "साठी",
+          "कसे",
+          "करा",
+          "आत",
+          "एक",
+          "एक",
+          "द"
         ]
       },
       "pedals": [
@@ -7520,10 +7546,9 @@
               "synonyms": [
                 "इतिहास",
                 "माहिती",
-                "माहिती",
+                "कुकी",
                 "कॅशे",
-                "डेटा",
-                "कुकी"
+                "डेटा"
               ]
             }
           ]
@@ -7550,8 +7575,8 @@
                 "अपडेट करा",
                 "सेव्ह करा",
                 "दाखवा",
-                "बदला",
-                "पाहा"
+                "पाहा",
+                "बदला"
               ]
             },
             {
@@ -7559,7 +7584,6 @@
               "single": true,
               "synonyms": [
                 "क्रेडेंशियल",
-                "पासवर्ड",
                 "पासवर्ड"
               ]
             }
@@ -7595,12 +7619,10 @@
                 "क्रेडिट कार्डाची माहिती",
                 "क्रेडिट कार्डची माहिती",
                 "कार्डाची माहिती",
-                "कार्डाची माहिती",
                 "क्रेडिट कार्डे",
                 "क्रेडिट कार्ड",
                 "पेमेंट पद्धती",
                 "कार्डे",
-                "पेमेंट",
                 "पेमेंट"
               ]
             }
@@ -7622,10 +7644,9 @@
               "required": false,
               "single": true,
               "synonyms": [
-                "लाँच करा",
-                "सुरू करा",
                 "एंटर करा",
                 "तयार करा",
+                "लाँच करा",
                 "उघडा"
               ]
             },
@@ -7633,12 +7654,12 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "गुप्त विंडो",
                 "खाजगी विंडो",
-                "गुप्त मोड",
-                "गुप्त टॅब",
-                "खाजगी मोड",
+                "गुप्त विंडो",
                 "खाजगी टॅब",
+                "खाजगी मोड",
+                "गुप्त टॅब",
+                "गुप्त मोड",
                 "गुप्त"
               ]
             }
@@ -7707,7 +7728,15 @@
         "required": false,
         "single": false,
         "synonyms": [
-          "di dalam"
+          "di dalam",
+          "lakukan",
+          "kepada",
+          "dalam",
+          "dalam",
+          "cara",
+          "saya",
+          "pada",
+          "saya"
         ]
       },
       "pedals": [
@@ -7718,8 +7747,8 @@
               "required": false,
               "single": true,
               "synonyms": [
-                "penyemak imbas",
                 "menyemak imbas",
+                "penyemak imbas",
                 "google chrome",
                 "chrome"
               ]
@@ -7730,8 +7759,6 @@
               "synonyms": [
                 "alih keluar",
                 "kosongkan",
-                "padam",
-                "padam",
                 "padam"
               ]
             },
@@ -7739,7 +7766,6 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "maklumat",
                 "maklumat",
                 "sejarah",
                 "cache",
@@ -7769,8 +7795,8 @@
                 "tunjukkan",
                 "pengurus",
                 "simpan",
-                "tukar",
                 "lihat",
+                "tukar",
                 "edit",
                 "urus"
               ]
@@ -7780,7 +7806,6 @@
               "single": true,
               "synonyms": [
                 "bukti kelayakan",
-                "kata laluan",
                 "kata laluan"
               ]
             }
@@ -7805,8 +7830,8 @@
                 "kemas kini",
                 "simpan",
                 "tukar",
-                "urus",
-                "edit"
+                "edit",
+                "urus"
               ]
             },
             {
@@ -7814,13 +7839,8 @@
               "single": true,
               "synonyms": [
                 "maklumat kad kredit",
-                "maklumat kad kredit",
-                "maklumat kad kredit",
-                "maklumat kad kredit",
                 "kaedah pembayaran",
                 "kad kredit",
-                "kad kredit",
-                "pembayaran",
                 "pembayaran",
                 "kad"
               ]
@@ -7845,9 +7865,9 @@
               "synonyms": [
                 "lancarkan",
                 "masuk",
-                "mula",
+                "buat",
                 "buka",
-                "buat"
+                "mula"
               ]
             },
             {
@@ -7912,8 +7932,8 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "tingkatkan",
                 "kemas kini",
+                "tingkatkan",
                 "pasang"
               ]
             }
@@ -7954,10 +7974,10 @@
               "single": true,
               "synonyms": [
                 "google chrome",
-                "browser",
                 "browsen",
-                "chrome",
-                "browse"
+                "browser",
+                "browse",
+                "chrome"
               ]
             },
             {
@@ -7983,8 +8003,8 @@
                 "informatie",
                 "gegevens",
                 "cookies",
-                "info",
-                "data"
+                "data",
+                "info"
               ]
             }
           ]
@@ -8007,13 +8027,13 @@
               "synonyms": [
                 "veranderen",
                 "weergeven",
+                "bekijken",
                 "bewerken",
                 "wijzigen",
-                "bekijken",
-                "manager",
                 "beheren",
-                "updaten",
+                "manager",
                 "opslaan",
+                "updaten",
                 "beheer",
                 "update"
               ]
@@ -8051,8 +8071,8 @@
                 "bewerken",
                 "wijzigen",
                 "beheren",
-                "updaten",
-                "opslaan"
+                "opslaan",
+                "updaten"
               ]
             },
             {
@@ -8063,10 +8083,9 @@
                 "creditcardgegevens",
                 "betaalmethoden",
                 "kaartgegevens",
-                "kaartgegevens",
                 "creditcards",
-                "creditcard",
                 "betalingen",
+                "creditcard",
                 "betaling",
                 "kaarten"
               ]
@@ -8100,11 +8119,11 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "incognitovenster",
                 "incognitotabblad",
+                "incognitovenster",
                 "incognitomodus",
-                "privévenster",
                 "privétabblad",
+                "privévenster",
                 "privémodus",
                 "incognito",
                 "privé"
@@ -8201,8 +8220,8 @@
               "single": true,
               "synonyms": [
                 "google chrome",
-                "przeglądarka",
                 "przeglądanie",
+                "przeglądarka",
                 "chrome"
               ]
             },
@@ -8212,8 +8231,8 @@
               "synonyms": [
                 "wyczyść",
                 "wykasuj",
-                "wymaż",
                 "skasuj",
+                "wymaż",
                 "usuń"
               ]
             },
@@ -8227,16 +8246,16 @@
                 "historię przeglądarki",
                 "pamięć przeglądania",
                 "pamięć przeglądarki",
-                "pamięć podręczną",
                 "dane z przeglądania",
+                "pamięć podręczną",
                 "dane przeglądania",
                 "pliki cookie",
-                "informacje",
                 "ciasteczka",
+                "informacje",
                 "historię",
                 "cookiesy",
-                "cookies",
                 "ciastka",
+                "cookies",
                 "cookie",
                 "dane",
                 "info"
@@ -8265,9 +8284,9 @@
                 "menedżer",
                 "wyświetl",
                 "edytuj",
-                "zmień",
+                "pokaż",
                 "zapisz",
-                "pokaż"
+                "zmień"
               ]
             },
             {
@@ -8306,8 +8325,8 @@
                 "zaktualizuj",
                 "zarządzaj",
                 "edytuj",
-                "zmień",
-                "zapisz"
+                "zapisz",
+                "zmień"
               ]
             },
             {
@@ -8315,28 +8334,28 @@
               "single": true,
               "synonyms": [
                 "informacje o karcie płatniczej",
-                "informacje z karty kredytowej",
                 "informacje z karty płatniczej",
+                "informacje z karty kredytowej",
                 "dane z karty płatniczej",
                 "dane z karty kredytowej",
                 "dane karty płatniczej",
                 "dane karty kredytowej",
-                "informacje z karty",
-                "informacje o karcie",
-                "sposób płatności",
-                "metodę płatności",
                 "dane do płatności",
+                "informacje o karcie",
+                "informacje z karty",
+                "metodę płatności",
+                "sposób płatności",
                 "formę płatności",
-                "metody płatności",
                 "kartę płatniczą",
-                "kartę kredytową",
+                "metody płatności",
                 "formy płatności",
+                "kartę kredytową",
                 "szczegóły karty",
-                "karty kredytowe",
                 "dane płatnicze",
+                "karty kredytowe",
                 "dane z karty",
-                "płatność",
                 "płatności",
+                "płatność",
                 "dane karty",
                 "karty"
               ]
@@ -8360,10 +8379,10 @@
               "single": true,
               "synonyms": [
                 "wyświetl",
-                "uruchom",
-                "włącz",
                 "otwórz",
-                "utwórz"
+                "uruchom",
+                "utwórz",
+                "włącz"
               ]
             },
             {
@@ -8411,9 +8430,9 @@
                 "tę stronę",
                 "tę treść",
                 "tej strony",
+                "te słowa",
                 "ten tekst",
                 "to zdanie",
-                "te słowa",
                 "stronę",
                 "strony",
                 "tego",
@@ -8533,8 +8552,8 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "gerenciar",
                 "atualizar",
+                "gerenciar",
                 "gerente",
                 "mostrar",
                 "editar",
@@ -8570,8 +8589,8 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "gerenciar",
                 "atualizar",
+                "gerenciar",
                 "editar",
                 "salvar",
                 "mudar"
@@ -8611,8 +8630,8 @@
               "required": false,
               "single": true,
               "synonyms": [
-                "lançar",
                 "iniciar",
+                "lançar",
                 "entrar",
                 "abrir",
                 "criar"
@@ -8627,8 +8646,8 @@
                 "janela anônima",
                 "janela privada",
                 "guia anônima",
-                "modo privado",
-                "guia privada"
+                "guia privada",
+                "modo privado"
               ]
             }
           ]
@@ -8732,7 +8751,6 @@
                 "eliminar",
                 "remover",
                 "apagar",
-                "limpar",
                 "limpar"
               ]
             },
@@ -8815,8 +8833,6 @@
               "single": true,
               "synonyms": [
                 "informações do cartão de crédito",
-                "informações do cartão de crédito",
-                "informações do cartão",
                 "informações do cartão",
                 "métodos de pagamento",
                 "cartões de crédito",
@@ -8913,7 +8929,6 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "atualizar",
                 "atualizar",
                 "instalar"
               ]
@@ -9079,8 +9094,8 @@
               "synonyms": [
                 "lansează",
                 "pornește",
-                "deschide",
                 "creează",
+                "deschide",
                 "intră"
               ]
             },
@@ -9090,8 +9105,8 @@
               "synonyms": [
                 "fereastră incognito",
                 "fereastră privată",
-                "modul incognito",
                 "filă incognito",
+                "modul incognito",
                 "filă privată",
                 "modul privat",
                 "incognito"
@@ -9124,8 +9139,8 @@
               "single": true,
               "synonyms": [
                 "această pagină",
-                "pagină",
-                "aceasta"
+                "aceasta",
+                "pagină"
               ]
             }
           ]
@@ -9200,8 +9215,8 @@
               "synonyms": [
                 "почистить",
                 "очистить",
-                "удалить",
                 "стереть",
+                "удалить",
                 "убрать"
               ]
             },
@@ -9235,10 +9250,10 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "управление",
                 "посмотреть",
-                "управлять",
+                "управление",
                 "сохранить",
+                "управлять",
                 "изменить",
                 "обновить",
                 "показать",
@@ -9275,8 +9290,8 @@
                 "управление",
                 "исправить",
                 "сохранить",
-                "обновить",
-                "изменить"
+                "изменить",
+                "обновить"
               ]
             },
             {
@@ -9329,9 +9344,9 @@
                 "анонимный просмотр",
                 "вкладка инкогнито",
                 "приватная вкладка",
-                "режим инкогнито",
-                "приватный режим",
                 "анонимный режим",
+                "приватный режим",
+                "режим инкогнито",
                 "окно инкогнито",
                 "приватное окно",
                 "инкогнито"
@@ -9444,9 +9459,6 @@
               "single": true,
               "synonyms": [
                 "odstrániť",
-                "odstrániť",
-                "vymazať",
-                "vymazať",
                 "vymazať"
               ]
             },
@@ -9456,7 +9468,6 @@
               "synonyms": [
                 "vyrovnávacia pamäť",
                 "súbory cookie",
-                "informácie",
                 "informácie",
                 "história",
                 "údaje"
@@ -9483,10 +9494,9 @@
                 "aktualizovať",
                 "spravovať",
                 "zobraziť",
-                "zobraziť",
-                "upraviť",
                 "správca",
                 "uložiť",
+                "upraviť",
                 "zmeniť"
               ]
             },
@@ -9519,8 +9529,8 @@
               "synonyms": [
                 "aktualizovať",
                 "spravovať",
-                "upraviť",
                 "uložiť",
+                "upraviť",
                 "zmeniť"
               ]
             },
@@ -9529,11 +9539,9 @@
               "single": true,
               "synonyms": [
                 "informácie o kreditnej karte",
-                "informácie o kreditnej karte",
                 "informácie o karte",
-                "informácie o karte",
-                "kreditné karty",
                 "kreditná karta",
+                "kreditné karty",
                 "spôsoby platby",
                 "platba",
                 "platby",
@@ -9559,8 +9567,8 @@
               "single": true,
               "synonyms": [
                 "vytvoriť",
-                "spustiť",
                 "otvoriť",
+                "spustiť",
                 "začať",
                 "zadať"
               ]
@@ -9572,8 +9580,8 @@
                 "súkromný režim",
                 "anonymný režim",
                 "súkromná karta",
-                "súkromné okno",
                 "karta inkognito",
+                "súkromné okno",
                 "okno inkognito",
                 "anonymný"
               ]
@@ -9645,7 +9653,11 @@
         "synonyms": [
           "znotraj",
           "kako",
+          "moji",
           "za",
+          "se",
+          "na",
+          "v",
           "v"
         ]
       },
@@ -9668,9 +9680,9 @@
               "single": true,
               "synonyms": [
                 "izbriši",
+                "izprazni",
                 "odstrani",
                 "pobriši",
-                "izprazni",
                 "počisti"
               ]
             },
@@ -9680,9 +9692,8 @@
               "synonyms": [
                 "predpomnilnik",
                 "informacije",
-                "informacije",
-                "zgodovino",
                 "piškotke",
+                "zgodovino",
                 "podatke"
               ]
             }
@@ -9707,8 +9718,8 @@
                 "upravitelj",
                 "upravljaj",
                 "posodobi",
-                "spremeni",
                 "prikaži",
+                "spremeni",
                 "pokaži",
                 "shrani",
                 "uredi"
@@ -9753,14 +9764,12 @@
               "single": true,
               "synonyms": [
                 "podatke o kreditni kartici",
-                "podatke o kreditni kartici",
-                "podatke o kreditni kartici",
                 "plačilna sredstva",
                 "podatke o kartici",
                 "kreditne kartice",
                 "kreditno kartico",
-                "plačilo",
                 "plačila",
+                "plačilo",
                 "kartice"
               ]
             }
@@ -9782,10 +9791,9 @@
               "required": false,
               "single": true,
               "synonyms": [
-                "zaženi",
                 "ustvari",
+                "zaženi",
                 "začni",
-                "odpri",
                 "odpri"
               ]
             },
@@ -9890,9 +9898,9 @@
               "required": false,
               "single": true,
               "synonyms": [
-                "прегледање",
                 "прегледача",
                 "прегледачу",
+                "прегледање",
                 "прегледач",
                 "google chrome",
                 "chrome"
@@ -9903,14 +9911,14 @@
               "single": true,
               "synonyms": [
                 "избрисати",
-                "уклонити",
                 "обрисати",
                 "уклањање",
+                "уклонити",
                 "брисати",
                 "брисање",
                 "избриши",
-                "уклони",
                 "обриши",
+                "уклони",
                 "бриши"
               ]
             },
@@ -9918,13 +9926,13 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "информације",
                 "информација",
-                "историју",
-                "колачиће",
+                "информације",
                 "историје",
-                "података",
+                "историју",
                 "колачића",
+                "колачиће",
+                "података",
                 "податке",
                 "кеша",
                 "кеш"
@@ -9951,36 +9959,36 @@
               "single": true,
               "synonyms": [
                 "прегледати",
-                "управљати",
                 "ажурирати",
-                "променити",
-                "приказати",
-                "управљање",
                 "ажурирање",
+                "приказати",
+                "променити",
+                "управљати",
+                "управљање",
                 "изменити",
                 "сачувати",
                 "менаџер",
+                "преглед",
                 "промена",
                 "сачувај",
-                "преглед",
-                "измени",
                 "измена",
+                "измени",
                 "мењање",
-                "чување",
+                "приказ",
                 "чувати",
-                "приказ"
+                "чување"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
-                "креденцијали",
                 "креденцијала",
-                "акредитиви",
+                "креденцијали",
                 "акредитива",
-                "лозинке",
+                "акредитиви",
                 "лозинка",
+                "лозинке",
                 "лозинки",
                 "лозинку"
               ]
@@ -10005,20 +10013,20 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "управљати",
                 "ажурирати",
-                "променити",
-                "управљање",
                 "ажурирање",
+                "променити",
+                "управљати",
+                "управљање",
                 "изменити",
                 "сачувати",
                 "промена",
                 "сачувај",
-                "измени",
                 "измена",
+                "измени",
                 "мењање",
-                "чување",
-                "чувати"
+                "чувати",
+                "чување"
               ]
             },
             {
@@ -10026,36 +10034,34 @@
               "single": true,
               "synonyms": [
                 "информацијама о кредитним картицама",
+                "информација о кредитним картицама",
                 "информацијама о кредитној картици",
                 "информације о кредитним картицама",
-                "информација о кредитним картицама",
-                "информације о кредитној картици",
                 "информација о кредитној картици",
+                "информације о кредитној картици",
                 "информацијама о картицама",
+                "информација о картицама",
                 "информацијама о картици",
                 "информације о картицама",
-                "информација о картицама",
-                "информације о картици",
                 "информација о картици",
+                "информације о картици",
                 "кредитним картицама",
                 "кредитном картицом",
                 "кредитних картица",
-                "кредитну картицу",
                 "кредитне картице",
+                "кредитну картицу",
                 "начинима плаћања",
                 "начином плаћања",
-                "начине плаћања",
                 "начина плаћања",
+                "начине плаћања",
                 "начин плаћања",
-                "картицама",
                 "картицама",
                 "картицом",
                 "плаћањем",
                 "картице",
                 "картицу",
-                "картице",
-                "плаћање",
-                "плаћања"
+                "плаћања",
+                "плаћање"
               ]
             }
           ]
@@ -10078,18 +10084,18 @@
               "required": false,
               "single": true,
               "synonyms": [
+                "направити",
                 "покренути",
                 "покретати",
-                "направити",
                 "покретање",
-                "отворити",
                 "отварање",
+                "отворити",
                 "прављење",
-                "покрени",
                 "направи",
+                "покрени",
                 "отвори",
-                "ући",
-                "уђи"
+                "уђи",
+                "ући"
               ]
             },
             {
@@ -10097,14 +10103,14 @@
               "single": true,
               "synonyms": [
                 "картица за приватно прегледање",
-                "прозора за приватно прегледање",
                 "картице за приватно прегледање",
+                "прозора за приватно прегледање",
                 "прозор за приватно прегледање",
                 "режима за приватно прегледање",
                 "режим за приватно прегледање",
                 "картица без архивирања",
-                "прозора без архивирања",
                 "картице без архивирања",
+                "прозора без архивирања",
                 "прозор без архивирања",
                 "режима без архивирања",
                 "режим без архивирања",
@@ -10175,14 +10181,14 @@
               "single": true,
               "synonyms": [
                 "надограђивање",
-                "надоградити",
                 "инсталирати",
                 "инсталирање",
+                "надоградити",
                 "инсталирај",
                 "надоградња",
                 "ажурирати",
-                "надогради",
                 "ажурирање",
+                "надогради",
                 "ажурирај"
               ]
             }
@@ -10268,8 +10274,8 @@
               "single": true,
               "synonyms": [
                 "uppdatera",
-                "redigera",
                 "ansvarig",
+                "redigera",
                 "hantera",
                 "ändra",
                 "spara",
@@ -10282,7 +10288,6 @@
               "single": true,
               "synonyms": [
                 "användaruppgifter",
-                "lösenord",
                 "lösenord"
               ]
             }
@@ -10321,7 +10326,6 @@
                 "kortinformation",
                 "kortuppgifter",
                 "betalningar",
-                "kreditkort",
                 "kreditkort",
                 "betalning",
                 "kort"
@@ -10415,8 +10419,8 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "uppgradera",
                 "installera",
+                "uppgradera",
                 "uppdatera"
               ]
             }
@@ -10462,9 +10466,6 @@
               "single": true,
               "synonyms": [
                 "ondoa",
-                "futa",
-                "futa",
-                "futa",
                 "futa"
               ]
             },
@@ -10475,7 +10476,6 @@
                 "kumbukumbu",
                 "historia",
                 "vidakuzi",
-                "maelezo",
                 "maelezo",
                 "data"
               ]
@@ -10500,11 +10500,10 @@
               "synonyms": [
                 "badilisha",
                 "kidhibiti",
-                "badilisha",
                 "dhibiti",
-                "sasisha",
                 "hifadhi",
                 "onyesha",
+                "sasisha",
                 "ona"
               ]
             },
@@ -10536,10 +10535,9 @@
               "single": true,
               "synonyms": [
                 "badilisha",
-                "badilisha",
                 "dhibiti",
-                "sasisha",
-                "hifadhi"
+                "hifadhi",
+                "sasisha"
               ]
             },
             {
@@ -10549,11 +10547,9 @@
                 "maelezo ya kadi ya mikopo",
                 "maelezo ya kadi za mikopo",
                 "maelezo ya kadi",
-                "maelezo ya kadi",
-                "kadi za mikopo",
                 "kadi ya mikopo",
+                "kadi za mikopo",
                 "njia za kulipa",
-                "malipo",
                 "malipo",
                 "kadi"
               ]
@@ -10577,8 +10573,8 @@
               "single": true,
               "synonyms": [
                 "anzisha",
-                "zindua",
                 "fungua",
+                "zindua",
                 "anza",
                 "weka"
               ]
@@ -10645,8 +10641,8 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "uppgradera",
                 "installera",
+                "uppgradera",
                 "uppdatera"
               ]
             }
@@ -10695,9 +10691,8 @@
               "single": true,
               "synonyms": [
                 "வைப் செய்",
-                "நீக்கு",
                 "அகற்று",
-                "அழி",
+                "நீக்கு",
                 "அழி"
               ]
             },
@@ -10707,9 +10702,8 @@
               "synonyms": [
                 "தற்காலிகச் சேமிப்பு",
                 "குக்கீகள்",
-                "வரலாறு",
                 "டேட்டா",
-                "தகவல்",
+                "வரலாறு",
                 "தகவல்",
                 "தரவு"
               ]
@@ -10735,10 +10729,8 @@
                 "திருத்து",
                 "நிர்வாகி",
                 "நிர்வகி",
-                "மாற்று",
-                "மாற்று",
                 "காட்டு",
-                "காட்டு",
+                "மாற்று",
                 "சேமி"
               ]
             },
@@ -10775,7 +10767,6 @@
                 "திருத்து",
                 "நிர்வகி",
                 "மாற்று",
-                "மாற்று",
                 "சேமி"
               ]
             },
@@ -10784,12 +10775,10 @@
               "single": true,
               "synonyms": [
                 "கிரெடிட் கார்டு தகவல்",
-                "கிரெடிட் கார்டு தகவல்",
                 "கிரெடிட் கார்டுகள்",
                 "பேமெண்ட் முறைகள்",
                 "கிரெடிட் கார்டு",
                 "பேமெண்ட்டுகள்",
-                "கார்டு தகவல்",
                 "கார்டு தகவல்",
                 "கார்டுகள்",
                 "பேமெண்ட்"
@@ -10815,8 +10804,8 @@
               "synonyms": [
                 "அறிமுகப்படுத்து",
                 "உருவாக்கு",
-                "தொடங்கு",
                 "உள்ளிடு",
+                "தொடங்கு",
                 "திற"
               ]
             },
@@ -10824,12 +10813,12 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "மறைநிலைப் பயன்முறை",
                 "தனிப்பட்ட பயன்முறை",
-                "மறைநிலைச் சாளரம்",
+                "மறைநிலைப் பயன்முறை",
                 "தனிப்பட்ட சாளரம்",
-                "மறைநிலைத் தாவல்",
+                "மறைநிலைச் சாளரம்",
                 "தனிப்பட்ட தாவல்",
+                "மறைநிலைத் தாவல்",
                 "மறைநிலை"
               ]
             }
@@ -10940,7 +10929,6 @@
               "synonyms": [
                 "క్లియర్ చేయడం",
                 "తొలగించండం",
-                "తొలగించడం",
                 "తీసివేయడం",
                 "తొలగించడం"
               ]
@@ -10950,7 +10938,6 @@
               "single": true,
               "synonyms": [
                 "కుక్కీలు",
-                "సమాచారం",
                 "సమాచారం",
                 "చరిత్ర",
                 "కాష్",
@@ -10979,9 +10966,9 @@
                 "నిర్వహించడం",
                 "ఎడిట్ చేయడం",
                 "సేవ్ చేయడం",
-                "మేనేజర్",
-                "మార్చడం",
                 "చూపించు",
+                "మార్చడం",
+                "మేనేజర్",
                 "చూడటం"
               ]
             },
@@ -11024,11 +11011,9 @@
               "single": true,
               "synonyms": [
                 "క్రెడిట్ కార్డ్ సమాచారం",
-                "క్రెడిట్ కార్డ్ సమాచారం",
                 "క్రెడిట్ కార్డ్‌లు",
                 "చెల్లింపు పద్ధతులు",
                 "క్రెడిట్ కార్డ్",
-                "కార్డ్ సమాచారం",
                 "కార్డ్ సమాచారం",
                 "చెల్లింపులు",
                 "కార్డ్‌లు",
@@ -11068,8 +11053,8 @@
                 "ప్రైవేట్ విండో",
                 "అజ్ఞాత ట్యాబ్",
                 "ప్రైవేట్ మోడ్",
-                "అజ్ఞాత విండో",
                 "అజ్ఞాత మోడ్‌",
+                "అజ్ఞాత విండో",
                 "అజ్ఞాత మోడ్"
               ]
             }
@@ -11140,8 +11125,14 @@
         "synonyms": [
           "ข้างใน",
           "สำหรับ",
+          "ของฉัน",
           "ภายใน",
-          "วิธี"
+          "ไปยัง",
+          "วิธี",
+          "ฉัน",
+          "ทำ",
+          "ใน",
+          "บน"
         ]
       },
       "pedals": [
@@ -11152,8 +11143,8 @@
               "required": false,
               "single": true,
               "synonyms": [
-                "เบราว์เซอร์",
                 "การท่องเว็บ",
+                "เบราว์เซอร์",
                 "google chrome",
                 "chrome"
               ]
@@ -11174,8 +11165,6 @@
               "single": true,
               "synonyms": [
                 "ประวัติ",
-                "ข้อมูล",
-                "ข้อมูล",
                 "ข้อมูล",
                 "คุกกี้",
                 "แคช"
@@ -11202,8 +11191,8 @@
                 "เปลี่ยนแปลง",
                 "ผู้จัดการ",
                 "จัดการ",
-                "อัปเดต",
                 "บันทึก",
+                "อัปเดต",
                 "แก้ไข",
                 "แสดง",
                 "ดู"
@@ -11214,7 +11203,6 @@
               "single": true,
               "synonyms": [
                 "ข้อมูลเข้าสู่ระบบ",
-                "รหัสผ่าน",
                 "รหัสผ่าน"
               ]
             }
@@ -11238,8 +11226,8 @@
               "synonyms": [
                 "เปลี่ยนแปลง",
                 "จัดการ",
-                "อัปเดต",
                 "บันทึก",
+                "อัปเดต",
                 "แก้ไข"
               ]
             },
@@ -11248,14 +11236,11 @@
               "single": true,
               "synonyms": [
                 "ข้อมูลบัตรเครดิต",
-                "ข้อมูลบัตรเครดิต",
                 "วิธีการชำระเงิน",
+                "การชำระเงิน",
                 "ข้อมููลบัตร",
-                "การชำระเงิน",
-                "การชำระเงิน",
-                "บัตรเครดิต",
-                "บัตรเครดิต",
                 "ข้อมูลบัตร",
+                "บัตรเครดิต",
                 "บัตร"
               ]
             }
@@ -11289,12 +11274,12 @@
               "single": true,
               "synonyms": [
                 "หน้าต่างไม่ระบุตัวตน",
-                "โหมดไม่ระบุตัวตน",
                 "แท็บไม่ระบุตัวตน",
+                "โหมดไม่ระบุตัวตน",
                 "หน้าต่างส่วนตัว",
                 "ไม่ระบุตัวตน",
-                "โหมดส่วนตัว",
-                "แท็บส่วนตัว"
+                "แท็บส่วนตัว",
+                "โหมดส่วนตัว"
               ]
             }
           ]
@@ -11346,8 +11331,8 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "อัปเกรด",
                 "ติดตั้ง",
+                "อัปเกรด",
                 "อัปเดต"
               ]
             }
@@ -11362,10 +11347,15 @@
         "required": false,
         "single": false,
         "synonyms": [
+          "üzerinde",
           "içinde",
           "içinde",
           "içinde",
-          "nasıl"
+          "nasıl",
+          "benim",
+          "bir",
+          "ona",
+          "bir"
         ]
       },
       "pedals": [
@@ -11378,8 +11368,8 @@
               "synonyms": [
                 "google chrome",
                 "tarayıcı",
-                "tarama",
-                "chrome"
+                "chrome",
+                "tarama"
               ]
             },
             {
@@ -11399,16 +11389,16 @@
               "synonyms": [
                 "önbelleği",
                 "çerezleri",
-                "önbellek",
-                "çerezler",
-                "geçmişi",
                 "bilgileri",
+                "geçmişi",
+                "çerezler",
+                "önbellek",
                 "geçmiş",
                 "verileri",
                 "veriyi",
                 "bilgi",
-                "veri",
-                "info"
+                "info",
+                "veri"
               ]
             }
           ]
@@ -11431,12 +11421,12 @@
               "synonyms": [
                 "görüntüle",
                 "değiştir",
-                "yönetici",
                 "güncelle",
+                "yönetici",
                 "düzenle",
                 "göster",
-                "yönet",
-                "kaydet"
+                "kaydet",
+                "yönet"
               ]
             },
             {
@@ -11472,8 +11462,8 @@
                 "değiştir",
                 "güncelle",
                 "düzenle",
-                "yönet",
-                "kaydet"
+                "kaydet",
+                "yönet"
               ]
             },
             {
@@ -11484,17 +11474,17 @@
                 "kredi kartı bilgisini",
                 "kredi kartı bilgisi",
                 "ödeme yöntemlerini",
-                "ödeme yöntemleri",
                 "kredi kartlarını",
+                "ödeme yöntemleri",
                 "card information",
                 "kredi kartları",
                 "kredi kartını",
                 "kart bilgisini",
-                "kredi kartı",
                 "kart bilgisi",
+                "kredi kartı",
                 "ödemeleri",
-                "ödemeler",
                 "kartları",
+                "ödemeler",
                 "ödemeyi",
                 "kartlar",
                 "ödeme"
@@ -11519,7 +11509,6 @@
               "single": true,
               "synonyms": [
                 "oluştur",
-                "başlat",
                 "başlat",
                 "geç",
                 "aç"
@@ -11688,11 +11677,11 @@
                 "переглянути",
                 "редагувати",
                 "диспетчер",
-                "керувати",
                 "зберегти",
+                "керувати",
                 "показати",
-                "оновити",
-                "змінити"
+                "змінити",
+                "оновити"
               ]
             },
             {
@@ -11700,8 +11689,8 @@
               "single": true,
               "synonyms": [
                 "облікові дані",
-                "паролі",
-                "пароль"
+                "пароль",
+                "паролі"
               ]
             }
           ]
@@ -11723,10 +11712,10 @@
               "single": true,
               "synonyms": [
                 "редагувати",
-                "керувати",
                 "зберегти",
-                "оновити",
-                "змінити"
+                "керувати",
+                "змінити",
+                "оновити"
               ]
             },
             {
@@ -11734,8 +11723,8 @@
               "single": true,
               "synonyms": [
                 "дані кредитної картки",
-                "кредитні картки",
                 "кредитна картка",
+                "кредитні картки",
                 "способи оплати",
                 "дані картки",
                 "платежі",
@@ -11762,8 +11751,8 @@
               "required": false,
               "single": true,
               "synonyms": [
-                "увімкнути",
                 "запустити",
+                "увімкнути",
                 "відкрити",
                 "створити",
                 "увійти"
@@ -11801,8 +11790,8 @@
               "single": true,
               "synonyms": [
                 "змінити мову",
-                "перекласти",
                 "перекладач",
+                "перекласти",
                 "переклад"
               ]
             },
@@ -11896,9 +11885,8 @@
               "single": true,
               "synonyms": [
                 "bộ nhớ đệm",
-                "lịch sử",
                 "dữ liệu",
-                "thông tin",
+                "lịch sử",
                 "thông tin",
                 "cookie"
               ]
@@ -11936,7 +11924,6 @@
               "single": true,
               "synonyms": [
                 "thông tin đăng nhập",
-                "mật khẩu",
                 "mật khẩu"
               ]
             }
@@ -11970,13 +11957,9 @@
               "single": true,
               "synonyms": [
                 "thông tin thẻ tín dụng",
-                "thông tin thẻ tín dụng",
                 "phương thức thanh toán",
                 "thẻ tín dụng",
-                "thẻ tín dụng",
                 "thông tin thẻ",
-                "thông tin thẻ",
-                "thanh toán",
                 "thanh toán",
                 "thẻ"
               ]
@@ -12069,8 +12052,8 @@
               "single": true,
               "synonyms": [
                 "cập nhật",
-                "nâng cấp",
-                "cài đặt"
+                "cài đặt",
+                "nâng cấp"
               ]
             }
           ]
@@ -12097,36 +12080,36 @@
               "synonyms": [
                 "google chrome",
                 "浏览器",
-                "浏览",
-                "chrome"
+                "chrome",
+                "浏览"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
-                "清除",
                 "删除",
-                "移除",
                 "去除",
+                "擦除",
                 "清理",
-                "擦除"
+                "清除",
+                "移除"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
-                "浏览数据",
                 "浏览历史",
+                "浏览数据",
                 "浏览记录",
-                "访问记录",
                 "访问历史",
-                "数据",
+                "访问记录",
+                "cookie",
                 "历史",
-                "记录",
+                "数据",
                 "缓存",
-                "cookie"
+                "记录"
               ]
             }
           ]
@@ -12147,24 +12130,24 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "管理",
+                "保存",
                 "修改",
-                "更新",
+                "显示",
                 "更换",
                 "更改",
-                "设置",
-                "保存",
+                "更新",
                 "查看",
-                "显示"
+                "管理",
+                "设置"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
-                "密码",
                 "凭据",
-                "凭证"
+                "凭证",
+                "密码"
               ]
             }
           ]
@@ -12185,12 +12168,12 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "更新",
-                "更改",
-                "更换",
+                "保存",
                 "修改",
-                "设置",
-                "保存"
+                "更换",
+                "更改",
+                "更新",
+                "设置"
               ]
             },
             {
@@ -12199,9 +12182,9 @@
               "synonyms": [
                 "信用卡信息",
                 "信用卡",
-                "银行卡",
+                "卡信息",
                 "支付卡",
-                "卡信息"
+                "银行卡"
               ]
             }
           ]
@@ -12215,8 +12198,8 @@
               "synonyms": [
                 "google chrome",
                 "浏览器",
-                "浏览",
-                "chrome"
+                "chrome",
+                "浏览"
               ]
             },
             {
@@ -12224,10 +12207,10 @@
               "single": true,
               "synonyms": [
                 "启动",
-                "开启",
-                "打开",
-                "开始",
                 "启用",
+                "开启",
+                "开始",
+                "打开",
                 "进入"
               ]
             },
@@ -12261,20 +12244,20 @@
               "single": true,
               "synonyms": [
                 "切换语言",
-                "翻译",
-                "转换",
                 "切换",
-                "转化"
+                "翻译",
+                "转化",
+                "转换"
               ]
             },
             {
               "required": false,
               "single": true,
               "synonyms": [
-                "这句话",
-                "这段话",
+                "本页面",
                 "此内容",
-                "本页面"
+                "这句话",
+                "这段话"
               ]
             }
           ]
@@ -12295,9 +12278,9 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "更新",
                 "升级",
-                "安装"
+                "安装",
+                "更新"
               ]
             }
           ]
@@ -12336,8 +12319,8 @@
               "synonyms": [
                 "google chrome",
                 "瀏覽器",
-                "瀏覽",
-                "chrome"
+                "chrome",
+                "瀏覽"
               ]
             },
             {
@@ -12345,10 +12328,9 @@
               "single": true,
               "synonyms": [
                 "刪除",
-                "移除",
+                "抹除",
                 "清除",
-                "清除",
-                "抹除"
+                "移除"
               ]
             },
             {
@@ -12356,11 +12338,10 @@
               "single": true,
               "synonyms": [
                 "歷史記錄",
+                "cookie",
                 "快取",
                 "資料",
-                "資訊",
-                "資訊",
-                "cookie"
+                "資訊"
               ]
             }
           ]
@@ -12382,12 +12363,12 @@
               "single": true,
               "synonyms": [
                 "管理員",
-                "編輯",
-                "管理",
-                "更新",
-                "變更",
                 "儲存",
+                "更新",
                 "查看",
+                "管理",
+                "編輯",
+                "變更",
                 "顯示"
               ]
             },
@@ -12395,7 +12376,6 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "密碼",
                 "密碼",
                 "憑證"
               ]
@@ -12418,11 +12398,11 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "管理",
+                "儲存",
                 "更新",
+                "管理",
                 "編輯",
-                "變更",
-                "儲存"
+                "變更"
               ]
             },
             {
@@ -12430,15 +12410,11 @@
               "single": true,
               "synonyms": [
                 "信用卡資訊",
-                "信用卡資訊",
-                "卡片資訊",
                 "付款方式",
                 "卡片資訊",
                 "信用卡",
-                "信用卡",
-                "卡片",
                 "付款",
-                "付款"
+                "卡片"
               ]
             }
           ]
@@ -12460,23 +12436,21 @@
               "single": true,
               "synonyms": [
                 "啟動",
-                "啟動",
+                "建立",
                 "輸入",
-                "開啟",
-                "建立"
+                "開啟"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
-                "私密瀏覽視窗",
                 "私密瀏覽模式",
+                "私密瀏覽視窗",
                 "無痕式視窗",
-                "無痕模式",
                 "無痕分頁",
-                "私密分頁",
-                "無痕模式"
+                "無痕模式",
+                "私密分頁"
               ]
             }
           ]

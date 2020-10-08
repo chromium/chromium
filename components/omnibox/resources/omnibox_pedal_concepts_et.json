@@ -1,7 +1,7 @@
 {
   "schema": "pedal_concepts_runtime",
   "schema_version": 1,
-  "data_version": 15497154,
+  "data_version": 15538875,
   "tokenize_characters": " -",
   "dictionary": [
     "ajalugu",
@@ -96,10 +96,10 @@
               52
             ],
             [
-              25
+              7
             ],
             [
-              7
+              25
             ]
           ]
         },
@@ -111,10 +111,10 @@
               29
             ],
             [
-              56
+              28
             ],
             [
-              28
+              56
             ],
             [
               0
@@ -183,9 +183,6 @@
           "required": true,
           "single": true,
           "synonyms": [
-            [
-              40
-            ],
             [
               40
             ],
@@ -259,10 +256,10 @@
               22
             ],
             [
-              34
+              17
             ],
             [
-              17
+              34
             ],
             [
               16
@@ -390,10 +387,6 @@
           "required": true,
           "single": true,
           "synonyms": [
-            [
-              45,
-              30
-            ],
             [
               45,
               30
