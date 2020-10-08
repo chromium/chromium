@@ -142,10 +142,6 @@ id ExecuteJavaScript(NSString* javascript, NSError* __autoreleasing* out_error);
 // GREYAssert is induced.
 - (void)waitForIncognitoTabCount:(NSUInteger)count;
 
-// Waits for there to be |count| number of browsers within a timeout,
-// or a GREYAssert is induced.
-- (void)waitForBrowserCount:(NSUInteger)count;
-
 // Loads |URL| as if it was opened from an external application.
 - (void)openURLFromExternalApp:(const GURL&)URL;
 
@@ -346,6 +342,22 @@ id ExecuteJavaScript(NSString* javascript, NSError* __autoreleasing* out_error);
 // and tablet.
 - (void)showTabSwitcher;
 
+#pragma mark - Window utilities (EG2)
+
+// Returns the number of windows, including background and disconnected or
+// archived windows.
+- (NSUInteger)windowCount WARN_UNUSED_RESULT;
+
+// Returns the number of foreground (visible on screen) windows.
+- (NSUInteger)foregroundWindowCount WARN_UNUSED_RESULT;
+
+// Waits for there to be |count| number of browsers within a timeout,
+// or a GREYAssert is induced.
+- (void)waitForForegroundWindowCount:(NSUInteger)count;
+
+// Closes all but one window, including all non-foreground windows.
+- (void)closeAllExtraWindows;
+
 #pragma mark - SignIn Utilities (EG2)
 
 // Signs the user out, clears the known accounts entirely and checks whether the
@@ -522,6 +534,10 @@ id ExecuteJavaScript(NSString* javascript, NSError* __autoreleasing* out_error);
 
 // Returns whether the native context menus feature is enabled or not.
 - (BOOL)isNativeContextMenusEnabled;
+
+// Returns whether the app is configured to, and running in an environment which
+// can, open multiple windows.
+- (BOOL)areMultipleWindowsSupported;
 
 #pragma mark - Popup Blocking
 

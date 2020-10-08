@@ -893,7 +893,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   // Create the menu item -- hardcoded string and no accessibility ID.
   PopupMenuToolsItem* openNewWindowItem = CreateTableViewItem(
       IDS_IOS_TOOLS_MENU_NEW_WINDOW, PopupMenuActionOpenNewWindow,
-      @"popup_menu_new_window", kToolsMenuNewWindow);
+      @"popup_menu_new_window", kToolsMenuNewWindowId);
 
   return @[ openNewWindowItem ];
 }

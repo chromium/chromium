@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/table_view/table_view_constants.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
 #include "ios/chrome/common/string_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -123,6 +122,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 - (void)setUp {
   [super setUp];
+
+  [ChromeEarlGrey closeAllExtraWindows];
+
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&StandardResponse));
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -138,6 +140,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 - (void)tearDown {
+  [ChromeEarlGrey closeAllExtraWindows];
+
   NSError* error = nil;
   // Dismiss search bar by pressing cancel, if present. Passing error prevents
   // failure if the element is not found.
@@ -395,16 +399,14 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests display and selection of 'Open in New Window' in a context menu on a
 // history entry.
-// TODO(crbug.com/1126893): reenable this test once EG multiwindow support is
-// available.
-- (void)DISABLED_testContextMenuOpenInNewWindow {
-  if (!IsMultipleScenesSupported())
-    return;
+- (void)testContextMenuOpenInNewWindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
   [self loadTestURLs];
   [self openHistoryPanel];
 
-  [ChromeEarlGrey waitForBrowserCount:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:1];
 
   // Long press on the history element.
   [[EarlGrey
@@ -415,13 +417,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // selected URL in the new window.
   [[EarlGrey selectElementWithMatcher:OpenLinkInNewWindowButton()]
       performAction:grey_tap()];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
                                           _URL1.GetContent())]
       assertWithMatcher:grey_notNil()];
-  [ChromeEarlGrey waitForBrowserCount:2];
-
-  [ChromeEarlGrey closeCurrentTab];
-  [ChromeEarlGrey waitForBrowserCount:1];
 }
 
 // Tests display and selection of 'Open in New Incognito Tab' in a context menu

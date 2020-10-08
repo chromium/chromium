@@ -162,6 +162,18 @@
 // Returns the index of active tab in normal mode.
 + (NSUInteger)indexOfActiveNormalTab;
 
+#pragma mark - Window utilities (EG2)
+
+// Returns the number of windows, including background and disconnected or
+// archived windows.
++ (NSUInteger)windowCount WARN_UNUSED_RESULT;
+
+// Returns the number of foreground (visible on screen) windows.
++ (NSUInteger)foregroundWindowCount WARN_UNUSED_RESULT;
+
+// Closes all but one window, including all non-foreground windows.
++ (void)closeAllExtraWindows;
+
 #pragma mark - WebState Utilities (EG2)
 
 // Attempts to tap the element with |element_id| within window.frames[0] of the
@@ -432,6 +444,10 @@
 
 // Returns whether the native context menus feature is enabled or not.
 + (BOOL)isNativeContextMenusEnabled;
+
+// Returns whether the app is configured to, and running in an environment which
+// can, open multiple windows.
++ (BOOL)areMultipleWindowsSupported;
 
 #pragma mark - Popup Blocking
 

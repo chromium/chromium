@@ -194,6 +194,7 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
   [[AppLaunchManager sharedManager] addObserver:self];
 
   [super setUp];
+  [[self class] closeAllWindows];
   [self resetAppState];
 
   ResetAuthentication();
@@ -220,6 +221,7 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
 
   // Clean up any UI that may remain open so the next test starts in a clean
   // state.
+  [[self class] closeAllWindows];
   [[self class] removeAnyOpenMenusAndInfoBars];
   [[self class] closeAllTabs];
 
@@ -252,6 +254,12 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
 
 + (void)closeAllTabs {
   [ChromeEarlGrey closeAllTabs];
+  [[GREYUIThreadExecutor sharedInstance]
+      drainUntilIdleWithTimeout:kDrainTimeout];
+}
+
++ (void)closeAllWindows {
+  [ChromeEarlGrey closeAllExtraWindows];
   [[GREYUIThreadExecutor sharedInstance]
       drainUntilIdleWithTimeout:kDrainTimeout];
 }
