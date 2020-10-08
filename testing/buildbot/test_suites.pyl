@@ -2224,15 +2224,6 @@
 
     # GPU gtests that test only Dawn
     'gpu_dawn_gtests': {
-      'dawn_end2end_no_spvc_tests': {
-        'mixins': ['dawn_end2end_gpu_test'],
-        'args': [
-          '--no-use-spvc',
-          '--no-use-spvc-parser',
-        ],
-        'linux_args': [ '--no-xvfb' ],
-        'test': 'dawn_end2end_tests',
-      },
       'dawn_end2end_skip_validation_tests': {
         'mixins': ['dawn_end2end_gpu_test'],
         'args': [
