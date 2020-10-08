@@ -1116,8 +1116,13 @@ void Shell::Init(
 
   // |assistant_controller_| is put before |ambient_controller_| as it will be
   // used by the latter.
-  if (chromeos::features::IsAmbientModeEnabled())
-    ambient_controller_ = std::make_unique<AmbientController>();
+  if (chromeos::features::IsAmbientModeEnabled()) {
+    mojo::PendingRemote<device::mojom::Fingerprint> fingerprint;
+    shell_delegate_->BindFingerprint(
+        fingerprint.InitWithNewPipeAndPassReceiver());
+    ambient_controller_ =
+        std::make_unique<AmbientController>(std::move(fingerprint));
+  }
 
   if (chromeos::assistant::features::IsBloomEnabled())
     bloom_ui_controller_ = std::make_unique<BloomUiControllerImpl>();

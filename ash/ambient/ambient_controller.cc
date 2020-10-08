@@ -171,7 +171,9 @@ void AmbientController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   }
 }
 
-AmbientController::AmbientController() {
+AmbientController::AmbientController(
+    mojo::PendingRemote<device::mojom::Fingerprint> fingerprint)
+    : fingerprint_(std::move(fingerprint)) {
   ambient_backend_controller_ = CreateAmbientBackendController();
 
   ambient_ui_model_observer_.Add(&ambient_ui_model_);
@@ -186,6 +188,9 @@ AmbientController::AmbientController() {
 
   ambient_backend_model_observer_.Add(
       ambient_photo_controller_.ambient_backend_model());
+
+  fingerprint_->AddFingerprintObserver(
+      fingerprint_observer_receiver_.BindNewPipeAndPassRemote());
 }
 
 AmbientController::~AmbientController() {
@@ -386,6 +391,12 @@ void AmbientController::ScreenIdleStateChanged(
   ShowUi();
 }
 
+void AmbientController::OnAuthScanDone(
+    device::mojom::ScanResult scan_result,
+    const base::flat_map<std::string, std::vector<std::string>>& matches) {
+  DismissUI();
+}
+
 void AmbientController::AddAmbientViewDelegateObserver(
     AmbientViewDelegateObserver* observer) {
   delegate_.AddObserver(observer);
@@ -433,11 +444,7 @@ bool AmbientController::IsShown() const {
 }
 
 void AmbientController::OnBackgroundPhotoEvents() {
-  // Dismisses the ambient screen when user interacts with the background photo.
-  if (LockScreen::HasInstance())
-    ShowHiddenUi();
-  else
-    CloseUi();
+  DismissUI();
 }
 
 void AmbientController::AcquireWakeLock() {
@@ -494,6 +501,13 @@ void AmbientController::RequestAccessToken(
     bool may_refresh_token_on_lock) {
   access_token_controller_.RequestAccessToken(std::move(callback),
                                               may_refresh_token_on_lock);
+}
+
+void AmbientController::DismissUI() {
+  if (LockScreen::HasInstance())
+    ShowHiddenUi();
+  else
+    CloseUi();
 }
 
 AmbientBackendModel* AmbientController::GetAmbientBackendModel() {
