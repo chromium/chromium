@@ -58,6 +58,10 @@ class ContentSubresourceFilterThrottleManager
   static const char
       kContentSubresourceFilterThrottleManagerWebContentsUserDataKey[];
 
+  // Creates a ThrottleManager instance from the given parameters and attaches
+  // it as user data of |web_contents|.
+  // NOTE: Short-circuits out if the kSafeBrowsingSubresourceFilter feature is
+  // not enabled.
   static void CreateForWebContents(
       content::WebContents* web_contents,
       std::unique_ptr<SubresourceFilterClient> client,

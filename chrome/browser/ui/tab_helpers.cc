@@ -106,7 +106,6 @@
 #include "components/performance_manager/public/decorators/tab_properties_decorator.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/permissions/permission_request_manager.h"
-#include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/sync/engine/sync_engine_switches.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "components/ukm/content/source_url_recorder.h"
@@ -243,11 +242,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
       web_contents,
       autofill::ChromeAutofillClient::FromWebContents(web_contents));
-  if (base::FeatureList::IsEnabled(
-          subresource_filter::kSafeBrowsingSubresourceFilter)) {
-    ChromeSubresourceFilterClient::
-        CreateThrottleManagerWithClientForWebContents(web_contents);
-  }
+  ChromeSubresourceFilterClient::CreateThrottleManagerWithClientForWebContents(
+      web_contents);
   ChromeTranslateClient::CreateForWebContents(web_contents);
   ConnectionHelpTabHelper::CreateForWebContents(web_contents);
   CoreTabHelper::CreateForWebContents(web_contents);

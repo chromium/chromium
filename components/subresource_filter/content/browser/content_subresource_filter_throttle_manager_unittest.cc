@@ -29,6 +29,7 @@
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/content/common/subresource_filter_messages.h"
 #include "components/subresource_filter/content/mojom/subresource_filter_agent.mojom.h"
+#include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/common/common_features.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
@@ -373,6 +374,10 @@ class ContentSubresourceFilterThrottleManagerTest
 
   void CreateSafeBrowsingDatabaseManager() {
     client_->CreateSafeBrowsingDatabaseManager();
+  }
+
+  VerifiedRulesetDealer::Handle* dealer_handle() {
+    return dealer_handle_.get();
   }
 
  private:
@@ -833,6 +838,46 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   ExpectActivationSignalForFrame(child, false /* expect_activation */);
 
   EXPECT_EQ(0, disallowed_notification_count());
+}
+
+TEST_F(ContentSubresourceFilterThrottleManagerTest, CreateForWebContents) {
+  auto web_contents =
+      content::RenderViewHostTestHarness::CreateTestWebContents();
+  ASSERT_EQ(ContentSubresourceFilterThrottleManager::FromWebContents(
+                web_contents.get()),
+            nullptr);
+
+  {
+    base::test::ScopedFeatureList scoped_feature;
+    scoped_feature.InitAndDisableFeature(kSafeBrowsingSubresourceFilter);
+
+    // CreateForWebContents() should not do anything if the subresource filter
+    // feature is not enabled.
+    ContentSubresourceFilterThrottleManager::CreateForWebContents(
+        web_contents.get(), std::make_unique<TestSubresourceFilterClient>(),
+        dealer_handle());
+    EXPECT_EQ(ContentSubresourceFilterThrottleManager::FromWebContents(
+                  web_contents.get()),
+              nullptr);
+  }
+
+  // If the subresource filter feature is enabled (as it is by default),
+  // CreateForWebContents() should create and attach an instance.
+  ContentSubresourceFilterThrottleManager::CreateForWebContents(
+      web_contents.get(), std::make_unique<TestSubresourceFilterClient>(),
+      dealer_handle());
+  auto* throttle_manager =
+      ContentSubresourceFilterThrottleManager::FromWebContents(
+          web_contents.get());
+  EXPECT_NE(throttle_manager, nullptr);
+
+  // A second call should not attach a different instance.
+  ContentSubresourceFilterThrottleManager::CreateForWebContents(
+      web_contents.get(), std::make_unique<TestSubresourceFilterClient>(),
+      dealer_handle());
+  EXPECT_EQ(ContentSubresourceFilterThrottleManager::FromWebContents(
+                web_contents.get()),
+            throttle_manager);
 }
 
 TEST_F(ContentSubresourceFilterThrottleManagerTest,
