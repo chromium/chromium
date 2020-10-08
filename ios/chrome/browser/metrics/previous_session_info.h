@@ -110,6 +110,11 @@ enum class DeviceBatteryState {
 // is available.
 @property(nonatomic, strong, readonly) NSString* OSVersion;
 
+// The date time at which recording for the previous sesion has started. Note
+// that recording usually starts soon after startup, but not exactly at the
+// startup.
+@property(nonatomic, strong, readonly) NSDate* sessionStartTime;
+
 // The time at which the previous sesion ended. Note that this is only an
 // estimate and is updated whenever another value of the receiver is updated.
 @property(nonatomic, strong, readonly) NSDate* sessionEndTime;

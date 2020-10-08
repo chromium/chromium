@@ -76,6 +76,8 @@ NSString* const kPreviousSessionInfoBatteryLevel =
 //   the device battery state.
 NSString* const kPreviousSessionInfoBatteryState =
     @"PreviousSessionInfoBatteryState";
+// - The (Date) of the recording start.
+NSString* const kPreviousSessionInfoStartTime = @"PreviousSessionInfoStartTime";
 // - The (Date) of the estimated end of the session.
 NSString* const kPreviousSessionInfoEndTime = @"PreviousSessionInfoEndTime";
 // - The (string) OS version.
@@ -130,6 +132,7 @@ NSString* const kPreviousSessionInfoURLs = @"PreviousSessionInfoURLs";
 @property(nonatomic, assign) BOOL isMultiWindowEnabledSession;
 @property(nonatomic, assign) BOOL OSRestartedAfterPreviousSession;
 @property(nonatomic, strong) NSString* OSVersion;
+@property(nonatomic, strong) NSDate* sessionStartTime;
 @property(nonatomic, strong) NSDate* sessionEndTime;
 @property(nonatomic, assign) BOOL terminatedDuringSessionRestoration;
 @property(nonatomic, strong) NSMutableSet<NSString*>* connectedSceneSessionsIDs;
@@ -177,6 +180,8 @@ static PreviousSessionInfo* gSharedInstance = nil;
         [defaults floatForKey:kPreviousSessionInfoBatteryLevel];
     gSharedInstance.deviceThermalState = static_cast<DeviceThermalState>(
         [defaults integerForKey:kPreviousSessionInfoThermalState]);
+    gSharedInstance.sessionStartTime =
+        [defaults objectForKey:kPreviousSessionInfoStartTime];
     gSharedInstance.sessionEndTime =
         [defaults objectForKey:kPreviousSessionInfoEndTime];
 
@@ -265,6 +270,8 @@ static PreviousSessionInfo* gSharedInstance = nil;
   [defaults
       removeObjectForKey:previous_session_info_constants::
                              kDidSeeMemoryWarningShortlyBeforeTerminating];
+
+  [defaults setObject:[NSDate date] forKey:kPreviousSessionInfoStartTime];
 
   [[NSNotificationCenter defaultCenter]
       addObserver:self

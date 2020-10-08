@@ -101,6 +101,13 @@ void CreateSyntheticCrashReportForUte(
         base::SysNSStringToUTF8(previous_session.reportParameterURLs[key]));
   }
 
+  if (previous_session.sessionStartTime && previous_session.sessionEndTime) {
+    NSTimeInterval uptime = [previous_session.sessionEndTime
+        timeIntervalSinceDate:previous_session.sessionStartTime];
+    AppendConfig(config, "BreakpadProcessUpTime",
+                 base::NumberToString(static_cast<long>(uptime * 1000)));
+  }
+
   // Write empty minidump file, as Breakpad can't upload config without the
   // minidump.
   base::File minidump_file(
