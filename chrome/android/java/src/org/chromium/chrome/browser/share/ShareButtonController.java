@@ -68,11 +68,14 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
      * @param activityLifecycleDispatcher Dispatcher for activity lifecycle events, e.g.
      * configuration changes.
      * @param modalDialogManager dispatcher for modal lifecycles events
+     * @param onShareRunnable A {@link Runnable} to execute when a share event occurs. This object
+     *                        does not actually handle sharing, but can provide supplemental
+     *                        functionality when the share button is pressed.
      */
     public ShareButtonController(Context context, ActivityTabProvider tabProvider,
             ObservableSupplier<ShareDelegate> shareDelegateSupplier, ShareUtils shareUtils,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            ModalDialogManager modalDialogManager) {
+            ModalDialogManager modalDialogManager, Runnable onShareRunnable) {
         mContext = context;
 
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -89,6 +92,7 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
             Tab tab = mTabProvider.get();
             assert tab != null : "Tab became null after share button was displayed";
             if (tab == null) return;
+            if (onShareRunnable != null) onShareRunnable.run();
             RecordUserAction.record("MobileTopToolbarShareButton");
             shareDelegate.share(tab, /*shareDirectly=*/false);
         });
