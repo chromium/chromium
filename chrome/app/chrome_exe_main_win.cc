@@ -47,6 +47,11 @@
 #include "content/public/common/result_codes.h"
 #include "third_party/crashpad/crashpad/util/win/initial_client_data.h"
 
+#if defined(WIN_CONSOLE_APP)
+// Forward declaration of main.
+int main();
+#endif
+
 namespace {
 
 bool IsFastStartSwitch(const std::string& command_line_switch) {
