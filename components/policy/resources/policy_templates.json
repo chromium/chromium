@@ -6883,11 +6883,9 @@
       'tags': [],
       'desc': '''This policy is deprecated, please use the '<ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME">NativeMessagingBlocklist</ph>' policy instead.
 
-          Allows you to specify which native messaging hosts that should not be loaded.
+      Setting the policy specifies which native messaging hosts shouldn't be loaded. A deny list value of <ph name="WILDCARD_VALUE">*</ph> means all native messaging hosts are denied, unless they're explicitly allowed.
 
-          A blocklist value of '*' means all native messaging hosts are blocked unless they are explicitly listed in the allowlist.
-
-          If this policy is left not set <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will load all installed native messaging hosts.''',
+      Leaving the policy unset means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> loads all installed native messaging hosts.''',
       'label': '''Names of the forbidden native messaging hosts (or * for all)''',
     },
     {
@@ -6910,11 +6908,9 @@
       'id': 744,
       'caption': '''Configure native messaging blacklist''',
       'tags': [],
-      'desc': '''Allows you to specify which native messaging hosts that should not be loaded.
+      'desc': '''Setting the policy specifies which native messaging hosts shouldn't be loaded. A deny list value of <ph name="WILDCARD_VALUE">*</ph> means all native messaging hosts are denied, unless they're explicitly allowed.
 
-          A blocklist value of '*' means all native messaging hosts are blocked unless they are explicitly listed in the allowlist.
-
-          If this policy is left not set <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will load all installed native messaging hosts.''',
+      Leaving the policy unset means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> loads all installed native messaging hosts.''',
       'label': '''Names of the forbidden native messaging hosts (or * for all)''',
     },
     {
@@ -6940,11 +6936,9 @@
       'tags': [],
       'desc': '''This policy is deprecated, please use the '<ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME">NativeMessagingAllowlist</ph>' policy instead.
 
-          Allows you to specify which native messaging hosts are not subject to the blocklist.
+      Setting the policy specifies which native messaging hosts aren't subject to the deny list. A deny list value of <ph name="WILDCARD_VALUE">*</ph> means all native messaging hosts are denied, unless they're explicitly allowed.
 
-          A blocklist value of * means all native messaging hosts are blocked and only native messaging hosts listed in the allowlist will be loaded.
-
-          By default, all native messaging hosts are allowed, but if all native messaging hosts have been blocked by policy, the allowlist can be used to override that policy.''',
+      All native messaging hosts are allowed by default. But, if all native messaging hosts are denied by policy, the admin can use the allow list to change that policy.''',
       'label': '''Names of the native messaging hosts to exempt from the blocklist''',
     },
     {
@@ -6967,11 +6961,9 @@
       'id': 745,
       'caption': '''Configure native messaging allowlist''',
       'tags': [],
-      'desc': '''Allows you to specify which native messaging hosts are not subject to the blocklist.
+      'desc': '''Setting the policy specifies which native messaging hosts aren't subject to the deny list. A deny list value of <ph name="WILDCARD_VALUE">*</ph> means all native messaging hosts are denied, unless they're explicitly allowed.
 
-          A blocklist value of * means all native messaging hosts are blocked and only native messaging hosts listed in the allowlist will be loaded.
-
-          By default, all native messaging hosts are allowed, but if all native messaging hosts have been blocked by policy, the allowlist can be used to override that policy.''',
+      All native messaging hosts are allowed by default. But, if all native messaging hosts are denied by policy, the admin can use the allow list to change that policy.''',
       'label': '''Names of the native messaging hosts to exempt from the blocklist''',
     },
     {
@@ -6988,13 +6980,9 @@
       'id': 253,
       'caption': '''Allow user-level Native Messaging hosts (installed without admin permissions)''',
       'tags': [],
-      'desc': '''Enables user-level installation of Native Messaging hosts.
+      'desc': '''Setting the policy to Enabled or leaving it unset means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> can use native messaging hosts installed at the user level.
 
-          If this setting is enabled then <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> allows usage of Native Messaging hosts installed on user level.
-
-          If this setting is disabled then <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will only use Native Messaging hosts installed on system level.
-
-          If this setting is left not set <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will allow usage of user-level Native Messaging hosts.''',
+      Setting the policy to Disabled means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> can only use these hosts if installed at the system level.''',
     },
     {
       'name': 'Disable3DAPIs',
