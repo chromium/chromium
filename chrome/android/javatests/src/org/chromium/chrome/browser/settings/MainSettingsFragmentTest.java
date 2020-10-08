@@ -4,6 +4,14 @@
 
 package org.chromium.chrome.browser.settings;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+
 import android.app.Activity;
 import android.text.TextUtils;
 import android.view.View;
@@ -49,6 +57,7 @@ import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
+import org.chromium.chrome.browser.signin.SigninActivityLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.sync.settings.SignInPreference.State;
@@ -63,6 +72,8 @@ import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -105,6 +116,9 @@ public class MainSettingsFragmentTest {
     @Mock
     private PasswordCheck mPasswordCheck;
 
+    @Mock
+    private SigninActivityLauncherImpl mMockSigninActivityLauncherImpl;
+
     private @Nullable TemplateUrlService mActualTemplateUrlService;
 
     private MainSettings mMainSettings;
@@ -113,6 +127,7 @@ public class MainSettingsFragmentTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);
+        SigninActivityLauncherImpl.setLauncherForTest(mMockSigninActivityLauncherImpl);
         DeveloperSettings.setIsEnabledForTests(true);
         NightModeUtils.setNightModeSupportedForTesting(true);
     }
@@ -284,6 +299,19 @@ public class MainSettingsFragmentTest {
         assertSettingsExists(MainSettings.PREF_DOWNLOADS, DownloadSettings.class);
         assertSettingsExists(MainSettings.PREF_DEVELOPER, DeveloperSettings.class);
         assertSettingsExists("about_chrome", AboutChromeSettings.class);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
+    public void testSyncRowLaunchesSignInFlowForSignedInAccounts() {
+        CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
+        launchSettingsActivity();
+
+        onView(withText(R.string.sync_category_title)).perform(click());
+        verify(mMockSigninActivityLauncherImpl)
+                .launchActivityForPromoDefaultFlow(any(Activity.class),
+                        eq(SigninAccessPoint.SETTINGS), eq(accountInfo.getEmail()));
     }
 
     @Test

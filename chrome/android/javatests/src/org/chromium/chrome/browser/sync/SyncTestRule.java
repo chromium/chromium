@@ -208,6 +208,16 @@ public class SyncTestRule extends ChromeActivityTestRule<ChromeActivity> {
     }
 
     /**
+     * Set up a test account and sign in. Does not setup sync.
+     * @return the test accountInfo that is signed in.
+     */
+    public CoreAccountInfo setUpAccountAndSignInForTesting() {
+        CoreAccountInfo accountInfo = mAccountManagerTestRule.addTestAccountThenSignin();
+        enableUKM();
+        return accountInfo;
+    }
+
+    /**
      * Set up a test account, sign in but don't mark sync setup complete.
      * @return the test account that is signed in.
      */
