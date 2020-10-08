@@ -7665,6 +7665,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Linux.GlibcVersion" enum="LinuxGlibcVersion"
     expires_after="2020-12-20">
   <owner>thestig@chromium.org</owner>
+  <owner>thomasanderson@chromium.org</owner>
   <summary>
     The version of glibc used. (Linux only) Logged on each start up.
   </summary>
