@@ -80,6 +80,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
                            std::vector<gpu::Mailbox> overlay_mailboxes,
                            gfx::SwapCompletionResult result);
 
+  gfx::Size GetSwapBuffersSize();
+
   std::unique_ptr<OutputPresenter> presenter_;
 
   SkiaOutputSurfaceDependency* const dependency_;
@@ -87,6 +89,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   // Format of images
   gfx::ColorSpace color_space_;
   gfx::Size image_size_;
+  gfx::OverlayTransform overlay_transform_ = gfx::OVERLAY_TRANSFORM_NONE;
 
   // All allocated images.
   std::vector<std::unique_ptr<OutputPresenter::Image>> images_;
