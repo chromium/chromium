@@ -11,6 +11,4 @@
   [RaisesException] constructor(optional SanitizerConfig config = {});
   [CallWith=ScriptState, RaisesException] DOMString sanitizeToString(DOMString input);
   [CallWith=ScriptState, RaisesException] DocumentFragment sanitize(DOMString input);
-
-  readonly attribute SanitizerConfig creationOptions;
 };

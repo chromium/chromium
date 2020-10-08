@@ -107,11 +107,6 @@ DocumentFragment* Sanitizer::sanitize(ScriptState* script_state,
   return fragment;
 }
 
-// TODO(lyf): https://github.com/WICG/sanitizer-api/issues/34
-SanitizerConfig* Sanitizer::creationOptions() const {
-  return config_;
-}
-
 void Sanitizer::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   visitor->Trace(config_);

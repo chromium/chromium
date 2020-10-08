@@ -27,8 +27,6 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
   String sanitizeToString(ScriptState*, const String&, ExceptionState&);
   DocumentFragment* sanitize(ScriptState*, const String&, ExceptionState&);
 
-  SanitizerConfig* creationOptions() const;
-
   void Trace(Visitor*) const override;
 
  private:

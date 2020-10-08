@@ -7,67 +7,60 @@
 
 <body>
 <script>
-    const default_option = {};
     test(t => {
       let s = new Sanitizer();
       assert_true(s instanceof Sanitizer);
-      assert_object_equals(s.creationOptions, default_option);
     }, "SanitizerAPI creator without config.");
 
     test(t => {
       let s = new Sanitizer({});
       assert_true(s instanceof Sanitizer);
-      assert_object_equals(s.creationOptions, default_option);
     }, "SanitizerAPI creator with empty config.");
 
     test(t => {
       let s = new Sanitizer(null);
       assert_true(s instanceof Sanitizer);
-      assert_object_equals(s.creationOptions, default_option);
     }, "SanitizerAPI creator with null as config.");
 
     test(t => {
       let s = new Sanitizer(undefined);
       assert_true(s instanceof Sanitizer);
-      assert_object_equals(s.creationOptions, default_option);
     }, "SanitizerAPI creator with undefined as config.");
 
     test(t => {
       let s = new Sanitizer({testConfig: [1,2,3], attr: ["test", "i", "am"]});
       assert_true(s instanceof Sanitizer);
-      assert_object_equals(s.creationOptions, default_option);
     }, "SanitizerAPI creator with config ignore unknown values.");
+
+    test(t => {
+      let options = {dropElements: ["div"]};
+
+      let s = new Sanitizer(options);
+      assert_true(s instanceof Sanitizer);
+      assert_equals(s.sanitizeToString("<div>balabala</div><test>test</test>"), "<test>test</test>");
+
+      options.dropElements.push("test");
+      assert_equals(s.sanitizeToString("<div>balabala</div><test>test</test>"), "<test>test</test>");
+    }, "SanitizerAPI config dropElements is not editable.");
+
+    test(t => {
+      let options = {dropAttributes: ["onclick"]};
+
+      let s = new Sanitizer(options);
+      assert_true(s instanceof Sanitizer);
+      assert_equals(s.sanitizeToString("<button id='btn' onclick='submit()'>balabala</button>"), "<button id=\"btn\">balabala</button>");
+
+      options.dropAttributes.push("id");
+      assert_equals(s.sanitizeToString("<button id='btn' onclick='submit()'>balabala</button>"), "<button id=\"btn\">balabala</button>");
+    }, "SanitizerAPI config dropAttributes is not editable.");
 
     const config_names = ["dropElements", "dropAttributes"];
     config_names.forEach(cname => {
-      test(t => {
-        let options = {};
-        options[cname] = cname.endsWith("Elements") ? ["div"] : ["script"];
-        let result = {};
-        result[cname] = cname.endsWith("Elements") ? ["DIV"] : ["script"];
-
-        let s = new Sanitizer(options);
-        assert_true(s instanceof Sanitizer);
-        assert_object_equals(s.creationOptions, result);
-
-        options[cname].push("test");
-        assert_object_equals(s.creationOptions, result);
-
-        let new_options = {};
-        new_options[cname] = ["test", "t"];
-        s.creationOptions = new_options;
-        assert_object_equals(s.creationOptions, result);
-
-        s.creationOptions[cname] = [1,2,3];
-        assert_object_equals(s.creationOptions, result);
-      }, "SanitizerAPI config " + cname + " is not editable.");
-
       let options = {};
       options[cname] = [];
       test(t => {
         let s = new Sanitizer(options);
         assert_true(s instanceof Sanitizer)
-        assert_object_equals(s.creationOptions, options);
         assert_equals(s.sanitizeToString("<div>balabala<i>test</i></div>"), "<div>balabala<i>test</i></div>");
       }, "SanitizerAPI creator with config " + JSON.stringify(options) + ".");
 
@@ -76,7 +69,6 @@
       test(t => {
         let s = new Sanitizer(options);
         assert_true(s instanceof Sanitizer)
-        assert_object_equals(s.creationOptions, default_option);
         assert_equals(s.sanitizeToString("<div>balabala<i>test</i></div>"), "<div>balabala<i>test</i></div>");
       }, "SanitizerAPI creator with config " + JSON.stringify(options, function(k,v){return v===undefined?"::undefined::":v}).replace(new RegExp("\"::undefined::\"", 'g'), "undefined") + ".");
 
