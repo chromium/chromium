@@ -29,6 +29,10 @@ TestPermissionBubbleViewDelegate::Requests() {
   return requests_;
 }
 
+GURL TestPermissionBubbleViewDelegate::GetRequestingOrigin() const {
+  return requests_.front()->GetOrigin();
+}
+
 GURL TestPermissionBubbleViewDelegate::GetEmbeddingOrigin() const {
   return GURL("https://embedder.example.com");
 }

@@ -58,9 +58,9 @@ class PermissionPromptAndroid : public permissions::PermissionPrompt,
   // PermissionPromptAndroid is owned by PermissionRequestManager, so it should
   // be safe to hold a raw WebContents pointer here because this class is
   // destroyed before the WebContents.
-  content::WebContents* web_contents_;
+  content::WebContents* const web_contents_;
   // |delegate_| is the PermissionRequestManager, which owns this object.
-  Delegate* delegate_;
+  Delegate* const delegate_;
 
   // The infobar used to display the permission request, if displayed in that
   // format. Never assume that this pointer is currently alive.

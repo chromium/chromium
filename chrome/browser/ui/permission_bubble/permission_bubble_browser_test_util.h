@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "components/permissions/permission_prompt.h"
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
+#include "url/gurl.h"
 
 namespace base {
 class CommandLine;
@@ -33,6 +34,8 @@ class TestPermissionBubbleViewDelegate
   ~TestPermissionBubbleViewDelegate() override;
 
   const std::vector<permissions::PermissionRequest*>& Requests() override;
+
+  GURL GetRequestingOrigin() const override;
 
   GURL GetEmbeddingOrigin() const override;
 

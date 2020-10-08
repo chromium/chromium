@@ -33,6 +33,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace permissions {
@@ -349,6 +350,16 @@ const std::vector<PermissionRequest*>& PermissionRequestManager::Requests() {
   return requests_;
 }
 
+GURL PermissionRequestManager::GetRequestingOrigin() const {
+  CHECK(!requests_.empty());
+  GURL origin = requests_.front()->GetOrigin();
+  if (DCHECK_IS_ON()) {
+    for (auto* request : requests_)
+      DCHECK_EQ(origin, request->GetOrigin());
+  }
+  return origin;
+}
+
 GURL PermissionRequestManager::GetEmbeddingOrigin() const {
   return web_contents()->GetLastCommittedURL().GetOrigin();
 }
@@ -491,6 +502,7 @@ void PermissionRequestManager::ShowBubble() {
   if (!IsRequestInProgress())
     return;
 
+  DCHECK(!requests_.empty());
   DCHECK(!view_);
   DCHECK(web_contents()->IsDocumentOnLoadCompletedInMainFrame());
   DCHECK(current_request_ui_to_use_);

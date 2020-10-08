@@ -51,6 +51,9 @@ class PermissionPrompt {
     // deleted upon navigation and so on.
     virtual const std::vector<PermissionRequest*>& Requests() = 0;
 
+    // Get the single origin for the current set of requests.
+    virtual GURL GetRequestingOrigin() const = 0;
+
     // Get the top-level origin currently displayed in the address bar
     // associated with the requests.
     virtual GURL GetEmbeddingOrigin() const = 0;

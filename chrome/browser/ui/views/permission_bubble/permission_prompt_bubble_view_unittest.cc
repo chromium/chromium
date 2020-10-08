@@ -8,6 +8,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 using PermissionPromptBubbleViewTest = ChromeViewsTestBase;
 
@@ -42,6 +43,10 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
 
   const std::vector<permissions::PermissionRequest*>& Requests() override {
     return raw_requests_;
+  }
+
+  GURL GetRequestingOrigin() const override {
+    return raw_requests_.front()->GetOrigin();
   }
 
   GURL GetEmbeddingOrigin() const override {

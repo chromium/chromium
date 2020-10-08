@@ -262,7 +262,7 @@ void PermissionPromptBubbleView::ButtonPressed(views::Button* sender,
 PermissionPromptBubbleView::DisplayNameOrOrigin
 PermissionPromptBubbleView::GetDisplayNameOrOrigin() const {
   DCHECK(!visible_requests_.empty());
-  GURL origin_url = visible_requests_[0]->GetOrigin();
+  GURL origin_url = delegate_->GetRequestingOrigin();
 
   if (origin_url.SchemeIs(extensions::kExtensionScheme)) {
     base::string16 extension_name =
@@ -295,7 +295,7 @@ base::Optional<base::string16> PermissionPromptBubbleView::GetExtraText()
       return l10n_util::GetStringFUTF16(
           IDS_STORAGE_ACCESS_PERMISSION_EXPLANATION,
           url_formatter::FormatUrlForSecurityDisplay(
-              visible_requests_[0]->GetOrigin(),
+              delegate_->GetRequestingOrigin(),
               url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC),
           url_formatter::FormatUrlForSecurityDisplay(
               delegate_->GetEmbeddingOrigin(),

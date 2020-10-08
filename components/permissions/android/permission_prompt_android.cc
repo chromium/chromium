@@ -131,7 +131,6 @@ static bool IsValidARCameraAccessRequestGroup(
 static void CheckValidRequestGroup(
     const std::vector<permissions::PermissionRequest*>& requests) {
   DCHECK_EQ(static_cast<size_t>(2u), requests.size());
-  DCHECK_EQ(requests[0]->GetOrigin(), requests[1]->GetOrigin());
   DCHECK((IsValidMediaRequestGroup(requests)) ||
          (IsValidARCameraAccessRequestGroup(requests)));
 }
@@ -154,7 +153,7 @@ base::string16 PermissionPromptAndroid::GetMessageText() const {
       return l10n_util::GetStringFUTF16(
           IDS_STORAGE_ACCESS_INFOBAR_TEXT,
           url_formatter::FormatUrlForSecurityDisplay(
-              requests[0]->GetOrigin(),
+              delegate_->GetRequestingOrigin(),
               url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC),
           url_formatter::FormatUrlForSecurityDisplay(
               delegate_->GetEmbeddingOrigin(),
@@ -168,13 +167,13 @@ base::string16 PermissionPromptAndroid::GetMessageText() const {
     return l10n_util::GetStringFUTF16(
         IDS_AR_AND_MEDIA_CAPTURE_VIDEO_INFOBAR_TEXT,
         url_formatter::FormatUrlForSecurityDisplay(
-            requests[0]->GetOrigin(),
+            delegate_->GetRequestingOrigin(),
             url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
   } else {
     return l10n_util::GetStringFUTF16(
         IDS_MEDIA_CAPTURE_AUDIO_AND_VIDEO_INFOBAR_TEXT,
         url_formatter::FormatUrlForSecurityDisplay(
-            requests[0]->GetOrigin(),
+            delegate_->GetRequestingOrigin(),
             url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
   }
 }
