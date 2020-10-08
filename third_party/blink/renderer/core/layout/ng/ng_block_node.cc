@@ -398,14 +398,14 @@ bool CanUseCachedIntrinsicInlineSizes(const MinMaxSizesInput& input,
 }
 
 bool IsContentMinimumInlineSizeZero(const NGBlockNode& block_node) {
-  if (block_node.IsTextControl())
-    return true;
   const auto* node = block_node.GetDOMNode();
   const auto* marquee_element = DynamicTo<HTMLMarqueeElement>(node);
   if (marquee_element && marquee_element->IsHorizontal())
     return true;
   if (!block_node.Style().LogicalWidth().IsPercentOrCalc())
     return false;
+  if (block_node.IsTextControl())
+    return true;
   if (IsA<HTMLSelectElement>(node))
     return true;
   if (const auto* input_element = DynamicTo<HTMLInputElement>(node)) {
