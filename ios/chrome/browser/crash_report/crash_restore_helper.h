@@ -15,6 +15,9 @@ class ChromeBrowserState;
 
 - (instancetype)initWithBrowser:(Browser*)browser;
 
+// Returns YES if a backup file for sessionID can be found on disk.
++ (BOOL)isBackedUpSessionID:(NSString*)sessionID;
+
 // Saves the session information stored on disk for sessions with |sessionIDs|
 // in temporary files and will then delete those from their default location.
 // This will ensure that the user will then start from scratch, while allowing

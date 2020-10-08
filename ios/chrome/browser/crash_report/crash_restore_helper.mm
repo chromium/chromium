@@ -232,11 +232,11 @@ int SessionCrashedInfoBarDelegate::GetIconId() const {
 @implementation CrashRestoreHelper {
   Browser* _browser;
   std::unique_ptr<InfoBarManagerObserverBridge> _infoBarBridge;
-
-  // Indicate that the session has been restored to tabs or to recently closed
-  // and should not be rerestored.
-  BOOL _sessionRestored;
 }
+
+// Indicate that the session has been restored to tabs or to recently closed
+// and should not be rerestored.
+static BOOL _sessionRestored = NO;
 
 - (instancetype)initWithBrowser:(Browser*)browser {
   if (self = [super init]) {
@@ -408,6 +408,10 @@ int SessionCrashedInfoBarDelegate::GetIconId() const {
                           error:nil];
 }
 
++ (BOOL)isBackedUpSessionID:(NSString*)sessionID {
+  return [[[self class] backedupSessionIDs] containsObject:sessionID];
+}
+
 + (BOOL)moveAsideSessionInformationForBrowserState:
     (ChromeBrowserState*)browserState {
   DCHECK(!IsMultiwindowSupported());
@@ -488,10 +492,15 @@ int SessionCrashedInfoBarDelegate::GetIconId() const {
     NSString* originalSessionPath =
         [SessionServiceIOS sessionPathForSessionID:sessionID
                                          directory:stashPath];
-    [fileManager
-        moveItemAtPath:[[strongSelf class] backupPathForSessionID:sessionID]
-                toPath:originalSessionPath
-                 error:&error];
+    NSString* backupPath =
+        [[strongSelf class] backupPathForSessionID:sessionID];
+    [fileManager moveItemAtPath:backupPath
+                         toPath:originalSessionPath
+                          error:&error];
+    // Remove Parent directory for the backup path, so it doesn't show restore
+    // prompt again.
+    [fileManager removeItemAtPath:[backupPath stringByDeletingLastPathComponent]
+                            error:&error];
   }
 
   return success;

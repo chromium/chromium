@@ -614,11 +614,16 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     }
   }
 
-  // Only create the restoration helper if the browser state was backed up
-  // successfully.
+  // Only create the restoration helper if the session with the current session
+  // id was backed up successfully.
   if (self.sceneState.appState.sessionRestorationRequired) {
-    self.sceneState.appState.startupInformation.restoreHelper =
-        [[CrashRestoreHelper alloc] initWithBrowser:self.mainInterface.browser];
+    if (!IsMultiwindowSupported() ||
+        [CrashRestoreHelper
+            isBackedUpSessionID:self.sceneState.sceneSessionID]) {
+      self.sceneState.appState.startupInformation.restoreHelper =
+          [[CrashRestoreHelper alloc]
+              initWithBrowser:self.mainInterface.browser];
+    }
   }
 
   // Before bringing up the UI, make sure the launch mode is correct, and
