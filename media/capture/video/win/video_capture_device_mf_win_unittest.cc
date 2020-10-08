@@ -14,6 +14,7 @@
 #include "base/bind_helpers.h"
 #include "base/test/task_environment.h"
 #include "base/win/windows_version.h"
+#include "media/base/win/mf_helpers.h"
 #include "media/capture/video/win/sink_filter_win.h"
 #include "media/capture/video/win/video_capture_device_factory_win.h"
 #include "media/capture/video/win/video_capture_device_mf_win.h"
@@ -43,6 +44,8 @@ constexpr long kVideoProcAmpCurrentBase = 25;
 constexpr long kVideoProcAmpMinBase = -50;
 constexpr long kVideoProcAmpMaxBase = 50;
 constexpr long kVideoProcAmpStep = 1;
+
+constexpr uint32_t kMFSampleBufferLength = 1;
 
 class MockClient : public VideoCaptureDevice::Client {
  public:
@@ -1227,6 +1230,24 @@ TEST_F(VideoCaptureDeviceMFWinTest, StartPreviewOnAllocateAndStart) {
   device_->AllocateAndStart(VideoCaptureParams(), std::move(client_));
   capture_preview_sink_->sample_callback->OnSample(nullptr);
   device_->StopAndDeAllocate();
+}
+
+// Expects device's |camera_rotation_| to be populated after first OnSample().
+TEST_F(VideoCaptureDeviceMFWinTest, PopulateCameraRotationOnSample) {
+  if (ShouldSkipTest())
+    return;
+
+  PrepareMFDeviceWithOneVideoStream(MFVideoFormat_MJPG);
+
+  EXPECT_CALL(*(engine_.Get()), OnStartPreview());
+  EXPECT_CALL(*client_, OnStarted());
+
+  device_->AllocateAndStart(VideoCaptureParams(), std::move(client_));
+  // Create a valid IMFSample to use with the callback.
+  Microsoft::WRL::ComPtr<IMFSample> test_sample =
+      CreateEmptySampleWithBuffer(kMFSampleBufferLength, 0);
+  capture_preview_sink_->sample_callback->OnSample(test_sample.Get());
+  EXPECT_TRUE(device_->camera_rotation().has_value());
 }
 
 // Expects OnError() to be called on an errored IMFMediaEvent

@@ -20,6 +20,7 @@
 
 #include "base/containers/queue.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/win/capability_list_win.h"
@@ -154,6 +155,8 @@ class VideoCaptureDeviceWin : public VideoCaptureDevice,
   base::ThreadChecker thread_checker_;
 
   bool enable_get_photo_state_;
+
+  base::Optional<int> camera_rotation_;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(VideoCaptureDeviceWin);
 };

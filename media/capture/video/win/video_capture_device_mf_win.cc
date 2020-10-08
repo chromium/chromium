@@ -1362,12 +1362,17 @@ void VideoCaptureDeviceMFWin::OnIncomingCapturedData(
       client_->OnStarted();
     }
 
+    // We always calculate camera rotation for the first frame. We also cache
+    // the latest value to use when AutoRotation is turned off.
+    if (!camera_rotation_.has_value() || IsAutoRotationEnabled())
+      camera_rotation_ = GetCameraRotation(facing_mode_);
+
     // TODO(julien.isorce): retrieve the color space information using Media
     // Foundation api, MFGetAttributeSize/MF_MT_VIDEO_PRIMARIES,in order to
     // build a gfx::ColorSpace. See http://crbug.com/959988.
     client_->OnIncomingCapturedData(
         data, length, selected_video_capability_->supported_format,
-        gfx::ColorSpace(), GetCameraRotation(facing_mode_), false /* flip_y */,
+        gfx::ColorSpace(), camera_rotation_.value(), false /* flip_y */,
         reference_time, timestamp);
   }
 

@@ -82,10 +82,6 @@ double PlatformExposureTimeToCaptureStep(long log_step,
 int GetCameraRotation(VideoFacingMode facing) {
   int rotation = 0;
 
-  if (!IsAutoRotationEnabled()) {
-    return rotation;
-  }
-
   // Before Win10, we can't distinguish if the selected camera is an internal or
   // external one. So we assume it's internal and do the frame rotation if the
   // auto rotation is enabled to cover most user cases.

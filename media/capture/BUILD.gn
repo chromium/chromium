@@ -494,6 +494,8 @@ test("capture_unittests") {
 
     # TODO(jschuh): https://crbug.com/167187 fix size_t to int truncations.
     configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
+
+    deps += [ "//media/base/win:media_foundation_util" ]
   }
 
   # TODO(https://crbug.com/1043007): use is_linux.
