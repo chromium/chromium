@@ -2,3 +2,7 @@
 
 # Consistent Timeout. https://crbug.com/1116577
 -BackForwardCacheBrowserTest.ReplacedNavigationEntry
+
+# Highly Flaky, even without Vulkan https://crbug.com/1134297
+-All/DumpAccessibilityTreeTest.Accessibility*
+-All/ScrollBehaviorBrowserTest.OverflowScrollInterruptedByWheelScroll/1
