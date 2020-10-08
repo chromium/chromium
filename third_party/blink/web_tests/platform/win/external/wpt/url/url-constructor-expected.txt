@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 574 tests; 409 PASS, 165 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 576 tests; 409 PASS, 167 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -542,6 +542,8 @@ PASS Parsing: <//one/two> against <file:///>
 PASS Parsing: <///one/two> against <file:///>
 FAIL Parsing: <////one/two> against <file:///> assert_equals: href expected "file:////one/two" but got "file://one/two"
 PASS Parsing: <file:///.//> against <file:////>
+FAIL Parsing: <file:.//p> against <about:blank> assert_equals: href expected "file:////p" but got "file://.//p"
+FAIL Parsing: <file:/.//p> against <about:blank> assert_equals: href expected "file:////p" but got "file://.//p"
 PASS Parsing: <http://[1:0::]> against <http://example.net/>
 PASS Parsing: <http://[0:1:2:3:4:5:6:7:8]> against <http://example.net/>
 PASS Parsing: <https://[0::0::0]> against <about:blank>

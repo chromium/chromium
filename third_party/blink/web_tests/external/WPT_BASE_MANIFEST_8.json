@@ -304,8 +304,15 @@
        {}
       ]
      ],
-     "overflow-clip-crash.html": [
+     "overflow-clip-001-crash.html": [
       "156343954deba47d0276ea482285048d773b74ab",
+      [
+       null,
+       {}
+      ]
+     ],
+     "overflow-clip-002-crash.html": [
+      "e60239655a07ca6ea3173356420c934ec10b2231",
       [
        null,
        {}
@@ -112943,6 +112950,19 @@
        {}
       ]
      ],
+     "text-underline-offset-negative.html": [
+      "1c945cc40374e3a92ec517f29b119fafc9b03462",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/reference/text-underline-offset-negative-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
      "text-underline-offset-scroll-001.html": [
       "ee521fa215c7b9102ec6a6805c2866bf433c10a4",
       [
@@ -199593,6 +199613,10 @@
        "8e8d1ff09870912f96520bea51ca467034f99ae7",
        []
       ],
+      "text-underline-offset-negative-notref.html": [
+       "4b0b285a797479f5cf979b778d51456507c24cb5",
+       []
+      ],
       "text-underline-offset-scroll-001-notref.html": [
        "c76a6a4945d0ad5324508cb372ba88fe52005fa9",
        []
@@ -249755,7 +249779,7 @@
       []
      ],
      "urltestdata.json": [
-      "c7a906c82e5acc9473db6a97e7c3fbdd2a853550",
+      "f55a40338a30ddfbac47f84457dc89f2db628acc",
       []
      ]
     },
@@ -250282,32 +250306,6 @@
      []
     ],
     "resources": {
-     "dynamic": {
-      "__dir__.headers": [
-       "cb762eff806849df46dc758ef7b98b63f27f54c9",
-       []
-      ],
-      "classic_script.js": [
-       "db69b96188d7ca20b8bb12b429aead8fcfdc7b64",
-       []
-      ],
-      "resource1.js": [
-       "7bd437364a24b6e94493c2acca939991b15cd41c",
-       []
-      ],
-      "resource2.js": [
-       "09a4ee7b704d4f6b895d898eb68ca5d8f874f17b",
-       []
-      ],
-      "resource3.js": [
-       "851168c9dac34f49b9f12a9620277c9cfc9d4c1f",
-       []
-      ],
-      "resource4.js": [
-       "ea456b8db0a411a6a5ade3c556a5e8c3e7415ef4",
-       []
-      ]
-     },
      "dynamic1": {
       "classic_script.js": [
        "5fcf045906c1ab151512a3e425b7c5c6f79cee59",
@@ -250353,7 +250351,7 @@
       ]
      },
      "generate-test-wbns.sh": [
-      "860327fe2451015ed9ca538c39cffff14bdccc19",
+      "247b9c781835357a12382ef7d7774c15b6555bc6",
       []
      ],
      "location": {
@@ -250363,6 +250361,18 @@
       ],
       "location.js": [
        "a1dbba73661f87b20895ed90c6cf96451ed5cc1c",
+       []
+      ]
+     },
+     "path-restriction": {
+      "resource1.js": [
+       "7bd437364a24b6e94493c2acca939991b15cd41c",
+       []
+      ]
+     },
+     "path-restriction1": {
+      "resource1.js": [
+       "e2da7e63c008ef405ee3a43595a940216a59d320",
        []
       ]
      },
@@ -250381,24 +250391,54 @@
        "21e57b9caca1183ecda6f5d4fb9ebd556abf769a",
        []
       ],
+      "dynamic": {
+       "__dir__.headers": [
+        "cb762eff806849df46dc758ef7b98b63f27f54c9",
+        []
+       ],
+       "classic_script.js": [
+        "db69b96188d7ca20b8bb12b429aead8fcfdc7b64",
+        []
+       ],
+       "resource1.js": [
+        "7bd437364a24b6e94493c2acca939991b15cd41c",
+        []
+       ],
+       "resource2.js": [
+        "09a4ee7b704d4f6b895d898eb68ca5d8f874f17b",
+        []
+       ],
+       "resource3.js": [
+        "851168c9dac34f49b9f12a9620277c9cfc9d4c1f",
+        []
+       ],
+       "resource4.js": [
+        "ea456b8db0a411a6a5ade3c556a5e8c3e7415ef4",
+        []
+       ]
+      },
       "dynamic1-crossorigin.wbn": [
-       "5ebb86178e9bf5cccfa09878210c7866f9d80478",
+       "597b6ee90be8094535a6e0bade4c7cbb22ba61a2",
        []
       ],
       "dynamic1.wbn": [
-       "9e69e1fd89834bd2d238859413fc8e09d8b6b181",
+       "9ba161e20558c1f34c902bfd11b2e2f872a01213",
        []
       ],
       "dynamic2.wbn": [
-       "e4d04d60c2aa9050c6454ad9f88af407a844669d",
+       "798da2e499dd07a2e185b6b7be41e84e88c75c4b",
        []
       ],
       "location.wbn": [
-       "1129cc1e92c89b5b33c86dde61bab7e66c8379bd",
+       "f2b1e5333bdcaf88ed8b40246caeb57c3b1be8df",
+       []
+      ],
+      "path-restriction.wbn": [
+       "7255de59c107acd2a4f9c377f0b6bafdb878b131",
        []
       ],
       "subresource.wbn": [
-       "4d059e7c0b819500c437529446158d2884915c4c",
+       "eabd994ff8bceaf4ef52b329b4faa158c292af12",
        []
       ]
      }
@@ -368446,6 +368486,15 @@
         }
        ]
       ],
+      "penPointerEventProperties.html": [
+       "c5a2b1c06d902d54f63b329ef3f5253b5d72ff04",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
       "wheelScroll.html": [
        "a7d9b2609da763dbfaacab253edb13ca35c16627",
        [
@@ -413887,7 +413936,7 @@
       ]
      ],
      "subresource-loading-from-web-bundle.tentative.html": [
-      "574a25b681651affd6744c45370554a118befe16",
+      "1d59e11e568cb8bdf0d7d58e7d22704ea4c1af14",
       [
        null,
        {}
