@@ -279,9 +279,12 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(DisabledSharingMessageChecker(GetSyncService(0)).Wait());
 }
 
+// TODO(crbug.com/1097054): enable the test once the issue is fixed, without
+// that it may be flaky because SharingMessage data type might not generate
+// retries.
 IN_PROC_BROWSER_TEST_F(
     SingleClientSharingMessageSyncTest,
-    ShouldRetrySendingSharingMessageDataTypeOnTransientAuthError) {
+    DISABLED_ShouldRetrySendingSharingMessageDataTypeOnTransientAuthError) {
   ASSERT_TRUE(SetupSync());
   GetFakeServer()->SetHttpError(net::HTTP_UNAUTHORIZED);
   SetOAuth2TokenResponse(kEmptyOAuth2Token, net::HTTP_INTERNAL_SERVER_ERROR,
