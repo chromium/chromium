@@ -1030,8 +1030,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.RequestThrottler.PerDay" units="requests"
-    expires_after="M85">
-  <owner>jkrcal@chromium.org</owner>
+    expires_after="2021-07-01">
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Records how many background requests of the given type the browser tried to
     perform each day where the type is specified by the _suffix of the
@@ -1044,8 +1045,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.RequestThrottler.PerDayInteractive"
-    units="requests" expires_after="M85">
-  <owner>jkrcal@chromium.org</owner>
+    units="requests" expires_after="2021-07-01">
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Records how many interactive requests of the given type the browser tried to
     perform each day where the type is specified by the _suffix of the
@@ -1058,8 +1060,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.RequestThrottler.RequestStatus"
-    enum="NtpRequestThrottlerStatus" expires_after="M85">
-  <owner>jkrcal@chromium.org</owner>
+    enum="NtpRequestThrottlerStatus" expires_after="2021-07-01">
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Records the status w.r.t. the quota for all requests of the given type. The
     type of request is specified by the _suffix of the histogram.
@@ -1159,7 +1162,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NewTabPage.Snippets.DatabaseLoadTime" units="ms"
     expires_after="M85">
-  <owner>treib@chromium.org</owner>
+  <obsolete>
+    Removed in October 2020.
+  </obsolete>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: The time it took to load the database of persisted content
     suggestions. Recorded only when the database is loaded successfully.
@@ -1168,7 +1175,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NewTabPage.Snippets.EnteredState" enum="NTPSnippetsState"
     expires_after="M85">
-  <owner>treib@chromium.org</owner>
+  <obsolete>
+    Removed in October 2020.
+  </obsolete>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: The state of the RemoteSuggestionsProvider. Recorded when the state
     changes, typically once at startup and rarely afterwards, e.g. on database
@@ -1178,7 +1189,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NewTabPage.Snippets.FetchHttpResponseOrErrorCode"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="M85">
-  <owner>mastiz@chromium.org</owner>
+  <obsolete>
+    Removed in October 2020.
+  </obsolete>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Response or error codes encountered when attempting to fetch snippets.
   </summary>
@@ -1186,14 +1201,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NewTabPage.Snippets.FetchResult" enum="NtpSnippetsFetchResult"
     expires_after="M85">
-  <owner>mastiz@chromium.org</owner>
+  <obsolete>
+    Removed in October 2020.
+  </obsolete>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Result of attempting a fetch, logged once per issued trigger.
   </summary>
 </histogram>
 
 <histogram name="NewTabPage.Snippets.FetchTime" units="ms" expires_after="M85">
-  <owner>mastiz@chromium.org</owner>
+  <obsolete>
+    Removed in October 2020.
+  </obsolete>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Time spent fetching snippets. Only recorded for fetch attempts that resulted
     in an actual network request.
@@ -1202,7 +1225,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NewTabPage.Snippets.FetchTimeLocal" units="minutes"
     expires_after="M85">
-  <owner>finkm@chromium.org</owner>
+  <obsolete>
+    Removed in October 2020.
+  </obsolete>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Records the time of the day in minutes when a snippets background fetch was
     initiated. Counts minutes since midnight UTC.
@@ -1211,7 +1238,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NewTabPage.Snippets.FetchTimeUTC" units="minutes"
     expires_after="M85">
-  <owner>finkm@chromium.org</owner>
+  <obsolete>
+    Removed in October 2020.
+  </obsolete>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Records the time of the day in minutes when a snippets background fetch was
     initiated. Counts minutes since midnight local time.
@@ -1229,7 +1260,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NewTabPage.Snippets.NumArticles" units="articles"
     expires_after="M85">
-  <owner>treib@chromium.org</owner>
+  <obsolete>
+    Removed in October 2020.
+  </obsolete>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: The number of snippet articles available to show on the NTP, logged
     once every time the list is updated.
@@ -1238,7 +1273,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NewTabPage.Snippets.NumArticlesFetched" units="articles"
     expires_after="M85">
-  <owner>mastiz@chromium.org</owner>
+  <obsolete>
+    Removed in October 2020.
+  </obsolete>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: The number of valid snippet articles fetched from the server,
     logged every time a fetch finishes successfully.
@@ -1247,7 +1286,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NewTabPage.Snippets.NumArticlesZeroDueToDiscarded"
     units="articles" expires_after="M85">
-  <owner>mastiz@chromium.org</owner>
+  <obsolete>
+    Removed in October 2020.
+  </obsolete>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: The number of snippet articles discarded by the user, logged every
     time the list is updated resulting in an empty list (all articles
@@ -1257,7 +1300,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NewTabPage.Snippets.NumIncompleteSnippets" units="snippets"
     expires_after="M85">
-  <owner>treib@chromium.org</owner>
+  <obsolete>
+    Removed in October 2020.
+  </obsolete>
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     The number of snippets that we discard per fetch due to having incomplete
     data.
@@ -1398,8 +1445,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.UserClassifier.AverageHoursToOpenNTP" units="hours"
-    expires_after="M85">
-  <owner>jkrcal@chromium.org</owner>
+    expires_after="2021-07-01">
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: The estimated average number of hours between two successive times
     when a new tab page is opened. Recorded after each opening of a NTP (and
@@ -1408,8 +1456,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.UserClassifier.AverageHoursToShowSuggestions"
-    units="hours" expires_after="M85">
-  <owner>jkrcal@chromium.org</owner>
+    units="hours" expires_after="2021-07-01">
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
   <summary>
     Android: The estimated average number of hours between two successive times
     when the list of content suggestions on a new tab page is shown (i.e. when
