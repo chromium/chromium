@@ -490,7 +490,7 @@ void PluginVmInstaller::UpdateProgress(double state_progress) {
       start_range + (end_range - start_range) * state_progress;
   if (new_progress < progress_) {
     LOG(ERROR) << "Progress went backwards from " << progress_ << " to "
-               << progress_;
+               << new_progress;
     return;
   }
 
