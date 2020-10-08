@@ -86,18 +86,22 @@ class TestCallbackWaiter {
 
 class TestCallbackWaiterWithCounter : public TestCallbackWaiter {
  public:
-  explicit TestCallbackWaiterWithCounter(int counter_limit)
-      : counter_limit_(counter_limit) {}
+  explicit TestCallbackWaiterWithCounter(size_t counter_limit)
+      : counter_limit_(counter_limit) {
+    DCHECK_GT(counter_limit, 0u);
+  }
 
   void Signal() override {
-    DCHECK_GT(counter_limit_, 0);
-    if (--counter_limit_ == 0) {
-      run_loop_->Quit();
+    const size_t old_count = counter_limit_.fetch_sub(1);
+    DCHECK_GT(old_count, 0u);
+    if (old_count > 1) {
+      return;
     }
+    run_loop_->Quit();
   }
 
  private:
-  std::atomic<int> counter_limit_;
+  std::atomic<size_t> counter_limit_;
 };
 
 class UploadClientTest : public ::testing::Test {
@@ -152,7 +156,10 @@ TEST_F(UploadClientTest, CreateUploadClient) {
       .WillRepeatedly(WithArgs<1>(
           Invoke([&waiter](AppInstallReportHandler::ClientCallback& callback) {
             std::move(callback).Run(true);
-            waiter.Signal();
+            base::ThreadPool::PostTask(
+                FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+                base::BindOnce(&TestCallbackWaiterWithCounter::Signal,
+                               base::Unretained(&waiter)));
           })));
 
   TestEvent<StatusOr<std::unique_ptr<UploadClient>>> e;
