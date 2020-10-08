@@ -94,17 +94,24 @@ void SmsFetcherImpl::OnRemote(base::Optional<std::string> sms) {
   if (!sms)
     return;
 
-  base::Optional<SmsParser::Result> result = SmsParser::Parse(*sms);
-  if (!result)
+  // TODO(yigu): We should log when the sms cannot be parsed similar to local
+  // SMSes.
+  SmsParser::Result result = SmsParser::Parse(*sms);
+  if (!result.IsValid())
     return;
 
-  Notify(result->origin, result->one_time_code);
+  Notify(result.origin, result.one_time_code);
 }
 
 bool SmsFetcherImpl::OnReceive(const url::Origin& origin,
                                const std::string& one_time_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return Notify(origin, one_time_code);
+}
+
+void SmsFetcherImpl::NotifyParsingFailure(SmsParser::SmsParsingStatus status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  subscribers_.NotifyParsingFailure(status);
 }
 
 bool SmsFetcherImpl::HasSubscribers() {

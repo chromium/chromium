@@ -17,67 +17,67 @@ namespace content {
 namespace {
 
 url::Origin ParseOrigin(const std::string& message) {
-  base::Optional<SmsParser::Result> result = SmsParser::Parse(message);
-  if (!result)
+  SmsParser::Result result = SmsParser::Parse(message);
+  if (!result.IsValid())
     return url::Origin();
-  return result->origin;
+  return result.origin;
 }
 
 std::string ParseOTP(const std::string& message) {
-  base::Optional<SmsParser::Result> result = SmsParser::Parse(message);
-  if (!result)
+  SmsParser::Result result = SmsParser::Parse(message);
+  if (!result.IsValid())
     return "";
-  return result->one_time_code;
+  return result.one_time_code;
 }
 
 }  // namespace
 
 TEST(SmsParserTest, NoToken) {
-  ASSERT_FALSE(SmsParser::Parse("foo"));
+  ASSERT_FALSE(SmsParser::Parse("foo").IsValid());
 }
 
 TEST(SmsParserTest, WithTokenInvalidUrl) {
-  ASSERT_FALSE(SmsParser::Parse("@foo"));
+  ASSERT_FALSE(SmsParser::Parse("@foo").IsValid());
 }
 
 TEST(SmsParserTest, NoSpace) {
-  ASSERT_FALSE(SmsParser::Parse("@example.com#12345"));
+  ASSERT_FALSE(SmsParser::Parse("@example.com#12345").IsValid());
 }
 
 TEST(SmsParserTest, MultipleSpace) {
-  ASSERT_FALSE(SmsParser::Parse("@example.com  #12345"));
+  ASSERT_FALSE(SmsParser::Parse("@example.com  #12345").IsValid());
 }
 
 TEST(SmsParserTest, WhiteSpaceThatIsNotSpace) {
-  ASSERT_FALSE(SmsParser::Parse("@example.com\t#12345"));
+  ASSERT_FALSE(SmsParser::Parse("@example.com\t#12345").IsValid());
 }
 
 TEST(SmsParserTest, WordInBetween) {
-  ASSERT_FALSE(SmsParser::Parse("@example.com random #12345"));
+  ASSERT_FALSE(SmsParser::Parse("@example.com random #12345").IsValid());
 }
 
 TEST(SmsParserTest, InvalidUrl) {
-  ASSERT_FALSE(SmsParser::Parse("@//example.com #123"));
+  ASSERT_FALSE(SmsParser::Parse("@//example.com #123").IsValid());
 }
 
 TEST(SmsParserTest, FtpScheme) {
-  ASSERT_FALSE(SmsParser::Parse("@ftp://example.com #123"));
+  ASSERT_FALSE(SmsParser::Parse("@ftp://example.com #123").IsValid());
 }
 
 TEST(SmsParserTest, Mailto) {
-  ASSERT_FALSE(SmsParser::Parse("@mailto:goto@chromium.org #123"));
+  ASSERT_FALSE(SmsParser::Parse("@mailto:goto@chromium.org #123").IsValid());
 }
 
 TEST(SmsParserTest, MissingOneTimeCodeParameter) {
-  ASSERT_FALSE(SmsParser::Parse("@example.com"));
+  ASSERT_FALSE(SmsParser::Parse("@example.com").IsValid());
 }
 
 TEST(SmsParserTest, Basic) {
   auto result = SmsParser::Parse("@example.com #12345");
 
-  ASSERT_TRUE(result);
-  EXPECT_EQ("12345", result->one_time_code);
-  EXPECT_EQ(url::Origin::Create(GURL("https://example.com")), result->origin);
+  ASSERT_TRUE(result.IsValid());
+  EXPECT_EQ("12345", result.one_time_code);
+  EXPECT_EQ(url::Origin::Create(GURL("https://example.com")), result.origin);
 }
 
 TEST(SmsParserTest, Realistic) {
@@ -92,12 +92,12 @@ TEST(SmsParserTest, OneTimeCode) {
 TEST(SmsParserTest, LocalhostForDevelopment) {
   EXPECT_EQ(url::Origin::Create(GURL("http://localhost")),
             ParseOrigin("@localhost #123"));
-  ASSERT_FALSE(SmsParser::Parse("@localhost:8080 #123"));
-  ASSERT_FALSE(SmsParser::Parse("@localhost"));
+  ASSERT_FALSE(SmsParser::Parse("@localhost:8080 #123").IsValid());
+  ASSERT_FALSE(SmsParser::Parse("@localhost").IsValid());
 }
 
 TEST(SmsParserTest, Paths) {
-  ASSERT_FALSE(SmsParser::Parse("@example.com/foobar #123"));
+  ASSERT_FALSE(SmsParser::Parse("@example.com/foobar #123").IsValid());
 }
 
 TEST(SmsParserTest, Message) {
@@ -151,7 +151,8 @@ TEST(SmsParserTest, ForbiddenCharacters) {
                                   '^'};
   for (char c : forbidden_chars) {
     ASSERT_FALSE(
-        SmsParser::Parse(base::StringPrintf("@cannot-contain-%c #123456", c)));
+        SmsParser::Parse(base::StringPrintf("@cannot-contain-%c #123456", c))
+            .IsValid());
   }
 }
 
@@ -168,19 +169,19 @@ TEST(SmsParserTest, TwoTokens) {
 }
 
 TEST(SmsParserTest, Ports) {
-  ASSERT_FALSE(SmsParser::Parse("@a.com:8443 #123"));
+  ASSERT_FALSE(SmsParser::Parse("@a.com:8443 #123").IsValid());
 }
 
 TEST(SmsParserTest, Username) {
-  ASSERT_FALSE(SmsParser::Parse("@username@a.com #123"));
+  ASSERT_FALSE(SmsParser::Parse("@username@a.com #123").IsValid());
 }
 
 TEST(SmsParserTest, QueryParams) {
-  ASSERT_FALSE(SmsParser::Parse("@a.com/?foo=123 #123"));
+  ASSERT_FALSE(SmsParser::Parse("@a.com/?foo=123 #123").IsValid());
 }
 
 TEST(SmsParserTest, HarmlessOriginsButInvalid) {
-  ASSERT_FALSE(SmsParser::Parse("@data://123"));
+  ASSERT_FALSE(SmsParser::Parse("@data://123").IsValid());
 }
 
 TEST(SmsParserTest, AppHash) {

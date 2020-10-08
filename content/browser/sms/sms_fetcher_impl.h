@@ -53,6 +53,8 @@ class CONTENT_EXPORT SmsFetcherImpl : public content::SmsFetcher,
 
   bool Notify(const url::Origin& origin, const std::string& one_time_code);
 
+  void NotifyParsingFailure(SmsParser::SmsParsingStatus) override;
+
   // |context_| is safe because all instances of SmsFetcherImpl are owned by
   // the BrowserContext itself.
   BrowserContext* context_;

@@ -51,12 +51,16 @@ class CONTENT_EXPORT SmsService
              mojo::PendingReceiver<blink::mojom::SmsReceiver>);
   ~SmsService() override;
 
+  using FailureType = SmsFetcher::FailureType;
+  using SmsParsingStatus = SmsParser::SmsParsingStatus;
+
   // blink::mojom::SmsReceiver:
   void Receive(ReceiveCallback) override;
   void Abort() override;
 
   // content::SmsQueue::Subscriber
   void OnReceive(const std::string& one_time_code) override;
+  void OnFailure(FailureType failure_type) override;
 
   // Completes the in-flight sms otp code request. Invokes the receive callback,
   // if one is available, with the provided status code and the existing one

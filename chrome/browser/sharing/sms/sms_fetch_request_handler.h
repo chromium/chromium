@@ -43,6 +43,7 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
     ~Request() override;
 
     void OnReceive(const std::string& one_time_code) override;
+    void OnFailure(content::SmsFetcher::FailureType failure_type) override;
 
    private:
     SmsFetchRequestHandler* handler_;

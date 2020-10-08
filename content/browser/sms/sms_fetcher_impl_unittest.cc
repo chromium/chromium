@@ -43,6 +43,7 @@ class MockSubscriber : public SmsFetcher::Subscriber {
   ~MockSubscriber() override = default;
 
   MOCK_METHOD1(OnReceive, void(const std::string& one_time_code));
+  MOCK_METHOD1(OnFailure, void(SmsFetcher::FailureType failure_type));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockSubscriber);

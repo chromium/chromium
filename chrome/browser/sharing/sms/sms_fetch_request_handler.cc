@@ -55,3 +55,9 @@ void SmsFetchRequestHandler::Request::OnReceive(
 
   handler_->RemoveRequest(this);
 }
+
+// TODO(crbug.com/1015645): Add implementation.
+void SmsFetchRequestHandler::Request::OnFailure(
+    content::SmsFetcher::FailureType failure_type) {
+  NOTIMPLEMENTED();
+}

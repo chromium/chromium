@@ -4,6 +4,7 @@
 
 #include "content/browser/sms/sms_metrics.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 
@@ -29,6 +30,14 @@ void RecordContinueOnSuccessTime(base::TimeDelta duration) {
 
 void RecordDestroyedReason(blink::SmsReceiverDestroyedReason reason) {
   UMA_HISTOGRAM_ENUMERATION("Blink.Sms.Receive.DestroyedReason", reason);
+}
+
+void RecordSmsParsingStatus(SmsParsingStatus status, ukm::SourceId source_id) {
+  ukm::builders::SMSReceiver builder(source_id);
+  builder.SetSmsParsingStatus(static_cast<int>(status));
+  builder.Record(ukm::UkmRecorder::Get());
+
+  base::UmaHistogramEnumeration("Blink.Sms.Receive.SmsParsingStatus", status);
 }
 
 }  // namespace content
