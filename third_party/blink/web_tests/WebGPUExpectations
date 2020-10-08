@@ -48,6 +48,10 @@ crbug.com/1083478 [ Linux ] wpt_internal/webgpu/webgpu/web-platform/reftests/can
 crbug.com/1083478 [ Win ] wpt_internal/webgpu/webgpu/web-platform/reftests/canvas_clear.html [ Skip ]
 crbug.com/1083478 [ Win ] wpt_internal/webgpu/webgpu/web-platform/reftests/canvas_complex_bgra8unorm.html [ Skip ]
 
+# These tests were written before the validation rules where settled upon.
+crbug.com/dawn/542 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,setViewport:* [ Failure ]
+crbug.com/dawn/542 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,setScissorRect:* [ Failure ]
+
 #
 # Platform-independent failures
 #
