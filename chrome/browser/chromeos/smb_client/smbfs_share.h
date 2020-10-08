@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/smb_client/smb_errors.h"
@@ -87,6 +88,9 @@ class SmbFsShare : public smbfs::SmbFsHost::Delegate {
   void SetMounterCreationCallbackForTest(MounterCreationCallback callback);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SmbFsShareTest, GenerateStableMountId);
+  FRIEND_TEST_ALL_PREFIXES(SmbFsShareTest, GenerateStableMountIdInput);
+
   // Callback for smbfs::SmbFsMounter::Mount().
   void OnMountDone(MountCallback callback,
                    smbfs::mojom::MountError mount_error,
@@ -111,6 +115,21 @@ class SmbFsShare : public smbfs::SmbFsHost::Delegate {
   // smbfs::SmbFsHost::Delegate overrides:
   void OnDisconnected() override;
   void RequestCredentials(RequestCredentialsCallback callback) override;
+
+  // Generate a stable ID to uniquely identify the share across each
+  // mount / unmount cycle. This allows the share to have the same path
+  // on the filesystem each time it is mounted.
+  //
+  // This function creates uniqueness beyond that currently enforced by
+  // the system (which presently only allows one share per canonical URL
+  // to be mounted). IDs generated here will be forward compatible in a
+  // future where the same share could be mounted once (ie. read-only)
+  // by preconfigured policy and subsequently by the user but using
+  // read-write credentials).
+  std::string GenerateStableMountId() const;
+
+  // Generate the input for stable mount ID hash (simplifies testing).
+  std::string GenerateStableMountIdInput() const;
 
   Profile* const profile_;
   const SmbUrl share_url_;
