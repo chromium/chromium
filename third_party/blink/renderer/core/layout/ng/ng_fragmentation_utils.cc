@@ -231,10 +231,10 @@ bool IsNodeFullyGrown(NGBlockNode node,
 
 bool FinishFragmentation(NGBlockNode node,
                          const NGConstraintSpace& space,
-                         const NGBlockBreakToken* previous_break_token,
                          LayoutUnit trailing_border_padding,
                          LayoutUnit space_left,
                          NGBoxFragmentBuilder* builder) {
+  const NGBlockBreakToken* previous_break_token = builder->PreviousBreakToken();
   LayoutUnit previously_consumed_block_size;
   if (previous_break_token && !previous_break_token->IsBreakBefore())
     previously_consumed_block_size = previous_break_token->ConsumedBlockSize();

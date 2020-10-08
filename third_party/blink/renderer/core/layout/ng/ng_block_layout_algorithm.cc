@@ -2159,7 +2159,7 @@ bool NGBlockLayoutAlgorithm::FinalizeForFragmentation() {
   if (ConstraintSpace().HasKnownFragmentainerBlockSize())
     space_left = FragmentainerSpaceAvailable();
 
-  return FinishFragmentation(Node(), ConstraintSpace(), BreakToken(),
+  return FinishFragmentation(Node(), ConstraintSpace(),
                              BorderPadding().block_end, space_left,
                              &container_builder_);
 }

@@ -148,7 +148,6 @@ bool IsNodeFullyGrown(NGBlockNode,
 // is to abort layout, then relayout and break earlier.
 bool FinishFragmentation(NGBlockNode node,
                          const NGConstraintSpace&,
-                         const NGBlockBreakToken* previous_break_token,
                          LayoutUnit trailing_border_padding,
                          LayoutUnit space_left,
                          NGBoxFragmentBuilder*);

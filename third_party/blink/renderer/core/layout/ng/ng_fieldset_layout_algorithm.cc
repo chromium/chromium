@@ -124,9 +124,9 @@ scoped_refptr<const NGLayoutResult> NGFieldsetLayoutAlgorithm::Layout() {
   container_builder_.SetIsFieldsetContainer();
 
   if (ConstraintSpace().HasBlockFragmentation()) {
-    FinishFragmentation(
-        Node(), ConstraintSpace(), BreakToken(), borders_.block_end,
-        FragmentainerSpaceAtBfcStart(ConstraintSpace()), &container_builder_);
+    FinishFragmentation(Node(), ConstraintSpace(), borders_.block_end,
+                        FragmentainerSpaceAtBfcStart(ConstraintSpace()),
+                        &container_builder_);
   }
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
