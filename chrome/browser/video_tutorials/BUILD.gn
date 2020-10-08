@@ -122,11 +122,17 @@ if (is_android) {
   }
 
   android_library("test_support_java") {
-    sources = [ "android/java/src/org/chromium/chrome/browser/video_tutorials/test/TestVideoTutorialService.java" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/test/TestImageFetcher.java",
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/test/TestVideoTutorialService.java",
+    ]
 
     deps = [
       ":java",
       "//base:base_java",
+      "//chrome/browser/image_fetcher:java",
+      "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/gif_player:gif_player_java",
     ]
   }
 }

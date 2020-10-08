@@ -173,17 +173,18 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/video_tutorials/iph/VideoIPHTest.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguagePickerTest.java",
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/list/TutorialListCoordinatorTest.java",
     ]
     deps = [
       ":java",
       "//base:base_java",
       "//base:base_java_test_support",
-      "//chrome/browser/image_fetcher:java",
       "//chrome/browser/video_tutorials:java",
       "//chrome/browser/video_tutorials:test_support_java",
       "//chrome/test/android:chrome_java_test_support",
       "//content/public/test/android:content_java_test_support",
       "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
       "//third_party/android_deps:androidx_test_runner_java",
       "//third_party/android_deps:espresso_java",
       "//third_party/android_support_test_runner:rules_java",

@@ -75,7 +75,7 @@ public class TestVideoTutorialService implements VideoTutorialService {
                 new Tutorial(FeatureType.SEARCH, "How to efficiently search with Google Chrome",
                         "https://storage.googleapis.com/stock-wizard.appspot.com/elephant.jpg ",
                         "https://storage.googleapis.com/stock-wizard.appspot.com/elephant.jpg",
-                        "caption url", "share url", 35));
+                        "caption url", "share url", 335));
     }
 
     private void initializeLanguages() {

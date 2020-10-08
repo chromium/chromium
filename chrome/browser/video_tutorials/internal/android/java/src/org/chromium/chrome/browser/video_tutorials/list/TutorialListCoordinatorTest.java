@@ -1,22 +1,23 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.video_tutorials.iph;
+package org.chromium.chrome.browser.video_tutorials.list;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.test.rule.ActivityTestRule;
-import android.view.ViewStub;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.filters.SmallTest;
 
@@ -29,30 +30,30 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.video_tutorials.FeatureType;
 import org.chromium.chrome.browser.video_tutorials.R;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
 import org.chromium.chrome.browser.video_tutorials.test.TestImageFetcher;
+import org.chromium.chrome.browser.video_tutorials.test.TestVideoTutorialService;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DummyUiActivity;
 
 /**
- * Tests for {@link LanguagePickerCoordinator}.
+ * Tests for {@link TutorialListCoordinator}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class VideoIPHTest {
+public class TutorialListCoordinatorTest {
     @Rule
     public ActivityTestRule<DummyUiActivity> mActivityTestRule =
             new ActivityTestRule<>(DummyUiActivity.class);
 
     private Activity mActivity;
-    private VideoIPHCoordinator mCoordinator;
+    private View mContentView;
+    private TestVideoTutorialService mTestVideoTutorialService;
+    private TutorialListCoordinator mCoordinator;
 
     @Mock
-    private Callback<Tutorial> mOnClickListener;
-    @Mock
-    private Callback<Tutorial> mOnDismissListener;
+    private Callback<Tutorial> mClickCallback;
 
     @Before
     public void setUp() throws Exception {
@@ -61,36 +62,27 @@ public class VideoIPHTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             FrameLayout parentView = new FrameLayout(mActivity);
             mActivity.setContentView(parentView);
-            ViewStub viewStub = new ViewStub(mActivity);
-            viewStub.setLayoutResource(R.layout.video_tutorial_iph_card);
-            parentView.addView(viewStub);
+            mTestVideoTutorialService = new TestVideoTutorialService();
+            mContentView = LayoutInflater.from(mActivity).inflate(
+                    R.layout.video_tutorial_list, null, false);
+            parentView.addView(mContentView);
 
             Bitmap testImage = BitmapFactory.decodeResource(mActivity.getResources(),
                     org.chromium.chrome.browser.video_tutorials.R.drawable.btn_close);
             TestImageFetcher imageFetcher = new TestImageFetcher(testImage);
-            mCoordinator = new VideoIPHCoordinatorImpl(
-                    viewStub, imageFetcher, mOnClickListener, mOnDismissListener);
+            mCoordinator = new TutorialListCoordinatorImpl(
+                    (RecyclerView) mContentView.findViewById(R.id.recycler_view),
+                    mTestVideoTutorialService, imageFetcher, mClickCallback);
         });
     }
 
     @Test
     @SmallTest
-    public void testShowIPH() {
-        final Tutorial tutorial = createDummyTutorial();
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mCoordinator.showVideoIPH(tutorial); });
+    public void testShowList() {
+        Tutorial tutorial = mTestVideoTutorialService.getTestTutorials().get(0);
         onView(withText(tutorial.displayTitle)).check(matches(isDisplayed()));
-        onView(withText("5:35")).check(matches(isDisplayed()));
+        onView(withText("0:35")).check(matches(isDisplayed()));
         onView(withText(tutorial.displayTitle)).perform(ViewActions.click());
-        Mockito.verify(mOnClickListener).onResult(Mockito.any());
-        onView(withId(R.id.close_button)).perform(ViewActions.click());
-        Mockito.verify(mOnDismissListener).onResult(Mockito.any());
+        Mockito.verify(mClickCallback).onResult(tutorial);
     }
-
-    private Tutorial createDummyTutorial() {
-        return new Tutorial(FeatureType.DOWNLOAD,
-                "How to use Google Chrome's download functionality",
-                "https://xyz.example.com/xyz.mp4", "https://xyz.example.com/xyz.png",
-                "https://xyz.example.com/xyz.vtt", "https://xyz.example.com/xyz.mp4", 335);
-    }
-
 }
