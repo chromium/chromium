@@ -265,6 +265,9 @@ bool CanOpenProfileOnStartup(Profile* profile) {
 
   // Guest or system profiles are not available unless a separate process
   // already has a window open for the profile.
+  if (profile->IsEphemeralGuestProfile())
+    return chrome::GetBrowserCount(profile->GetOriginalProfile()) > 0;
+
   return (!profile->IsGuestSession() && !profile->IsSystemProfile()) ||
          (chrome::GetBrowserCount(profile->GetPrimaryOTRProfile()) > 0);
 #endif
@@ -415,9 +418,10 @@ bool StartupBrowserCreator::LaunchBrowser(
   }
 
   if (IsGuestModeEnforced(command_line, /* show_warning= */ true)) {
-    profile = g_browser_process->profile_manager()
-                  ->GetProfile(ProfileManager::GetGuestProfilePath())
-                  ->GetPrimaryOTRProfile();
+    profile = g_browser_process->profile_manager()->GetProfile(
+        ProfileManager::GetGuestProfilePath());
+    if (!profile->IsEphemeralGuestProfile())
+      profile = profile->GetPrimaryOTRProfile();
   }
 
 #if defined(OS_WIN)
@@ -507,7 +511,7 @@ SessionStartupPref StartupBrowserCreator::GetSessionStartupPref(
   }
 
   // A browser starting for a profile being unlocked should always restore.
-  if (!profile->IsGuestSession()) {
+  if (!profile->IsGuestSession() && !profile->IsEphemeralGuestProfile()) {
     ProfileAttributesEntry* entry = nullptr;
     bool has_entry =
         g_browser_process->profile_manager()
@@ -921,7 +925,7 @@ bool StartupBrowserCreator::ProcessLastOpenedProfiles(
 
   // Launch the profiles in the order they became active.
   for (Profile* profile : last_opened_profiles) {
-    DCHECK(!profile->IsGuestSession());
+    DCHECK(!profile->IsGuestSession() && !profile->IsEphemeralGuestProfile());
 
 #if !defined(OS_CHROMEOS)
     // Skip any locked profile.
@@ -933,8 +937,10 @@ bool StartupBrowserCreator::ProcessLastOpenedProfiles(
     // when Chrome was closed. In this case, pick a different open profile
     // to be the active one, since the Guest profile is never added to the
     // list of open profiles.
-    if (last_used_profile->IsGuestSession())
+    if (last_used_profile->IsGuestSession() ||
+        last_used_profile->IsEphemeralGuestProfile()) {
       last_used_profile = profile;
+    }
 #endif
 
     // Don't launch additional profiles which would only open a new tab
