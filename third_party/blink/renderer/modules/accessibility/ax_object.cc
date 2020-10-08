@@ -514,6 +514,49 @@ HTMLDialogElement* GetActiveDialogElement(Node* node) {
   return node->GetDocument().ActiveModalDialog();
 }
 
+// TODO(dmazzoni): replace this with a call to RoleName().
+std::string GetEquivalentAriaRoleString(const ax::mojom::blink::Role role) {
+  switch (role) {
+    case ax::mojom::blink::Role::kArticle:
+      return "article";
+    case ax::mojom::blink::Role::kBanner:
+      return "banner";
+    case ax::mojom::blink::Role::kButton:
+      return "button";
+    case ax::mojom::blink::Role::kComplementary:
+      return "complementary";
+    case ax::mojom::blink::Role::kFigure:
+      return "figure";
+    case ax::mojom::blink::Role::kFooter:
+      return "contentinfo";
+    case ax::mojom::blink::Role::kHeader:
+      return "banner";
+    case ax::mojom::blink::Role::kHeading:
+      return "heading";
+    case ax::mojom::blink::Role::kImage:
+      return "img";
+    case ax::mojom::blink::Role::kMain:
+      return "main";
+    case ax::mojom::blink::Role::kNavigation:
+      return "navigation";
+    case ax::mojom::blink::Role::kRadioButton:
+      return "radio";
+    case ax::mojom::blink::Role::kRegion:
+      return "region";
+    case ax::mojom::blink::Role::kSection:
+      // A <section> element uses the 'region' ARIA role mapping.
+      return "region";
+    case ax::mojom::blink::Role::kSlider:
+      return "slider";
+    case ax::mojom::blink::Role::kTime:
+      return "time";
+    default:
+      break;
+  }
+
+  return std::string();
+}
+
 }  // namespace
 
 unsigned AXObject::number_of_live_ax_objects_ = 0;
@@ -885,6 +928,28 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
   }
 
   SerializePartialSparseAttributes(node_data);
+
+  if (Element* element = this->GetElement()) {
+    if (const AtomicString& class_name = element->GetClassAttribute()) {
+      TruncateAndAddStringAttribute(
+          node_data, ax::mojom::blink::StringAttribute::kClassName,
+          class_name.Utf8());
+    }
+
+    if (const AtomicString& aria_role =
+            GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole)) {
+      TruncateAndAddStringAttribute(node_data,
+                                    ax::mojom::blink::StringAttribute::kRole,
+                                    aria_role.Utf8());
+    } else {
+      std::string role_str = GetEquivalentAriaRoleString(RoleValue());
+      if (!role_str.empty()) {
+        TruncateAndAddStringAttribute(node_data,
+                                      ax::mojom::blink::StringAttribute::kRole,
+                                      GetEquivalentAriaRoleString(RoleValue()));
+      }
+    }
+  }
 }
 
 void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) {
