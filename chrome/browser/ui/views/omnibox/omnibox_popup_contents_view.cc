@@ -207,7 +207,11 @@ gfx::Image OmniboxPopupContentsView::GetMatchIcon(
 void OmniboxPopupContentsView::SetSelectedLineForMouseOrTouch(size_t index) {
   DCHECK(HasMatchAt(index));
   // We do this to prevent de-focusing auxiliary buttons due to drag.
-  if (index == model_->selected_line())
+  // With refined-focus-state enabled, there's more visual differences for
+  // having the actual suggestion focused vs. an aux button, so we cannot skip
+  // setting the selection.
+  if (!OmniboxFieldTrial::IsRefinedFocusStateEnabled() &&
+      index == model_->selected_line())
     return;
 
   OmniboxPopupModel::LineState line_state = OmniboxPopupModel::NORMAL;

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/grit/components_scaled_resources.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -613,7 +614,9 @@ base::Optional<ThemeHelper::OmniboxColor> ThemeHelper::GetOmniboxColorImpl(
     return blend_toward_max_contrast(bg, 0x0A);
   };
   const auto results_bg_hovered_color = [&]() {
-    return blend_toward_max_contrast(results_bg_color(), 0x1A);
+    return blend_toward_max_contrast(
+        results_bg_color(),
+        OmniboxFieldTrial::IsRefinedFocusStateEnabled() ? 0x0A : 0x1A);
   };
   const auto url_color = [&](OmniboxColor bg) {
     return blend_for_min_contrast(
@@ -621,7 +624,9 @@ base::Optional<ThemeHelper::OmniboxColor> ThemeHelper::GetOmniboxColorImpl(
         {{dark ? gfx::kGoogleBlue050 : gfx::kGoogleBlue900, false}});
   };
   const auto results_bg_selected_color = [&]() {
-    return blend_toward_max_contrast(results_bg_color(), 0x29);
+    return blend_toward_max_contrast(
+        results_bg_color(),
+        OmniboxFieldTrial::IsRefinedFocusStateEnabled() ? 0x0A : 0x29);
   };
   const auto blend_with_clamped_contrast = [&](OmniboxColor bg) {
     return blend_for_min_contrast(fg, fg, blend_for_min_contrast(bg, bg));

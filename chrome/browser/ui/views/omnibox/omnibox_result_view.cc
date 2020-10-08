@@ -319,7 +319,12 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   }
 
   if (OmniboxFieldTrial::IsRefinedFocusStateEnabled()) {
-    focus_bar_->SetVisible(IsMatchSelected());
+    // The focus bar indicates when the suggestion is focused. Do not show the
+    // focus bar if an auxiliary button is selected.
+    focus_bar_->SetVisible(
+        IsMatchSelected() &&
+        popup_contents_view_->model()->selected_line_state() ==
+            OmniboxPopupModel::NORMAL);
   }
 }
 
