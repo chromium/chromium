@@ -121,6 +121,9 @@ bool IsUsingSkiaRenderer() {
 bool IsDynamicColorGamutEnabled() {
   if (viz::AlwaysUseWideColorGamut())
     return false;
+  auto* build_info = base::android::BuildInfo::GetInstance();
+  if (!build_info->is_at_least_q())
+    return false;
   return base::FeatureList::IsEnabled(kDynamicColorGamut);
 }
 #endif
