@@ -8,7 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.ColorRes;
+
 import org.chromium.components.omnibox.SecurityStatusIcon;
+import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.content_public.browser.WebContents;
 
@@ -57,17 +60,37 @@ public class PageInfoConnectionController
         mInfoView.onDismiss();
     }
 
+    private static @ColorRes int getSecurityIconColor(
+            @ConnectionSecurityLevel int securityLevel, boolean showDangerTriangleForWarningLevel) {
+        switch (securityLevel) {
+            case ConnectionSecurityLevel.DANGEROUS:
+                return R.color.default_text_color_error;
+            case ConnectionSecurityLevel.WARNING:
+                return showDangerTriangleForWarningLevel ? R.color.default_text_color_error : 0;
+            case ConnectionSecurityLevel.NONE:
+            case ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT:
+            case ConnectionSecurityLevel.SECURE:
+                return 0;
+            default:
+                assert false;
+                return 0;
+        }
+    }
+
     public void setConnectionInfo(PageInfoView.ConnectionInfoParams params) {
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         mTitle = params.summary != null ? params.summary.toString() : null;
         rowParams.title = mTitle;
-        rowParams.subtitle = params.message != null ? params.message.toString() : null;
+        rowParams.subtitle = params.message;
         rowParams.visible = rowParams.title != null || rowParams.subtitle != null;
         int securityLevel = SecurityStateModel.getSecurityLevelForWebContents(mWebContents);
-        rowParams.iconResId = SecurityStatusIcon.getSecurityIconResource(securityLevel,
-                SecurityStateModel.shouldShowDangerTriangleForWarningLevel(),
-                /*isSmallDevice=*/false,
-                /*skipIconForNeutralState=*/false);
+        boolean showTriangleForWarning =
+                SecurityStateModel.shouldShowDangerTriangleForWarningLevel();
+        rowParams.iconResId =
+                SecurityStatusIcon.getSecurityIconResource(securityLevel, showTriangleForWarning,
+                        /*isSmallDevice=*/false,
+                        /*skipIconForNeutralState=*/false);
+        rowParams.iconTint = getSecurityIconColor(securityLevel, showTriangleForWarning);
         if (params.clickCallback != null) rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);
     }

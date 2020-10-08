@@ -15,8 +15,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -25,7 +23,6 @@ import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS
 
 import android.os.Build;
 import android.view.View;
-import android.widget.Button;
 
 import androidx.test.filters.MediumTest;
 
@@ -404,7 +401,7 @@ public class PageInfoViewTest {
         onView(withId(R.id.page_info_permissions_row)).perform(click());
         // Clear permissions in page info.
         onView(withText("Reset permissions")).perform(click());
-        onView(allOf(is(instanceOf(Button.class)), withText("Reset permissions"))).perform(click());
+        onView(withText("Reset")).perform(click());
         // Wait until the UI navigates back and check permissions are reset.
         onViewWaiting(allOf(withId(R.id.page_info_row_wrapper), isDisplayed()));
         // Make sure that the permission section is gone because there are no longer exceptions.
