@@ -264,7 +264,7 @@ const base::Feature kImeInputLogicHmm{"ImeInputLogicHmm",
 // Enable or disable Unified Input Logic for FST decoder in the IME extension
 // on Chrome OS.
 const base::Feature kImeInputLogicFst{"ImeInputLogicFst",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable or disable Unified Input Logic for Mozc decoder in the IME extension
 // on Chrome OS.
