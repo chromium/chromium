@@ -116,6 +116,9 @@ const char kPropertySwitchAccessEnabled[] = "a11ySwitchAccessEnabled";
 // Key which corresponds to the cursor color A11Y property in JS.
 const char kPropertyCursorColorEnabled[] = "a11yCursorColorEnabled";
 
+// Key which corresponds to the docked magnifier property in JS.
+const char kPropertyDockedMagnifierEnabled[] = "a11yDockedMagnifierEnabled";
+
 // Key which corresponds to the send-function-keys property in JS.
 const char kPropertySendFunctionsKeys[] = "sendFunctionKeys";
 
@@ -225,6 +228,7 @@ const struct {
     {kPropertySwitchAccessEnabled,
      ash::prefs::kAccessibilitySwitchAccessEnabled},
     {kPropertyCursorColorEnabled, ash::prefs::kAccessibilityCursorColorEnabled},
+    {kPropertyDockedMagnifierEnabled, ash::prefs::kDockedMagnifierEnabled},
     {kPropertySendFunctionsKeys, prefs::kLanguageSendFunctionKeys}};
 
 const char* GetBoolPrefNameForApiProperty(const char* api_name) {

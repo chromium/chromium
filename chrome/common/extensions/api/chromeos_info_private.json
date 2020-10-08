@@ -27,6 +27,7 @@
                  "a11ySelectToSpeakEnabled",
                  "a11ySwitchAccessEnabled",
                  "a11yCursorColorEnabled",
+                 "a11yDockedMagnifierEnabled",
                  "sendFunctionKeys"],
         "description": "Chrome OS system property name"
       },
@@ -115,6 +116,7 @@
                   "a11ySelectToSpeakEnabled" : {"type": "boolean", "optional": true, "description": "If true, select to speak will be enabled."},
                   "a11ySwitchAccessEnabled" : {"type": "boolean", "optional": true, "description": "If true, switch access will be enabled."},
                   "a11yCursorColorEnabled" : {"type": "boolean", "optional": true, "description": "If true, colorized cursor will be enabled."},
+                  "a11yDockedMagnifierEnabled" : {"type": "boolean", "optional": true, "description": "If true, docked magnifier will be enabled."},
                   "sendFunctionKeys" : {"type": "boolean", "optional": true, "description": "If true, the ChromeOS top row keys send function keys."},
                   "supportedTimezones" : {
                     "type": "array",

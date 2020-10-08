@@ -66,13 +66,11 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, TestGetAndSet) {
       prefs->GetBoolean(ash::prefs::kAccessibilitySpokenFeedbackEnabled));
   ASSERT_FALSE(
       prefs->GetBoolean(ash::prefs::kAccessibilityHighContrastEnabled));
-  ASSERT_FALSE(
-      prefs->GetBoolean(ash::prefs::kAccessibilityScreenMagnifierEnabled));
   ASSERT_FALSE(prefs->GetBoolean(ash::prefs::kAccessibilityAutoclickEnabled));
   ASSERT_FALSE(prefs->GetBoolean(ash::prefs::kAccessibilityCursorColorEnabled));
 
-  ASSERT_FALSE(profile()->GetPrefs()->GetBoolean(
-      prefs::kLanguageSendFunctionKeys));
+  ASSERT_FALSE(
+      profile()->GetPrefs()->GetBoolean(prefs::kLanguageSendFunctionKeys));
 
   ASSERT_TRUE(RunComponentExtensionTest("chromeos_info_private/basic"))
       << message_;
@@ -83,12 +81,37 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, TestGetAndSet) {
   ASSERT_TRUE(
       prefs->GetBoolean(ash::prefs::kAccessibilitySpokenFeedbackEnabled));
   ASSERT_TRUE(prefs->GetBoolean(ash::prefs::kAccessibilityHighContrastEnabled));
-  ASSERT_TRUE(
-      prefs->GetBoolean(ash::prefs::kAccessibilityScreenMagnifierEnabled));
   ASSERT_TRUE(prefs->GetBoolean(ash::prefs::kAccessibilityAutoclickEnabled));
   ASSERT_TRUE(prefs->GetBoolean(ash::prefs::kAccessibilityCursorColorEnabled));
 
   ASSERT_TRUE(prefs->GetBoolean(prefs::kLanguageSendFunctionKeys));
+}
+
+// docked magnifier and screen magnifier are mutually exclusive. test each of
+// them one by one.
+
+IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, TestGetAndSetDockedMagnifier) {
+  PrefService* prefs = profile()->GetPrefs();
+  ASSERT_FALSE(prefs->GetBoolean(ash::prefs::kDockedMagnifierEnabled));
+
+  ASSERT_TRUE(RunComponentExtensionTestWithArg("chromeos_info_private/basic",
+                                               "dockedMagnifier"))
+      << message_;
+
+  ASSERT_TRUE(prefs->GetBoolean(ash::prefs::kDockedMagnifierEnabled));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, TestGetAndSetScreenMagnifier) {
+  PrefService* prefs = profile()->GetPrefs();
+  ASSERT_FALSE(
+      prefs->GetBoolean(ash::prefs::kAccessibilityScreenMagnifierEnabled));
+
+  ASSERT_TRUE(RunComponentExtensionTestWithArg("chromeos_info_private/basic",
+                                               "screenMagnifier"))
+      << message_;
+
+  ASSERT_TRUE(
+      prefs->GetBoolean(ash::prefs::kAccessibilityScreenMagnifierEnabled));
 }
 
 // TODO(steel): Investigate merging the following tests.

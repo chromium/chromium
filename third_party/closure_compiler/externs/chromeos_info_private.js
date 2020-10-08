@@ -32,6 +32,7 @@ chrome.chromeosInfoPrivate.PropertyName = {
   A11Y_SELECT_TO_SPEAK_ENABLED: 'a11ySelectToSpeakEnabled',
   A11Y_SWITCH_ACCESS_ENABLED: 'a11ySwitchAccessEnabled',
   A11Y_CURSOR_COLOR_ENABLED: 'a11yCursorColorEnabled',
+  A11Y_DOCKED_MAGNIFIER_ENABLED: 'a11yDockedMagnifierEnabled',
   SEND_FUNCTION_KEYS: 'sendFunctionKeys',
 };
 
@@ -121,6 +122,7 @@ chrome.chromeosInfoPrivate.AssistantStatus = {
  *   a11ySelectToSpeakEnabled: (boolean|undefined),
  *   a11ySwitchAccessEnabled: (boolean|undefined),
  *   a11yCursorColorEnabled: (boolean|undefined),
+ *   a11yDockedMagnifierEnabled: (boolean|undefined),
  *   sendFunctionKeys: (boolean|undefined),
  *   supportedTimezones: (!Array<!Array<string>>|undefined)
  * }): void} callback
