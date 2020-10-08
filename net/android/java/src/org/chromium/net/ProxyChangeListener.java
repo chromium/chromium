@@ -233,9 +233,6 @@ public class ProxyChangeListener {
             return ProxyConfig.DIRECT;
         }
 
-        // Temporary logging to debug crbug.com/1122903
-        Log.i(TAG, "ProxyInfo: " + proxyInfo.toString());
-
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q
                 && proxyInfo.getHost().equals("localhost") && proxyInfo.getPort() == -1) {
             // There's a bug in Android Q's PAC support. If ConnectivityManager
