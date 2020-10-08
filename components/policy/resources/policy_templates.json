@@ -3084,12 +3084,11 @@
       'id': 16,
       'caption': '''Enable saving passwords to the password manager''',
       'tags': [],
-      'desc': '''If this setting is enabled, users can have <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> memorize passwords and provide them automatically the next time they log in to a site.
+      'desc': '''Setting the policy to Enabled means users have <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> remember passwords and provide them the next time they sign in to a site.
 
-          If this settings is disabled, users cannot save new passwords but they
-          may still use passwords that have been saved previously.
+      Setting the policy to Disabled means users can't save new passwords, but previously saved passwords will still work.
 
-          If this policy is enabled or disabled, users cannot change or override it in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. If this policy is unset, password saving is allowed (but can be turned off by the user).''',
+      If the policy is set, users can't change it in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. If not set, the user can turn off password saving.''',
       'arc_support': 'This policy has no effect on Android apps.',
     },
     {
@@ -3134,11 +3133,11 @@
       'id': 580,
       'caption': '''Enable leak detection for entered credentials''',
       'tags': ['google-sharing'],
-      'desc': '''This policy can be used to force enable or force disable credential leak checking in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+      'desc': '''Setting the policy to Enabled lets users have <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> check whether usernames and passwords entered were part of a leak.
 
-          Note that even if this policy is set to True, the behavior will not trigger if Safe Browsing is disabled (either by policy or by the user). In order to force Safe Browsing on, use the <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME">SafeBrowsingEnabled</ph> policy.
+      If the policy is set, users can't change it in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. If not set, credential leak checking is allowed, but the user can turn it off. 
 
-          If this policy is enabled or disabled, users cannot change or override it in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. If this policy is unset, credential leak checking is allowed (but can be turned off by the user).''',
+      This behavior will not trigger if Safe Browsing is disabled (either by policy or by the user). In order to force Safe Browsing on, use the <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME">SafeBrowsingEnabled</ph> policy or the <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME">SafeBrowsingProtectionLevel</ph> policy.''',
     },
     {
       'name': 'AutoFillEnabled',
