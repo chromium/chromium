@@ -511,8 +511,16 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
 
 // Validate that the root widget's window segments are correctly propagated
 // via the SynchronizeVisualProperties cascade.
+// Flaky on Mac and Linux (http://crbug/1089994).
+#if defined(OS_MAC) || defined(OS_LINUX)
+#define MAYBE_VisualPropertiesPropagation_RootWindowSegments \
+  DISABLED_VisualPropertiesPropagation_RootWindowSegments
+#else
+#define MAYBE_VisualPropertiesPropagation_RootWindowSegments \
+  VisualPropertiesPropagation_RootWindowSegments
+#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
-                       VisualPropertiesPropagation_RootWindowSegments) {
+                       MAYBE_VisualPropertiesPropagation_RootWindowSegments) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(c),a)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
