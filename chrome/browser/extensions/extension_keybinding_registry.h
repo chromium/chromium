@@ -63,11 +63,6 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
     return shortcut_handling_suspended_;
   }
 
-  // Execute the command bound to |accelerator| and provided by the extension
-  // with |extension_id|, if it exists.
-  void ExecuteCommand(const std::string& extension_id,
-                      const ui::Accelerator& accelerator);
-
   // Check whether the specified |accelerator| has been registered.
   bool IsAcceleratorRegistered(const ui::Accelerator& accelerator) const;
 

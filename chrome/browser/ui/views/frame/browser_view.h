@@ -76,11 +76,6 @@ class TopControlsSlideControllerTest;
 class WebContentsCloseHandler;
 class WebUITabStripContainerView;
 
-namespace extensions {
-class Command;
-class Extension;
-}
-
 #if defined(OS_CHROMEOS)
 namespace ui {
 class ThroughputTracker;
@@ -467,8 +462,6 @@ class BrowserView : public BrowserWindow,
       signin_metrics::AccessPoint access_point,
       bool is_source_keyboard) override;
   void ShowHatsBubble(const std::string& site_id) override;
-  void ExecuteExtensionCommand(const extensions::Extension* extension,
-                               const extensions::Command& command) override;
   ExclusiveAccessContext* GetExclusiveAccessContext() override;
   std::string GetWorkspace() const override;
   bool IsVisibleOnAllWorkspaces() const override;

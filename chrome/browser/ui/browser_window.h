@@ -56,11 +56,6 @@ struct NativeWebKeyboardEvent;
 enum class KeyboardEventProcessingResult;
 }  // namespace content
 
-namespace extensions {
-class Command;
-class Extension;
-}  // namespace extensions
-
 namespace gfx {
 class Size;
 }
@@ -474,10 +469,6 @@ class BrowserWindow : public ui::BaseWindow {
   // (such as having the proper anchor view).
   // |site_id| is the site identification of the survey the bubble leads to.
   virtual void ShowHatsBubble(const std::string& site_id) = 0;
-
-  // Executes |command| registered by |extension|.
-  virtual void ExecuteExtensionCommand(const extensions::Extension* extension,
-                                       const extensions::Command& command) = 0;
 
   // Returns object implementing ExclusiveAccessContext interface.
   virtual ExclusiveAccessContext* GetExclusiveAccessContext() = 0;

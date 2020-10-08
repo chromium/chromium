@@ -26,10 +26,6 @@ class FeaturePromoController;
 class LocationBarTesting;
 class OmniboxView;
 
-namespace extensions {
-class Extension;
-}
-
 namespace qrcode_generator {
 class QRCodeGeneratorBubbleController;
 class QRCodeGeneratorBubbleView;
@@ -184,8 +180,6 @@ class TestBrowserWindow : public BrowserWindow {
   void ShowHatsBubble(const std::string& site_id) override {}
 #endif
 
-  void ExecuteExtensionCommand(const extensions::Extension* extension,
-                               const extensions::Command& command) override;
   ExclusiveAccessContext* GetExclusiveAccessContext() override;
   std::string GetWorkspace() const override;
   bool IsVisibleOnAllWorkspaces() const override;

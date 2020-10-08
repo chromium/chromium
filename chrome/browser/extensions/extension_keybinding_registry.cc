@@ -244,12 +244,6 @@ bool ExtensionKeybindingRegistry::IsEventTargetsEmpty() const {
   return event_targets_.empty();
 }
 
-void ExtensionKeybindingRegistry::ExecuteCommand(
-    const std::string& extension_id,
-    const ui::Accelerator& accelerator) {
-  ExecuteCommands(accelerator, extension_id);
-}
-
 void ExtensionKeybindingRegistry::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {

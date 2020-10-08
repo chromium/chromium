@@ -237,10 +237,6 @@ web_modal::WebContentsModalDialogHost*
   return NULL;
 }
 
-void TestBrowserWindow::ExecuteExtensionCommand(
-    const extensions::Extension* extension,
-    const extensions::Command& command) {}
-
 ExclusiveAccessContext* TestBrowserWindow::GetExclusiveAccessContext() {
   return nullptr;
 }

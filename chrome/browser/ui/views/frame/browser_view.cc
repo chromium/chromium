@@ -3416,13 +3416,6 @@ void BrowserView::ShowHatsBubble(const std::string& site_id) {
   HatsBubbleView::ShowOnContentReady(browser(), site_id);
 }
 
-void BrowserView::ExecuteExtensionCommand(
-    const extensions::Extension* extension,
-    const extensions::Command& command) {
-  extension_keybinding_registry_->ExecuteCommand(extension->id(),
-                                                 command.accelerator());
-}
-
 ExclusiveAccessContext* BrowserView::GetExclusiveAccessContext() {
   return this;
 }
