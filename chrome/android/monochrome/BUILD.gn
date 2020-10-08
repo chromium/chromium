@@ -13,9 +13,11 @@ group("monochrome_apk_checker") {
   ]
 
   data = [
-    "./scripts/monochrome_apk_checker.py",
-    "//testing/scripts/monochrome_apk_checker_wrapper.py",
+    "scripts/",
     "//testing/scripts/common.py",
+    "//testing/scripts/run_isolated_script_test.py",
+    "//third_party/catapult/devil/",
+    "//third_party/catapult/third_party/typ/",
     "//testing/xvfb.py",
   ]
 }
