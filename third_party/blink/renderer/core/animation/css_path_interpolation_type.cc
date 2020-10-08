@@ -19,7 +19,8 @@ namespace {
 
 // Returns the property's path() value.
 // If the property's value is not a path(), returns nullptr.
-StylePath* GetPath(const CSSProperty& property, const ComputedStyle& style) {
+const StylePath* GetPath(const CSSProperty& property,
+                         const ComputedStyle& style) {
   switch (property.PropertyID()) {
     case CSSPropertyID::kD:
       return style.SvgStyle().D();
@@ -95,7 +96,7 @@ InterpolationValue CSSPathInterpolationType::MaybeConvertInitial(
 class InheritedPathChecker : public CSSInterpolationType::CSSConversionChecker {
  public:
   InheritedPathChecker(const CSSProperty& property,
-                       scoped_refptr<StylePath> style_path)
+                       scoped_refptr<const StylePath> style_path)
       : property_(property), style_path_(std::move(style_path)) {}
 
  private:
@@ -105,7 +106,7 @@ class InheritedPathChecker : public CSSInterpolationType::CSSConversionChecker {
   }
 
   const CSSProperty& property_;
-  const scoped_refptr<StylePath> style_path_;
+  const scoped_refptr<const StylePath> style_path_;
 };
 
 InterpolationValue CSSPathInterpolationType::MaybeConvertInherit(

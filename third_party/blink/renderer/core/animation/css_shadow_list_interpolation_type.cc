@@ -69,7 +69,7 @@ class InheritedShadowListChecker
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   InheritedShadowListChecker(const CSSProperty& property,
-                             scoped_refptr<ShadowList> shadow_list)
+                             scoped_refptr<const ShadowList> shadow_list)
       : property_(property), shadow_list_(std::move(shadow_list)) {}
 
  private:
@@ -85,7 +85,7 @@ class InheritedShadowListChecker
   }
 
   const CSSProperty& property_;
-  scoped_refptr<ShadowList> shadow_list_;
+  scoped_refptr<const ShadowList> shadow_list_;
 };
 
 InterpolationValue CSSShadowListInterpolationType::MaybeConvertInherit(
@@ -96,8 +96,7 @@ InterpolationValue CSSShadowListInterpolationType::MaybeConvertInherit(
   const ShadowList* inherited_shadow_list =
       GetShadowList(CssProperty(), *state.ParentStyle());
   conversion_checkers.push_back(std::make_unique<InheritedShadowListChecker>(
-      CssProperty(),
-      const_cast<ShadowList*>(inherited_shadow_list)));  // Take ref.
+      CssProperty(), inherited_shadow_list));  // Take ref.
   return ConvertShadowList(inherited_shadow_list,
                            state.ParentStyle()->EffectiveZoom());
 }
