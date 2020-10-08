@@ -14,6 +14,7 @@
 #include "components/infobars/core/infobar.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -52,13 +53,13 @@ GURL AdsBlockedInfobarDelegate::GetLinkURL() const {
 
 bool AdsBlockedInfobarDelegate::LinkClicked(WindowOpenDisposition disposition) {
   if (infobar_expanded_) {
-    ChromeSubresourceFilterClient::LogAction(
-        SubresourceFilterAction::kClickedLearnMore);
+    subresource_filter::ContentSubresourceFilterThrottleManager::LogAction(
+        subresource_filter::SubresourceFilterAction::kClickedLearnMore);
     return ConfirmInfoBarDelegate::LinkClicked(disposition);
   }
 
-  ChromeSubresourceFilterClient::LogAction(
-      SubresourceFilterAction::kDetailsShown);
+  subresource_filter::ContentSubresourceFilterThrottleManager::LogAction(
+      subresource_filter::SubresourceFilterAction::kDetailsShown);
   infobar_expanded_ = true;
   return false;
 }

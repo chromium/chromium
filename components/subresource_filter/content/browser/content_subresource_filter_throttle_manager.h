@@ -38,6 +38,34 @@ class ActivationStateComputingNavigationThrottle;
 class PageLoadStatistics;
 class SubresourceFilterClient;
 
+// This enum backs a histogram. Make sure new elements are only added to the
+// end. Keep histograms.xml up to date with any changes.
+enum class SubresourceFilterAction {
+  // Standard UI shown. On Desktop this is in the omnibox,
+  // On Android, it is an infobar.
+  kUIShown = 0,
+
+  // The UI was suppressed due to "smart" logic which tries not to spam the UI
+  // on navigations on the same origin within a certain time.
+  kUISuppressed = 1,
+
+  // On Desktop, this is a bubble. On Android it is an
+  // expanded infobar.
+  kDetailsShown = 2,
+
+  kClickedLearnMore = 3,
+
+  // Logged when the user presses "Always allow ads" scoped to a particular
+  // site. Does not count manual changes to content settings.
+  kAllowlistedSite = 4,
+
+  // Logged when a devtools message arrives notifying us to force activation in
+  // this web contents.
+  kForcedActivationEnabled = 5,
+
+  kMaxValue = kForcedActivationEnabled
+};
+
 // The ContentSubresourceFilterThrottleManager manages NavigationThrottles in
 // order to calculate frame activation states and subframe navigation filtering,
 // within a given WebContents. It contains a mapping of all activated
@@ -113,6 +141,8 @@ class ContentSubresourceFilterThrottleManager
   // in the filter list.
   base::Optional<LoadPolicy> LoadPolicyForLastCommittedNavigation(
       const content::RenderFrameHost* frame_host) const;
+
+  static void LogAction(SubresourceFilterAction action);
 
  protected:
   // content::WebContentsObserver:

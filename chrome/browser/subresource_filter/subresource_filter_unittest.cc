@@ -13,6 +13,7 @@
 #include "components/safe_browsing/core/db/util.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/subresource_filter/content/browser/content_activation_list_utils.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_test_utils.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
@@ -180,7 +181,8 @@ TEST_F(SubresourceFilterTest, ToggleForceActivation) {
   // Simulate opening devtools and forcing activation.
   GetClient()->ToggleForceActivationInCurrentWebContents(true);
   histogram_tester.ExpectBucketCount(
-      actions_histogram, SubresourceFilterAction::kForcedActivationEnabled, 1);
+      actions_histogram,
+      subresource_filter::SubresourceFilterAction::kForcedActivationEnabled, 1);
 
   SimulateNavigateAndCommit(url, main_rfh());
   EXPECT_FALSE(CreateAndNavigateDisallowedSubframe(main_rfh()));
@@ -196,7 +198,8 @@ TEST_F(SubresourceFilterTest, ToggleForceActivation) {
   SimulateNavigateAndCommit(url, main_rfh());
   EXPECT_TRUE(CreateAndNavigateDisallowedSubframe(main_rfh()));
   histogram_tester.ExpectBucketCount(
-      actions_histogram, SubresourceFilterAction::kForcedActivationEnabled, 1);
+      actions_histogram,
+      subresource_filter::SubresourceFilterAction::kForcedActivationEnabled, 1);
 }
 
 TEST_F(SubresourceFilterTest, ToggleOffForceActivation_AfterCommit) {
@@ -209,8 +212,9 @@ TEST_F(SubresourceFilterTest, ToggleOffForceActivation_AfterCommit) {
   // Resource should be disallowed, since navigation commit had activation.
   EXPECT_FALSE(CreateAndNavigateDisallowedSubframe(main_rfh()));
 
-  histogram_tester.ExpectBucketCount("SubresourceFilter.Actions2",
-                                     SubresourceFilterAction::kUIShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "SubresourceFilter.Actions2",
+      subresource_filter::SubresourceFilterAction::kUIShown, 1);
 }
 
 enum class AdBlockOnAbusiveSitesTest { kEnabled, kDisabled };

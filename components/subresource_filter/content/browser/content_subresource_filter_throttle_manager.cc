@@ -404,6 +404,12 @@ ContentSubresourceFilterThrottleManager::LoadPolicyForLastCommittedNavigation(
   return base::nullopt;
 }
 
+// static
+void ContentSubresourceFilterThrottleManager::LogAction(
+    SubresourceFilterAction action) {
+  UMA_HISTOGRAM_ENUMERATION("SubresourceFilter.Actions2", action);
+}
+
 std::unique_ptr<SubframeNavigationFilteringThrottle>
 ContentSubresourceFilterThrottleManager::
     MaybeCreateSubframeNavigationFilteringThrottle(

@@ -25,34 +25,6 @@ namespace subresource_filter {
 class ContentSubresourceFilterThrottleManager;
 }  // namespace subresource_filter
 
-// This enum backs a histogram. Make sure new elements are only added to the
-// end. Keep histograms.xml up to date with any changes.
-enum class SubresourceFilterAction {
-  // Standard UI shown. On Desktop this is in the omnibox,
-  // On Android, it is an infobar.
-  kUIShown = 0,
-
-  // The UI was suppressed due to "smart" logic which tries not to spam the UI
-  // on navigations on the same origin within a certain time.
-  kUISuppressed = 1,
-
-  // On Desktop, this is a bubble. On Android it is an
-  // expanded infobar.
-  kDetailsShown = 2,
-
-  kClickedLearnMore = 3,
-
-  // Logged when the user presses "Always allow ads" scoped to a particular
-  // site. Does not count manual changes to content settings.
-  kAllowlistedSite = 4,
-
-  // Logged when a devtools message arrives notifying us to force activation in
-  // this web contents.
-  kForcedActivationEnabled = 5,
-
-  kMaxValue = kForcedActivationEnabled
-};
-
 // Chrome implementation of SubresourceFilterClient. Instances are associated
 // with and owned by ContentSubresourceFilterThrottleManager instances.
 class ChromeSubresourceFilterClient
@@ -100,8 +72,6 @@ class ChromeSubresourceFilterClient
   bool did_show_ui_for_navigation() const {
     return did_show_ui_for_navigation_;
   }
-
-  static void LogAction(SubresourceFilterAction action);
 
  private:
   void AllowlistByContentSettings(const GURL& url);

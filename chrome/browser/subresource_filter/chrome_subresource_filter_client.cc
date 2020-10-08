@@ -86,7 +86,8 @@ void ChromeSubresourceFilterClient::DidStartNavigation(
 }
 
 void ChromeSubresourceFilterClient::OnReloadRequested() {
-  LogAction(SubresourceFilterAction::kAllowlistedSite);
+  subresource_filter::ContentSubresourceFilterThrottleManager::LogAction(
+      subresource_filter::SubresourceFilterAction::kAllowlistedSite);
   AllowlistByContentSettings(web_contents()->GetLastCommittedURL());
   web_contents()->GetController().Reload(content::ReloadType::NORMAL, true);
 }
@@ -100,7 +101,8 @@ void ChromeSubresourceFilterClient::ShowNotification() {
           top_level_url)) {
     ShowUI(top_level_url);
   } else {
-    LogAction(SubresourceFilterAction::kUISuppressed);
+    subresource_filter::ContentSubresourceFilterThrottleManager::LogAction(
+        subresource_filter::SubresourceFilterAction::kUISuppressed);
   }
 }
 
@@ -197,13 +199,9 @@ ChromeSubresourceFilterClient::GetSafeBrowsingDatabaseManager() {
 void ChromeSubresourceFilterClient::ToggleForceActivationInCurrentWebContents(
     bool force_activation) {
   if (!activated_via_devtools_ && force_activation)
-    LogAction(SubresourceFilterAction::kForcedActivationEnabled);
+    subresource_filter::ContentSubresourceFilterThrottleManager::LogAction(
+        subresource_filter::SubresourceFilterAction::kForcedActivationEnabled);
   activated_via_devtools_ = force_activation;
-}
-
-// static
-void ChromeSubresourceFilterClient::LogAction(SubresourceFilterAction action) {
-  UMA_HISTOGRAM_ENUMERATION("SubresourceFilter.Actions2", action);
 }
 
 void ChromeSubresourceFilterClient::ShowUI(const GURL& url) {
@@ -222,7 +220,8 @@ void ChromeSubresourceFilterClient::ShowUI(const GURL& url) {
           web_contents()->GetMainFrame());
   content_settings->OnContentBlocked(ContentSettingsType::ADS);
 
-  LogAction(SubresourceFilterAction::kUIShown);
+  subresource_filter::ContentSubresourceFilterThrottleManager::LogAction(
+      subresource_filter::SubresourceFilterAction::kUIShown);
   did_show_ui_for_navigation_ = true;
   profile_context_->settings_manager()->OnDidShowUI(url);
 }

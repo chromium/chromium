@@ -59,6 +59,7 @@
 #include "components/permissions/permissions_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/url_formatter/elide_url.h"
@@ -1386,8 +1387,8 @@ ContentSettingSubresourceFilterBubbleModel::
   SetManageText();
   set_done_button_text(l10n_util::GetStringUTF16(IDS_OK));
   set_show_learn_more(true);
-  ChromeSubresourceFilterClient::LogAction(
-      SubresourceFilterAction::kDetailsShown);
+  subresource_filter::ContentSubresourceFilterThrottleManager::LogAction(
+      subresource_filter::SubresourceFilterAction::kDetailsShown);
 }
 
 ContentSettingSubresourceFilterBubbleModel::
@@ -1415,8 +1416,8 @@ void ContentSettingSubresourceFilterBubbleModel::OnManageCheckboxChecked(
 
 void ContentSettingSubresourceFilterBubbleModel::OnLearnMoreClicked() {
   DCHECK(delegate());
-  ChromeSubresourceFilterClient::LogAction(
-      SubresourceFilterAction::kClickedLearnMore);
+  subresource_filter::ContentSubresourceFilterThrottleManager::LogAction(
+      subresource_filter::SubresourceFilterAction::kClickedLearnMore);
   delegate()->ShowLearnMorePage(ContentSettingsType::ADS);
 }
 

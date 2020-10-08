@@ -24,6 +24,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -250,8 +251,9 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterSettingsBrowserTest,
   EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
   EXPECT_TRUE(client->did_show_ui_for_navigation());
 
-  histogram_tester.ExpectBucketCount(kSubresourceFilterActionsHistogram,
-                                     SubresourceFilterAction::kUISuppressed, 0);
+  histogram_tester.ExpectBucketCount(
+      kSubresourceFilterActionsHistogram,
+      subresource_filter::SubresourceFilterAction::kUISuppressed, 0);
 
   // Second load should not trigger the UI, but should still filter content.
   ui_test_utils::NavigateToURL(browser(), a_url);
@@ -259,8 +261,9 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterSettingsBrowserTest,
 
   EXPECT_EQ(client->did_show_ui_for_navigation(), false);
 
-  histogram_tester.ExpectBucketCount(kSubresourceFilterActionsHistogram,
-                                     SubresourceFilterAction::kUISuppressed, 1);
+  histogram_tester.ExpectBucketCount(
+      kSubresourceFilterActionsHistogram,
+      subresource_filter::SubresourceFilterAction::kUISuppressed, 1);
 
   ConfigureAsPhishingURL(b_url);
 
@@ -278,8 +281,9 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterSettingsBrowserTest,
   EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
   EXPECT_TRUE(client->did_show_ui_for_navigation());
 
-  histogram_tester.ExpectBucketCount(kSubresourceFilterActionsHistogram,
-                                     SubresourceFilterAction::kUISuppressed, 1);
+  histogram_tester.ExpectBucketCount(
+      kSubresourceFilterActionsHistogram,
+      subresource_filter::SubresourceFilterAction::kUISuppressed, 1);
 }
 
 }  // namespace subresource_filter
