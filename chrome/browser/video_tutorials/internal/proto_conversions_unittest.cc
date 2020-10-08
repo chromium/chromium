@@ -13,9 +13,10 @@ namespace {
 TEST(VideoTutorialsProtoConversionsTest, FeatureConversion) {
   Tutorial expected, actual;
   TutorialProto intermediate;
-  FeatureType features[] = {FeatureType::kTest, FeatureType::kInvalid,
-                            FeatureType::kDebug, FeatureType::kDownload,
-                            FeatureType::kSearch};
+  FeatureType features[] = {FeatureType::kTest,       FeatureType::kInvalid,
+                            FeatureType::kSummary,    FeatureType::kChromeIntro,
+                            FeatureType::kDownload,   FeatureType::kSearch,
+                            FeatureType::kVoiceSearch};
   for (FeatureType feature : features) {
     expected.feature = feature;
     TutorialToProto(&expected, &intermediate);

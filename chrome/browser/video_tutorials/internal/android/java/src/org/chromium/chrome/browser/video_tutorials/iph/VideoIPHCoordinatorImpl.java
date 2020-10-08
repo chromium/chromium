@@ -69,4 +69,9 @@ public class VideoIPHCoordinatorImpl implements VideoIPHCoordinator {
             };
         });
     }
+
+    @Override
+    public void hideVideoIPH() {
+        mModel.set(VideoIPHProperties.VISIBILITY, false);
+    }
 }

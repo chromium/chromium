@@ -106,10 +106,16 @@ DEFINE_VARIATION_PARAM(kIPHTabGroupsDragAndDropFeature,
                        "IPH_TabGroupsDragAndDrop");
 DEFINE_VARIATION_PARAM(kIPHTranslateMenuButtonFeature,
                        "IPH_TranslateMenuButton");
-DEFINE_VARIATION_PARAM(kIPHVideoTutorialDownloadFeature,
-                       "IPH_VideoTutorial_Download");
-DEFINE_VARIATION_PARAM(kIPHVideoTutorialSearchFeature,
-                       "IPH_VideoTutorial_Search");
+DEFINE_VARIATION_PARAM(kIPHVideoTutorialNTPChromeIntroFeature,
+                       "IPH_VideoTutorial_NTP_ChromeIntro");
+DEFINE_VARIATION_PARAM(kIPHVideoTutorialNTPDownloadFeature,
+                       "IPH_VideoTutorial_NTP_Download");
+DEFINE_VARIATION_PARAM(kIPHVideoTutorialNTPSearchFeature,
+                       "IPH_VideoTutorial_NTP_Search");
+DEFINE_VARIATION_PARAM(kIPHVideoTutorialNTPVoiceSearchFeature,
+                       "IPH_VideoTutorial_NTP_VoiceSearch");
+DEFINE_VARIATION_PARAM(kIPHVideoTutorialNTPSummaryFeature,
+                       "IPH_VideoTutorial_NTP_Summary");
 DEFINE_VARIATION_PARAM(kIPHExploreSitesTileFeature, "IPH_ExploreSitesTile");
 DEFINE_VARIATION_PARAM(kIPHFeedHeaderMenuFeature, "IPH_FeedHeaderMenu");
 #endif  // defined(OS_ANDROID)
@@ -184,8 +190,11 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHTabGroupsYourTabsAreTogetherFeature),
         VARIATION_ENTRY(kIPHTabGroupsDragAndDropFeature),
         VARIATION_ENTRY(kIPHTranslateMenuButtonFeature),
-        VARIATION_ENTRY(kIPHVideoTutorialDownloadFeature),
-        VARIATION_ENTRY(kIPHVideoTutorialSearchFeature),
+        VARIATION_ENTRY(kIPHVideoTutorialNTPChromeIntroFeature),
+        VARIATION_ENTRY(kIPHVideoTutorialNTPDownloadFeature),
+        VARIATION_ENTRY(kIPHVideoTutorialNTPSearchFeature),
+        VARIATION_ENTRY(kIPHVideoTutorialNTPVoiceSearchFeature),
+        VARIATION_ENTRY(kIPHVideoTutorialNTPSummaryFeature),
         VARIATION_ENTRY(kIPHExploreSitesTileFeature),
         VARIATION_ENTRY(kIPHFeedHeaderMenuFeature),
 #elif defined(OS_IOS)

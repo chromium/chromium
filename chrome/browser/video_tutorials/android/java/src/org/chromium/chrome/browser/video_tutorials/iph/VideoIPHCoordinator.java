@@ -19,4 +19,9 @@ public interface VideoIPHCoordinator {
      * @param tutorial The tutorial to be featured in the IPH.
      */
     void showVideoIPH(Tutorial tutorial);
+
+    /**
+     * Hides the IPH card. Should be called after it has been clicked.
+     */
+    void hideVideoIPH();
 }

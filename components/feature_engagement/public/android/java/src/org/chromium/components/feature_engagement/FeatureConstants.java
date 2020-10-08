@@ -134,14 +134,32 @@ public @interface FeatureConstants {
     String TAB_GROUPS_DRAG_AND_DROP_FEATURE = "IPH_TabGroupsDragAndDrop";
 
     /**
-     * An IPH feature to show a video tutorial card to educate about downloading in chrome.
+     * An IPH feature to show a video tutorial card on NTP to educate about an introduction to
+     * chrome.
      */
-    String VIDEO_TUTORIAL_DOWNLOAD_FEATURE = "IPH_VideoTutorial_Download";
+    String VIDEO_TUTORIAL_NTP_CHROME_INTRO_FEATURE = "IPH_VideoTutorial_NTP_ChromeIntro";
 
     /**
-     * An IPH feature to show a video tutorial card to educate about how to search in chrome.
+     * An IPH feature to show a video tutorial card on NTP to educate about downloading in chrome.
      */
-    String VIDEO_TUTORIAL_SEARCH_FEATURE = "IPH_VideoTutorial_Search";
+    String VIDEO_TUTORIAL_NTP_DOWNLOAD_FEATURE = "IPH_VideoTutorial_NTP_Download";
+
+    /**
+     * An IPH feature to show a video tutorial card on NTP to educate about how to search in chrome.
+     */
+    String VIDEO_TUTORIAL_NTP_SEARCH_FEATURE = "IPH_VideoTutorial_NTP_Search";
+
+    /**
+     * An IPH feature to show a video tutorial card on NTP to educate about how to use voice search
+     * in chrome.
+     */
+    String VIDEO_TUTORIAL_NTP_VOICE_SEARCH_FEATURE = "IPH_VideoTutorial_NTP_VoiceSearch";
+
+    /**
+     * An IPH feature to show a video tutorial summary card on NTP that takes them to see the video
+     * tutorial list page.
+     */
+    String VIDEO_TUTORIAL_NTP_SUMMARY_FEATURE = "IPH_VideoTutorial_NTP_Summary";
 
     /**
      * An IPH feature to show on a card menu on the FeedNewTabPage.

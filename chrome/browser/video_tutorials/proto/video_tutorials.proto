@@ -11,9 +11,11 @@ package video_tutorials.proto;
 // Represents the feature where the video tutorial targeted to.
 enum FeatureType {
   INVALID = 0;
-  DEBUG = 1;
-  DOWNLOAD = 2;
-  SEARCH = 3;
+  SUMMARY = 1;
+  CHROME_INTRO = 2;
+  DOWNLOAD = 3;
+  SEARCH = 4;
+  VOICE_SEARCH = 5;
   // For test only.
   TEST = 9999999;
 }

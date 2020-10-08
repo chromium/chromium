@@ -5,15 +5,19 @@
 package org.chromium.chrome.browser.app.video_tutorials;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Handler;
 import android.view.ViewStub;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.video_tutorials.FeatureType;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialService;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialServiceFactory;
@@ -22,6 +26,7 @@ import org.chromium.chrome.browser.video_tutorials.iph.VideoTutorialIPHUtils;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.feature_engagement.Tracker;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,6 +36,13 @@ import java.util.List;
  * dismissed.
  */
 public class NewTabPageVideoIPHManager {
+    /**
+     * Delay between user tapping a card and card being dismissed, so that the card doesn't dismiss
+     * before the video player activity launches.
+     */
+    private static final int CARD_HIDE_ANIMATION_DURATION_MS = 500;
+
+    private final Handler mHandler = new Handler();
     private Context mContext;
     private Tracker mTracker;
     private VideoIPHCoordinator mVideoIPHCoordinator;
@@ -59,16 +71,20 @@ public class NewTabPageVideoIPHManager {
     }
 
     private void onFetchTutorials(List<Tutorial> tutorials) {
+        // Make a copy of the list before adding summary card.
+        List<Tutorial> tutorialsCopy = new ArrayList<>(tutorials);
+        addSyntheticSummaryTutorial(tutorialsCopy);
         mTracker.addOnInitializedCallback(success -> {
             if (!success) return;
 
-            showFirstEligibleIPH(tutorials);
+            showFirstEligibleIPH(tutorialsCopy);
         });
     }
 
     private void showFirstEligibleIPH(List<Tutorial> tutorials) {
         for (Tutorial tutorial : tutorials) {
-            String featureName = VideoTutorialIPHUtils.getFeatureName(tutorial.featureType);
+            String featureName = VideoTutorialIPHUtils.getFeatureNameForNTP(tutorial.featureType);
+            if (featureName == null) continue;
             if (mTracker.shouldTriggerHelpUI(featureName)) {
                 mVideoIPHCoordinator.showVideoIPH(tutorial);
                 mTracker.dismissed(featureName);
@@ -82,7 +98,13 @@ public class NewTabPageVideoIPHManager {
         mTracker.notifyEvent(VideoTutorialIPHUtils.getClickEvent(tutorial.featureType));
 
         // Bring up the player and start playing the video.
-        VideoPlayerActivity.playVideoTutorial(mContext, tutorial);
+        if (tutorial.featureType == FeatureType.SUMMARY) {
+            launchTutorialListActivity();
+        } else {
+            VideoPlayerActivity.playVideoTutorial(mContext, tutorial);
+        }
+
+        mHandler.postDelayed(mVideoIPHCoordinator::hideVideoIPH, CARD_HIDE_ANIMATION_DURATION_MS);
     }
 
     private void onDismissIPH(Tutorial tutorial) {
@@ -90,5 +112,18 @@ public class NewTabPageVideoIPHManager {
 
         // TODO(shaktisahu): Animate this. Maybe add a delay.
         mVideoTutorialService.getTutorials(this::onFetchTutorials);
+    }
+
+    private void addSyntheticSummaryTutorial(List<Tutorial> tutorials) {
+        Tutorial summary = new Tutorial(FeatureType.INVALID,
+                mContext.getString(R.string.video_tutorials_card_all_videos), null, null, null,
+                null, 0);
+        tutorials.add(summary);
+    }
+
+    private void launchTutorialListActivity() {
+        Intent intent = new Intent();
+        intent.setClass(mContext, VideoTutorialListActivity.class);
+        mContext.startActivity(intent);
     }
 }

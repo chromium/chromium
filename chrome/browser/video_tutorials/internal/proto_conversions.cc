@@ -13,12 +13,16 @@ FeatureType ToFeatureType(proto::FeatureType type) {
   switch (type) {
     case proto::FeatureType::INVALID:
       return FeatureType::kInvalid;
-    case proto::FeatureType::DEBUG:
-      return FeatureType::kDebug;
+    case proto::FeatureType::SUMMARY:
+      return FeatureType::kSummary;
+    case proto::FeatureType::CHROME_INTRO:
+      return FeatureType::kChromeIntro;
     case proto::FeatureType::DOWNLOAD:
       return FeatureType::kDownload;
     case proto::FeatureType::SEARCH:
       return FeatureType::kSearch;
+    case proto::FeatureType::VOICE_SEARCH:
+      return FeatureType::kVoiceSearch;
     case proto::FeatureType::TEST:
       return FeatureType::kTest;
     default:
@@ -31,12 +35,16 @@ proto::FeatureType FromFeatureType(FeatureType type) {
   switch (type) {
     case FeatureType::kInvalid:
       return proto::FeatureType::INVALID;
-    case FeatureType::kDebug:
-      return proto::FeatureType::DEBUG;
+    case FeatureType::kSummary:
+      return proto::FeatureType::SUMMARY;
+    case FeatureType::kChromeIntro:
+      return proto::FeatureType::CHROME_INTRO;
     case FeatureType::kDownload:
       return proto::FeatureType::DOWNLOAD;
     case FeatureType::kSearch:
       return proto::FeatureType::SEARCH;
+    case FeatureType::kVoiceSearch:
+      return proto::FeatureType::VOICE_SEARCH;
     case FeatureType::kTest:
       return proto::FeatureType::TEST;
     default:
