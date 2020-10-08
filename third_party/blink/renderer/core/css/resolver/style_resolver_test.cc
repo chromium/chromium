@@ -864,4 +864,89 @@ TEST_F(StyleResolverTest, ComputeValueCustomProperty) {
   EXPECT_EQ("blue", computed_value->CssText());
 }
 
+TEST_F(StyleResolverTest, TreeScopedReferences) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #host { animation-name: anim }
+    </style>
+    <div id="host">
+      <span id="slotted"></span>
+    </host>
+  )HTML");
+
+  Element* host = GetDocument().getElementById("host");
+  ASSERT_TRUE(host);
+  ShadowRoot& root = host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  root.setInnerHTML(R"HTML(
+    <style>
+      ::slotted(span) { animation-name: anim-slotted }
+      :host { font-family: myfont }
+    </style>
+    <div id="inner-host">
+      <slot></slot>
+    </div>
+  )HTML");
+
+  Element* inner_host = root.getElementById("inner-host");
+  ASSERT_TRUE(inner_host);
+  ShadowRoot& inner_root =
+      inner_host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  inner_root.setInnerHTML(R"HTML(
+    <style>
+      ::slotted(span) { animation-name: anim-inner-slotted }
+    </style>
+    <slot></slot>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  {
+    StyleResolverState state(GetDocument(), *host);
+    SelectorFilter filter;
+    MatchResult match_result;
+    ElementRuleCollector collector(state.ElementContext(), filter, match_result,
+                                   state.Style(), EInsideLink::kNotInsideLink);
+    GetDocument().GetStyleEngine().GetStyleResolver().MatchAllRules(
+        state, collector, false /* include_smil_properties */);
+    const auto& properties = match_result.GetMatchedProperties();
+    ASSERT_EQ(properties.size(), 3u);
+
+    // div { display: block }
+    EXPECT_EQ(properties[0].types_.origin, CascadeOrigin::kUserAgent);
+
+    // :host { font-family: myfont }
+    EXPECT_EQ(match_result.ScopeFromTreeOrder(properties[1].types_.tree_order),
+              root.GetTreeScope());
+    EXPECT_EQ(properties[1].types_.origin, CascadeOrigin::kAuthor);
+
+    // #host { animation-name: anim }
+    EXPECT_EQ(properties[2].types_.origin, CascadeOrigin::kAuthor);
+    EXPECT_EQ(match_result.ScopeFromTreeOrder(properties[2].types_.tree_order),
+              host->GetTreeScope());
+  }
+
+  {
+    auto* span = GetDocument().getElementById("slotted");
+    StyleResolverState state(GetDocument(), *span);
+    SelectorFilter filter;
+    MatchResult match_result;
+    ElementRuleCollector collector(state.ElementContext(), filter, match_result,
+                                   state.Style(), EInsideLink::kNotInsideLink);
+    GetDocument().GetStyleEngine().GetStyleResolver().MatchAllRules(
+        state, collector, false /* include_smil_properties */);
+    const auto& properties = match_result.GetMatchedProperties();
+    ASSERT_EQ(properties.size(), 2u);
+
+    // ::slotted(span) { animation-name: anim-inner-slotted }
+    EXPECT_EQ(properties[0].types_.origin, CascadeOrigin::kAuthor);
+    EXPECT_EQ(match_result.ScopeFromTreeOrder(properties[0].types_.tree_order),
+              inner_root.GetTreeScope());
+
+    // ::slotted(span) { animation-name: anim-slotted }
+    EXPECT_EQ(properties[1].types_.origin, CascadeOrigin::kAuthor);
+    EXPECT_EQ(match_result.ScopeFromTreeOrder(properties[1].types_.tree_order),
+              root.GetTreeScope());
+  }
+}
+
 }  // namespace blink

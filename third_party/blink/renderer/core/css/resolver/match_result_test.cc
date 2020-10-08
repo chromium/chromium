@@ -50,7 +50,7 @@ TEST_F(MatchResultTest, CascadeOriginUserAgent) {
   result.AddMatchedProperties(PropertySet(1));
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
-  result.FinishAddingAuthorRulesForTreeScope();
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
   ASSERT_EQ(LengthOf(result), 2u);
   EXPECT_EQ(OriginAt(result, 0), CascadeOrigin::kUserAgent);
@@ -63,7 +63,7 @@ TEST_F(MatchResultTest, CascadeOriginUser) {
   result.AddMatchedProperties(PropertySet(0));
   result.AddMatchedProperties(PropertySet(1));
   result.FinishAddingUserRules();
-  result.FinishAddingAuthorRulesForTreeScope();
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
   ASSERT_EQ(LengthOf(result), 2u);
   EXPECT_EQ(OriginAt(result, 0), CascadeOrigin::kUser);
@@ -76,7 +76,7 @@ TEST_F(MatchResultTest, CascadeOriginAuthor) {
   result.FinishAddingUserRules();
   result.AddMatchedProperties(PropertySet(0));
   result.AddMatchedProperties(PropertySet(1));
-  result.FinishAddingAuthorRulesForTreeScope();
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
   ASSERT_EQ(LengthOf(result), 2u);
   EXPECT_EQ(OriginAt(result, 0), CascadeOrigin::kAuthor);
@@ -93,7 +93,7 @@ TEST_F(MatchResultTest, CascadeOriginAll) {
   result.AddMatchedProperties(PropertySet(3));
   result.AddMatchedProperties(PropertySet(4));
   result.AddMatchedProperties(PropertySet(5));
-  result.FinishAddingAuthorRulesForTreeScope();
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
   ASSERT_EQ(LengthOf(result), 6u);
   EXPECT_EQ(OriginAt(result, 0), CascadeOrigin::kUserAgent);
@@ -113,7 +113,7 @@ TEST_F(MatchResultTest, CascadeOriginAllExceptUserAgent) {
   result.AddMatchedProperties(PropertySet(3));
   result.AddMatchedProperties(PropertySet(4));
   result.AddMatchedProperties(PropertySet(5));
-  result.FinishAddingAuthorRulesForTreeScope();
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
   ASSERT_EQ(LengthOf(result), 5u);
   EXPECT_EQ(OriginAt(result, 0), CascadeOrigin::kUser);
@@ -131,7 +131,7 @@ TEST_F(MatchResultTest, CascadeOriginAllExceptUser) {
   result.AddMatchedProperties(PropertySet(3));
   result.AddMatchedProperties(PropertySet(4));
   result.AddMatchedProperties(PropertySet(5));
-  result.FinishAddingAuthorRulesForTreeScope();
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
   ASSERT_EQ(LengthOf(result), 4u);
   EXPECT_EQ(OriginAt(result, 0), CascadeOrigin::kUserAgent);
@@ -147,7 +147,7 @@ TEST_F(MatchResultTest, CascadeOriginAllExceptAuthor) {
   result.AddMatchedProperties(PropertySet(1));
   result.AddMatchedProperties(PropertySet(2));
   result.FinishAddingUserRules();
-  result.FinishAddingAuthorRulesForTreeScope();
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
   ASSERT_EQ(LengthOf(result), 3u);
   EXPECT_EQ(OriginAt(result, 0), CascadeOrigin::kUserAgent);
@@ -162,14 +162,14 @@ TEST_F(MatchResultTest, CascadeOriginTreeScopes) {
   result.AddMatchedProperties(PropertySet(1));
   result.FinishAddingUserRules();
   result.AddMatchedProperties(PropertySet(2));
-  result.FinishAddingAuthorRulesForTreeScope();
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(PropertySet(3));
   result.AddMatchedProperties(PropertySet(4));
-  result.FinishAddingAuthorRulesForTreeScope();
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(PropertySet(5));
   result.AddMatchedProperties(PropertySet(6));
   result.AddMatchedProperties(PropertySet(7));
-  result.FinishAddingAuthorRulesForTreeScope();
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
   ASSERT_EQ(LengthOf(result), 8u);
   EXPECT_EQ(OriginAt(result, 0), CascadeOrigin::kUserAgent);
@@ -193,7 +193,7 @@ TEST_F(MatchResultTest, ExpansionsRange) {
   result.AddMatchedProperties(ParseDeclarationBlock("top:unset"));
   result.AddMatchedProperties(
       ParseDeclarationBlock("right:unset;bottom:unset"));
-  result.FinishAddingAuthorRulesForTreeScope();
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
   CascadeFilter filter;
 
@@ -216,7 +216,7 @@ TEST_F(MatchResultTest, EmptyExpansionsRange) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
-  result.FinishAddingAuthorRulesForTreeScope();
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
   CascadeFilter filter;
   auto range = result.Expansions(GetDocument(), filter);
@@ -230,11 +230,11 @@ TEST_F(MatchResultTest, Reset) {
   result.AddMatchedProperties(PropertySet(1));
   result.FinishAddingUserRules();
   result.AddMatchedProperties(PropertySet(2));
-  result.FinishAddingAuthorRulesForTreeScope();
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(PropertySet(3));
-  result.FinishAddingAuthorRulesForTreeScope();
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(PropertySet(4));
-  result.FinishAddingAuthorRulesForTreeScope();
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
   ASSERT_EQ(LengthOf(result), 5u);
   EXPECT_EQ(OriginAt(result, 0), CascadeOrigin::kUserAgent);
@@ -264,11 +264,11 @@ TEST_F(MatchResultTest, Reset) {
   result.AddMatchedProperties(PropertySet(1));
   result.FinishAddingUserRules();
   result.AddMatchedProperties(PropertySet(2));
-  result.FinishAddingAuthorRulesForTreeScope();
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(PropertySet(3));
-  result.FinishAddingAuthorRulesForTreeScope();
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(PropertySet(4));
-  result.FinishAddingAuthorRulesForTreeScope();
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
 
   ASSERT_EQ(LengthOf(result), 5u);
   EXPECT_EQ(OriginAt(result, 0), CascadeOrigin::kUserAgent);

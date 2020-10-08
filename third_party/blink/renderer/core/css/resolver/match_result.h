@@ -140,7 +140,7 @@ class CORE_EXPORT MatchResult {
 
   void FinishAddingUARules();
   void FinishAddingUserRules();
-  void FinishAddingAuthorRulesForTreeScope();
+  void FinishAddingAuthorRulesForTreeScope(const TreeScope&);
 
   void SetIsCacheable(bool cacheable) { is_cacheable_ = cacheable; }
   bool IsCacheable() const { return is_cacheable_; }
@@ -155,11 +155,17 @@ class CORE_EXPORT MatchResult {
   // objects were added.
   void Reset();
 
+  const TreeScope& ScopeFromTreeOrder(uint16_t tree_order) const {
+    SECURITY_DCHECK(tree_order < tree_scopes_.size());
+    return *tree_scopes_[tree_order];
+  }
+
  private:
   MatchedPropertiesVector matched_properties_;
-  bool is_cacheable_ = true;
-  CascadeOrigin current_origin_ = CascadeOrigin::kUserAgent;
-  uint16_t current_tree_order_ = 0;
+  HeapVector<Member<const TreeScope>, 4> tree_scopes_;
+  bool is_cacheable_{true};
+  CascadeOrigin current_origin_{CascadeOrigin::kUserAgent};
+  uint16_t current_tree_order_{0};
 };
 
 inline bool operator==(const MatchedProperties& a, const MatchedProperties& b) {

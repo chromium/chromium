@@ -313,7 +313,25 @@ static void MatchHostAndCustomElementRules(const Element& element,
   MatchCustomElementRules(element, collector);
   MatchHostRules(element, collector);
   collector.SortAndTransferMatchedRules();
-  collector.FinishAddingAuthorRulesForTreeScope();
+  // TODO(futhark): If the resolver is null here, it means we are matching rules
+  // for custom element default styles. Since we don't have a
+  // ScopedStyleResolver if the custom element does not have a shadow root,
+  // there is no way to collect @-rules for @font-face, @keyframes, etc. We
+  // currently pass the element's TreeScope, which might not be what we want. It
+  // means that if you have:
+  //
+  //   <style>@keyframes anim { ... }</style>
+  //   <custom-element></custom-element>
+  //
+  // and the custom-element is defined with:
+  //
+  //   @keyframes anim { ... }
+  //   custom-element { animation-name: anim }
+  //
+  // it means that the custom element will pick up the @keyframes definition
+  // from the element's scope.
+  collector.FinishAddingAuthorRulesForTreeScope(
+      resolver ? resolver->GetTreeScope() : element.GetTreeScope());
 }
 
 static void MatchSlottedRules(const Element&, ElementRuleCollector&);
@@ -368,7 +386,7 @@ static void MatchSlottedRules(const Element& element,
     collector.ClearMatchedRules();
     (*it)->CollectMatchingSlottedRules(collector);
     collector.SortAndTransferMatchedRules();
-    collector.FinishAddingAuthorRulesForTreeScope();
+    collector.FinishAddingAuthorRulesForTreeScope((*it)->GetTreeScope());
   }
 }
 
@@ -425,7 +443,9 @@ static void MatchElementScopeRules(const Element& element,
                                         is_inline_style_cacheable);
   }
 
-  collector.FinishAddingAuthorRulesForTreeScope();
+  collector.FinishAddingAuthorRulesForTreeScope(
+      element_scope_resolver ? element_scope_resolver->GetTreeScope()
+                             : element.GetTreeScope());
 }
 
 void StyleResolver::MatchPseudoPartRulesForUAHost(
@@ -461,7 +481,7 @@ void StyleResolver::MatchPseudoPartRules(const Element& element,
       collector.ClearMatchedRules();
       resolver->CollectMatchingPartPseudoRules(collector, current_names);
       collector.SortAndTransferMatchedRules();
-      collector.FinishAddingAuthorRulesForTreeScope();
+      collector.FinishAddingAuthorRulesForTreeScope(resolver->GetTreeScope());
     }
 
     // If the host doesn't forward any parts using partmap= then the element is
@@ -555,23 +575,24 @@ void StyleResolver::MatchScopedRulesV0(
     collector.ClearMatchedRules();
     resolver->CollectMatchingTreeBoundaryCrossingRules(collector);
     collector.SortAndTransferMatchedRules();
-    collector.FinishAddingAuthorRulesForTreeScope();
+    collector.FinishAddingAuthorRulesForTreeScope(resolver->GetTreeScope());
   }
 
   if (!match_element_scope_done)
     MatchElementScopeRules(element, element_scope_resolver, collector);
 }
 
-void StyleResolver::MatchAuthorRules(const Element& element,
-                                     ElementRuleCollector& collector) {
+void StyleResolver::MatchAuthorRules(
+    const Element& element,
+    ScopedStyleResolver* element_scope_resolver,
+    ElementRuleCollector& collector) {
   if (GetDocument().GetShadowCascadeOrder() ==
       ShadowCascadeOrder::kShadowCascadeV0) {
-    MatchAuthorRulesV0(element, collector);
+    MatchAuthorRulesV0(element, element_scope_resolver, collector);
     return;
   }
   MatchHostAndCustomElementRules(element, collector);
 
-  ScopedStyleResolver* element_scope_resolver = ScopedResolverFor(element);
   if (GetDocument().MayContainV0Shadow()) {
     MatchScopedRulesV0(element, collector, element_scope_resolver);
     return;
@@ -582,8 +603,10 @@ void StyleResolver::MatchAuthorRules(const Element& element,
   MatchPseudoPartRules(element, collector);
 }
 
-void StyleResolver::MatchAuthorRulesV0(const Element& element,
-                                       ElementRuleCollector& collector) {
+void StyleResolver::MatchAuthorRulesV0(
+    const Element& element,
+    ScopedStyleResolver* element_scope_resolver,
+    ElementRuleCollector& collector) {
   collector.ClearMatchedRules();
 
   ShadowV0CascadeOrder cascade_order = 0;
@@ -596,8 +619,10 @@ void StyleResolver::MatchAuthorRulesV0(const Element& element,
         collector, ++cascade_order);
 
   // Apply normal rules from element scope.
-  if (ScopedStyleResolver* resolver = ScopedResolverFor(element))
-    resolver->CollectMatchingAuthorRules(collector, ++cascade_order);
+  if (element_scope_resolver) {
+    element_scope_resolver->CollectMatchingAuthorRules(collector,
+                                                       ++cascade_order);
+  }
 
   // Apply /deep/ and ::shadow rules from outer scopes, and ::content from
   // inner.
@@ -664,23 +689,23 @@ DISABLE_CFI_PERF
 void StyleResolver::MatchAllRules(StyleResolverState& state,
                                   ElementRuleCollector& collector,
                                   bool include_smil_properties) {
-  MatchUARules(state.GetElement(), collector);
+  Element& element = state.GetElement();
+  MatchUARules(element, collector);
   MatchUserRules(collector);
 
   // Now check author rules, beginning first with presentational attributes
   // mapped from HTML.
-  if (state.GetElement().IsStyledElement()) {
-    collector.AddElementStyleProperties(
-        state.GetElement().PresentationAttributeStyle());
+  if (element.IsStyledElement()) {
+    collector.AddElementStyleProperties(element.PresentationAttributeStyle());
 
     // Now we check additional mapped declarations.
     // Tables and table cells share an additional mapped rule that must be
     // applied after all attributes, since their mapped style depends on the
     // values of multiple attributes.
     collector.AddElementStyleProperties(
-        state.GetElement().AdditionalPresentationAttributeStyle());
+        element.AdditionalPresentationAttributeStyle());
 
-    if (auto* html_element = DynamicTo<HTMLElement>(state.GetElement())) {
+    if (auto* html_element = DynamicTo<HTMLElement>(element)) {
       bool is_auto;
       TextDirection text_direction =
           html_element->DirectionalityIfhasDirAutoAttribute(is_auto);
@@ -693,30 +718,32 @@ void StyleResolver::MatchAllRules(StyleResolverState& state,
     }
   }
 
-  MatchAuthorRules(state.GetElement(), collector);
+  ScopedStyleResolver* element_scope_resolver = ScopedResolverFor(element);
+  MatchAuthorRules(element, element_scope_resolver, collector);
 
-  if (state.GetElement().IsStyledElement()) {
+  if (element.IsStyledElement()) {
     // For Shadow DOM V1, inline style is already collected in
     // matchScopedRules().
     if (GetDocument().GetShadowCascadeOrder() ==
             ShadowCascadeOrder::kShadowCascadeV0 &&
-        state.GetElement().InlineStyle()) {
+        element.InlineStyle()) {
       // Inline style is immutable as long as there is no CSSOM wrapper.
-      bool is_inline_style_cacheable =
-          !state.GetElement().InlineStyle()->IsMutable();
-      collector.AddElementStyleProperties(state.GetElement().InlineStyle(),
+      bool is_inline_style_cacheable = !element.InlineStyle()->IsMutable();
+      collector.AddElementStyleProperties(element.InlineStyle(),
                                           is_inline_style_cacheable);
     }
 
     // Now check SMIL animation override style.
-    auto* svg_element = DynamicTo<SVGElement>(state.GetElement());
+    auto* svg_element = DynamicTo<SVGElement>(element);
     if (include_smil_properties && svg_element) {
       collector.AddElementStyleProperties(
           svg_element->AnimatedSMILStyleProperties(), false /* isCacheable */);
     }
   }
 
-  collector.FinishAddingAuthorRulesForTreeScope();
+  collector.FinishAddingAuthorRulesForTreeScope(
+      element_scope_resolver ? element_scope_resolver->GetTreeScope()
+                             : element.GetTreeScope());
 }
 
 void StyleResolver::CollectTreeBoundaryCrossingRulesV0CascadeOrder(
@@ -1116,7 +1143,7 @@ scoped_refptr<ComputedStyle> StyleResolver::PseudoStyleForElement(
     // TODO(obrufau): support styling nested pseudo-elements
     if (!element->IsPseudoElement()) {
       MatchUserRules(collector);
-      MatchAuthorRules(*element, collector);
+      MatchAuthorRules(*element, ScopedResolverFor(*element), collector);
     }
 
     if (tracker_)
@@ -1341,7 +1368,7 @@ void StyleResolver::CollectPseudoRulesForElement(
   if (rules_to_include & kAuthorCSSRules) {
     collector.SetSameOriginOnly(!(rules_to_include & kCrossOriginCSSRules));
     collector.SetIncludeEmptyRules(rules_to_include & kEmptyCSSRules);
-    MatchAuthorRules(element, collector);
+    MatchAuthorRules(element, ScopedResolverFor(element), collector);
   }
 }
 

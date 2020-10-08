@@ -103,7 +103,7 @@ using StyleRuleList = HeapVector<Member<StyleRule>>;
 // Create one, ask what rules the ElementResolveContext matches
 // and then let it go out of scope.
 // FIXME: Currently it modifies the ComputedStyle but should not!
-class ElementRuleCollector {
+class CORE_EXPORT ElementRuleCollector {
   STACK_ALLOCATED();
 
  public:
@@ -148,8 +148,8 @@ class ElementRuleCollector {
   void FinishAddingUserRules() {
     result_.FinishAddingUserRules();
   }
-  void FinishAddingAuthorRulesForTreeScope() {
-    result_.FinishAddingAuthorRulesForTreeScope();
+  void FinishAddingAuthorRulesForTreeScope(const TreeScope& tree_scope) {
+    result_.FinishAddingAuthorRulesForTreeScope(tree_scope);
   }
   void SetIncludeEmptyRules(bool include) { include_empty_rules_ = include; }
   bool IncludeEmptyRules() const { return include_empty_rules_; }

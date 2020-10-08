@@ -191,8 +191,12 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   void MatchScopedRulesV0(const Element&,
                           ElementRuleCollector&,
                           ScopedStyleResolver*);
-  void MatchAuthorRules(const Element&, ElementRuleCollector&);
-  void MatchAuthorRulesV0(const Element&, ElementRuleCollector&);
+  void MatchAuthorRules(const Element&,
+                        ScopedStyleResolver*,
+                        ElementRuleCollector&);
+  void MatchAuthorRulesV0(const Element&,
+                          ScopedStyleResolver*,
+                          ElementRuleCollector&);
   void MatchAllRules(StyleResolverState&,
                      ElementRuleCollector&,
                      bool include_smil_properties);
@@ -264,6 +268,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   bool was_viewport_resized_ = false;
 
   FRIEND_TEST_ALL_PREFIXES(ComputedStyleTest, ApplyInternalLightDarkColor);
+  FRIEND_TEST_ALL_PREFIXES(StyleResolverTest, TreeScopedReferences);
 };
 
 }  // namespace blink

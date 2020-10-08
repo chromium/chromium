@@ -20,19 +20,21 @@ class MatchedPropertiesCacheTestKey {
   STACK_ALLOCATED();
 
  public:
-  explicit MatchedPropertiesCacheTestKey(String block_text, unsigned hash)
-      : key_(ParseBlock(block_text), hash) {
-  }
+  explicit MatchedPropertiesCacheTestKey(String block_text,
+                                         unsigned hash,
+                                         const TreeScope& tree_scope)
+      : key_(ParseBlock(block_text, tree_scope), hash) {}
 
   const MatchedPropertiesCache::Key& InnerKey() const { return key_; }
 
  private:
-  const MatchResult& ParseBlock(String block_text) {
+  const MatchResult& ParseBlock(String block_text,
+                                const TreeScope& tree_scope) {
     result_.FinishAddingUARules();
     result_.FinishAddingUserRules();
     auto* set = css_test_helpers::ParseDeclarationBlock(block_text);
     result_.AddMatchedProperties(set);
-    result_.FinishAddingAuthorRulesForTreeScope();
+    result_.FinishAddingAuthorRulesForTreeScope(tree_scope);
     return result_;
   }
 
@@ -180,10 +182,11 @@ TEST_F(MatchedPropertiesCacheTest, AllowedKeyValues) {
   ASSERT_EQ(0u, HashTraits<unsigned>::EmptyValue());
   ASSERT_TRUE(HashTraits<unsigned>::IsDeletedValue(deleted));
 
-  EXPECT_FALSE(TestKey("left:0", empty).InnerKey().IsValid());
-  EXPECT_TRUE(TestKey("left:0", empty + 1).InnerKey().IsValid());
-  EXPECT_TRUE(TestKey("left:0", deleted - 1).InnerKey().IsValid());
-  EXPECT_FALSE(TestKey("left:0", deleted).InnerKey().IsValid());
+  EXPECT_FALSE(TestKey("left:0", empty, GetDocument()).InnerKey().IsValid());
+  EXPECT_TRUE(TestKey("left:0", empty + 1, GetDocument()).InnerKey().IsValid());
+  EXPECT_TRUE(
+      TestKey("left:0", deleted - 1, GetDocument()).InnerKey().IsValid());
+  EXPECT_FALSE(TestKey("left:0", deleted, GetDocument()).InnerKey().IsValid());
 }
 
 TEST_F(MatchedPropertiesCacheTest, InvalidKeyForUncacheableMatchResult) {
@@ -194,7 +197,7 @@ TEST_F(MatchedPropertiesCacheTest, InvalidKeyForUncacheableMatchResult) {
 
 TEST_F(MatchedPropertiesCacheTest, Miss) {
   TestCache cache(GetDocument());
-  TestKey key("color:red", 1);
+  TestKey key("color:red", 1, GetDocument());
 
   auto style = CreateStyle();
   auto parent = CreateStyle();
@@ -204,7 +207,7 @@ TEST_F(MatchedPropertiesCacheTest, Miss) {
 
 TEST_F(MatchedPropertiesCacheTest, Hit) {
   TestCache cache(GetDocument());
-  TestKey key("color:red", 1);
+  TestKey key("color:red", 1, GetDocument());
 
   auto style = CreateStyle();
   auto parent = CreateStyle();
@@ -219,8 +222,8 @@ TEST_F(MatchedPropertiesCacheTest, HitOnlyForAddedEntry) {
   auto style = CreateStyle();
   auto parent = CreateStyle();
 
-  TestKey key1("color:red", 1);
-  TestKey key2("display:block", 2);
+  TestKey key1("color:red", 1, GetDocument());
+  TestKey key2("display:block", 2, GetDocument());
 
   cache.Add(key1, *style, *parent);
 
@@ -234,7 +237,7 @@ TEST_F(MatchedPropertiesCacheTest, HitWithStandardDependency) {
   auto style = CreateStyle();
   auto parent = CreateStyle();
 
-  TestKey key("top:inherit", 1);
+  TestKey key("top:inherit", 1, GetDocument());
 
   cache.Add(key, *style, *parent, Vector<String>{"top"});
   EXPECT_TRUE(cache.Find(key, *style, *parent));
@@ -251,7 +254,7 @@ TEST_F(MatchedPropertiesCacheTest, MissWithStandardDependency) {
   auto parent2 = CreateStyle();
   parent2->SetTop(Length(2, Length::kFixed));
 
-  TestKey key("top:inherit", 1);
+  TestKey key("top:inherit", 1, GetDocument());
   cache.Add(key, *style, *parent1, Vector<String>{"top"});
   EXPECT_TRUE(cache.Find(key, *style, *parent1));
   EXPECT_FALSE(cache.Find(key, *style, *parent2));
@@ -265,7 +268,7 @@ TEST_F(MatchedPropertiesCacheTest, HitWithCustomDependency) {
   auto parent = CreateStyle();
   parent->SetVariableData("--x", CreateVariableData("1px"), true);
 
-  TestKey key("top:var(--x)", 1);
+  TestKey key("top:var(--x)", 1, GetDocument());
 
   cache.Add(key, *style, *parent, Vector<String>{"--x"});
   EXPECT_TRUE(cache.Find(key, *style, *parent));
@@ -282,7 +285,7 @@ TEST_F(MatchedPropertiesCacheTest, MissWithCustomDependency) {
   auto parent2 = CreateStyle();
   parent2->SetVariableData("--x", CreateVariableData("2px"), true);
 
-  TestKey key("top:var(--x)", 1);
+  TestKey key("top:var(--x)", 1, GetDocument());
 
   cache.Add(key, *style, *parent1, Vector<String>{"--x"});
   EXPECT_FALSE(cache.Find(key, *style, *parent2));
@@ -301,7 +304,7 @@ TEST_F(MatchedPropertiesCacheTest, HitWithMultipleCustomDependencies) {
   auto parent2 = ComputedStyle::Clone(*parent1);
   parent2->SetVariableData("--z", CreateVariableData("4px"), true);
 
-  TestKey key("top:var(--x);left:var(--y)", 1);
+  TestKey key("top:var(--x);left:var(--y)", 1, GetDocument());
 
   // Does not depend on --z, so doesn't matter that --z changed.
   cache.Add(key, *style, *parent1, Vector<String>{"--x", "--y"});
@@ -320,7 +323,7 @@ TEST_F(MatchedPropertiesCacheTest, MissWithMultipleCustomDependencies) {
   auto parent2 = ComputedStyle::Clone(*parent1);
   parent2->SetVariableData("--y", CreateVariableData("3px"), true);
 
-  TestKey key("top:var(--x);left:var(--y)", 1);
+  TestKey key("top:var(--x);left:var(--y)", 1, GetDocument());
 
   cache.Add(key, *style, *parent1, Vector<String>{"--x", "--y"});
   EXPECT_FALSE(cache.Find(key, *style, *parent2));
@@ -341,7 +344,7 @@ TEST_F(MatchedPropertiesCacheTest, HitWithMixedDependencies) {
   parent2->SetVariableData("--y", CreateVariableData("5px"), true);
   parent2->SetRight(Length(6, Length::kFixed));
 
-  TestKey key("left:inherit;top:var(--x)", 1);
+  TestKey key("left:inherit;top:var(--x)", 1, GetDocument());
 
   cache.Add(key, *style, *parent1, Vector<String>{"left", "--x"});
   EXPECT_TRUE(cache.Find(key, *style, *parent2));
@@ -536,7 +539,7 @@ TEST_F(MatchedPropertiesCacheTest, EnsuredInDisplayNone) {
   auto ensured_parent = CreateStyle();
   ensured_parent->SetIsEnsuredInDisplayNone();
 
-  TestKey key1("display:block", 1);
+  TestKey key1("display:block", 1, GetDocument());
 
   cache.Add(key1, *style, *parent);
   EXPECT_TRUE(cache.Find(key1, *style, *parent));
@@ -555,7 +558,7 @@ TEST_F(MatchedPropertiesCacheTest, EnsuredOutsideFlatTree) {
   auto ensured_style = CreateStyle();
   ensured_style->SetIsEnsuredOutsideFlatTree();
 
-  TestKey key1("display:block", 1);
+  TestKey key1("display:block", 1, GetDocument());
 
   cache.Add(key1, *style, *parent);
   EXPECT_TRUE(cache.Find(key1, *style, *parent));
@@ -576,7 +579,7 @@ TEST_F(MatchedPropertiesCacheTest, EnsuredOutsideFlatTreeAndDisplayNone) {
   parent_none->SetIsEnsuredInDisplayNone();
   style_flat->SetIsEnsuredOutsideFlatTree();
 
-  TestKey key1("display:block", 1);
+  TestKey key1("display:block", 1, GetDocument());
 
   cache.Add(key1, *style, *parent_none);
   EXPECT_TRUE(cache.Find(key1, *style_flat, *parent));
