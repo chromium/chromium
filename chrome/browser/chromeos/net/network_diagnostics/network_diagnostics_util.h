@@ -43,6 +43,12 @@ std::vector<std::string> GetRandomHostsWithScheme(int num_hosts,
                                                   int prefix_length,
                                                   std::string scheme);
 
+// Similar to GetRandomHostsWithFixedHosts, but with a |scheme| prepended to the
+// hosts.
+std::vector<std::string> GetRandomAndFixedHostsWithScheme(int num_random_hosts,
+                                                          int prefix_length,
+                                                          std::string scheme);
+
 // Similar to GetRandomHostsWithScheme, but with the 204 path appended to hosts.
 std::vector<std::string> GetRandomHostsWithSchemeAndGenerate204Path(
     int num_hosts,

@@ -90,6 +90,17 @@ std::vector<std::string> GetRandomHostsWithScheme(int num_hosts,
   return hosts;
 }
 
+std::vector<std::string> GetRandomAndFixedHostsWithScheme(int num_random_hosts,
+                                                          int prefix_length,
+                                                          std::string scheme) {
+  std::vector<std::string> hosts =
+      GetRandomHostsWithFixedHosts(num_random_hosts, prefix_length);
+  for (auto& host : hosts) {
+    host = scheme + host;
+  }
+  return hosts;
+}
+
 std::vector<std::string> GetRandomHostsWithSchemeAndGenerate204Path(
     int num_hosts,
     int prefix_length,
