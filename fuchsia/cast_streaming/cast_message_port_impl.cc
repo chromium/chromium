@@ -21,19 +21,29 @@ namespace {
 const char kMirroringNamespace[] = "urn:x-cast:com.google.cast.webrtc";
 const char kRemotingNamespace[] = "urn:x-cast:com.google.cast.remoting";
 const char kSystemNamespace[] = "urn:x-cast:com.google.cast.system";
+const char kInjectNamespace[] = "urn:x-cast:com.google.cast.inject";
 
 const char kKeySenderId[] = "senderId";
 const char kKeyNamespace[] = "namespace";
 const char kKeyData[] = "data";
+const char kKeyType[] = "type";
+const char kKeyRequestId[] = "requestId";
+const char kKeyCode[] = "code";
 
 const char kValueSystemSenderId[] = "SystemSender";
+const char kValueWrapped[] = "WRAPPED";
+const char kValueError[] = "ERROR";
+const char kValueWrappedError[] = "WRAPPED_ERROR";
+const char kValueInjectNotSupportedError[] =
+    R"({"code":"NOT_SUPPORTED","type":"ERROR"})";
 
 const char kInitialConnectMessage[] = R"(
     {
       "type": "ready",
       "activeNamespaces": [
         "urn:x-cast:com.google.cast.webrtc",
-        "urn:x-cast:com.google.cast.remoting"
+        "urn:x-cast:com.google.cast.remoting",
+        "urn:x-cast:com.google.cast.inject"
       ],
       "version": "2.0.0",
       "messagesVersion": "1.0"
@@ -162,6 +172,52 @@ void CastMessagePortImpl::ResetClient() {
   MaybeCloseWithEpitaph(ZX_OK);
 }
 
+void CastMessagePortImpl::SendInjectResponse(const std::string& sender_id,
+                                             const std::string& message) {
+  base::Optional<base::Value> value = base::JSONReader::Read(message);
+  if (!value) {
+    LOG(ERROR) << "Malformed message from sender " << sender_id
+               << ": not a json payload:" << message;
+    return;
+  }
+
+  if (!value->is_dict()) {
+    LOG(ERROR) << "Malformed message from sender " << sender_id
+               << ": non-dictionary json payload: " << message;
+    return;
+  }
+
+  const std::string* type = value->FindStringKey(kKeyType);
+  if (!type) {
+    LOG(ERROR) << "Malformed message from sender " << sender_id
+               << ": no message type: " << message;
+    return;
+  }
+  if (*type != kValueWrapped) {
+    LOG(ERROR) << "Malformed message from sender " << sender_id
+               << ": unknown message type: " << *type;
+    return;
+  }
+
+  base::Optional<int> request_id = value->FindIntKey(kKeyRequestId);
+  if (!request_id) {
+    LOG(ERROR) << "Malformed message from sender " << sender_id
+               << ": no request id: " << message;
+    return;
+  }
+
+  // Build the response message.
+  base::Value response_value(base::Value::Type::DICTIONARY);
+  response_value.SetKey(kKeyType, base::Value(kValueError));
+  response_value.SetKey(kKeyRequestId, base::Value(request_id.value()));
+  response_value.SetKey(kKeyData, base::Value(kValueInjectNotSupportedError));
+  response_value.SetKey(kKeyCode, base::Value(kValueWrappedError));
+
+  std::string json_message;
+  CHECK(base::JSONWriter::Write(response_value, &json_message));
+  PostMessage(sender_id, kInjectNamespace, json_message);
+}
+
 void CastMessagePortImpl::PostMessage(const std::string& sender_id,
                                       const std::string& message_namespace,
                                       const std::string& message) {
@@ -209,7 +265,9 @@ void CastMessagePortImpl::PostMessage(
   if (message_namespace == kMirroringNamespace ||
       message_namespace == kRemotingNamespace) {
     client_->OnMessage(sender_id, message_namespace, str_message);
-  } else if (message_namespace.compare(kSystemNamespace) != 0) {
+  } else if (message_namespace == kInjectNamespace) {
+    SendInjectResponse(sender_id, str_message);
+  } else if (message_namespace == kSystemNamespace) {
     // System messages are ignored, log messages from unknown namespaces.
     DVLOG(2) << "Unknown message from " << sender_id
              << ", namespace=" << message_namespace
