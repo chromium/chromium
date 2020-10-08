@@ -877,6 +877,12 @@ void AXEventGenerator::PostprocessEvents() {
   // First pass through |tree_events_|, remove events that we do not need.
   for (auto& iter : tree_events_) {
     AXNode* node = iter.first;
+
+    // TODO(http://crbug.com/2279799): remove all of the cases that could
+    // add a null node to |tree_events|.
+    if (!node)
+      continue;
+
     std::set<EventParams>& node_events = iter.second;
 
     // A newly created live region or alert should not *also* fire a
