@@ -103,10 +103,13 @@ void LoginUIService::DisplayLoginResult(Browser* browser,
   last_login_result_ = error_message;
   last_login_error_email_ = email;
   if (!error_message.empty()) {
-    if (browser)
+    if (browser) {
       browser->signin_view_controller()->ShowModalSigninErrorDialog();
-    else
+    } else if (profile_->GetPath() == UserManager::GetSigninProfilePath()) {
       UserManagerProfileDialog::DisplayErrorMessage();
+    } else {
+      LOG(ERROR) << "Unable to show Login error message: " << error_message;
+    }
   } else if (browser) {
     browser->window()->ShowAvatarBubbleFromAvatarButton(
         BrowserWindow::AVATAR_BUBBLE_MODE_CONFIRM_SIGNIN,

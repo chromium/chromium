@@ -266,6 +266,9 @@ void UserManager::AddOnUserManagerShownCallbackForTesting(
 
 // static
 base::FilePath UserManager::GetSigninProfilePath() {
+  if (!g_user_manager_view)
+    return base::FilePath();
+
   return g_user_manager_view->GetSigninProfilePath();
 }
 
