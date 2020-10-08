@@ -312,6 +312,7 @@ class JobHandleImpl : public v8::JobHandle {
   }
   void Join() override { handle_.Join(); }
   void Cancel() override { handle_.Cancel(); }
+  void CancelAndDetach() override { handle_.CancelAndDetach(); }
   bool IsCompleted() override { return handle_.IsCompleted(); }
   bool IsRunning() override { return !!handle_; }
 
