@@ -37,8 +37,6 @@ const char kContentScripts[] = "content_scripts";
 const char kContentSecurityPolicy[] = "content_security_policy";
 const char kContentSecurityPolicy_ExtensionPagesPath[] =
     "content_security_policy.extension_pages";
-const char kContentSecurityPolicy_IsolatedWorldPath[] =
-    "content_security_policy.isolated_world";
 const char kContentSecurityPolicy_SandboxedPagesPath[] =
     "content_security_policy.sandbox";
 const char kConvertedFromUserScript[] = "converted_from_user_script";

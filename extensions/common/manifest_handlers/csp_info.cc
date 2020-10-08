@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -31,8 +32,6 @@ namespace {
 const char kDefaultContentSecurityPolicy[] =
     "script-src 'self' blob: filesystem:; "
     "object-src 'self' blob: filesystem:;";
-
-const char kDefaultIsolatedWorldCSP_BypassMainWorld[] = "";
 
 // The default secure CSP to be used in order to prevent remote scripts.
 const char kDefaultSecureCSP[] = "script-src 'self'; object-src 'self';";
@@ -125,13 +124,25 @@ const std::string& CSPInfo::GetExtensionPagesCSP(const Extension* extension) {
 
 // static
 const std::string* CSPInfo::GetIsolatedWorldCSP(const Extension& extension) {
-  // TODO(crbug.com/1005978): This should be only called for extensions which
-  // can have isolated worlds. Figure out the case of TYPE_USER_SCRIPT and add
-  // DCHECK(csp_info).
-  CSPInfo* csp_info = static_cast<CSPInfo*>(
-      extension.GetManifestData(keys::kContentSecurityPolicy));
+  if (extension.manifest_version() >= 3) {
+    // The isolated world will use its own CSP which blocks remotely hosted
+    // code.
+    static const base::NoDestructor<std::string> default_isolated_world_csp(
+        kDefaultSecureCSP);
+    return default_isolated_world_csp.get();
+  }
 
-  return csp_info ? &csp_info->isolated_world_csp : nullptr;
+  Manifest::Type type = extension.GetType();
+  bool bypass_main_world_csp = type == Manifest::TYPE_PLATFORM_APP ||
+                               type == Manifest::TYPE_EXTENSION ||
+                               type == Manifest::TYPE_LEGACY_PACKAGED_APP;
+  if (!bypass_main_world_csp) {
+    // The isolated world will use the main world CSP.
+    return nullptr;
+  }
+
+  // The isolated world will bypass the main world CSP.
+  return &base::EmptyString();
 }
 
 // static
@@ -161,26 +172,24 @@ bool CSPHandler::Parse(Extension* extension, base::string16* error) {
                         : keys::kContentSecurityPolicy;
 
   // The "content_security_policy" manifest key can either be a string or a
-  // dictionary of the format
+  // dictionary of the format.
   // "content_security_policy" : {
   //     "extension_pages": "",
   //     "sandbox": "",
-  //     "isolated_world": ""
   //  }
   const base::Value* csp = GetManifestPath(extension, key);
-  const int kManifestVersion3 = 3;
 
-  // TODO(crbug.com/914224): Remove the channel check once support for isolated
-  // world CSP is implemenented.
+  // TODO(karandeepb): Remove the channel check since we don't plan to support
+  // the CSP dictionary for Manifest V2.
   bool csp_dictionary_supported =
       extension->GetType() == Manifest::TYPE_EXTENSION &&
-      (extension->manifest_version() >= kManifestVersion3 ||
+      (extension->manifest_version() >= 3 ||
        GetCurrentChannel() == version_info::Channel::UNKNOWN);
 
   if (csp_dictionary_supported) {
     // CSP key as dictionary is mandatory for manifest v3 (and above)
     // extensions.
-    if (extension->manifest_version() >= kManifestVersion3) {
+    if (extension->manifest_version() >= 3) {
       if (csp && !csp->is_dict()) {
         *error = GetInvalidManifestKeyError(key);
         return false;
@@ -203,7 +212,6 @@ bool CSPHandler::Parse(Extension* extension, base::string16* error) {
     return false;
   }
 
-  SetIsolatedWorldCSP(extension, kDefaultIsolatedWorldCSP_BypassMainWorld);
   return true;
 }
 
@@ -223,9 +231,8 @@ bool CSPHandler::ParseCSPDictionary(Extension* extension,
                  extension, keys::kContentSecurityPolicy_ExtensionPagesPath)) &&
          ParseSandboxCSP(
              extension, error, keys::kContentSecurityPolicy_SandboxedPagesPath,
-             GetManifestPath(
-                 extension, keys::kContentSecurityPolicy_SandboxedPagesPath)) &&
-         ParseIsolatedWorldCSP(extension, error);
+             GetManifestPath(extension,
+                             keys::kContentSecurityPolicy_SandboxedPagesPath));
 }
 
 bool CSPHandler::ParseExtensionPagesCSP(
@@ -270,38 +277,6 @@ bool CSPHandler::ParseExtensionPagesCSP(
 
   SetExtensionPagesCSP(extension, manifest_key, secure_only,
                        std::move(sanitized_content_security_policy));
-  return true;
-}
-
-bool CSPHandler::ParseIsolatedWorldCSP(Extension* extension,
-                                       base::string16* error) {
-  const char* key = keys::kContentSecurityPolicy_IsolatedWorldPath;
-
-  const base::Value* isolated_world_csp = GetManifestPath(extension, key);
-
-  if (!isolated_world_csp) {
-    SetIsolatedWorldCSP(extension, kDefaultSecureCSP);
-    return true;
-  }
-
-  if (!isolated_world_csp->is_string()) {
-    *error = GetInvalidManifestKeyError(key);
-    return false;
-  }
-
-  const std::string& isolated_world_csp_str = isolated_world_csp->GetString();
-  if (!ContentSecurityPolicyIsLegal(isolated_world_csp_str)) {
-    *error = GetInvalidManifestKeyError(key);
-    return false;
-  }
-
-  if (!csp_validator::DoesCSPDisallowRemoteCode(
-          isolated_world_csp_str,
-          manifest_keys::kContentSecurityPolicy_IsolatedWorldPath, error)) {
-    return false;
-  }
-
-  SetIsolatedWorldCSP(extension, isolated_world_csp_str);
   return true;
 }
 
@@ -355,15 +330,6 @@ bool CSPHandler::SetExtensionPagesCSP(Extension* extension,
       keys::kContentSecurityPolicy,
       std::make_unique<CSPInfo>(std::move(content_security_policy)));
   return true;
-}
-
-void CSPHandler::SetIsolatedWorldCSP(Extension* extension,
-                                     std::string isolated_world_csp) {
-  // By now we must have parsed the extension page CSP.
-  CSPInfo* csp_info = static_cast<CSPInfo*>(
-      extension->GetManifestData(keys::kContentSecurityPolicy));
-  DCHECK(csp_info);
-  csp_info->isolated_world_csp = std::move(isolated_world_csp);
 }
 
 void CSPHandler::SetSandboxCSP(Extension* extension, std::string sandbox_csp) {
