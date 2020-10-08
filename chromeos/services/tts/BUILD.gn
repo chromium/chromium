@@ -16,6 +16,7 @@ source_set("tts") {
     ":libchrometts",
     "//base",
     "//chromeos/services/tts/public/mojom",
+    "//services/audio/public/cpp:cpp",
   ]
 }
 
@@ -54,5 +55,6 @@ generate_library_loader("libchrometts") {
     "GoogleTtsGetTimepointsCount",
     "GoogleTtsGetTimepointsTimeInSecsAtIndex",
     "GoogleTtsGetTimepointsCharIndexAtIndex",
+    "GoogleTtsGetFramesInAudioBuffer",
   ]
 }
