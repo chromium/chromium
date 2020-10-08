@@ -57,8 +57,8 @@ class WebAppUninstallDialogDelegateView : public views::DialogDelegateView {
   ui::ModalType GetModalType() const override;
   gfx::ImageSkia GetWindowIcon() override;
 
-  // Uninstalls the web app.
-  void Uninstall();
+  // Uninstalls the web app. Returns true on success.
+  bool Uninstall();
   void ClearWebAppSiteData();
 
   void OnDialogAccepted();
@@ -98,7 +98,6 @@ class WebAppUninstallDialogViews : public web_app::WebAppUninstallDialog,
 
   void UninstallStarted();
   void CallCallback(bool uninstalled);
-  base::WeakPtr<WebAppUninstallDialogViews> GetWeakPtr();
 
  private:
   // web_app::AppRegistrarObserver:

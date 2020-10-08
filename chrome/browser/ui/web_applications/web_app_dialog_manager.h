@@ -30,7 +30,6 @@ class WebAppDialogManager {
   enum class UninstallSource {
     kAppMenu,
     kAppsPage,
-    kOsSettings,
   };
 
   using Callback = base::OnceCallback<void(bool success)>;

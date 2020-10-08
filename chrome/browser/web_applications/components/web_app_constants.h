@@ -43,7 +43,6 @@ enum Type {
   kShortcuts = 0,
   kRunOnOsLogin,
   kShortcutsMenu,
-  kUninstallationViaOsSettings,
   kFileHandlers,
   kMaxValue = kFileHandlers,
 };

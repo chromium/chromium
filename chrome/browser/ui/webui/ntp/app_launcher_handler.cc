@@ -976,7 +976,6 @@ void AppLauncherHandler::HandleInstallAppLocally(const base::ListValue* args) {
   options.os_hooks[web_app::OsHookType::kShortcutsMenu] = true;
   options.os_hooks[web_app::OsHookType::kFileHandlers] = true;
   options.os_hooks[web_app::OsHookType::kRunOnOsLogin] = false;
-  options.os_hooks[web_app::OsHookType::kUninstallationViaOsSettings] = true;
 
   web_app_provider_->os_integration_manager().InstallOsHooks(
       app_id,

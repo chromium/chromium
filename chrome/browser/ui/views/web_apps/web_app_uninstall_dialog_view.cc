@@ -128,9 +128,11 @@ void WebAppUninstallDialogDelegateView::OnDialogAccepted() {
           : HistogramCloseAction::kUninstall;
   UMA_HISTOGRAM_ENUMERATION("Webapp.UninstallDialogAction", action);
 
-  Uninstall();
+  bool uninstalled = Uninstall();
   if (checkbox_->GetChecked())
     ClearWebAppSiteData();
+
+  std::exchange(dialog_, nullptr)->CallCallback(uninstalled);
 }
 
 void WebAppUninstallDialogDelegateView::OnDialogCanceled() {
@@ -156,28 +158,18 @@ gfx::ImageSkia WebAppUninstallDialogDelegateView::GetWindowIcon() {
   return image_;
 }
 
-void WebAppUninstallDialogDelegateView::Uninstall() {
+bool WebAppUninstallDialogDelegateView::Uninstall() {
   auto* provider = web_app::WebAppProvider::Get(profile_);
   DCHECK(provider);
 
-  if (!provider->install_finalizer().CanUserUninstallExternalApp(app_id_)) {
-    std::exchange(dialog_, nullptr)->CallCallback(/*uninstalled=*/false);
-    return;
-  }
+  if (!provider->install_finalizer().CanUserUninstallExternalApp(app_id_))
+    return false;
 
   dialog_->UninstallStarted();
 
-  // Callback to the WebAppUninstallDialogViews because
-  // WebAppUninstallDialogDelegateView lifetime is controlled by Widget and it
-  // is terminiated as soon as dialog is closed regardless of web app
-  // uninstallation.
-  provider->install_finalizer().UninstallExternalAppByUser(
-      app_id_, base::BindOnce(&WebAppUninstallDialogViews::CallCallback,
-                              dialog_->GetWeakPtr()));
-  // We successfully call Web App Uninstall routine, then
-  // WebAppUninstallDialogDelegateView can be terminated, but can't call the
-  // callback of the dialog caller.
-  dialog_ = nullptr;
+  provider->install_finalizer().UninstallExternalAppByUser(app_id_,
+                                                           base::DoNothing());
+  return true;
 }
 
 void WebAppUninstallDialogDelegateView::ClearWebAppSiteData() {
@@ -294,11 +286,6 @@ void WebAppUninstallDialogViews::UninstallStarted() {
 void WebAppUninstallDialogViews::CallCallback(bool uninstalled) {
   view_ = nullptr;
   std::move(closed_callback_).Run(uninstalled);
-}
-
-base::WeakPtr<WebAppUninstallDialogViews>
-WebAppUninstallDialogViews::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
 }
 
 // static
