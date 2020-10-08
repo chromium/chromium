@@ -341,7 +341,7 @@ void RenderAccessibilityImpl::AccessibilityModeChanged(const ui::AXMode& mode) {
     // If there are any events in flight, |HandleAXEvent| will refuse to process
     // our new event.
     pending_events_.clear();
-    auto root_object = WebAXObject::FromWebDocument(document);
+    auto root_object = WebAXObject::FromWebDocument(document, false);
     ax::mojom::Event event = root_object.IsLoaded()
                                  ? ax::mojom::Event::kLoadComplete
                                  : ax::mojom::Event::kLayoutComplete;
@@ -549,7 +549,7 @@ void RenderAccessibilityImpl::Reset(int32_t reset_token) {
   if (!document.IsNull()) {
     // Tree-only mode gets used by the automation extension API which requires a
     // load complete event to invoke listener callbacks.
-    auto root_object = WebAXObject::FromWebDocument(document);
+    auto root_object = WebAXObject::FromWebDocument(document, false);
     ax::mojom::Event event = root_object.IsLoaded()
                                  ? ax::mojom::Event::kLoadComplete
                                  : ax::mojom::Event::kLayoutComplete;
