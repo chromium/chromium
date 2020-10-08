@@ -25,6 +25,8 @@ import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
+import com.google.common.collect.ImmutableMap;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -538,10 +540,8 @@ public class AwContentsTest {
 
             url = testServer.getURL("/echoheader?Referer");
 
-            extraHeaders.clear();
-            extraHeaders.put("Referer", "http://www.example.com/");
-            mActivityTestRule.loadUrlSync(
-                    awContents, mContentsClient.getOnPageFinishedHelper(), url, extraHeaders);
+            mActivityTestRule.loadUrlSync(awContents, mContentsClient.getOnPageFinishedHelper(),
+                    url, ImmutableMap.of("Referer", "http://www.example.com/"));
 
             String referer = mActivityTestRule.getJavaScriptResultBodyTextContent(
                     awContents, mContentsClient);
