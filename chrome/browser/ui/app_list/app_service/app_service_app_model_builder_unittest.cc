@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -43,7 +42,6 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/web_application_info.h"
@@ -83,7 +81,6 @@ using extensions::ExtensionSystem;
 using plugin_vm::PluginVmTestHelper;
 using ::testing::_;
 using ::testing::Matcher;
-using web_app::ProviderType;
 
 namespace {
 
@@ -178,18 +175,9 @@ void VerifyIcon(const gfx::ImageSkia& src, const gfx::ImageSkia& dst) {
 
 }  // namespace
 
-class AppServiceAppModelBuilderTest
-    : public AppListTestBase,
-      public ::testing::WithParamInterface<ProviderType> {
+class AppServiceAppModelBuilderTest : public AppListTestBase {
  public:
   AppServiceAppModelBuilderTest() {
-    if (GetParam() == web_app::ProviderType::kWebApps) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    } else if (GetParam() == web_app::ProviderType::kBookmarkApps) {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    }
     scoped_screen_override_ =
         std::make_unique<ScopedScreenOverride>(&test_screen_);
   }
@@ -225,7 +213,6 @@ class AppServiceAppModelBuilderTest
     builder_->Initialize(nullptr, testing_profile(), model_updater_.get());
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   apps::AppServiceTest app_service_test_;
   std::unique_ptr<AppServiceAppModelBuilder> builder_;
   std::unique_ptr<FakeAppListModelUpdater> model_updater_;
@@ -313,8 +300,6 @@ class ExtensionAppTest : public AppServiceAppModelBuilderTest {
 
   std::vector<std::string> default_apps_;
 };
-
-using BookmarkAppBuilderTest = ExtensionAppTest;
 
 class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
  public:
@@ -404,7 +389,7 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
   }
 };
 
-TEST_P(BuiltInAppTest, Build) {
+TEST_F(BuiltInAppTest, Build) {
   // The internal apps list is provided by GetInternalAppList() in
   // internal_app_metadata.cc. Only count the apps can display in launcher.
   std::string built_in_apps_name;
@@ -416,7 +401,7 @@ TEST_P(BuiltInAppTest, Build) {
             base::JoinString(GetModelContent(model_updater_.get()), ","));
 }
 
-TEST_P(BuiltInAppTest, BuildGuestMode) {
+TEST_F(BuiltInAppTest, BuildGuestMode) {
   // The internal apps list is provided by GetInternalAppList() in
   // internal_app_metadata.cc. Only count the apps can display in launcher.
   std::string built_in_apps_name;
@@ -428,13 +413,13 @@ TEST_P(BuiltInAppTest, BuildGuestMode) {
             base::JoinString(GetModelContent(model_updater_.get()), ","));
 }
 
-TEST_P(ExtensionAppTest, Build) {
+TEST_F(ExtensionAppTest, Build) {
   // The apps list would have 3 extension apps in the profile.
   EXPECT_EQ(kDefaultAppCount, model_updater_->ItemCount());
   EXPECT_EQ(default_apps_, GetModelContent(model_updater_.get()));
 }
 
-TEST_P(ExtensionAppTest, HideWebStore) {
+TEST_F(ExtensionAppTest, HideWebStore) {
   // Install a "web store" app.
   scoped_refptr<extensions::Extension> store =
       MakeApp("webstore", "0.0", "http://google.com",
@@ -479,7 +464,7 @@ TEST_P(ExtensionAppTest, HideWebStore) {
   EXPECT_TRUE(model_updater2.FindItem(enterprise_store->id()));
 }
 
-TEST_P(ExtensionAppTest, DisableAndEnable) {
+TEST_F(ExtensionAppTest, DisableAndEnable) {
   service_->DisableExtension(kHostedAppId,
                              extensions::disable_reason::DISABLE_USER_ACTION);
   app_service_test_.FlushMojoCalls();
@@ -490,7 +475,7 @@ TEST_P(ExtensionAppTest, DisableAndEnable) {
   EXPECT_EQ(default_apps_, GetModelContent(model_updater_.get()));
 }
 
-TEST_P(ExtensionAppTest, Uninstall) {
+TEST_F(ExtensionAppTest, Uninstall) {
   service_->UninstallExtension(
       kPackagedApp2Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
   app_service_test_.FlushMojoCalls();
@@ -500,7 +485,7 @@ TEST_P(ExtensionAppTest, Uninstall) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_P(ExtensionAppTest, UninstallTerminatedApp) {
+TEST_F(ExtensionAppTest, UninstallTerminatedApp) {
   ASSERT_NE(nullptr, registry()->GetInstalledExtension(kPackagedApp2Id));
 
   // Simulate an app termination.
@@ -515,7 +500,7 @@ TEST_P(ExtensionAppTest, UninstallTerminatedApp) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_P(ExtensionAppTest, Reinstall) {
+TEST_F(ExtensionAppTest, Reinstall) {
   EXPECT_EQ(default_apps_, GetModelContent(model_updater_.get()));
 
   // Install kPackagedApp1Id again should not create a new entry.
@@ -529,7 +514,7 @@ TEST_P(ExtensionAppTest, Reinstall) {
   EXPECT_EQ(default_apps_, GetModelContent(model_updater_.get()));
 }
 
-TEST_P(ExtensionAppTest, OrdinalPrefsChange) {
+TEST_F(ExtensionAppTest, OrdinalPrefsChange) {
   AppSorting* sorting = ExtensionSystem::Get(profile_.get())->app_sorting();
 
   syncer::StringOrdinal package_app_page =
@@ -553,7 +538,7 @@ TEST_P(ExtensionAppTest, OrdinalPrefsChange) {
   EXPECT_EQ(default_apps_, GetModelContent(model_updater_.get()));
 }
 
-TEST_P(ExtensionAppTest, OnExtensionMoved) {
+TEST_F(ExtensionAppTest, OnExtensionMoved) {
   AppSorting* sorting = ExtensionSystem::Get(profile_.get())->app_sorting();
   sorting->SetPageOrdinal(kHostedAppId,
                           sorting->GetPageOrdinal(kPackagedApp1Id));
@@ -577,7 +562,7 @@ TEST_P(ExtensionAppTest, OnExtensionMoved) {
   EXPECT_EQ(default_apps_, GetModelContent(model_updater_.get()));
 }
 
-TEST_P(ExtensionAppTest, InvalidOrdinal) {
+TEST_F(ExtensionAppTest, InvalidOrdinal) {
   // Creates a no-ordinal case.
   AppSorting* sorting = ExtensionSystem::Get(profile_.get())->app_sorting();
   sorting->ClearOrdinals(kPackagedApp1Id);
@@ -593,7 +578,7 @@ TEST_P(ExtensionAppTest, InvalidOrdinal) {
   CreateBuilder();
 }
 
-TEST_P(ExtensionAppTest, LoadIcon) {
+TEST_F(ExtensionAppTest, LoadIcon) {
   // Generate the source icon for comparing.
   gfx::ImageSkia src_image_skia;
   GenerateExtensionAppIcon(kPackagedApp1Id, src_image_skia);
@@ -604,7 +589,7 @@ TEST_P(ExtensionAppTest, LoadIcon) {
   VerifyIcon(src_image_skia, item->icon());
 }
 
-TEST_P(ExtensionAppTest, LoadCompressedIcon) {
+TEST_F(ExtensionAppTest, LoadCompressedIcon) {
   // Generate the source icon for comparing.
   std::vector<uint8_t> src_data;
   GenerateExtensionAppCompressedIcon(kPackagedApp1Id, src_data);
@@ -639,35 +624,8 @@ TEST_P(ExtensionAppTest, LoadCompressedIcon) {
   ASSERT_EQ(src_data, dst_icon->compressed.value());
 }
 
-// This test adds a bookmark app to the app list.
-TEST_P(BookmarkAppBuilderTest, BookmarkAppList) {
-  const std::string kAppName = "Bookmark App";
-  const std::string kAppVersion = "2014.1.24.19748";
-  const std::string kAppUrl = "http://google.com";
-  const std::string kAppId = "podhdnefolignjhecmjkbimfgioanahm";
-  std::string err;
-  base::DictionaryValue value;
-  value.SetString("name", kAppName);
-  value.SetString("version", kAppVersion);
-  value.SetString("app.launch.web_url", kAppUrl);
-  scoped_refptr<extensions::Extension> bookmark_app =
-      extensions::Extension::Create(
-          base::FilePath(), extensions::Manifest::INTERNAL, value,
-          extensions::Extension::WAS_INSTALLED_BY_DEFAULT |
-              extensions::Extension::FROM_BOOKMARK,
-          kAppId, &err);
-  EXPECT_TRUE(err.empty());
-
-  service_->AddExtension(bookmark_app.get());
-  app_service_test_.SetUp(profile_.get());
-  RemoveApps(apps::mojom::AppType::kWeb, profile_.get(), model_updater_.get());
-  EXPECT_EQ(1u, model_updater_->ItemCount());
-  EXPECT_EQ((std::vector<std::string>{kAppName}),
-            GetModelContent(model_updater_.get()));
-}
-
 // This test adds a web app to the app list.
-TEST_P(WebAppBuilderTest, WebAppList) {
+TEST_F(WebAppBuilderTest, WebAppList) {
   const std::string kAppName = "Web App";
   CreateWebApp(kAppName);
 
@@ -678,7 +636,7 @@ TEST_P(WebAppBuilderTest, WebAppList) {
             GetModelContent(model_updater_.get()));
 }
 
-TEST_P(WebAppBuilderTest, LoadGeneratedIcon) {
+TEST_F(WebAppBuilderTest, LoadGeneratedIcon) {
   const std::string kAppName = "Web App";
   const std::string app_id = CreateWebApp(kAppName);
 
@@ -696,15 +654,7 @@ TEST_P(WebAppBuilderTest, LoadGeneratedIcon) {
 
 class CrostiniAppTest : public AppServiceAppModelBuilderTest {
  public:
-  CrostiniAppTest() {
-    if (GetParam() == web_app::ProviderType::kWebApps) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    } else if (GetParam() == web_app::ProviderType::kBookmarkApps) {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    }
-  }
+  CrostiniAppTest() = default;
 
   ~CrostiniAppTest() override {}
 
@@ -790,14 +740,13 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
   std::unique_ptr<CrostiniTestHelper> test_helper_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<
       app_list::AppListSyncableService::ScopedModelUpdaterFactoryForTest>
       model_updater_factory_scope_;
 };
 
 // Test that the Terminal app is only shown when Crostini is enabled
-TEST_P(CrostiniAppTest, EnableAndDisableCrostini) {
+TEST_F(CrostiniAppTest, EnableAndDisableCrostini) {
   // Reset things so we start with Crostini not enabled.
   ResetBuilder();
   test_helper_.reset();
@@ -817,7 +766,7 @@ TEST_P(CrostiniAppTest, EnableAndDisableCrostini) {
   EXPECT_THAT(GetAllApps(), testing::IsEmpty());
 }
 
-TEST_P(CrostiniAppTest, AppInstallation) {
+TEST_F(CrostiniAppTest, AppInstallation) {
   // Terminal app.
   EXPECT_EQ(1u, GetModelItemCount());
 
@@ -842,7 +791,7 @@ TEST_P(CrostiniAppTest, AppInstallation) {
 }
 
 // Test that the app model builder correctly picks up changes to existing apps.
-TEST_P(CrostiniAppTest, UpdateApps) {
+TEST_F(CrostiniAppTest, UpdateApps) {
   test_helper_->SetupDummyApps();
   // 3 apps.
   EXPECT_EQ(3u, GetModelItemCount());
@@ -882,7 +831,7 @@ TEST_P(CrostiniAppTest, UpdateApps) {
 }
 
 // Test that the app model builder handles removed apps
-TEST_P(CrostiniAppTest, RemoveApps) {
+TEST_F(CrostiniAppTest, RemoveApps) {
   test_helper_->SetupDummyApps();
   // 3 apps.
   EXPECT_EQ(3u, GetModelItemCount());
@@ -897,7 +846,7 @@ TEST_P(CrostiniAppTest, RemoveApps) {
 }
 
 // Tests that the crostini folder is (re)created with the correct parameters.
-TEST_P(CrostiniAppTest, CreatesFolder) {
+TEST_F(CrostiniAppTest, CreatesFolder) {
   EXPECT_THAT(GetAllApps(),
               testing::UnorderedElementsAre(
                   IsChromeApp(crostini::kCrostiniTerminalSystemAppId,
@@ -920,7 +869,7 @@ TEST_P(CrostiniAppTest, CreatesFolder) {
 }
 
 // Test that the Terminal app is removed when Crostini is disabled.
-TEST_P(CrostiniAppTest, DisableCrostini) {
+TEST_F(CrostiniAppTest, DisableCrostini) {
   test_helper_->SetupDummyApps();
   // 3 apps.
   EXPECT_EQ(3u, GetModelItemCount());
@@ -934,20 +883,8 @@ TEST_P(CrostiniAppTest, DisableCrostini) {
   EXPECT_EQ(0u, GetModelItemCount());
 }
 
-class PluginVmAppTest : public ::testing::TestWithParam<ProviderType> {
+class PluginVmAppTest : public testing::Test {
  public:
-  PluginVmAppTest() {
-    if (GetParam() == web_app::ProviderType::kWebApps) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    } else if (GetParam() == web_app::ProviderType::kBookmarkApps) {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    }
-  }
-
-  ~PluginVmAppTest() = default;
-
   void SetUp() override {
     testing_profile_ = std::make_unique<TestingProfile>();
     web_app::TestWebAppProvider::Get(testing_profile_.get())->Start();
@@ -1000,7 +937,6 @@ class PluginVmAppTest : public ::testing::TestWithParam<ProviderType> {
     test_helper_->SetPolicyRequirementsToAllowPluginVm();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<PluginVmTestHelper> test_helper_;
@@ -1011,13 +947,13 @@ class PluginVmAppTest : public ::testing::TestWithParam<ProviderType> {
   std::unique_ptr<test::TestAppListControllerDelegate> controller_;
 };
 
-TEST_P(PluginVmAppTest, PluginVmDisabled) {
+TEST_F(PluginVmAppTest, PluginVmDisabled) {
   EXPECT_FALSE(
       plugin_vm::PluginVmFeatures::Get()->IsAllowed(testing_profile_.get()));
   EXPECT_THAT(GetModelContent(model_updater_.get()), testing::IsEmpty());
 }
 
-TEST_P(PluginVmAppTest, EnableAndDisablePluginVm) {
+TEST_F(PluginVmAppTest, EnableAndDisablePluginVm) {
   app_service_test_.FlushMojoCalls();
   EXPECT_THAT(GetModelContent(model_updater_.get()), testing::IsEmpty());
 
@@ -1035,7 +971,7 @@ TEST_P(PluginVmAppTest, EnableAndDisablePluginVm) {
   EXPECT_THAT(GetModelContent(model_updater_.get()), testing::IsEmpty());
 }
 
-TEST_P(PluginVmAppTest, PluginVmEnabled) {
+TEST_F(PluginVmAppTest, PluginVmEnabled) {
   AllowPluginVm();
 
   // Reset the AppModelBuilder, so that it is created in a state where
@@ -1049,10 +985,6 @@ TEST_P(PluginVmAppTest, PluginVmEnabled) {
 
 class BorealisAppTest : public AppServiceAppModelBuilderTest {
  public:
-  BorealisAppTest() = default;
-
-  ~BorealisAppTest() = default;
-
   void SetUp() override {
     testing_profile_ = std::make_unique<TestingProfile>();
     web_app::TestWebAppProvider::Get(testing_profile_.get())->Start();
@@ -1081,14 +1013,14 @@ class BorealisAppTest : public AppServiceAppModelBuilderTest {
   std::unique_ptr<TestingProfile> testing_profile_;
 };
 
-TEST_P(BorealisAppTest, BorealisDisabled) {
+TEST_F(BorealisAppTest, BorealisDisabled) {
   EXPECT_FALSE(
       borealis::BorealisFeaturesFactory::GetForProfile(testing_profile_.get())
           ->IsAllowed());
   EXPECT_EQ(std::vector<std::string>{}, GetModelContent(model_updater_.get()));
 }
 
-TEST_P(BorealisAppTest, BorealisEnabled) {
+TEST_F(BorealisAppTest, BorealisEnabled) {
   // Enable the Borealis feature.
   scoped_feature_list_.InitAndEnableFeature(features::kBorealis);
   // Reset the AppModelBuilder, so that it is created in a state where
@@ -1102,43 +1034,3 @@ TEST_P(BorealisAppTest, BorealisEnabled) {
       std::vector<std::string>{l10n_util::GetStringUTF8(IDS_BOREALIS_APP_NAME)},
       GetModelContent(model_updater_.get()));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         BuiltInAppTest,
-                         ::testing::Values(ProviderType::kBookmarkApps,
-                                           ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ExtensionAppTest,
-                         ::testing::Values(ProviderType::kBookmarkApps,
-                                           ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         BookmarkAppBuilderTest,
-                         ::testing::Values(ProviderType::kBookmarkApps),
-                         web_app::ProviderTypeParamToString);
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebAppBuilderTest,
-                         ::testing::Values(ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         CrostiniAppTest,
-                         ::testing::Values(ProviderType::kBookmarkApps,
-                                           ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PluginVmAppTest,
-                         ::testing::Values(ProviderType::kBookmarkApps,
-                                           ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         BorealisAppTest,
-                         ::testing::Values(ProviderType::kBookmarkApps,
-                                           ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);
