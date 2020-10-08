@@ -20,6 +20,7 @@ js_type_check("closure_compile_module") {
     ":fake_method_resolver",
     ":fake_observables",
     ":fake_system_data_provider",
+    ":fake_system_routine_controller",
     ":memory_card",
     ":mojo_interface_provider",
     ":overview_card",
@@ -87,6 +88,10 @@ js_library("fake_observables") {
 }
 
 js_library("fake_system_data_provider") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+}
+
+js_library("fake_system_routine_controller") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
