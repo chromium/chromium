@@ -499,20 +499,8 @@ TEST_F('ChromeVoxTutorialTest', 'QuickOrientationLessonTest', function() {
     const getRangeStart = () => {
       return ChromeVoxState.instance.getCurrentRange().start.node;
     };
-    const createMockKeyEvent = (keyCode, opt_modifiers) => {
-      const modifiers = opt_modifiers === undefined ? {} : opt_modifiers;
-      const mockEvent = {};
-      mockEvent.keyCode = keyCode;
-      for (const key in modifiers) {
-        mockEvent[key] = modifiers[key];
-      }
-
-      mockEvent.preventDefault = () => {};
-      mockEvent.stopPropagation = () => {};
-      return mockEvent;
-    };
     const simulateKeyPress = (keyCode, opt_modifiers) => {
-      const keyEvent = createMockKeyEvent(keyCode, opt_modifiers);
+      const keyEvent = this.createMockKeyEvent(keyCode, opt_modifiers);
       keyboardHandler.onKeyDown(keyEvent);
       keyboardHandler.onKeyUp(keyEvent);
     };

@@ -13,18 +13,6 @@ ChromeVoxBackgroundKeyboardHandlerTest = class extends ChromeVoxNextE2ETest {
   setUp() {
     window.keyboardHandler = new BackgroundKeyboardHandler();
   }
-
-  createMockKeyEvent(keyCode, opt_modifiers) {
-    const modifiers = opt_modifiers === undefined ? {} : opt_modifiers;
-    const keyEvent = {};
-    keyEvent.keyCode = keyCode;
-    for (const key in modifiers) {
-      keyEvent[key] = modifiers[key];
-    }
-    keyEvent.preventDefault = _ => {};
-    keyEvent.stopPropagation = _ => {};
-    return keyEvent;
-  }
 };
 
 
@@ -57,7 +45,7 @@ TEST_F('ChromeVoxBackgroundKeyboardHandlerTest', 'PassThroughMode', function() {
     assertEquals(0, keyboardHandler.passedThroughKeyDowns_.size);
 
     // Send the pass through command: Search+Shift+Escape.
-    const search = this.createMockKeyEvent(91, {metaKey: true});
+    const search = this.createMockKeyEvent(KeyCode.SEARCH, {metaKey: true});
     keyboardHandler.onKeyDown(search);
     assertEquals(1, keyboardHandler.eatenKeyDowns_.size);
     assertEquals(0, keyboardHandler.passedThroughKeyDowns_.size);
@@ -65,15 +53,15 @@ TEST_F('ChromeVoxBackgroundKeyboardHandlerTest', 'PassThroughMode', function() {
     assertUndefined(ChromeVox.passThroughMode);
 
     const searchShift =
-        this.createMockKeyEvent(16, {metaKey: true, shiftKey: true});
+        this.createMockKeyEvent(KeyCode.SHIFT, {metaKey: true, shiftKey: true});
     keyboardHandler.onKeyDown(searchShift);
     assertEquals(2, keyboardHandler.eatenKeyDowns_.size);
     assertEquals(0, keyboardHandler.passedThroughKeyDowns_.size);
     assertEquals('no_pass_through', keyboardHandler.passThroughState_);
     assertUndefined(ChromeVox.passThroughMode);
 
-    const searchShiftEsc =
-        this.createMockKeyEvent(27, {metaKey: true, shiftKey: true});
+    const searchShiftEsc = this.createMockKeyEvent(
+        KeyCode.ESCAPE, {metaKey: true, shiftKey: true});
     keyboardHandler.onKeyDown(searchShiftEsc);
     assertEquals(3, keyboardHandler.eatenKeyDowns_.size);
     assertEquals(0, keyboardHandler.passedThroughKeyDowns_.size);
@@ -109,8 +97,8 @@ TEST_F('ChromeVoxBackgroundKeyboardHandlerTest', 'PassThroughMode', function() {
     assertEquals('pending_shortcut_keyups', keyboardHandler.passThroughState_);
     assertTrue(ChromeVox.passThroughMode);
 
-    const searchCtrl =
-        this.createMockKeyEvent(17, {metaKey: true, ctrlKey: true});
+    const searchCtrl = this.createMockKeyEvent(
+        KeyCode.CONTROL, {metaKey: true, ctrlKey: true});
     keyboardHandler.onKeyDown(searchCtrl);
     assertEquals(0, keyboardHandler.eatenKeyDowns_.size);
     assertEquals(2, keyboardHandler.passedThroughKeyDowns_.size);
@@ -118,7 +106,7 @@ TEST_F('ChromeVoxBackgroundKeyboardHandlerTest', 'PassThroughMode', function() {
     assertTrue(ChromeVox.passThroughMode);
 
     const searchCtrlM =
-        this.createMockKeyEvent(77, {metaKey: true, ctrlKey: true});
+        this.createMockKeyEvent(KeyCode.M, {metaKey: true, ctrlKey: true});
     keyboardHandler.onKeyDown(searchCtrlM);
     assertEquals(0, keyboardHandler.eatenKeyDowns_.size);
     assertEquals(3, keyboardHandler.passedThroughKeyDowns_.size);
@@ -156,17 +144,17 @@ TEST_F(
 
         // Send some random keys; ensure the pass through state variables never
         // change.
-        const search = this.createMockKeyEvent(91, {metaKey: true});
+        const search = this.createMockKeyEvent(KeyCode.SEARCH, {metaKey: true});
         keyboardHandler.onKeyDown(search);
         assertNoPassThrough();
 
-        const searchShift =
-            this.createMockKeyEvent(16, {metaKey: true, shiftKey: true});
+        const searchShift = this.createMockKeyEvent(
+            KeyCode.SHIFT, {metaKey: true, shiftKey: true});
         keyboardHandler.onKeyDown(searchShift);
         assertNoPassThrough();
 
         const searchShiftM =
-            this.createMockKeyEvent(77, {metaKey: true, shiftKey: true});
+            this.createMockKeyEvent(KeyCode.M, {metaKey: true, shiftKey: true});
         keyboardHandler.onKeyDown(searchShiftM);
         assertNoPassThrough();
 
@@ -179,13 +167,15 @@ TEST_F(
         keyboardHandler.onKeyUp(search);
         assertNoPassThrough();
 
-        keyboardHandler.onKeyDown(this.createMockKeyEvent(65));
+        keyboardHandler.onKeyDown(this.createMockKeyEvent(KeyCode.A));
         assertNoPassThrough();
 
-        keyboardHandler.onKeyDown(this.createMockKeyEvent(65, {altKey: true}));
+        keyboardHandler.onKeyDown(
+            this.createMockKeyEvent(KeyCode.A, {altKey: true}));
         assertNoPassThrough();
 
-        keyboardHandler.onKeyUp(this.createMockKeyEvent(65, {altKey: true}));
+        keyboardHandler.onKeyUp(
+            this.createMockKeyEvent(KeyCode.A, {altKey: true}));
         assertNoPassThrough();
       });
     });
@@ -195,23 +185,23 @@ TEST_F(
     function() {
       this.runWithLoadedTree('<p>test</p>', function() {
         // Send a few key downs.
-        const search = this.createMockKeyEvent(91, {metaKey: true});
+        const search = this.createMockKeyEvent(KeyCode.SEARCH, {metaKey: true});
         keyboardHandler.onKeyDown(search);
         assertEquals(1, keyboardHandler.eatenKeyDowns_.size);
 
-        const searchShift =
-            this.createMockKeyEvent(16, {metaKey: true, shiftKey: true});
+        const searchShift = this.createMockKeyEvent(
+            KeyCode.SHIFT, {metaKey: true, shiftKey: true});
         keyboardHandler.onKeyDown(searchShift);
         assertEquals(2, keyboardHandler.eatenKeyDowns_.size);
 
         const searchShiftM =
-            this.createMockKeyEvent(77, {metaKey: true, shiftKey: true});
+            this.createMockKeyEvent(KeyCode.M, {metaKey: true, shiftKey: true});
         keyboardHandler.onKeyDown(searchShiftM);
         assertEquals(3, keyboardHandler.eatenKeyDowns_.size);
 
         // Now, send a key down, but no modifiers set, which is impossible to
         // actually press. This key is not eaten.
-        const m = this.createMockKeyEvent(77, {});
+        const m = this.createMockKeyEvent(KeyCode.M, {});
         keyboardHandler.onKeyDown(m);
         assertEquals(0, keyboardHandler.eatenKeyDowns_.size);
 
@@ -230,26 +220,26 @@ TEST_F(
         ChromeVox.passThroughMode = true;
 
         // Send a few key downs (which are passed through).
-        const search = this.createMockKeyEvent(91, {metaKey: true});
+        const search = this.createMockKeyEvent(KeyCode.SEARCH, {metaKey: true});
         keyboardHandler.onKeyDown(search);
         assertEquals(0, keyboardHandler.eatenKeyDowns_.size);
         assertEquals(1, keyboardHandler.passedThroughKeyDowns_.size);
 
-        const searchShift =
-            this.createMockKeyEvent(16, {metaKey: true, shiftKey: true});
+        const searchShift = this.createMockKeyEvent(
+            KeyCode.SHIFT, {metaKey: true, shiftKey: true});
         keyboardHandler.onKeyDown(searchShift);
         assertEquals(0, keyboardHandler.eatenKeyDowns_.size);
         assertEquals(2, keyboardHandler.passedThroughKeyDowns_.size);
 
         const searchShiftM =
-            this.createMockKeyEvent(77, {metaKey: true, shiftKey: true});
+            this.createMockKeyEvent(KeyCode.M, {metaKey: true, shiftKey: true});
         keyboardHandler.onKeyDown(searchShiftM);
         assertEquals(0, keyboardHandler.eatenKeyDowns_.size);
         assertEquals(3, keyboardHandler.passedThroughKeyDowns_.size);
 
         // Now, send a key down, but no modifiers set, which is impossible to
         // actually press. This is passed through, so the count resets to 1.
-        const m = this.createMockKeyEvent(77, {});
+        const m = this.createMockKeyEvent(KeyCode.M, {});
         keyboardHandler.onKeyDown(m);
         assertEquals(0, keyboardHandler.eatenKeyDowns_.size);
         assertEquals(1, keyboardHandler.passedThroughKeyDowns_.size);
