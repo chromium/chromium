@@ -116,6 +116,12 @@ VisiblePositionTemplate<Strategy> VisiblePositionTemplate<Strategy>::Create(
           : SnapForward(position_with_affinity.GetPosition());
   DCHECK(forward_position.IsNotNull());
 
+  // Fast path to avoid slow InSameLine() below in common cases.
+  if (position_with_affinity.Affinity() == TextAffinity::kDownstream &&
+      backward_position_downstream == forward_position) {
+    return VisiblePositionTemplate<Strategy>(backward_position_downstream);
+  }
+
   // When not at a line wrap, make sure to end up with the backward canonical
   // position with |TextAffinity::Downstream| affinity.
   if (InSameLine(backward_position_upstream, forward_position))
