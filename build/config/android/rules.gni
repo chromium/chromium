@@ -405,8 +405,7 @@ if (enable_java_templates) {
   #     FooBar.java.
   #   inputs: additional compile-time dependencies. Any files
   #     `#include`-ed in the templates should be listed here.
-  #   package_path: this will be the subdirectory for each .java file in the
-  #     .srcjar.
+  #   defines: List of -D arguments for the preprocessor.
   #
   # Example
   #   java_cpp_template("foo_generated_enum") {
@@ -416,72 +415,41 @@ if (enable_java_templates) {
   #     inputs = [
   #       "android/java/templates/native_foo_header.h",
   #     ]
-  #
-  #     package_path = "org/chromium/base/library_loader"
-  #     include_path = "android/java/templates"
   #   }
   template("java_cpp_template") {
-    forward_variables_from(invoker, [ "testonly" ])
-
-    _include_path = "//"
-    if (defined(invoker.include_path)) {
-      _include_path = invoker.include_path
-    }
-
-    _apply_gcc_target_name = "${target_name}__apply_gcc"
-    _base_gen_dir = "${target_gen_dir}/${target_name}/java_cpp_template"
-    _package_path = invoker.package_path
-
-    action_foreach_with_pydeps(_apply_gcc_target_name) {
+    action_with_pydeps(target_name) {
       forward_variables_from(invoker,
                              [
+                               "data_deps",
                                "deps",
                                "inputs",
                                "public_deps",
-                               "data_deps",
+                               "sources",
+                               "testonly",
+                               "visibility",
                              ])
       script = "//build/android/gyp/gcc_preprocess.py"
-      depfile =
-          "${target_gen_dir}/${invoker.target_name}_{{source_name_part}}.d"
+      outputs = [ "$target_gen_dir/$target_name.srcjar" ]
 
-      sources = invoker.sources
-
-      outputs = [ "$_base_gen_dir/${_package_path}/{{source_name_part}}.java" ]
-
+      _include_dirs = [
+        "//",
+        root_gen_dir,
+      ]
+      _rebased_include_dirs = rebase_path(_include_dirs, root_build_dir)
       args = [
-        "--depfile",
-        rebase_path(depfile, root_build_dir),
-        "--include-path",
-        rebase_path(_include_path, root_build_dir),
+        "--include-dirs=$_rebased_include_dirs",
         "--output",
         rebase_path(outputs[0], root_build_dir),
-        "--template={{source}}",
       ]
-
       if (defined(invoker.defines)) {
-        foreach(_def, invoker.defines) {
+        foreach(_define, invoker.defines) {
           args += [
-            "--defines",
-            _def,
+            "--define",
+            _define,
           ]
         }
       }
-    }
-
-    # Filter out .d files.
-    sources = []
-    foreach(_output, get_target_outputs(":$_apply_gcc_target_name")) {
-      if (get_path_info(_output, "extension") != "d") {
-        sources += [ _output ]
-      }
-    }
-
-    zip(target_name) {
-      forward_variables_from(invoker, [ "visibility" ])
-      inputs = sources
-      output = "${target_gen_dir}/${target_name}.srcjar"
-      base_dir = _base_gen_dir
-      deps = [ ":$_apply_gcc_target_name" ]
+      args += rebase_path(sources, root_build_dir)
     }
   }
 
@@ -2058,7 +2026,6 @@ if (enable_java_templates) {
   #   is_incremental_install:
   template("generate_build_config_srcjar") {
     java_cpp_template(target_name) {
-      package_path = "org/chromium/base"
       sources = [ "//base/android/java/templates/BuildConfig.template" ]
       defines = []
 
@@ -2132,7 +2099,6 @@ if (enable_java_templates) {
         defines += [ "USE_FINAL" ]
       }
 
-      package_path = string_replace(invoker.java_package, ".", "/")
       sources = [ "//build/android/java/templates/ProductConfig.template" ]
       defines += [ "PACKAGE=${invoker.java_package}" ]
 

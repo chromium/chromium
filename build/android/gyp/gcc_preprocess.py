@@ -4,51 +4,60 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import optparse
+import argparse
 import os
+import posixpath
+import re
 import sys
+import zipfile
 
 from util import build_utils
 
-def DoGcc(options):
-  build_utils.MakeDirectory(os.path.dirname(options.output))
 
-  gcc_cmd = [ 'gcc' ]  # invoke host gcc.
-  if options.defines:
-    gcc_cmd.extend(sum(map(lambda w: ['-D', w], options.defines), []))
-
-  with build_utils.AtomicOutput(options.output) as f:
-    gcc_cmd.extend([
-        '-E',                  # stop after preprocessing.
-        '-D', 'ANDROID',       # Specify ANDROID define for pre-processor.
-        '-x', 'c-header',      # treat sources as C header files
-        '-P',                  # disable line markers, i.e. '#line 309'
-        '-I', options.include_path,
-        '-o', f.name,
-        options.template
-    ])
-
-    build_utils.CheckOutput(gcc_cmd)
+def _ParsePackageName(data):
+  m = re.match(r'^\s*package\s+(.*?)\s*;', data, re.MULTILINE)
+  return m.group(1) if m else ''
 
 
 def main(args):
   args = build_utils.ExpandFileArgs(args)
 
-  parser = optparse.OptionParser()
-  build_utils.AddDepfileOption(parser)
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--include-dirs', help='GN list of include directories.')
+  parser.add_argument('--output', help='Path for .srcjar.')
+  parser.add_argument('--define',
+                      action='append',
+                      dest='defines',
+                      help='List of -D args')
+  parser.add_argument('templates', nargs='+', help='Template files.')
+  options = parser.parse_args(args)
 
-  parser.add_option('--include-path', help='Include path for gcc.')
-  parser.add_option('--template', help='Path to template.')
-  parser.add_option('--output', help='Path for generated file.')
-  parser.add_option('--defines', help='Pre-defines macros', action='append')
+  options.defines = build_utils.ParseGnList(options.defines)
+  options.include_dirs = build_utils.ParseGnList(options.include_dirs)
 
-  options, _ = parser.parse_args(args)
+  gcc_cmd = [
+      'gcc',
+      '-E',  # stop after preprocessing.
+      '-DANDROID',  # Specify ANDROID define for pre-processor.
+      '-x',
+      'c-header',  # treat sources as C header files
+      '-P',  # disable line markers, i.e. '#line 309'
+  ]
+  gcc_cmd.extend('-D' + x for x in options.defines)
+  gcc_cmd.extend('-I' + x for x in options.include_dirs)
 
-  DoGcc(options)
-
-  if options.depfile:
-    build_utils.WriteDepfile(options.depfile, options.output)
+  with build_utils.AtomicOutput(options.output) as f:
+    with zipfile.ZipFile(f, 'w') as z:
+      for template in options.templates:
+        data = build_utils.CheckOutput(gcc_cmd + [template])
+        package_name = _ParsePackageName(data)
+        if not package_name:
+          raise Exception('Could not find java package of ' + template)
+        zip_path = posixpath.join(
+            package_name.replace('.', '/'),
+            os.path.splitext(os.path.basename(template))[0]) + '.java'
+        build_utils.AddToZipHermetic(z, zip_path, data=data)
 
 
 if __name__ == '__main__':
-  sys.exit(main(sys.argv[1:]))
+  main(sys.argv[1:])

@@ -26,7 +26,6 @@ jinja_template("cast_shell_manifest") {
 
 java_cpp_template("cast_shell_build_config_gen") {
   sources = [ "apk/templates/BuildConfig.template" ]
-  package_path = "org/chromium/chromecast/shell"
 
   defines = []
   if (display_web_contents_in_service) {

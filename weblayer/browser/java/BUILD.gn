@@ -51,7 +51,6 @@ generate_product_config_srcjar("weblayer_product_config") {
 
 java_cpp_template("resource_id_javagen") {
   sources = [ "ResourceId.template" ]
-  package_path = "org/chromium/weblayer_private/resources"
   inputs = [
     "//components/resources/android/blocked_content_resource_id.h",
     "//components/resources/android/page_info_resource_id.h",

@@ -82,12 +82,10 @@ java_cpp_enum("http_cache_type_java") {
 java_cpp_template("load_states_list") {
   sources = [ "java/src/org/chromium/net/impl/LoadState.template" ]
   inputs = [ "//net/base/load_states_list.h" ]
-  package_path = "org/chromium/net/impl"
 }
 
 java_cpp_template("integrated_mode_state") {
   sources = [ "java/src/org/chromium/net/impl/IntegratedModeState.template" ]
-  package_path = "org/chromium/net/impl"
   if (integrated_mode) {
     defines = [ "INTEGRATED_MODE" ]
   }

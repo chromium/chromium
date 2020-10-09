@@ -197,7 +197,6 @@ android_library("net_javatests") {
 }
 
 java_cpp_template("net_errors_java") {
-  package_path = "org/chromium/net"
   sources = [ "java/NetError.template" ]
   inputs = [ "../base/net_error_list.h" ]
 }
