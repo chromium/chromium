@@ -60,7 +60,7 @@ class OnRedirectReceived_Runnable : public Cronet_Runnable {
 
   void Run() override {
     Cronet_UrlRequestCallback_OnRedirectReceived(
-        callback_, /* request = */ nullptr, /* response_info = */ nullptr,
+        callback_, /* request = */ nullptr, /* info = */ nullptr,
         new_location_url_.c_str());
   }
 
@@ -160,7 +160,7 @@ TEST_F(RunnablesTest, TestRunOnceClosureOnExecutor) {
   // Invoke Cronet_UrlRequestCallback_OnResponseStarted using OnceClosure
   Cronet_RunnablePtr runnable = new cronet::OnceClosureRunnable(
       base::BindOnce(Cronet_UrlRequestCallback_OnResponseStarted, callback,
-                     /* request = */ nullptr, /* response_info = */ nullptr));
+                     /* request = */ nullptr, /* info = */ nullptr));
   Cronet_UrlRequestCallback_SetClientContext(callback, this);
   Cronet_Executor_Execute(executor, runnable);
   base::RunLoop().RunUntilIdle();
@@ -189,7 +189,7 @@ TEST_F(RunnablesTest, TestCronetBuffer) {
   Cronet_RunnablePtr runnable = new cronet::OnceClosureRunnable(base::BindOnce(
       RunnablesTest::UrlRequestCallback_OnReadCompleted, callback,
       /* request = */ nullptr,
-      /* response_info = */ nullptr, buffer, /* bytes_read = */ 0));
+      /* info = */ nullptr, buffer, /* bytes_read = */ 0));
   Cronet_UrlRequestCallback_SetClientContext(callback, this);
   Cronet_Executor_Execute(executor, runnable);
   base::RunLoop().RunUntilIdle();
