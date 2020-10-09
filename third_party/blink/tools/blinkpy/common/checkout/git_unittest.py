@@ -27,6 +27,10 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
         self._run(['git', 'init', self.untracking_checkout_path])
 
         self._chdir(self.untracking_checkout_path)
+        # Explicitly create the default branch instead of relying on
+        # init.defaultBranch. We don't use the new --initial-branch flag with
+        # `git init` to keep the tests compatible with older versions of git.
+        self._run(['git', 'checkout', '-b', 'master'])
         self._set_user_config()
         self._write_text_file('foo_file', 'foo')
         self._run(['git', 'add', 'foo_file'])
