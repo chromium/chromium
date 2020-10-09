@@ -11,7 +11,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.CookieChangeCause;
 import org.chromium.weblayer_private.interfaces.ICookieChangedCallbackClient;
 import org.chromium.weblayer_private.interfaces.ICookieManager;
@@ -73,13 +72,9 @@ public final class CookieManagerImpl extends ICookieManager.Stub {
     }
 
     @CalledByNative
-    private static void onCookieChange(
-            ICookieChangedCallbackClient callback, String cookie, int cause) {
-        try {
-            callback.onCookieChanged(cookie, mojoCauseToJavaType(cause));
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
+    private static void onCookieChange(ICookieChangedCallbackClient callback, String cookie,
+            int cause) throws RemoteException {
+        callback.onCookieChanged(cookie, mojoCauseToJavaType(cause));
     }
 
     @CookieChangeCause

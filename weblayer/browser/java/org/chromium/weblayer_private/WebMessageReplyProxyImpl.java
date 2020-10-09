@@ -44,22 +44,14 @@ public final class WebMessageReplyProxyImpl extends IWebMessageReplyProxy.Stub {
     }
 
     @CalledByNative
-    private void onNativeDestroyed() {
+    private void onNativeDestroyed() throws RemoteException {
         mNativeWebMessageReplyProxyImpl = 0;
-        try {
-            mClient.onReplyProxyDestroyed(mId);
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
+        mClient.onReplyProxyDestroyed(mId);
     }
 
     @CalledByNative
-    private void onPostMessage(String message) {
-        try {
-            mClient.onPostMessage(mId, message);
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
+    private void onPostMessage(String message) throws RemoteException {
+        mClient.onPostMessage(mId, message);
     }
 
     @Override

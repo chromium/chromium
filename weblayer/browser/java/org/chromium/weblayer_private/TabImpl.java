@@ -804,16 +804,12 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
     }
 
     @CalledByNative
-    private void onFindResultAvailable(
-            int numberOfMatches, int activeMatchOrdinal, boolean finalUpdate) {
-        try {
-            if (mFindInPageCallbackClient != null) {
-                // The WebLayer API deals in indices instead of ordinals.
-                mFindInPageCallbackClient.onFindResult(
-                        numberOfMatches, activeMatchOrdinal - 1, finalUpdate);
-            }
-        } catch (RemoteException e) {
-            throw new AndroidRuntimeException(e);
+    private void onFindResultAvailable(int numberOfMatches, int activeMatchOrdinal,
+            boolean finalUpdate) throws RemoteException {
+        if (mFindInPageCallbackClient != null) {
+            // The WebLayer API deals in indices instead of ordinals.
+            mFindInPageCallbackClient.onFindResult(
+                    numberOfMatches, activeMatchOrdinal - 1, finalUpdate);
         }
 
         if (mFindResultBar != null) {
