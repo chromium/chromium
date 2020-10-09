@@ -4632,7 +4632,7 @@ hooks = [
   # Download Telemetry's benchmark binary dependencies via conditionals
   {
     'name': 'checkout_telemetry_benchmark_deps',
-    'condition': 'checkout_telemetry_dependencies and checkout_linux',
+    'condition': 'checkout_telemetry_dependencies and checkout_linux and not checkout_android',
     'pattern': '.',
     'action': [ 'vpython',
                 'src/tools/perf/fetch_benchmark_deps.py',
