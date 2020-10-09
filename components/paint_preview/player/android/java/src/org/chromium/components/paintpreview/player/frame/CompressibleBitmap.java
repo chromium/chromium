@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.SequencedTaskRunner;
 
 import java.io.ByteArrayOutputStream;
@@ -27,7 +26,6 @@ class CompressibleBitmap {
     private byte[] mCompressedData;
     private SequencedTaskRunner mTaskRunner;
     private AtomicBoolean mInUse = new AtomicBoolean();
-    private ThreadUtils.ThreadChecker mThreadChecker;
 
     /**
      * Creates a new compressible bitmap which starts to compress immediately.
@@ -39,7 +37,6 @@ class CompressibleBitmap {
     CompressibleBitmap(Bitmap bitmap, SequencedTaskRunner taskRunner, boolean visible) {
         mBitmap = bitmap;
         mTaskRunner = taskRunner;
-        mTaskRunner.postTask(() -> { mThreadChecker = new ThreadUtils.ThreadChecker(); });
         compressInBackground(visible);
     }
 
@@ -95,7 +92,6 @@ class CompressibleBitmap {
     }
 
     private boolean inflate() {
-        mThreadChecker.assertOnValidThread();
         if (mBitmap != null) return true;
 
         if (mCompressedData == null) return false;
@@ -105,7 +101,6 @@ class CompressibleBitmap {
     }
 
     private void compress() {
-        mThreadChecker.assertOnValidThread();
         if (mBitmap == null) return;
 
         ByteArrayOutputStream byteArrayStream = new ByteArrayOutputStream();
@@ -125,7 +120,6 @@ class CompressibleBitmap {
     }
 
     private void discardBitmapInternal() {
-        mThreadChecker.assertOnValidThread();
         if (!lock()) {
             mTaskRunner.postDelayedTask(this::discardBitmapInternal, IN_USE_BACKOFF_MS);
             return;
@@ -139,7 +133,6 @@ class CompressibleBitmap {
     }
 
     private void destroyInternal() {
-        mThreadChecker.assertOnValidThread();
         if (!lock()) {
             mTaskRunner.postDelayedTask(this::destroyInternal, IN_USE_BACKOFF_MS);
             return;
