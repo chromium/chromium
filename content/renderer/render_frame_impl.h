@@ -114,8 +114,6 @@
 #include "content/renderer/pepper/plugin_power_saver_helper.h"
 #endif
 
-struct FrameMsg_MixedContentFound_Params;
-
 namespace blink {
 class WeakWrapperResourceLoadInfoNotifier;
 class WebComputedAXTree;
@@ -973,7 +971,6 @@ class CONTENT_EXPORT RenderFrameImpl
   void OnScrollFocusedEditableNodeIntoRect(const gfx::Rect& rect);
   void OnSelectRange(const gfx::Point& base, const gfx::Point& extent);
   void OnSuppressFurtherDialogs();
-  void OnMixedContentFound(const FrameMsg_MixedContentFound_Params& params);
 
   // Callback scheduled from SerializeAsMHTML for when writing serialized
   // MHTML to the handle has been completed in the file thread.

@@ -11,9 +11,10 @@ import "mojo/public/mojom/base/text_direction.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/data_decoder/public/mojom/resource_snapshot_for_web_bundle.mojom";
 import "services/network/public/mojom/content_security_policy.mojom";
-import "services/network/public/mojom/fetch_api.mojom";
-import "services/network/public/mojom/web_sandbox_flags.mojom";
 import "services/network/public/mojom/cross_origin_opener_policy.mojom";
+import "services/network/public/mojom/fetch_api.mojom";
+import "services/network/public/mojom/source_location.mojom";
+import "services/network/public/mojom/web_sandbox_flags.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "third_party/blink/public/mojom/ad_tagging/ad_frame.mojom";
 import "third_party/blink/public/mojom/blob/blob.mojom";
@@ -24,6 +25,7 @@ import "third_party/blink/public/mojom/devtools/console_message.mojom";
 import "third_party/blink/public/mojom/devtools/inspector_issue.mojom";
 import "third_party/blink/public/mojom/feature_policy/feature_policy.mojom";
 import "third_party/blink/public/mojom/favicon/favicon_url.mojom";
+import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
 import "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
 import "third_party/blink/public/mojom/frame/fullscreen.mojom";
@@ -613,6 +615,15 @@ interface LocalFrame {
   // Request to enumerate and return links to all savable resources in the frame
   // Note: this covers only the immediate frame / doesn't cover subframes.
   GetSavableResourceLinks() => (GetSavableResourceLinksReply? reply);
+
+  // Sent to a frame to notify about mixed content found externally.
+  MixedContentFound(url.mojom.Url main_resource_url,
+                    url.mojom.Url mixed_content_url,
+                    RequestContextType request_context,
+                    bool was_allowed,
+                    url.mojom.Url url_before_redirects,
+                    bool had_redirect,
+                    network.mojom.SourceLocation? source_location);
 };
 
 // Also implemented in Blink, this interface defines frame-specific methods

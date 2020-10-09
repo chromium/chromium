@@ -217,7 +217,6 @@
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
-#include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/core/loader/web_associated_url_loader_impl.h"
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
@@ -2301,26 +2300,6 @@ bool WebLocalFrameImpl::HasCommittedFirstRealLoad() {
 void WebLocalFrameImpl::BlinkFeatureUsageReport(
     blink::mojom::WebFeature feature) {
   UseCounter::Count(GetFrame()->GetDocument(), feature);
-}
-
-void WebLocalFrameImpl::MixedContentFound(
-    const WebURL& main_resource_url,
-    const WebURL& mixed_content_url,
-    mojom::RequestContextType request_context,
-    bool was_allowed,
-    const WebURL& url_before_redirects,
-    bool had_redirect,
-    const WebSourceLocation& source_location) {
-  DCHECK(GetFrame());
-  std::unique_ptr<SourceLocation> source;
-  if (!source_location.url.IsNull()) {
-    source = std::make_unique<SourceLocation>(
-        source_location.url, source_location.line_number,
-        source_location.column_number, nullptr);
-  }
-  MixedContentChecker::MixedContentFound(
-      GetFrame(), main_resource_url, mixed_content_url, request_context,
-      was_allowed, url_before_redirects, had_redirect, std::move(source));
 }
 
 void WebLocalFrameImpl::DidDropNavigation() {

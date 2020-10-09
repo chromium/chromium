@@ -2304,7 +2304,6 @@ bool RenderFrameImpl::OnMessageReceived(const IPC::Message& msg) {
 #if BUILDFLAG(ENABLE_PLUGINS)
     IPC_MESSAGE_HANDLER(FrameMsg_SetPepperVolume, OnSetPepperVolume)
 #endif
-    IPC_MESSAGE_HANDLER(FrameMsg_MixedContentFound, OnMixedContentFound)
     IPC_MESSAGE_HANDLER(UnfreezableFrameMsg_Delete, OnDeleteFrame)
   IPC_END_MESSAGE_MAP()
 
@@ -5942,20 +5941,6 @@ void RenderFrameImpl::OnWriteMHTMLComplete(
                 "mismatching enums: " #a)
 #undef STATIC_ASSERT_ENUM
 #endif
-
-void RenderFrameImpl::OnMixedContentFound(
-    const FrameMsg_MixedContentFound_Params& params) {
-  blink::WebSourceLocation source_location;
-  source_location.url = WebString::FromLatin1(params.source_location.url);
-  source_location.line_number = params.source_location.line;
-  source_location.column_number = params.source_location.column;
-  auto request_context = static_cast<blink::mojom::RequestContextType>(
-      params.request_context_type);
-  frame_->MixedContentFound(params.main_resource_url, params.mixed_content_url,
-                            request_context, params.was_allowed,
-                            params.url_before_redirects, params.had_redirect,
-                            source_location);
-}
 
 void RenderFrameImpl::RequestOverlayRoutingToken(
     media::RoutingTokenCallback callback) {

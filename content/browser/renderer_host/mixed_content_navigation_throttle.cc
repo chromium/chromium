@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/mixed_content_navigation_throttle.h"
 
+#include <vector>
+
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
@@ -14,6 +16,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/common/frame_messages.h"
+#include "content/common/navigation_params.mojom.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/navigation_policy.h"
@@ -23,8 +26,8 @@
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
-
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -71,21 +74,15 @@ void UpdateRendererOnMixedContentFound(NavigationRequest* navigation_request,
   // for mixed content than this will be allowed to happen and this DCHECK
   // should be updated.
   DCHECK(navigation_request->frame_tree_node()->parent());
-  RenderFrameHost* rfh =
+  RenderFrameHostImpl* rfh =
       navigation_request->frame_tree_node()->current_frame_host();
-  FrameMsg_MixedContentFound_Params params;
-  params.main_resource_url = mixed_content_url;
-  params.mixed_content_url = navigation_request->GetURL();
-  params.request_context_type = navigation_request->request_context_type();
-  params.request_destination = navigation_request->request_destination();
-  params.was_allowed = was_allowed;
   DCHECK(!navigation_request->GetRedirectChain().empty());
-  params.url_before_redirects = navigation_request->GetRedirectChain()[0];
-  params.had_redirect = for_redirect;
-  params.source_location =
-      *(navigation_request->common_params().source_location.get());
-
-  rfh->Send(new FrameMsg_MixedContentFound(rfh->GetRoutingID(), params));
+  GURL url_before_redirects = navigation_request->GetRedirectChain()[0];
+  rfh->GetAssociatedLocalFrame()->MixedContentFound(
+      mixed_content_url, navigation_request->GetURL(),
+      navigation_request->request_context_type(), was_allowed,
+      url_before_redirects, for_redirect,
+      navigation_request->common_params().source_location.Clone());
 }
 
 }  // namespace

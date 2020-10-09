@@ -638,6 +638,14 @@ class CORE_EXPORT LocalFrame final
   void UpdateOpener(
       const base::Optional<base::UnguessableToken>& opener_routing_id) final;
   void GetSavableResourceLinks(GetSavableResourceLinksCallback callback) final;
+  void MixedContentFound(
+      const KURL& main_resource_url,
+      const KURL& mixed_content_url,
+      mojom::blink::RequestContextType request_context,
+      bool was_allowed,
+      const KURL& url_before_redirects,
+      bool had_redirect,
+      network::mojom::blink::SourceLocationPtr source_location) final;
 
   // blink::mojom::LocalMainFrame overrides:
   void AnimateDoubleTapZoom(const gfx::Point& point,

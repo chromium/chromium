@@ -43,7 +43,6 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
-#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
@@ -56,7 +55,6 @@
 #include "third_party/blink/public/mojom/feature_policy/document_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/feature_policy/policy_disposition.mojom.h"
-#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
@@ -121,8 +119,6 @@ IPC_ENUM_TRAITS_MIN_MAX_VALUE(blink::FrameOcclusionState,
                               blink::FrameOcclusionState::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::WebFeature,
                           blink::mojom::WebFeature::kMaxValue)
-IPC_ENUM_TRAITS_MAX_VALUE(network::mojom::RequestDestination,
-                          network::mojom::RequestDestination::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::InsecureRequestPolicy,
                           blink::mojom::InsecureRequestPolicy::kMaxValue)
 
@@ -327,12 +323,6 @@ IPC_STRUCT_BEGIN_WITH_PARENT(FrameHostMsg_DidCommitProvisionalLoad_Params,
   IPC_STRUCT_MEMBER(base::Optional<base::UnguessableToken>, embedding_token)
 IPC_STRUCT_END()
 
-IPC_STRUCT_TRAITS_BEGIN(network::mojom::SourceLocation)
-  IPC_STRUCT_TRAITS_MEMBER(url)
-  IPC_STRUCT_TRAITS_MEMBER(line)
-  IPC_STRUCT_TRAITS_MEMBER(column)
-IPC_STRUCT_TRAITS_END()
-
 IPC_STRUCT_TRAITS_BEGIN(blink::ParsedFeaturePolicyDeclaration)
   IPC_STRUCT_TRAITS_MEMBER(feature)
   IPC_STRUCT_TRAITS_MEMBER(allowed_origins)
@@ -385,17 +375,6 @@ IPC_STRUCT_TRAITS_BEGIN(network::mojom::ContentSecurityPolicyHeader)
   IPC_STRUCT_TRAITS_MEMBER(source)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_BEGIN(FrameMsg_MixedContentFound_Params)
-  IPC_STRUCT_MEMBER(GURL, main_resource_url)
-  IPC_STRUCT_MEMBER(GURL, mixed_content_url)
-  IPC_STRUCT_MEMBER(blink::mojom::RequestContextType, request_context_type)
-  IPC_STRUCT_MEMBER(network::mojom::RequestDestination, request_destination)
-  IPC_STRUCT_MEMBER(bool, was_allowed)
-  IPC_STRUCT_MEMBER(GURL, url_before_redirects)
-  IPC_STRUCT_MEMBER(bool, had_redirect)
-  IPC_STRUCT_MEMBER(network::mojom::SourceLocation, source_location)
-IPC_STRUCT_END()
-
 #if BUILDFLAG(ENABLE_PLUGINS)
 IPC_STRUCT_TRAITS_BEGIN(content::PepperRendererInstanceData)
   IPC_STRUCT_TRAITS_MEMBER(render_process_id)
@@ -430,12 +409,6 @@ IPC_MESSAGE_ROUTED2(FrameMsg_SetPepperVolume,
                     int32_t /* pp_instance */,
                     double /* volume */)
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
-
-// Informs the renderer that mixed content was found by the browser. The
-// included data is used for instance to report to the CSP policy and to log to
-// the frame console.
-IPC_MESSAGE_ROUTED1(FrameMsg_MixedContentFound,
-                    FrameMsg_MixedContentFound_Params)
 
 // -----------------------------------------------------------------------------
 // Messages sent from the renderer to the browser.

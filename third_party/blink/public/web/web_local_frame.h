@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/unguessable_token.h"
-#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/css/page_size_type.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy_features.h"
@@ -26,7 +25,6 @@
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-shared.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-shared.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-shared.h"
-#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
@@ -86,7 +84,6 @@ struct WebPrintPageDescription;
 struct WebPrintParams;
 struct WebPrintPresetOptions;
 struct WebScriptSource;
-struct WebSourceLocation;
 
 namespace mojom {
 enum class TreeScopeType;
@@ -278,18 +275,6 @@ class WebLocalFrame : public WebFrame {
   virtual bool IsNavigationScheduledWithin(base::TimeDelta interval) const = 0;
 
   virtual void BlinkFeatureUsageReport(blink::mojom::WebFeature feature) = 0;
-
-  // Informs the renderer that mixed content was found externally regarding this
-  // frame. Currently only the the browser process can do so. The included data
-  // is used for instance to report to the CSP policy and to log to the frame
-  // console.
-  virtual void MixedContentFound(const WebURL& main_resource_url,
-                                 const WebURL& mixed_content_url,
-                                 mojom::RequestContextType,
-                                 bool was_allowed,
-                                 const WebURL& url_before_redirects,
-                                 bool had_redirect,
-                                 const WebSourceLocation&) = 0;
 
   // Orientation Changes ----------------------------------------------------
 

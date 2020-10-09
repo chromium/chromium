@@ -135,13 +135,6 @@ class CORE_EXPORT WebLocalFrameImpl final
   void SetReferrerForRequest(WebURLRequest&, const WebURL& referrer) override;
   bool IsNavigationScheduledWithin(base::TimeDelta interval) const override;
   void BlinkFeatureUsageReport(blink::mojom::WebFeature feature) override;
-  void MixedContentFound(const WebURL& main_resource_url,
-                         const WebURL& mixed_content_url,
-                         mojom::RequestContextType,
-                         bool was_allowed,
-                         const WebURL& url_before_redirects,
-                         bool had_redirect,
-                         const WebSourceLocation&) override;
   void SendOrientationChangeEvent() override;
   PageSizeType GetPageSizeType(uint32_t page_index) override;
   void GetPageDescription(uint32_t page_index,

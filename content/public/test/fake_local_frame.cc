@@ -118,6 +118,15 @@ void FakeLocalFrame::BindReportingObserver(
 void FakeLocalFrame::UpdateOpener(
     const base::Optional<base::UnguessableToken>& opener_frame_token) {}
 
+void FakeLocalFrame::MixedContentFound(
+    const GURL& main_resource_url,
+    const GURL& mixed_content_url,
+    blink::mojom::RequestContextType request_context,
+    bool was_allowed,
+    const GURL& url_before_redirects,
+    bool had_redirect,
+    network::mojom::SourceLocationPtr source_location) {}
+
 void FakeLocalFrame::BindFrameHostReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {
   receiver_.Bind(mojo::PendingAssociatedReceiver<blink::mojom::LocalFrame>(

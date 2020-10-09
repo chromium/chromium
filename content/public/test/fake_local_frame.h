@@ -91,6 +91,14 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       mojo::PendingReceiver<blink::mojom::ReportingObserver> receiver) override;
   void UpdateOpener(const base::Optional<base::UnguessableToken>&
                         opener_frame_token) override;
+  void MixedContentFound(
+      const GURL& main_resource_url,
+      const GURL& mixed_content_url,
+      blink::mojom::RequestContextType request_context,
+      bool was_allowed,
+      const GURL& url_before_redirects,
+      bool had_redirect,
+      network::mojom::SourceLocationPtr source_location) override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

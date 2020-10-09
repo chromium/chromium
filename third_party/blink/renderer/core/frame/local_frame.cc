@@ -41,6 +41,7 @@
 #include "services/data_decoder/public/mojom/resource_snapshot_for_web_bundle.mojom-blink.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
+#include "services/network/public/mojom/source_location.mojom-blink.h"
 #include "skia/public/mojom/skcolor.mojom-blink.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -50,6 +51,7 @@
 #include "third_party/blink/public/mojom/ad_tagging/ad_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-blink.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
@@ -143,6 +145,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/idleness_detector.h"
+#include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/drag_controller.h"
@@ -3134,6 +3137,25 @@ void LocalFrame::GetSavableResourceLinks(
   reply->subframes = std::move(subframes);
 
   std::move(callback).Run(std::move(reply));
+}
+
+void LocalFrame::MixedContentFound(
+    const KURL& main_resource_url,
+    const KURL& mixed_content_url,
+    mojom::blink::RequestContextType request_context,
+    bool was_allowed,
+    const KURL& url_before_redirects,
+    bool had_redirect,
+    network::mojom::blink::SourceLocationPtr source_location) {
+  std::unique_ptr<SourceLocation> source;
+  if (source_location) {
+    source = std::make_unique<SourceLocation>(source_location->url,
+                                              source_location->line,
+                                              source_location->column, nullptr);
+  }
+  MixedContentChecker::MixedContentFound(
+      this, main_resource_url, mixed_content_url, request_context, was_allowed,
+      url_before_redirects, had_redirect, std::move(source));
 }
 
 bool LocalFrame::ShouldThrottleDownload() {
