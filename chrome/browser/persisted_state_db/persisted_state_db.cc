@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/tab/state/tab_state_db.h"
+#include "chrome/browser/persisted_state_db/persisted_state_db.h"
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
@@ -12,10 +12,11 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "third_party/leveldatabase/src/include/leveldb/options.h"
 
 namespace {
 
-const char kTabStateDBFolder[] = "tab_state_db";
+const char kPersistedStateDBFolder[] = "persisted_state_db";
 leveldb::ReadOptions CreateReadOptions() {
   leveldb::ReadOptions opts;
   opts.fill_cache = false;
@@ -29,13 +30,14 @@ bool DatabasePrefixFilter(const std::string& key_prefix,
 
 }  // namespace
 
-TabStateDB::~TabStateDB() = default;
+PersistedStateDB::~PersistedStateDB() = default;
 
-void TabStateDB::LoadContent(const std::string& key, LoadCallback callback) {
+void PersistedStateDB::LoadContent(const std::string& key,
+                                   LoadCallback callback) {
   if (InitStatusUnknown()) {
-    deferred_operations_.push_back(
-        base::BindOnce(&TabStateDB::LoadContent, weak_ptr_factory_.GetWeakPtr(),
-                       std::move(key), std::move(callback)));
+    deferred_operations_.push_back(base::BindOnce(
+        &PersistedStateDB::LoadContent, weak_ptr_factory_.GetWeakPtr(),
+        std::move(key), std::move(callback)));
   } else if (FailedToInit()) {
     base::ThreadPool::PostTask(
         FROM_HERE,
@@ -44,40 +46,40 @@ void TabStateDB::LoadContent(const std::string& key, LoadCallback callback) {
     storage_database_->LoadEntriesWithFilter(
         base::BindRepeating(&DatabasePrefixFilter, key), CreateReadOptions(),
         /* target_prefix */ "",
-        base::BindOnce(&TabStateDB::OnLoadContent,
+        base::BindOnce(&PersistedStateDB::OnLoadContent,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 }
 
-void TabStateDB::InsertContent(const std::string& key,
-                               const std::vector<uint8_t>& value,
-                               OperationCallback callback) {
+void PersistedStateDB::InsertContent(const std::string& key,
+                                     const std::vector<uint8_t>& value,
+                                     OperationCallback callback) {
   if (InitStatusUnknown()) {
     deferred_operations_.push_back(base::BindOnce(
-        &TabStateDB::InsertContent, weak_ptr_factory_.GetWeakPtr(),
+        &PersistedStateDB::InsertContent, weak_ptr_factory_.GetWeakPtr(),
         std::move(key), std::move(value), std::move(callback)));
   } else if (FailedToInit()) {
     base::ThreadPool::PostTask(FROM_HERE,
                                base::BindOnce(std::move(callback), false));
   } else {
     auto contents_to_save = std::make_unique<ContentEntry>();
-    tab_state_db::TabStateContentProto proto;
+    persisted_state_db::PersistedStateContentProto proto;
     proto.set_key(key);
     proto.set_content_data(value.data(), value.size());
     contents_to_save->emplace_back(proto.key(), std::move(proto));
     storage_database_->UpdateEntries(
         std::move(contents_to_save),
         std::make_unique<std::vector<std::string>>(),
-        base::BindOnce(&TabStateDB::OnOperationCommitted,
+        base::BindOnce(&PersistedStateDB::OnOperationCommitted,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 }
 
-void TabStateDB::DeleteContent(const std::string& key,
-                               OperationCallback callback) {
+void PersistedStateDB::DeleteContent(const std::string& key,
+                                     OperationCallback callback) {
   if (InitStatusUnknown()) {
     deferred_operations_.push_back(base::BindOnce(
-        &TabStateDB::DeleteContent, weak_ptr_factory_.GetWeakPtr(),
+        &PersistedStateDB::DeleteContent, weak_ptr_factory_.GetWeakPtr(),
         std::move(key), std::move(callback)));
   } else if (FailedToInit()) {
     base::ThreadPool::PostTask(FROM_HERE,
@@ -86,15 +88,15 @@ void TabStateDB::DeleteContent(const std::string& key,
     storage_database_->UpdateEntriesWithRemoveFilter(
         std::make_unique<ContentEntry>(),
         std::move(base::BindRepeating(&DatabasePrefixFilter, std::move(key))),
-        base::BindOnce(&TabStateDB::OnOperationCommitted,
+        base::BindOnce(&PersistedStateDB::OnOperationCommitted,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 }
 
-void TabStateDB::DeleteAllContent(OperationCallback callback) {
+void PersistedStateDB::DeleteAllContent(OperationCallback callback) {
   if (InitStatusUnknown()) {
     deferred_operations_.push_back(
-        base::BindOnce(&TabStateDB::DeleteAllContent,
+        base::BindOnce(&PersistedStateDB::DeleteAllContent,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   } else if (FailedToInit()) {
     base::ThreadPool::PostTask(FROM_HERE,
@@ -104,31 +106,34 @@ void TabStateDB::DeleteAllContent(OperationCallback callback) {
   }
 }
 
-TabStateDB::TabStateDB(
+PersistedStateDB::PersistedStateDB(
     leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
     const base::FilePath& profile_directory)
     : database_status_(base::nullopt),
       storage_database_(
-          proto_database_provider->GetDB<tab_state_db::TabStateContentProto>(
-              leveldb_proto::ProtoDbType::TAB_STATE_DATABASE,
-              profile_directory.AppendASCII(kTabStateDBFolder),
-              base::ThreadPool::CreateSequencedTaskRunner(
-                  {base::MayBlock(), base::TaskPriority::USER_VISIBLE}))) {
-  storage_database_->Init(base::BindOnce(&TabStateDB::OnDatabaseInitialized,
-                                         weak_ptr_factory_.GetWeakPtr()));
+          proto_database_provider
+              ->GetDB<persisted_state_db::PersistedStateContentProto>(
+                  leveldb_proto::ProtoDbType::PERSISTED_STATE_DATABASE,
+                  profile_directory.AppendASCII(kPersistedStateDBFolder),
+                  base::ThreadPool::CreateSequencedTaskRunner(
+                      {base::MayBlock(), base::TaskPriority::USER_VISIBLE}))) {
+  storage_database_->Init(
+      base::BindOnce(&PersistedStateDB::OnDatabaseInitialized,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-TabStateDB::TabStateDB(
+PersistedStateDB::PersistedStateDB(
     std::unique_ptr<leveldb_proto::ProtoDatabase<
-        tab_state_db::TabStateContentProto>> storage_database,
+        persisted_state_db::PersistedStateContentProto>> storage_database,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : database_status_(base::nullopt),
       storage_database_(std::move(storage_database)) {
-  storage_database_->Init(base::BindOnce(&TabStateDB::OnDatabaseInitialized,
-                                         weak_ptr_factory_.GetWeakPtr()));
+  storage_database_->Init(
+      base::BindOnce(&PersistedStateDB::OnDatabaseInitialized,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void TabStateDB::OnDatabaseInitialized(
+void PersistedStateDB::OnDatabaseInitialized(
     leveldb_proto::Enums::InitStatus status) {
   database_status_ =
       base::make_optional<leveldb_proto::Enums::InitStatus>(status);
@@ -138,10 +143,11 @@ void TabStateDB::OnDatabaseInitialized(
   deferred_operations_.clear();
 }
 
-void TabStateDB::OnLoadContent(
+void PersistedStateDB::OnLoadContent(
     LoadCallback callback,
     bool success,
-    std::unique_ptr<std::vector<tab_state_db::TabStateContentProto>> content) {
+    std::unique_ptr<std::vector<persisted_state_db::PersistedStateContentProto>>
+        content) {
   std::vector<KeyAndValue> results;
   if (success) {
     for (const auto& proto : *content) {
@@ -155,16 +161,16 @@ void TabStateDB::OnLoadContent(
   std::move(callback).Run(success, std::move(results));
 }
 
-void TabStateDB::OnOperationCommitted(OperationCallback callback,
-                                      bool success) {
+void PersistedStateDB::OnOperationCommitted(OperationCallback callback,
+                                            bool success) {
   std::move(callback).Run(success);
 }
 
-bool TabStateDB::InitStatusUnknown() const {
+bool PersistedStateDB::InitStatusUnknown() const {
   return database_status_ == base::nullopt;
 }
 
-bool TabStateDB::FailedToInit() const {
+bool PersistedStateDB::FailedToInit() const {
   return database_status_.has_value() &&
          database_status_.value() != leveldb_proto::Enums::InitStatus::kOK;
 }

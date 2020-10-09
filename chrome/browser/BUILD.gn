@@ -1750,10 +1750,6 @@ static_library("browser") {
     "sync/sync_startup_tracker.h",
     "sync/user_event_service_factory.cc",
     "sync/user_event_service_factory.h",
-    "tab/state/tab_state_db.cc",
-    "tab/state/tab_state_db.h",
-    "tab/state/tab_state_db_factory.cc",
-    "tab/state/tab_state_db_factory.h",
     "tab_contents/navigation_metrics_recorder.cc",
     "tab_contents/navigation_metrics_recorder.h",
     "tab_contents/tab_util.cc",
@@ -1872,7 +1868,6 @@ static_library("browser") {
     ":permissions_proto",
     ":resource_prefetch_predictor_proto",
     ":status_proto",
-    ":tab_state_db_content_proto",
     ":unexpire_flags",
     "//base:i18n",
     "//base/allocator:buildflags",
@@ -1904,6 +1899,7 @@ static_library("browser") {
     "//chrome/browser/notifications",
     "//chrome/browser/notifications/scheduler:factory",
     "//chrome/browser/notifications/scheduler/public",
+    "//chrome/browser/persisted_state_db:persisted_state_db",
     "//chrome/browser/policy:path_parser",
     "//chrome/browser/privacy_budget",
     "//chrome/browser/profiling_host",
@@ -6195,10 +6191,6 @@ source_set("theme_properties") {
 
 proto_library("availability_protos") {
   sources = [ "availability/proto/availability_prober_cache_entry.proto" ]
-}
-
-proto_library("tab_state_db_content_proto") {
-  sources = [ "tab/state/tab_state_db_content.proto" ]
 }
 
 proto_library("resource_prefetch_predictor_proto") {

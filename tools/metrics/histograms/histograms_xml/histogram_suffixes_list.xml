@@ -8214,12 +8214,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="NTPSnippets" label="Database for RemoteSuggestion snippets."/>
   <suffix name="OfflinePageMetadataStore"
       label="Databases for OfflinePageMetadataStore"/>
+  <suffix name="PersistedStateDatabase"
+      label="Database for NonCriticalPersistedTabData"/>
   <suffix name="PreviewsHintCacheStore" label="Databases for Previews Hints"/>
   <suffix name="PrintJobDatabase" label="Database for print job metadata."/>
   <suffix name="SharedDb" label="Shared database"/>
   <suffix name="StrikeService" label="Database for strike service."/>
   <suffix name="TabStateDatabase"
-      label="Database for NonCriticalPersistedTabData"/>
+      label="Database for NonCriticalPersistedTabData">
+    <obsolete>
+      Deprecated since 10/2020 in favor of PersistedStateDatabase
+    </obsolete>
+  </suffix>
   <suffix name="UpboardingQueryTileStore"
       label="Database for Upboarding query tiles."/>
   <suffix name="UsageReportsBufferBackend"

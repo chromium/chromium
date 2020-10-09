@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/tab/state/tab_state_db_factory.h"
+#include "chrome/browser/persisted_state_db/persisted_state_db_factory.h"
 
 #include <memory>
 
@@ -11,9 +11,9 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class TabStateDBFactoryTest : public testing::Test {
+class PersistedStateDBFactoryTest : public testing::Test {
  public:
-  TabStateDBFactoryTest() = default;
+  PersistedStateDBFactoryTest() = default;
 
   void SetUp() override {
     ASSERT_TRUE(profile_dir_.CreateUniqueTempDir());
@@ -38,21 +38,21 @@ class TabStateDBFactoryTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<TestingProfile> different_profile_;
 
-  DISALLOW_COPY_AND_ASSIGN(TabStateDBFactoryTest);
+  DISALLOW_COPY_AND_ASSIGN(PersistedStateDBFactoryTest);
 };
 
-TEST_F(TabStateDBFactoryTest, TestIncognitoProfile) {
-  EXPECT_EQ(nullptr, TabStateDBFactory::GetInstance()->GetForProfile(
+TEST_F(PersistedStateDBFactoryTest, TestIncognitoProfile) {
+  EXPECT_EQ(nullptr, PersistedStateDBFactory::GetInstance()->GetForProfile(
                          profile()->GetPrimaryOTRProfile()));
 }
 
-TEST_F(TabStateDBFactoryTest, TestSameProfile) {
-  EXPECT_EQ(TabStateDBFactory::GetInstance()->GetForProfile(profile()),
-            TabStateDBFactory::GetInstance()->GetForProfile(profile()));
+TEST_F(PersistedStateDBFactoryTest, TestSameProfile) {
+  EXPECT_EQ(PersistedStateDBFactory::GetInstance()->GetForProfile(profile()),
+            PersistedStateDBFactory::GetInstance()->GetForProfile(profile()));
 }
 
-TEST_F(TabStateDBFactoryTest, TestDifferentProfile) {
-  EXPECT_NE(
-      TabStateDBFactory::GetInstance()->GetForProfile(different_profile()),
-      TabStateDBFactory::GetInstance()->GetForProfile(profile()));
+TEST_F(PersistedStateDBFactoryTest, TestDifferentProfile) {
+  EXPECT_NE(PersistedStateDBFactory::GetInstance()->GetForProfile(
+                different_profile()),
+            PersistedStateDBFactory::GetInstance()->GetForProfile(profile()));
 }

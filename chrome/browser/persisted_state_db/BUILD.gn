@@ -1,0 +1,28 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+source_set("persisted_state_db") {
+  sources = [
+    "persisted_state_db.cc",
+    "persisted_state_db.h",
+    "persisted_state_db_factory.cc",
+    "persisted_state_db_factory.h",
+  ]
+
+  deps = [
+    ":persisted_state_db_content_proto",
+    "//base:base",
+    "//components/keyed_service/content",
+    "//components/leveldb_proto",
+    "//content/public/browser:browser",
+    "//third_party/leveldatabase",
+  ]
+}
+
+proto_library("persisted_state_db_content_proto") {
+  sources = [ "persisted_state_db_content.proto" ]
+}

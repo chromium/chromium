@@ -50,6 +50,7 @@
 #include "chrome/browser/page_load_metrics/observers/https_engagement_metrics/https_engagement_service_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/permissions/adaptive_quiet_notification_permission_ui_enabler.h"
+#include "chrome/browser/persisted_state_db/persisted_state_db_factory.h"
 #include "chrome/browser/plugins/plugin_prefs_factory.h"
 #include "chrome/browser/policy/cloud/user_cloud_policy_invalidator_factory.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
@@ -78,7 +79,6 @@
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
-#include "chrome/browser/tab/state/tab_state_db_factory.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/translate/translate_ranker_factory.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
@@ -321,6 +321,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   NTPResourceCacheFactory::GetInstance();
 #endif
   PasswordStoreFactory::GetInstance();
+  PersistedStateDBFactory::GetInstance();
 #if !defined(OS_ANDROID)
   PinnedTabServiceFactory::GetInstance();
 #endif
@@ -385,7 +386,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   SupervisedUserServiceFactory::GetInstance();
 #endif
   TabRestoreServiceFactory::GetInstance();
-  TabStateDBFactory::GetInstance();
   TemplateURLFetcherFactory::GetInstance();
   TemplateURLServiceFactory::GetInstance();
 #if !defined(OS_ANDROID)

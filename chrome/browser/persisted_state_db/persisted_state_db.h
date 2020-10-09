@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TAB_STATE_TAB_STATE_DB_H_
-#define CHROME_BROWSER_TAB_STATE_TAB_STATE_DB_H_
+#ifndef CHROME_BROWSER_PERSISTED_STATE_DB_PERSISTED_STATE_DB_H_
+#define CHROME_BROWSER_PERSISTED_STATE_DB_PERSISTED_STATE_DB_H_
 
 #include <queue>
 #include <string>
@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
-#include "chrome/browser/tab/state/tab_state_db_content.pb.h"
+#include "chrome/browser/persisted_state_db/persisted_state_db_content.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/leveldb_proto/public/proto_database.h"
 
@@ -20,18 +20,18 @@ namespace leveldb_proto {
 class ProtoDatabaseProvider;
 }  // namespace leveldb_proto
 
-class TabStateDBFactory;
-class TabStateDBFactoryTest;
-class TabStateDBTest;
+class PersistedStateDBFactory;
+class PersistedStateDBFactoryTest;
+class PersistedStateDBTest;
 
-// TabStateDatabase is leveldb backend store for NonCriticalPersistedTabData.
+// PersistedStateDB is leveldb backend store for NonCriticalPersistedTabData.
 // NonCriticalPersistedTabData is an extension of TabState where data for
 // new features which are not critical to the core functionality of the app
 // are acquired and persisted across restarts. The intended key format is
 // <NonCriticalPersistedTabData id>_<Tab id>
 
 // NonCriticalPersistedTabData is stored in key/value pairs.
-class TabStateDB : public KeyedService {
+class PersistedStateDB : public KeyedService {
  public:
   using KeyAndValue = std::pair<std::string, std::vector<uint8_t>>;
 
@@ -45,9 +45,9 @@ class TabStateDB : public KeyedService {
 
   // Entry in the database
   using ContentEntry = leveldb_proto::ProtoDatabase<
-      tab_state_db::TabStateContentProto>::KeyEntryVector;
+      persisted_state_db::PersistedStateContentProto>::KeyEntryVector;
 
-  ~TabStateDB() override;
+  ~PersistedStateDB() override;
 
   // Loads the content data for the key and passes them to the callback
   void LoadContent(const std::string& key, LoadCallback callback);
@@ -66,18 +66,20 @@ class TabStateDB : public KeyedService {
   void DeleteAllContent(OperationCallback callback);
 
  private:
-  friend class ::TabStateDBTest;
-  friend class ::TabStateDBFactory;
-  friend class ::TabStateDBFactoryTest;
+  friend class ::PersistedStateDBTest;
+  friend class ::PersistedStateDBFactory;
+  friend class ::PersistedStateDBFactoryTest;
 
   // Initializes the database
-  TabStateDB(leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
-             const base::FilePath& profile_directory);
+  PersistedStateDB(
+      leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
+      const base::FilePath& profile_directory);
 
   // Used for tests
-  explicit TabStateDB(std::unique_ptr<leveldb_proto::ProtoDatabase<
-                          tab_state_db::TabStateContentProto>> storage_database,
-                      scoped_refptr<base::SequencedTaskRunner> task_runner);
+  explicit PersistedStateDB(
+      std::unique_ptr<leveldb_proto::ProtoDatabase<
+          persisted_state_db::PersistedStateContentProto>> storage_database,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // Passes back database status following database initialization
   void OnDatabaseInitialized(leveldb_proto::Enums::InitStatus status);
@@ -86,7 +88,8 @@ class TabStateDB : public KeyedService {
   void OnLoadContent(
       LoadCallback callback,
       bool success,
-      std::unique_ptr<std::vector<tab_state_db::TabStateContentProto>> content);
+      std::unique_ptr<
+          std::vector<persisted_state_db::PersistedStateContentProto>> content);
 
   // Callback when an operation (e.g. insert or delete) is called
   void OnOperationCommitted(OperationCallback callback, bool success);
@@ -101,17 +104,17 @@ class TabStateDB : public KeyedService {
   base::Optional<leveldb_proto::Enums::InitStatus> database_status_;
 
   // The database for storing content storage information.
-  std::unique_ptr<
-      leveldb_proto::ProtoDatabase<tab_state_db::TabStateContentProto>>
+  std::unique_ptr<leveldb_proto::ProtoDatabase<
+      persisted_state_db::PersistedStateContentProto>>
       storage_database_;
 
   // Store operations until the database is initialized at which point
   // deferred_operations_ is flushed and all operations are executed.
   std::vector<base::OnceClosure> deferred_operations_;
 
-  base::WeakPtrFactory<TabStateDB> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PersistedStateDB> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(TabStateDB);
+  DISALLOW_COPY_AND_ASSIGN(PersistedStateDB);
 };
 
-#endif  // CHROME_BROWSER_TAB_STATE_TAB_STATE_DB_H_
+#endif  // CHROME_BROWSER_PERSISTED_STATE_DB_PERSISTED_STATE_DB_H_
