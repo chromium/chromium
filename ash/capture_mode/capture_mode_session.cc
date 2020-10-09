@@ -202,7 +202,7 @@ void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
 
   capture_mode_bar_view_->OnCaptureSourceChanged(new_source);
   SetMouseWarpEnabled(new_source != CaptureModeSource::kRegion);
-  UpdateCaptureRegionWidgets();
+  UpdateDimensionsLabelWidget(/*is_resizing=*/false);
   layer()->SchedulePaint(layer()->bounds());
   UpdateCaptureLabelWidget();
 }
@@ -468,7 +468,7 @@ void CaptureModeSession::OnLocatedEventPressed(
     } else if (!CaptureModeBarView::GetBounds(current_root_)
                     .Contains(location_in_root)) {
       is_selecting_region_ = true;
-      UpdateCaptureRegion(gfx::Rect());
+      UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/true);
     }
     return;
   }
@@ -485,7 +485,8 @@ void CaptureModeSession::OnLocatedEventDragged(
   // press location and the current location.
   if (is_selecting_region_) {
     UpdateCaptureRegion(
-        GetRectEnclosingPoints({initial_location_in_root_, location_in_root}));
+        GetRectEnclosingPoints({initial_location_in_root_, location_in_root}),
+        /*is_resizing=*/true);
     return;
   }
 
@@ -499,7 +500,7 @@ void CaptureModeSession::OnLocatedEventDragged(
     gfx::Rect new_capture_region = controller_->user_capture_region();
     new_capture_region.Offset(location_in_root - previous_location_in_root);
     new_capture_region.AdjustToFit(current_root_->bounds());
-    UpdateCaptureRegion(new_capture_region);
+    UpdateCaptureRegion(new_capture_region, /*is_resizing=*/false);
     return;
   }
 
@@ -508,7 +509,7 @@ void CaptureModeSession::OnLocatedEventDragged(
   std::vector<gfx::Point> points = anchor_points_;
   DCHECK(!points.empty());
   points.push_back(location_in_root);
-  UpdateCaptureRegion(GetRectEnclosingPoints(points));
+  UpdateCaptureRegion(GetRectEnclosingPoints(points), /*is_resizing=*/true);
 }
 
 void CaptureModeSession::OnLocatedEventReleased(
@@ -523,17 +524,19 @@ void CaptureModeSession::OnLocatedEventReleased(
       gfx::Insets(-kAffordanceCircleRadiusDp - kCaptureRegionBorderStrokePx));
   layer()->SchedulePaint(damage_region);
 
+  UpdateDimensionsLabelWidget(/*is_resizing=*/false);
+
   if (!is_selecting_region_)
     return;
 
   // After first release event, we advance to the next phase.
   is_selecting_region_ = false;
-  UpdateCaptureRegionWidgets();
   UpdateCaptureLabelWidget();
 }
 
 void CaptureModeSession::UpdateCaptureRegion(
-    const gfx::Rect& new_capture_region) {
+    const gfx::Rect& new_capture_region,
+    bool is_resizing) {
   const gfx::Rect old_capture_region = controller_->user_capture_region();
   if (old_capture_region == new_capture_region)
     return;
@@ -548,25 +551,19 @@ void CaptureModeSession::UpdateCaptureRegion(
   layer()->SchedulePaint(damage_region);
 
   controller_->set_user_capture_region(new_capture_region);
-  UpdateCaptureRegionWidgets();
+  UpdateDimensionsLabelWidget(is_resizing);
   UpdateCaptureLabelWidget();
 }
 
-void CaptureModeSession::UpdateCaptureRegionWidgets() {
-  // TODO(chinsenj): The dimensons label is always shown and the capture
-  // button label is always shown in the fine tune stage. Update this to match
-  // the specs.
-  const bool show = controller_->source() == CaptureModeSource::kRegion;
-  if (!show) {
+void CaptureModeSession::UpdateDimensionsLabelWidget(bool is_resizing) {
+  const bool should_not_show =
+      !is_resizing || controller_->source() != CaptureModeSource::kRegion ||
+      controller_->user_capture_region().IsEmpty();
+  if (should_not_show) {
     dimensions_label_widget_.reset();
     return;
   }
 
-  MaybeCreateAndUpdateDimensionsLabelWidget();
-  UpdateDimensionsLabelBounds();
-}
-
-void CaptureModeSession::MaybeCreateAndUpdateDimensionsLabelWidget() {
   if (!dimensions_label_widget_) {
     auto* parent = GetParentContainer(current_root_);
     dimensions_label_widget_ = std::make_unique<views::Widget>();
@@ -595,6 +592,8 @@ void CaptureModeSession::MaybeCreateAndUpdateDimensionsLabelWidget() {
   const gfx::Rect capture_region = controller_->user_capture_region();
   size_label->SetText(base::UTF8ToUTF16(base::StringPrintf(
       "%d x %d", capture_region.width(), capture_region.height())));
+
+  UpdateDimensionsLabelBounds();
 }
 
 void CaptureModeSession::UpdateDimensionsLabelBounds() {

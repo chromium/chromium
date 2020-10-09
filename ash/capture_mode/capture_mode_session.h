@@ -106,18 +106,16 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   void OnLocatedEventDragged(const gfx::Point& location_in_root);
   void OnLocatedEventReleased(const gfx::Point& location_in_root);
 
-  // Updates the capture region and the capture region widgets.
-  void UpdateCaptureRegion(const gfx::Rect& new_capture_region);
+  // Updates the capture region and the capture region widgets depending on the
+  // value of |is_resizing|.
+  void UpdateCaptureRegion(const gfx::Rect& new_capture_region,
+                           bool is_resizing);
 
-  // Updates the widgets that are used to display text/icons while selecting a
-  // capture region. They are not visible during fullscreen or window capture,
-  // and some are only visible during certain phases of region capture. This
-  // will create or destroy the widgets as needed.
-  void UpdateCaptureRegionWidgets();
-
-  // Creates |dimensions_label_widget_| if it does not exist and then set its
-  // content view to the size label view.
-  void MaybeCreateAndUpdateDimensionsLabelWidget();
+  // Updates the dimensions label widget shown during a region capture session.
+  // If not |is_resizing|, not a region capture session or the capture region is
+  // empty, clear existing |dimensions_label_widget_|. Otherwise, create and
+  // update the dimensions label.
+  void UpdateDimensionsLabelWidget(bool is_resizing);
 
   // Updates the bounds of |dimensions_label_widget_| relative to the current
   // capture region. Both |dimensions_label_widget_| and its content view must
