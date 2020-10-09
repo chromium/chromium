@@ -17,6 +17,7 @@
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_switches.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/net/variations_http_headers.h"
 #include "content/public/browser/storage_partition.h"
 #include "media/base/media_switches.h"
 #include "net/base/load_flags.h"
@@ -94,6 +95,12 @@ class GetCollectionsRequest {
 
     resource_request->headers.SetHeader("X-Goog-Encode-Response-If-Executable",
                                         "base64");
+
+    variations::AppendVariationsHeader(
+        resource_request->url, variations::InIncognito::kNo,
+        credentials->access_token.has_value() ? variations::SignedIn::kYes
+                                              : variations::SignedIn::kNo,
+        resource_request.get());
 
     resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
                                         kRequestContentType);
