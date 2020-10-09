@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_WIN_FAKE_NOTIFICATION_IMAGE_RETAINER_H_
 #define CHROME_BROWSER_NOTIFICATIONS_WIN_FAKE_NOTIFICATION_IMAGE_RETAINER_H_
 
-#include "chrome/browser/notifications/win/notification_image_retainer.h"
+#include "chrome/browser/notifications/notification_image_retainer.h"
 
 namespace gfx {
 class Image;

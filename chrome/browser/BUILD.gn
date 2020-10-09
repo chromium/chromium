@@ -4469,8 +4469,6 @@ static_library("browser") {
       "net/net_error_diagnostics_dialog_win.cc",
       "net/service_providers_win.cc",
       "net/service_providers_win.h",
-      "notifications/win/notification_image_retainer.cc",
-      "notifications/win/notification_image_retainer.h",
       "notifications/win/notification_template_builder.cc",
       "notifications/win/notification_template_builder.h",
       "obsolete_system/obsolete_system_win.cc",
@@ -4863,6 +4861,8 @@ static_library("browser") {
   if (is_win || is_mac) {
     # Sources(generally "desktop OS importers") used only on Mac & Windows.
     sources += [
+      "notifications/notification_image_retainer.cc",
+      "notifications/notification_image_retainer.h",
       "recovery/recovery_install_global_error.cc",
       "recovery/recovery_install_global_error.h",
       "recovery/recovery_install_global_error_factory.cc",

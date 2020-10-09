@@ -17,7 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/notifications/win/notification_image_retainer.h"
+#include "chrome/browser/notifications/notification_image_retainer.h"
 #include "chrome/browser/notifications/win/notification_launch_id.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chromium_strings.h"

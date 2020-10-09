@@ -5786,6 +5786,10 @@ test("unit_tests") {
       data_deps += [ "//chrome:packed_resources" ]
     }
   }
+  if (is_win || is_mac) {
+    sources +=
+        [ "../browser/notifications/notification_image_retainer_unittest.cc" ]
+  }
   if (is_win || is_mac || is_chromeos) {
     sources += [ "../browser/extensions/api/networking_private/networking_private_crypto_unittest.cc" ]
   }
@@ -5795,7 +5799,6 @@ test("unit_tests") {
   }
   if (is_win) {
     sources += [
-      "../browser/notifications/win/notification_image_retainer_unittest.cc",
       "../browser/notifications/win/notification_template_builder_unittest.cc",
       "../browser/ui/views/uninstall_view_unittest.cc",
       "../browser/webshare/win/fake_data_transfer_manager_interop_unittest.cc",
