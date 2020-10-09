@@ -139,6 +139,10 @@ class ProfileSyncService : public SyncService,
       const std::string& gaia_id,
       const std::vector<std::vector<uint8_t>>& keys,
       int last_key_version) override;
+  void AddTrustedVaultRecoveryMethodFromWeb(
+      const std::string& gaia_id,
+      const std::vector<uint8_t>& public_key,
+      base::OnceClosure callback) override;
   UserDemographicsResult GetUserNoisedBirthYearAndGender(
       base::Time now) override;
   void AddObserver(SyncServiceObserver* observer) override;

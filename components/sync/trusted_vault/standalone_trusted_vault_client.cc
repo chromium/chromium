@@ -276,15 +276,6 @@ void StandaloneTrustedVaultClient::SetRecoverabilityDegradedForTesting() {
           backend_));
 }
 
-void StandaloneTrustedVaultClient::ResolveRecoverabilityDegradedForTesting() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(backend_);
-  backend_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&StandaloneTrustedVaultBackend::
-                                    ResolveRecoverabilityDegradedForTesting,
-                                backend_));
-}
-
 void StandaloneTrustedVaultClient::NotifyRecoverabilityDegradedChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   recoverability_observer_list_.Notify();

@@ -365,6 +365,13 @@ class SyncService : public KeyedService {
       const std::vector<std::vector<uint8_t>>& keys,
       int last_key_version) = 0;
 
+  // Registers a new trusted recovery method that can be used to retrieve
+  // trusted vault encryption keys.
+  virtual void AddTrustedVaultRecoveryMethodFromWeb(
+      const std::string& gaia_id,
+      const std::vector<uint8_t>& public_key,
+      base::OnceClosure callback) = 0;
+
   //////////////////////////////////////////////////////////////////////////////
   // USER DEMOGRAPHICS
   //////////////////////////////////////////////////////////////////////////////

@@ -227,11 +227,6 @@ void StandaloneTrustedVaultBackend::SetRecoverabilityDegradedForTesting() {
   delegate_->NotifyRecoverabilityDegradedChanged();
 }
 
-void StandaloneTrustedVaultBackend::ResolveRecoverabilityDegradedForTesting() {
-  is_recoverability_degraded_for_testing_ = false;
-  delegate_->NotifyRecoverabilityDegradedChanged();
-}
-
 void StandaloneTrustedVaultBackend::MaybeRegisterDevice(
     const std::string& gaia_id) {
   if (!base::FeatureList::IsEnabled(switches::kFollowTrustedVaultKeyRotation)) {

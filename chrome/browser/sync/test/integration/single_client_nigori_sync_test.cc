@@ -101,6 +101,12 @@ GURL GetTrustedVaultRetrievalURL(
                          base64_encoded_key.c_str()));
 }
 
+GURL GetTrustedVaultRecoverabilityURL(
+    const net::test_server::EmbeddedTestServer& test_server) {
+  return test_server.GetURL(base::StringPrintf(
+      "/sync/encryption_keys_recoverability.html?%s", kGaiaId));
+}
+
 std::string ComputeKeyName(const KeyParamsForTesting& key_params) {
   std::string key_name;
   syncer::Nigori::CreateByDerivation(key_params.derivation_params,
@@ -929,9 +935,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiFromUntrustedOriginTest,
                   ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
 }
 
-class SingleClientNigoriWithRecoverySyncTest : public SyncTest {
+class SingleClientNigoriWithRecoverySyncTest
+    : public SingleClientNigoriWithWebApiTest {
  public:
-  SingleClientNigoriWithRecoverySyncTest() : SyncTest(SINGLE_CLIENT) {
+  SingleClientNigoriWithRecoverySyncTest() {
     override_features_.InitAndEnableFeature(
         switches::kSyncSupportTrustedVaultPassphraseRecovery);
   }
@@ -947,6 +954,9 @@ class SingleClientNigoriWithRecoverySyncTest : public SyncTest {
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
                        ShouldReportDegradedTrustedVaultRecoverability) {
   const std::vector<uint8_t> kTestEncryptionKey = {1, 2, 3, 4};
+
+  const GURL recoverability_url =
+      GetTrustedVaultRecoverabilityURL(*embedded_test_server());
 
   // Mimic the account being already using a trusted vault passphrase.
   SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics({kTestEncryptionKey}),
@@ -979,10 +989,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
                         IDS_SETTINGS_EMPTY_STRING, sync_ui_util::NO_ACTION));
 
   // Mimic opening a web page where the user can interact with the degraded
-  // recoverability flow.
-  static_cast<syncer::StandaloneTrustedVaultClient*>(
-      GetSyncService(0)->GetSyncClientForTest()->GetTrustedVaultClient())
-      ->ResolveRecoverabilityDegradedForTesting();
+  // recoverability flow. Before that, there needs to be an existing tab for the
+  // second tab to be closeable via javascript.
+  chrome::AddTabAt(GetBrowser(0), GURL(url::kAboutBlankURL), /*index=*/0,
+                   /*foreground=*/true);
+  // TODO(crbug.com/1081649): This should use a dedicated page, instead of the
+  // retrieval page.
+  sync_ui_util::OpenTabForSyncKeyRetrievalWithURLForTesting(GetBrowser(0),
+                                                            recoverability_url);
+  ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
+              NotNull());
 
   EXPECT_TRUE(
       TrustedVaultRecoverabilityNotDegradedChecker(GetSyncService(0)).Wait());

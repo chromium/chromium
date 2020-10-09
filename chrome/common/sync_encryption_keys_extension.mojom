@@ -13,4 +13,8 @@ interface SyncEncryptionKeysExtension {
   // of encryption keys not being needed even prior to this call).
   SetEncryptionKeys(string gaia_id, array<array<uint8>> encryption_keys,
                     int32 last_key_version) => ();
+
+  // Registers a new trusted recovery method that can be used by other clients
+  // to retrieve sync trusted vault encryption keys.
+  AddTrustedRecoveryMethod(string gaia_id, array<uint8> public_key) => ();
 };

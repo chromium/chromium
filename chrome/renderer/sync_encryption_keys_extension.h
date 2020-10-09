@@ -36,6 +36,7 @@ class SyncEncryptionKeysExtension : public content::RenderFrameObserver {
 
   void Install();
   void SetSyncEncryptionKeys(gin::Arguments* args);
+  void AddTrustedSyncEncryptionRecoveryMethod(gin::Arguments* args);
   void RunCompletionCallback(
       std::unique_ptr<v8::Global<v8::Function>> callback);
 

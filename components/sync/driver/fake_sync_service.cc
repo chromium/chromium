@@ -160,6 +160,11 @@ void FakeSyncService::AddTrustedVaultDecryptionKeysFromWeb(
     const std::vector<std::vector<uint8_t>>& keys,
     int last_key_version) {}
 
+void FakeSyncService::AddTrustedVaultRecoveryMethodFromWeb(
+    const std::string& gaia_id,
+    const std::vector<uint8_t>& public_key,
+    base::OnceClosure callback) {}
+
 UserDemographicsResult FakeSyncService::GetUserNoisedBirthYearAndGender(
     base::Time now) {
   return UserDemographicsResult::ForStatus(

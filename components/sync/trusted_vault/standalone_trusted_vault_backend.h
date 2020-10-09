@@ -96,7 +96,6 @@ class StandaloneTrustedVaultBackend
       const std::string& gaia_id);
 
   void SetRecoverabilityDegradedForTesting();
-  void ResolveRecoverabilityDegradedForTesting();
 
  private:
   friend class base::RefCountedThreadSafe<StandaloneTrustedVaultBackend>;

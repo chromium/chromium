@@ -303,6 +303,11 @@ void TestSyncService::AddTrustedVaultDecryptionKeysFromWeb(
     const std::vector<std::vector<uint8_t>>& keys,
     int last_key_version) {}
 
+void TestSyncService::AddTrustedVaultRecoveryMethodFromWeb(
+    const std::string& gaia_id,
+    const std::vector<uint8_t>& public_key,
+    base::OnceClosure callback) {}
+
 UserDemographicsResult TestSyncService::GetUserNoisedBirthYearAndGender(
     base::Time now) {
   return user_demographics_result_;

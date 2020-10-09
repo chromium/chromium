@@ -59,6 +59,10 @@ class MockSyncService : public SyncService {
                void(const std::string& gaia_id,
                     const std::vector<std::vector<uint8_t>>& keys,
                     int last_key_version));
+  MOCK_METHOD3(AddTrustedVaultRecoveryMethodFromWeb,
+               void(const std::string& gaia_id,
+                    const std::vector<uint8_t>& public_key,
+                    base::OnceClosure callback));
   MOCK_METHOD1(GetUserNoisedBirthYearAndGender,
                UserDemographicsResult(base::Time now));
 

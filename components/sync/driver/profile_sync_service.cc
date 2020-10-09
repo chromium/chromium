@@ -1845,6 +1845,14 @@ void ProfileSyncService::AddTrustedVaultDecryptionKeysFromWeb(
                                                    last_key_version);
 }
 
+void ProfileSyncService::AddTrustedVaultRecoveryMethodFromWeb(
+    const std::string& gaia_id,
+    const std::vector<uint8_t>& public_key,
+    base::OnceClosure callback) {
+  sync_client_->GetTrustedVaultClient()->AddTrustedRecoveryMethod(
+      gaia_id, public_key, std::move(callback));
+}
+
 UserDemographicsResult ProfileSyncService::GetUserNoisedBirthYearAndGender(
     base::Time now) {
   // Do not provide the synced user’s birth year and gender when sync is

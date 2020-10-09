@@ -76,7 +76,6 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
       base::OnceCallback<void(const base::Optional<CoreAccountInfo>&)> callback)
       const;
   void SetRecoverabilityDegradedForTesting();
-  void ResolveRecoverabilityDegradedForTesting();
 
  private:
   void NotifyRecoverabilityDegradedChanged();

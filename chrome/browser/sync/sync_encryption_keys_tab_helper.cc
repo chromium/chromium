@@ -8,11 +8,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/common/sync_encryption_keys_extension.mojom.h"
+#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -58,12 +60,38 @@ class SyncEncryptionKeysTabHelper::EncryptionKeyApi
       const std::vector<std::vector<uint8_t>>& encryption_keys,
       int last_key_version,
       SetEncryptionKeysCallback callback) override {
-    CHECK_EQ(receivers_.GetCurrentTargetFrame()->GetLastCommittedOrigin(),
-             GetAllowedOrigin());
+    // This could instead be a CHECK because it's guaranteed by the logic in
+    // DidFinishNavigation(), but let's avoid browser crashes at all cost and
+    // simply ignore the call.
+    if (receivers_.GetCurrentTargetFrame()->GetLastCommittedOrigin() !=
+        GetAllowedOrigin()) {
+      return;
+    }
 
     sync_service_->AddTrustedVaultDecryptionKeysFromWeb(
         gaia_id, encryption_keys, last_key_version);
     std::move(callback).Run();
+  }
+
+  void AddTrustedRecoveryMethod(
+      const std::string& gaia_id,
+      const std::vector<uint8_t>& public_key,
+      AddTrustedRecoveryMethodCallback callback) override {
+    if (!base::FeatureList::IsEnabled(
+            switches::kSyncSupportTrustedVaultPassphraseRecovery)) {
+      return;
+    }
+
+    // This could instead be a CHECK because it's guaranteed by the logic in
+    // DidFinishNavigation(), but let's avoid browser crashes at all cost and
+    // simply ignore the call.
+    if (receivers_.GetCurrentTargetFrame()->GetLastCommittedOrigin() !=
+        GetAllowedOrigin()) {
+      return;
+    }
+
+    sync_service_->AddTrustedVaultRecoveryMethodFromWeb(gaia_id, public_key,
+                                                        std::move(callback));
   }
 
  private:
