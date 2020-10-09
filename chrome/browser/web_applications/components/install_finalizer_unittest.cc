@@ -34,6 +34,8 @@ struct FinalizeInstallResult {
 
 }  // namespace
 
+// TODO(crbug.com/1068081): Migrate remaining tests from
+// bookmark_app_install_finalizer_unittest.
 class InstallFinalizerUnitTest : public WebAppTest {
  public:
   InstallFinalizerUnitTest() = default;
