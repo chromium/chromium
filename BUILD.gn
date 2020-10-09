@@ -10,6 +10,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
+import("//build/config/dcheck_always_on.gni")
 import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
@@ -1113,9 +1114,6 @@ if (!is_ios) {
       "//third_party/blink/web_tests/wpt_internal/",
       "//third_party/pywebsocket3/src/mod_pywebsocket/",
       "//third_party/test_fonts/test_fonts/",
-
-      # Needed by run_web_tests.py to detect DCHECK build.
-      "$root_out_dir/args.gn",
     ]
 
     if (is_win) {
@@ -1147,6 +1145,9 @@ if (!is_ios) {
     _common_web_test_args += [ "--debug" ]
   } else {
     _common_web_test_args += [ "--release" ]
+    if (dcheck_always_on) {
+      _common_web_test_args += [ "--time-out-ms=12000" ]
+    }
   }
 
   if (is_android) {
