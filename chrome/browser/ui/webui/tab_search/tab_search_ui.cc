@@ -18,6 +18,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/views/style/platform_style.h"
 
 #if BUILDFLAG(ENABLE_TAB_SEARCH)
 #include "chrome/grit/tab_search_resources.h"
@@ -57,6 +58,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   source->AddBoolean(
       "submitFeedbackEnabled",
       base::FeatureList::IsEnabled(features::kTabSearchFeedback));
+  source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
 
   // Add the configuration parameters for fuzzy search.
   source->AddBoolean("searchIgnoreLocation",
