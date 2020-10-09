@@ -511,8 +511,11 @@ bool CommandSamplesCPUCycles(const std::vector<std::string>& args) {
   // Command must start with "perf record".
   if (args.size() < 4 || args[0] != "perf" || args[1] != "record")
     return false;
+  // Cycles event can be either the raw 'cycles' event, or the event name can be
+  // annotated with some qualifier suffix. Check for all cases.
   for (size_t i = 2; i + 1 < args.size(); ++i) {
-    if (args[i] == "-e" && args[i + 1] == "cycles")
+    if (args[i] == "-e" &&
+        (args[i + 1] == "cycles" || args[i + 1].rfind("cycles:", 0) == 0))
       return true;
   }
   return false;
