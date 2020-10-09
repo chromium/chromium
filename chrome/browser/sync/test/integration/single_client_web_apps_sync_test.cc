@@ -25,14 +25,13 @@ namespace {
 // These tests test the new Web Apps system with next generation sync.
 //
 // Chrome OS syncs apps as an OS type.
-class SingleClientWebAppsBmoOsSyncTest : public OsSyncTest {
+class SingleClientWebAppsOsSyncTest : public OsSyncTest {
  public:
-  SingleClientWebAppsBmoOsSyncTest() : OsSyncTest(SINGLE_CLIENT) {
-  }
-  ~SingleClientWebAppsBmoOsSyncTest() override = default;
+  SingleClientWebAppsOsSyncTest() : OsSyncTest(SINGLE_CLIENT) {}
+  ~SingleClientWebAppsOsSyncTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientWebAppsBmoOsSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientWebAppsOsSyncTest,
                        DisablingOsSyncFeatureDisablesDataType) {
   ASSERT_TRUE(chromeos::features::IsSplitSettingsSyncEnabled());
   ASSERT_TRUE(SetupSync());
@@ -50,14 +49,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsBmoOsSyncTest,
 #else   // !defined(OS_CHROMEOS)
 
 // These tests test the new Web Apps system with next generation sync.
-class SingleClientWebAppsBmoSyncTest : public SyncTest {
+class SingleClientWebAppsSyncTest : public SyncTest {
  public:
-  SingleClientWebAppsBmoSyncTest() : SyncTest(SINGLE_CLIENT) {
-  }
-  ~SingleClientWebAppsBmoSyncTest() override = default;
+  SingleClientWebAppsSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  ~SingleClientWebAppsSyncTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientWebAppsBmoSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
                        DisablingSelectedTypeDisablesModelType) {
   ASSERT_TRUE(SetupSync());
   syncer::ProfileSyncService* service = GetSyncService(0);

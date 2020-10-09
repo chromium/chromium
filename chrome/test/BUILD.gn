@@ -6967,7 +6967,7 @@ if (!is_fuchsia && !is_android) {
       "../browser/sync/test/integration/single_client_user_consents_sync_test.cc",
       "../browser/sync/test/integration/single_client_user_events_sync_test.cc",
       "../browser/sync/test/integration/single_client_wallet_sync_test.cc",
-      "../browser/sync/test/integration/single_client_web_apps_bmo_sync_test.cc",
+      "../browser/sync/test/integration/single_client_web_apps_sync_test.cc",
       "../browser/sync/test/integration/sync_auth_test.cc",
       "../browser/sync/test/integration/sync_errors_test.cc",
       "../browser/sync/test/integration/sync_exponential_backoff_test.cc",
