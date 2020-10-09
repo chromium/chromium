@@ -599,6 +599,7 @@ class FakeEventLogsUploadManager : public EventLogsUploadManager {
 
 class FakeUserPoliciesManager : public UserPoliciesManager {
  public:
+  explicit FakeUserPoliciesManager();
   explicit FakeUserPoliciesManager(bool cloud_policies_enabled);
   ~FakeUserPoliciesManager() override;
 

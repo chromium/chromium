@@ -281,5 +281,46 @@ INSTANTIATE_TEST_SUITE_P(
                        ::testing::Bool(),
                        ::testing::Values(L"", L"valid-dm-token")));
 
+// Test to verify automatic enabling of cloud policies when DM token is present.
+// Parameters:
+// string : Value of DM Token on the device.
+// int : 0 - Cloud policies disabled through registry.
+//       1 - Cloud policies enabled through registry.
+//       2 - Cloud policies registry flag not set.
+class GcpUserPoliciesEnableOnDmTokenTest
+    : public GcpUserPoliciesBaseTest,
+      public ::testing::WithParamInterface<std::tuple<const char*, int>> {};
+
+TEST_P(GcpUserPoliciesEnableOnDmTokenTest, EnableIfFound) {
+  std::string dm_token(std::get<0>(GetParam()));
+  int reg_enable_cloud_policies = std::get<1>(GetParam());
+
+  if (!dm_token.empty()) {
+    ASSERT_EQ(S_OK, SetDmTokenForTesting(dm_token));
+  }
+  if (reg_enable_cloud_policies < 2) {
+    SetGlobalFlagForTesting(L"cloud_policies_enabled",
+                            reg_enable_cloud_policies);
+  }
+
+  // This is needed because we want to call the default constructor of the
+  // UserDeviceManager in each test.
+  FakeUserPoliciesManager fake_user_policies_manager;
+
+  // Feature is enabled if it's explicitly enabled or if the flag is not set and
+  // a valid DM token exists.
+  if (reg_enable_cloud_policies == 1 ||
+      (reg_enable_cloud_policies == 2 && !dm_token.empty())) {
+    ASSERT_TRUE(UserPoliciesManager::Get()->CloudPoliciesEnabled());
+  } else {
+    ASSERT_FALSE(UserPoliciesManager::Get()->CloudPoliciesEnabled());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GcpUserPoliciesEnableOnDmTokenTest,
+                         ::testing::Combine(::testing::Values("", "dm-token"),
+                                            ::testing::Values(0, 1, 2)));
+
 }  // namespace testing
 }  // namespace credential_provider
