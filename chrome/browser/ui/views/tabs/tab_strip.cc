@@ -1269,7 +1269,7 @@ void TabStrip::AddTabAt(int model_index, TabRendererData data, bool is_active) {
 
   Profile* profile = controller()->GetProfile();
   if (profile) {
-    if (profile->IsGuestSession())
+    if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile())
       base::UmaHistogramCounts100("Tab.Count.Guest", tab_count());
     else if (profile->IsIncognitoProfile())
       base::UmaHistogramCounts100("Tab.Count.Incognito", tab_count());

@@ -778,7 +778,8 @@ void AppMenuModel::Build() {
                            sub_menus_.back().get());
   }
   AddItemWithStringId(IDC_SHOW_DOWNLOADS, IDS_SHOW_DOWNLOADS);
-  if (!browser_->profile()->IsGuestSession()) {
+  if (!browser_->profile()->IsGuestSession() &&
+      !browser_->profile()->IsEphemeralGuestProfile()) {
     bookmark_sub_menu_model_ =
         std::make_unique<BookmarkSubMenuModel>(this, browser_);
     AddSubMenuWithStringId(IDC_BOOKMARKS_MENU, IDS_BOOKMARKS_MENU,
@@ -939,7 +940,8 @@ void AppMenuModel::UpdateZoomControls() {
 }
 
 bool AppMenuModel::ShouldShowNewIncognitoWindowMenuItem() {
-  if (browser_->profile()->IsGuestSession())
+  if (browser_->profile()->IsGuestSession() ||
+      browser_->profile()->IsEphemeralGuestProfile())
     return false;
 
   return IncognitoModePrefs::GetAvailability(browser_->profile()->GetPrefs()) !=

@@ -29,7 +29,7 @@ DiceBubbleSyncPromoView::DiceBubbleSyncPromoView(
     bool signin_button_prominent,
     int text_style)
     : delegate_(delegate) {
-  DCHECK(!profile->IsGuestSession());
+  DCHECK(!profile->IsGuestSession() && !profile->IsEphemeralGuestProfile());
   AccountInfo account;
   // Signin promos can be shown in incognito, they use an empty account list.
   if (profile->IsRegularProfile())

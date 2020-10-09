@@ -771,7 +771,8 @@ bool BrowserView::IsIncognito() const {
 }
 
 bool BrowserView::IsGuestSession() const {
-  return browser_->profile()->IsGuestSession();
+  return browser_->profile()->IsGuestSession() ||
+         browser_->profile()->IsEphemeralGuestProfile();
 }
 
 bool BrowserView::IsRegularOrGuestSession() const {
@@ -2252,7 +2253,7 @@ base::string16 BrowserView::GetAccessibleWindowTitleForChannelAndProfile(
   // Finally annotate with the user - add Incognito or guest if it's an
   // incognito or guest window, otherwise use the avatar name.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  if (profile->IsGuestSession()) {
+  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile()) {
     title = l10n_util::GetStringFUTF16(IDS_ACCESSIBLE_GUEST_WINDOW_TITLE_FORMAT,
                                        title);
   } else if (profile->IsIncognitoProfile()) {
