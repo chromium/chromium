@@ -10,7 +10,6 @@ import("//build/config/c++/c++.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
-import("//testing/test.gni")
 import("//third_party/abseil-cpp/absl.gni")
 
 config("absl_component_build") {
@@ -178,28 +177,30 @@ config("absl_test_cflags_cc") {
   }
 }
 
-if (!is_component_build) {
-  test("absl_tests") {
-    testonly = true
-    deps = [
-      "absl/algorithm:algorithm_test",
-      "absl/algorithm:container_test",
-      "absl/base:config_test",
-      "absl/container:inlined_vector_test",
-      "absl/memory:memory_test",
-      "absl/meta:type_traits_test",
-      "absl/strings:ascii_test",
-      "absl/strings:match_test",
-      "absl/strings:str_replace_test",
-      "absl/strings:string_view_test",
-      "absl/types:optional_test",
-      "absl/types:variant_test",
-      "//third_party/googletest:gtest_main",
-    ]
-  }
-}
-
 if (build_with_chromium) {
+  import("//testing/test.gni")
+
+  if (!is_component_build) {
+    test("absl_tests") {
+      testonly = true
+      deps = [
+        "absl/algorithm:algorithm_test",
+        "absl/algorithm:container_test",
+        "absl/base:config_test",
+        "absl/container:inlined_vector_test",
+        "absl/memory:memory_test",
+        "absl/meta:type_traits_test",
+        "absl/strings:ascii_test",
+        "absl/strings:match_test",
+        "absl/strings:str_replace_test",
+        "absl/strings:string_view_test",
+        "absl/types:optional_test",
+        "absl/types:variant_test",
+        "//third_party/googletest:gtest_main",
+      ]
+    }
+  }
+
   test("absl_hardening_tests") {
     testonly = true
     sources = [ "absl_hardening_test.cc" ]
