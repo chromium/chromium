@@ -4,6 +4,7 @@
 
 #include "ash/system/phonehub/phone_hub_notification_controller.h"
 
+#include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/message_center_controller.h"
 #include "ash/test/ash_test_base.h"
@@ -169,7 +170,13 @@ TEST_F(PhoneHubNotificationControllerTest, InlineReply) {
 }
 
 TEST_F(PhoneHubNotificationControllerTest, ClickSettings) {
-  // TODO(tengs): Test this case once it is implemented.
+  notification_manager_.SetNotificationsInternal(fake_notifications_);
+  EXPECT_TRUE(
+      message_center_->FindVisibleNotificationById(kCrOSNotificationId0));
+  EXPECT_EQ(0, GetSystemTrayClient()->show_connected_devices_settings_count());
+
+  message_center_->ClickOnSettingsButton(kCrOSNotificationId0);
+  EXPECT_EQ(1, GetSystemTrayClient()->show_connected_devices_settings_count());
 }
 
 TEST_F(PhoneHubNotificationControllerTest, CancelReply) {
