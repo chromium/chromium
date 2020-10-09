@@ -131,28 +131,6 @@ void WebStateListMetricsBrowserAgent::DidStartNavigation(
       crash_util::ResetFailedStartupAttemptCount();
     });
   }
-
-  DCHECK(web_state->GetNavigationManager());
-  web::NavigationItem* navigation_item =
-      web_state->GetNavigationManager()->GetPendingItem();
-
-  // TODO(crbug.com/676129): the pending item is not correctly set when the
-  // page is reloading, use the last committed item if pending item is null.
-  // Remove this once tracking bug is fixed.
-  if (!navigation_item) {
-    navigation_item = web_state->GetNavigationManager()->GetLastCommittedItem();
-  }
-
-  if (!navigation_item) {
-    // Pending item may not exist due to the bug in //ios/web layer.
-    // TODO(crbug.com/899827): remove this early return once GetPendingItem()
-    // always return valid object inside WebStateObserver::DidStartNavigation()
-    // callback.
-    //
-    // Note that GetLastCommittedItem() returns null if navigation manager does
-    // not have committed items (which is normal situation).
-    return;
-  }
 }
 
 void WebStateListMetricsBrowserAgent::DidFinishNavigation(
