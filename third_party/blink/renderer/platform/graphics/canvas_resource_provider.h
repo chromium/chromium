@@ -265,6 +265,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   cc::PaintImage MakeImageSnapshot();
   virtual void RasterRecord(sk_sp<cc::PaintRecord>);
   CanvasImageProvider* GetOrCreateCanvasImageProvider();
+  void TearDownSkSurface();
 
   ResourceProviderType type_;
   mutable sk_sp<SkSurface> surface_;  // mutable for lazy init
