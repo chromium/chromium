@@ -1568,6 +1568,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "lacros-chrome",
+)
+
+chrome_internal_verifier(
     builder = "linux-chrome",
 )
 

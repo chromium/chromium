@@ -310,6 +310,17 @@
         },
         'os_type': 'chromeos'
       },
+      'lacros-chrome': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+        'mixins': [
+          'chrome-swarming-pool',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chrome_sizes',
+        },
+      },
       'linux-chrome': {
         'additional_compile_targets': [
           'chrome',
