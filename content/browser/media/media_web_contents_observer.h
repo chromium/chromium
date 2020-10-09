@@ -160,6 +160,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   void OnAudioOutputSinkChangingDisabled(RenderFrameHost* render_frame_host,
                                          int delegate_id);
   void OnBufferUnderflow(RenderFrameHost* render_frame_host, int delegate_id);
+  void OnSeek(RenderFrameHost* render_frame_host, int delegate_id);
 
   device::mojom::WakeLock* GetAudioWakeLock();
 

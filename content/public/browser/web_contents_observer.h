@@ -582,6 +582,7 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   virtual void MediaPictureInPictureChanged(bool is_picture_in_picture) {}
   virtual void MediaMutedStatusChanged(const MediaPlayerId& id, bool muted) {}
   virtual void MediaBufferUnderflow(const MediaPlayerId& id) {}
+  virtual void MediaPlayerSeek(const MediaPlayerId& id) {}
 
   // Invoked when the renderer process changes the page scale factor.
   virtual void OnPageScaleFactorChanged(float page_scale_factor) {}

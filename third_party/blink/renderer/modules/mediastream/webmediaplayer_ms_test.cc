@@ -134,6 +134,10 @@ class FakeWebMediaPlayerDelegate
     EXPECT_EQ(delegate_id_, delegate_id);
   }
 
+  void DidSeek(int delegate_id) override {
+    EXPECT_EQ(delegate_id_, delegate_id);
+  }
+
   void PlayerGone(int delegate_id) override {
     EXPECT_EQ(delegate_id_, delegate_id);
     is_gone_ = true;
