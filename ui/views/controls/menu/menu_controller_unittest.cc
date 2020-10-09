@@ -760,11 +760,14 @@ class MenuControllerTest : public ViewsTestBase,
     return menu_controller_->exit_type_;
   }
 
-  void AddButtonMenuItems() {
+  // Adds a menu item having buttons as children and returns it. If
+  // `single_child` is true, the hosting menu item has only one child button.
+  MenuItemView* AddButtonMenuItems(bool single_child) {
     menu_item()->SetBounds(0, 0, 200, 300);
     MenuItemView* item_view =
         menu_item()->AppendMenuItem(5, base::ASCIIToUTF16("Five"));
-    for (size_t i = 0; i < 3; ++i) {
+    const size_t children_count = single_child ? 1 : 3;
+    for (size_t i = 0; i < children_count; ++i) {
       LabelButton* button =
           new LabelButton(nullptr, base::ASCIIToUTF16("Label"));
       // This is an in-menu button. Hence it must be always focusable.
@@ -772,6 +775,7 @@ class MenuControllerTest : public ViewsTestBase,
       item_view->AddChildView(button);
     }
     menu_item()->GetSubmenu()->ShowAt(owner(), menu_item()->bounds(), false);
+    return item_view;
   }
 
   void DestroyMenuItem() { menu_item_.reset(); }
@@ -1261,7 +1265,7 @@ TEST_F(MenuControllerTest, SelectByChar) {
 }
 
 TEST_F(MenuControllerTest, SelectChildButtonView) {
-  AddButtonMenuItems();
+  AddButtonMenuItems(/*single_child=*/false);
   View* buttons_view = menu_item()->GetSubmenu()->children()[4];
   ASSERT_NE(nullptr, buttons_view);
   Button* button1 = Button::AsButton(buttons_view->children()[0]);
@@ -1331,7 +1335,7 @@ TEST_F(MenuControllerTest, SelectChildButtonView) {
 }
 
 TEST_F(MenuControllerTest, DeleteChildButtonView) {
-  AddButtonMenuItems();
+  AddButtonMenuItems(/*single_child=*/false);
 
   // Handle searching for 'f'; should find "Four".
   SelectByChar('f');
@@ -1370,17 +1374,26 @@ TEST_F(MenuControllerTest, DeleteChildButtonView) {
   EXPECT_FALSE(button3->IsHotTracked());
 }
 
+// Verifies that the child button is hot tracked after the host menu item is
+// selected by `MenuController::SelectItemAndOpenSubmenu()`.
+TEST_F(MenuControllerTest, ChildButtonHotTrackedAfterMenuItemSelection) {
+  // Add a menu item which owns a button as child.
+  MenuItemView* hosting_menu_item = AddButtonMenuItems(/*single_child=*/true);
+  ASSERT_FALSE(hosting_menu_item->IsSelected());
+  const Button* button = Button::AsButton(hosting_menu_item->children()[0]);
+  EXPECT_FALSE(button->IsHotTracked());
+
+  menu_controller()->SelectItemAndOpenSubmenu(hosting_menu_item);
+  EXPECT_TRUE(hosting_menu_item->IsSelected());
+  EXPECT_TRUE(button->IsHotTracked());
+}
+
 // Verifies that the child button of the menu item which is under mouse hovering
 // is hot tracked (https://crbug.com/1135000).
 TEST_F(MenuControllerTest, ChildButtonHotTrackedAfterMouseMove) {
   // Add a menu item which owns a button as child.
-  menu_item()->SetBounds(0, 0, 200, 300);
-  MenuItemView* button_host_view =
-      menu_item()->AppendMenuItem(/*command_id=*/5);
-  auto* button = button_host_view->AddChildView(
-      std::make_unique<LabelButton>(nullptr, base::ASCIIToUTF16("Label")));
-  button->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-  menu_item()->GetSubmenu()->ShowAt(owner(), menu_item()->bounds(), false);
+  MenuItemView* hosting_menu_item = AddButtonMenuItems(/*single_child=*/true);
+  const Button* button = Button::AsButton(hosting_menu_item->children()[0]);
   EXPECT_FALSE(button->IsHotTracked());
 
   SubmenuView* sub_menu = menu_item()->GetSubmenu();
@@ -1398,7 +1411,7 @@ TEST_F(MenuControllerTest, ChildButtonHotTrackedAfterMouseMove) {
 // Creates a menu with Button child views, simulates running a nested
 // menu and tests that existing the nested run restores hot-tracked child view.
 TEST_F(MenuControllerTest, ChildButtonHotTrackedWhenNested) {
-  AddButtonMenuItems();
+  AddButtonMenuItems(/*single_child=*/false);
 
   // Handle searching for 'f'; should find "Four".
   SelectByChar('f');
@@ -2223,7 +2236,7 @@ TEST_F(MenuControllerTest, RunWithoutWidgetDoesntCrash) {
 TEST_F(MenuControllerTest, MenuControllerReplacedDuringDrag) {
   // Build the menu so that the appropriate root window is available to set the
   // drag drop client on.
-  AddButtonMenuItems();
+  AddButtonMenuItems(/*single_child=*/false);
   TestDragDropClient drag_drop_client(base::BindRepeating(
       &MenuControllerTest::TestMenuControllerReplacementDuringDrag,
       base::Unretained(this)));
@@ -2238,7 +2251,7 @@ TEST_F(MenuControllerTest, MenuControllerReplacedDuringDrag) {
 TEST_F(MenuControllerTest, CancelAllDuringDrag) {
   // Build the menu so that the appropriate root window is available to set the
   // drag drop client on.
-  AddButtonMenuItems();
+  AddButtonMenuItems(/*single_child=*/false);
   TestDragDropClient drag_drop_client(base::BindRepeating(
       &MenuControllerTest::TestCancelAllDuringDrag, base::Unretained(this)));
   aura::client::SetDragDropClient(
@@ -2484,7 +2497,7 @@ TEST_F(MenuControllerTest,
 }
 
 TEST_F(MenuControllerTest, SetSelectionIndices_Buttons) {
-  AddButtonMenuItems();
+  AddButtonMenuItems(/*single_child=*/false);
   MenuItemView* const item1 = menu_item()->GetSubmenu()->GetMenuItemAt(0);
   MenuItemView* const item2 = menu_item()->GetSubmenu()->GetMenuItemAt(1);
   MenuItemView* const item3 = menu_item()->GetSubmenu()->GetMenuItemAt(2);
@@ -2526,7 +2539,7 @@ TEST_F(MenuControllerTest, SetSelectionIndices_Buttons) {
 }
 
 TEST_F(MenuControllerTest, SetSelectionIndices_Buttons_SkipHiddenAndDisabled) {
-  AddButtonMenuItems();
+  AddButtonMenuItems(/*single_child=*/false);
   MenuItemView* const item1 = menu_item()->GetSubmenu()->GetMenuItemAt(0);
   MenuItemView* const item2 = menu_item()->GetSubmenu()->GetMenuItemAt(1);
   MenuItemView* const item3 = menu_item()->GetSubmenu()->GetMenuItemAt(2);

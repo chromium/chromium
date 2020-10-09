@@ -162,8 +162,7 @@ ClipboardHistoryItemView::~ClipboardHistoryItemView() = default;
 ClipboardHistoryItemView::ClipboardHistoryItemView(
     const ClipboardHistoryItem* clipboard_history_item,
     views::MenuItemView* container)
-    : clipboard_history_item_(clipboard_history_item),
-      container_(container) {}
+    : clipboard_history_item_(clipboard_history_item), container_(container) {}
 
 void ClipboardHistoryItemView::Init() {
   SetLayoutManager(std::make_unique<views::FillLayout>());

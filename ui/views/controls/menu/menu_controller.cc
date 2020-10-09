@@ -626,6 +626,13 @@ bool MenuController::IsContextMenu() const {
 void MenuController::SelectItemAndOpenSubmenu(MenuItemView* item) {
   DCHECK(item);
   SetSelection(item, SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
+
+  // If `item` has not a submenu, hot track `item`'s initial focusable button
+  // if any.
+  if (!item->HasSubmenu()) {
+    View* hot_view = GetInitialFocusableView(item, /*forward=*/true);
+    SetHotTrackedButton(Button::AsButton(hot_view));
+  }
 }
 
 bool MenuController::OnMousePressed(SubmenuView* source,
