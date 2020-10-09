@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
 
   // The first child has the same origin as the top-level domain.
   RenderFrameHost* child_frame = ChildFrameAt(web_contents()->GetMainFrame(),
-                                              /*child_index=*/0);
+                                              /*index=*/0);
   ASSERT_TRUE(child_frame);
 
   bool api_exists = false;
@@ -671,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
 
   // The second child has a different origin as the top-level domain.
   RenderFrameHost* child_frame = ChildFrameAt(web_contents()->GetMainFrame(),
-                                              /*child_index=*/1);
+                                              /*index=*/1);
   ASSERT_TRUE(child_frame);
 
   bool api_exists = false;
