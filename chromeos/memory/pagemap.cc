@@ -9,6 +9,7 @@
 #include <sys/types.h>
 #include <string>
 
+#include "base/logging.h"
 #include "base/memory/aligned_memory.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/process_metrics.h"
@@ -78,11 +79,11 @@ bool Pagemap::GetEntries(uint64_t address,
   return true;
 }
 
-bool Pagemap::GetNumberOfPagesInCore(uint64_t address,
-                                     uint64_t length,
-                                     uint64_t* pages_in_core) const {
-  DCHECK(pages_in_core);
-  *pages_in_core = 0;
+bool Pagemap::GetNumberOfPagesPresent(uint64_t address,
+                                      uint64_t length,
+                                      uint64_t* pages_present) const {
+  DCHECK(pages_present);
+  *pages_present = 0;
 
   std::vector<Pagemap::PagemapEntry> entries(length / base::GetPageSize());
   if (!GetEntries(address, length, &entries)) {
@@ -91,10 +92,20 @@ bool Pagemap::GetNumberOfPagesInCore(uint64_t address,
 
   for (const Pagemap::PagemapEntry& entry : entries) {
     if (entry.page_present)
-      (*pages_in_core)++;
+      (*pages_present)++;
   }
 
   return true;
+}
+
+bool Pagemap::IsFullyPresent(uint64_t address, uint64_t length) const {
+  const size_t kPageSize = base::GetPageSize();
+  uint64_t pages_present = 0;
+  if (!GetNumberOfPagesPresent(address, length, &pages_present)) {
+    LOG(WARNING) << "Unable to get pagemap entry";
+    return false;
+  }
+  return (length / kPageSize) == pages_present;
 }
 
 }  // namespace memory
