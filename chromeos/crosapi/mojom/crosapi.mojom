@@ -33,7 +33,7 @@ struct LacrosInfo {
 //
 // Next version: 5
 // Next method id: 8
-[Stable]
+[Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e"]
 interface AshChromeService {
   // Binds Chrome OS Account Manager for Identity management.
   // Added in M87.
@@ -121,7 +121,7 @@ struct LacrosInitParams {
 
 // LacrosChromeService defines the APIs that live in lacros-chrome and
 // are accessed from ash-chrome.
-[Stable]
+[Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91"]
 interface LacrosChromeService {
   // Ash-chrome can pass initialize parameters via this method.
   // The parameters are available on lacros-chrome startup.

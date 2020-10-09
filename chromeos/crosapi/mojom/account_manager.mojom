@@ -39,7 +39,7 @@ struct Account {
 // Interface for observers of Chrome OS Account Manager.
 // This interface is implemented by lacros-chrome, and is used by ash-chrome to
 // send account update notifications.
-[Stable]
+[Stable, Uuid="f75c4963-497b-411f-97ab-c53c7f6b46ed"]
 interface AccountManagerObserver {
   // Called when the token for |account| is updated/inserted.
   // Note: Observers which register with |AccountManager| before its
@@ -67,7 +67,7 @@ interface AccountManagerObserver {
 //
 // Next version: 2
 // Next method id: 2
-[Stable]
+[Stable, Uuid="85b9a674-9d8e-497f-98d5-22c8dca6f2b8"]
 interface AccountManager {
   // Returns |true| if Chrome OS Account Manager has been fully initialized, and
   // |false| otherwise.

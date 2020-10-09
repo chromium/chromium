@@ -345,7 +345,7 @@ struct HidDeviceInfo {
 
 // A client interface for receiving a notification when HID devices are
 // physically connected or disconnected.
-[Stable]
+[Stable, Uuid="1b9b8008-dcf3-4c2e-9d68-ca3c47778817"]
 interface HidManagerClient {
   // Notifies the client that a device is added.
   DeviceAdded@0(HidDeviceInfo device_info);
@@ -358,7 +358,7 @@ interface HidManagerClient {
 // Provides an interface for enumerating available HID devices, registering for
 // device connection and disconnection notifications, and opening a connection
 // for reading from and writing to a HID device.
-[Stable]
+[Stable, Uuid="9e931765-42c9-4afd-9dc5-9086621b7bb6"]
 interface HidManager {
   // Enumerates available devices and set as a client of HidManager.
   // The implementation of HidManager guarantees that the returned callback
@@ -392,7 +392,7 @@ interface HidManager {
 // allows a device to define its own packet formats (reports) for sending or
 // receiving data. The methods in HidConnection send or receive data and specify
 // which report is used.
-[Stable]
+[Stable, Uuid="1b9b8008-dcf3-4c2e-9d68-ca3c47778817"]
 interface HidConnection {
   // A |report_id| of 0 is returned via callback if report IDs are not
   // supported by the device.
@@ -412,7 +412,7 @@ interface HidConnection {
 
 // A client interface for receiving a notification when input reports are
 // received.
-[Stable]
+[Stable, Uuid="11f949ed-fa57-4a94-a433-90b72a2d2b63"]
 interface HidConnectionClient {
   // Notifies the client that an input report was received. A |report_id| of 0
   // is passed if report IDs are not used by the device.
@@ -429,6 +429,6 @@ interface HidConnectionClient {
 // itself as a watcher so it can be notified when the connection is closed. This
 // allows the service to keep track of whether there are open connections for
 // the purpose of drawing an indicator icon when a tab is using a HID device.
-[Stable]
+[Stable, Uuid="8af071b5-0994-4af7-9c3f-6025d7f9e9d0"]
 interface HidConnectionWatcher {
 };

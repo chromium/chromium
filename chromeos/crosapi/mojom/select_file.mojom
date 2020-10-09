@@ -137,7 +137,7 @@ struct SelectedFileInfo {
 // Select file dialog interface. Wrapper around the C++ SelectFileDialog
 // class. Called from lacros-chrome. Implemented in ash-chrome using the
 // file manager dialog.
-[Stable]
+[Stable, Uuid="8c0eb5f3-4c90-4bfd-8a0f-377c99f09125"]
 interface SelectFile {
   // Selects one or more files. If the dialog is closed or canceled without
   // selecting a file, or if there is an error, |files| will be empty.

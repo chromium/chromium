@@ -19,7 +19,7 @@ struct SnapshotSource {
 
 // This interface is used to capture bitmap snapshots of screens or windows.
 // See ScreenManager methods used to create instances of this interface.
-[Stable]
+[Stable, Uuid="90487679-7dc8-40ad-a1e4-e741def0d79f"]
 interface SnapshotCapturer {
   // Returns list of screens or windows that can be captured.
   [Sync]
@@ -43,7 +43,7 @@ interface SnapshotCapturer {
 // TODO(https://crbug.com/1094460): This is a very simple interface. We will
 // likely want to replace it with a more feature-complete and performant
 // interface in the future.
-[Stable]
+[Stable, Uuid="95c3035c-5c63-45e3-8ec8-dd2a344c7dc2"]
 interface ScreenManager {
   // DEPRECATED. Use |GetScreenCapturer| instead.
   //

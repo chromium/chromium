@@ -36,7 +36,7 @@ struct FeedbackInfo {
 
 // This interface is implemented by ash-chrome. It allows lacros-chrome to
 // request ash-chrome to display Feedback ui.
-[Stable]
+[Stable, Uuid="f95688a1-3076-484f-852f-65772f2a2f68"]
 interface Feedback {
   // Displays the Feedback ui.
   ShowFeedbackPage@0(FeedbackInfo feedback_info);
