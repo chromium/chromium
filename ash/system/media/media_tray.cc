@@ -162,6 +162,9 @@ MediaTray::PinButton::PinButton()
 void MediaTray::PinButton::ButtonPressed(views::Button* sender,
                                          const ui::Event& event) {
   MediaTray::SetPinnedToShelf(!MediaTray::IsPinnedToShelf());
+  base::UmaHistogramBoolean("Media.CrosGlobalMediaControls.PinAction",
+                            MediaTray::IsPinnedToShelf());
+
   SetImage(views::Button::STATE_NORMAL,
            CreateVectorIcon(
                MediaTray::IsPinnedToShelf() ? kPinnedIcon : kUnpinnedIcon,
