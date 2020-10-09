@@ -68,7 +68,8 @@
               </cr-policy-pref-indicator>
             </template>
             <select class="md-select" on-change="onChange_"
-                aria-labelledby="searchExplanation"
+                aria-label="$i18n{osSearchEngineLabel}
+                    $i18n{osSearchEngineTooltip}"
                 disabled$="[[isDefaultSearchEngineEnforced_(
                     prefs.default_search_provider_data.template_url_data)]]"
                 deep-link-focus-id$="[[Setting.kPreferredSearchEngine]]">
