@@ -659,7 +659,7 @@ void WebUITabStripContainerView::EndDragToOpen(
                    : WebUITabStripOpenCloseReason::kDragRelease);
 }
 
-void WebUITabStripContainerView::TabCounterPressed() {
+void WebUITabStripContainerView::TabCounterPressed(const ui::Event& event) {
   const bool new_visibility = !GetVisible();
   if (new_visibility) {
     RecordTabStripUIOpenHistogram(TabStripUIOpenAction::kTapOnTabCounter);
@@ -676,9 +676,9 @@ void WebUITabStripContainerView::TabCounterPressed() {
   SetContainerTargetVisibility(new_visibility,
                                WebUITabStripOpenCloseReason::kOther);
 
-  if (GetVisible() && tab_counter_->HasFocus()) {
-    // Automatically move focus to the tab strip WebUI if the focus is
-    // currently on the toggle button.
+  if (GetVisible() && event.IsKeyEvent()) {
+    // Automatically move focus to the tab strip WebUI if the tab strip
+    // was opened via a key event.
     SetPaneFocusAndFocusDefault();
   }
 }
