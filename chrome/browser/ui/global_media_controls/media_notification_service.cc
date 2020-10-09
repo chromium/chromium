@@ -313,8 +313,6 @@ MediaNotificationService::MediaNotificationService(Profile* profile,
             base::BindRepeating(
                 &MediaNotificationService::OnCastNotificationsChanged,
                 base::Unretained(this)));
-    presentation_request_notification_provider_ =
-        std::make_unique<PresentationRequestNotificationProvider>(this);
   }
   if (media_router::GlobalMediaControlsCastStartStopEnabled()) {
     presentation_request_notification_provider_ =
