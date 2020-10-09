@@ -8,6 +8,7 @@
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/ax_tree_observer.h"
 
 namespace ui {
 
@@ -25,6 +26,9 @@ class AX_EXPORT AXTreeManager {
   // Returns the AXNode in the current tree that has the given |node_id|.
   // Returns nullptr if |node_id| is not found.
   virtual AXNode* GetNodeFromTree(const AXNode::AXID node_id) const = 0;
+
+  virtual void AddObserver(AXTreeObserver* observer) {}
+  virtual void RemoveObserver(AXTreeObserver* observer) {}
 
   // Returns the tree id of the tree managed by this AXTreeManager.
   virtual AXTreeID GetTreeID() const = 0;

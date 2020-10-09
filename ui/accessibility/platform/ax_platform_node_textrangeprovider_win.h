@@ -11,6 +11,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/scoped_observer.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_position.h"
 #include "ui/accessibility/ax_range.h"
@@ -187,20 +188,24 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
 
   Microsoft::WRL::ComPtr<AXPlatformNodeWin> owner_;
 
-  class TextRangeEndpoints {
+  class TextRangeEndpoints : public AXTreeObserver {
    public:
     TextRangeEndpoints();
-    ~TextRangeEndpoints();
+    ~TextRangeEndpoints() override;
     const AXPositionInstance& GetStart() const { return start_; }
     const AXPositionInstance& GetEnd() const { return end_; }
-    void SetStart(AXPositionInstance new_start) {
-      start_ = std::move(new_start);
-    }
-    void SetEnd(AXPositionInstance new_end) { end_ = std::move(new_end); }
+    void SetStart(AXPositionInstance new_start);
+    void SetEnd(AXPositionInstance new_end);
+
+    void AddObserver(const AXTreeID tree_id);
+    void RemoveObserver(const AXTreeID tree_id);
+    void OnNodeWillBeDeleted(AXTree* tree, AXNode* node) override;
 
    private:
     AXPositionInstance start_;
     AXPositionInstance end_;
+
+    ScopedObserver<AXTreeManager, AXTreeObserver> observer_{this};
   };
   TextRangeEndpoints endpoints_;
 };

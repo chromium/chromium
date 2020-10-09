@@ -961,6 +961,8 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetChildren(SAFEARRAY** children) {
   std::vector<gfx::NativeViewAccessible> descendants;
 
   const AXNode* common_anchor = start()->LowestCommonAnchor(*end());
+  if (!common_anchor)
+    return UIA_E_ELEMENTNOTAVAILABLE;
   const AXTreeID tree_id = common_anchor->tree()->GetAXTreeID();
   const AXNode::AXID node_id = common_anchor->id();
   AXPlatformNodeDelegate* delegate = GetDelegate(tree_id, node_id);
@@ -1419,7 +1421,90 @@ bool AXPlatformNodeTextRangeProviderWin::ShouldReleaseTextAttributeAsSafearray(
          !TextAttributeIsUiaReservedValue(attribute_value);
 }
 
-AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::TextRangeEndpoints() {}
+AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::TextRangeEndpoints() {
+  start_ = AXNodePosition::CreateNullPosition();
+  end_ = AXNodePosition::CreateNullPosition();
+}
+
 AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::~TextRangeEndpoints() {}
+
+void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::SetStart(
+    AXPositionInstance new_start) {
+  bool did_tree_change = start_->tree_id() != new_start->tree_id();
+  if (did_tree_change && !start_->IsNullPosition() &&
+      start_->tree_id() != end_->tree_id()) {
+    RemoveObserver(start_->tree_id());
+  }
+
+  start_ = std::move(new_start);
+
+  if (did_tree_change && !start_->IsNullPosition() &&
+      start_->tree_id() != end_->tree_id()) {
+    AddObserver(start_->tree_id());
+  }
+}
+
+void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::SetEnd(
+    AXPositionInstance new_end) {
+  bool did_tree_change = end_->tree_id() != new_end->tree_id();
+  if (did_tree_change && !end_->IsNullPosition() &&
+      end_->tree_id() != start_->tree_id()) {
+    RemoveObserver(end_->tree_id());
+  }
+
+  end_ = std::move(new_end);
+
+  if (did_tree_change && !end_->IsNullPosition() &&
+      start_->tree_id() != end_->tree_id()) {
+    AddObserver(end_->tree_id());
+  }
+}
+
+void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::AddObserver(
+    const AXTreeID tree_id) {
+  AXTreeManager* ax_tree_manager =
+      AXTreeManagerMap::GetInstance().GetManager(tree_id);
+  DCHECK(ax_tree_manager);
+  observer_.Add(ax_tree_manager);
+}
+
+void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::RemoveObserver(
+    const AXTreeID tree_id) {
+  AXTreeManager* ax_tree_manager =
+      AXTreeManagerMap::GetInstance().GetManager(tree_id);
+  DCHECK(ax_tree_manager);
+  observer_.Remove(ax_tree_manager);
+}
+
+void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
+    OnNodeWillBeDeleted(AXTree* tree, AXNode* node) {
+  // If an endpoint is on a node that will be deleted, move endpoint up to a
+  // parent since we want to ensure that the endpoints of a text range provider
+  // are always valid positions. Otherwise, the range will be stuck on nodes
+  // that don't exist anymore.
+  DCHECK(tree);
+  DCHECK(node);
+  DCHECK_EQ(tree->GetAXTreeID(), node->tree()->GetAXTreeID());
+  if (tree->GetAXTreeID() == start_->tree_id() &&
+      node->id() == start_->anchor_id()) {
+    AXPositionInstance new_start = start_->CreateParentPosition();
+    // Create a degenerate range at |end_| if we have an inverted range -
+    // which occurs when the |end_| comes before the |start_|. However, if the
+    // |end_| is positioned on the deleted node, don't create a degenerate range
+    // yet as that position will be updated below.
+    if (node->id() != end_->anchor_id() && *end_ < *new_start)
+      new_start = end_->Clone();
+    SetStart(std::move(new_start));
+  }
+  if (tree->GetAXTreeID() == end_->tree_id() &&
+      node->id() == end_->anchor_id()) {
+    AXPositionInstance new_end = end_->CreateParentPosition();
+    // Create a degenerate range at |start_| if we have an inverted range -
+    // which occurs when the |end_| comes before the |start_|.
+    if (*new_end < *start_)
+      new_end = start_->Clone();
+    SetEnd(std::move(new_end));
+  }
+}
 
 }  // namespace ui

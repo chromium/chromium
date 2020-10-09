@@ -2596,7 +2596,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       /*expected_text*/ L"Text in iframe\nAfter frame",
       /*expected_count*/ 1);
 
-  // Validiate this selection with a waiter.
+  // Validate this selection with a waiter.
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
       ax::mojom::Event::kDocumentSelectionChanged);
@@ -2624,6 +2624,99 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       /*expected_text*/ L"Before frame\nText in ifram",
       /*expected_count*/ -12);
   EXPECT_HRESULT_SUCCEEDED(text_range_provider->Select());
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       ReplaceStartAndEndEndpointNodeInMultipleTrees) {
+  LoadInitialAccessibilityTreeFromHtmlFilePath(
+      "/accessibility/html/replaced-node-across-trees.html");
+  auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
+  WaitForAccessibilityTreeToContainNodeWithName(web_contents, "Text in iframe");
+
+  auto* before_frame_node =
+      FindNode(ax::mojom::Role::kStaticText, "Before frame");
+  ASSERT_NE(nullptr, before_frame_node);
+
+  // 1. Test when |start_| and |end_| are both not in the iframe.
+  {
+    ComPtr<ITextRangeProvider> text_range_provider;
+    GetTextRangeProviderFromTextNode(*before_frame_node, &text_range_provider);
+    ASSERT_NE(nullptr, text_range_provider.Get());
+    EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"Before frame");
+
+    AccessibilityNotificationWaiter waiter(web_contents, ui::kAXModeComplete,
+                                           ax::mojom::Event::kChildrenChanged);
+
+    // Updating the style on that particular node is going to invalidate the
+    // leaf text node and will replace it with a new one with the updated style.
+    // We don't care about the style - we use it to trigger a node replacement.
+    EXPECT_TRUE(ExecuteScript(
+        web_contents,
+        "document.getElementById('s1').style.outline = '1px solid black';"));
+
+    waiter.WaitForNotification();
+    EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"Before frame");
+  }
+
+  // 1. Test when |start_| is not in the iframe but |end_| is.
+  {
+    ComPtr<ITextRangeProvider> text_range_provider;
+    GetTextRangeProviderFromTextNode(*before_frame_node, &text_range_provider);
+    ASSERT_NE(nullptr, text_range_provider.Get());
+    EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"Before frame");
+
+    // Move the range from "<B>efore frame<>" to "<B>efore frame/nText< >"
+    EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+        text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Word,
+        /*count*/ 1,
+        /*expected_text*/ L"Before frame\nText ",
+        /*expected_count*/ 1);
+
+    AccessibilityNotificationWaiter waiter(web_contents, ui::kAXModeComplete,
+                                           ax::mojom::Event::kChildrenChanged);
+
+    // Updating the style on that particular node is going to invalidate the
+    // leaf text node and will replace it with a new one with the updated style.
+    // We don't care about the style - we use it to trigger a node replacement.
+    EXPECT_TRUE(ExecuteScript(
+        web_contents,
+        "document.getElementsByTagName('iframe')[0].contentWindow.document."
+        "getElementById('s1').style.outline = '1px solid black';"));
+
+    waiter.WaitForNotification();
+    EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"Before frame\nText ");
+  }
+
+  // 1. Test when |start_| is in the iframe but |end_| is not.
+  {
+    ComPtr<ITextRangeProvider> text_range_provider;
+    auto* after_frame_node =
+        FindNode(ax::mojom::Role::kStaticText, "After frame");
+    ASSERT_NE(nullptr, after_frame_node);
+    GetTextRangeProviderFromTextNode(*after_frame_node, &text_range_provider);
+    ASSERT_NE(nullptr, text_range_provider.Get());
+    EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"After frame");
+
+    // Move the range from "<B>efore frame<>" to "<B>efore frame/nText< >"
+    EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+        text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Word,
+        /*count*/ -1,
+        /*expected_text*/ L"iframe\nAfter frame",
+        /*expected_count*/ -1);
+
+    AccessibilityNotificationWaiter waiter(web_contents, ui::kAXModeComplete,
+                                           ax::mojom::Event::kChildrenChanged);
+
+    // Updating the style on that particular node is going to invalidate the
+    // leaf text node and will replace it with a new one with the updated style.
+    // We don't care about the style - we use it to trigger a node replacement.
+    EXPECT_TRUE(ExecuteScript(
+        web_contents,
+        "document.getElementById('s2').style.outline = '1px solid black';"));
+
+    waiter.WaitForNotification();
+    EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"iframe\nAfter frame");
+  }
 }
 
 }  // namespace content

@@ -53,6 +53,16 @@ AXNode* TestAXTreeManager::GetNodeFromTree(const AXNode::AXID node_id) const {
   return tree_ ? tree_->GetFromId(node_id) : nullptr;
 }
 
+void TestAXTreeManager::AddObserver(AXTreeObserver* observer) {
+  if (tree_)
+    tree_->AddObserver(observer);
+}
+
+void TestAXTreeManager::RemoveObserver(AXTreeObserver* observer) {
+  if (tree_)
+    tree_->RemoveObserver(observer);
+}
+
 AXTreeID TestAXTreeManager::GetTreeID() const {
   return tree_ ? tree_->data().tree_id : AXTreeIDUnknown();
 }

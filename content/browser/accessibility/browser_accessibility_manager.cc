@@ -1427,6 +1427,14 @@ ui::AXNode* BrowserAccessibilityManager::GetNodeFromTree(
   return wrapper ? wrapper->node() : nullptr;
 }
 
+void BrowserAccessibilityManager::AddObserver(ui::AXTreeObserver* observer) {
+  ax_tree()->AddObserver(observer);
+}
+
+void BrowserAccessibilityManager::RemoveObserver(ui::AXTreeObserver* observer) {
+  ax_tree()->RemoveObserver(observer);
+}
+
 AXTreeID BrowserAccessibilityManager::GetTreeID() const {
   return ax_tree_id();
 }
