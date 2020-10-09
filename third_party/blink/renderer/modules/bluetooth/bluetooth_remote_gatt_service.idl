@@ -10,7 +10,7 @@
     SecureContext
 ] interface BluetoothRemoteGATTService {
     [SameObject] readonly attribute BluetoothDevice device;
-    [HighEntropy=Direct, MeasureAs=BluetoothRemoteGATTService_Uuid] readonly attribute UUID uuid;
+    readonly attribute UUID uuid;
     readonly attribute boolean isPrimary;
     [RaisesException, CallWith=ScriptState, MeasureAs=WebBluetoothRemoteServiceGetCharacteristic] Promise<BluetoothRemoteGATTCharacteristic> getCharacteristic(BluetoothCharacteristicUUID characteristic);
     [RaisesException, CallWith=ScriptState, MeasureAs=WebBluetoothRemoteServiceGetCharacteristics] Promise<sequence<BluetoothRemoteGATTCharacteristic>> getCharacteristics(optional BluetoothCharacteristicUUID characteristic);

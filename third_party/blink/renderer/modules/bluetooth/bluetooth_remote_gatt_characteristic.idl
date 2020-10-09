@@ -11,7 +11,7 @@
     SecureContext
 ] interface BluetoothRemoteGATTCharacteristic : EventTarget {
     [SameObject] readonly attribute BluetoothRemoteGATTService service;
-    [HighEntropy=Direct, MeasureAs=BluetoothRemoteGATTCharacteristic_Uuid] readonly attribute UUID uuid;
+    readonly attribute UUID uuid;
     readonly attribute BluetoothCharacteristicProperties properties;
     readonly attribute DataView? value;
     [RaisesException, CallWith=ScriptState, MeasureAs=WebBluetoothRemoteCharacteristicGetDescriptor] Promise<BluetoothRemoteGATTDescriptor> getDescriptor(BluetoothDescriptorUUID descriptor);
