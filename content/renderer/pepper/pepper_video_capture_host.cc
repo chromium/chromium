@@ -21,6 +21,7 @@
 #include "ppapi/thunk/enter.h"
 #include "ppapi/thunk/ppb_buffer_api.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
+#include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/webrtc/common_video/libyuv/include/webrtc_libyuv.h"
 
 using ppapi::HostResource;
@@ -198,16 +199,13 @@ void PepperVideoCaptureHost::OnFrameReady(const media::VideoFrame& frame) {
         gmb->Unmap();
       } else {
         DCHECK_EQ(frame.format(), media::PIXEL_FORMAT_I420);
-        for (size_t j = 0; j < media::VideoFrame::NumPlanes(frame.format());
-             ++j) {
-          const uint8_t* src = frame.visible_data(j);
-          const size_t row_bytes = frame.row_bytes(j);
-          const size_t src_stride = frame.stride(j);
-          for (int k = 0; k < frame.rows(j); ++k) {
-            memcpy(dst, src, row_bytes);
-            dst += row_bytes;
-            src += src_stride;
-          }
+        size_t num_planes = media::VideoFrame::NumPlanes(frame.format());
+        for (size_t plane = 0; plane < num_planes; ++plane) {
+          const uint8_t* src = frame.visible_data(plane);
+          int row_bytes = frame.row_bytes(plane);
+          int src_stride = frame.stride(plane);
+          int rows = frame.rows(plane);
+          libyuv::CopyPlane(src, src_stride, dst, row_bytes, row_bytes, rows);
         }
       }
 
