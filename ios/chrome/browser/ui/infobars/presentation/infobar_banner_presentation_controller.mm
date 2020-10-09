@@ -19,6 +19,9 @@ const CGFloat kContainerHorizontalPadding = 8;
 const CGFloat kContainerMaxWidth = 398;
 // The presented view maximum height.
 const CGFloat kContainerMaxHeight = 230;
+// Minimum height or width frame change that should warrant a resizing of the
+// container view in response to a relayout.
+const CGFloat kMinimumSizeChange = 0.01;
 }
 
 @interface InfobarBannerPresentationController ()
@@ -104,8 +107,18 @@ const CGFloat kContainerMaxHeight = 230;
   CGRect bannerFrame = self.bannerFrame;
   UIView* containerView = self.containerView;
   UIWindow* window = containerView.window;
-  containerView.frame = [containerView.superview convertRect:bannerFrame
-                                                    fromView:window];
+
+  CGRect newFrame = [containerView.superview convertRect:bannerFrame
+                                                fromView:window];
+  // Make sure new calculate frame has changed enough to warrant a rerender.
+  // Otherwise, an infinite loop is possible.
+  if (std::fabs(newFrame.size.height - containerView.frame.size.height) >
+          kMinimumSizeChange ||
+      std::fabs(newFrame.size.width - containerView.frame.size.width) >
+          kMinimumSizeChange) {
+    containerView.frame = newFrame;
+  }
+
   UIView* bannerView = self.presentedView;
   bannerView.frame = [bannerView.superview convertRect:bannerFrame
                                               fromView:window];
