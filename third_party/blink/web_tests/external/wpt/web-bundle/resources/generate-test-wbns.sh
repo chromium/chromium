@@ -50,7 +50,7 @@ gen-bundle \
 
 gen-bundle \
   -version b1 \
-  -baseURL $wpt_test_https_origin/web-bundle/resources/path-restriction/ \
-  -primaryURL $wpt_test_https_origin/web-bundle/resources/path-restriction/resource1.js \
-  -dir path-restriction1/ \
+  -baseURL $wpt_test_http_origin/web-bundle/resources/ \
+  -primaryURL $wpt_test_http_origin/web-bundle/resources/wbn/resource.js \
+  -dir path-restriction/ \
   -o wbn/path-restriction.wbn

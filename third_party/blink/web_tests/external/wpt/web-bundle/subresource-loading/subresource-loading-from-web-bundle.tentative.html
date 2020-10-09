@@ -101,16 +101,6 @@
     }, 'Subresource URL must be same-origin with bundle URL');
 
     promise_test(async () => {
-      const link = document.createElement('link');
-      link.rel = 'webbundle';
-      link.href = '../resources/wbn/path-restricion.wbn';
-      link.resources = 'http://web-platform.test:8001/web-bundle/resources/path-restriction/resource1.js';
-      document.body.appendChild(link);
-      const module = await import(link.resources);
-      assert_equals(module.result, 'resource1 from network');
-    }, "Subresource path contains the bundle's path (without a filename) as a prefix");
-
-    promise_test(async () => {
       const wbn_url = 'http://web-platform.test:8001/web-bundle/resources/wbn/subresource.wbn?test-resources-update';
       const resource_url = 'http://web-platform.test:8001/web-bundle/resources/wbn/submodule.js';
       const link = await addLinkAndWaitForLoad(wbn_url);
