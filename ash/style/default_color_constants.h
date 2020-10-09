@@ -27,4 +27,10 @@ constexpr SkColor kShelfButtonColor = SK_ColorWHITE;
 constexpr SkColor kIndicatorColorActive = SK_ColorWHITE;
 constexpr SkColor kInicatorColorRunning = SkColorSetA(SK_ColorWHITE, 0x7F);
 
+// Colors for back gesture.
+constexpr SkColor kArrowColorBeforeActivated = gfx::kGoogleBlue600;
+constexpr SkColor kArrowColorAfterActivated = gfx::kGoogleGrey100;
+const SkColor kBackgroundColorBeforeActivated = SK_ColorWHITE;
+const SkColor kBackgroundColorAfterActivated = gfx::kGoogleBlue600;
+
 #endif  // ASH_STYLE_DEFAULT_COLOR_CONSTANTS_H_

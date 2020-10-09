@@ -6,6 +6,10 @@
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/style/default_color_constants.h"
+#include "ash/style/default_colors.h"
+#include "ash/style/scoped_light_mode_as_default.h"
 #include "ash/window_factory.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
@@ -34,15 +38,8 @@ namespace {
 // is outside of the display.
 constexpr int kDistanceFromArrowToTouchPoint = 64;
 
-// Parameters defining the arrow of the affordance.
 constexpr int kArrowSize = 20;
-constexpr SkColor kArrowColorBeforeActivated = gfx::kGoogleBlue600;
-constexpr SkColor kArrowColorAfterActivated = gfx::kGoogleGrey100;
-
-// Parameters defining the background circle of the affordance.
 constexpr int kBackgroundRadius = 20;
-const SkColor kBackgroundColorBeforeActivated = SK_ColorWHITE;
-const SkColor kBackgroundColorAfterActivated = gfx::kGoogleBlue600;
 // The background shadow for the circle.
 constexpr int kBackNudgeShadowOffsetY1 = 1;
 constexpr int kBackNudgeShadowBlurRadius1 = 2;
@@ -78,8 +75,6 @@ constexpr base::TimeDelta kAbortAnimationTimeout =
     base::TimeDelta::FromMilliseconds(300);
 constexpr base::TimeDelta kCompleteAnimationTimeout =
     base::TimeDelta::FromMilliseconds(200);
-
-constexpr SkColor kRippleColor = SkColorSetA(gfx::kGoogleBlue600, 0x4C);  // 30%
 
 // Y-axis drag distance to achieve full y drag progress.
 constexpr float kDistanceForFullYProgress = 80.f;
@@ -126,7 +121,11 @@ class AffordanceView : public views::View {
     cc::PaintFlags ripple_flags;
     ripple_flags.setAntiAlias(true);
     ripple_flags.setStyle(cc::PaintFlags::kFill_Style);
-    ripple_flags.setColor(kRippleColor);
+    ScopedLightModeAsDefault scoped_light_mode_as_default;
+    ripple_flags.setColor(AshColorProvider::GetSecondToneColor(
+        AshColorProvider::Get()->GetControlsLayerColor(
+            AshColorProvider::ControlsLayerType::
+                kControlBackgroundColorActive)));
 
     float ripple_radius = 0.f;
     if (state_ == BackGestureAffordance::State::COMPLETING) {
@@ -162,8 +161,14 @@ class AffordanceView : public views::View {
         gfx::ShadowValue(gfx::Vector2d(0, kBackNudgeShadowOffsetY2),
                          kBackNudgeShadowBlurRadius2, kBackNudgeShadowColor2));
     bg_flags.setLooper(gfx::CreateShadowDrawLooper(shadows));
-    bg_flags.setColor(is_activated ? kBackgroundColorAfterActivated
-                                   : kBackgroundColorBeforeActivated);
+    bg_flags.setColor(is_activated
+                          ? DeprecatedGetControlsLayerColor(
+                                AshColorProvider::ControlsLayerType::
+                                    kControlBackgroundColorActive,
+                                kBackgroundColorAfterActivated)
+                          : DeprecatedGetBaseLayerColor(
+                                AshColorProvider::BaseLayerType::kTransparent80,
+                                kBackgroundColorBeforeActivated));
     canvas->DrawCircle(center_point, kBackgroundRadius, bg_flags);
 
     // Draw the arrow.
@@ -172,15 +177,23 @@ class AffordanceView : public views::View {
     const bool is_rtl = base::i18n::IsRTL();
     if (is_activated) {
       canvas->DrawImageInt(
-          gfx::CreateVectorIcon(is_rtl ? vector_icons::kForwardArrowIcon
-                                       : vector_icons::kBackArrowIcon,
-                                kArrowSize, kArrowColorAfterActivated),
+          gfx::CreateVectorIcon(
+              is_rtl ? vector_icons::kForwardArrowIcon
+                     : vector_icons::kBackArrowIcon,
+              kArrowSize,
+              DeprecatedGetContentLayerColor(
+                  AshColorProvider::ContentLayerType::kButtonIconColorPrimary,
+                  kArrowColorAfterActivated)),
           static_cast<int>(arrow_x), static_cast<int>(arrow_y));
     } else {
       canvas->DrawImageInt(
-          gfx::CreateVectorIcon(is_rtl ? vector_icons::kForwardArrowIcon
-                                       : vector_icons::kBackArrowIcon,
-                                kArrowSize, kArrowColorBeforeActivated),
+          gfx::CreateVectorIcon(
+              is_rtl ? vector_icons::kForwardArrowIcon
+                     : vector_icons::kBackArrowIcon,
+              kArrowSize,
+              DeprecatedGetContentLayerColor(
+                  AshColorProvider::ContentLayerType::kButtonIconColor,
+                  kArrowColorBeforeActivated)),
           static_cast<int>(arrow_x), static_cast<int>(arrow_y));
     }
   }
