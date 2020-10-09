@@ -140,6 +140,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     BOOL scrollViewAnimatingContentOffset;
 
 @property(nonatomic, assign) PageChangeInteraction pageChangeInteraction;
+// UIView whose background color changes to create a fade-in / fade-out effect
+// when revealing / hiding the Thumb Strip.
+@property(nonatomic, weak) UIView* foregroundView;
 @end
 
 @implementation TabGridViewController
@@ -170,6 +173,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self setupRemoteTabsViewController];
   [self setupTopToolbar];
   [self setupBottomToolbar];
+  if (IsThumbStripEnabled()) {
+    [self setupForegroundView];
+  }
 
   // Hide the toolbars and the floating button, so they can fade in the first
   // time there's a transition into this view controller.
@@ -442,6 +448,15 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)animateViewReveal:(ViewRevealState)viewRevealState {
+  switch (viewRevealState) {
+    case ViewRevealState::Hidden:
+      self.foregroundView.alpha = 1;
+      break;
+    case ViewRevealState::Peeked:
+    case ViewRevealState::Revealed:
+      self.foregroundView.alpha = 0;
+      break;
+  }
 }
 
 - (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
@@ -833,6 +848,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   [bottomToolbar setNewTabButtonTarget:self
                                 action:@selector(newTabButtonTapped:)];
+}
+
+// Adds the foreground view and sets constraints.
+- (void)setupForegroundView {
+  UIView* foregroundView = [[UIView alloc] init];
+  self.foregroundView = foregroundView;
+  foregroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  foregroundView.userInteractionEnabled = NO;
+  foregroundView.backgroundColor = [UIColor blackColor];
+  [self.view addSubview:foregroundView];
+  AddSameConstraints(foregroundView, self.view);
 }
 
 - (void)configureViewControllerForCurrentSizeClassesAndPage {
