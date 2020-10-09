@@ -397,15 +397,17 @@ void WidgetInputHandlerManager::DispatchScrollGestureToCompositor(
   std::unique_ptr<WebCoalescedInputEvent> web_scoped_gesture_event =
       std::make_unique<WebCoalescedInputEvent>(std::move(event),
                                                ui::LatencyInfo());
-  DCHECK(compositor_task_runner_);
-  compositor_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&WidgetInputHandlerManager::
-                                    HandleInputEventWithLatencyInfoOnCompositor,
-                                this, std::move(web_scoped_gesture_event)));
+  // input thread task runner is |main_thread_task_runner_| only in tests
+  InputThreadTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WidgetInputHandlerManager::
+                         HandleInputEventWithLatencyOnInputHandlingThread,
+                     this, std::move(web_scoped_gesture_event)));
 }
 
-void WidgetInputHandlerManager::HandleInputEventWithLatencyInfoOnCompositor(
-    std::unique_ptr<WebCoalescedInputEvent> event) {
+void WidgetInputHandlerManager::
+    HandleInputEventWithLatencyOnInputHandlingThread(
+        std::unique_ptr<WebCoalescedInputEvent> event) {
   DCHECK(base::FeatureList::IsEnabled(features::kScrollUnification));
   DCHECK(input_handler_proxy_);
   input_handler_proxy_->HandleInputEventWithLatencyInfo(std::move(event),

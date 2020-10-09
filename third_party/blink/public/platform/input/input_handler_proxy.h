@@ -52,8 +52,10 @@ class MomentumScrollJankTracker;
 
 // This class is a proxy between the blink web input events for a WebWidget and
 // the compositor's input handling logic. InputHandlerProxy instances live
-// entirely on the compositor thread. Each InputHandler instance handles input
-// events intended for a specific WebWidget.
+// entirely on the compositor thread if one exists; however, it can exist on
+// the main thread in web tests where only a single thread is used.
+// Each InputHandler instance handles input events intended for a specific
+// WebWidget.
 class BLINK_PLATFORM_EXPORT InputHandlerProxy
     : public cc::InputHandlerClient,
       public SynchronousInputHandlerProxy,

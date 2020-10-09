@@ -227,7 +227,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       const WebGestureEvent& gesture_event,
       const cc::InputHandlerScrollResult& scroll_result);
 
-  void HandleInputEventWithLatencyInfoOnCompositor(
+  void HandleInputEventWithLatencyOnInputHandlingThread(
       std::unique_ptr<WebCoalescedInputEvent>);
 
   // Returns the task runner for the thread that receives input. i.e. the
