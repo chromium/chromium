@@ -122,28 +122,32 @@ TEST_F(AppServerTestCase, SelfPromote) {
     local_prefs->SetQualified(true);
     PrefsCommitPendingWrites(local_prefs->GetPrefService());
   }
-  auto app = base::MakeRefCounted<AppServerTest>();
+  {
+    auto app = base::MakeRefCounted<AppServerTest>();
 
-  // Expect the app to SwapRpcInterfaces and then ActiveDuty then Shutdown(0).
-  EXPECT_CALL(*app, ActiveDuty).Times(1);
-  EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(true));
-  EXPECT_CALL(*app, UninstallSelf).Times(0);
-  EXPECT_EQ(app->Run(), 0);
+    // Expect the app to SwapRpcInterfaces and then ActiveDuty then Shutdown(0).
+    EXPECT_CALL(*app, ActiveDuty).Times(1);
+    EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(true));
+    EXPECT_CALL(*app, UninstallSelf).Times(0);
+    EXPECT_EQ(app->Run(), 0);
+  }
   std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
   EXPECT_FALSE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), UPDATER_VERSION_STRING);
 }
 
 TEST_F(AppServerTestCase, InstallAutoPromotes) {
-  auto app = base::MakeRefCounted<AppServerTest>();
+  {
+    auto app = base::MakeRefCounted<AppServerTest>();
 
-  // Expect the app to SwapRpcInterfaces and then ActiveDuty then Shutdown(0).
-  // In this case it bypasses qualification.
-  EXPECT_CALL(*app, ActiveDuty).Times(1);
-  EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(true));
-  EXPECT_CALL(*app, UninstallSelf).Times(0);
-  EXPECT_EQ(app->Run(), 0);
-  EXPECT_FALSE(CreateLocalPrefs()->GetQualified());
+    // Expect the app to SwapRpcInterfaces and then ActiveDuty then Shutdown(0).
+    // In this case it bypasses qualification.
+    EXPECT_CALL(*app, ActiveDuty).Times(1);
+    EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(true));
+    EXPECT_CALL(*app, UninstallSelf).Times(0);
+    EXPECT_EQ(app->Run(), 0);
+    EXPECT_FALSE(CreateLocalPrefs()->GetQualified());
+  }
   std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
   EXPECT_FALSE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), UPDATER_VERSION_STRING);
@@ -155,13 +159,15 @@ TEST_F(AppServerTestCase, SelfPromoteFails) {
     local_prefs->SetQualified(true);
     PrefsCommitPendingWrites(local_prefs->GetPrefService());
   }
-  auto app = base::MakeRefCounted<AppServerTest>();
+  {
+    auto app = base::MakeRefCounted<AppServerTest>();
 
-  // Expect the app to SwapRpcInterfaces and then Shutdown(2).
-  EXPECT_CALL(*app, ActiveDuty).Times(0);
-  EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(false));
-  EXPECT_CALL(*app, UninstallSelf).Times(0);
-  EXPECT_EQ(app->Run(), 2);
+    // Expect the app to SwapRpcInterfaces and then Shutdown(2).
+    EXPECT_CALL(*app, ActiveDuty).Times(0);
+    EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(false));
+    EXPECT_CALL(*app, UninstallSelf).Times(0);
+    EXPECT_EQ(app->Run(), 2);
+  }
   std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
   EXPECT_TRUE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), "0");
@@ -176,13 +182,15 @@ TEST_F(AppServerTestCase, ActiveDutyAlready) {
     local_prefs->SetQualified(true);
     PrefsCommitPendingWrites(local_prefs->GetPrefService());
   }
-  auto app = base::MakeRefCounted<AppServerTest>();
+  {
+    auto app = base::MakeRefCounted<AppServerTest>();
 
-  // Expect the app to ActiveDuty and then Shutdown(0).
-  EXPECT_CALL(*app, ActiveDuty).Times(1);
-  EXPECT_CALL(*app, SwapRPCInterfaces).Times(0);
-  EXPECT_CALL(*app, UninstallSelf).Times(0);
-  EXPECT_EQ(app->Run(), 0);
+    // Expect the app to ActiveDuty and then Shutdown(0).
+    EXPECT_CALL(*app, ActiveDuty).Times(1);
+    EXPECT_CALL(*app, SwapRPCInterfaces).Times(0);
+    EXPECT_CALL(*app, UninstallSelf).Times(0);
+    EXPECT_EQ(app->Run(), 0);
+  }
   std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
   EXPECT_FALSE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), UPDATER_VERSION_STRING);
@@ -198,14 +206,16 @@ TEST_F(AppServerTestCase, StateDirty) {
     local_prefs->SetQualified(true);
     PrefsCommitPendingWrites(local_prefs->GetPrefService());
   }
-  auto app = base::MakeRefCounted<AppServerTest>();
+  {
+    auto app = base::MakeRefCounted<AppServerTest>();
 
-  // Expect the app to SwapRpcInterfaces and then ActiveDuty and then
-  // Shutdown(0).
-  EXPECT_CALL(*app, ActiveDuty).Times(1);
-  EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(true));
-  EXPECT_CALL(*app, UninstallSelf).Times(0);
-  EXPECT_EQ(app->Run(), 0);
+    // Expect the app to SwapRpcInterfaces and then ActiveDuty and then
+    // Shutdown(0).
+    EXPECT_CALL(*app, ActiveDuty).Times(1);
+    EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(true));
+    EXPECT_CALL(*app, UninstallSelf).Times(0);
+    EXPECT_EQ(app->Run(), 0);
+  }
   std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
   EXPECT_FALSE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), UPDATER_VERSION_STRING);
@@ -221,13 +231,15 @@ TEST_F(AppServerTestCase, StateDirtySwapFails) {
     local_prefs->SetQualified(true);
     PrefsCommitPendingWrites(local_prefs->GetPrefService());
   }
-  auto app = base::MakeRefCounted<AppServerTest>();
+  {
+    auto app = base::MakeRefCounted<AppServerTest>();
 
-  // Expect the app to SwapRpcInterfaces and Shutdown(2).
-  EXPECT_CALL(*app, ActiveDuty).Times(0);
-  EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(false));
-  EXPECT_CALL(*app, UninstallSelf).Times(0);
-  EXPECT_EQ(app->Run(), 2);
+    // Expect the app to SwapRpcInterfaces and Shutdown(2).
+    EXPECT_CALL(*app, ActiveDuty).Times(0);
+    EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(false));
+    EXPECT_CALL(*app, UninstallSelf).Times(0);
+    EXPECT_EQ(app->Run(), 2);
+  }
   std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
   EXPECT_TRUE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), UPDATER_VERSION_STRING);
