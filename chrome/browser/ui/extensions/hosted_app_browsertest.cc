@@ -115,7 +115,6 @@ constexpr const char kExampleURL[] = "https://www.example.com/empty.html";
 
 enum class AppType {
   HOSTED_APP,    // Using HostedAppBrowserController
-  BOOKMARK_APP,  // Using WebAppBrowserController, BookmarkAppRegistrar
   WEB_APP,       // Using WebAppBrowserController, WebAppRegistrar
 };
 
@@ -124,8 +123,6 @@ std::string AppTypeParamToString(
   switch (app_type.param) {
     case AppType::HOSTED_APP:
       return "HostedApp";
-    case AppType::BOOKMARK_APP:
-      return "BookmarkApp";
     case AppType::WEB_APP:
       return "WebApp";
   }
@@ -168,25 +165,15 @@ bool TryToLoadImage(const content::ToRenderFrameHost& adapter,
 }  // namespace
 
 // Parameters are {app_type, desktop_pwa_flag}. |app_type| controls whether it
-// is a Hosted or Bookmark or Web app.
+// is a Hosted or Web app.
 class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
                            public ::testing::WithParamInterface<AppType> {
  public:
   HostedOrWebAppTest()
       : app_browser_(nullptr),
         https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    if (GetParam() == AppType::HOSTED_APP) {
-      scoped_feature_list_.InitWithFeatures(
-          {}, {predictors::kSpeculativePreconnectFeature});
-    } else if (GetParam() == AppType::BOOKMARK_APP) {
-      scoped_feature_list_.InitWithFeatures(
-          {}, {features::kDesktopPWAsWithoutExtensions,
-               predictors::kSpeculativePreconnectFeature});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kDesktopPWAsWithoutExtensions},
-          {predictors::kSpeculativePreconnectFeature});
-    }
+    scoped_feature_list_.InitAndDisableFeature(
+        predictors::kSpeculativePreconnectFeature);
   }
   ~HostedOrWebAppTest() override = default;
 
@@ -677,36 +664,6 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, CanUserUninstall) {
   GURL app_url = embedded_test_server()->GetURL("app.com", "/title1.html");
   SetupAppWithURL(app_url);
   EXPECT_TRUE(app_browser_->app_controller()->CanUninstall());
-}
-
-using BookmarkAppTest = HostedOrWebAppTest;
-
-IN_PROC_BROWSER_TEST_P(BookmarkAppTest, InstallFromSync) {
-  ASSERT_TRUE(https_server()->Start());
-
-  const GURL app_url =
-      https_server()->GetURL("/banners/manifest_test_page.html");
-  const web_app::AppId app_id = web_app::GenerateAppIdFromURL(app_url);
-
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->start_url = app_url;
-  web_app_info->scope = app_url.GetWithoutFilename();
-
-  base::RunLoop run_loop;
-  web_app::WebAppProviderBase* const provider =
-      web_app::WebAppProviderBase::GetProviderBase(profile());
-  DCHECK(provider);
-  provider->install_manager().InstallBookmarkAppFromSync(
-      app_id, std::move(web_app_info),
-      base::BindLambdaForTesting([&](const web_app::AppId& installed_app_id,
-                                     web_app::InstallResultCode code) {
-        EXPECT_EQ(web_app::InstallResultCode::kSuccessNewInstall, code);
-        EXPECT_EQ(app_id, installed_app_id);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-  EXPECT_EQ(web_app::DisplayMode::kStandalone,
-            provider->registrar().GetAppDisplayMode(app_id));
 }
 
 // Tests that platform apps can still load mixed content.
@@ -1857,17 +1814,12 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          HostedOrWebAppTest,
                          ::testing::Values(AppType::HOSTED_APP,
-                                           AppType::BOOKMARK_APP,
                                            AppType::WEB_APP),
                          AppTypeParamToString);
 
 INSTANTIATE_TEST_SUITE_P(All,
                          HostedAppTest,
                          ::testing::Values(AppType::HOSTED_APP));
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         BookmarkAppTest,
-                         ::testing::Values(AppType::BOOKMARK_APP));
 
 INSTANTIATE_TEST_SUITE_P(All,
                          HostedAppTestWithAutoupgradesDisabled,
