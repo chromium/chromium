@@ -365,6 +365,8 @@ api::autotest_private::AppWindowType GetAppWindowType(ash::AppType type) {
       return api::autotest_private::AppWindowType::APP_WINDOW_TYPE_EXTENSIONAPP;
     case ash::AppType::BROWSER:
       return api::autotest_private::AppWindowType::APP_WINDOW_TYPE_BROWSER;
+    case ash::AppType::LACROS:
+      return api::autotest_private::AppWindowType::APP_WINDOW_TYPE_LACROS;
     case ash::AppType::NON_APP:
       return api::autotest_private::AppWindowType::APP_WINDOW_TYPE_NONE;
       // TODO(oshima): Investigate if we want to have "extension" type.

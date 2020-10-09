@@ -97,6 +97,11 @@ void SetArcAppType(aura::Window* window) {
                       static_cast<int>(ash::AppType::ARC_APP));
 }
 
+void SetLacrosAppType(aura::Window* window) {
+  window->SetProperty(aura::client::kAppType,
+                      static_cast<int>(ash::AppType::LACROS));
+}
+
 void SetShellStartupId(aura::Window* window,
                        const base::Optional<std::string>& id) {
   TRACE_EVENT1("exo", "SetStartupId", "startup_id", id ? *id : "null");

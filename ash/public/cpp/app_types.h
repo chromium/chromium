@@ -18,10 +18,9 @@ enum class AppType {
   ARC_APP,
   CROSTINI_APP,
   SYSTEM_APP,
-  APP_TYPE_LAST = SYSTEM_APP,
+  // TODO(crbug.com/1090663): Migrate this into BROWSER.
+  LACROS,
 };
-
-const int kAppCount = static_cast<int>(AppType::APP_TYPE_LAST) + 1;
 
 }  // namespace ash
 

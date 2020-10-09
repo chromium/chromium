@@ -25,7 +25,11 @@ int GetDestination(views::Widget* target) {
 
   aura::Window* window = target->GetNativeWindow();
   DCHECK(window);
-  return window->GetProperty(aura::client::kAppType);
+  int app_type = window->GetProperty(aura::client::kAppType);
+  // Use "BROWSER" for Lacros Chrome's pointer metrics.
+  if (app_type == static_cast<int>(AppType::LACROS))
+    return static_cast<int>(AppType::BROWSER);
+  return app_type;
 }
 
 DownEventMetric2 FindCombination(int destination,

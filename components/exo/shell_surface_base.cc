@@ -26,6 +26,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/trees/layer_tree_frame_sink.h"
+#include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
@@ -64,6 +65,11 @@ void SetSkipImeProcessingToDescendentSurfaces(aura::Window* window) {
     window->SetProperty(aura::client::kSkipImeProcessing, true);
   for (aura::Window* child : window->children())
     SetSkipImeProcessingToDescendentSurfaces(child);
+}
+
+// Returns true, if the given ID represents Lacros.
+bool IsLacrosAppId(base::StringPiece app_id) {
+  return base::StartsWith(app_id, crosapi::kLacrosAppIdPrefix);
 }
 
 // The accelerator keys used to close ShellSurfaces.
@@ -409,8 +415,11 @@ void ShellSurfaceBase::SetApplicationId(const char* application_id) {
   else
     application_id_.reset();
 
-  if (widget_ && widget_->GetNativeWindow())
+  if (widget_ && widget_->GetNativeWindow()) {
     SetShellApplicationId(widget_->GetNativeWindow(), application_id_);
+    if (application_id_.has_value() && IsLacrosAppId(*application_id_))
+      SetLacrosAppType(widget_->GetNativeWindow());
+  }
 }
 
 void ShellSurfaceBase::SetStartupId(const char* startup_id) {
@@ -944,6 +953,8 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
       aura::EventTargetingPolicy::kTargetAndDescendants);
   InstallCustomWindowTargeter();
   SetShellApplicationId(window, application_id_);
+  if (application_id_.has_value() && IsLacrosAppId(*application_id_))
+    SetLacrosAppType(window);
   SetShellStartupId(window, startup_id_);
   SetShellMainSurface(window, root_surface());
 

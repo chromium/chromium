@@ -351,7 +351,8 @@ namespace autotestPrivate {
     ArcApp,
     CrostiniApp,
     SystemApp,
-    ExtensionApp
+    ExtensionApp,
+    Lacros
   };
 
   // A mapping of HotseatState in ash/public/cpp/shelf_types.h.

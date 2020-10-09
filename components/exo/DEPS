@@ -3,6 +3,7 @@ include_rules = [
   "+cc",
   "+chromeos/audio/chromeos_sounds.h",
   "+chromeos/constants/chromeos_features.h",
+  "+chromeos/crosapi/cpp/crosapi_constants.h",
   "+components/viz/common",
   "+components/viz/host",
   "+device/gamepad",

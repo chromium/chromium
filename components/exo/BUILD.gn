@@ -127,6 +127,7 @@ static_library("exo") {
       "//ash/keyboard/ui",
       "//ash/public/cpp",
       "//chromeos/constants",
+      "//chromeos/crosapi/cpp",
       "//ui/events/ozone/layout",
     ]
     sources += [
