@@ -2605,6 +2605,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',
+	  'isolated_scripts': 'updater_isolated_scripts',
         },
       },
       'mac10.11-omaha-tester-rel': {
@@ -2613,6 +2614,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',
+	  'isolated_scripts': 'updater_isolated_scripts',
         },
       },
       'mac10.12-blink-rel-dummy': {
@@ -2635,6 +2637,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',
+	  'isolated_scripts': 'updater_isolated_scripts',
         },
       },
       'mac10.13-blink-rel-dummy': {
@@ -2660,6 +2663,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',
+	  'isolated_scripts': 'updater_isolated_scripts',
         },
       },
       'mac10.14-blink-rel-dummy': {
@@ -2679,6 +2683,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',
+	  'isolated_scripts': 'updater_isolated_scripts',
         },
       },
       'mac10.15-blink-rel-dummy': {
@@ -2704,6 +2709,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',
+	  'isolated_scripts': 'updater_isolated_scripts',
         },
       },
       'mac11.0-blink-rel-dummy': {
@@ -2771,6 +2777,7 @@
       'win10-omaha-tester-rel': {
         'test_suites': {
           'gtest_tests': 'updater_gtests',
+	  'isolated_scripts': 'updater_isolated_scripts',
         },
         'swarming': {
           'dimension_sets': [
@@ -2802,6 +2809,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',
+	  'isolated_scripts': 'updater_isolated_scripts',
         },
         'swarming': {
           'dimension_sets': [

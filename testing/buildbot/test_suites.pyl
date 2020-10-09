@@ -4163,6 +4163,10 @@
       'updater_tests': {},
     },
 
+    'updater_isolated_scripts': {
+      'updater_integration_tests': {},
+    },
+
     'upload_perfetto': {
       'upload_trace_processor': {},
     },
