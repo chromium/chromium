@@ -4135,6 +4135,10 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   static bool affects_parent_block_;
 
   FragmentData fragment_;
+
+#if DCHECK_IS_ON()
+  bool is_destroyed_ = false;
+#endif
 };
 
 // Allow equality comparisons of LayoutObjects by reference or pointer,

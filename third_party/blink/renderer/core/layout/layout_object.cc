@@ -190,6 +190,9 @@ struct SameSizeAsLayoutObject : ImageResourceObserver, DisplayItemClient {
   // The following fields are in FragmentData.
   PhysicalOffset paint_offset_;
   std::unique_ptr<int> rare_data_;
+#if DCHECK_IS_ON()
+  bool is_destroyed_;
+#endif
 };
 
 ASSERT_SIZE(LayoutObject, SameSizeAsLayoutObject);
@@ -329,6 +332,9 @@ LayoutObject::~LayoutObject() {
   DCHECK(BeingDestroyed());
 #endif
   InstanceCounters::DecrementCounter(InstanceCounters::kLayoutObjectCounter);
+#if DCHECK_IS_ON()
+  is_destroyed_ = true;
+#endif
 }
 
 bool LayoutObject::IsDescendantOf(const LayoutObject* obj) const {
