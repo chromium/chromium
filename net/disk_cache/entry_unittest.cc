@@ -3719,9 +3719,9 @@ TEST_F(DiskCacheEntryTest, SimpleCacheDoomCreateOptimistic) {
       base::MakeRefCounted<net::IOBuffer>(kSize);
   CacheTestFillBuffer(buf_1->data(), kSize, false);
 
-  EXPECT_EQ(kSize, WriteData(entry2, /* stream_index = */ 1, /* offset = */ 0,
+  EXPECT_EQ(kSize, WriteData(entry2, /* index = */ 1, /* offset = */ 0,
                              buf_1.get(), kSize, /* truncate = */ false));
-  EXPECT_EQ(kSize, ReadData(entry2, /* stream_index = */ 1, /* offset = */ 0,
+  EXPECT_EQ(kSize, ReadData(entry2, /* index = */ 1, /* offset = */ 0,
                             buf_2.get(), kSize));
 
   doom_callback.WaitForResult();
@@ -5288,24 +5288,24 @@ void DiskCacheEntryTest::TruncateBackwards() {
   scoped_refptr<net::IOBuffer> read_buf =
       base::MakeRefCounted<net::IOBuffer>(kBigSize);
 
-  ASSERT_EQ(kSmallSize, WriteData(entry, /* stream_index = */ 0,
+  ASSERT_EQ(kSmallSize, WriteData(entry, /* index = */ 0,
                                   /* offset = */ kBigSize, buffer.get(),
                                   /* size = */ kSmallSize,
                                   /* truncate = */ false));
   memset(read_buf->data(), 0, kBigSize);
-  ASSERT_EQ(kSmallSize, ReadData(entry, /* stream_index = */ 0,
+  ASSERT_EQ(kSmallSize, ReadData(entry, /* index = */ 0,
                                  /* offset = */ kBigSize, read_buf.get(),
                                  /* size = */ kSmallSize));
   EXPECT_EQ(0, memcmp(read_buf->data(), buffer->data(), kSmallSize));
 
   // A partly overlapping truncate before the previous write.
   ASSERT_EQ(kBigSize,
-            WriteData(entry, /* stream_index = */ 0,
+            WriteData(entry, /* index = */ 0,
                       /* offset = */ 3, buffer.get(), /* size = */ kBigSize,
                       /* truncate = */ true));
   memset(read_buf->data(), 0, kBigSize);
   ASSERT_EQ(kBigSize,
-            ReadData(entry, /* stream_index = */ 0,
+            ReadData(entry, /* index = */ 0,
                      /* offset = */ 3, read_buf.get(), /* size = */ kBigSize));
   EXPECT_EQ(0, memcmp(read_buf->data(), buffer->data(), kBigSize));
   EXPECT_EQ(kBigSize + 3, entry->GetDataSize(0));
@@ -5345,15 +5345,15 @@ void DiskCacheEntryTest::ZeroWriteBackwards() {
   // Offset here needs to be > blockfile's kMaxBlockSize to hit
   // https://crbug.com/946538, as writes close to beginning are handled
   // specially.
-  EXPECT_EQ(0, WriteData(entry, /* stream_index = */ 0,
+  EXPECT_EQ(0, WriteData(entry, /* index = */ 0,
                          /* offset = */ 17000, buffer.get(),
                          /* size = */ 0, /* truncate = */ true));
 
-  EXPECT_EQ(0, WriteData(entry, /* stream_index = */ 0,
+  EXPECT_EQ(0, WriteData(entry, /* index = */ 0,
                          /* offset = */ 0, buffer.get(),
                          /* size = */ 0, /* truncate = */ false));
 
-  EXPECT_EQ(kSize, ReadData(entry, /* stream_index = */ 0,
+  EXPECT_EQ(kSize, ReadData(entry, /* index = */ 0,
                             /* offset = */ 0, buffer.get(),
                             /* size = */ kSize));
   for (int i = 0; i < kSize; ++i) {
