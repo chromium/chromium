@@ -4,6 +4,7 @@
 
 #include "chromeos/memory/userspace_swap/userspace_swap.h"
 
+#include <atomic>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -63,6 +64,100 @@ const base::FeatureParam<bool> kUserspaceDoSwapOnFreeze = {
     &kUserspaceSwap, "UserspaceSwapDoSwapOnFreeze", true};
 const base::FeatureParam<bool> kUserspaceSwapShuffleMapsOrder = {
     &kUserspaceSwap, "UserspaceSwapSuffleMapsOrder", true};
+
+// g_global_disk_usage is the sum of all |written_to_disk| values from each
+// renderer. We keep track of this number because we need to enforce the global
+// total swap limit. This value is safe to be fetched from any sequence.
+std::atomic<uint64_t> g_global_disk_usage_bytes = ATOMIC_VAR_INIT(0);
+
+// This is the sum of all |reclaimed_bytes| values from each renderer. This
+// value is safe to be fetched from any sequence.
+std::atomic<uint64_t> g_global_reclaimed_bytes = ATOMIC_VAR_INIT(0);
+
+class RendererSwapDataImpl : public RendererSwapData {
+ public:
+  RendererSwapDataImpl(
+      int render_process_host_id,
+      std::unique_ptr<chromeos::memory::userspace_swap::UserfaultFD>&& uffd,
+      std::unique_ptr<chromeos::memory::userspace_swap::SwapFile>&& swap_file)
+      : render_process_host_id_(render_process_host_id),
+        uffd_(std::move(uffd)),
+        swap_file_(std::move(swap_file)) {}
+
+  ~RendererSwapDataImpl() override;
+
+  // RendererSwapData impl:
+  int render_process_host_id() const override;
+  bool SwapAllowed() const override;
+  void DisallowSwap() override;
+  uint64_t SwapDiskspaceWrittenBytes() const override;
+  uint64_t SwapDiskspaceUsedBytes() const override;
+  uint64_t ReclaimedBytes() const override;
+
+  // Account/UnaccountSwapSpace update all counters both for this renderer and
+  // globally to reflect the swapped space.
+  void AccountSwapSpace(int64_t reclaimed, int64_t swap_size);
+  void UnaccountSwapSpace(int64_t reclaimed, int64_t swap_size);
+
+ private:
+  const int render_process_host_id_ = 0;
+  bool swap_allowed_ = true;
+
+  uint64_t on_disk_bytes_ = 0;
+  uint64_t reclaimed_bytes_ = 0;
+
+  std::unique_ptr<chromeos::memory::userspace_swap::UserfaultFD> uffd_;
+  std::unique_ptr<chromeos::memory::userspace_swap::SwapFile> swap_file_;
+};
+
+int RendererSwapDataImpl::render_process_host_id() const {
+  return render_process_host_id_;
+}
+
+void RendererSwapDataImpl::DisallowSwap() {
+  swap_allowed_ = false;
+}
+
+bool RendererSwapDataImpl::SwapAllowed() const {
+  return swap_allowed_;
+}
+
+uint64_t RendererSwapDataImpl::SwapDiskspaceWrittenBytes() const {
+  return on_disk_bytes_;
+}
+
+uint64_t RendererSwapDataImpl::SwapDiskspaceUsedBytes() const {
+  // Because punching a hole may not free the block if the region compressed
+  // down to a partial size, the block can only be freed when all of it has been
+  // punched. So we will take the larger of what we believe we've written to
+  // disk and what the swap file reports as being in use.
+  uint64_t swap_file_reported_disk_size_bytes =
+      swap_file_->GetUsageKB() << 10;  // Convert to bytes from KB.
+  uint64_t swap_file_disk_space_used_bytes =
+      std::max(swap_file_reported_disk_size_bytes, on_disk_bytes_);
+
+  return swap_file_disk_space_used_bytes;
+}
+
+uint64_t RendererSwapDataImpl::ReclaimedBytes() const {
+  return reclaimed_bytes_;
+}
+
+void RendererSwapDataImpl::AccountSwapSpace(int64_t reclaimed,
+                                            int64_t swap_size) {
+  on_disk_bytes_ += swap_size;
+  g_global_disk_usage_bytes += swap_size;
+  reclaimed_bytes_ += reclaimed;
+  g_global_reclaimed_bytes += reclaimed;
+}
+
+void RendererSwapDataImpl::UnaccountSwapSpace(int64_t reclaimed,
+                                              int64_t swap_size) {
+  AccountSwapSpace(-reclaimed, -swap_size);
+}
+
+RendererSwapDataImpl::~RendererSwapDataImpl() {}
+
 }  // namespace
 
 UserspaceSwapConfig::UserspaceSwapConfig() = default;
@@ -178,10 +273,30 @@ CHROMEOS_EXPORT bool KernelSupportsUserspaceSwap() {
   return userfault_fd_supported && mremap_dontunmap_supported;
 }
 
+RendererSwapData::RendererSwapData() {}
+RendererSwapData::~RendererSwapData() {}
+
+// static
+CHROMEOS_EXPORT std::unique_ptr<RendererSwapData> RendererSwapData::Create(
+    int render_process_host_id,
+    std::unique_ptr<chromeos::memory::userspace_swap::UserfaultFD> uffd,
+    std::unique_ptr<chromeos::memory::userspace_swap::SwapFile> swap_file) {
+  return std::make_unique<RendererSwapDataImpl>(
+      render_process_host_id, std::move(uffd), std::move(swap_file));
+}
+
 CHROMEOS_EXPORT bool UserspaceSwapSupportedAndEnabled() {
   static bool enabled = UserspaceSwapConfig::Get().enabled;
   static bool supported = KernelSupportsUserspaceSwap();
   return supported && enabled;
+}
+
+CHROMEOS_EXPORT bool SwapRegions(RendererSwapData* data, int num_regions) {
+  // TODO(bgeffon): We need to now land all of the process specific swap code.
+  RendererSwapDataImpl* impl = reinterpret_cast<RendererSwapDataImpl*>(data);
+  VLOG(1) << "SwapRegions for rphid " << impl->render_process_host_id()
+          << " at most " << num_regions << " regions";
+  return true;
 }
 
 CHROMEOS_EXPORT bool IsVMASwapEligible(
@@ -237,6 +352,14 @@ CHROMEOS_EXPORT bool GetAllSwapEligibleVMAs(base::PlatformThreadId pid,
   }
 
   return true;
+}
+
+CHROMEOS_EXPORT uint64_t GetGlobalMemoryReclaimed() {
+  return g_global_reclaimed_bytes.load();
+}
+
+CHROMEOS_EXPORT uint64_t GetGlobalSwapDiskspaceUsed() {
+  return g_global_disk_usage_bytes.load();
 }
 
 }  // namespace userspace_swap

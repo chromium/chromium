@@ -25,6 +25,9 @@ namespace chromeos {
 namespace memory {
 namespace userspace_swap {
 
+class UserfaultFD;
+class SwapFile;
+
 // UserspaceSwapConfig is a structure which contains all configuration values
 // for userspace swap.
 struct CHROMEOS_EXPORT UserspaceSwapConfig {
@@ -124,6 +127,55 @@ CHROMEOS_EXPORT bool KernelSupportsUserspaceSwap();
 // enabled.
 CHROMEOS_EXPORT bool UserspaceSwapSupportedAndEnabled();
 
+// GetGlobalSwapDiskspaceUsed returns the number of bytes currently on disk for
+// ALL renderers.
+CHROMEOS_EXPORT uint64_t GetGlobalSwapDiskspaceUsed();
+
+// GetGlobalMemoryReclaimed returns the number of bytes (physical memory) which
+// has been reclaimed by userspace swap. This number may not match what is on
+// disk due to encryption and compression.
+CHROMEOS_EXPORT uint64_t GetGlobalMemoryReclaimed();
+
+// RendererSwapData is attached to a ProcessNode and owned by the ProcessNode on
+// the PerformanceManager graph.
+class CHROMEOS_EXPORT RendererSwapData {
+ public:
+  virtual ~RendererSwapData();
+
+  static std::unique_ptr<RendererSwapData> Create(
+      int render_process_host_id,
+      std::unique_ptr<chromeos::memory::userspace_swap::UserfaultFD> uffd,
+      std::unique_ptr<chromeos::memory::userspace_swap::SwapFile> swap_file);
+
+  // Returns the Render Process Host ID associated with this RendererSwapData.
+  virtual int render_process_host_id() const = 0;
+
+  // If true this renderer has not been disallowed swap.
+  virtual bool SwapAllowed() const = 0;
+
+  // DisallowSwap prevents further swapping of this renderer. This cannot be
+  // unset.
+  virtual void DisallowSwap() = 0;
+
+  // There is a subtle difference between SwapdiskspaceWrittenBytes and
+  // SwapDiskspaceUsedBytes. Because punching a hole in a file may not reclaim a
+  // block on disk only after the entire block has been punched will the space
+  // actually be reclaimed on disk. However, SwapDiskspaceWrittenBytes will
+  // contain the total number of bytes that we think are on disk, these numbers
+  // will be equal when there is no waste of block space on disk.
+  virtual uint64_t SwapDiskspaceWrittenBytes() const = 0;
+  virtual uint64_t SwapDiskspaceUsedBytes() const = 0;
+
+  virtual uint64_t ReclaimedBytes() const = 0;
+
+ protected:
+  RendererSwapData();
+};
+
+// SwapRegions will swap at most |number_of_regions| on the renderer belonging
+// to the associated RendererSwapData.
+CHROMEOS_EXPORT bool SwapRegions(RendererSwapData* data, int number_of_regions);
+
 // A swap eligible VMA is one that meets the required swapping criteria,
 // which are:
 //   - RW protections
@@ -132,13 +184,16 @@ CHROMEOS_EXPORT bool UserspaceSwapSupportedAndEnabled();
 //   - Contains no locked memory
 //   - Meets the size constraints set by vma_region_min_size_bytes
 //     and vma_region_max_size_bytes
+//
+// This method is only exported for testing.
 CHROMEOS_EXPORT bool IsVMASwapEligible(
     const memory_instrumentation::mojom::VmRegionPtr& vma);
 
 // GetAllSwapEligibleVMAs will return a vector of regions which are swap
-// eligible, these regions are NOT "swap region" sized they are the VMAs and as
-// such must then be split in the appropriate region size by the userspace swap
-// mechanism. On error it will return false and errno will be set appropriately.
+// eligible, these regions are NOT "swap region" sized they are the VMAs and
+// as such must then be split in the appropriate region size by the userspace
+// swap mechanism. On error it will return false and errno will be set
+// appropriately.
 //
 // This vector may be shuffled if shuffle_maps_on_swap has been set to true.
 CHROMEOS_EXPORT bool GetAllSwapEligibleVMAs(base::PlatformThreadId pid,
