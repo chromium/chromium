@@ -34,6 +34,7 @@ constexpr char kEmojiSuggesterShowSettingCount[] =
     "emoji_suggester.show_setting_count";
 const int kMaxCandidateSize = 5;
 const char kSpaceChar = ' ';
+constexpr char kTrimLeadingChars[] = "(";
 constexpr char kEmojiMapFilePathTemplateName[] = "/emoji/emoji-map%s.csv";
 const int kMaxSuggestionIndex = 31;
 const int kMaxSuggestionSize = kMaxSuggestionIndex + 1;
@@ -71,10 +72,15 @@ std::string GetLastWord(const std::string& str) {
 
   // If not found, return the entire string up to the last position to search
   // else return the last word.
-  return space_before_last_word == std::string::npos
-             ? str.substr(0, last_pos_to_search + 1)
-             : str.substr(space_before_last_word + 1,
-                          last_pos_to_search - space_before_last_word);
+  const std::string last_word =
+      space_before_last_word == std::string::npos
+          ? str.substr(0, last_pos_to_search + 1)
+          : str.substr(space_before_last_word + 1,
+                       last_pos_to_search - space_before_last_word);
+
+  // Remove any leading special characters
+  return base::ToLowerASCII(
+      base::TrimString(last_word, kTrimLeadingChars, base::TRIM_LEADING));
 }
 
 void RecordTimeToAccept(base::TimeDelta delta) {
