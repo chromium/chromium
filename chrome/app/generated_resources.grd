@@ -6305,6 +6305,9 @@ the Bookmarks menu.">
         <message name="IDS_FEEDBACK_CLOSE_BUTTON_LABEL" desc="Label of the app close button.">
           Close
         </message>
+        <message name="IDS_FEEDBACK_FREE_TEXT_LABEL" desc="Label of the text box where users can describe a problem they are having">
+          Describe the issue in detail
+        </message>
         <message name="IDS_FEEDBACK_REPORT_URL_LABEL" desc="Label showing the URL that will be reported">
           URL
         </message>

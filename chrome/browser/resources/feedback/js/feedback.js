@@ -302,11 +302,11 @@ function resizeAppWindow() {
     width = FEEDBACK_MIN_WIDTH;
   }
 
-  // We get the height by adding the titlebar height and the content height +
-  // margins. We can't get the margins for the content-pane here by using
-  // style.margin - the variable seems to not exist.
-  let height = $('title-bar').scrollHeight + $('content-pane').scrollHeight +
-      CONTENT_MARGIN_HEIGHT;
+  // Note: If the display is shorter than this (e.g. if the user has it set to
+  // largest display size), the chrome app api(?) will cap the height of the
+  // window at the height of the screen and add a scroll bar. If we switch away
+  // from chrome apps, make sure that this behavior is the same.
+  let height = document.body.scrollHeight;
 
   let minHeight = FEEDBACK_MIN_HEIGHT;
   if (feedbackInfo.flow == chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
