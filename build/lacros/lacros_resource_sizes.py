@@ -8,12 +8,14 @@ More information at //docs/speed/binary_size/metrics.md.
 """
 
 import argparse
+import collections
 import contextlib
 import json
 import logging
 import os
 import subprocess
 import sys
+import tempfile
 
 
 @contextlib.contextmanager
@@ -41,6 +43,9 @@ BUILD_COMMON_PATH = os.path.join(DIR_SOURCE_ROOT, 'build', 'util', 'lib',
 TRACING_PATH = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'catapult',
                             'tracing')
 
+EU_STRIP_PATH = os.path.join(DIR_SOURCE_ROOT, 'buildtools', 'third_party',
+                             'eu-strip', 'bin', 'eu-strip')
+
 with _SysPath(BUILD_COMMON_PATH):
   import perf_tests_results_helper  # pylint: disable=import-error
 
@@ -55,6 +60,11 @@ _BASE_CHART = {
     'charts': {}
 }
 
+_KEY_RAW = 'raw'
+_KEY_GZIPPED = 'gzipped'
+_KEY_STRIPPED = 'stripped'
+_KEY_STRIPPED_GZIPPED = 'stripped_then_gzipped'
+
 
 class _Group:
   """A group of build artifacts whose file sizes are summed and tracked.
@@ -67,12 +77,15 @@ class _Group:
   Attributes:
     paths: A list of files or directories to be tracked together.
     title: The display name of the group.
+    track_stripped: Whether to also track summed stripped ELF sizes.
     track_compressed: Whether to also track summed compressed sizes.
   """
 
-  def __init__(self, paths, title, track_compressed=False):
+  def __init__(self, paths, title, track_stripped=False,
+               track_compressed=False):
     self.paths = paths
     self.title = title
+    self.track_stripped = track_stripped
     self.track_compressed = track_compressed
 
 
@@ -81,7 +94,10 @@ class _Group:
 # //infra/config/subprojects/chromium/ci.star) and
 # chromeos-amd64-generic-lacros-internal builder (specified in src-internal).
 _TRACKED_GROUPS = [
-    _Group(paths=['chrome'], title='File: chrome', track_compressed=True),
+    _Group(paths=['chrome'],
+           title='File: chrome',
+           track_stripped=True,
+           track_compressed=True),
     _Group(paths=['crashpad_handler'], title='File: crashpad_handler'),
     _Group(paths=['icudtl.dat'], title='File: icudtl.dat'),
     _Group(paths=['nacl_helper'], title='File: nacl_helper'),
@@ -120,6 +136,17 @@ def _visit_paths(base_dir, paths):
       logging.critical('Not found: %s', path)
 
 
+def _is_probably_elf(filename):
+  """Heuristically decides whether |filename| is ELF via magic signature."""
+  with open(filename, 'rb') as fh:
+    return fh.read(4) == '\x7FELF'
+
+
+def _is_unstrippable_elf(filename):
+  """Identifies known-unstrippable ELF files to denoise the system."""
+  return filename.endswith('.nexe') or filename.endswith('libwidevinecdm.so')
+
+
 def _get_filesize(filename):
   """Returns the size of a file, or 0 if file is not found."""
   try:
@@ -150,6 +177,37 @@ def _get_gzipped_filesize(filename):
   except OSError:
     logging.critical('Failed to get gzipped size: %s', filename)
   return 0
+
+
+def _get_catagorized_filesizes(filename):
+  """Measures |filename| sizes under various transforms.
+
+  Returns: A Counter (keyed by _Key_* constants) that stores measured sizes.
+  """
+  sizes = collections.Counter()
+  sizes[_KEY_RAW] = _get_filesize(filename)
+  sizes[_KEY_GZIPPED] = _get_gzipped_filesize(filename)
+
+  # Pre-assign values for non-ELF, or in case of failure for ELF.
+  sizes[_KEY_STRIPPED] = sizes[_KEY_RAW]
+  sizes[_KEY_STRIPPED_GZIPPED] = sizes[_KEY_GZIPPED]
+
+  if _is_probably_elf(filename) and not _is_unstrippable_elf(filename):
+    try:
+      fd, temp_file = tempfile.mkstemp()
+      os.close(fd)
+      cmd = [EU_STRIP_PATH, filename, '-o', temp_file]
+      subprocess.check_output(cmd)
+      sizes[_KEY_STRIPPED] = _get_filesize(temp_file)
+      sizes[_KEY_STRIPPED_GZIPPED] = _get_gzipped_filesize(temp_file)
+      if sizes[_KEY_STRIPPED] > sizes[_KEY_RAW]:
+        # This weird case has been observed for libwidevinecdm.so.
+        logging.critical('Stripping made things worse for %s' % filename)
+    except subprocess.CalledProcessError:
+      logging.critical('Failed to strip file: %s' % filename)
+    finally:
+      os.unlink(temp_file)
+  return sizes
 
 
 def _dump_chart_json(output_dir, chartjson):
@@ -189,41 +247,49 @@ def _run_resource_sizes(args):
   """Main flow to extract and output size data."""
   chartjson = _BASE_CHART.copy()
   report_func = perf_tests_results_helper.ReportPerfResult
-  total_size = 0
-  total_gzipped = 0
-  for group in _TRACKED_GROUPS:
-    group_size = sum(map(_get_filesize, _visit_paths(args.out_dir,
-                                                     group.paths)))
-    group_gzipped = sum(
-        map(_get_gzipped_filesize, _visit_paths(args.out_dir, group.paths)))
+  total_sizes = collections.Counter()
+
+  def report_sizes(sizes, title, track_stripped, track_compressed):
     report_func(chart_data=chartjson,
-                graph_title=group.title,
+                graph_title=title,
                 trace_title='size',
-                value=group_size,
+                value=sizes[_KEY_RAW],
                 units='bytes')
-    if group.track_compressed:
+
+    if track_stripped:
       report_func(chart_data=chartjson,
-                  graph_title=group.title + ' (Gzipped)',
+                  graph_title=title + ' (Stripped)',
                   trace_title='size',
-                  value=group_gzipped,
+                  value=sizes[_KEY_STRIPPED],
                   units='bytes')
-    total_size += group_size
-    # Summing compressed size of separate groups (instead of concatanating
-    # first) to get a conservative estimate. File metadata and overheads are
-    # assumed to be negligible.
-    total_gzipped += group_gzipped
 
-  report_func(chart_data=chartjson,
-              graph_title='Total',
-              trace_title='size',
-              value=total_size,
-              units='bytes')
+    if track_compressed:
+      report_func(chart_data=chartjson,
+                  graph_title=title + ' (Gzipped)',
+                  trace_title='size',
+                  value=sizes[_KEY_GZIPPED],
+                  units='bytes')
 
-  report_func(chart_data=chartjson,
-              graph_title='Total (Gzipped)',
-              trace_title='size',
-              value=total_gzipped,
-              units='bytes')
+    if track_stripped and track_compressed:
+      report_func(chart_data=chartjson,
+                  graph_title=title + ' (Stripped, Gzipped)',
+                  trace_title='size',
+                  value=sizes[_KEY_STRIPPED_GZIPPED],
+                  units='bytes')
+
+  for g in _TRACKED_GROUPS:
+    sizes = sum(
+        map(_get_catagorized_filesizes, _visit_paths(args.out_dir, g.paths)),
+        collections.Counter())
+    report_sizes(sizes, g.title, g.track_stripped, g.track_compressed)
+
+    # Total compressed size is summed over individual compressed sizes, instead
+    # of concatanating first, then compress everything. This is done for
+    # simplicity. It also gives a conservative size estimate (assuming file
+    # metadata and overheads are negligible).
+    total_sizes += sizes
+
+  report_sizes(total_sizes, 'Total', True, True)
 
   _dump_chart_json(args.output_dir, chartjson)
 
