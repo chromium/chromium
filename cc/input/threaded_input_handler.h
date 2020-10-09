@@ -117,7 +117,7 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
                               ScrollbarOrientation orientation) override;
   void ScrollOffsetAnimationFinished() override;
   bool IsCurrentlyScrolling() const override;
-  bool IsActivelyPrecisionScrolling() const override;
+  ActivelyScrollingType GetActivelyScrollingType() const override;
 
   // =========== Public Interface
 

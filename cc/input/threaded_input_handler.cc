@@ -1070,17 +1070,23 @@ bool ThreadedInputHandler::IsCurrentlyScrolling() const {
   return CurrentlyScrollingNode();
 }
 
-bool ThreadedInputHandler::IsActivelyPrecisionScrolling() const {
+ActivelyScrollingType ThreadedInputHandler::GetActivelyScrollingType() const {
   if (!CurrentlyScrollingNode())
-    return false;
+    return ActivelyScrollingType::kNone;
 
   if (!last_scroll_update_state_)
-    return false;
+    return ActivelyScrollingType::kNone;
 
   bool did_scroll_content =
       did_scroll_x_for_scroll_gesture_ || did_scroll_y_for_scroll_gesture_;
-  return !ShouldAnimateScroll(last_scroll_update_state_.value()) &&
-         did_scroll_content;
+
+  if (!did_scroll_content)
+    return ActivelyScrollingType::kNone;
+
+  if (ShouldAnimateScroll(last_scroll_update_state_.value()))
+    return ActivelyScrollingType::kAnimated;
+
+  return ActivelyScrollingType::kPrecise;
 }
 
 ScrollNode* ThreadedInputHandler::CurrentlyScrollingNode() {

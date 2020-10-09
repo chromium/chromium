@@ -1262,16 +1262,12 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollRootCallsCommitAndRedraw) {
   EXPECT_TRUE(did_request_commit_);
 }
 
-// Ensure correct semantics for the IsActivelyPrecisionScrolling method. This
+// Ensure correct semantics for the GetActivelyScrollingType method. This
 // method is used to determine scheduler policy so it wants to report true only
 // when real scrolling is occurring (i.e. the compositor is consuming scroll
-// delta, the page isn't handling the events itself). We also only consider
-// this signal for non-animated scrolls. This is partially historical but also
-// makes some sense since touchscreen/high-precision touchpad scrolling has a
-// physical metaphor (movement sticks to finger) so smoothness should be
-// prioritized.
+// delta, the page isn't handling the events itself).
 TEST_P(ScrollUnifiedLayerTreeHostImplTest,
-       ActivelyTouchScrollingOnlyAfterScrollMovement) {
+       ActivelyScrollingOnlyAfterScrollMovement) {
   SetupViewportLayersOuterScrolls(gfx::Size(50, 50), gfx::Size(100, 100));
   DrawFrame();
 
@@ -1286,29 +1282,33 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
     EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
     EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
               status.main_thread_scrolling_reasons);
-    EXPECT_FALSE(host_impl_->IsActivelyPrecisionScrolling());
+    EXPECT_EQ(host_impl_->GetActivelyScrollingType(),
+              ActivelyScrollingType::kNone);
 
     // There is no extent upwards so the scroll won't consume any delta.
     GetInputHandler().ScrollUpdate(
         UpdateState(gfx::Point(), gfx::Vector2d(0, -10),
                     ui::ScrollInputType::kTouchscreen)
             .get());
-    EXPECT_FALSE(host_impl_->IsActivelyPrecisionScrolling());
+    EXPECT_EQ(host_impl_->GetActivelyScrollingType(),
+              ActivelyScrollingType::kNone);
 
     // This should scroll so ensure the bit flips to true.
     GetInputHandler().ScrollUpdate(
         UpdateState(gfx::Point(), gfx::Vector2d(0, 10),
                     ui::ScrollInputType::kTouchscreen)
             .get());
-    EXPECT_TRUE(host_impl_->IsActivelyPrecisionScrolling());
+    EXPECT_EQ(host_impl_->GetActivelyScrollingType(),
+              ActivelyScrollingType::kPrecise);
     GetInputHandler().ScrollEnd();
-    EXPECT_FALSE(host_impl_->IsActivelyPrecisionScrolling());
+    EXPECT_EQ(host_impl_->GetActivelyScrollingType(),
+              ActivelyScrollingType::kNone);
   }
 
   ASSERT_EQ(10, CurrentScrollOffset(OuterViewportScrollLayer()).y());
 
-  // Ensure an animated wheel scroll doesn't cause the bit to flip even when
-  // scrolling occurs.
+  // Ensure an animated wheel scroll only causes the bit to flip when enabling
+  // smoothness mode (i.e. the value of GetParam().animate);
   {
     InputHandler::ScrollStatus status = GetInputHandler().ScrollBegin(
         BeginState(gfx::Point(), gfx::Vector2dF(0, 10),
@@ -1316,11 +1316,13 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
             .get(),
         ui::ScrollInputType::kWheel);
     EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
-    EXPECT_FALSE(host_impl_->IsActivelyPrecisionScrolling());
+    EXPECT_EQ(host_impl_->GetActivelyScrollingType(),
+              ActivelyScrollingType::kNone);
 
     GetInputHandler().ScrollUpdate(
         AnimatedUpdateState(gfx::Point(), gfx::Vector2dF(0, 10)).get());
-    EXPECT_FALSE(host_impl_->IsActivelyPrecisionScrolling());
+    EXPECT_EQ(host_impl_->GetActivelyScrollingType(),
+              ActivelyScrollingType::kAnimated);
 
     base::TimeTicks cur_time =
         base::TimeTicks() + base::TimeDelta::FromMilliseconds(100);
@@ -1339,18 +1341,22 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
     // The animation is setup in the first frame so tick at least twice to
     // actually animate it.
     ANIMATE(0);
-    EXPECT_FALSE(host_impl_->IsActivelyPrecisionScrolling());
+    EXPECT_EQ(host_impl_->GetActivelyScrollingType(),
+              ActivelyScrollingType::kAnimated);
     ANIMATE(200);
-    EXPECT_FALSE(host_impl_->IsActivelyPrecisionScrolling());
+    EXPECT_EQ(host_impl_->GetActivelyScrollingType(),
+              ActivelyScrollingType::kAnimated);
     ANIMATE(1000);
-    EXPECT_FALSE(host_impl_->IsActivelyPrecisionScrolling());
+    EXPECT_EQ(host_impl_->GetActivelyScrollingType(),
+              ActivelyScrollingType::kAnimated);
 
 #undef ANIMATE
 
     ASSERT_EQ(20, CurrentScrollOffset(OuterViewportScrollLayer()).y());
 
     GetInputHandler().ScrollEnd();
-    EXPECT_FALSE(host_impl_->IsActivelyPrecisionScrolling());
+    EXPECT_EQ(host_impl_->GetActivelyScrollingType(),
+              ActivelyScrollingType::kNone);
   }
 }
 

@@ -2145,8 +2145,11 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
   }
 
   if (GetDrawMode() == DRAW_MODE_RESOURCELESS_SOFTWARE) {
+    // TODO(savella) : Change to check for ActivelyScrollingType::kNone
+    const bool actively_scrolling =
+        GetActivelyScrollingType() == ActivelyScrollingType::kPrecise;
     metadata.is_resourceless_software_draw_with_scroll_or_animation =
-        IsActivelyPrecisionScrolling() || mutator_host_->NeedsTickAnimations();
+        actively_scrolling || mutator_host_->NeedsTickAnimations();
   }
 
   const base::flat_set<viz::SurfaceRange>& referenced_surfaces =
@@ -2998,10 +3001,10 @@ bool LayerTreeHostImpl::IsPinchGestureActive() const {
   return GetInputHandler().pinch_gesture_active();
 }
 
-bool LayerTreeHostImpl::IsActivelyPrecisionScrolling() const {
+ActivelyScrollingType LayerTreeHostImpl::GetActivelyScrollingType() const {
   if (!input_delegate_)
-    return false;
-  return input_delegate_->IsActivelyPrecisionScrolling();
+    return ActivelyScrollingType::kNone;
+  return input_delegate_->GetActivelyScrollingType();
 }
 
 bool LayerTreeHostImpl::ScrollAffectsScrollHandler() const {

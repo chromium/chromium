@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/time/time.h"
+#include "cc/input/actively_scrolling_type.h"
 #include "cc/paint/element_id.h"
 
 namespace viz {
@@ -70,18 +71,14 @@ class InputDelegateForCompositor {
   // finger from the touchscreen but we're scroll snapping).
   virtual bool IsCurrentlyScrolling() const = 0;
 
-  // Returns true if there is an active scroll in progress.  "Active" here
-  // means that it's been latched (i.e. we have a CurrentlyScrollingNode()) but
-  // also that some ScrollUpdates have been received and their delta consumed
-  // for scrolling. These can differ significantly e.g. the page allows the
-  // touchstart but preventDefaults all the touchmoves. In that case, we latch
-  // and have a CurrentlyScrollingNode() but will never receive a ScrollUpdate.
-  //
-  // "Precision" means it's a non-animated scroll like a touchscreen or
-  // high-precision touchpad. The latter distinction is important for things
-  // like scheduling decisions which might schedule a wheel and a touch
-  // scrolling differently due to user perception.
-  virtual bool IsActivelyPrecisionScrolling() const = 0;
+  // Indicates the type (Animated or Precise) of an active scroll, if there is
+  // one, in progress. "Active" here means that it's been latched (i.e. we have
+  // a CurrentlyScrollingNode()) but also that some ScrollUpdates have been
+  // received and their delta consumed for scrolling. These can differ
+  // significantly e.g. the page allows the touchstart but preventDefaults all
+  // the touchmoves. In that case, we latch and have a CurrentlyScrollingNode()
+  // but will never receive a ScrollUpdate.
+  virtual ActivelyScrollingType GetActivelyScrollingType() const = 0;
 };
 
 // This is the interface that's exposed by the LayerTreeHostImpl to the input

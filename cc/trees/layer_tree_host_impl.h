@@ -25,6 +25,7 @@
 #include "cc/base/synced_property.h"
 #include "cc/benchmarks/micro_benchmark_controller_impl.h"
 #include "cc/cc_export.h"
+#include "cc/input/actively_scrolling_type.h"
 #include "cc/input/browser_controls_offset_manager_client.h"
 #include "cc/input/input_handler.h"
 #include "cc/input/scrollbar_animation_controller.h"
@@ -84,6 +85,7 @@ struct FrameTimingDetails;
 
 namespace cc {
 
+enum class ActivelyScrollingType;
 class BrowserControlsOffsetManager;
 class CompositorFrameReportingController;
 class DebugRectHistory;
@@ -612,7 +614,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // LayerTreeHostImpl's interface.
   bool IsPinchGestureActive() const;
   // See comment in equivalent ThreadedInputHandler method for what this means.
-  bool IsActivelyPrecisionScrolling() const;
+  ActivelyScrollingType GetActivelyScrollingType() const;
   bool ScrollAffectsScrollHandler() const;
   void SetExternalPinchGestureActive(bool active);
   void set_force_smooth_wheel_scrolling_for_testing(bool enabled) {

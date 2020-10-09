@@ -55,4 +55,7 @@ bool IsMainLatencyRecoveryEnabled() {
 const base::Feature kScrollUnification{"ScrollUnification",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSchedulerSmoothnessForAnimatedScrolls{
+    "SmoothnessModeForAnimatedScrolls", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features

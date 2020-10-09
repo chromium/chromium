@@ -30,6 +30,12 @@ CC_BASE_EXPORT bool IsMainLatencyRecoveryEnabled();
 // https://docs.google.com/document/d/1smLAXs-DSLLmkEt4FIPP7PVglJXOcwRc7A5G0SEwxaY/edit
 CC_BASE_EXPORT extern const base::Feature kScrollUnification;
 
+// When enabled, wheel scrolls trigger smoothness mode. When disabled,
+// smoothness mode is limited to non-animated (precision) scrolls, such as
+// touch scrolling.
+CC_BASE_EXPORT extern const base::Feature
+    kSchedulerSmoothnessForAnimatedScrolls;
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_
