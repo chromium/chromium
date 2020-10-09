@@ -12,6 +12,8 @@
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/chromeos/borealis/borealis_context_manager_factory.h"
+#include "chrome/browser/chromeos/borealis/borealis_context_manager_impl.h"
 #include "chrome/browser/chromeos/borealis/borealis_installer_factory.h"
 #include "chrome/browser/chromeos/borealis/borealis_util.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -77,8 +79,9 @@ class BorealisInstallerView::TitleLabel : public views::Label {
 // Currently using the UI specs that the Plugin VM installer use.
 BorealisInstallerView::BorealisInstallerView(Profile* profile)
     : app_name_(l10n_util::GetStringUTF16(IDS_BOREALIS_APP_NAME)),
+      profile_(profile),
       borealis_installer_(
-          borealis::BorealisInstallerFactory::GetForProfile(profile)) {
+          borealis::BorealisInstallerFactory::GetForProfile(profile_)) {
   // Layout constants from the spec used for the plugin vm installer.
   gfx::Insets kDialogInsets(60, 64, 0, 64);
   const int kPrimaryMessageHeight = views::style::GetLineHeight(
@@ -187,7 +190,8 @@ bool BorealisInstallerView::Accept() {
 
   if (state_ == State::kCompleted) {
     // Launch button has been clicked.
-    // TODO(danielng): Link to launch VM command, once implemented.
+    borealis::BorealisContextManagerFactory::GetForProfile(profile_)
+        ->StartBorealis(base::DoNothing());
     return true;
   }
 

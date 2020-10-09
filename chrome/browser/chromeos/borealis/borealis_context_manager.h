@@ -11,7 +11,6 @@
 namespace borealis {
 
 class BorealisContext;
-class BorealisTask;
 
 using BorealisContextCallback =
     base::OnceCallback<void(const BorealisContext&)>;
@@ -25,8 +24,6 @@ class BorealisContextManager : public KeyedService {
 
   // Starts the Borealis VM and/or runs the callback when it is running.
   virtual void StartBorealis(BorealisContextCallback callback) = 0;
-
-  virtual void AddTaskForTesting(std::unique_ptr<BorealisTask> task) = 0;
 };
 
 }  // namespace borealis

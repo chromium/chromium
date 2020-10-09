@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_CHROMEOS_BOREALIS_BOREALIS_CONTEXT_H_
 #define CHROME_BROWSER_CHROMEOS_BOREALIS_BOREALIS_CONTEXT_H_
 
+#include <string>
+
+#include "base/files/file_path.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace borealis {
@@ -28,14 +31,25 @@ class BorealisContext {
   bool borealis_running() const { return borealis_running_; }
   void set_borealis_running(bool success) { borealis_running_ = success; }
 
+  const std::string& container_name() { return container_name_; }
+
+  const std::string& root_path() const { return root_path_; }
+  void set_root_path(const std::string& path) { root_path_ = path; }
+
+  const base::FilePath& disk_path() const { return disk_path_; }
+  void set_disk_path(const base::FilePath& path) { disk_path_ = path; }
+
  private:
   friend class BorealisContextManagerImpl;
 
-  BorealisContext() = default;
-  explicit BorealisContext(Profile* profile) : profile_(profile) {}
+  BorealisContext();
+  explicit BorealisContext(Profile* profile);
 
   Profile* profile_ = nullptr;
   bool borealis_running_ = false;
+  std::string container_name_ = "borealis";
+  std::string root_path_;
+  base::FilePath disk_path_;
 };
 
 }  // namespace borealis

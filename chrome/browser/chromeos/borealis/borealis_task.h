@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_CHROMEOS_BOREALIS_BOREALIS_TASK_H_
 #define CHROME_BROWSER_CHROMEOS_BOREALIS_BOREALIS_TASK_H_
 
+#include "base/memory/weak_ptr.h"
+#include "chromeos/dbus/concierge_client.h"
+#include "chromeos/dbus/dlcservice/dlcservice_client.h"
+
 namespace borealis {
 
 class BorealisContext;
@@ -16,10 +20,62 @@ class BorealisTask {
   // Callback to be run when the task completes. The |bool| should reflect
   // if the task succeeded (true) or failed (false).
   using CompletionStatusCallback = base::OnceCallback<void(bool)>;
+  BorealisTask() = default;
+  BorealisTask(const BorealisTask&) = delete;
+  BorealisTask& operator=(const BorealisTask&) = delete;
   virtual void Run(BorealisContext* context,
                    CompletionStatusCallback callback) = 0;
   virtual ~BorealisTask() = default;
 };
+
+// Mounts the Borealis DLC.
+class MountDlc : public BorealisTask {
+ public:
+  MountDlc();
+  ~MountDlc() override;
+  void Run(BorealisContext* context,
+           CompletionStatusCallback callback) override;
+
+ private:
+  void OnMountDlc(
+      BorealisContext* context,
+      CompletionStatusCallback callback,
+      const chromeos::DlcserviceClient::InstallResult& install_result);
+  base::WeakPtrFactory<MountDlc> weak_factory_{this};
+};
+
+// Creates a disk image for the Borealis VM.
+class CreateDiskImage : public BorealisTask {
+ public:
+  CreateDiskImage();
+  ~CreateDiskImage() override;
+  void Run(BorealisContext* context,
+           CompletionStatusCallback callback) override;
+
+ private:
+  void OnCreateDiskImage(
+      BorealisContext* context,
+      CompletionStatusCallback callback,
+      base::Optional<vm_tools::concierge::CreateDiskImageResponse> response);
+  base::WeakPtrFactory<CreateDiskImage> weak_factory_{this};
+};
+
+// Instructs Concierge to start the Borealis VM.
+class StartBorealisVm : public BorealisTask {
+ public:
+  StartBorealisVm();
+  ~StartBorealisVm() override;
+  void Run(BorealisContext* context,
+           CompletionStatusCallback callback) override;
+
+ private:
+  void OnStartBorealisVm(
+      BorealisContext* context,
+      CompletionStatusCallback callback,
+      base::Optional<vm_tools::concierge::StartVmResponse> response);
+  base::WeakPtrFactory<StartBorealisVm> weak_factory_{this};
+};
+
 }  // namespace borealis
 
 #endif  // CHROME_BROWSER_CHROMEOS_BOREALIS_BOREALIS_TASK_H_

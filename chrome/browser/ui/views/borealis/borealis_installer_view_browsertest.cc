@@ -5,7 +5,11 @@
 #include "chrome/browser/ui/views/borealis/borealis_installer_view.h"
 
 #include "base/bind.h"
+#include "chrome/browser/chromeos/borealis/borealis_context.h"
+#include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
+#include "chrome/browser/chromeos/borealis/borealis_context_manager_factory.h"
 #include "chrome/browser/chromeos/borealis/borealis_installer_factory.h"
+#include "chrome/browser/chromeos/borealis/borealis_task.h"
 #include "chrome/browser/chromeos/borealis/borealis_util.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,6 +27,9 @@
 using ::testing::_;
 using InstallationResult = borealis::BorealisInstaller::InstallationResult;
 
+namespace borealis {
+namespace {
+
 class BorealisInstallerMock : public borealis::BorealisInstaller {
  public:
   BorealisInstallerMock() = default;
@@ -35,6 +42,17 @@ class BorealisInstallerMock : public borealis::BorealisInstaller {
   MOCK_METHOD0(Cancel, void());
   MOCK_METHOD1(AddObserver, void(Observer*));
   MOCK_METHOD1(RemoveObserver, void(Observer*));
+};
+
+class BorealisContextManagerMock : public borealis::BorealisContextManager {
+ public:
+  BorealisContextManagerMock() = default;
+  ~BorealisContextManagerMock() = default;
+  BorealisContextManagerMock(const BorealisContextManagerMock&) = delete;
+  BorealisContextManagerMock& operator=(const BorealisContextManagerMock&) =
+      delete;
+
+  MOCK_METHOD1(StartBorealis, void(borealis::BorealisContextCallback));
 };
 
 class BorealisInstallerViewBrowserTest : public DialogBrowserTest {
@@ -52,6 +70,15 @@ class BorealisInstallerViewBrowserTest : public DialogBrowserTest {
                     base::BindRepeating([](content::BrowserContext* context)
                                             -> std::unique_ptr<KeyedService> {
                       return std::make_unique<BorealisInstallerMock>();
+                    })));
+    mock_context_manager_ =
+        static_cast<::testing::StrictMock<BorealisContextManagerMock>*>(
+            borealis::BorealisContextManagerFactory::GetInstance()
+                ->SetTestingFactoryAndUse(
+                    browser()->profile(),
+                    base::BindRepeating([](content::BrowserContext* context)
+                                            -> std::unique_ptr<KeyedService> {
+                      return std::make_unique<BorealisContextManagerMock>();
                     })));
   }
 
@@ -128,6 +155,7 @@ class BorealisInstallerViewBrowserTest : public DialogBrowserTest {
   }
 
   ::testing::StrictMock<BorealisInstallerMock>* mock_installer_;
+  ::testing::StrictMock<BorealisContextManagerMock>* mock_context_manager_;
   BorealisInstallerView* view_;
   base::string16 app_name_;
 
@@ -152,6 +180,7 @@ IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest, SucessfulInstall) {
   view_->OnInstallationEnded(InstallationResult::kCompleted);
   ExpectInstallationCompletedSucessfully();
 
+  EXPECT_CALL(*mock_context_manager_, StartBorealis(_));
   EXPECT_CALL(*mock_installer_, RemoveObserver(_));
   view_->AcceptDialog();
 
@@ -193,6 +222,7 @@ IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest,
   view_->OnInstallationEnded(InstallationResult::kCompleted);
   ExpectInstallationCompletedSucessfully();
 
+  EXPECT_CALL(*mock_context_manager_, StartBorealis(_));
   EXPECT_CALL(*mock_installer_, RemoveObserver(_));
   view_->AcceptDialog();
 
@@ -305,3 +335,5 @@ IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest, DlcUnknownError) {
 
   ClickCancel();
 }
+}  // namespace
+}  // namespace borealis

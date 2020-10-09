@@ -29,10 +29,11 @@ class BorealisContextManagerImpl : public BorealisContextManager {
 
   // BorealisContextManager:
   void StartBorealis(BorealisContextCallback callback) override;
-  void AddTaskForTesting(std::unique_ptr<BorealisTask> task) override;
+
+  // Public due to testing.
+  virtual base::queue<std::unique_ptr<BorealisTask>> GetTasks();
 
  private:
-  void AddTask(std::unique_ptr<BorealisTask> task);
   void AddCallback(BorealisContextCallback callback);
   void NextTask(bool should_continue);
   void OnQueueComplete();
@@ -44,6 +45,7 @@ class BorealisContextManagerImpl : public BorealisContextManager {
   BorealisContext context_;
   base::queue<BorealisContextCallback> callback_queue_;
   base::queue<std::unique_ptr<BorealisTask>> task_queue_;
+  std::unique_ptr<BorealisTask> current_task_;
 
   base::WeakPtrFactory<BorealisContextManagerImpl> weak_factory_{this};
 };

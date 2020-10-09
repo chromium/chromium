@@ -85,6 +85,7 @@ class BorealisInstallerView : public views::DialogDelegateView,
   void StartInstallation();
 
   base::string16 app_name_;
+  Profile* profile_ = nullptr;
   views::Label* primary_message_label_ = nullptr;
   views::Label* secondary_message_label_ = nullptr;
   views::ProgressBar* progress_bar_ = nullptr;

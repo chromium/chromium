@@ -22,18 +22,18 @@ void BorealisContextManagerImpl::StartBorealis(
   AddCallback(std::move(callback));
   if (!is_borealis_starting_) {
     is_borealis_starting_ = true;
-    // TODO(b/168425531): add actual startup tasks here.
+    task_queue_ = GetTasks();
     NextTask(/*should_continue=*/true);
   }
 }
 
-void BorealisContextManagerImpl::AddTaskForTesting(
-    std::unique_ptr<BorealisTask> task) {
-  AddTask(std::move(task));
-}
-
-void BorealisContextManagerImpl::AddTask(std::unique_ptr<BorealisTask> task) {
-  task_queue_.push(std::move(task));
+base::queue<std::unique_ptr<BorealisTask>>
+BorealisContextManagerImpl::GetTasks() {
+  base::queue<std::unique_ptr<BorealisTask>> task_queue;
+  task_queue.push(std::make_unique<MountDlc>());
+  task_queue.push(std::make_unique<CreateDiskImage>());
+  task_queue.push(std::make_unique<StartBorealisVm>());
+  return task_queue;
 }
 
 void BorealisContextManagerImpl::AddCallback(BorealisContextCallback callback) {
@@ -55,11 +55,11 @@ void BorealisContextManagerImpl::NextTask(bool should_continue) {
     OnQueueComplete();
     return;
   }
-  std::unique_ptr<BorealisTask> next_task = std::move(task_queue_.front());
+  current_task_ = std::move(task_queue_.front());
   task_queue_.pop();
-  next_task->Run(&context_,
-                 base::BindOnce(&BorealisContextManagerImpl::NextTask,
-                                weak_factory_.GetWeakPtr()));
+  current_task_->Run(&context_,
+                     base::BindOnce(&BorealisContextManagerImpl::NextTask,
+                                    weak_factory_.GetWeakPtr()));
 }
 
 void BorealisContextManagerImpl::OnQueueComplete() {
