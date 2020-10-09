@@ -156,9 +156,9 @@ Tests whether the HTTPS latency is below an acceptable threshold.
 
 Problems:
 * `kFailedDnsResolutions`: One or more DNS resolutions resulted in a failure.
-* `kFailedHttpRequests`: One or more HTTPS requests resulted in a failure.
-* `kSlightlyAboveThreshold`: Average HTTPS request latency is slightly above the expected threshold.
-* `kSignificantlyAboveThreshold`: Average HTTPS request latency is significantly above the expected threshold.
+* `kFailedHttpsRequests`: One or more HTTPS requests resulted in a failure.
+* `kHighLatency`: HTTPS request latency is high.
+* `kVeryHighLatency`: HTTPS request latency is very high.
 
 [Network Health and Configuration]: https://docs.google.com/document/d/10DSy-jZXaRo9I9aq1UqERy76t7HkgGvInWk57pHEkzg
 [network_diagnostics.mojom]: https://source.chromium.org/chromium/chromium/src/+/master:chromeos/services/network_health/public/mojom/network_diagnostics.mojom?originalUrl=https:%2F%2Fcs.chromium.org%2F
