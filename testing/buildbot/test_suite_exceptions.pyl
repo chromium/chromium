@@ -1650,7 +1650,7 @@
       },
     },
   },
-  'monochrome_apk_checker': {
+  'monochrome_public_apk_checker': {
     'modifications': {
       'ToTAndroid': {
         'swarming': {

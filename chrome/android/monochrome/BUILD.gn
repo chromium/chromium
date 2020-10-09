@@ -4,7 +4,7 @@
 
 import("//build/config/android/config.gni")
 
-group("monochrome_apk_checker") {
+group("monochrome_public_apk_checker") {
   testonly = true
   data_deps = [
     "//android_webview:system_webview_apk",

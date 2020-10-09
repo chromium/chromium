@@ -1247,7 +1247,7 @@
     "label": "//mojo:mojo_unittests",
     "type": "console_test_launcher",
   },
-  "monochrome_apk_checker": {
+  "monochrome_public_apk_checker": {
     "args": [
       "../../chrome/android/monochrome/scripts/monochrome_python_tests.py",
       "--chrome-apk",
@@ -1263,7 +1263,7 @@
       "--monochrome-pathmap",
       "apks/MonochromePublic.apk.pathmap.txt",
     ],
-    "label": "//chrome/android/monochrome:monochrome_apk_checker",
+    "label": "//chrome/android/monochrome:monochrome_public_apk_checker",
     "script": "//testing/scripts/run_isolated_script_test.py",
     "type": "script",
   },

@@ -8104,12 +8104,12 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "monochrome_apk_checker",
+        "isolate_name": "monochrome_public_apk_checker",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "monochrome_apk_checker",
+        "name": "monochrome_public_apk_checker",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -8120,7 +8120,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://chrome/android/monochrome:monochrome_apk_checker/"
+        "test_id_prefix": "ninja://chrome/android/monochrome:monochrome_public_apk_checker/"
       }
     ],
     "junit_tests": [

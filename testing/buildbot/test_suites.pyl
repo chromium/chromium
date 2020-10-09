@@ -3502,8 +3502,8 @@
       'services_unittests': {},
     },
 
-    'monochrome_apk_checker_isolated_script': {
-      'monochrome_apk_checker': {},
+    'monochrome_public_apk_checker_isolated_script': {
+      'monochrome_public_apk_checker': {},
     },
 
     # These tests will be run on the main waterfall.
@@ -5506,7 +5506,7 @@
     'marshmallow_nougat_pie_isolated_scripts_with_proguard': [
       'android_isolated_scripts',
       'components_perftests_isolated_scripts',
-      'monochrome_apk_checker_isolated_script',
+      'monochrome_public_apk_checker_isolated_script',
       'telemetry_android_minidump_unittests_isolated_scripts',
       'telemetry_perf_unittests_isolated_scripts',
     ],
