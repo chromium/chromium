@@ -125,6 +125,15 @@ void TtsService::Speak(const std::vector<uint8_t>& text_jspb,
     return;
   }
 
+  // For lower end devices, pre-fetching the first buffer on the main thread is
+  // important. Not doing so can cause us to not respond quickly enough in the
+  // audio rendering thread/callback below.
+  size_t frames = 0;
+  first_buf_.first.clear();
+  first_buf_.first.resize(libchrometts_.GoogleTtsGetFramesInAudioBuffer());
+  first_buf_.second =
+      libchrometts_.GoogleTtsReadBuffered(&first_buf_.first[0], &frames);
+
   output_device_->Play();
 }
 
@@ -147,13 +156,21 @@ int TtsService::Render(base::TimeDelta delay,
   // can be extremely important if there's a long queue of pending Speak/Stop
   // pairs being processed on the main thread. This can occur if the tts api
   // receives lots of tts requests.
-  if (!state_lock_.Try()) {
+  if (!state_lock_.Try())
     return 0;
-  }
 
   size_t frames = 0;
-  int32_t status =
-      libchrometts_.GoogleTtsReadBuffered(dest->channel(0), &frames);
+  float* channel = dest->channel(0);
+  int32_t status = -1;
+  if (got_first_buffer_) {
+    status = libchrometts_.GoogleTtsReadBuffered(channel, &frames);
+  } else {
+    status = first_buf_.second;
+    float* buf = &first_buf_.first[0];
+    frames = first_buf_.first.size();
+    for (size_t i = 0; i < frames; i++)
+      channel[i] = buf[i];
+  }
 
   if (status <= 0) {
     // -1 means an error, 0 means done.

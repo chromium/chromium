@@ -76,6 +76,11 @@ class TtsService : public mojom::TtsService,
   // Tracks whether any audio data came as a result of |Speak|. Reset for every
   // call to |Speak|.
   bool got_first_buffer_ GUARDED_BY(state_lock_);
+
+  // The first buffer; used for prefetching/warming up the engine for a new
+  // utterance. The first item is the audio data, the second is the status
+  // returned by a call to GoogleTtsReadBuffered.
+  std::pair<std::vector<float>, size_t> first_buf_;
 };
 
 }  // namespace tts
