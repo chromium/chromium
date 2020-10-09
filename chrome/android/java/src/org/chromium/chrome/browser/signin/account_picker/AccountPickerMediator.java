@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.signin.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.ProfileDataCache;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerCoordinator.AccountPickerAccessPoint;
@@ -104,7 +105,10 @@ class AccountPickerMediator {
         mListModel.add(new MVCListAdapter.ListItem(ItemType.ADD_ACCOUNT_ROW, model));
 
         // Add a "Go incognito mode" row
-        if (mAccessPoint == AccountPickerAccessPoint.WEB) {
+        // TODO(https://crbug.com/1136802): Let ctor receive a boolean directly to control
+        // the visibility of the incognito row.
+        if (mAccessPoint == AccountPickerAccessPoint.WEB
+                && IncognitoUtils.isIncognitoModeEnabled()) {
             PropertyModel incognitoModel = IncognitoAccountRowProperties.createModel(
                     mAccountPickerListener::goIncognitoMode);
             mListModel.add(

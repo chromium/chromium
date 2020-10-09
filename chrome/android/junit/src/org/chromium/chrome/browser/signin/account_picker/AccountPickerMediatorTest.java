@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.IdentityServicesProvider;
@@ -70,6 +71,7 @@ public class AccountPickerMediatorTest {
                         .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
                                 anyString()))
                 .thenReturn(null);
+        IncognitoUtils.setEnabledForTesting(true);
     }
 
     @After
@@ -77,6 +79,7 @@ public class AccountPickerMediatorTest {
         if (mMediator != null) {
             mMediator.destroy();
         }
+        IncognitoUtils.setEnabledForTesting(null);
         IdentityServicesProvider.setInstanceForTests(null);
         Profile.setLastUsedProfileForTesting(null);
     }
