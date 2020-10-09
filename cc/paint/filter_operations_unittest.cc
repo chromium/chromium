@@ -928,5 +928,46 @@ TEST(FilterOperationsTest, HasFilterOfType) {
   EXPECT_FALSE(filters.HasFilterOfType(FilterOperation::ZOOM));
 }
 
+TEST(FilterOperationsTest, MaximumPixelMovement) {
+  FilterOperations filters;
+
+  filters.Append(FilterOperation::CreateBlurFilter(20));
+  EXPECT_FLOAT_EQ(20.f * 2, filters.MaximumPixelMovement());
+
+  filters.Clear();
+  filters.Append(
+      FilterOperation::CreateDropShadowFilter(gfx::Point(3, -8), 20, 0));
+  float max_movement = fmax(std::abs(3), std::abs(-8)) + 20.f * 2;
+  EXPECT_FLOAT_EQ(max_movement, filters.MaximumPixelMovement());
+
+  filters.Clear();
+  filters.Append(FilterOperation::CreateZoomFilter(2, 3));
+  // max movement = zoom_inset = 3
+  EXPECT_FLOAT_EQ(3.f, filters.MaximumPixelMovement());
+
+  filters.Clear();
+  filters.Append(FilterOperation::CreateReferenceFilter(
+      sk_make_sp<OffsetPaintFilter>(10, 10, nullptr)));
+  // max movement = 100.
+  EXPECT_FLOAT_EQ(100.f, filters.MaximumPixelMovement());
+
+  // For filters that don't move pixels. HasFilterThatMovesPixels() = false.
+  filters.Clear();
+  filters.Append(FilterOperation::CreateOpacityFilter(0.25f));
+  SkScalar matrix[20] = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
+                         11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+  filters.Append(FilterOperation::CreateColorMatrixFilter(matrix));
+  filters.Append(FilterOperation::CreateGrayscaleFilter(0.75f));
+  filters.Append(FilterOperation::CreateSepiaFilter(0.625f));
+  filters.Append(FilterOperation::CreateSaturateFilter(1.25f));
+  filters.Append(FilterOperation::CreateHueRotateFilter(6.f));
+  filters.Append(FilterOperation::CreateInvertFilter(0.75f));
+  filters.Append(FilterOperation::CreateBrightnessFilter(9.f));
+  filters.Append(FilterOperation::CreateContrastFilter(3.f));
+  filters.Append(FilterOperation::CreateSaturatingBrightnessFilter(7.f));
+
+  EXPECT_FLOAT_EQ(0.f, filters.MaximumPixelMovement());
+}
+
 }  // namespace
 }  // namespace cc
