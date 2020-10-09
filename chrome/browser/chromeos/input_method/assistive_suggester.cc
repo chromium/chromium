@@ -162,7 +162,9 @@ bool IsInternalWebsite(GURL url) {
 template <size_t N>
 bool IsAllowedUrl(const char* (&allowedDomains)[N]) {
   Browser* browser = chrome::FindLastActive();
-  if (browser && browser->window()->IsActive()) {
+  if (browser && browser->window() && browser->window()->IsActive() &&
+      browser->tab_strip_model() &&
+      browser->tab_strip_model()->GetActiveWebContents()) {
     GURL url = browser->tab_strip_model()
                    ->GetActiveWebContents()
                    ->GetLastCommittedURL();
