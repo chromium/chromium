@@ -162331,6 +162331,19 @@
         {}
        ]
       ],
+      "markers-orient-002.svg": [
+       "f371784e2acb70fde4b6d6f0837652322900dc25",
+       [
+        null,
+        [
+         [
+          "/svg/pservers/reftests/reference/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "paint-context-001.svg": [
        "fd58d9b790a512940e2d8244148a3c62fb107898",
        [
@@ -210020,7 +210033,7 @@
       []
      ],
      "testdriver.md": [
-      "8eec38729f41b40a5e1cf073c9e8bba99c6f5efc",
+      "fd87f355bc3055b97aa876c82ebfe7c7ccdf1816",
       []
      ],
      "testharness-api.md": [
@@ -230065,10 +230078,26 @@
       "OWNERS": [
        "6aa7ab767945e24c2f7ed7c144d85af33b1fd15e",
        []
+      ],
+      "crossOriginChild.html": [
+       "48e37e233e14f690e6464257a22f70528edf720d",
+       []
+      ],
+      "iframeChild.html": [
+       "a46c54a7b7b51fec65d335ad54fc8fb4ca4c2050",
+       []
       ]
      },
      "click_child.html": [
       "5899841c4c1bcc9181f71b4b8699ded57cfe93fd",
+      []
+     ],
+     "click_child_crossorigin.html": [
+      "6a8c6840a25cb621736379677f3bb7713d6b88f6",
+      []
+     ],
+     "click_child_testdriver.html": [
+      "2c26a963f4a9691cbe83a7da0d2233fa5d96c3bc",
       []
      ],
      "click_nested-expected.txt": [
@@ -230077,6 +230106,10 @@
      ],
      "click_outer_child.html": [
       "ae4944635f00fb400fa8345a77bfb3b62766bc49",
+      []
+     ],
+     "click_outer_child.sub.html": [
+      "8e72223f9153d16e061482a5adf272a0e5e46112",
       []
      ],
      "click_window-expected.txt": [
@@ -237129,7 +237162,7 @@
      []
     ],
     "testdriver-actions.js": [
-     "b6030bf121388d5f4e33fbc31f8680fb6f58344b",
+     "f3e6388e8acd1998d89750150e0779df327a5417",
      []
     ],
     "testdriver-vendor.js": [
@@ -237141,7 +237174,7 @@
      []
     ],
     "testdriver.js": [
-     "165147d1430bfe990da2c8d3d601267dbe5143af",
+     "c53b24136c091f05e4ffbe286d060aba0fa66cdf",
      []
     ],
     "testdriver.js.headers": [
@@ -237200,6 +237233,10 @@
     ],
     "OWNERS": [
      "c5a213156a161824a4e5c6b96257d131ffb7212c",
+     []
+    ],
+    "sanitizer-config.tentative-expected.txt": [
+     "8e126d403b820266ce1fd19ebdcddd6a7f0c3f52",
      []
     ],
     "support": {
@@ -242439,7 +242476,7 @@
        []
       ],
       "sink_task.py": [
-       "ba76d27640c86197736d7edc9e8ed86fe8ec4bd0",
+       "1efcd4225cd2fb6352fe02c5f7197eb522f29292",
        []
       ],
       "taskgraph.py": [
@@ -242448,7 +242485,7 @@
       ],
       "tasks": {
        "test.yml": [
-        "78891bf302373168f7dd806fc332a3886538802d",
+        "4fa69e871bc19249d138531eaa9b7ccff458c582",
         []
        ]
       },
@@ -248640,7 +248677,7 @@
         []
        ],
        "base.py": [
-        "0247b3feed2b00d8de7da1dbc1c0da4f3841e5bd",
+        "4c3891c1cb67ba0a3d92e49860741569664ec784",
         []
        ],
        "executorchrome.py": [
@@ -248660,7 +248697,7 @@
         []
        ],
        "executormarionette.py": [
-        "e7c9726974b31118bb1dc6027feb9f817dd37563",
+        "7e2cc8e38a44c06a0d6c726fc917ca36776c0861",
         []
        ],
        "executoropera.py": [
@@ -248672,7 +248709,7 @@
         []
        ],
        "executorselenium.py": [
-        "82ab6f25560e67ee3a3877b6ee4af8b6cc200e3a",
+        "ff26351f84ed8d2e00d82d76570208a5947086cc",
         []
        ],
        "executorservo.py": [
@@ -248680,11 +248717,11 @@
         []
        ],
        "executorservodriver.py": [
-        "dbed2fedbdf1c686dda800bf182fbfc2ee6e0dd2",
+        "2cd1dbf3ad06f41b9555dad64d6d0c0a86537260",
         []
        ],
        "executorwebdriver.py": [
-        "139c475ce44ed29608d68509a88ba1b4c4aa932c",
+        "bad5fd072237bce2b826dde77b413bcabbcca990",
         []
        ],
        "executorwebkit.py": [
@@ -248696,7 +248733,7 @@
         []
        ],
        "protocol.py": [
-        "1c85c0f8b963482e8da72e7a793830e0d49b29be",
+        "bd768b1073c748fdb860745f1bf9442f5b415c3b",
         []
        ],
        "pytestrunner": {
@@ -248807,7 +248844,7 @@
        []
       ],
       "testdriver-extra.js": [
-       "241fc83395152fc9188b791e1f8e1ab9a3d3a542",
+       "9c0c69af3a3f278e8053b0a9907cd1dd7cae9dbc",
        []
       ],
       "testdriver-vendor.js": [
@@ -248827,7 +248864,7 @@
        []
       ],
       "testharnessreport.js": [
-       "29fc0e9873188223ac3783a8c622bbbe21ec5af5",
+       "9cd680e14aed3b6f7b8ee23aa5d2a5624cbe1fd2",
        []
       ],
       "testloader.py": [
@@ -291200,6 +291237,13 @@
      ],
      "overflow-abpos-transform.html": [
       "df1128316f6010f010e6d27c395d7751fa05d7b1",
+      [
+       null,
+       {}
+      ]
+     ],
+     "overflow-clip-hit-testing.html": [
+      "b22497601c2af66492958703df8f46c6756724ac",
       [
        null,
        {}
@@ -353678,6 +353722,15 @@
        ]
       ]
      },
+     "the-details-element": {
+      "details-blockification.html": [
+       "cc94e92fe0cdfb69c6d81f9406a58dd24a96a5fa",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "unmapped-attributes.html": [
       "5824f836f0d654c116a55a252dfbda5fc6e5bbc8",
       [
@@ -368634,6 +368687,15 @@
         }
        ]
       ],
+      "crossOrigin.sub.html": [
+       "38b3610af655a10f580c7f1fdb4621e4354deb82",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
       "elementPosition.html": [
        "145852e7b51bd0cdc9e7b4ef5ebddcbf1c0235c5",
        [
@@ -368654,6 +368716,15 @@
       ],
       "eventOrder.html": [
        "1fed285a27ab62d30617581506b48d281fd598f5",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "iframe.html": [
+       "6c64d6f49abc14cb03c5173536bb2d38c6d16e5d",
        [
         null,
         {
@@ -368744,7 +368815,7 @@
       ]
      },
      "bless.html": [
-      "b8a1c2e7d6000050351453a14a8bfb80d8af0c76",
+      "12257df01b7193c2a70bde1bedaa8e1d7e1ff2f7",
       [
        null,
        {
@@ -368770,8 +368841,26 @@
        }
       ]
      ],
+     "click_iframe_crossorigin.sub.html": [
+      "01833dc23d4e9f2c5033dfbc052a4decbca02161",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "click_nested.html": [
       "378b9e8c0f1411afdf7b93f7e93c03d05af227c7",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "click_nested_crossorigin.sub.html": [
+      "af90951df17804fd4ec18b99edc7165af989401a",
       [
        null,
        {
