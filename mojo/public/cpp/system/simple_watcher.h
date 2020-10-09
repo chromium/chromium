@@ -90,7 +90,7 @@ class MOJO_CPP_SYSTEM_EXPORT SimpleWatcher {
                 ArmingPolicy arming_policy,
                 scoped_refptr<base::SequencedTaskRunner> runner =
                     base::SequencedTaskRunnerHandle::Get(),
-                const char* heap_profiler_tag = nullptr);
+                const char* handler_tag = nullptr);
   ~SimpleWatcher();
 
   // Indicates if the SimpleWatcher is currently watching a handle.
@@ -226,7 +226,7 @@ class MOJO_CPP_SYSTEM_EXPORT SimpleWatcher {
 
   // Tag used to ID memory allocations that originated from notifications in
   // this watcher.
-  const char* heap_profiler_tag_ = nullptr;
+  const char* handler_tag_ = nullptr;
 
   base::WeakPtrFactory<SimpleWatcher> weak_factory_{this};
 
