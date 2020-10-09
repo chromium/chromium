@@ -108,6 +108,11 @@ TEST(FieldFormatterTest, CreditCard) {
   EXPECT_EQ(*FormatString("${-2} ${-5}",
                           CreateAutofillMappings(credit_card, "en-US")),
             "visa Visa");
+
+  // CREDIT_CARD_NON_PADDED_EXP_MONTH
+  EXPECT_EQ(
+      *FormatString("${-7}", CreateAutofillMappings(credit_card, "en-US")),
+      "1");
 }
 
 TEST(FieldFormatterTest, SpecialCases) {
@@ -189,6 +194,7 @@ TEST(FieldFormatterTest, AddsAllProfileFields) {
 
 TEST(FieldFormatterTest, AddsAllCreditCardFields) {
   std::map<std::string, std::string> expected_values = {
+      {"-7", "8"},
       {"-5", "Visa"},
       {"-4", "1111"},
       {"-2", "visa"},

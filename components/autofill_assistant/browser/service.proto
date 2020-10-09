@@ -431,6 +431,7 @@ enum KeyboardValueFillStrategy {
   SIMULATE_KEY_PRESSES_SELECT_VALUE = 3;
 }
 
+// Note: On multiple matches, the first one will be selected.
 enum DropdownSelectStrategy {
   UNSPECIFIED_SELECT_STRATEGY = 0;
 

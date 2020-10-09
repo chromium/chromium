@@ -133,6 +133,14 @@ std::map<std::string, std::string> CreateAutofillMappings<autofill::CreditCard>(
         AutofillFormatProto::CREDIT_CARD_NUMBER_LAST_FOUR_DIGITS))] =
         last_four_digits;
   }
+  int month;
+  if (base::StringToInt(
+          credit_card.GetInfo(autofill::CREDIT_CARD_EXP_MONTH, locale),
+          &month)) {
+    mappings[base::NumberToString(static_cast<int>(
+        AutofillFormatProto::CREDIT_CARD_NON_PADDED_EXP_MONTH))] =
+        base::NumberToString(month);
+  }
 
   return mappings;
 }
