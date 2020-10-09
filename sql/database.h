@@ -111,16 +111,25 @@ class COMPONENT_EXPORT(SQL) Database {
   // This must be called before Open() to have an effect.
   void want_wal_mode(bool enabled) { want_wal_mode_ = enabled; }
 
-  // Call to put the database in exclusive locking mode. There is no "back to
-  // normal" flag because of some additional requirements sqlite puts on this
-  // transaction (requires another access to the DB) and because we don't
-  // actually need it.
+  // Makes database accessible by only one process at a time.
   //
-  // Exclusive mode means that the database is not unlocked at the end of each
-  // transaction, which means there may be less time spent initializing the
-  // next transaction because it doesn't have to re-aquire locks.
+  // TODO(https://crbug.com/1120969): This should be the default mode. The
+  //                                  "NORMAL" mode should be opt-in.
   //
-  // This must be called before Open() to have an effect.
+  // SQLite supports a locking protocol that allows multiple processes to safely
+  // operate on the same database at the same time. The locking protocol is used
+  // on every transaction, and comes with a small performance penalty.
+  //
+  // Calling this method causes the locking protocol to be used once, when the
+  // database is opened. No other process will be able to access the database at
+  // the same time.
+  //
+  // This method must be called before Open() to have an effect.
+  //
+  // More details at https://www.sqlite.org/pragma.html#pragma_locking_mode
+  //
+  // SQLite's locking protocol is summarized at
+  // https://www.sqlite.org/c3ref/io_methods.html
   void set_exclusive_locking() { exclusive_locking_ = true; }
 
   // Call to use alternative status-tracking for mmap.  Usually this is tracked

@@ -133,6 +133,9 @@ bool SQLiteDatabase::Open(const String& filename) {
 
   opening_thread_ = CurrentThread();
 
+  if (!SQLiteStatement(*this, "PRAGMA locking_mode = NORMAL;").ExecuteCommand())
+    DLOG(ERROR) << "SQLite database could not set locking_mode to normal";
+
   if (!SQLiteStatement(*this, "PRAGMA temp_store = MEMORY;").ExecuteCommand())
     DLOG(ERROR) << "SQLite database could not set temp_store to memory";
 

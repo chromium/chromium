@@ -40,6 +40,15 @@ sqlite_common_configuration_flags = [
   # private, so our databases use stricter settings.
   "SQLITE_DEFAULT_FILE_PERMISSIONS=0600",
 
+  # Databases are opened in EXCLUSIVE mode by default.
+  #
+  # NORMAL mode, where a database can be used by multiple processes
+  # simultaneously, can be enabled by executing "PRAGMA locking_mode=0".
+  #
+  # https://www.sqlite.org/compile.html#default_locking_mode
+  # https://www.sqlite.org/pragma.html#pragma_locking_mode
+  "SQLITE_DEFAULT_LOCKING_MODE=1",
+
   # Needed by the SQL MemoryDumpProvider.
   #
   # Setting this to 1 is needed to collect the information reported by

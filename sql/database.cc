@@ -1487,22 +1487,15 @@ bool Database::OpenInternal(const std::string& file_name,
     return false;
   }
 
-  // If indicated, lock up the database before doing anything else, so
-  // that the following code doesn't have to deal with locking.
+  // If indicated, enable shared mode ("NORMAL") on the database, so it can be
+  // opened by multiple processes. This needs to happen before WAL mode is
+  // enabled.
   //
-  // Needs to happen before any other operation is performed in WAL mode so that
-  // no operation relies on shared memory if exclusive locking is turned on.
-  //
-  // TODO(shess): This code is brittle.  Find the cases where code
-  // doesn't request |exclusive_locking_| and audit that it does the
-  // right thing with SQLITE_BUSY, and that it doesn't make
-  // assumptions about who might change things in the database.
-  // http://crbug.com/56559
-  if (exclusive_locking_) {
-    // TODO(shess): This should probably be a failure.  Code which
-    // requests exclusive locking but doesn't get it is almost certain
-    // to be ill-tested.
-    ignore_result(Execute("PRAGMA locking_mode=EXCLUSIVE"));
+  // TODO(crbug.com/1120969): Remove support for non-exclusive mode.
+  if (!exclusive_locking_) {
+    err = ExecuteAndReturnErrorCode("PRAGMA locking_mode=NORMAL");
+    if (err != SQLITE_OK)
+      return false;
   }
 
   // Enable extended result codes to provide more color on I/O errors.

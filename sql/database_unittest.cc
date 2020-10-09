@@ -1252,6 +1252,18 @@ TEST_F(SQLDatabaseTest, GetAppropriateMmapSizeAltStatus) {
             ExecuteWithResult(&db(), "SELECT * FROM MmapStatus"));
 }
 
+TEST_F(SQLDatabaseTest, LockingModeExclusive) {
+  db().Close();
+  db().set_exclusive_locking();
+  ASSERT_TRUE(db().Open(db_path()));
+
+  EXPECT_EQ(ExecuteWithResult(&db(), "PRAGMA locking_mode"), "exclusive");
+}
+
+TEST_F(SQLDatabaseTest, LockingModeNormal) {
+  EXPECT_EQ(ExecuteWithResult(&db(), "PRAGMA locking_mode"), "normal");
+}
+
 TEST_F(SQLDatabaseTest, EnableWALMode) {
   db().want_wal_mode(true);
 #if defined(OS_FUCHSIA)  // Exclusive mode needs to be enabled to enter WAL mode
