@@ -269,12 +269,12 @@ TEST_F(GAIAInfoUpdateServiceTest, LogInLogOutLogIn) {
   entry->RecordAccountMetrics();
   tester.ExpectBucketCount(
       "Profile.AllAccounts.Names",
-      /*bucket=*/profile_metrics::AllAccountsNames::kLikelySingleName,
-      /*count=*/1);
+      /*sample=*/profile_metrics::AllAccountsNames::kLikelySingleName,
+      /*expected_count=*/1);
   tester.ExpectBucketCount(
       "Profile.AllAccounts.Categories",
-      /*bucket=*/profile_metrics::AllAccountsCategories::kSingleCategory,
-      /*count=*/1);
+      /*sample=*/profile_metrics::AllAccountsCategories::kSingleCategory,
+      /*expected_count=*/1);
 
   // Log out and record the metric again, sign-out wipes previous info in the
   // entry so again the default values get reported.
@@ -282,12 +282,12 @@ TEST_F(GAIAInfoUpdateServiceTest, LogInLogOutLogIn) {
   entry->RecordAccountMetrics();
   tester.ExpectBucketCount(
       "Profile.AllAccounts.Names",
-      /*bucket=*/profile_metrics::AllAccountsNames::kLikelySingleName,
-      /*count=*/2);
+      /*sample=*/profile_metrics::AllAccountsNames::kLikelySingleName,
+      /*expected_count=*/2);
   tester.ExpectBucketCount(
       "Profile.AllAccounts.Categories",
-      /*bucket=*/profile_metrics::AllAccountsCategories::kSingleCategory,
-      /*count=*/2);
+      /*sample=*/profile_metrics::AllAccountsCategories::kSingleCategory,
+      /*expected_count=*/2);
 
   std::string email2 = "pat2@example.com";
   AccountInfo info2 = identity_test_env()->MakeAccountAvailableWithCookies(
@@ -307,14 +307,15 @@ TEST_F(GAIAInfoUpdateServiceTest, LogInLogOutLogIn) {
   entry->RecordAccountMetrics();
   tester.ExpectBucketCount(
       "Profile.AllAccounts.Names",
-      /*bucket=*/profile_metrics::AllAccountsNames::kLikelySingleName,
-      /*count=*/3);
+      /*sample=*/profile_metrics::AllAccountsNames::kLikelySingleName,
+      /*expected_count=*/3);
   tester.ExpectBucketCount(
       "Profile.AllAccounts.Categories",
-      /*bucket=*/profile_metrics::AllAccountsCategories::kSingleCategory,
-      /*count=*/3);
-  tester.ExpectTotalCount("Profile.AllAccounts.Names", /*count=*/3);
-  tester.ExpectTotalCount("Profile.AllAccounts.Categories", /*count=*/3);
+      /*sample=*/profile_metrics::AllAccountsCategories::kSingleCategory,
+      /*expected_count=*/3);
+  tester.ExpectTotalCount("Profile.AllAccounts.Names", /*expected_count=*/3);
+  tester.ExpectTotalCount("Profile.AllAccounts.Categories",
+                          /*expected_count=*/3);
 }
 
 TEST_F(GAIAInfoUpdateServiceTest, MultiLoginAndLogOut) {
@@ -345,13 +346,13 @@ TEST_F(GAIAInfoUpdateServiceTest, MultiLoginAndLogOut) {
   entry->RecordAccountMetrics();
   tester.ExpectBucketCount(
       "Profile.AllAccounts.Names",
-      /*bucket=*/profile_metrics::AllAccountsNames::kMultipleNamesWithoutSync,
-      /*count=*/1);
+      /*sample=*/profile_metrics::AllAccountsNames::kMultipleNamesWithoutSync,
+      /*expected_count=*/1);
   tester.ExpectBucketCount(
       "Profile.AllAccounts.Categories",
-      /*bucket=*/
+      /*sample=*/
       profile_metrics::AllAccountsCategories::kBothConsumerAndEnterpriseNoSync,
-      /*count=*/1);
+      /*expected_count=*/1);
 
   // Log out and record the metric again, sign-out wipes previous info in the
   // entry so the default values get reported.
@@ -359,14 +360,15 @@ TEST_F(GAIAInfoUpdateServiceTest, MultiLoginAndLogOut) {
   entry->RecordAccountMetrics();
   tester.ExpectBucketCount(
       "Profile.AllAccounts.Names",
-      /*bucket=*/profile_metrics::AllAccountsNames::kLikelySingleName,
-      /*count=*/1);
+      /*sample=*/profile_metrics::AllAccountsNames::kLikelySingleName,
+      /*expected_count=*/1);
   tester.ExpectBucketCount(
       "Profile.AllAccounts.Categories",
-      /*bucket=*/profile_metrics::AllAccountsCategories::kSingleCategory,
-      /*count=*/1);
-  tester.ExpectTotalCount("Profile.AllAccounts.Names", /*count=*/2);
-  tester.ExpectTotalCount("Profile.AllAccounts.Categories", /*count=*/2);
+      /*sample=*/profile_metrics::AllAccountsCategories::kSingleCategory,
+      /*expected_count=*/1);
+  tester.ExpectTotalCount("Profile.AllAccounts.Names", /*expected_count=*/2);
+  tester.ExpectTotalCount("Profile.AllAccounts.Categories",
+                          /*expected_count=*/2);
 }
 #endif  // !defined(ANDROID)
 
