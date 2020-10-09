@@ -254,7 +254,7 @@ void WebAppInstallTask::UpdateWebAppFromInfo(
 
   data_retriever_->GetIcons(
       web_contents, std::move(icon_urls),
-      /*skip_page_fav_icons=*/true, WebAppIconDownloader::Histogram::kForUpdate,
+      /*skip_page_favicons=*/true, WebAppIconDownloader::Histogram::kForUpdate,
       base::BindOnce(&WebAppInstallTask::OnIconsRetrievedFinalizeUpdate,
                      base::Unretained(this), std::move(web_application_info)));
 }
