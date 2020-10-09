@@ -989,17 +989,6 @@ void AssistantManagerServiceImpl::OnGetDeviceSettings(
       /*is_user_initiated=*/true);
 }
 
-bool AssistantManagerServiceImpl::IsSettingSupported(
-    const std::string& setting_id) {
-  DVLOG(2) << "IsSettingSupported=" << setting_id;
-
-  return settings_delegate_->IsSettingSupported(setting_id);
-}
-
-bool AssistantManagerServiceImpl::SupportsModifySettings() {
-  return true;
-}
-
 void AssistantManagerServiceImpl::OnNotificationRemoved(
     const std::string& grouping_key) {
   ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnNotificationRemoved,
