@@ -39,7 +39,6 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/bindings_policy.h"
-#include "content/public/common/page_state.h"
 #include "content/public/common/page_type.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -55,6 +54,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 
@@ -2282,7 +2282,7 @@ TEST_F(NavigationControllerTest, SameDocument_Replace) {
   params.should_update_history = false;
   params.gesture = NavigationGestureUser;
   params.method = "GET";
-  params.page_state = PageState::CreateFromURL(url2);
+  params.page_state = blink::PageState::CreateFromURL(url2);
 
   // This should NOT generate a new entry, nor prune the list.
   LoadCommittedDetailsObserver observer(contents());
@@ -2301,7 +2301,7 @@ TEST_F(NavigationControllerTest, PushStateWithoutPreviousEntry) {
   params.nav_entry_id = 0;
   params.did_create_new_entry = true;
   params.url = url;
-  params.page_state = PageState::CreateFromURL(url);
+  params.page_state = blink::PageState::CreateFromURL(url);
   main_test_rfh()->SendRendererInitiatedNavigationRequest(url, false);
   main_test_rfh()->PrepareForCommit();
   contents()->GetMainFrame()->SendNavigateWithParams(&params, true);
@@ -3003,7 +3003,7 @@ TEST_F(NavigationControllerTest,
   params.origin = file_origin;
   params.transition = ui::PAGE_TRANSITION_LINK;
   params.gesture = NavigationGestureUser;
-  params.page_state = PageState::CreateFromURL(different_origin_url);
+  params.page_state = blink::PageState::CreateFromURL(different_origin_url);
   params.method = "GET";
   params.post_id = -1;
   main_test_rfh()->SendRendererInitiatedNavigationRequest(different_origin_url,
@@ -4050,7 +4050,7 @@ TEST_F(NavigationControllerTest, PushStateUpdatesTitleAndFavicon) {
   params.nav_entry_id = 0;
   params.did_create_new_entry = true;
   params.url = kUrl2;
-  params.page_state = PageState::CreateFromURL(kUrl2);
+  params.page_state = blink::PageState::CreateFromURL(kUrl2);
   main_test_rfh()->SendNavigateWithParams(&params, true);
 
   // The title should immediately be visible on the new NavigationEntry.
@@ -4161,7 +4161,7 @@ TEST_F(NavigationControllerTest, UnreachableURLGivesErrorPage) {
   params.url = url;
   params.transition = ui::PAGE_TRANSITION_LINK;
   params.gesture = NavigationGestureUser;
-  params.page_state = PageState::CreateFromURL(url);
+  params.page_state = blink::PageState::CreateFromURL(url);
   params.method = "POST";
   params.post_id = 2;
   params.url_is_unreachable = true;

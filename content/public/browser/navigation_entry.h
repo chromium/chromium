@@ -24,9 +24,12 @@
 
 class GURL;
 
+namespace blink {
+class PageState;
+}
+
 namespace content {
 
-class PageState;
 struct FaviconStatus;
 struct ReplacedNavigationEntryData;
 struct SSLStatus;
@@ -105,8 +108,8 @@ class NavigationEntry : public base::SupportsUserData {
   // NOTE: This state is saved to disk and used to restore previous states.  If
   // the format is modified in the future, we should still be able to deal with
   // older versions.
-  virtual void SetPageState(const PageState& state) = 0;
-  virtual PageState GetPageState() = 0;
+  virtual void SetPageState(const blink::PageState& state) = 0;
+  virtual blink::PageState GetPageState() = 0;
 
   // Page-related helpers ------------------------------------------------------
 

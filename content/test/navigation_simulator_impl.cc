@@ -1369,8 +1369,8 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
   if (!same_document)
     params->embedding_token = base::UnguessableToken::Create();
 
-  params->page_state =
-      page_state_.value_or(PageState::CreateForTestingWithSequenceNumbers(
+  params->page_state = page_state_.value_or(
+      blink::PageState::CreateForTestingWithSequenceNumbers(
           navigation_url_, params->item_sequence_number,
           params->document_sequence_number));
 

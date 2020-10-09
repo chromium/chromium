@@ -217,7 +217,7 @@ TEST_F(RenderViewHostTest, NavigationWithBadHistoryItemFiles) {
   auto navigation1 =
       NavigationSimulatorImpl::CreateRendererInitiated(url, main_test_rfh());
   navigation1->set_page_state(
-      PageState::CreateForTesting(url, false, "data", &file_path));
+      blink::PageState::CreateForTesting(url, false, "data", &file_path));
   navigation1->Commit();
   EXPECT_EQ(1, process()->bad_msg_count());
 
@@ -226,7 +226,7 @@ TEST_F(RenderViewHostTest, NavigationWithBadHistoryItemFiles) {
   auto navigation2 =
       NavigationSimulatorImpl::CreateRendererInitiated(url, main_test_rfh());
   navigation2->set_page_state(
-      PageState::CreateForTesting(url, false, "data", &file_path));
+      blink::PageState::CreateForTesting(url, false, "data", &file_path));
   navigation2->Commit();
   EXPECT_EQ(1, process()->bad_msg_count());
 }

@@ -598,7 +598,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void DOMContentLoaded(RenderFrameHost* render_frame_host) override;
   void DocumentOnLoadCompleted(RenderFrameHost* render_frame_host) override;
   void UpdateStateForFrame(RenderFrameHost* render_frame_host,
-                           const PageState& page_state) override;
+                           const blink::PageState& page_state) override;
   void UpdateTitle(RenderFrameHost* render_frame_host,
                    const base::string16& title,
                    base::i18n::TextDirection title_direction) override;

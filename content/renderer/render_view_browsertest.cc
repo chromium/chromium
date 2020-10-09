@@ -338,7 +338,7 @@ class RenderViewImplTest : public RenderViewTest {
   }
 
   void GoToOffsetWithParams(int offset,
-                            const PageState& state,
+                            const blink::PageState& state,
                             mojom::CommonNavigationParamsPtr common_params,
                             mojom::CommitNavigationParamsPtr commit_params) {
     EXPECT_TRUE(common_params->transition & ui::PAGE_TRANSITION_FORWARD_BACK);
@@ -853,7 +853,7 @@ TEST_F(RenderViewImplTest, OnNavigationHttpPost) {
   blink::WebHTTPBody::Element element;
   bool successful = body.ElementAt(0, element);
   EXPECT_TRUE(successful);
-  EXPECT_EQ(blink::WebHTTPBody::Element::kTypeData, element.type);
+  EXPECT_EQ(blink::HTTPBodyElementType::kTypeData, element.type);
   EXPECT_EQ(length, element.data.size());
 
   std::unique_ptr<char[]> flat_data(new char[element.data.size()]);
@@ -2176,7 +2176,7 @@ TEST_F(RenderViewImplTest, AndroidContextMenuSelectionOrdering) {
 
 TEST_F(RenderViewImplTest, TestBackForward) {
   LoadHTML("<div id=pagename>Page A</div>");
-  PageState page_a_state = GetCurrentPageState();
+  blink::PageState page_a_state = GetCurrentPageState();
   int was_page_a = -1;
   base::string16 check_page_a = base::ASCIIToUTF16(
       "Number(document.getElementById('pagename').innerHTML == 'Page A')");
@@ -2190,7 +2190,7 @@ TEST_F(RenderViewImplTest, TestBackForward) {
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(check_page_b, &was_page_b));
   EXPECT_EQ(1, was_page_b);
 
-  PageState back_state = GetCurrentPageState();
+  blink::PageState back_state = GetCurrentPageState();
 
   LoadHTML("<div id=pagename>Page C</div>");
   int was_page_c = -1;
@@ -2199,7 +2199,7 @@ TEST_F(RenderViewImplTest, TestBackForward) {
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(check_page_c, &was_page_c));
   EXPECT_EQ(1, was_page_c);
 
-  PageState forward_state = GetCurrentPageState();
+  blink::PageState forward_state = GetCurrentPageState();
 
   // Go back.
   GoBack(GURL("data:text/html;charset=utf-8,<div id=pagename>Page B</div>"),
@@ -2207,7 +2207,7 @@ TEST_F(RenderViewImplTest, TestBackForward) {
 
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(check_page_b, &was_page_b));
   EXPECT_EQ(1, was_page_b);
-  PageState back_state2 = GetCurrentPageState();
+  blink::PageState back_state2 = GetCurrentPageState();
 
   // Go forward.
   GoForward(GURL("data:text/html;charset=utf-8,<div id=pagename>Page C</div>"),
@@ -2790,9 +2790,9 @@ TEST_F(RenderViewImplTest, NavigationStartForReload) {
 TEST_F(RenderViewImplTest, NavigationStartForSameProcessHistoryNavigation) {
   LoadHTML("<div id=pagename>Page A</div>");
   LoadHTML("<div id=pagename>Page B</div>");
-  PageState back_state = GetCurrentPageState();
+  blink::PageState back_state = GetCurrentPageState();
   LoadHTML("<div id=pagename>Page C</div>");
-  PageState forward_state = GetCurrentPageState();
+  blink::PageState forward_state = GetCurrentPageState();
   base::RunLoop().RunUntilIdle();
   render_thread_->sink().ClearMessages();
 
@@ -2834,8 +2834,8 @@ TEST_F(RenderViewImplTest, NavigationStartForCrossProcessHistoryNavigation) {
       mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT;
 
   auto commit_params = CreateCommitNavigationParams();
-  commit_params->page_state =
-      PageState::CreateForTesting(common_params->url, false, nullptr, nullptr);
+  commit_params->page_state = blink::PageState::CreateForTesting(
+      common_params->url, false, nullptr, nullptr);
   commit_params->nav_entry_id = 42;
   commit_params->pending_history_list_offset = 1;
   commit_params->current_history_list_offset = 0;

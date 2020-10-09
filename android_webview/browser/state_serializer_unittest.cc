@@ -13,9 +13,9 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/page_state.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
 #include "url/gurl.h"
 
 using std::string;

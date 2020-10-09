@@ -164,7 +164,9 @@ class NavigationSimulatorImpl : public NavigationSimulator,
         block_invoking_before_unload_completed_callback;
   }
 
-  void set_page_state(const PageState& page_state) { page_state_ = page_state; }
+  void set_page_state(const blink::PageState& page_state) {
+    page_state_ = page_state;
+  }
 
   void set_origin(const url::Origin& origin) { origin_ = origin; }
 
@@ -309,7 +311,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
       net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN;
   net::ResolveErrorInfo resolve_error_info_ = net::ResolveErrorInfo(net::OK);
   base::Optional<net::SSLInfo> ssl_info_;
-  base::Optional<PageState> page_state_;
+  base::Optional<blink::PageState> page_state_;
   base::Optional<url::Origin> origin_;
   base::Optional<Impression> impression_;
   int64_t post_id_ = -1;

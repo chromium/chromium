@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/platform/network/form_data_encoder.h"
 #include "third_party/blink/renderer/platform/network/wrapped_data_pipe_getter.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-
 namespace blink {
 
 void WebHTTPBody::Initialize() {
@@ -76,25 +75,25 @@ bool WebHTTPBody::ElementAt(size_t index, Element& result) const {
 
   switch (element.type_) {
     case FormDataElement::kData:
-      result.type = Element::kTypeData;
+      result.type = HTTPBodyElementType::kTypeData;
       result.data.Assign(element.data_.data(), element.data_.size());
       break;
     case FormDataElement::kEncodedFile:
-      result.type = Element::kTypeFile;
+      result.type = HTTPBodyElementType::kTypeFile;
       result.file_path = element.filename_;
       result.file_start = element.file_start_;
       result.file_length = element.file_length_;
       result.modification_time = element.expected_file_modification_time_;
       break;
     case FormDataElement::kEncodedBlob:
-      result.type = Element::kTypeBlob;
+      result.type = HTTPBodyElementType::kTypeBlob;
       result.blob_length = std::numeric_limits<uint64_t>::max();
       result.optional_blob =
           element.optional_blob_data_handle_->CloneBlobRemote();
       result.blob_length = element.optional_blob_data_handle_->size();
       break;
     case FormDataElement::kDataPipe:
-      result.type = Element::kTypeDataPipe;
+      result.type = HTTPBodyElementType::kTypeDataPipe;
       mojo::PendingRemote<network::mojom::blink::DataPipeGetter>
           data_pipe_getter;
       element.data_pipe_getter_->GetDataPipeGetter()->Clone(

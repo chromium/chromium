@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/page_state_serialization.h"
+#include "third_party/blink/public/common/page_state/page_state_serialization.h"
 
 #include <algorithm>
 #include <limits>
@@ -13,18 +13,19 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "content/public/common/referrer.h"
-#include "ipc/ipc_message_utils.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
+#include "mojo/public/cpp/bindings/enum_utils.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "third_party/blink/public/common/loader/http_body_element_type.h"
 #include "third_party/blink/public/common/unique_name/unique_name_helper.h"
+#include "third_party/blink/public/mojom/page_state/page_state.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
-namespace content {
+namespace blink {
 
 namespace {
 
@@ -127,7 +128,7 @@ bool AppendReferencedFilesFromDocumentState(
 bool RecursivelyAppendReferencedFiles(
     const ExplodedFrameState& frame_state,
     std::vector<base::Optional<base::string16>>* referenced_files) {
-  if (frame_state.http_body.request_body != nullptr) {
+  if (frame_state.http_body.request_body) {
     AppendReferencedFilesFromHttpBody(
         *frame_state.http_body.request_body->elements(), referenced_files);
   }
@@ -148,15 +149,10 @@ bool RecursivelyAppendReferencedFiles(
 //----------------------------------------------------------------------------
 
 struct SerializeObject {
-  SerializeObject()
-      : version(0),
-        parse_error(false) {
-  }
+  SerializeObject() : version(0), parse_error(false) {}
 
   SerializeObject(const char* data, int len)
-      : pickle(data, len),
-        version(0),
-        parse_error(false) {
+      : pickle(data, len), version(0), parse_error(false) {
     iter = base::PickleIterator(pickle);
   }
 
@@ -315,7 +311,7 @@ void WriteString(const base::Optional<base::string16>& str,
 }
 
 // This reads a serialized base::Optional<base::string16> from obj. If a string
-// can't be read, NULL is returned.
+// can't be read, nullptr is returned.
 const base::char16* ReadStringNoCopy(SerializeObject* obj, int* num_chars) {
   int length_in_bytes;
   if (!obj->iter.ReadInt(&length_in_bytes)) {
@@ -396,11 +392,11 @@ void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
   for (const auto& element : *request_body.elements()) {
     switch (element.type()) {
       case network::mojom::DataElementType::kBytes:
-        WriteInteger(blink::WebHTTPBody::Element::kTypeData, obj);
+        WriteInteger(static_cast<int>(HTTPBodyElementType::kTypeData), obj);
         WriteData(element.bytes(), static_cast<int>(element.length()), obj);
         break;
       case network::mojom::DataElementType::kFile:
-        WriteInteger(blink::WebHTTPBody::Element::kTypeFile, obj);
+        WriteInteger(static_cast<int>(HTTPBodyElementType::kTypeFile), obj);
         WriteString(element.path().AsUTF16Unsafe(), obj);
         WriteInteger64(static_cast<int64_t>(element.offset()), obj);
         WriteInteger64(static_cast<int64_t>(element.length()), obj);
@@ -419,8 +415,9 @@ void ReadResourceRequestBody(
     const scoped_refptr<network::ResourceRequestBody>& request_body) {
   int num_elements = ReadInteger(obj);
   for (int i = 0; i < num_elements; ++i) {
-    int type = ReadInteger(obj);
-    if (type == blink::WebHTTPBody::Element::kTypeData) {
+    HTTPBodyElementType type =
+        static_cast<HTTPBodyElementType>(ReadInteger(obj));
+    if (type == HTTPBodyElementType::kTypeData) {
       const void* data;
       int length = -1;
       ReadData(obj, &data, &length);
@@ -428,7 +425,7 @@ void ReadResourceRequestBody(
         AppendDataToRequestBody(request_body, static_cast<const char*>(data),
                                 length);
       }
-    } else if (type == blink::WebHTTPBody::Element::kTypeFile) {
+    } else if (type == HTTPBodyElementType::kTypeFile) {
       base::Optional<base::string16> file_path = ReadString(obj);
       int64_t file_start = ReadInteger64(obj);
       int64_t file_length = ReadInteger64(obj);
@@ -436,7 +433,7 @@ void ReadResourceRequestBody(
       AppendFileRangeToRequestBody(
           request_body, file_path, file_start, file_length,
           base::Time::FromDoubleT(file_modification_time));
-    } else if (type == blink::WebHTTPBody::Element::kTypeBlob) {
+    } else if (type == HTTPBodyElementType::kTypeBlob) {
       // Skip obsolete blob values.
       if (obj->version >= 16) {
         ReadStdString(obj);
@@ -461,7 +458,7 @@ void ReadHttpBody(SerializeObject* obj, ExplodedHttpBody* http_body) {
 }
 
 void WriteHttpBody(const ExplodedHttpBody& http_body, SerializeObject* obj) {
-  bool is_null = http_body.request_body == nullptr;
+  bool is_null = !http_body.request_body;
   WriteBoolean(!is_null, obj);
   if (is_null)
     return;
@@ -473,7 +470,7 @@ void WriteHttpBody(const ExplodedHttpBody& http_body, SerializeObject* obj) {
 void ReadFrameState(
     SerializeObject* obj,
     bool is_top,
-    std::vector<blink::UniqueNameHelper::Replacement>* unique_name_replacements,
+    std::vector<UniqueNameHelper::Replacement>* unique_name_replacements,
     ExplodedFrameState* state) {
   if (obj->version < 14 && !is_top)
     ReadInteger(obj);  // Skip over redundant version field.
@@ -485,9 +482,8 @@ void ReadFrameState(
 
   state->target = ReadString(obj);
   if (obj->version < 25 && state->target) {
-    state->target =
-        base::UTF8ToUTF16(blink::UniqueNameHelper::UpdateLegacyNameFromV24(
-            base::UTF16ToUTF8(*state->target), unique_name_replacements));
+    state->target = base::UTF8ToUTF16(UniqueNameHelper::UpdateLegacyNameFromV24(
+        base::UTF16ToUTF8(*state->target), unique_name_replacements));
   }
   if (obj->version < 15) {
     ReadString(obj);  // Skip obsolete parent field.
@@ -528,7 +524,10 @@ void ReadFrameState(
     ReadInteger64(obj);  // Skip obsolete target frame id number.
 
   if (obj->version >= 18) {
-    state->referrer_policy = Referrer::ConvertToPolicy(ReadInteger(obj));
+    state->referrer_policy =
+        mojo::ConvertIntToMojoEnum<network::mojom::ReferrerPolicy>(
+            ReadInteger(obj))
+            .value_or(network::mojom::ReferrerPolicy::kDefault);
   }
 
   if (obj->version >= 20 && state->did_save_scroll_or_scale_state) {
@@ -541,7 +540,7 @@ void ReadFrameState(
 
   if (obj->version >= 22) {
     state->scroll_restoration_type =
-        static_cast<blink::mojom::ScrollRestorationType>(ReadInteger(obj));
+        static_cast<mojom::ScrollRestorationType>(ReadInteger(obj));
   }
 
   bool has_state_object = ReadBoolean(obj);
@@ -660,9 +659,9 @@ void WritePageState(const ExplodedPageState& state, SerializeObject* obj) {
 // "Modern" read/write functions start here. These are probably what you want.
 
 void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
-                              blink::mojom::RequestBody* mojo_body) {
+                              mojom::RequestBody* mojo_body) {
   for (const auto& element : *request_body.elements()) {
-    blink::mojom::ElementPtr data_element = blink::mojom::Element::New();
+    mojom::ElementPtr data_element = mojom::Element::New();
     switch (element.type()) {
       case network::mojom::DataElementType::kBytes: {
         data_element->set_bytes(std::vector<unsigned char>(
@@ -671,7 +670,7 @@ void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
         break;
       }
       case network::mojom::DataElementType::kFile: {
-        blink::mojom::FilePtr file = blink::mojom::File::New(
+        mojom::FilePtr file = mojom::File::New(
             element.path().AsUTF16Unsafe(), element.offset(), element.length(),
             element.expected_modification_time());
         data_element->set_file(std::move(file));
@@ -692,27 +691,27 @@ void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
 }
 
 void ReadResourceRequestBody(
-    blink::mojom::RequestBody* mojo_body,
+    mojom::RequestBody* mojo_body,
     const scoped_refptr<network::ResourceRequestBody>& request_body) {
   for (const auto& element : mojo_body->elements) {
-    blink::mojom::Element::Tag tag = element->which();
+    mojom::Element::Tag tag = element->which();
     switch (tag) {
-      case blink::mojom::Element::Tag::BYTES:
+      case mojom::Element::Tag::BYTES:
         AppendDataToRequestBody(
             request_body,
             reinterpret_cast<const char*>(element->get_bytes().data()),
             element->get_bytes().size());
         break;
-      case blink::mojom::Element::Tag::FILE: {
-        blink::mojom::File* file = element->get_file().get();
+      case mojom::Element::Tag::FILE: {
+        mojom::File* file = element->get_file().get();
         AppendFileRangeToRequestBody(request_body, file->path, file->offset,
                                      file->length, file->modification_time);
         break;
       }
-      case blink::mojom::Element::Tag::BLOB_UUID:
+      case mojom::Element::Tag::BLOB_UUID:
         // No longer supported.
         break;
-      case blink::mojom::Element::Tag::DEPRECATED_FILE_SYSTEM_FILE:
+      case mojom::Element::Tag::DEPRECATED_FILE_SYSTEM_FILE:
         // No longer supported.
         break;
     }
@@ -721,9 +720,9 @@ void ReadResourceRequestBody(
 }
 
 void WriteHttpBody(const ExplodedHttpBody& http_body,
-                   blink::mojom::HttpBody* mojo_body) {
-  if (http_body.request_body != nullptr) {
-    mojo_body->request_body = blink::mojom::RequestBody::New();
+                   mojom::HttpBody* mojo_body) {
+  if (http_body.request_body) {
+    mojo_body->request_body = mojom::RequestBody::New();
     mojo_body->contains_passwords = http_body.contains_passwords;
     mojo_body->http_content_type = http_body.http_content_type;
     WriteResourceRequestBody(*http_body.request_body,
@@ -731,8 +730,7 @@ void WriteHttpBody(const ExplodedHttpBody& http_body,
   }
 }
 
-void ReadHttpBody(blink::mojom::HttpBody* mojo_body,
-                  ExplodedHttpBody* http_body) {
+void ReadHttpBody(mojom::HttpBody* mojo_body, ExplodedHttpBody* http_body) {
   http_body->contains_passwords = mojo_body->contains_passwords;
   http_body->http_content_type = mojo_body->http_content_type;
   if (mojo_body->request_body) {
@@ -744,7 +742,7 @@ void ReadHttpBody(blink::mojom::HttpBody* mojo_body,
 }
 
 void WriteFrameState(const ExplodedFrameState& state,
-                     blink::mojom::FrameState* frame) {
+                     mojom::FrameState* frame) {
   frame->url_string = state.url_string;
   frame->referrer = state.referrer;
   if (state.initiator_origin.has_value())
@@ -757,11 +755,10 @@ void WriteFrameState(const ExplodedFrameState& state,
   }
 
   frame->scroll_restoration_type =
-      static_cast<blink::mojom::ScrollRestorationType>(
-          state.scroll_restoration_type);
+      static_cast<mojom::ScrollRestorationType>(state.scroll_restoration_type);
 
   if (state.did_save_scroll_or_scale_state) {
-    frame->view_state = blink::mojom::ViewState::New();
+    frame->view_state = mojom::ViewState::New();
     frame->view_state->scroll_offset = state.scroll_offset;
     frame->view_state->visual_viewport_scroll_offset =
         state.visual_viewport_scroll_offset;
@@ -782,20 +779,19 @@ void WriteFrameState(const ExplodedFrameState& state,
 
   frame->referrer_policy = state.referrer_policy;
 
-  frame->http_body = blink::mojom::HttpBody::New();
+  frame->http_body = mojom::HttpBody::New();
   WriteHttpBody(state.http_body, frame->http_body.get());
 
   // Subitems
   const std::vector<ExplodedFrameState>& children = state.children;
   for (const auto& child : children) {
-    blink::mojom::FrameStatePtr child_frame = blink::mojom::FrameState::New();
+    mojom::FrameStatePtr child_frame = mojom::FrameState::New();
     WriteFrameState(child, child_frame.get());
     frame->children.push_back(std::move(child_frame));
   }
 }
 
-void ReadFrameState(blink::mojom::FrameState* frame,
-                    ExplodedFrameState* state) {
+void ReadFrameState(mojom::FrameState* frame, ExplodedFrameState* state) {
   state->url_string = frame->url_string;
   state->referrer = frame->referrer;
   if (frame->initiator_origin.has_value()) {
@@ -811,8 +807,7 @@ void ReadFrameState(blink::mojom::FrameState* frame,
   }
 
   state->scroll_restoration_type =
-      static_cast<blink::mojom::ScrollRestorationType>(
-          frame->scroll_restoration_type);
+      static_cast<mojom::ScrollRestorationType>(frame->scroll_restoration_type);
 
   if (frame->view_state) {
     state->did_save_scroll_or_scale_state = true;
@@ -853,9 +848,8 @@ void ReadMojoPageState(SerializeObject* obj, ExplodedPageState* state) {
   if (obj->parse_error)
     return;
 
-  blink::mojom::PageStatePtr page;
-  obj->parse_error =
-      !(blink::mojom::PageState::Deserialize(tmp, length, &page));
+  mojom::PageStatePtr page;
+  obj->parse_error = !(mojom::PageState::Deserialize(tmp, length, &page));
   if (obj->parse_error)
     return;
 
@@ -873,15 +867,15 @@ void ReadMojoPageState(SerializeObject* obj, ExplodedPageState* state) {
 void WriteMojoPageState(const ExplodedPageState& state, SerializeObject* obj) {
   WriteInteger(obj->version, obj);
 
-  blink::mojom::PageStatePtr page = blink::mojom::PageState::New();
+  mojom::PageStatePtr page = mojom::PageState::New();
   for (const auto& referenced_file : state.referenced_files) {
     page->referenced_files.push_back(referenced_file.value());
   }
 
-  page->top = blink::mojom::FrameState::New();
+  page->top = mojom::FrameState::New();
   WriteFrameState(state.top, page->top.get());
 
-  std::vector<uint8_t> page_bytes = blink::mojom::PageState::Serialize(&page);
+  std::vector<uint8_t> page_bytes = mojom::PageState::Serialize(&page);
   obj->pickle.WriteData(reinterpret_cast<char*>(page_bytes.data()),
                         page_bytes.size());
 }
@@ -909,25 +903,23 @@ void ReadPageState(SerializeObject* obj, ExplodedPageState* state) {
   if (obj->version >= 14)
     ReadStringVector(obj, &state->referenced_files);
 
-  std::vector<blink::UniqueNameHelper::Replacement> unique_name_replacements;
+  std::vector<UniqueNameHelper::Replacement> unique_name_replacements;
   ReadFrameState(obj, true, &unique_name_replacements, &state->top);
 
   if (obj->version < 14)
     RecursivelyAppendReferencedFiles(state->top, &state->referenced_files);
 
   // De-dupe
-  state->referenced_files.erase(
-      std::unique(state->referenced_files.begin(),
-                  state->referenced_files.end()),
-      state->referenced_files.end());
+  state->referenced_files.erase(std::unique(state->referenced_files.begin(),
+                                            state->referenced_files.end()),
+                                state->referenced_files.end());
 }
 
 }  // namespace
 
 ExplodedHttpBody::ExplodedHttpBody() : contains_passwords(false) {}
 
-ExplodedHttpBody::~ExplodedHttpBody() {
-}
+ExplodedHttpBody::~ExplodedHttpBody() {}
 
 ExplodedFrameState::ExplodedFrameState() = default;
 
@@ -935,8 +927,7 @@ ExplodedFrameState::ExplodedFrameState(const ExplodedFrameState& other) {
   assign(other);
 }
 
-ExplodedFrameState::~ExplodedFrameState() {
-}
+ExplodedFrameState::~ExplodedFrameState() {}
 
 void ExplodedFrameState::operator=(const ExplodedFrameState& other) {
   if (&other != this)
@@ -964,11 +955,9 @@ void ExplodedFrameState::assign(const ExplodedFrameState& other) {
   children = other.children;
 }
 
-ExplodedPageState::ExplodedPageState() {
-}
+ExplodedPageState::ExplodedPageState() {}
 
-ExplodedPageState::~ExplodedPageState() {
-}
+ExplodedPageState::~ExplodedPageState() {}
 
 int DecodePageStateInternal(const std::string& encoded,
                             ExplodedPageState* exploded) {
@@ -1048,4 +1037,4 @@ std::string EncodeResourceRequestBody(
 
 #endif
 
-}  // namespace content
+}  // namespace blink

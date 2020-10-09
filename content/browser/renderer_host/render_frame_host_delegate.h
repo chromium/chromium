@@ -72,6 +72,7 @@ namespace blink {
 namespace mojom {
 class FullscreenOptions;
 }
+class PageState;
 namespace web_pref {
 struct WebPreferences;
 }
@@ -84,7 +85,6 @@ class ClipboardFormatType;
 namespace content {
 class AgentSchedulingGroupHost;
 class FrameTreeNode;
-class PageState;
 class RenderFrameHostImpl;
 class SessionStorageNamespace;
 class WebContents;
@@ -220,7 +220,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 
   // The state for the page changed and should be updated in session history.
   virtual void UpdateStateForFrame(RenderFrameHost* render_frame_host,
-                                   const PageState& page_state) {}
+                                   const blink::PageState& page_state) {}
 
   // The page's title was changed and should be updated. Only called for the
   // top-level frame.

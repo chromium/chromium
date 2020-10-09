@@ -36,7 +36,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "cc/paint/skia_paint_canvas.h"
-#include "content/common/page_state_serialization.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/child_process_termination_info.h"
@@ -58,7 +57,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/page_state.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/blink_test_browser_support.h"
 #include "content/shell/browser/shell.h"
@@ -88,6 +86,8 @@
 #include "storage/browser/file_system/isolated_context.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
+#include "third_party/blink/public/common/page_state/page_state_serialization.h"
 #include "third_party/blink/public/common/unique_name/unique_name_helper.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "ui/base/ui_base_switches.h"
@@ -104,7 +104,7 @@ namespace content {
 
 namespace {
 
-std::string DumpFrameState(const ExplodedFrameState& frame_state,
+std::string DumpFrameState(const blink::ExplodedFrameState& frame_state,
                            size_t indent,
                            bool is_current_index) {
   std::string result;
@@ -129,10 +129,11 @@ std::string DumpFrameState(const ExplodedFrameState& frame_state,
   }
   result.append("\n");
 
-  std::vector<ExplodedFrameState> sorted_children = frame_state.children;
+  std::vector<blink::ExplodedFrameState> sorted_children = frame_state.children;
   std::sort(
       sorted_children.begin(), sorted_children.end(),
-      [](const ExplodedFrameState& lhs, const ExplodedFrameState& rhs) {
+      [](const blink::ExplodedFrameState& lhs,
+         const blink::ExplodedFrameState& rhs) {
         // Child nodes should always have a target (aka unique name).
         DCHECK(lhs.target);
         DCHECK(rhs.target);
@@ -156,9 +157,10 @@ std::string DumpFrameState(const ExplodedFrameState& frame_state,
 std::string DumpNavigationEntry(NavigationEntry* navigation_entry,
                                 bool is_current_index) {
   // This is silly, but it's currently the best way to extract the information.
-  PageState page_state = navigation_entry->GetPageState();
-  ExplodedPageState exploded_page_state;
-  CHECK(DecodePageState(page_state.ToEncodedData(), &exploded_page_state));
+  blink::PageState page_state = navigation_entry->GetPageState();
+  blink::ExplodedPageState exploded_page_state;
+  CHECK(
+      blink::DecodePageState(page_state.ToEncodedData(), &exploded_page_state));
   return DumpFrameState(exploded_page_state.top, 8, is_current_index);
 }
 

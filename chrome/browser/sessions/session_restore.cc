@@ -67,7 +67,6 @@
 #include "content/public/browser/session_storage_namespace.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/page_state.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_set.h"
 

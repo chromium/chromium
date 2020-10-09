@@ -8,10 +8,10 @@
 #include <algorithm>
 
 #include "base/strings/nullable_string16.h"
-#include "content/common/page_state_serialization.h"
-#include "content/public/common/page_state.h"
 #include "content/renderer/history_entry.h"
 #include "content/renderer/loader/web_url_request_util.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
+#include "third_party/blink/public/common/page_state/page_state_serialization.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -38,7 +38,7 @@ void ToOptionalString16Vector(
 }
 
 void GenerateFrameStateFromItem(const WebHistoryItem& item,
-                                ExplodedFrameState* state) {
+                                blink::ExplodedFrameState* state) {
   state->url_string = WebString::ToOptionalString16(item.UrlString());
   state->referrer = WebString::ToOptionalString16(item.GetReferrer());
   state->referrer_policy = item.GetReferrerPolicy();
@@ -71,7 +71,7 @@ void GenerateFrameStateFromItem(const WebHistoryItem& item,
   state->scroll_anchor_simhash = anchor.simhash_;
 }
 
-void RecursivelyGenerateHistoryItem(const ExplodedFrameState& state,
+void RecursivelyGenerateHistoryItem(const blink::ExplodedFrameState& state,
                                     HistoryEntry::HistoryNode* node) {
   WebHistoryItem item;
   item.Initialize();
@@ -123,21 +123,21 @@ void RecursivelyGenerateHistoryItem(const ExplodedFrameState& state,
 
 }  // namespace
 
-PageState SingleHistoryItemToPageState(const WebHistoryItem& item) {
-  ExplodedPageState state;
+blink::PageState SingleHistoryItemToPageState(const WebHistoryItem& item) {
+  blink::ExplodedPageState state;
   ToOptionalString16Vector(item.GetReferencedFilePaths(),
                            &state.referenced_files);
   GenerateFrameStateFromItem(item, &state.top);
 
   std::string encoded_data;
-  EncodePageState(state, &encoded_data);
-  return PageState::CreateFromEncodedData(encoded_data);
+  blink::EncodePageState(state, &encoded_data);
+  return blink::PageState::CreateFromEncodedData(encoded_data);
 }
 
 std::unique_ptr<HistoryEntry> PageStateToHistoryEntry(
-    const PageState& page_state) {
-  ExplodedPageState state;
-  if (!DecodePageState(page_state.ToEncodedData(), &state))
+    const blink::PageState& page_state) {
+  blink::ExplodedPageState state;
+  if (!blink::DecodePageState(page_state.ToEncodedData(), &state))
     return std::unique_ptr<HistoryEntry>();
 
   std::unique_ptr<HistoryEntry> entry(new HistoryEntry());

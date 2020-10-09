@@ -270,7 +270,7 @@ TEST_F(BlinkUrlLoaderTest, OpenWithBody) {
 
   blink::WebHTTPBody::Element element;
   EXPECT_TRUE(request_body.ElementAt(0, element));
-  EXPECT_EQ(blink::WebHTTPBody::Element::kTypeData, element.type);
+  EXPECT_EQ(blink::HTTPBodyElementType::kTypeData, element.type);
 
   std::string data;
   element.data.ForEachSegment(

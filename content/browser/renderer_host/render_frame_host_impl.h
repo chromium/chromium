@@ -2063,7 +2063,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
                          WindowOpenDisposition disposition,
                          const gfx::Rect& initial_rect,
                          bool user_gesture) override;
-  void UpdateState(const PageState& state) override;
+  void UpdateState(const blink::PageState& state) override;
   void OpenURL(mojom::OpenURLParamsPtr params) override;
   void DidStopLoading() override;
 
@@ -2105,13 +2105,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Returns whether the current RenderProcessHost has read access to all the
   // files reported in |state|.
-  bool CanAccessFilesOfPageState(const PageState& state);
+  bool CanAccessFilesOfPageState(const blink::PageState& state);
 
   // Grants the current RenderProcessHost read access to any file listed in
   // |validated_state|.  It is important that the PageState has been validated
   // upon receipt from the renderer process to prevent it from forging access to
   // files without the user's consent.
-  void GrantFileAccessFromPageState(const PageState& validated_state);
+  void GrantFileAccessFromPageState(const blink::PageState& validated_state);
 
   // Grants the current RenderProcessHost read access to any file listed in
   // |body|.  It is important that the ResourceRequestBody has been validated

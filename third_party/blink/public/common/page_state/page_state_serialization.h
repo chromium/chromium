@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_PAGE_STATE_SERIALIZATION_H_
-#define CONTENT_COMMON_PAGE_STATE_SERIALIZATION_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_PAGE_STATE_PAGE_STATE_SERIALIZATION_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_PAGE_STATE_PAGE_STATE_SERIALIZATION_H_
 
 #include <stdint.h>
 
@@ -13,21 +13,19 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
-#include "content/common/content_export.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom.h"
-#include "third_party/blink/public/platform/web_http_body.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace content {
+namespace blink {
 
 constexpr int kMaxScrollAnchorSelectorLength = 500;
 
-struct CONTENT_EXPORT ExplodedHttpBody {
+struct BLINK_COMMON_EXPORT ExplodedHttpBody {
   base::Optional<base::string16> http_content_type;
   scoped_refptr<network::ResourceRequestBody> request_body;
   bool contains_passwords;
@@ -36,7 +34,7 @@ struct CONTENT_EXPORT ExplodedHttpBody {
   ~ExplodedHttpBody();
 };
 
-struct CONTENT_EXPORT ExplodedFrameState {
+struct BLINK_COMMON_EXPORT ExplodedFrameState {
   base::Optional<base::string16> url_string;
   base::Optional<base::string16> referrer;
   base::Optional<url::Origin> initiator_origin;
@@ -64,11 +62,11 @@ struct CONTENT_EXPORT ExplodedFrameState {
   ~ExplodedFrameState();
   void operator=(const ExplodedFrameState& other);
 
-private:
+ private:
   void assign(const ExplodedFrameState& other);
 };
 
-struct CONTENT_EXPORT ExplodedPageState {
+struct BLINK_COMMON_EXPORT ExplodedPageState {
   // TODO(creis, lukasza): Instead of storing them in |referenced_files|,
   // extract referenced files from ExplodedHttpBody.  |referenced_files|
   // currently contains a list from all frames, but cannot be deserialized into
@@ -80,21 +78,21 @@ struct CONTENT_EXPORT ExplodedPageState {
   ~ExplodedPageState();
 };
 
-CONTENT_EXPORT bool DecodePageState(const std::string& encoded,
-                                    ExplodedPageState* exploded);
+BLINK_COMMON_EXPORT bool DecodePageState(const std::string& encoded,
+                                         ExplodedPageState* exploded);
 // Similar to |DecodePageState()|, but returns an int indicating the original
 // version number of the encoded state. Returns -1 on failure.
-CONTENT_EXPORT int DecodePageStateForTesting(const std::string& encoded,
-                                             ExplodedPageState* exploded);
-CONTENT_EXPORT void EncodePageState(const ExplodedPageState& exploded,
-                                    std::string* encoded);
-CONTENT_EXPORT void LegacyEncodePageStateForTesting(
+BLINK_COMMON_EXPORT int DecodePageStateForTesting(const std::string& encoded,
+                                                  ExplodedPageState* exploded);
+BLINK_COMMON_EXPORT void EncodePageState(const ExplodedPageState& exploded,
+                                         std::string* encoded);
+BLINK_COMMON_EXPORT void LegacyEncodePageStateForTesting(
     const ExplodedPageState& exploded,
     int version,
     std::string* encoded);
 
 #if defined(OS_ANDROID)
-CONTENT_EXPORT bool DecodePageStateWithDeviceScaleFactorForTesting(
+BLINK_COMMON_EXPORT bool DecodePageStateWithDeviceScaleFactorForTesting(
     const std::string& encoded,
     float device_scale_factor,
     ExplodedPageState* exploded);
@@ -102,15 +100,14 @@ CONTENT_EXPORT bool DecodePageStateWithDeviceScaleFactorForTesting(
 // Converts results of EncodeResourceRequestBody (passed in as a pair of |data|
 // + |size|) back into a ResourceRequestBody.  Returns nullptr if the
 // decoding fails (e.g. if |data| is malformed).
-scoped_refptr<network::ResourceRequestBody> DecodeResourceRequestBody(
-    const char* data,
-    size_t size);
+BLINK_COMMON_EXPORT scoped_refptr<network::ResourceRequestBody>
+DecodeResourceRequestBody(const char* data, size_t size);
 
 // Encodes |resource_request_body| into |encoded|.
-std::string EncodeResourceRequestBody(
+BLINK_COMMON_EXPORT std::string EncodeResourceRequestBody(
     const network::ResourceRequestBody& resource_request_body);
 #endif
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_COMMON_PAGE_STATE_SERIALIZATION_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_PAGE_STATE_PAGE_STATE_SERIALIZATION_H_

@@ -383,7 +383,7 @@ void RenderViewTest::LoadHTMLWithUrlOverride(const char* html,
       blink::DocumentUpdateReason::kTest);
 }
 
-PageState RenderViewTest::GetCurrentPageState() {
+blink::PageState RenderViewTest::GetCurrentPageState() {
   RenderViewImpl* view = static_cast<RenderViewImpl*>(view_);
 
   // This returns a PageState object for the main frame, excluding subframes.
@@ -393,11 +393,11 @@ PageState RenderViewTest::GetCurrentPageState() {
   return SingleHistoryItemToPageState(frame->current_history_item());
 }
 
-void RenderViewTest::GoBack(const GURL& url, const PageState& state) {
+void RenderViewTest::GoBack(const GURL& url, const blink::PageState& state) {
   GoToOffset(-1, url, state);
 }
 
-void RenderViewTest::GoForward(const GURL& url, const PageState& state) {
+void RenderViewTest::GoForward(const GURL& url, const blink::PageState& state) {
   GoToOffset(1, url, state);
 }
 
@@ -897,7 +897,7 @@ RenderViewTest::CreateCompositorDependencies() {
 
 void RenderViewTest::GoToOffset(int offset,
                                 const GURL& url,
-                                const PageState& state) {
+                                const blink::PageState& state) {
   RenderViewImpl* view = static_cast<RenderViewImpl*>(view_);
 
   int history_list_length =

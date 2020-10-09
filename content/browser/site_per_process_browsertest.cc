@@ -14820,7 +14820,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   params->should_update_history = false;
   params->gesture = NavigationGestureAuto;
   params->method = "GET";
-  params->page_state = PageState::CreateFromURL(start_url);
+  params->page_state = blink::PageState::CreateFromURL(start_url);
   params->navigation_token =
       root->navigation_request()->commit_params().navigation_token;
 

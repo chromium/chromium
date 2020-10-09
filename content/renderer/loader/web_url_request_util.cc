@@ -174,10 +174,10 @@ scoped_refptr<network::ResourceRequestBody> GetRequestBodyForWebHTTPBody(
   WebHTTPBody::Element element;
   while (httpBody.ElementAt(i++, element)) {
     switch (element.type) {
-      case WebHTTPBody::Element::kTypeData:
+      case blink::HTTPBodyElementType::kTypeData:
         request_body->AppendBytes(element.data.Copy().ReleaseVector());
         break;
-      case WebHTTPBody::Element::kTypeFile:
+      case blink::HTTPBodyElementType::kTypeFile:
         if (element.file_length == -1) {
           request_body->AppendFileRange(
               blink::WebStringToFilePath(element.file_path), 0,
@@ -191,7 +191,7 @@ scoped_refptr<network::ResourceRequestBody> GetRequestBodyForWebHTTPBody(
               element.modification_time.value_or(base::Time()));
         }
         break;
-      case WebHTTPBody::Element::kTypeBlob: {
+      case blink::HTTPBodyElementType::kTypeBlob: {
         DCHECK(element.optional_blob);
         mojo::Remote<blink::mojom::Blob> blob_remote(
             mojo::PendingRemote<blink::mojom::Blob>(
@@ -205,7 +205,7 @@ scoped_refptr<network::ResourceRequestBody> GetRequestBodyForWebHTTPBody(
         request_body->AppendDataPipe(std::move(data_pipe_getter_remote));
         break;
       }
-      case WebHTTPBody::Element::kTypeDataPipe: {
+      case blink::HTTPBodyElementType::kTypeDataPipe: {
         // Convert the raw message pipe to
         // mojo::Remote<network::mojom::DataPipeGetter> data_pipe_getter.
         mojo::Remote<network::mojom::DataPipeGetter> data_pipe_getter(

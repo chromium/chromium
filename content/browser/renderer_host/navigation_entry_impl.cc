@@ -24,11 +24,11 @@
 #include "content/browser/web_package/web_bundle_navigation_info.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/navigation_params.h"
-#include "content/common/page_state_serialization.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/url_constants.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/common/page_state/page_state_serialization.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "ui/gfx/text_elider.h"
 
@@ -50,11 +50,11 @@ int CreateUniqueEntryID() {
 }
 
 void RecursivelyGenerateFrameEntries(
-    const ExplodedFrameState& state,
+    const blink::ExplodedFrameState& state,
     const std::vector<base::Optional<base::string16>>& referenced_files,
     NavigationEntryImpl::TreeNode* node) {
   // Set a single-frame PageState on the entry.
-  ExplodedPageState page_state;
+  blink::ExplodedPageState page_state;
 
   // Copy the incoming PageState's list of referenced files into the main
   // frame's PageState.  (We don't pass the list to subframes below.)
@@ -66,7 +66,7 @@ void RecursivelyGenerateFrameEntries(
 
   page_state.top = state;
   std::string data;
-  EncodePageState(page_state, &data);
+  blink::EncodePageState(page_state, &data);
   DCHECK(!data.empty()) << "Shouldn't generate an empty PageState.";
 
   node->frame_entry = base::MakeRefCounted<FrameNavigationEntry>(
@@ -79,7 +79,7 @@ void RecursivelyGenerateFrameEntries(
       Referrer(GURL(state.referrer.value_or(base::string16())),
                state.referrer_policy),
       state.initiator_origin, std::vector<GURL>(),
-      PageState::CreateFromEncodedData(data), "GET", -1,
+      blink::PageState::CreateFromEncodedData(data), "GET", -1,
       nullptr /* blob_url_loader_factory */,
       nullptr /* web_bundle_navigation_info */);
 
@@ -88,7 +88,7 @@ void RecursivelyGenerateFrameEntries(
   // RecursivelyGenerateFrameState).
   std::vector<base::Optional<base::string16>> empty_file_list;
 
-  for (const ExplodedFrameState& child_state : state.children) {
+  for (const blink::ExplodedFrameState& child_state : state.children) {
     node->children.push_back(
         std::make_unique<NavigationEntryImpl::TreeNode>(node, nullptr));
     RecursivelyGenerateFrameEntries(child_state, empty_file_list,
@@ -104,17 +104,17 @@ base::Optional<base::string16> UrlToOptionalString16(const GURL& url) {
 
 void RecursivelyGenerateFrameState(
     NavigationEntryImpl::TreeNode* node,
-    ExplodedFrameState* state,
+    blink::ExplodedFrameState* state,
     std::vector<base::Optional<base::string16>>* referenced_files) {
   // The FrameNavigationEntry's PageState contains just the ExplodedFrameState
   // for that particular frame.
-  ExplodedPageState exploded_page_state;
-  if (!DecodePageState(node->frame_entry->page_state().ToEncodedData(),
-                       &exploded_page_state)) {
+  blink::ExplodedPageState exploded_page_state;
+  if (!blink::DecodePageState(node->frame_entry->page_state().ToEncodedData(),
+                              &exploded_page_state)) {
     NOTREACHED();
     return;
   }
-  ExplodedFrameState frame_state = exploded_page_state.top;
+  blink::ExplodedFrameState frame_state = exploded_page_state.top;
 
   // Copy the FrameNavigationEntry's frame state into the destination state.
   *state = frame_state;
@@ -331,7 +331,7 @@ NavigationEntryImpl::NavigationEntryImpl(
               referrer,
               initiator_origin,
               std::vector<GURL>(),
-              PageState(),
+              blink::PageState(),
               "GET",
               -1,
               std::move(blob_url_loader_factory),
@@ -425,7 +425,7 @@ const base::string16& NavigationEntryImpl::GetTitle() {
   return title_;
 }
 
-void NavigationEntryImpl::SetPageState(const PageState& state) {
+void NavigationEntryImpl::SetPageState(const blink::PageState& state) {
   DCHECK(state.IsValid());
 
   // SetPageState should only be called before the NavigationEntry has been
@@ -442,8 +442,8 @@ void NavigationEntryImpl::SetPageState(const PageState& state) {
 
   // If the PageState can't be parsed, just store it on the main frame's
   // FrameNavigationEntry without recursively creating subframe entries.
-  ExplodedPageState exploded_state;
-  if (!DecodePageState(state.ToEncodedData(), &exploded_state)) {
+  blink::ExplodedPageState exploded_state;
+  if (!blink::DecodePageState(state.ToEncodedData(), &exploded_state)) {
     frame_tree_->frame_entry->SetPageState(state);
     return;
   }
@@ -452,16 +452,16 @@ void NavigationEntryImpl::SetPageState(const PageState& state) {
       exploded_state.top, exploded_state.referenced_files, frame_tree_.get());
 }
 
-PageState NavigationEntryImpl::GetPageState() {
+blink::PageState NavigationEntryImpl::GetPageState() {
   // Each FrameNavigationEntry has a frame-specific PageState.  We combine these
   // into an ExplodedPageState tree and generate a full PageState from it.
-  ExplodedPageState exploded_state;
+  blink::ExplodedPageState exploded_state;
   RecursivelyGenerateFrameState(frame_tree_.get(), &exploded_state.top,
                                 &exploded_state.referenced_files);
 
   std::string encoded_data;
-  EncodePageState(exploded_state, &encoded_data);
-  return PageState::CreateFromEncodedData(encoded_data);
+  blink::EncodePageState(exploded_state, &encoded_data);
+  return blink::PageState::CreateFromEncodedData(encoded_data);
 }
 
 void NavigationEntryImpl::set_site_instance(
@@ -848,7 +848,7 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
     const Referrer& referrer,
     const base::Optional<url::Origin>& initiator_origin,
     const std::vector<GURL>& redirect_chain,
-    const PageState& page_state,
+    const blink::PageState& page_state,
     const std::string& method,
     int64_t post_id,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
@@ -942,10 +942,11 @@ base::flat_map<std::string, bool> NavigationEntryImpl::GetSubframeUniqueNames(
       // See RenderProcessHostImpl::FilterURL to know which URLs are rewritten.
       // See https://crbug.com/657896 for details.
       bool is_about_blank = false;
-      ExplodedPageState exploded_page_state;
-      if (DecodePageState(child->frame_entry->page_state().ToEncodedData(),
-                          &exploded_page_state)) {
-        ExplodedFrameState frame_state = exploded_page_state.top;
+      blink::ExplodedPageState exploded_page_state;
+      if (blink::DecodePageState(
+              child->frame_entry->page_state().ToEncodedData(),
+              &exploded_page_state)) {
+        blink::ExplodedFrameState frame_state = exploded_page_state.top;
         if (UTF16ToUTF8(frame_state.url_string.value_or(base::string16())) ==
             url::kAboutBlankURL)
           is_about_blank = true;

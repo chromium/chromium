@@ -25,11 +25,11 @@
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/notification_types.h"
-#include "content/public/common/page_state.h"
 #include "content/public/common/url_utils.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_view_host.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
 #include "ui/base/page_transition_types.h"
 
@@ -176,10 +176,10 @@ void TestWebContents::TestDidNavigateWithSequenceNumber(
   params.http_status_code = 200;
   params.url_is_unreachable = false;
   if (item_sequence_number != -1 && document_sequence_number != -1) {
-    params.page_state = PageState::CreateForTestingWithSequenceNumbers(
+    params.page_state = blink::PageState::CreateForTestingWithSequenceNumbers(
         url, item_sequence_number, document_sequence_number);
   } else {
-    params.page_state = PageState::CreateFromURL(url);
+    params.page_state = blink::PageState::CreateFromURL(url);
   }
   params.original_request_url = GURL();
   params.is_overriding_user_agent = false;

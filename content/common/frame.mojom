@@ -52,6 +52,9 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
+[Native]
+struct PageState;
+
 // The name of the InterfaceProviderSpec in service manifests used by the
 // frame tree to expose frame-specific interfaces between renderer and browser.
 const string kNavigation_FrameSpec = "navigation:frame";

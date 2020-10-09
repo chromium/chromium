@@ -2335,8 +2335,8 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
         node, -1, -1, nullptr,
         static_cast<SiteInstanceImpl*>(source_site_instance), url,
         base::nullopt /* commit_origin */, referrer, initiator_origin,
-        std::vector<GURL>(), PageState(), method, -1, blob_url_loader_factory,
-        nullptr /* web_bundle_navigation_info */);
+        std::vector<GURL>(), blink::PageState(), method, -1,
+        blob_url_loader_factory, nullptr /* web_bundle_navigation_info */);
   } else {
     // Main frame case.
     entry = NavigationEntryImpl::FromNavigationEntry(CreateNavigationEntry(
@@ -2367,7 +2367,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
         node->unique_name(), -1, -1, nullptr,
         static_cast<SiteInstanceImpl*>(source_site_instance), url,
         nullptr /* origin */, referrer, initiator_origin, std::vector<GURL>(),
-        PageState(), method, -1, blob_url_loader_factory,
+        blink::PageState(), method, -1, blob_url_loader_factory,
         nullptr /* web_bundle_navigation_info */);
   }
 
@@ -3140,8 +3140,8 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
         node, -1, -1, nullptr,
         static_cast<SiteInstanceImpl*>(params.source_site_instance.get()),
         params.url, base::nullopt, params.referrer, params.initiator_origin,
-        params.redirect_chain, PageState(), "GET", -1, blob_url_loader_factory,
-        nullptr /* web_bundle_navigation_info */);
+        params.redirect_chain, blink::PageState(), "GET", -1,
+        blob_url_loader_factory, nullptr /* web_bundle_navigation_info */);
   } else {
     // Otherwise, create a pending entry for the main frame.
     entry = NavigationEntryImpl::FromNavigationEntry(CreateNavigationEntry(

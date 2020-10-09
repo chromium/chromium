@@ -4,7 +4,8 @@ include_rules = [
   "+content/public/test",
   "+extensions/buildflags",
   "+extensions/common",
-  "+third_party/blink/public/platform",
+  "+third_party/blink/public/common/page_state/page_state.h",
   "+third_party/blink/public/common/user_agent/user_agent_metadata.h",
+  "+third_party/blink/public/platform",
   "+services/network/public/mojom/referrer_policy.mojom.h",
 ]

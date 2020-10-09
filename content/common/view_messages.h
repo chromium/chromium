@@ -29,7 +29,6 @@
 #include "content/common/navigation_gesture.h"
 #include "content/public/common/common_param_traits.h"
 #include "content/public/common/menu_item.h"
-#include "content/public/common/page_state.h"
 #include "content/public/common/page_zoom.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/three_d_api_types.h"

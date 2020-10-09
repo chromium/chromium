@@ -15,11 +15,11 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/site_instance_impl.h"
-#include "content/common/page_state_serialization.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/page_state/page_state_serialization.h"
 
 using base::ASCIIToUTF16;
 
@@ -51,11 +51,11 @@ class TestSSLStatusData : public SSLStatus::UserData {
   DISALLOW_COPY_AND_ASSIGN(TestSSLStatusData);
 };
 
-PageState CreateTestPageState() {
-  ExplodedPageState exploded_state;
+blink::PageState CreateTestPageState() {
+  blink::ExplodedPageState exploded_state;
   std::string encoded_data;
-  EncodePageState(exploded_state, &encoded_data);
-  return PageState::CreateFromEncodedData(encoded_data);
+  blink::EncodePageState(exploded_state, &encoded_data);
+  return blink::PageState::CreateFromEncodedData(encoded_data);
 }
 
 }  // namespace
@@ -309,7 +309,7 @@ TEST_F(NavigationEntryTest, NavigationEntryAccessors) {
   // Note that calling SetPageState may also set some other FNE members
   // (referrer, initiator, etc.).  This is why it is important to test
   // SetPageState/GetPageState last.
-  PageState test_page_state = CreateTestPageState();
+  blink::PageState test_page_state = CreateTestPageState();
   entry2_->SetPageState(test_page_state);
   EXPECT_EQ(test_page_state.ToEncodedData(),
             entry2_->GetPageState().ToEncodedData());

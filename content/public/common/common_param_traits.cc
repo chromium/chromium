@@ -8,29 +8,28 @@
 
 #include "base/containers/stack_container.h"
 #include "content/public/common/content_constants.h"
-#include "content/public/common/page_state.h"
 #include "content/public/common/referrer.h"
 #include "net/http/http_util.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
 
 namespace IPC {
 
-void ParamTraits<content::PageState>::Write(base::Pickle* m,
-                                            const param_type& p) {
+void ParamTraits<blink::PageState>::Write(base::Pickle* m,
+                                          const param_type& p) {
   WriteParam(m, p.ToEncodedData());
 }
 
-bool ParamTraits<content::PageState>::Read(const base::Pickle* m,
-                                           base::PickleIterator* iter,
-                                           param_type* r) {
+bool ParamTraits<blink::PageState>::Read(const base::Pickle* m,
+                                         base::PickleIterator* iter,
+                                         param_type* r) {
   std::string data;
   if (!ReadParam(m, iter, &data))
     return false;
-  *r = content::PageState::CreateFromEncodedData(data);
+  *r = blink::PageState::CreateFromEncodedData(data);
   return true;
 }
 
-void ParamTraits<content::PageState>::Log(
-    const param_type& p, std::string* l) {
+void ParamTraits<blink::PageState>::Log(const param_type& p, std::string* l) {
   l->append("(");
   LogParam(p.ToEncodedData(), l);
   l->append(")");

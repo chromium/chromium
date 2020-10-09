@@ -44,9 +44,9 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/page_state.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -975,8 +975,8 @@ TEST_F(SessionServiceTest, RemovePostDataWithPasswords) {
   ASSERT_NE(window_id, tab_id);
 
   // Create a page state representing a HTTP body with posted passwords.
-  content::PageState page_state =
-      content::PageState::CreateForTesting(GURL(), true, "data", nullptr);
+  blink::PageState page_state =
+      blink::PageState::CreateForTesting(GURL(), true, "data", nullptr);
 
   // Create a TabNavigation containing page_state and representing a POST
   // request with passwords.

@@ -28,12 +28,12 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/drop_data.h"
-#include "content/public/common/page_state.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "media/base/video_frame.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/page/drag.mojom.h"
 #include "ui/aura/env.h"
@@ -62,7 +62,7 @@ void InitNavigateParams(FrameHostMsg_DidCommitProvisionalLoad_Params* params,
   params->did_create_new_entry = did_create_new_entry;
   params->gesture = NavigationGestureUser;
   params->method = "GET";
-  params->page_state = PageState::CreateFromURL(url);
+  params->page_state = blink::PageState::CreateFromURL(url);
 }
 
 TestRenderWidgetHostView::TestRenderWidgetHostView(RenderWidgetHost* rwh)
@@ -337,8 +337,8 @@ void TestRenderViewHost::TestStartDragging(const DropData& drop_data) {
 
 void TestRenderViewHost::TestOnUpdateStateWithFile(
     const base::FilePath& file_path) {
-  PageState state = PageState::CreateForTesting(GURL("http://www.google.com"),
-                                                false, "data", &file_path);
+  auto state = blink::PageState::CreateForTesting(GURL("http://www.google.com"),
+                                                  false, "data", &file_path);
   static_cast<RenderFrameHostImpl*>(GetMainFrame())->UpdateState(state);
 }
 

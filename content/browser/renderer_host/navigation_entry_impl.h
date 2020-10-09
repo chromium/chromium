@@ -29,9 +29,9 @@
 #include "content/public/browser/replaced_navigation_entry_data.h"
 #include "content/public/browser/restore_type.h"
 #include "content/public/browser/ssl_status.h"
-#include "content/public/common/page_state.h"
 #include "net/base/isolation_info.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
 #include "url/origin.h"
 
 namespace content {
@@ -114,8 +114,8 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   const GURL& GetVirtualURL() override;
   void SetTitle(const base::string16& title) override;
   const base::string16& GetTitle() override;
-  void SetPageState(const PageState& state) override;
-  PageState GetPageState() override;
+  void SetPageState(const blink::PageState& state) override;
+  blink::PageState GetPageState() override;
   const base::string16& GetTitleForDisplay() override;
   bool IsViewSourceMode() override;
   void SetTransitionType(ui::PageTransition transition_type) override;
@@ -229,7 +229,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
       const Referrer& referrer,
       const base::Optional<url::Origin>& initiator_origin,
       const std::vector<GURL>& redirect_chain,
-      const PageState& page_state,
+      const blink::PageState& page_state,
       const std::string& method,
       int64_t post_id,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,

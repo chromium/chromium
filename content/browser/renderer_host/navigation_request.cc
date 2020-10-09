@@ -854,7 +854,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*post_content_type=*/std::string(), common_params->url,
           common_params->method,
           /*can_load_local_resources=*/false,
-          /*page_state=*/PageState(),
+          /*page_state=*/blink::PageState(),
           /*nav_entry_id=*/0,
           /*subframe_unique_names=*/base::flat_map<std::string, bool>(),
           /*intended_as_new_entry=*/false,
@@ -1609,7 +1609,7 @@ void NavigationRequest::ResetStateForSiteInstanceChange() {
   // Reset any existing PageState with a non-empty, clean PageState, so that old
   // attacker-controlled state is not pulled into the new process.
   if (commit_params_->page_state.IsValid())
-    commit_params_->page_state = PageState::CreateFromURL(GetURL());
+    commit_params_->page_state = blink::PageState::CreateFromURL(GetURL());
 
   // Any previously computed origin to commit is no longer valid (e.g., an
   // opaque origin for an error page).
@@ -1715,7 +1715,7 @@ void NavigationRequest::OnRequestRedirected(
 
   // Reset the page state as it can no longer be used at commit time since the
   // navigation was redirected.
-  commit_params_->page_state = PageState();
+  commit_params_->page_state = blink::PageState();
 
 #if defined(OS_ANDROID)
   base::WeakPtr<NavigationRequest> this_ptr(weak_factory_.GetWeakPtr());

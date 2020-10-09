@@ -4804,7 +4804,7 @@ void RenderFrameHostImpl::ShowCreatedWindow(int pending_widget_routing_id,
                                initial_rect, user_gesture);
 }
 
-void RenderFrameHostImpl::UpdateState(const PageState& state) {
+void RenderFrameHostImpl::UpdateState(const blink::PageState& state) {
   // TODO(creis): Verify the state's ISN matches the last committed FNE.
 
   // Without this check, the renderer can trick the browser into using
@@ -7086,12 +7086,14 @@ RenderFrameHostImpl* RenderFrameHostImpl::GetMainFrame() {
   return main_frame;
 }
 
-bool RenderFrameHostImpl::CanAccessFilesOfPageState(const PageState& state) {
+bool RenderFrameHostImpl::CanAccessFilesOfPageState(
+    const blink::PageState& state) {
   return ChildProcessSecurityPolicyImpl::GetInstance()->CanReadAllFiles(
       GetProcess()->GetID(), state.GetReferencedFiles());
 }
 
-void RenderFrameHostImpl::GrantFileAccessFromPageState(const PageState& state) {
+void RenderFrameHostImpl::GrantFileAccessFromPageState(
+    const blink::PageState& state) {
   GrantFileAccess(GetProcess()->GetID(), state.GetReferencedFiles());
 }
 

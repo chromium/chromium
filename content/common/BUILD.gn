@@ -127,8 +127,6 @@ source_set("common") {
     "navigation_params_utils.h",
     "origin_util.cc",
     "page_messages.h",
-    "page_state_serialization.cc",
-    "page_state_serialization.h",
     "pepper_file_util.cc",
     "pepper_file_util.h",
     "pepper_plugin_list.cc",
@@ -634,7 +632,7 @@ mojom("mojo_bindings") {
         },
         {
           mojom = "content.mojom.PageState"
-          cpp = "::content::PageState"
+          cpp = "::blink::PageState"
         },
         {
           mojom = "content.mojom.PageTransition"
@@ -650,7 +648,7 @@ mojom("mojo_bindings") {
         "//content/common/navigation_params.h",
         "//content/public/common/impression.h",
         "//content/public/common/navigation_policy.h",
-        "//content/public/common/page_state.h",
+        "//third_party/blink/public/common/page_state/page_state.h",
         "//third_party/blink/public/platform/web_mixed_content_context_type.h",
         "//ui/base/page_transition_types.h",
       ]

@@ -14,12 +14,19 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "content/common/page_state_serialization.h"
-#include "content/public/common/content_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/loader/http_body_element_type.h"
+#include "third_party/blink/public/common/page_state/page_state_serialization.h"
 
-namespace content {
+namespace blink {
 namespace {
+
+base::FilePath GetFilePath() {
+  base::FilePath path;
+  base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+  return base::MakeAbsoluteFilePath(path.Append(
+      FILE_PATH_LITERAL("third_party/blink/common/page_state/test_data")));
+}
 
 //-----------------------------------------------------------------------------
 
@@ -57,7 +64,7 @@ void ExpectEquality(const ExplodedHttpBody& expected,
                     const ExplodedHttpBody& actual) {
   EXPECT_EQ(expected.http_content_type, actual.http_content_type);
   EXPECT_EQ(expected.contains_passwords, actual.contains_passwords);
-  if (expected.request_body == nullptr || actual.request_body == nullptr) {
+  if (!expected.request_body || !actual.request_body) {
     EXPECT_EQ(nullptr, expected.request_body);
     EXPECT_EQ(nullptr, actual.request_body);
   } else {
@@ -116,7 +123,7 @@ class PageStateSerializationTest : public testing::Test {
     frame_state->document_state.push_back(
         base::UTF8ToUTF16("dev.chromium.org"));
     frame_state->scroll_restoration_type =
-        blink::mojom::ScrollRestorationType::kManual;
+        mojom::ScrollRestorationType::kManual;
     frame_state->visual_viewport_scroll_offset = gfx::PointF(10, 15);
     frame_state->scroll_offset = gfx::Point(0, 100);
     frame_state->item_sequence_number = 1;
@@ -174,8 +181,7 @@ class PageStateSerializationTest : public testing::Test {
     frame_state->referrer_policy = network::mojom::ReferrerPolicy::kDefault;
     if (!is_child)
       frame_state->target = base::UTF8ToUTF16("target");
-    frame_state->scroll_restoration_type =
-        blink::mojom::ScrollRestorationType::kAuto;
+    frame_state->scroll_restoration_type = mojom::ScrollRestorationType::kAuto;
     frame_state->visual_viewport_scroll_offset = gfx::PointF(-1, -1);
     frame_state->scroll_offset = gfx::Point(42, -42);
     frame_state->item_sequence_number = 123;
@@ -224,11 +230,9 @@ class PageStateSerializationTest : public testing::Test {
   void ReadBackwardsCompatPageState(const std::string& suffix,
                                     int version,
                                     ExplodedPageState* page_state) {
-    base::FilePath path;
-    base::PathService::Get(content::DIR_TEST_DATA, &path);
-    path = path.AppendASCII("page_state")
-               .AppendASCII(
-                   base::StringPrintf("serialized_%s.dat", suffix.c_str()));
+    base::FilePath path = GetFilePath();
+    path = path.AppendASCII(
+        base::StringPrintf("serialized_%s.dat", suffix.c_str()));
 
     std::string file_contents;
     if (!base::ReadFileToString(path, &file_contents)) {
@@ -398,7 +402,7 @@ TEST_F(PageStateSerializationTest, BadMessagesTest2) {
   p.WriteInt(0);
   // WebForm
   p.WriteInt(1);
-  p.WriteInt(blink::WebHTTPBody::Element::kTypeData);
+  p.WriteInt(static_cast<int>(HTTPBodyElementType::kTypeData));
 
   std::string s(static_cast<const char*>(p.data()), p.size());
 
@@ -417,9 +421,8 @@ TEST_F(PageStateSerializationTest, LegacyEncodePageStateFrozen) {
   std::string actual_encoded_state;
   LegacyEncodePageStateForTesting(actual_state, 25, &actual_encoded_state);
 
-  base::FilePath path;
-  base::PathService::Get(content::DIR_TEST_DATA, &path);
-  path = path.AppendASCII("page_state").AppendASCII("serialized_v25.dat");
+  base::FilePath path = GetFilePath();
+  path = path.AppendASCII("serialized_v25.dat");
 
   std::string file_contents;
   ASSERT_TRUE(base::ReadFileToString(path, &file_contents))
@@ -637,8 +640,7 @@ TEST_F(PageStateSerializationTest, BackwardsCompat_DocumentState) {
 
 TEST_F(PageStateSerializationTest, BackwardsCompat_ScrollRestorationType) {
   ExplodedPageState state;
-  state.top.scroll_restoration_type =
-      blink::mojom::ScrollRestorationType::kManual;
+  state.top.scroll_restoration_type = mojom::ScrollRestorationType::kManual;
 
   ExplodedPageState saved_state;
   ReadBackwardsCompatPageState("scroll_restoration_type", 26, &saved_state);
@@ -698,4 +700,4 @@ TEST_F(PageStateSerializationTest, BackwardsCompat_HttpBody) {
 // where to put backwards compat version tests.
 
 }  // namespace
-}  // namespace content
+}  // namespace blink

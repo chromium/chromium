@@ -489,7 +489,7 @@ TEST_F(PerFrameTranslateAgentBrowserTest,
                                                    &has_notranslate_meta));
   EXPECT_EQ("es", detected_content_meta_lang);
 
-  content::PageState back_state = GetCurrentPageState();
+  blink::PageState back_state = GetCurrentPageState();
 
   LoadHTML(
       "<html><head><meta http-equiv=\"content-language\" content=\"fr\">"

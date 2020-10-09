@@ -9,7 +9,7 @@
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/web_package/web_bundle_navigation_info.h"
-#include "content/common/page_state_serialization.h"
+#include "third_party/blink/public/common/page_state/page_state_serialization.h"
 
 namespace content {
 
@@ -27,7 +27,7 @@ FrameNavigationEntry::FrameNavigationEntry(
     const Referrer& referrer,
     const base::Optional<url::Origin>& initiator_origin,
     const std::vector<GURL>& redirect_chain,
-    const PageState& page_state,
+    const blink::PageState& page_state,
     const std::string& method,
     int64_t post_id,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
@@ -80,7 +80,7 @@ void FrameNavigationEntry::UpdateEntry(
     const Referrer& referrer,
     const base::Optional<url::Origin>& initiator_origin,
     const std::vector<GURL>& redirect_chain,
-    const PageState& page_state,
+    const blink::PageState& page_state,
     const std::string& method,
     int64_t post_id,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
@@ -118,11 +118,11 @@ void FrameNavigationEntry::set_document_sequence_number(
   document_sequence_number_ = document_sequence_number;
 }
 
-void FrameNavigationEntry::SetPageState(const PageState& page_state) {
+void FrameNavigationEntry::SetPageState(const blink::PageState& page_state) {
   page_state_ = page_state;
 
-  ExplodedPageState exploded_state;
-  if (!DecodePageState(page_state_.ToEncodedData(), &exploded_state))
+  blink::ExplodedPageState exploded_state;
+  if (!blink::DecodePageState(page_state_.ToEncodedData(), &exploded_state))
     return;
 
   item_sequence_number_ = exploded_state.top.item_sequence_number;
@@ -142,8 +142,8 @@ scoped_refptr<network::ResourceRequestBody> FrameNavigationEntry::GetPostData(
     return nullptr;
 
   // Generate the body from the PageState.
-  ExplodedPageState exploded_state;
-  if (!DecodePageState(page_state_.ToEncodedData(), &exploded_state))
+  blink::ExplodedPageState exploded_state;
+  if (!blink::DecodePageState(page_state_.ToEncodedData(), &exploded_state))
     return nullptr;
 
   *content_type = base::UTF16ToASCII(

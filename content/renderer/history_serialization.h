@@ -11,18 +11,18 @@
 #include "content/common/content_export.h"
 
 namespace blink {
+class PageState;
 class WebHistoryItem;
 }
 
 namespace content {
 class HistoryEntry;
-class PageState;
 
-CONTENT_EXPORT PageState HistoryEntryToPageState(HistoryEntry* entry);
-CONTENT_EXPORT PageState SingleHistoryItemToPageState(
+CONTENT_EXPORT blink::PageState HistoryEntryToPageState(HistoryEntry* entry);
+CONTENT_EXPORT blink::PageState SingleHistoryItemToPageState(
     const blink::WebHistoryItem& item);
 CONTENT_EXPORT std::unique_ptr<HistoryEntry> PageStateToHistoryEntry(
-    const PageState& state);
+    const blink::PageState& state);
 
 }  // namespace content
 

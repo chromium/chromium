@@ -511,7 +511,7 @@ TEST_F(TranslateAgentBrowserTest, BackToTranslatablePage) {
   EXPECT_EQ("es", fake_translate_driver_.details_->adopted_language);
   fake_translate_driver_.ResetNewPageValues();
 
-  content::PageState back_state = GetCurrentPageState();
+  blink::PageState back_state = GetCurrentPageState();
 
   LoadHTML(
       "<html><head><meta http-equiv=\"content-language\" content=\"fr\">"

@@ -13,16 +13,16 @@
 #include "base/strings/nullable_string16.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
-#include "content/common/page_state_serialization.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/page_state/page_state_serialization.h"
 
-namespace content {
+namespace blink {
 namespace {
 
 // Requested names longer than this (that are unique) should be hashed.
 constexpr size_t kMaxSize = 80;
 
-class TestFrameAdapter : public blink::UniqueNameHelper::FrameAdapter {
+class TestFrameAdapter : public UniqueNameHelper::FrameAdapter {
  public:
   // |virtual_index_in_parent| is the virtual index of this frame in the
   // parent's list of children, as unique name generation should see it. Note
@@ -136,8 +136,8 @@ class TestFrameAdapter : public blink::UniqueNameHelper::FrameAdapter {
     // UniqueNameHelper.
     if (!IsMainFrame()) {
       base::AutoReset<bool> enable_legacy_mode(&generate_legacy_name_, true);
-      legacy_name_ = blink::UniqueNameHelper::CalculateLegacyNameForTesting(
-          this, requested_name);
+      legacy_name_ =
+          UniqueNameHelper::CalculateLegacyNameForTesting(this, requested_name);
     }
   }
 
@@ -154,7 +154,7 @@ class TestFrameAdapter : public blink::UniqueNameHelper::FrameAdapter {
   TestFrameAdapter* const parent_;
   std::vector<TestFrameAdapter*> children_;
   const int virtual_index_in_parent_;
-  blink::UniqueNameHelper unique_name_helper_;
+  UniqueNameHelper unique_name_helper_;
   std::string legacy_name_;
 };
 
@@ -428,4 +428,4 @@ TEST(UniqueNameHelper, UpdateName) {
 }
 
 }  // namespace
-}  // namespace content
+}  // namespace blink

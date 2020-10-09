@@ -5,9 +5,9 @@
 #include "chrome/browser/sessions/chrome_serialized_navigation_driver.h"
 
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
-#include "content/public/common/page_state.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
 #include "ui/base/page_transition_types.h"
 
 class ChromeSerializedNavigationDriverTest : public ::testing::Test {
@@ -38,8 +38,8 @@ TEST_F(ChromeSerializedNavigationDriverTest, SanitizeWithReferrerPolicyAlways) {
   sessions::SerializedNavigationEntryTestHelper::SetReferrerPolicy(
       static_cast<int>(network::mojom::ReferrerPolicy::kAlways), &navigation);
 
-  content::PageState page_state =
-      content::PageState::CreateFromURL(sessions::test_data::VirtualUrl());
+  blink::PageState page_state =
+      blink::PageState::CreateFromURL(sessions::test_data::VirtualUrl());
   sessions::SerializedNavigationEntryTestHelper::SetEncodedPageState(
       page_state.ToEncodedData(), &navigation);
 
@@ -76,8 +76,8 @@ TEST_F(ChromeSerializedNavigationDriverTest, SanitizeWithReferrerPolicyNever) {
   sessions::SerializedNavigationEntryTestHelper::SetReferrerPolicy(
       static_cast<int>(network::mojom::ReferrerPolicy::kNever), &navigation);
 
-  content::PageState page_state =
-      content::PageState::CreateFromURL(sessions::test_data::VirtualUrl());
+  blink::PageState page_state =
+      blink::PageState::CreateFromURL(sessions::test_data::VirtualUrl());
   sessions::SerializedNavigationEntryTestHelper::SetEncodedPageState(
       page_state.ToEncodedData(), &navigation);
 

@@ -79,6 +79,7 @@ include_rules = [
   "+storage/browser/quota",
   "+storage/common/quota",
 
+  "+third_party/blink/public/common/page_state/page_state.h",
   "+third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h",
   "+third_party/crashpad/crashpad/client",
   "+third_party/crashpad/crashpad/util",

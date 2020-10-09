@@ -32,7 +32,6 @@
 #include "content/public/common/frame_navigate_params.h"
 #include "content/public/common/impression.h"
 #include "content/public/common/navigation_policy.h"
-#include "content/public/common/page_state.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/stop_find_action.h"
 #include "content/public/common/three_d_api_types.h"
@@ -49,6 +48,7 @@
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/navigation/triggering_event_info.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
@@ -282,7 +282,7 @@ IPC_STRUCT_BEGIN_WITH_PARENT(FrameHostMsg_DidCommitProvisionalLoad_Params,
   IPC_STRUCT_MEMBER(bool, url_is_unreachable)
 
   // Serialized history item state to store in the navigation entry.
-  IPC_STRUCT_MEMBER(content::PageState, page_state)
+  IPC_STRUCT_MEMBER(blink::PageState, page_state)
 
   // Original request's URL.
   IPC_STRUCT_MEMBER(GURL, original_request_url)

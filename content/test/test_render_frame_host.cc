@@ -229,7 +229,8 @@ void TestRenderFrameHost::SimulateNavigationCommit(const GURL& url) {
        url.ReplaceComponents(replacements) ==
            GetLastCommittedURL().ReplaceComponents(replacements));
 
-  params.page_state = PageState::CreateForTesting(url, false, nullptr, nullptr);
+  params.page_state =
+      blink::PageState::CreateForTesting(url, false, nullptr, nullptr);
   if (!was_within_same_document)
     params.embedding_token = base::UnguessableToken::Create();
 
@@ -633,7 +634,7 @@ TestRenderFrameHost::BuildDidCommitParams(int nav_entry_id,
   url::Origin origin = url::Origin::Create(url);
   params->origin = origin;
 
-  params->page_state = PageState::CreateForTestingWithSequenceNumbers(
+  params->page_state = blink::PageState::CreateForTestingWithSequenceNumbers(
       url, params->item_sequence_number, params->document_sequence_number);
 
   return params;

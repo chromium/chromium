@@ -37,7 +37,6 @@
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame_messages.h"
-#include "content/common/page_state_serialization.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -74,6 +73,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/url_request/url_request_failed_job.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/page_state/page_state_serialization.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
@@ -4267,7 +4267,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
               main_url, Referrer(), base::nullopt, ui::PAGE_TRANSITION_RELOAD,
               false, std::string(), controller.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));
-  restored_entry->SetPageState(PageState::CreateFromURL(main_url));
+  restored_entry->SetPageState(blink::PageState::CreateFromURL(main_url));
   EXPECT_EQ(0U, restored_entry->root_node()->children.size());
 
   // Restore the new entry in a new tab and verify the iframe loads and has
@@ -6349,9 +6349,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // Check the PageState of the previous entry to ensure it isn't corrupted.
   NavigationEntry* entry = controller.GetEntryAtIndex(1);
   EXPECT_EQ(url_a, entry->GetURL());
-  ExplodedPageState exploded_state;
-  EXPECT_TRUE(
-      DecodePageState(entry->GetPageState().ToEncodedData(), &exploded_state));
+  blink::ExplodedPageState exploded_state;
+  EXPECT_TRUE(blink::DecodePageState(entry->GetPageState().ToEncodedData(),
+                                     &exploded_state));
   EXPECT_EQ(url_a,
             GURL(exploded_state.top.url_string.value_or(base::string16())));
   EXPECT_EQ(frame_url_a2,
@@ -6469,9 +6469,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(url_b, root->current_url());
   NavigationEntry* entry = controller.GetLastCommittedEntry();
   EXPECT_EQ(url_b, entry->GetURL());
-  ExplodedPageState exploded_state;
-  EXPECT_TRUE(
-      DecodePageState(entry->GetPageState().ToEncodedData(), &exploded_state));
+  blink::ExplodedPageState exploded_state;
+  EXPECT_TRUE(blink::DecodePageState(entry->GetPageState().ToEncodedData(),
+                                     &exploded_state));
   EXPECT_EQ(url_b,
             GURL(exploded_state.top.url_string.value_or(base::string16())));
   EXPECT_EQ(0U, exploded_state.top.children.size());
@@ -6563,9 +6563,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(data_url, root->child_at(0)->current_url());
   NavigationEntry* entry = controller.GetLastCommittedEntry();
   EXPECT_EQ(url_b, entry->GetURL());
-  ExplodedPageState exploded_state;
-  EXPECT_TRUE(
-      DecodePageState(entry->GetPageState().ToEncodedData(), &exploded_state));
+  blink::ExplodedPageState exploded_state;
+  EXPECT_TRUE(blink::DecodePageState(entry->GetPageState().ToEncodedData(),
+                                     &exploded_state));
   EXPECT_EQ(url_b,
             GURL(exploded_state.top.url_string.value_or(base::string16())));
 

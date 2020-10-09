@@ -18,11 +18,11 @@
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/common/page_state.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
 
 namespace sessions {
 

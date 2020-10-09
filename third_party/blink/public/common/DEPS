@@ -24,6 +24,7 @@ include_rules = [
     "+ui/base/pointer/pointer_device.h",
     "+ui/events/event_constants.h",
     "+ui/events/types",
+    "+ui/display",
     "+ui/gfx/color_space.h",
     "+ui/gfx/display_color_spaces.h",
     "+ui/gfx/geometry",

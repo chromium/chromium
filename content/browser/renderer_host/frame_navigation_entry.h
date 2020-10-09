@@ -11,10 +11,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "content/browser/site_instance_impl.h"
-#include "content/public/common/page_state.h"
 #include "content/public/common/referrer.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -51,7 +51,7 @@ class CONTENT_EXPORT FrameNavigationEntry
       const Referrer& referrer,
       const base::Optional<url::Origin>& initiator_origin,
       const std::vector<GURL>& redirect_chain,
-      const PageState& page_state,
+      const blink::PageState& page_state,
       const std::string& method,
       int64_t post_id,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
@@ -73,7 +73,7 @@ class CONTENT_EXPORT FrameNavigationEntry
       const Referrer& referrer,
       const base::Optional<url::Origin>& initiator_origin,
       const std::vector<GURL>& redirect_chain,
-      const PageState& page_state,
+      const blink::PageState& page_state,
       const std::string& method,
       int64_t post_id,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
@@ -160,8 +160,8 @@ class CONTENT_EXPORT FrameNavigationEntry
   }
   const std::vector<GURL>& redirect_chain() const { return redirect_chain_; }
 
-  void SetPageState(const PageState& page_state);
-  const PageState& page_state() const { return page_state_; }
+  void SetPageState(const blink::PageState& page_state);
+  const blink::PageState& page_state() const { return page_state_; }
 
   // Remember the set of bindings granted to this FrameNavigationEntry at the
   // time of commit, to ensure that we do not grant it additional bindings if we
@@ -230,7 +230,7 @@ class CONTENT_EXPORT FrameNavigationEntry
   // It is preserved after commit but should not be persisted.
   std::vector<GURL> redirect_chain_;
   // TODO(creis): Change this to FrameState.
-  PageState page_state_;
+  blink::PageState page_state_;
   // TODO(creis): Persist bindings_. https://crbug.com/173672.
   int bindings_ = kInvalidBindings;
   std::string method_;

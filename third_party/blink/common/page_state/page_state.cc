@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/common/page_state.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
 
 #include <stddef.h>
 
@@ -10,11 +10,11 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
-#include "content/common/page_state_serialization.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
+#include "third_party/blink/public/common/page_state/page_state_serialization.h"
 
-namespace content {
+namespace blink {
 namespace {
 
 base::FilePath ToFilePath(const base::Optional<base::string16>& s) {
@@ -49,8 +49,7 @@ void RecursivelyRemoveReferrer(ExplodedFrameState* state) {
   state->referrer.reset();
   state->referrer_policy = network::mojom::ReferrerPolicy::kDefault;
   for (std::vector<ExplodedFrameState>::iterator it = state->children.begin();
-       it != state->children.end();
-       ++it) {
+       it != state->children.end(); ++it) {
     RecursivelyRemoveReferrer(&*it);
   }
 }
@@ -91,14 +90,12 @@ PageState PageState::CreateForTesting(
     if (optional_body_file_path) {
       state.top.http_body.request_body = new network::ResourceRequestBody();
       state.top.http_body.request_body->AppendFileRange(
-          *optional_body_file_path,
-          0, std::numeric_limits<uint64_t>::max(),
+          *optional_body_file_path, 0, std::numeric_limits<uint64_t>::max(),
           base::Time());
       state.referenced_files.emplace_back(
           optional_body_file_path->AsUTF16Unsafe());
     }
-    state.top.http_body.contains_passwords =
-        body_contains_password_data;
+    state.top.http_body.contains_passwords = body_contains_password_data;
   }
 
   return ToPageState(state);
@@ -119,8 +116,7 @@ PageState PageState::CreateForTestingWithSequenceNumbers(
   return CreateFromEncodedData(encoded_page_state);
 }
 
-PageState::PageState() {
-}
+PageState::PageState() {}
 
 bool PageState::IsValid() const {
   return !data_.empty();
@@ -177,11 +173,10 @@ PageState PageState::RemoveReferrer() const {
   return ToPageState(state);
 }
 
-PageState::PageState(const std::string& data)
-    : data_(data) {
+PageState::PageState(const std::string& data) : data_(data) {
   // TODO(darin): Enable this DCHECK once tests have been fixed up to not pass
   // bogus encoded data to CreateFromEncodedData.
-  //DCHECK(IsValid());
+  // DCHECK(IsValid());
 }
 
-}  // namespace content
+}  // namespace blink

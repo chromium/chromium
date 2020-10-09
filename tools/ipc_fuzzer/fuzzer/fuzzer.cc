@@ -801,12 +801,12 @@ struct FuzzTraits<viz::CompositorRenderPassList> {
 };
 
 template <>
-struct FuzzTraits<content::PageState> {
-  static bool Fuzz(content::PageState* p, Fuzzer* fuzzer) {
+struct FuzzTraits<blink::PageState> {
+  static bool Fuzz(blink::PageState* p, Fuzzer* fuzzer) {
     std::string data = p->ToEncodedData();
     if (!FuzzParam(&data, fuzzer))
       return false;
-    *p = content::PageState::CreateFromEncodedData(data);
+    *p = blink::PageState::CreateFromEncodedData(data);
     return true;
   }
 };

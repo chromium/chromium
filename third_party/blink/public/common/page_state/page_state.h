@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_COMMON_PAGE_STATE_H_
-#define CONTENT_PUBLIC_COMMON_PAGE_STATE_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_PAGE_STATE_PAGE_STATE_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_PAGE_STATE_PAGE_STATE_H_
 
 #include <string>
 #include <vector>
 
-#include "content/common/content_export.h"
+#include "third_party/blink/public/common/common_export.h"
 
 class GURL;
 
@@ -16,7 +16,7 @@ namespace base {
 class FilePath;
 }
 
-namespace content {
+namespace blink {
 
 // The PageState class represents the information needed by the rendering
 // engine to reconstruct a web page (and its tree of frames), including for
@@ -24,7 +24,7 @@ namespace content {
 // information is used when navigating back & forward through session history.
 //
 // The format of the encoded data is not exposed by the content API.
-class CONTENT_EXPORT PageState {
+class BLINK_COMMON_EXPORT PageState {
  public:
   static PageState CreateFromEncodedData(const std::string& data);
   static PageState CreateFromURL(const GURL& url);
@@ -65,6 +65,6 @@ class CONTENT_EXPORT PageState {
   std::string data_;
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_PUBLIC_COMMON_PAGE_STATE_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_PAGE_STATE_PAGE_STATE_H_

@@ -128,8 +128,6 @@ source_set("common_sources") {
     "network_service_util.cc",
     "network_service_util.h",
     "origin_util.h",
-    "page_state.cc",
-    "page_state.h",
     "page_type.h",
     "page_visibility_state.h",
     "page_zoom.h",

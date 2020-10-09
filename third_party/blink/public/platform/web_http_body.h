@@ -34,6 +34,7 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom-shared.h"
+#include "third_party/blink/public/common/loader/http_body_element_type.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_data.h"
@@ -51,12 +52,7 @@ class EncodedFormData;
 class WebHTTPBody {
  public:
   struct Element {
-    enum Type {
-      kTypeData,
-      kTypeFile,
-      kTypeBlob,
-      kTypeDataPipe,
-    } type;
+    HTTPBodyElementType type;
     WebData data;
     WebString file_path;
     int64_t file_start;

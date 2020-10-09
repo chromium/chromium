@@ -105,7 +105,6 @@
 #include "content/common/frame_messages.h"
 #include "content/common/input_messages.h"
 #include "content/common/page_messages.h"
-#include "content/common/page_state_serialization.h"
 #include "content/common/render_message_filter.mojom.h"
 #include "content/common/view_messages.h"
 #include "content/common/widget_messages.h"
@@ -143,7 +142,6 @@
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/page_state.h"
 #include "content/public/common/referrer_type_converters.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/url_utils.h"
@@ -164,6 +162,8 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
+#include "third_party/blink/public/common/page_state/page_state_serialization.h"
 #include "third_party/blink/public/common/security/security_style.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
@@ -5665,7 +5665,7 @@ void WebContentsImpl::ViewSource(RenderFrameHostImpl* frame) {
   // Do not restore scroller position.
   // TODO(creis, lukasza, arthursonzogni): Do not reuse the original PageState,
   // but start from a new one and only copy the needed data.
-  const PageState& new_page_state =
+  const blink::PageState& new_page_state =
       frame_entry->page_state().RemoveScrollOffset();
 
   scoped_refptr<FrameNavigationEntry> new_frame_entry =
@@ -7375,7 +7375,7 @@ void WebContentsImpl::DocumentOnLoadCompleted(
 }
 
 void WebContentsImpl::UpdateStateForFrame(RenderFrameHost* render_frame_host,
-                                          const PageState& page_state) {
+                                          const blink::PageState& page_state) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::UpdateStateForFrame",
                         "render_frame_host",
                         base::trace_event::ToTracedValue(render_frame_host));
@@ -7411,8 +7411,8 @@ void WebContentsImpl::UpdateStateForFrame(RenderFrameHost* render_frame_host,
   // FrameNavigationEntry should not differ from the one coming with the update,
   // since it must come from the same document. Do not update it if a difference
   // is detected, as this indicates that |frame_entry| is not the correct one.
-  ExplodedPageState exploded_state;
-  if (!DecodePageState(page_state.ToEncodedData(), &exploded_state))
+  blink::ExplodedPageState exploded_state;
+  if (!blink::DecodePageState(page_state.ToEncodedData(), &exploded_state))
     return;
 
   if (exploded_state.top.document_sequence_number !=

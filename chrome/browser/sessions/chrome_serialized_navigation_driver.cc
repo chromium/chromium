@@ -12,7 +12,7 @@
 
 #if defined(OS_ANDROID)
 #include "content/public/common/content_features.h"
-#include "content/public/common/page_state.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
 #endif
 
 namespace {
@@ -25,7 +25,7 @@ void ChangeDestination(const GURL& new_destination_url,
   navigation->set_virtual_url(new_destination_url);
   navigation->set_original_request_url(new_destination_url);
   navigation->set_encoded_page_state(
-      content::PageState::CreateFromURL(new_destination_url).ToEncodedData());
+      blink::PageState::CreateFromURL(new_destination_url).ToEncodedData());
 
   // Make sure the referrer stored in the PageState (above) and in the
   // SerializedNavigationEntry (below) are in-sync.

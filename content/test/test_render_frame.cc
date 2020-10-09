@@ -208,7 +208,7 @@ class MockFrameHost : public mojom::FrameHost {
 
   void FrameSizeChanged(const gfx::Size& frame_size) override {}
 
-  void UpdateState(const PageState& state) override {
+  void UpdateState(const blink::PageState& state) override {
     is_page_state_updated_ = true;
   }
 
