@@ -30,13 +30,14 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_connector.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
-#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context_factory.h"
+#include "ui/ozone/platform/wayland/host/wayland_menu_utils.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/platform_menu_utils.h"
 #include "ui/ozone/public/system_input_injector.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
@@ -123,12 +124,6 @@ class OzonePlatformWayland : public OzonePlatform {
     return connection_->clipboard();
   }
 
-  int GetKeyModifiers() const override {
-    DCHECK(connection_);
-    DCHECK(connection_->event_source());
-    return connection_->event_source()->keyboard_modifiers();
-  }
-
   std::unique_ptr<InputMethod> CreateInputMethod(
       internal::InputMethodDelegate* delegate,
       gfx::AcceleratedWidget widget) override {
@@ -143,6 +138,10 @@ class OzonePlatformWayland : public OzonePlatform {
     }
 
     return std::make_unique<InputMethodAuraLinux>(delegate);
+  }
+
+  PlatformMenuUtils* GetPlatformMenuUtils() override {
+    return menu_utils_.get();
   }
 
   bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
@@ -188,6 +187,8 @@ class OzonePlatformWayland : public OzonePlatform {
         std::make_unique<GtkUiDelegateWayland>(connection_.get());
     GtkUiDelegate::SetInstance(gtk_ui_delegate_.get());
 #endif
+
+    menu_utils_ = std::make_unique<WaylandMenuUtils>(connection_.get());
 
     // TODO(crbug.com/1097007): report which Wayland compositor is used.
   }
@@ -278,6 +279,7 @@ class OzonePlatformWayland : public OzonePlatform {
   std::unique_ptr<WaylandInputMethodContextFactory>
       input_method_context_factory_;
   std::unique_ptr<WaylandBufferManagerConnector> buffer_manager_connector_;
+  std::unique_ptr<WaylandMenuUtils> menu_utils_;
 
   // Objects, which solely live in the GPU process.
   std::unique_ptr<WaylandBufferManagerGpu> buffer_manager_;

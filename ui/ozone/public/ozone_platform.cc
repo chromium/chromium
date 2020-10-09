@@ -13,6 +13,7 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/ozone/platform_object.h"
 #include "ui/ozone/platform_selection.h"
+#include "ui/ozone/public/platform_menu_utils.h"
 #include "ui/ozone/public/platform_screen.h"
 
 namespace ui {
@@ -98,9 +99,8 @@ PlatformGLEGLUtility* OzonePlatform::GetPlatformGLEGLUtility() {
   return nullptr;
 }
 
-int OzonePlatform::GetKeyModifiers() const {
-  // Platform may override this to provide the current state of modifier keys.
-  return 0;
+PlatformMenuUtils* OzonePlatform::GetPlatformMenuUtils() {
+  return nullptr;
 }
 
 bool OzonePlatform::IsNativePixmapConfigSupported(

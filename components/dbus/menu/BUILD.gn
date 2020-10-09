@@ -29,6 +29,9 @@ component("menu") {
       "//ui/gfx/x",
     ]
   }
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
 }
 
 source_set("unit_tests") {

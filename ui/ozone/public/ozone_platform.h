@@ -24,14 +24,15 @@ class NativeDisplayDelegate;
 
 namespace ui {
 class CursorFactory;
-class InputController;
 class GpuPlatformSupportHost;
+class InputController;
 class OverlayManagerOzone;
+class PlatformClipboard;
+class PlatformGLEGLUtility;
+class PlatformMenuUtils;
 class PlatformScreen;
 class SurfaceFactoryOzone;
 class SystemInputInjector;
-class PlatformClipboard;
-class PlatformGLEGLUtility;
 
 namespace internal {
 class InputMethodDelegate;
@@ -188,10 +189,7 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
       internal::InputMethodDelegate* delegate,
       gfx::AcceleratedWidget widget) = 0;
   virtual PlatformGLEGLUtility* GetPlatformGLEGLUtility();
-
-  // Returns a bitmask of EventFlags showing the state of Alt, Shift and Ctrl
-  // keys that came with the most recent UI event.
-  virtual int GetKeyModifiers() const;
+  virtual PlatformMenuUtils* GetPlatformMenuUtils();
 
   // Returns true if the specified buffer format is supported.
   virtual bool IsNativePixmapConfigSupported(gfx::BufferFormat format,

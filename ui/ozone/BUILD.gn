@@ -90,6 +90,8 @@ component("ozone_base") {
     "public/ozone_switches.h",
     "public/platform_clipboard.h",
     "public/platform_gl_egl_utility.h",
+    "public/platform_menu_utils.cc",
+    "public/platform_menu_utils.h",
     "public/platform_screen.cc",
     "public/platform_screen.h",
     "public/platform_window_surface.h",

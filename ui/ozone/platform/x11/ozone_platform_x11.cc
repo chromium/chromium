@@ -10,6 +10,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/base/buildflags.h"
@@ -24,12 +25,12 @@
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 #include "ui/events/platform/x11/x11_event_source.h"
-#include "ui/events/x/events_x_utils.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/x11_types.h"
 #include "ui/ozone/common/stub_overlay_manager.h"
 #include "ui/ozone/platform/x11/gl_egl_utility_x11.h"
 #include "ui/ozone/platform/x11/x11_clipboard_ozone.h"
+#include "ui/ozone/platform/x11/x11_menu_utils.h"
 #include "ui/ozone/platform/x11/x11_screen_ozone.h"
 #include "ui/ozone/platform/x11/x11_surface_factory.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
@@ -125,8 +126,6 @@ class OzonePlatformX11 : public OzonePlatform,
     return gl_egl_utility_.get();
   }
 
-  int GetKeyModifiers() const override { return GetModifierKeyState(); }
-
   std::unique_ptr<InputMethod> CreateInputMethod(
       internal::InputMethodDelegate* delegate,
       gfx::AcceleratedWidget) override {
@@ -141,6 +140,10 @@ class OzonePlatformX11 : public OzonePlatform,
       return nullptr;
     return std::make_unique<InputMethodAuraLinux>(delegate);
 #endif
+  }
+
+  PlatformMenuUtils* GetPlatformMenuUtils() override {
+    return menu_utils_.get();
   }
 
   std::unique_ptr<OSExchangeDataProvider> CreateProvider() override {
@@ -204,6 +207,8 @@ class OzonePlatformX11 : public OzonePlatform,
         std::make_unique<GtkUiDelegateX11>(x11::Connection::Get());
     GtkUiDelegate::SetInstance(gtk_ui_delegate_.get());
 #endif
+
+    menu_utils_ = std::make_unique<X11MenuUtils>();
 
     base::UmaHistogramEnumeration("Linux.WindowManager", GetWindowManagerUMA());
   }
@@ -269,6 +274,7 @@ class OzonePlatformX11 : public OzonePlatform,
   std::unique_ptr<X11ClipboardOzone> clipboard_;
   std::unique_ptr<CursorFactory> cursor_factory_;
   std::unique_ptr<GpuPlatformSupportHost> gpu_platform_support_host_;
+  std::unique_ptr<X11MenuUtils> menu_utils_;
 
   // Objects in the GPU process.
   std::unique_ptr<X11SurfaceFactory> surface_factory_ozone_;
