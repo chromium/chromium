@@ -4122,6 +4122,10 @@ const char kFilesTransferDetailsName[] = "Enable Files Transfer Details.";
 const char kFilesTransferDetailsDescription[] =
     "Enable transfer details like remaining time in the progress center panel.";
 
+const char kFilesTrashName[] = "Enable Files Trash.";
+const char kFilesTrashDescription[] =
+    "Enable trash for My files volume in Files App.";
+
 const char kFilesZipMountName[] = "New ZIP mounting in Files App";
 const char kFilesZipMountDescription[] =
     "Enable new ZIP archive mounting system in File Manager.";

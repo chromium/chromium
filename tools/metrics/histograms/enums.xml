@@ -44142,6 +44142,7 @@ from previous Chrome versions.
   <int value="624317932" label="print-pdf-as-image"/>
   <int value="624368375" label="OmniboxEntitySuggestions:enabled"/>
   <int value="625273056" label="disable-boot-animation"/>
+  <int value="625725485" label="FilesTrash:enabled"/>
   <int value="626605468" label="FilesZipUnpack:enabled"/>
   <int value="628302973" label="NTPSnippets:enabled"/>
   <int value="628570445" label="AndroidAutofillAccessibility:enabled"/>
@@ -45018,6 +45019,7 @@ from previous Chrome versions.
   <int value="1499163193" label="PostScriptPrinting:disabled"/>
   <int value="1500390299" label="NtpCustomizationMenuV2:disabled"/>
   <int value="1505194447" label="disable-transition-compositing"/>
+  <int value="1507233295" label="FilesTrash:disabled"/>
   <int value="1508761653" label="disable-site-isolation-trials"/>
   <int value="1509586356" label="CrossOriginOpenerPolicy:disabled"/>
   <int value="1509901380" label="disable-drive-search-in-app-launcher"/>

@@ -2546,6 +2546,11 @@
     "expiry_milestone": 88
   },
   {
+    "name": "files-trash",
+    "owners": [ "joelhockey", "noel", "simmonsjosh" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "files-unified-media-view",
     "owners": [ "fukino", "weifangsun" ],
     "expiry_milestone": 87

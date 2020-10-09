@@ -2389,6 +2389,9 @@ extern const char kFilesSWADescription[];
 extern const char kFilesTransferDetailsName[];
 extern const char kFilesTransferDetailsDescription[];
 
+extern const char kFilesTrashName[];
+extern const char kFilesTrashDescription[];
+
 extern const char kFilesZipMountName[];
 extern const char kFilesZipMountDescription[];
 
