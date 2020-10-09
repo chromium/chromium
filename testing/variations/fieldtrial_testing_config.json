@@ -1262,29 +1262,6 @@
             ]
         }
     ],
-    "ButterForPasswords": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "ButterForPasswords",
-                    "params": {
-                        "event_1": "name:passwords_account_storage_unselected;comparator:==0;window:180;storage:180",
-                        "event_trigger": "name:passwords_account_storage_trigger;comparator:<5;window:180;storage:180",
-                        "event_used": "name:passwords_account_storage_used;comparator:==0;window:180;storage:180"
-                    },
-                    "enable_features": [
-                        "EnablePasswordsAccountStorage",
-                        "IPH_PasswordsAccountStorage"
-                    ]
-                }
-            ]
-        }
-    ],
     "CSSMatchedPropertiesCacheDependencies": [
         {
             "platforms": [
