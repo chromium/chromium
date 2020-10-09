@@ -260,6 +260,11 @@ gfx::SwapResult DirectCompositionChildSurfaceWin::SwapBuffers(
                                     ? gfx::SwapResult::SWAP_ACK
                                     : gfx::SwapResult::SWAP_FAILED;
   EnqueuePendingFrame(std::move(callback));
+
+  // Reset swap_rect_ since SetDrawRectangle may not be called when the root
+  // damage rect is empty.
+  swap_rect_ = gfx::Rect();
+
   return swap_result;
 }
 
