@@ -138,7 +138,10 @@ std::vector<fuchsia::accessibility::semantics::Action> ConvertActions(
     const ui::AXNodeData& node) {
   std::vector<fuchsia::accessibility::semantics::Action> fuchsia_actions;
 
-  if (node.HasAction(ax::mojom::Action::kDoDefault)) {
+  const bool has_default =
+      node.HasAction(ax::mojom::Action::kDoDefault) ||
+      node.GetDefaultActionVerb() != ax::mojom::DefaultActionVerb::kNone;
+  if (has_default) {
     fuchsia_actions.push_back(
         fuchsia::accessibility::semantics::Action::DEFAULT);
   }

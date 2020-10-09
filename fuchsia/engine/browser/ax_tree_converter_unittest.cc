@@ -26,6 +26,7 @@ const char kValue1[] = "user entered value";
 const int32_t kChildId1 = 23901;
 const int32_t kChildId2 = 484345;
 const int32_t kChildId3 = 4156877;
+const int32_t kRootId = 5;
 const int32_t kRectX = 1;
 const int32_t kRectY = 2;
 const int32_t kRectWidth = 7;
@@ -79,29 +80,20 @@ Node CreateSemanticNode(uint32_t id,
   return node;
 }
 
-class AXTreeConverterTest : public testing::Test {
- public:
-  AXTreeConverterTest() = default;
-  ~AXTreeConverterTest() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(AXTreeConverterTest);
-};
-
-TEST_F(AXTreeConverterTest, AllFieldsSetAndEqual) {
+// Create an AXNodeData and a Fuchsia node that represent the same information.
+std::pair<ui::AXNodeData, Node> CreateSemanticNodeAllFieldsSet() {
   ui::AXRelativeBounds relative_bounds = ui::AXRelativeBounds();
   relative_bounds.bounds = gfx::RectF(kRectX, kRectY, kRectWidth, kRectHeight);
   relative_bounds.transform =
       std::make_unique<gfx::Transform>(gfx::Transform::kSkipInitialization);
   relative_bounds.transform->MakeIdentity();
-  auto source_node_data = CreateAXNodeData(
+  auto ax_node_data = CreateAXNodeData(
       ax::mojom::Role::kButton, ax::mojom::Action::kFocus,
       std::vector<int32_t>{kChildId1, kChildId2, kChildId3}, relative_bounds,
       kLabel1, kDescription1, ax::mojom::CheckedState::kMixed);
-  source_node_data.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, false);
-  source_node_data.RemoveState(ax::mojom::State::kIgnored);
-  auto converted_node = AXNodeDataToSemanticNode(source_node_data);
-  EXPECT_EQ(static_cast<uint32_t>(source_node_data.id),
-            converted_node.node_id());
+  ax_node_data.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, false);
+  ax_node_data.RemoveState(ax::mojom::State::kIgnored);
+  ax_node_data.id = kChildId1;
 
   Attributes attributes;
   attributes.set_label(kLabel1);
@@ -115,11 +107,31 @@ TEST_F(AXTreeConverterTest, AllFieldsSetAndEqual) {
   states.set_checked_state(CheckedState::MIXED);
   states.set_hidden(false);
   states.set_selected(false);
-  auto expected_node = CreateSemanticNode(
-      static_cast<uint32_t>(source_node_data.id), Role::BUTTON,
+  auto fuchsia_node = CreateSemanticNode(
+      ConvertToFuchsiaNodeId(ax_node_data.id, kRootId), Role::BUTTON,
       std::move(attributes), std::move(states),
       std::vector<Action>{Action::SET_FOCUS},
       std::vector<uint32_t>{kChildId1, kChildId2, kChildId3}, box, mat.value);
+
+  return std::make_pair(std::move(ax_node_data), std::move(fuchsia_node));
+}
+
+class AXTreeConverterTest : public testing::Test {
+ public:
+  AXTreeConverterTest() = default;
+  ~AXTreeConverterTest() override = default;
+
+  DISALLOW_COPY_AND_ASSIGN(AXTreeConverterTest);
+};
+
+TEST_F(AXTreeConverterTest, AllFieldsSetAndEqual) {
+  auto nodes = CreateSemanticNodeAllFieldsSet();
+  auto& source_node_data = nodes.first;
+  auto& expected_node = nodes.second;
+
+  auto converted_node = AXNodeDataToSemanticNode(source_node_data);
+  EXPECT_EQ(ConvertToFuchsiaNodeId(source_node_data.id, kRootId),
+            converted_node.node_id());
 
   EXPECT_TRUE(fidl::Equals(converted_node, expected_node));
 }
@@ -202,6 +214,25 @@ TEST_F(AXTreeConverterTest, FieldMismatch) {
   modified_node_data.child_ids = std::vector<int32_t>{};
   converted_node = AXNodeDataToSemanticNode(modified_node_data);
   EXPECT_FALSE(fidl::Equals(converted_node, expected_node));
+}
+
+TEST_F(AXTreeConverterTest, DefaultAction) {
+  auto nodes = CreateSemanticNodeAllFieldsSet();
+  auto& source_node_data = nodes.first;
+  auto& expected_node = nodes.second;
+
+  // Default action verb on an AXNodeData is equivalent to Action::DEFAULT on a
+  // Fuchsia semantic node.
+  source_node_data.SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
+  expected_node.mutable_actions()->insert(
+      expected_node.mutable_actions()->begin(),
+      fuchsia::accessibility::semantics::Action::DEFAULT);
+
+  auto converted_node = AXNodeDataToSemanticNode(source_node_data);
+  EXPECT_EQ(ConvertToFuchsiaNodeId(source_node_data.id, kRootId),
+            converted_node.node_id());
+
+  EXPECT_TRUE(fidl::Equals(converted_node, expected_node));
 }
 
 TEST_F(AXTreeConverterTest, ConvertToFuchsiaNodeId) {
