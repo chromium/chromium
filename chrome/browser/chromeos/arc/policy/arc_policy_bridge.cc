@@ -463,14 +463,10 @@ void ArcPolicyBridge::GetPolicies(GetPoliciesCallback callback) {
 void ArcPolicyBridge::ReportCompliance(const std::string& request,
                                        ReportComplianceCallback callback) {
   VLOG(1) << "ArcPolicyBridge::ReportCompliance";
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
-  // the callee interface.
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
   data_decoder::DataDecoder::ParseJsonIsolated(
       request,
       base::BindOnce(&ArcPolicyBridge::OnReportComplianceParse,
-                     weak_ptr_factory_.GetWeakPtr(), repeating_callback));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ArcPolicyBridge::ReportCloudDpsRequested(

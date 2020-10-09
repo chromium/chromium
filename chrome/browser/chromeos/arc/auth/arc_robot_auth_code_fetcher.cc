@@ -73,8 +73,7 @@ void ArcRobotAuthCodeFetcher::Fetch(FetchCallback callback) {
                     ->GetSharedURLLoaderFactory(),
           base::BindOnce(
               &ArcRobotAuthCodeFetcher::OnFetchRobotAuthCodeCompleted,
-              weak_ptr_factory_.GetWeakPtr(),
-              base::AdaptCallbackForRepeating(std::move(callback))));
+              weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
   enterprise_management::DeviceServiceApiAccessRequest* request =
       config->request()->mutable_service_api_access_request();

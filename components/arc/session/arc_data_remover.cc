@@ -57,9 +57,8 @@ void ArcDataRemover::Run(RunCallback callback) {
           .account_id();
   upstart_client->StartJob(
       kArcRemoveDataUpstartJob, {"CHROMEOS_USER=" + account_id},
-      base::AdaptCallbackForRepeating(
-          base::BindOnce(&ArcDataRemover::OnDataRemoved,
-                         weak_factory_.GetWeakPtr(), std::move(callback))));
+      base::BindOnce(&ArcDataRemover::OnDataRemoved, weak_factory_.GetWeakPtr(),
+                     std::move(callback)));
 }
 
 void ArcDataRemover::OnDataRemoved(RunCallback callback, bool success) {
