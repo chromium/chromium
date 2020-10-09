@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_layout.h"
 #import "ios/chrome/browser/ui/tab_grid/grid/horizontal_layout.h"
-#import "ios/chrome/browser/ui/tab_grid/grid/tab_switcher_layout.h"
 #import "ios/chrome/browser/ui/tab_grid/transitions/grid_transition_layout.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -150,7 +149,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     collectionView.dropDelegate = self;
     collectionView.dragInteractionEnabled = YES;
   } else {
-    self.reorderingLayout = [[TabSwitcherReorderingLayout alloc] init];
+    self.reorderingLayout = [[GridReorderingLayout alloc] init];
     self.itemReorderRecognizer = [[UILongPressGestureRecognizer alloc]
         initWithTarget:self
                 action:@selector(handleItemReorderingWithGesture:)];
