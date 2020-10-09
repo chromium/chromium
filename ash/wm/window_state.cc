@@ -14,7 +14,6 @@
 #include "ash/public/cpp/window_animation_types.h"
 #include "ash/public/cpp/window_pin_type.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/public/cpp/window_state_type.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
@@ -31,6 +30,7 @@
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/layout_manager.h"
 #include "ui/aura/window.h"
@@ -50,6 +50,8 @@
 
 namespace ash {
 namespace {
+
+using ::chromeos::WindowStateType;
 
 bool IsTabletModeEnabled() {
   return Shell::Get()->tablet_mode_controller()->InTabletMode();
@@ -563,7 +565,8 @@ WindowState::WindowState(aura::Window* window)
       autohide_shelf_when_maximized_or_fullscreen_(false),
       cached_z_order_(ui::ZOrderLevel::kNormal),
       ignore_property_change_(false),
-      current_state_(new DefaultState(ToWindowStateType(GetShowState()))) {
+      current_state_(
+          new DefaultState(chromeos::ToWindowStateType(GetShowState()))) {
   window_->AddObserver(this);
   UpdateWindowPropertiesFromStateType();
   OnPrePipStateChange(WindowStateType::kDefault);

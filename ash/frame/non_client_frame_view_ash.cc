@@ -39,6 +39,8 @@ DEFINE_UI_CLASS_PROPERTY_TYPE(ash::NonClientFrameViewAsh*)
 
 namespace ash {
 
+using ::chromeos::WindowStateType;
+
 DEFINE_UI_CLASS_PROPERTY_KEY(NonClientFrameViewAsh*,
                              kNonClientFrameViewAshKey,
                              nullptr)

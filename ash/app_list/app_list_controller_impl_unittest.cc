@@ -743,7 +743,7 @@ TEST_F(AppListControllerImplTestWithoutHotseat,
   wm::ActivateWindow(w1.get());
   Shell::Get()->home_screen_controller()->GoHome(
       display::Screen::GetScreen()->GetPrimaryDisplay().id());
-  EXPECT_EQ(WindowStateType::kMinimized,
+  EXPECT_EQ(chromeos::WindowStateType::kMinimized,
             WindowState::Get(w1.get())->GetStateType());
   EXPECT_TRUE(GetExpandArrowViewVisibility());
 

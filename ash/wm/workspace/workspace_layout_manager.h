@@ -83,7 +83,7 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
 
   // WindowStateObserver:
   void OnPostWindowStateTypeChange(WindowState* window_state,
-                                   WindowStateType old_type) override;
+                                   chromeos::WindowStateType old_type) override;
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,

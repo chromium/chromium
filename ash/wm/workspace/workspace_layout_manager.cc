@@ -40,6 +40,8 @@
 
 namespace ash {
 
+using ::chromeos::WindowStateType;
+
 WorkspaceLayoutManager::BubbleWindowObserver::BubbleWindowObserver(
     WorkspaceLayoutManager* workspace_layout_manager)
     : workspace_layout_manager_(workspace_layout_manager) {}

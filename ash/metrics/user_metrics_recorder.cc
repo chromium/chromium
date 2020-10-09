@@ -29,6 +29,8 @@ namespace ash {
 
 namespace {
 
+using ::chromeos::WindowStateType;
+
 // Time in seconds between calls to "RecordPeriodicMetrics".
 const int kAshPeriodicMetricsTimeInSeconds = 30 * 60;
 

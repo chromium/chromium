@@ -18,16 +18,17 @@ namespace ash {
 // BaseState implements the common framework for WindowState::State.
 class BaseState : public WindowState::State {
  public:
-  explicit BaseState(WindowStateType initial_state_type);
+  explicit BaseState(chromeos::WindowStateType initial_state_type);
   ~BaseState() override;
 
   // WindowState::State:
   void OnWMEvent(WindowState* window_state, const WMEvent* event) override;
-  WindowStateType GetType() const override;
+  chromeos::WindowStateType GetType() const override;
 
  protected:
-  // Returns the WindowStateType corresponds to the WMEvent type.
-  static WindowStateType GetStateForTransitionEvent(const WMEvent* event);
+  // Returns the chromeos::WindowStateType corresponds to the WMEvent type.
+  static chromeos::WindowStateType GetStateForTransitionEvent(
+      const WMEvent* event);
 
   static void CenterWindow(WindowState* window_state);
   static void CycleSnap(WindowState* window_state, WMEventType event);
@@ -51,14 +52,15 @@ class BaseState : public WindowState::State {
 
   // Shows/Hides window when minimized state changes.
   void UpdateMinimizedState(WindowState* window_state,
-                            WindowStateType previous_state_type);
+                            chromeos::WindowStateType previous_state_type);
 
   // Returns the window bounds for snapped window state.
-  gfx::Rect GetSnappedWindowBoundsInParent(aura::Window* window,
-                                           const WindowStateType state_type);
+  gfx::Rect GetSnappedWindowBoundsInParent(
+      aura::Window* window,
+      const chromeos::WindowStateType state_type);
 
   // The current type of the window.
-  WindowStateType state_type_;
+  chromeos::WindowStateType state_type_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(BaseState);

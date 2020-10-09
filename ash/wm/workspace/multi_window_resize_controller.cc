@@ -287,7 +287,7 @@ void MultiWindowResizeController::OnWindowDestroying(aura::Window* window) {
 
 void MultiWindowResizeController::OnPostWindowStateTypeChange(
     WindowState* window_state,
-    WindowStateType old_type) {
+    chromeos::WindowStateType old_type) {
   if (window_state->IsMaximized() || window_state->IsFullscreen() ||
       window_state->IsMinimized()) {
     ResetResizer();

@@ -7,7 +7,6 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_animation_types.h"
-#include "ash/public/cpp/window_state_type.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
@@ -20,6 +19,7 @@
 #include "ash/wm/workspace_controller.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -31,6 +31,8 @@
 
 namespace ash {
 namespace {
+
+using ::chromeos::WindowStateType;
 
 // This specifies how much percent (30%) of a window rect
 // must be visible when the window is added to the workspace.
@@ -92,8 +94,8 @@ void DefaultState::AttachState(WindowState* window_state,
 
   // If previous state is unminimized but window state is minimized, sync window
   // state to unminimized.
-  if (window_state->IsMinimized() &&
-      !IsMinimizedWindowStateType(state_in_previous_mode->GetType())) {
+  if (window_state->IsMinimized() && !chromeos::IsMinimizedWindowStateType(
+                                         state_in_previous_mode->GetType())) {
     aura::Window* window = window_state->window();
     window->SetProperty(
         aura::client::kShowStateKey,

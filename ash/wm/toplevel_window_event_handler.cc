@@ -120,7 +120,7 @@ class ToplevelWindowEventHandler::ScopedWindowResizer
 
   // WindowStateObserver overrides:
   void OnPreWindowStateTypeChange(WindowState* window_state,
-                                  WindowStateType type) override;
+                                  chromeos::WindowStateType type) override;
 
  private:
   ToplevelWindowEventHandler* handler_;
@@ -173,7 +173,8 @@ bool ToplevelWindowEventHandler::ScopedWindowResizer::IsResize() const {
 }
 
 void ToplevelWindowEventHandler::ScopedWindowResizer::
-    OnPreWindowStateTypeChange(WindowState* window_state, WindowStateType old) {
+    OnPreWindowStateTypeChange(WindowState* window_state,
+                               chromeos::WindowStateType old) {
   handler_->CompleteDrag(DragResult::SUCCESS);
 }
 

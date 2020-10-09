@@ -128,6 +128,7 @@ static_library("exo") {
       "//ash/public/cpp",
       "//chromeos/constants",
       "//chromeos/crosapi/cpp",
+      "//chromeos/ui/base",
       "//ui/events/ozone/layout",
     ]
     sources += [
@@ -224,6 +225,7 @@ source_set("test_support") {
     deps += [
       "//ash:test_support",
       "//ash/public/cpp",
+      "//chromeos/ui/base",
     ]
   }
 }

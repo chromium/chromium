@@ -7,9 +7,9 @@
 
 #include <memory>
 
-#include "ash/public/cpp/window_state_type.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"

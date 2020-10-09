@@ -9,9 +9,9 @@
 #include "ash/public/cpp/frame_utils.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/public/cpp/window_state_type.h"
 #include "base/check.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPaint.h"
@@ -176,9 +176,9 @@ void BrowserFrameHeaderAsh::PaintFrameImages(gfx::Canvas* canvas) {
   gfx::ImageSkia frame_overlay_image =
       appearance_provider_->GetFrameHeaderOverlayImage(active);
 
-  ash::WindowStateType state_type =
+  chromeos::WindowStateType state_type =
       target_widget()->GetNativeWindow()->GetProperty(ash::kWindowStateTypeKey);
-  int corner_radius = ash::IsNormalWindowStateType(state_type)
+  int corner_radius = chromeos::IsNormalWindowStateType(state_type)
                           ? ash::kTopCornerRadiusWhenRestored
                           : 0;
 

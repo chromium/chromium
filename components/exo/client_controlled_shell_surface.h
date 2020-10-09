@@ -91,8 +91,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
 
   // Set the callback to run when the surface state changed.
   using StateChangedCallback =
-      base::RepeatingCallback<void(ash::WindowStateType old_state_type,
-                                   ash::WindowStateType new_state_type)>;
+      base::RepeatingCallback<void(chromeos::WindowStateType old_state_type,
+                                   chromeos::WindowStateType new_state_type)>;
   void set_state_changed_callback(
       const StateChangedCallback& state_changed_callback) {
     state_changed_callback_ = state_changed_callback;
@@ -100,8 +100,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
 
   // Set the callback to run when the surface bounds changed.
   using BoundsChangedCallback =
-      base::RepeatingCallback<void(ash::WindowStateType current_state,
-                                   ash::WindowStateType requested_state,
+      base::RepeatingCallback<void(chromeos::WindowStateType current_state,
+                                   chromeos::WindowStateType requested_state,
                                    int64_t display_id,
                                    const gfx::Rect& bounds_in_display,
                                    bool is_resize,
@@ -172,16 +172,16 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   void ChangeZoomLevel(ZoomChange change);
 
   // Sends the window state change event to client.
-  void OnWindowStateChangeEvent(ash::WindowStateType old_state,
-                                ash::WindowStateType next_state);
+  void OnWindowStateChangeEvent(chromeos::WindowStateType old_state,
+                                chromeos::WindowStateType next_state);
 
   // Sends the window bounds change event to client. |display_id| specifies in
   // which display the surface should live in. |drag_bounds_change| is
   // a masked value of ash::WindowResizer::kBoundsChange_Xxx, and specifies
   // how the bounds was changed. The bounds change event may also come from a
   // snapped window state change |requested_state|.
-  void OnBoundsChangeEvent(ash::WindowStateType current_state,
-                           ash::WindowStateType requested_state,
+  void OnBoundsChangeEvent(chromeos::WindowStateType current_state,
+                           chromeos::WindowStateType requested_state,
                            int64_t display_id,
                            const gfx::Rect& bounds,
                            int drag_bounds_change);
@@ -340,7 +340,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
 
   ash::ClientControlledState* client_controlled_state_ = nullptr;
 
-  ash::WindowStateType pending_window_state_ = ash::WindowStateType::kNormal;
+  chromeos::WindowStateType pending_window_state_ =
+      chromeos::WindowStateType::kNormal;
 
   bool pending_always_on_top_ = false;
 

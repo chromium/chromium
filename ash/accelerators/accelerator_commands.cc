@@ -23,6 +23,8 @@
 namespace ash {
 namespace accelerators {
 
+using ::chromeos::WindowStateType;
+
 bool ZoomDisplay(bool up) {
   if (up)
     base::RecordAction(base::UserMetricsAction("Accel_Scale_Ui_Up"));

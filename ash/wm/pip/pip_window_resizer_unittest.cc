@@ -35,6 +35,8 @@ namespace ash {
 
 namespace {
 
+using ::chromeos::WindowStateType;
+
 // WindowState based on a given initial state. Records the last resize bounds.
 class FakeWindowState : public WindowState::State {
  public:

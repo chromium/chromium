@@ -5,7 +5,7 @@
 #ifndef ASH_WM_DRAG_DETAILS_H_
 #define ASH_WM_DRAG_DETAILS_H_
 
-#include "ash/public/cpp/window_state_type.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/wm/public/window_move_client.h"
@@ -24,7 +24,7 @@ struct DragDetails {
               ::wm::WindowMoveSource source);
   ~DragDetails();
 
-  const WindowStateType initial_state_type;
+  const chromeos::WindowStateType initial_state_type;
 
   // Initial bounds of the window in parent coordinates.
   const gfx::Rect initial_bounds_in_parent;

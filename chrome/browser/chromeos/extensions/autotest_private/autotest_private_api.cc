@@ -499,24 +499,24 @@ aura::Window* GetArcAppWindow(const std::string& package_name) {
 }
 
 // Gets expected window state type according to |event_type|.
-ash::WindowStateType GetExpectedWindowState(
+chromeos::WindowStateType GetExpectedWindowState(
     api::autotest_private::WMEventType event_type) {
   switch (event_type) {
     case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTNORMAL:
-      return ash::WindowStateType::kNormal;
+      return chromeos::WindowStateType::kNormal;
     case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTMAXIMIZE:
-      return ash::WindowStateType::kMaximized;
+      return chromeos::WindowStateType::kMaximized;
     case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTMINIMIZE:
-      return ash::WindowStateType::kMinimized;
+      return chromeos::WindowStateType::kMinimized;
     case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTFULLSCREEN:
-      return ash::WindowStateType::kFullscreen;
+      return chromeos::WindowStateType::kFullscreen;
     case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTSNAPLEFT:
-      return ash::WindowStateType::kLeftSnapped;
+      return chromeos::WindowStateType::kLeftSnapped;
     case api::autotest_private::WMEventType::WM_EVENT_TYPE_WMEVENTSNAPRIGHT:
-      return ash::WindowStateType::kRightSnapped;
+      return chromeos::WindowStateType::kRightSnapped;
     default:
       NOTREACHED();
-      return ash::WindowStateType::kNormal;
+      return chromeos::WindowStateType::kNormal;
   }
 }
 
@@ -541,28 +541,28 @@ ash::WMEventType ToWMEventType(api::autotest_private::WMEventType event_type) {
 }
 
 api::autotest_private::WindowStateType ToWindowStateType(
-    ash::WindowStateType state_type) {
+    chromeos::WindowStateType state_type) {
   switch (state_type) {
     // Consider adding DEFAULT type to idl.
-    case ash::WindowStateType::kDefault:
-    case ash::WindowStateType::kNormal:
+    case chromeos::WindowStateType::kDefault:
+    case chromeos::WindowStateType::kNormal:
       return api::autotest_private::WindowStateType::WINDOW_STATE_TYPE_NORMAL;
-    case ash::WindowStateType::kMinimized:
+    case chromeos::WindowStateType::kMinimized:
       return api::autotest_private::WindowStateType::
           WINDOW_STATE_TYPE_MINIMIZED;
-    case ash::WindowStateType::kMaximized:
+    case chromeos::WindowStateType::kMaximized:
       return api::autotest_private::WindowStateType::
           WINDOW_STATE_TYPE_MAXIMIZED;
-    case ash::WindowStateType::kFullscreen:
+    case chromeos::WindowStateType::kFullscreen:
       return api::autotest_private::WindowStateType::
           WINDOW_STATE_TYPE_FULLSCREEN;
-    case ash::WindowStateType::kLeftSnapped:
+    case chromeos::WindowStateType::kLeftSnapped:
       return api::autotest_private::WindowStateType::
           WINDOW_STATE_TYPE_LEFTSNAPPED;
-    case ash::WindowStateType::kRightSnapped:
+    case chromeos::WindowStateType::kRightSnapped:
       return api::autotest_private::WindowStateType::
           WINDOW_STATE_TYPE_RIGHTSNAPPED;
-    case ash::WindowStateType::kPip:
+    case chromeos::WindowStateType::kPip:
       return api::autotest_private::WindowStateType::WINDOW_STATE_TYPE_PIP;
     default:
       NOTREACHED();
@@ -809,7 +809,7 @@ std::string ResolutionToString(
 class WindowStateChangeObserver : public aura::WindowObserver {
  public:
   WindowStateChangeObserver(aura::Window* window,
-                            ash::WindowStateType expected_type,
+                            chromeos::WindowStateType expected_type,
                             base::OnceCallback<void(bool)> callback)
       : expected_type_(expected_type), callback_(std::move(callback)) {
     DCHECK_NE(window->GetProperty(ash::kWindowStateTypeKey), expected_type_);
@@ -836,7 +836,7 @@ class WindowStateChangeObserver : public aura::WindowObserver {
   }
 
  private:
-  ash::WindowStateType expected_type_;
+  chromeos::WindowStateType expected_type_;
   ScopedObserver<aura::Window, aura::WindowObserver> scoped_observer_{this};
   base::OnceCallback<void(bool)> callback_;
 
@@ -3713,7 +3713,7 @@ AutotestPrivateSetAppWindowStateFunction::Run() {
         base::StringPrintf("No app window was found : id=%d", params->id)));
   }
 
-  ash::WindowStateType expected_state =
+  chromeos::WindowStateType expected_state =
       GetExpectedWindowState(params->change.event_type);
   if (window->GetProperty(ash::kWindowStateTypeKey) == expected_state) {
     if (params->change.fail_if_no_change &&
@@ -3734,11 +3734,11 @@ AutotestPrivateSetAppWindowStateFunction::Run() {
 
   // TODO(crbug.com/990713): Make WMEvent trigger split view in tablet mode.
   if (ash::TabletMode::Get()->InTabletMode()) {
-    if (expected_state == ash::WindowStateType::kLeftSnapped) {
+    if (expected_state == chromeos::WindowStateType::kLeftSnapped) {
       ash::SplitViewTestApi().SnapWindow(
           window, ash::SplitViewTestApi::SnapPosition::LEFT);
       return RespondLater();
-    } else if (expected_state == ash::WindowStateType::kRightSnapped) {
+    } else if (expected_state == chromeos::WindowStateType::kRightSnapped) {
       ash::SplitViewTestApi().SnapWindow(
           window, ash::SplitViewTestApi::SnapPosition::RIGHT);
       return RespondLater();
@@ -3752,7 +3752,7 @@ AutotestPrivateSetAppWindowStateFunction::Run() {
 }
 
 void AutotestPrivateSetAppWindowStateFunction::WindowStateChanged(
-    ash::WindowStateType expected_type,
+    chromeos::WindowStateType expected_type,
     bool success) {
   if (!success) {
     Respond(Error(
@@ -4552,8 +4552,8 @@ AutotestPrivateSetWindowBoundsFunction::Run() {
   }
 
   auto* state = ash::WindowState::Get(window);
-  if (!state ||
-      ash::ToWindowShowState(state->GetStateType()) != ui::SHOW_STATE_NORMAL) {
+  if (!state || chromeos::ToWindowShowState(state->GetStateType()) !=
+                    ui::SHOW_STATE_NORMAL) {
     return RespondNow(
         Error("Cannot set bounds of window not in normal show state."));
   }

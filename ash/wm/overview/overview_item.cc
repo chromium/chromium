@@ -11,7 +11,6 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/public/cpp/window_state_type.h"
 #include "ash/scoped_animation_disabler.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -42,6 +41,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/metrics/user_metrics.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -61,6 +61,8 @@
 namespace ash {
 
 namespace {
+
+using ::chromeos::WindowStateType;
 
 // Opacity for fading out during closing a window.
 constexpr float kClosingItemOpacity = 0.8f;
@@ -1091,8 +1093,8 @@ void OverviewItem::OnPostWindowStateTypeChange(WindowState* window_state,
   }
 
   WindowStateType new_type = window_state->GetStateType();
-  if (IsMinimizedWindowStateType(old_type) ==
-      IsMinimizedWindowStateType(new_type)) {
+  if (chromeos::IsMinimizedWindowStateType(old_type) ==
+      chromeos::IsMinimizedWindowStateType(new_type)) {
     return;
   }
 

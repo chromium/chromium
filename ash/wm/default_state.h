@@ -21,7 +21,7 @@ enum class WindowStateType;
 // DefaultState implements Ash behavior without state machine.
 class DefaultState : public BaseState {
  public:
-  explicit DefaultState(WindowStateType initial_state_type);
+  explicit DefaultState(chromeos::WindowStateType initial_state_type);
   ~DefaultState() override;
 
   // WindowState::State overrides:
@@ -49,7 +49,7 @@ class DefaultState : public BaseState {
   // Enters next state. This is used when the state moves from one to another
   // within the same desktop mode.
   void EnterToNextState(WindowState* window_state,
-                        WindowStateType next_state_type);
+                        chromeos::WindowStateType next_state_type);
 
   // Reenters the current state. This is called when migrating from
   // previous desktop mode, and the window's state needs to re-construct the
@@ -59,7 +59,7 @@ class DefaultState : public BaseState {
 
   // Animates to new window bounds based on the current and previous state type.
   void UpdateBoundsFromState(WindowState* window_state,
-                             WindowStateType old_state_type);
+                             chromeos::WindowStateType old_state_type);
 
   // Updates the window bounds for display bounds, or display work area bounds
   // changes.

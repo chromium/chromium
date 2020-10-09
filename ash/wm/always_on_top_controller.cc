@@ -126,7 +126,7 @@ void AlwaysOnTopController::OnWindowDestroying(aura::Window* window) {
 
 void AlwaysOnTopController::OnPreWindowStateTypeChange(
     WindowState* window_state,
-    WindowStateType old_type) {
+    chromeos::WindowStateType old_type) {
   ReparentWindow(window_state->window());
 }
 

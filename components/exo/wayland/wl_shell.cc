@@ -125,7 +125,7 @@ const struct wl_shell_surface_interface shell_surface_implementation = {
 uint32_t HandleShellSurfaceConfigureCallback(
     wl_resource* resource,
     const gfx::Size& size,
-    ash::WindowStateType state_type,
+    chromeos::WindowStateType state_type,
     bool resizing,
     bool activated,
     const gfx::Vector2d& origin_offset) {

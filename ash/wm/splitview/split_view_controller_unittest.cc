@@ -4619,7 +4619,7 @@ TEST_P(SplitViewTabDraggingTestWithClamshellSupport,
   // Switch to clamshell mode and check that |snapped_window| keeps its snapped
   // window state.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
-  EXPECT_EQ(WindowStateType::kLeftSnapped,
+  EXPECT_EQ(chromeos::WindowStateType::kLeftSnapped,
             WindowState::Get(snapped_window.get())->GetStateType());
 }
 

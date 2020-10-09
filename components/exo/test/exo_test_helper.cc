@@ -32,20 +32,20 @@ namespace test {
 namespace {
 
 void HandleWindowStateRequest(ClientControlledShellSurface* shell_surface,
-                              ash::WindowStateType old_state,
-                              ash::WindowStateType new_state) {
+                              chromeos::WindowStateType old_state,
+                              chromeos::WindowStateType new_state) {
   switch (new_state) {
-    case ash::WindowStateType::kNormal:
-    case ash::WindowStateType::kDefault:
+    case chromeos::WindowStateType::kNormal:
+    case chromeos::WindowStateType::kDefault:
       shell_surface->SetRestored();
       break;
-    case ash::WindowStateType::kMinimized:
+    case chromeos::WindowStateType::kMinimized:
       shell_surface->SetMinimized();
       break;
-    case ash::WindowStateType::kMaximized:
+    case chromeos::WindowStateType::kMaximized:
       shell_surface->SetMaximized();
       break;
-    case ash::WindowStateType::kFullscreen:
+    case chromeos::WindowStateType::kFullscreen:
       shell_surface->SetFullscreen(true);
       break;
     default:
@@ -56,8 +56,8 @@ void HandleWindowStateRequest(ClientControlledShellSurface* shell_surface,
 }
 
 void HandleBoundsChangedRequest(ClientControlledShellSurface* shell_surface,
-                                ash::WindowStateType current_state,
-                                ash::WindowStateType requested_state,
+                                chromeos::WindowStateType current_state,
+                                chromeos::WindowStateType requested_state,
                                 int64_t display_id,
                                 const gfx::Rect& bounds_in_screen,
                                 bool is_resize,
@@ -88,10 +88,10 @@ void HandleBoundsChangedRequest(ClientControlledShellSurface* shell_surface,
   shell_surface->SetBounds(display_id, bounds_in_display);
 
   if (requested_state != window_state->GetStateType()) {
-    DCHECK(requested_state == ash::WindowStateType::kLeftSnapped ||
-           requested_state == ash::WindowStateType::kRightSnapped);
+    DCHECK(requested_state == chromeos::WindowStateType::kLeftSnapped ||
+           requested_state == chromeos::WindowStateType::kRightSnapped);
 
-    if (requested_state == ash::WindowStateType::kLeftSnapped)
+    if (requested_state == chromeos::WindowStateType::kLeftSnapped)
       shell_surface->SetSnappedToLeft();
     else
       shell_surface->SetSnappedToRight();

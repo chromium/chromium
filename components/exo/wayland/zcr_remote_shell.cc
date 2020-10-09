@@ -56,6 +56,8 @@ constexpr char kForceRemoteShellScale[] = "force-remote-shell-scale";
 
 }  // namespace switches
 
+using chromeos::WindowStateType;
+
 // We don't send configure immediately after tablet mode switch
 // because layout can change due to orientation lock state or accelerometer.
 constexpr int kConfigureDelayAfterLayoutSwitchMs = 300;
@@ -1131,8 +1133,8 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
 
   void HandleRemoteSurfaceBoundsChangedCallback(
       wl_resource* resource,
-      ash::WindowStateType current_state,
-      ash::WindowStateType requested_state,
+      WindowStateType current_state,
+      WindowStateType requested_state,
       int64_t display_id,
       const gfx::Rect& bounds_in_display,
       bool resize,
@@ -1140,7 +1142,7 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
     zcr_remote_surface_v1_bounds_change_reason reason =
         ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_RESIZE;
     if (!resize) {
-      reason = current_state == ash::WindowStateType::kPip
+      reason = current_state == WindowStateType::kPip
                    ? ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_MOVE_PIP
                    : ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_MOVE;
     }
@@ -1152,9 +1154,9 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
     // Override the reason only if the window enters snapped mode. If the window
     // resizes by dragging in snapped mode, we need to keep the original reason.
     if (requested_state != current_state) {
-      if (requested_state == ash::WindowStateType::kLeftSnapped) {
+      if (requested_state == WindowStateType::kLeftSnapped) {
         reason = ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_SNAP_TO_LEFT;
-      } else if (requested_state == ash::WindowStateType::kRightSnapped) {
+      } else if (requested_state == WindowStateType::kRightSnapped) {
         reason = ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_SNAP_TO_RIGHT;
       }
     }
@@ -1199,10 +1201,9 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
         bounds_in_display.height(), reason);
   }
 
-  void HandleRemoteSurfaceStateChangedCallback(
-      wl_resource* resource,
-      ash::WindowStateType old_state_type,
-      ash::WindowStateType new_state_type) {
+  void HandleRemoteSurfaceStateChangedCallback(wl_resource* resource,
+                                               WindowStateType old_state_type,
+                                               WindowStateType new_state_type) {
     DCHECK_NE(old_state_type, new_state_type);
     LOG_IF(ERROR, pending_bounds_changes_.count(resource) > 0)
         << "Sending window state while there is a pending bounds change. This "
@@ -1210,28 +1211,28 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
 
     uint32_t state_type = ZCR_REMOTE_SHELL_V1_STATE_TYPE_NORMAL;
     switch (new_state_type) {
-      case ash::WindowStateType::kMinimized:
+      case WindowStateType::kMinimized:
         state_type = ZCR_REMOTE_SHELL_V1_STATE_TYPE_MINIMIZED;
         break;
-      case ash::WindowStateType::kMaximized:
+      case WindowStateType::kMaximized:
         state_type = ZCR_REMOTE_SHELL_V1_STATE_TYPE_MAXIMIZED;
         break;
-      case ash::WindowStateType::kFullscreen:
+      case WindowStateType::kFullscreen:
         state_type = ZCR_REMOTE_SHELL_V1_STATE_TYPE_FULLSCREEN;
         break;
-      case ash::WindowStateType::kPinned:
+      case WindowStateType::kPinned:
         state_type = ZCR_REMOTE_SHELL_V1_STATE_TYPE_PINNED;
         break;
-      case ash::WindowStateType::kTrustedPinned:
+      case WindowStateType::kTrustedPinned:
         state_type = ZCR_REMOTE_SHELL_V1_STATE_TYPE_TRUSTED_PINNED;
         break;
-      case ash::WindowStateType::kLeftSnapped:
+      case WindowStateType::kLeftSnapped:
         state_type = ZCR_REMOTE_SHELL_V1_STATE_TYPE_LEFT_SNAPPED;
         break;
-      case ash::WindowStateType::kRightSnapped:
+      case WindowStateType::kRightSnapped:
         state_type = ZCR_REMOTE_SHELL_V1_STATE_TYPE_RIGHT_SNAPPED;
         break;
-      case ash::WindowStateType::kPip:
+      case WindowStateType::kPip:
         state_type = ZCR_REMOTE_SHELL_V1_STATE_TYPE_PIP;
         break;
       default:

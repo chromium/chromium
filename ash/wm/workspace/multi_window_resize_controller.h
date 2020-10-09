@@ -57,7 +57,7 @@ class ASH_EXPORT MultiWindowResizeController
 
   // WindowStateObserver:
   void OnPostWindowStateTypeChange(WindowState* window_state,
-                                   WindowStateType old_type) override;
+                                   chromeos::WindowStateType old_type) override;
 
   // OverviewObserver:
   void OnOverviewModeStarting() override;

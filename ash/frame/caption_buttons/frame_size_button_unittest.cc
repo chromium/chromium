@@ -27,6 +27,8 @@ namespace ash {
 
 namespace {
 
+using ::chromeos::WindowStateType;
+
 class TestWidgetDelegate : public views::WidgetDelegateView {
  public:
   explicit TestWidgetDelegate(bool resizable) {

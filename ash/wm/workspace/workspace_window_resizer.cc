@@ -48,6 +48,8 @@ namespace ash {
 
 namespace {
 
+using ::chromeos::WindowStateType;
+
 constexpr double kMinHorizVelocityForWindowSwipe = 1100;
 constexpr double kMinVertVelocityForWindowMinimize = 1000;
 
@@ -326,7 +328,9 @@ int GetDraggingThreshold(const DragDetails& details) {
 
   // Snapped and maximized windows need to be dragged a certain amount before
   // bounds start changing.
-  return IsNormalWindowStateType(state) ? 0 : kResizeRestoreDragThresholdDp;
+  return chromeos::IsNormalWindowStateType(state)
+             ? 0
+             : kResizeRestoreDragThresholdDp;
 }
 
 void ResetFrameRestoreLookKey(WindowState* window_state) {

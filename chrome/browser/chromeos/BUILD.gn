@@ -218,6 +218,7 @@ source_set("chromeos") {
     "//chromeos/system",
     "//chromeos/timezone",
     "//chromeos/tpm",
+    "//chromeos/ui/base",
     "//components/arc",
     "//components/arc/media_session",
     "//components/arc/mojom:mojom_traits",

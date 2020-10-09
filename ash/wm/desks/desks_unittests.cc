@@ -2748,7 +2748,8 @@ TEST_F(DesksWithSplitViewTest, SwitchToDeskWithSnappedActiveWindow) {
   WindowState* win0_state = WindowState::Get(win0.get());
   WMEvent snap_to_left(WM_EVENT_CYCLE_SNAP_LEFT);
   win0_state->OnWMEvent(&snap_to_left);
-  EXPECT_EQ(WindowStateType::kLeftSnapped, win0_state->GetStateType());
+  EXPECT_EQ(chromeos::WindowStateType::kLeftSnapped,
+            win0_state->GetStateType());
 
   // Switch to |desk_2| and then back to |desk_1|. Verify that neither split
   // view nor overview arises.

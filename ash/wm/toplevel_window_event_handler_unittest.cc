@@ -53,6 +53,8 @@ namespace ash {
 
 namespace {
 
+using ::chromeos::WindowStateType;
+
 // A simple window delegate that returns the specified hit-test code when
 // requested and applies a minimum size constraint if there is one.
 class TestWindowDelegate : public aura::test::TestWindowDelegate {

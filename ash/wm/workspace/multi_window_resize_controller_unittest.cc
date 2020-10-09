@@ -32,6 +32,7 @@
 
 using chromeos::kResizeInsideBoundsSize;
 using chromeos::kResizeOutsideBoundsSize;
+using chromeos::WindowStateType;
 
 namespace ash {
 

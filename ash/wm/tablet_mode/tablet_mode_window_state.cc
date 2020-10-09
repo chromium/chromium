@@ -11,7 +11,6 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_animation_types.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/public/cpp/window_state_type.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -24,6 +23,7 @@
 #include "ash/wm/window_state_util.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/compositor/layer.h"
@@ -33,6 +33,8 @@
 
 namespace ash {
 namespace {
+
+using ::chromeos::WindowStateType;
 
 // Sets the restore bounds and show state overrides. These values take
 // precedence over the restore bounds and restore show state (if set).
@@ -46,7 +48,7 @@ void SetWindowRestoreOverrides(aura::Window* window,
     return;
   }
   window->SetProperty(kRestoreWindowStateTypeOverrideKey,
-                      ToWindowStateType(window_state_override));
+                      chromeos::ToWindowStateType(window_state_override));
   window->SetProperty(kRestoreBoundsOverrideKey,
                       new gfx::Rect(bounds_override));
 }

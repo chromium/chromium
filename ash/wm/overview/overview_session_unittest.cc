@@ -106,6 +106,8 @@
 namespace ash {
 namespace {
 
+using ::chromeos::WindowStateType;
+
 constexpr const char kActiveWindowChangedFromOverview[] =
     "WindowSelector_ActiveWindowChanged";
 

@@ -21,6 +21,10 @@ template <typename T>
 using WindowProperty = ui::ClassProperty<T>;
 }  // namespace aura
 
+namespace chromeos {
+enum class WindowStateType;
+}
+
 namespace gfx {
 class Rect;
 }
@@ -28,7 +32,6 @@ class Rect;
 namespace ash {
 
 enum class WindowPinType;
-enum class WindowStateType;
 
 class WindowBackdrop;
 
@@ -134,8 +137,8 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool*>* const
     kMinimizeOnBackKey;
 
 // A property key to store the window state the window had before entering PIP.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<WindowStateType>* const
-    kPrePipWindowStateTypeKey;
+ASH_PUBLIC_EXPORT extern const aura::WindowProperty<
+    chromeos::WindowStateType>* const kPrePipWindowStateTypeKey;
 
 // If true, the current PIP window is spawned from this window.
 // Android PIP has two types of behavior depending on how many activities the
@@ -177,8 +180,8 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<gfx::Rect*>* const
 // take preference over the current state if
 // |kRestoreWindowStateTypeOverrideKey| is set. This is used by e.g. the tablet
 // mode window manager.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<WindowStateType>* const
-    kRestoreWindowStateTypeOverrideKey;
+ASH_PUBLIC_EXPORT extern const aura::WindowProperty<
+    chromeos::WindowStateType>* const kRestoreWindowStateTypeOverrideKey;
 
 // A property key to store whether search key accelerator is reserved for a
 // window. This is used to pass through search key accelerators to Android
@@ -237,8 +240,8 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
     kWindowPositionManagedTypeKey;
 
 // A property key to indicate ash's extended window state.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<WindowStateType>* const
-    kWindowStateTypeKey;
+ASH_PUBLIC_EXPORT extern const aura::WindowProperty<
+    chromeos::WindowStateType>* const kWindowStateTypeKey;
 
 // A property key to indicate pip window state.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const

@@ -25,6 +25,8 @@
 namespace ash {
 namespace {
 
+using ::chromeos::WindowStateType;
+
 constexpr gfx::Rect kInitialBounds(0, 0, 100, 100);
 
 class TestClientControlledStateDelegate
@@ -41,13 +43,13 @@ class TestClientControlledStateDelegate
   }
 
   void HandleBoundsRequest(WindowState* window_state,
-                           ash::WindowStateType requested_state,
+                           WindowStateType requested_state,
                            const gfx::Rect& bounds,
                            int64_t display_id) override {
     requested_bounds_ = bounds;
     if (requested_state != window_state->GetStateType()) {
-      DCHECK(requested_state == ash::WindowStateType::kLeftSnapped ||
-             requested_state == ash::WindowStateType::kRightSnapped);
+      DCHECK(requested_state == WindowStateType::kLeftSnapped ||
+             requested_state == WindowStateType::kRightSnapped);
       old_state_ = window_state->GetStateType();
       new_state_ = requested_state;
     }

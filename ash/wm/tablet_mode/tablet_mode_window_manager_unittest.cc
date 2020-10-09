@@ -14,7 +14,6 @@
 #include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/public/cpp/window_state_type.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
@@ -48,6 +47,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
@@ -60,6 +60,8 @@
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
+
+using ::chromeos::WindowStateType;
 
 // A helper function to set the shelf auto-hide preference. This has the same
 // effect as the user toggling the shelf context menu option.

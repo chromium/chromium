@@ -105,7 +105,7 @@ class AsyncWindowStateChangeObserver : public WindowStateObserver,
 
   // WindowStateObserver:
   void OnPostWindowStateTypeChange(WindowState* window_state,
-                                   WindowStateType) override {
+                                   chromeos::WindowStateType) override {
     RemoveAllObservers();
     std::move(on_post_window_state_changed_).Run(window_state);
     delete this;

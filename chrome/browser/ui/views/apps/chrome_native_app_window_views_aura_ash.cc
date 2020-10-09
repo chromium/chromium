@@ -16,7 +16,6 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/public/cpp/window_state_type.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -32,6 +31,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "components/session_manager/core/session_manager.h"
 #include "extensions/browser/app_window/app_delegate.h"
 #include "extensions/common/constants.h"
@@ -205,7 +205,7 @@ ChromeNativeAppWindowViewsAuraAsh::GetRestoredState() const {
   if (GetNativeWindow()->GetProperty(ash::kRestoreBoundsOverrideKey)) {
     // If an override is given, use that restore state, unless the window is in
     // immersive fullscreen.
-    restore_state = ash::ToWindowShowState(GetNativeWindow()->GetProperty(
+    restore_state = chromeos::ToWindowShowState(GetNativeWindow()->GetProperty(
         ash::kRestoreWindowStateTypeOverrideKey));
     is_fullscreen = restore_state == ui::SHOW_STATE_FULLSCREEN;
   } else {
@@ -469,7 +469,7 @@ void ChromeNativeAppWindowViewsAuraAsh::OnWidgetActivationChanged(
 
 void ChromeNativeAppWindowViewsAuraAsh::OnPostWindowStateTypeChange(
     ash::WindowState* window_state,
-    ash::WindowStateType old_type) {
+    chromeos::WindowStateType old_type) {
   DCHECK(!IsFrameless());
   DCHECK_EQ(GetNativeWindow(), window_state->window());
   if (window_state->IsFullscreen() != app_window()->IsFullscreen()) {

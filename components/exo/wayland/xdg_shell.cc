@@ -11,9 +11,9 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/public/cpp/window_state_type.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "components/exo/display.h"
 #include "components/exo/wayland/serial_tracker.h"
 #include "components/exo/wayland/server_util.h"
@@ -124,7 +124,7 @@ int XdgToplevelResizeComponent(uint32_t edges) {
 
 using XdgSurfaceConfigureCallback =
     base::RepeatingCallback<void(const gfx::Size& size,
-                                 ash::WindowStateType state_type,
+                                 chromeos::WindowStateType state_type,
                                  bool resizing,
                                  bool activated)>;
 
@@ -133,7 +133,7 @@ uint32_t HandleXdgSurfaceConfigureCallback(
     SerialTracker* serial_tracker,
     const XdgSurfaceConfigureCallback& callback,
     const gfx::Size& size,
-    ash::WindowStateType state_type,
+    chromeos::WindowStateType state_type,
     bool resizing,
     bool activated,
     const gfx::Vector2d& origin_offset) {
@@ -301,14 +301,14 @@ class WaylandToplevel : public aura::WindowObserver {
   }
 
   void OnConfigure(const gfx::Size& size,
-                   ash::WindowStateType state_type,
+                   chromeos::WindowStateType state_type,
                    bool resizing,
                    bool activated) {
     wl_array states;
     wl_array_init(&states);
-    if (state_type == ash::WindowStateType::kMaximized)
+    if (state_type == chromeos::WindowStateType::kMaximized)
       AddState(&states, XDG_TOPLEVEL_STATE_MAXIMIZED);
-    if (state_type == ash::WindowStateType::kFullscreen)
+    if (state_type == chromeos::WindowStateType::kFullscreen)
       AddState(&states, XDG_TOPLEVEL_STATE_FULLSCREEN);
     if (resizing)
       AddState(&states, XDG_TOPLEVEL_STATE_RESIZING);
@@ -477,7 +477,7 @@ class WaylandPopup : aura::WindowObserver {
   }
 
   void OnConfigure(const gfx::Size& size,
-                   ash::WindowStateType state_type,
+                   chromeos::WindowStateType state_type,
                    bool resizing,
                    bool activated) {
     // Nothing to do here as popups don't have additional configure state.

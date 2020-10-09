@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_WINDOW_STATE_TYPE_H_
-#define ASH_PUBLIC_CPP_WINDOW_STATE_TYPE_H_
+#ifndef CHROMEOS_UI_BASE_WINDOW_STATE_TYPE_H_
+#define CHROMEOS_UI_BASE_WINDOW_STATE_TYPE_H_
 
 #include <cstdint>
 #include <ostream>
 
-#include "ash/public/cpp/ash_public_export.h"
+#include "base/component_export.h"
 #include "ui/base/ui_base_types.h"
 
-namespace ash {
+namespace chromeos {
 
 // A superset of ui::WindowShowState. Ash has more states than the general
 // ui::WindowShowState enum. These need to be communicated back to Chrome.
@@ -46,31 +46,35 @@ enum class WindowStateType {
   kPip,
 };
 
-ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& stream,
-                                           WindowStateType state);
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+std::ostream& operator<<(std::ostream& stream, WindowStateType state);
 
 // Utility functions to convert WindowStateType <-> ui::WindowShowState.
 // Note: LEFT/RIGHT MAXIMIZED, AUTO_POSITIONED types will be lost when
 // converting to ui::WindowShowState.
-ASH_PUBLIC_EXPORT WindowStateType ToWindowStateType(ui::WindowShowState state);
-ASH_PUBLIC_EXPORT ui::WindowShowState ToWindowShowState(WindowStateType type);
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+WindowStateType ToWindowStateType(ui::WindowShowState state);
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+ui::WindowShowState ToWindowShowState(WindowStateType type);
 
 // Returns true if |type| is FULLSCREEN, PINNED, or TRUSTED_PINNED.
-ASH_PUBLIC_EXPORT bool IsFullscreenOrPinnedWindowStateType(
-    WindowStateType type);
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+bool IsFullscreenOrPinnedWindowStateType(WindowStateType type);
 
 // Returns true if |type| is MAXIMIZED, FULLSCREEN, PINNED, or TRUSTED_PINNED.
-ASH_PUBLIC_EXPORT bool IsMaximizedOrFullscreenOrPinnedWindowStateType(
-    WindowStateType type);
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+bool IsMaximizedOrFullscreenOrPinnedWindowStateType(WindowStateType type);
 
 // Returns true if |type| is MINIMIZED.
-ASH_PUBLIC_EXPORT bool IsMinimizedWindowStateType(WindowStateType type);
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+bool IsMinimizedWindowStateType(WindowStateType type);
 
 // Returns true if |type| is either NORMAL or DEFAULT.
-ASH_PUBLIC_EXPORT bool IsNormalWindowStateType(WindowStateType type);
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+bool IsNormalWindowStateType(WindowStateType type);
 
-ASH_PUBLIC_EXPORT bool IsValidWindowStateType(int64_t value);
+COMPONENT_EXPORT(CHROMEOS_UI_BASE) bool IsValidWindowStateType(int64_t value);
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // ASH_PUBLIC_CPP_WINDOW_STATE_TYPE_H_
+#endif  // CHROMEOS_UI_BASE_WINDOW_STATE_TYPE_H_

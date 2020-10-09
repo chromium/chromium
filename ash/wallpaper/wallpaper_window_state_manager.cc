@@ -24,7 +24,7 @@ void ActivateMruUnminimizedWindowOnActiveDesk() {
           DesksMruType::kActiveDesk));
   for (auto* window : mru_windows) {
     if (WindowState::Get(window)->GetStateType() !=
-        WindowStateType::kMinimized) {
+        chromeos::WindowStateType::kMinimized) {
       WindowState::Get(window)->Activate();
       return;
     }

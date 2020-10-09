@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/window_animation_types.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/public/cpp/window_state_type.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -15,10 +14,13 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/wm_event.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 
 namespace ash {
+
+using ::chromeos::WindowStateType;
 
 BaseState::BaseState(WindowStateType initial_state_type)
     : state_type_(initial_state_type) {}

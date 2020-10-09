@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/public/cpp/window_properties.h"
-#include "ash/public/cpp/window_state_type.h"
 #include "ash/shell.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -110,7 +110,7 @@ void BrowserFrameAsh::GetWindowPlacement(
   if (override_bounds && !override_bounds->IsEmpty()) {
     *bounds = *override_bounds;
     *show_state =
-        ash::ToWindowShowState(GetWidget()->GetNativeWindow()->GetProperty(
+        chromeos::ToWindowShowState(GetWidget()->GetNativeWindow()->GetProperty(
             ash::kRestoreWindowStateTypeOverrideKey));
   } else {
     *bounds = GetWidget()->GetRestoredBounds();

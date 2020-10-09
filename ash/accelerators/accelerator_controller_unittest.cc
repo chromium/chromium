@@ -85,6 +85,7 @@
 
 namespace ash {
 
+using ::chromeos::WindowStateType;
 using media_session::mojom::MediaSessionAction;
 
 namespace {

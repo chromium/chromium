@@ -43,6 +43,8 @@ namespace ash {
 
 namespace {
 
+using ::chromeos::WindowStateType;
+
 // This function is called to check if window[i] is eligible to be carried over
 // to split view mode during clamshell <-> tablet mode transition or multi-user
 // switch transition. Returns true if windows[i] exists, is on |root_window|,

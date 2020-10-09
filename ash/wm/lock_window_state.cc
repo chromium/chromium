@@ -24,6 +24,8 @@
 
 namespace ash {
 
+using ::chromeos::WindowStateType;
+
 LockWindowState::LockWindowState(aura::Window* window, bool exclude_shelf)
     : current_state_type_(WindowState::Get(window)->GetStateType()),
       exclude_shelf_(exclude_shelf) {}

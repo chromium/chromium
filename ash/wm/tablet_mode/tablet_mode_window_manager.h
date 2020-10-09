@@ -111,18 +111,18 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
   // current bounds or state type of |window|.
   gfx::Rect GetWindowBoundsInScreen(aura::Window* window,
                                     bool from_clamshell) const;
-  WindowStateType GetWindowStateType(aura::Window* window,
-                                     bool from_clamshell) const;
+  chromeos::WindowStateType GetWindowStateType(aura::Window* window,
+                                               bool from_clamshell) const;
 
   // Returns the windows that are going to be carried over to split view during
   // clamshell <-> tablet transition or multi-user switch transition.
-  base::flat_map<aura::Window*, WindowStateType> GetCarryOverWindowsInSplitView(
-      bool clamshell_to_tablet) const;
+  base::flat_map<aura::Window*, chromeos::WindowStateType>
+  GetCarryOverWindowsInSplitView(bool clamshell_to_tablet) const;
 
   // Calculates the split view divider position that will best preserve the
   // bounds of the windows.
   int CalculateCarryOverDividerPosition(
-      const base::flat_map<aura::Window*, WindowStateType>&
+      const base::flat_map<aura::Window*, chromeos::WindowStateType>&
           windows_in_splitview,
       bool clamshell_to_tablet) const;
 
@@ -136,7 +136,8 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
   // windows will be carried over to clamshell split view. |was_in_overview|
   // indicates whether overview is active before entering clamshell mode.
   void ArrangeWindowsForClamshellMode(
-      base::flat_map<aura::Window*, WindowStateType> windows_in_splitview,
+      base::flat_map<aura::Window*, chromeos::WindowStateType>
+          windows_in_splitview,
       bool was_in_overview);
 
   // If the given window should be handled by us, this function will add it to

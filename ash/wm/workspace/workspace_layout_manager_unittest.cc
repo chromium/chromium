@@ -75,6 +75,8 @@
 namespace ash {
 namespace {
 
+using ::chromeos::WindowStateType;
+
 class MaximizeDelegateView : public views::WidgetDelegateView {
  public:
   explicit MaximizeDelegateView(const gfx::Rect& initial_bounds)

@@ -215,9 +215,9 @@ class ASH_EXPORT OverviewItem : public views::ButtonListener,
 
   // WindowStateObserver:
   void OnPreWindowStateTypeChange(WindowState* window_state,
-                                  WindowStateType old_type) override;
+                                  chromeos::WindowStateType old_type) override;
   void OnPostWindowStateTypeChange(WindowState* window_state,
-                                   WindowStateType old_type) override;
+                                   chromeos::WindowStateType old_type) override;
 
   // Returns the root window on which this item is shown.
   aura::Window* root_window() { return root_window_; }

@@ -15,9 +15,6 @@
 #include "ui/gfx/geometry/rect.h"
 
 namespace ash {
-namespace mojom {
-enum class WindowStateType;
-}
 
 // ClientControlledState delegates the window state transition and
 // bounds control to the client. Its window state and bounds are
@@ -31,15 +28,16 @@ class ASH_EXPORT ClientControlledState : public BaseState {
     // Handles the state change of |window_state| to |requested_state|.
     // Delegate may decide to ignore the state change, proceed with the state
     // change, or can move to a different state.
-    virtual void HandleWindowStateRequest(WindowState* window_state,
-                                          WindowStateType requested_state) = 0;
+    virtual void HandleWindowStateRequest(
+        WindowState* window_state,
+        chromeos::WindowStateType requested_state) = 0;
     // Handles the bounds change request for |window_state|. The bounds change
     // might come from a state change request |requested_state| (currently it
     // should only be a snapped window state). Delegate may choose to ignore the
     // request, set the given bounds, or set the different bounds.
     virtual void HandleBoundsRequest(
         WindowState* window_state,
-        WindowStateType requested_state,
+        chromeos::WindowStateType requested_state,
         const gfx::Rect& requested_bounds_in_display,
         int64_t display_id) = 0;
   };
@@ -97,11 +95,12 @@ class ASH_EXPORT ClientControlledState : public BaseState {
   // within the same desktop mode. Returns true if the state has changed, or
   // false otherwise.
   bool EnterNextState(WindowState* window_state,
-                      WindowStateType next_state_type);
+                      chromeos::WindowStateType next_state_type);
 
  private:
-  WindowStateType GetResolvedNextWindowStateType(WindowState* window_state,
-                                                 const WMEvent* event);
+  chromeos::WindowStateType GetResolvedNextWindowStateType(
+      WindowState* window_state,
+      const WMEvent* event);
 
   std::unique_ptr<Delegate> delegate_;
 

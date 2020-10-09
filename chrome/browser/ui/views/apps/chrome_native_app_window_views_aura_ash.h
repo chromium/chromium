@@ -130,7 +130,7 @@ class ChromeNativeAppWindowViewsAuraAsh
 
   // ash::WindowStateObserver:
   void OnPostWindowStateTypeChange(ash::WindowState* window_state,
-                                   ash::WindowStateType old_type) override;
+                                   chromeos::WindowStateType old_type) override;
 
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,

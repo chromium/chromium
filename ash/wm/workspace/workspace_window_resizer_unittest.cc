@@ -38,6 +38,8 @@
 namespace ash {
 namespace {
 
+using chromeos::WindowStateType;
+
 constexpr int kRootHeight = 600;
 
 gfx::PointF CalculateDragPoint(const WindowResizer& resizer,

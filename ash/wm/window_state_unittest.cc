@@ -25,7 +25,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
-using ash::WindowStateType;
+using chromeos::WindowStateType;
 
 namespace ash {
 namespace {

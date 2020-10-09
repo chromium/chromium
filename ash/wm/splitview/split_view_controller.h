@@ -239,7 +239,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
 
   // WindowStateObserver:
   void OnPostWindowStateTypeChange(WindowState* window_state,
-                                   WindowStateType old_type) override;
+                                   chromeos::WindowStateType old_type) override;
 
   // ShellObserver:
   void OnPinnedStateChanged(aura::Window* pinned_window) override;

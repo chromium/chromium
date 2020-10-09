@@ -4697,6 +4697,7 @@ static_library("test_support") {
     deps += [
       "//ash/public/cpp",
       "//chromeos/dbus",
+      "//chromeos/ui/base",
     ]
   }
 

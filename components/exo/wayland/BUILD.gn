@@ -124,6 +124,7 @@ source_set("wayland") {
       deps += [
         "//ash",
         "//ash/public/cpp",
+        "//chromeos/ui/base",
       ]
     }
   }

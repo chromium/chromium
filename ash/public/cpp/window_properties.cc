@@ -8,14 +8,15 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_pin_type.h"
-#include "ash/public/cpp/window_state_type.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_properties.h"
 
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, ash::WindowPinType)
-DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, ash::WindowStateType)
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT,
+                                       chromeos::WindowStateType)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, ash::WindowBackdrop*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, bool*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, float*)
@@ -46,9 +47,9 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsDeferredTabDraggingTargetWindowKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsDraggingTabsKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideInDeskMiniViewKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kForceVisibleInMiniViewKey, false)
-DEFINE_UI_CLASS_PROPERTY_KEY(WindowStateType,
+DEFINE_UI_CLASS_PROPERTY_KEY(chromeos::WindowStateType,
                              kPrePipWindowStateTypeKey,
-                             WindowStateType::kDefault)
+                             chromeos::WindowStateType::kDefault)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowManagerManagesOpacityKey, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(bool, kMinimizeOnBackKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kPipOriginalWindowKey, false)
@@ -57,9 +58,9 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kRenderTitleAreaProperty, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect,
                                    kRestoreBoundsOverrideKey,
                                    nullptr)
-DEFINE_UI_CLASS_PROPERTY_KEY(WindowStateType,
+DEFINE_UI_CLASS_PROPERTY_KEY(chromeos::WindowStateType,
                              kRestoreWindowStateTypeOverrideKey,
-                             WindowStateType::kDefault)
+                             chromeos::WindowStateType::kDefault)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSearchKeyAcceleratorReservedKey, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kShelfIDKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kShelfItemTypeKey, TYPE_UNDEFINED)
@@ -83,9 +84,9 @@ DEFINE_UI_CLASS_PROPERTY_KEY(WindowPinType,
                              kWindowPinTypeKey,
                              WindowPinType::kNone)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowPositionManagedTypeKey, false)
-DEFINE_UI_CLASS_PROPERTY_KEY(WindowStateType,
+DEFINE_UI_CLASS_PROPERTY_KEY(chromeos::WindowStateType,
                              kWindowStateTypeKey,
-                             WindowStateType::kDefault)
+                             chromeos::WindowStateType::kDefault)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowPipTypeKey, false)
 

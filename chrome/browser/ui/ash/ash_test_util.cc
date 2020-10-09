@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/ash/ash_test_util.h"
 
 #include "ash/public/cpp/window_properties.h"
-#include "ash/public/cpp/window_state_type.h"
 #include "base/run_loop.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -15,11 +15,12 @@
 
 namespace test {
 namespace {
+
 // Wait until the window's state changes to given the snapped state.
 // The window should stay alive, so no need to observer destroying.
 class SnapWaiter : public aura::WindowObserver {
  public:
-  SnapWaiter(aura::Window* window, ash::WindowStateType type)
+  SnapWaiter(aura::Window* window, chromeos::WindowStateType type)
       : window_(window), type_(type) {
     window->AddObserver(this);
   }
@@ -41,7 +42,7 @@ class SnapWaiter : public aura::WindowObserver {
 
  private:
   aura::Window* window_;
-  ash::WindowStateType type_;
+  chromeos::WindowStateType type_;
   base::RunLoop run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(SnapWaiter);
@@ -49,7 +50,8 @@ class SnapWaiter : public aura::WindowObserver {
 
 }  // namespace
 
-void ActivateAndSnapWindow(aura::Window* window, ash::WindowStateType type) {
+void ActivateAndSnapWindow(aura::Window* window,
+                           chromeos::WindowStateType type) {
   DCHECK(window);
   if (!wm::IsActiveWindow(window))
     wm::ActivateWindow(window);
@@ -57,15 +59,15 @@ void ActivateAndSnapWindow(aura::Window* window, ash::WindowStateType type) {
   ASSERT_TRUE(wm::IsActiveWindow(window));
 
   SnapWaiter snap_waiter(window, type);
-  ASSERT_TRUE(type == ash::WindowStateType::kRightSnapped ||
-              type == ash::WindowStateType::kLeftSnapped);
+  ASSERT_TRUE(type == chromeos::WindowStateType::kRightSnapped ||
+              type == chromeos::WindowStateType::kLeftSnapped);
 
   // Early return if it's already snapped.
   if (snap_waiter.IsSnapped())
     return;
 
   ui_controls::SendKeyPress(window,
-                            type == ash::WindowStateType::kLeftSnapped
+                            type == chromeos::WindowStateType::kLeftSnapped
                                 ? ui::VKEY_OEM_4
                                 : ui::VKEY_OEM_6,
                             /*control=*/false,

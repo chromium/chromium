@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/window_state_type.h"
+#include "chromeos/ui/base/window_state_type.h"
 
 #include "base/notreached.h"
 
-namespace ash {
+namespace chromeos {
 
 std::ostream& operator<<(std::ostream& stream, WindowStateType state) {
   switch (state) {
@@ -120,4 +120,4 @@ bool IsValidWindowStateType(int64_t value) {
          value == int64_t(WindowStateType::kPip);
 }
 
-}  // namespace ash
+}  // namespace chromeos

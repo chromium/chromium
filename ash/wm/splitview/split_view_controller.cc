@@ -66,6 +66,8 @@ namespace ash {
 
 namespace {
 
+using ::chromeos::WindowStateType;
+
 // Three fixed position ratios of the divider, which means the divider can
 // always be moved to these three positions.
 constexpr float kFixedPositionRatios[] = {0.f, 0.5f, 1.0f};

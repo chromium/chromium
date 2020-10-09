@@ -49,7 +49,7 @@ class ASH_EXPORT AlwaysOnTopController : public aura::WindowObserver,
 
   // Overridden from WindowStateObserver:
   void OnPreWindowStateTypeChange(WindowState* window_state,
-                                  WindowStateType old_type) override;
+                                  chromeos::WindowStateType old_type) override;
 
   aura::Window* always_on_top_container_;
   aura::Window* pip_container_;

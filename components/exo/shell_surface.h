@@ -43,7 +43,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // in steps of NxM pixels).
   using ConfigureCallback =
       base::RepeatingCallback<uint32_t(const gfx::Size& size,
-                                       ash::WindowStateType state_type,
+                                       chromeos::WindowStateType state_type,
                                        bool resizing,
                                        bool activated,
                                        const gfx::Vector2d& origin_offset)>;
@@ -112,9 +112,9 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
 
   // Overridden from ash::WindowStateObserver:
   void OnPreWindowStateTypeChange(ash::WindowState* window_state,
-                                  ash::WindowStateType old_type) override;
+                                  chromeos::WindowStateType old_type) override;
   void OnPostWindowStateTypeChange(ash::WindowState* window_state,
-                                   ash::WindowStateType old_type) override;
+                                   chromeos::WindowStateType old_type) override;
 
   // Overridden from wm::ActivationChangeObserver:
   void OnWindowActivated(ActivationReason reason,

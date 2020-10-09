@@ -32,6 +32,8 @@ namespace ash {
 
 namespace {
 
+using ::chromeos::WindowStateType;
+
 // Clicks |button| with |flags|.
 void ClickButtonWithFlags(ui::test::EventGenerator* generator,
                           int button,

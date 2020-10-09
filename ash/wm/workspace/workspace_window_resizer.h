@@ -145,13 +145,13 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
 
   // Returns true if |bounds_in_parent| are valid bounds for snapped state type
   // |snapped_type|.
-  bool AreBoundsValidSnappedBounds(WindowStateType snapped_type,
+  bool AreBoundsValidSnappedBounds(chromeos::WindowStateType snapped_type,
                                    const gfx::Rect& bounds_in_parent) const;
 
   // Sets |window|'s state type to |new_state_type|. Called after the drag has
   // been completed for fling/swipe gestures.
   void SetWindowStateTypeFromGesture(aura::Window* window,
-                                     WindowStateType new_state_type);
+                                     chromeos::WindowStateType new_state_type);
 
   // Start/End drag for attached windows if there is any.
   void StartDragForAttachedWindows();

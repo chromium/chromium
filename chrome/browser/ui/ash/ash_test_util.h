@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_ASH_TEST_UTIL_H_
 #define CHROME_BROWSER_UI_ASH_ASH_TEST_UTIL_H_
 
-namespace ash {
+namespace chromeos {
 enum class WindowStateType;
 }
 
@@ -16,7 +16,8 @@ class Window;
 namespace test {
 
 // The snap window. This will activate the |window|.
-void ActivateAndSnapWindow(aura::Window* window, ash::WindowStateType type);
+void ActivateAndSnapWindow(aura::Window* window,
+                           chromeos::WindowStateType type);
 
 }  // namespace test
 

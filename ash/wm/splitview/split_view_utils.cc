@@ -33,6 +33,8 @@ namespace ash {
 
 namespace {
 
+using ::chromeos::WindowStateType;
+
 // The animation speed at which the highlights fade in or out.
 constexpr base::TimeDelta kHighlightsFadeInOut =
     base::TimeDelta::FromMilliseconds(250);

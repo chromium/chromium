@@ -323,8 +323,6 @@ component("cpp") {
     "window_pin_type.h",
     "window_properties.cc",
     "window_properties.h",
-    "window_state_type.cc",
-    "window_state_type.h",
   ]
 
   defines = [ "ASH_PUBLIC_IMPLEMENTATION" ]
