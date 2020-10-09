@@ -9,7 +9,6 @@
 
 #include "base/timer/timer.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(OS_CHROMEOS)
@@ -28,7 +27,6 @@ class TrackImageButton;
 // The Chrome desktop implementation of OverlayWindow. This will only be
 // implemented in views, which will support all desktop platforms.
 class OverlayWindowViews : public content::OverlayWindow,
-                           public views::ButtonListener,
                            public views::Widget {
  public:
   static std::unique_ptr<content::OverlayWindow> Create(
@@ -67,9 +65,6 @@ class OverlayWindowViews : public content::OverlayWindow,
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // Gets the bounds of the controls.
   gfx::Rect GetBackToTabControlsBounds();

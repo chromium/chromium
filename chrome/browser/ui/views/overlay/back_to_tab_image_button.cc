@@ -21,8 +21,8 @@ constexpr SkColor kBackToTabIconColor = SK_ColorWHITE;
 
 namespace views {
 
-BackToTabImageButton::BackToTabImageButton(ButtonListener* listener)
-    : ImageButton(listener) {
+BackToTabImageButton::BackToTabImageButton(PressedCallback callback)
+    : ImageButton(std::move(callback)) {
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   SetImage(views::Button::STATE_NORMAL,

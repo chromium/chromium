@@ -13,7 +13,7 @@ namespace views {
 // A resizable playback button with 3 states: play/pause/replay.
 class PlaybackImageButton : public views::ImageButton {
  public:
-  explicit PlaybackImageButton(ButtonListener*);
+  explicit PlaybackImageButton(PressedCallback callback);
   ~PlaybackImageButton() override = default;
 
   // Show appropriate images based on playback state.

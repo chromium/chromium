@@ -349,22 +349,57 @@ void OverlayWindowViews::SetUpViews() {
   auto window_background_view = std::make_unique<views::View>();
   auto video_view = std::make_unique<views::View>();
   auto controls_scrim_view = std::make_unique<views::View>();
-  auto close_controls_view = std::make_unique<views::CloseImageButton>(this);
+  auto close_controls_view =
+      std::make_unique<views::CloseImageButton>(base::BindRepeating(
+          [](OverlayWindowViews* overlay) {
+            overlay->controller_->Close(/*should_pause_video=*/true);
+            overlay->RecordButtonPressed(OverlayWindowControl::kClose);
+          },
+          base::Unretained(this)));
   auto back_to_tab_controls_view =
-      std::make_unique<views::BackToTabImageButton>(this);
+      std::make_unique<views::BackToTabImageButton>(base::BindRepeating(
+          [](OverlayWindowViews* overlay) {
+            overlay->controller_->CloseAndFocusInitiator();
+            overlay->RecordButtonPressed(OverlayWindowControl::kBackToTab);
+          },
+          base::Unretained(this)));
   auto previous_track_controls_view = std::make_unique<views::TrackImageButton>(
-      this, vector_icons::kMediaPreviousTrackIcon,
+      base::BindRepeating(
+          [](OverlayWindowViews* overlay) {
+            overlay->controller_->PreviousTrack();
+            overlay->RecordButtonPressed(OverlayWindowControl::kPreviousTrack);
+          },
+          base::Unretained(this)),
+      vector_icons::kMediaPreviousTrackIcon,
       l10n_util::GetStringUTF16(
           IDS_PICTURE_IN_PICTURE_PREVIOUS_TRACK_CONTROL_ACCESSIBLE_TEXT));
   auto play_pause_controls_view =
-      std::make_unique<views::PlaybackImageButton>(this);
+      std::make_unique<views::PlaybackImageButton>(base::BindRepeating(
+          [](OverlayWindowViews* overlay) {
+            overlay->TogglePlayPause();
+            overlay->RecordButtonPressed(OverlayWindowControl::kPlayPause);
+          },
+          base::Unretained(this)));
   auto next_track_controls_view = std::make_unique<views::TrackImageButton>(
-      this, vector_icons::kMediaNextTrackIcon,
+      base::BindRepeating(
+          [](OverlayWindowViews* overlay) {
+            overlay->controller_->NextTrack();
+            overlay->RecordButtonPressed(OverlayWindowControl::kNextTrack);
+          },
+          base::Unretained(this)),
+      vector_icons::kMediaNextTrackIcon,
       l10n_util::GetStringUTF16(
           IDS_PICTURE_IN_PICTURE_NEXT_TRACK_CONTROL_ACCESSIBLE_TEXT));
-  auto skip_ad_controls_view = std::make_unique<views::SkipAdLabelButton>(this);
+  auto skip_ad_controls_view =
+      std::make_unique<views::SkipAdLabelButton>(base::BindRepeating(
+          [](OverlayWindowViews* overlay) {
+            overlay->controller_->SkipAd();
+            overlay->RecordButtonPressed(OverlayWindowControl::kSkipAd);
+          },
+          base::Unretained(this)));
 #if defined(OS_CHROMEOS)
-  auto resize_handle_view = std::make_unique<views::ResizeHandleButton>(this);
+  auto resize_handle_view = std::make_unique<views::ResizeHandleButton>(
+      views::Button::PressedCallback());
 #endif
 
   window_background_view->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
@@ -937,39 +972,6 @@ void OverlayWindowViews::OnGestureEvent(ui::GestureEvent* event) {
     controller_->PreviousTrack();
     RecordTapGesture(OverlayWindowControl::kPreviousTrack);
     event->SetHandled();
-  }
-}
-
-void OverlayWindowViews::ButtonPressed(views::Button* sender,
-                                       const ui::Event& event) {
-  if (sender == back_to_tab_controls_view_) {
-    controller_->CloseAndFocusInitiator();
-    RecordButtonPressed(OverlayWindowControl::kBackToTab);
-  }
-
-  if (sender == skip_ad_controls_view_) {
-    controller_->SkipAd();
-    RecordButtonPressed(OverlayWindowControl::kSkipAd);
-  }
-
-  if (sender == close_controls_view_) {
-    controller_->Close(true /* should_pause_video */);
-    RecordButtonPressed(OverlayWindowControl::kClose);
-  }
-
-  if (sender == play_pause_controls_view_) {
-    TogglePlayPause();
-    RecordButtonPressed(OverlayWindowControl::kPlayPause);
-  }
-
-  if (sender == next_track_controls_view_) {
-    controller_->NextTrack();
-    RecordButtonPressed(OverlayWindowControl::kNextTrack);
-  }
-
-  if (sender == previous_track_controls_view_) {
-    controller_->PreviousTrack();
-    RecordButtonPressed(OverlayWindowControl::kPreviousTrack);
   }
 }
 

@@ -13,7 +13,7 @@ namespace views {
 // An image button representing a back-to-tab button.
 class BackToTabImageButton : public views::ImageButton {
  public:
-  explicit BackToTabImageButton(ButtonListener*);
+  explicit BackToTabImageButton(PressedCallback callback);
   ~BackToTabImageButton() override = default;
 
  private:

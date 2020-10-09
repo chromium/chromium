@@ -13,7 +13,7 @@ namespace views {
 // An image button representing a close button.
 class CloseImageButton : public views::ImageButton {
  public:
-  explicit CloseImageButton(ButtonListener*);
+  explicit CloseImageButton(PressedCallback callback);
   ~CloseImageButton() override = default;
 
   // Sets the position of itself with an offset from the given window size.

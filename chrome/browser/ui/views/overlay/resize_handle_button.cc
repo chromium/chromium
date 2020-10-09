@@ -26,8 +26,8 @@ constexpr SkColor kResizeHandleIconColor = SK_ColorWHITE;
 
 namespace views {
 
-ResizeHandleButton::ResizeHandleButton(ButtonListener* listener)
-    : ImageButton(listener) {
+ResizeHandleButton::ResizeHandleButton(PressedCallback callback)
+    : ImageButton(std::move(callback)) {
   SetSize(gfx::Size(kResizeHandleButtonSize, kResizeHandleButtonSize));
   SetImageForQuadrant(OverlayWindowViews::WindowQuadrant::kBottomRight);
 

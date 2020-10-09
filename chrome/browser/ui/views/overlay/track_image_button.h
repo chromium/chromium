@@ -17,7 +17,7 @@ namespace views {
 // A resizable previous/next track image button.
 class TrackImageButton : public views::ImageButton {
  public:
-  explicit TrackImageButton(ButtonListener*,
+  explicit TrackImageButton(PressedCallback callback,
                             const gfx::VectorIcon& icon,
                             base::string16 label);
   ~TrackImageButton() override = default;

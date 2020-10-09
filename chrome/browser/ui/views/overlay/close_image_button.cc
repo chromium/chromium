@@ -22,8 +22,8 @@ constexpr SkColor kCloseIconColor = SK_ColorWHITE;
 
 namespace views {
 
-CloseImageButton::CloseImageButton(ButtonListener* listener)
-    : ImageButton(listener) {
+CloseImageButton::CloseImageButton(PressedCallback callback)
+    : ImageButton(std::move(callback)) {
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   SetSize(gfx::Size(kCloseButtonSize, kCloseButtonSize));
