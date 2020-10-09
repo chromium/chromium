@@ -28,6 +28,7 @@ const char kLoggingModuleSwitch[] = "vmodule";
 const char kAppIdSwitch[] = "app-id";
 const char kAppVersionSwitch[] = "app-version";
 const char kWakeSwitch[] = "wake";
+const char kTagSwitch[] = "tag";
 
 const char kServerServiceSwitch[] = "service";
 const char kServerControlServiceSwitchValue[] = "control";

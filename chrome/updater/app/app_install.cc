@@ -24,6 +24,7 @@
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/setup.h"
+#include "chrome/updater/tag.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_version.h"
 #include "components/prefs/pref_service.h"
@@ -135,12 +136,33 @@ void AppInstall::RegisterUpdater() {
 
 void AppInstall::RegisterUpdaterDone(const RegistrationResponse& response) {
   VLOG(1) << "Updater registration complete, code = " << response.status_code;
-  HandleAppId();
+  MaybeInstallApp();
 }
 
-void AppInstall::HandleAppId() {
-  const std::string app_id =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(kAppIdSwitch);
+void AppInstall::MaybeInstallApp() {
+  const std::string app_id = []() {
+    // Returns the app id parsed from the tag, if the --tag is specified, or
+    // the switch value of the --app-id command line argument.
+    // Otherwise, returns an empty string.
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    const std::string tag = command_line->GetSwitchValueASCII(kTagSwitch);
+    if (!tag.empty()) {
+      tagging::TagArgs tag_args;
+      tagging::ErrorCode error = tagging::Parse(tag, base::nullopt, &tag_args);
+      if (error == tagging::ErrorCode::kSuccess) {
+        // TODO(crbug.com/1128631): support bundles. For now, assume one app.
+        DCHECK_EQ(tag_args.apps.size(), size_t{1});
+        const std::string& app_id = tag_args.apps.front().app_id;
+        if (!app_id.empty()) {
+          return app_id;
+        }
+      } else {
+        VLOG(1) << "Tag parsing returned " << static_cast<int>(error) << ".";
+      }
+    }
+    return command_line->GetSwitchValueASCII(kAppIdSwitch);
+  }();
+
   if (app_id.empty()) {
     Shutdown(0);
     return;

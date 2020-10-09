@@ -78,7 +78,7 @@ class Signer(object):
                     self._sign_item(os.path.join(root, f))
                 elif ext == '.7z':
                     self._sign_7z(os.path.join(root, f))
-        subprocess.run([self._lzma_exe, 'a', in_file, '*'],
+        subprocess.run([self._lzma_exe, 'a', '-mx0', in_file, '*'],
                        check=True,
                        cwd=tmp)
 

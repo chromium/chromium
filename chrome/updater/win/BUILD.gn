@@ -171,6 +171,25 @@ source_set("app_install_controller") {
   }
 }
 
+source_set("tag_extractor") {
+  public = [ "tag_extractor.h" ]
+
+  sources = [
+    "tag_extractor.cc",
+    "tag_extractor_impl.h",
+  ]
+
+  friend = [
+    ":updater_tests",
+    ":updater_fuzzer",
+  ]
+
+  # In the future, we want to rely on the base numerics headers and
+  # PeImageReader directly, but right now that isn't possible due to the
+  # visibility of the lib, so we depend on the entire base temporarily.
+  deps = [ "//base" ]
+}
+
 source_set("updater_tests") {
   testonly = true
 
@@ -229,25 +248,6 @@ test("updater_unittests") {
   ]
 
   data = [ "//chrome/updater/test/data/updater.runtime_deps" ]
-}
-
-source_set("tag_extractor") {
-  public = [ "tag_extractor.h" ]
-
-  sources = [
-    "tag_extractor.cc",
-    "tag_extractor_impl.h",
-  ]
-
-  friend = [
-    ":updater_tests",
-    ":updater_fuzzer",
-  ]
-
-  # In the future, we want to rely on the base numerics headers and
-  # PeImageReader directly, but right now that isn't possible due to the
-  # visibility of the lib, so we depend on the entire base temporarily.
-  deps = [ "//base" ]
 }
 
 fuzzer_test("updater_fuzzer") {

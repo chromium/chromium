@@ -64,9 +64,9 @@ class AppInstall : public App {
 
   void RegisterUpdaterDone(const RegistrationResponse& response);
 
-  // Handles the --app-id command line argument, and triggers installing of the
-  // corresponding app-id if the argument is present.
-  void HandleAppId();
+  // Handles the --tag and --app-id command line arguments, and triggers
+  // installing of the corresponding application if either argument is present.
+  void MaybeInstallApp();
 
   // Bound to the main sequence.
   SEQUENCE_CHECKER(sequence_checker_);

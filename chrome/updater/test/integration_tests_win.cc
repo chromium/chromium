@@ -20,9 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
-
 namespace test {
-
 namespace {
 
 base::FilePath GetInstallerPath() {
@@ -143,8 +141,12 @@ void RunWake(int expected_exit_code) {
 }
 
 void Install() {
+  const base::FilePath path = GetInstallerPath();
+  ASSERT_FALSE(path.empty());
+  base::CommandLine command_line(path);
+  command_line.AppendSwitch(kInstallSwitch);
   int exit_code = -1;
-  ASSERT_TRUE(Run(base::CommandLine(GetInstallerPath()), &exit_code));
+  ASSERT_TRUE(Run(command_line, &exit_code));
   EXPECT_EQ(0, exit_code);
 }
 
@@ -159,5 +161,4 @@ void Uninstall() {
 }
 
 }  // namespace test
-
 }  // namespace updater
