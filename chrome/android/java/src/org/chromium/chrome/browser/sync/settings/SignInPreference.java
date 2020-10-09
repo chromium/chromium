@@ -221,7 +221,11 @@ public class SignInPreference
     private void setupSigninDisabledByPolicy() {
         setState(State.SIGNIN_DISABLED_BY_POLICY);
         setLayoutResource(R.layout.account_management_account_row);
-        setTitle(R.string.sign_in_to_chrome);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
+            setTitle(R.string.sync_promo_turn_on_sync);
+        } else {
+            setTitle(R.string.sign_in_to_chrome);
+        }
         setSummary(R.string.sign_in_to_chrome_disabled_summary);
         setFragment(null);
         setIcon(ManagedPreferencesUtils.getManagedByEnterpriseIconId());
@@ -272,8 +276,11 @@ public class SignInPreference
     private void setupGenericPromo() {
         setState(State.GENERIC_PROMO);
         setLayoutResource(R.layout.account_management_account_row);
-        setTitle(R.string.sign_in_to_chrome);
-
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
+            setTitle(R.string.sync_promo_turn_on_sync);
+        } else {
+            setTitle(R.string.sign_in_to_chrome);
+        }
         setSummary(R.string.signin_pref_summary);
 
         setFragment(null);
