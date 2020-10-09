@@ -162,10 +162,9 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf)
   DCHECK(shelf_);
   SetNotifyEnterExitOnChild(true);
 
-  SetInkDropBaseColor(
-      DeprecatedGetShelfInkDropBaseColor(kDefaultShelfInkDropColor));
+  SetInkDropBaseColor(DeprecatedGetInkDropBaseColor(kDefaultShelfInkDropColor));
   SetInkDropVisibleOpacity(
-      DeprecatedGetShelfInkDropOpacity(kDefaultShelfInkDropOpacity));
+      DeprecatedGetInkDropOpacity(kDefaultShelfInkDropOpacity));
 
   SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
   SetLayoutManager(std::make_unique<views::FillLayout>());

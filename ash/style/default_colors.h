@@ -25,8 +25,10 @@ SkColor DeprecatedGetControlsLayerColor(
 SkColor DeprecatedGetContentLayerColor(AshColorProvider::ContentLayerType type,
                                        SkColor default_color);
 SkColor DeprecatedGetLoginBackgroundBaseColor(SkColor default_color);
-SkColor DeprecatedGetShelfInkDropBaseColor(SkColor default_color);
-float DeprecatedGetShelfInkDropOpacity(float default_opacity);
+SkColor DeprecatedGetInkDropBaseColor(SkColor default_color);
+SkColor DeprecatedGetInkDropRippleColor(SkColor default_color);
+SkColor DeprecatedGetInkDropHighlightColor(SkColor default_color);
+float DeprecatedGetInkDropOpacity(float default_opacity);
 SkColor DeprecatedGetAppStateIndicatorColor(bool active,
                                             SkColor active_color,
                                             SkColor default_color);

@@ -189,9 +189,9 @@ class LoginShelfButton : public views::LabelButton {
     SetInkDropMode(InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
     SetInkDropBaseColor(
-        DeprecatedGetShelfInkDropBaseColor(kDefaultShelfInkDropColor));
+        DeprecatedGetInkDropBaseColor(kDefaultShelfInkDropColor));
     SetInkDropVisibleOpacity(
-        DeprecatedGetShelfInkDropOpacity(kDefaultShelfInkDropOpacity));
+        DeprecatedGetInkDropOpacity(kDefaultShelfInkDropOpacity));
 
     // Layer rendering is required when the shelf background is visible, which
     // happens when the wallpaper is not blurred.
@@ -305,9 +305,9 @@ class KioskAppsButton : public views::MenuButton,
     SetInkDropMode(InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
     SetInkDropBaseColor(
-        DeprecatedGetShelfInkDropBaseColor(kDefaultShelfInkDropColor));
+        DeprecatedGetInkDropBaseColor(kDefaultShelfInkDropColor));
     SetInkDropVisibleOpacity(
-        DeprecatedGetShelfInkDropOpacity(kDefaultShelfInkDropOpacity));
+        DeprecatedGetInkDropOpacity(kDefaultShelfInkDropOpacity));
 
     // Layer rendering is required when the shelf background is visible, which
     // happens when the wallpaper is not blurred.

@@ -26,9 +26,12 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
   virtual SkColor GetSuggestionChipBackgroundColor() const = 0;
   virtual SkColor GetSuggestionChipTextColor() const = 0;
   virtual SkColor GetAppListItemTextColor() const = 0;
-  virtual SkColor GetPageSwitcherButtonColor() const = 0;
-  virtual SkColor GetPageSwitcherInkDropBaseColor() const = 0;
-  virtual SkColor GetPageSwitcherInkDropHighlightColor() const = 0;
+  virtual SkColor GetPageSwitcherButtonColor(
+      bool is_root_app_grid_page_switcher) const = 0;
+  virtual SkColor GetPageSwitcherInkDropBaseColor(
+      bool is_root_app_grid_page_switcher) const = 0;
+  virtual SkColor GetPageSwitcherInkDropHighlightColor(
+      bool is_root_app_grid_page_switcher) const = 0;
   virtual SkColor GetSearchBoxIconColor(SkColor default_color) const = 0;
   virtual SkColor GetSearchBoxCardBackgroundColor() const = 0;
   virtual SkColor GetFolderBackgroundColor(SkColor default_color) const = 0;

@@ -23,10 +23,9 @@ ShelfButton::ShelfButton(Shelf* shelf,
       shelf_button_delegate_(shelf_button_delegate) {
   DCHECK(shelf_button_delegate_);
   SetHideInkDropWhenShowingContextMenu(false);
-  SetInkDropBaseColor(
-      DeprecatedGetShelfInkDropBaseColor(kDefaultShelfInkDropColor));
+  SetInkDropBaseColor(DeprecatedGetInkDropBaseColor(kDefaultShelfInkDropColor));
   SetInkDropVisibleOpacity(
-      DeprecatedGetShelfInkDropOpacity(kDefaultShelfInkDropOpacity));
+      DeprecatedGetInkDropOpacity(kDefaultShelfInkDropOpacity));
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
   SetFocusPainter(views::Painter::CreateSolidFocusPainter(

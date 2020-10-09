@@ -27,9 +27,12 @@ class TestAppListColorProvider : public AppListColorProvider {
   SkColor GetSuggestionChipBackgroundColor() const override;
   SkColor GetSuggestionChipTextColor() const override;
   SkColor GetAppListItemTextColor() const override;
-  SkColor GetPageSwitcherButtonColor() const override;
-  SkColor GetPageSwitcherInkDropBaseColor() const override;
-  SkColor GetPageSwitcherInkDropHighlightColor() const override;
+  SkColor GetPageSwitcherButtonColor(
+      bool is_root_app_grid_page_switcher) const override;
+  SkColor GetPageSwitcherInkDropBaseColor(
+      bool is_root_app_grid_page_switcher) const override;
+  SkColor GetPageSwitcherInkDropHighlightColor(
+      bool is_root_app_grid_page_switcher) const override;
   SkColor GetSearchBoxIconColor(SkColor default_color) const override;
   SkColor GetSearchBoxCardBackgroundColor() const override;
   SkColor GetFolderBackgroundColor(SkColor default_color) const override;

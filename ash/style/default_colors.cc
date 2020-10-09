@@ -47,14 +47,38 @@ SkColor DeprecatedGetLoginBackgroundBaseColor(SkColor default_color) {
   return AshColorProvider::Get()->GetLoginBackgroundBaseColor();
 }
 
-SkColor DeprecatedGetShelfInkDropBaseColor(SkColor default_color) {
+SkColor DeprecatedGetInkDropBaseColor(SkColor default_color) {
   if (!features::IsDarkLightModeEnabled())
     return default_color;
 
   return AshColorProvider::Get()->GetRippleAttributes().base_color;
 }
 
-float DeprecatedGetShelfInkDropOpacity(float default_opacity) {
+SkColor DeprecatedGetInkDropRippleColor(SkColor default_color) {
+  if (!features::IsDarkLightModeEnabled())
+    return default_color;
+
+  AshColorProvider::RippleAttributes ripple_attributes =
+      AshColorProvider::Get()->GetRippleAttributes(
+          AshColorProvider::Get()->GetShieldLayerColor(
+              AshColorProvider::ShieldLayerType::kShield80));
+  return SkColorSetA(ripple_attributes.base_color,
+                     ripple_attributes.inkdrop_opacity * 255);
+}
+
+SkColor DeprecatedGetInkDropHighlightColor(SkColor default_color) {
+  if (!features::IsDarkLightModeEnabled())
+    return default_color;
+
+  AshColorProvider::RippleAttributes ripple_attributes =
+      AshColorProvider::Get()->GetRippleAttributes(
+          AshColorProvider::Get()->GetShieldLayerColor(
+              AshColorProvider::ShieldLayerType::kShield80));
+  return SkColorSetA(ripple_attributes.base_color,
+                     ripple_attributes.inkdrop_opacity * 255);
+}
+
+float DeprecatedGetInkDropOpacity(float default_opacity) {
   if (!features::IsDarkLightModeEnabled())
     return default_opacity;
 

@@ -15,8 +15,7 @@ AppListColorProviderImpl::AppListColorProviderImpl()
 AppListColorProviderImpl::~AppListColorProviderImpl() = default;
 
 SkColor AppListColorProviderImpl::GetExpandArrowInkDropBaseColor() const {
-  return DeprecatedGetShelfInkDropBaseColor(
-      SkColorSetARGB(0x14, 0xFF, 0xFF, 0xFF));
+  return DeprecatedGetInkDropBaseColor(SkColorSetARGB(0x14, 0xFF, 0xFF, 0xFF));
 }
 
 SkColor AppListColorProviderImpl::GetExpandArrowIconBaseColor() const {
@@ -81,23 +80,28 @@ SkColor AppListColorProviderImpl::GetAppListItemTextColor() const {
       AshColorProvider::ContentLayerType::kTextColorPrimary, SK_ColorBLACK);
 }
 
-SkColor AppListColorProviderImpl::GetPageSwitcherButtonColor() const {
-  return ash_color_provider_->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor);
+SkColor AppListColorProviderImpl::GetPageSwitcherButtonColor(
+    bool is_root_app_grid_page_switcher) const {
+  return DeprecatedGetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonIconColor,
+      is_root_app_grid_page_switcher ? SkColorSetARGB(255, 232, 234, 237)
+                                     : SkColorSetARGB(255, 232, 234, 237));
 }
 
-SkColor AppListColorProviderImpl::GetPageSwitcherInkDropBaseColor() const {
-  AshColorProvider::RippleAttributes ripple_attributes =
-      ash_color_provider_->GetRippleAttributes(GetAppListBackgroundColor());
-  return SkColorSetA(ripple_attributes.base_color,
-                     ripple_attributes.inkdrop_opacity * 255);
+SkColor AppListColorProviderImpl::GetPageSwitcherInkDropBaseColor(
+    bool is_root_app_grid_page_switcher) const {
+  return DeprecatedGetInkDropRippleColor(
+      is_root_app_grid_page_switcher
+          ? SkColorSetA(SkColorSetRGB(241, 243, 244), 15)
+          : SkColorSetA(SkColorSetRGB(241, 243, 244), 8));
 }
 
-SkColor AppListColorProviderImpl::GetPageSwitcherInkDropHighlightColor() const {
-  AshColorProvider::RippleAttributes ripple_attributes =
-      ash_color_provider_->GetRippleAttributes(GetAppListBackgroundColor());
-  return SkColorSetA(ripple_attributes.base_color,
-                     ripple_attributes.highlight_opacity * 255);
+SkColor AppListColorProviderImpl::GetPageSwitcherInkDropHighlightColor(
+    bool is_root_app_grid_page_switcher) const {
+  return DeprecatedGetInkDropHighlightColor(
+      is_root_app_grid_page_switcher
+          ? SkColorSetA(SkColorSetARGB(255, 95, 99, 104), 20)
+          : SkColorSetA(SkColorSetARGB(255, 95, 99, 104), 24));
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxIconColor(
