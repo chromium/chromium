@@ -114,16 +114,6 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
   capabilities_.only_invalidates_damage_rect = false;
   capabilities_.number_of_buffers = 3;
   capabilities_.orientation_mode = OutputSurface::OrientationMode::kHardware;
-#if defined(OS_ANDROID)
-  // With vulkan, if the chrome is launched in landscape mode, the chrome is
-  // always blank until chrome window is rotated once. Workaround this problem
-  // by using logic rotation mode.
-  // TODO(https://crbug.com/1115065): use hardware orientation mode for vulkan,
-  if (dependency_->GetSharedContextState()->GrContextIsVulkan() &&
-      base::FeatureList::GetFieldTrial(features::kVulkan)) {
-    capabilities_.orientation_mode = OutputSurface::OrientationMode::kLogic;
-  }
-#endif
 
   // Force the number of max pending frames to one when the switch
   // "double-buffer-compositing" is passed.
