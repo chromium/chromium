@@ -18,6 +18,18 @@
 // #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
 // clang-format on
 
+const arrowUpEvent = new KeyboardEvent(
+    'keydown', {cancelable: true, key: 'ArrowUp', keyCode: 38});
+
+const arrowDownEvent = new KeyboardEvent(
+    'keydown', {cancelable: true, key: 'ArrowDown', keyCode: 40});
+
+const arrowLeftEvent = new KeyboardEvent(
+    'keydown', {cancelable: true, key: 'ArrowLeft', keyCode: 37});
+
+const arrowRightEvent = new KeyboardEvent(
+    'keydown', {cancelable: true, key: 'ArrowRight', keyCode: 39});
+
 /**
  * @param {!HTMLElement} printerEntry
  * @private
@@ -615,6 +627,37 @@ suite('CupsSavedPrintersTests', function() {
         });
   });
 
+  test('NavigateSavedPrintersList', function() {
+    createCupsPrinterPage([
+      cups_printer_test_util.createCupsPrinterInfo('google', '4', 'id4'),
+      cups_printer_test_util.createCupsPrinterInfo('test1', '1', 'id1'),
+      cups_printer_test_util.createCupsPrinterInfo('test2', '2', 'id2'),
+    ]);
+    return cupsPrintersBrowserProxy.whenCalled('getCupsPrintersList')
+        .then(async () => {
+          // Wait for saved printers to populate.
+          Polymer.dom.flush();
+          savedPrintersElement = page.$$('settings-cups-saved-printers');
+          assertTrue(!!savedPrintersElement);
+          const printerEntryList = savedPrintersElement.$$('#printerEntryList');
+          const printerListEntries =
+              cups_printer_test_util.getPrinterEntries(savedPrintersElement);
+          printerEntryList.focus();
+          printerEntryList.dispatchEvent(arrowDownEvent);
+          Polymer.dom.flush();
+          assertEquals(printerListEntries[1], getDeepActiveElement());
+          printerEntryList.dispatchEvent(arrowDownEvent);
+          Polymer.dom.flush();
+          assertEquals(printerListEntries[2], getDeepActiveElement());
+          printerEntryList.dispatchEvent(arrowUpEvent);
+          Polymer.dom.flush();
+          assertEquals(printerListEntries[1], getDeepActiveElement());
+          printerEntryList.dispatchEvent(arrowUpEvent);
+          Polymer.dom.flush();
+          assertEquals(printerListEntries[0], getDeepActiveElement());
+        });
+  });
+
   test('Deep link to saved printers', async () => {
     loadTimeData.overrideValues({
       isDeepLinkingEnabled: true,
@@ -1199,6 +1242,59 @@ suite('CupsNearbyPrintersTests', function() {
               'Added ' + automaticPrinterList[0].printerName;
           verifyErrorToastMessage(expectedToastMessage, page.$$('#errorToast'));
         });
+  });
+
+  test('NavigateNearbyPrinterList', function() {
+    const discoveredPrinterList = [
+      cups_printer_test_util.createCupsPrinterInfo('first', '3', 'id3'),
+      cups_printer_test_util.createCupsPrinterInfo('second', '4', 'id4'),
+      cups_printer_test_util.createCupsPrinterInfo('third', '2', 'id5'),
+    ];
+    return test_util.flushTasks().then(async () => {
+      nearbyPrintersElement = page.$$('settings-cups-nearby-printers');
+
+      // Block so that FocusRowBehavior.attached can run.
+      await test_util.waitAfterNextRender(nearbyPrintersElement);
+
+      assertTrue(!!nearbyPrintersElement);
+      // Simuluate finding nearby printers.
+      cr.webUIListenerCallback(
+          'on-nearby-printers-changed', [], discoveredPrinterList);
+      Polymer.dom.flush();
+
+      // Wait one more time to ensure that async setup in FocusRowBehavior has
+      // executed.
+      await test_util.waitAfterNextRender(nearbyPrintersElement);
+      const nearbyPrinterEntries =
+          cups_printer_test_util.getPrinterEntries(nearbyPrintersElement);
+      const printerEntryList = nearbyPrintersElement.$$('#printerEntryList');
+
+      nearbyPrinterEntries[0].$$('#entry').focus();
+      assertEquals(
+          nearbyPrinterEntries[0].$$('#entry'), getDeepActiveElement());
+      // Ensure that we can navigate through items in a row
+      getDeepActiveElement().dispatchEvent(arrowRightEvent);
+      assertEquals(
+          nearbyPrinterEntries[0].$$('#setupPrinterButton'),
+          getDeepActiveElement());
+      getDeepActiveElement().dispatchEvent(arrowLeftEvent);
+      assertEquals(
+          nearbyPrinterEntries[0].$$('#entry'), getDeepActiveElement());
+
+      // Ensure that we can navigate through printer rows
+      printerEntryList.dispatchEvent(arrowDownEvent);
+      assertEquals(
+          nearbyPrinterEntries[1].$$('#entry'), getDeepActiveElement());
+      printerEntryList.dispatchEvent(arrowDownEvent);
+      assertEquals(
+          nearbyPrinterEntries[2].$$('#entry'), getDeepActiveElement());
+      printerEntryList.dispatchEvent(arrowUpEvent);
+      assertEquals(
+          nearbyPrinterEntries[1].$$('#entry'), getDeepActiveElement());
+      printerEntryList.dispatchEvent(arrowUpEvent);
+      assertEquals(
+          nearbyPrinterEntries[0].$$('#entry'), getDeepActiveElement());
+    });
   });
 
   test('addingDiscoveredPrinterIsSuccessful', function() {

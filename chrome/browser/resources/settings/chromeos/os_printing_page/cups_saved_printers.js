@@ -96,6 +96,18 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * Used by FocusRowBehavior to track the last focused element on a row.
+     * @private
+     */
+    lastFocused_: Object,
+
+    /**
+     * Used by FocusRowBehavior to track if the list has been blurred.
+     * @private
+     */
+    listBlurred_: Boolean,
   },
 
   listeners: {

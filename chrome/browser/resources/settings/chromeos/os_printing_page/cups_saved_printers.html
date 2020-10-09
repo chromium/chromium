@@ -63,7 +63,10 @@
     <iron-list class="list-frame vertical-list flex-auto" id="printerEntryList"
         items="[[filteredPrinters_]]">
       <template>
-        <settings-cups-printers-entry printer-entry="[[item]]">
+        <settings-cups-printers-entry printer-entry="[[item]]"
+            tabindex$="[[tabIndex]]" last-focused="{{lastFocused_}}"
+            list-blurred="{{listBlurred_}}" focus-row-index="[[index]]"
+            iron-list-tab-index="[[tabIndex]]">
         </settings-cups-printers-entry>
       </template>
     </iron-list>
