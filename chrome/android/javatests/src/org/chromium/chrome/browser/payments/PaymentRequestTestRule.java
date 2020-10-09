@@ -158,12 +158,59 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
 
     private final MainActivityStartCallback mCallback;
 
+    /**
+     * Creates an instance of PaymentRequestTestRule.
+     * @param testFileName The file name of an test page in //components/test/data/payments,
+     *         'about:blank', or a data url which starts with 'data:'.
+     */
+    public PaymentRequestTestRule(String testFileName) {
+        this(testFileName, null);
+    }
+
+    /**
+     * Creates an instance of PaymentRequestTestRule.
+     * @param testFileName The file name of an test page in //components/test/data/payments,
+     *         'about:blank', or a data url which starts with 'data:'.
+     * @param callback A callback that is invoked on the start of the main activity.
+     */
     public PaymentRequestTestRule(String testFileName, MainActivityStartCallback callback) {
         this(testFileName, callback, false);
     }
 
+    /**
+     * Creates an instance of PaymentRequestTestRule.
+     * @param testFileName The file name of an test page in //components/test/data/payments,
+     *         'about:blank', or a data url which starts with 'data:'.
+     * @param callback A callback that is invoked on the start of the main activity.
+     * @param delayStartActivity Whether to delay the start of the main activity. When true, {@link
+     *         #startMainActivity()} needs to be called to start the main activity; otherwise, the
+     *         main activity would start automatically.
+     */
     public PaymentRequestTestRule(
             String testFileName, MainActivityStartCallback callback, boolean delayStartActivity) {
+        this(testFileName, /*pathPrefix=*/"components/test/data/payments/", callback,
+                delayStartActivity);
+    }
+
+    /**
+     * Creates an instance of PaymentRequestTestRule with a test page, which is specified by
+     * pathPrefix and testFileName combined into a path relative to the repository root. For
+     * example, if testFileName is "merchant.html", pathPrefix is "components/test/data/payments/",
+     * the method would look for a test page at "components/test/data/payments/merchant.html".
+     * This method is used by the //clank tests.
+     * @param testFileName The file name of the test page.
+     * @param pathPrefix The prefix path to testFileName.
+     * @param delayStartActivity Whether to delay the start of the main activity.
+     * @return The created instance.
+     */
+    public static PaymentRequestTestRule createWithPathPrefix(
+            String testFileName, String pathPrefix, boolean delayStartActivity) {
+        assert pathPrefix.endsWith("/");
+        return new PaymentRequestTestRule(testFileName, pathPrefix, null, delayStartActivity);
+    }
+
+    private PaymentRequestTestRule(String testFilePath, String pathPrefix,
+            MainActivityStartCallback callback, boolean delayStartActivity) {
         super();
         mReadyForInput = new PaymentsCallbackHelper<>();
         mReadyToPay = new PaymentsCallbackHelper<>();
@@ -187,23 +234,21 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
         mCompleteReplied = new CallbackHelper();
         mRendererClosedMojoConnection = new CallbackHelper();
         mWebContentsRef = new AtomicReference<>();
-        mTestFilePath = testFileName.equals("about:blank") || testFileName.startsWith("data:")
-                ? testFileName
-                : UrlUtils.getIsolatedTestFilePath(
-                        String.format("components/test/data/payments/%s", testFileName));
+        if (testFilePath.equals("about:blank") || testFilePath.startsWith("data:")) {
+            mTestFilePath = testFilePath;
+        } else {
+            mTestFilePath = UrlUtils.getIsolatedTestFilePath(pathPrefix + testFilePath);
+        }
         mCallback = callback;
         mDelayStartActivity = delayStartActivity;
-    }
-
-    public PaymentRequestTestRule(String testFileName) {
-        this(testFileName, null);
     }
 
     public void startMainActivity() {
         startMainActivityWithURL(mTestFilePath);
     }
 
-    protected void openPage() throws TimeoutException {
+    // public is used so as to be visible to the payment tests in //clank.
+    public void openPage() throws TimeoutException {
         onMainActivityStarted();
         ThreadUtils.runOnUiThreadBlocking(() -> {
             mWebContentsRef.set(getActivity().getCurrentWebContents());
@@ -327,7 +372,8 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
         return JavaScriptUtils.executeJavaScriptAndWaitForResult(mWebContentsRef.get(), script);
     }
 
-    protected String runJavascriptWithAsyncResult(String script) throws TimeoutException {
+    // public is used so as to be visible to the payment tests in //clank.
+    public String runJavascriptWithAsyncResult(String script) throws TimeoutException {
         return JavaScriptUtils.runJavascriptWithAsyncResult(mWebContentsRef.get(), script);
     }
 
