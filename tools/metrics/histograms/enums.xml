@@ -26737,9 +26737,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="665" label="MixedContentFormPresent"/>
   <int value="666" label="GetUserMediaInsecureOrigin"/>
   <int value="667" label="GetUserMediaSecureOrigin"/>
-  <int value="668" label="DeviceMotionInsecureOrigin_Obsolete"/>
+  <int value="668" label="OBSOLETE_DeviceMotionInsecureOrigin"/>
   <int value="669" label="DeviceMotionSecureOrigin"/>
-  <int value="670" label="DeviceOrientationInsecureOrigin_Obsolete"/>
+  <int value="670" label="OBSOLETE_DeviceOrientationInsecureOrigin"/>
   <int value="671" label="DeviceOrientationSecureOrigin"/>
   <int value="672" label="SandboxViaIFrame"/>
   <int value="673" label="SandboxViaCSP"/>
@@ -26810,7 +26810,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="738" label="CryptoAlgorithmPbkdf2"/>
   <int value="739" label="DocumentSetDomain"/>
   <int value="740" label="UpgradeInsecureRequestsEnabled"/>
-  <int value="741" label="UpgradeInsecureRequestsUpgradedRequest_Obsolete"/>
+  <int value="741" label="OBSOLETE_UpgradeInsecureRequestsUpgradedRequest"/>
   <int value="742" label="DocumentDesignMode"/>
   <int value="743" label="GlobalCacheStorage"/>
   <int value="744" label="NetInfo"/>
@@ -27022,7 +27022,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="937" label="CSSAnimationsStackedNeutralKeyframe"/>
   <int value="938" label="ReadingCheckedInClickHandler"/>
   <int value="939" label="FlexboxIntrinsicSizeAlgorithmIsDifferent"/>
-  <int value="940" label="HTMLImportsHasStyleSheets_Obsolete"/>
+  <int value="940" label="OBSOLETE_HTMLImportsHasStyleSheets"/>
   <int value="941" label="WebkitTextInClipProperty"/>
   <int value="942" label="WebkitTextInColorProperty"/>
   <int value="943" label="HeaderValueNotMatchingRFC7230"/>
@@ -27070,7 +27070,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="984" label="BluetoothDeviceInstanceId"/>
   <int value="985" label="HTMLLabelElementFormIDLAttribute"/>
   <int value="986" label="HTMLLabelElementFormContentAttribute"/>
-  <int value="987" label="DeviceOrientationAbsoluteInsecureOrigin_Obsolete"/>
+  <int value="987" label="OBSOLETE_DeviceOrientationAbsoluteInsecureOrigin"/>
   <int value="988" label="DeviceOrientationAbsoluteSecureOrigin"/>
   <int value="989" label="FontFaceConstructor"/>
   <int value="990" label="ServiceWorkerControlledPage"/>
@@ -29023,9 +29023,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2844" label="CSSStyleSheetReplace"/>
   <int value="2845" label="CSSStyleSheetReplaceSync"/>
   <int value="2846" label="AdoptedStyleSheets"/>
-  <int value="2847" label="HTMLImportsOnReverseOriginTrials"/>
-  <int value="2848" label="ElementCreateShadowRootOnReverseOriginTrials"/>
-  <int value="2849" label="DocumentRegisterElementOnReverseOriginTrials"/>
+  <int value="2847" label="OBSOLETE_HTMLImportsOnReverseOriginTrials"/>
+  <int value="2848"
+      label="OBSOLETE_ElementCreateShadowRootOnReverseOriginTrials"/>
+  <int value="2849"
+      label="OBSOLETE_DocumentRegisterElementOnReverseOriginTrials"/>
   <int value="2850" label="InputTypeRadio"/>
   <int value="2851" label="InputTypeCheckbox"/>
   <int value="2852" label="InputTypeImage"/>
@@ -29311,8 +29313,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3118" label="LongTaskBufferFull"/>
   <int value="3119" label="HTMLMetaElementMonetization"/>
   <int value="3120" label="HTMLLinkElementMonetization"/>
-  <int value="3121" label="InputTypeCheckboxRenderedNonSquare_Obsolete"/>
-  <int value="3122" label="InputTypeRadioRenderedNonSquare_Obsolete"/>
+  <int value="3121" label="OBSOLETE_InputTypeCheckboxRenderedNonSquare"/>
+  <int value="3122" label="OBSOLETE_InputTypeRadioRenderedNonSquare"/>
   <int value="3123" label="WebkitBoxPackJustifyDoesSomething"/>
   <int value="3124" label="WebkitBoxPackCenterDoesSomething"/>
   <int value="3125" label="WebkitBoxPackEndDoesSomething"/>

@@ -3337,7 +3337,7 @@ ShadowRoot* Element::createShadowRoot(ExceptionState& exception_state) {
   // now-removed Shadow DOM v0 API.
   DCHECK(false) << "Shadow DOM v0 has been removed.";
 
-  DCHECK(RuntimeEnabledFeatures::ShadowDOMV0Enabled(GetExecutionContext()));
+  DCHECK(RuntimeEnabledFeatures::ShadowDOMV0Enabled());
   if (ShadowRoot* root = GetShadowRoot()) {
     if (root->IsUserAgent()) {
       exception_state.ThrowDOMException(
@@ -3372,7 +3372,7 @@ ShadowRoot* Element::createShadowRoot(ExceptionState& exception_state) {
 }
 
 ShadowRoot& Element::CreateShadowRootInternal() {
-  DCHECK(RuntimeEnabledFeatures::ShadowDOMV0Enabled(GetExecutionContext()));
+  DCHECK(RuntimeEnabledFeatures::ShadowDOMV0Enabled());
   DCHECK(!ClosedShadowRoot());
   DCHECK(AreAuthorShadowsAllowed());
   DCHECK(!AlwaysCreateUserAgentShadowRoot());

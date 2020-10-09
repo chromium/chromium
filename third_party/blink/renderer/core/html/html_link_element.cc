@@ -75,7 +75,7 @@ void HTMLLinkElement::ParseAttribute(
   if (name == html_names::kRelAttr) {
     rel_attribute_ = LinkRelAttribute(value);
     if (rel_attribute_.IsImport()) {
-      if (RuntimeEnabledFeatures::HTMLImportsEnabled(GetExecutionContext())) {
+      if (RuntimeEnabledFeatures::HTMLImportsEnabled()) {
         Deprecation::CountDeprecation(GetExecutionContext(),
                                       WebFeature::kHTMLImports);
       } else {
@@ -240,7 +240,7 @@ LinkResource* HTMLLinkElement::LinkResourceToProcess() {
   if (!link_) {
     if (rel_attribute_.IsImport()) {
       // Only create an import link when HTML imports are enabled.
-      if (!RuntimeEnabledFeatures::HTMLImportsEnabled(GetExecutionContext()))
+      if (!RuntimeEnabledFeatures::HTMLImportsEnabled())
         return nullptr;
       link_ = MakeGarbageCollected<LinkImport>(this);
     } else if (rel_attribute_.IsWebBundle()) {

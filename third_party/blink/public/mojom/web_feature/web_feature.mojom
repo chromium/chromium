@@ -9,6 +9,10 @@ module blink.mojom;
 // Do not change assigned numbers of existing items: add new features
 // to the end of the list.
 //
+// If you want to mark an item as no-longer-used, simply rename it, prefixing
+// "kOBSOLETE_" before the existing name.
+// E.g. kFrobulate becomes kOBSOLETE_Frobulate.
+//
 // A WebFeature conceptually represents some particular web-exposed API
 // or code path which can be used/triggered by a web page.
 // TODO(rbyers): Add CSS and animated CSS feature types by making this a
@@ -406,9 +410,9 @@ enum WebFeature {
   kGetUserMediaSecureOrigin = 667,
   // The above items are available in M41 branch.
 
-  kDeviceMotionInsecureOrigin_Obsolete = 668,
+  kOBSOLETE_DeviceMotionInsecureOrigin = 668,
   kDeviceMotionSecureOrigin = 669,
-  kDeviceOrientationInsecureOrigin_Obsolete = 670,
+  kOBSOLETE_DeviceOrientationInsecureOrigin = 670,
   kDeviceOrientationSecureOrigin = 671,
   kSandboxViaIFrame = 672,
   kSandboxViaCSP = 673,
@@ -466,7 +470,7 @@ enum WebFeature {
   kCryptoAlgorithmPbkdf2 = 738,
   kDocumentSetDomain = 739,
   kUpgradeInsecureRequestsEnabled = 740,
-  kUpgradeInsecureRequestsUpgradedRequest_Obsolete = 741,
+  kOBSOLETE_UpgradeInsecureRequestsUpgradedRequest = 741,
   kDocumentDesignMode = 742,
   kGlobalCacheStorage = 743,
   kNetInfo = 744,
@@ -604,7 +608,7 @@ enum WebFeature {
   kFlexboxIntrinsicSizeAlgorithmIsDifferent = 939,
   // The above items are available in M46 branch.
 
-  kHTMLImportsHasStyleSheets_Obsolete = 940,
+  kOBSOLETE_HTMLImportsHasStyleSheets = 940,
   kNetInfoType = 946,
   kNetInfoDownlinkMax = 947,
   kNetInfoOnChange = 948,
@@ -638,7 +642,7 @@ enum WebFeature {
   kExternalAddSearchProvider = 981,
   kExternalIsSearchProviderInstalled = 982,
   kV8Permissions_RequestAll_Method = 983,
-  kDeviceOrientationAbsoluteInsecureOrigin_Obsolete = 987,
+  kOBSOLETE_DeviceOrientationAbsoluteInsecureOrigin = 987,
   kDeviceOrientationAbsoluteSecureOrigin = 988,
   kFontFaceConstructor = 989,
   kServiceWorkerControlledPage = 990,
@@ -2174,9 +2178,9 @@ enum WebFeature {
   kCSSStyleSheetReplace = 2844,
   kCSSStyleSheetReplaceSync = 2845,
   kAdoptedStyleSheets = 2846,
-  kHTMLImportsOnReverseOriginTrials = 2847,
-  kElementCreateShadowRootOnReverseOriginTrials = 2848,
-  kDocumentRegisterElementOnReverseOriginTrials = 2849,
+  kOBSOLETE_HTMLImportsOnReverseOriginTrials = 2847,
+  kOBSOLETE_ElementCreateShadowRootOnReverseOriginTrials = 2848,
+  kOBSOLETE_DocumentRegisterElementOnReverseOriginTrials = 2849,
   kInputTypeRadio = 2850,
   kInputTypeCheckbox = 2851,
   kInputTypeImage = 2852,
@@ -2443,8 +2447,8 @@ enum WebFeature {
   kLongTaskBufferFull = 3118,
   kHTMLMetaElementMonetization = 3119,
   kHTMLLinkElementMonetization = 3120,
-  kInputTypeCheckboxRenderedNonSquare_Obsolete = 3121,
-  kInputTypeRadioRenderedNonSquare_Obsolete = 3122,
+  kOBSOLETE_InputTypeCheckboxRenderedNonSquare = 3121,
+  kOBSOLETE_InputTypeRadioRenderedNonSquare = 3122,
   kWebkitBoxPackJustifyDoesSomething = 3123,
   kWebkitBoxPackCenterDoesSomething = 3124,
   kWebkitBoxPackEndDoesSomething = 3125,
