@@ -27,6 +27,8 @@ import("//third_party/blink/renderer/core/core.gni")
 # -O2 optimiziation. If there is common inlined implementations, put this in
 # foo-inl.h and include that in both foo.cc and foo-hot.cc.
 blink_core_sources("dom_hotpath") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "element-hot.cc",
     "element-inl.h",
@@ -41,6 +43,8 @@ blink_core_sources("dom_hotpath") {
 }
 
 blink_core_sources("dom") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "abort_controller.cc",
     "abort_controller.h",
