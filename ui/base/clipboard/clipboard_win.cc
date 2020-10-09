@@ -822,7 +822,7 @@ SkBitmap ClipboardWin::ReadImageInternal(ClipboardBuffer buffer) const {
   // Since Windows uses premultiplied alpha, we scan for instances where
   // (R, G, B) > A. If there are any invalid premultiplied colors in the image,
   // we assume the alpha channel contains garbage and force the bitmap to be
-  // opaque as well. Note that this heuristic will fail on a transparent bitmap
+  // opaque as well. This heuristic will fail on a transparent bitmap
   // containing only black pixels...
   SkPixmap device_pixels(SkImageInfo::MakeN32Premul(bitmap->bmiHeader.biWidth,
                                                     bitmap->bmiHeader.biHeight),

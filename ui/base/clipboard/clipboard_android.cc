@@ -460,7 +460,7 @@ void ClipboardAndroid::ReadAsciiText(ClipboardBuffer buffer,
   *result = g_map.Get().Get(ClipboardFormatType::GetPlainTextType());
 }
 
-// Note: |src_url| isn't really used. It is only implemented in Windows.
+// |src_url| isn't really used. It is only implemented in Windows.
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardAndroid::ReadHTML(ClipboardBuffer buffer,
@@ -606,7 +606,7 @@ void ClipboardAndroid::WriteRTF(const char* rtf_data, size_t data_len) {
   NOTIMPLEMENTED();
 }
 
-// Note: according to other platforms implementations, this really writes the
+// According to other platforms implementations, this really writes the
 // URL spec.
 void ClipboardAndroid::WriteBookmark(const char* title_data,
                                      size_t title_len,

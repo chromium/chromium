@@ -1,8 +1,8 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Note: This header doesn't use REGISTER_TYPED_TEST_SUITE_P like most
+// This header doesn't use REGISTER_TYPED_TEST_SUITE_P like most
 // type-parameterized gtests. There are lot of test cases in here that are only
 // enabled on certain platforms. However, preprocessor directives in macro
 // arguments result in undefined behavior (and don't work on MSVC). Instead,
@@ -884,7 +884,7 @@ TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
   this->clipboard().ReadAsciiText(ClipboardBuffer::kCopyPaste,
                                   /* data_dst = */ nullptr, &text_result);
   EXPECT_EQ(text_result, text);
-  // Note: Windows will automatically convert CF_TEXT to its UNICODE version.
+  // Windows will automatically convert CF_TEXT to its UNICODE version.
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
       ClipboardFormatType::GetPlainTextType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));

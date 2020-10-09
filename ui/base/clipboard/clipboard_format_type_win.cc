@@ -263,7 +263,7 @@ const ClipboardFormatType& ClipboardFormatType::GetFileDescriptorType() {
 
 // static
 const ClipboardFormatType& ClipboardFormatType::GetFileContentZeroType() {
-  // Note this uses a storage media type of TYMED_HGLOBAL, which is not commonly
+  // This uses a storage media type of TYMED_HGLOBAL, which is not commonly
   // used with CFSTR_FILECONTENTS (but used in Chromium--see
   // OSExchangeDataProviderWin::SetFileContents). Use GetFileContentAtIndexType
   // if TYMED_ISTREAM and TYMED_ISTORAGE are needed.

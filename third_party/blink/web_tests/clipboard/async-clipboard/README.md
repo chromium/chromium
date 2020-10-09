@@ -4,7 +4,7 @@ This directory contains async clipboard tests automated through use of
 Chrome-specific test helper `permissions-helper.js`. Related tests not using
 `permissions-helper.js` can be found in
 [`web_tests/external/wpt/clipboard-apis/`](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/clipboard-apis/).
-Please note that these tests previously could not be run manually, as there
+These tests previously could not be run manually, as there
 was no exposed way to allow a permission in automated tests.
 
 TODO(https://crbug.com/1076691): Since the

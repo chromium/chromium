@@ -26,7 +26,7 @@ class ClipboardInternal;
 class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardNonBacked
     : public Clipboard {
  public:
-  // Returns the in-memory clipboard for the current thread. Note that this
+  // Returns the in-memory clipboard for the current thread. This
   // method must *only* be used when the caller is sure that the clipboard for
   // the current thread is in fact an instance of ClipboardNonBacked.
   static ClipboardNonBacked* GetForCurrentThread();

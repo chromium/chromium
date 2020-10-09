@@ -24,7 +24,7 @@ jboolean JNI_ClipboardAndroidTestSupport_NativeWriteHtml(
     const base::android::JavaParamRef<jstring>& j_html_text) {
   {
     // Simulate something writing HTML to the clipboard in native.
-    // NOTE: Android requires both a plaintext and HTML version.
+    // Android requires both a plaintext and HTML version.
     base::string16 html_text;
     base::android::ConvertJavaStringToUTF16(env, j_html_text, &html_text);
     std::string url;
