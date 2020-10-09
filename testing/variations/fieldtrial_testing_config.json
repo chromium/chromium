@@ -3407,6 +3407,21 @@
             ]
         }
     ],
+    "IOSPreloadDelayWebStateReset": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PreloadDelayWebStateReset"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSRequestDesktopByDefault": [
         {
             "platforms": [
