@@ -232,6 +232,8 @@ void SafeBrowsingLoudErrorUI::HandleCommand(
       break;
     }
     case CMD_OPEN_ENHANCED_PROTECTION_SETTINGS: {
+      controller()->metrics_helper()->RecordUserInteraction(
+          security_interstitials::MetricsHelper::OPEN_ENHANCED_PROTECTION);
       controller()->OpenEnhancedProtectionSettings();
       break;
     }
@@ -329,6 +331,10 @@ void SafeBrowsingLoudErrorUI::PopulateEnhancedProtectionMessage(
     base::DictionaryValue* load_time_data) {
   bool can_show_enhanced_protection_message =
       CanShowEnhancedProtectionMessage();
+  if (can_show_enhanced_protection_message) {
+    controller()->metrics_helper()->RecordUserInteraction(
+        security_interstitials::MetricsHelper::SHOW_ENHANCED_PROTECTION);
+  }
   load_time_data->SetBoolean(
       security_interstitials::kDisplayEnhancedProtectionMessage,
       can_show_enhanced_protection_message);
