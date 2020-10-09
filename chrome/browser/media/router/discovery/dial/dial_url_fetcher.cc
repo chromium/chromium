@@ -125,9 +125,15 @@ void DialURLFetcher::Start(const GURL& url,
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = url;
   request->method = method;
-  // As a security mitigation, DIAL launch requests now require a fake origin
-  // which cannot be spoofed by the drive-by Web.  Rather than attempt to
-  // coerce this fake origin into a url::Origin, set the header directly.
+  // DIAL requests are made by the browser to a fixed set of URLs in response to
+  // user actions, not by Web frames.  They require an Origin header, to prevent
+  // arbitrary Web frames from issuing site-controlled DIAL requests via Fetch
+  // or XHR.  We set a fake Origin that is only used by the browser to satisfy
+  // this requirement.  Rather than attempt to coerce this fake origin into a
+  // url::Origin, set the header directly.
+  //
+  // TODO(crbug.com/1136284): Pass through an actual Origin, which improves
+  // compatibility with certain DIAL applications (e.g., Netflix).
   request->headers.SetHeader("Origin", GetFakeOriginForDialLaunch());
   method_ = method;
 
