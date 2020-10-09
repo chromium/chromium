@@ -328,6 +328,7 @@ bool ServiceUtilityProcessHost::Launch(base::CommandLine* cmd_line,
     switches::kVModule,
 #if defined(OS_WIN)
     switches::kDisableHighResTimer,
+    switches::kRaiseTimerFrequency,
 #endif
   };
   cmd_line->CopySwitchesFrom(service_command_line, kForwardSwitches,

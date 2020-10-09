@@ -32,6 +32,7 @@ void CopyNaClCommandLineArguments(base::CommandLine* cmd_line) {
 #endif
 #if defined(OS_WIN)
     switches::kDisableHighResTimer,
+    switches::kRaiseTimerFrequency,
 #endif
   };
   cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames,

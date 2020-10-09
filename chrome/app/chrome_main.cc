@@ -23,6 +23,9 @@
 #endif
 
 #if defined(OS_WIN)
+#include <timeapi.h>
+
+#include "base/base_switches.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -96,6 +99,14 @@ int ChromeMain(int argc, const char** argv) {
   base::CommandLine::Init(0, nullptr);
   const base::CommandLine* command_line(base::CommandLine::ForCurrentProcess());
   ALLOW_UNUSED_LOCAL(command_line);
+
+#if defined(OS_WIN)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kRaiseTimerFrequency)) {
+    // Raise the timer interrupt frequency and leave it raised.
+    timeBeginPeriod(1);
+  }
+#endif
 
 #if defined(OS_MAC)
   SetUpBundleOverrides();

@@ -231,6 +231,7 @@ static const char* const kSwitchNames[] = {
 #endif
 #if defined(OS_WIN)
     switches::kDisableHighResTimer,
+    switches::kRaiseTimerFrequency,
 #endif  // defined(OS_WIN)
     switches::kEnableANGLEFeatures,
     switches::kDisableANGLEFeatures,
