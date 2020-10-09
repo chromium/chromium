@@ -13,6 +13,7 @@
 # method.AddParameter('baz', 0, mojom.INT32)
 
 import pickle
+from uuid import UUID
 
 
 class BackwardCompatibilityChecker(object):
@@ -286,6 +287,7 @@ ATTRIBUTE_EXTENSIBLE = 'Extensible'
 ATTRIBUTE_STABLE = 'Stable'
 ATTRIBUTE_SYNC = 'Sync'
 ATTRIBUTE_UNLIMITED_SIZE = 'UnlimitedSize'
+ATTRIBUTE_UUID = 'Uuid'
 
 
 class NamedValue(object):
@@ -1187,6 +1189,20 @@ class Interface(ReferenceKind):
             and (self.mojom_name, self.methods, self.enums, self.constants,
                  self.attributes) == (rhs.mojom_name, rhs.methods, rhs.enums,
                                       rhs.constants, rhs.attributes))
+
+  @property
+  def uuid(self):
+    uuid_str = self.attributes.get(ATTRIBUTE_UUID) if self.attributes else None
+    if uuid_str is None:
+      return None
+
+    try:
+      u = UUID(uuid_str)
+    except:
+      raise ValueError('Invalid format for Uuid attribute on interface {}. '
+                       'Expected standard RFC 4122 string representation of '
+                       'a UUID.'.format(self.mojom_name))
+    return (int(u.hex[:16], 16), int(u.hex[16:], 16))
 
   def __hash__(self):
     return id(self)

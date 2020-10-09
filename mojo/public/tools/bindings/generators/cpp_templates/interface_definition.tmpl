@@ -32,6 +32,9 @@ std::move(p_{{param.name}})
 
 {#--- Begin #}
 const char {{class_name}}::Name_[] = "{{module_namespace}}.{{class_name}}";
+{%-  if interface.uuid %}
+constexpr base::Token {{class_name}}::Uuid_;
+{%-  endif %}
 
 {#--- Constants #}
 {%-  for constant in interface.constants %}

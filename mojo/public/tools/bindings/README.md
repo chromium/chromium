@@ -418,6 +418,13 @@ interesting attributes supported today.
     strict presubmit check. See [Versioning](#Versioning) for more details on
     backward-compatibility constraints.
 
+**`[Uuid=<UUID>]`**
+:  Specifies a UUID to be associated with a given interface. The UUID is
+   intended to remain stable across all changes to the interface definition,
+   including name changes. The value given for this attribute should be a
+   standard UUID string representation as specified by RFC 4122. New UUIDs can
+   be generated with common tools such as `uuidgen`.
+
 **`[EnableIf=value]`**
 :   The `EnableIf` attribute is used to conditionally enable definitions when
     the mojom is parsed. If the `mojom` target in the GN file does not include
