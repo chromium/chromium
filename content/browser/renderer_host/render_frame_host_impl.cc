@@ -986,6 +986,41 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     set_nav_entry_id(parent_->nav_entry_id());
   }
 
+  // The initial empty document inherits its policy container from its creator.
+  // The creator is either its parent for iframes or its opener for new windows.
+  //
+  // Note 1: For normal document created from a navigation, the policy container
+  // is computed from the NavigationRequest and assigned in
+  // DidCommitNewDocument().
+  //
+  // Note 2: After creating a new frame, blink emits a second IPC
+  // (DidCommitProvisionalLoad) for committing the initial empty
+  // document. However, since the RenderFrameHost has already been created, we
+  // cannot use DidCommitProvisionalLoad to set the policy container, since we
+  // could run into a race condition. Hence we need to set The policy container
+  // immediately when creating the RenderFrameHost here.
+  if (!frame_tree_node_->has_committed_real_load()) {
+    if (parent_) {
+      // TODO(antoniosartori): Remove this check as soon as we are able to
+      // always ensure that then parent RFH has a policy container.
+      if (parent_->policy_container())
+        policy_container_ = parent_->policy_container()->Clone();
+    } else if (frame_tree_node_->opener()) {
+      // TODO(antoniosartori): Remove this check as soon as we are able to
+      // always ensure that then opener RFH has a policy container.
+      if (frame_tree_node_->opener()
+              ->current_frame_host()
+              ->policy_container()) {
+        policy_container_ = frame_tree_node_->opener()
+                                ->current_frame_host()
+                                ->policy_container()
+                                ->Clone();
+      }
+    } else {
+      policy_container_ = std::make_unique<PolicyContainer>();
+    }
+  }
+
   SetUpMojoIfNeeded();
 
   unload_event_monitor_timeout_ =

@@ -99,4 +99,40 @@ TEST_F(RenderFrameHostImplTest, CreateFullscreenWidget) {
       mojo::PendingAssociatedRemote<blink::mojom::Widget>(), base::DoNothing());
 }
 
+TEST_F(RenderFrameHostImplTest, PolicyContainerLifecycle) {
+  TestRenderFrameHost* main_rfh = contents()->GetMainFrame();
+  ASSERT_NE(main_rfh->policy_container(), nullptr);
+  EXPECT_EQ(main_rfh->policy_container()->referrer_policy(),
+            network::mojom::ReferrerPolicy::kDefault);
+
+  main_rfh->policy_container()->SetReferrerPolicy(
+      network::mojom::ReferrerPolicy::kAlways);
+  EXPECT_EQ(main_rfh->policy_container()->referrer_policy(),
+            network::mojom::ReferrerPolicy::kAlways);
+
+  // Create a child frame and check that it inherits the policy container from
+  // the parent frame.
+  auto* child_frame = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(main_test_rfh())
+          ->AppendChild("child"));
+
+  ASSERT_NE(child_frame->policy_container(), nullptr);
+  EXPECT_EQ(child_frame->policy_container()->referrer_policy(),
+            network::mojom::ReferrerPolicy::kAlways);
+
+  // Create a new WebContents with opener and test that the new main frame
+  // inherits the policy container from the opener.
+  child_frame->policy_container()->SetReferrerPolicy(
+      network::mojom::ReferrerPolicy::kNever);
+  WebContents::CreateParams params(browser_context());
+  std::unique_ptr<WebContentsImpl> new_contents(
+      WebContentsImpl::CreateWithOpener(params, child_frame));
+  RenderFrameHostImpl* new_frame =
+      new_contents->GetFrameTree()->root()->current_frame_host();
+
+  ASSERT_NE(new_frame->policy_container(), nullptr);
+  EXPECT_EQ(new_frame->policy_container()->referrer_policy(),
+            network::mojom::ReferrerPolicy::kNever);
+}
+
 }  // namespace content
