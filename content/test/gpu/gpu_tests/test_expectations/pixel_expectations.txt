@@ -357,8 +357,9 @@ crbug.com/1086758 [ win7 ] Pixel_DirectComposition* [ Skip ]
 # 3D box is shaded incorrectly using SkiaRenderer Dawn on Windows.
 crbug.com/1082769 [ win use-skia-dawn ] Pixel_CSS3DBlueBox [ Failure ]
 
-# Flakes on gpu-fyi-try-chromeos-kevin, produces notably different image.
+# Flakes on gpu-fyi-try-chromeos-kevin and Fuchsia x64, produces notably different image.
 crbug.com/1086687 [ chromeos chromeos-board-kevin ] Pixel_PrecisionRoundedCorner [ Skip ]
+crbug.com/1136875 [ fuchsia ] Pixel_PrecisionRoundedCorner [ Skip ]
 
 # Still fails on Nexus 5 after all other Pixel_CanvasLowLatency* pass.
 crbug.com/1097752 [ android qualcomm-adreno-(tm)-330 ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Skip ]
