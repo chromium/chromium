@@ -372,10 +372,7 @@ bool Profile::IsRegularProfile() const {
 }
 
 bool Profile::IsIncognitoProfile() const {
-  // TODO(https://crbug.com/1125474): Remove |IsEphemeralGuestProfile| when
-  // Incognito is disabled for ephemeral Guest profiles.
-  return IsPrimaryOTRProfile() && !IsGuestSession() &&
-         !IsEphemeralGuestProfile();
+  return IsPrimaryOTRProfile() && !IsGuestSession();
 }
 
 // static

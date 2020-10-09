@@ -962,26 +962,32 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_ZOOM_MINUS, true);
 
   // Show various bits of UI
-  const bool guest_session =
-      profile()->IsGuestSession() || profile()->IsSystemProfile();
   DCHECK(!profile()->IsSystemProfile())
       << "Ought to never have browser for the system profile.";
   const bool normal_window = browser_->is_type_normal();
   UpdateOpenFileState(&command_updater_);
   UpdateCommandsForDevTools();
   command_updater_.UpdateCommandEnabled(IDC_TASK_MANAGER, CanOpenTaskManager());
-  command_updater_.UpdateCommandEnabled(IDC_SHOW_HISTORY, !guest_session);
+  command_updater_.UpdateCommandEnabled(
+      IDC_SHOW_HISTORY,
+      (!profile()->IsGuestSession() && !profile()->IsSystemProfile()));
   command_updater_.UpdateCommandEnabled(IDC_SHOW_DOWNLOADS, true);
   command_updater_.UpdateCommandEnabled(IDC_HELP_MENU, true);
   command_updater_.UpdateCommandEnabled(IDC_HELP_PAGE_VIA_KEYBOARD, true);
   command_updater_.UpdateCommandEnabled(IDC_HELP_PAGE_VIA_MENU, true);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_BETA_FORUM, true);
-  command_updater_.UpdateCommandEnabled(IDC_BOOKMARKS_MENU, !guest_session);
   command_updater_.UpdateCommandEnabled(
-      IDC_RECENT_TABS_MENU, !guest_session && !profile()->IsOffTheRecord());
+      IDC_BOOKMARKS_MENU,
+      (!profile()->IsGuestSession() && !profile()->IsSystemProfile() &&
+       !profile()->IsEphemeralGuestProfile()));
+  command_updater_.UpdateCommandEnabled(
+      IDC_RECENT_TABS_MENU,
+      (!profile()->IsGuestSession() && !profile()->IsSystemProfile() &&
+       !profile()->IsIncognitoProfile()));
   command_updater_.UpdateCommandEnabled(
       IDC_CLEAR_BROWSING_DATA,
-      !guest_session && !profile()->IsIncognitoProfile());
+      (!profile()->IsGuestSession() && !profile()->IsSystemProfile() &&
+       !profile()->IsIncognitoProfile()));
 #if defined(OS_CHROMEOS)
   command_updater_.UpdateCommandEnabled(IDC_TAKE_SCREENSHOT, true);
   // Chrome OS uses the system tray menu to handle multi-profiles. Avatar menu
@@ -1066,19 +1072,18 @@ void BrowserCommandController::InitCommandState() {
 void BrowserCommandController::UpdateSharedCommandsForIncognitoAvailability(
     CommandUpdater* command_updater,
     Profile* profile) {
-  const bool guest_session = profile->IsGuestSession();
-  // TODO(mlerman): Make GetAvailability account for profile->IsGuestSession().
   IncognitoModePrefs::Availability incognito_availability =
       IncognitoModePrefs::GetAvailability(profile->GetPrefs());
   command_updater->UpdateCommandEnabled(
       IDC_NEW_WINDOW, incognito_availability != IncognitoModePrefs::FORCED);
   command_updater->UpdateCommandEnabled(
       IDC_NEW_INCOGNITO_WINDOW,
-      incognito_availability != IncognitoModePrefs::DISABLED && !guest_session);
+      incognito_availability != IncognitoModePrefs::DISABLED &&
+          !profile->IsGuestSession() && !profile->IsEphemeralGuestProfile());
 
   const bool forced_incognito =
       incognito_availability == IncognitoModePrefs::FORCED ||
-      guest_session;  // Guest always runs in Incognito mode.
+      profile->IsGuestSession();  // Guest always runs in Incognito mode.
   command_updater->UpdateCommandEnabled(
       IDC_SHOW_BOOKMARK_MANAGER,
       browser_defaults::bookmarks_enabled && !forced_incognito);
@@ -1095,8 +1100,8 @@ void BrowserCommandController::UpdateSharedCommandsForIncognitoAvailability(
                                         enable_extensions && !forced_incognito);
 
   command_updater->UpdateCommandEnabled(IDC_IMPORT_SETTINGS, !forced_incognito);
-  command_updater->UpdateCommandEnabled(IDC_OPTIONS,
-                                        !forced_incognito || guest_session);
+  command_updater->UpdateCommandEnabled(
+      IDC_OPTIONS, !forced_incognito || profile->IsGuestSession());
   command_updater->UpdateCommandEnabled(IDC_SHOW_SIGNIN, !forced_incognito);
 }
 
@@ -1242,6 +1247,7 @@ void BrowserCommandController::UpdateCommandsForBookmarkBar() {
   command_updater_.UpdateCommandEnabled(
       IDC_SHOW_BOOKMARK_BAR, browser_defaults::bookmarks_enabled &&
                                  !profile()->IsGuestSession() &&
+                                 !profile()->IsEphemeralGuestProfile() &&
                                  !profile()->IsSystemProfile() &&
                                  !profile()->GetPrefs()->IsManagedPreference(
                                      bookmarks::prefs::kShowBookmarkBar) &&

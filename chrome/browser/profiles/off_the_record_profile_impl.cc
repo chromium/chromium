@@ -144,10 +144,7 @@ void OffTheRecordProfileImpl::Init() {
 
   // Must be done before CreateBrowserContextServices(), since some of them
   // change behavior based on whether the provided context is a guest session.
-  // TODO(https://crbug.com/1125474): Remove |IsEphemeralGuestProfile| when
-  // Incognito is disabled for ephemeral Guest profiles.
-  set_is_guest_profile(profile_->IsGuestSession() ||
-                       profile_->IsEphemeralGuestProfile());
+  set_is_guest_profile(profile_->IsGuestSession());
 
   BrowserContextDependencyManager::GetInstance()->CreateBrowserContextServices(
       this);

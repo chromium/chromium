@@ -973,19 +973,20 @@ Browser::DownloadCloseType Browser::OkToCloseWithInProgressDownloads(
     return DownloadCloseType::kBrowserShutdown;
   }
 
-  // If there aren't any other windows on our profile, and we're an incognito
-  // profile, and there are downloads associated with that profile,
+  // If there aren't any other windows on our profile, and we're an Incognito
+  // or Guest profile, and there are downloads associated with that profile,
   // those downloads would be cancelled by our window (-> profile) close.
   DownloadCoreService* download_core_service =
       DownloadCoreServiceFactory::GetForBrowserContext(profile());
+  bool is_guest =
+      (profile()->IsGuestSession() || profile()->IsEphemeralGuestProfile());
   if ((profile_window_count == 0) &&
       (download_core_service->NonMaliciousDownloadCount() > 0) &&
-      profile()->IsOffTheRecord()) {
+      (profile()->IsIncognitoProfile() || is_guest)) {
     *num_downloads_blocking =
         download_core_service->NonMaliciousDownloadCount();
-    return profile()->IsGuestSession()
-               ? DownloadCloseType::kLastWindowInGuestSession
-               : DownloadCloseType::kLastWindowInIncognitoProfile;
+    return is_guest ? DownloadCloseType::kLastWindowInGuestSession
+                    : DownloadCloseType::kLastWindowInIncognitoProfile;
   }
 
   // Those are the only conditions under which we will block shutdown.
@@ -2133,7 +2134,9 @@ void Browser::RequestPpapiBrokerPermission(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   // TODO(wad): Add ephemeral device ID support for broker in guest mode.
-  if (profile->IsGuestSession()) {
+  // TODO(https://crbug.com/1125474): Update if PPAPI is supported in ephemeral
+  // Guest profiles.
+  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile()) {
     std::move(callback).Run(false);
     return;
   }
@@ -2996,7 +2999,7 @@ void Browser::UpdateBookmarkBarState(BookmarkBarStateChangeReason reason) {
 }
 
 bool Browser::ShouldShowBookmarkBar() const {
-  if (profile_->IsGuestSession())
+  if (profile_->IsGuestSession() || profile()->IsEphemeralGuestProfile())
     return false;
 
   if (browser_defaults::bookmarks_enabled &&
