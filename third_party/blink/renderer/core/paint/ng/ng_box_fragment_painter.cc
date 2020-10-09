@@ -2047,6 +2047,11 @@ bool NGBoxFragmentPainter::HitTestLineBoxFragment(
     const NGPhysicalLineBoxFragment& fragment,
     const NGInlineBackwardCursor& cursor,
     const PhysicalOffset& physical_offset) {
+  PhysicalRect overflow_rect = cursor.Current().InkOverflow();
+  overflow_rect.Move(physical_offset);
+  if (!hit_test.location.Intersects(overflow_rect))
+    return false;
+
   if (HitTestChildren(hit_test, PhysicalFragment(),
                       cursor.CursorForDescendants(), physical_offset))
     return true;
