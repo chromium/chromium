@@ -2579,7 +2579,7 @@ TEST_F(PartitionAllocTest, OptimizedGetSlotOffset) {
   }
 }
 
-TEST_F(PartitionAllocTest, GetAllocatedSize) {
+TEST_F(PartitionAllocTest, GetUsableSize) {
   size_t delta = SystemPageSize() + 1;
   for (size_t size = 1; size <= kMinDirectMappedDownsize; size += delta) {
     void* ptr = allocator.root()->Alloc(size, "");

@@ -588,15 +588,15 @@ TEST_F(AllocatorShimTest, ShimReplacesCRTHeapWhenEnabled) {
 #endif  // defined(OS_WIN)
 
 #if defined(OS_WIN)
-static size_t GetAllocatedSize(void* ptr) {
+static size_t GetUsableSize(void* ptr) {
   return _msize(ptr);
 }
 #elif defined(OS_APPLE)
-static size_t GetAllocatedSize(void* ptr) {
+static size_t GetUsableSize(void* ptr) {
   return malloc_size(ptr);
 }
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS)
-static size_t GetAllocatedSize(void* ptr) {
+static size_t GetUsableSize(void* ptr) {
   return malloc_usable_size(ptr);
 }
 #else
@@ -606,17 +606,17 @@ static size_t GetAllocatedSize(void* ptr) {
 #if !defined(NO_MALLOC_SIZE)
 TEST_F(AllocatorShimTest, ShimReplacesMallocSizeWhenEnabled) {
   InsertAllocatorDispatch(&g_mock_dispatch);
-  EXPECT_EQ(GetAllocatedSize(kTestSizeEstimateAddress), kTestSizeEstimate);
+  EXPECT_EQ(GetUsableSize(kTestSizeEstimateAddress), kTestSizeEstimate);
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
 }
 
 TEST_F(AllocatorShimTest, ShimDoesntChangeMallocSizeWhenEnabled) {
   void* alloc = malloc(16);
-  size_t sz = GetAllocatedSize(alloc);
+  size_t sz = GetUsableSize(alloc);
   EXPECT_GE(sz, 16U);
 
   InsertAllocatorDispatch(&g_mock_dispatch);
-  EXPECT_EQ(GetAllocatedSize(alloc), sz);
+  EXPECT_EQ(GetUsableSize(alloc), sz);
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
 
   free(alloc);
