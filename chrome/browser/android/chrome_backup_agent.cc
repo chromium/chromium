@@ -8,7 +8,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/stl_util.h"
-#include "chrome/android/chrome_jni_headers/ChromeBackupAgent_jni.h"
+#include "chrome/android/chrome_jni_headers/ChromeBackupAgentImpl_jni.h"
 #include "chrome/browser/android/chrome_backup_agent.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
@@ -33,7 +33,7 @@ const char* backed_up_preferences_[] = {
 }  // namespace
 
 static base::android::ScopedJavaLocalRef<jobjectArray>
-JNI_ChromeBackupAgent_GetBoolBackupNames(
+JNI_ChromeBackupAgentImpl_GetBoolBackupNames(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
   return base::android::ToJavaArrayOfStrings(env,
@@ -41,7 +41,7 @@ JNI_ChromeBackupAgent_GetBoolBackupNames(
 }
 
 static base::android::ScopedJavaLocalRef<jbooleanArray>
-JNI_ChromeBackupAgent_GetBoolBackupValues(
+JNI_ChromeBackupAgentImpl_GetBoolBackupValues(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
   PrefService* prefs = ProfileManager::GetLastUsedProfile()->GetPrefs();
@@ -56,7 +56,7 @@ JNI_ChromeBackupAgent_GetBoolBackupValues(
   return base::android::ScopedJavaLocalRef<jbooleanArray>(env, array);
 }
 
-static void JNI_ChromeBackupAgent_SetBoolBackupPrefs(
+static void JNI_ChromeBackupAgentImpl_SetBoolBackupPrefs(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
     const base::android::JavaParamRef<jobjectArray>& names,
@@ -87,13 +87,13 @@ std::vector<std::string> GetBackupPrefNames() {
 base::android::ScopedJavaLocalRef<jobjectArray> GetBoolBackupNamesForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
-  return JNI_ChromeBackupAgent_GetBoolBackupNames(env, jcaller);
+  return JNI_ChromeBackupAgentImpl_GetBoolBackupNames(env, jcaller);
 }
 
 base::android::ScopedJavaLocalRef<jbooleanArray> GetBoolBackupValuesForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
-  return JNI_ChromeBackupAgent_GetBoolBackupValues(env, jcaller);
+  return JNI_ChromeBackupAgentImpl_GetBoolBackupValues(env, jcaller);
 }
 
 void SetBoolBackupPrefsForTesting(
@@ -101,7 +101,7 @@ void SetBoolBackupPrefsForTesting(
     const base::android::JavaParamRef<jobject>& jcaller,
     const base::android::JavaParamRef<jobjectArray>& names,
     const base::android::JavaParamRef<jbooleanArray>& values) {
-  JNI_ChromeBackupAgent_SetBoolBackupPrefs(env, jcaller, names, values);
+  JNI_ChromeBackupAgentImpl_SetBoolBackupPrefs(env, jcaller, names, values);
 }
 
 }  //  namespace android

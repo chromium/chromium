@@ -50,7 +50,7 @@ public class ChromeBackupWatcher {
         }
         sharedPrefs.addObserver((key) -> {
             // Update the backup if any of the backed up Android preferences change.
-            for (String pref : ChromeBackupAgent.BACKUP_ANDROID_BOOL_PREFS) {
+            for (String pref : ChromeBackupAgentImpl.BACKUP_ANDROID_BOOL_PREFS) {
                 if (key.equals(pref)) {
                     onBackupPrefsChanged();
                     return;
