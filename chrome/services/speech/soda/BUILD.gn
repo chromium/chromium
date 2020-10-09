@@ -19,6 +19,8 @@ source_set("unit_tests") {
   if (enable_soda) {
     sources = [ "soda_client_unittest.cc" ]
 
+    data_deps = [ "//third_party/soda:soda_resources" ]
+
     deps = [
       ":soda",
       "//base",

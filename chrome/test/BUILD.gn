@@ -1609,6 +1609,7 @@ if (!is_android) {
     if (enable_soda) {
       sources +=
           [ "../browser/speech/speech_recognition_service_browsertest.cc" ]
+      data_deps += [ "//third_party/soda:soda_resources" ]
     }
 
     if (use_ozone) {
