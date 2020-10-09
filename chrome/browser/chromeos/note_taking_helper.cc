@@ -52,7 +52,7 @@ namespace {
 // Pointer to singleton instance.
 NoteTakingHelper* g_helper = nullptr;
 
-// Whitelisted Chrome note-taking apps.
+// Allowed Chrome note-taking apps.
 const char* const kExtensionIds[] = {
     // TODO(jdufault): Remove dev version? See crbug.com/640828.
     NoteTakingHelper::kDevKeepExtensionId,
@@ -90,10 +90,10 @@ bool IsLockScreenEnabled(const extensions::Extension* app) {
       app, app_runtime::ACTION_TYPE_NEW_NOTE);
 }
 
-// Gets the set of apps (more specifically, their app IDs) that are allowed to
-// be launched on the lock screen, if the feature is whitelisted using
+// Gets the set of app IDs that are allowed to be launched on the lock screen,
+// if the feature is restricted using the
 // |prefs::kNoteTakingAppsLockScreenAllowlist| preference. If the pref is not
-// set, this method will return null (in which case the white-list should not be
+// set, this method will return null (in which case the set should not be
 // checked).
 // Note that |prefs::kNoteTakingrAppsAllowedOnLockScreen| is currently only
 // expected to be set by policy (if it's set at all).
@@ -217,7 +217,7 @@ std::unique_ptr<NoteTakingAppInfo> NoteTakingHelper::GetPreferredChromeAppInfo(
   if (!preferred_app)
     return nullptr;
 
-  if (!IsWhitelistedChromeApp(preferred_app) &&
+  if (!IsAllowedChromeApp(preferred_app) &&
       !extensions::ActionHandlersInfo::HasActionHandler(
           preferred_app, app_runtime::ACTION_TYPE_NEW_NOTE)) {
     return nullptr;
@@ -372,12 +372,11 @@ NoteTakingHelper::NoteTakingHelper()
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kNoteTakingAppIds);
   if (!switch_value.empty()) {
-    whitelisted_chrome_app_ids_ = base::SplitString(
+    allowed_chrome_app_ids_ = base::SplitString(
         switch_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   }
-  whitelisted_chrome_app_ids_.insert(whitelisted_chrome_app_ids_.end(),
-                                     kExtensionIds,
-                                     kExtensionIds + base::size(kExtensionIds));
+  allowed_chrome_app_ids_.insert(allowed_chrome_app_ids_.end(), kExtensionIds,
+                                 kExtensionIds + base::size(kExtensionIds));
 
   // Track profiles so we can observe their extension registries.
   g_browser_process->profile_manager()->AddObserver(this);
@@ -431,10 +430,10 @@ NoteTakingHelper::~NoteTakingHelper() {
   }
 }
 
-bool NoteTakingHelper::IsWhitelistedChromeApp(
+bool NoteTakingHelper::IsAllowedChromeApp(
     const extensions::Extension* extension) const {
   DCHECK(extension);
-  return base::Contains(whitelisted_chrome_app_ids_, extension->id());
+  return base::Contains(allowed_chrome_app_ids_, extension->id());
 }
 
 std::vector<const extensions::Extension*> NoteTakingHelper::GetChromeApps(
@@ -446,7 +445,7 @@ std::vector<const extensions::Extension*> NoteTakingHelper::GetChromeApps(
       extension_registry->enabled_extensions();
 
   std::vector<const extensions::Extension*> extensions;
-  for (const auto& id : whitelisted_chrome_app_ids_) {
+  for (const auto& id : allowed_chrome_app_ids_) {
     if (enabled_extensions.Contains(id)) {
       extensions.push_back(extension_registry->GetExtensionById(
           id, extensions::ExtensionRegistry::ENABLED));
@@ -599,7 +598,7 @@ NoteTakingHelper::LaunchResult NoteTakingHelper::LaunchAppInternal(
 void NoteTakingHelper::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension) {
-  if (IsWhitelistedChromeApp(extension) ||
+  if (IsAllowedChromeApp(extension) ||
       extensions::ActionHandlersInfo::HasActionHandler(
           extension, app_runtime::ACTION_TYPE_NEW_NOTE)) {
     for (Observer& observer : observers_)
@@ -611,7 +610,7 @@ void NoteTakingHelper::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension,
     extensions::UnloadedExtensionReason reason) {
-  if (IsWhitelistedChromeApp(extension) ||
+  if (IsAllowedChromeApp(extension) ||
       extensions::ActionHandlersInfo::HasActionHandler(
           extension, app_runtime::ACTION_TYPE_NEW_NOTE)) {
     for (Observer& observer : observers_)
@@ -632,11 +631,12 @@ NoteTakingLockScreenSupport NoteTakingHelper::GetLockScreenSupportForChromeApp(
   if (!IsLockScreenEnabled(app))
     return NoteTakingLockScreenSupport::kNotSupported;
 
-  if (lock_screen_whitelist_state_ == AppWhitelistState::kUndetermined)
-    UpdateLockScreenAppsWhitelistState();
+  if (allowed_lock_screen_apps_state_ == AllowedAppListState::kUndetermined)
+    UpdateAllowedLockScreenAppsList();
 
-  if (lock_screen_whitelist_state_ == AppWhitelistState::kAppsWhitelisted &&
-      !lock_screen_apps_allowed_by_policy_.count(app->id())) {
+  if (allowed_lock_screen_apps_state_ ==
+          AllowedAppListState::kAllowedAppsListed &&
+      !allowed_lock_screen_apps_by_policy_.count(app->id())) {
     return NoteTakingLockScreenSupport::kNotAllowedByPolicy;
   }
 
@@ -647,7 +647,7 @@ NoteTakingLockScreenSupport NoteTakingHelper::GetLockScreenSupportForChromeApp(
 }
 
 void NoteTakingHelper::OnAllowedNoteTakingAppsChanged() {
-  if (lock_screen_whitelist_state_ == AppWhitelistState::kUndetermined)
+  if (allowed_lock_screen_apps_state_ == AllowedAppListState::kUndetermined)
     return;
 
   std::unique_ptr<NoteTakingAppInfo> preferred_app =
@@ -656,7 +656,7 @@ void NoteTakingHelper::OnAllowedNoteTakingAppsChanged() {
       preferred_app ? preferred_app->lock_screen_support
                     : NoteTakingLockScreenSupport::kNotSupported;
 
-  UpdateLockScreenAppsWhitelistState();
+  UpdateAllowedLockScreenAppsList();
 
   preferred_app =
       GetPreferredChromeAppInfo(profile_with_enabled_lock_screen_apps_);
@@ -674,16 +674,17 @@ void NoteTakingHelper::OnAllowedNoteTakingAppsChanged() {
   }
 }
 
-void NoteTakingHelper::UpdateLockScreenAppsWhitelistState() {
-  std::unique_ptr<std::set<std::string>> whitelist = GetAllowedLockScreenApps(
-      profile_with_enabled_lock_screen_apps_->GetPrefs());
+void NoteTakingHelper::UpdateAllowedLockScreenAppsList() {
+  std::unique_ptr<std::set<std::string>> allowed_apps =
+      GetAllowedLockScreenApps(
+          profile_with_enabled_lock_screen_apps_->GetPrefs());
 
-  if (whitelist) {
-    lock_screen_whitelist_state_ = AppWhitelistState::kAppsWhitelisted;
-    lock_screen_apps_allowed_by_policy_.swap(*whitelist);
+  if (allowed_apps) {
+    allowed_lock_screen_apps_state_ = AllowedAppListState::kAllowedAppsListed;
+    allowed_lock_screen_apps_by_policy_.swap(*allowed_apps);
   } else {
-    lock_screen_whitelist_state_ = AppWhitelistState::kNoAppWhitelist;
-    lock_screen_apps_allowed_by_policy_.clear();
+    allowed_lock_screen_apps_state_ = AllowedAppListState::kAllAppsAllowed;
+    allowed_lock_screen_apps_by_policy_.clear();
   }
 }
 
