@@ -11,10 +11,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "components/version_info/channel.h"
 #include "extensions/common/csp_validator.h"
 #include "extensions/common/error_utils.h"
-#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/sandboxed_page_info.h"
@@ -177,29 +175,16 @@ bool CSPHandler::Parse(Extension* extension, base::string16* error) {
   //     "extension_pages": "",
   //     "sandbox": "",
   //  }
+  // The dictionary is supported (and mandated) for manifest v3 (and above)
+  // extensions.
   const base::Value* csp = GetManifestPath(extension, key);
-
-  // TODO(karandeepb): Remove the channel check since we don't plan to support
-  // the CSP dictionary for Manifest V2.
-  bool csp_dictionary_supported =
-      extension->GetType() == Manifest::TYPE_EXTENSION &&
-      (extension->manifest_version() >= 3 ||
-       GetCurrentChannel() == version_info::Channel::UNKNOWN);
-
-  if (csp_dictionary_supported) {
-    // CSP key as dictionary is mandatory for manifest v3 (and above)
-    // extensions.
-    if (extension->manifest_version() >= 3) {
-      if (csp && !csp->is_dict()) {
-        *error = GetInvalidManifestKeyError(key);
-        return false;
-      }
-      return ParseCSPDictionary(extension, error);
+  bool parse_as_dictionary = extension->manifest_version() >= 3;
+  if (parse_as_dictionary) {
+    if (csp && !csp->is_dict()) {
+      *error = GetInvalidManifestKeyError(key);
+      return false;
     }
-
-    // CSP key as dictionary is optional for manifest v2 extensions.
-    if (csp && csp->is_dict())
-      return ParseCSPDictionary(extension, error);
+    return ParseCSPDictionary(extension, error);
   }
 
   if (!ParseExtensionPagesCSP(extension, error, key, false /* secure_only */,

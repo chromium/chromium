@@ -131,55 +131,33 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_ExtensionPages) {
                 "worker-src 'self'; script-src; default-src 'self'"},
                {"csp_empty_dictionary_valid.json", kDefaultSecureCSP}};
 
-  // Verify that keys::kContentSecurityPolicy key can be used as a dictionary on
-  // trunk.
-  {
-    ScopedCurrentChannel channel(version_info::Channel::UNKNOWN);
-    for (const auto& test_case : cases) {
-      SCOPED_TRACE(
-          base::StringPrintf("%s on channel %s", test_case.file_name, "trunk"));
-      scoped_refptr<Extension> extension =
-          LoadAndExpectSuccess(test_case.file_name);
-      ASSERT_TRUE(extension.get());
-      EXPECT_EQ(test_case.csp, CSPInfo::GetExtensionPagesCSP(extension.get()));
-    }
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(base::StringPrintf("Testing %s.", test_case.file_name));
+    scoped_refptr<Extension> extension =
+        LoadAndExpectSuccess(test_case.file_name);
+    ASSERT_TRUE(extension.get());
+    EXPECT_EQ(test_case.csp, CSPInfo::GetExtensionPagesCSP(extension.get()));
   }
 
-  // Verify that keys::kContentSecurityPolicy key can't be used as a dictionary
-  // on Stable.
-  {
-    ScopedCurrentChannel channel(version_info::Channel::STABLE);
-    for (const auto& test_case : cases) {
-      SCOPED_TRACE(base::StringPrintf("%s on channel %s", test_case.file_name,
-                                      "stable"));
-      LoadAndExpectError(
-          test_case.file_name,
-          GetInvalidManifestKeyError(keys::kContentSecurityPolicy));
-    }
-  }
-
-  {
-    ScopedCurrentChannel channel(version_info::Channel::UNKNOWN);
-    Testcase testcases[] = {
-        Testcase("csp_invalid_2.json",
-                 GetInvalidManifestKeyError(
-                     keys::kContentSecurityPolicy_ExtensionPagesPath)),
-        Testcase("csp_invalid_3.json",
-                 GetInvalidManifestKeyError(
-                     keys::kContentSecurityPolicy_ExtensionPagesPath)),
-        Testcase(
-            "csp_missing_src.json",
-            ErrorUtils::FormatErrorMessage(
-                errors::kInvalidCSPMissingSecureSrc,
-                keys::kContentSecurityPolicy_ExtensionPagesPath, "script-src")),
-        Testcase("csp_insecure_src.json",
-                 ErrorUtils::FormatErrorMessage(
-                     errors::kInvalidCSPInsecureValueError,
-                     keys::kContentSecurityPolicy_ExtensionPagesPath,
-                     "'unsafe-eval'", "worker-src")),
-    };
-    RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
-  }
+  Testcase testcases[] = {
+      Testcase("csp_invalid_2.json",
+               GetInvalidManifestKeyError(
+                   keys::kContentSecurityPolicy_ExtensionPagesPath)),
+      Testcase("csp_invalid_3.json",
+               GetInvalidManifestKeyError(
+                   keys::kContentSecurityPolicy_ExtensionPagesPath)),
+      Testcase(
+          "csp_missing_src.json",
+          ErrorUtils::FormatErrorMessage(
+              errors::kInvalidCSPMissingSecureSrc,
+              keys::kContentSecurityPolicy_ExtensionPagesPath, "script-src")),
+      Testcase("csp_insecure_src.json",
+               ErrorUtils::FormatErrorMessage(
+                   errors::kInvalidCSPInsecureValueError,
+                   keys::kContentSecurityPolicy_ExtensionPagesPath,
+                   "'unsafe-eval'", "worker-src")),
+  };
+  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
 }
 
 TEST_F(CSPInfoUnitTest, CSPDictionary_Sandbox) {
@@ -249,6 +227,12 @@ TEST_F(CSPInfoUnitTest, CSPDictionaryMandatoryForV3) {
     EXPECT_EQ(kDefaultSecureCSP,
               CSPInfo::GetExtensionPagesCSP(extension.get()));
   }
+}
+
+// Ensure the CSP dictionary is disallowed for mv2 extensions.
+TEST_F(CSPInfoUnitTest, CSPDictionaryDisallowedForV2) {
+  LoadAndExpectError("csp_dictionary_mv2.json",
+                     GetInvalidManifestKeyError(keys::kContentSecurityPolicy));
 }
 
 }  // namespace extensions
