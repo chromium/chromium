@@ -4496,6 +4496,8 @@ static_library("browser") {
       "themes/theme_helper_win.cc",
       "themes/theme_helper_win.h",
       "upgrade_detector/get_installed_version_win.cc",
+      "webshare/win/share_operation.cc",
+      "webshare/win/share_operation.h",
       "webshare/win/show_share_ui_for_window_operation.cc",
       "webshare/win/show_share_ui_for_window_operation.h",
       "win/app_icon.cc",

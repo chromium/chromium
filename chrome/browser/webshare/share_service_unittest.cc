@@ -29,6 +29,9 @@ using blink::mojom::ShareError;
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/webshare/chromeos/sharesheet_client.h"
 #endif
+#if defined(OS_WIN)
+#include "chrome/browser/webshare/win/scoped_fake_data_transfer_manager_interop.h"
+#endif
 
 class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -45,7 +48,20 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
     webshare::SharesheetClient::SetSharesheetCallbackForTesting(
         base::BindRepeating(&ShareServiceUnitTest::AcceptShareRequest));
 #endif
+#if defined(OS_WIN)
+    if (IsSupportedEnvironment()) {
+      scoped_interop_ =
+          std::make_unique<webshare::ScopedFakeDataTransferManagerInterop>();
+    }
+#endif
   }
+
+#if defined(OS_WIN)
+  bool IsSupportedEnvironment() {
+    return webshare::ScopedFakeDataTransferManagerInterop::
+        IsSupportedEnvironment();
+  }
+#endif
 
   ShareError ShareGeneratedFileData(const std::string& extension,
                                     const std::string& content_type,
@@ -123,11 +139,20 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
   }
 #endif
 
+#if defined(OS_WIN)
+  std::unique_ptr<webshare::ScopedFakeDataTransferManagerInterop>
+      scoped_interop_;
+#endif
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ShareServiceImpl> share_service_;
 };
 
 TEST_F(ShareServiceUnitTest, FileCount) {
+#if defined(OS_WIN)
+  if (!IsSupportedEnvironment())
+    return;
+#endif
+
   EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".txt", "text/plain", 1234,
                                                    kMaxSharedFileCount));
   EXPECT_EQ(ShareError::PERMISSION_DENIED,
@@ -172,6 +197,11 @@ TEST_F(ShareServiceUnitTest, Multimedia) {
 }
 
 TEST_F(ShareServiceUnitTest, PortableDocumentFormat) {
+#if defined(OS_WIN)
+  if (!IsSupportedEnvironment())
+    return;
+#endif
+
   // TODO(crbug.com/1006055): Support sharing of pdf files.
   // The URL will be checked using Safe Browsing.
   EXPECT_EQ(ShareError::PERMISSION_DENIED,

@@ -334,6 +334,7 @@ static_library("test_support") {
       "//components/crash/core/app",
       "//third_party/wtl",
     ]
+    libs = [ "runtimeobject.lib" ]
   }
 
   if (is_chromeos) {
@@ -5803,6 +5804,7 @@ test("unit_tests") {
       "../browser/ui/views/uninstall_view_unittest.cc",
       "../browser/webshare/win/fake_data_transfer_manager_interop_unittest.cc",
       "../browser/webshare/win/fake_data_transfer_manager_unittest.cc",
+      "../browser/webshare/win/share_operation_unittest.cc",
       "../browser/webshare/win/show_share_ui_for_window_operation_unittest.cc",
     ]
     deps += [

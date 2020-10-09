@@ -11,6 +11,7 @@
 #include "base/win/com_init_util.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/win_util.h"
+#include "base/win/windows_version.h"
 #include "chrome/browser/webshare/win/fake_data_transfer_manager_interop.h"
 #include "chrome/browser/webshare/win/show_share_ui_for_window_operation.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,6 +39,15 @@ static HRESULT FakeRoGetActivationFactory(HSTRING class_id,
 
 }  // namespace
 
+// static
+bool ScopedFakeDataTransferManagerInterop::IsSupportedEnvironment() {
+  if (base::win::ResolveCoreWinRTDelayload() &&
+      base::win::ScopedHString::ResolveCoreWinRTStringDelayload())
+    return true;
+  EXPECT_LT(base::win::GetVersion(), base::win::Version::WIN8);
+  return false;
+}
+
 ScopedFakeDataTransferManagerInterop::ScopedFakeDataTransferManagerInterop() {
   // Initialization work is done in an independent function so that the
   // various test macros can be used.
@@ -56,8 +66,7 @@ ScopedFakeDataTransferManagerInterop::instance() {
 }
 
 void ScopedFakeDataTransferManagerInterop::Initialize() {
-  ASSERT_TRUE(base::win::ResolveCoreWinRTDelayload());
-  ASSERT_TRUE(base::win::ScopedHString::ResolveCoreWinRTStringDelayload());
+  ASSERT_TRUE(IsSupportedEnvironment());
   base::win::AssertComInitialized();
 
   instance_ = Microsoft::WRL::Make<FakeDataTransferManagerInterop>();
