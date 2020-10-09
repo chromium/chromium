@@ -35,18 +35,6 @@ bool IsValidNonEmptyHexString(const std::string& input) {
   return true;
 }
 
-std::string LookUpExtensionName(content::BrowserContext* context,
-                                std::string extension_id) {
-  extensions::ExtensionRegistry* extension_registry =
-      extensions::ExtensionRegistry::Get(context);
-  DCHECK(extension_registry);
-  const extensions::Extension* extension = extension_registry->GetExtensionById(
-      extension_id, extensions::ExtensionRegistry::ENABLED);
-  if (extension == nullptr)
-    return std::string();
-  return extension->name();
-}
-
 }  // namespace
 
 NetworkingConfigService::AuthenticationResult::AuthenticationResult()
@@ -115,27 +103,15 @@ bool NetworkingConfigService::RegisterHexSsid(std::string hex_ssid,
     return false;
   }
 
-  chromeos::NetworkHandler::Get()
-      ->network_state_handler()
-      ->SetCaptivePortalProviderForHexSsid(
-          hex_ssid, extension_id,
-          LookUpExtensionName(browser_context_, extension_id));
+  // This method no longer actually does anything. TODO(1124419) Remove the
+  // networking.config API entirely in a follow-up.
   return true;
 }
 
 void NetworkingConfigService::UnregisterExtension(
     const std::string& extension_id) {
-  for (auto it = hex_ssid_to_extension_id_.begin();
-       it != hex_ssid_to_extension_id_.end();) {
-    if (it->second == extension_id) {
-      chromeos::NetworkHandler::Get()
-          ->network_state_handler()
-          ->SetCaptivePortalProviderForHexSsid(it->first, "", "");
-      it = hex_ssid_to_extension_id_.erase(it);
-    } else {
-      ++it;
-    }
-  }
+  // This method no longer actually does anything. TODO(1124419) Remove the
+  // networking.config API entirely in a follow-up.
 }
 
 const NetworkingConfigService::AuthenticationResult&

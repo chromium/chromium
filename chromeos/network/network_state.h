@@ -40,13 +40,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   explicit NetworkState(const std::string& path);
   ~NetworkState() override;
 
-  struct CaptivePortalProviderInfo {
-    // The id used by chrome to identify the provider (i.e. an extension id).
-    std::string id;
-    // The display name for the captive portal provider (i.e. extension name).
-    std::string name;
-  };
-
   struct VpnProviderInfo {
     // The id used by chrome to identify the provider (i.e. an extension id).
     std::string id;
@@ -110,10 +103,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   bool connectable() const { return connectable_; }
   void set_connectable(bool connectable) { connectable_ = connectable; }
   bool is_captive_portal() const { return is_captive_portal_; }
-  const CaptivePortalProviderInfo* captive_portal_provider() const {
-    return captive_portal_provider_.get();
-  }
-  void SetCaptivePortalProvider(const std::string& id, const std::string& name);
   int signal_strength() const { return signal_strength_; }
   void set_signal_strength(int signal_strength) {
     signal_strength_ = signal_strength;
@@ -306,7 +295,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   // Wireless properties, used for icons and Connect logic.
   bool connectable_ = false;
   bool is_captive_portal_ = false;
-  std::unique_ptr<CaptivePortalProviderInfo> captive_portal_provider_;
   int signal_strength_ = 0;
   std::string bssid_;
   int frequency_ = 0;

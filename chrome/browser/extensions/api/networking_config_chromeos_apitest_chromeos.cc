@@ -142,12 +142,6 @@ IN_PROC_BROWSER_TEST_F(NetworkingConfigTest, ApiAvailability) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(NetworkingConfigTest, RegisterNetworks) {
-  ASSERT_TRUE(
-      RunExtensionSubtest("networking_config", "register_networks.html"))
-      << message_;
-}
-
 // Test the full, positive flow starting with the extension registration and
 // ending with the captive portal being authenticated.
 IN_PROC_BROWSER_TEST_F(NetworkingConfigTest, FullTest) {

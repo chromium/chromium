@@ -41,7 +41,6 @@ struct NetworkInfo {
   chromeos::network_config::mojom::OncSource source;
   int battery_percentage = 0;
   int signal_strength = 0;
-  std::string captive_portal_provider_name;
 };
 
 }  // namespace ash

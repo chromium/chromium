@@ -369,18 +369,6 @@ GURL NetworkState::GetWebProxyAutoDiscoveryUrl() const {
   return gurl;
 }
 
-void NetworkState::SetCaptivePortalProvider(const std::string& id,
-                                            const std::string& name) {
-  if (id.empty()) {
-    captive_portal_provider_ = nullptr;
-    return;
-  }
-  if (!captive_portal_provider_)
-    captive_portal_provider_ = std::make_unique<CaptivePortalProviderInfo>();
-  captive_portal_provider_->id = id;
-  captive_portal_provider_->name = name;
-}
-
 std::string NetworkState::GetVpnProviderType() const {
   return vpn_provider_ ? vpn_provider_->type : std::string();
 }

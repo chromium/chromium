@@ -104,13 +104,6 @@ enum CertificateType {
   kUserCert,
 };
 
-struct CaptivePortalProvider {
-  // Id used to identify the captive portal provider (i.e. an extension id).
-  string id;
-  // Display name for the captive portal provider (i.e. extension name).
-  string name;
-};
-
 // The SIM card lock status for Cellular networks.
 struct SIMLockStatus {
   // The status of SIM lock. Possible values are 'sim-pin', 'sim-puk' or empty.
@@ -182,7 +175,6 @@ union NetworkTypeStateProperties {
 };
 
 struct NetworkStateProperties {
-  CaptivePortalProvider? captive_portal_provider;
   // True if the network is configured and may be connectable.
   bool connectable = false;
   // True if an explicit connect was requested. The network state may not be

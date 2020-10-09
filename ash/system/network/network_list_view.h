@@ -83,11 +83,6 @@ class NetworkListView : public NetworkStateListDetailedView,
   // not managed by policy.
   views::View* CreatePolicyView(const NetworkInfo& info);
 
-  // Creates the view of an extra icon appearing next to the network name
-  // indicating that the network is controlled by an extension. If no extension
-  // is registered for this network, returns |nullptr|.
-  views::View* CreateControlledByExtensionView(const NetworkInfo& info);
-
   // Adds or updates child views representing the network connections when
   // |is_wifi| is matching the attribute of a network connection starting at
   // |child_index|. Returns a set of guids for the added network

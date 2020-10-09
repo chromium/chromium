@@ -320,15 +320,6 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
                     network))
           : mojom::ProxyMode::kDirect;
 
-  const NetworkState::CaptivePortalProviderInfo* captive_portal_provider =
-      network->captive_portal_provider();
-  if (captive_portal_provider) {
-    auto mojo_captive_portal_provider = mojom::CaptivePortalProvider::New();
-    mojo_captive_portal_provider->id = captive_portal_provider->id;
-    mojo_captive_portal_provider->name = captive_portal_provider->name;
-    result->captive_portal_provider = std::move(mojo_captive_portal_provider);
-  }
-
   switch (type) {
     case mojom::NetworkType::kCellular: {
       auto cellular = mojom::CellularStateProperties::New();
