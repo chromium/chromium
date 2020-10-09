@@ -164,7 +164,26 @@ class VideoToHWAcceleratedCanvas(SimpleCanvasPage):
 
 class VideoToSubTexture(SimpleCanvasPage):
   BASE_NAME = 'video_to_sub_texture'
-  URL = 'file://../simple_canvas/video_to_sub_texture.html'
+  # pylint: disable=line-too-long
+  URL = 'file://../simple_canvas/video_to_sub_texture.html?flip_y=false&premult=false'
+
+
+class VideoToSubTextureFlipY(SimpleCanvasPage):
+  BASE_NAME = 'video_to_sub_texture_flip_y'
+  # pylint: disable=line-too-long
+  URL = 'file://../simple_canvas/video_to_sub_texture.html?flip_y=true&premult=false'
+
+
+class VideoToSubTexturePremultiply(SimpleCanvasPage):
+  BASE_NAME = 'video_to_sub_texture_premultiply'
+  # pylint: disable=line-too-long
+  URL = 'file://../simple_canvas/video_to_sub_texture.html?flip_y=false&premult=true'
+
+
+class VideoToSubTextureFlipAndPremultiply(SimpleCanvasPage):
+  BASE_NAME = 'video_to_sub_texture_flip_and_premultiply'
+  # pylint: disable=line-too-long
+  URL = 'file://../simple_canvas/video_to_sub_texture.html?flip_y=true&premult=true'
 
 
 class VideoToTexture(SimpleCanvasPage):
