@@ -104,6 +104,7 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView,
 
  private:
   friend class IntentPickerBubbleViewTest;
+  friend class IntentPickerBubbleViewBrowserTest;
   friend class IntentPickerBubbleViewBrowserTestChromeOS;
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, NullIcons);
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, NonNullIcons);
