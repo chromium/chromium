@@ -135,6 +135,18 @@ void StateStore::RemoveObserver(TestObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void StateStore::FlushForTesting(base::OnceClosure flushed_callback) {
+  // Look up a key in the database. This serves as a roundtrip to the DB and
+  // back; the value of the key doesn't matter.
+  GetExtensionValue("fake_id", "fake_key",
+                    base::BindOnce(
+                        [](base::OnceClosure flushed_callback,
+                           std::unique_ptr<base::Value> ignored) {
+                          std::move(flushed_callback).Run();
+                        },
+                        std::move(flushed_callback)));
+}
+
 bool StateStore::IsInitialized() const {
   return task_queue_->ready();
 }

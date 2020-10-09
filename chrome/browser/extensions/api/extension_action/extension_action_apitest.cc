@@ -184,6 +184,14 @@ class ActionTestHelper {
   DISALLOW_COPY_AND_ASSIGN(ActionTestHelper);
 };
 
+// Forces a flush of the StateStore, where action state is persisted.
+void FlushStateStore(Profile* profile) {
+  base::RunLoop run_loop;
+  ExtensionSystem::Get(profile)->state_store()->FlushForTesting(
+      run_loop.QuitWhenIdleClosure());
+  run_loop.Run();
+}
+
 }  // namespace
 
 using ExtensionActionAPITest = ExtensionApiTest;
@@ -636,6 +644,78 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest,
       popup_contents, "domAutomationController.send(sessionStorage.foo)",
       &foo));
   EXPECT_EQ("1", foo);
+}
+
+using ActionAndBrowserActionAPITest = MultiActionAPITest;
+
+// Tests whether action values persist across sessions.
+// Note: Since pageActions are only applicable on a specific tab, this test
+// doesn't apply to them.
+IN_PROC_BROWSER_TEST_P(ActionAndBrowserActionAPITest, PRE_ValuesArePersisted) {
+  const char* dir_name = nullptr;
+  switch (GetParam()) {
+    case ActionInfo::TYPE_ACTION:
+      dir_name = "extension_action/action_persistence";
+      break;
+    case ActionInfo::TYPE_BROWSER:
+      dir_name = "extension_action/browser_action_persistence";
+      break;
+    case ActionInfo::TYPE_PAGE:
+      NOTREACHED();
+      break;
+  }
+  // Load up an extension, which then modifies the popup, title, and badge text
+  // of the action. We need to use a "real" extension on disk here (rather than
+  // a TestExtensionDir owned by the test fixture), because it needs to persist
+  // to the next test.
+  ResultCatcher catcher;
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII(dir_name));
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  // Verify the values were modified.
+  auto* action_manager = ExtensionActionManager::Get(profile());
+  ExtensionAction* action = action_manager->GetExtensionAction(*extension);
+  EXPECT_EQ(extension->GetResourceURL("modified_popup.html"),
+            action->GetPopupUrl(ExtensionAction::kDefaultTabId));
+  EXPECT_EQ("modified title", action->GetTitle(ExtensionAction::kDefaultTabId));
+  EXPECT_EQ("custom badge text",
+            action->GetExplicitlySetBadgeText(ExtensionAction::kDefaultTabId));
+
+  // We flush the state store to ensure the modified state is correctly stored
+  // on-disk (which could otherwise be potentially racy).
+  FlushStateStore(profile());
+}
+
+IN_PROC_BROWSER_TEST_P(ActionAndBrowserActionAPITest, ValuesArePersisted) {
+  const Extension* extension = GetSingleLoadedExtension();
+  ASSERT_TRUE(extension);
+  EXPECT_EQ("Action persistence check", extension->name());
+
+  // The previous action states are read from the state store on start-up.
+  // Flushing it ensures that any pending tasks have run, and the action
+  // should be up-to-date.
+  FlushStateStore(profile());
+
+  auto* action_manager = ExtensionActionManager::Get(profile());
+  ExtensionAction* action = action_manager->GetExtensionAction(*extension);
+
+  // Only browser actions - not generic actions - persist values.
+  bool expect_persisted_values = GetParam() == ActionInfo::TYPE_BROWSER;
+
+  std::string expected_badge_text =
+      expect_persisted_values ? "custom badge text" : "";
+
+  EXPECT_EQ(expected_badge_text,
+            action->GetExplicitlySetBadgeText(ExtensionAction::kDefaultTabId));
+
+  // Due to https://crbug.com/1110156, action values with defaults specified in
+  // the manifest - like popup and title - aren't persisted, even for browser
+  // actions.
+  EXPECT_EQ(extension->GetResourceURL("default_popup.html"),
+            action->GetPopupUrl(ExtensionAction::kDefaultTabId));
+  EXPECT_EQ("default title", action->GetTitle(ExtensionAction::kDefaultTabId));
 }
 
 // Tests setting the icon dynamically from the background page.
@@ -1175,6 +1255,11 @@ INSTANTIATE_TEST_SUITE_P(All,
                          MultiActionAPITest,
                          testing::Values(ActionInfo::TYPE_ACTION,
                                          ActionInfo::TYPE_PAGE,
+                                         ActionInfo::TYPE_BROWSER));
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ActionAndBrowserActionAPITest,
+                         testing::Values(ActionInfo::TYPE_ACTION,
                                          ActionInfo::TYPE_BROWSER));
 
 INSTANTIATE_TEST_SUITE_P(All,

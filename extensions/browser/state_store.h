@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -81,6 +82,10 @@ class StateStore : public base::SupportsWeakPtr<StateStore>,
 
   void AddObserver(TestObserver* observer);
   void RemoveObserver(TestObserver* observer);
+
+  // Flushes the state store (finishes any pending reads and writes). Should
+  // only be used for testing. Invokes |flushed_callback| upon completion.
+  void FlushForTesting(base::OnceClosure flushed_callback);
 
  private:
   class DelayedTaskQueue;
