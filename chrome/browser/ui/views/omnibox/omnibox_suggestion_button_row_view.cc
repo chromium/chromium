@@ -29,6 +29,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
 
 class OmniboxSuggestionRowButton : public views::MdTextButton {
@@ -81,12 +82,30 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
 
   void OnThemeChanged() override {
     MdTextButton::OnThemeChanged();
-    SkColor color =
+    // We can't use colors from NativeTheme as the omnibox theme might be
+    // different (for example, if the NTP colors are customized).
+    SkColor icon_color =
         GetOmniboxColor(GetThemeProvider(), OmniboxPart::RESULTS_ICON,
                         OmniboxPartState::NORMAL);
     SetImage(views::Button::STATE_NORMAL,
              gfx::CreateVectorIcon(
-                 icon_, GetLayoutConstant(LOCATION_BAR_ICON_SIZE), color));
+                 icon_, GetLayoutConstant(LOCATION_BAR_ICON_SIZE), icon_color));
+    SetEnabledTextColors(GetOmniboxColor(GetThemeProvider(),
+                                         OmniboxPart::RESULTS_TEXT_DEFAULT,
+                                         OmniboxPartState::NORMAL));
+  }
+
+  void UpdateBackgroundColor() override {
+    // See comment in OnThemeChanged.
+    SkColor stroke_color =
+        GetOmniboxColor(GetThemeProvider(), OmniboxPart::RESULTS_BACKGROUND,
+                        OmniboxPartState::SELECTED);
+    SkColor bg_color =
+        GetOmniboxColor(GetThemeProvider(), OmniboxPart::RESULTS_BACKGROUND,
+                        OmniboxPartState::NORMAL);
+    SetBackground(CreateBackgroundFromPainter(
+        views::Painter::CreateRoundRectWith1PxBorderPainter(
+            bg_color, stroke_color, GetCornerRadius())));
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
