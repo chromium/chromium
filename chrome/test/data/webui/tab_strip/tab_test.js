@@ -457,4 +457,18 @@ suite('Tab', function() {
     assertEquals(
         Math.floor(originalAspectRatio), Math.floor(dragImageAspectRatio));
   });
+
+  test('RightClickOpensContextMenu', async () => {
+    tabElement.$('#tab').dispatchEvent(new PointerEvent('pointerup', {
+      pointerType: 'mouse',
+      button: 2,
+      clientX: 50,
+      clientY: 100,
+    }));
+    const [id, x, y] =
+        await testTabStripEmbedderProxy.whenCalled('showTabContextMenu');
+    assertEquals(tab.id, id);
+    assertEquals(50, x);
+    assertEquals(100, y);
+  });
 });
