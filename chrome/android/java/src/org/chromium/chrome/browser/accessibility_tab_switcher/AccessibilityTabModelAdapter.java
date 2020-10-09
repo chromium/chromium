@@ -139,7 +139,8 @@ public class AccessibilityTabModelAdapter extends BaseAdapter {
         }
 
         listItem.setTab(TabModelUtils.getTabById(mUndoneTabModel, tabId),
-                mActualTabModel.supportsPendingClosures());
+                mActualTabModel.supportsPendingClosures(),
+                TabModelUtils.getCurrentTab(mUndoneTabModel).getId() == tabId);
         listItem.setListeners(mInternalListener, mCanScrollListener);
         listItem.resetState();
 

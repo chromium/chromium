@@ -1851,6 +1851,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB" desc="Content description for the tab title.">
         <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, tab
       </message>
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB_SELECTED" desc="Content description for the tab title of the currently selected tab.">
+        <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, tab, selected
+      </message>
       <message name="IDS_ACCESSIBILITY_TABSTRIP_BTN_CLOSE_TAB" desc="Content description for the close tab button.">
         Close <ph name="TAB_TITLE">%1$s<ex>Google</ex></ph> tab
       </message>

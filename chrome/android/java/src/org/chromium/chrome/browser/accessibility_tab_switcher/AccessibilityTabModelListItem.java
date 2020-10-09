@@ -86,6 +86,7 @@ public class AccessibilityTabModelListItem extends FrameLayout implements OnClic
 
     private Tab mTab;
     private boolean mCanUndo;
+    private boolean mIsSelected;
     private AccessibilityTabModelListItemListener mListener;
     private final GestureDetector mSwipeGestureDetector;
     private final int mDefaultHeight;
@@ -269,12 +270,14 @@ public class AccessibilityTabModelListItem extends FrameLayout implements OnClic
      * Sets the {@link Tab} this {@link View} will represent in the list.
      * @param tab     The {@link Tab} to represent.
      * @param canUndo Whether or not closing this {@link Tab} can be undone.
+     * @param isSelected Whether or not the {@link Tab} is the currently selected one.
      */
-    public void setTab(Tab tab, boolean canUndo) {
+    public void setTab(Tab tab, boolean canUndo, boolean isSelected) {
         if (mTab != null) mTab.removeObserver(mTabObserver);
         mTab = tab;
         tab.addObserver(mTabObserver);
         mCanUndo = canUndo;
+        mIsSelected = isSelected;
         updateTabText();
         updateFavicon();
     }
@@ -315,11 +318,11 @@ public class AccessibilityTabModelListItem extends FrameLayout implements OnClic
 
         if (!title.equals(mTitleView.getText())) mTitleView.setText(title);
 
-        String accessibilityString =
-                getContext().getString(R.string.accessibility_tabstrip_tab, title);
+        String accessibilityString = mIsSelected
+                ? getContext().getString(R.string.accessibility_tabstrip_tab_selected, title)
+                : getContext().getString(R.string.accessibility_tabstrip_tab, title);
         if (!accessibilityString.equals(getContentDescription())) {
-            setContentDescription(
-                    getContext().getString(R.string.accessibility_tabstrip_tab, title));
+            setContentDescription(accessibilityString);
             mCloseButton.setContentDescription(
                     getContext().getString(R.string.accessibility_tabstrip_btn_close_tab, title));
         }
