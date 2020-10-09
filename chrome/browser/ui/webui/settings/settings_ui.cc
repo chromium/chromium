@@ -138,7 +138,7 @@ namespace settings {
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
 constexpr char kGeneratedPath[] =
-    "@out_folder@/gen/chrome/browser/resources/settings/";
+    "@out_folder@/gen/chrome/browser/resources/settings/preprocessed/";
 #endif
 
 // static

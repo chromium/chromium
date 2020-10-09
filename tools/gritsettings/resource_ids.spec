@@ -191,9 +191,9 @@
   "chrome/browser/resources/settings/settings_resources_vulcanized.grd": {
     "includes": [1820],
   },
-  "chrome/browser/resources/settings/settings_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/settings/settings_resources.grd": {
+    "META": {"sizes": {"includes": [500],}},
     "includes": [1830],
-    "structures": [1840],
   },
   "chrome/browser/resources/signin/profile_picker/profile_picker_resources_vulcanized.grd": {
     "includes": [1850],

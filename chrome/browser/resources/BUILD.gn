@@ -276,16 +276,20 @@ if (!is_android) {
       "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
     ]
 
+    defines = chrome_grit_defines
     if (optimize_webui) {
       source = "settings/settings_resources_vulcanized.grd"
-
       deps = [ "//chrome/browser/resources/settings:build_polymer3" ]
     } else {
-      source = "settings/settings_resources.grd"
-      deps = [ "//chrome/browser/resources/settings:polymer3_elements" ]
+      # These arguments are needed since the grd is generated at build time.
+      enable_input_discovery_for_gn_analyze = false
+      defines += [ "SHARED_INTERMEDIATE_DIR=" +
+                   rebase_path(root_gen_dir, root_build_dir) ]
+      gen_dir = "$root_gen_dir/chrome/browser/resources/settings"
+      source = "$gen_dir/settings_resources.grd"
+      deps = [ "//chrome/browser/resources/settings:build_grd" ]
     }
 
-    defines = chrome_grit_defines
     outputs = [
       "grit/settings_resources.h",
       "grit/settings_resources_map.cc",
