@@ -4658,6 +4658,7 @@
       },
       'Mac10.13 Tests': {
         'mixins': [
+            'isolate_profile_data',
             'mac_10.13',
             'no_gpu',
         ],
