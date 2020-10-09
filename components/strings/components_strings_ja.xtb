@@ -1261,7 +1261,7 @@
 <translation id="6051221802930200923"><ph name="SITE" /> では証明書ピンニングが使用されているため、現在アクセスできません。通常、ネットワーク エラーやネットワークへの攻撃は一時的なものです。しばらくするとページにアクセスできるようになります。</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">ご自分のアクティブ状態を共有しますか？</translation>
-<translation id="6057359309778282021">管理者が <ph name="ORIGIN_NAME" /> から <ph name="VM_NAME" /> への共有をブロックしました</translation>
+<translation id="6057359309778282021"><ph name="ORIGIN_NAME" /> から <ph name="VM_NAME" /> への共有は、管理者によってブロックされています</translation>
 <translation id="6058977677006700226">お使いのどのデバイスでも同じカードを使用できるようにしますか？</translation>
 <translation id="6059925163896151826">USB デバイス</translation>
 <translation id="6060009363608157444">無効な DnsOverHttps モードです。</translation>
@@ -1871,7 +1871,7 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">一致するパスワードがありません。保存したパスワードをすべて表示します。</translation>
 <translation id="8625384913736129811">このカード情報をこのデバイスに保存する</translation>
-<translation id="8657078576661269990">管理者が <ph name="ORIGIN_NAME" /> から <ph name="VM_NAME_1" /> および <ph name="VM_NAME_2" /> への共有をブロックしました</translation>
+<translation id="8657078576661269990"><ph name="ORIGIN_NAME" /> から <ph name="VM_NAME_1" /> および <ph name="VM_NAME_2" /> への共有は、管理者によってブロックされています</translation>
 <translation id="8663226718884576429">ご注文の概要、<ph name="TOTAL_LABEL" />、その他の詳細</translation>
 <translation id="867224526087042813">署名</translation>
 <translation id="8676424191133491403">今すぐ</translation>

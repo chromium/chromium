@@ -267,7 +267,7 @@
 <translation id="3040901448410802366">نشانگر پیشرفت</translation>
 <translation id="3046838483509668188">‏گزینه‌های ChromeVox</translation>
 <translation id="3060756054951570867">منوی <ph name="TITLE" /> باز شد</translation>
-<translation id="3060880924447482063">برای جابه‌جایی بین موارد، تند به راست یا چپ بکشید</translation>
+<translation id="3060880924447482063">برای جابه‌جایی بین موارد، تند به‌راست یا چپ بکشید</translation>
 <translation id="3070245424257836917">تند کشیدن سه انگشت به بالا</translation>
 <translation id="3078345202707391975">عنوان بعدی سطح ۲</translation>
 <translation id="3078740164268491126">جدول</translation>
@@ -282,7 +282,7 @@
 <translation id="3103579948980282461">ارغوانی</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">جمع شده</translation>
-<translation id="311015743332597320">با چهار انگشت تند به راست بکشید</translation>
+<translation id="311015743332597320">با چهار انگشت تند به‌راست بکشید</translation>
 <translation id="3112457281078985179">‏برای روشن یا خاموش کردن ChromeVox، از Control+Alt+Z استفاده کنید.</translation>
 <translation id="3131002934070407451">خواندن شماره‌ها به‌صورت:</translation>
 <translation id="3134461040845705080">rdonly</translation>
@@ -416,7 +416,7 @@
 <translation id="4161104397932142764">{COUNT,plural, =1{ثانیه}one{ثانیه}other{ثانیه}}</translation>
 <translation id="4161663686871496107">‏بازخورد گفتاری ChromeVox آماده است</translation>
 <translation id="4176463684765177261">غیرفعال شد</translation>
-<translation id="4187322598335821254">برای جابه‌جایی بین خطوط، تند به بالا یا پایین بکشید</translation>
+<translation id="4187322598335821254">برای جابه‌جایی بین خطوط، تند به‌بالا یا پایین بکشید</translation>
 <translation id="4188530942454211480">جمله قبلی</translation>
 <translation id="4191918948604314587">دکمه</translation>
 <translation id="419265409837491189">رفتن به ستون قبلی</translation>
@@ -910,7 +910,7 @@
 <translation id="812886159861361726">بارگیری <ph name="FILE_NAME" /> متوقف شد</translation>
 <translation id="8129445297241948503">سلولی در بالا وجود ندارد</translation>
 <translation id="8138880386467279117">لمس</translation>
-<translation id="8173092779156526980">با چهار انگشت تند به چپ بکشید</translation>
+<translation id="8173092779156526980">با چهار انگشت تند به‌چپ بکشید</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{زیرخط}one{# زیرخط}other{# زیرخط}}</translation>
 <translation id="8179976553408161302">ورود</translation>
 <translation id="8184828902145951186">ردیف</translation>

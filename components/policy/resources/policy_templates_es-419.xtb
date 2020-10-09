@@ -3252,7 +3252,7 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="5645779841392247734">Permitir cookies en estos sitios</translation>
 <translation id="5646234199535103501">Política de configuración para Chrome Enterprise Connector OnBulkDataEntry</translation>
 <translation id="5652250453612826983">Controla las políticas de supervisión parental, que se aplican solo a las cuentas de menores de edad.
-      Estas políticas no se establecen en la consola del administrador; se configuran directamente en el servidor de la API de Kids.</translation>
+      Estas políticas no se establecen en la Consola del administrador; se configuran directamente en el servidor de la API de Kids.</translation>
 <translation id="5656177735561364047">Habilita la función de portapapeles compartido</translation>
 <translation id="5657576769650058122">Si habilitas la política, se mantendrá activado el teclado virtual en pantalla (un dispositivo de entrada del Sistema operativo Chrome). Si inhabilitas la política, se mantendrá desactivado el teclado.
 

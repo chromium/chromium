@@ -206,7 +206,8 @@
 <translation id="1224275271335624810">Ամենաարագ</translation>
 <translation id="1225177025209879837">Հարցումը մշակվում է…</translation>
 <translation id="1227507814927581609">«<ph name="DEVICE_NAME" />»-ին կապակցվելիս իսկորոշումը ձախողվեց:</translation>
-<translation id="1230417814058465809">Սովորական պաշտպանությունը միացված է։ Ավելի շատ ապահովության համար օգտագործեք լրացուցիչ պաշտպանությունը։</translation>
+<translation id="1230417814058465809">Սովորական պաշտպանությունը միացված է։ Հավելյալ ապահովության համար օգտագործեք բարելավված
+ պաշտպանությունը։</translation>
 <translation id="1231733316453485619">Միացնե՞լ համաժամացումը</translation>
 <translation id="1232569758102978740">Անանուն</translation>
 <translation id="1233497634904001272">Հարցումն ավարտելու համար նորից հպեք անվտանգության բանալուն:</translation>
@@ -440,7 +441,7 @@
 <translation id="150411034776756821">Հեռացնել <ph name="SITE" /> կայքը</translation>
 <translation id="1504311855864906891">Ավելացրեք ենթագրեր մեդիա բովանդակությանը</translation>
 <translation id="1504551620756424144">Ընդհանուր պանակները Windows-ում հասանելի են այստեղ՝ <ph name="BASE_DIR" />։</translation>
-<translation id="1506061864768559482">Որոնիչ</translation>
+<translation id="1506061864768559482">Որոնողական համակարգ</translation>
 <translation id="1507170440449692343">Այս էջին արգելված է օգտագործել ձեր տեսախցիկը:</translation>
 <translation id="1507246803636407672">&amp;Հրաժարվել</translation>
 <translation id="1508491105858779599">Սարքն ապակողպելու համար մատը դրեք մատնահետքի սենսորի վրա։</translation>
@@ -3683,7 +3684,7 @@
 <translation id="5352033265844765294">Ժամադրոշմ</translation>
 <translation id="5353252989841766347">Գաղտնաբառերի արտահանում Chrome-ից</translation>
 <translation id="5355099869024327351">Թույլ տվեք Օգնականին ցուցադրել ծանուցումներ</translation>
-<translation id="5355191726083956201">Լրացուցիչ պաշտպանությունը միացված է</translation>
+<translation id="5355191726083956201">Բարելավված պաշտպանությունը միացված է</translation>
 <translation id="5355926466126177564">«<ph name="EXTENSION_NAME" />» ընդլայնումը փոխել է Omnibox-ում որոնման ժամանակ ցուցադրվող էջը:</translation>
 <translation id="5359910752122114278">1 արդյունք</translation>
 <translation id="5360150013186312835">Ցույց տալ գործիքագոտիում</translation>
@@ -4968,7 +4969,7 @@
 <translation id="6897363604023044284">Ընտրել կայքեր՝ մաքրելու համար</translation>
 <translation id="6898440773573063262">Այժմ այս սարքի վրա Kiosk ծրագրերը կարելի է կազմաձևել այնպես, որ դրանք ավտոմատ գործարկվեն:</translation>
 <translation id="6900284862687837908">Ետին պլանի հավելված՝ <ph name="BACKGROUND_APP_URL" /></translation>
-<translation id="6900532703269623216">Լրացուցիչ պաշտպանություն</translation>
+<translation id="6900532703269623216">Բարելավված պաշտպանություն</translation>
 <translation id="6900651018461749106">Նորից մուտք գործեք՝ <ph name="USER_EMAIL" /> հաշիվը թարմացնելու համար</translation>
 <translation id="6902066522699286937">Ձայնի նախնական հնչեցում</translation>
 <translation id="6902336033320348843">Բաժինը չի աջակցվում՝ <ph name="ERROR_LINE" /></translation>

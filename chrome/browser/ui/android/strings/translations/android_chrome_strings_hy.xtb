@@ -71,7 +71,7 @@
 <translation id="1430915738399379752">Տպում</translation>
 <translation id="1450753235335490080">Չհաջողվեց ուղարկել բովանդակությունը (<ph name="CONTENT_TYPE" />)</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց՝ սերվերի հետ կապված խնդրի պատճառով:</translation>
-<translation id="1506061864768559482">Որոնիչ</translation>
+<translation id="1506061864768559482">Որոնողական համակարգ</translation>
 <translation id="1513352483775369820">Էջանիշներ և վեբ պատմություն</translation>
 <translation id="1513858653616922153">Ջնջել գաղտնաբառը</translation>
 <translation id="1521774566618522728">Այսօր ակտիվ է եղել</translation>
@@ -572,7 +572,7 @@
 <translation id="5324858694974489420">Ծնողական կայանքներ</translation>
 <translation id="5327248766486351172">Անուն</translation>
 <translation id="5342314432463739672">Թույլտվությունների հարցումներ</translation>
-<translation id="5355191726083956201">Լրացուցիչ պաշտպանությունը միացված է</translation>
+<translation id="5355191726083956201">Բարելավված պաշտպանությունը միացված է</translation>
 <translation id="5357811892247919462">Դուք ներդիր եք ստացել</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> բացված ներդիր: Հպեք՝ ներդիրների միջև անցնելու համար։}one{<ph name="OPEN_TABS_MANY" /> բացված ներդիր։ հպեք՝ ներդիրների միջև անցնելու համար։}other{<ph name="OPEN_TABS_MANY" /> բացված ներդիրներ։ հպեք՝ ներդիրների միջև անցնելու համար։}}</translation>
 <translation id="5403644198645076998">Թույլատրել միայն որոշ կայքեր</translation>
@@ -692,7 +692,7 @@
 <translation id="6122831415929794347">Անջատե՞լ ապահով դիտարկումը</translation>
 <translation id="6127379762771434464">Տարրը հեռացվեց</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" /> հավելվածի լեզուն</translation>
-<translation id="6140709049082532940">Լրացուցիչ պաշտպանություն՝</translation>
+<translation id="6140709049082532940">Բարելավված պաշտպանություն՝</translation>
 <translation id="6140912465461743537">Երկիր/տարածաշրջան</translation>
 <translation id="614940544461990577">Փորձեք՝</translation>
 <translation id="6154478581116148741">Այս սարքից ձեր գաղտնաբառերն արտահանելու համար կարգավորումներում միացրեք էկրանի կողպումը։</translation>
@@ -811,7 +811,7 @@
 <translation id="688738109438487280">Ավելացնել առկա տվյալները <ph name="TO_ACCOUNT" /> հաշվում:</translation>
 <translation id="6891726759199484455">Գաղտնաբառը պատճենելու համար ապակողպեք էկրանը</translation>
 <translation id="6896758677409633944">Պատճենել</translation>
-<translation id="6900532703269623216">Լրացուցիչ պաշտպանություն</translation>
+<translation id="6900532703269623216">Բարելավված պաշտպանություն</translation>
 <translation id="6903907808598579934">Միացնել համաժամացումը</translation>
 <translation id="6929699136511445623">Միացնել Android համակարգի համաժամացումը</translation>
 <translation id="6941901516114974832">Ձեր գործողությունները ինկոգնիտո ռեժիմում <ph name="BEGIN_BOLD1" />կարող են տեսանելի լինել<ph name="END_BOLD1" /> ձեր այցելած կայքերի ադմինիստրատորներին, գործատուին կամ ուսումնական հաստատության ներկայացուցչին, ինչպես նաև ինտերնետ պրովայդերին։

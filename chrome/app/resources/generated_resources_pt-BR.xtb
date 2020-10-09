@@ -143,7 +143,7 @@
 <translation id="1153636665119721804">Programa Proteção Avançada do Google</translation>
 <translation id="1161575384898972166">Faça login no <ph name="TOKEN_NAME" /> para exportar o certificado do cliente.</translation>
 <translation id="1163931534039071049">&amp;Exibir código fonte do frame</translation>
-<translation id="1164891049599601209">Inserida em site enganoso</translation>
+<translation id="1164891049599601209">Inserida em fraudulento</translation>
 <translation id="1164899421101904659">Informar chave para desbloqueio de PIN</translation>
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1166212789817575481">Fechar guias à direita</translation>
@@ -206,7 +206,7 @@
 <translation id="1224275271335624810">Máxima</translation>
 <translation id="1225177025209879837">Processando solicitação...</translation>
 <translation id="1227507814927581609">Falha na autenticação ao conectar-se com "<ph name="DEVICE_NAME" />".</translation>
-<translation id="1230417814058465809">A proteção padrão está ativada. Para ter ainda mais segurança, use a proteção aprimorada.</translation>
+<translation id="1230417814058465809">A Proteção padrão está ativa. Para ter ainda mais segurança, selecione a Proteção reforçada.</translation>
 <translation id="1231733316453485619">Ativar sincronização?</translation>
 <translation id="1232569758102978740">Sem título</translation>
 <translation id="1233497634904001272">Toque na chave de segurança novamente para concluir a solicitação.</translation>
@@ -2147,7 +2147,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3498215018399854026">Não foi possível contatar seu pai/mãe no momento. Tente novamente.</translation>
 <translation id="3500417806337761827">Erro ao ativar o compartilhamento. Muitos compartilhamentos SMB já estão ativos.</translation>
 <translation id="3505030558724226696">Revogar acesso ao dispositivo</translation>
-<translation id="3507132249039706973">A "Proteção padrão" está ativada</translation>
+<translation id="3507132249039706973">A Proteção padrão está ativa</translation>
 <translation id="3507421388498836150">Permissões atuais para "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="3507888235492474624">Procurar dispositivos Bluetooth novamente</translation>
 <translation id="3508492320654304609">Não foi possível excluir os dados de login</translation>
@@ -2208,7 +2208,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; deseja compartilhar uma impressora &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; com um grupo de sua propriedade: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Se você aceitar, todos os membros do grupo poderão imprimir pela impressora.</translation>
 <translation id="357889014807611375">Wi-Fi limitado</translation>
 <translation id="3581605050355435601">Configurar endereço IP automaticamente</translation>
-<translation id="3582057310199111521">Inserida em um site enganoso e encontrada em uma violação de dados</translation>
+<translation id="3582057310199111521">Inserida em um fraudulento e encontrada em uma violação de dados</translation>
 <translation id="3584169441612580296">Ler e alterar fotos, músicas e outras mídias do seu computador</translation>
 <translation id="3586806079541226322">Não é possível abrir o arquivo</translation>
 <translation id="3586931643579894722">Ocultar detalhes</translation>
@@ -3681,7 +3681,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="5352033265844765294">Carimbo de data/hora</translation>
 <translation id="5353252989841766347">Exportar senhas do Chrome</translation>
 <translation id="5355099869024327351">Permitir que o Assistente mostre notificações</translation>
-<translation id="5355191726083956201">A "Proteção reforçada" está ativa</translation>
+<translation id="5355191726083956201">A Proteção reforçada está ativa</translation>
 <translation id="5355926466126177564">A extensão "<ph name="EXTENSION_NAME" />" alterou a página que é exibida quando você pesquisa na Omnibox.</translation>
 <translation id="5359910752122114278">1 resultado</translation>
 <translation id="5360150013186312835">Mostrar na barra de ferramentas</translation>
