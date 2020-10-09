@@ -167,7 +167,7 @@ class AffordanceView : public views::View {
                                     kControlBackgroundColorActive,
                                 kBackgroundColorAfterActivated)
                           : DeprecatedGetBaseLayerColor(
-                                AshColorProvider::BaseLayerType::kTransparent80,
+                                AshColorProvider::BaseLayerType::kOpaque,
                                 kBackgroundColorBeforeActivated));
     canvas->DrawCircle(center_point, kBackgroundRadius, bg_flags);
 
