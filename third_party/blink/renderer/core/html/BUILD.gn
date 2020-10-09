@@ -5,6 +5,8 @@
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("html") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "anchor_element_metrics.cc",
     "anchor_element_metrics.h",

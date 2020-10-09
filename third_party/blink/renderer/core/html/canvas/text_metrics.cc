@@ -64,14 +64,16 @@ void TextMetrics::Update(const Font& font,
   if (!font_data)
     return;
 
-  // TODO(kojii): Need to figure out the desired behavior of |advances| when
-  // bidi reorder occurs.
-  TextRun text_run(
-      text, /* xpos */ 0, /* expansion */ 0,
-      TextRun::kAllowTrailingExpansion | TextRun::kForbidLeadingExpansion,
-      direction, false);
-  text_run.SetNormalizeSpace(true);
-  advances_ = font.IndividualCharacterAdvances(text_run);
+  {
+    // TODO(kojii): Need to figure out the desired behavior of |advances| when
+    // bidi reorder occurs.
+    TextRun text_run(
+        text, /* xpos */ 0, /* expansion */ 0,
+        TextRun::kAllowTrailingExpansion | TextRun::kForbidLeadingExpansion,
+        direction, false);
+    text_run.SetNormalizeSpace(true);
+    advances_ = font.IndividualCharacterAdvances(text_run);
+  }
 
   // x direction
   // Run bidi algorithm on the given text. Step 5 of:

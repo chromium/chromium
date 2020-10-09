@@ -449,7 +449,7 @@ void MenuListSelectType::DidRecalcStyle(const StyleRecalcChange change) {
 }
 
 String MenuListSelectType::UpdateTextStyleInternal() {
-  HTMLOptionElement* option = OptionToBeShown();
+  HTMLOptionElement* option_to_be_shown = OptionToBeShown();
   String text = g_empty_string;
   const ComputedStyle* option_style = nullptr;
 
@@ -475,9 +475,9 @@ String MenuListSelectType::UpdateTextStyleInternal() {
       DCHECK(!option_style);
     }
   } else {
-    if (option) {
-      text = option->TextIndentedToRespectGroupLabel();
-      option_style = option->GetComputedStyle();
+    if (option_to_be_shown) {
+      text = option_to_be_shown->TextIndentedToRespectGroupLabel();
+      option_style = option_to_be_shown->GetComputedStyle();
     }
   }
   option_style_ = option_style;
@@ -499,7 +499,7 @@ String MenuListSelectType::UpdateTextStyleInternal() {
     }
   }
   if (select_->GetLayoutObject())
-    DidUpdateActiveOption(option);
+    DidUpdateActiveOption(option_to_be_shown);
 
   return text.StripWhiteSpace();
 }

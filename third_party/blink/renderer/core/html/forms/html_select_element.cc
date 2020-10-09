@@ -695,16 +695,18 @@ void HTMLSelectElement::ChildrenChanged(const ChildrenChange& change) {
       OptionInserted(*option, option->Selected());
     } else if (auto* optgroup =
                    DynamicTo<HTMLOptGroupElement>(change.sibling_changed)) {
-      for (auto& option : Traversal<HTMLOptionElement>::ChildrenOf(*optgroup))
-        OptionInserted(option, option.Selected());
+      for (auto& child_option :
+           Traversal<HTMLOptionElement>::ChildrenOf(*optgroup))
+        OptionInserted(child_option, child_option.Selected());
     }
   } else if (change.type == ChildrenChangeType::kElementRemoved) {
     if (auto* option = DynamicTo<HTMLOptionElement>(change.sibling_changed)) {
       OptionRemoved(*option);
     } else if (auto* optgroup =
                    DynamicTo<HTMLOptGroupElement>(change.sibling_changed)) {
-      for (auto& option : Traversal<HTMLOptionElement>::ChildrenOf(*optgroup))
-        OptionRemoved(option);
+      for (auto& child_option :
+           Traversal<HTMLOptionElement>::ChildrenOf(*optgroup))
+        OptionRemoved(child_option);
     }
   } else if (change.type == ChildrenChangeType::kAllChildrenRemoved) {
     DCHECK(change.removed_nodes);
@@ -712,8 +714,9 @@ void HTMLSelectElement::ChildrenChanged(const ChildrenChange& change) {
       if (auto* option = DynamicTo<HTMLOptionElement>(node)) {
         OptionRemoved(*option);
       } else if (auto* optgroup = DynamicTo<HTMLOptGroupElement>(node)) {
-        for (auto& option : Traversal<HTMLOptionElement>::ChildrenOf(*optgroup))
-          OptionRemoved(option);
+        for (auto& child_option :
+             Traversal<HTMLOptionElement>::ChildrenOf(*optgroup))
+          OptionRemoved(child_option);
       }
     }
   }
@@ -922,10 +925,11 @@ void HTMLSelectElement::RestoreFormControlState(const FormControlState& state) {
     } else {
       wtf_size_t found_index = SearchOptionsForValue(state[0], 0, items_size);
       if (found_index != kNotFound) {
-        auto* option_element = To<HTMLOptionElement>(items[found_index].Get());
-        option_element->SetSelectedState(true);
-        option_element->SetDirty(true);
-        last_on_change_option_ = option_element;
+        auto* found_option_element =
+            To<HTMLOptionElement>(items[found_index].Get());
+        found_option_element->SetSelectedState(true);
+        found_option_element->SetDirty(true);
+        last_on_change_option_ = found_option_element;
       }
     }
   } else {
@@ -947,9 +951,10 @@ void HTMLSelectElement::RestoreFormControlState(const FormControlState& state) {
           found_index = SearchOptionsForValue(value, 0, start_index);
         if (found_index == kNotFound)
           continue;
-        auto* option_element = To<HTMLOptionElement>(items[found_index].Get());
-        option_element->SetSelectedState(true);
-        option_element->SetDirty(true);
+        auto* found_option_element =
+            To<HTMLOptionElement>(items[found_index].Get());
+        found_option_element->SetSelectedState(true);
+        found_option_element->SetDirty(true);
         start_index = found_index + 1;
       }
     }
