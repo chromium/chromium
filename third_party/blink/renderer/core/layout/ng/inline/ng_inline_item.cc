@@ -183,6 +183,17 @@ unsigned NGInlineItem::SetBidiLevel(Vector<NGInlineItem>& items,
   return index + 1;
 }
 
+void NGInlineItemsData::GetOpenTagItems(wtf_size_t size,
+                                        OpenTagItems* open_items) const {
+  DCHECK_LE(size, items.size());
+  for (const NGInlineItem& item : base::make_span(items.data(), size)) {
+    if (item.Type() == NGInlineItem::kOpenTag)
+      open_items->push_back(&item);
+    else if (item.Type() == NGInlineItem::kCloseTag)
+      open_items->pop_back();
+  }
+}
+
 String NGInlineItem::ToString() const {
   return String::Format("NGInlineItem. Type: '%s'. LayoutObject: '%s'",
                         NGInlineItemTypeToString(Type()),

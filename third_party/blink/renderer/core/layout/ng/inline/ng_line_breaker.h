@@ -44,6 +44,10 @@ class CORE_EXPORT NGLineBreaker {
 
   const NGInlineItemsData& ItemsData() const { return items_data_; }
 
+  // True if the last line has `box-decoration-break: clone`, which affected the
+  // size.
+  bool HasClonedBoxDecorations() const { return has_cloned_box_decorations_; }
+
   // Compute the next line break point and produces NGInlineItemResults for
   // the line.
   inline void NextLine(NGLineInfo* line_info) {
@@ -199,6 +203,7 @@ class CORE_EXPORT NGLineBreaker {
   void MoveToNextOf(const NGInlineItemResult&);
 
   void ComputeBaseDirection();
+  void RecalcClonedBoxDecorations();
 
   LayoutUnit AvailableWidth() const {
     DCHECK_EQ(available_width_, ComputeAvailableWidth());
@@ -314,6 +319,12 @@ class CORE_EXPORT NGLineBreaker {
   TextDirection base_direction_;
 
   Vector<scoped_refptr<const NGBlockBreakToken>> propagated_break_tokens_;
+
+  // Fields for `box-decoration-break: clone`.
+  unsigned cloned_box_decorations_count_ = 0;
+  LayoutUnit cloned_box_decorations_initial_size_;
+  LayoutUnit cloned_box_decorations_end_size_;
+  bool has_cloned_box_decorations_ = false;
 
 #if DCHECK_IS_ON()
   // These fields are to detect rewind-loop.

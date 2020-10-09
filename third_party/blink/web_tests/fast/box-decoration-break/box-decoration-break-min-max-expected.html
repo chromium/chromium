@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<style>
+.border {
+  border-left: solid 10px orange;
+  border-right: solid 20px purple
+}
+.padding {
+  padding-left: 10px;
+  padding-right: 20px;
+}
+div {
+  border: 5px solid blue;
+}
+.min {
+  width: min-content;
+}
+.max {
+  width: max-content;
+}
+</style>
+<body>
+  <div class="min">
+    <span class="border">line1</span>
+    <span class="border">line2</span>
+    <span class="border">line3</span>
+  </div>
+  <div class="min">
+    <span class="padding">line1</span>
+    <span class="padding">line2</span>
+    <span class="padding">line3</span>
+  </div>
+  <div class="max">
+    <span class="border">
+      line1 line2 line3
+    </span>
+  </div>
+  <div class="max">
+    <span class="border">line1 line2</span><br>
+    <span class="border">line3</span>
+  </div>
+</body>

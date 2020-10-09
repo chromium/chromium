@@ -158,6 +158,10 @@ inline void NGLineBreaker::ClearNeedsLayout(const NGInlineItem& item) {
 
 LayoutUnit NGLineBreaker::ComputeAvailableWidth() const {
   LayoutUnit available_width = line_opportunity_.AvailableInlineSize();
+  // Make sure it's at least the initial size, which is usually 0 but not so
+  // when `box-decoration-break: clone`.
+  available_width =
+      std::max(available_width, cloned_box_decorations_initial_size_);
   // Available width must be smaller than |LayoutUnit::Max()| so that the
   // position can be larger.
   available_width = std::min(available_width, LayoutUnit::NearlyMax());
@@ -284,6 +288,36 @@ void NGLineBreaker::ComputeBaseDirection() {
           : StringView(text, offset_, end_offset - offset_));
 }
 
+void NGLineBreaker::RecalcClonedBoxDecorations() {
+  cloned_box_decorations_count_ = 0u;
+  cloned_box_decorations_initial_size_ = LayoutUnit();
+  cloned_box_decorations_end_size_ = LayoutUnit();
+  has_cloned_box_decorations_ = false;
+
+  // Compute which tags are not closed at |item_index_|.
+  NGInlineItemsData::OpenTagItems open_items;
+  items_data_.GetOpenTagItems(item_index_, &open_items);
+
+  for (const NGInlineItem* item : open_items) {
+    if (item->Style()->BoxDecorationBreak() == EBoxDecorationBreak::kClone) {
+      has_cloned_box_decorations_ = true;
+      ++cloned_box_decorations_count_;
+      NGInlineItemResult item_result;
+      ComputeOpenTagResult(*item, constraint_space_, &item_result);
+      cloned_box_decorations_initial_size_ += item_result.inline_size;
+      cloned_box_decorations_end_size_ += item_result.margins.inline_end +
+                                          item_result.borders.inline_end +
+                                          item_result.padding.inline_end;
+    }
+  }
+  // Advance |position_| by the initial size so that the tab position can
+  // accommodate cloned box decorations.
+  position_ += cloned_box_decorations_initial_size_;
+  // |cloned_box_decorations_initial_size_| may affect available width.
+  available_width_ = ComputeAvailableWidth();
+  DCHECK_GE(available_width_, cloned_box_decorations_initial_size_);
+}
+
 // Initialize internal states for the next line.
 void NGLineBreaker::PrepareNextLine(NGLineInfo* line_info) {
   // NGLineInfo is not supposed to be re-used because it's not much gain and to
@@ -327,6 +361,11 @@ void NGLineBreaker::PrepareNextLine(NGLineInfo* line_info) {
   // Use 'text-indent' as the initial position. This lets tab positions to align
   // regardless of 'text-indent'.
   position_ = line_info->TextIndent();
+
+  has_cloned_box_decorations_ = false;
+  if (UNLIKELY((break_token_ && break_token_->HasClonedBoxDecorations()) ||
+               cloned_box_decorations_count_))
+    RecalcClonedBoxDecorations();
 
   ResetRewindLoopDetector();
 }
@@ -466,16 +505,8 @@ void NGLineBreaker::ComputeLineLocation(NGLineInfo* line_info) const {
   // Negative margins can make the position negative, but the inline size is
   // always positive or 0.
   LayoutUnit available_width = AvailableWidth();
-
-#if DCHECK_IS_ON()
-  // Text measurement is done using floats which may introduce small rounding
-  // errors for near-saturated values.
-  // See http://crbug.com/1098795
-  if (!LayoutUnit(line_info->ComputeWidthInFloat()).MightBeSaturated())
-    DCHECK_EQ(position_.Round(), line_info->ComputeWidth().Round());
-#endif
-
-  line_info->SetWidth(available_width, position_);
+  line_info->SetWidth(available_width,
+                      position_ + cloned_box_decorations_end_size_);
   line_info->SetBfcOffset(
       {line_opportunity_.line_left_offset, line_opportunity_.bfc_block_offset});
   if (mode_ == NGLineBreakerMode::kContent)
@@ -1678,6 +1709,8 @@ void NGLineBreaker::HandleOpenTag(const NGInlineItem& item,
   DCHECK_EQ(item.Type(), NGInlineItem::kOpenTag);
 
   NGInlineItemResult* item_result = AddItem(item, line_info);
+  DCHECK(item.Style());
+  const ComputedStyle& style = *item.Style();
   if (ComputeOpenTagResult(item, constraint_space_, item_result)) {
     // Negative margins on open tags may bring the position back. Update
     // |state_| if that happens.
@@ -1698,11 +1731,17 @@ void NGLineBreaker::HandleOpenTag(const NGInlineItem& item,
     // Force to create a box, because such inline boxes affect line heights.
     if (!item_result->should_create_line_box && !item.IsEmptyItem())
       item_result->should_create_line_box = true;
+
+    if (UNLIKELY(style.BoxDecorationBreak() == EBoxDecorationBreak::kClone)) {
+      has_cloned_box_decorations_ = true;
+      ++cloned_box_decorations_count_;
+      cloned_box_decorations_end_size_ += item_result->margins.inline_end +
+                                          item_result->borders.inline_end +
+                                          item_result->padding.inline_end;
+    }
   }
 
   bool was_auto_wrap = auto_wrap_;
-  DCHECK(item.Style());
-  const ComputedStyle& style = *item.Style();
   SetCurrentStyle(style);
   MoveToNextOf(item);
 
@@ -1720,12 +1759,20 @@ void NGLineBreaker::HandleCloseTag(const NGInlineItem& item,
 
   item_result->has_edge = item.HasEndEdge();
   if (item_result->has_edge) {
-    item_result->inline_size =
-        ComputeInlineEndSize(constraint_space_, item.Style());
+    DCHECK(item.Style());
+    const ComputedStyle& style = *item.Style();
+    item_result->inline_size = ComputeInlineEndSize(constraint_space_, &style);
     position_ += item_result->inline_size;
 
     if (!item_result->should_create_line_box && !item.IsEmptyItem())
       item_result->should_create_line_box = true;
+
+    if (UNLIKELY(style.BoxDecorationBreak() == EBoxDecorationBreak::kClone)) {
+      DCHECK_GT(cloned_box_decorations_count_, 0u);
+      --cloned_box_decorations_count_;
+      DCHECK_GE(cloned_box_decorations_end_size_, item_result->inline_size);
+      cloned_box_decorations_end_size_ -= item_result->inline_size;
+    }
   }
   DCHECK(item.GetLayoutObject() && item.GetLayoutObject()->Parent());
   bool was_auto_wrap = auto_wrap_;
@@ -2082,6 +2129,9 @@ void NGLineBreaker::Rewind(unsigned new_end, NGLineInfo* line_info) {
 
   trailing_collapsible_space_.reset();
   position_ = line_info->ComputeWidth();
+
+  if (UNLIKELY(has_cloned_box_decorations_))
+    RecalcClonedBoxDecorations();
 }
 
 // Returns the style to use for |item_result_index|. Normally when handling
@@ -2217,9 +2267,13 @@ scoped_refptr<NGInlineBreakToken> NGLineBreaker::CreateBreakToken(
     return NGInlineBreakToken::Create(node_);
   return NGInlineBreakToken::Create(
       node_, current_style_.get(), item_index_, offset_,
-      ((is_after_forced_break_ ? NGInlineBreakToken::kIsForcedBreak : 0) |
-       (line_info.UseFirstLineStyle() ? NGInlineBreakToken::kUseFirstLineStyle
-                                      : 0)));
+      (is_after_forced_break_ ? NGInlineBreakToken::kIsForcedBreak : 0) |
+          (line_info.UseFirstLineStyle()
+               ? NGInlineBreakToken::kUseFirstLineStyle
+               : 0) |
+          (cloned_box_decorations_count_
+               ? NGInlineBreakToken::kHasClonedBoxDecorations
+               : 0));
 }
 
 void NGLineBreaker::PropagateBreakToken(

@@ -18,7 +18,8 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
   enum NGInlineBreakTokenFlags {
     kDefault = 0,
     kIsForcedBreak = 1 << 0,
-    kUseFirstLineStyle = 1 << 1
+    kUseFirstLineStyle = 1 << 1,
+    kHasClonedBoxDecorations = 1 << 2,
     // When adding values, ensure |flags_| has enough storage.
   };
 
@@ -67,6 +68,13 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
   bool IsForcedBreak() const {
     DCHECK(!IsFinished());
     return flags_ & kIsForcedBreak;
+  }
+
+  // True if the current position has open tags that has `box-decoration-break:
+  // clone`. They should be cloned to the start of the next line.
+  bool HasClonedBoxDecorations() const {
+    DCHECK(!IsFinished());
+    return flags_ & kHasClonedBoxDecorations;
   }
 
   using PassKey = util::PassKey<NGInlineBreakToken>;

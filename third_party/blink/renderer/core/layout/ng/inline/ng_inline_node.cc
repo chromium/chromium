@@ -1727,6 +1727,7 @@ static LayoutUnit ComputeContentSize(
     }
   };
   FloatsMaxSize floats_max_size(input);
+  bool can_compute_max_size_from_min_size = true;
   MaxSizeFromMinSize max_size_from_min_size(items_data, *max_size_cache,
                                             &floats_max_size);
 
@@ -1737,16 +1738,6 @@ static LayoutUnit ComputeContentSize(
       break;
 
     LayoutUnit inline_size = line_info.Width();
-#if DCHECK_IS_ON()
-    // Text measurement is done using floats which may introduce small rounding
-    // errors for near-saturated values.
-    // See http://crbug.com/1112560
-    if (!LayoutUnit(line_info.ComputeWidthInFloat()).MightBeSaturated()) {
-      DCHECK_EQ(inline_size.Round(),
-                line_info.ComputeWidth().ClampNegativeToZero().Round());
-    }
-#endif
-
     for (const NGInlineItemResult& item_result : line_info.Results()) {
       DCHECK(item_result.item);
       const NGInlineItem& item = *item_result.item;
@@ -1782,13 +1773,21 @@ static LayoutUnit ComputeContentSize(
 
     if (mode == NGLineBreakerMode::kMinContent) {
       result = std::max(result, inline_size);
-      max_size_from_min_size.ComputeFromMinSize(line_info);
+      can_compute_max_size_from_min_size =
+          can_compute_max_size_from_min_size &&
+          // `box-decoration-break: clone` clones box decorations to each
+          // fragment (line) that we cannot compute max-content from
+          // min-content.
+          !line_breaker.HasClonedBoxDecorations();
+      if (can_compute_max_size_from_min_size)
+        max_size_from_min_size.ComputeFromMinSize(line_info);
     } else {
       result = floats_max_size.ComputeMaxSizeForLine(inline_size, result);
     }
   } while (!line_breaker.IsFinished());
 
-  if (mode == NGLineBreakerMode::kMinContent) {
+  if (mode == NGLineBreakerMode::kMinContent &&
+      can_compute_max_size_from_min_size) {
     *max_size_out = max_size_from_min_size.Finish(items_data.items.end());
     // Check the max size matches to the value computed from 2 pass.
 #if DCHECK_IS_ON()
@@ -1823,8 +1822,13 @@ MinMaxSizesResult NGInlineNode::ComputeMinMaxSizes(
   sizes.min_size = ComputeContentSize(
       *this, container_writing_mode, input, NGLineBreakerMode::kMinContent,
       &max_size_cache, &max_size, &depends_on_percentage_block_size);
-  DCHECK(max_size.has_value());
-  sizes.max_size = *max_size;
+  if (max_size) {
+    sizes.max_size = *max_size;
+  } else {
+    sizes.max_size = ComputeContentSize(*this, container_writing_mode, input,
+                                        NGLineBreakerMode::kMaxContent,
+                                        &max_size_cache, nullptr, nullptr);
+  }
 
   // Negative text-indent can make min > max. Ensure min is the minimum size.
   sizes.min_size = std::min(sizes.min_size, sizes.max_size);

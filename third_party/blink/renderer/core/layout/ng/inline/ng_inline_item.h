@@ -306,6 +306,10 @@ struct CORE_EXPORT NGInlineItemsData {
   void AssertEndOffset(unsigned index, unsigned offset) const {
     items[index].AssertEndOffset(offset);
   }
+
+  // Get a list of |kOpenTag| that are open at |size|.
+  using OpenTagItems = Vector<const NGInlineItem*, 16>;
+  void GetOpenTagItems(wtf_size_t size, OpenTagItems* open_items) const;
 };
 
 }  // namespace blink

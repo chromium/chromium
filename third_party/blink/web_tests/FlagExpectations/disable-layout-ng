@@ -363,6 +363,9 @@ crbug.com/591099 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftest
 ### external/wpt/quirks/
 crbug.com/591099 external/wpt/quirks/line-height-trailing-collapsable-whitespace.html [ Failure ]
 
+### fast/box-decoration-break/
+crbug.com/612641 fast/box-decoration-break/box-decoration-break-min-max.html [ Failure ]
+
 ### fast/css/
 crbug.com/591099 fast/css/absolute-inline-alignment-2.html [ Failure ]
 crbug.com/591099 fast/css/text-overflow-ellipsis-button.html [ Failure ]

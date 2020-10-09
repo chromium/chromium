@@ -154,15 +154,8 @@ void NGInlineLayoutAlgorithm::RebuildBoxStates(
     const NGInlineBreakToken* break_token,
     NGInlineLayoutStateStack* box_states) const {
   // Compute which tags are not closed at the beginning of this line.
-  const Vector<NGInlineItem>& items = line_info.ItemsData().items;
-  Vector<const NGInlineItem*, 16> open_items;
-  for (unsigned i = 0; i < break_token->ItemIndex(); i++) {
-    const NGInlineItem& item = items[i];
-    if (item.Type() == NGInlineItem::kOpenTag)
-      open_items.push_back(&item);
-    else if (item.Type() == NGInlineItem::kCloseTag)
-      open_items.pop_back();
-  }
+  NGInlineItemsData::OpenTagItems open_items;
+  line_info.ItemsData().GetOpenTagItems(break_token->ItemIndex(), &open_items);
 
   // Create box states for tags that are not closed yet.
   NGLogicalLineItems line_box;
