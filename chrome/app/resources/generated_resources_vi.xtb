@@ -824,7 +824,7 @@
 <translation id="1927632033341042996">Ngón tay <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">Phương thức khóa màn hình: mã PIN</translation>
 <translation id="1928202201223835302">Nhập mã PIN cũ</translation>
-<translation id="1928696683969751773">Số lần cập nhật</translation>
+<translation id="1928696683969751773">Bản cập nhật</translation>
 <translation id="1929186283613845153">Tệp này đang được quét.</translation>
 <translation id="1929546189971853037">Đọc lịch sử duyệt web của bạn trên tất cả các thiết bị đã đăng nhập</translation>
 <translation id="1930879306590754738">Đã xóa mật khẩu khỏi thiết bị này và Tài khoản Google của bạn</translation>
@@ -2197,7 +2197,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; muốn chia sẻ máy in &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; với một nhóm bạn sở hữu: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Nếu bạn chấp nhận, tất cả thành viên của nhóm sẽ có thể in tới máy in.</translation>
 <translation id="357889014807611375">mạng Wi‑Fi có giới hạn dữ liệu</translation>
 <translation id="3581605050355435601">Tự động định cấu hình địa chỉ IP</translation>
-<translation id="3582057310199111521">Bạn đã nhập mật khẩu vào trang web lừa đảo và mật khẩu này bị lộ trong một sự cố rò rỉ dữ liệu</translation>
+<translation id="3582057310199111521">Bạn đã nhập mật khẩu vào trang web lừa đảo và mật khẩu này được phát hiện thấy trong một sự cố rò rỉ dữ liệu</translation>
 <translation id="3584169441612580296">Đọc và thay đổi ảnh, nhạc và phương tiện khác từ máy tính của bạn</translation>
 <translation id="3586806079541226322">Không thể mở tệp này</translation>
 <translation id="3586931643579894722">Ẩn chi tiết</translation>
@@ -5653,7 +5653,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7742706086992565332">Bạn có thể đặt mức phóng to hoặc thu nhỏ trên một số trang web</translation>
 <translation id="774377079771918250">Chọn vị trí lưu</translation>
 <translation id="7744047395460924128">Xem lịch sử in của bạn</translation>
-<translation id="7744192722284567281">Phát hiện mật khẩu bị rò rỉ</translation>
+<translation id="7744192722284567281">Phát hiện thấy trong một sự cố rò rỉ dữ liệu</translation>
 <translation id="7750228210027921155">Hình trong hình</translation>
 <translation id="7751260505918304024">Hiển thị tất cả</translation>
 <translation id="7753735457098489144">Cài đặt không thành công do thiếu dung lượng bộ nhớ. Để giải phóng dung lượng, hãy xóa bớt tệp khỏi bộ nhớ của thiết bị.</translation>

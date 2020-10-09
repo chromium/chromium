@@ -16,7 +16,7 @@
 <translation id="1105960400813249514">Экранды жазып алу</translation>
 <translation id="1111673857033749125">Басқа құрылғыларда сақталған бетбелгілер осы жерде шығады.</translation>
 <translation id="1113597929977215864">Қарапайым көріністі көрсету</translation>
-<translation id="1126809382673880764">Қауіпті веб-сайттардан, жүктеп алынатын файлдардан және кеңейтімдерден қорғамайды. Gmail және Search сияқты басқа Google қызметтерінде "Қауіпсіз шолу" функциясы қорғайтын болады.</translation>
+<translation id="1126809382673880764">Қауіпті веб-сайттардан, жүктеп алынған файлдардан және кеңейтімдерден қорғамайды. Gmail және Search сияқты басқа Google қызметтерінде "Қауіпсіз шолу" функциясы қорғайтын болады.</translation>
 <translation id="1129510026454351943">Мәліметтер: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1141800923049248244">{FILE_COUNT,plural, =1{1 файл жүктеп алынбақ.}other{# файл жүктеп алынбақ.}}</translation>
 <translation id="1142732900304639782">Бұл сайттарды аударуды ұсынбау</translation>
@@ -428,7 +428,7 @@
 <translation id="4269820728363426813">Сілтеме мекенжайын көшіру</translation>
 <translation id="4298388696830689168">Байланыстырылған сайттар</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="4307992518367153382">Негіздер</translation>
+<translation id="4307992518367153382">Негізгілер</translation>
 <translation id="4314815835985389558">Синхрондауды басқару</translation>
 <translation id="4320177379694898372">Интернет байланысы жоқ</translation>
 <translation id="4321739720395210191">Камера ашылмайды. Құрылғыны қайта қосып, әрекетті қайталаңыз.</translation>

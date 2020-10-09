@@ -156,7 +156,7 @@
 <translation id="2435457462613246316">نمایش گذرواژه</translation>
 <translation id="2473177541599297363">تأیید وضوح</translation>
 <translation id="2475982808118771221">یک خطا روی داد</translation>
-<translation id="2479579251444854687">برای باز کردن «مرور کلی»، با سه انگشت تند به بالا بکشید و برای بستن به پایین بکشید.</translation>
+<translation id="2479579251444854687">برای باز کردن «مرور کلی»، با سه انگشت تند به‌بالا بکشید و برای بستن به پایین بکشید.</translation>
 <translation id="2482878487686419369">اعلان‌ها</translation>
 <translation id="2484513351006226581">برای تغییر جانمایی صفحه‌کلید، <ph name="KEYBOARD_SHORTCUT" /> را فشار دهید.</translation>
 <translation id="2501920221385095727">کلیدهای چسبان</translation>
@@ -169,7 +169,7 @@
 <translation id="2595239820337756193">‏5K in miles (‏۵ کیلومتر به مایل)</translation>
 <translation id="2617342710774726426">سیم‌کارت قفل است</translation>
 <translation id="2621713457727696555">ایمن شد</translation>
-<translation id="2640255526076764619">اشاره صفحه لمسی برای جابه‌جایی به میزکار قبلی تغییر کرده است. برای جابه‌جایی به میزکار قبلی، با چهار انگشت تند به چپ بکشید.</translation>
+<translation id="2640255526076764619">اشاره صفحه لمسی برای جابه‌جایی به میزکار قبلی تغییر کرده است. برای جابه‌جایی به میزکار قبلی، با چهار انگشت تند به‌چپ بکشید.</translation>
 <translation id="2653659639078652383">ارسال</translation>
 <translation id="2658778018866295321">کلیک کنید و بکشید</translation>
 <translation id="2700493154570097719">تنظیم صفحه‌کلید</translation>
@@ -262,7 +262,7 @@
 <translation id="3571734092741541777">تنظیم</translation>
 <translation id="3573179567135747900">به "<ph name="FROM_LOCALE" />" تغییر دهید (به راه‌اندازی دوباره نیاز دارد)</translation>
 <translation id="3576141592585647168">تغییر منطقه زمانی</translation>
-<translation id="3593646411856133110">برای دیدن برنامه‌های باز، تند به بالا بکشید و نگه دارید</translation>
+<translation id="3593646411856133110">برای دیدن برنامه‌های باز، تند به‌بالا بکشید و نگه دارید</translation>
 <translation id="3595596368722241419">باتری پر است</translation>
 <translation id="3604801046548457007">میز <ph name="DESK_TITILE" /> ایجاد شد</translation>
 <translation id="3606978283550408104">نمایشگر بریل متصل شد.</translation>
@@ -493,7 +493,7 @@
 <translation id="6018164090099858612">خروج از حالت آینه</translation>
 <translation id="602001110135236999">پیمایش به چپ</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، تحت‌مدیریت سرپرست</translation>
-<translation id="6029337736376922061">اشاره صفحه لمسی برای جابه‌جایی به میزکار بعدی تغییر کرده است. برای جابه‌جایی به میزکار بعدی، با ۴ انگشت تند به راست بکشید.</translation>
+<translation id="6029337736376922061">اشاره صفحه لمسی برای جابه‌جایی به میزکار بعدی تغییر کرده است. برای جابه‌جایی به میزکار بعدی، با ۴ انگشت تند به‌راست بکشید.</translation>
 <translation id="6030495522958826102">منو به گوشه راست پایین صفحه منتقل شد.</translation>
 <translation id="6040143037577758943">بستن</translation>
 <translation id="6043212731627905357">این نمایشگر با <ph name="DEVICE_TYPE" /> سازگار نیست (نمایشگر پشتیبانی نمی‌شود).</translation>
@@ -791,7 +791,7 @@
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> زمان تا تخلیه باتری باقی‌مانده است.</translation>
 <translation id="9074739597929991885">بلوتوث</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
-<translation id="9080132581049224423">برای رفتن به صفحه اصلی تند به بالا بکشید</translation>
+<translation id="9080132581049224423">برای رفتن به صفحه اصلی تند به‌بالا بکشید</translation>
 <translation id="9080206825613744995">میکروفون در حال استفاده است.</translation>
 <translation id="9084606467167974638">جابه‌جایی موقعیت منو</translation>
 <translation id="9089416786594320554">روش‌های ورودی</translation>

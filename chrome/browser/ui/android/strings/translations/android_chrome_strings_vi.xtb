@@ -117,7 +117,7 @@
 <translation id="1919130412786645364">Cho phép đăng nhập vào Chrome</translation>
 <translation id="1922362554271624559">Ngôn ngữ đề xuất</translation>
 <translation id="1925021887439448749">Nhập địa chỉ web tùy chỉnh</translation>
-<translation id="1928696683969751773">Số lần cập nhật</translation>
+<translation id="1928696683969751773">Bản cập nhật</translation>
 <translation id="19288952978244135">Mở lại Chrome.</translation>
 <translation id="1933845786846280168">Thẻ được chọn</translation>
 <translation id="1943432128510653496">Lưu mật khẩu</translation>
@@ -331,7 +331,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /> về nội dung đề xuất</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="3507132249039706973">Tính năng Bảo vệ thông thường đang bật</translation>
-<translation id="3509330069915219067">Không có kết nối mạng. Chrome không thể kiểm tra các bản cập nhật.</translation>
+<translation id="3509330069915219067">Không có kết nối mạng. Chrome không thể kiểm tra để tìm các bản cập nhật.</translation>
 <translation id="3513704683820682405">Thực tế tăng cường</translation>
 <translation id="3518985090088779359">Chấp nhận và tiếp tục</translation>
 <translation id="3522247891732774234">Bản cập nhật có sẵn. Tùy chọn khác</translation>
@@ -615,7 +615,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5659593005791499971">Email</translation>
 <translation id="5665379678064389456">Tạo sự kiện trong <ph name="APP_NAME" /></translation>
 <translation id="5668404140385795438">Ghi đè yêu cầu của trang web để chặn phóng to</translation>
-<translation id="5683547024293500885">Chrome không thể kiểm tra các bản cập nhật</translation>
+<translation id="5683547024293500885">Chrome không thể kiểm tra để tìm các bản cập nhật</translation>
 <translation id="5686790454216892815">Tên tệp quá dài</translation>
 <translation id="5687809546194252819"><ph name="APP_NAME" /> sẽ sử dụng <ph name="LANGUAGE" /> sau khi khởi động lại.</translation>
 <translation id="5691211010013816086">Bạn có <ph name="READING_LIST_COUNT" /> trang</translation>

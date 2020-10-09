@@ -2661,7 +2661,7 @@
       Примітка: елементи в цей список можна також додавати за допомогою правила <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
 <translation id="5065753964276395784">Це правило більше не підтримується. Натомість використовуйте правило <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
-       Якщо це правило налаштоване, <ph name="PRODUCT_NAME" /> обходитиме всі проксі для хостів із наведеного тут списку. Це правило діє, лише якщо правило <ph name="PROXY_SETTINGS_POLICY_NAME" /> невказане, а для правила <ph name="PROXY_MODE_POLICY_NAME" /> вибрано значення <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />.
+       Якщо це правило налаштоване, <ph name="PRODUCT_NAME" /> обходитиме всі проксі для хостів із наведеного тут списку. Це правило діє, лише якщо правило <ph name="PROXY_SETTINGS_POLICY_NAME" /> не вказане, а для правила <ph name="PROXY_MODE_POLICY_NAME" /> вибрано значення <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />.
 
        Якщо ви вибрали інший режим, це правило не потрібно налаштовувати.
 
@@ -4091,7 +4091,7 @@
       Якщо вибрано опцію "U2F_EXTENDED", вбудований другий фактор забезпечує функції U2F і деякі розширення для особистого підтвердження.</translation>
 <translation id="6999948519306285655">Це правило більше не підтримується. Натомість використовуйте правило <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
-       За допомогою налаштувань цього правила можна вказати URL-адресу файлу .pac проксі-сервера. Це правило діє, лише якщо правило <ph name="PROXY_SETTINGS_POLICY_NAME" /> невказане, а для правила <ph name="PROXY_MODE_POLICY_NAME" /> вибрано значення <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />.
+       За допомогою налаштувань цього правила можна вказати URL-адресу файлу .pac проксі-сервера. Це правило діє, лише якщо правило <ph name="PROXY_SETTINGS_POLICY_NAME" /> не вказане, а для правила <ph name="PROXY_MODE_POLICY_NAME" /> вибрано значення <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />.
 
        Якщо ви вибрали інший режим, це правило не потрібно налаштовувати.
 
@@ -4683,7 +4683,7 @@
 <translation id="7715711044277116530">Відсоток, за яким масштабують затримку затемнення екрана в режимі презентації</translation>
 <translation id="7716020145539921591">Це правило більше не підтримується. Натомість використовуйте правило <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
-       За допомогою налаштувань цього правила можна вказати URL-адресу проксі-сервера. Це правило діє, лише якщо правило <ph name="PROXY_SETTINGS_POLICY_NAME" /> невказане, а для правила <ph name="PROXY_MODE_POLICY_NAME" /> вибрано значення <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />.
+       За допомогою налаштувань цього правила можна вказати URL-адресу проксі-сервера. Це правило діє, лише якщо правило <ph name="PROXY_SETTINGS_POLICY_NAME" /> не вказане, а для правила <ph name="PROXY_MODE_POLICY_NAME" /> вибрано значення <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />.
 
        Якщо ви вибрали інший режим, це правило не потрібно налаштовувати.
 
