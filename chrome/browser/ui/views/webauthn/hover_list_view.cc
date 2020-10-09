@@ -186,7 +186,7 @@ void HoverListView::CreateAndAppendPlaceholderItem() {
   auto placeholder_item = CreateHoverButtonForListItem(
       model_->GetPlaceholderIcon(), model_->GetPlaceholderText(),
       base::string16(), views::Button::PressedCallback(),
-      /*is_two_line_list=*/false, ItemType::kPlaceholder);
+      /*is_two_line_item=*/false, ItemType::kPlaceholder);
   item_container_->AddChildView(placeholder_item.get());
   auto* separator = AddSeparatorAsChild(item_container_);
   placeholder_list_item_view_.emplace(
