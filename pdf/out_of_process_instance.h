@@ -36,6 +36,8 @@ class Vector2d;
 namespace pp {
 class Size;
 class TextInput_Dev;
+class VarArray;
+class VarDictionary;
 }  // namespace pp
 
 namespace chrome_pdf {

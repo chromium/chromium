@@ -24,7 +24,6 @@
 #include "ppapi/cpp/completion_callback.h"
 #include "ppapi/cpp/private/pdf.h"
 #include "ppapi/cpp/url_loader.h"
-#include "ppapi/cpp/var_array.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -51,10 +50,6 @@ class Size;
 class SizeF;
 class Vector2d;
 }  // namespace gfx
-
-namespace pp {
-class VarDictionary;
-}  // namespace pp
 
 namespace chrome_pdf {
 
@@ -457,13 +452,13 @@ class PDFEngine {
   // Returns true if all the pages are the same size.
   virtual bool GetPageSizeAndUniformity(gfx::Size* size) = 0;
 
-  // Returns a VarArray of Bookmarks. Each Bookmark is a VarDictionary
+  // Returns a list of Values of Bookmarks. Each Bookmark is a dictionary Value
   // which contains the following key/values:
-  // - "title" - a string Var.
-  // - "page" - an int Var.
-  // - "children" - a VarArray(), with each entry containing a VarDictionary of
-  //   the same structure.
-  virtual pp::VarArray GetBookmarks() = 0;
+  // - "title" - a string Value.
+  // - "page" - an int Value.
+  // - "children" - a list of Values, with each entry containing
+  //   a dictionary Value of the same structure.
+  virtual base::Value GetBookmarks() = 0;
 
   // Append blank pages to make a 1-page document to a |num_pages| document.
   // Always retain the first page data.

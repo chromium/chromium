@@ -49,7 +49,6 @@
 #include "pdf/url_loader_wrapper_impl.h"
 #include "ppapi/cpp/instance.h"
 #include "ppapi/cpp/private/pdf.h"
-#include "ppapi/cpp/var_dictionary.h"
 #include "printing/units.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_annot.h"
@@ -2279,36 +2278,39 @@ int PDFiumEngine::GetNumberOfPages() const {
   return pages_.size();
 }
 
-pp::VarArray PDFiumEngine::GetBookmarks() {
-  pp::VarDictionary dict = TraverseBookmarks(nullptr, 0);
+base::Value PDFiumEngine::GetBookmarks() {
+  base::Value dict = TraverseBookmarks(nullptr, 0);
+  DCHECK(dict.is_dict());
   // The root bookmark contains no useful information.
-  return pp::VarArray(dict.Get(pp::Var("children")));
+  base::Value* children = dict.FindListKey("children");
+  DCHECK(children);
+  return std::move(*children);
 }
 
-pp::VarDictionary PDFiumEngine::TraverseBookmarks(FPDF_BOOKMARK bookmark,
-                                                  unsigned int depth) {
-  pp::VarDictionary dict;
+base::Value PDFiumEngine::TraverseBookmarks(FPDF_BOOKMARK bookmark,
+                                            unsigned int depth) {
+  base::Value dict(base::Value::Type::DICTIONARY);
   base::string16 title = CallPDFiumWideStringBufferApi(
       base::BindRepeating(&FPDFBookmark_GetTitle, bookmark),
       /*check_expected_size=*/true);
-  dict.Set(pp::Var("title"), pp::Var(base::UTF16ToUTF8(title)));
+  dict.SetStringKey("title", title);
 
   FPDF_DEST dest = FPDFBookmark_GetDest(doc(), bookmark);
   // Some bookmarks don't have a page to select.
   if (dest) {
     int page_index = FPDFDest_GetDestPageIndex(doc(), dest);
     if (PageIndexInBounds(page_index)) {
-      dict.Set(pp::Var("page"), pp::Var(page_index));
+      dict.SetIntKey("page", page_index);
 
       base::Optional<gfx::PointF> xy;
       base::Optional<float> zoom;
       pages_[page_index]->GetPageDestinationTarget(dest, &xy, &zoom);
       if (xy) {
-        dict.Set(pp::Var("x"), pp::Var(static_cast<int>(xy.value().x())));
-        dict.Set(pp::Var("y"), pp::Var(static_cast<int>(xy.value().y())));
+        dict.SetIntKey("x", static_cast<int>(xy.value().x()));
+        dict.SetIntKey("y", static_cast<int>(xy.value().y()));
       }
       if (zoom) {
-        dict.Set(pp::Var("zoom"), pp::Var(zoom.value()));
+        dict.SetDoubleKey("zoom", zoom.value());
       }
     }
   } else {
@@ -2318,15 +2320,14 @@ pp::VarDictionary PDFiumEngine::TraverseBookmarks(FPDF_BOOKMARK bookmark,
         base::BindRepeating(&FPDFAction_GetURIPath, doc(), action),
         /*check_expected_size=*/true);
     if (!uri.empty())
-      dict.Set(pp::Var("uri"), pp::Var(uri));
+      dict.SetStringKey("uri", uri);
   }
 
-  pp::VarArray children;
+  base::Value children(base::Value::Type::LIST);
 
   // Don't trust PDFium to handle circular bookmarks.
   constexpr unsigned int kMaxDepth = 128;
   if (depth < kMaxDepth) {
-    int child_index = 0;
     std::set<FPDF_BOOKMARK> seen_bookmarks;
     for (FPDF_BOOKMARK child_bookmark =
              FPDFBookmark_GetFirstChild(doc(), bookmark);
@@ -2336,11 +2337,10 @@ pp::VarDictionary PDFiumEngine::TraverseBookmarks(FPDF_BOOKMARK bookmark,
         break;
 
       seen_bookmarks.insert(child_bookmark);
-      children.Set(child_index, TraverseBookmarks(child_bookmark, depth + 1));
-      child_index++;
+      children.Append(TraverseBookmarks(child_bookmark, depth + 1));
     }
   }
-  dict.Set(pp::Var("children"), children);
+  dict.SetKey("children", std::move(children));
   return dict;
 }
 

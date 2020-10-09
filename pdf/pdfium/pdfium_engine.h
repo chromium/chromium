@@ -17,6 +17,7 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_layout.h"
 #include "pdf/document_loader.h"
@@ -28,7 +29,6 @@
 #include "pdf/pdfium/pdfium_range.h"
 #include "ppapi/c/private/ppp_pdf.h"
 #include "ppapi/cpp/dev/buffer_dev.h"
-#include "ppapi/cpp/var_array.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"
 #include "third_party/pdfium/public/fpdf_progressive.h"
@@ -133,7 +133,7 @@ class PDFiumEngine : public PDFEngine,
   std::vector<uint8_t> GetAttachmentData(size_t index) override;
   const DocumentMetadata& GetDocumentMetadata() const override;
   int GetNumberOfPages() const override;
-  pp::VarArray GetBookmarks() override;
+  base::Value GetBookmarks() override;
   base::Optional<PDFEngine::NamedDestination> GetNamedDestination(
       const std::string& destination) override;
   int GetMostVisiblePage() override;
@@ -564,12 +564,11 @@ class PDFiumEngine : public PDFEngine,
   void KillTouchTimer();
   void HandleLongPress(const TouchInputEvent& event);
 
-  // Returns a VarDictionary (representing a bookmark), which in turn contains
-  // child VarDictionaries (representing the child bookmarks).
+  // Returns a base::Value (representing a bookmark), which in turn contains
+  // child base::Value dictionaries (representing the child bookmarks).
   // If nullptr is passed in as the bookmark then we traverse from the "root".
   // Note that the "root" bookmark contains no useful information.
-  pp::VarDictionary TraverseBookmarks(FPDF_BOOKMARK bookmark,
-                                      unsigned int depth);
+  base::Value TraverseBookmarks(FPDF_BOOKMARK bookmark, unsigned int depth);
 
   void ScrollBasedOnScrollAlignment(
       const gfx::Rect& scroll_rect,

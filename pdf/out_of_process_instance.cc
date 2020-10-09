@@ -2254,8 +2254,9 @@ void OutOfProcessInstance::SendDocumentMetadata() {
 
   metadata_message.Set(pp::Var(kJSAttachments), GetDocumentAttachments());
 
-  pp::VarArray bookmarks = engine()->GetBookmarks();
-  metadata_message.Set(pp::Var(kJSBookmarks), bookmarks);
+  base::Value bookmarks = engine()->GetBookmarks();
+  DCHECK(bookmarks.is_list());
+  metadata_message.Set(pp::Var(kJSBookmarks), VarFromValue(bookmarks));
 
   metadata_message.Set(
       pp::Var(kJSCanSerializeDocument),
