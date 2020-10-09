@@ -102,6 +102,7 @@ android_library("signin_java_test_support") {
   testonly = true
   deps = [
     ":java",
+    ":signin_test_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//third_party/android_deps:androidx_annotation_annotation_java",
@@ -116,4 +117,12 @@ android_library("signin_java_test_support") {
     "javatests/src/org/chromium/components/signin/test/util/FakeAccountManagerFacade.java",
     "javatests/src/org/chromium/components/signin/test/util/FakeProfileDataSource.java",
   ]
+  resources_package = "org.chromium.components.signin.core.browser.javatests"
+}
+
+android_resources("signin_test_resources") {
+  testonly = true
+
+  create_srcjar = false
+  sources = [ "javatests/res/drawable/test_profile_picture.xml" ]
 }

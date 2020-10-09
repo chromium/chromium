@@ -88,8 +88,9 @@ public class BookmarkPersonalizedPromoRenderTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mFakeProfileDataSource.setProfileData(account.name,
-                                new ProfileDataSource.ProfileData(
-                                        account.name, null, "Full Name", "Given Name")));
+                                new ProfileDataSource.ProfileData(account.name,
+                                        mAccountManagerTestRule.createProfileImage(), "Full Name",
+                                        "Given Name")));
     }
 
     @After

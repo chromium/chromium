@@ -5,10 +5,6 @@
 package org.chromium.chrome.browser.ntp;
 
 import android.accounts.Account;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 
@@ -113,8 +109,9 @@ public class RecentTabsPageTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mFakeProfileDataSource.setProfileData(account.name,
-                                new ProfileDataSource.ProfileData(
-                                        account.name, createAvatar(), "Full Name", "Given Name")));
+                                new ProfileDataSource.ProfileData(account.name,
+                                        mAccountManagerTestRule.createProfileImage(), "Full Name",
+                                        "Given Name")));
         RecentTabsManager.forcePromoStateForTests(
                 RecentTabsManager.PromoState.PROMO_SIGNIN_PERSONALIZED);
         mPage = loadRecentTabsPage();
@@ -129,8 +126,9 @@ public class RecentTabsPageTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mFakeProfileDataSource.setProfileData(account.name,
-                                new ProfileDataSource.ProfileData(
-                                        account.name, createAvatar(), "Full Name", "Given Name")));
+                                new ProfileDataSource.ProfileData(account.name,
+                                        mAccountManagerTestRule.createProfileImage(), "Full Name",
+                                        "Given Name")));
         RecentTabsManager.forcePromoStateForTests(
                 RecentTabsManager.PromoState.PROMO_SYNC_PERSONALIZED);
         mPage = loadRecentTabsPage();
@@ -200,24 +198,5 @@ public class RecentTabsPageTest {
                 InstrumentationRegistry.getInstrumentation(), view);
         Assert.assertTrue(InstrumentationRegistry.getInstrumentation().invokeContextMenuAction(
                 mActivityTestRule.getActivity(), contextMenuItemId, 0));
-    }
-
-    /**
-     * TODO(https://crbug.com/1125452): Remove this method and use test only resource.
-     */
-    private Bitmap createAvatar() {
-        final int avatarSize = 40;
-
-        Bitmap result = Bitmap.createBitmap(avatarSize, avatarSize, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(result);
-        canvas.drawColor(Color.RED);
-
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-
-        paint.setColor(Color.BLUE);
-        canvas.drawCircle(0, 0, avatarSize, paint);
-
-        return result;
     }
 }

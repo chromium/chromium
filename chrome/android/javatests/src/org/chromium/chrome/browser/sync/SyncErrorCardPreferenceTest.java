@@ -101,11 +101,10 @@ public class SyncErrorCardPreferenceTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mFakeProfileSyncService = new FakeProfileSyncService();
             ProfileSyncService.overrideForTests(mFakeProfileSyncService);
-            // TODO(https://crbug.com/1125452): Use test resource for profile avatar instead of
-            // null.
             mFakeProfileDataSource.setProfileData(account.name,
-                    new ProfileDataSource.ProfileData(
-                            account.name, null, "Full Name", "Given Name"));
+                    new ProfileDataSource.ProfileData(account.name,
+                            mAccountManagerTestRule.createProfileImage(), "Full Name",
+                            "Given Name"));
             AndroidSyncSettings.overrideForTests(mAndroidSyncSettingsMock);
             when(mAndroidSyncSettingsMock.isChromeSyncEnabled()).thenReturn(true);
         });
