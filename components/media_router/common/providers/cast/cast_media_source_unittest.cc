@@ -4,6 +4,7 @@
 
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 
+#include "components/cast_channel/cast_message_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,6 +33,8 @@ TEST(CastMediaSourceTest, FromCastURLWithDefaults) {
   EXPECT_EQ(ReceiverAppType::kWeb, source->supported_app_types()[0]);
   EXPECT_EQ(base::nullopt, source->target_playout_delay());
   EXPECT_EQ(true, source->site_requested_audio_capture());
+  EXPECT_EQ(cast_channel::VirtualConnectionType::kStrong,
+            source->connection_type());
 }
 
 TEST(CastMediaSourceTest, FromCastURL) {
@@ -46,7 +49,8 @@ TEST(CastMediaSourceTest, FromCastURL) {
       "&appParams=appParams"
       "&supportedAppTypes=ANDROID_TV,WEB"
       "&streamingTargetPlayoutDelayMillis=42"
-      "&streamingCaptureAudio=0");
+      "&streamingCaptureAudio=0"
+      "&invisibleSender=true");
   std::unique_ptr<CastMediaSource> source =
       CastMediaSource::FromMediaSourceId(source_id);
   ASSERT_TRUE(source);
@@ -71,6 +75,8 @@ TEST(CastMediaSourceTest, FromCastURL) {
   EXPECT_EQ(base::TimeDelta::FromMilliseconds(42),
             source->target_playout_delay());
   EXPECT_EQ(false, source->site_requested_audio_capture());
+  EXPECT_EQ(cast_channel::VirtualConnectionType::kInvisible,
+            source->connection_type());
 }
 
 TEST(CastMediaSourceTest, FromLegacyCastURL) {

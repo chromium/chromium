@@ -12,6 +12,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/cast_channel/cast_message_util.h"
 #include "components/cast_channel/enum_table.h"
 #include "components/media_router/common/media_source.h"
 #include "net/base/escape.h"
@@ -222,7 +223,8 @@ std::unique_ptr<CastMediaSource> CreateFromURLParams(
     const std::string& target_playout_delay_millis_str,
     const std::string& audio_capture_str,
     const std::vector<ReceiverAppType>& supported_app_types,
-    const std::string& app_params) {
+    const std::string& app_params,
+    const std::string& invisible_sender) {
   if (app_infos.empty())
     return nullptr;
 
@@ -260,6 +262,11 @@ std::unique_ptr<CastMediaSource> CreateFromURLParams(
     cast_source->set_supported_app_types(supported_app_types);
   cast_source->set_app_params(app_params);
 
+  if (invisible_sender == "true") {
+    cast_source->set_connection_type(
+        cast_channel::VirtualConnectionType::kInvisible);
+  }
+
   return cast_source;
 }
 
@@ -284,7 +291,8 @@ std::unique_ptr<CastMediaSource> ParseCastUrl(const MediaSource::Id& source_id,
       FindValueOr(params, "streamingTargetPlayoutDelayMillis", ""),
       FindValueOr(params, "streamingCaptureAudio", ""),
       SupportedAppTypesFromString(FindValueOr(params, "supportedAppTypes", "")),
-      FindValueOr(params, "appParams", ""));
+      FindValueOr(params, "appParams", ""),
+      FindValueOr(params, "invisibleSender", ""));
 }
 
 std::unique_ptr<CastMediaSource> ParseLegacyCastUrl(
@@ -345,7 +353,8 @@ std::unique_ptr<CastMediaSource> ParseLegacyCastUrl(
       /* target_playout_delay_millis_str */ "",
       /* audio_capture */ "",
       /* supported_app_types */ {},
-      /* appParams */ "");
+      /* appParams */ "",
+      /* invisibleSender */ "");
 }
 
 }  // namespace

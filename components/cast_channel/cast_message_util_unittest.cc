@@ -185,4 +185,9 @@ TEST(CastMessageUtilTest, CreateVolumeRequest) {
   EXPECT_THAT(message.payload_utf8(), IsJson(expected_message));
 }
 
+TEST(CastMessageUtilTest, GetConnectionType) {
+  EXPECT_EQ(VirtualConnectionType::kStrong, GetConnectionType("receiver-0"));
+  EXPECT_EQ(VirtualConnectionType::kInvisible, GetConnectionType("sender-123"));
+}
+
 }  // namespace cast_channel

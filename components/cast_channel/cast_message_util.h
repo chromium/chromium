@@ -328,6 +328,9 @@ LaunchSessionResponse GetLaunchSessionResponse(const base::Value& payload);
 
 LaunchSessionResponse GetLaunchSessionResponseError(std::string error_msg);
 
+// Returns what connection type should be used based on the destination ID.
+VirtualConnectionType GetConnectionType(const std::string& destination_id);
+
 }  // namespace cast_channel
 
 #endif  // COMPONENTS_CAST_CHANNEL_CAST_MESSAGE_UTIL_H_

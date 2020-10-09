@@ -215,6 +215,13 @@ class CastMediaSource {
     return supported_app_types_;
   }
   void set_supported_app_types(const std::vector<ReceiverAppType>& types);
+  cast_channel::VirtualConnectionType connection_type() const {
+    return connection_type_;
+  }
+  void set_connection_type(
+      cast_channel::VirtualConnectionType connection_type) {
+    connection_type_ = connection_type;
+  }
 
  private:
   MediaSource::Id source_id_;
@@ -229,6 +236,8 @@ class CastMediaSource {
   bool site_requested_audio_capture_ = true;
   std::vector<ReceiverAppType> supported_app_types_ = {ReceiverAppType::kWeb};
   std::string app_params_;
+  cast_channel::VirtualConnectionType connection_type_ =
+      cast_channel::VirtualConnectionType::kStrong;
 };
 
 }  // namespace media_router
