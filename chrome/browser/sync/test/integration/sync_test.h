@@ -117,7 +117,7 @@ class SyncTest : public PlatformBrowserTest {
                   base::TimeDelta time_to_live,
                   const std::map<std::string, std::string>& options,
                   std::set<Flags> flags,
-                  GetTokenCallback callback) override {}
+                  GetTokenCallback callback) override;
 
     void ValidateToken(const std::string& authorized_entity,
                        const std::string& scope,

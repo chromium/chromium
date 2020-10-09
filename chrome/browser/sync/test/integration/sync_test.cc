@@ -216,6 +216,16 @@ class SyncProfileDelegate : public Profile::Delegate {
 
 }  // namespace
 
+void SyncTest::FakeInstanceID::GetToken(
+    const std::string& authorized_entity,
+    const std::string& scope,
+    base::TimeDelta time_to_live,
+    const std::map<std::string, std::string>& options,
+    std::set<Flags> flags,
+    GetTokenCallback callback) {
+  std::move(callback).Run("token", instance_id::InstanceID::Result::SUCCESS);
+}
+
 instance_id::InstanceID* SyncTest::FakeInstanceIDDriver::GetInstanceID(
     const std::string& app_id) {
   return &fake_instance_id_;
