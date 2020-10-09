@@ -38,8 +38,10 @@ CHROME_SPECIFIC = BuildFileMatchRegex(
     r'lib/.*/crazy\.libchrome\.so',
     r'lib/.*/crazy\.libchrome\.align',
     r'lib/.*/gdbserver',
-     # Monochrome doesn't have any res directories whose api number is less
-     # than v24.
+    # R.font.accent_font is an alias in internal Chrome.
+    r'res/.*/accent_font.xml',
+    # Monochrome doesn't have any res directories whose api number is less
+    # than v24.
     r'res/.*-v1\d/.*\.xml',
     r'res/.*-v2[0-3]/.*\.xml',
     r'META-INF/.*',
