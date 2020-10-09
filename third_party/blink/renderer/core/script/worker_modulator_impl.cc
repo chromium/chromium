@@ -50,8 +50,8 @@ bool WorkerModulatorImpl::IsDynamicImportForbidden(String* reason) {
 
   // TODO(https://crbug.com/824647): Support module loading for Service Worker.
   *reason =
-      "Module scripts are not supported on WorkerGlobalScope yet (see "
-      "https://crbug.com/680046).";
+      "Module scripts are not supported on ServiceWorkerGlobalScope yet (see "
+      "https://crbug.com/824647).";
   return true;
 }
 

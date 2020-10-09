@@ -23,8 +23,8 @@ promise_test(t => {
           assert_equals(msg_event.data.name, 'TypeError');
           assert_equals(
               msg_event.data.message,
-              'Module scripts are not supported on WorkerGlobalScope yet ' +
-              '(see https://crbug.com/680046).');
+              'Module scripts are not supported on ServiceWorkerGlobalScope ' +
+              'yet (see https://crbug.com/824647).');
         });
 }, 'Dynamic import() on ServiceWorkerGlobalScope should reject the promise.');
 
