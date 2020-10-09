@@ -77,8 +77,13 @@ public class OmniboxSuggestionsList
     }
 
     @Override
-    public int getItemCount() {
+    public int getDropdownItemViewCountForTest() {
         return getCount();
+    }
+
+    @Override
+    public View getDropdownItemViewForTest(int index) {
+        return getChildAt(index);
     }
 
     @Override

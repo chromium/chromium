@@ -60,22 +60,46 @@ public class OmniboxSuggestionBuilderForTest {
     }
 
     public OmniboxSuggestionBuilderForTest(@OmniboxSuggestionType int type) {
+        reset();
         mType = type;
+    }
+
+    public OmniboxSuggestionBuilderForTest() {
+        this(OmniboxSuggestion.INVALID_TYPE);
+    }
+
+    /**
+     * Reset the Builder to its default state.
+     */
+    public void reset() {
+        mType = OmniboxSuggestion.INVALID_TYPE;
         mSubtypes = new ArraySet<>();
+        mIsSearchType = false;
+        mDisplayText = null;
         mDisplayTextClassifications = new ArrayList<>();
+        mDescription = null;
         mDescriptionClassifications = new ArrayList<>();
+        mAnswer = null;
+        mFillIntoEdit = null;
         mUrl = GURL.emptyGURL();
         mImageUrl = GURL.emptyGURL();
+        mImageDominantColor = null;
+        mRelevance = 0;
+        mTransition = 0;
+        mIsStarred = false;
+        mIsDeletable = false;
+        mPostContentType = null;
+        mPostData = null;
         mGroupId = OmniboxSuggestion.INVALID_GROUP;
+        mQueryTiles = null;
+        mClipboardImageData = null;
+        mHasTabMatch = false;
+        mNavsuggestTiles = null;
 
         mDisplayTextClassifications.add(
                 new OmniboxSuggestion.MatchClassification(0, MatchClassificationStyle.NONE));
         mDescriptionClassifications.add(
                 new OmniboxSuggestion.MatchClassification(0, MatchClassificationStyle.NONE));
-    }
-
-    public OmniboxSuggestionBuilderForTest() {
-        this(OmniboxSuggestion.INVALID_TYPE);
     }
 
     /**
@@ -233,6 +257,16 @@ public class OmniboxSuggestionBuilderForTest {
      */
     public OmniboxSuggestionBuilderForTest addSubtype(int subtype) {
         mSubtypes.add(subtype);
+        return this;
+    }
+
+    /**
+     * @param tiles Navsuggest tiles to associate with the suggestion.
+     * @return Omnibox suggestion builder.
+     */
+    public OmniboxSuggestionBuilderForTest setNavsuggestTiles(
+            List<OmniboxSuggestion.NavsuggestTile> tiles) {
+        mNavsuggestTiles = tiles;
         return this;
     }
 }

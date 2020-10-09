@@ -54,7 +54,6 @@ import org.chromium.chrome.browser.locale.DefaultSearchEnginePromoDialog.Default
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBar;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinatorTestUtils;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteResult;
 import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion;
@@ -568,14 +567,13 @@ public class SearchActivityTest {
         OmniboxTestUtils.waitForOmniboxSuggestions(locationBar, OMNIBOX_SHOW_TIMEOUT_MS);
         waitForSuggestionType(locationBar, OmniboxSuggestionType.CLIPBOARD_IMAGE);
         OmniboxSuggestionsDropdown suggestionsDropdown =
-                AutocompleteCoordinatorTestUtils.getSuggestionsDropdown(
-                        locationBar.getAutocompleteCoordinator());
+                locationBar.getAutocompleteCoordinator().getSuggestionsDropdownForTest();
 
         int imageSuggestionIndex = INVALID_INDEX;
         // Find the index of the image clipboard suggestion.
-        for (int i = 0; i < suggestionsDropdown.getItemCount(); ++i) {
-            OmniboxSuggestion suggestion = AutocompleteCoordinatorTestUtils.getOmniboxSuggestionAt(
-                    locationBar.getAutocompleteCoordinator(), i);
+        for (int i = 0; i < suggestionsDropdown.getDropdownItemViewCountForTest(); ++i) {
+            OmniboxSuggestion suggestion =
+                    locationBar.getAutocompleteCoordinator().getSuggestionAt(i);
             if (suggestion != null
                     && suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_IMAGE) {
                 imageSuggestionIndex = i;
@@ -585,8 +583,8 @@ public class SearchActivityTest {
         Assert.assertNotEquals("Cannot find the image clipboard Omnibox suggestion", INVALID_INDEX,
                 imageSuggestionIndex);
 
-        OmniboxSuggestion imageSuggestion = AutocompleteCoordinatorTestUtils.getOmniboxSuggestionAt(
-                locationBar.getAutocompleteCoordinator(), imageSuggestionIndex);
+        OmniboxSuggestion imageSuggestion =
+                locationBar.getAutocompleteCoordinator().getSuggestionAt(imageSuggestionIndex);
         Assert.assertNotNull("The image clipboard suggestion should contains post content type.",
                 imageSuggestion.getPostContentType());
         Assert.assertNotEquals(
@@ -642,14 +640,13 @@ public class SearchActivityTest {
         OmniboxTestUtils.waitForOmniboxSuggestions(locationBar, OMNIBOX_SHOW_TIMEOUT_MS);
         waitForSuggestionType(locationBar, OmniboxSuggestionType.CLIPBOARD_IMAGE);
         OmniboxSuggestionsDropdown suggestionsDropdown =
-                AutocompleteCoordinatorTestUtils.getSuggestionsDropdown(
-                        locationBar.getAutocompleteCoordinator());
+                locationBar.getAutocompleteCoordinator().getSuggestionsDropdownForTest();
 
         int imageSuggestionIndex = INVALID_INDEX;
         // Find the index of the image clipboard suggestion.
-        for (int i = 0; i < suggestionsDropdown.getItemCount(); ++i) {
-            OmniboxSuggestion suggestion = AutocompleteCoordinatorTestUtils.getOmniboxSuggestionAt(
-                    locationBar.getAutocompleteCoordinator(), i);
+        for (int i = 0; i < suggestionsDropdown.getDropdownItemViewCountForTest(); ++i) {
+            OmniboxSuggestion suggestion =
+                    locationBar.getAutocompleteCoordinator().getSuggestionAt(i);
             if (suggestion != null
                     && suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_IMAGE) {
                 imageSuggestionIndex = i;
@@ -659,8 +656,8 @@ public class SearchActivityTest {
         Assert.assertNotEquals("Cannot find the image clipboard Omnibox suggestion", INVALID_INDEX,
                 imageSuggestionIndex);
 
-        OmniboxSuggestion imageSuggestion = AutocompleteCoordinatorTestUtils.getOmniboxSuggestionAt(
-                locationBar.getAutocompleteCoordinator(), imageSuggestionIndex);
+        OmniboxSuggestion imageSuggestion =
+                locationBar.getAutocompleteCoordinator().getSuggestionAt(imageSuggestionIndex);
 
         Intent intent =
                 new Intent(Intent.ACTION_VIEW, Uri.parse(imageSuggestion.getUrl().getSpec()));
@@ -710,14 +707,12 @@ public class SearchActivityTest {
         CriteriaHelper.pollUiThread(() -> {
             // Find the index of clipboard suggestion in the dropdown list.
             final int clipboardSuggestionIndexInDropdown =
-                    AutocompleteCoordinatorTestUtils.getIndexForFirstSuggestionOfType(
-                            locationBar.getAutocompleteCoordinator(),
-                            OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION);
+                    OmniboxTestUtils.getIndexForFirstSuggestionOfType(
+                            locationBar, OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION);
             Criteria.checkThat("Cannot find the clipboard Omnibox suggestion in ModelList.",
                     clipboardSuggestionIndexInDropdown, Matchers.not(INVALID_INDEX));
             OmniboxSuggestionsDropdown dropdown =
-                    AutocompleteCoordinatorTestUtils.getSuggestionsDropdown(
-                            locationBar.getAutocompleteCoordinator());
+                    locationBar.getAutocompleteCoordinator().getSuggestionsDropdownForTest();
             ViewGroup viewGroup = dropdown.getViewGroup();
             BaseSuggestionView baseSuggestionView =
                     (BaseSuggestionView) viewGroup.getChildAt(clipboardSuggestionIndexInDropdown);
@@ -773,13 +768,11 @@ public class SearchActivityTest {
             final @OmniboxSuggestionType int type) {
         CriteriaHelper.pollUiThread(() -> {
             OmniboxSuggestionsDropdown suggestionsDropdown =
-                    AutocompleteCoordinatorTestUtils.getSuggestionsDropdown(
-                            locationBar.getAutocompleteCoordinator());
+                    locationBar.getAutocompleteCoordinator().getSuggestionsDropdownForTest();
             Criteria.checkThat(suggestionsDropdown, Matchers.notNullValue());
-            for (int i = 0; i < suggestionsDropdown.getItemCount(); i++) {
+            for (int i = 0; i < suggestionsDropdown.getDropdownItemViewCountForTest(); i++) {
                 OmniboxSuggestion suggestion =
-                        AutocompleteCoordinatorTestUtils.getOmniboxSuggestionAt(
-                                locationBar.getAutocompleteCoordinator(), i);
+                        locationBar.getAutocompleteCoordinator().getSuggestionAt(i);
                 if (suggestion != null && suggestion.getType() == type) return;
             }
             throw new CriteriaNotSatisfiedException("No suggestions of type: " + type);

@@ -221,8 +221,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         return mSuggestionVisibilityState;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    ModelList getSuggestionModelList() {
+    /** @return The ModelList for currently shown suggestions. */
+    ModelList getSuggestionModelListForTest() {
         return mSuggestionModels;
     }
 
@@ -673,7 +673,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         assert mNativeInitialized
             : "updateSuggestionUrlIfNeeded called before native initialization";
         if (suggestion.getType() == OmniboxSuggestionType.VOICE_SUGGEST
-                || suggestion.getType() == OmniboxSuggestionType.TILE_SUGGESTION) {
+                || suggestion.getType() == OmniboxSuggestionType.TILE_SUGGESTION
+                || suggestion.getType() == OmniboxSuggestionType.TILE_NAVSUGGEST) {
             return url;
         }
 
@@ -889,6 +890,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         if (getSuggestionCount() > 0
                 && urlText.trim().equals(mUrlTextAfterSuggestionsReceived.trim())) {
             // Common case: the user typed something, received suggestions, then pressed enter.
+            // This triggers the Default Match.
             suggestionMatch = getSuggestionAt(0);
         } else {
             // Less common case: there are no valid omnibox suggestions. This can happen if the
@@ -1068,8 +1070,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      * @param controller The controller that will handle autocomplete/omnibox suggestions.
      * @note Only used for testing.
      */
-    @VisibleForTesting
-    public void setAutocompleteController(AutocompleteController controller) {
+    public void setAutocompleteControllerForTest(AutocompleteController controller) {
         if (mAutocomplete != null) stopAutocomplete(true);
         mAutocomplete = controller;
     }

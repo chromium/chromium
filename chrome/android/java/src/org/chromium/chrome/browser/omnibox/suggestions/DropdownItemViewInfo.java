@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** ListItem element used with OmniboxSuggestionList. */
-class DropdownItemViewInfo extends MVCListAdapter.ListItem {
+@VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+public class DropdownItemViewInfo extends MVCListAdapter.ListItem {
     /** Processor managing the item. */
     public final DropdownItemProcessor processor;
     /** Group ID this ViewInfo belongs to. */

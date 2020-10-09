@@ -329,24 +329,24 @@ public class AutocompleteCoordinatorImpl implements AutocompleteCoordinator {
         AutocompleteControllerJni.get().prefetchZeroSuggestResults();
     }
 
-    @VisibleForTesting
-    OmniboxSuggestionsDropdown getSuggestionsDropdown() {
+    @Override
+    public OmniboxSuggestionsDropdown getSuggestionsDropdownForTest() {
         return mDropdown;
     }
 
-    @VisibleForTesting
-    void setAutocompleteController(AutocompleteController controller) {
-        mMediator.setAutocompleteController(controller);
+    @Override
+    public void setAutocompleteControllerForTest(AutocompleteController controller) {
+        mMediator.setAutocompleteControllerForTest(controller);
     }
 
-    @VisibleForTesting
-    OnSuggestionsReceivedListener getSuggestionsReceivedListenerForTest() {
+    @Override
+    public OnSuggestionsReceivedListener getSuggestionsReceivedListenerForTest() {
         return mMediator;
     }
 
-    @VisibleForTesting
-    ModelList getSuggestionModelList() {
-        return mMediator.getSuggestionModelList();
+    @Override
+    public ModelList getSuggestionModelListForTest() {
+        return mMediator.getSuggestionModelListForTest();
     }
 
     private void onTileSelected(QueryTile queryTile) {

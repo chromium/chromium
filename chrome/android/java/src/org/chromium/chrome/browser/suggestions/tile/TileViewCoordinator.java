@@ -100,4 +100,13 @@ public class TileViewCoordinator {
     public void setOnCreateContextMenuListener(View.OnCreateContextMenuListener listener) {
         mMediator.setOnCreateContextMenuListener(listener);
     }
+
+    /**
+     * Set the Accessibility Content Description.
+     *
+     * @param description Text used by Talkback to announce selection.
+     */
+    void setContentDescription(CharSequence description) {
+        mMediator.setContentDescription(description);
+    }
 }

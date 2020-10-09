@@ -91,6 +91,9 @@ public interface OmniboxSuggestionsDropdown {
     /** Update the suggestion popup background to reflect the current state. */
     void refreshPopupBackground(boolean isIncognito);
 
-    /** Gets the number of items in the list. */
-    int getItemCount();
+    /** @return The number of items in the list. */
+    int getDropdownItemViewCountForTest();
+
+    /** @return The Suggestion view at specific index. */
+    View getDropdownItemViewForTest(int position);
 }

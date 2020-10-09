@@ -109,4 +109,9 @@ public class BaseCarouselSuggestionView extends LinearLayout {
     SimpleRecyclerViewAdapter getAdapter() {
         return (SimpleRecyclerViewAdapter) mRecyclerView.getAdapter();
     }
+
+    /** @return Recycler view used by the Carousel suggestion. */
+    public RecyclerView getRecyclerViewForTest() {
+        return mRecyclerView;
+    }
 }

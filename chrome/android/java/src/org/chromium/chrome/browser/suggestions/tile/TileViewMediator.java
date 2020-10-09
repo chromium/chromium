@@ -93,4 +93,13 @@ class TileViewMediator {
     void setOnCreateContextMenuListener(View.OnCreateContextMenuListener listener) {
         mModel.set(TileViewProperties.ON_CREATE_CONTEXT_MENU, listener);
     }
+
+    /**
+     * Set the Accessibility Content Description.
+     *
+     * @param description Text used by Talkback to announce selection.
+     */
+    void setContentDescription(CharSequence description) {
+        mModel.set(TileViewProperties.CONTENT_DESCRIPTION, description);
+    }
 }

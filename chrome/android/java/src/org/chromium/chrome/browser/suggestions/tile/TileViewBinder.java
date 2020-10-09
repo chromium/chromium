@@ -53,6 +53,8 @@ public class TileViewBinder {
         } else if (propertyKey == TileViewProperties.ON_CREATE_CONTEXT_MENU) {
             view.setOnCreateContextMenuListener(
                     model.get(TileViewProperties.ON_CREATE_CONTEXT_MENU));
+        } else if (propertyKey == TileViewProperties.CONTENT_DESCRIPTION) {
+            view.setContentDescription(model.get(TileViewProperties.CONTENT_DESCRIPTION));
         }
     }
 }

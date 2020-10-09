@@ -139,9 +139,16 @@ public class OmniboxSuggestionsRecyclerView
     }
 
     @Override
-    public int getItemCount() {
+    public int getDropdownItemViewCountForTest() {
         if (mAdapter == null) return 0;
         return mAdapter.getItemCount();
+    }
+
+    @Override
+    public View getDropdownItemViewForTest(int index) {
+        final LayoutManager manager = getLayoutManager();
+        manager.scrollToPosition(index);
+        return manager.findViewByPosition(index);
     }
 
     @Override

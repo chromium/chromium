@@ -50,8 +50,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionsResult;
-import org.chromium.chrome.test.util.OmniboxTestUtils.TestAutocompleteController;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -63,7 +61,6 @@ import org.chromium.ui.base.WindowAndroid.IntentCallback;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -84,7 +81,6 @@ public class VoiceRecognitionHandlerTest {
     private TestDataProvider mDataProvider;
     private TestDelegate mDelegate;
     private TestVoiceRecognitionHandler mHandler;
-    private TestAutocompleteController mAutocomplete;
     private TestAndroidPermissionDelegate mPermissionDelegate;
     private TestWindowAndroid mWindowAndroid;
     private Tab mTab;
@@ -494,8 +490,6 @@ public class VoiceRecognitionHandlerTest {
         mDelegate = TestThreadUtils.runOnUiThreadBlocking(() -> new TestDelegate());
         mHandler = new TestVoiceRecognitionHandler(mDelegate);
         mPermissionDelegate = new TestAndroidPermissionDelegate();
-        mAutocomplete = new TestAutocompleteController(null /* view */, sEmptySuggestionListener,
-                new HashMap<String, List<SuggestionsResult>>());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mWindowAndroid = new TestWindowAndroid(mActivityTestRule.getActivity());

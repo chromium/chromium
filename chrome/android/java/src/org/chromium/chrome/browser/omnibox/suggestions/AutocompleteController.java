@@ -293,7 +293,8 @@ public class AutocompleteController {
      * @param completedLength The length of the default match's inline autocompletion if any.
      * @param webContents The web contents for the tab where the selected suggestion will be shown.
      */
-    void onSuggestionSelected(int selectedIndex, int disposition, int hashCode, int type,
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public void onSuggestionSelected(int selectedIndex, int disposition, int hashCode, int type,
             String currentPageUrl, int pageClassification, long elapsedTimeSinceModified,
             int completedLength, WebContents webContents) {
         assert mNativeAutocompleteControllerAndroid != 0;

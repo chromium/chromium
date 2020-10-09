@@ -246,7 +246,9 @@ public class OmniboxSuggestion {
 
     @Override
     public int hashCode() {
-        int hash = 37 * mType + mDisplayText.hashCode() + mFillIntoEdit.hashCode()
+        final int displayTextHash = mDisplayText != null ? mDisplayText.hashCode() : 0;
+        final int fillIntoEditHash = mFillIntoEdit != null ? mFillIntoEdit.hashCode() : 0;
+        int hash = 37 * mType + 2017 * displayTextHash + 1901 * fillIntoEditHash
                 + (mIsStarred ? 1 : 0) + (mIsDeletable ? 1 : 0);
         if (mAnswer != null) hash = hash + mAnswer.hashCode();
         return hash;

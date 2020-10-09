@@ -122,8 +122,7 @@ public class SwitchToTabTest {
             Criteria.checkThat(matchSuggestion, Matchers.notNullValue());
 
             OmniboxSuggestionsDropdown suggestionsDropdown =
-                    AutocompleteCoordinatorTestUtils.getSuggestionsDropdown(
-                            locationBarLayout.getAutocompleteCoordinator());
+                    locationBarLayout.getAutocompleteCoordinator().getSuggestionsDropdownForTest();
 
             // Make sure data populated to UI
             int index = findIndexOfTabMatchSuggestionView(suggestionsDropdown, matchSuggestion);

@@ -30,6 +30,10 @@ public final class TileViewProperties {
     /** Badge visibility. */
     public static final WritableBooleanPropertyKey BADGE_VISIBLE = new WritableBooleanPropertyKey();
 
+    /** Content description used by Accessibility to announce selection. */
+    public static final WritableObjectPropertyKey<CharSequence> CONTENT_DESCRIPTION =
+            new WritableObjectPropertyKey<>();
+
     /** Handler receiving focus events. */
     public static final WritableObjectPropertyKey<Runnable> ON_FOCUS_VIA_SELECTION =
             new WritableObjectPropertyKey<>();
@@ -46,7 +50,7 @@ public final class TileViewProperties {
     public static final WritableObjectPropertyKey<View.OnCreateContextMenuListener>
             ON_CREATE_CONTEXT_MENU = new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {ICON, TITLE, TITLE_LINES, BADGE_VISIBLE, SHOW_LARGE_ICON,
-                    ON_FOCUS_VIA_SELECTION, ON_CLICK, ON_LONG_CLICK, ON_CREATE_CONTEXT_MENU};
+    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {ICON, TITLE, TITLE_LINES,
+            BADGE_VISIBLE, SHOW_LARGE_ICON, CONTENT_DESCRIPTION, ON_FOCUS_VIA_SELECTION, ON_CLICK,
+            ON_LONG_CLICK, ON_CREATE_CONTEXT_MENU};
 }

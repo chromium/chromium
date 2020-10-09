@@ -13,16 +13,20 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.List;
 
 /**
  * This component handles the interactions with the autocomplete system.
+ * TODO(ender): clean up the AutocompleteCoordinatorImpl and drop this interface
+ *              as it is never overloaded or mocked.
  */
 public interface AutocompleteCoordinator extends UrlFocusChangeListener, UrlTextChangeListener {
     /**
@@ -148,4 +152,16 @@ public interface AutocompleteCoordinator extends UrlFocusChangeListener, UrlText
      * Sends a zero suggest request to the server in order to pre-populate the result cache.
      */
     void prefetchZeroSuggestResults();
+
+    /** @return Suggestions Dropdown view, showing the list of suggestions. */
+    OmniboxSuggestionsDropdown getSuggestionsDropdownForTest();
+
+    /** @param controller The instance of AutocompleteController to be used. */
+    void setAutocompleteControllerForTest(AutocompleteController controller);
+
+    /** @return The current receiving OnSuggestionsReceived events. */
+    OnSuggestionsReceivedListener getSuggestionsReceivedListenerForTest();
+
+    /** @return The ModelList for the currently shown suggestions. */
+    ModelList getSuggestionModelListForTest();
 }

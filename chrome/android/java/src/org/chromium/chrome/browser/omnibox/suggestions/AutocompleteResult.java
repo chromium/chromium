@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.util.ObjectsCompat;
 
 import java.util.ArrayList;
@@ -60,7 +61,8 @@ public class AutocompleteResult {
      * @return List of Omnibox Suggestions.
      */
     @NonNull
-    List<OmniboxSuggestion> getSuggestionsList() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public List<OmniboxSuggestion> getSuggestionsList() {
         return mSuggestions;
     }
 
@@ -68,7 +70,8 @@ public class AutocompleteResult {
      * @return Map of Group ID to GroupDetails objects.
      */
     @NonNull
-    SparseArray<GroupDetails> getGroupsDetails() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public SparseArray<GroupDetails> getGroupsDetails() {
         return mGroupsDetails;
     }
 
