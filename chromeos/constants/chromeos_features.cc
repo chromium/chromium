@@ -485,8 +485,8 @@ const base::Feature kQuickUnlockPinAutosubmitBackfill{
     "QuickUnlockPinAutosubmitBackfill", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables Release Notes notifications on Chrome OS.
-const base::Feature kReleaseNotesNotification{"ReleaseNotesNotification",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kReleaseNotesNotification{
+    "ReleaseNotesNotification", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables or disables Release Notes notifications on non-stable Chrome OS
 // channels. Used for testing.
