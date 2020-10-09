@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 17: Uncaught TypeError: document.querySelector(...).createShadowRoot is not a function
-CONSOLE ERROR: line 22: Uncaught TypeError: Cannot read property 'getBoundingClientRect' of undefined

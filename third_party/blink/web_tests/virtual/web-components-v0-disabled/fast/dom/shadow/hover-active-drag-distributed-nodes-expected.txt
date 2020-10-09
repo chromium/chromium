@@ -1,7 +1,0 @@
-CONSOLE ERROR: line 56: Uncaught TypeError: host.createShadowRoot is not a function
-Top-level text Nested text
-Other div
-FAIL successfullyParsed should be true. Was false.
-
-TEST COMPLETE
-

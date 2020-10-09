@@ -1,5 +1,0 @@
-CONSOLE WARNING: line 5: HTML Imports is deprecated and will be removed in M80, around February 2020. Please use ES modules instead. See https://www.chromestatus.com/features/5144752345317376 and https://developers.google.com/web/updates/2019/07/web-components-time-to-upgrade for more details.
-CONSOLE ERROR: line 5: Refused to load the script 'http://127.0.0.1:8000/htmlimports/resources/hello.html' because it violates the following Content Security Policy directive: "script-src 'unsafe-inline'". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
-
-PASS
-

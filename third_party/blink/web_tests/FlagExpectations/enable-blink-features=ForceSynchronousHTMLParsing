@@ -59,10 +59,6 @@ crbug.com/901056 virtual/gpu/fast/canvas/canvas-drawImage-live-video.html [ Time
 ### external/wpt/preload/
 crbug.com/901056 external/wpt/preload/link-header-preload-imagesrcset.html [ Failure ]
 
-### http/tests/htmlimports/
-# Known failure, but won't fix because HTML imports are going away fairly soon
-crbug.com/901056 crbug.com/240592 http/tests/htmlimports/import-async-grandchild.html [ Failure ]
-
 ### http/tests/preload/
 crbug.com/901056 http/tests/preload/meta-csp.html [ Failure ]
 

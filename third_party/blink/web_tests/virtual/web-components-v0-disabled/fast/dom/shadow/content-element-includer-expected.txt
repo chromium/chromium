@@ -1,9 +1,0 @@
-CONSOLE ERROR: line 32: Uncaught TypeError: elementWithShadow.createShadowRoot is not a function
-This tests the correctness of includers of forwarded children.
-Note that this test needs internals object thus cannot run outside DRT.
-
-FAIL includerFor(childOfElementWithoutShadow) should be null. Threw exception TypeError: element.getDestinationInsertionPoints is not a function
-FAIL successfullyParsed should be true. Was false.
-
-TEST COMPLETE
-

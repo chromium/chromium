@@ -1,4 +1,0 @@
-CONSOLE ERROR: line 27: Uncaught TypeError: target.createShadowRoot is not a function
-Hello,contentWorld.
-This test compares a shadow-based render tree with one for a reference DOM tree.
-

@@ -1,1 +1,0 @@
-CONSOLE ERROR: line 11: Uncaught TypeError: imageDiv.createShadowRoot is not a function

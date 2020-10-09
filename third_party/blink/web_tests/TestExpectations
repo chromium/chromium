@@ -1311,30 +1311,12 @@ crbug.com/1053725 [ Mac ] transforms/transformed-caret.html [ Skip ]
 crbug.com/1053725 [ Mac ] transforms/transformed-focused-text-input.html [ Skip ]
 crbug.com/1053725 [ Mac ] transforms/2d/zoom-menulist.html [ Skip ]
 crbug.com/1053725 [ Mac ] transforms/3d/general/perspective-non-layer.html [ Skip ]
-
-
-# Still need eval:
-crbug.com/1053725 [ Mac ] virtual/web-components-v0-disabled/html/details_summary/details-add-summary-1-and-click.html [ Skip ]
-crbug.com/1053725 [ Mac ] virtual/web-components-v0-disabled/external/wpt/dom/events/Event-dispatch-redispatch.html [ Skip ]
-crbug.com/1053725 [ Mac ] virtual/web-components-v0-disabled/html/details_summary/details-add-summary-3-and-click.html [ Skip ]
-
-
-
-# Needs further triage:
 crbug.com/1053725 [ Mac ] fast/forms/implicit-submission.html [ Skip ]
 crbug.com/1053725 [ Mac ] fast/forms/select/option-mouseevents.html [ Skip ]
 crbug.com/1053725 [ Mac ] fast/forms/select/menulist-popup-open-hide-using-keyboard.html [ Skip ]
-crbug.com/1053725 [ Mac ] virtual/web-components-v0-disabled/fast/dom/title-text-property.html [ Skip ]
-
-
-
-# Needs triage:
 crbug.com/1053725 [ Mac ] fast/css/button-height.html [ Skip ]
 crbug.com/1053725 [ Mac ] fast/css-grid-layout/preferred-width-computed-after-layout.html [ Skip ]
 crbug.com/1053725 [ Mac ] editing/selection/replaced-boundaries-3.html [ Skip ]
-
-
-# Need triage:
 crbug.com/1053725 [ Mac ] fast/forms/textarea/textarea-metrics.html [ Skip ]
 
 # Flaky on Win7
@@ -1352,29 +1334,6 @@ crbug.com/1053725 [ Win7 ] fast/forms/calendar-picker/date-picker-appearance-dis
 
 # ====== Form Controls Refresh failures until here ======
 
-
-# ===== These tests fail when Web Components v0 is removed =====
-
-crbug.com/1081941 web-components-v0-only/* [ Skip ]
-crbug.com/1081941 virtual/web-components-v0-disabled/* [ Skip ]
-crbug.com/1081941 http/tests/htmlimports/* [ Skip ]
-crbug.com/1081941 http/tests/custom/xhr-response-does-not-have-registry.html [ Skip ]
-crbug.com/1081941 http/tests/custom-elements/no-registry-test.html [ Skip ]
-crbug.com/1081941 http/tests/devtools/import-open-inspector.js [ Skip ]
-crbug.com/1081941 http/tests/devtools/elements/html-link-import.js [ Skip ]
-crbug.com/1081941 http/tests/devtools/elements/styles-3/style-rule-from-imported-stylesheet.js [ Skip ]
-crbug.com/1081941 http/tests/devtools/network/network-imported-resource-content.js [ Skip ]
-crbug.com/1081941 http/tests/devtools/resource-tree/resource-tree-htmlimports.js [ Skip ]
-crbug.com/1081941 http/tests/linkHeader/link-rel-import-css-rule-capital.html [ Skip ]
-crbug.com/1081941 http/tests/security/contentSecurityPolicy/nonces/import-enforce-allowed.php [ Skip ]
-crbug.com/1081941 http/tests/security/contentSecurityPolicy/nonces/import-enforce-blocked.php [ Skip ]
-crbug.com/1081941 http/tests/security/contentSecurityPolicy/nonces/import-multiple-allowed.php [ Skip ]
-crbug.com/1081941 http/tests/security/contentSecurityPolicy/nonces/import-multiple-blocked.php [ Skip ]
-crbug.com/1081941 http/tests/security/contentSecurityPolicy/nonces/import-reportonly-allowed.php [ Skip ]
-crbug.com/1081941 http/tests/security/referrer-policy-attribute-import-no-referrer.html [ Skip ]
-crbug.com/1081941 http/tests/subresource_filter/resource-in-import-disallowed.html [ Skip ]
-
-# ===== Web Components v0 until here =====
 
 # Bug in FormControlsRefresh <select multiple> tap behavior:
 crbug.com/1045672 fast/forms/select/listbox-tap.html [ Failure ]
@@ -4433,132 +4392,6 @@ crbug.com/709227 external/wpt/html/canvas/offscreen/the-offscreen-canvas/size.at
 
 crbug.com/789139 http/tests/devtools/sources/debugger/live-edit-no-reveal.js [ Failure Pass Timeout Crash ]
 
-
-# ====== Begin web-components-v0-disabled virtual suite tests ======
-
-# Ignore these - they are tests of the disabled features. Eventually remove these.
-crbug.com/937746 virtual/web-components-v0-disabled/fast/dom/shadow/access-document-of-detached-stylesheetlist-crash.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/fast/dom/shadow/distribution-update-fonts-load.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/fast/dom/shadow/form-in-shadow.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/fast/dom/shadow/no-style-sharing-with-uncommon-attribute-nodes.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/fast/dom/shadow/shadow-dynamic-style-change-via-mutation-and-selector.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/fast/dom/shadow/shadowhost-keyframes.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/fast/dom/shadow/shadowroot-keyframes.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/fast/dom/shadow/transition-on-shadow-host-createshadowroot.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/fast/dom/gc-treescope.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/fast/dom/StyleSheet/css-insert-import-rule-to-shadow-stylesheets.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/fast/dom/shadow/gesture-tapHighlight-shadow-tree.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/fast/dom/shadow/import-rule-in-shadow-tree-needs-document-style-recalc.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/fast/dom/shadow/scrollbar.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/fast/dom/shadow/text-node-in-shadow.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/fast/dom/shadow/custom-pseudo-scope.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/fast/dom/shadow/dynamically-created-shadow-root.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/fast/dom/shadow/new-fallback.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/fast/dom/shadow/shadow-on-image.html [ Skip ]
-
-
-# == These fail with or without the WCv0 features disabled, and most/all already
-# == exist somewhere else in this file, outside the virtual suite.
-crbug.com/937746 virtual/web-components-v0-disabled/dom/legacy_dom_conformance/xhtml/level3/core/nodecomparedocumentposition38.xhtml [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/dom/events/Event-dispatch-on-disabled-elements.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/dom/events/EventListener-incumbent-global-1.sub.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/dom/events/EventListener-incumbent-global-2.sub.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/dom/ranges/Range-compareBoundaryPoints.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/dom/elements/global-attributes/title-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/document-metadata/styling/LinkStyle.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/document-metadata/the-link-element/link-multiple-error-events.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/document-metadata/the-link-element/link-multiple-load-events.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/document-metadata/the-link-element/stylesheet-not-removed-until-next-stylesheet-loads.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/media-elements/audio_controls_present-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/media-elements/audio_muted_overriding_volume-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/media-elements/audio_muted_present-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/media-elements/audio_volume_loudest-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/media-elements/audio_volume_silent-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/media-elements/src_object_blob.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/media-elements/video_controls_present-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/media-elements/video_muted_overriding_volume-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/media-elements/video_muted_present-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/media-elements/video_volume_loudest-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/media-elements/video_volume_silent-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/media-elements/mime-types/canPlayType.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cue-rendering-after-controls-removed.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/the-embed-element/embed-represent-nothing-04.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox_003-manual.htm [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox_004-manual.htm [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox_006-manual.htm [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox_007-manual.htm [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox_008-manual.htm [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox_010-manual.htm [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox_020-manual.htm [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox_021-manual.htm [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox_022-manual.htm [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/the-img-element/ismap/img-ismap-coordinates-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/the-object-element/object-events.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/the-video-element/video_initially_paused.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/forms/attributes-common-to-form-controls/dirname-rtl-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/forms/constraints/tooShort-input-email-add-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/forms/constraints/tooShort-input-password-add-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/forms/constraints/tooShort-input-search-add-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/forms/constraints/tooShort-input-tel-add-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/forms/constraints/tooShort-input-text-add-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/forms/constraints/tooShort-input-url-add-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/forms/constraints/tooShort-textarea-add-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/forms/the-input-element/event-select-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/forms/the-optgroup-element/optgroup-disabled-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/forms/the-option-element/option-disabled-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/forms/the-textarea-element/textarea-placeholder-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/forms/the-textarea-element/textarea-select-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/interactive-elements/commands/legend/first-input-after-legend-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/interactive-elements/commands/legend/first-input-before-legend-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/interactive-elements/commands/legend/first-input-inside-legend-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/interactive-elements/commands/legend/focusable-legend-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/interactive-elements/commands/legend/focusable-legend-sibling-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/interactive-elements/commands/legend/input-outside-fieldset-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/interactive-elements/commands/legend/label-sibling-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/interactive-elements/commands/legend/no-fieldset-parent-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/scripting-1/the-script-element/json-module/parse-error.tentative.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/scripting-1/the-script-element/module/module-in-xhtml.xhtml [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/no-active-script-manual-classic.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/no-active-script-manual-module.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/string-compilation-base-url-external-classic.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/string-compilation-base-url-external-module.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/string-compilation-base-url-inline-classic.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/string-compilation-base-url-inline-module.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/selectors/pseudo-classes/checked-001-manual.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/tabular-data/processing-model-1/span-limits.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/shadow-dom/directionality-002.tentative.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/fast/dom/HTMLImageElement/image-sizes-meta-viewport.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/fast/dom/Window/window-postmessage-clone-deep-array.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/fast/dom/shadow/focus-controller-recursion-crash.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/html/marquee/marquee-scroll.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/html/marquee/marquee-scrollamount.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/dom/ranges/Range-set.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-webvtt-non-snap-to-lines.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/forms/the-textarea-element/multiline-placeholder-cr.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/grouping-content/the-li-element/grouping-li-reftest-list-owner-menu.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/grouping-content/the-li-element/grouping-li-reftest-list-owner-skip-no-boxes.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/fast/parser/residual-style-hang.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/fast/dom/rtl-scroll-to-leftmost-and-resize.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/embedded-content/the-video-element/resize-during-playback.html [ Skip ]
-crbug.com/937746 [ Win7 ] virtual/web-components-v0-disabled/external/wpt/html/dom/documents/resource-metadata-management/document-lastModified-01.html [ Skip ]
-crbug.com/937746 [ Mac ] virtual/web-components-v0-disabled/fast/dom/inert/inert-node-is-uneditable.html [ Skip ]
-# These are in NeverFixTests:
-crbug.com/937746 [ Mac ] virtual/web-components-v0-disabled/external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-009a.html [ Skip ]
-crbug.com/937746 [ Mac ] virtual/web-components-v0-disabled/external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-009b.html [ Skip ]
-crbug.com/937746 [ Mac ] virtual/web-components-v0-disabled/external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-009c.html [ Skip ]
-
-# Sheriffs, please add any newly discovered flaky tests within
-# the virtual/web-components-v0-disabled suite here:
-###crbug.com/937746 virtual/web-components-v0-disabled/my/test/here [ Skip ]
-
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/semantics/links/following-hyperlinks/activation-behavior.window.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/dom/idlharness.any.serviceworker.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/external/wpt/html/dom/idlharness.worker.html [ Skip ]
-crbug.com/937746 virtual/web-components-v0-disabled/fast/dom/gc-acid3.html [ Pass Timeout ]
-
-# ====== End web-components-v0-disabled virtual suite tests ======
-
 # ====== Begin of display: contents tests ======
 
 crbug.com/795217 external/wpt/css/css-display/display-contents-details.html [ Failure ]
@@ -5958,7 +5791,6 @@ crbug.com/1041993 http/tests/origin_trials/sample-api-script-added-after-css-dec
 
 # Sheriff 2020-01-20
 crbug.com/1043357 http/tests/credentialmanager/credentialscontainer-get-with-virtual-authenticator.html [ Pass Timeout Failure ]
-crbug.com/1043774 [ Linux ] virtual/web-components-v0-disabled/external/wpt/html/dom/reflection-grouping.html [ Pass Failure ]
 
 # Sheriff 2020-01-22
 crbug.com/1044712 [ Win ] fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance-with-scroll-bar.html [ Pass Failure ]
@@ -6381,9 +6213,6 @@ crbug.com/1007228 [ Mac ] external/wpt/fullscreen/api/element-request-fullscreen
 
 # Disabled for landing DevTools change
 crbug.com/1011811 http/tests/devtools/persistence/automapping-sourcemap.js [ Pass Failure ]
-
-# Sheriff 2020-06-04
-crbug.com/1041973 virtual/web-components-v0-disabled/external/wpt/html/semantics/forms/constraints/form-validation-reportValidity.html [ Pass Failure Timeout ]
 
 # Sheriff 2020-06-05
 crbug.com/1091829 [ Mac ] fast/scrolling/scroll-non-composited-scroller.html [ Pass Failure ]

@@ -1,7 +1,0 @@
-CONSOLE WARNING: line 4: HTML Imports is deprecated and will be removed in M80, around February 2020. Please use ES modules instead. See https://www.chromestatus.com/features/5144752345317376 and https://developers.google.com/web/updates/2019/07/web-components-time-to-upgrade for more details.
-CONSOLE ERROR: Refused to execute script from 'http://127.0.0.1:8000/htmlimports/resources/sniff-js.cgi' because its MIME type ('text/plain') is not executable, and strict MIME type checking is enabled.
-PASS document.sniffing is undefined
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

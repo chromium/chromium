@@ -1,4 +1,0 @@
-CONSOLE WARNING: line 9: Element.createShadowRoot is deprecated and will be removed in M80, around February 2020. Please use Element.attachShadow instead. See https://www.chromestatus.com/features/4507242028072960 and https://developers.google.com/web/updates/2019/07/web-components-time-to-upgrade for more details.
-This tests the deletion of text in distributed node does not crash. To run it outside of DRT, you must delete text, 'foo', manually.
-
-PASS

@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<script src="../../../resources/testharness.js"></script>
-<script src="../../../resources/testharnessreport.js"></script>
-<link id="importLink" rel="import" href="dummy.html">
-<script>
-    test(() => {
-        document.head.appendChild(importLink.cloneNode());
-    }, "Cloning and appending the loading import should not crash.");
-</script>

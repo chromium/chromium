@@ -19,7 +19,6 @@ virtual/gpu-rasterization/images/* [ Skip ]
 virtual/threaded/printing/* [ Skip ]
 virtual/threaded/http/tests/devtools/tracing/* [ Skip ]
 virtual/controls-refresh-hc/* [ Skip ]
-virtual/web-components-v0-disabled/* [ Skip ]
 
 # They test Layer::ScrollsWithRespectTo() which is for pre-CompositeAfterPaint only.
 compositing/overflow/scrolls-with-respect-to-nested.html [ Skip ]

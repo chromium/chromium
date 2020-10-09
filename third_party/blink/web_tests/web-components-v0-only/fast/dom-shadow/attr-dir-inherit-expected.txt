@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-PASS dir=rtl inherits into shadow trees
-FAIL dir=rtl applies to the distributed content assert_equals: dir=rtl should be right-to-left expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
-FAIL dir=rtl applies to the distributed content (multiple levels) assert_equals: dir=rtl should be right-to-left expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
-PASS dir=auto the first character in the shadow trees
-FAIL dir=auto the first character in the distributed content assert_equals: Hebrew text should be right-to-left expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
-FAIL dir=auto the first character in the distributed content with multiple levels of shadow roots assert_equals: Hebrew text should be right-to-left expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
-Harness: the test ran to completion.
-

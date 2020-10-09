@@ -1,1 +1,0 @@
-CONSOLE ERROR: line 13: Uncaught TypeError: div.createShadowRoot is not a function

@@ -1,5 +1,0 @@
-CONSOLE ERROR: line 29: Uncaught TypeError: parent.createShadowRoot is not a function
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Uncaught TypeError: parent.createShadowRoot is not a function
-Harness: the test ran to completion.
-

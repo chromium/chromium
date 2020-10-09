@@ -645,20 +645,6 @@
     "args": ["--disable-features=SplitCacheByNetworkIsolationKey"]
   },
   {
-    "prefix": "web-components-v0-disabled",
-    "bases": ["external/wpt/dom",
-              "external/wpt/shadow-dom",
-              "external/wpt/html/dom",
-              "external/wpt/html/semantics",
-              "dom",
-              "shadow-dom",
-              "html",
-              "fast/dom",
-              "fast/html",
-              "fast/parser"],
-    "args": ["--disable-blink-features=ShadowDOMV0,CustomElementsV0,HTMLImports"]
-  },
-  {
     "prefix": "raw-clipboard",
     "bases": ["clipboard/async-clipboard",
               "external/wpt/clipboard-apis/clipboard-item.https.html"],
