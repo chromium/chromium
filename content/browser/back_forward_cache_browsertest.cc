@@ -3444,16 +3444,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 // Same test as above, but with eviction happening before URL loader starts a
 // response.
 // Flaky on most platforms (see crbug.com/1136683)
-#if defined(OS_MAC)
-#define MAYBE_ReissuesNavigationIfEvictedDuringNavigation_BeforeResponse \
-  DISABLED_ReissuesNavigationIfEvictedDuringNavigation_BeforeResponse
-#else
-#define MAYBE_ReissuesNavigationIfEvictedDuringNavigation_BeforeResponse \
-  ReissuesNavigationIfEvictedDuringNavigation_BeforeResponse
-#endif
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTest,
-    MAYBE_ReissuesNavigationIfEvictedDuringNavigation_BeforeResponse) {
+    DISABLED_ReissuesNavigationIfEvictedDuringNavigation_BeforeResponse) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
