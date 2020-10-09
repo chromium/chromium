@@ -3015,7 +3015,7 @@ void BrowserView::InfoBarContainerStateChanged(bool is_animating) {
 void BrowserView::MaybeInitializeWebUITabStrip() {
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
   TRACE_EVENT0("ui", "BrowserView::MaybeInitializeWebUITabStrip");
-  if (browser_->SupportsWindowFeature(Browser::FEATURE_TABSTRIP) &&
+  if (browser_->CanSupportWindowFeature(Browser::FEATURE_TABSTRIP) &&
       WebUITabStripContainerView::UseTouchableTabStrip(browser_.get())) {
     if (!webui_tab_strip_) {
       // We use |contents_container_| here so that enabling or disabling
