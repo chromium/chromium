@@ -334,7 +334,7 @@ const base::Feature kOmniboxSuggestionsWrapAround{
     "OmniboxSuggestionsWrapAround", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, uses WebUI to render the omnibox suggestions popup, similar to
-// how the NTP "fakebox" is implemented.
+// how the NTP "realbox" is implemented.
 const base::Feature kWebUIOmniboxPopup{"WebUIOmniboxPopup",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 

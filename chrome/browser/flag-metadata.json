@@ -3562,6 +3562,11 @@
     "expiry_milestone": 76
   },
   {
+    "name": "omnibox-webui-omnibox-popup",
+    "owners": [ "tommycli", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "on-the-fly-mhtml-hash-computation",
     "owners": [ "sclittle", "srsudar", "offline-dev" ],
     "expiry_milestone": 76

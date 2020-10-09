@@ -43691,6 +43691,7 @@ from previous Chrome versions.
   <int value="125934378" label="enable-password-link"/>
   <int value="127789400" label="PrivacyElevatedAndroid:enabled"/>
   <int value="128086566" label="D3D11VideoDecoder:enabled"/>
+  <int value="128323385" label="WebUIOmniboxPopup:enabled"/>
   <int value="129458360" label="LiteVideo:disabled"/>
   <int value="131881947" label="D3DVsync:enabled"/>
   <int value="132560299"
@@ -44048,6 +44049,7 @@ from previous Chrome versions.
   <int value="513356954" label="InstantTethering:disabled"/>
   <int value="513372959" label="ViewsProfileChooser:enabled"/>
   <int value="513728926" label="OsSettingsPolymer3:enabled"/>
+  <int value="514406112" label="WebUIOmniboxPopup:disabled"/>
   <int value="514569020" label="RemoteCopyImageNotification:enabled"/>
   <int value="516603570" label="QuickAnswersRichUi:disabled"/>
   <int value="517429103" label="AutofillImportDynamicForms:enabled"/>

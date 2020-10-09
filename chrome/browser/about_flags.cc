@@ -4147,6 +4147,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxUISwapTitleAndUrlDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kUIExperimentSwapTitleAndUrl)},
 
+    {"omnibox-webui-omnibox-popup",
+     flag_descriptions::kOmniboxWebUIOmniboxPopupName,
+     flag_descriptions::kOmniboxWebUIOmniboxPopupDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxPopup)},
+
 #if defined(OS_CHROMEOS)
     {"handwriting-gesture", flag_descriptions::kHandwritingGestureName,
      flag_descriptions::kHandwritingGestureDescription, kOsCrOS,

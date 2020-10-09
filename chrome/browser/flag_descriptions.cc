@@ -1684,6 +1684,11 @@ const char kOmniboxUISwapTitleAndUrlDescription[] =
     "In the omnibox dropdown, shows titles before URLs when both are "
     "available.";
 
+const char kOmniboxWebUIOmniboxPopupName[] = "WebUI Omnibox Popup";
+const char kOmniboxWebUIOmniboxPopupDescription[] =
+    "If enabled, uses WebUI to render the omnibox suggestions popup, similar "
+    "to how the NTP \"realbox\" is implemented.";
+
 const char kOnTheFlyMhtmlHashComputationName[] =
     "On-The-Fly MHTML Hash Computation";
 const char kOnTheFlyMhtmlHashComputationDescription[] =

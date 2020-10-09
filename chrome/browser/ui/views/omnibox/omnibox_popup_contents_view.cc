@@ -242,6 +242,13 @@ OmniboxResultView* OmniboxPopupContentsView::result_view_at(size_t i) {
 }
 
 OmniboxResultView* OmniboxPopupContentsView::GetSelectedResultView() {
+  // We can't return the native result view if we are using WebUI.
+  // TODO(tommycli): Ideally this is handled higher up the callstack.
+  // Callers to OmniboxPopupContentsView should not try to access child views,
+  // but rather should interact with OmniboxPopupModel instead.
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup))
+    return nullptr;
+
   size_t selected_line = model_->selected_line();
   if (selected_line == OmniboxPopupModel::kNoMatch)
     return nullptr;
