@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_grid/grid/tab_switcher_layout.h"
+#import "ios/chrome/browser/ui/tab_grid/grid/flow_layout.h"
 
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_constants.h"
 
@@ -10,12 +10,12 @@
 #error "This file requires ARC support."
 #endif
 
-@interface TabSwitcherLayout ()
+@interface FlowLayout ()
 @property(nonatomic, strong) NSArray<NSIndexPath*>* indexPathsOfDeletingItems;
 @property(nonatomic, strong) NSArray<NSIndexPath*>* indexPathsOfInsertingItems;
 @end
 
-@implementation TabSwitcherLayout
+@implementation FlowLayout
 
 - (instancetype)init {
   if (self = [super init]) {

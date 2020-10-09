@@ -74,7 +74,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // Animator to show or hide the empty state.
 @property(nonatomic, strong) UIViewPropertyAnimator* emptyStateAnimator;
 // The default layout for the tab switcher.
-@property(nonatomic, strong) TabSwitcherLayout* defaultLayout;
+@property(nonatomic, strong) FlowLayout* defaultLayout;
 // The layout for the tab grid.
 @property(nonatomic, strong) GridLayout* gridLayout;
 // The layout for the thumb strip.
@@ -697,7 +697,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)willTransitionToLayout:(LayoutSwitcherState)nextState
                     completion:
                         (void (^)(BOOL completed, BOOL finished))completion {
-  TabSwitcherLayout* nextLayout;
+  FlowLayout* nextLayout;
   switch (nextState) {
     case LayoutSwitcherState::Horizontal:
       nextLayout = self.horizontalLayout;

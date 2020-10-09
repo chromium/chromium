@@ -5,10 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_UI_TAB_GRID_GRID_GRID_LAYOUT_H_
 #define IOS_CHROME_BROWSER_UI_TAB_GRID_GRID_GRID_LAYOUT_H_
 
-#import "ios/chrome/browser/ui/tab_grid/grid/tab_switcher_layout.h"
+#import "ios/chrome/browser/ui/tab_grid/grid/flow_layout.h"
 
-// A specialization of TabSwitcherLayout that displays items in a grid.
-@interface GridLayout : TabSwitcherLayout
+// A specialization of FlowLayout that displays items in a grid.
+@interface GridLayout : FlowLayout
 @end
 
 // A specialization of GridLayout that shows the UI in its "reordering" state,

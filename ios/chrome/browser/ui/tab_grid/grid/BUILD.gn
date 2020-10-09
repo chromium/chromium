@@ -14,6 +14,8 @@ source_set("grid_ui_constants") {
 
 source_set("grid_ui") {
   sources = [
+    "flow_layout.h",
+    "flow_layout.mm",
     "grid_cell.h",
     "grid_cell.mm",
     "grid_commands.h",
@@ -30,8 +32,6 @@ source_set("grid_ui") {
     "grid_view_controller.mm",
     "horizontal_layout.h",
     "horizontal_layout.mm",
-    "tab_switcher_layout.h",
-    "tab_switcher_layout.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

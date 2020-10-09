@@ -5,10 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_UI_TAB_GRID_GRID_HORIZONTAL_LAYOUT_H_
 #define IOS_CHROME_BROWSER_UI_TAB_GRID_GRID_HORIZONTAL_LAYOUT_H_
 
-#import "ios/chrome/browser/ui/tab_grid/grid/tab_switcher_layout.h"
+#import "ios/chrome/browser/ui/tab_grid/grid/flow_layout.h"
 
-// A specialization of TabSwitcherLayout that displays items horizontally.
-@interface HorizontalLayout : TabSwitcherLayout
+// A specialization of FlowLayout that displays items horizontally.
+@interface HorizontalLayout : FlowLayout
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_GRID_GRID_HORIZONTAL_LAYOUT_H_
