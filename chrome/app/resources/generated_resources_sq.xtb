@@ -394,7 +394,6 @@
 <translation id="1442851588227551435">Cakto biletë aktive Kerberos</translation>
 <translation id="1444628761356461360">Ky cilësim menaxhohet nga zotëruesi i pajisjes, <ph name="OWNER_EMAIL" /></translation>
 <translation id="144518587530125858">Nuk mundi të ngarkonte "<ph name="IMAGE_PATH" />" për temën.</translation>
-<translation id="1445693676523799095">Kjo mund të zgjasë pak</translation>
 <translation id="1451375123200651445">Faqja e uebit, një skedar i vetëm</translation>
 <translation id="1451917004835509682">Shto një person të kontrolluar</translation>
 <translation id="1454223536435069390">&amp;Nxirr një pamje të ekranit</translation>
@@ -4894,7 +4893,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6828182567531805778">Fut frazën e kalimit për të sinkronizuar të dhënat</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Dështoi në konfigurimin e përditësimeve automatike për të gjithë përdoruesit (gabimi i ekzekutimit të kontrollit përfundimtar: <ph name="ERROR_NUMBER" />)</translation>
-<translation id="6829250331733125857">Merr ndihmë për pajisjen <ph name="DEVICE_TYPE" />.</translation>
 <translation id="682971198310367122">Politika e privatësisë së Google</translation>
 <translation id="6831043979455480757">Përkthe</translation>
 <translation id="683373380308365518">Kalo te një shfletues inteligjent dhe i sigurt</translation>

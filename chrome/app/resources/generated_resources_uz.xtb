@@ -395,7 +395,6 @@ xizmatlarini sizga moslashtirish maqsadlarida foydalanishi mumkin. Bu ruxsatni m
 <translation id="1442851588227551435">Faol Kerberos chiptasini belgilash</translation>
 <translation id="1444628761356461360">Bu sozlama qurilma egasi (<ph name="OWNER_EMAIL" />) tomonidan boshqariladi.</translation>
 <translation id="144518587530125858">Mavzu uchun “<ph name="IMAGE_PATH" />” yuklab bo‘lmadi.</translation>
-<translation id="1445693676523799095">Iltimos, kutib turing</translation>
 <translation id="1451375123200651445">Veb-sahifa, bitta fayl</translation>
 <translation id="1451917004835509682">Boshqariladigan profil qo‘shish</translation>
 <translation id="1454223536435069390">E&amp;kranni suratga olish</translation>
@@ -4895,7 +4894,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6828182567531805778">Sinxronlash uchun kodli iborani kiriting</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Barcha foydalanuvchilar uchun avtomatik yangilanishlar sozlanmadi (xato: <ph name="ERROR_NUMBER" />)</translation>
-<translation id="6829250331733125857"><ph name="DEVICE_TYPE" /> yuzasidan yordam oling.</translation>
 <translation id="682971198310367122">Google maxfiylik siyosati</translation>
 <translation id="6831043979455480757">Tarjima</translation>
 <translation id="683373380308365518">Qulay va xavfsiz brauzerdan foydalaning</translation>

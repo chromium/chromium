@@ -394,7 +394,6 @@
 <translation id="1442851588227551435">Կարգավորել ակտիվ Kerberos տոմս</translation>
 <translation id="1444628761356461360">Այս կարգավորումը կառավարվում է սարքի սեփականատիրոջ կողմից՝ <ph name="OWNER_EMAIL" />:</translation>
 <translation id="144518587530125858">Չհաջողվեց բեռնել «<ph name="IMAGE_PATH" />»-ը թեմայի համար:</translation>
-<translation id="1445693676523799095">Կարող է որոշ ժամանակ պահանջվել</translation>
 <translation id="1451375123200651445">Վեբէջ, մեկ ֆայլ</translation>
 <translation id="1451917004835509682">Ավելացնել վերահսկվող օգտատեր</translation>
 <translation id="1454223536435069390">Ստեղ&amp;ծել սքրինշոթ</translation>
@@ -4900,7 +4899,6 @@
 <translation id="6828182567531805778">Տվյալները համաժամացնելու համար մուտքագրեք ձեր անցաբառը</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Չհաջողվեց կարգավորել ավտոմատ թարմացումները բոլոր օգտատերերի համար (սխալ՝ <ph name="ERROR_NUMBER" />)</translation>
-<translation id="6829250331733125857">Ստացեք օգնություն <ph name="DEVICE_TYPE" /> սարքի օգտագործման վերաբերյալ:</translation>
 <translation id="682971198310367122">Google-ի գաղտնիության քաղաքականություն</translation>
 <translation id="6831043979455480757">Թարգմանել</translation>
 <translation id="683373380308365518">Ընտրեք խելացի ու անվտանգ դիտարկիչ</translation>

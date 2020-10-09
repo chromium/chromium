@@ -394,7 +394,6 @@
 <translation id="1442851588227551435">កំណត់​សំបុត្រ Kerberos សកម្ម</translation>
 <translation id="1444628761356461360">ការកំណត់នេះត្រូវបានគ្រប់គ្រងដោយម្ចាស់ឧបករណ៍ <ph name="OWNER_EMAIL" />។</translation>
 <translation id="144518587530125858">មិនអាចដំណើរការ '<ph name="IMAGE_PATH" />' សម្រាប់ធីមទេ។</translation>
-<translation id="1445693676523799095">អាច​ចំណាយ​ពេល​បន្តិច</translation>
 <translation id="1451375123200651445">គេហទំព័រ ឯកសារទោល</translation>
 <translation id="1451917004835509682">បន្ថែមអ្នកប្រើដែលបានចាត់</translation>
 <translation id="1454223536435069390">ថតអេក្រង់</translation>
@@ -4898,7 +4897,6 @@
 <translation id="6828182567531805778">បញ្ចូល​ឃ្លាសម្ងាត់​របស់អ្នក ដើម្បី​ធ្វើសមកាលកម្ម​ទិន្នន័យ​របស់អ្នក</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">បានបរាជ័យក្នុងការកំណត់ការអាប់ដេតដោយស្វ័យប្រវត្តិសម្រាប់អ្នកប្រើទាំងអស់ (មានកំហុសក្នុងការប្រតិបត្តិការ preflight៖ <ph name="ERROR_NUMBER" />)</translation>
-<translation id="6829250331733125857">ទទួលជំនួយដោយប្រើ <ph name="DEVICE_TYPE" /> របស់អ្នក។</translation>
 <translation id="682971198310367122">គោលការណ៍ឯកជនភាព Google</translation>
 <translation id="6831043979455480757">បកប្រែ</translation>
 <translation id="683373380308365518">ប្តូរទៅ​កម្មវិធីរុករកតាមអ៊ីនធឺណិត​ដែល​ឆ្លាតវៃ និងមានសុវត្ថិភាព</translation>

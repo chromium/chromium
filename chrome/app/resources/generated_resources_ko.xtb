@@ -394,7 +394,6 @@
 <translation id="1442851588227551435">활성 Kerberos 티켓 설정</translation>
 <translation id="1444628761356461360">기기 소유자인 <ph name="OWNER_EMAIL" />이(가) 관리하는 설정입니다.</translation>
 <translation id="144518587530125858">테마('<ph name="IMAGE_PATH" />')를 로드하지 못했습니다.</translation>
-<translation id="1445693676523799095">잠시만 기다려 주세요.</translation>
 <translation id="1451375123200651445">웹페이지, 단일 파일</translation>
 <translation id="1451917004835509682">관리 대상 사용자 추가</translation>
 <translation id="1454223536435069390">스크린샷 캡쳐하기(&amp;A)</translation>
@@ -4895,7 +4894,6 @@
 <translation id="6828182567531805778">데이터를 동기화하려면 암호를 입력합니다.</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">모든 사용자에 대해 자동 업데이트를 설정하지 못했습니다(프리플라이트 실행 오류: <ph name="ERROR_NUMBER" />).</translation>
-<translation id="6829250331733125857"><ph name="DEVICE_TYPE" /> 사용과 관련하여 도움을 받으세요.</translation>
 <translation id="682971198310367122">Google 개인정보처리방침</translation>
 <translation id="6831043979455480757">번역</translation>
 <translation id="683373380308365518">편리하고 안전한 브라우저로 전환</translation>

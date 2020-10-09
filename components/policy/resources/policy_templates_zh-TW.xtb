@@ -1069,6 +1069,7 @@
 
       注意：系統也可以透過 <ph name="USE_IE_SITELIST_POLICY_NAME" /> 和 <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> 政策將元素加入這份清單。</translation>
 <translation id="264093234299818170">系統會顯示所有印表機 (封鎖清單中的印表機除外)。</translation>
+<translation id="264252574246191885">不公開</translation>
 <translation id="2647069081229792812">允許或禁止編輯書籤</translation>
 <translation id="2649896281375932517">讓使用者決定</translation>
 <translation id="2650049181907741121">使用者蓋上螢幕時所採取的動作</translation>
@@ -2618,7 +2619,7 @@
 
        如果你選擇了透過任何其他模式設定 Proxy 政策，請勿設定這項政策。
 
-       注意：如需詳細範例，請前往 Chromium 計畫 (網址為https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett)。</translation>
+       注意：如需詳細範例，請前往 Chromium 計畫 (網址為 https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett )。</translation>
 <translation id="5067143124345820993">登入使用者許可清單</translation>
 <translation id="5073609397321802133">如果將這項政策設為 False，系統將禁止使用者自訂新分頁的背景。即使日後將這項政策設為 True，系統仍會永久移除任何現有的自訂背景。
 
@@ -4038,7 +4039,7 @@
 
        如果你選擇了透過任何其他模式設定 Proxy 政策，請勿設定這項政策。
 
-       注意：如需詳細範例，請前往 Chromium 計畫 (網址為 https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett)。</translation>
+       注意：如需詳細範例，請前往 Chromium 計畫 (網址為 https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett )。</translation>
 <translation id="7002040773317582266">已啟用主頁框網址的即時檢查功能。</translation>
 <translation id="7003746348783715221"><ph name="PRODUCT_NAME" /> 偏好設定</translation>
 <translation id="7008308728445338159">已啟用 DNS 攔截檢查功能</translation>
@@ -4621,7 +4622,7 @@
 
        如果你選擇了透過任何其他模式設定 Proxy 政策，請勿設定這項政策。
 
-      注意：如需詳細範例，請前往 Chromium 計畫 (網址為 https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett)。</translation>
+      注意：如需詳細範例，請前往 Chromium 計畫 (網址為 https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett )。</translation>
 <translation id="7717938661004793600">設定 <ph name="PRODUCT_OS_NAME" /> 無障礙功能。</translation>
 <translation id="7721944091689270995"><ph name="PLUGIN_VM_NAME" /> 使用者 ID</translation>
 <translation id="7724161903134898864">如果將這項政策設為 1，網站即可顯示彈出式視窗。如果將這項政策設為 2，網站將無法顯示彈出式視窗。
@@ -4648,6 +4649,7 @@
 <translation id="7750991880413385988">開啟新分頁</translation>
 <translation id="7754704193130578113">下載每個檔案前先詢問儲存位置</translation>
 <translation id="7758378441185523981">為設定檔類型啟用背景驗證。</translation>
+<translation id="776110834126722255">已淘汰</translation>
 <translation id="7763614521440615342">在新分頁顯示內容建議</translation>
 <translation id="7765753178910647492">這項政策可讓你設定要停用的 <ph name="PRODUCT_OS_NAME" />功能清單。
 
@@ -5160,23 +5162,6 @@
 <translation id="8537051350735478658">如果將這項政策設為 True，系統會在 <ph name="PRODUCT_NAME" /> 的網址列中啟用搜尋建議功能。如果將這項政策設為 False，系統會停用這類搜尋建議功能。
 
       如果設定這項政策，使用者將無法變更。如果未設定，系統會先啟用搜尋建議功能，但使用者隨時可以停用。</translation>
-<translation id="8542290591179355871">這項政策已遭淘汰，請改用 <ph name="PROXY_SETTINGS_POLICY_NAME" />。
-
-       如果將這項政策設為啟用，就可指定 Chrome 要使用的 Proxy 伺服器，並禁止使用者變更 Proxy 設定。Chrome 和 ARC 應用程式會忽略所有從指令列所指定的 Proxy 相關選項。只有在 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策未設定時，這項政策才會生效。
-
-          如果你選擇下列項目，系統會忽略其他選項：
-         * <ph name="PROXY_MODE_ENUM_DIRECT" /> = 完全不使用 Proxy 伺服器，一律直接連線
-         * <ph name="PROXY_MODE_ENUM_SYSTEM" /> = 使用系統 Proxy 設定
-         * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> = 自動偵測 Proxy 伺服器
-
-       如果你選擇使用：
-         * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> = 使用固定的 Proxy 伺服器。你可以透過 <ph name="PROXY_SERVER_POLICY_NAME" /> 和 <ph name="PROXY_BYPASS_LIST_POLICY_NAME" /> 指定更多選項。ARC 應用程式只能使用優先級最高的 HTTP Proxy 伺服器。
-
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> = 使用 .pac Proxy 指令碼。使用 <ph name="PROXY_PAC_URL_POLICY_NAME" /> 來指定 Proxy .pac 檔案的網址。
-
-      如果不設定這項政策，使用者將可選擇要使用的 Proxy 設定。
-
-      注意：如需詳細範例，請前往 Chromium 計畫 (網址為 https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett)。</translation>
 <translation id="8544375438507658205">預設 <ph name="PRODUCT_FRAME_NAME" /> 的 HTML 轉譯器</translation>
 <translation id="8544465954173828789">允許將簡訊從手機同步至 Chromebook。</translation>
 <translation id="8548832052135586762">設定僅限彩色列印、僅限單色列印，或是不限制色彩模式。如未設定這項政策，系統會視為未設限制。</translation>

@@ -394,7 +394,6 @@
 <translation id="1442851588227551435">Stilla virkan Kerberos miða</translation>
 <translation id="1444628761356461360">Eigandi tækisins, <ph name="OWNER_EMAIL" />, stjórnar þessari stillingu.</translation>
 <translation id="144518587530125858">Ekki var hægt að hlaða „<ph name="IMAGE_PATH" />“ fyrir þema.</translation>
-<translation id="1445693676523799095">Þetta gæti tekið dálitla stund</translation>
 <translation id="1451375123200651445">Vefsíða, stök skrá</translation>
 <translation id="1451917004835509682">Bæta stýrðum notanda við</translation>
 <translation id="1454223536435069390">T&amp;aka skjámynd</translation>
@@ -4897,7 +4896,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6828182567531805778">Sláðu inn aðgangsorðið til að samstilla gögnin þín</translation>
 <translation id="682871081149631693">Flýtilagfæring</translation>
 <translation id="6828860976882136098">Mistókst að setja upp sjálfvirkar uppfærslur fyrir alla notendur (villa við undirbúningskeyrslu: <ph name="ERROR_NUMBER" />)</translation>
-<translation id="6829250331733125857">Fáðu hjálp fyrir <ph name="DEVICE_TYPE" />.</translation>
 <translation id="682971198310367122">Persónuverndarstefna Google</translation>
 <translation id="6831043979455480757">Þýða</translation>
 <translation id="683373380308365518">Skipta yfir í öruggan og snjallan vafra</translation>

@@ -394,7 +394,6 @@
 <translation id="1442851588227551435">സജീവ Kerberos ടിക്കറ്റ് സജ്ജീകരിക്കുക</translation>
 <translation id="1444628761356461360">ഈ ക്രമീകരണം നിയന്ത്രിക്കുന്നത് ഉപകരണത്തിന്റെ ഉടമയായ <ph name="OWNER_EMAIL" /> ആണ്.</translation>
 <translation id="144518587530125858">തീമിനായി '<ph name="IMAGE_PATH" />' ലോഡ് ചെയ്യാനായില്ല.</translation>
-<translation id="1445693676523799095">ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം</translation>
 <translation id="1451375123200651445">വെബ്‌പേജ്, ഒരൊറ്റ ഫയൽ</translation>
 <translation id="1451917004835509682">സൂപ്പർവൈസ് ചെയ്‌ത വ്യക്തിയെ ചേർക്കുക</translation>
 <translation id="1454223536435069390">സ്ക്രീൻഷോട്ടെടുക്കുക</translation>
@@ -4895,7 +4894,6 @@
 <translation id="6828182567531805778">നിങ്ങളുടെ ഡാറ്റ സമന്വയിപ്പിക്കാൻ പാസ്‌ഫ്രെയ്‌സ് നൽകുക</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">എല്ലാ ഉപയോക്താക്കൾക്കുമായി സ്വയമേയുള്ള അപ്‌ഡേറ്റുകൾ സജ്ജമാക്കാനായില്ല (പ്രീഫ്ലൈറ്റ് എക്‌സിക്യൂഷൻ പിശക്: <ph name="ERROR_NUMBER" />)</translation>
-<translation id="6829250331733125857"><ph name="DEVICE_TYPE" /> ഉപയോഗിച്ച് സഹായം സ്വന്തമാക്കുക.</translation>
 <translation id="682971198310367122">Google സ്വകാര്യതാ നയം</translation>
 <translation id="6831043979455480757">വിവർത്തനം ചെയ്യുക</translation>
 <translation id="683373380308365518">സ്‌മാർട്ടും സുരക്ഷിതവുമായൊരു ബ്രൗസറിലേക്ക് മാറുക</translation>

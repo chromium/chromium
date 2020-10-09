@@ -1077,6 +1077,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Hinweis: Dieser Liste können auch über die Richtlinien "<ph name="USE_IE_SITELIST_POLICY_NAME" />" und "<ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />" Elemente hinzugefügt werden.</translation>
 <translation id="264093234299818170">Alle Drucker außer den in der Sperrliste aufgeführten werden angezeigt.</translation>
+<translation id="264252574246191885">Nicht gelistet</translation>
 <translation id="2647069081229792812">Bearbeitung von Lesezeichen aktivieren oder deaktivieren</translation>
 <translation id="2649896281375932517">Nutzer entscheiden lassen</translation>
 <translation id="2650049181907741121">Auszuführende Aktion beim Zuklappen des Geräts</translation>
@@ -4682,6 +4683,7 @@ Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen
 <translation id="7750991880413385988">"Neuer Tab"-Seite öffnen</translation>
 <translation id="7754704193130578113">Vor dem Download von Dateien nach dem Speicherort fragen</translation>
 <translation id="7758378441185523981">Aktiviert die passive Authentifizierung für Profiltypen.</translation>
+<translation id="776110834126722255">Eingestellt</translation>
 <translation id="7763614521440615342">Inhaltsvorschläge auf der "Neuer Tab"-Seite anzeigen</translation>
 <translation id="7765753178910647492">Ermöglicht die Zusammenstellung einer Liste mit <ph name="PRODUCT_OS_NAME" />-Funktionen, die deaktiviert werden sollen.
 
@@ -5195,22 +5197,6 @@ Die Richtlinie wird in M75 entfernt.</translation>
 <translation id="8537051350735478658">Wenn die Richtlinie auf "True" gesetzt ist, werden die Suchvorschläge in der Adressleiste von <ph name="PRODUCT_NAME" /> aktiviert. Ist sie auf "False" gesetzt, werden die Suchvorschläge deaktiviert.
 
       Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern nicht geändert werden. Wird sie nicht konfiguriert, sind die Suchvorschläge standardmäßig aktiviert, können aber jederzeit von Nutzern deaktiviert werden.</translation>
-<translation id="8542290591179355871">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />".
-
-       Durch Aktivieren der Richtlinie können Sie angeben, welcher Proxyserver von Chrome verwendet werden soll, und verhindern, dass Nutzer die Proxyeinstellungen ändern. Alle Proxyoptionen, die über die Befehlszeile eingegeben werden, werden von Chrome- und ARC-Apps ignoriert. Die Richtlinie ist nur wirksam, wenn die Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />" nicht konfiguriert wurde.
-
-       Bei Auswahl einer der folgenden Einstellungen werden andere Optionen ignoriert:
-         * <ph name="PROXY_MODE_ENUM_DIRECT" /> = nie einen Proxyserver, sondern immer eine direkte Verbindung nutzen
-         * <ph name="PROXY_MODE_ENUM_SYSTEM" /> = Proxyeinstellungen des Systems verwenden
-         * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> = automatische Erkennung des Proxyservers
-
-       Bei Auswahl der Einstellung:
-         * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> = feste Proxyserver. Mit "<ph name="PROXY_SERVER_POLICY_NAME" />" und "<ph name="PROXY_BYPASS_LIST_POLICY_NAME" />" können Sie weitere Optionen festlegen. Nur der HTTP-Proxyserver mit der höchsten Priorität ist für ARC-Apps verfügbar.
-         * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> = PAC-Proxyskript. Mit "<ph name="PROXY_PAC_URL_POLICY_NAME" />" können Sie die URL zu einer PAC-Proxydatei festlegen.
-
-      Wird die Richtlinie nicht konfiguriert, können Nutzer die Proxyeinstellungen auswählen.
-
-      Hinweis: Ausführliche Beispiele finden Sie in den Chromium-Projekten ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="8544375438507658205">Standardanwendung für HTML-Darstellung in <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Zulassen, dass SMS zwischen Smartphone mit Chromebook synchronisiert werden.</translation>
 <translation id="8548832052135586762">Damit wird festgelegt, ob nur in Farbe, nur in Schwarz-Weiß oder ohne Farbmodusbeschränkung gedruckt wird. Ist die Richtlinie nicht konfiguriert, wird keine Einschränkung angewendet.</translation>

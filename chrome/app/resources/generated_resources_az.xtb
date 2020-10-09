@@ -392,7 +392,6 @@
 <translation id="1442851588227551435">Aktiv Kerberos biletini ayarlayın</translation>
 <translation id="1444628761356461360">Bu ayar cihaz sahibi tərəfindən idarə olunur, <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Tema üçün '<ph name="IMAGE_PATH" />' yüklənə bilmədi.</translation>
-<translation id="1445693676523799095">Bu bir az vaxt çəkə bilər</translation>
 <translation id="1451375123200651445">Veb səhifə, Tək Fayl</translation>
 <translation id="1451917004835509682">Nəzarət olunan şəxs əlavə edin</translation>
 <translation id="1454223536435069390">Skrinşot çəkin</translation>
@@ -4888,7 +4887,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6828182567531805778">Datanızı sinxronizasiya etmək üçün parol ifadəsini daxil edin</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Bütün İstifadəçilər üçün avtomatik güncəlləmələri quraşdırmaq uğursuz oldu (ön yoxlamanın icrası xətası: <ph name="ERROR_NUMBER" />)</translation>
-<translation id="6829250331733125857">Yardım almaq Sizin <ph name="DEVICE_TYPE" /> .</translation>
 <translation id="682971198310367122">Google məxfilik siyasəti</translation>
 <translation id="6831043979455480757">Tərcümə et</translation>
 <translation id="683373380308365518">Ağıllı və təhlükəsiz brauzerə keçin</translation>

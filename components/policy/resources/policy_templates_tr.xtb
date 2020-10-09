@@ -5200,22 +5200,6 @@ Politika ayarlanırsa sınıra uymak için eski anlık görüntüler gerektiğin
 <translation id="8537051350735478658">Politikayı True (Doğru) değerine ayarlamak, <ph name="PRODUCT_NAME" /> ürününün adres çubuğunda arama önerilerini açar. Politikayı False (Yanlış) değerine ayarlamak, arama önerilerini kapatır.
 
       Bu politikayı ayarlarsanız kullanıcılar değiştiremez. Ayarlanmazsa arama önerileri ilk başta açıktır, ancak kullanıcılar istedikleri zaman kapatabilir.</translation>
-<translation id="8542290591179355871">Bu politika kullanımdan kaldırıldı, lütfen bunun yerine <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikasını kullanın.
-
-       Bu politikanın Etkin değerine ayarlanması, Chrome'un kullandığı proxy sunucusunu belirtmenizi sağlar ve kullanıcıların proxy ayarlarını değiştirmesini önler. Chrome ve ARC uygulamaları, komut satırında proxy ile ilgili belirtilen tüm seçenekleri yok sayar. Bu politika, yalnızca <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikası belirtilmediğinde geçerli olur.
-
-       Aşağıdakileri belirlerseniz diğer seçenekler yok sayılır:
-         * <ph name="PROXY_MODE_ENUM_DIRECT" /> = Hiçbir zaman proxy sunucu kullanma ve her zaman doğrudan bağlan
-         * <ph name="PROXY_MODE_ENUM_SYSTEM" /> = Sistem proxy ayarlarını kullan
-         * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> = Proxy sunucuyu otomatik olarak algıla
-
-       Aşağıdakini kullanmayı seçerseniz:
-         * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> = Sabit proxy sunucular. <ph name="PROXY_SERVER_POLICY_NAME" /> ve <ph name="PROXY_BYPASS_LIST_POLICY_NAME" /> ile daha ayrıntılı seçenekler belirtebilirsiniz. ARC uygulamaları için yalnızca en yüksek önceliğe sahip HTTP proxy sunucusu kullanılabilir.
-         * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> = .pac proxy komut dosyası. Proxy .pac dosyasının URL'si için <ph name="PROXY_PAC_URL_POLICY_NAME" /> kullanın.
-
-      Politika ayarlanmazsa kullanıcılar proxy ayarlarını seçebilir.
-
-      Not: Ayrıntılı örnekler için Chromium Projeleri'ni ziyaret edin ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="8544375438507658205"><ph name="PRODUCT_FRAME_NAME" /> için varsayılan HTML oluşturucusu</translation>
 <translation id="8544465954173828789">SMS Mesajlarının telefondan Chromebook'a senkronize edilmesine izin ver</translation>
 <translation id="8548832052135586762">Yazdırmayı yalnızca renkli, yalnızca tek renk veya renk modu kısıtlaması yok değerine ayarlar. Ayarlanmayan politika, kısıtlama yokmuş gibi işlenir.</translation>

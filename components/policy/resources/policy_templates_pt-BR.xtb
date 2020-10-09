@@ -5188,22 +5188,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8537051350735478658">Se a política for definida como verdadeira, as sugestões de pesquisa na barra de endereço do <ph name="PRODUCT_NAME" /> serão ativadas. Se ela for definida como falsa, essas sugestões serão desativadas.
 
       Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, as sugestões de pesquisa ficarão inicialmente ativadas, mas os usuários poderão desativá-las quando quiserem.</translation>
-<translation id="8542290591179355871">Esta política está obsoleta. Use a <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-       Se a política for definida como "Ativada", você poderá especificar o servidor proxy usado pelo Chrome e evitar que os usuários mudem as configurações de proxy. O Chrome e os apps ARC ignoram todas as opções relacionadas a proxy especificadas na linha de comando. A política só terá efeito se a <ph name="PROXY_SETTINGS_POLICY_NAME" /> não for especificada.
-
-       Outras opções serão ignoradas se você escolher uma destas:
-         * <ph name="PROXY_MODE_ENUM_DIRECT" />: nunca usar um servidor proxy e sempre conectar diretamente.
-         * <ph name="PROXY_MODE_ENUM_SYSTEM" />: usar as configurações de proxy do sistema.
-         * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />: detectar automaticamente o servidor proxy.
-
-       Se você escolher usar:
-         * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />: servidores proxy corrigidos. Será possível especificar mais opções com <ph name="PROXY_SERVER_POLICY_NAME" /> e <ph name="PROXY_BYPASS_LIST_POLICY_NAME" />. Apenas o servidor proxy HTTP com a maior prioridade está disponível para apps ARC.
-         * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: um script de proxy .pac. Use <ph name="PROXY_PAC_URL_POLICY_NAME" /> no URL de um arquivo proxy .pac.
-
-      Se a política não for definida, os usuários poderão escolher as configurações de proxy.
-
-      Observação: para ver exemplos detalhados, acesse The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett, link em inglês).</translation>
 <translation id="8544375438507658205">Renderizador padrão de HTML para o <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Permite a sincronização de mensagens SMS do smartphone com o Chromebook.</translation>
 <translation id="8548832052135586762">Define a impressão para apenas em cores, apenas monocromática ou sem restrição de modo de cor. Se a política não for definida, não haverá restrição.</translation>

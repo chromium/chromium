@@ -394,7 +394,6 @@
 <translation id="1442851588227551435">Definir permissão Kerberos ativa</translation>
 <translation id="1444628761356461360">Esta definição é gerida pelo proprietário do dispositivo, <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Não foi possível carregar "<ph name="IMAGE_PATH" />" para o tema.</translation>
-<translation id="1445693676523799095">Isto poderá demorar algum tempo.</translation>
 <translation id="1451375123200651445">Página Web, Ficheiro único</translation>
 <translation id="1451917004835509682">Adicionar pessoa supervisionada</translation>
 <translation id="1454223536435069390">C&amp;riar captura de ecrã</translation>
@@ -4898,7 +4897,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6828182567531805778">Introduzir a frase de acesso para sincronizar os dados</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Falha ao configurar atualizações automáticas para todos os utilizadores (erro de execução da verificação prévia: <ph name="ERROR_NUMBER" />)</translation>
-<translation id="6829250331733125857">Obtenha ajuda com o <ph name="DEVICE_TYPE" />.</translation>
 <translation id="682971198310367122">Política de privacidade da Google</translation>
 <translation id="6831043979455480757">Traduzir</translation>
 <translation id="683373380308365518">Mude para um navegador inteligente e seguro</translation>

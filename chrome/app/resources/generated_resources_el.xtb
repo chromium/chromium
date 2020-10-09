@@ -394,7 +394,6 @@
 <translation id="1442851588227551435">Ορισμός ενεργού εισιτηρίου Kerberos</translation>
 <translation id="1444628761356461360">Η διαχείριση αυτής της ρύθμισης πραγματοποιείται από τον ιδιοκτήτη της συσκευής, <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Δεν ήταν δυνατή η φόρτωση του "<ph name="IMAGE_PATH" />" για το θέμα.</translation>
-<translation id="1445693676523799095">Μπορεί να χρειαστεί λίγη ώρα</translation>
 <translation id="1451375123200651445">Ιστοσελίδα, μεμονωμένο αρχείο</translation>
 <translation id="1451917004835509682">Προσθήκη εποπτευόμενου ατόμου</translation>
 <translation id="1454223536435069390">Λήψη στιγμιότυπου οθόνης</translation>
@@ -4898,7 +4897,6 @@
 <translation id="6828182567531805778">Εισαγάγετε τη φράση πρόσβασης για να συγχρονίσετε τα δεδομένα σας</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Αποτυχία ρύθμισης αυτόματων ενημερώσεων για όλους τους χρήστες (σφάλμα προληπτικής εκτέλεσης: <ph name="ERROR_NUMBER" />)</translation>
-<translation id="6829250331733125857">Λάβετε βοήθεια για τη συσκευή σας <ph name="DEVICE_TYPE" />.</translation>
 <translation id="682971198310367122">Πολιτική απορρήτου Google</translation>
 <translation id="6831043979455480757">Μετάφραση</translation>
 <translation id="683373380308365518">Κάντε εναλλαγή σε ένα έξυπνο και ασφαλές πρόγραμμα περιήγησης</translation>

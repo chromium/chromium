@@ -394,7 +394,6 @@
 <translation id="1442851588227551435">Задаване на активен пропуск за Kerberos</translation>
 <translation id="1444628761356461360">Тази настройка се управлява от собственика на устройството – <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Не можа да се зареди „<ph name="IMAGE_PATH" />“ за темата.</translation>
-<translation id="1445693676523799095">Това може да отнеме известно време</translation>
 <translation id="1451375123200651445">Уеб страница, един файл</translation>
 <translation id="1451917004835509682">Добавяне на контролиран човек</translation>
 <translation id="1454223536435069390">Създаване на &amp;екранна снимка</translation>
@@ -4897,7 +4896,6 @@
 <translation id="6828182567531805778">Въведете своя пропуск, за да синхронизирате данните си</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Настройването на автоматични актуализации за всички потребители не бе успешно (грешка при изпълнението на предстартовия процес: <ph name="ERROR_NUMBER" />)</translation>
-<translation id="6829250331733125857">Получете помощ за устройството си <ph name="DEVICE_TYPE" />.</translation>
 <translation id="682971198310367122">Декларация за поверителност на Google</translation>
 <translation id="6831043979455480757">Превод</translation>
 <translation id="683373380308365518">Преминете към интелигентен и сигурен браузър</translation>

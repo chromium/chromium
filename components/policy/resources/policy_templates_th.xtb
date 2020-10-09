@@ -284,7 +284,7 @@
 
           หากตั้งค่านโยบายนี้ ผู้ใช้จะเปลี่ยนหรือลบล้างไม่ได้</translation>
 <translation id="1502843533062797703">เปิดใช้การบล็อกการแทรกซอฟต์แวร์ของบุคคลที่สาม</translation>
-<translation id="1503863096120373385">กำหนดค่าการตั้งค่าอายุการใช้งานของข้อมูลการท่องเว็บสำหรับ <ph name="PRODUCT_NAME" />
+<translation id="1503863096120373385">กำหนดค่าอายุการใช้งานของข้อมูลการท่องเว็บสำหรับ <ph name="PRODUCT_NAME" />
       นโยบายนี้จะควบคุมอายุการใช้งานของข้อมูลการท่องเว็บที่เลือก นโยบายนี้ไม่มีผลหากเปิดการซิงค์ไว้
       ประเภทข้อมูลที่พร้อมใช้งาน ได้แก่ <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> และ <ph name="DATA_TYPE_HOSTED_APP_DATA" />
       Chrome จะนำข้อมูลประเภทที่เลือกไว้ที่มีอายุนานกว่า <ph name="TIME_TO_LIVE_IN_HOURS" /> ชั่วโมงออกอยู่เสมอ เนื่องจากการลบนี้จะเกิดขึ้นในบางช่วงเวลาเท่านั้น ข้อมูลบางอย่างจึงอาจมีอายุการใช้งานนานกว่าเล็กน้อย แต่จะไม่เกิน 2 เท่าของ <ph name="TIME_TO_LIVE_IN_HOURS" /> ที่คาดไว้
@@ -2625,7 +2625,7 @@
       โปรดทราบว่าคุณเพิ่มเอลิเมนต์ลงในรายการนี้ผ่านนโยบาย <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> ได้ด้วย</translation>
 <translation id="5065753964276395784">นโยบายนี้เลิกใช้งานไปแล้ว โปรดใช้ <ph name="PROXY_SETTINGS_POLICY_NAME" /> แทน
 
-       การตั้งค่านโยบายหมายความว่า <ph name="PRODUCT_NAME" /> จะข้ามพร็อกซีสำหรับรายชื่อโฮสต์ที่ระบุไว้ที่นี่ นโยบายนี้จะมีผลก็ต่อเมื่อไม่ได้ระบุนโยบาย <ph name="PROXY_SETTINGS_POLICY_NAME" /> และคุณเลือก <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> ด้วย <ph name="PROXY_MODE_POLICY_NAME" /> เท่านั้น
+       การตั้งค่านโยบายนี้หมายความว่า <ph name="PRODUCT_NAME" /> จะข้ามพร็อกซีสำหรับรายชื่อโฮสต์ที่ระบุไว้ที่นี่ นโยบายนี้จะมีผลก็ต่อเมื่อไม่ได้ระบุนโยบาย <ph name="PROXY_SETTINGS_POLICY_NAME" /> และคุณเลือก <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> ด้วย <ph name="PROXY_MODE_POLICY_NAME" /> เท่านั้น
 
        ไม่ต้องตั้งค่านโยบายนี้หากได้เลือกโหมดอื่นสำหรับการตั้งค่านโยบายพร็อกซีแล้ว
 
@@ -4044,7 +4044,7 @@
       หากเลือก "U2F_EXTENDED" ปัจจัยที่ 2 ที่รวมอยู่จะแจ้งฟังก์ชัน U2F พร้อมส่วนขยายบางอย่างสำหรับการรับรองแต่ละรายการ</translation>
 <translation id="6999948519306285655">นโยบายนี้เลิกใช้งานไปแล้ว โปรดใช้ <ph name="PROXY_SETTINGS_POLICY_NAME" /> แทน
 
-       การตั้งค่านโยบายช่วยให้คุณระบุ URL ไปยังไฟล์ .pac ของพร็อกซีได้ นโยบายนี้จะมีผลก็ต่อเมื่อไม่ได้ระบุนโยบาย <ph name="PROXY_SETTINGS_POLICY_NAME" /> และคุณเลือก <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> ด้วย <ph name="PROXY_MODE_POLICY_NAME" /> เท่านั้น
+       การตั้งค่านโยบายนี้ช่วยให้คุณระบุ URL ไปยังไฟล์ .pac ของพร็อกซีได้ นโยบายนี้จะมีผลก็ต่อเมื่อไม่ได้ระบุนโยบาย <ph name="PROXY_SETTINGS_POLICY_NAME" /> และคุณเลือก <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> ด้วย <ph name="PROXY_MODE_POLICY_NAME" /> เท่านั้น
 
        ไม่ต้องตั้งค่านโยบายนี้หากได้เลือกโหมดอื่นสำหรับการตั้งค่านโยบายพร็อกซีแล้ว
 
@@ -4634,7 +4634,7 @@
 <translation id="7715711044277116530">เปอร์เซ็นต์ของระดับการปรับการหน่วงเวลาการสลัวหน้าจอในโหมดการนำเสนอ</translation>
 <translation id="7716020145539921591">นโยบายนี้เลิกใช้งานไปแล้ว โปรดใช้ <ph name="PROXY_SETTINGS_POLICY_NAME" /> แทน
 
-       การตั้งค่านโยบายช่วยให้คุณระบุ URL ของพร็อกซีเซิร์ฟเวอร์ได้ นโยบายนี้จะมีผลก็ต่อเมื่อไม่ได้ระบุนโยบาย <ph name="PROXY_SETTINGS_POLICY_NAME" /> และคุณเลือก <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> ด้วย <ph name="PROXY_MODE_POLICY_NAME" /> เท่านั้น
+       การตั้งค่านโยบายนี้ช่วยให้คุณระบุ URL ของพร็อกซีเซิร์ฟเวอร์ได้ นโยบายนี้จะมีผลก็ต่อเมื่อไม่ได้ระบุนโยบาย <ph name="PROXY_SETTINGS_POLICY_NAME" /> และคุณเลือก <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> ด้วย <ph name="PROXY_MODE_POLICY_NAME" /> เท่านั้น
 
        ไม่ต้องตั้งค่านโยบายนี้หากได้เลือกโหมดอื่นสำหรับการตั้งค่านโยบายพร็อกซีแล้ว
 
@@ -5187,22 +5187,6 @@
 <translation id="8537051350735478658">การตั้งค่านโยบายเป็น "จริง" จะเปิดการแนะนำการค้นหาในแถบที่อยู่ของ <ph name="PRODUCT_NAME" /> การตั้งค่านโยบายเป็น "เท็จ" จะปิดการแนะนำการค้นหา
 
       หากคุณตั้งค่านโยบายนี้ ผู้ใช้จะเปลี่ยนไม่ได้ หากไม่ได้ตั้งค่า การแนะนำการค้นหาจะเปิดอยู่ในตอนแรก แต่ผู้ใช้จะปิดได้ทุกเมื่อ</translation>
-<translation id="8542290591179355871">นโยบายนี้เลิกใช้งานไปแล้ว โปรดใช้ <ph name="PROXY_SETTINGS_POLICY_NAME" /> แทน
-
-       การตั้งค่านโยบายเป็น "เปิดใช้" ช่วยให้คุณระบุพร็อกซีเซิร์ฟเวอร์ที่ Chrome จะใช้ได้ และป้องกันไม่ให้ผู้ใช้เปลี่ยนการตั้งค่าพร็อกซี Chrome และแอป ARC จะไม่สนใจตัวเลือกที่เกี่ยวข้องกับพร็อกซีทั้งหมดที่ระบุจากบรรทัดคำสั่ง นโยบายนี้จะมีผลก็ต่อเมื่อไม่ได้ระบุนโยบาย <ph name="PROXY_SETTINGS_POLICY_NAME" /> เท่านั้น
-
-       ระบบจะไม่สนใจตัวเลือกอื่นๆ หากคุณเลือกตัวเลือกต่อไปนี้
-         * <ph name="PROXY_MODE_ENUM_DIRECT" /> = ไม่ใช้พร็อกซีเซิร์ฟเวอร์และเชื่อมต่อโดยตรงเสมอ
-         * <ph name="PROXY_MODE_ENUM_SYSTEM" /> = ใช้การตั้งค่าพร็อกซีของระบบ
-         * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> = ตรวจจับพร็อกซีเซิร์ฟเวอร์อัตโนมัติ
-
-       หากคุณเลือกใช้ตัวเลือกต่อไปนี้
-         * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> = พร็อกซีเซิร์ฟเวอร์แบบคงที่ คุณจะระบุตัวเลือกอื่นๆ ต่อไปได้ด้วย <ph name="PROXY_SERVER_POLICY_NAME" /> และ <ph name="PROXY_BYPASS_LIST_POLICY_NAME" /> มีเฉพาะพร็อกซีเซิร์ฟเวอร์ HTTP ที่มีลำดับความสำคัญสูงสุดเท่านั้นที่พร้อมใช้งานสำหรับแอป ARC
-         * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> =  สคริปต์พร็อกซี .pac ใช้ <ph name="PROXY_PAC_URL_POLICY_NAME" /> กับ URL ไปยังไฟล์ .pac ของพร็อกซี
-
-      การไม่ตั้งค่านโยบายจะทำให้ผู้ใช้เลือกการตั้งค่าพร็อกซีได้
-
-      หมายเหตุ: ดูตัวอย่างโดยละเอียดได้ที่ The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett )</translation>
 <translation id="8544375438507658205">โปรแกรมแสดง HTML เริ่มต้นสำหรับ <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">อนุญาตให้ซิงค์ข้อความ SMS จากโทรศัพท์ไปยัง Chromebook</translation>
 <translation id="8548832052135586762">ตั้งค่าการพิมพ์เป็นสีเท่านั้น ขาวดำเท่านั้น หรือไม่มีข้อจำกัดโหมดสี ระบบจะถือว่าไม่มีข้อจำกัดหากไม่ได้ตั้งค่านโยบายไว้</translation>

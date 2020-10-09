@@ -2620,7 +2620,7 @@
       注意：系统也可通过 <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> 政策向该列表添加元素。</translation>
 <translation id="5065753964276395784">此政策已被弃用，请改用 <ph name="PROXY_SETTINGS_POLICY_NAME" />。
 
-       如果您设置了此政策，<ph name="PRODUCT_NAME" /> 会绕过与此处指定的这一系列主机对应的所有代理。此政策仅在 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策未被指定并且您选择了 <ph name="PROXY_MODE_POLICY_NAME" /> 中的 <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> 时生效。
+       如果您设置了此政策，<ph name="PRODUCT_NAME" /> 会绕过此列表指定的域名，不对其使用任何代理。此政策仅在 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策未被指定并且您选择了 <ph name="PROXY_MODE_POLICY_NAME" /> 中的 <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> 时生效。
 
        如果您选择了任何其他用于设置代理政策的模式，请勿设置此政策。
 
@@ -3744,7 +3744,7 @@
 
       *“无特殊限制”，系统将根据安全分析结果检查下载内容是否符合常规安全限制。
 
-      注意：这些限制适用于从网页内容以及“下载链接…”菜单选项触发的下载，但不适用于下载当前显示的页面，也不适用于通过打印选项另存为 PDF 文件。详细了解“安全浏览”功能 ( https://developers.google.com/safe-browsing )。</translation>
+      注意：这些限制适用于从网页内容以及“下载链接…”菜单选项触发的下载，但不适用于当前所示页面的下载，也不适用于通过打印选项另存为 PDF 文件。详细了解“安全浏览”功能 ( https://developers.google.com/safe-browsing )。</translation>
 <translation id="6641981670621198190">停用对 3D 图形 API 的支持</translation>
 <translation id="6646056064606561298">启用“接通交流电时启动”电源管理政策。
 
@@ -5172,22 +5172,6 @@
 <translation id="8537051350735478658">如果此政策设为 True，系统会在 <ph name="PRODUCT_NAME" /> 地址栏中显示搜索建议。如果此政策设为 False，系统会停用此类搜索建议功能。
 
       如果您设置了此政策，用户便无法更改它。如果您不设置此政策，系统最初会显示搜索建议，但用户可随时停用此功能。</translation>
-<translation id="8542290591179355871">此政策已被弃用，请改用 <ph name="PROXY_SETTINGS_POLICY_NAME" />。
-
-       如果此政策已启用，您便可指定 Chrome 使用的代理服务器，并禁止用户更改代理设置。Chrome 和 ARC 应用会忽略通过命令行指定的所有与代理有关的选项。此政策仅在 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策未被指定时生效。
-
-       如果您选择以下设置，系统会忽略其他选项：
-         * <ph name="PROXY_MODE_ENUM_DIRECT" /> = 永不使用代理服务器，一律直接连接
-         * <ph name="PROXY_MODE_ENUM_SYSTEM" /> = 使用系统的代理设置
-         * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> = 自动检测代理服务器
-
-       如果您选择使用：
-         * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> = 固定的代理服务器。您可借助 <ph name="PROXY_SERVER_POLICY_NAME" /> 和 <ph name="PROXY_BYPASS_LIST_POLICY_NAME" /> 进一步指定相关选项。ARC 应用只能使用优先级最高的 HTTP 代理服务器。
-         * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> = .pac 代理脚本。使用 <ph name="PROXY_PAC_URL_POLICY_NAME" /> 指定代理 .pac 文件的网址。
-
-      如果您未设置此政策，用户便可自行选择代理设置。
-
-      注意：如需查看详细示例，请访问 Chromium 项目 ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett )。</translation>
 <translation id="8544375438507658205">默认 HTML 呈现器为“<ph name="PRODUCT_FRAME_NAME" />”</translation>
 <translation id="8544465954173828789">允许将短信从手机同步到 Chromebook。</translation>
 <translation id="8548832052135586762">将打印模式设置为仅限彩色打印、仅限单色打印或无颜色模式限制。如果未设置此政策，则会被视为无限制。</translation>

@@ -394,7 +394,6 @@
 <translation id="1442851588227551435">Definir como activo un tícket de Kerberos</translation>
 <translation id="1444628761356461360">Esta configuración está xestionada polo propietario do dispositivo, <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Non se puido cargar "<ph name="IMAGE_PATH" />" para o tema.</translation>
-<translation id="1445693676523799095">Este proceso pode tardar uns intres</translation>
 <translation id="1451375123200651445">Páxina web (nun só ficheiro)</translation>
 <translation id="1451917004835509682">Engadir persoa supervisada</translation>
 <translation id="1454223536435069390">F&amp;acer captura de pantalla</translation>
@@ -4896,7 +4895,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6828182567531805778">Introduce a túa frase de acceso para sincronizar os teus datos</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Non se puideron configurar as actualizacións automáticas para todos os usuarios (erro de execución da comprobación preliminar: <ph name="ERROR_NUMBER" />)</translation>
-<translation id="6829250331733125857">Recibe axuda co teu dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="682971198310367122">Política de privacidade de Google</translation>
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="683373380308365518">Cambiar a un navegador intelixente e seguro</translation>

@@ -394,7 +394,6 @@
 <translation id="1442851588227551435">设置有效的 Kerberos 票据</translation>
 <translation id="1444628761356461360">此设置由设备所有者<ph name="OWNER_EMAIL" />管理。</translation>
 <translation id="144518587530125858">无法加载主题背景的路径“<ph name="IMAGE_PATH" />”。</translation>
-<translation id="1445693676523799095">该过程可能需要一点时间</translation>
 <translation id="1451375123200651445">网页（单个文件）</translation>
 <translation id="1451917004835509682">添加受监管用户</translation>
 <translation id="1454223536435069390">屏幕截图(&amp;A)</translation>
@@ -4892,7 +4891,6 @@
 <translation id="6828182567531805778">输入密码以同步您的数据</translation>
 <translation id="682871081149631693">Quick Fix</translation>
 <translation id="6828860976882136098">未能按您的要求为所有用户设置自动更新（执行预定流程时出错：<ph name="ERROR_NUMBER" />）</translation>
-<translation id="6829250331733125857">获取与<ph name="DEVICE_TYPE" />相关的帮助。</translation>
 <translation id="682971198310367122">Google 隐私权政策</translation>
 <translation id="6831043979455480757">翻译</translation>
 <translation id="683373380308365518">改用智能且安全的浏览器</translation>

@@ -394,7 +394,6 @@
 <translation id="1442851588227551435">Setează tichetul Kerberos activ</translation>
 <translation id="1444628761356461360">Această setare este gestionată de proprietarul dispozitivului, <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Nu se poate încărca „<ph name="IMAGE_PATH" />” pentru temă.</translation>
-<translation id="1445693676523799095">Poate dura un timp</translation>
 <translation id="1451375123200651445">Pagină web, un singur fișier</translation>
 <translation id="1451917004835509682">Adaugă o persoană monitorizată</translation>
 <translation id="1454223536435069390">F&amp;aceți o captură de ecran</translation>
@@ -4897,7 +4896,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6828182567531805778">Introdu expresia de acces pentru a sincroniza datele</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Actualizările automate nu au putut fi configurate pentru toți utilizatorii (eroare la executarea testării pe dispozitiv: <ph name="ERROR_NUMBER" />)</translation>
-<translation id="6829250331733125857">Primește ajutor în privința <ph name="DEVICE_TYPE" />.</translation>
 <translation id="682971198310367122">Politica de confidențialitate Google</translation>
 <translation id="6831043979455480757">Tradu</translation>
 <translation id="683373380308365518">Comută la un browser inteligent și securizat</translation>

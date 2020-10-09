@@ -394,7 +394,6 @@
 <translation id="1442851588227551435">Активдүү Kerberos билетин жөндөө</translation>
 <translation id="1444628761356461360">Бул жөндөөнү түзмөк ээси башкарууда, <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Теманын '<ph name="IMAGE_PATH" />' жүктөлбөй калды.</translation>
-<translation id="1445693676523799095">Бул бир аз убакыт талап кылышы мүмкүн</translation>
 <translation id="1451375123200651445">Веб бет, Жалгыз файл</translation>
 <translation id="1451917004835509682">Көзөмөлдөнгөн адам кошуу</translation>
 <translation id="1454223536435069390">Скриншотту тарт&amp;ып алуу</translation>
@@ -4897,7 +4896,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6828182567531805778">Дайындарды шайкештирүү үчүн өткөрүүчү сүйлөмдү киргизиңиз</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Бардык колдонуучулар үчүн автоматтык жаңыртуулар орнотулбай калды (аткаруу катасы: <ph name="ERROR_NUMBER" />)</translation>
-<translation id="6829250331733125857"><ph name="DEVICE_TYPE" /> түзмөгүңүз менен жардам алыңыз.</translation>
 <translation id="682971198310367122">Google купуялык саясаты</translation>
 <translation id="6831043979455480757">Которуу</translation>
 <translation id="683373380308365518">Шамдагай жана коопсуз серепчиге которулуу</translation>

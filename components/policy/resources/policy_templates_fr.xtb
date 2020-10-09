@@ -1107,6 +1107,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Remarque : Vous pouvez également utiliser les règles <ph name="USE_IE_SITELIST_POLICY_NAME" /> et <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> pour ajouter des éléments à cette liste.</translation>
 <translation id="264093234299818170">Toutes les imprimantes sont affichées, sauf celles figurant dans la liste de blocage.</translation>
+<translation id="264252574246191885">Non répertorié</translation>
 <translation id="2647069081229792812">Activer ou désactiver la modification des favoris</translation>
 <translation id="2649896281375932517">Choix laissé aux utilisateurs</translation>
 <translation id="2650049181907741121">Action à effectuer lorsque l'utilisateur ferme le couvercle</translation>
@@ -2663,7 +2664,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
        Si cette règle est configurée, <ph name="PRODUCT_NAME" /> contourne tout proxy de la liste d'hôtes indiquée ici. Elle ne s'applique que si la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> n'est pas spécifiée et si vous avez sélectionné l'option <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> dans la règle <ph name="PROXY_MODE_POLICY_NAME" />.
 
-       Ne configurez pas cette règle si vous avez sélectionné un autre mode de spécification des règles de proxy.
+       Ne configurez pas cette règle si vous avez sélectionné un autre mode pour spécifier les règles de proxy.
 
        Remarque : Pour consulter des exemples détaillés, accédez au site The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="5067143124345820993">Liste des utilisateurs autorisés à se connecter</translation>
@@ -4082,7 +4083,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
        Elle permet de définir l'URL d'un fichier .pac proxy. Elle ne s'applique que si la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> n'est pas spécifiée et si vous avez sélectionné l'option <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> dans la règle <ph name="PROXY_MODE_POLICY_NAME" />.
 
-       Ne configurez pas cette règle si vous avez sélectionné un autre mode de spécification des règles de proxy.
+       Ne configurez pas cette règle si vous avez sélectionné un autre mode pour spécifier les règles de proxy.
 
        Remarque : Pour consulter des exemples détaillés, accédez au site The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="7002040773317582266">La vérification en temps réel des URL du frame principal est activée.</translation>
@@ -4677,7 +4678,7 @@ au maximum si un utilisateur se sert de l'appareil.
 
        Elle permet de définir l'URL du serveur proxy. Elle ne s'applique que si la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> n'est pas spécifiée et si vous avez sélectionné l'option <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> dans la règle <ph name="PROXY_MODE_POLICY_NAME" />.
 
-       Ne configurez pas cette règle si vous avez sélectionné un autre mode de spécification des règles de proxy.
+       Ne configurez pas cette règle si vous avez sélectionné un autre mode pour spécifier les règles de proxy.
 
       Remarque : Pour consulter des exemples détaillés, accédez au site The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="7717938661004793600">Permet de configurer les fonctionnalités d'accessibilité de <ph name="PRODUCT_OS_NAME" />.</translation>
@@ -4706,6 +4707,7 @@ au maximum si un utilisateur se sert de l'appareil.
 <translation id="7750991880413385988">Ouvrir la page Nouvel onglet</translation>
 <translation id="7754704193130578113">Toujours demander où enregistrer les fichiers</translation>
 <translation id="7758378441185523981">Activer l'authentification ambiante en fonction du type de profil.</translation>
+<translation id="776110834126722255">Obsolète</translation>
 <translation id="7763614521440615342">Afficher des recommandations de contenus sur la page "Nouvel onglet"</translation>
 <translation id="7765753178910647492">Permet de dresser la liste des fonctionnalités <ph name="PRODUCT_OS_NAME" /> à désactiver.
 
@@ -5226,22 +5228,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8537051350735478658">Si cette règle est définie sur "True", la fonctionnalité Suggestions de recherche est activée dans la barre d'adresse du navigateur <ph name="PRODUCT_NAME" />. Si cette règle est définie sur "False", cette fonctionnalité est désactivée.
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si cette règle n'est pas configurée, cette fonctionnalité est activée par défaut, mais les utilisateurs peuvent la désactiver à tout moment.</translation>
-<translation id="8542290591179355871">Cette règle étant obsolète, veuillez utiliser la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> à la place.
-
-       Si elle est activée, vous pouvez définir le serveur proxy que Chrome utilise. En revanche, les utilisateurs ne peuvent pas modifier les paramètres de proxy. Chrome et les applications ARC ignorent toutes les options liées au proxy spécifiées à partir de la ligne de commande. Cette règle ne s'applique que si la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> n'est pas spécifiée.
-
-       Les autres options sont ignorées si vous sélectionnez celles ci-dessous :
-         * <ph name="PROXY_MODE_ENUM_DIRECT" /> : la connexion s'effectue toujours directement sans aucun serveur proxy.
-         * <ph name="PROXY_MODE_ENUM_SYSTEM" /> : les paramètres de proxy utilisés sont ceux du système.
-         * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> : le serveur proxy est détecté automatiquement.
-
-       
-         * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> : des serveurs proxy spécifiés sont utilisés. Vous pouvez définir d'autres options avec les règles <ph name="PROXY_SERVER_POLICY_NAME" /> et <ph name="PROXY_BYPASS_LIST_POLICY_NAME" />. Les applications ARC n'utilisent que le serveur proxy HTTP ayant la priorité la plus élevée.
-         * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> : un script de proxy .pac est utilisé. Utilisez la règle <ph name="PROXY_PAC_URL_POLICY_NAME" /> pour spécifier l'URL d'un fichier .pac de proxy.
-
-      Si cette règle n'est pas configurée, les utilisateurs peuvent sélectionner les paramètres de proxy.
-
-      Remarque : Pour consulter des exemples détaillés, accédez au site The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="8544375438507658205">Moteur de rendu HTML par défaut pour <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Autoriser la synchronisation des SMS entre le téléphone et le Chromebook</translation>
 <translation id="8548832052135586762">Définit l'impression couleur seulement, monochrome seulement ou sans restriction de couleur. Si aucune règle n'est définie, on considère qu'il n'y a aucune restriction.</translation>

@@ -394,7 +394,6 @@
 <translation id="1442851588227551435">Définir le ticket Kerberos actif</translation>
 <translation id="1444628761356461360">Ce paramètre est géré par le propriétaire de l'appareil : <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Impossible de charger « <ph name="IMAGE_PATH" /> » pour le thème.</translation>
-<translation id="1445693676523799095">Cela peut prendre un certain temps</translation>
 <translation id="1451375123200651445">Page Web, fichier unique</translation>
 <translation id="1451917004835509682">Ajouter une personne supervisée</translation>
 <translation id="1454223536435069390">Faire une s&amp;aisie d'écran</translation>
@@ -4898,7 +4897,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6828182567531805778">Entrez votre phrase de passe pour synchroniser vos données</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Impossible de configurer les mises à jour automatiques pour tous les utilisateurs (erreur d'exécution des vérifications : <ph name="ERROR_NUMBER" />)</translation>
-<translation id="6829250331733125857">Obtenez de l'aide pour votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="682971198310367122">Politique de confidentialité de Google</translation>
 <translation id="6831043979455480757">Traduire</translation>
 <translation id="683373380308365518">Passer à un navigateur intelligent et sécurisé</translation>

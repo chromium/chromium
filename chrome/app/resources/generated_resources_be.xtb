@@ -394,7 +394,6 @@
 <translation id="1442851588227551435">Задаць актыўны білет Kerberos</translation>
 <translation id="1444628761356461360">Гэта налада кіруецца ўладальнікам прылады – <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Не ўдалося загрузіць відарыс "<ph name="IMAGE_PATH" />" для тэмы.</translation>
-<translation id="1445693676523799095">Гэта можа заняць некаторы час</translation>
 <translation id="1451375123200651445">Вэб-старонка адным файлам</translation>
 <translation id="1451917004835509682">Дадаць падкантрольнага карыстальніка</translation>
 <translation id="1454223536435069390">З&amp;рабіць здымак экрана</translation>
@@ -4896,7 +4895,6 @@
 <translation id="6828182567531805778">Для сінхранізацыі даных увядзіце фразу-пароль</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Не ўдалося задаць аўтаматычныя абнаўленні для ўсіх карыстальнікаў (памылка падрыхтоўкі выканання: <ph name="ERROR_NUMBER" />)</translation>
-<translation id="6829250331733125857">Дапамога па <ph name="DEVICE_TYPE" />.</translation>
 <translation id="682971198310367122">Палітыка прыватнасці Google</translation>
 <translation id="6831043979455480757">Перакласці</translation>
 <translation id="683373380308365518">Пераходзьце на разумны і бяспечны браўзер</translation>

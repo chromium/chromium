@@ -5199,22 +5199,6 @@ Dit beleid wordt verwijderd in M75.</translation>
 <translation id="8537051350735478658">Als je het beleid instelt op 'True', worden zoeksuggesties ingeschakeld in de adresbalk van <ph name="PRODUCT_NAME" />. Als je het beleid instelt op 'False', worden deze zoeksuggesties uitgeschakeld.
 
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je dit beleid niet instelt, zijn zoeksuggesties in eerste instantie ingeschakeld, maar kunnen gebruikers deze op elk moment uitschakelen.</translation>
-<translation id="8542290591179355871">Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-       Als je het beleid inschakelt, kun je de proxyserver opgeven die Chrome gebruikt en voorkomen dat gebruikers de proxyinstellingen wijzigen. Chrome en ARC-apps negeren alle proxygerelateerde opties die via de opdrachtregel worden opgegeven. Het beleid is alleen van kracht als het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" /> niet is opgegeven.
-
-       Andere opties worden genegeerd als je het volgende kiest:
-         * <ph name="PROXY_MODE_ENUM_DIRECT" /> = Nooit een proxyserver gebruiken en altijd rechtstreeks verbinding maken
-         * <ph name="PROXY_MODE_ENUM_SYSTEM" /> = De proxyinstellingen van het systeem gebruiken
-         * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> = De proxyserver automatisch zoeken
-
-       Als je ervoor kiest het volgende te gebruiken:
-         * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> = Vaste proxyservers. Je kunt verdere opties opgeven met <ph name="PROXY_SERVER_POLICY_NAME" /> en <ph name="PROXY_BYPASS_LIST_POLICY_NAME" />. Alleen de http-proxyserver met de hoogste prioriteit is beschikbaar voor ARC-apps.
-         * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> = Een pac-proxyscript. Gebruik <ph name="PROXY_PAC_URL_POLICY_NAME" /> voor de URL naar een pac-bestand van de proxy.
-
-      Als je het beleid niet instelt, kunnen gebruikers de proxyinstellingen kiezen.
-
-      Opmerking: Voor gedetailleerde voorbeelden ga je naar The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="8544375438507658205">Standaard HTML-renderer voor <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Toestaan dat sms-berichten worden gesynchroniseerd tussen telefoon en Chromebook.</translation>
 <translation id="8548832052135586762">Hiermee bepaal je of je alleen in kleur, alleen in monochroom of zonder kleurbeperking wilt afdrukken. Als er geen beleid is ingesteld, gelden er geen beperkingen.</translation>

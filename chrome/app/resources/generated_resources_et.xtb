@@ -394,7 +394,6 @@
 <translation id="1442851588227551435">Kerberose pileti aktiveerimine</translation>
 <translation id="1444628761356461360">Seadet haldab seadme omanik <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Teemale ei õnnestunud laadida üksust <ph name="IMAGE_PATH" />.</translation>
-<translation id="1445693676523799095">See võib pisut aega võtta</translation>
 <translation id="1451375123200651445">Veebileht, üks fail</translation>
 <translation id="1451917004835509682">Jälgitava isiku lisamine</translation>
 <translation id="1454223536435069390">J&amp;äädvusta ekraanipilt</translation>
@@ -4897,7 +4896,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6828182567531805778">Andmete sünkroonimiseks sisestage parool</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Automaatvärskenduste seadistamine kõikidele kasutajatele ebaõnnestus (esituseelne käivitamisviga: <ph name="ERROR_NUMBER" />)</translation>
-<translation id="6829250331733125857">Abi hankimine seadme <ph name="DEVICE_TYPE" /> puhul.</translation>
 <translation id="682971198310367122">Google'i privaatsuseeskirjad</translation>
 <translation id="6831043979455480757">Tõlgi</translation>
 <translation id="683373380308365518">Minge üle nutikale ja turvalisele brauserile</translation>

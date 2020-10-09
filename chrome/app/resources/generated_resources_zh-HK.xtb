@@ -394,7 +394,6 @@
 <translation id="1442851588227551435">設定使用中的 Kerberos 票證</translation>
 <translation id="1444628761356461360">這項設定是由裝置擁有者「<ph name="OWNER_EMAIL" />」管理。</translation>
 <translation id="144518587530125858">無法為主題背景載入「<ph name="IMAGE_PATH" />」。</translation>
-<translation id="1445693676523799095">請稍候片刻</translation>
 <translation id="1451375123200651445">另存為單一檔案網頁</translation>
 <translation id="1451917004835509682">新增受監管人</translation>
 <translation id="1454223536435069390">擷取螢幕畫面(&amp;A)</translation>
@@ -4896,7 +4895,6 @@
 <translation id="6828182567531805778">如要同步處理資料，請輸入您的密碼短語</translation>
 <translation id="682871081149631693">快速修正</translation>
 <translation id="6828860976882136098">無法為所有使用者設定自動更新 (預先執行錯誤：<ph name="ERROR_NUMBER" />)</translation>
-<translation id="6829250331733125857">取得 <ph name="DEVICE_TYPE" /> 相關說明。</translation>
 <translation id="682971198310367122">Google 私隱權政策</translation>
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="683373380308365518">改用智能且安全的瀏覽器</translation>

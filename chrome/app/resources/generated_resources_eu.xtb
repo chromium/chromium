@@ -394,7 +394,6 @@
 <translation id="1442851588227551435">Ezarri Kerberos-eko zerbitzu-eskaera aktibo bat</translation>
 <translation id="1444628761356461360">Ezarpen hau gailuaren jabeak (<ph name="OWNER_EMAIL" />) kudeatzen du.</translation>
 <translation id="144518587530125858">Ezin izan da "<ph name="IMAGE_PATH" />" kargatu itxura gisa.</translation>
-<translation id="1445693676523799095">Zenbait minutu beharko dira</translation>
 <translation id="1451375123200651445">Webgunea, fitxategi bakarra</translation>
 <translation id="1451917004835509682">Gehitu gainbegiratutako pertsona</translation>
 <translation id="1454223536435069390">&amp;Atera pantaila-argazkia</translation>
@@ -4897,7 +4896,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6828182567531805778">Datuak sinkronizatzeko, idatzi pasaesaldia</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Ezin izan dira konfiguratu eguneratze automatikoak erabiltzaile guztientzat (prozesua exekutatu bitarteko errorea: <ph name="ERROR_NUMBER" />)</translation>
-<translation id="6829250331733125857">Lortu laguntza <ph name="DEVICE_TYPE" /> erabiltzeko.</translation>
 <translation id="682971198310367122">Google-ren Pribatutasun-gidalerroak</translation>
 <translation id="6831043979455480757">Itzuli</translation>
 <translation id="683373380308365518">Aldatu arakatzaile adimendun eta seguru batera</translation>
