@@ -502,4 +502,51 @@ TEST_F(NavigationRequestTest, WillFailRequestCanAccessRenderFrameHost) {
   SetBrowserClientForTesting(old_browser_client);
 }
 
+TEST_F(NavigationRequestTest, PolicyContainerInheritance) {
+  struct TestCase {
+    const char* url;
+    bool expect_inherit;
+  } cases[]{{"about:blank", true},
+            {"data:text/plain,hello", true},
+            {"file://local", false},
+            {"http://chromium.org", false}};
+
+  const GURL kUrl1 = GURL("http://chromium.org");
+  auto navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kUrl1, main_rfh());
+  navigation->Commit();
+
+  for (auto test : cases) {
+    // We navigate child frames because the BlockedSchemeNavigationThrottle
+    // restricts navigations in the main frame.
+    auto* child_frame = static_cast<TestRenderFrameHost*>(
+        content::RenderFrameHostTester::For(main_rfh())->AppendChild("child"));
+
+    // We set the referrer policy of the frame to "always". We then create a new
+    // navigation, set as initiator the frame itself, start the navigation, and
+    // change the referrer policy of the frame to "never". After we commit the
+    // navigation:
+    // - If navigating to a local scheme, the target frame should have inherited
+    //   the referrer policy of the initiator ("always").
+    // - If navigating to a non-local scheme, the target frame should have a new
+    //   policy container (hence referrer policy set to "default").
+    const GURL kUrl = GURL(test.url);
+    auto navigation =
+        NavigationSimulatorImpl::CreateRendererInitiated(kUrl, child_frame);
+    child_frame->policy_container()->SetReferrerPolicy(
+        network::mojom::ReferrerPolicy::kAlways);
+    navigation->SetInitiatorFrame(child_frame);
+    navigation->Start();
+    child_frame->policy_container()->SetReferrerPolicy(
+        network::mojom::ReferrerPolicy::kNever);
+    navigation->Commit();
+    EXPECT_EQ(
+        test.expect_inherit ? network::mojom::ReferrerPolicy::kAlways
+                            : network::mojom::ReferrerPolicy::kDefault,
+        static_cast<RenderFrameHostImpl*>(navigation->GetFinalRenderFrameHost())
+            ->policy_container()
+            ->referrer_policy());
+  }
+}
+
 }  // namespace content

@@ -1001,21 +1001,12 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   // immediately when creating the RenderFrameHost here.
   if (!frame_tree_node_->has_committed_real_load()) {
     if (parent_) {
-      // TODO(antoniosartori): Remove this check as soon as we are able to
-      // always ensure that then parent RFH has a policy container.
-      if (parent_->policy_container())
-        policy_container_ = parent_->policy_container()->Clone();
+      policy_container_ = parent_->policy_container()->Clone();
     } else if (frame_tree_node_->opener()) {
-      // TODO(antoniosartori): Remove this check as soon as we are able to
-      // always ensure that then opener RFH has a policy container.
-      if (frame_tree_node_->opener()
-              ->current_frame_host()
-              ->policy_container()) {
-        policy_container_ = frame_tree_node_->opener()
-                                ->current_frame_host()
-                                ->policy_container()
-                                ->Clone();
-      }
+      policy_container_ = frame_tree_node_->opener()
+                              ->current_frame_host()
+                              ->policy_container()
+                              ->Clone();
     } else {
       policy_container_ = std::make_unique<PolicyContainer>();
     }
@@ -6529,6 +6520,8 @@ void RenderFrameHostImpl::CommitNavigation(
     if (IsURLHandledByNetworkStack(common_params->url))
       last_navigation_previews_state_ = common_params->previews_state;
 
+    DCHECK(navigation_request->policy_container());
+
     dom_content_loaded_ = false;
     SendCommitNavigation(
         navigation_client, navigation_request, std::move(common_params),
@@ -8684,6 +8677,15 @@ void RenderFrameHostImpl::DidCommitNewDocument(
         FROM_HERE,
         base::BindOnce(&RenderFrameHostImpl::BindReportingObserver,
                        weak_ptr_factory_.GetWeakPtr(), std::move(receiver)));
+  }
+
+  // We move the policy container of |navigation_request| into the
+  // RenderFrameHost unless this is the initial, "fake" navigation to
+  // about:blank (because otherwise we would overwrite the policy container of
+  // the new document, inherited at RenderFrameHost creation time, with an empty
+  // policy container).
+  if (navigation_request->IsWaitingToCommit()) {
+    policy_container_ = navigation_request->TakePolicyContainer();
   }
 
   // Set the state whether this navigation is to an MHTML document, since there

@@ -1076,6 +1076,31 @@ NavigationRequest::NavigationRequest(
                                     base::trace_event::ToTracedValue(this));
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("navigation", "Initializing",
                                     navigation_id_);
+
+  policy_container_ = std::make_unique<PolicyContainer>();
+
+  // Local schemes inherit the policy container from the initiator.
+  //
+  // TODO(antoniosartori): Fill up the policy container and/or replace it with a
+  // new one whenever needed (e.g. blob: or filesystem: URLs should get the
+  // policy container from the document which created them and not from the
+  // initiator of the navigation).
+  if (common_params_->url.SchemeIs(url::kAboutScheme) ||
+      common_params_->url.SchemeIs(url::kDataScheme) ||
+      common_params_->url.SchemeIs(url::kBlobScheme) ||
+      common_params_->url.SchemeIs(url::kFileSystemScheme)) {
+    if (GetInitiatorRoutingId()) {
+      RenderFrameHostImpl* initiator_rfh = static_cast<RenderFrameHostImpl*>(
+          RenderFrameHost::FromID(GetInitiatorRoutingId()));
+      // It can happen that the initiator RenderFrameHost is deleted just before
+      // this NavigationRequest is created, se https://crbug.com/1129416.
+      //
+      // TODO(antoniosartori): Fix this.
+      if (initiator_rfh) {
+        policy_container_ = initiator_rfh->policy_container()->Clone();
+      }
+    }
+  }
   NavigationControllerImpl* controller = GetNavigationController();
 
   if (frame_entry) {
@@ -1638,6 +1663,10 @@ void NavigationRequest::SetRequiredCSP(
 
 network::mojom::ContentSecurityPolicyPtr NavigationRequest::TakeRequiredCSP() {
   return std::move(required_csp_);
+}
+
+std::unique_ptr<PolicyContainer> NavigationRequest::TakePolicyContainer() {
+  return std::move(policy_container_);
 }
 
 void NavigationRequest::CreateCoepReporter(
