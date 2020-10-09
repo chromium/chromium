@@ -157,10 +157,7 @@ public class QualityEnforcer implements NativeInitObserver {
 
         // Do not crash on assetlink failures if the client app does not have installer package
         // name.
-        if (type == ViolationType.DIGITAL_ASSETLINKS
-                && ContextUtils.getApplicationContext().getPackageManager().getInstallerPackageName(
-                           mClientPackageNameProvider.get())
-                        == null) {
+        if (type == ViolationType.DIGITAL_ASSETLINKS && !isDebugInstall()) {
             return;
         }
 
@@ -177,7 +174,7 @@ public class QualityEnforcer implements NativeInitObserver {
         PackageManager pm = context.getPackageManager();
         // Only shows the toast when the TWA client app does not have installer info, i.e. install
         // via adb instead of a store.
-        if (pm.getInstallerPackageName(mClientPackageNameProvider.get()) == null) {
+        if (!isDebugInstall()) {
             Toast.makeText(context, message, Toast.LENGTH_LONG).show();
         }
     }
@@ -228,5 +225,14 @@ public class QualityEnforcer implements NativeInitObserver {
             default:
                 return "";
         }
+    }
+
+    private boolean isDebugInstall() {
+        // TODO(crbug.com/1136153) Need to figure out why the client package name can be null.
+        if (mClientPackageNameProvider.get() == null) return false;
+
+        return ContextUtils.getApplicationContext().getPackageManager().getInstallerPackageName(
+                       mClientPackageNameProvider.get())
+                != null;
     }
 }
