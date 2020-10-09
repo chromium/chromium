@@ -38,8 +38,6 @@ class QuotaManagerProxy;
 
 namespace content {
 
-class ServiceWorkerDiskCache;
-class ServiceWorkerResponseMetadataWriter;
 class ServiceWorkerStorageControlImplTest;
 
 namespace service_worker_storage_unittest {
@@ -188,8 +186,8 @@ class CONTENT_EXPORT ServiceWorkerStorage {
       int64_t resource_id);
   std::unique_ptr<ServiceWorkerResourceWriterImpl> CreateResourceWriter(
       int64_t resource_id);
-  std::unique_ptr<ServiceWorkerResponseMetadataWriter>
-  CreateResponseMetadataWriter(int64_t resource_id);
+  std::unique_ptr<ServiceWorkerResourceMetadataWriterImpl>
+  CreateResourceMetadataWriter(int64_t resource_id);
 
   // Adds |resource_id| to the set of resources that are in the disk cache
   // but not yet stored with a registration.

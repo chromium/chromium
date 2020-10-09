@@ -124,20 +124,20 @@ mojo_base::BigBuffer BigIOBuffer::TakeBuffer() {
   return std::move(buffer_);
 }
 
-DiskEntryManager::DiskEntryManager(int64_t resource_id,
+DiskEntryCreator::DiskEntryCreator(int64_t resource_id,
                                    base::WeakPtr<AppCacheDiskCache> disk_cache)
     : resource_id_(resource_id), disk_cache_(std::move(disk_cache)) {
   DCHECK_NE(resource_id_, blink::mojom::kInvalidServiceWorkerResourceId);
   DCHECK(disk_cache_);
 }
 
-DiskEntryManager::~DiskEntryManager() {
+DiskEntryCreator::~DiskEntryCreator() {
   if (entry_) {
     entry_->Close();
   }
 }
 
-void DiskEntryManager::EnsureEntryIsCreated(base::OnceClosure callback) {
+void DiskEntryCreator::EnsureEntryIsCreated(base::OnceClosure callback) {
   DCHECK(creation_phase_ == CreationPhase::kNoAttempt ||
          creation_phase_ == CreationPhase::kDone);
   DCHECK(!ensure_entry_is_created_callback_);
@@ -166,22 +166,22 @@ void DiskEntryManager::EnsureEntryIsCreated(base::OnceClosure callback) {
 }
 
 // static
-void DiskEntryManager::DidCreateEntryForFirstAttempt(
-    base::WeakPtr<DiskEntryManager> entry_manager,
+void DiskEntryCreator::DidCreateEntryForFirstAttempt(
+    base::WeakPtr<DiskEntryCreator> entry_creator,
     AppCacheDiskCacheEntry** entry,
     int rv) {
-  if (!entry_manager) {
+  if (!entry_creator) {
     delete entry;
     return;
   }
 
-  DCHECK_EQ(entry_manager->creation_phase_, CreationPhase::kInitialAttempt);
-  DCHECK(!entry_manager->entry_);
+  DCHECK_EQ(entry_creator->creation_phase_, CreationPhase::kInitialAttempt);
+  DCHECK(!entry_creator->entry_);
 
-  if (!entry_manager->disk_cache_) {
+  if (!entry_creator->disk_cache_) {
     delete entry;
-    entry_manager->entry_ = nullptr;
-    entry_manager->RunEnsureEntryIsCreatedCallback();
+    entry_creator->entry_ = nullptr;
+    entry_creator->RunEnsureEntryIsCreatedCallback();
     return;
   }
 
@@ -189,87 +189,142 @@ void DiskEntryManager::DidCreateEntryForFirstAttempt(
     // The first attempt to create an entry is failed. Try to overwrite the
     // existing entry.
     delete entry;
-    entry_manager->creation_phase_ = CreationPhase::kDoomExisting;
-    rv = entry_manager->disk_cache_->DoomEntry(
-        entry_manager->resource_id_,
-        base::BindOnce(&DiskEntryManager::DidDoomExistingEntry, entry_manager));
+    entry_creator->creation_phase_ = CreationPhase::kDoomExisting;
+    rv = entry_creator->disk_cache_->DoomEntry(
+        entry_creator->resource_id_,
+        base::BindOnce(&DiskEntryCreator::DidDoomExistingEntry, entry_creator));
     if (rv != net::ERR_IO_PENDING) {
-      DidDoomExistingEntry(entry_manager, rv);
+      DidDoomExistingEntry(entry_creator, rv);
     }
     return;
   }
 
   DCHECK(entry);
-  entry_manager->entry_ = *entry;
+  entry_creator->entry_ = *entry;
   delete entry;
-  entry_manager->RunEnsureEntryIsCreatedCallback();
+  entry_creator->RunEnsureEntryIsCreatedCallback();
 }
 
 // static
-void DiskEntryManager::DidDoomExistingEntry(
-    base::WeakPtr<DiskEntryManager> entry_manager,
+void DiskEntryCreator::DidDoomExistingEntry(
+    base::WeakPtr<DiskEntryCreator> entry_creator,
     int rv) {
-  if (!entry_manager) {
+  if (!entry_creator) {
     return;
   }
 
-  DCHECK_EQ(entry_manager->creation_phase_, CreationPhase::kDoomExisting);
-  DCHECK(!entry_manager->entry_);
+  DCHECK_EQ(entry_creator->creation_phase_, CreationPhase::kDoomExisting);
+  DCHECK(!entry_creator->entry_);
 
-  if (!entry_manager->disk_cache_) {
-    entry_manager->entry_ = nullptr;
-    entry_manager->RunEnsureEntryIsCreatedCallback();
+  if (!entry_creator->disk_cache_) {
+    entry_creator->entry_ = nullptr;
+    entry_creator->RunEnsureEntryIsCreatedCallback();
     return;
   }
 
-  entry_manager->creation_phase_ = CreationPhase::kSecondAttempt;
+  entry_creator->creation_phase_ = CreationPhase::kSecondAttempt;
   auto** entry_ptr = new AppCacheDiskCacheEntry*;
-  rv = entry_manager->disk_cache_->CreateEntry(
-      entry_manager->resource_id_, entry_ptr,
-      base::BindOnce(&DiskEntryManager::DidCreateEntryForSecondAttempt,
-                     entry_manager, entry_ptr));
+  rv = entry_creator->disk_cache_->CreateEntry(
+      entry_creator->resource_id_, entry_ptr,
+      base::BindOnce(&DiskEntryCreator::DidCreateEntryForSecondAttempt,
+                     entry_creator, entry_ptr));
   if (rv != net::ERR_IO_PENDING) {
-    DidCreateEntryForSecondAttempt(entry_manager, entry_ptr, rv);
+    DidCreateEntryForSecondAttempt(entry_creator, entry_ptr, rv);
   }
 }
 
 // static
-void DiskEntryManager::DidCreateEntryForSecondAttempt(
-    base::WeakPtr<DiskEntryManager> entry_manager,
+void DiskEntryCreator::DidCreateEntryForSecondAttempt(
+    base::WeakPtr<DiskEntryCreator> entry_creator,
     AppCacheDiskCacheEntry** entry,
     int rv) {
-  if (!entry_manager) {
+  if (!entry_creator) {
     delete entry;
     return;
   }
 
-  DCHECK_EQ(entry_manager->creation_phase_, CreationPhase::kSecondAttempt);
+  DCHECK_EQ(entry_creator->creation_phase_, CreationPhase::kSecondAttempt);
 
-  if (!entry_manager->disk_cache_) {
+  if (!entry_creator->disk_cache_) {
     delete entry;
-    entry_manager->entry_ = nullptr;
-    entry_manager->RunEnsureEntryIsCreatedCallback();
+    entry_creator->entry_ = nullptr;
+    entry_creator->RunEnsureEntryIsCreatedCallback();
     return;
   }
 
   if (rv != net::OK) {
     // The second attempt is also failed. Give up creating an entry.
     delete entry;
-    entry_manager->entry_ = nullptr;
-    entry_manager->RunEnsureEntryIsCreatedCallback();
+    entry_creator->entry_ = nullptr;
+    entry_creator->RunEnsureEntryIsCreatedCallback();
     return;
   }
 
-  DCHECK(!entry_manager->entry_);
+  DCHECK(!entry_creator->entry_);
   DCHECK(entry);
-  entry_manager->entry_ = *entry;
-  entry_manager->RunEnsureEntryIsCreatedCallback();
+  entry_creator->entry_ = *entry;
+  entry_creator->RunEnsureEntryIsCreatedCallback();
   delete entry;
 }
 
-void DiskEntryManager::RunEnsureEntryIsCreatedCallback() {
+void DiskEntryCreator::RunEnsureEntryIsCreatedCallback() {
   creation_phase_ = CreationPhase::kDone;
   std::move(ensure_entry_is_created_callback_).Run();
+}
+
+DiskEntryOpener::DiskEntryOpener(int64_t resource_id,
+                                 base::WeakPtr<AppCacheDiskCache> disk_cache)
+    : resource_id_(resource_id), disk_cache_(std::move(disk_cache)) {
+  DCHECK_NE(resource_id_, blink::mojom::kInvalidServiceWorkerResourceId);
+  DCHECK(disk_cache_);
+}
+
+DiskEntryOpener::~DiskEntryOpener() {
+  if (entry_) {
+    entry_->Close();
+  }
+}
+
+void DiskEntryOpener::EnsureEntryIsOpen(base::OnceClosure callback) {
+  DCHECK(!ensure_entry_is_opened_callback_);
+  ensure_entry_is_opened_callback_ = std::move(callback);
+
+  int rv;
+  AppCacheDiskCacheEntry** entry_ptr = nullptr;
+  if (entry_) {
+    rv = net::OK;
+  } else if (!disk_cache_) {
+    rv = net::ERR_FAILED;
+  } else {
+    entry_ptr = new AppCacheDiskCacheEntry*;
+    rv = disk_cache_->OpenEntry(
+        resource_id_, entry_ptr,
+        base::BindOnce(&DiskEntryOpener::DidOpenEntry,
+                       weak_factory_.GetWeakPtr(), entry_ptr));
+  }
+
+  if (rv != net::ERR_IO_PENDING) {
+    DidOpenEntry(weak_factory_.GetWeakPtr(), entry_ptr, rv);
+  }
+}
+
+// static
+void DiskEntryOpener::DidOpenEntry(base::WeakPtr<DiskEntryOpener> entry_opener,
+                                   AppCacheDiskCacheEntry** entry,
+                                   int rv) {
+  if (!entry_opener) {
+    delete entry;
+    return;
+  }
+
+  if (!entry_opener->entry_ && rv == net::OK) {
+    DCHECK(entry);
+    entry_opener->entry_ = *entry;
+  }
+  delete entry;
+
+  DCHECK(entry_opener->ensure_entry_is_opened_callback_);
+  std::move(entry_opener->ensure_entry_is_opened_callback_).Run();
 }
 
 class ServiceWorkerResourceReaderImpl::DataReader {
@@ -301,8 +356,8 @@ class ServiceWorkerResourceReaderImpl::DataReader {
     state_ = State::kStarted;
 #endif
 
-    owner_->EnsureEntryIsOpen(base::BindOnce(&DataReader::ContinueReadData,
-                                             weak_factory_.GetWeakPtr()));
+    owner_->entry_opener_.EnsureEntryIsOpen(base::BindOnce(
+        &DataReader::ContinueReadData, weak_factory_.GetWeakPtr()));
   }
 
  private:
@@ -317,7 +372,7 @@ class ServiceWorkerResourceReaderImpl::DataReader {
       return;
     }
 
-    if (!owner_->entry_) {
+    if (!owner_->entry_opener_.entry()) {
       Complete(net::ERR_CACHE_MISS);
       return;
     }
@@ -337,7 +392,7 @@ class ServiceWorkerResourceReaderImpl::DataReader {
     DCHECK(producer_handle_.is_valid());
     DCHECK(!pending_buffer_);
 
-    if (!owner_ || !owner_->entry_) {
+    if (!owner_ || !owner_->entry_opener_.entry()) {
       Complete(net::ERR_ABORTED);
       return;
     }
@@ -368,7 +423,7 @@ class ServiceWorkerResourceReaderImpl::DataReader {
         base::MakeRefCounted<network::NetToMojoIOBuffer>(pending_buffer_.get());
 
     net::IOBuffer* raw_buffer = buffer.get();
-    int read_bytes = owner_->entry_->Read(
+    int read_bytes = owner_->entry_opener_.entry()->Read(
         kResponseContentIndex, current_bytes_read_, raw_buffer, num_bytes,
         base::BindOnce(&DataReader::DidReadData, weak_factory_.GetWeakPtr(),
                        buffer));
@@ -446,16 +501,9 @@ class ServiceWorkerResourceReaderImpl::DataReader {
 ServiceWorkerResourceReaderImpl::ServiceWorkerResourceReaderImpl(
     int64_t resource_id,
     base::WeakPtr<AppCacheDiskCache> disk_cache)
-    : resource_id_(resource_id), disk_cache_(std::move(disk_cache)) {
-  DCHECK_NE(resource_id_, blink::mojom::kInvalidServiceWorkerResourceId);
-  DCHECK(disk_cache_);
-}
+    : entry_opener_(resource_id, std::move(disk_cache)) {}
 
-ServiceWorkerResourceReaderImpl::~ServiceWorkerResourceReaderImpl() {
-  if (entry_) {
-    entry_->Close();
-  }
-}
+ServiceWorkerResourceReaderImpl::~ServiceWorkerResourceReaderImpl() = default;
 
 void ServiceWorkerResourceReaderImpl::ReadResponseHead(
     ReadResponseHeadCallback callback) {
@@ -469,7 +517,7 @@ void ServiceWorkerResourceReaderImpl::ReadResponseHead(
   DCHECK(!data_reader_);
 
   read_response_head_callback_ = std::move(callback);
-  EnsureEntryIsOpen(
+  entry_opener_.EnsureEntryIsOpen(
       base::BindOnce(&ServiceWorkerResourceReaderImpl::ContinueReadResponseHead,
                      weak_factory_.GetWeakPtr()));
 }
@@ -517,12 +565,12 @@ void ServiceWorkerResourceReaderImpl::ContinueReadResponseHead() {
 #endif
   DCHECK(read_response_head_callback_);
 
-  if (!entry_) {
+  if (!entry_opener_.entry()) {
     FailReadResponseHead(net::ERR_CACHE_MISS);
     return;
   }
 
-  int64_t size = entry_->GetSize(kResponseInfoIndex);
+  int64_t size = entry_opener_.entry()->GetSize(kResponseInfoIndex);
   if (size <= 0) {
     FailReadResponseHead(net::ERR_CACHE_MISS);
     return;
@@ -530,7 +578,7 @@ void ServiceWorkerResourceReaderImpl::ContinueReadResponseHead() {
 
   auto buffer =
       base::MakeRefCounted<net::IOBuffer>(base::checked_cast<size_t>(size));
-  int rv = entry_->Read(
+  int rv = entry_opener_.entry()->Read(
       kResponseInfoIndex, /*offset=*/0, buffer.get(), size,
       base::BindOnce(&ServiceWorkerResourceReaderImpl::DidReadHttpResponseInfo,
                      weak_factory_.GetWeakPtr(), buffer));
@@ -547,7 +595,7 @@ void ServiceWorkerResourceReaderImpl::DidReadHttpResponseInfo(
   state_ = State::kResponseInfoRead;
 #endif
   DCHECK(read_response_head_callback_);
-  DCHECK(entry_);
+  DCHECK(entry_opener_.entry());
 
   if (status < 0) {
     FailReadResponseHead(status);
@@ -565,11 +613,13 @@ void ServiceWorkerResourceReaderImpl::DidReadHttpResponseInfo(
   }
   DCHECK(!response_truncated);
 
-  int64_t response_data_size = entry_->GetSize(kResponseContentIndex);
+  int64_t response_data_size =
+      entry_opener_.entry()->GetSize(kResponseContentIndex);
 
   response_head_ = ConvertHttpResponseInfo(*http_info, response_data_size);
 
-  int64_t metadata_size = entry_->GetSize(kResponseMetadataIndex);
+  int64_t metadata_size =
+      entry_opener_.entry()->GetSize(kResponseMetadataIndex);
   DCHECK_GE(metadata_size, 0);
   if (metadata_size <= 0) {
     CompleteReadResponseHead(status);
@@ -579,7 +629,7 @@ void ServiceWorkerResourceReaderImpl::DidReadHttpResponseInfo(
   // Read metadata.
   metadata_buffer_ = base::MakeRefCounted<BigIOBuffer>(
       mojo_base::BigBuffer(base::checked_cast<size_t>(metadata_size)));
-  int rv = entry_->Read(
+  int rv = entry_opener_.entry()->Read(
       kResponseMetadataIndex, /*offset=*/0, metadata_buffer_.get(),
       metadata_size,
       base::BindOnce(&ServiceWorkerResourceReaderImpl::DidReadMetadata,
@@ -639,53 +689,10 @@ void ServiceWorkerResourceReaderImpl::DidReadDataComplete() {
   data_reader_.reset();
 }
 
-void ServiceWorkerResourceReaderImpl::EnsureEntryIsOpen(
-    base::OnceClosure callback) {
-  DCHECK(!open_entry_callback_);
-  open_entry_callback_ = std::move(callback);
-
-  int rv;
-  AppCacheDiskCacheEntry** entry_ptr = nullptr;
-  if (entry_) {
-    rv = net::OK;
-  } else if (!disk_cache_) {
-    rv = net::ERR_FAILED;
-  } else {
-    entry_ptr = new AppCacheDiskCacheEntry*;
-    rv = disk_cache_->OpenEntry(
-        resource_id_, entry_ptr,
-        base::BindOnce(&DidOpenEntry, weak_factory_.GetWeakPtr(), entry_ptr));
-  }
-
-  if (rv != net::ERR_IO_PENDING) {
-    DidOpenEntry(weak_factory_.GetWeakPtr(), entry_ptr, rv);
-  }
-}
-
-// static
-void ServiceWorkerResourceReaderImpl::DidOpenEntry(
-    base::WeakPtr<ServiceWorkerResourceReaderImpl> reader,
-    AppCacheDiskCacheEntry** entry,
-    int rv) {
-  if (!reader) {
-    delete entry;
-    return;
-  }
-
-  if (!reader->entry_ && rv == net::OK) {
-    DCHECK(entry);
-    reader->entry_ = *entry;
-  }
-  delete entry;
-
-  DCHECK(reader->open_entry_callback_);
-  std::move(reader->open_entry_callback_).Run();
-}
-
 ServiceWorkerResourceWriterImpl::ServiceWorkerResourceWriterImpl(
     int64_t resource_id,
     base::WeakPtr<AppCacheDiskCache> disk_cache)
-    : entry_manager_(resource_id, std::move(disk_cache)) {}
+    : entry_creator_(resource_id, std::move(disk_cache)) {}
 
 ServiceWorkerResourceWriterImpl::~ServiceWorkerResourceWriterImpl() = default;
 
@@ -696,7 +703,7 @@ void ServiceWorkerResourceWriterImpl::WriteResponseHead(
   DCHECK_EQ(state_, State::kIdle);
   state_ = State::kWriteResponseHeadStarted;
 #endif
-  entry_manager_.EnsureEntryIsCreated(
+  entry_creator_.EnsureEntryIsCreated(
       base::BindOnce(&ServiceWorkerResourceWriterImpl::WriteResponseHeadToEntry,
                      weak_factory_.GetWeakPtr(), std::move(response_head),
                      std::move(callback)));
@@ -708,7 +715,7 @@ void ServiceWorkerResourceWriterImpl::WriteData(mojo_base::BigBuffer data,
   DCHECK_EQ(state_, State::kIdle);
   state_ = State::kWriteDataStarted;
 #endif
-  entry_manager_.EnsureEntryIsCreated(base::BindOnce(
+  entry_creator_.EnsureEntryIsCreated(base::BindOnce(
       &ServiceWorkerResourceWriterImpl::WriteDataToEntry,
       weak_factory_.GetWeakPtr(), std::move(data), std::move(callback)));
 }
@@ -720,7 +727,7 @@ void ServiceWorkerResourceWriterImpl::WriteResponseHeadToEntry(
   DCHECK_EQ(state_, State::kWriteResponseHeadStarted);
   state_ = State::kWriteResponseHeadHasEntry;
 #endif
-  if (!entry_manager_.entry()) {
+  if (!entry_creator_.entry()) {
     std::move(callback).Run(net::ERR_FAILED);
     return;
   }
@@ -733,7 +740,7 @@ void ServiceWorkerResourceWriterImpl::WriteResponseHeadToEntry(
   auto buffer = base::MakeRefCounted<WrappedPickleIOBuffer>(std::move(pickle));
 
   size_t write_amount = buffer->size();
-  int rv = entry_manager_.entry()->Write(
+  int rv = entry_creator_.entry()->Write(
       kResponseInfoIndex, /*offset=*/0, buffer.get(), write_amount,
       base::BindOnce(&ServiceWorkerResourceWriterImpl::DidWriteResponseHead,
                      weak_factory_.GetWeakPtr(), buffer, write_amount));
@@ -762,7 +769,7 @@ void ServiceWorkerResourceWriterImpl::WriteDataToEntry(
   DCHECK_EQ(state_, State::kWriteDataStarted);
   state_ = State::kWriteDataHasEntry;
 #endif
-  if (!entry_manager_.entry()) {
+  if (!entry_creator_.entry()) {
     std::move(callback).Run(net::ERR_FAILED);
     return;
   }
@@ -772,7 +779,7 @@ void ServiceWorkerResourceWriterImpl::WriteDataToEntry(
 
   size_t write_amount = data.size();
   auto buffer = base::MakeRefCounted<BigIOBuffer>(std::move(data));
-  int rv = entry_manager_.entry()->Write(
+  int rv = entry_creator_.entry()->Write(
       kResponseContentIndex, write_position_, buffer.get(), write_amount,
       base::BindOnce(&ServiceWorkerResourceWriterImpl::DidWriteData,
                      weak_factory_.GetWeakPtr(), buffer, write_amount));
@@ -799,10 +806,9 @@ void ServiceWorkerResourceWriterImpl::DidWriteData(
 
 ServiceWorkerResourceMetadataWriterImpl::
     ServiceWorkerResourceMetadataWriterImpl(
-        std::unique_ptr<ServiceWorkerResponseMetadataWriter> writer)
-    : writer_(std::move(writer)) {
-  DCHECK(writer_);
-}
+        int64_t resource_id,
+        base::WeakPtr<AppCacheDiskCache> disk_cache)
+    : entry_opener_(resource_id, std::move(disk_cache)) {}
 
 ServiceWorkerResourceMetadataWriterImpl::
     ~ServiceWorkerResourceMetadataWriterImpl() = default;
@@ -810,9 +816,51 @@ ServiceWorkerResourceMetadataWriterImpl::
 void ServiceWorkerResourceMetadataWriterImpl::WriteMetadata(
     mojo_base::BigBuffer data,
     WriteMetadataCallback callback) {
-  int buf_len = data.size();
+#if DCHECK_IS_ON()
+  DCHECK_EQ(state_, State::kIdle);
+  state_ = State::kWriteMetadataStarted;
+#endif
+  entry_opener_.EnsureEntryIsOpen(base::BindOnce(
+      &ServiceWorkerResourceMetadataWriterImpl::ContinueWriteMetadata,
+      weak_factory_.GetWeakPtr(), std::move(data), std::move(callback)));
+}
+
+void ServiceWorkerResourceMetadataWriterImpl::ContinueWriteMetadata(
+    mojo_base::BigBuffer data,
+    WriteMetadataCallback callback) {
+#if DCHECK_IS_ON()
+  DCHECK_EQ(state_, State::kWriteMetadataStarted);
+  state_ = State::kWriteMetadataHasEntry;
+#endif
+  if (!entry_opener_.entry()) {
+    std::move(callback).Run(net::ERR_FAILED);
+    return;
+  }
+
+  DCHECK(!write_metadata_callback_);
+  write_metadata_callback_ = std::move(callback);
+  size_t write_amount = data.size();
   auto buffer = base::MakeRefCounted<BigIOBuffer>(std::move(data));
-  writer_->WriteMetadata(buffer.get(), buf_len, std::move(callback));
+  int rv = entry_opener_.entry()->Write(
+      kResponseMetadataIndex, /*offset=*/0, buffer.get(), write_amount,
+      base::BindOnce(&ServiceWorkerResourceMetadataWriterImpl::DidWriteMetadata,
+                     weak_factory_.GetWeakPtr(), buffer, write_amount));
+  if (rv != net::ERR_IO_PENDING) {
+    DidWriteMetadata(std::move(buffer), write_amount, rv);
+  }
+}
+
+void ServiceWorkerResourceMetadataWriterImpl::DidWriteMetadata(
+    scoped_refptr<net::IOBuffer> buffer,
+    size_t write_amount,
+    int rv) {
+#if DCHECK_IS_ON()
+  DCHECK_EQ(state_, State::kWriteMetadataHasEntry);
+  state_ = State::kIdle;
+#endif
+  DCHECK(rv < 0 || base::checked_cast<size_t>(rv) == write_amount);
+  DCHECK(write_metadata_callback_);
+  std::move(write_metadata_callback_).Run(rv);
 }
 
 }  // namespace content

@@ -598,10 +598,10 @@ ServiceWorkerStorage::CreateResourceWriter(int64_t resource_id) {
       resource_id, disk_cache()->GetWeakPtr());
 }
 
-std::unique_ptr<ServiceWorkerResponseMetadataWriter>
-ServiceWorkerStorage::CreateResponseMetadataWriter(int64_t resource_id) {
-  return base::WrapUnique(new ServiceWorkerResponseMetadataWriter(
-      resource_id, disk_cache()->GetWeakPtr()));
+std::unique_ptr<ServiceWorkerResourceMetadataWriterImpl>
+ServiceWorkerStorage::CreateResourceMetadataWriter(int64_t resource_id) {
+  return std::make_unique<ServiceWorkerResourceMetadataWriterImpl>(
+      resource_id, disk_cache()->GetWeakPtr());
 }
 
 void ServiceWorkerStorage::StoreUncommittedResourceId(

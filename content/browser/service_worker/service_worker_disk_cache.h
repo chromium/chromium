@@ -5,13 +5,8 @@
 #ifndef CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_DISK_CACHE_H_
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_DISK_CACHE_H_
 
-#include <stdint.h>
-
-#include "base/memory/weak_ptr.h"
 #include "content/browser/appcache/appcache_disk_cache.h"
-#include "content/browser/appcache/appcache_disk_cache_ops.h"
 #include "content/common/content_export.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace content {
 
@@ -24,19 +19,6 @@ namespace content {
 class CONTENT_EXPORT ServiceWorkerDiskCache : public AppCacheDiskCache {
  public:
   ServiceWorkerDiskCache();
-};
-
-// TODO(crbug.com/1117369): Migrate to
-// storage::mojom::ServiceWorkerResourceMetadataWriter.
-class CONTENT_EXPORT ServiceWorkerResponseMetadataWriter
-    : public AppCacheResponseMetadataWriter {
- protected:
-  // Should only be constructed by the storage class.
-  friend class ServiceWorkerStorage;
-
-  ServiceWorkerResponseMetadataWriter(
-      int64_t resource_id,
-      base::WeakPtr<AppCacheDiskCache> disk_cache);
 };
 
 }  // namespace content

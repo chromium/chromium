@@ -272,9 +272,7 @@ void ServiceWorkerStorageControlImpl::CreateResourceMetadataWriter(
         writer) {
   DCHECK_NE(resource_id, blink::mojom::kInvalidServiceWorkerResourceId);
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<ServiceWorkerResourceMetadataWriterImpl>(
-          storage_->CreateResponseMetadataWriter(resource_id)),
-      std::move(writer));
+      storage_->CreateResourceMetadataWriter(resource_id), std::move(writer));
 }
 
 void ServiceWorkerStorageControlImpl::StoreUncommittedResourceId(

@@ -13,16 +13,15 @@ namespace content {
 
 class BigIOBuffer;
 
-// Manages a service worker disk cache entry. Creates and owns an entry.
-// TODO(bashi): Used by resource writers. Use in readers as well.
-class DiskEntryManager {
+// Creates and owns a service worker disk cacke entry.
+class DiskEntryCreator {
  public:
-  DiskEntryManager(int64_t resource_id,
+  DiskEntryCreator(int64_t resource_id,
                    base::WeakPtr<AppCacheDiskCache> disk_cache);
-  ~DiskEntryManager();
+  ~DiskEntryCreator();
 
-  DiskEntryManager(const DiskEntryManager&) = delete;
-  DiskEntryManager& operator=(const DiskEntryManager&) = delete;
+  DiskEntryCreator(const DiskEntryCreator&) = delete;
+  DiskEntryCreator& operator=(const DiskEntryCreator&) = delete;
 
   // Can be nullptr when a disk cache error occurs.
   AppCacheDiskCacheEntry* entry() {
@@ -58,14 +57,14 @@ class DiskEntryManager {
   // TODO(crbug.com/586174): Refactor service worker's disk cache to use
   // disk_cache::EntryResult to make these callbacks non-static.
   static void DidCreateEntryForFirstAttempt(
-      base::WeakPtr<DiskEntryManager> entry_manager,
+      base::WeakPtr<DiskEntryCreator> entry_creator,
       AppCacheDiskCacheEntry** entry,
       int rv);
   static void DidDoomExistingEntry(
-      base::WeakPtr<DiskEntryManager> entry_manager,
+      base::WeakPtr<DiskEntryCreator> entry_creator,
       int rv);
   static void DidCreateEntryForSecondAttempt(
-      base::WeakPtr<DiskEntryManager> entry_manager,
+      base::WeakPtr<DiskEntryCreator> entry_creator,
       AppCacheDiskCacheEntry** entry,
       int rv);
 
@@ -80,7 +79,44 @@ class DiskEntryManager {
   // Stored as a data member to handle //net-style maybe-async methods.
   base::OnceClosure ensure_entry_is_created_callback_;
 
-  base::WeakPtrFactory<DiskEntryManager> weak_factory_{this};
+  base::WeakPtrFactory<DiskEntryCreator> weak_factory_{this};
+};
+
+// Opens and owns a service worker disk cache entry.
+class DiskEntryOpener {
+ public:
+  DiskEntryOpener(int64_t resource_id,
+                  base::WeakPtr<AppCacheDiskCache> disk_cache);
+  ~DiskEntryOpener();
+
+  DiskEntryOpener(const DiskEntryOpener&) = delete;
+  DiskEntryOpener& operator=(const DiskEntryOpener&) = delete;
+
+  // Can be nullptr when a disk cache error occurs.
+  AppCacheDiskCacheEntry* entry() { return entry_; }
+
+  // Calls the callback when entry() is opened and can be used.
+  //
+  // If necessary, opens a disk cache entry for the `resource_id` passed to the
+  // constructor. After the callback is called, `entry()` can be safely called
+  // to obtain the created entry.
+  void EnsureEntryIsOpen(base::OnceClosure callback);
+
+ private:
+  // TODO(crbug.com/586174): Refactor service worker's disk cache to use
+  // disk_cache::EntryResult to make this callback non-static.
+  static void DidOpenEntry(base::WeakPtr<DiskEntryOpener> entry_creator,
+                           AppCacheDiskCacheEntry** entry,
+                           int rv);
+
+  const int64_t resource_id_;
+  base::WeakPtr<AppCacheDiskCache> disk_cache_;
+  AppCacheDiskCacheEntry* entry_ = nullptr;
+
+  // Stored as a data member to handle //net-style maybe-async methods.
+  base::OnceClosure ensure_entry_is_opened_callback_;
+
+  base::WeakPtrFactory<DiskEntryOpener> weak_factory_{this};
 };
 
 // The implementation of storage::mojom::ServiceWorkerResourceReader.
@@ -120,18 +156,7 @@ class ServiceWorkerResourceReaderImpl
   // data.
   void DidReadDataComplete();
 
-  // Opens a disk cache entry associated with `resource_id_`, if it isn't
-  // opened yet.
-  void EnsureEntryIsOpen(base::OnceClosure callback);
-
-  static void DidOpenEntry(
-      base::WeakPtr<ServiceWorkerResourceReaderImpl> reader,
-      AppCacheDiskCacheEntry** entry,
-      int rv);
-
-  const int64_t resource_id_;
-  base::WeakPtr<AppCacheDiskCache> disk_cache_;
-  AppCacheDiskCacheEntry* entry_ = nullptr;
+  DiskEntryOpener entry_opener_;
 
   // Used to read metadata from disk cache.
   scoped_refptr<BigIOBuffer> metadata_buffer_;
@@ -144,10 +169,6 @@ class ServiceWorkerResourceReaderImpl
 
   // Helper for ReadData().
   std::unique_ptr<DataReader> data_reader_;
-
-  // Holds the callback of EnsureEntryIsOpen(). Stored as a data member to
-  // handle //net-style maybe-async methods.
-  base::OnceClosure open_entry_callback_;
 
 #if DCHECK_IS_ON()
   enum class State {
@@ -199,7 +220,7 @@ class ServiceWorkerResourceWriterImpl
                     size_t write_amount,
                     int rv);
 
-  DiskEntryManager entry_manager_;
+  DiskEntryCreator entry_creator_;
 
   // Points the current write position of WriteData().
   size_t write_position_ = 0;
@@ -223,15 +244,12 @@ class ServiceWorkerResourceWriterImpl
 };
 
 // The implementation of storage::mojom::ServiceWorkerResourceMetadataWriter.
-// Currently this class is an adaptor that uses
-// ServiceWorkerResponseMetadataWriter internally.
-// TODO(crbug.com/1055677): Fork the implementation of
-// ServiceWorkerResponseMetadataWriter and stop using it.
 class ServiceWorkerResourceMetadataWriterImpl
     : public storage::mojom::ServiceWorkerResourceMetadataWriter {
  public:
-  explicit ServiceWorkerResourceMetadataWriterImpl(
-      std::unique_ptr<ServiceWorkerResponseMetadataWriter> writer);
+  ServiceWorkerResourceMetadataWriterImpl(
+      int64_t resource_id,
+      base::WeakPtr<AppCacheDiskCache> disk_cache);
 
   ServiceWorkerResourceMetadataWriterImpl(
       const ServiceWorkerResourceMetadataWriterImpl&) = delete;
@@ -240,12 +258,34 @@ class ServiceWorkerResourceMetadataWriterImpl
 
   ~ServiceWorkerResourceMetadataWriterImpl() override;
 
- private:
   // storage::mojom::ServiceWorkerResourceMetadataWriter implementations:
   void WriteMetadata(mojo_base::BigBuffer data,
                      WriteMetadataCallback callback) override;
 
-  const std::unique_ptr<ServiceWorkerResponseMetadataWriter> writer_;
+ private:
+  // Called while executing WriteMetadata().
+  void ContinueWriteMetadata(mojo_base::BigBuffer data,
+                             WriteMetadataCallback callback);
+  void DidWriteMetadata(scoped_refptr<net::IOBuffer> buffer,
+                        size_t write_amount,
+                        int rv);
+
+  DiskEntryOpener entry_opener_;
+
+  // Stored as a data member to handle //net-style maybe-async methods.
+  WriteMetadataCallback write_metadata_callback_;
+
+#if DCHECK_IS_ON()
+  enum class State {
+    kIdle,
+    kWriteMetadataStarted,
+    kWriteMetadataHasEntry,
+  };
+  State state_ = State::kIdle;
+#endif  // DCHECK_IS_ON()
+
+  base::WeakPtrFactory<ServiceWorkerResourceMetadataWriterImpl> weak_factory_{
+      this};
 };
 
 }  // namespace content
