@@ -1789,6 +1789,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.SpatialNavigation.Advance" units="microseconds"
     expires_after="M85">
+  <obsolete>
+    Expired in M85.
+  </obsolete>
   <owner>bokan@chromium.org</owner>
   <summary>
     Time it takes to find best candidate element, set focus or scroll for given
