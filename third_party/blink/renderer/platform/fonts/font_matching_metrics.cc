@@ -109,6 +109,12 @@ void FontMatchingMetrics::InsertFontHashIntoMap(IdentifiableTokenKey input_key,
     return;
   IdentifiableToken output_token(GetHashForFontData(font_data));
   hash_map.insert(input_key, output_token);
+
+  if (!font_data)
+    return;
+  IdentifiableTokenKey postscript_name_key(
+      GetPostScriptNameTokenForFontData(font_data));
+  font_load_postscript_name_.insert(postscript_name_key, output_token);
 }
 
 IdentifiableTokenBuilder
@@ -245,6 +251,8 @@ void FontMatchingMetrics::PublishIdentifiabilityMetrics() {
            IdentifiableSurface::Type::kLocalFontLookupAsLastResort},
           {&generic_font_lookups_,
            IdentifiableSurface::Type::kGenericFontLookup},
+          {&font_load_postscript_name_,
+           IdentifiableSurface::Type::kLocalFontLoadPostScriptName},
       };
 
   for (const auto& surface_entry : hash_maps_with_corresponding_surface_types) {
@@ -308,6 +316,13 @@ int64_t FontMatchingMetrics::GetHashForFontData(SimpleFontData* font_data) {
                          ->GetOrComputeTypefaceDigest(font_data->PlatformData())
                          .ToUkmMetricValue()
                    : 0;
+}
+
+IdentifiableToken FontMatchingMetrics::GetPostScriptNameTokenForFontData(
+    SimpleFontData* font_data) {
+  DCHECK(font_data);
+  return FontGlobalContext::Get()->GetOrComputePostScriptNameDigest(
+      font_data->PlatformData());
 }
 
 }  // namespace blink

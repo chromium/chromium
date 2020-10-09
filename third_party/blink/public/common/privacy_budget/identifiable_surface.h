@@ -171,7 +171,7 @@ class IdentifiableSurface {
     // FontSelectionRequest (i.e. weight, width and slope).
     kLocalFontLookupByFallbackCharacter = 13,
 
-    // Represents loading a font locally as a last resort. Input is the
+    // Represents looking up a font locally as a last resort. Input is the
     // FontSelectionRequest (i.e. weight, width and slope).
     kLocalFontLookupAsLastResort = 14,
 
@@ -200,6 +200,9 @@ class IdentifiableSurface {
     // API to provide more detailed User-Agent data. The output is keyed on
     // the hint parameter.
     kNavigatorUAData_GetHighEntropyValues = 24,
+
+    // Represents loading a font locally. Input is the PostScript name.
+    kLocalFontLoadPostScriptName = 29,
 
     // We can use values up to and including |kMax|.
     kMax = (1 << kTypeBits) - 1

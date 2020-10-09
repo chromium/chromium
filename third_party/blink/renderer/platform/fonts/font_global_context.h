@@ -59,6 +59,8 @@ class PLATFORM_EXPORT FontGlobalContext {
   static FontUniqueNameLookup* GetFontUniqueNameLookup();
 
   IdentifiableToken GetOrComputeTypefaceDigest(const FontPlatformData& source);
+  IdentifiableToken GetOrComputePostScriptNameDigest(
+      const FontPlatformData& source);
 
   // Called by MemoryPressureListenerRegistry to clear memory.
   static void ClearMemory();
@@ -75,6 +77,7 @@ class PLATFORM_EXPORT FontGlobalContext {
   hb_font_funcs_t* harfbuzz_font_funcs_harfbuzz_advances_;
   std::unique_ptr<FontUniqueNameLookup> font_unique_name_lookup_;
   WTF::LruCache<SkFontID, IdentifiableToken> typeface_digest_cache_;
+  WTF::LruCache<SkFontID, IdentifiableToken> postscript_name_digest_cache_;
 
   DISALLOW_COPY_AND_ASSIGN(FontGlobalContext);
 };
