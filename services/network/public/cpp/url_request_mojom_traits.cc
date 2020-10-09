@@ -270,12 +270,8 @@ bool StructTraits<network::mojom::DataElementDataView, network::DataElement>::
     return false;
   }
   if (data.type() == network::mojom::DataElementType::kBytes) {
-    mojo_base::BigBufferView big_buffer;
-    if (!data.ReadBuf(&big_buffer))
+    if (!data.ReadBuf(&out->buf_))
       return false;
-    out->buf_.clear();
-    out->buf_.insert(out->buf_.end(), big_buffer.data().begin(),
-                     big_buffer.data().end());
   }
   out->type_ = data.type();
   out->data_pipe_getter_ = data.TakeDataPipeGetter<

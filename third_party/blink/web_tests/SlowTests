@@ -542,10 +542,3 @@ crbug.com/1093478 external/wpt/quirks/unitless-length/limited-quirks.html [ Slow
 crbug.com/1133836 external/wpt/scroll-to-text-fragment/redirects.html [ Slow ]
 
 crbug.com/1134580 virtual/eye-dropper/color-picker-show-eye-dropper.html [ Slow ]
-
-crbug.com/919361 [ Mac ] http/tests/fetch/serviceworker/fetch_upload-base-https-other-https.html [ Slow ]
-crbug.com/919361 [ Mac ] http/tests/fetch/serviceworker/fetch_upload.html [ Slow ]
-crbug.com/919361 [ Mac ] http/tests/fetch/window/fetch_upload-base-https-other-https.html [ Slow ]
-crbug.com/919361 [ Mac ] http/tests/fetch/window/fetch_upload.html [ Slow ]
-crbug.com/919361 [ Mac ] http/tests/fetch/workers/fetch_upload-base-https-other-https.html [ Slow ]
-crbug.com/919361 [ Mac ] http/tests/fetch/workers/fetch_upload.html [ Slow ]
