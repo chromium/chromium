@@ -89,6 +89,43 @@ base::string16 GetToastString(const base::string16& notification_id,
       profile_id.c_str(), incognito, notification_id.c_str());
 }
 
+// Observes the passed |histogram_name| and calls |callback| when a new sample
+// is recorded. Stops observing after the first sample or when this object is
+// destructed. Note that this may not call |callback| if it has been destructed
+// before a sample has been recorded.
+class ScopedHistogramObserver {
+ public:
+  ScopedHistogramObserver(const std::string& histogram_name,
+                          base::OnceClosure callback)
+      : histogram_name_(histogram_name), callback_(std::move(callback)) {
+    DCHECK(callback_);
+    // base::Unretained is safe as we remove the callback before destruction.
+    EXPECT_TRUE(base::StatisticsRecorder::SetCallback(
+        histogram_name_,
+        base::BindRepeating(&ScopedHistogramObserver::OnHistogramRecorded,
+                            base::Unretained(this))));
+  }
+  ScopedHistogramObserver(const ScopedHistogramObserver&) = delete;
+  ScopedHistogramObserver& operator=(const ScopedHistogramObserver&) = delete;
+  ~ScopedHistogramObserver() {
+    // Only clear the callback once (either here or in OnHistogramRecorded()) so
+    // we don't clear any callbacks from other observers.
+    if (callback_)
+      base::StatisticsRecorder::ClearCallback(histogram_name_);
+  }
+
+ private:
+  void OnHistogramRecorded(const char* histogram_name,
+                           uint64_t name_hash,
+                           base::HistogramBase::Sample sample) {
+    base::StatisticsRecorder::ClearCallback(histogram_name_);
+    std::move(callback_).Run();
+  }
+
+  std::string histogram_name_;
+  base::OnceClosure callback_;
+};
+
 }  // namespace
 
 class NotificationPlatformBridgeWinUITest : public InProcessBrowserTest {
@@ -514,16 +551,8 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest,
   bridge->SetExpectedDisplayedNotificationsForTesting(nullptr);
 }
 
-// Flaky on Windows, tracked at crbug.com/1135576
-#if defined(OS_WIN)
-#define MAYBE_SynchronizeNotificationsAfterClose \
-  DISABLED_SynchronizeNotificationsAfterClose
-#else
-#define MAYBE_SynchronizeNotificationsAfterClose \
-  SynchronizeNotificationsAfterClose
-#endif
 IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest,
-                       MAYBE_SynchronizeNotificationsAfterClose) {
+                       SynchronizeNotificationsAfterClose) {
   if (base::win::GetVersion() < kMinimumWindowsVersion)
     return;
 
@@ -539,10 +568,8 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest,
       message_center::NotifierId(), message_center::RichNotificationData(),
       nullptr);
   base::RunLoop display_run_loop;
-  notifier.SetNotificationShownCallback(base::BindLambdaForTesting(
-      [&display_run_loop](const NotificationLaunchId& launch_id) {
-        display_run_loop.Quit();
-      }));
+  ScopedHistogramObserver display_observer(
+      "Notifications.Windows.DisplayStatus", display_run_loop.QuitClosure());
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT,
                   browser()->profile(), notification, /*metadata=*/nullptr);
   display_run_loop.Run();
@@ -552,20 +579,14 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest,
 
   // Close the notification
   base::RunLoop close_run_loop;
-  EXPECT_TRUE(base::StatisticsRecorder::SetCallback(
-      "Notifications.Windows.CloseStatus",
-      base::BindLambdaForTesting(
-          [&close_run_loop](const char* histogram_name, uint64_t name_hash,
-                            base::HistogramBase::Sample sample) {
-            close_run_loop.Quit();
-          })));
+  ScopedHistogramObserver close_observer("Notifications.Windows.CloseStatus",
+                                         close_run_loop.QuitClosure());
   bridge->Close(browser()->profile(), notification.id());
   close_run_loop.Run();
 
   // Closing a notification should remove it from the expected map.
   EXPECT_EQ(0u, bridge->GetExpectedDisplayedNotificationForTesting().size());
 
-  base::StatisticsRecorder::ClearCallback("Notifications.Windows.CloseStatus");
   bridge->SetNotifierForTesting(nullptr);
 }
 

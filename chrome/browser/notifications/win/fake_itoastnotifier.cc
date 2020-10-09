@@ -20,6 +20,9 @@ void FakeIToastNotifier::SetNotificationShownCallback(
 
 HRESULT FakeIToastNotifier::Show(
     winui::Notifications::IToastNotification* notification) {
+  if (!notification_shown_callback_)
+    return S_OK;
+
   NotificationLaunchId launch_id = GetNotificationLaunchId(notification);
   notification_shown_callback_.Run(launch_id);
   return S_OK;
