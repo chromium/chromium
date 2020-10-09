@@ -3,9 +3,15 @@
 // found in the LICENSE file.
 
 #include "extensions/common/manifest_handlers/permissions_parser.h"
+
+#include "base/stl_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/values_test_util.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -150,6 +156,76 @@ TEST_F(PermissionsParserTest, UnsupportedOptionalPermissionWarning) {
       PermissionsParser::GetOptionalPermissions(extension.get())
           .GetAPIsAsStrings();
   EXPECT_THAT(optional_api_names, testing::UnorderedElementsAre("tabs"));
+}
+
+// Test that chrome://favicon is a supported permission in MV2, but not MV3.
+TEST_F(PermissionsParserTest, ChromeFavicon) {
+  auto get_manifest_data = [](int manifest_version, const char* permission) {
+    constexpr char kManifestStub[] =
+        R"({
+             "name": "Test",
+             "version": "0.1",
+             "manifest_version": %d,
+             "%s": ["%s"]
+           })";
+
+    const char* permissions_key = manifest_version > 2
+                                      ? manifest_keys::kHostPermissions
+                                      : manifest_keys::kPermissions;
+    base::Value manifest_value = base::test::ParseJson(base::StringPrintf(
+        kManifestStub, manifest_version, permissions_key, permission));
+    EXPECT_EQ(base::Value::Type::DICTIONARY, manifest_value.type());
+    return ManifestData(std::move(manifest_value), permission);
+  };
+
+  static constexpr char kFaviconPattern[] = "chrome://favicon/*";
+  // <all_urls> implicitly includes chrome://favicon, if it's supported.
+  constexpr char kAllUrls[] = "<all_urls>";
+
+  auto has_favicon_access = [](const Extension& extension) {
+    const GURL favicon_url("chrome://favicon");
+    return extension.permissions_data()->HasHostPermission(favicon_url);
+  };
+
+  auto has_install_warning = [](const Extension& extension) {
+    InstallWarning expected_warning(ErrorUtils::FormatErrorMessage(
+        manifest_errors::kInvalidPermissionScheme, kFaviconPattern));
+    return base::Contains(extension.install_warnings(), expected_warning);
+  };
+
+  {
+    scoped_refptr<const Extension> extension =
+        LoadAndExpectSuccess(get_manifest_data(2, kFaviconPattern));
+    ASSERT_TRUE(extension);
+    EXPECT_TRUE(has_favicon_access(*extension));
+    EXPECT_FALSE(has_install_warning(*extension));
+  }
+
+  {
+    scoped_refptr<const Extension> extension =
+        LoadAndExpectSuccess(get_manifest_data(2, kAllUrls));
+    ASSERT_TRUE(extension);
+    EXPECT_TRUE(has_favicon_access(*extension));
+    EXPECT_FALSE(has_install_warning(*extension));
+  }
+  {
+    scoped_refptr<const Extension> extension =
+        LoadAndExpectSuccess(get_manifest_data(3, kFaviconPattern));
+    ASSERT_TRUE(extension);
+    EXPECT_FALSE(has_favicon_access(*extension));
+    // Since chrome://favicon is not a valid permission in MV3, we expect a
+    // warning to be thrown.
+    EXPECT_TRUE(has_install_warning(*extension));
+  }
+  {
+    scoped_refptr<const Extension> extension =
+        LoadAndExpectSuccess(get_manifest_data(3, kAllUrls));
+    ASSERT_TRUE(extension);
+    EXPECT_FALSE(has_favicon_access(*extension));
+    // NOTE: We don't expect an install warning here, because the <all_urls>
+    // permission is still supported. It just doesn't grant favicon access.
+    EXPECT_FALSE(has_install_warning(*extension));
+  }
 }
 
 }  // namespace extensions
