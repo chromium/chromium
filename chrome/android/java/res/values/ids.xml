@@ -24,11 +24,6 @@
     <item type="id" name="edit_group_name" />
 
     <!-- InfoBar constants -->
-    <item type="id" name="infobar_extra_check" />
-    <item type="id" name="permission_infobar_persist_toggle" />
-    <item type="id" name="translate_infobar_always_toggle" />
-    <item type="id" name="translate_infobar_source_spinner" />
-    <item type="id" name="translate_infobar_target_spinner" />
     <item type="id" name="subresource_filter_infobar_toggle" />
 
     <!-- Media playback notification -->
