@@ -88,11 +88,6 @@ const char kBasicPrintShortcut[] = "\x28\xE2\x8c\xA5\xE2\x8C\x98\x50\x29";
 const char kBasicPrintShortcut[] = "(Ctrl+Shift+P)";
 #endif
 
-#if !BUILDFLAG(OPTIMIZE_WEBUI)
-constexpr char kGeneratedPath[] =
-    "@out_folder@/gen/chrome/browser/resources/print_preview/preprocessed/";
-#endif
-
 PrintPreviewUI::TestDelegate* g_test_delegate = nullptr;
 
 void StopWorker(int document_cookie) {
@@ -478,8 +473,8 @@ content::WebUIDataSource* CreatePrintPreviewUISource(Profile* profile) {
 #else
   webui::SetupWebUIDataSource(
       source,
-      base::make_span(kPrintPreviewResources, kPrintPreviewResourcesSize),
-      kGeneratedPath, IDR_PRINT_PREVIEW_PRINT_PREVIEW_HTML);
+      base::make_span(kPrintPreviewResources, kPrintPreviewResourcesSize), "",
+      IDR_PRINT_PREVIEW_PRINT_PREVIEW_HTML);
 #endif
   AddPrintPreviewStrings(source);
   SetupPrintPreviewPlugin(source);

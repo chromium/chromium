@@ -11,6 +11,10 @@ template("generate_grd") {
     }
 
     inputs = invoker.manifest_files
+    if (defined(invoker.input_files)) {
+      inputs += invoker.input_files
+    }
+
     outputs = [ invoker.out_grd ]
 
     args = [
@@ -22,5 +26,13 @@ template("generate_grd") {
              rebase_path(root_gen_dir, root_build_dir),
              "--manifest-files",
            ] + rebase_path(invoker.manifest_files, root_build_dir)
+
+    if (defined(invoker.input_files)) {
+      args += [
+        "--input-files-base-dir",
+        invoker.input_files_base_dir,
+      ]
+      args += [ "--input-files" ] + invoker.input_files
+    }
   }
 }

@@ -29,6 +29,14 @@
 #     from the root generated directory for setting file paths, as grd files
 #     with generated file paths must specify these paths as
 #     "${root_gen_dir}/<path_to_file>"
+#
+#   input_files:
+#     List of file paths (from |input_files_base_dir|) that are not included in
+#     any manifest files, but should be added to the grd.
+#
+#   input_files_base_dir:
+#     The base directory for the paths in |input_files|. |input_files| and
+#     |input_files_base_dir| must either both be provided or both be omitted.
 
 import argparse
 import json
@@ -56,13 +64,33 @@ GRD_BEGIN_TEMPLATE = '<?xml version="1.0" encoding="UTF-8"?>\n'\
                      '    <includes>\n'
 
 GRD_INCLUDE_TEMPLATE = '      <include name="{name}" ' \
-                       'file="${{root_gen_dir}}/{path_from_gen}" ' \
-                       'resource_path="{path}" use_base_dir="false" ' \
-                       'type="BINDATA" />\n'
+                       'file="{file}" resource_path="{path}" ' \
+                       'use_base_dir="false" type="{type}" />\n'
 
 GRD_END_TEMPLATE = '    </includes>\n'\
                    '  </release>\n'\
                    '</grit>\n'
+
+
+# Generates an <include .... /> row for the given file.
+def _generate_include_row(grd_prefix, filename, pathname):
+  name_suffix = filename.upper().replace('/', '_').replace('.', '_')
+  name = 'IDR_%s_%s' % (grd_prefix.upper(), name_suffix)
+  extension = os.path.splitext(filename)[1]
+  type = 'chrome_html' if extension == '.html' or extension == '.js' \
+          else 'BINDATA'
+  resource_path = filename
+  # Remove 'rollup' from *.rollup.js paths, except for shared.rollup.js.
+  # Possibly pass such replacements from the gni file, if this ends up not being
+  # sufficient for all cases.
+  if ('rollup' in resource_path and 'shared' not in resource_path):
+    resource_path = resource_path.replace('rollup.', '')
+  return GRD_INCLUDE_TEMPLATE.format(
+      file=pathname,
+      path=resource_path,
+      name=name,
+      type=type)
+
 
 def main(argv):
   parser = argparse.ArgumentParser()
@@ -70,10 +98,20 @@ def main(argv):
   parser.add_argument('--out-grd', required=True)
   parser.add_argument('--grd-prefix', required=True)
   parser.add_argument('--root-gen-dir', required=True)
+  parser.add_argument('--input-files', nargs="*")
+  parser.add_argument('--input-files-base-dir')
   args = parser.parse_args(argv)
 
   grd_file = open(os.path.normpath(os.path.join(_CWD, args.out_grd)), 'w')
   grd_file.write(GRD_BEGIN_TEMPLATE.format(prefix=args.grd_prefix))
+
+  if args.input_files != None:
+    assert(args.input_files_base_dir)
+    for filename in args.input_files:
+      filepath = os.path.join(
+          args.input_files_base_dir, filename).replace('\\', '/')
+      grd_file.write(_generate_include_row(
+          args.grd_prefix, filename, '${root_src_dir}/' + filepath))
 
   for manifest_file in args.manifest_files:
     manifest_path = os.path.normpath(os.path.join(_CWD, manifest_file))
@@ -81,13 +119,10 @@ def main(argv):
       data = json.load(f)
       base_dir= os.path.normpath(os.path.join(_CWD, data['base_dir']))
       for filename in data['files']:
-        name_suffix = filename.upper().replace('/', '_').replace('.', '_')
-        name = 'IDR_%s_%s' % (args.grd_prefix.upper(), name_suffix)
         filepath = os.path.join(base_dir, filename).replace('\\', '/')
         rebased_path = os.path.relpath(filepath, args.root_gen_dir)
-        grd_file.write(GRD_INCLUDE_TEMPLATE.format(name=name,
-                                                   path=filename,
-                                                   path_from_gen=rebased_path))
+        grd_file.write(_generate_include_row(
+            args.grd_prefix, filename, '${root_gen_dir}/' + rebased_path))
 
   grd_file.write(GRD_END_TEMPLATE)
   return

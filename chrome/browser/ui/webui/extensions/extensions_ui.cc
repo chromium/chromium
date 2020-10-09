@@ -59,11 +59,6 @@ constexpr char kInDevModeKey[] = "inDevMode";
 constexpr char kShowActivityLogKey[] = "showActivityLog";
 constexpr char kLoadTimeClassesKey[] = "loadTimeClasses";
 
-#if !BUILDFLAG(OPTIMIZE_WEBUI)
-constexpr char kGeneratedPath[] =
-    "@out_folder@/gen/chrome/browser/resources/extensions/preprocessed/";
-#endif
-
 std::string GetLoadTimeClasses(bool in_dev_mode) {
   return in_dev_mode ? "in-dev-mode" : std::string();
 }
@@ -82,7 +77,7 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
 #else
   webui::SetupWebUIDataSource(
       source, base::make_span(kExtensionsResources, kExtensionsResourcesSize),
-      kGeneratedPath, IDR_EXTENSIONS_EXTENSIONS_HTML);
+      "", IDR_EXTENSIONS_EXTENSIONS_HTML);
 #endif
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {

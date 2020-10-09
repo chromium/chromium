@@ -136,11 +136,6 @@
 
 namespace settings {
 
-#if !BUILDFLAG(OPTIMIZE_WEBUI)
-constexpr char kGeneratedPath[] =
-    "@out_folder@/gen/chrome/browser/resources/settings/preprocessed/";
-#endif
-
 // static
 void SettingsUI::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -373,7 +368,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 #else
   webui::SetupWebUIDataSource(
       html_source, base::make_span(kSettingsResources, kSettingsResourcesSize),
-      kGeneratedPath, IDR_SETTINGS_SETTINGS_V3_HTML);
+      "", IDR_SETTINGS_SETTINGS_V3_HTML);
 #endif
 
   AddLocalizedStrings(html_source, profile, web_ui->GetWebContents());

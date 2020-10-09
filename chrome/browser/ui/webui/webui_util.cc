@@ -43,9 +43,12 @@ void SetupWebUIDataSource(content::WebUIDataSource* source,
                           const std::string& generated_path,
                           int default_resource) {
   SetupPolymer3Defaults(source);
+  // TODO (crbug.com/1132403): Replace usages of |generated_path| with the new
+  // |resource_path| GRD property, and remove from here.
+  bool has_gen_path = !generated_path.empty();
   for (const GritResourceMap& resource : resources) {
     std::string path = resource.name;
-    if (path.rfind(generated_path, 0) == 0) {
+    if (has_gen_path && path.rfind(generated_path, 0) == 0) {
       path = path.substr(generated_path.size());
     }
 
