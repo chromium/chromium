@@ -97,6 +97,11 @@ int GetLowEntropyHashValue(const std::string& value) {
   return base::PersistentHash(value) % kNumberOfLowEntropyHashValues;
 }
 
+bool ShouldShowGenericColoredAvatar(size_t avatar_icon_index) {
+  return base::FeatureList::IsEnabled(features::kNewProfilePicker) &&
+         avatar_icon_index == profiles::GetPlaceholderAvatarIndex();
+}
+
 }  // namespace
 
 bool ProfileThemeColors::operator==(const ProfileThemeColors& other) const {
@@ -300,8 +305,7 @@ gfx::Image ProfileAttributesEntry::GetAvatarIcon(
 
   // TODO(crbug.com/1100835): After launch, remove the treatment of placeholder
   // avatars from GetHighResAvatar() and from any other places.
-  if (base::FeatureList::IsEnabled(features::kNewProfilePicker) &&
-      GetAvatarIconIndex() == profiles::GetPlaceholderAvatarIndex()) {
+  if (ShouldShowGenericColoredAvatar(GetAvatarIconIndex())) {
     return GetPlaceholderAvatarIcon(size_for_placeholder_avatar);
   }
 
@@ -615,16 +619,22 @@ void ProfileAttributesEntry::SetAvatarIconIndex(size_t icon_index) {
 
 void ProfileAttributesEntry::SetProfileThemeColors(
     const base::Optional<ProfileThemeColors>& colors) {
+  bool changed = false;
   if (colors.has_value()) {
-    SetInteger(kProfileHighlightColorKey, colors->profile_highlight_color);
-    SetInteger(kDefaultAvatarFillColorKey, colors->default_avatar_fill_color);
-    SetInteger(kDefaultAvatarStrokeColorKey,
-               colors->default_avatar_stroke_color);
+    changed |=
+        SetInteger(kProfileHighlightColorKey, colors->profile_highlight_color);
+    changed |= SetInteger(kDefaultAvatarFillColorKey,
+                          colors->default_avatar_fill_color);
+    changed |= SetInteger(kDefaultAvatarStrokeColorKey,
+                          colors->default_avatar_stroke_color);
   } else {
-    ClearValue(kProfileHighlightColorKey);
-    ClearValue(kDefaultAvatarFillColorKey);
-    ClearValue(kDefaultAvatarStrokeColorKey);
+    changed |= ClearValue(kProfileHighlightColorKey);
+    changed |= ClearValue(kDefaultAvatarFillColorKey);
+    changed |= ClearValue(kDefaultAvatarStrokeColorKey);
   }
+
+  if (changed && ShouldShowGenericColoredAvatar(GetAvatarIconIndex()))
+    profile_info_cache_->NotifyOnProfileAvatarChanged(GetPath());
 }
 
 void ProfileAttributesEntry::SetHostedDomain(std::string hosted_domain) {
