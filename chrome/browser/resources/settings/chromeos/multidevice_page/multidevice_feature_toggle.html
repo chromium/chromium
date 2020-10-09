@@ -8,7 +8,7 @@
 <dom-module id="settings-multidevice-feature-toggle">
   <template>
     <cr-toggle id="toggle"
-        aria-label$="[[getFeatureName(feature)]]"
+        aria-label$="[[getToggleA11yLabel_(feature)]]"
         checked="{{checked_}}"
         disabled="[[!isFeatureStateEditable(feature, pageContentData)]]"
         on-change="onChange_">

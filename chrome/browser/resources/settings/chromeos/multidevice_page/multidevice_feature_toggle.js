@@ -19,6 +19,8 @@ Polymer({
     /** @type {!settings.MultiDeviceFeature} */
     feature: Number,
 
+    toggleAriaLabel: String,
+
     /** @private {boolean} */
     checked_: Boolean,
   },
@@ -78,4 +80,12 @@ Polymer({
         'feature-toggle-clicked',
         {feature: this.feature, enabled: !this.checked_});
   },
+
+  /**
+   * Returns the A11y label for the toggle.
+   * @private
+   */
+  getToggleA11yLabel_() {
+    return this.toggleAriaLabel || this.getFeatureName(this.feature);
+  }
 });

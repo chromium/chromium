@@ -270,6 +270,8 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_MULTIDEVICE_SETUP_ITEM_HEADING},
       {"multideviceEnabled", IDS_SETTINGS_MULTIDEVICE_ENABLED},
       {"multideviceDisabled", IDS_SETTINGS_MULTIDEVICE_DISABLED},
+      {"multideviceSuiteToggleA11yLabel",
+       IDS_SETTINGS_MULTIDEVICE_SUITE_TOGGLE_A11Y_LABEL},
       {"multideviceSmartLockItemTitle", IDS_SETTINGS_EASY_UNLOCK_SECTION_TITLE},
       {"multidevicePhoneHubItemTitle",
        IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_SECTION_TITLE},
