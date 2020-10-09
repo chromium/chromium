@@ -1,14 +1,6 @@
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-'use strict';
-
-goog.require('mojo.interfaceControl.RUN_MESSAGE_ID');
-goog.require('mojo.interfaceControl.RunResponseMessageParamsSpec');
-goog.require('mojo.internal');
-
-goog.provide('mojo.internal.interfaceSupport');
-
 
 /**
  * Handles incoming interface control messages on a remote or router endpoint.

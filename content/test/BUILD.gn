@@ -799,6 +799,14 @@ mojom("test_interfaces") {
   sources = [ "echo.mojom" ]
 }
 
+mojom("mojo_bindings_web_test_mojom") {
+  testonly = true
+  sources = [
+    "data/mojo_bindings_web_test.test-mojom",
+    "data/mojo_bindings_web_test_types.test-mojom",
+  ]
+}
+
 if (is_android) {
   static_library("android_test_message_pump_support") {
     testonly = true

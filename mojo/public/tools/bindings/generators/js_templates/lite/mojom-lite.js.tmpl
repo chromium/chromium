@@ -11,7 +11,7 @@ goog.require('mojo.internal.interfaceSupport');
 {% for kind in module.imported_kinds.values() %}
 goog.require('{{kind|lite_js_import_name}}');
 {%- endfor %}
-{% else %}
+{% elif not for_bindings_internals  %}
 mojo.internal.exportModule('{{module.namespace}}');
 {% endif %}
 

@@ -1,14 +1,10 @@
-{%  if generate_closure_exports -%}
-goog.provide('{{module.namespace}}.{{union.name}}');
-{% endif %}
-
 mojo.internal.Union(
-    {{module.namespace}}.{{union.name}}Spec.$, '{{union.name}}',
+    {{union.name}}Spec.$, '{{union.name}}',
     {
 {%- for field in union.fields %}
       '{{field.name}}': {
         'ordinal': {{field.ordinal}},
-        'type': {{field.kind|lite_js_type}},
+        'type': {{field.kind|spec_type_in_js_module}},
 {%-    if field.kind.is_nullable %}
         'nullable': true,
 {%-    endif %}
@@ -19,8 +15,8 @@ mojo.internal.Union(
 /**
  * @typedef { {
 {%- for field in union.fields %}
- *   {{field.name}}: ({{field.kind|lite_closure_type_with_nullability}}|undefined),
+ *   {{field.name}}: ({{field.kind|type_in_js_module_with_nullability}}|undefined),
 {%-  endfor %}
  * } }
  */
-{{module.namespace}}.{{union.name}};
+export const {{union.name}} = {};

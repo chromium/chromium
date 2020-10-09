@@ -267,10 +267,13 @@ class JavaScriptStylizer(generator.Stylizer):
 class Generator(generator.Generator):
   def _GetParameters(self, for_compile=False):
     return {
+        "bindings_library_path": self._GetBindingsLibraryPath(),
         "enums": self.module.enums,
+        "for_bindings_internals": self.disallow_native_types,
         "html_imports": self._GenerateHtmlImports(),
         "imports": self.module.imports,
         "interfaces": self.module.interfaces,
+        "js_module_imports": self._GetJsModuleImports(),
         "kinds": self.module.kinds,
         "module": self.module,
         "mojom_filename": os.path.basename(self.module.path),
@@ -291,10 +294,12 @@ class Generator(generator.Generator):
         "closure_type": self._ClosureType,
         "decode_snippet": self._JavaScriptDecodeSnippet,
         "default_value": self._JavaScriptDefaultValue,
+        "default_value_in_js_module": self._DefaultValueInJsModule,
         "encode_snippet": self._JavaScriptEncodeSnippet,
         "expression_to_text": self._ExpressionToText,
         "expression_to_text_lite": self._ExpressionToTextLite,
         "field_offset": JavaScriptFieldOffset,
+        "field_type_in_js_module": self._GetFieldTypeInJsModule,
         "get_relative_url": GetRelativeUrl,
         "has_callbacks": mojom.HasCallbacks,
         "is_any_handle_or_interface_kind": mojom.IsAnyHandleOrInterfaceKind,
@@ -326,14 +331,20 @@ class Generator(generator.Generator):
         "lite_js_import_name": self._LiteJavaScriptImportName,
         "method_passes_associated_kinds": mojom.MethodPassesAssociatedKinds,
         "namespace_declarations": self._NamespaceDeclarations,
+        "name_in_js_module": self._GetNameInJsModule,
         "closure_type_with_nullability": self._ClosureTypeWithNullability,
         "lite_closure_param_type": self._LiteClosureParamType,
         "lite_closure_type": self._LiteClosureType,
         "lite_closure_type_with_nullability":
         self._LiteClosureTypeWithNullability,
         "lite_closure_field_type": self._LiteClosureFieldType,
+        "param_type_in_js_module": self._GetParamTypeInJsModule,
         "payload_size": JavaScriptPayloadSize,
+        "spec_type_in_js_module": self._GetSpecTypeInJsModule,
         "to_camel": generator.ToCamel,
+        "type_in_js_module": self._GetTypeInJsModule,
+        "type_in_js_module_with_nullability":
+        self._GetTypeInJsModuleWithNullability,
         "union_decode_snippet": self._JavaScriptUnionDecodeSnippet,
         "union_encode_snippet": self._JavaScriptUnionEncodeSnippet,
         "validate_array_params": self._JavaScriptValidateArrayParams,
@@ -371,6 +382,10 @@ class Generator(generator.Generator):
   def _GenerateLiteBindingsForCompile(self):
     return self._GetParameters(for_compile=True)
 
+  @UseJinja("lite/mojom.m.js.tmpl")
+  def _GenerateJsModule(self):
+    return self._GetParameters()
+
   def GenerateFiles(self, args):
     if self.variant:
       raise Exception("Variants not supported in JavaScript bindings.")
@@ -392,6 +407,18 @@ class Generator(generator.Generator):
                             "%s-lite.js" % self.module.path)
       self.WriteWithComment(self._GenerateLiteBindingsForCompile(),
                             "%s-lite-for-compile.js" % self.module.path)
+      self.WriteWithComment(self._GenerateJsModule(),
+                            "%s.m.js" % self.module.path)
+
+  def _GetRelativePath(self, path):
+    relpath = urllib_request.pathname2url(
+        os.path.relpath(path, os.path.dirname(self.module.path)))
+    if relpath.startswith('.') or relpath.startswith('/'):
+      return relpath
+    return './' + relpath
+
+  def _GetBindingsLibraryPath(self):
+    return self._GetRelativePath('mojo/public/js/bindings.m.js')
 
   def _SetUniqueNameForImports(self):
     used_names = set()
@@ -449,86 +476,136 @@ class Generator(generator.Generator):
             or mojom.IsDoubleKind(kind) or mojom.IsStringKind(kind)
             or mojom.IsEnumKind(kind))
 
+  def _GetTypeNameForNewBindings(self,
+                                 kind,
+                                 with_nullability=False,
+                                 for_module=False):
+    def recurse_with_nullability(kind):
+      return self._GetTypeNameForNewBindings(kind,
+                                             with_nullability=True,
+                                             for_module=for_module)
+
+    def get_type_name(kind):
+      if kind in mojom.PRIMITIVES:
+        return _kind_to_closure_type[kind]
+      if mojom.IsArrayKind(kind):
+        return "Array<%s>" % recurse_with_nullability(kind.kind)
+      if mojom.IsMapKind(kind) and self._IsStringableKind(kind.key_kind):
+        return "Object<%s, %s>" % (recurse_with_nullability(
+            kind.key_kind), recurse_with_nullability(kind.value_kind))
+      if mojom.IsMapKind(kind):
+        return "Map<%s, %s>" % (recurse_with_nullability(
+            kind.key_kind), recurse_with_nullability(kind.value_kind))
+
+      if (mojom.IsAssociatedKind(kind) or mojom.IsInterfaceRequestKind(kind)
+          or mojom.IsPendingRemoteKind(kind)
+          or mojom.IsPendingReceiverKind(kind)
+          or mojom.IsPendingAssociatedRemoteKind(kind)
+          or mojom.IsPendingAssociatedReceiverKind(kind)):
+        named_kind = kind.kind
+      else:
+        named_kind = kind
+
+      name = []
+      qualified = (not for_module) or (self.module is not named_kind.module)
+      if qualified and named_kind.module:
+        name.append(named_kind.module.namespace)
+      if named_kind.parent_kind:
+        name.append(named_kind.parent_kind.name)
+
+      if mojom.IsEnumKind(kind) and named_kind.parent_kind:
+        name = ".".join(name)
+        name += "_" + named_kind.name
+      else:
+        name.append("" + named_kind.name)
+        name = ".".join(name)
+
+      if for_module:
+        name = name.replace(".", "_")
+
+      if (mojom.IsStructKind(kind) or mojom.IsUnionKind(kind)
+          or mojom.IsEnumKind(kind)):
+        return name
+      if mojom.IsInterfaceKind(kind) or mojom.IsPendingRemoteKind(kind):
+        return name + "Remote"
+      if mojom.IsInterfaceRequestKind(kind) or mojom.IsPendingReceiverKind(
+          kind):
+        return name + "PendingReceiver"
+      # TODO(calamity): Support associated interfaces properly.
+      if (mojom.IsAssociatedInterfaceKind(kind)
+          or mojom.IsPendingAssociatedRemoteKind(kind)):
+        return "Object"
+      # TODO(calamity): Support associated interface requests properly.
+      if (mojom.IsAssociatedInterfaceRequestKind(kind)
+          or mojom.IsPendingAssociatedReceiverKind(kind)):
+        return "Object"
+      raise Exception("No valid closure type: %s" % kind)
+
+    if with_nullability:
+      return ('?' if mojom.IsNullableKind(kind) else '!') + get_type_name(kind)
+
+    return get_type_name(kind)
+
   def _LiteClosureType(self, kind):
-    if kind in mojom.PRIMITIVES:
-      return _kind_to_closure_type[kind]
-    if mojom.IsArrayKind(kind):
-      return "Array<%s>" % self._LiteClosureTypeWithNullability(kind.kind)
-    if mojom.IsMapKind(kind) and self._IsStringableKind(kind.key_kind):
-      return "Object<%s, %s>" % (self._LiteClosureTypeWithNullability(
-          kind.key_kind), self._LiteClosureTypeWithNullability(kind.value_kind))
-    if mojom.IsMapKind(kind):
-      return "Map<%s, %s>" % (self._LiteClosureTypeWithNullability(
-          kind.key_kind), self._LiteClosureTypeWithNullability(kind.value_kind))
+    return self._GetTypeNameForNewBindings(kind,
+                                           with_nullability=False,
+                                           for_module=False)
 
-    if (mojom.IsAssociatedKind(kind) or mojom.IsInterfaceRequestKind(kind)
-        or mojom.IsPendingRemoteKind(kind) or mojom.IsPendingReceiverKind(kind)
-        or mojom.IsPendingAssociatedRemoteKind(kind)
-        or mojom.IsPendingAssociatedReceiverKind(kind)):
-      named_kind = kind.kind
-    else:
-      named_kind = kind
-
-    name = []
-    if named_kind.module:
-      name.append(named_kind.module.namespace)
-    if named_kind.parent_kind:
-      name.append(named_kind.parent_kind.name)
-
-    if mojom.IsEnumKind(kind) and named_kind.parent_kind:
-      name = ".".join(name)
-      name += "_" + named_kind.name
-    else:
-      name.append("" + named_kind.name)
-      name = ".".join(name)
-
-    if (mojom.IsStructKind(kind) or mojom.IsUnionKind(kind)
-        or mojom.IsEnumKind(kind)):
-      return name
-    if mojom.IsInterfaceKind(kind) or mojom.IsPendingRemoteKind(kind):
-      return name + "Remote"
-    if mojom.IsInterfaceRequestKind(kind) or mojom.IsPendingReceiverKind(kind):
-      return name + "PendingReceiver"
-    # TODO(calamity): Support associated interfaces properly.
-    if (mojom.IsAssociatedInterfaceKind(kind)
-        or mojom.IsPendingAssociatedRemoteKind(kind)):
-      return "Object"
-    # TODO(calamity): Support associated interface requests properly.
-    if (mojom.IsAssociatedInterfaceRequestKind(kind)
-        or mojom.IsPendingAssociatedReceiverKind(kind)):
-      return "Object"
-
-    raise Exception("No valid closure type: %s" % kind)
+  def _GetTypeInJsModule(self, kind):
+    return self._GetTypeNameForNewBindings(kind,
+                                           with_nullability=False,
+                                           for_module=True)
 
   def _ClosureTypeWithNullability(self, kind):
     return ("" if mojom.IsNullableKind(kind) else "!") + self._ClosureType(kind)
 
-  def _LiteClosureParamType(self, kind):
-    if mojom.IsEnumKind(kind):
-      return "number"
-    prefix = "" if mojom.IsNullableKind(kind) else "!"
-    if mojom.IsStructKind(kind) or mojom.IsUnionKind(kind):
-      return prefix + "Object"
-    if mojom.IsArrayKind(kind):
-      return prefix + ("Array<%s>" % self._LiteClosureParamType(kind.kind))
-    if mojom.IsMapKind(kind):
-      return "%sMap<%s, %s>|%sObject<%s, %s>" % (
-          prefix, self._LiteClosureParamType(kind.key_kind),
-          self._LiteClosureParamType(
-              kind.value_kind), prefix, self._LiteClosureParamType(
-                  kind.key_kind), self._LiteClosureParamType(kind.value_kind))
+  def _GetParamTypeNameForNewBindings(self, kind, for_module=False):
+    def get_type_name(kind):
+      if mojom.IsEnumKind(kind):
+        return "number"
+      prefix = "" if mojom.IsNullableKind(kind) else "!"
+      if mojom.IsStructKind(kind) or mojom.IsUnionKind(kind):
+        return prefix + "Object"
+      if mojom.IsArrayKind(kind):
+        return prefix + ("Array<%s>" % get_type_name(kind.kind))
+      if mojom.IsMapKind(kind):
+        return "%sMap<%s, %s>|%sObject<%s, %s>" % (
+            prefix, get_type_name(kind.key_kind), get_type_name(
+                kind.value_kind), prefix, get_type_name(
+                    kind.key_kind), get_type_name(kind.value_kind))
+      return prefix + self._GetTypeNameForNewBindings(kind,
+                                                      for_module=for_module)
 
-    return prefix + self._LiteClosureType(kind)
+    return get_type_name(kind)
+
+  def _LiteClosureParamType(self, kind):
+    return self._GetParamTypeNameForNewBindings(kind, for_module=False)
+
+  def _GetParamTypeInJsModule(self, kind):
+    return self._GetParamTypeNameForNewBindings(kind, for_module=True)
 
   def _LiteClosureTypeWithNullability(self, kind):
-    return (("?" if mojom.IsNullableKind(kind) else "!") +
-            self._LiteClosureType(kind))
+    return self._GetTypeNameForNewBindings(kind,
+                                           with_nullability=True,
+                                           for_module=False)
+
+  def _GetTypeInJsModuleWithNullability(self, kind):
+    return self._GetTypeNameForNewBindings(kind,
+                                           with_nullability=True,
+                                           for_module=True)
+
+  def _GetFieldTypeForNewBindings(self, kind, for_module=False):
+    if mojom.IsNullableKind(kind):
+      return "({}|undefined)".format(
+          self._GetTypeNameForNewBindings(kind, for_module=for_module))
+    else:
+      return "!" + self._GetTypeNameForNewBindings(kind, for_module=for_module)
 
   def _LiteClosureFieldType(self, kind):
-    if mojom.IsNullableKind(kind):
-      return "(" + self._LiteClosureType(kind) + "|undefined)"
-    else:
-      return "!" + self._LiteClosureType(kind)
+    return self._GetFieldTypeForNewBindings(kind, for_module=False)
+
+  def _GetFieldTypeInJsModule(self, kind):
+    return self._GetFieldTypeForNewBindings(kind, for_module=True)
 
   def _NamespaceDeclarations(self, namespace):
     pieces = namespace.split('.')
@@ -539,6 +616,14 @@ class Generator(generator.Generator):
       declarations.append('.'.join(declaration))
     return declarations
 
+  def _GetNameInJsModule(self, kind):
+    qualifier = ""
+    if kind.module is not self.module and kind.module.namespace:
+      qualifier = kind.module.namespace + '.'
+    if kind.parent_kind:
+      qualifier += kind.parent_kind.name + '.'
+    return (qualifier + kind.name).replace('.', '_')
+
   def _JavaScriptType(self, kind):
     name = []
     if kind.module and kind.module.path != self.module.path:
@@ -548,54 +633,67 @@ class Generator(generator.Generator):
     name.append(kind.name)
     return ".".join(name)
 
+  def _GetSpecType(self, kind, for_module=False):
+    def get_spec(kind):
+      if self._IsPrimitiveKind(kind):
+        return _kind_to_lite_js_type[kind]
+      if mojom.IsArrayKind(kind):
+        return "mojo.internal.Array(%s, %s)" % (get_spec(
+            kind.kind), "true" if mojom.IsNullableKind(kind.kind) else "false")
+      if mojom.IsMapKind(kind):
+        return "mojo.internal.Map(%s, %s, %s)" % (
+            get_spec(kind.key_kind), get_spec(kind.value_kind),
+            "true" if mojom.IsNullableKind(kind.value_kind) else "false")
+
+      if (mojom.IsAssociatedKind(kind) or mojom.IsInterfaceRequestKind(kind)
+          or mojom.IsPendingRemoteKind(kind)
+          or mojom.IsPendingReceiverKind(kind)
+          or mojom.IsPendingAssociatedRemoteKind(kind)
+          or mojom.IsPendingAssociatedReceiverKind(kind)):
+        named_kind = kind.kind
+      else:
+        named_kind = kind
+
+      name = []
+      qualified = (not for_module) or (self.module is not named_kind.module)
+      if qualified and named_kind.module:
+        name.append(named_kind.module.namespace)
+      if named_kind.parent_kind:
+        parent_name = named_kind.parent_kind.name
+        if mojom.IsStructKind(named_kind.parent_kind) and not for_module:
+          parent_name += "Spec"
+        name.append(parent_name)
+      name.append(named_kind.name)
+      name = ".".join(name)
+      if for_module:
+        name = name.replace(".", "_")
+
+      if (mojom.IsStructKind(kind) or mojom.IsUnionKind(kind)
+          or mojom.IsEnumKind(kind)):
+        return "%sSpec.$" % name
+      if mojom.IsInterfaceKind(kind) or mojom.IsPendingRemoteKind(kind):
+        return "mojo.internal.InterfaceProxy(%sRemote)" % name
+      if mojom.IsInterfaceRequestKind(kind) or mojom.IsPendingReceiverKind(
+          kind):
+        return "mojo.internal.InterfaceRequest(%sPendingReceiver)" % name
+      if (mojom.IsAssociatedInterfaceKind(kind)
+          or mojom.IsPendingAssociatedRemoteKind(kind)):
+        # TODO(rockot): Implement associated interfaces.
+        return "mojo.internal.AssociatedInterfaceProxy(%sRemote)" % (name)
+      if (mojom.IsAssociatedInterfaceRequestKind(kind)
+          or mojom.IsPendingAssociatedReceiverKind(kind)):
+        return "mojo.internal.AssociatedInterfaceRequest(%sPendingReceiver)" % (
+            name)
+
+      return name
+
+    return get_spec(kind)
+
   def _LiteJavaScriptType(self, kind):
-    if self._IsPrimitiveKind(kind):
-      return _kind_to_lite_js_type[kind]
-    if mojom.IsArrayKind(kind):
-      return "mojo.internal.Array(%s, %s)" % (self._LiteJavaScriptType(
-          kind.kind), "true" if mojom.IsNullableKind(kind.kind) else "false")
-    if mojom.IsMapKind(kind):
-      return "mojo.internal.Map(%s, %s, %s)" % (self._LiteJavaScriptType(
-          kind.key_kind), self._LiteJavaScriptType(
-              kind.value_kind), "true" if mojom.IsNullableKind(kind.value_kind)
-                                                else "false")
+    return self._GetSpecType(kind, for_module=False)
 
-    if (mojom.IsAssociatedKind(kind) or mojom.IsInterfaceRequestKind(kind)
-        or mojom.IsPendingRemoteKind(kind) or mojom.IsPendingReceiverKind(kind)
-        or mojom.IsPendingAssociatedRemoteKind(kind)
-        or mojom.IsPendingAssociatedReceiverKind(kind)):
-      named_kind = kind.kind
-    else:
-      named_kind = kind
-
-    name = []
-    if named_kind.module:
-      name.append(named_kind.module.namespace)
-    if named_kind.parent_kind:
-      parent_name = named_kind.parent_kind.name
-      if mojom.IsStructKind(named_kind.parent_kind):
-        parent_name += "Spec"
-      name.append(parent_name)
-    name.append(named_kind.name)
-    name = ".".join(name)
-
-    if (mojom.IsStructKind(kind) or mojom.IsUnionKind(kind)
-        or mojom.IsEnumKind(kind)):
-      return "%sSpec.$" % name
-    if mojom.IsInterfaceKind(kind) or mojom.IsPendingRemoteKind(kind):
-      return "mojo.internal.InterfaceProxy(%sRemote)" % name
-    if mojom.IsInterfaceRequestKind(kind) or mojom.IsPendingReceiverKind(kind):
-      return "mojo.internal.InterfaceRequest(%sPendingReceiver)" % name
-    if (mojom.IsAssociatedInterfaceKind(kind)
-        or mojom.IsPendingAssociatedRemoteKind(kind)):
-      # TODO(rockot): Implement associated interfaces.
-      return "mojo.internal.AssociatedInterfaceProxy(%sRemote)" % (name)
-    if (mojom.IsAssociatedInterfaceRequestKind(kind)
-        or mojom.IsPendingAssociatedReceiverKind(kind)):
-      return "mojo.internal.AssociatedInterfaceRequest(%sPendingReceiver)" % (
-          name)
-
-    return name
+  def _GetSpecTypeInJsModule(self, kind):
+    return self._GetSpecType(kind, for_module=True)
 
   def _LiteJavaScriptImportName(self, kind):
     name = []
@@ -639,17 +737,23 @@ class Generator(generator.Generator):
       return "0"
     raise Exception("No valid default: %s" % field)
 
-  def _LiteJavaScriptDefaultValue(self, field):
+  def _GetDefaultValue(self, field, for_module=False):
     if field.default:
       if mojom.IsStructKind(field.kind):
         assert field.default == "default"
         return "null"
-      return self._ExpressionToTextLite(field.default)
+      return self._ExpressionToTextLite(field.default, for_module=for_module)
     if field.kind in mojom.PRIMITIVES:
       return _kind_to_javascript_default_value[field.kind]
     if mojom.IsEnumKind(field.kind):
       return "0"
     return "null"
+
+  def _LiteJavaScriptDefaultValue(self, field):
+    return self._GetDefaultValue(field, for_module=False)
+
+  def _DefaultValueInJsModule(self, field):
+    return self._GetDefaultValue(field, for_module=True)
 
   def _CodecType(self, kind):
     if kind in mojom.PRIMITIVES:
@@ -814,14 +918,15 @@ class Generator(generator.Generator):
 
     return token
 
-  def _ExpressionToTextLite(self, token):
+  def _ExpressionToTextLite(self, token, for_module=False):
     if isinstance(token, (mojom.EnumValue, mojom.NamedValue)):
       # Generate the following for:
       #  - Enums: NamespaceUid.Enum.CONSTANT_NAME
       #  - Struct: NamespaceUid.Struct_CONSTANT_NAME
 
       name_prefix = []
-      if token.module:
+      qualified = (not for_module) or (token.module is not self.module)
+      if token.module and qualified:
         name_prefix.append(token.module.namespace)
       if token.parent_kind:
         name_prefix.append(token.parent_kind.name)
@@ -832,7 +937,7 @@ class Generator(generator.Generator):
       name.append(token.name)
 
       separator = "."
-      if mojom.IsStructKind(token.parent_kind):
+      if mojom.IsStructKind(token.parent_kind) or for_module:
         separator = "_"
 
       return ".".join(name_prefix) + separator + ".".join(name)
@@ -845,6 +950,15 @@ class Generator(generator.Generator):
       result.append(
           os.path.relpath(full_import.path, os.path.dirname(self.module.path)))
     return result
+
+  def _GetJsModuleImports(self):
+    imports = dict()
+    for spec, kind in self.module.imported_kinds.items():
+      path = self._GetRelativePath(kind.module.path) + '.m.js'
+      if path not in imports:
+        imports[path] = []
+      imports[path].append(kind)
+    return imports
 
   def _GetStructsFromMethods(self):
     result = []

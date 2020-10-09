@@ -1,33 +1,6 @@
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-'use strict';
-
-goog.provide('mojo.internal');
-
-// "self" is always defined as opposed to "this", which isn't defined in
-// modules, or "window", which isn't defined in workers.
-/** @const {!Object} */
-mojo.internal.globalScope = self;
-
-/**
- * This is effectively the same as goog.provide, but it's made available under
- * the mojo.internal namespace to avoid potential collisions in certain
- * compilation environments.
- *
- * @param {string} namespace
- * @export
- */
-mojo.internal.exportModule = function(namespace) {
-  let current = mojo.internal.globalScope;
-  const parts = namespace.split('.');
-
-  for (let part; parts.length && (part = parts.shift());) {
-    if (!current[part])
-      current[part] = {};
-    current = current[part];
-  }
-};
 
 /** @const {number} */
 mojo.internal.kArrayHeaderSize = 8;

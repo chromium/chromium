@@ -1,0 +1,8 @@
+'use strict';
+
+goog.require('mojo.interfaceControl.RUN_MESSAGE_ID');
+goog.require('mojo.interfaceControl.RunResponseMessageParamsSpec');
+goog.require('mojo.internal');
+
+goog.provide('mojo.internal.interfaceSupport');
+
