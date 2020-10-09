@@ -48,11 +48,12 @@ class SerialPortManagerImpl : public mojom::SerialPortManager,
   void SetClient(
       mojo::PendingRemote<mojom::SerialPortManagerClient> client) override;
   void GetDevices(GetDevicesCallback callback) override;
-  void GetPort(
-      const base::UnguessableToken& token,
-      bool use_alternate_path,
-      mojo::PendingReceiver<mojom::SerialPort> receiver,
-      mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher) override;
+  void OpenPort(const base::UnguessableToken& token,
+                bool use_alternate_path,
+                device::mojom::SerialConnectionOptionsPtr options,
+                mojo::PendingRemote<mojom::SerialPortClient> client,
+                mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
+                OpenPortCallback callback) override;
 
   // SerialDeviceEnumerator::Observer methods:
   void OnPortAdded(const mojom::SerialPortInfo& port) override;

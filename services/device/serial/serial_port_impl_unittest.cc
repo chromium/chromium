@@ -79,9 +79,18 @@ class SerialPortImplTest : public DeviceServiceTestBase {
     *watcher = mojo::MakeSelfOwnedReceiver(
         std::make_unique<mojom::SerialPortConnectionWatcher>(),
         watcher_remote.InitWithNewPipeAndPassReceiver());
-    SerialPortImpl::CreateForTesting(
+    base::RunLoop loop;
+    SerialPortImpl::OpenForTesting(
         base::MakeRefCounted<FakeSerialIoHandler>(),
-        port->BindNewPipeAndPassReceiver(), std::move(watcher_remote));
+        mojom::SerialConnectionOptions::New(), mojo::NullRemote(),
+        std::move(watcher_remote),
+        base::BindLambdaForTesting(
+            [&](mojo::PendingRemote<mojom::SerialPort> pending_remote) {
+              EXPECT_TRUE(pending_remote.is_valid());
+              port->Bind(std::move(pending_remote));
+              loop.Quit();
+            }));
+    loop.Run();
   }
 
   void CreateDataPipe(mojo::ScopedDataPipeProducerHandle* producer,
@@ -114,32 +123,6 @@ class SerialPortImplTest : public DeviceServiceTestBase {
     return producer;
   }
 };
-
-TEST_F(SerialPortImplTest, StartIoBeforeOpen) {
-  mojo::Remote<mojom::SerialPort> serial_port;
-  mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher_remote;
-  mojo::SelfOwnedReceiverRef<mojom::SerialPortConnectionWatcher> watcher =
-      mojo::MakeSelfOwnedReceiver(
-          std::make_unique<mojom::SerialPortConnectionWatcher>(),
-          watcher_remote.InitWithNewPipeAndPassReceiver());
-  SerialPortImpl::Create(
-      base::FilePath(FILE_PATH_LITERAL("/dev/fakeserialmojo")),
-      serial_port.BindNewPipeAndPassReceiver(), std::move(watcher_remote),
-      task_environment_.GetMainThreadTaskRunner());
-
-  mojo::ScopedDataPipeConsumerHandle consumer = StartReading(serial_port.get());
-  mojo::ScopedDataPipeProducerHandle producer = StartWriting(serial_port.get());
-
-  // Write some data so that StartWriting() will cause a call to Write().
-  static const char kBuffer[] = "test";
-  uint32_t bytes_written = base::size(kBuffer);
-  MojoResult result =
-      producer->WriteData(&kBuffer, &bytes_written, MOJO_WRITE_DATA_FLAG_NONE);
-  DCHECK_EQ(result, MOJO_RESULT_OK);
-  DCHECK_EQ(bytes_written, base::size(kBuffer));
-
-  base::RunLoop().RunUntilIdle();
-}
 
 TEST_F(SerialPortImplTest, WatcherClosedWhenPortClosed) {
   mojo::Remote<mojom::SerialPort> serial_port;

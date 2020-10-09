@@ -109,12 +109,16 @@ void SerialService::RequestPort(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void SerialService::GetPort(
+void SerialService::OpenPort(
     const base::UnguessableToken& token,
-    mojo::PendingReceiver<device::mojom::SerialPort> receiver) {
+    device::mojom::SerialConnectionOptionsPtr options,
+    mojo::PendingRemote<device::mojom::SerialPortClient> client,
+    OpenPortCallback callback) {
   SerialDelegate* delegate = GetContentClient()->browser()->GetSerialDelegate();
-  if (!delegate)
+  if (!delegate) {
+    std::move(callback).Run(mojo::NullRemote());
     return;
+  }
 
   if (watchers_.empty()) {
     auto* web_contents_impl = static_cast<WebContentsImpl*>(
@@ -125,8 +129,8 @@ void SerialService::GetPort(
   mojo::PendingRemote<device::mojom::SerialPortConnectionWatcher> watcher;
   watchers_.Add(this, watcher.InitWithNewPipeAndPassReceiver());
   delegate->GetPortManager(render_frame_host_)
-      ->GetPort(token, /*use_alternate_path=*/false, std::move(receiver),
-                std::move(watcher));
+      ->OpenPort(token, /*use_alternate_path=*/false, std::move(options),
+                 std::move(client), std::move(watcher), std::move(callback));
 }
 
 void SerialService::OnPortAdded(const device::mojom::SerialPortInfo& port) {

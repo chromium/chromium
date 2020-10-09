@@ -26,20 +26,26 @@ class FakeSerialPortManager : public mojom::SerialPortManager {
   void AddPort(mojom::SerialPortInfoPtr port);
   void RemovePort(base::UnguessableToken token);
 
+  void set_simulate_open_failure(bool simulate_open_failure) {
+    simulate_open_failure_ = simulate_open_failure;
+  }
+
   // mojom::SerialPortManager
   void SetClient(
       mojo::PendingRemote<mojom::SerialPortManagerClient> client) override;
   void GetDevices(GetDevicesCallback callback) override;
-  void GetPort(
-      const base::UnguessableToken& token,
-      bool use_alternate_path,
-      mojo::PendingReceiver<mojom::SerialPort> receiver,
-      mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher) override;
+  void OpenPort(const base::UnguessableToken& token,
+                bool use_alternate_path,
+                device::mojom::SerialConnectionOptionsPtr options,
+                mojo::PendingRemote<mojom::SerialPortClient> client,
+                mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
+                OpenPortCallback callback) override;
 
  private:
   std::map<base::UnguessableToken, mojom::SerialPortInfoPtr> ports_;
   mojo::ReceiverSet<mojom::SerialPortManager> receivers_;
   mojo::RemoteSet<mojom::SerialPortManagerClient> clients_;
+  bool simulate_open_failure_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(FakeSerialPortManager);
 };

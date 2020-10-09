@@ -52,9 +52,11 @@ class Serial final : public EventTargetWithInlineData,
                             const SerialPortRequestOptions*,
                             ExceptionState&);
 
-  void GetPort(
+  void OpenPort(
       const base::UnguessableToken& token,
-      mojo::PendingReceiver<device::mojom::blink::SerialPort> receiver);
+      device::mojom::blink::SerialConnectionOptionsPtr options,
+      mojo::PendingRemote<device::mojom::blink::SerialPortClient> client,
+      mojom::blink::SerialService::OpenPortCallback callback);
   void Trace(Visitor*) const override;
 
  protected:

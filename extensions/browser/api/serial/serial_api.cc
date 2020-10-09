@@ -142,12 +142,8 @@ ExtensionFunction::ResponseAction SerialConnectFunction::Run() {
   auto* manager = SerialPortManager::Get(browser_context());
   DCHECK(manager);
 
-  mojo::PendingRemote<device::mojom::SerialPort> serial_port;
-  manager->GetPort(params->path, serial_port.InitWithNewPipeAndPassReceiver());
-
-  connection_ = std::make_unique<SerialConnection>(extension_->id(),
-                                                   std::move(serial_port));
-  connection_->Open(*params->options,
+  connection_ = std::make_unique<SerialConnection>(extension_->id());
+  connection_->Open(manager, params->path, *params->options,
                     base::BindOnce(&SerialConnectFunction::OnConnected, this));
   return RespondLater();
 }

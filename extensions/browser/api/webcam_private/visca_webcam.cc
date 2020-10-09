@@ -158,7 +158,8 @@ ViscaWebcam::ViscaWebcam() = default;
 ViscaWebcam::~ViscaWebcam() = default;
 
 void ViscaWebcam::Open(const std::string& extension_id,
-                       mojo::PendingRemote<device::mojom::SerialPort> port,
+                       api::SerialPortManager* port_manager,
+                       const std::string& path,
                        const OpenCompleteCallback& open_callback) {
   api::serial::ConnectionOptions options;
 
@@ -174,11 +175,11 @@ void ViscaWebcam::Open(const std::string& extension_id,
   options.parity_bit = api::serial::PARITY_BIT_NO;
   options.stop_bits = api::serial::STOP_BITS_ONE;
 
-  serial_connection_ =
-      std::make_unique<SerialConnection>(extension_id, std::move(port));
+  serial_connection_ = std::make_unique<SerialConnection>(extension_id);
   serial_connection_->Open(
-      options, base::BindOnce(&ViscaWebcam::OnConnected, base::Unretained(this),
-                              open_callback));
+      port_manager, path, options,
+      base::BindOnce(&ViscaWebcam::OnConnected, base::Unretained(this),
+                     open_callback));
 }
 
 void ViscaWebcam::OnConnected(const OpenCompleteCallback& open_callback,

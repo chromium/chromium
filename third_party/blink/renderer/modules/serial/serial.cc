@@ -157,11 +157,14 @@ ScriptPromise Serial::requestPort(ScriptState* script_state,
   return resolver->Promise();
 }
 
-void Serial::GetPort(
+void Serial::OpenPort(
     const base::UnguessableToken& token,
-    mojo::PendingReceiver<device::mojom::blink::SerialPort> receiver) {
+    device::mojom::blink::SerialConnectionOptionsPtr options,
+    mojo::PendingRemote<device::mojom::blink::SerialPortClient> client,
+    mojom::blink::SerialService::OpenPortCallback callback) {
   EnsureServiceConnection();
-  service_->GetPort(token, std::move(receiver));
+  service_->OpenPort(token, std::move(options), std::move(client),
+                     std::move(callback));
 }
 
 void Serial::Trace(Visitor* visitor) const {

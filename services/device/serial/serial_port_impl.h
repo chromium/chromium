@@ -33,28 +33,32 @@ class SerialIoHandler;
 // This class must be constructed and run on IO thread.
 class SerialPortImpl : public mojom::SerialPort {
  public:
-  static void Create(
-      const base::FilePath& path,
-      mojo::PendingReceiver<mojom::SerialPort> receiver,
-      mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+  using OpenCallback =
+      base::OnceCallback<void(mojo::PendingRemote<mojom::SerialPort>)>;
 
-  static void CreateForTesting(
+  static void Open(
+      const base::FilePath& path,
+      mojom::SerialConnectionOptionsPtr options,
+      mojo::PendingRemote<mojom::SerialPortClient> client,
+      mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
+      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+      OpenCallback callback);
+
+  static void OpenForTesting(
       scoped_refptr<SerialIoHandler> io_handler,
-      mojo::PendingReceiver<mojom::SerialPort> receiver,
-      mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher);
+      mojom::SerialConnectionOptionsPtr options,
+      mojo::PendingRemote<mojom::SerialPortClient> client,
+      mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
+      OpenCallback callback);
 
  private:
   SerialPortImpl(
       scoped_refptr<SerialIoHandler> io_handler,
-      mojo::PendingReceiver<mojom::SerialPort> receiver,
+      mojo::PendingRemote<mojom::SerialPortClient> client,
       mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher);
   ~SerialPortImpl() override;
 
   // mojom::SerialPort methods:
-  void Open(mojom::SerialConnectionOptionsPtr options,
-            mojo::PendingRemote<mojom::SerialPortClient> client,
-            OpenCallback callback) override;
   void StartWriting(mojo::ScopedDataPipeConsumerHandle consumer) override;
   void StartReading(mojo::ScopedDataPipeProducerHandle producer) override;
   void Flush(mojom::SerialPortFlushMode mode, FlushCallback callback) override;
@@ -67,6 +71,9 @@ class SerialPortImpl : public mojom::SerialPort {
   void GetPortInfo(GetPortInfoCallback callback) override;
   void Close(CloseCallback callback) override;
 
+  void OpenPort(const mojom::SerialConnectionOptions& options,
+                OpenCallback callback);
+  void PortOpened(OpenCallback callback, bool success);
   void WriteToPort(MojoResult result, const mojo::HandleSignalsState& state);
   void OnWriteToPortCompleted(uint32_t bytes_expected,
                               uint32_t bytes_sent,
@@ -74,8 +81,9 @@ class SerialPortImpl : public mojom::SerialPort {
   void ReadFromPortAndWriteOut(MojoResult result,
                                const mojo::HandleSignalsState& state);
   void WriteToOutStream(uint32_t bytes_read, mojom::SerialReceiveError error);
+  void PortClosed(CloseCallback callback);
 
-  mojo::Receiver<mojom::SerialPort> receiver_;
+  mojo::Receiver<mojom::SerialPort> receiver_{this};
 
   // Underlying connection to the serial port.
   scoped_refptr<SerialIoHandler> io_handler_;

@@ -33,6 +33,8 @@ source_set("test_support") {
   sources = [
     "test/fake_sensor_and_provider.cc",
     "test/fake_sensor_and_provider.h",
+    "test/fake_serial_port_client.cc",
+    "test/fake_serial_port_client.h",
     "test/fake_serial_port_manager.cc",
     "test/fake_serial_port_manager.h",
     "test/fake_usb_device.cc",

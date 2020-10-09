@@ -259,18 +259,13 @@ ScriptPromise SerialPort::open(ScriptState* script_state,
   mojo_options->cts_flow_control = options->flowControl() == "hardware";
 
   mojo::PendingRemote<device::mojom::blink::SerialPortClient> client;
-  parent_->GetPort(
-      info_->token,
-      port_.BindNewPipeAndPassReceiver(
-          GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
-  port_.set_disconnect_handler(
-      WTF::Bind(&SerialPort::OnConnectionError, WrapWeakPersistent(this)));
-
   open_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   auto callback = WTF::Bind(&SerialPort::OnOpen, WrapPersistent(this),
                             client.InitWithNewPipeAndPassReceiver());
 
-  port_->Open(std::move(mojo_options), std::move(client), std::move(callback));
+  parent_->OpenPort(info_->token, std::move(mojo_options), std::move(client),
+                    std::move(callback));
+
   return open_resolver_->Promise();
 }
 
@@ -579,12 +574,12 @@ void SerialPort::OnConnectionError() {
 void SerialPort::OnOpen(
     mojo::PendingReceiver<device::mojom::blink::SerialPortClient>
         client_receiver,
-    bool success) {
+    mojo::PendingRemote<device::mojom::blink::SerialPort> port) {
   ScriptState* script_state = open_resolver_->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
 
-  if (!success) {
+  if (!port) {
     ScriptPromiseResolver* resolver = open_resolver_;
     open_resolver_ = nullptr;
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -592,9 +587,14 @@ void SerialPort::OnOpen(
     return;
   }
 
+  port_.Bind(std::move(port),
+             GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
+  port_.set_disconnect_handler(
+      WTF::Bind(&SerialPort::OnConnectionError, WrapWeakPersistent(this)));
   client_receiver_.Bind(
       std::move(client_receiver),
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
+
   open_resolver_->Resolve();
   open_resolver_ = nullptr;
 }

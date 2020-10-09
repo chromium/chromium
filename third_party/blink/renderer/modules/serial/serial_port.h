@@ -83,7 +83,7 @@ class SerialPort final : public ScriptWrappable,
                       mojo::ScopedDataPipeConsumerHandle* consumer);
   void OnConnectionError();
   void OnOpen(mojo::PendingReceiver<device::mojom::blink::SerialPortClient>,
-              bool success);
+              mojo::PendingRemote<device::mojom::blink::SerialPort>);
   void OnGetSignals(ScriptPromiseResolver*,
                     device::mojom::blink::SerialPortControlSignalsPtr);
   void OnSetSignals(ScriptPromiseResolver*, bool success);

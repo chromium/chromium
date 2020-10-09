@@ -39,10 +39,12 @@ interface SerialService {
   // Requests permission to access a port.
   RequestPort(array<SerialPortFilter> filters) => (SerialPortInfo? port);
 
-  // Connects an instance of the SerialPort interface attached to the serial
-  // port identified by |token|.
-  GetPort(mojo_base.mojom.UnguessableToken token,
-          pending_receiver<device.mojom.SerialPort> port_receiver);
+  // Opens the port represented by |token| using |options| and returns a
+  // connection to it in |port|.
+  OpenPort(mojo_base.mojom.UnguessableToken token,
+           device.mojom.SerialConnectionOptions options,
+           pending_remote<device.mojom.SerialPortClient> client)
+      => (pending_remote<device.mojom.SerialPort>? port);
 };
 
 // Client interface for receiving events from SerialService.

@@ -13,33 +13,37 @@
 namespace device {
 
 // static
-void BluetoothSerialPortImpl::Create(
+void BluetoothSerialPortImpl::Open(
     scoped_refptr<BluetoothAdapter> adapter,
     const std::string& address,
-    mojo::PendingReceiver<mojom::SerialPort> receiver,
-    mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher) {
+    mojom::SerialConnectionOptionsPtr options,
+    mojo::PendingRemote<mojom::SerialPortClient> client,
+    mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
+    OpenCallback callback) {
   DCHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kEnableBluetoothSerialPortProfileInSerialApi));
 
-  // This BluetoothSerialPortImpl is owned by |receiver| and |watcher|.
-  new BluetoothSerialPortImpl(std::move(adapter), address, std::move(receiver),
-                              std::move(watcher));
+  // This BluetoothSerialPortImpl is owned by its |receiver_| and |watcher_| and
+  // will self-destruct on connection failure.
+  auto* port = new BluetoothSerialPortImpl(
+      std::move(adapter), address, std::move(options), std::move(client),
+      std::move(watcher));
+  port->OpenSocket(std::move(callback));
 }
 
 BluetoothSerialPortImpl::BluetoothSerialPortImpl(
     scoped_refptr<BluetoothAdapter> adapter,
     const std::string& address,
-    mojo::PendingReceiver<mojom::SerialPort> receiver,
+    mojom::SerialConnectionOptionsPtr options,
+    mojo::PendingRemote<mojom::SerialPortClient> client,
     mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher)
-    : receiver_(this, std::move(receiver)),
-      watcher_(std::move(watcher)),
+    : watcher_(std::move(watcher)),
+      client_(std::move(client)),
       in_stream_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
       out_stream_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
       bluetooth_adapter_(std::move(adapter)),
-      address_(address) {
-  receiver_.set_disconnect_handler(
-      base::BindOnce([](BluetoothSerialPortImpl* self) { delete self; },
-                     base::Unretained(this)));
+      address_(address),
+      options_(std::move(options)) {
   if (watcher_.is_bound()) {
     watcher_.set_disconnect_handler(
         base::BindOnce([](BluetoothSerialPortImpl* self) { delete self; },
@@ -52,17 +56,14 @@ BluetoothSerialPortImpl::~BluetoothSerialPortImpl() {
     bluetooth_socket_->Close();
 }
 
-void BluetoothSerialPortImpl::Open(
-    mojom::SerialConnectionOptionsPtr options,
-    mojo::PendingRemote<mojom::SerialPortClient> client,
-    OpenCallback callback) {
-  if (client)
-    client_.Bind(std::move(client));
+void BluetoothSerialPortImpl::OpenSocket(OpenCallback callback) {
   BluetoothDevice* device = bluetooth_adapter_->GetDevice(address_);
   if (!device) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(mojo::NullRemote());
+    delete this;
     return;
   }
+
   BluetoothDevice::UUIDSet device_uuids = device->GetUUIDs();
   if (base::Contains(device_uuids, GetSerialPortProfileUUID())) {
     auto copyable_callback =
@@ -75,7 +76,9 @@ void BluetoothSerialPortImpl::Open(
                        weak_ptr_factory_.GetWeakPtr(), copyable_callback));
     return;
   }
-  std::move(callback).Run(false);
+
+  std::move(callback).Run(mojo::NullRemote());
+  delete this;
 }
 
 void BluetoothSerialPortImpl::OnSocketConnected(
@@ -83,13 +86,19 @@ void BluetoothSerialPortImpl::OnSocketConnected(
     scoped_refptr<BluetoothSocket> socket) {
   DCHECK(socket);
   bluetooth_socket_ = std::move(socket);
-  std::move(callback).Run(true);
+  mojo::PendingRemote<mojom::SerialPort> port =
+      receiver_.BindNewPipeAndPassRemote();
+  receiver_.set_disconnect_handler(
+      base::BindOnce([](BluetoothSerialPortImpl* self) { delete self; },
+                     base::Unretained(this)));
+  std::move(callback).Run(std::move(port));
 }
 
 void BluetoothSerialPortImpl::OnSocketConnectedError(
     OpenCallback callback,
     const std::string& message) {
-  std::move(callback).Run(false);
+  std::move(callback).Run(mojo::NullRemote());
+  delete this;
 }
 
 void BluetoothSerialPortImpl::StartWriting(
@@ -378,12 +387,8 @@ void BluetoothSerialPortImpl::GetPortInfo(GetPortInfoCallback callback) {
 }
 
 void BluetoothSerialPortImpl::Close(CloseCallback callback) {
-  client_.reset();
-  if (bluetooth_socket_) {
-    bluetooth_socket_->Close();
-    bluetooth_socket_.reset();
-  }
   std::move(callback).Run();
+  delete this;
 }
 
 }  // namespace device

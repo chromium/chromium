@@ -21,6 +21,7 @@
 #include "net/base/io_buffer.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
 #include "services/device/public/cpp/serial/serial_switches.h"
+#include "services/device/public/cpp/test/fake_serial_port_client.h"
 #include "services/device/public/mojom/serial.mojom.h"
 #include "services/device/serial/buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -73,35 +74,18 @@ class BluetoothSerialPortImplTest : public testing::Test {
                 ConnectToService(GetSerialPortProfileUUID(), _, _))
         .WillOnce(RunOnceCallback<1>(mock_socket_));
 
-    BluetoothSerialPortImpl::Create(std::move(adapter), kDeviceAddress,
-                                    port->BindNewPipeAndPassReceiver(),
-                                    std::move(watcher_remote));
-  }
-
-  void CreatePortWithSocketError(
-      mojo::Remote<mojom::SerialPort>* port,
-      mojo::SelfOwnedReceiverRef<mojom::SerialPortConnectionWatcher>* watcher) {
-    mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher_remote;
-    *watcher = mojo::MakeSelfOwnedReceiver(
-        std::make_unique<mojom::SerialPortConnectionWatcher>(),
-        watcher_remote.InitWithNewPipeAndPassReceiver());
-
-    scoped_refptr<MockBluetoothAdapter> adapter =
-        base::MakeRefCounted<MockBluetoothAdapter>();
-    device::BluetoothAdapterFactory::SetAdapterForTesting(adapter);
-    mock_device_ = std::make_unique<MockBluetoothDevice>(
-        adapter.get(), 0, "Test Device", kDeviceAddress, false, false);
-    mock_device_->AddUUID(GetSerialPortProfileUUID());
-
-    EXPECT_CALL(*adapter, GetDevice(kDeviceAddress))
-        .WillOnce(Return(mock_device_.get()));
-    EXPECT_CALL(*mock_device_,
-                ConnectToService(GetSerialPortProfileUUID(), _, _))
-        .WillOnce(RunOnceCallback<2>("Error"));
-
-    BluetoothSerialPortImpl::Create(std::move(adapter), kDeviceAddress,
-                                    port->BindNewPipeAndPassReceiver(),
-                                    std::move(watcher_remote));
+    base::RunLoop loop;
+    BluetoothSerialPortImpl::Open(
+        std::move(adapter), kDeviceAddress,
+        mojom::SerialConnectionOptions::New(), FakeSerialPortClient::Create(),
+        std::move(watcher_remote),
+        base::BindLambdaForTesting(
+            [&](mojo::PendingRemote<mojom::SerialPort> remote) {
+              EXPECT_TRUE(remote.is_valid());
+              port->Bind(std::move(remote));
+              loop.Quit();
+            }));
+    loop.Run();
   }
 
   void CreateDataPipe(mojo::ScopedDataPipeProducerHandle* producer,
@@ -126,58 +110,34 @@ class BluetoothSerialPortImplTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
-class FakeSerialPortClient : public mojom::SerialPortClient {
- public:
-  FakeSerialPortClient() = default;
-  FakeSerialPortClient(FakeSerialPortClient&) = delete;
-  FakeSerialPortClient& operator=(FakeSerialPortClient&) = delete;
-  ~FakeSerialPortClient() override = default;
-
-  void Bind(mojo::PendingReceiver<device::mojom::SerialPortClient> receiver) {
-    receiver_.Bind(std::move(receiver));
-  }
-
-  // mojom::SerialPortClient
-  void OnReadError(mojom::SerialReceiveError error) override {}
-  void OnSendError(mojom::SerialSendError error) override {}
-
- private:
-  mojo::Receiver<mojom::SerialPortClient> receiver_{this};
-};
-
 }  // namespace
 
-TEST_F(BluetoothSerialPortImplTest, NullSocketTest) {
-  mojo::Remote<mojom::SerialPort> serial_port;
-  mojo::SelfOwnedReceiverRef<mojom::SerialPortConnectionWatcher> watcher;
-  CreatePortWithSocketError(&serial_port, &watcher);
+TEST_F(BluetoothSerialPortImplTest, OpenFailure) {
+  scoped_refptr<MockBluetoothAdapter> adapter =
+      base::MakeRefCounted<MockBluetoothAdapter>();
+  device::BluetoothAdapterFactory::SetAdapterForTesting(adapter);
+  auto mock_device = std::make_unique<MockBluetoothDevice>(
+      adapter.get(), 0, "Test Device", kDeviceAddress, false, false);
+  mock_device->AddUUID(GetSerialPortProfileUUID());
 
-  mojo::ScopedDataPipeProducerHandle producer;
-  mojo::ScopedDataPipeConsumerHandle consumer;
-  CreateDataPipe(&producer, &consumer);
-
-  auto options = mojom::SerialConnectionOptions::New();
-  mojo::PendingRemote<mojom::SerialPortClient> client;
-  FakeSerialPortClient serial_client;
-  serial_client.Bind(client.InitWithNewPipeAndPassReceiver());
-  base::RunLoop loop;
-  serial_port->Open(std::move(options), std::move(client),
-                    base::BindLambdaForTesting([&loop](bool success) {
-                      EXPECT_FALSE(success);
-                      loop.Quit();
-                    }));
-  loop.Run();
+  EXPECT_CALL(*adapter, GetDevice(kDeviceAddress))
+      .WillOnce(Return(mock_device.get()));
+  EXPECT_CALL(*mock_device, ConnectToService(GetSerialPortProfileUUID(), _, _))
+      .WillOnce(RunOnceCallback<2>("Error"));
 
   EXPECT_CALL(mock_socket(), Receive(_, _, _)).Times(0);
   EXPECT_CALL(mock_socket(), Close()).Times(0);
 
-  serial_port->StartReading(std::move(producer));
-
-  base::RunLoop disconnect_loop;
-  watcher->set_connection_error_handler(disconnect_loop.QuitClosure());
-
-  serial_port.reset();
-  disconnect_loop.Run();
+  base::RunLoop loop;
+  BluetoothSerialPortImpl::Open(
+      std::move(adapter), kDeviceAddress, mojom::SerialConnectionOptions::New(),
+      FakeSerialPortClient::Create(), mojo::NullRemote(),
+      base::BindLambdaForTesting(
+          [&](mojo::PendingRemote<mojom::SerialPort> remote) {
+            EXPECT_FALSE(remote.is_valid());
+            loop.Quit();
+          }));
+  loop.Run();
 }
 
 TEST_F(BluetoothSerialPortImplTest, StartWritingTest) {
@@ -188,18 +148,6 @@ TEST_F(BluetoothSerialPortImplTest, StartWritingTest) {
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
   CreateDataPipe(&producer, &consumer);
-
-  auto options = mojom::SerialConnectionOptions::New();
-  mojo::PendingRemote<mojom::SerialPortClient> client;
-  FakeSerialPortClient serial_client;
-  serial_client.Bind(client.InitWithNewPipeAndPassReceiver());
-  base::RunLoop loop;
-  serial_port->Open(std::move(options), std::move(client),
-                    base::BindLambdaForTesting([&loop](bool success) {
-                      EXPECT_TRUE(success);
-                      loop.Quit();
-                    }));
-  loop.Run();
 
   uint32_t bytes_read = std::char_traits<char>::length(kBuffer);
   auto write_buffer = base::MakeRefCounted<net::StringIOBuffer>(kBuffer);
@@ -244,18 +192,6 @@ TEST_F(BluetoothSerialPortImplTest, StartReadingTest) {
   mojo::ScopedDataPipeConsumerHandle consumer;
   CreateDataPipe(&producer, &consumer);
 
-  auto options = mojom::SerialConnectionOptions::New();
-  mojo::PendingRemote<mojom::SerialPortClient> client;
-  FakeSerialPortClient serial_client;
-  serial_client.Bind(client.InitWithNewPipeAndPassReceiver());
-  base::RunLoop loop;
-  serial_port->Open(std::move(options), std::move(client),
-                    base::BindLambdaForTesting([&loop](bool success) {
-                      EXPECT_TRUE(success);
-                      loop.Quit();
-                    }));
-  loop.Run();
-
   uint32_t bytes_read = std::char_traits<char>::length(kBuffer);
   auto write_buffer = base::MakeRefCounted<net::StringIOBuffer>(kBuffer);
 
@@ -295,18 +231,6 @@ TEST_F(BluetoothSerialPortImplTest, Drain) {
   mojo::ScopedDataPipeConsumerHandle consumer;
   CreateDataPipe(&producer, &consumer);
 
-  auto options = mojom::SerialConnectionOptions::New();
-  mojo::PendingRemote<mojom::SerialPortClient> client;
-  FakeSerialPortClient serial_client;
-  serial_client.Bind(client.InitWithNewPipeAndPassReceiver());
-  base::RunLoop loop;
-  serial_port->Open(std::move(options), std::move(client),
-                    base::BindLambdaForTesting([&loop](bool success) {
-                      EXPECT_TRUE(success);
-                      loop.Quit();
-                    }));
-  loop.Run();
-
   serial_port->StartWriting(std::move(consumer));
 
   producer.reset();
@@ -330,17 +254,6 @@ TEST_F(BluetoothSerialPortImplTest, Close) {
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
   CreateDataPipe(&producer, &consumer);
-
-  auto options = mojom::SerialConnectionOptions::New();
-  mojo::PendingRemote<mojom::SerialPortClient> client;
-  FakeSerialPortClient serial_client;
-  serial_client.Bind(client.InitWithNewPipeAndPassReceiver());
-  base::RunLoop loop;
-  serial_port->Open(
-      std::move(options), std::move(client),
-      base::BindOnce([](base::RunLoop* loop, bool success) { loop->Quit(); },
-                     &loop));
-  loop.Run();
 
   EXPECT_CALL(mock_socket(), Close());
 

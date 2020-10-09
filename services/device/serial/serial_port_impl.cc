@@ -16,39 +16,45 @@
 namespace device {
 
 // static
-void SerialPortImpl::Create(
+void SerialPortImpl::Open(
     const base::FilePath& path,
-    mojo::PendingReceiver<mojom::SerialPort> receiver,
+    mojom::SerialConnectionOptionsPtr options,
+    mojo::PendingRemote<mojom::SerialPortClient> client,
     mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner) {
-  // This SerialPortImpl is owned by |receiver| and |watcher|.
-  new SerialPortImpl(
+    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+    OpenCallback callback) {
+  // This SerialPortImpl is owned by |receiver_| and |watcher_| and will
+  // self-destruct on close.
+  auto* port = new SerialPortImpl(
       device::SerialIoHandler::Create(path, std::move(ui_task_runner)),
-      std::move(receiver), std::move(watcher));
+      std::move(client), std::move(watcher));
+  port->OpenPort(*options, std::move(callback));
 }
 
 // static
-void SerialPortImpl::CreateForTesting(
+void SerialPortImpl::OpenForTesting(
     scoped_refptr<SerialIoHandler> io_handler,
-    mojo::PendingReceiver<mojom::SerialPort> receiver,
-    mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher) {
-  // This SerialPortImpl is owned by |receiver| and |watcher|.
-  new SerialPortImpl(std::move(io_handler), std::move(receiver),
-                     std::move(watcher));
+    mojom::SerialConnectionOptionsPtr options,
+    mojo::PendingRemote<mojom::SerialPortClient> client,
+    mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
+    OpenCallback callback) {
+  // This SerialPortImpl is owned by |receiver| and |watcher| and will
+  // self-destruct on close.
+  auto* port = new SerialPortImpl(std::move(io_handler), std::move(client),
+                                  std::move(watcher));
+  port->OpenPort(*options, std::move(callback));
 }
 
 SerialPortImpl::SerialPortImpl(
     scoped_refptr<SerialIoHandler> io_handler,
-    mojo::PendingReceiver<mojom::SerialPort> receiver,
+    mojo::PendingRemote<mojom::SerialPortClient> client,
     mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher)
-    : receiver_(this, std::move(receiver)),
-      io_handler_(std::move(io_handler)),
+    : io_handler_(std::move(io_handler)),
+      client_(std::move(client)),
       watcher_(std::move(watcher)),
       in_stream_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
       out_stream_watcher_(FROM_HERE,
                           mojo::SimpleWatcher::ArmingPolicy::MANUAL) {
-  receiver_.set_disconnect_handler(base::BindOnce(
-      [](SerialPortImpl* self) { delete self; }, base::Unretained(this)));
   if (watcher_.is_bound()) {
     watcher_.set_disconnect_handler(base::BindOnce(
         [](SerialPortImpl* self) { delete self; }, base::Unretained(this)));
@@ -60,13 +66,25 @@ SerialPortImpl::~SerialPortImpl() {
   io_handler_->Close(base::DoNothing());
 }
 
-void SerialPortImpl::Open(mojom::SerialConnectionOptionsPtr options,
-                          mojo::PendingRemote<mojom::SerialPortClient> client,
-                          OpenCallback callback) {
-  if (client)
-    client_.Bind(std::move(client));
+void SerialPortImpl::OpenPort(const mojom::SerialConnectionOptions& options,
+                              OpenCallback callback) {
+  io_handler_->Open(
+      options, base::BindOnce(&SerialPortImpl::PortOpened,
+                              weak_factory_.GetWeakPtr(), std::move(callback)));
+}
 
-  io_handler_->Open(*options, std::move(callback));
+void SerialPortImpl::PortOpened(OpenCallback callback, bool success) {
+  mojo::PendingRemote<SerialPort> port;
+  if (success) {
+    port = receiver_.BindNewPipeAndPassRemote();
+    receiver_.set_disconnect_handler(base::BindOnce(
+        [](SerialPortImpl* self) { delete self; }, base::Unretained(this)));
+  }
+
+  std::move(callback).Run(std::move(port));
+
+  if (!success)
+    delete this;
 }
 
 void SerialPortImpl::StartWriting(mojo::ScopedDataPipeConsumerHandle consumer) {
@@ -183,7 +201,9 @@ void SerialPortImpl::GetPortInfo(GetPortInfoCallback callback) {
 }
 
 void SerialPortImpl::Close(CloseCallback callback) {
-  io_handler_->Close(std::move(callback));
+  io_handler_->Close(base::BindOnce(&SerialPortImpl::PortClosed,
+                                    weak_factory_.GetWeakPtr(),
+                                    std::move(callback)));
 }
 
 void SerialPortImpl::WriteToPort(MojoResult result,
@@ -298,6 +318,11 @@ void SerialPortImpl::WriteToOutStream(uint32_t bytes_read,
   }
 
   out_stream_watcher_.ArmOrNotify();
+}
+
+void SerialPortImpl::PortClosed(CloseCallback callback) {
+  std::move(callback).Run();
+  delete this;
 }
 
 }  // namespace device

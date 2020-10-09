@@ -22,19 +22,25 @@ namespace device {
 // which is closed upon error in any of the interface functions.
 class BluetoothSerialPortImpl : public mojom::SerialPort {
  public:
+  using OpenCallback =
+      base::OnceCallback<void(mojo::PendingRemote<mojom::SerialPort>)>;
+
   // Creates of instance of BluetoothSerialPortImpl using a Bluetooth
   // adapter, a Bluetooth device address and a receiver/watcher to
   // create a pipe. The receiver and watcher will own this object.
-  static void Create(
+  static void Open(
       scoped_refptr<BluetoothAdapter> adapter,
       const std::string& address,
-      mojo::PendingReceiver<mojom::SerialPort> receiver,
-      mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher);
+      mojom::SerialConnectionOptionsPtr options,
+      mojo::PendingRemote<mojom::SerialPortClient> client,
+      mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
+      OpenCallback callback);
 
   BluetoothSerialPortImpl(
       scoped_refptr<BluetoothAdapter> adapter,
       const std::string& address,
-      mojo::PendingReceiver<mojom::SerialPort> receiver,
+      mojom::SerialConnectionOptionsPtr options,
+      mojo::PendingRemote<mojom::SerialPortClient> client,
       mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher);
   BluetoothSerialPortImpl(const BluetoothSerialPortImpl&) = delete;
   BluetoothSerialPortImpl& operator=(const BluetoothSerialPortImpl&) = delete;
@@ -42,9 +48,6 @@ class BluetoothSerialPortImpl : public mojom::SerialPort {
 
  private:
   // mojom::SerialPort methods:
-  void Open(mojom::SerialConnectionOptionsPtr options,
-            mojo::PendingRemote<mojom::SerialPortClient> client,
-            OpenCallback callback) override;
   void StartWriting(mojo::ScopedDataPipeConsumerHandle consumer) override;
   void StartReading(mojo::ScopedDataPipeProducerHandle producer) override;
   void Flush(mojom::SerialPortFlushMode mode, FlushCallback callback) override;
@@ -57,6 +60,7 @@ class BluetoothSerialPortImpl : public mojom::SerialPort {
   void GetPortInfo(GetPortInfoCallback callback) override;
   void Close(CloseCallback callback) override;
 
+  void OpenSocket(OpenCallback callback);
   void WriteToSocket(MojoResult result, const mojo::HandleSignalsState& state);
   void ReadFromSocketAndWriteOut(MojoResult result,
                                  const mojo::HandleSignalsState& state);
@@ -78,7 +82,7 @@ class BluetoothSerialPortImpl : public mojom::SerialPort {
   void OnBluetoothSocketSend(int num_bytes_sent);
   void OnBluetoothSocketSendError(const std::string& error_message);
 
-  mojo::Receiver<mojom::SerialPort> receiver_;
+  mojo::Receiver<mojom::SerialPort> receiver_{this};
   mojo::Remote<mojom::SerialPortConnectionWatcher> watcher_;
   mojo::Remote<mojom::SerialPortClient> client_;
 

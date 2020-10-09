@@ -40,9 +40,10 @@ class SerialService
   void GetPorts(GetPortsCallback callback) override;
   void RequestPort(std::vector<blink::mojom::SerialPortFilterPtr> filters,
                    RequestPortCallback callback) override;
-  void GetPort(
-      const base::UnguessableToken& token,
-      mojo::PendingReceiver<device::mojom::SerialPort> receiver) override;
+  void OpenPort(const base::UnguessableToken& token,
+                device::mojom::SerialConnectionOptionsPtr options,
+                mojo::PendingRemote<device::mojom::SerialPortClient> client,
+                OpenPortCallback callback) override;
 
   // SerialDelegate::Observer implementation
   void OnPortAdded(const device::mojom::SerialPortInfo& port) override;

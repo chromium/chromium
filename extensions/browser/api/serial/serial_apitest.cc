@@ -77,29 +77,27 @@ class FakeSerialPort : public device::mojom::SerialPort {
 
   ~FakeSerialPort() override = default;
 
-  const device::mojom::SerialPortInfo& info() { return *info_; }
+  mojo::PendingRemote<device::mojom::SerialPort> Open(
+      device::mojom::SerialConnectionOptionsPtr options,
+      mojo::PendingRemote<device::mojom::SerialPortClient> client) {
+    if (receiver_.is_bound()) {
+      // Port is already open.
+      return mojo::NullRemote();
+    }
 
-  void Bind(mojo::PendingReceiver<device::mojom::SerialPort> receiver) {
-    receivers_.Add(this, std::move(receiver));
+    DCHECK(!client_.is_bound());
+    DCHECK(client.is_valid());
+    client_.Bind(std::move(client));
+
+    DoConfigurePort(*options);
+
+    return receiver_.BindNewPipeAndPassRemote();
   }
+
+  const device::mojom::SerialPortInfo& info() { return *info_; }
 
  private:
   // device::mojom::SerialPort methods:
-  void Open(device::mojom::SerialConnectionOptionsPtr options,
-            mojo::PendingRemote<device::mojom::SerialPortClient> client,
-            OpenCallback callback) override {
-    if (client_) {
-      // Port is already open.
-      std::move(callback).Run(false);
-      return;
-    }
-
-    DoConfigurePort(*options);
-    DCHECK(client);
-    client_.Bind(std::move(client));
-    std::move(callback).Run(true);
-  }
-
   void StartWriting(mojo::ScopedDataPipeConsumerHandle consumer) override {
     if (in_stream_)
       return;
@@ -172,6 +170,7 @@ class FakeSerialPort : public device::mojom::SerialPort {
     out_stream_.reset();
     client_.reset();
     std::move(callback).Run();
+    receiver_.reset();
   }
 
   void DoWrite(MojoResult result, const mojo::HandleSignalsState& state) {
@@ -269,7 +268,7 @@ class FakeSerialPort : public device::mojom::SerialPort {
   }
 
   device::mojom::SerialPortInfoPtr info_;
-  mojo::ReceiverSet<device::mojom::SerialPort> receivers_;
+  mojo::Receiver<device::mojom::SerialPort> receiver_{this};
 
   // Currently applied connection options.
   device::mojom::SerialConnectionOptions options_;
@@ -312,15 +311,18 @@ class FakeSerialPortManager : public device::mojom::SerialPortManager {
     std::move(callback).Run(std::move(ports));
   }
 
-  void GetPort(const base::UnguessableToken& token,
-               bool use_alternate_path,
-               mojo::PendingReceiver<device::mojom::SerialPort> receiver,
-               mojo::PendingRemote<device::mojom::SerialPortConnectionWatcher>
-                   watcher) override {
+  void OpenPort(
+      const base::UnguessableToken& token,
+      bool use_alternate_path,
+      device::mojom::SerialConnectionOptionsPtr options,
+      mojo::PendingRemote<device::mojom::SerialPortClient> client,
+      mojo::PendingRemote<device::mojom::SerialPortConnectionWatcher> watcher,
+      OpenPortCallback callback) override {
     DCHECK(!watcher);
     auto it = ports_.find(token);
     DCHECK(it != ports_.end());
-    it->second->Bind(std::move(receiver));
+    std::move(callback).Run(
+        it->second->Open(std::move(options), std::move(client)));
   }
 
   void AddPort(const base::FilePath& path) {

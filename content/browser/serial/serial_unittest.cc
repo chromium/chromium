@@ -5,6 +5,7 @@
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "content/browser/serial/serial_test_utils.h"
 #include "content/public/common/content_client.h"
@@ -12,6 +13,7 @@
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/device/public/cpp/test/fake_serial_port_client.h"
 #include "services/device/public/cpp/test/fake_serial_port_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,7 +44,7 @@ class MockSerialServiceClient : public blink::mojom::SerialServiceClient {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
-  // mojom::SerialPortManagerClient
+  // blink::mojom::SerialPortManagerClient
   MOCK_METHOD1(OnPortAdded, void(blink::mojom::SerialPortInfoPtr));
   MOCK_METHOD1(OnPortRemoved, void(blink::mojom::SerialPortInfoPtr));
 
@@ -103,11 +105,51 @@ TEST_F(SerialTest, OpenAndClosePort) {
   EXPECT_FALSE(contents()->IsConnectedToSerialPort());
 
   mojo::Remote<device::mojom::SerialPort> port;
-  service->GetPort(token, port.BindNewPipeAndPassReceiver());
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop loop;
+  service->OpenPort(
+      token, device::mojom::SerialConnectionOptions::New(),
+      device::FakeSerialPortClient::Create(),
+      base::BindLambdaForTesting(
+          [&](mojo::PendingRemote<device::mojom::SerialPort> pending_remote) {
+            EXPECT_TRUE(pending_remote.is_valid());
+            port.Bind(std::move(pending_remote));
+            loop.Quit();
+          }));
+  loop.Run();
   EXPECT_TRUE(contents()->IsConnectedToSerialPort());
 
   port.reset();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(contents()->IsConnectedToSerialPort());
+}
+
+TEST_F(SerialTest, OpenFailure) {
+  NavigateAndCommit(GURL(kTestUrl));
+
+  mojo::Remote<blink::mojom::SerialService> service;
+  contents()->GetMainFrame()->BindSerialService(
+      service.BindNewPipeAndPassReceiver());
+
+  auto token = base::UnguessableToken::Create();
+  auto port_info = device::mojom::SerialPortInfo::New();
+  port_info->token = token;
+  port_manager()->AddPort(std::move(port_info));
+  port_manager()->set_simulate_open_failure(true);
+
+  EXPECT_FALSE(contents()->IsConnectedToSerialPort());
+
+  base::RunLoop loop;
+  service->OpenPort(
+      token, device::mojom::SerialConnectionOptions::New(),
+      device::FakeSerialPortClient::Create(),
+      base::BindLambdaForTesting(
+          [&](mojo::PendingRemote<device::mojom::SerialPort> pending_remote) {
+            EXPECT_FALSE(pending_remote.is_valid());
+            loop.Quit();
+          }));
+  loop.Run();
+
+  // Allow extra time for the watcher connection failure to propagate.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(contents()->IsConnectedToSerialPort());
 }
@@ -127,8 +169,17 @@ TEST_F(SerialTest, OpenAndNavigateCrossOrigin) {
   EXPECT_FALSE(contents()->IsConnectedToSerialPort());
 
   mojo::Remote<device::mojom::SerialPort> port;
-  service->GetPort(token, port.BindNewPipeAndPassReceiver());
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop loop;
+  service->OpenPort(
+      token, device::mojom::SerialConnectionOptions::New(),
+      device::FakeSerialPortClient::Create(),
+      base::BindLambdaForTesting(
+          [&](mojo::PendingRemote<device::mojom::SerialPort> pending_remote) {
+            EXPECT_TRUE(pending_remote.is_valid());
+            port.Bind(std::move(pending_remote));
+            loop.Quit();
+          }));
+  loop.Run();
   EXPECT_TRUE(contents()->IsConnectedToSerialPort());
 
   NavigateAndCommit(GURL(kCrossOriginTestUrl));
@@ -206,8 +257,17 @@ TEST_F(SerialTest, OpenAndClosePortManagerConnection) {
   EXPECT_FALSE(contents()->IsConnectedToSerialPort());
 
   mojo::Remote<device::mojom::SerialPort> port;
-  service->GetPort(token, port.BindNewPipeAndPassReceiver());
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop loop;
+  service->OpenPort(
+      token, device::mojom::SerialConnectionOptions::New(),
+      device::FakeSerialPortClient::Create(),
+      base::BindLambdaForTesting(
+          [&](mojo::PendingRemote<device::mojom::SerialPort> pending_remote) {
+            EXPECT_TRUE(pending_remote.is_valid());
+            port.Bind(std::move(pending_remote));
+            loop.Quit();
+          }));
+  loop.Run();
   EXPECT_TRUE(contents()->IsConnectedToSerialPort());
 
   ASSERT_TRUE(observer());

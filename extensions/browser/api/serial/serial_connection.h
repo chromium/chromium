@@ -31,6 +31,10 @@ using content::BrowserThread;
 
 namespace extensions {
 
+namespace api {
+class SerialPortManager;
+}
+
 // Encapsulates an mojo interface ptr of device::mojom::SerialPort, which
 // corresponds with an open serial port in remote side(Device Service). NOTE:
 // Instances of this object should only be constructed on the IO thread, and all
@@ -38,7 +42,7 @@ namespace extensions {
 class SerialConnection : public ApiResource,
                          public device::mojom::SerialPortClient {
  public:
-  using OpenCompleteCallback = device::mojom::SerialPort::OpenCallback;
+  using OpenCompleteCallback = base::OnceCallback<void(bool)>;
   using GetInfoCompleteCallback =
       base::OnceCallback<void(bool,
                               std::unique_ptr<api::serial::ConnectionInfo>)>;
@@ -67,8 +71,7 @@ class SerialConnection : public ApiResource,
   using SetControlSignalsCompleteCallback =
       device::mojom::SerialPort::SetControlSignalsCallback;
 
-  SerialConnection(const std::string& owner_extension_id,
-                   mojo::PendingRemote<device::mojom::SerialPort> serial_port);
+  explicit SerialConnection(const std::string& owner_extension_id);
   ~SerialConnection() override;
 
   // ApiResource override.
@@ -97,7 +100,9 @@ class SerialConnection : public ApiResource,
   // Initiates an asynchronous Open of the device. It is the caller's
   // responsibility to ensure that this SerialConnection stays alive
   // until |callback| is run.
-  virtual void Open(const api::serial::ConnectionOptions& options,
+  virtual void Open(api::SerialPortManager* port_manager,
+                    const std::string& path,
+                    const api::serial::ConnectionOptions& options,
                     OpenCompleteCallback callback);
 
   // Begins an asynchronous send operation. Calling this while a Send
@@ -138,6 +143,11 @@ class SerialConnection : public ApiResource,
 
   static const BrowserThread::ID kThreadId = BrowserThread::UI;
 
+ protected:
+  // Initializes |serial_port_| with a disconnected Mojo pipe for testing
+  // purposes.
+  void InitSerialPortForTesting();
+
  private:
   friend class ApiResourceManager<SerialConnection>;
   static const char* service_name() { return "SerialConnectionManager"; }
@@ -149,7 +159,7 @@ class SerialConnection : public ApiResource,
   void OnOpen(
       mojo::PendingReceiver<device::mojom::SerialPortClient> client_receiver,
       OpenCompleteCallback callback,
-      bool success);
+      mojo::PendingRemote<device::mojom::SerialPort> serial_port);
 
   // Read data from |receive_pipe_| when the data is ready or dispatch error
   // events in error cases.

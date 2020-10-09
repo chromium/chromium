@@ -114,13 +114,25 @@ class FakeSerialPort {
     };
   }
 
-  bind(request) {
-    assert_equals(this.binding, undefined, 'Port is still open');
-    this.binding = new mojo.Binding(device.mojom.SerialPort,
-                                    this, request);
-    this.binding.setConnectionErrorHandler(() => {
+  open(options, client) {
+    if (this.binding_ !== undefined) {
+      // Port already open.
+      return null;
+    }
+
+    let portPtr = new device.mojom.SerialPortPtr();
+    this.binding_ = new mojo.Binding(
+        device.mojom.SerialPort, this, mojo.makeRequest(portPtr));
+    this.binding_.setConnectionErrorHandler(() => {
       this.close();
     });
+
+    this.options_ = options;
+    this.client_ = client;
+    // OS typically sets DTR on open.
+    this.outputSignals_.dataTerminalReady = true;
+
+    return portPtr;
   }
 
   write(data) {
@@ -200,14 +212,6 @@ class FakeSerialPort {
     }
 
     return this.readablePromise_;
-  }
-
-  async open(options, client) {
-    this.options_ = options;
-    this.client_ = client;
-    // OS typically sets DTR on open.
-    this.outputSignals_.dataTerminalReady = true;
-    return { success: true };
   }
 
   async startWriting(in_stream) {
@@ -298,7 +302,11 @@ class FakeSerialPort {
       this.writer_ = undefined;
     }
     this.writable_ = undefined;
-    this.binding = undefined;
+
+    if (this.binding_) {
+      this.binding_.close();
+      this.binding_ = undefined;
+    }
     return {};
   }
 }
@@ -402,12 +410,12 @@ class FakeSerialService {
       return { port: null };
   }
 
-  async getPort(token, port_receiver) {
+  async openPort(token, options, client) {
     let record = this.ports_.get(token.low);
     if (record !== undefined) {
-      record.fakePort.bind(port_receiver);
+      return {port: record.fakePort.open(options, client)};
     } else {
-      port_receiver.close();
+      return {port: null};
     }
   }
 }

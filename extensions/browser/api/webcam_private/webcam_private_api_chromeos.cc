@@ -92,10 +92,9 @@ bool WebcamPrivateAPI::OpenSerialWebcam(
   mojo::PendingRemote<device::mojom::SerialPort> port;
   auto* port_manager = api::SerialPortManager::Get(browser_context_);
   DCHECK(port_manager);
-  port_manager->GetPort(device_path, port.InitWithNewPipeAndPassReceiver());
 
   auto visca_webcam = base::MakeRefCounted<ViscaWebcam>();
-  visca_webcam->Open(extension_id, std::move(port),
+  visca_webcam->Open(extension_id, port_manager, device_path,
                      base::Bind(&WebcamPrivateAPI::OnOpenSerialWebcam,
                                 weak_ptr_factory_.GetWeakPtr(), extension_id,
                                 device_path, visca_webcam, callback));

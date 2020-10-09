@@ -28,6 +28,7 @@
 #include "services/device/device_service_test_base.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
 #include "services/device/public/cpp/serial/serial_switches.h"
+#include "services/device/public/cpp/test/fake_serial_port_client.h"
 #include "services/device/public/mojom/serial.mojom.h"
 #include "services/device/serial/bluetooth_serial_device_enumerator.h"
 #include "services/device/serial/fake_serial_device_enumerator.h"
@@ -66,25 +67,6 @@ class MockSerialPortManagerClient : public mojom::SerialPortManagerClient {
 
  private:
   mojo::Receiver<mojom::SerialPortManagerClient> receiver_{this};
-};
-
-class FakeSerialPortClient : public mojom::SerialPortClient {
- public:
-  FakeSerialPortClient() = default;
-  FakeSerialPortClient(FakeSerialPortClient&) = delete;
-  FakeSerialPortClient& operator=(FakeSerialPortClient&) = delete;
-  ~FakeSerialPortClient() override = default;
-
-  void Bind(mojo::PendingReceiver<device::mojom::SerialPortClient> receiver) {
-    receiver_.Bind(std::move(receiver));
-  }
-
-  // mojom::SerialPortClient
-  void OnReadError(mojom::SerialReceiveError error) override {}
-  void OnSendError(mojom::SerialSendError error) override {}
-
- private:
-  mojo::Receiver<mojom::SerialPortClient> receiver_{this};
 };
 
 }  // namespace
@@ -178,7 +160,7 @@ class SerialPortManagerImplTest : public DeviceServiceTestBase {
 
 // This is to simply test that we can enumerate devices on the platform without
 // hanging or crashing.
-TEST_F(SerialPortManagerImplTest, SimpleConnectTest) {
+TEST_F(SerialPortManagerImplTest, SimpleEnumerationTest) {
   // DeviceService has its own instance of SerialPortManagerImpl that is used to
   // bind the receiver over the one created for this test.
   mojo::Remote<mojom::SerialPortManager> port_manager;
@@ -188,17 +170,6 @@ TEST_F(SerialPortManagerImplTest, SimpleConnectTest) {
   base::RunLoop loop;
   port_manager->GetDevices(base::BindLambdaForTesting(
       [&](std::vector<mojom::SerialPortInfoPtr> results) {
-        for (auto& device : results) {
-          mojo::Remote<mojom::SerialPort> serial_port;
-          port_manager->GetPort(device->token,
-                                /*use_alternate_path=*/false,
-                                serial_port.BindNewPipeAndPassReceiver(),
-                                /*watcher=*/mojo::NullRemote());
-          // Send a message on the pipe and wait for the response to make sure
-          // that the interface request was bound successfully.
-          serial_port.FlushForTesting();
-          EXPECT_TRUE(serial_port.is_connected());
-        }
         loop.Quit();
       }));
   loop.Run();
@@ -225,17 +196,22 @@ TEST_F(SerialPortManagerImplTest, GetDevices) {
   loop.Run();
 }
 
-TEST_F(SerialPortManagerImplTest, GetUnknownPort) {
+TEST_F(SerialPortManagerImplTest, OpenUnknownPort) {
   mojo::Remote<mojom::SerialPortManager> port_manager;
   Bind(port_manager.BindNewPipeAndPassReceiver());
 
-  mojo::Remote<mojom::SerialPort> serial_port;
-  port_manager->GetPort(base::UnguessableToken::Create(),
-                        /*use_alternate_path=*/false,
-                        serial_port.BindNewPipeAndPassReceiver(),
-                        /*watcher=*/mojo::NullRemote());
-  serial_port.FlushForTesting();
-  EXPECT_FALSE(serial_port.is_connected());
+  base::RunLoop loop;
+  port_manager->OpenPort(
+      base::UnguessableToken::Create(),
+      /*use_alternate_path=*/false, mojom::SerialConnectionOptions::New(),
+      FakeSerialPortClient::Create(),
+      /*watcher=*/mojo::NullRemote(),
+      base::BindLambdaForTesting(
+          [&](mojo::PendingRemote<mojom::SerialPort> pending_remote) {
+            EXPECT_FALSE(pending_remote.is_valid());
+            loop.Quit();
+          }));
+  loop.Run();
 }
 
 TEST_F(SerialPortManagerImplTest, PortRemovedAndAdded) {
@@ -288,31 +264,7 @@ TEST_F(SerialPortManagerImplTest, PortRemovedAndAdded) {
   }
 }
 
-TEST_F(SerialPortManagerImplTest, GetPort) {
-  SetupBluetoothEnumerator();
-  mojo::Remote<mojom::SerialPortManager> port_manager;
-  Bind(port_manager.BindNewPipeAndPassReceiver());
-
-  base::RunLoop loop;
-  port_manager->GetDevices(base::BindLambdaForTesting(
-      [&](std::vector<mojom::SerialPortInfoPtr> results) {
-        EXPECT_GT(results.size(), 0u);
-
-        mojo::Remote<mojom::SerialPort> serial_port;
-        port_manager->GetPort(results[0]->token,
-                              /*use_alternate_path=*/false,
-                              serial_port.BindNewPipeAndPassReceiver(),
-                              /*watcher=*/mojo::NullRemote());
-        // Send a message on the pipe and wait for the response to make sure
-        // that the interface request was bound successfully.
-        serial_port.FlushForTesting();
-        EXPECT_TRUE(serial_port.is_connected());
-        loop.Quit();
-      }));
-  loop.Run();
-}
-
-TEST_F(SerialPortManagerImplTest, GetBluetoothDevicePort) {
+TEST_F(SerialPortManagerImplTest, OpenBluetoothDevicePort) {
   SetupBluetoothEnumeratorWithExpectations();
   mojo::Remote<mojom::SerialPortManager> port_manager;
   Bind(port_manager.BindNewPipeAndPassReceiver());
@@ -321,11 +273,6 @@ TEST_F(SerialPortManagerImplTest, GetBluetoothDevicePort) {
       mojo::MakeSelfOwnedReceiver(
           std::make_unique<mojom::SerialPortConnectionWatcher>(),
           watcher_remote.InitWithNewPipeAndPassReceiver());
-  auto options = mojom::SerialConnectionOptions::New();
-  mojo::PendingRemote<mojom::SerialPortClient> client;
-  FakeSerialPortClient serial_client;
-  serial_client.Bind(client.InitWithNewPipeAndPassReceiver());
-  mojo::Remote<mojom::SerialPort> serial_port;
 
   // Since we only want to use devices enumerated by the Bluetooth
   // enumerator, we can remove the devices that are not.
@@ -335,6 +282,7 @@ TEST_F(SerialPortManagerImplTest, GetBluetoothDevicePort) {
   const std::set<base::FilePath> expected_paths = {
       base::FilePath::FromUTF8Unsafe(kDeviceAddress)};
 
+  mojo::Remote<mojom::SerialPort> serial_port;
   base::RunLoop loop;
   port_manager->GetDevices(base::BindLambdaForTesting(
       [&](std::vector<mojom::SerialPortInfoPtr> results) {
@@ -344,15 +292,16 @@ TEST_F(SerialPortManagerImplTest, GetBluetoothDevicePort) {
           actual_paths.insert(results[i]->path);
         EXPECT_EQ(expected_paths, actual_paths);
 
-        port_manager->GetPort(results[0]->token,
-                              /*use_alternate_path=*/false,
-                              serial_port.BindNewPipeAndPassReceiver(),
-                              /*watcher=*/std::move(watcher_remote));
-        serial_port->Open(std::move(options), std::move(client),
-                          base::BindLambdaForTesting([&loop](bool success) {
-                            EXPECT_TRUE(success);
-                            loop.Quit();
-                          }));
+        port_manager->OpenPort(
+            results[0]->token,
+            /*use_alternate_path=*/false, mojom::SerialConnectionOptions::New(),
+            FakeSerialPortClient::Create(), std::move(watcher_remote),
+            base::BindLambdaForTesting(
+                [&](mojo::PendingRemote<mojom::SerialPort> pending_remote) {
+                  serial_port.Bind(std::move(pending_remote));
+                  EXPECT_TRUE(serial_port.is_connected());
+                  loop.Quit();
+                }));
       }));
 
   loop.Run();

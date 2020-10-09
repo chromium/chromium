@@ -16,6 +16,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "extensions/browser/api/api_resource_manager.h"
+#include "extensions/browser/api/serial/serial_port_manager.h"
 #include "extensions/common/api/serial.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -159,9 +160,7 @@ ApiResourceManager<SerialConnection>::GetFactoryInstance() {
   return g_factory.Pointer();
 }
 
-SerialConnection::SerialConnection(
-    const std::string& owner_extension_id,
-    mojo::PendingRemote<device::mojom::SerialPort> serial_port)
+SerialConnection::SerialConnection(const std::string& owner_extension_id)
     : ApiResource(owner_extension_id),
       persistent_(false),
       buffer_size_(kDefaultBufferSize),
@@ -170,13 +169,9 @@ SerialConnection::SerialConnection(
       paused_(true),
       read_error_(base::nullopt),
       bytes_written_(0),
-      serial_port_(std::move(serial_port)),
       receive_pipe_watcher_(FROM_HERE,
                             mojo::SimpleWatcher::ArmingPolicy::MANUAL),
       send_pipe_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL) {
-  DCHECK(serial_port_);
-  serial_port_.set_disconnect_handler(base::BindOnce(
-      &SerialConnection::OnConnectionError, base::Unretained(this)));
 }
 
 SerialConnection::~SerialConnection() {}
@@ -227,9 +222,11 @@ void SerialConnection::SetConnectionErrorHandler(
   connection_error_handler_ = std::move(connection_error_handler);
 }
 
-void SerialConnection::Open(const api::serial::ConnectionOptions& options,
+void SerialConnection::Open(api::SerialPortManager* port_manager,
+                            const std::string& path,
+                            const api::serial::ConnectionOptions& options,
                             OpenCompleteCallback callback) {
-  DCHECK(serial_port_);
+  DCHECK(!serial_port_);
   DCHECK(!send_pipe_);
   DCHECK(!receive_pipe_);
 
@@ -246,12 +243,13 @@ void SerialConnection::Open(const api::serial::ConnectionOptions& options,
 
   mojo::PendingRemote<device::mojom::SerialPortClient> client;
   auto client_receiver = client.InitWithNewPipeAndPassReceiver();
-  serial_port_->Open(
-      device::mojom::SerialConnectionOptions::From(options), std::move(client),
+  port_manager->OpenPort(
+      path, device::mojom::SerialConnectionOptions::From(options),
+      std::move(client),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(&SerialConnection::OnOpen, weak_factory_.GetWeakPtr(),
                          std::move(client_receiver), std::move(callback)),
-          false));
+          mojo::NullRemote()));
 }
 
 void SerialConnection::CreatePipe(
@@ -323,11 +321,15 @@ void SerialConnection::OnSendError(device::mojom::SerialSendError error) {
 void SerialConnection::OnOpen(
     mojo::PendingReceiver<device::mojom::SerialPortClient> client_receiver,
     OpenCompleteCallback callback,
-    bool success) {
-  if (!success) {
+    mojo::PendingRemote<device::mojom::SerialPort> serial_port) {
+  if (!serial_port.is_valid()) {
     std::move(callback).Run(false);
     return;
   }
+
+  serial_port_.Bind(std::move(serial_port));
+  serial_port_.set_disconnect_handler(base::BindOnce(
+      &SerialConnection::OnConnectionError, base::Unretained(this)));
 
   SetUpReceiveDataPipe();
   SetUpSendDataPipe();
@@ -517,6 +519,10 @@ void SerialConnection::Close(base::OnceClosure callback) {
   DCHECK(serial_port_);
   serial_port_->Close(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback)));
+}
+
+void SerialConnection::InitSerialPortForTesting() {
+  ignore_result(serial_port_.BindNewPipeAndPassReceiver());
 }
 
 void SerialConnection::SetTimeoutCallback() {

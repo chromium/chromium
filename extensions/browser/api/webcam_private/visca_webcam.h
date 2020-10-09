@@ -33,7 +33,8 @@ class ViscaWebcam : public Webcam {
   // command buffer. After these three steps completes, |open_callback| will be
   // called.
   void Open(const std::string& extension_id,
-            mojo::PendingRemote<device::mojom::SerialPort> port,
+            api::SerialPortManager* port_manager,
+            const std::string& path,
             const OpenCompleteCallback& open_callback);
 
  private:
