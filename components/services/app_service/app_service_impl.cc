@@ -10,6 +10,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -54,11 +55,15 @@ void Connect(apps::mojom::Publisher* publisher,
 }
 
 void LogPreferredAppFileIOAction(PreferredAppsFileIOAction action) {
-  UMA_HISTOGRAM_ENUMERATION("PreferredApps.FileIOAction", action);
+  UMA_HISTOGRAM_ENUMERATION("Apps.PreferredApps.FileIOAction", action);
 }
 
 void LogPreferredAppUpdateAction(PreferredAppsUpdateAction action) {
-  UMA_HISTOGRAM_ENUMERATION("PreferredApps.UpdateAction", action);
+  UMA_HISTOGRAM_ENUMERATION("Apps.PreferredApps.UpdateAction", action);
+}
+
+void LogPreferredAppEntryCount(int entry_count) {
+  base::UmaHistogramCounts10000("Apps.PreferredApps.EntryCount", entry_count);
 }
 
 // Performs blocking I/O. Called on another thread.
@@ -492,6 +497,8 @@ void AppServiceImpl::ReadCompleted(std::string preferred_apps_string) {
   if (read_completed_for_testing_) {
     std::move(read_completed_for_testing_).Run();
   }
+
+  LogPreferredAppEntryCount(preferred_apps_.GetEntrySize());
 }
 
 }  // namespace apps
