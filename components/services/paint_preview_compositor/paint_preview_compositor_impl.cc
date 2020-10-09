@@ -81,13 +81,15 @@ base::Optional<PaintPreviewFrame> BuildFrame(
   return frame;
 }
 
-SkBitmap CreateBitmap(sk_sp<SkPicture> skp,
-                      const gfx::Rect& clip_rect,
-                      float scale_factor) {
+base::Optional<SkBitmap> CreateBitmap(sk_sp<SkPicture> skp,
+                                      const gfx::Rect& clip_rect,
+                                      float scale_factor) {
   TRACE_EVENT0("paint_preview", "PaintPreviewCompositorImpl::CreateBitmap");
   SkBitmap bitmap;
-  bitmap.allocPixels(
-      SkImageInfo::MakeN32Premul(clip_rect.width(), clip_rect.height()));
+  if (!bitmap.tryAllocPixels(
+          SkImageInfo::MakeN32Premul(clip_rect.width(), clip_rect.height()))) {
+    return base::nullopt;
+  }
   SkCanvas canvas(bitmap);
   SkMatrix matrix;
   matrix.setScaleTranslate(scale_factor, scale_factor, -clip_rect.x(),
@@ -178,12 +180,11 @@ void PaintPreviewCompositorImpl::BitmapForSeparatedFrame(
     BitmapForSeparatedFrameCallback callback) {
   TRACE_EVENT0("paint_preview",
                "PaintPreviewCompositorImpl::BitmapForSeparatedFrame");
-  SkBitmap bitmap;
   auto frame_it = frames_.find(frame_guid);
   if (frame_it == frames_.end()) {
     DVLOG(1) << "Frame not found for " << frame_guid.ToString();
     std::move(callback).Run(
-        mojom::PaintPreviewCompositor::BitmapStatus::kMissingFrame, bitmap);
+        mojom::PaintPreviewCompositor::BitmapStatus::kMissingFrame, SkBitmap());
     return;
   }
 
@@ -192,8 +193,20 @@ void PaintPreviewCompositorImpl::BitmapForSeparatedFrame(
       {base::TaskPriority::USER_VISIBLE, base::WithBaseSyncPrimitives()},
       base::BindOnce(&CreateBitmap, frame_it->second.skp, clip_rect,
                      scale_factor),
-      base::BindOnce(std::move(callback),
-                     mojom::PaintPreviewCompositor::BitmapStatus::kSuccess));
+      base::BindOnce(
+          [](BitmapForSeparatedFrameCallback callback,
+             const base::Optional<SkBitmap>& maybe_bitmap) {
+            if (!maybe_bitmap.has_value()) {
+              std::move(callback).Run(
+                  mojom::PaintPreviewCompositor::BitmapStatus::kAllocFailed,
+                  SkBitmap());
+              return;
+            }
+            std::move(callback).Run(
+                mojom::PaintPreviewCompositor::BitmapStatus::kSuccess,
+                maybe_bitmap.value());
+          },
+          std::move(callback)));
 }
 
 void PaintPreviewCompositorImpl::BeginMainFrameComposite(
@@ -256,8 +269,20 @@ void PaintPreviewCompositorImpl::BitmapForMainFrame(
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE, base::WithBaseSyncPrimitives()},
       base::BindOnce(&CreateBitmap, root_frame_, clip_rect, scale_factor),
-      base::BindOnce(std::move(callback),
-                     mojom::PaintPreviewCompositor::BitmapStatus::kSuccess));
+      base::BindOnce(
+          [](BitmapForMainFrameCallback callback,
+             const base::Optional<SkBitmap>& maybe_bitmap) {
+            if (!maybe_bitmap.has_value()) {
+              std::move(callback).Run(
+                  mojom::PaintPreviewCompositor::BitmapStatus::kAllocFailed,
+                  SkBitmap());
+              return;
+            }
+            std::move(callback).Run(
+                mojom::PaintPreviewCompositor::BitmapStatus::kSuccess,
+                maybe_bitmap.value());
+          },
+          std::move(callback)));
 }
 
 void PaintPreviewCompositorImpl::SetRootFrameUrl(const GURL& url) {
