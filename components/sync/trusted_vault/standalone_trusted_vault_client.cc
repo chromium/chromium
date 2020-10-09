@@ -163,11 +163,14 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
 
 StandaloneTrustedVaultClient::~StandaloneTrustedVaultClient() = default;
 
-std::unique_ptr<StandaloneTrustedVaultClient::Subscription>
-StandaloneTrustedVaultClient::AddKeysChangedObserver(
-    const base::RepeatingClosure& cb) {
+void StandaloneTrustedVaultClient::AddObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return keys_observer_list_.Add(cb);
+  observer_list_.AddObserver(observer);
+}
+
+void StandaloneTrustedVaultClient::RemoveObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observer_list_.RemoveObserver(observer);
 }
 
 void StandaloneTrustedVaultClient::FetchKeys(
@@ -190,7 +193,9 @@ void StandaloneTrustedVaultClient::StoreKeys(
   backend_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&StandaloneTrustedVaultBackend::StoreKeys,
                                 backend_, gaia_id, keys, last_key_version));
-  keys_observer_list_.Notify();
+  for (Observer& observer : observer_list_) {
+    observer.OnTrustedVaultKeysChanged();
+  }
 }
 
 void StandaloneTrustedVaultClient::RemoveAllStoredKeys() {
@@ -200,7 +205,9 @@ void StandaloneTrustedVaultClient::RemoveAllStoredKeys() {
       FROM_HERE,
       base::BindOnce(&StandaloneTrustedVaultBackend::RemoveAllStoredKeys,
                      backend_));
-  keys_observer_list_.Notify();
+  for (Observer& observer : observer_list_) {
+    observer.OnTrustedVaultKeysChanged();
+  }
 }
 
 void StandaloneTrustedVaultClient::MarkKeysAsStale(
@@ -225,13 +232,6 @@ void StandaloneTrustedVaultClient::GetIsRecoverabilityDegraded(
       base::BindOnce(
           &StandaloneTrustedVaultBackend::GetIsRecoverabilityDegraded, backend_,
           account_info, BindToCurrentSequence(std::move(cb))));
-}
-
-std::unique_ptr<StandaloneTrustedVaultClient::Subscription>
-StandaloneTrustedVaultClient::AddRecoverabilityObserver(
-    const base::RepeatingClosure& cb) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return recoverability_observer_list_.Add(cb);
 }
 
 void StandaloneTrustedVaultClient::AddTrustedRecoveryMethod(
@@ -278,7 +278,9 @@ void StandaloneTrustedVaultClient::SetRecoverabilityDegradedForTesting() {
 
 void StandaloneTrustedVaultClient::NotifyRecoverabilityDegradedChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  recoverability_observer_list_.Notify();
+  for (Observer& observer : observer_list_) {
+    observer.OnTrustedVaultRecoverabilityChanged();
+  }
 }
 
 }  // namespace syncer

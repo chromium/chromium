@@ -38,10 +38,9 @@ class EmptyTrustedVaultClient : public TrustedVaultClient {
   ~EmptyTrustedVaultClient() override = default;
 
   // TrustedVaultClient implementation.
-  std::unique_ptr<Subscription> AddKeysChangedObserver(
-      const base::RepeatingClosure& cb) override {
-    return nullptr;
-  }
+  void AddObserver(Observer* observer) override {}
+
+  void RemoveObserver(Observer* observer) override {}
 
   void FetchKeys(
       const CoreAccountInfo& account_info,
@@ -70,11 +69,6 @@ class EmptyTrustedVaultClient : public TrustedVaultClient {
   void GetIsRecoverabilityDegraded(const CoreAccountInfo& account_info,
                                    base::OnceCallback<void(bool)> cb) override {
     std::move(cb).Run(false);
-  }
-
-  std::unique_ptr<Subscription> AddRecoverabilityObserver(
-      const base::RepeatingClosure& cb) override {
-    return nullptr;
   }
 
   void AddTrustedRecoveryMethod(const std::string& gaia_id,
@@ -232,18 +226,12 @@ SyncServiceCrypto::SyncServiceCrypto(
   DCHECK(sync_prefs_);
   DCHECK(trusted_vault_client_);
 
-  trusted_vault_client_keys_subscription_ =
-      trusted_vault_client_->AddKeysChangedObserver(base::BindRepeating(
-          &SyncServiceCrypto::OnTrustedVaultClientKeysChanged,
-          weak_factory_.GetWeakPtr()));
-
-  trusted_vault_client_recoverability_subscription_ =
-      trusted_vault_client_->AddRecoverabilityObserver(base::BindRepeating(
-          &SyncServiceCrypto::OnTrustedVaultClientRecoverabilityChanged,
-          weak_factory_.GetWeakPtr()));
+  trusted_vault_client_->AddObserver(this);
 }
 
-SyncServiceCrypto::~SyncServiceCrypto() = default;
+SyncServiceCrypto::~SyncServiceCrypto() {
+  trusted_vault_client_->RemoveObserver(this);
+}
 
 void SyncServiceCrypto::Reset() {
   state_ = State();
@@ -412,6 +400,34 @@ bool SyncServiceCrypto::IsTrustedVaultKeyRequiredStateKnown() const {
 PassphraseType SyncServiceCrypto::GetPassphraseType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return state_.cached_passphrase_type;
+}
+
+void SyncServiceCrypto::SetSyncEngine(const CoreAccountInfo& account_info,
+                                      SyncEngine* engine) {
+  DCHECK(engine);
+  state_.account_info = account_info;
+  state_.engine = engine;
+
+  // Since there was no state changes during engine initialization, now the
+  // state is known and no user action required.
+  if (state_.required_user_action ==
+      RequiredUserAction::kUnknownDuringInitialization) {
+    UpdateRequiredUserActionAndNotify(RequiredUserAction::kNone);
+  }
+
+  // This indicates OnTrustedVaultKeyRequired() was called as part of the
+  // engine's initialization.
+  if (state_.required_user_action ==
+      RequiredUserAction::kFetchingTrustedVaultKeys) {
+    FetchTrustedVaultKeys(/*is_second_fetch_attempt=*/false);
+  }
+}
+
+std::unique_ptr<SyncEncryptionHandler::Observer>
+SyncServiceCrypto::GetEncryptionObserverProxy() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return std::make_unique<SyncEncryptionObserverProxy>(
+      weak_factory_.GetWeakPtr(), base::SequencedTaskRunnerHandle::Get());
 }
 
 ModelTypeSet SyncServiceCrypto::GetEncryptedDataTypes() const {
@@ -606,35 +622,7 @@ void SyncServiceCrypto::OnPassphraseTypeChanged(PassphraseType type,
   notify_observers_.Run();
 }
 
-void SyncServiceCrypto::SetSyncEngine(const CoreAccountInfo& account_info,
-                                      SyncEngine* engine) {
-  DCHECK(engine);
-  state_.account_info = account_info;
-  state_.engine = engine;
-
-  // Since there was no state changes during engine initialization, now the
-  // state is known and no user action required.
-  if (state_.required_user_action ==
-      RequiredUserAction::kUnknownDuringInitialization) {
-    UpdateRequiredUserActionAndNotify(RequiredUserAction::kNone);
-  }
-
-  // This indicates OnTrustedVaultKeyRequired() was called as part of the
-  // engine's initialization.
-  if (state_.required_user_action ==
-      RequiredUserAction::kFetchingTrustedVaultKeys) {
-    FetchTrustedVaultKeys(/*is_second_fetch_attempt=*/false);
-  }
-}
-
-std::unique_ptr<SyncEncryptionHandler::Observer>
-SyncServiceCrypto::GetEncryptionObserverProxy() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::make_unique<SyncEncryptionObserverProxy>(
-      weak_factory_.GetWeakPtr(), base::SequencedTaskRunnerHandle::Get());
-}
-
-void SyncServiceCrypto::OnTrustedVaultClientKeysChanged() {
+void SyncServiceCrypto::OnTrustedVaultKeysChanged() {
   switch (state_.required_user_action) {
     case RequiredUserAction::kUnknownDuringInitialization:
     case RequiredUserAction::kNone:
@@ -662,7 +650,7 @@ void SyncServiceCrypto::OnTrustedVaultClientKeysChanged() {
   FetchTrustedVaultKeys(/*is_second_fetch_attempt=*/false);
 }
 
-void SyncServiceCrypto::OnTrustedVaultClientRecoverabilityChanged() {
+void SyncServiceCrypto::OnTrustedVaultRecoverabilityChanged() {
   RefreshIsRecoverabilityDegraded();
 }
 

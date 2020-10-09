@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind_helpers.h"
+#include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
@@ -151,13 +152,18 @@ class TestTrustedVaultClient : public TrustedVaultClient {
 
   void SetIsRecoverabilityDegraded(bool is_recoverability_degraded) {
     is_recoverability_degraded_ = is_recoverability_degraded;
-    recoverability_observer_list_.Notify();
+    for (Observer& observer : observer_list_) {
+      observer.OnTrustedVaultRecoverabilityChanged();
+    }
   }
 
   // TrustedVaultClient implementation.
-  std::unique_ptr<Subscription> AddKeysChangedObserver(
-      const base::RepeatingClosure& cb) override {
-    return keys_observer_list_.Add(cb);
+  void AddObserver(Observer* observer) override {
+    observer_list_.AddObserver(observer);
+  }
+
+  void RemoveObserver(Observer* observer) override {
+    observer_list_.RemoveObserver(observer);
   }
 
   void FetchKeys(
@@ -203,12 +209,16 @@ class TestTrustedVaultClient : public TrustedVaultClient {
     CachedKeysPerUser& cached_keys = gaia_id_to_cached_keys_[gaia_id];
     cached_keys.keys = keys;
     cached_keys.marked_as_stale = false;
-    keys_observer_list_.Notify();
+    for (Observer& observer : observer_list_) {
+      observer.OnTrustedVaultKeysChanged();
+    }
   }
 
   void RemoveAllStoredKeys() override {
     gaia_id_to_cached_keys_.clear();
-    keys_observer_list_.Notify();
+    for (Observer& observer : observer_list_) {
+      observer.OnTrustedVaultKeysChanged();
+    }
   }
 
   void MarkKeysAsStale(const CoreAccountInfo& account_info,
@@ -237,11 +247,6 @@ class TestTrustedVaultClient : public TrustedVaultClient {
     std::move(cb).Run(is_recoverability_degraded_);
   }
 
-  std::unique_ptr<Subscription> AddRecoverabilityObserver(
-      const base::RepeatingClosure& cb) override {
-    return recoverability_observer_list_.Add(cb);
-  }
-
   void AddTrustedRecoveryMethod(const std::string& gaia_id,
                                 const std::vector<uint8_t>& public_key,
                                 base::OnceClosure cb) override {
@@ -258,8 +263,7 @@ class TestTrustedVaultClient : public TrustedVaultClient {
   const TestTrustedVaultServer* const server_;
 
   std::map<std::string, CachedKeysPerUser> gaia_id_to_cached_keys_;
-  CallbackList keys_observer_list_;
-  CallbackList recoverability_observer_list_;
+  base::ObserverList<Observer> observer_list_;
   int fetch_count_ = 0;
   int keys_marked_as_stale_count_ = 0;
   int get_is_recoverablity_degraded_call_count_ = 0;
@@ -294,7 +298,7 @@ class SyncServiceCryptoTest : public testing::Test {
 
   bool VerifyAndClearExpectations() {
     return testing::Mock::VerifyAndClearExpectations(&notify_observers_cb_) &&
-           testing::Mock::VerifyAndClearExpectations(&notify_observers_cb_) &&
+           testing::Mock::VerifyAndClearExpectations(&reconfigure_cb_) &&
            testing::Mock::VerifyAndClearExpectations(&trusted_vault_client_) &&
            testing::Mock::VerifyAndClearExpectations(&engine_);
   }

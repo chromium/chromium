@@ -17,17 +17,24 @@ IOSTrustedVaultClient::IOSTrustedVaultClient() {}
 
 IOSTrustedVaultClient::~IOSTrustedVaultClient() = default;
 
-std::unique_ptr<IOSTrustedVaultClient::Subscription>
-IOSTrustedVaultClient::AddKeysChangedObserver(
-    const base::RepeatingClosure& closure) {
+void IOSTrustedVaultClient::AddObserver(Observer* observer) {
   ios::ChromeBrowserProvider* browser_provider =
       ios::GetChromeBrowserProvider();
   ios::ChromeTrustedVaultService* trusted_vault_service =
       browser_provider->GetChromeTrustedVaultService();
-  if (!trusted_vault_service) {
-    return nullptr;
+  if (trusted_vault_service) {
+    trusted_vault_service->AddObserver(observer);
   }
-  return trusted_vault_service->AddKeysChangedObserver(closure);
+}
+
+void IOSTrustedVaultClient::RemoveObserver(Observer* observer) {
+  ios::ChromeBrowserProvider* browser_provider =
+      ios::GetChromeBrowserProvider();
+  ios::ChromeTrustedVaultService* trusted_vault_service =
+      browser_provider->GetChromeTrustedVaultService();
+  if (trusted_vault_service) {
+    trusted_vault_service->RemoveObserver(observer);
+  }
 }
 
 void IOSTrustedVaultClient::FetchKeys(
@@ -71,13 +78,6 @@ void IOSTrustedVaultClient::GetIsRecoverabilityDegraded(
     base::OnceCallback<void(bool)> callback) {
   // TODO(crbug.com/1100278): Needs implementation.
   std::move(callback).Run(false);
-}
-
-std::unique_ptr<IOSTrustedVaultClient::Subscription>
-IOSTrustedVaultClient::AddRecoverabilityObserver(
-    const base::RepeatingClosure& callback) {
-  // TODO(crbug.com/1100278): Needs implementation.
-  return nullptr;
 }
 
 void IOSTrustedVaultClient::AddTrustedRecoveryMethod(

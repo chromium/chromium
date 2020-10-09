@@ -13,6 +13,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
+#include "base/observer_list.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/driver/trusted_vault_client.h"
 
@@ -46,8 +47,8 @@ class TrustedVaultClientAndroid : public syncer::TrustedVaultClient {
   void NotifyKeysChanged(JNIEnv* env);
 
   // TrustedVaultClient implementation.
-  std::unique_ptr<Subscription> AddKeysChangedObserver(
-      const base::RepeatingClosure& cb) override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void FetchKeys(
       const CoreAccountInfo& account_info,
       base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> cb)
@@ -60,8 +61,6 @@ class TrustedVaultClientAndroid : public syncer::TrustedVaultClient {
                        base::OnceCallback<void(bool)> cb) override;
   void GetIsRecoverabilityDegraded(const CoreAccountInfo& account_info,
                                    base::OnceCallback<void(bool)> cb) override;
-  std::unique_ptr<Subscription> AddRecoverabilityObserver(
-      const base::RepeatingClosure& cb) override;
   void AddTrustedRecoveryMethod(const std::string& gaia_id,
                                 const std::vector<uint8_t>& public_key,
                                 base::OnceClosure cb) override;
@@ -86,7 +85,7 @@ class TrustedVaultClientAndroid : public syncer::TrustedVaultClient {
   // C++.
   base::OnceCallback<void(bool)> ongoing_mark_keys_as_stale_;
 
-  CallbackList observer_list_;
+  base::ObserverList<Observer> observer_list_;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TRUSTED_VAULT_CLIENT_ANDROID_H_

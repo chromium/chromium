@@ -10,8 +10,9 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/callback_list.h"
 #include "base/macros.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 
 struct CoreAccountInfo;
 
@@ -21,17 +22,26 @@ namespace syncer {
 // available trusted vault encryption keys.
 class TrustedVaultClient {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    Observer() = default;
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+    ~Observer() override = default;
+
+    // Invoked when the keys inside the vault have changed.
+    virtual void OnTrustedVaultKeysChanged() = 0;
+
+    // Invoked when the recoverability of the keys has changed.
+    virtual void OnTrustedVaultRecoverabilityChanged() = 0;
+  };
+
   TrustedVaultClient() = default;
   virtual ~TrustedVaultClient() = default;
 
-  using CallbackList = base::CallbackList<void()>;
-  using Subscription = CallbackList::Subscription;
-
-  // Registers an observer-like callback that will be invoked when the content
-  // of the vault has changed (e.g. new keys added). The subscription must not
-  // outlive |*this|.
-  virtual std::unique_ptr<Subscription> AddKeysChangedObserver(
-      const base::RepeatingClosure& cb) = 0;
+  // Adds/removes an observer.
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Attempts to fetch decryption keys, required by sync to resume.
   // Implementations are expected to NOT prompt the user for actions. |cb| is
@@ -73,14 +83,6 @@ class TrustedVaultClient {
   virtual void GetIsRecoverabilityDegraded(
       const CoreAccountInfo& account_info,
       base::OnceCallback<void(bool)> cb) = 0;
-
-  // Registers an observer-like callback that will be invoked when the
-  // recoverability of the keys has changed. The subscription must not outlive
-  // |*this|.
-  // TODO(crbug.com/1081649): Unify with AddKeysChangedObserver() by introducing
-  // an observer interface instead.
-  virtual std::unique_ptr<Subscription> AddRecoverabilityObserver(
-      const base::RepeatingClosure& cb) = 0;
 
   // Registers a new trusted recovery method that can be used to retrieve keys,
   // usually for the purpose of resolving a recoverability-degraded case

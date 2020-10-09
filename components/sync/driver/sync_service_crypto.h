@@ -28,7 +28,8 @@ class CryptoSyncPrefs;
 // handles things related to encryption, including holding lots of state and
 // encryption communications with the sync thread.
 class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
-                          public DataTypeEncryptionHandler {
+                          public DataTypeEncryptionHandler,
+                          public TrustedVaultClient::Observer {
  public:
   // |sync_prefs| must not be null and must outlive this object.
   // |trusted_vault_client| may be null, but if non-null, the pointee must
@@ -62,6 +63,12 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   // Returns the actual passphrase type being used for encryption.
   PassphraseType GetPassphraseType() const;
 
+  // Used to provide the engine when it is initialized.
+  void SetSyncEngine(const CoreAccountInfo& account_info, SyncEngine* engine);
+
+  // Creates a proxy observer object that will post calls to this thread.
+  std::unique_ptr<SyncEncryptionHandler::Observer> GetEncryptionObserverProxy();
+
   // SyncEncryptionHandler::Observer implementation.
   void OnPassphraseRequired(
       PassphraseRequiredReason reason,
@@ -84,11 +91,9 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   bool HasCryptoError() const override;
   ModelTypeSet GetEncryptedDataTypes() const override;
 
-  // Used to provide the engine when it is initialized.
-  void SetSyncEngine(const CoreAccountInfo& account_info, SyncEngine* engine);
-
-  // Creates a proxy observer object that will post calls to this thread.
-  std::unique_ptr<SyncEncryptionHandler::Observer> GetEncryptionObserverProxy();
+  // TrustedVaultClient::Observer implementation.
+  void OnTrustedVaultKeysChanged() override;
+  void OnTrustedVaultRecoverabilityChanged() override;
 
   bool encryption_pending() const { return state_.encryption_pending; }
 
@@ -112,10 +117,6 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
     // recoverability.
     kTrustedVaultRecoverabilityDegraded,
   };
-
-  // Observer methods invoked by TrustedVaultClient when its content changes.
-  void OnTrustedVaultClientKeysChanged();
-  void OnTrustedVaultClientRecoverabilityChanged();
 
   // Reads trusted vault keys from the client and feeds them to the sync engine.
   void FetchTrustedVaultKeys(bool is_second_fetch_attempt);
@@ -156,12 +157,6 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
 
   // Never null and guaranteed to outlive us.
   TrustedVaultClient* const trusted_vault_client_;
-
-  // Subscriptions to observe changes in |*trusted_vault_client_|.
-  std::unique_ptr<TrustedVaultClient::Subscription>
-      trusted_vault_client_keys_subscription_;
-  std::unique_ptr<TrustedVaultClient::Subscription>
-      trusted_vault_client_recoverability_subscription_;
 
   // All the mutable state is wrapped in a struct so that it can be easily
   // reset to its default values.

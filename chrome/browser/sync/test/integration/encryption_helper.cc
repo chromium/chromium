@@ -89,18 +89,14 @@ bool TrustedVaultKeyRequiredStateChecker::IsExitConditionSatisfied(
 
 TrustedVaultKeysChangedStateChecker::TrustedVaultKeysChangedStateChecker(
     syncer::ProfileSyncService* service)
-    : keys_changed_(false) {
-  // base::Unretained() is safe here, because callback won't be called once
-  // |subscription_| is destroyed.
-  subscription_ = service->GetSyncClientForTest()
-                      ->GetTrustedVaultClient()
-                      ->AddKeysChangedObserver(base::BindRepeating(
-                          &TrustedVaultKeysChangedStateChecker::OnKeysChanged,
-                          base::Unretained(this)));
+    : service_(service), keys_changed_(false) {
+  service->GetSyncClientForTest()->GetTrustedVaultClient()->AddObserver(this);
 }
 
-TrustedVaultKeysChangedStateChecker::~TrustedVaultKeysChangedStateChecker() =
-    default;
+TrustedVaultKeysChangedStateChecker::~TrustedVaultKeysChangedStateChecker() {
+  service_->GetSyncClientForTest()->GetTrustedVaultClient()->RemoveObserver(
+      this);
+}
 
 bool TrustedVaultKeysChangedStateChecker::IsExitConditionSatisfied(
     std::ostream* os) {
@@ -108,9 +104,13 @@ bool TrustedVaultKeysChangedStateChecker::IsExitConditionSatisfied(
   return keys_changed_;
 }
 
-void TrustedVaultKeysChangedStateChecker::OnKeysChanged() {
+void TrustedVaultKeysChangedStateChecker::OnTrustedVaultKeysChanged() {
   keys_changed_ = true;
+  CheckExitCondition();
 }
+
+void TrustedVaultKeysChangedStateChecker::
+    OnTrustedVaultRecoverabilityChanged() {}
 
 ScopedScryptFeatureToggler::ScopedScryptFeatureToggler(
     bool force_disabled,

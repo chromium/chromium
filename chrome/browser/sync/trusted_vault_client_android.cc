@@ -64,13 +64,17 @@ void TrustedVaultClientAndroid::MarkKeysAsStaleCompleted(JNIEnv* env,
 }
 
 void TrustedVaultClientAndroid::NotifyKeysChanged(JNIEnv* env) {
-  observer_list_.Notify();
+  for (Observer& observer : observer_list_) {
+    observer.OnTrustedVaultKeysChanged();
+  }
 }
 
-std::unique_ptr<TrustedVaultClientAndroid::Subscription>
-TrustedVaultClientAndroid::AddKeysChangedObserver(
-    const base::RepeatingClosure& cb) {
-  return observer_list_.Add(cb);
+void TrustedVaultClientAndroid::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void TrustedVaultClientAndroid::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
 }
 
 void TrustedVaultClientAndroid::FetchKeys(
@@ -136,14 +140,6 @@ void TrustedVaultClientAndroid::GetIsRecoverabilityDegraded(
   // TODO(crbug.com/1100279): Needs implementation.
   NOTIMPLEMENTED();
   std::move(cb).Run(false);
-}
-
-std::unique_ptr<TrustedVaultClientAndroid::Subscription>
-TrustedVaultClientAndroid::AddRecoverabilityObserver(
-    const base::RepeatingClosure& cb) {
-  // TODO(crbug.com/1100279): Needs implementation.
-  NOTIMPLEMENTED();
-  return nullptr;
 }
 
 void TrustedVaultClientAndroid::AddTrustedRecoveryMethod(

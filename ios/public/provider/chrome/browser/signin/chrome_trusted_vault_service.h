@@ -5,10 +5,13 @@
 #ifndef IOS_PUBLIC_PROVIDER_CHROME_BROWSER_SIGNIN_CHROME_TRUSTED_VAULT_SERVICE_H_
 #define IOS_PUBLIC_PROVIDER_CHROME_BROWSER_SIGNIN_CHROME_TRUSTED_VAULT_SERVICE_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/callback_list.h"
+#include "base/observer_list.h"
+#include "components/sync/driver/trusted_vault_client.h"
 
 @class ChromeIdentity;
 @class UIViewController;
@@ -27,8 +30,13 @@ class ChromeTrustedVaultService {
   ChromeTrustedVaultService& operator=(const ChromeTrustedVaultService&) =
       delete;
 
+  using Observer = syncer::TrustedVaultClient::Observer;
   using CallbackList = base::CallbackList<void()>;
   using Subscription = CallbackList::Subscription;
+
+  // Adds/removes observers.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Asynchronously fetch the shared keys for |identity|
   // and returns them by calling |callback|.
@@ -48,8 +56,20 @@ class ChromeTrustedVaultService {
   // synchronously.
   virtual void CancelReauthentication(BOOL animated,
                                       void (^callback)(void)) = 0;
+  // TODO(crbug.com/1100278): Delete this deprecated function.
   virtual std::unique_ptr<Subscription> AddKeysChangedObserver(
-      const base::RepeatingClosure& cb) = 0;
+      const base::RepeatingClosure& cb);
+
+ protected:
+  // Functions to notify observers.
+  void NotifyKeysChanged();
+  void NotifyRecoverabilityChanged();
+
+ private:
+  base::ObserverList<Observer> observer_list_;
+  // TODO(crbug.com/1100278): Delete this field onceAddKeysChangedObserver() is
+  // cleaned up.
+  std::unique_ptr<Subscription> deprecated_keys_changed_subscription_;
 };
 
 }  // namespace ios

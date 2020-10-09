@@ -72,19 +72,24 @@ class TrustedVaultKeyRequiredStateChecker
 };
 
 // Checker used to block until trusted vault keys are changed.
-class TrustedVaultKeysChangedStateChecker : public StatusChangeChecker {
+class TrustedVaultKeysChangedStateChecker
+    : public StatusChangeChecker,
+      syncer::TrustedVaultClient::Observer {
  public:
   explicit TrustedVaultKeysChangedStateChecker(
       syncer::ProfileSyncService* service);
   ~TrustedVaultKeysChangedStateChecker() override;
 
+  // StatusChangeChecker overrides.
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
- private:
-  void OnKeysChanged();
+  // TrustedVaultClient::Observer overrides.
+  void OnTrustedVaultKeysChanged() override;
+  void OnTrustedVaultRecoverabilityChanged() override;
 
+ private:
+  syncer::ProfileSyncService* const service_;
   bool keys_changed_;
-  std::unique_ptr<syncer::TrustedVaultClient::Subscription> subscription_;
 };
 
 // Helper for setting scrypt-related feature flags.

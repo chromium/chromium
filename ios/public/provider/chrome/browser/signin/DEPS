@@ -1,3 +1,7 @@
+include_rules = [
+  "+components/sync/driver/trusted_vault_client.h",
+]
+
 specific_include_rules = {
   "test_signin_resources_provider\.mm": [
     "+ui/base/test/ios/ui_image_test_utils.h",

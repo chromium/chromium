@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -50,8 +51,8 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
   ~StandaloneTrustedVaultClient() override;
 
   // TrustedVaultClient implementation.
-  std::unique_ptr<Subscription> AddKeysChangedObserver(
-      const base::RepeatingClosure& cb) override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void FetchKeys(
       const CoreAccountInfo& account_info,
       base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> cb)
@@ -64,8 +65,6 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
                        base::OnceCallback<void(bool)> cb) override;
   void GetIsRecoverabilityDegraded(const CoreAccountInfo& account_info,
                                    base::OnceCallback<void(bool)> cb) override;
-  std::unique_ptr<Subscription> AddRecoverabilityObserver(
-      const base::RepeatingClosure& cb) override;
   void AddTrustedRecoveryMethod(const std::string& gaia_id,
                                 const std::vector<uint8_t>& public_key,
                                 base::OnceClosure cb) override;
@@ -84,8 +83,7 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  CallbackList keys_observer_list_;
-  CallbackList recoverability_observer_list_;
+  base::ObserverList<Observer> observer_list_;
 
   // Allows access token fetching for primary account on the ui thread. Passed
   // as WeakPtr to TrustedVaultAccessTokenFetcherImpl.

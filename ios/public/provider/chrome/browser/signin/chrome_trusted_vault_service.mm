@@ -14,4 +14,38 @@ ChromeTrustedVaultService::ChromeTrustedVaultService() {}
 
 ChromeTrustedVaultService::~ChromeTrustedVaultService() {}
 
+void ChromeTrustedVaultService::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+
+  if (!deprecated_keys_changed_subscription_) {
+    // base::Unretained() is safe because the subscription is stored in a member
+    // field and hence cannot outlive |this|.
+    deprecated_keys_changed_subscription_ = AddKeysChangedObserver(
+        base::BindRepeating(&ChromeTrustedVaultService::NotifyKeysChanged,
+                            base::Unretained(this)));
+  }
+}
+
+void ChromeTrustedVaultService::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+std::unique_ptr<ChromeTrustedVaultService::Subscription>
+ChromeTrustedVaultService::AddKeysChangedObserver(
+    const base::RepeatingClosure& cb) {
+  return nullptr;
+}
+
+void ChromeTrustedVaultService::NotifyKeysChanged() {
+  for (Observer& observer : observer_list_) {
+    observer.OnTrustedVaultKeysChanged();
+  }
+}
+
+void ChromeTrustedVaultService::NotifyRecoverabilityChanged() {
+  for (Observer& observer : observer_list_) {
+    observer.OnTrustedVaultRecoverabilityChanged();
+  }
+}
+
 }  // namespace ios
