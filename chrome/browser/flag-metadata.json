@@ -4698,8 +4698,8 @@
   },
   {
     "name": "web-bundles",
-    "owners": [ "toyoshim", "ksakamoto", "horo", "kinuko" ],
-    "expiry_milestone": 87
+    "owners": [ "ksakamoto", "horo", "kinuko" ],
+    "expiry_milestone": 90
   },
   {
     "name": "web-contents-occlusion",
