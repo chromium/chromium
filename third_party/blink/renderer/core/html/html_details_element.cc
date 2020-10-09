@@ -89,12 +89,12 @@ void HTMLDetailsElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   summary_slot->AppendChild(default_summary);
   root.AppendChild(summary_slot);
 
-  auto* content = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-  content->SetIdAttribute(shadow_element_names::kIdDetailsContent);
-  content->AppendChild(
-      HTMLSlotElement::CreateUserAgentDefaultSlot(GetDocument()));
-  content->SetInlineStyleProperty(CSSPropertyID::kDisplay, CSSValueID::kNone);
-  root.AppendChild(content);
+  HTMLSlotElement* content_slot =
+      HTMLSlotElement::CreateUserAgentDefaultSlot(GetDocument());
+  content_slot->SetIdAttribute(shadow_element_names::kIdDetailsContent);
+  content_slot->SetInlineStyleProperty(CSSPropertyID::kDisplay,
+                                       CSSValueID::kNone);
+  root.AppendChild(content_slot);
 }
 
 Element* HTMLDetailsElement::FindMainSummary() const {

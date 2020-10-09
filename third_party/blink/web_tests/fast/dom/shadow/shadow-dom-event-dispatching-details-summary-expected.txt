@@ -8,8 +8,7 @@ DIV	 id=sandbox
 				SUMMARY	 id=summary
 					DIV	 id=details-marker
 					SLOT	
-			DIV	 id=details-content
-				SLOT	
+			SLOT	 id=details-content
 
 
 Moving mouse from details to summary
