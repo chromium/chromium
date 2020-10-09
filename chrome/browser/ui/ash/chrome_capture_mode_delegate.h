@@ -20,6 +20,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   // ash::CaptureModeDelegate:
   base::FilePath GetActiveUserDownloadsDir() const override;
   void ShowScreenCaptureItemInFolder(const base::FilePath& file_path) override;
+  void OpenScreenshotInImageEditor(const base::FilePath& file_path) override;
   bool Uses24HourFormat() const override;
   bool IsCaptureAllowed(const aura::Window* window,
                         const gfx::Rect& bounds,

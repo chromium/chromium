@@ -455,9 +455,10 @@ void CaptureModeController::HandleNotificationClicked(
     // Show the item in the folder.
     delegate_->ShowScreenCaptureItemInFolder(screen_capture_path);
   } else {
-    // TODO: fill in here.
+    // TODO(crbug.com/1136666): Remove edit button for video recording.
     switch (button_index.value()) {
       case NotificationButtonIndex::BUTTON_EDIT:
+        delegate_->OpenScreenshotInImageEditor(screen_capture_path);
         break;
       case NotificationButtonIndex::BUTTON_DELETE:
         DeleteFileAsync(screen_capture_path);

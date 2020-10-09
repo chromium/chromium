@@ -36,6 +36,9 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   virtual void ShowScreenCaptureItemInFolder(
       const base::FilePath& file_path) = 0;
 
+  // Opens the screenshot item in an image editor.
+  virtual void OpenScreenshotInImageEditor(const base::FilePath& file_path) = 0;
+
   // Returns true if the current user is using the 24-hour format (i.e. 14:00
   // vs. 2:00 PM). This is used to build the file name of the captured image or
   // video.

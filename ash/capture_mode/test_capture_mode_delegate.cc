@@ -16,6 +16,9 @@ base::FilePath TestCaptureModeDelegate::GetActiveUserDownloadsDir() const {
 void TestCaptureModeDelegate::ShowScreenCaptureItemInFolder(
     const base::FilePath& file_path) {}
 
+void TestCaptureModeDelegate::OpenScreenshotInImageEditor(
+    const base::FilePath& file_path) {}
+
 bool TestCaptureModeDelegate::Uses24HourFormat() const {
   return false;
 }

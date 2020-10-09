@@ -6,7 +6,11 @@
 
 #include "base/files/file_path.h"
 #include "base/i18n/time_formatting.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
+#include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -15,6 +19,7 @@
 #include "chromeos/login/login_state/login_state.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace {
 
@@ -42,6 +47,27 @@ void ChromeCaptureModeDelegate::ShowScreenCaptureItemInFolder(
     const base::FilePath& file_path) {
   platform_util::ShowItemInFolder(ProfileManager::GetActiveUserProfile(),
                                   file_path);
+}
+
+void ChromeCaptureModeDelegate::OpenScreenshotInImageEditor(
+    const base::FilePath& file_path) {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!profile)
+    return;
+
+  apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
+      profile->GetOriginalProfile());
+  apps::mojom::FilePathsPtr file_paths_ptr =
+      apps::mojom::FilePaths::New(std::vector<base::FilePath>({file_path}));
+
+  // open the image with Essential App: Backlight.
+  proxy->LaunchAppWithFiles(
+      chromeos::default_web_apps::kMediaAppId,
+      apps::mojom::LaunchContainer::kLaunchContainerWindow,
+      apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
+                          WindowOpenDisposition::NEW_WINDOW,
+                          /*preferred_container=*/true),
+      apps::mojom::LaunchSource::kFromFileManager, std::move(file_paths_ptr));
 }
 
 bool ChromeCaptureModeDelegate::Uses24HourFormat() const {
