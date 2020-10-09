@@ -7,6 +7,8 @@
 #include <d3d11_1.h>
 #include <dcomptypes.h>
 
+#include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -199,8 +201,12 @@ bool DirectCompositionChildSurfaceWin::ReleaseDrawTexture(bool will_discard) {
             base::WaitableEvent::ResetPolicy::AUTOMATIC,
             base::WaitableEvent::InitialState::NOT_SIGNALED);
         hr = dxgi_device2->EnqueueSetEvent(event.handle());
-        DCHECK(SUCCEEDED(hr));
-        event.Wait();
+        if (SUCCEEDED(hr)) {
+          event.Wait();
+        } else {
+          base::debug::Alias(&hr);
+          base::debug::DumpWithoutCrashing();
+        }
       }
     }
   }
