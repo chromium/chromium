@@ -32,6 +32,7 @@
 #endif
 
 class PolicyStatusProvider;
+struct GoogleUpdatePoliciesAndState;
 
 namespace policy {
 class PolicyMap;
@@ -97,11 +98,13 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   void SendPolicies();
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Sets |updater_policies_| in this instance and refreshes the UI via
+  // Sets |updater_policies_| in this instance, updates
+  // |updater_status_provider_| with a new state and refreshes the UI via
   // SendPolicies.
-  void SetUpdaterPolicies(std::unique_ptr<policy::PolicyMap> updater_policies);
+  void SetUpdaterPoliciesAndState(
+      std::unique_ptr<GoogleUpdatePoliciesAndState> updater_policies_and_state);
 
-  void ReloadUpdaterPolicies();
+  void ReloadUpdaterPoliciesAndState();
 #endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // Send the status of cloud policy to the UI. For each scope that has cloud

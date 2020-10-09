@@ -67,6 +67,7 @@ PolicyMap::Entry PolicyMap::Entry::DeepCopy() const {
   copy.error_strings_ = error_strings_;
   copy.error_message_ids_ = error_message_ids_;
   copy.warning_message_ids_ = warning_message_ids_;
+  copy.is_default_value_ = is_default_value_;
   copy.conflicts.reserve(conflicts.size());
   for (const auto& conflict : conflicts) {
     copy.AddConflictingPolicy(conflict.DeepCopy());
@@ -96,6 +97,7 @@ bool PolicyMap::Entry::Equals(const PolicyMap::Entry& other) const {
       error_strings_ == other.error_strings_ &&
       error_message_ids_ == other.error_message_ids_ &&
       warning_message_ids_ == other.warning_message_ids_ &&
+      is_default_value_ == other.is_default_value_ &&
       ((!value_ && !other.value()) ||
        (value_ && other.value() && *value_ == *other.value())) &&
       ExternalDataFetcher::Equals(external_data_fetcher.get(),
@@ -169,6 +171,14 @@ void PolicyMap::Entry::SetIgnoredByPolicyAtomicGroup() {
 bool PolicyMap::Entry::IsIgnoredByAtomicGroup() const {
   return error_message_ids_.find(IDS_POLICY_IGNORED_BY_GROUP_MERGING) !=
          error_message_ids_.end();
+}
+
+void PolicyMap::Entry::SetIsDefaultValue() {
+  is_default_value_ = true;
+}
+
+bool PolicyMap::Entry::IsDefaultValue() const {
+  return is_default_value_;
 }
 
 PolicyMap::PolicyMap() = default;

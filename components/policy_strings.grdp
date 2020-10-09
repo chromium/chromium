@@ -444,6 +444,9 @@ Additional details:
   <message name="IDS_POLICY_SOURCE_ENTERPRISE_DEFAULT" desc="Indicates that a policy is set by default in an enterprise environment and can be overridden (for Chrome OS only).">
     Enterprise default
   </message>
+  <message name="IDS_POLICY_SOURCE_DEFAULT" desc="Indicates that a policy is set by default and can be overridden.">
+    Default
+  </message>
   <message name="IDS_POLICY_SOURCE_COMMAND_LINE" desc="Indicates that a policy is set by command line switch for testing purpose.">
     Command line
   </message>

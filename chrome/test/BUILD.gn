@@ -5704,7 +5704,10 @@ test("unit_tests") {
     ]
 
     if (is_chrome_branded) {
-      sources += [ "../browser/google/google_update_win_unittest.cc" ]
+      sources += [
+        "../browser/google/google_update_policy_fetcher_win_util_unittest.cc",
+        "../browser/google/google_update_win_unittest.cc",
+      ]
     }
   }
   if (!is_android && !is_chromeos) {
