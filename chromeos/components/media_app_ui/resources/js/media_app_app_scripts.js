@@ -4,6 +4,7 @@
 
 /** @fileoverview Concatenation of the JS files we use in app.html. */
 
+// <include src="../../../../../ui/webui/resources/js/load_time_data.js">
 // <include src="../../../system_apps/public/js/message_pipe.js">
 // <include src="message_types.js">
 // <include src="receiver.js">

@@ -24,7 +24,8 @@ js_type_check("closure_compile_index") {
 }
 
 js_type_check("closure_compile_app") {
-  closure_flags = media_closure_flags
+  closure_flags =
+      media_closure_flags + ignore_load_time_data_errors_closure_flags
   deps = [ ":receiver" ]
 }
 
@@ -60,6 +61,7 @@ js_library("receiver") {
   deps = [
     ":message_types",
     "//chromeos/components/system_apps/public/js:message_pipe",
+    "//ui/webui/resources/js:load_time_data",
   ]
 }
 

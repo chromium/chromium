@@ -3,13 +3,19 @@
      found in the LICENSE file. -->
 <!DOCTYPE html>
 <html dir="$i18n{textdirection}" lang="$i18n{appLocale}">
-<meta charset="utf-8"/>
+<meta charset="utf-8">
 <style>
   body {
     margin: 0;
     overflow: hidden;
   }
 </style>
+
 <script src="/js/app_main.js"></script>
 <script src="/media_app_app_scripts.js"></script>
+
+<!-- Populates `window.loadTimeData`, needs to be after
+  "media_app_app_scripts.js" which loads "load_time_data.js" -->
+<script src="/strings.js"></script>
+
 </html>

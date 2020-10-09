@@ -30,3 +30,12 @@ system_app_closure_flags_strict =
       "jscomp_error=conformanceViolations",
       "jscomp_error=reportUnknownTypes",
     ]
+
+ignore_load_time_data_errors_closure_flags = [
+  "hide_warnings_for=ui/webui/resources/js/load_time_data.js",
+
+  # load_time_data.js has dependencies on these files that also throw closure errors.
+  "hide_warnings_for=ui/webui/resources/js/assert.js",
+  "hide_warnings_for=ui/webui/resources/js/parse_html_subset.js",
+  "hide_warnings_for=third_party/jstemplate/",
+]

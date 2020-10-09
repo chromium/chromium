@@ -41,6 +41,14 @@ GUEST_TEST('GuestHasLang', () => {
   assertEquals(document.documentElement.lang, 'en-US');
 });
 
+GUEST_TEST('GuestLoadsLoadTimeData', () => {
+  // Check `LoadTimeData` exists.
+  chai.assert.isTrue(loadTimeData !== undefined);
+  // Check data loaded into `LoadTimeData` by "strings.js" via
+  // `source->UseStringsJs()` exists.
+  assertEquals(loadTimeData.getValue('appLocale'), 'en-US');
+});
+
 // Test can load files with CSP restrictions. We expect `error` to be called
 // as these tests are loading resources that don't exist. Note: we can't violate
 // CSP in tests or Js Errors will cause test failures.
