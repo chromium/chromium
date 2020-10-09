@@ -18,7 +18,7 @@ source_set("sharing") {
   public_deps = [
     "//base",
     "//chrome/services/sharing/public/cpp",
-    "//chrome/services/sharing/public/mojom",
+    "//chromeos/services/nearby/public/mojom",
     "//mojo/public/cpp/bindings",
   ]
 }

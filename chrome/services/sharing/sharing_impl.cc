@@ -9,7 +9,7 @@
 #include "base/callback.h"
 #include "chrome/services/sharing/nearby/decoder/nearby_decoder.h"
 #include "chrome/services/sharing/nearby/nearby_connections.h"
-#include "chrome/services/sharing/public/mojom/nearby_decoder.mojom.h"
+#include "chromeos/services/nearby/public/mojom/nearby_decoder.mojom.h"
 
 namespace sharing {
 

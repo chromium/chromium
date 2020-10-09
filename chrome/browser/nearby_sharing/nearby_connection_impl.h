@@ -10,7 +10,7 @@
 #include <queue>
 #include <vector>
 #include "base/sequence_checker.h"
-#include "chrome/services/sharing/public/mojom/nearby_connections_types.mojom.h"
+#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 
 class NearbyConnectionsManager;
 

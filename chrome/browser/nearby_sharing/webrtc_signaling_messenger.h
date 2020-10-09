@@ -11,7 +11,7 @@
 #include "chrome/browser/nearby_sharing/instantmessaging/receive_messages_express.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/send_message_express.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/token_fetcher.h"
-#include "chrome/services/sharing/public/mojom/webrtc_signaling_messenger.mojom.h"
+#include "chromeos/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 

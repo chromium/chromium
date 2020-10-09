@@ -24,7 +24,7 @@
 #include "chrome/browser/sharing/webrtc/ice_config_fetcher.h"
 #include "chrome/browser/sharing/webrtc/sharing_mojo_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/services/sharing/public/mojom/nearby_connections.mojom.h"
+#include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/network_context_client_base.h"

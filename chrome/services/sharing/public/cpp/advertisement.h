@@ -12,7 +12,7 @@
 
 #include "base/containers/span.h"
 #include "base/optional.h"
-#include "chrome/services/sharing/public/mojom/nearby_share_target_types.mojom.h"
+#include "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
 
 namespace sharing {
 

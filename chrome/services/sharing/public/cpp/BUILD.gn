@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(is_chromeos)
+
 source_set("cpp") {
   sources = [
     "advertisement.cc",
@@ -14,8 +16,8 @@ source_set("cpp") {
 
   public_deps = [
     "//base",
-    "//chrome/services/sharing/public/mojom",
     "//chrome/services/sharing/public/proto",
+    "//chromeos/services/nearby/public/mojom",
     "//mojo/public/cpp/bindings",
   ]
 }

@@ -1,5 +1,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
+assert(is_chromeos)
+
 mojom("nearby_share_target_types") {
   sources = [ "nearby_share_target_types.mojom" ]
 }

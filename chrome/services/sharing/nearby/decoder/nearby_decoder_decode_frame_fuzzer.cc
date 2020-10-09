@@ -13,8 +13,8 @@
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
-#include "chrome/services/sharing/public/mojom/nearby_decoder.mojom.h"
-#include "chrome/services/sharing/public/mojom/nearby_decoder_types.mojom.h"
+#include "chromeos/services/nearby/public/mojom/nearby_decoder.mojom.h"
+#include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

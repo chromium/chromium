@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "chrome/services/sharing/public/mojom/nearby_connections.mojom-forward.h"
-#include "chrome/services/sharing/public/mojom/nearby_connections_types.mojom-forward.h"
+#include "chromeos/services/nearby/public/mojom/nearby_connections.mojom-forward.h"
+#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom-forward.h"
 #include "third_party/nearby/src/cpp/core_v2/options.h"
 #include "third_party/nearby/src/cpp/core_v2/params.h"
 

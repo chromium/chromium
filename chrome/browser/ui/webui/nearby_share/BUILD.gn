@@ -10,7 +10,7 @@ mojom("mojom") {
   sources = [ "nearby_share.mojom" ]
 
   public_deps = [
-    "//chrome/services/sharing/public/mojom:nearby_share_target_types",
+    "//chromeos/services/nearby/public/mojom:nearby_share_target_types",
     "//mojo/public/mojom/base",
   ]
 

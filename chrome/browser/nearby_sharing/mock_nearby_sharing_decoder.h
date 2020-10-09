@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_MOCK_NEARBY_SHARING_DECODER_H_
 #define CHROME_BROWSER_NEARBY_SHARING_MOCK_NEARBY_SHARING_DECODER_H_
 
-#include "chrome/services/sharing/public/mojom/nearby_decoder.mojom.h"
+#include "chromeos/services/nearby/public/mojom/nearby_decoder.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class MockNearbySharingDecoder : public sharing::mojom::NearbySharingDecoder {

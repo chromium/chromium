@@ -12,8 +12,8 @@
 #include "base/optional.h"
 #include "chrome/services/sharing/nearby/decoder/advertisement_decoder.h"
 #include "chrome/services/sharing/public/cpp/advertisement.h"
-#include "chrome/services/sharing/public/mojom/nearby_decoder_types.mojom.h"
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
+#include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 
 namespace sharing {
 

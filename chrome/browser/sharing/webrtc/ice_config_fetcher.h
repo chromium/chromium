@@ -13,7 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "chrome/services/sharing/public/mojom/webrtc.mojom.h"
+#include "chromeos/services/nearby/public/mojom/webrtc.mojom.h"
 #include "url/gurl.h"
 
 namespace network {

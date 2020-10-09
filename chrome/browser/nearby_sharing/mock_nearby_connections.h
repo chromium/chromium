@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_MOCK_NEARBY_CONNECTIONS_H_
 #define CHROME_BROWSER_NEARBY_SHARING_MOCK_NEARBY_CONNECTIONS_H_
 
-#include "chrome/services/sharing/public/mojom/nearby_connections.mojom.h"
+#include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
 

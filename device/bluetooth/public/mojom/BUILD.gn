@@ -62,6 +62,6 @@ mojom("deprecated_experimental_interfaces") {
     "//chrome/browser/ui/webui/bluetooth_internals:*",
 
     # Nearby Sharing feature
-    "//chrome/services/sharing/public/mojom:*",
+    "//chromeos/services/nearby/public/mojom:*",
   ]
 }

@@ -82,11 +82,11 @@
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 
 #if defined(OS_CHROMEOS)
-#include "chrome/services/sharing/public/mojom/sharing.mojom.h"  // nogncheck
 #include "chrome/services/sharing/sharing_impl.h"
 #include "chromeos/assistant/buildflags.h"  // nogncheck
 #include "chromeos/services/ime/ime_service.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
+#include "chromeos/services/nearby/public/mojom/sharing.mojom.h"  // nogncheck
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
 #include "chromeos/services/tts/tts_service.h"
 

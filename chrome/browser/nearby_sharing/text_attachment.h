@@ -9,7 +9,7 @@
 
 #include "base/optional.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
-#include "chrome/services/sharing/public/mojom/nearby_decoder_types.mojom.h"
+#include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 
 // Represents a text attachment.
 class TextAttachment : public Attachment {

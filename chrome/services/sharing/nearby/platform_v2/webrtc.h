@@ -10,8 +10,8 @@
 #include <memory>
 
 #include "base/single_thread_task_runner.h"
-#include "chrome/services/sharing/public/mojom/webrtc.mojom.h"
-#include "chrome/services/sharing/public/mojom/webrtc_signaling_messenger.mojom.h"
+#include "chromeos/services/nearby/public/mojom/webrtc.mojom.h"
+#include "chromeos/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/network/public/mojom/mdns_responder.mojom.h"
 #include "services/network/public/mojom/p2p.mojom.h"

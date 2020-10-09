@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(is_chromeos)
+
 source_set("platform_v2") {
   sources = [
     "atomic_boolean.cc",
@@ -53,8 +55,8 @@ source_set("platform_v2") {
 
   deps = [
     "//base",
-    "//chrome/services/sharing/public/mojom",
     "//chrome/services/sharing/webrtc",
+    "//chromeos/services/nearby/public/mojom",
     "//crypto",
     "//jingle:webrtc_glue",
     "//third_party/abseil-cpp:absl",

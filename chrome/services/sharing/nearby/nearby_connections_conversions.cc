@@ -8,8 +8,8 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "chrome/services/sharing/public/mojom/nearby_connections.mojom.h"
-#include "chrome/services/sharing/public/mojom/nearby_connections_types.mojom.h"
+#include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 
 namespace location {
 namespace nearby {

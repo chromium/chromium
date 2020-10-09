@@ -20,7 +20,7 @@
                file="${root_gen_dir}/chrome/browser/ui/webui/nearby_share/nearby_share.mojom-lite.js"
                use_base_dir="false" type="BINDATA"/>
       <include name="IDR_NEARBY_SHARE_TARGET_TYPES_MOJO_JS"
-               file="${root_gen_dir}/chrome/services/sharing/public/mojom/nearby_share_target_types.mojom-lite.js"
+               file="${root_gen_dir}/chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom-lite.js"
                use_base_dir="false" type="BINDATA"/>
       <include name="IDR_NEARBY_SHARE_SETTINGS_MOJOM_LITE_JS"
                file="${root_gen_dir}/chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom-lite.js"

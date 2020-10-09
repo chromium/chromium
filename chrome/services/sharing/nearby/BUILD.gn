@@ -18,7 +18,7 @@ source_set("nearby") {
     "platform_v2",
     "//base",
     "//chrome/services/sharing/public/cpp",
-    "//chrome/services/sharing/public/mojom",
+    "//chromeos/services/nearby/public/mojom",
     "//mojo/public/cpp/bindings",
     "//third_party/nearby:core",
   ]

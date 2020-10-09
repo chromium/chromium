@@ -15,7 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/nearby_process_manager.h"
-#include "chrome/services/sharing/public/mojom/nearby_decoder_types.mojom.h"
+#include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 
 class NearbyConnection;
 class Profile;

@@ -5,8 +5,8 @@
 #ifndef CHROME_SERVICES_SHARING_NEARBY_TEST_SUPPORT_MOCK_WEBRTC_DEPENDENCIES_H_
 #define CHROME_SERVICES_SHARING_NEARBY_TEST_SUPPORT_MOCK_WEBRTC_DEPENDENCIES_H_
 
-#include "chrome/services/sharing/public/mojom/webrtc.mojom.h"
-#include "chrome/services/sharing/public/mojom/webrtc_signaling_messenger.mojom.h"
+#include "chromeos/services/nearby/public/mojom/webrtc.mojom.h"
+#include "chromeos/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/mdns_responder.mojom.h"
 #include "services/network/public/mojom/p2p.mojom.h"

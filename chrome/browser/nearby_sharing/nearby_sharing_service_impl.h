@@ -39,8 +39,8 @@
 #include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
-#include "chrome/services/sharing/public/mojom/nearby_decoder_types.mojom.h"
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
+#include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class FastInitiationManager;

@@ -10,7 +10,7 @@
 
 #include "base/optional.h"
 #include "chrome/browser/nearby_sharing/share_target_info.h"
-#include "chrome/services/sharing/public/mojom/nearby_connections_types.mojom.h"
+#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 
 // A description of the outgoing connection to a remote device.
 class OutgoingShareTargetInfo : public ShareTargetInfo {

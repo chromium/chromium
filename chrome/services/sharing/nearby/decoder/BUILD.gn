@@ -4,6 +4,8 @@
 
 import("//testing/libfuzzer/fuzzer_test.gni")
 
+assert(is_chromeos)
+
 source_set("decoder") {
   sources = [
     "advertisement_decoder.cc",
@@ -15,8 +17,8 @@ source_set("decoder") {
   public_deps = [
     "//base",
     "//chrome/services/sharing/public/cpp",
-    "//chrome/services/sharing/public/mojom",
     "//chrome/services/sharing/public/proto",
+    "//chromeos/services/nearby/public/mojom",
     "//mojo/public/cpp/bindings",
   ]
 }

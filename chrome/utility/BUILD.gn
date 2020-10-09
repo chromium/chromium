@@ -170,10 +170,10 @@ static_library("utility") {
     deps += [
       "//chrome/services/file_util",
       "//chrome/services/sharing",
-      "//chrome/services/sharing/public/mojom:mojom",
       "//chromeos/assistant:buildflags",
       "//chromeos/services/ime:lib",
       "//chromeos/services/ime/public/mojom",
+      "//chromeos/services/nearby/public/mojom:mojom",
       "//chromeos/services/tts",
       "//chromeos/services/tts/public/mojom",
     ]

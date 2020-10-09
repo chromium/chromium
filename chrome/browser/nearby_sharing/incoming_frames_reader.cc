@@ -11,7 +11,7 @@
 #include "chrome/browser/nearby_sharing/nearby_connection.h"
 #include "chrome/browser/nearby_sharing/nearby_process_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/services/sharing/public/mojom/nearby_decoder.mojom.h"
+#include "chromeos/services/nearby/public/mojom/nearby_decoder.mojom.h"
 
 namespace {
 
