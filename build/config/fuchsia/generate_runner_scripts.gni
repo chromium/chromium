@@ -129,7 +129,7 @@ template("fuchsia_package_runner") {
     }
 
     foreach(fuchsia_additional_boot_image, fuchsia_additional_boot_images) {
-      data += [ "${fuchsia_additional_boot_images}/" ]
+      data += [ "${fuchsia_additional_boot_image}/" ]
     }
 
     executable_args = []
