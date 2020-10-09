@@ -33,7 +33,9 @@
     "aquarium_20k": {
       "ci_095": 45.797,
       "avg": 139.949,
-      "cpu_wall_time_ratio": 0.455
+      "cpu_wall_time_ratio": 0.455,
+      "experimental": true,
+      "_comment": "crbug.com/1134251"
     },
     "balls_css_transition_2_properties": {
       "ci_095": 7.166,
