@@ -236,9 +236,6 @@ extern const char kGoogleKeepAppId[];
 // The extension id of the Youtube application.
 extern const char kYoutubeAppId[];
 
-// The extension id of the genius (Get Help) app.
-extern const char kGeniusAppId[];
-
 #if defined(OS_CHROMEOS)
 // The extension id of the default Demo Mode Highlights app.
 extern const char kHighlightsAppId[];

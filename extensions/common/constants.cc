@@ -131,7 +131,6 @@ const char kGoogleSheetsDemoAppId[] = "nifkmgcdokhkjghdlgflonppnefddien";
 const char kGoogleSlidesDemoAppId[] = "hdmobeajeoanbanmdlabnbnlopepchip";
 const char kGoogleKeepAppId[] = "hmjkmjkepdijhoojdojkdfohbdgmmhki";
 const char kYoutubeAppId[] = "blpcfgokakmgnkcojhhkbfbldkacnbeo";
-const char kGeniusAppId[] = "ljoammodoonkhnehlncldjelhidljdpi";
 
 #if defined(OS_CHROMEOS)
 // TODO(michaelpg): Deprecate old app IDs before adding new ones to avoid bloat.

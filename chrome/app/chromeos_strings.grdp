@@ -3048,9 +3048,6 @@
   <message name="IDS_GENIUS_APP_NAME" desc="Name of the genius app in the app shelf">
     Get Help
   </message>
-  <message name="IDS_GENIUS_APP_DESCRIPTION" desc="Description of the genius app in the app shelf">
-    Get help with your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
-  </message>
   <message name="IDS_FILEMANAGER_APP_NAME" desc="Name for the File Manager app.">
     Files
   </message>

@@ -511,23 +511,6 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
     return;
   }
 
-#if defined(OS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // TODO(b/159863346): Delete this entirely around M88 when it has has a chance
-  // to be cleaned up.
-  if (extensions::ExtensionPrefs::Get(profile_)
-          ->ShouldInstallObsoleteComponentExtension(
-              extension_misc::kGeniusAppId)) {
-    // Since this is a v2 Chrome app it has a background page.
-    AddWithNameAndDescription(
-        IDR_GENIUS_APP_MANIFEST,
-        base::FilePath(
-            FILE_PATH_LITERAL("/usr/share/chromeos-assets/genius_app")),
-        l10n_util::GetStringUTF8(IDS_GENIUS_APP_NAME),
-        l10n_util::GetStringFUTF8(IDS_GENIUS_APP_DESCRIPTION,
-                                  ui::GetChromeOSDeviceName()));
-  }
-#endif
-
   if (!skip_session_components) {
 #if BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
     AddHangoutServicesExtension();

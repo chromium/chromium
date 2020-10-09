@@ -137,7 +137,9 @@ const char* const kMigratedExtensionIds[] = {
 
 // IDs of component extensions that have been obsoleted and need to be
 // uninstalled.
+// Note: We preserve at least one entry here for continued testing coverage.
 const char* const kObsoleteComponentExtensionIds[] = {
+    // Obsolete since M86.
     "ljoammodoonkhnehlncldjelhidljdpi"  // Genius
 };
 
