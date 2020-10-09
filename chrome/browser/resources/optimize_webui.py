@@ -380,6 +380,7 @@ def main(argv):
   parser.add_argument('--js_out_files', nargs='*', required=True)
   parser.add_argument('--out_folder', required=True)
   parser.add_argument('--js_module_in_files', nargs='*')
+  parser.add_argument('--out-manifest')
   parser.add_argument('--gen_dir_relpath', default='gen', help='Path of the '
       'gen directory relative to the out/. If running in the default '
       'toolchain, the path is gen, otherwise $toolchain_name/gen')
@@ -410,6 +411,16 @@ def main(argv):
     raise Exception(
         'polymer-bundler could not find files for the following URLs:\n' +
         '\n'.join(manifest['_missing']))
+
+
+  # Output a manifest file that will be used to auto-generate a grd file later.
+  if args.out_manifest:
+    manifest_data = {}
+    manifest_data['base_dir'] = '%s' % args.out_folder
+    manifest_data['files'] = manifest.keys()
+    manifest_file = open(
+        os.path.normpath(os.path.join(_CWD, args.out_manifest)), 'wb')
+    json.dump(manifest_data, manifest_file)
 
   _update_dep_file(args.input, args, manifest)
 

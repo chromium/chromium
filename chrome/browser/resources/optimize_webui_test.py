@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import json
 import optimize_webui
 import os
 import shutil
@@ -10,14 +11,15 @@ import tempfile
 import unittest
 
 
+_CWD = os.getcwd()
 _HERE_DIR = os.path.dirname(__file__)
 
 
 class OptimizeWebUiTest(unittest.TestCase):
   def setUp(self):
-    self._out_folder = None
     self._tmp_dirs = []
     self._tmp_src_dir = None
+    self._out_folder = self._create_tmp_dir()
 
   def tearDown(self):
     for tmp_dir in self._tmp_dirs:
@@ -45,8 +47,6 @@ class OptimizeWebUiTest(unittest.TestCase):
     return open(os.path.join(self._out_folder, file_name), 'r').read()
 
   def _run_optimize(self, input_args):
-    assert not self._out_folder
-    self._out_folder = self._create_tmp_dir()
     # TODO(dbeam): make it possible to _run_optimize twice? Is that useful?
     args = input_args + [
       '--depfile', os.path.join(self._out_folder, 'depfile.d'),
@@ -209,6 +209,7 @@ import './element_in_dir/element_in_dir.js';
     args = [
       '--js_module_in_files', 'ui.js', 'lazy.js',
       '--js_out_files', 'ui.rollup.js', 'lazy.rollup.js', 'shared.rollup.js',
+      '--out-manifest', os.path.join(self._out_folder, 'out_manifest.json'),
     ]
     self._run_optimize(args)
 
@@ -233,6 +234,16 @@ import './element_in_dir/element_in_dir.js';
     self._check_output_depfile(False)
     depfile_d = self._read_out_file('depfile.d')
     self.assertIn('lazy_element.js', depfile_d)
+
+    manifest = json.loads(self._read_out_file('out_manifest.json'))
+    self.assertEquals(3, len(manifest['files']))
+    self.assertTrue('lazy.rollup.js' in manifest['files'])
+    self.assertTrue('ui.rollup.js' in manifest['files'])
+    self.assertTrue('shared.rollup.js' in manifest['files'])
+
+    self.assertEquals(
+        os.path.relpath(self._out_folder, _CWD).replace('\\', '/'),
+        os.path.relpath(manifest['base_dir'], _CWD).replace('\\', '/'))
 
 if __name__ == '__main__':
   unittest.main()
