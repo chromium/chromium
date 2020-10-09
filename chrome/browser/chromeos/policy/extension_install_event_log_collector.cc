@@ -242,6 +242,30 @@ ConvertInstallCreationStageToProto(
   }
 }
 
+em::ExtensionInstallReportLogEvent_DownloadCacheStatus
+ConvertDownloadCacheStatusToProto(
+    extensions::ExtensionDownloaderDelegate::CacheStatus status) {
+  using Status = extensions::ExtensionDownloaderDelegate::CacheStatus;
+  switch (status) {
+    case Status::CACHE_UNKNOWN:
+      return em::ExtensionInstallReportLogEvent::CACHE_UNKNOWN;
+    case Status::CACHE_DISABLED:
+      return em::ExtensionInstallReportLogEvent::CACHE_DISABLED;
+    case Status::CACHE_MISS:
+      return em::ExtensionInstallReportLogEvent::CACHE_MISS;
+    case Status::CACHE_OUTDATED:
+      return em::ExtensionInstallReportLogEvent::CACHE_OUTDATED;
+    case Status::CACHE_HIT:
+      return em::ExtensionInstallReportLogEvent::CACHE_HIT;
+    case Status::CACHE_HIT_ON_MANIFEST_FETCH_FAILURE:
+      return em::ExtensionInstallReportLogEvent::
+          CACHE_HIT_ON_MANIFEST_FETCH_FAILURE;
+    default:
+      NOTREACHED();
+      return em::ExtensionInstallReportLogEvent::CACHE_UNKNOWN;
+  }
+}
+
 }  // namespace
 
 ExtensionInstallEventLogCollector::ExtensionInstallEventLogCollector(
@@ -374,6 +398,17 @@ void ExtensionInstallEventLogCollector::OnExtensionInstallCreationStageChanged(
     return;
   auto event = std::make_unique<em::ExtensionInstallReportLogEvent>();
   event->set_install_creation_stage(ConvertInstallCreationStageToProto(stage));
+  delegate_->Add(id, false /* gather_disk_space_info */, std::move(event));
+}
+
+void ExtensionInstallEventLogCollector::OnExtensionDownloadCacheStatusRetrieved(
+    const extensions::ExtensionId& id,
+    extensions::ExtensionDownloaderDelegate::CacheStatus cache_status) {
+  if (!delegate_->IsExtensionPending(id))
+    return;
+  auto event = std::make_unique<em::ExtensionInstallReportLogEvent>();
+  event->set_download_cache_status(
+      ConvertDownloadCacheStatusToProto(cache_status));
   delegate_->Add(id, false /* gather_disk_space_info */, std::move(event));
 }
 

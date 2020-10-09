@@ -49,6 +49,7 @@ constexpr char kUserType[] = "userType";
 constexpr char kIsNewUser[] = "isNewUser";
 constexpr char kIsMisconfigurationFailure[] = "isMisconfigurationFailure";
 constexpr char kInstallCreationStage[] = "installCreationStage";
+constexpr char kDownloadCacheStatus[] = "downloadCacheStatus";
 
 // Calculates hash for the given |event| and |context|, and stores the hash in
 // |hash|. Returns true if |event| and |context| are json serializable and
@@ -206,6 +207,11 @@ base::Value ConvertExtensionEventToValue(
     event.SetIntKey(
         kInstallCreationStage,
         extension_install_report_log_event.install_creation_stage());
+  }
+
+  if (extension_install_report_log_event.has_download_cache_status()) {
+    event.SetIntKey(kDownloadCacheStatus,
+                    extension_install_report_log_event.download_cache_status());
   }
 
   base::Value wrapper(base::Value::Type::DICTIONARY);

@@ -605,4 +605,21 @@ TEST_F(ExtensionInstallEventLogCollectorTest, InstallCreationStageChanged) {
             delegate()->last_request().event.install_creation_stage());
 }
 
+// Verifies that a new event is created when the cache status is retrieved
+// during the extension downloading process.
+TEST_F(ExtensionInstallEventLogCollectorTest, DownloadCacheStatusRetrieved) {
+  std::unique_ptr<ExtensionInstallEventLogCollector> collector =
+      std::make_unique<ExtensionInstallEventLogCollector>(
+          registry(), delegate(), profile());
+
+  auto ext = extensions::ExtensionBuilder(kExtensionName1)
+                 .SetID(kExtensionId1)
+                 .Build();
+  collector->OnExtensionDownloadCacheStatusRetrieved(
+      kExtensionId1,
+      extensions::ExtensionDownloaderDelegate::CacheStatus::CACHE_MISS);
+  ASSERT_TRUE(VerifyEventAddedSuccessfully(1 /*expected_add_count*/,
+                                           0 /*expected_add_all_count*/));
+}
+
 }  // namespace policy

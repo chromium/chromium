@@ -107,9 +107,14 @@ class ExtensionDownloaderDelegate {
 
   // Passes as an argument to OnExtensionDownloadCacheStatusRetrieved to inform
   // delegate about cache status.
-  // Note: enum used for UMA. Do NOT reorder or remove entries. Don't forget to
-  // update enums.xml (name: ExtensionInstallationCacheStatus) when adding new
+  // Note: enum used for UMA. Do NOT reorder or remove entries.
+  // 1) Don't forget to update enums.xml (name:
+  // ExtensionInstallationDownloadingCacheStatus) when adding new entries.
+  // 2) Don't forget to update device_management_backend.proto (name:
+  // ExtensionInstallReportLogEvent::DownloadCacheStatus) when adding new
   // entries.
+  // 3) Don't forget to update ConvertDownloadCacheStatusToProto method in
+  // ExtensionInstallEventLogCollector.
   enum class CacheStatus {
     // No information about cache status. This is never reported by
     // ExtensionDownloader, but may be used later in statistics.

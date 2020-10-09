@@ -3043,6 +3043,25 @@ message ExtensionInstallReportLogEvent {
     SEEN_BY_EXTERNAL_PROVIDER = 7;
   }
 
+  // Status of cache when an attempt is made to fetch the extension from it
+  // during the downloading process. See
+  // ExtensionDownloaderDelegate::CacheStatus for more details.
+  // ExtensionDownloaderDelegate::CacheStatus is the main enum and this is a
+  // copy used for reporting purposes.
+  enum DownloadCacheStatus {
+    CACHE_UNKNOWN = 0;
+
+    CACHE_DISABLED = 1;
+
+    CACHE_MISS = 2;
+
+    CACHE_OUTDATED = 3;
+
+    CACHE_HIT = 4;
+
+    CACHE_HIT_ON_MANIFEST_FETCH_FAILURE = 5;
+  }
+
   // Timestamp, in microseconds since epoch. Set for all log
   // events.
   optional int64 timestamp = 1;
@@ -3087,6 +3106,9 @@ message ExtensionInstallReportLogEvent {
 
   // Stage of install creation process.
   optional InstallCreationStage install_creation_stage = 14;
+
+  // Status of cache during downloading process.
+  optional DownloadCacheStatus download_cache_status = 15;
 }
 
 // A single entry in the push-install log for an app.

@@ -48,6 +48,7 @@ constexpr char kUserType[] = "userType";
 constexpr char kIsNewUser[] = "isNewUser";
 constexpr char kIsMisconfigurationFailure[] = "isMisconfigurationFailure";
 constexpr char kInstallCreationStage[] = "installCreationStage";
+constexpr char kDownloadCacheStatus[] = "downloadCacheStatus";
 
 void ConvertToValueAndVerify(const em::ExtensionInstallReportLogEvent& event,
                              const std::vector<std::string>& keys) {
@@ -137,6 +138,14 @@ TEST_F(ExtensionInstallEventLogUtilTest, InstallCreationStageEvent) {
   event_.set_install_creation_stage(
       em::ExtensionInstallReportLogEvent::CREATION_INITIATED);
   ConvertToValueAndVerify(event_, {kInstallCreationStage});
+}
+
+// Verifies that an event reporting cache status during downloading process is
+// successfully parsed.
+TEST_F(ExtensionInstallEventLogUtilTest, DownloadCacheStatusEvent) {
+  event_.set_download_cache_status(
+      em::ExtensionInstallReportLogEvent::CACHE_OUTDATED);
+  ConvertToValueAndVerify(event_, {kDownloadCacheStatus});
 }
 
 }  // namespace policy
