@@ -19,6 +19,7 @@ import android.view.ViewStructure;
 import android.view.autofill.AutofillValue;
 import android.webkit.ValueCallback;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -101,9 +102,8 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
     private FullscreenCallbackProxy mFullscreenCallbackProxy;
     private TabViewAndroidDelegate mViewAndroidDelegate;
     private GoogleAccountsCallbackProxy mGoogleAccountsCallbackProxy;
-    // BrowserImpl this TabImpl is in. This is null before attached to a Browser. While this is null
-    // before attached, there are code paths that may trigger calling methods before set.
-    @Nullable
+    // BrowserImpl this TabImpl is in.
+    @NonNull
     private BrowserImpl mBrowser;
     private LoginPrompt mLoginPrompt;
     /**
@@ -238,7 +238,8 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
         return sTabMap.get(tabId);
     }
 
-    public TabImpl(ProfileImpl profile, WindowAndroid windowAndroid) {
+    public TabImpl(BrowserImpl browser, ProfileImpl profile, WindowAndroid windowAndroid) {
+        mBrowser = browser;
         mId = ++sNextId;
         init(profile, windowAndroid, TabImplJni.get().createTab(profile.getNativeProfile(), this));
     }
@@ -247,8 +248,10 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
      * This constructor is called when the native side triggers creation of a TabImpl
      * (as happens with popups and other scenarios).
      */
-    public TabImpl(ProfileImpl profile, WindowAndroid windowAndroid, long nativeTab) {
+    public TabImpl(
+            BrowserImpl browser, ProfileImpl profile, WindowAndroid windowAndroid, long nativeTab) {
         mId = ++sNextId;
+        mBrowser = browser;
         TabImplJni.get().setJavaImpl(nativeTab, TabImpl.this);
         init(profile, windowAndroid, nativeTab);
     }
@@ -336,6 +339,9 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
      * Sets the BrowserImpl this TabImpl is contained in.
      */
     public void attachToBrowser(BrowserImpl browser) {
+        // NOTE: during tab creation this is called with |mBrowser| set to |browser|. This happens
+        // because the tab is created with |mBrowser| already set (to avoid having a bunch of null
+        // checks).
         mBrowser = browser;
         updateFromBrowser();
     }
@@ -418,7 +424,6 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
     public void onAttachedToViewController(
             long topControlsContainerViewHandle, long bottomControlsContainerViewHandle) {
         // attachToFragment() must be called before activate().
-        assert mBrowser != null;
         TabImplJni.get().setBrowserControlsContainerViews(
                 mNativeTab, topControlsContainerViewHandle, bottomControlsContainerViewHandle);
         mInfoBarContainer.onTabAttachedToViewController();
@@ -459,7 +464,7 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
     }
 
     private boolean isActiveTab() {
-        return mBrowser != null && mBrowser.getActiveTab() == this;
+        return mBrowser.getActiveTab() == this;
     }
 
     private void updateWebContentsVisibility() {
@@ -1043,8 +1048,6 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
     }
 
     private void onBrowserControlsConstraintUpdated(int constraint) {
-        // WARNING: this may be called before attached. This means |mBrowser| may be null.
-
         // If something has overridden the FIP's SHOWN constraint, cancel FIP. This causes FIP to
         // dismiss when entering fullscreen.
         if (constraint != BrowserControlsState.SHOWN) {
