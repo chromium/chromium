@@ -1768,16 +1768,6 @@ TEST_F(ServiceWorkerResourceStorageTest, UpdateRegistration_NoLiveVersion) {
   EXPECT_FALSE(VerifyBasicResponse(storage_control(), resource_id2_, false));
 }
 
-// Test fixture that uses disk storage, rather than memory. Useful for tests
-// that test persistence by simulating browser shutdown and restart.
-class ServiceWorkerStorageDiskTest : public ServiceWorkerStorageTest {
- public:
-  void SetUp() override {
-    ASSERT_TRUE(InitUserDataDirectory());
-    ServiceWorkerStorageTest::SetUp();
-  }
-};
-
 TEST_F(ServiceWorkerStorageTest, OriginTrialsAbsentEntryAndEmptyEntry) {
   const GURL origin1("http://www1.example.com");
   const GURL scope1("http://www1.example.com/foo/");
@@ -1855,55 +1845,6 @@ TEST_F(ServiceWorkerStorageTest, AbsentNavigationPreloadState) {
   EXPECT_EQ("true", state.header);
 }
 
-// Tests storing the script response time for DevTools.
-TEST_F(ServiceWorkerStorageDiskTest, ScriptResponseTime) {
-  // Make a registration.
-  LazyInitialize();
-  const GURL kScope("https://example.com/scope");
-  const GURL kScript("https://example.com/script.js");
-  scoped_refptr<ServiceWorkerRegistration> registration =
-      CreateServiceWorkerRegistrationAndVersion(context(), kScope, kScript,
-                                                /*resource_id=*/1);
-  ServiceWorkerVersion* version = registration->waiting_version();
-
-  // Give it a main script response info.
-  network::mojom::URLResponseHead response_head;
-  response_head.headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
-  response_head.response_time = base::Time::FromJsTime(19940123);
-  version->SetMainScriptResponse(
-      std::make_unique<ServiceWorkerVersion::MainScriptResponse>(
-          response_head));
-  EXPECT_TRUE(version->main_script_response_);
-  EXPECT_EQ(response_head.response_time,
-            version->script_response_time_for_devtools_);
-  EXPECT_EQ(response_head.response_time,
-            version->GetInfo().script_response_time);
-
-  // Store the registration.
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            StoreRegistration(registration, version));
-
-  // Simulate browser shutdown and restart.
-  registration = nullptr;
-  version = nullptr;
-  InitializeTestHelper();
-  LazyInitialize();
-
-  // Read the registration. The main script's response time should be gettable.
-  scoped_refptr<ServiceWorkerRegistration> found_registration;
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            FindRegistrationForClientUrl(kScope, &found_registration));
-  ASSERT_TRUE(found_registration);
-  auto* waiting_version = found_registration->waiting_version();
-  ASSERT_TRUE(waiting_version);
-  EXPECT_FALSE(waiting_version->main_script_response_);
-  EXPECT_EQ(response_head.response_time,
-            waiting_version->script_response_time_for_devtools_);
-  EXPECT_EQ(response_head.response_time,
-            waiting_version->GetInfo().script_response_time);
-}
-
 // Tests reading storage usage from database.
 TEST_F(ServiceWorkerStorageTest, GetStorageUsageForOrigin) {
   const GURL kScope1("https://www.example.com/foo/");
@@ -1964,43 +1905,6 @@ TEST_F(ServiceWorkerStorageTest, GetStorageUsageForOrigin) {
   EXPECT_EQ(GetStorageUsageForOrigin(origin, usage),
             blink::ServiceWorkerStatusCode::kOk);
   EXPECT_EQ(usage, 0);
-}
-
-// Tests loading a registration with a disabled navigation preload
-// state.
-TEST_F(ServiceWorkerStorageDiskTest, DisabledNavigationPreloadState) {
-  LazyInitialize();
-  const GURL kScope("https://valid.example.com/scope");
-  const GURL kScript("https://valid.example.com/script.js");
-  scoped_refptr<ServiceWorkerRegistration> registration =
-      CreateServiceWorkerRegistrationAndVersion(context(), kScope, kScript,
-                                                /*resource_id=*/1);
-  ServiceWorkerVersion* version = registration->waiting_version();
-  version->SetStatus(ServiceWorkerVersion::ACTIVATED);
-  registration->SetActiveVersion(version);
-  registration->EnableNavigationPreload(false);
-
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            StoreRegistration(registration, version));
-
-  // Simulate browser shutdown and restart.
-  registration = nullptr;
-  version = nullptr;
-  InitializeTestHelper();
-  LazyInitialize();
-
-  scoped_refptr<ServiceWorkerRegistration> found_registration;
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            FindRegistrationForClientUrl(kScope, &found_registration));
-  const blink::mojom::NavigationPreloadState& registration_state =
-      found_registration->navigation_preload_state();
-  EXPECT_FALSE(registration_state.enabled);
-  EXPECT_EQ("true", registration_state.header);
-  ASSERT_TRUE(found_registration->active_version());
-  const blink::mojom::NavigationPreloadState& state =
-      found_registration->active_version()->navigation_preload_state();
-  EXPECT_FALSE(state.enabled);
-  EXPECT_EQ("true", state.header);
 }
 
 }  // namespace service_worker_storage_unittest

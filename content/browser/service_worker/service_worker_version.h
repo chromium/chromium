@@ -103,9 +103,7 @@ FORWARD_DECLARE_TEST(ServiceWorkerVersionTest, StallInStopping_DetachThenStart);
 FORWARD_DECLARE_TEST(ServiceWorkerVersionTest, StartRequestWithNullContext);
 }  // namespace service_worker_version_unittest
 
-namespace service_worker_storage_unittest {
-FORWARD_DECLARE_TEST(ServiceWorkerStorageDiskTest, ScriptResponseTime);
-}  // namespace service_worker_storage_unittest
+FORWARD_DECLARE_TEST(ServiceWorkerRegistryTest, ScriptResponseTime);
 
 namespace service_worker_registration_unittest {
 class ServiceWorkerActivationTest;
@@ -675,9 +673,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   FRIEND_TEST_ALL_PREFIXES(
       service_worker_version_unittest::ServiceWorkerVersionTest,
       MixedRequestTimeouts);
-  FRIEND_TEST_ALL_PREFIXES(
-      service_worker_storage_unittest::ServiceWorkerStorageDiskTest,
-      ScriptResponseTime);
+  FRIEND_TEST_ALL_PREFIXES(ServiceWorkerRegistryTest, ScriptResponseTime);
 
   // Contains timeout info for InflightRequest.
   struct InflightRequestTimeoutInfo {
