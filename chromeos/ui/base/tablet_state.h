@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_UI_TABLET_STATE_H_
-#define CHROMEOS_UI_TABLET_STATE_H_
+#ifndef CHROMEOS_UI_BASE_TABLET_STATE_H_
+#define CHROMEOS_UI_BASE_TABLET_STATE_H_
 
 #include "base/component_export.h"
 
@@ -17,7 +17,7 @@ namespace chromeos {
 //
 // The idea is that only the creator of this class in Ash or Lacros/Ozone code
 // is able to set the state.
-class COMPONENT_EXPORT(CHROMEOS_UI) TabletState {
+class COMPONENT_EXPORT(CHROMEOS_UI_BASE) TabletState {
  public:
   // Returns the singleton instance.
   static TabletState* Get();
@@ -55,4 +55,4 @@ class COMPONENT_EXPORT(CHROMEOS_UI) TabletState {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_UI_TABLET_STATE_H_
+#endif  // CHROMEOS_UI_BASE_TABLET_STATE_H_

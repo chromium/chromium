@@ -10,7 +10,7 @@
 #include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/bind.h"
-#include "chromeos/ui/chromeos_ui_constants.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"

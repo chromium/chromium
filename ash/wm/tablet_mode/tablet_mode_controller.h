@@ -23,7 +23,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/ui/tablet_state.h"
+#include "chromeos/ui/base/tablet_state.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_observer.h"

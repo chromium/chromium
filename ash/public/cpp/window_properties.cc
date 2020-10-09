@@ -9,7 +9,7 @@
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_pin_type.h"
 #include "ash/public/cpp/window_state_type.h"
-#include "chromeos/ui/chromeos_ui_constants.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_properties.h"

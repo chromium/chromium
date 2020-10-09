@@ -73,7 +73,7 @@
 #include "chrome/common/web_application_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/ui/chromeos_ui_constants.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "components/account_id/account_id.h"
 #include "components/autofill/core/common/password_form.h"
 #include "components/keep_alive_registry/keep_alive_types.h"

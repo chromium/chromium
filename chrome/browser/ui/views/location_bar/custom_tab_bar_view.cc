@@ -47,7 +47,7 @@
 #include "url/gurl.h"
 
 #if defined(OS_CHROMEOS)
-#include "chromeos/ui/chromeos_ui_constants.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #else
 #include "chrome/browser/themes/theme_properties.h"
 #endif

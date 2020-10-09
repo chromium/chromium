@@ -20,7 +20,7 @@
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
-#include "chromeos/ui/chromeos_ui_constants.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"

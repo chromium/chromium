@@ -5,7 +5,7 @@
 #include "ash/public/cpp/frame_utils.h"
 
 #include "ash/public/cpp/window_properties.h"
-#include "chromeos/ui/chromeos_ui_constants.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
