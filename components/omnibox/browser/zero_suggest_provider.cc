@@ -242,12 +242,18 @@ void ZeroSuggestProvider::Stop(bool clear_cached_results,
 }
 
 void ZeroSuggestProvider::DeleteMatch(const AutocompleteMatch& match) {
-  if (result_type_running_ == REMOTE_NO_URL) {
-    // Remove the deleted match from the cache, so it is not shown to the user
-    // again. Since we cannot remove just one result, blow away the cache.
-    client()->GetPrefs()->SetString(omnibox::kZeroSuggestCachedResults,
-                                    std::string());
-  }
+  // Remove the deleted match from the cache, so it is not shown to the user
+  // again. Since we cannot remove just one result, blow away the cache.
+  //
+  // Although the cache is currently only used for REMOTE_NO_URL, we have no
+  // easy way of checking the request type after-the-fact. It's safe though, to
+  // always clear the cache even if we are on a different request type.
+  //
+  // TODO(tommycli): It seems quite odd that the cache is saved to a pref, as
+  // if we would want to persist it across restarts. That seems to be directly
+  // contradictory to the fact that ZeroSuggest results can change rapidly.
+  client()->GetPrefs()->SetString(omnibox::kZeroSuggestCachedResults,
+                                  std::string());
   BaseSearchProvider::DeleteMatch(match);
 }
 
