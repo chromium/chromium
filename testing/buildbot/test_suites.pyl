@@ -634,12 +634,6 @@
       },
     },
 
-    'chromium_check_static_initializers_scripts': {
-      'check_static_initializers': {
-        'script': 'check_static_initializers.py',
-      },
-    },
-
     'chromium_gtests': {
       'absl_hardening_tests': {},
       'angle_unittests': {},
