@@ -171,7 +171,11 @@ class InlinedStructPtr {
     DCHECK(state_ == VALID);
     return &value_;
   }
-  Struct* get() const { return &value_; }
+  Struct* get() const {
+    if (state_ == NIL)
+      return nullptr;
+    return &value_;
+  }
 
   void Swap(InlinedStructPtr* other) {
     std::swap(value_, other->value_);
