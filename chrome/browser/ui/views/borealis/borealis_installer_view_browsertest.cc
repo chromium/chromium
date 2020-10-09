@@ -190,6 +190,8 @@ IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest, SucessfulInstall) {
 IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest,
                        ConfirmationCancelled) {
   ShowUi("default");
+
+  EXPECT_CALL(*mock_installer_, Cancel());
   ClickCancel();
 }
 
