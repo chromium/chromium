@@ -120,7 +120,7 @@ int ComputeHeadingMessageFromUsage(
 // Displays a (one-column) table model as a one-line summary showing the
 // first few items, with a toggle button to expand a table below to contain the
 // full list of items.
-class CollapsibleListView : public views::View, public views::ButtonListener {
+class CollapsibleListView : public views::View {
  public:
   // How many rows to show in the expanded table without having to scroll.
   static constexpr int kExpandedTableRowCount = 3;
@@ -161,7 +161,8 @@ class CollapsibleListView : public views::View, public views::ButtonListener {
         views::style::STYLE_PRIMARY));
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     label_layout->SetFlexForView(label, 1);
-    auto button = views::CreateVectorToggleImageButton(this);
+    auto button = views::CreateVectorToggleImageButton(base::BindRepeating(
+        &CollapsibleListView::ButtonPressed, base::Unretained(this)));
     button->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_NATIVE_FILE_SYSTEM_USAGE_EXPAND));
     button->SetToggledTooltipText(
@@ -209,15 +210,14 @@ class CollapsibleListView : public views::View, public views::ButtonListener {
         icon_color, disabled_icon_color);
   }
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
+ private:
+  void ButtonPressed() {
     table_is_expanded_ = !table_is_expanded_;
     expand_collapse_button_->SetToggled(table_is_expanded_);
     table_view_parent_->SetVisible(table_is_expanded_);
     PreferredSizeChanged();
   }
 
- private:
   bool table_is_expanded_ = false;
   views::ScrollView* table_view_parent_;
   views::ToggleImageButton* expand_collapse_button_;
