@@ -848,7 +848,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
     // "ParentObject()" always gets the first ancestor that is included in tree
     // (ignored or unignored), so it will never return objects that are not
     // included in the tree at all.
-    if (!obj.AccessibilityIsIncludedInTree())
+    if (!obj.IsDetached() && !obj.AccessibilityIsIncludedInTree())
       obj = obj.ParentObject();
     for (; !obj.IsDetached() && obj.AccessibilityIsIgnored();
          obj = obj.ParentObject()) {
