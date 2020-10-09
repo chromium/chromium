@@ -5,6 +5,8 @@
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("loader") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "address_space_feature.cc",
     "address_space_feature.h",

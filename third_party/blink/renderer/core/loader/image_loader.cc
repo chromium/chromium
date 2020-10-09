@@ -592,9 +592,10 @@ void ImageLoader::DoUpdateFromElement(
 
     if (ShouldEnableSubresourceRedirect(
             DynamicTo<HTMLImageElement>(GetElement()), params.Url())) {
-      auto& resource_request = params.MutableResourceRequest();
-      resource_request.SetPreviewsState(resource_request.GetPreviewsState() |
-                                        PreviewsTypes::kSubresourceRedirectOn);
+      auto& subresource_request = params.MutableResourceRequest();
+      subresource_request.SetPreviewsState(
+          subresource_request.GetPreviewsState() |
+          PreviewsTypes::kSubresourceRedirectOn);
     }
 
     new_image_content = ImageResourceContent::Fetch(params, document.Fetcher());
