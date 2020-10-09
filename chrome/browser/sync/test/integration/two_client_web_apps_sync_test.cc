@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/web_application_info.h"
@@ -30,6 +31,19 @@ class TwoClientWebAppsSyncTest : public SyncTest {
   TwoClientWebAppsSyncTest() : SyncTest(TWO_CLIENT) { DisableVerifier(); }
 
   ~TwoClientWebAppsSyncTest() override = default;
+
+  void SetUpOnMainThread() override {
+    SyncTest::SetUpOnMainThread();
+
+    ASSERT_TRUE(SetupSync());
+    ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
+
+    for (Profile* profile : GetAllProfiles()) {
+      WebAppProvider::Get(profile)
+          ->os_integration_manager()
+          .SuppressOsHooksForTesting();
+    }
+  }
 
   AppId InstallApp(const WebApplicationInfo& info, Profile* profile) {
     DCHECK(info.start_url.is_valid());
@@ -78,9 +92,6 @@ class TwoClientWebAppsSyncTest : public SyncTest {
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Basic) {
-  ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
-
   WebApplicationInfo info;
   info.title = base::UTF8ToUTF16("Test name");
   info.description = base::UTF8ToUTF16("Test description");
@@ -92,14 +103,12 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Basic) {
   const AppRegistrar& registrar = GetRegistrar(GetProfile(1));
   EXPECT_EQ(base::UTF8ToUTF16(registrar.GetAppShortName(app_id)), info.title);
   EXPECT_EQ(registrar.GetAppStartUrl(app_id), info.start_url);
+  EXPECT_EQ(registrar.GetAppScope(app_id), info.scope);
 
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Minimal) {
-  ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
-
   WebApplicationInfo info;
   info.title = base::UTF8ToUTF16("Test name");
   info.start_url = GURL("http://www.chromium.org/");
@@ -114,9 +123,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Minimal) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, ThemeColor) {
-  ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
-
   WebApplicationInfo info;
   info.title = base::UTF8ToUTF16("Test name");
   info.start_url = GURL("http://www.chromium.org/");
@@ -135,9 +141,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, ThemeColor) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, IsLocallyInstalled) {
-  ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
-
   WebApplicationInfo info;
   info.title = base::UTF8ToUTF16("Test name");
   info.start_url = GURL("http://www.chromium.org/");
@@ -157,9 +160,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, IsLocallyInstalled) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, AppFieldsChangeDoesNotSync) {
-  ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
-
   const AppRegistrar& registrar0 = GetRegistrar(GetProfile(0));
   const AppRegistrar& registrar1 = GetRegistrar(GetProfile(1));
 
@@ -175,6 +175,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, AppFieldsChangeDoesNotSync) {
 
   EXPECT_EQ(base::UTF8ToUTF16(registrar1.GetAppShortName(app_id_a)),
             info_a.title);
+  EXPECT_EQ(registrar1.GetAppScope(app_id_a), info_a.scope);
 
   EXPECT_EQ(registrar1.GetAppThemeColor(app_id_a), info_a.theme_color);
   ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
@@ -208,6 +209,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, AppFieldsChangeDoesNotSync) {
   // After sync we should not see the metadata update in Profile 1.
   EXPECT_EQ(base::UTF8ToUTF16(registrar1.GetAppShortName(app_id_a)),
             info_a.title);
+  EXPECT_EQ(registrar1.GetAppScope(app_id_a), info_a.scope);
 
   EXPECT_EQ(registrar1.GetAppThemeColor(app_id_a), info_a.theme_color);
 
@@ -217,8 +219,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, AppFieldsChangeDoesNotSync) {
 // Tests that we don't crash when syncing an icon info with no size.
 // Context: https://crbug.com/1058283
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncFaviconOnly) {
-  ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
   ASSERT_TRUE(embedded_test_server()->Start());
 
   Profile* sourceProfile = GetProfile(0);
@@ -258,8 +258,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncFaviconOnly) {
 // Tests that we don't use the manifest start_url if it differs from what came
 // through sync.
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingStartUrlFallback) {
-  ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
   ASSERT_TRUE(embedded_test_server()->Start());
 
   Profile* source_profile = GetProfile(0);
@@ -289,8 +287,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingStartUrlFallback) {
 // from e.g. login redirects or loading pages.
 // Context: https://crbug.com/1078286
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingNameFallback) {
-  ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
   ASSERT_TRUE(embedded_test_server()->Start());
 
   Profile* source_profile = GetProfile(0);
@@ -317,8 +313,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingNameFallback) {
 // Negative test of SyncUsingNameFallback above. Don't use the app name fallback
 // if there's a name provided by the manifest during sync.
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncWithoutUsingNameFallback) {
-  ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
   ASSERT_TRUE(embedded_test_server()->Start());
 
   Profile* source_profile = GetProfile(0);
@@ -342,8 +336,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncWithoutUsingNameFallback) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingIconUrlFallback) {
-  ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
   ASSERT_TRUE(embedded_test_server()->Start());
 
   Profile* source_profile = GetProfile(0);
