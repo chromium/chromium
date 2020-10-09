@@ -139,6 +139,14 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
  private:
   __weak id<PreloadCancelling> cancel_handler_ = nil;
 };
+
+// Maximum time to let a cancelled webState attempt to finish restore.
+static const size_t kMaximumCancelledWebStateDelay = 2;
+
+// Used to enable the workaround for a WebKit crash, see crbug.com/1032928.
+const base::Feature kPreloadDelayWebStateReset{
+    "PreloadDelayWebStateReset", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace
 
 @interface PreloadController () <CRConnectionTypeObserverBridge,
@@ -599,8 +607,49 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
   _webState->RemoveObserver(_webStateObserver.get());
   breakpad::StopMonitoringURLsForPreloadWebState(_webState.get());
   _webState->SetDelegate(nullptr);
-  _webState.reset();
 
+  // Preload appears to trigger an edge-case crash in WebKit when a restore is
+  // triggered and cancelled before it can complete.  This isn't specific to
+  // preload, but is very easy to trigger in preload.  As a speculative fix, if
+  // a preload is in restore, don't destroy it until after restore is complete.
+  // This logic should really belong in WebState itself, so any attempt to
+  // destroy a WebState during restore will trigger this logic.  Even better,
+  // this edge case crash should be fixed in WebKit:
+  //     https://bugs.webkit.org/show_bug.cgi?id=217440.
+  // The crash in WebKit appears to be related to IPC throttling.  Session
+  // restore can create a large number of IPC calls, which can then be
+  // throttled.  It seems if the WKWebView is destroyed with this backlog of
+  // IPC calls, sometimes WebKit crashes.
+  // See crbug.com/1032928 for an explanation for how to trigger this crash.
+  // Note the timer should only be called if for some reason session restoration
+  // fails to complete -- thus preventing a WebState leak.
+  static bool delayPreloadDestroyWebState =
+      base::FeatureList::IsEnabled(kPreloadDelayWebStateReset);
+  if (delayPreloadDestroyWebState &&
+      _webState->GetNavigationManager()->IsRestoreSessionInProgress()) {
+    __block std::unique_ptr<web::WebState> webState = std::move(_webState);
+    __block std::unique_ptr<base::OneShotTimer> resetTimer(
+        new base::OneShotTimer());
+    auto reset_block = ^{
+      if (webState) {
+        webState.reset();
+      }
+
+      if (resetTimer) {
+        resetTimer->Stop();
+        resetTimer.reset();
+      }
+    };
+    resetTimer->Start(
+        FROM_HERE, base::TimeDelta::FromSeconds(kMaximumCancelledWebStateDelay),
+        base::BindOnce(reset_block));
+    webState->GetNavigationManager()->AddRestoreCompletionCallback(
+        base::BindOnce(^{
+          dispatch_async(dispatch_get_main_queue(), reset_block);
+        }));
+  } else {
+    _webState.reset();
+  }
   self.prerenderedURL = GURL();
   self.startTime = base::TimeTicks();
   self.loadCompleted = NO;
